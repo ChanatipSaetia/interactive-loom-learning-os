@@ -40,16 +40,16 @@ test.describe('US-4: ArchitectureFlow Section', () => {
     const stepBtn = page.getByTestId('arch-flow-step').first()
     const progress = page.getByTestId('arch-flow-progress').first()
 
-    await expect(progress).toHaveText(/0 \//)
-
-    await stepBtn.click()
     await expect(progress).toHaveText(/1 \//)
 
     await stepBtn.click()
     await expect(progress).toHaveText(/2 \//)
+
+    await stepBtn.click()
+    await expect(progress).toHaveText(/3 \//)
   })
 
-  test('reset button resets progress to zero', async ({ page }) => {
+  test('reset button resets progress to one', async ({ page }) => {
     await page.goto('/demo/rest-vs-websocket')
 
     const stepBtn = page.getByTestId('arch-flow-step').first()
@@ -60,7 +60,23 @@ test.describe('US-4: ArchitectureFlow Section', () => {
     await stepBtn.click()
 
     await resetBtn.click()
-    await expect(progress).toHaveText(/0 \//)
+    await expect(progress).toHaveText(/1 \//)
+  })
+
+  test('play then step produces consistent state', async ({ page }) => {
+    await page.goto('/demo/rest-vs-websocket')
+
+    const playBtn = page.getByTestId('arch-flow-play').first()
+    const pauseBtn = page.getByTestId('arch-flow-pause').first()
+    const stepBtn = page.getByTestId('arch-flow-step').first()
+    const progress = page.getByTestId('arch-flow-progress').first()
+
+    await playBtn.click()
+    await page.waitForTimeout(500)
+    await pauseBtn.click()
+    await expect(stepBtn).not.toBeDisabled()
+    await stepBtn.click()
+    await expect(progress).toHaveText(/\d \//)
   })
 
   test('renders architecture flow titles', async ({ page }) => {

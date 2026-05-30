@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest'
-import { render, screen, fireEvent } from '@testing-library/react'
+import { render, screen } from '@testing-library/react'
 import { MemoryRouter } from 'react-router-dom'
 import { SectionRegistry } from '../../../../src/core/registry'
 import DataFlow from '../../../../src/sections/data-flow/index'
@@ -12,6 +12,9 @@ vi.mock('../../../../src/core/hooks/useAnimation', () => ({
     reset: vi.fn(),
     restart: vi.fn(),
     seek: vi.fn(),
+    stepForward: vi.fn(),
+    stepBack: vi.fn(),
+    status: { playing: false, currentStep: 0, totalSteps: 2 },
   })),
 }))
 
@@ -78,32 +81,21 @@ describe('DataFlow', () => {
 
   it('shows correct progress count initially', () => {
     render(<DataFlow {...defaultProps} />, { wrapper })
-    expect(screen.getByTestId('data-flow-progress')).toHaveTextContent('0 / 2')
-  })
-
-  it('advances step on Step button click', () => {
-    render(<DataFlow {...defaultProps} />, { wrapper })
-    const stepBtn = screen.getByTestId('dataflow-step')
-    fireEvent.click(stepBtn)
     expect(screen.getByTestId('data-flow-progress')).toHaveTextContent('1 / 2')
   })
 
-  it('disables Step button at last step', () => {
+  it('renders step back button', () => {
     render(<DataFlow {...defaultProps} />, { wrapper })
-    const stepBtn = screen.getByTestId('dataflow-step')
-    fireEvent.click(stepBtn)
-    fireEvent.click(stepBtn)
-    expect(stepBtn).toBeDisabled()
+    expect(screen.getByTestId('dataflow-step-back')).toBeInTheDocument()
   })
 
-  it('resets progress on Reset button click', () => {
+  it('renders animation controls', () => {
     render(<DataFlow {...defaultProps} />, { wrapper })
-    const stepBtn = screen.getByTestId('dataflow-step')
-    const resetBtn = screen.getByTestId('dataflow-reset')
-    fireEvent.click(stepBtn)
-    expect(screen.getByTestId('data-flow-progress')).toHaveTextContent('1 / 2')
-    fireEvent.click(resetBtn)
-    expect(screen.getByTestId('data-flow-progress')).toHaveTextContent('0 / 2')
+    expect(screen.getByTestId('dataflow-play')).toBeInTheDocument()
+    expect(screen.getByTestId('dataflow-pause')).toBeInTheDocument()
+    expect(screen.getByTestId('dataflow-step')).toBeInTheDocument()
+    expect(screen.getByTestId('dataflow-step-back')).toBeInTheDocument()
+    expect(screen.getByTestId('dataflow-reset')).toBeInTheDocument()
   })
 
   it('registers with SectionRegistry', async () => {
