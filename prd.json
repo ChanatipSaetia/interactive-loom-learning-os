@@ -213,7 +213,7 @@
       ],
       "dependencies": ["US-7", "US-8", "US-12"],
       "testFor": ["US-7", "US-8"],
-      "passes": false
+      "passes": true
     },
     {
       "id": "US-16",

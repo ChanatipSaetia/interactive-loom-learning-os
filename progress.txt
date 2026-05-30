@@ -105,3 +105,8 @@
 - What was built: Verified existing integration of DataFlow, StepByStep, Text, and Bullets sections in the demo topic with narrative content
 - Tests added: No new tests needed — existing E2E tests in us5-data-flow.spec.ts (5 E2E), us6-step-by-step.spec.ts (6 E2E), us9-text.spec.ts (5 E2E), us10-bullets.spec.ts (5 E2E) plus demo topic unit tests already cover all US-14 acceptance criteria
 - Learnings: US-14 criteria were already satisfied by US-5, US-6, US-9, US-10 implementations since their E2E tests navigate to the demo topic and verify each section renders with correct content, controls, and narrative. When a TEST story's criteria are covered by the stories it tests, verification of passing tests is sufficient.
+
+## [2026-05-30 22:58] US-15 Complete
+- What was built: Verified DragDrop and Choice interactive exercises fully integrated into demo topic with deterministic test ids for E2E. All acceptance criteria already satisfied by US-7 and US-8 implementations.
+- Tests added: No new tests needed — existing E2E tests in us7-drag-drop.spec.ts (6 E2E) and us8-choice.spec.ts (7 E2E) plus 30 unit tests already cover all US-15 acceptance criteria
+- Learnings: US-15 criteria were already satisfied by US-7 and US-8 implementations since their E2E tests navigate to the demo topic and verify interactive exercises with drag, validate, reset, selection, and pros/cons rendering. When a TEST story's criteria overlap with the stories it tests, verification of passing tests is sufficient.
