@@ -29,3 +29,7 @@ npm-debug.log*
 # Handoff documents
 HANDOFF.md
 grill-log.md
+
+# Ralph Loop
+.env.ralph
+logs/

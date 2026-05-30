@@ -30,3 +30,96 @@
 **A:** Single long page with sections.
 
 **Decision:** Each topic is a single scrollable page with sections for different content types (animations, drag-and-drop, tables, choices).
+
+## Q4: Animation Implementation Approach
+
+**Q:** What should the animated elements be built from - SVG, HTML/CSS, or a hybrid approach?
+
+**A:** Hybrid. SVG for architecture/data flow diagrams, HTML/CSS for interactive UI elements.
+
+**Decision:** SVG for diagrams and flow visualizations (precision, path animation), HTML/CSS for interactive elements like drag-and-drop and choice selectors, all animated with anime.js.
+
+## Q5: Section Architecture
+
+**Q:** How should section components be architected for pluggability and independent development?
+
+**A:** Registry pattern. Each section registers itself, topic pages compose via config. Hexagonal architecture - core provides ports, sections are adapters.
+
+**Decision:** Registry pattern with hexagonal architecture. Core app defines section interfaces (ports). Each section type registers itself as an adapter. Topic pages compose sections via configuration.
+
+## Q6: Main Section Types
+
+**Q:** What are the main section types, and how does animation relate to them?
+
+**A:** Animation is a capability all sections can use. The three main sections are: Architecture Flow, Data Flow, and Step-by-Step Sequence. Other sections (DragDrop, Choice) may also animate.
+
+**Decision:** Animation is a cross-cutting capability, not a section type. Main sections: Architecture Flow (system diagrams), Data Flow (data movement), Step-by-Step Sequence (progressive reveal with next/prev). Other sections: DragDrop, Choice. All sections can use animations.
+
+## Q7: Animation Engine Interface
+
+**Q:** How should the shared animation engine work - centralized, per-section, or hook-based?
+
+**A:** Hook-based. Each section calls `useAnimation()` to get control functions.
+
+**Decision:** React hook `useAnimation()` returns play/pause/step functions. Each section manages its own anime.js timeline independently. No global animation state.
+
+## Q8: State Management
+
+**Q:** What state management approach for interactive state (DnD, animation controls, choices, filters)?
+
+**A:** React useState/useReducer + Context API only. No external library.
+
+**Decision:** `useState`/`useReducer` for local section state. Context API only for topic-level shared state. No external state library. Add Zustand later only if needed.
+
+## Q9: Topic Page Loading
+
+**Q:** How should topic pages be loaded - lazy loading, auto-routing, or explicit config?
+
+**A:** React.lazy + explicit route config.
+
+**Decision:** `React.lazy` + `Suspense` for code-splitting per topic. Central `routes.ts` array maps URLs to topic components. Each topic loads on demand when navigated to.
+
+## Q10: Table/Graph Library
+
+**Q:** What library for tables and graphs?
+
+**A:** Shadcn UI for tables, Recharts for graphs.
+
+**Decision:** Shadcn UI for copy-paste customizable table components with sort/filter/pagination. Recharts for React-native charts (bar/line/pie) when needed.
+
+## Q11: Seed Topic Page
+
+**Q:** Should we scaffold a seed topic page as a reference implementation during project initialization?
+
+**A:** Yes, a Demo topic comparing REST API vs WebSocket.
+
+**Decision:** Create a "Demo" topic page comparing REST API vs WebSocket that showcases all section types (Architecture Flow, Data Flow, Step-by-Step Sequence, DragDrop, Choice). Serves as template for future topics.
+
+---
+
+## Summary of Decisions
+
+- **React + React Router** for UI and client-side routing
+- **Vite** as build tool; hosting TBD
+- **Single long scrollable page** per topic with sections
+- **Hybrid animations** - SVG for diagrams, HTML/CSS for interactive elements, powered by anime.js
+- **Registry pattern with hexagonal architecture** - core provides ports, sections register as adapters
+- **Animation is a capability** - all sections can animate, not a section type itself
+- **Main sections:** Architecture Flow, Data Flow, Step-by-Step Sequence, DragDrop, Choice
+- **Hook-based animation engine** - `useAnimation()` hook per section, independent timelines
+- **useState + Context API** for state management, no external library
+- **React.lazy + explicit routes.ts** for code-split topic pages
+- **Shadcn UI** for tables, **Recharts** for graphs
+- **Seed Demo topic:** REST API vs WebSocket comparison
+
+## Implied Stories
+
+1. **Project scaffolding** - Initialize Vite + React + TypeScript project with React Router
+2. **Core architecture** - Build hexagonal core: section registry, `useAnimation` hook, route config
+3. **Shared section components** - ArchitectureFlow, DataFlow, StepByStep, DragDrop, Choice
+4. **Overview page** - Topic list table with search, filter, pagination, sort (Shadcn UI)
+5. **Demo topic: Architecture Flow** - REST vs WebSocket architecture diagrams (SVG + anime.js)
+6. **Demo topic: Data Flow** - Animated data flow comparison
+7. **Demo topic: Step-by-Step** - Progressive request/response sequence with next/prev
+8. **Demo topic: DragDrop** - Interactive comparison exercise
+9. **Demo topic: Choice section** - Pros/cons selection for REST vs WebSocket

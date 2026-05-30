@@ -1,0 +1,3 @@
+# Progress Log — Interactive Loom Learning OS
+# Append-only. Each iteration adds a new entry.
+# Format: ## [YYYY-MM-DD HH:MM] <Story ID> <status>
