@@ -1,6 +1,7 @@
 import { useRef, useCallback, useMemo, type ComponentType } from 'react'
 import { useAnimation } from '../../core/hooks/useAnimation'
 import { SectionRegistry } from '../../core/registry'
+import './architecture-flow.css'
 
 export interface ArchNode {
   id: string

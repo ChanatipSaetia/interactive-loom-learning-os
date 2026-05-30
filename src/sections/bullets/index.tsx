@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect, useCallback, type ComponentType } from 'react'
 import { SectionRegistry } from '../../core/registry'
+import './bullets.css'
 
 export interface BulletItem {
   text: string

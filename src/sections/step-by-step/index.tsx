@@ -1,5 +1,6 @@
 import { useRef, useState, useCallback, type ComponentType } from 'react'
 import { SectionRegistry } from '../../core/registry'
+import './step-by-step.css'
 
 export interface StepContent {
   title: string

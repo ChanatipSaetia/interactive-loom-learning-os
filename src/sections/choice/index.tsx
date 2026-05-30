@@ -1,5 +1,6 @@
 import { useState, useCallback, type ComponentType } from 'react'
 import { SectionRegistry } from '../../core/registry'
+import './choice.css'
 
 export interface ChoiceOption {
   id: string

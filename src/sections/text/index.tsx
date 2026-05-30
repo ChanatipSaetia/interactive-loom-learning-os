@@ -1,5 +1,6 @@
 import { useRef, useEffect, useState, type ComponentType } from 'react'
 import { SectionRegistry } from '../../core/registry'
+import './text.css'
 
 export interface TextSectionProps {
   title?: string

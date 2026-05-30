@@ -2,6 +2,7 @@ import { useState, useMemo } from 'react'
 import { Link } from 'react-router-dom'
 import { Search, ChevronUp, ChevronDown, ChevronsUpDown } from 'lucide-react'
 import type { TopicRoute } from '../../core/routes'
+import './overview.css'
 
 export type SortDirection = 'asc' | 'desc' | null
 export type SortColumn = 'label' | 'category' | 'description' | null

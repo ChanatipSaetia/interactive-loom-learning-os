@@ -1,5 +1,6 @@
 import { useState, useCallback, useMemo, useRef, type ComponentType } from 'react'
 import { SectionRegistry } from '../../core/registry'
+import './drag-drop.css'
 
 export interface DragItem {
   id: string

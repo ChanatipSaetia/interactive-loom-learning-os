@@ -1,6 +1,7 @@
 import { useRef, useCallback, useMemo, type ComponentType } from 'react'
 import { useAnimation } from '../../core/hooks/useAnimation'
 import { SectionRegistry } from '../../core/registry'
+import './data-flow.css'
 
 export interface DataFlowPath {
   id: string
