@@ -31,7 +31,7 @@
         "Unit tests pass for registry, hook, and route config"
       ],
       "dependencies": ["US-1"],
-      "passes": false
+      "passes": true
     },
     {
       "id": "US-3",

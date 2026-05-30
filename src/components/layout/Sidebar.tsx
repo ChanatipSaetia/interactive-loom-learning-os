@@ -1,13 +1,8 @@
 import { NavLink } from 'react-router-dom'
-
-export interface TopicLink {
-  id: string
-  label: string
-  path: string
-}
+import type { TopicRoute } from '../../core/routes'
 
 export interface SidebarProps {
-  topics: TopicLink[]
+  topics: TopicRoute[]
 }
 
 export function Sidebar({ topics }: SidebarProps) {

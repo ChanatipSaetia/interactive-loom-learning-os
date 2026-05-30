@@ -17,12 +17,12 @@ test.describe('US-1: Scaffolding + Shell', () => {
     await expect(topicLinks).toHaveCount(1)
     await expect(topicLinks.first()).toHaveText('REST API vs WebSocket')
 
-    await expect(page.locator('.home-page')).toBeVisible()
-    await expect(page.locator('.home-page-title')).toHaveText('Interactive Learning Platform')
+    await expect(page.locator('.overview-page')).toBeVisible()
+    await expect(page.locator('.overview-page-title')).toHaveText('Interactive Learning Platform')
 
-    const topicCards = page.locator('.home-topic-card')
-    await expect(topicCards).toHaveCount(1)
-    await expect(topicCards.first()).toContainText('REST API vs WebSocket')
+    const topicLink = page.getByTestId('topic-link-demo')
+    await expect(topicLink).toBeVisible()
+    await expect(topicLink).toHaveText('REST API vs WebSocket')
   })
 
   test('sidebar Overview link is active on home page', async ({ page }) => {
@@ -33,7 +33,7 @@ test.describe('US-1: Scaffolding + Shell', () => {
 
   test('sidebar topic link navigates to topic page', async ({ page }) => {
     await page.goto('/')
-    await page.locator('.home-topic-card').first().click()
+    await page.getByTestId('topic-link-demo').click()
     await expect(page).toHaveURL('/demo/rest-vs-websocket')
     await expect(page.locator('.topic-page')).toBeVisible()
   })

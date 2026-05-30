@@ -1,9 +1,10 @@
 import { render, screen } from '@testing-library/react'
 import { MemoryRouter } from 'react-router-dom'
 import { Sidebar } from '../../../../src/components/layout/Sidebar'
+import type { TopicRoute } from '../../../../src/core/routes'
 
-const mockTopics = [
-  { id: 'demo', label: 'REST API vs WebSocket', path: '/demo/rest-vs-websocket' }
+const mockTopics: TopicRoute[] = [
+  { id: 'demo', label: 'REST API vs WebSocket', path: '/demo/rest-vs-websocket', category: 'Architecture', description: 'Compare patterns', sections: [] }
 ]
 
 function renderSidebar() {

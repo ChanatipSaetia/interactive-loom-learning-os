@@ -4,9 +4,9 @@ test.describe('US-2: Core Architecture + Section Registry', () => {
   test('topic page loads from route config via TopicShell', async ({ page }) => {
     await page.goto('/')
 
-    const topicCard = page.locator('.home-topic-card').first()
-    await expect(topicCard).toBeVisible()
-    await topicCard.click()
+    const topicLink = page.getByTestId('topic-link-demo')
+    await expect(topicLink).toBeVisible()
+    await topicLink.click()
 
     await expect(page).toHaveURL('/demo/rest-vs-websocket')
 
