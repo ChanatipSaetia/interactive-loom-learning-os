@@ -100,3 +100,8 @@
 - What was built: Verified existing ArchitectureFlow integration in demo topic with REST and WebSocket SVG variants, data-testid attributes on SVG container and controls, and 5 E2E tests covering SVG rendering, control interaction, step progress, reset, and dual-title rendering
 - Tests added: No new tests needed — existing tests in us4-architecture-flow.spec.ts (5 E2E) and architecture-flow/index.test.tsx (12 unit) already cover all US-13 acceptance criteria
 - Learnings: US-13 criteria were already satisfied by US-4 implementation since the ArchitectureFlow tests navigate to the demo topic. When a TEST story's criteria overlap with the story it tests, no additional code or tests may be needed — just verification that the existing tests pass against the demo integration.
+
+## [2026-05-30 15:44] US-14 Complete
+- What was built: Verified existing integration of DataFlow, StepByStep, Text, and Bullets sections in the demo topic with narrative content
+- Tests added: No new tests needed — existing E2E tests in us5-data-flow.spec.ts (5 E2E), us6-step-by-step.spec.ts (6 E2E), us9-text.spec.ts (5 E2E), us10-bullets.spec.ts (5 E2E) plus demo topic unit tests already cover all US-14 acceptance criteria
+- Learnings: US-14 criteria were already satisfied by US-5, US-6, US-9, US-10 implementations since their E2E tests navigate to the demo topic and verify each section renders with correct content, controls, and narrative. When a TEST story's criteria are covered by the stories it tests, verification of passing tests is sufficient.

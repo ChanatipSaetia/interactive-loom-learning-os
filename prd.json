@@ -199,7 +199,7 @@
       ],
       "dependencies": ["US-5", "US-6", "US-9", "US-10", "US-12"],
       "testFor": ["US-5", "US-6", "US-9", "US-10"],
-      "passes": false
+      "passes": true
     },
     {
       "id": "US-15",
