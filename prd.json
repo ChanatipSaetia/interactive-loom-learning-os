@@ -47,7 +47,7 @@
         "E2E: Playwright loads overview, searches, filters, and clicks topic link"
       ],
       "dependencies": ["US-1"],
-      "passes": false
+      "passes": true
     },
     {
       "id": "US-4",
@@ -160,19 +160,83 @@
       "passes": false
     },
     {
+      "id": "US-12",
+      "title": "[TEST] Demo - Topic Shell & Routing",
+      "description": "Integration test harness: demo topic scaffold and routing used to test individual section stories (US-4..US-10).",
+      "acceptanceCriteria": [
+        "Route available at /demo/rest-vs-websocket",
+        "Topic component lazy-loads with Suspense boundary",
+        "Topic scaffold reserves space for all demo sections in order",
+        "Unit test for route and lazy loading exists"
+      ],
+      "dependencies": ["US-2", "US-3"],
+      "testFor": ["US-4", "US-5", "US-6", "US-7", "US-8", "US-9", "US-10"],
+      "passes": false
+    },
+    {
+      "id": "US-13",
+      "title": "[TEST] Demo - ArchitectureFlow Integration",
+      "description": "Test case for ArchitectureFlow (US-4) showing REST vs WebSocket diagrams and controls.",
+      "acceptanceCriteria": [
+        "ArchitectureFlow renders demo SVGs for REST and WebSocket variants",
+        "Play/pause/step controls affect the demo animation sequence",
+        "Data-testid present for SVG container and controls",
+        "E2E: Playwright verifies ArchitectureFlow renders and controls respond"
+      ],
+      "dependencies": ["US-4", "US-12"],
+      "testFor": ["US-4"],
+      "passes": false
+    },
+    {
+      "id": "US-14",
+      "title": "[TEST] Demo - Data & Narrative Sections",
+      "description": "Test case for DataFlow (US-5), StepByStep (US-6), Text (US-9), and Bullets (US-10) with demo content.",
+      "acceptanceCriteria": [
+        "DataFlow shows particles along demo paths",
+        "StepByStep contains the REST lifecycle steps with next/prev",
+        "Text and Bullets sections display narrative content",
+        "Sections register with SectionRegistry and render in the demo topic"
+      ],
+      "dependencies": ["US-5", "US-6", "US-9", "US-10", "US-12"],
+      "testFor": ["US-5", "US-6", "US-9", "US-10"],
+      "passes": false
+    },
+    {
+      "id": "US-15",
+      "title": "[TEST] Demo - Interactive Exercises",
+      "description": "Test case for DragDrop (US-7) and Choice (US-8) exercises used by the demo topic.",
+      "acceptanceCriteria": [
+        "DragDrop exercise validates scenario categorization",
+        "Choice section shows pros/cons and persists selection during session",
+        "Interactive sections expose deterministic test ids for E2E",
+        "E2E: Playwright interacts with exercises and asserts expected outcomes"
+      ],
+      "dependencies": ["US-7", "US-8", "US-12"],
+      "testFor": ["US-7", "US-8"],
+      "passes": false
+    },
+    {
+      "id": "US-16",
+      "title": "[TEST] Demo - Full E2E Walkthrough",
+      "description": "End-to-end test that verifies all demo sections exercise happy paths of US-4..US-10.",
+      "acceptanceCriteria": [
+        "Playwright test navigates to demo topic and verifies each demo section in order",
+        "Selectors use data-testid attributes for deterministic selection",
+        "Test runs against dev server with webServer configured or manual `npm run dev` started"
+      ],
+      "dependencies": ["US-4", "US-5", "US-6", "US-7", "US-8", "US-9", "US-10"],
+      "testFor": ["US-4", "US-5", "US-6", "US-7", "US-8", "US-9", "US-10"],
+      "passes": false
+    },
+    {
       "id": "US-11",
-      "title": "Demo Topic - REST API vs WebSocket",
-      "description": "Complete demo topic comparing REST API vs WebSocket using all section types.",
+      "title": "Demo Topic - REST API vs WebSocket (Orchestration)",
+      "description": "Orchestrate the demo topic which composes the individual sections. Coordinates all demo sub-stories.",
       "acceptanceCriteria": [
         "Topic page loads at /demo/rest-vs-websocket",
-        "All 8 sections render in order with proper spacing",
-        "ArchitectureFlow shows both REST and WebSocket diagrams with animation",
-        "DataFlow shows animated particles for both patterns",
-        "StepByStep walks through 6-step REST lifecycle with next/prev",
-        "DragDrop exercise validates scenario categorization",
-        "Choice section shows pros/cons for both options",
-        "Topic appears in overview page table",
-        "E2E: Playwright navigates through all sections and interacts with each"
+        "Topic composes the required demo section stories in order",
+        "Overview page includes the demo topic entry",
+        "E2E: Playwright can navigate to the demo topic page"
       ],
       "dependencies": ["US-4", "US-5", "US-6", "US-7", "US-8", "US-9", "US-10"],
       "passes": false

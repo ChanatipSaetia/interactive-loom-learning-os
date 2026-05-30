@@ -81,5 +81,5 @@ tests/
 ## Obsidian Vault
 - Agent has access to Obsidian vault via MCP tools
 - Use `obsidian_vault_read`, `obsidian_vault_search`, etc. to reference documentation
-- anime.js v4 docs saved in vault at `animejs-docs/` folder
-- Consult vault for technical references, design notes, or prior learnings
+- anime.js v4 docs are available only in the Obsidian vault under `animejs-docs/`. Access them via the vault tools (obsidian_vault_read, obsidian_vault_search, etc.); do not fetch them from external web sources.
+- Consult the vault for technical references, design notes, or prior learnings

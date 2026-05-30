@@ -123,7 +123,7 @@ for s in stories:
         stuck_count=1
     fi
 
-    if [ "$stuck_count" -ge 2 ]; then
+    if [ "$stuck_count" -ge 3 ]; then
         log "BLOCKED: $CURRENT_STORY failed $stuck_count iterations in a row"
         ./notify.sh "BLOCKED: $CURRENT_STORY failed $stuck_count times in a row. Check logs/ralph.log or run unstick-story skill."
         if [ -t 0 ]; then
@@ -139,7 +139,7 @@ for s in stories:
     opencode run $MODEL_FLAG \
         @prd.json @progress.txt @AGENTS.md @prompt.md $STEERING_FLAG . \
         "Follow the instructions in prompt.md exactly." \
-        2>&1 | filter_opencode >> "$LOOP_LOG" &
+        >> "$LOOP_LOG" 2>&1 &
     OPENCODE_PID=$!
     wait $OPENCODE_PID || true
     OPENCODE_PID=""

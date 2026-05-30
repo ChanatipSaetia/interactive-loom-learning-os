@@ -1,4 +1,3 @@
-/// <reference types="@playwright/test" />
 import { defineConfig } from '@playwright/test'
 
 export default defineConfig({

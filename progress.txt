@@ -11,3 +11,47 @@
 - What was built: SectionRegistry (register/get/list/clear), useAnimation hook (anime.js timeline with play/pause/reset/restart/seek controls), routes.ts (typed TopicRoute configuration), TopicShell (lazy-loaded topic rendering with Suspense), SectionRenderer (reads config and renders registered section type)
 - Tests added: 12 unit tests (SectionRegistry: 5, useAnimation: 3, routes: 3, plus Sidebar: 4, HomePage: 3, useAnimation: 3) + 2 E2E tests (topic page loads via TopicShell, unknown topic shows not found)
 - Learnings: Import paths from tests/unit/core/ need four levels up (../../../../src/) not three. TopicShell dynamic import with lazy() requires default export from topic component. useParam returns string | undefined so needs null coalescing before use as Record key.
+
+## [2026-05-30 12:15] US-3 Complete
+- What was built: OverviewPage component with sortable table, search input, category filter chips, pagination with configurable rows per page, and topic navigation links. Replaced card-based HomePage with table-based OverviewPage. Updated Sidebar to use TopicRoute type. Added Cohere-styled CSS for overview page (search, filter chips, table, pagination).
+- Tests added: 15 unit tests (OverviewPage: search, filter, sort, pagination, empty state) + 5 E2E tests (full page load, search filter, category filter, sort toggle, rows per page)
+- Learnings: Playwright strict mode requires unique selectors when same text appears in multiple places (e.g., category name in both filter chip and table). playwright.config.ts needed webServer config for dev server auto-start. data-testid attributes essential for reliable E2E selectors.
+
+## [2026-05-30 12:45] US-4 Complete
+- What was built: ArchitectureFlow SVG section with node/edge animations, play/pause/step controls, and SectionRegistry registration
+
+## [2026-05-30 12:45] US-5 Complete
+- What was built: DataFlow SVG particle animations along paths with step highlighting and controls
+
+## [2026-05-30 12:46] US-6 Complete
+- What was built: StepByStep section with next/prev controls, progress indicator, and per-step entrance animations
+
+## [2026-05-30 12:46] US-7 Complete
+- What was built: DragDrop exercise with draggable items, highlighted drop zones, validation feedback, and reset button
+
+## [2026-05-30 12:47] US-8 Complete
+- What was built: Choice section with selectable cards, pros/cons display, and persistent selection state during topic session
+
+## [2026-05-30 12:47] US-9 Complete
+- What was built: Text section with Cohere typography, inline code styling, and optional entrance animation
+
+## [2026-05-30 12:48] US-10 Complete
+- What was built: Bullets section supporting nested lists, checkable items, and staggered reveal animation
+
+## [2026-05-30 12:48] US-12 Complete
+- What was built: Demo topic shell and routing at /demo/rest-vs-websocket with Suspense boundary
+
+## [2026-05-30 12:49] US-13 Complete
+- What was built: ArchitectureFlow integrated into demo with REST vs WebSocket variants and test ids
+
+## [2026-05-30 12:49] US-14 Complete
+- What was built: DataFlow, StepByStep, Text, and Bullets integrated into demo topic with narrative content
+
+## [2026-05-30 12:50] US-15 Complete
+- What was built: DragDrop and Choice exercises integrated into demo with deterministic test ids
+
+## [2026-05-30 12:50] US-11 Complete
+- What was built: Demo topic orchestration composing all demo sections and listed in Overview
+
+## [2026-05-30 12:51] US-16 Complete
+- What was built: Full E2E walkthrough for demo topic, deterministic selectors, and Playwright test harness

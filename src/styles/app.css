@@ -410,6 +410,64 @@
   font-family: var(--font-body);
 }
 
+/* ArchitectureFlow Section */
+.architecture-flow {
+  margin-bottom: var(--spacing-xxl);
+}
+
+.architecture-flow-title {
+  font-size: var(--text-feature-heading);
+  font-weight: 400;
+  color: var(--ink);
+  margin-bottom: var(--spacing-md);
+  line-height: 1.3;
+}
+
+.architecture-flow-svg {
+  width: 100%;
+  max-width: 600px;
+  height: auto;
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-sm);
+  background-color: var(--canvas);
+}
+
+.architecture-flow-controls {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  margin-top: var(--spacing-md);
+  flex-wrap: wrap;
+}
+
+.architecture-flow-btn {
+  padding: var(--spacing-sm) var(--spacing-md);
+  border: 1px solid var(--hairline);
+  border-radius: var(--radius-xs);
+  font-size: var(--text-caption);
+  color: var(--ink);
+  background-color: var(--canvas);
+  cursor: pointer;
+  transition: border-color 0.15s ease, background-color 0.15s ease;
+  font-family: var(--font-body);
+}
+
+.architecture-flow-btn:hover:not(:disabled) {
+  border-color: var(--action-blue);
+  background-color: var(--pale-blue);
+}
+
+.architecture-flow-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.architecture-flow-progress {
+  font-size: var(--text-caption);
+  color: var(--muted);
+  margin-left: var(--spacing-sm);
+}
+
 /* Main content layout */
 .app-layout {
   display: flex;
