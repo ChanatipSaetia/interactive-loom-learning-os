@@ -1,65 +1,28 @@
-import { useState, useMemo } from 'react'
+import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { Search, ChevronUp, ChevronDown, ChevronsUpDown } from 'lucide-react'
 import type { TopicRoute } from '../../core/routes'
+import { useTopicFiltering, type SortDirection, type SortColumn } from '../../core/hooks/useTopicFiltering'
+import { usePagination } from '../../core/hooks/usePagination'
 import './overview.css'
-
-export type SortDirection = 'asc' | 'desc' | null
-export type SortColumn = 'label' | 'category' | 'description' | null
-
-interface OverviewPageProps {
-  topics: TopicRoute[]
-}
 
 const rowsPerPageOptions = [5, 10, 20]
 
-export function OverviewPage({ topics }: OverviewPageProps) {
+export function OverviewPage({ topics }: { topics: TopicRoute[] }) {
   const [search, setSearch] = useState('')
-  const [activeCategory, setActiveCategory] = useState<string>('all')
+  const [activeCategory, setActiveCategory] = useState('all')
   const [sortColumn, setSortColumn] = useState<SortColumn>(null)
   const [sortDirection, setSortDirection] = useState<SortDirection>(null)
   const [currentPage, setCurrentPage] = useState(1)
   const [rowsPerPage, setRowsPerPage] = useState(10)
 
-  const categories = useMemo(() => {
-    const cats = new Set(topics.map((t) => t.category))
-    return ['all', ...Array.from(cats)]
-  }, [topics])
+  const { categories, filteredTopics } = useTopicFiltering({
+    topics, search, activeCategory, sortColumn, sortDirection,
+  })
 
-  const filteredTopics = useMemo(() => {
-    let result = [...topics]
-
-    if (search.trim()) {
-      const q = search.toLowerCase()
-      result = result.filter(
-        (t) =>
-          t.label.toLowerCase().includes(q) ||
-          t.description.toLowerCase().includes(q)
-      )
-    }
-
-    if (activeCategory !== 'all') {
-      result = result.filter((t) => t.category === activeCategory)
-    }
-
-    if (sortColumn && sortDirection) {
-      result.sort((a, b) => {
-        const aVal = a[sortColumn as keyof TopicRoute] as string
-        const bVal = b[sortColumn as keyof TopicRoute] as string
-        const cmp = aVal.localeCompare(bVal)
-        return sortDirection === 'asc' ? cmp : -cmp
-      })
-    }
-
-    return result
-  }, [topics, search, activeCategory, sortColumn, sortDirection])
-
-  const totalPages = Math.max(1, Math.ceil(filteredTopics.length / rowsPerPage))
-  const safeCurrentPage = Math.min(currentPage, totalPages)
-  const pagedTopics = filteredTopics.slice(
-    (safeCurrentPage - 1) * rowsPerPage,
-    safeCurrentPage * rowsPerPage
-  )
+  const { pageItems: pagedTopics, totalPages, startIdx, endIdx, totalItems } = usePagination({
+    items: filteredTopics, page: currentPage, pageSize: rowsPerPage,
+  })
 
   const handleSort = (column: SortColumn) => {
     if (sortColumn === column) {
@@ -75,16 +38,6 @@ export function OverviewPage({ topics }: OverviewPageProps) {
       setSortColumn(column)
       setSortDirection('asc')
     }
-    setCurrentPage(1)
-  }
-
-  const handleCategoryChange = (cat: string) => {
-    setActiveCategory(cat)
-    setCurrentPage(1)
-  }
-
-  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setSearch(e.target.value)
     setCurrentPage(1)
   }
 
@@ -112,7 +65,7 @@ export function OverviewPage({ topics }: OverviewPageProps) {
             className="overview-search-input"
             placeholder="Search topics..."
             value={search}
-            onChange={handleSearchChange}
+            onChange={(e) => { setSearch(e.target.value); setCurrentPage(1) }}
             data-testid="overview-search"
           />
         </div>
@@ -122,7 +75,7 @@ export function OverviewPage({ topics }: OverviewPageProps) {
             <button
               key={cat}
               className={`overview-filter-chip${activeCategory === cat ? ' overview-filter-chip-active' : ''}`}
-              onClick={() => handleCategoryChange(cat)}
+              onClick={() => { setActiveCategory(cat); setCurrentPage(1) }}
               data-testid={`filter-chip-${cat}`}
             >
               {cat === 'all' ? 'All' : cat}
@@ -141,8 +94,7 @@ export function OverviewPage({ topics }: OverviewPageProps) {
                   onClick={() => handleSort('label')}
                   data-testid="sort-label"
                 >
-                  Topic
-                  {getSortIcon('label')}
+                  Topic {getSortIcon('label')}
                 </button>
               </th>
               <th className="overview-table-header">
@@ -151,8 +103,7 @@ export function OverviewPage({ topics }: OverviewPageProps) {
                   onClick={() => handleSort('category')}
                   data-testid="sort-category"
                 >
-                  Category
-                  {getSortIcon('category')}
+                  Category {getSortIcon('category')}
                 </button>
               </th>
               <th className="overview-table-header">
@@ -161,8 +112,7 @@ export function OverviewPage({ topics }: OverviewPageProps) {
                   onClick={() => handleSort('description')}
                   data-testid="sort-description"
                 >
-                  Description
-                  {getSortIcon('description')}
+                  Description {getSortIcon('description')}
                 </button>
               </th>
             </tr>
@@ -199,18 +149,16 @@ export function OverviewPage({ topics }: OverviewPageProps) {
         </table>
       </div>
 
-      {filteredTopics.length > 0 && (
+      {totalItems > 0 && (
         <div className="overview-pagination" data-testid="overview-pagination">
           <div className="overview-pagination-info">
-            Showing {(safeCurrentPage - 1) * rowsPerPage + 1}–
-            {Math.min(safeCurrentPage * rowsPerPage, filteredTopics.length)} of{' '}
-            {filteredTopics.length}
+            Showing {startIdx + 1}–{endIdx} of {totalItems}
           </div>
 
           <div className="overview-pagination-controls">
             <button
               className="overview-pagination-button"
-              disabled={safeCurrentPage === 1}
+              disabled={currentPage === 1}
               onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
               data-testid="pagination-prev"
             >
@@ -220,7 +168,7 @@ export function OverviewPage({ topics }: OverviewPageProps) {
             {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
               <button
                 key={page}
-                className={`overview-pagination-page${page === safeCurrentPage ? ' overview-pagination-page-active' : ''}`}
+                className={`overview-pagination-page${page === currentPage ? ' overview-pagination-page-active' : ''}`}
                 onClick={() => setCurrentPage(page)}
                 data-testid={`pagination-page-${page}`}
               >
@@ -230,7 +178,7 @@ export function OverviewPage({ topics }: OverviewPageProps) {
 
             <button
               className="overview-pagination-button"
-              disabled={safeCurrentPage === totalPages}
+              disabled={currentPage === totalPages}
               onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
               data-testid="pagination-next"
             >
@@ -246,16 +194,11 @@ export function OverviewPage({ topics }: OverviewPageProps) {
               id="rows-per-page"
               className="overview-rows-select"
               value={rowsPerPage}
-              onChange={(e) => {
-                setRowsPerPage(Number(e.target.value))
-                setCurrentPage(1)
-              }}
+              onChange={(e) => { setRowsPerPage(Number(e.target.value)); setCurrentPage(1) }}
               data-testid="rows-per-page"
             >
               {rowsPerPageOptions.map((opt) => (
-                <option key={opt} value={opt}>
-                  {opt}
-                </option>
+                <option key={opt} value={opt}>{opt}</option>
               ))}
             </select>
           </div>
