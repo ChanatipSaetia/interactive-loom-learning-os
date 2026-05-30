@@ -8,6 +8,7 @@ import './sections/data-flow'
 import './sections/step-by-step'
 import './sections/drag-drop'
 import './sections/choice'
+import './sections/text'
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>

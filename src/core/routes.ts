@@ -64,6 +64,18 @@ export const routes: TopicRoute[] = [
             },
           },
           {
+            type: 'text',
+            props: {
+              title: 'What is REST?',
+              heading: 'Representational State Transfer',
+              paragraphs: [
+                'REST is an architectural style for designing networked applications. It relies on a stateless, client-server, cacheable communications protocol -- the HTTP.',
+                'REST uses HTTP methods like <code>GET</code>, <code>POST</code>, <code>PUT</code>, and <code>DELETE</code> to perform CRUD operations on resources identified by URIs.',
+                'For more details, see <a href="https://restfulapi.net">RESTful API Guide</a>.',
+              ],
+            },
+          },
+          {
             type: 'step-by-step',
             props: {
               title: 'REST Lifecycle',
