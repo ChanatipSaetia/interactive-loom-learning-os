@@ -16,7 +16,7 @@
         "E2E: Playwright navigates to / and finds sidebar with topic links"
       ],
       "dependencies": [],
-      "passes": false
+      "passes": true
     },
     {
       "id": "US-2",

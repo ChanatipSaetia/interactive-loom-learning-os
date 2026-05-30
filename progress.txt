@@ -1,3 +1,8 @@
 # Progress Log — Interactive Loom Learning OS
 # Append-only. Each iteration adds a new entry.
 # Format: ## [YYYY-MM-DD HH:MM] <Story ID> <status>
+
+## [2026-05-30 11:03] US-1 Complete
+- What was built: Vite + React + TypeScript project with React Router, Cohere design system CSS variables, sidebar navigation layout, home page with topic cards, and topic page placeholder
+- Tests added: 7 unit tests (Sidebar: 4, HomePage: 3) + 3 E2E tests (home page + sidebar navigation, active link state, topic link navigation)
+- Learnings: app.css was missing @import for global.css, breaking CSS variable chain. playwright.config.ts had malformed JSON instead of proper defineConfig export. App was named export but imported as default.
