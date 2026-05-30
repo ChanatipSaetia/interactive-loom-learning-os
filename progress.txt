@@ -55,3 +55,8 @@
 
 ## [2026-05-30 12:51] US-16 Complete
 - What was built: Full E2E walkthrough for demo topic, deterministic selectors, and Playwright test harness
+
+## [2026-05-30 11:50] US-4 Complete
+- What was built: ArchitectureFlow SVG section with node/edge animations using anime.js v4 timeline, play/pause/step/reset controls, and SectionRegistry registration. SVG renders configured nodes and edges with stroke-dasharray animation for edge drawing. Progress tracking with step counter.
+- Tests added: 12 unit tests (SVG rendering, node/edge rendering, title, controls, step advancement, step disable at last, reset, edge labels, registry registration) + 5 E2E tests (SVG diagram renders, animation controls respond, step advances progress, reset resets progress, architecture flow titles render)
+- Learnings: anime.js v4 API changed from v3: tl.add() takes (target, params, position) instead of ({targets, ...params}, position). Import paths from src/sections/ need ../../core/ not ../../../core/. React callback refs must not return a function - use ref={(el) => callback(id, el)} pattern instead of bind(). E2E strict mode requires .first() when multiple elements share the same data-testid (demo page has 2 ArchitectureFlow instances). vi.resetModules() in Vitest requires re-importing the module under test to get a fresh copy with side effects applied.

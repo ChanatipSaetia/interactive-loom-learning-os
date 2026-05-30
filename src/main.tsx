@@ -4,6 +4,7 @@ import { BrowserRouter } from 'react-router-dom'
 import { App } from './App'
 import './styles/app.css'
 import './sections/architecture-flow'
+import './sections/data-flow'
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>

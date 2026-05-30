@@ -62,7 +62,7 @@
         "E2E: Playwright verifies SVG renders and animation controls respond"
       ],
       "dependencies": ["US-2"],
-      "passes": false
+      "passes": true
     },
     {
       "id": "US-5",

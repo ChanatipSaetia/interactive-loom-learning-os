@@ -468,6 +468,64 @@
   margin-left: var(--spacing-sm);
 }
 
+/* DataFlow Section */
+.data-flow {
+  margin-bottom: var(--spacing-xxl);
+}
+
+.data-flow-title {
+  font-size: var(--text-feature-heading);
+  font-weight: 400;
+  color: var(--ink);
+  margin-bottom: var(--spacing-md);
+  line-height: 1.3;
+}
+
+.data-flow-svg {
+  width: 100%;
+  max-width: 600px;
+  height: auto;
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-sm);
+  background-color: var(--canvas);
+}
+
+.data-flow-controls {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  margin-top: var(--spacing-md);
+  flex-wrap: wrap;
+}
+
+.data-flow-btn {
+  padding: var(--spacing-sm) var(--spacing-md);
+  border: 1px solid var(--hairline);
+  border-radius: var(--radius-xs);
+  font-size: var(--text-caption);
+  color: var(--ink);
+  background-color: var(--canvas);
+  cursor: pointer;
+  transition: border-color 0.15s ease, background-color 0.15s ease;
+  font-family: var(--font-body);
+}
+
+.data-flow-btn:hover:not(:disabled) {
+  border-color: var(--action-blue);
+  background-color: var(--pale-blue);
+}
+
+.data-flow-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.data-flow-progress {
+  font-size: var(--text-caption);
+  color: var(--muted);
+  margin-left: var(--spacing-sm);
+}
+
 /* Main content layout */
 .app-layout {
   display: flex;
