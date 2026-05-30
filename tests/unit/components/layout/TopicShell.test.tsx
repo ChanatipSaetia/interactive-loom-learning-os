@@ -2,10 +2,12 @@ import { render, screen, waitFor } from '@testing-library/react'
 import { MemoryRouter, Routes, Route } from 'react-router-dom'
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 import * as registryModule from '../../../../src/core/registry'
+import { TopicRegistry } from '../../../../src/core/topic-registry'
 import { TopicShell, SectionRenderer } from '../../../../src/components/layout/TopicShell'
 import type { SectionConfig } from '../../../../src/core/registry'
 
 const mockSectionComponent = vi.fn(() => <div data-testid="mock-registered-section" />)
+const mockTopicComponent = vi.fn(() => <div data-testid="mock-topic-content" />)
 
 function renderTopicShell(path = '/demo/rest-vs-websocket') {
   return render(
@@ -22,10 +24,13 @@ describe('US-12: TopicShell lazy loading and Suspense', () => {
     vi.clearAllMocks()
     registryModule.SectionRegistry.clear()
     registryModule.SectionRegistry.register('test-section', mockSectionComponent)
+    TopicRegistry.clear()
+    TopicRegistry.register('demo', mockTopicComponent)
   })
 
   afterEach(() => {
     registryModule.SectionRegistry.clear()
+    TopicRegistry.clear()
     vi.restoreAllMocks()
   })
 

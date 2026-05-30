@@ -63,12 +63,15 @@ if not updates:
 
 print(f"OFFSET={updates[-1]['update_id'] + 1}")
 
-def send(text):
-    """Send plain text, truncated to Telegram's 4096 char limit."""
+def send(text, code_block=False):
+    """Send text, truncated to Telegram's 4096 char limit. Use code_block for monospace formatting."""
     text = text[:4096]
+    if code_block:
+        text = f"```ini\n{text}\n```"
     params = urllib.parse.urlencode({
         'chat_id': chat_id,
         'text': text,
+        'parse_mode': 'Markdown' if code_block else '',
     }).encode('utf-8')
     try:
         req = urllib.request.Request(
@@ -102,7 +105,8 @@ def gh_issue_summary():
         # Get ready-for-agent issues
         r = subprocess.run(
             ['gh', 'issue', 'list', '--label', 'ready-for-agent', '--state', 'open',
-             '--json', 'number,title', '--jq', '.[] | "#\\(.number) \\(.title)"'],
+             '--search', 'sort:created',
+             '--json', 'number,title', '--jq', '[reverse[]] | .[] | "#\\(.number) \\(.title)"'],
             capture_output=True, text=True, timeout=15
         )
         ready = r.stdout.strip().splitlines() if r.stdout.strip() else []
@@ -136,17 +140,12 @@ for u in updates:
         continue
 
     if text.startswith('/status'):
-        # Try status.sh first, fall back to gh issue query
-        try:
-            r = subprocess.run(['./status.sh'], capture_output=True, text=True, timeout=15)
-            out = clean_log(r.stdout)[:3900] or gh_issue_summary()
-        except Exception:
-            out = gh_issue_summary()
-        send(f'[STATUS] {project}\n\n{out}')
+        out = gh_issue_summary()
+        send(f'[STATUS]\n\n{out}', code_block=True)
 
     elif text.startswith('/log'):
         out = tail_file('logs/ralph.log', 40)
-        send(f'[LOG] {project}\n\n{out}')
+        send(f'[LOG] {project}\n\n{out}', code_block=True)
 
     elif text.startswith('/agent'):
         out = tail_file('logs/ralph.log', 40)
@@ -170,7 +169,7 @@ for u in updates:
             out = '\n'.join(lines[-20:]) if lines else '(no output)'
         except Exception as e:
             out = f'Error: {e}'
-        send(f'[LLAMA SERVER] last 20 lines\n\n{out}')
+        send(f'[LLAMA SERVER] last 20 lines\n\n{out}', code_block=True)
 
     elif text.startswith('/stop'):
         send(f'[STOP] Stopping Ralph Loop {project}...')

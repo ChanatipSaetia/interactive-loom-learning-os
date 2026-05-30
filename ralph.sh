@@ -101,7 +101,7 @@ while [ $iteration -lt $MAX ]; do
     fi
 
     # Get the oldest ready-for-agent issue
-    CURRENT_ISSUE=$(gh issue list --label ready-for-agent --state open --sort created --search "sort:created" --json number,title --jq '.[0] | "#\(.number) \(.title)"' 2>/dev/null || echo "unknown")
+    CURRENT_ISSUE=$(gh issue list --label ready-for-agent --state open --search "sort:created" --json number,title --jq '.[-1] | "#\(.number) \(.title)"' 2>/dev/null || echo "unknown")
     CURRENT_ISSUE_NUM=$(echo "$CURRENT_ISSUE" | grep -o '#[0-9]*' | tr -d '#')
 
     log "========================================="
@@ -115,26 +115,21 @@ while [ $iteration -lt $MAX ]; do
         stuck_count=1
     fi
 
-    if [ "$stuck_count" -ge 3 ]; then
-        log "BLOCKED: $CURRENT_ISSUE failed $stuck_count iterations in a row"
-        ./notify.sh "BLOCKED: $CURRENT_ISSUE failed $stuck_count times in a row. Check logs/ralph.log or run unstick-story skill."
-        if [ -t 0 ]; then
-            read -p "   Press Enter to continue the loop anyway, or Ctrl+C to stop: "
-        else
-            log "Running in background — continuing automatically in 5s"
-            sleep 5
-        fi
+    if [ "$stuck_count" -ge 5 ]; then
+        log "BLOCKED: $CURRENT_ISSUE failed $stuck_count iterations in a row — tagging as needs-info"
+        gh issue edit "$CURRENT_ISSUE_NUM" --remove-label "ready-for-agent" --add-label "needs-info" 2>/dev/null
+        ./notify.sh "BLOCKED: $CURRENT_ISSUE failed $stuck_count times. Tagged as needs-info, moving to next issue."
         stuck_count=0
     fi
 
     # Fetch the issue body for context
     ISSUE_BODY=$(gh issue view "$CURRENT_ISSUE_NUM" --json body --jq '.body' 2>/dev/null || echo "")
 
-    # Run opencode — filtered output to logs/ralph.log
+    # Run opencode — output to logs/ralph.log
     opencode run $MODEL_FLAG \
         @progress.txt @AGENTS.md @prompt.md $STEERING_FLAG . \
         "Implement issue $CURRENT_ISSUE. Issue body: $ISSUE_BODY. Follow the instructions in prompt.md exactly." \
-        2>&1 | filter_opencode >> "$LOOP_LOG" &
+        >> "$LOOP_LOG" 2>&1 &
     OPENCODE_PID=$!
     wait $OPENCODE_PID || true
     OPENCODE_PID=""
