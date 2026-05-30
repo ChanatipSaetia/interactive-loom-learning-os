@@ -75,6 +75,21 @@ export const routes: TopicRoute[] = [
               ],
             },
           },
+          {
+            type: 'drag-drop',
+            props: {
+              title: 'Categorize Communication Patterns',
+              items: [
+                { id: 'rest-call', label: 'REST API Call', correctZone: 'rest' },
+                { id: 'ws-msg', label: 'WebSocket Message', correctZone: 'ws' },
+                { id: 'http-req', label: 'HTTP Request', correctZone: 'rest' },
+              ],
+              zones: [
+                { id: 'rest', label: 'REST' },
+                { id: 'ws', label: 'WebSocket' },
+              ],
+            },
+          },
         ],
       },
     ]

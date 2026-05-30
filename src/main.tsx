@@ -6,6 +6,7 @@ import './styles/app.css'
 import './sections/architecture-flow'
 import './sections/data-flow'
 import './sections/step-by-step'
+import './sections/drag-drop'
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
