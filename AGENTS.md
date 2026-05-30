@@ -83,3 +83,17 @@ tests/
 - Use `obsidian_vault_read`, `obsidian_vault_search`, etc. to reference documentation
 - anime.js v4 docs are available only in the Obsidian vault under `animejs-docs/`. Access them via the vault tools (obsidian_vault_read, obsidian_vault_search, etc.); do not fetch them from external web sources.
 - Consult the vault for technical references, design notes, or prior learnings
+
+## Agent skills
+
+### Issue tracker
+
+Issues are tracked in GitHub Issues for this repo (`ChanatipSaetia/interactive-loom-learning-os`). The `gh` CLI is used to create, list, and update issues. See `docs/agents/issue-tracker.md`.
+
+### Triage labels
+
+Standard label vocabulary: `needs-triage`, `needs-info`, `ready-for-agent`, `ready-for-human`, `wontfix`. See `docs/agents/triage-labels.md`.
+
+### Domain docs
+
+Single-context: one `CONTEXT.md` and `docs/adr/` at the repo root. See `docs/agents/domain.md`.

@@ -1,9 +1,9 @@
 #!/bin/bash
-# ralph.sh — Autonomous Ralph Loop runner
+# ralph.sh — Autonomous Ralph Loop runner (GitHub issues driven)
 # Usage: ./ralph.sh [max_iterations] [model]
+# Picks up issues labeled 'ready-for-agent', implements them, and closes on success.
 
 # Add opencode to PATH — try common locations so the skill works anywhere
-# The user's opencode install location varies; check the most common ones
 if ! command -v opencode &>/dev/null; then
     for _p in "$HOME/.opencode/bin" "$HOME/.local/bin" /usr/local/bin /usr/bin; do
         if [ -x "$_p/opencode" ]; then
@@ -19,7 +19,7 @@ if [ -n "$2" ]; then
     MODEL_FLAG="--model $2"
 fi
 iteration=0
-stuck_story=""
+stuck_issue=""
 stuck_count=0
 OPENCODE_PID=""
 PROJECT="$(basename $(pwd))"
@@ -35,8 +35,6 @@ strip_ansi() {
     sed -u 's/\x1b\[[0-9;]*[mK]//g; s/\r//g'
 }
 
-# Keep only meaningful opencode output — messages, errors, results, commits.
-# Filter out: tool calls, file content, build noise.
 filter_opencode() {
     strip_ansi | grep -iE \
         'Error|error:|ERROR|Build|PASS|FAIL|passed|failed|tests|commit|write|modified|deleted|created' |
@@ -55,6 +53,12 @@ if [ ! -d .git ]; then
     git init
     git add -A
     git commit -m "chore: initial commit before ralph loop" || true
+fi
+
+# Verify GitHub auth
+if ! gh auth status &>/dev/null; then
+    log "ERROR: Not authenticated with GitHub. Run 'gh auth login' first."
+    exit 1
 fi
 
 BOT_LISTENER_PID=""
@@ -87,45 +91,33 @@ while [ $iteration -lt $MAX ]; do
         log "[steering] STEERING.md detected"
     fi
 
-    REMAINING=$(python3 -c "
-import json
-with open('prd.json') as f:
-    stories = json.load(f)['stories']
-print(len([s for s in stories if not s.get('passes', False)]))" 2>/dev/null || echo "0")
+    # Count remaining ready-for-agent issues
+    REMAINING=$(gh issue list --label ready-for-agent --state open --json number --jq 'length' 2>/dev/null || echo "0")
 
     if [ "$REMAINING" -eq 0 ]; then
-        log "All tasks complete!"
-        ./notify.sh "Loop complete! All stories passed after $((iteration - 1)) iterations. Project: $PROJECT"
+        log "No more ready-for-agent issues!"
+        ./notify.sh "Loop complete! All ready-for-agent issues processed after $((iteration - 1)) iterations. Project: $PROJECT"
         break
     fi
 
-    CURRENT_STORY=$(python3 -c "
-import json
-with open('prd.json') as f:
-    stories = json.load(f)['stories']
-done_ids = {s['id'] for s in stories if s.get('passes', False)}
-for s in stories:
-    if not s.get('passes', False):
-        deps = s.get('dependencies', [])
-        if all(d in done_ids for d in deps):
-            print(s['id'])
-            break
-" 2>/dev/null || echo "unknown")
+    # Get the oldest ready-for-agent issue
+    CURRENT_ISSUE=$(gh issue list --label ready-for-agent --state open --sort created --search "sort:created" --json number,title --jq '.[0] | "#\(.number) \(.title)"' 2>/dev/null || echo "unknown")
+    CURRENT_ISSUE_NUM=$(echo "$CURRENT_ISSUE" | grep -o '#[0-9]*' | tr -d '#')
 
     log "========================================="
-    log "Iteration $iteration / $MAX | Remaining: $REMAINING | Story: $CURRENT_STORY"
+    log "Iteration $iteration / $MAX | Remaining: $REMAINING | Issue: $CURRENT_ISSUE"
     log "========================================="
 
-    if [ "$CURRENT_STORY" = "$stuck_story" ]; then
+    if [ "$CURRENT_ISSUE" = "$stuck_issue" ]; then
         stuck_count=$((stuck_count + 1))
     else
-        stuck_story="$CURRENT_STORY"
+        stuck_issue="$CURRENT_ISSUE"
         stuck_count=1
     fi
 
     if [ "$stuck_count" -ge 3 ]; then
-        log "BLOCKED: $CURRENT_STORY failed $stuck_count iterations in a row"
-        ./notify.sh "BLOCKED: $CURRENT_STORY failed $stuck_count times in a row. Check logs/ralph.log or run unstick-story skill."
+        log "BLOCKED: $CURRENT_ISSUE failed $stuck_count iterations in a row"
+        ./notify.sh "BLOCKED: $CURRENT_ISSUE failed $stuck_count times in a row. Check logs/ralph.log or run unstick-story skill."
         if [ -t 0 ]; then
             read -p "   Press Enter to continue the loop anyway, or Ctrl+C to stop: "
         else
@@ -135,30 +127,26 @@ for s in stories:
         stuck_count=0
     fi
 
+    # Fetch the issue body for context
+    ISSUE_BODY=$(gh issue view "$CURRENT_ISSUE_NUM" --json body --jq '.body' 2>/dev/null || echo "")
+
     # Run opencode — filtered output to logs/ralph.log
     opencode run $MODEL_FLAG \
-        @prd.json @progress.txt @AGENTS.md @prompt.md $STEERING_FLAG . \
-        "Follow the instructions in prompt.md exactly." \
-        >> "$LOOP_LOG" 2>&1 &
+        @progress.txt @AGENTS.md @prompt.md $STEERING_FLAG . \
+        "Implement issue $CURRENT_ISSUE. Issue body: $ISSUE_BODY. Follow the instructions in prompt.md exactly." \
+        2>&1 | filter_opencode >> "$LOOP_LOG" &
     OPENCODE_PID=$!
     wait $OPENCODE_PID || true
     OPENCODE_PID=""
 
-    PASSED=$(python3 -c "
-import json
-with open('prd.json') as f:
-    stories = json.load(f)['stories']
-for s in stories:
-    if s['id'] == '$CURRENT_STORY':
-        print('yes' if s.get('passes') else 'no')
-        break
-" 2>/dev/null || echo "unknown")
+    # Check if the issue was closed
+    ISSUE_STATE=$(gh issue view "$CURRENT_ISSUE_NUM" --json state --jq '.state' 2>/dev/null || echo "OPEN")
 
-    if [ "$PASSED" = "yes" ]; then
-        log "Iteration $iteration PASSED: $CURRENT_STORY"
-        ./notify.sh "PASSED: $CURRENT_STORY (iter $iteration/$MAX, $((REMAINING-1)) remaining)"
+    if [ "$ISSUE_STATE" = "CLOSED" ]; then
+        log "Iteration $iteration PASSED: $CURRENT_ISSUE (issue closed)"
+        ./notify.sh "PASSED: $CURRENT_ISSUE (iter $iteration/$MAX, $((REMAINING-1)) remaining)"
     else
-        log "Iteration $iteration FAILED: $CURRENT_STORY"
+        log "Iteration $iteration FAILED: $CURRENT_ISSUE (issue still open)"
     fi
 done
 

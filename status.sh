@@ -1,33 +1,28 @@
 #!/bin/bash
-# status.sh — show current Ralph Loop progress
+# status.sh — show current Ralph Loop progress via GitHub issues
 set -e
-
-if [ ! -f prd.json ]; then
-    echo "No prd.json found. Run ralph-loop-setup first."
-    exit 1
-fi
 
 echo "=== Ralph Loop Status: $(basename $(pwd)) ==="
 echo ""
 
-python3 -c "
-import json
-with open('prd.json') as f:
-    data = json.load(f)
+if ! gh auth status &>/dev/null; then
+    echo "Not authenticated with GitHub."
+    exit 1
+fi
 
-stories = data['stories']
-done = [s for s in stories if s.get('passes', False)]
-todo = [s for s in stories if not s.get('passes', False)]
-
-print(f'  Done : {len(done)}/{len(stories)}')
-print(f'  Todo : {len(todo)}')
-print('')
-
-for s in stories:
-    icon = '[DONE]' if s.get('passes', False) else '[TODO]'
-    print(f'  {icon}  {s[\"id\"]}: {s[\"title\"]}')
-"
-
+# Show issue counts by label
+echo "Issue counts:"
+echo "  ready-for-agent: $(gh issue list --label ready-for-agent --state open --json number --jq 'length' 2>/dev/null || echo 0)"
+echo "  needs-triage: $(gh issue list --label needs-triage --state open --json number --jq 'length' 2>/dev/null || echo 0)"
+echo "  needs-info: $(gh issue list --label needs-info --state open --json number --jq 'length' 2>/dev/null || echo 0)"
+echo "  ready-for-human: $(gh issue list --label ready-for-human --state open --json number --jq 'length' 2>/dev/null || echo 0)"
+echo "  closed (recent): $(gh issue list --state closed --json number --jq 'length' 2>/dev/null || echo 0)"
 echo ""
+
+# Show ready-for-agent issues
+echo "Ready for agent:"
+gh issue list --label ready-for-agent --state open --sort created --search "sort:created" --json number,title --jq '.[] | "#\(.number) \(.title)"' 2>/dev/null || echo "  (none)"
+echo ""
+
 echo "--- Last 10 lines of progress.txt ---"
 tail -10 progress.txt 2>/dev/null || echo "(no progress.txt yet)"

@@ -63,15 +63,12 @@ if not updates:
 
 print(f"OFFSET={updates[-1]['update_id'] + 1}")
 
-def send(text, code_block=False):
-    """Send text, truncated to Telegram's 4096 char limit. Use code_block for monospace formatting."""
+def send(text):
+    """Send plain text, truncated to Telegram's 4096 char limit."""
     text = text[:4096]
-    if code_block:
-        text = f"```\n{text}\n```"
     params = urllib.parse.urlencode({
         'chat_id': chat_id,
         'text': text,
-        'parse_mode': 'Markdown' if code_block else '',
     }).encode('utf-8')
     try:
         req = urllib.request.Request(
@@ -99,45 +96,36 @@ def tail_file(path, n=40):
     except Exception as e:
         return f'Error reading {path}: {e}'
 
-def prd_summary():
-    """Return a compact story status table from prd.json with loop info."""
+def gh_issue_summary():
+    """Return a compact issue status from GitHub."""
     try:
-        with open('prd.json') as f:
-            stories = json.load(f)['stories']
-        lines = []
-        total = len(stories)
-        passed = sum(1 for s in stories if s.get('passes'))
-        failed = total - passed
-        lines.append(f'Project: {project}')
-        lines.append(f'Pass: {passed}  Fail: {failed}  Total: {total}')
-        lines.append('')
+        # Get ready-for-agent issues
+        r = subprocess.run(
+            ['gh', 'issue', 'list', '--label', 'ready-for-agent', '--state', 'open',
+             '--json', 'number,title', '--jq', '.[] | "#\\(.number) \\(.title)"'],
+            capture_output=True, text=True, timeout=15
+        )
+        ready = r.stdout.strip().splitlines() if r.stdout.strip() else []
 
-        # Read current iteration and remaining from log
-        try:
-            with open('logs/ralph.log') as lf:
-                log_content = lf.read()
-            import re as re_mod
-            iter_match = re_mod.search(r'Iteration (\d+) / (\d+)', log_content)
-            if iter_match:
-                current_iter = iter_match.group(1)
-                max_iter = iter_match.group(2)
-                lines.append(f'Iteration: {current_iter}/{max_iter}')
-            rem_match = re_mod.search(r'Remaining: (\d+)', log_content)
-            if rem_match:
-                lines.append(f'Remaining: {rem_match.group(1)} stories')
-            cur_match = re_mod.search(r'Story: (\S+)', log_content)
-            if cur_match:
-                lines.append(f'Current Story: {cur_match.group(1)}')
-            lines.append('')
-        except Exception:
-            pass
+        # Get counts
+        counts = []
+        for label in ['ready-for-agent', 'needs-triage', 'needs-info', 'ready-for-human']:
+            r2 = subprocess.run(
+                ['gh', 'issue', 'list', '--label', label, '--state', 'open',
+                 '--json', 'number', '--jq', 'length'],
+                capture_output=True, text=True, timeout=10
+            )
+            cnt = r2.stdout.strip() or '0'
+            counts.append(f'  {label}: {cnt}')
 
-        for s in stories:
-            icon = 'PASS' if s.get('passes') else 'FAIL'
-            lines.append(f"[{icon}] {s['id']}: {s['title'][:40]}")
+        lines = ['Issue counts:'] + counts + ['', 'Ready for agent:']
+        if ready:
+            lines.extend(ready)
+        else:
+            lines.append('  (none)')
         return '\n'.join(lines)
     except Exception as e:
-        return f'Error reading prd.json: {e}'
+        return f'Error querying GitHub issues: {e}'
 
 for u in updates:
     msg       = u.get('message', {})
@@ -148,12 +136,29 @@ for u in updates:
         continue
 
     if text.startswith('/status'):
-        out = prd_summary()
-        send(f'[STATUS]\n\n{out}', code_block=True)
+        # Try status.sh first, fall back to gh issue query
+        try:
+            r = subprocess.run(['./status.sh'], capture_output=True, text=True, timeout=15)
+            out = clean_log(r.stdout)[:3900] or gh_issue_summary()
+        except Exception:
+            out = gh_issue_summary()
+        send(f'[STATUS] {project}\n\n{out}')
 
     elif text.startswith('/log'):
         out = tail_file('logs/ralph.log', 40)
-        send(f'[LOG] {project}\n\n{out}', code_block=True)
+        send(f'[LOG] {project}\n\n{out}')
+
+    elif text.startswith('/agent'):
+        out = tail_file('logs/ralph.log', 40)
+        try:
+            import subprocess as sp
+            r = sp.run(['grep', '-iE', 'Error|PASS|FAIL|commit|write|modified|deleted|created|Iteration',
+                       'logs/ralph.log'], capture_output=True, text=True)
+            meaningful = r.stdout.strip().splitlines()
+            out = '\n'.join(meaningful[-40:]) if meaningful else '(no meaningful output yet)'
+        except Exception:
+            pass
+        send(f'[AGENT] {project}\n\n{out}')
 
     elif text.startswith('/llama') or text.startswith('/gpu'):
         try:
@@ -165,7 +170,7 @@ for u in updates:
             out = '\n'.join(lines[-20:]) if lines else '(no output)'
         except Exception as e:
             out = f'Error: {e}'
-        send(f'[LLAMA SERVER] last 20 lines\n\n{out}', code_block=True)
+        send(f'[LLAMA SERVER] last 20 lines\n\n{out}')
 
     elif text.startswith('/stop'):
         send(f'[STOP] Stopping Ralph Loop {project}...')
@@ -178,8 +183,9 @@ for u in updates:
     elif text.startswith('/help') or text.startswith('/start'):
         send(
             f'Ralph Loop Bot - {project}\n\n'
-            '/status  - prd pass/fail + loop info\n'
+            '/status  - issue status summary from GitHub\n'
             '/log     - last 40 lines of logs/ralph.log\n'
+            '/agent   - last 40 lines of agent output (ralph.log)\n'
             '/llama   - llama-server journal (last 20 lines)\n'
             '/stop    - kill the loop\n'
             '/help    - show this message'
