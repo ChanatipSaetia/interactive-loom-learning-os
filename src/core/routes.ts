@@ -60,9 +60,21 @@ export const routes: TopicRoute[] = [
             { id: 'rest', label: 'REST API', d: 'M 50 100 C 150 100, 250 120, 400 120 L 520 120', color: '#1863dc' },
             { id: 'ws', label: 'WebSocket', d: 'M 50 140 C 150 140, 300 160, 450 160 L 550 160', color: '#ff7759' },
           ],
-          particleColor: '#ff7759',
-        },
+             particleColor: '#ff7759',
+            },
+          },
+          {
+            type: 'step-by-step',
+            props: {
+              title: 'REST Lifecycle',
+              steps: [
+                { title: 'Step 1: Client Sends Request', body: 'The client initiates an HTTP request to the server with method, headers, and optional body.' },
+                { title: 'Step 2: Server Processes Request', body: 'The server receives the request, routes it to the appropriate handler, and processes the business logic.' },
+                { title: 'Step 3: Server Returns Response', body: 'The server sends back an HTTP response with status code, headers, and the requested data.' },
+                { title: 'Step 4: Client Receives Response', body: 'The client processes the response, renders the data, and awaits the next user action.' },
+              ],
+            },
+          },
+        ],
       },
-    ],
-  },
-]
+    ]

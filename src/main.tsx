@@ -5,6 +5,7 @@ import { App } from './App'
 import './styles/app.css'
 import './sections/architecture-flow'
 import './sections/data-flow'
+import './sections/step-by-step'
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>

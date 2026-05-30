@@ -56,6 +56,11 @@
 ## [2026-05-30 12:51] US-16 Complete
 - What was built: Full E2E walkthrough for demo topic, deterministic selectors, and Playwright test harness
 
+## [2026-05-30 19:19] US-5 Complete
+- What was built: DataFlow SVG particle section with configurable paths, animated stroke-dasharray drawing, particle circles at path starts, play/pause/step/reset controls, progress tracking, and SectionRegistry registration
+- Tests added: 12 unit tests (SVG rendering, path/particle rendering, title, labels, controls, step advancement, step disable at last, reset, registry registration) + 5 E2E tests (SVG renders with paths/particles, controls respond, step advances progress, reset resets progress, title renders)
+- Learnings: jsdom does NOT support SVGPathElement.getTotalLength() — must guard with typeof check to avoid test crashes. In-browser (Playwright) getTotalLength works fine. Use stroke-dasharray/stroke-dashoffset on style property (not setAttribute) for inline style animation. Demo routes config needs section type import in main.tsx to trigger SectionRegistry registration.
+
 ## [2026-05-30 11:50] US-4 Complete
 - What was built: ArchitectureFlow SVG section with node/edge animations using anime.js v4 timeline, play/pause/step/reset controls, and SectionRegistry registration. SVG renders configured nodes and edges with stroke-dasharray animation for edge drawing. Progress tracking with step counter.
 - Tests added: 12 unit tests (SVG rendering, node/edge rendering, title, controls, step advancement, step disable at last, reset, edge labels, registry registration) + 5 E2E tests (SVG diagram renders, animation controls respond, step advances progress, reset resets progress, architecture flow titles render)

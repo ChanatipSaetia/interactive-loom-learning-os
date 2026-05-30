@@ -77,7 +77,7 @@
         "E2E: Playwright verifies animation renders and controls respond"
       ],
       "dependencies": ["US-2"],
-      "passes": false
+      "passes": true
     },
     {
       "id": "US-6",

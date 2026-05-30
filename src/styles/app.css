@@ -526,6 +526,78 @@
   margin-left: var(--spacing-sm);
 }
 
+/* StepByStep Section */
+.step-by-step {
+  margin-bottom: var(--spacing-xxl);
+}
+
+.step-by-step-title {
+  font-size: var(--text-feature-heading);
+  font-weight: 400;
+  color: var(--ink);
+  margin-bottom: var(--spacing-md);
+  line-height: 1.3;
+}
+
+.step-by-step-content {
+  padding: var(--spacing-xl);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-sm);
+  background-color: var(--canvas);
+  min-height: 80px;
+}
+
+.step-by-step-step-title {
+  font-size: var(--text-feature-heading);
+  font-weight: 400;
+  color: var(--ink);
+  margin-bottom: var(--spacing-sm);
+  line-height: 1.3;
+}
+
+.step-by-step-step-body {
+  font-size: var(--text-body);
+  color: var(--body-muted);
+  line-height: 1.5;
+}
+
+.step-by-step-controls {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md);
+  margin-top: var(--spacing-md);
+  justify-content: center;
+}
+
+.step-by-step-btn {
+  padding: var(--spacing-sm) var(--spacing-lg);
+  border: 1px solid var(--hairline);
+  border-radius: var(--radius-xs);
+  font-size: var(--text-caption);
+  color: var(--ink);
+  background-color: var(--canvas);
+  cursor: pointer;
+  transition: border-color 0.15s ease, background-color 0.15s ease;
+  font-family: var(--font-body);
+}
+
+.step-by-step-btn:hover:not(:disabled) {
+  border-color: var(--action-blue);
+  background-color: var(--pale-blue);
+}
+
+.step-by-step-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.step-by-step-progress {
+  font-size: var(--text-caption);
+  color: var(--muted);
+  min-width: 60px;
+  text-align: center;
+}
+
 /* Main content layout */
 .app-layout {
   display: flex;
