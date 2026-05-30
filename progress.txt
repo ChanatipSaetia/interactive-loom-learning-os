@@ -110,3 +110,8 @@
 - What was built: Verified DragDrop and Choice interactive exercises fully integrated into demo topic with deterministic test ids for E2E. All acceptance criteria already satisfied by US-7 and US-8 implementations.
 - Tests added: No new tests needed — existing E2E tests in us7-drag-drop.spec.ts (6 E2E) and us8-choice.spec.ts (7 E2E) plus 30 unit tests already cover all US-15 acceptance criteria
 - Learnings: US-15 criteria were already satisfied by US-7 and US-8 implementations since their E2E tests navigate to the demo topic and verify interactive exercises with drag, validate, reset, selection, and pros/cons rendering. When a TEST story's criteria overlap with the stories it tests, verification of passing tests is sufficient.
+
+## [2026-05-31 01:28] Issue #1 Complete
+- What was built: Deleted TopicPage.tsx (dead code, never imported). Deleted HomePage.tsx (pass-through wrapper adding zero logic). Updated App.tsx to import OverviewPage directly, removing the intermediate HomePage layer. Cleaned up empty src/pages/ and tests/unit/pages/ directories.
+- Tests added: No new tests needed — existing OverviewPage unit tests (15 tests) and E2E tests (us1-scaffolding: 3, us3-overview: 5) already cover the home page rendering. Deleted HomePage.test.tsx (3 tests that tested OverviewPage content through the pass-through, not HomePage behavior).
+- Learnings: When a component is purely a pass-through wrapper (delegates all props to another component), it adds coupling without value. The App.tsx route can import OverviewPage directly. The existing test suite was already comprehensive for OverviewPage, so collapsing the wrapper only meant deleting the redundant HomePage tests.
