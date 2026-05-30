@@ -76,6 +76,19 @@ export const routes: TopicRoute[] = [
             },
           },
           {
+            type: 'bullets',
+            props: {
+              title: 'HTTP Methods',
+              ordered: false,
+              items: [
+                { text: 'GET — Retrieve a resource', checkable: true },
+                { text: 'POST — Create a new resource', checkable: true },
+                { text: 'PUT — Update an existing resource', checkable: true },
+                { text: 'DELETE — Remove a resource', checkable: true },
+              ],
+            },
+          },
+          {
             type: 'step-by-step',
             props: {
               title: 'REST Lifecycle',

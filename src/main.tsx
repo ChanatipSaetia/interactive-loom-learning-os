@@ -9,6 +9,7 @@ import './sections/step-by-step'
 import './sections/drag-drop'
 import './sections/choice'
 import './sections/text'
+import './sections/bullets'
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>

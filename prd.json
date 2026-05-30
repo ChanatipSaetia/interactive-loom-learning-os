@@ -141,7 +141,7 @@
         "Unit tests pass for content rendering"
       ],
       "dependencies": ["US-2"],
-      "passes": false
+      "passes": true
     },
     {
       "id": "US-10",
