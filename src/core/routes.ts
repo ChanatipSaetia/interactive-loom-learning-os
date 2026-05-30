@@ -90,6 +90,44 @@ export const routes: TopicRoute[] = [
               ],
             },
           },
+          {
+            type: 'choice',
+            props: {
+              title: 'REST API vs WebSocket',
+              options: [
+                {
+                  id: 'rest',
+                  label: 'REST API',
+                  description: 'Request-response pattern using HTTP methods for resource-oriented communication.',
+                  pros: [
+                    'Simple and well-understood',
+                    'Cacheable responses',
+                    'Stateless, easy to scale horizontally',
+                  ],
+                  cons: [
+                    'Not ideal for real-time data',
+                    'Higher latency for frequent updates',
+                    'Client must poll for changes',
+                  ],
+                },
+                {
+                  id: 'websocket',
+                  label: 'WebSocket',
+                  description: 'Full-duplex persistent connection enabling real-time bidirectional communication.',
+                  pros: [
+                    'Real-time bidirectional messaging',
+                    'Low latency for live updates',
+                    'Single persistent connection',
+                  ],
+                  cons: [
+                    'More complex to implement',
+                    'Stateful connections harder to scale',
+                    'Requires fallback handling',
+                  ],
+                },
+              ],
+            },
+          },
         ],
       },
     ]

@@ -109,7 +109,7 @@
         "E2E: Playwright drags item to zone and validates feedback"
       ],
       "dependencies": ["US-2"],
-      "passes": false
+      "passes": true
     },
     {
       "id": "US-8",
@@ -125,7 +125,7 @@
         "E2E: Playwright clicks options and verifies selection state"
       ],
       "dependencies": ["US-2"],
-      "passes": false
+      "passes": true
     },
     {
       "id": "US-9",
