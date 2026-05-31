@@ -11,6 +11,7 @@ export function App() {
       <main className="main-content">
         <Routes>
           <Route path="/" element={<OverviewPage topics={routes} />} />
+          <Route path="/topics/:topicId/*" element={<TopicShell />} />
           <Route path="/:topicId/*" element={<TopicShell />} />
         </Routes>
       </main>

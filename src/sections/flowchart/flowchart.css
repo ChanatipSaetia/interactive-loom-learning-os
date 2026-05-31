@@ -1,0 +1,53 @@
+.flowchart-section {
+  margin-bottom: var(--spacing-xxl);
+}
+
+.flowchart-title {
+  font-size: var(--text-feature-heading);
+  font-weight: 400;
+  color: var(--ink);
+  margin-bottom: var(--spacing-md);
+  line-height: 1.3;
+}
+
+.flowchart-svg {
+  width: 100%;
+  max-width: 800px;
+  height: auto;
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-sm);
+  background-color: var(--canvas);
+}
+
+.flowchart-node-rect {
+  transition: stroke-color 0.15s ease;
+}
+
+.flowchart-node-group:hover .flowchart-node-rect {
+  stroke: var(--action-blue);
+}
+
+.flowchart-node-label {
+  font-family: var(--font-body);
+  font-size: 13px;
+  font-weight: 500;
+  fill: var(--ink);
+}
+
+.flowchart-node-stereotype {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  fill: var(--muted);
+}
+
+.flowchart-node-icon {
+  color: var(--muted);
+}
+
+.flowchart-node-icon-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+}

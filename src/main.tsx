@@ -10,7 +10,9 @@ import './sections/drag-drop'
 import './sections/choice'
 import './sections/text'
 import './sections/bullets'
+import './sections/flowchart'
 import './topics/demo'
+import './topics/ai-agent'
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>

@@ -14,7 +14,7 @@ test.describe('US-1: Scaffolding + Shell', () => {
     await expect(overviewLink).toHaveText('Overview')
 
     const topicLinks = page.locator('.sidebar-link:not(.sidebar-link-home)')
-    await expect(topicLinks).toHaveCount(1)
+    await expect(topicLinks).toHaveCount(2)
     await expect(topicLinks.first()).toHaveText('REST API vs WebSocket')
 
     await expect(page.locator('.overview-page')).toBeVisible()
