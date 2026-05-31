@@ -9,7 +9,7 @@ Replace both with a single **Flowchart** component that:
 - Renders all nodes (rectangles with `<<stereotype>>`, Lucide icon, label) and edges (straight lines, arrowheads, no labels) visible from the start
 - Supports multiple **journeys** — ordered step sequences through the nodes, selected via dropdown
 - Animates step-by-step: highlights the current node, shows a particle traveling along the edge to the next node, and displays a description near the highlighted node
-- Playback controls: Play (auto-advance), Pause, Next (advance one step). No Step Back, no Reset.
+- Playback controls: Play (auto-advance), Pause, Next (advance one step), Prev (step back), Reset (return to start)
 - Uses top-to-bottom auto-layout with barycenter distribution within layers; author can override layer assignments; nodes are draggable (session-only, connections follow)
 - Smart placement for step descriptions (avoids overlap with other nodes/edges)
 - Zoom + pan on mobile via SVG viewBox
