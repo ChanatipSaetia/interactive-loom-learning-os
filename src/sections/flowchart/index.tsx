@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useRef, useState, type ComponentType } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState, type ComponentType } from 'react'
 import { SectionRegistry } from '../../core/registry'
 import * as Icons from 'lucide-react'
 import './flowchart.css'
@@ -16,10 +16,22 @@ export interface FlowchartEdge {
   to: string
 }
 
+export interface Step {
+  nodeId: string
+  description: string
+}
+
+export interface Journey {
+  id: string
+  label: string
+  steps: Step[]
+}
+
 export interface FlowchartProps {
   title?: string
   nodes: FlowchartNode[]
   edges: FlowchartEdge[]
+  journeys?: Journey[]
 }
 
 interface PositionedNode extends FlowchartNode {
@@ -160,11 +172,70 @@ function getIconComponent(iconName: string) {
   return IconComponent ? <IconComponent size={16} className="flowchart-node-icon" /> : null
 }
 
-function Flowchart({ title, nodes, edges }: FlowchartProps) {
+function Flowchart({ title, nodes, edges, journeys }: FlowchartProps) {
   const basePositioned = useMemo(
     () => computeLayoutWithBarycenter(nodes, edges),
     [nodes, edges]
   )
+
+  const [currentJourneyId, setCurrentJourneyId] = useState<string>(
+    journeys?.[0]?.id ?? ''
+  )
+  const [currentStep, setCurrentStep] = useState(0)
+  const [isPlaying, setIsPlaying] = useState(false)
+  const playTimerRef = useRef<number | null>(null)
+
+  const currentJourney = journeys?.find((j) => j.id === currentJourneyId)
+  const highlightedNodeId = currentJourney?.steps[currentStep]?.nodeId
+
+  useEffect(() => {
+    if (isPlaying && currentJourney && currentStep < currentJourney.steps.length - 1) {
+      playTimerRef.current = window.setTimeout(() => {
+        setCurrentStep((s) => s + 1)
+      }, 1200)
+    } else {
+      setIsPlaying(false)
+    }
+    return () => {
+      if (playTimerRef.current) {
+        clearTimeout(playTimerRef.current)
+        playTimerRef.current = null
+      }
+    }
+  }, [isPlaying, currentStep, currentJourney])
+
+  const handleJourneyChange = useCallback((e: React.ChangeEvent<HTMLSelectElement>) => {
+    setCurrentJourneyId(e.target.value)
+    setCurrentStep(0)
+    setIsPlaying(false)
+  }, [])
+
+  const handlePlay = useCallback(() => {
+    if (currentJourney && currentStep < currentJourney.steps.length - 1) {
+      setIsPlaying(true)
+    }
+  }, [currentJourney, currentStep])
+
+  const handlePause = useCallback(() => {
+    setIsPlaying(false)
+  }, [])
+
+  const handleNext = useCallback(() => {
+    if (currentJourney && currentStep < currentJourney.steps.length - 1) {
+      setCurrentStep((s) => s + 1)
+    }
+  }, [currentJourney, currentStep])
+
+  const handlePrev = useCallback(() => {
+    if (currentStep > 0) {
+      setCurrentStep((s) => s - 1)
+    }
+  }, [currentStep])
+
+  const handleReset = useCallback(() => {
+    setCurrentStep(0)
+    setIsPlaying(false)
+  }, [])
 
   const [dragOffsets, setDragOffsets] = useState<Record<string, { dx: number; dy: number }>>({})
   const dragRef = useRef<{ active: boolean; nodeId: string | null; lastSvgX: number; lastSvgY: number; svgEl: SVGSVGElement | null }>({
@@ -385,6 +456,76 @@ function Flowchart({ title, nodes, edges }: FlowchartProps) {
         </h3>
       )}
 
+      {journeys && journeys.length > 0 && (
+        <div className="flowchart-controls" data-testid="flowchart-controls">
+          <div className="flowchart-journey-selector">
+            <label htmlFor="flowchart-journey-select" className="flowchart-journey-label">Journey:</label>
+            <select
+              id="flowchart-journey-select"
+              className="flowchart-journey-select"
+              value={currentJourneyId}
+              onChange={handleJourneyChange}
+              data-testid="flowchart-journey-select"
+            >
+              {journeys.map((j) => (
+                <option key={j.id} value={j.id}>{j.label}</option>
+              ))}
+            </select>
+          </div>
+
+          <div className="flowchart-playback" data-testid="flowchart-playback">
+            <button
+              className="flowchart-btn flowchart-btn-play"
+              disabled={isPlaying || (!currentJourney || currentStep >= currentJourney.steps.length - 1)}
+              onClick={handlePlay}
+              data-testid="flowchart-btn-play"
+              aria-label="Play"
+            >
+              ▶
+            </button>
+            <button
+              className="flowchart-btn flowchart-btn-pause"
+              disabled={!isPlaying}
+              onClick={handlePause}
+              data-testid="flowchart-btn-pause"
+              aria-label="Pause"
+            >
+              ❚❚
+            </button>
+            <button
+              className="flowchart-btn flowchart-btn-next"
+              disabled={!currentJourney || currentStep >= currentJourney.steps.length - 1}
+              onClick={handleNext}
+              data-testid="flowchart-btn-next"
+              aria-label="Next"
+            >
+              ⏭
+            </button>
+            <button
+              className="flowchart-btn flowchart-btn-prev"
+              disabled={currentStep === 0}
+              onClick={handlePrev}
+              data-testid="flowchart-btn-prev"
+              aria-label="Previous"
+            >
+              ⏮
+            </button>
+            <button
+              className="flowchart-btn flowchart-btn-reset"
+              disabled={currentStep === 0}
+              onClick={handleReset}
+              data-testid="flowchart-btn-reset"
+              aria-label="Reset"
+            >
+              ⏹
+            </button>
+            <span className="flowchart-progress" data-testid="flowchart-progress">
+              {currentStep + 1} / {currentJourney?.steps.length ?? 0}
+            </span>
+          </div>
+        </div>
+      )}
+
       <svg
         className="flowchart-svg"
         viewBox={`0 0 ${svgWidth} ${svgHeight}`}
@@ -476,10 +617,10 @@ function Flowchart({ title, nodes, edges }: FlowchartProps) {
                   width={nodeWidth}
                   height={nodeHeight}
                   rx="var(--radius-sm)"
-                  fill="var(--canvas)"
-                  stroke="var(--hairline)"
-                  strokeWidth="1"
-                  className="flowchart-node-rect"
+                  fill={highlightedNodeId === node.id ? 'var(--pale-blue)' : 'var(--canvas)'}
+                  stroke={highlightedNodeId === node.id ? 'var(--action-blue)' : 'var(--hairline)'}
+                  strokeWidth={highlightedNodeId === node.id ? '2.5' : '1'}
+                  className={`flowchart-node-rect${highlightedNodeId === node.id ? ' flowchart-node-highlighted' : ''}`}
                 />
                 {getIconComponent(node.icon) && (
                   <foreignObject

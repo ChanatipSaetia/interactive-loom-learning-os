@@ -1,9 +1,9 @@
 import { describe, it, expect, beforeEach } from 'vitest'
-import { render, screen } from '@testing-library/react'
+import { render, screen, fireEvent, act } from '@testing-library/react'
 import { MemoryRouter } from 'react-router-dom'
 import { SectionRegistry } from '../../../../src/core/registry'
 import Flowchart, { computeLayout, computeLayoutWithBarycenter } from '../../../../src/sections/flowchart/index'
-import type { FlowchartNode, FlowchartEdge } from '../../../../src/sections/flowchart/index'
+import type { FlowchartNode, FlowchartEdge, Journey } from '../../../../src/sections/flowchart/index'
 
 const mockNodes: FlowchartNode[] = [
   { id: 'user', label: 'User', stereotype: 'actor', icon: 'User', layer: 0 },
@@ -215,5 +215,194 @@ describe('Flowchart component', () => {
     expect(svg).toHaveProperty('ontouchstart')
     expect(svg).toHaveProperty('ontouchmove')
     expect(svg).toHaveProperty('onwheel')
+  })
+})
+
+const mockJourneys: Journey[] = [
+  {
+    id: 'journey-a',
+    label: 'Journey A',
+    steps: [
+      { nodeId: 'user', description: 'Step 1' },
+      { nodeId: 'agent', description: 'Step 2' },
+      { nodeId: 'llm', description: 'Step 3' },
+    ],
+  },
+  {
+    id: 'journey-b',
+    label: 'Journey B',
+    steps: [
+      { nodeId: 'llm', description: 'Step 1' },
+      { nodeId: 'agent', description: 'Step 2' },
+    ],
+  },
+]
+
+describe('Flowchart journey controls', () => {
+  beforeEach(() => {
+    SectionRegistry.clear()
+    vi.useFakeTimers()
+  })
+
+  it('renders journey selector when journeys provided', () => {
+    render(<Flowchart title="Test" nodes={mockNodes} edges={mockEdges} journeys={mockJourneys} />, { wrapper })
+    expect(screen.getByTestId('flowchart-journey-select')).toBeInTheDocument()
+  })
+
+  it('does not render controls when journeys not provided', () => {
+    render(<Flowchart title="Test" nodes={mockNodes} edges={mockEdges} />, { wrapper })
+    expect(screen.queryByTestId('flowchart-journey-select')).not.toBeInTheDocument()
+    expect(screen.queryByTestId('flowchart-controls')).not.toBeInTheDocument()
+  })
+
+  it('renders all journey options', () => {
+    render(<Flowchart title="Test" nodes={mockNodes} edges={mockEdges} journeys={mockJourneys} />, { wrapper })
+    const select = screen.getByTestId('flowchart-journey-select') as HTMLSelectElement
+    expect(select.options.length).toBe(2)
+    expect(select.options[0].text).toBe('Journey A')
+    expect(select.options[1].text).toBe('Journey B')
+  })
+
+  it('defaults to first journey', () => {
+    render(<Flowchart title="Test" nodes={mockNodes} edges={mockEdges} journeys={mockJourneys} />, { wrapper })
+    const select = screen.getByTestId('flowchart-journey-select') as HTMLSelectElement
+    expect(select.value).toBe('journey-a')
+  })
+
+  it('switching journeys resets to step 0', () => {
+    render(<Flowchart title="Test" nodes={mockNodes} edges={mockEdges} journeys={mockJourneys} />, { wrapper })
+    const select = screen.getByTestId('flowchart-journey-select') as HTMLSelectElement
+    fireEvent.change(select, { target: { value: 'journey-b' } })
+    const progress = screen.getByTestId('flowchart-progress')
+    expect(progress.textContent).toBe('1 / 2')
+  })
+
+  it('renders playback controls', () => {
+    render(<Flowchart title="Test" nodes={mockNodes} edges={mockEdges} journeys={mockJourneys} />, { wrapper })
+    expect(screen.getByTestId('flowchart-btn-play')).toBeInTheDocument()
+    expect(screen.getByTestId('flowchart-btn-pause')).toBeInTheDocument()
+    expect(screen.getByTestId('flowchart-btn-next')).toBeInTheDocument()
+    expect(screen.getByTestId('flowchart-btn-prev')).toBeInTheDocument()
+    expect(screen.getByTestId('flowchart-btn-reset')).toBeInTheDocument()
+  })
+
+  it('renders progress indicator', () => {
+    render(<Flowchart title="Test" nodes={mockNodes} edges={mockEdges} journeys={mockJourneys} />, { wrapper })
+    const progress = screen.getByTestId('flowchart-progress')
+    expect(progress.textContent).toBe('1 / 3')
+  })
+
+  it('prev button is disabled at first step', () => {
+    render(<Flowchart title="Test" nodes={mockNodes} edges={mockEdges} journeys={mockJourneys} />, { wrapper })
+    expect(screen.getByTestId('flowchart-btn-prev')).toBeDisabled()
+  })
+
+  it('next button is disabled at last step', () => {
+    render(<Flowchart title="Test" nodes={mockNodes} edges={mockEdges} journeys={mockJourneys} />, { wrapper })
+    const nextBtn = screen.getByTestId('flowchart-btn-next')
+    for (let i = 0; i < 2; i++) {
+      fireEvent.click(nextBtn)
+    }
+    expect(nextBtn).toBeDisabled()
+    const progress = screen.getByTestId('flowchart-progress')
+    expect(progress.textContent).toBe('3 / 3')
+  })
+
+  it('next button advances step', () => {
+    render(<Flowchart title="Test" nodes={mockNodes} edges={mockEdges} journeys={mockJourneys} />, { wrapper })
+    const nextBtn = screen.getByTestId('flowchart-btn-next')
+    const progress = screen.getByTestId('flowchart-progress')
+    expect(progress.textContent).toBe('1 / 3')
+    fireEvent.click(nextBtn)
+    expect(progress.textContent).toBe('2 / 3')
+  })
+
+  it('prev button goes back one step', () => {
+    render(<Flowchart title="Test" nodes={mockNodes} edges={mockEdges} journeys={mockJourneys} />, { wrapper })
+    const nextBtn = screen.getByTestId('flowchart-btn-next')
+    const prevBtn = screen.getByTestId('flowchart-btn-prev')
+    const progress = screen.getByTestId('flowchart-progress')
+    fireEvent.click(nextBtn)
+    expect(progress.textContent).toBe('2 / 3')
+    fireEvent.click(prevBtn)
+    expect(progress.textContent).toBe('1 / 3')
+  })
+
+  it('reset button returns to step 0', () => {
+    render(<Flowchart title="Test" nodes={mockNodes} edges={mockEdges} journeys={mockJourneys} />, { wrapper })
+    const nextBtn = screen.getByTestId('flowchart-btn-next')
+    const resetBtn = screen.getByTestId('flowchart-btn-reset')
+    const progress = screen.getByTestId('flowchart-progress')
+    fireEvent.click(nextBtn)
+    fireEvent.click(nextBtn)
+    expect(progress.textContent).toBe('3 / 3')
+    fireEvent.click(resetBtn)
+    expect(progress.textContent).toBe('1 / 3')
+  })
+
+  it('play auto-advances through steps', async () => {
+    render(<Flowchart title="Test" nodes={mockNodes} edges={mockEdges} journeys={mockJourneys} />, { wrapper })
+    const playBtn = screen.getByTestId('flowchart-btn-play')
+    const progress = screen.getByTestId('flowchart-progress')
+    expect(progress.textContent).toBe('1 / 3')
+    await act(async () => {
+      fireEvent.click(playBtn)
+    })
+    await act(async () => {
+      vi.advanceTimersByTime(1200)
+    })
+    expect(progress.textContent).toBe('2 / 3')
+    await act(async () => {
+      vi.advanceTimersByTime(1200)
+    })
+    expect(progress.textContent).toBe('3 / 3')
+  })
+
+  it('pause stops auto-advance', async () => {
+    render(<Flowchart title="Test" nodes={mockNodes} edges={mockEdges} journeys={mockJourneys} />, { wrapper })
+    const playBtn = screen.getByTestId('flowchart-btn-play')
+    const pauseBtn = screen.getByTestId('flowchart-btn-pause')
+    const progress = screen.getByTestId('flowchart-progress')
+    await act(async () => {
+      fireEvent.click(playBtn)
+      fireEvent.click(pauseBtn)
+      vi.advanceTimersByTime(1200)
+    })
+    expect(progress.textContent).toBe('1 / 3')
+  })
+
+  it('highlights current step node', () => {
+    render(<Flowchart title="Test" nodes={mockNodes} edges={mockEdges} journeys={mockJourneys} />, { wrapper })
+    const svg = screen.getByTestId('flowchart-svg')
+    const userRect = svg.querySelector('[data-testid="flowchart-node-user"] .flowchart-node-highlighted')
+    expect(userRect).toBeInTheDocument()
+  })
+
+  it('update highlight when step advances', () => {
+    render(<Flowchart title="Test" nodes={mockNodes} edges={mockEdges} journeys={mockJourneys} />, { wrapper })
+    const nextBtn = screen.getByTestId('flowchart-btn-next')
+    const svg = screen.getByTestId('flowchart-svg')
+    fireEvent.click(nextBtn)
+    const agentRect = svg.querySelector('[data-testid="flowchart-node-agent"] .flowchart-node-highlighted')
+    expect(agentRect).toBeInTheDocument()
+  })
+
+  it('play disabled at last step', () => {
+    render(<Flowchart title="Test" nodes={mockNodes} edges={mockEdges} journeys={mockJourneys} />, { wrapper })
+    const nextBtn = screen.getByTestId('flowchart-btn-next')
+    const playBtn = screen.getByTestId('flowchart-btn-play')
+    fireEvent.click(nextBtn)
+    fireEvent.click(nextBtn)
+    expect(playBtn).toBeDisabled()
+  })
+
+  it('pause disabled when not playing', () => {
+    render(<Flowchart title="Test" nodes={mockNodes} edges={mockEdges} journeys={mockJourneys} />, { wrapper })
+    expect(screen.getByTestId('flowchart-btn-pause')).toBeDisabled()
+  })
+
+  it('reset disabled at step 0', () => {
+    render(<Flowchart title="Test" nodes={mockNodes} edges={mockEdges} journeys={mockJourneys} />, { wrapper })
+    expect(screen.getByTestId('flowchart-btn-reset')).toBeDisabled()
   })
 })

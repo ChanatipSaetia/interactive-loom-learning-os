@@ -1,5 +1,5 @@
 import type { SectionConfig } from '../../core/registry'
-import { aiAgentNodes, aiAgentEdges } from './data'
+import { aiAgentNodes, aiAgentEdges, aiAgentJourneys } from './data'
 
 export const aiAgentSections: SectionConfig[] = [
   {
@@ -8,6 +8,7 @@ export const aiAgentSections: SectionConfig[] = [
       title: 'AI Agent Architecture',
       nodes: aiAgentNodes,
       edges: aiAgentEdges,
+      journeys: aiAgentJourneys,
     },
   },
 ]

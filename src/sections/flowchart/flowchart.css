@@ -63,3 +63,96 @@
   width: 100%;
   height: 100%;
 }
+
+.flowchart-controls {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--spacing-md);
+  flex-wrap: wrap;
+  gap: var(--spacing-sm);
+}
+
+.flowchart-journey-selector {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+}
+
+.flowchart-journey-label {
+  font-size: var(--text-caption);
+  font-weight: 500;
+  color: var(--ink);
+}
+
+.flowchart-journey-select {
+  font-size: var(--text-caption);
+  padding: 4px 8px;
+  border: 1px solid var(--hairline);
+  border-radius: var(--radius-xs);
+  background-color: var(--canvas);
+  color: var(--ink);
+  cursor: pointer;
+}
+
+.flowchart-journey-select:focus {
+  outline: none;
+  border-color: var(--focus-blue);
+  box-shadow: 0 0 0 2px var(--focus-blue);
+}
+
+.flowchart-playback {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+}
+
+.flowchart-btn {
+  font-size: var(--text-button);
+  font-weight: 500;
+  padding: 4px 10px;
+  border: 1px solid var(--hairline);
+  border-radius: var(--radius-xs);
+  background-color: var(--canvas);
+  color: var(--ink);
+  cursor: pointer;
+  line-height: 1.4;
+  transition: background-color 0.15s ease, border-color 0.15s ease;
+}
+
+.flowchart-btn:hover:not(:disabled) {
+  background-color: var(--soft-stone);
+  border-color: var(--muted);
+}
+
+.flowchart-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.flowchart-btn:focus {
+  outline: none;
+  border-color: var(--focus-blue);
+  box-shadow: 0 0 0 2px var(--focus-blue);
+}
+
+.flowchart-progress {
+  font-size: var(--text-mono-label);
+  color: var(--muted);
+  margin-left: var(--spacing-xs);
+  min-width: 48px;
+  text-align: center;
+}
+
+.flowchart-node-highlighted {
+  animation: flowchart-pulse 1.2s ease-in-out infinite;
+}
+
+@keyframes flowchart-pulse {
+  0%, 100% {
+    stroke-width: 2.5;
+  }
+  50% {
+    stroke-width: 3.5;
+  }
+}

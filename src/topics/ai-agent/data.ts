@@ -1,4 +1,4 @@
-import type { FlowchartNode, FlowchartEdge } from '../../sections/flowchart'
+import type { FlowchartNode, FlowchartEdge, Journey } from '../../sections/flowchart'
 
 export const aiAgentNodes: FlowchartNode[] = [
   { id: 'user', label: 'User', stereotype: 'actor', icon: 'User', layer: 0 },
@@ -15,4 +15,32 @@ export const aiAgentEdges: FlowchartEdge[] = [
   { from: 'ai-agent', to: 'tools-search' },
   { from: 'ai-agent', to: 'tools-code' },
   { from: 'ai-agent', to: 'memory' },
+]
+
+export const aiAgentJourneys: Journey[] = [
+  {
+    id: 'query-journey',
+    label: 'Query Journey',
+    steps: [
+      { nodeId: 'user', description: 'User sends a query' },
+      { nodeId: 'ai-agent', description: 'AI Agent receives the query' },
+      { nodeId: 'llm', description: 'LLM processes the query' },
+      { nodeId: 'tools-search', description: 'Search tool is invoked' },
+      { nodeId: 'ai-agent', description: 'AI Agent processes search results' },
+      { nodeId: 'user', description: 'Response returned to user' },
+    ],
+  },
+  {
+    id: 'tool-use-journey',
+    label: 'Tool Use Journey',
+    steps: [
+      { nodeId: 'user', description: 'User sends a request' },
+      { nodeId: 'ai-agent', description: 'AI Agent receives the request' },
+      { nodeId: 'llm', description: 'LLM determines tool needed' },
+      { nodeId: 'tools-code', description: 'Code tool is executed' },
+      { nodeId: 'llm', description: 'LLM processes code output' },
+      { nodeId: 'ai-agent', description: 'AI Agent compiles results' },
+      { nodeId: 'user', description: 'Response returned to user' },
+    ],
+  },
 ]
