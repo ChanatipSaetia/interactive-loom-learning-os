@@ -3,6 +3,7 @@ import { MemoryRouter, Routes, Route } from 'react-router-dom'
 import { afterEach, describe, it, expect, vi, beforeEach } from 'vitest'
 import DemoTopic from '../../../../src/topics/demo/index'
 import { routes } from '../../../../src/core/routes'
+import { demoSections } from '../../../../src/topics/demo/sections'
 
 const renderedConfigs: { type?: string }[] = []
 
@@ -57,24 +58,20 @@ describe('US-12: Demo Topic Shell & Routing', () => {
   it('demo topic renders all sections from config in order', () => {
     renderDemoTopic()
 
-    const demoRoute = routes.find((r) => r.id === 'demo')
-    expect(demoRoute).toBeDefined()
-
-    const expectedSections = demoRoute!.sections.length
+    const expectedSections = demoSections.length
     const renderedSections = screen.getAllByTestId('mock-section')
     expect(renderedSections.length).toBe(expectedSections)
 
     expect(mockSectionRenderer).toHaveBeenCalledTimes(expectedSections)
     for (let i = 0; i < expectedSections; i++) {
-      expect(renderedConfigs[i]).toEqual(demoRoute!.sections[i])
+      expect(renderedConfigs[i]).toEqual(demoSections[i])
     }
   })
 
   it('demo topic renders section types in correct sequence', () => {
     renderDemoTopic()
 
-    const demoRoute = routes.find((r) => r.id === 'demo')
-    const expectedTypes = demoRoute!.sections.map((s) => s.type)
+    const expectedTypes = demoSections.map((s) => s.type)
 
     const renderedSections = screen.getAllByTestId('mock-section')
     const renderedTypes = renderedSections.map((el) => el.getAttribute('data-section-type'))

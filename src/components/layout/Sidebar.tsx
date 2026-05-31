@@ -1,5 +1,6 @@
 import { NavLink } from 'react-router-dom'
 import type { TopicRoute } from '../../core/routes'
+import './layout.css'
 
 export interface SidebarProps {
   topics: TopicRoute[]

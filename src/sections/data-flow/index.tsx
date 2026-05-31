@@ -1,7 +1,7 @@
-import { useRef, useCallback, useMemo, useState, type ComponentType } from 'react'
-import { createTimeline } from 'animejs'
+import { useRef, useCallback, useMemo, type ComponentType } from 'react'
 import { useAnimation } from '../../core/hooks/useAnimation'
 import { SectionRegistry } from '../../core/registry'
+import './data-flow.css'
 
 export interface DataFlowPath {
   id: string
@@ -31,7 +31,6 @@ function DataFlow({ title, paths, particleColor = defaultParticleColor }: DataFl
   const svgRef = useRef<SVGSVGElement>(null)
   const pathRefs = useRef<Record<string, SVGPathElement | null>>({})
   const particleRefs = useRef<Record<string, SVGCircleElement | null>>({})
-  const [currentStep, setCurrentStep] = useState(-1)
 
   const setPathRef = useCallback((id: string, el: SVGPathElement | null) => {
     if (el) {
@@ -52,7 +51,7 @@ function DataFlow({ title, paths, particleColor = defaultParticleColor }: DataFl
   }, [])
 
   const buildTimeline = useCallback(
-    (tl: ReturnType<typeof createTimeline>) => {
+    (tl: Parameters<Parameters<typeof useAnimation>[0]>[0]) => {
       paths.forEach((p, i) => {
         const pathEl = pathRefs.current[p.id]
         const particleEl = particleRefs.current[p.id]
@@ -64,7 +63,7 @@ function DataFlow({ title, paths, particleColor = defaultParticleColor }: DataFl
         tl.add(
           particleEl,
           { opacity: 1, duration: 100 },
-          String(base)
+          base
         )
 
         tl.add(
@@ -74,68 +73,15 @@ function DataFlow({ title, paths, particleColor = defaultParticleColor }: DataFl
             duration: 800,
             easing: 'easeInOutQuad',
           },
-          String(base)
+          base
         )
       })
     },
     [paths]
   )
 
-  const tlRef = useRef<ReturnType<typeof createTimeline> | null>(null)
-
-  useAnimation(
-    useCallback(
-      (tl: ReturnType<typeof createTimeline>) => {
-        tlRef.current = tl
-        buildTimeline(tl)
-      },
-      [buildTimeline]
-    ),
-    { autoplay: false }
-  )
-
-  const handlePlay = useCallback(() => {
-    if (tlRef.current) {
-      tlRef.current.restart()
-      setCurrentStep(paths.length - 1)
-    }
-  }, [paths.length])
-
-  const handlePause = useCallback(() => {
-    tlRef.current?.pause()
-  }, [])
-
-  const handleReset = useCallback(() => {
-    tlRef.current?.reset()
-    setCurrentStep(-1)
-    paths.forEach((p) => {
-      const pathEl = pathRefs.current[p.id]
-      const particleEl = particleRefs.current[p.id]
-      if (pathEl && typeof pathEl.getTotalLength === 'function') {
-        pathEl.style.strokeDashoffset = String(pathEl.getTotalLength())
-      }
-      if (particleEl) {
-        particleEl.setAttribute('opacity', '0')
-      }
-    })
-  }, [paths])
-
-  const handleStep = useCallback(() => {
-    const next = Math.min(currentStep + 1, paths.length - 1)
-    if (next < 0) return
-
-    setCurrentStep(next)
-    const p = paths[next]
-    const pathEl = pathRefs.current[p.id]
-    const particleEl = particleRefs.current[p.id]
-
-    if (particleEl) {
-      particleEl.setAttribute('opacity', '1')
-    }
-    if (pathEl) {
-      pathEl.style.strokeDashoffset = '0'
-    }
-  }, [currentStep, paths])
+  const control = useAnimation(buildTimeline, { autoplay: false, totalSteps: paths.length })
+  const { playing, currentStep, totalSteps } = control.status
 
   const startPositions = useMemo(() => {
     const positions: Record<string, { x: number; y: number }> = {}
@@ -191,7 +137,7 @@ function DataFlow({ title, paths, particleColor = defaultParticleColor }: DataFl
       <div className="data-flow-controls" data-testid="data-flow-controls">
         <button
           className="data-flow-btn"
-          onClick={handlePlay}
+          onClick={control.play}
           data-testid="dataflow-play"
           aria-label="Play animation"
         >
@@ -199,7 +145,7 @@ function DataFlow({ title, paths, particleColor = defaultParticleColor }: DataFl
         </button>
         <button
           className="data-flow-btn"
-          onClick={handlePause}
+          onClick={control.pause}
           data-testid="dataflow-pause"
           aria-label="Pause animation"
         >
@@ -207,8 +153,8 @@ function DataFlow({ title, paths, particleColor = defaultParticleColor }: DataFl
         </button>
         <button
           className="data-flow-btn"
-          onClick={handleStep}
-          disabled={currentStep >= paths.length - 1}
+          onClick={control.stepForward}
+          disabled={playing || currentStep >= totalSteps - 1}
           data-testid="dataflow-step"
           aria-label="Step forward"
         >
@@ -216,7 +162,16 @@ function DataFlow({ title, paths, particleColor = defaultParticleColor }: DataFl
         </button>
         <button
           className="data-flow-btn"
-          onClick={handleReset}
+          onClick={control.stepBack}
+          disabled={playing || currentStep <= 0}
+          data-testid="dataflow-step-back"
+          aria-label="Step back"
+        >
+          Step Back
+        </button>
+        <button
+          className="data-flow-btn"
+          onClick={control.reset}
           data-testid="dataflow-reset"
           aria-label="Reset animation"
         >
@@ -226,7 +181,7 @@ function DataFlow({ title, paths, particleColor = defaultParticleColor }: DataFl
           className="data-flow-progress"
           data-testid="data-flow-progress"
         >
-          {currentStep + 1} / {paths.length}
+          {currentStep + 1} / {totalSteps}
         </span>
       </div>
     </div>

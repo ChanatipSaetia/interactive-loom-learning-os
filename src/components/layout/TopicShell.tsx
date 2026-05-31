@@ -2,7 +2,7 @@ import { Suspense, lazy, useMemo } from 'react'
 import { useParams } from 'react-router-dom'
 import { routes } from '../../core/routes'
 import { SectionRegistry, type SectionConfig } from '../../core/registry'
-import DemoTopic from '../../topics/demo/index'
+import { TopicRegistry } from '../../core/topic-registry'
 
 interface SectionRendererProps {
   config: SectionConfig
@@ -20,10 +20,6 @@ function SectionRenderer({ config }: SectionRendererProps) {
   return <Component {...config.props} />
 }
 
-const topicComponents: Record<string, React.ComponentType> = {
-  demo: DemoTopic,
-}
-
 export function TopicShell() {
   const { topicId } = useParams()
 
@@ -39,8 +35,9 @@ export function TopicShell() {
   }
 
   const resolvedTopicId = topicId ?? ''
-  const TopicContent = topicComponents[resolvedTopicId]
-    ? lazy(async () => ({ default: topicComponents[resolvedTopicId] }))
+  const TopicComponent = TopicRegistry.get(resolvedTopicId)
+  const TopicContent = TopicComponent
+    ? lazy(async () => ({ default: TopicComponent }))
     : null
 
   if (!TopicContent) {

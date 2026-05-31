@@ -73,14 +73,14 @@ describe('ArchitectureFlow', () => {
 
   it('shows correct progress count initially', () => {
     render(<ArchitectureFlow {...mockProps} />, { wrapper })
-    expect(screen.getByTestId('arch-flow-progress')).toHaveTextContent('0 / 3')
+    expect(screen.getByTestId('arch-flow-progress')).toHaveTextContent('1 / 3')
   })
 
   it('advances step on Step button click', () => {
     render(<ArchitectureFlow {...mockProps} />, { wrapper })
     const stepBtn = screen.getByTestId('arch-flow-step')
     fireEvent.click(stepBtn)
-    expect(screen.getByTestId('arch-flow-progress')).toHaveTextContent('1 / 3')
+    expect(screen.getByTestId('arch-flow-progress')).toHaveTextContent('2 / 3')
   })
 
   it('disables Step button at last step', () => {
@@ -88,8 +88,12 @@ describe('ArchitectureFlow', () => {
     const stepBtn = screen.getByTestId('arch-flow-step')
     fireEvent.click(stepBtn)
     fireEvent.click(stepBtn)
-    fireEvent.click(stepBtn)
     expect(stepBtn).toBeDisabled()
+  })
+
+  it('renders step back button', () => {
+    render(<ArchitectureFlow {...mockProps} />, { wrapper })
+    expect(screen.getByTestId('arch-flow-step-back')).toBeInTheDocument()
   })
 
   it('resets progress on Reset button click', () => {
@@ -97,9 +101,9 @@ describe('ArchitectureFlow', () => {
     const stepBtn = screen.getByTestId('arch-flow-step')
     const resetBtn = screen.getByTestId('arch-flow-reset')
     fireEvent.click(stepBtn)
-    expect(screen.getByTestId('arch-flow-progress')).toHaveTextContent('1 / 3')
+    expect(screen.getByTestId('arch-flow-progress')).toHaveTextContent('2 / 3')
     fireEvent.click(resetBtn)
-    expect(screen.getByTestId('arch-flow-progress')).toHaveTextContent('0 / 3')
+    expect(screen.getByTestId('arch-flow-progress')).toHaveTextContent('1 / 3')
   })
 
   it('renders edge labels', () => {

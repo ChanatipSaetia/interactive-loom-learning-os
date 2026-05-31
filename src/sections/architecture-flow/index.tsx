@@ -1,7 +1,7 @@
-import { useRef, useCallback, useMemo, useState, type ComponentType } from 'react'
-import { createTimeline } from 'animejs'
+import { useRef, useCallback, useMemo, type ComponentType } from 'react'
 import { useAnimation } from '../../core/hooks/useAnimation'
 import { SectionRegistry } from '../../core/registry'
+import './architecture-flow.css'
 
 export interface ArchNode {
   id: string
@@ -58,8 +58,6 @@ function ArchitectureFlow({ title, nodes, edges }: ArchitectureFlowProps) {
   const svgRef = useRef<SVGSVGElement>(null)
   const nodeRefs = useRef<Record<string, SVGCircleElement | null>>({})
   const edgeRefs = useRef<Record<string, SVGPathElement | null>>({})
-  const [currentStep, setCurrentStep] = useState(-1)
-  const totalSteps = nodes.length
 
   const nodeMap = useMemo(() => {
     const m = Object.create(null)
@@ -86,7 +84,7 @@ function ArchitectureFlow({ title, nodes, edges }: ArchitectureFlowProps) {
   }, [nodes, edges])
 
   const buildTimeline = useCallback(
-    (tl: ReturnType<typeof createTimeline>) => {
+    (tl: Parameters<Parameters<typeof useAnimation>[0]>[0]) => {
       for (let i = 0; i < nodes.length; i++) {
         const el = nodeRefs.current[nodes[i].id]
         if (el) {
@@ -116,69 +114,8 @@ function ArchitectureFlow({ title, nodes, edges }: ArchitectureFlowProps) {
     [nodes, edges]
   )
 
-  const tlRef = useRef<ReturnType<typeof createTimeline> | null>(null)
-
-  useAnimation(
-    useCallback(
-      (tl: ReturnType<typeof createTimeline>) => {
-        tlRef.current = tl
-        buildTimeline(tl)
-      },
-      [buildTimeline]
-    ),
-    { autoplay: false }
-  )
-
-  const handlePlay = useCallback(() => {
-    if (tlRef.current) {
-      tlRef.current.restart()
-      setCurrentStep(nodes.length - 1)
-    }
-  }, [nodes.length])
-
-  const handlePause = useCallback(() => {
-    if (tlRef.current) {
-      tlRef.current.pause()
-    }
-  }, [])
-
-  const handleReset = useCallback(() => {
-    if (tlRef.current) {
-      tlRef.current.reset()
-    }
-    setCurrentStep(-1)
-    for (const n of nodes) {
-      const el = nodeRefs.current[n.id]
-      if (el) el.setAttribute('opacity', '0')
-    }
-    for (let i = 0; i < edges.length; i++) {
-      const el = edgeRefs.current[i]
-      if (el) {
-        const { length } = getEdgePath(nodes, edges[i].from, edges[i].to)
-        el.setAttribute('stroke-dashoffset', String(length))
-      }
-    }
-  }, [nodes, edges])
-
-  const handleStep = useCallback(() => {
-    const next = Math.min(currentStep + 1, totalSteps - 1)
-    if (next < 0 || next >= nodes.length) return
-
-    setCurrentStep(next)
-    const node = nodes[next]
-    const el = nodeRefs.current[node.id]
-    if (el) {
-      el.setAttribute('opacity', '1')
-    }
-    if (next < edges.length) {
-      const edgeEl = edgeRefs.current[next]
-      const { length } = getEdgePath(nodes, edges[next].from, edges[next].to)
-      if (edgeEl) {
-        edgeEl.setAttribute('stroke-dasharray', String(length))
-        edgeEl.setAttribute('stroke-dashoffset', '0')
-      }
-    }
-  }, [currentStep, totalSteps, nodes, edges])
+  const control = useAnimation(buildTimeline, { autoplay: false, totalSteps: nodes.length })
+  const { playing, currentStep, totalSteps } = control.status
 
   const viewBoxY = nodes.length > 0
     ? Math.min(...nodes.map((n) => n.y)) - 50
@@ -206,23 +143,23 @@ function ArchitectureFlow({ title, nodes, edges }: ArchitectureFlowProps) {
           return (
             <g key={`edge-${idx}`} data-testid={`edge-${idx}`}>
              <path
-                 ref={(el) => setEdgeRef(idx, el)}
-                 d={path}
-                fill="none"
-                stroke="var(--hairline)"
-                strokeWidth="2"
-              />
-              {edge.label && (
-                <text
-                  x={labelX}
-                  y={labelY}
-                  textAnchor="middle"
-                  fontSize="11"
-                  fill="var(--muted)"
-                >
-                  {edge.label}
-                </text>
-              )}
+                  ref={(el) => setEdgeRef(idx, el)}
+                  d={path}
+                 fill="none"
+                 stroke="var(--hairline)"
+                 strokeWidth="2"
+               />
+               {edge.label && (
+                 <text
+                   x={labelX}
+                   y={labelY}
+                   textAnchor="middle"
+                   fontSize="11"
+                   fill="var(--muted)"
+                 >
+                   {edge.label}
+                 </text>
+               )}
             </g>
           )
         })}
@@ -232,10 +169,10 @@ function ArchitectureFlow({ title, nodes, edges }: ArchitectureFlowProps) {
             <circle
                ref={(el) => setNodeRef(node.id, el)}
                cx={node.x}
-              cy={node.y}
-              r="28"
-              fill={node.color || defaultNodeColor}
-            />
+               cy={node.y}
+               r="28"
+               fill={node.color || defaultNodeColor}
+             />
             <text
               x={node.x}
               y={node.y}
@@ -256,7 +193,7 @@ function ArchitectureFlow({ title, nodes, edges }: ArchitectureFlowProps) {
       <div className="architecture-flow-controls" data-testid="arch-flow-controls">
         <button
           className="architecture-flow-btn"
-          onClick={handlePlay}
+          onClick={control.play}
           data-testid="arch-flow-play"
           aria-label="Play animation"
         >
@@ -264,7 +201,7 @@ function ArchitectureFlow({ title, nodes, edges }: ArchitectureFlowProps) {
         </button>
         <button
           className="architecture-flow-btn"
-          onClick={handlePause}
+          onClick={control.pause}
           data-testid="arch-flow-pause"
           aria-label="Pause animation"
         >
@@ -272,8 +209,8 @@ function ArchitectureFlow({ title, nodes, edges }: ArchitectureFlowProps) {
         </button>
         <button
           className="architecture-flow-btn"
-          onClick={handleStep}
-          disabled={currentStep >= totalSteps - 1}
+          onClick={control.stepForward}
+          disabled={playing || currentStep >= totalSteps - 1}
           data-testid="arch-flow-step"
           aria-label="Step forward"
         >
@@ -281,7 +218,16 @@ function ArchitectureFlow({ title, nodes, edges }: ArchitectureFlowProps) {
         </button>
         <button
           className="architecture-flow-btn"
-          onClick={handleReset}
+          onClick={control.stepBack}
+          disabled={playing || currentStep <= 0}
+          data-testid="arch-flow-step-back"
+          aria-label="Step back"
+        >
+          Step Back
+        </button>
+        <button
+          className="architecture-flow-btn"
+          onClick={control.reset}
           data-testid="arch-flow-reset"
           aria-label="Reset animation"
         >
