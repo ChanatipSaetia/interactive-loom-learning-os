@@ -23,8 +23,20 @@
   transition: stroke-color 0.15s ease;
 }
 
+.flowchart-node-group {
+  cursor: grab;
+}
+
+.flowchart-node-group:active {
+  cursor: grabbing;
+}
+
 .flowchart-node-group:hover .flowchart-node-rect {
   stroke: var(--action-blue);
+}
+
+.flowchart-canvas {
+  transition: none;
 }
 
 .flowchart-node-label {

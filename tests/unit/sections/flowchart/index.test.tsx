@@ -182,4 +182,38 @@ describe('Flowchart component', () => {
     expect(Registry.get('flowchart')).toBeDefined()
     void mod
   })
+
+  it('renders transformable canvas group', () => {
+    render(<Flowchart title="Test" nodes={mockNodes} edges={mockEdges} />, { wrapper })
+    const canvas = screen.getByTestId('flowchart-canvas')
+    expect(canvas).toBeInTheDocument()
+    expect(canvas).toHaveAttribute('transform')
+  })
+
+  it('node groups have drag mouse handlers', () => {
+    render(<Flowchart title="Test" nodes={mockNodes} edges={mockEdges} />, { wrapper })
+    const svg = screen.getByTestId('flowchart-svg')
+    const nodeGroup = svg.querySelector('[data-testid="flowchart-node-user"]')
+    expect(nodeGroup).toHaveProperty('onmousedown')
+    expect(nodeGroup).toHaveProperty('onmousemove')
+    expect(nodeGroup).toHaveProperty('onmouseup')
+  })
+
+  it('node groups have touch handlers', () => {
+    render(<Flowchart title="Test" nodes={mockNodes} edges={mockEdges} />, { wrapper })
+    const svg = screen.getByTestId('flowchart-svg')
+    const nodeGroup = svg.querySelector('[data-testid="flowchart-node-user"]')
+    expect(nodeGroup).toHaveProperty('ontouchstart')
+    expect(nodeGroup).toHaveProperty('ontouchmove')
+    expect(nodeGroup).toHaveProperty('ontouchend')
+  })
+
+  it('SVG has pan and zoom handlers', () => {
+    render(<Flowchart title="Test" nodes={mockNodes} edges={mockEdges} />, { wrapper })
+    const svg = screen.getByTestId('flowchart-svg')
+    expect(svg).toHaveProperty('onmousedown')
+    expect(svg).toHaveProperty('ontouchstart')
+    expect(svg).toHaveProperty('ontouchmove')
+    expect(svg).toHaveProperty('onwheel')
+  })
 })
