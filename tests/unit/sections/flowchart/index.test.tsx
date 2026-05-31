@@ -406,3 +406,62 @@ describe('Flowchart journey controls', () => {
     expect(screen.getByTestId('flowchart-btn-reset')).toBeDisabled()
   })
 })
+
+describe('Flowchart particle animation', () => {
+  beforeEach(() => {
+    SectionRegistry.clear()
+    vi.useFakeTimers()
+  })
+
+  it('renders particle circle when journeys provided', () => {
+    render(<Flowchart title="Test" nodes={mockNodes} edges={mockEdges} journeys={mockJourneys} />, { wrapper })
+    expect(screen.getByTestId('flowchart-particle')).toBeInTheDocument()
+  })
+
+  it('does not render particle when no journeys', () => {
+    render(<Flowchart title="Test" nodes={mockNodes} edges={mockEdges} />, { wrapper })
+    expect(screen.queryByTestId('flowchart-particle')).not.toBeInTheDocument()
+  })
+
+  it('particle is invisible at step 0', () => {
+    render(<Flowchart title="Test" nodes={mockNodes} edges={mockEdges} journeys={mockJourneys} />, { wrapper })
+    const particle = screen.getByTestId('flowchart-particle')
+    expect(particle.getAttribute('opacity')).toBe('0')
+  })
+
+  it('particle is present when advancing step', () => {
+    render(<Flowchart title="Test" nodes={mockNodes} edges={mockEdges} journeys={mockJourneys} />, { wrapper })
+    const nextBtn = screen.getByTestId('flowchart-btn-next')
+    fireEvent.click(nextBtn)
+    const particle = screen.getByTestId('flowchart-particle')
+    expect(particle).toBeInTheDocument()
+  })
+})
+
+describe('Flowchart description panel', () => {
+  beforeEach(() => {
+    SectionRegistry.clear()
+  })
+
+  it('renders description panel when step has description', () => {
+    render(<Flowchart title="Test" nodes={mockNodes} edges={mockEdges} journeys={mockJourneys} />, { wrapper })
+    expect(screen.getByTestId('flowchart-desc-panel')).toBeInTheDocument()
+  })
+
+  it('description panel shows step description text', () => {
+    render(<Flowchart title="Test" nodes={mockNodes} edges={mockEdges} journeys={mockJourneys} />, { wrapper })
+    expect(screen.getByText('Step 1')).toBeInTheDocument()
+  })
+
+  it('description panel updates when step advances', () => {
+    render(<Flowchart title="Test" nodes={mockNodes} edges={mockEdges} journeys={mockJourneys} />, { wrapper })
+    const nextBtn = screen.getByTestId('flowchart-btn-next')
+    fireEvent.click(nextBtn)
+    expect(screen.getByText('Step 2')).toBeInTheDocument()
+  })
+
+  it('description panel does not render when no journeys', () => {
+    render(<Flowchart title="Test" nodes={mockNodes} edges={mockEdges} />, { wrapper })
+    expect(screen.queryByTestId('flowchart-desc-panel')).not.toBeInTheDocument()
+  })
+})

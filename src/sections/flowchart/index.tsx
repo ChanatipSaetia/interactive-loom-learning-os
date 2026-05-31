@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState, type ComponentType } from 'react'
+import { animate } from 'animejs'
 import { SectionRegistry } from '../../core/registry'
 import * as Icons from 'lucide-react'
 import './flowchart.css'
@@ -172,6 +173,84 @@ function getIconComponent(iconName: string) {
   return IconComponent ? <IconComponent size={16} className="flowchart-node-icon" /> : null
 }
 
+const panelWidth = 180
+const panelHeight = 48
+const panelGap = 12
+
+type Placement = 'above' | 'below' | 'left' | 'right'
+
+function smartPlacePanel(
+  nodeX: number,
+  nodeY: number,
+  allNodes: PositionedNode[],
+  svgW: number,
+  svgH: number
+): Placement {
+  const nodeLeft = nodeX - nodeWidth / 2
+  const nodeRight = nodeX + nodeWidth / 2
+  const nodeTop = nodeY - nodeHeight / 2
+  const nodeBottom = nodeY + nodeHeight / 2
+
+  const candidateBoxes: { placement: Placement; x: number; y: number }[] = [
+    { placement: 'above', x: nodeX - panelWidth / 2, y: nodeTop - panelHeight - panelGap },
+    { placement: 'below', x: nodeX - panelWidth / 2, y: nodeBottom + panelGap },
+    { placement: 'left', x: nodeLeft - panelWidth - panelGap, y: nodeY - panelHeight / 2 },
+    { placement: 'right', x: nodeRight + panelGap, y: nodeY - panelHeight / 2 },
+  ]
+
+  const overlaps = (boxX: number, boxY: number) => {
+    const boxRight = boxX + panelWidth
+    const boxBottom = boxY + panelHeight
+    for (const n of allNodes) {
+      const nLeft = n.x - nodeWidth / 2
+      const nRight = n.x + nodeWidth / 2
+      const nTop = n.y - nodeHeight / 2
+      const nBottom = n.y + nodeHeight / 2
+      if (boxX < nRight && boxRight > nLeft && boxY < nBottom && boxBottom > nTop) {
+        return true
+      }
+    }
+    return false
+  }
+
+  const outOfBounds = (boxX: number, boxY: number) => {
+    return boxX < 4 || boxY < 4 || (boxX + panelWidth) > (svgW - 4) || (boxY + panelHeight) > (svgH - 4)
+  }
+
+  for (const c of candidateBoxes) {
+    if (!overlaps(c.x, c.y) && !outOfBounds(c.x, c.y)) {
+      return c.placement
+    }
+  }
+  for (const c of candidateBoxes) {
+    if (!overlaps(c.x, c.y)) {
+      return c.placement
+    }
+  }
+  return 'above'
+}
+
+function getPanelPosition(
+  placement: Placement,
+  nodeX: number,
+  nodeY: number
+): { x: number; y: number } {
+  const nodeLeft = nodeX - nodeWidth / 2
+  const nodeRight = nodeX + nodeWidth / 2
+  const nodeTop = nodeY - nodeHeight / 2
+  const nodeBottom = nodeY + nodeHeight / 2
+  switch (placement) {
+    case 'above':
+      return { x: nodeX - panelWidth / 2, y: nodeTop - panelHeight - panelGap }
+    case 'below':
+      return { x: nodeX - panelWidth / 2, y: nodeBottom + panelGap }
+    case 'left':
+      return { x: nodeLeft - panelWidth - panelGap, y: nodeY - panelHeight / 2 }
+    case 'right':
+      return { x: nodeRight + panelGap, y: nodeY - panelHeight / 2 }
+  }
+}
+
 function Flowchart({ title, nodes, edges, journeys }: FlowchartProps) {
   const basePositioned = useMemo(
     () => computeLayoutWithBarycenter(nodes, edges),
@@ -184,9 +263,18 @@ function Flowchart({ title, nodes, edges, journeys }: FlowchartProps) {
   const [currentStep, setCurrentStep] = useState(0)
   const [isPlaying, setIsPlaying] = useState(false)
   const playTimerRef = useRef<number | null>(null)
+  const particleRef = useRef<SVGCircleElement | null>(null)
+  const animeInstanceRef = useRef<ReturnType<typeof animate> | null>(null)
 
   const currentJourney = journeys?.find((j) => j.id === currentJourneyId)
   const highlightedNodeId = currentJourney?.steps[currentStep]?.nodeId
+  const prevHighlightedNodeId = useMemo(() => {
+    if (currentStep > 0 && currentJourney) {
+      return currentJourney.steps[currentStep - 1]?.nodeId
+    }
+    return null
+  }, [currentStep, currentJourney])
+  const currentDescription = currentJourney?.steps[currentStep]?.description ?? ''
 
   useEffect(() => {
     if (isPlaying && currentJourney && currentStep < currentJourney.steps.length - 1) {
@@ -275,6 +363,43 @@ function Flowchart({ title, nodes, edges, journeys }: FlowchartProps) {
   const svgHeight = Math.max(300, (maxY - minY) + nodeHeight + svgPaddingTop * 2)
   const offsetX = svgWidth / 2
   const offsetY = -minY + svgPaddingTop
+
+  useEffect(() => {
+    if (currentStep === 0 || !prevHighlightedNodeId || !highlightedNodeId) return
+    const fromNode = nodeMap[prevHighlightedNodeId]
+    const toNode = nodeMap[highlightedNodeId]
+    if (!fromNode || !toNode) return
+    const edgeExists = edges.some((e) => e.from === prevHighlightedNodeId && e.to === highlightedNodeId)
+    if (!edgeExists) return
+    if (animeInstanceRef.current) {
+      animeInstanceRef.current.pause()
+    }
+    const startX = fromNode.x + offsetX
+    const startY = fromNode.y + offsetY + nodeHeight
+    const endX = toNode.x + offsetX
+    const endY = toNode.y + offsetY
+    if (particleRef.current) {
+      particleRef.current.setAttribute('cx', String(startX))
+      particleRef.current.setAttribute('cy', String(startY))
+      particleRef.current.setAttribute('opacity', '1')
+      animeInstanceRef.current = animate(particleRef.current, {
+        cx: [startX, endX],
+        cy: [startY, endY],
+        duration: 400,
+        easing: 'easeInOutQuad',
+        onComplete: () => {
+          if (particleRef.current) {
+            particleRef.current.setAttribute('opacity', '0')
+          }
+        },
+      })
+    }
+    return () => {
+      if (animeInstanceRef.current) {
+        animeInstanceRef.current.pause()
+      }
+    }
+  }, [currentStep, prevHighlightedNodeId, highlightedNodeId, edges, nodeMap, offsetX, offsetY])
 
   const getSvgPoint = useCallback(
     (clientX: number, clientY: number, svgEl: SVGSVGElement) => {
@@ -564,7 +689,7 @@ function Flowchart({ title, nodes, edges, journeys }: FlowchartProps) {
           style={{ pointerEvents: 'none' }}
         />
 
-        <g transform={transformStr} data-testid="flowchart-canvas">
+       <g transform={transformStr} data-testid="flowchart-canvas">
           {edges.map((edge, idx) => {
             const fromNode = nodeMap[edge.from]
             const toNode = nodeMap[edge.to]
@@ -589,6 +714,67 @@ function Flowchart({ title, nodes, edges, journeys }: FlowchartProps) {
               </g>
             )
           })}
+
+          {journeys && journeys.length > 0 && (
+            <circle
+              ref={particleRef}
+              r="6"
+              fill="var(--action-blue)"
+              opacity="0"
+              className="flowchart-particle"
+              data-testid="flowchart-particle"
+            />
+          )}
+
+          {journeys && journeys.length > 0 && highlightedNodeId && currentDescription && (
+            (() => {
+              const node = nodeMap[highlightedNodeId]
+              if (!node) return null
+              const nodeAbsX = node.x + offsetX
+              const nodeAbsY = node.y + offsetY
+              const placement = smartPlacePanel(nodeAbsX, nodeAbsY, positioned, svgWidth, svgHeight)
+              const pos = getPanelPosition(placement, nodeAbsX, nodeAbsY)
+              const words = currentDescription.split(' ')
+              const lines: string[] = []
+              let line = ''
+              const maxChars = 22
+              for (const word of words) {
+                if ((line + ' ' + word).length <= maxChars) {
+                  line = line ? line + ' ' + word : word
+                } else {
+                  lines.push(line)
+                  line = word
+                }
+              }
+              if (line) lines.push(line)
+              const lineCount = Math.min(lines.length, 3)
+              return (
+                <g key={`panel-${currentStep}`} data-testid="flowchart-desc-panel">
+                  <rect
+                    x={pos.x}
+                    y={pos.y}
+                    width={panelWidth}
+                    height={panelHeight}
+                    rx="var(--radius-sm)"
+                    fill="var(--canvas)"
+                    stroke="var(--border-light)"
+                    strokeWidth="1"
+                    className="flowchart-desc-panel-bg"
+                  />
+                  {Array.from({ length: lineCount }).map((_, li) => (
+                    <text
+                      key={li}
+                      x={pos.x + 10}
+                      y={pos.y + 18 + li * 14}
+                      className="flowchart-desc-panel-text"
+                    >
+                      {lines[li]}
+                    </text>
+                  ))}
+                </g>
+              )
+            })()
+          )}
 
           {positioned.map((node) => {
             const x = node.x + offsetX - nodeWidth / 2

@@ -156,3 +156,18 @@
     stroke-width: 3.5;
   }
 }
+
+.flowchart-particle {
+  filter: drop-shadow(0 0 4px var(--action-blue));
+}
+
+.flowchart-desc-panel-bg {
+  transition: none;
+}
+
+.flowchart-desc-panel-text {
+  font-family: var(--font-body);
+  font-size: 11px;
+  fill: var(--ink);
+  dominant-baseline: middle;
+}
