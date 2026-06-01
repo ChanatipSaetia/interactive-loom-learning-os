@@ -14,10 +14,10 @@ export interface TopicRoute {
 export const routes: TopicRoute[] = [
   {
     id: 'demo',
-    label: 'REST API vs WebSocket',
-    path: '/demo/rest-vs-websocket',
+    label: 'AI Agent Architecture (Demo)',
+    path: '/demo/ai-agent',
     category: 'Architecture',
-    description: 'Compare REST API and WebSocket communication patterns',
+    description: 'Explore AI Agent system architecture with LLM, tools, and memory',
     sections: demoSections,
   },
   {

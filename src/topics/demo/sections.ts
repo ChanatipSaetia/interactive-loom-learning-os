@@ -1,79 +1,62 @@
 import type { SectionConfig } from '../../core/registry'
 import {
-  restNodes,
-  restEdges,
-  wsNodes,
-  wsEdges,
-  flowPaths,
-  textParagraphs,
-  bulletItems,
-  restLifecycleSteps,
-  dragItems,
-  dragZones,
-  choiceOptions,
+  agentNodes,
+  agentEdges,
+  agentJourneys,
+  agentTextParagraphs,
+  agentLifecycleMarkdown,
+  agentCapabilityBullets,
+  orchestrationChoices,
+  agentDragItems,
+  agentDragZones,
 } from './data'
 
 export const demoSections: SectionConfig[] = [
   {
-    type: 'architecture-flow',
+    type: 'text',
     props: {
-      title: 'REST API Architecture',
-      nodes: restNodes,
-      edges: restEdges,
+      title: 'What is an AI Agent?',
+      heading: 'Autonomous Goal-Directed Systems',
+      paragraphs: agentTextParagraphs,
     },
   },
   {
-    type: 'architecture-flow',
+    type: 'flowchart',
     props: {
-      title: 'WebSocket Architecture',
-      nodes: wsNodes,
-      edges: wsEdges,
-    },
-  },
-  {
-    type: 'data-flow',
-    props: {
-      title: 'Data Flow Patterns',
-      paths: flowPaths,
-      particleColor: '#ff7759',
+      title: 'AI Agent Architecture',
+      nodes: agentNodes,
+      edges: agentEdges,
+      journeys: agentJourneys,
     },
   },
   {
     type: 'text',
     props: {
-      title: 'What is REST?',
-      heading: 'Representational State Transfer',
-      paragraphs: textParagraphs,
+      title: 'Agent Lifecycle',
+      paragraphs: agentLifecycleMarkdown,
     },
   },
   {
     type: 'bullets',
     props: {
-      title: 'HTTP Methods',
+      title: 'Key Agent Capabilities',
       ordered: false,
-      items: bulletItems,
-    },
-  },
-  {
-    type: 'step-by-step',
-    props: {
-      title: 'REST Lifecycle',
-      steps: restLifecycleSteps,
+      items: agentCapabilityBullets,
     },
   },
   {
     type: 'drag-drop',
     props: {
-      title: 'Categorize Communication Patterns',
-      items: dragItems,
-      zones: dragZones,
+      title: 'Match Component to Layer',
+      items: agentDragItems,
+      zones: agentDragZones,
     },
   },
   {
     type: 'choice',
     props: {
-      title: 'REST API vs WebSocket',
-      options: choiceOptions,
+      title: 'Orchestration Strategy',
+      options: orchestrationChoices,
     },
   },
 ]

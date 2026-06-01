@@ -166,13 +166,13 @@ describe('Flowchart component', () => {
     expect(rects.length).toBeGreaterThanOrEqual(3)
   })
 
-  it('renders edges with lines and arrowheads', () => {
+  it('renders edges as undirected lines', () => {
     render(<Flowchart title="Test" nodes={mockNodes} edges={mockEdges} />, { wrapper })
     const svg = screen.getByTestId('flowchart-svg')
     const lines = svg.querySelectorAll('line')
     expect(lines.length).toBeGreaterThanOrEqual(2)
     const marker = svg.querySelector('marker')
-    expect(marker).toBeInTheDocument()
+    expect(marker).not.toBeInTheDocument()
   })
 
   it('registers with SectionRegistry', async () => {

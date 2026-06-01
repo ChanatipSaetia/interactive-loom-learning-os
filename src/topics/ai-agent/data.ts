@@ -15,6 +15,10 @@ export const aiAgentEdges: FlowchartEdge[] = [
   { from: 'ai-agent', to: 'tools-search' },
   { from: 'ai-agent', to: 'tools-code' },
   { from: 'ai-agent', to: 'memory' },
+  { from: 'tools-search', to: 'ai-agent' },
+  { from: 'tools-code', to: 'ai-agent' },
+  { from: 'llm', to: 'ai-agent' },
+  { from: 'ai-agent', to: 'user' },
 ]
 
 export const aiAgentJourneys: Journey[] = [
@@ -25,6 +29,7 @@ export const aiAgentJourneys: Journey[] = [
       { nodeId: 'user', description: 'User sends a query' },
       { nodeId: 'ai-agent', description: 'AI Agent receives the query' },
       { nodeId: 'llm', description: 'LLM processes the query' },
+      { nodeId: 'ai-agent', description: 'AI Agent routes to search tool' },
       { nodeId: 'tools-search', description: 'Search tool is invoked' },
       { nodeId: 'ai-agent', description: 'AI Agent processes search results' },
       { nodeId: 'user', description: 'Response returned to user' },
@@ -37,8 +42,8 @@ export const aiAgentJourneys: Journey[] = [
       { nodeId: 'user', description: 'User sends a request' },
       { nodeId: 'ai-agent', description: 'AI Agent receives the request' },
       { nodeId: 'llm', description: 'LLM determines tool needed' },
+      { nodeId: 'ai-agent', description: 'AI Agent routes to code tool' },
       { nodeId: 'tools-code', description: 'Code tool is executed' },
-      { nodeId: 'llm', description: 'LLM processes code output' },
       { nodeId: 'ai-agent', description: 'AI Agent compiles results' },
       { nodeId: 'user', description: 'Response returned to user' },
     ],
