@@ -1,61 +1,103 @@
-.sidebar {
-  width: 260px;
-  min-height: 100vh;
-  background-color: var(--primary);
-  color: var(--on-dark);
+/* =============================================
+   App shell — column layout
+============================================= */
+.app-layout {
   display: flex;
   flex-direction: column;
-  padding: var(--spacing-xl) 0;
+  min-height: 100vh;
+}
+
+/* =============================================
+   Top navigation bar
+============================================= */
+.topnav {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xl);
+  height: 52px;
+  padding: 0 var(--spacing-xxl);
+  background-color: var(--ctp-crust);
+  border-bottom: 1px solid var(--border-light);
   flex-shrink: 0;
 }
 
-.sidebar-header {
-  padding: 0 var(--spacing-xl);
-  margin-bottom: var(--spacing-xl);
+.topnav-brand {
+  flex-shrink: 0;
 }
 
-.sidebar-title {
+.topnav-title {
   font-family: var(--font-display);
-  font-size: 20px;
-  font-weight: 400;
-  line-height: 1.2;
-  letter-spacing: -0.2px;
-  color: var(--on-primary);
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: -0.1px;
+  color: var(--ctp-lavender);
+  white-space: nowrap;
 }
 
-.sidebar-nav {
+.topnav-links {
   display: flex;
-  flex-direction: column;
+  align-items: center;
   gap: 2px;
-  flex: 1;
+  overflow-x: auto;
+  scrollbar-width: none;
 }
 
-.sidebar-link {
-  display: block;
-  padding: var(--spacing-sm) var(--spacing-xl);
-  color: var(--slate);
+.topnav-links::-webkit-scrollbar {
+  display: none;
+}
+
+.topnav-link {
+  padding: 5px var(--spacing-md);
+  border-radius: var(--radius-sm);
   font-size: var(--text-button);
+  color: var(--ctp-overlay2);
   text-decoration: none;
+  white-space: nowrap;
   transition: color 0.15s ease, background-color 0.15s ease;
 }
 
-.sidebar-link:hover {
-  color: var(--on-primary);
-  background-color: rgba(255, 255, 255, 0.06);
+.topnav-link:hover {
+  color: var(--ctp-text);
+  background-color: rgba(140, 170, 238, 0.08);
 }
 
-.sidebar-link-active {
-  color: var(--on-primary);
-  background-color: rgba(255, 255, 255, 0.1);
+.topnav-link-active {
+  color: var(--ctp-blue);
+  background-color: rgba(140, 170, 238, 0.12);
 }
 
-.sidebar-section-label {
-  padding: var(--spacing-lg) var(--spacing-xl) var(--spacing-xs);
-  font-size: var(--text-micro);
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  color: var(--muted);
-  font-weight: 500;
+.topnav-link-active:hover {
+  color: var(--ctp-lavender);
+  background-color: rgba(186, 187, 241, 0.12);
+}
+
+.topnav-divider {
+  width: 1px;
+  height: 18px;
+  background-color: var(--border-light);
+  margin: 0 var(--spacing-xs);
+  flex-shrink: 0;
+}
+
+/* =============================================
+   Main content
+============================================= */
+.main-content {
+  flex: 1;
+  padding: var(--spacing-xxl) calc(var(--spacing-xxl) * 1.5);
+  background-color: var(--canvas);
+  overflow-y: auto;
+}
+
+/* =============================================
+   Topic page
+============================================= */
+.topic-page {
+  max-width: 860px;
+  margin: 0 auto;
 }
 
 .topic-page-title {
@@ -64,8 +106,10 @@
   font-weight: 400;
   line-height: 1.2;
   letter-spacing: -0.32px;
-  color: var(--ink);
-  margin-bottom: var(--spacing-md);
+  color: var(--ctp-lavender);
+  margin-bottom: var(--spacing-xxl);
+  padding-bottom: var(--spacing-md);
+  border-bottom: 1px solid var(--border-light);
 }
 
 .topic-page-placeholder {
@@ -73,13 +117,17 @@
   font-size: var(--text-body);
 }
 
-.app-layout {
-  display: flex;
+.topic-loading {
+  color: var(--muted);
+  font-size: var(--text-body);
+  padding: var(--spacing-xl) 0;
 }
 
-.main-content {
-  flex: 1;
-  padding: var(--spacing-xxl) var(--spacing-xxl);
-  min-height: 100vh;
-  overflow-y: auto;
+.section-missing {
+  color: var(--ctp-red);
+  font-size: var(--text-caption);
+  padding: var(--spacing-md);
+  border: 1px solid var(--ctp-red);
+  border-radius: var(--radius-sm);
+  background-color: rgba(231, 130, 132, 0.08);
 }

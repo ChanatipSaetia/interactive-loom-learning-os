@@ -9,9 +9,9 @@ import {
   orchestrationChoices,
   agentDragItems,
   agentDragZones,
-} from './data'
+} from '../demo/data'
 
-export const demoSections: SectionConfig[] = [
+export const aiAgentSections: SectionConfig[] = [
   {
     type: 'text',
     props: {

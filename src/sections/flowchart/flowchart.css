@@ -1,0 +1,517 @@
+.flowchart-section {
+  margin-bottom: var(--spacing-xxl);
+}
+
+.flowchart-title {
+  font-size: var(--text-feature-heading);
+  font-weight: 400;
+  color: var(--ctp-mauve);
+  margin-bottom: var(--spacing-lg);
+  line-height: 1.3;
+}
+
+/* SVG container */
+.flowchart-body {
+  display: block;
+}
+
+.flowchart-svg {
+  width: 100%;
+  height: 400px;
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-sm);
+  background-color: var(--soft-stone);
+  overflow: hidden;
+  display: block;
+}
+
+/* ===========================
+   Step list — below the SVG
+=========================== */
+.flowchart-steps-list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  margin-top: var(--spacing-md);
+}
+
+.flowchart-step-item {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  padding: 5px var(--spacing-sm);
+  border-radius: var(--radius-xs);
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition: background-color 0.15s ease, border-color 0.15s ease, opacity 0.15s ease;
+  opacity: 0.45;
+}
+
+.flowchart-step-item:hover {
+  background-color: rgba(140, 170, 238, 0.06);
+  border-color: var(--ctp-surface1);
+  opacity: 0.85;
+}
+
+.flowchart-step-past {
+  opacity: 0.6;
+}
+
+.flowchart-step-current {
+  opacity: 1;
+  border-color: #8caaee;
+  background-color: rgba(140, 170, 238, 0.08);
+}
+
+.flowchart-step-num {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  border: 1.5px solid;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 9px;
+  font-weight: 700;
+  font-family: var(--font-mono);
+  flex-shrink: 0;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.flowchart-step-content {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: baseline;
+  gap: var(--spacing-sm);
+}
+
+.flowchart-step-node {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--ctp-text);
+  white-space: nowrap;
+  flex-shrink: 0;
+  transition: color 0.2s ease;
+}
+
+.flowchart-step-desc {
+  font-size: 11px;
+  color: var(--ctp-subtext0);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* ===========================
+   Node styles
+=========================== */
+.flowchart-node-rect {
+  transition: stroke-width 0.1s ease;
+}
+
+.flowchart-node-group {
+  cursor: grab;
+}
+
+.flowchart-node-group:active {
+  cursor: grabbing;
+}
+
+.flowchart-canvas {
+  transition: none;
+}
+
+.flowchart-node-label {
+  font-family: var(--font-body);
+  font-size: 13px;
+  font-weight: 500;
+  fill: var(--ctp-text);
+}
+
+.flowchart-node-stereotype {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  fill: var(--ctp-overlay1);
+}
+
+.flowchart-node-icon {
+  color: var(--ctp-overlay2);
+}
+
+.flowchart-node-icon-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+}
+
+/* ===========================
+   Journey bar
+ =========================== */
+.flowchart-journey-bar {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xs);
+  margin-bottom: var(--spacing-sm);
+}
+
+.flowchart-journey-selector {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+}
+
+.flowchart-journey-label {
+  font-size: var(--text-caption);
+  font-weight: 500;
+  color: var(--ink);
+}
+
+.flowchart-journey-description {
+  font-size: var(--text-caption);
+  color: var(--ctp-subtext0);
+  line-height: 1.5;
+  padding: 6px 10px;
+  background-color: rgba(140, 170, 238, 0.06);
+  border-left: 3px solid var(--ctp-blue);
+  border-radius: var(--radius-xs);
+}
+
+.flowchart-journey-dropdown {
+  position: relative;
+}
+
+.flowchart-journey-select {
+  font-size: var(--text-body);
+  padding: 12px 36px 12px 16px;
+  min-width: 240px;
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-sm);
+  background-color: var(--bg-card);
+  color: var(--ink);
+  cursor: pointer;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%238caaee' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+}
+
+.flowchart-journey-select:hover {
+  border-color: var(--ctp-blue);
+}
+
+.flowchart-journey-select:focus {
+  outline: none;
+  border-color: var(--focus-blue);
+  box-shadow: 0 0 0 2px rgba(140, 170, 238, 0.25);
+}
+
+.flowchart-journey-options {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  min-width: 240px;
+  margin: 0;
+  padding: 8px;
+  list-style: none;
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-sm);
+  background-color: #1e2028;
+  opacity: 1;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+  z-index: 10;
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+.flowchart-journey-option {
+  font-size: var(--text-body);
+  padding: 10px 12px;
+  border-radius: var(--radius-xs);
+  color: var(--ink);
+  cursor: pointer;
+  transition: background-color 0.12s ease, color 0.12s ease;
+}
+
+.flowchart-journey-option:hover {
+  background-color: rgba(140, 170, 238, 0.12);
+}
+
+.flowchart-journey-option-active {
+  background-color: rgba(140, 170, 238, 0.15);
+  color: var(--ctp-blue);
+  font-weight: 600;
+}
+
+/* ===========================
+   Playback controls
+ =========================== */
+.flowchart-playback {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+  margin-bottom: var(--spacing-md);
+}
+
+.flowchart-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: auto;
+  height: auto;
+  padding: 8px;
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-sm);
+  background-color: var(--soft-stone);
+  color: var(--ink);
+  cursor: pointer;
+  transition: background-color 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.flowchart-btn-icon {
+  color: var(--ink);
+}
+
+.flowchart-btn:hover:not(:disabled) {
+  background-color: var(--pale-blue);
+  border-color: var(--action-blue);
+  box-shadow: 0 0 0 1px rgba(140, 170, 238, 0.15);
+}
+
+.flowchart-btn:hover:not(:disabled) .flowchart-btn-icon {
+  color: var(--action-blue);
+}
+
+.flowchart-btn:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+.flowchart-btn:focus {
+  outline: none;
+  border-color: var(--focus-blue);
+  box-shadow: 0 0 0 2px rgba(186, 187, 241, 0.2);
+}
+
+.flowchart-progress {
+  font-size: var(--text-mono-label);
+  color: var(--muted);
+  margin-left: var(--spacing-xs);
+  min-width: 48px;
+  text-align: center;
+  font-family: var(--font-mono);
+}
+
+/* Animated edges */
+.flowchart-edge-animated {
+  animation: flowchart-edge-flow 1.4s linear infinite;
+}
+
+@keyframes flowchart-edge-flow {
+  from { stroke-dashoffset: 13; }
+  to   { stroke-dashoffset: 0; }
+}
+
+/* Highlighted node — glow style matching the active step row */
+.flowchart-node-highlighted {
+  stroke: #8caaee !important;
+  stroke-width: 2px !important;
+  stroke-opacity: 1 !important;
+  filter: drop-shadow(0 0 4px rgba(140, 170, 238, 0.5));
+}
+
+/* Particle */
+.flowchart-particle {
+  filter: drop-shadow(0 0 6px var(--ctp-blue));
+}
+
+/* Description panel */
+.flowchart-desc-panel-bg {
+  transition: none;
+}
+
+.flowchart-desc-panel-text {
+  font-family: var(--font-body);
+  font-size: 11px;
+  fill: var(--ctp-text);
+  dominant-baseline: middle;
+}
+
+
+.flowchart-title {
+  font-size: var(--text-feature-heading);
+  font-weight: 400;
+  color: var(--ctp-mauve);
+  margin-bottom: var(--spacing-lg);
+  line-height: 1.3;
+}
+
+.flowchart-svg {
+  width: 100%;
+  height: 400px;
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-sm);
+  background-color: var(--soft-stone);
+  overflow: hidden;
+  display: block;
+}
+
+.flowchart-node-rect {
+  transition: stroke-width 0.1s ease;
+}
+
+.flowchart-node-group {
+  cursor: grab;
+}
+
+.flowchart-node-group:active {
+  cursor: grabbing;
+}
+
+.flowchart-node-group:hover .flowchart-node-rect {
+  stroke: var(--ctp-blue);
+}
+
+.flowchart-canvas {
+  transition: none;
+}
+
+.flowchart-node-label {
+  font-family: var(--font-body);
+  font-size: 13px;
+  font-weight: 500;
+  fill: var(--ctp-text);
+}
+
+.flowchart-node-stereotype {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  fill: var(--ctp-overlay1);
+}
+
+.flowchart-node-icon {
+  color: var(--ctp-overlay2);
+}
+
+.flowchart-node-icon-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+}
+
+/* Controls row */
+.flowchart-controls {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--spacing-md);
+  flex-wrap: wrap;
+  gap: var(--spacing-sm);
+}
+
+.flowchart-journey-selector {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+}
+
+.flowchart-journey-label {
+  font-size: var(--text-caption);
+  font-weight: 500;
+  color: var(--ink);
+}
+
+.flowchart-journey-select {
+  font-size: var(--text-caption);
+  padding: 4px 8px;
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-sm);
+  background-color: var(--soft-stone);
+  color: var(--ink);
+  cursor: pointer;
+  transition: border-color 0.15s ease;
+}
+
+.flowchart-journey-select:focus {
+  outline: none;
+  border-color: var(--focus-blue);
+  box-shadow: 0 0 0 2px rgba(186, 187, 241, 0.2);
+}
+
+.flowchart-playback {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+}
+
+.flowchart-btn {
+  font-size: var(--text-button);
+  font-weight: 500;
+  padding: 4px 12px;
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-sm);
+  background-color: var(--soft-stone);
+  color: var(--ink);
+  cursor: pointer;
+  line-height: 1.4;
+  transition: background-color 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.flowchart-btn:hover:not(:disabled) {
+  background-color: var(--pale-blue);
+  border-color: var(--action-blue);
+  box-shadow: 0 0 0 1px rgba(140, 170, 238, 0.15);
+}
+
+.flowchart-btn:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+.flowchart-btn:focus {
+  outline: none;
+  border-color: var(--focus-blue);
+  box-shadow: 0 0 0 2px rgba(186, 187, 241, 0.2);
+}
+
+.flowchart-progress {
+  font-size: var(--text-mono-label);
+  color: var(--muted);
+  margin-left: var(--spacing-xs);
+  min-width: 48px;
+  text-align: center;
+  font-family: var(--font-mono);
+}
+
+/* Highlighted node — glow style matching the active step row */
+.flowchart-node-highlighted {
+  stroke: #8caaee !important;
+  stroke-width: 2px !important;
+  stroke-opacity: 1 !important;
+  filter: drop-shadow(0 0 4px rgba(140, 170, 238, 0.5));
+}
+
+/* Particle */
+.flowchart-particle {
+  filter: drop-shadow(0 0 6px var(--ctp-blue));
+}
+
+/* Description panel */
+.flowchart-desc-panel-bg {
+  transition: none;
+}
+
+.flowchart-desc-panel-text {
+  font-family: var(--font-body);
+  font-size: 11px;
+  fill: var(--ctp-text);
+  dominant-baseline: middle;
+}

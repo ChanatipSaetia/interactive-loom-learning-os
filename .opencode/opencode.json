@@ -2,5 +2,17 @@
   "$schema": "https://opencode.ai/config.json",
   "watcher": {
     "ignore": ["**/node_modules/**", "**/dist/**", "**/logs/**"]
+  },
+  "mcp": {
+    "playwright": {
+      "type": "local",
+      "command": ["npx", "-y", "@playwright/mcp"],
+      "enabled": true
+    },
+    "tavily": {
+      "type": "remote",
+      "url": "https://mcp.tavily.com/mcp/?tavilyApiKey=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",
+      "enabled": true
+    }
   }
 }

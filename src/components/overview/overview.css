@@ -8,7 +8,7 @@
   font-weight: 400;
   line-height: 1.2;
   letter-spacing: -0.48px;
-  color: var(--ink);
+  color: var(--ctp-lavender);
   margin-bottom: var(--spacing-sm);
 }
 
@@ -19,6 +19,7 @@
   line-height: 1.4;
 }
 
+/* Controls (search + filters) */
 .overview-controls {
   display: flex;
   flex-wrap: wrap;
@@ -44,18 +45,19 @@
 
 .overview-search-input {
   width: 100%;
-  padding: var(--spacing-sm) var(--spacing-lg) var(--spacing-sm) var(--spacing-xl);
-  border: 1px solid var(--hairline);
-  border-radius: var(--radius-xs);
+  padding: var(--spacing-sm) var(--spacing-lg) var(--spacing-sm) 36px;
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-sm);
   font-size: var(--text-body);
   color: var(--ink);
-  background-color: var(--canvas);
+  background-color: var(--soft-stone);
   outline: none;
-  transition: border-color 0.15s ease;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
 }
 
 .overview-search-input:focus {
-  border-color: var(--form-focus, var(--action-blue));
+  border-color: var(--action-blue);
+  box-shadow: 0 0 0 2px rgba(140, 170, 238, 0.15);
 }
 
 .overview-search-input::placeholder {
@@ -69,27 +71,28 @@
 }
 
 .overview-filter-chip {
-  padding: var(--spacing-sm) var(--spacing-md);
-  border: 1px solid var(--hairline);
-  border-radius: var(--radius-xl);
+  padding: var(--spacing-xs) var(--spacing-md);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-full);
   font-size: var(--text-caption);
-  color: var(--ink);
-  background-color: transparent;
+  color: var(--body-muted);
+  background-color: var(--soft-stone);
   cursor: pointer;
   transition: border-color 0.15s ease, background-color 0.15s ease, color 0.15s ease;
 }
 
 .overview-filter-chip:hover {
-  border-color: var(--coral);
-  color: var(--coral);
+  border-color: var(--ctp-mauve);
+  color: var(--ctp-mauve);
 }
 
 .overview-filter-chip-active {
-  border-color: var(--coral);
-  background-color: var(--coral);
-  color: var(--cohere-black);
+  border-color: var(--ctp-mauve);
+  background-color: rgba(202, 158, 230, 0.15);
+  color: var(--ctp-mauve);
 }
 
+/* Table */
 .overview-table-wrapper {
   border: 1px solid var(--border-light);
   border-radius: var(--radius-sm);
@@ -105,12 +108,13 @@
   padding: var(--spacing-md) var(--spacing-lg);
   text-align: left;
   font-size: var(--text-caption);
-  font-weight: 500;
-  color: var(--slate);
+  font-weight: 600;
+  color: var(--ctp-overlay2);
   text-transform: uppercase;
-  letter-spacing: 0.3px;
+  letter-spacing: 0.5px;
+  font-family: var(--font-mono);
   border-bottom: 1px solid var(--border-light);
-  background-color: var(--soft-stone);
+  background-color: var(--ctp-mantle);
   white-space: nowrap;
 }
 
@@ -122,16 +126,17 @@
   border: none;
   cursor: pointer;
   font-size: var(--text-caption);
-  font-weight: 500;
-  color: var(--slate);
+  font-weight: 600;
+  color: var(--ctp-overlay2);
   text-transform: uppercase;
-  letter-spacing: 0.3px;
-  font-family: var(--font-body);
+  letter-spacing: 0.5px;
+  font-family: var(--font-mono);
   padding: 0;
+  transition: color 0.15s ease;
 }
 
 .overview-table-header-button:hover {
-  color: var(--ink);
+  color: var(--ctp-text);
 }
 
 .overview-sort-icon {
@@ -140,11 +145,11 @@
 }
 
 .overview-table-row {
-  transition: background-color 0.15s ease;
+  transition: background-color 0.12s ease;
 }
 
 .overview-table-row:hover {
-  background-color: var(--pale-blue);
+  background-color: rgba(140, 170, 238, 0.07);
 }
 
 .overview-table-cell {
@@ -160,6 +165,7 @@
   text-decoration: none;
   font-weight: 500;
   font-family: var(--font-body);
+  transition: color 0.15s ease;
 }
 
 .overview-table-link:hover {
@@ -169,11 +175,13 @@
 
 .overview-table-category {
   display: inline-block;
-  padding: var(--spacing-xxs) var(--spacing-sm);
+  padding: 2px var(--spacing-sm);
   border-radius: var(--radius-full);
   font-size: var(--text-micro);
-  color: var(--slate);
-  background-color: var(--soft-stone);
+  font-family: var(--font-mono);
+  color: var(--ctp-mauve);
+  background-color: rgba(202, 158, 230, 0.12);
+  border: 1px solid rgba(202, 158, 230, 0.25);
 }
 
 .overview-table-description {
@@ -201,6 +209,7 @@
 .overview-pagination-info {
   font-size: var(--text-caption);
   color: var(--muted);
+  font-family: var(--font-mono);
 }
 
 .overview-pagination-controls {
@@ -211,11 +220,11 @@
 
 .overview-pagination-button {
   padding: var(--spacing-sm) var(--spacing-md);
-  border: 1px solid var(--hairline);
-  border-radius: var(--radius-xs);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-sm);
   font-size: var(--text-caption);
   color: var(--ink);
-  background-color: var(--canvas);
+  background-color: var(--soft-stone);
   cursor: pointer;
   transition: border-color 0.15s ease, background-color 0.15s ease;
   font-family: var(--font-body);
@@ -227,7 +236,7 @@
 }
 
 .overview-pagination-button:disabled {
-  opacity: 0.4;
+  opacity: 0.35;
   cursor: not-allowed;
 }
 
@@ -237,24 +246,26 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  border: 1px solid var(--hairline);
-  border-radius: var(--radius-xs);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-sm);
   font-size: var(--text-caption);
   color: var(--ink);
-  background-color: var(--canvas);
+  background-color: var(--soft-stone);
   cursor: pointer;
   transition: border-color 0.15s ease, background-color 0.15s ease;
-  font-family: var(--font-body);
+  font-family: var(--font-mono);
 }
 
 .overview-pagination-page:hover {
   border-color: var(--action-blue);
+  background-color: var(--pale-blue);
 }
 
 .overview-pagination-page-active {
-  border-color: var(--action-blue);
-  background-color: var(--action-blue);
-  color: var(--canvas);
+  border-color: var(--ctp-blue);
+  background-color: var(--ctp-blue);
+  color: var(--ctp-crust);
+  font-weight: 600;
 }
 
 .overview-rows-per-page {
@@ -270,11 +281,17 @@
 
 .overview-rows-select {
   padding: var(--spacing-xxs) var(--spacing-sm);
-  border: 1px solid var(--hairline);
-  border-radius: var(--radius-xs);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-sm);
   font-size: var(--text-caption);
   color: var(--ink);
-  background-color: var(--canvas);
+  background-color: var(--soft-stone);
   cursor: pointer;
   font-family: var(--font-body);
+  transition: border-color 0.15s ease;
+}
+
+.overview-rows-select:focus {
+  outline: none;
+  border-color: var(--action-blue);
 }

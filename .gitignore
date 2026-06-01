@@ -33,3 +33,12 @@ grill-log.md
 # Ralph Loop
 .env.ralph
 logs/
+
+# Screenshots
+*.png
+*.jpg
+*.jpeg
+
+# MCP
+.mcp.json
+.playwright-mcp/

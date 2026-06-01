@@ -5,7 +5,7 @@
 .text-section-title {
   font-size: var(--text-feature-heading);
   font-weight: 400;
-  color: var(--ink);
+  color: var(--ctp-mauve);
   margin-bottom: var(--spacing-md);
   line-height: 1.3;
 }
@@ -28,21 +28,28 @@
 .text-paragraph {
   font-size: var(--text-body);
   color: var(--ink);
-  line-height: 1.5;
+  line-height: 1.6;
+}
+
+.text-paragraph strong {
+  color: var(--ctp-pink);
+  font-weight: 600;
 }
 
 .text-inline-code {
   font-family: var(--font-mono);
-  font-size: 0.9em;
+  font-size: 0.875em;
   background-color: var(--soft-stone);
-  padding: var(--spacing-xxs) var(--spacing-xs);
+  padding: 1px var(--spacing-xs);
   border-radius: var(--radius-xs);
-  color: var(--ink);
+  color: var(--ctp-mauve);
+  border: 1px solid var(--border-light);
 }
 
 .text-link {
   color: var(--action-blue);
   text-decoration: underline;
+  text-underline-offset: 2px;
 }
 
 .text-link:hover {
