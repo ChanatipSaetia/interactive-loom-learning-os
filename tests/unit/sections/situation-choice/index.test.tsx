@@ -197,4 +197,120 @@ describe('SituationChoice Section', () => {
     render(<SituationChoiceSection {...defaultProps} />)
     expect(screen.getByTestId('situation-accordion-0')).toBeInTheDocument()
   })
+
+  // ─── Compare All Modal ──────────────────────────────────────
+
+  it('renders Compare All button', () => {
+    render(<SituationChoiceSection {...defaultProps} />)
+    expect(screen.getByTestId('compare-all-button-0')).toBeInTheDocument()
+    expect(screen.getByText('Compare All')).toBeInTheDocument()
+  })
+
+  it('Compare All button is positioned above accordion', () => {
+    render(<SituationChoiceSection {...defaultProps} />)
+    const item = screen.getByTestId('situation-choice-item-0')
+    const button = screen.getByTestId('compare-all-button-0')
+    const accordion = screen.getByTestId('situation-accordion-0')
+    const children = Array.from(item.children)
+    const buttonIdx = children.indexOf(button)
+    const accordionIdx = children.indexOf(accordion)
+    expect(buttonIdx).toBeLessThan(accordionIdx)
+  })
+
+  it('clicking Compare All opens modal', () => {
+    render(<SituationChoiceSection {...defaultProps} />)
+    const button = screen.getByTestId('compare-all-button-0')
+    fireEvent.click(button)
+    expect(screen.getByTestId('compare-dialog-0')).toBeInTheDocument()
+    expect(screen.getByTestId('compare-overlay-0')).toBeInTheDocument()
+  })
+
+  it('modal shows 2-column grid with all choices', () => {
+    render(<SituationChoiceSection {...defaultProps} />)
+    fireEvent.click(screen.getByTestId('compare-all-button-0'))
+    const grid = screen.getByTestId('compare-grid-0')
+    expect(grid).toBeInTheDocument()
+    expect(screen.getByTestId('compare-card-0-rest')).toBeInTheDocument()
+    expect(screen.getByTestId('compare-card-0-websocket')).toBeInTheDocument()
+  })
+
+  it('modal shows title', () => {
+    render(<SituationChoiceSection {...defaultProps} />)
+    fireEvent.click(screen.getByTestId('compare-all-button-0'))
+    expect(screen.getByTestId('compare-dialog-title-0')).toBeInTheDocument()
+    expect(screen.getByText('Compare All Options')).toBeInTheDocument()
+  })
+
+  it('each choice shows label', () => {
+    render(<SituationChoiceSection {...defaultProps} />)
+    fireEvent.click(screen.getByTestId('compare-all-button-0'))
+    expect(screen.getByTestId('compare-card-label-0-rest')).toBeInTheDocument()
+    expect(screen.getByTestId('compare-card-label-0-websocket')).toBeInTheDocument()
+  })
+
+  it('each choice shows pros with Check icon (green)', () => {
+    render(<SituationChoiceSection {...defaultProps} />)
+    fireEvent.click(screen.getByTestId('compare-all-button-0'))
+    expect(screen.getByTestId('compare-pros-0-websocket')).toBeInTheDocument()
+    expect(screen.getByTestId('compare-icon-pro-0-websocket-0')).toBeInTheDocument()
+    expect(screen.getByTestId('compare-pro-0-websocket-0')).toBeInTheDocument()
+  })
+
+  it('each choice shows cons with X icon (red)', () => {
+    render(<SituationChoiceSection {...defaultProps} />)
+    fireEvent.click(screen.getByTestId('compare-all-button-0'))
+    expect(screen.getByTestId('compare-cons-0-websocket')).toBeInTheDocument()
+    expect(screen.getByTestId('compare-icon-con-0-websocket-0')).toBeInTheDocument()
+    expect(screen.getByTestId('compare-con-0-websocket-0')).toBeInTheDocument()
+  })
+
+  it('recommended choice has Recommended badge', () => {
+    render(<SituationChoiceSection {...defaultProps} />)
+    fireEvent.click(screen.getByTestId('compare-all-button-0'))
+    expect(screen.getByTestId('compare-badge-0-websocket')).toBeInTheDocument()
+    expect(screen.queryByTestId('compare-badge-0-rest')).not.toBeInTheDocument()
+  })
+
+  it('recommended choice card has recommended class', () => {
+    render(<SituationChoiceSection {...defaultProps} />)
+    fireEvent.click(screen.getByTestId('compare-all-button-0'))
+    const recCard = screen.getByTestId('compare-card-0-websocket')
+    expect(recCard.classList.contains('compare-card-recommended')).toBe(true)
+    const otherCard = screen.getByTestId('compare-card-0-rest')
+    expect(otherCard.classList.contains('compare-card-recommended')).toBe(false)
+  })
+
+  it('recommendationDetail.why is displayed above grid', () => {
+    render(<SituationChoiceSection {...defaultProps} />)
+    fireEvent.click(screen.getByTestId('compare-all-button-0'))
+    const why = screen.getByTestId('compare-why-0')
+    expect(why).toBeInTheDocument()
+    expect(why).toHaveTextContent('WebSocket provides instant delivery for real-time chat.')
+  })
+
+  it('modal is dismissible with close button', () => {
+    render(<SituationChoiceSection {...defaultProps} />)
+    fireEvent.click(screen.getByTestId('compare-all-button-0'))
+    expect(screen.getByTestId('compare-dialog-0')).toBeInTheDocument()
+    const closeBtn = screen.getByTestId('compare-dialog-close-0')
+    fireEvent.click(closeBtn)
+    expect(screen.queryByTestId('compare-dialog-0')).not.toBeInTheDocument()
+  })
+
+  it('modal is dismissible with Escape key', () => {
+    render(<SituationChoiceSection {...defaultProps} />)
+    fireEvent.click(screen.getByTestId('compare-all-button-0'))
+    expect(screen.getByTestId('compare-dialog-0')).toBeInTheDocument()
+    fireEvent.keyDown(document.body, { key: 'Escape', code: 'Escape' })
+    expect(screen.queryByTestId('compare-dialog-0')).not.toBeInTheDocument()
+  })
+
+  it('modal dismissible by clicking outside (overlay click)', () => {
+    render(<SituationChoiceSection {...defaultProps} />)
+    fireEvent.click(screen.getByTestId('compare-all-button-0'))
+    expect(screen.getByTestId('compare-dialog-0')).toBeInTheDocument()
+    const overlay = screen.getByTestId('compare-overlay-0')
+    fireEvent.click(overlay)
+    expect(screen.queryByTestId('compare-dialog-0')).not.toBeInTheDocument()
+  })
 })

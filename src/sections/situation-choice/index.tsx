@@ -1,4 +1,6 @@
 import { useState, useCallback, type ComponentType } from 'react'
+import * as Dialog from '@radix-ui/react-dialog'
+import { Check, X } from 'lucide-react'
 import { SectionRegistry } from '../../core/registry'
 import './situation-choice.css'
 
@@ -31,6 +33,7 @@ export interface SituationChoiceSectionProps {
 function SituationItem({ situation, index }: { situation: SituationChoice; index: number }) {
   const recommendedIdx = situation.choices.findIndex((c) => c.id === situation.recommended)
   const [openIndex, setOpenIndex] = useState(recommendedIdx >= 0 ? recommendedIdx : 0)
+  const [compareOpen, setCompareOpen] = useState(false)
 
   const handleToggle = useCallback(
     (idx: number) => {
@@ -52,6 +55,88 @@ function SituationItem({ situation, index }: { situation: SituationChoice; index
       <div className="recommendation-banner" data-testid={`recommendation-banner-${index}`}>
         <p className="recommendation-text">{situation.recommendationDetail.why}</p>
       </div>
+
+      <Dialog.Root open={compareOpen} onOpenChange={setCompareOpen}>
+        <Dialog.Trigger asChild>
+          <button
+            className="compare-all-button"
+            data-testid={`compare-all-button-${index}`}
+          >
+            Compare All
+          </button>
+        </Dialog.Trigger>
+        <Dialog.Portal>
+          <Dialog.Overlay
+            className="compare-overlay"
+            data-testid={`compare-overlay-${index}`}
+            onClick={() => setCompareOpen(false)}
+          />
+          <Dialog.Content className="compare-dialog" data-testid={`compare-dialog-${index}`}>
+            <Dialog.Title className="compare-dialog-title" data-testid={`compare-dialog-title-${index}`}>
+              Compare All Options
+            </Dialog.Title>
+            <Dialog.Description className="compare-dialog-description">
+              Side-by-side comparison of all choices for this situation.
+            </Dialog.Description>
+            <Dialog.Close
+              className="compare-dialog-close"
+              data-testid={`compare-dialog-close-${index}`}
+            >
+              ✕
+            </Dialog.Close>
+
+            <div className="compare-why" data-testid={`compare-why-${index}`}>
+              {situation.recommendationDetail.why}
+            </div>
+
+            <div className="compare-grid" data-testid={`compare-grid-${index}`}>
+              {situation.choices.map((choice) => {
+                const isRecommended = choice.id === situation.recommended
+                return (
+                  <div
+                    key={choice.id}
+                    className={`compare-card${isRecommended ? ' compare-card-recommended' : ''}`}
+                    data-testid={`compare-card-${index}-${choice.id}`}
+                  >
+                    <div className="compare-card-header">
+                      <span className="compare-card-label" data-testid={`compare-card-label-${index}-${choice.id}`}>
+                        {choice.label}
+                      </span>
+                      {isRecommended && (
+                        <span className="compare-badge" data-testid={`compare-badge-${index}-${choice.id}`}>
+                          Recommended
+                        </span>
+                      )}
+                    </div>
+
+                    {choice.pros.length > 0 && (
+                      <ul className="compare-pros" data-testid={`compare-pros-${index}-${choice.id}`}>
+                        {choice.pros.map((pro, pidx) => (
+                          <li key={pidx} className="compare-pro" data-testid={`compare-pro-${index}-${choice.id}-${pidx}`}>
+                            <Check className="compare-icon compare-icon-pro" data-testid={`compare-icon-pro-${index}-${choice.id}-${pidx}`} />
+                            {pro}
+                          </li>
+                        ))}
+                      </ul>
+                    )}
+
+                    {choice.cons.length > 0 && (
+                      <ul className="compare-cons" data-testid={`compare-cons-${index}-${choice.id}`}>
+                        {choice.cons.map((con, cidx) => (
+                          <li key={cidx} className="compare-con" data-testid={`compare-con-${index}-${choice.id}-${cidx}`}>
+                            <X className="compare-icon compare-icon-con" data-testid={`compare-icon-con-${index}-${choice.id}-${cidx}`} />
+                            {con}
+                          </li>
+                        ))}
+                      </ul>
+                    )}
+                  </div>
+                )
+              })}
+            </div>
+          </Dialog.Content>
+        </Dialog.Portal>
+      </Dialog.Root>
 
       <div className="situation-accordion" data-testid={`situation-accordion-${index}`}>
         {situation.choices.map((choice, idx) => {

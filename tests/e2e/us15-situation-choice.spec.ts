@@ -72,4 +72,102 @@ test.describe('Issue #15: SituationChoice Section', () => {
     const whenToUse = page.getByTestId('situation-when-to-use-0-rest')
     await expect(whenToUse).toBeVisible()
   })
+
+  // ─── Compare All Modal ─────────────────────────────────────
+
+  test('Compare All button is rendered', async ({ page }) => {
+    await page.goto('/demo/ai-agent')
+
+    const button = page.getByTestId('compare-all-button-0')
+    await expect(button).toBeVisible()
+    await expect(button).toContainText('Compare All')
+  })
+
+  test('clicking Compare All opens modal', async ({ page }) => {
+    await page.goto('/demo/ai-agent')
+
+    await page.getByTestId('compare-all-button-0').click()
+
+    const dialog = page.getByTestId('compare-dialog-0')
+    await expect(dialog).toBeVisible()
+    await expect(page.getByTestId('compare-overlay-0')).toBeVisible()
+  })
+
+  test('modal shows 2-column grid with all choices', async ({ page }) => {
+    await page.goto('/demo/ai-agent')
+    await page.getByTestId('compare-all-button-0').click()
+
+    const grid = page.getByTestId('compare-grid-0')
+    await expect(grid).toBeVisible()
+    await expect(page.getByTestId('compare-card-0-rest')).toBeVisible()
+    await expect(page.getByTestId('compare-card-0-websocket')).toBeVisible()
+  })
+
+  test('each choice shows label', async ({ page }) => {
+    await page.goto('/demo/ai-agent')
+    await page.getByTestId('compare-all-button-0').click()
+
+    await expect(page.getByTestId('compare-card-label-0-rest')).toBeVisible()
+    await expect(page.getByTestId('compare-card-label-0-websocket')).toBeVisible()
+  })
+
+  test('each choice shows pros with Check icon', async ({ page }) => {
+    await page.goto('/demo/ai-agent')
+    await page.getByTestId('compare-all-button-0').click()
+
+    await expect(page.getByTestId('compare-icon-pro-0-websocket-0')).toBeVisible()
+  })
+
+  test('each choice shows cons with X icon', async ({ page }) => {
+    await page.goto('/demo/ai-agent')
+    await page.getByTestId('compare-all-button-0').click()
+
+    await expect(page.getByTestId('compare-icon-con-0-websocket-0')).toBeVisible()
+  })
+
+  test('recommended choice has Recommended badge', async ({ page }) => {
+    await page.goto('/demo/ai-agent')
+    await page.getByTestId('compare-all-button-0').click()
+
+    await expect(page.getByTestId('compare-badge-0-websocket')).toBeVisible()
+    await expect(page.getByTestId('compare-badge-0-websocket')).toContainText('Recommended')
+  })
+
+  test('recommendationDetail.why is displayed above grid', async ({ page }) => {
+    await page.goto('/demo/ai-agent')
+    await page.getByTestId('compare-all-button-0').click()
+
+    const why = page.getByTestId('compare-why-0')
+    await expect(why).toBeVisible()
+    await expect(why).toContainText('full-duplex, persistent connections')
+  })
+
+  test('modal dismissible with Escape key', async ({ page }) => {
+    await page.goto('/demo/ai-agent')
+    await page.getByTestId('compare-all-button-0').click()
+    await expect(page.getByTestId('compare-dialog-0')).toBeVisible()
+
+    await page.keyboard.press('Escape')
+    await expect(page.getByTestId('compare-dialog-0')).not.toBeVisible()
+  })
+
+  test('modal dismissible by clicking outside', async ({ page }) => {
+    await page.goto('/demo/ai-agent')
+    await page.getByTestId('compare-all-button-0').click()
+    await expect(page.getByTestId('compare-dialog-0')).toBeVisible()
+
+    // Click on the overlay above the dialog content
+    const dialogBox = await page.getByTestId('compare-dialog-0').boundingBox()
+    await page.mouse.click(dialogBox.x + dialogBox.width / 2, dialogBox.y - 20)
+    await expect(page.getByTestId('compare-dialog-0')).not.toBeVisible()
+  })
+
+  test('modal dismissible with close button', async ({ page }) => {
+    await page.goto('/demo/ai-agent')
+    await page.getByTestId('compare-all-button-0').click()
+    await expect(page.getByTestId('compare-dialog-0')).toBeVisible()
+
+    await page.getByTestId('compare-dialog-close-0').click()
+    await expect(page.getByTestId('compare-dialog-0')).not.toBeVisible()
+  })
 })
