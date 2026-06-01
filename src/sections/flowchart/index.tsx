@@ -27,6 +27,7 @@ export interface Step {
 export interface Journey {
   id: string
   label: string
+  description?: string
   steps: Step[]
 }
 
@@ -154,6 +155,11 @@ export function computeLayoutWithBarycenter(
 function getIconComponent(iconName: string) {
   const IconComponent = (Icons as unknown as Record<string, ComponentType<{ size?: number; className?: string }>>)[iconName]
   return IconComponent ? <IconComponent size={16} className="flowchart-node-icon" /> : null
+}
+
+function getPlaybackIcon(iconName: string) {
+  const IconComponent = (Icons as unknown as Record<string, ComponentType<{ size?: number; className?: string }>>)[iconName]
+  return IconComponent ? <IconComponent size={20} className="flowchart-btn-icon" /> : null
 }
 
 function wrapTooltipText(text: string, maxChars = 28): string[] {
@@ -298,6 +304,19 @@ function Flowchart({ title, nodes, edges, journeys }: FlowchartProps) {
   const highlightAnimRef = useRef<Map<string, number>>(new Map())
   const [, setHighlightTick] = useState(0)
   const [tooltip, setTooltip] = useState<{ description: string; x: number; y: number } | null>(null)
+  const [dropdownOpen, setDropdownOpen] = useState(false)
+  const dropdownRef = useRef<HTMLDivElement | null>(null)
+
+  useEffect(() => {
+    if (!dropdownOpen) return
+    const handler = (e: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
+        setDropdownOpen(false)
+      }
+    }
+    document.addEventListener('mousedown', handler)
+    return () => document.removeEventListener('mousedown', handler)
+  }, [dropdownOpen])
 
   const currentJourney = journeys?.find((j) => j.id === currentJourneyId)
   const highlightedNodeId = currentJourney?.steps[currentStep]?.nodeId
@@ -732,73 +751,100 @@ function Flowchart({ title, nodes, edges, journeys }: FlowchartProps) {
       )}
 
       {journeys && journeys.length > 0 && (
-        <div className="flowchart-controls" data-testid="flowchart-controls">
-          <div className="flowchart-journey-selector">
-            <label htmlFor="flowchart-journey-select" className="flowchart-journey-label">Journey:</label>
-            <select
-              id="flowchart-journey-select"
-              className="flowchart-journey-select"
-              value={currentJourneyId}
-              onChange={handleJourneyChange}
-              data-testid="flowchart-journey-select"
-            >
-              {journeys.map((j) => (
-                <option key={j.id} value={j.id}>{j.label}</option>
-              ))}
-            </select>
+        <>
+          <div className="flowchart-journey-bar" data-testid="flowchart-journey-bar">
+            <div className="flowchart-journey-selector">
+              <label htmlFor="flowchart-journey-select" className="flowchart-journey-label">Journey:</label>
+              <div className="flowchart-journey-dropdown" ref={dropdownRef} data-testid="flowchart-journey-dropdown">
+                <button
+                  id="flowchart-journey-select"
+                  className="flowchart-journey-select"
+                  type="button"
+                  onClick={() => setDropdownOpen(!dropdownOpen)}
+                  data-testid="flowchart-journey-select"
+                  aria-haspopup="listbox"
+                  aria-expanded={dropdownOpen}
+                >
+                  {currentJourney?.label}
+                </button>
+                {dropdownOpen && (
+                  <ul className="flowchart-journey-options" role="listbox">
+                    {journeys.map((j) => (
+                      <li
+                        key={j.id}
+                        className={`flowchart-journey-option${j.id === currentJourneyId ? ' flowchart-journey-option-active' : ''}`}
+                        role="option"
+                        aria-selected={j.id === currentJourneyId}
+                        onClick={() => {
+                          handleJourneyChange({ target: { value: j.id } } as React.ChangeEvent<HTMLSelectElement>)
+                          setDropdownOpen(false)
+                        }}
+                      >
+                        {j.label}
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </div>
+            </div>
+            {currentJourney?.description && (
+              <div className="flowchart-journey-description" data-testid="flowchart-journey-description">
+                {currentJourney.description}
+              </div>
+            )}
           </div>
 
           <div className="flowchart-playback" data-testid="flowchart-playback">
             <button
-              className="flowchart-btn flowchart-btn-play"
+              className="flowchart-btn"
               disabled={isPlaying || (!currentJourney || currentStep >= currentJourney.steps.length - 1)}
               onClick={handlePlay}
               data-testid="flowchart-btn-play"
               aria-label="Play"
             >
-              ▶
+              {getPlaybackIcon('Play')}
             </button>
             <button
-              className="flowchart-btn flowchart-btn-pause"
+              className="flowchart-btn"
               disabled={!isPlaying}
               onClick={handlePause}
               data-testid="flowchart-btn-pause"
               aria-label="Pause"
             >
-              ❚❚
+              {getPlaybackIcon('Pause')}
             </button>
             <button
-              className="flowchart-btn flowchart-btn-next"
+              className="flowchart-btn"
               disabled={!currentJourney || currentStep >= currentJourney.steps.length - 1}
               onClick={handleNext}
               data-testid="flowchart-btn-next"
               aria-label="Next"
             >
-              ⏭
+              {getPlaybackIcon('SkipForward')}
             </button>
             <button
-              className="flowchart-btn flowchart-btn-prev"
+              className="flowchart-btn"
               disabled={currentStep === 0}
               onClick={handlePrev}
               data-testid="flowchart-btn-prev"
               aria-label="Previous"
             >
-              ⏮
+              {getPlaybackIcon('SkipBack')}
             </button>
             <button
-              className="flowchart-btn flowchart-btn-reset"
+              className="flowchart-btn"
               disabled={currentStep === 0}
               onClick={handleReset}
               data-testid="flowchart-btn-reset"
               aria-label="Reset"
             >
-              ⏹
+              {getPlaybackIcon('RotateCcw')}
             </button>
             <span className="flowchart-progress" data-testid="flowchart-progress">
               {currentStep + 1} / {currentJourney?.steps.length ?? 0}
             </span>
           </div>
-        </div>
+        </>
       )}
 
       <div className="flowchart-body">

@@ -95,6 +95,7 @@ export const agentJourneys: Journey[] = [
   {
     id: 'happy-path',
     label: 'Happy Path',
+    description: 'The agent completes the goal in a single pass: plan, execute tools, evaluate success, and return the response.',
     steps: [
       { nodeId: 'user', description: 'User submits a goal: "Research top 3 competitors and summarise."' },
       { nodeId: 'orchestrator', description: 'Orchestrator receives the goal and kicks off planning.' },
@@ -110,6 +111,7 @@ export const agentJourneys: Journey[] = [
   {
     id: 'replan',
     label: 'Re-plan Loop',
+    description: 'The agent attempts a fix, evaluates failure, re-plans with new context, and iterates until the goal is met.',
     steps: [
       { nodeId: 'user', description: 'User asks: "Fix the failing unit tests in my repo."' },
       { nodeId: 'orchestrator', description: 'Orchestrator decomposes into: read tests → identify failures → patch code → re-run.' },
