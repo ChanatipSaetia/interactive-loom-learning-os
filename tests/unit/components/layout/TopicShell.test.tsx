@@ -42,7 +42,7 @@ describe('US-12: TopicShell lazy loading and Suspense', () => {
       expect(topicPage).toBeInTheDocument()
     })
 
-    const topicTitle = screen.getByText('REST API vs WebSocket')
+    const topicTitle = screen.getByText('AI Agent Architecture (Demo)')
     expect(topicTitle).toBeInTheDocument()
   })
 

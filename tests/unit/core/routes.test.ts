@@ -21,6 +21,6 @@ describe('routes', () => {
   it('demo route has correct path', () => {
     const demo = routes.find((r) => r.id === 'demo')
     expect(demo).toBeDefined()
-    expect(demo?.path).toBe('/demo/rest-vs-websocket')
+    expect(demo?.path).toBe('/demo/ai-agent')
   })
 })

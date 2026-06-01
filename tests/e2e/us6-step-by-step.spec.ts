@@ -2,7 +2,7 @@ import { test, expect } from '@playwright/test'
 
 test.describe('US-6: StepByStep Section', () => {
   test('renders step content with title and body', async ({ page }) => {
-    await page.goto('/demo/rest-vs-websocket')
+    await page.goto('/demo/ai-agent')
 
     const stepByStep = page.getByTestId('step-by-step')
     await expect(stepByStep).toBeVisible()
@@ -16,13 +16,13 @@ test.describe('US-6: StepByStep Section', () => {
   })
 
   test('renders step-by-step section title', async ({ page }) => {
-    await page.goto('/demo/rest-vs-websocket')
+    await page.goto('/demo/ai-agent')
 
     await expect(page.getByText('REST Lifecycle')).toBeVisible()
   })
 
   test('Next button advances step content', async ({ page }) => {
-    await page.goto('/demo/rest-vs-websocket')
+    await page.goto('/demo/ai-agent')
 
     const progress = page.getByTestId('step-progress')
     await expect(progress).toHaveText('1 / 4')
@@ -38,7 +38,7 @@ test.describe('US-6: StepByStep Section', () => {
   })
 
   test('Prev button retreats step content', async ({ page }) => {
-    await page.goto('/demo/rest-vs-websocket')
+    await page.goto('/demo/ai-agent')
 
     const nextBtn = page.getByTestId('step-next')
     const prevBtn = page.getByTestId('step-prev')
@@ -53,14 +53,14 @@ test.describe('US-6: StepByStep Section', () => {
   })
 
   test('Prev button is disabled at first step', async ({ page }) => {
-    await page.goto('/demo/rest-vs-websocket')
+    await page.goto('/demo/ai-agent')
 
     const prevBtn = page.getByTestId('step-prev')
     await expect(prevBtn).toBeDisabled()
   })
 
   test('Next button is disabled at last step', async ({ page }) => {
-    await page.goto('/demo/rest-vs-websocket')
+    await page.goto('/demo/ai-agent')
 
     const nextBtn = page.getByTestId('step-next')
 

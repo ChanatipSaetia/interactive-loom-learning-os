@@ -2,7 +2,7 @@ import { test, expect } from '@playwright/test'
 
 test.describe('US-10: Bullets Section', () => {
   test('renders bullets section with list items', async ({ page }) => {
-    await page.goto('/demo/rest-vs-websocket')
+    await page.goto('/demo/ai-agent')
 
     const bulletsSection = page.getByTestId('bullets-section')
     await expect(bulletsSection).toBeVisible()
@@ -13,14 +13,14 @@ test.describe('US-10: Bullets Section', () => {
   })
 
   test('renders section title', async ({ page }) => {
-    await page.goto('/demo/rest-vs-websocket')
+    await page.goto('/demo/ai-agent')
 
     await expect(page.getByTestId('bullets-title')).toBeVisible()
     await expect(page.getByTestId('bullets-title')).toHaveText('HTTP Methods')
   })
 
   test('renders all bullet text items', async ({ page }) => {
-    await page.goto('/demo/rest-vs-websocket')
+    await page.goto('/demo/ai-agent')
 
     await expect(page.getByTestId('bullet-text-0')).toBeVisible()
     await expect(page.getByTestId('bullet-text-1')).toBeVisible()
@@ -29,14 +29,14 @@ test.describe('US-10: Bullets Section', () => {
   })
 
   test('renders bullet markers', async ({ page }) => {
-    await page.goto('/demo/rest-vs-websocket')
+    await page.goto('/demo/ai-agent')
 
     const markers = page.getByTestId('bullet-marker-0')
     await expect(markers).toBeVisible()
   })
 
   test('checkable items toggle checked state', async ({ page }) => {
-    await page.goto('/demo/rest-vs-websocket')
+    await page.goto('/demo/ai-agent')
 
     const checkbox = page.getByTestId('bullet-checkbox-0')
     await expect(checkbox).toBeVisible()

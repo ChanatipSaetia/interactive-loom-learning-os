@@ -2,7 +2,7 @@ import { test, expect } from '@playwright/test'
 
 test.describe('US-5: DataFlow Section', () => {
   test('SVG renders with paths and particles', async ({ page }) => {
-    await page.goto('/demo/rest-vs-websocket')
+    await page.goto('/demo/ai-agent')
 
     const svg = page.getByTestId('data-flow-svg')
     await expect(svg).toBeVisible()
@@ -15,7 +15,7 @@ test.describe('US-5: DataFlow Section', () => {
   })
 
   test('animation controls respond to interaction', async ({ page }) => {
-    await page.goto('/demo/rest-vs-websocket')
+    await page.goto('/demo/ai-agent')
 
     const controls = page.getByTestId('data-flow-controls')
     await expect(controls).toBeVisible()
@@ -35,7 +35,7 @@ test.describe('US-5: DataFlow Section', () => {
   })
 
   test('step button advances progress', async ({ page }) => {
-    await page.goto('/demo/rest-vs-websocket')
+    await page.goto('/demo/ai-agent')
 
     const stepBtn = page.getByTestId('dataflow-step')
     const progress = page.getByTestId('data-flow-progress')
@@ -50,7 +50,7 @@ test.describe('US-5: DataFlow Section', () => {
   })
 
   test('reset button resets progress to one', async ({ page }) => {
-    await page.goto('/demo/rest-vs-websocket')
+    await page.goto('/demo/ai-agent')
 
     const stepBtn = page.getByTestId('dataflow-step')
     const resetBtn = page.getByTestId('dataflow-reset')
@@ -64,7 +64,7 @@ test.describe('US-5: DataFlow Section', () => {
   })
 
   test('play then step produces consistent state', async ({ page }) => {
-    await page.goto('/demo/rest-vs-websocket')
+    await page.goto('/demo/ai-agent')
 
     const playBtn = page.getByTestId('dataflow-play')
     const pauseBtn = page.getByTestId('dataflow-pause')
@@ -80,7 +80,7 @@ test.describe('US-5: DataFlow Section', () => {
   })
 
   test('renders data flow title', async ({ page }) => {
-    await page.goto('/demo/rest-vs-websocket')
+    await page.goto('/demo/ai-agent')
 
     await expect(page.getByText('Data Flow Patterns')).toBeVisible()
   })

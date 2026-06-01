@@ -8,14 +8,14 @@ test.describe('US-4: ArchitectureFlow Section', () => {
     await expect(topicLink).toBeVisible()
     await topicLink.click()
 
-    await expect(page).toHaveURL('/demo/rest-vs-websocket')
+    await expect(page).toHaveURL('/demo/ai-agent')
 
     const svg = page.getByTestId('architecture-flow-svg').first()
     await expect(svg).toBeVisible()
   })
 
   test('animation controls respond to interaction', async ({ page }) => {
-    await page.goto('/demo/rest-vs-websocket')
+    await page.goto('/demo/ai-agent')
 
     const controls = page.getByTestId('arch-flow-controls').first()
     await expect(controls).toBeVisible()
@@ -35,7 +35,7 @@ test.describe('US-4: ArchitectureFlow Section', () => {
   })
 
   test('step button advances progress', async ({ page }) => {
-    await page.goto('/demo/rest-vs-websocket')
+    await page.goto('/demo/ai-agent')
 
     const stepBtn = page.getByTestId('arch-flow-step').first()
     const progress = page.getByTestId('arch-flow-progress').first()
@@ -50,7 +50,7 @@ test.describe('US-4: ArchitectureFlow Section', () => {
   })
 
   test('reset button resets progress to one', async ({ page }) => {
-    await page.goto('/demo/rest-vs-websocket')
+    await page.goto('/demo/ai-agent')
 
     const stepBtn = page.getByTestId('arch-flow-step').first()
     const resetBtn = page.getByTestId('arch-flow-reset').first()
@@ -64,7 +64,7 @@ test.describe('US-4: ArchitectureFlow Section', () => {
   })
 
   test('play then step produces consistent state', async ({ page }) => {
-    await page.goto('/demo/rest-vs-websocket')
+    await page.goto('/demo/ai-agent')
 
     const playBtn = page.getByTestId('arch-flow-play').first()
     const pauseBtn = page.getByTestId('arch-flow-pause').first()
@@ -80,7 +80,7 @@ test.describe('US-4: ArchitectureFlow Section', () => {
   })
 
   test('renders architecture flow titles', async ({ page }) => {
-    await page.goto('/demo/rest-vs-websocket')
+    await page.goto('/demo/ai-agent')
 
     await expect(page.getByText('REST API Architecture')).toBeVisible()
     await expect(page.getByText('WebSocket Architecture')).toBeVisible()
