@@ -9,6 +9,7 @@ import {
   orchestrationChoices,
   agentDragItems,
   agentDragZones,
+  apiPatternSituations,
 } from './data'
 
 export const demoSections: SectionConfig[] = [
@@ -57,6 +58,13 @@ export const demoSections: SectionConfig[] = [
     props: {
       title: 'Orchestration Strategy',
       options: orchestrationChoices,
+    },
+  },
+  {
+    type: 'situation-choice',
+    props: {
+      title: 'Communication Pattern Choice',
+      situations: apiPatternSituations,
     },
   },
 ]

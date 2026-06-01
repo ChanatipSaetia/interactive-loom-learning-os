@@ -1,0 +1,209 @@
+.situation-choice {
+  margin-bottom: var(--spacing-xxl);
+}
+
+.situation-choice-title {
+  font-size: var(--text-feature-heading);
+  font-weight: 400;
+  color: var(--ctp-mauve);
+  margin-bottom: var(--spacing-lg);
+  line-height: 1.3;
+}
+
+.situation-choice-item {
+  margin-bottom: var(--spacing-xxl);
+  padding: var(--spacing-lg);
+  background-color: var(--pale-green);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-sm);
+}
+
+.situation-choice-heading {
+  font-size: var(--text-feature-heading);
+  font-weight: 400;
+  color: var(--ink);
+  margin: 0 0 var(--spacing-md) 0;
+  line-height: 1.3;
+}
+
+.situation-banner {
+  padding: var(--spacing-md);
+  background-color: rgba(140, 170, 238, 0.08);
+  border-radius: var(--radius-xs);
+  margin-bottom: var(--spacing-md);
+}
+
+.situation-text {
+  font-size: var(--text-body-large);
+  color: var(--body-muted);
+  line-height: 1.5;
+  margin: 0;
+}
+
+.recommendation-banner {
+  padding: var(--spacing-md);
+  background-color: var(--pale-green);
+  border-left: 3px solid var(--ctp-green);
+  border-radius: var(--radius-xs);
+  margin-bottom: var(--spacing-md);
+}
+
+.recommendation-text {
+  font-size: var(--text-body);
+  color: var(--ink);
+  line-height: 1.5;
+  margin: 0;
+}
+
+.situation-accordion {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+}
+
+.situation-card {
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-sm);
+  background-color: var(--ctp-base);
+  overflow: hidden;
+  transition: border-color 0.15s ease, background-color 0.15s ease;
+}
+
+.situation-card:hover {
+  border-color: var(--action-blue);
+}
+
+.situation-card-recommended {
+  border-color: var(--ctp-green);
+  background-color: rgba(166, 209, 137, 0.06);
+}
+
+.situation-card-recommended:hover {
+  border-color: var(--ctp-green);
+}
+
+.situation-card-open {
+  border-color: var(--action-blue);
+}
+
+.situation-card-recommended.situation-card-open {
+  border-color: var(--ctp-green);
+  background-color: rgba(166, 209, 137, 0.10);
+}
+
+.situation-card-trigger {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  padding: var(--spacing-md) var(--spacing-lg);
+  background: none;
+  border: none;
+  cursor: pointer;
+  text-align: left;
+  gap: var(--spacing-sm);
+  font-family: var(--font-body);
+}
+
+.situation-card-trigger:focus {
+  outline: 2px solid var(--focus-blue);
+  outline-offset: -2px;
+  border-radius: var(--radius-xs);
+}
+
+.situation-card-label {
+  font-size: var(--text-feature-heading);
+  font-weight: 400;
+  color: var(--ink);
+  line-height: 1.3;
+  flex: 1;
+}
+
+.situation-badge {
+  font-size: var(--text-micro);
+  font-weight: 500;
+  color: var(--ctp-green);
+  background-color: rgba(166, 209, 137, 0.15);
+  border-radius: var(--radius-pill);
+  padding: var(--spacing-xxs) var(--spacing-sm);
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+  white-space: nowrap;
+}
+
+.situation-chevron {
+  font-size: var(--text-caption);
+  color: var(--muted);
+  flex-shrink: 0;
+  transition: transform 0.15s ease;
+}
+
+.situation-card-content {
+  padding: 0 var(--spacing-lg) var(--spacing-lg);
+}
+
+.situation-card-description {
+  font-size: var(--text-body);
+  color: var(--body-muted);
+  line-height: 1.5;
+  margin: 0 0 var(--spacing-md) 0;
+}
+
+.situation-pros {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 var(--spacing-sm) 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xxs);
+}
+
+.situation-pro {
+  font-size: var(--text-caption);
+  color: var(--body-muted);
+  line-height: 1.4;
+  display: flex;
+  align-items: flex-start;
+  gap: var(--spacing-xs);
+}
+
+.situation-cons {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 var(--spacing-sm) 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xxs);
+}
+
+.situation-con {
+  font-size: var(--text-caption);
+  color: var(--body-muted);
+  line-height: 1.4;
+  display: flex;
+  align-items: flex-start;
+  gap: var(--spacing-xs);
+}
+
+.situation-bullet {
+  font-size: 8px;
+  margin-top: 4px;
+  flex-shrink: 0;
+}
+
+.situation-bullet-pro {
+  color: var(--ctp-green);
+}
+
+.situation-bullet-con {
+  color: var(--error);
+}
+
+.situation-when-to-use {
+  font-size: var(--text-caption);
+  color: var(--slate);
+  line-height: 1.4;
+  font-style: italic;
+  margin: var(--spacing-sm) 0 0 0;
+  padding-top: var(--spacing-sm);
+  border-top: 1px solid var(--border-light);
+}

@@ -12,6 +12,7 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
+    "@radix-ui/react-dialog": "^1.1.15",
     "animejs": "^4.2.1",
     "lucide-react": "^1.17.0",
     "marked": "^18.0.4",

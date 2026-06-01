@@ -11,6 +11,7 @@ import './sections/choice'
 import './sections/text'
 import './sections/bullets'
 import './sections/flowchart'
+import './sections/situation-choice'
 import './topics/demo'
 import './topics/ai-agent'
 

@@ -1,4 +1,5 @@
 import type { FlowchartNode, FlowchartEdge, Journey } from '../../sections/flowchart'
+import type { SituationChoice } from '../../sections/situation-choice'
 
 // ─── Flowchart: AI Agent Architecture ────────────────────────────────────────
 
@@ -252,4 +253,34 @@ export const agentDragZones: DragZone[] = [
   { id: 'memory', label: 'Memory Layer' },
   { id: 'tool', label: 'Tool Layer' },
   { id: 'reasoning', label: 'Reasoning Layer' },
+]
+
+// ─── Situation Choice: API communication pattern ──────────────────────────────
+
+export const apiPatternSituations: SituationChoice[] = [
+  {
+    title: 'Real-time Communication',
+    situation: 'You need to build a chat application where messages must appear instantly for all connected users.',
+    recommended: 'websocket',
+    recommendationDetail: {
+      why: 'WebSocket provides full-duplex, persistent connections ideal for low-latency bidirectional messaging required in real-time chat.',
+    },
+    choices: [
+      {
+        id: 'rest',
+        label: 'REST API',
+        description: 'Use HTTP request-response pattern for each message.',
+        pros: ['Simple to implement', 'Built-in caching'],
+        cons: ['Higher latency', 'Requires polling for new messages'],
+        whenToUse: 'Useful when message frequency is low and real-time delivery is not critical.',
+      },
+      {
+        id: 'websocket',
+        label: 'WebSocket',
+        description: 'Use persistent full-duplex connection for instant message delivery.',
+        pros: ['Real-time delivery', 'Low latency', 'Efficient for frequent messages'],
+        cons: ['More complex server setup', 'Connection management overhead'],
+      },
+    ],
+  },
 ]

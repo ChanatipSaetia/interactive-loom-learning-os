@@ -39,3 +39,19 @@ _Avoid_: Type, Tag, Category
 **Zoom + Pan**:
 Mobile interaction mode. Flowchart scales via SVG viewBox; user pinch-zooms and pans to explore. Preserves layout intent on small screens.
 _Avoid_: Responsive, Scroll, Re-flow
+
+**SituationChoice**:
+A section type presenting a real-world scenario with a recommended choice and alternatives. Learners see why the recommendation fits and can compare all options via accordion cards and a summary modal. Replaces the old `choice` and `drag-drop` sections.
+_Avoid_: Scenario Choice, Decision Tree, Multi-Choice
+
+**Situation**:
+The scenario text describing a real-world context for decision-making (e.g., "You're building a dashboard that needs live updates to 50K users"). Displayed in a contextual banner above the choices.
+_Avoid_: Context, Case, Story
+
+**ChoiceOption**:
+A single option within a SituationChoice. Contains label, description, pros, cons, and optionally `whenToUse` for alternatives. All options share the same shape; the recommended one is identified by ID reference on the parent.
+_Avoid_: Option, Alternative, Variant
+
+**RecommendationDetail**:
+The persistent "why this fits" explanation for the recommended choice. Always visible in a banner, separate from choice cards.
+_Avoid_: Reason, Justification, Rationale
