@@ -85,15 +85,15 @@ test.describe('Issue #18: AI Agent SituationChoice', () => {
   test('recommended card is open by default for each situation', async ({ page }) => {
     await page.goto('/topics/ai-agent')
 
-    await expect(page.getByTestId('situation-card-content-0-react-loop')).toBeVisible()
-    await expect(page.getByTestId('situation-card-content-0-multi-agent-pipeline')).not.toBeVisible()
+    await expect(page.getByTestId('situation-card-trigger-0-react-loop')).toHaveAttribute('aria-expanded', 'true')
+    await expect(page.getByTestId('situation-card-trigger-0-multi-agent-pipeline')).toHaveAttribute('aria-expanded', 'false')
 
     await page.getByTestId('situation-select').click()
     await page.getByRole('option', { name: 'Component Placement' }).click()
 
-    await expect(page.getByTestId('situation-card-content-1-vector-db')).toBeVisible()
-    await expect(page.getByTestId('situation-card-content-1-code-sandbox')).not.toBeVisible()
-    await expect(page.getByTestId('situation-card-content-1-chain-of-thought')).not.toBeVisible()
+    await expect(page.getByTestId('situation-card-trigger-1-vector-db')).toHaveAttribute('aria-expanded', 'true')
+    await expect(page.getByTestId('situation-card-trigger-1-code-sandbox')).toHaveAttribute('aria-expanded', 'false')
+    await expect(page.getByTestId('situation-card-trigger-1-chain-of-thought')).toHaveAttribute('aria-expanded', 'false')
   })
 
   test('non-recommended cards show pros and cons when expanded', async ({ page }) => {

@@ -101,16 +101,16 @@ describe('SituationChoice Section', () => {
 
   it('recommended card is open by default', () => {
     render(<SituationChoiceSection {...defaultProps} />)
-    expect(screen.getByTestId('situation-card-content-0-websocket')).toBeInTheDocument()
-    expect(screen.queryByTestId('situation-card-content-0-rest')).not.toBeInTheDocument()
+    expect(screen.getByTestId('situation-card-trigger-0-websocket')).toHaveAttribute('aria-expanded', 'true')
+    expect(screen.getByTestId('situation-card-trigger-0-rest')).toHaveAttribute('aria-expanded', 'false')
   })
 
   it('clicking a closed card opens it and closes the other (accordion)', () => {
     render(<SituationChoiceSection {...defaultProps} />)
     const restTrigger = screen.getByTestId('situation-card-trigger-0-rest')
     fireEvent.click(restTrigger)
-    expect(screen.getByTestId('situation-card-content-0-rest')).toBeInTheDocument()
-    expect(screen.queryByTestId('situation-card-content-0-websocket')).not.toBeInTheDocument()
+    expect(screen.getByTestId('situation-card-trigger-0-rest')).toHaveAttribute('aria-expanded', 'true')
+    expect(screen.getByTestId('situation-card-trigger-0-websocket')).toHaveAttribute('aria-expanded', 'false')
   })
 
   it('clicking open card keeps it open (exactly one always open)', () => {
@@ -474,12 +474,12 @@ describe('SituationChoice Section', () => {
     ]
     render(<SituationChoiceSection situations={multiSituations} />)
     // First situation: websocket is recommended, should be open
-    expect(screen.getByTestId('situation-card-content-0-websocket')).toBeInTheDocument()
+    expect(screen.getByTestId('situation-card-trigger-0-websocket')).toHaveAttribute('aria-expanded', 'true')
     // Switch to second situation: rest is recommended, should be open
     fireEvent.click(screen.getByTestId('situation-select'))
     fireEvent.click(screen.getByRole('option', { name: 'Batch Processing' }))
-    expect(screen.getByTestId('situation-card-content-1-rest')).toBeInTheDocument()
-    expect(screen.queryByTestId('situation-card-content-1-websocket')).not.toBeInTheDocument()
+    expect(screen.getByTestId('situation-card-trigger-1-rest')).toHaveAttribute('aria-expanded', 'true')
+    expect(screen.getByTestId('situation-card-trigger-1-websocket')).toHaveAttribute('aria-expanded', 'false')
   })
 
   it('active dropdown option has active class', () => {
@@ -516,5 +516,74 @@ describe('SituationChoice Section', () => {
     expect(screen.queryAllByRole('option')).toHaveLength(2)
     fireEvent.click(screen.getByRole('option', { name: 'Batch Processing' }))
     expect(screen.queryAllByRole('option')).toHaveLength(0)
+  })
+
+  // ─── Animation Tests ──────────────────────────────────────────
+
+  it('situation card has initial hidden inline styles for animation', () => {
+    render(<SituationChoiceSection {...defaultProps} />)
+    const item = screen.getByTestId('situation-choice-item-0')
+    expect(item.style.opacity).toBe('0')
+    expect(item.style.transform).toBe('translateY(20px)')
+  })
+
+  it('recommendation banner has initial hidden inline styles for animation', () => {
+    render(<SituationChoiceSection {...defaultProps} />)
+    const banner = screen.getByTestId('recommendation-banner-0')
+    expect(banner.style.opacity).toBe('0')
+    expect(banner.style.transform).toBe('translateY(12px)')
+  })
+
+  it('recommended card has initial hidden inline styles for animation', () => {
+    render(<SituationChoiceSection {...defaultProps} />)
+    const recCard = screen.getByTestId('situation-card-0-websocket')
+    expect(recCard.style.opacity).toBe('0')
+    expect(recCard.style.transform).toBe('translateX(-16px)')
+  })
+
+  it('non-recommended card has no animation inline styles', () => {
+    render(<SituationChoiceSection {...defaultProps} />)
+    const nonRecCard = screen.getByTestId('situation-card-0-rest')
+    expect(nonRecCard.style.opacity).toBe('')
+    expect(nonRecCard.style.transform).toBe('')
+  })
+
+  it('accordion content wrapper exists for each card', () => {
+    render(<SituationChoiceSection {...defaultProps} />)
+    expect(screen.getByTestId('situation-card-content-wrapper-0-rest')).toBeInTheDocument()
+    expect(screen.getByTestId('situation-card-content-wrapper-0-websocket')).toBeInTheDocument()
+  })
+
+  it('accordion content wrapper has correct height when expanded', () => {
+    render(<SituationChoiceSection {...defaultProps} />)
+    const openContent = screen.getByTestId('situation-card-content-0-websocket')
+    expect(openContent.style.opacity).toBe('1')
+    const closedContent = screen.getByTestId('situation-card-content-0-rest')
+    expect(closedContent.style.opacity).toBe('0')
+  })
+
+  it('accordion content wrapper toggles visibility on card switch', () => {
+    render(<SituationChoiceSection {...defaultProps} />)
+    fireEvent.click(screen.getByTestId('situation-card-trigger-0-rest'))
+    const restContent = screen.getByTestId('situation-card-content-0-rest')
+    const wsContent = screen.getByTestId('situation-card-content-0-websocket')
+    expect(restContent.style.opacity).toBe('1')
+    expect(wsContent.style.opacity).toBe('0')
+  })
+
+  it('accordion content has correct opacity when expanded', () => {
+    render(<SituationChoiceSection {...defaultProps} />)
+    const openContent = screen.getByTestId('situation-card-content-0-websocket')
+    expect(openContent.style.opacity).toBe('1')
+    const closedContent = screen.getByTestId('situation-card-content-0-rest')
+    expect(closedContent.style.opacity).toBe('0')
+  })
+
+  it('accordion content has pointer-events disabled when collapsed', () => {
+    render(<SituationChoiceSection {...defaultProps} />)
+    const closedContent = screen.getByTestId('situation-card-content-0-rest')
+    expect(closedContent.style.pointerEvents).toBe('none')
+    const openContent = screen.getByTestId('situation-card-content-0-websocket')
+    expect(openContent.style.pointerEvents).toBe('auto')
   })
 })

@@ -1,8 +1,16 @@
 import { useState, useCallback, useEffect, useRef, type ComponentType } from 'react'
 import * as Dialog from '@radix-ui/react-dialog'
 import { Check, X } from 'lucide-react'
+import { animate, type JSAnimation } from 'animejs'
 import { SectionRegistry } from '../../core/registry'
+import { useAnimation } from '../../core/hooks/useAnimation'
 import './situation-choice.css'
+
+function prefersReducedMotion(): boolean {
+  return typeof window !== 'undefined'
+    && typeof window.matchMedia === 'function'
+    && window.matchMedia('(prefers-reduced-motion: reduce)').matches
+}
 
 export interface ChoiceOption {
   id: string
@@ -30,6 +38,93 @@ export interface SituationChoiceSectionProps {
   situations: SituationChoice[]
 }
 
+function AccordionContent({
+  isOpen,
+  choiceId,
+  index,
+  children,
+  reducedMotion,
+}: {
+  isOpen: boolean
+  choiceId: string
+  index: number
+  children: React.ReactNode
+  reducedMotion: boolean
+}) {
+  const contentRef = useRef<HTMLDivElement>(null)
+  const innerRef = useRef<HTMLDivElement>(null)
+  const animRef = useRef<JSAnimation | null>(null)
+
+  const getHeight = useCallback(() => {
+    return innerRef.current?.scrollHeight ?? 0
+  }, [])
+
+  useEffect(() => {
+    if (!isOpen) {
+      if (animRef.current) {
+        animRef.current.cancel()
+      }
+      const el = contentRef.current
+      if (!el) return
+      const currentHeight = el.scrollHeight
+      if (currentHeight === 0) {
+        el.style.height = '0px'
+        el.style.overflow = 'hidden'
+        return
+      }
+      animRef.current = animate(
+        el,
+        { height: [currentHeight, 0], duration: reducedMotion ? 0 : 250, ease: 'easeInOutQuad', autoplay: true }
+      )
+      animRef.current.onComplete = () => {
+        el.style.overflow = 'hidden'
+      }
+      return () => {
+        animRef.current?.cancel()
+      }
+    }
+
+    const el = contentRef.current
+    if (!el) return
+    el.style.height = 'auto'
+    const targetHeight = getHeight()
+    el.style.height = '0px'
+
+    if (reducedMotion) {
+      el.style.height = 'auto'
+      return
+    }
+
+    animRef.current = animate(
+      el,
+      { height: [0, targetHeight], duration: 300, ease: 'easeOutQuad', autoplay: true }
+    )
+    animRef.current.onComplete = () => {
+      el.style.height = 'auto'
+    }
+    return () => {
+      animRef.current?.cancel()
+    }
+  }, [isOpen, reducedMotion, getHeight])
+
+  return (
+    <div
+      ref={contentRef}
+      className="situation-card-content-wrapper"
+      data-testid={`situation-card-content-wrapper-${index}-${choiceId}`}
+    >
+      <div
+        ref={innerRef}
+        className="situation-card-content"
+        data-testid={`situation-card-content-${index}-${choiceId}`}
+        style={{ opacity: isOpen ? 1 : 0, pointerEvents: isOpen ? 'auto' : 'none' }}
+      >
+        {children}
+      </div>
+    </div>
+  )
+}
+
 function SituationItem({
   situation,
   index,
@@ -37,6 +132,7 @@ function SituationItem({
   onToggle,
   compareOpen,
   onCompareToggle,
+  reducedMotion,
 }: {
   situation: SituationChoice
   index: number
@@ -44,9 +140,46 @@ function SituationItem({
   onToggle: (idx: number) => void
   compareOpen: boolean
   onCompareToggle: () => void
+  reducedMotion: boolean
 }) {
+  const itemRef = useRef<HTMLDivElement>(null)
+  const recBannerRef = useRef<HTMLDivElement>(null)
+  const recCardRefs = useRef<Map<string, HTMLDivElement | null>>(new Map())
+
+  useAnimation(
+    (tl) => {
+      if (reducedMotion) return
+
+      const item = itemRef.current
+      if (item) {
+        tl.add(item, { opacity: [0, 1], translateY: [20, 0], duration: 400, ease: 'easeOut' })
+      }
+
+      const recBanner = recBannerRef.current
+      if (recBanner) {
+        tl.add(recBanner, { opacity: [0, 1], translateY: [12, 0], duration: 350, ease: 'easeOut' }, '-=200')
+      }
+
+      const recId = situation.recommended
+      const recCard = recCardRefs.current.get(recId)
+      if (recCard) {
+        tl.add(recCard, { opacity: [0, 1], translateX: [-16, 0], duration: 350, ease: 'easeOut' }, '-=250')
+      }
+    },
+    { autoplay: true }
+  )
+
+  const setRecCardRef = useCallback((choiceId: string) => (el: HTMLDivElement | null) => {
+    recCardRefs.current.set(choiceId, el)
+  }, [])
+
   return (
-    <div className="situation-choice-item" data-testid={`situation-choice-item-${index}`}>
+    <div
+      ref={itemRef}
+      className="situation-choice-item"
+      data-testid={`situation-choice-item-${index}`}
+      style={{ opacity: 0, transform: 'translateY(20px)' }}
+    >
       <h4 className="situation-choice-heading" data-testid={`situation-choice-heading-${index}`}>
         {situation.title}
       </h4>
@@ -55,7 +188,12 @@ function SituationItem({
         <p className="situation-text">{situation.situation}</p>
       </div>
 
-      <div className="recommendation-banner" data-testid={`recommendation-banner-${index}`}>
+      <div
+        ref={recBannerRef}
+        className="recommendation-banner"
+        data-testid={`recommendation-banner-${index}`}
+        style={{ opacity: 0, transform: 'translateY(12px)' }}
+      >
         <p className="recommendation-text">{situation.recommendationDetail.why}</p>
       </div>
 
@@ -146,11 +284,15 @@ function SituationItem({
           const isOpen = idx === openIndex
           const isRecommended = choice.id === situation.recommended
 
+          const cardRef = isRecommended ? setRecCardRef(choice.id) : undefined
+
           return (
             <div
               key={choice.id}
+              ref={cardRef}
               className={`situation-card${isOpen ? ' situation-card-open' : ''}${isRecommended ? ' situation-card-recommended' : ''}`}
               data-testid={`situation-card-${index}-${choice.id}`}
+              style={isRecommended ? { opacity: 0, transform: 'translateX(-16px)' } : undefined}
             >
               <button
                 className="situation-card-trigger"
@@ -175,39 +317,42 @@ function SituationItem({
                 </span>
               </button>
 
-              {isOpen && (
-                <div className="situation-card-content" data-testid={`situation-card-content-${index}-${choice.id}`}>
-                  <p className="situation-card-description">{choice.description}</p>
+              <AccordionContent
+                isOpen={isOpen}
+                choiceId={choice.id}
+                index={index}
+                reducedMotion={reducedMotion}
+              >
+                <p className="situation-card-description">{choice.description}</p>
 
-                  {choice.pros.length > 0 && (
-                    <ul className="situation-pros" data-testid={`situation-pros-${index}-${choice.id}`}>
-                      {choice.pros.map((pro, pidx) => (
-                        <li key={pidx} className="situation-pro" data-testid={`situation-pro-${index}-${choice.id}-${pidx}`}>
-                          <span className="situation-bullet situation-bullet-pro" data-testid={`situation-bullet-pro-${index}-${choice.id}-${pidx}`}>&#9652;</span>
-                          {pro}
-                        </li>
-                      ))}
-                    </ul>
-                  )}
+                {choice.pros.length > 0 && (
+                  <ul className="situation-pros" data-testid={`situation-pros-${index}-${choice.id}`}>
+                    {choice.pros.map((pro, pidx) => (
+                      <li key={pidx} className="situation-pro" data-testid={`situation-pro-${index}-${choice.id}-${pidx}`}>
+                        <span className="situation-bullet situation-bullet-pro" data-testid={`situation-bullet-pro-${index}-${choice.id}-${pidx}`}>&#9652;</span>
+                        {pro}
+                      </li>
+                    ))}
+                  </ul>
+                )}
 
-                  {choice.cons.length > 0 && (
-                    <ul className="situation-cons" data-testid={`situation-cons-${index}-${choice.id}`}>
-                      {choice.cons.map((con, cidx) => (
-                        <li key={cidx} className="situation-con" data-testid={`situation-con-${index}-${choice.id}-${cidx}`}>
-                          <span className="situation-bullet situation-bullet-con" data-testid={`situation-bullet-con-${index}-${choice.id}-${cidx}`}>&#9652;</span>
-                          {con}
-                        </li>
-                      ))}
-                    </ul>
-                  )}
+                {choice.cons.length > 0 && (
+                  <ul className="situation-cons" data-testid={`situation-cons-${index}-${choice.id}`}>
+                    {choice.cons.map((con, cidx) => (
+                      <li key={cidx} className="situation-con" data-testid={`situation-con-${index}-${choice.id}-${cidx}`}>
+                        <span className="situation-bullet situation-bullet-con" data-testid={`situation-bullet-con-${index}-${choice.id}-${cidx}`}>&#9652;</span>
+                        {con}
+                      </li>
+                    ))}
+                  </ul>
+                )}
 
-                  {choice.whenToUse && !isRecommended && (
-                    <p className="situation-when-to-use" data-testid={`situation-when-to-use-${index}-${choice.id}`}>
-                      {choice.whenToUse}
-                    </p>
-                  )}
-                </div>
-              )}
+                {choice.whenToUse && !isRecommended && (
+                  <p className="situation-when-to-use" data-testid={`situation-when-to-use-${index}-${choice.id}`}>
+                    {choice.whenToUse}
+                  </p>
+                )}
+              </AccordionContent>
             </div>
           )
         })}
@@ -219,6 +364,7 @@ function SituationItem({
 function SituationChoiceSection({ title, situations }: SituationChoiceSectionProps) {
   const [currentSituationIdx, setCurrentSituationIdx] = useState(0)
   const [dropdownOpen, setDropdownOpen] = useState(false)
+  const [reducedMotion] = useState(prefersReducedMotion())
   const dropdownRef = useRef<HTMLDivElement | null>(null)
 
   const currentSituation = situations[currentSituationIdx]
@@ -304,6 +450,7 @@ function SituationChoiceSection({ title, situations }: SituationChoiceSectionPro
         onToggle={handleToggle}
         compareOpen={compareOpen}
         onCompareToggle={handleCompareToggle}
+        reducedMotion={reducedMotion}
       />
     </div>
   )

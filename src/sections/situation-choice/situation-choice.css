@@ -220,6 +220,10 @@
   transition: transform 0.15s ease;
 }
 
+.situation-card-content-wrapper {
+  overflow: hidden;
+}
+
 .situation-card-content {
   padding: 0 var(--spacing-lg) var(--spacing-lg);
 }
