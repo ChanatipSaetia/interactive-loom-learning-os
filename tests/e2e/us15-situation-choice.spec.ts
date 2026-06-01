@@ -170,4 +170,91 @@ test.describe('Issue #15: SituationChoice Section', () => {
     await page.getByTestId('compare-dialog-close-0').click()
     await expect(page.getByTestId('compare-dialog-0')).not.toBeVisible()
   })
+
+  // ─── Situation Dropdown (Issue #17) ──────────────────────────
+
+  test('dropdown is visible when multiple situations', async ({ page }) => {
+    await page.goto('/demo/ai-agent')
+
+    const dropdown = page.getByTestId('situation-dropdown')
+    await expect(dropdown).toBeVisible()
+    const select = page.getByTestId('situation-select')
+    await expect(select).toBeVisible()
+  })
+
+  test('dropdown shows first situation title by default', async ({ page }) => {
+    await page.goto('/demo/ai-agent')
+
+    const select = page.getByTestId('situation-select')
+    await expect(select).toContainText('Real-time Communication')
+  })
+
+  test('clicking dropdown opens options', async ({ page }) => {
+    await page.goto('/demo/ai-agent')
+
+    await page.getByTestId('situation-select').click()
+
+    const option1 = page.getByRole('option', { name: 'Real-time Communication' })
+    const option2 = page.getByRole('option', { name: 'Batch Data Processing' })
+    await expect(option1).toBeVisible()
+    await expect(option2).toBeVisible()
+  })
+
+  test('selecting situation updates situation banner', async ({ page }) => {
+    await page.goto('/demo/ai-agent')
+
+    await expect(page.getByTestId('situation-banner-0')).toContainText('chat application')
+    await page.getByTestId('situation-select').click()
+    await page.getByRole('option', { name: 'Batch Data Processing' }).click()
+
+    await expect(page.getByTestId('situation-banner-1')).toContainText('large datasets')
+  })
+
+  test('selecting situation updates recommendation banner', async ({ page }) => {
+    await page.goto('/demo/ai-agent')
+
+    await expect(page.getByTestId('recommendation-banner-0')).toBeVisible()
+    await page.getByTestId('situation-select').click()
+    await page.getByRole('option', { name: 'Batch Data Processing' }).click()
+
+    await expect(page.getByTestId('recommendation-banner-1')).toBeVisible()
+    await expect(page.getByTestId('recommendation-banner-1')).toContainText('batch endpoints')
+  })
+
+  test('selecting situation updates accordion cards', async ({ page }) => {
+    await page.goto('/demo/ai-agent')
+
+    await expect(page.getByTestId('situation-card-0-websocket')).toBeVisible()
+    await page.getByTestId('situation-select').click()
+    await page.getByRole('option', { name: 'Batch Data Processing' }).click()
+
+    await expect(page.getByTestId('situation-card-1-rest')).toBeVisible()
+    await expect(page.getByTestId('situation-card-1-websocket')).toBeVisible()
+  })
+
+  test('accordion resets to recommended card open on situation change', async ({ page }) => {
+    await page.goto('/demo/ai-agent')
+
+    // First situation: websocket is recommended, open by default
+    await expect(page.getByTestId('situation-card-content-0-websocket')).toBeVisible()
+
+    // Switch to second situation: rest is recommended, should be open
+    await page.getByTestId('situation-select').click()
+    await page.getByRole('option', { name: 'Batch Data Processing' }).click()
+
+    await expect(page.getByTestId('situation-card-content-1-rest')).toBeVisible()
+    await expect(page.getByTestId('situation-card-content-1-websocket')).not.toBeVisible()
+  })
+
+  test('selecting option closes dropdown', async ({ page }) => {
+    await page.goto('/demo/ai-agent')
+
+    await page.getByTestId('situation-select').click()
+    await expect(page.getByRole('option', { name: 'Real-time Communication' })).toBeVisible()
+
+    await page.getByRole('option', { name: 'Batch Data Processing' }).click()
+
+    await expect(page.getByRole('option', { name: 'Real-time Communication' })).not.toBeVisible()
+    await expect(page.getByRole('option', { name: 'Batch Data Processing' })).not.toBeVisible()
+  })
 })

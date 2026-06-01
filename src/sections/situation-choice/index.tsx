@@ -1,4 +1,4 @@
-import { useState, useCallback, type ComponentType } from 'react'
+import { useState, useCallback, useEffect, useRef, type ComponentType } from 'react'
 import * as Dialog from '@radix-ui/react-dialog'
 import { Check, X } from 'lucide-react'
 import { SectionRegistry } from '../../core/registry'
@@ -30,18 +30,21 @@ export interface SituationChoiceSectionProps {
   situations: SituationChoice[]
 }
 
-function SituationItem({ situation, index }: { situation: SituationChoice; index: number }) {
-  const recommendedIdx = situation.choices.findIndex((c) => c.id === situation.recommended)
-  const [openIndex, setOpenIndex] = useState(recommendedIdx >= 0 ? recommendedIdx : 0)
-  const [compareOpen, setCompareOpen] = useState(false)
-
-  const handleToggle = useCallback(
-    (idx: number) => {
-      setOpenIndex((prev) => (prev === idx ? idx : idx))
-    },
-    [],
-  )
-
+function SituationItem({
+  situation,
+  index,
+  openIndex,
+  onToggle,
+  compareOpen,
+  onCompareToggle,
+}: {
+  situation: SituationChoice
+  index: number
+  openIndex: number
+  onToggle: (idx: number) => void
+  compareOpen: boolean
+  onCompareToggle: () => void
+}) {
   return (
     <div className="situation-choice-item" data-testid={`situation-choice-item-${index}`}>
       <h4 className="situation-choice-heading" data-testid={`situation-choice-heading-${index}`}>
@@ -56,7 +59,7 @@ function SituationItem({ situation, index }: { situation: SituationChoice; index
         <p className="recommendation-text">{situation.recommendationDetail.why}</p>
       </div>
 
-      <Dialog.Root open={compareOpen} onOpenChange={setCompareOpen}>
+      <Dialog.Root open={compareOpen} onOpenChange={onCompareToggle}>
         <Dialog.Trigger asChild>
           <button
             className="compare-all-button"
@@ -69,7 +72,7 @@ function SituationItem({ situation, index }: { situation: SituationChoice; index
           <Dialog.Overlay
             className="compare-overlay"
             data-testid={`compare-overlay-${index}`}
-            onClick={() => setCompareOpen(false)}
+            onClick={onCompareToggle}
           />
           <Dialog.Content className="compare-dialog" data-testid={`compare-dialog-${index}`}>
             <Dialog.Title className="compare-dialog-title" data-testid={`compare-dialog-title-${index}`}>
@@ -151,11 +154,11 @@ function SituationItem({ situation, index }: { situation: SituationChoice; index
             >
               <button
                 className="situation-card-trigger"
-                onClick={() => handleToggle(idx)}
+                onClick={() => onToggle(idx)}
                 onKeyDown={(e) => {
                   if (e.key === 'Enter' || e.key === ' ') {
                     e.preventDefault()
-                    handleToggle(idx)
+                    onToggle(idx)
                   }
                 }}
                 aria-expanded={isOpen}
@@ -214,13 +217,94 @@ function SituationItem({ situation, index }: { situation: SituationChoice; index
 }
 
 function SituationChoiceSection({ title, situations }: SituationChoiceSectionProps) {
+  const [currentSituationIdx, setCurrentSituationIdx] = useState(0)
+  const [dropdownOpen, setDropdownOpen] = useState(false)
+  const dropdownRef = useRef<HTMLDivElement | null>(null)
+
+  const currentSituation = situations[currentSituationIdx]
+
+  const recommendedIdx = currentSituation.choices.findIndex((c) => c.id === currentSituation.recommended)
+  const [openIndex, setOpenIndex] = useState(recommendedIdx >= 0 ? recommendedIdx : 0)
+  const [compareOpen, setCompareOpen] = useState(false)
+
+  useEffect(() => {
+    const recIdx = currentSituation.choices.findIndex((c) => c.id === currentSituation.recommended)
+    setOpenIndex(recIdx >= 0 ? recIdx : 0)
+  }, [currentSituationIdx, currentSituation])
+
+  useEffect(() => {
+    if (!dropdownOpen) return
+    const handler = (e: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
+        setDropdownOpen(false)
+      }
+    }
+    document.addEventListener('mousedown', handler)
+    return () => document.removeEventListener('mousedown', handler)
+  }, [dropdownOpen])
+
+  const handleToggle = useCallback(
+    (idx: number) => {
+      setOpenIndex((prev) => (prev === idx ? idx : idx))
+    },
+    [],
+  )
+
+  const handleSituationChange = useCallback((idx: number) => {
+    setCurrentSituationIdx(idx)
+    setDropdownOpen(false)
+  }, [])
+
+  const handleCompareToggle = useCallback(() => {
+    setCompareOpen((prev) => !prev)
+  }, [])
+
   return (
     <div className="situation-choice" data-testid="situation-choice">
       {title && <h3 className="situation-choice-title" data-testid="situation-choice-title">{title}</h3>}
 
-      {situations.map((situation, idx) => (
-        <SituationItem key={idx} situation={situation} index={idx} />
-      ))}
+      {situations.length > 1 && (
+        <div className="situation-selector">
+          <label htmlFor="situation-select" className="situation-label">Situation:</label>
+          <div className="situation-dropdown" ref={dropdownRef} data-testid="situation-dropdown">
+            <button
+              id="situation-select"
+              className="situation-select"
+              type="button"
+              onClick={() => setDropdownOpen(!dropdownOpen)}
+              data-testid="situation-select"
+              aria-haspopup="listbox"
+              aria-expanded={dropdownOpen}
+            >
+              {currentSituation.title}
+            </button>
+            {dropdownOpen && (
+              <ul className="situation-options" role="listbox">
+                {situations.map((s, idx) => (
+                  <li
+                    key={idx}
+                    className={`situation-option${idx === currentSituationIdx ? ' situation-option-active' : ''}`}
+                    role="option"
+                    aria-selected={idx === currentSituationIdx}
+                    onClick={() => handleSituationChange(idx)}
+                  >
+                    {s.title}
+                  </li>
+                ))}
+              </ul>
+            )}
+          </div>
+        </div>
+      )}
+
+      <SituationItem
+        situation={currentSituation}
+        index={currentSituationIdx}
+        openIndex={openIndex}
+        onToggle={handleToggle}
+        compareOpen={compareOpen}
+        onCompareToggle={handleCompareToggle}
+      />
     </div>
   )
 }

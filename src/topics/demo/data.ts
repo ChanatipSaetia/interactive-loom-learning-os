@@ -283,4 +283,29 @@ export const apiPatternSituations: SituationChoice[] = [
       },
     ],
   },
+  {
+    title: 'Batch Data Processing',
+    situation: 'You need to process large datasets periodically, such as generating daily reports from database exports.',
+    recommended: 'rest',
+    recommendationDetail: {
+      why: 'REST with batch endpoints is simpler to implement and debug for periodic, non-real-time data processing where low latency is not required.',
+    },
+    choices: [
+      {
+        id: 'rest',
+        label: 'REST API',
+        description: 'Use batch endpoints to submit and poll for processing results.',
+        pros: ['Simple to implement', 'Built-in caching', 'Easy to monitor and debug'],
+        cons: ['Requires polling for completion', 'Not ideal for streaming results'],
+        whenToUse: 'Best for periodic batch jobs where results are needed within minutes, not milliseconds.',
+      },
+      {
+        id: 'websocket',
+        label: 'WebSocket',
+        description: 'Use persistent connection to receive real-time processing updates.',
+        pros: ['Real-time progress updates', 'Lower polling overhead', 'Immediate result delivery'],
+        cons: ['More complex server setup', 'Connection management overhead', 'Overkill for periodic jobs'],
+      },
+    ],
+  },
 ]

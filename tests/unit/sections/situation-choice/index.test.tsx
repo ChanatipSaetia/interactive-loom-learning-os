@@ -190,6 +190,9 @@ describe('SituationChoice Section', () => {
     ]
     render(<SituationChoiceSection title="Multiple Situations" situations={multiSituations} />)
     expect(screen.getByTestId('situation-choice-item-0')).toBeInTheDocument()
+    expect(screen.getByTestId('situation-dropdown')).toBeInTheDocument()
+    fireEvent.click(screen.getByTestId('situation-select'))
+    fireEvent.click(screen.getByText('Batch Processing'))
     expect(screen.getByTestId('situation-choice-item-1')).toBeInTheDocument()
   })
 
@@ -312,5 +315,206 @@ describe('SituationChoice Section', () => {
     const overlay = screen.getByTestId('compare-overlay-0')
     fireEvent.click(overlay)
     expect(screen.queryByTestId('compare-dialog-0')).not.toBeInTheDocument()
+  })
+
+  // ─── Situation Dropdown ───────────────────────────────────────
+
+  it('single situation does not show dropdown', () => {
+    render(<SituationChoiceSection {...defaultProps} />)
+    expect(screen.queryByTestId('situation-dropdown')).not.toBeInTheDocument()
+    expect(screen.queryByTestId('situation-select')).not.toBeInTheDocument()
+  })
+
+  it('multiple situations show dropdown', () => {
+    const multiSituations: SituationChoice[] = [
+      ...mockSituations,
+      {
+        title: 'Batch Processing',
+        situation: 'You need to process large datasets.',
+        recommended: 'rest',
+        recommendationDetail: { why: 'REST is simpler for batch operations.' },
+        choices: mockChoices,
+      },
+    ]
+    render(<SituationChoiceSection title="Multiple Situations" situations={multiSituations} />)
+    expect(screen.getByTestId('situation-dropdown')).toBeInTheDocument()
+    expect(screen.getByTestId('situation-select')).toBeInTheDocument()
+  })
+
+  it('dropdown shows title of first situation by default', () => {
+    const multiSituations: SituationChoice[] = [
+      ...mockSituations,
+      {
+        title: 'Batch Processing',
+        situation: 'You need to process large datasets.',
+        recommended: 'rest',
+        recommendationDetail: { why: 'REST is simpler for batch operations.' },
+        choices: mockChoices,
+      },
+    ]
+    render(<SituationChoiceSection situations={multiSituations} />)
+    const select = screen.getByTestId('situation-select')
+    expect(select).toHaveTextContent('Real-time Communication')
+  })
+
+  it('clicking dropdown opens options', () => {
+    const multiSituations: SituationChoice[] = [
+      ...mockSituations,
+      {
+        title: 'Batch Processing',
+        situation: 'You need to process large datasets.',
+        recommended: 'rest',
+        recommendationDetail: { why: 'REST is simpler for batch operations.' },
+        choices: mockChoices,
+      },
+    ]
+    render(<SituationChoiceSection situations={multiSituations} />)
+    const select = screen.getByTestId('situation-select')
+    fireEvent.click(select)
+    const options = screen.queryAllByRole('option')
+    expect(options).toHaveLength(2)
+  })
+
+  it('dropdown options show situation titles', () => {
+    const multiSituations: SituationChoice[] = [
+      ...mockSituations,
+      {
+        title: 'Batch Processing',
+        situation: 'You need to process large datasets.',
+        recommended: 'rest',
+        recommendationDetail: { why: 'REST is simpler for batch operations.' },
+        choices: mockChoices,
+      },
+    ]
+    render(<SituationChoiceSection situations={multiSituations} />)
+    fireEvent.click(screen.getByTestId('situation-select'))
+    expect(screen.getByRole('option', { name: 'Real-time Communication' })).toBeInTheDocument()
+    expect(screen.getByRole('option', { name: 'Batch Processing' })).toBeInTheDocument()
+  })
+
+  it('selecting a situation updates the situation banner', () => {
+    const multiSituations: SituationChoice[] = [
+      ...mockSituations,
+      {
+        title: 'Batch Processing',
+        situation: 'You need to process large datasets.',
+        recommended: 'rest',
+        recommendationDetail: { why: 'REST is simpler for batch operations.' },
+        choices: mockChoices,
+      },
+    ]
+    render(<SituationChoiceSection situations={multiSituations} />)
+    expect(screen.getByText('You need to build a chat application.')).toBeInTheDocument()
+    fireEvent.click(screen.getByTestId('situation-select'))
+    fireEvent.click(screen.getByRole('option', { name: 'Batch Processing' }))
+    expect(screen.getByText('You need to process large datasets.')).toBeInTheDocument()
+    expect(screen.queryByText('You need to build a chat application.')).not.toBeInTheDocument()
+  })
+
+  it('selecting a situation updates the recommendation banner', () => {
+    const multiSituations: SituationChoice[] = [
+      ...mockSituations,
+      {
+        title: 'Batch Processing',
+        situation: 'You need to process large datasets.',
+        recommended: 'rest',
+        recommendationDetail: { why: 'REST is simpler for batch operations.' },
+        choices: mockChoices,
+      },
+    ]
+    render(<SituationChoiceSection situations={multiSituations} />)
+    expect(screen.getByText('WebSocket provides instant delivery for real-time chat.')).toBeInTheDocument()
+    fireEvent.click(screen.getByTestId('situation-select'))
+    fireEvent.click(screen.getByRole('option', { name: 'Batch Processing' }))
+    expect(screen.getByText('REST is simpler for batch operations.')).toBeInTheDocument()
+  })
+
+  it('selecting a situation updates the accordion cards', () => {
+    const secondSituation: SituationChoice = {
+      title: 'Batch Processing',
+      situation: 'You need to process large datasets.',
+      recommended: 'rest',
+      recommendationDetail: { why: 'REST is simpler for batch operations.' },
+      choices: [
+        {
+          id: 'batch',
+          label: 'Batch REST',
+          description: 'Process in batches via REST.',
+          pros: ['Simple'],
+          cons: ['Slower'],
+        },
+        {
+          id: 'stream',
+          label: 'Stream Processing',
+          description: 'Process data as a stream.',
+          pros: ['Faster'],
+          cons: ['More complex'],
+        },
+      ],
+    }
+    const multiSituations = [...mockSituations, secondSituation]
+    render(<SituationChoiceSection situations={multiSituations} />)
+    expect(screen.getByTestId('situation-card-0-websocket')).toBeInTheDocument()
+    fireEvent.click(screen.getByTestId('situation-select'))
+    fireEvent.click(screen.getByRole('option', { name: 'Batch Processing' }))
+    expect(screen.getByTestId('situation-card-1-batch')).toBeInTheDocument()
+    expect(screen.getByTestId('situation-card-1-stream')).toBeInTheDocument()
+  })
+
+  it('accordion resets to recommended card open on situation change', () => {
+    const multiSituations: SituationChoice[] = [
+      ...mockSituations,
+      {
+        title: 'Batch Processing',
+        situation: 'You need to process large datasets.',
+        recommended: 'rest',
+        recommendationDetail: { why: 'REST is simpler for batch operations.' },
+        choices: mockChoices,
+      },
+    ]
+    render(<SituationChoiceSection situations={multiSituations} />)
+    // First situation: websocket is recommended, should be open
+    expect(screen.getByTestId('situation-card-content-0-websocket')).toBeInTheDocument()
+    // Switch to second situation: rest is recommended, should be open
+    fireEvent.click(screen.getByTestId('situation-select'))
+    fireEvent.click(screen.getByRole('option', { name: 'Batch Processing' }))
+    expect(screen.getByTestId('situation-card-content-1-rest')).toBeInTheDocument()
+    expect(screen.queryByTestId('situation-card-content-1-websocket')).not.toBeInTheDocument()
+  })
+
+  it('active dropdown option has active class', () => {
+    const multiSituations: SituationChoice[] = [
+      ...mockSituations,
+      {
+        title: 'Batch Processing',
+        situation: 'You need to process large datasets.',
+        recommended: 'rest',
+        recommendationDetail: { why: 'REST is simpler for batch operations.' },
+        choices: mockChoices,
+      },
+    ]
+    render(<SituationChoiceSection situations={multiSituations} />)
+    fireEvent.click(screen.getByTestId('situation-select'))
+    const options = screen.queryAllByRole('option')
+    expect(options[0]).toHaveClass('situation-option-active')
+    expect(options[1]).not.toHaveClass('situation-option-active')
+  })
+
+  it('selecting option closes dropdown', () => {
+    const multiSituations: SituationChoice[] = [
+      ...mockSituations,
+      {
+        title: 'Batch Processing',
+        situation: 'You need to process large datasets.',
+        recommended: 'rest',
+        recommendationDetail: { why: 'REST is simpler for batch operations.' },
+        choices: mockChoices,
+      },
+    ]
+    render(<SituationChoiceSection situations={multiSituations} />)
+    fireEvent.click(screen.getByTestId('situation-select'))
+    expect(screen.queryAllByRole('option')).toHaveLength(2)
+    fireEvent.click(screen.getByRole('option', { name: 'Batch Processing' }))
+    expect(screen.queryAllByRole('option')).toHaveLength(0)
   })
 })
