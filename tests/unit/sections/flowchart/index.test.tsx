@@ -257,22 +257,23 @@ describe('Flowchart journey controls', () => {
 
   it('renders all journey options', () => {
     render(<Flowchart title="Test" nodes={mockNodes} edges={mockEdges} journeys={mockJourneys} />, { wrapper })
-    const select = screen.getByTestId('flowchart-journey-select') as HTMLSelectElement
-    expect(select.options.length).toBe(2)
-    expect(select.options[0].text).toBe('Journey A')
-    expect(select.options[1].text).toBe('Journey B')
+    const select = screen.getByTestId('flowchart-journey-select')
+    fireEvent.click(select)
+    expect(screen.getByRole('option', { name: 'Journey A' })).toBeInTheDocument()
+    expect(screen.getByRole('option', { name: 'Journey B' })).toBeInTheDocument()
   })
 
   it('defaults to first journey', () => {
     render(<Flowchart title="Test" nodes={mockNodes} edges={mockEdges} journeys={mockJourneys} />, { wrapper })
-    const select = screen.getByTestId('flowchart-journey-select') as HTMLSelectElement
-    expect(select.value).toBe('journey-a')
+    const select = screen.getByTestId('flowchart-journey-select')
+    expect(select.textContent).toBe('Journey A')
   })
 
   it('switching journeys resets to step 0', () => {
     render(<Flowchart title="Test" nodes={mockNodes} edges={mockEdges} journeys={mockJourneys} />, { wrapper })
-    const select = screen.getByTestId('flowchart-journey-select') as HTMLSelectElement
-    fireEvent.change(select, { target: { value: 'journey-b' } })
+    const select = screen.getByTestId('flowchart-journey-select')
+    fireEvent.click(select)
+    fireEvent.click(screen.getByRole('option', { name: 'Journey B' }))
     const progress = screen.getByTestId('flowchart-progress')
     expect(progress.textContent).toBe('1 / 2')
   })

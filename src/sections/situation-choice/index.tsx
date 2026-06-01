@@ -3,7 +3,6 @@ import * as Dialog from '@radix-ui/react-dialog'
 import { Check, X } from 'lucide-react'
 import { animate, type JSAnimation } from 'animejs'
 import { SectionRegistry } from '../../core/registry'
-import { useAnimation } from '../../core/hooks/useAnimation'
 import './situation-choice.css'
 
 function prefersReducedMotion(): boolean {
@@ -12,16 +11,22 @@ function prefersReducedMotion(): boolean {
     && window.matchMedia('(prefers-reduced-motion: reduce)').matches
 }
 
+export interface ChoiceProCon {
+  title: string
+  description: string
+}
+
 export interface ChoiceOption {
   id: string
   label: string
   description: string
-  pros: string[]
-  cons: string[]
+  pros: ChoiceProCon[]
+  cons: ChoiceProCon[]
   whenToUse?: string
 }
 
 export interface RecommendationDetail {
+  heading?: string
   why: string
 }
 
@@ -142,58 +147,22 @@ function SituationItem({
   onCompareToggle: () => void
   reducedMotion: boolean
 }) {
-  const itemRef = useRef<HTMLDivElement>(null)
-  const recBannerRef = useRef<HTMLDivElement>(null)
-  const recCardRefs = useRef<Map<string, HTMLDivElement | null>>(new Map())
-
-  useAnimation(
-    (tl) => {
-      if (reducedMotion) return
-
-      const item = itemRef.current
-      if (item) {
-        tl.add(item, { opacity: [0, 1], translateY: [20, 0], duration: 400, ease: 'easeOut' })
-      }
-
-      const recBanner = recBannerRef.current
-      if (recBanner) {
-        tl.add(recBanner, { opacity: [0, 1], translateY: [12, 0], duration: 350, ease: 'easeOut' }, '-=200')
-      }
-
-      const recId = situation.recommended
-      const recCard = recCardRefs.current.get(recId)
-      if (recCard) {
-        tl.add(recCard, { opacity: [0, 1], translateX: [-16, 0], duration: 350, ease: 'easeOut' }, '-=250')
-      }
-    },
-    { autoplay: true }
-  )
-
-  const setRecCardRef = useCallback((choiceId: string) => (el: HTMLDivElement | null) => {
-    recCardRefs.current.set(choiceId, el)
-  }, [])
-
   return (
     <div
-      ref={itemRef}
       className="situation-choice-item"
       data-testid={`situation-choice-item-${index}`}
-      style={{ opacity: 0, transform: 'translateY(20px)' }}
     >
-      <h4 className="situation-choice-heading" data-testid={`situation-choice-heading-${index}`}>
-        {situation.title}
-      </h4>
-
       <div className="situation-banner" data-testid={`situation-banner-${index}`}>
         <p className="situation-text">{situation.situation}</p>
       </div>
 
       <div
-        ref={recBannerRef}
         className="recommendation-banner"
         data-testid={`recommendation-banner-${index}`}
-        style={{ opacity: 0, transform: 'translateY(12px)' }}
       >
+        <h5 className="recommendation-heading" data-testid={`recommendation-heading-${index}`}>
+          Recommendation
+        </h5>
         <p className="recommendation-text">{situation.recommendationDetail.why}</p>
       </div>
 
@@ -250,27 +219,27 @@ function SituationItem({
                       )}
                     </div>
 
-                    {choice.pros.length > 0 && (
-                      <ul className="compare-pros" data-testid={`compare-pros-${index}-${choice.id}`}>
-                        {choice.pros.map((pro, pidx) => (
-                          <li key={pidx} className="compare-pro" data-testid={`compare-pro-${index}-${choice.id}-${pidx}`}>
-                            <Check className="compare-icon compare-icon-pro" data-testid={`compare-icon-pro-${index}-${choice.id}-${pidx}`} />
-                            {pro}
-                          </li>
-                        ))}
-                      </ul>
-                    )}
+               {choice.pros.length > 0 && (
+                        <ul className="compare-pros" data-testid={`compare-pros-${index}-${choice.id}`}>
+                          {choice.pros.map((pro, pidx) => (
+                            <li key={pidx} className="compare-pro" data-testid={`compare-pro-${index}-${choice.id}-${pidx}`}>
+                              <Check className="compare-icon compare-icon-pro" data-testid={`compare-icon-pro-${index}-${choice.id}-${pidx}`} />
+                              {pro.title}
+                            </li>
+                          ))}
+                        </ul>
+                      )}
 
-                    {choice.cons.length > 0 && (
-                      <ul className="compare-cons" data-testid={`compare-cons-${index}-${choice.id}`}>
-                        {choice.cons.map((con, cidx) => (
-                          <li key={cidx} className="compare-con" data-testid={`compare-con-${index}-${choice.id}-${cidx}`}>
-                            <X className="compare-icon compare-icon-con" data-testid={`compare-icon-con-${index}-${choice.id}-${cidx}`} />
-                            {con}
-                          </li>
-                        ))}
-                      </ul>
-                    )}
+                      {choice.cons.length > 0 && (
+                        <ul className="compare-cons" data-testid={`compare-cons-${index}-${choice.id}`}>
+                          {choice.cons.map((con, cidx) => (
+                            <li key={cidx} className="compare-con" data-testid={`compare-con-${index}-${choice.id}-${cidx}`}>
+                              <X className="compare-icon compare-icon-con" data-testid={`compare-icon-con-${index}-${choice.id}-${cidx}`} />
+                              {con.title}
+                            </li>
+                          ))}
+                        </ul>
+                      )}
                   </div>
                 )
               })}
@@ -284,15 +253,11 @@ function SituationItem({
           const isOpen = idx === openIndex
           const isRecommended = choice.id === situation.recommended
 
-          const cardRef = isRecommended ? setRecCardRef(choice.id) : undefined
-
           return (
             <div
               key={choice.id}
-              ref={cardRef}
               className={`situation-card${isOpen ? ' situation-card-open' : ''}${isRecommended ? ' situation-card-recommended' : ''}`}
               data-testid={`situation-card-${index}-${choice.id}`}
-              style={isRecommended ? { opacity: 0, transform: 'translateX(-16px)' } : undefined}
             >
               <button
                 className="situation-card-trigger"
@@ -330,7 +295,10 @@ function SituationItem({
                     {choice.pros.map((pro, pidx) => (
                       <li key={pidx} className="situation-pro" data-testid={`situation-pro-${index}-${choice.id}-${pidx}`}>
                         <span className="situation-bullet situation-bullet-pro" data-testid={`situation-bullet-pro-${index}-${choice.id}-${pidx}`}>&#9652;</span>
-                        {pro}
+                        <span>
+                          <strong>{pro.title}</strong>
+                          <span className="situation-pro-description">{pro.description}</span>
+                        </span>
                       </li>
                     ))}
                   </ul>
@@ -341,7 +309,10 @@ function SituationItem({
                     {choice.cons.map((con, cidx) => (
                       <li key={cidx} className="situation-con" data-testid={`situation-con-${index}-${choice.id}-${cidx}`}>
                         <span className="situation-bullet situation-bullet-con" data-testid={`situation-bullet-con-${index}-${choice.id}-${cidx}`}>&#9652;</span>
-                        {con}
+                        <span>
+                          <strong>{con.title}</strong>
+                          <span className="situation-con-description">{con.description}</span>
+                        </span>
                       </li>
                     ))}
                   </ul>

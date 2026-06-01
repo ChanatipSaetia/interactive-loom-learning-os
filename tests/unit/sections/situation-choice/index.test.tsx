@@ -13,16 +13,26 @@ const mockChoices: ChoiceOption[] = [
     id: 'rest',
     label: 'REST API',
     description: 'Use HTTP request-response pattern.',
-    pros: ['Simple', 'Cacheable'],
-    cons: ['Higher latency'],
+   pros: [
+      { title: 'Simple', description: '' },
+      { title: 'Cacheable', description: '' },
+    ],
+     cons: [
+      { title: 'Higher latency', description: '' },
+    ],
     whenToUse: 'When real-time is not critical.',
   },
   {
     id: 'websocket',
     label: 'WebSocket',
     description: 'Use persistent full-duplex connection.',
-    pros: ['Real-time', 'Low latency'],
-    cons: ['More complex'],
+   pros: [
+      { title: 'Real-time', description: '' },
+      { title: 'Low latency', description: '' },
+    ],
+     cons: [
+      { title: 'More complex', description: '' },
+    ],
   },
 ]
 
@@ -68,8 +78,7 @@ describe('SituationChoice Section', () => {
 
   it('renders situation title', () => {
     render(<SituationChoiceSection {...defaultProps} />)
-    expect(screen.getByTestId('situation-choice-heading-0')).toBeInTheDocument()
-    expect(screen.getByText('Real-time Communication')).toBeInTheDocument()
+    expect(screen.getByText('You need to build a chat application.')).toBeInTheDocument()
   })
 
   it('renders situation banner with text', () => {
@@ -440,15 +449,23 @@ describe('SituationChoice Section', () => {
           id: 'batch',
           label: 'Batch REST',
           description: 'Process in batches via REST.',
-          pros: ['Simple'],
-          cons: ['Slower'],
+          pros: [
+            { title: 'Simple', description: '' },
+          ],
+          cons: [
+            { title: 'Slower', description: '' },
+          ],
         },
         {
           id: 'stream',
           label: 'Stream Processing',
           description: 'Process data as a stream.',
-          pros: ['Faster'],
-          cons: ['More complex'],
+          pros: [
+            { title: 'Faster', description: '' },
+          ],
+          cons: [
+            { title: 'More complex', description: '' },
+          ],
         },
       ],
     }
@@ -518,35 +535,7 @@ describe('SituationChoice Section', () => {
     expect(screen.queryAllByRole('option')).toHaveLength(0)
   })
 
-  // ─── Animation Tests ──────────────────────────────────────────
-
-  it('situation card has initial hidden inline styles for animation', () => {
-    render(<SituationChoiceSection {...defaultProps} />)
-    const item = screen.getByTestId('situation-choice-item-0')
-    expect(item.style.opacity).toBe('0')
-    expect(item.style.transform).toBe('translateY(20px)')
-  })
-
-  it('recommendation banner has initial hidden inline styles for animation', () => {
-    render(<SituationChoiceSection {...defaultProps} />)
-    const banner = screen.getByTestId('recommendation-banner-0')
-    expect(banner.style.opacity).toBe('0')
-    expect(banner.style.transform).toBe('translateY(12px)')
-  })
-
-  it('recommended card has initial hidden inline styles for animation', () => {
-    render(<SituationChoiceSection {...defaultProps} />)
-    const recCard = screen.getByTestId('situation-card-0-websocket')
-    expect(recCard.style.opacity).toBe('0')
-    expect(recCard.style.transform).toBe('translateX(-16px)')
-  })
-
-  it('non-recommended card has no animation inline styles', () => {
-    render(<SituationChoiceSection {...defaultProps} />)
-    const nonRecCard = screen.getByTestId('situation-card-0-rest')
-    expect(nonRecCard.style.opacity).toBe('')
-    expect(nonRecCard.style.transform).toBe('')
-  })
+  // ─── Accordion Animation Tests ──────────────────────────────────
 
   it('accordion content wrapper exists for each card', () => {
     render(<SituationChoiceSection {...defaultProps} />)
