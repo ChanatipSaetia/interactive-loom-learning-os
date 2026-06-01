@@ -1,4 +1,5 @@
 import type { FlowchartNode, FlowchartEdge, Journey } from '../../sections/flowchart'
+import type { SituationChoice } from '../../sections/situation-choice'
 
 // ─── Flowchart: AI Agent Architecture ────────────────────────────────────────
 
@@ -183,73 +184,85 @@ export const agentCapabilityBullets: BulletItem[] = [
   { text: 'Multi-agent coordination (delegating sub-tasks)' },
 ]
 
-// ─── Choice: orchestration strategy ──────────────────────────────────────────
+// ─── Situation Choice: API communication pattern ──────────────────────────────
 
-export interface ChoiceOption {
-  id: string
-  label: string
-  description: string
-  pros: string[]
-  cons: string[]
-}
-
-export const orchestrationChoices: ChoiceOption[] = [
+export const apiPatternSituations: SituationChoice[] = [
   {
-    id: 'react',
-    label: 'ReAct Loop',
-    description: 'Synchronous Reason → Act → Observe cycle driven by a single LLM prompt per iteration.',
-    pros: [
-      'Simple to implement and debug',
-      'Works well for focused, linear tasks',
-      'Low infrastructure overhead',
-    ],
-    cons: [
-      'Blocks on each tool call (sequential)',
-      'Context window fills up on long tasks',
-      'Hard to parallelise sub-tasks',
+    title: 'Real-time Communication',
+    situation: 'You need to build a chat application where messages must appear instantly for all connected users.',
+    recommended: 'websocket',
+    recommendationDetail: {
+      why: 'WebSocket provides full-duplex, persistent connections ideal for low-latency bidirectional messaging required in real-time chat.',
+    },
+    choices: [
+      {
+        id: 'rest',
+        label: 'REST API',
+        description: 'Use HTTP request-response pattern for each message.',
+        pros: [
+          { title: 'Simple to implement', description: '' },
+          { title: 'Built-in caching', description: 'HTTP caching reduces server load' },
+        ],
+        cons: [
+          { title: 'Higher latency', description: 'Each message requires a new HTTP round-trip' },
+          { title: 'Requires polling', description: 'Client must poll for new messages' },
+        ],
+        whenToUse: 'Useful when message frequency is low and real-time delivery is not critical.',
+      },
+      {
+        id: 'websocket',
+        label: 'WebSocket',
+        description: 'Use persistent full-duplex connection for instant message delivery.',
+        pros: [
+          { title: 'Real-time delivery', description: 'Messages arrive instantly without polling' },
+          { title: 'Low latency', description: 'Persistent connection eliminates HTTP overhead' },
+          { title: 'Efficient for frequent messages', description: 'Single connection handles bidirectional traffic' },
+        ],
+        cons: [
+          { title: 'Complex server setup', description: 'Requires WebSocket server infrastructure' },
+          { title: 'Connection management', description: 'Must handle reconnects and state' },
+        ],
+      },
     ],
   },
   {
-    id: 'multi-agent',
-    label: 'Multi-Agent Pipeline',
-    description: 'An orchestrator delegates sub-tasks to specialised sub-agents running concurrently.',
-    pros: [
-      'Parallel execution of independent sub-tasks',
-      'Each agent has a focused, smaller context',
-      'Easier to scale and specialise',
-    ],
-    cons: [
-      'Higher coordination complexity',
-      'Harder to debug cross-agent failures',
-      'Requires robust inter-agent messaging',
+    title: 'Batch Data Processing',
+    situation: 'You need to process large datasets periodically, such as generating daily reports from database exports.',
+    recommended: 'rest',
+    recommendationDetail: {
+      why: 'REST with batch endpoints is simpler to implement and debug for periodic, non-real-time data processing where low latency is not required.',
+    },
+    choices: [
+      {
+        id: 'rest',
+        label: 'REST API',
+        description: 'Use batch endpoints to submit and poll for processing results.',
+        pros: [
+          { title: 'Simple to implement', description: '' },
+          { title: 'Built-in caching', description: 'HTTP caching reduces server load' },
+          { title: 'Easy to monitor', description: 'Standard HTTP tools for debugging' },
+        ],
+        cons: [
+          { title: 'Requires polling', description: 'Must poll endpoint for completion status' },
+          { title: 'Not ideal for streaming', description: 'Batch results, not incremental updates' },
+        ],
+        whenToUse: 'Best for periodic batch jobs where results are needed within minutes, not milliseconds.',
+      },
+      {
+        id: 'websocket',
+        label: 'WebSocket',
+        description: 'Use persistent connection to receive real-time processing updates.',
+        pros: [
+          { title: 'Real-time progress', description: 'Live updates as processing advances' },
+          { title: 'Lower polling overhead', description: 'Push model eliminates repeated requests' },
+          { title: 'Immediate results', description: 'Results delivered as soon as available' },
+        ],
+        cons: [
+          { title: 'Complex server setup', description: 'Requires WebSocket server infrastructure' },
+          { title: 'Connection management', description: 'Must handle reconnects and state' },
+          { title: 'Overkill for periodic jobs', description: 'Adds complexity for infrequent tasks' },
+        ],
+      },
     ],
   },
-]
-
-// ─── Drag-drop: match component to role ──────────────────────────────────────
-
-export interface DragItem {
-  id: string
-  label: string
-  correctZone: string
-}
-
-export interface DragZone {
-  id: string
-  label: string
-}
-
-export const agentDragItems: DragItem[] = [
-  { id: 'vector-db', label: 'Vector DB', correctZone: 'memory' },
-  { id: 'code-sandbox', label: 'Code Sandbox', correctZone: 'tool' },
-  { id: 'cot-prompt', label: 'Chain-of-Thought Prompt', correctZone: 'reasoning' },
-  { id: 'web-search', label: 'Web Search API', correctZone: 'tool' },
-  { id: 'embeddings', label: 'Embedding Model', correctZone: 'memory' },
-  { id: 'reward-model', label: 'Reward / Evaluator', correctZone: 'reasoning' },
-]
-
-export const agentDragZones: DragZone[] = [
-  { id: 'memory', label: 'Memory Layer' },
-  { id: 'tool', label: 'Tool Layer' },
-  { id: 'reasoning', label: 'Reasoning Layer' },
 ]

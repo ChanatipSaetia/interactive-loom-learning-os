@@ -16,7 +16,7 @@ vi.mock('../../../../src/components/layout/TopicShell', () => ({
   SectionRenderer: ({ config }: { config: { type?: string } }) => mockSectionRenderer(config),
 }))
 
-function renderDemoTopic(path = '/demo/rest-vs-websocket') {
+function renderDemoTopic(path = '/demo/ai-agent') {
   return render(
     <MemoryRouter initialEntries={[path]}>
       <Routes>
@@ -36,23 +36,20 @@ describe('US-12: Demo Topic Shell & Routing', () => {
     vi.restoreAllMocks()
   })
 
-  it('demo route is available at /demo/rest-vs-websocket', () => {
+  it('demo route is available at /demo/ai-agent', () => {
     const demoRoute = routes.find((r) => r.id === 'demo')
     expect(demoRoute).toBeDefined()
-    expect(demoRoute?.path).toBe('/demo/rest-vs-websocket')
+    expect(demoRoute?.path).toBe('/demo/ai-agent')
   })
 
   it('demo route has all required section types', () => {
     const demoRoute = routes.find((r) => r.id === 'demo')
     expect(demoRoute).toBeDefined()
     const sectionTypes = demoRoute?.sections.map((s) => s.type) || []
-    expect(sectionTypes).toContain('architecture-flow')
-    expect(sectionTypes).toContain('data-flow')
     expect(sectionTypes).toContain('text')
+    expect(sectionTypes).toContain('flowchart')
     expect(sectionTypes).toContain('bullets')
-    expect(sectionTypes).toContain('step-by-step')
-    expect(sectionTypes).toContain('drag-drop')
-    expect(sectionTypes).toContain('choice')
+    expect(sectionTypes).toContain('situation-choice')
   })
 
   it('demo topic renders all sections from config in order', () => {

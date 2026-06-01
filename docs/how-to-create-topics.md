@@ -1,6 +1,6 @@
 # How to Create a New Topic
 
-This guide covers how to add a new topic to the Interactive Loom Learning OS, using the **Text**, **Bullets**, and **Architecture Flow** section types.
+This guide covers how to add a new topic to the Interactive Loom Learning OS, using the **Text**, **Bullets**, **Architecture Flow**, and **Situation Choice** section types.
 
 ---
 
@@ -127,6 +127,106 @@ export const myEdges: ArchEdge[] = [
 - Nodes are placed manually by `x`/`y`; there is no auto-layout for this section type.
 - Use consistent `y` values for nodes on the same horizontal layer.
 - Leave ~180 px of horizontal space between nodes so edge labels have room.
+
+---
+
+### Situation Choice section data
+
+`situation-choice` renders an interactive comparison of options for different scenarios, with an accordion for each choice showing pros and cons.
+
+```ts
+// src/topics/<your-topic>/data.ts
+import type { SituationChoiceSectionProps, ChoiceOption, ChoiceProCon } from '../../sections/situation-choice'
+
+export const mySituations: SituationChoiceSectionProps['situations'] = [
+  {
+    title: 'Real-time Communication',
+    situation: 'You need to build a chat application where messages must appear instantly for all connected users.',
+    recommended: 'websocket',
+    recommendationDetail: {
+      why: 'WebSocket provides full-duplex, persistent connections ideal for low-latency bidirectional messaging.',
+    },
+    choices: [
+      {
+        id: 'rest',
+        label: 'REST API',
+        description: 'Use HTTP request-response pattern for each message.',
+        pros: [
+          { title: 'Simple to implement', description: 'No special server setup needed; standard HTTP tools apply.' },
+          { title: 'Built-in caching', description: 'HTTP caching headers reduce redundant requests.' },
+        ],
+        cons: [
+          { title: 'Higher latency', description: 'Each message requires a new HTTP round-trip.' },
+          { title: 'Requires polling', description: 'Client must repeatedly ask for new messages.' },
+        ],
+        whenToUse: 'Useful when message frequency is low and real-time delivery is not critical.',
+      },
+      {
+        id: 'websocket',
+        label: 'WebSocket',
+        description: 'Use persistent full-duplex connection for instant message delivery.',
+        pros: [
+          { title: 'Real-time delivery', description: 'Messages arrive instantly without polling.' },
+          { title: 'Low latency', description: 'Single persistent connection eliminates HTTP overhead.' },
+        ],
+        cons: [
+          { title: 'Complex server setup', description: 'Requires WebSocket-capable server and connection management.' },
+          { title: 'Connection overhead', description: 'Must handle reconnection, heartbeats, and state.' },
+        ],
+      },
+    ],
+  },
+]
+```
+
+**`ChoiceProCon` fields:**
+
+| Field | Type | Required | Notes |
+|-------|------|----------|-------|
+| `title` | `string` | yes | Short label (2-5 words) shown in accordion and compare view |
+| `description` | `string` | yes | Full explanation shown only in the accordion |
+
+**`ChoiceOption` fields:**
+
+| Field | Type | Required | Notes |
+|-------|------|----------|-------|
+| `id` | `string` | yes | Unique identifier within this situation |
+| `label` | `string` | yes | Display name shown in the accordion trigger |
+| `description` | `string` | yes | Shown inside the expanded accordion |
+| `pros` | `ChoiceProCon[]` | yes | Advantages with title + description |
+| `cons` | `ChoiceProCon[]` | yes | Disadvantages with title + description |
+| `whenToUse` | `string` | no | Guidance shown at the bottom of the accordion |
+
+**`SituationChoice` fields:**
+
+| Field | Type | Required | Notes |
+|-------|------|----------|-------|
+| `title` | `string` | yes | Shown in the situation selector dropdown |
+| `situation` | `string` | yes | The scenario description displayed in a banner |
+| `recommended` | `string` | yes | `id` of the recommended choice |
+| `recommendationDetail` | `{ why: string }` | yes | Explains why this choice is recommended |
+
+**In `sections.ts`:**
+
+```ts
+import type { SectionConfig } from '../../core/registry'
+import { mySituations } from './data'
+
+{
+  type: 'situation-choice',
+  props: {
+    title: 'When to Use REST vs WebSocket',  // section heading (optional)
+    situations: mySituations,
+  },
+},
+```
+
+**Behavior:**
+- Pink border and badge highlight the recommended option
+- "Recommendation" heading appears above the why text
+- Click "Compare All" to see all options side-by-side (shows only pro/con titles)
+- Accordion expand/collapse has smooth animation
+- Multiple situations show a dropdown selector to switch between them
 
 ---
 

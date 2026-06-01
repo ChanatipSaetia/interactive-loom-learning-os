@@ -2,7 +2,7 @@ import { test, expect } from '@playwright/test'
 
 test.describe('Issue #3: TopicRegistry seam', () => {
   test('demo topic loads via TopicRegistry resolution', async ({ page }) => {
-    await page.goto('/demo/rest-vs-websocket')
+    await page.goto('/demo/ai-agent')
 
     const topicPage = page.locator('.topic-page')
     await expect(topicPage).toBeVisible()

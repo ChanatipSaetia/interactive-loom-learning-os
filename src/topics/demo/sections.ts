@@ -6,9 +6,7 @@ import {
   agentTextParagraphs,
   agentLifecycleMarkdown,
   agentCapabilityBullets,
-  orchestrationChoices,
-  agentDragItems,
-  agentDragZones,
+  apiPatternSituations,
 } from './data'
 
 export const demoSections: SectionConfig[] = [
@@ -45,18 +43,10 @@ export const demoSections: SectionConfig[] = [
     },
   },
   {
-    type: 'drag-drop',
+    type: 'situation-choice',
     props: {
-      title: 'Match Component to Layer',
-      items: agentDragItems,
-      zones: agentDragZones,
-    },
-  },
-  {
-    type: 'choice',
-    props: {
-      title: 'Orchestration Strategy',
-      options: orchestrationChoices,
+      title: 'Communication Pattern Choice',
+      situations: apiPatternSituations,
     },
   },
 ]

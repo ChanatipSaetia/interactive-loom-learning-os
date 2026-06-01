@@ -1,14 +1,14 @@
 import type { SectionConfig } from '../../core/registry'
 import {
-  agentNodes,
-  agentEdges,
-  agentJourneys,
+  aiAgentNodes,
+  aiAgentEdges,
+  aiAgentJourneys,
+  aiAgentSituations,
+} from './data'
+import {
   agentTextParagraphs,
   agentLifecycleMarkdown,
   agentCapabilityBullets,
-  orchestrationChoices,
-  agentDragItems,
-  agentDragZones,
 } from '../demo/data'
 
 export const aiAgentSections: SectionConfig[] = [
@@ -24,9 +24,9 @@ export const aiAgentSections: SectionConfig[] = [
     type: 'flowchart',
     props: {
       title: 'AI Agent Architecture',
-      nodes: agentNodes,
-      edges: agentEdges,
-      journeys: agentJourneys,
+      nodes: aiAgentNodes,
+      edges: aiAgentEdges,
+      journeys: aiAgentJourneys,
     },
   },
   {
@@ -45,18 +45,10 @@ export const aiAgentSections: SectionConfig[] = [
     },
   },
   {
-    type: 'drag-drop',
+    type: 'situation-choice',
     props: {
-      title: 'Match Component to Layer',
-      items: agentDragItems,
-      zones: agentDragZones,
-    },
-  },
-  {
-    type: 'choice',
-    props: {
-      title: 'Orchestration Strategy',
-      options: orchestrationChoices,
+      title: 'AI Agent Design Decisions',
+      situations: aiAgentSituations,
     },
   },
 ]

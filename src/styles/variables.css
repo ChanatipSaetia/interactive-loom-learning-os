@@ -42,6 +42,7 @@
   --soft-stone:    var(--ctp-surface0);    /* elevated surface (cards, table header) */
   --pale-green:    rgba(166, 209, 137, 0.13);
   --pale-blue:     rgba(140, 170, 238, 0.16); /* selection highlight */
+  --pale-pink:     rgba(244, 184, 228, 0.13);
 
   --hairline:      var(--ctp-surface2);    /* strong border / divider */
   --border-light:  var(--ctp-surface1);    /* subtle border */
