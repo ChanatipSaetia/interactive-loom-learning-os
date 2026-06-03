@@ -1,6 +1,9 @@
 import type { SectionConfig } from './registry'
 import { demoSections } from '../topics/demo/sections'
 import { aiAgentSections } from '../topics/ai-agent/sections'
+import { aiOperatingModelSections } from '../topics/ai-operating-model/sections'
+import { agentopsSections } from '../topics/agentops/sections'
+import { aiGovernanceSections } from '../topics/ai-governance/sections'
 
 export interface TopicRoute {
   id: string
@@ -27,5 +30,29 @@ export const routes: TopicRoute[] = [
     category: 'Architecture',
     description: 'Explore AI Agent system architecture with LLM, tools, and memory',
     sections: aiAgentSections,
+  },
+  {
+    id: 'ai-operating-model',
+    label: 'AI Operating Model',
+    path: '/topics/ai-operating-model',
+    category: 'Governance',
+    description: 'Design decisions, autonomy tiers, HITL oversight patterns, and production deployment controls for AI agents',
+    sections: aiOperatingModelSections,
+  },
+  {
+    id: 'agentops',
+    label: 'AgentOps Framework',
+    path: '/topics/agentops',
+    category: 'Operations',
+    description: 'Four-phase operational lifecycle for LLM agents: monitoring, anomaly detection, root cause analysis, and resolution',
+    sections: agentopsSections,
+  },
+  {
+    id: 'ai-governance',
+    label: 'AI Governance',
+    path: '/topics/ai-governance',
+    category: 'Governance',
+    description: 'Risk taxonomy, intervention categories, governance frameworks (OWASP, SAIF, ARC), and design decisions for autonomous AI systems',
+    sections: aiGovernanceSections,
   },
 ]

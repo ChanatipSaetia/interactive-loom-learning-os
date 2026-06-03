@@ -12,6 +12,9 @@ import './sections/flowchart'
 import './sections/situation-choice'
 import './topics/demo'
 import './topics/ai-agent'
+import './topics/ai-operating-model'
+import './topics/agentops'
+import './topics/ai-governance'
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
