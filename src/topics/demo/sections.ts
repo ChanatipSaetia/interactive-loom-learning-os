@@ -6,7 +6,7 @@ import {
   agentTextParagraphs,
   agentLifecycleMarkdown,
   agentCapabilityBullets,
-  apiPatternSituations,
+  apiPatternScenarios,
   tradeoffSandboxScenarios,
   taxonomyCategories,
 } from './data'
@@ -45,10 +45,10 @@ export const demoSections: SectionConfig[] = [
     },
   },
   {
-    type: 'situation-choice',
+    type: 'tradeoff-sandbox',
     props: {
       title: 'Communication Pattern Choice',
-      situations: apiPatternSituations,
+      scenarios: apiPatternScenarios,
     },
   },
   {

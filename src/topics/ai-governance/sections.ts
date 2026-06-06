@@ -3,7 +3,7 @@ import {
   governanceNodes,
   governanceEdges,
   governanceJourneys,
-  governanceSituations,
+  governanceScenarios,
   governanceTextParagraphs,
   governanceFrameworksParagraphs,
   governanceInterventionBullets,
@@ -62,10 +62,10 @@ export const aiGovernanceSections: SectionConfig[] = [
     },
   },
   {
-    type: 'situation-choice',
+    type: 'tradeoff-sandbox',
     props: {
       title: 'AI Governance Design Decisions',
-      situations: governanceSituations,
+      scenarios: governanceScenarios,
     },
   },
 ]

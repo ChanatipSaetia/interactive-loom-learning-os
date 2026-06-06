@@ -49,7 +49,7 @@ describe('US-12: Demo Topic Shell & Routing', () => {
     expect(sectionTypes).toContain('text')
     expect(sectionTypes).toContain('flowchart')
     expect(sectionTypes).toContain('bullets')
-    expect(sectionTypes).toContain('situation-choice')
+    expect(sectionTypes).toContain('tradeoff-sandbox')
   })
 
   it('demo topic renders all sections from config in order', () => {

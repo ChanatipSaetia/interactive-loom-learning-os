@@ -3,7 +3,7 @@ import {
   aiAgentNodes,
   aiAgentEdges,
   aiAgentJourneys,
-  aiAgentSituations,
+  aiAgentScenarios,
 } from './data'
 import {
   agentTextParagraphs,
@@ -45,10 +45,10 @@ export const aiAgentSections: SectionConfig[] = [
     },
   },
   {
-    type: 'situation-choice',
+    type: 'tradeoff-sandbox',
     props: {
       title: 'AI Agent Design Decisions',
-      situations: aiAgentSituations,
+      scenarios: aiAgentScenarios,
     },
   },
 ]

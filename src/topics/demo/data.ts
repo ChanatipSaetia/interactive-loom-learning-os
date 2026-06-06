@@ -1,5 +1,4 @@
 import type { FlowchartNode, FlowchartEdge, Journey } from '../../sections/flowchart'
-import type { SituationChoice } from '../../sections/situation-choice'
 import type { TradeoffScenario } from '../../sections/tradeoff-sandbox'
 import type { TaxonomyCategory } from '../../sections/taxonomy-browser'
 import type { ComponentType } from 'react'
@@ -581,83 +580,98 @@ export const agentCapabilityBullets: BulletItem[] = [
   { text: 'Multi-agent coordination (delegating sub-tasks)' },
 ]
 
-// ─── Situation Choice: API communication pattern ──────────────────────────────
+// ─── Tradeoff Sandbox: API communication pattern ──────────────────────────────
 
-export const apiPatternSituations: SituationChoice[] = [
+export const apiPatternScenarios: TradeoffScenario[] = [
   {
-    title: 'Real-time Communication',
-    situation: 'You need to build a chat application where messages must appear instantly for all connected users.',
-    recommended: 'websocket',
-    recommendationDetail: {
-      why: 'WebSocket provides full-duplex, persistent connections ideal for low-latency bidirectional messaging required in real-time chat.',
-    },
-    choices: [
-      {
-        id: 'rest',
-        label: 'REST API',
-        description: 'Use HTTP request-response pattern for each message.',
-        pros: [
-          { title: 'Simple to implement', description: '' },
-          { title: 'Built-in caching', description: 'HTTP caching reduces server load' },
-        ],
-        cons: [
-          { title: 'Higher latency', description: 'Each message requires a new HTTP round-trip' },
-          { title: 'Requires polling', description: 'Client must poll for new messages' },
-        ],
-        whenToUse: 'Useful when message frequency is low and real-time delivery is not critical.',
-      },
-      {
-        id: 'websocket',
-        label: 'WebSocket',
-        description: 'Use persistent full-duplex connection for instant message delivery.',
-        pros: [
-          { title: 'Real-time delivery', description: 'Messages arrive instantly without polling' },
-          { title: 'Low latency', description: 'Persistent connection eliminates HTTP overhead' },
-          { title: 'Efficient for frequent messages', description: 'Single connection handles bidirectional traffic' },
-        ],
-        cons: [
-          { title: 'Complex server setup', description: 'Requires WebSocket server infrastructure' },
-          { title: 'Connection management', description: 'Must handle reconnects and state' },
-        ],
-      },
+    id: 'api-pattern',
+    title: 'API Communication Pattern',
+    description: 'Evaluate communication patterns for real-time and batch workloads.',
+    metrics: [
+      { id: 'latency', label: 'Low Latency', baseValue: 50, min: 0, max: 100, direction: 'higher' },
+      { id: 'throughput', label: 'Throughput', baseValue: 50, min: 0, max: 100, direction: 'higher' },
+      { id: 'complexity', label: 'Complexity', baseValue: 30, min: 0, max: 100, direction: 'lower' },
+      { id: 'cost', label: 'Cost Efficiency', baseValue: 50, min: 0, max: 100, direction: 'higher' },
     ],
-  },
-  {
-    title: 'Batch Data Processing',
-    situation: 'You need to process large datasets periodically, such as generating daily reports from database exports.',
-    recommended: 'rest',
-    recommendationDetail: {
-      why: 'REST with batch endpoints is simpler to implement and debug for periodic, non-real-time data processing where low latency is not required.',
-    },
-    choices: [
+    steps: [
       {
-        id: 'rest',
-        label: 'REST API',
-        description: 'Use batch endpoints to submit and poll for processing results.',
-        pros: [
-          { title: 'Simple to implement', description: '' },
-          { title: 'Built-in caching', description: 'HTTP caching reduces server load' },
-          { title: 'Easy to monitor', description: 'Standard HTTP tools for debugging' },
+        id: 'realtime-comm',
+        title: 'Real-time Communication',
+        description: 'You need to build a chat application where messages must appear instantly for all connected users.',
+        recommended: 'websocket',
+        choices: [
+          {
+            id: 'rest',
+            label: 'REST API',
+            description: 'Use HTTP request-response pattern for each message.',
+            metrics: { latency: -20, throughput: -10, complexity: -10, cost: 5 },
+            pros: [
+              { title: 'Simple to implement', description: 'Straightforward HTTP calls' },
+              { title: 'Built-in caching', description: 'HTTP caching reduces server load' },
+            ],
+            cons: [
+              { title: 'Higher latency', description: 'Each message requires a new HTTP round-trip' },
+              { title: 'Requires polling', description: 'Client must poll for new messages' },
+            ],
+            whenToUse: 'Useful when message frequency is low and real-time delivery is not critical.',
+          },
+          {
+            id: 'websocket',
+            label: 'WebSocket',
+            description: 'Use persistent full-duplex connection for instant message delivery.',
+            metrics: { latency: 25, throughput: 20, complexity: 15, cost: -5 },
+            pros: [
+              { title: 'Real-time delivery', description: 'Messages arrive instantly without polling' },
+              { title: 'Low latency', description: 'Persistent connection eliminates HTTP overhead' },
+              { title: 'Efficient for frequent messages', description: 'Single connection handles bidirectional traffic' },
+            ],
+            cons: [
+              { title: 'Complex server setup', description: 'Requires WebSocket server infrastructure' },
+              { title: 'Connection management', description: 'Must handle reconnects and state' },
+            ],
+            whyThisFits: 'WebSocket provides full-duplex, persistent connections ideal for low-latency bidirectional messaging required in real-time chat.',
+          },
         ],
-        cons: [
-          { title: 'Requires polling', description: 'Must poll endpoint for completion status' },
-          { title: 'Not ideal for streaming', description: 'Batch results, not incremental updates' },
-        ],
-        whenToUse: 'Best for periodic batch jobs where results are needed within minutes, not milliseconds.',
       },
       {
-        id: 'websocket',
-        label: 'WebSocket',
-        description: 'Use persistent connection to receive real-time processing updates.',
-        pros: [
-          { title: 'Real-time progress', description: 'Live updates as processing advances' },
-          { title: 'Lower polling overhead', description: 'Push model eliminates repeated requests' },
-          { title: 'Immediate results', description: 'Results delivered as soon as available' },
-        ],
-        cons: [
-          { title: 'Complex server setup', description: 'Requires WebSocket server infrastructure' },
-          { title: 'Connection management', description: 'Must handle reconnects and state' },
-          { title: 'Overkill for periodic jobs', description: 'Adds complexity for infrequent tasks' },
+        id: 'batch-processing',
+        title: 'Batch Data Processing',
+        description: 'You need to process large datasets periodically, such as generating daily reports from database exports.',
+        recommended: 'rest',
+        choices: [
+          {
+            id: 'rest',
+            label: 'REST API',
+            description: 'Use batch endpoints to submit and poll for processing results.',
+            metrics: { latency: -5, throughput: 15, complexity: -15, cost: 15 },
+            pros: [
+              { title: 'Simple to implement', description: 'Standard HTTP methods' },
+              { title: 'Built-in caching', description: 'HTTP caching reduces server load' },
+              { title: 'Easy to monitor', description: 'Standard HTTP tools for debugging' },
+            ],
+            cons: [
+              { title: 'Requires polling', description: 'Must poll endpoint for completion status' },
+              { title: 'Not ideal for streaming', description: 'Batch results, not incremental updates' },
+            ],
+            whyThisFits: 'REST with batch endpoints is simpler to implement and debug for periodic, non-real-time data processing where low latency is not required.',
+            whenToUse: 'Best for periodic batch jobs where results are needed within minutes, not milliseconds.',
+          },
+          {
+            id: 'websocket',
+            label: 'WebSocket',
+            description: 'Use persistent connection to receive real-time processing updates.',
+            metrics: { latency: 15, throughput: 5, complexity: 15, cost: -10 },
+            pros: [
+              { title: 'Real-time progress', description: 'Live updates as processing advances' },
+              { title: 'Lower polling overhead', description: 'Push model eliminates repeated requests' },
+              { title: 'Immediate results', description: 'Results delivered as soon as available' },
+            ],
+            cons: [
+              { title: 'Complex server setup', description: 'Requires WebSocket server infrastructure' },
+              { title: 'Connection management', description: 'Must handle reconnects and state' },
+              { title: 'Overkill for periodic jobs', description: 'Adds complexity for infrequent tasks' },
+            ],
+          },
         ],
       },
     ],

@@ -8,7 +8,7 @@ import {
   anomalyTaxonomyBullets,
   rcaStrategiesBullets,
   opsComparisonBullets,
-  agentopsSituations,
+  agentopsScenarios,
 } from './data'
 
 export const agentopsSections: SectionConfig[] = [
@@ -61,10 +61,10 @@ export const agentopsSections: SectionConfig[] = [
     },
   },
   {
-    type: 'situation-choice',
+    type: 'tradeoff-sandbox',
     props: {
       title: 'AgentOps Design Decisions',
-      situations: agentopsSituations,
+      scenarios: agentopsScenarios,
     },
   },
 ]
