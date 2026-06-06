@@ -1,7 +1,7 @@
 import { test, expect } from '@playwright/test'
 
 test.describe('Issue #25: TradeoffSandbox Testing Suite', () => {
-  const baseUrl = '/demo/ai-agent'
+  const baseUrl = '/#/demo/ai-agent'
 
   // ─── Reset to Optimal State ─────────────────────────────────────
 
@@ -319,5 +319,111 @@ test.describe('Issue #25: TradeoffSandbox Testing Suite', () => {
     await expect(page.getByTestId('metric-value-performance')).toHaveText('60')
 
     await expect(page.getByTestId('progress-indicator')).toHaveText('3 / 3')
+  })
+
+  // ─── Issue #35: Horizontal Layout & Dashed Cards ─────────────────
+
+  test('steps-panel uses horizontal layout', async ({ page }) => {
+    await page.goto(baseUrl)
+
+    const stepsPanel = page.getByTestId('steps-panel')
+    const display = await stepsPanel.evaluate((el) => getComputedStyle(el).display)
+    expect(display).toBe('flex')
+
+    const flexDirection = await stepsPanel.evaluate((el) => getComputedStyle(el).flexDirection)
+    expect(flexDirection).toBe('row')
+
+    const flexWrap = await stepsPanel.evaluate((el) => getComputedStyle(el).flexWrap)
+    expect(flexWrap).toBe('nowrap')
+
+    const overflowX = await stepsPanel.evaluate((el) => getComputedStyle(el).overflowX)
+    expect(overflowX).toBe('auto')
+  })
+
+  test('unselected TradeoffStep cards have dashed outline', async ({ page }) => {
+    await page.goto(baseUrl)
+
+    // All three steps should be unselected initially
+    await expect(page.getByTestId('step-section-0-0')).toHaveClass(/step-section-unselected/)
+    await expect(page.getByTestId('step-section-0-1')).toHaveClass(/step-section-unselected/)
+    await expect(page.getByTestId('step-section-0-2')).toHaveClass(/step-section-unselected/)
+
+    // Verify dashed border style
+    const step1 = page.getByTestId('step-section-0-0')
+    const borderStyle = await step1.evaluate((el) => getComputedStyle(el).borderStyle)
+    expect(borderStyle).toBe('dashed')
+  })
+
+  test('selected TradeoffStep card loses dashed outline', async ({ page }) => {
+    await page.goto(baseUrl)
+
+    // Initially dashed
+    await expect(page.getByTestId('step-section-0-0')).toHaveClass(/step-section-unselected/)
+
+    // Select a choice
+    await page.getByTestId('choice-card-0-0-react-spa').click()
+
+    // Should no longer have dashed class
+    await expect(page.getByTestId('step-section-0-0')).not.toHaveClass(/step-section-unselected/)
+
+    // Border should be solid
+    const step1 = page.getByTestId('step-section-0-0')
+    const borderStyle = await step1.evaluate((el) => getComputedStyle(el).borderStyle)
+    expect(borderStyle).toBe('solid')
+  })
+
+  test('step cards are fixed-width compact cards', async ({ page }) => {
+    await page.goto(baseUrl)
+
+    const step1 = page.getByTestId('step-section-0-0')
+    const width = await step1.evaluate((el) => getComputedStyle(el).width)
+    expect(width).toBe('320px')
+
+    const flexShrink = await step1.evaluate((el) => getComputedStyle(el).flexShrink)
+    expect(flexShrink).toBe('0')
+  })
+
+  test('horizontal layout preserves step order', async ({ page }) => {
+    await page.goto(baseUrl)
+
+    // Wait for tradeoff sandbox section to render
+    await expect(page.getByTestId('tradeoff-sandbox')).toBeVisible()
+
+    const steps = page.locator('[data-testid^="step-section-0-"]')
+    const count = await steps.count()
+    expect(count).toBe(3)
+
+    // Verify order
+    await expect(steps.nth(0)).toContainText('Frontend Framework')
+    await expect(steps.nth(1)).toContainText('Backend Architecture')
+    await expect(steps.nth(2)).toContainText('Data Storage')
+  })
+
+  test('horizontal scroll works at tablet viewport', async ({ page }) => {
+    await page.setViewportSize({ width: 768, height: 1024 })
+    await page.goto(baseUrl)
+
+    const stepsPanel = page.getByTestId('steps-panel')
+    const scrollWidth = await stepsPanel.evaluate((el) => el.scrollWidth)
+    const clientWidth = await stepsPanel.evaluate((el) => el.clientWidth)
+
+    // Total content width should exceed viewport, requiring horizontal scroll
+    expect(scrollWidth).toBeGreaterThan(clientWidth)
+
+    // All step sections should still be visible (scrollable)
+    await expect(page.getByTestId('step-section-0-0')).toBeVisible()
+    await expect(page.getByTestId('step-section-0-1')).toBeVisible()
+    await expect(page.getByTestId('step-section-0-2')).toBeVisible()
+  })
+
+  test('removing choice restores dashed outline', async ({ page }) => {
+    await page.goto(baseUrl)
+
+    // Select then remove
+    await page.getByTestId('choice-card-0-0-react-spa').click()
+    await expect(page.getByTestId('step-section-0-0')).not.toHaveClass(/step-section-unselected/)
+
+    await page.getByTestId('drop-zone-remove-0-0').click()
+    await expect(page.getByTestId('step-section-0-0')).toHaveClass(/step-section-unselected/)
   })
 })

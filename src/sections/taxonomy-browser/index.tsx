@@ -210,7 +210,6 @@ function TaxonomyBrowserSection({ title, categories }: TaxonomyBrowserSectionPro
         opacity: [0, 1],
         translateY: [60, 0],
         scale: [0.9, 1],
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
         delay: (_el: unknown, i: number) => i * 100,
         duration: 500,
         easing: springEasing,

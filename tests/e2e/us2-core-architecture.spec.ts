@@ -8,7 +8,7 @@ test.describe('US-2: Core Architecture + Section Registry', () => {
     await expect(topicLink).toBeVisible()
     await topicLink.click()
 
-    await expect(page).toHaveURL('/demo/ai-agent')
+    await expect(page).toHaveURL('/#/demo/ai-agent')
 
     const topicPage = page.locator('.topic-page')
     await expect(topicPage).toBeVisible()

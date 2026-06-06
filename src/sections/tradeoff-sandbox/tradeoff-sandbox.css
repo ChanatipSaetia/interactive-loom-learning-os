@@ -476,8 +476,11 @@
 
 .steps-panel {
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  overflow-x: auto;
   gap: var(--spacing-lg);
+  padding-bottom: var(--spacing-sm);
 }
 
 .step-section {
@@ -485,6 +488,13 @@
   border-radius: var(--radius-sm);
   padding: var(--spacing-lg);
   background-color: var(--ctp-base);
+  flex-shrink: 0;
+  width: 320px;
+  transition: border-color 0.15s ease;
+}
+
+.step-section-unselected {
+  border: 2px dashed var(--hairline);
 }
 
 .step-title {

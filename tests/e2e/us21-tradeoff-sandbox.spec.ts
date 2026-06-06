@@ -2,14 +2,14 @@ import { test, expect } from '@playwright/test'
 
 test.describe('Issue #21: TradeoffSandbox Section', () => {
   test('renders tradeoff sandbox section', async ({ page }) => {
-    await page.goto('/demo/ai-agent')
+    await page.goto('/#/demo/ai-agent')
 
     const section = page.getByTestId('tradeoff-sandbox')
     await expect(section).toBeVisible()
   })
 
   test('renders section title', async ({ page }) => {
-    await page.goto('/demo/ai-agent')
+    await page.goto('/#/demo/ai-agent')
 
     const title = page.getByTestId('tradeoff-sandbox-title')
     await expect(title).toBeVisible()
@@ -17,7 +17,7 @@ test.describe('Issue #21: TradeoffSandbox Section', () => {
   })
 
   test('renders scenario dropdown with multiple scenarios', async ({ page }) => {
-    await page.goto('/demo/ai-agent')
+    await page.goto('/#/demo/ai-agent')
 
     const dropdown = page.getByTestId('scenario-dropdown')
     await expect(dropdown).toBeVisible()
@@ -26,14 +26,14 @@ test.describe('Issue #21: TradeoffSandbox Section', () => {
   })
 
   test('dropdown shows first scenario by default', async ({ page }) => {
-    await page.goto('/demo/ai-agent')
+    await page.goto('/#/demo/ai-agent')
 
     const select = page.getByTestId('scenario-select')
     await expect(select).toContainText('Enterprise Web Application')
   })
 
   test('clicking dropdown opens scenario options', async ({ page }) => {
-    await page.goto('/demo/ai-agent')
+    await page.goto('/#/demo/ai-agent')
 
     await page.getByTestId('scenario-select').click()
 
@@ -46,7 +46,7 @@ test.describe('Issue #21: TradeoffSandbox Section', () => {
   })
 
   test('selecting scenario updates banner description', async ({ page }) => {
-    await page.goto('/demo/ai-agent')
+    await page.goto('/#/demo/ai-agent')
 
     await expect(page.getByTestId('scenario-banner')).toContainText('React SPA')
     await page.getByTestId('scenario-select').click()
@@ -56,7 +56,7 @@ test.describe('Issue #21: TradeoffSandbox Section', () => {
   })
 
   test('selecting scenario resets metrics to base values', async ({ page }) => {
-    await page.goto('/demo/ai-agent')
+    await page.goto('/#/demo/ai-agent')
 
     // Select a choice first
     await page.getByTestId('choice-card-0-0-react-spa').click()
@@ -71,7 +71,7 @@ test.describe('Issue #21: TradeoffSandbox Section', () => {
   })
 
   test('selecting option closes dropdown', async ({ page }) => {
-    await page.goto('/demo/ai-agent')
+    await page.goto('/#/demo/ai-agent')
 
     await page.getByTestId('scenario-select').click()
     await expect(page.getByRole('option', { name: 'Enterprise Web Application' })).toBeVisible()
@@ -84,7 +84,7 @@ test.describe('Issue #21: TradeoffSandbox Section', () => {
   // ─── Metric Dashboard ──────────────────────────────────
 
   test('renders metric dashboard', async ({ page }) => {
-    await page.goto('/demo/ai-agent')
+    await page.goto('/#/demo/ai-agent')
 
     const dashboard = page.getByTestId('metric-dashboard')
     await expect(dashboard).toBeVisible()
@@ -92,7 +92,7 @@ test.describe('Issue #21: TradeoffSandbox Section', () => {
   })
 
   test('renders all metric bars for current scenario', async ({ page }) => {
-    await page.goto('/demo/ai-agent')
+    await page.goto('/#/demo/ai-agent')
 
     await expect(page.getByTestId('metric-bar-performance')).toBeVisible()
     await expect(page.getByTestId('metric-bar-scalability')).toBeVisible()
@@ -101,7 +101,7 @@ test.describe('Issue #21: TradeoffSandbox Section', () => {
   })
 
   test('shows base metric values', async ({ page }) => {
-    await page.goto('/demo/ai-agent')
+    await page.goto('/#/demo/ai-agent')
 
     await expect(page.getByTestId('metric-value-performance')).toHaveText('50')
     await expect(page.getByTestId('metric-value-scalability')).toHaveText('50')
@@ -110,14 +110,14 @@ test.describe('Issue #21: TradeoffSandbox Section', () => {
   })
 
   test('shows metric labels', async ({ page }) => {
-    await page.goto('/demo/ai-agent')
+    await page.goto('/#/demo/ai-agent')
 
     await expect(page.getByTestId('metric-label-performance')).toContainText('Performance')
     await expect(page.getByTestId('metric-label-scalability')).toContainText('Scalability')
   })
 
   test('shows progress indicator', async ({ page }) => {
-    await page.goto('/demo/ai-agent')
+    await page.goto('/#/demo/ai-agent')
 
     await expect(page.getByTestId('progress-indicator')).toHaveText('0 / 3')
   })
@@ -125,14 +125,14 @@ test.describe('Issue #21: TradeoffSandbox Section', () => {
   // ─── Steps Panel ───────────────────────────────────────
 
   test('renders steps panel', async ({ page }) => {
-    await page.goto('/demo/ai-agent')
+    await page.goto('/#/demo/ai-agent')
 
     const panel = page.getByTestId('steps-panel')
     await expect(panel).toBeVisible()
   })
 
   test('renders all step sections', async ({ page }) => {
-    await page.goto('/demo/ai-agent')
+    await page.goto('/#/demo/ai-agent')
 
     await expect(page.getByTestId('step-section-0-0')).toBeVisible()
     await expect(page.getByTestId('step-section-0-1')).toBeVisible()
@@ -140,7 +140,7 @@ test.describe('Issue #21: TradeoffSandbox Section', () => {
   })
 
   test('renders step titles', async ({ page }) => {
-    await page.goto('/demo/ai-agent')
+    await page.goto('/#/demo/ai-agent')
 
     await expect(page.getByTestId('step-title-0-0')).toContainText('Frontend Framework')
     await expect(page.getByTestId('step-title-0-1')).toContainText('Backend Architecture')
@@ -148,21 +148,21 @@ test.describe('Issue #21: TradeoffSandbox Section', () => {
   })
 
   test('renders choice cards in tray', async ({ page }) => {
-    await page.goto('/demo/ai-agent')
+    await page.goto('/#/demo/ai-agent')
 
     await expect(page.getByTestId('choice-card-0-0-react-spa')).toBeVisible()
     await expect(page.getByTestId('choice-card-0-0-next-ssr')).toBeVisible()
   })
 
   test('renders choice card labels', async ({ page }) => {
-    await page.goto('/demo/ai-agent')
+    await page.goto('/#/demo/ai-agent')
 
     await expect(page.getByTestId('choice-card-label-0-0-react-spa')).toContainText('React SPA')
     await expect(page.getByTestId('choice-card-label-0-0-next-ssr')).toContainText('Next.js SSR')
   })
 
   test('renders drop zone with placeholder', async ({ page }) => {
-    await page.goto('/demo/ai-agent')
+    await page.goto('/#/demo/ai-agent')
 
     await expect(page.getByTestId('drop-zone-0-0')).toBeVisible()
     await expect(page.getByTestId('drop-zone-placeholder-0-0')).toContainText('Drag or click a choice here')
@@ -171,7 +171,7 @@ test.describe('Issue #21: TradeoffSandbox Section', () => {
   // ─── Click-to-Drop ────────────────────────────────────
 
   test('clicking choice card selects it in drop zone', async ({ page }) => {
-    await page.goto('/demo/ai-agent')
+    await page.goto('/#/demo/ai-agent')
 
     await page.getByTestId('choice-card-0-0-react-spa').click()
 
@@ -181,7 +181,7 @@ test.describe('Issue #21: TradeoffSandbox Section', () => {
   })
 
   test('selected choice card shows placed badge', async ({ page }) => {
-    await page.goto('/demo/ai-agent')
+    await page.goto('/#/demo/ai-agent')
 
     await page.getByTestId('choice-card-0-0-react-spa').click()
 
@@ -191,7 +191,7 @@ test.describe('Issue #21: TradeoffSandbox Section', () => {
   })
 
   test('placed card is disabled in browser', async ({ page }) => {
-    await page.goto('/demo/ai-agent')
+    await page.goto('/#/demo/ai-agent')
 
     await page.getByTestId('choice-card-0-0-react-spa').click()
     await expect(page.getByTestId('drop-zone-content-0-0')).toBeVisible()
@@ -203,7 +203,7 @@ test.describe('Issue #21: TradeoffSandbox Section', () => {
   })
 
   test('selecting different choice replaces previous', async ({ page }) => {
-    await page.goto('/demo/ai-agent')
+    await page.goto('/#/demo/ai-agent')
 
     await page.getByTestId('choice-card-0-0-react-spa').click()
     await expect(page.getByTestId('drop-zone-content-0-0')).toContainText('React SPA')
@@ -213,14 +213,14 @@ test.describe('Issue #21: TradeoffSandbox Section', () => {
   })
 
   test('drop zone shows remove button when filled', async ({ page }) => {
-    await page.goto('/demo/ai-agent')
+    await page.goto('/#/demo/ai-agent')
 
     await page.getByTestId('choice-card-0-0-react-spa').click()
     await expect(page.getByTestId('drop-zone-remove-0-0')).toBeVisible()
   })
 
   test('clicking remove button clears drop zone', async ({ page }) => {
-    await page.goto('/demo/ai-agent')
+    await page.goto('/#/demo/ai-agent')
 
     await page.getByTestId('choice-card-0-0-react-spa').click()
     await expect(page.getByTestId('drop-zone-content-0-0')).toBeVisible()
@@ -232,7 +232,7 @@ test.describe('Issue #21: TradeoffSandbox Section', () => {
   // ─── Metric Updates ────────────────────────────────────
 
   test('metrics update when choice is placed', async ({ page }) => {
-    await page.goto('/demo/ai-agent')
+    await page.goto('/#/demo/ai-agent')
 
     await expect(page.getByTestId('metric-value-performance')).toHaveText('50')
     await page.getByTestId('choice-card-0-0-react-spa').click()
@@ -240,7 +240,7 @@ test.describe('Issue #21: TradeoffSandbox Section', () => {
   })
 
   test('metrics update when choice changes', async ({ page }) => {
-    await page.goto('/demo/ai-agent')
+    await page.goto('/#/demo/ai-agent')
 
     await page.getByTestId('choice-card-0-0-react-spa').click()
     await expect(page.getByTestId('metric-value-performance')).toHaveText('60')
@@ -250,7 +250,7 @@ test.describe('Issue #21: TradeoffSandbox Section', () => {
   })
 
   test('metrics reset when choice is removed', async ({ page }) => {
-    await page.goto('/demo/ai-agent')
+    await page.goto('/#/demo/ai-agent')
 
     await page.getByTestId('choice-card-0-0-react-spa').click()
     await expect(page.getByTestId('metric-value-performance')).toHaveText('60')
@@ -262,7 +262,7 @@ test.describe('Issue #21: TradeoffSandbox Section', () => {
   // ─── Progress Updates ──────────────────────────────────
 
   test('progress updates when choice placed', async ({ page }) => {
-    await page.goto('/demo/ai-agent')
+    await page.goto('/#/demo/ai-agent')
 
     await expect(page.getByTestId('progress-indicator')).toHaveText('0 / 3')
     await page.getByTestId('choice-card-0-0-react-spa').click()
@@ -270,7 +270,7 @@ test.describe('Issue #21: TradeoffSandbox Section', () => {
   })
 
   test('progress accumulates across steps', async ({ page }) => {
-    await page.goto('/demo/ai-agent')
+    await page.goto('/#/demo/ai-agent')
 
     await page.getByTestId('choice-card-0-0-react-spa').click()
     await expect(page.getByTestId('progress-indicator')).toHaveText('1 / 3')
@@ -282,7 +282,7 @@ test.describe('Issue #21: TradeoffSandbox Section', () => {
   // ─── Drag and Drop ─────────────────────────────────────
 
   test('choice card is draggable', async ({ page }) => {
-    await page.goto('/demo/ai-agent')
+    await page.goto('/#/demo/ai-agent')
 
     const card = page.getByTestId('choice-card-0-0-react-spa')
     const draggable = await card.getAttribute('draggable')
@@ -290,7 +290,7 @@ test.describe('Issue #21: TradeoffSandbox Section', () => {
   })
 
   test('dragging choice to drop zone selects it', async ({ page }) => {
-    await page.goto('/demo/ai-agent')
+    await page.goto('/#/demo/ai-agent')
 
     const card = page.getByTestId('choice-card-0-0-react-spa')
     const dropZone = page.getByTestId('drop-zone-0-0')
@@ -304,7 +304,7 @@ test.describe('Issue #21: TradeoffSandbox Section', () => {
   // ─── Compare All Modal ─────────────────────────────────
 
   test('Compare All button is rendered', async ({ page }) => {
-    await page.goto('/demo/ai-agent')
+    await page.goto('/#/demo/ai-agent')
 
     const button = page.getByTestId('compare-all-button')
     await expect(button).toBeVisible()
@@ -312,7 +312,7 @@ test.describe('Issue #21: TradeoffSandbox Section', () => {
   })
 
   test('clicking Compare All opens modal', async ({ page }) => {
-    await page.goto('/demo/ai-agent')
+    await page.goto('/#/demo/ai-agent')
 
     await page.getByTestId('compare-all-button').click()
 
@@ -322,7 +322,7 @@ test.describe('Issue #21: TradeoffSandbox Section', () => {
   })
 
   test('modal shows step sections', async ({ page }) => {
-    await page.goto('/demo/ai-agent')
+    await page.goto('/#/demo/ai-agent')
     await page.getByTestId('compare-all-button').click()
 
     await expect(page.getByTestId('compare-step-0')).toBeVisible()
@@ -330,7 +330,7 @@ test.describe('Issue #21: TradeoffSandbox Section', () => {
   })
 
   test('modal shows 2-column grid with all choices', async ({ page }) => {
-    await page.goto('/demo/ai-agent')
+    await page.goto('/#/demo/ai-agent')
     await page.getByTestId('compare-all-button').click()
 
     await expect(page.getByTestId('compare-grid-0')).toBeVisible()
@@ -339,7 +339,7 @@ test.describe('Issue #21: TradeoffSandbox Section', () => {
   })
 
   test('modal shows choice labels', async ({ page }) => {
-    await page.goto('/demo/ai-agent')
+    await page.goto('/#/demo/ai-agent')
     await page.getByTestId('compare-all-button').click()
 
     await expect(page.getByTestId('compare-card-label-0-react-spa')).toContainText('React SPA')
@@ -347,7 +347,7 @@ test.describe('Issue #21: TradeoffSandbox Section', () => {
   })
 
   test('modal shows pros with Check icon', async ({ page }) => {
-    await page.goto('/demo/ai-agent')
+    await page.goto('/#/demo/ai-agent')
     await page.getByTestId('compare-all-button').click()
 
     await expect(page.getByTestId('compare-pros-0-react-spa')).toBeVisible()
@@ -355,7 +355,7 @@ test.describe('Issue #21: TradeoffSandbox Section', () => {
   })
 
   test('modal shows cons with X icon', async ({ page }) => {
-    await page.goto('/demo/ai-agent')
+    await page.goto('/#/demo/ai-agent')
     await page.getByTestId('compare-all-button').click()
 
     await expect(page.getByTestId('compare-cons-0-react-spa')).toBeVisible()
@@ -363,7 +363,7 @@ test.describe('Issue #21: TradeoffSandbox Section', () => {
   })
 
   test('selected choice has Selected badge in modal', async ({ page }) => {
-    await page.goto('/demo/ai-agent')
+    await page.goto('/#/demo/ai-agent')
 
     await page.getByTestId('choice-card-0-0-react-spa').click()
     await page.getByTestId('compare-all-button').click()
@@ -373,7 +373,7 @@ test.describe('Issue #21: TradeoffSandbox Section', () => {
   })
 
   test('modal dismissible with Escape key', async ({ page }) => {
-    await page.goto('/demo/ai-agent')
+    await page.goto('/#/demo/ai-agent')
     await page.getByTestId('compare-all-button').click()
     await expect(page.getByTestId('compare-dialog')).toBeVisible()
 
@@ -382,7 +382,7 @@ test.describe('Issue #21: TradeoffSandbox Section', () => {
   })
 
   test('modal dismissible by clicking outside', async ({ page }) => {
-    await page.goto('/demo/ai-agent')
+    await page.goto('/#/demo/ai-agent')
     await page.getByTestId('compare-all-button').click()
     await expect(page.getByTestId('compare-dialog')).toBeVisible()
 
@@ -392,7 +392,7 @@ test.describe('Issue #21: TradeoffSandbox Section', () => {
   })
 
   test('modal dismissible with close button', async ({ page }) => {
-    await page.goto('/demo/ai-agent')
+    await page.goto('/#/demo/ai-agent')
     await page.getByTestId('compare-all-button').click()
     await expect(page.getByTestId('compare-dialog')).toBeVisible()
 
@@ -403,7 +403,7 @@ test.describe('Issue #21: TradeoffSandbox Section', () => {
   // ─── Keyboard Accessibility ────────────────────────────
 
   test('choice card is keyboard focusable', async ({ page }) => {
-    await page.goto('/demo/ai-agent')
+    await page.goto('/#/demo/ai-agent')
 
     const card = page.getByTestId('choice-card-0-0-react-spa')
     const tabindex = await card.getAttribute('tabindex')
@@ -411,7 +411,7 @@ test.describe('Issue #21: TradeoffSandbox Section', () => {
   })
 
   test('choice card has role button', async ({ page }) => {
-    await page.goto('/demo/ai-agent')
+    await page.goto('/#/demo/ai-agent')
 
     const card = page.getByTestId('choice-card-0-0-react-spa')
     const role = await card.getAttribute('role')
@@ -419,7 +419,7 @@ test.describe('Issue #21: TradeoffSandbox Section', () => {
   })
 
   test('Enter key selects choice', async ({ page }) => {
-    await page.goto('/demo/ai-agent')
+    await page.goto('/#/demo/ai-agent')
 
     await page.getByTestId('choice-card-0-0-react-spa').focus()
     await page.keyboard.press('Enter')
@@ -429,7 +429,7 @@ test.describe('Issue #21: TradeoffSandbox Section', () => {
   })
 
   test('Space key selects choice', async ({ page }) => {
-    await page.goto('/demo/ai-agent')
+    await page.goto('/#/demo/ai-agent')
 
     await page.getByTestId('choice-card-0-0-react-spa').focus()
     await page.keyboard.press('Space')
@@ -441,7 +441,7 @@ test.describe('Issue #21: TradeoffSandbox Section', () => {
   // ─── Cross-Scenario Metrics ────────────────────────────
 
   test('different scenario has different metrics', async ({ page }) => {
-    await page.goto('/demo/ai-agent')
+    await page.goto('/#/demo/ai-agent')
 
     await page.getByTestId('scenario-select').click()
     await page.getByRole('option', { name: 'High-Security Financial Auditing Platform' }).click()
@@ -453,7 +453,7 @@ test.describe('Issue #21: TradeoffSandbox Section', () => {
  // ─── Metric Bar Color Coding ────────────────────────────
 
   test('metric fill is neutral blue at base value', async ({ page }) => {
-    await page.goto('/demo/ai-agent')
+    await page.goto('/#/demo/ai-agent')
 
     const fill = page.getByTestId('metric-fill-performance')
     const bg = await fill.evaluate((el) => getComputedStyle(el).backgroundColor)
@@ -461,7 +461,7 @@ test.describe('Issue #21: TradeoffSandbox Section', () => {
   })
 
   test('metric fill turns green when value improves', async ({ page }) => {
-    await page.goto('/demo/ai-agent')
+    await page.goto('/#/demo/ai-agent')
 
     await page.getByTestId('choice-card-0-0-react-spa').click()
 
@@ -471,7 +471,7 @@ test.describe('Issue #21: TradeoffSandbox Section', () => {
   })
 
   test('metric fill turns red when complexity increases (lower direction)', async ({ page }) => {
-    await page.goto('/demo/ai-agent')
+    await page.goto('/#/demo/ai-agent')
 
     await page.getByTestId('choice-card-0-1-microservices').click()
 
@@ -481,7 +481,7 @@ test.describe('Issue #21: TradeoffSandbox Section', () => {
   })
 
   test('metric fill turns green when complexity decreases', async ({ page }) => {
-    await page.goto('/demo/ai-agent')
+    await page.goto('/#/demo/ai-agent')
 
     await page.getByTestId('choice-card-0-1-modular-monolith').click()
 
@@ -493,7 +493,7 @@ test.describe('Issue #21: TradeoffSandbox Section', () => {
   // ─── Feedback Banner ───────────────────────────────────
 
   test('feedback banner renders with empty state', async ({ page }) => {
-    await page.goto('/demo/ai-agent')
+    await page.goto('/#/demo/ai-agent')
 
     const banner = page.getByTestId('feedback-banner')
     await expect(banner).toBeVisible()
@@ -501,7 +501,7 @@ test.describe('Issue #21: TradeoffSandbox Section', () => {
   })
 
   test('feedback banner updates to partial state after first choice', async ({ page }) => {
-    await page.goto('/demo/ai-agent')
+    await page.goto('/#/demo/ai-agent')
 
     await page.getByTestId('choice-card-0-0-react-spa').click()
 
@@ -509,7 +509,7 @@ test.describe('Issue #21: TradeoffSandbox Section', () => {
   })
 
   test('feedback banner updates to complete state when all choices made', async ({ page }) => {
-    await page.goto('/demo/ai-agent')
+    await page.goto('/#/demo/ai-agent')
 
     await page.getByTestId('choice-card-0-0-react-spa').click()
     await page.getByTestId('choice-card-0-1-microservices').click()
@@ -519,7 +519,7 @@ test.describe('Issue #21: TradeoffSandbox Section', () => {
   })
 
   test('feedback banner reverts to empty when all choices removed', async ({ page }) => {
-    await page.goto('/demo/ai-agent')
+    await page.goto('/#/demo/ai-agent')
 
     await page.getByTestId('choice-card-0-0-react-spa').click()
     await page.getByTestId('choice-card-0-1-microservices').click()
@@ -535,7 +535,7 @@ test.describe('Issue #21: TradeoffSandbox Section', () => {
   // ─── Financial Scenario ─────────────────────────────────
 
   test('financial scenario has different step titles', async ({ page }) => {
-    await page.goto('/demo/ai-agent')
+    await page.goto('/#/demo/ai-agent')
 
     await page.getByTestId('scenario-select').click()
     await page.getByRole('option', { name: 'High-Security Financial Auditing Platform' }).click()

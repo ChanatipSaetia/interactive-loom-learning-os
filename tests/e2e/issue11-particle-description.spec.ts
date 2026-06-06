@@ -70,7 +70,7 @@ test.describe('Issue #11 Slice 3: Particle animation + description panel', () =>
   })
 
   test('description panel not rendered without journeys', async ({ page }) => {
-    await page.goto('/demo/ai-agent')
+    await page.goto('/#/demo/ai-agent')
     const panel = page.getByTestId('flowchart-desc-panel')
     await expect(panel).not.toBeVisible()
   })

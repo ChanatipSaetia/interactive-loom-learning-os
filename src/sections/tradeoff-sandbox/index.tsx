@@ -167,7 +167,7 @@ function StepSection({
   const chosenChoice = step.choices.find((c) => c.id === chosenChoiceId) || null
 
   return (
-    <div className="step-section" data-testid={`step-section-${scenarioIdx}-${stepIdx}`}>
+    <div className={`step-section${chosenChoiceId ? '' : ' step-section-unselected'}`} data-testid={`step-section-${scenarioIdx}-${stepIdx}`}>
       <h4 className="step-title" data-testid={`step-title-${scenarioIdx}-${stepIdx}`}>
         {step.title}
       </h4>
