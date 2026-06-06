@@ -36,19 +36,37 @@ export const TYPES = {
 } as const;
 
 export const COLORS = {
-  [TYPES.EVENT]: '#fed7aa', [TYPES.COMMAND]: '#bfdbfe', [TYPES.AGGREGATE]: '#e2e8f0',  
-  [TYPES.POLICY]: '#fbcfe8', [TYPES.READ_MODEL]: '#e9d5ff', [TYPES.USER]: '#fef08a',       
-  [TYPES.EXTERNAL]: '#bbf7d0', [TYPES.HOTSPOT]: '#fecaca', [TYPES.SERVICE]: '#cbd5e1',
-  [TYPES.DATABASE]: '#bae6fd', [TYPES.PROCESS]: '#fde047', [TYPES.DATA_OBJECT]: '#ddd6fe',
-  [TYPES.DECISION]: '#fca5a5', default: '#ffffff'
+  [TYPES.EVENT]:       '#64575f', // surface0 + peach
+  [TYPES.COMMAND]:     '#505977', // surface0 + blue
+  [TYPES.AGGREGATE]:   '#51576d', // surface1 (neutral)
+  [TYPES.POLICY]:      '#5c5775', // surface0 + mauve
+  [TYPES.READ_MODEL]:  '#595c77', // surface0 + lavender
+  [TYPES.USER]:        '#625f64', // surface0 + yellow
+  [TYPES.EXTERNAL]:    '#556163', // surface0 + green
+  [TYPES.HOTSPOT]:     '#625162', // surface0 + red
+  [TYPES.SERVICE]:     '#4f5e73', // surface0 + sapphire
+  [TYPES.DATABASE]:    '#4e5f6d', // surface0 + teal
+  [TYPES.PROCESS]:     '#536173', // surface0 + sky
+  [TYPES.DATA_OBJECT]: '#655c75', // surface0 + pink
+  [TYPES.DECISION]:    '#635666', // surface0 + maroon
+  default:             '#414559'  // surface0
 } as const;
 
 export const BORDER_COLORS = {
-  [TYPES.EVENT]: '#f97316', [TYPES.COMMAND]: '#3b82f6', [TYPES.AGGREGATE]: '#64748b',  
-  [TYPES.POLICY]: '#ec4899', [TYPES.READ_MODEL]: '#a855f7', [TYPES.USER]: '#eab308',       
-  [TYPES.EXTERNAL]: '#22c55e', [TYPES.HOTSPOT]: '#ef4444', [TYPES.SERVICE]: '#64748b',
-  [TYPES.DATABASE]: '#0284c7', [TYPES.PROCESS]: '#ca8a04', [TYPES.DATA_OBJECT]: '#7c3aed',
-  [TYPES.DECISION]: '#dc2626', default: '#cbd5e1'
+  [TYPES.EVENT]:       '#ef9f76', // peach
+  [TYPES.COMMAND]:     '#8caaee', // blue
+  [TYPES.AGGREGATE]:   '#626880', // surface2
+  [TYPES.POLICY]:      '#ca9ee6', // mauve
+  [TYPES.READ_MODEL]:  '#babbf1', // lavender
+  [TYPES.USER]:        '#e5c890', // yellow
+  [TYPES.EXTERNAL]:    '#a6d189', // green
+  [TYPES.HOTSPOT]:     '#e78284', // red
+  [TYPES.SERVICE]:     '#85c1dc', // sapphire
+  [TYPES.DATABASE]:    '#81c8be', // teal
+  [TYPES.PROCESS]:     '#99d1db', // sky
+  [TYPES.DATA_OBJECT]: '#f4b8e4', // pink
+  [TYPES.DECISION]:    '#ea999c', // maroon
+  default:             '#626880'  // surface2
 } as const;
 
 export const ICONS = {
@@ -440,7 +458,7 @@ export function Flowchart({ title, schema = INITIAL_SCHEMA }: FlowchartProps) {
   // Viewport / Camera Engine
   const containerRef = useRef<HTMLDivElement | null>(null);
   const svgRef = useRef<SVGSVGElement | null>(null);
-  const [transform, setTransform] = useState<TransformState>({ scale: 0.3, translateX: 50, translateY: 100 });
+  const [transform, setTransform] = useState<TransformState>({ scale: 0.9, translateX: 50, translateY: 100 });
   const transformRef = useRef(transform);
   useEffect(() => { transformRef.current = transform; }, [transform]);
 
@@ -484,15 +502,16 @@ export function Flowchart({ title, schema = INITIAL_SCHEMA }: FlowchartProps) {
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement | null>(null);
 
-  // Journey step focus
-  const highlightedNodeId = currentJourney?.steps[currentStep]?.nodeId;
+  // Journey step focus — currentStep=0 means "overview / nothing selected"
+  // actual steps are 1-indexed: steps[currentStep - 1]
+  const highlightedNodeId = currentStep > 0 ? currentJourney?.steps[currentStep - 1]?.nodeId : undefined;
   const prevHighlightedNodeId = useMemo(() => {
-    if (currentStep > 0 && currentJourney) {
-      return currentJourney.steps[currentStep - 1]?.nodeId;
+    if (currentStep > 1 && currentJourney) {
+      return currentJourney.steps[currentStep - 2]?.nodeId;
     }
     return null;
   }, [currentStep, currentJourney]);
-  const currentDescription = currentJourney?.steps[currentStep]?.description ?? '';
+  const currentDescription = currentStep > 0 ? (currentJourney?.steps[currentStep - 1]?.description ?? '') : '';
 
   // Get view steps or generate from currentJourney
   const activeSteps = useMemo(() => {
@@ -511,16 +530,18 @@ export function Flowchart({ title, schema = INITIAL_SCHEMA }: FlowchartProps) {
     return [];
   }, [activeView.steps, currentJourney, localSchema.entities]);
 
-  // Sync selected step with currentStep — drives card highlight, camera, and node dimming.
+  // Sync selected step with currentStep.
+  // currentStep=0 → no selection (overview). currentStep N → activeSteps[N-1].
   useEffect(() => {
-    if (activeView.steps && activeView.steps.length > 0) {
-      setActiveStep(activeSteps[currentStep] ?? null);
-    } else if (currentJourney && currentStep > 0) {
-      setActiveStep(activeSteps[currentStep] ?? null);
-    } else if (!currentJourney) {
+    if (currentStep === 0) {
+      setActiveStep(null);
+    } else if (activeView.steps && activeView.steps.length > 0) {
+      setActiveStep(activeSteps[currentStep - 1] ?? null);
+    } else if (currentJourney) {
+      setActiveStep(activeSteps[currentStep - 1] ?? null);
+    } else {
       setActiveStep(null);
     }
-    // currentStep === 0 with a journey: leave activeStep alone (user may have cleared it)
   }, [currentStep, currentJourney, activeSteps, activeView.steps]);
 
   // Node IDs to highlight — derived directly from the selected step.
@@ -532,6 +553,11 @@ export function Flowchart({ title, schema = INITIAL_SCHEMA }: FlowchartProps) {
   const positioned = useMemo(() => {
     return activeView.nodes;
   }, [activeView.nodes]);
+
+  // Keep a ref to the current view's nodes so the fit effect can read them
+  // without listing them as reactive deps (prevents drag from resetting the viewport)
+  const activeViewNodesRef = useRef(activeView.nodes);
+  useEffect(() => { activeViewNodesRef.current = activeView.nodes; }, [activeView.nodes]);
 
   const nodeMap = useMemo(() => {
     const m = Object.create(null);
@@ -550,29 +576,36 @@ export function Flowchart({ title, schema = INITIAL_SCHEMA }: FlowchartProps) {
   const svgWidth = (maxX - minX) + NODE_W + 120;
   const svgHeight = Math.max(480, (maxY - minY) + NODE_H + 80);
 
-  // View reset on switch
+  // View reset on switch — fires ONLY on view key change (not on node drag).
+  // Node positions are read from a ref at rAF time so they don't become deps.
   useEffect(() => {
     setIsPlaying(false);
     setCurrentStep(0);
     setActiveStep(null);
-    
-    if (svgRef.current) {
+
+    const raf = requestAnimationFrame(() => {
+      if (!svgRef.current) return;
+      const nodes = activeViewNodesRef.current;
+      if (nodes.length === 0) return;
+      const xs = nodes.map(n => n.x);
+      const ys = nodes.map(n => n.y);
+      const nx = (Math.min(...xs) + Math.max(...xs)) / 2;
+      const ny = (Math.min(...ys) + Math.max(...ys)) / 2;
       const W = svgRef.current.clientWidth || 800;
       const H = svgRef.current.clientHeight || 500;
-      const fitScale = Math.min(W / svgWidth, H / svgHeight, 1.0) * 0.65 || 0.3;
-      const cx = minX + (maxX - minX) / 2;
-      const cy = minY + (maxY - minY) / 2;
       setTransform({
-        scale: fitScale,
-        translateX: W / 2 - cx * fitScale,
-        translateY: H / 2 - cy * fitScale
+        scale: 0.45,
+        translateX: W / 2 - nx * 0.45,
+        translateY: H / 2 - ny * 0.45,
       });
-    }
-  }, [activeViewKey, svgWidth, svgHeight, minX, maxX, minY, maxY]);
+    });
+
+    return () => cancelAnimationFrame(raf);
+  }, [activeViewKey]); // ← only fires on view switch, never on node drag
 
   // Playback timer loops
   useEffect(() => {
-    if (isPlaying && currentJourney && currentStep < currentJourney.steps.length - 1) {
+    if (isPlaying && currentJourney && currentStep < currentJourney.steps.length) {
       playTimerRef.current = window.setTimeout(() => {
         setCurrentStep(s => s + 1);
       }, 2500);
@@ -629,10 +662,10 @@ export function Flowchart({ title, schema = INITIAL_SCHEMA }: FlowchartProps) {
       if (!node) return;
       const type = localSchema.entities[id]?.viewTypes[activeViewKey] || 'default';
       const isSmall = [TYPES.USER, TYPES.EXTERNAL, TYPES.HOTSPOT, TYPES.DECISION].includes(type as any);
-      minX = Math.min(minX, node.x); 
-      minY = Math.min(minY, node.y);
-      maxX = Math.max(maxX, node.x + (isSmall ? SMALL_W : NODE_W)); 
-      maxY = Math.max(maxY, node.y + (isSmall ? SMALL_H : NODE_H));
+      minX = Math.min(minX, node.x - (isSmall ? SMALL_W : NODE_W) / 2);
+      minY = Math.min(minY, node.y - (isSmall ? SMALL_H : NODE_H) / 2);
+      maxX = Math.max(maxX, node.x + (isSmall ? SMALL_W : NODE_W) / 2);
+      maxY = Math.max(maxY, node.y + (isSmall ? SMALL_H : NODE_H) / 2);
     });
     if (minX === Infinity) return;
     
@@ -640,9 +673,17 @@ export function Flowchart({ title, schema = INITIAL_SCHEMA }: FlowchartProps) {
     const viewportH = svgRef.current.clientHeight; 
     const padding = Math.min(viewportW * 0.1, 80); 
     
-    const targetScale = Math.min((viewportW - padding * 2) / (maxX - minX + 100), (viewportH - padding * 2) / (maxY - minY + 100), 1.4); 
-    const targetX = (viewportW / 2) - (((minX) + (maxX - minX) / 2) * targetScale);
-    const targetY = (viewportH / 2) - (((minY) + (maxY - minY) / 2) * targetScale);
+    const bboxW = Math.max(maxX - minX, 1);
+    const bboxH = Math.max(maxY - minY, 1);
+    const targetScale = Math.min(
+      (viewportW - padding * 2) / bboxW,
+      (viewportH - padding * 2) / bboxH,
+      1.4
+    );
+    const centerX = (minX + maxX) / 2;
+    const centerY = (minY + maxY) / 2;
+    const targetX = viewportW / 2 - centerX * targetScale;
+    const targetY = viewportH / 2 - centerY * targetScale;
     animateTo(targetX, targetY, targetScale);
   }, [animateTo, activeView, activeViewKey, localSchema.entities]);
 
@@ -819,23 +860,96 @@ export function Flowchart({ title, schema = INITIAL_SCHEMA }: FlowchartProps) {
     pinchRef.current = { active: false, initialDist: 0, initialScale: 1 };
   }, []);
 
-  const onWheel = useCallback((e: React.WheelEvent) => {
+  const onWheelNative = useCallback((e: WheelEvent) => {
     e.preventDefault();
     const delta = -e.deltaY * 0.0015;
-    const newScale = Math.min(3, Math.max(0.15, transform.scale * (1 + delta)));
-    const svgEl = e.currentTarget as SVGSVGElement;
+    const currentScale = transformRef.current.scale;
+    const newScale = Math.min(3, Math.max(0.15, currentScale * (1 + delta)));
+    const svgEl = svgRef.current;
+    if (!svgEl) return;
     const rect = svgEl.getBoundingClientRect();
     const mouseX = e.clientX - rect.left - rect.width / 2;
     const mouseY = e.clientY - rect.top - rect.height / 2;
-    const svgMouseX = mouseX / transform.scale;
-    const svgMouseY = mouseY / transform.scale;
-    const scaleFactor = newScale / transform.scale;
+    const svgMouseX = mouseX / currentScale;
+    const svgMouseY = mouseY / currentScale;
+    const scaleFactor = newScale / currentScale;
     setTransform(prev => ({
       scale: newScale,
       translateX: prev.translateX + svgMouseX * (1 - scaleFactor),
       translateY: prev.translateY + svgMouseY * (1 - scaleFactor)
     }));
-  }, [transform.scale]);
+  }, []);
+
+  const onSvgTouchStartNative = useCallback((e: TouchEvent) => {
+    if (e.touches.length === 2) {
+      e.preventDefault();
+      const t1 = e.touches[0];
+      const t2 = e.touches[1];
+      const dist = Math.hypot(t2.clientX - t1.clientX, t2.clientY - t1.clientY);
+      pinchRef.current = { active: true, initialDist: dist, initialScale: transformRef.current.scale };
+      setIsPanning(false);
+      return;
+    }
+    if (e.touches.length === 1) {
+      const target = e.target as Element;
+      if (!target.closest('.flowchart-node-group') && !target.closest('foreignObject')) {
+        e.preventDefault();
+        setIsPanning(true);
+        const touch = e.touches[0];
+        panStartRef.current = {
+          x: touch.clientX,
+          y: touch.clientY,
+          baseTranslateX: transformRef.current.translateX,
+          baseTranslateY: transformRef.current.translateY
+        };
+      }
+    }
+  }, []);
+
+  const onTouchMoveNative = useCallback((e: TouchEvent) => {
+    if (pinchRef.current.active && e.touches.length === 2) {
+      e.preventDefault();
+      const t1 = e.touches[0];
+      const t2 = e.touches[1];
+      const dist = Math.hypot(t2.clientX - t1.clientX, t2.clientY - t1.clientY);
+      const scaleRatio = dist / pinchRef.current.initialDist;
+      const currentScale = transformRef.current.scale;
+      const newScale = Math.min(3, Math.max(0.15, pinchRef.current.initialScale * scaleRatio));
+      const svgEl = svgRef.current;
+      if (!svgEl) return;
+      const rect = svgEl.getBoundingClientRect();
+      const centerX = (t1.clientX + t2.clientX) / 2 - rect.left;
+      const centerY = (t1.clientY + t2.clientY) / 2 - rect.top;
+      const svgCenterX = (centerX - rect.width / 2) / currentScale;
+      const svgCenterY = (centerY - rect.height / 2) / currentScale;
+      const scaleFactor = newScale / currentScale;
+      setTransform(prev => ({
+        scale: newScale,
+        translateX: prev.translateX + svgCenterX * (1 - scaleFactor),
+        translateY: prev.translateY + svgCenterY * (1 - scaleFactor)
+      }));
+      return;
+    }
+    if (e.touches.length === 1 && (isPanning || dragRef.current.active)) {
+      e.preventDefault();
+      const touch = e.touches[0];
+      handlePointerMove(touch.clientX, touch.clientY);
+    }
+  }, [handlePointerMove, isPanning]);
+
+  // Attach wheel + touch as non-passive listeners so preventDefault() works
+  useEffect(() => {
+    const svg = svgRef.current;
+    if (!svg) return;
+    svg.addEventListener('wheel', onWheelNative, { passive: false });
+    svg.addEventListener('touchstart', onSvgTouchStartNative, { passive: false });
+    svg.addEventListener('touchmove', onTouchMoveNative, { passive: false });
+    return () => {
+      svg.removeEventListener('wheel', onWheelNative);
+      svg.removeEventListener('touchstart', onSvgTouchStartNative);
+      svg.removeEventListener('touchmove', onTouchMoveNative);
+    };
+  }, [onWheelNative, onSvgTouchStartNative, onTouchMoveNative]);
 
   const onSvgMouseDown = useCallback((e: React.MouseEvent) => {
     if ((e.target as Element).closest('.flowchart-node-group') || (e.target as Element).closest('foreignObject')) return;
@@ -848,60 +962,9 @@ export function Flowchart({ title, schema = INITIAL_SCHEMA }: FlowchartProps) {
     };
   }, [transform]);
 
-  const onSvgTouchStart = useCallback((e: React.TouchEvent) => {
-    if (e.touches.length === 2) {
-      const t1 = e.touches[0];
-      const t2 = e.touches[1];
-      const dist = Math.hypot(t2.clientX - t1.clientX, t2.clientY - t1.clientY);
-      pinchRef.current = { active: true, initialDist: dist, initialScale: transform.scale };
-      setIsPanning(false);
-      return;
-    }
-    if (e.touches.length === 1) {
-      const target = e.target as Element;
-      if (!target.closest('.flowchart-node-group') && !target.closest('foreignObject')) {
-        setIsPanning(true);
-        const touch = e.touches[0];
-        panStartRef.current = {
-          x: touch.clientX,
-          y: touch.clientY,
-          baseTranslateX: transform.translateX,
-          baseTranslateY: transform.translateY
-        };
-      }
-    }
-  }, [transform]);
-
-  const onTouchMove = useCallback((e: React.TouchEvent) => {
-    if (pinchRef.current.active && e.touches.length === 2) {
-      const t1 = e.touches[0];
-      const t2 = e.touches[1];
-      const dist = Math.hypot(t2.clientX - t1.clientX, t2.clientY - t1.clientY);
-      const scaleRatio = dist / pinchRef.current.initialDist;
-      const newScale = Math.min(3, Math.max(0.15, pinchRef.current.initialScale * scaleRatio));
-      const svgEl = e.currentTarget as SVGSVGElement;
-      const rect = svgEl.getBoundingClientRect();
-      const centerX = (t1.clientX + t2.clientX) / 2 - rect.left;
-      const centerY = (t1.clientY + t2.clientY) / 2 - rect.top;
-      const svgCenterX = (centerX - rect.width / 2) / transform.scale;
-      const svgCenterY = (centerY - rect.height / 2) / transform.scale;
-      const scaleFactor = newScale / transform.scale;
-      setTransform(prev => ({
-        scale: newScale,
-        translateX: prev.translateX + svgCenterX * (1 - scaleFactor),
-        translateY: prev.translateY + svgCenterY * (1 - scaleFactor)
-      }));
-      return;
-    }
-    if (e.touches.length === 1 && (isPanning || dragRef.current.active)) {
-      const touch = e.touches[0];
-      handlePointerMove(touch.clientX, touch.clientY);
-    }
-  }, [handlePointerMove, isPanning, transform.scale]);
-
-  // Stepper Handlers
+  // Stepper Handlers — currentStep=0 is the overview (no highlight)
   const handlePlay = useCallback(() => {
-    if (currentJourney && currentStep < currentJourney.steps.length - 1) {
+    if (currentJourney && currentStep < currentJourney.steps.length) {
       setIsPlaying(true);
     }
   }, [currentJourney, currentStep]);
@@ -911,7 +974,7 @@ export function Flowchart({ title, schema = INITIAL_SCHEMA }: FlowchartProps) {
   }, []);
 
   const handleNext = useCallback(() => {
-    if (currentJourney && currentStep < currentJourney.steps.length - 1) {
+    if (currentJourney && currentStep < currentJourney.steps.length) {
       setCurrentStep(s => s + 1);
     }
   }, [currentJourney, currentStep]);
@@ -928,15 +991,16 @@ export function Flowchart({ title, schema = INITIAL_SCHEMA }: FlowchartProps) {
     setActiveStep(null);
   }, []);
 
+  // 1-indexed: idx=1 → first step, idx=0 → overview
   const handleGoToStep = useCallback((idx: number) => {
-    setCurrentStep(idx);
+    setCurrentStep(idx + 1);
     setIsPlaying(false);
   }, []);
 
   // Step carousel handler — activeStep is the single source for selection, dim, and camera.
   const handleStepClick = (step: any) => {
     if (activeStep?.id === step.id) {
-      // Deselect: clear selection, stop playback, reset to step 0
+      // Deselect → back to overview (step 0)
       setActiveStep(null);
       setCurrentStep(0);
       setIsPlaying(false);
@@ -944,10 +1008,10 @@ export function Flowchart({ title, schema = INITIAL_SCHEMA }: FlowchartProps) {
       setActiveStep(step);
       focusOnNodes(step.nodeIds || []);
 
-      // Sync currentStep index when using journey steps
+      // Sync currentStep (1-indexed) when using journey steps
       if (!activeView.steps && currentJourney) {
         const stepIdx = activeSteps.findIndex(s => s.id === step.id);
-        if (stepIdx !== -1) setCurrentStep(stepIdx);
+        if (stepIdx !== -1) setCurrentStep(stepIdx + 1);
       }
 
       // Scroll carousel to keep the active card visible
@@ -1468,10 +1532,7 @@ export function Flowchart({ title, schema = INITIAL_SCHEMA }: FlowchartProps) {
             onMouseUp={handlePointerUp}
             onMouseLeave={handlePointerUp}
             onMouseDown={onSvgMouseDown}
-            onTouchStart={onSvgTouchStart}
-            onTouchMove={onTouchMove}
             onTouchEnd={handlePointerUp}
-            onWheel={onWheel}
           >
             <defs>
               <filter id="flowchart-desc-shadow" x="-20%" y="-20%" width="140%" height="140%">
@@ -1536,10 +1597,10 @@ export function Flowchart({ title, schema = INITIAL_SCHEMA }: FlowchartProps) {
                 const gNodes = positioned.filter(n => group.nodeIds?.includes(n.id));
                 if (gNodes.length === 0) return null;
                 
-                const gMinX = Math.min(...gNodes.map(n => n.x)) - 35;
-                const gMaxX = Math.max(...gNodes.map(n => n.x)) + 35 + NODE_W/2;
-                const gMinY = Math.min(...gNodes.map(n => n.y)) - 30 - NODE_H/2;
-                const gMaxY = Math.max(...gNodes.map(n => n.y)) + 30 + NODE_H/2;
+                const gMinX = Math.min(...gNodes.map(n => n.x - NODE_W / 2)) - 35;
+                const gMaxX = Math.max(...gNodes.map(n => n.x + NODE_W / 2)) + 35;
+                const gMinY = Math.min(...gNodes.map(n => n.y - NODE_H / 2)) - 30;
+                const gMaxY = Math.max(...gNodes.map(n => n.y + NODE_H / 2)) + 30;
                 
                 return (
                   <g key={group.id} className="flowchart-domain-group" opacity={isFaded ? 0.15 : 1} style={{ transition: 'opacity 0.3s' }}>
@@ -1682,7 +1743,7 @@ export function Flowchart({ title, schema = INITIAL_SCHEMA }: FlowchartProps) {
 
                 const isHighlighted = isStepHighlighted || (highlightedNodeId === node.id);
                 
-                const nodeFill = isHighlighted ? 'var(--ctp-surface0)' : (COLORS[viewType as keyof typeof COLORS] || COLORS.default);
+                const nodeFill = COLORS[viewType as keyof typeof COLORS] || COLORS.default;
                 const strokeColor = BORDER_COLORS[viewType as keyof typeof BORDER_COLORS] || BORDER_COLORS.default;
                 
                 const iconName = ICONS[viewType as keyof typeof ICONS];
@@ -1713,7 +1774,7 @@ export function Flowchart({ title, schema = INITIAL_SCHEMA }: FlowchartProps) {
                       rx="8"
                       fill={nodeFill}
                       stroke={strokeColor}
-                      strokeWidth={isHighlighted || isSelected ? '2.5' : '1.5'}
+                      strokeWidth="1.5"
                       filter={isHighlighted || isSelected ? 'url(#flowchart-glow)' : undefined}
                       className={`flowchart-node-rect ${isHighlighted ? 'flowchart-node-highlighted' : ''}`}
                     />
@@ -1738,7 +1799,7 @@ export function Flowchart({ title, schema = INITIAL_SCHEMA }: FlowchartProps) {
                             display: 'flex',
                             alignItems: 'center',
                             gap: '6px',
-                            borderBottom: '1px solid rgba(0, 0, 0, 0.08)',
+                            borderBottom: '1px solid rgba(255, 255, 255, 0.06)',
                             paddingBottom: '4px',
                             marginBottom: '4px'
                           }}
@@ -1751,11 +1812,11 @@ export function Flowchart({ title, schema = INITIAL_SCHEMA }: FlowchartProps) {
                           <span
                             style={{
                               fontSize: '8px',
-                              fontWeight: 700,
+                              fontWeight: 600,
                               textTransform: 'uppercase',
                               letterSpacing: '0.5px',
-                              opacity: 0.7,
-                              color: isHighlighted ? 'var(--ctp-text)' : '#303446'
+                              opacity: 0.85,
+                              color: strokeColor
                             }}
                           >
                             {viewType}
@@ -1777,7 +1838,7 @@ export function Flowchart({ title, schema = INITIAL_SCHEMA }: FlowchartProps) {
                               fontWeight: 'bold',
                               lineHeight: 1.25,
                               fontSize: isSmall ? '10px' : '11px',
-                              color: isHighlighted ? 'var(--ctp-text)' : '#303446',
+                              color: 'var(--ctp-text)',
                               display: '-webkit-box',
                               WebkitLineClamp: isSmall ? 2 : 3,
                               WebkitBoxOrient: 'vertical',
