@@ -37,8 +37,20 @@ function TextSection({ title, heading, paragraphs, animate = false }: TextSectio
   }, [animate, visible])
 
   const renderedParagraphs = useMemo(
-    () => paragraphs.map((p) => marked.parse(p) as string),
-    [paragraphs]
+    () =>
+      paragraphs.map((p) => {
+        let html = marked.parse(p) as string
+        html = html.replace(
+          /<code([^>]*)>/g,
+          '<code$1 data-testid="text-inline-code" class="text-inline-code">',
+        )
+        html = html.replace(
+          /<a([^>]*)>/g,
+          '<a$1 data-testid="text-link" class="text-link">',
+        )
+        return html
+      }),
+    [paragraphs],
   )
 
   return (

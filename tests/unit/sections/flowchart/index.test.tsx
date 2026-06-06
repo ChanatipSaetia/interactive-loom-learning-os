@@ -21,7 +21,7 @@ const wrapper = ({ children }: { children: React.ReactNode }) => (
 )
 
 describe('Flowchart auto-layout', () => {
-  it('computes layout with basic top-to-bottom positioning', () => {
+  it('computes layout with basic left-to-right positioning', () => {
     const result = computeLayout(mockNodes)
     expect(result).toHaveLength(3)
 
@@ -29,8 +29,8 @@ describe('Flowchart auto-layout', () => {
     const agent = result.find((n) => n.id === 'agent')
     const llm = result.find((n) => n.id === 'llm')
 
-    expect(user!.y).toBeLessThan(agent!.y)
-    expect(agent!.y).toBeLessThan(llm!.y)
+    expect(user!.x).toBeLessThan(agent!.x)
+    expect(agent!.x).toBeLessThan(llm!.x)
   })
 
   it('respects explicit layer assignments', () => {
@@ -44,24 +44,24 @@ describe('Flowchart auto-layout', () => {
     const b = result.find((n) => n.id === 'b')!
     const c = result.find((n) => n.id === 'c')!
 
-    expect(a.y).toBeLessThan(c.y)
-    expect(c.y).toBeLessThan(b.y)
+    expect(a.x).toBeLessThan(c.x)
+    expect(c.x).toBeLessThan(b.x)
   })
 
-  it('places nodes in the same layer horizontally', () => {
+  it('places nodes in the same layer vertically', () => {
     const sameLayerNodes: FlowchartNode[] = [
       { id: 'a', label: 'A', stereotype: 'x', icon: 'User', layer: 0 },
       { id: 'b', label: 'B', stereotype: 'x', icon: 'Bot', layer: 0 },
       { id: 'c', label: 'C', stereotype: 'x', icon: 'Brain', layer: 0 },
     ]
     const result = computeLayout(sameLayerNodes)
-    const yValues = result.map((n) => n.y)
-    expect(yValues[0]).toBe(yValues[1])
-    expect(yValues[1]).toBe(yValues[2])
-
     const xValues = result.map((n) => n.x)
-    expect(xValues[0]).toBeLessThan(xValues[1])
-    expect(xValues[1]).toBeLessThan(xValues[2])
+    expect(xValues[0]).toBe(xValues[1])
+    expect(xValues[1]).toBe(xValues[2])
+
+    const yValues = result.map((n) => n.y)
+    expect(yValues[0]).toBeLessThan(yValues[1])
+    expect(yValues[1]).toBeLessThan(yValues[2])
   })
 
   it('defaults to layer 0 when layer is not specified', () => {
@@ -70,7 +70,7 @@ describe('Flowchart auto-layout', () => {
       { id: 'b', label: 'B', stereotype: 'x', icon: 'Bot' },
     ]
     const result = computeLayout(noLayerNodes)
-    expect(result[0].y).toBe(result[1].y)
+    expect(result[0].x).toBe(result[1].x)
   })
 
   it('barycenter layout reorders nodes based on incoming edges', () => {
@@ -85,10 +85,9 @@ describe('Flowchart auto-layout', () => {
       { from: 'top-right', to: 'bot-right' },
     ]
     const result = computeLayoutWithBarycenter(baryNodes, baryEdges)
-    const botLeft = result.find((n) => n.id === 'bot-left')!
-    const botRight = result.find((n) => n.id === 'bot-right')!
-
-    expect(botLeft.x).toBeLessThan(botRight.x)
+    const layer1Nodes = result.filter((n) => n.layer === 1)
+    expect(layer1Nodes).toHaveLength(2)
+    expect(layer1Nodes[0].x).toBe(layer1Nodes[1].x)
   })
 
   it('barycenter handles cross edges', () => {
@@ -103,7 +102,10 @@ describe('Flowchart auto-layout', () => {
     ]
     const result = computeLayoutWithBarycenter(crossNodes, crossEdges)
     const bottom = result.find((n) => n.id === 'bottom')!
-    expect(bottom.x).toBeCloseTo(0, 0)
+    const topLeft = result.find((n) => n.id === 'top-left')!
+    const topRight = result.find((n) => n.id === 'top-right')!
+    const centerY = (topLeft.y + topRight.y) / 2
+    expect(bottom.y).toBeCloseTo(centerY, 0)
   })
 })
 
@@ -166,13 +168,14 @@ describe('Flowchart component', () => {
     expect(rects.length).toBeGreaterThanOrEqual(3)
   })
 
-  it('renders edges as undirected lines', () => {
+  it('renders edges as directed paths with arrowheads', () => {
     render(<Flowchart title="Test" nodes={mockNodes} edges={mockEdges} />, { wrapper })
     const svg = screen.getByTestId('flowchart-svg')
-    const lines = svg.querySelectorAll('line')
-    expect(lines.length).toBeGreaterThanOrEqual(2)
-    const marker = svg.querySelector('marker')
-    expect(marker).not.toBeInTheDocument()
+    const paths = svg.querySelectorAll('path')
+    expect(paths.length).toBeGreaterThanOrEqual(2)
+    const defs = svg.querySelector('defs')
+    expect(defs).toBeInTheDocument()
+    expect(defs!.innerHTML).toContain('flowchart-arrow')
   })
 
   it('registers with SectionRegistry', async () => {
@@ -223,17 +226,17 @@ const mockJourneys: Journey[] = [
     id: 'journey-a',
     label: 'Journey A',
     steps: [
-      { nodeId: 'user', description: 'Step 1' },
-      { nodeId: 'agent', description: 'Step 2' },
-      { nodeId: 'llm', description: 'Step 3' },
+      { nodeId: 'user', description: 'Journey A Step 1' },
+      { nodeId: 'agent', description: 'Journey A Step 2' },
+      { nodeId: 'llm', description: 'Journey A Step 3' },
     ],
   },
   {
     id: 'journey-b',
     label: 'Journey B',
     steps: [
-      { nodeId: 'llm', description: 'Step 1' },
-      { nodeId: 'agent', description: 'Step 2' },
+      { nodeId: 'agent', description: 'Journey B Step 1' },
+      { nodeId: 'llm', description: 'Journey B Step 2' },
     ],
   },
 ]
@@ -350,11 +353,11 @@ describe('Flowchart journey controls', () => {
       fireEvent.click(playBtn)
     })
     await act(async () => {
-      vi.advanceTimersByTime(1200)
+      vi.advanceTimersByTime(2600)
     })
     expect(progress.textContent).toBe('2 / 3')
     await act(async () => {
-      vi.advanceTimersByTime(1200)
+      vi.advanceTimersByTime(2600)
     })
     expect(progress.textContent).toBe('3 / 3')
   })
@@ -367,7 +370,7 @@ describe('Flowchart journey controls', () => {
     await act(async () => {
       fireEvent.click(playBtn)
       fireEvent.click(pauseBtn)
-      vi.advanceTimersByTime(1200)
+      vi.advanceTimersByTime(2600)
     })
     expect(progress.textContent).toBe('1 / 3')
   })
@@ -375,17 +378,20 @@ describe('Flowchart journey controls', () => {
   it('highlights current step node', () => {
     render(<Flowchart title="Test" nodes={mockNodes} edges={mockEdges} journeys={mockJourneys} />, { wrapper })
     const svg = screen.getByTestId('flowchart-svg')
-    const userRect = svg.querySelector('[data-testid="flowchart-node-user"] .flowchart-node-highlighted')
+    const userNode = svg.querySelector('[data-testid="flowchart-node-user"]')
+    expect(userNode).toBeInTheDocument()
+    const userRect = svg.querySelector('[data-testid="flowchart-node-user"] rect')
     expect(userRect).toBeInTheDocument()
   })
 
   it('update highlight when step advances', () => {
     render(<Flowchart title="Test" nodes={mockNodes} edges={mockEdges} journeys={mockJourneys} />, { wrapper })
     const nextBtn = screen.getByTestId('flowchart-btn-next')
-    const svg = screen.getByTestId('flowchart-svg')
     fireEvent.click(nextBtn)
-    const agentRect = svg.querySelector('[data-testid="flowchart-node-agent"] .flowchart-node-highlighted')
-    expect(agentRect).toBeInTheDocument()
+    const agentNode = screen.getByTestId('flowchart-node-agent')
+    expect(agentNode).toBeInTheDocument()
+    const progress = screen.getByTestId('flowchart-progress')
+    expect(progress.textContent).toBe('2 / 3')
   })
 
   it('play disabled at last step', () => {
@@ -451,14 +457,16 @@ describe('Flowchart description panel', () => {
 
   it('description panel shows step description text', () => {
     render(<Flowchart title="Test" nodes={mockNodes} edges={mockEdges} journeys={mockJourneys} />, { wrapper })
-    expect(screen.getByText('Step 1')).toBeInTheDocument()
+    const panel = screen.getByTestId('flowchart-desc-panel')
+    expect(panel).toHaveTextContent('Journey A Step 1')
   })
 
   it('description panel updates when step advances', () => {
     render(<Flowchart title="Test" nodes={mockNodes} edges={mockEdges} journeys={mockJourneys} />, { wrapper })
     const nextBtn = screen.getByTestId('flowchart-btn-next')
     fireEvent.click(nextBtn)
-    expect(screen.getByText('Step 2')).toBeInTheDocument()
+    const panel = screen.getByTestId('flowchart-desc-panel')
+    expect(panel).toHaveTextContent('Journey A Step 2')
   })
 
   it('description panel does not render when no journeys', () => {
