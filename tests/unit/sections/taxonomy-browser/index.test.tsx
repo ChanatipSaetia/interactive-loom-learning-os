@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach } from 'vitest'
-import { render, screen } from '@testing-library/react'
+import { render, screen, fireEvent } from '@testing-library/react'
 import { SectionRegistry } from '../../../../src/core/registry'
 import TaxonomyBrowserSection from '../../../../src/sections/taxonomy-browser'
 
@@ -113,5 +113,124 @@ describe('TaxonomyBrowser Section', () => {
     const { SectionRegistry: Registry } = await import('../../../../src/core/registry')
     expect(Registry.get('taxonomy-browser')).toBeDefined()
     void mod
+  })
+
+  it('opens modal on card click', () => {
+    render(<TaxonomyBrowserSection categories={mockCategories} />)
+    fireEvent.click(screen.getByTestId('taxonomy-browser-card-0'))
+    expect(screen.getByTestId('taxonomy-dialog')).toBeInTheDocument()
+    expect(screen.getByTestId('taxonomy-overlay')).toBeInTheDocument()
+  })
+
+  it('modal shows correct category title', () => {
+    render(<TaxonomyBrowserSection categories={mockCategories} />)
+    fireEvent.click(screen.getByTestId('taxonomy-browser-card-0'))
+    const dialog = screen.getByTestId('taxonomy-dialog')
+    expect(dialog.querySelector('.taxonomy-modal-title')).toHaveTextContent('Category One')
+  })
+
+  it('modal shows correct category subtitle', () => {
+    render(<TaxonomyBrowserSection categories={mockCategories} />)
+    fireEvent.click(screen.getByTestId('taxonomy-browser-card-0'))
+    const dialog = screen.getByTestId('taxonomy-dialog')
+    expect(dialog.querySelector('.taxonomy-modal-subtitle')).toHaveTextContent('Subtitle One')
+  })
+
+  it('modal shows overview section', () => {
+    render(<TaxonomyBrowserSection categories={mockCategories} />)
+    fireEvent.click(screen.getByTestId('taxonomy-browser-card-0'))
+    const overview = screen.getByTestId('taxonomy-modal-overview')
+    expect(overview).toBeInTheDocument()
+    expect(overview).toHaveTextContent('Description for the first category.')
+  })
+
+  it('modal shows deep dive section', () => {
+    render(<TaxonomyBrowserSection categories={mockCategories} />)
+    fireEvent.click(screen.getByTestId('taxonomy-browser-card-0'))
+    const deepdive = screen.getByTestId('taxonomy-modal-deepdive')
+    expect(deepdive).toBeInTheDocument()
+    expect(deepdive).toHaveTextContent('More details about category one.')
+  })
+
+  it('modal shows scope boundaries section', () => {
+    render(<TaxonomyBrowserSection categories={mockCategories} />)
+    fireEvent.click(screen.getByTestId('taxonomy-browser-card-0'))
+    const scope = screen.getByTestId('taxonomy-modal-scope')
+    expect(scope).toBeInTheDocument()
+    expect(scope).toHaveTextContent('Primary Focus')
+    expect(scope).toHaveTextContent('Main focus area.')
+  })
+
+  it('modal shows analogy', () => {
+    render(<TaxonomyBrowserSection categories={mockCategories} />)
+    fireEvent.click(screen.getByTestId('taxonomy-browser-card-0'))
+    expect(screen.getByTestId('taxonomy-modal-analogy')).toHaveTextContent('An analogy for category one.')
+  })
+
+  it('modal shows primary focus', () => {
+    render(<TaxonomyBrowserSection categories={mockCategories} />)
+    fireEvent.click(screen.getByTestId('taxonomy-browser-card-0'))
+    expect(screen.getByTestId('taxonomy-modal-primary-focus')).toHaveTextContent('Main focus area.')
+  })
+
+  it('modal shows in-scope items', () => {
+    render(<TaxonomyBrowserSection categories={mockCategories} />)
+    fireEvent.click(screen.getByTestId('taxonomy-browser-card-0'))
+    expect(screen.getByTestId('taxonomy-modal-in-scope')).toBeInTheDocument()
+    expect(screen.getByTestId('taxonomy-modal-in-scope-0')).toHaveTextContent('Item A')
+    expect(screen.getByTestId('taxonomy-modal-in-scope-1')).toHaveTextContent('Item B')
+  })
+
+  it('modal shows out-of-scope items', () => {
+    render(<TaxonomyBrowserSection categories={mockCategories} />)
+    fireEvent.click(screen.getByTestId('taxonomy-browser-card-0'))
+    expect(screen.getByTestId('taxonomy-modal-out-of-scope')).toBeInTheDocument()
+    expect(screen.getByTestId('taxonomy-modal-out-of-scope-0')).toHaveTextContent('Item C')
+  })
+
+  it('modal closes on close button click', () => {
+    render(<TaxonomyBrowserSection categories={mockCategories} />)
+    fireEvent.click(screen.getByTestId('taxonomy-browser-card-0'))
+    expect(screen.getByTestId('taxonomy-dialog')).toBeInTheDocument()
+    fireEvent.click(screen.getByTestId('taxonomy-dialog-close'))
+    expect(screen.queryByTestId('taxonomy-dialog')).not.toBeInTheDocument()
+  })
+
+  it('modal closes on overlay click', () => {
+    render(<TaxonomyBrowserSection categories={mockCategories} />)
+    fireEvent.click(screen.getByTestId('taxonomy-browser-card-0'))
+    expect(screen.getByTestId('taxonomy-dialog')).toBeInTheDocument()
+    fireEvent.click(screen.getByTestId('taxonomy-overlay'))
+    expect(screen.queryByTestId('taxonomy-dialog')).not.toBeInTheDocument()
+  })
+
+  it('opens modal on Enter key', () => {
+    render(<TaxonomyBrowserSection categories={mockCategories} />)
+    const card = screen.getByTestId('taxonomy-browser-card-0')
+    fireEvent.keyDown(card, { key: 'Enter', code: 'Enter' })
+    expect(screen.getByTestId('taxonomy-dialog')).toBeInTheDocument()
+  })
+
+  it('opens modal on Space key', () => {
+    render(<TaxonomyBrowserSection categories={mockCategories} />)
+    const card = screen.getByTestId('taxonomy-browser-card-0')
+    fireEvent.keyDown(card, { key: ' ', code: 'Space' })
+    expect(screen.getByTestId('taxonomy-dialog')).toBeInTheDocument()
+  })
+
+  it('modal shows second category data when its card is clicked', () => {
+    render(<TaxonomyBrowserSection categories={mockCategories} />)
+    fireEvent.click(screen.getByTestId('taxonomy-browser-card-1'))
+    expect(screen.getByTestId('taxonomy-dialog')).toBeInTheDocument()
+    const dialog = screen.getByTestId('taxonomy-dialog')
+    expect(dialog.querySelector('.taxonomy-modal-title')).toHaveTextContent('Category Two')
+    expect(dialog.querySelector('.taxonomy-modal-subtitle')).toHaveTextContent('Subtitle Two')
+    const deepdive = screen.getByTestId('taxonomy-modal-deepdive')
+    expect(deepdive).toHaveTextContent('More details about category two.')
+  })
+
+  it('modal does not show when no card is clicked', () => {
+    render(<TaxonomyBrowserSection categories={mockCategories} />)
+    expect(screen.queryByTestId('taxonomy-dialog')).not.toBeInTheDocument()
   })
 })
