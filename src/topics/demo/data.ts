@@ -1,6 +1,9 @@
 import type { FlowchartNode, FlowchartEdge, Journey } from '../../sections/flowchart'
 import type { SituationChoice } from '../../sections/situation-choice'
 import type { TradeoffScenario } from '../../sections/tradeoff-sandbox'
+import type { TaxonomyCategory } from '../../sections/taxonomy-browser'
+import type { ComponentType } from 'react'
+import { Brain, Zap, Shield, Workflow } from 'lucide-react'
 
 // ─── Flowchart: AI Agent Architecture ────────────────────────────────────────
 
@@ -631,5 +634,62 @@ export const apiPatternSituations: SituationChoice[] = [
         ],
       },
     ],
+  },
+]
+
+// ─── Taxonomy Browser: AI Agent Capability Categories ─────────────────────────
+
+export const taxonomyCategories: TaxonomyCategory[] = [
+  {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    icon: Brain as unknown as ComponentType<any>,
+    title: 'Reasoning & Planning',
+    subtitle: 'Core Intelligence',
+    description: 'The agent decomposes goals into actionable plans, reasons through chain-of-thought, and adapts strategies when encountering obstacles.',
+    details: 'Planning encompasses ReAct loops, tree-of-thought search, and self-refinement patterns.',
+    analogy: 'Like a project manager breaking down an epic into sprint tasks and adjusting when blockers appear.',
+    primaryFocus: 'Goal decomposition and step-by-step execution',
+    inScope: ['Chain-of-thought', 'ReAct loops', 'Self-correction'],
+    outOfScope: ['Raw text generation without planning'],
+    color: 'mauve',
+  },
+  {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    icon: Zap as unknown as ComponentType<any>,
+    title: 'Tool Use & Execution',
+    subtitle: 'Action Layer',
+    description: 'The agent selects and invokes external tools — web search, code execution, API calls — to extend its capabilities beyond text generation.',
+    details: 'Tool routing matches task requirements to available capabilities, then dispatches execution through a sandboxed runtime.',
+    analogy: 'Like a developer choosing the right CLI tool or API for each sub-task in a deployment pipeline.',
+    primaryFocus: 'Tool selection, argument generation, and result processing',
+    inScope: ['Web search', 'Code sandbox', 'API calls', 'Browser automation'],
+    outOfScope: ['Hardware control', 'Physical world interaction'],
+    color: 'peach',
+  },
+  {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    icon: Shield as unknown as ComponentType<any>,
+    title: 'Memory & Context',
+    subtitle: 'State Management',
+    description: 'The agent maintains short-term context within a session and retrieves relevant long-term knowledge from a vector store.',
+    details: 'Memory includes conversation history, tool output caching, and semantic retrieval of stored facts.',
+    analogy: 'Like a researcher with sticky notes for current work and a reference library for background knowledge.',
+    primaryFocus: 'Context window management and semantic retrieval',
+    inScope: ['Conversation history', 'Vector DB retrieval', 'Embedding storage'],
+    outOfScope: ['Real-time streaming state sync'],
+    color: 'blue',
+  },
+  {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    icon: Workflow as unknown as ComponentType<any>,
+    title: 'Self-Evaluation',
+    subtitle: 'Quality Assurance',
+    description: 'The agent evaluates its own output against success criteria, identifies failures, and triggers re-planning when goals are not met.',
+    details: 'Self-evaluation uses structured critique prompts, rubric-based scoring, and automated success checks.',
+    analogy: 'Like a code review process where the author checks their own pull request before submitting.',
+    primaryFocus: 'Output validation and failure recovery',
+    inScope: ['Success criteria checking', 'Rubric scoring', 'Re-planning triggers'],
+    outOfScope: ['Human-in-the-loop approval'],
+    color: 'green',
   },
 ]

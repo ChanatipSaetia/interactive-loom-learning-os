@@ -55,3 +55,11 @@ _Avoid_: Option, Alternative, Variant
 **RecommendationDetail**:
 The persistent "why this fits" explanation for the recommended choice. Always visible in a banner, separate from choice cards.
 _Avoid_: Reason, Justification, Rationale
+
+**TaxonomyBrowser**:
+A section type presenting categorized concepts as a responsive 2-column card grid. Each card shows an icon, subtitle, title, and description with a Catppuccin accent color. Clicking a card opens a Radix Dialog modal with overview, deep dive, boundary analogy, primary focus, and in-scope/out-of-scope lists. Cards animate in with staggered entrance via anime.js.
+_Avoid_: Bento Grid, Category Browser, Taxonomy Viewer
+
+**TaxonomyCategory**:
+A single entry within a TaxonomyBrowser. Contains visual metadata (icon, color), summary content (title, subtitle, description), and boundary definitions (analogy, primaryFocus, inScope[], outOfScope[]).
+_Avoid_: Card, Item, Entry, Domain
