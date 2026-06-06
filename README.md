@@ -128,4 +128,4 @@ The UI uses the Catppuccin Frappé palette for a dark theme, with Cohere structu
 
 ## License
 
-Private
+MIT
