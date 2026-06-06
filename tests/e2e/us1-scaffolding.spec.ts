@@ -34,7 +34,7 @@ test.describe('US-1: Scaffolding + Shell', () => {
   test('sidebar topic link navigates to topic page', async ({ page }) => {
     await page.goto('/')
     await page.getByTestId('topic-link-demo').click()
-    await expect(page).toHaveURL('/demo/ai-agent')
+    await expect(page).toHaveURL('/#/demo/ai-agent')
     await expect(page.locator('.topic-page')).toBeVisible()
   })
 })

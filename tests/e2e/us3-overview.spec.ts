@@ -14,7 +14,7 @@ test.describe('US-3: Overview Page', () => {
     // Topic link is present and navigates
     const topicLink = page.getByTestId('topic-link-demo')
     await expect(topicLink).toBeVisible()
-    await expect(topicLink).toHaveAttribute('href', '/demo/ai-agent')
+    await expect(topicLink).toHaveAttribute('href', '/#/demo/ai-agent')
 
     // Search input exists
     const searchInput = page.getByTestId('overview-search')

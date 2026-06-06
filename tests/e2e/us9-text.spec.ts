@@ -2,7 +2,7 @@ import { test, expect } from '@playwright/test'
 
 test.describe('US-9: Text Section', () => {
   test('renders text section with paragraphs', async ({ page }) => {
-    await page.goto('/demo/ai-agent')
+    await page.goto('/#/demo/ai-agent')
 
     const textSection = page.getByTestId('text-section')
     await expect(textSection).toBeVisible()
@@ -12,7 +12,7 @@ test.describe('US-9: Text Section', () => {
   })
 
   test('renders section title and heading', async ({ page }) => {
-    await page.goto('/demo/ai-agent')
+    await page.goto('/#/demo/ai-agent')
 
     await expect(page.getByTestId('text-title')).toBeVisible()
     await expect(page.getByTestId('text-title')).toHaveText('What is REST?')
@@ -22,7 +22,7 @@ test.describe('US-9: Text Section', () => {
   })
 
   test('renders inline code with monospace styling', async ({ page }) => {
-    await page.goto('/demo/ai-agent')
+    await page.goto('/#/demo/ai-agent')
 
     const codes = page.getByTestId('text-inline-code')
     await expect(codes.first()).toBeVisible()
@@ -30,7 +30,7 @@ test.describe('US-9: Text Section', () => {
   })
 
   test('renders links with action-blue styling', async ({ page }) => {
-    await page.goto('/demo/ai-agent')
+    await page.goto('/#/demo/ai-agent')
 
     const link = page.getByTestId('text-link')
     await expect(link).toBeVisible()
@@ -39,7 +39,7 @@ test.describe('US-9: Text Section', () => {
   })
 
   test('renders multiple paragraphs', async ({ page }) => {
-    await page.goto('/demo/ai-agent')
+    await page.goto('/#/demo/ai-agent')
 
     await expect(page.getByTestId('text-paragraph-0')).toBeVisible()
     await expect(page.getByTestId('text-paragraph-1')).toBeVisible()

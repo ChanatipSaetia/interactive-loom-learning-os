@@ -18,22 +18,25 @@ const mockSteps: TradeoffStep[] = [
     id: 'step-frontend',
     title: 'Frontend Choice',
     description: 'Choose the frontend approach.',
+    recommended: 'ssr',
     choices: [
       {
         id: 'spa',
         label: 'SPA',
         description: 'Single page application.',
         metrics: { performance: 10, cost: 5 },
-        pros: [{ title: 'Fast navigation', description: '' }],
-        cons: [{ title: 'SEO issues', description: '' }],
+        pros: [{ title: 'Fast navigation', description: 'Smooth client transitions' }],
+        cons: [{ title: 'SEO issues', description: 'Requires SSR for search indexing' }],
+        whenToUse: 'Internal tools where SEO does not matter.',
       },
       {
         id: 'ssr',
         label: 'SSR',
         description: 'Server-side rendered.',
         metrics: { performance: 15, cost: -5 },
-        pros: [{ title: 'Better SEO', description: '' }],
-        cons: [{ title: 'Server cost', description: '' }],
+        pros: [{ title: 'Better SEO', description: 'Server-rendered HTML' }],
+        cons: [{ title: 'Server cost', description: 'Needs Node.js runtime' }],
+        whyThisFits: 'Enterprise apps benefit from SSR for SEO and faster first paint.',
       },
     ],
   },
@@ -52,6 +55,12 @@ const mockScenarios: TradeoffScenario[] = [
 const defaultProps: TradeoffSandboxSectionProps = {
   title: 'Trade-off Sandbox',
   scenarios: mockScenarios,
+}
+
+// Helper to select a choice via dropdown
+function selectChoice(scenarioIdx: number, stepIdx: number, choiceId: string) {
+  fireEvent.click(screen.getByTestId(`step-dropdown-trigger-${scenarioIdx}-${stepIdx}`))
+  fireEvent.click(screen.getByTestId(`dropdown-option-${scenarioIdx}-${stepIdx}-${choiceId}`))
 }
 
 describe('TradeoffSandbox Section', () => {
@@ -135,72 +144,60 @@ describe('TradeoffSandbox Section', () => {
     expect(screen.getByTestId('step-description-0-0')).toHaveTextContent('Choose the frontend approach.')
   })
 
-  it('renders choice cards in tray', () => {
+  it('renders floating dropdown trigger', () => {
     render(<TradeoffSandboxSection {...defaultProps} />)
-    expect(screen.getByTestId('choice-card-0-0-spa')).toBeInTheDocument()
-    expect(screen.getByTestId('choice-card-0-0-ssr')).toBeInTheDocument()
-  })
-
-  it('renders choice card labels', () => {
-    render(<TradeoffSandboxSection {...defaultProps} />)
-    expect(screen.getByTestId('choice-card-label-0-0-spa')).toHaveTextContent('SPA')
-    expect(screen.getByTestId('choice-card-label-0-0-ssr')).toHaveTextContent('SSR')
+    expect(screen.getByTestId('step-dropdown-trigger-0-0')).toBeInTheDocument()
   })
 
   it('renders drop zone with placeholder', () => {
     render(<TradeoffSandboxSection {...defaultProps} />)
     expect(screen.getByTestId('drop-zone-0-0')).toBeInTheDocument()
-    expect(screen.getByTestId('drop-zone-placeholder-0-0')).toHaveTextContent('Drag or click a choice here')
+    expect(screen.getByTestId('drop-zone-placeholder-0-0')).toHaveTextContent('Select a choice from the dropdown')
   })
 
-  // ─── Click-to-Drop (Accessibility) ────────────────────
+  // ─── Floating Dropdown ────────────────────────────────
 
-  it('clicking a choice card selects it in drop zone', () => {
+  it('clicking dropdown trigger opens menu', () => {
     render(<TradeoffSandboxSection {...defaultProps} />)
-    fireEvent.click(screen.getByTestId('choice-card-0-0-spa'))
+    expect(screen.queryByTestId('step-dropdown-menu-0-0')).not.toBeInTheDocument()
+    fireEvent.click(screen.getByTestId('step-dropdown-trigger-0-0'))
+    expect(screen.getByTestId('step-dropdown-menu-0-0')).toBeInTheDocument()
+    expect(screen.getByTestId('dropdown-option-0-0-spa')).toBeInTheDocument()
+    expect(screen.getByTestId('dropdown-option-0-0-ssr')).toBeInTheDocument()
+  })
+
+  it('selecting dropdown option fills drop zone', () => {
+    render(<TradeoffSandboxSection {...defaultProps} />)
+    selectChoice(0, 0, 'spa')
     expect(screen.getByTestId('drop-zone-content-0-0')).toBeInTheDocument()
+    expect(screen.getByTestId('drop-zone-label-0-0')).toHaveTextContent('SPA')
+  })
+
+  it('dropdown menu closes after selection', () => {
+    render(<TradeoffSandboxSection {...defaultProps} />)
+    fireEvent.click(screen.getByTestId('step-dropdown-trigger-0-0'))
+    expect(screen.getByTestId('step-dropdown-menu-0-0')).toBeInTheDocument()
+    fireEvent.click(screen.getByTestId('dropdown-option-0-0-spa'))
+    expect(screen.queryByTestId('step-dropdown-menu-0-0')).not.toBeInTheDocument()
+  })
+
+  it('selecting different option replaces previous selection', () => {
+    render(<TradeoffSandboxSection {...defaultProps} />)
+    selectChoice(0, 0, 'spa')
     expect(screen.getByTestId('drop-zone-content-0-0')).toHaveTextContent('SPA')
-  })
-
-  it('selected choice card shows placed badge', () => {
-    render(<TradeoffSandboxSection {...defaultProps} />)
-    fireEvent.click(screen.getByTestId('choice-card-0-0-spa'))
-    expect(screen.getByTestId('choice-placed-badge-0-0-spa')).toBeInTheDocument()
-    expect(screen.getByTestId('choice-placed-badge-0-0-spa')).toHaveTextContent('Placed')
-  })
-
-  it('selected choice card has placed class', () => {
-    render(<TradeoffSandboxSection {...defaultProps} />)
-    fireEvent.click(screen.getByTestId('choice-card-0-0-spa'))
-    const card = screen.getByTestId('choice-card-0-0-spa')
-    expect(card.classList.contains('choice-card-placed')).toBe(true)
-  })
-
-  it('placed card is disabled and not clickable', () => {
-    render(<TradeoffSandboxSection {...defaultProps} />)
-    fireEvent.click(screen.getByTestId('choice-card-0-0-spa'))
-    expect(screen.getByTestId('drop-zone-content-0-0')).toBeInTheDocument()
-    const placedCard = screen.getByTestId('choice-card-0-0-spa')
-    expect(placedCard).toHaveAttribute('aria-disabled', 'true')
-  })
-
-  it('selecting different choice replaces previous selection', () => {
-    render(<TradeoffSandboxSection {...defaultProps} />)
-    fireEvent.click(screen.getByTestId('choice-card-0-0-spa'))
-    expect(screen.getByTestId('drop-zone-content-0-0')).toHaveTextContent('SPA')
-    fireEvent.click(screen.getByTestId('choice-card-0-0-ssr'))
+    selectChoice(0, 0, 'ssr')
     expect(screen.getByTestId('drop-zone-content-0-0')).toHaveTextContent('SSR')
   })
 
   it('drop zone shows remove button when filled', () => {
     render(<TradeoffSandboxSection {...defaultProps} />)
-    fireEvent.click(screen.getByTestId('choice-card-0-0-spa'))
+    selectChoice(0, 0, 'spa')
     expect(screen.getByTestId('drop-zone-remove-0-0')).toBeInTheDocument()
   })
 
   it('clicking remove button clears drop zone', () => {
     render(<TradeoffSandboxSection {...defaultProps} />)
-    fireEvent.click(screen.getByTestId('choice-card-0-0-spa'))
+    selectChoice(0, 0, 'spa')
     expect(screen.getByTestId('drop-zone-content-0-0')).toBeInTheDocument()
     fireEvent.click(screen.getByTestId('drop-zone-remove-0-0'))
     expect(screen.queryByTestId('drop-zone-content-0-0')).not.toBeInTheDocument()
@@ -211,30 +208,126 @@ describe('TradeoffSandbox Section', () => {
   it('drop zone has filled class when choice placed', () => {
     render(<TradeoffSandboxSection {...defaultProps} />)
     expect(screen.getByTestId('drop-zone-0-0')).not.toHaveClass('drop-zone-filled')
-    fireEvent.click(screen.getByTestId('choice-card-0-0-spa'))
+    selectChoice(0, 0, 'spa')
     expect(screen.getByTestId('drop-zone-0-0')).toHaveClass('drop-zone-filled')
+  })
+
+  // ─── Recommended Badge ────────────────────────────────
+
+  it('recommended option shows badge in dropdown', () => {
+    render(<TradeoffSandboxSection {...defaultProps} />)
+    fireEvent.click(screen.getByTestId('step-dropdown-trigger-0-0'))
+    expect(screen.getByTestId('recommended-badge-0-0-ssr')).toBeInTheDocument()
+    expect(screen.getByTestId('recommended-badge-0-0-ssr')).toHaveTextContent('Recommended')
+  })
+
+  it('non-recommended option does not show badge', () => {
+    render(<TradeoffSandboxSection {...defaultProps} />)
+    fireEvent.click(screen.getByTestId('step-dropdown-trigger-0-0'))
+    expect(screen.queryByTestId('recommended-badge-0-0-spa')).not.toBeInTheDocument()
+  })
+
+  it('recommended choice shows badge in drop zone', () => {
+    render(<TradeoffSandboxSection {...defaultProps} />)
+    selectChoice(0, 0, 'ssr')
+    expect(screen.getByTestId('drop-zone-recommended-badge-0-0')).toBeInTheDocument()
+  })
+
+  it('non-recommended choice does not show badge in drop zone', () => {
+    render(<TradeoffSandboxSection {...defaultProps} />)
+    selectChoice(0, 0, 'spa')
+    expect(screen.queryByTestId('drop-zone-recommended-badge-0-0')).not.toBeInTheDocument()
+  })
+
+  // ─── Info Icon & Details Modal ────────────────────────
+
+  it('placed step cards render info icon', () => {
+    render(<TradeoffSandboxSection {...defaultProps} />)
+    selectChoice(0, 0, 'spa')
+    expect(screen.getByTestId('drop-zone-info-0-0')).toBeInTheDocument()
+  })
+
+  it('clicking info icon opens details modal', () => {
+    render(<TradeoffSandboxSection {...defaultProps} />)
+    selectChoice(0, 0, 'spa')
+    fireEvent.click(screen.getByTestId('drop-zone-info-0-0'))
+    expect(screen.getByTestId('details-dialog')).toBeInTheDocument()
+    expect(screen.getByTestId('details-overlay')).toBeInTheDocument()
+  })
+
+  it('details modal shows choice label and description', () => {
+    render(<TradeoffSandboxSection {...defaultProps} />)
+    selectChoice(0, 0, 'spa')
+    fireEvent.click(screen.getByTestId('drop-zone-info-0-0'))
+    expect(screen.getByTestId('details-choice-label')).toHaveTextContent('SPA')
+    expect(screen.getByTestId('details-description')).toHaveTextContent('Single page application.')
+  })
+
+  it('details modal shows recommended badge for recommended choice', () => {
+    render(<TradeoffSandboxSection {...defaultProps} />)
+    selectChoice(0, 0, 'ssr')
+    fireEvent.click(screen.getByTestId('drop-zone-info-0-0'))
+    expect(screen.getByTestId('details-recommended-badge')).toBeInTheDocument()
+    expect(screen.getByTestId('details-recommendation-box')).toBeInTheDocument()
+  })
+
+  it('details modal shows alternative box for non-recommended choice', () => {
+    render(<TradeoffSandboxSection {...defaultProps} />)
+    selectChoice(0, 0, 'spa')
+    fireEvent.click(screen.getByTestId('drop-zone-info-0-0'))
+    expect(screen.getByTestId('details-alternative-box')).toBeInTheDocument()
+    expect(screen.getByTestId('details-alt-text')).toHaveTextContent('Internal tools where SEO does not matter.')
+  })
+
+  it('details modal shows detailed pros with title and description', () => {
+    render(<TradeoffSandboxSection {...defaultProps} />)
+    selectChoice(0, 0, 'spa')
+    fireEvent.click(screen.getByTestId('drop-zone-info-0-0'))
+    expect(screen.getByTestId('details-pros')).toBeInTheDocument()
+    const pro = screen.getByTestId('details-pro-0')
+    expect(pro).toHaveTextContent('Fast navigation')
+    expect(pro).toHaveTextContent('Smooth client transitions')
+  })
+
+  it('details modal shows detailed cons with title and description', () => {
+    render(<TradeoffSandboxSection {...defaultProps} />)
+    selectChoice(0, 0, 'spa')
+    fireEvent.click(screen.getByTestId('drop-zone-info-0-0'))
+    expect(screen.getByTestId('details-cons')).toBeInTheDocument()
+    const con = screen.getByTestId('details-con-0')
+    expect(con).toHaveTextContent('SEO issues')
+    expect(con).toHaveTextContent('Requires SSR for search indexing')
+  })
+
+  it('details modal dismissible with close button', () => {
+    render(<TradeoffSandboxSection {...defaultProps} />)
+    selectChoice(0, 0, 'spa')
+    fireEvent.click(screen.getByTestId('drop-zone-info-0-0'))
+    expect(screen.getByTestId('details-dialog')).toBeInTheDocument()
+    fireEvent.click(screen.getByTestId('details-dialog-close'))
+    expect(screen.queryByTestId('details-dialog')).not.toBeInTheDocument()
   })
 
   // ─── Metric Updates ───────────────────────────────────
 
-  it('metrics update when choice is placed', () => {
+  it('metrics update when choice is selected', () => {
     render(<TradeoffSandboxSection {...defaultProps} />)
     expect(screen.getByTestId('metric-value-performance')).toHaveTextContent('50')
-    fireEvent.click(screen.getByTestId('choice-card-0-0-spa'))
+    selectChoice(0, 0, 'spa')
     expect(screen.getByTestId('metric-value-performance')).toHaveTextContent('60')
   })
 
   it('metrics update when choice changes', () => {
     render(<TradeoffSandboxSection {...defaultProps} />)
-    fireEvent.click(screen.getByTestId('choice-card-0-0-spa'))
+    selectChoice(0, 0, 'spa')
     expect(screen.getByTestId('metric-value-performance')).toHaveTextContent('60')
-    fireEvent.click(screen.getByTestId('choice-card-0-0-ssr'))
+    selectChoice(0, 0, 'ssr')
     expect(screen.getByTestId('metric-value-performance')).toHaveTextContent('65')
   })
 
   it('metrics reset when choice is removed', () => {
     render(<TradeoffSandboxSection {...defaultProps} />)
-    fireEvent.click(screen.getByTestId('choice-card-0-0-spa'))
+    selectChoice(0, 0, 'spa')
     expect(screen.getByTestId('metric-value-performance')).toHaveTextContent('60')
     fireEvent.click(screen.getByTestId('drop-zone-remove-0-0'))
     expect(screen.getByTestId('metric-value-performance')).toHaveTextContent('50')
@@ -242,67 +335,32 @@ describe('TradeoffSandbox Section', () => {
 
   // ─── Progress Updates ─────────────────────────────────
 
-  it('progress indicator updates when choice placed', () => {
+  it('progress indicator updates when choice selected', () => {
     render(<TradeoffSandboxSection {...defaultProps} />)
     expect(screen.getByTestId('progress-indicator')).toHaveTextContent('0 / 1')
-    fireEvent.click(screen.getByTestId('choice-card-0-0-spa'))
+    selectChoice(0, 0, 'spa')
     expect(screen.getByTestId('progress-indicator')).toHaveTextContent('1 / 1')
   })
 
   // ─── Keyboard Accessibility ───────────────────────────
 
-  it('choice card is focusable', () => {
+  it('dropdown trigger is focusable', () => {
     render(<TradeoffSandboxSection {...defaultProps} />)
-    const card = screen.getByTestId('choice-card-0-0-spa')
-    expect(card).toHaveAttribute('tabIndex', '0')
+    const trigger = screen.getByTestId('step-dropdown-trigger-0-0')
+    expect(trigger).toHaveAttribute('type', 'button')
   })
 
-  it('choice card has role button', () => {
+  it('Enter key opens dropdown', () => {
     render(<TradeoffSandboxSection {...defaultProps} />)
-    const card = screen.getByTestId('choice-card-0-0-spa')
-    expect(card).toHaveAttribute('role', 'button')
+    fireEvent.click(screen.getByTestId('step-dropdown-trigger-0-0'))
+    expect(screen.getByTestId('step-dropdown-menu-0-0')).toBeInTheDocument()
   })
 
-  it('Enter key selects choice', () => {
+  it('Enter key selects dropdown option', () => {
     render(<TradeoffSandboxSection {...defaultProps} />)
-    const card = screen.getByTestId('choice-card-0-0-spa')
-    fireEvent.keyDown(card, { key: 'Enter', code: 'Enter' })
+    fireEvent.click(screen.getByTestId('step-dropdown-trigger-0-0'))
+    fireEvent.click(screen.getByTestId('dropdown-option-0-0-spa'))
     expect(screen.getByTestId('drop-zone-content-0-0')).toBeInTheDocument()
-  })
-
-  it('Space key selects choice', () => {
-    render(<TradeoffSandboxSection {...defaultProps} />)
-    const card = screen.getByTestId('choice-card-0-0-spa')
-    fireEvent.keyDown(card, { key: ' ', code: 'Space' })
-    expect(screen.getByTestId('drop-zone-content-0-0')).toBeInTheDocument()
-  })
-
-  it('placed card is not keyboard focusable', () => {
-    render(<TradeoffSandboxSection {...defaultProps} />)
-    fireEvent.click(screen.getByTestId('choice-card-0-0-spa'))
-    const card = screen.getByTestId('choice-card-0-0-spa')
-    expect(card).toHaveAttribute('tabIndex', '-1')
-    expect(card).toHaveAttribute('aria-disabled', 'true')
-  })
-
-  // ─── HTML5 Drag and Drop ──────────────────────────────
-
-  it('choice card is draggable', () => {
-    render(<TradeoffSandboxSection {...defaultProps} />)
-    const card = screen.getByTestId('choice-card-0-0-spa')
-    expect(card).toHaveAttribute('draggable', 'true')
-  })
-
-  it('dragging choice to drop zone selects it', () => {
-    render(<TradeoffSandboxSection {...defaultProps} />)
-    const card = screen.getByTestId('choice-card-0-0-spa')
-    const dropZone = screen.getByTestId('drop-zone-0-0')
-    fireEvent.dragStart(card)
-    fireEvent.dragOver(dropZone)
-    const dataTransfer = { getData: () => 'spa', effectAllowed: 'move', dropEffect: 'move', types: ['text/plain'] } as unknown as DataTransfer
-    fireEvent.drop(dropZone, { dataTransfer })
-    expect(screen.getByTestId('drop-zone-content-0-0')).toBeInTheDocument()
-    expect(screen.getByTestId('drop-zone-content-0-0')).toHaveTextContent('SPA')
   })
 
   // ─── Compare All Modal ────────────────────────────────
@@ -342,25 +400,34 @@ describe('TradeoffSandbox Section', () => {
     expect(screen.getByTestId('compare-card-label-0-ssr')).toHaveTextContent('SSR')
   })
 
-  it('modal shows pros with Check icon', () => {
+  it('modal shows pros with title and description', () => {
     render(<TradeoffSandboxSection {...defaultProps} />)
     fireEvent.click(screen.getByTestId('compare-all-button'))
     expect(screen.getByTestId('compare-pros-0-spa')).toBeInTheDocument()
-    expect(screen.getByTestId('compare-pro-0-spa-0')).toBeInTheDocument()
-    expect(screen.getByTestId('compare-pro-0-spa-0')).toHaveTextContent('Fast navigation')
+    const pro = screen.getByTestId('compare-pro-0-spa-0')
+    expect(pro).toHaveTextContent('Fast navigation')
+    expect(pro).toHaveTextContent('Smooth client transitions')
   })
 
-  it('modal shows cons with X icon', () => {
+  it('modal shows cons with title and description', () => {
     render(<TradeoffSandboxSection {...defaultProps} />)
     fireEvent.click(screen.getByTestId('compare-all-button'))
     expect(screen.getByTestId('compare-cons-0-spa')).toBeInTheDocument()
-    expect(screen.getByTestId('compare-con-0-spa-0')).toBeInTheDocument()
-    expect(screen.getByTestId('compare-con-0-spa-0')).toHaveTextContent('SEO issues')
+    const con = screen.getByTestId('compare-con-0-spa-0')
+    expect(con).toHaveTextContent('SEO issues')
+    expect(con).toHaveTextContent('Requires SSR for search indexing')
+  })
+
+  it('modal shows recommended badge for recommended choice', () => {
+    render(<TradeoffSandboxSection {...defaultProps} />)
+    fireEvent.click(screen.getByTestId('compare-all-button'))
+    expect(screen.getByTestId('compare-recommended-badge-0-ssr')).toBeInTheDocument()
+    expect(screen.getByTestId('compare-recommended-badge-0-ssr')).toHaveTextContent('Recommended')
   })
 
   it('chosen choice has Selected badge in modal', () => {
     render(<TradeoffSandboxSection {...defaultProps} />)
-    fireEvent.click(screen.getByTestId('choice-card-0-0-spa'))
+    selectChoice(0, 0, 'spa')
     fireEvent.click(screen.getByTestId('compare-all-button'))
     expect(screen.getByTestId('compare-badge-0-spa')).toBeInTheDocument()
     expect(screen.getByTestId('compare-badge-0-spa')).toHaveTextContent('Selected')
@@ -369,7 +436,7 @@ describe('TradeoffSandbox Section', () => {
 
   it('chosen choice card has chosen class in modal', () => {
     render(<TradeoffSandboxSection {...defaultProps} />)
-    fireEvent.click(screen.getByTestId('choice-card-0-0-spa'))
+    selectChoice(0, 0, 'spa')
     fireEvent.click(screen.getByTestId('compare-all-button'))
     const chosenCard = screen.getByTestId('compare-card-0-spa')
     expect(chosenCard.classList.contains('compare-card-chosen')).toBe(true)
@@ -486,7 +553,7 @@ describe('TradeoffSandbox Section', () => {
       },
     ]
     render(<TradeoffSandboxSection scenarios={multiScenarios} />)
-    fireEvent.click(screen.getByTestId('choice-card-0-0-spa'))
+    selectChoice(0, 0, 'spa')
     expect(screen.getByTestId('metric-value-performance')).toHaveTextContent('60')
     fireEvent.click(screen.getByTestId('scenario-select'))
     fireEvent.click(screen.getByRole('option', { name: 'Chat System' }))
@@ -568,7 +635,7 @@ describe('TradeoffSandbox Section', () => {
     }
     render(<TradeoffSandboxSection scenarios={[scenario]} />)
     expect(screen.getByTestId('progress-indicator')).toHaveTextContent('0 / 2')
-    fireEvent.click(screen.getByTestId('choice-card-0-0-spa'))
+    selectChoice(0, 0, 'spa')
     expect(screen.getByTestId('progress-indicator')).toHaveTextContent('1 / 2')
   })
 
@@ -596,9 +663,9 @@ describe('TradeoffSandbox Section', () => {
       steps: multiSteps,
     }
     render(<TradeoffSandboxSection scenarios={[scenario]} />)
-    fireEvent.click(screen.getByTestId('choice-card-0-0-spa'))
+    selectChoice(0, 0, 'spa')
     expect(screen.getByTestId('metric-value-performance')).toHaveTextContent('60')
-    fireEvent.click(screen.getByTestId('choice-card-0-1-monolith'))
+    selectChoice(0, 1, 'monolith')
     expect(screen.getByTestId('metric-value-performance')).toHaveTextContent('55')
   })
 
@@ -622,7 +689,7 @@ describe('TradeoffSandbox Section', () => {
 
   it('metric fill turns green when value improves for higher direction', () => {
     render(<TradeoffSandboxSection {...defaultProps} />)
-    fireEvent.click(screen.getByTestId('choice-card-0-0-spa'))
+    selectChoice(0, 0, 'spa')
     const fill = screen.getByTestId('metric-fill-performance')
     const bg = fill.style.backgroundColor
     expect(bg).toBe('var(--ctp-green)')
@@ -656,7 +723,7 @@ describe('TradeoffSandbox Section', () => {
       steps: stepsWithNegative,
     }
     render(<TradeoffSandboxSection scenarios={[scenario]} />)
-    fireEvent.click(screen.getByTestId('choice-card-0-0-neg'))
+    selectChoice(0, 0, 'neg')
     const fill = screen.getByTestId('metric-fill-performance')
     const bg = fill.style.backgroundColor
     expect(bg).toBe('var(--ctp-red)')
@@ -689,7 +756,7 @@ describe('TradeoffSandbox Section', () => {
       ],
     }
     render(<TradeoffSandboxSection scenarios={[scenario]} />)
-    fireEvent.click(screen.getByTestId('choice-card-0-0-reduce'))
+    selectChoice(0, 0, 'reduce')
     const fill = screen.getByTestId('metric-fill-complexity')
     const bg = fill.style.backgroundColor
     expect(bg).toBe('var(--ctp-green)')
@@ -722,7 +789,7 @@ describe('TradeoffSandbox Section', () => {
       ],
     }
     render(<TradeoffSandboxSection scenarios={[scenario]} />)
-    fireEvent.click(screen.getByTestId('choice-card-0-0-increase'))
+    selectChoice(0, 0, 'increase')
     const fill = screen.getByTestId('metric-fill-complexity')
     const bg = fill.style.backgroundColor
     expect(bg).toBe('var(--ctp-red)')
@@ -755,7 +822,7 @@ describe('TradeoffSandbox Section', () => {
       ],
     }
     render(<TradeoffSandboxSection scenarios={[scenario]} />)
-    fireEvent.click(screen.getByTestId('choice-card-0-0-faster'))
+    selectChoice(0, 0, 'faster')
     const fill = screen.getByTestId('metric-fill-speed')
     const bg = fill.style.backgroundColor
     expect(bg).toBe('var(--ctp-green)')
@@ -800,7 +867,7 @@ describe('TradeoffSandbox Section', () => {
       steps: multiSteps,
     }
     render(<TradeoffSandboxSection scenarios={[scenario]} />)
-    fireEvent.click(screen.getByTestId('choice-card-0-0-spa'))
+    selectChoice(0, 0, 'spa')
     expect(screen.getByTestId('feedback-text')).toHaveTextContent('1 of 2 decisions made')
     const banner = screen.getByTestId('feedback-banner')
     expect(banner.classList.contains('feedback-banner-partial')).toBe(true)
@@ -808,7 +875,7 @@ describe('TradeoffSandbox Section', () => {
 
   it('feedback shows complete state when all choices made', () => {
     render(<TradeoffSandboxSection {...defaultProps} />)
-    fireEvent.click(screen.getByTestId('choice-card-0-0-spa'))
+    selectChoice(0, 0, 'spa')
     expect(screen.getByTestId('feedback-text')).toHaveTextContent('All decisions made')
     const banner = screen.getByTestId('feedback-banner')
     expect(banner.classList.contains('feedback-banner-complete')).toBe(true)
@@ -839,15 +906,15 @@ describe('TradeoffSandbox Section', () => {
     }
     render(<TradeoffSandboxSection scenarios={[scenario]} />)
     expect(screen.getByTestId('feedback-text')).toHaveTextContent('Make your first choice')
-    fireEvent.click(screen.getByTestId('choice-card-0-0-spa'))
+    selectChoice(0, 0, 'spa')
     expect(screen.getByTestId('feedback-text')).toHaveTextContent('1 of 2 decisions made')
-    fireEvent.click(screen.getByTestId('choice-card-0-1-mono'))
+    selectChoice(0, 1, 'mono')
     expect(screen.getByTestId('feedback-text')).toHaveTextContent('All decisions made')
   })
 
   it('feedback updates from complete to partial on remove', () => {
     render(<TradeoffSandboxSection {...defaultProps} />)
-    fireEvent.click(screen.getByTestId('choice-card-0-0-spa'))
+    selectChoice(0, 0, 'spa')
     expect(screen.getByTestId('feedback-text')).toHaveTextContent('All decisions made')
     fireEvent.click(screen.getByTestId('drop-zone-remove-0-0'))
     expect(screen.getByTestId('feedback-text')).toHaveTextContent('Make your first choice')

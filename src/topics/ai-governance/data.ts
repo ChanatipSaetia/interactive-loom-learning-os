@@ -1,5 +1,5 @@
 import type { FlowchartNode, FlowchartEdge, Journey } from '../../sections/flowchart'
-import type { SituationChoice } from '../../sections/situation-choice'
+import type { TradeoffScenario } from '../../sections/tradeoff-sandbox'
 
 /* ──────────────────────────────────────────────────────────────
  * All content sourced from Obsidian vault notes. References below.
@@ -121,173 +121,193 @@ export const governanceJourneys: Journey[] = [
   },
 ]
 
-// ─── Situation Choice: Governance design decisions ─────────────
+// ─── Tradeoff Sandbox: Governance design decisions ────────────────────────────
 
-export const governanceSituations: SituationChoice[] = [
+export const governanceScenarios: TradeoffScenario[] = [
   {
-    title: 'Autonomy Level for Production Agent',
-    situation: 'You are deploying an AI agent to handle customer support tickets. The agent can route queries, look up knowledge bases, and draft responses. The consequences of wrong actions include customer dissatisfaction and potential data exposure.',
-    recommended: 'guided',
-    recommendationDetail: {
-      why: 'Guided autonomy lets the agent act independently while humans monitor exceptions and intervene when flagged. This balances efficiency with oversight for a medium-stakes domain. Ref: glossary/Autonomy Tier.md',
-    },
-    choices: [
-      {
-        id: 'shadow',
-        label: 'Shadow Mode',
-        description: 'Agent suggests actions; human always takes the final action. Best for early deployment and calibration.',
-        pros: [
-          { title: 'Zero autonomous risk', description: 'Human always in control of final action' },
-          { title: 'Calibration data', description: 'Builds trust data before going live' },
-        ],
-        cons: [
-          { title: 'No efficiency gain', description: 'Human still does all the work' },
-          { title: 'Bottleneck', description: 'Cannot scale without human bandwidth' },
-        ],
-        whenToUse: 'Use during initial deployment or in high-stakes domains (finance, legal) where autonomous errors are unacceptable.',
-      },
-      {
-        id: 'supervised',
-        label: 'Supervised Mode',
-        description: 'Agent drafts the action; human approves before execution. Adds a confirmation gate.',
-        pros: [
-          { title: 'Efficiency with safety', description: 'Agent does the work, human validates' },
-          { title: 'Audit trail', description: 'Every action has human approval record' },
-        ],
-        cons: [
-          { title: 'Approval bottleneck', description: 'Still requires human per action' },
-          { title: 'Alert fatigue', description: 'Humans may rubber-stamp over time' },
-        ],
-        whenToUse: 'Use for financial transactions, legal commitments, or regulated workflows where every action needs approval.',
-      },
-      {
-        id: 'guided',
-        label: 'Guided Mode (Recommended)',
-        description: 'Agent acts independently; human monitors exceptions and intervenes when flagged. Balances autonomy with oversight.',
-        pros: [
-          { title: 'Scalable autonomy', description: 'Agent handles routine cases without human per action' },
-          { title: 'Exception focus', description: 'Human attention directed to flagged cases only' },
-          { title: 'Behavioral guardrails', description: 'Agent operates within defined bounds (glossary/Behavioral Guardrails.md)' },
-        ],
-        cons: [
-          { title: 'Flag accuracy', description: 'Depends on quality of exception detection' },
-          { title: 'Drift risk', description: 'Agent behavior may drift without per-action review' },
-        ],
-      },
-      {
-        id: 'autonomous',
-        label: 'Autonomous Mode',
-        description: 'Agent acts and self-corrects within bounds; human reviews only aggregated outcomes.',
-        pros: [
-          { title: 'Maximum efficiency', description: 'No human bottleneck at any level' },
-          { title: 'Self-correction', description: 'Agent learns from outcomes to improve' },
-        ],
-        cons: [
-          { title: 'Highest risk', description: 'Errors compound before human review' },
-          { title: 'Requires maturity', description: 'Only for mature workflows with low blast radius' },
-        ],
-        whenToUse: 'Use only for mature workflows with proven reliability and low blast radius, backed by runtime controls (glossary/Runtime Control.md).',
-      },
+    id: 'ai-governance-sandbox',
+    title: 'AI Governance Sandbox',
+    description: 'Evaluate choices across the AI Governance lifecycle: autonomy level, runtime control, and governance framework.',
+    metrics: [
+      { id: 'mitigation', label: 'Risk Mitigation', baseValue: 50, min: 0, max: 100, direction: 'higher' },
+      { id: 'speed', label: 'Development Speed', baseValue: 50, min: 0, max: 100, direction: 'higher' },
+      { id: 'compliance', label: 'Compliance Alignment', baseValue: 50, min: 0, max: 100, direction: 'higher' },
+      { id: 'complexity', label: 'System Complexity', baseValue: 30, min: 0, max: 100, direction: 'lower' },
     ],
-  },
-  {
-    title: 'Runtime Control Strategy',
-    situation: 'Your AI agent will interact with internal APIs: reading customer data, writing to a CRM, and sending emails. A malfunctioning agent could expose data, corrupt records, or send misleading communications.',
-    recommended: 'layered-controls',
-    recommendationDetail: {
-      why: 'A layered approach combining API contracts, permission scoping, kill switches, and reasoning sandboxes provides defense-in-depth. Each control catches failures the others might miss. Ref: glossary/Runtime Control.md',
-    },
-    choices: [
+    steps: [
       {
-        id: 'permission-scoping',
-        label: 'Permission Scoping Only',
-        description: 'Separate read from write access, scoped per workflow. Simplest control to implement.',
-        pros: [
-          { title: 'Simple', description: 'Straightforward to implement' },
-          { title: 'Clear boundaries', description: 'Read vs write separation' },
-        ],
-        cons: [
-          { title: 'Static', description: 'Does not adapt to runtime behavior' },
-          { title: 'Single layer', description: 'No defense if permissions are exploited' },
+        id: 'autonomy-level',
+        title: 'Autonomy Level for Production Agent',
+        description: 'You are deploying an AI agent to handle customer support tickets. The agent can route queries, look up knowledge bases, and draft responses. The consequences of wrong actions include customer dissatisfaction and potential data exposure.',
+        recommended: 'guided',
+        choices: [
+          {
+            id: 'shadow',
+            label: 'Shadow Mode',
+            description: 'Agent suggests actions; human always takes the final action. Best for early deployment and calibration.',
+            metrics: { mitigation: 30, speed: -20, compliance: 20, complexity: 5 },
+            pros: [
+              { title: 'Zero autonomous risk', description: 'Human always in control of final action' },
+              { title: 'Calibration data', description: 'Builds trust data before going live' },
+            ],
+            cons: [
+              { title: 'No efficiency gain', description: 'Human still does all the work' },
+              { title: 'Bottleneck', description: 'Cannot scale without human bandwidth' },
+            ],
+            whenToUse: 'Use during initial deployment or in high-stakes domains (finance, legal) where autonomous errors are unacceptable.',
+          },
+          {
+            id: 'supervised',
+            label: 'Supervised Mode',
+            description: 'Agent drafts the action; human approves before execution. Adds a confirmation gate.',
+            metrics: { mitigation: 20, speed: -10, compliance: 15, complexity: 10 },
+            pros: [
+              { title: 'Efficiency with safety', description: 'Agent does the work, human validates' },
+              { title: 'Audit trail', description: 'Every action has human approval record' },
+            ],
+            cons: [
+              { title: 'Approval bottleneck', description: 'Still requires human per action' },
+              { title: 'Alert fatigue', description: 'Humans may rubber-stamp over time' },
+            ],
+            whenToUse: 'Use for financial transactions, legal commitments, or regulated workflows where every action needs approval.',
+          },
+          {
+            id: 'guided',
+            label: 'Guided Mode (Recommended)',
+            description: 'Agent acts independently; human monitors exceptions and intervenes when flagged. Balances autonomy with oversight.',
+            metrics: { mitigation: 15, speed: 15, compliance: 15, complexity: 15 },
+            pros: [
+              { title: 'Scalable autonomy', description: 'Agent handles routine cases without human per action' },
+              { title: 'Exception focus', description: 'Human attention directed to flagged cases only' },
+              { title: 'Behavioral guardrails', description: 'Agent operates within defined bounds (glossary/Behavioral Guardrails.md)' },
+            ],
+            cons: [
+              { title: 'Flag accuracy', description: 'Depends on quality of exception detection' },
+              { title: 'Drift risk', description: 'Agent behavior may drift without per-action review' },
+            ],
+            whyThisFits: 'Guided autonomy lets the agent act independently while humans monitor exceptions and intervene when flagged. This balances efficiency with oversight for a medium-stakes domain. Ref: glossary/Autonomy Tier.md',
+          },
+          {
+            id: 'autonomous',
+            label: 'Autonomous Mode',
+            description: 'Agent acts and self-corrects within bounds; human reviews only aggregated outcomes.',
+            metrics: { mitigation: -10, speed: 30, compliance: 5, complexity: 20 },
+            pros: [
+              { title: 'Maximum efficiency', description: 'No human bottleneck at any level' },
+              { title: 'Self-correction', description: 'Agent learns from outcomes to improve' },
+            ],
+            cons: [
+              { title: 'Highest risk', description: 'Errors compound before human review' },
+              { title: 'Requires maturity', description: 'Only for mature workflows with low blast radius' },
+            ],
+            whenToUse: 'Use only for mature workflows with proven reliability and low blast radius, backed by runtime controls (glossary/Runtime Control.md).',
+          },
         ],
       },
       {
-        id: 'kill-switch',
-        label: 'Kill Switch + Monitoring',
-        description: 'Stop the agent when anomalies or drift are detected. Provides an emergency brake.',
-        pros: [
-          { title: 'Emergency stop', description: 'Halts agent when things go wrong' },
-          { title: 'Observable', description: 'Requires monitoring infrastructure' },
-        ],
-        cons: [
-          { title: 'Reactive', description: 'Damage may already be done before trigger' },
-          { title: 'Threshold tuning', description: 'Hard to calibrate alarm thresholds' },
-        ],
-      },
-      {
-        id: 'layered-controls',
-        label: 'Layered Controls (Recommended)',
-        description: 'Combine API contracts (per-call validation), permission scoping (least-privilege), kill switches (emergency stop), and reasoning sandboxes (dry-run before execution).',
-        pros: [
-          { title: 'Defense-in-depth', description: 'Multiple layers catch different failure modes' },
-          { title: 'Pre-execution safety', description: 'Reasoning sandboxes validate before action' },
-          { title: 'Comprehensive', description: 'Covers prevention, detection, and response' },
-        ],
-        cons: [
-          { title: 'Complexity', description: 'More infrastructure to build and maintain' },
-          { title: 'Latency', description: 'Validation layers add execution time' },
-        ],
-      },
-    ],
-  },
-  {
-    title: 'Governance Framework Selection',
-    situation: 'Your organization needs to establish an AI governance framework for deployed agents. You need a structured approach to assess risks and implement controls.',
-    recommended: 'arc-owasp-hybrid',
-    recommendationDetail: {
-      why: 'Combining ARC Framework\'s capability-centric risk mapping with OWASP Top 10\'s security focus provides comprehensive coverage. ARC maps capabilities to risks to controls systematically, while OWASP ensures known security vulnerabilities are addressed. Ref: glossary/Agentic Risk & Capability Framework.md; summaries/owasp-top10-agentic-2026/01-core.md',
-    },
-    choices: [
-      {
-        id: 'arc-only',
-        label: 'ARC Framework',
-        description: 'GovTech Singapore capability-centric framework. Maps capabilities to risks to controls with 54+ risks and three-tier controls (Cardinal, Standard, Best Practice).',
-        pros: [
-          { title: 'Capability-centric', description: 'Maps what agents can do to how they can fail' },
-          { title: 'Systematic', description: 'Consistent risk phrasing and control tiers' },
-          { title: 'Comprehensive', description: '54+ risks across three analytical lenses' },
-        ],
-        cons: [
-          { title: 'Academic origin', description: 'Less industry-tested than OWASP' },
-          { title: 'Singapore-focused', description: 'May not align with all regulatory contexts' },
-        ],
-      },
-      {
-        id: 'owasp-only',
-        label: 'OWASP Top 10 Agentic',
-        description: 'Industry peer-reviewed with 100+ contributors. Focuses on the most critical security risks with actionable mitigations.',
-        pros: [
-          { title: 'Industry consensus', description: '100+ expert peer review' },
-          { title: 'Actionable', description: 'Clear risk descriptions and mitigations' },
-          { title: 'Familiar format', description: 'Builds on established OWASP Top 10 pattern' },
-        ],
-        cons: [
-          { title: 'Security-focused', description: 'Less coverage of alignment and societal integration' },
-          { title: 'Top 10 limit', description: 'May miss less common but critical risks' },
+        id: 'runtime-control',
+        title: 'Runtime Control Strategy',
+        description: 'Your AI agent will interact with internal APIs: reading customer data, writing to a CRM, and sending emails. A malfunctioning agent could expose data, corrupt records, or send misleading communications.',
+        recommended: 'layered-controls',
+        choices: [
+          {
+            id: 'permission-scoping',
+            label: 'Permission Scoping Only',
+            description: 'Separate read from write access, scoped per workflow. Simplest control to implement.',
+            metrics: { mitigation: 5, speed: 15, compliance: 5, complexity: -5 },
+            pros: [
+              { title: 'Simple', description: 'Straightforward to implement' },
+              { title: 'Clear boundaries', description: 'Read vs write separation' },
+            ],
+            cons: [
+              { title: 'Static', description: 'Does not adapt to runtime behavior' },
+              { title: 'Single layer', description: 'No defense if permissions are exploited' },
+            ],
+          },
+          {
+            id: 'kill-switch',
+            label: 'Kill Switch + Monitoring',
+            description: 'Stop the agent when anomalies or drift are detected. Provides an emergency brake.',
+            metrics: { mitigation: 15, speed: 10, compliance: 10, complexity: 10 },
+            pros: [
+              { title: 'Emergency stop', description: 'Halts agent when things go wrong' },
+              { title: 'Observable', description: 'Requires monitoring infrastructure' },
+            ],
+            cons: [
+              { title: 'Reactive', description: 'Damage may already be done before trigger' },
+              { title: 'Threshold tuning', description: 'Hard to calibrate alarm thresholds' },
+            ],
+          },
+          {
+            id: 'layered-controls',
+            label: 'Layered Controls (Recommended)',
+            description: 'Combine API contracts (per-call validation), permission scoping (least-privilege), kill switches (emergency stop), and reasoning sandboxes (dry-run before execution).',
+            metrics: { mitigation: 30, speed: -10, compliance: 20, complexity: 25 },
+            pros: [
+              { title: 'Defense-in-depth', description: 'Multiple layers catch different failure modes' },
+              { title: 'Pre-execution safety', description: 'Reasoning sandboxes validate before action' },
+              { title: 'Comprehensive', description: 'Covers prevention, detection, and response' },
+            ],
+            cons: [
+              { title: 'Complexity', description: 'More infrastructure to build and maintain' },
+              { title: 'Latency', description: 'Validation layers add execution time' },
+            ],
+            whyThisFits: 'A layered approach combining API contracts, permission scoping, kill switches, and reasoning sandboxes provides defense-in-depth. Each control catches failures the others might miss. Ref: glossary/Runtime Control.md',
+          },
         ],
       },
       {
-        id: 'arc-owasp-hybrid',
-        label: 'ARC + OWASP Hybrid (Recommended)',
-        description: 'Use ARC for systematic capability-risk-control mapping, supplemented by OWASP for security depth and industry validation.',
-        pros: [
-          { title: 'Comprehensive coverage', description: 'Governance breadth + security depth' },
-          { title: 'Industry validated', description: 'Combines academic rigor with practitioner review' },
-          { title: 'Tiered controls', description: 'Cardinal/Standard/Best Practice from ARC' },
-        ],
-        cons: [
-          { title: 'Integration effort', description: 'Need to reconcile two frameworks' },
-          { title: 'Maintenance', description: 'Two frameworks to keep current' },
+        id: 'governance-framework',
+        title: 'Governance Framework Selection',
+        description: 'Your organization needs to establish an AI governance framework for deployed agents. You need a structured approach to assess risks and implement controls.',
+        recommended: 'arc-owasp-hybrid',
+        choices: [
+          {
+            id: 'arc-only',
+            label: 'ARC Framework',
+            description: 'GovTech Singapore capability-centric framework. Maps capabilities to risks to controls with 54+ risks and three-tier controls (Cardinal, Standard, Best Practice).',
+            metrics: { mitigation: 20, speed: 5, compliance: 25, complexity: 15 },
+            pros: [
+              { title: 'Capability-centric', description: 'Maps what agents can do to how they can fail' },
+              { title: 'Systematic', description: 'Consistent risk phrasing and control tiers' },
+              { title: 'Comprehensive', description: '54+ risks across three analytical lenses' },
+            ],
+            cons: [
+              { title: 'Academic origin', description: 'Less industry-tested than OWASP' },
+              { title: 'Singapore-focused', description: 'May not align with all regulatory contexts' },
+            ],
+          },
+          {
+            id: 'owasp-only',
+            label: 'OWASP Top 10 Agentic',
+            description: 'Industry peer-reviewed with 100+ contributors. Focuses on the most critical security risks with actionable mitigations.',
+            metrics: { mitigation: 15, speed: 10, compliance: 15, complexity: 10 },
+            pros: [
+              { title: 'Industry consensus', description: '100+ expert peer review' },
+              { title: 'Actionable', description: 'Clear risk descriptions and mitigations' },
+              { title: 'Familiar format', description: 'Builds on established OWASP Top 10 pattern' },
+            ],
+            cons: [
+              { title: 'Security-focused', description: 'Less coverage of alignment and societal integration' },
+              { title: 'Top 10 limit', description: 'May miss less common but critical risks' },
+            ],
+          },
+          {
+            id: 'arc-owasp-hybrid',
+            label: 'ARC + OWASP Hybrid (Recommended)',
+            description: 'Use ARC for systematic capability-risk-control mapping, supplemented by OWASP for security depth and industry validation.',
+            metrics: { mitigation: 30, speed: -5, compliance: 30, complexity: 20 },
+            pros: [
+              { title: 'Comprehensive coverage', description: 'Governance breadth + security depth' },
+              { title: 'Industry validated', description: 'Combines academic rigor with practitioner review' },
+              { title: 'Tiered controls', description: 'Cardinal/Standard/Best Practice from ARC' },
+            ],
+            cons: [
+              { title: 'Integration effort', description: 'Need to reconcile two frameworks' },
+              { title: 'Maintenance', description: 'Two frameworks to keep current' },
+            ],
+            whyThisFits: 'Combining ARC Framework\'s capability-centric risk mapping with OWASP Top 10\'s security focus provides comprehensive coverage. ARC maps capabilities to risks to controls systematically, while OWASP ensures known security vulnerabilities are addressed. Ref: glossary/Agentic Risk & Capability Framework.md; summaries/owasp-top10-agentic-2026/01-core.md',
+          },
         ],
       },
     ],

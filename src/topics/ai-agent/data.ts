@@ -1,5 +1,5 @@
 import type { FlowchartNode, FlowchartEdge, Journey } from '../../sections/flowchart'
-import type { SituationChoice } from '../../sections/situation-choice'
+import type { TradeoffScenario } from '../../sections/tradeoff-sandbox'
 
 export const aiAgentNodes: FlowchartNode[] = [
   { id: 'user', label: 'User', stereotype: 'actor', icon: 'User', layer: 0 },
@@ -53,103 +53,119 @@ export const aiAgentJourneys: Journey[] = [
   },
 ]
 
-// ─── Situation Choice: AI Agent design decisions ─────────────────────────────
+// ─── Tradeoff Sandbox: AI Agent design decisions ─────────────────────────────
 
-export const aiAgentSituations: SituationChoice[] = [
+export const aiAgentScenarios: TradeoffScenario[] = [
   {
-    title: 'Orchestration Strategy',
-    situation: 'You\'re building an AI agent to research and summarize a topic. The task is well-defined, linear, and doesn\'t require parallel work.',
-    recommended: 'react-loop',
-    recommendationDetail: {
-      why: 'For a well-defined, linear task, a single ReAct loop is simpler to implement, easier to debug, and has lower infrastructure overhead than a multi-agent pipeline.',
-    },
-    choices: [
-      {
-        id: 'react-loop',
-        label: 'ReAct Loop',
-        description: 'A single agent alternates between reasoning (Thought) and action (Act) steps, observing results before continuing to the next iteration.',
-        pros: [
-          { title: 'Simple to implement', description: 'Easy to build and debug' },
-          { title: 'Low infrastructure', description: 'Minimal setup overhead' },
-          { title: 'Linear task support', description: 'Works well for sequential tasks' },
-        ],
-        cons: [
-          { title: 'Sequential execution', description: 'Blocks on each tool call' },
-          { title: 'Context window limits', description: 'Fills up on long tasks' },
-          { title: 'Hard to parallelize', description: 'Sub-tasks run sequentially' },
-        ],
-      },
-      {
-        id: 'multi-agent-pipeline',
-        label: 'Multi-Agent Pipeline',
-        description: 'An orchestrator delegates sub-tasks to specialized sub-agents that can run concurrently, then aggregates their results.',
-        pros: [
-          { title: 'Parallel execution', description: 'Independent sub-tasks run concurrently' },
-          { title: 'Focused context', description: 'Each agent has a smaller context' },
-          { title: 'Easier to scale', description: 'Simple to add specialized agents' },
-        ],
-        cons: [
-          { title: 'Coordination complexity', description: 'More complex orchestration logic' },
-          { title: 'Cross-agent debugging', description: 'Harder to trace failures' },
-          { title: 'Messaging overhead', description: 'Requires robust inter-agent messaging' },
-        ],
-        whenToUse: 'Best when the task has multiple independent sub-tasks that benefit from parallel execution.',
-      },
+    id: 'ai-agent-design',
+    title: 'AI Agent Design Decisions',
+    description: 'Evaluate trade-offs across orchestration strategies and component placements.',
+    metrics: [
+      { id: 'reasoning', label: 'Reasoning Accuracy', baseValue: 50, min: 0, max: 100, direction: 'higher' },
+      { id: 'speed', label: 'Execution Speed', baseValue: 50, min: 0, max: 100, direction: 'higher' },
+      { id: 'complexity', label: 'Infrastructure Complexity', baseValue: 30, min: 0, max: 100, direction: 'lower' },
+      { id: 'cost', label: 'Token Cost', baseValue: 50, min: 0, max: 100, direction: 'lower' },
     ],
-  },
-  {
-    title: 'Component Placement',
-    situation: 'You\'re designing the memory subsystem for an AI agent that needs to recall facts across sessions.',
-    recommended: 'vector-db',
-    recommendationDetail: {
-      why: 'A vector database with embeddings enables semantic search over stored facts, making it ideal for cross-session recall where exact keyword matching is insufficient.',
-    },
-    choices: [
+    steps: [
       {
-        id: 'vector-db',
-        label: 'Vector DB + Embeddings (Memory Layer)',
-        description: 'Store facts as vector embeddings in a database like Pinecone or Chroma, then retrieve semantically similar memories at query time.',
-        pros: [
-          { title: 'Semantic search', description: 'Finds similar facts by meaning' },
-          { title: 'Scales massively', description: 'Handles millions of facts' },
-          { title: 'Persistent memory', description: 'Survives across sessions' },
-        ],
-        cons: [
-          { title: 'Embedding overhead', description: 'Requires embedding model' },
-          { title: 'Approximate matches', description: 'May miss exact keyword matches' },
+        id: 'orchestration',
+        title: 'Orchestration Strategy',
+        description: 'You\'re building an AI agent to research and summarize a topic. The task is well-defined, linear, and doesn\'t require parallel work.',
+        recommended: 'react-loop',
+        choices: [
+          {
+            id: 'react-loop',
+            label: 'ReAct Loop',
+            description: 'A single agent alternates between reasoning (Thought) and action (Act) steps, observing results before continuing to the next iteration.',
+            metrics: { reasoning: 5, speed: -5, complexity: -10, cost: -5 },
+            pros: [
+              { title: 'Simple to implement', description: 'Easy to build and debug' },
+              { title: 'Low infrastructure', description: 'Minimal setup overhead' },
+              { title: 'Linear task support', description: 'Works well for sequential tasks' },
+            ],
+            cons: [
+              { title: 'Sequential execution', description: 'Blocks on each tool call' },
+              { title: 'Context window limits', description: 'Fills up on long tasks' },
+              { title: 'Hard to parallelize', description: 'Sub-tasks run sequentially' },
+            ],
+            whyThisFits: 'For a well-defined, linear task, a single ReAct loop is simpler to implement, easier to debug, and has lower infrastructure overhead than a multi-agent pipeline.',
+          },
+          {
+            id: 'multi-agent-pipeline',
+            label: 'Multi-Agent Pipeline',
+            description: 'An orchestrator delegates sub-tasks to specialized sub-agents that can run concurrently, then aggregates their results.',
+            metrics: { reasoning: 15, speed: 10, complexity: 20, cost: 20 },
+            pros: [
+              { title: 'Parallel execution', description: 'Independent sub-tasks run concurrently' },
+              { title: 'Focused context', description: 'Each agent has a smaller context' },
+              { title: 'Easier to scale', description: 'Simple to add specialized agents' },
+            ],
+            cons: [
+              { title: 'Coordination complexity', description: 'More complex orchestration logic' },
+              { title: 'Cross-agent debugging', description: 'Harder to trace failures' },
+              { title: 'Messaging overhead', description: 'Requires robust inter-agent messaging' },
+            ],
+            whenToUse: 'Best when the task has multiple independent sub-tasks that benefit from parallel execution.',
+          },
         ],
       },
       {
-        id: 'code-sandbox',
-        label: 'Code Sandbox (Tool Layer)',
-        description: 'Use an isolated execution environment where the agent can run code to process or transform data at runtime.',
-        pros: [
-          { title: 'Full computation', description: 'Complete computational power' },
-          { title: 'Arbitrary logic', description: 'Execute any code at runtime' },
-          { title: 'Data processing', description: 'Good for transforming data' },
+        id: 'component-placement',
+        title: 'Component Placement',
+        description: 'You\'re designing the memory subsystem for an AI agent that needs to recall facts across sessions.',
+        recommended: 'vector-db',
+        choices: [
+          {
+            id: 'vector-db',
+            label: 'Vector DB + Embeddings (Memory Layer)',
+            description: 'Store facts as vector embeddings in a database like Pinecone or Chroma, then retrieve semantically similar memories at query time.',
+            metrics: { reasoning: 10, speed: 5, complexity: 5, cost: 5 },
+            pros: [
+              { title: 'Semantic search', description: 'Finds similar facts by meaning' },
+              { title: 'Scales massively', description: 'Handles millions of facts' },
+              { title: 'Persistent memory', description: 'Survives across sessions' },
+            ],
+            cons: [
+              { title: 'Embedding overhead', description: 'Requires embedding model' },
+              { title: 'Approximate matches', description: 'May miss exact keyword matches' },
+            ],
+            whyThisFits: 'A vector database with embeddings enables semantic search over stored facts, making it ideal for cross-session recall where exact keyword matching is insufficient.',
+          },
+          {
+            id: 'code-sandbox',
+            label: 'Code Sandbox (Tool Layer)',
+            description: 'Use an isolated execution environment where the agent can run code to process or transform data at runtime.',
+            metrics: { reasoning: 5, speed: -5, complexity: 15, cost: 10 },
+            pros: [
+              { title: 'Full computation', description: 'Complete computational power' },
+              { title: 'Arbitrary logic', description: 'Execute any code at runtime' },
+              { title: 'Data processing', description: 'Good for transforming data' },
+            ],
+            cons: [
+              { title: 'Security concerns', description: 'Risky with untrusted code' },
+              { title: 'Slower execution', description: 'Slower than simple lookups' },
+              { title: 'No persistence', description: 'Not designed for persistent memory' },
+            ],
+            whenToUse: 'Use when the agent needs to execute code, run computations, or process data dynamically.',
+          },
+          {
+            id: 'chain-of-thought',
+            label: 'Chain-of-Thought (Reasoning Layer)',
+            description: 'Prompt the LLM to reason step-by-step, showing its internal thought process before producing the final answer.',
+            metrics: { reasoning: 15, speed: -10, complexity: -5, cost: 15 },
+            pros: [
+              { title: 'Better reasoning', description: 'Improves reasoning accuracy' },
+              { title: 'Transparent decisions', description: 'Shows decision process' },
+              { title: 'No dependencies', description: 'No external tools needed' },
+            ],
+            cons: [
+              { title: 'No persistence', description: 'Does not persist across sessions' },
+              { title: 'Context limits', description: 'Limited by context window' },
+              { title: 'Token heavy', description: 'More tokens per query' },
+            ],
+            whenToUse: 'Use when the agent needs to show its reasoning process or tackle complex multi-step problems within a single session.',
+          },
         ],
-        cons: [
-          { title: 'Security concerns', description: 'Risky with untrusted code' },
-          { title: 'Slower execution', description: 'Slower than simple lookups' },
-          { title: 'No persistence', description: 'Not designed for persistent memory' },
-        ],
-        whenToUse: 'Use when the agent needs to execute code, run computations, or process data dynamically.',
-      },
-      {
-        id: 'chain-of-thought',
-        label: 'Chain-of-Thought (Reasoning Layer)',
-        description: 'Prompt the LLM to reason step-by-step, showing its internal thought process before producing the final answer.',
-        pros: [
-          { title: 'Better reasoning', description: 'Improves reasoning accuracy' },
-          { title: 'Transparent decisions', description: 'Shows decision process' },
-          { title: 'No dependencies', description: 'No external tools needed' },
-        ],
-        cons: [
-          { title: 'No persistence', description: 'Does not persist across sessions' },
-          { title: 'Context limits', description: 'Limited by context window' },
-          { title: 'Token heavy', description: 'More tokens per query' },
-        ],
-        whenToUse: 'Use when the agent needs to show its reasoning process or tackle complex multi-step problems within a single session.',
       },
     ],
   },

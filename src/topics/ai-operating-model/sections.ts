@@ -2,10 +2,7 @@ import type { SectionConfig } from '../../core/registry'
 import {
   introTextParagraphs,
   sixDecisionsBullets,
-  autonomyTierSituations,
-  hitlPatternSituations,
-  governanceArchSituations,
-  productionReadinessSituations,
+  operatingModelScenarios,
   operatingModelNodes,
   operatingModelEdges,
   operatingModelJourneys,
@@ -38,31 +35,10 @@ export const aiOperatingModelSections: SectionConfig[] = [
     },
   },
   {
-    type: 'situation-choice',
+    type: 'tradeoff-sandbox',
     props: {
-      title: 'Autonomy Tier Decision',
-      situations: autonomyTierSituations,
-    },
-  },
-  {
-    type: 'situation-choice',
-    props: {
-      title: 'Human-in-the-Loop Oversight Pattern',
-      situations: hitlPatternSituations,
-    },
-  },
-  {
-    type: 'situation-choice',
-    props: {
-      title: 'Governance Architecture',
-      situations: governanceArchSituations,
-    },
-  },
-  {
-    type: 'situation-choice',
-    props: {
-      title: 'Production Deployment Readiness',
-      situations: productionReadinessSituations,
+      title: 'AI Operating Model Design Decisions',
+      scenarios: operatingModelScenarios,
     },
   },
 ]

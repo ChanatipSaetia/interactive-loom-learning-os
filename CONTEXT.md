@@ -63,3 +63,20 @@ _Avoid_: Bento Grid, Category Browser, Taxonomy Viewer
 **TaxonomyCategory**:
 A single entry within a TaxonomyBrowser. Contains visual metadata (icon, color), summary content (title, subtitle, description), and boundary definitions (analogy, primaryFocus, inScope[], outOfScope[]).
 _Avoid_: Card, Item, Entry, Domain
+
+**TradeoffSandbox**:
+A section type that allows learners to explore and configure architectural scenarios by placing options for each component (step) and getting real-time metric feedback.
+_Avoid_: Tradeoff Section, Choice Sandbox
+
+**TradeoffScenario**:
+A specific architectural system configuration context (e.g., Enterprise Web Application) consisting of defining metrics and a sequence of architectural steps.
+_Avoid_: Scenario, System Context
+
+**TradeoffStep**:
+A specific decision point or component layer within a TradeoffScenario (e.g., Frontend Framework, Data Storage) requiring a design choice.
+_Avoid_: Component Section, Choice Card Container
+
+**TradeoffChoice**:
+An option that can be placed in a TradeoffStep. Each choice features pros, cons, and metric deltas that impact the overall dashboard.
+_Avoid_: Option, Alternative, Selected Card
+

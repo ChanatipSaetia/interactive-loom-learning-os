@@ -1,5 +1,5 @@
 import type { FlowchartNode, FlowchartEdge, Journey } from '../../sections/flowchart'
-import type { SituationChoice } from '../../sections/situation-choice'
+import type { TradeoffScenario } from '../../sections/tradeoff-sandbox'
 import type { BulletItem } from '../../sections/bullets'
 
 // ─── Flowchart: AgentOps Four-Phase Lifecycle ────────────────────────────────
@@ -212,253 +212,159 @@ export const opsComparisonBullets: BulletItem[] = [
   },
 ]
 
-// ─── Situation Choice: AgentOps Design Decisions ──────────────────────────────
+// ─── Tradeoff Sandbox: AgentOps Design Decisions ──────────────────────────────
 
-export const agentopsSituations: SituationChoice[] = [
+export const agentopsScenarios: TradeoffScenario[] = [
   {
-    title: 'Monitoring Depth',
-    situation:
-      'Your agent system is experiencing intermittent failures in production. You need to set up monitoring to diagnose the root cause. The team is unsure how deep to go with data collection.',
-    recommended: 'full-agentops',
-    recommendationDetail: {
-      why: 'Agent systems have non-deterministic failures that cannot be diagnosed with traditional metrics alone. Model data (internal LLM states) and checkpoint data (step-by-step snapshots) are essential for tracing reasoning anomalies and emergent behavior that traditional monitoring misses.',
-    },
-    choices: [
-      {
-        id: 'traditional',
-        label: 'Traditional Monitoring (Metrics + Logs + Traces)',
-        description:
-          'Monitor latency, token usage, cost, and standard distributed traces — similar to microservice observability.',
-        pros: [
-          { title: 'Familiar tooling', description: 'Teams already know Prometheus, Grafana, Datadog' },
-          { title: 'Lower overhead', description: 'Less data to store and process' },
-          { title: 'Easy to start', description: 'Quick to implement with existing infrastructure' },
-        ],
-        cons: [
-          {
-            title: 'Cannot detect reasoning anomalies',
-            description:
-              'Hallucinations and logic errors leave no trace in traditional metrics',
-          },
-          {
-            title: 'Blind to model internals',
-            description: 'No visibility into why the LLM produced a specific output',
-          },
-          {
-            title: 'No rollback capability',
-            description: 'Without checkpoints, cannot replay or rewind agent state',
-          },
-        ],
-        whenToUse:
-          'Useful as a baseline, but insufficient for diagnosing the unique failure modes of LLM agents.',
-      },
-      {
-        id: 'full-agentops',
-        label: 'Full AgentOps Monitoring',
-        description:
-          'Traditional data plus model data (hidden states, attention maps, token logits) and checkpoint data (memory/environment snapshots at each step).',
-        pros: [
-          {
-            title: 'Complete observability',
-            description:
-              'Can trace reasoning paths, detect hallucinations, and replay agent execution',
-          },
-          {
-            title: 'Enables counterfactual simulation',
-            description: 'Checkpoints allow time-travel debugging',
-          },
-          {
-            title: 'Supports all RCA strategies',
-            description: 'Full-stack traceability and semantic comparison require deep data',
-          },
-        ],
-        cons: [
-          {
-            title: 'Vast data volume',
-            description: 'Model and checkpoint data scales with agent count and step count',
-          },
-          {
-            title: 'Higher complexity',
-            description: 'Requires specialized tools like LangFuse, AgentOps.ai, or Arize Phoenix',
-          },
-          {
-            title: 'Security sensitivity',
-            description: 'Internal model states and memory may contain confidential data',
-          },
-        ],
-      },
+    id: 'agentops-lifecycle',
+    title: 'AgentOps Lifecycle Sandbox',
+    description: 'Evaluate choices across the AgentOps lifecycle: monitoring, resolution, and RCA.',
+    metrics: [
+      { id: 'observability', label: 'Observability Depth', baseValue: 50, min: 0, max: 100, direction: 'higher' },
+      { id: 'overhead', label: 'Operational Overhead', baseValue: 30, min: 0, max: 100, direction: 'lower' },
+      { id: 'cost', label: 'Implementation Cost', baseValue: 30, min: 0, max: 100, direction: 'lower' },
+      { id: 'speed', label: 'Detection Speed', baseValue: 50, min: 0, max: 100, direction: 'higher' },
     ],
-  },
-  {
-    title: 'Resolution Strategy',
-    situation:
-      'Your agent has been producing inconsistent answers for the same query. You need to choose a resolution approach to stabilize the output.',
-    recommended: 'system-design',
-    recommendationDetail: {
-      why: 'For non-deterministic reasoning issues, system-design approaches like redundancy-and-voting or guardrails provide more reliable stabilization than prompt tweaks alone. Prompt optimization helps but cannot guarantee consistency across stochastic LLM calls.',
-    },
-    choices: [
+    steps: [
       {
-        id: 'system-design',
-        label: 'System Design (Redundancy, Guardrails, Recovery)',
-        description:
-          'Architectural approaches: run multiple LLM instances with voting, add behavioral guardrails for output filtering, implement checkpoint-based rollback.',
-        pros: [
+        id: 'monitoring-depth',
+        title: 'Monitoring Depth',
+        description: 'Your agent system is experiencing intermittent failures in production. You need to set up monitoring to diagnose the root cause. The team is unsure how deep to go with data collection.',
+        recommended: 'full-agentops',
+        choices: [
           {
-            title: 'Deterministic guarantees',
-            description: 'Guardrails enforce hard constraints on agent behavior',
+            id: 'traditional',
+            label: 'Traditional Monitoring (Metrics + Logs + Traces)',
+            description: 'Monitor latency, token usage, cost, and standard distributed traces — similar to microservice observability.',
+            metrics: { observability: 10, overhead: 5, cost: 5, speed: 10 },
+            pros: [
+              { title: 'Familiar tooling', description: 'Teams already know Prometheus, Grafana, Datadog' },
+              { title: 'Lower overhead', description: 'Less data to store and process' },
+              { title: 'Easy to start', description: 'Quick to implement with existing infrastructure' },
+            ],
+            cons: [
+              { title: 'Cannot detect reasoning anomalies', description: 'Hallucinations and logic errors leave no trace in traditional metrics' },
+              { title: 'Blind to model internals', description: 'No visibility into why the LLM produced a specific output' },
+              { title: 'No rollback capability', description: 'Without checkpoints, cannot replay or rewind agent state' },
+            ],
+            whenToUse: 'Useful as a baseline, but insufficient for diagnosing the unique failure modes of LLM agents.',
           },
           {
-            title: 'Redundancy improves reliability',
-            description: 'Voting across LLM instances reduces hallucination risk',
-          },
-          {
-            title: 'Recovery enables safe failure',
-            description: 'Rollback to checkpoints prevents cascading errors',
-          },
-        ],
-        cons: [
-          {
-            title: 'Higher cost',
-            description: 'Multiple LLM calls and guardrail checks increase token usage',
-          },
-          {
-            title: 'Added latency',
-            description: 'Voting and validation add rounds to the execution pipeline',
+            id: 'full-agentops',
+            label: 'Full AgentOps Monitoring',
+            description: 'Traditional data plus model data (hidden states, attention maps, token logits) and checkpoint data (memory/environment snapshots at each step).',
+            metrics: { observability: 35, overhead: 25, cost: 20, speed: 25 },
+            pros: [
+              { title: 'Complete observability', description: 'Can trace reasoning paths, detect hallucinations, and replay agent execution' },
+              { title: 'Enables counterfactual simulation', description: 'Checkpoints allow time-travel debugging' },
+              { title: 'Supports all RCA strategies', description: 'Full-stack traceability and semantic comparison require deep data' },
+            ],
+            cons: [
+              { title: 'Vast data volume', description: 'Model and checkpoint data scales with agent count and step count' },
+              { title: 'Higher complexity', description: 'Requires specialized tools like LangFuse, AgentOps.ai, or Arize Phoenix' },
+              { title: 'Security sensitivity', description: 'Internal model states and memory may contain confidential data' },
+            ],
+            whyThisFits: 'Agent systems have non-deterministic failures that cannot be diagnosed with traditional metrics alone. Model data (internal LLM states) and checkpoint data (step-by-step snapshots) are essential for tracing reasoning anomalies and emergent behavior that traditional monitoring misses.',
           },
         ],
       },
       {
-        id: 'prompt-optimization',
-        label: 'Prompt Optimization (Self-Correction, Re-Prompting)',
-        description:
-          'Refine prompts to improve reasoning: add self-correction instructions, re-specify roles, re-prompt with different framing.',
-        pros: [
-          { title: 'Lower cost', description: 'No additional LLM instances needed' },
+        id: 'resolution-strategy',
+        title: 'Resolution Strategy',
+        description: 'Your agent has been producing inconsistent answers for the same query. You need to choose a resolution approach to stabilize the output.',
+        recommended: 'system-design',
+        choices: [
           {
-            title: 'Improves reasoning quality',
-            description: 'Better prompts reduce hallucination and logic errors',
-          },
-          { title: 'Quick to iterate', description: 'Prompt changes deploy without infrastructure changes' },
-        ],
-        cons: [
-          {
-            title: 'Non-deterministic',
-            description: 'No guarantee the fix will hold across different inputs or model versions',
-          },
-          {
-            title: 'Requires multi-turn validation',
-            description: 'Each prompt change needs A/B testing to verify',
-          },
-          {
-            title: 'Second-order effects',
-            description:
-              'A fix for one anomaly may create another (e.g., stricter prompt causes premature termination)',
-          },
-        ],
-        whenToUse:
-          'Best as a complement to system-design approaches, not as the sole resolution strategy for production agents.',
-      },
-    ],
-  },
-  {
-    title: 'RCA Approach',
-    situation:
-      'A multi-agent system failed to complete a complex task. You need to diagnose what went wrong. The failure involved three agents coordinating through message passing.',
-    recommended: 'counterfactual',
-    recommendationDetail: {
-      why: 'For multi-agent coordination failures, counterfactual simulation is the most powerful RCA strategy. It lets you isolate which agent\'s decision caused the failure by replaying the scenario with one element changed at a time — far more precise than trace comparison alone.',
-    },
-    choices: [
-      {
-        id: 'traceability',
-        label: 'Full-Stack Traceability',
-        description:
-          'Replay the complete execution trace: cognitive states, reasoning records, and action-environment interactions at every step.',
-        pros: [
-          {
-            title: 'Complete picture',
-            description: 'Shows every decision the agents made',
+            id: 'system-design',
+            label: 'System Design (Redundancy, Guardrails, Recovery)',
+            description: 'Architectural approaches: run multiple LLM instances with voting, add behavioral guardrails for output filtering, implement checkpoint-based rollback.',
+            metrics: { observability: 15, overhead: 15, cost: 20, speed: 10 },
+            pros: [
+              { title: 'Deterministic guarantees', description: 'Guardrails enforce hard constraints on agent behavior' },
+              { title: 'Redundancy improves reliability', description: 'Voting across LLM instances reduces hallucination risk' },
+              { title: 'Recovery enables safe failure', description: 'Rollback to checkpoints prevents cascading errors' },
+            ],
+            cons: [
+              { title: 'Higher cost', description: 'Multiple LLM calls and guardrail checks increase token usage' },
+              { title: 'Added latency', description: 'Voting and validation add rounds to the execution pipeline' },
+            ],
+            whyThisFits: 'For non-deterministic reasoning issues, system-design approaches like redundancy-and-voting or guardrails provide more reliable stabilization than prompt tweaks alone. Prompt optimization helps but cannot guarantee consistency across stochastic LLM calls.',
           },
           {
-            title: 'Passive analysis',
-            description: 'No need to re-run the system',
-          },
-          { title: 'Good for documentation', description: 'Trace serves as audit record' },
-        ],
-        cons: [
-          {
-            title: 'Descriptive, not diagnostic',
-            description: 'Shows what happened but not why',
-          },
-          {
-            title: 'Hard to isolate cause',
-            description: 'With multiple agents, the trace shows correlations, not causation',
-          },
-        ],
-        whenToUse: 'Best as a first step to understand the failure timeline before deeper analysis.',
-      },
-      {
-        id: 'counterfactual',
-        label: 'Counterfactual Simulation',
-        description:
-          'Time-travel to a checkpoint, modify one element (e.g., one agent\'s prompt), and observe the outcome to test hypotheses about root cause.',
-        pros: [
-          {
-            title: 'Causal diagnosis',
-            description: 'Directly tests whether a specific factor caused the failure',
-          },
-          {
-            title: 'Isolates variables',
-            description: 'Changes one element at a time for clean experiments',
-          },
-          {
-            title: 'Validates fixes',
-            description: 'Same mechanism used to verify resolution works',
-          },
-        ],
-        cons: [
-          {
-            title: 'Requires checkpoints',
-            description: 'Needs checkpoint data from monitoring phase',
-          },
-          {
-            title: 'Computationally expensive',
-            description: 'Each simulation re-runs the full agent pipeline',
-          },
-          {
-            title: 'Non-deterministic results',
-            description: 'Stochastic LLM may produce different outcomes on replay',
+            id: 'prompt-optimization',
+            label: 'Prompt Optimization (Self-Correction, Re-Prompting)',
+            description: 'Refine prompts to improve reasoning: add self-correction instructions, re-specify roles, re-prompt with different framing.',
+            metrics: { observability: 5, overhead: 5, cost: 5, speed: 5 },
+            pros: [
+              { title: 'Lower cost', description: 'No additional LLM instances needed' },
+              { title: 'Improves reasoning quality', description: 'Better prompts reduce hallucination and logic errors' },
+              { title: 'Quick to iterate', description: 'Prompt changes deploy without infrastructure changes' },
+            ],
+            cons: [
+              { title: 'Non-deterministic', description: 'No guarantee the fix will hold across different inputs or model versions' },
+              { title: 'Requires multi-turn validation', description: 'Each prompt change needs A/B testing to verify' },
+              { title: 'Second-order effects', description: 'A fix for one anomaly may create another (e.g., stricter prompt causes premature termination)' },
+            ],
+            whenToUse: 'Best as a complement to system-design approaches, not as the sole resolution strategy for production agents.',
           },
         ],
       },
       {
-        id: 'semantic-comparison',
-        label: 'Semantic Comparative Analysis',
-        description:
-          'Compare the failed execution trace with a successful trace on similar input, looking for semantic divergence in reasoning paths.',
-        pros: [
-          { title: 'No re-execution needed', description: 'Uses existing traces only' },
+        id: 'rca-approach',
+        title: 'RCA Approach',
+        description: 'A multi-agent system failed to complete a complex task. You need to diagnose what went wrong. The failure involved three agents coordinating through message passing.',
+        recommended: 'counterfactual',
+        choices: [
           {
-            title: 'Finds divergence points',
-            description: 'Identifies where the failed path deviated from success',
+            id: 'traceability',
+            label: 'Full-Stack Traceability',
+            description: 'Replay the complete execution trace: cognitive states, reasoning records, and action-environment interactions at every step.',
+            metrics: { observability: 15, overhead: 5, cost: 5, speed: 5 },
+            pros: [
+              { title: 'Complete picture', description: 'Shows every decision the agents made' },
+              { title: 'Passive analysis', description: 'No need to re-run the system' },
+              { title: 'Good for documentation', description: 'Trace serves as audit record' },
+            ],
+            cons: [
+              { title: 'Descriptive, not diagnostic', description: 'Shows what happened but not why' },
+              { title: 'Hard to isolate cause', description: 'With multiple agents, the trace shows correlations, not causation' },
+            ],
+            whenToUse: 'Best as a first step to understand the failure timeline before deeper analysis.',
           },
           {
-            title: 'Semantic understanding',
-            description: 'Compares meaning, not just literal token sequences',
+            id: 'counterfactual',
+            label: 'Counterfactual Simulation',
+            description: 'Time-travel to a checkpoint, modify one element (e.g., one agent\'s prompt), and observe the outcome to test hypotheses about root cause.',
+            metrics: { observability: 25, overhead: 20, cost: 20, speed: 15 },
+            pros: [
+              { title: 'Causal diagnosis', description: 'Directly tests whether a specific factor caused the failure' },
+              { title: 'Isolates variables', description: 'Changes one element at a time for clean experiments' },
+              { title: 'Validates fixes', description: 'Same mechanism used to verify resolution works' },
+            ],
+            cons: [
+              { title: 'Requires checkpoints', description: 'Needs checkpoint data from monitoring phase' },
+              { title: 'Computationally expensive', description: 'Each simulation re-runs the full agent pipeline' },
+              { title: 'Non-deterministic results', description: 'Stochastic LLM may produce different outcomes on replay' },
+            ],
+            whyThisFits: 'For multi-agent coordination failures, counterfactual simulation is the most powerful RCA strategy. It lets you isolate which agent\'s decision caused the failure by replaying the scenario with one element changed at a time — far more precise than trace comparison alone.',
+          },
+          {
+            id: 'semantic-comparison',
+            label: 'Semantic Comparative Analysis',
+            description: 'Compare the failed execution trace with a successful trace on similar input, looking for semantic divergence in reasoning paths.',
+            metrics: { observability: 20, overhead: 10, cost: 10, speed: 10 },
+            pros: [
+              { title: 'No re-execution needed', description: 'Uses existing traces only' },
+              { title: 'Finds divergence points', description: 'Identifies where the failed path deviated from success' },
+              { title: 'Semantic understanding', description: 'Compares meaning, not just literal token sequences' },
+            ],
+            cons: [
+              { title: 'Requires successful baseline', description: 'Need a comparable successful trace for comparison' },
+              { title: 'Correlation, not causation', description: 'Divergence point may not be the root cause' },
+            ],
+            whenToUse: 'Effective when you have a library of successful traces to compare against.',
           },
         ],
-        cons: [
-          {
-            title: 'Requires successful baseline',
-            description: 'Need a comparable successful trace for comparison',
-          },
-          {
-            title: 'Correlation, not causation',
-            description: 'Divergence point may not be the root cause',
-          },
-        ],
-        whenToUse: 'Effective when you have a library of successful traces to compare against.',
       },
     ],
   },
