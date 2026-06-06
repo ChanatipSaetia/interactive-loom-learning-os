@@ -8,6 +8,7 @@ import {
   agentCapabilityBullets,
   apiPatternSituations,
   tradeoffSandboxScenarios,
+  taxonomyCategories,
 } from './data'
 
 export const demoSections: SectionConfig[] = [
@@ -55,6 +56,13 @@ export const demoSections: SectionConfig[] = [
     props: {
       title: 'Architecture Trade-off Sandbox',
       scenarios: tradeoffSandboxScenarios,
+    },
+  },
+  {
+    type: 'taxonomy-browser',
+    props: {
+      title: 'AI Agent Capability Taxonomy',
+      categories: taxonomyCategories,
     },
   },
 ]

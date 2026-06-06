@@ -1,0 +1,75 @@
+.taxonomy-browser-section {
+  margin-bottom: var(--spacing-xxl);
+}
+
+.taxonomy-browser-title {
+  font-size: var(--text-feature-heading);
+  font-weight: 400;
+  color: var(--ctp-mauve);
+  margin-bottom: var(--spacing-lg);
+  line-height: 1.3;
+}
+
+.taxonomy-browser-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--spacing-lg);
+}
+
+@media (min-width: 768px) {
+  .taxonomy-browser-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+.taxonomy-browser-card {
+  background: var(--soft-stone);
+  border: 1px solid var(--border-light);
+  border-top: 3px solid var(--ctp-blue);
+  border-radius: var(--radius-lg);
+  padding: var(--spacing-xl);
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
+  transition: transform 0.2s ease, border-color 0.2s ease;
+}
+
+.taxonomy-browser-card:hover {
+  transform: translateY(-2px);
+}
+
+.taxonomy-browser-card-icon {
+  display: flex;
+  align-items: center;
+}
+
+.taxonomy-browser-card-body {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xs);
+}
+
+.taxonomy-browser-subtitle {
+  font-size: var(--text-mono-label);
+  font-weight: 400;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ctp-subtext0);
+  margin: 0;
+}
+
+.taxonomy-browser-card-title {
+  font-size: var(--text-card-heading);
+  font-weight: 400;
+  color: var(--ink);
+  margin: 0;
+  line-height: 1.2;
+  letter-spacing: -0.32px;
+}
+
+.taxonomy-browser-description {
+  font-size: var(--text-body);
+  color: var(--body-muted);
+  line-height: 1.5;
+  margin: 0;
+}
