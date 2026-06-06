@@ -124,6 +124,37 @@
   margin: 0;
 }
 
+/* ─── Feedback Banner ─────────────────────────────────── */
+
+.feedback-banner {
+  padding: var(--spacing-md) var(--spacing-lg);
+  border-radius: var(--radius-sm);
+  margin-bottom: var(--spacing-lg);
+  border: 1px solid var(--border-light);
+  background-color: var(--ctp-base);
+  transition: border-color 0.2s ease, background-color 0.2s ease;
+}
+
+.feedback-banner-empty {
+  border-color: var(--border-light);
+}
+
+.feedback-banner-partial {
+  border-color: var(--action-blue);
+  background-color: var(--pale-blue);
+}
+
+.feedback-banner-complete {
+  border-color: var(--ctp-green);
+  background-color: var(--pale-green);
+}
+
+.feedback-text {
+  font-size: var(--text-body);
+  color: var(--ink);
+  line-height: 1.5;
+}
+
 /* ─── Compare All Button ────────────────────────────── */
 
 .compare-all-button {

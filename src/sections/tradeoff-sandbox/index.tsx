@@ -10,6 +10,7 @@ export interface MetricDef {
   baseValue: number
   min?: number
   max?: number
+  direction?: 'higher' | 'lower'
 }
 
 export interface TradeoffProCon {
@@ -49,6 +50,17 @@ export interface TradeoffSandboxSectionProps {
 function MetricBar({ metric, value, max }: { metric: MetricDef; value: number; max: number }) {
   const clamped = Math.max(metric.min ?? 0, Math.min(metric.max ?? 100, value))
   const pct = max !== 0 ? (clamped / max) * 100 : 0
+  const direction = metric.direction ?? 'higher'
+  const delta = value - metric.baseValue
+
+  let fillColor = 'var(--ctp-blue)'
+  if (delta !== 0) {
+    if (direction === 'higher') {
+      fillColor = delta > 0 ? 'var(--ctp-green)' : 'var(--ctp-red)'
+    } else {
+      fillColor = delta < 0 ? 'var(--ctp-green)' : 'var(--ctp-red)'
+    }
+  }
 
   return (
     <div className="metric-bar" data-testid={`metric-bar-${metric.id}`}>
@@ -60,7 +72,7 @@ function MetricBar({ metric, value, max }: { metric: MetricDef; value: number; m
         <div
           className="metric-fill"
           data-testid={`metric-fill-${metric.id}`}
-          style={{ width: `${pct}%` }}
+          style={{ width: `${pct}%`, backgroundColor: fillColor }}
         />
       </div>
     </div>
@@ -278,6 +290,19 @@ function TradeoffSandboxSection({ title, scenarios }: TradeoffSandboxSectionProp
   const totalSteps = scenario.steps.length
   const placedCount = Object.keys(chosenIds).length
 
+  let feedbackText = ''
+  let feedbackState: 'empty' | 'partial' | 'complete' = 'empty'
+  if (placedCount === 0) {
+    feedbackText = 'Make your first choice to begin evaluating trade-offs.'
+    feedbackState = 'empty'
+  } else if (placedCount < totalSteps) {
+    feedbackText = `${placedCount} of ${totalSteps} decisions made — review your metrics and continue.`
+    feedbackState = 'partial'
+  } else {
+    feedbackText = 'All decisions made — review your final architecture trade-offs.'
+    feedbackState = 'complete'
+  }
+
   return (
     <div className="tradeoff-sandbox" data-testid="tradeoff-sandbox">
       {title && (
@@ -327,6 +352,10 @@ function TradeoffSandboxSection({ title, scenarios }: TradeoffSandboxSectionProp
 
       <div className="scenario-banner" data-testid="scenario-banner">
         <p className="scenario-description">{scenario.description}</p>
+      </div>
+
+      <div className={`feedback-banner feedback-banner-${feedbackState}`} data-testid="feedback-banner">
+        <span className="feedback-text" data-testid="feedback-text">{feedbackText}</span>
       </div>
 
       <Dialog.Root open={compareOpen} onOpenChange={setCompareOpen}>

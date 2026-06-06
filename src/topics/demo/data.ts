@@ -120,10 +120,10 @@ export const tradeoffSandboxScenarios: TradeoffScenario[] = [
     title: 'Enterprise Web Application',
     description: 'Build a scalable enterprise web app: React SPA, Node.js microservices, PostgreSQL, deployed on Cloud PaaS. Evaluate trade-offs across frontend, backend, and infrastructure decisions.',
     metrics: [
-      { id: 'performance', label: 'Performance', baseValue: 50, min: 0, max: 100 },
-      { id: 'scalability', label: 'Scalability', baseValue: 50, min: 0, max: 100 },
-      { id: 'complexity', label: 'Complexity', baseValue: 30, min: 0, max: 100 },
-      { id: 'cost', label: 'Cost Efficiency', baseValue: 50, min: 0, max: 100 },
+      { id: 'performance', label: 'Performance', baseValue: 50, min: 0, max: 100, direction: 'higher' },
+      { id: 'scalability', label: 'Scalability', baseValue: 50, min: 0, max: 100, direction: 'higher' },
+      { id: 'complexity', label: 'Complexity', baseValue: 30, min: 0, max: 100, direction: 'lower' },
+      { id: 'cost', label: 'Cost Efficiency', baseValue: 50, min: 0, max: 100, direction: 'higher' },
     ],
     steps: [
       {
@@ -244,10 +244,10 @@ export const tradeoffSandboxScenarios: TradeoffScenario[] = [
     title: 'Real-Time Chat & Collab System',
     description: 'Design a real-time collaborative system: WebAssembly compute, Node.js services, Redis pub/sub, Kubernetes orchestration. Balance latency, consistency, and cost.',
     metrics: [
-      { id: 'latency', label: 'Low Latency', baseValue: 40, min: 0, max: 100 },
-      { id: 'consistency', label: 'Consistency', baseValue: 50, min: 0, max: 100 },
-      { id: 'devex', label: 'Developer Experience', baseValue: 50, min: 0, max: 100 },
-      { id: 'ops-cost', label: 'Ops Cost', baseValue: 50, min: 0, max: 100 },
+      { id: 'latency', label: 'Low Latency', baseValue: 40, min: 0, max: 100, direction: 'higher' },
+      { id: 'consistency', label: 'Consistency', baseValue: 50, min: 0, max: 100, direction: 'higher' },
+      { id: 'devex', label: 'Developer Experience', baseValue: 50, min: 0, max: 100, direction: 'higher' },
+      { id: 'ops-cost', label: 'Ops Cost', baseValue: 50, min: 0, max: 100, direction: 'higher' },
     ],
     steps: [
       {
@@ -372,10 +372,10 @@ export const tradeoffSandboxScenarios: TradeoffScenario[] = [
     title: 'High-Security Financial Auditing Platform',
     description: 'Build a compliance-critical auditing system: Angular frontend, Java monolith, PostgreSQL, deployed on-premise. Prioritize security, auditability, and regulatory compliance.',
     metrics: [
-      { id: 'security', label: 'Security', baseValue: 50, min: 0, max: 100 },
-      { id: 'compliance', label: 'Compliance', baseValue: 40, min: 0, max: 100 },
-      { id: 'maintainability', label: 'Maintainability', baseValue: 40, min: 0, max: 100 },
-      { id: 'time-market', label: 'Time to Market', baseValue: 40, min: 0, max: 100 },
+      { id: 'security', label: 'Security', baseValue: 50, min: 0, max: 100, direction: 'higher' },
+      { id: 'compliance', label: 'Compliance', baseValue: 40, min: 0, max: 100, direction: 'higher' },
+      { id: 'maintainability', label: 'Maintainability', baseValue: 40, min: 0, max: 100, direction: 'higher' },
+      { id: 'time-market', label: 'Time to Market', baseValue: 40, min: 0, max: 100, direction: 'higher' },
     ],
     steps: [
       {

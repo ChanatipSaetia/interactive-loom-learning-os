@@ -450,6 +450,90 @@ test.describe('Issue #21: TradeoffSandbox Section', () => {
     await expect(page.getByTestId('metric-value-compliance')).toHaveText('40')
   })
 
+ // ─── Metric Bar Color Coding ────────────────────────────
+
+  test('metric fill is neutral blue at base value', async ({ page }) => {
+    await page.goto('/demo/ai-agent')
+
+    const fill = page.getByTestId('metric-fill-performance')
+    const bg = await fill.evaluate((el) => getComputedStyle(el).backgroundColor)
+    expect(bg).toMatch(/rgb\(140, 170, 238\)/)
+  })
+
+  test('metric fill turns green when value improves', async ({ page }) => {
+    await page.goto('/demo/ai-agent')
+
+    await page.getByTestId('choice-card-0-0-react-spa').click()
+
+    const fill = page.getByTestId('metric-fill-performance')
+    const bg = await fill.evaluate((el) => getComputedStyle(el).backgroundColor)
+    expect(bg).toMatch(/rgb\(166, 209, 137\)/)
+  })
+
+  test('metric fill turns red when complexity increases (lower direction)', async ({ page }) => {
+    await page.goto('/demo/ai-agent')
+
+    await page.getByTestId('choice-card-0-1-microservices').click()
+
+    const fill = page.getByTestId('metric-fill-complexity')
+    const bg = await fill.evaluate((el) => getComputedStyle(el).backgroundColor)
+    expect(bg).toMatch(/rgb\(231, 130, 132\)/)
+  })
+
+  test('metric fill turns green when complexity decreases', async ({ page }) => {
+    await page.goto('/demo/ai-agent')
+
+    await page.getByTestId('choice-card-0-1-modular-monolith').click()
+
+    const fill = page.getByTestId('metric-fill-complexity')
+    const bg = await fill.evaluate((el) => getComputedStyle(el).backgroundColor)
+    expect(bg).toMatch(/rgb\(166, 209, 137\)/)
+  })
+
+  // ─── Feedback Banner ───────────────────────────────────
+
+  test('feedback banner renders with empty state', async ({ page }) => {
+    await page.goto('/demo/ai-agent')
+
+    const banner = page.getByTestId('feedback-banner')
+    await expect(banner).toBeVisible()
+    await expect(page.getByTestId('feedback-text')).toContainText('Make your first choice')
+  })
+
+  test('feedback banner updates to partial state after first choice', async ({ page }) => {
+    await page.goto('/demo/ai-agent')
+
+    await page.getByTestId('choice-card-0-0-react-spa').click()
+
+    await expect(page.getByTestId('feedback-text')).toContainText('1 of 3 decisions made')
+  })
+
+  test('feedback banner updates to complete state when all choices made', async ({ page }) => {
+    await page.goto('/demo/ai-agent')
+
+    await page.getByTestId('choice-card-0-0-react-spa').click()
+    await page.getByTestId('choice-card-0-1-microservices').click()
+    await page.getByTestId('choice-card-0-2-postgresql').click()
+
+    await expect(page.getByTestId('feedback-text')).toContainText('All decisions made')
+  })
+
+  test('feedback banner reverts to empty when all choices removed', async ({ page }) => {
+    await page.goto('/demo/ai-agent')
+
+    await page.getByTestId('choice-card-0-0-react-spa').click()
+    await page.getByTestId('choice-card-0-1-microservices').click()
+    await page.getByTestId('choice-card-0-2-postgresql').click()
+    await expect(page.getByTestId('feedback-text')).toContainText('All decisions made')
+
+    await page.getByTestId('drop-zone-remove-0-0').click()
+    await page.getByTestId('drop-zone-remove-0-1').click()
+    await page.getByTestId('drop-zone-remove-0-2').click()
+    await expect(page.getByTestId('feedback-text')).toContainText('Make your first choice')
+  })
+
+  // ─── Financial Scenario ─────────────────────────────────
+
   test('financial scenario has different step titles', async ({ page }) => {
     await page.goto('/demo/ai-agent')
 

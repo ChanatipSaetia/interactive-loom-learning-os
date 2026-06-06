@@ -610,4 +610,246 @@ describe('TradeoffSandbox Section', () => {
     const { SectionRegistry: Registry } = await import('../../../../src/core/registry')
     expect(Registry.get('tradeoff-sandbox')).toBeDefined()
   })
+
+  // ─── Metric Bar Color Coding ──────────────────────────
+
+  it('metric fill is neutral blue at base value', () => {
+    render(<TradeoffSandboxSection {...defaultProps} />)
+    const fill = screen.getByTestId('metric-fill-performance')
+    const bg = fill.style.backgroundColor
+    expect(bg).toBe('var(--ctp-blue)')
+  })
+
+  it('metric fill turns green when value improves for higher direction', () => {
+    render(<TradeoffSandboxSection {...defaultProps} />)
+    fireEvent.click(screen.getByTestId('choice-card-0-0-spa'))
+    const fill = screen.getByTestId('metric-fill-performance')
+    const bg = fill.style.backgroundColor
+    expect(bg).toBe('var(--ctp-green)')
+  })
+
+  it('metric fill turns red when value worsens for higher direction', () => {
+    const stepsWithNegative: TradeoffStep[] = [
+      {
+        id: 'step-1',
+        title: 'Step',
+        description: 'Choose.',
+        choices: [
+          {
+            id: 'neg',
+            label: 'Negative',
+            description: 'Reduces performance.',
+            metrics: { performance: -20, cost: 10 },
+            pros: [{ title: 'Cheap', description: '' }],
+            cons: [{ title: 'Slow', description: '' }],
+          },
+        ],
+      },
+    ]
+    const scenario: TradeoffScenario = {
+      id: 'test',
+      title: 'Test',
+      description: 'Test scenario.',
+      metrics: [
+        { id: 'performance', label: 'Performance', baseValue: 50, min: 0, max: 100, direction: 'higher' },
+      ],
+      steps: stepsWithNegative,
+    }
+    render(<TradeoffSandboxSection scenarios={[scenario]} />)
+    fireEvent.click(screen.getByTestId('choice-card-0-0-neg'))
+    const fill = screen.getByTestId('metric-fill-performance')
+    const bg = fill.style.backgroundColor
+    expect(bg).toBe('var(--ctp-red)')
+  })
+
+  it('metric fill turns green when value decreases for lower direction', () => {
+    const scenario: TradeoffScenario = {
+      id: 'test',
+      title: 'Test',
+      description: 'Test scenario.',
+      metrics: [
+        { id: 'complexity', label: 'Complexity', baseValue: 50, min: 0, max: 100, direction: 'lower' },
+      ],
+      steps: [
+        {
+          id: 'step-1',
+          title: 'Step',
+          description: 'Choose.',
+          choices: [
+            {
+              id: 'reduce',
+              label: 'Reduce',
+              description: 'Reduces complexity.',
+              metrics: { complexity: -15 },
+              pros: [{ title: 'Simpler', description: '' }],
+              cons: [{ title: 'Less feature-rich', description: '' }],
+            },
+          ],
+        },
+      ],
+    }
+    render(<TradeoffSandboxSection scenarios={[scenario]} />)
+    fireEvent.click(screen.getByTestId('choice-card-0-0-reduce'))
+    const fill = screen.getByTestId('metric-fill-complexity')
+    const bg = fill.style.backgroundColor
+    expect(bg).toBe('var(--ctp-green)')
+  })
+
+  it('metric fill turns red when value increases for lower direction', () => {
+    const scenario: TradeoffScenario = {
+      id: 'test',
+      title: 'Test',
+      description: 'Test scenario.',
+      metrics: [
+        { id: 'complexity', label: 'Complexity', baseValue: 50, min: 0, max: 100, direction: 'lower' },
+      ],
+      steps: [
+        {
+          id: 'step-1',
+          title: 'Step',
+          description: 'Choose.',
+          choices: [
+            {
+              id: 'increase',
+              label: 'Increase',
+              description: 'Increases complexity.',
+              metrics: { complexity: 20 },
+              pros: [{ title: 'More features', description: '' }],
+              cons: [{ title: 'Harder to maintain', description: '' }],
+            },
+          ],
+        },
+      ],
+    }
+    render(<TradeoffSandboxSection scenarios={[scenario]} />)
+    fireEvent.click(screen.getByTestId('choice-card-0-0-increase'))
+    const fill = screen.getByTestId('metric-fill-complexity')
+    const bg = fill.style.backgroundColor
+    expect(bg).toBe('var(--ctp-red)')
+  })
+
+  it('metric without direction defaults to higher', () => {
+    const scenario: TradeoffScenario = {
+      id: 'test',
+      title: 'Test',
+      description: 'Test scenario.',
+      metrics: [
+        { id: 'speed', label: 'Speed', baseValue: 50, min: 0, max: 100 },
+      ],
+      steps: [
+        {
+          id: 'step-1',
+          title: 'Step',
+          description: 'Choose.',
+          choices: [
+            {
+              id: 'faster',
+              label: 'Faster',
+              description: 'Increases speed.',
+              metrics: { speed: 15 },
+              pros: [{ title: 'Faster', description: '' }],
+              cons: [],
+            },
+          ],
+        },
+      ],
+    }
+    render(<TradeoffSandboxSection scenarios={[scenario]} />)
+    fireEvent.click(screen.getByTestId('choice-card-0-0-faster'))
+    const fill = screen.getByTestId('metric-fill-speed')
+    const bg = fill.style.backgroundColor
+    expect(bg).toBe('var(--ctp-green)')
+  })
+
+  // ─── Feedback Banner ──────────────────────────────────
+
+  it('feedback banner renders', () => {
+    render(<TradeoffSandboxSection {...defaultProps} />)
+    expect(screen.getByTestId('feedback-banner')).toBeInTheDocument()
+    expect(screen.getByTestId('feedback-text')).toBeInTheDocument()
+  })
+
+  it('feedback shows empty state with no choices', () => {
+    render(<TradeoffSandboxSection {...defaultProps} />)
+    expect(screen.getByTestId('feedback-text')).toHaveTextContent('Make your first choice')
+    const banner = screen.getByTestId('feedback-banner')
+    expect(banner.classList.contains('feedback-banner-empty')).toBe(true)
+  })
+
+  it('feedback shows partial state when some choices made', () => {
+    const multiSteps: TradeoffStep[] = [
+      ...mockSteps,
+      {
+        id: 'step-backend',
+        title: 'Backend',
+        description: 'Choose backend.',
+        choices: [
+          {
+            id: 'mono',
+            label: 'Monolith',
+            description: 'One service.',
+            metrics: { performance: 5, cost: 10 },
+            pros: [{ title: 'Simple', description: '' }],
+            cons: [],
+          },
+        ],
+      },
+    ]
+    const scenario: TradeoffScenario = {
+      ...mockScenarios[0],
+      steps: multiSteps,
+    }
+    render(<TradeoffSandboxSection scenarios={[scenario]} />)
+    fireEvent.click(screen.getByTestId('choice-card-0-0-spa'))
+    expect(screen.getByTestId('feedback-text')).toHaveTextContent('1 of 2 decisions made')
+    const banner = screen.getByTestId('feedback-banner')
+    expect(banner.classList.contains('feedback-banner-partial')).toBe(true)
+  })
+
+  it('feedback shows complete state when all choices made', () => {
+    render(<TradeoffSandboxSection {...defaultProps} />)
+    fireEvent.click(screen.getByTestId('choice-card-0-0-spa'))
+    expect(screen.getByTestId('feedback-text')).toHaveTextContent('All decisions made')
+    const banner = screen.getByTestId('feedback-banner')
+    expect(banner.classList.contains('feedback-banner-complete')).toBe(true)
+  })
+
+  it('feedback updates from partial to complete', () => {
+    const multiSteps: TradeoffStep[] = [
+      ...mockSteps,
+      {
+        id: 'step-backend',
+        title: 'Backend',
+        description: 'Choose backend.',
+        choices: [
+          {
+            id: 'mono',
+            label: 'Monolith',
+            description: 'One service.',
+            metrics: { performance: 5, cost: 10 },
+            pros: [{ title: 'Simple', description: '' }],
+            cons: [],
+          },
+        ],
+      },
+    ]
+    const scenario: TradeoffScenario = {
+      ...mockScenarios[0],
+      steps: multiSteps,
+    }
+    render(<TradeoffSandboxSection scenarios={[scenario]} />)
+    expect(screen.getByTestId('feedback-text')).toHaveTextContent('Make your first choice')
+    fireEvent.click(screen.getByTestId('choice-card-0-0-spa'))
+    expect(screen.getByTestId('feedback-text')).toHaveTextContent('1 of 2 decisions made')
+    fireEvent.click(screen.getByTestId('choice-card-0-1-mono'))
+    expect(screen.getByTestId('feedback-text')).toHaveTextContent('All decisions made')
+  })
+
+  it('feedback updates from complete to partial on remove', () => {
+    render(<TradeoffSandboxSection {...defaultProps} />)
+    fireEvent.click(screen.getByTestId('choice-card-0-0-spa'))
+    expect(screen.getByTestId('feedback-text')).toHaveTextContent('All decisions made')
+    fireEvent.click(screen.getByTestId('drop-zone-remove-0-0'))
+    expect(screen.getByTestId('feedback-text')).toHaveTextContent('Make your first choice')
+  })
 })
