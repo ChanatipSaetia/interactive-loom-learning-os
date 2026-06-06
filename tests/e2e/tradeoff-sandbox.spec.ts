@@ -8,10 +8,13 @@ test.describe('Issue #25: TradeoffSandbox Testing Suite', () => {
   test('reset to optimal state removes all choices and restores base metrics', async ({ page }) => {
     await page.goto(baseUrl)
 
-    // Place choices in all 3 steps
-    await page.getByTestId('choice-card-0-0-react-spa').click()
-    await page.getByTestId('choice-card-0-1-microservices').click()
-    await page.getByTestId('choice-card-0-2-postgresql').click()
+    // Place choices in all 3 steps via dropdown
+    await page.getByTestId('step-dropdown-trigger-0-0').click()
+    await page.getByTestId('dropdown-option-0-0-react-spa').click()
+    await page.getByTestId('step-dropdown-trigger-0-1').click()
+    await page.getByTestId('dropdown-option-0-1-microservices').click()
+    await page.getByTestId('step-dropdown-trigger-0-2').click()
+    await page.getByTestId('dropdown-option-0-2-postgresql').click()
 
     // Verify all choices placed
     await expect(page.getByTestId('progress-indicator')).toHaveText('3 / 3')
@@ -39,8 +42,10 @@ test.describe('Issue #25: TradeoffSandbox Testing Suite', () => {
     await page.goto(baseUrl)
 
     // Place choices in Enterprise scenario
-    await page.getByTestId('choice-card-0-0-react-spa').click()
-    await page.getByTestId('choice-card-0-1-microservices').click()
+    await page.getByTestId('step-dropdown-trigger-0-0').click()
+    await page.getByTestId('dropdown-option-0-0-react-spa').click()
+    await page.getByTestId('step-dropdown-trigger-0-1').click()
+    await page.getByTestId('dropdown-option-0-1-microservices').click()
     await expect(page.getByTestId('progress-indicator')).toHaveText('2 / 3')
 
     // Switch to another scenario then back to reset
@@ -57,23 +62,6 @@ test.describe('Issue #25: TradeoffSandbox Testing Suite', () => {
     await expect(page.getByTestId('metric-value-scalability')).toHaveText('50')
     await expect(page.getByTestId('metric-value-complexity')).toHaveText('30')
     await expect(page.getByTestId('metric-value-cost')).toHaveText('50')
-  })
-
-  test('reset preserves choice cards as draggable after removal', async ({ page }) => {
-    await page.goto(baseUrl)
-
-    // Place and remove a choice
-    await page.getByTestId('choice-card-0-0-react-spa').click()
-    await expect(page.getByTestId('choice-placed-badge-0-0-react-spa')).toBeVisible()
-    await page.getByTestId('drop-zone-remove-0-0').click()
-
-    // Card should be draggable again
-    const card = page.getByTestId('choice-card-0-0-react-spa')
-    const draggable = await card.getAttribute('draggable')
-    expect(draggable).toBe('true')
-    await expect(card).toHaveAttribute('role', 'button')
-    const tabindex = await card.getAttribute('tabindex')
-    expect(tabindex).toBe('0')
   })
 
   // ─── Screen Resizing / Layout Responsiveness ────────────────────
@@ -107,12 +95,13 @@ test.describe('Issue #25: TradeoffSandbox Testing Suite', () => {
     expect(fillBox?.width).toBeGreaterThan(0)
   })
 
-  test('choice cards and drop zones remain interactive at tablet viewport', async ({ page }) => {
+  test('dropdown selection works at tablet viewport', async ({ page }) => {
     await page.setViewportSize({ width: 768, height: 1024 })
     await page.goto(baseUrl)
 
-    // Click-to-drop should work
-    await page.getByTestId('choice-card-0-0-react-spa').click()
+    // Dropdown select should work
+    await page.getByTestId('step-dropdown-trigger-0-0').click()
+    await page.getByTestId('dropdown-option-0-0-react-spa').click()
     await expect(page.getByTestId('drop-zone-content-0-0')).toBeVisible()
     await expect(page.getByTestId('drop-zone-content-0-0')).toContainText('React SPA')
 
@@ -160,9 +149,9 @@ test.describe('Issue #25: TradeoffSandbox Testing Suite', () => {
     await page.setViewportSize({ width: 375, height: 667 })
     await page.goto(baseUrl)
 
-    await page.getByTestId('choice-card-0-0-react-spa').focus()
+    await page.getByTestId('step-dropdown-trigger-0-0').focus()
     await page.keyboard.press('Enter')
-    await expect(page.getByTestId('drop-zone-content-0-0')).toBeVisible()
+    await expect(page.getByTestId('step-dropdown-menu-0-0')).toBeVisible()
   })
 
   test('large desktop viewport maintains layout', async ({ page }) => {
@@ -182,7 +171,7 @@ test.describe('Issue #25: TradeoffSandbox Testing Suite', () => {
     expect(stepsBox?.width).toBeGreaterThan(200)
   })
 
-  // ─── Validation Feedback: Optimal Process Comparison ───────────────
+  // ─── Validation Feedback: Optimal Process Comparison ────────────
 
   test('feedback banner reflects optimal state with no choices', async ({ page }) => {
     await page.goto(baseUrl)
@@ -201,15 +190,18 @@ test.describe('Issue #25: TradeoffSandbox Testing Suite', () => {
     await expect(page.getByTestId('feedback-text')).toContainText('Make your first choice')
 
     // Partial state after 1 choice
-    await page.getByTestId('choice-card-0-0-react-spa').click()
+    await page.getByTestId('step-dropdown-trigger-0-0').click()
+    await page.getByTestId('dropdown-option-0-0-react-spa').click()
     await expect(page.getByTestId('feedback-text')).toContainText('1 of 3 decisions made')
 
     // Partial state after 2 choices
-    await page.getByTestId('choice-card-0-1-microservices').click()
+    await page.getByTestId('step-dropdown-trigger-0-1').click()
+    await page.getByTestId('dropdown-option-0-1-microservices').click()
     await expect(page.getByTestId('feedback-text')).toContainText('2 of 3 decisions made')
 
     // Complete state
-    await page.getByTestId('choice-card-0-2-postgresql').click()
+    await page.getByTestId('step-dropdown-trigger-0-2').click()
+    await page.getByTestId('dropdown-option-0-2-postgresql').click()
     await expect(page.getByTestId('feedback-text')).toContainText('All decisions made')
     await expect(page.getByTestId('feedback-banner')).toHaveClass(/feedback-banner-complete/)
   })
@@ -270,51 +262,54 @@ test.describe('Issue #25: TradeoffSandbox Testing Suite', () => {
 
     // In Enterprise, complexity has direction=lower
     // Placing microservices increases complexity -> red
-    await page.getByTestId('choice-card-0-1-microservices').click()
+    await page.getByTestId('step-dropdown-trigger-0-1').click()
+    await page.getByTestId('dropdown-option-0-1-microservices').click()
     const complexFill = page.getByTestId('metric-fill-complexity')
     const redBg = await complexFill.evaluate((el) => getComputedStyle(el).backgroundColor)
     expect(redBg).toMatch(/rgb\(231, 130, 132\)/)
 
     // Placing modular-monolith decreases complexity -> green
-    await page.getByTestId('choice-card-0-1-modular-monolith').click()
+    await page.getByTestId('step-dropdown-trigger-0-1').click()
+    await page.getByTestId('dropdown-option-0-1-modular-monolith').click()
     const greenBg = await complexFill.evaluate((el) => getComputedStyle(el).backgroundColor)
     expect(greenBg).toMatch(/rgb\(166, 209, 137\)/)
   })
 
-  // ─── Drag and Drop Edge Cases ─────────────────────────────────────────
+  // ─── Dropdown Selection Edge Cases ────────────────────────────────────────
 
-  test('drag and drop replaces existing choice in drop zone', async ({ page }) => {
+  test('selecting same option replaces existing choice', async ({ page }) => {
     await page.goto(baseUrl)
 
-    // First place react-spa
-    await page.getByTestId('choice-card-0-0-react-spa').click()
+    // First select react-spa
+    await page.getByTestId('step-dropdown-trigger-0-0').click()
+    await page.getByTestId('dropdown-option-0-0-react-spa').click()
     await expect(page.getByTestId('drop-zone-content-0-0')).toContainText('React SPA')
 
-    // Then drag next-ssr to the same drop zone
-    const card = page.getByTestId('choice-card-0-0-next-ssr')
-    const dropZone = page.getByTestId('drop-zone-0-0')
-    await card.dragTo(dropZone)
+    // Select next-ssr
+    await page.getByTestId('step-dropdown-trigger-0-0').click()
+    await page.getByTestId('dropdown-option-0-0-next-ssr').click()
 
     await expect(page.getByTestId('drop-zone-content-0-0')).toContainText('Next.js SSR')
-    await expect(page.getByTestId('choice-placed-badge-0-0-next-ssr')).toBeVisible()
-    await expect(page.getByTestId('choice-placed-badge-0-0-react-spa')).not.toBeVisible()
   })
 
-  test('drag and drop accumulates metrics across steps', async ({ page }) => {
+  test('metrics accumulate across steps', async ({ page }) => {
     await page.goto(baseUrl)
 
-    // Drag choice to step 0
-    await page.getByTestId('choice-card-0-0-react-spa').dragTo(page.getByTestId('drop-zone-0-0'))
+    // Select choice for step 0
+    await page.getByTestId('step-dropdown-trigger-0-0').click()
+    await page.getByTestId('dropdown-option-0-0-react-spa').click()
     await expect(page.getByTestId('drop-zone-content-0-0')).toContainText('React SPA')
     await expect(page.getByTestId('metric-value-performance')).toHaveText('60')
 
-    // Use click-to-drop for step 1 (more reliable across steps)
-    await page.getByTestId('choice-card-0-1-microservices').click()
+    // Select choice for step 1
+    await page.getByTestId('step-dropdown-trigger-0-1').click()
+    await page.getByTestId('dropdown-option-0-1-microservices').click()
     await expect(page.getByTestId('drop-zone-content-0-1')).toContainText('Microservices')
     await expect(page.getByTestId('metric-value-performance')).toHaveText('55')
 
-    // Use click-to-drop for step 2
-    await page.getByTestId('choice-card-0-2-postgresql').click()
+    // Select choice for step 2
+    await page.getByTestId('step-dropdown-trigger-0-2').click()
+    await page.getByTestId('dropdown-option-0-2-postgresql').click()
     await expect(page.getByTestId('drop-zone-content-0-2')).toContainText('PostgreSQL')
     await expect(page.getByTestId('metric-value-performance')).toHaveText('60')
 
@@ -361,7 +356,8 @@ test.describe('Issue #25: TradeoffSandbox Testing Suite', () => {
     await expect(page.getByTestId('step-section-0-0')).toHaveClass(/step-section-unselected/)
 
     // Select a choice
-    await page.getByTestId('choice-card-0-0-react-spa').click()
+    await page.getByTestId('step-dropdown-trigger-0-0').click()
+    await page.getByTestId('dropdown-option-0-0-react-spa').click()
 
     // Should no longer have dashed class
     await expect(page.getByTestId('step-section-0-0')).not.toHaveClass(/step-section-unselected/)
@@ -420,10 +416,119 @@ test.describe('Issue #25: TradeoffSandbox Testing Suite', () => {
     await page.goto(baseUrl)
 
     // Select then remove
-    await page.getByTestId('choice-card-0-0-react-spa').click()
+    await page.getByTestId('step-dropdown-trigger-0-0').click()
+    await page.getByTestId('dropdown-option-0-0-react-spa').click()
     await expect(page.getByTestId('step-section-0-0')).not.toHaveClass(/step-section-unselected/)
 
     await page.getByTestId('drop-zone-remove-0-0').click()
     await expect(page.getByTestId('step-section-0-0')).toHaveClass(/step-section-unselected/)
+  })
+
+  // ─── Issue #36: Info Icon & Details Modal ─────────────────
+
+  test('placed step cards render an info icon', async ({ page }) => {
+    await page.goto(baseUrl)
+
+    await page.getByTestId('step-dropdown-trigger-0-0').click()
+    await page.getByTestId('dropdown-option-0-0-react-spa').click()
+
+    await expect(page.getByTestId('drop-zone-info-0-0')).toBeVisible()
+  })
+
+  test('clicking info icon opens details modal', async ({ page }) => {
+    await page.goto(baseUrl)
+
+    await page.getByTestId('step-dropdown-trigger-0-0').click()
+    await page.getByTestId('dropdown-option-0-0-react-spa').click()
+    await page.getByTestId('drop-zone-info-0-0').click()
+
+    await expect(page.getByTestId('details-dialog')).toBeVisible()
+    await expect(page.getByTestId('details-overlay')).toBeVisible()
+  })
+
+  test('details modal shows choice label, description, pros, cons', async ({ page }) => {
+    await page.goto(baseUrl)
+
+    await page.getByTestId('step-dropdown-trigger-0-0').click()
+    await page.getByTestId('dropdown-option-0-0-react-spa').click()
+    await page.getByTestId('drop-zone-info-0-0').click()
+
+    await expect(page.getByTestId('details-choice-label')).toContainText('React SPA')
+    await expect(page.getByTestId('details-description')).toBeVisible()
+    await expect(page.getByTestId('details-pros')).toBeVisible()
+    await expect(page.getByTestId('details-cons')).toBeVisible()
+  })
+
+  test('details modal shows detailed pros with title and description', async ({ page }) => {
+    await page.goto(baseUrl)
+
+    await page.getByTestId('step-dropdown-trigger-0-0').click()
+    await page.getByTestId('dropdown-option-0-0-react-spa').click()
+    await page.getByTestId('drop-zone-info-0-0').click()
+
+    const firstPro = page.getByTestId('details-pro-0')
+    await expect(firstPro).toBeVisible()
+    await expect(firstPro).toContainText('Rich ecosystem')
+    await expect(firstPro).toContainText('Vast library support and community')
+  })
+
+  test('details modal shows detailed cons with title and description', async ({ page }) => {
+    await page.goto(baseUrl)
+
+    await page.getByTestId('step-dropdown-trigger-0-0').click()
+    await page.getByTestId('dropdown-option-0-0-react-spa').click()
+    await page.getByTestId('drop-zone-info-0-0').click()
+
+    const firstCon = page.getByTestId('details-con-0')
+    await expect(firstCon).toBeVisible()
+    await expect(firstCon).toContainText('SEO challenges')
+    await expect(firstCon).toContainText('Requires SSR or SSG for search indexing')
+  })
+
+  test('details modal shows recommendation box for recommended choice', async ({ page }) => {
+    await page.goto(baseUrl)
+
+    await page.getByTestId('step-dropdown-trigger-0-0').click()
+    await page.getByTestId('dropdown-option-0-0-next-ssr').click()
+    await page.getByTestId('drop-zone-info-0-0').click()
+
+    await expect(page.getByTestId('details-recommended-badge')).toBeVisible()
+    await expect(page.getByTestId('details-recommendation-box')).toBeVisible()
+    await expect(page.getByTestId('details-rec-text')).toBeVisible()
+  })
+
+  test('details modal shows alternative box for non-recommended choice', async ({ page }) => {
+    await page.goto(baseUrl)
+
+    await page.getByTestId('step-dropdown-trigger-0-0').click()
+    await page.getByTestId('dropdown-option-0-0-react-spa').click()
+    await page.getByTestId('drop-zone-info-0-0').click()
+
+    await expect(page.getByTestId('details-alternative-box')).toBeVisible()
+    await expect(page.getByTestId('details-alt-text')).toBeVisible()
+  })
+
+  test('details modal dismissible with Escape key', async ({ page }) => {
+    await page.goto(baseUrl)
+
+    await page.getByTestId('step-dropdown-trigger-0-0').click()
+    await page.getByTestId('dropdown-option-0-0-react-spa').click()
+    await page.getByTestId('drop-zone-info-0-0').click()
+    await expect(page.getByTestId('details-dialog')).toBeVisible()
+
+    await page.keyboard.press('Escape')
+    await expect(page.getByTestId('details-dialog')).not.toBeVisible()
+  })
+
+  test('details modal dismissible with close button', async ({ page }) => {
+    await page.goto(baseUrl)
+
+    await page.getByTestId('step-dropdown-trigger-0-0').click()
+    await page.getByTestId('dropdown-option-0-0-react-spa').click()
+    await page.getByTestId('drop-zone-info-0-0').click()
+    await expect(page.getByTestId('details-dialog')).toBeVisible()
+
+    await page.getByTestId('details-dialog-close').click()
+    await expect(page.getByTestId('details-dialog')).not.toBeVisible()
   })
 })
