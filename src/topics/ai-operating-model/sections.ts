@@ -3,9 +3,7 @@ import {
   introTextParagraphs,
   sixDecisionsBullets,
   operatingModelScenarios,
-  operatingModelNodes,
-  operatingModelEdges,
-  operatingModelJourneys,
+  operatingModelSchema,
 } from './data'
 
 export const aiOperatingModelSections: SectionConfig[] = [
@@ -21,9 +19,7 @@ export const aiOperatingModelSections: SectionConfig[] = [
     type: 'flowchart',
     props: {
       title: 'AI Operating Model — Request Flow',
-      nodes: operatingModelNodes,
-      edges: operatingModelEdges,
-      journeys: operatingModelJourneys,
+      schema: operatingModelSchema,
     },
   },
   {

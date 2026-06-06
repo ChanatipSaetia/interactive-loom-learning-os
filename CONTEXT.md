@@ -5,8 +5,13 @@ Interactive React-based learning platform for teaching IT architecture, operatin
 ## Language
 
 **Flowchart**:
-The single unified visualization component. Static layout of nodes (boxes) and edges (connections) with step-by-step animations. Replaces the old `architecture-flow` and `data-flow` sections.
+The single unified visualization component. Displays one or more **Views** (which are different coordinate projections of the same underlying Nodes and Edges) with step-by-step animations. Replaces the old `architecture-flow` and `data-flow` sections.
 _Avoid_: Architecture Flow, Data Flow, Diagram
+
+**View**:
+A specific layout projection mode of a flowchart (e.g., Event Storming, System Architecture, Data Flow, Activity Swimlanes) that positions a subset of the nodes and edges, optionally grouping them.
+_Avoid_: Tab, Layout Mode, Board
+
 
 **Node**:
 A rectangular box in the flowchart representing a system component, concept, or entity. Contains a stereotype tag (`<<xxx>>`), a Lucide icon, and a label.

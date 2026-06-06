@@ -1,8 +1,6 @@
 import type { SectionConfig } from '../../core/registry'
 import {
-  agentNodes,
-  agentEdges,
-  agentJourneys,
+  agentSchema,
   agentTextParagraphs,
   agentLifecycleMarkdown,
   agentCapabilityBullets,
@@ -24,9 +22,7 @@ export const demoSections: SectionConfig[] = [
     type: 'flowchart',
     props: {
       title: 'AI Agent Architecture',
-      nodes: agentNodes,
-      edges: agentEdges,
-      journeys: agentJourneys,
+      schema: agentSchema,
     },
   },
   {

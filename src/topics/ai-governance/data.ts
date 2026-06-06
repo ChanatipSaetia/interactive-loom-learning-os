@@ -1,4 +1,5 @@
-import type { FlowchartNode, FlowchartEdge, Journey } from '../../sections/flowchart'
+import { TYPES } from '../../sections/flowchart'
+import type { UnifiedFlowchartSchema } from '../../sections/flowchart'
 import type { TradeoffScenario } from '../../sections/tradeoff-sandbox'
 
 /* ──────────────────────────────────────────────────────────────
@@ -77,49 +78,121 @@ export const riskLandscapeBullets: { text: string }[] = [
 
 // ─── Flowchart: Intervention Taxonomy Architecture ─────────────
 
-export const governanceNodes: FlowchartNode[] = [
-  { id: 'agent', label: 'AI Agent', stereotype: 'agent', icon: 'Bot', layer: 0 },
-  { id: 'alignment', label: 'Alignment', stereotype: 'control', icon: 'Shield', layer: 1 },
-  { id: 'control', label: 'Control', stereotype: 'control', icon: 'Lock', layer: 1 },
-  { id: 'visibility', label: 'Visibility', stereotype: 'control', icon: 'Eye', layer: 1 },
-  { id: 'security', label: 'Security', stereotype: 'control', icon: 'Shield', layer: 1 },
-  { id: 'society', label: 'Societal\nIntegration', stereotype: 'control', icon: 'Users', layer: 1 },
-  { id: 'model-layer', label: 'Model Layer', stereotype: 'layer', icon: 'Brain', layer: 2 },
-  { id: 'system-layer', label: 'System Layer', stereotype: 'layer', icon: 'Server', layer: 2 },
-  { id: 'eco-layer', label: 'Ecosystem Layer', stereotype: 'layer', icon: 'Globe', layer: 2 },
-]
-
-export const governanceEdges: FlowchartEdge[] = [
-  { from: 'alignment', to: 'model-layer' },
-  { from: 'control', to: 'system-layer' },
-  { from: 'visibility', to: 'system-layer' },
-  { from: 'security', to: 'system-layer' },
-  { from: 'society', to: 'eco-layer' },
-  { from: 'agent', to: 'alignment' },
-  { from: 'agent', to: 'control' },
-  { from: 'agent', to: 'visibility' },
-  { from: 'agent', to: 'security' },
-  { from: 'agent', to: 'society' },
-]
-
-export const governanceJourneys: Journey[] = [
-  {
-    id: 'governance-flow',
-    label: 'Governance Flow',
-    description: 'Shows how five governance categories map to three operational layers to govern an AI Agent. Alignment operates at the model layer, Control and Visibility at the system layer, and Societal Integration at the ecosystem layer.',
-    steps: [
-      { nodeId: 'agent', description: 'AI Agent operates autonomously' },
-      { nodeId: 'alignment', description: 'Alignment ensures value consistency' },
-      { nodeId: 'model-layer', description: 'Implemented at the foundation model level' },
-      { nodeId: 'control', description: 'Control constrains behavior within boundaries' },
-      { nodeId: 'system-layer', description: 'Implemented through scaffolding and tool restrictions' },
-      { nodeId: 'visibility', description: 'Visibility makes behavior observable' },
-      { nodeId: 'security', description: 'Security protects from external threats' },
-      { nodeId: 'society', description: 'Societal integration ensures long-term fit' },
-      { nodeId: 'eco-layer', description: 'Implemented through policy and legal mechanisms' },
-    ],
+export const governanceSchema: UnifiedFlowchartSchema = {
+  entities: {
+    agent: {
+      title: 'AI Agent',
+      desc: 'AI Agent operating autonomously.',
+      viewTypes: {
+        SYS_ARCH: TYPES.SERVICE,
+      },
+    },
+    alignment: {
+      title: 'Alignment',
+      desc: 'Ensures values consistency with the principal.',
+      viewTypes: {
+        SYS_ARCH: TYPES.POLICY,
+      },
+    },
+    control: {
+      title: 'Control',
+      desc: 'Constrains behavior within predefined boundaries.',
+      viewTypes: {
+        SYS_ARCH: TYPES.POLICY,
+      },
+    },
+    visibility: {
+      title: 'Visibility',
+      desc: 'Makes agent behavior observable to humans.',
+      viewTypes: {
+        SYS_ARCH: TYPES.POLICY,
+      },
+    },
+    security: {
+      title: 'Security',
+      desc: 'Protects from external threats and ensures robustness.',
+      viewTypes: {
+        SYS_ARCH: TYPES.POLICY,
+      },
+    },
+    society: {
+      title: 'Societal Integration',
+      desc: 'Supports long-term integration into social/political systems.',
+      viewTypes: {
+        SYS_ARCH: TYPES.POLICY,
+      },
+    },
+    'model-layer': {
+      title: 'Model Layer',
+      desc: 'Foundation model level rules and alignment.',
+      viewTypes: {
+        SYS_ARCH: TYPES.AGGREGATE,
+      },
+    },
+    'system-layer': {
+      title: 'System Layer',
+      desc: 'Scaffolding and runtime platform restrictions.',
+      viewTypes: {
+        SYS_ARCH: TYPES.AGGREGATE,
+      },
+    },
+    'eco-layer': {
+      title: 'Ecosystem Layer',
+      desc: 'Broader environment and policy/legal frameworks.',
+      viewTypes: {
+        SYS_ARCH: TYPES.AGGREGATE,
+      },
+    },
   },
-]
+  relations: [
+    { id: 're_g1', from: 'alignment', to: 'model-layer', views: ['SYS_ARCH'] },
+    { id: 're_g2', from: 'control', to: 'system-layer', views: ['SYS_ARCH'] },
+    { id: 're_g3', from: 'visibility', to: 'system-layer', views: ['SYS_ARCH'] },
+    { id: 're_g4', from: 'security', to: 'system-layer', views: ['SYS_ARCH'] },
+    { id: 're_g5', from: 'society', to: 'eco-layer', views: ['SYS_ARCH'] },
+    { id: 're_g6', from: 'agent', to: 'alignment', views: ['SYS_ARCH'] },
+    { id: 're_g7', from: 'agent', to: 'control', views: ['SYS_ARCH'] },
+    { id: 're_g8', from: 'agent', to: 'visibility', views: ['SYS_ARCH'] },
+    { id: 're_g9', from: 'agent', to: 'security', views: ['SYS_ARCH'] },
+    { id: 're_g10', from: 'agent', to: 'society', views: ['SYS_ARCH'] },
+  ],
+  views: {
+    SYS_ARCH: {
+      name: 'System Architecture',
+      icon: 'Server',
+      nodes: [
+        { id: 'agent', x: 100, y: 300 },
+        { id: 'alignment', x: 280, y: 100 },
+        { id: 'control', x: 280, y: 200 },
+        { id: 'visibility', x: 280, y: 300 },
+        { id: 'security', x: 280, y: 400 },
+        { id: 'society', x: 280, y: 500 },
+        { id: 'model-layer', x: 460, y: 100 },
+        { id: 'system-layer', x: 460, y: 300 },
+        { id: 'eco-layer', x: 460, y: 500 },
+      ],
+      groups: [],
+    },
+  },
+  journeys: [
+    {
+      id: 'governance-flow',
+      label: 'Governance Flow',
+      description: 'Shows how five governance categories map to three operational layers to govern an AI Agent. Alignment operates at the model layer, Control and Visibility at the system layer, and Societal Integration at the ecosystem layer.',
+      steps: [
+        { nodeId: 'agent', description: 'AI Agent operates autonomously' },
+        { nodeId: 'alignment', description: 'Alignment ensures value consistency' },
+        { nodeId: 'model-layer', description: 'Implemented at the foundation model level' },
+        { nodeId: 'control', description: 'Control constrains behavior within boundaries' },
+        { nodeId: 'system-layer', description: 'Implemented through scaffolding and tool restrictions' },
+        { nodeId: 'visibility', description: 'Visibility makes behavior observable' },
+        { nodeId: 'security', description: 'Security protects from external threats' },
+        { nodeId: 'society', description: 'Societal integration ensures long-term fit' },
+        { nodeId: 'eco-layer', description: 'Implemented through policy and legal mechanisms' },
+      ],
+    },
+  ],
+}
 
 // ─── Tradeoff Sandbox: Governance design decisions ────────────────────────────
 

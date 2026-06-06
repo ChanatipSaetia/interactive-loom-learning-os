@@ -1,122 +1,125 @@
-import type { FlowchartNode, FlowchartEdge, Journey } from '../../sections/flowchart'
+import { TYPES } from '../../sections/flowchart'
+import type { UnifiedFlowchartSchema } from '../../sections/flowchart'
 import type { TradeoffScenario } from '../../sections/tradeoff-sandbox'
 import type { BulletItem } from '../../sections/bullets'
 
 // ─── Flowchart: AgentOps Four-Phase Lifecycle ────────────────────────────────
 
-export const agentopsNodes: FlowchartNode[] = [
-  {
-    id: 'agent-system',
-    label: 'Agent System',
-    stereotype: 'System',
-    icon: 'Bot',
-    layer: 0,
-    description: 'LLM-powered agent running in production — single or multi-agent.',
+export const agentopsSchema: UnifiedFlowchartSchema = {
+  entities: {
+    'agent-system': {
+      title: 'Agent System',
+      desc: 'LLM-powered agent running in production — single or multi-agent.',
+      viewTypes: {
+        SYS_ARCH: TYPES.SERVICE,
+      },
+    },
+    monitoring: {
+      title: 'Monitoring',
+      desc: 'Collect traditional data (metrics, logs, traces) plus model data (hidden states, attention maps) and checkpoint data (memory/environment snapshots).',
+      viewTypes: {
+        SYS_ARCH: TYPES.PROCESS,
+      },
+    },
+    'anomaly-detection': {
+      title: 'Anomaly Detection',
+      desc: 'Detect anomalies using white-box, grey-box, or black-box methods depending on type: reasoning hallucinations, planning inconsistencies, action failures, memory issues, security attacks, or emergent behavior.',
+      viewTypes: {
+        SYS_ARCH: TYPES.POLICY,
+      },
+    },
+    rca: {
+      title: 'Root Cause Analysis',
+      desc: 'Diagnose root cause across three dimensions: system-centric (DevOps/SRE), model-centric (ML Engineering), or orchestration-centric (Agent Developers).',
+      viewTypes: {
+        SYS_ARCH: TYPES.PROCESS,
+      },
+    },
+    resolution: {
+      title: 'Resolution',
+      desc: 'Apply iterative fixes: redundancy/voting, guardrails/assertions, recovery/rollback, self-correction, or re-prompting. Requires multi-turn validation due to non-determinism.',
+      viewTypes: {
+        SYS_ARCH: TYPES.POLICY,
+      },
+    },
+    validate: {
+      title: 'Validate',
+      desc: 'Verify fix via manual annotation or LLM-as-a-Judge. If unresolved, loop back to Monitoring.',
+      viewTypes: {
+        SYS_ARCH: TYPES.DECISION,
+      },
+    },
   },
-  {
-    id: 'monitoring',
-    label: 'Monitoring',
-    stereotype: 'Phase 1',
-    icon: 'Activity',
-    layer: 1,
-    description:
-      'Collect traditional data (metrics, logs, traces) plus model data (hidden states, attention maps) and checkpoint data (memory/environment snapshots).',
+  relations: [
+    { id: 're_ops1', from: 'agent-system', to: 'monitoring', views: ['SYS_ARCH'] },
+    { id: 're_ops2', from: 'monitoring', to: 'anomaly-detection', views: ['SYS_ARCH'] },
+    { id: 're_ops3', from: 'anomaly-detection', to: 'rca', views: ['SYS_ARCH'] },
+    { id: 're_ops4', from: 'rca', to: 'resolution', views: ['SYS_ARCH'] },
+    { id: 're_ops5', from: 'resolution', to: 'validate', views: ['SYS_ARCH'] },
+    { id: 're_ops6', from: 'validate', to: 'monitoring', views: ['SYS_ARCH'] },
+    { id: 're_ops7', from: 'validate', to: 'agent-system', views: ['SYS_ARCH'] },
+  ],
+  views: {
+    SYS_ARCH: {
+      name: 'System Architecture',
+      icon: 'Server',
+      nodes: [
+        { id: 'agent-system', x: 100, y: 250 },
+        { id: 'monitoring', x: 260, y: 250 },
+        { id: 'anomaly-detection', x: 420, y: 250 },
+        { id: 'rca', x: 580, y: 250 },
+        { id: 'resolution', x: 740, y: 250 },
+        { id: 'validate', x: 900, y: 250 },
+      ],
+      groups: [],
+    },
   },
-  {
-    id: 'anomaly-detection',
-    label: 'Anomaly Detection',
-    stereotype: 'Phase 2',
-    icon: 'AlertTriangle',
-    layer: 2,
-    description:
-      'Detect anomalies using white-box, grey-box, or black-box methods depending on type: reasoning hallucinations, planning inconsistencies, action failures, memory issues, security attacks, or emergent behavior.',
-  },
-  {
-    id: 'rca',
-    label: 'Root Cause Analysis',
-    stereotype: 'Phase 3',
-    icon: 'Search',
-    layer: 3,
-    description:
-      'Diagnose root cause across three dimensions: system-centric (DevOps/SRE), model-centric (ML Engineering), or orchestration-centric (Agent Developers).',
-  },
-  {
-    id: 'resolution',
-    label: 'Resolution',
-    stereotype: 'Phase 4',
-    icon: 'Wrench',
-    layer: 4,
-    description:
-      'Apply iterative fixes: redundancy/voting, guardrails/assertions, recovery/rollback, self-correction, or re-prompting. Requires multi-turn validation due to non-determinism.',
-  },
-  {
-    id: 'validate',
-    label: 'Validate',
-    stereotype: 'Feedback',
-    icon: 'CheckCircle',
-    layer: 5,
-    description:
-      'Verify fix via manual annotation or LLM-as-a-Judge. If unresolved, loop back to Monitoring.',
-  },
-]
+  journeys: [
+    {
+      id: 'reasoning-anomaly',
+      label: 'Reasoning Anomaly Journey',
+      description: 'An agent produces a hallucinated fact during reasoning. The anomaly is detected via LLM-as-judge, traced to model stochasticity, and resolved by adding a redundancy-and-voting guardrail.',
+      steps: [
+        { nodeId: 'agent-system', description: 'Agent reasons over a query and generates a response containing a hallucinated fact.' },
+        { nodeId: 'monitoring', description: 'Monitoring captures the LLM output, token logits, and checkpoint of the agent\'s memory state.' },
+        { nodeId: 'anomaly-detection', description: 'Black-box LLM-as-judge detects a factual inconsistency between the response and known sources.' },
+        { nodeId: 'rca', description: 'Root cause analysis determines the anomaly is model-centric (stochastic hallucination), not a system or orchestration issue.' },
+        { nodeId: 'resolution', description: 'Resolution applies redundancy-and-voting: runs the query through two LLM instances and cross-validates facts.' },
+        { nodeId: 'validate', description: 'Validation confirms the hallucinated fact is no longer present in the aggregated response.' },
+        { nodeId: 'agent-system', description: 'Agent continues with improved factual reliability.' },
+      ],
+    },
+    {
+      id: 'termination-anomaly',
+      label: 'Termination Anomaly Journey',
+      description: 'A multi-agent system falls into infinite recursion (neural howlround). Monitoring detects the loop via trace analysis, RCA identifies orchestration design flaw, and resolution applies a termination guardrail.',
+      steps: [
+        { nodeId: 'agent-system', description: 'Two agents keep delegating a task to each other in an infinite loop.' },
+        { nodeId: 'monitoring', description: 'Monitoring captures distributed traces showing the same task being passed back and forth.' },
+        { nodeId: 'anomaly-detection', description: 'Loop detection algorithm identifies a termination anomaly — the neural howlround pattern.' },
+        { nodeId: 'rca', description: 'Semantic comparative analysis contrasts the failing trace with a successful trace, finding divergence at the delegation logic.' },
+        { nodeId: 'resolution', description: 'Resolution re-specifies the prompt with a maximum delegation depth and adds a termination guardrail.' },
+        { nodeId: 'validate', description: 'Counterfactual simulation replays the scenario with the fix — the loop terminates at the configured depth.' },
+        { nodeId: 'agent-system', description: 'Multi-agent system now terminates gracefully within bounds.' },
+      ],
+    },
+    {
+      id: 'security-anomaly',
+      label: 'Security Anomaly Journey',
+      description: 'An external actor injects a malicious prompt into the agent\'s tool input. Graph-based detection catches the attack, RCA traces to an unprotected API, and resolution applies behavioral guardrails.',
+      steps: [
+        { nodeId: 'agent-system', description: 'Agent calls an external API whose response contains a hidden prompt injection.' },
+        { nodeId: 'monitoring', description: 'Monitoring captures the API call, response payload, and subsequent agent behavior shift.' },
+        { nodeId: 'anomaly-detection', description: 'Graph-based detection (SentinelAgent pattern) flags an unusual action sequence inconsistent with the agent\'s role.' },
+        { nodeId: 'rca', description: 'Full-stack traceability captures the cognitive state before and after the injection, pinpointing the injected prompt as root cause.' },
+        { nodeId: 'resolution', description: 'Resolution applies behavioral guardrails: input sanitization, output filtering, and tool-call validation.' },
+        { nodeId: 'validate', description: 'Adversarial test cases confirm the agent now rejects the injected prompt.' },
+        { nodeId: 'agent-system', description: 'Agent continues with hardened input/output pipeline.' },
+      ],
+    },
+  ],
+}
 
-export const agentopsEdges: FlowchartEdge[] = [
-  { from: 'agent-system', to: 'monitoring', description: 'Agent emits operational data continuously' },
-  { from: 'monitoring', to: 'anomaly-detection', description: 'Collected data fed into detection methods' },
-  { from: 'anomaly-detection', to: 'rca', description: 'Detected anomaly triggers root cause investigation' },
-  { from: 'rca', to: 'resolution', description: 'Identified root cause guides resolution strategy' },
-  { from: 'resolution', to: 'validate', description: 'Fix applied and validated' },
-  { from: 'validate', to: 'monitoring', description: 'Unresolved — loop back with new context' },
-  { from: 'validate', to: 'agent-system', description: 'Resolved — agent continues operation' },
-]
-
-export const agentopsJourneys: Journey[] = [
-  {
-    id: 'reasoning-anomaly',
-    label: 'Reasoning Anomaly Journey',
-    description:
-      'An agent produces a hallucinated fact during reasoning. The anomaly is detected via LLM-as-judge, traced to model stochasticity, and resolved by adding a redundancy-and-voting guardrail.',
-    steps: [
-      { nodeId: 'agent-system', description: 'Agent reasons over a query and generates a response containing a hallucinated fact.' },
-      { nodeId: 'monitoring', description: 'Monitoring captures the LLM output, token logits, and checkpoint of the agent\'s memory state.' },
-      { nodeId: 'anomaly-detection', description: 'Black-box LLM-as-judge detects a factual inconsistency between the response and known sources.' },
-      { nodeId: 'rca', description: 'Root cause analysis determines the anomaly is model-centric (stochastic hallucination), not a system or orchestration issue.' },
-      { nodeId: 'resolution', description: 'Resolution applies redundancy-and-voting: runs the query through two LLM instances and cross-validates facts.' },
-      { nodeId: 'validate', description: 'Validation confirms the hallucinated fact is no longer present in the aggregated response.' },
-      { nodeId: 'agent-system', description: 'Agent continues with improved factual reliability.' },
-    ],
-  },
-  {
-    id: 'termination-anomaly',
-    label: 'Termination Anomaly Journey',
-    description:
-      'A multi-agent system falls into infinite recursion (neural howlround). Monitoring detects the loop via trace analysis, RCA identifies orchestration design flaw, and resolution applies a termination guardrail.',
-    steps: [
-      { nodeId: 'agent-system', description: 'Two agents keep delegating a task to each other in an infinite loop.' },
-      { nodeId: 'monitoring', description: 'Monitoring captures distributed traces showing the same task being passed back and forth.' },
-      { nodeId: 'anomaly-detection', description: 'Loop detection algorithm identifies a termination anomaly — the neural howlround pattern.' },
-      { nodeId: 'rca', description: 'Semantic comparative analysis contrasts the failing trace with a successful trace, finding divergence at the delegation logic.' },
-      { nodeId: 'resolution', description: 'Resolution re-specifies the prompt with a maximum delegation depth and adds a termination guardrail.' },
-      { nodeId: 'validate', description: 'Counterfactual simulation replays the scenario with the fix — the loop terminates at the configured depth.' },
-      { nodeId: 'agent-system', description: 'Multi-agent system now terminates gracefully within bounds.' },
-    ],
-  },
-  {
-    id: 'security-anomaly',
-    label: 'Security Anomaly Journey',
-    description:
-      'An external actor injects a malicious prompt into the agent\'s tool input. Graph-based detection catches the attack, RCA traces to an unprotected API, and resolution applies behavioral guardrails.',
-    steps: [
-      { nodeId: 'agent-system', description: 'Agent calls an external API whose response contains a hidden prompt injection.' },
-      { nodeId: 'monitoring', description: 'Monitoring captures the API call, response payload, and subsequent agent behavior shift.' },
-      { nodeId: 'anomaly-detection', description: 'Graph-based detection (SentinelAgent pattern) flags an unusual action sequence inconsistent with the agent\'s role.' },
-      { nodeId: 'rca', description: 'Full-stack traceability captures the cognitive state before and after the injection, pinpointing the injected prompt as root cause.' },
-      { nodeId: 'resolution', description: 'Resolution applies behavioral guardrails: input sanitization, output filtering, and tool-call validation.' },
-      { nodeId: 'validate', description: 'Adversarial test cases confirm the agent now rejects the injected prompt.' },
-      { nodeId: 'agent-system', description: 'Agent continues with hardened input/output pipeline.' },
-    ],
-  },
-]
 
 // ─── Text: Background and Problem ────────────────────────────────────────────
 

@@ -1,168 +1,178 @@
+import { TYPES } from '../../sections/flowchart'
+import type { UnifiedFlowchartSchema } from '../../sections/flowchart'
 import type { TradeoffScenario } from '../../sections/tradeoff-sandbox'
-import type { FlowchartNode, FlowchartEdge, Journey } from '../../sections/flowchart'
 
 // ─── Flowchart: AI Operating Model Stack ─────────────────────────────────────
 
-export const operatingModelNodes: FlowchartNode[] = [
-  {
-    id: 'trigger',
-    label: 'Trigger Event',
-    stereotype: 'Input',
-    icon: 'Zap',
-    layer: 0,
-    description: 'A business event, user request, or scheduled job that kicks off the agent workflow.',
+export const operatingModelSchema: UnifiedFlowchartSchema = {
+  entities: {
+    trigger: {
+      title: 'Trigger Event',
+      desc: 'A business event, user request, or scheduled job that kicks off the agent workflow.',
+      viewTypes: {
+        SYS_ARCH: TYPES.EVENT,
+      },
+    },
+    'workflow-map': {
+      title: 'Workflow Map',
+      desc: 'Checks whether the trigger falls within the documented scope: trigger, inputs, decision points, and output systems.',
+      viewTypes: {
+        SYS_ARCH: TYPES.PROCESS,
+      },
+    },
+    'data-layer': {
+      title: 'Data & Context',
+      desc: 'Retrieves working context, episodic history, semantic facts, and procedural patterns from the four memory types.',
+      viewTypes: {
+        SYS_ARCH: TYPES.DATABASE,
+      },
+    },
+    'scope-check': {
+      title: 'Scope & Authority',
+      desc: 'Determines the autonomy tier: Shadow, Supervised, Guided, or Autonomous — and what the agent is allowed to do.',
+      viewTypes: {
+        SYS_ARCH: TYPES.DECISION,
+      },
+    },
+    'runtime-controls': {
+      title: 'Runtime Controls',
+      desc: 'Pre-dispatch policy enforcement: every tool call is evaluated as ALLOW, DENY, REQUIRE_APPROVAL, or ALLOW_WITH_CONSTRAINTS.',
+      viewTypes: {
+        SYS_ARCH: TYPES.POLICY,
+      },
+    },
+    'human-approval': {
+      title: 'Human Approval',
+      desc: 'Synchronous review gate for Supervised tier or REQUIRE_APPROVAL policy decisions. Session pauses until a named approver acts.',
+      viewTypes: {
+        SYS_ARCH: TYPES.USER,
+      },
+    },
+    'agent-execution': {
+      title: 'Agent Execution',
+      desc: 'The agent executes the approved action — calling tools, writing to systems, or generating output.',
+      viewTypes: {
+        SYS_ARCH: TYPES.SERVICE,
+      },
+    },
+    'output-safety': {
+      title: 'Output Safety',
+      desc: 'Post-execution pipeline: ALLOW, REDACT (remove PII/secrets), or QUARANTINE the output before delivery.',
+      viewTypes: {
+        SYS_ARCH: TYPES.POLICY,
+      },
+    },
+    'audit-trail': {
+      title: 'Audit Trail',
+      desc: 'Immutable write-once log of every action, policy decision, approver, and outcome — the post-incident narrative.',
+      viewTypes: {
+        SYS_ARCH: TYPES.DATABASE,
+      },
+    },
+    measurement: {
+      title: 'Measurement',
+      desc: 'Cycle time, containment rate, handoff rate, override rate, and drift detection lag — the operational scorecard.',
+      viewTypes: {
+        SYS_ARCH: TYPES.READ_MODEL,
+      },
+    },
+    output: {
+      title: 'Output / Action',
+      desc: 'The final result delivered to the user or written to business systems. Marked in the audit trail with approver and policy snapshot.',
+      viewTypes: {
+        SYS_ARCH: TYPES.DATA_OBJECT,
+      },
+    },
   },
-  {
-    id: 'workflow-map',
-    label: 'Workflow Map',
-    stereotype: 'Scope',
-    icon: 'Map',
-    layer: 1,
-    description: 'Checks whether the trigger falls within the documented scope: trigger, inputs, decision points, and output systems.',
+  relations: [
+    { id: 'ro_e1', from: 'trigger', to: 'workflow-map', views: ['SYS_ARCH'] },
+    { id: 'ro_e2', from: 'workflow-map', to: 'data-layer', views: ['SYS_ARCH'] },
+    { id: 'ro_e3', from: 'data-layer', to: 'scope-check', views: ['SYS_ARCH'] },
+    { id: 'ro_e4', from: 'scope-check', to: 'runtime-controls', views: ['SYS_ARCH'] },
+    { id: 'ro_e5', from: 'runtime-controls', to: 'human-approval', views: ['SYS_ARCH'] },
+    { id: 'ro_e6', from: 'runtime-controls', to: 'agent-execution', views: ['SYS_ARCH'] },
+    { id: 'ro_e7', from: 'human-approval', to: 'agent-execution', views: ['SYS_ARCH'] },
+    { id: 'ro_e8', from: 'agent-execution', to: 'output-safety', views: ['SYS_ARCH'] },
+    { id: 'ro_e9', from: 'output-safety', to: 'audit-trail', views: ['SYS_ARCH'] },
+    { id: 'ro_e10', from: 'audit-trail', to: 'measurement', views: ['SYS_ARCH'] },
+    { id: 'ro_e11', from: 'measurement', to: 'output', views: ['SYS_ARCH'] },
+  ],
+  views: {
+    SYS_ARCH: {
+      name: 'System Architecture',
+      icon: 'Server',
+      nodes: [
+        { id: 'trigger', x: 80, y: 250 },
+        { id: 'workflow-map', x: 220, y: 250 },
+        { id: 'data-layer', x: 360, y: 250 },
+        { id: 'scope-check', x: 500, y: 250 },
+        { id: 'runtime-controls', x: 640, y: 250 },
+        { id: 'human-approval', x: 780, y: 150 },
+        { id: 'agent-execution', x: 920, y: 350 },
+        { id: 'output-safety', x: 1060, y: 250 },
+        { id: 'audit-trail', x: 1200, y: 250 },
+        { id: 'measurement', x: 1340, y: 250 },
+        { id: 'output', x: 1480, y: 250 },
+      ],
+      groups: [],
+    },
   },
-  {
-    id: 'data-layer',
-    label: 'Data & Context',
-    stereotype: 'Memory',
-    icon: 'Database',
-    layer: 2,
-    description: 'Retrieves working context, episodic history, semantic facts, and procedural patterns from the four memory types.',
-  },
-  {
-    id: 'scope-check',
-    label: 'Scope & Authority',
-    stereotype: 'Guard',
-    icon: 'ShieldCheck',
-    layer: 3,
-    description: 'Determines the autonomy tier: Shadow, Supervised, Guided, or Autonomous — and what the agent is allowed to do.',
-  },
-  {
-    id: 'runtime-controls',
-    label: 'Runtime Controls',
-    stereotype: 'Policy',
-    icon: 'Lock',
-    layer: 4,
-    description: 'Pre-dispatch policy enforcement: every tool call is evaluated as ALLOW, DENY, REQUIRE_APPROVAL, or ALLOW_WITH_CONSTRAINTS.',
-  },
-  {
-    id: 'human-approval',
-    label: 'Human Approval',
-    stereotype: 'Actor',
-    icon: 'UserCheck',
-    layer: 5,
-    description: 'Synchronous review gate for Supervised tier or REQUIRE_APPROVAL policy decisions. Session pauses until a named approver acts.',
-  },
-  {
-    id: 'agent-execution',
-    label: 'Agent Execution',
-    stereotype: 'Runtime',
-    icon: 'Bot',
-    layer: 5,
-    description: 'The agent executes the approved action — calling tools, writing to systems, or generating output.',
-  },
-  {
-    id: 'output-safety',
-    label: 'Output Safety',
-    stereotype: 'Filter',
-    icon: 'ScanLine',
-    layer: 6,
-    description: 'Post-execution pipeline: ALLOW, REDACT (remove PII/secrets), or QUARANTINE the output before delivery.',
-  },
-  {
-    id: 'audit-trail',
-    label: 'Audit Trail',
-    stereotype: 'Compliance',
-    icon: 'ClipboardList',
-    layer: 7,
-    description: 'Immutable write-once log of every action, policy decision, approver, and outcome — the post-incident narrative.',
-  },
-  {
-    id: 'measurement',
-    label: 'Measurement',
-    stereotype: 'Metrics',
-    icon: 'BarChart2',
-    layer: 8,
-    description: 'Cycle time, containment rate, handoff rate, override rate, and drift detection lag — the operational scorecard.',
-  },
-  {
-    id: 'output',
-    label: 'Output / Action',
-    stereotype: 'Output',
-    icon: 'Send',
-    layer: 9,
-    description: 'The final result delivered to the user or written to business systems. Marked in the audit trail with approver and policy snapshot.',
-  },
-]
-
-export const operatingModelEdges: FlowchartEdge[] = [
-  { from: 'trigger', to: 'workflow-map', description: 'Incoming event checked against documented scope' },
-  { from: 'workflow-map', to: 'data-layer', description: 'In-scope: retrieve context and memory' },
-  { from: 'data-layer', to: 'scope-check', description: 'Context loaded — determine autonomy tier' },
-  { from: 'scope-check', to: 'runtime-controls', description: 'Tier confirmed — evaluate pre-dispatch policy' },
-  { from: 'runtime-controls', to: 'human-approval', description: 'REQUIRE_APPROVAL: route to human review queue' },
-  { from: 'runtime-controls', to: 'agent-execution', description: 'ALLOW or ALLOW_WITH_CONSTRAINTS: execute' },
-  { from: 'human-approval', to: 'agent-execution', description: 'Approved: session resumes, approver on record' },
-  { from: 'agent-execution', to: 'output-safety', description: 'Raw output passed through safety pipeline' },
-  { from: 'output-safety', to: 'audit-trail', description: 'Decision logged: ALLOW / REDACT / QUARANTINE' },
-  { from: 'audit-trail', to: 'measurement', description: 'Metrics updated: cycle time, override rate, drift' },
-  { from: 'measurement', to: 'output', description: 'Cleared output delivered to user or system' },
-]
-
-export const operatingModelJourneys: Journey[] = [
-  {
-    id: 'supervised-journey',
-    label: 'Supervised Tier — Financial Transaction',
-    description: 'A $4,500 refund request: agent drafts the action, runtime policy routes it to a human approver, then executes after sign-off.',
-    steps: [
-      { nodeId: 'trigger', description: 'Customer submits a refund request for $4,500.' },
-      { nodeId: 'workflow-map', description: 'Event matches the "Refund Processing" workflow map — within scope.' },
-      { nodeId: 'data-layer', description: 'Agent retrieves customer order history, policy rules, and prior refund decisions.' },
-      { nodeId: 'scope-check', description: 'Amount exceeds the $2,000 Guided threshold — Supervised tier applies.' },
-      { nodeId: 'runtime-controls', description: 'Policy Decision Point: financial action over threshold → REQUIRE_APPROVAL.' },
-      { nodeId: 'human-approval', description: 'Support manager reviews the refund draft, confirms eligibility, approves.' },
-      { nodeId: 'agent-execution', description: 'Agent executes the refund with the approver\'s identity on record.' },
-      { nodeId: 'output-safety', description: 'Output checked — no PII leakage, payment amount within expected bounds.' },
-      { nodeId: 'audit-trail', description: 'Action, approver name, policy snapshot, and timestamp written immutably.' },
-      { nodeId: 'measurement', description: 'Cycle time and override rate updated. Containment rate unchanged.' },
-      { nodeId: 'output', description: 'Refund confirmation delivered to the customer.' },
-    ],
-  },
-  {
-    id: 'guided-journey',
-    label: 'Guided Tier — Support Ticket Routing',
-    description: 'A support ticket routed autonomously by the agent. Human monitors exceptions but is not on the critical path.',
-    steps: [
-      { nodeId: 'trigger', description: 'New support ticket arrives: "Billing discrepancy on invoice #8841".' },
-      { nodeId: 'workflow-map', description: 'Event matches "Ticket Routing" workflow — in scope.' },
-      { nodeId: 'data-layer', description: 'Agent retrieves ticket history, product context, and routing rules.' },
-      { nodeId: 'scope-check', description: 'Classification task, recoverable errors — Guided tier confirmed.' },
-      { nodeId: 'runtime-controls', description: 'Policy Decision Point: read + classify action → ALLOW.' },
-      { nodeId: 'agent-execution', description: 'Agent classifies ticket as "Billing" and routes to billing queue.' },
-      { nodeId: 'output-safety', description: 'Output scanned — no sensitive data in the routing decision.' },
-      { nodeId: 'audit-trail', description: 'Routing decision and confidence score logged.' },
-      { nodeId: 'measurement', description: 'Containment rate incremented. Human monitoring dashboard updated.' },
-      { nodeId: 'output', description: 'Ticket assigned to billing team. Human monitor notified of no exceptions.' },
-    ],
-  },
-  {
-    id: 'shadow-journey',
-    label: 'Shadow Tier — New Deployment Calibration',
-    description: 'First week of deployment in a regulated workflow. Agent generates suggestions; a human makes every decision while divergences are logged.',
-    steps: [
-      { nodeId: 'trigger', description: 'Loan application submitted for underwriting review.' },
-      { nodeId: 'workflow-map', description: 'Event matches "Underwriting" workflow — in scope.' },
-      { nodeId: 'data-layer', description: 'Agent reads applicant data, credit history, and underwriting policy.' },
-      { nodeId: 'scope-check', description: 'New deployment in regulated domain — Shadow tier enforced.' },
-      { nodeId: 'runtime-controls', description: 'Policy Decision Point: shadow mode → DENY all writes, ALLOW read + suggest.' },
-      { nodeId: 'human-approval', description: 'Underwriter receives the agent\'s recommendation alongside the full file. Human makes the final decision.' },
-      { nodeId: 'agent-execution', description: 'Agent records its suggestion and the human\'s decision for divergence analysis.' },
-      { nodeId: 'output-safety', description: 'Suggestion output checked — no PII in the recommendation text.' },
-      { nodeId: 'audit-trail', description: 'Agent suggestion, human decision, and divergence flag logged for calibration.' },
-      { nodeId: 'measurement', description: 'Override rate and divergence rate updated — key signals for tier promotion readiness.' },
-      { nodeId: 'output', description: 'Human underwriter\'s decision submitted. Agent calibration data accumulated.' },
-    ],
-  },
-]
+  journeys: [
+    {
+      id: 'supervised-journey',
+      label: 'Supervised Tier — Financial Transaction',
+      description: 'A $4,500 refund request: agent drafts the action, runtime policy routes it to a human approver, then executes after sign-off.',
+      steps: [
+        { nodeId: 'trigger', description: 'Customer submits a refund request for $4,500.' },
+        { nodeId: 'workflow-map', description: 'Event matches the "Refund Processing" workflow map — within scope.' },
+        { nodeId: 'data-layer', description: 'Agent retrieves customer order history, policy rules, and prior refund decisions.' },
+        { nodeId: 'scope-check', description: 'Amount exceeds the $2,000 Guided threshold — Supervised tier applies.' },
+        { nodeId: 'runtime-controls', description: 'Policy Decision Point: financial action over threshold → REQUIRE_APPROVAL.' },
+        { nodeId: 'human-approval', description: 'Support manager reviews the refund draft, confirms eligibility, approves.' },
+        { nodeId: 'agent-execution', description: 'Agent executes the refund with the approver\'s identity on record.' },
+        { nodeId: 'output-safety', description: 'Output checked — no PII leakage, payment amount within expected bounds.' },
+        { nodeId: 'audit-trail', description: 'Action, approver name, policy snapshot, and timestamp written immutably.' },
+        { nodeId: 'measurement', description: 'Cycle time and override rate updated. Containment rate unchanged.' },
+        { nodeId: 'output', description: 'Refund confirmation delivered to the customer.' },
+      ],
+    },
+    {
+      id: 'guided-journey',
+      label: 'Guided Tier — Support Ticket Routing',
+      description: 'A support ticket routed autonomously by the agent. Human monitors exceptions but is not on the critical path.',
+      steps: [
+        { nodeId: 'trigger', description: 'New support ticket arrives: "Billing discrepancy on invoice #8841".' },
+        { nodeId: 'workflow-map', description: 'Event matches "Ticket Routing" workflow — in scope.' },
+        { nodeId: 'data-layer', description: 'Agent retrieves ticket history, product context, and routing rules.' },
+        { nodeId: 'scope-check', description: 'Classification task, recoverable errors — Guided tier confirmed.' },
+        { nodeId: 'runtime-controls', description: 'Policy Decision Point: read + classify action → ALLOW.' },
+        { nodeId: 'agent-execution', description: 'Agent classifies ticket as "Billing" and routes to billing queue.' },
+        { nodeId: 'output-safety', description: 'Output scanned — no sensitive data in the routing decision.' },
+        { nodeId: 'audit-trail', description: 'Routing decision and confidence score logged.' },
+        { nodeId: 'measurement', description: 'Containment rate incremented. Human monitoring dashboard updated.' },
+        { nodeId: 'output', description: 'Ticket assigned to billing team. Human monitor notified of no exceptions.' },
+      ],
+    },
+    {
+      id: 'shadow-journey',
+      label: 'Shadow Tier — New Deployment Calibration',
+      description: 'First week of deployment in a regulated workflow. Agent generates suggestions; a human makes every decision while divergences are logged.',
+      steps: [
+        { nodeId: 'trigger', description: 'Loan application submitted for underwriting review.' },
+        { nodeId: 'workflow-map', description: 'Event matches "Underwriting" workflow — in scope.' },
+        { nodeId: 'data-layer', description: 'Agent reads applicant data, credit history, and underwriting policy.' },
+        { nodeId: 'scope-check', description: 'New deployment in regulated domain — Shadow tier enforced.' },
+        { nodeId: 'runtime-controls', description: 'Policy Decision Point: shadow mode → DENY all writes, ALLOW read + suggest.' },
+        { nodeId: 'human-approval', description: 'Underwriter receives the agent\'s recommendation alongside the full file. Human makes the final decision.' },
+        { nodeId: 'agent-execution', description: 'Agent records its suggestion and the human\'s decision for divergence analysis.' },
+        { nodeId: 'output-safety', description: 'Suggestion output checked — no PII in the recommendation text.' },
+        { nodeId: 'audit-trail', description: 'Agent suggestion, human decision, and divergence flag logged for calibration.' },
+        { nodeId: 'measurement', description: 'Override rate and divergence rate updated — key signals for tier promotion readiness.' },
+        { nodeId: 'output', description: 'Human underwriter\'s decision submitted. Agent calibration data accumulated.' },
+      ],
+    },
+  ],
+}
 
 // ─── Text: Introduction ───────────────────────────────────────────────────────
 

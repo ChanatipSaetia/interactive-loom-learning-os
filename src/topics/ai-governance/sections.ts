@@ -1,8 +1,6 @@
 import type { SectionConfig } from '../../core/registry'
 import {
-  governanceNodes,
-  governanceEdges,
-  governanceJourneys,
+  governanceSchema,
   governanceScenarios,
   governanceTextParagraphs,
   governanceFrameworksParagraphs,
@@ -24,9 +22,7 @@ export const aiGovernanceSections: SectionConfig[] = [
     type: 'flowchart',
     props: {
       title: 'Five-Category Intervention Taxonomy',
-      nodes: governanceNodes,
-      edges: governanceEdges,
-      journeys: governanceJourneys,
+      schema: governanceSchema,
     },
   },
   {

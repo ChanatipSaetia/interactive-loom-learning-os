@@ -1,57 +1,109 @@
-import type { FlowchartNode, FlowchartEdge, Journey } from '../../sections/flowchart'
+import { TYPES } from '../../sections/flowchart'
+import type { UnifiedFlowchartSchema } from '../../sections/flowchart'
 import type { TradeoffScenario } from '../../sections/tradeoff-sandbox'
 
-export const aiAgentNodes: FlowchartNode[] = [
-  { id: 'user', label: 'User', stereotype: 'actor', icon: 'User', layer: 0 },
-  { id: 'ai-agent', label: 'AI Agent', stereotype: 'agent', icon: 'Bot', layer: 1 },
-  { id: 'llm', label: 'LLM', stereotype: 'model', icon: 'Brain', layer: 2 },
-  { id: 'tools-search', label: 'Tools: Search', stereotype: 'tool', icon: 'Search', layer: 2 },
-  { id: 'tools-code', label: 'Tools: Code', stereotype: 'tool', icon: 'Code', layer: 2 },
-  { id: 'memory', label: 'Memory', stereotype: 'storage', icon: 'Database', layer: 2 },
-]
-
-export const aiAgentEdges: FlowchartEdge[] = [
-  { from: 'user', to: 'ai-agent' },
-  { from: 'ai-agent', to: 'llm' },
-  { from: 'ai-agent', to: 'tools-search' },
-  { from: 'ai-agent', to: 'tools-code' },
-  { from: 'ai-agent', to: 'memory' },
-  { from: 'tools-search', to: 'ai-agent' },
-  { from: 'tools-code', to: 'ai-agent' },
-  { from: 'llm', to: 'ai-agent' },
-  { from: 'ai-agent', to: 'user' },
-]
-
-export const aiAgentJourneys: Journey[] = [
-  {
-    id: 'query-journey',
-    label: 'Query Journey',
-    description: 'Shows how a user query flows through the AI Agent: received, processed by the LLM, routed to a search tool, and returned as a response.',
-    steps: [
-      { nodeId: 'user', description: 'User sends a query' },
-      { nodeId: 'ai-agent', description: 'AI Agent receives the query' },
-      { nodeId: 'llm', description: 'LLM processes the query' },
-      { nodeId: 'ai-agent', description: 'AI Agent routes to search tool' },
-      { nodeId: 'tools-search', description: 'Search tool is invoked' },
-      { nodeId: 'ai-agent', description: 'AI Agent processes search results' },
-      { nodeId: 'user', description: 'Response returned to user' },
-    ],
+export const aiAgentSchema: UnifiedFlowchartSchema = {
+  entities: {
+    user: {
+      title: 'User',
+      desc: 'The human actor invoking the agent.',
+      viewTypes: {
+        SYS_ARCH: TYPES.USER,
+      },
+    },
+    'ai-agent': {
+      title: 'AI Agent',
+      desc: 'The main agent orchestrator running the cognitive loop.',
+      viewTypes: {
+        SYS_ARCH: TYPES.SERVICE,
+      },
+    },
+    llm: {
+      title: 'LLM',
+      desc: 'Large Language Model reasoning engine.',
+      viewTypes: {
+        SYS_ARCH: TYPES.EXTERNAL,
+      },
+    },
+    'tools-search': {
+      title: 'Tools: Search',
+      desc: 'External search integration.',
+      viewTypes: {
+        SYS_ARCH: TYPES.COMMAND,
+      },
+    },
+    'tools-code': {
+      title: 'Tools: Code',
+      desc: 'Sandboxed code execution tool.',
+      viewTypes: {
+        SYS_ARCH: TYPES.COMMAND,
+      },
+    },
+    memory: {
+      title: 'Memory',
+      desc: 'Semantic and episodic memory store.',
+      viewTypes: {
+        SYS_ARCH: TYPES.DATABASE,
+      },
+    },
   },
-  {
-    id: 'tool-use-journey',
-    label: 'Tool Use Journey',
-    description: 'Demonstrates the agent determining which tool to use, executing the code tool, and compiling results before responding to the user.',
-    steps: [
-      { nodeId: 'user', description: 'User sends a request' },
-      { nodeId: 'ai-agent', description: 'AI Agent receives the request' },
-      { nodeId: 'llm', description: 'LLM determines tool needed' },
-      { nodeId: 'ai-agent', description: 'AI Agent routes to code tool' },
-      { nodeId: 'tools-code', description: 'Code tool is executed' },
-      { nodeId: 'ai-agent', description: 'AI Agent compiles results' },
-      { nodeId: 'user', description: 'Response returned to user' },
-    ],
+  relations: [
+    { id: 'r1', from: 'user', to: 'ai-agent', views: ['SYS_ARCH'] },
+    { id: 'r2', from: 'ai-agent', to: 'llm', views: ['SYS_ARCH'] },
+    { id: 'r3', from: 'ai-agent', to: 'tools-search', views: ['SYS_ARCH'] },
+    { id: 'r4', from: 'ai-agent', to: 'tools-code', views: ['SYS_ARCH'] },
+    { id: 'r5', from: 'ai-agent', to: 'memory', views: ['SYS_ARCH'] },
+    { id: 'r6', from: 'tools-search', to: 'ai-agent', views: ['SYS_ARCH'] },
+    { id: 'r7', from: 'tools-code', to: 'ai-agent', views: ['SYS_ARCH'] },
+    { id: 'r8', from: 'llm', to: 'ai-agent', views: ['SYS_ARCH'] },
+    { id: 'r9', from: 'ai-agent', to: 'user', views: ['SYS_ARCH'] },
+  ],
+  views: {
+    SYS_ARCH: {
+      name: 'System Architecture',
+      icon: 'Server',
+      nodes: [
+        { id: 'user', x: 100, y: 250 },
+        { id: 'ai-agent', x: 280, y: 250 },
+        { id: 'llm', x: 460, y: 100 },
+        { id: 'tools-search', x: 460, y: 200 },
+        { id: 'tools-code', x: 460, y: 300 },
+        { id: 'memory', x: 460, y: 400 },
+      ],
+      groups: [],
+    },
   },
-]
+  journeys: [
+    {
+      id: 'query-journey',
+      label: 'Query Journey',
+      description: 'Shows how a user query flows through the AI Agent: received, processed by the LLM, routed to a search tool, and returned as a response.',
+      steps: [
+        { nodeId: 'user', description: 'User sends a query' },
+        { nodeId: 'ai-agent', description: 'AI Agent receives the query' },
+        { nodeId: 'llm', description: 'LLM processes the query' },
+        { nodeId: 'tools-search', description: 'Search tool is invoked' },
+        { nodeId: 'ai-agent', description: 'AI Agent processes search results' },
+        { nodeId: 'user', description: 'Response returned to user' },
+      ],
+    },
+    {
+      id: 'tool-use-journey',
+      label: 'Tool Use Journey',
+      description: 'Demonstrates the agent determining which tool to use, executing the code tool, and compiling results before responding to the user.',
+      steps: [
+        { nodeId: 'user', description: 'User sends a request' },
+        { nodeId: 'ai-agent', description: 'AI Agent receives the request' },
+        { nodeId: 'llm', description: 'LLM determines tool needed' },
+        { nodeId: 'tools-code', description: 'Code tool is executed' },
+        { nodeId: 'llm', description: 'LLM processes code output' },
+        { nodeId: 'ai-agent', description: 'AI Agent compiles results' },
+        { nodeId: 'user', description: 'Response returned to user' },
+      ],
+    },
+  ],
+}
+
 
 // ─── Tradeoff Sandbox: AI Agent design decisions ─────────────────────────────
 

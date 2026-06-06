@@ -1,118 +1,9 @@
-import type { FlowchartNode, FlowchartEdge, Journey } from '../../sections/flowchart'
+import { TYPES } from '../../sections/flowchart'
+import type { UnifiedFlowchartSchema } from '../../sections/flowchart'
 import type { TradeoffScenario } from '../../sections/tradeoff-sandbox'
 import type { TaxonomyCategory } from '../../sections/taxonomy-browser'
 import type { ComponentType } from 'react'
 import { Brain, Zap, Shield, Workflow } from 'lucide-react'
-
-// ─── Flowchart: AI Agent Architecture ────────────────────────────────────────
-
-export const agentNodes: FlowchartNode[] = [
-  {
-    id: 'user',
-    label: 'User',
-    stereotype: 'Actor',
-    icon: 'User',
-    layer: 0,
-    description: 'The human (or system) that sends goals, queries, or instructions to the agent.',
-  },
-  {
-    id: 'orchestrator',
-    label: 'Orchestrator',
-    stereotype: 'Controller',
-    icon: 'Brain',
-    layer: 1,
-    description: 'Decomposes the user goal into sub-tasks and coordinates all other components.',
-  },
-  {
-    id: 'planner',
-    label: 'Planner',
-    stereotype: 'Service',
-    icon: 'ClipboardList',
-    layer: 2,
-    description: 'Produces a step-by-step plan (chain-of-thought or ReAct loop) to achieve the goal.',
-  },
-  {
-    id: 'memory',
-    label: 'Memory',
-    stereotype: 'Store',
-    icon: 'Database',
-    layer: 2,
-    description: 'Stores short-term context (conversation history) and long-term facts (vector DB).',
-  },
-  {
-    id: 'tools',
-    label: 'Tool Router',
-    stereotype: 'Gateway',
-    icon: 'Wrench',
-    layer: 3,
-    description: 'Selects and invokes the right tool (search, code executor, API, browser, etc.).',
-  },
-  {
-    id: 'llm',
-    label: 'LLM',
-    stereotype: 'Model',
-    icon: 'Sparkles',
-    layer: 3,
-    description: 'Large language model that performs reasoning, summarisation, and generation.',
-  },
-  {
-    id: 'executor',
-    label: 'Executor',
-    stereotype: 'Runtime',
-    icon: 'Settings2',
-    layer: 4,
-    description: 'Runs tool calls (shell commands, HTTP requests, code sandboxes) and returns results.',
-  },
-  {
-    id: 'evaluator',
-    label: 'Evaluator',
-    stereotype: 'Guard',
-    icon: 'ShieldCheck',
-    layer: 4,
-    description: 'Checks whether the current output meets the success criteria; triggers re-planning if not.',
-  },
-  {
-    id: 'output',
-    label: 'Response',
-    stereotype: 'Output',
-    icon: 'Send',
-    layer: 5,
-    description: 'Final answer or artefact delivered back to the user.',
-  },
-]
-
-export const agentEdges: FlowchartEdge[] = [
-  { from: 'user', to: 'orchestrator', description: 'Goal or query submitted by the user' },
-  { from: 'orchestrator', to: 'planner', description: 'Request a task plan' },
-  { from: 'orchestrator', to: 'memory', description: 'Retrieve relevant context' },
-  { from: 'planner', to: 'llm', description: 'Prompt the LLM with the plan request' },
-  { from: 'memory', to: 'llm', description: 'Inject retrieved facts into the prompt' },
-  { from: 'llm', to: 'tools', description: 'LLM emits a tool-call directive' },
-  { from: 'tools', to: 'executor', description: 'Dispatch selected tool with arguments' },
-  { from: 'executor', to: 'evaluator', description: 'Return raw tool output for evaluation' },
-  { from: 'evaluator', to: 'orchestrator', description: 'Goal not met — re-plan' },
-  { from: 'evaluator', to: 'output', description: 'Goal met — emit final response' },
-  { from: 'output', to: 'user', description: 'Deliver answer to the user' },
-]
-
-export const agentJourneys: Journey[] = [
-  {
-    id: 'happy-path',
-    label: 'Happy Path',
-    description: 'The agent completes the goal in a single pass: plan, execute tools, evaluate success, and return the response.',
-    steps: [
-      { nodeId: 'user', description: 'User submits a goal: "Research top 3 competitors and summarise."' },
-      { nodeId: 'orchestrator', description: 'Orchestrator receives the goal and kicks off planning.' },
-      { nodeId: 'memory', description: 'Memory retrieves any prior research stored from previous sessions.' },
-      { nodeId: 'planner', description: 'Planner generates a step list: search, scrape, summarise.' },
-      { nodeId: 'llm', description: 'LLM reasons over the plan and decides to call the web-search tool.' },
-      { nodeId: 'tools', description: 'Tool Router selects the web-search tool and prepares arguments.' },
-      { nodeId: 'executor', description: 'Executor fires the HTTP search request and collects results.' },
-      { nodeId: 'evaluator', description: 'Evaluator confirms all 3 competitors found — goal met.' },
-      { nodeId: 'output', description: 'A concise markdown summary is returned to the user.' },
-   ],
-  },
-]
 
 // ─── Tradeoff Sandbox: Architecture scenarios ─────────────────────────────────
 
@@ -734,3 +625,288 @@ export const taxonomyCategories: TaxonomyCategory[] = [
     color: 'green',
   },
 ]
+
+export const agentSchema: UnifiedFlowchartSchema = {
+  entities: {
+    'user': {
+      title: 'User',
+      desc: 'The human (or client system) initiating goals or receiving results.',
+      viewTypes: {
+        EVENT_STORMING: TYPES.USER,
+        SYS_ARCH: TYPES.USER,
+        DATA_FLOW: TYPES.USER,
+        SWIMLANES: TYPES.USER,
+      }
+    },
+    'orchestrator': {
+      title: 'Orchestrator',
+      desc: 'Coordinating component running the core planning and execution loops.',
+      viewTypes: {
+        EVENT_STORMING: TYPES.AGGREGATE,
+        SYS_ARCH: TYPES.SERVICE,
+        DATA_FLOW: TYPES.SERVICE,
+        SWIMLANES: TYPES.SERVICE,
+      }
+    },
+    'planner': {
+      title: 'Planner',
+      desc: 'Formulates multi-step actions (e.g. CoT, ReAct plan) dynamically.',
+      viewTypes: {
+        EVENT_STORMING: TYPES.COMMAND,
+        SYS_ARCH: TYPES.SERVICE,
+        DATA_FLOW: TYPES.PROCESS,
+        SWIMLANES: TYPES.PROCESS,
+      }
+    },
+    'memory': {
+      title: 'Memory Storage',
+      desc: 'Retrieves conversational logs and semantic vectors (long-term database).',
+      viewTypes: {
+        EVENT_STORMING: TYPES.DATABASE,
+        SYS_ARCH: TYPES.DATABASE,
+        DATA_FLOW: TYPES.DATABASE,
+        SWIMLANES: TYPES.DATABASE,
+      }
+    },
+    'tools': {
+      title: 'Tool Router',
+      desc: 'Selects appropriate external APIs or scripts for a given task.',
+      viewTypes: {
+        EVENT_STORMING: TYPES.POLICY,
+        SYS_ARCH: TYPES.SERVICE,
+        DATA_FLOW: TYPES.PROCESS,
+        SWIMLANES: TYPES.PROCESS,
+      }
+    },
+    'llm': {
+      title: 'LLM Engine',
+      desc: 'Large language model performing prompt parsing and reasoning.',
+      viewTypes: {
+        EVENT_STORMING: TYPES.EXTERNAL,
+        SYS_ARCH: TYPES.EXTERNAL,
+        DATA_FLOW: TYPES.EXTERNAL,
+        SWIMLANES: TYPES.EXTERNAL,
+      }
+    },
+    'executor': {
+      title: 'Tool Executor',
+      desc: 'Executes actions (HTTP search, sandboxed script, API requests).',
+      viewTypes: {
+        EVENT_STORMING: TYPES.COMMAND,
+        SYS_ARCH: TYPES.SERVICE,
+        DATA_FLOW: TYPES.PROCESS,
+        SWIMLANES: TYPES.PROCESS,
+      }
+    },
+    'evaluator': {
+      title: 'Evaluator',
+      desc: 'Tests execution outputs against success conditions.',
+      viewTypes: {
+        EVENT_STORMING: TYPES.DECISION,
+        SYS_ARCH: TYPES.SERVICE,
+        DATA_FLOW: TYPES.DECISION,
+        SWIMLANES: TYPES.DECISION,
+      }
+    },
+    'output': {
+      title: 'Final Response',
+      desc: 'The verified markdown output returned to the caller.',
+      viewTypes: {
+        EVENT_STORMING: TYPES.DATA_OBJECT,
+        SYS_ARCH: TYPES.DATA_OBJECT,
+        DATA_FLOW: TYPES.DATA_OBJECT,
+        SWIMLANES: TYPES.DATA_OBJECT,
+      }
+    },
+    'evt_goal': {
+      title: 'Goal Dispatched',
+      desc: 'User goal received by the orchestrator.',
+      viewTypes: { EVENT_STORMING: TYPES.EVENT }
+    },
+    'evt_plan_ready': {
+      title: 'Plan Generated',
+      desc: 'Multi-step execution plan written to working memory.',
+      viewTypes: { EVENT_STORMING: TYPES.EVENT }
+    },
+    'evt_tool_call': {
+      title: 'Tool Route Chosen',
+      desc: 'Router selected tool and arguments.',
+      viewTypes: { EVENT_STORMING: TYPES.EVENT }
+    },
+    'evt_executed': {
+      title: 'Tool Output Captured',
+      desc: 'Output retrieved from sandbox execution.',
+      viewTypes: { EVENT_STORMING: TYPES.EVENT }
+    },
+    'evt_done': {
+      title: 'Goal Satisfied',
+      desc: 'Evaluation passes, ready to reply.',
+      viewTypes: { EVENT_STORMING: TYPES.EVENT }
+    },
+    'evt_fail': {
+      title: 'Goal Not Satisfied',
+      desc: 'Evaluation fails, requiring re-planning.',
+      viewTypes: { EVENT_STORMING: TYPES.EVENT }
+    },
+    'pol_retry': {
+      title: 'Re-Planning Rule',
+      desc: 'Policy to feed error logs back to the orchestrator.',
+      viewTypes: { EVENT_STORMING: TYPES.POLICY }
+    }
+  },
+  relations: [
+    { id: 'r_es_1', from: 'user', to: 'evt_goal', views: ['EVENT_STORMING'] },
+    { id: 'r_es_2', from: 'evt_goal', to: 'planner', views: ['EVENT_STORMING'] },
+    { id: 'r_es_3', from: 'planner', to: 'orchestrator', views: ['EVENT_STORMING'] },
+    { id: 'r_es_4', from: 'orchestrator', to: 'evt_plan_ready', views: ['EVENT_STORMING'] },
+    { id: 'r_es_5', from: 'evt_plan_ready', to: 'tools', views: ['EVENT_STORMING'] },
+    { id: 'r_es_6', from: 'tools', to: 'llm', views: ['EVENT_STORMING'] },
+    { id: 'r_es_7', from: 'llm', to: 'evt_tool_call', views: ['EVENT_STORMING'] },
+    { id: 'r_es_8', from: 'evt_tool_call', to: 'executor', views: ['EVENT_STORMING'] },
+    { id: 'r_es_9', from: 'executor', to: 'evt_executed', views: ['EVENT_STORMING'] },
+    { id: 'r_es_10', from: 'evt_executed', to: 'evaluator', views: ['EVENT_STORMING'] },
+    { id: 'r_es_11', from: 'evaluator', to: 'evt_done', views: ['EVENT_STORMING'] },
+    { id: 'r_es_12', from: 'evaluator', to: 'evt_fail', views: ['EVENT_STORMING'] },
+    { id: 'r_es_13', from: 'evt_fail', to: 'pol_retry', views: ['EVENT_STORMING'] },
+    { id: 'r_es_14', from: 'pol_retry', to: 'planner', views: ['EVENT_STORMING'], dashed: true },
+    { id: 'r_es_15', from: 'evt_done', to: 'output', views: ['EVENT_STORMING'] },
+    { id: 'r_es_16', from: 'orchestrator', to: 'memory', views: ['EVENT_STORMING'] },
+
+    { id: 'r_sa_1', from: 'user', to: 'orchestrator', views: ['SYS_ARCH'] },
+    { id: 'r_sa_2', from: 'orchestrator', to: 'memory', views: ['SYS_ARCH'] },
+    { id: 'r_sa_3', from: 'orchestrator', to: 'planner', views: ['SYS_ARCH'] },
+    { id: 'r_sa_4', from: 'orchestrator', to: 'tools', views: ['SYS_ARCH'] },
+    { id: 'r_sa_5', from: 'tools', to: 'llm', views: ['SYS_ARCH'] },
+    { id: 'r_sa_6', from: 'tools', to: 'executor', views: ['SYS_ARCH'] },
+    { id: 'r_sa_7', from: 'executor', to: 'evaluator', views: ['SYS_ARCH'] },
+    { id: 'r_sa_8', from: 'evaluator', to: 'orchestrator', views: ['SYS_ARCH'] },
+    { id: 'r_sa_9', from: 'evaluator', to: 'output', views: ['SYS_ARCH'] },
+    { id: 'r_sa_10', from: 'output', to: 'user', views: ['SYS_ARCH'] },
+
+    { id: 'r_df_1', from: 'user', to: 'orchestrator', views: ['DATA_FLOW'] },
+    { id: 'r_df_2', from: 'orchestrator', to: 'memory', views: ['DATA_FLOW'] },
+    { id: 'r_df_3', from: 'memory', to: 'planner', views: ['DATA_FLOW'] },
+    { id: 'r_df_4', from: 'planner', to: 'llm', views: ['DATA_FLOW'] },
+    { id: 'r_df_5', from: 'llm', to: 'tools', views: ['DATA_FLOW'] },
+    { id: 'r_df_6', from: 'tools', to: 'executor', views: ['DATA_FLOW'] },
+    { id: 'r_df_7', from: 'executor', to: 'evaluator', views: ['DATA_FLOW'] },
+    { id: 'r_df_8', from: 'evaluator', to: 'output', views: ['DATA_FLOW'] },
+    { id: 'r_df_9', from: 'output', to: 'user', views: ['DATA_FLOW'] },
+
+    { id: 'r_sl_1', from: 'user', to: 'orchestrator', views: ['SWIMLANES'] },
+    { id: 'r_sl_2', from: 'orchestrator', to: 'memory', views: ['SWIMLANES'] },
+    { id: 'r_sl_3', from: 'memory', to: 'llm', views: ['SWIMLANES'] },
+    { id: 'r_sl_4', from: 'llm', to: 'tools', views: ['SWIMLANES'] },
+    { id: 'r_sl_5', from: 'tools', to: 'executor', views: ['SWIMLANES'] },
+    { id: 'r_sl_6', from: 'executor', to: 'evaluator', views: ['SWIMLANES'] },
+    { id: 'r_sl_7', from: 'evaluator', to: 'output', views: ['SWIMLANES'] },
+    { id: 'r_sl_8', from: 'output', to: 'user', views: ['SWIMLANES'] }
+  ],
+  views: {
+    EVENT_STORMING: {
+      name: 'Event Storming',
+      icon: 'Component',
+      nodes: [
+        { id: 'user', x: 100, y: 250 },
+        { id: 'evt_goal', x: 240, y: 250 },
+        { id: 'planner', x: 380, y: 250 },
+        { id: 'orchestrator', x: 520, y: 250 },
+        { id: 'memory', x: 520, y: 120 },
+        { id: 'evt_plan_ready', x: 660, y: 250 },
+        { id: 'tools', x: 800, y: 250 },
+        { id: 'llm', x: 940, y: 250 },
+        { id: 'evt_tool_call', x: 1080, y: 250 },
+        { id: 'executor', x: 1220, y: 250 },
+        { id: 'evt_executed', x: 1360, y: 250 },
+        { id: 'evaluator', x: 1500, y: 250 },
+        { id: 'evt_done', x: 1640, y: 180 },
+        { id: 'evt_fail', x: 1640, y: 320 },
+        { id: 'pol_retry', x: 1780, y: 320 },
+        { id: 'output', x: 1780, y: 180 }
+      ],
+      groups: [
+        { id: 'es_g1', title: 'Cognition & Planning', desc: 'Translates goals into reasoning steps and parses facts.', nodeIds: ['evt_goal', 'planner', 'orchestrator', 'memory', 'evt_plan_ready'], color: 'rgba(96, 165, 250, 0.08)', borderColor: '#93c5fd', textColor: '#1e40af' },
+        { id: 'es_g2', title: 'Action Space Execution', desc: 'Selects, schedules, and executes external integrations.', nodeIds: ['tools', 'llm', 'evt_tool_call', 'executor', 'evt_executed'], color: 'rgba(244, 114, 182, 0.08)', borderColor: '#f9a8d4', textColor: '#9d174d' },
+        { id: 'es_g3', title: 'Evaluation & Control', desc: 'Verifies safety and performance goals before exit.', nodeIds: ['evaluator', 'evt_done', 'evt_fail', 'pol_retry'], color: 'rgba(250, 204, 21, 0.08)', borderColor: '#fde047', textColor: '#854d0e' }
+      ]
+    },
+    SYS_ARCH: {
+      name: 'System Architecture',
+      icon: 'Server',
+      nodes: [
+        { id: 'user', x: 150, y: 250 },
+        { id: 'orchestrator', x: 420, y: 250 },
+        { id: 'memory', x: 420, y: 100 },
+        { id: 'planner', x: 670, y: 100 },
+        { id: 'tools', x: 670, y: 250 },
+        { id: 'llm', x: 920, y: 180 },
+        { id: 'executor', x: 920, y: 320 },
+        { id: 'evaluator', x: 1170, y: 250 },
+        { id: 'output', x: 1390, y: 250 }
+      ],
+      groups: [
+        { id: 'sa_g1', title: 'Core Agent Scaffolding', desc: 'Runs within the secure orchestration hosting container.', nodeIds: ['orchestrator', 'memory', 'planner', 'tools', 'evaluator'], color: 'rgba(148, 163, 184, 0.1)', borderColor: '#94a3b8', textColor: '#334155' }
+      ]
+    },
+    DATA_FLOW: {
+      name: 'Data Flow (DFD)',
+      icon: 'Share2',
+      nodes: [
+        { id: 'user', x: 100, y: 250 },
+        { id: 'orchestrator', x: 280, y: 250 },
+        { id: 'memory', x: 460, y: 250 },
+        { id: 'planner', x: 640, y: 250 },
+        { id: 'llm', x: 820, y: 250 },
+        { id: 'tools', x: 1000, y: 250 },
+        { id: 'executor', x: 1180, y: 250 },
+        { id: 'evaluator', x: 1360, y: 250 },
+        { id: 'output', x: 1540, y: 250 }
+      ],
+      groups: []
+    },
+    SWIMLANES: {
+      name: 'Activity Swimlanes',
+      icon: 'Layers',
+      nodes: [
+        { id: 'user', x: 150, y: 100 },
+        { id: 'orchestrator', x: 380, y: 250 },
+        { id: 'memory', x: 580, y: 250 },
+        { id: 'llm', x: 780, y: 250 },
+        { id: 'tools', x: 980, y: 250 },
+        { id: 'executor', x: 980, y: 400 },
+        { id: 'evaluator', x: 1180, y: 250 },
+        { id: 'output', x: 1180, y: 100 }
+      ],
+      groups: [
+        { id: 'sl_l1', isLane: true, title: 'Human Interface', desc: 'User boundaries.', y: 50, h: 100, color: '#fef08a' },
+        { id: 'sl_l2', isLane: true, title: 'Cognitive Loop', desc: 'State tracking, planning, routing and validation.', y: 150, h: 200, color: '#bae6fd' },
+        { id: 'sl_l3', isLane: true, title: 'Sandbox Actions', desc: 'Side-effects execution layer.', y: 350, h: 100, color: '#cbd5e1' }
+      ]
+    }
+  },
+  journeys: [
+    {
+      id: 'happy-path',
+      label: 'Agentic Problem Solving Loop',
+      description: 'Follow the execution plan as it transitions from the orchestrator through the LLM, resolves tools, and returns the response.',
+      steps: [
+        { nodeId: 'user', description: 'User submits a goal: "Research top 3 competitors and summarise."' },
+        { nodeId: 'evt_goal', description: 'Goal is captured as a starting trigger event.' },
+        { nodeId: 'planner', description: 'Planner generates a step list: search, scrape, summarise.' },
+        { nodeId: 'orchestrator', description: 'Orchestrator tracks step progression and writes coordinates to working memory.' },
+        { nodeId: 'memory', description: 'Agent fetches past context vectors to pre-warm LLM workspace.' },
+        { nodeId: 'evt_plan_ready', description: 'Plan generation triggers tool routing execution.' },
+        { nodeId: 'tools', description: 'Tool router selects the Google Search API executor.' },
+        { nodeId: 'llm', description: 'LLM reasoning engine synthesises the query arguments.' },
+        { nodeId: 'evt_tool_call', description: 'Tool call arguments are generated and validated.' },
+        { nodeId: 'executor', description: 'Executor fires the API calls in a secure sandbox.' },
+        { nodeId: 'evt_executed', description: 'Raw results are emitted back into evaluation queue.' },
+        { nodeId: 'evaluator', description: 'Evaluator checks if all competitors are found.' },
+        { nodeId: 'evt_done', description: 'Quality goals met. Ready to compile output.' },
+        { nodeId: 'output', description: 'Formatting clean markdown summary and sending to client.' }
+      ]
+    }
+  ]
+}
+
+

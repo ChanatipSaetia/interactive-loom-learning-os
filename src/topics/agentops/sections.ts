@@ -1,8 +1,6 @@
 import type { SectionConfig } from '../../core/registry'
 import {
-  agentopsNodes,
-  agentopsEdges,
-  agentopsJourneys,
+  agentopsSchema,
   agentopsIntroParagraphs,
   agentopsEvolutionParagraphs,
   anomalyTaxonomyBullets,
@@ -31,9 +29,7 @@ export const agentopsSections: SectionConfig[] = [
     type: 'flowchart',
     props: {
       title: 'AgentOps Four-Phase Lifecycle',
-      nodes: agentopsNodes,
-      edges: agentopsEdges,
-      journeys: agentopsJourneys,
+      schema: agentopsSchema,
     },
   },
   {
