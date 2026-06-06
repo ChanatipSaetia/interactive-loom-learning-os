@@ -233,4 +233,20 @@ describe('TaxonomyBrowser Section', () => {
     render(<TaxonomyBrowserSection categories={mockCategories} />)
     expect(screen.queryByTestId('taxonomy-dialog')).not.toBeInTheDocument()
   })
+
+  it('cards have initial animation styles for entrance', () => {
+    render(<TaxonomyBrowserSection categories={mockCategories} />)
+    const card0 = screen.getByTestId('taxonomy-browser-card-0')
+    expect(card0.style.opacity).toBe('0')
+    expect(card0.style.transform).toBe('translateY(60px) scale(0.9)')
+  })
+
+  it('all cards have initial animation styles', () => {
+    render(<TaxonomyBrowserSection categories={mockCategories} />)
+    for (let i = 0; i < 3; i++) {
+      const card = screen.getByTestId(`taxonomy-browser-card-${i}`)
+      expect(card.style.opacity).toBe('0')
+      expect(card.style.transform).toBe('translateY(60px) scale(0.9)')
+    }
+  })
 })

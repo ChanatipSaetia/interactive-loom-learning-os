@@ -1,5 +1,6 @@
-import { useState, useCallback, type ComponentType } from 'react'
+import { useState, useCallback, useEffect, useRef, type ComponentType } from 'react'
 import * as Dialog from '@radix-ui/react-dialog'
+import { animate } from 'animejs'
 import { SectionRegistry } from '../../core/registry'
 import './taxonomy-browser.css'
 
@@ -35,6 +36,14 @@ const colorAccentMap: Record<string, string> = {
   red: 'var(--ctp-red)',
 }
 
+function prefersReducedMotion(): boolean {
+  return typeof window !== 'undefined'
+    && typeof window.matchMedia === 'function'
+    && window.matchMedia('(prefers-reduced-motion: reduce)').matches
+}
+
+const springEasing = 'cubic-bezier(0.34, 1.56, 0.64, 1)'
+
 function TaxonomyModal({
   category,
   open,
@@ -46,6 +55,32 @@ function TaxonomyModal({
 }) {
   const Icon = category.icon
   const accent = colorAccentMap[category.color] ?? 'var(--ctp-blue)'
+  const dialogRef = useRef<HTMLDivElement | null>(null)
+  const [reducedMotion] = useState(prefersReducedMotion())
+
+  useEffect(() => {
+    if (!open || !dialogRef.current) return
+    const el = dialogRef.current
+    el.style.opacity = '0'
+    el.style.transform = 'translate(-50%, -50%) scale(0.85)'
+    const anim = animate(
+      el,
+      {
+        opacity: [0, 1],
+        transform: [
+          { value: 'translate(-50%, -50%) scale(0.85)' },
+          { value: 'translate(-50%, -50%) scale(1.03)' },
+          { value: 'translate(-50%, -50%) scale(0.97)' },
+          { value: 'translate(-50%, -50%) scale(1)' },
+        ],
+        duration: reducedMotion ? 0 : 500,
+        easing: springEasing,
+      }
+    )
+    return () => {
+      anim.cancel()
+    }
+  }, [open, reducedMotion])
 
   return (
     <Dialog.Root open={open} onOpenChange={onOpenChange}>
@@ -55,7 +90,11 @@ function TaxonomyModal({
           data-testid="taxonomy-overlay"
           onClick={() => onOpenChange(false)}
         />
-        <Dialog.Content className="taxonomy-dialog" data-testid="taxonomy-dialog">
+        <Dialog.Content
+          ref={dialogRef}
+          className="taxonomy-dialog"
+          data-testid="taxonomy-dialog"
+        >
           <Dialog.Title className="taxonomy-dialog-title-sr" style={{ display: 'none' }}>
             {category.title} Details
           </Dialog.Title>
@@ -158,6 +197,26 @@ function TaxonomyModal({
 
 function TaxonomyBrowserSection({ title, categories }: TaxonomyBrowserSectionProps) {
   const [selectedIdx, setSelectedIdx] = useState<number | null>(null)
+  const cardRefs = useRef<HTMLDivElement[]>([])
+  const [reducedMotion] = useState(prefersReducedMotion())
+
+  useEffect(() => {
+    if (reducedMotion) return
+    const els = cardRefs.current.filter(Boolean)
+    if (els.length === 0) return
+    animate(
+      els,
+      {
+        opacity: [0, 1],
+        translateY: [60, 0],
+        scale: [0.9, 1],
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        delay: (_el: unknown, i: number) => i * 100,
+        duration: 500,
+        easing: springEasing,
+      }
+    )
+  }, [reducedMotion])
 
   const handleOpenChange = useCallback((open: boolean) => {
     if (!open) {
@@ -180,6 +239,9 @@ function TaxonomyBrowserSection({ title, categories }: TaxonomyBrowserSectionPro
         {categories.map((cat, idx) => {
           const Icon = cat.icon
           const accent = colorAccentMap[cat.color] ?? 'var(--ctp-blue)'
+          const initialStyle = reducedMotion
+            ? {}
+            : { opacity: 0, transform: 'translateY(60px) scale(0.9)' }
           return (
             <div
               key={idx}
@@ -188,7 +250,10 @@ function TaxonomyBrowserSection({ title, categories }: TaxonomyBrowserSectionPro
               aria-label={`Open details for ${cat.title}`}
               className="taxonomy-browser-card"
               data-testid={`taxonomy-browser-card-${idx}`}
-              style={{ borderTopColor: accent }}
+              ref={(el) => {
+                if (el) cardRefs.current[idx] = el
+              }}
+              style={{ borderTopColor: accent, ...initialStyle }}
               onClick={() => handleCardClick(idx)}
               onKeyDown={(e) => {
                 if (e.key === 'Enter' || e.key === ' ') {
