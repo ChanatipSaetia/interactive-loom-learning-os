@@ -639,42 +639,45 @@ function TradeoffSandboxSection({ title, scenarios }: TradeoffSandboxSectionProp
         />
       )}
 
-      <div className="metric-dashboard" data-testid="metric-dashboard">
-        <div className="dashboard-header">
-          <span className="progress-indicator" data-testid="progress-indicator">
-            {placedCount} / {totalSteps}
-          </span>
+      <div className="tradeoff-layout">
+        <div className="metric-dashboard" data-testid="metric-dashboard">
+          <div className="dashboard-header">
+            <h4 className="dashboard-title">Metric Dashboard</h4>
+            <span className="progress-indicator" data-testid="progress-indicator">
+              {placedCount} / {totalSteps}
+            </span>
+          </div>
+          <div className="metric-bars" data-testid="metric-bars">
+            {scenario.metrics.map((metric) => (
+              <MetricBar
+                key={metric.id}
+                metric={metric}
+                value={currentValues[metric.id] ?? metric.baseValue}
+                max={metric.max ?? 100}
+              />
+            ))}
+          </div>
         </div>
-        <div className="metric-bars" data-testid="metric-bars">
-          {scenario.metrics.map((metric) => (
-            <MetricBar
-              key={metric.id}
-              metric={metric}
-              value={currentValues[metric.id] ?? metric.baseValue}
-              max={metric.max ?? 100}
+
+        <div className="steps-panel" data-testid="steps-panel">
+          {scenario.steps.map((step, sIdx) => (
+            <StepSection
+              key={step.id}
+              step={step}
+              chosenChoiceId={chosenIds[step.id] ?? null}
+              onChoiceSelect={(choiceId: string) => handleChoiceSelect(step.id, choiceId)}
+              onClear={() => handleClearChoice(step.id)}
+              onOpenDetails={() => {
+                const chosenId = chosenIds[step.id]
+                if (chosenId) {
+                  handleOpenDetails(step.id, chosenId)
+                }
+              }}
+              scenarioIdx={scenarioIdx}
+              stepIdx={sIdx}
             />
           ))}
         </div>
-      </div>
-
-      <div className="steps-panel" data-testid="steps-panel">
-        {scenario.steps.map((step, sIdx) => (
-          <StepSection
-            key={step.id}
-            step={step}
-            chosenChoiceId={chosenIds[step.id] ?? null}
-            onChoiceSelect={(choiceId: string) => handleChoiceSelect(step.id, choiceId)}
-            onClear={() => handleClearChoice(step.id)}
-            onOpenDetails={() => {
-              const chosenId = chosenIds[step.id]
-              if (chosenId) {
-                handleOpenDetails(step.id, chosenId)
-              }
-            }}
-            scenarioIdx={scenarioIdx}
-            stepIdx={sIdx}
-          />
-        ))}
       </div>
     </div>
   )

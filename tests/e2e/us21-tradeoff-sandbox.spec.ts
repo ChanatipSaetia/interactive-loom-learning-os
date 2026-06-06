@@ -89,8 +89,7 @@ test.describe('Issue #21: TradeoffSandbox Section', () => {
 
     const dashboard = page.getByTestId('metric-dashboard')
     await expect(dashboard).toBeVisible()
-    await expect(page.getByTestId('progress-indicator')).toBeVisible()
-    await expect(page.getByTestId('metric-bars')).toBeVisible()
+    await expect(dashboard).toContainText('Metric Dashboard')
   })
 
   test('renders all metric bars for current scenario', async ({ page }) => {

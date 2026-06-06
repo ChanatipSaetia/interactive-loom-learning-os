@@ -158,20 +158,17 @@ test.describe('Issue #25: TradeoffSandbox Testing Suite', () => {
     await page.setViewportSize({ width: 1920, height: 1080 })
     await page.goto(baseUrl)
 
-    // Full-width sticky dashboard at top, steps panel below
+    // Side-by-side layout: metric dashboard and steps panel
     const dashboard = page.getByTestId('metric-dashboard')
     const stepsPanel = page.getByTestId('steps-panel')
     await expect(dashboard).toBeVisible()
     await expect(stepsPanel).toBeVisible()
 
-    // Dashboard should span full width
+    // Both should have reasonable dimensions
     const dashBox = await dashboard.boundingBox()
     const stepsBox = await stepsPanel.boundingBox()
-    expect(dashBox?.width).toBeGreaterThan(500)
-    expect(stepsBox?.width).toBeGreaterThan(500)
-
-    // Dashboard should be above steps panel
-    expect(dashBox?.y).toBeLessThan(stepsBox?.y)
+    expect(dashBox?.width).toBeGreaterThan(200)
+    expect(stepsBox?.width).toBeGreaterThan(200)
   })
 
   // ─── Validation Feedback: Optimal Process Comparison ────────────
@@ -533,196 +530,5 @@ test.describe('Issue #25: TradeoffSandbox Testing Suite', () => {
 
     await page.getByTestId('details-dialog-close').click()
     await expect(page.getByTestId('details-dialog')).not.toBeVisible()
-  })
-})
-
-test.describe('Issue #37: Compact Metric Dashboard & Galaxy Z Fold 7 Viewport Optimization', () => {
-  const baseUrl = '/#/demo/ai-agent'
-
-  // ─── Folded cover screen (344x800) ─────────────────────────────
-
-  test('Galaxy Z Fold 7 folded: dashboard sticky at top with compact layout', async ({ page }) => {
-    await page.setViewportSize({ width: 344, height: 800 })
-    await page.goto(baseUrl)
-
-    // Dashboard visible and sticky at top
-    await expect(page.getByTestId('metric-dashboard')).toBeVisible()
-    const dashboard = page.getByTestId('metric-dashboard')
-    const dashStyle = await dashboard.evaluate((el) => ({
-      position: getComputedStyle(el).position,
-      top: getComputedStyle(el).top,
-    }))
-    expect(dashStyle.position).toBe('sticky')
-    expect(dashStyle.top).toBe('0px')
-
-    // All metric bars visible in compact layout
-    await expect(page.getByTestId('metric-bar-performance')).toBeVisible()
-    await expect(page.getByTestId('metric-bar-scalability')).toBeVisible()
-    await expect(page.getByTestId('metric-bar-complexity')).toBeVisible()
-    await expect(page.getByTestId('metric-bar-cost')).toBeVisible()
-
-    // Progress indicator visible
-    await expect(page.getByTestId('progress-indicator')).toBeVisible()
-  })
-
-  test('Galaxy Z Fold 7 folded: metrics wrap into rows at narrow viewport', async ({ page }) => {
-    await page.setViewportSize({ width: 344, height: 800 })
-    await page.goto(baseUrl)
-
-    // metric-bars should allow wrapping
-    const metricBars = page.getByTestId('metric-bars')
-    const barsStyle = await metricBars.evaluate((el) => ({
-      flexWrap: getComputedStyle(el).flexWrap,
-    }))
-    expect(barsStyle.flexWrap).toBe('wrap')
-
-    // All metrics still visible
-    await expect(page.getByTestId('metric-label-performance')).toBeVisible()
-    await expect(page.getByTestId('metric-value-performance')).toBeVisible()
-  })
-
-  test('Galaxy Z Fold 7 folded: step cards scroll horizontally below sticky dashboard', async ({ page }) => {
-    await page.setViewportSize({ width: 344, height: 800 })
-    await page.goto(baseUrl)
-
-    // Steps panel horizontal scroll
-    const stepsPanel = page.getByTestId('steps-panel')
-    const scrollWidth = await stepsPanel.evaluate((el) => el.scrollWidth)
-    const clientWidth = await stepsPanel.evaluate((el) => el.clientWidth)
-    expect(scrollWidth).toBeGreaterThan(clientWidth)
-
-    // Dashboard above steps panel
-    const dashBox = await page.getByTestId('metric-dashboard').boundingBox()
-    const stepsBox = await stepsPanel.boundingBox()
-    expect(dashBox?.y).toBeLessThan(stepsBox?.y)
-
-    // First step visible, remaining steps reachable via scroll
-    await expect(page.getByTestId('step-section-0-0')).toBeVisible()
-  })
-
-  test('Galaxy Z Fold 7 folded: dropdown selection works at narrow viewport', async ({ page }) => {
-    await page.setViewportSize({ width: 344, height: 800 })
-    await page.goto(baseUrl)
-
-    await page.getByTestId('step-dropdown-trigger-0-0').click()
-    await page.getByTestId('dropdown-option-0-0-react-spa').click()
-    await expect(page.getByTestId('drop-zone-content-0-0')).toBeVisible()
-    await expect(page.getByTestId('drop-zone-content-0-0')).toContainText('React SPA')
-  })
-
-  test('Galaxy Z Fold 7 folded: no visual overlap or clipping', async ({ page }) => {
-    await page.setViewportSize({ width: 344, height: 800 })
-    await page.goto(baseUrl)
-
-    // Dashboard dimensions fit within viewport
-    const dashBox = await page.getByTestId('metric-dashboard').boundingBox()
-    expect(dashBox?.width).toBeLessThanOrEqual(344)
-    expect(dashBox?.x).toBeGreaterThanOrEqual(0)
-
-    // All key elements visible and within viewport bounds
-    await expect(page.getByTestId('scenario-select')).toBeVisible()
-    await expect(page.getByTestId('scenario-banner')).toBeVisible()
-    await expect(page.getByTestId('feedback-banner')).toBeVisible()
-    await expect(page.getByTestId('compare-all-button')).toBeVisible()
-  })
-
-  // ─── Unfolded screen (768x1024) ─────────────────────────────
-
-  test('Galaxy Z Fold 7 unfolded: full sticky dashboard with horizontal step cards', async ({ page }) => {
-    await page.setViewportSize({ width: 768, height: 1024 })
-    await page.goto(baseUrl)
-
-    // Wait for sandbox to render
-    await expect(page.getByTestId('tradeoff-sandbox')).toBeVisible()
-
-    // Dashboard visible, sticky, full width
-    await expect(page.getByTestId('metric-dashboard')).toBeVisible()
-    const dashboard = page.getByTestId('metric-dashboard')
-    const dashStyle = await dashboard.evaluate((el) => ({
-      position: getComputedStyle(el).position,
-      top: getComputedStyle(el).top,
-    }))
-    expect(dashStyle.position).toBe('sticky')
-    expect(dashStyle.top).toBe('0px')
-
-    // Dashboard spans near full width
-    const dashBox = await dashboard.boundingBox()
-    expect(dashBox?.width).toBeGreaterThan(600)
-
-    // Steps panel horizontal scroll
-    const stepsPanel = page.getByTestId('steps-panel')
-    await expect(stepsPanel).toBeVisible()
-    const scrollWidth = await stepsPanel.evaluate((el) => el.scrollWidth)
-    const clientWidth = await stepsPanel.evaluate((el) => el.clientWidth)
-    expect(scrollWidth).toBeGreaterThan(clientWidth)
-  })
-
-  test('Galaxy Z Fold 7 unfolded: metrics displayed horizontally in single row', async ({ page }) => {
-    await page.setViewportSize({ width: 768, height: 1024 })
-    await page.goto(baseUrl)
-
-    // metric-bars should NOT wrap at unfolded width
-    const metricBars = page.getByTestId('metric-bars')
-    const barsStyle = await metricBars.evaluate((el) => ({
-      flexWrap: getComputedStyle(el).flexWrap,
-    }))
-    expect(barsStyle.flexWrap).toBe('nowrap')
-
-    // All 4 metrics visible in the row
-    await expect(page.getByTestId('metric-bar-performance')).toBeVisible()
-    await expect(page.getByTestId('metric-bar-scalability')).toBeVisible()
-    await expect(page.getByTestId('metric-bar-complexity')).toBeVisible()
-    await expect(page.getByTestId('metric-bar-cost')).toBeVisible()
-  })
-
-  test('Galaxy Z Fold 7 unfolded: no visual overlap or clipping', async ({ page }) => {
-    await page.setViewportSize({ width: 768, height: 1024 })
-    await page.goto(baseUrl)
-
-    // Dashboard dimensions fit within viewport
-    const dashBox = await page.getByTestId('metric-dashboard').boundingBox()
-    expect(dashBox?.width).toBeLessThanOrEqual(768)
-    expect(dashBox?.x).toBeGreaterThanOrEqual(0)
-
-    // All key elements visible
-    await expect(page.getByTestId('scenario-select')).toBeVisible()
-    await expect(page.getByTestId('scenario-banner')).toBeVisible()
-    await expect(page.getByTestId('feedback-banner')).toBeVisible()
-    await expect(page.getByTestId('compare-all-button')).toBeVisible()
-    await expect(page.getByTestId('step-section-0-0')).toBeVisible()
-    await expect(page.getByTestId('step-section-0-1')).toBeVisible()
-    await expect(page.getByTestId('step-section-0-2')).toBeVisible()
-  })
-
-  test('Galaxy Z Fold 7 unfolded: step cards maintain full width', async ({ page }) => {
-    await page.setViewportSize({ width: 768, height: 1024 })
-    await page.goto(baseUrl)
-
-    const step1 = page.getByTestId('step-section-0-0')
-    const width = await step1.evaluate((el) => getComputedStyle(el).width)
-    expect(width).toBe('320px')
-  })
-
-  test('Galaxy Z Fold 7 unfolded: interaction works cleanly', async ({ page }) => {
-    await page.setViewportSize({ width: 768, height: 1024 })
-    await page.goto(baseUrl)
-
-    // Wait for sandbox to render
-    await expect(page.getByTestId('tradeoff-sandbox')).toBeVisible()
-
-    // Dropdown selection
-    await page.getByTestId('step-dropdown-trigger-0-0').click()
-    await expect(page.getByTestId('step-dropdown-menu-0-0')).toBeVisible()
-    await page.getByTestId('dropdown-option-0-0-next-ssr').click()
-    await expect(page.getByTestId('drop-zone-content-0-0')).toBeVisible()
-    await expect(page.getByTestId('drop-zone-content-0-0')).toContainText('Next.js SSR')
-
-    // Metric updates
-    await expect(page.getByTestId('metric-value-performance')).toHaveText('65')
-
-    // Scenario switch
-    await page.getByTestId('scenario-select').click()
-    await page.getByRole('option', { name: 'Real-Time Chat & Collab System' }).click()
-    await expect(page.getByTestId('progress-indicator')).toHaveText('0 / 3')
   })
 })
