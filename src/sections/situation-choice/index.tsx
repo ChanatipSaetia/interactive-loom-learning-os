@@ -1,6 +1,6 @@
 import { useState, useCallback, useEffect, useRef, type ComponentType } from 'react'
 import * as Dialog from '@radix-ui/react-dialog'
-import { Check, X } from 'lucide-react'
+import { Check, X, Star } from 'lucide-react'
 import { animate, type JSAnimation } from 'animejs'
 import { SectionRegistry } from '../../core/registry'
 import './situation-choice.css'
@@ -213,8 +213,9 @@ function SituationItem({
                         {choice.label}
                       </span>
                       {isRecommended && (
-                        <span className="compare-badge" data-testid={`compare-badge-${index}-${choice.id}`}>
-                          Recommended
+                        <span className="compare-badge" data-testid={`compare-badge-${index}-${choice.id}`} title="Recommended">
+                          <Star size={14} style={{ fill: 'currentColor' }} />
+                          <span style={{ display: 'none' }}>Recommended</span>
                         </span>
                       )}
                     </div>
@@ -273,8 +274,9 @@ function SituationItem({
               >
                 <span className="situation-card-label">{choice.label}</span>
                 {isRecommended && (
-                  <span className="situation-badge" data-testid={`situation-badge-${index}-${choice.id}`}>
-                    Recommended
+                  <span className="situation-badge" data-testid={`situation-badge-${index}-${choice.id}`} title="Recommended">
+                    <Star size={14} style={{ fill: 'currentColor' }} />
+                    <span style={{ display: 'none' }}>Recommended</span>
                   </span>
                 )}
                 <span className="situation-chevron" data-testid={`situation-chevron-${index}-${choice.id}`}>

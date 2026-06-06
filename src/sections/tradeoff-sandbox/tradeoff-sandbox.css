@@ -194,13 +194,13 @@
 
 .compare-dialog {
   position: fixed;
-  top: 50%;
+  top: 80px;
   left: 50%;
-  transform: translate(-50%, -50%);
+  transform: translate(-50%, 0);
   z-index: 51;
   width: 90vw;
-  max-width: 780px;
-  max-height: 85vh;
+  max-width: 680px;
+  max-height: calc(100vh - 160px);
   overflow-y: auto;
   background-color: var(--ctp-base);
   border: 1px solid var(--border-light);
@@ -315,15 +315,15 @@
 }
 
 .compare-badge {
-  font-size: var(--text-micro);
-  font-weight: 500;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   color: var(--ctp-green);
   background-color: rgba(166, 209, 137, 0.15);
-  border-radius: var(--radius-pill);
-  padding: var(--spacing-xxs) var(--spacing-sm);
-  text-transform: uppercase;
-  letter-spacing: 0.3px;
-  white-space: nowrap;
+  border-radius: 50%;
+  width: 24px;
+  height: 24px;
+  flex-shrink: 0;
 }
 
 .compare-pros {
@@ -402,15 +402,15 @@
 }
 
 .compare-recommended-badge {
-  font-size: var(--text-micro);
-  font-weight: 500;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   color: var(--ctp-green);
   background-color: rgba(166, 209, 137, 0.15);
-  border-radius: var(--radius-pill);
-  padding: 1px var(--spacing-xs);
-  text-transform: uppercase;
-  letter-spacing: 0.3px;
-  white-space: nowrap;
+  border-radius: 50%;
+  width: 24px;
+  height: 24px;
+  flex-shrink: 0;
 }
 
 /* ─── Details Modal ───────────────────────────────────── */
@@ -424,13 +424,13 @@
 
 .details-dialog {
   position: fixed;
-  top: 50%;
+  top: 80px;
   left: 50%;
-  transform: translate(-50%, -50%);
+  transform: translate(-50%, 0);
   z-index: 51;
   width: 90vw;
-  max-width: 560px;
-  max-height: 85vh;
+  max-width: 480px;
+  max-height: calc(100vh - 160px);
   overflow-y: auto;
   background-color: var(--ctp-base);
   border: 1px solid var(--border-light);
@@ -506,15 +506,15 @@
 }
 
 .details-recommended-badge {
-  font-size: var(--text-micro);
-  font-weight: 500;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   color: var(--ctp-green);
   background-color: rgba(166, 209, 137, 0.15);
-  border-radius: var(--radius-pill);
-  padding: 1px var(--spacing-xs);
-  text-transform: uppercase;
-  letter-spacing: 0.3px;
-  white-space: nowrap;
+  border-radius: 50%;
+  width: 24px;
+  height: 24px;
+  flex-shrink: 0;
 }
 
 .details-description {
@@ -887,15 +887,14 @@
 }
 
 .recommended-badge {
-  font-size: var(--text-micro);
-  font-weight: 500;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   color: var(--ctp-green);
   background-color: rgba(166, 209, 137, 0.15);
-  border-radius: var(--radius-pill);
-  padding: 1px var(--spacing-xs);
-  text-transform: uppercase;
-  letter-spacing: 0.3px;
-  white-space: nowrap;
+  border-radius: 50%;
+  width: 20px;
+  height: 20px;
   flex-shrink: 0;
 }
 
@@ -938,15 +937,15 @@
 }
 
 .drop-zone-recommended-badge {
-  font-size: var(--text-micro);
-  font-weight: 500;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   color: var(--ctp-green);
   background-color: rgba(166, 209, 137, 0.15);
-  border-radius: var(--radius-pill);
-  padding: 1px var(--spacing-xs);
-  text-transform: uppercase;
-  letter-spacing: 0.3px;
-  white-space: nowrap;
+  border-radius: 50%;
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
 }
 
 .drop-zone-info {

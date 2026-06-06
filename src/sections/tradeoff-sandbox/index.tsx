@@ -1,6 +1,6 @@
 import { useState, useCallback, useEffect, useRef, useMemo, type ComponentType } from 'react'
 import * as Dialog from '@radix-ui/react-dialog'
-import { Check, X } from 'lucide-react'
+import { Check, X, Star } from 'lucide-react'
 import { SectionRegistry } from '../../core/registry'
 import './tradeoff-sandbox.css'
 
@@ -168,8 +168,9 @@ function FloatingDropdown({
               >
                 <span className="dropdown-option-label">{choice.label}</span>
                 {isRecommended && (
-                  <span className="recommended-badge" data-testid={`recommended-badge-${scenarioIdx}-${stepIdx}-${choice.id}`}>
-                    Recommended
+                  <span className="recommended-badge" data-testid={`recommended-badge-${scenarioIdx}-${stepIdx}-${choice.id}`} title="Recommended">
+                    <Star size={12} style={{ fill: 'currentColor' }} />
+                    <span style={{ display: 'none' }}>Recommended</span>
                   </span>
                 )}
               </li>
@@ -229,8 +230,9 @@ function StepSection({
               {chosenChoice.label}
             </span>
             {isRecommended && (
-              <span className="drop-zone-recommended-badge" data-testid={`drop-zone-recommended-badge-${scenarioIdx}-${stepIdx}`}>
-                Recommended
+              <span className="drop-zone-recommended-badge" data-testid={`drop-zone-recommended-badge-${scenarioIdx}-${stepIdx}`} title="Recommended">
+                <Star size={12} style={{ fill: 'currentColor' }} />
+                <span style={{ display: 'none' }}>Recommended</span>
               </span>
             )}
             <button
@@ -299,8 +301,9 @@ function DetailsModal({
               {choice.label}
             </h4>
             {isRecommended && (
-              <span className="details-recommended-badge" data-testid="details-recommended-badge">
-                Recommended
+              <span className="details-recommended-badge" data-testid="details-recommended-badge" title="Recommended">
+                <Star size={14} style={{ fill: 'currentColor' }} />
+                <span style={{ display: 'none' }}>Recommended</span>
               </span>
             )}
             <p className="details-description" data-testid="details-description">
@@ -570,13 +573,15 @@ function TradeoffSandboxSection({ title, scenarios }: TradeoffSandboxSectionProp
                               {choice.label}
                             </span>
                             {isRecommended && (
-                              <span className="compare-recommended-badge" data-testid={`compare-recommended-badge-${sIdx}-${choice.id}`}>
-                                Recommended
+                              <span className="compare-recommended-badge" data-testid={`compare-recommended-badge-${sIdx}-${choice.id}`} title="Recommended">
+                                <Star size={14} style={{ fill: 'currentColor' }} />
+                                <span style={{ display: 'none' }}>Recommended</span>
                               </span>
                             )}
                             {isChosen && (
-                              <span className="compare-badge" data-testid={`compare-badge-${sIdx}-${choice.id}`}>
-                                Selected
+                              <span className="compare-badge" data-testid={`compare-badge-${sIdx}-${choice.id}`} title="Selected">
+                                <Check size={14} strokeWidth={3} />
+                                <span style={{ display: 'none' }}>Selected</span>
                               </span>
                             )}
                           </div>

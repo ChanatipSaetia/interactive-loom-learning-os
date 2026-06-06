@@ -62,16 +62,16 @@ function TaxonomyModal({
     if (!open || !dialogRef.current) return
     const el = dialogRef.current
     el.style.opacity = '0'
-    el.style.transform = 'translate(-50%, -50%) scale(0.85)'
+    el.style.transform = 'translate(-50%, 0) scale(0.85)'
     const anim = animate(
       el,
       {
         opacity: [0, 1],
         transform: [
-          { value: 'translate(-50%, -50%) scale(0.85)' },
-          { value: 'translate(-50%, -50%) scale(1.03)' },
-          { value: 'translate(-50%, -50%) scale(0.97)' },
-          { value: 'translate(-50%, -50%) scale(1)' },
+          { value: 'translate(-50%, 0) scale(0.85)' },
+          { value: 'translate(-50%, 0) scale(1.03)' },
+          { value: 'translate(-50%, 0) scale(0.97)' },
+          { value: 'translate(-50%, 0) scale(1)' },
         ],
         duration: reducedMotion ? 0 : 500,
         easing: springEasing,
