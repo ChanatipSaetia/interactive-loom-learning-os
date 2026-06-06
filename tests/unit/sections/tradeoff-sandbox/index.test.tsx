@@ -92,7 +92,8 @@ describe('TradeoffSandbox Section', () => {
   it('renders metric dashboard', () => {
     render(<TradeoffSandboxSection {...defaultProps} />)
     expect(screen.getByTestId('metric-dashboard')).toBeInTheDocument()
-    expect(screen.getByText('Metric Dashboard')).toBeInTheDocument()
+    expect(screen.getByTestId('progress-indicator')).toBeInTheDocument()
+    expect(screen.getByTestId('metric-bars')).toBeInTheDocument()
   })
 
   it('renders all metric bars', () => {
