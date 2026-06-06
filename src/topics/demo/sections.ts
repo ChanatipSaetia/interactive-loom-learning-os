@@ -7,6 +7,7 @@ import {
   agentLifecycleMarkdown,
   agentCapabilityBullets,
   apiPatternSituations,
+  tradeoffSandboxScenarios,
 } from './data'
 
 export const demoSections: SectionConfig[] = [
@@ -47,6 +48,13 @@ export const demoSections: SectionConfig[] = [
     props: {
       title: 'Communication Pattern Choice',
       situations: apiPatternSituations,
+    },
+  },
+  {
+    type: 'tradeoff-sandbox',
+    props: {
+      title: 'Architecture Trade-off Sandbox',
+      scenarios: tradeoffSandboxScenarios,
     },
   },
 ]
