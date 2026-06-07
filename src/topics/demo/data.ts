@@ -627,14 +627,23 @@ export const agentSchema: UnifiedFlowchartSchema = {
       title: 'Orchestrator',
       desc: 'Coordinating component running the core planning and execution loops.',
       viewTypes: {
-        EVENT_STORMING: TYPES.AGGREGATE,
         SYS_ARCH: TYPES.SERVICE,
         DATA_FLOW: TYPES.SERVICE,
         SWIMLANES: TYPES.SERVICE,
       }
     },
+    'orch_plan': {
+      title: 'Orchestrator',
+      desc: 'Handles planning: creates execution plan, tracks progression, retrieves memory.',
+      viewTypes: { EVENT_STORMING: TYPES.AGGREGATE }
+    },
+    'orch_eval': {
+      title: 'Orchestrator',
+      desc: 'Handles evaluation: assesses result quality, decides pass or fail.',
+      viewTypes: { EVENT_STORMING: TYPES.AGGREGATE }
+    },
     'planner': {
-      title: 'Planner',
+      title: 'Create Plan',
       desc: 'Formulates multi-step actions (e.g. CoT, ReAct plan) dynamically.',
       viewTypes: {
         EVENT_STORMING: TYPES.COMMAND,
@@ -654,7 +663,7 @@ export const agentSchema: UnifiedFlowchartSchema = {
       }
     },
     'tools': {
-      title: 'Tool Router',
+      title: 'Execute Next Step',
       desc: 'Selects appropriate external APIs or scripts for a given task.',
       viewTypes: {
         EVENT_STORMING: TYPES.POLICY,
@@ -674,7 +683,7 @@ export const agentSchema: UnifiedFlowchartSchema = {
       }
     },
     'executor': {
-      title: 'Tool Executor',
+      title: 'Run Tool',
       desc: 'Executes actions (HTTP search, sandboxed script, API requests).',
       viewTypes: {
         EVENT_STORMING: TYPES.COMMAND,
@@ -684,10 +693,10 @@ export const agentSchema: UnifiedFlowchartSchema = {
       }
     },
     'evaluator': {
-      title: 'Evaluator',
+      title: 'Evaluate Result',
       desc: 'Tests execution outputs against success conditions.',
       viewTypes: {
-        EVENT_STORMING: TYPES.DECISION,
+        EVENT_STORMING: TYPES.COMMAND,
         SYS_ARCH: TYPES.SERVICE,
         DATA_FLOW: TYPES.DECISION,
         SWIMLANES: TYPES.DECISION,
@@ -704,9 +713,14 @@ export const agentSchema: UnifiedFlowchartSchema = {
       }
     },
     'evt_goal': {
-      title: 'Goal Dispatched',
-      desc: 'User goal received by the orchestrator.',
+      title: 'Goal Submitted',
+      desc: 'User submitted a natural-language goal.',
       viewTypes: { EVENT_STORMING: TYPES.EVENT }
+    },
+    'pol_plan': {
+      title: 'Plan on New Goal',
+      desc: 'When Goal Submitted, create an execution plan.',
+      viewTypes: { EVENT_STORMING: TYPES.POLICY }
     },
     'evt_plan_ready': {
       title: 'Plan Generated',
@@ -714,14 +728,19 @@ export const agentSchema: UnifiedFlowchartSchema = {
       viewTypes: { EVENT_STORMING: TYPES.EVENT }
     },
     'evt_tool_call': {
-      title: 'Tool Route Chosen',
+      title: 'Tool Selected',
       desc: 'Router selected tool and arguments.',
       viewTypes: { EVENT_STORMING: TYPES.EVENT }
     },
     'evt_executed': {
-      title: 'Tool Output Captured',
+      title: 'Tool Executed',
       desc: 'Output retrieved from sandbox execution.',
       viewTypes: { EVENT_STORMING: TYPES.EVENT }
+    },
+    'pol_eval': {
+      title: 'Evaluate on Result',
+      desc: 'When Tool Executed, evaluate the output.',
+      viewTypes: { EVENT_STORMING: TYPES.POLICY }
     },
     'evt_done': {
       title: 'Goal Satisfied',
@@ -734,28 +753,56 @@ export const agentSchema: UnifiedFlowchartSchema = {
       viewTypes: { EVENT_STORMING: TYPES.EVENT }
     },
     'pol_retry': {
-      title: 'Re-Planning Rule',
-      desc: 'Policy to feed error logs back to the orchestrator.',
+      title: 'Re-Plan on Failure',
+      desc: 'When Goal Not Satisfied, re-plan and try again.',
       viewTypes: { EVENT_STORMING: TYPES.POLICY }
-    }
+    },
+    'pol_escalate': {
+      title: 'Escalate to Human',
+      desc: 'When Goal Not Satisfied, escalate to human reviewer.',
+      viewTypes: { EVENT_STORMING: TYPES.POLICY }
+    },
+    'human_reviewer': {
+      title: 'Human Reviewer',
+      desc: 'Subject-matter expert who reviews failed evaluation results.',
+      viewTypes: { EVENT_STORMING: TYPES.USER }
+    },
+    'cmd_review': {
+      title: 'Review Result',
+      desc: 'Human reviews the failed output and provides feedback.',
+      viewTypes: { EVENT_STORMING: TYPES.COMMAND }
+    },
+    'evt_reviewed': {
+      title: 'Result Reviewed',
+      desc: 'Human feedback captured, ready for re-planning.',
+      viewTypes: { EVENT_STORMING: TYPES.EVENT }
+    },
   },
   relations: [
     { id: 'r_es_1', from: 'user', to: 'evt_goal', views: ['EVENT_STORMING'] },
-    { id: 'r_es_2', from: 'evt_goal', to: 'planner', views: ['EVENT_STORMING'] },
-    { id: 'r_es_3', from: 'planner', to: 'orchestrator', views: ['EVENT_STORMING'] },
-    { id: 'r_es_4', from: 'orchestrator', to: 'evt_plan_ready', views: ['EVENT_STORMING'] },
-    { id: 'r_es_5', from: 'evt_plan_ready', to: 'tools', views: ['EVENT_STORMING'] },
-    { id: 'r_es_6', from: 'tools', to: 'llm', views: ['EVENT_STORMING'] },
-    { id: 'r_es_7', from: 'llm', to: 'evt_tool_call', views: ['EVENT_STORMING'] },
-    { id: 'r_es_8', from: 'evt_tool_call', to: 'executor', views: ['EVENT_STORMING'] },
-    { id: 'r_es_9', from: 'executor', to: 'evt_executed', views: ['EVENT_STORMING'] },
-    { id: 'r_es_10', from: 'evt_executed', to: 'evaluator', views: ['EVENT_STORMING'] },
-    { id: 'r_es_11', from: 'evaluator', to: 'evt_done', views: ['EVENT_STORMING'] },
-    { id: 'r_es_12', from: 'evaluator', to: 'evt_fail', views: ['EVENT_STORMING'] },
-    { id: 'r_es_13', from: 'evt_fail', to: 'pol_retry', views: ['EVENT_STORMING'] },
-    { id: 'r_es_14', from: 'pol_retry', to: 'planner', views: ['EVENT_STORMING'], dashed: true },
-    { id: 'r_es_15', from: 'evt_done', to: 'output', views: ['EVENT_STORMING'] },
-    { id: 'r_es_16', from: 'orchestrator', to: 'memory', views: ['EVENT_STORMING'] },
+    { id: 'r_es_2', from: 'evt_goal', to: 'pol_plan', views: ['EVENT_STORMING'] },
+    { id: 'r_es_3', from: 'pol_plan', to: 'planner', views: ['EVENT_STORMING'] },
+    { id: 'r_es_4', from: 'planner', to: 'orch_plan', views: ['EVENT_STORMING'], handledBy: true },
+    { id: 'r_es_5', from: 'orch_plan', to: 'evt_plan_ready', views: ['EVENT_STORMING'] },
+    { id: 'r_es_6', from: 'evt_plan_ready', to: 'tools', views: ['EVENT_STORMING'] },
+    { id: 'r_es_7', from: 'tools', to: 'evt_tool_call', views: ['EVENT_STORMING'] },
+    { id: 'r_es_9', from: 'evt_tool_call', to: 'executor', views: ['EVENT_STORMING'] },
+    { id: 'r_es_10', from: 'executor', to: 'llm', views: ['EVENT_STORMING'], handledBy: true },
+    { id: 'r_es_10b', from: 'llm', to: 'evt_executed', views: ['EVENT_STORMING'] },
+    { id: 'r_es_11', from: 'evt_executed', to: 'pol_eval', views: ['EVENT_STORMING'] },
+    { id: 'r_es_12', from: 'pol_eval', to: 'evaluator', views: ['EVENT_STORMING'] },
+    { id: 'r_es_13', from: 'evaluator', to: 'orch_eval', views: ['EVENT_STORMING'], handledBy: true },
+    { id: 'r_es_14', from: 'orch_eval', to: 'evt_done', views: ['EVENT_STORMING'] },
+    { id: 'r_es_15', from: 'orch_eval', to: 'evt_fail', views: ['EVENT_STORMING'] },
+    { id: 'r_es_16', from: 'evt_fail', to: 'pol_retry', views: ['EVENT_STORMING'] },
+    { id: 'r_es_17', from: 'pol_retry', to: 'planner', views: ['EVENT_STORMING'], dashed: true },
+    { id: 'r_es_18', from: 'evt_done', to: 'output', views: ['EVENT_STORMING'] },
+    { id: 'r_es_19', from: 'orch_plan', to: 'memory', views: ['EVENT_STORMING'] },
+    { id: 'r_es_20', from: 'evt_fail', to: 'pol_escalate', views: ['EVENT_STORMING'] },
+    { id: 'r_es_21', from: 'pol_escalate', to: 'cmd_review', views: ['EVENT_STORMING'] },
+    { id: 'r_es_22', from: 'cmd_review', to: 'human_reviewer', views: ['EVENT_STORMING'], handledBy: true },
+    { id: 'r_es_23', from: 'human_reviewer', to: 'evt_reviewed', views: ['EVENT_STORMING'] },
+    { id: 'r_es_24', from: 'evt_reviewed', to: 'planner', views: ['EVENT_STORMING'], dashed: true },
 
     { id: 'r_sa_1', from: 'user', to: 'orchestrator', views: ['SYS_ARCH'] },
     { id: 'r_sa_2', from: 'orchestrator', to: 'memory', views: ['SYS_ARCH'] },
@@ -792,27 +839,42 @@ export const agentSchema: UnifiedFlowchartSchema = {
       name: 'Event Storming',
       icon: 'Component',
       nodes: [
-        { id: 'user', x: 100, y: 250 },
-        { id: 'evt_goal', x: 240, y: 250 },
-        { id: 'planner', x: 380, y: 250 },
-        { id: 'orchestrator', x: 520, y: 250 },
-        { id: 'memory', x: 520, y: 120 },
-        { id: 'evt_plan_ready', x: 660, y: 250 },
-        { id: 'tools', x: 800, y: 250 },
-        { id: 'llm', x: 940, y: 250 },
-        { id: 'evt_tool_call', x: 1080, y: 250 },
-        { id: 'executor', x: 1220, y: 250 },
-        { id: 'evt_executed', x: 1360, y: 250 },
-        { id: 'evaluator', x: 1500, y: 250 },
-        { id: 'evt_done', x: 1640, y: 180 },
-        { id: 'evt_fail', x: 1640, y: 320 },
-        { id: 'pol_retry', x: 1780, y: 320 },
-        { id: 'output', x: 1780, y: 180 }
+        // STACK 1 — Cognition & Planning
+        { id: 'user', x: 60, y: 250 },
+        { id: 'evt_goal', x: 200, y: 250 },
+        { id: 'pol_plan', x: 320, y: 250 },
+        { id: 'planner', x: 460, y: 250 },
+        { id: 'evt_plan_ready', x: 620, y: 250 },
+        // STACK 2 — Action Space Execution
+        { id: 'tools', x: 780, y: 250 },
+        { id: 'evt_tool_call', x: 920, y: 250 },
+        { id: 'executor', x: 1060, y: 250 },
+        { id: 'evt_executed', x: 1220, y: 250 },
+        // STACK 3 — Evaluation & Outcome
+        { id: 'pol_eval', x: 1380, y: 250 },
+        { id: 'evaluator', x: 1520, y: 250 },
+        { id: 'evt_done', x: 1680, y: 250 },
+        { id: 'output', x: 1820, y: 250 },
+        // FAILURE BRANCH 1 — Auto Re-Plan (below)
+        { id: 'evt_fail', x: 1680, y: 400 },
+        { id: 'pol_retry', x: 1860, y: 400 },
+        // FAILURE BRANCH 2 — Human Escalation (further below)
+        { id: 'pol_escalate', x: 1860, y: 540 },
+        { id: 'cmd_review', x: 2020, y: 540 },
+        { id: 'evt_reviewed', x: 2180, y: 540 },
+        // HANDLERS (above commands)
+        { id: 'orch_plan', x: 460, y: 120 },
+        { id: 'llm', x: 1060, y: 120 },
+        { id: 'orch_eval', x: 1520, y: 120 },
+        { id: 'human_reviewer', x: 2020, y: 410 },
+        // DATABASE (above orchestrator)
+        { id: 'memory', x: 460, y: 50 },
       ],
       groups: [
-        { id: 'es_g1', title: 'Cognition & Planning', desc: 'Translates goals into reasoning steps and parses facts.', nodeIds: ['evt_goal', 'planner', 'orchestrator', 'memory', 'evt_plan_ready'], color: 'rgba(140, 170, 238, 0.12)', borderColor: '#8caaee', textColor: '#c6d0f5' },
-        { id: 'es_g2', title: 'Action Space Execution', desc: 'Selects, schedules, and executes external integrations.', nodeIds: ['tools', 'llm', 'evt_tool_call', 'executor', 'evt_executed'], color: 'rgba(244, 184, 228, 0.12)', borderColor: '#f4b8e4', textColor: '#c6d0f5' },
-        { id: 'es_g3', title: 'Evaluation & Control', desc: 'Verifies safety and performance goals before exit.', nodeIds: ['evaluator', 'evt_done', 'evt_fail', 'pol_retry'], color: 'rgba(229, 200, 144, 0.12)', borderColor: '#e5c890', textColor: '#c6d0f5' }
+        { id: 'es_g1', title: 'Cognition & Planning', desc: 'Goal triggers policy, Create Plan command handled by Orchestrator, plan generated.', nodeIds: ['evt_goal', 'pol_plan', 'planner', 'orch_plan', 'memory', 'evt_plan_ready'], color: 'rgba(140, 170, 238, 0.12)', borderColor: '#8caaee', textColor: '#c6d0f5' },
+        { id: 'es_g2', title: 'Action Space Execution', desc: 'Execute Next Step policy routes to LLM, Run Tool command handled by LLM, result captured.', nodeIds: ['tools', 'llm', 'evt_tool_call', 'executor', 'evt_executed'], color: 'rgba(244, 184, 228, 0.12)', borderColor: '#f4b8e4', textColor: '#c6d0f5' },
+        { id: 'es_g3', title: 'Evaluation & Happy Path', desc: 'Evaluate on Result policy, Evaluate Result command handled by Orchestrator, Goal Satisfied delivered.', nodeIds: ['pol_eval', 'evaluator', 'orch_eval', 'evt_done', 'output'], color: 'rgba(229, 200, 144, 0.12)', borderColor: '#e5c890', textColor: '#c6d0f5' },
+        { id: 'es_g4', title: 'Failure Recovery', desc: 'Goal Not Satisfied branches to auto re-planning or human review, both loop back.', nodeIds: ['evt_fail', 'pol_retry', 'pol_escalate', 'cmd_review', 'human_reviewer', 'evt_reviewed'], color: 'rgba(231, 130, 132, 0.12)', borderColor: '#e78284', textColor: '#c6d0f5' }
       ]
     },
     SYS_ARCH: {
@@ -875,11 +937,13 @@ export const agentSchema: UnifiedFlowchartSchema = {
       label: 'Agentic Problem Solving Loop',
       description: 'Follow the execution plan as it transitions from the orchestrator through the LLM, resolves tools, and returns the response.',
       steps: [
-        { nodeIds: ['user', 'evt_goal'], description: 'User submits a goal: "Research top 3 competitors and summarise."' },
-        { nodeIds: ['planner', 'orchestrator', 'memory', 'evt_plan_ready'], description: 'Cognition & Planning — Planner creates step list (search, scrape, summarise), Orchestrator tracks progression, Memory fetches context vectors.' },
-        { nodeIds: ['tools', 'llm', 'evt_tool_call', 'executor', 'evt_executed'], description: 'Action Space Execution — Tool Router selects API, LLM Engine synthesizes query arguments, Executor runs in secure sandbox.' },
-        { nodeIds: ['evaluator', 'evt_done', 'output'], description: 'Evaluation (Happy Path) — Evaluator validates quality goals met, final output formatted and delivered to User.' },
-        { nodeIds: ['evaluator', 'evt_fail', 'pol_retry', 'planner'], description: 'Evaluation (Fail Branch) — Evaluator detects failure, Re-Planning Rule triggers, Planner generates new plan and loops back.' },
+        { nodeIds: ['user', 'evt_goal'], description: 'Goal Submitted — User submits: "Research top 3 competitors and summarise."' },
+        { nodeIds: ['pol_plan', 'planner', 'orch_plan', 'memory', 'evt_plan_ready'], description: 'Cognition & Planning — Policy "Plan on New Goal" fires. "Create Plan" command handled by Orchestrator (Aggregate). Memory fetches context. Plan Generated event published.' },
+        { nodeIds: ['tools', 'evt_tool_call'], description: 'Tool Selection — Policy "Execute Next Step" fires. Tool Selected event published.' },
+        { nodeIds: ['executor', 'llm', 'evt_executed'], description: 'Action Execution — "Run Tool" command handled by LLM (External). Tool Executed event published.' },
+        { nodeIds: ['pol_eval', 'evaluator', 'orch_eval', 'evt_done', 'output'], description: 'Evaluation (Happy Path) — Policy "Evaluate on Result" fires. "Evaluate Result" handled by Orchestrator. Goal Satisfied → Final Response delivered.' },
+        { nodeIds: ['evt_fail', 'pol_retry', 'planner'], description: 'Failure Branch (Auto Re-Plan) — Goal Not Satisfied triggers "Re-Plan on Failure" policy, loops back to "Create Plan" command.' },
+        { nodeIds: ['evt_fail', 'pol_escalate', 'cmd_review', 'human_reviewer', 'evt_reviewed'], description: 'Failure Branch (Human Review) — "Escalate to Human" policy fires. "Review Result" handled by Human Reviewer. Result Reviewed loops back to planning.' },
       ]
     }
   ]

@@ -105,6 +105,7 @@ export interface FlowchartRelation {
   to: string;
   views: string[];
   dashed?: boolean;
+  handledBy?: boolean;
 }
 
 export interface FlowchartViewNode {
@@ -1579,37 +1580,59 @@ export function Flowchart({ title, schema = INITIAL_SCHEMA }: FlowchartProps) {
                     endY = y2 + (dy > 0 ? -toH / 2 : toH / 2);
                   }
 
-                  const dist = Math.hypot(endX - startX, endY - startY);
-                  const cp1x = startX + (dx > 0 ? Math.min(100, dist * 0.4) : -Math.min(100, dist * 0.4));
-                  const cp1y = startY;
-                  const cp2x = endX + (dx > 0 ? -Math.min(100, dist * 0.4) : Math.min(100, dist * 0.4));
-                  const cp2y = endY;
+                 const dist = Math.hypot(endX - startX, endY - startY);
+                   const cp1x = startX + (dx > 0 ? Math.min(100, dist * 0.4) : -Math.min(100, dist * 0.4));
+                   const cp1y = startY;
+                   const cp2x = endX + (dx > 0 ? -Math.min(100, dist * 0.4) : Math.min(100, dist * 0.4));
+                   const cp2y = endY;
 
-                  const isHighlighted = activeNodeIds && activeNodeIds.includes(rel.from) && activeNodeIds.includes(rel.to);
-                  const isFaded = activeNodeIds !== null && !isHighlighted;
+                   const isHighlighted = activeNodeIds && activeNodeIds.includes(rel.from) && activeNodeIds.includes(rel.to);
+                   const isFaded = activeNodeIds !== null && !isHighlighted;
+                   const isHandledBy = rel.handledBy;
+                   const midX = (startX + endX) / 2;
+                   const midY = (startY + endY) / 2;
+                   const isVertical = fromNode.x === toNode.x;
 
-                  return (
-                    <g key={rel.id} data-testid={`flowchart-edge-${idx}`} style={{ transition: 'opacity 0.3s', opacity: isFaded ? 0.1 : 0.8 }}>
-                      <path
-                        d={`M ${startX} ${startY} C ${cp1x} ${cp1y}, ${cp2x} ${cp2y}, ${endX} ${endY}`}
-                        stroke="#626880"
-                        strokeWidth="1.5"
-                        fill="none"
-                        strokeOpacity="0.3"
-                        markerEnd="url(#flowchart-arrow)"
-                      />
-                      <path
-                        d={`M ${startX} ${startY} C ${cp1x} ${cp1y}, ${cp2x} ${cp2y}, ${endX} ${endY}`}
-                        stroke={isHighlighted ? '#8caaee' : (rel.dashed ? '#e5c890' : '#8caaee')}
-                        strokeWidth={isHighlighted ? '2.5' : '1.5'}
-                        fill="none"
-                        strokeOpacity={isHighlighted ? '0.95' : '0.55'}
-                        strokeDasharray={rel.dashed ? '4 4' : '6 7'}
-                        markerEnd={isHighlighted ? 'url(#flowchart-arrow-highlight)' : 'url(#flowchart-arrow)'}
-                        className={rel.dashed ? '' : 'flowchart-edge-animated'}
-                      />
-                    </g>
-                  );
+                   const pathD = isHandledBy && isVertical
+                     ? `M ${startX} ${startY} L ${endX} ${endY}`
+                     : `M ${startX} ${startY} C ${cp1x} ${cp1y}, ${cp2x} ${cp2y}, ${endX} ${endY}`;
+
+                   return (
+                     <g key={rel.id} data-testid={`flowchart-edge-${idx}`} style={{ transition: 'opacity 0.3s', opacity: isFaded ? 0.1 : 0.8 }}>
+                       <path
+                         d={pathD}
+                         stroke="#626880"
+                         strokeWidth="1.5"
+                         fill="none"
+                         strokeOpacity="0.3"
+                         markerEnd={isHandledBy ? '' : 'url(#flowchart-arrow)'}
+                       />
+                       <path
+                         d={pathD}
+                         stroke={isHighlighted ? '#8caaee' : (isHandledBy ? '#a6d189' : (rel.dashed ? '#e5c890' : '#8caaee'))}
+                         strokeWidth={isHighlighted ? '2.5' : (isHandledBy ? '2' : '1.5')}
+                         fill="none"
+                         strokeOpacity={isHighlighted ? '0.95' : (isHandledBy ? '0.8' : '0.55')}
+                         strokeDasharray={isHandledBy ? 'none' : (rel.dashed ? '4 4' : '6 7')}
+                         markerEnd={isHandledBy ? 'url(#flowchart-arrow)' : (isHighlighted ? 'url(#flowchart-arrow-highlight)' : 'url(#flowchart-arrow)')}
+                         className={rel.dashed ? '' : 'flowchart-edge-animated'}
+                       />
+                       {isHandledBy && (
+                         <text
+                           x={midX + (isVertical ? 12 : 0)}
+                           y={midY - 6}
+                           textAnchor={isVertical ? 'start' : 'middle'}
+                           fill="#a6d189"
+                           fontSize="9"
+                           fontWeight="600"
+                           opacity={isHighlighted ? '0.95' : '0.75'}
+                           style={{ pointerEvents: 'none', userSelect: 'none' }}
+                         >
+                           handled by
+                         </text>
+                       )}
+                     </g>
+                   );
                 })}
 
               {/* In-flight flow particles */}
