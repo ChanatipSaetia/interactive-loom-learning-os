@@ -1,6 +1,6 @@
 # How to Create a New Topic
 
-This guide covers how to add a new topic to the Interactive Loom Learning OS, using all seven section types: **Text**, **Bullets**, **Architecture Flow**, **Data Flow**, **Flowchart**, **Step-by-Step**, and **Situation Choice**.
+This guide covers how to add a new topic to the Interactive Loom Learning OS using the five active section types: **Text**, **Bullets**, **Flowchart**, **Tradeoff Sandbox**, and **Taxonomy Browser**.
 
 ---
 
@@ -11,12 +11,14 @@ A topic is composed of three files inside `src/topics/<your-topic>/`:
 ```
 src/topics/
   <your-topic>/
-    data.ts        — raw content (nodes, edges, paragraphs, etc.)
+    data.ts        — raw content (paragraphs, schemas, scenarios, etc.)
     sections.ts    — assembles SectionConfig[] from data
     index.tsx      — React component + TopicRegistry registration
 ```
 
-You also need to add an entry to `src/core/routes.ts` so the topic appears in the nav.
+You also need to:
+1. Add an entry to `src/core/routes.ts` so the topic appears in the nav
+2. Import the topic in `src/main.tsx` so the registration side-effect runs
 
 ---
 
@@ -87,206 +89,99 @@ export const myBullets: BulletItem[] = [
 
 ---
 
-### Architecture Flow section data
-
-`architecture-flow` renders an animated node-edge diagram with SVG paths. Nodes are placed manually by `x`/`y` coordinates.
-
-```ts
-// src/topics/<your-topic>/data.ts
-import type { ArchNode, ArchEdge } from '../../sections/architecture-flow'
-
-export const myNodes: ArchNode[] = [
-  { id: 'client',  label: 'Client',     x: 80,  y: 120 },
-  { id: 'server',  label: 'API Server', x: 300, y: 120 },
-  { id: 'db',      label: 'Database',   x: 520, y: 120 },
-]
-
-export const myEdges: ArchEdge[] = [
-  { from: 'client', to: 'server', label: 'Request' },
-  { from: 'server', to: 'db',     label: 'Query'   },
-]
-```
-
-**`ArchNode` fields:**
-
-| Field | Type | Required | Notes |
-|-------|------|----------|-------|
-| `id` | `string` | yes | Unique identifier, referenced by edges |
-| `label` | `string` | yes | Display name inside the node |
-| `x` | `number` | yes | SVG x coordinate (pixels) |
-| `y` | `number` | yes | SVG y coordinate (pixels) |
-| `color` | `string` | no | Override node fill color (hex / CSS) |
-
-**`ArchEdge` fields:**
-
-| Field | Type | Required | Notes |
-|-------|------|----------|-------|
-| `from` | `string` | yes | Source node `id` |
-| `to` | `string` | yes | Target node `id` |
-| `label` | `string` | no | Text shown along the edge |
-
-**Positioning tips:**
-- Nodes are placed manually by `x`/`y`; there is no auto-layout for this section type.
-- Use consistent `y` values for nodes on the same horizontal layer.
-- Leave ~180 px of horizontal space between nodes so edge labels have room.
-
-**In `sections.ts`:**
-
-```ts
-{
-  type: 'architecture-flow',
-  props: {
-    title: 'System Architecture',
-    nodes: myNodes,
-    edges: myEdges,
-  },
-},
-```
-
----
-
-### Data Flow section data
-
-`data-flow` renders SVG paths with stroke-dashoffset animation and particle markers. Paths are supplied as raw SVG `d` strings.
-
-```ts
-// src/topics/<your-topic>/data.ts
-import type { DataFlowPath } from '../../sections/data-flow'
-
-export const myPaths: DataFlowPath[] = [
-  {
-    id: 'request',
-    label: 'Request',
-    d: 'M 40 100 C 150 100, 200 60, 300 60 C 400 60, 450 100, 560 100',
-    color: '#8caaee',
-  },
-  {
-    id: 'response',
-    label: 'Response',
-    d: 'M 560 140 C 450 140, 400 180, 300 180 C 200 180, 150 140, 40 140',
-    color: '#a6d189',
-  },
-]
-```
-
-**`DataFlowPath` fields:**
-
-| Field | Type | Required | Notes |
-|-------|------|----------|-------|
-| `id` | `string` | yes | Unique identifier |
-| `label` | `string` | yes | Text shown above the path start |
-| `d` | `string` | yes | Raw SVG path data string |
-| `color` | `string` | no | Override path stroke color |
-
-**Path tips:**
-- The SVG viewBox is fixed at `600 x 200`.
-- Use cubic bezier curves (`C`) for smooth S-curved paths.
-- Each path gets a particle (circle) at its start point (`M` position).
-- Paths animate sequentially left-to-right.
-
-**In `sections.ts`:**
-
-```ts
-{
-  type: 'data-flow',
-  props: {
-    title: 'Request-Response Flow',
-    paths: myPaths,
-    particleColor: '#ff7759',  // optional, default is coral
-  },
-},
-```
-
----
-
 ### Flowchart section data
 
 `flowchart` renders an auto-laid flowchart with Sugiyama-style barycenter layout, pan/zoom, node drag, and animated journey playback. This is the most feature-rich section type.
 
+Use the `UnifiedFlowchartSchema` type for a unified schema that supports multiple views (System Architecture, Event Storming, Data Flow, Swimlanes):
+
 ```ts
 // src/topics/<your-topic>/data.ts
-import type { FlowchartNode, FlowchartEdge, Journey } from '../../sections/flowchart'
+import { TYPES } from '../../sections/flowchart'
+import type { UnifiedFlowchartSchema } from '../../sections/flowchart'
 
-export const myNodes: FlowchartNode[] = [
-  {
-    id: 'user',
-    label: 'User',
-    stereotype: 'actor',
-    icon: 'User',           // lucide-react icon name
-    layer: 0,
-    description: 'End user interacting with the system',
+export const mySchema: UnifiedFlowchartSchema = {
+  entities: {
+    user: {
+      title: 'User',
+      desc: 'End user interacting with the system',
+      viewTypes: {
+        SYS_ARCH: TYPES.USER,
+      },
+    },
+    service: {
+      title: 'Service',
+      desc: 'Main processing service',
+      viewTypes: {
+        SYS_ARCH: TYPES.SERVICE,
+      },
+    },
+    db: {
+      title: 'Database',
+      desc: 'Persistent storage',
+      viewTypes: {
+        SYS_ARCH: TYPES.DATABASE,
+      },
+    },
   },
-  {
-    id: 'api',
-    label: 'API Gateway',
-    stereotype: 'service',
-    icon: 'Server',
-    layer: 1,
-    description: 'Routes and authenticates requests',
+  relations: [
+    { id: 'r1', from: 'user', to: 'service', views: ['SYS_ARCH'] },
+    { id: 'r2', from: 'service', to: 'db', views: ['SYS_ARCH'] },
+  ],
+  views: {
+    SYS_ARCH: {
+      name: 'System Architecture',
+      icon: 'Server',
+      nodes: [
+        { id: 'user', x: 100, y: 250 },
+        { id: 'service', x: 300, y: 250 },
+        { id: 'db', x: 500, y: 250 },
+      ],
+      groups: [],
+    },
   },
-  {
-    id: 'llm',
-    label: 'LLM',
-    stereotype: 'model',
-    icon: 'Brain',
-    layer: 2,
-    description: 'Large language model for reasoning',
-  },
-]
-
-export const myEdges: FlowchartEdge[] = [
-  { from: 'user', to: 'api', description: 'HTTP request' },
-  { from: 'api', to: 'llm', description: 'Prompt call' },
-]
-
-export const myJourneys: Journey[] = [
-  {
-    id: 'query',
-    label: 'User Query Flow',
-    description: 'How a user request travels through the system',
-    steps: [
-      { nodeId: 'user', description: 'User submits a query' },
-      { nodeId: 'api', description: 'API gateway routes the request' },
-      { nodeId: 'llm', description: 'LLM processes the query and returns a response' },
-    ],
-  },
-]
+  journeys: [
+    {
+      id: 'query-flow',
+      label: 'Query Flow',
+      description: 'How a request flows through the system',
+      steps: [
+        { nodeId: 'user', description: 'User sends a request' },
+        { nodeId: 'service', description: 'Service processes the request' },
+        { nodeId: 'db', description: 'Data retrieved from database' },
+      ],
+    },
+  ],
+}
 ```
 
-**`FlowchartNode` fields:**
+**Available entity types (`TYPES`):**
+- `TYPES.USER` — External user/actor
+- `TYPES.SERVICE` — Service component
+- `TYPES.DATABASE` — Database/storage
+- `TYPES.EXTERNAL` — External system
+- `TYPES.COMMAND` — Command/action
+- `TYPES.DECISION` — Decision point
+- `TYPES.PROCESS` — Process/transform
+- `TYPES.DATA_OBJECT` — Data object/artifact
+- `TYPES.EVENT` — Event (for Event Storming)
+- `TYPES.AGGREGATE` — Aggregate (for Event Storming)
+- `TYPES.POLICY` — Policy rule (for Event Storming)
+
+**Available view templates:**
+- `SYS_ARCH` — System Architecture
+- `EVENT_STORMING` — Event Storming
+- `DATA_FLOW` — Data Flow Diagram
+- `SWIMLANES` — Activity Swimlanes
+
+**`UnifiedFlowchartSchema` fields:**
 
 | Field | Type | Required | Notes |
 |-------|------|----------|-------|
-| `id` | `string` | yes | Unique identifier |
-| `label` | `string` | yes | Display name inside the node |
-| `stereotype` | `string` | yes | Shown as `<<stereotype>>` above the label |
-| `icon` | `string` | yes | lucide-react icon component name |
-| `layer` | `number` | no | Auto-layout layer (default: 0). Lower = left, higher = right. |
-| `description` | `string` | no | Hover tooltip text |
-
-**`FlowchartEdge` fields:**
-
-| Field | Type | Required | Notes |
-|-------|------|----------|-------|
-| `from` | `string` | yes | Source node `id` |
-| `to` | `string` | yes | Target node `id` |
-| `description` | `string` | no | Hover tooltip on the edge |
-
-**`Journey` fields:**
-
-| Field | Type | Required | Notes |
-|-------|------|----------|-------|
-| `id` | `string` | yes | Unique identifier |
-| `label` | `string` | yes | Shown in the journey selector dropdown |
-| `description` | `string` | no | Journey description |
-| `steps` | `Step[]` | yes | Ordered sequence of node visits |
-
-**`Step` fields:**
-
-| Field | Type | Required | Notes |
-|-------|------|----------|-------|
-| `nodeId` | `string` | yes | Node `id` to highlight at this step |
-| `description` | `string` | yes | Shown in the step description panel |
+| `entities` | `Record<string, Entity>` | yes | Node definitions with multi-view type mapping |
+| `relations` | `Relation[]` | yes | Edges between entities, scoped per view |
+| `views` | `Record<string, View>` | yes | View configs with node positions and groups |
+| `journeys` | `Journey[]` | no | Animated step sequences for playback |
 
 **In `sections.ts`:**
 
@@ -295,102 +190,65 @@ export const myJourneys: Journey[] = [
   type: 'flowchart',
   props: {
     title: 'System Architecture',
-    nodes: myNodes,
-    edges: myEdges,
-    journeys: myJourneys,
+    schema: mySchema,
   },
 },
 ```
 
 ---
 
-### Step-by-Step section data
+### Tradeoff Sandbox section data
 
-`step-by-step` renders a pager showing one step at a time with prev/next navigation and fade transitions.
-
-```ts
-// src/topics/<your-topic>/data.ts
-import type { StepContent } from '../../sections/step-by-step'
-
-export const mySteps: StepContent[] = [
-  {
-    title: 'Step 1: Initialize',
-    body: 'Set up the project workspace and configure dependencies.',
-  },
-  {
-    title: 'Step 2: Connect',
-    body: 'Establish a connection to the external service using credentials.',
-  },
-  {
-    title: 'Step 3: Process',
-    body: 'Transform the incoming data and store the result.',
-  },
-]
-```
-
-**`StepContent` fields:**
-
-| Field | Type | Required | Notes |
-|-------|------|----------|-------|
-| `title` | `string` | yes | Step heading |
-| `body` | `string` | yes | Step body text (plain text) |
-
-**In `sections.ts`:**
-
-```ts
-{
-  type: 'step-by-step',
-  props: {
-    title: 'Getting Started',   // section heading (optional)
-    steps: mySteps,
-  },
-},
-```
-
----
-
-### Situation Choice section data
-
-`situation-choice` renders an interactive comparison of options for different scenarios, with an accordion for each choice showing pros and cons.
+`tradeoff-sandbox` renders an interactive trade-off evaluation with metric dashboards, choice selection, and side-by-side comparison. Users pick design choices per step, see real-time metric impact, and view pros/cons.
 
 ```ts
 // src/topics/<your-topic>/data.ts
-import type { SituationChoice } from '../../sections/situation-choice'
+import type { TradeoffScenario } from '../../sections/tradeoff-sandbox'
 
-export const mySituations: SituationChoice[] = [
+export const myScenarios: TradeoffScenario[] = [
   {
-    title: 'Real-time Communication',
-    situation: 'You need to build a chat application where messages must appear instantly for all connected users.',
-    recommended: 'websocket',
-    recommendationDetail: {
-      why: 'WebSocket provides full-duplex, persistent connections ideal for low-latency bidirectional messaging.',
-    },
-    choices: [
+    id: 'my-scenario',
+    title: 'My Design Decision',
+    description: 'Evaluate trade-offs across architecture choices.',
+    metrics: [
+      { id: 'performance', label: 'Performance', baseValue: 50, min: 0, max: 100, direction: 'higher' },
+      { id: 'complexity', label: 'Complexity', baseValue: 30, min: 0, max: 100, direction: 'lower' },
+      { id: 'cost', label: 'Cost Efficiency', baseValue: 50, min: 0, max: 100, direction: 'higher' },
+    ],
+    steps: [
       {
-        id: 'rest',
-        label: 'REST API',
-        description: 'Use HTTP request-response pattern for each message.',
-        pros: [
-          { title: 'Simple to implement', description: 'No special server setup needed; standard HTTP tools apply.' },
-          { title: 'Built-in caching', description: 'HTTP caching headers reduce redundant requests.' },
-        ],
-        cons: [
-          { title: 'Higher latency', description: 'Each message requires a new HTTP round-trip.' },
-          { title: 'Requires polling', description: 'Client must repeatedly ask for new messages.' },
-        ],
-        whenToUse: 'Useful when message frequency is low and real-time delivery is not critical.',
-      },
-      {
-        id: 'websocket',
-        label: 'WebSocket',
-        description: 'Use persistent full-duplex connection for instant message delivery.',
-        pros: [
-          { title: 'Real-time delivery', description: 'Messages arrive instantly without polling.' },
-          { title: 'Low latency', description: 'Single persistent connection eliminates HTTP overhead.' },
-        ],
-        cons: [
-          { title: 'Complex server setup', description: 'Requires WebSocket-capable server and connection management.' },
-          { title: 'Connection overhead', description: 'Must handle reconnection, heartbeats, and state.' },
+        id: 'frontend',
+        title: 'Frontend Framework',
+        description: 'Choose the client-side rendering approach.',
+        recommended: 'react',
+        choices: [
+          {
+            id: 'vanilla',
+            label: 'Vanilla JS',
+            description: 'Plain JavaScript with no framework.',
+            metrics: { performance: 10, complexity: -10, cost: 10 },
+            pros: [
+              { title: 'Zero dependencies', description: 'No build tooling required' },
+            ],
+            cons: [
+              { title: 'Manual DOM', description: 'More boilerplate for state management' },
+            ],
+            whenToUse: 'Best for simple pages where framework overhead is unnecessary.',
+          },
+          {
+            id: 'react',
+            label: 'React',
+            description: 'Component-based UI library with virtual DOM.',
+            metrics: { performance: 5, complexity: 10, cost: -5 },
+            pros: [
+              { title: 'Rich ecosystem', description: 'Vast library support and community' },
+              { title: 'Component model', description: 'Reusable, composable UI components' },
+            ],
+            cons: [
+              { title: 'Build required', description: 'Needs bundler and transpilation' },
+            ],
+            whyThisFits: 'React provides the component model and ecosystem needed for maintainable UI at scale.',
+          },
         ],
       },
     ],
@@ -398,41 +256,118 @@ export const mySituations: SituationChoice[] = [
 ]
 ```
 
-**`ChoiceProCon` fields:**
+**`MetricDef` fields:**
 
 | Field | Type | Required | Notes |
 |-------|------|----------|-------|
-| `title` | `string` | yes | Short label (2-5 words) shown in accordion and compare view |
-| `description` | `string` | yes | Full explanation shown only in the accordion |
+| `id` | `string` | yes | Unique metric identifier |
+| `label` | `string` | yes | Display name in dashboard |
+| `baseValue` | `number` | yes | Starting value before any choices |
+| `min` | `number` | no | Min value (default: 0) |
+| `max` | `number` | no | Max value (default: 100) |
+| `direction` | `'higher' | 'lower'` | no | Whether higher is better (default: `'higher'`) |
 
-**`ChoiceOption` fields:**
-
-| Field | Type | Required | Notes |
-|-------|------|----------|-------|
-| `id` | `string` | yes | Unique identifier within this situation |
-| `label` | `string` | yes | Display name shown in the accordion trigger |
-| `description` | `string` | yes | Shown inside the expanded accordion |
-| `pros` | `ChoiceProCon[]` | yes | Advantages with title + description |
-| `cons` | `ChoiceProCon[]` | yes | Disadvantages with title + description |
-| `whenToUse` | `string` | no | Guidance shown at the bottom of the accordion |
-
-**`SituationChoice` fields:**
+**`TradeoffChoice` fields:**
 
 | Field | Type | Required | Notes |
 |-------|------|----------|-------|
-| `title` | `string` | yes | Shown in the situation selector dropdown |
-| `situation` | `string` | yes | The scenario description displayed in a banner |
-| `recommended` | `string` | yes | `id` of the recommended choice |
-| `recommendationDetail` | `{ heading?: string, why: string }` | yes | Explains why this choice is recommended |
+| `id` | `string` | yes | Unique choice identifier |
+| `label` | `string` | yes | Display name |
+| `description` | `string` | yes | Shown in details modal |
+| `metrics` | `Record<string, number>` | yes | Delta values per metric `id` |
+| `pros` | `TradeoffProCon[]` | yes | Advantages with title + description |
+| `cons` | `TradeoffProCon[]` | yes | Disadvantages with title + description |
+| `whyThisFits` | `string` | no | Shown for the recommended choice |
+| `whenToUse` | `string` | no | Shown for non-recommended choices |
+
+**`TradeoffStep` fields:**
+
+| Field | Type | Required | Notes |
+|-------|------|----------|-------|
+| `id` | `string` | yes | Unique step identifier |
+| `title` | `string` | yes | Step heading |
+| `description` | `string` | yes | Context for the decision |
+| `choices` | `TradeoffChoice[]` | yes | Available options |
+| `recommended` | `string` | no | `id` of the recommended choice |
 
 **In `sections.ts`:**
 
 ```ts
 {
-  type: 'situation-choice',
+  type: 'tradeoff-sandbox',
   props: {
-    title: 'When to Use REST vs WebSocket',
-    situations: mySituations,
+    title: 'Architecture Decisions',
+    scenarios: myScenarios,
+  },
+},
+```
+
+---
+
+### Taxonomy Browser section data
+
+`taxonomy-browser` renders an interactive card grid that opens detail modals. Each card shows an icon, subtitle, title, and description. Clicking opens a modal with overview, deep dive, and scope boundaries.
+
+```ts
+// src/topics/<your-topic>/data.ts
+import type { TaxonomyCategory } from '../../sections/taxonomy-browser'
+import { Brain, Zap, Shield } from 'lucide-react'
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+import type { ComponentType } from 'react'
+
+export const myCategories: TaxonomyCategory[] = [
+  {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    icon: Brain as unknown as ComponentType<any>,
+    title: 'Reasoning & Planning',
+    subtitle: 'Core Intelligence',
+    description: 'The system decomposes goals into actionable plans and adapts strategies.',
+    details: 'Planning encompasses ReAct loops, tree-of-thought search, and self-refinement patterns.',
+    analogy: 'Like a project manager breaking down an epic into sprint tasks.',
+    primaryFocus: 'Goal decomposition and step-by-step execution',
+    inScope: ['Chain-of-thought', 'ReAct loops', 'Self-correction'],
+    outOfScope: ['Raw text generation without planning'],
+    color: 'mauve',
+  },
+  {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    icon: Zap as unknown as ComponentType<any>,
+    title: 'Tool Use & Execution',
+    subtitle: 'Action Layer',
+    description: 'The system selects and invokes external tools to extend its capabilities.',
+    details: 'Tool routing matches task requirements to available capabilities.',
+    analogy: 'Like a developer choosing the right CLI tool for each sub-task.',
+    primaryFocus: 'Tool selection, argument generation, and result processing',
+    inScope: ['Web search', 'Code sandbox', 'API calls'],
+    outOfScope: ['Hardware control', 'Physical world interaction'],
+    color: 'peach',
+  },
+]
+```
+
+**`TaxonomyCategory` fields:**
+
+| Field | Type | Required | Notes |
+|-------|------|----------|-------|
+| `icon` | `ComponentType` | yes | lucide-react icon component |
+| `title` | `string` | yes | Card title and modal heading |
+| `subtitle` | `string` | yes | Shown above the title |
+| `description` | `string` | yes | Shown on the card |
+| `details` | `string` | yes | Deep dive content in modal |
+| `analogy` | `string` | yes | Analogy shown in scope section |
+| `primaryFocus` | `string` | yes | Primary focus label |
+| `inScope` | `string[]` | yes | In-scope items list |
+| `outOfScope` | `string[]` | yes | Out-of-scope items list |
+| `color` | `string` | yes | Accent color key: `blue`, `peach`, `pink`, `mauve`, `green`, `teal`, `sky`, `lavender`, `yellow`, `red` |
+
+**In `sections.ts`:**
+
+```ts
+{
+  type: 'taxonomy-browser',
+  props: {
+    title: 'Capability Taxonomy',
+    categories: myCategories,
   },
 },
 ```
@@ -444,14 +379,20 @@ export const mySituations: SituationChoice[] = [
 ```ts
 // src/topics/<your-topic>/sections.ts
 import type { SectionConfig } from '../../core/registry'
-import { myParagraphs, myNodes, myEdges, mySteps, mySituations } from './data'
+import {
+  myParagraphs,
+  myBullets,
+  mySchema,
+  myScenarios,
+  myCategories,
+} from './data'
 
 export const myTopicSections: SectionConfig[] = [
   {
     type: 'text',
     props: {
-      title: 'Introduction',          // nav/section heading (optional)
-      heading: 'What is this about?', // large heading inside the section (optional)
+      title: 'Introduction',
+      heading: 'What is this about?',
       paragraphs: myParagraphs,
     },
   },
@@ -459,22 +400,29 @@ export const myTopicSections: SectionConfig[] = [
     type: 'flowchart',
     props: {
       title: 'System Architecture',
-      nodes: myNodes,
-      edges: myEdges,
+      schema: mySchema,
     },
   },
   {
-    type: 'step-by-step',
+    type: 'bullets',
     props: {
-      title: 'How It Works',
-      steps: mySteps,
+      title: 'Key Points',
+      ordered: false,
+      items: myBullets,
     },
   },
   {
-    type: 'situation-choice',
+    type: 'tradeoff-sandbox',
     props: {
-      title: 'Design Choices',
-      situations: mySituations,
+      title: 'Design Decisions',
+      scenarios: myScenarios,
+    },
+  },
+  {
+    type: 'taxonomy-browser',
+    props: {
+      title: 'Capability Taxonomy',
+      categories: myCategories,
     },
   },
 ]
@@ -558,31 +506,31 @@ src/topics/http-basics/
 
 **`data.ts`**
 ```ts
-import type { ArchNode, ArchEdge } from '../../sections/architecture-flow'
-
 export const introParagraphs = [
   'HTTP is the foundation of data communication on the web.',
   'It follows a **request–response** model between client and server.',
 ]
 
-export const httpNodes: ArchNode[] = [
-  { id: 'browser', label: 'Browser', x: 60,  y: 100 },
-  { id: 'server',  label: 'Server',  x: 300, y: 100 },
-]
+import type { BulletItem } from '../../sections/bullets'
 
-export const httpEdges: ArchEdge[] = [
-  { from: 'browser', to: 'server', label: 'GET /index.html' },
+export const httpBullets: BulletItem[] = [
+  { text: 'Stateless protocol' },
+  { text: 'Client-server model' },
+  { text: 'Text-based messaging', children: [
+    { text: 'Request methods: GET, POST, PUT, DELETE' },
+    { text: 'Status codes: 200 OK, 404 Not Found, 500 Server Error' },
+  ]},
 ]
 ```
 
 **`sections.ts`**
 ```ts
 import type { SectionConfig } from '../../core/registry'
-import { introParagraphs, httpNodes, httpEdges } from './data'
+import { introParagraphs, httpBullets } from './data'
 
 export const httpBasicsSections: SectionConfig[] = [
-  { type: 'text',              props: { title: 'What is HTTP?', paragraphs: introParagraphs } },
-  { type: 'architecture-flow', props: { title: 'Request-Response', nodes: httpNodes, edges: httpEdges } },
+  { type: 'text',    props: { title: 'What is HTTP?', paragraphs: introParagraphs } },
+  { type: 'bullets', props: { title: 'Key Characteristics', ordered: false, items: httpBullets } },
 ]
 ```
 

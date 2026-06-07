@@ -4,6 +4,8 @@ import { aiAgentSections } from '../topics/ai-agent/sections'
 import { aiOperatingModelSections } from '../topics/ai-operating-model/sections'
 import { agentopsSections } from '../topics/agentops/sections'
 import { aiGovernanceSections } from '../topics/ai-governance/sections'
+import { sellOnlineSections } from '../topics/sell-online-thai/sections'
+import { shopeeBuyerSections } from '../topics/shopee-buyer-journey/sections'
 
 export interface TopicRoute {
   id: string
@@ -55,4 +57,20 @@ export const routes: TopicRoute[] = [
     description: 'Risk taxonomy, intervention categories, governance frameworks (OWASP, SAIF, ARC), and design decisions for autonomous AI systems',
     sections: aiGovernanceSections,
   },
-]
+   {
+      id: 'sell-online-thai',
+      label: 'ขายของออนไลน์',
+      path: '/topics/sell-online-thai',
+      category: 'E-Commerce',
+      description: 'ออกแบบระบบขายของออนไลน์แบบครบวงจร: เลือกแพลตฟอร์ม โลจิสติกส์ การเงิน และการตลาด',
+      sections: sellOnlineSections,
+    },
+    {
+      id: 'shopee-buyer-journey',
+      label: 'Shopee Buyer Journey',
+      path: '/topics/shopee-buyer-journey',
+      category: 'E-Commerce',
+      description: 'เส้นทางการช้อปบน Shopee: ค้นหา เปรียบเทียบ สั่งซื้อ ชำระเงิน จัดส่ง และรีวิว',
+      sections: shopeeBuyerSections,
+    },
+  ]

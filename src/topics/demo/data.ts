@@ -2,10 +2,11 @@ import { TYPES } from '../../sections/flowchart'
 import type { UnifiedFlowchartSchema } from '../../sections/flowchart'
 import type { TradeoffScenario } from '../../sections/tradeoff-sandbox'
 import type { TaxonomyCategory } from '../../sections/taxonomy-browser'
+import type { BulletItem } from '../../sections/bullets'
 import type { ComponentType } from 'react'
 import { Brain, Zap, Shield, Workflow } from 'lucide-react'
 
-// ─── Tradeoff Sandbox: Architecture scenarios ─────────────────────────────────
+// ─── Tradeoff Sandbox (Section-TradeoffSandbox.md) ────────────────────────────
 
 export const tradeoffSandboxScenarios: TradeoffScenario[] = [
   {
@@ -417,7 +418,7 @@ steps: [
   },
 ]
 
-// ─── Text paragraphs ─────────────────────────────────────────────────────────
+// ─── Text paragraphs (Section-Text.md: string[]) ─────────────────────────────
 
 export const agentTextParagraphs: string[] = [
   'An **AI agent** is a software system that perceives its environment, reasons about a goal, and takes autonomous actions — potentially across multiple steps — to achieve that goal.',
@@ -436,25 +437,7 @@ export const agentLifecycleMarkdown: string[] = [
 6. **Response Delivery** — Once the evaluator confirms success, the final artefact (answer, code diff, report) is formatted and returned to the user. Results are optionally persisted to memory.`,
 ]
 
-export const agentCapabilitiesMarkdown: string[] = [
-  `## Key Agent Capabilities
-
-- **Tool use** — call external APIs, run code, browse the web
-  - Web search (Tavily, Brave, Google)
-  - Code execution (sandboxed interpreter)
-  - Browser automation (Playwright)
-- **Long-horizon planning** via chain-of-thought or ReAct
-- **Persistent memory** across sessions (vector store)
-- **Self-evaluation** and automatic re-planning on failure
-- **Multi-agent coordination** — delegating sub-tasks to specialised agents`,
-]
-
-// ─── Bullets: key agent capabilities ─────────────────────────────────────────
-
-export interface BulletItem {
-  text: string
-  children?: BulletItem[]
-}
+// ─── Bullets: key agent capabilities (Section-Bullets.md) ────────────────────
 
 export const agentCapabilityBullets: BulletItem[] = [
   {
@@ -471,7 +454,7 @@ export const agentCapabilityBullets: BulletItem[] = [
   { text: 'Multi-agent coordination (delegating sub-tasks)' },
 ]
 
-// ─── Tradeoff Sandbox: API communication pattern ──────────────────────────────
+// ─── Tradeoff Sandbox: API pattern (Section-TradeoffSandbox.md) ───────────────
 
 export const apiPatternScenarios: TradeoffScenario[] = [
   {
@@ -569,7 +552,7 @@ export const apiPatternScenarios: TradeoffScenario[] = [
   },
 ]
 
-// ─── Taxonomy Browser: AI Agent Capability Categories ─────────────────────────
+// ─── Taxonomy Browser (Section-TaxonomyBrowser.md) ───────────────────────────
 
 export const taxonomyCategories: TaxonomyCategory[] = [
   {
@@ -625,6 +608,8 @@ export const taxonomyCategories: TaxonomyCategory[] = [
     color: 'green',
   },
 ]
+
+// ─── Flowchart Schema (Section-Flowchart.md: 4 views) ────────────────────────
 
 export const agentSchema: UnifiedFlowchartSchema = {
   entities: {

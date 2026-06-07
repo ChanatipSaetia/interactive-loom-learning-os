@@ -16,6 +16,8 @@ import './topics/ai-agent'
 import './topics/ai-operating-model'
 import './topics/agentops'
 import './topics/ai-governance'
+import './topics/sell-online-thai'
+import './topics/shopee-buyer-journey'
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
