@@ -289,6 +289,54 @@ Journeys are animated step sequences. The user clicks play and the diagram highl
 - Node positions (`x`, `y`) are per-view — the same entity can be at different coordinates in different views
 - Leave ~160px horizontal spacing between nodes for edge labels
 
+## Stack Layout Technique
+
+The "Stack" is the primary layout technique for complex diagrams (especially Event Storming). Instead of drawing arrows between every related node, nodes are positioned to **touch edge-to-edge**, forming visually grouped "chunks" the brain processes as single units.
+
+### Horizontal Stack (Core Flow)
+
+Nodes snap side-by-side: each node's X = previous X + NODE_W (140). Same Y coordinate creates a touching horizontal bar.
+
+```
+Node 1 (Command):    x = 120, y = 250
+Node 2 (Aggregate):  x = 260, y = 250  (120 + 140)
+Node 3 (Event):      x = 400, y = 250  (260 + 140)
+```
+
+### Vertical Stack (Actors and Systems)
+
+Peripheral elements sit directly above/below their target node. Center-align on X, snap on Y.
+
+```
+Main Command:        x = 120, y = 250
+Stacked Actor:       x = 130, y = 185  (X: 120 + (140-120)/2, Y: 250 - 65)
+```
+
+### Edge Routing (Bridge Rule)
+
+- **Inside a Stack:** Zero arrows. Touching borders imply sequential flow.
+- **Between Stacks:** One arrow. From the final node of Stack A to the first node of Stack B.
+
+### Journey Steps as Groups
+
+Use the `nodeIds` array (not just single `nodeId`) to highlight an entire Stack at once:
+
+```ts
+journeys: [{
+  id: 'main-flow',
+  label: 'Execution Flow',
+  description: 'Follow the agent from goal to output',
+  steps: [
+    { nodeIds: ['user', 'evt_goal', 'planner', 'orchestrator'], description: 'User submits goal → Planner creates plan' },
+    { nodeIds: ['tools', 'llm', 'executor', 'evt_executed'], description: 'LLM routes tools → Executor runs them' },
+    { nodeIds: ['evaluator', 'evt_done', 'output'], description: 'Evaluator validates → Output delivered' },
+    { nodeIds: ['evaluator', 'evt_fail', 'pol_retry', 'planner'], description: 'If failed → Retry loop back to Planner' },
+  ],
+}]
+```
+
+This way each journey step highlights a complete "chunk" of the architecture, not one isolated node.
+
 ---
 
 ## Layout Strategy and Positioning Principles

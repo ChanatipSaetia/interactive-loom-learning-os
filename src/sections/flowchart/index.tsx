@@ -127,7 +127,8 @@ export interface FlowchartViewGroup {
 }
 
 export interface FlowchartStep {
-  nodeId: string;
+  nodeId?: string;
+  nodeIds?: string[];
   description: string;
 }
 
@@ -259,9 +260,9 @@ export const INITIAL_SCHEMA: UnifiedFlowchartSchema = {
         { id: 'pol_db', x: 2200, y: 250 }, { id: 'db_os', x: 2350, y: 185 }, { id: 'cmd_os', x: 2340, y: 250 }, { id: 'evt_idx', x: 2480, y: 250 }, { id: 'sys_portal', x: 2620, y: 250 }
       ],
       groups: [
-        { id: 'g1', title: 'Ingestion Subdomain', desc: 'Handles secure file uploads and initial storage state before processing.', nodeIds: ['user_editor', 'cmd_up', 'agg_pipe', 'evt_up'], color: 'rgba(96, 165, 250, 0.08)', borderColor: '#93c5fd', textColor: '#1e40af' },
-        { id: 'g2', title: 'Quality Assurance & Routing', desc: 'Evaluates structural integrity of the parsed markdown and loops in humans for anomaly correction.', nodeIds: ['pol_pass', 'pol_fail', 'user_reviewer', 'cmd_fix', 'cmd_reject', 'risk_tbl', 'evt_rejected', 'pol_notify'], color: 'rgba(250, 204, 21, 0.08)', borderColor: '#fde047', textColor: '#854d0e' },
-        { id: 'g3', title: 'Vectorization Infrastructure', desc: 'Manages API interactions for AI embeddings and final persistence to OpenSearch clusters.', nodeIds: ['pol_emb', 'cmd_req_emb', 'api_emb', 'evt_vec', 'pol_db', 'cmd_os', 'db_os', 'evt_idx', 'sys_portal'], color: 'rgba(244, 114, 182, 0.08)', borderColor: '#f9a8d4', textColor: '#9d174d' }
+        { id: 'g1', title: 'Ingestion Subdomain', desc: 'Handles secure file uploads and initial storage state before processing.', nodeIds: ['user_editor', 'cmd_up', 'agg_pipe', 'evt_up'], color: 'rgba(140, 170, 238, 0.12)', borderColor: '#8caaee', textColor: '#c6d0f5' },
+        { id: 'g2', title: 'Quality Assurance & Routing', desc: 'Evaluates structural integrity of the parsed markdown and loops in humans for anomaly correction.', nodeIds: ['pol_pass', 'pol_fail', 'user_reviewer', 'cmd_fix', 'cmd_reject', 'risk_tbl', 'evt_rejected', 'pol_notify'], color: 'rgba(229, 200, 144, 0.12)', borderColor: '#e5c890', textColor: '#c6d0f5' },
+        { id: 'g3', title: 'Vectorization Infrastructure', desc: 'Manages API interactions for AI embeddings and final persistence to OpenSearch clusters.', nodeIds: ['pol_emb', 'cmd_req_emb', 'api_emb', 'evt_vec', 'pol_db', 'cmd_os', 'db_os', 'evt_idx', 'sys_portal'], color: 'rgba(244, 184, 228, 0.12)', borderColor: '#f4b8e4', textColor: '#c6d0f5' }
       ]
     },
     SYS_ARCH: {
@@ -270,7 +271,7 @@ export const INITIAL_SCHEMA: UnifiedFlowchartSchema = {
         { id: 'user_editor', x: 200, y: 300 }, { id: 'sys_gw', x: 450, y: 300 }, { id: 'sys_worker', x: 750, y: 150 },
         { id: 'sys_portal', x: 750, y: 450 }, { id: 'api_emb', x: 1050, y: 150 }, { id: 'db_os', x: 1050, y: 450 }, { id: 'db_s3', x: 750, y: 300 }
       ],
-      groups: [ { id: 'g_vpc', title: 'Internal Virtual Private Cloud', desc: 'Secure network boundary shielding internal services from the public internet.', nodeIds: ['sys_gw','sys_worker','sys_portal','db_os','db_s3'], color: 'rgba(148, 163, 184, 0.1)', borderColor: '#94a3b8', textColor: '#334155' } ]
+      groups: [ { id: 'g_vpc', title: 'Internal Virtual Private Cloud', desc: 'Secure network boundary shielding internal services from the public internet.', nodeIds: ['sys_gw','sys_worker','sys_portal','db_os','db_s3'], color: 'rgba(129, 200, 190, 0.12)', borderColor: '#81c8be', textColor: '#c6d0f5' } ]
     },
     DATA_FLOW: {
       name: 'Data Flow (DFD)', icon: 'Share2',
@@ -288,9 +289,9 @@ export const INITIAL_SCHEMA: UnifiedFlowchartSchema = {
         { id: 'cmd_fix', x: 900, y: 520 }, { id: 'api_emb', x: 1150, y: 320 }, { id: 'db_os', x: 1400, y: 320 }
       ],
       groups: [
-        { id: 'l1', isLane: true, title: 'Content Editor', desc: 'External users submitting raw data.', y: 50, h: 200, color: '#fef08a' },
-        { id: 'l2', isLane: true, title: 'Automated Pipeline', desc: 'Backend asynchronous processors running without human input.', y: 250, h: 200, color: '#e2e8f0' },
-        { id: 'l3', isLane: true, title: 'Review Team', desc: 'Internal staff overseeing quality and edge cases.', y: 450, h: 200, color: '#fed7aa' }
+        { id: 'l1', isLane: true, title: 'Content Editor', desc: 'External users submitting raw data.', y: 50, h: 200, color: 'rgba(239, 159, 118, 0.12)' },
+        { id: 'l2', isLane: true, title: 'Automated Pipeline', desc: 'Backend asynchronous processors running without human input.', y: 250, h: 200, color: 'rgba(153, 209, 219, 0.12)' },
+        { id: 'l3', isLane: true, title: 'Review Team', desc: 'Internal staff overseeing quality and edge cases.', y: 450, h: 200, color: 'rgba(186, 187, 241, 0.12)' }
       ]
     }
   },
@@ -300,25 +301,11 @@ export const INITIAL_SCHEMA: UnifiedFlowchartSchema = {
       label: 'Document Ingest Happy Path',
       description: 'Follow a document as it is uploaded, converted, validated, and indexed with a high confidence score.',
       steps: [
-        { nodeId: 'user_editor', description: 'Content Editor prepares a PDF file for ingestion.' },
-        { nodeId: 'cmd_up', description: 'Upload Document is triggered, transferring payload to Gateway.' },
-        { nodeId: 'agg_pipe', description: 'The Doc Pipeline state machine initiates processing.' },
-        { nodeId: 'evt_up', description: 'Publish "Document Uploaded" event into raw storage.' },
-        { nodeId: 'pol_conv', description: 'Policy fires to trigger Markdown conversion.' },
-        { nodeId: 'sys_worker', description: 'Async Conversion Worker picks up the conversion job.' },
-        { nodeId: 'cmd_md', description: 'The document is converted into unformatted Markdown.' },
-        { nodeId: 'evt_md', description: 'Publish "Markdown Converted" with raw text content.' },
-        { nodeId: 'pol_pass', description: 'Score checks out (>90%), auto-approve the markdown.' },
-        { nodeId: 'evt_app', description: 'Publish "Markdown Approved" representing clean state.' },
-        { nodeId: 'pol_emb', description: 'Policy fires to request spatial vector embeddings.' },
-        { nodeId: 'cmd_req_emb', description: 'Trigger Request Embeddings API call.' },
-        { nodeId: 'api_emb', description: 'Call External LLM Embedding service to get float arrays.' },
-        { nodeId: 'evt_vec', description: 'Publish "Embeddings Generated" with vectors.' },
-        { nodeId: 'pol_db', description: 'Policy triggers database save routing.' },
-        { nodeId: 'cmd_os', description: 'Index document command formats both clean text and vectors.' },
-        { nodeId: 'db_os', description: 'Write data records to the OpenSearch database cluster.' },
-        { nodeId: 'evt_idx', description: 'Publish "Document Indexed" signifying indexing success.' },
-        { nodeId: 'sys_portal', description: 'The document is now available for searching on the Review Portal UI.' }
+        { nodeIds: ['user_editor', 'cmd_up', 'agg_pipe', 'evt_up'], description: 'Ingestion Stack — Content Editor uploads PDF → Upload Command triggered → Pipeline initiated → Document Uploaded event published.' },
+        { nodeIds: ['pol_conv', 'sys_worker', 'cmd_md', 'evt_md'], description: 'Conversion Stack — Policy fires → Async Worker converts → Markdown produced → Markdown Converted event published.' },
+        { nodeIds: ['pol_pass', 'evt_app'], description: 'Quality Check (Pass) — Score >90%, auto-approve → Markdown Approved event published.' },
+        { nodeIds: ['pol_emb', 'cmd_req_emb', 'api_emb', 'evt_vec'], description: 'Vectorization Stack — Policy fires → Embedding API called → LLM generates vectors → Embeddings Generated.' },
+        { nodeIds: ['pol_db', 'cmd_os', 'db_os', 'evt_idx', 'sys_portal'], description: 'Indexing Stack — Policy routes to DB → Index command formats data → Written to OpenSearch → Document available on Portal.' },
       ]
     },
     {
@@ -326,17 +313,10 @@ export const INITIAL_SCHEMA: UnifiedFlowchartSchema = {
       label: 'Manual Review & Recovery Path',
       description: 'What happens when parsing quality drops below confidence thresholds and requires a human review.',
       steps: [
-        { nodeId: 'user_editor', description: 'Content Editor uploads a scanned document.' },
-        { nodeId: 'cmd_up', description: 'Document is received.' },
-        { nodeId: 'sys_worker', description: 'Worker processes the messy document structure.' },
-        { nodeId: 'evt_md', description: 'Conversion produces low-quality markdown.' },
-        { nodeId: 'pol_fail', description: 'Quality score is low (<90%), halting auto-approval.' },
-        { nodeId: 'risk_tbl', description: 'Hotspot triggered: PDF table columns are parsed as garbage.' },
-        { nodeId: 'user_reviewer', description: 'Reviewer is notified of the pending item.' },
-        { nodeId: 'cmd_fix', description: 'Human reviewer fixes layout formats manually.' },
-        { nodeId: 'evt_app', description: 'Publish "Markdown Approved" following manual correction.' },
-        { nodeId: 'api_emb', description: 'Vectorize the corrected text.' },
-        { nodeId: 'db_os', description: 'Save the finalized indices to OpenSearch.' }
+        { nodeIds: ['user_editor', 'cmd_up', 'sys_worker', 'evt_md'], description: 'Ingestion → Conversion — Scanned document uploaded, Worker processes messy structure, produces low-quality markdown.' },
+        { nodeIds: ['pol_fail', 'risk_tbl'], description: 'Quality Check (Fail) — Score <90%, auto-approval halted. Hotspot: PDF table columns parsed as garbage.' },
+        { nodeIds: ['user_reviewer', 'cmd_fix'], description: 'Human Review — Reviewer notified, manually fixes layout formats.' },
+        { nodeIds: ['evt_app', 'api_emb', 'db_os'], description: 'Recovery Complete — Markdown Approved → Vectors generated → Saved to OpenSearch.' },
       ]
     }
   ]
@@ -437,28 +417,31 @@ export function Flowchart({ title, schema = INITIAL_SCHEMA }: FlowchartProps) {
 
   // Journey step focus — currentStep=0 means "overview / nothing selected"
   // actual steps are 1-indexed: steps[currentStep - 1]
-  const highlightedNodeId = currentStep > 0 ? currentJourney?.steps[currentStep - 1]?.nodeId : undefined;
+  const currentStepData = currentStep > 0 ? currentJourney?.steps[currentStep - 1] : undefined;
+  const highlightedNodeId = currentStepData?.nodeId || currentStepData?.nodeIds?.[0];
+  const prevStepData = currentStep > 1 ? currentJourney?.steps[currentStep - 2] : undefined;
   const prevHighlightedNodeId = useMemo(() => {
-    if (currentStep > 1 && currentJourney) {
-      return currentJourney.steps[currentStep - 2]?.nodeId;
-    }
-    return null;
+    return prevStepData?.nodeId || prevStepData?.nodeIds?.[0] || null;
   }, [currentStep, currentJourney]);
-  const currentDescription = currentStep > 0 ? (currentJourney?.steps[currentStep - 1]?.description ?? '') : '';
+  const currentDescription = currentStepData?.description ?? '';
 
   // Get view steps or generate from currentJourney
   const activeSteps = useMemo(() => {
     if (activeView.steps && activeView.steps.length > 0) {
       return activeView.steps;
     }
-    if (currentJourney && currentJourney.steps.length > 0) {
-      return currentJourney.steps.map((step, idx) => ({
-        id: `journey-step-${idx}`,
-        type: 'linear',
-        nodeIds: [step.nodeId],
-        title: localSchema.entities[step.nodeId]?.title || `Step ${idx + 1}`,
-        reason: step.description
-      }));
+   if (currentJourney && currentJourney.steps.length > 0) {
+       return currentJourney.steps.map((step, idx) => {
+         const ids = step.nodeIds || (step.nodeId ? [step.nodeId] : []);
+         const primaryNode = ids[0] || step.nodeId || '';
+         return {
+           id: `journey-step-${idx}`,
+           type: 'linear',
+           nodeIds: ids,
+           title: localSchema.entities[primaryNode]?.title || `Step ${idx + 1}`,
+           reason: step.description
+         };
+       });
     }
     return [];
   }, [activeView.steps, currentJourney, localSchema.entities]);
@@ -1500,8 +1483,8 @@ export function Flowchart({ title, schema = INITIAL_SCHEMA }: FlowchartProps) {
                         y={group.y ?? 100}
                         width={maxX - minX + 500}
                         height={group.h ?? 180}
-                        fill={group.color || 'rgba(242, 243, 244, 0.05)'}
-                        stroke={group.borderColor || '#cbd5e1'}
+                        fill={group.color || 'rgba(186, 187, 241, 0.10)'}
+                        stroke={group.borderColor || '#626880'}
                         strokeWidth="1.5"
                       />
                       <text
@@ -1529,22 +1512,22 @@ export function Flowchart({ title, schema = INITIAL_SCHEMA }: FlowchartProps) {
                 return (
                   <g key={group.id} className="flowchart-domain-group" opacity={isFaded ? 0.15 : 1} style={{ transition: 'opacity 0.3s' }}>
                     <rect
-                      x={gMinX}
-                      y={gMinY}
-                      width={gMaxX - gMinX}
-                      height={gMaxY - gMinY}
-                      rx="12"
-                      fill={group.color || 'rgba(96, 165, 250, 0.05)'}
-                      stroke={group.borderColor || '#93c5fd'}
-                      strokeWidth="1.5"
-                      strokeDasharray="4 4"
-                    />
-                    <text
-                      x={gMinX + 15}
-                      y={gMinY + 22}
-                      fontSize="11"
-                      fontWeight="bold"
-                      fill={group.textColor || '#8caaee'}
+                       x={gMinX}
+                       y={gMinY}
+                       width={gMaxX - gMinX}
+                       height={gMaxY - gMinY}
+                       rx="12"
+                       fill={group.color || 'rgba(140, 170, 238, 0.10)'}
+                       stroke={group.borderColor || '#8caaee'}
+                       strokeWidth="1.5"
+                       strokeDasharray="4 4"
+                     />
+                     <text
+                       x={gMinX + 15}
+                       y={gMinY + 22}
+                       fontSize="11"
+                       fontWeight="bold"
+                       fill={group.textColor || '#c6d0f5'}
                     >
                       {group.title}
                     </text>

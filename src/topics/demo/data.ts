@@ -810,9 +810,9 @@ export const agentSchema: UnifiedFlowchartSchema = {
         { id: 'output', x: 1780, y: 180 }
       ],
       groups: [
-        { id: 'es_g1', title: 'Cognition & Planning', desc: 'Translates goals into reasoning steps and parses facts.', nodeIds: ['evt_goal', 'planner', 'orchestrator', 'memory', 'evt_plan_ready'], color: 'rgba(96, 165, 250, 0.08)', borderColor: '#93c5fd', textColor: '#1e40af' },
-        { id: 'es_g2', title: 'Action Space Execution', desc: 'Selects, schedules, and executes external integrations.', nodeIds: ['tools', 'llm', 'evt_tool_call', 'executor', 'evt_executed'], color: 'rgba(244, 114, 182, 0.08)', borderColor: '#f9a8d4', textColor: '#9d174d' },
-        { id: 'es_g3', title: 'Evaluation & Control', desc: 'Verifies safety and performance goals before exit.', nodeIds: ['evaluator', 'evt_done', 'evt_fail', 'pol_retry'], color: 'rgba(250, 204, 21, 0.08)', borderColor: '#fde047', textColor: '#854d0e' }
+        { id: 'es_g1', title: 'Cognition & Planning', desc: 'Translates goals into reasoning steps and parses facts.', nodeIds: ['evt_goal', 'planner', 'orchestrator', 'memory', 'evt_plan_ready'], color: 'rgba(140, 170, 238, 0.12)', borderColor: '#8caaee', textColor: '#c6d0f5' },
+        { id: 'es_g2', title: 'Action Space Execution', desc: 'Selects, schedules, and executes external integrations.', nodeIds: ['tools', 'llm', 'evt_tool_call', 'executor', 'evt_executed'], color: 'rgba(244, 184, 228, 0.12)', borderColor: '#f4b8e4', textColor: '#c6d0f5' },
+        { id: 'es_g3', title: 'Evaluation & Control', desc: 'Verifies safety and performance goals before exit.', nodeIds: ['evaluator', 'evt_done', 'evt_fail', 'pol_retry'], color: 'rgba(229, 200, 144, 0.12)', borderColor: '#e5c890', textColor: '#c6d0f5' }
       ]
     },
     SYS_ARCH: {
@@ -830,7 +830,7 @@ export const agentSchema: UnifiedFlowchartSchema = {
         { id: 'output', x: 1390, y: 250 }
       ],
       groups: [
-        { id: 'sa_g1', title: 'Core Agent Scaffolding', desc: 'Runs within the secure orchestration hosting container.', nodeIds: ['orchestrator', 'memory', 'planner', 'tools', 'evaluator'], color: 'rgba(148, 163, 184, 0.1)', borderColor: '#94a3b8', textColor: '#334155' }
+        { id: 'sa_g1', title: 'Core Agent Scaffolding', desc: 'Runs within the secure orchestration hosting container.', nodeIds: ['orchestrator', 'memory', 'planner', 'tools', 'evaluator'], color: 'rgba(129, 200, 190, 0.12)', borderColor: '#81c8be', textColor: '#c6d0f5' }
       ]
     },
     DATA_FLOW: {
@@ -863,9 +863,9 @@ export const agentSchema: UnifiedFlowchartSchema = {
         { id: 'output', x: 1180, y: 100 }
       ],
       groups: [
-        { id: 'sl_l1', isLane: true, title: 'Human Interface', desc: 'User boundaries.', y: 50, h: 100, color: '#fef08a' },
-        { id: 'sl_l2', isLane: true, title: 'Cognitive Loop', desc: 'State tracking, planning, routing and validation.', y: 150, h: 200, color: '#bae6fd' },
-        { id: 'sl_l3', isLane: true, title: 'Sandbox Actions', desc: 'Side-effects execution layer.', y: 350, h: 100, color: '#cbd5e1' }
+        { id: 'sl_l1', isLane: true, title: 'Human Interface', desc: 'User boundaries.', y: 50, h: 100, color: 'rgba(239, 159, 118, 0.12)' },
+        { id: 'sl_l2', isLane: true, title: 'Cognitive Loop', desc: 'State tracking, planning, routing and validation.', y: 150, h: 200, color: 'rgba(153, 209, 219, 0.12)' },
+        { id: 'sl_l3', isLane: true, title: 'Sandbox Actions', desc: 'Side-effects execution layer.', y: 350, h: 100, color: 'rgba(186, 187, 241, 0.12)' }
       ]
     }
   },
@@ -875,20 +875,11 @@ export const agentSchema: UnifiedFlowchartSchema = {
       label: 'Agentic Problem Solving Loop',
       description: 'Follow the execution plan as it transitions from the orchestrator through the LLM, resolves tools, and returns the response.',
       steps: [
-        { nodeId: 'user', description: 'User submits a goal: "Research top 3 competitors and summarise."' },
-        { nodeId: 'evt_goal', description: 'Goal is captured as a starting trigger event.' },
-        { nodeId: 'planner', description: 'Planner generates a step list: search, scrape, summarise.' },
-        { nodeId: 'orchestrator', description: 'Orchestrator tracks step progression and writes coordinates to working memory.' },
-        { nodeId: 'memory', description: 'Agent fetches past context vectors to pre-warm LLM workspace.' },
-        { nodeId: 'evt_plan_ready', description: 'Plan generation triggers tool routing execution.' },
-        { nodeId: 'tools', description: 'Tool router selects the Google Search API executor.' },
-        { nodeId: 'llm', description: 'LLM reasoning engine synthesises the query arguments.' },
-        { nodeId: 'evt_tool_call', description: 'Tool call arguments are generated and validated.' },
-        { nodeId: 'executor', description: 'Executor fires the API calls in a secure sandbox.' },
-        { nodeId: 'evt_executed', description: 'Raw results are emitted back into evaluation queue.' },
-        { nodeId: 'evaluator', description: 'Evaluator checks if all competitors are found.' },
-        { nodeId: 'evt_done', description: 'Quality goals met. Ready to compile output.' },
-        { nodeId: 'output', description: 'Formatting clean markdown summary and sending to client.' }
+        { nodeIds: ['user', 'evt_goal'], description: 'User submits a goal: "Research top 3 competitors and summarise."' },
+        { nodeIds: ['planner', 'orchestrator', 'memory', 'evt_plan_ready'], description: 'Cognition & Planning — Planner creates step list (search, scrape, summarise), Orchestrator tracks progression, Memory fetches context vectors.' },
+        { nodeIds: ['tools', 'llm', 'evt_tool_call', 'executor', 'evt_executed'], description: 'Action Space Execution — Tool Router selects API, LLM Engine synthesizes query arguments, Executor runs in secure sandbox.' },
+        { nodeIds: ['evaluator', 'evt_done', 'output'], description: 'Evaluation (Happy Path) — Evaluator validates quality goals met, final output formatted and delivered to User.' },
+        { nodeIds: ['evaluator', 'evt_fail', 'pol_retry', 'planner'], description: 'Evaluation (Fail Branch) — Evaluator detects failure, Re-Planning Rule triggers, Planner generates new plan and loops back.' },
       ]
     }
   ]
