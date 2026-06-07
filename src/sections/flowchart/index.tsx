@@ -170,10 +170,6 @@ interface PinchState {
   initialScale: number;
 }
 
-const panelWidth = 216;
-const panelGap = 14;
-type Placement = 'above' | 'below' | 'left' | 'right';
-
 function wrapTooltipText(text: string, maxChars = 28): string[] {
   const words = text.split(' ');
   const lines: string[] = [];
@@ -189,69 +185,6 @@ function wrapTooltipText(text: string, maxChars = 28): string[] {
   }
   if (current) lines.push(current);
   return lines;
-}
-
-function smartPlacePanel(
-  nodeX: number,
-  nodeY: number,
-  nodeW: number,
-  nodeH: number,
-  allNodes: { id: string; x: number; y: number }[],
-  panelH: number
-): Placement {
-  const nodeLeft = nodeX - nodeW / 2;
-  const nodeRight = nodeX + nodeW / 2;
-  const nodeTop = nodeY - nodeH / 2;
-  const nodeBottom = nodeY + nodeH / 2;
-
-  const candidateBoxes: { placement: Placement; x: number; y: number }[] = [
-    { placement: 'right', x: nodeRight + panelGap, y: nodeY - panelH / 2 },
-    { placement: 'above', x: nodeX - panelWidth / 2, y: nodeTop - panelH - panelGap },
-    { placement: 'below', x: nodeX - panelWidth / 2, y: nodeBottom + panelGap },
-    { placement: 'left', x: nodeLeft - panelWidth - panelGap, y: nodeY - panelH / 2 },
-  ];
-
-  const overlaps = (boxX: number, boxY: number) => {
-    const boxRight = boxX + panelWidth;
-    const boxBottom = boxY + panelH;
-    for (const n of allNodes) {
-      const nX = n.x;
-      const nY = n.y;
-      if (boxX < nX + NODE_W/2 && boxRight > nX - NODE_W/2 && boxY < nY + NODE_H/2 && boxBottom > nY - NODE_H/2) {
-        return true;
-      }
-    }
-    return false;
-  };
-
-  for (const c of candidateBoxes) {
-    if (!overlaps(c.x, c.y)) return c.placement;
-  }
-  return 'right';
-}
-
-function getPanelPosition(
-  placement: Placement,
-  nodeX: number,
-  nodeY: number,
-  nodeW: number,
-  nodeH: number,
-  panelH: number
-): { x: number; y: number } {
-  const nodeLeft = nodeX - nodeW / 2;
-  const nodeRight = nodeX + nodeW / 2;
-  const nodeTop = nodeY - nodeH / 2;
-  const nodeBottom = nodeY + nodeH / 2;
-  switch (placement) {
-    case 'above':
-      return { x: nodeX - panelWidth / 2, y: nodeTop - panelH - panelGap };
-    case 'below':
-      return { x: nodeX - panelWidth / 2, y: nodeBottom + panelGap };
-    case 'left':
-      return { x: nodeLeft - panelWidth - panelGap, y: nodeY - panelH / 2 };
-    case 'right':
-      return { x: nodeRight + panelGap, y: nodeY - panelH / 2 };
-  }
 }
 
 // --- 4. DEFAULT INITIAL SCHEMA ---
@@ -572,9 +505,6 @@ export function Flowchart({ title, schema = INITIAL_SCHEMA }: FlowchartProps) {
   const maxX = positioned.length > 0 ? Math.max(...positioned.map(n => n.x)) : 0;
   const minY = positioned.length > 0 ? Math.min(...positioned.map(n => n.y)) : 0;
   const maxY = positioned.length > 0 ? Math.max(...positioned.map(n => n.y)) : 0;
-
-  const svgWidth = (maxX - minX) + NODE_W + 120;
-  const svgHeight = Math.max(480, (maxY - minY) + NODE_H + 80);
 
   // View reset on switch — fires ONLY on view key change (not on node drag).
   // Node positions are read from a ref at rAF time so they don't become deps.
@@ -989,12 +919,6 @@ export function Flowchart({ title, schema = INITIAL_SCHEMA }: FlowchartProps) {
     setCurrentStep(0);
     setIsPlaying(false);
     setActiveStep(null);
-  }, []);
-
-  // 1-indexed: idx=1 → first step, idx=0 → overview
-  const handleGoToStep = useCallback((idx: number) => {
-    setCurrentStep(idx + 1);
-    setIsPlaying(false);
   }, []);
 
   // Step carousel handler — activeStep is the single source for selection, dim, and camera.
