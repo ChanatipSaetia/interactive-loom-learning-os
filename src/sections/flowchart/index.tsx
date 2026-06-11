@@ -580,18 +580,6 @@ export function Flowchart({ title, schema = INITIAL_SCHEMA }: FlowchartProps) {
     });
   }, []);
 
-  const focusOnNode = useCallback((nodeId: string) => {
-    const node = nodeMap[nodeId];
-    if (!node || !svgRef.current) return;
-    const W = svgRef.current.clientWidth;
-    const H = svgRef.current.clientHeight;
-    const nx = node.x;
-    const ny = node.y;
-    const targetTx = W / 2 - nx * transform.scale;
-    const targetTy = H / 2 - ny * transform.scale;
-    animateTo(targetTx, targetTy, transform.scale);
-  }, [nodeMap, transform.scale, animateTo]);
-
   const focusOnNodes = useCallback((nodeIds: string[]) => {
     if (!containerRef.current || !nodeIds || nodeIds.length === 0 || !svgRef.current) return;
     let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
@@ -616,21 +604,21 @@ export function Flowchart({ title, schema = INITIAL_SCHEMA }: FlowchartProps) {
     const targetScale = Math.min(
       (viewportW - padding * 2) / bboxW,
       (viewportH - padding * 2) / bboxH,
-      1.4
+      0.8
     );
     const centerX = (minX + maxX) / 2;
     const centerY = (minY + maxY) / 2;
     const targetX = viewportW / 2 - centerX * targetScale;
-    const targetY = viewportH / 2 - centerY * targetScale;
+    const targetY = (viewportH / 2 - 40) - centerY * targetScale;
     animateTo(targetX, targetY, targetScale);
   }, [animateTo, activeView, activeViewKey, localSchema.entities]);
 
   // Timed camera adjustments
   useEffect(() => {
-    if (highlightedNodeId && !isPanning && !dragRef.current.active) {
-      focusOnNode(highlightedNodeId);
+    if (activeNodeIds && activeNodeIds.length > 0 && !isPanning && !dragRef.current.active) {
+      focusOnNodes(activeNodeIds);
     }
-  }, [currentStep, highlightedNodeId, focusOnNode, isPanning]);
+  }, [currentStep, activeNodeIds, focusOnNodes, isPanning]);
 
   // In-flight flow particles
   useEffect(() => {
@@ -1454,6 +1442,37 @@ export function Flowchart({ title, schema = INITIAL_SCHEMA }: FlowchartProps) {
             )}
           </div>
 
+          {/* Clear Focus overlay */}
+          {activeStep && (
+            <button
+              onClick={() => {
+                setActiveStep(null);
+                animateTo(50, 100, 0.45);
+              }}
+              className="flowchart-btn animate-fade-in"
+              style={{
+                position: 'absolute',
+                top: '16px',
+                right: '16px',
+                zIndex: 10,
+                padding: '6px 16px',
+                borderRadius: '20px',
+                fontSize: '12px',
+                fontWeight: 'bold',
+                backgroundColor: 'var(--ctp-crust)',
+                color: 'var(--ctp-text)',
+                border: '1px solid var(--border-light)',
+                boxShadow: '0 4px 12px rgba(0, 0, 0, 0.25)',
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '4px'
+              }}
+            >
+              Clear Focus &times;
+            </button>
+          )}
+
           <svg
             ref={svgRef}
             className="flowchart-svg"
@@ -1866,28 +1885,7 @@ export function Flowchart({ title, schema = INITIAL_SCHEMA }: FlowchartProps) {
                 pointerEvents: 'none'
               }}
             >
-              {activeStep && (
-                <button
-                  onClick={() => {
-                    setActiveStep(null);
-                    animateTo(50, 100, 0.45);
-                  }}
-                  className="flowchart-btn"
-                  style={{
-                    marginBottom: '12px',
-                    padding: '6px 16px',
-                    borderRadius: '20px',
-                    fontSize: '12px',
-                    fontWeight: 'bold',
-                    backgroundColor: 'var(--ctp-crust)',
-                    color: 'var(--ctp-text)',
-                    pointerEvents: 'auto',
-                    border: '1px solid var(--border-light)'
-                  }}
-                >
-                  Clear Focus &times;
-                </button>
-              )}
+
 
               <div
                 className="hide-scrollbar"
