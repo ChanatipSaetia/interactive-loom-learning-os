@@ -620,6 +620,19 @@ export function Flowchart({ title, schema = INITIAL_SCHEMA }: FlowchartProps) {
     }
   }, [currentStep, activeNodeIds, focusOnNodes, isPanning]);
 
+  // Scroll carousel to keep active step visible
+  useEffect(() => {
+    if (activeStep) {
+      const timer = setTimeout(() => {
+        const el = document.getElementById(`step-card-${activeStep.id}`);
+        if (el && typeof el.scrollIntoView === 'function') {
+          el.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+        }
+      }, 50);
+      return () => clearTimeout(timer);
+    }
+  }, [activeStep]);
+
   // In-flight flow particles
   useEffect(() => {
     if (currentStep === 0 || !prevHighlightedNodeId || !highlightedNodeId) return;
@@ -933,12 +946,6 @@ export function Flowchart({ title, schema = INITIAL_SCHEMA }: FlowchartProps) {
         const stepIdx = activeSteps.findIndex(s => s.id === step.id);
         if (stepIdx !== -1) setCurrentStep(stepIdx + 1);
       }
-
-      // Scroll carousel to keep the active card visible
-      setTimeout(() => {
-        const el = document.getElementById(`step-card-${step.id}`);
-        if (el) el.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
-      }, 50);
     }
   };
 
