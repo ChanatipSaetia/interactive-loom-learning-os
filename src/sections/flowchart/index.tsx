@@ -609,7 +609,7 @@ export function Flowchart({ title, schema = INITIAL_SCHEMA }: FlowchartProps) {
     const centerX = (minX + maxX) / 2;
     const centerY = (minY + maxY) / 2;
     const targetX = viewportW / 2 - centerX * targetScale;
-    const targetY = (viewportH / 2 - 40) - centerY * targetScale;
+    const targetY = (viewportH / 2 - 100) - centerY * targetScale;
     animateTo(targetX, targetY, targetScale);
   }, [animateTo, activeView, activeViewKey, localSchema.entities]);
 
