@@ -133,6 +133,30 @@ export interface FlowchartStep {
   description: string;
 }
 
+export interface FlowchartStepLinear {
+  id: string;
+  type: 'linear';
+  nodeIds?: string[];
+  title: string;
+  reason: string;
+}
+
+export interface FlowchartStepBranchOption {
+  id: string;
+  type: string;
+  nodeIds?: string[];
+  title: string;
+  reason: string;
+}
+
+export interface FlowchartStepBranch {
+  id: string;
+  type: 'branch';
+  branches: FlowchartStepBranchOption[];
+}
+
+export type FlowchartStepData = FlowchartStepLinear | FlowchartStepBranch;
+
 export interface FlowchartJourney {
   id: string;
   label: string;
@@ -145,7 +169,7 @@ export interface FlowchartViewConfig {
   icon: string;
   nodes: FlowchartViewNode[];
   groups: FlowchartViewGroup[];
-  steps?: any[];
+  steps?: FlowchartStepData[];
 }
 
 export interface UnifiedFlowchartSchema {
@@ -351,7 +375,9 @@ export function Flowchart({ title, schema = INITIAL_SCHEMA }: FlowchartProps) {
     }
   }, [viewKeys, activeViewKey]);
 
-  const activeView = localSchema.views[activeViewKey] || { name: 'Empty', icon: 'Workflow', nodes: [], groups: [] };
+  const activeView = useMemo(() => {
+    return localSchema.views[activeViewKey] || { name: 'Empty', icon: 'Workflow', nodes: [], groups: [] };
+  }, [localSchema.views, activeViewKey]);
 
   // Journeys & Stepper Controls
   const [currentJourneyId, setCurrentJourneyId] = useState<string>('');
@@ -388,7 +414,7 @@ export function Flowchart({ title, schema = INITIAL_SCHEMA }: FlowchartProps) {
   const [isEditMode, setIsEditMode] = useState(false);
   const [activeTab, setActiveTab] = useState('entities'); 
   const [selectedId, setSelectedId] = useState<string | null>(null);
-  const [activeStep, setActiveStep] = useState<any | null>(null);
+  const [activeStep, setActiveStep] = useState<FlowchartStepData | FlowchartStepBranchOption | null>(null);
 
   const dragRef = useRef<{ 
     active: boolean; 
@@ -421,9 +447,7 @@ export function Flowchart({ title, schema = INITIAL_SCHEMA }: FlowchartProps) {
   const currentStepData = currentStep > 0 ? currentJourney?.steps[currentStep - 1] : undefined;
   const highlightedNodeId = currentStepData?.nodeId || currentStepData?.nodeIds?.[0];
   const prevStepData = currentStep > 1 ? currentJourney?.steps[currentStep - 2] : undefined;
-  const prevHighlightedNodeId = useMemo(() => {
-    return prevStepData?.nodeId || prevStepData?.nodeIds?.[0] || null;
-  }, [currentStep, currentJourney]);
+  const prevHighlightedNodeId = prevStepData?.nodeId || prevStepData?.nodeIds?.[0] || null;
   const currentDescription = currentStepData?.description ?? '';
 
   // Get view steps or generate from currentJourney
@@ -437,7 +461,7 @@ export function Flowchart({ title, schema = INITIAL_SCHEMA }: FlowchartProps) {
          const primaryNode = ids[0] || step.nodeId || '';
          return {
            id: `journey-step-${idx}`,
-           type: 'linear',
+           type: 'linear' as const,
            nodeIds: ids,
            title: localSchema.entities[primaryNode]?.title || `Step ${idx + 1}`,
            reason: step.description
@@ -461,9 +485,9 @@ export function Flowchart({ title, schema = INITIAL_SCHEMA }: FlowchartProps) {
     }
   }, [currentStep, currentJourney, activeSteps, activeView.steps]);
 
-  // Node IDs to highlight — derived directly from the selected step.
   const activeNodeIds = useMemo(() => {
-    return activeStep?.nodeIds ?? null;
+    if (!activeStep) return null;
+    return ('nodeIds' in activeStep) ? activeStep.nodeIds ?? null : null;
   }, [activeStep]);
 
   // Node mappings
@@ -575,7 +599,7 @@ export function Flowchart({ title, schema = INITIAL_SCHEMA }: FlowchartProps) {
       const node = activeView.nodes.find(n => n.id === id);
       if (!node) return;
       const type = localSchema.entities[id]?.viewTypes[activeViewKey] || 'default';
-      const isSmall = [TYPES.USER, TYPES.EXTERNAL, TYPES.HOTSPOT, TYPES.DECISION].includes(type as any);
+      const isSmall = ([TYPES.USER, TYPES.EXTERNAL, TYPES.HOTSPOT, TYPES.DECISION] as readonly string[]).includes(type);
       minX = Math.min(minX, node.x - (isSmall ? SMALL_W : NODE_W) / 2);
       minY = Math.min(minY, node.y - (isSmall ? SMALL_H : NODE_H) / 2);
       maxX = Math.max(maxX, node.x + (isSmall ? SMALL_W : NODE_W) / 2);
@@ -606,7 +630,7 @@ export function Flowchart({ title, schema = INITIAL_SCHEMA }: FlowchartProps) {
     if (highlightedNodeId && !isPanning && !dragRef.current.active) {
       focusOnNode(highlightedNodeId);
     }
-  }, [currentStep, highlightedNodeId]);
+  }, [currentStep, highlightedNodeId, focusOnNode, isPanning]);
 
   // In-flight flow particles
   useEffect(() => {
@@ -906,7 +930,7 @@ export function Flowchart({ title, schema = INITIAL_SCHEMA }: FlowchartProps) {
   }, []);
 
   // Step carousel handler — activeStep is the single source for selection, dim, and camera.
-  const handleStepClick = (step: any) => {
+  const handleStepClick = (step: FlowchartStepLinear | FlowchartStepBranchOption) => {
     if (activeStep?.id === step.id) {
       // Deselect → back to overview (step 0)
       setActiveStep(null);
@@ -967,8 +991,8 @@ export function Flowchart({ title, schema = INITIAL_SCHEMA }: FlowchartProps) {
             next.views[vKey].nodes = viewNodes.filter(n => n.id !== id);
           }
         }
-      } else {
-        (next.entities[id] as any)[field] = value;
+      } else if (field === 'title' || field === 'desc') {
+        next.entities[id][field] = value;
       }
       return next;
     });
@@ -1300,7 +1324,7 @@ export function Flowchart({ title, schema = INITIAL_SCHEMA }: FlowchartProps) {
             <div className="flowchart-view-tabs" data-testid="flowchart-view-tabs">
               {viewKeys.map(vk => {
                 const view = localSchema.views[vk];
-                const Icon = (DYNAMIC_ICONS as any)[view.icon] || Workflow;
+                const Icon = (view.icon in DYNAMIC_ICONS) ? DYNAMIC_ICONS[view.icon as keyof typeof DYNAMIC_ICONS] : Workflow;
                 return (
                   <button
                     key={vk}
@@ -1678,7 +1702,7 @@ export function Flowchart({ title, schema = INITIAL_SCHEMA }: FlowchartProps) {
                 
                 const iconName = ICONS[viewType as keyof typeof ICONS];
                 const animClass = ICON_ANIMATIONS[viewType as keyof typeof ICON_ANIMATIONS] || '';
-                const IconComponent = iconName ? (Icons as any)[iconName] : null;
+                const IconComponent = iconName && (iconName in Icons) ? (Icons as unknown as Record<string, React.ComponentType<{ size?: number; className?: string; color?: string }>>)[iconName] : null;
 
                 return (
                   <g
@@ -1881,7 +1905,7 @@ export function Flowchart({ title, schema = INITIAL_SCHEMA }: FlowchartProps) {
                   scrollBehavior: 'smooth'
                 }}
               >
-                {activeSteps.map((step: any, idx: number) => {
+                {activeSteps.map((step: FlowchartStepData, idx: number) => {
                   if (step.type === 'linear') {
                     const isActive = activeStep?.id === step.id;
                     return (
@@ -1975,7 +1999,7 @@ export function Flowchart({ title, schema = INITIAL_SCHEMA }: FlowchartProps) {
                         >
                           <GitBranch size={12} />
                         </div>
-                        {step.branches.map((branch: any) => {
+                        {step.branches.map((branch: FlowchartStepBranchOption) => {
                           const isActive = activeStep?.id === branch.id;
                           return (
                             <div

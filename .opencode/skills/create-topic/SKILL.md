@@ -10,107 +10,90 @@ Use this skill when the user wants to create a new topic, add a new lesson, or s
 
 ### 1. Gather Requirements
 
-Ask the user:
+Ask the user for:
 - **Topic ID** — kebab-case slug (e.g., `microservices-patterns`)
 - **Topic Label** — display name for nav (e.g., "Microservices Patterns")
-- **Category** — grouping for Overview page (e.g., "Architecture", "Operations", "Governance")
+- **Category** — grouping for Overview page (e.g., "Architecture", "Operations")
 - **Description** — short summary for the topic table
-- **Section types needed** — which of the 5 section types to include
+- **Section types needed** — which section types to include
 
 ### 2. Determine Section Types
 
-Choose section types based on what the user wants to teach. Each section serves a distinct purpose:
-
-#### `text` — Narrative and Explanation
-
-Renders Markdown paragraphs with fade-in animation. Use for:
-- Topic introduction and overview
-- Explanatory prose between diagrams
-- Lifecycle descriptions, numbered step sequences
-- Any content that reads better as flowing paragraphs
-
-Don't use when the content is a short list of items (use `bullets` instead).
-
-#### `bullets` — Key Points and Hierarchies
-
-Hierarchical lists with nesting, ordered/unordered modes, and checkable items. Use for:
-- Key takeaways or summary points
-- Feature lists, capability enumerations
-- Parent-child hierarchies (e.g., categories with sub-items)
-- Checklists with interactive checkboxes
-
-Don't use for long explanations (use `text` instead).
-
-#### `flowchart` — Visual System Understanding
-
-Auto-laid diagrams with pan/zoom, node drag, and animated journey playback. A single schema can render four views. Choose the view that matches what you want to teach:
-
-| View | Teaches | Use When |
-|---|---|---|
-| **SYS_ARCH** | What components exist and how they connect | Showing services, databases, external systems, and their relationships. The default "box-and-line" architecture diagram. |
-| **EVENT_STORMING** | What happens over time in the domain | Showing the temporal sequence of events, commands, decisions, and policies. Use for behavioral flows and DDD event chains. |
-| **DATA_FLOW** | How data transforms through the system | Showing a pipeline: raw input → transformation → output. Use for processing workflows and data movement. |
-| **SWIMLANES** | Which responsibility zone handles each step | Showing horizontal bands (lanes) for roles or layers. Use when "who does what" and cross-boundary handoffs are the teaching point. |
-
-Start with SYS_ARCH for simple topics. Add EVENT_STORMING when temporal behavior matters. Use all four when the system benefits from multiple perspectives.
-
-Don't use for static content that doesn't benefit from visual relationships (use `text` or `bullets` instead).
-
-#### `tradeoff-sandbox` — Design Decision Reasoning
-
-Interactive metric dashboard with choice selection, pros/cons modals, and side-by-side comparison. Use for:
-- Architecture decision records (ADRs) with trade-off analysis
-- Comparing design options: frameworks, patterns, approaches
-- Teaching design reasoning: why one choice fits better than another
-- Multi-step decisions where each choice affects overall metrics
-
-Don't use when there's only one option or no meaningful trade-offs.
-
-#### `taxonomy-browser` — Concept Categories and Boundaries
-
-Card grid with detail modals showing overview, deep dive, and scope boundaries. Use for:
-- Categorizing domain concepts or capabilities
-- Showing the scope and boundaries of a concept (in scope vs out of scope)
-- Presenting analogies for abstract topics
-- Bounded context visualization (DDD)
-
-Don't use for sequential steps or decision comparisons (use `flowchart` or `tradeoff-sandbox` instead).
-
-#### Composition Guidelines
-
-Common patterns:
-1. `text` → `flowchart` → `bullets` — Explain, visualize, summarize (minimum viable topic)
-2. `text` → `flowchart` → `tradeoff-sandbox` → `bullets` — Add design decisions
-3. `text` → `taxonomy-browser` → `tradeoff-sandbox` — Concept categorization with decisions
-4. `text` → `flowchart` (4 views) → `tradeoff-sandbox` → `taxonomy-browser` → `bullets` — Full coverage
-
-Read `references/Section-*.md` for type shapes and examples before writing data.
+Map requirements to the appropriate section types (refer to `references/Section-*.md` for complete details):
+- **`text`** — Narrative explanations and flowing paragraphs.
+- **`bullets`** — Key takeaways, checklist hierarchies, and feature lists.
+- **`flowchart`** — Visual component structures, DFD pipelines, or Event Storming timelines.
+- **`tradeoff-sandbox`** — Multi-step design decision reasoning and metrics.
+- **`taxonomy-browser`** — Card grid showing concept scope and boundaries.
 
 ### 3. Create Files
 
-Create three files under `src/topics/<topic-id>/`:
+Scaffold the topic under `src/topics/<topic-id>/` using a modular directory structure:
 
-#### `data.ts`
-Define raw content. Read the relevant `references/Section-*.md` files for type shapes and examples.
+#### Directory Layout
+```
+src/topics/<topic-id>/
+├── index.tsx                 # React component with SectionRenderer and TopicRegistry.register
+├── sections.ts               # Assembles SectionConfig[] from data exports
+└── data/                     # Modular data directory
+    ├── index.ts              # Exports all sub-modules
+    ├── text.ts               # Plain text explanations and bullet lists
+    ├── flowchart/            # Flowchart schema components
+    │   ├── index.ts          # Assembles the UnifiedFlowchartSchema
+    │   ├── entities.ts       # Logical node definition and multi-view types
+    │   ├── relations.ts      # Visual links/edges scoped by view
+    │   ├── views/            # Subdirectory for view-specific node layouts
+    │   │   ├── index.ts      # Combines and exports all views configuration
+    │   │   ├── event-storming.ts # Event Storming view node coordinates and groups
+    │   │   └── sys-arch.ts   # System Architecture view node coordinates and groups
+    │   └── journeys/
+    │       └── happy-path.ts # Stepper playback/journey definitions
+    ├── tradeoffs/            # Tradeoff Sandbox scenarios
+    │   ├── index.ts          # Exports scenarios array
+    │   └── <scenario-name>/  # E.g., api-pattern/
+    │       ├── index.ts      # Combines scenario metadata and steps
+    │       ├── <step-1>.ts   # Decision step 1
+    │       └── <step-2>.ts   # Decision step 2
+    └── taxonomy/             # Taxonomy Browser categories
+        ├── index.ts          # Exports categories array
+        └── <category-name>.ts # Individual category (e.g. tool-use.ts)
+```
 
-#### `sections.ts`
-Assemble `SectionConfig[]` from data exports. Import `SectionConfig` from `../../core/registry`.
+Refer to `references/Section-*.md` for exact file shapes and schema requirements.
 
-#### `index.tsx`
-React component with `SectionRenderer` and `TopicRegistry.register`. Follow existing topic pattern.
+### 4. Delegate Content Creation to Subagents
 
-### 4. Register Route
+Rather than writing all files sequentially in the main thread, delegate the creation of individual sections to subagents:
+- **Flowchart Subagent**: Handles writing all files under `data/flowchart/` (such as `entities.ts`, `relations.ts`, and coordinates in `views/`).
+- **Tradeoff Subagent**: Handles writing tradeoff scenarios under `data/tradeoffs/`.
+- **Taxonomy Subagent**: Handles writing categories under `data/taxonomy/`.
+- **Text Subagent**: Handles writing text/bullets under `data/text.ts`.
 
-Add entry to `src/core/routes.ts`:
-- Import sections from new topic
-- Add to `routes` array with matching `id`, `label`, `path`, `category`, `description`, `sections`
+> [!IMPORTANT]
+> Subagents do not need to run tests or typechecks. They only need to focus on generating/scaffolding files correctly.
 
-### 5. Register Import
+### 5. Integrate Topic (Main Agent)
 
-Add `import './topics/<topic-id>'` to `src/main.tsx`.
+Once the subagents finish generating the components/data, the main agent takes over to integrate the topic:
+- Import the topic in `src/main.tsx` to register it:
+  ```ts
+  import './topics/<topic-id>'
+  ```
+- Register the route in `src/core/routes.ts` by importing `sections` and adding the route object to `routes`:
+  ```ts
+  {
+    id: '<topic-id>',
+    label: 'Display Name',
+    path: '/topics/<topic-id>',
+    category: 'Category Name',
+    description: 'Brief table summary of topic.',
+    sections: <importedSections>,
+  }
+  ```
 
-### 6. Verify
+### 6. Verify (Main Agent Only)
 
+Ensure the compilation and linting checks pass:
 ```bash
 npm run typecheck
 npm run lint
@@ -118,19 +101,24 @@ npm run lint
 
 ## Gotchas
 
-- `TopicRegistry.register` id must match `routes.ts` `id`
-- Flowchart `viewTypes` must use `TYPES.*` constants from `../../sections/flowchart`
-- Taxonomy `icon` needs eslint-disable cast to `ComponentType<any>`
-- Taxonomy `color` must be one of: `blue`, `peach`, `pink`, `mauve`, `green`, `teal`, `sky`, `lavender`, `yellow`, `red`
-- Tradeoff `metrics` keys must match metric `id` values
-- Recommended tradeoff choice should use `whyThisFits`; alternatives use `whenToUse`
+- `TopicRegistry.register` ID must match the route `id` in `routes.ts`.
+- Flowchart `viewTypes` must map to `TYPES.*` constants from `../../sections/flowchart`.
+- Taxonomy `icon` needs an eslint-disable cast to `ComponentType<any>`:
+  ```ts
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  icon: Zap as unknown as ComponentType<any>,
+  ```
+- Taxonomy `color` must map to Frazier theme keys: `blue`, `peach`, `pink`, `mauve`, `green`, `teal`, `sky`, `lavender`, `yellow`, `red`.
+- Tradeoff `metrics` keys in choices must match the defined metric `id` keys.
+- The recommended choice in tradeoffs must use `whyThisFits`; alternatives must use `whenToUse`.
 
 ## Reference Files
 
 - `references/Section-Text.md`
 - `references/Section-Bullets.md`
-- `references/Section-Flowchart.md` — 4 view types with purpose and design guidance
-- `references/Section-TradeoffSandbox.md`
-- `references/Section-TaxonomyBrowser.md`
+- `references/Section-Flowchart.md` — Detailed breakdown of entities, relations, views, and journeys
+- `references/Section-EventStorming.md` — Event Storming specific entity mapping, sequence triad, and stack layout conventions
+- `references/Section-TradeoffSandbox.md` — Modular scenarios and step setup
+- `references/Section-TaxonomyBrowser.md` — Categorization cards and details
 - Full how-to: `docs/how-to-create-topics.md`
 - Examples: `src/topics/demo/`, `src/topics/ai-agent/`

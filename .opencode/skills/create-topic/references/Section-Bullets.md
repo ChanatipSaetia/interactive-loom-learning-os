@@ -9,10 +9,13 @@ Hierarchical list with nesting, ordered/unordered modes, and checkable items.
 - Checklists with interactive checkboxes
 - Any content with parent-child hierarchy
 
-## Data Shape
+## Data Shape (Modular Layout)
+
+Bullet lists are defined in `src/topics/<topic-id>/data/text.ts` alongside paragraphs.
 
 ```ts
-import type { BulletItem } from '../../sections/bullets'
+// E.g., data/text.ts
+import type { BulletItem } from '../../../sections/bullets'
 
 export const myBullets: BulletItem[] = [
   {
@@ -28,6 +31,7 @@ export const myBullets: BulletItem[] = [
   { text: 'Self-evaluation and re-planning on failure', checkable: true },
 ]
 ```
+
 
 ### BulletItem Fields
 

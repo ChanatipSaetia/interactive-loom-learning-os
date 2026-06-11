@@ -9,43 +9,46 @@ Card grid with stagger animation. Each card opens a detail modal with overview, 
 - Presenting analogous explanations for abstract topics
 - Bounded context visualization (DDD)
 
-## Data Shape
+## Data Shape (Modular Taxonomy Layout)
 
+Rather than defining all categories in a single file, they are structured under `src/topics/<topic-id>/data/taxonomy/`. Each category is configured in its own file, and they are aggregated in the folder's `index.ts`.
+
+### 1. `data/taxonomy/index.ts`
+**Description:** Aggregates and exports the collection of categories for the topic.
 ```ts
-import type { TaxonomyCategory } from '../../sections/taxonomy-browser'
-import { Brain, Zap, Shield, Workflow } from 'lucide-react'
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-import type { ComponentType } from 'react'
+import type { TaxonomyCategory } from '../../../../sections/taxonomy-browser'
+import { reasoningPlanningCategory } from './reasoning-planning'
+import { toolUseCategory } from './tool-use'
 
-export const myCategories: TaxonomyCategory[] = [
-  {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    icon: Brain as unknown as ComponentType<any>,
-    title: 'Reasoning & Planning',
-    subtitle: 'Core Intelligence',
-    description: 'The system decomposes goals into actionable plans and adapts strategies.',
-    details: 'Planning encompasses ReAct loops, tree-of-thought search, and self-refinement patterns.',
-    analogy: 'Like a project manager breaking down an epic into sprint tasks.',
-    primaryFocus: 'Goal decomposition and step-by-step execution',
-    inScope: ['Chain-of-thought', 'ReAct loops', 'Self-correction'],
-    outOfScope: ['Raw text generation without planning'],
-    color: 'mauve',
-  },
-  {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    icon: Zap as unknown as ComponentType<any>,
-    title: 'Tool Use & Execution',
-    subtitle: 'Action Layer',
-    description: 'The system invokes external tools to extend its capabilities beyond text.',
-    details: 'Tool routing matches task requirements to available capabilities.',
-    analogy: 'Like a developer choosing the right CLI tool for each sub-task.',
-    primaryFocus: 'Tool selection and result processing',
-    inScope: ['Web search', 'Code sandbox', 'API calls'],
-    outOfScope: ['Hardware control', 'Physical interaction'],
-    color: 'peach',
-  },
+export const taxonomyCategories: TaxonomyCategory[] = [
+  reasoningPlanningCategory,
+  toolUseCategory
 ]
 ```
+
+### 2. `data/taxonomy/<category-name>.ts`
+**Description:** Defines a single taxonomy category configuration, complete with custom icons, metadata, scope lists, and colors.
+```ts
+// E.g., data/taxonomy/tool-use.ts
+import { Zap } from 'lucide-react'
+import type { ComponentType } from 'react'
+import type { TaxonomyCategory } from '../../../../sections/taxonomy-browser'
+
+export const toolUseCategory: TaxonomyCategory = {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  icon: Zap as unknown as ComponentType<any>,
+  title: 'Tool Use & Execution',
+  subtitle: 'Action Layer',
+  description: 'The agent selects and invokes external tools — web search, code execution, API calls.',
+  details: 'Tool routing matches task requirements to available capabilities, then dispatches execution.',
+  analogy: 'Like a developer choosing the right CLI tool or API for each sub-task.',
+  primaryFocus: 'Tool selection, argument generation, and result processing',
+  inScope: ['Web search', 'Code sandbox', 'API calls'],
+  outOfScope: ['Hardware control', 'Physical world interaction'],
+  color: 'peach',
+}
+```
+
 
 ### Type Reference
 

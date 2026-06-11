@@ -200,65 +200,210 @@ groups: [
 
 You don't need all four. Start with SYS_ARCH for simple topics. Add EVENT_STORMING when temporal behavior matters. Add DATA_FLOW for pipeline-heavy systems. Add SWIMLANES when responsibility boundaries are the key teaching point.
 
-## Data Shape (Full Schema)
+## Data Shape (Modular Schema Layout)
 
+Rather than keeping all data in one file, the flowchart schema is split into modular files under `src/topics/<topic-id>/data/flowchart/`. This makes schema files much easier to maintain, review, and extend.
+
+### 1. `data/flowchart/index.ts`
+**Description:** Assembles and exports the final `UnifiedFlowchartSchema` to be consumed by `sections.ts`. Note that the flowchart can support multiple journeys (e.g. happy path, alternate paths) in the `journeys` array.
 ```ts
-import { TYPES } from '../../sections/flowchart'
-import type { UnifiedFlowchartSchema } from '../../sections/flowchart'
+import type { UnifiedFlowchartSchema } from '../../../../sections/flowchart'
+import { entities } from './entities'
+import { relations } from './relations'
+import { views } from './views'
+import { happyPathJourney } from './journeys/happy-path'
+import { recoveryPathJourney } from './journeys/recovery-path'
 
-export const mySchema: UnifiedFlowchartSchema = {
-  entities: {
-    // Each entity maps a logical id to view-specific type rendering
-    user: {
-      title: 'User',
-      desc: 'End user',
-      viewTypes: {
-        SYS_ARCH: TYPES.USER,
-        EVENT_STORMING: TYPES.USER,
-        DATA_FLOW: TYPES.USER,
-        SWIMLANES: TYPES.USER,
-      },
-    },
-    service: {
-      title: 'Service',
-      desc: 'Main processing service',
-      viewTypes: {
-        SYS_ARCH: TYPES.SERVICE,
-        EVENT_STORMING: TYPES.AGGREGATE,
-        DATA_FLOW: TYPES.PROCESS,
-        SWIMLANES: TYPES.SERVICE,
-      },
-    },
-  },
-  relations: [
-    // Each relation specifies which views it appears in
-    { id: 'r1', from: 'user', to: 'service', views: ['SYS_ARCH', 'DATA_FLOW', 'SWIMLANES'] },
-  ],
-  views: {
-    // Define each view you want (not all four required)
-    SYS_ARCH: {
-      name: 'System Architecture',
-      icon: 'Server',
-      nodes: [
-        { id: 'user', x: 100, y: 250 },
-        { id: 'service', x: 300, y: 250 },
-      ],
-      groups: [],
-    },
-  },
+export const agentSchema: UnifiedFlowchartSchema = {
+  entities,
+  relations,
+  views,
   journeys: [
-    {
-      id: 'flow',
-      label: 'Request Flow',
-      description: 'How a request travels through the system',
-      steps: [
-        { nodeId: 'user', description: 'User sends request' },
-        { nodeId: 'service', description: 'Service processes' },
-      ],
-    },
-  ],
+    happyPathJourney,
+    recoveryPathJourney
+  ]
 }
 ```
+
+### 2. `data/flowchart/entities.ts`
+**Description:** Defines the vocabulary of the system: all logical nodes, their titles, descriptions, and what `viewType` they represent in each view.
+```ts
+import { TYPES } from '../../../../sections/flowchart'
+import type { UnifiedFlowchartSchema } from '../../../../sections/flowchart'
+
+export const entities: UnifiedFlowchartSchema['entities'] = {
+  'user': {
+    title: 'User',
+    desc: 'The human initiating requests or reviewing outputs.',
+    viewTypes: {
+      EVENT_STORMING: TYPES.USER,
+      SYS_ARCH: TYPES.USER,
+      DATA_FLOW: TYPES.USER,
+      SWIMLANES: TYPES.USER,
+    }
+  },
+  'planner': {
+    title: 'Create Plan',
+    desc: 'Generates execution steps dynamically based on goal.',
+    viewTypes: {
+      EVENT_STORMING: TYPES.COMMAND,
+      SYS_ARCH: TYPES.SERVICE,
+      DATA_FLOW: TYPES.PROCESS,
+      SWIMLANES: TYPES.PROCESS,
+    }
+  },
+  'evt_goal': {
+    title: 'Goal Submitted',
+    desc: 'Domain event signifying user submitted a new goal.',
+    viewTypes: { EVENT_STORMING: TYPES.EVENT }
+  },
+  'pol_plan': {
+    title: 'Plan on New Goal',
+    desc: 'Domain policy to trigger planning when goal is submitted.',
+    viewTypes: { EVENT_STORMING: TYPES.POLICY }
+  },
+  'orch_plan': {
+    title: 'Orchestrator',
+    desc: 'Aggregate root coordinating core execution state.',
+    viewTypes: { EVENT_STORMING: TYPES.AGGREGATE }
+  },
+  'memory': {
+    title: 'Memory Storage',
+    desc: 'Persistent storage for context and history.',
+    viewTypes: {
+      EVENT_STORMING: TYPES.DATABASE,
+      SYS_ARCH: TYPES.DATABASE,
+      DATA_FLOW: TYPES.DATABASE,
+      SWIMLANES: TYPES.DATABASE,
+    }
+  }
+}
+```
+
+### 3. `data/flowchart/relations.ts`
+**Description:** Defines visual connections (edges) between nodes, scoped to specific views.
+```ts
+import type { UnifiedFlowchartSchema } from '../../../../sections/flowchart'
+
+export const relations: UnifiedFlowchartSchema['relations'] = [
+  // Event Storming view relations
+  { id: 'r_es_1', from: 'user', to: 'evt_goal', views: ['EVENT_STORMING'] },
+  { id: 'r_es_2', from: 'evt_goal', to: 'pol_plan', views: ['EVENT_STORMING'] },
+  { id: 'r_es_3', from: 'pol_plan', to: 'planner', views: ['EVENT_STORMING'] },
+  { id: 'r_es_4', from: 'planner', to: 'orch_plan', views: ['EVENT_STORMING'], handledBy: true },
+  { id: 'r_es_5', from: 'orch_plan', to: 'memory', views: ['EVENT_STORMING'] },
+
+  // System Architecture view relations
+  { id: 'r_sa_1', from: 'user', to: 'planner', views: ['SYS_ARCH'] },
+  { id: 'r_sa_2', from: 'planner', to: 'memory', views: ['SYS_ARCH'] }
+]
+```
+
+### 4. `data/flowchart/views/` (Modular View Layouts)
+**Description:** View coordinates (`x`, `y`) and bounding groups are split into view-specific files under a `views/` subdirectory, and consolidated in the folder's `index.ts`.
+
+#### `data/flowchart/views/event-storming.ts`
+```ts
+import type { FlowchartView } from '../../../../../sections/flowchart'
+
+export const eventStormingView: FlowchartView = {
+  name: 'Event Storming',
+  icon: 'Component',
+  nodes: [
+    { id: 'user', x: 60, y: 250 },
+    { id: 'evt_goal', x: 200, y: 250 },
+    { id: 'pol_plan', x: 320, y: 250 },
+    { id: 'planner', x: 460, y: 250 },
+    { id: 'orch_plan', x: 460, y: 120 },
+    { id: 'memory', x: 460, y: 50 }
+  ],
+  groups: [
+    {
+      id: 'es_g1',
+      title: 'Cognition & Planning',
+      desc: 'Goal triggers planning policy, handled by Orchestrator.',
+      nodeIds: ['evt_goal', 'pol_plan', 'planner', 'orch_plan', 'memory'],
+      color: 'rgba(140, 170, 238, 0.12)',
+      borderColor: '#8caaee',
+      textColor: '#c6d0f5'
+    }
+  ]
+}
+```
+
+#### `data/flowchart/views/sys-arch.ts`
+```ts
+import type { FlowchartView } from '../../../../../sections/flowchart'
+
+export const sysArchView: FlowchartView = {
+  name: 'System Architecture',
+  icon: 'Server',
+  nodes: [
+    { id: 'user', x: 150, y: 250 },
+    { id: 'planner', x: 420, y: 250 },
+    { id: 'memory', x: 420, y: 100 }
+  ],
+  groups: []
+}
+```
+
+#### `data/flowchart/views/index.ts`
+```ts
+import type { UnifiedFlowchartSchema } from '../../../../../sections/flowchart'
+import { eventStormingView } from './event-storming'
+import { sysArchView } from './sys-arch'
+
+export const views: UnifiedFlowchartSchema['views'] = {
+  EVENT_STORMING: eventStormingView,
+  SYS_ARCH: sysArchView
+}
+```
+
+### 5. `data/flowchart/journeys/` (Multiple Journey Definitions)
+**Description:** Defines step-by-step playback sequences (journeys) to highlight specific nodes as users click through the lesson. You can define multiple journey files here (e.g., `happy-path.ts` and `recovery-path.ts`) and register them in the flowchart index.
+
+#### Example A: `data/flowchart/journeys/happy-path.ts`
+```ts
+import type { FlowchartJourney } from '../../../../../sections/flowchart'
+
+export const happyPathJourney: FlowchartJourney = {
+  id: 'happy-path',
+  label: 'Agentic Problem Solving Loop',
+  description: 'Follow the execution plan as it transitions from user goal into planning and memory.',
+  steps: [
+    {
+      nodeIds: ['user', 'evt_goal'],
+      description: 'Goal Submitted — User submits a task request.'
+    },
+    {
+      nodeIds: ['pol_plan', 'planner', 'orch_plan', 'memory'],
+      description: 'Cognition & Planning — Policy triggers, planner creates step sequence, saved to memory.'
+    }
+  ]
+}
+```
+
+#### Example B: `data/flowchart/journeys/recovery-path.ts`
+```ts
+import type { FlowchartJourney } from '../../../../../sections/flowchart'
+
+export const recoveryPathJourney: FlowchartJourney = {
+  id: 'recovery-path',
+  label: 'Manual Review & Recovery Path',
+  description: 'Follow the flow when parsing drops below confidence thresholds and requires human review.',
+  steps: [
+    {
+      nodeIds: ['user', 'evt_goal'],
+      description: 'Goal Submitted — User submits a request.'
+    },
+    {
+      nodeIds: ['pol_plan', 'planner'],
+      description: 'Planning Failure — The orchestrator plans but returns low-confidence scores.'
+    }
+  ]
+}
+```
+
 
 ## All Entity Types
 
@@ -289,55 +434,6 @@ Journeys are animated step sequences. The user clicks play and the diagram highl
 - Node positions (`x`, `y`) are per-view — the same entity can be at different coordinates in different views
 - Leave ~160px horizontal spacing between nodes for edge labels
 
-## Stack Layout Technique
-
-The "Stack" is the primary layout technique for complex diagrams (especially Event Storming). Instead of drawing arrows between every related node, nodes are positioned to **touch edge-to-edge**, forming visually grouped "chunks" the brain processes as single units.
-
-### Horizontal Stack (Core Flow)
-
-Nodes snap side-by-side: each node's X = previous X + NODE_W (140). Same Y coordinate creates a touching horizontal bar.
-
-```
-Node 1 (Command):    x = 120, y = 250
-Node 2 (Aggregate):  x = 260, y = 250  (120 + 140)
-Node 3 (Event):      x = 400, y = 250  (260 + 140)
-```
-
-### Vertical Stack (Actors and Systems)
-
-Peripheral elements sit directly above/below their target node. Center-align on X, snap on Y.
-
-```
-Main Command:        x = 120, y = 250
-Stacked Actor:       x = 130, y = 185  (X: 120 + (140-120)/2, Y: 250 - 65)
-```
-
-### Edge Routing (Bridge Rule)
-
-- **Inside a Stack:** Zero arrows. Touching borders imply sequential flow.
-- **Between Stacks:** One arrow. From the final node of Stack A to the first node of Stack B.
-
-### Journey Steps as Groups
-
-Use the `nodeIds` array (not just single `nodeId`) to highlight an entire Stack at once:
-
-```ts
-journeys: [{
-  id: 'main-flow',
-  label: 'Execution Flow',
-  description: 'Follow the agent from goal to output',
-  steps: [
-    { nodeIds: ['user', 'evt_goal', 'planner', 'orchestrator'], description: 'User submits goal → Planner creates plan' },
-    { nodeIds: ['tools', 'llm', 'executor', 'evt_executed'], description: 'LLM routes tools → Executor runs them' },
-    { nodeIds: ['evaluator', 'evt_done', 'output'], description: 'Evaluator validates → Output delivered' },
-    { nodeIds: ['evaluator', 'evt_fail', 'pol_retry', 'planner'], description: 'If failed → Retry loop back to Planner' },
-  ],
-}]
-```
-
-This way each journey step highlights a complete "chunk" of the architecture, not one isolated node.
-
----
 
 ## Layout Strategy and Positioning Principles
 
@@ -350,21 +446,6 @@ Organizing nodes effectively is crucial for readability, especially when transit
 
 ### View-Specific Layout Strategies
 
-#### Event Storming (Chronological Behavior)
-
-Relies on the DDD "Triad" pattern: Command → Aggregate → Event.
-
-- **Main Timeline (Center Track):** Core business flow on a central horizontal track (e.g., `y = 250`). Triad nodes placed horizontally adjacent.
-- **Actors (Peripheral, Above):** Users placed slightly above the Command they initiate (e.g., `y = 185`), visually "dropping down" into the timeline.
-- **External Systems:** Placed above or below the Event they react to.
-- **Branching (Vertical Divergence):** "Happy Path" moves up (e.g., `y = 110`), "Exception Path" moves down (e.g., `y = 390`).
-
-**Example coordinates:**
-```
-cmd_up (Command):    x = 120, y = 250  (Main Track)
-agg_pipe (Aggregate): x = 260, y = 250  (Next to Command)
-user_editor (Actor):  x = 130, y = 185  (Above Command)
-```
 
 #### System Architecture (Infrastructure Topology)
 

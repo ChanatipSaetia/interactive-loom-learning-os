@@ -9,17 +9,19 @@ Renders Markdown paragraphs with optional fade-in animation. Simplest section ty
 - Lifecycle descriptions, numbered steps in Markdown
 - Any content that reads better as paragraphs than lists
 
-## Data Shape
+## Data Shape (Modular Layout)
 
-No type import needed — just `string[]`.
+Paragraph lists are defined in `src/topics/<topic-id>/data/text.ts` as simple string arrays. No special types are required.
 
 ```ts
+// E.g., data/text.ts
 export const introParagraphs: string[] = [
   'An **AI agent** is a software system that perceives, reasons, and acts autonomously.',
   'Modern agents combine an LLM with memory, tools, and a feedback loop.',
   'The key decision is the **orchestration strategy**: single-agent vs multi-agent.',
 ]
 ```
+
 
 Each string is parsed as Markdown. Supported: bold, italic, `inline code`, [links](url), headings (`##`), lists (`-`, `1.`), blockquotes (`>`).
 

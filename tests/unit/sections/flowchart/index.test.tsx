@@ -144,7 +144,7 @@ describe('Flowchart component', () => {
   it('node groups have drag mouse handlers', () => {
     render(<Flowchart title="Test" schema={mockSchema} />, { wrapper });
     const svg = screen.getByTestId('flowchart-svg');
-    const nodeGroup = svg.querySelector('[data-testid="flowchart-node-user"]') as any;
+    const nodeGroup = svg.querySelector('[data-testid="flowchart-node-user"]') as unknown as HTMLElement;
     expect(nodeGroup).toBeInTheDocument();
     // Verify properties exist (Testing Library might wrap them)
     expect(nodeGroup.onmousedown).toBeDefined();
@@ -152,7 +152,7 @@ describe('Flowchart component', () => {
 
   it('SVG has pan and zoom handlers', () => {
     render(<Flowchart title="Test" schema={mockSchema} />, { wrapper });
-    const svg = screen.getByTestId('flowchart-svg') as any;
+    const svg = screen.getByTestId('flowchart-svg') as unknown as HTMLElement;
     expect(svg.onmousedown).toBeDefined();
     expect(svg.ontouchstart).toBeDefined();
     expect(svg.onwheel).toBeDefined();
@@ -366,11 +366,15 @@ describe('Flowchart description panel', () => {
 
   it('renders description panel when step has description', () => {
     render(<Flowchart title="Test" schema={mockSchema} />, { wrapper });
+    const nextBtn = screen.getByTestId('flowchart-btn-next');
+    fireEvent.click(nextBtn);
     expect(screen.getByTestId('flowchart-desc-panel')).toBeInTheDocument();
   });
 
   it('description panel shows step description text', () => {
     render(<Flowchart title="Test" schema={mockSchema} />, { wrapper });
+    const nextBtn = screen.getByTestId('flowchart-btn-next');
+    fireEvent.click(nextBtn);
     const panel = screen.getByTestId('flowchart-desc-panel');
     expect(panel).toHaveTextContent('Journey A Step 1');
   });
@@ -378,6 +382,7 @@ describe('Flowchart description panel', () => {
   it('description panel updates when step advances', () => {
     render(<Flowchart title="Test" schema={mockSchema} />, { wrapper });
     const nextBtn = screen.getByTestId('flowchart-btn-next');
+    fireEvent.click(nextBtn);
     fireEvent.click(nextBtn);
     const panel = screen.getByTestId('flowchart-desc-panel');
     expect(panel).toHaveTextContent('Journey A Step 2');
