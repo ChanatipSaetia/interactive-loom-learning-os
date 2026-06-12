@@ -2,6 +2,7 @@ import { TYPES } from '../../../../sections/flowchart'
 import type { UnifiedFlowchartSchema } from '../../../../sections/flowchart'
 
 export const entities: UnifiedFlowchartSchema['entities'] = {
+  // ── ACTORS ───────────────────────────────────────────────────────────────
   'user': {
     title: 'User',
     desc: 'The human (or client system) initiating goals or receiving results.',
@@ -12,55 +13,45 @@ export const entities: UnifiedFlowchartSchema['entities'] = {
       SWIMLANES: TYPES.USER,
     }
   },
+  'human_reviewer': {
+    title: 'Human Reviewer',
+    desc: 'Subject-matter expert who reviews failed evaluation results.',
+    viewTypes: {
+      EVENT_STORMING: TYPES.USER,
+      SYS_ARCH: TYPES.USER,
+      DATA_FLOW: TYPES.USER,
+      SWIMLANES: TYPES.USER,
+    }
+  },
+
+  // ── AGGREGATES ────────────────────────────────────────────────────────────
+  // In Event Storming the Orchestrator is split into two separate command
+  // handlers (planning vs evaluation bounded contexts). In all other views
+  // it collapses into a single Orchestrator component.
   'orchestrator': {
     title: 'Orchestrator',
-    desc: 'Coordinating component running the core planning and execution loops.',
+    desc: 'Core agent runtime owning the planning and evaluation loops.',
     viewTypes: {
-      SYS_ARCH: TYPES.SERVICE,
-      DATA_FLOW: TYPES.SERVICE,
-      SWIMLANES: TYPES.SERVICE,
+      SYS_ARCH: TYPES.AGGREGATE,
+      SWIMLANES: TYPES.AGGREGATE,
     }
   },
   'orch_plan': {
     title: 'Orchestrator',
     desc: 'Handles planning: creates execution plan, tracks progression, retrieves memory.',
-    viewTypes: { EVENT_STORMING: TYPES.AGGREGATE }
+    viewTypes: {
+      EVENT_STORMING: TYPES.AGGREGATE,
+    }
   },
   'orch_eval': {
     title: 'Orchestrator',
     desc: 'Handles evaluation: assesses result quality, decides pass or fail.',
-    viewTypes: { EVENT_STORMING: TYPES.AGGREGATE }
-  },
-  'planner': {
-    title: 'Create Plan',
-    desc: 'Formulates multi-step actions (e.g. CoT, ReAct plan) dynamically.',
     viewTypes: {
-      EVENT_STORMING: TYPES.COMMAND,
-      SYS_ARCH: TYPES.SERVICE,
-      DATA_FLOW: TYPES.PROCESS,
-      SWIMLANES: TYPES.PROCESS,
+      EVENT_STORMING: TYPES.AGGREGATE,
     }
   },
-  'memory': {
-    title: 'Memory Storage',
-    desc: 'Retrieves conversational logs and semantic vectors (long-term database).',
-    viewTypes: {
-      EVENT_STORMING: TYPES.DATABASE,
-      SYS_ARCH: TYPES.DATABASE,
-      DATA_FLOW: TYPES.DATABASE,
-      SWIMLANES: TYPES.DATABASE,
-    }
-  },
-  'tools': {
-    title: 'Execute Next Step',
-    desc: 'Selects appropriate external APIs or scripts for a given task.',
-    viewTypes: {
-      EVENT_STORMING: TYPES.POLICY,
-      SYS_ARCH: TYPES.SERVICE,
-      DATA_FLOW: TYPES.PROCESS,
-      SWIMLANES: TYPES.PROCESS,
-    }
-  },
+
+  // ── EXTERNAL SYSTEM ──────────────────────────────────────────────────────
   'llm': {
     title: 'LLM Engine',
     desc: 'Large language model performing prompt parsing and reasoning.',
@@ -71,45 +62,12 @@ export const entities: UnifiedFlowchartSchema['entities'] = {
       SWIMLANES: TYPES.EXTERNAL,
     }
   },
-  'executor': {
-    title: 'Run Tool',
-    desc: 'Executes actions (HTTP search, sandboxed script, API requests).',
-    viewTypes: {
-      EVENT_STORMING: TYPES.COMMAND,
-      SYS_ARCH: TYPES.SERVICE,
-      DATA_FLOW: TYPES.PROCESS,
-      SWIMLANES: TYPES.PROCESS,
-    }
-  },
-  'evaluator': {
-    title: 'Evaluate Result',
-    desc: 'Tests execution outputs against success conditions.',
-    viewTypes: {
-      EVENT_STORMING: TYPES.COMMAND,
-      SYS_ARCH: TYPES.SERVICE,
-      DATA_FLOW: TYPES.DECISION,
-      SWIMLANES: TYPES.DECISION,
-    }
-  },
-  'output': {
-    title: 'Final Response',
-    desc: 'The verified markdown output returned to the caller.',
-    viewTypes: {
-      EVENT_STORMING: TYPES.DATA_OBJECT,
-      SYS_ARCH: TYPES.DATA_OBJECT,
-      DATA_FLOW: TYPES.DATA_OBJECT,
-      SWIMLANES: TYPES.DATA_OBJECT,
-    }
-  },
+
+  // ── EVENTS (Event Storming only) ──────────────────────────────────────────
   'evt_goal': {
     title: 'Goal Submitted',
     desc: 'User submitted a natural-language goal.',
     viewTypes: { EVENT_STORMING: TYPES.EVENT }
-  },
-  'pol_plan': {
-    title: 'Plan on New Goal',
-    desc: 'When Goal Submitted, create an execution plan.',
-    viewTypes: { EVENT_STORMING: TYPES.POLICY }
   },
   'evt_plan_ready': {
     title: 'Plan Generated',
@@ -126,11 +84,6 @@ export const entities: UnifiedFlowchartSchema['entities'] = {
     desc: 'Output retrieved from sandbox execution.',
     viewTypes: { EVENT_STORMING: TYPES.EVENT }
   },
-  'pol_eval': {
-    title: 'Evaluate on Result',
-    desc: 'When Tool Executed, evaluate the output.',
-    viewTypes: { EVENT_STORMING: TYPES.POLICY }
-  },
   'evt_done': {
     title: 'Goal Satisfied',
     desc: 'Evaluation passes, ready to reply.',
@@ -141,6 +94,34 @@ export const entities: UnifiedFlowchartSchema['entities'] = {
     desc: 'Evaluation fails, requiring re-planning.',
     viewTypes: { EVENT_STORMING: TYPES.EVENT }
   },
+  'evt_reviewed': {
+    title: 'Result Reviewed',
+    desc: 'Human feedback captured, ready for re-planning.',
+    viewTypes: { EVENT_STORMING: TYPES.EVENT }
+  },
+
+  // ── POLICIES ─────────────────────────────────────────────────────────────
+  'pol_plan': {
+    title: 'Plan on New Goal',
+    desc: 'When Goal Submitted, create an execution plan.',
+    viewTypes: { EVENT_STORMING: TYPES.POLICY }
+  },
+  'tools': {
+    title: 'Execute Next Step',
+    viewTitles: { SYS_ARCH: 'Tool Router', DATA_FLOW: 'Tool Router', SWIMLANES: 'Tool Router' },
+    desc: 'Selects appropriate external APIs or scripts for a given task.',
+    viewTypes: {
+      EVENT_STORMING: TYPES.POLICY,
+      SYS_ARCH: TYPES.SERVICE,
+      DATA_FLOW: TYPES.PROCESS,
+      SWIMLANES: TYPES.PROCESS,
+    }
+  },
+  'pol_eval': {
+    title: 'Evaluate on Result',
+    desc: 'When Tool Executed, evaluate the output.',
+    viewTypes: { EVENT_STORMING: TYPES.POLICY }
+  },
   'pol_retry': {
     title: 'Re-Plan on Failure',
     desc: 'When Goal Not Satisfied, re-plan and try again.',
@@ -149,21 +130,72 @@ export const entities: UnifiedFlowchartSchema['entities'] = {
   'pol_escalate': {
     title: 'Escalate to Human',
     desc: 'When Goal Not Satisfied, escalate to human reviewer.',
-    viewTypes: { EVENT_STORMING: TYPES.POLICY }
+    viewTypes: {
+      EVENT_STORMING: TYPES.POLICY,
+      SYS_ARCH: TYPES.HOTSPOT,
+      DATA_FLOW: TYPES.DECISION,
+      SWIMLANES: TYPES.DECISION,
+    }
   },
-  'human_reviewer': {
-    title: 'Human Reviewer',
-    desc: 'Subject-matter expert who reviews failed evaluation results.',
-    viewTypes: { EVENT_STORMING: TYPES.USER }
+
+  // ── COMMANDS / SERVICES ───────────────────────────────────────────────────
+  'planner': {
+    title: 'Create Plan',
+    viewTitles: { SYS_ARCH: 'Planner', DATA_FLOW: 'Planner', SWIMLANES: 'Planner' },
+    desc: 'Formulates multi-step actions (e.g. CoT, ReAct plan) dynamically.',
+    viewTypes: {
+      EVENT_STORMING: TYPES.COMMAND,
+      SYS_ARCH: TYPES.SERVICE,
+      DATA_FLOW: TYPES.PROCESS,
+      SWIMLANES: TYPES.PROCESS,
+    }
+  },
+  'executor': {
+    title: 'Run Tool',
+    viewTitles: { SYS_ARCH: 'Tool Executor', DATA_FLOW: 'Tool Executor', SWIMLANES: 'Tool Executor' },
+    desc: 'Executes actions (HTTP search, sandboxed script, API requests).',
+    viewTypes: {
+      EVENT_STORMING: TYPES.COMMAND,
+      SYS_ARCH: TYPES.SERVICE,
+      DATA_FLOW: TYPES.PROCESS,
+      SWIMLANES: TYPES.PROCESS,
+    }
+  },
+  'evaluator': {
+    title: 'Evaluate Result',
+    viewTitles: { SYS_ARCH: 'Evaluator', DATA_FLOW: 'Evaluator', SWIMLANES: 'Evaluator' },
+    desc: 'Tests execution outputs against success conditions.',
+    viewTypes: {
+      EVENT_STORMING: TYPES.COMMAND,
+      SYS_ARCH: TYPES.SERVICE,
+      DATA_FLOW: TYPES.DECISION,
+      SWIMLANES: TYPES.DECISION,
+    }
   },
   'cmd_review': {
     title: 'Review Result',
     desc: 'Human reviews the failed output and provides feedback.',
     viewTypes: { EVENT_STORMING: TYPES.COMMAND }
   },
-  'evt_reviewed': {
-    title: 'Result Reviewed',
-    desc: 'Human feedback captured, ready for re-planning.',
-    viewTypes: { EVENT_STORMING: TYPES.EVENT }
+
+  // ── DATA / READ MODELS ────────────────────────────────────────────────────
+  'memory': {
+    title: 'Memory Storage',
+    desc: 'Retrieves conversational logs and semantic vectors (long-term database).',
+    viewTypes: {
+      EVENT_STORMING: TYPES.DATABASE,
+      SYS_ARCH: TYPES.DATABASE,
+      DATA_FLOW: TYPES.DATABASE,
+      SWIMLANES: TYPES.DATABASE,
+    }
+  },
+  'output': {
+    title: 'Final Response',
+    desc: 'The verified markdown output returned to the caller.',
+    viewTypes: {
+      EVENT_STORMING: TYPES.DATA_OBJECT,
+      DATA_FLOW: TYPES.DATA_OBJECT,
+      SWIMLANES: TYPES.DATA_OBJECT,
+    }
   },
 }

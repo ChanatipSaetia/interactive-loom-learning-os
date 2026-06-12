@@ -4,10 +4,14 @@ Card grid with stagger animation. Each card opens a detail modal with overview, 
 
 ## When to Use
 
-- Categorizing domain concepts or capabilities
-- Showing the scope and boundaries of a concept
+- **3+ related concepts** that each have a "what it is" and "what it does" → prefer over bullets
+- **Memory types, capability categories, design decisions** → cards show scope and boundaries at a glance
+- **Categorizing domain concepts** with in-scope/out-of-scope distinctions
+- **Bounded context visualization** (DDD)
 - Presenting analogous explanations for abstract topics
-- Bounded context visualization (DDD)
+
+> [!TIP]
+> If you would have written a bulleted list where each item has a title and 2+ sub-points describing what it is and what it enables, use taxonomy cards instead. Each card maps naturally: `title` = concept name, `description` = what it is, `details` = what it enables, `inScope`/`outOfScope` = boundaries.
 
 ## Data Shape (Modular Taxonomy Layout)
 

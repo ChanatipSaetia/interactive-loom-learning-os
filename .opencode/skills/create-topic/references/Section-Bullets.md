@@ -4,10 +4,20 @@ Hierarchical list with nesting, ordered/unordered modes, and checkable items.
 
 ## When to Use
 
-- Key takeaways or summary points
-- Feature lists, capability enumerations
-- Checklists with interactive checkboxes
-- Any content with parent-child hierarchy
+- **Checklists** with interactive checkboxes (e.g., readiness filters, action items)
+- **Simple enumeration** of <5 items with no meaningful scope/boundary distinction
+- **Ranked lists** where ordering matters but no visual diagram adds value
+
+## When NOT to Use (Use Visual Sections Instead)
+
+| Instead of Bullets for... | Use This Section | Why |
+|---|---|---|
+| 3+ related concepts with "what/when/scope" | **`taxonomy-browser`** | Cards show scope, boundaries, analogies at a glance |
+| System components and how they connect | **`flowchart` (SYS_ARCH)** | Structural diagram > bullet list of components |
+| Temporal flow: "what happens first, second" | **`flowchart` (EVENT_STORMING)** | Events/commands/policies show sequence visually |
+| Roles that report to each other | **`flowchart` (SYS_ARCH)** | Shows hierarchy and accountability chains |
+| Types that each have "what it holds" + "what it enables" | **`taxonomy-browser`** | Each type gets a card with `details` and `primaryFocus` |
+| Defense layers, pipeline, or chained steps | **`flowchart`** | Both structural and temporal views add value |
 
 ## Data Shape (Modular Layout)
 
@@ -60,3 +70,4 @@ export const myBullets: BulletItem[] = [
 - Use `ordered: true` for sequential steps or ranked lists
 - Nest no more than 2 levels deep for readability
 - Use `checkable` sparingly — reserve for actual checklists
+- **If you can describe each item's "what it is" and "what it does", use taxonomy cards instead**

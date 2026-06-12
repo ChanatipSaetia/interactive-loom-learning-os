@@ -3,360 +3,50 @@ import { animate } from 'animejs';
 import { SectionRegistry } from '../../core/registry';
 import * as Icons from 'lucide-react';
 
-const ZoomIn = Icons.ZoomIn;
-const ZoomOut = Icons.ZoomOut;
-const Locate = Icons.Locate;
-const Share2 = Icons.Share2;
-const Play = Icons.Play;
-const Component = Icons.Component;
-const Server = Icons.Server;
-const Layers = Icons.Layers;
-const Workflow = Icons.Workflow;
-const Pause = Icons.Pause;
-const SkipForward = Icons.SkipForward;
-const SkipBack = Icons.SkipBack;
-const RotateCcw = Icons.RotateCcw;
-const Plus = Icons.Plus;
-const Trash2 = Icons.Trash2;
-const CheckSquare = Icons.CheckSquare;
-const Square = Icons.Square;
-const X = Icons.X;
-const Settings = Icons.Settings;
-const FileDown = Icons.FileDown;
-const GitBranch = Icons.GitBranch;
+import { ZoomToolbar } from './zoom-toolbar';
+import { PlaybackControls } from './playback-controls';
+import { StepCarousel } from './step-carousel';
+import { FlowchartSidebar } from './sidebar';
+
+import {
+  TYPES,
+  COLORS,
+  BORDER_COLORS,
+  ICONS,
+  ICON_ANIMATIONS,
+  DYNAMIC_ICONS,
+  NODE_W,
+  NODE_H,
+  SMALL_W,
+  SMALL_H,
+  wrapTooltipText,
+  INITIAL_SCHEMA
+} from './types';
+
+import type {
+  UnifiedFlowchartSchema,
+  FlowchartRelation,
+  FlowchartViewNode,
+  FlowchartViewGroup,
+  FlowchartStep,
+  FlowchartStepData,
+  FlowchartStepLinear,
+  FlowchartStepBranchOption,
+  FlowchartJourney,
+  FlowchartViewConfig,
+  FlowchartProps,
+  TransformState,
+  PinchState
+} from './types';
 
 import './flowchart.css';
 
-// --- 1. CONFIG & TYPES ---
-export const TYPES = {
-  EVENT: 'Event', COMMAND: 'Command', AGGREGATE: 'Aggregate', POLICY: 'Policy', 
-  READ_MODEL: 'Read Model', USER: 'Actor', EXTERNAL: 'External API', HOTSPOT: 'Risk',
-  SERVICE: 'Service', DATABASE: 'Database', PROCESS: 'Process', 
-  DATA_OBJECT: 'Data Object', DECISION: 'Decision'
-} as const;
+const Workflow = Icons.Workflow;
+const Settings = Icons.Settings;
 
-export const COLORS = {
-  [TYPES.EVENT]:       '#64575f', // surface0 + peach
-  [TYPES.COMMAND]:     '#505977', // surface0 + blue
-  [TYPES.AGGREGATE]:   '#51576d', // surface1 (neutral)
-  [TYPES.POLICY]:      '#5c5775', // surface0 + mauve
-  [TYPES.READ_MODEL]:  '#595c77', // surface0 + lavender
-  [TYPES.USER]:        '#625f64', // surface0 + yellow
-  [TYPES.EXTERNAL]:    '#556163', // surface0 + green
-  [TYPES.HOTSPOT]:     '#625162', // surface0 + red
-  [TYPES.SERVICE]:     '#4f5e73', // surface0 + sapphire
-  [TYPES.DATABASE]:    '#4e5f6d', // surface0 + teal
-  [TYPES.PROCESS]:     '#536173', // surface0 + sky
-  [TYPES.DATA_OBJECT]: '#655c75', // surface0 + pink
-  [TYPES.DECISION]:    '#635666', // surface0 + maroon
-  default:             '#414559'  // surface0
-} as const;
+export { TYPES, COLORS, BORDER_COLORS, ICONS, ICON_ANIMATIONS, DYNAMIC_ICONS, NODE_W, NODE_H, SMALL_W, SMALL_H, INITIAL_SCHEMA };
+export type { UnifiedFlowchartSchema, FlowchartRelation, FlowchartViewNode, FlowchartViewGroup, FlowchartStep, FlowchartStepData, FlowchartStepLinear, FlowchartStepBranchOption, FlowchartJourney, FlowchartViewConfig, FlowchartProps };
 
-export const BORDER_COLORS = {
-  [TYPES.EVENT]:       '#ef9f76', // peach
-  [TYPES.COMMAND]:     '#8caaee', // blue
-  [TYPES.AGGREGATE]:   '#626880', // surface2
-  [TYPES.POLICY]:      '#ca9ee6', // mauve
-  [TYPES.READ_MODEL]:  '#babbf1', // lavender
-  [TYPES.USER]:        '#e5c890', // yellow
-  [TYPES.EXTERNAL]:    '#a6d189', // green
-  [TYPES.HOTSPOT]:     '#e78284', // red
-  [TYPES.SERVICE]:     '#85c1dc', // sapphire
-  [TYPES.DATABASE]:    '#81c8be', // teal
-  [TYPES.PROCESS]:     '#99d1db', // sky
-  [TYPES.DATA_OBJECT]: '#f4b8e4', // pink
-  [TYPES.DECISION]:    '#ea999c', // maroon
-  default:             '#626880'  // surface2
-} as const;
-
-export const ICONS = {
-  [TYPES.EVENT]: 'Zap', [TYPES.COMMAND]: 'Terminal', [TYPES.AGGREGATE]: 'Database', 
-  [TYPES.POLICY]: 'ShieldAlert', [TYPES.READ_MODEL]: 'Eye', [TYPES.USER]: 'User', 
-  [TYPES.EXTERNAL]: 'Cloud', [TYPES.HOTSPOT]: 'AlertTriangle', [TYPES.SERVICE]: 'Server',
-  [TYPES.DATABASE]: 'Database', [TYPES.PROCESS]: 'Activity', [TYPES.DATA_OBJECT]: 'FileText',
-  [TYPES.DECISION]: 'GitBranch'
-} as const;
-
-export const ICON_ANIMATIONS = {
-  [TYPES.EVENT]: 'anim-icon-zap', [TYPES.COMMAND]: 'anim-icon-blink', [TYPES.AGGREGATE]: 'anim-icon-float-heavy',
-  [TYPES.POLICY]: 'anim-icon-pulse', [TYPES.READ_MODEL]: 'anim-icon-scan', [TYPES.USER]: 'anim-icon-wobble',
-  [TYPES.EXTERNAL]: 'anim-icon-drift', [TYPES.HOTSPOT]: 'anim-icon-ring', [TYPES.SERVICE]: 'anim-icon-float-heavy',
-  [TYPES.DATABASE]: 'anim-icon-pulse', [TYPES.PROCESS]: 'anim-icon-spin-slow', [TYPES.DATA_OBJECT]: 'anim-icon-float',
-  [TYPES.DECISION]: 'anim-icon-wobble'
-} as const;
-
-export const DYNAMIC_ICONS = { Component, Server, Share2, Layers };
-
-export const NODE_W = 140; 
-export const NODE_H = 100;
-export const SMALL_W = 120; 
-export const SMALL_H = 65;
-
-// --- 2. THE UNIFIED DATA SCHEMA TYPES ---
-export interface FlowchartEntity {
-  title: string;
-  desc: string;
-  viewTypes: Record<string, string>;
-}
-
-export interface FlowchartRelation {
-  id: string;
-  from: string;
-  to: string;
-  views: string[];
-  dashed?: boolean;
-  handledBy?: boolean;
-}
-
-export interface FlowchartViewNode {
-  id: string;
-  x: number;
-  y: number;
-}
-
-export interface FlowchartViewGroup {
-  id: string;
-  title: string;
-  desc?: string;
-  nodeIds?: string[];
-  color?: string;
-  borderColor?: string;
-  textColor?: string;
-  isLane?: boolean;
-  y?: number;
-  h?: number;
-}
-
-export interface FlowchartStep {
-  nodeId?: string;
-  nodeIds?: string[];
-  description: string;
-}
-
-export interface FlowchartStepLinear {
-  id: string;
-  type: 'linear';
-  nodeIds?: string[];
-  title: string;
-  reason: string;
-}
-
-export interface FlowchartStepBranchOption {
-  id: string;
-  type: string;
-  nodeIds?: string[];
-  title: string;
-  reason: string;
-}
-
-export interface FlowchartStepBranch {
-  id: string;
-  type: 'branch';
-  branches: FlowchartStepBranchOption[];
-}
-
-export type FlowchartStepData = FlowchartStepLinear | FlowchartStepBranch;
-
-export interface FlowchartJourney {
-  id: string;
-  label: string;
-  description?: string;
-  steps: FlowchartStep[];
-}
-
-export interface FlowchartViewConfig {
-  name: string;
-  icon: string;
-  nodes: FlowchartViewNode[];
-  groups: FlowchartViewGroup[];
-  steps?: FlowchartStepData[];
-}
-
-export interface UnifiedFlowchartSchema {
-  entities: Record<string, FlowchartEntity>;
-  relations: FlowchartRelation[];
-  views: Record<string, FlowchartViewConfig>;
-  journeys: FlowchartJourney[];
-}
-
-export interface FlowchartProps {
-  title?: string;
-  schema?: UnifiedFlowchartSchema;
-}
-
-interface TransformState {
-  scale: number;
-  translateX: number;
-  translateY: number;
-}
-
-interface PinchState {
-  active: boolean;
-  initialDist: number;
-  initialScale: number;
-}
-
-function wrapTooltipText(text: string, maxChars = 28): string[] {
-  const words = text.split(' ');
-  const lines: string[] = [];
-  let current = '';
-  for (const word of words) {
-    const candidate = current ? `${current} ${word}` : word;
-    if (candidate.length <= maxChars) {
-      current = candidate;
-    } else {
-      if (current) lines.push(current);
-      current = word;
-    }
-  }
-  if (current) lines.push(current);
-  return lines;
-}
-
-// --- 4. DEFAULT INITIAL SCHEMA ---
-export const INITIAL_SCHEMA: UnifiedFlowchartSchema = {
-  entities: {
-    'user_editor': { title: 'Content Editor', desc: 'Provides input.', viewTypes: { EVENT_STORMING: TYPES.USER, SYS_ARCH: TYPES.USER, SWIMLANES: TYPES.USER } },
-    'user_reviewer': { title: 'Reviewer', desc: 'Human-in-the-loop QA.', viewTypes: { EVENT_STORMING: TYPES.USER, SWIMLANES: TYPES.USER } },
-    'db_os': { title: 'OpenSearch DB', desc: 'Search cluster.', viewTypes: { EVENT_STORMING: TYPES.EXTERNAL, SYS_ARCH: TYPES.DATABASE, DATA_FLOW: TYPES.DATABASE, SWIMLANES: TYPES.DATABASE } },
-    'api_emb': { title: 'Embedding API', desc: 'External LLM service.', viewTypes: { EVENT_STORMING: TYPES.EXTERNAL, SYS_ARCH: TYPES.EXTERNAL, DATA_FLOW: TYPES.PROCESS, SWIMLANES: TYPES.PROCESS } },
-    'sys_worker': { title: 'Conversion Worker', desc: 'Async parser.', viewTypes: { EVENT_STORMING: TYPES.EXTERNAL, SYS_ARCH: TYPES.SERVICE, DATA_FLOW: TYPES.PROCESS, SWIMLANES: TYPES.PROCESS } },
-    'sys_gw': { title: 'API Gateway', desc: 'Secure entry point.', viewTypes: { SYS_ARCH: TYPES.SERVICE } },
-    'db_s3': { title: 'S3 Raw Storage', desc: 'Immutable blob storage.', viewTypes: { SYS_ARCH: TYPES.DATABASE } },
-    'sys_portal': { title: 'Review Portal UI', desc: 'Frontend for QA.', viewTypes: { SYS_ARCH: TYPES.SERVICE, EVENT_STORMING: TYPES.READ_MODEL } },
-    'cmd_up': { title: 'Upload Document', desc: 'Ingest new file.', viewTypes: { EVENT_STORMING: TYPES.COMMAND, SWIMLANES: TYPES.PROCESS } },
-    'cmd_md': { title: 'Convert to Markdown', desc: 'Parse binary to text.', viewTypes: { EVENT_STORMING: TYPES.COMMAND } },
-    'cmd_fix': { title: 'Fix Formatting', desc: 'Manual override.', viewTypes: { EVENT_STORMING: TYPES.COMMAND, SWIMLANES: TYPES.PROCESS } },
-    'cmd_reject': { title: 'Reject Document', desc: 'Abandon document.', viewTypes: { EVENT_STORMING: TYPES.COMMAND } },
-    'dec_qa': { title: 'Quality Routing', desc: 'Confidence check.', viewTypes: { DATA_FLOW: TYPES.DECISION, SWIMLANES: TYPES.DECISION } },
-    'data_pdf': { title: 'Raw PDF', desc: 'Binary payload.', viewTypes: { DATA_FLOW: TYPES.DATA_OBJECT } },
-    'data_raw_md': { title: 'Unstructured MD', desc: 'Messy OCR output.', viewTypes: { DATA_FLOW: TYPES.DATA_OBJECT } },
-    'data_clean_md': { title: 'Clean Markdown', desc: 'Validated chunks.', viewTypes: { DATA_FLOW: TYPES.DATA_OBJECT } },
-    'data_vec': { title: 'Float32 Arrays', desc: 'Embeddings.', viewTypes: { DATA_FLOW: TYPES.DATA_OBJECT } },
-    'agg_pipe': { title: 'Doc Pipeline', desc: 'State machine.', viewTypes: { EVENT_STORMING: TYPES.AGGREGATE } },
-    'evt_up': { title: 'Document Uploaded', desc: 'File secured.', viewTypes: { EVENT_STORMING: TYPES.EVENT } },
-    'pol_conv': { title: 'Trigger Conversion', desc: 'Queue conversion.', viewTypes: { EVENT_STORMING: TYPES.POLICY } },
-    'evt_md': { title: 'Markdown Converted', desc: 'Text string returned.', viewTypes: { EVENT_STORMING: TYPES.EVENT } },
-    'pol_pass': { title: 'Score > 90%', desc: 'Auto-approve high quality.', viewTypes: { EVENT_STORMING: TYPES.POLICY } },
-    'pol_fail': { title: 'Score < 90%', desc: 'Flag for human intervention.', viewTypes: { EVENT_STORMING: TYPES.POLICY } },
-    'evt_app': { title: 'Markdown Approved', desc: 'Text is ready.', viewTypes: { EVENT_STORMING: TYPES.EVENT } },
-    'evt_rejected': { title: 'Document Rejected', desc: 'Document discarded.', viewTypes: { EVENT_STORMING: TYPES.EVENT } },
-    'pol_notify': { title: 'Notify Uploader', desc: 'Send failure email.', viewTypes: { EVENT_STORMING: TYPES.POLICY } },
-    'pol_emb': { title: 'Trigger Embedding', desc: 'Generate vectors.', viewTypes: { EVENT_STORMING: TYPES.POLICY } },
-    'cmd_req_emb': { title: 'Request Embeddings', desc: 'Call external LLM.', viewTypes: { EVENT_STORMING: TYPES.COMMAND } },
-    'evt_vec': { title: 'Embeddings Generated', desc: 'Arrays received.', viewTypes: { EVENT_STORMING: TYPES.EVENT } },
-    'pol_db': { title: 'Trigger DB Save', desc: 'Save to database.', viewTypes: { EVENT_STORMING: TYPES.POLICY } },
-    'cmd_os': { title: 'Index Document', desc: 'Write to OpenSearch.', viewTypes: { EVENT_STORMING: TYPES.COMMAND } },
-    'evt_idx': { title: 'Document Indexed', desc: 'Data is searchable.', viewTypes: { EVENT_STORMING: TYPES.EVENT } },
-    'risk_tbl': { title: 'Lost Tables?', desc: 'Grids parse as garbage.', viewTypes: { EVENT_STORMING: TYPES.HOTSPOT } }
-  },
-  relations: [
-    { id:'r1', from: 'user_editor', to: 'cmd_up', views: ['EVENT_STORMING', 'SWIMLANES'] }, { id:'r2', from: 'user_editor', to: 'sys_gw', views: ['SYS_ARCH'] },
-    { id:'r3', from: 'sys_gw', to: 'db_s3', views: ['SYS_ARCH'] }, { id:'r4', from: 'sys_gw', to: 'sys_worker', views: ['SYS_ARCH'] }, { id:'r5', from: 'sys_gw', to: 'sys_portal', views: ['SYS_ARCH'] },
-    { id:'r6', from: 'cmd_up', to: 'agg_pipe', views: ['EVENT_STORMING'] }, { id:'r7', from: 'agg_pipe', to: 'evt_up', views: ['EVENT_STORMING'] },
-    { id:'r8', from: 'evt_up', to: 'pol_conv', views: ['EVENT_STORMING'] }, { id:'r9', from: 'pol_conv', to: 'cmd_md', views: ['EVENT_STORMING'] },
-    { id:'r10', from: 'sys_worker', to: 'cmd_md', views: ['EVENT_STORMING'] }, { id:'r11', from: 'cmd_md', to: 'evt_md', views: ['EVENT_STORMING'] },
-    { id:'r12', from: 'evt_md', to: 'pol_pass', views: ['EVENT_STORMING'] }, { id:'r13', from: 'evt_md', to: 'pol_fail', views: ['EVENT_STORMING'] },
-    { id:'r14', from: 'pol_pass', to: 'evt_app', views: ['EVENT_STORMING'] }, { id:'r15', from: 'pol_fail', to: 'risk_tbl', views: ['EVENT_STORMING'], dashed: true },
-    { id:'r16', from: 'pol_fail', to: 'cmd_fix', views: ['EVENT_STORMING'] }, { id:'r17', from: 'pol_fail', to: 'cmd_reject', views: ['EVENT_STORMING'] },
-    { id:'r18', from: 'user_reviewer', to: 'cmd_fix', views: ['EVENT_STORMING'] }, { id:'r19', from: 'cmd_fix', to: 'evt_app', views: ['EVENT_STORMING'] },
-    { id:'r20', from: 'cmd_reject', to: 'evt_rejected', views: ['EVENT_STORMING'] }, { id:'r21', from: 'evt_rejected', to: 'pol_notify', views: ['EVENT_STORMING'] },
-    { id:'r22', from: 'evt_app', to: 'pol_emb', views: ['EVENT_STORMING'] }, { id:'r23', from: 'pol_emb', to: 'cmd_req_emb', views: ['EVENT_STORMING'] },
-    { id:'r24', from: 'cmd_req_emb', to: 'api_emb', views: ['EVENT_STORMING'] }, { id:'r25', from: 'api_emb', to: 'evt_vec', views: ['EVENT_STORMING'] },
-    { id:'r26', from: 'evt_vec', to: 'pol_db', views: ['EVENT_STORMING'] }, { id:'r27', from: 'pol_db', to: 'cmd_os', views: ['EVENT_STORMING'] },
-    { id:'r28', from: 'cmd_os', to: 'db_os', views: ['EVENT_STORMING'] }, { id:'r29', from: 'db_os', to: 'evt_idx', views: ['EVENT_STORMING'] }, { id:'r30', from: 'evt_idx', to: 'sys_portal', views: ['EVENT_STORMING'] }, 
-    { id:'r31', from: 'sys_worker', to: 'api_emb', views: ['SYS_ARCH'] }, { id:'r32', from: 'sys_worker', to: 'db_os', views: ['SYS_ARCH'] }, { id:'r33', from: 'sys_portal', to: 'db_os', views: ['SYS_ARCH'] },
-    { id:'r34', from: 'data_pdf', to: 'sys_worker', views: ['DATA_FLOW'] }, { id:'r35', from: 'sys_worker', to: 'data_raw_md', views: ['DATA_FLOW'] },
-    { id:'r36', from: 'data_raw_md', to: 'dec_qa', views: ['DATA_FLOW'] }, { id:'r37', from: 'dec_qa', to: 'data_clean_md', views: ['DATA_FLOW'] },
-    { id:'r38', from: 'data_clean_md', to: 'api_emb', views: ['DATA_FLOW'] }, { id:'r39', from: 'api_emb', to: 'data_vec', views: ['DATA_FLOW'] }, { id:'r40', from: 'data_vec', to: 'db_os', views: ['DATA_FLOW'] },
-    { id:'r41', from: 'cmd_up', to: 'sys_worker', views: ['SWIMLANES'] }, { id:'r42', from: 'sys_worker', to: 'dec_qa', views: ['SWIMLANES'] },
-    { id:'r43', from: 'dec_qa', to: 'api_emb', views: ['SWIMLANES'] }, { id:'r44', from: 'dec_qa', to: 'cmd_fix', views: ['SWIMLANES'], dashed: true },
-    { id:'r45', from: 'cmd_fix', to: 'api_emb', views: ['SWIMLANES'] }, { id:'r46', from: 'api_emb', to: 'db_os', views: ['SWIMLANES'] }
-  ],
-  views: {
-    EVENT_STORMING: {
-      name: 'Event Storming', icon: 'Component',
-      nodes: [
-        { id: 'user_editor', x: 130, y: 185 }, { id: 'cmd_up', x: 120, y: 250 }, { id: 'agg_pipe', x: 260, y: 250 }, { id: 'evt_up', x: 400, y: 250 },
-        { id: 'pol_conv', x: 620, y: 250 }, { id: 'sys_worker', x: 770, y: 185 }, { id: 'cmd_md', x: 760, y: 250 }, { id: 'evt_md', x: 900, y: 250 },
-        { id: 'pol_pass', x: 1120, y: 110 }, { id: 'pol_fail', x: 1120, y: 390 }, { id: 'risk_tbl', x: 1130, y: 490 }, { id: 'user_reviewer', x: 1350, y: 265 },
-        { id: 'cmd_fix', x: 1340, y: 330 }, { id: 'cmd_reject', x: 1340, y: 450 }, { id: 'evt_app', x: 1480, y: 250 }, { id: 'evt_rejected', x: 1480, y: 450 }, { id: 'pol_notify', x: 1700, y: 450 },
-        { id: 'pol_emb', x: 1700, y: 250 }, { id: 'api_emb', x: 1850, y: 185 }, { id: 'cmd_req_emb', x: 1840, y: 250 }, { id: 'evt_vec', x: 1980, y: 250 }, 
-        { id: 'pol_db', x: 2200, y: 250 }, { id: 'db_os', x: 2350, y: 185 }, { id: 'cmd_os', x: 2340, y: 250 }, { id: 'evt_idx', x: 2480, y: 250 }, { id: 'sys_portal', x: 2620, y: 250 }
-      ],
-      groups: [
-        { id: 'g1', title: 'Ingestion Subdomain', desc: 'Handles secure file uploads and initial storage state before processing.', nodeIds: ['user_editor', 'cmd_up', 'agg_pipe', 'evt_up'], color: 'rgba(140, 170, 238, 0.12)', borderColor: '#8caaee', textColor: '#c6d0f5' },
-        { id: 'g2', title: 'Quality Assurance & Routing', desc: 'Evaluates structural integrity of the parsed markdown and loops in humans for anomaly correction.', nodeIds: ['pol_pass', 'pol_fail', 'user_reviewer', 'cmd_fix', 'cmd_reject', 'risk_tbl', 'evt_rejected', 'pol_notify'], color: 'rgba(229, 200, 144, 0.12)', borderColor: '#e5c890', textColor: '#c6d0f5' },
-        { id: 'g3', title: 'Vectorization Infrastructure', desc: 'Manages API interactions for AI embeddings and final persistence to OpenSearch clusters.', nodeIds: ['pol_emb', 'cmd_req_emb', 'api_emb', 'evt_vec', 'pol_db', 'cmd_os', 'db_os', 'evt_idx', 'sys_portal'], color: 'rgba(244, 184, 228, 0.12)', borderColor: '#f4b8e4', textColor: '#c6d0f5' }
-      ]
-    },
-    SYS_ARCH: {
-      name: 'System Architecture', icon: 'Server',
-      nodes: [
-        { id: 'user_editor', x: 200, y: 300 }, { id: 'sys_gw', x: 450, y: 300 }, { id: 'sys_worker', x: 750, y: 150 },
-        { id: 'sys_portal', x: 750, y: 450 }, { id: 'api_emb', x: 1050, y: 150 }, { id: 'db_os', x: 1050, y: 450 }, { id: 'db_s3', x: 750, y: 300 }
-      ],
-      groups: [ { id: 'g_vpc', title: 'Internal Virtual Private Cloud', desc: 'Secure network boundary shielding internal services from the public internet.', nodeIds: ['sys_gw','sys_worker','sys_portal','db_os','db_s3'], color: 'rgba(129, 200, 190, 0.12)', borderColor: '#81c8be', textColor: '#c6d0f5' } ]
-    },
-    DATA_FLOW: {
-      name: 'Data Flow (DFD)', icon: 'Share2',
-      nodes: [
-        { id: 'data_pdf', x: 150, y: 250 }, { id: 'sys_worker', x: 400, y: 250 }, { id: 'data_raw_md', x: 650, y: 250 },
-        { id: 'dec_qa', x: 900, y: 250 }, { id: 'data_clean_md', x: 1150, y: 250 }, { id: 'api_emb', x: 1400, y: 250 },
-        { id: 'data_vec', x: 1650, y: 250 }, { id: 'db_os', x: 1900, y: 250 }
-      ],
-      groups: []
-    },
-    SWIMLANES: {
-      name: 'Activity Swimlanes', icon: 'Layers',
-      nodes: [
-        { id: 'cmd_up', x: 150, y: 120 }, { id: 'sys_worker', x: 400, y: 320 }, { id: 'dec_qa', x: 650, y: 320 },
-        { id: 'cmd_fix', x: 900, y: 520 }, { id: 'api_emb', x: 1150, y: 320 }, { id: 'db_os', x: 1400, y: 320 }
-      ],
-      groups: [
-        { id: 'l1', isLane: true, title: 'Content Editor', desc: 'External users submitting raw data.', y: 50, h: 200, color: 'rgba(239, 159, 118, 0.12)' },
-        { id: 'l2', isLane: true, title: 'Automated Pipeline', desc: 'Backend asynchronous processors running without human input.', y: 250, h: 200, color: 'rgba(153, 209, 219, 0.12)' },
-        { id: 'l3', isLane: true, title: 'Review Team', desc: 'Internal staff overseeing quality and edge cases.', y: 450, h: 200, color: 'rgba(186, 187, 241, 0.12)' }
-      ]
-    }
-  },
-  journeys: [
-    {
-      id: 'happy-path',
-      label: 'Document Ingest Happy Path',
-      description: 'Follow a document as it is uploaded, converted, validated, and indexed with a high confidence score.',
-      steps: [
-        { nodeIds: ['user_editor', 'cmd_up', 'agg_pipe', 'evt_up'], description: 'Ingestion Stack — Content Editor uploads PDF → Upload Command triggered → Pipeline initiated → Document Uploaded event published.' },
-        { nodeIds: ['pol_conv', 'sys_worker', 'cmd_md', 'evt_md'], description: 'Conversion Stack — Policy fires → Async Worker converts → Markdown produced → Markdown Converted event published.' },
-        { nodeIds: ['pol_pass', 'evt_app'], description: 'Quality Check (Pass) — Score >90%, auto-approve → Markdown Approved event published.' },
-        { nodeIds: ['pol_emb', 'cmd_req_emb', 'api_emb', 'evt_vec'], description: 'Vectorization Stack — Policy fires → Embedding API called → LLM generates vectors → Embeddings Generated.' },
-        { nodeIds: ['pol_db', 'cmd_os', 'db_os', 'evt_idx', 'sys_portal'], description: 'Indexing Stack — Policy routes to DB → Index command formats data → Written to OpenSearch → Document available on Portal.' },
-      ]
-    },
-    {
-      id: 'recovery-path',
-      label: 'Manual Review & Recovery Path',
-      description: 'What happens when parsing quality drops below confidence thresholds and requires a human review.',
-      steps: [
-        { nodeIds: ['user_editor', 'cmd_up', 'sys_worker', 'evt_md'], description: 'Ingestion → Conversion — Scanned document uploaded, Worker processes messy structure, produces low-quality markdown.' },
-        { nodeIds: ['pol_fail', 'risk_tbl'], description: 'Quality Check (Fail) — Score <90%, auto-approval halted. Hotspot: PDF table columns parsed as garbage.' },
-        { nodeIds: ['user_reviewer', 'cmd_fix'], description: 'Human Review — Reviewer notified, manually fixes layout formats.' },
-        { nodeIds: ['evt_app', 'api_emb', 'db_os'], description: 'Recovery Complete — Markdown Approved → Vectors generated → Saved to OpenSearch.' },
-      ]
-    }
-  ]
-};
-
-function getPlaybackIcon(iconName: string) {
-  switch (iconName) {
-    case 'Play': return <Play size={18} className="flowchart-btn-icon" />;
-    case 'Pause': return <Pause size={18} className="flowchart-btn-icon" />;
-    case 'SkipForward': return <SkipForward size={18} className="flowchart-btn-icon" />;
-    case 'SkipBack': return <SkipBack size={18} className="flowchart-btn-icon" />;
-    case 'RotateCcw': return <RotateCcw size={18} className="flowchart-btn-icon" />;
-    default: return null;
-  }
-}
 
 export function Flowchart({ title, schema = INITIAL_SCHEMA }: FlowchartProps) {
   // Local editable schema state
@@ -434,21 +124,17 @@ export function Flowchart({ title, schema = INITIAL_SCHEMA }: FlowchartProps) {
   const playTimerRef = useRef<number | null>(null);
   const particleRef = useRef<SVGCircleElement | null>(null);
   const animeInstanceRef = useRef<ReturnType<typeof animate> | null>(null);
-  const descPanelRef = useRef<SVGGElement | null>(null);
-  const descPanelAnimRef = useRef<ReturnType<typeof animate> | null>(null);
 
   // Hover Tooltip state
   const [tooltip, setTooltip] = useState<{ description: string; x: number; y: number } | null>(null);
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement | null>(null);
 
-  // Journey step focus — currentStep=0 means "overview / nothing selected"
-  // actual steps are 1-indexed: steps[currentStep - 1]
-  const currentStepData = currentStep > 0 ? currentJourney?.steps[currentStep - 1] : undefined;
+  // Journey step focus — currentStep is 0-indexed step number (0 to length - 1)
+  const currentStepData = currentJourney?.steps[currentStep];
   const highlightedNodeId = currentStepData?.nodeId || currentStepData?.nodeIds?.[0];
-  const prevStepData = currentStep > 1 ? currentJourney?.steps[currentStep - 2] : undefined;
+  const prevStepData = currentStep > 0 ? currentJourney?.steps[currentStep - 1] : undefined;
   const prevHighlightedNodeId = prevStepData?.nodeId || prevStepData?.nodeIds?.[0] || null;
-  const currentDescription = currentStepData?.description ?? '';
 
   // Get view steps or generate from currentJourney
   const activeSteps = useMemo(() => {
@@ -472,14 +158,21 @@ export function Flowchart({ title, schema = INITIAL_SCHEMA }: FlowchartProps) {
   }, [activeView.steps, currentJourney, localSchema.entities]);
 
   // Sync selected step with currentStep.
-  // currentStep=0 → no selection (overview). currentStep N → activeSteps[N-1].
   useEffect(() => {
-    if (currentStep === 0) {
-      setActiveStep(null);
-    } else if (activeView.steps && activeView.steps.length > 0) {
-      setActiveStep(activeSteps[currentStep - 1] ?? null);
+    if (activeView.steps && activeView.steps.length > 0) {
+      // In view phases mode, currentStep = 0 is overview, > 0 is 1-indexed step
+      if (currentStep === 0) {
+        setActiveStep(null);
+      } else {
+        setActiveStep(activeSteps[currentStep - 1] ?? null);
+      }
     } else if (currentJourney) {
-      setActiveStep(activeSteps[currentStep - 1] ?? null);
+      // In journey playback mode, currentStep is 0-indexed step (0 to length - 1)
+      if (currentStep === -1) {
+        setActiveStep(null);
+      } else {
+        setActiveStep(activeSteps[currentStep] ?? null);
+      }
     } else {
       setActiveStep(null);
     }
@@ -670,18 +363,6 @@ export function Flowchart({ title, schema = INITIAL_SCHEMA }: FlowchartProps) {
     }
   }, [currentStep, prevHighlightedNodeId, highlightedNodeId, activeViewKey, nodeMap, localSchema.relations]);
 
-  // Smart Step descriptions panel animation
-  useEffect(() => {
-    if (descPanelAnimRef.current) descPanelAnimRef.current.cancel();
-    if (descPanelRef.current) {
-      descPanelRef.current.setAttribute('opacity', '0');
-      descPanelAnimRef.current = animate(descPanelRef.current, {
-        opacity: [0, 1],
-        duration: 400,
-        easing: 'easeOutQuad'
-      });
-    }
-  }, [currentStep, highlightedNodeId]);
 
   // Dropdown close events
   useEffect(() => {
@@ -933,18 +614,22 @@ export function Flowchart({ title, schema = INITIAL_SCHEMA }: FlowchartProps) {
   // Step carousel handler — activeStep is the single source for selection, dim, and camera.
   const handleStepClick = (step: FlowchartStepLinear | FlowchartStepBranchOption) => {
     if (activeStep?.id === step.id) {
-      // Deselect → back to overview (step 0)
+      // Deselect → back to overview/unfocused
       setActiveStep(null);
-      setCurrentStep(0);
+      if (currentJourney && !activeView.steps) {
+        setCurrentStep(-1);
+      } else {
+        setCurrentStep(0);
+      }
       setIsPlaying(false);
     } else {
       setActiveStep(step);
       focusOnNodes(step.nodeIds || []);
 
-      // Sync currentStep (1-indexed) when using journey steps
+      // Sync currentStep when using journey steps (0-indexed)
       if (!activeView.steps && currentJourney) {
         const stepIdx = activeSteps.findIndex(s => s.id === step.id);
-        if (stepIdx !== -1) setCurrentStep(stepIdx + 1);
+        if (stepIdx !== -1) setCurrentStep(stepIdx);
       }
     }
   };
@@ -1029,283 +714,6 @@ export function Flowchart({ title, schema = INITIAL_SCHEMA }: FlowchartProps) {
     console.log(jsonStr);
   };
 
-  const renderSidebar = () => {
-    if (!isEditMode) return null;
-    return (
-      <div className={`flowchart-sidebar ${selectedId ? 'active' : ''}`} style={{ display: selectedId ? 'flex' : 'none' }}>
-        <div className="flowchart-sidebar-tabs">
-          {[
-            { id: 'entities', label: 'Entities' },
-            { id: 'relations', label: 'Relations' },
-            { id: 'groups', label: 'Groups' }
-          ].map(t => (
-            <button
-              key={t.id}
-              onClick={() => { setActiveTab(t.id); }}
-              className={`flowchart-sidebar-tab-btn ${activeTab === t.id ? 'active' : ''}`}
-            >
-              {t.label}
-            </button>
-          ))}
-          <button onClick={() => setSelectedId(null)} className="flowchart-sidebar-close" aria-label="Close sidebar"><X size={16} /></button>
-        </div>
-
-        <div className="flowchart-sidebar-content">
-          {/* ENTITIES TAB */}
-          {activeTab === 'entities' && selectedId && localSchema.entities[selectedId] && (
-            <div className="flowchart-sidebar-form">
-              <div className="flowchart-sidebar-section-header">
-                <h2>Edit Entity</h2>
-                <button onClick={addEntity} className="flowchart-sidebar-add-btn" title="Add Entity"><Plus size={14} /></button>
-              </div>
-              <div className="flowchart-form-group">
-                <label>Title</label>
-                <input
-                  type="text"
-                  value={localSchema.entities[selectedId]?.title || ''}
-                  onChange={e => updateEntity(selectedId, 'title', e.target.value)}
-                />
-              </div>
-              <div className="flowchart-form-group">
-                <label>Description (Tooltip)</label>
-                <textarea
-                  value={localSchema.entities[selectedId]?.desc || ''}
-                  onChange={e => updateEntity(selectedId, 'desc', e.target.value)}
-                />
-              </div>
-              <div className="flowchart-projections-box">
-                <h3>View Stereotypes</h3>
-                {viewKeys.map(vKey => (
-                  <div key={vKey} className="flowchart-projection-row">
-                    <label>{localSchema.views[vKey]?.name}</label>
-                    <select
-                      value={localSchema.entities[selectedId]?.viewTypes[vKey] || ''}
-                      onChange={e => updateEntity(selectedId, `viewTypes.${vKey}`, e.target.value)}
-                    >
-                      <option value="">-- Exclude --</option>
-                      {Object.values(TYPES).map(t => <option key={t} value={t}>{t}</option>)}
-                    </select>
-                  </div>
-                ))}
-              </div>
-              <button onClick={() => deleteEntity(selectedId)} className="flowchart-sidebar-danger-btn"><Trash2 size={14} /> Delete Entity</button>
-            </div>
-          )}
-
-          {/* RELATIONS TAB */}
-          {activeTab === 'relations' && (
-            <div className="flowchart-sidebar-form">
-              <h2>Connections</h2>
-              <div className="flowchart-relation-builder">
-                <h3>Create Connection</h3>
-                <div className="flowchart-relation-inputs">
-                  <select id="relFrom" className="flowchart-relation-select">
-                    <option value="">Source...</option>
-                    {activeView.nodes.map(n => <option key={n.id} value={n.id}>{localSchema.entities[n.id]?.title}</option>)}
-                  </select>
-                  <span className="arrow-divider">&rarr;</span>
-                  <select id="relTo" className="flowchart-relation-select">
-                    <option value="">Target...</option>
-                    {activeView.nodes.map(n => <option key={n.id} value={n.id}>{localSchema.entities[n.id]?.title}</option>)}
-                  </select>
-                </div>
-                <button
-                  onClick={() => {
-                    const fromEl = document.getElementById('relFrom') as HTMLSelectElement | null;
-                    const toEl = document.getElementById('relTo') as HTMLSelectElement | null;
-                    const f = fromEl?.value;
-                    const t = toEl?.value;
-                    if (f && t && f !== t) {
-                      setLocalSchema(p => {
-                        const n = JSON.parse(JSON.stringify(p)) as UnifiedFlowchartSchema;
-                        n.relations.push({ id: `rel_${Date.now()}`, from: f, to: t, views: [activeViewKey] });
-                        return n;
-                      });
-                    }
-                  }}
-                  className="flowchart-sidebar-primary-btn"
-                >
-                  Add Connection
-                </button>
-              </div>
-
-              <div className="flowchart-sidebar-list">
-                {localSchema.relations.filter(r => r.views.includes(activeViewKey)).map(rel => (
-                  <div key={rel.id} className="flowchart-relation-item">
-                    <div className="flowchart-relation-label">
-                      <span>{localSchema.entities[rel.from]?.title || 'Unknown'}</span>
-                      <span className="arrow-symbol">&rarr;</span>
-                      <span>{localSchema.entities[rel.to]?.title || 'Unknown'}</span>
-                    </div>
-                    <button
-                      onClick={() => setLocalSchema(p => {
-                        const n = JSON.parse(JSON.stringify(p)) as UnifiedFlowchartSchema;
-                        n.relations = n.relations.filter(r => r.id !== rel.id);
-                        return n;
-                      })}
-                      className="flowchart-delete-link-btn"
-                      aria-label="Delete connection"
-                    >
-                      <X size={14} />
-                    </button>
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
-
-          {/* GROUPS TAB */}
-          {activeTab === 'groups' && (
-            <div className="flowchart-sidebar-form">
-              <div className="flowchart-sidebar-section-header">
-                <h2>Groups & Swimlanes</h2>
-                <button
-                  onClick={() => {
-                    const id = `g_${Date.now()}`;
-                    setLocalSchema(p => {
-                      const n = JSON.parse(JSON.stringify(p)) as UnifiedFlowchartSchema;
-                      n.views[activeViewKey]?.groups.push({
-                        id,
-                        title: 'New Group',
-                        desc: '',
-                        nodeIds: [],
-                        color: 'rgba(96, 165, 250, 0.08)',
-                        borderColor: '#93c5fd',
-                        textColor: '#1e40af',
-                        isLane: false,
-                        y: 100,
-                        h: 200
-                      });
-                      return n;
-                    });
-                    setSelectedId(id);
-                  }}
-                  className="flowchart-sidebar-add-btn"
-                  title="Add Group"
-                >
-                  <Plus size={14} />
-                </button>
-              </div>
-
-              {selectedId && activeView.groups.find(g => g.id === selectedId) ? (() => {
-                const group = activeView.groups.find(g => g.id === selectedId)!;
-                return (
-                  <div className="flowchart-sidebar-form">
-                    <button onClick={() => setSelectedId(null)} className="flowchart-sidebar-back">&larr; Back to list</button>
-                    <div className="flowchart-form-group">
-                      <label>Group Title</label>
-                      <input
-                        type="text"
-                        value={group.title || ''}
-                        onChange={e => {
-                          setLocalSchema(p => {
-                            const n = JSON.parse(JSON.stringify(p)) as UnifiedFlowchartSchema;
-                            const target = n.views[activeViewKey]?.groups.find(g => g.id === selectedId);
-                            if (target) target.title = e.target.value;
-                            return n;
-                          });
-                        }}
-                      />
-                    </div>
-                    <div className="flowchart-form-group">
-                      <label>Description (Tooltip)</label>
-                      <textarea
-                        value={group.desc || ''}
-                        onChange={e => {
-                          setLocalSchema(p => {
-                            const n = JSON.parse(JSON.stringify(p)) as UnifiedFlowchartSchema;
-                            const target = n.views[activeViewKey]?.groups.find(g => g.id === selectedId);
-                            if (target) target.desc = e.target.value;
-                            return n;
-                          });
-                        }}
-                      />
-                    </div>
-                    <label className="flowchart-checkbox-row">
-                      <input
-                        type="checkbox"
-                        checked={group.isLane || false}
-                        onChange={e => {
-                          setLocalSchema(p => {
-                            const n = JSON.parse(JSON.stringify(p)) as UnifiedFlowchartSchema;
-                            const target = n.views[activeViewKey]?.groups.find(g => g.id === selectedId);
-                            if (target) target.isLane = e.target.checked;
-                            return n;
-                          });
-                        }}
-                      />
-                      <span>Render as Swimlane</span>
-                    </label>
-
-                    {!group.isLane && (
-                      <div className="flowchart-node-assign-list">
-                        <label>Assigned Nodes</label>
-                        <div className="flowchart-checkbox-container">
-                          {activeView.nodes.map(n => {
-                            const isChecked = group.nodeIds?.includes(n.id) || false;
-                            return (
-                              <label key={n.id} className="flowchart-checkbox-item">
-                                <span className={`checkbox-icon ${isChecked ? 'checked' : ''}`}>
-                                  {isChecked ? <CheckSquare size={14} /> : <Square size={14} />}
-                                </span>
-                                <span className="label-text">{localSchema.entities[n.id]?.title}</span>
-                                <input
-                                  type="checkbox"
-                                  checked={isChecked}
-                                  onChange={e => {
-                                    setLocalSchema(p => {
-                                      const nxt = JSON.parse(JSON.stringify(p)) as UnifiedFlowchartSchema;
-                                      const g = nxt.views[activeViewKey]?.groups.find(gx => gx.id === selectedId);
-                                      if (g) {
-                                        if (!g.nodeIds) g.nodeIds = [];
-                                        if (e.target.checked) g.nodeIds.push(n.id);
-                                        else g.nodeIds = g.nodeIds.filter(id => id !== n.id);
-                                      }
-                                      return nxt;
-                                    });
-                                  }}
-                                />
-                              </label>
-                            );
-                          })}
-                        </div>
-                      </div>
-                    )}
-                    <button
-                      onClick={() => {
-                        setLocalSchema(p => {
-                          const n = JSON.parse(JSON.stringify(p)) as UnifiedFlowchartSchema;
-                          n.views[activeViewKey].groups = n.views[activeViewKey].groups.filter(g => g.id !== selectedId);
-                          return n;
-                        });
-                        setSelectedId(null);
-                      }}
-                      className="flowchart-sidebar-danger-btn"
-                    >
-                      <Trash2 size={14} /> Delete Group
-                    </button>
-                  </div>
-                );
-              })() : (
-                <div className="flowchart-sidebar-list">
-                  {activeView.groups.map(g => (
-                    <div key={g.id} onClick={() => setSelectedId(g.id)} className="flowchart-sidebar-item hoverable">
-                      <div className="flowchart-group-meta">
-                        <span className="flowchart-sidebar-item-title">{g.title}</span>
-                        <span className="flowchart-sidebar-item-subtitle">{g.isLane ? 'Swimlane' : `${g.nodeIds?.length || 0} nodes`}</span>
-                      </div>
-                      <div className="flowchart-color-indicator" style={{ backgroundColor: g.borderColor || g.color }}></div>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
-          )}
-        </div>
-      </div>
-    );
-  };
-
   const transformStr = `translate(${transform.translateX}, ${transform.translateY}) scale(${transform.scale})`;
 
   return (
@@ -1385,75 +793,39 @@ export function Flowchart({ title, schema = INITIAL_SCHEMA }: FlowchartProps) {
 
       {/* Guided checklist playback controls */}
       {currentJourney && (
-        <div className="flowchart-playback animate-fade-in" data-testid="flowchart-playback">
-          <button
-            className="flowchart-btn"
-            disabled={isPlaying || currentStep >= currentJourney.steps.length - 1}
-            onClick={handlePlay}
-            data-testid="flowchart-btn-play"
-            aria-label="Play"
-          >
-            {getPlaybackIcon('Play')}
-          </button>
-          <button
-            className="flowchart-btn"
-            disabled={!isPlaying}
-            onClick={handlePause}
-            data-testid="flowchart-btn-pause"
-            aria-label="Pause"
-          >
-            {getPlaybackIcon('Pause')}
-          </button>
-          <button
-            className="flowchart-btn"
-            disabled={currentStep >= currentJourney.steps.length - 1}
-            onClick={handleNext}
-            data-testid="flowchart-btn-next"
-            aria-label="Next"
-          >
-            {getPlaybackIcon('SkipForward')}
-          </button>
-          <button
-            className="flowchart-btn"
-            disabled={currentStep === 0}
-            onClick={handlePrev}
-            data-testid="flowchart-btn-prev"
-            aria-label="Previous"
-          >
-            {getPlaybackIcon('SkipBack')}
-          </button>
-          <button
-            className="flowchart-btn"
-            disabled={currentStep === 0}
-            onClick={handleReset}
-            data-testid="flowchart-btn-reset"
-            aria-label="Reset"
-          >
-            {getPlaybackIcon('RotateCcw')}
-          </button>
-          <span className="flowchart-progress" data-testid="flowchart-progress">
-            {currentStep + 1} / {currentJourney.steps.length}
-          </span>
-        </div>
+        <PlaybackControls
+          currentJourney={currentJourney}
+          currentStep={currentStep}
+          isPlaying={isPlaying}
+          handlePlay={handlePlay}
+          handlePause={handlePause}
+          handleNext={handleNext}
+          handlePrev={handlePrev}
+          handleReset={handleReset}
+        />
       )}
 
       <div className="flowchart-canvas-wrapper" style={{ position: 'relative' }}>
         <div className="flowchart-body">
           {/* Zoom toolbar overlay */}
-          <div className="flowchart-zoom-toolbar">
-            <button onClick={handleZoomIn} title="Zoom In"><ZoomIn size={16}/></button>
-            <button onClick={handleZoomOut} title="Zoom Out"><ZoomOut size={16}/></button>
-            <button onClick={handleFitToScreen} title="Fit to Screen"><Locate size={16}/></button>
-            {isEditMode && (
-              <button onClick={exportSchema} title="Export Schema to Clipboard"><FileDown size={16}/></button>
-            )}
-          </div>
+          <ZoomToolbar
+            handleZoomIn={handleZoomIn}
+            handleZoomOut={handleZoomOut}
+            handleFitToScreen={handleFitToScreen}
+            exportSchema={exportSchema}
+            isEditMode={isEditMode}
+          />
 
           {/* Clear Focus overlay */}
           {activeStep && (
             <button
               onClick={() => {
                 setActiveStep(null);
+                if (currentJourney && !activeView.steps) {
+                  setCurrentStep(-1);
+                } else {
+                  setCurrentStep(0);
+                }
                 animateTo(50, 100, 0.45);
               }}
               className="flowchart-btn animate-fade-in"
@@ -1697,12 +1069,6 @@ export function Flowchart({ title, schema = INITIAL_SCHEMA }: FlowchartProps) {
                 />
               )}
 
-              {/* Smart Step Description Overlay */}
-              {currentJourney && highlightedNodeId && currentDescription && (
-                <g key={`panel-${currentStep}`} data-testid="flowchart-desc-panel" style={{ display: 'none' }}>
-                  <text>{currentDescription}</text>
-                </g>
-              )}
 
               {/* Render Nodes as foreignObjects for auto-wrapping and premium cards */}
               {positioned.map(node => {
@@ -1825,14 +1191,14 @@ export function Flowchart({ title, schema = INITIAL_SCHEMA }: FlowchartProps) {
                               overflow: 'hidden'
                             }}
                           >
-                            {entity.title}
+                            {entity.viewTitles?.[activeViewKey] ?? entity.title}
                           </p>
                         </div>
                       </div>
                     </foreignObject>
                     
                     {/* Hide fallback render, keep SVG elements for screen readers / tests query */}
-                    <text x={x} y={y} display="none">{entity.title}</text>
+                    <text x={x} y={y} display="none">{entity.viewTitles?.[activeViewKey] ?? entity.title}</text>
                     <text x={x} y={y} display="none">&lt;&lt;{viewType}&gt;&gt;</text>
                   </g>
                 );
@@ -1878,187 +1244,28 @@ export function Flowchart({ title, schema = INITIAL_SCHEMA }: FlowchartProps) {
           </svg>
 
           {/* Stepper carousel at bottom of canvas (renders if view or journey steps exist) */}
-          {activeSteps && activeSteps.length > 0 && (
-            <div
-              style={{
-                position: 'absolute',
-                bottom: '16px',
-                left: 0,
-                right: 0,
-                zIndex: 30,
-                display: 'flex',
-                flexDirection: 'column',
-                alignItems: 'center',
-                pointerEvents: 'none'
-              }}
-            >
-
-
-              <div
-                className="hide-scrollbar"
-                style={{
-                  width: '100%',
-                  display: 'flex',
-                  gap: '16px',
-                  overflowX: 'auto',
-                  paddingBottom: '16px',
-                  paddingTop: '8px',
-                  alignItems: 'center',
-                  paddingLeft: '24px',
-                  paddingRight: '24px',
-                  pointerEvents: 'auto',
-                  scrollBehavior: 'smooth'
-                }}
-              >
-                {activeSteps.map((step: FlowchartStepData, idx: number) => {
-                  if (step.type === 'linear') {
-                    const isActive = activeStep?.id === step.id;
-                    return (
-                      <div
-                        id={`step-card-${step.id}`}
-                        key={step.id}
-                        onClick={() => handleStepClick(step)}
-                        style={{
-                          flexShrink: 0,
-                          width: '256px',
-                          padding: '12px',
-                          borderRadius: '12px',
-                          cursor: 'pointer',
-                          border: '1px solid',
-                          borderColor: isActive ? 'var(--ctp-blue)' : 'var(--border-light)',
-                          backgroundColor: isActive ? 'var(--ctp-surface0)' : 'var(--ctp-base)',
-                          transition: 'all 0.3s ease',
-                          opacity: activeStep && !isActive ? 0.6 : 1
-                        }}
-                      >
-                        <div
-                          style={{
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'space-between',
-                            marginBottom: '8px'
-                          }}
-                        >
-                          <span
-                            style={{
-                              fontSize: '9px',
-                              fontWeight: 800,
-                              textTransform: 'uppercase',
-                              letterSpacing: '1px',
-                              padding: '2px 8px',
-                              borderRadius: '4px',
-                              backgroundColor: isActive ? 'var(--ctp-blue)' : 'var(--ctp-surface1)',
-                              color: isActive ? 'var(--ctp-crust)' : 'var(--ctp-text)'
-                            }}
-                          >
-                            Phase {idx + 1}
-                          </span>
-                        </div>
-                        <h3
-                          style={{
-                            margin: '0 0 4px 0',
-                            fontSize: '14px',
-                            fontWeight: 'bold',
-                            color: isActive ? 'var(--ctp-blue)' : 'var(--ctp-text)'
-                          }}
-                        >
-                          {step.title}
-                        </h3>
-                        <p style={{ margin: 0, fontSize: '11px', color: 'var(--ctp-subtext0)' }}>
-                          {step.reason}
-                        </p>
-                      </div>
-                    );
-                  }
-
-                  if (step.type === 'branch') {
-                    return (
-                      <div
-                        key={step.id}
-                        style={{
-                          flexShrink: 0,
-                          display: 'flex',
-                          flexDirection: 'column',
-                          gap: '8px',
-                          paddingLeft: '20px',
-                          marginLeft: '8px',
-                          borderLeft: '2px dashed var(--ctp-overlay1)',
-                          position: 'relative'
-                        }}
-                      >
-                        <div
-                          style={{
-                            position: 'absolute',
-                            left: '-11px',
-                            top: '50%',
-                            transform: 'translateY(-50%)',
-                            backgroundColor: 'var(--ctp-base)',
-                            border: '2px solid var(--ctp-overlay1)',
-                            borderRadius: '50%',
-                            padding: '2px',
-                            color: 'var(--ctp-text)',
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center'
-                          }}
-                        >
-                          <GitBranch size={12} />
-                        </div>
-                        {step.branches.map((branch: FlowchartStepBranchOption) => {
-                          const isActive = activeStep?.id === branch.id;
-                          return (
-                            <div
-                              id={`step-card-${branch.id}`}
-                              key={branch.id}
-                              onClick={() => handleStepClick(branch)}
-                              style={{
-                                width: '224px',
-                                padding: '10px',
-                                borderRadius: '8px',
-                                cursor: 'pointer',
-                                border: '1px solid',
-                                borderColor: isActive ? 'var(--ctp-blue)' : 'var(--border-light)',
-                                backgroundColor: isActive ? 'var(--ctp-surface0)' : 'var(--ctp-base)',
-                                transition: 'all 0.3s ease',
-                                opacity: activeStep && !isActive ? 0.6 : 1
-                              }}
-                            >
-                              <div
-                                style={{
-                                  display: 'flex',
-                                  alignItems: 'center',
-                                  justifyContent: 'space-between',
-                                  marginBottom: '4px'
-                                }}
-                              >
-                                <h3
-                                  style={{
-                                    margin: 0,
-                                    fontSize: '12px',
-                                    fontWeight: 'bold',
-                                    color: isActive ? 'var(--ctp-blue)' : 'var(--ctp-text)'
-                                  }}
-                                >
-                                  {branch.title}
-                                </h3>
-                              </div>
-                              <p style={{ margin: 0, fontSize: '10px', color: 'var(--ctp-subtext0)' }}>
-                                {branch.reason}
-                              </p>
-                            </div>
-                          );
-                        })}
-                      </div>
-                    );
-                  }
-                  return null;
-                })}
-              </div>
-            </div>
-          )}
+          <StepCarousel
+            activeSteps={activeSteps}
+            activeStep={activeStep}
+            handleStepClick={handleStepClick}
+          />
         </div>
 
-        {renderSidebar()}
+        <FlowchartSidebar
+          isEditMode={isEditMode}
+          selectedId={selectedId}
+          activeTab={activeTab}
+          localSchema={localSchema}
+          activeViewKey={activeViewKey}
+          activeView={activeView}
+          viewKeys={viewKeys}
+          setSelectedId={setSelectedId}
+          setActiveTab={setActiveTab}
+          setLocalSchema={setLocalSchema}
+          addEntity={addEntity}
+          updateEntity={updateEntity}
+          deleteEntity={deleteEntity}
+        />
       </div>
 
 

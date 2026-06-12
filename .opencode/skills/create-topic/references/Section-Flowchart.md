@@ -200,6 +200,21 @@ groups: [
 
 You don't need all four. Start with SYS_ARCH for simple topics. Add EVENT_STORMING when temporal behavior matters. Add DATA_FLOW for pipeline-heavy systems. Add SWIMLANES when responsibility boundaries are the key teaching point.
 
+> [!TIP] Multi-View Pattern
+> The most impactful flowcharts combine **SYS_ARCH** (structural view: what exists) and **EVENT_STORMING** (behavioral view: what happens over time). This gives the learner two lenses on the same system. See `src/topics/ai-operating-model/data/flowchart/runtime-controls/` for a reference implementation.
+
+### Journey Scoping Rules
+
+When a flowchart has multiple views, each journey must reference entity IDs that exist in at least one view:
+
+- **Label journeys to indicate their view**: e.g., `Defense-in-Depth (Layers)` for SYS_ARCH, `Workflow Execution (Happy Path)` for EVENT_STORMING
+- **SYS_ARCH journeys** use structural entity IDs: `agent`, `api_contract`, `permission`, `sandbox`
+- **EVENT_STORMING journeys** use behavioral entity IDs: `evt_workflow_triggered`, `cmd_tool_call`, `pol_route_agent`
+- A journey whose `nodeIds` don't exist in the current view will be **invisible** (no nodes highlight)
+
+> [!IMPORTANT]
+> Never use the same entity IDs across both views. Keep SYS_ARCH entities structural (nouns) and EVENT_STORMING entities behavioral (past-tense events, action commands, reactive policies).
+
 ## Data Shape (Modular Schema Layout)
 
 Rather than keeping all data in one file, the flowchart schema is split into modular files under `src/topics/<topic-id>/data/flowchart/`. This makes schema files much easier to maintain, review, and extend.

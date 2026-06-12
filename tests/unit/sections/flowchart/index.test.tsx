@@ -359,37 +359,4 @@ describe('Flowchart particle animation', () => {
   });
 });
 
-describe('Flowchart description panel', () => {
-  beforeEach(() => {
-    SectionRegistry.clear();
-  });
 
-  it('renders description panel when step has description', () => {
-    render(<Flowchart title="Test" schema={mockSchema} />, { wrapper });
-    const nextBtn = screen.getByTestId('flowchart-btn-next');
-    fireEvent.click(nextBtn);
-    expect(screen.getByTestId('flowchart-desc-panel')).toBeInTheDocument();
-  });
-
-  it('description panel shows step description text', () => {
-    render(<Flowchart title="Test" schema={mockSchema} />, { wrapper });
-    const nextBtn = screen.getByTestId('flowchart-btn-next');
-    fireEvent.click(nextBtn);
-    const panel = screen.getByTestId('flowchart-desc-panel');
-    expect(panel).toHaveTextContent('Journey A Step 1');
-  });
-
-  it('description panel updates when step advances', () => {
-    render(<Flowchart title="Test" schema={mockSchema} />, { wrapper });
-    const nextBtn = screen.getByTestId('flowchart-btn-next');
-    fireEvent.click(nextBtn);
-    fireEvent.click(nextBtn);
-    const panel = screen.getByTestId('flowchart-desc-panel');
-    expect(panel).toHaveTextContent('Journey A Step 2');
-  });
-
-  it('description panel does not render when no journeys', () => {
-    render(<Flowchart title="Test" schema={mockSchemaNoJourneys} />, { wrapper });
-    expect(screen.queryByTestId('flowchart-desc-panel')).not.toBeInTheDocument();
-  });
-});
