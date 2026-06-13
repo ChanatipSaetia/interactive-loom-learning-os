@@ -84,6 +84,20 @@ tests/
 - anime.js v4 docs are available only in the Obsidian vault under `animejs-docs/`. Access them via the vault tools (obsidian_vault_read, obsidian_vault_search, etc.); do not fetch them from external web sources.
 - Consult the vault for technical references, design notes, or prior learnings
 
+## Creating Topics
+- Use the **create-topic** skill (`.opencode/skills/create-topic/SKILL.md`) for topic scaffolding
+- Topics are composed of sections: flowchart, taxonomy, tradeoff, text (see `references/Section-*.md` under the skill directory)
+
+### Flowchart Multi-View Conventions
+- **4 mandatory views**: EVENT_STORMING (source of truth), SYS_ARCH, DATA_FLOW, SWIMLANES
+- **EVENT_STORMING** is defined first; other views are derived lenses
+- Every entity in SYS_ARCH/DFD/SWIMLANES must also exist in EVENT_STORMING
+- `EVENT` and `POLICY` types are Event Storming only — omit from other views
+- Use `viewTitles` for per-view naming (verb-based in ES, noun-based elsewhere)
+- Collapse split aggregates from EVENT_STORMING into single nodes in SYS_ARCH/SWIMLANES
+- Subagent delegation: 1 infra + n journeys per flowchart; run sequentially; don't research for subagents
+- Reference files: `references/Section-Flowchart.md`, `references/Section-EventStorming.md`, `references/Section-DiagramConventions.md`
+
 ## Agent skills
 
 ### Issue tracker

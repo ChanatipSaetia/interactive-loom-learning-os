@@ -11,6 +11,7 @@ import './sections/taxonomy-browser'
 import './topics/demo'
 import './topics/ai-operating-model'
 import './topics/ddd'
+import './topics/a2a-a2ui'
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>

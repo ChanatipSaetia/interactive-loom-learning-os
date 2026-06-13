@@ -2,6 +2,7 @@ import type { SectionConfig } from './registry'
 import { demoSections } from '../topics/demo/sections'
 import { aiOperatingModelSections } from '../topics/ai-operating-model/sections'
 import { dddSections } from '../topics/ddd/sections'
+import { a2aA2uiSections } from '../topics/a2a-a2ui/sections'
 
 export interface TopicRoute {
   id: string
@@ -37,4 +38,12 @@ export const routes: TopicRoute[] = [
     description: 'Strategic and tactical patterns for modeling complex business domains: bounded contexts, aggregates, ubiquitous language, and context mapping',
     sections: dddSections,
   },
-]
+  {
+    id: 'a2a-a2ui',
+    label: 'A2A & A2UI Protocols',
+    path: '/topics/a2a-a2ui',
+    category: 'AI Protocols',
+    description: 'Agent-to-Agent (A2A) and Agent-to-UI (A2UI) protocols for interoperable AI agent communication and generative UI',
+    sections: a2aA2uiSections,
+  },
+ ]
