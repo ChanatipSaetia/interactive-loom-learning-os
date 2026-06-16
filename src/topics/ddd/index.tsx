@@ -1,5 +1,4 @@
 import { SectionRenderer } from '../../components/layout/TopicShell'
-import { TopicRegistry } from '../../core/topic-registry'
 import { dddSections } from './sections'
 
 export default function DddTopic() {
@@ -11,5 +10,3 @@ export default function DddTopic() {
     </div>
   )
 }
-
-TopicRegistry.register('ddd', DddTopic)

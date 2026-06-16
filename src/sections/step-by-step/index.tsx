@@ -1,5 +1,4 @@
-import { useRef, useState, useCallback, type ComponentType } from 'react'
-import { SectionRegistry } from '../../core/registry'
+import { useRef, useState, useCallback } from 'react'
 import './step-by-step.css'
 
 export interface StepContent {
@@ -102,7 +101,5 @@ function animateStepIn(el: HTMLDivElement | null) {
     // no-op if browser doesn't support animations
   }
 }
-
-SectionRegistry.register('step-by-step', StepByStep as ComponentType<unknown>)
 
 export default StepByStep

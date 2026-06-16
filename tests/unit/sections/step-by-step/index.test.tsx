@@ -81,11 +81,11 @@ describe('StepByStep Section', () => {
     expect(screen.getByTestId('step-progress')).toHaveTextContent('1 / 3')
   })
 
-  it('registers with SectionRegistry', async () => {
+  it('does not self-register with SectionRegistry', async () => {
     vi.resetModules()
     const mod = await import('../../../../src/sections/step-by-step')
     const { SectionRegistry: Registry } = await import('../../../../src/core/registry')
-    expect(Registry.get('step-by-step')).toBeDefined()
+    expect(Registry.get('step-by-step')).toBeUndefined()
     void mod
   })
 

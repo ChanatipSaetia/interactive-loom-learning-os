@@ -1,7 +1,6 @@
-import { useState, useCallback, useEffect, useRef, useMemo, type ComponentType } from 'react'
+import { useState, useCallback, useEffect, useRef, useMemo } from 'react'
 import * as Dialog from '@radix-ui/react-dialog'
 import { Check, X, Star } from 'lucide-react'
-import { SectionRegistry } from '../../core/registry'
 import './tradeoff-sandbox.css'
 
 export interface MetricDef {
@@ -687,7 +686,5 @@ function TradeoffSandboxSection({ title, scenarios }: TradeoffSandboxSectionProp
     </div>
   )
 }
-
-SectionRegistry.register('tradeoff-sandbox', TradeoffSandboxSection as ComponentType<unknown>)
 
 export default TradeoffSandboxSection

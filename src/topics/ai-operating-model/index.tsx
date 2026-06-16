@@ -1,5 +1,4 @@
 import { SectionRenderer } from '../../components/layout/TopicShell'
-import { TopicRegistry } from '../../core/topic-registry'
 import { aiOperatingModelSections } from './sections'
 
 export default function AiOperatingModelTopic() {
@@ -11,5 +10,3 @@ export default function AiOperatingModelTopic() {
     </div>
   )
 }
-
-TopicRegistry.register('ai-operating-model', AiOperatingModelTopic)

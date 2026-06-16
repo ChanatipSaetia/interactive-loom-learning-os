@@ -1,5 +1,4 @@
-import { useState, useRef, useEffect, useCallback, type ComponentType } from 'react'
-import { SectionRegistry } from '../../core/registry'
+import { useState, useRef, useEffect, useCallback } from 'react'
 import './bullets.css'
 
 export interface BulletItem {
@@ -173,7 +172,5 @@ function BulletsSection({ title, items, ordered = false, animate = true }: Bulle
     </div>
   )
 }
-
-SectionRegistry.register('bullets', BulletsSection as ComponentType<unknown>)
 
 export default BulletsSection

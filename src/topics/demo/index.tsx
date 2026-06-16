@@ -1,5 +1,4 @@
 import { SectionRenderer } from '../../components/layout/TopicShell'
-import { TopicRegistry } from '../../core/topic-registry'
 import { demoSections } from './sections'
 
 export default function DemoTopic() {
@@ -11,5 +10,3 @@ export default function DemoTopic() {
     </div>
   )
 }
-
-TopicRegistry.register('demo', DemoTopic)

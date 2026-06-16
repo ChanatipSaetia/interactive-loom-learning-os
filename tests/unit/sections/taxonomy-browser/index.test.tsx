@@ -107,11 +107,11 @@ describe('TaxonomyBrowser Section', () => {
     expect(card0.style.borderTopColor).toBe('var(--ctp-blue)')
   })
 
-  it('registers with SectionRegistry', async () => {
+  it('does not self-register with SectionRegistry', async () => {
     vi.resetModules()
     const mod = await import('../../../../src/sections/taxonomy-browser')
     const { SectionRegistry: Registry } = await import('../../../../src/core/registry')
-    expect(Registry.get('taxonomy-browser')).toBeDefined()
+    expect(Registry.get('taxonomy-browser')).toBeUndefined()
     void mod
   })
 

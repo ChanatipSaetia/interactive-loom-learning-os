@@ -1,7 +1,6 @@
 import { useState, useCallback, useEffect, useRef, type ComponentType } from 'react'
 import * as Dialog from '@radix-ui/react-dialog'
 import { animate } from 'animejs'
-import { SectionRegistry } from '../../core/registry'
 import './taxonomy-browser.css'
 
 export interface TaxonomyCategory {
@@ -292,7 +291,5 @@ function TaxonomyBrowserSection({ title, categories }: TaxonomyBrowserSectionPro
     </div>
   )
 }
-
-SectionRegistry.register('taxonomy-browser', TaxonomyBrowserSection as ComponentType<unknown>)
 
 export default TaxonomyBrowserSection

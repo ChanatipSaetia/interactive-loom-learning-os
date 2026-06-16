@@ -671,11 +671,11 @@ describe('TradeoffSandbox Section', () => {
 
   // ─── Registry ─────────────────────────────────────────
 
-  it('registers with SectionRegistry', async () => {
+  it('does not self-register with SectionRegistry', async () => {
     vi.resetModules()
     await import('../../../../src/sections/tradeoff-sandbox')
     const { SectionRegistry: Registry } = await import('../../../../src/core/registry')
-    expect(Registry.get('tradeoff-sandbox')).toBeDefined()
+    expect(Registry.get('tradeoff-sandbox')).toBeUndefined()
   })
 
   // ─── Metric Bar Color Coding ──────────────────────────

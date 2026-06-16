@@ -119,11 +119,11 @@ describe('Bullets Section', () => {
     expect(screen.getByTestId('bullets-list')).toBeInTheDocument()
   })
 
-  it('registers with SectionRegistry', async () => {
+  it('does not self-register with SectionRegistry', async () => {
     vi.resetModules()
     const mod = await import('../../../../src/sections/bullets')
     const { SectionRegistry: Registry } = await import('../../../../src/core/registry')
-    expect(Registry.get('bullets')).toBeDefined()
+    expect(Registry.get('bullets')).toBeUndefined()
     void mod
   })
 

@@ -126,11 +126,11 @@ describe('Flowchart component', () => {
     expect(defs!.innerHTML).toContain('flowchart-arrow');
   });
 
-  it('registers with SectionRegistry', async () => {
+  it('does not self-register with SectionRegistry', async () => {
     vi.resetModules();
     const mod = await import('../../../../src/sections/flowchart/index');
     const { SectionRegistry: Registry } = await import('../../../../src/core/registry');
-    expect(Registry.get('flowchart')).toBeDefined();
+    expect(Registry.get('flowchart')).toBeUndefined();
     void mod;
   });
 

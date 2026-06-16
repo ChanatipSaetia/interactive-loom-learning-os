@@ -1,6 +1,5 @@
-import { useMemo, useRef, useEffect, useState, type ComponentType } from 'react'
+import { useMemo, useRef, useEffect, useState } from 'react'
 import { marked } from 'marked'
-import { SectionRegistry } from '../../core/registry'
 import './text.css'
 
 export interface TextSectionProps {
@@ -84,7 +83,5 @@ function TextSection({ title, heading, paragraphs, animate = false }: TextSectio
     </div>
   )
 }
-
-SectionRegistry.register('text', TextSection as ComponentType<unknown>)
 
 export default TextSection

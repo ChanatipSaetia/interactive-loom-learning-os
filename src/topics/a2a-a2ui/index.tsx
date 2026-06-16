@@ -1,5 +1,4 @@
 import { SectionRenderer } from '../../components/layout/TopicShell'
-import { TopicRegistry } from '../../core/topic-registry'
 import { a2aA2uiSections } from './sections'
 
 export default function A2aA2uiTopic() {
@@ -11,5 +10,3 @@ export default function A2aA2uiTopic() {
     </div>
   )
 }
-
-TopicRegistry.register('a2a-a2ui', A2aA2uiTopic)

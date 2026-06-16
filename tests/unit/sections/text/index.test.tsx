@@ -67,11 +67,11 @@ describe('Text Section', () => {
     expect(screen.queryByTestId('text-heading')).not.toBeInTheDocument()
   })
 
-  it('registers with SectionRegistry', async () => {
+  it('does not self-register with SectionRegistry', async () => {
     vi.resetModules()
     const mod = await import('../../../../src/sections/text')
     const { SectionRegistry: Registry } = await import('../../../../src/core/registry')
-    expect(Registry.get('text')).toBeDefined()
+    expect(Registry.get('text')).toBeUndefined()
     void mod
   })
 })

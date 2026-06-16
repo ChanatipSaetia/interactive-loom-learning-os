@@ -1,5 +1,4 @@
-import React, { useCallback, useEffect, useId, useMemo, useRef, useState, type ComponentType } from 'react';
-import { SectionRegistry } from '../../core/registry';
+import React, { useCallback, useEffect, useId, useMemo, useRef, useState } from 'react';
 import * as Icons from 'lucide-react';
 
 import { ZoomToolbar } from './zoom-toolbar';
@@ -920,7 +919,5 @@ export function Flowchart({ title, schema = INITIAL_SCHEMA }: FlowchartProps) {
     </div>
   );
 }
-
-SectionRegistry.register('flowchart', Flowchart as ComponentType<unknown>);
 
 export default Flowchart;
