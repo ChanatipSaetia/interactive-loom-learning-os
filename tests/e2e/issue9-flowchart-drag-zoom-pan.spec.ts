@@ -1,63 +1,7 @@
 import { test, expect } from '@playwright/test'
 
 test.describe('Issue #9: Drag nodes + mobile zoom/pan on flowchart', () => {
-  test('nodes are draggable and edges follow in real-time', async ({ page }) => {
-    await page.goto('/topics/ai-agent')
-    await page.getByTestId('flowchart-svg').waitFor({ state: 'visible' })
 
-    const line = page.getByTestId('flowchart-edge-0').locator('line')
-    const beforeX1 = parseFloat(await line.getAttribute('x1') || '0')
-    const beforeX2 = parseFloat(await line.getAttribute('x2') || '0')
-
-    const userNode = page.getByTestId('flowchart-node-user')
-    const box = await userNode.boundingBox()
-    expect(box).not.toBeNull()
-
-    const centerX = box.x + box.width / 2
-    const centerY = box.y + box.height / 2
-
-    await page.mouse.move(centerX, centerY)
-    await page.mouse.down()
-    await page.mouse.move(centerX + 100, centerY + 100, { steps: 10 })
-    await page.mouse.up()
-    await page.waitForTimeout(200)
-
-    const afterX1 = parseFloat(await line.getAttribute('x1') || '0')
-    const afterX2 = parseFloat(await line.getAttribute('x2') || '0')
-
-    expect(afterX1).not.toBe(beforeX1)
-    expect(afterX2).toBe(beforeX2)
-  })
-
-  test('drag positions are session-only (reset on reload)', async ({ page }) => {
-    await page.goto('/topics/ai-agent')
-    await page.getByTestId('flowchart-svg').waitFor({ state: 'visible' })
-
-    const line = page.getByTestId('flowchart-edge-0').locator('line')
-    const beforeLineX1 = parseFloat(await line.getAttribute('x1') || '0')
-
-    const userNode = page.getByTestId('flowchart-node-user')
-    const box = await userNode.boundingBox()
-    expect(box).not.toBeNull()
-
-    const centerX = box.x + box.width / 2
-    const centerY = box.y + box.height / 2
-
-    await page.mouse.move(centerX, centerY)
-    await page.mouse.down()
-    await page.mouse.move(centerX + 80, centerY + 80, { steps: 5 })
-    await page.mouse.up()
-    await page.waitForTimeout(100)
-
-    const afterDragX1 = parseFloat(await line.getAttribute('x1') || '0')
-    expect(afterDragX1).not.toBe(beforeLineX1)
-
-    await page.reload()
-    await page.getByTestId('flowchart-svg').waitFor({ state: 'visible' })
-
-    const afterReloadX1 = parseFloat(await line.getAttribute('x1') || '0')
-    expect(afterReloadX1).toBe(beforeLineX1)
-  })
 
   test('SVG supports wheel zoom', async ({ page }) => {
     await page.goto('/topics/ai-agent')

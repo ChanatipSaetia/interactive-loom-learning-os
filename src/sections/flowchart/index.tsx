@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useRef, useState, type ComponentType } from 'react';
+import React, { useCallback, useEffect, useId, useMemo, useRef, useState, type ComponentType } from 'react';
 import { animate } from 'animejs';
 import { SectionRegistry } from '../../core/registry';
 import * as Icons from 'lucide-react';
@@ -6,7 +6,6 @@ import * as Icons from 'lucide-react';
 import { ZoomToolbar } from './zoom-toolbar';
 import { PlaybackControls } from './playback-controls';
 import { StepCarousel } from './step-carousel';
-import { FlowchartSidebar } from './sidebar';
 
 import {
   TYPES,
@@ -17,8 +16,6 @@ import {
   DYNAMIC_ICONS,
   NODE_W,
   NODE_H,
-  SMALL_W,
-  SMALL_H,
   wrapTooltipText,
   INITIAL_SCHEMA
 } from './types';
@@ -42,13 +39,14 @@ import type {
 import './flowchart.css';
 
 const Workflow = Icons.Workflow;
-const Settings = Icons.Settings;
 
-export { TYPES, COLORS, BORDER_COLORS, ICONS, ICON_ANIMATIONS, DYNAMIC_ICONS, NODE_W, NODE_H, SMALL_W, SMALL_H, INITIAL_SCHEMA };
+export { TYPES, COLORS, BORDER_COLORS, ICONS, ICON_ANIMATIONS, DYNAMIC_ICONS, NODE_W, NODE_H, INITIAL_SCHEMA };
 export type { UnifiedFlowchartSchema, FlowchartRelation, FlowchartViewNode, FlowchartViewGroup, FlowchartStep, FlowchartStepData, FlowchartStepLinear, FlowchartStepBranchOption, FlowchartJourney, FlowchartViewConfig, FlowchartProps };
 
 
 export function Flowchart({ title, schema = INITIAL_SCHEMA }: FlowchartProps) {
+  const rawId = useId();
+  const instanceId = useMemo(() => rawId.replace(/:/g, ''), [rawId]);
   // Local editable schema state
   const [localSchema, setLocalSchema] = useState<UnifiedFlowchartSchema>(schema);
 
@@ -65,6 +63,10 @@ export function Flowchart({ title, schema = INITIAL_SCHEMA }: FlowchartProps) {
     }
   }, [viewKeys, activeViewKey]);
 
+  useEffect(() => {
+    setActiveNodePopup(null);
+  }, [activeViewKey]);
+
   const activeView = useMemo(() => {
     return localSchema.views[activeViewKey] || { name: 'Empty', icon: 'Workflow', nodes: [], groups: [] };
   }, [localSchema.views, activeViewKey]);
@@ -77,12 +79,12 @@ export function Flowchart({ title, schema = INITIAL_SCHEMA }: FlowchartProps) {
     } else {
       setCurrentJourneyId('');
     }
-    setCurrentStep(0);
+    setCurrentStep(-1);
     setIsPlaying(false);
   }, [localSchema]);
 
   const currentJourney = localSchema.journeys.find(j => j.id === currentJourneyId);
-  const [currentStep, setCurrentStep] = useState(0);
+  const [currentStep, setCurrentStep] = useState(-1);
   const [isPlaying, setIsPlaying] = useState(false);
 
   // Viewport / Camera Engine
@@ -94,6 +96,7 @@ export function Flowchart({ title, schema = INITIAL_SCHEMA }: FlowchartProps) {
 
   const panAnimRef = useRef<ReturnType<typeof animate> | null>(null);
   const cameraAnimating = useRef(false);
+  const pendingFocusNodeIdRef = useRef<string | null>(null);
 
   // Interaction / Editor State
   const [isPanning, setIsPanning] = useState(false);
@@ -101,24 +104,7 @@ export function Flowchart({ title, schema = INITIAL_SCHEMA }: FlowchartProps) {
   const pinchRef = useRef<PinchState>({ active: false, initialDist: 0, initialScale: 1 });
 
   // Sidebar Editor state
-  const [isEditMode, setIsEditMode] = useState(false);
-  const [activeTab, setActiveTab] = useState('entities'); 
-  const [selectedId, setSelectedId] = useState<string | null>(null);
   const [activeStep, setActiveStep] = useState<FlowchartStepData | FlowchartStepBranchOption | null>(null);
-
-  const dragRef = useRef<{ 
-    active: boolean; 
-    nodeId: string | null; 
-    offsetX: number;
-    offsetY: number;
-    svgEl: SVGSVGElement | null;
-  }>({
-    active: false,
-    nodeId: null,
-    offsetX: 0,
-    offsetY: 0,
-    svgEl: null
-  });
 
   // Playback timers & particles
   const playTimerRef = useRef<number | null>(null);
@@ -127,6 +113,16 @@ export function Flowchart({ title, schema = INITIAL_SCHEMA }: FlowchartProps) {
 
   // Hover Tooltip state
   const [tooltip, setTooltip] = useState<{ description: string; x: number; y: number } | null>(null);
+
+  // Click Popover state for switching views
+  const [activeNodePopup, setActiveNodePopup] = useState<{
+    nodeId: string;
+    x: number;
+    y: number;
+    views: { key: string; name: string; type: string }[];
+  } | null>(null);
+
+
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement | null>(null);
 
@@ -159,39 +155,80 @@ export function Flowchart({ title, schema = INITIAL_SCHEMA }: FlowchartProps) {
 
   // Sync selected step with currentStep.
   useEffect(() => {
-    if (activeView.steps && activeView.steps.length > 0) {
-      // In view phases mode, currentStep = 0 is overview, > 0 is 1-indexed step
-      if (currentStep === 0) {
-        setActiveStep(null);
-      } else {
-        setActiveStep(activeSteps[currentStep - 1] ?? null);
-      }
-    } else if (currentJourney) {
-      // In journey playback mode, currentStep is 0-indexed step (0 to length - 1)
-      if (currentStep === -1) {
-        setActiveStep(null);
-      } else {
-        setActiveStep(activeSteps[currentStep] ?? null);
-      }
-    } else {
+    if (currentStep === -1) {
       setActiveStep(null);
+    } else {
+      setActiveStep(activeSteps[currentStep] ?? null);
     }
-  }, [currentStep, currentJourney, activeSteps, activeView.steps]);
+  }, [currentStep, activeSteps]);
 
   const activeNodeIds = useMemo(() => {
     if (!activeStep) return null;
-    return ('nodeIds' in activeStep) ? activeStep.nodeIds ?? null : null;
-  }, [activeStep]);
+    const ids = ('nodeIds' in activeStep) ? activeStep.nodeIds ?? [] : [];
+    
+    // Resolve collapsed/mapped nodes for the active view
+    const resolvedIds = new Set<string>();
+    const currentViewNodeIds = new Set(activeView.nodes.map(n => n.id));
+    
+    for (const id of ids) {
+      if (currentViewNodeIds.has(id)) {
+        resolvedIds.add(id);
+      } else {
+        const entity = localSchema.entities[id];
+        if (entity && entity.collapsedTo && currentViewNodeIds.has(entity.collapsedTo)) {
+          resolvedIds.add(entity.collapsedTo);
+        }
+      }
+    }
+    
+    return Array.from(resolvedIds);
+  }, [activeStep, activeView.nodes, localSchema.entities]);
 
-  // Node mappings
+  // Node mappings with runtime grid resolution
   const positioned = useMemo(() => {
-    return activeView.nodes;
-  }, [activeView.nodes]);
+    return activeView.nodes.map(node => {
+      if (typeof node.x === 'number' && typeof node.y === 'number') {
+        return { ...node, x: node.x, y: node.y };
+      }
+      if (node.grid) {
+        const [c, r] = node.grid;
+        let x = 0;
+        let y = 0;
+        if (activeViewKey === 'EVENT_STORMING') {
+          x = c * 140 + 60;
+          if (r === 0) y = 50;
+          else if (r === 1) y = 150;
+          else if (r === 2) y = 250;
+          else if (r === 3) y = 450;
+          else if (r === 4) y = 650;
+          else y = 250 + (r - 2) * 200;
+        } else if (activeViewKey === 'SYS_ARCH') {
+          x = c * 140 + 80;
+          y = r * 100 + 100;
+        } else if (activeViewKey === 'DATA_FLOW') {
+          x = c * 140 + 100;
+          y = r * 100 + 100;
+        } else if (activeViewKey === 'SWIMLANES') {
+          x = c * 140 + 160;
+          if (r === 0) y = 75;
+          else if (r === 1) y = 270;
+          else if (r === 2) y = 460;
+          else if (r === 3) y = 650;
+          else y = 75 + r * 190;
+        } else {
+          x = c * 140 + 100;
+          y = r * 100 + 100;
+        }
+        return { ...node, x, y };
+      }
+      return { ...node, x: 0, y: 0 };
+    });
+  }, [activeView.nodes, activeViewKey]);
 
   // Keep a ref to the current view's nodes so the fit effect can read them
   // without listing them as reactive deps (prevents drag from resetting the viewport)
-  const activeViewNodesRef = useRef(activeView.nodes);
-  useEffect(() => { activeViewNodesRef.current = activeView.nodes; }, [activeView.nodes]);
+  const activeViewNodesRef = useRef(positioned);
+  useEffect(() => { activeViewNodesRef.current = positioned; }, [positioned]);
 
   const nodeMap = useMemo(() => {
     const m = Object.create(null);
@@ -211,13 +248,31 @@ export function Flowchart({ title, schema = INITIAL_SCHEMA }: FlowchartProps) {
   // Node positions are read from a ref at rAF time so they don't become deps.
   useEffect(() => {
     setIsPlaying(false);
-    setCurrentStep(0);
+    setCurrentStep(-1);
     setActiveStep(null);
 
     const raf = requestAnimationFrame(() => {
       if (!svgRef.current) return;
       const nodes = activeViewNodesRef.current;
       if (nodes.length === 0) return;
+
+      const pendingNodeId = pendingFocusNodeIdRef.current;
+      if (pendingNodeId) {
+        pendingFocusNodeIdRef.current = null;
+        const targetNode = nodes.find(n => n.id === pendingNodeId);
+        if (targetNode) {
+          const W = svgRef.current.clientWidth || 800;
+          const H = svgRef.current.clientHeight || 500;
+          const targetScale = 0.8;
+          setTransform({
+            scale: targetScale,
+            translateX: W / 2 - targetNode.x * targetScale,
+            translateY: (H / 2 - 50) - targetNode.y * targetScale,
+          });
+          return;
+        }
+      }
+
       const xs = nodes.map(n => n.x);
       const ys = nodes.map(n => n.y);
       const nx = (Math.min(...xs) + Math.max(...xs)) / 2;
@@ -236,7 +291,7 @@ export function Flowchart({ title, schema = INITIAL_SCHEMA }: FlowchartProps) {
 
   // Playback timer loops
   useEffect(() => {
-    if (isPlaying && currentJourney && currentStep < currentJourney.steps.length) {
+    if (isPlaying && currentJourney && currentStep < currentJourney.steps.length - 1) {
       playTimerRef.current = window.setTimeout(() => {
         setCurrentStep(s => s + 1);
       }, 2500);
@@ -277,14 +332,12 @@ export function Flowchart({ title, schema = INITIAL_SCHEMA }: FlowchartProps) {
     if (!containerRef.current || !nodeIds || nodeIds.length === 0 || !svgRef.current) return;
     let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
     nodeIds.forEach(id => {
-      const node = activeView.nodes.find(n => n.id === id);
+      const node = positioned.find(n => n.id === id);
       if (!node) return;
-      const type = localSchema.entities[id]?.viewTypes[activeViewKey] || 'default';
-      const isSmall = ([TYPES.USER, TYPES.EXTERNAL, TYPES.HOTSPOT, TYPES.DECISION] as readonly string[]).includes(type);
-      minX = Math.min(minX, node.x - (isSmall ? SMALL_W : NODE_W) / 2);
-      minY = Math.min(minY, node.y - (isSmall ? SMALL_H : NODE_H) / 2);
-      maxX = Math.max(maxX, node.x + (isSmall ? SMALL_W : NODE_W) / 2);
-      maxY = Math.max(maxY, node.y + (isSmall ? SMALL_H : NODE_H) / 2);
+      minX = Math.min(minX, node.x - NODE_W / 2);
+      minY = Math.min(minY, node.y - NODE_H / 2);
+      maxX = Math.max(maxX, node.x + NODE_W / 2);
+      maxY = Math.max(maxY, node.y + NODE_H / 2);
     });
     if (minX === Infinity) return;
     
@@ -304,11 +357,11 @@ export function Flowchart({ title, schema = INITIAL_SCHEMA }: FlowchartProps) {
     const targetX = viewportW / 2 - centerX * targetScale;
     const targetY = (viewportH / 2 - 100) - centerY * targetScale;
     animateTo(targetX, targetY, targetScale);
-  }, [animateTo, activeView, activeViewKey, localSchema.entities]);
+  }, [animateTo, positioned]);
 
   // Timed camera adjustments
   useEffect(() => {
-    if (activeNodeIds && activeNodeIds.length > 0 && !isPanning && !dragRef.current.active) {
+    if (activeNodeIds && activeNodeIds.length > 0 && !isPanning) {
       focusOnNodes(activeNodeIds);
     }
   }, [currentStep, activeNodeIds, focusOnNodes, isPanning]);
@@ -317,14 +370,14 @@ export function Flowchart({ title, schema = INITIAL_SCHEMA }: FlowchartProps) {
   useEffect(() => {
     if (activeStep) {
       const timer = setTimeout(() => {
-        const el = document.getElementById(`step-card-${activeStep.id}`);
+        const el = document.getElementById(`step-card-${instanceId}-${activeStep.id}`);
         if (el && typeof el.scrollIntoView === 'function') {
           el.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
         }
       }, 50);
       return () => clearTimeout(timer);
     }
-  }, [activeStep]);
+  }, [activeStep, instanceId]);
 
   // In-flight flow particles
   useEffect(() => {
@@ -377,92 +430,38 @@ export function Flowchart({ title, schema = INITIAL_SCHEMA }: FlowchartProps) {
   }, [dropdownOpen]);
 
   // Interaction handlers
-  const getSvgPoint = useCallback((clientX: number, clientY: number, svgEl: SVGSVGElement) => {
-    const pt = svgEl.createSVGPoint();
-    pt.x = clientX;
-    pt.y = clientY;
-    const ctm = svgEl.getScreenCTM();
-    if (!ctm) return { x: clientX, y: clientY };
-    const svgP = pt.matrixTransform(ctm.inverse());
-    return { x: svgP.x, y: svgP.y };
-  }, []);
 
-  const onNodeMouseDown = useCallback((e: React.MouseEvent, nodeId: string) => {
-    e.stopPropagation();
-    const svgEl = e.currentTarget.closest('svg') as SVGSVGElement;
-    if (!svgEl) return;
-    
-    // Select node in edit mode
-    if (isEditMode) {
-      setSelectedId(nodeId);
-      setActiveTab('entities');
-    }
-    
-    const node = nodeMap[nodeId];
-    if (!node) return;
-    
-    const pt = getSvgPoint(e.clientX, e.clientY, svgEl);
-    dragRef.current = { 
-      active: true, 
-      nodeId, 
-      offsetX: pt.x - node.x,
-      offsetY: pt.y - node.y,
-      svgEl 
-    };
-    setTooltip(null);
-  }, [getSvgPoint, isEditMode, nodeMap]);
-
-  const onNodeTouchStart = useCallback((e: React.TouchEvent, nodeId: string) => {
-    if (e.touches.length !== 1) return;
-    e.stopPropagation();
-    const svgEl = (e.currentTarget as Element).closest('svg') as SVGSVGElement;
-    if (!svgEl) return;
-    
-    if (isEditMode) {
-      setSelectedId(nodeId);
-      setActiveTab('entities');
-    }
-    
-    const node = nodeMap[nodeId];
-    if (!node) return;
-    
-    const touch = e.touches[0];
-    const pt = getSvgPoint(touch.clientX, touch.clientY, svgEl);
-    dragRef.current = { 
-      active: true, 
-      nodeId, 
-      offsetX: pt.x - node.x,
-      offsetY: pt.y - node.y,
-      svgEl 
-    };
-    setTooltip(null);
-  }, [getSvgPoint, isEditMode, nodeMap]);
-
-  const handlePointerMove = useCallback((clientX: number, clientY: number) => {
-    if (dragRef.current.active && dragRef.current.nodeId) {
-      const svgEl = dragRef.current.svgEl;
-      if (!svgEl) return;
-      const pt = getSvgPoint(clientX, clientY, svgEl);
-      const nodeId = dragRef.current.nodeId;
-      
-      const newX = pt.x - dragRef.current.offsetX;
-      const newY = pt.y - dragRef.current.offsetY;
-
-      // Snap to grid (10px) in edit mode
-      const finalX = isEditMode ? Math.round(newX / 10) * 10 : newX;
-      const finalY = isEditMode ? Math.round(newY / 10) * 10 : newY;
-
-      setLocalSchema(prev => {
-        const next = JSON.parse(JSON.stringify(prev)) as UnifiedFlowchartSchema;
-        const node = next.views[activeViewKey]?.nodes.find(n => n.id === nodeId);
-        if (node) {
-          node.x = finalX;
-          node.y = finalY;
-        }
-        return next;
-      });
+  const handleNodeClick = useCallback((nodeId: string) => {
+    if (activeNodePopup?.nodeId === nodeId) {
+      setActiveNodePopup(null);
       return;
     }
+    
+    const entity = localSchema.entities[nodeId];
+    if (!entity) return;
+    
+    const otherViews = Object.keys(entity.viewTypes).filter(vk => vk !== activeViewKey && localSchema.views[vk]);
+    
+    if (otherViews.length > 0) {
+      const node = nodeMap[nodeId];
+      if (node) {
+        setActiveNodePopup({
+          nodeId,
+          x: node.x,
+          y: node.y,
+          views: otherViews.map(vk => ({
+            key: vk,
+            name: localSchema.views[vk]?.name || vk,
+            type: entity.viewTypes[vk] || 'default'
+          }))
+        });
+      }
+    } else {
+      setActiveNodePopup(null);
+    }
+  }, [activeViewKey, localSchema.entities, localSchema.views, nodeMap, activeNodePopup]);
+
+  const handlePointerMove = useCallback((clientX: number, clientY: number) => {
     if (isPanning) {
       const dx = clientX - panStartRef.current.x;
       const dy = clientY - panStartRef.current.y;
@@ -472,10 +471,9 @@ export function Flowchart({ title, schema = INITIAL_SCHEMA }: FlowchartProps) {
         translateY: panStartRef.current.baseTranslateY + dy
       }));
     }
-  }, [getSvgPoint, isPanning, activeViewKey, isEditMode]);
+  }, [isPanning]);
 
   const handlePointerUp = useCallback(() => {
-    dragRef.current = { active: false, nodeId: null, offsetX: 0, offsetY: 0, svgEl: null };
     setIsPanning(false);
     pinchRef.current = { active: false, initialDist: 0, initialScale: 1 };
   }, []);
@@ -501,6 +499,13 @@ export function Flowchart({ title, schema = INITIAL_SCHEMA }: FlowchartProps) {
   }, []);
 
   const onSvgTouchStartNative = useCallback((e: TouchEvent) => {
+    const target = e.target as Element;
+    if (target && typeof target.closest === 'function') {
+      if (target.closest('.flowchart-node-group') || target.closest('foreignObject')) {
+        return;
+      }
+    }
+    setActiveNodePopup(null);
     if (e.touches.length === 2) {
       e.preventDefault();
       const t1 = e.touches[0];
@@ -511,18 +516,15 @@ export function Flowchart({ title, schema = INITIAL_SCHEMA }: FlowchartProps) {
       return;
     }
     if (e.touches.length === 1) {
-      const target = e.target as Element;
-      if (!target.closest('.flowchart-node-group') && !target.closest('foreignObject')) {
-        e.preventDefault();
-        setIsPanning(true);
-        const touch = e.touches[0];
-        panStartRef.current = {
-          x: touch.clientX,
-          y: touch.clientY,
-          baseTranslateX: transformRef.current.translateX,
-          baseTranslateY: transformRef.current.translateY
-        };
-      }
+      e.preventDefault();
+      setIsPanning(true);
+      const touch = e.touches[0];
+      panStartRef.current = {
+        x: touch.clientX,
+        y: touch.clientY,
+        baseTranslateX: transformRef.current.translateX,
+        baseTranslateY: transformRef.current.translateY
+      };
     }
   }, []);
 
@@ -550,7 +552,7 @@ export function Flowchart({ title, schema = INITIAL_SCHEMA }: FlowchartProps) {
       }));
       return;
     }
-    if (e.touches.length === 1 && (isPanning || dragRef.current.active)) {
+    if (e.touches.length === 1 && isPanning) {
       e.preventDefault();
       const touch = e.touches[0];
       handlePointerMove(touch.clientX, touch.clientY);
@@ -580,12 +582,16 @@ export function Flowchart({ title, schema = INITIAL_SCHEMA }: FlowchartProps) {
       baseTranslateX: transform.translateX,
       baseTranslateY: transform.translateY
     };
+    setActiveNodePopup(null);
   }, [transform]);
 
-  // Stepper Handlers — currentStep=0 is the overview (no highlight)
+  // Stepper Handlers — currentStep=-1 is the overview (no highlight)
   const handlePlay = useCallback(() => {
-    if (currentJourney && currentStep < currentJourney.steps.length) {
+    if (currentJourney) {
       setIsPlaying(true);
+      if (currentStep === -1) {
+        setCurrentStep(0);
+      }
     }
   }, [currentJourney, currentStep]);
 
@@ -594,19 +600,19 @@ export function Flowchart({ title, schema = INITIAL_SCHEMA }: FlowchartProps) {
   }, []);
 
   const handleNext = useCallback(() => {
-    if (currentJourney && currentStep < currentJourney.steps.length) {
+    if (currentJourney && currentStep < currentJourney.steps.length - 1) {
       setCurrentStep(s => s + 1);
     }
   }, [currentJourney, currentStep]);
 
   const handlePrev = useCallback(() => {
-    if (currentStep > 0) {
+    if (currentStep > -1) {
       setCurrentStep(s => s - 1);
     }
   }, [currentStep]);
 
   const handleReset = useCallback(() => {
-    setCurrentStep(0);
+    setCurrentStep(-1);
     setIsPlaying(false);
     setActiveStep(null);
   }, []);
@@ -616,21 +622,14 @@ export function Flowchart({ title, schema = INITIAL_SCHEMA }: FlowchartProps) {
     if (activeStep?.id === step.id) {
       // Deselect → back to overview/unfocused
       setActiveStep(null);
-      if (currentJourney && !activeView.steps) {
-        setCurrentStep(-1);
-      } else {
-        setCurrentStep(0);
-      }
+      setCurrentStep(-1);
       setIsPlaying(false);
     } else {
       setActiveStep(step);
       focusOnNodes(step.nodeIds || []);
 
-      // Sync currentStep when using journey steps (0-indexed)
-      if (!activeView.steps && currentJourney) {
-        const stepIdx = activeSteps.findIndex(s => s.id === step.id);
-        if (stepIdx !== -1) setCurrentStep(stepIdx);
-      }
+      const stepIdx = activeSteps.findIndex(s => s.id === step.id);
+      if (stepIdx !== -1) setCurrentStep(stepIdx);
     }
   };
 
@@ -652,67 +651,7 @@ export function Flowchart({ title, schema = INITIAL_SCHEMA }: FlowchartProps) {
     animateTo(W / 2 - nx * 0.45, H / 2 - ny * 0.45, 0.45);
   }, [positioned, minX, maxX, minY, maxY, animateTo]);
 
-  // Mutation helper functions for the Editor
-  const updateEntity = (id: string, field: string, value: string) => {
-    setLocalSchema(prev => {
-      const next = JSON.parse(JSON.stringify(prev)) as UnifiedFlowchartSchema;
-      if (!next.entities[id]) return prev;
-      if (field.startsWith('viewTypes.')) {
-        const vKey = field.split('.')[1];
-        next.entities[id].viewTypes[vKey] = value;
-        
-        // Add or remove node in view configuration
-        const viewNodes = next.views[vKey]?.nodes;
-        if (viewNodes) {
-          const exists = viewNodes.some(n => n.id === id);
-          if (value && !exists) {
-            viewNodes.push({ id, x: 150, y: 150 });
-          } else if (!value && exists) {
-            next.views[vKey].nodes = viewNodes.filter(n => n.id !== id);
-          }
-        }
-      } else if (field === 'title' || field === 'desc') {
-        next.entities[id][field] = value;
-      }
-      return next;
-    });
-  };
 
-  const addEntity = () => {
-    const id = `ent_${Date.now()}`;
-    setLocalSchema(prev => {
-      const next = JSON.parse(JSON.stringify(prev)) as UnifiedFlowchartSchema;
-      next.entities[id] = { title: 'New Entity', desc: '', viewTypes: { [activeViewKey]: TYPES.EVENT } };
-      next.views[activeViewKey]?.nodes.push({ id, x: 200, y: 200 });
-      return next;
-    });
-    setSelectedId(id);
-    setActiveTab('entities');
-  };
-
-  const deleteEntity = (id: string) => {
-    setLocalSchema(prev => {
-      const next = JSON.parse(JSON.stringify(prev)) as UnifiedFlowchartSchema;
-      delete next.entities[id];
-      Object.keys(next.views).forEach(vKey => {
-        next.views[vKey].nodes = next.views[vKey].nodes.filter(n => n.id !== id);
-        next.views[vKey].groups.forEach(g => g.nodeIds = g.nodeIds ? g.nodeIds.filter(nid => nid !== id) : []);
-      });
-      next.relations = next.relations.filter(r => r.from !== id && r.to !== id);
-      next.journeys.forEach(j => {
-        j.steps = j.steps.filter(s => s.nodeId !== id);
-      });
-      return next;
-    });
-    setSelectedId(null);
-  };
-
-  const exportSchema = () => {
-    const jsonStr = JSON.stringify(localSchema, null, 2);
-    navigator.clipboard.writeText(jsonStr);
-    alert('Schema JSON copied to clipboard!');
-    console.log(jsonStr);
-  };
 
   const transformStr = `translate(${transform.translateX}, ${transform.translateY}) scale(${transform.scale})`;
 
@@ -741,21 +680,6 @@ export function Flowchart({ title, schema = INITIAL_SCHEMA }: FlowchartProps) {
               })}
             </div>
           )}
-
-          {/* Toggle Edit Mode button */}
-          <button
-            onClick={() => {
-              setIsEditMode(!isEditMode);
-              setSelectedId(null);
-              setActiveStep(null);
-            }}
-            className={`flowchart-view-tab-btn ${isEditMode ? 'active' : ''}`}
-            title="Toggle Edit Mode"
-            style={{ padding: '6px 10px', height: '31px' }}
-          >
-            <Settings size={14} />
-            <span>{isEditMode ? 'Exit Edit' : 'Edit Diagram'}</span>
-          </button>
         </div>
       </div>
 
@@ -770,7 +694,7 @@ export function Flowchart({ title, schema = INITIAL_SCHEMA }: FlowchartProps) {
               value={currentJourneyId}
               onChange={(e) => {
                 setCurrentJourneyId(e.target.value);
-                setCurrentStep(0);
+                setCurrentStep(-1);
                 setIsPlaying(false);
                 setActiveStep(null);
               }}
@@ -812,8 +736,6 @@ export function Flowchart({ title, schema = INITIAL_SCHEMA }: FlowchartProps) {
             handleZoomIn={handleZoomIn}
             handleZoomOut={handleZoomOut}
             handleFitToScreen={handleFitToScreen}
-            exportSchema={exportSchema}
-            isEditMode={isEditMode}
           />
 
           {/* Clear Focus overlay */}
@@ -821,11 +743,7 @@ export function Flowchart({ title, schema = INITIAL_SCHEMA }: FlowchartProps) {
             <button
               onClick={() => {
                 setActiveStep(null);
-                if (currentJourney && !activeView.steps) {
-                  setCurrentStep(-1);
-                } else {
-                  setCurrentStep(0);
-                }
+                setCurrentStep(-1);
                 animateTo(50, 100, 0.45);
               }}
               className="flowchart-btn animate-fade-in"
@@ -865,23 +783,23 @@ export function Flowchart({ title, schema = INITIAL_SCHEMA }: FlowchartProps) {
             onTouchEnd={handlePointerUp}
           >
             <defs>
-              <filter id="flowchart-desc-shadow" x="-20%" y="-20%" width="140%" height="140%">
+              <filter id={`flowchart-desc-shadow-${instanceId}`} x="-20%" y="-20%" width="140%" height="140%">
                 <feDropShadow dx="0" dy="3" stdDeviation="6" floodColor="#ca9ee6" floodOpacity="0.25" />
               </filter>
-              <filter id="flowchart-tooltip-shadow" x="-20%" y="-20%" width="140%" height="140%">
+              <filter id={`flowchart-tooltip-shadow-${instanceId}`} x="-20%" y="-20%" width="140%" height="140%">
                 <feDropShadow dx="0" dy="2" stdDeviation="4" floodColor="#000000" floodOpacity="0.4" />
               </filter>
-              <filter id="flowchart-glow" x="-20%" y="-20%" width="140%" height="140%">
+              <filter id={`flowchart-glow-${instanceId}`} x="-20%" y="-20%" width="140%" height="140%">
                 <feDropShadow dx="0" dy="0" stdDeviation="6" floodColor="#8caaee" floodOpacity="0.6" />
               </filter>
-              <marker id="flowchart-arrow" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto">
+              <marker id={`flowchart-arrow-${instanceId}`} markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto">
                 <path d="M 0 0 L 7 3 L 0 6 Z" fill="#626880" />
               </marker>
-              <marker id="flowchart-arrow-highlight" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto">
+              <marker id={`flowchart-arrow-highlight-${instanceId}`} markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto">
                 <path d="M 0 0 L 7 3 L 0 6 Z" fill="#8caaee" />
               </marker>
               <pattern
-                id="dotGrid"
+                id={`dotGrid-${instanceId}`}
                 width={20 * transform.scale}
                 height={20 * transform.scale}
                 patternUnits="userSpaceOnUse"
@@ -891,7 +809,7 @@ export function Flowchart({ title, schema = INITIAL_SCHEMA }: FlowchartProps) {
               </pattern>
             </defs>
 
-            <rect width="100%" height="100%" fill="url(#dotGrid)" style={{ pointerEvents: 'none' }} />
+            <rect width="100%" height="100%" fill={`url(#dotGrid-${instanceId})`} style={{ pointerEvents: 'none' }} />
 
             <g transform={transformStr} data-testid="flowchart-canvas">
               
@@ -899,20 +817,40 @@ export function Flowchart({ title, schema = INITIAL_SCHEMA }: FlowchartProps) {
               {activeView.groups && activeView.groups.map(group => {
                 const isFaded = activeNodeIds !== null;
                 if (group.isLane) {
+                  let yVal = group.y ?? 100;
+                  let hVal = group.h ?? 180;
+                  if (typeof group.row === 'number') {
+                    if (group.row === 0) {
+                      yVal = 30;
+                      hVal = 110;
+                    } else if (group.row === 1) {
+                      yVal = 200;
+                      hVal = 160;
+                    } else if (group.row === 2) {
+                      yVal = 390;
+                      hVal = 160;
+                    } else if (group.row === 3) {
+                      yVal = 590;
+                      hVal = 110;
+                    } else {
+                      yVal = 590 + (group.row - 3) * 190;
+                      hVal = 160;
+                    }
+                  }
                   return (
                     <g key={group.id} className="flowchart-swimlane-group" opacity={isFaded ? 0.15 : 0.85} style={{ transition: 'opacity 0.3s' }}>
                       <rect
                         x={minX - 100}
-                        y={group.y ?? 100}
+                        y={yVal}
                         width={maxX - minX + 500}
-                        height={group.h ?? 180}
+                        height={hVal}
                         fill={group.color || 'rgba(186, 187, 241, 0.10)'}
                         stroke={group.borderColor || '#626880'}
                         strokeWidth="1.5"
                       />
                       <text
                         x={minX - 80}
-                        y={(group.y ?? 100) + 25}
+                        y={yVal + 25}
                         fontSize="13"
                         fontWeight="bold"
                         fill={group.textColor || '#b5bfe2'}
@@ -970,16 +908,10 @@ export function Flowchart({ title, schema = INITIAL_SCHEMA }: FlowchartProps) {
                   const entityTo = localSchema.entities[rel.to];
                   if (!entityFrom || !entityTo) return null;
 
-                  const fromType = entityFrom.viewTypes[activeViewKey] || 'default';
-                  const toType = entityTo.viewTypes[activeViewKey] || 'default';
-
-                  const fromIsSmall = ([TYPES.USER, TYPES.EXTERNAL, TYPES.HOTSPOT, TYPES.DECISION] as string[]).includes(fromType);
-                  const toIsSmall = ([TYPES.USER, TYPES.EXTERNAL, TYPES.HOTSPOT, TYPES.DECISION] as string[]).includes(toType);
-
-                  const fromW = fromIsSmall ? SMALL_W : NODE_W;
-                  const fromH = fromIsSmall ? SMALL_H : NODE_H;
-                  const toW = toIsSmall ? SMALL_W : NODE_W;
-                  const toH = toIsSmall ? SMALL_H : NODE_H;
+                  const fromW = NODE_W;
+                  const fromH = NODE_H;
+                  const toW = NODE_W;
+                  const toH = NODE_H;
 
                   const x1 = fromNode.x;
                   const y1 = fromNode.y;
@@ -1027,7 +959,7 @@ export function Flowchart({ title, schema = INITIAL_SCHEMA }: FlowchartProps) {
                          strokeWidth="1.5"
                          fill="none"
                          strokeOpacity="0.3"
-                         markerEnd={isHandledBy ? '' : 'url(#flowchart-arrow)'}
+                         markerEnd={isHandledBy ? '' : `url(#flowchart-arrow-${instanceId})`}
                        />
                        <path
                          d={pathD}
@@ -1036,7 +968,7 @@ export function Flowchart({ title, schema = INITIAL_SCHEMA }: FlowchartProps) {
                          fill="none"
                          strokeOpacity={isHighlighted ? '0.95' : (isHandledBy ? '0.8' : '0.55')}
                          strokeDasharray={isHandledBy ? 'none' : (rel.dashed ? '4 4' : '6 7')}
-                         markerEnd={isHandledBy ? 'url(#flowchart-arrow)' : (isHighlighted ? 'url(#flowchart-arrow-highlight)' : 'url(#flowchart-arrow)')}
+                         markerEnd={isHandledBy ? `url(#flowchart-arrow-${instanceId})` : (isHighlighted ? `url(#flowchart-arrow-highlight-${instanceId})` : `url(#flowchart-arrow-${instanceId})`)}
                          className={rel.dashed ? '' : 'flowchart-edge-animated'}
                        />
                        {isHandledBy && (
@@ -1051,6 +983,21 @@ export function Flowchart({ title, schema = INITIAL_SCHEMA }: FlowchartProps) {
                            style={{ pointerEvents: 'none', userSelect: 'none' }}
                          >
                            handled by
+                         </text>
+                       )}
+                       {!isHandledBy && rel.label && (
+                         <text
+                           x={midX + (isVertical ? 8 : 0)}
+                           y={midY - 4}
+                           textAnchor={isVertical ? 'start' : 'middle'}
+                           fill={isHighlighted ? '#8caaee' : '#a5adce'}
+                           fontSize="9"
+                           fontFamily="var(--font-mono)"
+                           fontWeight="500"
+                           opacity={isHighlighted ? '0.95' : '0.75'}
+                           style={{ pointerEvents: 'none', userSelect: 'none' }}
+                         >
+                           {rel.label}
                          </text>
                        )}
                      </g>
@@ -1076,16 +1023,14 @@ export function Flowchart({ title, schema = INITIAL_SCHEMA }: FlowchartProps) {
                 if (!entity) return null;
                 
                 const viewType = entity.viewTypes[activeViewKey] || 'default';
-                const isSmall = ( [TYPES.USER, TYPES.EXTERNAL, TYPES.HOTSPOT, TYPES.DECISION] as string[] ).includes(viewType);
-                const nW = isSmall ? SMALL_W : NODE_W;
-                const nH = isSmall ? SMALL_H : NODE_H;
+                const nW = NODE_W;
+                const nH = NODE_H;
 
                 const x = node.x - nW / 2;
                 const y = node.y - nH / 2;
 
                 const isStepHighlighted = activeNodeIds && activeNodeIds.includes(node.id);
                 const isDimmed = activeNodeIds !== null && !isStepHighlighted;
-                const isSelected = selectedId === node.id && activeTab === 'entities';
 
                 const isHighlighted = isStepHighlighted || (highlightedNodeId === node.id);
                 
@@ -1096,22 +1041,29 @@ export function Flowchart({ title, schema = INITIAL_SCHEMA }: FlowchartProps) {
                 const animClass = ICON_ANIMATIONS[viewType as keyof typeof ICON_ANIMATIONS] || '';
                 const IconComponent = iconName && (iconName in Icons) ? (Icons as unknown as Record<string, React.ComponentType<{ size?: number; className?: string; color?: string }>>)[iconName] : null;
 
+                const hasLinks = entity && Object.keys(entity.viewTypes).filter(vk => vk !== activeViewKey && localSchema.views[vk]).length > 0;
+
                 return (
                   <g
                     key={node.id}
                     data-testid={`flowchart-node-${node.id}`}
-                    className="flowchart-node-group"
-                    onMouseDown={(e) => onNodeMouseDown(e, node.id)}
-                    onTouchStart={(e) => onNodeTouchStart(e, node.id)}
+                    className={`flowchart-node-group ${hasLinks ? 'has-links' : ''}`}
+                    onMouseDown={(e) => e.stopPropagation()}
+                    onTouchStart={(e) => e.stopPropagation()}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleNodeClick(node.id);
+                    }}
                     onMouseEnter={() => {
-                      if (!dragRef.current.active && entity.desc) {
+                      if (entity.desc) {
                         setTooltip({ description: entity.desc, x: node.x, y: node.y - nH/2 });
                       }
                     }}
                     onMouseLeave={() => setTooltip(null)}
                     style={{
                       opacity: isDimmed ? 0.25 : 1,
-                      transition: 'opacity 0.3s, filter 0.3s'
+                      transition: 'opacity 0.3s, filter 0.3s',
+                      cursor: hasLinks ? 'pointer' : 'default'
                     }}
                   >
                     <rect
@@ -1121,11 +1073,17 @@ export function Flowchart({ title, schema = INITIAL_SCHEMA }: FlowchartProps) {
                       fill={nodeFill}
                       stroke={strokeColor}
                       strokeWidth="1.5"
-                      filter={isHighlighted || isSelected ? 'url(#flowchart-glow)' : undefined}
+                      filter={isHighlighted ? `url(#flowchart-glow-${instanceId})` : undefined}
                       className={`flowchart-node-rect ${isHighlighted ? 'flowchart-node-highlighted' : ''}`}
                     />
                     
-                    <foreignObject x={x} y={y} width={nW} height={nH} style={{ pointerEvents: 'none' }}>
+                    <foreignObject
+                      x={0}
+                      y={0}
+                      transform={`translate(${x}, ${y})`}
+                      width={nW}
+                      height={nH}
+                    >
                       <div
                         className="flowchart-node-card"
                         style={{
@@ -1167,6 +1125,21 @@ export function Flowchart({ title, schema = INITIAL_SCHEMA }: FlowchartProps) {
                           >
                             {viewType}
                           </span>
+                          {hasLinks && (
+                            <span 
+                              className="flowchart-node-link-icon"
+                              style={{ 
+                                marginLeft: 'auto', 
+                                display: 'flex', 
+                                alignItems: 'center', 
+                                opacity: 0.5,
+                                transition: 'all 0.2s ease'
+                              }} 
+                              title="Has links to other views"
+                            >
+                              <Icons.Link size={10} color={strokeColor} />
+                            </span>
+                          )}
                         </div>
                         <div
                           style={{
@@ -1183,10 +1156,10 @@ export function Flowchart({ title, schema = INITIAL_SCHEMA }: FlowchartProps) {
                               textAlign: 'center',
                               fontWeight: 'bold',
                               lineHeight: 1.25,
-                              fontSize: isSmall ? '10px' : '11px',
+                              fontSize: '11px',
                               color: 'var(--ctp-text)',
                               display: '-webkit-box',
-                              WebkitLineClamp: isSmall ? 2 : 3,
+                              WebkitLineClamp: 3,
                               WebkitBoxOrient: 'vertical',
                               overflow: 'hidden'
                             }}
@@ -1223,7 +1196,7 @@ export function Flowchart({ title, schema = INITIAL_SCHEMA }: FlowchartProps) {
                       fill="#232634"
                       stroke="#51576d"
                       strokeWidth="1"
-                      filter="url(#flowchart-tooltip-shadow)"
+                      filter={`url(#flowchart-tooltip-shadow-${instanceId})`}
                     />
                     {lines.map((line, li) => (
                       <text
@@ -1248,24 +1221,86 @@ export function Flowchart({ title, schema = INITIAL_SCHEMA }: FlowchartProps) {
             activeSteps={activeSteps}
             activeStep={activeStep}
             handleStepClick={handleStepClick}
+            instanceId={instanceId}
           />
+
+          {/* Jump to view popover */}
+          {activeNodePopup && (
+            <div
+              style={{
+                position: 'absolute',
+                left: `${transform.translateX + activeNodePopup.x * transform.scale}px`,
+                top: `${transform.translateY + activeNodePopup.y * transform.scale + 30}px`,
+                transform: 'translateX(-50%)',
+                zIndex: 40,
+                background: 'var(--ctp-crust)',
+                border: '1px solid var(--ctp-blue)',
+                borderRadius: '8px',
+                padding: '8px 12px',
+                boxShadow: '0 4px 16px rgba(0, 0, 0, 0.5)',
+                display: 'flex',
+                flexDirection: 'column',
+                gap: '6px',
+                minWidth: '150px',
+                pointerEvents: 'auto'
+              }}
+            >
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2px' }}>
+                <span style={{ fontSize: '9px', fontWeight: 'bold', color: 'var(--ctp-overlay1)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                  Related Views
+                </span>
+                <button
+                  onClick={() => setActiveNodePopup(null)}
+                  style={{
+                    background: 'transparent',
+                    border: 'none',
+                    color: 'var(--ctp-overlay1)',
+                    cursor: 'pointer',
+                    padding: '2px',
+                    display: 'flex',
+                    alignItems: 'center'
+                  }}
+                >
+                  <Icons.X size={10} />
+                </button>
+              </div>
+              {activeNodePopup.views.map(v => (
+                <button
+                  key={v.key}
+                  onClick={() => {
+                    pendingFocusNodeIdRef.current = activeNodePopup.nodeId;
+                    setActiveViewKey(v.key);
+                    setActiveNodePopup(null);
+                  }}
+                  style={{
+                    background: 'var(--ctp-surface0)',
+                    border: '1px solid var(--border-light)',
+                    borderRadius: '4px',
+                    color: 'var(--ctp-text)',
+                    padding: '6px 10px',
+                    fontSize: '11px',
+                    textAlign: 'left',
+                    cursor: 'pointer',
+                    transition: 'all 0.15s ease',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                    gap: '12px'
+                  }}
+                  className="flowchart-popup-btn"
+                >
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
+                    <span style={{ fontWeight: '500' }}>{v.name}</span>
+                    <span style={{ fontSize: '9px', color: 'var(--ctp-overlay1)' }}>as {v.type}</span>
+                  </div>
+                  <span style={{ color: 'var(--ctp-blue)', fontSize: '12px' }}>&rarr;</span>
+                </button>
+              ))}
+            </div>
+          )}
         </div>
 
-        <FlowchartSidebar
-          isEditMode={isEditMode}
-          selectedId={selectedId}
-          activeTab={activeTab}
-          localSchema={localSchema}
-          activeViewKey={activeViewKey}
-          activeView={activeView}
-          viewKeys={viewKeys}
-          setSelectedId={setSelectedId}
-          setActiveTab={setActiveTab}
-          setLocalSchema={setLocalSchema}
-          addEntity={addEntity}
-          updateEntity={updateEntity}
-          deleteEntity={deleteEntity}
-        />
+
       </div>
 
 

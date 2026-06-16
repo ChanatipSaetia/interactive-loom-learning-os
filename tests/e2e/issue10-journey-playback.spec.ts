@@ -18,21 +18,22 @@ test.describe('Issue #10 Slice 2: Journey selector + step-by-step highlighting +
     await expect(select).toHaveValue('query-journey')
   })
 
-  test('switching journeys resets to step 0', async ({ page }) => {
+  test('switching journeys resets to overview', async ({ page }) => {
     const select = page.getByTestId('flowchart-journey-select')
     const progress = page.getByTestId('flowchart-progress')
 
-    await expect(progress).toHaveText('1 / 6')
+    await expect(progress).toHaveText('0 / 6')
 
     await select.selectOption('tool-use-journey')
-    await expect(progress).toHaveText('1 / 7')
+    await expect(progress).toHaveText('0 / 7')
   })
 
   test('step through all Query Journey steps with highlights', async ({ page }) => {
     const progress = page.getByTestId('flowchart-progress')
     const nextBtn = page.getByTestId('flowchart-btn-next')
 
-    await expect(progress).toHaveText('1 / 6')
+    await expect(progress).toHaveText('0 / 6')
+    await nextBtn.click()
 
     const queryJourneyNodes = [
       '[data-testid="flowchart-node-user"]',
@@ -62,7 +63,8 @@ test.describe('Issue #10 Slice 2: Journey selector + step-by-step highlighting +
     const nextBtn = page.getByTestId('flowchart-btn-next')
 
     await select.selectOption('tool-use-journey')
-    await expect(progress).toHaveText('1 / 7')
+    await expect(progress).toHaveText('0 / 7')
+    await nextBtn.click()
 
     const toolUseJourneyNodes = [
       '[data-testid="flowchart-node-user"]',
@@ -91,8 +93,10 @@ test.describe('Issue #10 Slice 2: Journey selector + step-by-step highlighting +
     const playBtn = page.getByTestId('flowchart-btn-play')
     const progress = page.getByTestId('flowchart-progress')
 
-    await expect(progress).toHaveText('1 / 6')
+    await expect(progress).toHaveText('0 / 6')
     await playBtn.click()
+
+    await expect(progress).toHaveText('1 / 6')
 
     for (let step = 2; step <= 6; step++) {
       await page.waitForTimeout(1300)
@@ -116,33 +120,35 @@ test.describe('Issue #10 Slice 2: Journey selector + step-by-step highlighting +
     const prevBtn = page.getByTestId('flowchart-btn-prev')
     const progress = page.getByTestId('flowchart-progress')
 
-    await nextBtn.click()
+    await nextBtn.click() // to 1 / 6
+    await nextBtn.click() // to 2 / 6
     await expect(progress).toHaveText('2 / 6')
     await prevBtn.click()
     await expect(progress).toHaveText('1 / 6')
   })
 
-  test('reset button returns to step 0', async ({ page }) => {
+  test('reset button returns to overview', async ({ page }) => {
     const nextBtn = page.getByTestId('flowchart-btn-next')
     const resetBtn = page.getByTestId('flowchart-btn-reset')
     const progress = page.getByTestId('flowchart-progress')
 
-    await nextBtn.click()
-    await nextBtn.click()
-    await nextBtn.click()
+    await nextBtn.click() // to 1 / 6
+    await nextBtn.click() // to 2 / 6
+    await nextBtn.click() // to 3 / 6
+    await nextBtn.click() // to 4 / 6
     await expect(progress).toHaveText('4 / 6')
     await resetBtn.click()
-    await expect(progress).toHaveText('1 / 6')
+    await expect(progress).toHaveText('0 / 6')
   })
 
-  test('prev disabled at first step', async ({ page }) => {
+  test('prev disabled at overview', async ({ page }) => {
     const prevBtn = page.getByTestId('flowchart-btn-prev')
     await expect(prevBtn).toBeDisabled()
   })
 
   test('next disabled at last step', async ({ page }) => {
     const nextBtn = page.getByTestId('flowchart-btn-next')
-    for (let i = 0; i < 5; i++) {
+    for (let i = 0; i < 6; i++) {
       await nextBtn.click()
     }
     await expect(nextBtn).toBeDisabled()
@@ -152,7 +158,7 @@ test.describe('Issue #10 Slice 2: Journey selector + step-by-step highlighting +
   test('play disabled at last step', async ({ page }) => {
     const nextBtn = page.getByTestId('flowchart-btn-next')
     const playBtn = page.getByTestId('flowchart-btn-play')
-    for (let i = 0; i < 5; i++) {
+    for (let i = 0; i < 6; i++) {
       await nextBtn.click()
     }
     await expect(playBtn).toBeDisabled()
@@ -163,7 +169,7 @@ test.describe('Issue #10 Slice 2: Journey selector + step-by-step highlighting +
     await expect(pauseBtn).toBeDisabled()
   })
 
-  test('reset disabled at step 0', async ({ page }) => {
+  test('reset disabled at overview', async ({ page }) => {
     const resetBtn = page.getByTestId('flowchart-btn-reset')
     await expect(resetBtn).toBeDisabled()
   })

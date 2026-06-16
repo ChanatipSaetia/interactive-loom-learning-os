@@ -34,9 +34,9 @@ Event → Policy → Command ═══> Handler → Event
 | Y-Coordinate | Layer | Elements |
 |---|---|---|
 | 50 | Support | Database, Read Model |
-| 120 | Handler | Aggregate, Actor, External System |
+| 150 | Handler | Aggregate, Actor, External System |
 | 250 | Timeline | Event, Command, Policy |
-| 400+ | Branch | Failure/alternative paths (+150px per level) |
+| 450+ | Branch | Failure/alternative paths (+200px per level) |
 
 ## Stacking Rule
 
@@ -57,7 +57,7 @@ Event → Policy → Command ═══> Handler → Event
 ```
 Within a stack:   ~140px between elements (tight, adjacent)
 Between stacks:   ~160px gap (visual separation)
-Branch offset:    +150px per branch level (y:400, y:540, ...)
+Branch offset:    +200px per branch level (y:450, y:650, ...)
 ```
 
 ## Schema Rules
@@ -83,9 +83,9 @@ When creating Event Storming data, verify:
 - [ ] Events use past tense (`Submitted`, `Generated`)
 - [ ] Commands use imperative verbs (`Create`, `Run`, `Review`)
 - [ ] Commands and handlers share same x-coordinate
-- [ ] Handlers positioned above commands at y:120
+- [ ] Handlers positioned above commands at y:150
 - [ ] All timeline elements at y:250
-- [ ] Branches diverge to lower y (400, 540, ...)
+- [ ] Branches diverge to lower y (450, 650, ...)
 - [ ] `handledBy: true` on command → handler relations
 - [ ] Loop-back relations use `dashed: true`
 - [ ] Each stack is tightly grouped (~140px between elements)

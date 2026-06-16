@@ -33,9 +33,17 @@ _Avoid_: Stage, Phase, Tick
 Text that appears near the highlighted node and disappears when the step changes. Does not move between nodes — appears fresh at each new node.
 _Avoid_: Tooltip, Caption, Annotation
 
+**Grid Coordinates**:
+The logical column and row indices (`[col, row]`) used to position a node. Spacing, padding, and alignment are calculated automatically by the layout compiler based on these indices.
+_Avoid_: Absolute Coordinates, X/Y Coordinates, Pixel Positions
+
 **Layer**:
-A horizontal band in the top-to-bottom layout where nodes sit at the same vertical level. Determined by auto-layout algorithm with author override.
-_Avoid_: Level, Row, Tier
+A horizontal band in the flowchart layout determined by the logical grid row index.
+_Avoid_: Level, Tier
+
+**Group**:
+A visual container (boundary box) enclosing a set of nodes. Its boundaries and dimensions are calculated automatically by the compiler at runtime based on the positions of its member nodes.
+_Avoid_: VPC Box, Boundary Container
 
 **Stereotype**:
 A UML-style tag (`<<service>>`, `<<database>>`, `<<client>>`) displayed above the node's icon/label to categorize the node type.

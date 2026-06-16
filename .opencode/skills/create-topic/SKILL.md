@@ -71,7 +71,7 @@ Before writing code:
 
 ### 5. Subagent Types
 
-Each subagent reads its own `references/Section-<Type>.md` for schema. Flowchart subagents read `Section-Flowchart.md` plus the view-specific files (`Section-Flowchart-SysArch.md`, `Section-Flowchart-EventStorming.md`, `Section-Flowchart-DataFlow.md`, `Section-Flowchart-Swimlanes.md`).
+Each subagent reads its own `references/Section-<Type>.md` for schema. Flowchart subagents read `Section-Flowchart.md`.
 
 ### 6. Integrate and Verify (Main Agent)
 
@@ -83,17 +83,22 @@ Import topic in `src/main.tsx`, register route in `src/core/routes.ts`, run `npm
 - Flowchart journeys must reference entity IDs that exist in at least one view
 - EVENT and POLICY types are Event Storming only
 - Taxonomy `color` must be Frappé key
-- Event Storming EVENTS use past tense titles
+- **Event Storming Naming**: Events use past tense titles (e.g. `Goal Submitted`), Commands use imperative verbs (e.g. `Create Plan`), and Policies use rule titles (e.g. `Route Next Step`).
+- **Entity Collapsing**: Event Storming aggregates or temporary nodes that merge/collapse in other structural views must declare `collapsedTo: 'collapsed_entity_id'` in their entity definitions so that journey steps highlight them correctly in all views.
 
 ## Reference Files
 
-- [Section-Flowchart.md](references/Section-Flowchart.md) — Schema, entities, relations, views, journeys
-- [Section-Flowchart-SysArch.md](references/Section-Flowchart-SysArch.md) — SYS_ARCH: layout, boundary group, positions
-- [Section-Flowchart-EventStorming.md](references/Section-Flowchart-EventStorming.md) — ES: DDD mappings, stack layout math, grid
-- [Section-Flowchart-DataFlow.md](references/Section-Flowchart-DataFlow.md) — DFD: pipeline layout, positions
-- [Section-Flowchart-Swimlanes.md](references/Section-Flowchart-Swimlanes.md) — Swimlanes: lane design, positions
+- [Section-Flowchart.md](references/Section-Flowchart.md) — Unified single-file schema and grid coordinate system (referencing flowchart-schema.json)
+  - [Section-Flowchart-EventStorming.md](references/Section-Flowchart-EventStorming.md) — Chronological, zero-gap stacking, branching tree
+  - [Section-Flowchart-Swimlanes.md](references/Section-Flowchart-Swimlanes.md) — Simplified 3-lane structure (Actors, System, External Systems)
+  - [Section-Flowchart-SysArch.md](references/Section-Flowchart-SysArch.md) — Center-focused hub-and-spoke topologies
+  - [Section-Flowchart-Sequence.md](references/Section-Flowchart-Sequence.md) — (NEW) Vertical lifelines and horizontal message calls
+  - [Section-Flowchart-DataFlow.md](references/Section-Flowchart-DataFlow.md) — Data-format nodes and JSON payload transitions
+  - [Section-Flowchart-StateMachine.md](references/Section-Flowchart-StateMachine.md) — (NEW) Interactive Orchestrator lifecycle states
+  - [Section-Flowchart-ERD.md](references/Section-Flowchart-ERD.md) — (NEW) Relational database schemas for aggregates
 - [Section-TaxonomyBrowser.md](references/Section-TaxonomyBrowser.md)
 - [Section-TradeoffSandbox.md](references/Section-TradeoffSandbox.md)
 - [Section-Text.md](references/Section-Text.md)
 - [Section-Bullets.md](references/Section-Bullets.md)
 - **Best example**: `src/topics/ai-operating-model/`
+

@@ -93,3 +93,11 @@ Comment each cross-lane relation with the boundary it crosses:
 - Use when "who does what" matters more than component structure
 - Cross-lane edges highlight handoffs and integration points
 - Position nodes inside their lane's y-range
+
+## Simplified 3-Lane Design
+
+To keep swimlane ownership clean and high-level:
+- **Actors Lane (Lane 0)**: Contains human roles (e.g. `user`, `human_reviewer`, `admin`) and final deliverables (`output`).
+- **System Lane (Lane 1)**: Represents the built system itself. Ignore internal micro-level service splits or aggregates here; place all internal system components (e.g. `orchestrator`, `planner`, `tools`, `executor`, `evaluator`, `memory`) inside this single lane.
+- **External Systems Lane (Lane 2)**: Contains out-of-boundary systems (e.g. `llm` engine, external APIs, payment gateways).
+- This structure reduces visual noise and draws focus to boundary crossings (Actor ↔ System and System ↔ External).

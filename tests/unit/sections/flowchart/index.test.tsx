@@ -141,14 +141,7 @@ describe('Flowchart component', () => {
     expect(canvas).toHaveAttribute('transform');
   });
 
-  it('node groups have drag mouse handlers', () => {
-    render(<Flowchart title="Test" schema={mockSchema} />, { wrapper });
-    const svg = screen.getByTestId('flowchart-svg');
-    const nodeGroup = svg.querySelector('[data-testid="flowchart-node-user"]') as unknown as HTMLElement;
-    expect(nodeGroup).toBeInTheDocument();
-    // Verify properties exist (Testing Library might wrap them)
-    expect(nodeGroup.onmousedown).toBeDefined();
-  });
+
 
   it('SVG has pan and zoom handlers', () => {
     render(<Flowchart title="Test" schema={mockSchema} />, { wrapper });
@@ -189,12 +182,12 @@ describe('Flowchart journey controls', () => {
     expect(select.value).toBe('journey-a');
   });
 
-  it('switching journeys resets to step 0', () => {
+  it('switching journeys resets to overview', () => {
     render(<Flowchart title="Test" schema={mockSchema} />, { wrapper });
     const select = screen.getByTestId('flowchart-journey-select');
     fireEvent.change(select, { target: { value: 'journey-b' } });
     const progress = screen.getByTestId('flowchart-progress');
-    expect(progress.textContent).toBe('1 / 2');
+    expect(progress.textContent).toBe('0 / 2');
   });
 
   it('renders playback controls', () => {
@@ -209,7 +202,7 @@ describe('Flowchart journey controls', () => {
   it('renders progress indicator', () => {
     render(<Flowchart title="Test" schema={mockSchema} />, { wrapper });
     const progress = screen.getByTestId('flowchart-progress');
-    expect(progress.textContent).toBe('1 / 3');
+    expect(progress.textContent).toBe('0 / 3');
   });
 
   it('prev button is disabled at first step', () => {
@@ -222,6 +215,7 @@ describe('Flowchart journey controls', () => {
     const nextBtn = screen.getByTestId('flowchart-btn-next');
     fireEvent.click(nextBtn);
     fireEvent.click(nextBtn);
+    fireEvent.click(nextBtn);
     expect(nextBtn).toBeDisabled();
     expect(screen.getByTestId('flowchart-progress')).toHaveTextContent('3 / 3');
   });
@@ -230,9 +224,9 @@ describe('Flowchart journey controls', () => {
     render(<Flowchart title="Test" schema={mockSchema} />, { wrapper });
     const nextBtn = screen.getByTestId('flowchart-btn-next');
     const progress = screen.getByTestId('flowchart-progress');
-    expect(progress.textContent).toBe('1 / 3');
+    expect(progress.textContent).toBe('0 / 3');
     fireEvent.click(nextBtn);
-    expect(progress.textContent).toBe('2 / 3');
+    expect(progress.textContent).toBe('1 / 3');
   });
 
   it('prev button goes back one step', () => {
@@ -241,31 +235,33 @@ describe('Flowchart journey controls', () => {
     const prevBtn = screen.getByTestId('flowchart-btn-prev');
     const progress = screen.getByTestId('flowchart-progress');
     fireEvent.click(nextBtn);
+    fireEvent.click(nextBtn);
     expect(progress.textContent).toBe('2 / 3');
     fireEvent.click(prevBtn);
     expect(progress.textContent).toBe('1 / 3');
   });
 
-  it('reset button returns to step 0', () => {
+  it('reset button returns to overview', () => {
     render(<Flowchart title="Test" schema={mockSchema} />, { wrapper });
     const nextBtn = screen.getByTestId('flowchart-btn-next');
     const resetBtn = screen.getByTestId('flowchart-btn-reset');
     const progress = screen.getByTestId('flowchart-progress');
     fireEvent.click(nextBtn);
     fireEvent.click(nextBtn);
-    expect(progress.textContent).toBe('3 / 3');
+    expect(progress.textContent).toBe('2 / 3');
     fireEvent.click(resetBtn);
-    expect(progress.textContent).toBe('1 / 3');
+    expect(progress.textContent).toBe('0 / 3');
   });
 
   it('play auto-advances through steps', async () => {
     render(<Flowchart title="Test" schema={mockSchema} />, { wrapper });
     const playBtn = screen.getByTestId('flowchart-btn-play');
     const progress = screen.getByTestId('flowchart-progress');
-    expect(progress.textContent).toBe('1 / 3');
+    expect(progress.textContent).toBe('0 / 3');
     await act(async () => {
       fireEvent.click(playBtn);
     });
+    expect(progress.textContent).toBe('1 / 3');
     await act(async () => {
       vi.advanceTimersByTime(2600);
     });
@@ -291,6 +287,8 @@ describe('Flowchart journey controls', () => {
 
   it('highlights current step node', () => {
     render(<Flowchart title="Test" schema={mockSchema} />, { wrapper });
+    const nextBtn = screen.getByTestId('flowchart-btn-next');
+    fireEvent.click(nextBtn);
     const svg = screen.getByTestId('flowchart-svg');
     const userNode = svg.querySelector('[data-testid="flowchart-node-user"]');
     expect(userNode).toBeInTheDocument();
@@ -301,6 +299,7 @@ describe('Flowchart journey controls', () => {
   it('update highlight when step advances', () => {
     render(<Flowchart title="Test" schema={mockSchema} />, { wrapper });
     const nextBtn = screen.getByTestId('flowchart-btn-next');
+    fireEvent.click(nextBtn);
     fireEvent.click(nextBtn);
     const agentNode = screen.getByTestId('flowchart-node-agent');
     expect(agentNode).toBeInTheDocument();
@@ -314,6 +313,7 @@ describe('Flowchart journey controls', () => {
     const playBtn = screen.getByTestId('flowchart-btn-play');
     fireEvent.click(nextBtn);
     fireEvent.click(nextBtn);
+    fireEvent.click(nextBtn);
     expect(playBtn).toBeDisabled();
   });
 
@@ -322,7 +322,7 @@ describe('Flowchart journey controls', () => {
     expect(screen.getByTestId('flowchart-btn-pause')).toBeDisabled();
   });
 
-  it('reset disabled at step 0', () => {
+  it('reset disabled at overview', () => {
     render(<Flowchart title="Test" schema={mockSchema} />, { wrapper });
     expect(screen.getByTestId('flowchart-btn-reset')).toBeDisabled();
   });
@@ -358,5 +358,100 @@ describe('Flowchart particle animation', () => {
     expect(particle).toBeInTheDocument();
   });
 });
+
+describe('Flowchart grid coordinate compilation', () => {
+  const gridSchema: UnifiedFlowchartSchema = {
+    entities: {
+      n1: { title: 'Node 1', desc: 'Node 1 desc', viewTypes: { EVENT_STORMING: 'Event', SYS_ARCH: 'Service' } }
+    },
+    relations: [],
+    views: {
+      EVENT_STORMING: {
+        name: 'Event Storming',
+        icon: 'Component',
+        nodes: [
+          { id: 'n1', grid: [1, 2] }
+        ],
+        groups: []
+      },
+      SYS_ARCH: {
+        name: 'System Architecture',
+        icon: 'Server',
+        nodes: [
+          { id: 'n1', grid: [1, 2] }
+        ],
+        groups: []
+      }
+    },
+    journeys: []
+  };
+
+  it('resolves grid coordinates in EVENT_STORMING view', () => {
+    // Render flowchart, defaulting to EVENT_STORMING view
+    render(<Flowchart title="Grid Test" schema={gridSchema} />, { wrapper });
+    const nodeGroup = screen.getByTestId('flowchart-node-n1');
+    expect(nodeGroup).toBeInTheDocument();
+    
+    const rect = nodeGroup.querySelector('rect');
+    expect(rect).toBeInTheDocument();
+    
+    // grid: [1, 2] -> x = 1 * 140 + 60 = 200 -> rect x = 200 - 140/2 = 130
+    // grid: [1, 2] -> y = r2 -> 250 -> rect y = 250 - 100/2 = 200
+    expect(rect!.getAttribute('x')).toBe('130');
+    expect(rect!.getAttribute('y')).toBe('200');
+  });
+
+  it('renders and switches view via related views popup when clicking a node in view mode', async () => {
+    const multiViewSchema: UnifiedFlowchartSchema = {
+      entities: {
+        n1: { title: 'Node 1', desc: 'Node 1 desc', viewTypes: { VIEW_A: 'Event', VIEW_B: 'Service' } }
+      },
+      relations: [],
+      views: {
+        VIEW_A: {
+          name: 'View A',
+          icon: 'Component',
+          nodes: [{ id: 'n1', grid: [1, 2] }],
+          groups: []
+        },
+        VIEW_B: {
+          name: 'View B',
+          icon: 'Server',
+          nodes: [{ id: 'n1', grid: [2, 2] }],
+          groups: []
+        }
+      },
+      journeys: []
+    };
+
+    render(<Flowchart title="Multi View Test" schema={multiViewSchema} />, { wrapper });
+    
+    // Click on node n1
+    const node = screen.getByTestId('flowchart-node-n1');
+    expect(node).toBeInTheDocument();
+    
+    // Simulates a click directly on the node
+    fireEvent.click(node);
+    
+    // Verify popup appears
+    expect(screen.getByText('Related Views')).toBeInTheDocument();
+    expect(screen.getByText('as Service')).toBeInTheDocument();
+    const jumpButton = screen.getAllByText('View B')[1];
+    expect(jumpButton).toBeInTheDocument();
+    
+    // Click jump to View B
+    fireEvent.click(jumpButton);
+    
+    // Verify popup closes and focuses on target node (scale(0.8))
+    await act(async () => {
+      vi.advanceTimersByTime(100);
+    });
+
+    expect(screen.queryByText('Related Views')).not.toBeInTheDocument();
+    const canvas = screen.getByTestId('flowchart-canvas');
+    expect(canvas.getAttribute('transform')).toContain('scale(0.8)');
+  });
+});
+
 
 

@@ -80,3 +80,10 @@ y ≈ 380:                          Process → Decision → External
 - Don't include event nodes — DFD is about data, not timing
 - Use when you want to show how raw input becomes a finished output
 - Each `PROCESS` node transforms input data into output data
+
+## Data-Format Node Conventions
+
+To visually map the flow of data transformations:
+- **Nodes as Data Formats**: The nodes in the DFD must represent the formatted data objects/artifacts themselves (e.g. Goal text, Plan JSON, Tool Arguments, Tool Output, Final Response).
+- **Edges as Transitions/Processes**: The connecting arrows (edges) represent the processing steps or service components that perform the transition from one data format to the next.
+- External sources/sinks (such as the User client) remain as boundary nodes on the left and right.

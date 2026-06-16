@@ -5,12 +5,14 @@ interface StepCarouselProps {
   activeSteps: FlowchartStepData[];
   activeStep: FlowchartStepData | FlowchartStepBranchOption | null;
   handleStepClick: (step: FlowchartStepLinear | FlowchartStepBranchOption) => void;
+  instanceId: string;
 }
 
 export function StepCarousel({
   activeSteps,
   activeStep,
-  handleStepClick
+  handleStepClick,
+  instanceId
 }: StepCarouselProps) {
   if (!activeSteps || activeSteps.length === 0) return null;
 
@@ -49,7 +51,7 @@ export function StepCarousel({
             const isActive = activeStep?.id === step.id;
             return (
               <div
-                id={`step-card-${step.id}`}
+                id={`step-card-${instanceId}-${step.id}`}
                 key={step.id}
                 onClick={() => handleStepClick(step)}
                 style={{
@@ -142,7 +144,7 @@ export function StepCarousel({
                   const isActive = activeStep?.id === branch.id;
                   return (
                     <div
-                      id={`step-card-${branch.id}`}
+                      id={`step-card-${instanceId}-${branch.id}`}
                       key={branch.id}
                       onClick={() => handleStepClick(branch)}
                       style={{

@@ -38,64 +38,55 @@ The **Stack Layout** is the primary design technique. Related components are pos
 
 ### Node Dimensions
 
-| Size | Dimensions | Used For |
+All nodes are **140 × 100 px** (uniform size). This means the grid system (`grid: [col, row]`) provides zero-gap adjacency for all node types.
+
+### Grid Coordinate System
+
+All nodes use `grid: [col, row]` coordinates. The runtime compiler converts them to pixel positions:
+
+| Row | Y Position | Usage |
 |---|---|---|
-| Standard | `140 × 100` | Commands, Events, Aggregates, Databases, Policies, Processes |
-| Small | `120 × 65` | Actors/Users, External Systems, Decisions, Hotspots |
+| 0 | `y = 50` | Database (above Aggregate) |
+| 1 | `y = 150` | Aggregate / Handler (above Command) |
+| 2 | `y = 250` | Main timeline (Events, Policies, Commands, Actors) |
+| 3 | `y = 450` | Failure branch 1 |
+| 4 | `y = 650` | Failure branch 2 |
 
-### Horizontal Stacking (Zero Gap)
-
-To place Node 2 immediately to the right of Node 1:
-
-| From → To | X offset |
-|---|---|
-| Standard → Standard | `+140` |
-| Small → Standard | `+130` |
-| Standard → Small | `+130` |
-| Small → Small | `+120` |
-
-### Vertical Stacking (Zero Gap)
-
-To stack Node 2 immediately above Node 1:
-
-| From → To | Y offset |
-|---|---|
-| Standard → Standard | `-100` |
-| Small → Standard | `-82.5` |
-| Standard → Small | `-82.5` |
-| Small → Small | `-65` |
+Column formula: `x = col * 140 + 60`
 
 ### Standard Grid Layout
 
-1. **Central Chronology (Happy Path):** Core timeline at `y = 250`
-2. **Horizontal Sequence (Zero Gap):**
-   - Actor (Small) at `x = 60, y = 250`
-   - Event (Standard) at `x = 190, y = 250` (touches Actor)
-   - Policy (Standard) at `x = 330, y = 250` (touches Event)
-   - Command (Standard) at `x = 470, y = 250` (touches Policy)
-   - Event (Standard) at `x = 610, y = 250` (touches Command)
-3. **Gap Between Stacks:** ~100px horizontal gap between separate logical phases
+1. **Central Chronology (Happy Path):** Core timeline at Row 2 (`y = 250`)
+2. **Horizontal Sequence:** Place nodes edge-to-edge in consecutive columns
+   - Actor at `grid: [0, 2]`
+   - Event at `grid: [1, 2]`
+   - Policy at `grid: [2, 2]`
+   - Command at `grid: [3, 2]`
+   - Event at `grid: [4, 2]`
+3. **Gap Between Phases:** Skip one column between separate logical phases (~140px gap)
 4. **Vertical Stack Above Command:**
-   - Command at `y = 250`
-   - Aggregate above Command: `y = 150`
-   - Database above Aggregate: `y = 50`
-5. **Exceptions & Failure Branches:** Diverge vertically downward with ~100px gap between tracks
-   - Main timeline: `y = 250`
-   - First failure branch: `y = 450`
-   - Second failure branch: `y = 650`
+   - Command at Row 2
+   - Aggregate above Command: Row 1 (same column)
+   - Database above Aggregate: Row 0 (same column)
+5. **Exceptions & Failure Branches:** Diverge vertically downward
+   - Main timeline: Row 2
+   - First failure branch: Row 3
+   - Second failure branch: Row 4
 
 ### Typical Node Positions
 
 ```ts
-// Happy path — y = 250
-{ id: 'user',    x: 60,   y: 250 },
-{ id: 'evt_goal', x: 190, y: 250 },
-{ id: 'pol_plan', x: 330, y: 250 },
-{ id: 'planner',  x: 470, y: 250 },
-{ id: 'evt_plan', x: 610, y: 250 },
-// Vertical stack above Command
-{ id: 'orch',     x: 470, y: 150 },  // Aggregate above planner
-{ id: 'memory',   x: 470, y: 50  },  // Database above aggregate
+// Happy path — Row 2
+{ id: 'user',     grid: [0, 2] },
+{ id: 'evt_goal', grid: [1, 2] },
+{ id: 'pol_plan', grid: [2, 2] },
+{ id: 'planner',  grid: [3, 2] },
+{ id: 'evt_plan', grid: [4, 2] },
+// Vertical stack above Command (same column)
+{ id: 'orch',     grid: [3, 1] },  // Aggregate — Row 1
+{ id: 'memory',   grid: [3, 0] },  // Database  — Row 0
+// External handler above Command (same column)
+{ id: 'llm',      grid: [7, 1] },  // External  — Row 1
 ```
 
 ## Groups
@@ -127,3 +118,19 @@ groups: [
 - Use `handledBy: true` for command→aggregate relations
 - Use `dashed: true` for feedback/retry loops
 - Relation ID naming: `r_es_<n>`
+
+## Node Order and Behavior Chain Guidelines
+
+- **Strict Behavior Cycle**: The horizontal timeline flow must strictly follow:
+  `Event (orange) → Policy (mauve) → Command (blue) ══(handled by)══> Handler (gray/green) → Event (orange)`
+- **No Direct Policy-to-Event Connections**: A Policy represents a business rule, not an action. It cannot directly publish an Event. It must trigger an imperative Command, which is handled by an Aggregate/External System to produce the Event.
+
+## Stacking and Alignment Guidelines
+
+- **Command-Handler Stacks**: The Command (e.g. `planner` on Row 2) and its Handler (e.g. `orch_plan` on Row 1) must share the **exact same column coordinate** `col`. The Handler sits directly above the Command, connected by a straight vertical solid arrow (`handledBy: true`).
+- **Database Alignment**: Backing databases (on Row 0) sit directly above their Aggregate handler (on Row 1) in the same column coordinate `col`.
+
+## Branching Tree Guidelines
+
+- **Vertically Diverging Timelines**: Alternative, exception, or failure flows must diverge vertically downward using Row 3 (`y: 450`) and Row 4 (`y: 650`).
+- **Multi-Level Trees**: Each branch acts as a child timeline with its own sequence of Events, Policies, and Commands. Ensure you place branching timeline elements chronologically left-to-right (shifting columns rightward) and cleanly loop them back to main timeline commands (such as `planner`) with a dashed feedback relation.

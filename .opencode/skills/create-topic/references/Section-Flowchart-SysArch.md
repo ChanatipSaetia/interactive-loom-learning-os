@@ -103,3 +103,10 @@ Label comments on each edge with the boundary context:
 
 - Use `dashed: true` for feedback/retry loops
 - Relation ID naming: `r_sa_<n>`
+
+## Center-Focused Layout (Hub & Spoke Topology)
+
+Instead of a purely linear row pipeline, lay out the System Architecture topologically:
+- **Central Coordinator**: Place the central hub component (e.g. `orchestrator`) in the center of the grid (typically `grid: [3, 2]`).
+- **Radiating Spoke Dependencies**: Position client interfaces, databases, external APIs, and auxiliary services around the coordinator in a circular/radial fashion (e.g. clients to the left, logic services above, data stores below, external integrations to the right).
+- This visually emphasizes the role of the central orchestrator and makes connections shorter and cleaner.

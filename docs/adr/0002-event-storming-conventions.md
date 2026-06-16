@@ -9,10 +9,10 @@ The Flowchart component supports an Event Storming View. To produce correct, rea
 
 ```
 y:50     — Support layer (Database, Read Model)
-y:120    — Handler layer (Aggregate, Actor, External System)
+y:150    — Handler layer (Aggregate, Actor, External System)
 y:250    — Timeline (Event, Command, Policy — left to right, chronological)
-y:400    — Branch row 1 (failure/alternative paths)
-y:540    — Branch row 2 (further alternatives)
+y:450    — Branch row 1 (failure/alternative paths)
+y:650    — Branch row 2 (further alternatives)
 ```
 
 ### What Goes Where
@@ -49,7 +49,7 @@ A single logical unit stacks vertically:
 ```
 Within a stack:   ~140px between elements (tight, adjacent)
 Between stacks:   ~160px gap (visual separation)
-Branch offset:    +150px per branch level (y:400, y:540, ...)
+Branch offset:    +200px per branch level (y:450, y:650, ...)
 ```
 
 ### Drawing Rules

@@ -975,10 +975,25 @@
 }
 
 .flowchart-node-group {
-  cursor: grab;
   user-select: none;
 }
 
-.flowchart-node-group:active {
-  cursor: grabbing;
+.flowchart-node-group.has-links:hover {
+  cursor: pointer;
+}
+
+.flowchart-node-group.has-links:hover .flowchart-node-rect {
+  stroke-width: 2.2px !important;
+  filter: drop-shadow(0 0 6px rgba(140, 170, 238, 0.55)) !important;
+}
+
+.flowchart-node-group.has-links:hover .flowchart-node-link-icon {
+  opacity: 1 !important;
+  transform: scale(1.15);
+}
+
+.flowchart-popup-btn:hover {
+  background: var(--ctp-surface1) !important;
+  border-color: var(--ctp-blue) !important;
+  color: var(--ctp-blue) !important;
 }

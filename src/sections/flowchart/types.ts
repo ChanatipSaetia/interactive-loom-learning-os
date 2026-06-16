@@ -66,8 +66,6 @@ export const DYNAMIC_ICONS = { Component, Server, Share2, Layers };
 
 export const NODE_W = 140; 
 export const NODE_H = 100;
-export const SMALL_W = 120; 
-export const SMALL_H = 65;
 
 export interface FlowchartEntity {
   title: string;
@@ -75,6 +73,8 @@ export interface FlowchartEntity {
   viewTitles?: Record<string, string>;
   desc: string;
   viewTypes: Record<string, string>;
+  /** Maps this fine-grained entity to a collapsed/high-level entity ID in other views. */
+  collapsedTo?: string;
 }
 
 export interface FlowchartRelation {
@@ -84,12 +84,14 @@ export interface FlowchartRelation {
   views: string[];
   dashed?: boolean;
   handledBy?: boolean;
+  label?: string;
 }
 
 export interface FlowchartViewNode {
   id: string;
-  x: number;
-  y: number;
+  x?: number;
+  y?: number;
+  grid?: [number, number];
 }
 
 export interface FlowchartViewGroup {
@@ -101,6 +103,7 @@ export interface FlowchartViewGroup {
   borderColor?: string;
   textColor?: string;
   isLane?: boolean;
+  row?: number;
   y?: number;
   h?: number;
 }
