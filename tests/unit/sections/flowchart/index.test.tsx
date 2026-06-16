@@ -57,28 +57,35 @@ const wrapper = ({ children }: { children: React.ReactNode }) => (
   <MemoryRouter>{children}</MemoryRouter>
 );
 
+describe('Flowchart component simple', () => {
+   it('passes', () => {
+     expect(true).toBe(true);
+   });
+ });
+
 describe('Flowchart component', () => {
-  beforeEach(() => {
+   beforeEach(() => {
     SectionRegistry.clear();
+    vi.useRealTimers();
   });
 
   it('renders SVG flowchart', () => {
-    render(<Flowchart title="Test Flowchart" schema={mockSchema} />, { wrapper });
-    const svg = screen.getByTestId('flowchart-svg');
-    expect(svg).toBeInTheDocument();
+    const { container } = render(<Flowchart title="Test Flowchart" schema={mockSchema} />, { wrapper });
+    const svg = container.querySelector('[data-testid="flowchart-svg-DEFAULT_VIEW"]');
+    expect(svg).toBeTruthy();
   });
 
   it('renders all nodes with data-testid', () => {
     render(<Flowchart title="Test" schema={mockSchema} />, { wrapper });
-    expect(screen.getByTestId('flowchart-node-user')).toBeInTheDocument();
-    expect(screen.getByTestId('flowchart-node-agent')).toBeInTheDocument();
-    expect(screen.getByTestId('flowchart-node-llm')).toBeInTheDocument();
+    expect(screen.getByTestId('flowchart-node-DEFAULT_VIEW-user')).toBeInTheDocument();
+    expect(screen.getByTestId('flowchart-node-DEFAULT_VIEW-agent')).toBeInTheDocument();
+    expect(screen.getByTestId('flowchart-node-DEFAULT_VIEW-llm')).toBeInTheDocument();
   });
 
   it('renders all edges', () => {
     render(<Flowchart title="Test" schema={mockSchema} />, { wrapper });
-    expect(screen.getByTestId('flowchart-edge-0')).toBeInTheDocument();
-    expect(screen.getByTestId('flowchart-edge-1')).toBeInTheDocument();
+    expect(screen.getByTestId('flowchart-edge-DEFAULT_VIEW-0')).toBeInTheDocument();
+    expect(screen.getByTestId('flowchart-edge-DEFAULT_VIEW-1')).toBeInTheDocument();
   });
 
   it('renders title when provided', () => {
@@ -112,13 +119,13 @@ describe('Flowchart component', () => {
 
   it('renders nodes with rectangles', () => {
     render(<Flowchart title="Test" schema={mockSchema} />, { wrapper });
-    const rects = screen.getByTestId('flowchart-svg').querySelectorAll('rect');
+    const rects = screen.getByTestId('flowchart-svg-DEFAULT_VIEW').querySelectorAll('rect');
     expect(rects.length).toBeGreaterThanOrEqual(3);
   });
 
   it('renders edges as directed paths with arrowheads', () => {
     render(<Flowchart title="Test" schema={mockSchema} />, { wrapper });
-    const svg = screen.getByTestId('flowchart-svg');
+    const svg = screen.getByTestId('flowchart-svg-DEFAULT_VIEW');
     const paths = svg.querySelectorAll('path');
     expect(paths.length).toBeGreaterThanOrEqual(2);
     const defs = svg.querySelector('defs');
@@ -136,7 +143,7 @@ describe('Flowchart component', () => {
 
   it('renders transformable canvas group', () => {
     render(<Flowchart title="Test" schema={mockSchema} />, { wrapper });
-    const canvas = screen.getByTestId('flowchart-canvas');
+    const canvas = screen.getByTestId('flowchart-canvas-DEFAULT_VIEW');
     expect(canvas).toBeInTheDocument();
     expect(canvas).toHaveAttribute('transform');
   });
@@ -145,7 +152,7 @@ describe('Flowchart component', () => {
 
   it('SVG has pan and zoom handlers', () => {
     render(<Flowchart title="Test" schema={mockSchema} />, { wrapper });
-    const svg = screen.getByTestId('flowchart-svg') as unknown as HTMLElement;
+    const svg = screen.getByTestId('flowchart-svg-DEFAULT_VIEW') as unknown as HTMLElement;
     expect(svg.onmousedown).toBeDefined();
     expect(svg.ontouchstart).toBeDefined();
     expect(svg.onwheel).toBeDefined();
@@ -156,6 +163,10 @@ describe('Flowchart journey controls', () => {
   beforeEach(() => {
     SectionRegistry.clear();
     vi.useFakeTimers();
+  });
+
+  afterEach(() => {
+    vi.useRealTimers();
   });
 
   it('renders journey selector when journeys provided', () => {
@@ -289,10 +300,10 @@ describe('Flowchart journey controls', () => {
     render(<Flowchart title="Test" schema={mockSchema} />, { wrapper });
     const nextBtn = screen.getByTestId('flowchart-btn-next');
     fireEvent.click(nextBtn);
-    const svg = screen.getByTestId('flowchart-svg');
-    const userNode = svg.querySelector('[data-testid="flowchart-node-user"]');
+    const svg = screen.getByTestId('flowchart-svg-DEFAULT_VIEW');
+    const userNode = svg.querySelector('[data-testid="flowchart-node-DEFAULT_VIEW-user"]');
     expect(userNode).toBeInTheDocument();
-    const userRect = svg.querySelector('[data-testid="flowchart-node-user"] rect');
+    const userRect = svg.querySelector('[data-testid="flowchart-node-DEFAULT_VIEW-user"] rect');
     expect(userRect).toBeInTheDocument();
   });
 
@@ -301,7 +312,7 @@ describe('Flowchart journey controls', () => {
     const nextBtn = screen.getByTestId('flowchart-btn-next');
     fireEvent.click(nextBtn);
     fireEvent.click(nextBtn);
-    const agentNode = screen.getByTestId('flowchart-node-agent');
+    const agentNode = screen.getByTestId('flowchart-node-DEFAULT_VIEW-agent');
     expect(agentNode).toBeInTheDocument();
     const progress = screen.getByTestId('flowchart-progress');
     expect(progress.textContent).toBe('2 / 3');
@@ -334,9 +345,13 @@ describe('Flowchart particle animation', () => {
     vi.useFakeTimers();
   });
 
+  afterEach(() => {
+    vi.useRealTimers();
+  });
+
   it('renders particle circle when journeys provided', () => {
     render(<Flowchart title="Test" schema={mockSchema} />, { wrapper });
-    expect(screen.getByTestId('flowchart-particle')).toBeInTheDocument();
+    expect(screen.getByTestId('flowchart-particle-DEFAULT_VIEW')).toBeInTheDocument();
   });
 
   it('does not render particle when no journeys', () => {
@@ -346,7 +361,7 @@ describe('Flowchart particle animation', () => {
 
   it('particle is invisible at step 0', () => {
     render(<Flowchart title="Test" schema={mockSchema} />, { wrapper });
-    const particle = screen.getByTestId('flowchart-particle');
+    const particle = screen.getByTestId('flowchart-particle-DEFAULT_VIEW');
     expect(particle.getAttribute('opacity')).toBe('0');
   });
 
@@ -354,12 +369,20 @@ describe('Flowchart particle animation', () => {
     render(<Flowchart title="Test" schema={mockSchema} />, { wrapper });
     const nextBtn = screen.getByTestId('flowchart-btn-next');
     fireEvent.click(nextBtn);
-    const particle = screen.getByTestId('flowchart-particle');
+    const particle = screen.getByTestId('flowchart-particle-DEFAULT_VIEW');
     expect(particle).toBeInTheDocument();
   });
 });
 
 describe('Flowchart grid coordinate compilation', () => {
+  beforeEach(() => {
+    vi.useFakeTimers();
+  });
+
+  afterEach(() => {
+    vi.useRealTimers();
+  });
+
   const gridSchema: UnifiedFlowchartSchema = {
     entities: {
       n1: { title: 'Node 1', desc: 'Node 1 desc', viewTypes: { EVENT_STORMING: 'Event', SYS_ARCH: 'Service' } }
@@ -389,7 +412,7 @@ describe('Flowchart grid coordinate compilation', () => {
   it('resolves grid coordinates in EVENT_STORMING view', () => {
     // Render flowchart, defaulting to EVENT_STORMING view
     render(<Flowchart title="Grid Test" schema={gridSchema} />, { wrapper });
-    const nodeGroup = screen.getByTestId('flowchart-node-n1');
+    const nodeGroup = screen.getByTestId('flowchart-node-EVENT_STORMING-n1');
     expect(nodeGroup).toBeInTheDocument();
     
     const rect = nodeGroup.querySelector('rect');
@@ -427,7 +450,7 @@ describe('Flowchart grid coordinate compilation', () => {
     render(<Flowchart title="Multi View Test" schema={multiViewSchema} />, { wrapper });
     
     // Click on node n1
-    const node = screen.getByTestId('flowchart-node-n1');
+    const node = screen.getByTestId('flowchart-node-VIEW_A-n1');
     expect(node).toBeInTheDocument();
     
     // Simulates a click directly on the node
@@ -448,7 +471,7 @@ describe('Flowchart grid coordinate compilation', () => {
     });
 
     expect(screen.queryByText('Related Views')).not.toBeInTheDocument();
-    const canvas = screen.getByTestId('flowchart-canvas');
+    const canvas = screen.getByTestId('flowchart-canvas-VIEW_B');
     expect(canvas.getAttribute('transform')).toContain('scale(0.8)');
   });
 });
