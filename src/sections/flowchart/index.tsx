@@ -16,9 +16,9 @@ import {
   DYNAMIC_ICONS,
   NODE_W,
   NODE_H,
-  wrapTooltipText,
-  INITIAL_SCHEMA
+  wrapTooltipText
 } from './types';
+import { INITIAL_SCHEMA } from './initial-schema';
 
 import type {
   UnifiedFlowchartSchema,
