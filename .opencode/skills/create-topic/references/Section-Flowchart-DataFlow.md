@@ -24,7 +24,7 @@ Focuses on data movement and transformation, not component structure or timing. 
 
 | EVENT_STORMING | DATA_FLOW |
 |---|---|
-| `COMMAND` | `PROCESS` |
+| `COMMAND` | — (omit, maps to edge label) |
 | `POLICY` | `DECISION` |
 | `AGGREGATE` | — (omit) |
 | `EVENT` | — (omit) |

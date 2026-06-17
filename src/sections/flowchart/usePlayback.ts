@@ -106,7 +106,7 @@ export function usePlayback({ schema, activeViewKey, nodeMap, onNodeFocus }: Use
     if (!fromNode || !toNode) return;
 
     const hasRelation = schema.relations.some(
-      r => r.views.includes(activeViewKey) &&
+      r => r.views?.includes(activeViewKey) &&
       ((r.from === prevHighlightedNodeId && r.to === highlightedNodeId) ||
         (r.to === prevHighlightedNodeId && r.from === highlightedNodeId))
     );

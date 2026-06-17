@@ -42,7 +42,7 @@ test.describe('Flowchart Grid Layout', () => {
     await page.click('[data-testid="flowchart-btn-grid"]');
     await page.click('[data-testid="flowchart-btn-next"]');
     const progress = page.locator('[data-testid="flowchart-progress"]');
-    await expect(progress).toHaveText('1 / 3');
+    await expect(progress).toHaveText('1 / 6');
   });
 
   test('viewport resize below 1024px resets to single mode', async ({ page }) => {

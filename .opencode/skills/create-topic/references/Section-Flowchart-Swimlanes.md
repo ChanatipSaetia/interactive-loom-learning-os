@@ -20,7 +20,7 @@ Same as SYS_ARCH for nodes: `SERVICE`, `PROCESS`, `DATABASE`, `DECISION`, `EXTER
 | `COMMAND` | `PROCESS` |
 | `POLICY` | `DECISION` |
 | `AGGREGATE` | `AGGREGATE` |
-| `EVENT` | — (omit) |
+| `EVENT` | — (omit, maps to edge label) |
 | `USER` | `USER` |
 | `EXTERNAL` | `EXTERNAL` |
 | `DATABASE` | `DATABASE` |

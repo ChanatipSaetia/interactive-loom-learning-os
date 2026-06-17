@@ -1312,3 +1312,126 @@
   text-align: center;
   padding: var(--spacing-sm);
 }
+
+/* ==========================================================================
+   GRID MODAL VIEW (FULL SCREEN / OVERLAY)
+   ========================================================================== */
+
+.flowchart-grid-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(17, 17, 27, 0.85); /* ctp-crust with opacity */
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  z-index: 999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  animation: flowchart-fade-in 0.25s ease-out;
+}
+
+.flowchart-grid-modal-content {
+  background-color: var(--ctp-base);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-lg);
+  width: 100%;
+  height: 100%;
+  max-width: 1600px;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 24px 48px -12px rgba(0, 0, 0, 0.5);
+  overflow: hidden;
+  animation: flowchart-scale-up 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  padding: var(--spacing-lg);
+  gap: var(--spacing-md);
+}
+
+.flowchart-grid-modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--spacing-md);
+  border-bottom: 1px solid var(--border-light);
+  padding-bottom: var(--spacing-md);
+  flex-shrink: 0;
+}
+
+.flowchart-grid-modal-title {
+  font-family: var(--font-body);
+  font-size: var(--text-feature-heading);
+  font-weight: 400;
+  color: var(--ctp-mauve);
+  margin: 0;
+  line-height: 1.3;
+}
+
+.flowchart-grid-modal-header-left {
+  flex: 1;
+  min-width: 0;
+}
+
+.flowchart-grid-modal-header-center {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.flowchart-grid-modal-header-right {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: var(--spacing-md);
+  flex: 1;
+}
+
+.flowchart-grid-modal-description {
+  font-family: var(--font-body);
+  font-size: 13px;
+  color: var(--ctp-subtext0);
+  line-height: 1.5;
+  padding: var(--spacing-xs) var(--spacing-sm);
+  border-left: 3px solid var(--ctp-blue);
+  background-color: var(--ctp-mantle);
+  border-radius: var(--radius-xs);
+  flex-shrink: 0;
+}
+
+/* Modal specific overrides to let the grid fill the screen */
+.flowchart-grid-modal-content .flowchart-grid-container {
+  flex: 1;
+  min-height: 0;
+  height: 100%;
+  grid-template-rows: 1fr 1fr;
+  grid-template-columns: 1fr 1fr;
+}
+
+.flowchart-grid-modal-content .flowchart-grid-container .flowchart-canvas-wrapper {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.flowchart-grid-modal-content .flowchart-grid-container .flowchart-body {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.flowchart-grid-modal-content .flowchart-grid-container .flowchart-svg {
+  height: 100% !important;
+  flex: 1;
+  min-height: 0;
+}
+
+/* Animations */
+@keyframes flowchart-fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes flowchart-scale-up {
+  from { transform: scale(0.95); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}

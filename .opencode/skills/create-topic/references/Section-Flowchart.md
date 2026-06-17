@@ -106,6 +106,7 @@ export const schema: UnifiedFlowchartSchema = {
 - Use `dashed: true` on relations for feedback loops or optional paths.
 - Use `handledBy: true` for command→aggregate relations in EVENT_STORMING.
 - Use `viewTitles` to override titles per-view: verb-based in EVENT_STORMING, noun-based elsewhere.
+- **Sequence Diagram Condition Boundaries (Groups)**: To draw a UML alternative (`alt`) or optional (`opt`) condition boundary box in a sequence diagram, define a group under `views.SEQUENCE.groups`. Set `nodeIds` to the participants (lifelines) it spans, and specify custom `y` and `h` coordinates (in pixels, e.g. `y: 110, h: 80`) to vertically frame the target message arrows.
 
 ---
 
@@ -114,9 +115,10 @@ All other diagrams are derived from the master Event Storming schema according t
 
 | Event Storming Node Type | System Architecture | Activity Swimlanes | Sequence Diagram | Data Flow (DFD) | State Machine | Entity-Relationship (ERD) | Infrastructure / Cloud |
 | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
-| 🟠 **Event** | *Omitted* (not structural) | *Omitted* | **Return Message / Transition Label** | 📄 **Data Object** *(Payload)* | ➡️ **State Transition (Arrow)** | *Omitted* (Stored as record logs) | *Omitted* |
-| 🔵 **Command** | **Edge Interaction / Action Line** | 🟩 **Process Box** *(Action)* | ➡️ **Request Message (Call Arrow)** | *Omitted* (Actions are hidden) | *Omitted* | *Omitted* | *Omitted* |
+| 🟠 **Event** | *Omitted* (not structural) | 🏷️ **Edge Label (Transition/Trigger)** | **Return Message / Transition Label** | 📄 **Data Object** *(Payload)* | ➡️ **State Transition (Arrow)** | *Omitted* (Stored as record logs) | *Omitted* |
+| 🔵 **Command** | **Edge Interaction / Action Line** | 🟩 **Process Box** *(Action)* | ➡️ **Request Message (Call Arrow)** | 🏷️ **Edge Label (Transition/Process)** | *Omitted* | *Omitted* | *Omitted* |
 | 🟣 **Policy** | **Router / Controller / Hotspot** | 🔶 **Decision Node** *(Branching)* | *Omitted* (Represented as a check step) | *Omitted* | 🛡️ **Transition Guard (Condition)** | *Omitted* | *Omitted* |
+| 🔥 **Hotspot / Risk** | Warning Annotation / Omitted | Warning Indicator / Omitted | Failure / Error Annotation | Threat / Vulnerability Marker | **Error State / Guard** | *Omitted* | **Vulnerability / SPOF Area** |
 | 🟡 **Aggregate / DB** | 🖥️ **Internal Service / DB node** | **Swimlane (Vertical / Horizontal)** | 💈 **Vertical Lifeline** | *Omitted* | *The Subject* (State Machine tracks this) | 🗃️ **Table Cluster / Aggregate Root** | 📦 **VPC Subnet / ECS Container** |
 | 👤 **User / Actor** | 👤 **Client Node** | **Actors Lane** | 👤 **User Lifeline** | 👤 **Data Source / Sink** | *Omitted* | 🗃️ **User metadata table** | 🌐 **Web Browser / Client Zone** |
 | 🛜 **External System** | 🛜 **External API Boundary** | **External Systems Lane** | 🛜 **External Lifeline** | *Omitted* | *Omitted* | *Omitted* (No data schema stored) | ☁️ **SaaS Endpoint (Public Internet)** |

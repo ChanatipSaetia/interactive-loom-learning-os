@@ -219,4 +219,40 @@ describe('Flowchart SEQUENCE view', () => {
     expect(screen.getByTestId('flowchart-svg-SEQUENCE')).toBeInTheDocument();
     expect(screen.getByTestId('flowchart-lifeline-SEQUENCE-0')).toBeInTheDocument();
   });
+
+  it('renders SEQUENCE condition boundary groups', () => {
+    const schemaWithGroups: UnifiedFlowchartSchema = {
+      ...seqSchema,
+      views: {
+        SEQUENCE: {
+          name: 'Sequence Diagram',
+          icon: 'List',
+          nodes: [
+            { id: 'client', grid: [0, 0] },
+            { id: 'server', grid: [1, 0] }
+          ],
+          groups: [
+            {
+              id: 'alt_group',
+              title: 'alt [Score < 90%]',
+              nodeIds: ['client', 'server'],
+              y: 110,
+              h: 80,
+              borderColor: '#e78284',
+              color: 'rgba(231, 130, 132, 0.05)',
+              textColor: '#c6d0f5'
+            }
+          ]
+        }
+      }
+    };
+
+    render(<Flowchart title="Seq Group Test" schema={schemaWithGroups} />, { wrapper });
+    
+    const groupElement = screen.getByTestId('flowchart-seq-group-SEQUENCE-alt_group');
+    expect(groupElement).toBeInTheDocument();
+    expect(groupElement.querySelector('rect')).toBeInTheDocument();
+    expect(groupElement.querySelector('polygon')).toBeInTheDocument();
+    expect(groupElement.querySelector('text')).toHaveTextContent('alt [Score < 90%]');
+  });
 });

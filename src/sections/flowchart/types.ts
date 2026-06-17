@@ -65,6 +65,72 @@ export const ICON_ANIMATIONS = {
 
 export const DYNAMIC_ICONS = { Component, Server, Share2, Layers, List };
 
+export const MASTER_MAPPING_MATRIX: Record<string, Record<string, string | null>> = {
+  [TYPES.EVENT]: {
+    EVENT_STORMING: TYPES.EVENT,
+    SYS_ARCH: null,
+    SWIMLANES: null,
+    SEQUENCE: null,
+    DATA_FLOW: TYPES.DATA_OBJECT
+  },
+  [TYPES.COMMAND]: {
+    EVENT_STORMING: TYPES.COMMAND,
+    SYS_ARCH: null,
+    SWIMLANES: TYPES.PROCESS,
+    SEQUENCE: null,
+    DATA_FLOW: null
+  },
+  [TYPES.POLICY]: {
+    EVENT_STORMING: TYPES.POLICY,
+    SYS_ARCH: TYPES.SERVICE,
+    SWIMLANES: TYPES.DECISION,
+    SEQUENCE: null,
+    DATA_FLOW: TYPES.DECISION
+  },
+  [TYPES.AGGREGATE]: {
+    EVENT_STORMING: TYPES.AGGREGATE,
+    SYS_ARCH: TYPES.SERVICE,
+    SWIMLANES: TYPES.PROCESS,
+    SEQUENCE: TYPES.SERVICE,
+    DATA_FLOW: null
+  },
+  [TYPES.DATABASE]: {
+    EVENT_STORMING: TYPES.DATABASE,
+    SYS_ARCH: TYPES.DATABASE,
+    SWIMLANES: TYPES.DATABASE,
+    SEQUENCE: TYPES.DATABASE,
+    DATA_FLOW: null
+  },
+  [TYPES.USER]: {
+    EVENT_STORMING: TYPES.USER,
+    SYS_ARCH: TYPES.USER,
+    SWIMLANES: TYPES.USER,
+    SEQUENCE: TYPES.USER,
+    DATA_FLOW: TYPES.USER
+  },
+  [TYPES.EXTERNAL]: {
+    EVENT_STORMING: TYPES.EXTERNAL,
+    SYS_ARCH: TYPES.EXTERNAL,
+    SWIMLANES: TYPES.EXTERNAL,
+    SEQUENCE: TYPES.EXTERNAL,
+    DATA_FLOW: null
+  },
+  [TYPES.HOTSPOT]: {
+    EVENT_STORMING: TYPES.HOTSPOT,
+    SYS_ARCH: null,
+    SWIMLANES: null,
+    SEQUENCE: null,
+    DATA_FLOW: TYPES.HOTSPOT
+  },
+  [TYPES.READ_MODEL]: {
+    EVENT_STORMING: TYPES.READ_MODEL,
+    SYS_ARCH: null,
+    SWIMLANES: null,
+    SEQUENCE: null,
+    DATA_FLOW: TYPES.DATA_OBJECT
+  }
+};
+
 export const NODE_W = 140; 
 export const NODE_H = 100;
 
@@ -103,7 +169,12 @@ export interface FlowchartEntity {
   /** Per-view title override — falls back to `title` when absent. */
   viewTitles?: Record<string, string>;
   desc: string;
-  viewTypes: Record<string, string>;
+  /** Single entity type representing the Event Storming source of truth node type. */
+  type?: string;
+  /** Deprecated: use `type` instead. Retained for backward compatibility. */
+  viewTypes?: Record<string, string>;
+  /** Reference IDs that refer to this canonical entity. */
+  refs?: string[];
   /** Maps this fine-grained entity to a collapsed/high-level entity ID in other views. */
   collapsedTo?: string;
   /** State machine definition for this aggregate (shown in inspector). */
@@ -118,7 +189,7 @@ export interface FlowchartRelation {
   id: string;
   from: string;
   to: string;
-  views: string[];
+  views?: string[];
   dashed?: boolean;
   handledBy?: boolean;
   label?: string;

@@ -5,544 +5,266 @@ export const agentSchema: UnifiedFlowchartSchema = {
   entities: {
     'user': {
       title: 'User',
-      desc: 'The human (or client system) initiating goals or receiving results.',
-      viewTypes: {
-        EVENT_STORMING: TYPES.USER,
-        SYS_ARCH: TYPES.USER,
-        DATA_FLOW: TYPES.USER,
-        SWIMLANES: TYPES.USER,
-        SEQUENCE: TYPES.USER,
-      }
-    },
-    'human_reviewer': {
-      title: 'Human Reviewer',
-      desc: 'Subject-matter expert who reviews failed evaluation results.',
-      viewTypes: {
-        EVENT_STORMING: TYPES.USER,
-        SYS_ARCH: TYPES.USER,
-        SWIMLANES: TYPES.USER,
-      }
+      desc: 'The human client initiating instructions and goals.',
+      type: TYPES.USER
     },
     'orchestrator': {
       title: 'Orchestrator',
-      desc: 'Core agent runtime owning the planning and evaluation loops.',
-      viewTypes: {
-        SYS_ARCH: TYPES.AGGREGATE,
-        SWIMLANES: TYPES.AGGREGATE,
-        SEQUENCE: TYPES.AGGREGATE,
-      },
+      desc: 'Core agent runtime owning the planning and coordination loops.',
+      type: TYPES.AGGREGATE,
+      refs: ['orch_agent', 'orch_plan_ref'],
       stateMachine: {
         states: [
           { id: 'IDLE', label: 'Idle', color: '#838ba7' },
-          { id: 'PLANNING', label: 'Planning', color: '#8caaee' },
-          { id: 'EXECUTING', label: 'Executing', color: '#a6d189' },
-          { id: 'EVALUATING', label: 'Evaluating', color: '#e5c890' },
-          { id: 'ESCALATED', label: 'Escalated', color: '#e78284' },
+          { id: 'THINKING', label: 'Thinking', color: '#8caaee' },
+          { id: 'EXECUTING_TOOL', label: 'Executing Tool', color: '#a6d189' },
+          { id: 'DELEGATING', label: 'Delegating', color: '#e5c890' },
+          { id: 'COMPLETED', label: 'Completed', color: '#81c8be' }
         ],
-        initialState: 'IDLE',
+        initialState: 'IDLE'
       },
       erdSchema: [
         {
-          name: 'agent_sessions',
+          name: 'agent_runs',
           columns: [
             { name: 'id', type: 'UUID', primaryKey: true, notNull: true },
-            { name: 'user_id', type: 'UUID', notNull: true },
             { name: 'status', type: 'VARCHAR(20)', notNull: true },
-            { name: 'created_at', type: 'TIMESTAMPTZ', notNull: true },
-            { name: 'updated_at', type: 'TIMESTAMPTZ', notNull: true },
-          ],
+            { name: 'current_step', type: 'INTEGER', notNull: true },
+            { name: 'started_at', type: 'TIMESTAMPTZ', notNull: true }
+          ]
+        }
+      ]
+    },
+    'orch_agent': {
+      title: 'Agent Orchestrator',
+      desc: 'Manages step coordination, memory updates, and loop state.',
+      type: TYPES.AGGREGATE,
+      collapsedTo: 'orchestrator'
+    },
+    'orch_plan_ref': {
+      title: 'Agent Orchestrator',
+      desc: 'Generates plans using loaded skills.',
+      type: TYPES.AGGREGATE,
+      collapsedTo: 'orchestrator'
+    },
+    'filesystem': {
+      title: 'Filesystem',
+      desc: 'Stores local instructions, skill definitions, and domain knowledge.',
+      type: TYPES.DATABASE,
+      erdSchema: [
+        {
+          name: 'skills',
+          columns: [
+            { name: 'id', type: 'UUID', primaryKey: true, notNull: true },
+            { name: 'name', type: 'VARCHAR(50)', notNull: true },
+            { name: 'instructions', type: 'TEXT', notNull: true }
+          ]
         },
         {
-          name: 'execution_plans',
+          name: 'domain_knowledge',
           columns: [
             { name: 'id', type: 'UUID', primaryKey: true, notNull: true },
-            { name: 'session_id', type: 'UUID', notNull: true },
-            { name: 'steps', type: 'JSONB', notNull: true },
-            { name: 'current_step', type: 'INTEGER', notNull: true },
-          ],
-        },
-      ],
-    },
-    'orch_plan': {
-      title: 'Orchestrator',
-      desc: 'Handles planning: creates execution plan, tracks progression, retrieves memory.',
-      viewTypes: {
-        EVENT_STORMING: TYPES.AGGREGATE,
-      },
-      collapsedTo: 'orchestrator'
-    },
-    'orch_eval': {
-      title: 'Orchestrator',
-      desc: 'Handles evaluation: assesses result quality, decides pass or fail.',
-      viewTypes: {
-        EVENT_STORMING: TYPES.AGGREGATE,
-      },
-      collapsedTo: 'orchestrator'
+            { name: 'topic', type: 'VARCHAR(100)', notNull: true },
+            { name: 'content', type: 'TEXT', notNull: true }
+          ]
+        }
+      ]
     },
     'llm': {
       title: 'LLM Engine',
-      desc: 'Large language model performing prompt parsing and reasoning.',
-      viewTypes: {
-        EVENT_STORMING: TYPES.EXTERNAL,
-        SYS_ARCH: TYPES.EXTERNAL,
-        SWIMLANES: TYPES.EXTERNAL,
-        SEQUENCE: TYPES.EXTERNAL,
-      }
+      desc: 'Generates plans, reasons about data, and makes tool-use decisions.',
+      type: TYPES.EXTERNAL,
+      refs: ['llm_reason_ref', 'llm_final_ref']
     },
-    'evt_goal': {
-      title: 'Goal Submitted',
-      viewTitles: { DATA_FLOW: 'Goal Text' },
-      desc: 'User submitted a natural-language goal.',
-      viewTypes: {
-        EVENT_STORMING: TYPES.EVENT,
-        DATA_FLOW: TYPES.DATA_OBJECT,
-      },
+    'llm_reason_ref': {
+      title: 'LLM Engine',
+      desc: 'Generates execution plans and makes tool decisions.',
+      type: TYPES.EXTERNAL,
+      collapsedTo: 'llm'
+    },
+    'llm_final_ref': {
+      title: 'LLM Engine',
+      desc: 'Synthesizes final answer from tool execution outputs.',
+      type: TYPES.EXTERNAL,
+      collapsedTo: 'llm'
+    },
+    'tools': {
+      title: 'Tools Router',
+      desc: 'Dispatches task executions to local filesystem scripts, subagents, or external APIs.',
+      type: TYPES.AGGREGATE,
+      refs: ['tools_ref']
+    },
+    'tools_ref': {
+      title: 'Tools Router',
+      desc: 'Handles command routing and executes operations.',
+      type: TYPES.AGGREGATE,
+      collapsedTo: 'tools'
+    },
+    'mcp_servers': {
+      title: 'MCP Servers',
+      desc: 'Model Context Protocol servers providing structured tools like search, database access, or terminal command runners.',
+      type: TYPES.EXTERNAL
+    },
+    'subagents': {
+      title: 'Subagent Pool',
+      desc: 'Dynamic spawned subagents delegated to run isolated journeys concurrently.',
+      type: TYPES.EXTERNAL
+    },
+    'cmd_run_agent': {
+      title: 'Run Agent',
+      desc: 'Trigger the agent orchestrator with custom user guidelines.',
+      type: TYPES.COMMAND
+    },
+    'cmd_call_llm': {
+      title: 'Call LLM',
+      desc: 'Request completion using current chat logs, skills, and history.',
+      type: TYPES.COMMAND
+    },
+    'cmd_execute_tool': {
+      title: 'Execute Tool',
+      desc: 'Dispatch execution to the appropriate tool script or subagent.',
+      type: TYPES.COMMAND
+    },
+    'cmd_complete': {
+      title: 'Complete Task',
+      desc: 'Compile tool execution logs and finalize user response.',
+      type: TYPES.COMMAND
+    },
+    'evt_started': {
+      title: 'Agent Started',
+      viewTitles: { DATA_FLOW: 'User Request' },
+      desc: 'Task received, environment setup complete.',
+      type: TYPES.EVENT,
       jsonPayload: {
-        type: 'parsed_request',
+        type: 'agent_start',
         payload: {
-          goal: 'Research top 3 competitors and summarise',
-          userId: 'usr_abc123',
-          sessionId: 'sess_xyz789',
-          timestamp: '2025-01-15T10:30:00Z'
+          taskId: 'task_001',
+          prompt: 'Solve the coding task using search and run tests.'
         }
       }
     },
-    'evt_plan_ready': {
-      title: 'Plan Generated',
-      viewTitles: { DATA_FLOW: 'Execution Plan' },
-      desc: 'Multi-step execution plan written to working memory.',
-      viewTypes: {
-        EVENT_STORMING: TYPES.EVENT,
-        DATA_FLOW: TYPES.DATA_OBJECT,
-      },
+    'evt_reasoned': {
+      title: 'LLM Response Generated',
+      viewTitles: { DATA_FLOW: 'Reasoning Output' },
+      desc: 'Thinking thoughts and requested tool calls retrieved.',
+      type: TYPES.EVENT,
       jsonPayload: {
-        type: 'execution_plan',
+        type: 'llm_completion',
         payload: {
-          planId: 'plan_001',
-          steps: [
-            { id: 1, action: 'search', target: 'competitor_list_2025', tool: 'web_search' },
-            { id: 2, action: 'extract', target: 'market_share_data', tool: 'ocr' },
-            { id: 3, action: 'summarize', target: 'comparison_matrix', tool: 'llm_prompt' }
-          ],
-          context: ['memory_vector_01', 'memory_vector_02']
+          thinking: 'I need to check the files first before editing.',
+          toolCalls: [
+            { name: 'view_file', args: { path: 'src/main.ts' } }
+          ]
         }
       }
     },
-    'evt_executed': {
+    'evt_tool_executed': {
       title: 'Tool Executed',
-      viewTitles: { DATA_FLOW: 'Tool Output' },
-      desc: 'Output retrieved from sandbox execution.',
-      viewTypes: {
-        EVENT_STORMING: TYPES.EVENT,
-        DATA_FLOW: TYPES.DATA_OBJECT,
-      },
+      viewTitles: { DATA_FLOW: 'Tool Result' },
+      desc: 'Result status and stdout output returned from execution.',
+      type: TYPES.EVENT,
       jsonPayload: {
         type: 'tool_output',
         payload: {
-          stepId: 1,
-          tool: 'web_search',
-          output: 'Top 3 competitors: Acme Corp (32%), GlobalTech (28%), InnovateCo (18%)',
-          tokensUsed: 1247,
-          latency: '2.3s'
+          status: 'success',
+          data: 'File view successful, line 10 contains export...'
         }
       }
     },
     'evt_done': {
-      title: 'Goal Satisfied',
-      desc: 'Evaluation passes, ready to reply.',
-      viewTypes: { EVENT_STORMING: TYPES.EVENT }
-    },
-    'evt_fail': {
-      title: 'Goal Not Satisfied',
-      viewTitles: { DATA_FLOW: 'Failure Report' },
-      desc: 'Evaluation fails, requiring re-planning.',
-      viewTypes: {
-        EVENT_STORMING: TYPES.EVENT,
-        DATA_FLOW: TYPES.DATA_OBJECT,
-      },
+      title: 'Task Completed',
+      viewTitles: { DATA_FLOW: 'Final Answer' },
+      desc: 'Agent finishes loops and returns the verified solution to user.',
+      type: TYPES.EVENT,
       jsonPayload: {
-        type: 'failure_report',
+        type: 'agent_completion',
         payload: {
-          stepId: 2,
-          reason: 'OCR confidence below threshold (0.62 < 0.80)',
-          attempt: 2,
-          maxAttempts: 3,
-          fallback: null
-        }
-      }
-    },
-    'evt_reviewed': {
-      title: 'Result Reviewed',
-      viewTitles: { DATA_FLOW: 'Corrected Feedback' },
-      desc: 'Human feedback captured, ready for re-planning.',
-      viewTypes: {
-        EVENT_STORMING: TYPES.EVENT,
-        DATA_FLOW: TYPES.DATA_OBJECT,
-      },
-      jsonPayload: {
-        type: 'human_feedback',
-        payload: {
-          reviewerId: 'rev_001',
-          feedback: 'Use quarterly earnings reports instead of web search for market share data',
-          correction: {
-            stepId: 1,
-            action: 'search',
-            target: 'earnings_reports_q4_2024',
-            tool: 'financial_api'
-          }
+          result: 'All edits made, tests are passing.',
+          status: 'success'
         }
       }
     },
     'pol_plan': {
-      title: 'Plan on New Goal',
-      desc: 'When Goal Submitted, create an execution plan.',
-      viewTypes: { EVENT_STORMING: TYPES.POLICY }
+      title: 'Trigger Planning',
+      desc: 'Load domain knowledge and query LLM on start.',
+      type: TYPES.POLICY
     },
-    'tools': {
-      title: 'Route Next Step',
-      viewTitles: { SYS_ARCH: 'Tool Router', SWIMLANES: 'Tool Router' },
-      desc: 'Selects appropriate external APIs or scripts for a given task.',
-      viewTypes: {
-        EVENT_STORMING: TYPES.POLICY,
-        SYS_ARCH: TYPES.SERVICE,
-        SWIMLANES: TYPES.PROCESS,
-      }
+    'pol_route': {
+      title: 'Trigger Tool Call',
+      desc: 'Check if LLM requested a tool, execute if present.',
+      type: TYPES.POLICY
     },
     'pol_eval': {
-      title: 'Evaluate on Result',
-      desc: 'When Tool Executed, evaluate the output.',
-      viewTypes: { EVENT_STORMING: TYPES.POLICY }
-    },
-    'pol_retry': {
-      title: 'Re-Plan on Failure',
-      desc: 'When Goal Not Satisfied, re-plan and try again.',
-      viewTypes: { EVENT_STORMING: TYPES.POLICY }
-    },
-    'pol_escalate': {
-      title: 'Escalate to Human',
-      desc: 'When Goal Not Satisfied, escalate to human reviewer.',
-      viewTypes: {
-        EVENT_STORMING: TYPES.POLICY,
-        SYS_ARCH: TYPES.HOTSPOT,
-        SWIMLANES: TYPES.DECISION,
-      }
-    },
-    'planner': {
-      title: 'Create Plan',
-      viewTitles: { SYS_ARCH: 'Planner', SWIMLANES: 'Planner', SEQUENCE: 'Planner' },
-      desc: 'Formulates multi-step actions (e.g. CoT, ReAct plan) dynamically.',
-      viewTypes: {
-        EVENT_STORMING: TYPES.COMMAND,
-        SYS_ARCH: TYPES.SERVICE,
-        SWIMLANES: TYPES.PROCESS,
-        SEQUENCE: TYPES.SERVICE,
-      }
-    },
-    'executor': {
-      title: 'Run Tool',
-      viewTitles: { SYS_ARCH: 'Tool Executor', SWIMLANES: 'Tool Executor', SEQUENCE: 'Executor' },
-      desc: 'Executes actions (HTTP search, sandboxed script, API requests).',
-      viewTypes: {
-        EVENT_STORMING: TYPES.COMMAND,
-        SYS_ARCH: TYPES.SERVICE,
-        SWIMLANES: TYPES.PROCESS,
-        SEQUENCE: TYPES.SERVICE,
-      }
-    },
-    'evaluator': {
-      title: 'Evaluate Result',
-      viewTitles: { SYS_ARCH: 'Evaluator', SWIMLANES: 'Evaluator', SEQUENCE: 'Evaluator' },
-      desc: 'Tests execution outputs against success conditions.',
-      viewTypes: {
-        EVENT_STORMING: TYPES.COMMAND,
-        SYS_ARCH: TYPES.SERVICE,
-        SWIMLANES: TYPES.DECISION,
-        SEQUENCE: TYPES.SERVICE,
-      }
-    },
-    'cmd_review': {
-      title: 'Review Result',
-      desc: 'Human reviews the failed output and provides feedback.',
-      viewTypes: { EVENT_STORMING: TYPES.COMMAND },
-      collapsedTo: 'human_reviewer'
-    },
-    'memory': {
-      title: 'Memory Storage',
-      desc: 'Retrieves conversational logs and semantic vectors (long-term database).',
-      viewTypes: {
-        EVENT_STORMING: TYPES.DATABASE,
-        SYS_ARCH: TYPES.DATABASE,
-        SWIMLANES: TYPES.DATABASE,
-      },
-      erdSchema: [
-        {
-          name: 'memory_entries',
-          columns: [
-            { name: 'id', type: 'UUID', primaryKey: true, notNull: true },
-            { name: 'session_id', type: 'UUID', notNull: true },
-            { name: 'content', type: 'TEXT', notNull: true },
-            { name: 'embedding', type: 'VECTOR(768)', notNull: true },
-            { name: 'metadata', type: 'JSONB' },
-            { name: 'created_at', type: 'TIMESTAMPTZ', notNull: true },
-          ],
-        },
-        {
-          name: 'conversation_logs',
-          columns: [
-            { name: 'id', type: 'UUID', primaryKey: true, notNull: true },
-            { name: 'session_id', type: 'UUID', notNull: true },
-            { name: 'role', type: 'VARCHAR(10)', notNull: true },
-            { name: 'message', type: 'TEXT', notNull: true },
-            { name: 'tokens', type: 'INTEGER', notNull: true },
-            { name: 'created_at', type: 'TIMESTAMPTZ', notNull: true },
-          ],
-        },
-      ],
-    },
-    'output': {
-      title: 'Final Response',
-      desc: 'The verified markdown output returned to the caller.',
-      viewTypes: {
-        EVENT_STORMING: TYPES.DATA_OBJECT,
-        DATA_FLOW: TYPES.DATA_OBJECT,
-        SWIMLANES: TYPES.DATA_OBJECT,
-      }
-    },
+      title: 'Trigger Evaluation',
+      desc: 'Send execution output back to LLM to decide next action.',
+      type: TYPES.POLICY
+    }
   },
   relations: [
-    // ── EVENT STORMING ───────────────────────────────────────────────
-    // Phase 1: Cognition & Planning
-    { id: 'r_es_1',  from: 'user',           to: 'evt_goal',        views: ['EVENT_STORMING'] },
-    { id: 'r_es_2',  from: 'evt_goal',       to: 'pol_plan',        views: ['EVENT_STORMING'] },
-    { id: 'r_es_3',  from: 'pol_plan',       to: 'planner',         views: ['EVENT_STORMING'] },
-    { id: 'r_es_4',  from: 'planner',        to: 'orch_plan',       views: ['EVENT_STORMING'], handledBy: true },
-    { id: 'r_es_5',  from: 'orch_plan',      to: 'evt_plan_ready',  views: ['EVENT_STORMING'] },
-    { id: 'r_es_6',  from: 'orch_plan',      to: 'memory',          views: ['EVENT_STORMING'] },
-    // Phase 2: Action Execution
-    { id: 'r_es_7',  from: 'evt_plan_ready', to: 'tools',           views: ['EVENT_STORMING'] },
-    { id: 'r_es_8',  from: 'tools',          to: 'executor',        views: ['EVENT_STORMING'] },
-    { id: 'r_es_10', from: 'executor',       to: 'llm',             views: ['EVENT_STORMING'], handledBy: true },
-    { id: 'r_es_11', from: 'llm',            to: 'evt_executed',    views: ['EVENT_STORMING'] },
-    // Phase 3: Evaluation & Output
-    { id: 'r_es_12', from: 'evt_executed',   to: 'pol_eval',        views: ['EVENT_STORMING'] },
-    { id: 'r_es_13', from: 'pol_eval',       to: 'evaluator',       views: ['EVENT_STORMING'] },
-    { id: 'r_es_14', from: 'evaluator',      to: 'orch_eval',       views: ['EVENT_STORMING'], handledBy: true },
-    { id: 'r_es_15', from: 'orch_eval',      to: 'evt_done',        views: ['EVENT_STORMING'] },
-    { id: 'r_es_16', from: 'orch_eval',      to: 'evt_fail',        views: ['EVENT_STORMING'] },
-    { id: 'r_es_17', from: 'evt_done',       to: 'output',          views: ['EVENT_STORMING'] },
-    // Failure branching
-    { id: 'r_es_18', from: 'evt_fail',       to: 'pol_retry',       views: ['EVENT_STORMING'] },
-    { id: 'r_es_19', from: 'pol_retry',      to: 'planner',         views: ['EVENT_STORMING'], dashed: true },
-    { id: 'r_es_20', from: 'evt_fail',       to: 'pol_escalate',    views: ['EVENT_STORMING'] },
-    { id: 'r_es_21', from: 'pol_escalate',   to: 'cmd_review',      views: ['EVENT_STORMING'] },
-    { id: 'r_es_22', from: 'cmd_review',     to: 'human_reviewer',  views: ['EVENT_STORMING'], handledBy: true },
-    { id: 'r_es_23', from: 'human_reviewer', to: 'evt_reviewed',    views: ['EVENT_STORMING'] },
-    { id: 'r_es_24', from: 'evt_reviewed',   to: 'planner',         views: ['EVENT_STORMING'], dashed: true },
-
-    // ── SYSTEM ARCHITECTURE ──────────────────────────────────────────
-    { id: 'r_sa_1',  from: 'user',          to: 'orchestrator',   views: ['SYS_ARCH'] },
-    { id: 'r_sa_2',  from: 'orchestrator',  to: 'planner',        views: ['SYS_ARCH'] },
-    { id: 'r_sa_3',  from: 'orchestrator',  to: 'memory',         views: ['SYS_ARCH'] },
-    { id: 'r_sa_4',  from: 'planner',       to: 'tools',          views: ['SYS_ARCH'] },
-    { id: 'r_sa_5',  from: 'tools',         to: 'llm',            views: ['SYS_ARCH'] },
-    { id: 'r_sa_6',  from: 'llm',           to: 'executor',       views: ['SYS_ARCH'] },
-    { id: 'r_sa_7',  from: 'tools',         to: 'executor',       views: ['SYS_ARCH'] },
-    { id: 'r_sa_8',  from: 'executor',      to: 'evaluator',      views: ['SYS_ARCH'] },
-    { id: 'r_sa_9',  from: 'evaluator',     to: 'user',           views: ['SYS_ARCH'] },
-    { id: 'r_sa_10', from: 'evaluator',     to: 'pol_escalate',   views: ['SYS_ARCH'] },
-    { id: 'r_sa_11', from: 'pol_escalate',  to: 'human_reviewer', views: ['SYS_ARCH'] },
-    { id: 'r_sa_12', from: 'human_reviewer',to: 'orchestrator',   views: ['SYS_ARCH'], dashed: true },
-
-    // ── DATA FLOW ────────────────────────────────────────────────────
-    // Happy path: data transforms left → right
-    { id: 'r_df_1',  from: 'user',           to: 'evt_goal',        views: ['DATA_FLOW'] },
-    { id: 'r_df_2',  from: 'evt_goal',       to: 'evt_plan_ready',  views: ['DATA_FLOW'] },
-    { id: 'r_df_3',  from: 'evt_plan_ready', to: 'evt_executed',    views: ['DATA_FLOW'] },
-    { id: 'r_df_4',  from: 'evt_executed',   to: 'output',          views: ['DATA_FLOW'] },
-    { id: 'r_df_5',  from: 'output',         to: 'user',            views: ['DATA_FLOW'] },
-    // Failure branch: data diverts down then loops back
-    { id: 'r_df_6',  from: 'evt_executed',   to: 'evt_fail',        views: ['DATA_FLOW'] },
-    { id: 'r_df_7',  from: 'evt_fail',       to: 'evt_reviewed',    views: ['DATA_FLOW'] },
-    { id: 'r_df_8',  from: 'evt_reviewed',   to: 'evt_plan_ready',  views: ['DATA_FLOW'], dashed: true },
-
-    // ── SWIMLANES ────────────────────────────────────────────────────
-    { id: 'r_sl_1',  from: 'user',           to: 'orchestrator',    views: ['SWIMLANES'] },
-    { id: 'r_sl_2',  from: 'orchestrator',   to: 'memory',          views: ['SWIMLANES'] },
-    { id: 'r_sl_3',  from: 'orchestrator',   to: 'planner',         views: ['SWIMLANES'] },
-    { id: 'r_sl_4',  from: 'planner',        to: 'tools',           views: ['SWIMLANES'] },
-    { id: 'r_sl_5',  from: 'tools',          to: 'llm',             views: ['SWIMLANES'] },
-    { id: 'r_sl_6',  from: 'llm',            to: 'executor',        views: ['SWIMLANES'] },
-    { id: 'r_sl_7',  from: 'executor',       to: 'evaluator',       views: ['SWIMLANES'] },
-    { id: 'r_sl_8',  from: 'evaluator',      to: 'output',          views: ['SWIMLANES'] },
-    { id: 'r_sl_9',  from: 'output',         to: 'user',            views: ['SWIMLANES'] },
-    { id: 'r_sl_10', from: 'evaluator',      to: 'pol_escalate',    views: ['SWIMLANES'] },
-    { id: 'r_sl_11', from: 'pol_escalate',   to: 'human_reviewer',  views: ['SWIMLANES'] },
-    { id: 'r_sl_12', from: 'human_reviewer', to: 'orchestrator',    views: ['SWIMLANES'], dashed: true },
-
-    // ── SEQUENCE ─────────────────────────────────────────────────────
-    { id: 'r_sq_1', from: 'user',         to: 'orchestrator', views: ['SEQUENCE'], label: 'submit goal' },
-    { id: 'r_sq_2', from: 'orchestrator', to: 'planner',      views: ['SEQUENCE'], label: 'create plan' },
-    { id: 'r_sq_3', from: 'planner',      to: 'orchestrator', views: ['SEQUENCE'], label: 'plan ready' },
-    { id: 'r_sq_4', from: 'orchestrator', to: 'executor',     views: ['SEQUENCE'], label: 'run tool' },
-    { id: 'r_sq_5', from: 'executor',     to: 'llm',          views: ['SEQUENCE'], label: 'execute' },
-    { id: 'r_sq_6', from: 'llm',          to: 'executor',     views: ['SEQUENCE'], label: 'result' },
-    { id: 'r_sq_7', from: 'executor',     to: 'evaluator',    views: ['SEQUENCE'], label: 'check output' },
-    { id: 'r_sq_8', from: 'evaluator',    to: 'orchestrator', views: ['SEQUENCE'], label: 'pass/fail' },
-    { id: 'r_sq_9', from: 'orchestrator', to: 'user',         views: ['SEQUENCE'], label: 'final response' },
+    { id: 'r1', from: 'user', to: 'cmd_run_agent', views: ['EVENT_STORMING'] },
+    { id: 'r2', from: 'cmd_run_agent', to: 'orch_agent', handledBy: true, views: ['EVENT_STORMING'] },
+    { id: 'r3', from: 'orch_agent', to: 'filesystem', views: ['EVENT_STORMING'] },
+    { id: 'r4', from: 'orch_agent', to: 'evt_started', views: ['EVENT_STORMING'] },
+    { id: 'r5', from: 'evt_started', to: 'pol_plan', views: ['EVENT_STORMING'] },
+    { id: 'r6', from: 'pol_plan', to: 'cmd_call_llm', views: ['EVENT_STORMING'] },
+    { id: 'r7', from: 'cmd_call_llm', to: 'llm_reason_ref', handledBy: true, views: ['EVENT_STORMING'] },
+    { id: 'r8', from: 'llm_reason_ref', to: 'evt_reasoned', views: ['EVENT_STORMING'] },
+    { id: 'r9', from: 'evt_reasoned', to: 'pol_route', views: ['EVENT_STORMING'] },
+    { id: 'r10', from: 'pol_route', to: 'cmd_execute_tool', views: ['EVENT_STORMING'] },
+    { id: 'r11', from: 'cmd_execute_tool', to: 'tools_ref', handledBy: true, views: ['EVENT_STORMING'] },
+    { id: 'r12', from: 'tools_ref', to: 'mcp_servers', views: ['EVENT_STORMING'] },
+    { id: 'r13', from: 'tools_ref', to: 'subagents', views: ['EVENT_STORMING'] },
+    { id: 'r14', from: 'tools_ref', to: 'evt_tool_executed', views: ['EVENT_STORMING'] },
+    { id: 'r15', from: 'evt_tool_executed', to: 'pol_eval', views: ['EVENT_STORMING'] },
+    { id: 'r16', from: 'pol_eval', to: 'cmd_complete', views: ['EVENT_STORMING'] },
+    { id: 'r17', from: 'cmd_complete', to: 'llm_final_ref', handledBy: true, views: ['EVENT_STORMING'] },
+    { id: 'r18', from: 'llm_final_ref', to: 'evt_done', views: ['EVENT_STORMING'] },
+    { id: 'r19', from: 'evt_done', to: 'user', views: ['EVENT_STORMING'] }
   ],
   views: {
     EVENT_STORMING: {
       name: 'Event Storming',
       icon: 'Component',
       nodes: [
-        // Phase 1: Cognition & Planning  (cols 0–4)
         { id: 'user', grid: [0, 2] },
-        { id: 'evt_goal', grid: [1, 2] },
-        { id: 'pol_plan', grid: [2, 2] },
-        { id: 'planner', grid: [3, 2] },
-        { id: 'evt_plan_ready', grid: [4, 2] },
-        // Stacked: handler above command, database above handler
-        { id: 'orch_plan', grid: [3, 1] },
-        { id: 'memory', grid: [3, 0] },
-        // Phase 2: Action Execution  (cols 6–8, gap at col 5)
-        { id: 'tools', grid: [6, 2] },
-        { id: 'executor', grid: [7, 2] },
-        { id: 'evt_executed', grid: [8, 2] },
-        // Stacked: handler above command
-        { id: 'llm', grid: [7, 1] },
-        // Phase 3: Evaluation & Output  (cols 10–13, gap at col 9)
-        { id: 'pol_eval', grid: [10, 2] },
-        { id: 'evaluator', grid: [11, 2] },
-        { id: 'evt_done', grid: [12, 2] },
-        { id: 'output', grid: [13, 2] },
-        // Stacked: handler above command
-        { id: 'orch_eval', grid: [11, 1] },
-        // Failure Branch 1: Re-Plan  (row 3, starts at col 12)
-        { id: 'evt_fail', grid: [12, 3] },
-        { id: 'pol_retry', grid: [13, 3] },
-        // Failure Branch 2: Human Escalation  (row 4, starts at col 13)
-        { id: 'pol_escalate', grid: [13, 4] },
-        { id: 'cmd_review', grid: [14, 4] },
-        { id: 'evt_reviewed', grid: [15, 4] },
-        // Stacked: handler above command on branch row
-        { id: 'human_reviewer', grid: [14, 3] },
+        { id: 'cmd_run_agent', grid: [1, 2] },
+        { id: 'orch_agent', grid: [1, 1] },
+        { id: 'filesystem', grid: [1, 0] },
+        { id: 'evt_started', grid: [2, 2] },
+        // GAP at Column 3
+        { id: 'pol_plan', grid: [4, 2] },
+        { id: 'cmd_call_llm', grid: [5, 2] },
+        { id: 'llm_reason_ref', grid: [5, 1] },
+        { id: 'evt_reasoned', grid: [6, 2] },
+        // GAP at Column 7
+        { id: 'pol_route', grid: [8, 2] },
+        { id: 'cmd_execute_tool', grid: [9, 2] },
+        { id: 'tools_ref', grid: [9, 1] },
+        { id: 'mcp_servers', grid: [9, 0] },
+        { id: 'subagents', grid: [9, 3] },
+        { id: 'evt_tool_executed', grid: [10, 2] },
+        // GAP at Column 11
+        { id: 'pol_eval', grid: [12, 2] },
+        { id: 'cmd_complete', grid: [13, 2] },
+        { id: 'llm_final_ref', grid: [13, 1] },
+        { id: 'evt_done', grid: [14, 2] }
       ],
       groups: [
-        { id: 'es_g1', title: 'Cognition & Planning', desc: 'Goal triggers policy, Create Plan command handled by Orchestrator, plan generated.', nodeIds: ['evt_goal','pol_plan','planner','orch_plan','memory','evt_plan_ready'], color: 'rgba(140,170,238,0.12)', borderColor: '#8caaee', textColor: '#c6d0f5' },
-        { id: 'es_g2', title: 'Action Space Execution', desc: 'Execute Next Step policy routes to LLM, Run Tool handled by LLM, result captured.', nodeIds: ['tools','llm','executor','evt_executed'], color: 'rgba(244,184,228,0.12)', borderColor: '#f4b8e4', textColor: '#c6d0f5' },
-        { id: 'es_g3', title: 'Evaluation & Happy Path', desc: 'Evaluate on Result policy, Evaluate Result handled by Orchestrator, Goal Satisfied.', nodeIds: ['pol_eval','evaluator','orch_eval','evt_done','output'], color: 'rgba(229,200,144,0.12)', borderColor: '#e5c890', textColor: '#c6d0f5' },
-        { id: 'es_g4', title: 'Failure Recovery', desc: 'Goal Not Satisfied branches to auto re-planning or human review.', nodeIds: ['evt_fail','pol_retry','pol_escalate','cmd_review','human_reviewer','evt_reviewed'], color: 'rgba(231,130,132,0.12)', borderColor: '#e78284', textColor: '#c6d0f5' },
+        { id: 'g1', title: 'Agent Core Ingestion', desc: 'Sets up task and parses skills & instructions.', nodeIds: ['user', 'cmd_run_agent', 'orch_agent', 'filesystem', 'evt_started'], color: 'rgba(140, 170, 238, 0.12)', borderColor: '#8caaee', textColor: '#c6d0f5' },
+        { id: 'g2', title: 'Cognition & Actions Loop', desc: 'Evaluates logic with LLM and runs tools via MCP servers or subagents.', nodeIds: ['pol_plan', 'cmd_call_llm', 'llm_reason_ref', 'evt_reasoned', 'pol_route', 'cmd_execute_tool', 'tools_ref', 'mcp_servers', 'subagents', 'evt_tool_executed', 'pol_eval', 'cmd_complete', 'llm_final_ref', 'evt_done'], color: 'rgba(244, 184, 228, 0.12)', borderColor: '#f4b8e4', textColor: '#c6d0f5' }
       ]
-    },
-    SYS_ARCH: {
-      name: 'System Architecture',
-      icon: 'Server',
-      nodes: [
-        // Hub-and-spoke: orchestrator at center [3,2]
-        { id: 'user', grid: [1, 2] },
-        { id: 'orchestrator', grid: [3, 2] },
-        { id: 'planner', grid: [2, 1] },
-        { id: 'memory', grid: [2, 3] },
-        { id: 'tools', grid: [5, 2] },
-        { id: 'executor', grid: [5, 1] },
-        { id: 'evaluator', grid: [5, 3] },
-        { id: 'llm', grid: [6, 0] },
-        { id: 'pol_escalate', grid: [4, 4] },
-        { id: 'human_reviewer', grid: [3, 4] },
-      ],
-      groups: [
-        {
-          id: 'sa_boundary',
-          title: 'Agent System',
-          desc: 'Everything built and operated within our control — the cognitive loop, tool execution, evaluation, and escalation policy.',
-          nodeIds: ['orchestrator', 'planner', 'memory', 'tools', 'executor', 'evaluator', 'pol_escalate'],
-          color: 'rgba(129,200,190,0.06)',
-          borderColor: '#81c8be',
-          textColor: '#c6d0f5',
-        }
-      ]
-    },
-    DATA_FLOW: {
-      name: 'Data Flow (DFD)',
-      icon: 'Share2',
-      nodes: [
-        // Row 1 (main): left-to-right data transformation pipeline
-        { id: 'user', grid: [0, 1] },
-        { id: 'evt_goal', grid: [2, 1] },
-        { id: 'evt_plan_ready', grid: [4, 1] },
-        { id: 'evt_executed', grid: [6, 1] },
-        { id: 'output', grid: [8, 1] },
-        // Row 2 (failure branch): data diverts down then loops back left
-        { id: 'evt_fail', grid: [6, 2] },
-        { id: 'evt_reviewed', grid: [4, 2] },
-      ],
-      groups: []
-    },
-    SWIMLANES: {
-      name: 'Activity Swimlanes',
-      icon: 'Layers',
-      nodes: [
-        // Lane 0 — Actors (row 0)
-        { id: 'user', grid: [0, 0] },
-        { id: 'human_reviewer', grid: [8, 0] },
-        { id: 'output', grid: [10, 0] },
-        // Lane 1 — System: orchestration row (row 1)
-        { id: 'orchestrator', grid: [2, 1] },
-        { id: 'planner', grid: [3, 1] },
-        { id: 'memory', grid: [4, 1] },
-        { id: 'evaluator', grid: [7, 1] },
-        // Lane 1 — System: execution row (row 2)
-        { id: 'tools', grid: [4, 2] },
-        { id: 'executor', grid: [6, 2] },
-        { id: 'pol_escalate', grid: [8, 2] },
-        // Lane 2 — External Systems (row 3)
-        { id: 'llm', grid: [5, 3] },
-      ],
-      groups: [
-        { id: 'sl_l1', isLane: true, title: 'Actors', desc: 'Human actors initiating requests or reviewing failures.', row: 0, color: 'rgba(239,159,118,0.10)' },
-        { id: 'sl_l2', isLane: true, title: 'Agent System', desc: 'Internal components — orchestration (top) and execution (bottom).', y: 200, h: 330, color: 'rgba(153,209,219,0.10)' },
-        { id: 'sl_l3', isLane: true, title: 'External Systems', desc: 'Third-party APIs and models utilized by the system.', row: 3, color: 'rgba(186,187,241,0.10)' },
-      ]
-    },
-    SEQUENCE: {
-      name: 'Sequence Diagram',
-      icon: 'List',
-      nodes: [
-        { id: 'user', grid: [0, 0] },
-        { id: 'orchestrator', grid: [1, 0] },
-        { id: 'planner', grid: [2, 0] },
-        { id: 'executor', grid: [3, 0] },
-        { id: 'llm', grid: [4, 0] },
-        { id: 'evaluator', grid: [5, 0] }
-      ],
-      groups: []
     }
   },
   journeys: [
     {
-      id: 'happy-path',
-      label: 'Agentic Problem Solving Loop',
-      description: 'Follow the execution plan as it transitions from the orchestrator through the LLM, resolves tools, and returns the response.',
+      id: 'agent-tool-use-loop',
+      label: 'Agent-Subagent MCP Loop',
+      description: 'Follow the flow of running the agent, loading filesystem knowledge, calling the LLM, executing MCP server tools, delegating to subagents, and returning final answers.',
       steps: [
-        { nodeIds: ['user', 'evt_goal'], description: 'Goal Submitted — User submits: "Research top 3 competitors and summarise."' },
-        { nodeIds: ['pol_plan', 'planner', 'orch_plan', 'memory', 'evt_plan_ready'], description: 'Cognition & Planning — Policy "Plan on New Goal" fires. "Create Plan" command handled by Orchestrator (Aggregate). Memory fetches context. Plan Generated event published.', processGroup: 'planning' },
-        { nodeIds: ['tools', 'executor', 'llm', 'evt_executed'], description: 'Action Execution — "Run Tool" command handled by LLM (External). Tool Executed event published.', processGroup: 'execution' },
-        { nodeIds: ['pol_eval', 'evaluator', 'orch_eval', 'evt_done', 'output'], description: 'Evaluation (Happy Path) — Policy "Evaluate on Result" fires. "Evaluate Result" handled by Orchestrator. Goal Satisfied → Final Response delivered.', processGroup: 'evaluation' },
-        { nodeIds: ['evt_fail', 'pol_retry', 'planner'], description: 'Failure Branch (Auto Re-Plan) — Goal Not Satisfied triggers "Re-Plan on Failure" policy, loops back to "Create Plan" command.', processGroup: 'planning' },
-        { nodeIds: ['evt_fail', 'pol_escalate', 'cmd_review', 'human_reviewer', 'evt_reviewed'], description: 'Failure Branch (Human Review) — "Escalate to Human" policy fires. "Review Result" handled by Human Reviewer. Result Reviewed loops back to planning.', processGroup: 'escalation' },
-      ]
-    },
-    {
-      id: 'human-escalation',
-      label: 'Human-in-the-Loop Escalation',
-      description: 'Trace the path when tool execution fails repeatedly and policy escalates to human intervention.',
-      steps: [
-        { nodeIds: ['user', 'evt_goal'], description: 'Goal Submitted — User submits a complex task requiring human verification.' },
-        { nodeIds: ['pol_plan', 'planner', 'orch_plan'], description: 'Initial Planning — Planner creates execution steps; Orchestrator registers plan.', processGroup: 'planning' },
-        { nodeIds: ['tools', 'executor', 'llm', 'evt_executed'], description: 'Tool Execution — Tool runs and LLM processes, producing an output.', processGroup: 'execution' },
-        { nodeIds: ['pol_eval', 'evaluator', 'orch_eval', 'evt_fail'], description: 'Evaluation Failure — Evaluator assesses output and determines it fails the quality check.', processGroup: 'evaluation' },
-        { nodeIds: ['pol_escalate', 'cmd_review', 'human_reviewer'], description: 'Human Escalation — System triggers escalation policy; review command dispatched to human reviewer.', processGroup: 'escalation' },
-        { nodeIds: ['human_reviewer', 'evt_reviewed', 'planner'], description: 'Human Recovery — Human reviewer corrects feedback; Result Reviewed event triggers re-planning.', processGroup: 'planning' },
+        { nodeIds: ['user', 'cmd_run_agent', 'orch_agent', 'filesystem', 'evt_started'], description: 'Agent Started — User requests task; Agent loads skills from the Filesystem.' },
+        { nodeIds: ['pol_plan', 'cmd_call_llm', 'llm_reason_ref', 'evt_reasoned'], description: 'Thinking — Agent triggers planning; calls LLM to choose actions and tool targets.', processGroup: 'planning' },
+        { nodeIds: ['pol_route', 'cmd_execute_tool', 'tools_ref', 'mcp_servers', 'subagents', 'evt_tool_executed'], description: 'Tool Use — Agent executes tool commands, utilizing MCP Servers or delegating tasks to Subagents.', processGroup: 'execution' },
+        { nodeIds: ['pol_eval', 'cmd_complete', 'llm_final_ref', 'evt_done'], description: 'Task Completion — LLM verifies results and returns the successful solution to the User.', processGroup: 'evaluation' }
       ]
     }
   ]

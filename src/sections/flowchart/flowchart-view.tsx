@@ -5,6 +5,7 @@ import * as Icons from 'lucide-react';
 import { ZoomToolbar } from './zoom-toolbar';
 import { useCamera } from './useCamera';
 import {
+  TYPES,
   COLORS,
   BORDER_COLORS,
   ICONS,
@@ -49,7 +50,7 @@ export function FlowchartView({
 
   // SEQUENCE view derived data
   const seqRelations = useMemo(
-    () => schema.relations.filter(r => r.views.includes('SEQUENCE')),
+    () => schema.relations.filter(r => r.views?.includes('SEQUENCE')),
     [schema.relations]
   );
 
@@ -146,7 +147,7 @@ export function FlowchartView({
     if (!fromNode || !toNode) return;
 
     const hasRelation = schema.relations.some(
-      r => r.views.includes(viewKey) &&
+      r => r.views?.includes(viewKey) &&
       ((r.from === prevHighlightedNodeId && r.to === highlightedNodeId) ||
         (r.to === prevHighlightedNodeId && r.from === highlightedNodeId))
     );
@@ -290,6 +291,59 @@ export function FlowchartView({
           <g transform={transformStr} data-testid={`flowchart-canvas-${viewKey}`}>
              {isSequenceView ? (
                <>
+                 {/* Sequence Groups / Condition Boundaries */}
+                 {view.groups && view.groups.map(group => {
+                   const isFaded = activeNodeIds !== null;
+                   const gCols = seqColumns.filter(([, nodeId]) => group.nodeIds?.includes(nodeId));
+                   if (gCols.length === 0) return null;
+
+                   const minCol = Math.min(...gCols.map(([c]) => c));
+                   const maxCol = Math.max(...gCols.map(([c]) => c));
+                   const xStart = minCol * 100 + 60 - 25;
+                   const xEnd = maxCol * 100 + 60 + 25;
+                   
+                   const yVal = group.y ?? 100;
+                   const hVal = group.h ?? 150;
+                   const labelW = Math.max(30, group.title.length * 5 + 10);
+
+                   return (
+                     <g 
+                       key={group.id} 
+                       className="flowchart-seq-group" 
+                       opacity={isFaded ? 0.15 : 0.85} 
+                       style={{ transition: 'opacity 0.3s' }}
+                       data-testid={`flowchart-seq-group-${viewKey}-${group.id}`}
+                     >
+                       <rect
+                         x={xStart}
+                         y={yVal}
+                         width={xEnd - xStart}
+                         height={hVal}
+                         rx="4"
+                         fill={group.color || 'rgba(229, 200, 144, 0.04)'}
+                         stroke={group.borderColor || '#e5c890'}
+                         strokeWidth="1.2"
+                         strokeDasharray="4 4"
+                       />
+                       <polygon
+                         points={`${xStart},${yVal} ${xStart + labelW},${yVal} ${xStart + labelW},${yVal + 12} ${xStart + labelW - 6},${yVal + 18} ${xStart},${yVal + 18}`}
+                         fill={group.borderColor || '#e5c890'}
+                         opacity="0.2"
+                       />
+                       <text
+                         x={xStart + 6}
+                         y={yVal + 12}
+                         fontSize="8"
+                         fontWeight="bold"
+                         fill={group.textColor || '#c6d0f5'}
+                         fontFamily="var(--font-mono)"
+                       >
+                         {group.title}
+                       </text>
+                     </g>
+                   );
+                 })}
+
                  {/* Sequence lifelines */}
                  {seqColumns.map(([colIdx, nodeId]) => {
                    const entity = schema.entities[nodeId];
@@ -325,8 +379,9 @@ export function FlowchartView({
                    const boxX = colX - boxW / 2;
                    const boxY = 12;
                    const boxH = 36;
-                   const nodeFill = COLORS[entity.viewTypes.SEQUENCE as keyof typeof COLORS] || COLORS.default;
-                   const strokeColor = BORDER_COLORS[entity.viewTypes.SEQUENCE as keyof typeof BORDER_COLORS] || BORDER_COLORS.default;
+                   const viewTypes = entity.viewTypes || {};
+                   const nodeFill = COLORS[viewTypes.SEQUENCE as keyof typeof COLORS] || COLORS.default;
+                   const strokeColor = BORDER_COLORS[viewTypes.SEQUENCE as keyof typeof BORDER_COLORS] || BORDER_COLORS.default;
                    const isActive = activeNodeIds?.includes(nodeId);
                    return (
                      <g key={`seq-top-${nodeId}`} data-testid={`flowchart-seq-top-${viewKey}-${nodeId}`}>
@@ -366,8 +421,9 @@ export function FlowchartView({
                    const msgStartY = 80;
                    const bottomY = msgStartY + seqRelations.length * msgSpacing + 40;
                    const boxH = 36;
-                   const nodeFill = COLORS[entity.viewTypes.SEQUENCE as keyof typeof COLORS] || COLORS.default;
-                   const strokeColor = BORDER_COLORS[entity.viewTypes.SEQUENCE as keyof typeof BORDER_COLORS] || BORDER_COLORS.default;
+                   const viewTypes = entity.viewTypes || {};
+                   const nodeFill = COLORS[viewTypes.SEQUENCE as keyof typeof COLORS] || COLORS.default;
+                   const strokeColor = BORDER_COLORS[viewTypes.SEQUENCE as keyof typeof BORDER_COLORS] || BORDER_COLORS.default;
                    const isActive = activeNodeIds?.includes(nodeId);
                    return (
                      <g key={`seq-bottom-${nodeId}`} data-testid={`flowchart-seq-bottom-${viewKey}-${nodeId}`}>
@@ -549,7 +605,7 @@ export function FlowchartView({
 
                  {/* Edges */}
                  {schema.relations
-                   .filter(r => r.views.includes(viewKey))
+                   .filter(r => r.views?.includes(viewKey))
                    .map((rel, idx) => {
                      const fromNode = nodeMap[rel.from];
                      const toNode = nodeMap[rel.to];
@@ -651,23 +707,21 @@ export function FlowchartView({
                    })}
 
                  {/* Particle */}
-                 {currentStep >= 0 && (
-                   <circle
-                     ref={particleRef}
-                     r="6"
-                     fill="#8caaee"
-                     opacity="0"
-                     className="flowchart-particle"
-                     data-testid={`flowchart-particle-${viewKey}`}
-                   />
-                 )}
+                 <circle
+                   ref={particleRef}
+                   r="6"
+                   fill="#8caaee"
+                   opacity="0"
+                   className="flowchart-particle"
+                   data-testid={`flowchart-particle-${viewKey}`}
+                 />
 
                  {/* Nodes */}
                  {positioned.map(node => {
                    const entity = schema.entities[node.id];
                    if (!entity) return null;
 
-                   const viewType = entity.viewTypes[viewKey] || 'default';
+                   const viewType = entity.viewTypes?.[viewKey] || 'default';
                    const nW = NODE_W;
                    const nH = NODE_H;
                    const x = node.x - nW / 2;
@@ -682,7 +736,7 @@ export function FlowchartView({
                    const IconComponent = iconName && (iconName in Icons)
                      ? (Icons as unknown as Record<string, React.ComponentType<{ size?: number; className?: string; color?: string }>>)[iconName]
                      : null;
-                   const hasLinks = Object.keys(entity.viewTypes).filter(vk => vk !== viewKey && schema.views[vk]).length > 0;
+                   const hasLinks = Object.keys(entity.viewTypes || {}).filter(vk => vk !== viewKey && schema.views[vk]).length > 0;
 
                    return (
                      <g
@@ -702,21 +756,61 @@ export function FlowchartView({
                        }}
                        onMouseLeave={() => setTooltip(null)}
                        style={{
-                         opacity: isDimmed ? 0.25 : 1,
+                           opacity: isDimmed ? 0.25 : 1,
                          transition: 'opacity 0.3s, filter 0.3s',
                          cursor: hasLinks ? 'pointer' : 'default'
                        }}
                      >
-                       <rect
-                         x={x} y={y}
-                         width={nW} height={nH}
-                         rx="8"
-                         fill={nodeFill}
-                         stroke={strokeColor}
-                         strokeWidth="1.5"
-                         filter={isHighlighted ? `url(#flowchart-glow-${viewInstanceId})` : undefined}
-                         className={`flowchart-node-rect ${isHighlighted ? 'flowchart-node-highlighted' : ''}`}
-                       />
+                        {viewType === TYPES.DECISION ? (
+                          <polygon
+                            points={`${node.x},${y} ${x + nW},${node.y} ${node.x},${y + nH} ${x},${node.y}`}
+                            fill={nodeFill}
+                            stroke={strokeColor}
+                            strokeWidth="1.5"
+                            filter={isHighlighted ? `url(#flowchart-glow-${viewInstanceId})` : undefined}
+                            className={`flowchart-node-rect ${isHighlighted ? 'flowchart-node-highlighted' : ''}`}
+                          />
+                        ) : viewType === TYPES.DATABASE ? (
+                          <g>
+                            {/* Cylinder body + bottom curve */}
+                            <path
+                              d={`M ${x} ${y + 10} L ${x} ${y + nH - 10} A ${nW / 2} 10 0 0 0 ${x + nW} ${y + nH - 10} L ${x + nW} ${y + 10} Z`}
+                              fill={nodeFill}
+                              stroke={strokeColor}
+                              strokeWidth="1.5"
+                              filter={isHighlighted ? `url(#flowchart-glow-${viewInstanceId})` : undefined}
+                              className={`flowchart-node-rect ${isHighlighted ? 'flowchart-node-highlighted' : ''}`}
+                            />
+                            {/* Cylinder bottom outline curve */}
+                            <path
+                              d={`M ${x} ${y + nH - 10} A ${nW / 2} 10 0 0 0 ${x + nW} ${y + nH - 10}`}
+                              fill="none"
+                              stroke={strokeColor}
+                              strokeWidth="1.5"
+                            />
+                            {/* Cylinder top ellipse */}
+                            <ellipse
+                              cx={node.x}
+                              cy={y + 10}
+                              rx={nW / 2}
+                              ry={10}
+                              fill={nodeFill}
+                              stroke={strokeColor}
+                              strokeWidth="1.5"
+                            />
+                          </g>
+                        ) : (
+                          <rect
+                            x={x} y={y}
+                            width={nW} height={nH}
+                            rx="8"
+                            fill={nodeFill}
+                            stroke={strokeColor}
+                            strokeWidth="1.5"
+                            filter={isHighlighted ? `url(#flowchart-glow-${viewInstanceId})` : undefined}
+                            className={`flowchart-node-rect ${isHighlighted ? 'flowchart-node-highlighted' : ''}`}
+                          />
+                        )}
 
                        <foreignObject
                          x={0}
