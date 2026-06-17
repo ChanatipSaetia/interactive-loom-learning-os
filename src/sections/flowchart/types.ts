@@ -68,6 +68,36 @@ export const DYNAMIC_ICONS = { Component, Server, Share2, Layers, List };
 export const NODE_W = 140; 
 export const NODE_H = 100;
 
+export const PROCESS_GROUP_STATE_MAP: Record<ProcessGroup, string> = {
+  planning: 'PLANNING',
+  execution: 'EXECUTING',
+  evaluation: 'EVALUATING',
+  escalation: 'ESCALATED',
+};
+
+export interface FlowchartStateMachineState {
+  id: string;
+  label: string;
+  color: string;
+}
+
+export interface FlowchartStateMachine {
+  states: FlowchartStateMachineState[];
+  initialState: string;
+}
+
+export interface FlowchartERDColumn {
+  name: string;
+  type: string;
+  primaryKey?: boolean;
+  notNull?: boolean;
+}
+
+export interface FlowchartERDTable {
+  name: string;
+  columns: FlowchartERDColumn[];
+}
+
 export interface FlowchartEntity {
   title: string;
   /** Per-view title override — falls back to `title` when absent. */
@@ -76,6 +106,12 @@ export interface FlowchartEntity {
   viewTypes: Record<string, string>;
   /** Maps this fine-grained entity to a collapsed/high-level entity ID in other views. */
   collapsedTo?: string;
+  /** State machine definition for this aggregate (shown in inspector). */
+  stateMachine?: FlowchartStateMachine;
+  /** JSON payload for a specific DFD node (shown in inspector during playback). */
+  jsonPayload?: Record<string, unknown>;
+  /** ERD table definitions for database/aggregate entities (shown on node click). */
+  erdSchema?: FlowchartERDTable[];
 }
 
 export interface FlowchartRelation {
@@ -109,10 +145,13 @@ export interface FlowchartViewGroup {
   h?: number;
 }
 
+export type ProcessGroup = 'planning' | 'execution' | 'evaluation' | 'escalation';
+
 export interface FlowchartStep {
   nodeId?: string;
   nodeIds?: string[];
   description: string;
+  processGroup?: ProcessGroup;
 }
 
 export interface FlowchartStepLinear {

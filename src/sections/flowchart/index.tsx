@@ -5,6 +5,7 @@ import { FlowchartView } from './flowchart-view';
 import { PlaybackControls } from './playback-controls';
 import { StepCarousel } from './step-carousel';
 import { usePlaybackState } from './usePlaybackState';
+import { InspectorSidebar } from './inspector';
 
 import {
   TYPES,
@@ -15,11 +16,13 @@ import {
   DYNAMIC_ICONS,
   NODE_W,
   NODE_H,
+  PROCESS_GROUP_STATE_MAP,
 } from './types';
 import { INITIAL_SCHEMA } from './initial-schema';
 
 import type {
   UnifiedFlowchartSchema,
+  FlowchartEntity,
   FlowchartRelation,
   FlowchartViewNode,
   FlowchartViewGroup,
@@ -29,7 +32,12 @@ import type {
   FlowchartStepBranchOption,
   FlowchartJourney,
   FlowchartViewConfig,
-  FlowchartProps
+  FlowchartProps,
+  ProcessGroup,
+  FlowchartStateMachineState,
+  FlowchartStateMachine,
+  FlowchartERDColumn,
+  FlowchartERDTable,
 } from './types';
 
 import './flowchart.css';
@@ -38,8 +46,8 @@ const Workflow = Icons.Workflow;
 const LayoutGrid = Icons.LayoutGrid;
 const Maximize = Icons.Maximize;
 
-export { TYPES, COLORS, BORDER_COLORS, ICONS, ICON_ANIMATIONS, DYNAMIC_ICONS, NODE_W, NODE_H, INITIAL_SCHEMA };
-export type { UnifiedFlowchartSchema, FlowchartRelation, FlowchartViewNode, FlowchartViewGroup, FlowchartStep, FlowchartStepData, FlowchartStepLinear, FlowchartStepBranchOption, FlowchartJourney, FlowchartViewConfig, FlowchartProps };
+export { TYPES, COLORS, BORDER_COLORS, ICONS, ICON_ANIMATIONS, DYNAMIC_ICONS, NODE_W, NODE_H, INITIAL_SCHEMA, PROCESS_GROUP_STATE_MAP };
+export type { UnifiedFlowchartSchema, FlowchartEntity, FlowchartRelation, FlowchartViewNode, FlowchartViewGroup, FlowchartStep, FlowchartStepData, FlowchartStepLinear, FlowchartStepBranchOption, FlowchartJourney, FlowchartViewConfig, FlowchartProps, ProcessGroup, FlowchartStateMachineState, FlowchartStateMachine, FlowchartERDColumn, FlowchartERDTable };
 
 export function Flowchart({ title, schema = INITIAL_SCHEMA }: FlowchartProps) {
   const rawId = useId();
@@ -66,6 +74,10 @@ export function Flowchart({ title, schema = INITIAL_SCHEMA }: FlowchartProps) {
 
   // Layout mode state
   const [layoutMode, setLayoutMode] = useState<'single' | 'grid'>('single');
+
+  // Inspector sidebar state
+  const [inspectorOpen, setInspectorOpen] = useState(false);
+  const [selectedNodeId, setSelectedNodeId] = useState<string | null>(null);
 
   // Viewport resize listener - fallback to single mode below 1024px
   useEffect(() => {
@@ -151,12 +163,22 @@ export function Flowchart({ title, schema = INITIAL_SCHEMA }: FlowchartProps) {
   const pendingFocusNodeIdRef = useRef<string | null>(null);
 
   const handleNodeClick = useCallback((nodeId: string) => {
-    if (layoutMode === 'grid') {
+    const entity = localSchema.entities[nodeId];
+    if (!entity) return;
+
+    // Check if this is a database or aggregate node (shows ERD in inspector)
+    const viewType = entity.viewTypes[activeViewKey];
+    const isDbOrAggregate = viewType === 'Database' || viewType === 'Aggregate';
+
+    if (isDbOrAggregate) {
+      setSelectedNodeId(nodeId);
+      setInspectorOpen(true);
       return;
     }
 
-    const entity = localSchema.entities[nodeId];
-    if (!entity) return;
+    if (layoutMode === 'grid') {
+      return;
+    }
 
     const otherViews = Object.keys(entity.viewTypes).filter(vk => vk !== activeViewKey && localSchema.views[vk]);
 
@@ -221,6 +243,17 @@ export function Flowchart({ title, schema = INITIAL_SCHEMA }: FlowchartProps) {
               </button>
             </div>
           )}
+
+          {/* Inspector toggle */}
+          <button
+            onClick={() => setInspectorOpen(prev => !prev)}
+            className={`flowchart-layout-btn ${inspectorOpen ? 'active' : ''}`}
+            data-testid="flowchart-btn-inspector"
+            aria-label="Toggle Inspector Sidebar"
+          >
+            <Icons.PanelRight size={14} />
+            <span>Inspector</span>
+          </button>
 
           {/* View tabs (only in single mode) */}
           {!isGridMode && viewKeys.length > 1 && (
@@ -355,6 +388,16 @@ export function Flowchart({ title, schema = INITIAL_SCHEMA }: FlowchartProps) {
             handleStepClick={handleStepClick}
             instanceId={instanceId}
           />
+
+          {inspectorOpen && (
+            <InspectorSidebar
+              schema={localSchema}
+              currentStep={playback.currentStep}
+              currentJourneyId={playback.currentJourneyId}
+              selectedNodeId={selectedNodeId}
+              onClose={() => setInspectorOpen(false)}
+            />
+          )}
         </div>
       )}
     </div>

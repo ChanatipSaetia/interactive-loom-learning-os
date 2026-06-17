@@ -30,7 +30,38 @@ export const agentSchema: UnifiedFlowchartSchema = {
         SYS_ARCH: TYPES.AGGREGATE,
         SWIMLANES: TYPES.AGGREGATE,
         SEQUENCE: TYPES.AGGREGATE,
-      }
+      },
+      stateMachine: {
+        states: [
+          { id: 'IDLE', label: 'Idle', color: '#838ba7' },
+          { id: 'PLANNING', label: 'Planning', color: '#8caaee' },
+          { id: 'EXECUTING', label: 'Executing', color: '#a6d189' },
+          { id: 'EVALUATING', label: 'Evaluating', color: '#e5c890' },
+          { id: 'ESCALATED', label: 'Escalated', color: '#e78284' },
+        ],
+        initialState: 'IDLE',
+      },
+      erdSchema: [
+        {
+          name: 'agent_sessions',
+          columns: [
+            { name: 'id', type: 'UUID', primaryKey: true, notNull: true },
+            { name: 'user_id', type: 'UUID', notNull: true },
+            { name: 'status', type: 'VARCHAR(20)', notNull: true },
+            { name: 'created_at', type: 'TIMESTAMPTZ', notNull: true },
+            { name: 'updated_at', type: 'TIMESTAMPTZ', notNull: true },
+          ],
+        },
+        {
+          name: 'execution_plans',
+          columns: [
+            { name: 'id', type: 'UUID', primaryKey: true, notNull: true },
+            { name: 'session_id', type: 'UUID', notNull: true },
+            { name: 'steps', type: 'JSONB', notNull: true },
+            { name: 'current_step', type: 'INTEGER', notNull: true },
+          ],
+        },
+      ],
     },
     'orch_plan': {
       title: 'Orchestrator',
@@ -65,6 +96,15 @@ export const agentSchema: UnifiedFlowchartSchema = {
       viewTypes: {
         EVENT_STORMING: TYPES.EVENT,
         DATA_FLOW: TYPES.DATA_OBJECT,
+      },
+      jsonPayload: {
+        type: 'parsed_request',
+        payload: {
+          goal: 'Research top 3 competitors and summarise',
+          userId: 'usr_abc123',
+          sessionId: 'sess_xyz789',
+          timestamp: '2025-01-15T10:30:00Z'
+        }
       }
     },
     'evt_plan_ready': {
@@ -74,6 +114,18 @@ export const agentSchema: UnifiedFlowchartSchema = {
       viewTypes: {
         EVENT_STORMING: TYPES.EVENT,
         DATA_FLOW: TYPES.DATA_OBJECT,
+      },
+      jsonPayload: {
+        type: 'execution_plan',
+        payload: {
+          planId: 'plan_001',
+          steps: [
+            { id: 1, action: 'search', target: 'competitor_list_2025', tool: 'web_search' },
+            { id: 2, action: 'extract', target: 'market_share_data', tool: 'ocr' },
+            { id: 3, action: 'summarize', target: 'comparison_matrix', tool: 'llm_prompt' }
+          ],
+          context: ['memory_vector_01', 'memory_vector_02']
+        }
       }
     },
     'evt_executed': {
@@ -83,6 +135,16 @@ export const agentSchema: UnifiedFlowchartSchema = {
       viewTypes: {
         EVENT_STORMING: TYPES.EVENT,
         DATA_FLOW: TYPES.DATA_OBJECT,
+      },
+      jsonPayload: {
+        type: 'tool_output',
+        payload: {
+          stepId: 1,
+          tool: 'web_search',
+          output: 'Top 3 competitors: Acme Corp (32%), GlobalTech (28%), InnovateCo (18%)',
+          tokensUsed: 1247,
+          latency: '2.3s'
+        }
       }
     },
     'evt_done': {
@@ -97,6 +159,16 @@ export const agentSchema: UnifiedFlowchartSchema = {
       viewTypes: {
         EVENT_STORMING: TYPES.EVENT,
         DATA_FLOW: TYPES.DATA_OBJECT,
+      },
+      jsonPayload: {
+        type: 'failure_report',
+        payload: {
+          stepId: 2,
+          reason: 'OCR confidence below threshold (0.62 < 0.80)',
+          attempt: 2,
+          maxAttempts: 3,
+          fallback: null
+        }
       }
     },
     'evt_reviewed': {
@@ -106,6 +178,19 @@ export const agentSchema: UnifiedFlowchartSchema = {
       viewTypes: {
         EVENT_STORMING: TYPES.EVENT,
         DATA_FLOW: TYPES.DATA_OBJECT,
+      },
+      jsonPayload: {
+        type: 'human_feedback',
+        payload: {
+          reviewerId: 'rev_001',
+          feedback: 'Use quarterly earnings reports instead of web search for market share data',
+          correction: {
+            stepId: 1,
+            action: 'search',
+            target: 'earnings_reports_q4_2024',
+            tool: 'financial_api'
+          }
+        }
       }
     },
     'pol_plan': {
@@ -188,7 +273,31 @@ export const agentSchema: UnifiedFlowchartSchema = {
         EVENT_STORMING: TYPES.DATABASE,
         SYS_ARCH: TYPES.DATABASE,
         SWIMLANES: TYPES.DATABASE,
-      }
+      },
+      erdSchema: [
+        {
+          name: 'memory_entries',
+          columns: [
+            { name: 'id', type: 'UUID', primaryKey: true, notNull: true },
+            { name: 'session_id', type: 'UUID', notNull: true },
+            { name: 'content', type: 'TEXT', notNull: true },
+            { name: 'embedding', type: 'VECTOR(768)', notNull: true },
+            { name: 'metadata', type: 'JSONB' },
+            { name: 'created_at', type: 'TIMESTAMPTZ', notNull: true },
+          ],
+        },
+        {
+          name: 'conversation_logs',
+          columns: [
+            { name: 'id', type: 'UUID', primaryKey: true, notNull: true },
+            { name: 'session_id', type: 'UUID', notNull: true },
+            { name: 'role', type: 'VARCHAR(10)', notNull: true },
+            { name: 'message', type: 'TEXT', notNull: true },
+            { name: 'tokens', type: 'INTEGER', notNull: true },
+            { name: 'created_at', type: 'TIMESTAMPTZ', notNull: true },
+          ],
+        },
+      ],
     },
     'output': {
       title: 'Final Response',
@@ -416,11 +525,11 @@ export const agentSchema: UnifiedFlowchartSchema = {
       description: 'Follow the execution plan as it transitions from the orchestrator through the LLM, resolves tools, and returns the response.',
       steps: [
         { nodeIds: ['user', 'evt_goal'], description: 'Goal Submitted — User submits: "Research top 3 competitors and summarise."' },
-        { nodeIds: ['pol_plan', 'planner', 'orch_plan', 'memory', 'evt_plan_ready'], description: 'Cognition & Planning — Policy "Plan on New Goal" fires. "Create Plan" command handled by Orchestrator (Aggregate). Memory fetches context. Plan Generated event published.' },
-        { nodeIds: ['tools', 'executor', 'llm', 'evt_executed'], description: 'Action Execution — "Run Tool" command handled by LLM (External). Tool Executed event published.' },
-        { nodeIds: ['pol_eval', 'evaluator', 'orch_eval', 'evt_done', 'output'], description: 'Evaluation (Happy Path) — Policy "Evaluate on Result" fires. "Evaluate Result" handled by Orchestrator. Goal Satisfied → Final Response delivered.' },
-        { nodeIds: ['evt_fail', 'pol_retry', 'planner'], description: 'Failure Branch (Auto Re-Plan) — Goal Not Satisfied triggers "Re-Plan on Failure" policy, loops back to "Create Plan" command.' },
-        { nodeIds: ['evt_fail', 'pol_escalate', 'cmd_review', 'human_reviewer', 'evt_reviewed'], description: 'Failure Branch (Human Review) — "Escalate to Human" policy fires. "Review Result" handled by Human Reviewer. Result Reviewed loops back to planning.' },
+        { nodeIds: ['pol_plan', 'planner', 'orch_plan', 'memory', 'evt_plan_ready'], description: 'Cognition & Planning — Policy "Plan on New Goal" fires. "Create Plan" command handled by Orchestrator (Aggregate). Memory fetches context. Plan Generated event published.', processGroup: 'planning' },
+        { nodeIds: ['tools', 'executor', 'llm', 'evt_executed'], description: 'Action Execution — "Run Tool" command handled by LLM (External). Tool Executed event published.', processGroup: 'execution' },
+        { nodeIds: ['pol_eval', 'evaluator', 'orch_eval', 'evt_done', 'output'], description: 'Evaluation (Happy Path) — Policy "Evaluate on Result" fires. "Evaluate Result" handled by Orchestrator. Goal Satisfied → Final Response delivered.', processGroup: 'evaluation' },
+        { nodeIds: ['evt_fail', 'pol_retry', 'planner'], description: 'Failure Branch (Auto Re-Plan) — Goal Not Satisfied triggers "Re-Plan on Failure" policy, loops back to "Create Plan" command.', processGroup: 'planning' },
+        { nodeIds: ['evt_fail', 'pol_escalate', 'cmd_review', 'human_reviewer', 'evt_reviewed'], description: 'Failure Branch (Human Review) — "Escalate to Human" policy fires. "Review Result" handled by Human Reviewer. Result Reviewed loops back to planning.', processGroup: 'escalation' },
       ]
     },
     {
@@ -429,11 +538,11 @@ export const agentSchema: UnifiedFlowchartSchema = {
       description: 'Trace the path when tool execution fails repeatedly and policy escalates to human intervention.',
       steps: [
         { nodeIds: ['user', 'evt_goal'], description: 'Goal Submitted — User submits a complex task requiring human verification.' },
-        { nodeIds: ['pol_plan', 'planner', 'orch_plan'], description: 'Initial Planning — Planner creates execution steps; Orchestrator registers plan.' },
-        { nodeIds: ['tools', 'executor', 'llm', 'evt_executed'], description: 'Tool Execution — Tool runs and LLM processes, producing an output.' },
-        { nodeIds: ['pol_eval', 'evaluator', 'orch_eval', 'evt_fail'], description: 'Evaluation Failure — Evaluator assesses output and determines it fails the quality check.' },
-        { nodeIds: ['pol_escalate', 'cmd_review', 'human_reviewer'], description: 'Human Escalation — System triggers escalation policy; review command dispatched to human reviewer.' },
-        { nodeIds: ['human_reviewer', 'evt_reviewed', 'planner'], description: 'Human Recovery — Human reviewer corrects feedback; Result Reviewed event triggers re-planning.' },
+        { nodeIds: ['pol_plan', 'planner', 'orch_plan'], description: 'Initial Planning — Planner creates execution steps; Orchestrator registers plan.', processGroup: 'planning' },
+        { nodeIds: ['tools', 'executor', 'llm', 'evt_executed'], description: 'Tool Execution — Tool runs and LLM processes, producing an output.', processGroup: 'execution' },
+        { nodeIds: ['pol_eval', 'evaluator', 'orch_eval', 'evt_fail'], description: 'Evaluation Failure — Evaluator assesses output and determines it fails the quality check.', processGroup: 'evaluation' },
+        { nodeIds: ['pol_escalate', 'cmd_review', 'human_reviewer'], description: 'Human Escalation — System triggers escalation policy; review command dispatched to human reviewer.', processGroup: 'escalation' },
+        { nodeIds: ['human_reviewer', 'evt_reviewed', 'planner'], description: 'Human Recovery — Human reviewer corrects feedback; Result Reviewed event triggers re-planning.', processGroup: 'planning' },
       ]
     }
   ]
