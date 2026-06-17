@@ -4,6 +4,7 @@ import { aiOperatingModelSections } from '../topics/ai-operating-model/sections'
 import { dddSections } from '../topics/ddd/sections'
 import { a2aA2uiSections } from '../topics/a2a-a2ui/sections'
 import { docPipelineSections } from '../topics/doc-pipeline/sections'
+import { ecommerceOrdersSections } from '../topics/ecommerce-orders/sections'
 
 export interface TopicRoute {
   id: string
@@ -54,5 +55,13 @@ export const routes: TopicRoute[] = [
     category: 'Architecture',
     description: 'AI-driven document processing with OCR extraction, LLM validation, confidence-based routing, and human audit loop',
     sections: docPipelineSections,
+  },
+  {
+    id: 'ecommerce-orders',
+    label: 'E-Commerce Order Processing',
+    path: '/topics/ecommerce-orders',
+    category: 'Architecture',
+    description: 'Automated order processing with inventory lock, Stripe payment authorization, fraud detection, and risk analyst review gates',
+    sections: ecommerceOrdersSections,
   },
  ]
