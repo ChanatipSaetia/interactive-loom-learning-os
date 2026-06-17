@@ -4,6 +4,7 @@ const Component = Icons.Component;
 const Server = Icons.Server;
 const Share2 = Icons.Share2;
 const Layers = Icons.Layers;
+const List = Icons.List;
 
 export const TYPES = {
   EVENT: 'Event', COMMAND: 'Command', AGGREGATE: 'Aggregate', POLICY: 'Policy', 
@@ -62,7 +63,7 @@ export const ICON_ANIMATIONS = {
   [TYPES.DECISION]: 'anim-icon-wobble'
 } as const;
 
-export const DYNAMIC_ICONS = { Component, Server, Share2, Layers };
+export const DYNAMIC_ICONS = { Component, Server, Share2, Layers, List };
 
 export const NODE_W = 140; 
 export const NODE_H = 100;

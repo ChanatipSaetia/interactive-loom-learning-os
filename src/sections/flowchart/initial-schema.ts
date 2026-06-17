@@ -3,12 +3,12 @@ import { TYPES } from './types';
 
 export const INITIAL_SCHEMA: UnifiedFlowchartSchema = {
   entities: {
-    'user_editor': { title: 'Content Editor', desc: 'Provides input.', viewTypes: { EVENT_STORMING: TYPES.USER, SYS_ARCH: TYPES.USER, SWIMLANES: TYPES.USER } },
+    'user_editor': { title: 'Content Editor', desc: 'Provides input.', viewTypes: { EVENT_STORMING: TYPES.USER, SYS_ARCH: TYPES.USER, SWIMLANES: TYPES.USER, SEQUENCE: TYPES.USER } },
     'user_reviewer': { title: 'Reviewer', desc: 'Human-in-the-loop QA.', viewTypes: { EVENT_STORMING: TYPES.USER, SWIMLANES: TYPES.USER } },
-    'db_os': { title: 'OpenSearch DB', desc: 'Search cluster.', viewTypes: { EVENT_STORMING: TYPES.EXTERNAL, SYS_ARCH: TYPES.DATABASE, DATA_FLOW: TYPES.DATABASE, SWIMLANES: TYPES.DATABASE } },
+    'db_os': { title: 'OpenSearch DB', desc: 'Search cluster.', viewTypes: { EVENT_STORMING: TYPES.EXTERNAL, SYS_ARCH: TYPES.DATABASE, DATA_FLOW: TYPES.DATABASE, SWIMLANES: TYPES.DATABASE, SEQUENCE: TYPES.DATABASE } },
     'api_emb': { title: 'Embedding API', desc: 'External LLM service.', viewTypes: { EVENT_STORMING: TYPES.EXTERNAL, SYS_ARCH: TYPES.EXTERNAL, DATA_FLOW: TYPES.PROCESS, SWIMLANES: TYPES.PROCESS } },
-    'sys_worker': { title: 'Conversion Worker', desc: 'Async parser.', viewTypes: { EVENT_STORMING: TYPES.EXTERNAL, SYS_ARCH: TYPES.SERVICE, DATA_FLOW: TYPES.PROCESS, SWIMLANES: TYPES.PROCESS } },
-    'sys_gw': { title: 'API Gateway', desc: 'Secure entry point.', viewTypes: { SYS_ARCH: TYPES.SERVICE } },
+    'sys_worker': { title: 'Conversion Worker', desc: 'Async parser.', viewTypes: { EVENT_STORMING: TYPES.EXTERNAL, SYS_ARCH: TYPES.SERVICE, DATA_FLOW: TYPES.PROCESS, SWIMLANES: TYPES.PROCESS, SEQUENCE: TYPES.SERVICE } },
+    'sys_gw': { title: 'API Gateway', desc: 'Secure entry point.', viewTypes: { SYS_ARCH: TYPES.SERVICE, SEQUENCE: TYPES.SERVICE } },
     'db_s3': { title: 'S3 Raw Storage', desc: 'Immutable blob storage.', viewTypes: { SYS_ARCH: TYPES.DATABASE } },
     'sys_portal': { title: 'Review Portal UI', desc: 'Frontend for QA.', viewTypes: { SYS_ARCH: TYPES.SERVICE, EVENT_STORMING: TYPES.READ_MODEL } },
     'cmd_up': { title: 'Upload Document', desc: 'Ingest new file.', viewTypes: { EVENT_STORMING: TYPES.COMMAND, SWIMLANES: TYPES.PROCESS } },
@@ -58,7 +58,13 @@ export const INITIAL_SCHEMA: UnifiedFlowchartSchema = {
     { id:'r38', from: 'data_clean_md', to: 'api_emb', views: ['DATA_FLOW'] }, { id:'r39', from: 'api_emb', to: 'data_vec', views: ['DATA_FLOW'] }, { id:'r40', from: 'data_vec', to: 'db_os', views: ['DATA_FLOW'] },
     { id:'r41', from: 'cmd_up', to: 'sys_worker', views: ['SWIMLANES'] }, { id:'r42', from: 'sys_worker', to: 'dec_qa', views: ['SWIMLANES'] },
     { id:'r43', from: 'dec_qa', to: 'api_emb', views: ['SWIMLANES'] }, { id:'r44', from: 'dec_qa', to: 'cmd_fix', views: ['SWIMLANES'], dashed: true },
-    { id:'r45', from: 'cmd_fix', to: 'api_emb', views: ['SWIMLANES'] }, { id:'r46', from: 'api_emb', to: 'db_os', views: ['SWIMLANES'] }
+    { id:'r45', from: 'cmd_fix', to: 'api_emb', views: ['SWIMLANES'] }, { id:'r46', from: 'api_emb', to: 'db_os', views: ['SWIMLANES'] },
+    { id:'r_s1', from: 'user_editor', to: 'sys_gw', views: ['SEQUENCE'], label: 'POST /upload' },
+    { id:'r_s2', from: 'sys_gw', to: 'sys_worker', views: ['SEQUENCE'], label: 'convert()' },
+    { id:'r_s3', from: 'sys_worker', to: 'sys_gw', views: ['SEQUENCE'], label: 'markdown' },
+    { id:'r_s4', from: 'sys_gw', to: 'user_editor', views: ['SEQUENCE'], label: '200 OK' },
+    { id:'r_s5', from: 'sys_gw', to: 'db_os', views: ['SEQUENCE'], label: 'save()' },
+    { id:'r_s6', from: 'db_os', to: 'sys_gw', views: ['SEQUENCE'], label: 'ack' }
   ],
   views: {
     EVENT_STORMING: {
@@ -91,6 +97,16 @@ export const INITIAL_SCHEMA: UnifiedFlowchartSchema = {
         { id: 'data_pdf', x: 150, y: 250 }, { id: 'sys_worker', x: 400, y: 250 }, { id: 'data_raw_md', x: 650, y: 250 },
         { id: 'dec_qa', x: 900, y: 250 }, { id: 'data_clean_md', x: 1150, y: 250 }, { id: 'api_emb', x: 1400, y: 250 },
         { id: 'data_vec', x: 1650, y: 250 }, { id: 'db_os', x: 1900, y: 250 }
+      ],
+      groups: []
+    },
+    SEQUENCE: {
+      name: 'Sequence Diagram', icon: 'List',
+      nodes: [
+        { id: 'user_editor', grid: [0, 0] },
+        { id: 'sys_gw', grid: [1, 0] },
+        { id: 'sys_worker', grid: [2, 0] },
+        { id: 'db_os', grid: [3, 0] }
       ],
       groups: []
     },

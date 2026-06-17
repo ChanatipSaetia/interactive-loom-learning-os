@@ -11,6 +11,7 @@ export const agentSchema: UnifiedFlowchartSchema = {
         SYS_ARCH: TYPES.USER,
         DATA_FLOW: TYPES.USER,
         SWIMLANES: TYPES.USER,
+        SEQUENCE: TYPES.USER,
       }
     },
     'human_reviewer': {
@@ -28,6 +29,7 @@ export const agentSchema: UnifiedFlowchartSchema = {
       viewTypes: {
         SYS_ARCH: TYPES.AGGREGATE,
         SWIMLANES: TYPES.AGGREGATE,
+        SEQUENCE: TYPES.AGGREGATE,
       }
     },
     'orch_plan': {
@@ -53,6 +55,7 @@ export const agentSchema: UnifiedFlowchartSchema = {
         EVENT_STORMING: TYPES.EXTERNAL,
         SYS_ARCH: TYPES.EXTERNAL,
         SWIMLANES: TYPES.EXTERNAL,
+        SEQUENCE: TYPES.EXTERNAL,
       }
     },
     'evt_goal': {
@@ -141,32 +144,35 @@ export const agentSchema: UnifiedFlowchartSchema = {
     },
     'planner': {
       title: 'Create Plan',
-      viewTitles: { SYS_ARCH: 'Planner', SWIMLANES: 'Planner' },
+      viewTitles: { SYS_ARCH: 'Planner', SWIMLANES: 'Planner', SEQUENCE: 'Planner' },
       desc: 'Formulates multi-step actions (e.g. CoT, ReAct plan) dynamically.',
       viewTypes: {
         EVENT_STORMING: TYPES.COMMAND,
         SYS_ARCH: TYPES.SERVICE,
         SWIMLANES: TYPES.PROCESS,
+        SEQUENCE: TYPES.SERVICE,
       }
     },
     'executor': {
       title: 'Run Tool',
-      viewTitles: { SYS_ARCH: 'Tool Executor', SWIMLANES: 'Tool Executor' },
+      viewTitles: { SYS_ARCH: 'Tool Executor', SWIMLANES: 'Tool Executor', SEQUENCE: 'Executor' },
       desc: 'Executes actions (HTTP search, sandboxed script, API requests).',
       viewTypes: {
         EVENT_STORMING: TYPES.COMMAND,
         SYS_ARCH: TYPES.SERVICE,
         SWIMLANES: TYPES.PROCESS,
+        SEQUENCE: TYPES.SERVICE,
       }
     },
     'evaluator': {
       title: 'Evaluate Result',
-      viewTitles: { SYS_ARCH: 'Evaluator', SWIMLANES: 'Evaluator' },
+      viewTitles: { SYS_ARCH: 'Evaluator', SWIMLANES: 'Evaluator', SEQUENCE: 'Evaluator' },
       desc: 'Tests execution outputs against success conditions.',
       viewTypes: {
         EVENT_STORMING: TYPES.COMMAND,
         SYS_ARCH: TYPES.SERVICE,
         SWIMLANES: TYPES.DECISION,
+        SEQUENCE: TYPES.SERVICE,
       }
     },
     'cmd_review': {
@@ -263,6 +269,17 @@ export const agentSchema: UnifiedFlowchartSchema = {
     { id: 'r_sl_10', from: 'evaluator',      to: 'pol_escalate',    views: ['SWIMLANES'] },
     { id: 'r_sl_11', from: 'pol_escalate',   to: 'human_reviewer',  views: ['SWIMLANES'] },
     { id: 'r_sl_12', from: 'human_reviewer', to: 'orchestrator',    views: ['SWIMLANES'], dashed: true },
+
+    // ── SEQUENCE ─────────────────────────────────────────────────────
+    { id: 'r_sq_1', from: 'user',         to: 'orchestrator', views: ['SEQUENCE'], label: 'submit goal' },
+    { id: 'r_sq_2', from: 'orchestrator', to: 'planner',      views: ['SEQUENCE'], label: 'create plan' },
+    { id: 'r_sq_3', from: 'planner',      to: 'orchestrator', views: ['SEQUENCE'], label: 'plan ready' },
+    { id: 'r_sq_4', from: 'orchestrator', to: 'executor',     views: ['SEQUENCE'], label: 'run tool' },
+    { id: 'r_sq_5', from: 'executor',     to: 'llm',          views: ['SEQUENCE'], label: 'execute' },
+    { id: 'r_sq_6', from: 'llm',          to: 'executor',     views: ['SEQUENCE'], label: 'result' },
+    { id: 'r_sq_7', from: 'executor',     to: 'evaluator',    views: ['SEQUENCE'], label: 'check output' },
+    { id: 'r_sq_8', from: 'evaluator',    to: 'orchestrator', views: ['SEQUENCE'], label: 'pass/fail' },
+    { id: 'r_sq_9', from: 'orchestrator', to: 'user',         views: ['SEQUENCE'], label: 'final response' },
   ],
   views: {
     EVENT_STORMING: {
@@ -377,6 +394,19 @@ export const agentSchema: UnifiedFlowchartSchema = {
         { id: 'sl_l2', isLane: true, title: 'Agent System', desc: 'Internal components — orchestration (top) and execution (bottom).', y: 200, h: 330, color: 'rgba(153,209,219,0.10)' },
         { id: 'sl_l3', isLane: true, title: 'External Systems', desc: 'Third-party APIs and models utilized by the system.', row: 3, color: 'rgba(186,187,241,0.10)' },
       ]
+    },
+    SEQUENCE: {
+      name: 'Sequence Diagram',
+      icon: 'List',
+      nodes: [
+        { id: 'user', grid: [0, 0] },
+        { id: 'orchestrator', grid: [1, 0] },
+        { id: 'planner', grid: [2, 0] },
+        { id: 'executor', grid: [3, 0] },
+        { id: 'llm', grid: [4, 0] },
+        { id: 'evaluator', grid: [5, 0] }
+      ],
+      groups: []
     }
   },
   journeys: [
