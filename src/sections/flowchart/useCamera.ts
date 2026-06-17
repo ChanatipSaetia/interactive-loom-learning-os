@@ -42,9 +42,8 @@ export function useCamera({ positionedNodesRef }: UseCameraOptions): UseCameraRe
   const animateTo = useCallback((targetX: number, targetY: number, targetScale: number) => {
     if (panAnimRef.current) panAnimRef.current.pause();
     cameraAnimating.current = true;
-    setTransform({ scale: targetScale, translateX: targetX, translateY: targetY });
-    const start = { translateX: targetX, translateY: targetY, scale: targetScale };
-    const proxy = { tx: start.translateX, ty: start.translateY, sc: start.scale };
+    const current = transformRef.current;
+    const proxy = { tx: current.translateX, ty: current.translateY, sc: current.scale };
 
     panAnimRef.current = animate(proxy, {
       tx: targetX,
