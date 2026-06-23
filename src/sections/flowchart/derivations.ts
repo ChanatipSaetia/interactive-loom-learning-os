@@ -339,6 +339,265 @@ export function autoDeriveViews(schema: UnifiedFlowchartSchema): UnifiedFlowchar
     };
   }
 
+  // ----------------------------------------------------
+  // 5. Derive STATE_MACHINE (State Machine)
+  // ----------------------------------------------------
+  if (!derivedViews.STATE_MACHINE) {
+    const smNodes: FlowchartViewNode[] = [];
+    const smRelations: FlowchartRelation[] = [];
+
+    // Find the first entity with a stateMachine definition
+    const smEntityEntry = Object.entries(schema.entities).find(([, e]) => !!e.stateMachine);
+
+    if (smEntityEntry) {
+      const [aggregateId, aggregateEntity] = smEntityEntry;
+      const stateMachine = aggregateEntity.stateMachine!;
+
+      // Spaced grid layouts for state machines
+      const isDocPipeline = stateMachine.states.some(s => s.id === 'QUEUED');
+      const isAgent = stateMachine.states.some(s => s.id === 'THINKING');
+
+      let layouts: Record<string, [number, number]> = {};
+      if (isDocPipeline) {
+        layouts = {
+          QUEUED: [0, 1],
+          EXTRACTING: [2, 1],
+          VALIDATING: [4, 1],
+          HIGH_CONFIDENCE: [6, 1],
+          LOW_CONFIDENCE: [4, 2],
+          AUDITED: [6, 2],
+          COMPLETED: [8, 1]
+        };
+      } else if (isAgent) {
+        layouts = {
+          IDLE: [0, 1],
+          THINKING: [2, 1],
+          EXECUTING_TOOL: [4, 1],
+          DELEGATING: [4, 2],
+          COMPLETED: [6, 1]
+        };
+      } else if (stateMachine.states.some(s => s.id === 'PLANNING')) {
+        layouts = {
+          IDLE: [0, 1],
+          PLANNING: [2, 1],
+          EXECUTING: [4, 1],
+          EVALUATING: [6, 1],
+          ESCALATED: [4, 2]
+        };
+      } else if (aggregateId === 'order_service') {
+        layouts = {
+          PENDING: [0, 1],
+          INVENTORY_LOCKED: [2, 1],
+          PAYMENT_AUTHORIZED: [4, 1],
+          FRAUD_CLEARED: [6, 1],
+          CONFIRMED: [8, 1],
+          FRAUD_REVIEW: [4, 2],
+          CANCELLED: [8, 2]
+        };
+      }
+
+      const EVENT_TO_STATE_MAP: Record<string, string> = {
+        evt_order_placed: 'PENDING',
+        evt_inventory_locked: 'INVENTORY_LOCKED',
+        evt_payment_authorized: 'PAYMENT_AUTHORIZED',
+        evt_fraud_evaluated: 'FRAUD_CLEARED',
+        evt_fraud_flagged: 'FRAUD_REVIEW',
+        evt_review_decision: 'FRAUD_REVIEW',
+        evt_order_confirmed: 'CONFIRMED',
+        evt_order_approved: 'CONFIRMED',
+        evt_order_cancelled: 'CANCELLED',
+
+        evt_uploaded: 'QUEUED',
+        evt_extracted: 'EXTRACTING',
+        evt_validated: 'VALIDATING',
+        evt_approved: 'HIGH_CONFIDENCE',
+        evt_flagged: 'LOW_CONFIDENCE',
+        evt_audited: 'AUDITED',
+        evt_completed: 'COMPLETED',
+
+        evt_started: 'THINKING',
+        evt_reasoned: 'THINKING',
+        evt_tool_executed: 'EXECUTING_TOOL',
+        evt_done: 'COMPLETED',
+
+        evt_goal: 'IDLE',
+        evt_plan: 'PLANNING',
+        evt_exec: 'EXECUTING',
+        evt_eval: 'EVALUATING',
+        evt_escalate: 'ESCALATED'
+      };
+
+      // Add each state as a temporary entity in the compiled schema
+      stateMachine.states.forEach((state, idx) => {
+        const stateNodeId = `${aggregateId}_state_${state.id}`;
+        schema.entities[stateNodeId] = {
+          title: state.label,
+          desc: `State: ${state.label}`,
+          type: TYPES.EVENT,
+          viewTypes: { STATE_MACHINE: TYPES.EVENT },
+          color: 'var(--ctp-mantle)',
+          strokeColor: state.color
+        };
+
+        const gridPos = layouts[state.id] || [idx * 2, 1];
+        smNodes.push({
+          id: stateNodeId,
+          grid: gridPos
+        });
+      });
+
+      // Add manual transitions for non-event-sourced states (like IDLE/DELEGATING/ESCALATED)
+      if (isAgent) {
+        smRelations.push({
+          id: `derived_state_machine_rel_${aggregateId}_idle_thinking`,
+          from: `${aggregateId}_state_IDLE`,
+          to: `${aggregateId}_state_THINKING`,
+          views: ['STATE_MACHINE'],
+          label: 'Run Agent \n[Guard: Goal Submitted]'
+        });
+        smRelations.push({
+          id: `derived_state_machine_rel_${aggregateId}_exec_delegating`,
+          from: `${aggregateId}_state_EXECUTING_TOOL`,
+          to: `${aggregateId}_state_DELEGATING`,
+          views: ['STATE_MACHINE'],
+          label: 'Delegate Task \n[Guard: Subagent Target]'
+        });
+        smRelations.push({
+          id: `derived_state_machine_rel_${aggregateId}_delegating_exec`,
+          from: `${aggregateId}_state_DELEGATING`,
+          to: `${aggregateId}_state_EXECUTING_TOOL`,
+          views: ['STATE_MACHINE'],
+          label: 'Return Output'
+        });
+      } else if (stateMachine.states.some(s => s.id === 'PLANNING')) {
+        smRelations.push({
+          id: `derived_state_machine_rel_${aggregateId}_idle_planning`,
+          from: `${aggregateId}_state_IDLE`,
+          to: `${aggregateId}_state_PLANNING`,
+          views: ['STATE_MACHINE'],
+          label: 'Submit Goal \n[Guard: Plan on Goal]'
+        });
+        smRelations.push({
+          id: `derived_state_machine_rel_${aggregateId}_planning_exec`,
+          from: `${aggregateId}_state_PLANNING`,
+          to: `${aggregateId}_state_EXECUTING`,
+          views: ['STATE_MACHINE'],
+          label: 'Generate Plan \n[Guard: Execute on Planned]'
+        });
+        smRelations.push({
+          id: `derived_state_machine_rel_${aggregateId}_exec_eval`,
+          from: `${aggregateId}_state_EXECUTING`,
+          to: `${aggregateId}_state_EVALUATING`,
+          views: ['STATE_MACHINE'],
+          label: 'Run Tools \n[Guard: Evaluate on Executed]'
+        });
+        smRelations.push({
+          id: `derived_state_machine_rel_${aggregateId}_eval_idle`,
+          from: `${aggregateId}_state_EVALUATING`,
+          to: `${aggregateId}_state_IDLE`,
+          views: ['STATE_MACHINE'],
+          label: 'Succeed \n[Guard: Finish on Success]'
+        });
+        smRelations.push({
+          id: `derived_state_machine_rel_${aggregateId}_eval_escalated`,
+          from: `${aggregateId}_state_EVALUATING`,
+          to: `${aggregateId}_state_ESCALATED`,
+          views: ['STATE_MACHINE'],
+          label: 'Escalate \n[Guard: Escalate on Failure]'
+        });
+        smRelations.push({
+          id: `derived_state_machine_rel_${aggregateId}_escalated_planning`,
+          from: `${aggregateId}_state_ESCALATED`,
+          to: `${aggregateId}_state_PLANNING`,
+          views: ['STATE_MACHINE'],
+          label: 'Retry / Re-plan \n[Guard: Re-plan on Escalated]'
+        });
+      }
+
+      // Traversal branch tracker to avoid duplicate transition relations
+      const addedTransitions = new Set<string>();
+
+      // Traverse flow relations skipping intermediate events to find transitions
+      Object.keys(schema.entities).forEach(startId => {
+        const stateA = EVENT_TO_STATE_MAP[startId];
+        if (!stateA) return;
+
+        // BFS queue: { currentId, path, firstCmdId, firstPolId }
+        const queue: Array<{
+          currentId: string;
+          path: string[];
+          firstCmdId?: string;
+          firstPolId?: string;
+        }> = [{ currentId: startId, path: [startId] }];
+
+        while (queue.length > 0) {
+          const { currentId, path, firstCmdId, firstPolId } = queue.shift()!;
+
+          // Find outgoing EVENT_STORMING relations
+          const outRels = schema.relations.filter(r =>
+            (!r.views || r.views.includes('EVENT_STORMING')) && r.from === currentId
+          );
+
+          outRels.forEach(rel => {
+            const nextId = rel.to;
+            if (path.includes(nextId)) return; // Avoid cycles
+
+            const nextEntity = schema.entities[nextId];
+            if (!nextEntity) return;
+
+            const nextRole = getEntityType(nextEntity);
+            const newFirstCmd = firstCmdId || (nextRole === TYPES.COMMAND ? nextId : undefined);
+            const newFirstPol = firstPolId || (nextRole === TYPES.POLICY ? nextId : undefined);
+
+            const stateB = EVENT_TO_STATE_MAP[nextId];
+            if (stateB && stateB !== stateA) {
+              // Found a transition from stateA to stateB!
+              const transitionKey = `${stateA}->${stateB}`;
+              if (!addedTransitions.has(transitionKey)) {
+                addedTransitions.add(transitionKey);
+
+                const fromNodeId = `${aggregateId}_state_${stateA}`;
+                const toNodeId = `${aggregateId}_state_${stateB}`;
+
+                const cmdTitle = newFirstCmd ? schema.entities[newFirstCmd]?.title : 'Transition';
+                const polTitle = newFirstPol ? schema.entities[newFirstPol]?.title : undefined;
+                const label = polTitle ? `${cmdTitle} \n[Guard: ${polTitle}]` : cmdTitle;
+
+                smRelations.push({
+                  id: `derived_state_machine_rel_${aggregateId}_${smRelations.length}`,
+                  from: fromNodeId,
+                  to: toNodeId,
+                  views: ['STATE_MACHINE'],
+                  label
+                });
+              }
+            } else {
+              // Continue BFS traversal (skipping intermediate event/command/policy nodes)
+              queue.push({
+                currentId: nextId,
+                path: [...path, nextId],
+                firstCmdId: newFirstCmd,
+                firstPolId: newFirstPol
+              });
+            }
+          });
+        }
+      });
+    }
+
+    schema.relations = [
+      ...schema.relations.filter(r => !r.views || !r.views.includes('STATE_MACHINE')),
+      ...smRelations
+    ];
+
+    derivedViews.STATE_MACHINE = {
+      name: 'State Machine',
+      icon: 'Activity',
+      nodes: smNodes,
+      groups: []
+    };
+  }
+
   // Update entity viewTypes to match derived configurations from MASTER_MAPPING_MATRIX
   const finalEntities = { ...schema.entities };
   Object.keys(finalEntities).forEach(nodeId => {

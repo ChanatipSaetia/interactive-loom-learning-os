@@ -5,6 +5,7 @@ import EcommerceOrdersTopic from '../../../../src/topics/ecommerce-orders/index'
 import { routes } from '../../../../src/core/routes'
 import { ecommerceOrdersSections } from '../../../../src/topics/ecommerce-orders/sections'
 import { orderSchema } from '../../../../src/topics/ecommerce-orders/data/order-schema'
+import { autoDeriveViews } from '../../../../src/sections/flowchart/derivations'
 
 const renderedConfigs: { type?: string }[] = []
 
@@ -84,7 +85,8 @@ describe('Issue #56: E-Commerce Order Processing Topic', () => {
   })
 
   it('schema has all 5 views', () => {
-    const viewNames = Object.keys(orderSchema.views)
+    const compiledSchema = autoDeriveViews(orderSchema)
+    const viewNames = Object.keys(compiledSchema.views)
     expect(viewNames).toContain('EVENT_STORMING')
     expect(viewNames).toContain('SYS_ARCH')
     expect(viewNames).toContain('DATA_FLOW')
@@ -262,7 +264,9 @@ describe('Issue #56: E-Commerce Order Processing Topic', () => {
   })
 
   it('SWIMLANES view has 3 lane groups', () => {
-    const slView = orderSchema.views.SWIMLANES
+    const compiledSchema = autoDeriveViews(orderSchema)
+    const slView = compiledSchema.views.SWIMLANES
+    expect(slView).toBeDefined()
     expect(slView.groups.length).toBe(3)
     expect(slView.groups[0].isLane).toBe(true)
     expect(slView.groups[1].isLane).toBe(true)

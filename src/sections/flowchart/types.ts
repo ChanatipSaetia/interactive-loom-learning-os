@@ -71,63 +71,72 @@ export const MASTER_MAPPING_MATRIX: Record<string, Record<string, string | null>
     SYS_ARCH: null,
     SWIMLANES: null,
     SEQUENCE: null,
-    DATA_FLOW: TYPES.DATA_OBJECT
+    DATA_FLOW: TYPES.DATA_OBJECT,
+    STATE_MACHINE: TYPES.DATA_OBJECT
   },
   [TYPES.COMMAND]: {
     EVENT_STORMING: TYPES.COMMAND,
     SYS_ARCH: null,
     SWIMLANES: TYPES.PROCESS,
     SEQUENCE: null,
-    DATA_FLOW: null
+    DATA_FLOW: null,
+    STATE_MACHINE: null
   },
   [TYPES.POLICY]: {
     EVENT_STORMING: TYPES.POLICY,
     SYS_ARCH: TYPES.SERVICE,
     SWIMLANES: TYPES.DECISION,
     SEQUENCE: null,
-    DATA_FLOW: TYPES.DECISION
+    DATA_FLOW: TYPES.DECISION,
+    STATE_MACHINE: null
   },
   [TYPES.AGGREGATE]: {
     EVENT_STORMING: TYPES.AGGREGATE,
     SYS_ARCH: TYPES.SERVICE,
     SWIMLANES: TYPES.PROCESS,
     SEQUENCE: TYPES.SERVICE,
-    DATA_FLOW: null
+    DATA_FLOW: null,
+    STATE_MACHINE: TYPES.AGGREGATE
   },
   [TYPES.DATABASE]: {
     EVENT_STORMING: TYPES.DATABASE,
     SYS_ARCH: TYPES.DATABASE,
     SWIMLANES: TYPES.DATABASE,
     SEQUENCE: TYPES.DATABASE,
-    DATA_FLOW: null
+    DATA_FLOW: null,
+    STATE_MACHINE: null
   },
   [TYPES.USER]: {
     EVENT_STORMING: TYPES.USER,
     SYS_ARCH: TYPES.USER,
     SWIMLANES: TYPES.USER,
     SEQUENCE: TYPES.USER,
-    DATA_FLOW: TYPES.USER
+    DATA_FLOW: TYPES.USER,
+    STATE_MACHINE: null
   },
   [TYPES.EXTERNAL]: {
     EVENT_STORMING: TYPES.EXTERNAL,
     SYS_ARCH: TYPES.EXTERNAL,
     SWIMLANES: TYPES.EXTERNAL,
     SEQUENCE: TYPES.EXTERNAL,
-    DATA_FLOW: null
+    DATA_FLOW: null,
+    STATE_MACHINE: null
   },
   [TYPES.HOTSPOT]: {
     EVENT_STORMING: TYPES.HOTSPOT,
     SYS_ARCH: null,
     SWIMLANES: null,
     SEQUENCE: null,
-    DATA_FLOW: TYPES.HOTSPOT
+    DATA_FLOW: TYPES.HOTSPOT,
+    STATE_MACHINE: null
   },
   [TYPES.READ_MODEL]: {
     EVENT_STORMING: TYPES.READ_MODEL,
     SYS_ARCH: null,
     SWIMLANES: null,
     SEQUENCE: null,
-    DATA_FLOW: TYPES.DATA_OBJECT
+    DATA_FLOW: TYPES.DATA_OBJECT,
+    STATE_MACHINE: null
   }
 };
 
@@ -183,6 +192,8 @@ export interface FlowchartEntity {
   jsonPayload?: Record<string, unknown>;
   /** ERD table definitions for database/aggregate entities (shown on node click). */
   erdSchema?: FlowchartERDTable[];
+  color?: string;
+  strokeColor?: string;
 }
 
 export interface FlowchartRelation {

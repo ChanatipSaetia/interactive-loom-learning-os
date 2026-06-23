@@ -4,6 +4,8 @@ import * as Icons from 'lucide-react';
 
 import { ZoomToolbar } from './zoom-toolbar';
 import { useCamera } from './useCamera';
+import { StateMachineWidget } from './inspector/state-machine-widget';
+import { ERDSchemaWidget } from './inspector/erd-schema-widget';
 import {
   TYPES,
   COLORS,
@@ -28,9 +30,18 @@ export interface FlowchartViewProps {
   highlightedNodeId: string | null;
   prevHighlightedNodeId: string | null;
   currentStep: number;
-  handleNodeClick: (nodeId: string) => void;
+  handleNodeClick: (nodeId: string, x?: number, y?: number) => void;
   instanceId: string;
   isGridMode: boolean;
+  activeNodePopup?: {
+    nodeId: string;
+    x: number;
+    y: number;
+    views: { key: string; name: string; type: string }[];
+  } | null;
+  setActiveNodePopup: (popup: { nodeId: string; x: number; y: number; views: { key: string; name: string; type: string }[] } | null) => void;
+  setActiveViewKey: (viewKey: string) => void;
+  activeStateId: string | null;
 }
 
 export function FlowchartView({
@@ -42,7 +53,11 @@ export function FlowchartView({
   currentStep,
   handleNodeClick,
   instanceId,
-  isGridMode
+  isGridMode,
+  activeNodePopup,
+  setActiveNodePopup,
+  setActiveViewKey,
+  activeStateId
 }: FlowchartViewProps) {
   const view = schema.views[viewKey];
   const viewInstanceId = `${instanceId}-${viewKey}`;
@@ -729,8 +744,8 @@ export function FlowchartView({
                    const isStepHighlighted = activeNodeIds && activeNodeIds.includes(node.id);
                    const isDimmed = activeNodeIds !== null && !isStepHighlighted;
                    const isHighlighted = isStepHighlighted || (highlightedNodeId === node.id);
-                   const nodeFill = COLORS[viewType as keyof typeof COLORS] || COLORS.default;
-                   const strokeColor = BORDER_COLORS[viewType as keyof typeof BORDER_COLORS] || BORDER_COLORS.default;
+                   const nodeFill = entity.color || COLORS[viewType as keyof typeof COLORS] || COLORS.default;
+                   const strokeColor = entity.strokeColor || BORDER_COLORS[viewType as keyof typeof BORDER_COLORS] || BORDER_COLORS.default;
                    const iconName = ICONS[viewType as keyof typeof ICONS];
                    const animClass = ICON_ANIMATIONS[viewType as keyof typeof ICON_ANIMATIONS] || '';
                    const IconComponent = iconName && (iconName in Icons)
@@ -747,7 +762,7 @@ export function FlowchartView({
                        onTouchStart={(e) => e.stopPropagation()}
                        onClick={(e) => {
                          e.stopPropagation();
-                         handleNodeClick(node.id);
+                         handleNodeClick(node.id, node.x, node.y);
                        }}
                        onMouseEnter={() => {
                          if (entity.desc) {
@@ -950,8 +965,132 @@ export function FlowchartView({
              )}
 
            </g>
-        </svg>
-      </div>
-    </div>
-  );
-}
+         </svg>
+       </div>
+
+      {activeNodePopup && activeNodePopup.nodeId && (() => {
+        const entity = schema.entities[activeNodePopup.nodeId];
+        if (!entity) return null;
+
+        const hasErd = entity.erdSchema && entity.erdSchema.length > 0;
+        const hasSM = !!entity.stateMachine;
+
+        return (
+          <div
+            style={{
+              position: 'absolute',
+              left: `${camera.transform.translateX + activeNodePopup.x * camera.transform.scale}px`,
+              top: `${camera.transform.translateY + activeNodePopup.y * camera.transform.scale + 30}px`,
+              transform: 'translateX(-50%)',
+              zIndex: 40,
+              background: 'var(--ctp-crust)',
+              border: '1px solid var(--ctp-blue)',
+              borderRadius: '8px',
+              padding: '12px 14px',
+              boxShadow: '0 8px 32px rgba(0, 0, 0, 0.6)',
+              display: 'flex',
+              flexDirection: 'column',
+              gap: '10px',
+              minWidth: '220px',
+              maxWidth: '320px',
+              maxHeight: '400px',
+              overflowY: 'auto',
+              pointerEvents: 'auto',
+              color: 'var(--ctp-text)',
+            }}
+          >
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', borderBottom: '1px solid var(--border-light)', paddingBottom: '6px' }}>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
+                <span style={{ fontSize: '13px', fontWeight: 'bold' }}>{entity.title}</span>
+                <span style={{ fontSize: '9px', color: 'var(--ctp-overlay1)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                  {entity.viewTypes?.[viewKey] || 'Node Details'}
+                </span>
+              </div>
+              <button
+                onClick={() => setActiveNodePopup(null)}
+                style={{
+                  background: 'transparent',
+                  border: 'none',
+                  color: 'var(--ctp-overlay1)',
+                  cursor: 'pointer',
+                  padding: '2px',
+                  display: 'flex',
+                  alignItems: 'center'
+                }}
+              >
+                <Icons.X size={12} />
+              </button>
+            </div>
+
+            {entity.desc && (
+              <p style={{ margin: 0, fontSize: '11px', lineHeight: '1.4', color: 'var(--ctp-subtext1)', opacity: 0.9 }}>
+                {entity.desc}
+              </p>
+            )}
+
+            {hasSM && entity.stateMachine && (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', borderTop: '1px solid var(--border-light)', paddingTop: '8px' }}>
+                <span style={{ fontSize: '9px', fontWeight: 'bold', color: 'var(--ctp-overlay1)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                  States / Lifecycle
+                </span>
+                <StateMachineWidget
+                  stateMachine={entity.stateMachine}
+                  activeStateId={activeStateId}
+                />
+              </div>
+            )}
+
+            {hasErd && (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', borderTop: '1px solid var(--border-light)', paddingTop: '8px' }}>
+                <span style={{ fontSize: '9px', fontWeight: 'bold', color: 'var(--ctp-overlay1)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                  Database Schema
+                </span>
+                <ERDSchemaWidget entity={entity} />
+              </div>
+            )}
+
+            {activeNodePopup.views.length > 0 && (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', borderTop: '1px solid var(--border-light)', paddingTop: '8px' }}>
+                <span style={{ fontSize: '9px', fontWeight: 'bold', color: 'var(--ctp-overlay1)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                  Related Views
+                </span>
+                {activeNodePopup.views.map(v => (
+                  <button
+                    key={v.key}
+                    onClick={() => {
+                      camera.transformRef.current = { scale: 0.8, translateX: camera.transform.translateX, translateY: camera.transform.translateY };
+                      setActiveViewKey(v.key);
+                      setActiveNodePopup(null);
+                    }}
+                    style={{
+                      background: 'var(--ctp-surface0)',
+                      border: '1px solid var(--border-light)',
+                      borderRadius: '4px',
+                      color: 'var(--ctp-text)',
+                      padding: '6px 10px',
+                      fontSize: '11px',
+                      textAlign: 'left',
+                      cursor: 'pointer',
+                      transition: 'all 0.15s ease',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'space-between',
+                      gap: '12px'
+                    }}
+                    className="flowchart-popup-btn"
+                  >
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
+                      <span style={{ fontWeight: '500' }}>{v.name}</span>
+                      <span style={{ fontSize: '9px', color: 'var(--ctp-overlay1)' }}>as {v.type}</span>
+                    </div>
+                    <span style={{ color: 'var(--ctp-blue)', fontSize: '12px' }}>&rarr;</span>
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+        );
+      })()}
+     </div>
+   );
+ }

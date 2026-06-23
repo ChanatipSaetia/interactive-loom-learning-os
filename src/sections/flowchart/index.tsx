@@ -5,7 +5,6 @@ import { FlowchartView } from './flowchart-view';
 import { PlaybackControls } from './playback-controls';
 import { StepCarousel } from './step-carousel';
 import { usePlaybackState } from './usePlaybackState';
-import { InspectorSidebar } from './inspector';
 import { autoDeriveViews } from './derivations';
 
 import {
@@ -44,11 +43,35 @@ import type {
 import './flowchart.css';
 
 const Workflow = Icons.Workflow;
-const LayoutGrid = Icons.LayoutGrid;
-const Maximize = Icons.Maximize;
 
 export { TYPES, COLORS, BORDER_COLORS, ICONS, ICON_ANIMATIONS, DYNAMIC_ICONS, NODE_W, NODE_H, INITIAL_SCHEMA, PROCESS_GROUP_STATE_MAP };
 export type { UnifiedFlowchartSchema, FlowchartEntity, FlowchartRelation, FlowchartViewNode, FlowchartViewGroup, FlowchartStep, FlowchartStepData, FlowchartStepLinear, FlowchartStepBranchOption, FlowchartJourney, FlowchartViewConfig, FlowchartProps, ProcessGroup, FlowchartStateMachineState, FlowchartStateMachine, FlowchartERDColumn, FlowchartERDTable };
+
+const STEP_EVENT_TO_STATE_MAP: Record<string, string> = {
+  evt_order_placed: 'PENDING',
+  evt_inventory_locked: 'INVENTORY_LOCKED',
+  evt_payment_authorized: 'PAYMENT_AUTHORIZED',
+  evt_fraud_evaluated: 'FRAUD_CLEARED',
+  evt_fraud_flagged: 'FRAUD_REVIEW',
+  evt_review_decision: 'FRAUD_REVIEW',
+  evt_order_confirmed: 'CONFIRMED',
+  evt_order_approved: 'CONFIRMED',
+  evt_order_cancelled: 'CANCELLED',
+
+  evt_uploaded: 'QUEUED',
+  evt_extracted: 'EXTRACTING',
+  evt_validated: 'VALIDATING',
+  evt_approved: 'HIGH_CONFIDENCE',
+  evt_flagged: 'LOW_CONFIDENCE',
+  evt_audited: 'AUDITED',
+  evt_completed: 'COMPLETED',
+
+  evt_goal: 'IDLE',
+  evt_plan: 'PLANNING',
+  evt_exec: 'EXECUTING',
+  evt_eval: 'EVALUATING',
+  evt_escalate: 'ESCALATED'
+};
 
 export function Flowchart({ title, schema = INITIAL_SCHEMA }: FlowchartProps) {
   const rawId = useId();
@@ -73,30 +96,18 @@ export function Flowchart({ title, schema = INITIAL_SCHEMA }: FlowchartProps) {
     return localSchema.views[activeViewKey] || { name: 'Empty', icon: 'Workflow', nodes: [], groups: [] };
   }, [localSchema.views, activeViewKey]);
 
-  // Layout mode state
-  const [layoutMode, setLayoutMode] = useState<'single' | 'grid'>('single');
+  // Popup state for node related views
+  const [activeNodePopup, setActiveNodePopup] = useState<{
+    nodeId: string;
+    x: number;
+    y: number;
+    views: { key: string; name: string; type: string }[];
+  } | null>(null);
 
-  // Inspector sidebar state
-  const [inspectorOpen, setInspectorOpen] = useState(false);
-  const [selectedNodeId, setSelectedNodeId] = useState<string | null>(null);
-
-  // Viewport resize listener - fallback to single mode below 1024px
+  // Close popup when active view key changes
   useEffect(() => {
-    const handleResize = () => {
-      if (window.innerWidth < 1024 && layoutMode === 'grid') {
-        setLayoutMode('single');
-      }
-    };
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
-  }, [layoutMode]);
-
-  // Initialize as single if viewport is too small
-  useEffect(() => {
-    if (window.innerWidth < 1024) {
-      setLayoutMode('single');
-    }
-  }, []);
+    setActiveNodePopup(null);
+  }, [activeViewKey]);
 
   // Playback state (shared across all views in grid mode)
   const playback = usePlaybackState({ schema: localSchema });
@@ -149,6 +160,50 @@ export function Flowchart({ title, schema = INITIAL_SCHEMA }: FlowchartProps) {
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement | null>(null);
 
+  // Derive activeStateId from current playback step
+  const activeStateId = useMemo(() => {
+    const journey = localSchema.journeys.find(j => j.id === playback.currentJourneyId);
+    if (!journey || playback.currentStep < 0) return null;
+    const currentStepData = journey.steps[playback.currentStep] as FlowchartStep | undefined;
+    if (!currentStepData) return null;
+
+    // Find any node in nodeIds that maps to a state machine state
+    const matchedNodeId = currentStepData.nodeIds?.find(id => !!STEP_EVENT_TO_STATE_MAP[id]);
+    if (matchedNodeId) {
+      return STEP_EVENT_TO_STATE_MAP[matchedNodeId];
+    }
+
+    if (currentStepData.processGroup) {
+      return PROCESS_GROUP_STATE_MAP[currentStepData.processGroup] ?? null;
+    }
+    return null;
+  }, [localSchema, playback.currentJourneyId, playback.currentStep]);
+
+  const activeStateMachineAggregateId = useMemo(() => {
+    const firstWithSM = Object.entries(localSchema.entities).find(([, entity]) => !!entity.stateMachine);
+    return firstWithSM ? firstWithSM[0] : null;
+  }, [localSchema.entities]);
+
+  const highlightedNodeId = useMemo(() => {
+    if (activeViewKey === 'STATE_MACHINE' && activeStateMachineAggregateId) {
+      const activeState = activeStateId || localSchema.entities[activeStateMachineAggregateId]?.stateMachine?.initialState;
+      if (activeState) {
+        return `${activeStateMachineAggregateId}_state_${activeState}`;
+      }
+    }
+    return playback.highlightedNodeId;
+  }, [activeViewKey, activeStateMachineAggregateId, activeStateId, playback.highlightedNodeId, localSchema.entities]);
+
+  const [prevHighlightedNodeId, setPrevHighlightedNodeId] = useState<string | null>(null);
+  const lastHighlightedId = useRef<string | null>(null);
+
+  useEffect(() => {
+    if (highlightedNodeId !== lastHighlightedId.current) {
+      setPrevHighlightedNodeId(lastHighlightedId.current);
+      lastHighlightedId.current = highlightedNodeId;
+    }
+  }, [highlightedNodeId]);
+
   useEffect(() => {
     if (!dropdownOpen) return;
     const handler = (e: MouseEvent) => {
@@ -160,34 +215,30 @@ export function Flowchart({ title, schema = INITIAL_SCHEMA }: FlowchartProps) {
     return () => document.removeEventListener('mousedown', handler);
   }, [dropdownOpen]);
 
-  // Pending focus node ID for view switching
-  const pendingFocusNodeIdRef = useRef<string | null>(null);
-
-  const handleNodeClick = useCallback((nodeId: string) => {
+  const handleNodeClick = useCallback((nodeId: string, x?: number, y?: number) => {
     const entity = localSchema.entities[nodeId];
     if (!entity) return;
 
-    // Check if this is a database or aggregate node (shows ERD in inspector)
-    const viewType = entity.viewTypes?.[activeViewKey] || 'default';
-    const isDbOrAggregate = viewType === 'Database' || viewType === 'Aggregate';
+    const otherViews = Object.keys(entity.viewTypes || {})
+      .filter(vk => vk !== activeViewKey && localSchema.views[vk])
+      .map(vk => ({
+        key: vk,
+        name: localSchema.views[vk].name,
+        type: entity.viewTypes?.[vk] || ''
+      }));
 
-    if (isDbOrAggregate) {
-      setSelectedNodeId(nodeId);
-      setInspectorOpen(true);
-      return;
+    const hasErd = !!entity.erdSchema && entity.erdSchema.length > 0;
+    const hasSM = !!entity.stateMachine;
+
+    if ((otherViews.length > 0 || hasErd || hasSM) && typeof x === 'number' && typeof y === 'number') {
+      setActiveNodePopup({
+        nodeId,
+        x,
+        y,
+        views: otherViews
+      });
     }
-
-    if (layoutMode === 'grid') {
-      return;
-    }
-
-    const otherViews = Object.keys(entity.viewTypes || {}).filter(vk => vk !== activeViewKey && localSchema.views[vk]);
-
-    if (otherViews.length > 0) {
-      pendingFocusNodeIdRef.current = nodeId;
-      setActiveViewKey(otherViews[0]);
-    }
-  }, [activeViewKey, localSchema.entities, localSchema.views, layoutMode]);
+  }, [activeViewKey, localSchema.entities, localSchema.views]);
 
   const handleStepClick = (step: FlowchartStepLinear | FlowchartStepBranchOption) => {
     if (activeStep?.id === step.id) {
@@ -202,67 +253,27 @@ export function Flowchart({ title, schema = INITIAL_SCHEMA }: FlowchartProps) {
     }
   };
 
-  // Grid view keys (first 4 views, or all if fewer)
-  const gridKeys = useMemo(() => {
-    return viewKeys.slice(0, 4);
-  }, [viewKeys]);
-
-  // For single view mode, we need to use the old usePlayback hook for camera/particles
-  // In grid mode, each FlowchartView handles its own camera and particles
-  const isGridMode = layoutMode === 'grid' && gridKeys.length >= 2;
+  // Filter visible view tabs to show EVENT_STORMING, SWIMLANES, SYS_ARCH, DATA_FLOW, SEQUENCE
+  // unless STATE_MACHINE is active, in which case it is rendered temporarily.
+  const visibleViewKeys = useMemo(() => {
+    return viewKeys.filter(vk => {
+      if (vk === activeViewKey) return true;
+      return vk === 'EVENT_STORMING' || vk === 'SWIMLANES' || vk === 'SYS_ARCH' || vk === 'DATA_FLOW' || vk === 'SEQUENCE';
+    });
+  }, [viewKeys, activeViewKey]);
 
   return (
     <div className="flowchart-section" data-testid="flowchart-section">
       <div className="flowchart-header-container">
-        {!isGridMode && title && <h3 className="flowchart-title" data-testid="flowchart-title">{title}</h3>}
+        {title && <h3 className="flowchart-title" data-testid="flowchart-title">{title}</h3>}
 
         <div style={{ display: 'flex', gap: '8px', alignItems: 'center', flexWrap: 'wrap' }}>
-          {/* Layout toggle */}
-          {!isGridMode && viewKeys.length >= 2 && (
-            <div className="flowchart-layout-toggle" data-testid="flowchart-layout-toggle">
-              <button
-                onClick={() => setLayoutMode('single')}
-                className={`flowchart-layout-btn ${layoutMode === 'single' ? 'active' : ''}`}
-                data-testid="flowchart-btn-single"
-                aria-label="Single Focus View"
-              >
-                <Maximize size={14} />
-                <span>Single</span>
-              </button>
-              <button
-                onClick={() => {
-                  if (window.innerWidth >= 1024) {
-                    setLayoutMode('grid');
-                  }
-                }}
-                className={`flowchart-layout-btn ${layoutMode === 'grid' ? 'active' : ''}`}
-                data-testid="flowchart-btn-grid"
-                aria-label="Split Grid View"
-              >
-                <LayoutGrid size={14} />
-                <span>Grid</span>
-              </button>
-            </div>
-          )}
-
-          {/* Inspector toggle */}
-          {!isGridMode && (
-            <button
-              onClick={() => setInspectorOpen(prev => !prev)}
-              className={`flowchart-layout-btn ${inspectorOpen ? 'active' : ''}`}
-              data-testid="flowchart-btn-inspector"
-              aria-label="Toggle Inspector Sidebar"
-            >
-              <Icons.PanelRight size={14} />
-              <span>Inspector</span>
-            </button>
-          )}
-
-          {/* View tabs (only in single mode) */}
-          {!isGridMode && viewKeys.length > 1 && (
+          {/* View tabs */}
+          {visibleViewKeys.length > 1 && (
             <div className="flowchart-view-tabs" data-testid="flowchart-view-tabs">
-              {viewKeys.map(vk => {
+              {visibleViewKeys.map(vk => {
                 const view = localSchema.views[vk];
+                if (!view) return null;
                 const Icon = (view.icon in DYNAMIC_ICONS) ? DYNAMIC_ICONS[view.icon as keyof typeof DYNAMIC_ICONS] : Workflow;
                 return (
                   <button
@@ -280,7 +291,7 @@ export function Flowchart({ title, schema = INITIAL_SCHEMA }: FlowchartProps) {
         </div>
       </div>
 
-      {!isGridMode && localSchema.journeys.length > 0 && (
+      {localSchema.journeys.length > 0 && (
         <div className="flowchart-journey-bar" data-testid="flowchart-journey-bar">
           <div className="flowchart-journey-selector">
             <span className="flowchart-journey-label">Story / Journey:</span>
@@ -309,7 +320,7 @@ export function Flowchart({ title, schema = INITIAL_SCHEMA }: FlowchartProps) {
         </div>
       )}
 
-      {!isGridMode && playback.currentJourney && (
+      {playback.currentJourney && (
         <PlaybackControls
           currentJourney={playback.currentJourney}
           currentStep={playback.currentStep}
@@ -322,165 +333,61 @@ export function Flowchart({ title, schema = INITIAL_SCHEMA }: FlowchartProps) {
         />
       )}
 
-      {/* Single View - rendered when NOT in grid mode */}
-      {!isGridMode && (
-        <div className="flowchart-canvas-wrapper" style={{ position: 'relative' }}>
-          <FlowchartView
-            viewKey={activeViewKey}
-            schema={localSchema}
-            activeNodeIds={playback.activeNodeIds}
-            highlightedNodeId={playback.highlightedNodeId}
-            prevHighlightedNodeId={playback.prevHighlightedNodeId}
-            currentStep={playback.currentStep}
-            handleNodeClick={handleNodeClick}
-            instanceId={instanceId}
-            isGridMode={false}
-          />
+      {/* Canvas View */}
+      <div className="flowchart-canvas-wrapper" style={{ position: 'relative' }}>
+        <FlowchartView
+          viewKey={activeViewKey}
+          schema={localSchema}
+          activeNodeIds={playback.activeNodeIds}
+          highlightedNodeId={highlightedNodeId}
+          prevHighlightedNodeId={prevHighlightedNodeId}
+          currentStep={playback.currentStep}
+          handleNodeClick={handleNodeClick}
+          instanceId={instanceId}
+          isGridMode={false}
+          activeNodePopup={activeNodePopup}
+          setActiveNodePopup={setActiveNodePopup}
+          setActiveViewKey={setActiveViewKey}
+          activeStateId={activeStateId}
+        />
 
-          {activeStep && (
-            <button
-              onClick={() => {
-                setActiveStep(null);
-                playback.resetAll();
-              }}
-              className="flowchart-btn animate-fade-in"
-              style={{
-                position: 'absolute',
-                top: '16px',
-                right: '16px',
-                zIndex: 10,
-                padding: '6px 16px',
-                borderRadius: '20px',
-                fontSize: '12px',
-                fontWeight: 'bold',
-                backgroundColor: 'var(--ctp-crust)',
-                color: 'var(--ctp-text)',
-                border: '1px solid var(--border-light)',
-                boxShadow: '0 4px 12px rgba(0, 0, 0, 0.25)',
-                cursor: 'pointer',
-                display: 'flex',
-                alignItems: 'center',
-                gap: '4px'
-              }}
-            >
-              Clear Focus &times;
-            </button>
-          )}
+        {activeStep && (
+          <button
+            onClick={() => {
+              setActiveStep(null);
+              playback.resetAll();
+            }}
+            className="flowchart-btn animate-fade-in"
+            style={{
+              position: 'absolute',
+              top: '16px',
+              right: '16px',
+              zIndex: 10,
+              padding: '6px 16px',
+              borderRadius: '20px',
+              fontSize: '12px',
+              fontWeight: 'bold',
+              backgroundColor: 'var(--ctp-crust)',
+              color: 'var(--ctp-text)',
+              border: '1px solid var(--border-light)',
+              boxShadow: '0 4px 12px rgba(0, 0, 0, 0.25)',
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '4px'
+            }}
+          >
+            Clear Focus &times;
+          </button>
+        )}
 
-          <StepCarousel
-            activeSteps={activeSteps}
-            activeStep={activeStep}
-            handleStepClick={handleStepClick}
-            instanceId={instanceId}
-          />
-
-          {inspectorOpen && (
-            <InspectorSidebar
-              schema={localSchema}
-              currentStep={playback.currentStep}
-              currentJourneyId={playback.currentJourneyId}
-              selectedNodeId={selectedNodeId}
-              onClose={() => setInspectorOpen(false)}
-            />
-          )}
-        </div>
-      )}
-
-      {/* Grid View Modal Overlay */}
-      {isGridMode && (
-        <div className="flowchart-grid-modal-overlay" data-testid="flowchart-grid-modal-overlay">
-          <div className="flowchart-grid-modal-content" data-testid="flowchart-grid-modal-content">
-            <div className="flowchart-grid-modal-header">
-              <div className="flowchart-grid-modal-header-left">
-                {title && <h3 className="flowchart-grid-modal-title" data-testid="flowchart-title">{title}</h3>}
-              </div>
-
-              <div className="flowchart-grid-modal-header-center">
-                {playback.currentJourney && (
-                  <PlaybackControls
-                    currentJourney={playback.currentJourney}
-                    currentStep={playback.currentStep}
-                    isPlaying={playback.isPlaying}
-                    handlePlay={playback.handlePlay}
-                    handlePause={playback.handlePause}
-                    handleNext={playback.handleNext}
-                    handlePrev={playback.handlePrev}
-                    handleReset={playback.handleReset}
-                  />
-                )}
-              </div>
-
-              <div className="flowchart-grid-modal-header-right">
-                {localSchema.journeys.length > 0 && (
-                  <div className="flowchart-journey-selector" style={{ border: 'none', background: 'transparent', padding: 0 }}>
-                    <select
-                      id="flowchart-grid-journey-select"
-                      className="flowchart-journey-select"
-                      value={playback.currentJourneyId}
-                      onChange={(e) => {
-                        playback.setCurrentJourneyId(e.target.value);
-                        setActiveStep(null);
-                      }}
-                      data-testid="flowchart-journey-select"
-                      style={{ minWidth: '180px' }}
-                    >
-                      {localSchema.journeys.map(j => (
-                        <option key={j.id} value={j.id}>
-                          {j.label}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-                )}
-
-                <div className="flowchart-layout-toggle" data-testid="flowchart-layout-toggle">
-                  <button
-                    onClick={() => setLayoutMode('single')}
-                    className="flowchart-layout-btn"
-                    data-testid="flowchart-btn-single"
-                    aria-label="Single Focus View"
-                  >
-                    <Maximize size={14} />
-                    <span>Single</span>
-                  </button>
-                  <button
-                    className="flowchart-layout-btn active"
-                    data-testid="flowchart-btn-grid"
-                    aria-label="Split Grid View"
-                    disabled
-                  >
-                    <LayoutGrid size={14} />
-                    <span>Grid</span>
-                  </button>
-                </div>
-              </div>
-            </div>
-
-            {playback.currentJourney?.description && (
-              <div className="flowchart-grid-modal-description" data-testid="flowchart-journey-description">
-                {playback.currentJourney.description}
-              </div>
-            )}
-
-            <div className="flowchart-grid-container" data-testid="flowchart-grid-container">
-              {gridKeys.map(vk => (
-                <FlowchartView
-                  key={vk}
-                  viewKey={vk}
-                  schema={localSchema}
-                  activeNodeIds={playback.activeNodeIds}
-                  highlightedNodeId={playback.highlightedNodeId}
-                  prevHighlightedNodeId={playback.prevHighlightedNodeId}
-                  currentStep={playback.currentStep}
-                  handleNodeClick={handleNodeClick}
-                  instanceId={instanceId}
-                  isGridMode={true}
-                />
-              ))}
-            </div>
-          </div>
-        </div>
-      )}
+        <StepCarousel
+          activeSteps={activeSteps}
+          activeStep={activeStep}
+          handleStepClick={handleStepClick}
+          instanceId={instanceId}
+        />
+      </div>
     </div>
   );
 }

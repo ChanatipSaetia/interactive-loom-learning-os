@@ -425,7 +425,7 @@ describe('Flowchart grid coordinate compilation', () => {
     expect(rect!.getAttribute('y')).toBe('200');
   });
 
-  it('renders and switches view directly when clicking a node in view mode', async () => {
+  it('renders a related views popup when clicking a node and switches view when popup item is clicked', async () => {
     const multiViewSchema: UnifiedFlowchartSchema = {
       entities: {
         n1: { title: 'Node 1', desc: 'Node 1 desc', viewTypes: { VIEW_A: 'Event', VIEW_B: 'Service' } }
@@ -454,10 +454,17 @@ describe('Flowchart grid coordinate compilation', () => {
     const node = screen.getByTestId('flowchart-node-VIEW_A-n1');
     expect(node).toBeInTheDocument();
     
-    // Simulates a click directly on the node
+    // Simulates a click directly on the node to open the popover
     fireEvent.click(node);
     
-    // Verify view has switched directly to VIEW_B
+    // Verify the popover options are rendered
+    expect(screen.getByText('Related Views')).toBeInTheDocument();
+    const switchBtn = screen.getByText('View B');
+    expect(switchBtn).toBeInTheDocument();
+
+    // Click the popover button to switch the view
+    fireEvent.click(switchBtn);
+
     await act(async () => {
       vi.advanceTimersByTime(100);
     });

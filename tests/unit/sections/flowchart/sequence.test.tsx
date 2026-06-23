@@ -173,52 +173,6 @@ describe('Flowchart SEQUENCE view', () => {
     expect(screen.getByTestId('flowchart-lifeline-SEQUENCE-0')).toBeInTheDocument();
   });
 
-  it('renders grid view with SEQUENCE in quadrant', () => {
-    const gridSchema: UnifiedFlowchartSchema = {
-      entities: {
-        a: { title: 'A', desc: 'A', viewTypes: { EVENT_STORMING: 'Actor', SYS_ARCH: 'Service', SEQUENCE: 'Actor' } },
-        b: { title: 'B', desc: 'B', viewTypes: { EVENT_STORMING: 'Service', SYS_ARCH: 'Service', SEQUENCE: 'Service' } }
-      },
-      relations: [
-        { id: 'e1', from: 'a', to: 'b', views: ['EVENT_STORMING'] },
-        { id: 'sa1', from: 'a', to: 'b', views: ['SYS_ARCH'] },
-        { id: 's1', from: 'a', to: 'b', views: ['SEQUENCE'], label: 'call()' }
-      ],
-      views: {
-        EVENT_STORMING: {
-          name: 'Event Storming', icon: 'Component',
-          nodes: [{ id: 'a', x: 100, y: 150 }, { id: 'b', x: 300, y: 150 }],
-          groups: []
-        },
-        SYS_ARCH: {
-          name: 'System Architecture', icon: 'Server',
-          nodes: [{ id: 'a', x: 100, y: 150 }, { id: 'b', x: 300, y: 150 }],
-          groups: []
-        },
-        DATA_FLOW: {
-          name: 'Data Flow', icon: 'Share2',
-          nodes: [{ id: 'a', x: 100, y: 150 }, { id: 'b', x: 300, y: 150 }],
-          groups: []
-        },
-        SEQUENCE: {
-          name: 'Sequence Diagram', icon: 'List',
-          nodes: [{ id: 'a', grid: [0, 0] }, { id: 'b', grid: [1, 0] }],
-          groups: []
-        }
-      },
-      journeys: []
-    };
-
-    render(<Flowchart title="Grid Test" schema={gridSchema} />, { wrapper });
-    
-    const gridBtn = screen.getByTestId('flowchart-btn-grid');
-    fireEvent.click(gridBtn);
-    
-    expect(screen.getByTestId('flowchart-grid-container')).toBeInTheDocument();
-    expect(screen.getByTestId('flowchart-grid-label-SEQUENCE')).toBeInTheDocument();
-    expect(screen.getByTestId('flowchart-svg-SEQUENCE')).toBeInTheDocument();
-    expect(screen.getByTestId('flowchart-lifeline-SEQUENCE-0')).toBeInTheDocument();
-  });
 
   it('renders SEQUENCE condition boundary groups', () => {
     const schemaWithGroups: UnifiedFlowchartSchema = {

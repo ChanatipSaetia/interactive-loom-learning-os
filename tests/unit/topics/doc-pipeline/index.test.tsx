@@ -5,6 +5,7 @@ import DocPipelineTopic from '../../../../src/topics/doc-pipeline/index'
 import { routes } from '../../../../src/core/routes'
 import { docPipelineSections } from '../../../../src/topics/doc-pipeline/sections'
 import { docPipelineSchema } from '../../../../src/topics/doc-pipeline/data/doc-schema'
+import { autoDeriveViews } from '../../../../src/sections/flowchart/derivations'
 
 const renderedConfigs: { type?: string }[] = []
 
@@ -84,7 +85,8 @@ describe('Issue #55: Doc Pipeline Topic', () => {
   })
 
   it('doc-pipeline schema has all 5 views', () => {
-    const viewNames = Object.keys(docPipelineSchema.views)
+    const compiledSchema = autoDeriveViews(docPipelineSchema)
+    const viewNames = Object.keys(compiledSchema.views)
     expect(viewNames).toContain('EVENT_STORMING')
     expect(viewNames).toContain('SYS_ARCH')
     expect(viewNames).toContain('DATA_FLOW')
