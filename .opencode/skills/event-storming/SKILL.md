@@ -31,30 +31,34 @@ Event → Policy → Command ═══> Handler → Event
 
 ## Row System
 
-| Y-Coordinate | Layer | Elements |
-|---|---|---|
-| 50 | Support | Database, Read Model |
-| 150 | Handler | Aggregate, Actor, External System |
-| 250 | Timeline | Event, Command, Policy |
-| 450+ | Branch | Failure/alternative paths (+200px per level) |
+> **Note**: Node positions are computed automatically by the layout algorithm in `derivations.ts`. The grid row indices below are assigned based on entity type; the pixel Y-coordinates are the rendered output in `flowchart-view.tsx`.
+
+| Grid Row | Y-Pixel | Layer | Elements |
+|---|---|---|---|
+| 0 | 50 | Support | Database, Read Model |
+| 1 | 150 | Handler | Aggregate, Actor, External System |
+| 2 | 250 | Timeline | Event, Command, Policy |
+| 3 | 450 | Branch 1 | Failure/alternative paths |
+| 4 | 650 | Branch 2 | Second-level branches |
 
 ## Stacking Rule
 
 ```
-          [Database]
+          [Database]         ← row 0 (y:50), same column as Command
               ↑
-          [Aggregate]        ← HANDLER (above command, same x)
+          [Aggregate]        ← row 1 (y:150), same column as Command
       ────[handled by]───
-      [Policy] [Command] [Event]   ← TIMELINE (inline, same y)
+      [Policy] [Command] [Event]   ← row 2 (y:250), inline
 ```
 
-- Command and handler share the **same x-coordinate**
+- Command and handler share the **same column** (auto-assigned by layout algorithm)
 - Handler sits directly above, connected by **straight vertical arrow**
 - Timeline elements connected by **curved bezier, dashed arrows**
 
 ## Spacing
 
 ```
+Column formula:   x = col * 140 + 60  (auto-computed col index)
 Within a stack:   ~140px between elements (tight, adjacent)
 Between stacks:   ~160px gap (visual separation)
 Branch offset:    +200px per branch level (y:450, y:650, ...)
@@ -82,17 +86,17 @@ When creating Event Storming data, verify:
 
 - [ ] Events use past tense (`Submitted`, `Generated`)
 - [ ] Commands use imperative verbs (`Create`, `Run`, `Review`)
-- [ ] Commands and handlers share same x-coordinate
-- [ ] Handlers positioned above commands at y:150
-- [ ] All timeline elements at y:250
-- [ ] Branches diverge to lower y (450, 650, ...)
+- [ ] Entity `type` field is set correctly (positions are auto-computed from type)
 - [ ] `handledBy: true` on command → handler relations
 - [ ] Loop-back relations use `dashed: true`
-- [ ] Each stack is tightly grouped (~140px between elements)
-- [ ] Stacks separated by ~160px gap
+- [ ] Handlers/Databases are connected to their Commands via relations (stacking is auto-derived)
+- [ ] Branch paths are connected via forward relations (branch levels are auto-derived)
+
+> **Note**: Manual `grid` coordinates in schema data are ignored. The layout algorithm in `src/sections/flowchart/derivations.ts` computes all positions automatically based on entity types and relations.
 
 ## Reference Files
 
 - `docs/adr/0002-event-storming-conventions.md` — Full ADR
-- `src/sections/flowchart/index.tsx` — Rendering implementation
-- `src/topics/demo/data.ts` — Working example with all conventions applied
+- `src/sections/flowchart/derivations.ts` — Auto-layout algorithm (`layoutNodes`)
+- `src/sections/flowchart/flowchart-view.tsx` — Grid-to-pixel rendering
+- `src/topics/demo/data/agent-schema.ts` — Working example with all conventions applied

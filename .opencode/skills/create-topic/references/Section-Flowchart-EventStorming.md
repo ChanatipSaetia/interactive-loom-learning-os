@@ -36,15 +36,17 @@ Aggregate → Event → Policy → Command → ...
 
 The **Stack Layout** is the primary design technique. Related components are positioned to **touch edge-to-edge**, forming visually grouped "stacks" or blocks.
 
+> **Note**: All node positions are computed automatically by the layout algorithm in `src/sections/flowchart/derivations.ts`. Manual `grid` coordinates in schema data are ignored. The algorithm assigns grid indices based on entity types and relation topology, then `flowchart-view.tsx` converts grid indices to pixel positions.
+
 ### Node Dimensions
 
 All nodes are **140 × 100 px** (uniform size). This means the grid system (`grid: [col, row]`) provides zero-gap adjacency for all node types.
 
-### Grid Coordinate System
+### Grid-to-Pixel Coordinate System
 
-All nodes use `grid: [col, row]` coordinates. The runtime compiler converts them to pixel positions:
+The layout algorithm assigns `grid: [col, row]` indices automatically. The renderer converts them to pixel positions:
 
-| Row | Y Position | Usage |
+| Grid Row | Y-Pixel | Usage |
 |---|---|---|
 | 0 | `y = 50` | Database (above Aggregate) |
 | 1 | `y = 150` | Aggregate / Handler (above Command) |
@@ -52,41 +54,24 @@ All nodes use `grid: [col, row]` coordinates. The runtime compiler converts them
 | 3 | `y = 450` | Failure branch 1 |
 | 4 | `y = 650` | Failure branch 2 |
 
-Column formula: `x = col * 140 + 60`
+Column formula: `x = col * 140 + 60` (col is auto-computed)
 
-### Standard Grid Layout
+### How the Layout Algorithm Works
 
-1. **Central Chronology (Happy Path):** Core timeline at Row 2 (`y = 250`)
-2. **Horizontal Sequence:** Place nodes edge-to-edge in consecutive columns
-   - Actor at `grid: [0, 2]`
-   - Event at `grid: [1, 2]`
-   - Policy at `grid: [2, 2]`
-   - Command at `grid: [3, 2]`
-   - Event at `grid: [4, 2]`
-3. **Gap Between Phases:** Skip one column between separate logical phases (~140px gap)
-4. **Vertical Stack Above Command:**
-   - Command at Row 2
-   - Aggregate above Command: Row 1 (same column)
-   - Database above Aggregate: Row 0 (same column)
-5. **Exceptions & Failure Branches:** Diverge vertically downward
-   - Main timeline: Row 2
-   - First failure branch: Row 3
-   - Second failure branch: Row 4
+1. **Central Chronology (Happy Path):** Timeline nodes (Event, Command, Policy, Actor) are placed at Row 2 (`y = 250`). Columns are assigned by topological ordering of relations.
+2. **Command-Handler Stacking:** When a Command has a `handledBy` relation to an Aggregate/Handler, the Handler is placed in the same column at Row 1 (`y = 150`).
+3. **Database Alignment:** Databases connected to a Handler are placed in the same column at Row 0 (`y = 50`).
+4. **Branch Detection:** When a timeline node has multiple forward targets, the first target stays at the current branch level and subsequent targets diverge to Row 3 (`y = 450`), Row 4 (`y = 650`), etc.
 
-### Typical Node Positions
+### Resulting Layout (example)
 
-```ts
-// Happy path — Row 2
-{ id: 'user',     grid: [0, 2] },
-{ id: 'evt_goal', grid: [1, 2] },
-{ id: 'pol_plan', grid: [2, 2] },
-{ id: 'planner',  grid: [3, 2] },
-{ id: 'evt_plan', grid: [4, 2] },
-// Vertical stack above Command (same column)
-{ id: 'orch',     grid: [3, 1] },  // Aggregate — Row 1
-{ id: 'memory',   grid: [3, 0] },  // Database  — Row 0
-// External handler above Command (same column)
-{ id: 'llm',      grid: [7, 1] },  // External  — Row 1
+```
+                    [Database]     ← Row 0 (y:50), auto-stacked above handler
+                        ↑
+                    [Aggregate]    ← Row 1 (y:150), auto-stacked above command
+                 ════[handled by]════
+[Actor] [Event] [Policy] [Command] [Event]   ← Row 2 (y:250), auto-sequenced
+  col:0   col:1   col:2    col:3    col:4
 ```
 
 ## Groups

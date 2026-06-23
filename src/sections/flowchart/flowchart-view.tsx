@@ -99,12 +99,15 @@ export function FlowchartView({
           else if (r === 3) y = 450;
           else if (r === 4) y = 650;
           else y = 250 + (r - 2) * 200;
+        } else if (viewKey === 'STATE_MACHINE') {
+          x = c * 140 + 60;
+          y = r * 150 + 80;
         } else if (viewKey === 'SYS_ARCH') {
           x = c * 140 + 80;
-          y = r * 100 + 100;
+          y = r * 130 + 100;
         } else if (viewKey === 'DATA_FLOW') {
           x = c * 140 + 100;
-          y = r * 100 + 100;
+          y = r * 130 + 100;
         } else if (viewKey === 'SWIMLANES') {
           x = c * 140 + 160;
           if (r === 0) y = 75;
@@ -117,7 +120,7 @@ export function FlowchartView({
           y = (r ?? 0) * 48 + 80;
         } else {
           x = c * 140 + 100;
-          y = r * 100 + 100;
+          y = r * 150 + 100;
         }
         return { ...node, x, y };
       }

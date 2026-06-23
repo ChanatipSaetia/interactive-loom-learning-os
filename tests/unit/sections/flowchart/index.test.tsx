@@ -419,9 +419,9 @@ describe('Flowchart grid coordinate compilation', () => {
     const rect = nodeGroup.querySelector('rect');
     expect(rect).toBeInTheDocument();
     
-    // grid: [1, 2] -> x = 1 * 140 + 60 = 200 -> rect x = 200 - 140/2 = 130
-    // grid: [1, 2] -> y = r2 -> 250 -> rect y = 250 - 100/2 = 200
-    expect(rect!.getAttribute('x')).toBe('130');
+    // grid: [0, 2] -> x = 0 * 140 + 60 = 60 -> rect x = 60 - 140/2 = -10
+    // grid: [0, 2] -> y = r2 -> 250 -> rect y = 250 - 100/2 = 200
+    expect(rect!.getAttribute('x')).toBe('-10');
     expect(rect!.getAttribute('y')).toBe('200');
   });
 

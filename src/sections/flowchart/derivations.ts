@@ -11,7 +11,21 @@ const getEntityType = (entity: FlowchartEntity | undefined): string => {
  * from the master EVENT_STORMING view if they are not explicitly declared.
  */
 export function autoDeriveViews(schema: UnifiedFlowchartSchema): UnifiedFlowchartSchema {
-  // If views are already fully configured, return the schema as-is
+  // Automatically lay out all existing views in the schema except SEQUENCE
+  const laidOutViews = { ...schema.views };
+  Object.keys(laidOutViews).forEach(viewKey => {
+    if (viewKey === 'SEQUENCE') return;
+    const view = laidOutViews[viewKey];
+    laidOutViews[viewKey] = {
+      ...view,
+      nodes: layoutNodes(view.nodes, schema.relations, viewKey, schema.entities)
+    };
+  });
+  schema = {
+    ...schema,
+    views: laidOutViews
+  };
+
   const viewKeys = Object.keys(schema.views);
   const hasOnlyEventStorming = viewKeys.length === 1 && viewKeys.includes('EVENT_STORMING');
   
@@ -590,10 +604,12 @@ export function autoDeriveViews(schema: UnifiedFlowchartSchema): UnifiedFlowchar
       ...smRelations
     ];
 
+    const laidOutSmNodes = layoutNodes(smNodes, smRelations, 'STATE_MACHINE', schema.entities);
+
     derivedViews.STATE_MACHINE = {
       name: 'State Machine',
       icon: 'Activity',
-      nodes: smNodes,
+      nodes: laidOutSmNodes,
       groups: []
     };
   }
@@ -708,4 +724,504 @@ function deriveRelations(
   });
 
   return relations;
+}
+
+/**
+ * Graph layout algorithm to dynamically position nodes using DAG topological levels (columns)
+ * and barycenter heuristics (rows) to minimize edge crossings.
+ * For EVENT_STORMING view, it strictly enforces spec-compliant database, aggregate handler,
+ * and timeline vertical layering and horizontal alignment stack rules.
+ */
+function layoutNodes(
+  nodes: FlowchartViewNode[],
+  relations: FlowchartRelation[],
+  viewKey: string,
+  entities: Record<string, FlowchartEntity> = {}
+): FlowchartViewNode[] {
+  if (nodes.length === 0) return [];
+
+  const nodeIds = nodes.map(n => n.id);
+  const nodeSet = new Set(nodeIds);
+
+  const getRole = (id: string): 'db' | 'handler' | 'timeline' => {
+    const entity = entities[id];
+    const type = entity?.type || entity?.viewTypes?.EVENT_STORMING || 'default';
+    if (type === TYPES.DATABASE) return 'db';
+    if (type === TYPES.AGGREGATE || type === TYPES.EXTERNAL || type === TYPES.SERVICE) return 'handler';
+    return 'timeline';
+  };
+
+  if (viewKey === 'EVENT_STORMING') {
+    // ----------------------------------------------------
+    // SPEC-COMPLIANT EVENT STORMING LAYOUT
+    // ----------------------------------------------------
+    const timelineOfHandler = new Map<string, string>();
+    const handlerOfDb = new Map<string, string>();
+
+    const handlerNodes = nodeIds.filter(id => getRole(id) === 'handler');
+    const dbNodes = nodeIds.filter(id => getRole(id) === 'db');
+    const timelineNodes = nodeIds.filter(id => getRole(id) === 'timeline');
+
+    // Detect which handlers are "stacked" (connected via handledBy to a Command)
+    const stackedHandlers = new Set<string>();
+    relations.forEach(rel => {
+      const isForView = !rel.views || rel.views.includes(viewKey);
+      if (isForView && rel.handledBy && nodeSet.has(rel.from) && nodeSet.has(rel.to)) {
+        const fromRole = getRole(rel.from);
+        const toRole = getRole(rel.to);
+        if (fromRole === 'timeline' && toRole === 'handler') {
+          stackedHandlers.add(rel.to);
+        }
+      }
+    });
+
+    // Build handler-to-handler adjacency for orphan handler propagation
+    const handlerParent = new Map<string, string>();
+    handlerNodes.forEach(h => {
+      if (stackedHandlers.has(h)) return; // Already stacked, skip
+      // Find if this handler is connected FROM another handler
+      relations.forEach(rel => {
+        const isForView = !rel.views || rel.views.includes(viewKey);
+        if (!isForView) return;
+        if (rel.to === h && nodeSet.has(rel.from) && getRole(rel.from) === 'handler') {
+          handlerParent.set(h, rel.from);
+        }
+      });
+    });
+
+    // Group Handlers with timeline nodes (Commands preferred)
+    handlerNodes.forEach(h => {
+      const connected = new Set<string>();
+      relations.forEach(rel => {
+        const isForView = !rel.views || rel.views.includes(viewKey);
+        if (!isForView) return;
+        if (rel.from === h && nodeSet.has(rel.to) && getRole(rel.to) === 'timeline') {
+          connected.add(rel.to);
+        }
+        if (rel.to === h && nodeSet.has(rel.from) && getRole(rel.from) === 'timeline') {
+          connected.add(rel.from);
+        }
+      });
+
+      const connectedList = Array.from(connected);
+      const cmd = connectedList.find(id => {
+        const entity = entities[id];
+        const t = entity?.type || entity?.viewTypes?.EVENT_STORMING || 'default';
+        return t === TYPES.COMMAND;
+      });
+
+      if (cmd) {
+        timelineOfHandler.set(h, cmd);
+      } else if (connectedList.length > 0) {
+        timelineOfHandler.set(h, connectedList[0]);
+      }
+    });
+
+    // Group Databases with Handler aggregates
+    dbNodes.forEach(d => {
+      const connected = new Set<string>();
+      relations.forEach(rel => {
+        const isForView = !rel.views || rel.views.includes(viewKey);
+        if (!isForView) return;
+        if (rel.from === d && nodeSet.has(rel.to) && getRole(rel.to) === 'handler') {
+          connected.add(rel.to);
+        }
+        if (rel.to === d && nodeSet.has(rel.from) && getRole(rel.from) === 'handler') {
+          connected.add(rel.from);
+        }
+      });
+      const connectedList = Array.from(connected);
+      if (connectedList.length > 0) {
+        handlerOfDb.set(d, connectedList[0]);
+      }
+    });
+
+    // Build timeline adjacency graph (tracing through handlers/databases)
+    const timelineAdj = new Map<string, Set<string>>();
+    const timelineInDegree = new Map<string, number>();
+
+    timelineNodes.forEach(id => {
+      timelineAdj.set(id, new Set());
+      timelineInDegree.set(id, 0);
+    });
+
+    timelineNodes.forEach(u => {
+      const visited = new Set<string>();
+      const queue = [u];
+
+      while (queue.length > 0) {
+        const curr = queue.shift()!;
+        if (visited.has(curr)) continue;
+        visited.add(curr);
+
+        relations.forEach(rel => {
+          const isForView = !rel.views || rel.views.includes(viewKey);
+          if (isForView && rel.from === curr) {
+            const toRole = getRole(rel.to);
+            if (toRole === 'timeline') {
+              if (rel.to !== u) {
+                timelineAdj.get(u)!.add(rel.to);
+              }
+            } else if (nodeSet.has(rel.to)) {
+              queue.push(rel.to);
+            }
+          }
+        });
+      }
+    });
+
+    timelineNodes.forEach(u => {
+      timelineAdj.get(u)!.forEach(v => {
+        timelineInDegree.set(v, timelineInDegree.get(v)! + 1);
+      });
+    });
+
+    // ── Back-edge pruning ──
+    // Detect and remove back-edges (edges that create cycles, e.g. evt_done → user).
+    // A back-edge is identified when the target appears before the source in the
+    // original node declaration order — this represents a loop-back, not forward flow.
+    const timelineOrder = new Map<string, number>();
+    timelineNodes.forEach((id, idx) => timelineOrder.set(id, idx));
+
+    const backEdges = new Set<string>(); // "from->to" keys to exclude
+    timelineNodes.forEach(u => {
+      const uOrder = timelineOrder.get(u)!;
+      timelineAdj.get(u)!.forEach(v => {
+        const vOrder = timelineOrder.get(v)!;
+        if (vOrder <= uOrder) {
+          backEdges.add(`${u}->${v}`);
+        }
+      });
+    });
+
+    // Remove back-edges from adjacency and adjust in-degrees
+    backEdges.forEach(key => {
+      const [from, to] = key.split('->');
+      timelineAdj.get(from)?.delete(to);
+      timelineInDegree.set(to, Math.max(0, timelineInDegree.get(to)! - 1));
+    });
+
+    // Assign horizontal columns for timeline nodes
+    const col = new Map<string, number>();
+    nodeIds.forEach(id => col.set(id, -1));
+
+    const assignTimelineColumns = (startNodes: string[]) => {
+      const queue: string[] = [];
+      const pushCount = new Map<string, number>();
+
+      startNodes.forEach(node => {
+        col.set(node, Math.max(0, col.get(node)!));
+        queue.push(node);
+        pushCount.set(node, 1);
+      });
+
+      while (queue.length > 0) {
+        const u = queue.shift()!;
+        const uCol = col.get(u)!;
+
+        const targets = Array.from(timelineAdj.get(u) || []);
+        targets.forEach(v => {
+          const nextCol = uCol + 1;
+          if (nextCol > col.get(v)!) {
+            col.set(v, nextCol);
+            const count = pushCount.get(v) || 0;
+            if (count < nodes.length) {
+              pushCount.set(v, count + 1);
+              queue.push(v);
+            }
+          }
+        });
+      }
+    };
+
+    let sources = timelineNodes.filter(id => timelineInDegree.get(id) === 0);
+    if (sources.length === 0 && timelineNodes.length > 0) {
+      sources = [timelineNodes[0]];
+    }
+
+    assignTimelineColumns(sources);
+
+    let unreached = timelineNodes.filter(id => col.get(id) === -1);
+    while (unreached.length > 0) {
+      unreached.sort((a, b) => timelineInDegree.get(a)! - timelineInDegree.get(b)!);
+      const nextSrc = unreached[0];
+      col.set(nextSrc, 0);
+      assignTimelineColumns([nextSrc]);
+      unreached = timelineNodes.filter(id => col.get(id) === -1);
+    }
+
+    // ── Stack Gap Insertion ──
+    // Detect Command nodes that have a stacked handler (handledBy) and insert
+    // a 1-column gap before each such Command to visually separate stacks.
+    // Also detect Events that follow a stacked handler chain (handler->event)
+    // and add gaps after them when a new stack begins.
+    const stackCommands = new Set<string>();
+    relations.forEach(rel => {
+      const isForView = !rel.views || rel.views.includes(viewKey);
+      if (isForView && rel.handledBy && nodeSet.has(rel.from) && nodeSet.has(rel.to)) {
+        if (getRole(rel.from) === 'timeline' && getRole(rel.to) === 'handler') {
+          stackCommands.add(rel.from);
+        }
+      }
+    });
+
+    // Find timeline columns sorted and detect where gaps should go
+    const sortedTimelineByCol = timelineNodes
+      .filter(id => col.get(id)! >= 0)
+      .sort((a, b) => col.get(a)! - col.get(b)!);
+
+    // For each stack command, check if there's a non-gap predecessor
+    // (i.e., the previous timeline node is NOT already a gap apart)
+    const gapBeforeCols = new Set<number>();
+    sortedTimelineByCol.forEach((id, idx) => {
+      if (stackCommands.has(id) && idx > 0) {
+        const prevCol = col.get(sortedTimelineByCol[idx - 1])!;
+        const thisCol = col.get(id)!;
+        // Only add gap if they're adjacent (difference of 1)
+        if (thisCol - prevCol === 1) {
+          gapBeforeCols.add(thisCol);
+        }
+      }
+    });
+
+    // Apply gaps: shift columns >= each gap point by 1
+    // Process from highest to lowest to avoid cascading shifts
+    const sortedGapCols = Array.from(gapBeforeCols).sort((a, b) => b - a);
+    sortedGapCols.forEach(gapCol => {
+      timelineNodes.forEach(id => {
+        const c = col.get(id)!;
+        if (c >= gapCol) {
+          col.set(id, c + 1);
+        }
+      });
+    });
+
+    // Propagate columns to stacked handlers and databases
+    handlerNodes.forEach(h => {
+      if (timelineOfHandler.has(h)) {
+        const cmd = timelineOfHandler.get(h)!;
+        col.set(h, col.get(cmd) !== undefined && col.get(cmd)! >= 0 ? col.get(cmd)! : 0);
+      }
+    });
+
+    dbNodes.forEach(d => {
+      const h = handlerOfDb.get(d);
+      col.set(d, h && col.get(h) !== undefined && col.get(h)! >= 0 ? col.get(h)! : 0);
+    });
+
+    // ── Orphan Handler Placement ──
+    // Handlers connected only to other handlers (not to any timeline node)
+    // get placed adjacent to their parent handler with a column offset.
+    const orphanHandlers = handlerNodes.filter(h => !timelineOfHandler.has(h));
+    orphanHandlers.forEach(h => {
+      // Trace up the handler chain to find the root stacked handler
+      let current = h;
+      const visited = new Set<string>();
+      while (handlerParent.has(current) && !visited.has(current)) {
+        visited.add(current);
+        current = handlerParent.get(current)!;
+      }
+      // current is now the root handler (hopefully stacked)
+      if (col.get(current) !== undefined && col.get(current)! >= 0) {
+        col.set(h, col.get(current)!);
+      } else {
+        col.set(h, 0);
+      }
+    });
+
+    // Assign rows based on timeline branch levels and stack layers
+    const branchLevel = new Map<string, number>();
+    timelineNodes.forEach(id => branchLevel.set(id, -1));
+
+    sources.forEach(src => {
+      branchLevel.set(src, 0);
+    });
+
+    const queue = [...sources];
+    const visited = new Set<string>();
+
+    while (queue.length > 0) {
+      const u = queue.shift()!;
+      if (visited.has(u)) continue;
+      visited.add(u);
+
+      const uLevel = branchLevel.get(u)!;
+      const targets = Array.from(timelineAdj.get(u) || []);
+      const forwardTargets = targets.filter(v => col.get(v)! > col.get(u)!);
+      forwardTargets.sort((a, b) => nodeIds.indexOf(a) - nodeIds.indexOf(b));
+
+      forwardTargets.forEach((v, idx) => {
+        const nextLevel = idx === 0 ? uLevel : uLevel + idx;
+        const currentVLevel = branchLevel.get(v)!;
+        if (currentVLevel === -1 || nextLevel < currentVLevel) {
+          branchLevel.set(v, nextLevel);
+        }
+        queue.push(v);
+      });
+    }
+
+    const row = new Map<string, number>();
+    timelineNodes.forEach(u => {
+      row.set(u, 2 + Math.max(0, branchLevel.get(u)!));
+    });
+
+    // Stacked handlers always at row 1
+    handlerNodes.forEach(h => {
+      row.set(h, 1);
+    });
+
+    dbNodes.forEach(d => {
+      row.set(d, 0);
+    });
+
+    // ── Orphan Handler Row Offsets ──
+    // If multiple orphan handlers share the same parent handler column,
+    // spread them vertically: first at row 0 (above), subsequent at row 3+ (below)
+    const orphansByCol = new Map<number, string[]>();
+    orphanHandlers.forEach(h => {
+      const c = col.get(h)!;
+      if (!orphansByCol.has(c)) orphansByCol.set(c, []);
+      orphansByCol.get(c)!.push(h);
+    });
+
+    orphansByCol.forEach((handlers) => {
+      handlers.forEach((h, idx) => {
+        if (idx === 0) {
+          row.set(h, 0); // First orphan above (row 0)
+        } else {
+          row.set(h, 2 + idx); // Subsequent below (row 3, 4, ...)
+        }
+      });
+    });
+
+    return nodes.map(n => ({
+      ...n,
+      grid: [col.get(n.id)!, row.get(n.id)!]
+    }));
+  } else {
+    // ----------------------------------------------------
+    // GENERAL LAYOUT (STATE_MACHINE & CUSTOM VIEWS)
+    // ----------------------------------------------------
+    const adj = new Map<string, string[]>();
+    const incoming = new Map<string, string[]>();
+    const inDegree = new Map<string, number>();
+
+    nodeIds.forEach(id => {
+      adj.set(id, []);
+      incoming.set(id, []);
+      inDegree.set(id, 0);
+    });
+
+    relations.forEach(rel => {
+      const isForView = !rel.views || rel.views.includes(viewKey);
+      if (isForView && nodeSet.has(rel.from) && nodeSet.has(rel.to)) {
+        adj.get(rel.from)!.push(rel.to);
+        incoming.get(rel.to)!.push(rel.from);
+        inDegree.set(rel.to, inDegree.get(rel.to)! + 1);
+      }
+    });
+
+    const col = new Map<string, number>();
+    nodeIds.forEach(id => col.set(id, -1));
+
+    const assignColumns = (startNodes: string[]) => {
+      const queue: string[] = [];
+      const pushCount = new Map<string, number>();
+
+      startNodes.forEach(node => {
+        col.set(node, Math.max(0, col.get(node)!));
+        queue.push(node);
+        pushCount.set(node, 1);
+      });
+
+      while (queue.length > 0) {
+        const u = queue.shift()!;
+        const uCol = col.get(u)!;
+
+        const targets = adj.get(u) || [];
+        targets.forEach(v => {
+          const nextCol = uCol + 1;
+          if (nextCol > col.get(v)!) {
+            col.set(v, nextCol);
+            const count = pushCount.get(v) || 0;
+            if (count < nodes.length) {
+              pushCount.set(v, count + 1);
+              queue.push(v);
+            }
+          }
+        });
+      }
+    };
+
+    let sources = nodeIds.filter(id => inDegree.get(id) === 0);
+    if (sources.length === 0 && nodeIds.length > 0) {
+      sources = [nodeIds[0]];
+    }
+
+    assignColumns(sources);
+
+    let unreached = nodeIds.filter(id => col.get(id) === -1);
+    while (unreached.length > 0) {
+      unreached.sort((a, b) => inDegree.get(a)! - inDegree.get(b)!);
+      const nextSrc = unreached[0];
+      col.set(nextSrc, 0);
+      assignColumns([nextSrc]);
+      unreached = nodeIds.filter(id => col.get(id) === -1);
+    }
+
+    const colGroups = new Map<number, string[]>();
+    col.forEach((c, id) => {
+      if (!colGroups.has(c)) {
+        colGroups.set(c, []);
+      }
+      colGroups.get(c)!.push(id);
+    });
+
+    const sortedCols = Array.from(colGroups.keys()).sort((a, b) => a - b);
+    const row = new Map<string, number>();
+
+    sortedCols.forEach(c => {
+      const colNodes = colGroups.get(c)!;
+
+      if (c === 0) {
+        colNodes.sort((a, b) => nodeIds.indexOf(a) - nodeIds.indexOf(b));
+        colNodes.forEach((id, idx) => {
+          row.set(id, idx);
+        });
+      } else {
+        const weights = new Map<string, number>();
+        colNodes.forEach(id => {
+          let sum = 0;
+          let count = 0;
+          const parents = incoming.get(id) || [];
+          parents.forEach(p => {
+            const pCol = col.get(p)!;
+            const pRow = row.get(p);
+            if (pCol < c && pRow !== undefined) {
+              sum += pRow;
+              count++;
+            }
+          });
+          const weight = count > 0 ? sum / count : 999;
+          weights.set(id, weight);
+        });
+
+        colNodes.sort((a, b) => {
+          const wA = weights.get(a)!;
+          const wB = weights.get(b)!;
+          if (wA !== wB) return wA - wB;
+          return nodeIds.indexOf(a) - nodeIds.indexOf(b);
+        });
+
+        colNodes.forEach((id, idx) => {
+          row.set(id, idx);
+        });
+      }
+    });
+
+    return nodes.map(n => ({
+      ...n,
+      grid: [col.get(n.id)!, row.get(n.id)!]
+    }));
+  }
 }
