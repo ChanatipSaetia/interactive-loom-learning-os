@@ -161,18 +161,6 @@ export interface FlowchartStateMachine {
   initialState: string;
 }
 
-export interface FlowchartERDColumn {
-  name: string;
-  type: string;
-  primaryKey?: boolean;
-  notNull?: boolean;
-}
-
-export interface FlowchartERDTable {
-  name: string;
-  columns: FlowchartERDColumn[];
-}
-
 export interface FlowchartEntity {
   title: string;
   /** Per-view title override — falls back to `title` when absent. */
@@ -190,8 +178,6 @@ export interface FlowchartEntity {
   stateMachine?: FlowchartStateMachine;
   /** JSON payload for a specific DFD node (shown in inspector during playback). */
   jsonPayload?: Record<string, unknown>;
-  /** ERD table definitions for database/aggregate entities (shown on node click). */
-  erdSchema?: FlowchartERDTable[];
   color?: string;
   strokeColor?: string;
 }

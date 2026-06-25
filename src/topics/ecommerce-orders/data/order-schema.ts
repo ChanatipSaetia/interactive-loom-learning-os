@@ -32,32 +32,6 @@ export const orderSchema: UnifiedFlowchartSchema = {
         ],
         initialState: 'PENDING',
       },
-      erdSchema: [
-        {
-          name: 'orders',
-          columns: [
-            { name: 'id', type: 'UUID', primaryKey: true, notNull: true },
-            { name: 'customer_id', type: 'UUID', notNull: true },
-            { name: 'status', type: 'VARCHAR(20)', notNull: true },
-            { name: 'total_amount', type: 'DECIMAL(12,2)', notNull: true },
-            { name: 'currency', type: 'VARCHAR(3)', notNull: true },
-            { name: 'fraud_risk_level', type: 'VARCHAR(10)' },
-            { name: 'created_at', type: 'TIMESTAMPTZ', notNull: true },
-            { name: 'updated_at', type: 'TIMESTAMPTZ', notNull: true },
-          ],
-        },
-        {
-          name: 'order_items',
-          columns: [
-            { name: 'id', type: 'UUID', primaryKey: true, notNull: true },
-            { name: 'order_id', type: 'UUID', notNull: true },
-            { name: 'product_id', type: 'UUID', notNull: true },
-            { name: 'quantity', type: 'INTEGER', notNull: true },
-            { name: 'unit_price', type: 'DECIMAL(10,2)', notNull: true },
-            { name: 'subtotal', type: 'DECIMAL(12,2)', notNull: true },
-          ],
-        },
-      ],
     },
 
     // Split aggregates for Event Storming detail
@@ -80,20 +54,6 @@ export const orderSchema: UnifiedFlowchartSchema = {
       viewTitles: { SEQUENCE: 'Inventory' },
       desc: 'Checks product availability and locks stock for the order duration.',
       type: TYPES.AGGREGATE,
-      erdSchema: [
-        {
-          name: 'inventory_locks',
-          columns: [
-            { name: 'id', type: 'UUID', primaryKey: true, notNull: true },
-            { name: 'order_id', type: 'UUID', notNull: true },
-            { name: 'product_id', type: 'UUID', notNull: true },
-            { name: 'quantity', type: 'INTEGER', notNull: true },
-            { name: 'locked_at', type: 'TIMESTAMPTZ', notNull: true },
-            { name: 'expires_at', type: 'TIMESTAMPTZ', notNull: true },
-            { name: 'released', type: 'BOOLEAN', notNull: true },
-          ],
-        },
-      ],
     },
 
     'fraud_service': {
@@ -101,22 +61,6 @@ export const orderSchema: UnifiedFlowchartSchema = {
       viewTitles: { SEQUENCE: 'Fraud Engine' },
       desc: 'Evaluates order risk using ML models, velocity checks, and behavioral signals. Returns risk score and level.',
       type: TYPES.AGGREGATE,
-      erdSchema: [
-        {
-          name: 'fraud_evaluations',
-          columns: [
-            { name: 'id', type: 'UUID', primaryKey: true, notNull: true },
-            { name: 'order_id', type: 'UUID', notNull: true },
-            { name: 'risk_score', type: 'DECIMAL(5,4)', notNull: true },
-            { name: 'risk_level', type: 'VARCHAR(10)', notNull: true },
-            { name: 'signals', type: 'JSONB', notNull: true },
-            { name: 'reviewed_by', type: 'UUID' },
-            { name: 'reviewed_at', type: 'TIMESTAMPTZ' },
-            { name: 'decision', type: 'VARCHAR(10)' },
-            { name: 'created_at', type: 'TIMESTAMPTZ', notNull: true },
-          ],
-        },
-      ],
     },
 
     'fraud_policy': {
@@ -130,21 +74,6 @@ export const orderSchema: UnifiedFlowchartSchema = {
       title: 'Stripe',
       desc: 'External payment processor handling card authorization, capture, and webhook callbacks.',
       type: TYPES.EXTERNAL,
-      erdSchema: [
-        {
-          name: 'payments',
-          columns: [
-            { name: 'id', type: 'UUID', primaryKey: true, notNull: true },
-            { name: 'order_id', type: 'UUID', notNull: true },
-            { name: 'stripe_payment_intent_id', type: 'VARCHAR(255)', notNull: true },
-            { name: 'amount', type: 'DECIMAL(12,2)', notNull: true },
-            { name: 'currency', type: 'VARCHAR(3)', notNull: true },
-            { name: 'status', type: 'VARCHAR(20)', notNull: true },
-            { name: 'captured', type: 'BOOLEAN', notNull: true },
-            { name: 'created_at', type: 'TIMESTAMPTZ', notNull: true },
-          ],
-        },
-      ],
     },
 
     // ── Database ──────────────────────────────────────────────────────
@@ -152,59 +81,6 @@ export const orderSchema: UnifiedFlowchartSchema = {
       title: 'Order Database',
       desc: 'Persistent storage for orders, line items, payments, and fraud evaluation records.',
       type: TYPES.DATABASE,
-      erdSchema: [
-        {
-          name: 'orders',
-          columns: [
-            { name: 'id', type: 'UUID', primaryKey: true, notNull: true },
-            { name: 'customer_id', type: 'UUID', notNull: true },
-            { name: 'status', type: 'VARCHAR(20)', notNull: true },
-            { name: 'total_amount', type: 'DECIMAL(12,2)', notNull: true },
-            { name: 'currency', type: 'VARCHAR(3)', notNull: true },
-            { name: 'fraud_risk_level', type: 'VARCHAR(10)' },
-            { name: 'created_at', type: 'TIMESTAMPTZ', notNull: true },
-            { name: 'updated_at', type: 'TIMESTAMPTZ', notNull: true },
-          ],
-        },
-        {
-          name: 'order_items',
-          columns: [
-            { name: 'id', type: 'UUID', primaryKey: true, notNull: true },
-            { name: 'order_id', type: 'UUID', notNull: true },
-            { name: 'product_id', type: 'UUID', notNull: true },
-            { name: 'quantity', type: 'INTEGER', notNull: true },
-            { name: 'unit_price', type: 'DECIMAL(10,2)', notNull: true },
-            { name: 'subtotal', type: 'DECIMAL(12,2)', notNull: true },
-          ],
-        },
-        {
-          name: 'payments',
-          columns: [
-            { name: 'id', type: 'UUID', primaryKey: true, notNull: true },
-            { name: 'order_id', type: 'UUID', notNull: true },
-            { name: 'stripe_payment_intent_id', type: 'VARCHAR(255)', notNull: true },
-            { name: 'amount', type: 'DECIMAL(12,2)', notNull: true },
-            { name: 'currency', type: 'VARCHAR(3)', notNull: true },
-            { name: 'status', type: 'VARCHAR(20)', notNull: true },
-            { name: 'captured', type: 'BOOLEAN', notNull: true },
-            { name: 'created_at', type: 'TIMESTAMPTZ', notNull: true },
-          ],
-        },
-        {
-          name: 'fraud_evaluations',
-          columns: [
-            { name: 'id', type: 'UUID', primaryKey: true, notNull: true },
-            { name: 'order_id', type: 'UUID', notNull: true },
-            { name: 'risk_score', type: 'DECIMAL(5,4)', notNull: true },
-            { name: 'risk_level', type: 'VARCHAR(10)', notNull: true },
-            { name: 'signals', type: 'JSONB', notNull: true },
-            { name: 'reviewed_by', type: 'UUID' },
-            { name: 'reviewed_at', type: 'TIMESTAMPTZ' },
-            { name: 'decision', type: 'VARCHAR(10)' },
-            { name: 'created_at', type: 'TIMESTAMPTZ', notNull: true },
-          ],
-        },
-      ],
     },
 
     // ── Events ────────────────────────────────────────────────────────

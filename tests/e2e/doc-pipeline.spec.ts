@@ -107,37 +107,6 @@ test.describe('Issue #55: AI Document Ingestion Pipeline Topic', () => {
     await expect(svg).toBeVisible()
   })
 
-  test('database node displays ERD schemas in popover', async ({ page }) => {
-    // Switch to SYS_ARCH view where db node exists
-    const sysArchTab = page.getByText('System Architecture')
-    await sysArchTab.click()
-    await page.waitForTimeout(500)
-
-    // Click on database node
-    const dbNode = page.getByTestId('flowchart-node-SYS_ARCH-db')
-    await dbNode.evaluate(el => el.dispatchEvent(new MouseEvent('click', { bubbles: true, cancelable: true })))
-    await page.waitForTimeout(500)
-
-    // ERD schema widget should be visible
-    const erdWidget = page.getByTestId('erd-schema-widget')
-    await expect(erdWidget).toBeVisible()
-  })
-
-  test('documents table visible in ERD popover', async ({ page }) => {
-    // Switch to SYS_ARCH view
-    const sysArchTab = page.getByText('System Architecture')
-    await sysArchTab.click()
-    await page.waitForTimeout(500)
-
-    // Click on database node
-    const dbNode = page.getByTestId('flowchart-node-SYS_ARCH-db')
-    await dbNode.evaluate(el => el.dispatchEvent(new MouseEvent('click', { bubbles: true, cancelable: true })))
-    await page.waitForTimeout(500)
-
-    // Check for table names in ERD
-    await expect(page.getByTestId('erd-table-documents')).toBeVisible()
-  })
-
   test('bullets section renders pipeline capabilities', async ({ page }) => {
     await expect(page.getByText('Pipeline Capabilities')).toBeVisible()
     await expect(page.getByText('Multi-format OCR extraction')).toBeVisible()

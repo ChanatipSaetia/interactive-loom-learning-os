@@ -1,7 +1,6 @@
 import { useMemo, useState } from 'react';
 import { StateMachineWidget } from './state-machine-widget';
 import { JsonPayloadViewer } from './json-payload-viewer';
-import { ERDSchemaWidget } from './erd-schema-widget';
 import { PROCESS_GROUP_STATE_MAP } from '../types';
 import type {
   UnifiedFlowchartSchema,
@@ -9,13 +8,12 @@ import type {
   FlowchartEntity,
 } from '../types';
 
-export type InspectorTab = 'state-machine' | 'payload' | 'erd';
+export type InspectorTab = 'state-machine' | 'payload';
 
 export interface InspectorSidebarProps {
   schema: UnifiedFlowchartSchema;
   currentStep: number;
   currentJourneyId: string;
-  selectedNodeId: string | null;
   onClose: () => void;
 }
 
@@ -23,7 +21,6 @@ export function InspectorSidebar({
   schema,
   currentStep,
   currentJourneyId,
-  selectedNodeId,
   onClose,
 }: InspectorSidebarProps) {
   const [activeTab, setActiveTab] = useState<InspectorTab>('state-machine');
@@ -66,16 +63,9 @@ export function InspectorSidebar({
     return null;
   }, [currentStepData, schema]);
 
-  // Get the selected entity for ERD display
-  const erdEntity = useMemo((): FlowchartEntity | null => {
-    if (!selectedNodeId) return null;
-    return schema.entities[selectedNodeId] ?? null;
-  }, [selectedNodeId, schema]);
-
   const tabs: { id: InspectorTab; label: string }[] = [
     { id: 'state-machine', label: 'States' },
     { id: 'payload', label: 'Payload' },
-    { id: 'erd', label: 'Schema' },
   ];
 
   return (
@@ -124,22 +114,6 @@ export function InspectorSidebar({
               <h2>Data Flow Payload</h2>
             </div>
             <JsonPayloadViewer entity={payloadEntity} />
-          </div>
-        )}
-
-        {activeTab === 'erd' && (
-          <div className="inspector-widget-container" data-testid="inspector-widget-erd">
-            <div className="flowchart-sidebar-section-header">
-              <h2>
-                {erdEntity ? `${erdEntity.title} Schema` : 'Entity Schema'}
-              </h2>
-            </div>
-            <ERDSchemaWidget entity={erdEntity} />
-            {!selectedNodeId && (
-              <div className="inspector-erd-hint" data-testid="erd-schema-hint">
-                Click a database or aggregate node to view its schema
-              </div>
-            )}
           </div>
         )}
       </div>

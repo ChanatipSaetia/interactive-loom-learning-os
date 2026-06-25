@@ -23,17 +23,6 @@ export const agentSchema: UnifiedFlowchartSchema = {
         ],
         initialState: 'IDLE'
       },
-      erdSchema: [
-        {
-          name: 'agent_runs',
-          columns: [
-            { name: 'id', type: 'UUID', primaryKey: true, notNull: true },
-            { name: 'status', type: 'VARCHAR(20)', notNull: true },
-            { name: 'current_step', type: 'INTEGER', notNull: true },
-            { name: 'started_at', type: 'TIMESTAMPTZ', notNull: true }
-          ]
-        }
-      ]
     },
     'orch_agent': {
       title: 'Agent Orchestrator',
@@ -51,24 +40,6 @@ export const agentSchema: UnifiedFlowchartSchema = {
       title: 'Filesystem',
       desc: 'Stores local instructions, skill definitions, and domain knowledge.',
       type: TYPES.DATABASE,
-      erdSchema: [
-        {
-          name: 'skills',
-          columns: [
-            { name: 'id', type: 'UUID', primaryKey: true, notNull: true },
-            { name: 'name', type: 'VARCHAR(50)', notNull: true },
-            { name: 'instructions', type: 'TEXT', notNull: true }
-          ]
-        },
-        {
-          name: 'domain_knowledge',
-          columns: [
-            { name: 'id', type: 'UUID', primaryKey: true, notNull: true },
-            { name: 'topic', type: 'VARCHAR(100)', notNull: true },
-            { name: 'content', type: 'TEXT', notNull: true }
-          ]
-        }
-      ]
     },
     'llm': {
       title: 'LLM Engine',

@@ -32,21 +32,6 @@ export const docPipelineSchema: UnifiedFlowchartSchema = {
         ],
         initialState: 'QUEUED',
       },
-      erdSchema: [
-        {
-          name: 'documents',
-          columns: [
-            { name: 'id', type: 'UUID', primaryKey: true, notNull: true },
-            { name: 'filename', type: 'VARCHAR(255)', notNull: true },
-            { name: 'mime_type', type: 'VARCHAR(100)', notNull: true },
-            { name: 'status', type: 'VARCHAR(20)', notNull: true },
-            { name: 'confidence_score', type: 'FLOAT' },
-            { name: 'uploaded_by', type: 'UUID', notNull: true },
-            { name: 'created_at', type: 'TIMESTAMPTZ', notNull: true },
-            { name: 'updated_at', type: 'TIMESTAMPTZ', notNull: true },
-          ],
-        },
-      ],
     },
 
     // Split aggregates for Event Storming detail
@@ -95,47 +80,6 @@ export const docPipelineSchema: UnifiedFlowchartSchema = {
       title: 'Pipeline Database',
       desc: 'Persistent storage for documents, extracted fields, and audit corrections.',
       type: TYPES.DATABASE,
-      erdSchema: [
-        {
-          name: 'documents',
-          columns: [
-            { name: 'id', type: 'UUID', primaryKey: true, notNull: true },
-            { name: 'filename', type: 'VARCHAR(255)', notNull: true },
-            { name: 'mime_type', type: 'VARCHAR(100)', notNull: true },
-            { name: 'status', type: 'VARCHAR(20)', notNull: true },
-            { name: 'confidence_score', type: 'FLOAT' },
-            { name: 'uploaded_by', type: 'UUID', notNull: true },
-            { name: 'created_at', type: 'TIMESTAMPTZ', notNull: true },
-            { name: 'updated_at', type: 'TIMESTAMPTZ', notNull: true },
-          ],
-        },
-        {
-          name: 'extracted_fields',
-          columns: [
-            { name: 'id', type: 'UUID', primaryKey: true, notNull: true },
-            { name: 'document_id', type: 'UUID', notNull: true },
-            { name: 'field_name', type: 'VARCHAR(100)', notNull: true },
-            { name: 'field_value', type: 'TEXT', notNull: true },
-            { name: 'confidence', type: 'FLOAT', notNull: true },
-            { name: 'validated', type: 'BOOLEAN', notNull: true },
-            { name: 'validated_by', type: 'VARCHAR(20)' },
-            { name: 'created_at', type: 'TIMESTAMPTZ', notNull: true },
-          ],
-        },
-        {
-          name: 'audit_corrections',
-          columns: [
-            { name: 'id', type: 'UUID', primaryKey: true, notNull: true },
-            { name: 'document_id', type: 'UUID', notNull: true },
-            { name: 'field_id', type: 'UUID', notNull: true },
-            { name: 'original_value', type: 'TEXT', notNull: true },
-            { name: 'corrected_value', type: 'TEXT', notNull: true },
-            { name: 'corrected_by', type: 'UUID', notNull: true },
-            { name: 'reason', type: 'TEXT' },
-            { name: 'created_at', type: 'TIMESTAMPTZ', notNull: true },
-          ],
-        },
-      ],
     },
 
     // ── Events ────────────────────────────────────────────────────────

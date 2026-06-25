@@ -56,22 +56,4 @@ test.describe('Active Node Popup Widgets', () => {
     await expect(thinkingState).toHaveClass(/inspector-state-active/);
   });
 
-  test('ERD schema widget shows tables in popup when database node clicked', async ({ page }) => {
-    await page.goto('/#/demo/ai-agent');
-    await page.waitForSelector('[data-testid="flowchart-section"]');
-    await page.waitForTimeout(500);
-
-    // Click on Filesystem node (Database type) in the flowchart
-    const fsNode = page.getByTestId('flowchart-node-EVENT_STORMING-filesystem');
-    await fsNode.evaluate(el => el.dispatchEvent(new MouseEvent('click', { bubbles: true, cancelable: true })));
-    await page.waitForTimeout(500);
-
-    // ERD schema should now be visible inside popup
-    const erdWidget = page.getByTestId('erd-schema-widget');
-    await expect(erdWidget).toBeVisible();
-    const skillsTable = page.getByTestId('erd-table-skills');
-    await expect(skillsTable).toBeVisible();
-    const knowledgeTable = page.getByTestId('erd-table-domain_knowledge');
-    await expect(knowledgeTable).toBeVisible();
-  });
 });

@@ -36,8 +36,6 @@ import type {
   ProcessGroup,
   FlowchartStateMachineState,
   FlowchartStateMachine,
-  FlowchartERDColumn,
-  FlowchartERDTable,
 } from './types';
 
 import './flowchart.css';
@@ -45,7 +43,7 @@ import './flowchart.css';
 const Workflow = Icons.Workflow;
 
 export { TYPES, COLORS, BORDER_COLORS, ICONS, ICON_ANIMATIONS, DYNAMIC_ICONS, NODE_W, NODE_H, INITIAL_SCHEMA, PROCESS_GROUP_STATE_MAP };
-export type { UnifiedFlowchartSchema, FlowchartEntity, FlowchartRelation, FlowchartViewNode, FlowchartViewGroup, FlowchartStep, FlowchartStepData, FlowchartStepLinear, FlowchartStepBranchOption, FlowchartJourney, FlowchartViewConfig, FlowchartProps, ProcessGroup, FlowchartStateMachineState, FlowchartStateMachine, FlowchartERDColumn, FlowchartERDTable };
+export type { UnifiedFlowchartSchema, FlowchartEntity, FlowchartRelation, FlowchartViewNode, FlowchartViewGroup, FlowchartStep, FlowchartStepData, FlowchartStepLinear, FlowchartStepBranchOption, FlowchartJourney, FlowchartViewConfig, FlowchartProps, ProcessGroup, FlowchartStateMachineState, FlowchartStateMachine };
 
 const STEP_EVENT_TO_STATE_MAP: Record<string, string> = {
   evt_order_placed: 'PENDING',
@@ -230,9 +228,8 @@ export function Flowchart({ title, schema = INITIAL_SCHEMA }: FlowchartProps) {
         entity = {
           ...canonical,
           ...entity,
-          stateMachine: entity.stateMachine || canonical.stateMachine,
-          erdSchema: entity.erdSchema || canonical.erdSchema,
-          viewTypes: {
+         stateMachine: entity.stateMachine || canonical.stateMachine,
+           viewTypes: {
             ...canonical.viewTypes,
             ...entity.viewTypes
           }
@@ -248,10 +245,9 @@ export function Flowchart({ title, schema = INITIAL_SCHEMA }: FlowchartProps) {
         type: entity.viewTypes?.[vk] || ''
       }));
 
-    const hasErd = !!entity.erdSchema && entity.erdSchema.length > 0;
     const hasSM = !!entity.stateMachine;
 
-    if ((otherViews.length > 0 || hasErd || hasSM) && typeof x === 'number' && typeof y === 'number') {
+    if ((otherViews.length > 0 || hasSM) && typeof x === 'number' && typeof y === 'number') {
       setActiveNodePopup({
         nodeId,
         x,

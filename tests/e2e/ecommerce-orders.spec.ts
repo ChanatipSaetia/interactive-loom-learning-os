@@ -107,36 +107,6 @@ test.describe('Issue #56: E-Commerce Order Processing Topic', () => {
     await expect(svg).toBeVisible()
   })
 
-  test('database node displays ERD schemas in popover', async ({ page }) => {
-    // Switch to SYS_ARCH view where order_db node exists
-    const sysArchTab = page.getByText('System Architecture')
-    await sysArchTab.click()
-    await page.waitForTimeout(500)
-
-    // Click on database node
-    const dbNode = page.getByTestId('flowchart-node-SYS_ARCH-order_db')
-    await dbNode.evaluate(el => el.dispatchEvent(new MouseEvent('click', { bubbles: true, cancelable: true })))
-    await page.waitForTimeout(500)
-
-    // ERD schema widget should be visible
-    const erdWidget = page.getByTestId('erd-schema-widget')
-    await expect(erdWidget).toBeVisible()
-  })
-
-  test('payments table shows stripe_payment_intent_id column', async ({ page }) => {
-    const sysArchTab = page.getByText('System Architecture')
-    await sysArchTab.click()
-    await page.waitForTimeout(500)
-
-    const stripeNode = page.getByTestId('flowchart-node-SYS_ARCH-stripe')
-    await stripeNode.evaluate(el => el.dispatchEvent(new MouseEvent('click', { bubbles: true, cancelable: true })))
-    await page.waitForTimeout(500)
-
-    const erdWidget = page.getByTestId('erd-schema-widget')
-    await expect(erdWidget).toBeVisible()
-    await expect(page.getByText('payments')).toBeVisible()
-  })
-
   test('bullets section renders pipeline capabilities', async ({ page }) => {
     await expect(page.getByText('Pipeline Capabilities')).toBeVisible()
     await expect(page.getByText('Real-time inventory lock with 15-minute expiry window')).toBeVisible()

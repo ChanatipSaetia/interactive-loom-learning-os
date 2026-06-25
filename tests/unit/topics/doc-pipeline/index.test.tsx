@@ -118,47 +118,6 @@ describe('Issue #55: Doc Pipeline Topic', () => {
     expect(orchestrator.stateMachine?.states.length).toBe(7)
   })
 
-  it('pipeline database has 3 ERD tables', () => {
-    const db = docPipelineSchema.entities['db']
-    expect(db.erdSchema).toBeDefined()
-    expect(db.erdSchema?.length).toBe(3)
-    const tableNames = db.erdSchema?.map((t) => t.name) || []
-    expect(tableNames).toContain('documents')
-    expect(tableNames).toContain('extracted_fields')
-    expect(tableNames).toContain('audit_corrections')
-  })
-
-  it('documents table has correct columns', () => {
-    const db = docPipelineSchema.entities['db']
-    const documents = db.erdSchema?.find((t) => t.name === 'documents')
-    expect(documents).toBeDefined()
-    const colNames = documents?.columns.map((c) => c.name) || []
-    expect(colNames).toContain('id')
-    expect(colNames).toContain('filename')
-    expect(colNames).toContain('status')
-    expect(colNames).toContain('confidence_score')
-  })
-
-  it('extracted_fields table has confidence and validated columns', () => {
-    const db = docPipelineSchema.entities['db']
-    const extracted = db.erdSchema?.find((t) => t.name === 'extracted_fields')
-    expect(extracted).toBeDefined()
-    const colNames = extracted?.columns.map((c) => c.name) || []
-    expect(colNames).toContain('confidence')
-    expect(colNames).toContain('validated')
-    expect(colNames).toContain('field_value')
-  })
-
-  it('audit_corrections table has original and corrected value columns', () => {
-    const db = docPipelineSchema.entities['db']
-    const audit = db.erdSchema?.find((t) => t.name === 'audit_corrections')
-    expect(audit).toBeDefined()
-    const colNames = audit?.columns.map((c) => c.name) || []
-    expect(colNames).toContain('original_value')
-    expect(colNames).toContain('corrected_value')
-    expect(colNames).toContain('corrected_by')
-  })
-
   it('low confidence audit step 4 triggers escalation process group', () => {
     const lowConf = docPipelineSchema.journeys.find((j) => j.id === 'low-confidence-audit')
     const step4 = lowConf?.steps[3]

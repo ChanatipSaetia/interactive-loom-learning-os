@@ -125,66 +125,6 @@ describe('Issue #56: E-Commerce Order Processing Topic', () => {
     expect(stateIds).toContain('CANCELLED')
   })
 
-  it('order database has 4 ERD tables', () => {
-    const db = orderSchema.entities['order_db']
-    expect(db.erdSchema).toBeDefined()
-    expect(db.erdSchema?.length).toBe(4)
-    const tableNames = db.erdSchema?.map((t) => t.name) || []
-    expect(tableNames).toContain('orders')
-    expect(tableNames).toContain('order_items')
-    expect(tableNames).toContain('payments')
-    expect(tableNames).toContain('fraud_evaluations')
-  })
-
-  it('orders table has correct columns', () => {
-    const db = orderSchema.entities['order_db']
-    const orders = db.erdSchema?.find((t) => t.name === 'orders')
-    expect(orders).toBeDefined()
-    const colNames = orders?.columns.map((c) => c.name) || []
-    expect(colNames).toContain('id')
-    expect(colNames).toContain('customer_id')
-    expect(colNames).toContain('status')
-    expect(colNames).toContain('total_amount')
-    expect(colNames).toContain('fraud_risk_level')
-  })
-
-  it('order_items table has product and quantity columns', () => {
-    const db = orderSchema.entities['order_db']
-    const items = db.erdSchema?.find((t) => t.name === 'order_items')
-    expect(items).toBeDefined()
-    const colNames = items?.columns.map((c) => c.name) || []
-    expect(colNames).toContain('order_id')
-    expect(colNames).toContain('product_id')
-    expect(colNames).toContain('quantity')
-    expect(colNames).toContain('unit_price')
-    expect(colNames).toContain('subtotal')
-  })
-
-  it('payments table has stripe and capture columns', () => {
-    const db = orderSchema.entities['order_db']
-    const payments = db.erdSchema?.find((t) => t.name === 'payments')
-    expect(payments).toBeDefined()
-    const colNames = payments?.columns.map((c) => c.name) || []
-    expect(colNames).toContain('order_id')
-    expect(colNames).toContain('stripe_payment_intent_id')
-    expect(colNames).toContain('amount')
-    expect(colNames).toContain('status')
-    expect(colNames).toContain('captured')
-  })
-
-  it('fraud_evaluations table has risk score and signals columns', () => {
-    const db = orderSchema.entities['order_db']
-    const fraud = db.erdSchema?.find((t) => t.name === 'fraud_evaluations')
-    expect(fraud).toBeDefined()
-    const colNames = fraud?.columns.map((c) => c.name) || []
-    expect(colNames).toContain('order_id')
-    expect(colNames).toContain('risk_score')
-    expect(colNames).toContain('risk_level')
-    expect(colNames).toContain('signals')
-    expect(colNames).toContain('reviewed_by')
-    expect(colNames).toContain('decision')
-  })
-
   it('fraud review block step 4 triggers escalation process group', () => {
     const fraudReview = orderSchema.journeys.find((j) => j.id === 'fraud-review-block')
     const step4 = fraudReview?.steps[3]
@@ -199,27 +139,6 @@ describe('Issue #56: E-Commerce Order Processing Topic', () => {
     expect(step5).toBeDefined()
     expect(step5?.processGroup).toBe('escalation')
     expect(step5?.description).toContain('Risk Ops')
-  })
-
-  it('stripe external entity has payments ERD schema', () => {
-    const stripe = orderSchema.entities['stripe']
-    expect(stripe.erdSchema).toBeDefined()
-    expect(stripe.erdSchema?.length).toBe(1)
-    expect(stripe.erdSchema?.[0].name).toBe('payments')
-  })
-
-  it('fraud service has fraud_evaluations ERD schema', () => {
-    const fraudService = orderSchema.entities['fraud_service']
-    expect(fraudService.erdSchema).toBeDefined()
-    expect(fraudService.erdSchema?.length).toBe(1)
-    expect(fraudService.erdSchema?.[0].name).toBe('fraud_evaluations')
-  })
-
-  it('inventory service has inventory_locks ERD schema', () => {
-    const inventoryService = orderSchema.entities['inventory_service']
-    expect(inventoryService.erdSchema).toBeDefined()
-    expect(inventoryService.erdSchema?.length).toBe(1)
-    expect(inventoryService.erdSchema?.[0].name).toBe('inventory_locks')
   })
 
   it('evt_order_placed has jsonPayload with order details', () => {
