@@ -3,11 +3,13 @@ import type { FlowchartStateMachine } from '../types';
 export interface StateMachineWidgetProps {
   stateMachine: FlowchartStateMachine;
   activeStateId: string | null;
+  onStateClick?: (stateId: string) => void;
 }
 
-export function StateMachineWidget({ stateMachine, activeStateId }: StateMachineWidgetProps) {
+export function StateMachineWidget({ stateMachine, activeStateId, onStateClick }: StateMachineWidgetProps) {
   const { states, initialState } = stateMachine;
   const resolvedActiveId = activeStateId ?? initialState;
+  const clickable = !!onStateClick;
 
   return (
     <div className="inspector-state-machine" data-testid="state-machine-widget">
@@ -15,12 +17,16 @@ export function StateMachineWidget({ stateMachine, activeStateId }: StateMachine
         {states.map((state) => {
           const isActive = state.id === resolvedActiveId;
           return (
-            <div
+            <button
               key={state.id}
-              className={`inspector-state-node${isActive ? ' inspector-state-active' : ''}`}
+              type="button"
+              className={`inspector-state-node${isActive ? ' inspector-state-active' : ''}${clickable ? ' inspector-state-clickable' : ''}`}
               data-testid={`state-${state.id}`}
+              onClick={clickable ? () => onStateClick?.(state.id) : undefined}
+              disabled={!clickable}
               style={{
                 borderColor: isActive ? state.color : undefined,
+                cursor: clickable ? 'pointer' : 'default',
               }}
             >
               <div
@@ -30,48 +36,10 @@ export function StateMachineWidget({ stateMachine, activeStateId }: StateMachine
                 }}
               />
               <span className="inspector-state-label">{state.label}</span>
-            </div>
+            </button>
           );
         })}
       </div>
-
-      {states.length > 1 && (
-        <div className="inspector-state-machine-transitions" data-testid="state-transitions">
-          {states.map((state, idx) => {
-            if (idx === states.length - 1) return null;
-            const fromActive = state.id === resolvedActiveId;
-            const toActive = states[idx + 1].id === resolvedActiveId;
-            return (
-              <div
-                key={`${state.id}-${states[idx + 1].id}`}
-                className={`inspector-state-transition${fromActive || toActive ? ' inspector-state-transition-active' : ''}`}
-                data-testid={`transition-${state.id}-${states[idx + 1].id}`}
-              >
-                <span
-                  className="inspector-state-transition-dot"
-                  style={{
-                    backgroundColor: fromActive ? state.color : 'var(--ctp-surface2)',
-                  }}
-                />
-                <span
-                  className="inspector-state-transition-line"
-                  style={{
-                    borderColor: (fromActive || toActive)
-                      ? (fromActive ? state.color : states[idx + 1].color)
-                      : 'var(--ctp-surface2)',
-                  }}
-                />
-                <span
-                  className="inspector-state-transition-dot"
-                  style={{
-                    backgroundColor: toActive ? states[idx + 1].color : 'var(--ctp-surface2)',
-                  }}
-                />
-              </div>
-            );
-          })}
-        </div>
-      )}
     </div>
   );
 }

@@ -63,7 +63,7 @@ test.describe('Inspector Sidebar Layout & Aggregate Dropdown', () => {
     await expect(page.getByTestId('inspector-sidebar')).not.toBeVisible();
   });
 
-  test('inspector sidebar shows States tab with state machine', async ({ page }) => {
+  test('inspector sidebar shows Details tab by default', async ({ page }) => {
     await page.goto('/#/demo/ai-agent');
     await page.waitForSelector('[data-testid="flowchart-section"]');
     await page.waitForTimeout(500);
@@ -72,7 +72,22 @@ test.describe('Inspector Sidebar Layout & Aggregate Dropdown', () => {
     await page.getByTestId('flowchart-sidebar-toggle').click();
     await page.waitForTimeout(300);
 
-    // States tab should be active
+    // Details tab should be active by default
+    await expect(page.getByTestId('inspector-tab-details')).toHaveClass(/active/);
+    await expect(page.getByTestId('inspector-widget-details')).toBeVisible();
+  });
+
+  test('inspector sidebar shows States tab with state machine when switched', async ({ page }) => {
+    await page.goto('/#/demo/ai-agent');
+    await page.waitForSelector('[data-testid="flowchart-section"]');
+    await page.waitForTimeout(500);
+
+    await page.getByTestId('flowchart-fullscreen-toggle').click();
+    await page.getByTestId('flowchart-sidebar-toggle').click();
+    await page.waitForTimeout(300);
+
+    // Switch to States tab
+    await page.getByTestId('inspector-tab-state-machine').click();
     await expect(page.getByTestId('inspector-tab-state-machine')).toHaveClass(/active/);
 
     // State machine widget should be visible
@@ -113,12 +128,16 @@ test.describe('Inspector Sidebar Layout & Aggregate Dropdown', () => {
     await orchNode.click({ force: true });
     await page.waitForTimeout(500);
 
-    // Sidebar should now be open with state machine
+    // Sidebar should now be open with Details tab active
     await expect(page.getByTestId('inspector-sidebar')).toBeVisible();
+    await expect(page.getByTestId('inspector-tab-details')).toHaveClass(/active/);
+
+    // Switching to States tab reveals the aggregate's state machine
+    await page.getByTestId('inspector-tab-state-machine').click();
     await expect(page.getByTestId('state-IDLE')).toBeVisible();
   });
 
-  test('state machine states are visible in sidebar', async ({ page }) => {
+  test('state machine states are visible in sidebar States tab', async ({ page }) => {
     await page.goto('/#/demo/ai-agent');
     await page.waitForSelector('[data-testid="flowchart-section"]');
     await page.waitForTimeout(500);
@@ -126,6 +145,7 @@ test.describe('Inspector Sidebar Layout & Aggregate Dropdown', () => {
     await page.getByTestId('flowchart-fullscreen-toggle').click();
     await page.getByTestId('flowchart-sidebar-toggle').click();
     await page.waitForTimeout(300);
+    await page.getByTestId('inspector-tab-state-machine').click();
 
     // States from the orchestrator state machine should be visible
     await expect(page.getByTestId('state-IDLE')).toBeVisible();
@@ -255,6 +275,7 @@ test.describe('Inspector Sidebar Aggregate Dropdown', () => {
     await page.waitForTimeout(300);
     await page.getByTestId('flowchart-sidebar-toggle').click();
     await page.waitForTimeout(500);
+    await page.getByTestId('inspector-tab-state-machine').click();
 
     // Even with one aggregate, the dropdown selector may appear
     // depending on implementation. Check if sidebar is open with state machine.

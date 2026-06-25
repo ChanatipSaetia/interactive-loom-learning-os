@@ -4,7 +4,6 @@ import * as Icons from 'lucide-react';
 
 import { ZoomToolbar } from './zoom-toolbar';
 import { useCamera } from './useCamera';
-import { StateMachineWidget } from './inspector/state-machine-widget';
 import {
   TYPES,
   COLORS,
@@ -40,10 +39,10 @@ export interface FlowchartViewProps {
     views: { key: string; name: string; type: string }[];
   } | null;
   setActiveNodePopup: (popup: { nodeId: string; x: number; y: number; views: { key: string; name: string; type: string }[] } | null) => void;
-  setActiveViewKey: (viewKey: string) => void;
-  activeStateId: string | null;
   currentJourneyId?: string;
   onEnterFullscreen?: () => void;
+  focusAfterViewSwitch?: string | null;
+  onCameraFocused?: () => void;
 }
 
 export function FlowchartView({
@@ -59,10 +58,10 @@ export function FlowchartView({
   isFullscreen,
   activeNodePopup,
   setActiveNodePopup,
-  setActiveViewKey,
-  activeStateId,
   currentJourneyId,
-  onEnterFullscreen
+  onEnterFullscreen,
+  focusAfterViewSwitch,
+  onCameraFocused
 }: FlowchartViewProps) {
   const view = schema.views[viewKey];
   const viewInstanceId = `${instanceId}-${viewKey}`;
@@ -164,6 +163,16 @@ export function FlowchartView({
       }
     }
   }, [viewKey, activeNodeIds, highlightedNodeId, camera]);
+
+  // Focus camera after view switch (triggered from Details tab related view click)
+  const hasFocusedRef = useRef(false);
+  useEffect(() => {
+    if (focusAfterViewSwitch && !hasFocusedRef.current) {
+      hasFocusedRef.current = true;
+      camera.focusOnNodes([focusAfterViewSwitch]);
+      onCameraFocused?.();
+    }
+  }, [focusAfterViewSwitch, camera, onCameraFocused]);
 
   // Particle animation
   const particleRef = useRef<SVGCircleElement | null>(null);
@@ -313,27 +322,27 @@ export function FlowchartView({
         >
           <defs>
             <filter id={`flowchart-desc-shadow-${viewInstanceId}`} x="-20%" y="-20%" width="140%" height="140%">
-              <feDropShadow dx="0" dy="3" stdDeviation="6" floodColor="#ca9ee6" floodOpacity="0.25" />
+              <feDropShadow dx="0" dy="3" stdDeviation="6" floodColor="var(--ctp-mauve)" floodOpacity="0.25" />
             </filter>
             <filter id={`flowchart-tooltip-shadow-${viewInstanceId}`} x="-20%" y="-20%" width="140%" height="140%">
               <feDropShadow dx="0" dy="2" stdDeviation="4" floodColor="#000000" floodOpacity="0.4" />
             </filter>
             <filter id={`flowchart-glow-${viewInstanceId}`} x="-20%" y="-20%" width="140%" height="140%">
-              <feDropShadow dx="0" dy="0" stdDeviation="6" floodColor="#8caaee" floodOpacity="0.6" />
+              <feDropShadow dx="0" dy="0" stdDeviation="6" floodColor="var(--ctp-blue)" floodOpacity="0.6" />
             </filter>
             <marker id={`flowchart-arrow-${viewInstanceId}`} markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto">
-              <path d="M 0 0 L 7 3 L 0 6 Z" fill="#626880" />
+              <path d="M 0 0 L 7 3 L 0 6 Z" fill="var(--ctp-surface2)" />
             </marker>
             <marker id={`flowchart-arrow-highlight-${viewInstanceId}`} markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto">
-              <path d="M 0 0 L 7 3 L 0 6 Z" fill="#8caaee" />
+              <path d="M 0 0 L 7 3 L 0 6 Z" fill="var(--ctp-blue)" />
             </marker>
             {isSequenceView && (
               <>
                 <marker id={`seq-arrow-fwd-${viewInstanceId}`} markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto">
-                  <path d="M 0 0 L 7 3 L 0 6 Z" fill="#8caaee" />
+                  <path d="M 0 0 L 7 3 L 0 6 Z" fill="var(--ctp-blue)" />
                 </marker>
                 <marker id={`seq-arrow-ret-${viewInstanceId}`} markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto">
-                  <path d="M 0 0 L 7 3 L 0 6 Z" fill="#e5c890" />
+                  <path d="M 0 0 L 7 3 L 0 6 Z" fill="var(--ctp-yellow)" />
                 </marker>
               </>
             )}
@@ -344,7 +353,7 @@ export function FlowchartView({
               patternUnits="userSpaceOnUse"
               patternTransform={`translate(${camera.transform.translateX % (20 * camera.transform.scale)}, ${camera.transform.translateY % (20 * camera.transform.scale)})`}
             >
-              <circle cx="2" cy="2" r={1 * camera.transform.scale} fill="#51576d" opacity="0.6" />
+              <circle cx="2" cy="2" r={1 * camera.transform.scale} fill="var(--ctp-surface1)" opacity="0.6" />
             </pattern>
           </defs>
 
@@ -382,14 +391,14 @@ export function FlowchartView({
                          width={xEnd - xStart}
                          height={hVal}
                          rx="4"
-                         fill={group.color || 'rgba(229, 200, 144, 0.04)'}
-                         stroke={group.borderColor || '#e5c890'}
+                         fill={group.color || 'color-mix(in srgb, var(--ctp-yellow) 6%, transparent)'}
+                         stroke={group.borderColor || 'var(--ctp-yellow)'}
                          strokeWidth="1.2"
                          strokeDasharray="4 4"
                        />
                        <polygon
                          points={`${xStart},${yVal} ${xStart + labelW},${yVal} ${xStart + labelW},${yVal + 12} ${xStart + labelW - 6},${yVal + 18} ${xStart},${yVal + 18}`}
-                         fill={group.borderColor || '#e5c890'}
+                         fill={group.borderColor || 'var(--ctp-yellow)'}
                          opacity="0.2"
                        />
                        <text
@@ -397,7 +406,7 @@ export function FlowchartView({
                          y={yVal + 12}
                          fontSize="8"
                          fontWeight="bold"
-                         fill={group.textColor || '#c6d0f5'}
+                         fill={group.textColor || 'var(--ctp-text)'}
                          fontFamily="var(--font-mono)"
                        >
                          {group.title}
@@ -424,7 +433,7 @@ export function FlowchartView({
                          y1={lifelineStart}
                          x2={colX}
                          y2={lifelineEnd}
-                         stroke="#626880"
+                         stroke="var(--ctp-surface2)"
                          strokeWidth="1.5"
                          strokeDasharray="4 4"
                        />
@@ -454,7 +463,7 @@ export function FlowchartView({
                          height={boxH}
                          rx="6"
                          fill={nodeFill}
-                         stroke={isActive ? '#8caaee' : strokeColor}
+                         stroke={isActive ? 'var(--ctp-blue)' : strokeColor}
                          strokeWidth={isActive ? '2' : '1.5'}
                          filter={isActive ? `url(#flowchart-glow-${viewInstanceId})` : undefined}
                        />
@@ -462,7 +471,7 @@ export function FlowchartView({
                          x={colX}
                          y={boxY + 20}
                          textAnchor="middle"
-                         fill="#c6d0f5"
+                         fill="var(--ctp-text)"
                          fontSize="9"
                          fontWeight="600"
                        >
@@ -496,14 +505,14 @@ export function FlowchartView({
                          height={boxH}
                          rx="6"
                          fill={nodeFill}
-                         stroke={isActive ? '#8caaee' : strokeColor}
+                         stroke={isActive ? 'var(--ctp-blue)' : strokeColor}
                          strokeWidth={isActive ? '2' : '1.5'}
                        />
                        <text
                          x={colX}
                          y={bottomY + 20}
                          textAnchor="middle"
-                         fill="#c6d0f5"
+                         fill="var(--ctp-text)"
                          fontSize="9"
                          fontWeight="600"
                        >
@@ -534,8 +543,8 @@ export function FlowchartView({
                        width={10}
                        height={lifelineEnd - lifelineStart}
                        rx="3"
-                       fill="rgba(140, 170, 238, 0.12)"
-                       stroke="#8caaee"
+                       fill="color-mix(in srgb, var(--ctp-blue) 12%, transparent)"
+                       stroke="var(--ctp-blue)"
                        strokeWidth="1"
                      />
                    );
@@ -563,7 +572,7 @@ export function FlowchartView({
                          y1={y}
                          x2={x2}
                          y2={y}
-                         stroke={isActiveMsg ? '#8caaee' : (isReturn ? '#e5c890' : '#8caaee')}
+                         stroke={isActiveMsg ? 'var(--ctp-blue)' : (isReturn ? 'var(--ctp-yellow)' : 'var(--ctp-blue)')}
                          strokeWidth={isActiveMsg ? '2' : '1.5'}
                          strokeDasharray={isReturn ? '4 4' : 'none'}
                          strokeOpacity={isActiveMsg ? '0.95' : '0.65'}
@@ -577,7 +586,7 @@ export function FlowchartView({
                            x={midX}
                            y={y - 6}
                            textAnchor="middle"
-                           fill={isActiveMsg ? '#8caaee' : '#a5adce'}
+                           fill={isActiveMsg ? 'var(--ctp-blue)' : 'var(--ctp-subtext0)'}
                            fontSize="8"
                            fontFamily="var(--font-mono)"
                            fontWeight="500"
@@ -614,8 +623,8 @@ export function FlowchartView({
                            y={yVal}
                            width={maxX - minX + 500}
                            height={hVal}
-                           fill={group.color || 'rgba(186, 187, 241, 0.10)'}
-                           stroke={group.borderColor || '#626880'}
+                           fill={group.color || 'color-mix(in srgb, var(--ctp-lavender) 12%, transparent)'}
+                           stroke={group.borderColor || 'var(--ctp-surface2)'}
                            strokeWidth="1.5"
                          />
                          <text
@@ -647,8 +656,8 @@ export function FlowchartView({
                          width={gMaxX - gMinX}
                          height={gMaxY - gMinY}
                          rx="12"
-                         fill={group.color || 'rgba(140, 170, 238, 0.10)'}
-                         stroke={group.borderColor || '#8caaee'}
+                         fill={group.color || 'color-mix(in srgb, var(--ctp-blue) 10%, transparent)'}
+                         stroke={group.borderColor || 'var(--ctp-blue)'}
                          strokeWidth="1.5"
                          strokeDasharray="4 4"
                        />
@@ -657,7 +666,7 @@ export function FlowchartView({
                          y={gMinY + 22}
                          fontSize="11"
                          fontWeight="bold"
-                         fill={group.textColor || '#c6d0f5'}
+                         fill={group.textColor || 'var(--ctp-text)'}
                        >
                          {group.title}
                        </text>
@@ -722,7 +731,7 @@ export function FlowchartView({
                        <g key={rel.id} data-testid={`flowchart-edge-${viewKey}-${idx}`} style={{ transition: 'opacity 0.3s', opacity: isFaded ? 0.1 : 0.8 }}>
                          <path
                            d={pathD}
-                           stroke="#626880"
+                           stroke="var(--ctp-surface2)"
                            strokeWidth="1.5"
                            fill="none"
                            strokeOpacity="0.3"
@@ -730,7 +739,7 @@ export function FlowchartView({
                          />
                          <path
                            d={pathD}
-                           stroke={isHighlighted ? '#8caaee' : (isHandledBy ? '#a6d189' : (rel.dashed ? '#e5c890' : '#8caaee'))}
+                           stroke={isHighlighted ? 'var(--ctp-blue)' : (isHandledBy ? 'var(--ctp-green)' : (rel.dashed ? 'var(--ctp-yellow)' : 'var(--ctp-blue)'))}
                            strokeWidth={isHighlighted ? '2.5' : (isHandledBy ? '2' : '1.5')}
                            fill="none"
                            strokeOpacity={isHighlighted ? '0.95' : (isHandledBy ? '0.8' : '0.55')}
@@ -743,7 +752,7 @@ export function FlowchartView({
                              x={midX + (isVertical ? 12 : 0)}
                              y={midY - 6}
                              textAnchor={isVertical ? 'start' : 'middle'}
-                             fill="#a6d189"
+                             fill="var(--ctp-green)"
                              fontSize="9"
                              fontWeight="600"
                              opacity={isHighlighted ? '0.95' : '0.75'}
@@ -757,7 +766,7 @@ export function FlowchartView({
                              x={midX + (isVertical ? 8 : 0)}
                              y={midY - 4}
                              textAnchor={isVertical ? 'start' : 'middle'}
-                             fill={isHighlighted ? '#8caaee' : '#a5adce'}
+                             fill={isHighlighted ? 'var(--ctp-blue)' : 'var(--ctp-subtext0)'}
                              fontSize="9"
                              fontFamily="var(--font-mono)"
                              fontWeight="500"
@@ -775,7 +784,7 @@ export function FlowchartView({
                  <circle
                    ref={particleRef}
                    r="6"
-                   fill="#8caaee"
+                   fill="var(--ctp-blue)"
                    opacity="0"
                    className="flowchart-particle"
                    data-testid={`flowchart-particle-${viewKey}`}
@@ -903,7 +912,7 @@ export function FlowchartView({
                                display: 'flex',
                                alignItems: 'center',
                                gap: '6px',
-                               borderBottom: '1px solid rgba(255, 255, 255, 0.06)',
+                               borderBottom: '1px solid var(--border-light)',
                                paddingBottom: '4px',
                                marginBottom: '4px'
                              }}
@@ -992,8 +1001,8 @@ export function FlowchartView({
                          x={ttX} y={ttY}
                          width={ttW} height={ttH}
                          rx="6"
-                         fill="#232634"
-                         stroke="#51576d"
+                         fill="var(--ctp-crust)"
+                         stroke="var(--ctp-surface1)"
                          strokeWidth="1"
                          filter={`url(#flowchart-tooltip-shadow-${viewInstanceId})`}
                        />
@@ -1003,7 +1012,7 @@ export function FlowchartView({
                            x={ttX + ttPadX}
                            y={ttY + ttPadY + ttLineH * li + 11}
                            fontSize="10"
-                           fill="#c6d0f5"
+                           fill="var(--ctp-text)"
                          >
                            {line}
                          </text>
@@ -1018,7 +1027,7 @@ export function FlowchartView({
          </svg>
        </div>
 
-      {activeNodePopup && activeNodePopup.nodeId && (() => {
+      {activeNodePopup && activeNodePopup.nodeId && !isFullscreen && (() => {
         const popupStyle: React.CSSProperties = {
           position: 'absolute',
           left: `${camera.transform.translateX + activeNodePopup.x * camera.transform.scale}px`,
@@ -1041,91 +1050,15 @@ export function FlowchartView({
           color: 'var(--ctp-text)',
         };
 
-        if (!isFullscreen) {
-          return (
-            <div
-              data-testid="flowchart-node-popup"
-              style={popupStyle}
-            >
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', borderBottom: '1px solid var(--border-light)', paddingBottom: '6px' }}>
-                <span style={{ fontSize: '11px', lineHeight: '1.4', color: 'var(--ctp-subtext1)', opacity: 0.9 }}>
-                  Open fullscreen to view details and interactive lifecycle
-                </span>
-                <button
-                  onClick={() => setActiveNodePopup(null)}
-                  data-testid="flowchart-node-popup-close"
-                  style={{
-                    background: 'transparent',
-                    border: 'none',
-                    color: 'var(--ctp-overlay1)',
-                    cursor: 'pointer',
-                    padding: '2px',
-                    display: 'flex',
-                    alignItems: 'center',
-                    flexShrink: 0,
-                    marginLeft: '8px'
-                  }}
-                >
-                  <Icons.X size={12} />
-                </button>
-              </div>
-              <button
-                onClick={() => {
-                  setActiveNodePopup(null);
-                  onEnterFullscreen?.();
-                }}
-                data-testid="flowchart-node-popup-enter-fullscreen"
-                style={{
-                  background: 'var(--ctp-blue)',
-                  border: 'none',
-                  borderRadius: '4px',
-                  color: 'var(--ctp-mantle)',
-                  padding: '6px 12px',
-                  fontSize: '11px',
-                  fontWeight: 'bold',
-                  cursor: 'pointer',
-                  transition: 'all 0.15s ease',
-                  textAlign: 'center'
-                }}
-              >
-                Enter Fullscreen
-              </button>
-            </div>
-          );
-        }
-
-        let entity = schema.entities[activeNodePopup.nodeId];
-        if (!entity) return null;
-
-        if (entity.collapsedTo) {
-          const canonical = schema.entities[entity.collapsedTo];
-          if (canonical) {
-            entity = {
-              ...canonical,
-              ...entity,
-              stateMachine: entity.stateMachine || canonical.stateMachine,
-                viewTypes: {
-                 ...canonical.viewTypes,
-                 ...entity.viewTypes
-               }
-             };
-           }
-         }
-
-        const hasSM = !!entity.stateMachine;
-
         return (
           <div
             data-testid="flowchart-node-popup"
             style={popupStyle}
           >
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', borderBottom: '1px solid var(--border-light)', paddingBottom: '6px' }}>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
-                <span style={{ fontSize: '13px', fontWeight: 'bold' }}>{entity.title}</span>
-                <span style={{ fontSize: '9px', color: 'var(--ctp-overlay1)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
-                  {entity.viewTypes?.[viewKey] || 'Node Details'}
-                </span>
-              </div>
+              <span style={{ fontSize: '11px', lineHeight: '1.4', color: 'var(--ctp-subtext1)', opacity: 0.9 }}>
+                Open fullscreen to view details and interactive lifecycle
+              </span>
               <button
                 onClick={() => setActiveNodePopup(null)}
                 data-testid="flowchart-node-popup-close"
@@ -1136,70 +1069,35 @@ export function FlowchartView({
                   cursor: 'pointer',
                   padding: '2px',
                   display: 'flex',
-                  alignItems: 'center'
+                  alignItems: 'center',
+                  flexShrink: 0,
+                  marginLeft: '8px'
                 }}
               >
                 <Icons.X size={12} />
               </button>
             </div>
-
-            {entity.desc && (
-              <p style={{ margin: 0, fontSize: '11px', lineHeight: '1.4', color: 'var(--ctp-subtext1)', opacity: 0.9 }}>
-                {entity.desc}
-              </p>
-            )}
-
-            {hasSM && entity.stateMachine && (
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', borderTop: '1px solid var(--border-light)', paddingTop: '8px' }}>
-                <span style={{ fontSize: '9px', fontWeight: 'bold', color: 'var(--ctp-overlay1)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
-                  States / Lifecycle
-                </span>
-                <StateMachineWidget
-                  stateMachine={entity.stateMachine}
-                  activeStateId={activeStateId}
-                />
-              </div>
-            )}
-
-            {activeNodePopup.views.length > 0 && (
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', borderTop: '1px solid var(--border-light)', paddingTop: '8px' }}>
-                <span style={{ fontSize: '9px', fontWeight: 'bold', color: 'var(--ctp-overlay1)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
-                  Related Views
-                </span>
-                {activeNodePopup.views.map(v => (
-                  <button
-                    key={v.key}
-                    onClick={() => {
-                      camera.transformRef.current = { scale: 0.8, translateX: camera.transform.translateX, translateY: camera.transform.translateY };
-                      setActiveViewKey(v.key);
-                      setActiveNodePopup(null);
-                    }}
-                    style={{
-                      background: 'var(--ctp-surface0)',
-                      border: '1px solid var(--border-light)',
-                      borderRadius: '4px',
-                      color: 'var(--ctp-text)',
-                      padding: '6px 10px',
-                      fontSize: '11px',
-                      textAlign: 'left',
-                      cursor: 'pointer',
-                      transition: 'all 0.15s ease',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'space-between',
-                      gap: '12px'
-                    }}
-                    className="flowchart-popup-btn"
-                  >
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
-                      <span style={{ fontWeight: '500' }}>{v.name}</span>
-                      <span style={{ fontSize: '9px', color: 'var(--ctp-overlay1)' }}>as {v.type}</span>
-                    </div>
-                    <span style={{ color: 'var(--ctp-blue)', fontSize: '12px' }}>&rarr;</span>
-                  </button>
-                ))}
-              </div>
-            )}
+            <button
+              onClick={() => {
+                setActiveNodePopup(null);
+                onEnterFullscreen?.();
+              }}
+              data-testid="flowchart-node-popup-enter-fullscreen"
+              style={{
+                background: 'var(--ctp-blue)',
+                border: 'none',
+                borderRadius: '4px',
+                color: 'var(--ctp-mantle)',
+                padding: '6px 12px',
+                fontSize: '11px',
+                fontWeight: 'bold',
+                cursor: 'pointer',
+                transition: 'all 0.15s ease',
+                textAlign: 'center'
+              }}
+            >
+              Enter Fullscreen
+            </button>
           </div>
         );
       })()}

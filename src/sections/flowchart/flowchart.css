@@ -303,7 +303,7 @@
   width: 10px;
   height: 10px;
   border-radius: var(--radius-full);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  border: 1px solid var(--border-light);
   flex-shrink: 0;
 }
 
@@ -807,7 +807,7 @@
   cursor: pointer;
   transition: background-color 0.15s ease;
   opacity: 0.45;
-  border-bottom: 1px solid rgba(255,255,255,0.02);
+  border-bottom: 1px solid var(--border-light);
 }
 
 .flowchart-step-item:hover {
@@ -1115,11 +1115,18 @@
   display: flex;
   align-items: center;
   gap: 8px;
+  width: 100%;
   padding: 8px 10px;
   border-radius: var(--radius-xs);
   background: var(--ctp-surface0);
   border: 1px solid transparent;
+  text-align: left;
+  font-family: inherit;
   transition: border-color 0.2s ease, background-color 0.2s ease;
+}
+
+.inspector-state-clickable:hover {
+  border-color: var(--ctp-blue);
 }
 
 .inspector-state-active {
@@ -1142,35 +1149,6 @@
   color: var(--ctp-text);
   text-transform: uppercase;
   letter-spacing: 0.5px;
-}
-
-.inspector-state-machine-transitions {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 0;
-  padding: 0 4px;
-}
-
-.inspector-state-transition {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 0;
-}
-
-.inspector-state-transition-dot {
-  width: 6px;
-  height: 6px;
-  border-radius: var(--radius-full);
-  transition: background-color 0.2s ease;
-}
-
-.inspector-state-transition-line {
-  width: 2px;
-  height: 8px;
-  border-left: 2px solid;
-  transition: border-color 0.2s ease;
 }
 
 .inspector-state-hint {

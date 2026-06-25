@@ -543,19 +543,19 @@ describe('Flowchart auto-derivation engine', () => {
   it('derives STATE_MACHINE view and verifies that columns are compacted', () => {
     render(<Flowchart title="SM Test" schema={agentSchema} />, { wrapper });
 
-    // Enter fullscreen first so detailed popup is shown
+    // Enter fullscreen first so the inspector sidebar can be used
     fireEvent.click(screen.getByTestId('flowchart-fullscreen-toggle'));
     expect(screen.getByTestId('flowchart-section')).toHaveClass('fullscreen');
 
-    // Switch to State Machine view by clicking the orchestrator node to open popup
+    // Click the orchestrator node -> opens sidebar Details tab and selects aggregate
     const orchNode = screen.getByTestId('flowchart-node-EVENT_STORMING-orch_agent');
     expect(orchNode).toBeInTheDocument();
     fireEvent.click(orchNode);
 
-    const switchBtn = screen.getByText('State Machine');
-    expect(switchBtn).toBeInTheDocument();
-    fireEvent.click(switchBtn);
-    
+    // Switch to the States tab and click a state -> links to STATE_MACHINE view
+    fireEvent.click(screen.getByTestId('inspector-tab-state-machine'));
+    fireEvent.click(screen.getByTestId('state-IDLE'));
+
     // Verify State Machine view is rendered
     expect(screen.getByTestId('flowchart-canvas-STATE_MACHINE')).toBeInTheDocument();
     
@@ -775,7 +775,7 @@ describe('Flowchart minimal mode node popup', () => {
     expect(screen.getByTestId('flowchart-node-popup-enter-fullscreen')).toBeInTheDocument();
   });
 
-  it('clicking node in fullscreen mode shows detailed popup for multi-view entities', () => {
+  it('clicking node in fullscreen mode opens sidebar Details tab (no popup) for multi-view entities', () => {
     const multiViewSchema: UnifiedFlowchartSchema = {
       entities: {
         n1: { title: 'Node 1', desc: 'Node 1 desc', viewTypes: { VIEW_A: 'Event', VIEW_B: 'Service' } }
@@ -806,10 +806,16 @@ describe('Flowchart minimal mode node popup', () => {
     const node = screen.getByTestId('flowchart-node-VIEW_A-n1');
     fireEvent.click(node);
 
-    const popup = screen.getByTestId('flowchart-node-popup');
-    expect(popup).toBeInTheDocument();
-    expect(popup).toHaveTextContent('Node 1');
-    expect(popup).toHaveTextContent('Related Views');
+    // No floating popup in fullscreen
+    expect(screen.queryByTestId('flowchart-node-popup')).not.toBeInTheDocument();
+
+    // Sidebar opens with the Details tab active showing the node title + related views
+    const sidebar = screen.getByTestId('inspector-sidebar');
+    expect(sidebar).toBeInTheDocument();
+    expect(screen.getByTestId('inspector-tab-details')).toHaveClass('active');
+    const detailsWidget = screen.getByTestId('inspector-widget-details');
+    expect(detailsWidget).toHaveTextContent('Node 1');
+    expect(screen.getByTestId('details-related-views')).toBeInTheDocument();
   });
 
   it('clicking node in fullscreen mode does not open popup for single-view entities', () => {
@@ -932,19 +938,20 @@ describe('Flowchart inspector sidebar', () => {
     expect(screen.queryByTestId('inspector-sidebar')).not.toBeInTheDocument();
   });
 
-  it('inspector sidebar shows state machine tab by default', () => {
+  it('inspector sidebar shows details tab by default', () => {
     render(<Flowchart title="Test" schema={smSchema} />, { wrapper });
     fireEvent.click(screen.getByTestId('flowchart-fullscreen-toggle'));
     fireEvent.click(screen.getByTestId('flowchart-sidebar-toggle'));
 
-    expect(screen.getByTestId('inspector-tab-state-machine')).toHaveClass('active');
-    expect(screen.getByTestId('inspector-widget-state-machine')).toBeInTheDocument();
+    expect(screen.getByTestId('inspector-tab-details')).toHaveClass('active');
+    expect(screen.getByTestId('inspector-widget-details')).toBeInTheDocument();
   });
 
-  it('inspector sidebar shows state machine states', () => {
+  it('inspector sidebar shows state machine states on States tab', () => {
     render(<Flowchart title="Test" schema={smSchema} />, { wrapper });
     fireEvent.click(screen.getByTestId('flowchart-fullscreen-toggle'));
     fireEvent.click(screen.getByTestId('flowchart-sidebar-toggle'));
+    fireEvent.click(screen.getByTestId('inspector-tab-state-machine'));
 
     expect(screen.getByTestId('inspector-sidebar')).toBeInTheDocument();
     // State machine widget is rendered in the sidebar
@@ -952,7 +959,7 @@ describe('Flowchart inspector sidebar', () => {
     expect(sidebar.querySelector('[data-testid="state-machine-widget"]')).toBeTruthy();
   });
 
-  it('clicking node with stateMachine opens sidebar and selects aggregate', () => {
+  it('clicking node with stateMachine opens sidebar with Details tab and no popup', () => {
     render(<Flowchart title="Test" schema={smSchema} />, { wrapper });
     fireEvent.click(screen.getByTestId('flowchart-fullscreen-toggle'));
 
@@ -961,10 +968,34 @@ describe('Flowchart inspector sidebar', () => {
     const orchNode = screen.getByTestId('flowchart-node-EVENT_STORMING-orchestrator');
     fireEvent.click(orchNode);
 
+    // Sidebar opens with Details tab; no floating popup in fullscreen
     expect(screen.getByTestId('inspector-sidebar')).toBeInTheDocument();
-    // State machine appears in both sidebar and popup, so use getAllByTestId
-    const idleStates = screen.getAllByTestId('state-IDLE');
-    expect(idleStates.length).toBeGreaterThanOrEqual(1);
+    expect(screen.queryByTestId('flowchart-node-popup')).not.toBeInTheDocument();
+    expect(screen.getByTestId('inspector-tab-details')).toHaveClass('active');
+    expect(screen.getByTestId('inspector-widget-details')).toHaveTextContent('Orchestrator');
+
+    // Switching to States tab reveals the aggregate's state machine
+    fireEvent.click(screen.getByTestId('inspector-tab-state-machine'));
+    expect(screen.getByTestId('state-IDLE')).toBeInTheDocument();
+  });
+
+  it('manually closing sidebar prevents playback step changes from reopening it', () => {
+    render(<Flowchart title="Test" schema={smSchema} />, { wrapper });
+    fireEvent.click(screen.getByTestId('flowchart-fullscreen-toggle'));
+
+    // Click node to open sidebar
+    fireEvent.click(screen.getByTestId('flowchart-node-EVENT_STORMING-orchestrator'));
+    expect(screen.getByTestId('inspector-sidebar')).toBeInTheDocument();
+
+    // Manually close it
+    fireEvent.click(screen.getByTestId('inspector-close'));
+    expect(screen.queryByTestId('inspector-sidebar')).not.toBeInTheDocument();
+
+    // Advancing playback should not reopen it
+    act(() => {
+      fireEvent.click(screen.getByTestId('flowchart-btn-next'));
+    });
+    expect(screen.queryByTestId('inspector-sidebar')).not.toBeInTheDocument();
   });
 });
 

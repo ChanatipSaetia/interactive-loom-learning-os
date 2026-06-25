@@ -103,6 +103,47 @@ const multiAggSchema: UnifiedFlowchartSchema = {
   ],
 };
 
+const agentStateMachine = {
+  states: [
+    { id: 'IDLE', label: 'Idle', color: '#838ba7' },
+    { id: 'THINKING', label: 'Thinking', color: '#8caaee' },
+    { id: 'EXECUTING', label: 'Executing', color: '#a6d189' },
+  ],
+  initialState: 'IDLE',
+};
+
+// Schema exercising the Details tab + related views + state linking (US-23)
+const detailsSchema: UnifiedFlowchartSchema = {
+  entities: {
+    orch_agent: {
+      title: 'Orchestrator Agent',
+      desc: 'Coordinates the agent loop',
+      viewTypes: { EVENT_STORMING: 'Aggregate', SYS_ARCH: 'Service', STATE_MACHINE: 'Aggregate' },
+      stateMachine: agentStateMachine,
+    },
+    evt_reasoned: {
+      title: 'Reasoned',
+      desc: 'Agent reasoned over the goal',
+      viewTypes: { EVENT_STORMING: 'Event' },
+    },
+  },
+  relations: [],
+  views: {
+    EVENT_STORMING: { name: 'Event Storming', icon: 'List', nodes: [], groups: [] },
+    SYS_ARCH: { name: 'System Architecture', icon: 'Server', nodes: [], groups: [] },
+    STATE_MACHINE: { name: 'State Machine', icon: 'Share2', nodes: [], groups: [] },
+  },
+  journeys: [
+    {
+      id: 'd-journey',
+      label: 'Agent Journey',
+      steps: [
+        { nodeIds: ['evt_reasoned'], description: 'Reasoned' },
+      ],
+    },
+  ],
+};
+
 describe('StateMachineWidget', () => {
   it('renders all states', () => {
     render(<StateMachineWidget stateMachine={mockStateMachine} activeStateId={null} />);
@@ -125,9 +166,28 @@ describe('StateMachineWidget', () => {
     expect(idleNode).toHaveClass('inspector-state-active');
   });
 
-  it('renders transitions between states', () => {
+  it('does not render the SVG transition drawing', () => {
     render(<StateMachineWidget stateMachine={mockStateMachine} activeStateId="PLANNING" />);
-    expect(screen.getByTestId('state-transitions')).toBeTruthy();
+    expect(screen.queryByTestId('state-transitions')).toBeNull();
+  });
+
+  it('calls onStateClick when a state is clicked', () => {
+    const onStateClick = vi.fn();
+    render(
+      <StateMachineWidget
+        stateMachine={mockStateMachine}
+        activeStateId="PLANNING"
+        onStateClick={onStateClick}
+      />
+    );
+    fireEvent.click(screen.getByTestId('state-EXECUTING'));
+    expect(onStateClick).toHaveBeenCalledWith('EXECUTING');
+  });
+
+  it('does not invoke click when onStateClick is absent', () => {
+    render(<StateMachineWidget stateMachine={mockStateMachine} activeStateId="PLANNING" />);
+    const node = screen.getByTestId('state-EXECUTING') as HTMLButtonElement;
+    expect(node.disabled).toBe(true);
   });
 });
 
@@ -159,7 +219,7 @@ describe('JsonPayloadViewer', () => {
 describe('InspectorSidebar', () => {
   const onClose = vi.fn();
 
-  it('renders with state-machine tab active by default', () => {
+  it('renders with details tab active by default', () => {
     render(
       <InspectorSidebar
         schema={mockSchema as UnifiedFlowchartSchema}
@@ -169,7 +229,20 @@ describe('InspectorSidebar', () => {
       />
     );
     expect(screen.getByTestId('inspector-sidebar')).toBeTruthy();
-    expect(screen.getByTestId('inspector-tab-state-machine')).toHaveClass('active');
+    expect(screen.getByTestId('inspector-tab-details')).toHaveClass('active');
+    expect(screen.getByTestId('inspector-widget-details')).toBeTruthy();
+  });
+
+  it('switches to states tab', () => {
+    render(
+      <InspectorSidebar
+        schema={mockSchema as UnifiedFlowchartSchema}
+        currentStep={-1}
+        currentJourneyId="test-journey"
+        onClose={onClose}
+      />
+    );
+    fireEvent.click(screen.getByTestId('inspector-tab-state-machine'));
     expect(screen.getByTestId('inspector-widget-state-machine')).toBeTruthy();
   });
 
@@ -210,6 +283,7 @@ describe('InspectorSidebar', () => {
         onClose={onClose}
       />
     );
+    fireEvent.click(screen.getByTestId('inspector-tab-state-machine'));
     expect(screen.getByTestId('state-PLANNING')).toHaveClass('inspector-state-active');
   });
 
@@ -237,6 +311,7 @@ describe('InspectorSidebar', () => {
         onClose={onClose}
       />
     );
+    fireEvent.click(screen.getByTestId('inspector-tab-state-machine'));
     const select = screen.getByTestId('inspector-aggregate-select');
     expect(select).toBeTruthy();
     expect(select).toHaveValue('order_service');
@@ -251,6 +326,7 @@ describe('InspectorSidebar', () => {
         onClose={onClose}
       />
     );
+    fireEvent.click(screen.getByTestId('inspector-tab-state-machine'));
     const select = screen.getByTestId('inspector-aggregate-select') as HTMLSelectElement;
     expect(select).toBeTruthy();
     expect(select.options).toHaveLength(1);
@@ -266,6 +342,7 @@ describe('InspectorSidebar', () => {
         onClose={onClose}
       />
     );
+    fireEvent.click(screen.getByTestId('inspector-tab-state-machine'));
     const select = screen.getByTestId('inspector-aggregate-select') as HTMLSelectElement;
     expect(select.options).toHaveLength(2);
     expect(select.options[0].text).toBe('Order Service');
@@ -284,6 +361,7 @@ describe('InspectorSidebar', () => {
         onClose={onClose}
       />
     );
+    fireEvent.click(screen.getByTestId('inspector-tab-state-machine'));
 
     expect(screen.getByTestId('state-IDLE')).toBeTruthy();
     expect(screen.getByTestId('state-PLANNING')).toBeTruthy();
@@ -304,6 +382,7 @@ describe('InspectorSidebar', () => {
         onClose={onClose}
       />
     );
+    fireEvent.click(screen.getByTestId('inspector-tab-state-machine'));
     expect(screen.getByTestId('state-PENDING')).toBeTruthy();
     expect(screen.getByTestId('state-PROCESSING')).toBeTruthy();
     expect(screen.getByTestId('state-COMPLETED')).toBeTruthy();
@@ -322,6 +401,7 @@ describe('InspectorSidebar', () => {
         onClose={onClose}
       />
     );
+    fireEvent.click(screen.getByTestId('inspector-tab-state-machine'));
 
     const select = screen.getByTestId('inspector-aggregate-select') as HTMLSelectElement;
     fireEvent.change(select, { target: { value: 'inventory_service' } });
@@ -337,7 +417,102 @@ describe('InspectorSidebar', () => {
         onClose={onClose}
       />
     );
+    fireEvent.click(screen.getByTestId('inspector-tab-state-machine'));
     expect(screen.getByTestId('state-machine-hint')).toBeTruthy();
     expect(screen.getByTestId('state-machine-hint')).toHaveTextContent('Advance playback to see state transitions');
+  });
+
+  // Details tab tests (US-23)
+  it('renders selected node title and description in Details tab', () => {
+    render(
+      <InspectorSidebar
+        schema={detailsSchema}
+        currentStep={-1}
+        currentJourneyId="d-journey"
+        selectedNodeId="orch_agent"
+        onClose={onClose}
+      />
+    );
+    const widget = screen.getByTestId('inspector-widget-details');
+    expect(widget).toHaveTextContent('Orchestrator Agent');
+    expect(screen.getByTestId('details-description')).toHaveTextContent('Coordinates the agent loop');
+  });
+
+  it('lists related views (view name only) in Details tab', () => {
+    render(
+      <InspectorSidebar
+        schema={detailsSchema}
+        currentStep={-1}
+        currentJourneyId="d-journey"
+        selectedNodeId="orch_agent"
+        onSwitchView={vi.fn()}
+        onClose={onClose}
+      />
+    );
+    const related = screen.getByTestId('details-related-views');
+    expect(related).toBeTruthy();
+    expect(screen.getByTestId('details-related-view-SYS_ARCH')).toHaveTextContent('System Architecture');
+    // STATE_MACHINE is excluded from related views
+    expect(screen.queryByTestId('details-related-view-STATE_MACHINE')).toBeNull();
+  });
+
+  it('clicking a related view calls onSwitchView with view key and node id', () => {
+    const onSwitchView = vi.fn();
+    render(
+      <InspectorSidebar
+        schema={detailsSchema}
+        currentStep={-1}
+        currentJourneyId="d-journey"
+        selectedNodeId="orch_agent"
+        onSwitchView={onSwitchView}
+        onClose={onClose}
+      />
+    );
+    fireEvent.click(screen.getByTestId('details-related-view-SYS_ARCH'));
+    expect(onSwitchView).toHaveBeenCalledWith('SYS_ARCH', 'orch_agent');
+  });
+
+  it('shows empty state in Details tab when no node selected', () => {
+    render(
+      <InspectorSidebar
+        schema={detailsSchema}
+        currentStep={-1}
+        currentJourneyId="d-journey"
+        onClose={onClose}
+      />
+    );
+    expect(screen.getByTestId('details-empty')).toBeTruthy();
+  });
+
+  it('clicking a state in States tab links to STATE_MACHINE view', () => {
+    const onSwitchView = vi.fn();
+    render(
+      <InspectorSidebar
+        schema={detailsSchema}
+        currentStep={-1}
+        currentJourneyId="d-journey"
+        selectedAggregateId="orch_agent"
+        onSwitchView={onSwitchView}
+        onClose={onClose}
+      />
+    );
+    fireEvent.click(screen.getByTestId('inspector-tab-state-machine'));
+    fireEvent.click(screen.getByTestId('state-EXECUTING'));
+    expect(onSwitchView).toHaveBeenCalledWith('STATE_MACHINE', 'orch_agent_state_EXECUTING');
+  });
+
+  it('uses event-to-state map to highlight active state (no processGroup)', () => {
+    render(
+      <InspectorSidebar
+        schema={detailsSchema}
+        currentStep={0}
+        currentJourneyId="d-journey"
+        selectedAggregateId="orch_agent"
+        onClose={onClose}
+      />
+    );
+    fireEvent.click(screen.getByTestId('inspector-tab-state-machine'));
+    // step 0 is evt_reasoned -> THINKING
+    expect(screen.getByTestId('state-THINKING')).toHaveClass('inspector-state-active');
   });
 });

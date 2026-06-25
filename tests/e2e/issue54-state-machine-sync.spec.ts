@@ -6,16 +6,19 @@ test.describe('Issue #54: State Machine Layout and Playback Synchronization', ()
     await page.goto('/#/demo/ai-agent');
     await page.waitForSelector('[data-testid="flowchart-section"]');
 
-    // 2. Click on the orchestrator aggregate node to open the popup
-    // (Note: in Event Storming, orch_agent is rendered, which is collapsed to orchestrator)
+    // 2. Enter fullscreen and click the orchestrator aggregate node to open the
+    // inspector sidebar (Details tab). In Event Storming, orch_agent is rendered,
+    // which is collapsed to orchestrator.
+    await page.getByTestId('flowchart-fullscreen-toggle').click();
     const orchestratorNodeES = page.getByTestId('flowchart-node-EVENT_STORMING-orch_agent');
     await expect(orchestratorNodeES).toBeVisible();
-    await orchestratorNodeES.click();
+    await orchestratorNodeES.click({ force: true });
 
-    // 3. Switch to State Machine view from the popup
-    const stateMachineBtn = page.locator('.flowchart-popup-btn:has-text("State Machine")');
-    await expect(stateMachineBtn).toBeVisible();
-    await stateMachineBtn.click();
+    // 3. Switch to the States tab and click a state to navigate to the
+    // STATE_MACHINE view.
+    await page.getByTestId('inspector-tab-state-machine').click();
+    await expect(page.getByTestId('inspector-widget-state-machine')).toBeVisible();
+    await page.getByTestId('state-IDLE').click();
 
     // Verify State Machine SVG is visible
     const smSvg = page.getByTestId('flowchart-svg-STATE_MACHINE');

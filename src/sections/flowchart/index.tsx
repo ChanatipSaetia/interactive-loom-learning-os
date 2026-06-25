@@ -23,6 +23,7 @@ import {
   NODE_W,
   NODE_H,
   PROCESS_GROUP_STATE_MAP,
+  STEP_EVENT_TO_STATE_MAP,
 } from './types';
 import { INITIAL_SCHEMA } from './initial-schema';
 
@@ -48,39 +49,8 @@ import './flowchart.css';
 
 const Workflow = Icons.Workflow;
 
-export { TYPES, COLORS, BORDER_COLORS, ICONS, ICON_ANIMATIONS, DYNAMIC_ICONS, NODE_W, NODE_H, INITIAL_SCHEMA, PROCESS_GROUP_STATE_MAP };
+export { TYPES, COLORS, BORDER_COLORS, ICONS, ICON_ANIMATIONS, DYNAMIC_ICONS, NODE_W, NODE_H, INITIAL_SCHEMA, PROCESS_GROUP_STATE_MAP, STEP_EVENT_TO_STATE_MAP };
 export type { UnifiedFlowchartSchema, FlowchartEntity, FlowchartRelation, FlowchartViewNode, FlowchartViewGroup, FlowchartStep, FlowchartStepData, FlowchartStepLinear, FlowchartStepBranchOption, FlowchartJourney, FlowchartViewConfig, FlowchartProps, ProcessGroup, FlowchartStateMachineState, FlowchartStateMachine };
-
-const STEP_EVENT_TO_STATE_MAP: Record<string, string> = {
-  evt_order_placed: 'PENDING',
-  evt_inventory_locked: 'INVENTORY_LOCKED',
-  evt_payment_authorized: 'PAYMENT_AUTHORIZED',
-  evt_fraud_evaluated: 'FRAUD_CLEARED',
-  evt_fraud_flagged: 'FRAUD_REVIEW',
-  evt_review_decision: 'FRAUD_REVIEW',
-  evt_order_confirmed: 'CONFIRMED',
-  evt_order_approved: 'CONFIRMED',
-  evt_order_cancelled: 'CANCELLED',
-
-  evt_uploaded: 'QUEUED',
-  evt_extracted: 'EXTRACTING',
-  evt_validated: 'VALIDATING',
-  evt_approved: 'HIGH_CONFIDENCE',
-  evt_flagged: 'LOW_CONFIDENCE',
-  evt_audited: 'AUDITED',
-  evt_completed: 'COMPLETED',
-
-  evt_goal: 'IDLE',
-  evt_plan: 'PLANNING',
-  evt_exec: 'EXECUTING',
-  evt_eval: 'EVALUATING',
-  evt_escalate: 'ESCALATED',
-
-  evt_started: 'IDLE',
-  evt_reasoned: 'THINKING',
-  evt_tool_executed: 'EXECUTING_TOOL',
-  evt_done: 'COMPLETED'
-};
 
 export function Flowchart({ title, schema = INITIAL_SCHEMA }: FlowchartProps) {
   const rawId = useId();
@@ -230,6 +200,9 @@ export function Flowchart({ title, schema = INITIAL_SCHEMA }: FlowchartProps) {
   // Inspector sidebar state
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [selectedAggregateId, setSelectedAggregateId] = useState<string | null>(null);
+  const [selectedNodeId, setSelectedNodeId] = useState<string | null>(null);
+  const [sidebarManuallyClosed, setSidebarManuallyClosed] = useState(false);
+  const [focusAfterViewSwitch, setFocusAfterViewSwitch] = useState<string | null>(null);
 
   useEffect(() => {
     if (!isFullscreen) return;
@@ -243,19 +216,24 @@ export function Flowchart({ title, schema = INITIAL_SCHEMA }: FlowchartProps) {
   }, [isFullscreen]);
 
  const handleNodeClick = useCallback((nodeId: string, x?: number, y?: number) => {
-    let entity = localSchema.entities[nodeId];
-    if (!entity) return;
+    const rawEntity = localSchema.entities[nodeId];
+    if (!rawEntity) return;
 
-    if (entity.collapsedTo) {
-      const canonical = localSchema.entities[entity.collapsedTo];
+    // Canonical id is the collapsed-to id when present (the entity that owns
+    // the state machine), otherwise the node id itself.
+    const canonicalId = rawEntity.collapsedTo || nodeId;
+    let entity = rawEntity;
+
+    if (rawEntity.collapsedTo) {
+      const canonical = localSchema.entities[rawEntity.collapsedTo];
       if (canonical) {
         entity = {
           ...canonical,
-          ...entity,
-          stateMachine: entity.stateMachine || canonical.stateMachine,
+          ...rawEntity,
+          stateMachine: rawEntity.stateMachine || canonical.stateMachine,
             viewTypes: {
              ...canonical.viewTypes,
-             ...entity.viewTypes
+             ...rawEntity.viewTypes
            }
          };
        }
@@ -269,25 +247,21 @@ export function Flowchart({ title, schema = INITIAL_SCHEMA }: FlowchartProps) {
         type: entity.viewTypes?.[vk] || ''
       }));
 
-    const hasSM = !!entity.stateMachine;
-
-    // If node has a state machine, update sidebar selection and open sidebar
-    if (hasSM && isFullscreen) {
-      setSelectedAggregateId(nodeId);
-      setIsSidebarOpen(true);
-    }
-
-    if (typeof x === 'number' && typeof y === 'number') {
-      if (isFullscreen) {
-        if (otherViews.length > 0 || hasSM) {
-          setActiveNodePopup({
-            nodeId,
-            x,
-            y,
-            views: otherViews
-          });
-        }
-      } else {
+    if (isFullscreen) {
+      // Select node, open sidebar, switch to Details tab
+      setSelectedNodeId(nodeId);
+      // When the resolved entity has a state machine, select the canonical
+      // aggregate id so the States tab can render its lifecycle.
+      if (entity.stateMachine) {
+        setSelectedAggregateId(canonicalId);
+      }
+      if (!sidebarManuallyClosed) {
+        setIsSidebarOpen(true);
+      }
+      // No popup in fullscreen
+      setActiveNodePopup(null);
+    } else {
+      if (typeof x === 'number' && typeof y === 'number') {
         setActiveNodePopup({
           nodeId,
           x,
@@ -296,7 +270,7 @@ export function Flowchart({ title, schema = INITIAL_SCHEMA }: FlowchartProps) {
         });
       }
     }
-  }, [activeViewKey, localSchema.entities, localSchema.views, isFullscreen]);
+  }, [activeViewKey, localSchema.entities, localSchema.views, isFullscreen, sidebarManuallyClosed]);
 
   const handleStepClick = (step: FlowchartStepLinear | FlowchartStepBranchOption) => {
     if (activeStep?.id === step.id) {
@@ -427,10 +401,10 @@ export function Flowchart({ title, schema = INITIAL_SCHEMA }: FlowchartProps) {
           isFullscreen={isFullscreen}
           activeNodePopup={activeNodePopup}
           setActiveNodePopup={setActiveNodePopup}
-          setActiveViewKey={setActiveViewKey}
-          activeStateId={activeStateId}
           currentJourneyId={playback.currentJourneyId}
           onEnterFullscreen={() => setIsFullscreen(true)}
+          focusAfterViewSwitch={focusAfterViewSwitch}
+          onCameraFocused={() => setFocusAfterViewSwitch(null)}
         />
 
         {/* Inspector Sidebar */}
@@ -439,9 +413,17 @@ export function Flowchart({ title, schema = INITIAL_SCHEMA }: FlowchartProps) {
             schema={localSchema}
             currentStep={playback.currentStep}
             currentJourneyId={playback.currentJourneyId}
+            selectedNodeId={selectedNodeId ?? undefined}
             selectedAggregateId={selectedAggregateId ?? undefined}
             onAggregateChange={setSelectedAggregateId}
-            onClose={() => setIsSidebarOpen(false)}
+            onSwitchView={(viewKey, nodeId) => {
+              setActiveViewKey(viewKey);
+              setFocusAfterViewSwitch(nodeId);
+            }}
+            onClose={() => {
+              setIsSidebarOpen(false);
+              setSidebarManuallyClosed(true);
+            }}
           />
         )}
 

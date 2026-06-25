@@ -69,19 +69,22 @@ test.describe('Minimal Mode Node Popup', () => {
     await expect(page.getByTestId('flowchart-node-popup-enter-fullscreen')).toBeVisible();
   });
 
-  test('fullscreen mode detailed popup still works for multi-view nodes', async ({ page }) => {
+  test('fullscreen mode opens Details sidebar (no popup) for multi-view nodes', async ({ page }) => {
     await page.getByTestId('flowchart-fullscreen-toggle').click();
 
     const section = page.getByTestId('flowchart-section');
     expect(await section.getAttribute('class')).toContain('fullscreen');
 
     const orchNode = page.getByTestId('flowchart-node-EVENT_STORMING-orch_agent');
-    await orchNode.click();
+    await orchNode.click({ force: true });
 
-    const popup = page.getByTestId('flowchart-node-popup');
-    await expect(popup).toBeVisible();
+    // No floating popup in fullscreen
+    await expect(page.getByTestId('flowchart-node-popup')).not.toBeVisible();
 
-    await expect(page.getByText('Related Views')).toBeVisible();
+    // Sidebar opens with Details tab active and Related Views listed
+    await expect(page.getByTestId('inspector-sidebar')).toBeVisible();
+    await expect(page.getByTestId('inspector-tab-details')).toHaveClass(/active/);
+    await expect(page.getByTestId('details-related-views')).toBeVisible();
   });
 
   test('node shows pointer cursor in minimal mode', async ({ page }) => {

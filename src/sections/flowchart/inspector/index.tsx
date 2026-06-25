@@ -1,7 +1,7 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import { StateMachineWidget } from './state-machine-widget';
 import { JsonPayloadViewer } from './json-payload-viewer';
-import { PROCESS_GROUP_STATE_MAP } from '../types';
+import { PROCESS_GROUP_STATE_MAP, STEP_EVENT_TO_STATE_MAP } from '../types';
 import type {
   UnifiedFlowchartSchema,
   FlowchartStep,
@@ -9,14 +9,16 @@ import type {
   FlowchartStateMachine,
 } from '../types';
 
-export type InspectorTab = 'state-machine' | 'payload';
+export type InspectorTab = 'details' | 'state-machine' | 'payload';
 
 export interface InspectorSidebarProps {
   schema: UnifiedFlowchartSchema;
   currentStep: number;
   currentJourneyId: string;
+  selectedNodeId?: string | null;
   selectedAggregateId?: string | null;
   onAggregateChange?: (id: string) => void;
+  onSwitchView?: (viewKey: string, nodeId: string) => void;
   onClose: () => void;
 }
 
@@ -24,13 +26,14 @@ export function InspectorSidebar({
   schema,
   currentStep,
   currentJourneyId,
+  selectedNodeId,
   selectedAggregateId: controlledAggregateId,
   onAggregateChange,
+  onSwitchView,
   onClose,
 }: InspectorSidebarProps) {
-  const [activeTab, setActiveTab] = useState<InspectorTab>('state-machine');
+  const [activeTab, setActiveTab] = useState<InspectorTab>('details');
 
-  // Derive list of entities that have a stateMachine definition
   const smEntities = useMemo(() => {
     const result: { id: string; title: string; stateMachine: FlowchartStateMachine }[] = [];
     for (const [id, entity] of Object.entries(schema.entities)) {
@@ -41,39 +44,40 @@ export function InspectorSidebar({
     return result;
   }, [schema.entities]);
 
-  // Controlled or uncontrolled aggregate selection
   const [internalAggregateId, setInternalAggregateId] = useState<string | null>(null);
   const resolvedAggregateId = controlledAggregateId !== undefined
     ? controlledAggregateId
     : internalAggregateId;
 
   // Auto-select first aggregate on mount if none selected
-  useEffect(() => {
-    if (!internalAggregateId && smEntities.length > 0) {
-      setInternalAggregateId(smEntities[0].id);
-    }
-  }, [internalAggregateId, smEntities]);
+  if (!internalAggregateId && smEntities.length > 0 && !controlledAggregateId) {
+    setInternalAggregateId(smEntities[0].id);
+  }
 
   const selectedEntity = useMemo(() => {
     if (!resolvedAggregateId) return null;
     return schema.entities[resolvedAggregateId] || null;
   }, [resolvedAggregateId, schema.entities]);
 
-  // Derive current step data for state machine and JSON payload
   const currentStepData = useMemo(() => {
     const journey = schema.journeys.find(j => j.id === currentJourneyId);
     if (!journey || currentStep < 0) return null;
     return journey.steps[currentStep] as FlowchartStep | undefined;
   }, [schema, currentJourneyId, currentStep]);
 
-  // Determine active state from process group
   const activeStateId = useMemo(() => {
     if (!currentStepData) return null;
-    if (!currentStepData.processGroup) return null;
-    return PROCESS_GROUP_STATE_MAP[currentStepData.processGroup] ?? null;
+    // Try direct event-node → state mapping first, then fall back to processGroup.
+    const matchedNodeId = currentStepData.nodeIds?.find(id => !!STEP_EVENT_TO_STATE_MAP[id]);
+    if (matchedNodeId) {
+      return STEP_EVENT_TO_STATE_MAP[matchedNodeId];
+    }
+    if (currentStepData.processGroup) {
+      return PROCESS_GROUP_STATE_MAP[currentStepData.processGroup] ?? null;
+    }
+    return null;
   }, [currentStepData]);
 
-  // Get the highlighted entity for JSON payload display
   const payloadEntity = useMemo((): FlowchartEntity | null => {
     if (!currentStepData) return null;
     const nodeId = currentStepData.nodeIds?.[0] || currentStepData.nodeId;
@@ -95,10 +99,73 @@ export function InspectorSidebar({
     onAggregateChange?.(id);
   };
 
+  // Resolve the entity to show in Details tab
+  const detailsEntity = useMemo((): FlowchartEntity | null => {
+    if (selectedNodeId) {
+      let entity = schema.entities[selectedNodeId];
+      if (!entity) return null;
+      if (entity.collapsedTo) {
+        const canonical = schema.entities[entity.collapsedTo];
+        if (canonical) {
+          entity = {
+            ...canonical,
+            ...entity,
+            stateMachine: entity.stateMachine || canonical.stateMachine,
+            viewTypes: {
+              ...canonical.viewTypes,
+              ...entity.viewTypes
+            }
+          };
+        }
+      }
+      return entity;
+    }
+    // Fall back to current playback step's node
+    if (currentStepData) {
+      const nodeId = currentStepData.nodeIds?.[0] || currentStepData.nodeId;
+      if (nodeId) {
+        return schema.entities[nodeId] || null;
+      }
+    }
+    return null;
+  }, [selectedNodeId, schema.entities, currentStepData]);
+
+  // Derive related views for the selected entity
+  const relatedViews = useMemo(() => {
+    if (!detailsEntity || !onSwitchView) return [];
+    const viewTypes = detailsEntity.viewTypes || {};
+    return Object.keys(viewTypes)
+      .filter(vk => {
+        if (!schema.views[vk]) return false;
+        if (vk === 'STATE_MACHINE') return false;
+        return true;
+      })
+      .map(vk => ({
+        key: vk,
+        name: schema.views[vk].name
+      }));
+  }, [detailsEntity, schema.views, onSwitchView]);
+
   const tabs: { id: InspectorTab; label: string }[] = [
+    { id: 'details', label: 'Details' },
     { id: 'state-machine', label: 'States' },
     { id: 'payload', label: 'Payload' },
   ];
+
+  const handleRelatedViewClick = (viewKey: string) => {
+    if (onSwitchView && detailsEntity) {
+      onSwitchView(viewKey, selectedNodeId || '');
+    }
+  };
+
+  // A state can link to the STATE_MACHINE view when that view exists and a
+  // state-machine aggregate is selected.
+  const canLinkToStateMachine = !!onSwitchView && !!schema.views['STATE_MACHINE'] && !!resolvedAggregateId;
+
+  const handleStateClick = (stateId: string) => {
+    if (!onSwitchView || !resolvedAggregateId) return;
+    onSwitchView('STATE_MACHINE', `${resolvedAggregateId}_state_${stateId}`);
+  };
 
   return (
     <div className="flowchart-sidebar active inspector-sidebar" data-testid="inspector-sidebar">
@@ -123,6 +190,66 @@ export function InspectorSidebar({
         </button>
       </div>
       <div className="flowchart-sidebar-content">
+        {activeTab === 'details' && (
+          <div className="inspector-widget-container" data-testid="inspector-widget-details">
+            {detailsEntity ? (
+              <>
+                <div className="flowchart-sidebar-section-header">
+                  <h2>{detailsEntity.title}</h2>
+                </div>
+                {detailsEntity.desc && (
+                  <div data-testid="details-description">
+                    <p style={{ margin: 0, fontSize: '11px', lineHeight: '1.5', color: 'var(--ctp-subtext1)' }}>
+                      {detailsEntity.desc}
+                    </p>
+                  </div>
+                )}
+                {relatedViews.length > 0 && (
+                  <div style={{ marginTop: '12px', borderTop: '1px solid var(--border-light)', paddingTop: '8px' }}>
+                    <div style={{ fontSize: '9px', fontWeight: 'bold', color: 'var(--ctp-overlay1)', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '6px' }}>
+                      Related Views
+                    </div>
+                    <div data-testid="details-related-views" style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                      {relatedViews.map(v => (
+                        <button
+                          key={v.key}
+                          onClick={() => handleRelatedViewClick(v.key)}
+                          data-testid={`details-related-view-${v.key}`}
+                          style={{
+                            background: 'var(--ctp-surface0)',
+                            border: '1px solid var(--border-light)',
+                            borderRadius: '4px',
+                            color: 'var(--ctp-text)',
+                            padding: '6px 10px',
+                            fontSize: '11px',
+                            textAlign: 'left',
+                            cursor: 'pointer',
+                            transition: 'all 0.15s ease'
+                          }}
+                          onMouseEnter={(e) => {
+                            (e.target as HTMLElement).style.borderColor = 'var(--ctp-blue)';
+                          }}
+                          onMouseLeave={(e) => {
+                            (e.target as HTMLElement).style.borderColor = 'var(--border-light)';
+                          }}
+                        >
+                          {v.name}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </>
+            ) : (
+              <div data-testid="details-empty">
+                <p style={{ margin: 0, fontSize: '11px', color: 'var(--ctp-subtext1)' }}>
+                  Select a node to view details
+                </p>
+              </div>
+            )}
+          </div>
+        )}
+
         {activeTab === 'state-machine' && (
           <div className="inspector-widget-container" data-testid="inspector-widget-state-machine">
             {smEntities.length > 1 && (
@@ -154,6 +281,7 @@ export function InspectorSidebar({
                 <StateMachineWidget
                   stateMachine={selectedEntity.stateMachine}
                   activeStateId={activeStateId}
+                  onStateClick={canLinkToStateMachine ? handleStateClick : undefined}
                 />
                 {!currentStepData && (
                   <div className="inspector-state-hint" data-testid="state-machine-hint">

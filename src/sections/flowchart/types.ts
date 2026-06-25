@@ -13,39 +13,38 @@ export const TYPES = {
   DATA_OBJECT: 'Data Object', DECISION: 'Decision'
 } as const;
 
-export const COLORS = {
-  [TYPES.EVENT]:       '#64575f', // surface0 + peach
-  [TYPES.COMMAND]:     '#505977', // surface0 + blue
-  [TYPES.AGGREGATE]:   '#51576d', // surface1 (neutral)
-  [TYPES.POLICY]:      '#5c5775', // surface0 + mauve
-  [TYPES.READ_MODEL]:  '#595c77', // surface0 + lavender
-  [TYPES.USER]:        '#625f64', // surface0 + yellow
-  [TYPES.EXTERNAL]:    '#556163', // surface0 + green
-  [TYPES.HOTSPOT]:     '#625162', // surface0 + red
-  [TYPES.SERVICE]:     '#4f5e73', // surface0 + sapphire
-  [TYPES.DATABASE]:    '#4e5f6d', // surface0 + teal
-  [TYPES.PROCESS]:     '#536173', // surface0 + sky
-  [TYPES.DATA_OBJECT]: '#655c75', // surface0 + pink
-  [TYPES.DECISION]:    '#635666', // surface0 + maroon
-  default:             '#414559'  // surface0
+/**
+ * Per-type accent token (CSS custom property) for each node type.
+ * Colors resolve from the active theme's --ctp-* palette, so the
+ * flowchart re-themes automatically. Node fills are a light tint of
+ * the accent over the theme surface (via color-mix); borders use the
+ * accent directly.
+ */
+const ACCENT_VARS = {
+  [TYPES.EVENT]:       'var(--ctp-peach)',
+  [TYPES.COMMAND]:     'var(--ctp-blue)',
+  [TYPES.AGGREGATE]:   'var(--ctp-surface2)',
+  [TYPES.POLICY]:      'var(--ctp-mauve)',
+  [TYPES.READ_MODEL]:  'var(--ctp-lavender)',
+  [TYPES.USER]:        'var(--ctp-yellow)',
+  [TYPES.EXTERNAL]:    'var(--ctp-green)',
+  [TYPES.HOTSPOT]:     'var(--ctp-red)',
+  [TYPES.SERVICE]:     'var(--ctp-sapphire)',
+  [TYPES.DATABASE]:    'var(--ctp-teal)',
+  [TYPES.PROCESS]:     'var(--ctp-sky)',
+  [TYPES.DATA_OBJECT]: 'var(--ctp-pink)',
+  [TYPES.DECISION]:    'var(--ctp-maroon)',
+  default:             'var(--ctp-surface2)'
 } as const;
 
-export const BORDER_COLORS = {
-  [TYPES.EVENT]:       '#ef9f76', // peach
-  [TYPES.COMMAND]:     '#8caaee', // blue
-  [TYPES.AGGREGATE]:   '#626880', // surface2
-  [TYPES.POLICY]:      '#ca9ee6', // mauve
-  [TYPES.READ_MODEL]:  '#babbf1', // lavender
-  [TYPES.USER]:        '#e5c890', // yellow
-  [TYPES.EXTERNAL]:    '#a6d189', // green
-  [TYPES.HOTSPOT]:     '#e78284', // red
-  [TYPES.SERVICE]:     '#85c1dc', // sapphire
-  [TYPES.DATABASE]:    '#81c8be', // teal
-  [TYPES.PROCESS]:     '#99d1db', // sky
-  [TYPES.DATA_OBJECT]: '#f4b8e4', // pink
-  [TYPES.DECISION]:    '#ea999c', // maroon
-  default:             '#626880'  // surface2
-} as const;
+const tint = (accent: string) =>
+  `color-mix(in srgb, ${accent} 16%, var(--ctp-surface0))`;
+
+export const COLORS = Object.fromEntries(
+  Object.entries(ACCENT_VARS).map(([type, accent]) => [type, tint(accent)])
+) as Record<keyof typeof ACCENT_VARS, string>;
+
+export const BORDER_COLORS = ACCENT_VARS;
 
 export const ICONS = {
   [TYPES.EVENT]: 'Zap', [TYPES.COMMAND]: 'Terminal', [TYPES.AGGREGATE]: 'Database', 
@@ -148,6 +147,38 @@ export const PROCESS_GROUP_STATE_MAP: Record<ProcessGroup, string> = {
   execution: 'EXECUTING',
   evaluation: 'EVALUATING',
   escalation: 'ESCALATED',
+};
+
+/** Maps a journey step's event node id to the corresponding state-machine state id. */
+export const STEP_EVENT_TO_STATE_MAP: Record<string, string> = {
+  evt_order_placed: 'PENDING',
+  evt_inventory_locked: 'INVENTORY_LOCKED',
+  evt_payment_authorized: 'PAYMENT_AUTHORIZED',
+  evt_fraud_evaluated: 'FRAUD_CLEARED',
+  evt_fraud_flagged: 'FRAUD_REVIEW',
+  evt_review_decision: 'FRAUD_REVIEW',
+  evt_order_confirmed: 'CONFIRMED',
+  evt_order_approved: 'CONFIRMED',
+  evt_order_cancelled: 'CANCELLED',
+
+  evt_uploaded: 'QUEUED',
+  evt_extracted: 'EXTRACTING',
+  evt_validated: 'VALIDATING',
+  evt_approved: 'HIGH_CONFIDENCE',
+  evt_flagged: 'LOW_CONFIDENCE',
+  evt_audited: 'AUDITED',
+  evt_completed: 'COMPLETED',
+
+  evt_goal: 'IDLE',
+  evt_plan: 'PLANNING',
+  evt_exec: 'EXECUTING',
+  evt_eval: 'EVALUATING',
+  evt_escalate: 'ESCALATED',
+
+  evt_started: 'IDLE',
+  evt_reasoned: 'THINKING',
+  evt_tool_executed: 'EXECUTING_TOOL',
+  evt_done: 'COMPLETED'
 };
 
 export interface FlowchartStateMachineState {
