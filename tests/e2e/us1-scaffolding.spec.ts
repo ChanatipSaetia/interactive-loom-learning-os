@@ -1,37 +1,40 @@
 import { test, expect } from '@playwright/test'
 
 test.describe('US-1: Scaffolding + Shell', () => {
-  test('navigates to home page and finds sidebar with topic links', async ({ page }) => {
+  test('navigates to home page and finds topnav with topic links', async ({ page }) => {
     await page.goto('/')
 
     await expect(page).toHaveTitle('Interactive Loom Learning OS')
 
-    await expect(page.locator('.sidebar')).toBeVisible()
-    await expect(page.locator('.sidebar-title')).toHaveText('Learning OS')
+    await expect(page.locator('.topnav')).toBeVisible()
+    await expect(page.locator('.topnav-title')).toHaveText('Learning OS')
 
-    const overviewLink = page.locator('.sidebar-link-home')
+    const overviewLink = page.locator('.topnav-link').first()
     await expect(overviewLink).toBeVisible()
     await expect(overviewLink).toHaveText('Overview')
 
-    const topicLinks = page.locator('.sidebar-link:not(.sidebar-link-home)')
-    await expect(topicLinks).toHaveCount(2)
-    await expect(topicLinks.first()).toHaveText('REST API vs WebSocket')
+    const allLinks = page.locator('.topnav-link')
+    await expect(allLinks).toHaveCount(7)
+
+    const topicLinks = page.locator('.topnav-link').nth(1)
+    await expect(page.locator('.topnav-link').filter({ hasNot: page.getByText('Overview') })).toHaveCount(6)
+    await expect(topicLinks).toHaveText('AI Agent Architecture (Demo)')
 
     await expect(page.locator('.overview-page')).toBeVisible()
     await expect(page.locator('.overview-page-title')).toHaveText('Interactive Learning Platform')
 
     const topicLink = page.getByTestId('topic-link-demo')
     await expect(topicLink).toBeVisible()
-    await expect(topicLink).toHaveText('REST API vs WebSocket')
+    await expect(topicLink).toHaveText('AI Agent Architecture (Demo)')
   })
 
-  test('sidebar Overview link is active on home page', async ({ page }) => {
+  test('topnav Overview link is active on home page', async ({ page }) => {
     await page.goto('/')
-    const overviewLink = page.locator('.sidebar-link-home')
-    await expect(overviewLink).toHaveClass(/sidebar-link-active/)
+    const overviewLink = page.locator('.topnav-link').first()
+    await expect(overviewLink).toHaveClass(/topnav-link-active/)
   })
 
-  test('sidebar topic link navigates to topic page', async ({ page }) => {
+  test('topnav topic link navigates to topic page', async ({ page }) => {
     await page.goto('/')
     await page.getByTestId('topic-link-demo').click()
     await expect(page).toHaveURL('/#/demo/ai-agent')

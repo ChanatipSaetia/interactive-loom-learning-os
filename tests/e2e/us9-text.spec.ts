@@ -4,45 +4,45 @@ test.describe('US-9: Text Section', () => {
   test('renders text section with paragraphs', async ({ page }) => {
     await page.goto('/#/demo/ai-agent')
 
-    const textSection = page.getByTestId('text-section')
+    const textSection = page.getByTestId('text-section').first()
     await expect(textSection).toBeVisible()
 
-    const firstParagraph = page.getByTestId('text-paragraph-0')
+    const firstParagraph = textSection.locator('[data-testid="text-paragraph-0"]')
     await expect(firstParagraph).toBeVisible()
   })
 
   test('renders section title and heading', async ({ page }) => {
     await page.goto('/#/demo/ai-agent')
 
-    await expect(page.getByTestId('text-title')).toBeVisible()
-    await expect(page.getByTestId('text-title')).toHaveText('What is REST?')
+    const firstSection = page.getByTestId('text-section').first()
+    await expect(firstSection.locator('[data-testid="text-title"]')).toBeVisible()
+    await expect(firstSection.locator('[data-testid="text-title"]')).toHaveText('What is an AI Agent?')
 
-    await expect(page.getByTestId('text-heading')).toBeVisible()
-    await expect(page.getByTestId('text-heading')).toHaveText('Representational State Transfer')
+    await expect(firstSection.locator('[data-testid="text-heading"]')).toBeVisible()
+    await expect(firstSection.locator('[data-testid="text-heading"]')).toHaveText('Autonomous Goal-Directed Systems')
   })
 
-  test('renders inline code with monospace styling', async ({ page }) => {
+  test('renders paragraph content about AI agents', async ({ page }) => {
     await page.goto('/#/demo/ai-agent')
 
-    const codes = page.getByTestId('text-inline-code')
-    await expect(codes.first()).toBeVisible()
-    await expect(codes.first()).toHaveText('GET')
-  })
+    const firstSection = page.getByTestId('text-section').first()
 
-  test('renders links with action-blue styling', async ({ page }) => {
-    await page.goto('/#/demo/ai-agent')
+    const firstParagraph = firstSection.locator('[data-testid="text-paragraph-0"]')
+    await expect(firstParagraph).toContainText('AI agent')
 
-    const link = page.getByTestId('text-link')
-    await expect(link).toBeVisible()
-    await expect(link).toHaveText('RESTful API Guide')
-    await expect(link).toHaveAttribute('href', 'https://restfulapi.net')
+    const secondParagraph = firstSection.locator('[data-testid="text-paragraph-1"]')
+    await expect(secondParagraph).toContainText('large language model')
+
+    const thirdParagraph = firstSection.locator('[data-testid="text-paragraph-2"]')
+    await expect(thirdParagraph).toContainText('orchestration strategy')
   })
 
   test('renders multiple paragraphs', async ({ page }) => {
     await page.goto('/#/demo/ai-agent')
 
-    await expect(page.getByTestId('text-paragraph-0')).toBeVisible()
-    await expect(page.getByTestId('text-paragraph-1')).toBeVisible()
-    await expect(page.getByTestId('text-paragraph-2')).toBeVisible()
+    const firstSection = page.getByTestId('text-section').first()
+    await expect(firstSection.locator('[data-testid="text-paragraph-0"]')).toBeVisible()
+    await expect(firstSection.locator('[data-testid="text-paragraph-1"]')).toBeVisible()
+    await expect(firstSection.locator('[data-testid="text-paragraph-2"]')).toBeVisible()
   })
 })
