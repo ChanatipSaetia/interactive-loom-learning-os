@@ -837,5 +837,134 @@ describe('Flowchart minimal mode node popup', () => {
   });
 });
 
+describe('Flowchart inspector sidebar', () => {
+  beforeEach(() => {
+    SectionRegistry.clear();
+    vi.useFakeTimers();
+  });
 
+  afterEach(() => {
+    vi.useRealTimers();
+  });
+
+  const smSchema: UnifiedFlowchartSchema = {
+    entities: {
+      user: { title: 'User', desc: 'A user actor.', viewTypes: { EVENT_STORMING: 'Actor' } },
+      orchestrator: {
+        title: 'Orchestrator',
+        desc: 'Main orchestrator',
+        viewTypes: { EVENT_STORMING: 'Aggregate' },
+        stateMachine: {
+          states: [
+            { id: 'IDLE', label: 'Idle', color: '#838ba7' },
+            { id: 'THINKING', label: 'Thinking', color: '#8caaee' },
+          ],
+          initialState: 'IDLE',
+        },
+      },
+      llm: { title: 'LLM', desc: 'Language model.', viewTypes: { EVENT_STORMING: 'Read Model' } },
+    },
+    relations: [],
+    views: {
+      EVENT_STORMING: {
+        name: 'Event Storming',
+        icon: 'Component',
+        nodes: [
+          { id: 'user', grid: [0, 2] },
+          { id: 'orchestrator', grid: [1, 2] },
+          { id: 'llm', grid: [2, 2] },
+        ],
+        groups: [],
+      },
+    },
+    journeys: [
+      {
+        id: 'j1',
+        label: 'Test Journey',
+        steps: [
+          { nodeId: 'user', description: 'Step 1' },
+          { nodeId: 'orchestrator', description: 'Step 2' },
+        ],
+      },
+    ],
+  };
+
+  it('does not render sidebar toggle outside fullscreen', () => {
+    render(<Flowchart title="Test" schema={smSchema} />, { wrapper });
+    expect(screen.queryByTestId('flowchart-sidebar-toggle')).not.toBeInTheDocument();
+  });
+
+  it('renders sidebar toggle button in fullscreen mode', () => {
+    render(<Flowchart title="Test" schema={smSchema} />, { wrapper });
+    fireEvent.click(screen.getByTestId('flowchart-fullscreen-toggle'));
+    expect(screen.getByTestId('flowchart-sidebar-toggle')).toBeInTheDocument();
+  });
+
+  it('clicking sidebar toggle opens inspector sidebar', () => {
+    render(<Flowchart title="Test" schema={smSchema} />, { wrapper });
+    fireEvent.click(screen.getByTestId('flowchart-fullscreen-toggle'));
+
+    expect(screen.queryByTestId('inspector-sidebar')).not.toBeInTheDocument();
+
+    fireEvent.click(screen.getByTestId('flowchart-sidebar-toggle'));
+    expect(screen.getByTestId('inspector-sidebar')).toBeInTheDocument();
+  });
+
+  it('clicking sidebar toggle again closes inspector sidebar', () => {
+    render(<Flowchart title="Test" schema={smSchema} />, { wrapper });
+    fireEvent.click(screen.getByTestId('flowchart-fullscreen-toggle'));
+    fireEvent.click(screen.getByTestId('flowchart-sidebar-toggle'));
+
+    expect(screen.getByTestId('inspector-sidebar')).toBeInTheDocument();
+
+    fireEvent.click(screen.getByTestId('flowchart-sidebar-toggle'));
+    expect(screen.queryByTestId('inspector-sidebar')).not.toBeInTheDocument();
+  });
+
+  it('closing inspector sidebar via close button works', () => {
+    render(<Flowchart title="Test" schema={smSchema} />, { wrapper });
+    fireEvent.click(screen.getByTestId('flowchart-fullscreen-toggle'));
+    fireEvent.click(screen.getByTestId('flowchart-sidebar-toggle'));
+
+    expect(screen.getByTestId('inspector-sidebar')).toBeInTheDocument();
+
+    fireEvent.click(screen.getByTestId('inspector-close'));
+    expect(screen.queryByTestId('inspector-sidebar')).not.toBeInTheDocument();
+  });
+
+  it('inspector sidebar shows state machine tab by default', () => {
+    render(<Flowchart title="Test" schema={smSchema} />, { wrapper });
+    fireEvent.click(screen.getByTestId('flowchart-fullscreen-toggle'));
+    fireEvent.click(screen.getByTestId('flowchart-sidebar-toggle'));
+
+    expect(screen.getByTestId('inspector-tab-state-machine')).toHaveClass('active');
+    expect(screen.getByTestId('inspector-widget-state-machine')).toBeInTheDocument();
+  });
+
+  it('inspector sidebar shows state machine states', () => {
+    render(<Flowchart title="Test" schema={smSchema} />, { wrapper });
+    fireEvent.click(screen.getByTestId('flowchart-fullscreen-toggle'));
+    fireEvent.click(screen.getByTestId('flowchart-sidebar-toggle'));
+
+    expect(screen.getByTestId('inspector-sidebar')).toBeInTheDocument();
+    // State machine widget is rendered in the sidebar
+    const sidebar = screen.getByTestId('inspector-sidebar');
+    expect(sidebar.querySelector('[data-testid="state-machine-widget"]')).toBeTruthy();
+  });
+
+  it('clicking node with stateMachine opens sidebar and selects aggregate', () => {
+    render(<Flowchart title="Test" schema={smSchema} />, { wrapper });
+    fireEvent.click(screen.getByTestId('flowchart-fullscreen-toggle'));
+
+    expect(screen.queryByTestId('inspector-sidebar')).not.toBeInTheDocument();
+
+    const orchNode = screen.getByTestId('flowchart-node-EVENT_STORMING-orchestrator');
+    fireEvent.click(orchNode);
+
+    expect(screen.getByTestId('inspector-sidebar')).toBeInTheDocument();
+    // State machine appears in both sidebar and popup, so use getAllByTestId
+    const idleStates = screen.getAllByTestId('state-IDLE');
+    expect(idleStates.length).toBeGreaterThanOrEqual(1);
+  });
+});
 

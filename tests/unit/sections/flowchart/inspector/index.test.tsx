@@ -16,6 +16,15 @@ const mockStateMachine = {
   initialState: 'IDLE',
 };
 
+const mockStateMachine2 = {
+  states: [
+    { id: 'PENDING', label: 'Pending', color: '#838ba7' },
+    { id: 'PROCESSING', label: 'Processing', color: '#8caaee' },
+    { id: 'COMPLETED', label: 'Completed', color: '#a6d189' },
+  ],
+  initialState: 'PENDING',
+};
+
 const mockEntityWithPayload: FlowchartEntity = {
   title: 'Goal Submitted',
   desc: 'Test entity',
@@ -54,6 +63,41 @@ const mockSchema = {
         { nodeIds: ['evt_goal'], description: 'Goal step' },
         { nodeIds: ['orchestrator'], description: 'Planning step', processGroup: 'planning' },
         { nodeIds: ['orchestrator'], description: 'Execution step', processGroup: 'execution' },
+      ],
+    },
+  ],
+};
+
+// Schema with multiple aggregates that have stateMachine
+const multiAggSchema: UnifiedFlowchartSchema = {
+  entities: {
+    order_service: {
+      title: 'Order Service',
+      desc: 'Core order orchestration',
+      viewTypes: { EVENT_STORMING: 'Aggregate' },
+      stateMachine: mockStateMachine,
+    },
+    inventory_service: {
+      title: 'Inventory Service',
+      desc: 'Stock management',
+      viewTypes: { EVENT_STORMING: 'Aggregate' },
+      stateMachine: mockStateMachine2,
+    },
+    evt_order: {
+      title: 'Order Placed',
+      desc: 'Order event',
+      viewTypes: { EVENT_STORMING: 'Event' },
+    },
+  },
+  relations: [],
+  views: {},
+  journeys: [
+    {
+      id: 'order-journey',
+      label: 'Order Journey',
+      steps: [
+        { nodeIds: ['evt_order'], description: 'Order placed' },
+        { nodeIds: ['order_service'], description: 'Processing', processGroup: 'execution' },
       ],
     },
   ],
@@ -121,7 +165,7 @@ describe('InspectorSidebar', () => {
         schema={mockSchema as UnifiedFlowchartSchema}
         currentStep={-1}
         currentJourneyId="test-journey"
-         onClose={onClose}
+        onClose={onClose}
       />
     );
     expect(screen.getByTestId('inspector-sidebar')).toBeTruthy();
@@ -135,7 +179,7 @@ describe('InspectorSidebar', () => {
         schema={mockSchema as UnifiedFlowchartSchema}
         currentStep={-1}
         currentJourneyId="test-journey"
-         onClose={onClose}
+        onClose={onClose}
       />
     );
     const payloadTab = screen.getByTestId('inspector-tab-payload');
@@ -149,7 +193,7 @@ describe('InspectorSidebar', () => {
         schema={mockSchema as UnifiedFlowchartSchema}
         currentStep={0}
         currentJourneyId="test-journey"
-         onClose={onClose}
+        onClose={onClose}
       />
     );
     const payloadTab = screen.getByTestId('inspector-tab-payload');
@@ -163,7 +207,7 @@ describe('InspectorSidebar', () => {
         schema={mockSchema as UnifiedFlowchartSchema}
         currentStep={1}
         currentJourneyId="test-journey"
-         onClose={onClose}
+        onClose={onClose}
       />
     );
     expect(screen.getByTestId('state-PLANNING')).toHaveClass('inspector-state-active');
@@ -175,11 +219,125 @@ describe('InspectorSidebar', () => {
         schema={mockSchema as UnifiedFlowchartSchema}
         currentStep={-1}
         currentJourneyId="test-journey"
-         onClose={onClose}
+        onClose={onClose}
       />
     );
     const closeBtn = screen.getByTestId('inspector-close');
     fireEvent.click(closeBtn);
     expect(onClose).toHaveBeenCalled();
+  });
+
+  // New tests for aggregate dropdown
+  it('shows aggregate dropdown when multiple aggregates have stateMachine', () => {
+    render(
+      <InspectorSidebar
+        schema={multiAggSchema}
+        currentStep={-1}
+        currentJourneyId="order-journey"
+        onClose={onClose}
+      />
+    );
+    const select = screen.getByTestId('inspector-aggregate-select');
+    expect(select).toBeTruthy();
+    expect(select).toHaveValue('order_service');
+  });
+
+  it('shows aggregate dropdown with single option when one aggregate has stateMachine', () => {
+    render(
+      <InspectorSidebar
+        schema={mockSchema as UnifiedFlowchartSchema}
+        currentStep={-1}
+        currentJourneyId="test-journey"
+        onClose={onClose}
+      />
+    );
+    const select = screen.getByTestId('inspector-aggregate-select') as HTMLSelectElement;
+    expect(select).toBeTruthy();
+    expect(select.options).toHaveLength(1);
+    expect(select.options[0].text).toBe('Orchestrator');
+  });
+
+  it('renders all aggregates in dropdown', () => {
+    render(
+      <InspectorSidebar
+        schema={multiAggSchema}
+        currentStep={-1}
+        currentJourneyId="order-journey"
+        onClose={onClose}
+      />
+    );
+    const select = screen.getByTestId('inspector-aggregate-select') as HTMLSelectElement;
+    expect(select.options).toHaveLength(2);
+    expect(select.options[0].text).toBe('Order Service');
+    expect(select.options[1].text).toBe('Inventory Service');
+  });
+
+  it('switching aggregate updates state machine display', () => {
+    const onAggregateChange = vi.fn();
+    render(
+      <InspectorSidebar
+        schema={multiAggSchema}
+        currentStep={-1}
+        currentJourneyId="order-journey"
+        selectedAggregateId="order_service"
+        onAggregateChange={onAggregateChange}
+        onClose={onClose}
+      />
+    );
+
+    expect(screen.getByTestId('state-IDLE')).toBeTruthy();
+    expect(screen.getByTestId('state-PLANNING')).toBeTruthy();
+
+    const select = screen.getByTestId('inspector-aggregate-select') as HTMLSelectElement;
+    fireEvent.change(select, { target: { value: 'inventory_service' } });
+
+    expect(onAggregateChange).toHaveBeenCalledWith('inventory_service');
+  });
+
+  it('controlled selectedAggregateId displays correct state machine', () => {
+    render(
+      <InspectorSidebar
+        schema={multiAggSchema}
+        currentStep={-1}
+        currentJourneyId="order-journey"
+        selectedAggregateId="inventory_service"
+        onClose={onClose}
+      />
+    );
+    expect(screen.getByTestId('state-PENDING')).toBeTruthy();
+    expect(screen.getByTestId('state-PROCESSING')).toBeTruthy();
+    expect(screen.getByTestId('state-COMPLETED')).toBeTruthy();
+    expect(screen.queryByTestId('state-IDLE')).not.toBeInTheDocument();
+  });
+
+  it('calls onAggregateChange when dropdown value changes', () => {
+    const onAggregateChange = vi.fn();
+    render(
+      <InspectorSidebar
+        schema={multiAggSchema}
+        currentStep={-1}
+        currentJourneyId="order-journey"
+        selectedAggregateId="order_service"
+        onAggregateChange={onAggregateChange}
+        onClose={onClose}
+      />
+    );
+
+    const select = screen.getByTestId('inspector-aggregate-select') as HTMLSelectElement;
+    fireEvent.change(select, { target: { value: 'inventory_service' } });
+    expect(onAggregateChange).toHaveBeenCalledWith('inventory_service');
+  });
+
+  it('shows state machine hint when no step data', () => {
+    render(
+      <InspectorSidebar
+        schema={mockSchema as UnifiedFlowchartSchema}
+        currentStep={-1}
+        currentJourneyId="test-journey"
+        onClose={onClose}
+      />
+    );
+    expect(screen.getByTestId('state-machine-hint')).toBeTruthy();
+    expect(screen.getByTestId('state-machine-hint')).toHaveTextContent('Advance playback to see state transitions');
   });
 });

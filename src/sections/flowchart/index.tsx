@@ -6,10 +6,12 @@ import { PlaybackControls } from './playback-controls';
 import { StepCarousel } from './step-carousel';
 import { usePlaybackState } from './usePlaybackState';
 import { autoDeriveViews } from './derivations';
+import { InspectorSidebar } from './inspector';
 
 const Maximize = Icons.Maximize2;
 const Minimize = Icons.Minimize2;
 const X = Icons.X;
+const PanelRight = Icons.PanelRight;
 
 import {
   TYPES,
@@ -225,6 +227,10 @@ export function Flowchart({ title, schema = INITIAL_SCHEMA }: FlowchartProps) {
   // Fullscreen mode state
   const [isFullscreen, setIsFullscreen] = useState(false);
 
+  // Inspector sidebar state
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [selectedAggregateId, setSelectedAggregateId] = useState<string | null>(null);
+
   useEffect(() => {
     if (!isFullscreen) return;
     const handler = (e: KeyboardEvent) => {
@@ -264,6 +270,12 @@ export function Flowchart({ title, schema = INITIAL_SCHEMA }: FlowchartProps) {
       }));
 
     const hasSM = !!entity.stateMachine;
+
+    // If node has a state machine, update sidebar selection and open sidebar
+    if (hasSM && isFullscreen) {
+      setSelectedAggregateId(nodeId);
+      setIsSidebarOpen(true);
+    }
 
     if (typeof x === 'number' && typeof y === 'number') {
       if (isFullscreen) {
@@ -313,15 +325,27 @@ export function Flowchart({ title, schema = INITIAL_SCHEMA }: FlowchartProps) {
         {title && <h3 className="flowchart-title" data-testid="flowchart-title">{title}</h3>}
 
         <div style={{ display: 'flex', gap: '8px', alignItems: 'center', flexWrap: 'wrap' }}>
-          {/* Fullscreen toggle */}
-          <button
-            className="flowchart-fullscreen-toggle"
-            onClick={() => setIsFullscreen(!isFullscreen)}
-            title={isFullscreen ? 'Exit fullscreen' : 'Enter fullscreen'}
-            data-testid="flowchart-fullscreen-toggle"
-          >
-            {isFullscreen ? <Minimize size={14} /> : <Maximize size={14} />}
-          </button>
+         {/* Fullscreen toggle */}
+           <button
+             className="flowchart-fullscreen-toggle"
+             onClick={() => setIsFullscreen(!isFullscreen)}
+             title={isFullscreen ? 'Exit fullscreen' : 'Enter fullscreen'}
+             data-testid="flowchart-fullscreen-toggle"
+           >
+             {isFullscreen ? <Minimize size={14} /> : <Maximize size={14} />}
+           </button>
+
+           {/* Inspector sidebar toggle */}
+           {isFullscreen && (
+             <button
+               className="flowchart-fullscreen-toggle"
+               onClick={() => setIsSidebarOpen(!isSidebarOpen)}
+               title={isSidebarOpen ? 'Close inspector' : 'Open inspector'}
+               data-testid="flowchart-sidebar-toggle"
+             >
+               <PanelRight size={14} />
+             </button>
+           )}
 
           {/* View tabs */}
           {visibleViewKeys.length > 1 && (
@@ -408,6 +432,18 @@ export function Flowchart({ title, schema = INITIAL_SCHEMA }: FlowchartProps) {
           currentJourneyId={playback.currentJourneyId}
           onEnterFullscreen={() => setIsFullscreen(true)}
         />
+
+        {/* Inspector Sidebar */}
+        {isFullscreen && isSidebarOpen && (
+          <InspectorSidebar
+            schema={localSchema}
+            currentStep={playback.currentStep}
+            currentJourneyId={playback.currentJourneyId}
+            selectedAggregateId={selectedAggregateId ?? undefined}
+            onAggregateChange={setSelectedAggregateId}
+            onClose={() => setIsSidebarOpen(false)}
+          />
+        )}
 
         {activeStep && (
           <button

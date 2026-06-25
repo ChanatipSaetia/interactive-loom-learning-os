@@ -1231,6 +1231,10 @@
   padding: var(--spacing-sm);
 }
 
+/* ---- Aggregate Selector ---- */
+.inspector-aggregate-selector {
+  margin-bottom: var(--spacing-sm);
+}
 
 /* ==========================================================================
    GRID MODAL VIEW (FULL SCREEN / OVERLAY)
@@ -1439,4 +1443,48 @@
 
 .flowchart-fullscreen-exit:hover {
   background: var(--ctp-mantle);
+}
+
+/* ==========================================================================
+   RESPONSIVE — Mobile / Tablet (< 768px)
+   ========================================================================== */
+
+@media (max-width: 767px) {
+  .flowchart-section.fullscreen .inspector-sidebar {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    width: 100%;
+    height: auto;
+    max-height: 60vh;
+    border-left: none;
+    border-top: 1px solid var(--border-light);
+    border-radius: var(--radius-md) var(--radius-md) 0 0;
+    transform: translateY(100%);
+    transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    z-index: 1001;
+    box-shadow: 0 -8px 32px rgba(0, 0, 0, 0.35);
+  }
+
+  .flowchart-section.fullscreen .inspector-sidebar.flowchart-sidebar.active {
+    transform: translateY(0);
+    margin-right: 0;
+  }
+
+  .flowchart-section.fullscreen .inspector-sidebar .flowchart-sidebar-content {
+    max-height: calc(60vh - 48px);
+    overflow-y: auto;
+  }
+
+  /* Bottom sheet handle indicator */
+  .flowchart-section.fullscreen .inspector-sidebar .flowchart-sidebar-tabs::before {
+    content: '';
+    display: block;
+    width: 32px;
+    height: 4px;
+    border-radius: 2px;
+    background: var(--ctp-surface2);
+    margin: 4px auto 0;
+  }
 }
