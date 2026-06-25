@@ -12,7 +12,6 @@ import BulletsSection from './sections/bullets'
 import Flowchart from './sections/flowchart'
 import TradeoffSandboxSection from './sections/tradeoff-sandbox'
 import TaxonomyBrowserSection from './sections/taxonomy-browser'
-import StepByStep from './sections/step-by-step'
 
 // Topic registration
 import DemoTopic from './topics/demo'
@@ -27,8 +26,6 @@ SectionRegistry.register('bullets', BulletsSection as ComponentType<unknown>)
 SectionRegistry.register('flowchart', Flowchart as ComponentType<unknown>)
 SectionRegistry.register('tradeoff-sandbox', TradeoffSandboxSection as ComponentType<unknown>)
 SectionRegistry.register('taxonomy-browser', TaxonomyBrowserSection as ComponentType<unknown>)
-SectionRegistry.register('step-by-step', StepByStep as ComponentType<unknown>)
-
 TopicRegistry.register('demo', DemoTopic)
 TopicRegistry.register('ai-operating-model', AiOperatingModelTopic)
 TopicRegistry.register('ddd', DddTopic)
