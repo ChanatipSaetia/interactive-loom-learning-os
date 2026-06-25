@@ -449,7 +449,10 @@ describe('Flowchart grid coordinate compilation', () => {
     };
 
     render(<Flowchart title="Multi View Test" schema={multiViewSchema} />, { wrapper });
-    
+
+    // Enter fullscreen so detailed popup is shown
+    fireEvent.click(screen.getByTestId('flowchart-fullscreen-toggle'));
+
     // Click on node n1
     const node = screen.getByTestId('flowchart-node-VIEW_A-n1');
     expect(node).toBeInTheDocument();
@@ -539,12 +542,16 @@ describe('Flowchart auto-derivation engine', () => {
 
   it('derives STATE_MACHINE view and verifies that columns are compacted', () => {
     render(<Flowchart title="SM Test" schema={agentSchema} />, { wrapper });
-    
+
+    // Enter fullscreen first so detailed popup is shown
+    fireEvent.click(screen.getByTestId('flowchart-fullscreen-toggle'));
+    expect(screen.getByTestId('flowchart-section')).toHaveClass('fullscreen');
+
     // Switch to State Machine view by clicking the orchestrator node to open popup
     const orchNode = screen.getByTestId('flowchart-node-EVENT_STORMING-orch_agent');
     expect(orchNode).toBeInTheDocument();
     fireEvent.click(orchNode);
-    
+
     const switchBtn = screen.getByText('State Machine');
     expect(switchBtn).toBeInTheDocument();
     fireEvent.click(switchBtn);
@@ -673,6 +680,160 @@ describe('Flowchart fullscreen mode', () => {
   it('fullscreen exit button not visible in normal mode', () => {
     render(<Flowchart title="Test" schema={mockSchema} />, { wrapper });
     expect(screen.queryByTestId('flowchart-fullscreen-exit')).not.toBeInTheDocument();
+  });
+});
+
+describe('Flowchart minimal mode node popup', () => {
+  beforeEach(() => {
+    SectionRegistry.clear();
+    vi.useFakeTimers();
+  });
+
+  afterEach(() => {
+    vi.useRealTimers();
+  });
+
+  const singleViewSchema: UnifiedFlowchartSchema = {
+    entities: {
+      user: { title: 'User', desc: 'A user actor.', viewTypes: { DEFAULT_VIEW: 'Command' } },
+      agent: { title: 'Agent', desc: 'An agent helper.', viewTypes: { DEFAULT_VIEW: 'Aggregate' } },
+      llm: { title: 'LLM', desc: 'A language model.', viewTypes: { DEFAULT_VIEW: 'Read Model' } }
+    },
+    relations: [
+      { id: 'rel_0', from: 'user', to: 'agent', views: ['DEFAULT_VIEW'] },
+      { id: 'rel_1', from: 'agent', to: 'llm', views: ['DEFAULT_VIEW'] }
+    ],
+    views: {
+      DEFAULT_VIEW: {
+        name: 'Test View',
+        icon: 'Workflow',
+        nodes: [
+          { id: 'user', x: 100, y: 150 },
+          { id: 'agent', x: 300, y: 150 },
+          { id: 'llm', x: 500, y: 150 }
+        ],
+        groups: []
+      }
+    },
+    journeys: []
+  };
+
+  it('clicking a node in minimal mode opens simplified popup', () => {
+    render(<Flowchart title="Test" schema={singleViewSchema} />, { wrapper });
+
+    const node = screen.getByTestId('flowchart-node-DEFAULT_VIEW-user');
+    fireEvent.click(node);
+
+    expect(screen.getByTestId('flowchart-node-popup')).toBeInTheDocument();
+    expect(screen.getByTestId('flowchart-node-popup-enter-fullscreen')).toBeInTheDocument();
+    expect(screen.queryByText('Open fullscreen to view details and interactive lifecycle')).toBeInTheDocument();
+  });
+
+  it('minimal popup does not show detailed node information', () => {
+    render(<Flowchart title="Test" schema={singleViewSchema} />, { wrapper });
+
+    const node = screen.getByTestId('flowchart-node-DEFAULT_VIEW-agent');
+    fireEvent.click(node);
+
+    expect(screen.getByTestId('flowchart-node-popup')).toBeInTheDocument();
+    expect(screen.queryByText('Related Views')).not.toBeInTheDocument();
+    expect(screen.queryByText('States / Lifecycle')).not.toBeInTheDocument();
+    expect(screen.queryByText('A agent helper.')).not.toBeInTheDocument();
+  });
+
+  it('minimal popup close button closes popup', () => {
+    render(<Flowchart title="Test" schema={singleViewSchema} />, { wrapper });
+
+    const node = screen.getByTestId('flowchart-node-DEFAULT_VIEW-user');
+    fireEvent.click(node);
+    expect(screen.getByTestId('flowchart-node-popup')).toBeInTheDocument();
+
+    fireEvent.click(screen.getByTestId('flowchart-node-popup-close'));
+    expect(screen.queryByTestId('flowchart-node-popup')).not.toBeInTheDocument();
+  });
+
+  it('enter fullscreen button in popup enters fullscreen mode', () => {
+    render(<Flowchart title="Test" schema={singleViewSchema} />, { wrapper });
+
+    const node = screen.getByTestId('flowchart-node-DEFAULT_VIEW-user');
+    fireEvent.click(node);
+
+    const enterBtn = screen.getByTestId('flowchart-node-popup-enter-fullscreen');
+    fireEvent.click(enterBtn);
+
+    expect(screen.getByTestId('flowchart-section')).toHaveClass('fullscreen');
+    expect(screen.queryByTestId('flowchart-node-popup')).not.toBeInTheDocument();
+  });
+
+  it('minimal popup shows for nodes without cross-view links', () => {
+    render(<Flowchart title="Test" schema={singleViewSchema} />, { wrapper });
+
+    const llmNode = screen.getByTestId('flowchart-node-DEFAULT_VIEW-llm');
+    fireEvent.click(llmNode);
+
+    expect(screen.getByTestId('flowchart-node-popup')).toBeInTheDocument();
+    expect(screen.getByTestId('flowchart-node-popup-enter-fullscreen')).toBeInTheDocument();
+  });
+
+  it('clicking node in fullscreen mode shows detailed popup for multi-view entities', () => {
+    const multiViewSchema: UnifiedFlowchartSchema = {
+      entities: {
+        n1: { title: 'Node 1', desc: 'Node 1 desc', viewTypes: { VIEW_A: 'Event', VIEW_B: 'Service' } }
+      },
+      relations: [],
+      views: {
+        VIEW_A: {
+          name: 'View A',
+          icon: 'Component',
+          nodes: [{ id: 'n1', x: 100, y: 150 }],
+          groups: []
+        },
+        VIEW_B: {
+          name: 'View B',
+          icon: 'Server',
+          nodes: [{ id: 'n1', x: 200, y: 150 }],
+          groups: []
+        }
+      },
+      journeys: []
+    };
+
+    render(<Flowchart title="Multi View Test" schema={multiViewSchema} />, { wrapper });
+
+    fireEvent.click(screen.getByTestId('flowchart-fullscreen-toggle'));
+    expect(screen.getByTestId('flowchart-section')).toHaveClass('fullscreen');
+
+    const node = screen.getByTestId('flowchart-node-VIEW_A-n1');
+    fireEvent.click(node);
+
+    const popup = screen.getByTestId('flowchart-node-popup');
+    expect(popup).toBeInTheDocument();
+    expect(popup).toHaveTextContent('Node 1');
+    expect(popup).toHaveTextContent('Related Views');
+  });
+
+  it('clicking node in fullscreen mode does not open popup for single-view entities', () => {
+    render(<Flowchart title="Test" schema={singleViewSchema} />, { wrapper });
+
+    fireEvent.click(screen.getByTestId('flowchart-fullscreen-toggle'));
+    expect(screen.getByTestId('flowchart-section')).toHaveClass('fullscreen');
+
+    const node = screen.getByTestId('flowchart-node-DEFAULT_VIEW-user');
+    fireEvent.click(node);
+
+    expect(screen.queryByTestId('flowchart-node-popup')).not.toBeInTheDocument();
+  });
+
+  it('minimal popup contains only CTA message and enter fullscreen button', () => {
+    render(<Flowchart title="Test" schema={singleViewSchema} />, { wrapper });
+
+    const node = screen.getByTestId('flowchart-node-DEFAULT_VIEW-user');
+    fireEvent.click(node);
+
+    expect(screen.getByTestId('flowchart-node-popup')).toBeInTheDocument();
+    expect(screen.getByText('Open fullscreen to view details and interactive lifecycle')).toBeInTheDocument();
+    expect(screen.getByTestId('flowchart-node-popup-enter-fullscreen')).toBeInTheDocument();
+    expect(screen.getByText('Enter Fullscreen')).toBeInTheDocument();
   });
 });
 

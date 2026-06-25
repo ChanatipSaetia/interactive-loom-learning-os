@@ -43,6 +43,7 @@ export interface FlowchartViewProps {
   setActiveViewKey: (viewKey: string) => void;
   activeStateId: string | null;
   currentJourneyId?: string;
+  onEnterFullscreen?: () => void;
 }
 
 export function FlowchartView({
@@ -60,7 +61,8 @@ export function FlowchartView({
   setActiveNodePopup,
   setActiveViewKey,
   activeStateId,
-  currentJourneyId
+  currentJourneyId,
+  onEnterFullscreen
 }: FlowchartViewProps) {
   const view = schema.views[viewKey];
   const viewInstanceId = `${instanceId}-${viewKey}`;
@@ -819,10 +821,10 @@ export function FlowchartView({
                        }}
                        onMouseLeave={() => setTooltip(null)}
                        style={{
-                           opacity: isDimmed ? 0.25 : 1,
-                         transition: 'opacity 0.3s, filter 0.3s',
-                         cursor: hasLinks ? 'pointer' : 'default'
-                       }}
+                            opacity: isDimmed ? 0.25 : 1,
+                          transition: 'opacity 0.3s, filter 0.3s',
+                          cursor: (!isFullscreen || hasLinks) ? 'pointer' : 'default'
+                        }}
                      >
                         {viewType === TYPES.DECISION ? (
                           <polygon
@@ -1017,6 +1019,81 @@ export function FlowchartView({
        </div>
 
       {activeNodePopup && activeNodePopup.nodeId && (() => {
+        const popupStyle: React.CSSProperties = {
+          position: 'absolute',
+          left: `${camera.transform.translateX + activeNodePopup.x * camera.transform.scale}px`,
+          top: `${camera.transform.translateY + activeNodePopup.y * camera.transform.scale + 30}px`,
+          transform: 'translateX(-50%)',
+          zIndex: 40,
+          background: 'var(--ctp-crust)',
+          border: '1px solid var(--ctp-blue)',
+          borderRadius: '8px',
+          padding: '12px 14px',
+          boxShadow: '0 8px 32px rgba(0, 0, 0, 0.6)',
+          display: 'flex',
+          flexDirection: 'column',
+          gap: '10px',
+          minWidth: '220px',
+          maxWidth: '320px',
+          maxHeight: '400px',
+          overflowY: 'auto',
+          pointerEvents: 'auto',
+          color: 'var(--ctp-text)',
+        };
+
+        if (!isFullscreen) {
+          return (
+            <div
+              data-testid="flowchart-node-popup"
+              style={popupStyle}
+            >
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', borderBottom: '1px solid var(--border-light)', paddingBottom: '6px' }}>
+                <span style={{ fontSize: '11px', lineHeight: '1.4', color: 'var(--ctp-subtext1)', opacity: 0.9 }}>
+                  Open fullscreen to view details and interactive lifecycle
+                </span>
+                <button
+                  onClick={() => setActiveNodePopup(null)}
+                  data-testid="flowchart-node-popup-close"
+                  style={{
+                    background: 'transparent',
+                    border: 'none',
+                    color: 'var(--ctp-overlay1)',
+                    cursor: 'pointer',
+                    padding: '2px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    flexShrink: 0,
+                    marginLeft: '8px'
+                  }}
+                >
+                  <Icons.X size={12} />
+                </button>
+              </div>
+              <button
+                onClick={() => {
+                  setActiveNodePopup(null);
+                  onEnterFullscreen?.();
+                }}
+                data-testid="flowchart-node-popup-enter-fullscreen"
+                style={{
+                  background: 'var(--ctp-blue)',
+                  border: 'none',
+                  borderRadius: '4px',
+                  color: 'var(--ctp-mantle)',
+                  padding: '6px 12px',
+                  fontSize: '11px',
+                  fontWeight: 'bold',
+                  cursor: 'pointer',
+                  transition: 'all 0.15s ease',
+                  textAlign: 'center'
+                }}
+              >
+                Enter Fullscreen
+              </button>
+            </div>
+          );
+        }
+
         let entity = schema.entities[activeNodePopup.nodeId];
         if (!entity) return null;
 
@@ -1026,41 +1103,21 @@ export function FlowchartView({
             entity = {
               ...canonical,
               ...entity,
-             stateMachine: entity.stateMachine || canonical.stateMachine,
-               viewTypes: {
-                ...canonical.viewTypes,
-                ...entity.viewTypes
-              }
-            };
-          }
-        }
+              stateMachine: entity.stateMachine || canonical.stateMachine,
+                viewTypes: {
+                 ...canonical.viewTypes,
+                 ...entity.viewTypes
+               }
+             };
+           }
+         }
 
         const hasSM = !!entity.stateMachine;
 
         return (
           <div
             data-testid="flowchart-node-popup"
-            style={{
-              position: 'absolute',
-              left: `${camera.transform.translateX + activeNodePopup.x * camera.transform.scale}px`,
-              top: `${camera.transform.translateY + activeNodePopup.y * camera.transform.scale + 30}px`,
-              transform: 'translateX(-50%)',
-              zIndex: 40,
-              background: 'var(--ctp-crust)',
-              border: '1px solid var(--ctp-blue)',
-              borderRadius: '8px',
-              padding: '12px 14px',
-              boxShadow: '0 8px 32px rgba(0, 0, 0, 0.6)',
-              display: 'flex',
-              flexDirection: 'column',
-              gap: '10px',
-              minWidth: '220px',
-              maxWidth: '320px',
-              maxHeight: '400px',
-              overflowY: 'auto',
-              pointerEvents: 'auto',
-              color: 'var(--ctp-text)',
-            }}
+            style={popupStyle}
           >
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', borderBottom: '1px solid var(--border-light)', paddingBottom: '6px' }}>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>

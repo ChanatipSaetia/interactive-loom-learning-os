@@ -236,7 +236,7 @@ export function Flowchart({ title, schema = INITIAL_SCHEMA }: FlowchartProps) {
     return () => document.removeEventListener('keydown', handler);
   }, [isFullscreen]);
 
-  const handleNodeClick = useCallback((nodeId: string, x?: number, y?: number) => {
+ const handleNodeClick = useCallback((nodeId: string, x?: number, y?: number) => {
     let entity = localSchema.entities[nodeId];
     if (!entity) return;
 
@@ -246,14 +246,14 @@ export function Flowchart({ title, schema = INITIAL_SCHEMA }: FlowchartProps) {
         entity = {
           ...canonical,
           ...entity,
-         stateMachine: entity.stateMachine || canonical.stateMachine,
-           viewTypes: {
-            ...canonical.viewTypes,
-            ...entity.viewTypes
-          }
-        };
-      }
-    }
+          stateMachine: entity.stateMachine || canonical.stateMachine,
+            viewTypes: {
+             ...canonical.viewTypes,
+             ...entity.viewTypes
+           }
+         };
+       }
+     }
 
     const otherViews = Object.keys(entity.viewTypes || {})
       .filter(vk => vk !== activeViewKey && localSchema.views[vk])
@@ -265,15 +265,26 @@ export function Flowchart({ title, schema = INITIAL_SCHEMA }: FlowchartProps) {
 
     const hasSM = !!entity.stateMachine;
 
-    if ((otherViews.length > 0 || hasSM) && typeof x === 'number' && typeof y === 'number') {
-      setActiveNodePopup({
-        nodeId,
-        x,
-        y,
-        views: otherViews
-      });
+    if (typeof x === 'number' && typeof y === 'number') {
+      if (isFullscreen) {
+        if (otherViews.length > 0 || hasSM) {
+          setActiveNodePopup({
+            nodeId,
+            x,
+            y,
+            views: otherViews
+          });
+        }
+      } else {
+        setActiveNodePopup({
+          nodeId,
+          x,
+          y,
+          views: otherViews
+        });
+      }
     }
-  }, [activeViewKey, localSchema.entities, localSchema.views]);
+  }, [activeViewKey, localSchema.entities, localSchema.views, isFullscreen]);
 
   const handleStepClick = (step: FlowchartStepLinear | FlowchartStepBranchOption) => {
     if (activeStep?.id === step.id) {
@@ -395,6 +406,7 @@ export function Flowchart({ title, schema = INITIAL_SCHEMA }: FlowchartProps) {
           setActiveViewKey={setActiveViewKey}
           activeStateId={activeStateId}
           currentJourneyId={playback.currentJourneyId}
+          onEnterFullscreen={() => setIsFullscreen(true)}
         />
 
         {activeStep && (
