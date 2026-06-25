@@ -536,6 +536,50 @@ describe('Flowchart auto-derivation engine', () => {
     console.log('--- TEST RENDERED PATHS ---');
     console.log(pathList);
   });
+
+  it('derives STATE_MACHINE view and verifies that columns are compacted', () => {
+    render(<Flowchart title="SM Test" schema={agentSchema} />, { wrapper });
+    
+    // Switch to State Machine view by clicking the orchestrator node to open popup
+    const orchNode = screen.getByTestId('flowchart-node-EVENT_STORMING-orch_agent');
+    expect(orchNode).toBeInTheDocument();
+    fireEvent.click(orchNode);
+    
+    const switchBtn = screen.getByText('State Machine');
+    expect(switchBtn).toBeInTheDocument();
+    fireEvent.click(switchBtn);
+    
+    // Verify State Machine view is rendered
+    expect(screen.getByTestId('flowchart-canvas-STATE_MACHINE')).toBeInTheDocument();
+    
+    const idleNode = screen.getByTestId('flowchart-node-STATE_MACHINE-orchestrator_state_IDLE');
+    const thinkingNode = screen.getByTestId('flowchart-node-STATE_MACHINE-orchestrator_state_THINKING');
+    const delegatingNode = screen.getByTestId('flowchart-node-STATE_MACHINE-orchestrator_state_DELEGATING');
+    
+    expect(idleNode).toBeInTheDocument();
+    expect(thinkingNode).toBeInTheDocument();
+    expect(delegatingNode).toBeInTheDocument();
+    
+    // Verify coordinates are compacted
+    const idleRect = idleNode.querySelector('rect');
+    const thinkingRect = thinkingNode.querySelector('rect');
+    const delegatingRect = delegatingNode.querySelector('rect');
+    
+    expect(idleRect).toBeTruthy();
+    expect(thinkingRect).toBeTruthy();
+    expect(delegatingRect).toBeTruthy();
+    
+    const idleX = parseFloat(idleRect!.getAttribute('x') || '0');
+    const thinkingX = parseFloat(thinkingRect!.getAttribute('x') || '0');
+    const delegatingX = parseFloat(delegatingRect!.getAttribute('x') || '0');
+    
+    // Idle is col 0 -> x = 60 -> rect x = -10
+    // Delegating is col 1 (compacted from 9) -> x = 200 -> rect x = 130
+    // Thinking is col 2 (compacted from 10) -> x = 340 -> rect x = 270
+    expect(idleX).toBe(-10);
+    expect(delegatingX).toBe(130);
+    expect(thinkingX).toBe(270);
+  });
 });
 
 

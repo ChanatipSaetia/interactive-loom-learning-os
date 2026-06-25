@@ -36,6 +36,7 @@ export function useCamera({ positionedNodesRef }: UseCameraOptions): UseCameraRe
   const cameraAnimating = useRef(false);
 
   const [isPanning, setIsPanning] = useState(false);
+  const isPanningRef = useRef(false);
   const panStartRef = useRef({ x: 0, y: 0, baseTranslateX: 0, baseTranslateY: 0 });
   const pinchRef = useRef<PinchState>({ active: false, initialDist: 0, initialScale: 1 });
 
@@ -111,7 +112,7 @@ export function useCamera({ positionedNodesRef }: UseCameraOptions): UseCameraRe
 
   // Interaction handlers
   const handlePointerMove = useCallback((clientX: number, clientY: number) => {
-    if (isPanning) {
+    if (isPanningRef.current) {
       const dx = clientX - panStartRef.current.x;
       const dy = clientY - panStartRef.current.y;
       setTransform(() => ({
@@ -120,9 +121,10 @@ export function useCamera({ positionedNodesRef }: UseCameraOptions): UseCameraRe
         translateY: panStartRef.current.baseTranslateY + dy
       }));
     }
-  }, [isPanning]);
+  }, []);
 
   const handlePointerUp = useCallback(() => {
+    isPanningRef.current = false;
     setIsPanning(false);
     pinchRef.current = { active: false, initialDist: 0, initialScale: 1 };
   }, []);
@@ -160,11 +162,13 @@ export function useCamera({ positionedNodesRef }: UseCameraOptions): UseCameraRe
       const t2 = e.touches[1];
       const dist = Math.hypot(t2.clientX - t1.clientX, t2.clientY - t1.clientY);
       pinchRef.current = { active: true, initialDist: dist, initialScale: transformRef.current.scale };
+      isPanningRef.current = false;
       setIsPanning(false);
       return;
     }
     if (e.touches.length === 1) {
       e.preventDefault();
+      isPanningRef.current = true;
       setIsPanning(true);
       const touch = e.touches[0];
       panStartRef.current = {
@@ -200,15 +204,16 @@ export function useCamera({ positionedNodesRef }: UseCameraOptions): UseCameraRe
       }));
       return;
     }
-    if (e.touches.length === 1 && isPanning) {
+    if (e.touches.length === 1 && isPanningRef.current) {
       e.preventDefault();
       const touch = e.touches[0];
       handlePointerMove(touch.clientX, touch.clientY);
     }
-  }, [handlePointerMove, isPanning]);
+  }, [handlePointerMove]);
 
   const onSvgMouseDown = useCallback((e: React.MouseEvent) => {
     if ((e.target as Element).closest('.flowchart-node-group') || (e.target as Element).closest('foreignObject')) return;
+    isPanningRef.current = true;
     setIsPanning(true);
     panStartRef.current = {
       x: e.clientX,

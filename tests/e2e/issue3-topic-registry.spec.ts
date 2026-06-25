@@ -8,7 +8,7 @@ test.describe('Issue #3: TopicRegistry seam', () => {
     await expect(topicPage).toBeVisible()
 
     const topicTitle = page.locator('.topic-page-title')
-    await expect(topicTitle).toHaveText('REST API vs WebSocket')
+    await expect(topicTitle).toHaveText('AI Agent Architecture (Demo)')
 
     const topicContainer = page.locator('[data-topic-id="demo"]')
     await expect(topicContainer).toBeVisible()
@@ -18,7 +18,7 @@ test.describe('Issue #3: TopicRegistry seam', () => {
   })
 
   test('topic component not registered shows placeholder', async ({ page }) => {
-    await page.goto('/nonexistent/path')
+    await page.goto('/#/nonexistent/path')
 
     const topicTitle = page.locator('.topic-page-title')
     await expect(topicTitle).toHaveText('Topic Not Found')

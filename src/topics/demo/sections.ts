@@ -43,6 +43,7 @@ export const demoSections: SectionConfig[] = [
   {
     type: 'tradeoff-sandbox',
     props: {
+      instanceId: 'comm-pattern',
       title: 'Communication Pattern Choice',
       scenarios: apiPatternScenarios,
     },

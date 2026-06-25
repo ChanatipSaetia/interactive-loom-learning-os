@@ -42,6 +42,7 @@ export interface FlowchartViewProps {
   setActiveNodePopup: (popup: { nodeId: string; x: number; y: number; views: { key: string; name: string; type: string }[] } | null) => void;
   setActiveViewKey: (viewKey: string) => void;
   activeStateId: string | null;
+  currentJourneyId?: string;
 }
 
 export function FlowchartView({
@@ -57,7 +58,8 @@ export function FlowchartView({
   activeNodePopup,
   setActiveNodePopup,
   setActiveViewKey,
-  activeStateId
+  activeStateId,
+  currentJourneyId
 }: FlowchartViewProps) {
   const view = schema.views[viewKey];
   const viewInstanceId = `${instanceId}-${viewKey}`;
@@ -149,25 +151,63 @@ export function FlowchartView({
 
   // Focus camera on active nodes
   useEffect(() => {
-    if (activeNodeIds && activeNodeIds.length > 0) {
-      camera.focusOnNodes(activeNodeIds);
+    if (viewKey === 'STATE_MACHINE') {
+      if (highlightedNodeId) {
+        camera.focusOnNodes([highlightedNodeId]);
+      }
+    } else {
+      if (activeNodeIds && activeNodeIds.length > 0) {
+        camera.focusOnNodes(activeNodeIds);
+      }
     }
-  }, [activeNodeIds, camera]);
+  }, [viewKey, activeNodeIds, highlightedNodeId, camera]);
 
   // Particle animation
   const particleRef = useRef<SVGCircleElement | null>(null);
   const animeInstanceRef = useRef<ReturnType<typeof animate> | null>(null);
 
   useEffect(() => {
-    if (currentStep <= 0 || !prevHighlightedNodeId || !highlightedNodeId || !view) return;
-    const fromNode = nodeMap[prevHighlightedNodeId];
-    const toNode = nodeMap[highlightedNodeId];
+    if (currentStep <= 0 || !view) return;
+
+    const journey = schema.journeys.find(j => j.id === currentJourneyId);
+    if (!journey) return;
+
+    const currentStepData = journey.steps[currentStep];
+    const prevStepData = journey.steps[currentStep - 1];
+    if (!currentStepData || !prevStepData) return;
+
+    const prevNodeIds = prevStepData.nodeIds || (prevStepData.nodeId ? [prevStepData.nodeId] : []);
+    const currentNodeIds = currentStepData.nodeIds || (currentStepData.nodeId ? [currentStepData.nodeId] : []);
+
+    let fromNodeId = prevHighlightedNodeId;
+    let toNodeId = highlightedNodeId;
+
+    const connectingRelation = schema.relations.find(
+      r => r.views?.includes(viewKey) &&
+      ((prevNodeIds.includes(r.from) && currentNodeIds.includes(r.to)) ||
+       (prevNodeIds.includes(r.to) && currentNodeIds.includes(r.from)))
+    );
+
+    if (connectingRelation) {
+      if (prevNodeIds.includes(connectingRelation.from)) {
+        fromNodeId = connectingRelation.from;
+        toNodeId = connectingRelation.to;
+      } else {
+        fromNodeId = connectingRelation.to;
+        toNodeId = connectingRelation.from;
+      }
+    }
+
+    if (!fromNodeId || !toNodeId) return;
+
+    const fromNode = nodeMap[fromNodeId];
+    const toNode = nodeMap[toNodeId];
     if (!fromNode || !toNode) return;
 
     const hasRelation = schema.relations.some(
       r => r.views?.includes(viewKey) &&
-      ((r.from === prevHighlightedNodeId && r.to === highlightedNodeId) ||
-        (r.to === prevHighlightedNodeId && r.from === highlightedNodeId))
+      ((r.from === fromNodeId && r.to === toNodeId) ||
+        (r.to === fromNodeId && r.from === toNodeId))
     );
     if (!hasRelation) return;
 
@@ -192,7 +232,7 @@ export function FlowchartView({
         }
       });
     }
-  }, [currentStep, prevHighlightedNodeId, highlightedNodeId, viewKey, nodeMap, schema.relations, view]);
+  }, [currentStep, prevHighlightedNodeId, highlightedNodeId, viewKey, nodeMap, schema.relations, view, currentJourneyId, schema.journeys]);
 
   // Attach/detach native event listeners
   useEffect(() => {
@@ -660,8 +700,11 @@ export function FlowchartView({
                      const cp2x = endX + (dx > 0 ? -Math.min(100, dist * 0.4) : Math.min(100, dist * 0.4));
                      const cp2y = endY;
 
-                     const isHighlighted = activeNodeIds && activeNodeIds.includes(rel.from) && activeNodeIds.includes(rel.to);
-                     const isFaded = activeNodeIds !== null && !isHighlighted;
+                      let isHighlighted = activeNodeIds && activeNodeIds.includes(rel.from) && activeNodeIds.includes(rel.to);
+                      if (viewKey === 'STATE_MACHINE') {
+                        isHighlighted = prevHighlightedNodeId === rel.from && highlightedNodeId === rel.to;
+                      }
+                      const isFaded = activeNodeIds !== null && !isHighlighted;
                      const isHandledBy = rel.handledBy;
                      const midX = (startX + endX) / 2;
                      const midY = (startY + endY) / 2;
@@ -745,8 +788,8 @@ export function FlowchartView({
                    const x = node.x - nW / 2;
                    const y = node.y - nH / 2;
                    const isStepHighlighted = activeNodeIds && activeNodeIds.includes(node.id);
-                   const isDimmed = activeNodeIds !== null && !isStepHighlighted;
                    const isHighlighted = isStepHighlighted || (highlightedNodeId === node.id);
+                   const isDimmed = activeNodeIds !== null && !isHighlighted;
                    const nodeFill = entity.color || COLORS[viewType as keyof typeof COLORS] || COLORS.default;
                    const strokeColor = entity.strokeColor || BORDER_COLORS[viewType as keyof typeof BORDER_COLORS] || BORDER_COLORS.default;
                    const iconName = ICONS[viewType as keyof typeof ICONS];
@@ -972,14 +1015,31 @@ export function FlowchartView({
        </div>
 
       {activeNodePopup && activeNodePopup.nodeId && (() => {
-        const entity = schema.entities[activeNodePopup.nodeId];
+        let entity = schema.entities[activeNodePopup.nodeId];
         if (!entity) return null;
+
+        if (entity.collapsedTo) {
+          const canonical = schema.entities[entity.collapsedTo];
+          if (canonical) {
+            entity = {
+              ...canonical,
+              ...entity,
+              stateMachine: entity.stateMachine || canonical.stateMachine,
+              erdSchema: entity.erdSchema || canonical.erdSchema,
+              viewTypes: {
+                ...canonical.viewTypes,
+                ...entity.viewTypes
+              }
+            };
+          }
+        }
 
         const hasErd = entity.erdSchema && entity.erdSchema.length > 0;
         const hasSM = !!entity.stateMachine;
 
         return (
           <div
+            data-testid="flowchart-node-popup"
             style={{
               position: 'absolute',
               left: `${camera.transform.translateX + activeNodePopup.x * camera.transform.scale}px`,
@@ -1011,6 +1071,7 @@ export function FlowchartView({
               </div>
               <button
                 onClick={() => setActiveNodePopup(null)}
+                data-testid="flowchart-node-popup-close"
                 style={{
                   background: 'transparent',
                   border: 'none',

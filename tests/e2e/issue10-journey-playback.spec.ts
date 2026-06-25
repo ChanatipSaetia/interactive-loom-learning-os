@@ -2,7 +2,7 @@ import { test, expect } from '@playwright/test'
 
 test.describe('Issue #10 Slice 2: Journey selector + step-by-step highlighting + playback controls', () => {
   test.beforeEach(async ({ page }) => {
-    await page.goto('/topics/ai-agent')
+    await page.goto('/#/demo/ai-agent')
   })
 
   test('journey selector renders with all journeys', async ({ page }) => {
@@ -10,80 +10,34 @@ test.describe('Issue #10 Slice 2: Journey selector + step-by-step highlighting +
     await expect(select).toBeVisible()
 
     const options = select.locator('option')
-    await expect(options).toHaveCount(2)
-    await expect(options.nth(0)).toHaveAttribute('value', 'query-journey')
-    await expect(options.nth(0)).toHaveText('Query Journey')
-    await expect(options.nth(1)).toHaveAttribute('value', 'tool-use-journey')
-    await expect(options.nth(1)).toHaveText('Tool Use Journey')
-    await expect(select).toHaveValue('query-journey')
+    await expect(options).toHaveCount(1)
+    await expect(options.nth(0)).toHaveAttribute('value', 'agent-tool-use-loop')
+    await expect(options.nth(0)).toHaveText('Agent-Subagent MCP Loop')
+    await expect(select).toHaveValue('agent-tool-use-loop')
   })
 
-  test('switching journeys resets to overview', async ({ page }) => {
-    const select = page.getByTestId('flowchart-journey-select')
-    const progress = page.getByTestId('flowchart-progress')
-
-    await expect(progress).toHaveText('0 / 6')
-
-    await select.selectOption('tool-use-journey')
-    await expect(progress).toHaveText('0 / 7')
-  })
-
-  test('step through all Query Journey steps with highlights', async ({ page }) => {
+  test('step through all Agent-Subagent MCP Loop steps with highlights', async ({ page }) => {
     const progress = page.getByTestId('flowchart-progress')
     const nextBtn = page.getByTestId('flowchart-btn-next')
 
-    await expect(progress).toHaveText('0 / 6')
+    await expect(progress).toHaveText('0 / 4')
     await nextBtn.click()
 
     const queryJourneyNodes = [
-      '[data-testid="flowchart-node-user"]',
-      '[data-testid="flowchart-node-ai-agent"]',
-      '[data-testid="flowchart-node-llm"]',
-      '[data-testid="flowchart-node-tools-search"]',
-      '[data-testid="flowchart-node-ai-agent"]',
-      '[data-testid="flowchart-node-user"]',
+      'user',
+      'pol_plan',
+      'pol_route',
+      'pol_eval',
     ]
 
-    for (let i = 0; i < 6; i++) {
+    for (let i = 0; i < 4; i++) {
       const stepNum = i + 1
-      await expect(progress).toHaveText(`${stepNum} / 6`)
+      await expect(progress).toHaveText(`${stepNum} / 4`)
 
-      const highlighted = page.locator(`${queryJourneyNodes[i]} .flowchart-node-highlighted`)
+      const highlighted = page.locator(`[data-testid="flowchart-node-EVENT_STORMING-${queryJourneyNodes[i]}"] .flowchart-node-highlighted`)
       await expect(highlighted).toBeVisible()
 
-      if (i < 5) {
-        await nextBtn.click()
-      }
-    }
-  })
-
-  test('step through all Tool Use Journey steps with highlights', async ({ page }) => {
-    const select = page.getByTestId('flowchart-journey-select')
-    const progress = page.getByTestId('flowchart-progress')
-    const nextBtn = page.getByTestId('flowchart-btn-next')
-
-    await select.selectOption('tool-use-journey')
-    await expect(progress).toHaveText('0 / 7')
-    await nextBtn.click()
-
-    const toolUseJourneyNodes = [
-      '[data-testid="flowchart-node-user"]',
-      '[data-testid="flowchart-node-ai-agent"]',
-      '[data-testid="flowchart-node-llm"]',
-      '[data-testid="flowchart-node-tools-code"]',
-      '[data-testid="flowchart-node-llm"]',
-      '[data-testid="flowchart-node-ai-agent"]',
-      '[data-testid="flowchart-node-user"]',
-    ]
-
-    for (let i = 0; i < 7; i++) {
-      const stepNum = i + 1
-      await expect(progress).toHaveText(`${stepNum} / 7`)
-
-      const highlighted = page.locator(`${toolUseJourneyNodes[i]} .flowchart-node-highlighted`)
-      await expect(highlighted).toBeVisible()
-
-      if (i < 6) {
+      if (i < 3) {
         await nextBtn.click()
       }
     }
@@ -93,14 +47,14 @@ test.describe('Issue #10 Slice 2: Journey selector + step-by-step highlighting +
     const playBtn = page.getByTestId('flowchart-btn-play')
     const progress = page.getByTestId('flowchart-progress')
 
-    await expect(progress).toHaveText('0 / 6')
+    await expect(progress).toHaveText('0 / 4')
     await playBtn.click()
 
-    await expect(progress).toHaveText('1 / 6')
+    await expect(progress).toHaveText('1 / 4')
 
-    for (let step = 2; step <= 6; step++) {
+    for (let step = 2; step <= 4; step++) {
       await page.waitForTimeout(1300)
-      await expect(progress).toHaveText(`${step} / 6`)
+      await expect(progress).toHaveText(`${step} / 4`)
     }
   })
 
@@ -112,7 +66,7 @@ test.describe('Issue #10 Slice 2: Journey selector + step-by-step highlighting +
     await playBtn.click()
     await pauseBtn.click()
     await page.waitForTimeout(1500)
-    await expect(progress).toHaveText('1 / 6')
+    await expect(progress).toHaveText('1 / 4')
   })
 
   test('prev button goes back one step', async ({ page }) => {
@@ -120,11 +74,11 @@ test.describe('Issue #10 Slice 2: Journey selector + step-by-step highlighting +
     const prevBtn = page.getByTestId('flowchart-btn-prev')
     const progress = page.getByTestId('flowchart-progress')
 
-    await nextBtn.click() // to 1 / 6
-    await nextBtn.click() // to 2 / 6
-    await expect(progress).toHaveText('2 / 6')
+    await nextBtn.click() // to 1 / 4
+    await nextBtn.click() // to 2 / 4
+    await expect(progress).toHaveText('2 / 4')
     await prevBtn.click()
-    await expect(progress).toHaveText('1 / 6')
+    await expect(progress).toHaveText('1 / 4')
   })
 
   test('reset button returns to overview', async ({ page }) => {
@@ -132,13 +86,12 @@ test.describe('Issue #10 Slice 2: Journey selector + step-by-step highlighting +
     const resetBtn = page.getByTestId('flowchart-btn-reset')
     const progress = page.getByTestId('flowchart-progress')
 
-    await nextBtn.click() // to 1 / 6
-    await nextBtn.click() // to 2 / 6
-    await nextBtn.click() // to 3 / 6
-    await nextBtn.click() // to 4 / 6
-    await expect(progress).toHaveText('4 / 6')
+    await nextBtn.click() // to 1 / 4
+    await nextBtn.click() // to 2 / 4
+    await nextBtn.click() // to 3 / 4
+    await expect(progress).toHaveText('3 / 4')
     await resetBtn.click()
-    await expect(progress).toHaveText('0 / 6')
+    await expect(progress).toHaveText('0 / 4')
   })
 
   test('prev disabled at overview', async ({ page }) => {
@@ -148,17 +101,17 @@ test.describe('Issue #10 Slice 2: Journey selector + step-by-step highlighting +
 
   test('next disabled at last step', async ({ page }) => {
     const nextBtn = page.getByTestId('flowchart-btn-next')
-    for (let i = 0; i < 6; i++) {
+    for (let i = 0; i < 4; i++) {
       await nextBtn.click()
     }
     await expect(nextBtn).toBeDisabled()
-    await expect(page.getByTestId('flowchart-progress')).toHaveText('6 / 6')
+    await expect(page.getByTestId('flowchart-progress')).toHaveText('4 / 4')
   })
 
   test('play disabled at last step', async ({ page }) => {
     const nextBtn = page.getByTestId('flowchart-btn-next')
     const playBtn = page.getByTestId('flowchart-btn-play')
-    for (let i = 0; i < 6; i++) {
+    for (let i = 0; i < 4; i++) {
       await nextBtn.click()
     }
     await expect(playBtn).toBeDisabled()
@@ -172,5 +125,30 @@ test.describe('Issue #10 Slice 2: Journey selector + step-by-step highlighting +
   test('reset disabled at overview', async ({ page }) => {
     const resetBtn = page.getByTestId('flowchart-btn-reset')
     await expect(resetBtn).toBeDisabled()
+  })
+
+  test('clicking stepper card selects step and pauses playback', async ({ page }) => {
+    const progress = page.getByTestId('flowchart-progress')
+    const playBtn = page.getByTestId('flowchart-btn-play')
+    
+    // Play first
+    await playBtn.click()
+    await expect(progress).toHaveText('1 / 4')
+    
+    // Find the step card for Phase 3 (journey-step-2) and click it
+    const stepCard = page.locator('[id$="journey-step-2"]')
+    await expect(stepCard).toBeVisible()
+    await stepCard.click()
+    
+    // Progress should jump to 3 / 4
+    await expect(progress).toHaveText('3 / 4')
+    
+    // Playback should be paused (play button enabled, pause button disabled)
+    await expect(playBtn).toBeEnabled()
+    await expect(page.getByTestId('flowchart-btn-pause')).toBeDisabled()
+    
+    // Wait to verify it doesn't auto-advance (step remains at 3 / 4)
+    await page.waitForTimeout(1500)
+    await expect(progress).toHaveText('3 / 4')
   })
 })

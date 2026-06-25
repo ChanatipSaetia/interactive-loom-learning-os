@@ -107,16 +107,7 @@ test.describe('Issue #55: AI Document Ingestion Pipeline Topic', () => {
     await expect(svg).toBeVisible()
   })
 
-  test('database node displays ERD schemas in inspector', async ({ page }) => {
-    // Open inspector sidebar
-    const inspectorBtn = page.getByTestId('flowchart-btn-inspector')
-    await inspectorBtn.click()
-    await page.waitForSelector('[data-testid="inspector-sidebar"]')
-
-    // Switch to ERD tab
-    await page.getByTestId('inspector-tab-erd').click()
-    await page.waitForTimeout(200)
-
+  test('database node displays ERD schemas in popover', async ({ page }) => {
     // Switch to SYS_ARCH view where db node exists
     const sysArchTab = page.getByText('System Architecture')
     await sysArchTab.click()
@@ -124,23 +115,15 @@ test.describe('Issue #55: AI Document Ingestion Pipeline Topic', () => {
 
     // Click on database node
     const dbNode = page.getByTestId('flowchart-node-SYS_ARCH-db')
-    await dbNode.click({ force: true })
+    await dbNode.evaluate(el => el.dispatchEvent(new MouseEvent('click', { bubbles: true, cancelable: true })))
     await page.waitForTimeout(500)
 
     // ERD schema widget should be visible
-    const erdWidget = page.getByTestId('inspector-widget-erd')
+    const erdWidget = page.getByTestId('erd-schema-widget')
     await expect(erdWidget).toBeVisible()
   })
 
-  test('documents table visible in ERD inspector', async ({ page }) => {
-    // Open inspector sidebar
-    await page.getByTestId('flowchart-btn-inspector').click()
-    await page.waitForSelector('[data-testid="inspector-sidebar"]')
-
-    // Switch to ERD tab
-    await page.getByTestId('inspector-tab-erd').click()
-    await page.waitForTimeout(200)
-
+  test('documents table visible in ERD popover', async ({ page }) => {
     // Switch to SYS_ARCH view
     const sysArchTab = page.getByText('System Architecture')
     await sysArchTab.click()
@@ -148,11 +131,11 @@ test.describe('Issue #55: AI Document Ingestion Pipeline Topic', () => {
 
     // Click on database node
     const dbNode = page.getByTestId('flowchart-node-SYS_ARCH-db')
-    await dbNode.click({ force: true })
+    await dbNode.evaluate(el => el.dispatchEvent(new MouseEvent('click', { bubbles: true, cancelable: true })))
     await page.waitForTimeout(500)
 
     // Check for table names in ERD
-    await expect(page.getByText('documents')).toBeVisible()
+    await expect(page.getByTestId('erd-table-documents')).toBeVisible()
   })
 
   test('bullets section renders pipeline capabilities', async ({ page }) => {

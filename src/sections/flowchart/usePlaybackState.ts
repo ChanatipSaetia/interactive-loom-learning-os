@@ -14,6 +14,7 @@ interface UsePlaybackStateReturn {
   setCurrentJourneyId: (id: string) => void;
   currentJourney: FlowchartJourney | undefined;
   currentStep: number;
+  setCurrentStep: (step: number) => void;
   isPlaying: boolean;
   activeNodeIds: string[] | null;
   highlightedNodeId: string | null;
@@ -124,6 +125,7 @@ export function usePlaybackState({ schema }: UsePlaybackStateOptions): UsePlayba
     setCurrentJourneyId,
     currentJourney,
     currentStep,
+    setCurrentStep,
     isPlaying,
     activeNodeIds,
     highlightedNodeId,

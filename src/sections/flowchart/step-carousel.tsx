@@ -42,7 +42,7 @@ export function StepCarousel({
           alignItems: 'center',
           paddingLeft: '24px',
           paddingRight: '24px',
-          pointerEvents: 'auto',
+          pointerEvents: 'none',
           scrollBehavior: 'smooth'
         }}
       >
@@ -64,7 +64,8 @@ export function StepCarousel({
                   borderColor: isActive ? 'var(--ctp-blue)' : 'var(--border-light)',
                   backgroundColor: isActive ? 'var(--ctp-surface0)' : 'var(--ctp-base)',
                   transition: 'all 0.3s ease',
-                  opacity: activeStep && !isActive ? 0.6 : 1
+                  opacity: activeStep && !isActive ? 0.6 : 1,
+                  pointerEvents: 'auto'
                 }}
               >
                 <div
@@ -119,7 +120,8 @@ export function StepCarousel({
                   paddingLeft: '20px',
                   marginLeft: '8px',
                   borderLeft: '2px dashed var(--ctp-overlay1)',
-                  position: 'relative'
+                  position: 'relative',
+                  pointerEvents: 'none'
                 }}
               >
                 <div
@@ -135,7 +137,8 @@ export function StepCarousel({
                     color: 'var(--ctp-text)',
                     display: 'flex',
                     alignItems: 'center',
-                    justifyContent: 'center'
+                    justifyContent: 'center',
+                    pointerEvents: 'none'
                   }}
                 >
                   <GitBranch size={12} />
@@ -156,7 +159,8 @@ export function StepCarousel({
                         borderColor: isActive ? 'var(--ctp-blue)' : 'var(--border-light)',
                         backgroundColor: isActive ? 'var(--ctp-surface0)' : 'var(--ctp-base)',
                         transition: 'all 0.3s ease',
-                        opacity: activeStep && !isActive ? 0.6 : 1
+                        opacity: activeStep && !isActive ? 0.6 : 1,
+                        pointerEvents: 'auto'
                       }}
                     >
                       <div

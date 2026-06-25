@@ -70,7 +70,12 @@ const STEP_EVENT_TO_STATE_MAP: Record<string, string> = {
   evt_plan: 'PLANNING',
   evt_exec: 'EXECUTING',
   evt_eval: 'EVALUATING',
-  evt_escalate: 'ESCALATED'
+  evt_escalate: 'ESCALATED',
+
+  evt_started: 'IDLE',
+  evt_reasoned: 'THINKING',
+  evt_tool_executed: 'EXECUTING_TOOL',
+  evt_done: 'COMPLETED'
 };
 
 export function Flowchart({ title, schema = INITIAL_SCHEMA }: FlowchartProps) {
@@ -216,8 +221,24 @@ export function Flowchart({ title, schema = INITIAL_SCHEMA }: FlowchartProps) {
   }, [dropdownOpen]);
 
   const handleNodeClick = useCallback((nodeId: string, x?: number, y?: number) => {
-    const entity = localSchema.entities[nodeId];
+    let entity = localSchema.entities[nodeId];
     if (!entity) return;
+
+    if (entity.collapsedTo) {
+      const canonical = localSchema.entities[entity.collapsedTo];
+      if (canonical) {
+        entity = {
+          ...canonical,
+          ...entity,
+          stateMachine: entity.stateMachine || canonical.stateMachine,
+          erdSchema: entity.erdSchema || canonical.erdSchema,
+          viewTypes: {
+            ...canonical.viewTypes,
+            ...entity.viewTypes
+          }
+        };
+      }
+    }
 
     const otherViews = Object.keys(entity.viewTypes || {})
       .filter(vk => vk !== activeViewKey && localSchema.views[vk])
@@ -242,13 +263,12 @@ export function Flowchart({ title, schema = INITIAL_SCHEMA }: FlowchartProps) {
 
   const handleStepClick = (step: FlowchartStepLinear | FlowchartStepBranchOption) => {
     if (activeStep?.id === step.id) {
-      setActiveStep(null);
       playback.resetAll();
     } else {
-      setActiveStep(step);
       const stepIdx = activeSteps.findIndex(s => s.id === step.id);
       if (stepIdx !== -1) {
-        // Manual step navigation via carousel
+        playback.setCurrentStep(stepIdx);
+        playback.handlePause();
       }
     }
   };
@@ -349,6 +369,7 @@ export function Flowchart({ title, schema = INITIAL_SCHEMA }: FlowchartProps) {
           setActiveNodePopup={setActiveNodePopup}
           setActiveViewKey={setActiveViewKey}
           activeStateId={activeStateId}
+          currentJourneyId={playback.currentJourneyId}
         />
 
         {activeStep && (

@@ -47,9 +47,10 @@ export interface TradeoffScenario {
 export interface TradeoffSandboxSectionProps {
   title?: string
   scenarios: TradeoffScenario[]
+  instanceId?: string
 }
 
-function MetricBar({ metric, value, max }: { metric: MetricDef; value: number; max: number }) {
+function MetricBar({ metric, value, max, instanceId }: { metric: MetricDef; value: number; max: number; instanceId?: string }) {
   const clamped = Math.max(metric.min ?? 0, Math.min(metric.max ?? 100, value))
   const pct = max !== 0 ? (clamped / max) * 100 : 0
   const direction = metric.direction ?? 'higher'
@@ -64,16 +65,18 @@ function MetricBar({ metric, value, max }: { metric: MetricDef; value: number; m
     }
   }
 
+  const getTestId = (id: string) => instanceId ? `${instanceId}-${id}` : id
+
   return (
-    <div className="metric-bar" data-testid={`metric-bar-${metric.id}`}>
+    <div className="metric-bar" data-testid={getTestId(`metric-bar-${metric.id}`)}>
       <div className="metric-bar-header">
-        <span className="metric-label" data-testid={`metric-label-${metric.id}`}>{metric.label}</span>
-        <span className="metric-value" data-testid={`metric-value-${metric.id}`}>{clamped}</span>
+        <span className="metric-label" data-testid={getTestId(`metric-label-${metric.id}`)}>{metric.label}</span>
+        <span className="metric-value" data-testid={getTestId(`metric-value-${metric.id}`)}>{clamped}</span>
       </div>
-      <div className="metric-track" data-testid={`metric-track-${metric.id}`}>
+      <div className="metric-track" data-testid={getTestId(`metric-track-${metric.id}`)}>
         <div
           className="metric-fill"
-          data-testid={`metric-fill-${metric.id}`}
+          data-testid={getTestId(`metric-fill-${metric.id}`)}
           style={{ width: `${pct}%`, backgroundColor: fillColor }}
         />
       </div>
@@ -87,12 +90,14 @@ function FloatingDropdown({
   onSelect,
   scenarioIdx,
   stepIdx,
+  instanceId,
 }: {
   step: TradeoffStep
   chosenChoiceId: string | null
   onSelect: (choiceId: string) => void
   scenarioIdx: number
   stepIdx: number
+  instanceId?: string
 }) {
   const [open, setOpen] = useState(false)
   const dropdownRef = useRef<HTMLDivElement | null>(null)
@@ -126,8 +131,10 @@ function FloatingDropdown({
 
   const recommendedId = step.recommended
 
+  const getTestId = (id: string) => instanceId ? `${instanceId}-${id}` : id
+
   return (
-    <div className="step-dropdown-wrapper" ref={dropdownRef} data-testid={`step-dropdown-wrapper-${scenarioIdx}-${stepIdx}`}>
+    <div className="step-dropdown-wrapper" ref={dropdownRef} data-testid={getTestId(`step-dropdown-wrapper-${scenarioIdx}-${stepIdx}`)}>
       <button
         className="step-dropdown-trigger"
         type="button"
@@ -140,12 +147,12 @@ function FloatingDropdown({
         }}
         aria-haspopup="listbox"
         aria-expanded={open}
-        data-testid={`step-dropdown-trigger-${scenarioIdx}-${stepIdx}`}
+        data-testid={getTestId(`step-dropdown-trigger-${scenarioIdx}-${stepIdx}`)}
       >
-        <span className="dropdown-chevron" data-testid={`dropdown-chevron-${scenarioIdx}-${stepIdx}`}>▼</span>
+        <span className="dropdown-chevron" data-testid={getTestId(`dropdown-chevron-${scenarioIdx}-${stepIdx}`)}>▼</span>
       </button>
       {open && (
-        <ul className="step-dropdown-menu" role="listbox" data-testid={`step-dropdown-menu-${scenarioIdx}-${stepIdx}`}>
+        <ul className="step-dropdown-menu" role="listbox" data-testid={getTestId(`step-dropdown-menu-${scenarioIdx}-${stepIdx}`)}>
           {step.choices.map((choice) => {
             const isRecommended = recommendedId === choice.id
             const isSelected = chosenChoiceId === choice.id
@@ -163,11 +170,11 @@ function FloatingDropdown({
                   }
                 }}
                 tabIndex={0}
-                data-testid={`dropdown-option-${scenarioIdx}-${stepIdx}-${choice.id}`}
+                data-testid={getTestId(`dropdown-option-${scenarioIdx}-${stepIdx}-${choice.id}`)}
               >
                 <span className="dropdown-option-label">{choice.label}</span>
                 {isRecommended && (
-                  <span className="recommended-badge" data-testid={`recommended-badge-${scenarioIdx}-${stepIdx}-${choice.id}`} title="Recommended">
+                  <span className="recommended-badge" data-testid={getTestId(`recommended-badge-${scenarioIdx}-${stepIdx}-${choice.id}`)} title="Recommended">
                     <Star size={12} style={{ fill: 'currentColor' }} />
                     <span style={{ display: 'none' }}>Recommended</span>
                   </span>
@@ -189,6 +196,7 @@ function StepSection({
   onOpenDetails,
   scenarioIdx,
   stepIdx,
+  instanceId,
 }: {
   step: TradeoffStep
   chosenChoiceId: string | null
@@ -197,14 +205,17 @@ function StepSection({
   onOpenDetails: () => void
   scenarioIdx: number
   stepIdx: number
+  instanceId?: string
 }) {
   const chosenChoice = step.choices.find((c) => c.id === chosenChoiceId) || null
   const isRecommended = chosenChoice && step.recommended === chosenChoiceId
 
+  const getTestId = (id: string) => instanceId ? `${instanceId}-${id}` : id
+
   return (
-    <div className={`step-section${chosenChoiceId ? '' : ' step-section-unselected'}`} data-testid={`step-section-${scenarioIdx}-${stepIdx}`}>
+    <div className={`step-section${chosenChoiceId ? '' : ' step-section-unselected'}`} data-testid={getTestId(`step-section-${scenarioIdx}-${stepIdx}`)}>
       <div className="step-header">
-        <h4 className="step-title" data-testid={`step-title-${scenarioIdx}-${stepIdx}`}>
+        <h4 className="step-title" data-testid={getTestId(`step-title-${scenarioIdx}-${stepIdx}`)}>
           {step.title}
         </h4>
         <FloatingDropdown
@@ -213,23 +224,24 @@ function StepSection({
           onSelect={onChoiceSelect}
           scenarioIdx={scenarioIdx}
           stepIdx={stepIdx}
+          instanceId={instanceId}
         />
       </div>
-      <p className="step-description" data-testid={`step-description-${scenarioIdx}-${stepIdx}`}>
+      <p className="step-description" data-testid={getTestId(`step-description-${scenarioIdx}-${stepIdx}`)}>
         {step.description}
       </p>
 
       <div
         className={`drop-zone${chosenChoice ? ' drop-zone-filled' : ''}`}
-        data-testid={`drop-zone-${scenarioIdx}-${stepIdx}`}
+        data-testid={getTestId(`drop-zone-${scenarioIdx}-${stepIdx}`)}
       >
         {chosenChoice ? (
-          <div className="drop-zone-content" data-testid={`drop-zone-content-${scenarioIdx}-${stepIdx}`}>
-            <span className="drop-zone-label" data-testid={`drop-zone-label-${scenarioIdx}-${stepIdx}`}>
+          <div className="drop-zone-content" data-testid={getTestId(`drop-zone-content-${scenarioIdx}-${stepIdx}`)}>
+            <span className="drop-zone-label" data-testid={getTestId(`drop-zone-label-${scenarioIdx}-${stepIdx}`)}>
               {chosenChoice.label}
             </span>
             {isRecommended && (
-              <span className="drop-zone-recommended-badge" data-testid={`drop-zone-recommended-badge-${scenarioIdx}-${stepIdx}`} title="Recommended">
+              <span className="drop-zone-recommended-badge" data-testid={getTestId(`drop-zone-recommended-badge-${scenarioIdx}-${stepIdx}`)} title="Recommended">
                 <Star size={12} style={{ fill: 'currentColor' }} />
                 <span style={{ display: 'none' }}>Recommended</span>
               </span>
@@ -237,7 +249,7 @@ function StepSection({
             <button
               className="drop-zone-info"
               onClick={onOpenDetails}
-              data-testid={`drop-zone-info-${scenarioIdx}-${stepIdx}`}
+              data-testid={getTestId(`drop-zone-info-${scenarioIdx}-${stepIdx}`)}
               aria-label="View details"
               title="View details"
             >
@@ -246,14 +258,14 @@ function StepSection({
             <button
               className="drop-zone-remove"
               onClick={onClear}
-              data-testid={`drop-zone-remove-${scenarioIdx}-${stepIdx}`}
+              data-testid={getTestId(`drop-zone-remove-${scenarioIdx}-${stepIdx}`)}
               aria-label="Remove choice"
             >
               ✕
             </button>
           </div>
         ) : (
-          <span className="drop-zone-placeholder" data-testid={`drop-zone-placeholder-${scenarioIdx}-${stepIdx}`}>
+          <span className="drop-zone-placeholder" data-testid={getTestId(`drop-zone-placeholder-${scenarioIdx}-${stepIdx}`)}>
             Select a choice from the dropdown
           </span>
         )}
@@ -367,7 +379,7 @@ function DetailsModal({
   )
 }
 
-function TradeoffSandboxSection({ title, scenarios }: TradeoffSandboxSectionProps) {
+function TradeoffSandboxSection({ title, scenarios, instanceId }: TradeoffSandboxSectionProps) {
   const [scenarioIdx, setScenarioIdx] = useState(0)
   const [scenarioDropdownOpen, setScenarioDropdownOpen] = useState(false)
   const scenarioDropdownRef = useRef<HTMLDivElement | null>(null)
@@ -467,10 +479,12 @@ function TradeoffSandboxSection({ title, scenarios }: TradeoffSandboxSectionProp
     return { choice, step }
   }, [detailsTarget, scenario])
 
+  const getTestId = (id: string) => instanceId ? `${instanceId}-${id}` : id
+
   return (
-    <div className="tradeoff-sandbox" data-testid="tradeoff-sandbox">
+    <div className="tradeoff-sandbox" data-testid={getTestId("tradeoff-sandbox")}>
       {title && (
-        <h3 className="tradeoff-sandbox-title" data-testid="tradeoff-sandbox-title">
+        <h3 className="tradeoff-sandbox-title" data-testid={getTestId("tradeoff-sandbox-title")}>
           {title}
         </h3>
       )}
@@ -480,13 +494,13 @@ function TradeoffSandboxSection({ title, scenarios }: TradeoffSandboxSectionProp
           <label htmlFor="scenario-select" className="scenario-label">
             Scenario:
           </label>
-          <div className="scenario-dropdown" ref={scenarioDropdownRef} data-testid="scenario-dropdown">
+          <div className="scenario-dropdown" ref={scenarioDropdownRef} data-testid={getTestId("scenario-dropdown")}>
             <button
               id="scenario-select"
               className="scenario-select"
               type="button"
               onClick={() => setScenarioDropdownOpen(!scenarioDropdownOpen)}
-              data-testid="scenario-select"
+              data-testid={getTestId("scenario-select")}
               aria-haspopup="listbox"
               aria-expanded={scenarioDropdownOpen}
             >
@@ -514,17 +528,17 @@ function TradeoffSandboxSection({ title, scenarios }: TradeoffSandboxSectionProp
         </div>
       )}
 
-      <div className="scenario-banner" data-testid="scenario-banner">
+      <div className="scenario-banner" data-testid={getTestId("scenario-banner")}>
         <p className="scenario-description">{scenario.description}</p>
       </div>
 
-      <div className={`feedback-banner feedback-banner-${feedbackState}`} data-testid="feedback-banner">
-        <span className="feedback-text" data-testid="feedback-text">{feedbackText}</span>
+      <div className={`feedback-banner feedback-banner-${feedbackState}`} data-testid={getTestId("feedback-banner")}>
+        <span className="feedback-text" data-testid={getTestId("feedback-text")}>{feedbackText}</span>
       </div>
 
       <Dialog.Root open={compareOpen} onOpenChange={setCompareOpen}>
         <Dialog.Trigger asChild>
-          <button className="compare-all-button" data-testid="compare-all-button">
+          <button className="compare-all-button" data-testid={getTestId("compare-all-button")}>
             Compare All
           </button>
         </Dialog.Trigger>
@@ -644,26 +658,27 @@ function TradeoffSandboxSection({ title, scenarios }: TradeoffSandboxSectionProp
       )}
 
       <div className="tradeoff-layout">
-        <div className="metric-dashboard" data-testid="metric-dashboard">
+        <div className="metric-dashboard" data-testid={getTestId("metric-dashboard")}>
           <div className="dashboard-header">
             <h4 className="dashboard-title">Metric Dashboard</h4>
-            <span className="progress-indicator" data-testid="progress-indicator">
+            <span className="progress-indicator" data-testid={getTestId("progress-indicator")}>
               {placedCount} / {totalSteps}
             </span>
           </div>
-          <div className="metric-bars" data-testid="metric-bars">
+          <div className="metric-bars" data-testid={getTestId("metric-bars")}>
             {scenario.metrics.map((metric) => (
               <MetricBar
                 key={metric.id}
                 metric={metric}
                 value={currentValues[metric.id] ?? metric.baseValue}
                 max={metric.max ?? 100}
+                instanceId={instanceId}
               />
             ))}
           </div>
         </div>
 
-        <div className="steps-panel" data-testid="steps-panel">
+        <div className="steps-panel" data-testid={getTestId("steps-panel")}>
           {scenario.steps.map((step, sIdx) => (
             <StepSection
               key={step.id}
@@ -679,6 +694,7 @@ function TradeoffSandboxSection({ title, scenarios }: TradeoffSandboxSectionProp
               }}
               scenarioIdx={scenarioIdx}
               stepIdx={sIdx}
+              instanceId={instanceId}
             />
           ))}
         </div>

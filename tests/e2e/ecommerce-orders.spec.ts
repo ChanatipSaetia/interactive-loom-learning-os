@@ -107,16 +107,7 @@ test.describe('Issue #56: E-Commerce Order Processing Topic', () => {
     await expect(svg).toBeVisible()
   })
 
-  test('database node displays ERD schemas in inspector', async ({ page }) => {
-    // Open inspector sidebar
-    const inspectorBtn = page.getByTestId('flowchart-btn-inspector')
-    await inspectorBtn.click()
-    await page.waitForSelector('[data-testid="inspector-sidebar"]')
-
-    // Switch to ERD tab
-    await page.getByTestId('inspector-tab-erd').click()
-    await page.waitForTimeout(200)
-
+  test('database node displays ERD schemas in popover', async ({ page }) => {
     // Switch to SYS_ARCH view where order_db node exists
     const sysArchTab = page.getByText('System Architecture')
     await sysArchTab.click()
@@ -124,43 +115,24 @@ test.describe('Issue #56: E-Commerce Order Processing Topic', () => {
 
     // Click on database node
     const dbNode = page.getByTestId('flowchart-node-SYS_ARCH-order_db')
-    await dbNode.click({ force: true })
+    await dbNode.evaluate(el => el.dispatchEvent(new MouseEvent('click', { bubbles: true, cancelable: true })))
     await page.waitForTimeout(500)
 
     // ERD schema widget should be visible
-    const erdWidget = page.getByTestId('inspector-widget-erd')
+    const erdWidget = page.getByTestId('erd-schema-widget')
     await expect(erdWidget).toBeVisible()
-  })
-
-  test('ERD inspector tab accessible and shows schema hint', async ({ page }) => {
-    await page.getByTestId('flowchart-btn-inspector').click()
-    await page.waitForSelector('[data-testid="inspector-sidebar"]')
-
-    await page.getByTestId('inspector-tab-erd').click()
-    await page.waitForTimeout(300)
-
-    // ERD widget container visible with hint text
-    const erdWidget = page.getByTestId('inspector-widget-erd')
-    await expect(erdWidget).toBeVisible()
-    await expect(page.getByText('Click a database or aggregate node to view its schema')).toBeVisible()
   })
 
   test('payments table shows stripe_payment_intent_id column', async ({ page }) => {
-    await page.getByTestId('flowchart-btn-inspector').click()
-    await page.waitForSelector('[data-testid="inspector-sidebar"]')
-
-    await page.getByTestId('inspector-tab-erd').click()
-    await page.waitForTimeout(200)
-
     const sysArchTab = page.getByText('System Architecture')
     await sysArchTab.click()
     await page.waitForTimeout(500)
 
     const stripeNode = page.getByTestId('flowchart-node-SYS_ARCH-stripe')
-    await stripeNode.click({ force: true })
+    await stripeNode.evaluate(el => el.dispatchEvent(new MouseEvent('click', { bubbles: true, cancelable: true })))
     await page.waitForTimeout(500)
 
-    const erdWidget = page.getByTestId('inspector-widget-erd')
+    const erdWidget = page.getByTestId('erd-schema-widget')
     await expect(erdWidget).toBeVisible()
     await expect(page.getByText('payments')).toBeVisible()
   })

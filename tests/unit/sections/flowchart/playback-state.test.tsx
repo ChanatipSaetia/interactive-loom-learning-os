@@ -314,4 +314,14 @@ describe('usePlaybackState', () => {
     expect(result.current.currentStep).toBe(2);
     expect(result.current.activeNodeIds).toEqual(['node_a', 'node_c']);
   });
+
+  it('setCurrentStep updates the current step directly', () => {
+    const { result } = renderHook(() => usePlaybackState({ schema: baseSchema }));
+
+    act(() => { result.current.setCurrentStep(1); });
+
+    expect(result.current.currentStep).toBe(1);
+    expect(result.current.activeNodeIds).toEqual(['node_b']);
+    expect(result.current.highlightedNodeId).toBe('node_b');
+  });
 });

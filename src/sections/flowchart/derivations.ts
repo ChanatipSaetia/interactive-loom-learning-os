@@ -1219,9 +1219,19 @@ function layoutNodes(
       }
     });
 
+    // Compact columns to remove any empty columns/gaps (e.g. from state machine cycles)
+    const compactedCol = new Map<string, number>();
+    sortedCols.forEach((c, newColIdx) => {
+      const colNodes = colGroups.get(c)!;
+      colNodes.forEach(id => {
+        compactedCol.set(id, newColIdx);
+      });
+    });
+
+
     return nodes.map(n => ({
       ...n,
-      grid: [col.get(n.id)!, row.get(n.id)!]
+      grid: [compactedCol.get(n.id)!, row.get(n.id)!]
     }));
   }
 }
