@@ -7,6 +7,10 @@ import { StepCarousel } from './step-carousel';
 import { usePlaybackState } from './usePlaybackState';
 import { autoDeriveViews } from './derivations';
 
+const Maximize = Icons.Maximize2;
+const Minimize = Icons.Minimize2;
+const X = Icons.X;
+
 import {
   TYPES,
   COLORS,
@@ -218,6 +222,20 @@ export function Flowchart({ title, schema = INITIAL_SCHEMA }: FlowchartProps) {
     return () => document.removeEventListener('mousedown', handler);
   }, [dropdownOpen]);
 
+  // Fullscreen mode state
+  const [isFullscreen, setIsFullscreen] = useState(false);
+
+  useEffect(() => {
+    if (!isFullscreen) return;
+    const handler = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        setIsFullscreen(false);
+      }
+    };
+    document.addEventListener('keydown', handler);
+    return () => document.removeEventListener('keydown', handler);
+  }, [isFullscreen]);
+
   const handleNodeClick = useCallback((nodeId: string, x?: number, y?: number) => {
     let entity = localSchema.entities[nodeId];
     if (!entity) return;
@@ -279,11 +297,21 @@ export function Flowchart({ title, schema = INITIAL_SCHEMA }: FlowchartProps) {
   }, [viewKeys, activeViewKey]);
 
   return (
-    <div className="flowchart-section" data-testid="flowchart-section">
+    <div className={`flowchart-section${isFullscreen ? ' fullscreen' : ''}`} data-testid="flowchart-section">
       <div className="flowchart-header-container">
         {title && <h3 className="flowchart-title" data-testid="flowchart-title">{title}</h3>}
 
         <div style={{ display: 'flex', gap: '8px', alignItems: 'center', flexWrap: 'wrap' }}>
+          {/* Fullscreen toggle */}
+          <button
+            className="flowchart-fullscreen-toggle"
+            onClick={() => setIsFullscreen(!isFullscreen)}
+            title={isFullscreen ? 'Exit fullscreen' : 'Enter fullscreen'}
+            data-testid="flowchart-fullscreen-toggle"
+          >
+            {isFullscreen ? <Minimize size={14} /> : <Maximize size={14} />}
+          </button>
+
           {/* View tabs */}
           {visibleViewKeys.length > 1 && (
             <div className="flowchart-view-tabs" data-testid="flowchart-view-tabs">
@@ -361,6 +389,7 @@ export function Flowchart({ title, schema = INITIAL_SCHEMA }: FlowchartProps) {
           handleNodeClick={handleNodeClick}
           instanceId={instanceId}
           isGridMode={false}
+          isFullscreen={isFullscreen}
           activeNodePopup={activeNodePopup}
           setActiveNodePopup={setActiveNodePopup}
           setActiveViewKey={setActiveViewKey}
@@ -405,6 +434,18 @@ export function Flowchart({ title, schema = INITIAL_SCHEMA }: FlowchartProps) {
           instanceId={instanceId}
         />
       </div>
+
+      {isFullscreen && (
+        <button
+          className="flowchart-fullscreen-exit"
+          onClick={() => setIsFullscreen(false)}
+          title="Exit fullscreen (Escape)"
+          data-testid="flowchart-fullscreen-exit"
+        >
+          <X size={14} />
+          Exit
+        </button>
+      )}
     </div>
   );
 }

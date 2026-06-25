@@ -1354,3 +1354,89 @@
   from { transform: scale(0.95); opacity: 0; }
   to { transform: scale(1); opacity: 1; }
 }
+
+/* ==========================================================================
+   FULLSCREEN MODE OVERLAY
+   ========================================================================== */
+
+.flowchart-section.fullscreen {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 999;
+  background-color: var(--ctp-crust);
+  padding: var(--spacing-lg);
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
+  animation: flowchart-fade-in 0.2s ease-out;
+  overflow: auto;
+}
+
+.flowchart-section.fullscreen .flowchart-canvas-wrapper {
+  flex: 1;
+  min-height: 0;
+}
+
+.flowchart-section.fullscreen .flowchart-body {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.flowchart-section.fullscreen .flowchart-svg {
+  height: 100% !important;
+  flex: 1;
+  min-height: 0;
+}
+
+/* Fullscreen toggle button */
+.flowchart-fullscreen-toggle {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 12px;
+  font-family: var(--font-body);
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--ctp-overlay1);
+  background: transparent;
+  border: none;
+  border-radius: var(--radius-xs);
+  cursor: pointer;
+  transition: color 0.15s ease, background-color 0.15s ease;
+  white-space: nowrap;
+}
+
+.flowchart-fullscreen-toggle:hover {
+  color: var(--ctp-text);
+  background: var(--ctp-surface0);
+}
+
+/* Fullscreen exit button in overlay */
+.flowchart-fullscreen-exit {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  z-index: 1001;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 14px;
+  font-family: var(--font-body);
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--ctp-text);
+  background: var(--ctp-crust);
+  border: 1px solid var(--border-light);
+  border-radius: 20px;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+  transition: background-color 0.15s ease;
+}
+
+.flowchart-fullscreen-exit:hover {
+  background: var(--ctp-mantle);
+}

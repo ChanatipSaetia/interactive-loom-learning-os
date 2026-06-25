@@ -582,5 +582,99 @@ describe('Flowchart auto-derivation engine', () => {
   });
 });
 
+describe('Flowchart fullscreen mode', () => {
+  beforeEach(() => {
+    SectionRegistry.clear();
+    vi.useFakeTimers();
+  });
+
+  afterEach(() => {
+    vi.useRealTimers();
+  });
+
+  it('renders fullscreen toggle button', () => {
+    render(<Flowchart title="Test" schema={mockSchema} />, { wrapper });
+    expect(screen.getByTestId('flowchart-fullscreen-toggle')).toBeInTheDocument();
+  });
+
+  it('clicking toggle enters fullscreen mode', () => {
+    render(<Flowchart title="Test" schema={mockSchema} />, { wrapper });
+    const section = screen.getByTestId('flowchart-section');
+    expect(section).not.toHaveClass('fullscreen');
+
+    const toggle = screen.getByTestId('flowchart-fullscreen-toggle');
+    fireEvent.click(toggle);
+
+    expect(section).toHaveClass('fullscreen');
+    expect(screen.getByTestId('flowchart-fullscreen-exit')).toBeInTheDocument();
+  });
+
+  it('clicking exit button exits fullscreen mode', () => {
+    render(<Flowchart title="Test" schema={mockSchema} />, { wrapper });
+    const toggle = screen.getByTestId('flowchart-fullscreen-toggle');
+    fireEvent.click(toggle);
+    expect(screen.getByTestId('flowchart-section')).toHaveClass('fullscreen');
+
+    const exit = screen.getByTestId('flowchart-fullscreen-exit');
+    fireEvent.click(exit);
+
+    expect(screen.getByTestId('flowchart-section')).not.toHaveClass('fullscreen');
+    expect(screen.queryByTestId('flowchart-fullscreen-exit')).not.toBeInTheDocument();
+  });
+
+  it('Escape key exits fullscreen mode', () => {
+    render(<Flowchart title="Test" schema={mockSchema} />, { wrapper });
+    const toggle = screen.getByTestId('flowchart-fullscreen-toggle');
+    fireEvent.click(toggle);
+    expect(screen.getByTestId('flowchart-section')).toHaveClass('fullscreen');
+
+    fireEvent.keyDown(document, { key: 'Escape' });
+
+    expect(screen.getByTestId('flowchart-section')).not.toHaveClass('fullscreen');
+    expect(screen.queryByTestId('flowchart-fullscreen-exit')).not.toBeInTheDocument();
+  });
+
+  it('non-Escape key does not exit fullscreen', () => {
+    render(<Flowchart title="Test" schema={mockSchema} />, { wrapper });
+    const toggle = screen.getByTestId('flowchart-fullscreen-toggle');
+    fireEvent.click(toggle);
+    expect(screen.getByTestId('flowchart-section')).toHaveClass('fullscreen');
+
+    fireEvent.keyDown(document, { key: 'Enter' });
+
+    expect(screen.getByTestId('flowchart-section')).toHaveClass('fullscreen');
+  });
+
+  it('toggling fullscreen off and on again works', () => {
+    render(<Flowchart title="Test" schema={mockSchema} />, { wrapper });
+    const toggle = screen.getByTestId('flowchart-fullscreen-toggle');
+    const section = screen.getByTestId('flowchart-section');
+
+    fireEvent.click(toggle);
+    expect(section).toHaveClass('fullscreen');
+
+    fireEvent.click(screen.getByTestId('flowchart-fullscreen-exit'));
+    expect(section).not.toHaveClass('fullscreen');
+
+    fireEvent.click(toggle);
+    expect(section).toHaveClass('fullscreen');
+  });
+
+  it('SVG has data-fullscreen attribute reflecting state', () => {
+    render(<Flowchart title="Test" schema={mockSchema} />, { wrapper });
+    const svg = screen.getByTestId('flowchart-svg-DEFAULT_VIEW');
+    expect(svg).toHaveAttribute('data-fullscreen', 'false');
+
+    const toggle = screen.getByTestId('flowchart-fullscreen-toggle');
+    fireEvent.click(toggle);
+    expect(svg).toHaveAttribute('data-fullscreen', 'true');
+  });
+
+  it('fullscreen exit button not visible in normal mode', () => {
+    render(<Flowchart title="Test" schema={mockSchema} />, { wrapper });
+    expect(screen.queryByTestId('flowchart-fullscreen-exit')).not.toBeInTheDocument();
+  });
+});
+
 
 

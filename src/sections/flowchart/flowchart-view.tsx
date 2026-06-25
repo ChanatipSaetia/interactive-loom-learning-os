@@ -32,6 +32,7 @@ export interface FlowchartViewProps {
   handleNodeClick: (nodeId: string, x?: number, y?: number) => void;
   instanceId: string;
   isGridMode: boolean;
+  isFullscreen?: boolean;
   activeNodePopup?: {
     nodeId: string;
     x: number;
@@ -54,6 +55,7 @@ export function FlowchartView({
   handleNodeClick,
   instanceId,
   isGridMode,
+  isFullscreen,
   activeNodePopup,
   setActiveNodePopup,
   setActiveViewKey,
@@ -298,6 +300,7 @@ export function FlowchartView({
           ref={camera.svgRef}
           className="flowchart-svg"
           data-testid={`flowchart-svg-${viewKey}`}
+          data-fullscreen={isFullscreen || false}
           width="100%"
           height="100%"
           onMouseMove={(e) => camera.handlePointerMove(e.clientX, e.clientY)}
