@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach } from 'vitest'
-import { render, screen, fireEvent, waitFor } from '@testing-library/react'
+import { render, screen } from '@testing-library/react'
 import { SectionRegistry } from '../../../../src/core/registry'
 import BulletsSection, { type BulletItem } from '../../../../src/sections/bullets'
 
@@ -64,49 +64,6 @@ describe('Bullets Section', () => {
     expect(screen.getByTestId('bullet-text-0-1')).toHaveTextContent('Child two')
   })
 
-  it('renders checkable items with checkbox', () => {
-    const checkableItems: BulletItem[] = [
-      { text: 'Task one', checkable: true },
-      { text: 'Task two', checkable: true },
-    ]
-    render(<BulletsSection items={checkableItems} animate={false} />)
-    expect(screen.getByTestId('bullet-checkbox-0')).toBeInTheDocument()
-    expect(screen.getByTestId('bullet-icon-unchecked-0')).toBeInTheDocument()
-  })
-
-  it('toggles checkable item on click', async () => {
-    const checkableItems: BulletItem[] = [
-      { text: 'Task one', checkable: true },
-    ]
-    render(<BulletsSection items={checkableItems} animate={false} />)
-    const checkbox = screen.getByTestId('bullet-checkbox-0')
-    expect(screen.getByTestId('bullet-icon-unchecked-0')).toBeInTheDocument()
-
-    fireEvent.click(checkbox)
-    await waitFor(() => {
-      expect(screen.getByTestId('bullet-icon-checked-0')).toBeInTheDocument()
-    })
-    expect(screen.getByTestId('bullet-text-0')).toHaveClass('bullet-text-checked')
-  })
-
-  it('toggles off when clicking checked item', async () => {
-    const checkableItems: BulletItem[] = [
-      { text: 'Task one', checkable: true },
-    ]
-    render(<BulletsSection items={checkableItems} animate={false} />)
-    const checkbox = screen.getByTestId('bullet-checkbox-0')
-
-    fireEvent.click(checkbox)
-    await waitFor(() => {
-      expect(screen.getByTestId('bullet-icon-checked-0')).toBeInTheDocument()
-    })
-
-    fireEvent.click(checkbox)
-    await waitFor(() => {
-      expect(screen.getByTestId('bullet-icon-unchecked-0')).toBeInTheDocument()
-    })
-  })
-
   it('stagger animation applies opacity and transform on mount', () => {
     const { container } = render(<BulletsSection items={mockItems} />)
     const firstItem = container.querySelector('[data-testid="bullet-item-0"]')
@@ -125,14 +82,5 @@ describe('Bullets Section', () => {
     const { SectionRegistry: Registry } = await import('../../../../src/core/registry')
     expect(Registry.get('bullets')).toBeUndefined()
     void mod
-  })
-
-  it('pre-initialized items show as checked', () => {
-    const preCheckedItems: BulletItem[] = [
-      { text: 'Done task', checkable: true, checked: true },
-    ]
-    render(<BulletsSection items={preCheckedItems} animate={false} />)
-    expect(screen.getByTestId('bullet-icon-checked-0')).toBeInTheDocument()
-    expect(screen.getByTestId('bullet-text-0')).toHaveClass('bullet-text-checked')
   })
 })

@@ -74,50 +74,6 @@
   flex: 1;
 }
 
-.bullet-text-checked {
-  color: var(--muted);
-  text-decoration: line-through;
-}
-
-.bullet-checkbox {
-  flex-shrink: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 20px;
-  height: 20px;
-  border: 1px solid var(--border-light);
-  border-radius: var(--radius-xs);
-  background: none;
-  cursor: pointer;
-  transition: border-color 0.15s ease, background-color 0.15s ease;
-  padding: 0;
-  margin-top: var(--spacing-xxs);
-}
-
-.bullet-checkbox:hover {
-  border-color: var(--action-blue);
-  background-color: var(--pale-blue);
-}
-
-.bullet-checkbox-checked {
-  border-color: var(--action-blue);
-  background-color: rgba(140, 170, 238, 0.15);
-}
-
-.bullet-icon {
-  font-size: 12px;
-  line-height: 1;
-}
-
-.bullet-icon-checked {
-  color: var(--action-blue);
-}
-
-.bullet-icon-unchecked {
-  color: var(--muted);
-}
-
 .bullet-children {
   list-style: none;
   padding: var(--spacing-xs) 0 0 var(--spacing-lg);

@@ -126,10 +126,10 @@ export const accountabilityBullets: BulletItem[] = [
 
 // Readiness filter checklist
 export const readinessChecklist: BulletItem[] = [
-  { text: 'Can we describe the workflow so a new hire could execute it without asking how we usually do things?', checkable: true },
-  { text: 'Do we know which data sources are authoritative and which are off-limits?', checkable: true },
-  { text: 'Do we know what the agent is allowed to do, prohibited from doing, and at what autonomy tier?', checkable: true },
-  { text: 'Do we know how the agent gets stopped and who can pull the kill switch?', checkable: true },
-  { text: 'Do we know the baseline cycle time, cost, and quality to measure improvement?', checkable: true },
-  { text: 'Can we name the four people responsible for business outcomes, technical health, data quality, and behavioral oversight?', checkable: true },
+  { text: 'Can we describe the workflow so a new hire could execute it without asking how we usually do things?' },
+  { text: 'Do we know which data sources are authoritative and which are off-limits?' },
+  { text: 'Do we know what the agent is allowed to do, prohibited from doing, and at what autonomy tier?' },
+  { text: 'Do we know how the agent gets stopped and who can pull the kill switch?' },
+  { text: 'Do we know the baseline cycle time, cost, and quality to measure improvement?' },
+  { text: 'Can we name the four people responsible for business outcomes, technical health, data quality, and behavioral oversight?' },
 ]

@@ -1,10 +1,8 @@
-import { useState, useRef, useEffect, useCallback } from 'react'
+import { useRef, useEffect } from 'react'
 import './bullets.css'
 
 export interface BulletItem {
   text: string
-  checked?: boolean
-  checkable?: boolean
   children?: BulletItem[]
 }
 
@@ -21,8 +19,6 @@ function BulletItemRow({
   depth,
   path,
   ordered,
-  checkedItems,
-  onToggle,
   animate,
 }: {
   item: BulletItem
@@ -30,12 +26,9 @@ function BulletItemRow({
   depth: number
   path: string
   ordered: boolean
-  checkedItems: Set<string>
-  onToggle: (key: string) => void
   animate: boolean
 }) {
   const rowRef = useRef<HTMLLIElement>(null)
-  const itemKey = `${path}-${item.text}`
 
   useEffect(() => {
     if (!animate) return
@@ -55,8 +48,6 @@ function BulletItemRow({
     return () => clearTimeout(timer)
   }, [animate, depth, index, path])
 
-  const isChecked = item.checked || checkedItems.has(itemKey)
-
   return (
     <li
       ref={rowRef}
@@ -64,26 +55,6 @@ function BulletItemRow({
       data-testid={`bullet-item-${path}`}
     >
       <div className="bullet-item-row">
-        {item.checkable && (
-          <button
-            className={`bullet-checkbox ${isChecked ? 'bullet-checkbox-checked' : ''}`}
-            onClick={() => onToggle(itemKey)}
-            data-testid={`bullet-checkbox-${path}`}
-            aria-label={isChecked ? `Uncheck ${item.text}` : `Check ${item.text}`}
-            type="button"
-          >
-            {isChecked ? (
-              <span className="bullet-icon bullet-icon-checked" data-testid={`bullet-icon-checked-${path}`}>
-                &#10003;
-              </span>
-            ) : (
-              <span className="bullet-icon bullet-icon-unchecked" data-testid={`bullet-icon-unchecked-${path}`}>
-                &#9675;
-              </span>
-            )}
-          </button>
-        )}
-
         {ordered ? (
           <span className="bullet-marker bullet-marker-ordered" data-testid={`bullet-number-${path}`}>
           </span>
@@ -94,7 +65,7 @@ function BulletItemRow({
         )}
 
         <span
-          className={`bullet-text ${isChecked ? 'bullet-text-checked' : ''}`}
+          className="bullet-text"
           data-testid={`bullet-text-${path}`}
         >
           {item.text}
@@ -114,8 +85,6 @@ function BulletItemRow({
               depth={depth + 1}
               path={`${path}-${ci}`}
               ordered={ordered}
-              checkedItems={checkedItems}
-              onToggle={onToggle}
               animate={animate}
             />
           ))}
@@ -126,20 +95,6 @@ function BulletItemRow({
 }
 
 function BulletsSection({ title, items, ordered = false, animate = true }: BulletsSectionProps) {
-  const [checkedItems, setCheckedItems] = useState(new Set<string>())
-
-  const handleToggle = useCallback((key: string) => {
-    setCheckedItems((prev) => {
-      const next = new Set(prev)
-      if (next.has(key)) {
-        next.delete(key)
-      } else {
-        next.add(key)
-      }
-      return next
-    })
-  }, [])
-
   return (
     <div
       className="bullets-section"
@@ -163,8 +118,6 @@ function BulletsSection({ title, items, ordered = false, animate = true }: Bulle
             depth={0}
             path={`${index}`}
             ordered={ordered}
-            checkedItems={checkedItems}
-            onToggle={handleToggle}
             animate={animate}
           />
         ))}

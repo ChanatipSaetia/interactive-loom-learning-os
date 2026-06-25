@@ -9,14 +9,14 @@ test.describe('US-10: Bullets Section', () => {
 
     const firstItem = page.getByTestId('bullet-text-0')
     await expect(firstItem).toBeVisible()
-    await expect(firstItem).toHaveText('GET — Retrieve a resource')
+    await expect(firstItem).toHaveText('Tool use — call external APIs, run code, browse the web')
   })
 
   test('renders section title', async ({ page }) => {
     await page.goto('/#/demo/ai-agent')
 
     await expect(page.getByTestId('bullets-title')).toBeVisible()
-    await expect(page.getByTestId('bullets-title')).toHaveText('HTTP Methods')
+    await expect(page.getByTestId('bullets-title')).toHaveText('Key Agent Capabilities')
   })
 
   test('renders all bullet text items', async ({ page }) => {
@@ -33,19 +33,5 @@ test.describe('US-10: Bullets Section', () => {
 
     const markers = page.getByTestId('bullet-marker-0')
     await expect(markers).toBeVisible()
-  })
-
-  test('checkable items toggle checked state', async ({ page }) => {
-    await page.goto('/#/demo/ai-agent')
-
-    const checkbox = page.getByTestId('bullet-checkbox-0')
-    await expect(checkbox).toBeVisible()
-
-    await checkbox.click()
-    await expect(page.getByTestId('bullet-icon-checked-0')).toBeVisible()
-    await expect(page.getByTestId('bullet-text-0')).toHaveClass(/bullet-text-checked/)
-
-    await checkbox.click()
-    await expect(page.getByTestId('bullet-icon-unchecked-0')).toBeVisible()
   })
 })
