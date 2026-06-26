@@ -9,7 +9,7 @@ import { SPRING_PANEL } from "../../lib/ease";
 export interface DropdownOption {
   value: string;
   label: string;
-  [key: string]: any;
+  [key: string]: unknown;
 }
 
 export interface DropdownProps {
@@ -83,7 +83,7 @@ export function Dropdown({
   };
 
   const reduce = useReducedMotion();
-  const isTest = typeof (globalThis as any).process !== "undefined" && (globalThis as any).process.env?.NODE_ENV === "test";
+  const isTest = typeof (globalThis as unknown as { process?: { env?: { NODE_ENV?: string } } }).process !== "undefined" && (globalThis as unknown as { process?: { env?: { NODE_ENV?: string } } }).process?.env?.NODE_ENV === "test";
   const animateExit = !reduce && !isTest;
 
   return (

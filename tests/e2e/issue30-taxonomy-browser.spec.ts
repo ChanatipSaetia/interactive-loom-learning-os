@@ -35,10 +35,10 @@ test.describe('Issue #30: TaxonomyBrowser Section', () => {
     await page.goto('/#/demo/ai-agent')
 
     await expect(page.getByTestId('taxonomy-browser-card-title-0')).toBeVisible()
-    await expect(page.getByTestId('taxonomy-browser-card-title-0')).toHaveText('Reasoning & Planning')
+    await expect(page.getByTestId('taxonomy-browser-card-title-0')).toHaveText('Hierarchical Orchestration')
 
     await expect(page.getByTestId('taxonomy-browser-subtitle-0')).toBeVisible()
-    await expect(page.getByTestId('taxonomy-browser-subtitle-0')).toHaveText('Core Intelligence')
+    await expect(page.getByTestId('taxonomy-browser-subtitle-0')).toHaveText('Orchestrator-Workers')
 
     await expect(page.getByTestId('taxonomy-browser-description-0')).toBeVisible()
   })

@@ -42,7 +42,7 @@ export function Tabs({
   variant?: Variant;
   children: ReactNode;
   className?: string;
-  [key: string]: any;
+  [key: string]: unknown;
 }) {
   const [internal, setInternal] = useState(defaultValue ?? "");
   const layoutId = useId();

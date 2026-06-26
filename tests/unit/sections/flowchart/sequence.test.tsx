@@ -151,6 +151,7 @@ describe('Flowchart SEQUENCE view', () => {
 
   it('renders view tab for SEQUENCE when multiple views exist', () => {
     render(<Flowchart title="Multi View" schema={multiViewSeqSchema} />, { wrapper });
+    fireEvent.click(screen.getByTestId('dock-tab-views'));
     expect(screen.getByTestId('flowchart-view-tabs')).toBeInTheDocument();
     const tabs = screen.getByTestId('flowchart-view-tabs');
     expect(tabs.textContent).toContain('Sequence Diagram');
@@ -158,6 +159,7 @@ describe('Flowchart SEQUENCE view', () => {
 
   it('switches to SEQUENCE view from tab', () => {
     render(<Flowchart title="Multi View" schema={multiViewSeqSchema} />, { wrapper });
+    fireEvent.click(screen.getByTestId('dock-tab-views'));
     const tabs = screen.getByTestId('flowchart-view-tabs');
     const buttons = tabs.querySelectorAll('button');
     let seqTabBtn: HTMLElement | null = null;

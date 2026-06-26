@@ -1,4 +1,5 @@
 import '@testing-library/jest-dom'
+import React from 'react'
 
 // Mock IntersectionObserver for framer-motion viewport hooks (useInView, whileInView)
 class MockIntersectionObserver implements IntersectionObserver {
@@ -62,3 +63,12 @@ Object.defineProperty(window, 'ResizeObserver', {
     disconnect() {}
   },
 })
+
+// Mock AnimatePresence to render children synchronously in unit tests
+vi.mock('motion/react', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('motion/react')>();
+  return {
+    ...actual,
+    AnimatePresence: ({ children }: { children: React.ReactNode }) => children,
+  };
+});

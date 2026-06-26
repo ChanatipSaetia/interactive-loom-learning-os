@@ -172,6 +172,7 @@ describe('Flowchart journey controls', () => {
 
   it('renders journey selector when journeys provided', () => {
     render(<Flowchart title="Test" schema={mockSchema} />, { wrapper });
+    fireEvent.click(screen.getByTestId('dock-tab-journey'));
     expect(screen.getByTestId('flowchart-journey-select')).toBeInTheDocument();
   });
 
@@ -182,6 +183,7 @@ describe('Flowchart journey controls', () => {
 
   it('renders all journey options', () => {
     render(<Flowchart title="Test" schema={mockSchema} />, { wrapper });
+    fireEvent.click(screen.getByTestId('dock-tab-journey'));
     const select = screen.getByTestId('flowchart-journey-select') as HTMLSelectElement;
     expect(select.options).toHaveLength(2);
     expect(select.options[0].text).toBe('Journey A');
@@ -190,14 +192,17 @@ describe('Flowchart journey controls', () => {
 
   it('defaults to first journey', () => {
     render(<Flowchart title="Test" schema={mockSchema} />, { wrapper });
+    fireEvent.click(screen.getByTestId('dock-tab-journey'));
     const select = screen.getByTestId('flowchart-journey-select') as HTMLSelectElement;
     expect(select.value).toBe('journey-a');
   });
 
   it('switching journeys resets to overview', () => {
     render(<Flowchart title="Test" schema={mockSchema} />, { wrapper });
+    fireEvent.click(screen.getByTestId('dock-tab-journey'));
     const select = screen.getByTestId('flowchart-journey-select');
     fireEvent.change(select, { target: { value: 'journey-b' } });
+    fireEvent.click(screen.getByTestId('dock-tab-steps'));
     const progress = screen.getByTestId('flowchart-progress');
     expect(progress.textContent).toBe('0 / 2');
   });
@@ -506,6 +511,9 @@ describe('Flowchart auto-derivation engine', () => {
   it('automatically derives SYS_ARCH, SWIMLANES, SEQUENCE, and DATA_FLOW views', () => {
     render(<Flowchart title="Derivation Test" schema={masterSchema} />, { wrapper });
     
+    // Expand Views tab
+    fireEvent.click(screen.getByTestId('dock-tab-views'));
+    
     expect(screen.getByText('System Architecture')).toBeInTheDocument();
     expect(screen.getByText('Activity Swimlanes')).toBeInTheDocument();
     expect(screen.getByText('Sequence Diagram')).toBeInTheDocument();
@@ -520,6 +528,9 @@ describe('Flowchart auto-derivation engine', () => {
 
   it('renders demo agentSchema SYS_ARCH edges without NaN and logs them', () => {
     const { container } = render(<Flowchart title="Agent Test" schema={agentSchema} />, { wrapper });
+    
+    // Expand Views tab
+    fireEvent.click(screen.getByTestId('dock-tab-views'));
     
     fireEvent.click(screen.getByText('System Architecture'));
     

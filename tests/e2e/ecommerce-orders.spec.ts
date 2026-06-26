@@ -40,10 +40,12 @@ test.describe('Issue #56: E-Commerce Order Processing Topic', () => {
   })
 
   test('instant checkout journey executes with journey selector', async ({ page }) => {
+    await page.getByTestId('dock-tab-journey').click()
     const journeySelect = page.getByTestId('flowchart-journey-select')
     await expect(journeySelect).toBeVisible()
     await expect(journeySelect).toHaveValue('instant-checkout')
 
+    await page.getByTestId('dock-tab-steps').click()
     const playBtn = page.getByTestId('flowchart-btn-play')
     await expect(playBtn).toBeVisible()
 
@@ -52,17 +54,21 @@ test.describe('Issue #56: E-Commerce Order Processing Topic', () => {
   })
 
   test('fraud review block journey available in selector', async ({ page }) => {
+    await page.getByTestId('dock-tab-journey').click()
     const journeySelect = page.getByTestId('flowchart-journey-select')
     await journeySelect.selectOption('fraud-review-block')
     await expect(journeySelect).toHaveValue('fraud-review-block')
 
+    await page.getByTestId('dock-tab-steps').click()
     const progress = page.getByTestId('flowchart-progress')
     await expect(progress).toHaveText('0 / 6')
   })
 
   test('fraud review block step 5 triggers risk/escalation', async ({ page }) => {
+    await page.getByTestId('dock-tab-journey').click()
     await page.getByTestId('flowchart-journey-select').selectOption('fraud-review-block')
 
+    await page.getByTestId('dock-tab-steps').click()
     const nextBtn = page.getByTestId('flowchart-btn-next')
     await expect(nextBtn).toBeVisible()
 
@@ -76,18 +82,21 @@ test.describe('Issue #56: E-Commerce Order Processing Topic', () => {
   })
 
   test('view tabs show all 5 views', async ({ page }) => {
+    await page.getByTestId('dock-tab-views').click()
     const viewTabs = page.getByTestId('flowchart-view-tabs')
     await expect(viewTabs).toBeVisible()
 
-    await expect(page.getByText('Event Storming')).toBeVisible()
-    await expect(page.getByText('System Architecture')).toBeVisible()
-    await expect(page.getByText('Data Flow')).toBeVisible()
-    await expect(page.getByText('Activity Swimlanes')).toBeVisible()
-    await expect(page.getByText('Sequence Diagram')).toBeVisible()
+    const tabTexts = await viewTabs.locator('.flowchart-view-tab-label').evaluateAll(el => el.map(e => e.textContent?.trim()))
+    expect(tabTexts).toContain('Event Storming')
+    expect(tabTexts).toContain('System Architecture')
+    expect(tabTexts).toContain('Data Flow')
+    expect(tabTexts).toContain('Activity Swimlanes')
+    expect(tabTexts).toContain('Sequence Diagram')
   })
 
   test('switching to System Architecture view updates diagram', async ({ page }) => {
-    const sysArchTab = page.getByText('System Architecture')
+    await page.getByTestId('dock-tab-views').click()
+    const sysArchTab = page.locator('.flowchart-view-tab-trigger').filter({ hasText: 'System Architecture' })
     await sysArchTab.click()
     await page.waitForTimeout(500)
 
@@ -99,7 +108,8 @@ test.describe('Issue #56: E-Commerce Order Processing Topic', () => {
   })
 
   test('switching to Sequence Diagram view shows lifelines', async ({ page }) => {
-    const seqTab = page.getByText('Sequence Diagram')
+    await page.getByTestId('dock-tab-views').click()
+    const seqTab = page.locator('.flowchart-view-tab-trigger').filter({ hasText: 'Sequence Diagram' })
     await seqTab.click()
     await page.waitForTimeout(500)
 

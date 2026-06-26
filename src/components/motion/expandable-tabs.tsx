@@ -30,7 +30,7 @@ const TABS_TRANSITION: Transition = {
   stiffness: 380,
   damping: 30,
   mouse: 0.8, // standard spring values
-} as any;
+} as Record<string, unknown>;
 
 export function ExpandableTabs({
   tabs,
@@ -65,6 +65,14 @@ export function ExpandableTabs({
   const activeTab = tabs.find((t) => t.id === activeTabId);
   const showLabels = isContainerHovered || activeTabId !== null;
 
+  const [isAnimating, setIsAnimating] = useState(false);
+
+  useEffect(() => {
+    setIsAnimating(true);
+  }, [activeTabId]);
+
+  const showOverflow = activeTabId !== null && !isAnimating;
+
   return (
     <motion.div
       layout
@@ -73,7 +81,8 @@ export function ExpandableTabs({
       transition={TABS_TRANSITION}
       style={{ width: activeTabId === "steps" ? "100%" : "auto" }}
       className={cn(
-        "relative flex flex-col overflow-hidden rounded-[20px] border border-border bg-card/95 shadow-xl backdrop-blur-md transition-all duration-300",
+        "relative flex flex-col rounded-[20px] border border-border bg-card/95 shadow-xl backdrop-blur-md transition-all duration-300",
+        showOverflow ? "overflow-visible" : "overflow-hidden",
         className
       )}
     >
@@ -84,7 +93,8 @@ export function ExpandableTabs({
           opacity: activeTabId ? 1 : 0,
         }}
         transition={TABS_TRANSITION}
-        className={cn("overflow-hidden w-full", contentClassName)}
+        onAnimationComplete={() => setIsAnimating(false)}
+        className={cn("w-full", showOverflow ? "overflow-visible" : "overflow-hidden", contentClassName)}
       >
         <div ref={contentRef} className="p-3 w-full">
           <AnimatePresence mode="wait" initial={false}>

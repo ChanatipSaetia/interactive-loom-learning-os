@@ -29,6 +29,17 @@ export function PlaybackControls({
         size="icon"
         variant="ghost"
         className="flowchart-btn"
+        disabled={currentStep <= 0}
+        onClick={handlePrev}
+        data-testid="flowchart-btn-prev"
+        aria-label="Previous"
+      >
+        <SkipBack size={18} className="flowchart-btn-icon" />
+      </Button>
+      <Button
+        size="icon"
+        variant="ghost"
+        className="flowchart-btn"
         disabled={isPlaying || currentStep >= currentJourney.steps.length - 1}
         onClick={handlePlay}
         data-testid="flowchart-btn-play"
@@ -57,17 +68,6 @@ export function PlaybackControls({
         aria-label="Next"
       >
         <SkipForward size={18} className="flowchart-btn-icon" />
-      </Button>
-      <Button
-        size="icon"
-        variant="ghost"
-        className="flowchart-btn"
-        disabled={currentStep <= 0}
-        onClick={handlePrev}
-        data-testid="flowchart-btn-prev"
-        aria-label="Previous"
-      >
-        <SkipBack size={18} className="flowchart-btn-icon" />
       </Button>
       <Button
         size="icon"

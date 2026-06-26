@@ -221,6 +221,7 @@ function TextSlot({
   const label = typeof children === "string" ? children : null;
   const cascade = label !== null && !reduce;
 
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   useLayoutEffect(() => {
     const nextWidth = measureRef.current?.offsetWidth;
     if (!nextWidth) return;

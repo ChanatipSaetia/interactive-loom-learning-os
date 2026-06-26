@@ -166,8 +166,8 @@ test.describe('Inspector Sidebar Layout & Aggregate Dropdown', () => {
     await page.waitForTimeout(300);
     await expect(page.getByTestId('inspector-sidebar')).toBeVisible();
 
-    // Close
-    await page.getByTestId('flowchart-sidebar-toggle').click();
+    // Close using the close button in the sidebar (toggle button is hidden when open)
+    await page.getByTestId('inspector-close').click();
     await page.waitForTimeout(300);
     await expect(page.getByTestId('inspector-sidebar')).not.toBeVisible();
 

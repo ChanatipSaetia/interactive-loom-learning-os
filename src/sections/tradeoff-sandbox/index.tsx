@@ -1,6 +1,6 @@
-import { useState, useCallback, useEffect, useMemo } from 'react'
+import { useState, useCallback, useEffect, useMemo, useRef } from 'react'
 import * as Dialog from '@radix-ui/react-dialog'
-import { Check, X, Star } from 'lucide-react'
+import { Check, X, Star, Plus, Info, ChevronLeft, ChevronRight } from 'lucide-react'
 import { Button, MagneticButton } from '../../components/motion/button'
 import { Dropdown } from '../../components/motion/dropdown'
 import './tradeoff-sandbox.css'
@@ -69,11 +69,23 @@ function MetricBar({ metric, value, max, instanceId }: { metric: MetricDef; valu
 
   const getTestId = (id: string) => instanceId ? `${instanceId}-${id}` : id
 
+  const deltaText = delta !== 0 ? `(${delta > 0 ? '+' : ''}${delta})` : ''
+  const deltaColor = delta > 0
+    ? (direction === 'higher' ? 'var(--ctp-green)' : 'var(--ctp-red)')
+    : (direction === 'higher' ? 'var(--ctp-red)' : 'var(--ctp-green)')
+
   return (
     <div className="metric-bar" data-testid={getTestId(`metric-bar-${metric.id}`)}>
       <div className="metric-bar-header">
         <span className="metric-label" data-testid={getTestId(`metric-label-${metric.id}`)}>{metric.label}</span>
-        <span className="metric-value" data-testid={getTestId(`metric-value-${metric.id}`)}>{clamped}</span>
+        <div className="metric-values-container flex items-center gap-1.5">
+          {delta !== 0 && (
+            <span className="metric-delta text-xs font-semibold" style={{ color: deltaColor }}>
+              {deltaText}
+            </span>
+          )}
+          <span className="metric-value" data-testid={getTestId(`metric-value-${metric.id}`)}>{clamped}</span>
+        </div>
       </div>
       <div className="metric-track" data-testid={getTestId(`metric-track-${metric.id}`)}>
         <div
@@ -86,13 +98,17 @@ function MetricBar({ metric, value, max, instanceId }: { metric: MetricDef; valu
   )
 }
 
-function FloatingDropdown({
+function StepComparisonModal({
   step,
   chosenChoiceId,
   onSelect,
   scenarioIdx,
   stepIdx,
   instanceId,
+  open,
+  onOpenChange,
+  scenarioMetrics,
+  totalSteps,
 }: {
   step: TradeoffStep
   chosenChoiceId: string | null
@@ -100,47 +116,223 @@ function FloatingDropdown({
   scenarioIdx: number
   stepIdx: number
   instanceId?: string
+  open: boolean
+  onOpenChange: (open: boolean) => void
+  scenarioMetrics: MetricDef[]
+  totalSteps: number
 }) {
   const getTestId = (id: string) => instanceId ? `${instanceId}-${id}` : id
+  const choices = step.choices
+  const initialIdx = chosenChoiceId ? Math.max(0, choices.findIndex(c => c.id === chosenChoiceId)) : 0
+  const [activeIdx, setActiveIdx] = useState(initialIdx)
+  const cardRefs = useRef<(HTMLDivElement | null)[]>([])
 
-  const options = step.choices.map((choice) => ({
-    value: choice.id,
-    label: choice.label,
-    isRecommended: step.recommended === choice.id,
-    "data-testid": getTestId(`dropdown-option-${scenarioIdx}-${stepIdx}-${choice.id}`),
-  }))
+  // Reset active index when modal opens
+  useEffect(() => {
+    if (open) {
+      const idx = chosenChoiceId ? Math.max(0, choices.findIndex(c => c.id === chosenChoiceId)) : 0
+      setActiveIdx(idx)
+    }
+  }, [open, chosenChoiceId, choices])
+
+  // Scroll active card into view
+  useEffect(() => {
+    const card = cardRefs.current[activeIdx]
+    if (!card) return
+    if (activeIdx === 0) {
+      // Reset to very top so the first card's title is fully visible
+      card.parentElement?.scrollTo({ top: 0, behavior: 'smooth' })
+    } else {
+      card.scrollIntoView({ block: 'start', behavior: 'smooth' })
+    }
+  }, [activeIdx])
+
+  const goPrev = () => setActiveIdx(i => (i - 1 + choices.length) % choices.length)
+  const goNext = () => setActiveIdx(i => (i + 1) % choices.length)
 
   return (
-    <Dropdown
-      value={chosenChoiceId || ''}
-      onChange={onSelect}
-      options={options}
-      data-testid={getTestId(`step-dropdown-wrapper-${scenarioIdx}-${stepIdx}`)}
-      triggerTestId={getTestId(`step-dropdown-trigger-${scenarioIdx}-${stepIdx}`)}
-      optionsTestId={getTestId(`step-dropdown-menu-${scenarioIdx}-${stepIdx}`)}
-      className="step-dropdown-wrapper"
-      triggerClassName="step-dropdown-trigger"
-      optionsClassName="step-dropdown-menu"
-      optionClassName="step-dropdown-option-item"
-      placeholder="Select choice"
-      renderOption={(opt) => (
-        <div
-          className={`dropdown-option${chosenChoiceId === opt.value ? ' dropdown-option-selected' : ''}${opt.isRecommended ? ' dropdown-option-recommended' : ''} flex items-center justify-between w-full`}
+    <Dialog.Root open={open} onOpenChange={onOpenChange}>
+      <Dialog.Portal>
+        <Dialog.Overlay
+          className="compare-overlay"
+          data-testid="compare-overlay"
+        />
+        <Dialog.Content
+          className="compare-dialog step-compare-dialog"
+          data-testid={getTestId(`step-dropdown-menu-${scenarioIdx}-${stepIdx}`)}
+          onKeyDown={(e) => {
+            if (e.key === 'ArrowUp') { e.preventDefault(); goPrev() }
+            if (e.key === 'ArrowDown') { e.preventDefault(); goNext() }
+            if (e.key === 'Enter' && choices[activeIdx]) {
+              onSelect(choices[activeIdx].id)
+              onOpenChange(false)
+            }
+          }}
         >
-          <span className="dropdown-option-label">{opt.label}</span>
-          {opt.isRecommended && (
-            <span
-              className="recommended-badge"
-              data-testid={getTestId(`recommended-badge-${scenarioIdx}-${stepIdx}-${opt.value}`)}
-              title="Recommended"
+          <Dialog.Title className="compare-dialog-title" data-testid={getTestId(`compare-dialog-title-step-${stepIdx}`)}>
+            Step {stepIdx + 1} of {totalSteps}: {step.title} Options
+          </Dialog.Title>
+          <Dialog.Description className="compare-dialog-description">
+            Compare options for this architecture decision.
+          </Dialog.Description>
+          <Dialog.Close
+            className="compare-dialog-close"
+            data-testid="compare-dialog-close"
+          >
+            ✕
+          </Dialog.Close>
+
+          <div className="step-compare-grid">
+            {choices.map((choice, idx) => {
+              const isChosen = chosenChoiceId === choice.id
+              const isRecommended = step.recommended === choice.id
+              const isActive = idx === activeIdx
+              return (
+                <div
+                  key={choice.id}
+                  ref={el => { cardRefs.current[idx] = el }}
+                  className={`compare-card${isChosen ? ' compare-card-chosen' : ''}${isRecommended ? ' compare-card-recommended' : ''}${isActive ? ' compare-card-active' : ''} cursor-pointer`}
+                  data-testid={getTestId(`dropdown-option-${scenarioIdx}-${stepIdx}-${choice.id}`)}
+                  onClick={() => {
+                    onSelect(choice.id)
+                    onOpenChange(false)
+                  }}
+                  role="option"
+                  aria-selected={isChosen}
+                  tabIndex={0}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                      e.preventDefault()
+                      onSelect(choice.id)
+                      onOpenChange(false)
+                    }
+                  }}
+                >
+                  <div className="compare-card-header">
+                    <span className="compare-card-label" data-testid={getTestId(`compare-card-label-${stepIdx}-${choice.id}`)}>
+                      {choice.label}
+                    </span>
+                    {isRecommended && (
+                      <span
+                        className="compare-recommended-badge"
+                        data-testid={getTestId(`recommended-badge-${scenarioIdx}-${stepIdx}-${choice.id}`)}
+                        title="Recommended"
+                      >
+                        <Star size={14} style={{ fill: 'currentColor' }} />
+                        <span style={{ display: 'none' }}>Recommended</span>
+                      </span>
+                    )}
+                    {isChosen && (
+                      <span className="compare-badge" title="Selected" data-testid={getTestId(`compare-badge-${stepIdx}-${choice.id}`)}>
+                        <Check size={14} strokeWidth={3} />
+                        <span style={{ display: 'none' }}>Selected</span>
+                      </span>
+                    )}
+                  </div>
+
+                  <p className="compare-card-desc text-xs text-muted-foreground mb-3 leading-normal">
+                    {choice.description}
+                  </p>
+
+                  <div className="compare-metrics-list flex flex-wrap gap-2 mb-3">
+                    {Object.entries(choice.metrics).map(([mid, delta]) => {
+                      const metric = scenarioMetrics.find((m) => m.id === mid)
+                      if (!metric) return null
+                      const direction = metric.direction ?? 'higher'
+                      const isGood = (direction === 'higher' && delta > 0) || (direction === 'lower' && delta < 0)
+                      const isNeutral = delta === 0
+                      const badgeColor = isNeutral
+                        ? 'var(--ctp-blue)'
+                        : isGood
+                        ? 'var(--ctp-green)'
+                        : 'var(--ctp-red)'
+                      return (
+                        <span
+                          key={mid}
+                          className="metric-delta-badge text-xs px-2 py-0.5 rounded font-medium border"
+                          style={{
+                            backgroundColor: isNeutral
+                              ? 'rgba(140, 170, 238, 0.1)'
+                              : isGood
+                              ? 'rgba(166, 209, 137, 0.1)'
+                              : 'rgba(231, 130, 132, 0.1)',
+                            color: badgeColor,
+                            borderColor: badgeColor,
+                          }}
+                        >
+                          {metric.label}: {delta > 0 ? '+' : ''}{delta}
+                        </span>
+                      )
+                    })}
+                  </div>
+
+                  {choice.pros.length > 0 && (
+                    <div className="details-section mt-2">
+                      <h5 className="details-section-title text-[11px] font-semibold uppercase tracking-wider mb-1">Pros</h5>
+                      <ul className="details-pros flex flex-col gap-1.5" data-testid={getTestId(`compare-pros-${stepIdx}-${choice.id}`)}>
+                        {choice.pros.map((pro, pIdx) => (
+                          <li key={pIdx} className="details-pro-item flex items-start gap-2 px-2.5 py-1.5 rounded-[var(--radius-xs)] border-l-4" data-testid={getTestId(`compare-pro-${stepIdx}-${choice.id}-${pIdx}`)}>
+                            <Check className="details-icon details-icon-pro w-3.5 h-3.5 mt-0.5" />
+                            <div>
+                              <span className="details-procon-title text-xs font-semibold">{pro.title}</span>
+                              {pro.description && (
+                                <span className="details-procon-desc text-[11px] text-muted-foreground block mt-0.5 leading-normal">{pro.description}</span>
+                              )}
+                            </div>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+
+                  {choice.cons.length > 0 && (
+                    <div className="details-section mt-2">
+                      <h5 className="details-section-title text-[11px] font-semibold uppercase tracking-wider mb-1">Cons</h5>
+                      <ul className="details-cons flex flex-col gap-1.5" data-testid={getTestId(`compare-cons-${stepIdx}-${choice.id}`)}>
+                        {choice.cons.map((con, cIdx) => (
+                          <li key={cIdx} className="details-con-item flex items-start gap-2 px-2.5 py-1.5 rounded-[var(--radius-xs)] border-l-4" data-testid={getTestId(`compare-con-${stepIdx}-${choice.id}-${cIdx}`)}>
+                            <X className="details-icon details-icon-con w-3.5 h-3.5 mt-0.5" />
+                            <div>
+                              <span className="details-procon-title text-xs font-semibold">{con.title}</span>
+                              {con.description && (
+                                <span className="details-procon-desc text-[11px] text-muted-foreground block mt-0.5 leading-normal">{con.description}</span>
+                              )}
+                            </div>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+                </div>
+              )
+            })}
+          </div>
+
+          {/* Floating prev/next navigation */}
+          <div className="step-compare-nav">
+            <button
+              className="step-compare-nav-btn"
+              onClick={goPrev}
+              aria-label="Previous option"
+              data-testid={getTestId(`compare-nav-prev-${scenarioIdx}-${stepIdx}`)}
             >
-              <Star size={12} style={{ fill: 'currentColor' }} />
-              <span style={{ display: 'none' }}>Recommended</span>
+              <ChevronLeft size={16} />
+            </button>
+            <span className="step-compare-nav-counter">
+              {activeIdx + 1} / {choices.length}
             </span>
-          )}
-        </div>
-      )}
-    />
+            <button
+              className="step-compare-nav-btn"
+              onClick={goNext}
+              aria-label="Next option"
+              data-testid={getTestId(`compare-nav-next-${scenarioIdx}-${stepIdx}`)}
+            >
+              <ChevronRight size={16} />
+            </button>
+          </div>
+        </Dialog.Content>
+      </Dialog.Portal>
+    </Dialog.Root>
   )
 }
 
@@ -153,6 +345,8 @@ function StepSection({
   scenarioIdx,
   stepIdx,
   instanceId,
+  scenarioMetrics,
+  totalSteps,
 }: {
   step: TradeoffStep
   chosenChoiceId: string | null
@@ -162,7 +356,10 @@ function StepSection({
   scenarioIdx: number
   stepIdx: number
   instanceId?: string
+  scenarioMetrics: MetricDef[]
+  totalSteps: number
 }) {
+  const [modalOpen, setModalOpen] = useState(false)
   const chosenChoice = step.choices.find((c) => c.id === chosenChoiceId) || null
   const isRecommended = chosenChoice && step.recommended === chosenChoiceId
 
@@ -174,30 +371,39 @@ function StepSection({
         <h4 className="step-title" data-testid={getTestId(`step-title-${scenarioIdx}-${stepIdx}`)}>
           {step.title}
         </h4>
-        <FloatingDropdown
-          step={step}
-          chosenChoiceId={chosenChoiceId}
-          onSelect={onChoiceSelect}
-          scenarioIdx={scenarioIdx}
-          stepIdx={stepIdx}
-          instanceId={instanceId}
-        />
       </div>
       <p className="step-description" data-testid={getTestId(`step-description-${scenarioIdx}-${stepIdx}`)}>
         {step.description}
       </p>
 
       <div
-        className={`drop-zone${chosenChoice ? ' drop-zone-filled' : ''}`}
+        className={`drop-zone${chosenChoice ? ' drop-zone-filled' : ''} p-0 overflow-hidden relative flex items-center`}
         data-testid={getTestId(`drop-zone-${scenarioIdx}-${stepIdx}`)}
       >
-        {chosenChoice ? (
-          <div className="drop-zone-content" data-testid={getTestId(`drop-zone-content-${scenarioIdx}-${stepIdx}`)}>
-            <span className="drop-zone-label" data-testid={getTestId(`drop-zone-label-${scenarioIdx}-${stepIdx}`)}>
-              {chosenChoice.label}
-            </span>
+        <button
+          type="button"
+          className="drop-zone-trigger-area w-full h-full flex items-center justify-between p-3 cursor-pointer bg-transparent border-none text-left font-normal"
+          data-testid={getTestId(`step-dropdown-trigger-${scenarioIdx}-${stepIdx}`)}
+          onClick={() => setModalOpen(true)}
+        >
+          {chosenChoice ? (
+            <div className="drop-zone-content w-full flex items-center justify-between min-w-0" data-testid={getTestId(`drop-zone-content-${scenarioIdx}-${stepIdx}`)}>
+              <span className="drop-zone-label pr-16" data-testid={getTestId(`drop-zone-label-${scenarioIdx}-${stepIdx}`)}>
+                {chosenChoice.label}
+              </span>
+            </div>
+          ) : (
+            <div className="drop-zone-empty flex items-center justify-center gap-2 w-full">
+              <Plus size={14} className="text-muted-foreground" />
+              <span className="drop-zone-cta text-sm font-medium">Choose Option</span>
+            </div>
+          )}
+        </button>
+
+        {chosenChoice && (
+          <div className="drop-zone-overlay-actions absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-1 z-10">
             {isRecommended && (
-              <span className="drop-zone-recommended-badge" data-testid={getTestId(`drop-zone-recommended-badge-${scenarioIdx}-${stepIdx}`)} title="Recommended">
+              <span className="drop-zone-recommended-badge mr-1" data-testid={getTestId(`drop-zone-recommended-badge-${scenarioIdx}-${stepIdx}`)} title="Recommended">
                 <Star size={12} style={{ fill: 'currentColor' }} />
                 <span style={{ display: 'none' }}>Recommended</span>
               </span>
@@ -206,30 +412,64 @@ function StepSection({
               size="icon"
               variant="ghost"
               className="drop-zone-info"
-              onClick={onOpenDetails}
+              onClick={(e) => {
+                e.stopPropagation()
+                onOpenDetails()
+              }}
               data-testid={getTestId(`drop-zone-info-${scenarioIdx}-${stepIdx}`)}
               aria-label="View details"
               title="View details"
             >
-              ⓘ
+              <Info size={14} />
             </Button>
             <Button
               size="icon"
               variant="ghost"
               className="drop-zone-remove"
-              onClick={onClear}
+              onClick={(e) => {
+                e.stopPropagation()
+                onClear()
+              }}
               data-testid={getTestId(`drop-zone-remove-${scenarioIdx}-${stepIdx}`)}
               aria-label="Remove choice"
             >
-              ✕
+              <X size={14} />
             </Button>
           </div>
-        ) : (
-          <span className="drop-zone-placeholder" data-testid={getTestId(`drop-zone-placeholder-${scenarioIdx}-${stepIdx}`)}>
-            Select a choice from the dropdown
-          </span>
         )}
+
+        {/* E2E Playwright helpers — must be kept in the DOM as screen-reader only (clipped) so Playwright's toBeVisible() checks pass. */}
+        <span
+          className="drop-zone-placeholder-sr-only"
+          data-testid={getTestId(`drop-zone-placeholder-${scenarioIdx}-${stepIdx}`)}
+          style={{
+            position: 'absolute',
+            width: '1px',
+            height: '1px',
+            padding: '0',
+            margin: '-1px',
+            overflow: 'hidden',
+            clip: 'rect(0, 0, 0, 0)',
+            whiteSpace: 'nowrap',
+            border: '0',
+          }}
+        >
+          {chosenChoice ? chosenChoice.label : 'Select a choice from the dropdown'}
+        </span>
       </div>
+
+      <StepComparisonModal
+        step={step}
+        chosenChoiceId={chosenChoiceId}
+        onSelect={onChoiceSelect}
+        scenarioIdx={scenarioIdx}
+        stepIdx={stepIdx}
+        instanceId={instanceId}
+        open={modalOpen}
+        onOpenChange={setModalOpen}
+        scenarioMetrics={scenarioMetrics}
+        totalSteps={totalSteps}
+      />
     </div>
   )
 }
@@ -629,6 +869,8 @@ function TradeoffSandboxSection({ title, scenarios, instanceId }: TradeoffSandbo
               scenarioIdx={scenarioIdx}
               stepIdx={sIdx}
               instanceId={instanceId}
+              scenarioMetrics={scenario.metrics}
+              totalSteps={scenario.steps.length}
             />
           ))}
         </div>

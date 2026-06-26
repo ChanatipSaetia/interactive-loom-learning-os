@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useId, useRef, useState, type ComponentType } from 'react';
+import { useCallback, useEffect, useMemo, useId, useRef, useState, type ComponentType, type SVGProps } from 'react';
 import * as Icons from 'lucide-react';
 import { Button } from '../../components/motion/button';
 import { Dropdown } from '../../components/motion/dropdown';
@@ -83,7 +83,8 @@ export function Flowchart({ title, schema = INITIAL_SCHEMA }: FlowchartProps) {
   }, [viewKeys, activeViewKey]);
 
   const activeView = useMemo(() => {
-    return localSchema.views[activeViewKey] || { name: 'Empty', icon: 'Workflow', nodes: [], groups: [] };
+    return (localSchema.views as Record<string, typeof localSchema.views[keyof typeof localSchema.views]>)[activeViewKey] || { name: 'Empty', icon: 'Workflow', nodes: [], groups: [] };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [localSchema.views, activeViewKey]);
 
   // Popup state for node related views
@@ -297,20 +298,13 @@ export function Flowchart({ title, schema = INITIAL_SCHEMA }: FlowchartProps) {
   };
 
   const [activeDockTabId, setActiveDockTabId] = useState<string | null>(() => {
-    return playback.currentJourney ? 'playback' : null;
+    return schema.journeys && schema.journeys.length > 0 ? 'steps' : null;
   });
   const [cameraControls, setCameraControls] = useState<{
     handleZoomIn: () => void;
     handleZoomOut: () => void;
     handleFitToScreen: () => void;
   } | null>(null);
-
-  // Auto-expand Steps tab when a journey is selected
-  useEffect(() => {
-    if (playback.currentJourneyId) {
-      setActiveDockTabId('steps');
-    }
-  }, [playback.currentJourneyId]);
 
 
   // Filter visible view tabs to show EVENT_STORMING, SWIMLANES, SYS_ARCH, DATA_FLOW, SEQUENCE
@@ -327,7 +321,7 @@ export function Flowchart({ title, schema = INITIAL_SCHEMA }: FlowchartProps) {
       const view = localSchema.views[vk];
       const name = view?.name || vk;
       
-      let IconComponent: ComponentType<any> = Workflow;
+      let IconComponent: ComponentType<SVGProps<SVGSVGElement>> = Workflow;
       if (vk === 'EVENT_STORMING') IconComponent = EventStormingIcon;
       else if (vk === 'SYS_ARCH') IconComponent = SystemArchitectureIcon;
       else if (vk === 'DATA_FLOW') IconComponent = DataFlowIcon;
@@ -433,17 +427,22 @@ export function Flowchart({ title, schema = INITIAL_SCHEMA }: FlowchartProps) {
         content: (
           <div className="flowchart-dock-steps">
             {playback.currentJourney && (
-              <div className="flowchart-dock-playback">
-                <PlaybackControls
-                  currentJourney={playback.currentJourney}
-                  currentStep={playback.currentStep}
-                  isPlaying={playback.isPlaying}
-                  handlePlay={playback.handlePlay}
-                  handlePause={playback.handlePause}
-                  handleNext={playback.handleNext}
-                  handlePrev={playback.handlePrev}
-                  handleReset={playback.handleReset}
-                />
+              <div className="flowchart-dock-steps-controls">
+                <div className="flowchart-dock-journey-title" data-testid="flowchart-dock-journey-title">
+                  {playback.currentJourney.label}
+                </div>
+                <div className="flowchart-dock-playback">
+                  <PlaybackControls
+                    currentJourney={playback.currentJourney}
+                    currentStep={playback.currentStep}
+                    isPlaying={playback.isPlaying}
+                    handlePlay={playback.handlePlay}
+                    handlePause={playback.handlePause}
+                    handleNext={playback.handleNext}
+                    handlePrev={playback.handlePrev}
+                    handleReset={playback.handleReset}
+                  />
+                </div>
               </div>
             )}
             <StepCarousel
@@ -514,6 +513,7 @@ export function Flowchart({ title, schema = INITIAL_SCHEMA }: FlowchartProps) {
     // ── Floating buttons (fullscreen, inspector) rendered outside dock ──
 
     return tabs;
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activeSteps, activeStep, handleStepClick, instanceId, playback, cameraControls, isFullscreen, visibleViewKeys, actionBarItems, activeViewKey, localSchema.journeys]);
 
   return (
@@ -548,15 +548,15 @@ export function Flowchart({ title, schema = INITIAL_SCHEMA }: FlowchartProps) {
         <button
           onClick={() => setIsFullscreen(!isFullscreen)}
           className="flowchart-fullscreen-toggle-btn"
-          data-testid="flowchart-fullscreen-toggle"
+          data-testid={isFullscreen ? 'flowchart-fullscreen-exit' : 'flowchart-fullscreen-toggle'}
           title={isFullscreen ? 'Exit Fullscreen' : 'Fullscreen'}
           aria-label={isFullscreen ? 'Exit Fullscreen' : 'Fullscreen'}
         >
           {isFullscreen ? <Minimize size={16} /> : <Maximize size={16} />}
         </button>
 
-        {/* Inspector Toggle Button - Fixed top-right (hidden when sidebar is open) */}
-        {isFullscreen && !isSidebarOpen && (
+        {/* Inspector Toggle Button - Fixed top-right */}
+        {isFullscreen && (
           <button
             onClick={() => {
               if (isSidebarOpen) {
@@ -570,6 +570,7 @@ export function Flowchart({ title, schema = INITIAL_SCHEMA }: FlowchartProps) {
             data-testid="flowchart-sidebar-toggle"
             title={isSidebarOpen ? 'Close Inspector' : 'Open Inspector'}
             aria-label={isSidebarOpen ? 'Close Inspector' : 'Open Inspector'}
+            style={isSidebarOpen ? { display: 'none' } : undefined}
           >
             <PanelRight size={16} />
           </button>
