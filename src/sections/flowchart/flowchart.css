@@ -111,7 +111,7 @@
   @apply flex justify-center items-center flex-1 h-8 border-none bg-transparent rounded-[var(--radius-xs)] cursor-pointer;
   color: var(--ctp-overlay1);
   font-family: var(--font-body);
-  font-size: 12px;
+  font-size: 14px;
   transition: color 0.15s ease, background-color 0.15s ease;
 }
 
@@ -193,7 +193,7 @@
 }
 
 .flowchart-sidebar-item-subtitle {
-  @apply text-[10px] mt-0.5;
+  @apply text-[12px] mt-0.5;
   font-family: var(--font-body);
   color: var(--ctp-subtext0);
 }
@@ -280,7 +280,7 @@
   @apply flex items-center justify-center gap-[6px] bg-transparent rounded-[var(--radius-xs)] border border-border py-[7px] cursor-pointer mt-2;
   color: var(--ctp-red);
   font-family: var(--font-body);
-  font-size: 12px;
+  font-size: 13px;
   font-weight: 500;
   transition: border-color 0.15s ease, background-color 0.15s ease;
 }
@@ -954,7 +954,7 @@
 .flowchart-fullscreen-exit {
   @apply absolute top-4 right-4 z-[1001] flex items-center gap-[6px] px-3.5 py-1.5 rounded-[20px] border border-border cursor-pointer shadow-lg;
   font-family: var(--font-body);
-  font-size: 12px;
+  font-size: 14px;
   font-weight: 600;
   color: var(--ctp-text);
   background: var(--ctp-crust);
@@ -1066,8 +1066,8 @@
 }
 
 .flowchart-view-tab-list {
-  background-color: var(--ctp-mantle) !important;
-  border: 1px solid var(--border) !important;
+  background: transparent !important;
+  border: none !important;
   box-shadow: none !important;
 }
 
@@ -1076,9 +1076,18 @@
   background-color: rgba(140, 170, 238, 0.12) !important;
 }
 
+/* Keep text dark on translucent indicator */
+.flowchart-view-tab-trigger[aria-selected="true"] {
+  color: var(--ctp-blue) !important;
+}
+
 .flowchart-view-tab-trigger {
   color: var(--ctp-overlay1) !important;
-  font-size: 11px !important;
+}
+
+.flowchart-view-tab-trigger {
+  color: var(--ctp-overlay1) !important;
+  font-size: 13px !important;
   padding: 4px 10px !important;
   min-height: 28px !important;
 }
@@ -1087,8 +1096,12 @@
   color: var(--ctp-blue) !important;
 }
 
-/* View tab label — hidden on mobile by default, shown for active tab */
+/* View tab label — hidden by default, shown only for active tab */
 .flowchart-view-tab-label {
+  display: none;
+}
+
+.flowchart-view-tab-trigger[aria-selected="true"] .flowchart-view-tab-label {
   display: inline;
 }
 

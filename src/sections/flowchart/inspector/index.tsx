@@ -202,14 +202,14 @@ export function InspectorSidebar({
                 </div>
                 {detailsEntity.desc && (
                   <div data-testid="details-description">
-                    <p style={{ margin: 0, fontSize: '11px', lineHeight: '1.5', color: 'var(--ctp-subtext1)' }}>
+                    <p style={{ margin: 0, fontSize: '13px', lineHeight: '1.5', color: 'var(--ctp-subtext1)' }}>
                       {detailsEntity.desc}
                     </p>
                   </div>
                 )}
                 {relatedViews.length > 0 && (
                   <div style={{ marginTop: '12px', borderTop: '1px solid var(--border-light)', paddingTop: '8px' }}>
-                    <div style={{ fontSize: '9px', fontWeight: 'bold', color: 'var(--ctp-overlay1)', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '6px' }}>
+                    <div style={{ fontSize: '11px', fontWeight: 'bold', color: 'var(--ctp-overlay1)', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '6px' }}>
                       Related Views
                     </div>
                     <div data-testid="details-related-views" style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
@@ -224,7 +224,7 @@ export function InspectorSidebar({
                             borderRadius: '4px',
                             color: 'var(--ctp-text)',
                             padding: '6px 10px',
-                            fontSize: '11px',
+                            fontSize: '13px',
                             textAlign: 'left',
                             cursor: 'pointer',
                             transition: 'all 0.15s ease',
@@ -242,8 +242,8 @@ export function InspectorSidebar({
                           }}
                         >
                           <span style={{ fontWeight: '600', color: 'var(--ctp-blue)' }}>{v.name}</span>
-                          <span style={{ fontSize: '10px', color: 'var(--ctp-subtext0)' }}>
-                            {v.titleInView} {v.typeInView && <span style={{ opacity: 0.7, fontSize: '9px', fontFamily: 'var(--font-mono)' }}>({v.typeInView})</span>}
+                          <span style={{ fontSize: '11px', color: 'var(--ctp-subtext0)' }}>
+                            {v.titleInView} {v.typeInView && <span style={{ opacity: 0.7, fontSize: '10px', fontFamily: 'var(--font-mono)' }}>({v.typeInView})</span>}
                           </span>
                         </button>
                       ))}
@@ -253,7 +253,7 @@ export function InspectorSidebar({
               </>
             ) : (
               <div data-testid="details-empty">
-                <p style={{ margin: 0, fontSize: '11px', color: 'var(--ctp-subtext1)' }}>
+                <p style={{ margin: 0, fontSize: '13px', color: 'var(--ctp-subtext1)' }}>
                   Select a node to view details
                 </p>
               </div>

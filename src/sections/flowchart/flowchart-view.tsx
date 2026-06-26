@@ -310,12 +310,12 @@ export function FlowchartView({
           display: 'flex',
           alignItems: 'center',
           gap: '4px',
-          fontSize: '10px',
-          fontWeight: 600,
-          color: 'var(--ctp-overlay1)',
-          pointerEvents: 'none',
-          textTransform: 'uppercase',
-          letterSpacing: '0.5px'
+          fontSize: '12px',
+           fontWeight: 600,
+           color: 'var(--ctp-overlay1)',
+           pointerEvents: 'none',
+           textTransform: 'uppercase',
+           letterSpacing: '0.5px'
         }}>
           {viewLabel}
         </div>
@@ -427,10 +427,10 @@ export function FlowchartView({
                        <text
                          x={xStart + 6}
                          y={yVal + 12}
-                         fontSize="8"
-                         fontWeight="bold"
-                         fill={group.textColor || 'var(--ctp-text)'}
-                         fontFamily="var(--font-mono)"
+                         fontSize="11"
+                          fontWeight="bold"
+                          fill={group.textColor || 'var(--ctp-text)'}
+                          fontFamily="var(--font-mono)"
                        >
                          {group.title}
                        </text>
@@ -495,16 +495,16 @@ export function FlowchartView({
                          y={boxY + 20}
                          textAnchor="middle"
                          fill="var(--ctp-text)"
-                         fontSize="9"
-                         fontWeight="600"
-                       >
-                         {(entity.viewTitles?.SEQUENCE ?? entity.title)}
-                       </text>
-                     </g>
-                   );
-                 })}
+                          fontSize="12"
+                          fontWeight="600"
+                        >
+                          {(entity.viewTitles?.SEQUENCE ?? entity.title)}
+                        </text>
+                      </g>
+                    );
+                  })}
 
-                 {/* Sequence bottom participant boxes */}
+                  {/* Sequence bottom participant boxes */}
                  {seqColumns.map(([colIdx, nodeId]) => {
                    const entity = schema.entities[nodeId];
                    if (!entity) return null;
@@ -536,16 +536,16 @@ export function FlowchartView({
                          y={bottomY + 20}
                          textAnchor="middle"
                          fill="var(--ctp-text)"
-                         fontSize="9"
-                         fontWeight="600"
-                       >
-                         {(entity.viewTitles?.SEQUENCE ?? entity.title)}
-                       </text>
-                     </g>
-                   );
-                 })}
+                          fontSize="12"
+                          fontWeight="600"
+                        >
+                          {(entity.viewTitles?.SEQUENCE ?? entity.title)}
+                        </text>
+                      </g>
+                    );
+                  })}
 
-                 {/* Sequence activation bars */}
+                  {/* Sequence activation bars */}
                  {activeNodeIds && activeNodeIds.map(nodeId => {
                    const colEntry = seqColumns.find(([, id]) => id === nodeId);
                    if (!colEntry) return null;
@@ -610,12 +610,12 @@ export function FlowchartView({
                            y={y - 6}
                            textAnchor="middle"
                            fill={isActiveMsg ? 'var(--ctp-blue)' : 'var(--ctp-subtext0)'}
-                           fontSize="8"
-                           fontFamily="var(--font-mono)"
-                           fontWeight="500"
-                           opacity={isActiveMsg ? '0.95' : '0.75'}
-                           style={{ pointerEvents: 'none', userSelect: 'none' }}
-                           data-testid={`flowchart-seq-msg-label-${viewKey}-${idx}`}
+                            fontSize="11"
+                            fontFamily="var(--font-mono)"
+                            fontWeight="500"
+                            opacity={isActiveMsg ? '0.95' : '0.75'}
+                            style={{ pointerEvents: 'none', userSelect: 'none' }}
+                            data-testid={`flowchart-seq-msg-label-${viewKey}-${idx}`}
                          >
                            {rel.label}
                          </text>
@@ -651,11 +651,11 @@ export function FlowchartView({
                            strokeWidth="1.5"
                          />
                          <text
-                           x={minX - 80}
-                           y={yVal + 25}
-                           fontSize="13"
-                           fontWeight="bold"
-                           fill={group.textColor || '#b5bfe2'}
+                            x={minX - 80}
+                            y={yVal + 25}
+                            fontSize="16"
+                            fontWeight="bold"
+                            fill={group.textColor || '#b5bfe2'}
                          >
                            {group.title}
                          </text>
@@ -685,11 +685,11 @@ export function FlowchartView({
                          strokeDasharray="4 4"
                        />
                        <text
-                         x={gMinX + 15}
-                         y={gMinY + 22}
-                         fontSize="11"
-                         fontWeight="bold"
-                         fill={group.textColor || 'var(--ctp-text)'}
+                          x={gMinX + 15}
+                          y={gMinY + 22}
+                          fontSize="13"
+                          fontWeight="bold"
+                          fill={group.textColor || 'var(--ctp-text)'}
                        >
                          {group.title}
                        </text>
@@ -776,12 +776,12 @@ export function FlowchartView({
                              y={midY - 6}
                              textAnchor={isVertical ? 'start' : 'middle'}
                              fill="var(--ctp-green)"
-                             fontSize="9"
-                             fontWeight="600"
-                             opacity={isHighlighted ? '0.95' : '0.75'}
-                             style={{ pointerEvents: 'none', userSelect: 'none' }}
-                           >
-                             handled by
+                              fontSize="11"
+                              fontWeight="600"
+                              opacity={isHighlighted ? '0.95' : '0.75'}
+                              style={{ pointerEvents: 'none', userSelect: 'none' }}
+                            >
+                              handled by
                            </text>
                          )}
                          {!isHandledBy && rel.label && (
@@ -790,13 +790,13 @@ export function FlowchartView({
                              y={midY - 4}
                              textAnchor={isVertical ? 'start' : 'middle'}
                              fill={isHighlighted ? 'var(--ctp-blue)' : 'var(--ctp-subtext0)'}
-                             fontSize="9"
-                             fontFamily="var(--font-mono)"
-                             fontWeight="500"
-                             opacity={isHighlighted ? '0.95' : '0.75'}
-                             style={{ pointerEvents: 'none', userSelect: 'none' }}
-                           >
-                             {rel.label}
+                              fontSize="11"
+                              fontFamily="var(--font-mono)"
+                              fontWeight="500"
+                              opacity={isHighlighted ? '0.95' : '0.75'}
+                              style={{ pointerEvents: 'none', userSelect: 'none' }}
+                            >
+                              {rel.label}
                            </text>
                          )}
                        </g>
@@ -907,13 +907,13 @@ export function FlowchartView({
                              )}
                              <span
                                style={{
-                                 fontSize: '8px',
-                                 fontWeight: 600,
-                                 textTransform: 'uppercase',
-                                 letterSpacing: '0.5px',
-                                 opacity: 0.85,
-                                 color: strokeColor
-                               }}
+                                  fontSize: '10px',
+                                  fontWeight: 600,
+                                  textTransform: 'uppercase',
+                                  letterSpacing: '0.5px',
+                                  opacity: 0.85,
+                                  color: strokeColor
+                                }}
                              >
                                {viewType}
                              </span>
@@ -948,12 +948,12 @@ export function FlowchartView({
                                  textAlign: 'center',
                                  fontWeight: 'bold',
                                  lineHeight: 1.25,
-                                 fontSize: '11px',
-                                 color: 'var(--ctp-text)',
-                                 display: '-webkit-box',
-                                 WebkitLineClamp: 3,
-                                 WebkitBoxOrient: 'vertical',
-                                 overflow: 'hidden'
+                                 fontSize: '14px',
+                                  color: 'var(--ctp-text)',
+                                  display: '-webkit-box',
+                                  WebkitLineClamp: 3,
+                                  WebkitBoxOrient: 'vertical',
+                                  overflow: 'hidden'
                                }}
                              >
                                {entity.viewTitles?.[viewKey] ?? entity.title}
@@ -971,10 +971,10 @@ export function FlowchartView({
                  {/* Tooltip */}
                  {tooltip && (() => {
                    const lines = wrapTooltipText(tooltip.description);
-                   const ttW = 190;
-                   const ttPadX = 10;
-                   const ttPadY = 8;
-                   const ttLineH = 15;
+                    const ttW = 210;
+                    const ttPadX = 12;
+                    const ttPadY = 10;
+                    const ttLineH = 19;
                    const ttH = ttPadY * 2 + lines.length * ttLineH;
                    const ttX = tooltip.x - ttW / 2;
                    const ttY = tooltip.y - ttH - 10;
@@ -991,14 +991,14 @@ export function FlowchartView({
                        />
                        {lines.map((line, li) => (
                          <text
-                           key={li}
-                           x={ttX + ttPadX}
-                           y={ttY + ttPadY + ttLineH * li + 11}
-                           fontSize="10"
-                           fill="var(--ctp-text)"
-                         >
-                           {line}
-                         </text>
+                            key={li}
+                            x={ttX + ttPadX}
+                            y={ttY + ttPadY + ttLineH * li + 14}
+                            fontSize="14"
+                            fill="var(--ctp-text)"
+                          >
+                            {line}
+                          </text>
                        ))}
                      </g>
                    );
