@@ -42,9 +42,9 @@ export function SequenceView({
   const COL_W = 200;
   const START_X = 140;
   const TOP_Y = 12;
-  const MSG_SPACING = 64;
-  const MSG_START_Y = TOP_Y + NODE_H + 40;
-  const BOTTOM_Y = MSG_START_Y + seqRelations.length * MSG_SPACING + 40;
+  const MSG_SPACING = 40;
+  const MSG_START_Y = TOP_Y + NODE_H + 20;
+  const BOTTOM_Y = MSG_START_Y + Math.max(0, seqRelations.length - 1) * MSG_SPACING + 60;
 
   return (
     <>
@@ -144,8 +144,8 @@ export function SequenceView({
         let displayLabel = rel.label || '';
         const segmentLength = Math.abs(x2 - x1);
         
-        // Ensure the label pill (length * 7 + 12) doesn't exceed the segment length
-        const maxAllowedChars = Math.max(5, Math.floor((segmentLength - 32) / 7));
+        // Ensure the label pill doesn't exceed the segment length, with a large padding to keep it visually contained
+        const maxAllowedChars = Math.max(5, Math.floor((segmentLength - 80) / 7));
         if (displayLabel && displayLabel.length > maxAllowedChars) {
           displayLabel = displayLabel.substring(0, maxAllowedChars - 3) + '...';
         }
