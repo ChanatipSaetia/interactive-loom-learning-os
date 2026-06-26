@@ -143,7 +143,9 @@ export function InspectorSidebar({
       })
       .map(vk => ({
         key: vk,
-        name: schema.views[vk].name
+        name: schema.views[vk].name,
+        titleInView: detailsEntity.viewTitles?.[vk] || detailsEntity.title,
+        typeInView: viewTypes[vk]
       }));
   }, [detailsEntity, schema.views, onSwitchView]);
 
@@ -225,16 +227,24 @@ export function InspectorSidebar({
                             fontSize: '11px',
                             textAlign: 'left',
                             cursor: 'pointer',
-                            transition: 'all 0.15s ease'
+                            transition: 'all 0.15s ease',
+                            display: 'flex',
+                            flexDirection: 'column',
+                            gap: '2px'
                           }}
                           onMouseEnter={(e) => {
-                            (e.target as HTMLElement).style.borderColor = 'var(--ctp-blue)';
+                            const btn = e.currentTarget;
+                            if (btn) btn.style.borderColor = 'var(--ctp-blue)';
                           }}
                           onMouseLeave={(e) => {
-                            (e.target as HTMLElement).style.borderColor = 'var(--border-light)';
+                            const btn = e.currentTarget;
+                            if (btn) btn.style.borderColor = 'var(--border-light)';
                           }}
                         >
-                          {v.name}
+                          <span style={{ fontWeight: '600', color: 'var(--ctp-blue)' }}>{v.name}</span>
+                          <span style={{ fontSize: '10px', color: 'var(--ctp-subtext0)' }}>
+                            {v.titleInView} {v.typeInView && <span style={{ opacity: 0.7, fontSize: '9px', fontFamily: 'var(--font-mono)' }}>({v.typeInView})</span>}
+                          </span>
                         </button>
                       ))}
                     </div>

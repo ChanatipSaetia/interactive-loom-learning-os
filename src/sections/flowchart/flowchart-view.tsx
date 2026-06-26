@@ -859,56 +859,16 @@ export function FlowchartView({
                           cursor: (!isFullscreen || hasLinks) ? 'pointer' : 'default'
                         }}
                      >
-                        {viewType === TYPES.DECISION ? (
-                          <polygon
-                            points={`${node.x},${y} ${x + nW},${node.y} ${node.x},${y + nH} ${x},${node.y}`}
-                            fill={nodeFill}
-                            stroke={strokeColor}
-                            strokeWidth="1.5"
-                            filter={isHighlighted ? `url(#flowchart-glow-${viewInstanceId})` : undefined}
-                            className={`flowchart-node-rect ${isHighlighted ? 'flowchart-node-highlighted' : ''}`}
-                          />
-                        ) : viewType === TYPES.DATABASE ? (
-                          <g>
-                            {/* Cylinder body + bottom curve */}
-                            <path
-                              d={`M ${x} ${y + 10} L ${x} ${y + nH - 10} A ${nW / 2} 10 0 0 0 ${x + nW} ${y + nH - 10} L ${x + nW} ${y + 10} Z`}
-                              fill={nodeFill}
-                              stroke={strokeColor}
-                              strokeWidth="1.5"
-                              filter={isHighlighted ? `url(#flowchart-glow-${viewInstanceId})` : undefined}
-                              className={`flowchart-node-rect ${isHighlighted ? 'flowchart-node-highlighted' : ''}`}
-                            />
-                            {/* Cylinder bottom outline curve */}
-                            <path
-                              d={`M ${x} ${y + nH - 10} A ${nW / 2} 10 0 0 0 ${x + nW} ${y + nH - 10}`}
-                              fill="none"
-                              stroke={strokeColor}
-                              strokeWidth="1.5"
-                            />
-                            {/* Cylinder top ellipse */}
-                            <ellipse
-                              cx={node.x}
-                              cy={y + 10}
-                              rx={nW / 2}
-                              ry={10}
-                              fill={nodeFill}
-                              stroke={strokeColor}
-                              strokeWidth="1.5"
-                            />
-                          </g>
-                        ) : (
-                          <rect
-                            x={x} y={y}
-                            width={nW} height={nH}
-                            rx="8"
-                            fill={nodeFill}
-                            stroke={strokeColor}
-                            strokeWidth="1.5"
-                            filter={isHighlighted ? `url(#flowchart-glow-${viewInstanceId})` : undefined}
-                            className={`flowchart-node-rect ${isHighlighted ? 'flowchart-node-highlighted' : ''}`}
-                          />
-                        )}
+                           <rect
+                             x={x} y={y}
+                             width={nW} height={nH}
+                             rx="8"
+                             fill={nodeFill}
+                             stroke={strokeColor}
+                             strokeWidth="1.5"
+                             filter={isHighlighted ? `url(#flowchart-glow-${viewInstanceId})` : undefined}
+                             className={`flowchart-node-rect ${isHighlighted ? 'flowchart-node-highlighted' : ''}`}
+                           />
 
                        <foreignObject
                          x={0}
