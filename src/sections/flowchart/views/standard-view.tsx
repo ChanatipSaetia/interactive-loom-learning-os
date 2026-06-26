@@ -173,8 +173,9 @@ export function StandardView({
             {/* Invisible wider interactive hover trigger path */}
             <path
               d={rel.path}
-              stroke="transparent"
-              strokeWidth="15"
+              stroke="#000"
+              strokeOpacity="0"
+              strokeWidth="25"
               fill="none"
               style={{ cursor: 'pointer' }}
             />
@@ -187,9 +188,11 @@ export function StandardView({
               strokeDasharray={rel.dashed ? '4 4' : '8 8'}
               markerEnd={marker}
               className="flowchart-edge flowchart-edge-animated"
-              filter={isEdgeActive ? `url(#flowchart-glow-${viewInstanceId})` : undefined}
               data-testid={`flowchart-edge-${viewKey}-${idx}`}
-              style={{ pointerEvents: 'none' }}
+              style={{ 
+                pointerEvents: 'none',
+                filter: isEdgeActive ? 'drop-shadow(0 0 6px var(--ctp-blue))' : undefined 
+              }}
             />
             {isHandledBy && viewKey !== 'SYS_ARCH' && (
               <g transform={`translate(${midX}, ${midY})`} style={{ pointerEvents: 'none' }}>
