@@ -16,6 +16,7 @@ export const agentSchema: UnifiedFlowchartSchema = {
       type: TYPES.USER,
       collapsedTo: 'dev_user'
     },
+
     'qa_user': {
       title: 'QA Engineer',
       desc: 'The QA engineer reviewing results.',
@@ -27,7 +28,7 @@ export const agentSchema: UnifiedFlowchartSchema = {
       title: 'Orchestrator',
       desc: 'Core agent runtime owning the planning and coordination loops.',
       type: TYPES.AGGREGATE,
-      refs: ['orch_agent', 'orch_plan_ref', 'orch_qa_ref'],
+      refs: ['orch_agent', 'orch_plan_ref', 'orch_qa_ref', 'orch_notify_ref'],
       stateMachine: {
         states: [
           { id: 'IDLE', label: 'Idle', color: 'var(--ctp-overlay1)' },
@@ -54,6 +55,12 @@ export const agentSchema: UnifiedFlowchartSchema = {
     'orch_qa_ref': {
       title: 'Agent Orchestrator',
       desc: 'Processes QA review.',
+      type: TYPES.AGGREGATE,
+      collapsedTo: 'orchestrator'
+    },
+    'orch_notify_ref': {
+      title: 'Agent Orchestrator',
+      desc: 'Handles sending messages to user interface.',
       type: TYPES.AGGREGATE,
       collapsedTo: 'orchestrator'
     },
@@ -136,6 +143,11 @@ export const agentSchema: UnifiedFlowchartSchema = {
       desc: 'Different actor (QA) reviews the final output.',
       type: TYPES.COMMAND
     },
+    'cmd_send_message': {
+      title: 'Send Message',
+      desc: 'System sends a message to the user asking for input or clarification.',
+      type: TYPES.COMMAND
+    },
 
     // Events
     'evt_started': {
@@ -203,8 +215,19 @@ export const agentSchema: UnifiedFlowchartSchema = {
       desc: 'The output failed QA standards.',
       type: TYPES.EVENT
     },
+    'evt_message_sent': {
+      title: 'Message Sent',
+      viewTitles: { DATA_FLOW: 'User Prompted' },
+      desc: 'User is notified and presented with input prompt.',
+      type: TYPES.EVENT
+    },
 
     // Policies
+    'pol_notify_user': {
+      title: 'Trigger User Notification',
+      desc: 'Tool needs human input or threw an error requiring intervention.',
+      type: TYPES.POLICY
+    },
     'pol_plan': {
       title: 'Trigger Planning',
       desc: 'Load domain knowledge and query LLM on start or feedback.',
@@ -264,7 +287,11 @@ export const agentSchema: UnifiedFlowchartSchema = {
     { id: 'r20', from: 'evt_tool_executed', to: 'pol_eval', views: ['EVENT_STORMING'] },
     
     // Branching: Same actor feedback (Requirement #3)
-    { id: 'r21', from: 'evt_tool_executed', to: 'dev_user_ref', views: ['EVENT_STORMING'], label: 'Ask User' },
+    { id: 'r21', from: 'evt_tool_executed', to: 'pol_notify_user', views: ['EVENT_STORMING'], label: 'Needs Input' },
+    { id: 'r21a', from: 'pol_notify_user', to: 'cmd_send_message', views: ['EVENT_STORMING'] },
+    { id: 'r21b', from: 'cmd_send_message', to: 'orch_notify_ref', handledBy: true, views: ['EVENT_STORMING'] },
+    { id: 'r21c', from: 'orch_notify_ref', to: 'evt_message_sent', views: ['EVENT_STORMING'] },
+    { id: 'r21d', from: 'evt_message_sent', to: 'dev_user_ref', views: ['EVENT_STORMING'], label: 'Prompt User' },
     { id: 'r22', from: 'dev_user_ref', to: 'cmd_provide_feedback', views: ['EVENT_STORMING'] },
     { id: 'r23', from: 'cmd_provide_feedback', to: 'orch_plan_ref', handledBy: true, views: ['EVENT_STORMING'] },
     { id: 'r24', from: 'orch_plan_ref', to: 'evt_feedback_received', views: ['EVENT_STORMING'] },
@@ -278,6 +305,7 @@ export const agentSchema: UnifiedFlowchartSchema = {
     
     { id: 'r28', from: 'cmd_complete', to: 'llm_final_ref', handledBy: true, views: ['EVENT_STORMING'] },
     { id: 'r29', from: 'llm_final_ref', to: 'evt_done', views: ['EVENT_STORMING'] },
+
 
     // Different Actor: QA Review (Requirement #4)
     { id: 'r30', from: 'evt_done', to: 'qa_user', views: ['EVENT_STORMING'], label: 'Ready for QA' },
@@ -321,10 +349,15 @@ export const agentSchema: UnifiedFlowchartSchema = {
         { id: 'pol_eval', grid: [12, 0] },
         
         // Same Actor feedback
-        { id: 'dev_user_ref', grid: [12, 2] },
-        { id: 'cmd_provide_feedback', grid: [13, 2] },
-        { id: 'orch_plan_ref', grid: [14, 2] },
-        { id: 'evt_feedback_received', grid: [15, 2] },
+        { id: 'pol_notify_user', grid: [12, 2] },
+        { id: 'cmd_send_message', grid: [13, 2] },
+        { id: 'orch_notify_ref', grid: [14, 2] },
+        { id: 'evt_message_sent', grid: [15, 2] },
+
+        { id: 'dev_user_ref', grid: [15, 2] },
+        { id: 'cmd_provide_feedback', grid: [16, 2] },
+        { id: 'orch_plan_ref', grid: [17, 2] },
+        { id: 'evt_feedback_received', grid: [18, 2] },
 
         // Branch B: Direct Complete
         { id: 'pol_complete', grid: [8, 3] },
@@ -333,6 +366,7 @@ export const agentSchema: UnifiedFlowchartSchema = {
         { id: 'cmd_complete', grid: [13, 1] },
         { id: 'llm_final_ref', grid: [14, 1] },
         { id: 'evt_done', grid: [15, 1] },
+
         
         // QA
         { id: 'qa_user', grid: [16, 1] },
@@ -344,7 +378,7 @@ export const agentSchema: UnifiedFlowchartSchema = {
       groups: [
         { id: 'g1', title: 'Initialization', desc: 'Sets up task and context.', nodeIds: ['dev_user', 'cmd_run_agent', 'orch_agent', 'filesystem', 'evt_started', 'evt_session_created', 'evt_fs_read'], color: 'rgba(140, 170, 238, 0.12)', borderColor: 'var(--ctp-blue)', textColor: 'var(--ctp-text)' },
         { id: 'g2', title: 'Cognition & Actions Loop', desc: 'LLM reasoning and branching.', nodeIds: ['pol_plan', 'cmd_call_llm', 'llm_reason_ref', 'evt_reasoned', 'pol_route', 'cmd_execute_tool', 'tools_ref', 'mcp_servers', 'subagents', 'evt_tool_executed', 'evt_mcp_called', 'evt_subagent_spawned', 'pol_eval'], color: 'rgba(244, 184, 228, 0.12)', borderColor: 'var(--ctp-pink)', textColor: 'var(--ctp-text)' },
-        { id: 'g3', title: 'Feedback & Completion', desc: 'User feedback loop and final output generation.', nodeIds: ['dev_user_ref', 'cmd_provide_feedback', 'orch_plan_ref', 'evt_feedback_received', 'pol_complete', 'cmd_complete', 'llm_final_ref', 'evt_done'], color: 'rgba(166, 218, 149, 0.12)', borderColor: 'var(--ctp-green)', textColor: 'var(--ctp-text)' },
+        { id: 'g3', title: 'Feedback & Completion', desc: 'User feedback loop and final output generation.', nodeIds: ['pol_notify_user', 'cmd_send_message', 'orch_notify_ref', 'evt_message_sent', 'dev_user_ref', 'cmd_provide_feedback', 'orch_plan_ref', 'evt_feedback_received', 'pol_complete', 'cmd_complete', 'llm_final_ref', 'evt_done'], color: 'rgba(166, 218, 149, 0.12)', borderColor: 'var(--ctp-green)', textColor: 'var(--ctp-text)' },
         { id: 'g4', title: 'QA Review', desc: 'Different actor reviews the result.', nodeIds: ['qa_user', 'cmd_review_result', 'orch_qa_ref', 'evt_qa_approved', 'evt_qa_rejected'], color: 'rgba(237, 135, 150, 0.12)', borderColor: 'var(--ctp-red)', textColor: 'var(--ctp-text)' }
       ]
     }
@@ -368,6 +402,7 @@ export const agentSchema: UnifiedFlowchartSchema = {
       description: 'Agent needs more info from same actor.',
       steps: [
         { nodeIds: ['pol_route', 'cmd_execute_tool', 'tools_ref', 'evt_tool_executed'], description: 'Tool returns an error or asks user for input.', processGroup: 'execution' },
+        { nodeIds: ['pol_notify_user', 'cmd_send_message', 'orch_notify_ref', 'evt_message_sent'], description: 'System sends message to user.' },
         { nodeIds: ['dev_user_ref', 'cmd_provide_feedback', 'orch_plan_ref', 'evt_feedback_received'], description: 'Dev provides missing info.' },
         { nodeIds: ['evt_feedback_received', 'pol_plan', 'cmd_call_llm', 'llm_reason_ref', 'evt_reasoned'], description: 'Agent replans with new context.', processGroup: 'planning' }
       ]

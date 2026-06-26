@@ -193,7 +193,20 @@ export function layoutEventStorming(
         }
 
         let dist = 1;
+        let hasActorRight = false;
+        if (uType === TYPES.EVENT) {
+           handlerNodes.forEach(h => {
+             if (timelineOfHandler.get(h) === u) {
+               const hEntity = entities[h];
+               const hType = hEntity?.type || hEntity?.viewTypes?.EVENT_STORMING || 'default';
+               if (hType === TYPES.USER) hasActorRight = true;
+             }
+           });
+        }
+        
         if (uType === TYPES.EVENT && vType === TYPES.POLICY && outPolicies.length > 1) {
+          dist = 2;
+        } else if (hasActorRight) {
           dist = 2;
         }
 
@@ -260,25 +273,30 @@ export function layoutEventStorming(
       if (c > maxInternalCol) maxInternalCol = c;
     });
 
+    let maxPadding = 2;
     groupAdj.get(gIdx)!.forEach(nextGIdx => {
       const nextGroup = groups[nextGIdx];
       let hasActorOnLeft = false;
       
       nextGroup.nodes.forEach(u => {
         if (nextGroup.internalCol.get(u) === 0) {
+          const uEntity = entities[u];
+          const uType = uEntity?.type || uEntity?.viewTypes?.EVENT_STORMING || 'default';
           handlerNodes.forEach(h => {
             if (timelineOfHandler.get(h) === u) {
               const hEntity = entities[h];
               const hType = hEntity?.type || hEntity?.viewTypes?.EVENT_STORMING || 'default';
-              if (hType === TYPES.USER) hasActorOnLeft = true;
+              if (hType === TYPES.USER && uType !== TYPES.EVENT) hasActorOnLeft = true;
             }
           });
         }
       });
-      
-      const padding = hasActorOnLeft ? 3 : 2;
-      const nextBaseCol = baseCol + maxInternalCol + padding;
+      if (hasActorOnLeft) maxPadding = 3;
+    });
 
+    const nextBaseCol = baseCol + maxInternalCol + maxPadding;
+
+    groupAdj.get(gIdx)!.forEach(nextGIdx => {
       if (nextBaseCol > groupBaseCol.get(nextGIdx)!) {
         groupBaseCol.set(nextGIdx, nextBaseCol);
       }
@@ -379,7 +397,13 @@ export function layoutEventStorming(
       
       if (hType === TYPES.USER) {
         row.set(h, cmdRow);
-        col.set(h, Math.max(0, cmdCol - 1));
+        const cmdEntity = entities[cmd];
+        const cmdType = cmdEntity?.type || cmdEntity?.viewTypes?.EVENT_STORMING || 'default';
+        if (cmdType === TYPES.EVENT) {
+          col.set(h, cmdCol + 1);
+        } else {
+          col.set(h, Math.max(0, cmdCol - 1));
+        }
       } else {
         row.set(h, cmdRow - 0.625);
         col.set(h, cmdCol);
