@@ -20,6 +20,35 @@ import type {
 
 const Workflow = Icons.Workflow;
 
+const MIN_ROW_SPACING = 120;
+const MAX_ROW_SPACING = 240;
+
+function computeDynamicSpacing(
+  info: { rowCount: number; colCount: number; nodeCount: number },
+  base: { colSpacing: number; rowSpacing: number; offsetX: number; offsetY: number },
+  viewKey: string
+): { colSpacing: number; rowSpacing: number; offsetX: number; offsetY: number } {
+  const { rowCount, colCount } = info;
+
+  // SEQUENCE uses columns only, no dynamic row spacing needed
+  if (viewKey === 'SEQUENCE') return base;
+
+  // Dynamic row spacing: scale based on row count to prevent crowding
+  let rowSpacing = base.rowSpacing;
+  if (rowCount > 2) {
+    const extraRows = rowCount - 2;
+    const additionalSpacing = Math.min(extraRows * 12, 80);
+    rowSpacing = Math.min(base.rowSpacing + additionalSpacing, MAX_ROW_SPACING);
+  }
+  rowSpacing = Math.max(rowSpacing, MIN_ROW_SPACING);
+
+  // Dynamic offsets: adjust for wider views
+  const offsetX = base.offsetX + Math.max(0, (colCount - 8)) * 20;
+  const offsetY = base.offsetY + Math.max(0, (rowCount - 3)) * 10;
+
+  return { ...base, rowSpacing, offsetX, offsetY };
+}
+
 export interface FlowchartViewProps {
   viewKey: string;
   schema: UnifiedFlowchartSchema;
@@ -85,48 +114,29 @@ export function FlowchartView({
     return Array.from(cols.entries()).sort((a, b) => a[0] - b[0]);
   }, [view, isSequenceView]);
 
-  // Node positioning
+  // Node positioning with dynamic spacing
   const positioned = useMemo(() => {
     if (!view) return [];
+    const defaults: Record<string, { colSpacing: number; rowSpacing: number; offsetX: number; offsetY: number }> = {
+      EVENT_STORMING: { colSpacing: 140, rowSpacing: 160, offsetX: 60, offsetY: 50 },
+      STATE_MACHINE: { colSpacing: 140, rowSpacing: 150, offsetX: 60, offsetY: 80 },
+      SYS_ARCH: { colSpacing: 140, rowSpacing: 130, offsetX: 80, offsetY: 100 },
+      DATA_FLOW: { colSpacing: 140, rowSpacing: 130, offsetX: 100, offsetY: 100 },
+      SWIMLANES: { colSpacing: 140, rowSpacing: 190, offsetX: 160, offsetY: 75 },
+      SEQUENCE: { colSpacing: 100, rowSpacing: 48, offsetX: 60, offsetY: 80 },
+    };
+    const base = defaults[viewKey] || { colSpacing: 140, rowSpacing: 150, offsetX: 100, offsetY: 100 };
+    const spacing = view.layoutInfo
+      ? computeDynamicSpacing(view.layoutInfo, base, viewKey)
+      : base;
     return view.nodes.map(node => {
       if (typeof node.x === 'number' && typeof node.y === 'number') {
         return { ...node, x: node.x, y: node.y };
       }
       if (node.grid) {
         const [c, r] = node.grid;
-        let x = 0;
-        let y = 0;
-        if (viewKey === 'EVENT_STORMING') {
-          x = c * 140 + 60;
-          if (r === 0) y = 50;
-          else if (r === 1) y = 150;
-          else if (r === 2) y = 250;
-          else if (r === 3) y = 450;
-          else if (r === 4) y = 650;
-          else y = 250 + (r - 2) * 200;
-        } else if (viewKey === 'STATE_MACHINE') {
-          x = c * 140 + 60;
-          y = r * 150 + 80;
-        } else if (viewKey === 'SYS_ARCH') {
-          x = c * 140 + 80;
-          y = r * 130 + 100;
-        } else if (viewKey === 'DATA_FLOW') {
-          x = c * 140 + 100;
-          y = r * 130 + 100;
-        } else if (viewKey === 'SWIMLANES') {
-          x = c * 140 + 160;
-          if (r === 0) y = 75;
-          else if (r === 1) y = 270;
-          else if (r === 2) y = 460;
-          else if (r === 3) y = 650;
-          else y = 75 + r * 190;
-        } else if (viewKey === 'SEQUENCE') {
-          x = c * 100 + 60;
-          y = (r ?? 0) * 48 + 80;
-        } else {
-          x = c * 140 + 100;
-          y = r * 150 + 100;
-        }
+        const x = c * spacing.colSpacing + spacing.offsetX;
+        const y = r * spacing.rowSpacing + spacing.offsetY;
         return { ...node, x, y };
       }
       return { ...node, x: 0, y: 0 };
@@ -630,16 +640,15 @@ export function FlowchartView({
                  {/* Groups */}
                  {view.groups && view.groups.map(group => {
                    const isFaded = activeNodeIds !== null;
-                   if (group.isLane) {
-                     let yVal = group.y ?? 100;
-                     let hVal = group.h ?? 180;
-                     if (typeof group.row === 'number') {
-                       if (group.row === 0) { yVal = 30; hVal = 110; }
-                       else if (group.row === 1) { yVal = 200; hVal = 160; }
-                       else if (group.row === 2) { yVal = 390; hVal = 160; }
-                       else if (group.row === 3) { yVal = 590; hVal = 110; }
-                       else { yVal = 590 + (group.row - 3) * 190; hVal = 160; }
-                     }
+                 if (group.isLane) {
+                      let yVal = group.y ?? 100;
+                      let hVal = group.h ?? 180;
+                      if (typeof group.row === 'number') {
+                        const laneHeight = 160;
+                        const laneGap = 30;
+                        yVal = 30 + group.row * (laneHeight + laneGap);
+                        hVal = laneHeight;
+                      }
                      return (
                        <g key={group.id} className="flowchart-swimlane-group" opacity={isFaded ? 0.15 : 0.85} style={{ transition: 'opacity 0.3s' }}>
                          <rect

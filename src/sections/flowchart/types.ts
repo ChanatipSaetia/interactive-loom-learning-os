@@ -284,12 +284,24 @@ export interface FlowchartJourney {
   steps: FlowchartStep[];
 }
 
+/** Layout metadata computed by the dynamic layout engine. */
+export interface LayoutInfo {
+  /** Total number of rows in the grid. */
+  rowCount: number;
+  /** Total number of columns in the grid. */
+  colCount: number;
+  /** Total number of nodes in the view. */
+  nodeCount: number;
+}
+
 export interface FlowchartViewConfig {
   name: string;
   icon: string;
   nodes: FlowchartViewNode[];
   groups: FlowchartViewGroup[];
   steps?: FlowchartStepData[];
+  /** Computed layout metadata for dynamic spacing. */
+  layoutInfo?: LayoutInfo;
 }
 
 export interface UnifiedFlowchartSchema {
