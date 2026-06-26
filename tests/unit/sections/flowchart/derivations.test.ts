@@ -3,6 +3,173 @@ import { autoDeriveViews } from '../../../../src/sections/flowchart/derivations'
 import type { UnifiedFlowchartSchema, FlowchartEntity, FlowchartRelation, FlowchartViewNode } from '../../../../src/sections/flowchart/types';
 import { TYPES } from '../../../../src/sections/flowchart/types';
 
+describe('Policy branching mapping (#69)', () => {
+  const baseSchema = (entities: Record<string, FlowchartEntity>, relations: FlowchartRelation[], viewNodes: FlowchartViewNode[]): UnifiedFlowchartSchema => ({
+    entities,
+    relations,
+    views: {
+      EVENT_STORMING: {
+        name: 'Event Storming',
+        icon: 'Component',
+        nodes: viewNodes,
+        groups: []
+      }
+    },
+    journeys: []
+  });
+
+  it('omits linear Policy (1 outgoing) from SWIMLANES and DATA_FLOW', () => {
+    const schema = baseSchema(
+      {
+        user: { title: 'User', desc: '', type: TYPES.USER },
+        cmd: { title: 'Command', desc: '', type: TYPES.COMMAND },
+        pol: { title: 'Policy', desc: '', type: TYPES.POLICY },
+        evt1: { title: 'Event1', desc: '', type: TYPES.EVENT },
+        agg: { title: 'Aggregate', desc: '', type: TYPES.AGGREGATE }
+      },
+      [
+        { id: 'r1', from: 'user', to: 'cmd', views: ['EVENT_STORMING'] },
+        { id: 'r2', from: 'cmd', to: 'pol', views: ['EVENT_STORMING'] },
+        { id: 'r3', from: 'pol', to: 'agg', views: ['EVENT_STORMING'] },
+        { id: 'r4', from: 'agg', to: 'evt1', views: ['EVENT_STORMING'] }
+      ],
+      [
+        { id: 'user', grid: [0, 2] },
+        { id: 'cmd', grid: [1, 2] },
+        { id: 'pol', grid: [2, 2] },
+        { id: 'agg', grid: [2, 1] },
+        { id: 'evt1', grid: [3, 2] }
+      ]
+    );
+
+    const result = autoDeriveViews(schema);
+
+    // Policy should NOT appear in SWIMLANES (linear, 1 outgoing)
+    const swimNodeIds = result.views.SWIMLANES!.nodes.map(n => n.id);
+    expect(swimNodeIds).not.toContain('pol');
+
+    // Policy should NOT appear in DATA_FLOW (linear, 1 outgoing)
+    const dfNodeIds = result.views.DATA_FLOW!.nodes.map(n => n.id);
+    expect(dfNodeIds).not.toContain('pol');
+
+    // Policy SHOULD still appear in EVENT_STORMING (source of truth)
+    const esNodeIds = result.views.EVENT_STORMING.nodes.map(n => n.id);
+    expect(esNodeIds).toContain('pol');
+
+    // Policy viewTypes should NOT include Decision for SWIMLANES/DATA_FLOW
+    const polEntity = result.entities['pol'];
+    expect(polEntity?.viewTypes?.EVENT_STORMING).toBe(TYPES.POLICY);
+    expect(polEntity?.viewTypes?.SWIMLANES).toBeUndefined();
+    expect(polEntity?.viewTypes?.DATA_FLOW).toBeUndefined();
+  });
+
+  it('maps branching Policy (2+ outgoing) to Decision in SWIMLANES and DATA_FLOW', () => {
+    const schema = baseSchema(
+      {
+        user: { title: 'User', desc: '', type: TYPES.USER },
+        cmd: { title: 'Command', desc: '', type: TYPES.COMMAND },
+        pol: { title: 'Policy', desc: '', type: TYPES.POLICY },
+        evt1: { title: 'Event1', desc: '', type: TYPES.EVENT },
+        evt2: { title: 'Event2', desc: '', type: TYPES.EVENT },
+        agg: { title: 'Aggregate', desc: '', type: TYPES.AGGREGATE }
+      },
+      [
+        { id: 'r1', from: 'user', to: 'cmd', views: ['EVENT_STORMING'] },
+        { id: 'r2', from: 'cmd', to: 'pol', views: ['EVENT_STORMING'] },
+        { id: 'r3', from: 'pol', to: 'evt1', views: ['EVENT_STORMING'] },
+        { id: 'r4', from: 'pol', to: 'evt2', views: ['EVENT_STORMING'] },
+        { id: 'r5', from: 'evt1', to: 'agg', views: ['EVENT_STORMING'] }
+      ],
+      [
+        { id: 'user', grid: [0, 2] },
+        { id: 'cmd', grid: [1, 2] },
+        { id: 'pol', grid: [2, 2] },
+        { id: 'evt1', grid: [3, 2] },
+        { id: 'evt2', grid: [3, 3] },
+        { id: 'agg', grid: [3, 1] }
+      ]
+    );
+
+    const result = autoDeriveViews(schema);
+
+    // Policy SHOULD appear in SWIMLANES as Decision (branching, 2 outgoing)
+    const swimNodeIds = result.views.SWIMLANES!.nodes.map(n => n.id);
+    expect(swimNodeIds).toContain('pol');
+
+    // Policy SHOULD appear in DATA_FLOW as Decision (branching, 2 outgoing)
+    const dfNodeIds = result.views.DATA_FLOW!.nodes.map(n => n.id);
+    expect(dfNodeIds).toContain('pol');
+
+    // Policy viewTypes should include Decision for SWIMLANES/DATA_FLOW
+    const polEntity = result.entities['pol'];
+    expect(polEntity?.viewTypes?.SWIMLANES).toBe(TYPES.DECISION);
+    expect(polEntity?.viewTypes?.DATA_FLOW).toBe(TYPES.DECISION);
+  });
+
+  it('omits Policy with 0 outgoing relations from derived views', () => {
+    const schema = baseSchema(
+      {
+        user: { title: 'User', desc: '', type: TYPES.USER },
+        pol: { title: 'Policy', desc: '', type: TYPES.POLICY },
+        agg: { title: 'Aggregate', desc: '', type: TYPES.AGGREGATE },
+        evt: { title: 'Event', desc: '', type: TYPES.EVENT }
+      },
+      [
+        { id: 'r1', from: 'user', to: 'agg', views: ['EVENT_STORMING'] },
+        { id: 'r2', from: 'agg', to: 'evt', views: ['EVENT_STORMING'] }
+      ],
+      [
+        { id: 'user', grid: [0, 2] },
+        { id: 'pol', grid: [1, 2] },
+        { id: 'agg', grid: [1, 1] },
+        { id: 'evt', grid: [2, 2] }
+      ]
+    );
+
+    const result = autoDeriveViews(schema);
+
+    const swimNodeIds = result.views.SWIMLANES!.nodes.map(n => n.id);
+    expect(swimNodeIds).not.toContain('pol');
+
+    const dfNodeIds = result.views.DATA_FLOW!.nodes.map(n => n.id);
+    expect(dfNodeIds).not.toContain('pol');
+  });
+
+  it('non-Policy entities are unaffected by branching rule', () => {
+    const schema = baseSchema(
+      {
+        user: { title: 'User', desc: '', type: TYPES.USER },
+        cmd: { title: 'Command', desc: '', type: TYPES.COMMAND },
+        agg: { title: 'Aggregate', desc: '', type: TYPES.AGGREGATE },
+        evt: { title: 'Event', desc: '', type: TYPES.EVENT }
+      },
+      [
+        { id: 'r1', from: 'user', to: 'cmd', views: ['EVENT_STORMING'] },
+        { id: 'r2', from: 'cmd', to: 'agg', views: ['EVENT_STORMING'] },
+        { id: 'r3', from: 'agg', to: 'evt', views: ['EVENT_STORMING'] }
+      ],
+      [
+        { id: 'user', grid: [0, 2] },
+        { id: 'cmd', grid: [1, 2] },
+        { id: 'agg', grid: [1, 1] },
+        { id: 'evt', grid: [2, 2] }
+      ]
+    );
+
+    const result = autoDeriveViews(schema);
+
+    // Command maps to Process in SWIMLANES regardless of outgoing count
+    const swimNodeIds = result.views.SWIMLANES!.nodes.map(n => n.id);
+    expect(swimNodeIds).toContain('cmd');
+    expect(swimNodeIds).toContain('agg');
+
+    // User always appears in DATA_FLOW
+    const dfNodeIds = result.views.DATA_FLOW!.nodes.map(n => n.id);
+    expect(dfNodeIds).toContain('user');
+  });
+});
+
+
 describe('Dynamic layout (#68)', () => {
   const baseSchema = (entities: Record<string, FlowchartEntity>, relations: FlowchartRelation[], viewNodes: FlowchartViewNode[]): UnifiedFlowchartSchema => ({
     entities,

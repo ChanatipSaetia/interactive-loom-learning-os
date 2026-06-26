@@ -7,6 +7,35 @@ const getEntityType = (entity: FlowchartEntity | undefined): string => {
 };
 
 /**
+ * Count outgoing EVENT_STORMING relations for an entity.
+ */
+function countOutgoingRelations(
+  schema: UnifiedFlowchartSchema,
+  entityId: string
+): number {
+  // Count across all instances (canonical + refs) that resolve to this entity
+  const instances = Object.keys(schema.entities).filter(
+    id => (schema.entities[id]?.collapsedTo || id) === entityId || id === entityId
+  );
+  return schema.relations.filter(r =>
+    (!r.views || r.views.includes('EVENT_STORMING')) && instances.includes(r.from)
+  ).length;
+}
+
+/**
+ * A Policy only maps to Decision in derived views when it's a branching point (2+ outgoing).
+ * Linear Policies (0-1 outgoing) are omitted from SWIMLANES/DATA_FLOW to reduce clutter.
+ */
+function policyShouldMapToDecision(
+  schema: UnifiedFlowchartSchema,
+  entityId: string,
+  entityType: string
+): boolean {
+  if (entityType !== TYPES.POLICY) return true;
+  return countOutgoingRelations(schema, entityId) >= 2;
+}
+
+/**
  * Automatically derives SYS_ARCH, SWIMLANES, SEQUENCE, and DATA_FLOW views 
  * from the master EVENT_STORMING view if they are not explicitly declared.
  */
@@ -153,7 +182,7 @@ export function autoDeriveViews(schema: UnifiedFlowchartSchema): UnifiedFlowchar
       if (!esNode) return;
 
       const swimType = MASTER_MAPPING_MATRIX[type]?.SWIMLANES;
-      if (swimType) {
+      if (swimType && policyShouldMapToDecision(schema, id, type)) {
         const collapsedId = getCollapsedId(id);
         if (addedNodes.has(collapsedId)) return;
         addedNodes.add(collapsedId);
@@ -276,7 +305,7 @@ export function autoDeriveViews(schema: UnifiedFlowchartSchema): UnifiedFlowchar
       if (!esNode) return;
 
       const dfType = MASTER_MAPPING_MATRIX[type]?.DATA_FLOW;
-      if (dfType) {
+      if (dfType && policyShouldMapToDecision(schema, id, type)) {
         const collapsedId = getCollapsedId(id);
         if (addedNodes.has(collapsedId)) return;
         addedNodes.add(collapsedId);
@@ -621,7 +650,7 @@ export function autoDeriveViews(schema: UnifiedFlowchartSchema): UnifiedFlowchar
     const mapping = MASTER_MAPPING_MATRIX[esType];
     if (mapping) {
       Object.entries(mapping).forEach(([vk, mappedType]) => {
-        if (mappedType) {
+        if (mappedType && policyShouldMapToDecision(schema, nodeId, esType)) {
           derivedTypes[vk] = mappedType;
         }
       });
