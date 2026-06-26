@@ -450,18 +450,23 @@ export function FlowchartView({
             )}
             <pattern
               id={`dotGrid-${viewInstanceId}`}
-              width={20 * camera.transform.scale}
-              height={20 * camera.transform.scale}
+              width="20"
+              height="20"
               patternUnits="userSpaceOnUse"
-              patternTransform={`translate(${camera.transform.translateX % (20 * camera.transform.scale)}, ${camera.transform.translateY % (20 * camera.transform.scale)})`}
             >
-              <circle cx="2" cy="2" r={1 * camera.transform.scale} fill="var(--ctp-surface1)" opacity="0.6" />
+              <circle cx="2" cy="2" r="1" fill="var(--ctp-surface1)" opacity="0.6" />
             </pattern>
           </defs>
 
-          <rect width="100%" height="100%" fill={`url(#dotGrid-${viewInstanceId})`} style={{ pointerEvents: 'none' }} />
-
           <g transform={transformStr} data-testid={`flowchart-canvas-${viewKey}`}>
+            <rect
+              x="-50000"
+              y="-50000"
+              width="100000"
+              height="100000"
+              fill={`url(#dotGrid-${viewInstanceId})`}
+              style={{ pointerEvents: 'none' }}
+            />
              {isSequenceView ? (
                <SequenceView 
                  viewKey={viewKey}
@@ -485,6 +490,7 @@ export function FlowchartView({
                  spacing={spacing}
                  setActiveNodePopup={setActiveNodePopup}
                  handleNodeClick={handleNodeClick}
+                 isFullscreen={isFullscreen}
                />
              )}
           </g>
