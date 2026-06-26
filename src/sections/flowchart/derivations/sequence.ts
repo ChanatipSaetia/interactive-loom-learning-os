@@ -267,25 +267,10 @@ export function deriveSequence(
 
 export function layoutSequence(
   nodes: FlowchartViewNode[],
-  nodeIds: string[],
-  nodeSet: Set<string>,
-  relations: FlowchartRelation[],
-  viewKey: string
+  _nodeIds: string[],
+  _nodeSet: Set<string>,
+  _relations: FlowchartRelation[],
+  _viewKey: string
 ): FlowchartViewNode[] {
-  const adj = buildAdjacency(nodeIds, relations, viewKey, nodeSet);
-  const inDegree = buildInDegree(nodeIds, relations, viewKey, nodeSet);
-
-  const col = computeTopologicalColumns(nodeIds, inDegree, adj);
-
-  const compactedCol = new Map<string, number>();
-  const colSet = new Set(col.values());
-  const sortedCols = Array.from(colSet).sort((a, b) => a - b);
-  col.forEach((c, id) => {
-    compactedCol.set(id, sortedCols.indexOf(c));
-  });
-
-  return nodes.map(n => ({
-    ...n,
-    grid: [compactedCol.get(n.id)!, 0]
-  }));
+  return nodes;
 }
