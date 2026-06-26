@@ -553,6 +553,10 @@ describe('Flowchart auto-derivation engine', () => {
 
     console.log('--- TEST RENDERED PATHS ---');
     console.log(pathList);
+    console.log('--- SYS_ARCH DERIVED NODES ---');
+    import('../../../../src/sections/flowchart/derivations').then(({ autoDeriveViews }) => {
+      console.log(JSON.stringify(autoDeriveViews(agentSchema).views.SYS_ARCH?.nodes, null, 2));
+    });
   });
 
   it('derives STATE_MACHINE view and verifies that columns are compacted', () => {

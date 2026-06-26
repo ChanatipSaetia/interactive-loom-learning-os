@@ -419,12 +419,12 @@ describe('Dynamic layout (#68)', () => {
       const rowValues = sysNodes.map(n => n.grid![1]);
       const maxRow = Math.max(...rowValues);
 
-      // With 7 nodes, rows should spread beyond 2 (fixed old behavior)
-      expect(maxRow).toBeGreaterThanOrEqual(3);
-      expect(result.views.SYS_ARCH!.layoutInfo!.rowCount).toBeGreaterThan(3);
+      // With reduced gap of 1, check that the row indices layout correctly
+      expect(maxRow).toBeGreaterThanOrEqual(2);
+      expect(result.views.SYS_ARCH!.layoutInfo!.rowCount).toBeGreaterThan(2);
     });
 
-    it('places users above other nodes in SYS_ARCH', () => {
+    it('places users to the left of other nodes in SYS_ARCH', () => {
       const schema = baseSchema(
         {
           user: { title: 'User', desc: '', type: TYPES.USER },
@@ -446,12 +446,12 @@ describe('Dynamic layout (#68)', () => {
       const sysNodes = result.views.SYS_ARCH!.nodes;
       const nodeMap = new Map(sysNodes.map(n => [n.id, n.grid!]));
 
-      const userRow = nodeMap.get('user')?.[1];
-      const svcRow = nodeMap.get('svc')?.[1];
+      const userCol = nodeMap.get('user')?.[0];
+      const svcCol = nodeMap.get('svc')?.[0];
 
-      expect(userRow).toBeDefined();
-      expect(svcRow).toBeDefined();
-      expect(userRow).toBeLessThanOrEqual(svcRow!);
+      expect(userCol).toBeDefined();
+      expect(svcCol).toBeDefined();
+      expect(userCol).toBeLessThan(svcCol!);
     });
   });
 

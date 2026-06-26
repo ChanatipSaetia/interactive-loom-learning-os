@@ -49,6 +49,12 @@
   background-color: var(--ctp-base);
 }
 
+.flowchart-canvas-inner {
+  @apply flex relative w-full gap-0 overflow-hidden;
+  flex: 1;
+  min-width: 0;
+}
+
 /* ---- SVG container ---- */
 .flowchart-body {
   @apply flex-1 relative min-w-0;
@@ -972,13 +978,24 @@
   font-family: var(--font-body);
   color: var(--ctp-overlay1);
   background: var(--ctp-crust);
-  transition: background-color 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+  transition: opacity 0.2s ease, background-color 0.15s ease, color 0.15s ease, border-color 0.15s ease;
 }
 
 .flowchart-fullscreen-toggle-btn:hover {
   background: var(--ctp-mantle);
   color: var(--ctp-text);
   border-color: var(--ctp-blue);
+}
+
+/* In minimal mode, hide the button and show only on hover of the canvas wrapper */
+.flowchart-section:not(.fullscreen) .flowchart-fullscreen-toggle-btn {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.flowchart-section:not(.fullscreen) .flowchart-canvas-wrapper:hover .flowchart-fullscreen-toggle-btn {
+  opacity: 1;
+  pointer-events: auto;
 }
 
 /* Inspector toggle button - fixed top-right */

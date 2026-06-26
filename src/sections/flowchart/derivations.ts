@@ -35,6 +35,8 @@ function policyShouldMapToDecision(
   return countOutgoingRelations(schema, entityId) >= 2;
 }
 
+
+
 /**
  * Automatically derives SYS_ARCH, SWIMLANES, SEQUENCE, and DATA_FLOW views 
  * from the master EVENT_STORMING view if they are not explicitly declared.
@@ -152,19 +154,96 @@ export function autoDeriveViews(schema: UnifiedFlowchartSchema): UnifiedFlowchar
       return { label: '' };
     };
 
+    const centerId = 'temp_center';
+    const esCols = sysNodes.map(n => {
+      const esNode = getESNode(n.id);
+      return esNode?.grid?.[0] ?? 0;
+    });
+    const minCol = esCols.length > 0 ? Math.min(...esCols) : 0;
+    const maxCol = esCols.length > 0 ? Math.max(...esCols) : 4;
+    const centerCol = Math.max(1, Math.round((minCol + maxCol) / 2));
+    sysNodes.push({
+      id: 'temp_center',
+      grid: [centerCol, 1]
+    });
+    schema.entities['temp_center'] = {
+      title: 'Core System',
+      desc: 'Central coordination and core routing engine.',
+      type: TYPES.CORE_SYSTEM
+    };
+    addedNodes.add('temp_center');
+
     const sysRelations = deriveRelations(schema, 'SYS_ARCH', addedNodes, getSysArchLabel);
+
+    // Star topology rerouting through the center node
+    const finalSysRelations: FlowchartRelation[] = [];
+    const relationKeys = new Set<string>();
+
+    sysRelations.forEach(r => {
+      if (r.from === centerId || r.to === centerId) {
+        const key = `${r.from}->${r.to}`;
+        if (!relationKeys.has(key)) {
+          relationKeys.add(key);
+          finalSysRelations.push(r);
+        }
+      } else {
+        const key1 = `${r.from}->${centerId}`;
+        if (!relationKeys.has(key1)) {
+          relationKeys.add(key1);
+          finalSysRelations.push({
+            id: `${r.id}_to_center`,
+            from: r.from,
+            to: centerId,
+            views: r.views,
+            label: r.label,
+            dashed: r.dashed
+          });
+        }
+        const key2 = `${centerId}->${r.to}`;
+        if (!relationKeys.has(key2)) {
+          relationKeys.add(key2);
+          finalSysRelations.push({
+            id: `${r.id}_from_center`,
+            from: centerId,
+            to: r.to,
+            views: r.views,
+            label: r.label,
+            dashed: r.dashed
+          });
+        }
+      }
+    });
 
     schema.relations = [
       ...schema.relations.filter(r => !r.views || !r.views.includes('SYS_ARCH')),
-      ...sysRelations
+      ...finalSysRelations
     ];
+
+    const aggregateIds = sysNodes
+      .map(n => n.id)
+      .filter(id => {
+        const ent = schema.entities[id];
+        const type = getEntityType(ent);
+        return ent && (type === TYPES.AGGREGATE || type === TYPES.DATABASE || type === TYPES.CORE_SYSTEM);
+      });
+
+    const sysGroups = aggregateIds.length > 0 ? [
+      {
+        id: 'sys_boundary',
+        title: 'System Boundary',
+        nodeIds: aggregateIds,
+        color: 'color-mix(in srgb, var(--ctp-green) 5%, transparent)',
+        borderColor: 'var(--ctp-green)',
+        textColor: 'var(--ctp-green)'
+      }
+    ] : [];
 
     const laidOutSysNodes = layoutNodes(sysNodes, schema.relations, 'SYS_ARCH', schema.entities);
     derivedViews.SYS_ARCH = {
       name: 'System Architecture',
       icon: 'Server',
       nodes: laidOutSysNodes,
-      groups: [],
+      groups: sysGroups,
       layoutInfo: computeLayoutInfo(laidOutSysNodes)
     };
   }
@@ -299,12 +378,85 @@ export function autoDeriveViews(schema: UnifiedFlowchartSchema): UnifiedFlowchar
       ...seqRelations
     ];
 
+    // Compute dynamic Sequence groups (Alt/Opt box boundaries) based on branching Policies
+    const seqGroups: FlowchartViewGroup[] = [];
+    const policyEntities = Object.entries(schema.entities).filter(
+      ([, entity]) => getEntityType(entity) === TYPES.POLICY
+    );
+
+    policyEntities.forEach(([polId, polEntity]) => {
+      // Find all ES outgoing relations from this policy
+      const esOutgoing = schema.relations.filter(
+        r => (!r.views || r.views.includes('EVENT_STORMING')) && getCollapsedId(r.from) === polId
+      );
+
+      // If it's a branching policy (2+ outgoing)
+      if (esOutgoing.length >= 2) {
+        // Collect all sequence relations that are downstream of this policy
+        const downstreamNodeIds = new Set<string>();
+        const queue = esOutgoing.map(r => getCollapsedId(r.to));
+        queue.forEach(id => downstreamNodeIds.add(id));
+
+        const visited = new Set<string>(queue);
+        while (queue.length > 0) {
+          const curr = queue.shift()!;
+          const out = schema.relations.filter(
+            r => (!r.views || r.views.includes('EVENT_STORMING')) && getCollapsedId(r.from) === curr
+          );
+          out.forEach(r => {
+            const toCollapsed = getCollapsedId(r.to);
+            if (!visited.has(toCollapsed)) {
+              visited.add(toCollapsed);
+              downstreamNodeIds.add(toCollapsed);
+              queue.push(toCollapsed);
+            }
+          });
+        }
+
+        // Now filter seqRelations that start or end at any of these downstream nodes
+        const enclosedSeqRels = seqRelations.filter(
+          r => downstreamNodeIds.has(getCollapsedId(r.from)) || downstreamNodeIds.has(getCollapsedId(r.to))
+        );
+
+        if (enclosedSeqRels.length > 0) {
+          // Find the lifeline node IDs involved
+          const participantIds = new Set<string>();
+          enclosedSeqRels.forEach(r => {
+            participantIds.add(getCollapsedId(r.from));
+            participantIds.add(getCollapsedId(r.to));
+          });
+
+          // Determine the sequence indices of the enclosed relations
+          const relIndices = enclosedSeqRels.map(r => seqRelations.indexOf(r));
+          const minRelIdx = Math.min(...relIndices);
+          const maxRelIdx = Math.max(...relIndices);
+
+          // Calculate vertical y and h bounds
+          const msgStartY = 80;
+          const msgSpacing = 48;
+          const y = msgStartY + minRelIdx * msgSpacing - 18;
+          const h = (maxRelIdx - minRelIdx + 1) * msgSpacing + 8;
+
+          seqGroups.push({
+            id: `seq_group_${polId}`,
+            title: polEntity.title,
+            nodeIds: Array.from(participantIds),
+            y,
+            h,
+            color: 'color-mix(in srgb, var(--ctp-mauve) 5%, transparent)',
+            borderColor: 'var(--ctp-mauve)',
+            textColor: 'var(--ctp-mauve)'
+          });
+        }
+      }
+    });
+
     const laidOutSeqNodes = layoutNodes(seqNodes, schema.relations, 'SEQUENCE', schema.entities);
     derivedViews.SEQUENCE = {
       name: 'Sequence Diagram',
       icon: 'List',
       nodes: laidOutSeqNodes,
-      groups: [],
+      groups: seqGroups,
       layoutInfo: computeLayoutInfo(laidOutSeqNodes)
     };
   }
@@ -396,7 +548,7 @@ export function autoDeriveViews(schema: UnifiedFlowchartSchema): UnifiedFlowchar
       return { label: '' };
     };
 
-   const dfRelations = deriveRelations(schema, 'DATA_FLOW', addedNodes, getDataFlowLabel);
+    const dfRelations = deriveRelations(schema, 'DATA_FLOW', addedNodes, getDataFlowLabel);
 
     schema.relations = [
       ...schema.relations.filter(r => !r.views || !r.views.includes('DATA_FLOW')),
@@ -1234,58 +1386,275 @@ function layoutEventStorming(
 function layoutSysArch(
   nodes: FlowchartViewNode[],
   nodeIds: string[],
-  nodeSet: Set<string>,
+  _nodeSet: Set<string>,
   relations: FlowchartRelation[],
-  viewKey: string,
+  _viewKey: string,
   entities: Record<string, FlowchartEntity>
 ): FlowchartViewNode[] {
-  const adj = buildAdjacency(nodeIds, relations, viewKey, nodeSet);
-  const inDegree = buildInDegree(nodeIds, relations, viewKey, nodeSet);
+  // Helper to resolve collapsed targets
+  const getCollapsedId = (id: string): string => {
+    return entities[id]?.collapsedTo || id;
+  };
 
-  const col = computeTopologicalColumns(nodeIds, inDegree, adj);
+  const adj = new Map<string, Set<string>>();
+  nodeIds.forEach(id => adj.set(id, new Set<string>()));
 
-  const userNodes = nodeIds.filter(id => isType(entities, id, TYPES.USER));
-  userNodes.forEach(id => col.set(id, 0));
+  // Populate adjacency list from direct original relations
+  relations.forEach(r => {
+    // Only use relations that are original (e.g. EVENT_STORMING, or not SYS_ARCH)
+    const isOriginal = !r.views || r.views.includes('EVENT_STORMING') || !r.views.includes('SYS_ARCH');
+    if (!isOriginal) return;
 
-  const colGroups = new Map<number, string[]>();
-  col.forEach((c, id) => {
-    if (!colGroups.has(c)) colGroups.set(c, []);
-    colGroups.get(c)!.push(id);
-  });
-  const sortedCols = Array.from(colGroups.keys()).sort((a, b) => a - b);
+    const fromId = getCollapsedId(r.from);
+    const toId = getCollapsedId(r.to);
 
- // Compute total nodes per category to determine global row ranges
-  let totalUsers = 0, totalOther = 0;
-  sortedCols.forEach(c => {
-    const colNodes = colGroups.get(c) || [];
-    totalUsers += colNodes.filter(id => isType(entities, id, TYPES.USER)).length;
-    totalOther += colNodes.filter(id => !isType(entities, id, TYPES.USER) && !isType(entities, id, TYPES.DATABASE)).length;
-  });
-
-  // Dynamic row gap: spread nodes vertically based on total count to avoid crowding
-  const gapPerCol = Math.max(1, Math.ceil(nodeIds.length / sortedCols.length / 3));
-
-  const row = new Map<string, number>();
-  const userOffset = 0;
-  const otherOffset = totalUsers + gapPerCol;
-  const dbOffset = otherOffset + totalOther + gapPerCol;
-
-  sortedCols.forEach(c => {
-    const colNodes = colGroups.get(c) || [];
-    const userInCol = colNodes.filter(id => isType(entities, id, TYPES.USER));
-    const dbInCol = colNodes.filter(id => isType(entities, id, TYPES.DATABASE));
-    const otherInCol = colNodes.filter(id => !isType(entities, id, TYPES.USER) && !isType(entities, id, TYPES.DATABASE));
-
-    userInCol.forEach((id, idx) => row.set(id, userOffset + idx));
-    otherInCol.forEach((id, idx) => row.set(id, otherOffset + idx));
-    dbInCol.forEach((id, idx) => row.set(id, dbOffset + idx));
+    if (adj.has(fromId) && adj.has(toId) && fromId !== toId) {
+      adj.get(fromId)!.add(toId);
+      adj.get(toId)!.add(fromId);
+    }
   });
 
-  const compactedCol = compactColumns(sortedCols, col);
+  const hasCenter = nodeIds.includes('temp_center');
+  const centerId = 'temp_center';
+
+  // Connect temp_center to all AGGREGATE and SERVICE nodes (if present)
+  if (hasCenter) {
+    nodeIds.forEach(id => {
+      if (id === 'temp_center') return;
+      const ent = entities[id];
+      const type = ent?.type || ent?.viewTypes?.EVENT_STORMING || 'default';
+      if (type === TYPES.AGGREGATE || type === TYPES.SERVICE) {
+        adj.get(centerId)!.add(id);
+        adj.get(id)!.add(centerId);
+      }
+    });
+  }
+
+  // Separate node types: actors, external APIs, and internal components
+  const userNodes = nodeIds.filter(id => {
+    const ent = entities[id];
+    const type = ent?.type || ent?.viewTypes?.EVENT_STORMING || 'default';
+    return type === TYPES.USER;
+  });
+  userNodes.sort();
+
+  const externalNodes = nodeIds.filter(id => {
+    const ent = entities[id];
+    const type = ent?.type || ent?.viewTypes?.EVENT_STORMING || 'default';
+    return type === TYPES.EXTERNAL;
+  });
+  externalNodes.sort();
+
+  const internalNodeIds = nodeIds.filter(
+    id => !userNodes.includes(id) && !externalNodes.includes(id)
+  );
+
+  const queue: string[] = [];
+  const visited = new Set<string>();
+  const parent = new Map<string, string>();
+  const hopCount = new Map<string, number>();
+
+  const startNode = hasCenter ? centerId : (internalNodeIds[0] || '');
+  if (startNode) {
+    queue.push(startNode);
+    visited.add(startNode);
+    hopCount.set(startNode, 0);
+  }
+
+  while (queue.length > 0) {
+    const curr = queue.shift()!;
+    const neighbors = adj.get(curr) || new Set<string>();
+    neighbors.forEach(nbr => {
+      if (internalNodeIds.includes(nbr) && !visited.has(nbr)) {
+        visited.add(nbr);
+        parent.set(nbr, curr);
+        hopCount.set(nbr, hopCount.get(curr)! + 1);
+        queue.push(nbr);
+      }
+    });
+  }
+
+  // Handle any disconnected internal nodes (fallback to hopCount 1, parent center)
+  internalNodeIds.forEach(id => {
+    if (!visited.has(id)) {
+      visited.add(id);
+      parent.set(id, startNode);
+      hopCount.set(id, 1);
+    }
+  });
+
+  const childrenOf = new Map<string, string[]>();
+  internalNodeIds.forEach(id => childrenOf.set(id, []));
+  internalNodeIds.forEach(id => {
+    const p = parent.get(id);
+    if (p) {
+      childrenOf.get(p)!.push(id);
+    }
+  });
+  // Sort children for deterministic ordering
+  childrenOf.forEach((list) => {
+    list.sort();
+  });
+
+  const relX = new Map<string, number>();
+  const relY = new Map<string, number>();
+  const occupied = new Set<string>();
+
+  // Helper to record occupancy
+  const occupy = (id: string, x: number, y: number) => {
+    relX.set(id, x);
+    relY.set(id, y);
+    occupied.add(`${x},${y}`);
+  };
+
+  // Place center at (0, 0)
+  if (hasCenter) {
+    occupy(centerId, 0, 0);
+  }
+
+  const relativeOffset = new Map<string, [number, number]>();
+  const dir = new Map<string, [number, number]>();
+  if (hasCenter) {
+    dir.set(centerId, [0, 0]);
+  }
+
+  // Helper to get outward offsets
+  const getOutwardOffsets = (dx: number, dy: number): [number, number][] => {
+    if (dx === 0 && dy === -1) return [[0, -1], [-1, -1], [1, -1], [-2, -1], [2, -1]]; // North
+    if (dx === 0 && dy === 1) return [[0, 1], [-1, 1], [1, 1], [-2, 1], [2, 1]];    // South
+    if (dx === 1 && dy === 0) return [[1, 0], [1, -1], [1, 1], [1, -2], [1, 2]];    // East
+    if (dx === -1 && dy === 0) return [[-1, 0], [-1, -1], [-1, 1], [-1, -2], [-1, 2]]; // West
+    // Diagonals
+    if (dx === 1 && dy === -1) return [[1, -1], [1, 0], [0, -1], [2, -1], [1, -2]];  // North-East
+    if (dx === 1 && dy === 1) return [[1, 1], [1, 0], [0, 1], [2, 1], [1, 2]];     // South-East
+    if (dx === -1 && dy === -1) return [[-1, -1], [-1, 0], [0, -1], [-2, -1], [-1, -2]]; // North-West
+    if (dx === -1 && dy === 1) return [[-1, 1], [-1, 0], [0, 1], [-2, 1], [-1, 2]];    // South-West
+    return [[dx, dy]];
+  };
+
+  const sortedByHop = [...internalNodeIds].sort((a, b) => hopCount.get(a)! - hopCount.get(b)!);
+
+  // First-hop internal nodes
+  const firstHopNonUsers = (childrenOf.get(centerId) || []);
+  const SECTORS: [number, number][] = [[0, -1], [1, 0], [0, 1], [1, -1], [1, 1], [-1, -1], [-1, 1]];
+  firstHopNonUsers.forEach((id, idx) => {
+    const s = SECTORS[idx % SECTORS.length];
+    dir.set(id, s);
+    relativeOffset.set(id, s);
+  });
+
+  // Downstream directions
+  sortedByHop.forEach(id => {
+    if (id === centerId) return;
+    if (hopCount.get(id)! <= 1) return; // already assigned
+
+    const p = parent.get(id)!;
+    const pDir = dir.get(p) || [0, -1];
+    const siblings = childrenOf.get(p) || [];
+    const idx = siblings.indexOf(id);
+    const offsets = getOutwardOffsets(pDir[0], pDir[1]);
+    const offset = offsets[idx % offsets.length] || pDir;
+
+    relativeOffset.set(id, offset);
+    dir.set(id, [Math.sign(offset[0]), Math.sign(offset[1])]);
+  });
+
+  // Assign coordinates to non-center internal nodes in BFS order
+  sortedByHop.forEach(id => {
+    if (id === centerId) return;
+
+    const p = parent.get(id)!;
+    const px = relX.get(p) || 0;
+    const py = relY.get(p) || 0;
+    const offset = relativeOffset.get(id) || dir.get(id) || [0, -1];
+    const tx = px + offset[0];
+    const ty = py + offset[1];
+
+    if (!occupied.has(`${tx},${ty}`)) {
+      occupy(id, tx, ty);
+    } else {
+      // Resolve collision
+      let d = 1;
+      let placed = false;
+      const childDir = dir.get(id) || [0, -1];
+
+      while (!placed) {
+        const candidates: [number, number][] = [];
+        for (let ox = -d; ox <= d; ox++) {
+          for (let oy = -d; oy <= d; oy++) {
+            if (Math.max(Math.abs(ox), Math.abs(oy)) === d) {
+              const cx = tx + ox;
+              const cy = ty + oy;
+              if (!occupied.has(`${cx},${cy}`)) {
+                candidates.push([cx, cy]);
+              }
+            }
+          }
+        }
+
+        if (candidates.length > 0) {
+          candidates.sort((a, b) => {
+            const distA = a[0]*a[0] + a[1]*a[1];
+            const distB = b[0]*b[0] + b[1]*b[1];
+            if (distA !== distB) return distB - distA;
+
+            const dotA = a[0] * childDir[0] + a[1] * childDir[1];
+            const dotB = b[0] * childDir[0] + b[1] * childDir[1];
+            return dotB - dotA;
+          });
+
+          const best = candidates[0];
+          occupy(id, best[0], best[1]);
+          placed = true;
+        } else {
+          d++;
+        }
+      }
+    }
+  });
+
+  // Find bounds of the internal system (aggregates, databases, core system)
+  const internalXs = internalNodeIds.map(id => relX.get(id) ?? 0);
+  const internalYs = internalNodeIds.map(id => relY.get(id) ?? 0);
+  const minInternalX = internalXs.length > 0 ? Math.min(...internalXs) : 0;
+  const maxInternalX = internalXs.length > 0 ? Math.max(...internalXs) : 0;
+  const minInternalY = internalYs.length > 0 ? Math.min(...internalYs) : 0;
+  const maxInternalY = internalYs.length > 0 ? Math.max(...internalYs) : 0;
+
+  const centerY = (minInternalY + maxInternalY) / 2;
+
+  // Place user nodes to the left of the system boundary
+  userNodes.forEach((uid, idx) => {
+    const uy = Math.round(centerY + idx - (userNodes.length - 1) / 2);
+    occupy(uid, minInternalX - 1, uy);
+  });
+
+  // Place external nodes to the right of the system boundary
+  externalNodes.forEach((eid, idx) => {
+    const ey = Math.round(centerY + idx - (externalNodes.length - 1) / 2);
+    occupy(eid, maxInternalX + 1, ey);
+  });
+
+  // Find overall bounds
+  const xs = Array.from(relX.values());
+  const ys = Array.from(relY.values());
+  const minX = xs.length > 0 ? Math.min(...xs) : 0;
+  const minY = ys.length > 0 ? Math.min(...ys) : 0;
+
+  // Shift to start at 0 and scale by 2 to create visual gaps
+  const finalCol = new Map<string, number>();
+  const finalRow = new Map<string, number>();
+
+  nodeIds.forEach(id => {
+    const rx = relX.get(id) ?? 0;
+    const ry = relY.get(id) ?? 0;
+    finalCol.set(id, (rx - minX) * 2);
+    finalRow.set(id, ry - minY);
+  });
 
   return nodes.map(n => ({
     ...n,
-    grid: [compactedCol.get(n.id)!, row.get(n.id)!]
+    grid: [finalCol.get(n.id)!, finalRow.get(n.id)!]
   }));
 }
 
@@ -1300,9 +1669,7 @@ function layoutSwimlanes(
   viewKey: string,
   entities: Record<string, FlowchartEntity>
 ): FlowchartViewNode[] {
-  const adj = buildAdjacency(nodeIds, relations, viewKey, nodeSet);
-  const inDegree = buildInDegree(nodeIds, relations, viewKey, nodeSet);
-
+  const { adj, inDegree } = buildCycleFreeGraph(nodeIds, relations, viewKey, nodeSet);
   const col = computeTopologicalColumns(nodeIds, inDegree, adj);
 
   const colGroups = new Map<number, string[]>();
@@ -1320,17 +1687,23 @@ function layoutSwimlanes(
     const externalInCol = colNodes.filter(id => isType(entities, id, TYPES.EXTERNAL));
     const otherInCol = colNodes.filter(id => !isType(entities, id, TYPES.USER) && !isType(entities, id, TYPES.EXTERNAL));
 
+    // Enforce a row gap of 1 between swimlanes (i.e. if user is at 0, other starts at 1)
+    const laneGap = 1;
     userInCol.forEach(id => row.set(id, 0));
-    otherInCol.forEach((id, idx) => row.set(id, 1 + idx));
-    const maxOtherRow = otherInCol.length > 0 ? 1 + otherInCol.length - 1 : 0;
-    externalInCol.forEach((id, idx) => row.set(id, Math.max(maxOtherRow, 1) + 1 + idx));
+    otherInCol.forEach((id, idx) => row.set(id, laneGap + idx));
+    const maxOtherRow = otherInCol.length > 0 ? laneGap + otherInCol.length - 1 : 0;
+    externalInCol.forEach((id, idx) => row.set(id, Math.max(maxOtherRow, laneGap) + laneGap + idx));
   });
 
   const compactedCol = compactColumns(sortedCols, col);
+  const spacedCol = new Map<string, number>();
+  compactedCol.forEach((val, key) => {
+    spacedCol.set(key, val * 2);
+  });
 
   return nodes.map(n => ({
     ...n,
-    grid: [compactedCol.get(n.id)!, row.get(n.id)!]
+    grid: [spacedCol.get(n.id)!, row.get(n.id)!]
   }));
 }
 
@@ -1345,9 +1718,7 @@ function layoutDataFlow(
   viewKey: string,
   entities: Record<string, FlowchartEntity>
 ): FlowchartViewNode[] {
-  const adj = buildAdjacency(nodeIds, relations, viewKey, nodeSet);
-  const inDegree = buildInDegree(nodeIds, relations, viewKey, nodeSet);
-
+  const { adj, inDegree } = buildCycleFreeGraph(nodeIds, relations, viewKey, nodeSet);
   const col = computeTopologicalColumns(nodeIds, inDegree, adj);
 
   const userNodes = nodeIds.filter(id => isType(entities, id, TYPES.USER));
@@ -1368,16 +1739,22 @@ function layoutDataFlow(
     const userInCol = colNodes.filter(id => isType(entities, id, TYPES.USER));
     const otherInCol = colNodes.filter(id => !isType(entities, id, TYPES.USER));
 
+    // Enforce a row gap of 1 between User nodes and other nodes in DATA_FLOW
+    const dataFlowGap = 1;
     userInCol.forEach((id, idx) => row.set(id, idx));
     const maxUserRow = userInCol.length > 0 ? userInCol.length - 1 : -1;
-    otherInCol.forEach((id, idx) => row.set(id, maxUserRow + 1 + idx));
+    otherInCol.forEach((id, idx) => row.set(id, maxUserRow + dataFlowGap + idx));
   });
 
   const compactedCol = compactColumns(sortedCols, col);
+  const spacedCol = new Map<string, number>();
+  compactedCol.forEach((val, key) => {
+    spacedCol.set(key, val * 2);
+  });
 
   return nodes.map(n => ({
     ...n,
-    grid: [compactedCol.get(n.id)!, row.get(n.id)!]
+    grid: [spacedCol.get(n.id)!, row.get(n.id)!]
   }));
 }
 
@@ -1468,6 +1845,19 @@ function layoutGeneral(
   });
 
   const compactedCol = compactColumns(sortedCols, col);
+
+  if (nodeIds.includes('temp_center')) {
+    const otherCols = nodeIds.filter(id => id !== 'temp_center').map(id => compactedCol.get(id) || 0);
+    const minC = otherCols.length > 0 ? Math.min(...otherCols) : 0;
+    const maxC = otherCols.length > 0 ? Math.max(...otherCols) : 0;
+
+    const otherRows = nodeIds.filter(id => id !== 'temp_center').map(id => row.get(id) || 0);
+    const minR = otherRows.length > 0 ? Math.min(...otherRows) : 0;
+    const maxR = otherRows.length > 0 ? Math.max(...otherRows) : 0;
+
+    compactedCol.set('temp_center', Math.round((minC + maxC) / 2));
+    row.set('temp_center', Math.round((minR + maxR) / 2));
+  }
 
   return nodes.map(n => ({
     ...n,
@@ -1616,4 +2006,72 @@ function computeLayoutInfo(nodes: FlowchartViewNode[]): LayoutInfo {
     colCount: maxCol + 1,
     nodeCount: nodes.length
   };
+}
+
+function buildCycleFreeGraph(
+  nodeIds: string[],
+  relations: FlowchartRelation[],
+  viewKey: string,
+  nodeSet: Set<string>
+): { adj: Map<string, string[]>; inDegree: Map<string, number> } {
+  const adj = new Map<string, string[]>();
+  nodeIds.forEach(id => adj.set(id, []));
+
+  const inDegree = new Map<string, number>();
+  nodeIds.forEach(id => inDegree.set(id, 0));
+
+  // Run DFS to detect back-edges (cycles)
+  const backEdges = new Set<string>();
+  const visited = new Set<string>();
+  const recStack = new Set<string>();
+
+  // Temporary full adjacency for cycle detection
+  const tempAdj = new Map<string, string[]>();
+  nodeIds.forEach(id => tempAdj.set(id, []));
+  relations.forEach(rel => {
+    const isForView = !rel.views || rel.views.includes(viewKey);
+    if (isForView && nodeSet.has(rel.from) && nodeSet.has(rel.to)) {
+      tempAdj.get(rel.from)!.push(rel.to);
+    }
+  });
+
+  const dfs = (u: string) => {
+    visited.add(u);
+    recStack.add(u);
+
+    const neighbors = tempAdj.get(u) || [];
+    neighbors.forEach(v => {
+      if (recStack.has(v)) {
+        // Found a back-edge/cycle!
+        const rel = relations.find(r => 
+          (!r.views || r.views.includes(viewKey)) && 
+          r.from === u && r.to === v
+        );
+        if (rel) {
+          backEdges.add(rel.id);
+        }
+      } else if (!visited.has(v)) {
+        dfs(v);
+      }
+    });
+
+    recStack.delete(u);
+  };
+
+  nodeIds.forEach(id => {
+    if (!visited.has(id)) {
+      dfs(id);
+    }
+  });
+
+  // Build the cycle-free adjacency and inDegree
+  relations.forEach(rel => {
+    const isForView = !rel.views || rel.views.includes(viewKey);
+    if (isForView && nodeSet.has(rel.from) && nodeSet.has(rel.to) && !backEdges.has(rel.id)) {
+      adj.get(rel.from)!.push(rel.to);
+      inDegree.set(rel.to, inDegree.get(rel.to)! + 1);
+    }
+  });
+
+  return { adj, inDegree };
 }

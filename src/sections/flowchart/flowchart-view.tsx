@@ -114,9 +114,9 @@ export function FlowchartView({
     return Array.from(cols.entries()).sort((a, b) => a[0] - b[0]);
   }, [view, isSequenceView]);
 
-  // Node positioning with dynamic spacing
-  const positioned = useMemo(() => {
-    if (!view) return [];
+  // Memoized spacing configuration
+  const spacing = useMemo(() => {
+    if (!view) return { colSpacing: 140, rowSpacing: 150, offsetX: 100, offsetY: 100 };
     const defaults: Record<string, { colSpacing: number; rowSpacing: number; offsetX: number; offsetY: number }> = {
       EVENT_STORMING: { colSpacing: 140, rowSpacing: 160, offsetX: 60, offsetY: 50 },
       STATE_MACHINE: { colSpacing: 140, rowSpacing: 150, offsetX: 60, offsetY: 80 },
@@ -126,9 +126,14 @@ export function FlowchartView({
       SEQUENCE: { colSpacing: 100, rowSpacing: 48, offsetX: 60, offsetY: 80 },
     };
     const base = defaults[viewKey] || { colSpacing: 140, rowSpacing: 150, offsetX: 100, offsetY: 100 };
-    const spacing = view.layoutInfo
+    return view.layoutInfo
       ? computeDynamicSpacing(view.layoutInfo, base, viewKey)
       : base;
+  }, [view, viewKey]);
+
+  // Node positioning with dynamic spacing
+  const positioned = useMemo(() => {
+    if (!view) return [];
     return view.nodes.map(node => {
       if (typeof node.x === 'number' && typeof node.y === 'number') {
         return { ...node, x: node.x, y: node.y };
@@ -141,7 +146,7 @@ export function FlowchartView({
       }
       return { ...node, x: 0, y: 0 };
     });
-  }, [view, viewKey]);
+  }, [view, spacing]);
 
   const positionedNodesRef = useRef(positioned);
   useEffect(() => { positionedNodesRef.current = positioned; }, [positioned]);
@@ -153,6 +158,187 @@ export function FlowchartView({
     }
     return m;
   }, [positioned]);
+
+  const routedRelations = useMemo(() => {
+    if (!view) return [];
+
+    const activeRelations = schema.relations.filter(r => r.views?.includes(viewKey));
+
+    // 1. Determine chosen sides for each relation
+    const relSides = activeRelations.map(rel => {
+      const fromNode = nodeMap[rel.from];
+      const toNode = nodeMap[rel.to];
+      if (!fromNode || !toNode) return null;
+
+      const x1 = fromNode.x;
+      const y1 = fromNode.y;
+      const x2 = toNode.x;
+      const y2 = toNode.y;
+
+      const startPoints = [
+        { side: 'T', x: x1, y: y1 - NODE_H / 2 },
+        { side: 'R', x: x1 + NODE_W / 2, y: y1 },
+        { side: 'B', x: x1, y: y1 + NODE_H / 2 },
+        { side: 'L', x: x1 - NODE_W / 2, y: y1 }
+      ];
+
+      const endPoints = [
+        { side: 'T', x: x2, y: y2 - NODE_H / 2 },
+        { side: 'R', x: x2 + NODE_W / 2, y: y2 },
+        { side: 'B', x: x2, y: y2 + NODE_H / 2 },
+        { side: 'L', x: x2 - NODE_W / 2, y: y2 }
+      ];
+
+      const gridFrom = fromNode.grid || [0, 0];
+      const gridTo = toNode.grid || [0, 0];
+      const colA = gridFrom[0];
+      const rowA = gridFrom[1];
+      const colB = gridTo[0];
+      const rowB = gridTo[1];
+
+      let startPt = startPoints[1]; // R
+      let endPt = endPoints[3];   // L
+
+      let minDistance = Infinity;
+      startPoints.forEach(sp => {
+        endPoints.forEach(ep => {
+          const dist = Math.hypot(ep.x - sp.x, ep.y - sp.y);
+          if (dist < minDistance) {
+            minDistance = dist;
+            startPt = sp;
+            endPt = ep;
+          }
+        });
+      });
+
+      return {
+        rel,
+        fromId: rel.from,
+        toId: rel.to,
+        sideFrom: startPt.side,
+        sideTo: endPt.side,
+        fromNode,
+        toNode,
+        colA, rowA, colB, rowB
+      };
+    }).filter(Boolean) as Array<{
+      rel: typeof schema.relations[0];
+      fromId: string;
+      toId: string;
+      sideFrom: string;
+      sideTo: string;
+      fromNode: any;
+      toNode: any;
+      colA: number; rowA: number; colB: number; rowB: number;
+    }>;
+
+    // 2. Group connections on each node side
+    const nodeSideConns: Record<string, Record<string, Array<{ relId: string; role: 'from' | 'to'; otherNodeId: string; relIndex: number }>>> = {};
+    
+    positioned.forEach(n => {
+      nodeSideConns[n.id] = {
+        'T': [], 'R': [], 'B': [], 'L': []
+      };
+    });
+
+    relSides.forEach((entry, index) => {
+      if (nodeSideConns[entry.fromId]) {
+        nodeSideConns[entry.fromId][entry.sideFrom].push({
+          relId: entry.rel.id,
+          role: 'from',
+          otherNodeId: entry.toId,
+          relIndex: index
+        });
+      }
+      if (nodeSideConns[entry.toId]) {
+        nodeSideConns[entry.toId][entry.sideTo].push({
+          relId: entry.rel.id,
+          role: 'to',
+          otherNodeId: entry.fromId,
+          relIndex: index
+        });
+      }
+    });
+
+    // 3. Sort connections and assign port coordinates
+    const relPorts: Record<string, { startX: number; startY: number; endX: number; endY: number; sideFrom: string; sideTo: string }> = {};
+
+    positioned.forEach(node => {
+      const sides = ['T', 'R', 'B', 'L'];
+      sides.forEach(side => {
+        const conns = nodeSideConns[node.id][side];
+        if (conns.length === 0) return;
+
+        conns.sort((a, b) => {
+          const nodeA = nodeMap[a.otherNodeId];
+          const nodeB = nodeMap[b.otherNodeId];
+          if (!nodeA || !nodeB) return 0;
+          if (side === 'T' || side === 'B') {
+            return nodeA.x - nodeB.x;
+          } else {
+            return nodeA.y - nodeB.y;
+          }
+        });
+
+        const K = conns.length;
+        conns.forEach((conn, i) => {
+          let px = node.x;
+          let py = node.y;
+
+          if (side === 'L') {
+            px = node.x - NODE_W / 2;
+            py = node.y - NODE_H / 2 + (i + 1) * NODE_H / (K + 1);
+          } else if (side === 'R') {
+            px = node.x + NODE_W / 2;
+            py = node.y - NODE_H / 2 + (i + 1) * NODE_H / (K + 1);
+          } else if (side === 'T') {
+            py = node.y - NODE_H / 2;
+            px = node.x - NODE_W / 2 + (i + 1) * NODE_W / (K + 1);
+          } else if (side === 'B') {
+            py = node.y + NODE_H / 2;
+            px = node.x - NODE_W / 2 + (i + 1) * NODE_W / (K + 1);
+          }
+
+          if (!relPorts[conn.relId]) {
+            relPorts[conn.relId] = {} as any;
+          }
+
+          if (conn.role === 'from') {
+            relPorts[conn.relId].startX = px;
+            relPorts[conn.relId].startY = py;
+            relPorts[conn.relId].sideFrom = side;
+          } else {
+            relPorts[conn.relId].endX = px;
+            relPorts[conn.relId].endY = py;
+            relPorts[conn.relId].sideTo = side;
+          }
+        });
+      });
+    });
+
+    // 4. Route Manhattan paths
+    return relSides.map(entry => {
+      const ports = relPorts[entry.rel.id];
+      if (!ports) return null;
+
+      const { startX, startY, endX, endY, sideFrom, sideTo } = ports;
+      const { pathD, midX, midY } = routeManhattanPath(
+        startX, startY, endX, endY,
+        sideFrom, sideTo,
+        entry.fromNode, entry.toNode,
+        positioned, spacing
+      );
+
+      return {
+        rel: entry.rel,
+        pathD,
+        startX, startY, endX, endY,
+        midX, midY
+      };
+    }).filter((x): x is { rel: any; pathD: string; startX: number; startY: number; endX: number; endY: number; midX: number; midY: number; } => x !== null);
+
+  }, [view, schema.relations, positioned, viewKey, spacing, nodeMap]);
+
 
   const minX = positioned.length > 0 ? Math.min(...positioned.map(n => n.x)) : 0;
   const maxX = positioned.length > 0 ? Math.max(...positioned.map(n => n.x)) : 0;
@@ -311,7 +497,7 @@ export function FlowchartView({
   );
 
   return (
-    <div className="flowchart-canvas-wrapper" style={{ position: 'relative' }}>
+    <div className="flowchart-canvas-inner" style={{ position: 'relative' }}>
       {isGridMode && (
         <div style={{
           position: 'absolute',
@@ -707,111 +893,98 @@ export function FlowchartView({
                    );
                  })}
 
-                 {/* Edges */}
-                 {schema.relations
-                   .filter(r => r.views?.includes(viewKey))
-                   .map((rel, idx) => {
-                     const fromNode = nodeMap[rel.from];
-                     const toNode = nodeMap[rel.to];
-                     if (!fromNode || !toNode) return null;
+                  {/* Edges */}
+                  {routedRelations.map((entry, idx) => {
+                    const { rel, pathD, startX, endX, midX, midY } = entry;
 
-                     const entityFrom = schema.entities[rel.from];
-                     const entityTo = schema.entities[rel.to];
-                     if (!entityFrom || !entityTo) return null;
+                    let isHighlighted = activeNodeIds && activeNodeIds.includes(rel.from) && activeNodeIds.includes(rel.to);
+                    if (viewKey === 'STATE_MACHINE') {
+                      isHighlighted = prevHighlightedNodeId === rel.from && highlightedNodeId === rel.to;
+                    }
+                    const isFaded = activeNodeIds !== null && !isHighlighted;
+                    const isHandledBy = rel.handledBy;
+                    const fromNode = nodeMap[rel.from];
+                    const toNode = nodeMap[rel.to];
+                    const isVertical = fromNode && toNode ? fromNode.x === toNode.x : false;
 
-                     const x1 = fromNode.x;
-                     const y1 = fromNode.y;
-                     const x2 = toNode.x;
-                     const y2 = toNode.y;
+                    // Truncate edge label to fit segment if too long
+                    let labelText = rel.label || '';
+                    const segmentLength = Math.abs(endX - startX);
+                    if (labelText && labelText.length > 18 && segmentLength < 180) {
+                      labelText = labelText.substring(0, 15) + '...';
+                    }
 
-                     const dx = x2 - x1;
-                     const dy = y2 - y1;
-
-                     let startX = x1;
-                     let startY = y1;
-                     let endX = x2;
-                     let endY = y2;
-
-                     if (Math.abs(dx) > Math.abs(dy)) {
-                       startX = x1 + (dx > 0 ? NODE_W / 2 : -NODE_W / 2);
-                       endX = x2 + (dx > 0 ? -NODE_W / 2 : NODE_W / 2);
-                     } else {
-                       startY = y1 + (dy > 0 ? NODE_H / 2 : -NODE_H / 2);
-                       endY = y2 + (dy > 0 ? -NODE_H / 2 : NODE_H / 2);
-                     }
-
-                     const dist = Math.hypot(endX - startX, endY - startY);
-                     const cp1x = startX + (dx > 0 ? Math.min(100, dist * 0.4) : -Math.min(100, dist * 0.4));
-                     const cp1y = startY;
-                     const cp2x = endX + (dx > 0 ? -Math.min(100, dist * 0.4) : Math.min(100, dist * 0.4));
-                     const cp2y = endY;
-
-                      let isHighlighted = activeNodeIds && activeNodeIds.includes(rel.from) && activeNodeIds.includes(rel.to);
-                      if (viewKey === 'STATE_MACHINE') {
-                        isHighlighted = prevHighlightedNodeId === rel.from && highlightedNodeId === rel.to;
-                      }
-                      const isFaded = activeNodeIds !== null && !isHighlighted;
-                     const isHandledBy = rel.handledBy;
-                     const midX = (startX + endX) / 2;
-                     const midY = (startY + endY) / 2;
-                     const isVertical = fromNode.x === toNode.x;
-
-                     const pathD = isHandledBy && isVertical
-                       ? `M ${startX} ${startY} L ${endX} ${endY}`
-                       : `M ${startX} ${startY} C ${cp1x} ${cp1y}, ${cp2x} ${cp2y}, ${endX} ${endY}`;
-
-                     return (
-                       <g key={rel.id} data-testid={`flowchart-edge-${viewKey}-${idx}`} style={{ transition: 'opacity 0.3s', opacity: isFaded ? 0.1 : 0.8 }}>
-                         <path
-                           d={pathD}
-                           stroke="var(--ctp-surface2)"
-                           strokeWidth="1.5"
-                           fill="none"
-                           strokeOpacity="0.3"
-                           markerEnd={isHandledBy ? '' : `url(#flowchart-arrow-${viewInstanceId})`}
-                         />
-                         <path
-                           d={pathD}
-                           stroke={isHighlighted ? 'var(--ctp-blue)' : (isHandledBy ? 'var(--ctp-green)' : (rel.dashed ? 'var(--ctp-yellow)' : 'var(--ctp-blue)'))}
-                           strokeWidth={isHighlighted ? '2.5' : (isHandledBy ? '2' : '1.5')}
-                           fill="none"
-                           strokeOpacity={isHighlighted ? '0.95' : (isHandledBy ? '0.8' : '0.55')}
-                           strokeDasharray={isHandledBy ? 'none' : (rel.dashed ? '4 4' : '6 7')}
-                           markerEnd={isHandledBy ? `url(#flowchart-arrow-${viewInstanceId})` : (isHighlighted ? `url(#flowchart-arrow-highlight-${viewInstanceId})` : `url(#flowchart-arrow-${viewInstanceId})`)}
-                           className={rel.dashed ? '' : 'flowchart-edge-animated'}
-                         />
-                         {isHandledBy && (
-                           <text
-                             x={midX + (isVertical ? 12 : 0)}
-                             y={midY - 6}
-                             textAnchor={isVertical ? 'start' : 'middle'}
-                             fill="var(--ctp-green)"
-                              fontSize="11"
-                              fontWeight="600"
-                              opacity={isHighlighted ? '0.95' : '0.75'}
-                              style={{ pointerEvents: 'none', userSelect: 'none' }}
-                            >
-                              handled by
-                           </text>
-                         )}
-                         {!isHandledBy && rel.label && (
-                           <text
-                             x={midX + (isVertical ? 8 : 0)}
-                             y={midY - 4}
-                             textAnchor={isVertical ? 'start' : 'middle'}
-                             fill={isHighlighted ? 'var(--ctp-blue)' : 'var(--ctp-subtext0)'}
-                              fontSize="11"
-                              fontFamily="var(--font-mono)"
-                              fontWeight="500"
-                              opacity={isHighlighted ? '0.95' : '0.75'}
-                              style={{ pointerEvents: 'none', userSelect: 'none' }}
-                            >
-                              {rel.label}
-                           </text>
-                         )}
-                       </g>
-                     );
-                   })}
+                    return (
+                      <g 
+                        key={rel.id} 
+                        data-testid={`flowchart-edge-${viewKey}-${idx}`} 
+                        style={{ transition: 'opacity 0.3s', opacity: isFaded ? 0.1 : 0.8 }}
+                        onMouseEnter={() => {
+                          if (rel.label || isHandledBy) {
+                            const desc = isHandledBy ? 'Handled by orchestrator runtime process flow.' : (rel.label || '');
+                            setTooltip({ description: desc, x: midX, y: midY });
+                          }
+                        }}
+                        onMouseLeave={() => setTooltip(null)}
+                      >
+                        {/* Invisible wider interactive hover trigger path */}
+                        <path
+                          d={pathD}
+                          stroke="transparent"
+                          strokeWidth="10"
+                          fill="none"
+                          style={{ cursor: 'pointer' }}
+                        />
+                        <path
+                          d={pathD}
+                          stroke="var(--ctp-surface2)"
+                          strokeWidth="1.5"
+                          fill="none"
+                          strokeOpacity="0.3"
+                          markerEnd={isHandledBy ? '' : `url(#flowchart-arrow-${viewInstanceId})`}
+                        />
+                        <path
+                          d={pathD}
+                          stroke={isHighlighted ? 'var(--ctp-blue)' : (isHandledBy ? 'var(--ctp-green)' : (rel.dashed ? 'var(--ctp-yellow)' : 'var(--ctp-blue)'))}
+                          strokeWidth={isHighlighted ? '2.5' : (isHandledBy ? '2' : '1.5')}
+                          fill="none"
+                          strokeOpacity={isHighlighted ? '0.95' : (isHandledBy ? '0.8' : '0.55')}
+                          strokeDasharray={isHandledBy ? 'none' : (rel.dashed ? '4 4' : '8 8')}
+                          markerEnd={isHandledBy ? `url(#flowchart-arrow-${viewInstanceId})` : (isHighlighted ? `url(#flowchart-arrow-highlight-${viewInstanceId})` : `url(#flowchart-arrow-${viewInstanceId})`)}
+                          className={rel.dashed ? '' : 'flowchart-edge-animated'}
+                        />
+                        {isHandledBy && (
+                          <text
+                            x={midX + (isVertical ? 12 : 0)}
+                            y={midY - 6}
+                            textAnchor={isVertical ? 'start' : 'middle'}
+                            fill="var(--ctp-green)"
+                            fontSize="11"
+                            fontWeight="600"
+                            opacity={isHighlighted ? '0.95' : '0.75'}
+                            style={{ pointerEvents: 'none', userSelect: 'none' }}
+                          >
+                            handled by
+                          </text>
+                        )}
+                        {!isHandledBy && labelText && (
+                          <text
+                            x={midX + (isVertical ? 8 : 0)}
+                            y={midY - 4}
+                            textAnchor={isVertical ? 'start' : 'middle'}
+                            fill={isHighlighted ? 'var(--ctp-blue)' : 'var(--ctp-subtext0)'}
+                            fontSize="11"
+                            fontFamily="var(--font-mono)"
+                            fontWeight="500"
+                            opacity={isHighlighted ? '0.95' : '0.75'}
+                            style={{ pointerEvents: 'none', userSelect: 'none' }}
+                          >
+                            {labelText}
+                          </text>
+                        )}
+                      </g>
+                    );
+                  })}
 
                  {/* Particle */}
                  <circle
@@ -828,7 +1001,7 @@ export function FlowchartView({
                    const entity = schema.entities[node.id];
                    if (!entity) return null;
 
-                   const viewType = entity.viewTypes?.[viewKey] || 'default';
+                   const viewType = entity.viewTypes?.[viewKey] || entity.type || 'default';
                    const nW = NODE_W;
                    const nH = NODE_H;
                    const x = node.x - nW / 2;
@@ -1094,6 +1267,225 @@ export function FlowchartView({
           </div>
         );
       })()}
-     </div>
-   );
- }
+      </div>
+    );
+  }
+
+function getPathMidpoint(points: Array<{ x: number; y: number }>): { x: number; y: number } {
+  if (points.length === 0) return { x: 0, y: 0 };
+  if (points.length === 1) return points[0];
+
+  const lengths: number[] = [];
+  let totalLength = 0;
+  for (let i = 0; i < points.length - 1; i++) {
+    const dx = points[i+1].x - points[i].x;
+    const dy = points[i+1].y - points[i].y;
+    const len = Math.abs(dx) + Math.abs(dy);
+    lengths.push(len);
+    totalLength += len;
+  }
+
+  const targetDist = totalLength / 2;
+  let currentDist = 0;
+  for (let i = 0; i < points.length - 1; i++) {
+    const len = lengths[i];
+    if (currentDist + len >= targetDist) {
+      const remaining = targetDist - currentDist;
+      const p1 = points[i];
+      const p2 = points[i+1];
+      if (len === 0) return p1;
+      const ratio = remaining / len;
+      return {
+        x: p1.x + (p2.x - p1.x) * ratio,
+        y: p1.y + (p2.y - p1.y) * ratio
+      };
+    }
+    currentDist += len;
+  }
+
+  return points[points.length - 1];
+}
+
+function routeManhattanPath(
+  startX: number,
+  startY: number,
+  endX: number,
+  endY: number,
+  sideFrom: string,
+  sideTo: string,
+  fromNode: any,
+  toNode: any,
+  positioned: any[],
+  spacing: any
+): { pathD: string; midX: number; midY: number } {
+  const candidates: Array<{ type: string; points: Array<{ x: number; y: number }> }> = [];
+
+  const candidateXs = new Set<number>();
+  candidateXs.add((startX + endX) / 2);
+  candidateXs.add(startX + 30);
+  candidateXs.add(startX - 30);
+  candidateXs.add(endX + 30);
+  candidateXs.add(endX - 30);
+
+  const maxCol = positioned.length > 0 ? Math.max(...positioned.map(n => n.grid?.[0] ?? 0)) : 0;
+  for (let c = 0; c <= maxCol; c++) {
+    candidateXs.add((c + 0.5) * spacing.colSpacing + spacing.offsetX);
+  }
+
+  const candidateYs = new Set<number>();
+  candidateYs.add((startY + endY) / 2);
+  candidateYs.add(startY + 30);
+  candidateYs.add(startY - 30);
+  candidateYs.add(endY + 30);
+  candidateYs.add(endY - 30);
+
+  const maxRow = positioned.length > 0 ? Math.max(...positioned.map(n => n.grid?.[1] ?? 0)) : 0;
+  for (let r = 0; r <= maxRow; r++) {
+    candidateYs.add((r + 0.5) * spacing.rowSpacing + spacing.offsetY);
+  }
+
+  // 1-bend H-V
+  candidates.push({
+    type: '1-bend H-V',
+    points: [
+      { x: startX, y: startY },
+      { x: endX, y: startY },
+      { x: endX, y: endY }
+    ]
+  });
+
+  // 1-bend V-H
+  candidates.push({
+    type: '1-bend V-H',
+    points: [
+      { x: startX, y: startY },
+      { x: startX, y: endY },
+      { x: endX, y: endY }
+    ]
+  });
+
+  // H-V-H
+  candidateXs.forEach(midX => {
+    candidates.push({
+      type: 'H-V-H',
+      points: [
+        { x: startX, y: startY },
+        { x: midX, y: startY },
+        { x: midX, y: endY },
+        { x: endX, y: endY }
+      ]
+    });
+  });
+
+  // V-H-V
+  candidateYs.forEach(midY => {
+    candidates.push({
+      type: 'V-H-V',
+      points: [
+        { x: startX, y: startY },
+        { x: startX, y: midY },
+        { x: endX, y: midY },
+        { x: endX, y: endY }
+      ]
+    });
+  });
+
+  let bestPath: Array<{ x: number; y: number }> | null = null;
+  let minScore = Infinity;
+  const PADDING = 12;
+
+  candidates.forEach(cand => {
+    const pts = cand.points;
+    let collisions = 0;
+    let length = 0;
+    const bends = pts.length - 2;
+
+    const p0 = pts[0];
+    const p1 = pts[1];
+    if (sideFrom === 'R' && p1.x < p0.x) return;
+    if (sideFrom === 'L' && p1.x > p0.x) return;
+    if (sideFrom === 'T' && p1.y > p0.y) return;
+    if (sideFrom === 'B' && p1.y < p0.y) return;
+
+    const pk = pts[pts.length - 1];
+    const pk1 = pts[pts.length - 2];
+    if (sideTo === 'R' && pk1.x < pk.x) return;
+    if (sideTo === 'L' && pk1.x > pk.x) return;
+    if (sideTo === 'T' && pk1.y > pk.y) return;
+    if (sideTo === 'B' && pk1.y < pk.y) return;
+
+    for (let i = 0; i < pts.length - 1; i++) {
+      const segmentStart = pts[i];
+      const segmentEnd = pts[i+1];
+      const dx = segmentEnd.x - segmentStart.x;
+      const dy = segmentEnd.y - segmentStart.y;
+      length += Math.abs(dx) + Math.abs(dy);
+
+      positioned.forEach(node => {
+        const isFromNode = node.id === fromNode.id;
+        const isToNode = node.id === toNode.id;
+
+        if (i === 0 && isFromNode) return;
+        if (i === pts.length - 2 && isToNode) return;
+
+        const pad = (isFromNode || isToNode) ? 0 : PADDING;
+        const left = node.x - NODE_W / 2 - pad;
+        const right = node.x + NODE_W / 2 + pad;
+        const top = node.y - NODE_H / 2 - pad;
+        const bottom = node.y + NODE_H / 2 + pad;
+
+        if (segmentStart.y === segmentEnd.y) {
+          const y = segmentStart.y;
+          const xMin = Math.min(segmentStart.x, segmentEnd.x);
+          const xMax = Math.max(segmentStart.x, segmentEnd.x);
+          if (y > top && y < bottom && xMax > left && xMin < right) {
+            collisions++;
+          }
+        } else {
+          const x = segmentStart.x;
+          const yMin = Math.min(segmentStart.y, segmentEnd.y);
+          const yMax = Math.max(segmentStart.y, segmentEnd.y);
+          if (x > left && x < right && yMax > top && yMin < bottom) {
+            collisions++;
+          }
+        }
+      });
+    }
+
+    const score = collisions * 1000000 + bends * 5000 + length;
+    if (score < minScore) {
+      minScore = score;
+      bestPath = pts;
+    }
+  });
+
+  if (!bestPath) {
+    bestPath = [
+      { x: startX, y: startY },
+      { x: (startX + endX) / 2, y: startY },
+      { x: (startX + endX) / 2, y: endY },
+      { x: endX, y: endY }
+    ];
+  }
+
+  let pathD = `M ${bestPath[0].x} ${bestPath[0].y}`;
+  for (let i = 1; i < bestPath.length; i++) {
+    const prev = bestPath[i-1];
+    const curr = bestPath[i];
+    if (curr.x === prev.x) {
+      pathD += ` V ${curr.y}`;
+    } else if (curr.y === prev.y) {
+      pathD += ` H ${curr.x}`;
+    } else {
+      pathD += ` L ${curr.x} ${curr.y}`;
+    }
+  }
+
+  const mid = getPathMidpoint(bestPath);
+
+  return {
+    pathD,
+    midX: mid.x,
+    midY: mid.y
+  };
+}
