@@ -1,5 +1,6 @@
 import { motion, useInView, useReducedMotion } from "motion/react";
 import { type ReactNode, type RefObject, useRef } from "react";
+
 import { EASE_OUT } from "../../lib/ease";
 import { cn } from "../../lib/utils";
 
@@ -40,10 +41,14 @@ export function ScrollReveal({
     : { opacity: 1, y: 0, filter: "blur(0px)" };
 
   const MotionComponent = motion[Component];
+  // The ref type cannot be statically narrowed across the "div" | "tr" | "section"
+  // union without a full discriminated union — safe to cast here.
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const motionRef = ref as unknown as any;
 
   return (
     <MotionComponent
-      ref={ref as any}
+      ref={motionRef}
       initial={hidden}
       animate={inView ? shown : hidden}
       transition={{ duration, ease: EASE_OUT, delay }}

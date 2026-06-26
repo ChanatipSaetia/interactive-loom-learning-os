@@ -23,7 +23,7 @@ export function TopNav({ topics }: TopNavProps) {
               cn(
                 "topnav-link inline-flex items-center rounded-full px-3.5 py-1.5 text-sm font-medium transition-colors",
                 isActive
-                  ? "bg-primary text-primary-foreground"
+                  ? "bg-primary text-primary-foreground topnav-link-active"
                   : "text-muted-foreground hover:text-foreground hover:bg-accent",
               )
             }
@@ -38,7 +38,7 @@ export function TopNav({ topics }: TopNavProps) {
                 cn(
                   "topnav-link inline-flex items-center rounded-full px-3.5 py-1.5 text-sm font-medium transition-colors",
                   isActive
-                    ? "bg-primary text-primary-foreground"
+                    ? "bg-primary text-primary-foreground topnav-link-active"
                     : "text-muted-foreground hover:text-foreground hover:bg-accent",
                 )
               }

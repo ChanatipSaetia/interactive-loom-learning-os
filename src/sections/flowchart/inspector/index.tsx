@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react';
 import { StateMachineWidget } from './state-machine-widget';
 import { JsonPayloadViewer } from './json-payload-viewer';
+import { Dropdown } from '../../../components/motion/dropdown';
 import { PROCESS_GROUP_STATE_MAP, STEP_EVENT_TO_STATE_MAP } from '../types';
 import type {
   UnifiedFlowchartSchema,
@@ -259,18 +260,18 @@ export function InspectorSidebar({
             )}
             {smEntities.length > 0 && (
               <div className="inspector-aggregate-selector" data-testid="inspector-aggregate-selector">
-                <select
-                  className="flowchart-journey-select"
+                <Dropdown
                   value={resolvedAggregateId || smEntities[0]?.id || ''}
-                  onChange={(e) => handleAggregateChange(e.target.value)}
+                  onChange={handleAggregateChange}
+                  options={smEntities.map(opt => ({ value: opt.id, label: opt.title }))}
                   data-testid="inspector-aggregate-select"
-                >
-                  {smEntities.map(opt => (
-                    <option key={opt.id} value={opt.id}>
-                      {opt.title}
-                    </option>
-                  ))}
-                </select>
+                  native={true}
+                  showChevron={false}
+                  triggerClassName="flowchart-journey-select"
+                  className="flowchart-journey-dropdown"
+                  optionsClassName="flowchart-journey-options"
+                  optionClassName="flowchart-journey-option"
+                />
               </div>
             )}
             {selectedEntity && selectedEntity.stateMachine && (

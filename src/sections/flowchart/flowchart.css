@@ -994,3 +994,82 @@
     background: var(--ctp-surface2);
   }
 }
+
+/* ---- Flowchart Controls Row ---- */
+.flowchart-controls-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0 12px 12px;
+  flex-wrap: wrap;
+}
+
+.flowchart-view-selector-wrapper {
+  display: flex;
+  align-items: center;
+}
+
+.flowchart-view-selector-label {
+  @apply font-semibold uppercase tracking-[0.5px] whitespace-nowrap text-[10px] mr-2;
+  font-family: var(--font-mono);
+  color: var(--ctp-overlay1);
+}
+
+.flowchart-view-action-bar > div {
+  background-color: var(--ctp-mantle) !important;
+  border-color: var(--border) !important;
+  box-shadow: none !important;
+}
+
+.flowchart-view-tab-active {
+  color: var(--ctp-blue) !important;
+}
+
+/* Floating Combined Controls Dock Overlay inside Canvas */
+.flowchart-controls-dock-container {
+  position: absolute;
+  bottom: 32px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 30;
+  width: 90%;
+  max-width: 680px;
+  display: flex;
+  justify-content: center;
+  pointer-events: none;
+}
+
+.flowchart-controls-dock {
+  pointer-events: auto;
+  background-color: var(--ctp-mantle) !important;
+  border-color: var(--border-light) !important;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4) !important;
+}
+
+.flowchart-controls-dock-content {
+  background-color: var(--ctp-base);
+  width: 100%;
+}
+
+.flowchart-dock-playback {
+  @apply flex justify-center py-1 w-full whitespace-nowrap;
+}
+
+.flowchart-dock-playback .flowchart-playback {
+  @apply bg-transparent p-0 border-none shadow-none flex-nowrap;
+}
+
+.flowchart-dock-zoom {
+  @apply flex justify-center py-1 w-full whitespace-nowrap;
+}
+
+.flowchart-dock-btn {
+  @apply h-8 px-3 rounded-[var(--radius-xs)] border-none text-xs font-semibold flex items-center justify-center cursor-pointer transition-all duration-150;
+  color: var(--ctp-overlay1) !important;
+  background-color: transparent !important;
+}
+
+.flowchart-dock-btn:hover {
+  color: var(--ctp-text) !important;
+  background-color: var(--ctp-surface0) !important;
+}

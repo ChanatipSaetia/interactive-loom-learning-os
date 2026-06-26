@@ -48,12 +48,12 @@ function BulletItemRow({
           <motion.span
             className="bullet-marker bullet-marker-ordered"
             data-testid={`bullet-number-${path}`}
-            initial={animate ? { scale: 0 } : {}}
-            whileInView={animate ? { scale: 1 } : {}}
+            initial={animate ? { opacity: 0 } : {}}
+            whileInView={animate ? { opacity: 1 } : {}}
             viewport={animate ? { once: true, amount: 0.3 } : {}}
             transition={
               animate
-                ? { type: 'spring', stiffness: 400, damping: 25, delay: staggerDelay }
+                ? { duration: 0.3, ease: [0.25, 1, 0.5, 1], delay: staggerDelay }
                 : {}
             }
           />
@@ -61,12 +61,12 @@ function BulletItemRow({
           <motion.span
             className="bullet-marker bullet-marker-unordered"
             data-testid={`bullet-marker-${path}`}
-            initial={animate ? { scale: 0 } : {}}
-            whileInView={animate ? { scale: 1 } : {}}
+            initial={animate ? { opacity: 0 } : {}}
+            whileInView={animate ? { opacity: 1 } : {}}
             viewport={animate ? { once: true, amount: 0.3 } : {}}
             transition={
               animate
-                ? { type: 'spring', stiffness: 400, damping: 25, delay: staggerDelay }
+                ? { duration: 0.3, ease: [0.25, 1, 0.5, 1], delay: staggerDelay }
                 : {}
             }
           >

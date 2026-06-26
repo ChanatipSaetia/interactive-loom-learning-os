@@ -34,7 +34,9 @@ a {
 
 button {
   font-family: var(--font-body);
-  @apply cursor-pointer border-none bg-none;
+  @apply cursor-pointer;
+  background: none;
+  box-sizing: border-box;
 }
 
 input,

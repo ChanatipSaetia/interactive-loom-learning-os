@@ -19,7 +19,7 @@
 }
 
 .taxonomy-browser-card {
-  @apply rounded-[var(--radius-lg)] border border-border pt-[3px] px-6 py-6 flex flex-col gap-3 cursor-pointer;
+  @apply rounded-[var(--radius-lg)] border border-border p-6 flex flex-col gap-3 cursor-pointer;
   background: var(--soft-stone);
   border-top: 3px solid var(--ctp-blue);
   transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
@@ -97,7 +97,7 @@
 /* ─── Scrollable Content ──────────────────────────────────── */
 
 .taxonomy-modal-scroll {
-  @apply overflow-y-auto px-6;
+  @apply overflow-y-auto px-6 py-6;
   max-height: calc(100vh - 160px);
   scrollbar-width: thin;
   scrollbar-color: var(--ctp-surface0) var(--ctp-mantle);

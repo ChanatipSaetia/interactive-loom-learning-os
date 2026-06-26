@@ -2,7 +2,6 @@ import { useState, useCallback, useRef, type ComponentType } from 'react'
 import { motion } from 'motion/react'
 import * as Dialog from '@radix-ui/react-dialog'
 import { ScrollReveal } from '../../components/motion/scroll-reveal'
-import { TiltCard } from '../../components/motion/tilt-card'
 import './taxonomy-browser.css'
 
 export interface TaxonomyCategory {
@@ -196,40 +195,38 @@ function TaxonomyBrowserSection({ title, categories }: TaxonomyBrowserSectionPro
           const accent = colorAccentMap[cat.color] ?? 'var(--ctp-blue)'
           return (
             <ScrollReveal key={idx} delay={idx * 0.1}>
-              <TiltCard>
-                <div
-                  role="button"
-                  tabIndex={0}
-                  aria-label={`Open details for ${cat.title}`}
-                  className="taxonomy-browser-card"
-                  data-testid={`taxonomy-browser-card-${idx}`}
-                  style={{ borderTopColor: accent }}
-                  onClick={() => handleCardClick(idx)}
-                  onKeyDown={(e) => {
-                    if (e.key === 'Enter' || e.key === ' ') {
-                      e.preventDefault()
-                      handleCardClick(idx)
-                    }
-                  }}
-                >
-                  <div className="taxonomy-browser-card-icon" data-testid={`taxonomy-browser-icon-${idx}`}>
-                    <Icon style={{ color: accent }} size={20} strokeWidth={1.5} />
-                  </div>
-                  <div className="taxonomy-browser-card-body">
-                    {cat.subtitle && (
-                      <p className="taxonomy-browser-subtitle" data-testid={`taxonomy-browser-subtitle-${idx}`}>
-                        {cat.subtitle}
-                      </p>
-                    )}
-                    <h4 className="taxonomy-browser-card-title" data-testid={`taxonomy-browser-card-title-${idx}`}>
-                      {cat.title}
-                    </h4>
-                    <p className="taxonomy-browser-description" data-testid={`taxonomy-browser-description-${idx}`}>
-                      {cat.description}
-                    </p>
-                  </div>
+              <div
+                role="button"
+                tabIndex={0}
+                aria-label={`Open details for ${cat.title}`}
+                className="taxonomy-browser-card"
+                data-testid={`taxonomy-browser-card-${idx}`}
+                style={{ borderTopColor: accent }}
+                onClick={() => handleCardClick(idx)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault()
+                    handleCardClick(idx)
+                  }
+                }}
+              >
+                <div className="taxonomy-browser-card-icon" data-testid={`taxonomy-browser-icon-${idx}`}>
+                  <Icon style={{ color: accent }} size={20} strokeWidth={1.5} />
                 </div>
-              </TiltCard>
+                <div className="taxonomy-browser-card-body">
+                  {cat.subtitle && (
+                    <p className="taxonomy-browser-subtitle" data-testid={`taxonomy-browser-subtitle-${idx}`}>
+                      {cat.subtitle}
+                    </p>
+                  )}
+                  <h4 className="taxonomy-browser-card-title" data-testid={`taxonomy-browser-card-title-${idx}`}>
+                    {cat.title}
+                  </h4>
+                  <p className="taxonomy-browser-description" data-testid={`taxonomy-browser-description-${idx}`}>
+                    {cat.description}
+                  </p>
+                </div>
+              </div>
             </ScrollReveal>
           )
         })}

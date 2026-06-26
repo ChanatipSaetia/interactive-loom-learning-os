@@ -43,6 +43,7 @@ export interface FlowchartViewProps {
   onEnterFullscreen?: () => void;
   focusAfterViewSwitch?: string | null;
   onCameraFocused?: () => void;
+  onCameraControls?: (controls: { handleZoomIn: () => void; handleZoomOut: () => void; handleFitToScreen: () => void } | null) => void;
 }
 
 export function FlowchartView({
@@ -61,7 +62,8 @@ export function FlowchartView({
   currentJourneyId,
   onEnterFullscreen,
   focusAfterViewSwitch,
-  onCameraFocused
+  onCameraFocused,
+  onCameraControls
 }: FlowchartViewProps) {
   const view = schema.views[viewKey];
   const viewInstanceId = `${instanceId}-${viewKey}`;
@@ -150,6 +152,26 @@ export function FlowchartView({
 
   // Camera
   const camera = useCamera({ positionedNodesRef });
+
+  // Register camera controls with parent
+  const onCameraControlsRef = useRef(onCameraControls);
+  useEffect(() => {
+    onCameraControlsRef.current = onCameraControls;
+  }, [onCameraControls]);
+
+  useEffect(() => {
+    const cb = onCameraControlsRef.current;
+    if (cb) {
+      cb({
+        handleZoomIn: camera.handleZoomIn,
+        handleZoomOut: camera.handleZoomOut,
+        handleFitToScreen: () => camera.fitToScreen(minX, maxX, minY, maxY),
+      });
+      return () => {
+        cb(null);
+      };
+    }
+  }, [camera.handleZoomIn, camera.handleZoomOut, camera.fitToScreen, minX, maxX, minY, maxY]);
 
   // Focus camera on active nodes
   useEffect(() => {
@@ -301,11 +323,13 @@ export function FlowchartView({
       )}
 
       <div className="flowchart-body">
-        <ZoomToolbar
-          handleZoomIn={camera.handleZoomIn}
-          handleZoomOut={camera.handleZoomOut}
-          handleFitToScreen={() => camera.fitToScreen(minX, maxX, minY, maxY)}
-        />
+        {isGridMode && (
+          <ZoomToolbar
+            handleZoomIn={camera.handleZoomIn}
+            handleZoomOut={camera.handleZoomOut}
+            handleFitToScreen={() => camera.fitToScreen(minX, maxX, minY, maxY)}
+          />
+        )}
 
         <svg
           ref={camera.svgRef}

@@ -5,6 +5,7 @@ import type { TopicRoute } from '../../core/routes'
 import { useTopicFiltering, type SortDirection, type SortColumn } from '../../core/hooks/useTopicFiltering'
 import { usePagination } from '../../core/hooks/usePagination'
 import { ScrollReveal } from '../motion/scroll-reveal'
+import { Dropdown } from '../motion/dropdown'
 import { cn } from '../../lib/utils'
 import './overview.css'
 
@@ -84,7 +85,7 @@ export function OverviewPage({ topics }: { topics: TopicRoute[] }) {
                 className={cn(
                   "overview-filter-chip rounded-full border px-3.5 py-1.5 text-sm font-medium transition-colors",
                   activeCategory === cat
-                    ? "bg-primary border-primary text-primary-foreground"
+                    ? "bg-primary border-primary text-primary-foreground overview-filter-chip-active"
                     : "border-border bg-card text-muted-foreground hover:text-foreground hover:bg-accent",
                 )}
                 onClick={() => { setActiveCategory(cat); setCurrentPage(1) }}
@@ -211,17 +212,15 @@ export function OverviewPage({ topics }: { topics: TopicRoute[] }) {
               <label htmlFor="rows-per-page" className="overview-rows-label">
                 Rows per page:
               </label>
-              <select
-                id="rows-per-page"
-                className="overview-rows-select"
-                value={rowsPerPage}
-                onChange={(e) => { setRowsPerPage(Number(e.target.value)); setCurrentPage(1) }}
+              <Dropdown
+                value={String(rowsPerPage)}
+                onChange={(val) => { setRowsPerPage(Number(val)); setCurrentPage(1) }}
+                options={rowsPerPageOptions.map(opt => ({ value: String(opt), label: String(opt) }))}
                 data-testid="rows-per-page"
-              >
-                {rowsPerPageOptions.map((opt) => (
-                  <option key={opt} value={opt}>{opt}</option>
-                ))}
-              </select>
+                triggerClassName="overview-rows-select"
+                className="overview-rows-dropdown"
+                native={true}
+              />
             </div>
           </div>
         </ScrollReveal>

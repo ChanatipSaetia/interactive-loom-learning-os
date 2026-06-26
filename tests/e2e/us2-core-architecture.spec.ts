@@ -14,14 +14,14 @@ test.describe('US-2: Core Architecture + Section Registry', () => {
     await expect(topicPage).toBeVisible()
 
     const topicTitle = page.locator('.topic-page-title')
-    await expect(topicTitle).toHaveText('REST API vs WebSocket')
+    await expect(topicTitle).toHaveText('AI Agent Architecture (Demo)')
 
     const topicContainer = page.locator('[data-topic-id="demo"]')
     await expect(topicContainer).toBeVisible()
   })
 
   test('navigating to unknown topic shows not found', async ({ page }) => {
-    await page.goto('/nonexistent/path')
+    await page.goto('/#/nonexistent/path')
 
     const topicTitle = page.locator('.topic-page-title')
     await expect(topicTitle).toHaveText('Topic Not Found')

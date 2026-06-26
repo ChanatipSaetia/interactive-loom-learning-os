@@ -34,6 +34,7 @@ export function Tabs({
   variant = "pill",
   children,
   className,
+  ...rest
 }: {
   defaultValue?: string;
   value?: string;
@@ -41,6 +42,7 @@ export function Tabs({
   variant?: Variant;
   children: ReactNode;
   className?: string;
+  [key: string]: any;
 }) {
   const [internal, setInternal] = useState(defaultValue ?? "");
   const layoutId = useId();
@@ -54,7 +56,7 @@ export function Tabs({
   return (
     <MotionConfig transition={reduce ? { duration: 0 } : transition}>
       <TabsCtx.Provider value={{ value: current, setValue, layoutId, variant }}>
-        <motion.div layoutRoot className={className}>
+        <motion.div layoutRoot className={className} {...rest}>
           {children}
         </motion.div>
       </TabsCtx.Provider>
