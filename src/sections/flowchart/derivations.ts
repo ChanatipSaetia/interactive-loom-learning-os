@@ -134,7 +134,7 @@ export function autoDeriveViews(schema: UnifiedFlowchartSchema): UnifiedFlowchar
     });
 
     // Derive relations using our path tracer
-    const getSysArchLabel = (pathNodeIds: string[]): { label: string } => {
+    const getSysArchLabel = (pathNodeIds: string[], _startId: string): { label: string } => {
       const cmdNode = pathNodeIds.find(id => getEntityType(schema.entities[id]) === TYPES.COMMAND);
       const evtNode = pathNodeIds.find(id => getEntityType(schema.entities[id]) === TYPES.EVENT);
 
@@ -144,6 +144,11 @@ export function autoDeriveViews(schema: UnifiedFlowchartSchema): UnifiedFlowchar
       if (cmdNode) return { label: schema.entities[cmdNode].title };
       if (evtNode) return { label: schema.entities[evtNode].title };
 
+      // Fallback: use the last structural entity on the path
+      const lastNode = pathNodeIds[pathNodeIds.length - 1];
+      if (lastNode && schema.entities[lastNode]) {
+        return { label: schema.entities[lastNode].title };
+      }
       return { label: '' };
     };
 
@@ -194,9 +199,15 @@ export function autoDeriveViews(schema: UnifiedFlowchartSchema): UnifiedFlowchar
       }
     });
 
-    const getSwimlaneLabel = (pathNodeIds: string[]): { label: string } => {
+   const getSwimlaneLabel = (pathNodeIds: string[], _startId: string): { label: string } => {
       const evtNode = pathNodeIds.find(id => getEntityType(schema.entities[id]) === TYPES.EVENT);
       if (evtNode) return { label: schema.entities[evtNode].title };
+
+      // Fallback: use the last structural entity on the path
+      const lastNode = pathNodeIds[pathNodeIds.length - 1];
+      if (lastNode && schema.entities[lastNode]) {
+        return { label: schema.entities[lastNode].title };
+      }
       return { label: '' };
     };
 
@@ -249,7 +260,7 @@ export function autoDeriveViews(schema: UnifiedFlowchartSchema): UnifiedFlowchar
       });
     });
 
-    const getSequenceLabel = (pathNodeIds: string[]): { label: string; dashed?: boolean } => {
+    const getSequenceLabel = (pathNodeIds: string[], _startId: string): { label: string; dashed?: boolean } => {
       const evtNode = pathNodeIds.find(id => getEntityType(schema.entities[id]) === TYPES.EVENT);
       const cmdNode = pathNodeIds.find(id => getEntityType(schema.entities[id]) === TYPES.COMMAND);
 
@@ -264,6 +275,12 @@ export function autoDeriveViews(schema: UnifiedFlowchartSchema): UnifiedFlowchar
       }
       if (cmdNode) {
         return { label: schema.entities[cmdNode].title, dashed: false };
+      }
+
+      // Fallback: use the last structural entity on the path
+      const lastNode = pathNodeIds[pathNodeIds.length - 1];
+      if (lastNode && schema.entities[lastNode]) {
+        return { label: schema.entities[lastNode].title, dashed: false };
       }
       return { label: '', dashed: false };
     };
@@ -319,9 +336,6 @@ export function autoDeriveViews(schema: UnifiedFlowchartSchema): UnifiedFlowchar
 
     const getDataFlowLabel = (pathNodeIds: string[], startId: string): { label: string } => {
       const cmdNode = pathNodeIds.find(id => getEntityType(schema.entities[id]) === TYPES.COMMAND);
-      if (!cmdNode) return { label: '' };
-
-      const cmdTitle = schema.entities[cmdNode].title;
 
       // Find if there is an Event (Data Object) on the path or at the start
       let dataObjectTitle = '';
@@ -352,13 +366,34 @@ export function autoDeriveViews(schema: UnifiedFlowchartSchema): UnifiedFlowchar
         componentName = `${componentName} [${typeLabel}]`;
       }
 
+      if (cmdNode) {
+        const cmdTitle = schema.entities[cmdNode].title;
+        if (dataObjectTitle && componentName) {
+          return { label: `${cmdTitle} (${dataObjectTitle} in ${componentName})` };
+        }
+        if (dataObjectTitle) {
+          return { label: `${cmdTitle} (${dataObjectTitle})` };
+        }
+        return { label: cmdTitle };
+      }
+
+      // Fallback: use data object and component info without command
       if (dataObjectTitle && componentName) {
-        return { label: `${cmdTitle} (${dataObjectTitle} in ${componentName})` };
+        return { label: `${dataObjectTitle} in ${componentName}` };
       }
       if (dataObjectTitle) {
-        return { label: `${cmdTitle} (${dataObjectTitle})` };
+        return { label: dataObjectTitle };
       }
-      return { label: cmdTitle };
+      if (componentName) {
+        return { label: componentName };
+      }
+
+      // Last resort: use the last entity on the path
+      const lastNode = pathNodeIds[pathNodeIds.length - 1];
+      if (lastNode && schema.entities[lastNode]) {
+        return { label: schema.entities[lastNode].title };
+      }
+      return { label: '' };
     };
 
    const dfRelations = deriveRelations(schema, 'DATA_FLOW', addedNodes, getDataFlowLabel);
@@ -673,7 +708,30 @@ export function autoDeriveViews(schema: UnifiedFlowchartSchema): UnifiedFlowchar
 }
 
 /**
+ * Check if an entity type is a "boundary" type (Actor/User or External API).
+ * Boundary nodes represent system perimeter and should not have direct
+ * structural relations in derived views unless explicitly connected in
+ * the Event Storming source of truth.
+ */
+function isBoundaryType(entity: FlowchartEntity | undefined): boolean {
+  const type = entity?.type || entity?.viewTypes?.EVENT_STORMING || '';
+  return type === TYPES.USER || type === TYPES.EXTERNAL;
+}
+
+/**
+ * Check if an entity type is structural (Aggregate, Service, Database, Policy).
+ * These represent internal system components that mediate between boundaries.
+ */
+function isStructuralType(entity: FlowchartEntity | undefined): boolean {
+  const type = entity?.type || entity?.viewTypes?.EVENT_STORMING || '';
+  return type === TYPES.AGGREGATE || type === TYPES.SERVICE || type === TYPES.DATABASE || type === TYPES.POLICY;
+}
+
+/**
  * Traverses EVENT_STORMING relations to find paths between participant ids.
+ * Filters out spurious edges between boundary types (User ↔ External) that
+ * arise from BFS traversing through domain events/commands and hitting
+ * direct structural shortcuts between unrelated participants.
  */
 function deriveRelations(
   schema: UnifiedFlowchartSchema,
@@ -699,14 +757,15 @@ function deriveRelations(
       startingInstanceIds.push(startId);
     }
 
-    // BFS queue: { currentId, path }
+    // BFS queue: { currentId, path, intermediateNodeIds }
     const queue: Array<{
       currentId: string;
       path: string[];
-    }> = startingInstanceIds.map(id => ({ currentId: id, path: [id] }));
+      intermediateNodeIds: string[];
+    }> = startingInstanceIds.map(id => ({ currentId: id, path: [id], intermediateNodeIds: [] }));
 
     while (queue.length > 0) {
-      const { currentId, path } = queue.shift()!;
+      const { currentId, path, intermediateNodeIds } = queue.shift()!;
 
       // Find all outgoing relations in EVENT_STORMING
       const outRels = schema.relations.filter(r => 
@@ -724,7 +783,26 @@ function deriveRelations(
           if (collapsedNext !== collapsedStart) {
             const pathNodeIds = [...path.slice(1), nextId];
             const { label, dashed } = getLabel(pathNodeIds, startId);
+
+            // Filter: reject spurious edges between boundary types (User ↔ External)
+            // that are traced through intermediate nodes. Only allow direct ES relations
+            // between boundaries. This prevents BFS from creating false structural
+            // connectivity when domain events/commands pass through actor boundaries.
+            const startEntity = schema.entities[collapsedStart];
+            const endEntity = schema.entities[collapsedNext];
+            const bothBoundary = isBoundaryType(startEntity) && isBoundaryType(endEntity);
+            const hasIntermediates = intermediateNodeIds.length > 0 || pathNodeIds.length > 0;
             
+            if (bothBoundary && hasIntermediates) {
+              // Check if there's a direct ES relation between these two boundaries
+              const hasDirectESRel = schema.relations.some(r =>
+                (!r.views || r.views.includes('EVENT_STORMING')) &&
+                ((r.from === collapsedStart && r.to === collapsedNext) ||
+                 (r.from === collapsedNext && r.to === collapsedStart))
+              );
+              if (!hasDirectESRel) continue;
+            }
+
             const relKey = `${collapsedStart}->${collapsedNext}:${label}`;
             if (!visitedPaths.has(relKey)) {
               visitedPaths.add(relKey);
@@ -740,9 +818,13 @@ function deriveRelations(
           }
         } else {
           // Intermediate node, continue BFS
+          const nextIntermediates = isStructuralType(schema.entities[nextId])
+            ? [...intermediateNodeIds, nextId]
+            : intermediateNodeIds;
           queue.push({
             currentId: nextId,
-            path: [...path, nextId]
+            path: [...path, nextId],
+            intermediateNodeIds: nextIntermediates
           });
         }
       }
