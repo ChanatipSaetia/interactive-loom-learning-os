@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useId, useRef, useState, type ComponentType, type SVGProps } from 'react';
+import { useCallback, useEffect, useMemo, useId, useRef, useState, type ComponentType } from 'react';
 import * as Icons from 'lucide-react';
 import { Button } from '../../components/motion/button';
 import { Dropdown } from '../../components/motion/dropdown';
@@ -321,7 +321,7 @@ export function Flowchart({ title, schema = INITIAL_SCHEMA }: FlowchartProps) {
       const view = localSchema.views[vk];
       const name = view?.name || vk;
       
-      let IconComponent: ComponentType<SVGProps<SVGSVGElement>> = Workflow;
+      let IconComponent: ComponentType<{ size?: number | string; className?: string }> = Workflow;
       if (vk === 'EVENT_STORMING') IconComponent = EventStormingIcon;
       else if (vk === 'SYS_ARCH') IconComponent = SystemArchitectureIcon;
       else if (vk === 'DATA_FLOW') IconComponent = DataFlowIcon;
