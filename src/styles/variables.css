@@ -62,7 +62,8 @@
      Semantic color tokens
   ====================================== */
   --cohere-black:  var(--ctp-crust);
-  --primary:       var(--ctp-crust);       /* sidebar background */
+  --primary:       var(--ctp-blue);
+  --primary-foreground: var(--ctp-crust);
   --ink:           var(--ctp-text);        /* primary text */
   --deep-green:    var(--ctp-teal);        /* accent band color */
   --dark-navy:     var(--ctp-crust);

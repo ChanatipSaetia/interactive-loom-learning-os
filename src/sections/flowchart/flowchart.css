@@ -1073,3 +1073,23 @@
   color: var(--ctp-text) !important;
   background-color: var(--ctp-surface0) !important;
 }
+
+.flowchart-dock-views {
+  @apply flex justify-center py-1 w-full;
+}
+
+.flowchart-dock-views .flowchart-view-action-bar {
+  @apply border-none bg-transparent shadow-none;
+}
+
+.flowchart-dock-journey {
+  @apply flex flex-col gap-1 py-1 w-full;
+}
+
+.flowchart-dock-journey .flowchart-journey-selector {
+  @apply flex items-center gap-2 justify-center;
+}
+
+.flowchart-dock-journey .flowchart-journey-description {
+  @apply text-center;
+}

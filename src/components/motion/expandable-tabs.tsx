@@ -8,8 +8,12 @@ export interface ExpandableTabItem {
   id: string;
   label: React.ReactNode;
   icon: React.ReactNode;
-  content: React.ReactNode;
+  content?: React.ReactNode;
   testId?: string;
+  /** If provided, clicking fires this callback instead of toggling content. */
+  onClick?: () => void;
+  /** Render a thin vertical separator before this tab. */
+  separator?: boolean;
 }
 
 export interface ExpandableTabsProps {
@@ -121,60 +125,69 @@ export function ExpandableTabs({
         )}
       >
         {tabs.map((tab) => {
-          const isActive = tab.id === activeTabId;
+          const isAction = !!tab.onClick;
+          const isActive = !isAction && tab.id === activeTabId;
           return (
-            <motion.button
-              key={tab.id}
-              layout="position"
-              type="button"
-              data-testid={tab.testId}
-              onMouseEnter={() => setHoveredId(tab.id)}
-              onMouseLeave={() => setHoveredId(null)}
-              onClick={() => {
-                onTabChange(isActive ? null : tab.id);
-              }}
-              whileTap={{ scale: 0.97 }}
-              className={cn(
-                "relative flex items-center justify-center rounded-full text-xs font-semibold transition-[color,padding] duration-200 outline-none select-none border border-transparent cursor-pointer",
-                showLabels ? "px-3.5 py-1.5" : "p-2.5",
-                isActive
-                  ? "text-primary border-primary/20"
-                  : "text-muted-foreground hover:text-foreground"
+            <React.Fragment key={tab.id}>
+              {tab.separator && (
+                <span className="mx-0.5 h-4 w-px bg-border shrink-0" aria-hidden />
               )}
-            >
-              {/* Active Background */}
-              {isActive && (
-                <motion.span
-                  layoutId="expandable-tab-active-bg"
-                  className="absolute inset-0 rounded-full bg-primary/[0.08]"
-                  transition={TABS_TRANSITION}
-                />
-              )}
-
-              {/* Hover Background */}
-              {hoveredId === tab.id && !isActive && (
-                <motion.span
-                  layoutId="expandable-tab-hover-bg"
-                  className="absolute inset-0 rounded-full bg-foreground/[0.04]"
-                  transition={TABS_TRANSITION}
-                />
-              )}
-
-              <span className="relative z-10 flex items-center justify-center shrink-0 w-4 h-4">
-                {tab.icon}
-              </span>
-              <motion.span
-                animate={{
-                  width: showLabels ? "auto" : 0,
-                  opacity: showLabels ? 1 : 0,
-                  marginLeft: showLabels ? 6 : 0,
+              <motion.button
+                layout="position"
+                type="button"
+                data-testid={tab.testId}
+                onMouseEnter={() => setHoveredId(tab.id)}
+                onMouseLeave={() => setHoveredId(null)}
+                onClick={() => {
+                  if (isAction) {
+                    tab.onClick!();
+                  } else {
+                    onTabChange(isActive ? null : tab.id);
+                  }
                 }}
-                transition={TABS_TRANSITION}
-                className="relative z-10 whitespace-nowrap overflow-hidden inline-block"
+                whileTap={{ scale: 0.97 }}
+                className={cn(
+                  "relative flex items-center justify-center rounded-full text-xs font-semibold transition-[color,padding] duration-200 outline-none select-none border border-transparent cursor-pointer",
+                  showLabels ? "px-3.5 py-1.5" : "p-2.5",
+                  isActive
+                    ? "text-primary border-primary/20"
+                    : "text-muted-foreground hover:text-foreground"
+                )}
               >
-                {tab.label}
-              </motion.span>
-            </motion.button>
+                {/* Active Background */}
+                {isActive && (
+                  <motion.span
+                    layoutId="expandable-tab-active-bg"
+                    className="absolute inset-0 rounded-full bg-primary/[0.08]"
+                    transition={TABS_TRANSITION}
+                  />
+                )}
+
+                {/* Hover Background */}
+                {hoveredId === tab.id && !isActive && (
+                  <motion.span
+                    layoutId="expandable-tab-hover-bg"
+                    className="absolute inset-0 rounded-full bg-foreground/[0.04]"
+                    transition={TABS_TRANSITION}
+                  />
+                )}
+
+                <span className="relative z-10 flex items-center justify-center shrink-0 w-4 h-4">
+                  {tab.icon}
+                </span>
+                <motion.span
+                  animate={{
+                    width: showLabels ? "auto" : 0,
+                    opacity: showLabels ? 1 : 0,
+                    marginLeft: showLabels ? 6 : 0,
+                  }}
+                  transition={TABS_TRANSITION}
+                  className="relative z-10 whitespace-nowrap overflow-hidden inline-block"
+                >
+                  {tab.label}
+                </motion.span>
+              </motion.button>
+            </React.Fragment>
           );
         })}
       </div>

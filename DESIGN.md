@@ -56,7 +56,8 @@ The Interactive Loom Learning OS uses a dark theme built on the **Catppuccin Fra
 | Token | Maps To | Role |
 |---|---|---|
 | `--cohere-black` | `--ctp-crust` | Highest-contrast dark surface |
-| `--primary` | `--ctp-crust` | Sidebar background, primary buttons |
+| `--primary` | `--ctp-blue` | Primary brand accent color, active states, primary buttons |
+| `--primary-foreground` | `--ctp-crust` | Text on primary backgrounds |
 | `--ink` | `--ctp-text` | Primary text color |
 | `--deep-green` | `--ctp-teal` | Accent band color |
 | `--dark-navy` | `--ctp-crust` | Dark feature sections |

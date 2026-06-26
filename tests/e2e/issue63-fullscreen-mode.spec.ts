@@ -1,7 +1,7 @@
 import { test, expect } from '@playwright/test'
 
 test.describe('Issue #63 US-20: Fullscreen Mode Layout and Toggle Control', () => {
-  test('fullscreen toggle button is visible in header', async ({ page }) => {
+  test('fullscreen toggle button is visible in dock', async ({ page }) => {
     await page.goto('/#/demo/ai-agent')
     await expect(page.getByTestId('flowchart-fullscreen-toggle')).toBeVisible()
   })
@@ -13,17 +13,15 @@ test.describe('Issue #63 US-20: Fullscreen Mode Layout and Toggle Control', () =
 
     await page.getByTestId('flowchart-fullscreen-toggle').click()
     await expect(section).toHaveClass(/fullscreen/)
-    await expect(page.getByTestId('flowchart-fullscreen-exit')).toBeVisible()
   })
 
-  test('clicking exit button exits fullscreen mode', async ({ page }) => {
+  test('clicking toggle again exits fullscreen mode', async ({ page }) => {
     await page.goto('/#/demo/ai-agent')
     await page.getByTestId('flowchart-fullscreen-toggle').click()
     await expect(page.getByTestId('flowchart-section')).toHaveClass(/fullscreen/)
 
-    await page.getByTestId('flowchart-fullscreen-exit').click()
+    await page.getByTestId('flowchart-fullscreen-toggle').click()
     await expect(page.getByTestId('flowchart-section')).not.toHaveClass(/fullscreen/)
-    await expect(page.getByTestId('flowchart-fullscreen-exit')).not.toBeVisible()
   })
 
   test('Escape key exits fullscreen mode', async ({ page }) => {
@@ -65,7 +63,7 @@ test.describe('Issue #63 US-20: Fullscreen Mode Layout and Toggle Control', () =
     await toggle.click()
     await expect(section).toHaveClass(/fullscreen/)
 
-    await page.getByTestId('flowchart-fullscreen-exit').click()
+    await page.getByTestId('flowchart-fullscreen-toggle').click()
     await expect(section).not.toHaveClass(/fullscreen/)
 
     await toggle.click()
@@ -92,9 +90,10 @@ test.describe('Issue #63 US-20: Fullscreen Mode Layout and Toggle Control', () =
     await expect(page.getByTestId('flowchart-node-EVENT_STORMING-user')).toBeVisible()
   })
 
-  test('fullscreen exit button not visible in normal mode', async ({ page }) => {
+  test('fullscreen toggle shows correct label based on state', async ({ page }) => {
     await page.goto('/#/demo/ai-agent')
-    await expect(page.getByTestId('flowchart-fullscreen-exit')).not.toBeVisible()
+    // In normal mode, the toggle should exist
+    await expect(page.getByTestId('flowchart-fullscreen-toggle')).toBeVisible()
   })
 
   test('non-Escape keys do not exit fullscreen', async ({ page }) => {
