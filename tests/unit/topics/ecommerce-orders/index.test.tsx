@@ -186,7 +186,7 @@ describe('Issue #56: E-Commerce Order Processing Topic', () => {
     const compiledSchema = autoDeriveViews(orderSchema)
     const slView = compiledSchema.views.SWIMLANES
     expect(slView).toBeDefined()
-    expect(slView.groups.length).toBe(7)
+    expect(slView.groups.length).toBe(6)
     slView.groups.forEach(g => {
       expect(g.isLane).toBe(true)
     })

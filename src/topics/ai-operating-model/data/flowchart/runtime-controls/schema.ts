@@ -31,7 +31,7 @@ export const runtimeControlsSchema: UnifiedFlowchartSchema = {
     business_system: {
       title: 'Business Systems',
       desc: 'CRM, ERP, databases the agent writes to.',
-      type: TYPES.DATABASE,
+      type: TYPES.EXTERNAL,
     },
     monitor: {
       title: 'Anomaly Monitor',
@@ -67,7 +67,7 @@ export const runtimeControlsSchema: UnifiedFlowchartSchema = {
     workflow_memory: {
       title: 'Working Memory',
       desc: 'Stores intermediate reasoning, tool outputs, and session state.',
-      type: TYPES.DATABASE,
+      type: TYPES.AGGREGATE,
     },
     cmd_validate_api: {
       title: 'Validate API Contract',
@@ -114,10 +114,15 @@ export const runtimeControlsSchema: UnifiedFlowchartSchema = {
       desc: 'Outcome persisted to working memory and business system.',
       type: TYPES.EVENT,
     },
-    dec_outcome: {
-      title: 'Outcome Check',
+    pol_evaluate_outcome: {
+      title: 'Evaluate Anomaly Policy',
       desc: 'Anomaly monitor evaluates whether the result is within bounds.',
-      type: TYPES.DECISION,
+      type: TYPES.POLICY,
+    },
+    cmd_evaluate_drift: {
+      title: 'Evaluate Drift',
+      desc: 'Run drift assessment checks.',
+      type: TYPES.COMMAND,
     },
     evt_anomaly_detected: {
       title: 'Anomaly Detected',
@@ -144,15 +149,20 @@ export const runtimeControlsSchema: UnifiedFlowchartSchema = {
       desc: 'Policy: notify Business Owner and Technical Owner for review.',
       type: TYPES.POLICY,
     },
-    evt_incident_resolved: {
-      title: 'Incident Resolved',
-      desc: 'Human operator investigates, fixes root cause, and clears agent for restart.',
-      type: TYPES.EVENT,
-    },
     incident_reviewer: {
       title: 'Incident Reviewer',
       desc: 'Technical Owner or Business Owner investigating the incident.',
       type: TYPES.USER,
+    },
+    cmd_resolve_incident: {
+      title: 'Resolve Incident',
+      desc: 'Submit incident report and clear agent for restart.',
+      type: TYPES.COMMAND,
+    },
+    evt_incident_resolved: {
+      title: 'Incident Resolved',
+      desc: 'Human operator investigates, fixes root cause, and clears agent for restart.',
+      type: TYPES.EVENT,
     },
   },
   relations: [
@@ -174,16 +184,18 @@ export const runtimeControlsSchema: UnifiedFlowchartSchema = {
     { id: 'r_es_16', from: 'sandbox', to: 'evt_action_executed', views: ['EVENT_STORMING'] },
     { id: 'r_es_17', from: 'evt_action_executed', to: 'evt_result_stored', views: ['EVENT_STORMING'] },
     { id: 'r_es_18', from: 'evt_result_stored', to: 'business_system', views: ['EVENT_STORMING'] },
-    { id: 'r_es_19', from: 'evt_result_stored', to: 'dec_outcome', views: ['EVENT_STORMING'] },
-    { id: 'r_es_20', from: 'dec_outcome', to: 'monitor', handledBy: true, views: ['EVENT_STORMING'] },
-    { id: 'r_es_21', from: 'dec_outcome', to: 'evt_anomaly_detected', views: ['EVENT_STORMING'], dashed: true },
+    { id: 'r_es_19', from: 'evt_result_stored', to: 'pol_evaluate_outcome', views: ['EVENT_STORMING'] },
+    { id: 'r_es_19a', from: 'pol_evaluate_outcome', to: 'cmd_evaluate_drift', views: ['EVENT_STORMING'] },
+    { id: 'r_es_20', from: 'cmd_evaluate_drift', to: 'monitor', handledBy: true, views: ['EVENT_STORMING'] },
+    { id: 'r_es_21', from: 'monitor', to: 'evt_anomaly_detected', views: ['EVENT_STORMING'], dashed: true },
     { id: 'r_es_22', from: 'evt_anomaly_detected', to: 'pol_halt_agent', views: ['EVENT_STORMING'] },
     { id: 'r_es_23', from: 'pol_halt_agent', to: 'cmd_kill_switch', views: ['EVENT_STORMING'] },
     { id: 'r_es_24', from: 'cmd_kill_switch', to: 'kill_switch', handledBy: true, views: ['EVENT_STORMING'] },
     { id: 'r_es_25', from: 'kill_switch', to: 'evt_agent_stopped', views: ['EVENT_STORMING'] },
     { id: 'r_es_26', from: 'evt_agent_stopped', to: 'pol_escalate', views: ['EVENT_STORMING'] },
     { id: 'r_es_27', from: 'pol_escalate', to: 'incident_reviewer', views: ['EVENT_STORMING'] },
-    { id: 'r_es_28', from: 'incident_reviewer', to: 'evt_incident_resolved', views: ['EVENT_STORMING'] },
+    { id: 'r_es_27a', from: 'incident_reviewer', to: 'cmd_resolve_incident', views: ['EVENT_STORMING'] },
+    { id: 'r_es_28', from: 'cmd_resolve_incident', to: 'evt_incident_resolved', views: ['EVENT_STORMING'] },
   ],
   views: {
     EVENT_STORMING: {
@@ -209,16 +221,18 @@ export const runtimeControlsSchema: UnifiedFlowchartSchema = {
         { id: 'evt_action_executed', grid: [11, 2] },
         { id: 'evt_result_stored', grid: [12, 2] },
         { id: 'business_system', grid: [12, 0] },
-        { id: 'dec_outcome', grid: [13, 2] },
-        { id: 'monitor', grid: [13, 1] },
-        { id: 'evt_anomaly_detected', grid: [13, 3] },
-        { id: 'pol_halt_agent', grid: [14, 3] },
-        { id: 'cmd_kill_switch', grid: [15, 3] },
-        { id: 'kill_switch', grid: [15, 1] },
-        { id: 'evt_agent_stopped', grid: [16, 3] },
-        { id: 'pol_escalate', grid: [17, 3] },
-        { id: 'incident_reviewer', grid: [17, 2] },
-        { id: 'evt_incident_resolved', grid: [18, 3] },
+        { id: 'pol_evaluate_outcome', grid: [13, 2] },
+        { id: 'cmd_evaluate_drift', grid: [14, 2] },
+        { id: 'monitor', grid: [14, 1] },
+        { id: 'evt_anomaly_detected', grid: [15, 3] },
+        { id: 'pol_halt_agent', grid: [16, 3] },
+        { id: 'cmd_kill_switch', grid: [17, 3] },
+        { id: 'kill_switch', grid: [17, 1] },
+        { id: 'evt_agent_stopped', grid: [18, 3] },
+        { id: 'pol_escalate', grid: [19, 3] },
+        { id: 'incident_reviewer', grid: [19, 2] },
+        { id: 'cmd_resolve_incident', grid: [20, 2] },
+        { id: 'evt_incident_resolved', grid: [21, 3] },
       ],
       groups: [
         {
@@ -234,7 +248,7 @@ export const runtimeControlsSchema: UnifiedFlowchartSchema = {
           id: 'es_g2',
           title: 'Defense Layer Validation',
           desc: 'Tool call passes through API contract, permission check, and sandbox dry-run before execution.',
-          nodeIds: ['cmd_validate_api', 'api_contract', 'evt_api_validated', 'pol_check_perm', 'cmd_check_perm', 'permission', 'evt_permission_checked', 'pol_dryrun', 'cmd_sandbox_dryrun', 'sandbox', 'evt_action_executed', 'evt_result_stored', 'business_system', 'dec_outcome', 'monitor'],
+          nodeIds: ['cmd_validate_api', 'api_contract', 'evt_api_validated', 'pol_check_perm', 'cmd_check_perm', 'permission', 'evt_permission_checked', 'pol_dryrun', 'cmd_sandbox_dryrun', 'sandbox', 'evt_action_executed', 'evt_result_stored', 'business_system', 'pol_evaluate_outcome', 'cmd_evaluate_drift', 'monitor'],
           color: 'rgba(166, 209, 137, 0.12)',
           borderColor: 'var(--ctp-green)',
           textColor: 'var(--ctp-text)',
@@ -243,7 +257,7 @@ export const runtimeControlsSchema: UnifiedFlowchartSchema = {
           id: 'es_g3',
           title: 'Incident Response',
           desc: 'When anomaly is detected, the kill switch halts the agent and escalates to human review.',
-          nodeIds: ['evt_anomaly_detected', 'pol_halt_agent', 'cmd_kill_switch', 'kill_switch', 'evt_agent_stopped', 'pol_escalate', 'incident_reviewer', 'evt_incident_resolved'],
+          nodeIds: ['evt_anomaly_detected', 'pol_halt_agent', 'cmd_kill_switch', 'kill_switch', 'evt_agent_stopped', 'pol_escalate', 'incident_reviewer', 'cmd_resolve_incident', 'evt_incident_resolved'],
           color: 'rgba(231, 130, 132, 0.12)',
           borderColor: 'var(--ctp-red)',
           textColor: 'var(--ctp-text)',
@@ -301,7 +315,7 @@ export const runtimeControlsSchema: UnifiedFlowchartSchema = {
           description: 'Sandbox & Execute — Proposed action is dry-run against policy, then executed and persisted.',
         },
         {
-          nodeIds: ['dec_outcome'],
+          nodeIds: ['pol_evaluate_outcome'],
           description: 'Outcome Check — Anomaly monitor evaluates whether the result is within expected bounds.',
         },
       ],
@@ -312,7 +326,7 @@ export const runtimeControlsSchema: UnifiedFlowchartSchema = {
       description: 'Follow what happens when an anomaly is detected: kill switch fires, agent halts, and human reviews.',
       steps: [
         {
-          nodeIds: ['dec_outcome', 'evt_anomaly_detected'],
+          nodeIds: ['pol_evaluate_outcome', 'evt_anomaly_detected'],
           description: 'Anomaly Detected — Output drift or failure exceeds the anomaly threshold.',
         },
         {
@@ -324,7 +338,7 @@ export const runtimeControlsSchema: UnifiedFlowchartSchema = {
           description: 'Escalation — Incident escalated to Technical Owner or Business Owner for root cause analysis.',
         },
         {
-          nodeIds: ['evt_incident_resolved'],
+          nodeIds: ['incident_reviewer', 'cmd_resolve_incident', 'evt_incident_resolved'],
           description: 'Resolution — Root cause fixed, agent cleared for restart.',
         },
       ],
