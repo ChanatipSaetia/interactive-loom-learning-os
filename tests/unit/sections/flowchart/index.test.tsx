@@ -559,6 +559,33 @@ describe('Flowchart auto-derivation engine', () => {
     });
   });
 
+  it('does not render edge labels in SYS_ARCH view, but triggers tooltip on hover', () => {
+    const { container } = render(<Flowchart title="Edge Label Test" schema={agentSchema} />, { wrapper });
+    
+    // Switch to SYS_ARCH view
+    fireEvent.click(screen.getByTestId('dock-tab-views'));
+    fireEvent.click(screen.getByText('System Architecture'));
+    
+    const svg = container.querySelector('[data-testid="flowchart-svg-SYS_ARCH"]');
+    expect(svg).toBeTruthy();
+    
+    // In SYS_ARCH, there should be no text elements inside flowchart-edge groups.
+    const edgeGroups = container.querySelectorAll('g[data-testid^="flowchart-edge-SYS_ARCH-"]');
+    expect(edgeGroups.length).toBeGreaterThan(0);
+    
+    edgeGroups.forEach(group => {
+      const texts = group.querySelectorAll('text');
+      expect(texts.length).toBe(0);
+    });
+
+    // Also assert that hover sets the tooltip
+    const firstEdgeGroup = edgeGroups[0];
+    fireEvent.mouseEnter(firstEdgeGroup);
+    
+    const tooltipRect = svg?.querySelector('rect[fill="var(--ctp-crust)"]');
+    expect(tooltipRect).toBeInTheDocument();
+  });
+
   it('derives STATE_MACHINE view and verifies that columns are compacted', () => {
     render(<Flowchart title="SM Test" schema={agentSchema} />, { wrapper });
 

@@ -953,7 +953,7 @@ export function FlowchartView({
                           markerEnd={isHandledBy ? `url(#flowchart-arrow-${viewInstanceId})` : (isHighlighted ? `url(#flowchart-arrow-highlight-${viewInstanceId})` : `url(#flowchart-arrow-${viewInstanceId})`)}
                           className={rel.dashed ? '' : 'flowchart-edge-animated'}
                         />
-                        {isHandledBy && (
+                        {isHandledBy && viewKey !== 'SYS_ARCH' && (
                           <text
                             x={midX + (isVertical ? 12 : 0)}
                             y={midY - 6}
@@ -967,7 +967,7 @@ export function FlowchartView({
                             handled by
                           </text>
                         )}
-                        {!isHandledBy && labelText && (
+                        {!isHandledBy && labelText && viewKey !== 'SYS_ARCH' && (
                           <text
                             x={midX + (isVertical ? 8 : 0)}
                             y={midY - 4}
