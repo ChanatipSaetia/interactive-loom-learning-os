@@ -38,6 +38,7 @@ export function StandardView({
   const maxX = positioned.length > 0 ? Math.max(...positioned.map(n => n.x || 0)) : 0;
 
   const [tooltip, setTooltip] = useState<{ description: string; x: number; y: number } | null>(null);
+  const [hoveredEdgeId, setHoveredEdgeId] = useState<string | null>(null);
 
   return (
     <>
@@ -119,11 +120,15 @@ export function StandardView({
         const toNode = nodeMap.get(rel.to);
         if (!fromNode || !toNode) return null;
 
+        const edgeId = `edge-${rel.id}`;
+        const isHoveredEdge = hoveredEdgeId === edgeId;
         const isHighlightedNode = highlightedNodeId === rel.from || highlightedNodeId === rel.to;
+        const isEdgeActive = isHighlightedNode || isHoveredEdge;
+
         const isFaded = activeNodeIds !== null && !activeNodeIds.includes(rel.from) && !activeNodeIds.includes(rel.to);
-        const strokeColor = isHighlightedNode ? 'var(--ctp-blue)' : 'var(--ctp-surface2)';
-        const strokeWidth = isHighlightedNode ? 2.5 : 1.5;
-        const marker = isHighlightedNode
+        const strokeColor = isEdgeActive ? 'var(--ctp-blue)' : 'var(--ctp-surface2)';
+        const strokeWidth = isEdgeActive ? 2.5 : 1.5;
+        const marker = isEdgeActive
           ? `url(#flowchart-arrow-highlight-${viewInstanceId})`
           : `url(#flowchart-arrow-${viewInstanceId})`;
 
@@ -133,7 +138,6 @@ export function StandardView({
 
         // If it is handledBy, we can shift it slightly if we want, but using layout midX is standard.
 
-        const edgeId = `edge-${rel.id}`;
         let labelText = rel.label;
         if (!labelText) {
           const fromType = schema.entities[rel.from]?.type || schema.entities[rel.from]?.viewTypes?.EVENT_STORMING || 'default';
@@ -155,12 +159,16 @@ export function StandardView({
             opacity={isFaded ? 0.1 : 0.8} 
             style={{ transition: 'opacity 0.3s' }}
             onMouseEnter={() => {
+              setHoveredEdgeId(edgeId);
               if (labelText || isHandledBy) {
                 const desc = isHandledBy ? 'Handled by orchestrator runtime process flow.' : labelText;
                 if (desc) setTooltip({ description: desc, x: midX || 0, y: midY || 0 });
               }
             }}
-            onMouseLeave={() => setTooltip(null)}
+            onMouseLeave={() => {
+              setHoveredEdgeId(null);
+              setTooltip(null);
+            }}
           >
             {/* Invisible wider interactive hover trigger path */}
             <path
@@ -176,9 +184,10 @@ export function StandardView({
               fill="none"
               stroke={strokeColor}
               strokeWidth={strokeWidth}
-              strokeDasharray={rel.dashed ? '4 4' : 'none'}
+              strokeDasharray={rel.dashed ? '4 4' : '8 8'}
               markerEnd={marker}
-              className="flowchart-edge"
+              className="flowchart-edge flowchart-edge-animated"
+              filter={isEdgeActive ? `url(#flowchart-glow-${viewInstanceId})` : undefined}
               data-testid={`flowchart-edge-${viewKey}-${idx}`}
               style={{ pointerEvents: 'none' }}
             />
@@ -197,17 +206,17 @@ export function StandardView({
                   height="20"
                   rx="10"
                   fill="var(--ctp-base)"
-                  stroke={isHighlightedNode ? 'var(--ctp-blue)' : 'var(--ctp-surface1)'}
+                  stroke={isEdgeActive ? 'var(--ctp-blue)' : 'var(--ctp-surface1)'}
                   strokeWidth="1"
                 />
                 <text
                   x="0"
                   y="3"
                   textAnchor="middle"
-                  fill={isHighlightedNode ? 'var(--ctp-blue)' : 'var(--ctp-subtext0)'}
+                  fill={isEdgeActive ? 'var(--ctp-blue)' : 'var(--ctp-subtext0)'}
                   fontSize="10"
                   fontFamily="var(--font-mono)"
-                  fontWeight={isHighlightedNode ? "600" : "500"}
+                  fontWeight={isEdgeActive ? "600" : "500"}
                 >
                   {displayLabel}
                 </text>
