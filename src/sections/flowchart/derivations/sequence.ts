@@ -1,6 +1,6 @@
 import type { UnifiedFlowchartSchema, FlowchartRelation, FlowchartViewNode, FlowchartViewGroup } from '../types';
 import { TYPES, MASTER_MAPPING_MATRIX } from '../types';
-import { getEntityType, deriveRelations, buildAdjacency, buildInDegree, computeTopologicalColumns, computeLayoutInfo } from './utils';
+import { getEntityType, deriveRelations, computeLayoutInfo } from './utils';
 
 export function deriveSequence(
   schema: UnifiedFlowchartSchema,
