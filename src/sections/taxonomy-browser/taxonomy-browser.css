@@ -1,36 +1,27 @@
 .taxonomy-browser-section {
-  margin-bottom: var(--spacing-xxl);
+  @apply mb-8;
 }
 
 .taxonomy-browser-title {
+  @apply font-normal leading-[1.3] mb-4;
   font-size: var(--text-feature-heading);
-  font-weight: 400;
   color: var(--ctp-mauve);
-  margin-bottom: var(--spacing-lg);
-  line-height: 1.3;
 }
 
 .taxonomy-browser-grid {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: var(--spacing-lg);
+  @apply grid grid-cols-1 gap-4;
 }
 
 @media (min-width: 768px) {
   .taxonomy-browser-grid {
-    grid-template-columns: repeat(2, 1fr);
+    @apply grid-cols-2;
   }
 }
 
 .taxonomy-browser-card {
+  @apply rounded-[var(--radius-lg)] border border-border pt-[3px] px-6 py-6 flex flex-col gap-3 cursor-pointer;
   background: var(--soft-stone);
-  border: 1px solid var(--border-light);
   border-top: 3px solid var(--ctp-blue);
-  border-radius: var(--radius-lg);
-  padding: var(--spacing-xl);
-  display: flex;
-  flex-direction: column;
-  gap: var(--spacing-md);
   transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
@@ -39,98 +30,57 @@
 }
 
 .taxonomy-browser-card-icon {
-  display: flex;
-  align-items: center;
+  @apply flex items-center;
 }
 
 .taxonomy-browser-card-body {
-  display: flex;
-  flex-direction: column;
-  gap: var(--spacing-xs);
+  @apply flex flex-col gap-1.5;
 }
 
 .taxonomy-browser-subtitle {
-  font-size: var(--text-mono-label);
-  font-weight: 400;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
+  @apply font-normal tracking-[0.08em] uppercase m-0 text-xs;
   color: var(--ctp-subtext0);
-  margin: 0;
 }
 
 .taxonomy-browser-card-title {
+  @apply font-normal leading-[1.2] tracking-[-0.32px] m-0;
   font-size: var(--text-card-heading);
-  font-weight: 400;
   color: var(--ink);
-  margin: 0;
-  line-height: 1.2;
-  letter-spacing: -0.32px;
 }
 
 .taxonomy-browser-description {
+  @apply leading-[1.5] m-0;
   font-size: var(--text-body);
   color: var(--body-muted);
-  line-height: 1.5;
-  margin: 0;
-}
-
-.taxonomy-browser-card {
-  cursor: pointer;
 }
 
 /* ─── Overlay ─────────────────────────────────────────────── */
 
 .taxonomy-overlay {
-  position: fixed;
-  inset: 0;
+  @apply fixed inset-0 z-[50];
   background-color: rgba(0, 0, 0, 0.5);
   backdrop-filter: blur(4px);
   -webkit-backdrop-filter: blur(4px);
-  z-index: 50;
 }
 
 /* ─── Dialog ──────────────────────────────────────────────── */
 
 .taxonomy-dialog {
-  position: fixed;
-  top: 80px;
-  left: 50%;
+  @apply fixed top-[80px] left-1/2 z-[51] w-[90vw] max-w-[560px] max-h-[calc(100vh-160px)] rounded-[var(--radius-md)] border border-border overflow-hidden flex flex-col;
   transform: translate(-50%, 0);
-  z-index: 51;
-  width: 90vw;
-  max-width: 560px;
-  max-height: calc(100vh - 160px);
   background-color: var(--ctp-mantle);
-  border: 1px solid var(--border-light);
-  border-radius: var(--radius-md);
-  padding: 0;
-  overflow: hidden;
-  display: flex;
-  flex-direction: column;
 }
 
 .taxonomy-dialog:focus {
-  outline: none;
+  @apply outline-none;
 }
 
 /* ─── Close Button ────────────────────────────────────────── */
 
 .taxonomy-dialog-close {
-  position: absolute;
-  top: var(--spacing-md);
-  right: var(--spacing-md);
-  width: 32px;
-  height: 32px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: none;
-  border: none;
-  border-radius: var(--radius-xs);
-  cursor: pointer;
+  @apply absolute top-3 right-3 w-8 h-8 flex items-center justify-center bg-none border-none rounded-[var(--radius-xs)] cursor-pointer z-[1];
   font-size: var(--text-body);
   color: var(--ctp-overlay0);
-  z-index: 1;
   transition: transform 0.3s ease, color 0.15s ease, background-color 0.15s ease;
 }
 
@@ -141,15 +91,13 @@
 }
 
 .taxonomy-dialog-close:focus {
-  outline: 2px solid var(--focus-blue);
-  outline-offset: 2px;
+  @apply outline-none ring-2 ring-[var(--focus-blue)] ring-offset-2;
 }
 
 /* ─── Scrollable Content ──────────────────────────────────── */
 
 .taxonomy-modal-scroll {
-  padding: var(--spacing-xl);
-  overflow-y: auto;
+  @apply overflow-y-auto px-6;
   max-height: calc(100vh - 160px);
   scrollbar-width: thin;
   scrollbar-color: var(--ctp-surface0) var(--ctp-mantle);
@@ -176,72 +124,53 @@
 /* ─── Header ──────────────────────────────────────────────── */
 
 .taxonomy-modal-header {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  text-align: center;
-  gap: var(--spacing-sm);
-  margin-bottom: var(--spacing-xl);
-  padding-bottom: var(--spacing-lg);
-  border-bottom: 1px solid var(--border-light);
+  @apply flex flex-col items-center text-center gap-2 mb-6 pb-4 border-b border-border;
 }
 
 .taxonomy-modal-icon {
-  margin-bottom: var(--spacing-xs);
+  @apply mb-1.5;
 }
 
 .taxonomy-modal-subtitle {
-  font-size: var(--text-mono-label);
-  font-weight: 400;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  margin: 0;
+  @apply font-normal tracking-[0.08em] uppercase m-0 text-xs;
 }
 
 .taxonomy-modal-title {
+  @apply font-normal leading-[1.2] tracking-[-0.4px] m-0;
   font-size: var(--text-section-heading);
-  font-weight: 400;
-  margin: 0;
-  line-height: 1.2;
-  letter-spacing: -0.4px;
 }
 
 /* ─── Sections ────────────────────────────────────────────── */
 
 .taxonomy-modal-section {
-  margin-bottom: var(--spacing-xl);
+  @apply mb-6;
 }
 
 .taxonomy-modal-section:last-child {
-  margin-bottom: 0;
+  @apply mb-0;
 }
 
 .taxonomy-modal-section-title {
+  @apply font-semibold leading-[1.3] mt-0 mb-2;
   font-size: var(--text-card-heading);
-  font-weight: 600;
   color: var(--ctp-text);
-  margin: 0 0 var(--spacing-sm) 0;
-  line-height: 1.3;
 }
 
 .taxonomy-modal-text {
+  @apply leading-[1.6] m-0;
   font-size: var(--text-body);
   color: var(--ctp-subtext1);
-  line-height: 1.6;
-  margin: 0;
 }
 
 /* ─── Deep Dive Elevated ──────────────────────────────────── */
 
 .taxonomy-modal-deepdive {
-  margin-bottom: var(--spacing-xl);
+  @apply mb-6;
 }
 
 .taxonomy-modal-elevated {
+  @apply rounded-[var(--radius-sm)] border border-border px-4 py-3;
   background-color: var(--ctp-surface0);
-  border: 1px solid var(--border-light);
-  border-radius: var(--radius-sm);
-  padding: var(--spacing-md) var(--spacing-lg);
 }
 
 .taxonomy-modal-elevated .taxonomy-modal-text {
@@ -251,66 +180,49 @@
 /* ─── Analogy ─────────────────────────────────────────────── */
 
 .taxonomy-modal-analogy {
-  margin: 0 0 var(--spacing-md) 0;
-  padding: var(--spacing-sm) var(--spacing-md);
-  border-left: 3px solid var(--ctp-peach);
+  @apply rounded-[var(--radius-xs)] border-l-4 px-3 py-2 mt-0 mb-3 italic leading-[1.5];
+  border-left-color: var(--ctp-peach);
   background-color: rgba(253, 224, 209, 0.06);
-  border-radius: var(--radius-xs);
   font-size: var(--text-body);
   color: var(--ctp-subtext1);
-  line-height: 1.5;
-  font-style: italic;
 }
 
 /* ─── Primary Focus ───────────────────────────────────────── */
 
 .taxonomy-modal-focus {
-  display: flex;
-  flex-direction: column;
-  gap: var(--spacing-xs);
-  margin-bottom: var(--spacing-md);
+  @apply flex flex-col gap-1.5 mb-3;
 }
 
 .taxonomy-modal-focus-label {
+  @apply font-semibold uppercase tracking-[0.05em];
   font-size: var(--text-caption);
-  font-weight: 600;
   color: var(--ctp-text);
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
 }
 
 .taxonomy-modal-focus-text {
+  @apply leading-[1.5];
   font-size: var(--text-body);
   color: var(--ctp-subtext0);
-  line-height: 1.5;
 }
 
 /* ─── Scope Grid ──────────────────────────────────────────── */
 
 .taxonomy-modal-scope-grid {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: var(--spacing-md);
+  @apply grid grid-cols-1 gap-3;
 }
 
 @media (min-width: 640px) {
   .taxonomy-modal-scope-grid {
-    grid-template-columns: 1fr 1fr;
+    @apply grid-cols-2;
   }
 }
 
 .taxonomy-modal-scope-col {
-  display: flex;
-  flex-direction: column;
-  gap: var(--spacing-sm);
+  @apply flex flex-col gap-2;
 }
 
 .taxonomy-modal-scope-col-title {
-  font-size: var(--text-caption);
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  margin: 0;
+  @apply font-semibold uppercase tracking-[0.05em] m-0 text-xs;
 }
 
 .taxonomy-modal-scope-col-title--in {
@@ -322,25 +234,17 @@
 }
 
 .taxonomy-modal-scope-list {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-  display: flex;
-  flex-direction: column;
-  gap: var(--spacing-xxs);
+  @apply list-none p-0 m-0 flex flex-col gap-0.5;
 }
 
 .taxonomy-modal-scope-item {
+  @apply leading-[1.4] pl-3 relative;
   font-size: var(--text-body);
   color: var(--ctp-subtext1);
-  line-height: 1.4;
-  padding-left: var(--spacing-md);
-  position: relative;
 }
 
 .taxonomy-modal-scope-item::before {
-  content: '•';
-  position: absolute;
-  left: 0;
+  content: '\2022';
+  @apply absolute left-0;
   color: var(--ctp-overlay0);
 }

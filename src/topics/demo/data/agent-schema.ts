@@ -15,11 +15,11 @@ export const agentSchema: UnifiedFlowchartSchema = {
       refs: ['orch_agent', 'orch_plan_ref'],
       stateMachine: {
         states: [
-          { id: 'IDLE', label: 'Idle', color: '#838ba7' },
-          { id: 'THINKING', label: 'Thinking', color: '#8caaee' },
-          { id: 'EXECUTING_TOOL', label: 'Executing Tool', color: '#a6d189' },
-          { id: 'DELEGATING', label: 'Delegating', color: '#e5c890' },
-          { id: 'COMPLETED', label: 'Completed', color: '#81c8be' }
+          { id: 'IDLE', label: 'Idle', color: 'var(--ctp-overlay1)' },
+          { id: 'THINKING', label: 'Thinking', color: 'var(--ctp-blue)' },
+          { id: 'EXECUTING_TOOL', label: 'Executing Tool', color: 'var(--ctp-green)' },
+          { id: 'DELEGATING', label: 'Delegating', color: 'var(--ctp-yellow)' },
+          { id: 'COMPLETED', label: 'Completed', color: 'var(--ctp-teal)' }
         ],
         initialState: 'IDLE'
       },
@@ -221,8 +221,8 @@ export const agentSchema: UnifiedFlowchartSchema = {
         { id: 'evt_done', grid: [14, 2] }
       ],
       groups: [
-        { id: 'g1', title: 'Agent Core Ingestion', desc: 'Sets up task and parses skills & instructions.', nodeIds: ['user', 'cmd_run_agent', 'orch_agent', 'filesystem', 'evt_started'], color: 'rgba(140, 170, 238, 0.12)', borderColor: '#8caaee', textColor: '#c6d0f5' },
-        { id: 'g2', title: 'Cognition & Actions Loop', desc: 'Evaluates logic with LLM and runs tools via MCP servers or subagents.', nodeIds: ['pol_plan', 'cmd_call_llm', 'llm_reason_ref', 'evt_reasoned', 'pol_route', 'cmd_execute_tool', 'tools_ref', 'mcp_servers', 'subagents', 'evt_tool_executed', 'pol_eval', 'cmd_complete', 'llm_final_ref', 'evt_done'], color: 'rgba(244, 184, 228, 0.12)', borderColor: '#f4b8e4', textColor: '#c6d0f5' }
+        { id: 'g1', title: 'Agent Core Ingestion', desc: 'Sets up task and parses skills & instructions.', nodeIds: ['user', 'cmd_run_agent', 'orch_agent', 'filesystem', 'evt_started'], color: 'rgba(140, 170, 238, 0.12)', borderColor: 'var(--ctp-blue)', textColor: 'var(--ctp-text)' },
+        { id: 'g2', title: 'Cognition & Actions Loop', desc: 'Evaluates logic with LLM and runs tools via MCP servers or subagents.', nodeIds: ['pol_plan', 'cmd_call_llm', 'llm_reason_ref', 'evt_reasoned', 'pol_route', 'cmd_execute_tool', 'tools_ref', 'mcp_servers', 'subagents', 'evt_tool_executed', 'pol_eval', 'cmd_complete', 'llm_final_ref', 'evt_done'], color: 'rgba(244, 184, 228, 0.12)', borderColor: 'var(--ctp-pink)', textColor: 'var(--ctp-text)' }
       ]
     }
   },

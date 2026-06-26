@@ -1,5 +1,7 @@
 import { useCallback, useEffect, useMemo, useId, useRef, useState } from 'react';
 import * as Icons from 'lucide-react';
+import { Button } from '../../components/motion/button';
+import { Tabs, TabsList, TabsTrigger } from '../../components/motion/tabs';
 
 import { FlowchartView } from './flowchart-view';
 import { PlaybackControls } from './playback-controls';
@@ -299,49 +301,57 @@ export function Flowchart({ title, schema = INITIAL_SCHEMA }: FlowchartProps) {
         {title && <h3 className="flowchart-title" data-testid="flowchart-title">{title}</h3>}
 
         <div style={{ display: 'flex', gap: '8px', alignItems: 'center', flexWrap: 'wrap' }}>
-         {/* Fullscreen toggle */}
-           <button
-             className="flowchart-fullscreen-toggle"
-             onClick={() => setIsFullscreen(!isFullscreen)}
-             title={isFullscreen ? 'Exit fullscreen' : 'Enter fullscreen'}
-             data-testid="flowchart-fullscreen-toggle"
-           >
-             {isFullscreen ? <Minimize size={14} /> : <Maximize size={14} />}
-           </button>
+          {/* Fullscreen toggle */}
+            <Button
+              size="sm"
+              variant="ghost"
+              className="flowchart-fullscreen-toggle"
+              onClick={() => setIsFullscreen(!isFullscreen)}
+              title={isFullscreen ? 'Exit fullscreen' : 'Enter fullscreen'}
+              data-testid="flowchart-fullscreen-toggle"
+            >
+              {isFullscreen ? <Minimize size={14} /> : <Maximize size={14} />}
+            </Button>
 
-           {/* Inspector sidebar toggle */}
-           {isFullscreen && (
-             <button
-               className="flowchart-fullscreen-toggle"
-               onClick={() => setIsSidebarOpen(!isSidebarOpen)}
-               title={isSidebarOpen ? 'Close inspector' : 'Open inspector'}
-               data-testid="flowchart-sidebar-toggle"
+            {/* Inspector sidebar toggle */}
+            {isFullscreen && (
+              <Button
+                size="sm"
+                variant="ghost"
+                className="flowchart-fullscreen-toggle"
+                onClick={() => setIsSidebarOpen(!isSidebarOpen)}
+                title={isSidebarOpen ? 'Close inspector' : 'Open inspector'}
+                data-testid="flowchart-sidebar-toggle"
+              >
+                <PanelRight size={14} />
+              </Button>
+            )}
+
+           {/* View tabs */}
+           {visibleViewKeys.length > 1 && (
+             <Tabs
+               value={activeViewKey}
+               onValueChange={setActiveViewKey}
+               variant="segment"
+               className="flowchart-view-tabs"
+               data-testid="flowchart-view-tabs"
              >
-               <PanelRight size={14} />
-             </button>
+               <TabsList>
+                 {visibleViewKeys.map(vk => {
+                   const view = localSchema.views[vk];
+                   if (!view) return null;
+                   const Icon = (view.icon in DYNAMIC_ICONS) ? DYNAMIC_ICONS[view.icon as keyof typeof DYNAMIC_ICONS] : Workflow;
+                   return (
+                     <TabsTrigger key={vk} value={vk}>
+                       <Icon size={14} />
+                       <span>{view.name}</span>
+                     </TabsTrigger>
+                   );
+                 })}
+               </TabsList>
+             </Tabs>
            )}
-
-          {/* View tabs */}
-          {visibleViewKeys.length > 1 && (
-            <div className="flowchart-view-tabs" data-testid="flowchart-view-tabs">
-              {visibleViewKeys.map(vk => {
-                const view = localSchema.views[vk];
-                if (!view) return null;
-                const Icon = (view.icon in DYNAMIC_ICONS) ? DYNAMIC_ICONS[view.icon as keyof typeof DYNAMIC_ICONS] : Workflow;
-                return (
-                  <button
-                    key={vk}
-                    onClick={() => setActiveViewKey(vk)}
-                    className={`flowchart-view-tab-btn ${activeViewKey === vk ? 'active' : ''}`}
-                  >
-                    <Icon size={14} />
-                    <span>{view.name}</span>
-                  </button>
-                );
-              })}
-            </div>
-          )}
-        </div>
+         </div>
       </div>
 
       {localSchema.journeys.length > 0 && (
@@ -428,7 +438,9 @@ export function Flowchart({ title, schema = INITIAL_SCHEMA }: FlowchartProps) {
         )}
 
         {activeStep && (
-          <button
+          <Button
+            variant="outline"
+            size="sm"
             onClick={() => {
               setActiveStep(null);
               playback.resetAll();
@@ -439,22 +451,10 @@ export function Flowchart({ title, schema = INITIAL_SCHEMA }: FlowchartProps) {
               top: '16px',
               right: '16px',
               zIndex: 10,
-              padding: '6px 16px',
-              borderRadius: '20px',
-              fontSize: '12px',
-              fontWeight: 'bold',
-              backgroundColor: 'var(--ctp-crust)',
-              color: 'var(--ctp-text)',
-              border: '1px solid var(--border-light)',
-              boxShadow: '0 4px 12px rgba(0, 0, 0, 0.25)',
-              cursor: 'pointer',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '4px'
             }}
           >
             Clear Focus &times;
-          </button>
+          </Button>
         )}
 
         <StepCarousel
@@ -466,7 +466,9 @@ export function Flowchart({ title, schema = INITIAL_SCHEMA }: FlowchartProps) {
       </div>
 
       {isFullscreen && (
-        <button
+        <Button
+          variant="ghost"
+          size="sm"
           className="flowchart-fullscreen-exit"
           onClick={() => setIsFullscreen(false)}
           title="Exit fullscreen (Escape)"
@@ -474,7 +476,7 @@ export function Flowchart({ title, schema = INITIAL_SCHEMA }: FlowchartProps) {
         >
           <X size={14} />
           Exit
-        </button>
+        </Button>
       )}
     </div>
   );

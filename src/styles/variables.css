@@ -1,4 +1,33 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
 :root {
+  /* ======================================
+     Tailwind / shadcn semantic tokens
+     Maps to existing Catppuccin palette so
+     both Tailwind utils and custom classes
+     share the same colors.
+  ====================================== */
+  --background:    var(--ctp-base);
+  --foreground:    var(--ctp-text);
+  --card:          var(--ctp-surface0);
+  --card-foreground: var(--ctp-text);
+  --primary:       var(--ctp-blue);
+  --primary-foreground: var(--ctp-crust);
+  --secondary:     var(--ctp-surface1);
+  --secondary-foreground: var(--ctp-text);
+  --muted:         var(--ctp-surface1);
+  --muted-foreground: var(--ctp-overlay2);
+  --accent:        var(--ctp-surface1);
+  --accent-foreground: var(--ctp-text);
+  --border:        var(--ctp-surface1);
+  --input:         var(--ctp-surface1);
+  --ring:          var(--ctp-blue);
+  --destructive:   var(--ctp-red);
+  --destructive-foreground: var(--ctp-crust);
+  --radius:        0.5rem;
+
   /* ======================================
      Catppuccin Frappé — full palette
   ====================================== */
@@ -103,4 +132,144 @@
   --text-caption:          14px / 1.4  0      var(--font-body);
   --text-mono-label:       14px / 1.4  0.28px var(--font-mono);
   --text-micro:            12px / 1.4  0      var(--font-body);
+}
+
+/* ============================================================
+   Theme: MediCare+ (clinical, light)
+   Source: https://designmd.ai/chef/medicare
+
+   The app references the raw --ctp-* palette directly in many
+   places, and the semantic tokens above resolve those vars
+   lazily. So remapping the --ctp-* roles here re-themes the
+   entire UI without touching component styles. The Catppuccin
+   role meanings are preserved (crust = darkest surface →
+   inverted to the lightest header surface for a light theme).
+============================================================ */
+[data-theme='medicare'] {
+  /* shadcn semantic tokens — light clinical */
+  --background:        #fafcff;
+  --foreground:        #0f172a;
+  --card:              #ffffff;
+  --card-foreground:   #0f172a;
+  --primary:           #0077b6;
+  --primary-foreground: #ffffff;
+  --secondary:         #e2e8f0;
+  --secondary-foreground: #0f172a;
+  --muted:             #e2e8f0;
+  --muted-foreground:  #64748b;
+  --accent:            #e2e8f0;
+  --accent-foreground: #0f172a;
+  --border:            #e2e8f0;
+  --input:             #e2e8f0;
+  --ring:              #0077b6;
+  --destructive:       #dc2626;
+  --destructive-foreground: #ffffff;
+
+  /* Surfaces (inverted: light theme) */
+  --ctp-crust:     #ffffff;   /* topnav / sidebar surface */
+  --ctp-mantle:    #f0f7ff;   /* tinted secondary surface */
+  --ctp-base:      #fafcff;   /* page / canvas background */
+  --ctp-surface0:  #ffffff;   /* cards, elevated surfaces */
+  --ctp-surface1:  #e2e8f0;   /* subtle border */
+  --ctp-surface2:  #cbd5e1;   /* strong border / divider */
+
+  /* Overlays / muted text */
+  --ctp-overlay0:  #94a3b8;
+  --ctp-overlay1:  #475569;
+  --ctp-overlay2:  #64748b;
+  --ctp-subtext0:  #475569;
+  --ctp-subtext1:  #334155;
+  --ctp-text:      #0f172a;   /* primary foreground */
+
+  /* Accents (MediCare+ palette) */
+  --ctp-blue:      #0077b6;   /* primary — Med Blue */
+  --ctp-sapphire:  #0096c7;
+  --ctp-lavender:  #023e8a;   /* headings / brand accent */
+  --ctp-sky:       #48cae4;   /* secondary — Light Blue */
+  --ctp-teal:      #0096c7;
+  --ctp-mauve:     #0077b6;   /* generic accent → primary */
+  --ctp-pink:      #48cae4;
+  --ctp-rosewater: #90e0ef;   /* tertiary — Pale Cyan */
+  --ctp-flamingo:  #90e0ef;
+
+  /* Status */
+  --ctp-green:     #059669;   /* success */
+  --ctp-yellow:    #d97706;   /* warning */
+  --ctp-peach:     #d97706;
+  --ctp-red:       #dc2626;   /* error */
+  --ctp-maroon:    #dc2626;
+
+  /* Selection / highlight tints reused by semantic tokens */
+  --pale-green:    rgba(5, 150, 105, 0.10);
+  --pale-blue:     rgba(0, 119, 182, 0.10);
+  --pale-pink:     rgba(72, 202, 228, 0.12);
+}
+
+/* ============================================================
+   Theme: RecipeBook (warm, homey, light)
+   Source: https://designmd.ai/chef/recipebook
+
+   Warm kitchen-table palette: olive-green primary, warm-white
+   surfaces, red for favorites/alerts. Remaps the --ctp-* roles
+   so the whole UI (and flowchart) re-themes via the lazily
+   resolved semantic tokens.
+============================================================ */
+[data-theme='recipebook'] {
+  /* shadcn semantic tokens — warm homey */
+  --background:        #fffbf5;
+  --foreground:        #1c1917;
+  --card:              #ffffff;
+  --card-foreground:   #1c1917;
+  --primary:           #65a30d;
+  --primary-foreground: #ffffff;
+  --secondary:         #e7e5e4;
+  --secondary-foreground: #1c1917;
+  --muted:             #e7e5e4;
+  --muted-foreground:  #78716c;
+  --accent:            #e7e5e4;
+  --accent-foreground: #1c1917;
+  --border:            #e7e5e4;
+  --input:             #e7e5e4;
+  --ring:              #65a30d;
+  --destructive:       #ef4444;
+  --destructive-foreground: #ffffff;
+
+  /* Surfaces (warm light) */
+  --ctp-crust:     #ffffff;   /* topnav / sidebar surface */
+  --ctp-mantle:    #fffbf5;   /* warm secondary surface */
+  --ctp-base:      #fffbf5;   /* page / canvas background */
+  --ctp-surface0:  #ffffff;   /* recipe cards, panels */
+  --ctp-surface1:  #e7e5e4;   /* subtle border */
+  --ctp-surface2:  #d6d3d1;   /* strong border / divider */
+
+  /* Overlays / muted text (warm stone) */
+  --ctp-overlay0:  #a8a29e;
+  --ctp-overlay1:  #57534e;
+  --ctp-overlay2:  #78716c;
+  --ctp-subtext0:  #57534e;
+  --ctp-subtext1:  #44403c;
+  --ctp-text:      #1c1917;   /* primary foreground */
+
+  /* Accents (RecipeBook palette) */
+  --ctp-blue:      #65a30d;   /* primary — olive green */
+  --ctp-sapphire:  #4d7c0f;
+  --ctp-lavender:  #4d7c0f;   /* headings / brand accent */
+  --ctp-sky:       #84cc16;
+  --ctp-teal:      #059669;
+  --ctp-mauve:     #ea580c;   /* generic accent → warm orange */
+  --ctp-pink:      #dc2626;   /* secondary — favorites/red */
+  --ctp-rosewater: #fef9c3;   /* tertiary — tip highlight */
+  --ctp-flamingo:  #fde68a;
+
+  /* Status */
+  --ctp-green:     #059669;   /* success */
+  --ctp-yellow:    #d97706;   /* warning */
+  --ctp-peach:     #ea580c;
+  --ctp-red:       #ef4444;   /* error */
+  --ctp-maroon:    #dc2626;
+
+  /* Selection / highlight tints reused by semantic tokens */
+  --pale-green:    rgba(101, 163, 13, 0.12);
+  --pale-blue:     rgba(101, 163, 13, 0.10);
+  --pale-pink:     rgba(220, 38, 38, 0.10);
 }

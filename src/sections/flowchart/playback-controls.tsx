@@ -1,4 +1,5 @@
 import { Play, Pause, SkipForward, SkipBack, RotateCcw } from 'lucide-react';
+import { Button } from '../../components/motion/button';
 import type { FlowchartJourney } from './types';
 
 interface PlaybackControlsProps {
@@ -24,7 +25,9 @@ export function PlaybackControls({
 }: PlaybackControlsProps) {
   return (
     <div className="flowchart-playback animate-fade-in" data-testid="flowchart-playback">
-      <button
+      <Button
+        size="icon"
+        variant="ghost"
         className="flowchart-btn"
         disabled={isPlaying || currentStep >= currentJourney.steps.length - 1}
         onClick={handlePlay}
@@ -32,8 +35,10 @@ export function PlaybackControls({
         aria-label="Play"
       >
         <Play size={18} className="flowchart-btn-icon" />
-      </button>
-      <button
+      </Button>
+      <Button
+        size="icon"
+        variant="ghost"
         className="flowchart-btn"
         disabled={!isPlaying}
         onClick={handlePause}
@@ -41,8 +46,10 @@ export function PlaybackControls({
         aria-label="Pause"
       >
         <Pause size={18} className="flowchart-btn-icon" />
-      </button>
-      <button
+      </Button>
+      <Button
+        size="icon"
+        variant="ghost"
         className="flowchart-btn"
         disabled={currentStep >= currentJourney.steps.length - 1}
         onClick={handleNext}
@@ -50,8 +57,10 @@ export function PlaybackControls({
         aria-label="Next"
       >
         <SkipForward size={18} className="flowchart-btn-icon" />
-      </button>
-      <button
+      </Button>
+      <Button
+        size="icon"
+        variant="ghost"
         className="flowchart-btn"
         disabled={currentStep <= 0}
         onClick={handlePrev}
@@ -59,8 +68,10 @@ export function PlaybackControls({
         aria-label="Previous"
       >
         <SkipBack size={18} className="flowchart-btn-icon" />
-      </button>
-      <button
+      </Button>
+      <Button
+        size="icon"
+        variant="ghost"
         className="flowchart-btn"
         disabled={currentStep <= 0}
         onClick={handleReset}
@@ -68,7 +79,7 @@ export function PlaybackControls({
         aria-label="Reset"
       >
         <RotateCcw size={18} className="flowchart-btn-icon" />
-      </button>
+      </Button>
       <span className="flowchart-progress" data-testid="flowchart-progress">
         {currentStep === -1 ? 0 : currentStep + 1} / {currentJourney.steps.length}
       </span>

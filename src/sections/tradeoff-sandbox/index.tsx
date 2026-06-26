@@ -1,6 +1,7 @@
 import { useState, useCallback, useEffect, useRef, useMemo } from 'react'
 import * as Dialog from '@radix-ui/react-dialog'
 import { Check, X, Star } from 'lucide-react'
+import { Button } from '../../components/motion/button'
 import './tradeoff-sandbox.css'
 
 export interface MetricDef {
@@ -135,9 +136,10 @@ function FloatingDropdown({
 
   return (
     <div className="step-dropdown-wrapper" ref={dropdownRef} data-testid={getTestId(`step-dropdown-wrapper-${scenarioIdx}-${stepIdx}`)}>
-      <button
+      <Button
+        size="icon"
+        variant="ghost"
         className="step-dropdown-trigger"
-        type="button"
         onClick={handleToggle}
         onKeyDown={(e) => {
           if (e.key === 'Enter' || e.key === ' ') {
@@ -150,7 +152,7 @@ function FloatingDropdown({
         data-testid={getTestId(`step-dropdown-trigger-${scenarioIdx}-${stepIdx}`)}
       >
         <span className="dropdown-chevron" data-testid={getTestId(`dropdown-chevron-${scenarioIdx}-${stepIdx}`)}>▼</span>
-      </button>
+      </Button>
       {open && (
         <ul className="step-dropdown-menu" role="listbox" data-testid={getTestId(`step-dropdown-menu-${scenarioIdx}-${stepIdx}`)}>
           {step.choices.map((choice) => {
@@ -246,7 +248,9 @@ function StepSection({
                 <span style={{ display: 'none' }}>Recommended</span>
               </span>
             )}
-            <button
+            <Button
+              size="icon"
+              variant="ghost"
               className="drop-zone-info"
               onClick={onOpenDetails}
               data-testid={getTestId(`drop-zone-info-${scenarioIdx}-${stepIdx}`)}
@@ -254,15 +258,17 @@ function StepSection({
               title="View details"
             >
               ⓘ
-            </button>
-            <button
+            </Button>
+            <Button
+              size="icon"
+              variant="ghost"
               className="drop-zone-remove"
               onClick={onClear}
               data-testid={getTestId(`drop-zone-remove-${scenarioIdx}-${stepIdx}`)}
               aria-label="Remove choice"
             >
               ✕
-            </button>
+            </Button>
           </div>
         ) : (
           <span className="drop-zone-placeholder" data-testid={getTestId(`drop-zone-placeholder-${scenarioIdx}-${stepIdx}`)}>
@@ -495,17 +501,18 @@ function TradeoffSandboxSection({ title, scenarios, instanceId }: TradeoffSandbo
             Scenario:
           </label>
           <div className="scenario-dropdown" ref={scenarioDropdownRef} data-testid={getTestId("scenario-dropdown")}>
-            <button
+            <Button
               id="scenario-select"
+              variant="secondary"
+              size="sm"
               className="scenario-select"
-              type="button"
               onClick={() => setScenarioDropdownOpen(!scenarioDropdownOpen)}
               data-testid={getTestId("scenario-select")}
               aria-haspopup="listbox"
               aria-expanded={scenarioDropdownOpen}
             >
               {scenario.title}
-            </button>
+            </Button>
             {scenarioDropdownOpen && (
               <ul className="scenario-options" role="listbox">
                 {scenarios.map((s, idx) => (
@@ -538,9 +545,9 @@ function TradeoffSandboxSection({ title, scenarios, instanceId }: TradeoffSandbo
 
       <Dialog.Root open={compareOpen} onOpenChange={setCompareOpen}>
         <Dialog.Trigger asChild>
-          <button className="compare-all-button" data-testid={getTestId("compare-all-button")}>
+          <Button variant="outline" size="md" className="compare-all-button" data-testid={getTestId("compare-all-button")}>
             Compare All
-          </button>
+          </Button>
         </Dialog.Trigger>
         <Dialog.Portal>
           <Dialog.Overlay
