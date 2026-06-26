@@ -5,7 +5,6 @@ import * as Icons from 'lucide-react';
 import { ZoomToolbar } from './zoom-toolbar';
 import { useCamera } from './useCamera';
 import {
-  TYPES,
   COLORS,
   BORDER_COLORS,
   ICONS,

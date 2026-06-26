@@ -965,6 +965,43 @@
   background: var(--ctp-mantle);
 }
 
+/* Fullscreen toggle button - fixed top-left */
+.flowchart-fullscreen-toggle-btn {
+  @apply absolute top-4 left-4 z-[1001] flex items-center justify-center w-9 h-9 rounded-[var(--radius-sm)] border border-border cursor-pointer shadow-lg;
+  font-family: var(--font-body);
+  color: var(--ctp-overlay1);
+  background: var(--ctp-crust);
+  transition: background-color 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+}
+
+.flowchart-fullscreen-toggle-btn:hover {
+  background: var(--ctp-mantle);
+  color: var(--ctp-text);
+  border-color: var(--ctp-blue);
+}
+
+/* Inspector toggle button - fixed top-right */
+.flowchart-inspector-toggle {
+  @apply absolute top-4 right-4 z-[1001] flex items-center justify-center w-9 h-9 rounded-[var(--radius-sm)] border border-border cursor-pointer shadow-lg;
+  font-family: var(--font-body);
+  color: var(--ctp-overlay1);
+  background: var(--ctp-crust);
+  transition: background-color 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+}
+
+.flowchart-inspector-toggle:hover {
+  background: var(--ctp-mantle);
+  color: var(--ctp-text);
+  border-color: var(--ctp-blue);
+}
+
+.flowchart-inspector-toggle[aria-checked="true"],
+.flowchart-inspector-toggle.active {
+  color: var(--ctp-blue);
+  border-color: var(--ctp-blue);
+  background: rgba(140, 170, 238, 0.08);
+}
+
 /* ==========================================================================
    RESPONSIVE — Mobile / Tablet (< 768px)
    ========================================================================== */
@@ -1019,6 +1056,40 @@
   background-color: var(--ctp-mantle) !important;
   border-color: var(--border) !important;
   box-shadow: none !important;
+}
+
+/* View tabs (Tabs component inside dock) */
+.flowchart-view-tabs {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+
+.flowchart-view-tab-list {
+  background-color: var(--ctp-mantle) !important;
+  border: 1px solid var(--border) !important;
+  box-shadow: none !important;
+}
+
+/* Override active indicator background to match flowchart theme */
+.flowchart-view-tab-list > div:has(button[aria-selected="true"]) > span {
+  background-color: rgba(140, 170, 238, 0.12) !important;
+}
+
+.flowchart-view-tab-trigger {
+  color: var(--ctp-overlay1) !important;
+  font-size: 11px !important;
+  padding: 4px 10px !important;
+  min-height: 28px !important;
+}
+
+.flowchart-view-tab-trigger[aria-selected="true"] {
+  color: var(--ctp-blue) !important;
+}
+
+/* View tab label — hidden on mobile by default, shown for active tab */
+.flowchart-view-tab-label {
+  display: inline;
 }
 
 .flowchart-view-tab-active {
@@ -1092,4 +1163,62 @@
 
 .flowchart-dock-journey .flowchart-journey-description {
   @apply text-center;
+}
+
+.flowchart-dock-steps {
+  @apply flex flex-col gap-2;
+}
+
+/* Mobile responsive: icon-only tabs, dynamic journey height */
+@media (max-width: 639px) {
+  .flowchart-controls-dock .expandable-tab-label {
+    display: none !important;
+  }
+
+  /* Show label for active dock tab so user knows which panel is open */
+  .flowchart-controls-dock button[data-active="true"] .expandable-tab-label {
+    display: inline !important;
+  }
+
+  .flowchart-view-tab-label {
+    display: none !important;
+  }
+
+  /* Show label for the active view tab so user knows which view is selected */
+  .flowchart-view-tab-trigger[aria-selected="true"] .flowchart-view-tab-label {
+    display: inline !important;
+  }
+
+  .flowchart-controls-dock .flowchart-controls-dock-content {
+    min-height: 0;
+  }
+
+  .flowchart-controls-dock .flowchart-dock-journey {
+    min-height: auto;
+    padding: 6px 8px 8px;
+  }
+
+  .flowchart-dock-journey .flowchart-journey-selector {
+    flex-wrap: wrap;
+    justify-content: flex-start;
+    gap: 6px;
+  }
+
+  .flowchart-dock-journey .flowchart-journey-label {
+    font-size: 9px !important;
+  }
+
+  .flowchart-journey-select {
+    min-width: 0 !important;
+    flex: 1 1 auto;
+    max-width: 100%;
+    font-size: 11px;
+    padding: 4px 28px 4px 8px;
+  }
+
+  .flowchart-dock-journey .flowchart-journey-description {
+    font-size: 10px;
+    max-height: none;
+    overflow: visible;
+  }
 }

@@ -136,6 +136,7 @@ export function ExpandableTabs({
                 layout="position"
                 type="button"
                 data-testid={tab.testId}
+                data-active={isActive ? "true" : "false"}
                 onMouseEnter={() => setHoveredId(tab.id)}
                 onMouseLeave={() => setHoveredId(null)}
                 onClick={() => {
@@ -182,7 +183,7 @@ export function ExpandableTabs({
                     marginLeft: showLabels ? 6 : 0,
                   }}
                   transition={TABS_TRANSITION}
-                  className="relative z-10 whitespace-nowrap overflow-hidden inline-block"
+                  className="relative z-10 whitespace-nowrap overflow-hidden inline-block expandable-tab-label"
                 >
                   {tab.label}
                 </motion.span>
