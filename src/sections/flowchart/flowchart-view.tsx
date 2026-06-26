@@ -170,6 +170,7 @@ export function FlowchartView({
         cb(null);
       };
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [camera.handleZoomIn, camera.handleZoomOut, camera.fitToScreen, minX, maxX, minY, maxY]);
 
   // Focus camera on active nodes

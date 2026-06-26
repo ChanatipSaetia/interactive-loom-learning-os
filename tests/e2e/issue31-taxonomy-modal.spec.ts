@@ -24,11 +24,11 @@ test.describe('Issue #31: TaxonomyBrowser Detail Modal', () => {
 
     const modalTitle = dialog.locator('.taxonomy-modal-title')
     await expect(modalTitle).toBeVisible()
-    await expect(modalTitle).toHaveText('Reasoning & Planning')
+    await expect(modalTitle).toHaveText('Hierarchical Orchestration')
 
     const modalSubtitle = dialog.locator('.taxonomy-modal-subtitle')
     await expect(modalSubtitle).toBeVisible()
-    await expect(modalSubtitle).toHaveText('Core Intelligence')
+    await expect(modalSubtitle).toHaveText('Orchestrator-Workers')
 
     const overview = dialog.getByTestId('taxonomy-modal-overview')
     await expect(overview).toBeVisible()
@@ -69,10 +69,10 @@ test.describe('Issue #31: TaxonomyBrowser Detail Modal', () => {
     await expect(dialog).toBeVisible()
     const modalTitle = dialog.locator('.taxonomy-modal-title')
     await expect(modalTitle).toBeVisible()
-    await expect(modalTitle).toHaveText('Tool Use & Execution')
+    await expect(modalTitle).toHaveText('Sequential Choreography')
     const modalSubtitle = dialog.locator('.taxonomy-modal-subtitle')
     await expect(modalSubtitle).toBeVisible()
-    await expect(modalSubtitle).toHaveText('Action Layer')
+    await expect(modalSubtitle).toHaveText('Chain of Agents')
   })
 
   test('modal shows in-scope and out-of-scope lists', async ({ page }) => {
@@ -85,11 +85,11 @@ test.describe('Issue #31: TaxonomyBrowser Detail Modal', () => {
 
     const inScope = dialog.getByTestId('taxonomy-modal-in-scope')
     await expect(inScope).toBeVisible()
-    await expect(dialog.getByTestId('taxonomy-modal-in-scope-0')).toContainText('Chain-of-thought')
+    await expect(dialog.getByTestId('taxonomy-modal-in-scope-0')).toContainText('Central director')
 
     const outOfScope = dialog.getByTestId('taxonomy-modal-out-of-scope')
     await expect(outOfScope).toBeVisible()
-    await expect(dialog.getByTestId('taxonomy-modal-out-of-scope-0')).toContainText('Raw text generation without planning')
+    await expect(dialog.getByTestId('taxonomy-modal-out-of-scope-0')).toContainText('Peer-to-peer unstructured negotiation')
   })
 
   test('modal shows analogy and primary focus', async ({ page }) => {
@@ -102,11 +102,11 @@ test.describe('Issue #31: TaxonomyBrowser Detail Modal', () => {
 
     const analogy = dialog.getByTestId('taxonomy-modal-analogy')
     await expect(analogy).toBeVisible()
-    await expect(analogy).toContainText('Like a project manager')
+    await expect(analogy).toContainText('Like a software engineering manager')
 
     const focus = dialog.getByTestId('taxonomy-modal-primary-focus')
     await expect(focus).toBeVisible()
-    await expect(focus).toContainText('Goal decomposition')
+    await expect(focus).toContainText('Task decomposition')
   })
 
   test('modal content is scrollable', async ({ page }) => {

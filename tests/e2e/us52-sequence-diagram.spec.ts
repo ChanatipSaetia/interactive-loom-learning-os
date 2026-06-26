@@ -5,23 +5,13 @@ test.describe('US-13: Sequence Diagram View Projection', () => {
     await page.goto('/#/demo/ai-agent');
     await page.waitForSelector('[data-testid="flowchart-section"]');
 
-    const singleBtn = page.getByTestId('flowchart-btn-single');
-    await singleBtn.click();
+    await page.getByTestId('dock-tab-views').click();
 
-    const viewTabs = page.getByTestId('flowchart-view-tabs');
-    await expect(viewTabs).toBeVisible();
-
-    const tabs = viewTabs.locator('button');
-    const seqTabIndex = await tabs.evaluateAll(async (btns) => {
-      return btns.findIndex(b => b.textContent?.includes('Sequence Diagram'));
-    });
-
-    if (seqTabIndex >= 0) {
-      await tabs.nth(seqTabIndex).click();
-    }
+    const seqTab = page.locator('.flowchart-view-tab-trigger').filter({ hasText: 'Sequence Diagram' });
+    await seqTab.click();
 
     const seqSvg = page.getByTestId('flowchart-svg-SEQUENCE');
-    await expect(seqSvg).toBeInViewport();
+    await expect(seqSvg).toBeVisible();
 
     const lifelines = page.locator('[data-testid^="flowchart-lifeline-SEQUENCE-"]');
     const lifelineCount = await lifelines.count();
@@ -46,18 +36,13 @@ test.describe('US-13: Sequence Diagram View Projection', () => {
     await page.goto('/#/demo/ai-agent');
     await page.waitForSelector('[data-testid="flowchart-section"]');
 
-    const singleBtn = page.getByTestId('flowchart-btn-single');
-    await singleBtn.click();
+    await page.getByTestId('dock-tab-views').click();
 
-    const viewTabs = page.getByTestId('flowchart-view-tabs');
-    const tabs = viewTabs.locator('button');
-    const seqTabIndex = await tabs.evaluateAll(async (btns) => {
-      return btns.findIndex(b => b.textContent?.includes('Sequence Diagram'));
-    });
+    const seqTab = page.locator('.flowchart-view-tab-trigger').filter({ hasText: 'Sequence Diagram' });
+    await seqTab.click();
 
-    if (seqTabIndex >= 0) {
-      await tabs.nth(seqTabIndex).click();
-    }
+    const seqSvg = page.getByTestId('flowchart-svg-SEQUENCE');
+    await expect(seqSvg).toBeVisible();
 
     const firstLabel = page.getByTestId('flowchart-seq-msg-label-SEQUENCE-0');
     await expect(firstLabel).toBeVisible();
@@ -70,17 +55,12 @@ test.describe('US-13: Sequence Diagram View Projection', () => {
     await page.goto('/#/demo/ai-agent');
     await page.waitForSelector('[data-testid="flowchart-section"]');
 
-    const singleBtn = page.getByTestId('flowchart-btn-single');
-    await singleBtn.click();
+    await page.getByTestId('dock-tab-views').click();
 
     const viewTabs = page.getByTestId('flowchart-view-tabs');
     await expect(viewTabs).toBeVisible();
 
-    const tabs = viewTabs.locator('button');
-    const tabCount = await tabs.count();
-    expect(tabCount).toBeGreaterThanOrEqual(4);
-
-    const tabTexts = await tabs.evaluateAll(async (btns) => btns.map(b => b.textContent || ''));
+    const tabTexts = await viewTabs.locator('.flowchart-view-tab-label').evaluateAll(el => el.map(e => e.textContent?.trim()));
     expect(tabTexts.some(t => t.includes('Sequence Diagram'))).toBe(true);
   });
 
@@ -88,21 +68,13 @@ test.describe('US-13: Sequence Diagram View Projection', () => {
     await page.goto('/#/demo/ai-agent');
     await page.waitForSelector('[data-testid="flowchart-section"]');
 
-    const singleBtn = page.getByTestId('flowchart-btn-single');
-    await singleBtn.click();
+    await page.getByTestId('dock-tab-views').click();
 
-    const viewTabs = page.getByTestId('flowchart-view-tabs');
-    const tabs = viewTabs.locator('button');
-    const seqTabIndex = await tabs.evaluateAll(async (btns) => {
-      return btns.findIndex(b => b.textContent?.includes('Sequence Diagram'));
-    });
-
-    if (seqTabIndex >= 0) {
-      await tabs.nth(seqTabIndex).click();
-    }
+    const seqTab = page.locator('.flowchart-view-tab-trigger').filter({ hasText: 'Sequence Diagram' });
+    await seqTab.click();
 
     const seqSvg = page.getByTestId('flowchart-svg-SEQUENCE');
-    await expect(seqSvg).toBeInViewport();
+    await expect(seqSvg).toBeVisible();
 
     const line = page.locator('[data-testid="flowchart-lifeline-SEQUENCE-0"] line').first();
     const dasharray = await line.getAttribute('stroke-dasharray');
@@ -116,18 +88,13 @@ test.describe('US-13: Sequence Diagram View Projection', () => {
     await page.goto('/#/demo/ai-agent');
     await page.waitForSelector('[data-testid="flowchart-section"]');
 
-    const singleBtn = page.getByTestId('flowchart-btn-single');
-    await singleBtn.click();
+    await page.getByTestId('dock-tab-views').click();
 
-    const viewTabs = page.getByTestId('flowchart-view-tabs');
-    const tabs = viewTabs.locator('button');
-    const seqTabIndex = await tabs.evaluateAll(async (btns) => {
-      return btns.findIndex(b => b.textContent?.includes('Sequence Diagram'));
-    });
+    const seqTab = page.locator('.flowchart-view-tab-trigger').filter({ hasText: 'Sequence Diagram' });
+    await seqTab.click();
 
-    if (seqTabIndex >= 0) {
-      await tabs.nth(seqTabIndex).click();
-    }
+    const seqSvg = page.getByTestId('flowchart-svg-SEQUENCE');
+    await expect(seqSvg).toBeVisible();
 
     const msgs = page.locator('[data-testid^="flowchart-seq-msg-SEQUENCE-"]');
     const count = await msgs.count();

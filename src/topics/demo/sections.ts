@@ -4,7 +4,6 @@ import {
   agentTextParagraphs,
   agentLifecycleMarkdown,
   agentCapabilityBullets,
-  apiPatternScenarios,
   tradeoffSandboxScenarios,
   taxonomyCategories,
 } from './data'
@@ -38,14 +37,6 @@ export const demoSections: SectionConfig[] = [
       title: 'Key Agent Capabilities',
       ordered: false,
       items: agentCapabilityBullets,
-    },
-  },
-  {
-    type: 'tradeoff-sandbox',
-    props: {
-      instanceId: 'comm-pattern',
-      title: 'Communication Pattern Choice',
-      scenarios: apiPatternScenarios,
     },
   },
   {

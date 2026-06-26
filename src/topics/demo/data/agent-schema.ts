@@ -237,6 +237,27 @@ export const agentSchema: UnifiedFlowchartSchema = {
         { nodeIds: ['pol_route', 'cmd_execute_tool', 'tools_ref', 'mcp_servers', 'subagents', 'evt_tool_executed'], description: 'Tool Use — Agent executes tool commands, utilizing MCP Servers or delegating tasks to Subagents.', processGroup: 'execution' },
         { nodeIds: ['pol_eval', 'cmd_complete', 'llm_final_ref', 'evt_done'], description: 'Task Completion — LLM verifies results and returns the successful solution to the User.', processGroup: 'evaluation' }
       ]
+    },
+    {
+      id: 'direct-llm-response',
+      label: 'Direct LLM Response',
+      description: 'Follow the fast path where the user asks a question that does not require any tool execution, and the LLM responds directly.',
+      steps: [
+        { nodeIds: ['user', 'cmd_run_agent', 'orch_agent', 'evt_started'], description: 'Agent Started — User requests task; Agent initializes core runtime.' },
+        { nodeIds: ['pol_plan', 'cmd_call_llm', 'llm_reason_ref', 'evt_reasoned'], description: 'Thinking — Agent triggers planning; calls LLM to decide on the plan.', processGroup: 'planning' },
+        { nodeIds: ['pol_eval', 'cmd_complete', 'llm_final_ref', 'evt_done'], description: 'Task Completion — LLM determines no tools are needed, constructs the final answer, and returns it to the User.', processGroup: 'evaluation' }
+      ]
+    },
+    {
+      id: 'subagent-delegation',
+      label: 'Subagent Delegation Flow',
+      description: 'Follow the execution path where the agent delegates a complex coding subtask to an isolated subagent.',
+      steps: [
+        { nodeIds: ['user', 'cmd_run_agent', 'orch_agent', 'evt_started'], description: 'Agent Started — User requests task; Agent initializes core runtime.' },
+        { nodeIds: ['pol_plan', 'cmd_call_llm', 'llm_reason_ref', 'evt_reasoned'], description: 'Thinking — Agent triggers planning; calls LLM to define the subagent prompt.', processGroup: 'planning' },
+        { nodeIds: ['pol_route', 'cmd_execute_tool', 'tools_ref', 'subagents', 'evt_tool_executed'], description: 'Subagent Delegation — Agent delegates execution to a spawned subagent running in parallel.', processGroup: 'execution' },
+        { nodeIds: ['pol_eval', 'cmd_complete', 'llm_final_ref', 'evt_done'], description: 'Task Completion — LLM verifies results from the subagent and completes the task.', processGroup: 'evaluation' }
+      ]
     }
   ]
 }

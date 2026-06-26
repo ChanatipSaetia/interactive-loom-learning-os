@@ -455,10 +455,11 @@
 }
 
 .flowchart-journey-options {
-  @apply absolute top-full left-0 w-full m-0 p-[3px] list-none rounded-[var(--radius-xs)] border border-border z-[50] max-h-[200px] overflow-y-auto;
-  margin-top: 4px;
+  @apply absolute bottom-full left-0 w-full m-0 p-[3px] list-none rounded-[var(--radius-xs)] border border-border z-[50] max-h-[200px] overflow-y-auto;
+  margin-bottom: 4px;
+  top: auto !important;
   background-color: var(--ctp-mantle);
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+  box-shadow: 0 -8px 24px rgba(0, 0, 0, 0.4);
 }
 
 .flowchart-journey-option {
@@ -1136,7 +1137,7 @@
 }
 
 .flowchart-dock-playback {
-  @apply flex justify-center py-1 w-full whitespace-nowrap;
+  @apply flex justify-end py-1 whitespace-nowrap flex-shrink-0;
 }
 
 .flowchart-dock-playback .flowchart-playback {
@@ -1234,4 +1235,15 @@
     max-height: none;
     overflow: visible;
   }
+}
+
+.flowchart-dock-steps-controls {
+  @apply flex items-center justify-between w-full mb-2 gap-4 px-1;
+}
+
+.flowchart-dock-journey-title {
+  @apply text-xs font-bold text-left;
+  color: var(--primary);
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
 }
