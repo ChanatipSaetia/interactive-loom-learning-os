@@ -79,7 +79,7 @@ export const docPipelineSchema: UnifiedFlowchartSchema = {
     'db': {
       title: 'Pipeline Database',
       desc: 'Persistent storage for documents, extracted fields, and audit corrections.',
-      type: TYPES.DATABASE,
+      type: TYPES.AGGREGATE,
     },
 
     // ── Events ────────────────────────────────────────────────────────
@@ -213,6 +213,20 @@ export const docPipelineSchema: UnifiedFlowchartSchema = {
       collapsedTo: 'auditor'
     },
 
+    'cmd_approve': {
+      title: 'Approve Document',
+      desc: 'Mark document as approved and finalize validation.',
+      type: TYPES.COMMAND,
+      collapsedTo: 'confidence_router',
+    },
+
+    'cmd_flag_audit': {
+      title: 'Flag for Audit',
+      desc: 'Flag document as low confidence and route to audit queue.',
+      type: TYPES.COMMAND,
+      collapsedTo: 'confidence_router',
+    },
+
     // ── Policies (Event Storming only) ────────────────────────────────
     'pol_process': {
       title: 'Process on Upload',
@@ -249,7 +263,7 @@ export const docPipelineSchema: UnifiedFlowchartSchema = {
     'approved_doc': {
       title: 'Approved Document',
       desc: 'Final validated document record ready for downstream consumption.',
-      type: TYPES.DATA_OBJECT,
+      type: TYPES.AGGREGATE,
     },
   },
 
@@ -276,11 +290,15 @@ export const docPipelineSchema: UnifiedFlowchartSchema = {
     { id: 'r_es_13', from: 'evt_validated', to: 'pol_route',       views: ['EVENT_STORMING'] },
 
     // Happy path: Auto-approve
-    { id: 'r_es_14', from: 'pol_route',     to: 'evt_approved',    views: ['EVENT_STORMING'] },
+    { id: 'r_es_14a', from: 'pol_route',     to: 'cmd_approve',     views: ['EVENT_STORMING'] },
+    { id: 'r_es_14_hb', from: 'cmd_approve', to: 'confidence_router', handledBy: true, views: ['EVENT_STORMING'] },
+    { id: 'r_es_14b', from: 'cmd_approve',   to: 'evt_approved',    views: ['EVENT_STORMING'] },
     { id: 'r_es_15', from: 'evt_approved',  to: 'evt_completed',   views: ['EVENT_STORMING'] },
 
     // Low confidence path: Audit
-    { id: 'r_es_16', from: 'pol_route',     to: 'evt_flagged',     views: ['EVENT_STORMING'] },
+    { id: 'r_es_16a', from: 'pol_route',     to: 'cmd_flag_audit',  views: ['EVENT_STORMING'] },
+    { id: 'r_es_16_hb', from: 'cmd_flag_audit', to: 'confidence_router', handledBy: true, views: ['EVENT_STORMING'] },
+    { id: 'r_es_16b', from: 'cmd_flag_audit', to: 'evt_flagged',     views: ['EVENT_STORMING'] },
     { id: 'r_es_17', from: 'evt_flagged',   to: 'pol_audit',       views: ['EVENT_STORMING'] },
     { id: 'r_es_18', from: 'pol_audit',     to: 'cmd_audit',       views: ['EVENT_STORMING'] },
     { id: 'r_es_19', from: 'cmd_audit',     to: 'auditor',         views: ['EVENT_STORMING'], handledBy: true },
@@ -315,20 +333,22 @@ export const docPipelineSchema: UnifiedFlowchartSchema = {
         { id: 'field_validator', grid: [7, 1] },
         { id: 'llm_api', grid: [8, 1] },
         { id: 'db', grid: [3, 0] },
-        { id: 'evt_approved', grid: [11, 2] },
-        { id: 'evt_completed', grid: [12, 2] },
-        { id: 'evt_flagged', grid: [11, 3] },
-        { id: 'pol_audit', grid: [11, 4] },
-        { id: 'cmd_audit', grid: [12, 4] },
-        { id: 'auditor', grid: [13, 3] },
-        { id: 'evt_corrected', grid: [13, 4] },
-        { id: 'pol_finalize', grid: [14, 4] },
-        { id: 'approved_doc', grid: [11, 0] },
+        { id: 'cmd_approve', grid: [11, 2] },
+        { id: 'evt_approved', grid: [12, 2] },
+        { id: 'evt_completed', grid: [13, 2] },
+        { id: 'cmd_flag_audit', grid: [11, 3.5] },
+        { id: 'evt_flagged', grid: [12, 3.5] },
+        { id: 'pol_audit', grid: [12, 4.5] },
+        { id: 'cmd_audit', grid: [13, 4.5] },
+        { id: 'auditor', grid: [14, 3.5] },
+        { id: 'evt_corrected', grid: [14, 4.5] },
+        { id: 'pol_finalize', grid: [15, 4.5] },
+        { id: 'approved_doc', grid: [12, 0] },
       ],
       groups: [
         { id: 'es_g1', title: 'Upload & OCR Extraction', desc: 'Document upload triggers OCR extraction pipeline via external OCR service. Raw fields stored in database.', nodeIds: ['user','evt_uploaded','pol_process','cmd_ocr','ocr_service','orch_extract','db','evt_extracted'], color: 'rgba(140,170,238,0.12)', borderColor: 'var(--ctp-blue)', textColor: 'var(--ctp-text)' },
         { id: 'es_g2', title: 'LLM Validation', desc: 'Extracted fields sent to LLM API for semantic validation and confidence scoring.', nodeIds: ['pol_validate','cmd_validate','llm_api','orch_validate','field_validator','evt_validated'], color: 'rgba(244,184,228,0.12)', borderColor: 'var(--ctp-pink)', textColor: 'var(--ctp-text)' },
-        { id: 'es_g3', title: 'Confidence Routing', desc: 'Policy routes documents by aggregate confidence: above threshold auto-approves, below flags for audit.', nodeIds: ['pol_route','confidence_router','evt_approved','evt_completed','evt_flagged','approved_doc'], color: 'rgba(229,200,144,0.12)', borderColor: 'var(--ctp-yellow)', textColor: 'var(--ctp-text)' },
+        { id: 'es_g3', title: 'Confidence Routing', desc: 'Policy routes documents by aggregate confidence: above threshold auto-approves, below flags for audit.', nodeIds: ['pol_route','confidence_router','cmd_approve','evt_approved','evt_completed','cmd_flag_audit','evt_flagged','approved_doc'], color: 'rgba(229,200,144,0.12)', borderColor: 'var(--ctp-yellow)', textColor: 'var(--ctp-text)' },
         { id: 'es_g4', title: 'Human Audit Loop', desc: 'Low-confidence documents dispatched to auditor who corrects fields, then finalized.', nodeIds: ['pol_audit','cmd_audit','auditor','evt_corrected','pol_finalize'], color: 'rgba(231,130,132,0.12)', borderColor: 'var(--ctp-red)', textColor: 'var(--ctp-text)' },
       ]
     }
@@ -343,7 +363,7 @@ export const docPipelineSchema: UnifiedFlowchartSchema = {
         { nodeIds: ['user', 'evt_uploaded'], description: 'Document Uploaded — User uploads a PDF document (invoice_2024_q4.pdf) into the pipeline.' },
         { nodeIds: ['pol_process', 'cmd_ocr', 'ocr_service', 'orch_extract', 'db', 'evt_extracted'], description: 'OCR Extraction — Policy triggers "Process Document" command. OCR Service extracts field key-value pairs with bounding boxes. Orchestrator stores raw fields in database. Fields Extracted event published.', processGroup: 'execution' },
         { nodeIds: ['pol_validate', 'cmd_validate', 'llm_api', 'orch_validate', 'evt_validated'], description: 'LLM Validation — Extracted fields sent to LLM API for semantic validation. Confidence scores computed per-field and aggregated. Fields Validated event published.', processGroup: 'evaluation' },
-        { nodeIds: ['pol_route', 'evt_approved', 'evt_completed'], description: 'Auto-Approval — Aggregate confidence (0.92) exceeds threshold (0.85). Document auto-approved and marked completed.', processGroup: 'evaluation' },
+        { nodeIds: ['pol_route', 'cmd_approve', 'evt_approved', 'evt_completed'], description: 'Auto-Approval — Aggregate confidence (0.92) exceeds threshold (0.85). Document auto-approved and marked completed.', processGroup: 'evaluation' },
       ]
     },
     {
@@ -354,7 +374,7 @@ export const docPipelineSchema: UnifiedFlowchartSchema = {
         { nodeIds: ['user', 'evt_uploaded'], description: 'Document Uploaded — User uploads a scanned document with degraded image quality.' },
         { nodeIds: ['pol_process', 'cmd_ocr', 'ocr_service', 'orch_extract', 'db', 'evt_extracted'], description: 'OCR Extraction — OCR extracts fields but some have low confidence due to poor scan quality.', processGroup: 'execution' },
         { nodeIds: ['pol_validate', 'cmd_validate', 'llm_api', 'orch_validate', 'evt_validated'], description: 'LLM Validation — LLM validates fields. Aggregate confidence (0.73) falls below threshold (0.85). Vendor field flagged: "Acme Suppl1es" (confidence 0.62).', processGroup: 'evaluation' },
-        { nodeIds: ['pol_route', 'evt_flagged', 'pol_audit', 'cmd_audit', 'auditor'], description: '⚠️ Risk / Human Review — Confidence Router flags document for audit. Policy dispatches to Auditor queue. Auditor reviews flagged fields and applies corrections.', processGroup: 'escalation' },
+        { nodeIds: ['pol_route', 'cmd_flag_audit', 'evt_flagged', 'pol_audit', 'cmd_audit', 'auditor'], description: '⚠️ Risk / Human Review — Confidence Router flags document for audit. Policy dispatches to Auditor queue. Auditor reviews flagged fields and applies corrections.', processGroup: 'escalation' },
         { nodeIds: ['auditor', 'evt_corrected', 'pol_finalize', 'evt_completed'], description: 'Correction Finalized — Auditor corrects vendor to "Acme Supplies". Correction stored for model retraining. Document finalized and completed.', processGroup: 'execution' },
       ]
     }

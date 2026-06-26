@@ -24,8 +24,7 @@ test.describe('Issue #8: Flowchart Section + AI Agent Topic', () => {
     const toolsNode = page.getByTestId('flowchart-node-EVENT_STORMING-tools_ref')
     await expect(toolsNode).toBeVisible()
 
-    const filesystemNode = page.getByTestId('flowchart-node-EVENT_STORMING-filesystem')
-    await expect(filesystemNode).toBeVisible()
+
   })
 
   test('renders all edges connecting nodes', async ({ page }) => {

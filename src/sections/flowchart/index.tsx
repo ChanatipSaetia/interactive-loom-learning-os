@@ -5,7 +5,7 @@ import { Dropdown } from '../../components/motion/dropdown';
 import { ExpandableTabs, type ExpandableTabItem } from '../../components/motion/expandable-tabs';
 import { Tabs, TabsList, TabsTrigger } from '../../components/motion/tabs';
 
-import { FlowchartView } from './flowchart-view';
+import { FlowchartView } from './views';
 import { PlaybackControls } from './playback-controls';
 import { StepCarousel } from './step-carousel';
 import { usePlaybackState } from './usePlaybackState';
@@ -172,19 +172,37 @@ export function Flowchart({ title, schema = INITIAL_SCHEMA }: FlowchartProps) {
   }, [localSchema, playback.currentJourneyId, playback.currentStep]);
 
   const activeStateMachineAggregateId = useMemo(() => {
+    const smView = localSchema.views.STATE_MACHINE;
+    if (smView) {
+      // Find the node ID in the STATE_MACHINE view that does NOT contain "_state_" (which is the subject Aggregate node itself)
+      const aggNode = smView.nodes.find(n => !n.id.includes('_state_'));
+      if (aggNode) return aggNode.id;
+    }
+    // Fallback: check static entities
     const firstWithSM = Object.entries(localSchema.entities).find(([, entity]) => !!entity.stateMachine);
     return firstWithSM ? firstWithSM[0] : null;
-  }, [localSchema.entities]);
+  }, [localSchema.views, localSchema.entities]);
 
   const highlightedNodeId = useMemo(() => {
     if (activeViewKey === 'STATE_MACHINE' && activeStateMachineAggregateId) {
-      const activeState = activeStateId || localSchema.entities[activeStateMachineAggregateId]?.stateMachine?.initialState;
-      if (activeState) {
-        return `${activeStateMachineAggregateId}_state_${activeState}`;
+      // Find all state nodes in the view. We want to fall back to the initial one if activeStateId is not set.
+      const smView = localSchema.views.STATE_MACHINE;
+      if (smView) {
+        const stateNodes = smView.nodes.filter(n => n.id.includes('_state_')) || [];
+        const activeState = activeStateId || (stateNodes[0] ? stateNodes[0].id.replace(`${activeStateMachineAggregateId}_state_`, '') : 'IDLE');
+        if (activeState) {
+          return `${activeStateMachineAggregateId}_state_${activeState}`;
+        }
+      } else {
+        // Static fallback
+        const activeState = activeStateId || localSchema.entities[activeStateMachineAggregateId]?.stateMachine?.initialState;
+        if (activeState) {
+          return `${activeStateMachineAggregateId}_state_${activeState}`;
+        }
       }
     }
     return playback.highlightedNodeId;
-  }, [activeViewKey, activeStateMachineAggregateId, activeStateId, playback.highlightedNodeId, localSchema.entities]);
+  }, [activeViewKey, activeStateMachineAggregateId, activeStateId, playback.highlightedNodeId, localSchema.views, localSchema.entities]);
 
   const [prevHighlightedNodeId, setPrevHighlightedNodeId] = useState<string | null>(null);
   const lastHighlightedId = useRef<string | null>(null);
@@ -260,12 +278,16 @@ export function Flowchart({ title, schema = INITIAL_SCHEMA }: FlowchartProps) {
         type: entity.viewTypes?.[vk] || ''
       }));
 
+    const smView = localSchema.views.STATE_MACHINE;
+    const aggNode = smView?.nodes.find(n => !n.id.includes('_state_'));
+    const isSmSubject = (aggNode && aggNode.id === canonicalId) || !!entity.stateMachine;
+
     if (isFullscreen) {
       // Select node, open sidebar, switch to Details tab
       setSelectedNodeId(nodeId);
       // When the resolved entity has a state machine, select the canonical
       // aggregate id so the States tab can render its lifecycle.
-      if (entity.stateMachine) {
+      if (isSmSubject) {
         setSelectedAggregateId(canonicalId);
       }
       if (!sidebarManuallyClosed) {

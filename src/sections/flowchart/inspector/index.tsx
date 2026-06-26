@@ -36,6 +36,40 @@ export function InspectorSidebar({
   const [activeTab, setActiveTab] = useState<InspectorTab>('details');
 
   const smEntities = useMemo(() => {
+    const smView = schema.views?.STATE_MACHINE;
+    if (smView) {
+      // Find the aggregate node (non state-node)
+      const aggNode = smView.nodes.find(n => !n.id.includes('_state_'));
+      if (aggNode) {
+        const entity = schema.entities[aggNode.id];
+        if (entity) {
+          // Construct the FlowchartStateMachine configuration dynamically from state nodes
+          const stateNodes = smView.nodes.filter(n => n.id.includes('_state_'));
+          const states = stateNodes.map(node => {
+            const stateId = node.id.replace(`${aggNode.id}_state_`, '');
+            const stateEntity = schema.entities[node.id];
+            return {
+              id: stateId,
+              label: stateEntity?.title || stateId,
+              color: stateEntity?.strokeColor || 'var(--ctp-blue)'
+            };
+          });
+
+          const stateMachine: FlowchartStateMachine = {
+            states,
+            initialState: states[0]?.id || 'IDLE'
+          };
+
+          return [{
+            id: aggNode.id,
+            title: entity.title,
+            stateMachine
+          }];
+        }
+      }
+    }
+
+    // Fallback: check static entities
     const result: { id: string; title: string; stateMachine: FlowchartStateMachine }[] = [];
     for (const [id, entity] of Object.entries(schema.entities)) {
       if (entity.stateMachine) {
@@ -43,7 +77,7 @@ export function InspectorSidebar({
       }
     }
     return result;
-  }, [schema.entities]);
+  }, [schema.entities, schema.views]);
 
   const [internalAggregateId, setInternalAggregateId] = useState<string | null>(null);
   const resolvedAggregateId = controlledAggregateId !== undefined
@@ -57,8 +91,9 @@ export function InspectorSidebar({
 
   const selectedEntity = useMemo(() => {
     if (!resolvedAggregateId) return null;
-    return schema.entities[resolvedAggregateId] || null;
-  }, [resolvedAggregateId, schema.entities]);
+    const smEnt = smEntities.find(e => e.id === resolvedAggregateId);
+    return smEnt ? { ...schema.entities[resolvedAggregateId], stateMachine: smEnt.stateMachine } : null;
+  }, [resolvedAggregateId, schema.entities, smEntities]);
 
   const currentStepData = useMemo(() => {
     const journey = schema.journeys.find(j => j.id === currentJourneyId);

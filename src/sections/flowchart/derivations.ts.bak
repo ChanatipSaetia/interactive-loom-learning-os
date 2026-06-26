@@ -1,0 +1,2295 @@
+import type { UnifiedFlowchartSchema, FlowchartRelation, FlowchartViewNode, FlowchartViewGroup, FlowchartEntity, LayoutInfo } from './types';
+import { MASTER_MAPPING_MATRIX, TYPES } from './types';
+
+// Helper to resolve the entity's primary type (event storming node type)
+const getEntityType = (entity: FlowchartEntity | undefined): string => {
+  return entity?.type || entity?.viewTypes?.EVENT_STORMING || 'default';
+};
+
+/**
+ * Count outgoing EVENT_STORMING relations for an entity.
+ */
+function countOutgoingRelations(
+  schema: UnifiedFlowchartSchema,
+  entityId: string
+): number {
+  // Count across all instances (canonical + refs) that resolve to this entity
+  const instances = Object.keys(schema.entities).filter(
+    id => (schema.entities[id]?.collapsedTo || id) === entityId || id === entityId
+  );
+  return schema.relations.filter(r =>
+    (!r.views || r.views.includes('EVENT_STORMING')) && instances.includes(r.from)
+  ).length;
+}
+
+/**
+ * A Policy only maps to Decision in derived views when it's a branching point (2+ outgoing).
+ * Linear Policies (0-1 outgoing) are omitted from SWIMLANES/DATA_FLOW to reduce clutter.
+ */
+function policyShouldMapToDecision(
+  schema: UnifiedFlowchartSchema,
+  entityId: string,
+  entityType: string
+): boolean {
+  if (entityType !== TYPES.POLICY) return true;
+  return countOutgoingRelations(schema, entityId) >= 2;
+}
+
+
+
+/**
+ * Automatically derives SYS_ARCH, SWIMLANES, SEQUENCE, and DATA_FLOW views 
+ * from the master EVENT_STORMING view if they are not explicitly declared.
+ */
+export function autoDeriveViews(schema: UnifiedFlowchartSchema): UnifiedFlowchartSchema {
+  // Automatically lay out all existing views in the schema except SEQUENCE (needs derivation)
+  const laidOutViews = { ...schema.views };
+  const esNodes = schema.views.EVENT_STORMING?.nodes;
+  Object.keys(laidOutViews).forEach(viewKey => {
+    if (viewKey === 'SEQUENCE') return;
+    const view = laidOutViews[viewKey];
+    const laidOutNodes = layoutNodes(view.nodes, schema.relations, viewKey, schema.entities, esNodes);
+    let groups = view.groups;
+    if (viewKey === 'SWIMLANES') {
+      groups = generateDynamicSwimlaneGroups(schema, laidOutNodes);
+    }
+    laidOutViews[viewKey] = {
+      ...view,
+      nodes: laidOutNodes,
+      groups: groups,
+      layoutInfo: computeLayoutInfo(laidOutNodes)
+    };
+  });
+  schema = {
+    ...schema,
+    views: laidOutViews
+  };
+
+  const viewKeys = Object.keys(schema.views);
+  const hasOnlyEventStorming = viewKeys.length === 1 && viewKeys.includes('EVENT_STORMING');
+  
+  if (!hasOnlyEventStorming) {
+    return schema;
+  }
+
+  // Clone entities to avoid mutating the original schema directly and expand refs
+  const expandedEntities = { ...schema.entities };
+  Object.entries(schema.entities).forEach(([canonicalId, entity]) => {
+    if (entity.refs && entity.refs.length > 0) {
+      entity.refs.forEach(refId => {
+        if (!expandedEntities[refId]) {
+          expandedEntities[refId] = {
+            ...entity,
+            collapsedTo: canonicalId,
+            title: entity.title,
+            desc: entity.desc
+          };
+        }
+      });
+    }
+  });
+
+  const updatedRelations = schema.relations.map(r => ({
+    ...r,
+    views: r.views || ['EVENT_STORMING']
+  }));
+
+  schema = {
+    ...schema,
+    relations: updatedRelations,
+    entities: expandedEntities
+  };
+
+  const esView = schema.views.EVENT_STORMING;
+  if (!esView) return schema;
+
+  const derivedViews = { ...schema.views };
+
+  // Helper to find the original Event Storming node position
+  const getESNode = (nodeId: string): FlowchartViewNode | undefined => {
+    return esView.nodes.find(n => n.id === nodeId);
+  };
+
+  // Helper to get collapsed target ID
+  const getCollapsedId = (id: string): string => {
+    return schema.entities[id]?.collapsedTo || id;
+  };
+
+  // ----------------------------------------------------
+  // 1. Derive SYS_ARCH (System Architecture)
+  // ----------------------------------------------------
+  if (!derivedViews.SYS_ARCH) {
+    const sysNodes: FlowchartViewNode[] = [];
+    const addedNodes = new Set<string>();
+    
+    // Filter structural entities using MASTER_MAPPING_MATRIX
+    Object.entries(schema.entities).forEach(([id, entity]) => {
+      const type = getEntityType(entity);
+      const esNode = getESNode(id);
+      if (!esNode) return;
+
+      const sysType = MASTER_MAPPING_MATRIX[type]?.SYS_ARCH;
+      if (sysType) {
+        const collapsedId = getCollapsedId(id);
+        if (addedNodes.has(collapsedId)) return;
+        addedNodes.add(collapsedId);
+
+        sysNodes.push({
+          id: collapsedId,
+          grid: [esNode.grid ? esNode.grid[0] : 0, 0]
+        });
+      }
+    });
+
+    // Derive relations using our path tracer
+    const getSysArchLabel = (pathNodeIds: string[], _startId: string): { label: string } => {
+      const cmdNode = pathNodeIds.find(id => getEntityType(schema.entities[id]) === TYPES.COMMAND);
+      const evtNode = pathNodeIds.find(id => getEntityType(schema.entities[id]) === TYPES.EVENT);
+
+      if (cmdNode && evtNode) {
+        return { label: `${schema.entities[cmdNode].title} / ${schema.entities[evtNode].title}` };
+      }
+      if (cmdNode) return { label: schema.entities[cmdNode].title };
+      if (evtNode) return { label: schema.entities[evtNode].title };
+
+      // Fallback: use the last structural entity on the path
+      const lastNode = pathNodeIds[pathNodeIds.length - 1];
+      if (lastNode && schema.entities[lastNode]) {
+        return { label: schema.entities[lastNode].title };
+      }
+      return { label: '' };
+    };
+
+    const centerId = 'temp_center';
+    const esCols = sysNodes.map(n => {
+      const esNode = getESNode(n.id);
+      return esNode?.grid?.[0] ?? 0;
+    });
+    const minCol = esCols.length > 0 ? Math.min(...esCols) : 0;
+    const maxCol = esCols.length > 0 ? Math.max(...esCols) : 4;
+    const centerCol = Math.max(1, Math.round((minCol + maxCol) / 2));
+    sysNodes.push({
+      id: 'temp_center',
+      grid: [centerCol, 1]
+    });
+    schema.entities['temp_center'] = {
+      title: 'Core System',
+      desc: 'Central coordination and core routing engine.',
+      type: TYPES.CORE_SYSTEM
+    };
+    addedNodes.add('temp_center');
+
+    const sysRelations = deriveRelations(schema, 'SYS_ARCH', addedNodes, getSysArchLabel);
+
+    // Star topology rerouting through the center node
+    const finalSysRelations: FlowchartRelation[] = [];
+    const relationKeys = new Set<string>();
+
+    sysRelations.forEach(r => {
+      if (r.from === centerId || r.to === centerId) {
+        const key = `${r.from}->${r.to}`;
+        if (!relationKeys.has(key)) {
+          relationKeys.add(key);
+          finalSysRelations.push(r);
+        }
+      } else {
+        const key1 = `${r.from}->${centerId}`;
+        if (!relationKeys.has(key1)) {
+          relationKeys.add(key1);
+          finalSysRelations.push({
+            id: `${r.id}_to_center`,
+            from: r.from,
+            to: centerId,
+            views: r.views,
+            label: r.label,
+            dashed: r.dashed
+          });
+        }
+        const key2 = `${centerId}->${r.to}`;
+        if (!relationKeys.has(key2)) {
+          relationKeys.add(key2);
+          finalSysRelations.push({
+            id: `${r.id}_from_center`,
+            from: centerId,
+            to: r.to,
+            views: r.views,
+            label: r.label,
+            dashed: r.dashed
+          });
+        }
+      }
+    });
+
+    schema.relations = [
+      ...schema.relations.filter(r => !r.views || !r.views.includes('SYS_ARCH')),
+      ...finalSysRelations
+    ];
+
+    const aggregateIds = sysNodes
+      .map(n => n.id)
+      .filter(id => {
+        const ent = schema.entities[id];
+        const type = getEntityType(ent);
+        return ent && (type === TYPES.AGGREGATE || type === TYPES.DATABASE || type === TYPES.CORE_SYSTEM);
+      });
+
+    const sysGroups = aggregateIds.length > 0 ? [
+      {
+        id: 'sys_boundary',
+        title: 'System Boundary',
+        nodeIds: aggregateIds,
+        color: 'color-mix(in srgb, var(--ctp-green) 5%, transparent)',
+        borderColor: 'var(--ctp-green)',
+        textColor: 'var(--ctp-green)'
+      }
+    ] : [];
+
+    const laidOutSysNodes = layoutNodes(sysNodes, schema.relations, 'SYS_ARCH', schema.entities);
+    derivedViews.SYS_ARCH = {
+      name: 'System Architecture',
+      icon: 'Server',
+      nodes: laidOutSysNodes,
+      groups: sysGroups,
+      layoutInfo: computeLayoutInfo(laidOutSysNodes)
+    };
+  }
+
+  // ----------------------------------------------------
+  // 2. Derive SWIMLANES (Activity Swimlanes)
+  // ----------------------------------------------------
+  if (!derivedViews.SWIMLANES) {
+    const swimNodes: FlowchartViewNode[] = [];
+    const addedNodes = new Set<string>();
+
+    Object.entries(schema.entities).forEach(([id, entity]) => {
+      const type = getEntityType(entity);
+      const esNode = getESNode(id);
+      if (!esNode) return;
+
+      const swimType = MASTER_MAPPING_MATRIX[type]?.SWIMLANES;
+      if (swimType && policyShouldMapToDecision(schema, id, type)) {
+        const collapsedId = getCollapsedId(id);
+        if (addedNodes.has(collapsedId)) return;
+        addedNodes.add(collapsedId);
+
+        swimNodes.push({
+          id: collapsedId,
+          grid: [esNode.grid ? esNode.grid[0] : 0, 0]
+        });
+      }
+    });
+
+   const getSwimlaneLabel = (pathNodeIds: string[], _startId: string): { label: string } => {
+      const evtNode = pathNodeIds.find(id => getEntityType(schema.entities[id]) === TYPES.EVENT);
+      if (evtNode) return { label: schema.entities[evtNode].title };
+
+      // Fallback: use the last structural entity on the path
+      const lastNode = pathNodeIds[pathNodeIds.length - 1];
+      if (lastNode && schema.entities[lastNode]) {
+        return { label: schema.entities[lastNode].title };
+      }
+      return { label: '' };
+    };
+
+    const swimRelations = deriveRelations(schema, 'SWIMLANES', addedNodes, getSwimlaneLabel);
+
+    schema.relations = [
+      ...schema.relations.filter(r => !r.views || !r.views.includes('SWIMLANES')),
+      ...swimRelations
+    ];
+
+    const laidOutSwimNodes = layoutNodes(swimNodes, schema.relations, 'SWIMLANES', schema.entities, esNodes);
+    const swimGroups = generateDynamicSwimlaneGroups(schema, laidOutSwimNodes);
+    derivedViews.SWIMLANES = {
+      name: 'Activity Swimlanes',
+      icon: 'Share2',
+      nodes: laidOutSwimNodes,
+      groups: swimGroups,
+      layoutInfo: computeLayoutInfo(laidOutSwimNodes)
+    };
+  }
+
+  // ----------------------------------------------------
+  // 3. Derive SEQUENCE (Sequence Diagram)
+  // ----------------------------------------------------
+  if (!derivedViews.SEQUENCE) {
+    const seqNodes: FlowchartViewNode[] = [];
+    const addedNodes = new Set<string>();
+
+    Object.entries(schema.entities).forEach(([id, entity]) => {
+      const type = getEntityType(entity);
+      const seqType = MASTER_MAPPING_MATRIX[type]?.SEQUENCE;
+      if (seqType) {
+        const collapsedId = getCollapsedId(id);
+        addedNodes.add(collapsedId);
+      }
+    });
+
+    // Sort participant lifelines by their original Event Storming column index
+    const sortedParticipants = Array.from(addedNodes).sort((a, b) => {
+      const esNodeA = esView.nodes.find(n => getCollapsedId(n.id) === a);
+      const esNodeB = esView.nodes.find(n => getCollapsedId(n.id) === b);
+      const colA = esNodeA?.grid?.[0] ?? 0;
+      const colB = esNodeB?.grid?.[0] ?? 0;
+      return colA - colB;
+    });
+
+    sortedParticipants.forEach((id, colIdx) => {
+      seqNodes.push({
+        id,
+        grid: [colIdx, 0]
+      });
+    });
+
+    const getSequenceLabel = (pathNodeIds: string[], _startId: string): { label: string; dashed?: boolean } => {
+      const evtNode = pathNodeIds.find(id => getEntityType(schema.entities[id]) === TYPES.EVENT);
+      const cmdNode = pathNodeIds.find(id => getEntityType(schema.entities[id]) === TYPES.COMMAND);
+
+      if (evtNode && cmdNode) {
+        return {
+          label: `${schema.entities[evtNode].title} / ${schema.entities[cmdNode].title}`,
+          dashed: false
+        };
+      }
+      if (evtNode) {
+        return { label: schema.entities[evtNode].title, dashed: true };
+      }
+      if (cmdNode) {
+        return { label: schema.entities[cmdNode].title, dashed: false };
+      }
+
+      // Fallback: use the last structural entity on the path
+      const lastNode = pathNodeIds[pathNodeIds.length - 1];
+      if (lastNode && schema.entities[lastNode]) {
+        return { label: schema.entities[lastNode].title, dashed: false };
+      }
+      return { label: '', dashed: false };
+    };
+
+    const seqRelations = deriveRelations(schema, 'SEQUENCE', addedNodes, getSequenceLabel);
+
+    // Sort relations chronologically based on their source/path order
+    seqRelations.sort((a, b) => {
+      const aIndex = schema.relations.findIndex(r => (!r.views || r.views.includes('EVENT_STORMING')) && getCollapsedId(r.from) === a.from);
+      const bIndex = schema.relations.findIndex(r => (!r.views || r.views.includes('EVENT_STORMING')) && getCollapsedId(r.from) === b.from);
+      return aIndex - bIndex;
+    });
+
+    schema.relations = [
+      ...schema.relations.filter(r => !r.views || !r.views.includes('SEQUENCE')),
+      ...seqRelations
+    ];
+
+    // Compute dynamic Sequence groups (Alt/Opt box boundaries) based on branching Policies
+    const seqGroups: FlowchartViewGroup[] = [];
+    const policyEntities = Object.entries(schema.entities).filter(
+      ([, entity]) => getEntityType(entity) === TYPES.POLICY
+    );
+
+    policyEntities.forEach(([polId, polEntity]) => {
+      // Find all ES outgoing relations from this policy
+      const esOutgoing = schema.relations.filter(
+        r => (!r.views || r.views.includes('EVENT_STORMING')) && getCollapsedId(r.from) === polId
+      );
+
+      // If it's a branching policy (2+ outgoing)
+      if (esOutgoing.length >= 2) {
+        // Collect all sequence relations that are downstream of this policy
+        const downstreamNodeIds = new Set<string>();
+        const queue = esOutgoing.map(r => getCollapsedId(r.to));
+        queue.forEach(id => downstreamNodeIds.add(id));
+
+        const visited = new Set<string>(queue);
+        while (queue.length > 0) {
+          const curr = queue.shift()!;
+          const out = schema.relations.filter(
+            r => (!r.views || r.views.includes('EVENT_STORMING')) && getCollapsedId(r.from) === curr
+          );
+          out.forEach(r => {
+            const toCollapsed = getCollapsedId(r.to);
+            if (!visited.has(toCollapsed)) {
+              visited.add(toCollapsed);
+              downstreamNodeIds.add(toCollapsed);
+              queue.push(toCollapsed);
+            }
+          });
+        }
+
+        // Now filter seqRelations that start or end at any of these downstream nodes
+        const enclosedSeqRels = seqRelations.filter(
+          r => downstreamNodeIds.has(getCollapsedId(r.from)) || downstreamNodeIds.has(getCollapsedId(r.to))
+        );
+
+        if (enclosedSeqRels.length > 0) {
+          // Find the lifeline node IDs involved
+          const participantIds = new Set<string>();
+          enclosedSeqRels.forEach(r => {
+            participantIds.add(getCollapsedId(r.from));
+            participantIds.add(getCollapsedId(r.to));
+          });
+
+          // Determine the sequence indices of the enclosed relations
+          const relIndices = enclosedSeqRels.map(r => seqRelations.indexOf(r));
+          const minRelIdx = Math.min(...relIndices);
+          const maxRelIdx = Math.max(...relIndices);
+
+          // Calculate vertical y and h bounds
+          const msgStartY = 80;
+          const msgSpacing = 48;
+          const y = msgStartY + minRelIdx * msgSpacing - 18;
+          const h = (maxRelIdx - minRelIdx + 1) * msgSpacing + 8;
+
+          seqGroups.push({
+            id: `seq_group_${polId}`,
+            title: polEntity.title,
+            nodeIds: Array.from(participantIds),
+            y,
+            h,
+            color: 'color-mix(in srgb, var(--ctp-mauve) 5%, transparent)',
+            borderColor: 'var(--ctp-mauve)',
+            textColor: 'var(--ctp-mauve)'
+          });
+        }
+      }
+    });
+
+    const laidOutSeqNodes = layoutNodes(seqNodes, schema.relations, 'SEQUENCE', schema.entities);
+    derivedViews.SEQUENCE = {
+      name: 'Sequence Diagram',
+      icon: 'List',
+      nodes: laidOutSeqNodes,
+      groups: seqGroups,
+      layoutInfo: computeLayoutInfo(laidOutSeqNodes)
+    };
+  }
+
+  // ----------------------------------------------------
+  // 4. Derive DATA_FLOW (Data Flow Diagram)
+  // ----------------------------------------------------
+  if (!derivedViews.DATA_FLOW) {
+    const dfNodes: FlowchartViewNode[] = [];
+    const addedNodes = new Set<string>();
+
+    Object.entries(schema.entities).forEach(([id, entity]) => {
+      const type = getEntityType(entity);
+      const esNode = getESNode(id);
+      if (!esNode) return;
+
+      const dfType = MASTER_MAPPING_MATRIX[type]?.DATA_FLOW;
+      if (dfType && policyShouldMapToDecision(schema, id, type)) {
+        const collapsedId = getCollapsedId(id);
+        if (addedNodes.has(collapsedId)) return;
+        addedNodes.add(collapsedId);
+
+        dfNodes.push({
+          id: collapsedId,
+          grid: [esNode.grid ? esNode.grid[0] : 0, 0]
+        });
+      }
+    });
+
+    const getDataFlowLabel = (pathNodeIds: string[], startId: string): { label: string } => {
+      const cmdNode = pathNodeIds.find(id => getEntityType(schema.entities[id]) === TYPES.COMMAND);
+
+      // Find if there is an Event (Data Object) on the path or at the start
+      let dataObjectTitle = '';
+      const startEntity = schema.entities[startId];
+      if (startEntity && getEntityType(startEntity) === TYPES.EVENT) {
+        dataObjectTitle = startEntity.viewTitles?.DATA_FLOW || startEntity.title;
+      } else {
+        const evtNode = pathNodeIds.find(id => getEntityType(schema.entities[id]) === TYPES.EVENT);
+        if (evtNode) {
+          const evtEntity = schema.entities[evtNode];
+          dataObjectTitle = evtEntity.viewTitles?.DATA_FLOW || evtEntity.title;
+        }
+      }
+
+      // Find the component (Aggregate, DB, or External system)
+      let componentName = '';
+      const compNode = pathNodeIds.find(id => {
+        const type = getEntityType(schema.entities[id]);
+        return type === TYPES.AGGREGATE || type === TYPES.DATABASE || type === TYPES.EXTERNAL;
+      });
+
+      if (compNode) {
+        componentName = schema.entities[compNode].title;
+        const type = getEntityType(schema.entities[compNode]);
+        let typeLabel = 'aggregate';
+        if (type === TYPES.DATABASE) typeLabel = 'db';
+        else if (type === TYPES.EXTERNAL) typeLabel = 'external';
+        componentName = `${componentName} [${typeLabel}]`;
+      }
+
+      if (cmdNode) {
+        const cmdTitle = schema.entities[cmdNode].title;
+        if (dataObjectTitle && componentName) {
+          return { label: `${cmdTitle} (${dataObjectTitle} in ${componentName})` };
+        }
+        if (dataObjectTitle) {
+          return { label: `${cmdTitle} (${dataObjectTitle})` };
+        }
+        return { label: cmdTitle };
+      }
+
+      // Fallback: use data object and component info without command
+      if (dataObjectTitle && componentName) {
+        return { label: `${dataObjectTitle} in ${componentName}` };
+      }
+      if (dataObjectTitle) {
+        return { label: dataObjectTitle };
+      }
+      if (componentName) {
+        return { label: componentName };
+      }
+
+      // Last resort: use the last entity on the path
+      const lastNode = pathNodeIds[pathNodeIds.length - 1];
+      if (lastNode && schema.entities[lastNode]) {
+        return { label: schema.entities[lastNode].title };
+      }
+      return { label: '' };
+    };
+
+    const dfRelations = deriveRelations(schema, 'DATA_FLOW', addedNodes, getDataFlowLabel);
+
+    schema.relations = [
+      ...schema.relations.filter(r => !r.views || !r.views.includes('DATA_FLOW')),
+      ...dfRelations
+    ];
+
+    const laidOutDfNodes = layoutNodes(dfNodes, schema.relations, 'DATA_FLOW', schema.entities);
+    derivedViews.DATA_FLOW = {
+      name: 'Data Flow',
+      icon: 'Share2',
+      nodes: laidOutDfNodes,
+      groups: [],
+      layoutInfo: computeLayoutInfo(laidOutDfNodes)
+    };
+  }
+
+  // ----------------------------------------------------
+  // 5. Derive STATE_MACHINE (State Machine)
+  // ----------------------------------------------------
+  if (!derivedViews.STATE_MACHINE) {
+    const smNodes: FlowchartViewNode[] = [];
+    const smRelations: FlowchartRelation[] = [];
+
+    // Find the first entity with a stateMachine definition
+    const smEntityEntry = Object.entries(schema.entities).find(([, e]) => !!e.stateMachine);
+
+    if (smEntityEntry) {
+      const [aggregateId, aggregateEntity] = smEntityEntry;
+      const stateMachine = aggregateEntity.stateMachine!;
+
+      // Spaced grid layouts for state machines
+      const isDocPipeline = stateMachine.states.some(s => s.id === 'QUEUED');
+      const isAgent = stateMachine.states.some(s => s.id === 'THINKING');
+
+      let layouts: Record<string, [number, number]> = {};
+      if (isDocPipeline) {
+        layouts = {
+          QUEUED: [0, 1],
+          EXTRACTING: [2, 1],
+          VALIDATING: [4, 1],
+          HIGH_CONFIDENCE: [6, 1],
+          LOW_CONFIDENCE: [4, 2],
+          AUDITED: [6, 2],
+          COMPLETED: [8, 1]
+        };
+      } else if (isAgent) {
+        layouts = {
+          IDLE: [0, 1],
+          THINKING: [2, 1],
+          EXECUTING_TOOL: [4, 1],
+          DELEGATING: [4, 2],
+          COMPLETED: [6, 1]
+        };
+      } else if (stateMachine.states.some(s => s.id === 'PLANNING')) {
+        layouts = {
+          IDLE: [0, 1],
+          PLANNING: [2, 1],
+          EXECUTING: [4, 1],
+          EVALUATING: [6, 1],
+          ESCALATED: [4, 2]
+        };
+      } else if (aggregateId === 'order_service') {
+        layouts = {
+          PENDING: [0, 1],
+          INVENTORY_LOCKED: [2, 1],
+          PAYMENT_AUTHORIZED: [4, 1],
+          FRAUD_CLEARED: [6, 1],
+          CONFIRMED: [8, 1],
+          FRAUD_REVIEW: [4, 2],
+          CANCELLED: [8, 2]
+        };
+      }
+
+      const EVENT_TO_STATE_MAP: Record<string, string> = {
+        evt_order_placed: 'PENDING',
+        evt_inventory_locked: 'INVENTORY_LOCKED',
+        evt_payment_authorized: 'PAYMENT_AUTHORIZED',
+        evt_fraud_evaluated: 'FRAUD_CLEARED',
+        evt_fraud_flagged: 'FRAUD_REVIEW',
+        evt_review_decision: 'FRAUD_REVIEW',
+        evt_order_confirmed: 'CONFIRMED',
+        evt_order_approved: 'CONFIRMED',
+        evt_order_cancelled: 'CANCELLED',
+
+        evt_uploaded: 'QUEUED',
+        evt_extracted: 'EXTRACTING',
+        evt_validated: 'VALIDATING',
+        evt_approved: 'HIGH_CONFIDENCE',
+        evt_flagged: 'LOW_CONFIDENCE',
+        evt_audited: 'AUDITED',
+        evt_completed: 'COMPLETED',
+
+        evt_started: 'THINKING',
+        evt_reasoned: 'THINKING',
+        evt_tool_executed: 'EXECUTING_TOOL',
+        evt_done: 'COMPLETED',
+
+        evt_goal: 'IDLE',
+        evt_plan: 'PLANNING',
+        evt_exec: 'EXECUTING',
+        evt_eval: 'EVALUATING',
+        evt_escalate: 'ESCALATED'
+      };
+
+      // Add each state as a temporary entity in the compiled schema
+      stateMachine.states.forEach((state, idx) => {
+        const stateNodeId = `${aggregateId}_state_${state.id}`;
+        schema.entities[stateNodeId] = {
+          title: state.label,
+          desc: `State: ${state.label}`,
+          type: TYPES.EVENT,
+          viewTypes: { STATE_MACHINE: TYPES.EVENT },
+          color: 'var(--ctp-mantle)',
+          strokeColor: state.color
+        };
+
+        const gridPos = layouts[state.id] || [idx * 2, 1];
+        smNodes.push({
+          id: stateNodeId,
+          grid: gridPos
+        });
+      });
+
+      // Add manual transitions for non-event-sourced states (like IDLE/DELEGATING/ESCALATED)
+      if (isAgent) {
+        smRelations.push({
+          id: `derived_state_machine_rel_${aggregateId}_idle_thinking`,
+          from: `${aggregateId}_state_IDLE`,
+          to: `${aggregateId}_state_THINKING`,
+          views: ['STATE_MACHINE'],
+          label: 'Run Agent \n[Guard: Goal Submitted]'
+        });
+        smRelations.push({
+          id: `derived_state_machine_rel_${aggregateId}_exec_delegating`,
+          from: `${aggregateId}_state_EXECUTING_TOOL`,
+          to: `${aggregateId}_state_DELEGATING`,
+          views: ['STATE_MACHINE'],
+          label: 'Delegate Task \n[Guard: Subagent Target]'
+        });
+        smRelations.push({
+          id: `derived_state_machine_rel_${aggregateId}_delegating_exec`,
+          from: `${aggregateId}_state_DELEGATING`,
+          to: `${aggregateId}_state_EXECUTING_TOOL`,
+          views: ['STATE_MACHINE'],
+          label: 'Return Output'
+        });
+      } else if (stateMachine.states.some(s => s.id === 'PLANNING')) {
+        smRelations.push({
+          id: `derived_state_machine_rel_${aggregateId}_idle_planning`,
+          from: `${aggregateId}_state_IDLE`,
+          to: `${aggregateId}_state_PLANNING`,
+          views: ['STATE_MACHINE'],
+          label: 'Submit Goal \n[Guard: Plan on Goal]'
+        });
+        smRelations.push({
+          id: `derived_state_machine_rel_${aggregateId}_planning_exec`,
+          from: `${aggregateId}_state_PLANNING`,
+          to: `${aggregateId}_state_EXECUTING`,
+          views: ['STATE_MACHINE'],
+          label: 'Generate Plan \n[Guard: Execute on Planned]'
+        });
+        smRelations.push({
+          id: `derived_state_machine_rel_${aggregateId}_exec_eval`,
+          from: `${aggregateId}_state_EXECUTING`,
+          to: `${aggregateId}_state_EVALUATING`,
+          views: ['STATE_MACHINE'],
+          label: 'Run Tools \n[Guard: Evaluate on Executed]'
+        });
+        smRelations.push({
+          id: `derived_state_machine_rel_${aggregateId}_eval_idle`,
+          from: `${aggregateId}_state_EVALUATING`,
+          to: `${aggregateId}_state_IDLE`,
+          views: ['STATE_MACHINE'],
+          label: 'Succeed \n[Guard: Finish on Success]'
+        });
+        smRelations.push({
+          id: `derived_state_machine_rel_${aggregateId}_eval_escalated`,
+          from: `${aggregateId}_state_EVALUATING`,
+          to: `${aggregateId}_state_ESCALATED`,
+          views: ['STATE_MACHINE'],
+          label: 'Escalate \n[Guard: Escalate on Failure]'
+        });
+        smRelations.push({
+          id: `derived_state_machine_rel_${aggregateId}_escalated_planning`,
+          from: `${aggregateId}_state_ESCALATED`,
+          to: `${aggregateId}_state_PLANNING`,
+          views: ['STATE_MACHINE'],
+          label: 'Retry / Re-plan \n[Guard: Re-plan on Escalated]'
+        });
+      }
+
+      // Traversal branch tracker to avoid duplicate transition relations
+      const addedTransitions = new Set<string>();
+
+      // Traverse flow relations skipping intermediate events to find transitions
+      Object.keys(schema.entities).forEach(startId => {
+        const stateA = EVENT_TO_STATE_MAP[startId];
+        if (!stateA) return;
+
+        // BFS queue: { currentId, path, firstCmdId, firstPolId }
+        const queue: Array<{
+          currentId: string;
+          path: string[];
+          firstCmdId?: string;
+          firstPolId?: string;
+        }> = [{ currentId: startId, path: [startId] }];
+
+        while (queue.length > 0) {
+          const { currentId, path, firstCmdId, firstPolId } = queue.shift()!;
+
+          // Find outgoing EVENT_STORMING relations
+          const outRels = schema.relations.filter(r =>
+            (!r.views || r.views.includes('EVENT_STORMING')) && r.from === currentId
+          );
+
+          outRels.forEach(rel => {
+            const nextId = rel.to;
+            if (path.includes(nextId)) return; // Avoid cycles
+
+            const nextEntity = schema.entities[nextId];
+            if (!nextEntity) return;
+
+            const nextRole = getEntityType(nextEntity);
+            const newFirstCmd = firstCmdId || (nextRole === TYPES.COMMAND ? nextId : undefined);
+            const newFirstPol = firstPolId || (nextRole === TYPES.POLICY ? nextId : undefined);
+
+            const stateB = EVENT_TO_STATE_MAP[nextId];
+            if (stateB && stateB !== stateA) {
+              // Found a transition from stateA to stateB!
+              const transitionKey = `${stateA}->${stateB}`;
+              if (!addedTransitions.has(transitionKey)) {
+                addedTransitions.add(transitionKey);
+
+                const fromNodeId = `${aggregateId}_state_${stateA}`;
+                const toNodeId = `${aggregateId}_state_${stateB}`;
+
+                const cmdTitle = newFirstCmd ? schema.entities[newFirstCmd]?.title : 'Transition';
+                const polTitle = newFirstPol ? schema.entities[newFirstPol]?.title : undefined;
+                const label = polTitle ? `${cmdTitle} \n[Guard: ${polTitle}]` : cmdTitle;
+
+                smRelations.push({
+                  id: `derived_state_machine_rel_${aggregateId}_${smRelations.length}`,
+                  from: fromNodeId,
+                  to: toNodeId,
+                  views: ['STATE_MACHINE'],
+                  label
+                });
+              }
+            } else {
+              // Continue BFS traversal (skipping intermediate event/command/policy nodes)
+              queue.push({
+                currentId: nextId,
+                path: [...path, nextId],
+                firstCmdId: newFirstCmd,
+                firstPolId: newFirstPol
+              });
+            }
+          });
+        }
+      });
+    }
+
+    schema.relations = [
+      ...schema.relations.filter(r => !r.views || !r.views.includes('STATE_MACHINE')),
+      ...smRelations
+    ];
+
+   const laidOutSmNodes = layoutNodes(smNodes, smRelations, 'STATE_MACHINE', schema.entities);
+
+    derivedViews.STATE_MACHINE = {
+      name: 'State Machine',
+      icon: 'Activity',
+      nodes: laidOutSmNodes,
+      groups: [],
+      layoutInfo: computeLayoutInfo(laidOutSmNodes)
+    };
+  }
+
+  // Update entity viewTypes to match derived configurations from MASTER_MAPPING_MATRIX
+  const finalEntities = { ...schema.entities };
+  Object.keys(finalEntities).forEach(nodeId => {
+    const entity = finalEntities[nodeId];
+    const esType = getEntityType(entity);
+    
+    const derivedTypes: Record<string, string> = { EVENT_STORMING: esType };
+    const mapping = MASTER_MAPPING_MATRIX[esType];
+    if (mapping) {
+      Object.entries(mapping).forEach(([vk, mappedType]) => {
+        if (mappedType && policyShouldMapToDecision(schema, nodeId, esType)) {
+          derivedTypes[vk] = mappedType;
+        }
+      });
+    }
+
+    finalEntities[nodeId] = {
+      ...entity,
+      viewTypes: {
+        ...derivedTypes,
+        ...(entity.viewTypes || {}) // Keep any explicit overrides
+      }
+    };
+  });
+
+  return {
+    ...schema,
+    entities: finalEntities,
+    views: derivedViews
+  };
+}
+
+/**
+ * Check if an entity type is a "boundary" type (Actor/User or External API).
+ * Boundary nodes represent system perimeter and should not have direct
+ * structural relations in derived views unless explicitly connected in
+ * the Event Storming source of truth.
+ */
+function isBoundaryType(entity: FlowchartEntity | undefined): boolean {
+  const type = entity?.type || entity?.viewTypes?.EVENT_STORMING || '';
+  return type === TYPES.USER || type === TYPES.EXTERNAL;
+}
+
+/**
+ * Check if an entity type is structural (Aggregate, Service, Database, Policy).
+ * These represent internal system components that mediate between boundaries.
+ */
+function isStructuralType(entity: FlowchartEntity | undefined): boolean {
+  const type = entity?.type || entity?.viewTypes?.EVENT_STORMING || '';
+  return type === TYPES.AGGREGATE || type === TYPES.SERVICE || type === TYPES.DATABASE || type === TYPES.POLICY;
+}
+
+/**
+ * Traverses EVENT_STORMING relations to find paths between participant ids.
+ * Filters out spurious edges between boundary types (User ↔ External) that
+ * arise from BFS traversing through domain events/commands and hitting
+ * direct structural shortcuts between unrelated participants.
+ */
+function deriveRelations(
+  schema: UnifiedFlowchartSchema,
+  viewKey: string,
+  participantIds: Set<string>,
+  getLabel: (nodesOnPath: string[], startId: string) => { label: string; dashed?: boolean }
+): FlowchartRelation[] {
+  const relations: FlowchartRelation[] = [];
+  const visitedPaths = new Set<string>();
+
+  const getCollapsedId = (id: string): string => {
+    return schema.entities[id]?.collapsedTo || id;
+  };
+
+  participantIds.forEach(startId => {
+    const collapsedStart = getCollapsedId(startId);
+
+    // Find all instances that collapse to this startId
+    const startingInstanceIds = Object.keys(schema.entities).filter(
+      id => getCollapsedId(id) === startId
+    );
+    if (!startingInstanceIds.includes(startId)) {
+      startingInstanceIds.push(startId);
+    }
+
+    // BFS queue: { currentId, path, intermediateNodeIds }
+    const queue: Array<{
+      currentId: string;
+      path: string[];
+      intermediateNodeIds: string[];
+    }> = startingInstanceIds.map(id => ({ currentId: id, path: [id], intermediateNodeIds: [] }));
+
+    while (queue.length > 0) {
+      const { currentId, path, intermediateNodeIds } = queue.shift()!;
+
+      // Find all outgoing relations in EVENT_STORMING
+      const outRels = schema.relations.filter(r => 
+        (!r.views || r.views.includes('EVENT_STORMING')) && r.from === currentId
+      );
+
+      for (const rel of outRels) {
+        const nextId = rel.to;
+        const collapsedNext = getCollapsedId(nextId);
+
+        // Avoid loops
+        if (path.includes(nextId) || path.includes(collapsedNext)) continue;
+
+        if (participantIds.has(collapsedNext)) {
+          if (collapsedNext !== collapsedStart) {
+            const pathNodeIds = [...path.slice(1), nextId];
+            const { label, dashed } = getLabel(pathNodeIds, startId);
+
+            // Filter: reject spurious edges between boundary types (User ↔ External)
+            // that are traced through intermediate nodes. Only allow direct ES relations
+            // between boundaries. This prevents BFS from creating false structural
+            // connectivity when domain events/commands pass through actor boundaries.
+            const startEntity = schema.entities[collapsedStart];
+            const endEntity = schema.entities[collapsedNext];
+            const bothBoundary = isBoundaryType(startEntity) && isBoundaryType(endEntity);
+            const hasIntermediates = intermediateNodeIds.length > 0 || pathNodeIds.length > 0;
+            
+            if (bothBoundary && hasIntermediates) {
+              // Check if there's a direct ES relation between these two boundaries
+              const hasDirectESRel = schema.relations.some(r =>
+                (!r.views || r.views.includes('EVENT_STORMING')) &&
+                ((r.from === collapsedStart && r.to === collapsedNext) ||
+                 (r.from === collapsedNext && r.to === collapsedStart))
+              );
+              if (!hasDirectESRel) continue;
+            }
+
+            const relKey = `${collapsedStart}->${collapsedNext}:${label}`;
+            if (!visitedPaths.has(relKey)) {
+              visitedPaths.add(relKey);
+              relations.push({
+                id: `derived_${viewKey.toLowerCase()}_rel_${collapsedStart}_${collapsedNext}_${relations.length}`,
+                from: collapsedStart,
+                to: collapsedNext,
+                views: [viewKey],
+                label,
+                dashed
+              });
+            }
+          }
+        } else {
+          // Intermediate node, continue BFS
+          const nextIntermediates = isStructuralType(schema.entities[nextId])
+            ? [...intermediateNodeIds, nextId]
+            : intermediateNodeIds;
+          queue.push({
+            currentId: nextId,
+            path: [...path, nextId],
+            intermediateNodeIds: nextIntermediates
+          });
+        }
+      }
+    }
+  });
+
+  return relations;
+}
+
+/**
+ * Graph layout algorithm to dynamically position nodes using DAG topological levels (columns)
+ * and barycenter heuristics (rows) to minimize edge crossings.
+ * Each view type has specific layout rules:
+ * - EVENT_STORMING: DB/Aggregate/Timeline layering with auto-expanding timeline branches
+ * - SYS_ARCH: Dynamic rows based on node count, User top, DB bottom
+ * - SWIMLANES: One row per entity type
+ * - DATA_FLOW: User on top, rest dynamic below
+ * - SEQUENCE: Columns only, all nodes row 0
+ * - STATE_MACHINE: Dynamic barycenter layout
+ */
+function layoutNodes(
+  nodes: FlowchartViewNode[],
+  relations: FlowchartRelation[],
+  viewKey: string,
+  entities: Record<string, FlowchartEntity> = {},
+  esNodes?: FlowchartViewNode[]
+): FlowchartViewNode[] {
+  if (nodes.length === 0) return [];
+
+  const nodeIds = nodes.map(n => n.id);
+  const nodeSet = new Set(nodeIds);
+
+  const getRole = (id: string): 'db' | 'handler' | 'timeline' => {
+    const entity = entities[id];
+    const type = entity?.type || entity?.viewTypes?.EVENT_STORMING || 'default';
+    if (type === TYPES.DATABASE) return 'db';
+    if (type === TYPES.AGGREGATE || type === TYPES.EXTERNAL || type === TYPES.SERVICE) return 'handler';
+    return 'timeline';
+  };
+
+  // ----------------------------------------------------
+  // EVENT_STORMING: DB/Aggregate/Timeline layering
+  // ----------------------------------------------------
+  if (viewKey === 'EVENT_STORMING') {
+    return layoutEventStorming(nodes, nodeIds, nodeSet, relations, viewKey, entities, getRole);
+  }
+
+  // ----------------------------------------------------
+  // SEQUENCE: Columns only, all nodes row 0
+  // ----------------------------------------------------
+  if (viewKey === 'SEQUENCE') {
+    return layoutSequence(nodes, nodeIds, nodeSet, relations, viewKey);
+  }
+
+  // ----------------------------------------------------
+  // SYS_ARCH: Dynamic rows, User top, DB bottom
+  // ----------------------------------------------------
+  if (viewKey === 'SYS_ARCH') {
+    return layoutSysArch(nodes, nodeIds, nodeSet, relations, viewKey, entities);
+  }
+
+  // ----------------------------------------------------
+  // SWIMLANES: One row per entity type
+  // ----------------------------------------------------
+  if (viewKey === 'SWIMLANES') {
+    return layoutSwimlanes(nodes, nodeIds, nodeSet, relations, viewKey, entities, esNodes);
+  }
+
+  // ----------------------------------------------------
+  // DATA_FLOW: User on top, rest dynamic below
+  // ----------------------------------------------------
+  if (viewKey === 'DATA_FLOW') {
+    return layoutDataFlow(nodes, nodeIds, nodeSet, relations, viewKey, entities);
+  }
+
+  // ----------------------------------------------------
+  // STATE_MACHINE & CUSTOM: General barycenter layout
+  // ----------------------------------------------------
+  return layoutGeneral(nodes, nodeIds, nodeSet, relations, viewKey);
+}
+
+// ----------------------------------------------------
+// EVENT STORMING LAYOUT (preserves existing logic)
+// ----------------------------------------------------
+function layoutEventStorming(
+  nodes: FlowchartViewNode[],
+  nodeIds: string[],
+  nodeSet: Set<string>,
+  relations: FlowchartRelation[],
+  viewKey: string,
+  entities: Record<string, FlowchartEntity>,
+  getRole: (id: string) => 'db' | 'handler' | 'timeline'
+): FlowchartViewNode[] {
+  const timelineOfHandler = new Map<string, string>();
+  const handlerOfDb = new Map<string, string>();
+
+  const handlerNodes = nodeIds.filter(id => getRole(id) === 'handler');
+  const dbNodes = nodeIds.filter(id => getRole(id) === 'db');
+  const timelineNodes = nodeIds.filter(id => getRole(id) === 'timeline');
+
+  const stackedHandlers = new Set<string>();
+  relations.forEach(rel => {
+    const isForView = !rel.views || rel.views.includes(viewKey);
+    if (isForView && rel.handledBy && nodeSet.has(rel.from) && nodeSet.has(rel.to)) {
+      const fromRole = getRole(rel.from);
+      const toRole = getRole(rel.to);
+      if (fromRole === 'timeline' && toRole === 'handler') {
+        stackedHandlers.add(rel.to);
+      }
+    }
+  });
+
+  const handlerParent = new Map<string, string>();
+  handlerNodes.forEach(h => {
+    if (stackedHandlers.has(h)) return;
+    relations.forEach(rel => {
+      const isForView = !rel.views || rel.views.includes(viewKey);
+      if (!isForView) return;
+      if (rel.to === h && nodeSet.has(rel.from) && getRole(rel.from) === 'handler') {
+        handlerParent.set(h, rel.from);
+      }
+    });
+  });
+
+  handlerNodes.forEach(h => {
+    const connected = new Set<string>();
+    relations.forEach(rel => {
+      const isForView = !rel.views || rel.views.includes(viewKey);
+      if (!isForView) return;
+      if (rel.from === h && nodeSet.has(rel.to) && getRole(rel.to) === 'timeline') {
+        connected.add(rel.to);
+      }
+      if (rel.to === h && nodeSet.has(rel.from) && getRole(rel.from) === 'timeline') {
+        connected.add(rel.from);
+      }
+    });
+
+    const connectedList = Array.from(connected);
+    const cmd = connectedList.find(id => {
+      const entity = entities[id];
+      const t = entity?.type || entity?.viewTypes?.EVENT_STORMING || 'default';
+      return t === TYPES.COMMAND;
+    });
+
+    if (cmd) {
+      timelineOfHandler.set(h, cmd);
+    } else if (connectedList.length > 0) {
+      timelineOfHandler.set(h, connectedList[0]);
+    }
+  });
+
+  dbNodes.forEach(d => {
+    const connected = new Set<string>();
+    relations.forEach(rel => {
+      const isForView = !rel.views || rel.views.includes(viewKey);
+      if (!isForView) return;
+      if (rel.from === d && nodeSet.has(rel.to) && getRole(rel.to) === 'handler') {
+        connected.add(rel.to);
+      }
+      if (rel.to === d && nodeSet.has(rel.from) && getRole(rel.from) === 'handler') {
+        connected.add(rel.from);
+      }
+    });
+    const connectedList = Array.from(connected);
+    if (connectedList.length > 0) {
+      handlerOfDb.set(d, connectedList[0]);
+    }
+  });
+
+  const timelineAdj = new Map<string, Set<string>>();
+  const timelineInDegree = new Map<string, number>();
+
+  timelineNodes.forEach(id => {
+    timelineAdj.set(id, new Set());
+    timelineInDegree.set(id, 0);
+  });
+
+  timelineNodes.forEach(u => {
+    const visited = new Set<string>();
+    const queue = [u];
+
+    while (queue.length > 0) {
+      const curr = queue.shift()!;
+      if (visited.has(curr)) continue;
+      visited.add(curr);
+
+      relations.forEach(rel => {
+        const isForView = !rel.views || rel.views.includes(viewKey);
+        if (isForView && rel.from === curr) {
+          const toRole = getRole(rel.to);
+          if (toRole === 'timeline') {
+            if (rel.to !== u) {
+              timelineAdj.get(u)!.add(rel.to);
+            }
+          } else if (nodeSet.has(rel.to)) {
+            queue.push(rel.to);
+          }
+        }
+      });
+    }
+  });
+
+  timelineNodes.forEach(u => {
+    timelineAdj.get(u)!.forEach(v => {
+      timelineInDegree.set(v, timelineInDegree.get(v)! + 1);
+    });
+  });
+
+  const timelineOrder = new Map<string, number>();
+  timelineNodes.forEach((id, idx) => timelineOrder.set(id, idx));
+
+  const backEdges = new Set<string>();
+  timelineNodes.forEach(u => {
+    const uOrder = timelineOrder.get(u)!;
+    timelineAdj.get(u)!.forEach(v => {
+      const vOrder = timelineOrder.get(v)!;
+      if (vOrder <= uOrder) {
+        backEdges.add(`${u}->${v}`);
+      }
+    });
+  });
+
+  backEdges.forEach(key => {
+    const [from, to] = key.split('->');
+    timelineAdj.get(from)?.delete(to);
+    timelineInDegree.set(to, Math.max(0, timelineInDegree.get(to)! - 1));
+  });
+
+  const col = new Map<string, number>();
+  nodeIds.forEach(id => col.set(id, -1));
+
+  const assignTimelineColumns = (startNodes: string[]) => {
+    const queue: string[] = [];
+    const pushCount = new Map<string, number>();
+
+    startNodes.forEach(node => {
+      col.set(node, Math.max(0, col.get(node)!));
+      queue.push(node);
+      pushCount.set(node, 1);
+    });
+
+    while (queue.length > 0) {
+      const u = queue.shift()!;
+      const uCol = col.get(u)!;
+
+      const targets = Array.from(timelineAdj.get(u) || []);
+      targets.forEach(v => {
+        const nextCol = uCol + 1;
+        if (nextCol > col.get(v)!) {
+          col.set(v, nextCol);
+          const count = pushCount.get(v) || 0;
+          if (count < nodes.length) {
+            pushCount.set(v, count + 1);
+            queue.push(v);
+          }
+        }
+      });
+    }
+  };
+
+  let sources = timelineNodes.filter(id => timelineInDegree.get(id) === 0);
+  if (sources.length === 0 && timelineNodes.length > 0) {
+    sources = [timelineNodes[0]];
+  }
+
+  assignTimelineColumns(sources);
+
+  let unreached = timelineNodes.filter(id => col.get(id) === -1);
+  while (unreached.length > 0) {
+    unreached.sort((a, b) => timelineInDegree.get(a)! - timelineInDegree.get(b)!);
+    const nextSrc = unreached[0];
+    col.set(nextSrc, 0);
+    assignTimelineColumns([nextSrc]);
+    unreached = timelineNodes.filter(id => col.get(id) === -1);
+  }
+
+  const stackCommands = new Set<string>();
+  relations.forEach(rel => {
+    const isForView = !rel.views || rel.views.includes(viewKey);
+    if (isForView && rel.handledBy && nodeSet.has(rel.from) && nodeSet.has(rel.to)) {
+      if (getRole(rel.from) === 'timeline' && getRole(rel.to) === 'handler') {
+        stackCommands.add(rel.from);
+      }
+    }
+  });
+
+  const sortedTimelineByCol = timelineNodes
+    .filter(id => col.get(id)! >= 0)
+    .sort((a, b) => col.get(a)! - col.get(b)!);
+
+  const gapBeforeCols = new Set<number>();
+  sortedTimelineByCol.forEach((id, idx) => {
+    if (stackCommands.has(id) && idx > 0) {
+      const prevCol = col.get(sortedTimelineByCol[idx - 1])!;
+      const thisCol = col.get(id)!;
+      if (thisCol - prevCol === 1) {
+        gapBeforeCols.add(thisCol);
+      }
+    }
+  });
+
+  const sortedGapCols = Array.from(gapBeforeCols).sort((a, b) => b - a);
+  sortedGapCols.forEach(gapCol => {
+    timelineNodes.forEach(id => {
+      const c = col.get(id)!;
+      if (c >= gapCol) {
+        col.set(id, c + 1);
+      }
+    });
+  });
+
+  handlerNodes.forEach(h => {
+    if (timelineOfHandler.has(h)) {
+      const cmd = timelineOfHandler.get(h)!;
+      col.set(h, col.get(cmd) !== undefined && col.get(cmd)! >= 0 ? col.get(cmd)! : 0);
+    }
+  });
+
+  dbNodes.forEach(d => {
+    const h = handlerOfDb.get(d);
+    col.set(d, h && col.get(h) !== undefined && col.get(h)! >= 0 ? col.get(h)! : 0);
+  });
+
+  const orphanHandlers = handlerNodes.filter(h => !timelineOfHandler.has(h));
+  orphanHandlers.forEach(h => {
+    let current = h;
+    const visited = new Set<string>();
+    while (handlerParent.has(current) && !visited.has(current)) {
+      visited.add(current);
+      current = handlerParent.get(current)!;
+    }
+    if (col.get(current) !== undefined && col.get(current)! >= 0) {
+      col.set(h, col.get(current)!);
+    } else {
+      col.set(h, 0);
+    }
+  });
+
+  const branchLevel = new Map<string, number>();
+  timelineNodes.forEach(id => branchLevel.set(id, -1));
+
+  sources.forEach(src => {
+    branchLevel.set(src, 0);
+  });
+
+  const queue = [...sources];
+  const visited = new Set<string>();
+
+  while (queue.length > 0) {
+    const u = queue.shift()!;
+    if (visited.has(u)) continue;
+    visited.add(u);
+
+    const uLevel = branchLevel.get(u)!;
+    const targets = Array.from(timelineAdj.get(u) || []);
+    const forwardTargets = targets.filter(v => col.get(v)! > col.get(u)!);
+    forwardTargets.sort((a, b) => nodeIds.indexOf(a) - nodeIds.indexOf(b));
+
+    forwardTargets.forEach((v, idx) => {
+      const nextLevel = idx === 0 ? uLevel : uLevel + idx;
+      const currentVLevel = branchLevel.get(v)!;
+      if (currentVLevel === -1 || nextLevel < currentVLevel) {
+        branchLevel.set(v, nextLevel);
+      }
+      queue.push(v);
+    });
+  }
+
+  const row = new Map<string, number>();
+  timelineNodes.forEach(u => {
+    row.set(u, 2 + Math.max(0, branchLevel.get(u)!));
+  });
+
+  handlerNodes.forEach(h => {
+    row.set(h, 1);
+  });
+
+  dbNodes.forEach(d => {
+    row.set(d, 0);
+  });
+
+  const orphansByCol = new Map<number, string[]>();
+  orphanHandlers.forEach(h => {
+    const c = col.get(h)!;
+    if (!orphansByCol.has(c)) orphansByCol.set(c, []);
+    orphansByCol.get(c)!.push(h);
+  });
+
+  orphansByCol.forEach((handlers) => {
+    handlers.forEach((h, idx) => {
+      if (idx === 0) {
+        row.set(h, 0);
+      } else {
+        row.set(h, 2 + idx);
+      }
+    });
+  });
+
+  return nodes.map(n => ({
+    ...n,
+    grid: [col.get(n.id)!, row.get(n.id)!]
+  }));
+}
+
+// ----------------------------------------------------
+// SYS_ARCH LAYOUT: Dynamic rows, User top, DB bottom
+// ----------------------------------------------------
+function layoutSysArch(
+  nodes: FlowchartViewNode[],
+  nodeIds: string[],
+  _nodeSet: Set<string>,
+  relations: FlowchartRelation[],
+  _viewKey: string,
+  entities: Record<string, FlowchartEntity>
+): FlowchartViewNode[] {
+  // Helper to resolve collapsed targets
+  const getCollapsedId = (id: string): string => {
+    return entities[id]?.collapsedTo || id;
+  };
+
+  const adj = new Map<string, Set<string>>();
+  nodeIds.forEach(id => adj.set(id, new Set<string>()));
+
+  // Populate adjacency list from direct original relations
+  relations.forEach(r => {
+    // Only use relations that are original (e.g. EVENT_STORMING, or not SYS_ARCH)
+    const isOriginal = !r.views || r.views.includes('EVENT_STORMING') || !r.views.includes('SYS_ARCH');
+    if (!isOriginal) return;
+
+    const fromId = getCollapsedId(r.from);
+    const toId = getCollapsedId(r.to);
+
+    if (adj.has(fromId) && adj.has(toId) && fromId !== toId) {
+      adj.get(fromId)!.add(toId);
+      adj.get(toId)!.add(fromId);
+    }
+  });
+
+  const hasCenter = nodeIds.includes('temp_center');
+  const centerId = 'temp_center';
+
+  // Connect temp_center to all AGGREGATE and SERVICE nodes (if present)
+  if (hasCenter) {
+    nodeIds.forEach(id => {
+      if (id === 'temp_center') return;
+      const ent = entities[id];
+      const type = ent?.type || ent?.viewTypes?.EVENT_STORMING || 'default';
+      if (type === TYPES.AGGREGATE || type === TYPES.SERVICE) {
+        adj.get(centerId)!.add(id);
+        adj.get(id)!.add(centerId);
+      }
+    });
+  }
+
+  // Separate node types: actors, external APIs, and internal components
+  const userNodes = nodeIds.filter(id => {
+    const ent = entities[id];
+    const type = ent?.type || ent?.viewTypes?.EVENT_STORMING || 'default';
+    return type === TYPES.USER;
+  });
+  userNodes.sort();
+
+  const externalNodes = nodeIds.filter(id => {
+    const ent = entities[id];
+    const type = ent?.type || ent?.viewTypes?.EVENT_STORMING || 'default';
+    return type === TYPES.EXTERNAL;
+  });
+  externalNodes.sort();
+
+  const internalNodeIds = nodeIds.filter(
+    id => !userNodes.includes(id) && !externalNodes.includes(id)
+  );
+
+  const queue: string[] = [];
+  const visited = new Set<string>();
+  const parent = new Map<string, string>();
+  const hopCount = new Map<string, number>();
+
+  const startNode = hasCenter ? centerId : (internalNodeIds[0] || '');
+  if (startNode) {
+    queue.push(startNode);
+    visited.add(startNode);
+    hopCount.set(startNode, 0);
+  }
+
+  while (queue.length > 0) {
+    const curr = queue.shift()!;
+    const neighbors = adj.get(curr) || new Set<string>();
+    neighbors.forEach(nbr => {
+      if (internalNodeIds.includes(nbr) && !visited.has(nbr)) {
+        visited.add(nbr);
+        parent.set(nbr, curr);
+        hopCount.set(nbr, hopCount.get(curr)! + 1);
+        queue.push(nbr);
+      }
+    });
+  }
+
+  // Handle any disconnected internal nodes (fallback to hopCount 1, parent center)
+  internalNodeIds.forEach(id => {
+    if (!visited.has(id)) {
+      visited.add(id);
+      parent.set(id, startNode);
+      hopCount.set(id, 1);
+    }
+  });
+
+  const childrenOf = new Map<string, string[]>();
+  internalNodeIds.forEach(id => childrenOf.set(id, []));
+  internalNodeIds.forEach(id => {
+    const p = parent.get(id);
+    if (p) {
+      childrenOf.get(p)!.push(id);
+    }
+  });
+  // Sort children for deterministic ordering
+  childrenOf.forEach((list) => {
+    list.sort();
+  });
+
+  const relX = new Map<string, number>();
+  const relY = new Map<string, number>();
+  const occupied = new Set<string>();
+
+  // Helper to record occupancy
+  const occupy = (id: string, x: number, y: number) => {
+    relX.set(id, x);
+    relY.set(id, y);
+    occupied.add(`${x},${y}`);
+  };
+
+  // Place center at (0, 0)
+  if (hasCenter) {
+    occupy(centerId, 0, 0);
+  }
+
+  const relativeOffset = new Map<string, [number, number]>();
+  const dir = new Map<string, [number, number]>();
+  if (hasCenter) {
+    dir.set(centerId, [0, 0]);
+  }
+
+  // Helper to get outward offsets
+  const getOutwardOffsets = (dx: number, dy: number): [number, number][] => {
+    if (dx === 0 && dy === -1) return [[0, -1], [-1, -1], [1, -1], [-2, -1], [2, -1]]; // North
+    if (dx === 0 && dy === 1) return [[0, 1], [-1, 1], [1, 1], [-2, 1], [2, 1]];    // South
+    if (dx === 1 && dy === 0) return [[1, 0], [1, -1], [1, 1], [1, -2], [1, 2]];    // East
+    if (dx === -1 && dy === 0) return [[-1, 0], [-1, -1], [-1, 1], [-1, -2], [-1, 2]]; // West
+    // Diagonals
+    if (dx === 1 && dy === -1) return [[1, -1], [1, 0], [0, -1], [2, -1], [1, -2]];  // North-East
+    if (dx === 1 && dy === 1) return [[1, 1], [1, 0], [0, 1], [2, 1], [1, 2]];     // South-East
+    if (dx === -1 && dy === -1) return [[-1, -1], [-1, 0], [0, -1], [-2, -1], [-1, -2]]; // North-West
+    if (dx === -1 && dy === 1) return [[-1, 1], [-1, 0], [0, 1], [-2, 1], [-1, 2]];    // South-West
+    return [[dx, dy]];
+  };
+
+  const sortedByHop = [...internalNodeIds].sort((a, b) => hopCount.get(a)! - hopCount.get(b)!);
+
+  // First-hop internal nodes
+  const firstHopNonUsers = (childrenOf.get(centerId) || []);
+  const SECTORS: [number, number][] = [[0, -1], [1, 0], [0, 1], [1, -1], [1, 1], [-1, -1], [-1, 1]];
+  firstHopNonUsers.forEach((id, idx) => {
+    const s = SECTORS[idx % SECTORS.length];
+    dir.set(id, s);
+    relativeOffset.set(id, s);
+  });
+
+  // Downstream directions
+  sortedByHop.forEach(id => {
+    if (id === centerId) return;
+    if (hopCount.get(id)! <= 1) return; // already assigned
+
+    const p = parent.get(id)!;
+    const pDir = dir.get(p) || [0, -1];
+    const siblings = childrenOf.get(p) || [];
+    const idx = siblings.indexOf(id);
+    const offsets = getOutwardOffsets(pDir[0], pDir[1]);
+    const offset = offsets[idx % offsets.length] || pDir;
+
+    relativeOffset.set(id, offset);
+    dir.set(id, [Math.sign(offset[0]), Math.sign(offset[1])]);
+  });
+
+  // Assign coordinates to non-center internal nodes in BFS order
+  sortedByHop.forEach(id => {
+    if (id === centerId) return;
+
+    const p = parent.get(id)!;
+    const px = relX.get(p) || 0;
+    const py = relY.get(p) || 0;
+    const offset = relativeOffset.get(id) || dir.get(id) || [0, -1];
+    const tx = px + offset[0];
+    const ty = py + offset[1];
+
+    if (!occupied.has(`${tx},${ty}`)) {
+      occupy(id, tx, ty);
+    } else {
+      // Resolve collision
+      let d = 1;
+      let placed = false;
+      const childDir = dir.get(id) || [0, -1];
+
+      while (!placed) {
+        const candidates: [number, number][] = [];
+        for (let ox = -d; ox <= d; ox++) {
+          for (let oy = -d; oy <= d; oy++) {
+            if (Math.max(Math.abs(ox), Math.abs(oy)) === d) {
+              const cx = tx + ox;
+              const cy = ty + oy;
+              if (!occupied.has(`${cx},${cy}`)) {
+                candidates.push([cx, cy]);
+              }
+            }
+          }
+        }
+
+        if (candidates.length > 0) {
+          candidates.sort((a, b) => {
+            const distA = a[0]*a[0] + a[1]*a[1];
+            const distB = b[0]*b[0] + b[1]*b[1];
+            if (distA !== distB) return distB - distA;
+
+            const dotA = a[0] * childDir[0] + a[1] * childDir[1];
+            const dotB = b[0] * childDir[0] + b[1] * childDir[1];
+            return dotB - dotA;
+          });
+
+          const best = candidates[0];
+          occupy(id, best[0], best[1]);
+          placed = true;
+        } else {
+          d++;
+        }
+      }
+    }
+  });
+
+  // Find bounds of the internal system (aggregates, databases, core system)
+  const internalXs = internalNodeIds.map(id => relX.get(id) ?? 0);
+  const internalYs = internalNodeIds.map(id => relY.get(id) ?? 0);
+  const minInternalX = internalXs.length > 0 ? Math.min(...internalXs) : 0;
+  const maxInternalX = internalXs.length > 0 ? Math.max(...internalXs) : 0;
+  const minInternalY = internalYs.length > 0 ? Math.min(...internalYs) : 0;
+  const maxInternalY = internalYs.length > 0 ? Math.max(...internalYs) : 0;
+
+  const centerY = (minInternalY + maxInternalY) / 2;
+
+  // Place user nodes to the left of the system boundary
+  userNodes.forEach((uid, idx) => {
+    const uy = Math.round(centerY + idx - (userNodes.length - 1) / 2);
+    occupy(uid, minInternalX - 1, uy);
+  });
+
+  // Place external nodes to the right of the system boundary
+  externalNodes.forEach((eid, idx) => {
+    const ey = Math.round(centerY + idx - (externalNodes.length - 1) / 2);
+    occupy(eid, maxInternalX + 1, ey);
+  });
+
+  // Find overall bounds
+  const xs = Array.from(relX.values());
+  const ys = Array.from(relY.values());
+  const minX = xs.length > 0 ? Math.min(...xs) : 0;
+  const minY = ys.length > 0 ? Math.min(...ys) : 0;
+
+  // Shift to start at 0 and scale by 2 to create visual gaps
+  const finalCol = new Map<string, number>();
+  const finalRow = new Map<string, number>();
+
+  nodeIds.forEach(id => {
+    const rx = relX.get(id) ?? 0;
+    const ry = relY.get(id) ?? 0;
+    finalCol.set(id, (rx - minX) * 2);
+    finalRow.set(id, ry - minY);
+  });
+
+  return nodes.map(n => ({
+    ...n,
+    grid: [finalCol.get(n.id)!, finalRow.get(n.id)!]
+  }));
+}
+
+// ----------------------------------------------------
+// SWIMLANES LAYOUT: One row per entity type
+// ----------------------------------------------------
+/**
+ * BFS helper to resolve the Aggregate/External entity associated with a node.
+ * Traverses forward first, then backward if needed.
+ */
+function findHandlingEntity(
+  entities: Record<string, FlowchartEntity>,
+  relations: FlowchartRelation[],
+  nodeId: string
+): string | null {
+  const getCollapsedId = (id: string): string => {
+    return entities[id]?.collapsedTo || id;
+  };
+
+  const getEntityType = (id: string): string => {
+    const entity = entities[id];
+    return entity?.type || entity?.viewTypes?.EVENT_STORMING || 'default';
+  };
+
+  const isStructuralOrBoundary = (type: string): boolean => {
+    return (
+      type === TYPES.USER ||
+      type === TYPES.AGGREGATE ||
+      type === TYPES.EXTERNAL ||
+      type === TYPES.DATABASE ||
+      type === TYPES.SERVICE ||
+      type === TYPES.CORE_SYSTEM
+    );
+  };
+
+  const startType = getEntityType(nodeId);
+  if (isStructuralOrBoundary(startType)) {
+    return getCollapsedId(nodeId);
+  }
+
+  // Downstream BFS
+  let queue: { id: string; depth: number }[] = [{ id: nodeId, depth: 0 }];
+  let visited = new Set<string>([nodeId]);
+
+  while (queue.length > 0) {
+    const { id, depth } = queue.shift()!;
+    if (depth > 4) continue;
+
+    const currentType = getEntityType(id);
+    if (id !== nodeId && isStructuralOrBoundary(currentType)) {
+      return getCollapsedId(id);
+    }
+
+    const outRels = relations.filter(r =>
+      (!r.views || r.views.includes('EVENT_STORMING')) && r.from === id
+    );
+    for (const r of outRels) {
+      if (!visited.has(r.to)) {
+        visited.add(r.to);
+        queue.push({ id: r.to, depth: depth + 1 });
+      }
+    }
+  }
+
+  // Upstream BFS
+  queue = [{ id: nodeId, depth: 0 }];
+  visited = new Set<string>([nodeId]);
+
+  while (queue.length > 0) {
+    const { id, depth } = queue.shift()!;
+    if (depth > 4) continue;
+
+    const currentType = getEntityType(id);
+    if (id !== nodeId && isStructuralOrBoundary(currentType)) {
+      return getCollapsedId(id);
+    }
+
+    const inRels = relations.filter(r =>
+      (!r.views || r.views.includes('EVENT_STORMING')) && r.to === id
+    );
+    for (const r of inRels) {
+      if (!visited.has(r.from)) {
+        visited.add(r.from);
+        queue.push({ id: r.from, depth: depth + 1 });
+      }
+    }
+  }
+
+  return null;
+}
+
+/**
+ * Find the earliest column index in ES view of any node that maps to the entity.
+ */
+function getEntityFirstAppearance(
+  entities: Record<string, FlowchartEntity>,
+  relations: FlowchartRelation[],
+  esNodes: FlowchartViewNode[] | undefined,
+  entityId: string
+): number {
+  if (!esNodes) return 0;
+
+  const instances: string[] = [];
+  Object.keys(entities).forEach(id => {
+    if (findHandlingEntity(entities, relations, id) === entityId) {
+      instances.push(id);
+    }
+  });
+
+  let minCol = Infinity;
+  instances.forEach(id => {
+    const esNode = esNodes.find(n => n.id === id);
+    if (esNode && typeof esNode.grid?.[0] === 'number') {
+      if (esNode.grid[0] < minCol) {
+        minCol = esNode.grid[0];
+      }
+    }
+  });
+
+  return minCol === Infinity ? 0 : minCol;
+}
+
+/**
+ * Identify active lane entities and sort them Actors -> Aggregates -> Externals.
+ */
+function getSortedActiveLanes(
+  entities: Record<string, FlowchartEntity>,
+  relations: FlowchartRelation[],
+  esNodes: FlowchartViewNode[] | undefined,
+  nodeIds: string[]
+): string[] {
+  const getEntityType = (id: string): string => {
+    const entity = entities[id];
+    return entity?.type || entity?.viewTypes?.EVENT_STORMING || 'default';
+  };
+
+  const activeLanes = new Set<string>();
+  nodeIds.forEach(id => {
+    const laneId = findHandlingEntity(entities, relations, id);
+    if (laneId) {
+      activeLanes.add(laneId);
+    }
+  });
+
+  const actors: string[] = [];
+  const aggregates: string[] = [];
+  const externals: string[] = [];
+
+  activeLanes.forEach(laneId => {
+    const type = getEntityType(laneId);
+    if (type === TYPES.USER) {
+      actors.push(laneId);
+    } else if (type === TYPES.EXTERNAL) {
+      externals.push(laneId);
+    } else {
+      aggregates.push(laneId);
+    }
+  });
+
+  const sortByAppearance = (a: string, b: string) => {
+    const colA = getEntityFirstAppearance(entities, relations, esNodes, a);
+    const colB = getEntityFirstAppearance(entities, relations, esNodes, b);
+    if (colA !== colB) return colA - colB;
+    return a.localeCompare(b);
+  };
+
+  actors.sort(sortByAppearance);
+  aggregates.sort(sortByAppearance);
+  externals.sort(sortByAppearance);
+
+  return [...actors, ...aggregates, ...externals];
+}
+
+/**
+ * Generate styling-rich lane groups dynamically for SWIMLANES.
+ */
+function generateDynamicSwimlaneGroups(
+  schema: UnifiedFlowchartSchema,
+  laidOutSwimNodes: FlowchartViewNode[]
+): FlowchartViewGroup[] {
+  const nodeIds = laidOutSwimNodes.map(n => n.id);
+  const esNodes = schema.views.EVENT_STORMING?.nodes;
+  const sortedLanes = getSortedActiveLanes(schema.entities, schema.relations, esNodes, nodeIds);
+
+  const getEntityType = (id: string): string => {
+    const entity = schema.entities[id];
+    return entity?.type || entity?.viewTypes?.EVENT_STORMING || 'default';
+  };
+
+  const tint = (accent: string) =>
+    `color-mix(in srgb, ${accent} 5%, transparent)`;
+
+  const getAccent = (type: string): string => {
+    if (type === TYPES.USER) return 'var(--ctp-yellow)';
+    if (type === TYPES.EXTERNAL) return 'var(--ctp-green)';
+    if (type === TYPES.DATABASE) return 'var(--ctp-teal)';
+    if (type === TYPES.SERVICE) return 'var(--ctp-sapphire)';
+    if (type === TYPES.CORE_SYSTEM) return 'var(--ctp-rosewater)';
+    return 'var(--ctp-blue)';
+  };
+
+  return sortedLanes.map((laneId, idx) => {
+    const entity = schema.entities[laneId];
+    const type = getEntityType(laneId);
+    const accent = getAccent(type);
+    const title = entity?.viewTitles?.SWIMLANES || entity?.title || laneId;
+
+    return {
+      id: `lane_${laneId}`,
+      title: title,
+      isLane: true,
+      row: idx,
+      color: tint(accent),
+      borderColor: `color-mix(in srgb, ${accent} 35%, var(--ctp-surface2))`,
+      textColor: accent
+    };
+  });
+}
+
+function layoutSwimlanes(
+  nodes: FlowchartViewNode[],
+  nodeIds: string[],
+  nodeSet: Set<string>,
+  relations: FlowchartRelation[],
+  viewKey: string,
+  entities: Record<string, FlowchartEntity>,
+  esNodes?: FlowchartViewNode[]
+): FlowchartViewNode[] {
+  const { adj, inDegree } = buildCycleFreeGraph(nodeIds, relations, viewKey, nodeSet);
+  const col = computeTopologicalColumns(nodeIds, inDegree, adj);
+
+  const colGroups = new Map<number, string[]>();
+  col.forEach((c, id) => {
+    if (!colGroups.has(c)) colGroups.set(c, []);
+    colGroups.get(c)!.push(id);
+  });
+  const sortedCols = Array.from(colGroups.keys()).sort((a, b) => a - b);
+
+  const sortedLanes = getSortedActiveLanes(entities, relations, esNodes, nodeIds);
+
+  const row = new Map<string, number>();
+  nodeIds.forEach(id => {
+    const laneId = findHandlingEntity(entities, relations, id);
+    if (laneId) {
+      const idx = sortedLanes.indexOf(laneId);
+      if (idx !== -1) {
+        row.set(id, idx);
+      } else {
+        row.set(id, 0);
+      }
+    } else {
+      row.set(id, 0);
+    }
+  });
+
+  const compactedCol = compactColumns(sortedCols, col);
+  const spacedCol = new Map<string, number>();
+  compactedCol.forEach((val, key) => {
+    spacedCol.set(key, val * 2);
+  });
+
+  return nodes.map(n => ({
+    ...n,
+    grid: [spacedCol.get(n.id)!, row.get(n.id)!]
+  }));
+}
+
+// ----------------------------------------------------
+// DATA_FLOW LAYOUT: User on top, rest dynamic
+// ----------------------------------------------------
+function layoutDataFlow(
+  nodes: FlowchartViewNode[],
+  nodeIds: string[],
+  nodeSet: Set<string>,
+  relations: FlowchartRelation[],
+  viewKey: string,
+  entities: Record<string, FlowchartEntity>
+): FlowchartViewNode[] {
+  const { adj, inDegree } = buildCycleFreeGraph(nodeIds, relations, viewKey, nodeSet);
+  const col = computeTopologicalColumns(nodeIds, inDegree, adj);
+
+  const userNodes = nodeIds.filter(id => isType(entities, id, TYPES.USER));
+
+  userNodes.forEach(id => col.set(id, 0));
+
+  const colGroups = new Map<number, string[]>();
+  col.forEach((c, id) => {
+    if (!colGroups.has(c)) colGroups.set(c, []);
+    colGroups.get(c)!.push(id);
+  });
+  const sortedCols = Array.from(colGroups.keys()).sort((a, b) => a - b);
+
+  const row = new Map<string, number>();
+
+  sortedCols.forEach(c => {
+    const colNodes = colGroups.get(c) || [];
+    const userInCol = colNodes.filter(id => isType(entities, id, TYPES.USER));
+    const otherInCol = colNodes.filter(id => !isType(entities, id, TYPES.USER));
+
+    // Enforce a row gap of 1 between User nodes and other nodes in DATA_FLOW
+    const dataFlowGap = 1;
+    userInCol.forEach((id, idx) => row.set(id, idx));
+    const maxUserRow = userInCol.length > 0 ? userInCol.length - 1 : -1;
+    otherInCol.forEach((id, idx) => row.set(id, maxUserRow + dataFlowGap + idx));
+  });
+
+  const compactedCol = compactColumns(sortedCols, col);
+  const spacedCol = new Map<string, number>();
+  compactedCol.forEach((val, key) => {
+    spacedCol.set(key, val * 2);
+  });
+
+  return nodes.map(n => ({
+    ...n,
+    grid: [spacedCol.get(n.id)!, row.get(n.id)!]
+  }));
+}
+
+// ----------------------------------------------------
+// SEQUENCE LAYOUT: Columns only, all row 0
+// ----------------------------------------------------
+function layoutSequence(
+  nodes: FlowchartViewNode[],
+  nodeIds: string[],
+  nodeSet: Set<string>,
+  relations: FlowchartRelation[],
+  viewKey: string
+): FlowchartViewNode[] {
+  const adj = buildAdjacency(nodeIds, relations, viewKey, nodeSet);
+  const inDegree = buildInDegree(nodeIds, relations, viewKey, nodeSet);
+
+  const col = computeTopologicalColumns(nodeIds, inDegree, adj);
+
+  const compactedCol = new Map<string, number>();
+  const colSet = new Set(col.values());
+  const sortedCols = Array.from(colSet).sort((a, b) => a - b);
+  col.forEach((c, id) => {
+    compactedCol.set(id, sortedCols.indexOf(c));
+  });
+
+  return nodes.map(n => ({
+    ...n,
+    grid: [compactedCol.get(n.id)!, 0]
+  }));
+}
+
+// ----------------------------------------------------
+// GENERAL LAYOUT: Barycenter heuristic (STATE_MACHINE, custom)
+// ----------------------------------------------------
+function layoutGeneral(
+  nodes: FlowchartViewNode[],
+  nodeIds: string[],
+  nodeSet: Set<string>,
+  relations: FlowchartRelation[],
+  viewKey: string
+): FlowchartViewNode[] {
+  const adj = buildAdjacency(nodeIds, relations, viewKey, nodeSet);
+  const inDegree = buildInDegree(nodeIds, relations, viewKey, nodeSet);
+  const incoming = buildIncoming(nodeIds, relations, viewKey, nodeSet);
+
+  const col = computeTopologicalColumns(nodeIds, inDegree, adj);
+
+  const colGroups = new Map<number, string[]>();
+  col.forEach((c, id) => {
+    if (!colGroups.has(c)) colGroups.set(c, []);
+    colGroups.get(c)!.push(id);
+  });
+  const sortedCols = Array.from(colGroups.keys()).sort((a, b) => a - b);
+
+  const row = new Map<string, number>();
+
+  sortedCols.forEach(c => {
+    const colNodes = colGroups.get(c) || [];
+
+    if (c === 0) {
+      colNodes.sort((a, b) => nodeIds.indexOf(a) - nodeIds.indexOf(b));
+      colNodes.forEach((id, idx) => row.set(id, idx));
+    } else {
+      const weights = new Map<string, number>();
+      colNodes.forEach(id => {
+        let sum = 0, count = 0;
+        const parents = incoming.get(id) || [];
+        parents.forEach(p => {
+          const pCol = col.get(p)!;
+          const pRow = row.get(p);
+          if (pCol < c && pRow !== undefined) {
+            sum += pRow;
+            count++;
+          }
+        });
+        weights.set(id, count > 0 ? sum / count : 999);
+      });
+
+      colNodes.sort((a, b) => {
+        const wA = weights.get(a)!;
+        const wB = weights.get(b)!;
+        if (wA !== wB) return wA - wB;
+        return nodeIds.indexOf(a) - nodeIds.indexOf(b);
+      });
+
+      colNodes.forEach((id, idx) => row.set(id, idx));
+    }
+  });
+
+  const compactedCol = compactColumns(sortedCols, col);
+
+  if (nodeIds.includes('temp_center')) {
+    const otherCols = nodeIds.filter(id => id !== 'temp_center').map(id => compactedCol.get(id) || 0);
+    const minC = otherCols.length > 0 ? Math.min(...otherCols) : 0;
+    const maxC = otherCols.length > 0 ? Math.max(...otherCols) : 0;
+
+    const otherRows = nodeIds.filter(id => id !== 'temp_center').map(id => row.get(id) || 0);
+    const minR = otherRows.length > 0 ? Math.min(...otherRows) : 0;
+    const maxR = otherRows.length > 0 ? Math.max(...otherRows) : 0;
+
+    compactedCol.set('temp_center', Math.round((minC + maxC) / 2));
+    row.set('temp_center', Math.round((minR + maxR) / 2));
+  }
+
+  return nodes.map(n => ({
+    ...n,
+    grid: [compactedCol.get(n.id)!, row.get(n.id)!]
+  }));
+}
+
+// ----------------------------------------------------
+// Shared helpers
+// ----------------------------------------------------
+
+function buildAdjacency(
+  nodeIds: string[],
+  relations: FlowchartRelation[],
+  viewKey: string,
+  nodeSet: Set<string>
+): Map<string, string[]> {
+  const adj = new Map<string, string[]>();
+  nodeIds.forEach(id => adj.set(id, []));
+  relations.forEach(rel => {
+    const isForView = !rel.views || rel.views.includes(viewKey);
+    if (isForView && nodeSet.has(rel.from) && nodeSet.has(rel.to)) {
+      adj.get(rel.from)!.push(rel.to);
+    }
+  });
+  return adj;
+}
+
+function buildInDegree(
+  nodeIds: string[],
+  relations: FlowchartRelation[],
+  viewKey: string,
+  nodeSet: Set<string>
+): Map<string, number> {
+  const inDegree = new Map<string, number>();
+  nodeIds.forEach(id => inDegree.set(id, 0));
+  relations.forEach(rel => {
+    const isForView = !rel.views || rel.views.includes(viewKey);
+    if (isForView && nodeSet.has(rel.from) && nodeSet.has(rel.to)) {
+      inDegree.set(rel.to, inDegree.get(rel.to)! + 1);
+    }
+  });
+  return inDegree;
+}
+
+function buildIncoming(
+  nodeIds: string[],
+  relations: FlowchartRelation[],
+  viewKey: string,
+  nodeSet: Set<string>
+): Map<string, string[]> {
+  const incoming = new Map<string, string[]>();
+  nodeIds.forEach(id => incoming.set(id, []));
+  relations.forEach(rel => {
+    const isForView = !rel.views || rel.views.includes(viewKey);
+    if (isForView && nodeSet.has(rel.from) && nodeSet.has(rel.to)) {
+      incoming.get(rel.to)!.push(rel.from);
+    }
+  });
+  return incoming;
+}
+
+function computeTopologicalColumns(
+  nodeIds: string[],
+  inDegree: Map<string, number>,
+  adj: Map<string, string[]>
+): Map<string, number> {
+  const col = new Map<string, number>();
+  nodeIds.forEach(id => col.set(id, -1));
+
+  const assignColumns = (startNodes: string[], maxNodes: number) => {
+    const queue: string[] = [];
+    const pushCount = new Map<string, number>();
+
+    startNodes.forEach(node => {
+      col.set(node, Math.max(0, col.get(node)!));
+      queue.push(node);
+      pushCount.set(node, 1);
+    });
+
+    while (queue.length > 0) {
+      const u = queue.shift()!;
+      const uCol = col.get(u)!;
+
+      (adj.get(u) || []).forEach(v => {
+        const nextCol = uCol + 1;
+        if (nextCol > col.get(v)!) {
+          col.set(v, nextCol);
+          const count = pushCount.get(v) || 0;
+          if (count < maxNodes) {
+            pushCount.set(v, count + 1);
+            queue.push(v);
+          }
+        }
+      });
+    }
+  };
+
+  let sources = nodeIds.filter(id => inDegree.get(id) === 0);
+  if (sources.length === 0 && nodeIds.length > 0) {
+    sources = [nodeIds[0]];
+  }
+
+  assignColumns(sources, nodeIds.length);
+
+  let unreached = nodeIds.filter(id => col.get(id) === -1);
+  while (unreached.length > 0) {
+    unreached.sort((a, b) => inDegree.get(a)! - inDegree.get(b)!);
+    const nextSrc = unreached[0];
+    col.set(nextSrc, 0);
+    assignColumns([nextSrc], nodeIds.length);
+    unreached = nodeIds.filter(id => col.get(id) === -1);
+  }
+
+  return col;
+}
+
+function compactColumns(
+  sortedCols: number[],
+  col: Map<string, number>
+): Map<string, number> {
+  const compactedCol = new Map<string, number>();
+  sortedCols.forEach((c, newColIdx) => {
+    col.forEach((v, id) => {
+      if (v === c) compactedCol.set(id, newColIdx);
+    });
+  });
+  return compactedCol;
+}
+
+function isType(entities: Record<string, FlowchartEntity>, id: string, type: string): boolean {
+  const entity = entities[id];
+  return entity?.type === type || entity?.viewTypes?.EVENT_STORMING === type;
+}
+
+function computeLayoutInfo(nodes: FlowchartViewNode[]): LayoutInfo {
+  let maxRow = 0, maxCol = 0;
+  nodes.forEach(n => {
+    if (n.grid) {
+      maxRow = Math.max(maxRow, n.grid[1]);
+      maxCol = Math.max(maxCol, n.grid[0]);
+    }
+  });
+  return {
+    rowCount: maxRow + 1,
+    colCount: maxCol + 1,
+    nodeCount: nodes.length
+  };
+}
+
+function buildCycleFreeGraph(
+  nodeIds: string[],
+  relations: FlowchartRelation[],
+  viewKey: string,
+  nodeSet: Set<string>
+): { adj: Map<string, string[]>; inDegree: Map<string, number> } {
+  const adj = new Map<string, string[]>();
+  nodeIds.forEach(id => adj.set(id, []));
+
+  const inDegree = new Map<string, number>();
+  nodeIds.forEach(id => inDegree.set(id, 0));
+
+  // Run DFS to detect back-edges (cycles)
+  const backEdges = new Set<string>();
+  const visited = new Set<string>();
+  const recStack = new Set<string>();
+
+  // Temporary full adjacency for cycle detection
+  const tempAdj = new Map<string, string[]>();
+  nodeIds.forEach(id => tempAdj.set(id, []));
+  relations.forEach(rel => {
+    const isForView = !rel.views || rel.views.includes(viewKey);
+    if (isForView && nodeSet.has(rel.from) && nodeSet.has(rel.to)) {
+      tempAdj.get(rel.from)!.push(rel.to);
+    }
+  });
+
+  const dfs = (u: string) => {
+    visited.add(u);
+    recStack.add(u);
+
+    const neighbors = tempAdj.get(u) || [];
+    neighbors.forEach(v => {
+      if (recStack.has(v)) {
+        // Found a back-edge/cycle!
+        const rel = relations.find(r => 
+          (!r.views || r.views.includes(viewKey)) && 
+          r.from === u && r.to === v
+        );
+        if (rel) {
+          backEdges.add(rel.id);
+        }
+      } else if (!visited.has(v)) {
+        dfs(v);
+      }
+    });
+
+    recStack.delete(u);
+  };
+
+  nodeIds.forEach(id => {
+    if (!visited.has(id)) {
+      dfs(id);
+    }
+  });
+
+  // Build the cycle-free adjacency and inDegree
+  relations.forEach(rel => {
+    const isForView = !rel.views || rel.views.includes(viewKey);
+    if (isForView && nodeSet.has(rel.from) && nodeSet.has(rel.to) && !backEdges.has(rel.id)) {
+      adj.get(rel.from)!.push(rel.to);
+      inDegree.set(rel.to, inDegree.get(rel.to)! + 1);
+    }
+  });
+
+  return { adj, inDegree };
+}

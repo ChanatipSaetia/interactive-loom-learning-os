@@ -10,7 +10,7 @@ export const TYPES = {
   EVENT: 'Event', COMMAND: 'Command', AGGREGATE: 'Aggregate', POLICY: 'Policy', 
   READ_MODEL: 'Read Model', USER: 'Actor', EXTERNAL: 'External API', HOTSPOT: 'Risk',
   SERVICE: 'Service', DATABASE: 'Database', PROCESS: 'Process', 
-  DATA_OBJECT: 'Data Object', DECISION: 'Decision'
+  DATA_OBJECT: 'Data Object', DECISION: 'Decision', CORE_SYSTEM: 'Core System'
 } as const;
 
 /**
@@ -34,6 +34,7 @@ const ACCENT_VARS = {
   [TYPES.PROCESS]:     'var(--ctp-sky)',
   [TYPES.DATA_OBJECT]: 'var(--ctp-pink)',
   [TYPES.DECISION]:    'var(--ctp-maroon)',
+  [TYPES.CORE_SYSTEM]: 'var(--ctp-rosewater)',
   default:             'var(--ctp-surface2)'
 } as const;
 
@@ -51,7 +52,7 @@ export const ICONS = {
   [TYPES.POLICY]: 'ShieldAlert', [TYPES.READ_MODEL]: 'Eye', [TYPES.USER]: 'User', 
   [TYPES.EXTERNAL]: 'Cloud', [TYPES.HOTSPOT]: 'AlertTriangle', [TYPES.SERVICE]: 'Server',
   [TYPES.DATABASE]: 'Database', [TYPES.PROCESS]: 'Activity', [TYPES.DATA_OBJECT]: 'FileText',
-  [TYPES.DECISION]: 'GitBranch'
+  [TYPES.DECISION]: 'GitBranch', [TYPES.CORE_SYSTEM]: 'Cpu'
 } as const;
 
 export const ICON_ANIMATIONS = {
@@ -59,7 +60,7 @@ export const ICON_ANIMATIONS = {
   [TYPES.POLICY]: 'anim-icon-pulse', [TYPES.READ_MODEL]: 'anim-icon-scan', [TYPES.USER]: 'anim-icon-wobble',
   [TYPES.EXTERNAL]: 'anim-icon-drift', [TYPES.HOTSPOT]: 'anim-icon-ring', [TYPES.SERVICE]: 'anim-icon-float-heavy',
   [TYPES.DATABASE]: 'anim-icon-pulse', [TYPES.PROCESS]: 'anim-icon-spin-slow', [TYPES.DATA_OBJECT]: 'anim-icon-float',
-  [TYPES.DECISION]: 'anim-icon-wobble'
+  [TYPES.DECISION]: 'anim-icon-wobble', [TYPES.CORE_SYSTEM]: 'anim-icon-pulse'
 } as const;
 
 export const DYNAMIC_ICONS = { Component, Server, Share2, Layers, List };
@@ -83,7 +84,7 @@ export const MASTER_MAPPING_MATRIX: Record<string, Record<string, string | null>
   },
   [TYPES.POLICY]: {
     EVENT_STORMING: TYPES.POLICY,
-    SYS_ARCH: TYPES.SERVICE,
+    SYS_ARCH: null,
     SWIMLANES: TYPES.DECISION,
     SEQUENCE: null,
     DATA_FLOW: TYPES.DECISION,
@@ -92,7 +93,7 @@ export const MASTER_MAPPING_MATRIX: Record<string, Record<string, string | null>
   [TYPES.AGGREGATE]: {
     EVENT_STORMING: TYPES.AGGREGATE,
     SYS_ARCH: TYPES.SERVICE,
-    SWIMLANES: TYPES.PROCESS,
+    SWIMLANES: null,
     SEQUENCE: TYPES.SERVICE,
     DATA_FLOW: null,
     STATE_MACHINE: TYPES.AGGREGATE
@@ -116,7 +117,7 @@ export const MASTER_MAPPING_MATRIX: Record<string, Record<string, string | null>
   [TYPES.EXTERNAL]: {
     EVENT_STORMING: TYPES.EXTERNAL,
     SYS_ARCH: TYPES.EXTERNAL,
-    SWIMLANES: TYPES.EXTERNAL,
+    SWIMLANES: null,
     SEQUENCE: TYPES.EXTERNAL,
     DATA_FLOW: null,
     STATE_MACHINE: null
@@ -205,12 +206,13 @@ export interface FlowchartEntity {
   refs?: string[];
   /** Maps this fine-grained entity to a collapsed/high-level entity ID in other views. */
   collapsedTo?: string;
-  /** State machine definition for this aggregate (shown in inspector). */
-  stateMachine?: FlowchartStateMachine;
   /** JSON payload for a specific DFD node (shown in inspector during playback). */
   jsonPayload?: Record<string, unknown>;
   color?: string;
   strokeColor?: string;
+  stateMachine?: FlowchartStateMachine;
+  /** Store branching condition label when multiple policies are merged */
+  branchLabel?: string;
 }
 
 export interface FlowchartRelation {
@@ -221,6 +223,7 @@ export interface FlowchartRelation {
   dashed?: boolean;
   handledBy?: boolean;
   label?: string;
+  chronologicalIndex?: number;
 }
 
 export interface FlowchartViewNode {
@@ -284,12 +287,24 @@ export interface FlowchartJourney {
   steps: FlowchartStep[];
 }
 
+/** Layout metadata computed by the dynamic layout engine. */
+export interface LayoutInfo {
+  /** Total number of rows in the grid. */
+  rowCount: number;
+  /** Total number of columns in the grid. */
+  colCount: number;
+  /** Total number of nodes in the view. */
+  nodeCount: number;
+}
+
 export interface FlowchartViewConfig {
   name: string;
   icon: string;
   nodes: FlowchartViewNode[];
   groups: FlowchartViewGroup[];
   steps?: FlowchartStepData[];
+  /** Computed layout metadata for dynamic spacing. */
+  layoutInfo?: LayoutInfo;
 }
 
 export interface UnifiedFlowchartSchema {

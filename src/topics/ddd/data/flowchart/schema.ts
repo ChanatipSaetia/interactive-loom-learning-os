@@ -31,7 +31,7 @@ export const dddSchema: UnifiedFlowchartSchema = {
     'repository': {
       title: 'Repository',
       desc: 'Collection-like interface for persisting and loading aggregates.',
-      type: TYPES.DATABASE,
+      type: TYPES.AGGREGATE,
     },
     'domain-event': {
       title: 'Domain Event',
@@ -66,7 +66,7 @@ export const dddSchema: UnifiedFlowchartSchema = {
     'dec_split_context': {
       title: 'Same Word, Different Model?',
       desc: 'If yes → new bounded context. If no → can share.',
-      type: TYPES.DECISION,
+      type: TYPES.POLICY,
     },
     'cmd_map_relationships': {
       title: 'Map Context Relationships',

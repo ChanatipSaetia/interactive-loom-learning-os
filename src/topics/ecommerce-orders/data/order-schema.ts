@@ -80,7 +80,7 @@ export const orderSchema: UnifiedFlowchartSchema = {
     'order_db': {
       title: 'Order Database',
       desc: 'Persistent storage for orders, line items, payments, and fraud evaluation records.',
-      type: TYPES.DATABASE,
+      type: TYPES.AGGREGATE,
     },
 
     // ── Events ────────────────────────────────────────────────────────
@@ -293,11 +293,32 @@ export const orderSchema: UnifiedFlowchartSchema = {
       collapsedTo: 'order_fulfill'
     },
 
+    'cmd_hold_order': {
+      title: 'Hold Order',
+      desc: 'Hold payment and pause order processing.',
+      type: TYPES.COMMAND,
+      collapsedTo: 'order_checkout',
+    },
+
     'cmd_review_order': {
       title: 'Review Order',
       desc: 'Risk analyst manually reviews flagged order and makes approve/cancel decision.',
       type: TYPES.COMMAND,
       collapsedTo: 'risk_analyst'
+    },
+
+    'cmd_confirm_order': {
+      title: 'Confirm Order',
+      desc: 'Approve order and capture payment.',
+      type: TYPES.COMMAND,
+      collapsedTo: 'order_fulfill',
+    },
+
+    'cmd_cancel_order': {
+      title: 'Cancel Order',
+      desc: 'Cancel order and release payment hold.',
+      type: TYPES.COMMAND,
+      collapsedTo: 'order_fulfill',
     },
 
     // ── Policies (Event Storming only) ────────────────────────────────
@@ -350,6 +371,12 @@ export const orderSchema: UnifiedFlowchartSchema = {
       type: TYPES.POLICY,
     },
 
+    'pol_dispatch_review': {
+      title: 'Dispatch Review',
+      desc: 'Dispatch review request to risk analyst.',
+      type: TYPES.POLICY,
+    },
+
     'pol_finalize_review': {
       title: 'Finalize Review Decision',
       desc: 'When analyst decides, either approve (capture payment) or cancel (release payment, unlock inventory).',
@@ -397,15 +424,24 @@ export const orderSchema: UnifiedFlowchartSchema = {
 
     // High risk path: Flag → review → decision
     { id: 'r_es_29', from: 'pol_route_risk', to: 'pol_flag_review',       views: ['EVENT_STORMING'] },
-    { id: 'r_es_30', from: 'pol_flag_review', to: 'evt_fraud_flagged',    views: ['EVENT_STORMING'] },
-    { id: 'r_es_31', from: 'evt_fraud_flagged', to: 'cmd_review_order',   views: ['EVENT_STORMING'] },
+    { id: 'r_es_30', from: 'pol_flag_review', to: 'cmd_hold_order',       views: ['EVENT_STORMING'] },
+    { id: 'r_es_30_hb', from: 'cmd_hold_order', to: 'order_checkout', handledBy: true, views: ['EVENT_STORMING'] },
+    { id: 'r_es_30b', from: 'cmd_hold_order', to: 'evt_fraud_flagged',    views: ['EVENT_STORMING'] },
+    { id: 'r_es_31', from: 'evt_fraud_flagged', to: 'pol_dispatch_review', views: ['EVENT_STORMING'] },
+    { id: 'r_es_31a', from: 'pol_dispatch_review', to: 'cmd_review_order', views: ['EVENT_STORMING'] },
     { id: 'r_es_32', from: 'cmd_review_order', to: 'risk_analyst',        views: ['EVENT_STORMING'], handledBy: true },
     { id: 'r_es_33', from: 'risk_analyst',     to: 'evt_review_decision', views: ['EVENT_STORMING'] },
     { id: 'r_es_34', from: 'evt_review_decision', to: 'pol_finalize_review', views: ['EVENT_STORMING'] },
+    
     // Approve branch
-    { id: 'r_es_35', from: 'pol_finalize_review', to: 'evt_order_confirmed', views: ['EVENT_STORMING'] },
+    { id: 'r_es_35', from: 'pol_finalize_review', to: 'cmd_confirm_order', views: ['EVENT_STORMING'] },
+    { id: 'r_es_35_hb', from: 'cmd_confirm_order', to: 'order_fulfill', handledBy: true, views: ['EVENT_STORMING'] },
+    { id: 'r_es_35b', from: 'cmd_confirm_order', to: 'evt_order_confirmed', views: ['EVENT_STORMING'] },
+    
     // Cancel branch
-    { id: 'r_es_36', from: 'pol_finalize_review', to: 'evt_order_cancelled', views: ['EVENT_STORMING'] },
+    { id: 'r_es_36', from: 'pol_finalize_review', to: 'cmd_cancel_order', views: ['EVENT_STORMING'] },
+    { id: 'r_es_36_hb', from: 'cmd_cancel_order', to: 'order_fulfill', handledBy: true, views: ['EVENT_STORMING'] },
+    { id: 'r_es_36b', from: 'cmd_cancel_order', to: 'evt_order_cancelled', views: ['EVENT_STORMING'] },
 
     // Dynamic edge helpers
     { id: 'r_es_sa_1', from: 'order_checkout', to: 'inventory_service',    views: ['EVENT_STORMING'] },
@@ -443,22 +479,27 @@ export const orderSchema: UnifiedFlowchartSchema = {
         { id: 'fraud_policy', grid: [19, 1] },
         { id: 'fraud_service', grid: [17, 1] },
         { id: 'pol_auto_approve', grid: [20, 2] },
-        { id: 'evt_order_approved', grid: [21, 2] },
-        { id: 'evt_order_confirmed', grid: [22, 2] },
+        { id: 'cmd_approve_order', grid: [21, 2] },
         { id: 'order_fulfill', grid: [21, 1] },
+        { id: 'evt_order_approved', grid: [22, 2] },
         { id: 'pol_flag_review', grid: [20, 3] },
-        { id: 'evt_fraud_flagged', grid: [20, 4] },
-        { id: 'cmd_review_order', grid: [21, 4] },
-        { id: 'risk_analyst', grid: [22, 3] },
-        { id: 'evt_review_decision', grid: [22, 4] },
-        { id: 'pol_finalize_review', grid: [23, 4] },
-        { id: 'evt_order_cancelled', grid: [24, 4] },
+        { id: 'cmd_hold_order', grid: [21, 3] },
+        { id: 'evt_fraud_flagged', grid: [22, 3] },
+        { id: 'pol_dispatch_review', grid: [23, 3] },
+        { id: 'cmd_review_order', grid: [24, 3] },
+        { id: 'risk_analyst', grid: [24, 2] },
+        { id: 'evt_review_decision', grid: [25, 3] },
+        { id: 'pol_finalize_review', grid: [26, 3] },
+        { id: 'cmd_confirm_order', grid: [27, 2] },
+        { id: 'cmd_cancel_order', grid: [27, 4] },
+        { id: 'evt_order_confirmed', grid: [28, 2] },
+        { id: 'evt_order_cancelled', grid: [28, 4] },
       ],
       groups: [
         { id: 'es_g1', title: 'Checkout & Inventory', desc: 'Order Placed triggers checkout. Inventory checked and locked with time-based expiry.', nodeIds: ['customer','evt_order_placed','pol_process_checkout','cmd_checkout','order_checkout','order_db','pol_check_inventory','cmd_check_inventory','inventory_service','evt_inventory_checked','pol_lock_inventory','cmd_lock_inventory','evt_inventory_locked'], color: 'rgba(140,170,238,0.12)', borderColor: 'var(--ctp-blue)', textColor: 'var(--ctp-text)' },
         { id: 'es_g2', title: 'Payment Authorization', desc: 'Inventory lock triggers Stripe authorization. Webhook confirms funds held.', nodeIds: ['pol_authorize','cmd_authorize_payment','stripe','evt_payment_authorized'], color: 'rgba(244,184,228,0.12)', borderColor: 'var(--ctp-pink)', textColor: 'var(--ctp-text)' },
         { id: 'es_g3', title: 'Fraud Evaluation & Auto-Approve', desc: 'Fraud engine scores order. Low-risk auto-approved: payment captured, order confirmed.', nodeIds: ['pol_evaluate_fraud','cmd_evaluate_fraud','fraud_service','evt_fraud_evaluated','pol_route_risk','fraud_policy','pol_auto_approve','cmd_approve_order','order_fulfill','evt_order_approved','evt_order_confirmed'], color: 'rgba(229,200,144,0.12)', borderColor: 'var(--ctp-yellow)', textColor: 'var(--ctp-text)' },
-        { id: 'es_g4', title: 'Fraud Review & Decision', desc: 'High-risk orders flagged for Risk Ops analyst. Manual review leads to approval or cancellation.', nodeIds: ['pol_flag_review','evt_fraud_flagged','cmd_review_order','risk_analyst','evt_review_decision','pol_finalize_review','evt_order_cancelled'], color: 'rgba(231,130,132,0.12)', borderColor: 'var(--ctp-red)', textColor: 'var(--ctp-text)' },
+        { id: 'es_g4', title: 'Fraud Review & Decision', desc: 'High-risk orders flagged for Risk Ops analyst. Manual review leads to approval or cancellation.', nodeIds: ['pol_flag_review','cmd_hold_order','evt_fraud_flagged','pol_dispatch_review','cmd_review_order','risk_analyst','evt_review_decision','pol_finalize_review','cmd_confirm_order','cmd_cancel_order','evt_order_cancelled'], color: 'rgba(231,130,132,0.12)', borderColor: 'var(--ctp-red)', textColor: 'var(--ctp-text)' },
       ]
     }
   },
@@ -473,7 +514,7 @@ export const orderSchema: UnifiedFlowchartSchema = {
         { nodeIds: ['pol_check_inventory', 'cmd_check_inventory', 'inventory_service', 'evt_inventory_checked', 'pol_lock_inventory', 'cmd_lock_inventory', 'evt_inventory_locked'], description: 'Inventory Lock — Inventory Service checks availability (147 widgets, 523 cables in stock). Stock locked for 15-minute window.', processGroup: 'execution' },
         { nodeIds: ['pol_authorize', 'cmd_authorize_payment', 'stripe', 'evt_payment_authorized'], description: 'Payment Authorized — Stripe creates PaymentIntent, authorizes card ending in 4242. Webhook confirms $112.97 held (requires_capture).', processGroup: 'execution' },
         { nodeIds: ['pol_evaluate_fraud', 'cmd_evaluate_fraud', 'fraud_service', 'evt_fraud_evaluated'], description: 'Fraud Evaluation — Fraud Engine scores order at 0.12 (low risk). All signals pass: velocity OK, card reused 3x, address matches, amount normal.', processGroup: 'evaluation' },
-        { nodeIds: ['pol_route_risk', 'pol_auto_approve', 'order_fulfill', 'evt_order_approved', 'evt_order_confirmed'], description: 'Auto-Confirm — Risk router auto-approves. Payment captured, inventory committed. Order confirmed with CNF-20250615-0042. Customer notified.', processGroup: 'evaluation' },
+        { nodeIds: ['pol_route_risk', 'pol_auto_approve', 'cmd_approve_order', 'order_fulfill', 'evt_order_approved', 'evt_order_confirmed'], description: 'Auto-Confirm — Risk router auto-approves. Payment captured, inventory committed. Order confirmed with CNF-20250615-0042. Customer notified.', processGroup: 'evaluation' },
       ]
     },
     {
@@ -485,8 +526,8 @@ export const orderSchema: UnifiedFlowchartSchema = {
         { nodeIds: ['pol_check_inventory', 'cmd_check_inventory', 'inventory_service', 'evt_inventory_checked', 'pol_lock_inventory', 'cmd_lock_inventory', 'evt_inventory_locked'], description: 'Inventory Lock — Items available, stock locked pending payment and fraud clearance.', processGroup: 'execution' },
         { nodeIds: ['pol_authorize', 'cmd_authorize_payment', 'stripe', 'evt_payment_authorized'], description: 'Payment Authorized — Stripe authorizes $2,499.00 on new card. Funds held pending capture decision.', processGroup: 'execution' },
         { nodeIds: ['pol_evaluate_fraud', 'cmd_evaluate_fraud', 'fraud_service', 'evt_fraud_evaluated', 'pol_route_risk'], description: 'Fraud Flagged — Fraud Engine scores 0.87 (high risk). Signals fail: 8 orders/24h, new card, address mismatch, 3-sigma amount anomaly. Risk router directs to manual review.', processGroup: 'evaluation' },
-        { nodeIds: ['pol_flag_review', 'evt_fraud_flagged', 'cmd_review_order', 'risk_analyst'], description: '⚠️ Risk Ops Review — Order paused with payment held. Risk Ops analyst reviews signals, contacts customer for verification.', processGroup: 'escalation' },
-        { nodeIds: ['risk_analyst', 'evt_review_decision', 'pol_finalize_review'], description: 'Review Decision — Analyst makes approve/cancel decision. Approve: payment captured, order confirmed. Cancel: payment released, inventory unlocked.', processGroup: 'escalation' },
+        { nodeIds: ['pol_flag_review', 'cmd_hold_order', 'evt_fraud_flagged', 'pol_dispatch_review', 'cmd_review_order', 'risk_analyst'], description: '⚠️ Risk Ops Review — Order paused with payment held. Risk Ops analyst reviews signals, contacts customer for verification.', processGroup: 'escalation' },
+        { nodeIds: ['risk_analyst', 'evt_review_decision', 'pol_finalize_review', 'cmd_confirm_order', 'cmd_cancel_order'], description: 'Review Decision — Analyst makes approve/cancel decision. Approve: payment captured, order confirmed. Cancel: payment released, inventory unlocked.', processGroup: 'escalation' },
       ]
     }
   ]

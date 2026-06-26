@@ -182,13 +182,13 @@ describe('Issue #56: E-Commerce Order Processing Topic', () => {
     expect(groupTitles).toContain('Fraud Review & Decision')
   })
 
-  it('SWIMLANES view has 3 lane groups', () => {
+  it('SWIMLANES view has dynamic per-entity lane groups', () => {
     const compiledSchema = autoDeriveViews(orderSchema)
     const slView = compiledSchema.views.SWIMLANES
     expect(slView).toBeDefined()
-    expect(slView.groups.length).toBe(3)
-    expect(slView.groups[0].isLane).toBe(true)
-    expect(slView.groups[1].isLane).toBe(true)
-    expect(slView.groups[2].isLane).toBe(true)
+    expect(slView.groups.length).toBe(6)
+    slView.groups.forEach(g => {
+      expect(g.isLane).toBe(true)
+    })
   })
 })
