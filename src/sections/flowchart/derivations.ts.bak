@@ -44,13 +44,19 @@ function policyShouldMapToDecision(
 export function autoDeriveViews(schema: UnifiedFlowchartSchema): UnifiedFlowchartSchema {
   // Automatically lay out all existing views in the schema except SEQUENCE (needs derivation)
   const laidOutViews = { ...schema.views };
+  const esNodes = schema.views.EVENT_STORMING?.nodes;
   Object.keys(laidOutViews).forEach(viewKey => {
     if (viewKey === 'SEQUENCE') return;
     const view = laidOutViews[viewKey];
-    const laidOutNodes = layoutNodes(view.nodes, schema.relations, viewKey, schema.entities);
+    const laidOutNodes = layoutNodes(view.nodes, schema.relations, viewKey, schema.entities, esNodes);
+    let groups = view.groups;
+    if (viewKey === 'SWIMLANES') {
+      groups = generateDynamicSwimlaneGroups(schema, laidOutNodes);
+    }
     laidOutViews[viewKey] = {
       ...view,
       nodes: laidOutNodes,
+      groups: groups,
       layoutInfo: computeLayoutInfo(laidOutNodes)
     };
   });
@@ -254,11 +260,6 @@ export function autoDeriveViews(schema: UnifiedFlowchartSchema): UnifiedFlowchar
   if (!derivedViews.SWIMLANES) {
     const swimNodes: FlowchartViewNode[] = [];
     const addedNodes = new Set<string>();
-    const swimGroups: FlowchartViewGroup[] = [
-      { id: 'lane_actor', title: 'User Activity', isLane: true, row: 0 },
-      { id: 'lane_core', title: 'Automated Core', isLane: true, row: 1 },
-      { id: 'lane_ext', title: 'External Integration', isLane: true, row: 2 }
-    ];
 
     Object.entries(schema.entities).forEach(([id, entity]) => {
       const type = getEntityType(entity);
@@ -297,7 +298,8 @@ export function autoDeriveViews(schema: UnifiedFlowchartSchema): UnifiedFlowchar
       ...swimRelations
     ];
 
-    const laidOutSwimNodes = layoutNodes(swimNodes, schema.relations, 'SWIMLANES', schema.entities);
+    const laidOutSwimNodes = layoutNodes(swimNodes, schema.relations, 'SWIMLANES', schema.entities, esNodes);
+    const swimGroups = generateDynamicSwimlaneGroups(schema, laidOutSwimNodes);
     derivedViews.SWIMLANES = {
       name: 'Activity Swimlanes',
       icon: 'Share2',
@@ -1001,7 +1003,8 @@ function layoutNodes(
   nodes: FlowchartViewNode[],
   relations: FlowchartRelation[],
   viewKey: string,
-  entities: Record<string, FlowchartEntity> = {}
+  entities: Record<string, FlowchartEntity> = {},
+  esNodes?: FlowchartViewNode[]
 ): FlowchartViewNode[] {
   if (nodes.length === 0) return [];
 
@@ -1041,7 +1044,7 @@ function layoutNodes(
   // SWIMLANES: One row per entity type
   // ----------------------------------------------------
   if (viewKey === 'SWIMLANES') {
-    return layoutSwimlanes(nodes, nodeIds, nodeSet, relations, viewKey, entities);
+    return layoutSwimlanes(nodes, nodeIds, nodeSet, relations, viewKey, entities, esNodes);
   }
 
   // ----------------------------------------------------
@@ -1661,13 +1664,227 @@ function layoutSysArch(
 // ----------------------------------------------------
 // SWIMLANES LAYOUT: One row per entity type
 // ----------------------------------------------------
+/**
+ * BFS helper to resolve the Aggregate/External entity associated with a node.
+ * Traverses forward first, then backward if needed.
+ */
+function findHandlingEntity(
+  entities: Record<string, FlowchartEntity>,
+  relations: FlowchartRelation[],
+  nodeId: string
+): string | null {
+  const getCollapsedId = (id: string): string => {
+    return entities[id]?.collapsedTo || id;
+  };
+
+  const getEntityType = (id: string): string => {
+    const entity = entities[id];
+    return entity?.type || entity?.viewTypes?.EVENT_STORMING || 'default';
+  };
+
+  const isStructuralOrBoundary = (type: string): boolean => {
+    return (
+      type === TYPES.USER ||
+      type === TYPES.AGGREGATE ||
+      type === TYPES.EXTERNAL ||
+      type === TYPES.DATABASE ||
+      type === TYPES.SERVICE ||
+      type === TYPES.CORE_SYSTEM
+    );
+  };
+
+  const startType = getEntityType(nodeId);
+  if (isStructuralOrBoundary(startType)) {
+    return getCollapsedId(nodeId);
+  }
+
+  // Downstream BFS
+  let queue: { id: string; depth: number }[] = [{ id: nodeId, depth: 0 }];
+  let visited = new Set<string>([nodeId]);
+
+  while (queue.length > 0) {
+    const { id, depth } = queue.shift()!;
+    if (depth > 4) continue;
+
+    const currentType = getEntityType(id);
+    if (id !== nodeId && isStructuralOrBoundary(currentType)) {
+      return getCollapsedId(id);
+    }
+
+    const outRels = relations.filter(r =>
+      (!r.views || r.views.includes('EVENT_STORMING')) && r.from === id
+    );
+    for (const r of outRels) {
+      if (!visited.has(r.to)) {
+        visited.add(r.to);
+        queue.push({ id: r.to, depth: depth + 1 });
+      }
+    }
+  }
+
+  // Upstream BFS
+  queue = [{ id: nodeId, depth: 0 }];
+  visited = new Set<string>([nodeId]);
+
+  while (queue.length > 0) {
+    const { id, depth } = queue.shift()!;
+    if (depth > 4) continue;
+
+    const currentType = getEntityType(id);
+    if (id !== nodeId && isStructuralOrBoundary(currentType)) {
+      return getCollapsedId(id);
+    }
+
+    const inRels = relations.filter(r =>
+      (!r.views || r.views.includes('EVENT_STORMING')) && r.to === id
+    );
+    for (const r of inRels) {
+      if (!visited.has(r.from)) {
+        visited.add(r.from);
+        queue.push({ id: r.from, depth: depth + 1 });
+      }
+    }
+  }
+
+  return null;
+}
+
+/**
+ * Find the earliest column index in ES view of any node that maps to the entity.
+ */
+function getEntityFirstAppearance(
+  entities: Record<string, FlowchartEntity>,
+  relations: FlowchartRelation[],
+  esNodes: FlowchartViewNode[] | undefined,
+  entityId: string
+): number {
+  if (!esNodes) return 0;
+
+  const instances: string[] = [];
+  Object.keys(entities).forEach(id => {
+    if (findHandlingEntity(entities, relations, id) === entityId) {
+      instances.push(id);
+    }
+  });
+
+  let minCol = Infinity;
+  instances.forEach(id => {
+    const esNode = esNodes.find(n => n.id === id);
+    if (esNode && typeof esNode.grid?.[0] === 'number') {
+      if (esNode.grid[0] < minCol) {
+        minCol = esNode.grid[0];
+      }
+    }
+  });
+
+  return minCol === Infinity ? 0 : minCol;
+}
+
+/**
+ * Identify active lane entities and sort them Actors -> Aggregates -> Externals.
+ */
+function getSortedActiveLanes(
+  entities: Record<string, FlowchartEntity>,
+  relations: FlowchartRelation[],
+  esNodes: FlowchartViewNode[] | undefined,
+  nodeIds: string[]
+): string[] {
+  const getEntityType = (id: string): string => {
+    const entity = entities[id];
+    return entity?.type || entity?.viewTypes?.EVENT_STORMING || 'default';
+  };
+
+  const activeLanes = new Set<string>();
+  nodeIds.forEach(id => {
+    const laneId = findHandlingEntity(entities, relations, id);
+    if (laneId) {
+      activeLanes.add(laneId);
+    }
+  });
+
+  const actors: string[] = [];
+  const aggregates: string[] = [];
+  const externals: string[] = [];
+
+  activeLanes.forEach(laneId => {
+    const type = getEntityType(laneId);
+    if (type === TYPES.USER) {
+      actors.push(laneId);
+    } else if (type === TYPES.EXTERNAL) {
+      externals.push(laneId);
+    } else {
+      aggregates.push(laneId);
+    }
+  });
+
+  const sortByAppearance = (a: string, b: string) => {
+    const colA = getEntityFirstAppearance(entities, relations, esNodes, a);
+    const colB = getEntityFirstAppearance(entities, relations, esNodes, b);
+    if (colA !== colB) return colA - colB;
+    return a.localeCompare(b);
+  };
+
+  actors.sort(sortByAppearance);
+  aggregates.sort(sortByAppearance);
+  externals.sort(sortByAppearance);
+
+  return [...actors, ...aggregates, ...externals];
+}
+
+/**
+ * Generate styling-rich lane groups dynamically for SWIMLANES.
+ */
+function generateDynamicSwimlaneGroups(
+  schema: UnifiedFlowchartSchema,
+  laidOutSwimNodes: FlowchartViewNode[]
+): FlowchartViewGroup[] {
+  const nodeIds = laidOutSwimNodes.map(n => n.id);
+  const esNodes = schema.views.EVENT_STORMING?.nodes;
+  const sortedLanes = getSortedActiveLanes(schema.entities, schema.relations, esNodes, nodeIds);
+
+  const getEntityType = (id: string): string => {
+    const entity = schema.entities[id];
+    return entity?.type || entity?.viewTypes?.EVENT_STORMING || 'default';
+  };
+
+  const tint = (accent: string) =>
+    `color-mix(in srgb, ${accent} 5%, transparent)`;
+
+  const getAccent = (type: string): string => {
+    if (type === TYPES.USER) return 'var(--ctp-yellow)';
+    if (type === TYPES.EXTERNAL) return 'var(--ctp-green)';
+    if (type === TYPES.DATABASE) return 'var(--ctp-teal)';
+    if (type === TYPES.SERVICE) return 'var(--ctp-sapphire)';
+    if (type === TYPES.CORE_SYSTEM) return 'var(--ctp-rosewater)';
+    return 'var(--ctp-blue)';
+  };
+
+  return sortedLanes.map((laneId, idx) => {
+    const entity = schema.entities[laneId];
+    const type = getEntityType(laneId);
+    const accent = getAccent(type);
+    const title = entity?.viewTitles?.SWIMLANES || entity?.title || laneId;
+
+    return {
+      id: `lane_${laneId}`,
+      title: title,
+      isLane: true,
+      row: idx,
+      color: tint(accent),
+      borderColor: `color-mix(in srgb, ${accent} 35%, var(--ctp-surface2))`,
+      textColor: accent
+    };
+  });
+}
+
 function layoutSwimlanes(
   nodes: FlowchartViewNode[],
   nodeIds: string[],
   nodeSet: Set<string>,
   relations: FlowchartRelation[],
   viewKey: string,
-  entities: Record<string, FlowchartEntity>
+  entities: Record<string, FlowchartEntity>,
+  esNodes?: FlowchartViewNode[]
 ): FlowchartViewNode[] {
   const { adj, inDegree } = buildCycleFreeGraph(nodeIds, relations, viewKey, nodeSet);
   const col = computeTopologicalColumns(nodeIds, inDegree, adj);
@@ -1679,20 +1896,21 @@ function layoutSwimlanes(
   });
   const sortedCols = Array.from(colGroups.keys()).sort((a, b) => a - b);
 
+  const sortedLanes = getSortedActiveLanes(entities, relations, esNodes, nodeIds);
+
   const row = new Map<string, number>();
-
-  sortedCols.forEach(c => {
-    const colNodes = colGroups.get(c) || [];
-    const userInCol = colNodes.filter(id => isType(entities, id, TYPES.USER));
-    const externalInCol = colNodes.filter(id => isType(entities, id, TYPES.EXTERNAL));
-    const otherInCol = colNodes.filter(id => !isType(entities, id, TYPES.USER) && !isType(entities, id, TYPES.EXTERNAL));
-
-    // Enforce a row gap of 1 between swimlanes (i.e. if user is at 0, other starts at 1)
-    const laneGap = 1;
-    userInCol.forEach(id => row.set(id, 0));
-    otherInCol.forEach((id, idx) => row.set(id, laneGap + idx));
-    const maxOtherRow = otherInCol.length > 0 ? laneGap + otherInCol.length - 1 : 0;
-    externalInCol.forEach((id, idx) => row.set(id, Math.max(maxOtherRow, laneGap) + laneGap + idx));
+  nodeIds.forEach(id => {
+    const laneId = findHandlingEntity(entities, relations, id);
+    if (laneId) {
+      const idx = sortedLanes.indexOf(laneId);
+      if (idx !== -1) {
+        row.set(id, idx);
+      } else {
+        row.set(id, 0);
+      }
+    } else {
+      row.set(id, 0);
+    }
   });
 
   const compactedCol = compactColumns(sortedCols, col);

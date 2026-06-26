@@ -117,7 +117,7 @@ export const MASTER_MAPPING_MATRIX: Record<string, Record<string, string | null>
   [TYPES.EXTERNAL]: {
     EVENT_STORMING: TYPES.EXTERNAL,
     SYS_ARCH: TYPES.EXTERNAL,
-    SWIMLANES: TYPES.EXTERNAL,
+    SWIMLANES: null,
     SEQUENCE: TYPES.EXTERNAL,
     DATA_FLOW: null,
     STATE_MACHINE: null

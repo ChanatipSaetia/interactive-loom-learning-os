@@ -5,7 +5,7 @@ import { Dropdown } from '../../components/motion/dropdown';
 import { ExpandableTabs, type ExpandableTabItem } from '../../components/motion/expandable-tabs';
 import { Tabs, TabsList, TabsTrigger } from '../../components/motion/tabs';
 
-import { FlowchartView } from './flowchart-view';
+import { FlowchartView } from './views';
 import { PlaybackControls } from './playback-controls';
 import { StepCarousel } from './step-carousel';
 import { usePlaybackState } from './usePlaybackState';
