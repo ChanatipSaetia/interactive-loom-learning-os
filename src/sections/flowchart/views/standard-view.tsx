@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, memo } from 'react';
 import * as Icons from 'lucide-react';
 import { COLORS, BORDER_COLORS, ICONS, ICON_ANIMATIONS, NODE_W, NODE_H, wrapTooltipText, TYPES } from '../types';
 import type { UnifiedFlowchartSchema, FlowchartRelation, FlowchartViewNode, FlowchartViewGroup } from '../types';
@@ -20,7 +20,7 @@ export interface StandardViewProps {
   isFullscreen?: boolean;
 }
 
-export function StandardView({
+export const StandardView = memo(function StandardView({
   viewKey,
   viewInstanceId,
   schema,
@@ -268,14 +268,14 @@ export function StandardView({
             key={node.id}
             id={`node-${node.id}`}
             data-testid={`flowchart-node-${viewKey}-${node.id}`}
-            className={`flowchart-node-group ${hasLinks ? 'has-links' : ''} ${isHighlighted ? 'active' : ''}`}
+            className={`flowchart-node-group ${(isFullscreen && hasLinks) ? 'has-links' : ''} ${isHighlighted ? 'active' : ''}`}
             transform={`translate(${x}, ${y})`}
             onMouseDown={(e) => e.stopPropagation()}
             onTouchStart={(e) => e.stopPropagation()}
-            onClick={(e) => {
+            onClick={isFullscreen ? (e) => {
               e.stopPropagation();
               handleNodeClick(node.id, node.x, node.y);
-            }}
+            } : undefined}
             onMouseEnter={() => {
               if (entity.desc) {
                 setTooltip({ description: entity.desc, x: node.x || 0, y: (node.y || 0) - nH / 2 });
@@ -285,7 +285,7 @@ export function StandardView({
             style={{
               opacity: isDimmed ? 0.25 : 1,
               transition: 'opacity 0.3s, filter 0.3s',
-              cursor: (!isFullscreen || hasLinks) ? 'pointer' : 'default'
+              cursor: isFullscreen ? 'pointer' : 'default'
             }}
           >
             {isHighlighted && (
@@ -467,4 +467,4 @@ export function StandardView({
       })()}
     </>
   );
-}
+});
