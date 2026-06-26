@@ -14,12 +14,15 @@ export interface ThemeOption {
   id: string
   /** Human-readable label shown in the dropdown. */
   label: string
+  /** Optional emoji or text icon shown beside the label. */
+  icon?: string
 }
 
 export const THEMES: ThemeOption[] = [
   { id: '', label: 'Catppuccin Frappé' },
   { id: 'medicare', label: 'MediCare+' },
   { id: 'recipebook', label: 'RecipeBook' },
+  { id: 'pinkcatboo', label: 'PinkCatBoo' },
 ]
 
 export const DEFAULT_THEME_ID = ''

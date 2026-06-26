@@ -274,3 +274,75 @@
   --pale-blue:     rgba(101, 163, 13, 0.10);
   --pale-pink:     rgba(220, 38, 38, 0.10);
 }
+
+/* ============================================================
+   Theme: Pink Cat Boo (dark, rose/lavender)
+   Source: VS Code theme by Fiona Fan
+
+   Primary accent: #fe7c8e (vivid pink)
+   Dark surfaces:  #202330 (base) / #2d2f42 (mantle) / #1a1c2a (crust)
+   Text:           #FFF0F5 (lavender-white)
+   Highlight gold: #d0963a
+
+   Remaps --ctp-* roles so the entire UI re-themes via lazy
+   semantic-token resolution — no component styles need changing.
+============================================================ */
+[data-theme='pinkcatboo'] {
+  /* shadcn semantic tokens — dark rose */
+  --background:        #202330;
+  --foreground:        #FFF0F5;
+  --card:              #2d2f42;
+  --card-foreground:   #FFF0F5;
+  --primary:           #fe7c8e;
+  --primary-foreground: #202330;
+  --secondary:         #2d2f42;
+  --secondary-foreground: #FFF0F5;
+  --muted:             #2d2f42;
+  --muted-foreground:  #9498a1;
+  --accent:            #472541;
+  --accent-foreground: #FFF0F5;
+  --border:            rgba(148, 152, 161, 0.27);
+  --input:             #202330;
+  --ring:              #fe7c8e;
+  --destructive:       #ff62a5;
+  --destructive-foreground: #202330;
+
+  /* Surfaces (dark) */
+  --ctp-crust:     #1a1c2a;   /* darkest: topnav / sidebar header */
+  --ctp-mantle:    #2d2f42;   /* secondary surface */
+  --ctp-base:      #202330;   /* page / canvas background */
+  --ctp-surface0:  #2d2f42;   /* cards, panels, elevated surfaces */
+  --ctp-surface1:  rgba(148, 152, 161, 0.27); /* subtle border */
+  --ctp-surface2:  #9498a1;   /* strong border / divider */
+
+  /* Overlays / muted text */
+  --ctp-overlay0:  #565970;
+  --ctp-overlay1:  #707070;
+  --ctp-overlay2:  #9498a1;
+  --ctp-subtext0:  #9498a1;
+  --ctp-subtext1:  #c0c4cf;
+  --ctp-text:      #FFF0F5;   /* primary foreground */
+
+  /* Accents (Pink Cat Boo palette) */
+  --ctp-blue:      #fe7c8e;   /* primary — vivid pink */
+  --ctp-sapphire:  #f3b4bf;   /* lighter pink (scrollbar, separators) */
+  --ctp-lavender:  #e6a1ff;   /* tag attributes / purple tint */
+  --ctp-sky:       #a2c2eb;   /* library functions / cool blue */
+  --ctp-teal:      #3bc089;   /* warnings / success green */
+  --ctp-mauve:     #DCBFF2;   /* storage type / soft purple */
+  --ctp-pink:      #FA508C;   /* tag names / strong pink */
+  --ctp-rosewater: #EBA4AC;   /* class variables / rose */
+  --ctp-flamingo:  #ffedf0;   /* cursor / softest pink */
+
+  /* Status */
+  --ctp-green:     #3bc089;   /* success */
+  --ctp-yellow:    #d0963a;   /* warning / gold accent */
+  --ctp-peach:     #ffc85b;   /* function names */
+  --ctp-red:       #ff62a5;   /* error */
+  --ctp-maroon:    #ff38a2;   /* numbers */
+
+  /* Selection / highlight tints reused by semantic tokens */
+  --pale-green:    rgba(59, 192, 137, 0.12);
+  --pale-blue:     rgba(254, 124, 142, 0.14);
+  --pale-pink:     rgba(71, 37, 65, 0.60);
+}
