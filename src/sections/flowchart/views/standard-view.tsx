@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import * as Icons from 'lucide-react';
-import { COLORS, BORDER_COLORS, ICONS, ICON_ANIMATIONS, NODE_W, NODE_H, wrapTooltipText } from '../types';
+import { COLORS, BORDER_COLORS, ICONS, ICON_ANIMATIONS, NODE_W, NODE_H, wrapTooltipText, TYPES } from '../types';
 import type { UnifiedFlowchartSchema, FlowchartRelation, FlowchartViewNode, FlowchartViewGroup } from '../types';
 
 export interface StandardViewProps {
@@ -304,16 +304,27 @@ export function StandardView({
               />
             )}
 
-            <rect
-              x={0} y={0}
-              width={nW} height={nH}
-              rx="8"
-              fill={nodeFill}
-              stroke={strokeColor}
-              strokeWidth="1.5"
-              filter={isHighlighted ? `url(#flowchart-glow-${viewInstanceId})` : undefined}
-              className={`flowchart-node-rect ${isHighlighted ? 'flowchart-node-highlighted' : ''}`}
-            />
+            {viewType === TYPES.DECISION ? (
+              <polygon
+                points={`${nW/2},0 ${nW},${nH/2} ${nW/2},${nH} 0,${nH/2}`}
+                fill={nodeFill}
+                stroke={strokeColor}
+                strokeWidth="1.5"
+                filter={isHighlighted ? `url(#flowchart-glow-${viewInstanceId})` : undefined}
+                className={`flowchart-node-rect ${isHighlighted ? 'flowchart-node-highlighted' : ''}`}
+              />
+            ) : (
+              <rect
+                x={0} y={0}
+                width={nW} height={nH}
+                rx="8"
+                fill={nodeFill}
+                stroke={strokeColor}
+                strokeWidth="1.5"
+                filter={isHighlighted ? `url(#flowchart-glow-${viewInstanceId})` : undefined}
+                className={`flowchart-node-rect ${isHighlighted ? 'flowchart-node-highlighted' : ''}`}
+              />
+            )}
 
             <foreignObject x={0} y={0} width={nW} height={nH}>
               <div
@@ -321,74 +332,85 @@ export function StandardView({
                 style={{
                   width: '100%',
                   height: '100%',
-                  padding: '10px',
+                  padding: viewType === TYPES.DECISION ? '16px' : '10px',
                   boxSizing: 'border-box',
                   display: 'flex',
                   flexDirection: 'column',
                   overflow: 'hidden',
-                  userSelect: 'none'
+                  userSelect: 'none',
+                  justifyContent: viewType === TYPES.DECISION ? 'center' : 'flex-start'
                 }}
               >
-                <div
-                  className="flowchart-node-meta"
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '6px',
-                    borderBottom: '1px solid var(--border-light)',
-                    paddingBottom: '4px',
-                    marginBottom: '4px'
-                  }}
-                >
-                  {IconComponent && (
-                    <span className={animClass} style={{ display: 'flex', alignItems: 'center' }}>
-                      <IconComponent size={14} color={strokeColor} />
-                    </span>
-                  )}
-                  <span
+                {viewType !== TYPES.DECISION && (
+                  <div
+                    className="flowchart-node-meta"
                     style={{
-                      fontSize: '10px',
-                      fontWeight: 600,
-                      textTransform: 'uppercase',
-                      letterSpacing: '0.5px',
-                      opacity: 0.85,
-                      color: strokeColor
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '6px',
+                      borderBottom: '1px solid var(--border-light)',
+                      paddingBottom: '4px',
+                      marginBottom: '4px'
                     }}
                   >
-                    {viewType}
-                  </span>
-                  {hasLinks && (
+                    {IconComponent && (
+                      <span className={animClass} style={{ display: 'flex', alignItems: 'center' }}>
+                        <IconComponent size={14} color={strokeColor} />
+                      </span>
+                    )}
                     <span
-                      className="flowchart-node-link-icon"
                       style={{
-                        marginLeft: 'auto',
-                        display: 'flex',
-                        alignItems: 'center',
-                        opacity: 0.5,
-                        transition: 'all 0.2s ease'
+                        fontSize: '10px',
+                        fontWeight: 600,
+                        textTransform: 'uppercase',
+                        letterSpacing: '0.5px',
+                        opacity: 0.85,
+                        color: strokeColor
                       }}
-                      title="Has links to other views"
                     >
-                      <Icons.Link size={10} color={strokeColor} />
+                      {viewType}
                     </span>
-                  )}
-                </div>
+                    {hasLinks && (
+                      <span
+                        className="flowchart-node-link-icon"
+                        style={{
+                          marginLeft: 'auto',
+                          display: 'flex',
+                          alignItems: 'center',
+                          opacity: 0.5,
+                          transition: 'all 0.2s ease'
+                        }}
+                        title="Has links to other views"
+                      >
+                        <Icons.Link size={10} color={strokeColor} />
+                      </span>
+                    )}
+                  </div>
+                )}
+                
                 <div
                   style={{
-                    flex: 1,
+                    flex: viewType === TYPES.DECISION ? 'none' : 1,
                     display: 'flex',
+                    flexDirection: 'column',
                     alignItems: 'center',
                     justifyContent: 'center',
-                    overflow: 'hidden'
+                    overflow: 'hidden',
+                    gap: viewType === TYPES.DECISION ? '4px' : '0'
                   }}
                 >
+                  {viewType === TYPES.DECISION && IconComponent && (
+                    <span className={animClass} style={{ display: 'flex', alignItems: 'center' }}>
+                      <IconComponent size={16} color={strokeColor} />
+                    </span>
+                  )}
                   <p
                     style={{
                       margin: 0,
                       textAlign: 'center',
                       fontWeight: 'bold',
                       lineHeight: 1.25,
-                      fontSize: '14px',
+                      fontSize: viewType === TYPES.DECISION ? '12px' : '14px',
                       color: 'var(--ctp-text)',
                       display: '-webkit-box',
                       WebkitLineClamp: 3,

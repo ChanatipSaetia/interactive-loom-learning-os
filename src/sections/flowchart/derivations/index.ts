@@ -248,6 +248,29 @@ export function autoDeriveViews(schema: UnifiedFlowchartSchema): UnifiedFlowchar
     }
   });
 
+  // AUTOMATIC POLICY MERGING FOR DECISIONS
+  const eventIds = Object.keys(expandedEntities).filter(id => getEntityType(expandedEntities[id]) === TYPES.EVENT);
+  
+  eventIds.forEach(eventId => {
+    const outRels = newSchema.relations.filter(r => r.from === eventId && (!r.views || r.views.includes('EVENT_STORMING')));
+    const policyRels = outRels.filter(r => getEntityType(expandedEntities[r.to]) === TYPES.POLICY);
+    
+    if (policyRels.length >= 2) {
+      const decId = `dec_${eventId}`;
+      expandedEntities[decId] = {
+        title: 'Evaluate',
+        desc: 'Decision point branching to multiple policies',
+        type: TYPES.DECISION
+      };
+      
+      policyRels.forEach(r => {
+        const polId = r.to;
+        expandedEntities[polId].collapsedTo = decId;
+        expandedEntities[polId].branchLabel = r.label;
+      });
+    }
+  });
+
   const updatedRelations = newSchema.relations.map(r => ({
     ...r,
     views: r.views || ['EVENT_STORMING']
@@ -336,8 +359,16 @@ export function autoDeriveViews(schema: UnifiedFlowchartSchema): UnifiedFlowchar
     const mapping = MASTER_MAPPING_MATRIX[esType];
     if (mapping) {
       Object.entries(mapping).forEach(([vk, mappedType]) => {
-        if (mappedType && policyShouldMapToDecision(newSchema, nodeId, esType)) {
-          derivedTypes[vk] = mappedType;
+        if (mappedType) {
+          if (esType === TYPES.POLICY && (vk === 'SWIMLANES' || vk === 'DATA_FLOW')) {
+            if (policyShouldMapToDecision(newSchema, nodeId, esType)) {
+              derivedTypes[vk] = TYPES.DECISION;
+            } else {
+              derivedTypes[vk] = TYPES.PROCESS;
+            }
+          } else {
+            derivedTypes[vk] = mappedType;
+          }
         }
       });
     }

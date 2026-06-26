@@ -286,7 +286,9 @@ export function layoutEventStorming(
             if (timelineOfHandler.get(h) === u) {
               const hEntity = entities[h];
               const hType = hEntity?.type || hEntity?.viewTypes?.EVENT_STORMING || 'default';
-              if (hType === TYPES.USER && uType !== TYPES.EVENT) hasActorOnLeft = true;
+              if (hType === TYPES.USER && uType !== TYPES.EVENT) {
+                hasActorOnLeft = true;
+              }
             }
           });
         }
@@ -382,8 +384,44 @@ export function layoutEventStorming(
   }
 
   const row = new Map<string, number>();
+
+  let maxBranchLevel = 0;
   timelineNodes.forEach(u => {
-    row.set(u, 2 + Math.max(0, branchLevel.get(u)!));
+    const l = Math.max(0, branchLevel.get(u)!);
+    if (l > maxBranchLevel) maxBranchLevel = l;
+  });
+
+  const levelRow = new Map<number, number>();
+  let currentRow = 2; // base row for level 0
+
+  for (let L = 0; L <= maxBranchLevel; L++) {
+    let hasHandlerOnTop = false;
+    timelineNodes.forEach(u => {
+      if (Math.max(0, branchLevel.get(u)!) === L) {
+        handlerNodes.forEach(h => {
+          if (timelineOfHandler.get(h) === u) {
+            const hEntity = entities[h];
+            const hType = hEntity?.type || hEntity?.viewTypes?.EVENT_STORMING || 'default';
+            if (hType !== TYPES.USER) {
+              hasHandlerOnTop = true;
+            }
+          }
+        });
+      }
+    });
+
+    if (L > 0) {
+      if (hasHandlerOnTop) {
+        currentRow += 1.5; // increase vertical gap
+      } else {
+        currentRow += 1;
+      }
+    }
+    levelRow.set(L, currentRow);
+  }
+
+  timelineNodes.forEach(u => {
+    row.set(u, levelRow.get(Math.max(0, branchLevel.get(u)!))!);
   });
 
   handlerNodes.forEach(h => {

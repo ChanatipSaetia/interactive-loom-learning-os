@@ -1,13 +1,12 @@
 import type { UnifiedFlowchartSchema, FlowchartRelation, FlowchartViewNode, FlowchartViewGroup, FlowchartEntity } from '../types';
 import { TYPES, MASTER_MAPPING_MATRIX } from '../types';
-import { getEntityType, policyShouldMapToDecision, deriveRelations, buildCycleFreeGraph, computeTopologicalColumns, compactColumns, computeLayoutInfo } from './utils';
+import { getEntityType, deriveRelations, buildCycleFreeGraph, computeTopologicalColumns, compactColumns, computeLayoutInfo } from './utils';
 
 export function deriveSwimlanes(
   schema: UnifiedFlowchartSchema,
   getCollapsedId: (id: string) => string,
   getESNode: (id: string) => FlowchartViewNode | undefined,
-  esNodes: FlowchartViewNode[] | undefined,
-  sysNodes?: FlowchartViewNode[]
+  esNodes: FlowchartViewNode[] | undefined
 ) {
   const swimNodes: FlowchartViewNode[] = [];
   const localAddedNodes = new Set<string>();
@@ -18,7 +17,7 @@ export function deriveSwimlanes(
     if (!esNode) return;
 
     const swimType = MASTER_MAPPING_MATRIX[type]?.SWIMLANES;
-    if (swimType && policyShouldMapToDecision(schema, id, type)) {
+    if (swimType) {
       const collapsedId = getCollapsedId(id);
       if (localAddedNodes.has(collapsedId)) return;
       localAddedNodes.add(collapsedId);
@@ -30,7 +29,12 @@ export function deriveSwimlanes(
     }
   });
 
-  const getSwimlaneLabel = (pathNodeIds: string[], _startId: string): { label: string } => {
+  const getSwimlaneLabel = (pathNodeIds: string[], startInstanceId: string): { label: string } => {
+    const startEntity = schema.entities[startInstanceId];
+    if (startEntity?.branchLabel) {
+      return { label: startEntity.branchLabel };
+    }
+
     const evtNode = pathNodeIds.find(id => getEntityType(schema.entities[id]) === TYPES.EVENT);
     if (evtNode) return { label: schema.entities[evtNode].title };
 
@@ -50,8 +54,8 @@ export function deriveSwimlanes(
 
   const nodeIds = swimNodes.map(n => n.id);
   const nodeSet = new Set(nodeIds);
-  const laidOutSwimNodes = layoutSwimlanes(swimNodes, nodeIds, nodeSet, updatedRelations, 'SWIMLANES', schema.entities, esNodes, sysNodes);
-  const swimGroups = generateDynamicSwimlaneGroups(schema, laidOutSwimNodes, esNodes, sysNodes);
+  const laidOutSwimNodes = layoutSwimlanes(swimNodes, nodeIds, nodeSet, updatedRelations, 'SWIMLANES', schema.entities, esNodes);
+  const swimGroups = generateDynamicSwimlaneGroups(schema, laidOutSwimNodes, esNodes);
 
   return {
     nodes: laidOutSwimNodes,
@@ -89,6 +93,7 @@ function findHandlingEntity(
   let queue: { id: string; depth: number }[] = [{ id: nodeId, depth: 0 }];
   let visited = new Set<string>([nodeId]);
 
+  // Backward BFS (prioritize previous command)
   while (queue.length > 0) {
     const { id, depth } = queue.shift()!;
     if (depth > 4) continue;
@@ -98,17 +103,18 @@ function findHandlingEntity(
       return getCollapsedId(id);
     }
 
-    const outRels = relations.filter(r =>
-      (!r.views || r.views.includes('EVENT_STORMING')) && r.from === id
+    const inRels = relations.filter(r =>
+      (!r.views || r.views.includes('EVENT_STORMING') || r.views.includes('SWIMLANES')) && r.to === id
     );
-    for (const r of outRels) {
-      if (!visited.has(r.to)) {
-        visited.add(r.to);
-        queue.push({ id: r.to, depth: depth + 1 });
+    for (const r of inRels) {
+      if (!visited.has(r.from)) {
+        visited.add(r.from);
+        queue.push({ id: r.from, depth: depth + 1 });
       }
     }
   }
 
+  // Forward BFS
   queue = [{ id: nodeId, depth: 0 }];
   visited = new Set<string>([nodeId]);
 
@@ -121,13 +127,13 @@ function findHandlingEntity(
       return getCollapsedId(id);
     }
 
-    const inRels = relations.filter(r =>
-      (!r.views || r.views.includes('EVENT_STORMING')) && r.to === id
+    const outRels = relations.filter(r =>
+      (!r.views || r.views.includes('EVENT_STORMING') || r.views.includes('SWIMLANES')) && r.from === id
     );
-    for (const r of inRels) {
-      if (!visited.has(r.from)) {
-        visited.add(r.from);
-        queue.push({ id: r.from, depth: depth + 1 });
+    for (const r of outRels) {
+      if (!visited.has(r.to)) {
+        visited.add(r.to);
+        queue.push({ id: r.to, depth: depth + 1 });
       }
     }
   }
@@ -167,8 +173,7 @@ function getSortedActiveLanes(
   entities: Record<string, FlowchartEntity>,
   relations: FlowchartRelation[],
   esNodes: FlowchartViewNode[] | undefined,
-  nodeIds: string[],
-  sysNodes?: FlowchartViewNode[]
+  nodeIds: string[]
 ): string[] {
   const activeLanes = new Set<string>();
   nodeIds.forEach(id => {
@@ -193,8 +198,7 @@ function getSortedActiveLanes(
 }
 
 function computeLaneYAssignments(
-  sortedLanes: string[],
-  sysNodes?: FlowchartViewNode[]
+  sortedLanes: string[]
 ): Map<string, number> {
   const assignedY = new Map<string, number>();
   
@@ -208,14 +212,12 @@ function computeLaneYAssignments(
 export function generateDynamicSwimlaneGroups(
   schema: UnifiedFlowchartSchema,
   laidOutSwimNodes: FlowchartViewNode[],
-  esNodes?: FlowchartViewNode[],
-  sysNodes?: FlowchartViewNode[]
+  esNodes?: FlowchartViewNode[]
 ): FlowchartViewGroup[] {
   const nodeIds = laidOutSwimNodes.map(n => n.id);
   const resolvedEsNodes = esNodes || schema.views.EVENT_STORMING?.nodes;
-  const resolvedSysNodes = sysNodes || schema.views.SYS_ARCH?.nodes;
-  const sortedLanes = getSortedActiveLanes(schema.entities, schema.relations, resolvedEsNodes, nodeIds, resolvedSysNodes);
-  const laneYMap = computeLaneYAssignments(sortedLanes, resolvedSysNodes);
+  const sortedLanes = getSortedActiveLanes(schema.entities, schema.relations, resolvedEsNodes, nodeIds);
+  const laneYMap = computeLaneYAssignments(sortedLanes);
 
   const tint = (accent: string) => `color-mix(in srgb, ${accent} 5%, transparent)`;
 
@@ -253,8 +255,7 @@ export function layoutSwimlanes(
   relations: FlowchartRelation[],
   viewKey: string,
   entities: Record<string, FlowchartEntity>,
-  esNodes?: FlowchartViewNode[],
-  sysNodes?: FlowchartViewNode[]
+  esNodes?: FlowchartViewNode[]
 ): FlowchartViewNode[] {
   const { adj, inDegree } = buildCycleFreeGraph(nodeIds, relations, viewKey, nodeSet);
   const col = computeTopologicalColumns(nodeIds, inDegree, adj);
@@ -266,8 +267,8 @@ export function layoutSwimlanes(
   });
   const sortedCols = Array.from(colGroups.keys()).sort((a, b) => a - b);
 
-  const sortedLanes = getSortedActiveLanes(entities, relations, esNodes, nodeIds, sysNodes);
-  const laneYMap = computeLaneYAssignments(sortedLanes, sysNodes);
+  const sortedLanes = getSortedActiveLanes(entities, relations, esNodes, nodeIds);
+  const laneYMap = computeLaneYAssignments(sortedLanes);
 
   const row = new Map<string, number>();
   nodeIds.forEach(id => {

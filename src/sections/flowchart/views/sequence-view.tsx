@@ -126,23 +126,23 @@ export function SequenceView({
         const x1 = fromCol * COL_W + START_X;
         const x2 = toCol * COL_W + START_X;
         const y = MSG_START_Y + idx * MSG_SPACING;
-        const isReturn = x2 < x1;
         const midX = (x1 + x2) / 2;
-
+        const isSelf = x1 === x2;
         const edgeId = `seq-edge-${rel.id}`;
         const isHoveredEdge = hoveredEdgeId === edgeId;
         const isHighlightedNode = highlightedNodeId === rel.from || highlightedNodeId === rel.to;
         const isEdgeActive = isHighlightedNode || isHoveredEdge || !!(activeNodeIds?.includes(rel.from) || activeNodeIds?.includes(rel.to));
 
-        const strokeColor = isEdgeActive ? 'var(--ctp-blue)' : (isReturn ? 'var(--ctp-yellow)' : 'var(--ctp-surface2)');
+        const isEvent = rel.dashed;
+        const strokeColor = isEvent ? 'var(--ctp-peach)' : 'var(--ctp-blue)';
         const strokeWidth = isEdgeActive ? 2.5 : 1.5;
 
-        const marker = isEdgeActive
-          ? `url(#flowchart-arrow-highlight-${viewInstanceId})`
-          : `url(#flowchart-arrow-${viewInstanceId})`;
+        const marker = isEvent
+          ? `url(#seq-arrow-evt-${viewInstanceId})`
+          : `url(#seq-arrow-cmd-${viewInstanceId})`;
 
         let displayLabel = rel.label || '';
-        const segmentLength = Math.abs(x2 - x1);
+        const segmentLength = isSelf ? COL_W - 40 : Math.abs(x2 - x1);
         
         // Ensure the label pill doesn't exceed the segment length, with a large padding to keep it visually contained
         const maxAllowedChars = Math.max(5, Math.floor((segmentLength - 80) / 7));
@@ -158,7 +158,7 @@ export function SequenceView({
             onMouseEnter={() => {
               setHoveredEdgeId(edgeId);
               if (rel.label) {
-                setTooltip({ description: rel.label, x: midX, y });
+                setTooltip({ description: rel.label, x: isSelf ? x1 + 40 : midX, y });
               }
             }}
             onMouseLeave={() => {
@@ -167,38 +167,65 @@ export function SequenceView({
             }}
             data-testid={`flowchart-seq-msg-${viewKey}-${idx}`}
           >
-            {/* Invisible wider hover path */}
-            <line
-              x1={x1}
-              y1={y}
-              x2={x2}
-              y2={y}
-              stroke="#000"
-              strokeOpacity="0"
-              strokeWidth="25"
-              style={{ cursor: 'pointer' }}
-            />
-            {/* Visible animated dash line */}
-            <line
-              x1={x1}
-              y1={y}
-              x2={x2}
-              y2={y}
-              stroke={strokeColor}
-              strokeWidth={strokeWidth}
-              strokeDasharray={isReturn ? '4 4' : '8 8'}
-              className="flowchart-edge flowchart-edge-animated"
-              style={{
-                pointerEvents: 'none',
-                filter: isEdgeActive ? 'drop-shadow(0 0 6px var(--ctp-blue))' : undefined
-              }}
-              markerEnd={isReturn
-                ? `url(#seq-arrow-ret-${viewInstanceId})`
-                : marker
-              }
-            />
+            {isSelf ? (
+              <>
+                {/* Invisible wider hover path for self-loop */}
+                <path
+                  d={`M ${x1} ${y - 12} h 35 v 24 h -35`}
+                  stroke="#000"
+                  strokeOpacity="0"
+                  strokeWidth="20"
+                  fill="none"
+                  style={{ cursor: 'pointer' }}
+                />
+                {/* Visible self-loop path */}
+                <path
+                  d={`M ${x1} ${y - 12} h 25 v 24 h -25`}
+                  stroke={strokeColor}
+                  strokeWidth={strokeWidth}
+                  strokeDasharray={isEvent ? '4 4' : '8 8'}
+                  fill="none"
+                  className="flowchart-edge flowchart-edge-animated"
+                  style={{
+                    pointerEvents: 'none',
+                    filter: isEdgeActive ? `drop-shadow(0 0 6px ${strokeColor})` : undefined
+                  }}
+                  markerEnd={marker}
+                />
+              </>
+            ) : (
+              <>
+                {/* Invisible wider hover path */}
+                <line
+                  x1={x1}
+                  y1={y}
+                  x2={x2}
+                  y2={y}
+                  stroke="#000"
+                  strokeOpacity="0"
+                  strokeWidth="25"
+                  style={{ cursor: 'pointer' }}
+                />
+                {/* Visible animated dash line */}
+                <line
+                  x1={x1}
+                  y1={y}
+                  x2={x2}
+                  y2={y}
+                  stroke={strokeColor}
+                  strokeWidth={strokeWidth}
+                  strokeDasharray={isEvent ? '4 4' : '8 8'}
+                  className="flowchart-edge flowchart-edge-animated"
+                  style={{
+                    pointerEvents: 'none',
+                    filter: isEdgeActive ? `drop-shadow(0 0 6px ${strokeColor})` : undefined
+                  }}
+                  markerEnd={marker}
+                />
+              </>
+            )}
             {displayLabel && (
-              <g transform={`translate(${midX}, ${y})`} style={{ pointerEvents: 'none' }}>
+              <g transform={`translate(${isSelf ? x1 + 30 + (displayLabel.length * 3.5) : midX}, ${y})`} style={{ pointerEvents: 'none' }}>
                 <rect
                   x={-displayLabel.length * 3.5 - 6}
                   y="-10"

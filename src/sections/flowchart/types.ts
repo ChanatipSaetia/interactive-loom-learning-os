@@ -211,6 +211,8 @@ export interface FlowchartEntity {
   color?: string;
   strokeColor?: string;
   stateMachine?: FlowchartStateMachine;
+  /** Store branching condition label when multiple policies are merged */
+  branchLabel?: string;
 }
 
 export interface FlowchartRelation {
@@ -221,6 +223,7 @@ export interface FlowchartRelation {
   dashed?: boolean;
   handledBy?: boolean;
   label?: string;
+  chronologicalIndex?: number;
 }
 
 export interface FlowchartViewNode {

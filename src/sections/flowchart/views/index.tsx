@@ -440,11 +440,11 @@ export function FlowchartView({
             </marker>
             {isSequenceView && (
               <>
-                <marker id={`seq-arrow-fwd-${viewInstanceId}`} markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto">
+                <marker id={`seq-arrow-cmd-${viewInstanceId}`} markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto">
                   <path d="M 0 0 L 7 3 L 0 6 Z" fill="var(--ctp-blue)" />
                 </marker>
-                <marker id={`seq-arrow-ret-${viewInstanceId}`} markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto">
-                  <path d="M 0 0 L 7 3 L 0 6 Z" fill="var(--ctp-yellow)" />
+                <marker id={`seq-arrow-evt-${viewInstanceId}`} markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto">
+                  <path d="M 0 0 L 7 3 L 0 6 Z" fill="var(--ctp-peach)" />
                 </marker>
               </>
             )}

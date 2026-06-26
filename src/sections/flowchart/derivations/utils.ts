@@ -16,7 +16,24 @@ export function countOutgoingRelations(schema: UnifiedFlowchartSchema, entityId:
 
 export function policyShouldMapToDecision(schema: UnifiedFlowchartSchema, entityId: string, entityType: string): boolean {
   if (entityType !== TYPES.POLICY) return true;
-  return countOutgoingRelations(schema, entityId) >= 2;
+  
+  // A policy is a decision if it has multiple outcomes
+  const outCount = countOutgoingRelations(schema, entityId);
+  if (outCount >= 2) return true;
+
+  // Or if it is one of multiple policies triggered by the same event
+  const incomingEvents = schema.relations
+    .filter(r => (!r.views || r.views.includes('EVENT_STORMING')) && r.to === entityId)
+    .map(r => r.from)
+    .filter(fromId => getEntityType(schema.entities[fromId]) === TYPES.EVENT);
+
+  for (const evtId of incomingEvents) {
+    if (countOutgoingRelations(schema, evtId) >= 2) {
+      return true;
+    }
+  }
+
+  return false;
 }
 
 export function isBoundaryType(entity: FlowchartEntity | undefined): boolean {
@@ -33,7 +50,8 @@ export function deriveRelations(
   schema: UnifiedFlowchartSchema,
   viewKey: string,
   participantIds: Set<string>,
-  getLabel: (nodesOnPath: string[], startId: string) => { label: string; dashed?: boolean }
+  getLabel: (nodesOnPath: string[], startId: string) => { label: string; dashed?: boolean },
+  onDanglingPath?: (pathNodeIds: string[], startId: string) => void
 ): FlowchartRelation[] {
   const relations: FlowchartRelation[] = [];
   const visitedPaths = new Set<string>();
@@ -53,17 +71,24 @@ export function deriveRelations(
     }
 
     const queue: Array<{
+      startingInstanceId: string;
       currentId: string;
       path: string[];
       intermediateNodeIds: string[];
-    }> = startingInstanceIds.map(id => ({ currentId: id, path: [id], intermediateNodeIds: [] }));
+    }> = startingInstanceIds.map(id => ({ startingInstanceId: id, currentId: id, path: [id], intermediateNodeIds: [] }));
 
     while (queue.length > 0) {
-      const { currentId, path, intermediateNodeIds } = queue.shift()!;
+      const { startingInstanceId, currentId, path, intermediateNodeIds } = queue.shift()!;
 
       const outRels = schema.relations.filter(r => 
         (!r.views || r.views.includes('EVENT_STORMING')) && r.from === currentId
       );
+
+      if (outRels.length === 0 && currentId !== startingInstanceId) {
+        if (onDanglingPath) {
+          onDanglingPath([...path.slice(1)], startingInstanceId);
+        }
+      }
 
       for (const rel of outRels) {
         const nextId = rel.to;
@@ -74,7 +99,7 @@ export function deriveRelations(
         if (participantIds.has(collapsedNext)) {
           if (collapsedNext !== collapsedStart) {
             const pathNodeIds = [...path.slice(1), nextId];
-            const { label, dashed } = getLabel(pathNodeIds, startId);
+            const { label, dashed } = getLabel(pathNodeIds, startingInstanceId);
 
             const startEntity = schema.entities[collapsedStart];
             const endEntity = schema.entities[collapsedNext];
@@ -93,13 +118,37 @@ export function deriveRelations(
             const relKey = `${collapsedStart}->${collapsedNext}:${label}`;
             if (!visitedPaths.has(relKey)) {
               visitedPaths.add(relKey);
+
+              let chronologicalIndex = 999;
+              const labelNodeId = pathNodeIds.find(id => {
+                const type = getEntityType(schema.entities[id]);
+                return type === TYPES.COMMAND || type === TYPES.EVENT;
+              }) || pathNodeIds[pathNodeIds.length - 1];
+
+              if (labelNodeId) {
+                let relIdx = schema.relations.findIndex(r => 
+                  (!r.views || r.views.includes('EVENT_STORMING')) && 
+                  r.to === labelNodeId
+                );
+                if (relIdx === -1) {
+                  relIdx = schema.relations.findIndex(r => 
+                    (!r.views || r.views.includes('EVENT_STORMING')) && 
+                    r.from === labelNodeId
+                  );
+                }
+                if (relIdx !== -1) {
+                  chronologicalIndex = relIdx;
+                }
+              }
+
               relations.push({
                 id: `derived_${viewKey.toLowerCase()}_rel_${collapsedStart}_${collapsedNext}_${relations.length}`,
                 from: collapsedStart,
                 to: collapsedNext,
                 views: [viewKey],
                 label,
-                dashed
+                dashed,
+                chronologicalIndex
               });
             }
           }
@@ -108,6 +157,7 @@ export function deriveRelations(
             ? [...intermediateNodeIds, nextId]
             : intermediateNodeIds;
           queue.push({
+            startingInstanceId,
             currentId: nextId,
             path: [...path, nextId],
             intermediateNodeIds: nextIntermediates

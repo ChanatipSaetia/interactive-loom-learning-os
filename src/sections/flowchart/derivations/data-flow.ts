@@ -1,6 +1,6 @@
 import type { UnifiedFlowchartSchema, FlowchartRelation, FlowchartViewNode, FlowchartEntity } from '../types';
 import { TYPES, MASTER_MAPPING_MATRIX } from '../types';
-import { getEntityType, policyShouldMapToDecision, deriveRelations, buildCycleFreeGraph, computeTopologicalColumns, compactColumns, isType, computeLayoutInfo } from './utils';
+import { getEntityType, deriveRelations, buildCycleFreeGraph, computeTopologicalColumns, compactColumns, isType, computeLayoutInfo } from './utils';
 
 export function deriveDataFlow(
   schema: UnifiedFlowchartSchema,
@@ -16,7 +16,7 @@ export function deriveDataFlow(
     if (!esNode) return;
 
     const dfType = MASTER_MAPPING_MATRIX[type]?.DATA_FLOW;
-    if (dfType && policyShouldMapToDecision(schema, id, type)) {
+    if (dfType) {
       const collapsedId = getCollapsedId(id);
       if (localAddedNodes.has(collapsedId)) return;
       localAddedNodes.add(collapsedId);
@@ -28,11 +28,16 @@ export function deriveDataFlow(
     }
   });
 
-  const getDataFlowLabel = (pathNodeIds: string[], startId: string): { label: string } => {
+  const getDataFlowLabel = (pathNodeIds: string[], startInstanceId: string): { label: string } => {
+    const startInstanceEntity = schema.entities[startInstanceId];
+    if (startInstanceEntity?.branchLabel) {
+      return { label: startInstanceEntity.branchLabel };
+    }
+
     const cmdNode = pathNodeIds.find(id => getEntityType(schema.entities[id]) === TYPES.COMMAND);
 
     let dataObjectTitle = '';
-    const startEntity = schema.entities[startId];
+    const startEntity = schema.entities[getCollapsedId(startInstanceId)];
     if (startEntity && getEntityType(startEntity) === TYPES.EVENT) {
       dataObjectTitle = startEntity.viewTitles?.DATA_FLOW || startEntity.title;
     } else {
