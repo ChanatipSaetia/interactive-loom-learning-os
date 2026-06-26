@@ -3,60 +3,38 @@
    ========================================================================== */
 
 .flowchart-section {
-  margin-bottom: var(--spacing-xxl);
-  display: flex;
-  flex-direction: column;
-  gap: var(--spacing-md);
-  width: 100%;
+  @apply flex flex-col gap-3 w-full mb-8;
 }
 
 /* ---- Header ---- */
 .flowchart-header-container {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: var(--spacing-md);
+  @apply flex justify-between items-center flex-wrap gap-3;
 }
 
 .flowchart-title {
+  @apply font-normal m-0 leading-[1.3];
   font-family: var(--font-body);
   font-size: var(--text-feature-heading);
-  font-weight: 400;
   color: var(--ctp-mauve);
-  margin: 0;
-  line-height: 1.3;
 }
 
 /* ---- View tabs ---- */
 .flowchart-view-tabs {
-  display: flex;
-  gap: 2px;
+  @apply flex gap-[2px] rounded-[var(--radius-sm)] border border-border p-[3px];
   background: var(--ctp-mantle);
-  padding: 3px;
-  border-radius: var(--radius-sm);
-  border: 1px solid var(--border-light);
 }
 
 .flowchart-view-tab-btn {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  padding: 5px 12px;
+  @apply flex items-center gap-[6px] px-3 py-[5px] rounded-[var(--radius-xs)] border-none bg-transparent cursor-pointer whitespace-nowrap;
   font-family: var(--font-body);
   font-size: 12px;
   font-weight: 500;
   color: var(--ctp-overlay1);
-  background: transparent;
-  border: none;
-  border-radius: var(--radius-xs);
-  cursor: pointer;
   transition: color 0.15s ease, background-color 0.15s ease;
-  white-space: nowrap;
 }
 
 .flowchart-view-tab-btn:hover {
-  color: var(--ctp-text);
+  @apply text-foreground;
   background: var(--ctp-surface0);
 }
 
@@ -67,29 +45,19 @@
 
 /* ---- Canvas wrapper ---- */
 .flowchart-canvas-wrapper {
-  display: flex;
-  position: relative;
-  width: 100%;
-  gap: 0;
-  border: 1px solid var(--border-light);
-  border-radius: var(--radius-sm);
+  @apply flex relative w-full gap-0 rounded-[var(--radius-sm)] border border-border overflow-hidden;
   background-color: var(--ctp-base);
-  overflow: hidden;
 }
 
 /* ---- SVG container ---- */
 .flowchart-body {
-  flex: 1;
-  position: relative;
-  min-width: 0;
+  @apply flex-1 relative min-w-0;
 }
 
 .flowchart-svg {
-  width: 100%;
+  @apply w-full block overflow-hidden;
   height: 480px;
   background-color: var(--ctp-base);
-  overflow: hidden;
-  display: block;
   touch-action: none;
   cursor: grab;
 }
@@ -100,79 +68,48 @@
 
 /* ---- Zoom toolbar overlay ---- */
 .flowchart-zoom-toolbar {
-  position: absolute;
-  top: var(--spacing-md);
-  left: var(--spacing-md);
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-  z-index: 10;
+  @apply absolute top-3 left-3 flex flex-col gap-[2px] z-[10] rounded-[var(--radius-sm)] border border-border p-[3px];
   background: var(--ctp-mantle);
-  border: 1px solid var(--border-light);
-  border-radius: var(--radius-sm);
-  padding: 3px;
 }
 
 .flowchart-zoom-toolbar button {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 30px;
-  height: 30px;
-  border: none;
-  background: transparent;
+  @apply flex items-center justify-center w-[30px] h-[30px] border-none bg-transparent rounded-[var(--radius-xs)] cursor-pointer;
   color: var(--ctp-overlay1);
-  border-radius: var(--radius-xs);
-  cursor: pointer;
   transition: color 0.15s ease, background-color 0.15s ease;
   font-family: var(--font-body);
 }
 
 .flowchart-zoom-toolbar button:hover {
-  color: var(--ctp-text);
+  @apply text-foreground;
   background: var(--ctp-surface0);
 }
 
 /* ---- Sidebar editor ---- */
 .flowchart-sidebar {
+  @apply flex flex-col flex-shrink-0 overflow-hidden;
   width: 300px;
+  height: 480px;
   background-color: var(--ctp-crust);
   border-left: 1px solid var(--border-light);
-  display: flex;
-  flex-direction: column;
-  height: 480px;
   transition: transform 0.25s ease, margin-right 0.25s ease;
   z-index: 20;
-  flex-shrink: 0;
   transform: translateX(100%);
   margin-right: -300px;
 }
 
 .flowchart-sidebar.active {
-  transform: translateX(0);
+  @apply transform-none;
   margin-right: 0;
 }
 
 .flowchart-sidebar-tabs {
-  display: flex;
-  align-items: center;
+  @apply flex items-center gap-[2px] p-1 border-b border-border;
   background: var(--ctp-mantle);
-  padding: 4px;
-  gap: 2px;
-  border-bottom: 1px solid var(--border-light);
 }
 
 .flowchart-sidebar-tab-btn {
-  flex: 1;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 32px;
-  border: none;
-  background: transparent;
+  @apply flex justify-center items-center flex-1 h-8 border-none bg-transparent rounded-[var(--radius-xs)] cursor-pointer;
   color: var(--ctp-overlay1);
-  border-radius: var(--radius-xs);
-  cursor: pointer;
   font-family: var(--font-body);
   font-size: 12px;
   transition: color 0.15s ease, background-color 0.15s ease;
@@ -180,7 +117,7 @@
 
 .flowchart-sidebar-tab-btn:hover {
   background: var(--ctp-surface0);
-  color: var(--ctp-text);
+  @apply text-foreground;
 }
 
 .flowchart-sidebar-tab-btn.active {
@@ -189,16 +126,8 @@
 }
 
 .flowchart-sidebar-close {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 32px;
-  height: 32px;
-  border: none;
-  background: transparent;
+  @apply flex items-center justify-center w-8 h-8 border-none bg-transparent rounded-[var(--radius-xs)] cursor-pointer;
   color: var(--ctp-overlay1);
-  border-radius: var(--radius-xs);
-  cursor: pointer;
   transition: color 0.15s ease, background-color 0.15s ease;
 }
 
@@ -208,42 +137,22 @@
 }
 
 .flowchart-sidebar-content {
-  flex: 1;
-  overflow-y: auto;
-  padding: var(--spacing-md);
-  display: flex;
-  flex-direction: column;
-  gap: var(--spacing-md);
+  @apply flex-1 overflow-y-auto flex flex-col gap-3 p-3;
 }
 
 .flowchart-sidebar-section-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: var(--spacing-sm);
+  @apply flex justify-between items-center mb-2;
 }
 
 .flowchart-sidebar-section-header h2 {
+  @apply font-bold uppercase tracking-[0.8px] m-0 text-xs;
   font-family: var(--font-mono);
-  font-size: 10px;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.8px;
   color: var(--ctp-overlay1);
-  margin: 0;
 }
 
 .flowchart-sidebar-add-btn {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 22px;
-  height: 22px;
-  background: transparent;
+  @apply flex items-center justify-center w-[22px] h-[22px] bg-transparent rounded-[var(--radius-xs)] border border-border cursor-pointer;
   color: var(--ctp-blue);
-  border: 1px solid var(--border-light);
-  border-radius: var(--radius-xs);
-  cursor: pointer;
   transition: border-color 0.15s ease, background-color 0.15s ease;
 }
 
@@ -254,21 +163,13 @@
 
 /* Sidebar list items */
 .flowchart-sidebar-list {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
+  @apply flex flex-col gap-1;
 }
 
 .flowchart-sidebar-item {
-  padding: 8px 10px;
-  border-radius: var(--radius-xs);
+  @apply flex justify-between items-center px-2.5 py-2 rounded-[var(--radius-xs)] border border-transparent cursor-pointer;
   background: var(--ctp-surface0);
-  border: 1px solid transparent;
-  cursor: pointer;
   transition: border-color 0.15s ease, background-color 0.15s ease;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
 }
 
 .flowchart-sidebar-item.hoverable:hover {
@@ -282,81 +183,57 @@
 }
 
 .flowchart-sidebar-item.inactive {
-  opacity: 0.5;
+  @apply opacity-50;
 }
 
 .flowchart-sidebar-item-title {
+  @apply font-medium text-sm;
   font-family: var(--font-body);
-  font-size: 12px;
-  font-weight: 500;
   color: var(--ctp-text);
 }
 
 .flowchart-sidebar-item-subtitle {
+  @apply text-[10px] mt-0.5;
   font-family: var(--font-body);
-  font-size: 10px;
   color: var(--ctp-subtext0);
-  margin-top: 2px;
 }
 
 .flowchart-color-indicator {
-  width: 10px;
-  height: 10px;
-  border-radius: var(--radius-full);
-  border: 1px solid var(--border-light);
-  flex-shrink: 0;
+  @apply w-2.5 h-2.5 rounded-full border border-border flex-shrink-0;
 }
 
 /* Sidebar forms */
 .flowchart-sidebar-form {
-  display: flex;
-  flex-direction: column;
-  gap: var(--spacing-md);
+  @apply flex flex-col gap-3;
 }
 
 .flowchart-sidebar-back {
+  @apply font-medium text-xs bg-transparent border-none cursor-pointer text-left self-start p-0;
   font-family: var(--font-body);
-  font-size: 11px;
-  font-weight: 500;
   color: var(--ctp-blue);
-  background: transparent;
-  border: none;
-  cursor: pointer;
-  text-align: left;
-  align-self: flex-start;
-  padding: 0;
 }
 
 .flowchart-sidebar-back:hover {
-  text-decoration: underline;
+  @apply underline;
 }
 
 .flowchart-form-group {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
+  @apply flex flex-col gap-1;
 }
 
 .flowchart-form-group label {
+  @apply font-semibold uppercase tracking-[0.5px] text-[10px];
   font-family: var(--font-mono);
-  font-size: 10px;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
   color: var(--ctp-overlay1);
 }
 
 .flowchart-form-group input,
 .flowchart-form-group textarea,
 .flowchart-form-group select {
+  @apply text-sm rounded-[var(--radius-xs)] border border-border p-[7px_9px] outline-none;
   font-family: var(--font-body);
-  font-size: 13px;
   background: var(--ctp-base);
-  border: 1px solid var(--border-light);
-  border-radius: var(--radius-xs);
   color: var(--ctp-text);
-  padding: 7px 9px;
-  outline: none;
   transition: border-color 0.15s ease;
 }
 
@@ -367,69 +244,45 @@
 }
 
 .flowchart-form-group textarea {
-  min-height: 72px;
+  @apply min-h-[72px];
   resize: vertical;
 }
 
 .flowchart-projections-box {
+  @apply flex flex-col gap-2 p-2 rounded-[var(--radius-xs)] border border-border;
   background: var(--ctp-mantle);
-  border: 1px solid var(--border-light);
-  border-radius: var(--radius-xs);
-  padding: var(--spacing-sm);
-  display: flex;
-  flex-direction: column;
-  gap: var(--spacing-sm);
 }
 
 .flowchart-projections-box h3 {
+  @apply font-semibold uppercase tracking-[0.5px] text-[10px] m-0 mb-1;
   font-family: var(--font-mono);
-  font-size: 10px;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
   color: var(--ctp-overlay1);
-  margin: 0 0 4px 0;
 }
 
 .flowchart-projection-row {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
+  @apply flex flex-col gap-1;
 }
 
 .flowchart-projection-row label {
+  @apply text-xs;
   font-family: var(--font-body);
-  font-size: 11px;
   color: var(--ctp-subtext0);
 }
 
 .flowchart-projection-row select {
+  @apply text-xs rounded-[var(--radius-xs)] border border-border p-[5px_7px] outline-none;
   font-family: var(--font-body);
   background: var(--ctp-base);
-  border: 1px solid var(--border-light);
-  border-radius: var(--radius-xs);
   color: var(--ctp-text);
-  padding: 5px 7px;
-  font-size: 12px;
-  outline: none;
 }
 
 .flowchart-sidebar-danger-btn {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 6px;
-  background: transparent;
+  @apply flex items-center justify-center gap-[6px] bg-transparent rounded-[var(--radius-xs)] border border-border py-[7px] cursor-pointer mt-2;
   color: var(--ctp-red);
-  border: 1px solid var(--border-light);
-  border-radius: var(--radius-xs);
-  padding: 7px;
   font-family: var(--font-body);
   font-size: 12px;
   font-weight: 500;
-  cursor: pointer;
   transition: border-color 0.15s ease, background-color 0.15s ease;
-  margin-top: var(--spacing-sm);
 }
 
 .flowchart-sidebar-danger-btn:hover {
@@ -439,42 +292,25 @@
 
 /* Sidebar — connections tab */
 .flowchart-relation-builder {
+  @apply flex flex-col gap-2 p-2 rounded-[var(--radius-xs)] border border-border mb-3;
   background: var(--ctp-base);
-  border: 1px solid var(--border-light);
-  border-radius: var(--radius-xs);
-  padding: var(--spacing-sm);
-  display: flex;
-  flex-direction: column;
-  gap: var(--spacing-sm);
-  margin-bottom: var(--spacing-md);
 }
 
 .flowchart-relation-builder h3 {
+  @apply font-semibold uppercase tracking-[0.5px] text-[10px] m-0;
   font-family: var(--font-mono);
-  font-size: 10px;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
   color: var(--ctp-blue);
-  margin: 0;
 }
 
 .flowchart-relation-inputs {
-  display: flex;
-  align-items: center;
-  gap: 6px;
+  @apply flex items-center gap-[6px];
 }
 
 .flowchart-relation-select {
-  flex: 1;
+  @apply flex-1 rounded-[var(--radius-xs)] border border-border p-[5px_7px] text-xs outline-none;
   font-family: var(--font-body);
   background: var(--ctp-mantle);
-  border: 1px solid var(--border-light);
-  border-radius: var(--radius-xs);
   color: var(--ctp-text);
-  padding: 5px 7px;
-  font-size: 12px;
-  outline: none;
 }
 
 .arrow-divider {
@@ -482,15 +318,10 @@
 }
 
 .flowchart-sidebar-primary-btn {
+  @apply font-medium text-sm rounded-[var(--radius-xs)] border border-border py-[7px] cursor-pointer;
   font-family: var(--font-body);
   background: rgba(140, 170, 238, 0.12);
   color: var(--ctp-blue);
-  font-size: 12px;
-  font-weight: 500;
-  border: 1px solid var(--border-light);
-  border-radius: var(--radius-xs);
-  padding: 7px;
-  cursor: pointer;
   transition: border-color 0.15s ease, background-color 0.15s ease;
 }
 
@@ -500,30 +331,18 @@
 }
 
 .flowchart-relation-item {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 6px 8px;
+  @apply flex justify-between items-center px-2 py-1.5 rounded-[var(--radius-xs)] border border-border text-xs;
   background: var(--ctp-base);
-  border: 1px solid var(--border-light);
-  border-radius: var(--radius-xs);
   font-family: var(--font-body);
-  font-size: 11px;
 }
 
 .flowchart-relation-label {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  min-width: 0;
+  @apply flex items-center gap-[6px] min-w-0;
   color: var(--ctp-subtext0);
 }
 
 .flowchart-relation-label span {
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  max-width: 90px;
+  @apply whitespace-nowrap overflow-hidden text-ellipsis max-w-[90px];
 }
 
 .arrow-symbol {
@@ -531,11 +350,8 @@
 }
 
 .flowchart-delete-link-btn {
-  background: transparent;
-  border: none;
+  @apply bg-transparent border-none cursor-pointer p-0.5;
   color: var(--ctp-overlay1);
-  cursor: pointer;
-  padding: 2px;
   transition: color 0.15s ease;
 }
 
@@ -545,60 +361,34 @@
 
 /* Sidebar — groups tab */
 .flowchart-group-meta {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
+  @apply flex flex-col gap-[2px];
 }
 
 .flowchart-checkbox-row {
-  display: flex;
-  align-items: center;
-  gap: var(--spacing-sm);
+  @apply flex items-center gap-2 cursor-pointer my-2 text-sm;
   font-family: var(--font-body);
-  font-size: 13px;
   color: var(--ctp-text);
-  cursor: pointer;
-  margin: var(--spacing-sm) 0;
 }
 
 .flowchart-node-assign-list {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
+  @apply flex flex-col gap-1.5;
 }
 
 .flowchart-node-assign-list label {
+  @apply font-semibold uppercase tracking-[0.5px] text-[10px];
   font-family: var(--font-mono);
-  font-size: 10px;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
   color: var(--ctp-overlay1);
 }
 
 .flowchart-checkbox-container {
-  max-height: 160px;
-  overflow-y: auto;
-  border: 1px solid var(--border-light);
-  border-radius: var(--radius-xs);
+  @apply max-h-[160px] overflow-y-auto flex flex-col gap-[2px] p-1 rounded-[var(--radius-xs)] border border-border;
   background: var(--ctp-mantle);
-  padding: 4px;
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
 }
 
 .flowchart-checkbox-item {
-  display: flex;
-  align-items: center;
-  gap: var(--spacing-sm);
+  @apply flex items-center gap-2 text-xs rounded-[var(--radius-xs)] cursor-pointer select-none p-[4px_6px];
   font-family: var(--font-body);
-  font-size: 12px;
   color: var(--ctp-subtext1);
-  padding: 4px 6px;
-  border-radius: var(--radius-xs);
-  cursor: pointer;
-  user-select: none;
   transition: background-color 0.15s ease, color 0.15s ease;
 }
 
@@ -608,8 +398,8 @@
 }
 
 .checkbox-icon {
+  @apply flex-shrink-0;
   color: var(--ctp-overlay1);
-  flex-shrink: 0;
 }
 
 .checkbox-icon.checked {
@@ -617,65 +407,41 @@
 }
 
 .label-text {
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  @apply whitespace-nowrap overflow-hidden text-ellipsis;
 }
 
 .flowchart-checkbox-item input {
-  display: none;
+  @apply hidden;
 }
 
 /* ---- Journey selector bar ---- */
 .flowchart-journey-bar {
-  display: flex;
-  flex-direction: column;
-  gap: var(--spacing-sm);
-  padding: var(--spacing-sm) var(--spacing-md);
+  @apply flex flex-col gap-2 p-2 mx-3 rounded-[var(--radius-sm)] border border-border;
   background: var(--ctp-mantle);
-  border-radius: var(--radius-sm);
-  border: 1px solid var(--border-light);
 }
 
 .flowchart-journey-selector {
-  display: flex;
-  align-items: center;
-  gap: var(--spacing-sm);
+  @apply flex items-center gap-2;
 }
 
 .flowchart-journey-label {
+  @apply font-semibold uppercase tracking-[0.5px] whitespace-nowrap text-[10px];
   font-family: var(--font-mono);
-  font-size: 10px;
-  font-weight: 600;
   color: var(--ctp-overlay1);
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  white-space: nowrap;
 }
 
 .flowchart-journey-dropdown {
-  position: relative;
-  display: inline-block;
+  @apply relative inline-block;
 }
 
 .flowchart-journey-select {
+  @apply flex items-center justify-between gap-2 text-sm min-w-[240px] rounded-[var(--radius-xs)] border border-border cursor-pointer text-left relative;
   font-family: var(--font-body);
-  font-size: 13px;
   font-weight: 400;
   padding: 5px 32px 5px 10px;
-  min-width: 240px;
-  border: 1px solid var(--border-light);
-  border-radius: var(--radius-xs);
   background-color: var(--ctp-base);
   color: var(--ctp-text);
-  cursor: pointer;
   transition: border-color 0.15s ease;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 8px;
-  text-align: left;
-  position: relative;
 }
 
 .flowchart-journey-select:hover {
@@ -684,38 +450,21 @@
 
 .flowchart-journey-select::after {
   content: '';
-  width: 12px;
-  height: 12px;
-  flex-shrink: 0;
+  @apply w-3 h-3 flex-shrink-0 bg-no-repeat bg-center;
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23838ba7' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
-  background-repeat: no-repeat;
-  background-position: center;
 }
 
 .flowchart-journey-options {
-  position: absolute;
-  top: calc(100% + 4px);
-  left: 0;
-  min-width: 100%;
-  margin: 0;
-  padding: 3px;
-  list-style: none;
-  border: 1px solid var(--border-light);
-  border-radius: var(--radius-xs);
+  @apply absolute top-full left-0 w-full m-0 p-[3px] list-none rounded-[var(--radius-xs)] border border-border z-[50] max-h-[200px] overflow-y-auto;
+  margin-top: 4px;
   background-color: var(--ctp-mantle);
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
-  z-index: 50;
-  max-height: 200px;
-  overflow-y: auto;
 }
 
 .flowchart-journey-option {
+  @apply text-sm py-1.5 px-2.5 rounded-[var(--radius-xs)] cursor-pointer;
   font-family: var(--font-body);
-  font-size: 13px;
-  padding: 7px 10px;
-  border-radius: var(--radius-xs);
   color: var(--ctp-subtext1);
-  cursor: pointer;
   transition: background-color 0.1s ease, color 0.1s ease;
 }
 
@@ -730,37 +479,20 @@
 }
 
 .flowchart-journey-description {
+  @apply text-xs leading-[1.5] px-0.5 border-l-2 border-border pl-2;
   font-family: var(--font-body);
-  font-size: 12px;
   color: var(--ctp-subtext0);
-  line-height: 1.5;
-  padding: 0 2px;
-  border-left: 2px solid var(--border-light);
-  padding-left: 8px;
 }
 
 /* ---- Playback controls ---- */
 .flowchart-playback {
-  display: flex;
-  align-items: center;
-  gap: 2px;
+  @apply flex items-center gap-[2px] rounded-[var(--radius-sm)] border border-border p-[3px] self-start;
   background: var(--ctp-mantle);
-  padding: 3px;
-  border-radius: var(--radius-sm);
-  border: 1px solid var(--border-light);
-  align-self: flex-start;
 }
 
 .flowchart-btn {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 5px;
-  border: none;
-  border-radius: var(--radius-xs);
-  background-color: transparent;
+  @apply flex items-center justify-center p-[5px] border-none rounded-[var(--radius-xs)] bg-transparent cursor-pointer;
   color: var(--ctp-overlay1);
-  cursor: pointer;
   transition: color 0.15s ease, background-color 0.15s ease;
   font-family: var(--font-body);
 }
@@ -771,43 +503,24 @@
 }
 
 .flowchart-btn:disabled {
-  opacity: 0.25;
-  cursor: not-allowed;
+  @apply opacity-25 cursor-not-allowed;
 }
 
 .flowchart-progress {
-  font-size: 11px;
+  @apply text-[11px] ml-1.5 min-w-[42px] text-center;
   font-family: var(--font-mono);
   color: var(--ctp-overlay1);
-  margin-left: var(--spacing-xs);
-  min-width: 42px;
-  text-align: center;
 }
 
 /* ---- Step list ---- */
 .flowchart-steps-list {
-  list-style: none;
-  display: flex;
-  flex-direction: column;
-  gap: 1px;
-  margin: var(--spacing-sm) 0 0 0;
-  padding: 0;
-  max-height: 240px;
-  overflow-y: auto;
-  border: 1px solid var(--border-light);
-  border-radius: var(--radius-xs);
+  @apply list-none flex flex-col gap-[1px] mt-2 px-0 max-h-[240px] overflow-y-auto rounded-[var(--radius-xs)] border border-border;
   background: var(--ctp-mantle);
 }
 
 .flowchart-step-item {
-  display: flex;
-  align-items: center;
-  gap: var(--spacing-sm);
-  padding: 7px var(--spacing-md);
-  cursor: pointer;
+  @apply flex items-center gap-2 px-3 py-[7px] cursor-pointer opacity-45 border-b border-border;
   transition: background-color 0.15s ease;
-  opacity: 0.45;
-  border-bottom: 1px solid var(--border-light);
 }
 
 .flowchart-step-item:hover {
@@ -816,52 +529,34 @@
 }
 
 .flowchart-step-past {
-  opacity: 0.6;
+  @apply opacity-60;
 }
 
 .flowchart-step-current {
-  opacity: 1;
+  @apply opacity-100 border-l-2;
   background-color: var(--ctp-base);
-  border-left: 2px solid var(--ctp-blue);
+  border-left-color: var(--ctp-blue);
 }
 
 .flowchart-step-num {
-  width: 18px;
-  height: 18px;
-  border-radius: 50%;
-  border: 1px solid;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 9px;
-  font-weight: 600;
+  @apply w-[18px] h-[18px] rounded-full border flex items-center justify-center text-[9px] font-semibold flex-shrink-0;
   font-family: var(--font-mono);
-  flex-shrink: 0;
 }
 
 .flowchart-step-content {
-  flex: 1;
-  display: flex;
-  align-items: baseline;
-  gap: var(--spacing-sm);
-  min-width: 0;
+  @apply flex-1 flex items-baseline gap-2 min-w-0;
 }
 
 .flowchart-step-node {
+  @apply font-medium text-sm flex-shrink-0;
   font-family: var(--font-body);
-  font-size: 12px;
-  font-weight: 500;
   color: var(--ctp-text);
-  flex-shrink: 0;
 }
 
 .flowchart-step-desc {
+  @apply text-[11px] whitespace-nowrap overflow-hidden text-ellipsis;
   font-family: var(--font-body);
-  font-size: 11px;
   color: var(--ctp-subtext0);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
 }
 
 /* ==========================================================================
@@ -975,7 +670,7 @@
 }
 
 .flowchart-node-group {
-  user-select: none;
+  @apply select-none;
 }
 
 .flowchart-node-group.has-links:hover {
@@ -1003,22 +698,15 @@
    ========================================================================== */
 
 .flowchart-grid-container {
-  display: grid;
+  @apply grid w-full rounded-[var(--radius-sm)] border border-border overflow-hidden min-h-[500px];
   grid-template-columns: 1fr 1fr;
   grid-template-rows: 1fr 1fr;
   gap: 4px;
-  width: 100%;
-  border: 1px solid var(--border-light);
-  border-radius: var(--radius-sm);
   background-color: var(--ctp-base);
-  overflow: hidden;
-  min-height: 500px;
 }
 
 .flowchart-grid-container .flowchart-canvas-wrapper {
-  border: none;
-  background-color: transparent;
-  overflow: visible;
+  @apply border-none bg-transparent overflow-visible;
 }
 
 .flowchart-grid-container .flowchart-svg {
@@ -1026,15 +714,8 @@
 }
 
 .flowchart-grid-view-label {
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  font-size: 10px;
-  font-weight: 600;
+  @apply flex items-center gap-1 text-[10px] font-semibold pointer-events-none uppercase tracking-[0.5px];
   color: var(--ctp-overlay1);
-  pointer-events: none;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
 }
 
 /* ==========================================================================
@@ -1042,33 +723,19 @@
    ========================================================================== */
 
 .flowchart-layout-toggle {
-  display: flex;
-  gap: 2px;
+  @apply flex gap-[2px] rounded-[var(--radius-sm)] border border-border p-[3px];
   background: var(--ctp-mantle);
-  padding: 3px;
-  border-radius: var(--radius-sm);
-  border: 1px solid var(--border-light);
 }
 
 .flowchart-layout-btn {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  padding: 5px 12px;
+  @apply flex items-center gap-[6px] px-3 py-[5px] rounded-[var(--radius-xs)] bg-transparent border-none cursor-pointer whitespace-nowrap text-sm font-medium;
   font-family: var(--font-body);
-  font-size: 12px;
-  font-weight: 500;
   color: var(--ctp-overlay1);
-  background: transparent;
-  border: none;
-  border-radius: var(--radius-xs);
-  cursor: pointer;
   transition: color 0.15s ease, background-color 0.15s ease;
-  white-space: nowrap;
 }
 
 .flowchart-layout-btn:hover {
-  color: var(--ctp-text);
+  @apply text-foreground;
   background: var(--ctp-surface0);
 }
 
@@ -1082,45 +749,29 @@
    ========================================================================== */
 
 .inspector-sidebar {
+  @apply flex flex-col flex-shrink-0 overflow-hidden;
   width: 300px;
+  height: 480px;
   background-color: var(--ctp-crust);
   border-left: 1px solid var(--border-light);
-  display: flex;
-  flex-direction: column;
-  height: 480px;
-  flex-shrink: 0;
-  overflow: hidden;
 }
 
 .inspector-widget-container {
-  display: flex;
-  flex-direction: column;
-  gap: var(--spacing-sm);
+  @apply flex flex-col gap-2;
 }
 
 /* ---- State Machine Widget ---- */
 .inspector-state-machine {
-  display: flex;
-  flex-direction: column;
-  gap: var(--spacing-sm);
+  @apply flex flex-col gap-2;
 }
 
 .inspector-state-machine-states {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
+  @apply flex flex-col gap-1.5;
 }
 
 .inspector-state-node {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  width: 100%;
-  padding: 8px 10px;
-  border-radius: var(--radius-xs);
+  @apply flex items-center gap-2 w-full px-2.5 py-2 rounded-[var(--radius-xs)] border border-transparent text-left;
   background: var(--ctp-surface0);
-  border: 1px solid transparent;
-  text-align: left;
   font-family: inherit;
   transition: border-color 0.2s ease, background-color 0.2s ease;
 }
@@ -1135,83 +786,54 @@
 }
 
 .inspector-state-indicator {
-  width: 10px;
-  height: 10px;
-  border-radius: var(--radius-full);
-  flex-shrink: 0;
+  @apply w-2.5 h-2.5 rounded-full flex-shrink-0;
   transition: background-color 0.2s ease;
 }
 
 .inspector-state-label {
+  @apply font-medium text-[11px] uppercase tracking-[0.5px];
   font-family: var(--font-mono);
-  font-size: 11px;
-  font-weight: 500;
   color: var(--ctp-text);
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
 }
 
 .inspector-state-hint {
+  @apply text-xs italic text-center p-2;
   font-family: var(--font-body);
-  font-size: 11px;
   color: var(--ctp-overlay1);
-  font-style: italic;
-  text-align: center;
-  padding: var(--spacing-sm);
 }
 
 /* ---- JSON Payload Viewer ---- */
 .inspector-payload-viewer {
-  display: flex;
-  flex-direction: column;
-  gap: var(--spacing-xs);
+  @apply flex flex-col gap-1.5;
 }
 
 .inspector-payload-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
+  @apply flex items-center justify-between;
 }
 
 .inspector-payload-type {
+  @apply font-semibold uppercase tracking-[0.5px] text-[10px] rounded-[var(--radius-xs)] px-2 py-[3px];
   font-family: var(--font-mono);
-  font-size: 10px;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
   color: var(--ctp-teal);
   background: rgba(129, 200, 190, 0.1);
-  padding: 3px 8px;
-  border-radius: var(--radius-xs);
 }
 
 .inspector-payload-code {
-  font-family: var(--font-mono);
-  font-size: 11px;
-  line-height: 1.5;
+  @apply font-mono text-[11px] leading-[1.5] rounded-[var(--radius-xs)] border border-border p-2 m-0 overflow-x-auto whitespace-pre;
   color: var(--ctp-text);
   background: var(--ctp-mantle);
-  border: 1px solid var(--border-light);
-  border-radius: var(--radius-xs);
-  padding: var(--spacing-sm);
-  margin: 0;
-  overflow-x: auto;
-  white-space: pre;
 }
 
 .inspector-payload-empty,
 .inspector-payload-placeholder {
+  @apply text-xs italic text-center p-2;
   font-family: var(--font-body);
-  font-size: 11px;
   color: var(--ctp-overlay1);
-  font-style: italic;
-  text-align: center;
-  padding: var(--spacing-sm);
 }
 
 /* ---- Aggregate Selector ---- */
 .inspector-aggregate-selector {
-  margin-bottom: var(--spacing-sm);
+  @apply mb-2;
 }
 
 /* ==========================================================================
@@ -1219,111 +841,67 @@
    ========================================================================== */
 
 .flowchart-grid-modal-overlay {
-  position: fixed;
-  inset: 0;
+  @apply fixed inset-0 flex items-center justify-center p-6 z-[999];
   background-color: rgba(17, 17, 27, 0.85); /* ctp-crust with opacity */
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
-  z-index: 999;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 24px;
   animation: flowchart-fade-in 0.25s ease-out;
 }
 
 .flowchart-grid-modal-content {
+  @apply flex flex-col w-full h-full max-w-[1600px] rounded-[var(--radius-lg)] border border-border overflow-hidden p-4 gap-3;
   background-color: var(--ctp-base);
-  border: 1px solid var(--border-light);
-  border-radius: var(--radius-lg);
-  width: 100%;
-  height: 100%;
-  max-width: 1600px;
-  display: flex;
-  flex-direction: column;
   box-shadow: 0 24px 48px -12px rgba(0, 0, 0, 0.5);
-  overflow: hidden;
   animation: flowchart-scale-up 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
-  padding: var(--spacing-lg);
-  gap: var(--spacing-md);
 }
 
 .flowchart-grid-modal-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: var(--spacing-md);
-  border-bottom: 1px solid var(--border-light);
-  padding-bottom: var(--spacing-md);
-  flex-shrink: 0;
+  @apply flex items-center justify-between gap-3 border-b border-border pb-3 flex-shrink-0;
 }
 
 .flowchart-grid-modal-title {
+  @apply font-normal m-0 leading-[1.3];
   font-family: var(--font-body);
   font-size: var(--text-feature-heading);
-  font-weight: 400;
   color: var(--ctp-mauve);
-  margin: 0;
-  line-height: 1.3;
 }
 
 .flowchart-grid-modal-header-left {
-  flex: 1;
-  min-width: 0;
+  @apply flex-1 min-w-0;
 }
 
 .flowchart-grid-modal-header-center {
-  display: flex;
-  justify-content: center;
-  align-items: center;
+  @apply flex justify-center items-center;
 }
 
 .flowchart-grid-modal-header-right {
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
-  gap: var(--spacing-md);
-  flex: 1;
+  @apply flex items-center justify-end gap-3 flex-1;
 }
 
 .flowchart-grid-modal-description {
+  @apply text-sm leading-[1.5] px-2 py-1 rounded-[var(--radius-xs)] border-l-4 bg-card flex-shrink-0;
   font-family: var(--font-body);
-  font-size: 13px;
   color: var(--ctp-subtext0);
-  line-height: 1.5;
-  padding: var(--spacing-xs) var(--spacing-sm);
-  border-left: 3px solid var(--ctp-blue);
-  background-color: var(--ctp-mantle);
-  border-radius: var(--radius-xs);
-  flex-shrink: 0;
+  border-left-color: var(--ctp-blue);
 }
 
 /* Modal specific overrides to let the grid fill the screen */
 .flowchart-grid-modal-content .flowchart-grid-container {
-  flex: 1;
-  min-height: 0;
-  height: 100%;
+  @apply flex-1 min-h-0 h-full;
   grid-template-rows: 1fr 1fr;
   grid-template-columns: 1fr 1fr;
 }
 
 .flowchart-grid-modal-content .flowchart-grid-container .flowchart-canvas-wrapper {
-  height: 100%;
-  display: flex;
-  flex-direction: column;
+  @apply h-full flex flex-col;
 }
 
 .flowchart-grid-modal-content .flowchart-grid-container .flowchart-body {
-  flex: 1;
-  min-height: 0;
-  display: flex;
-  flex-direction: column;
+  @apply flex-1 min-h-0 flex flex-col;
 }
 
 .flowchart-grid-modal-content .flowchart-grid-container .flowchart-svg {
-  height: 100% !important;
-  flex: 1;
-  min-height: 0;
+  @apply h-full flex-1 min-h-0 !important;
 }
 
 /* Animations */
@@ -1342,80 +920,44 @@
    ========================================================================== */
 
 .flowchart-section.fullscreen {
-  position: fixed;
-  inset: 0;
-  width: 100vw;
-  height: 100vh;
-  z-index: 999;
+  @apply fixed inset-0 w-screen h-screen z-[999] flex flex-col gap-3 p-4 overflow-auto;
   background-color: var(--ctp-crust);
-  padding: var(--spacing-lg);
-  display: flex;
-  flex-direction: column;
-  gap: var(--spacing-md);
   animation: flowchart-fade-in 0.2s ease-out;
-  overflow: auto;
 }
 
 .flowchart-section.fullscreen .flowchart-canvas-wrapper {
-  flex: 1;
-  min-height: 0;
+  @apply flex-1 min-h-0;
 }
 
 .flowchart-section.fullscreen .flowchart-body {
-  flex: 1;
-  min-height: 0;
-  display: flex;
-  flex-direction: column;
+  @apply flex-1 min-h-0 flex flex-col;
 }
 
 .flowchart-section.fullscreen .flowchart-svg {
-  height: 100% !important;
-  flex: 1;
-  min-height: 0;
+  @apply h-full flex-1 min-h-0 !important;
 }
 
 /* Fullscreen toggle button */
 .flowchart-fullscreen-toggle {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  padding: 5px 12px;
+  @apply flex items-center gap-[6px] px-3 py-[5px] rounded-[var(--radius-xs)] bg-transparent border-none cursor-pointer whitespace-nowrap text-sm font-medium;
   font-family: var(--font-body);
-  font-size: 12px;
-  font-weight: 500;
   color: var(--ctp-overlay1);
-  background: transparent;
-  border: none;
-  border-radius: var(--radius-xs);
-  cursor: pointer;
   transition: color 0.15s ease, background-color 0.15s ease;
-  white-space: nowrap;
 }
 
 .flowchart-fullscreen-toggle:hover {
-  color: var(--ctp-text);
+  @apply text-foreground;
   background: var(--ctp-surface0);
 }
 
 /* Fullscreen exit button in overlay */
 .flowchart-fullscreen-exit {
-  position: absolute;
-  top: 16px;
-  right: 16px;
-  z-index: 1001;
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  padding: 6px 14px;
+  @apply absolute top-4 right-4 z-[1001] flex items-center gap-[6px] px-3.5 py-1.5 rounded-[20px] border border-border cursor-pointer shadow-lg;
   font-family: var(--font-body);
   font-size: 12px;
   font-weight: 600;
   color: var(--ctp-text);
   background: var(--ctp-crust);
-  border: 1px solid var(--border-light);
-  border-radius: 20px;
-  cursor: pointer;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
   transition: background-color 0.15s ease;
 }
 
@@ -1429,40 +971,125 @@
 
 @media (max-width: 767px) {
   .flowchart-section.fullscreen .inspector-sidebar {
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    width: 100%;
-    height: auto;
-    max-height: 60vh;
-    border-left: none;
-    border-top: 1px solid var(--border-light);
+    @apply fixed inset-x-0 bottom-0 w-auto max-h-[60vh] border-l-0 border-t border-border z-[1001] shadow-2xl;
     border-radius: var(--radius-md) var(--radius-md) 0 0;
     transform: translateY(100%);
     transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
-    z-index: 1001;
-    box-shadow: 0 -8px 32px rgba(0, 0, 0, 0.35);
   }
 
   .flowchart-section.fullscreen .inspector-sidebar.flowchart-sidebar.active {
-    transform: translateY(0);
+    @apply transform-none;
     margin-right: 0;
   }
 
   .flowchart-section.fullscreen .inspector-sidebar .flowchart-sidebar-content {
     max-height: calc(60vh - 48px);
-    overflow-y: auto;
+    @apply overflow-y-auto;
   }
 
   /* Bottom sheet handle indicator */
   .flowchart-section.fullscreen .inspector-sidebar .flowchart-sidebar-tabs::before {
     content: '';
-    display: block;
-    width: 32px;
-    height: 4px;
-    border-radius: 2px;
+    @apply block w-8 h-1 rounded mx-auto mt-1;
     background: var(--ctp-surface2);
-    margin: 4px auto 0;
   }
+}
+
+/* ---- Flowchart Controls Row ---- */
+.flowchart-controls-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0 12px 12px;
+  flex-wrap: wrap;
+}
+
+.flowchart-view-selector-wrapper {
+  display: flex;
+  align-items: center;
+}
+
+.flowchart-view-selector-label {
+  @apply font-semibold uppercase tracking-[0.5px] whitespace-nowrap text-[10px] mr-2;
+  font-family: var(--font-mono);
+  color: var(--ctp-overlay1);
+}
+
+.flowchart-view-action-bar > div {
+  background-color: var(--ctp-mantle) !important;
+  border-color: var(--border) !important;
+  box-shadow: none !important;
+}
+
+.flowchart-view-tab-active {
+  color: var(--ctp-blue) !important;
+}
+
+/* Floating Combined Controls Dock Overlay inside Canvas */
+.flowchart-controls-dock-container {
+  position: absolute;
+  bottom: 32px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 30;
+  width: 90%;
+  max-width: 680px;
+  display: flex;
+  justify-content: center;
+  pointer-events: none;
+}
+
+.flowchart-controls-dock {
+  pointer-events: auto;
+  background-color: var(--ctp-mantle) !important;
+  border-color: var(--border-light) !important;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4) !important;
+}
+
+.flowchart-controls-dock-content {
+  background-color: var(--ctp-base);
+  width: 100%;
+}
+
+.flowchart-dock-playback {
+  @apply flex justify-center py-1 w-full whitespace-nowrap;
+}
+
+.flowchart-dock-playback .flowchart-playback {
+  @apply bg-transparent p-0 border-none shadow-none flex-nowrap;
+}
+
+.flowchart-dock-zoom {
+  @apply flex justify-center py-1 w-full whitespace-nowrap;
+}
+
+.flowchart-dock-btn {
+  @apply h-8 px-3 rounded-[var(--radius-xs)] border-none text-xs font-semibold flex items-center justify-center cursor-pointer transition-all duration-150;
+  color: var(--ctp-overlay1) !important;
+  background-color: transparent !important;
+}
+
+.flowchart-dock-btn:hover {
+  color: var(--ctp-text) !important;
+  background-color: var(--ctp-surface0) !important;
+}
+
+.flowchart-dock-views {
+  @apply flex justify-center py-1 w-full;
+}
+
+.flowchart-dock-views .flowchart-view-action-bar {
+  @apply border-none bg-transparent shadow-none;
+}
+
+.flowchart-dock-journey {
+  @apply flex flex-col gap-1 py-1 w-full;
+}
+
+.flowchart-dock-journey .flowchart-journey-selector {
+  @apply flex items-center gap-2 justify-center;
+}
+
+.flowchart-dock-journey .flowchart-journey-description {
+  @apply text-center;
 }

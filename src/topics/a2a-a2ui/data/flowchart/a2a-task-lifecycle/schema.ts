@@ -196,8 +196,8 @@ export const a2aTaskLifecycleSchema: UnifiedFlowchartSchema = {
           desc: 'Client agent fetches the Agent Card to discover target agent capabilities and endpoints.',
           nodeIds: ['client_agent', 'cmd_discover', 'agent_card_ep', 'evt_discovered'],
           color: 'rgba(140, 170, 238, 0.12)',
-          borderColor: '#8caaee',
-          textColor: '#c6d0f5',
+          borderColor: 'var(--ctp-blue)',
+          textColor: 'var(--ctp-text)',
         },
         {
           id: 'g_auth',
@@ -205,8 +205,8 @@ export const a2aTaskLifecycleSchema: UnifiedFlowchartSchema = {
           desc: 'Optional authentication flow when the Agent Card requires credentials.',
           nodeIds: ['pol_auth', 'cmd_auth', 'auth_server', 'evt_authenticated'],
           color: 'rgba(166, 209, 137, 0.12)',
-          borderColor: '#a6d189',
-          textColor: '#c6d0f5',
+          borderColor: 'var(--ctp-green)',
+          textColor: 'var(--ctp-text)',
         },
         {
           id: 'g_execution',
@@ -214,8 +214,8 @@ export const a2aTaskLifecycleSchema: UnifiedFlowchartSchema = {
           desc: 'Task submission, processing, and streaming of artifacts and status updates via SSE.',
           nodeIds: ['cmd_send', 'a2a_server', 'task_store', 'orch_task', 'evt_submitted', 'evt_working', 'cmd_execute', 'agent_skills', 'llm_backend', 'evt_artifact', 'sse_stream', 'evt_status'],
           color: 'rgba(239, 159, 118, 0.12)',
-          borderColor: '#ef9f76',
-          textColor: '#c6d0f5',
+          borderColor: 'var(--ctp-peach)',
+          textColor: 'var(--ctp-text)',
         },
         {
           id: 'g_outcomes',
@@ -223,8 +223,8 @@ export const a2aTaskLifecycleSchema: UnifiedFlowchartSchema = {
           desc: 'Final task state resolution: completed, failed, canceled, or rejected.',
           nodeIds: ['dec_outcome', 'evt_completed', 'evt_failed', 'evt_canceled', 'evt_rejected'],
           color: 'rgba(202, 158, 230, 0.12)',
-          borderColor: '#ca9ee6',
-          textColor: '#c6d0f5',
+          borderColor: 'var(--ctp-mauve)',
+          textColor: 'var(--ctp-text)',
         },
       ]
     }

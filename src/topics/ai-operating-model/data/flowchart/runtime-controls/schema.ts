@@ -227,8 +227,8 @@ export const runtimeControlsSchema: UnifiedFlowchartSchema = {
           desc: 'Human triggers the workflow, policy routes work to the agent, and the orchestrator coordinates execution.',
           nodeIds: ['human', 'evt_workflow_triggered', 'pol_route_agent', 'cmd_tool_call', 'orchestrator', 'workflow_memory'],
           color: 'rgba(140, 170, 238, 0.12)',
-          borderColor: '#8caaee',
-          textColor: '#c6d0f5',
+          borderColor: 'var(--ctp-blue)',
+          textColor: 'var(--ctp-text)',
         },
         {
           id: 'es_g2',
@@ -236,8 +236,8 @@ export const runtimeControlsSchema: UnifiedFlowchartSchema = {
           desc: 'Tool call passes through API contract, permission check, and sandbox dry-run before execution.',
           nodeIds: ['cmd_validate_api', 'api_contract', 'evt_api_validated', 'pol_check_perm', 'cmd_check_perm', 'permission', 'evt_permission_checked', 'pol_dryrun', 'cmd_sandbox_dryrun', 'sandbox', 'evt_action_executed', 'evt_result_stored', 'business_system', 'dec_outcome', 'monitor'],
           color: 'rgba(166, 209, 137, 0.12)',
-          borderColor: '#a6d189',
-          textColor: '#c6d0f5',
+          borderColor: 'var(--ctp-green)',
+          textColor: 'var(--ctp-text)',
         },
         {
           id: 'es_g3',
@@ -245,8 +245,8 @@ export const runtimeControlsSchema: UnifiedFlowchartSchema = {
           desc: 'When anomaly is detected, the kill switch halts the agent and escalates to human review.',
           nodeIds: ['evt_anomaly_detected', 'pol_halt_agent', 'cmd_kill_switch', 'kill_switch', 'evt_agent_stopped', 'pol_escalate', 'incident_reviewer', 'evt_incident_resolved'],
           color: 'rgba(231, 130, 132, 0.12)',
-          borderColor: '#e78284',
-          textColor: '#c6d0f5',
+          borderColor: 'var(--ctp-red)',
+          textColor: 'var(--ctp-text)',
         },
       ]
     }

@@ -240,8 +240,8 @@ export const dddSchema: UnifiedFlowchartSchema = {
           desc: 'Event Storming reveals the ubiquitous language and domain events.',
           nodeIds: ['evt_discover_domain', 'cmd_discover', 'ubiquitous-language', 'cmd_event_storm', 'evt_language_emerges', 'evt_discovered'],
           color: 'rgba(245, 194, 230, 0.12)',
-          borderColor: '#f2cde7',
-          textColor: '#f2cde7',
+          borderColor: 'var(--ctp-pink)',
+          textColor: 'var(--ctp-pink)',
         },
         {
           id: 'es_context',
@@ -249,8 +249,8 @@ export const dddSchema: UnifiedFlowchartSchema = {
           desc: 'Bounded contexts drawn where model diverges. Relationships mapped.',
           nodeIds: ['pol_define', 'subdomains', 'bounded-contexts', 'cmd_define_contexts', 'dec_split_context', 'evt_boundaries_drawn', 'pol_map', 'context-map', 'cmd_map_relationships', 'evt_contexts_defined'],
           color: 'rgba(148, 226, 213, 0.12)',
-          borderColor: '#94e2d5',
-          textColor: '#94e2d5',
+          borderColor: 'var(--ctp-teal)',
+          textColor: 'var(--ctp-teal)',
         },
         {
           id: 'es_implementation',
@@ -258,8 +258,8 @@ export const dddSchema: UnifiedFlowchartSchema = {
           desc: 'Entities, Aggregates, Events implemented within bounded context.',
           nodeIds: ['pol_build', 'domain-service', 'aggregate', 'cmd_build_model', 'pol_enforce_invariants', 'evt_state_changed', 'pol_persist', 'repository', 'evt_event_published', 'pol_publish', 'domain-event', 'evt_logic_evaluated', 'pol_call', 'evt_model_implemented'],
           color: 'rgba(132, 185, 240, 0.12)',
-          borderColor: '#85a6f4',
-          textColor: '#85a6f4',
+          borderColor: 'var(--ctp-blue)',
+          textColor: 'var(--ctp-blue)',
         },
       ]
     }

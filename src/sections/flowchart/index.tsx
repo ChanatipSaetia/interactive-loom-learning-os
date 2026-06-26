@@ -1,5 +1,9 @@
-import { useCallback, useEffect, useMemo, useId, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useId, useRef, useState, type ComponentType } from 'react';
 import * as Icons from 'lucide-react';
+import { Button } from '../../components/motion/button';
+import { Dropdown } from '../../components/motion/dropdown';
+import { ExpandableActionBar } from '../../components/motion/expandable-action-bar';
+import { ExpandableTabs, type ExpandableTabItem } from '../../components/motion/expandable-tabs';
 
 import { FlowchartView } from './flowchart-view';
 import { PlaybackControls } from './playback-controls';
@@ -7,6 +11,14 @@ import { StepCarousel } from './step-carousel';
 import { usePlaybackState } from './usePlaybackState';
 import { autoDeriveViews } from './derivations';
 import { InspectorSidebar } from './inspector';
+import {
+  EventStormingIcon,
+  SystemArchitectureIcon,
+  DataFlowIcon,
+  SwimlanesIcon,
+  SequenceIcon,
+  StateMachineIcon,
+} from './view-icons';
 
 const Maximize = Icons.Maximize2;
 const Minimize = Icons.Minimize2;
@@ -90,6 +102,7 @@ export function Flowchart({ title, schema = INITIAL_SCHEMA }: FlowchartProps) {
 
   // Playback state (shared across all views in grid mode)
   const playback = usePlaybackState({ schema: localSchema });
+
 
   // Sync active step with current playback step
   const activeSteps = useMemo(() => {
@@ -284,6 +297,23 @@ export function Flowchart({ title, schema = INITIAL_SCHEMA }: FlowchartProps) {
     }
   };
 
+  const [activeDockTabId, setActiveDockTabId] = useState<string | null>(() => {
+    return playback.currentJourney ? 'playback' : null;
+  });
+  const [cameraControls, setCameraControls] = useState<{
+    handleZoomIn: () => void;
+    handleZoomOut: () => void;
+    handleFitToScreen: () => void;
+  } | null>(null);
+
+  // Auto-expand Playback tab when a journey is selected
+  useEffect(() => {
+    if (playback.currentJourneyId) {
+      setActiveDockTabId('playback');
+    }
+  }, [playback.currentJourneyId]);
+
+
   // Filter visible view tabs to show EVENT_STORMING, SWIMLANES, SYS_ARCH, DATA_FLOW, SEQUENCE
   // unless STATE_MACHINE is active, in which case it is rendered temporarily.
   const visibleViewKeys = useMemo(() => {
@@ -293,98 +323,225 @@ export function Flowchart({ title, schema = INITIAL_SCHEMA }: FlowchartProps) {
     });
   }, [viewKeys, activeViewKey]);
 
+  const actionBarItems = useMemo(() => {
+    return visibleViewKeys.map(vk => {
+      const view = localSchema.views[vk];
+      const name = view?.name || vk;
+      
+      let IconComponent: ComponentType<any> = Workflow;
+      if (vk === 'EVENT_STORMING') IconComponent = EventStormingIcon;
+      else if (vk === 'SYS_ARCH') IconComponent = SystemArchitectureIcon;
+      else if (vk === 'DATA_FLOW') IconComponent = DataFlowIcon;
+      else if (vk === 'SWIMLANES') IconComponent = SwimlanesIcon;
+      else if (vk === 'SEQUENCE') IconComponent = SequenceIcon;
+      else if (vk === 'STATE_MACHINE') IconComponent = StateMachineIcon;
+      else {
+        IconComponent = (view && view.icon in DYNAMIC_ICONS) 
+          ? DYNAMIC_ICONS[view.icon as keyof typeof DYNAMIC_ICONS] 
+          : Workflow;
+      }
+      
+      return {
+        id: vk,
+        label: name,
+        icon: <IconComponent size={14} />,
+        active: activeViewKey === vk,
+        onClick: () => setActiveViewKey(vk)
+      };
+    });
+  }, [visibleViewKeys, localSchema.views, activeViewKey]);
+
+  const dockTabs = useMemo<ExpandableTabItem[]>(() => {
+    const tabs: ExpandableTabItem[] = [];
+
+    // Views Tab (only when multiple views)
+    if (visibleViewKeys.length > 1) {
+      tabs.push({
+        id: 'views',
+        label: 'Views',
+        icon: <Icons.Layers size={14} />,
+        testId: 'dock-tab-views',
+        content: (
+          <div className="flowchart-dock-views" data-testid="flowchart-view-tabs">
+            <ExpandableActionBar
+              items={actionBarItems}
+              activeId={activeViewKey}
+              onAction={(item) => setActiveViewKey(item.id)}
+              size="sm"
+              className="flowchart-view-action-bar"
+              classNames={{
+                activeItem: "text-primary font-semibold flowchart-view-tab-active"
+              }}
+            />
+          </div>
+        )
+      });
+    }
+
+    // Journey Tab (only when journeys exist)
+    if (localSchema.journeys.length > 0) {
+      tabs.push({
+        id: 'journey',
+        label: 'Journey',
+        icon: <Icons.Route size={14} />,
+        testId: 'dock-tab-journey',
+        content: (
+          <div className="flowchart-dock-journey" data-testid="flowchart-journey-bar">
+            <div className="flowchart-journey-selector">
+              <span className="flowchart-journey-label">Story / Journey:</span>
+              <Dropdown
+                value={playback.currentJourneyId}
+                onChange={(val) => {
+                  playback.setCurrentJourneyId(val);
+                  setActiveStep(null);
+                }}
+                options={localSchema.journeys.map(j => ({ value: j.id, label: j.label }))}
+                data-testid="flowchart-journey-select"
+                native={true}
+                showChevron={false}
+                triggerClassName="flowchart-journey-select"
+                className="flowchart-journey-dropdown"
+                optionsClassName="flowchart-journey-options"
+                optionClassName="flowchart-journey-option"
+              />
+            </div>
+            {playback.currentJourney?.description && (
+              <div className="flowchart-journey-description" data-testid="flowchart-journey-description">
+                {playback.currentJourney.description}
+              </div>
+            )}
+          </div>
+        )
+      });
+    }
+
+    // Steps Tab
+    if (activeSteps && activeSteps.length > 0) {
+      tabs.push({
+        id: 'steps',
+        label: 'Steps',
+        icon: <Icons.Footprints size={14} />,
+        testId: 'dock-tab-steps',
+        content: (
+          <StepCarousel
+            activeSteps={activeSteps}
+            activeStep={activeStep}
+            handleStepClick={handleStepClick}
+            instanceId={instanceId}
+            inline={true}
+          />
+        )
+      });
+    }
+
+    // Playback Tab
+    if (playback.currentJourney) {
+      tabs.push({
+        id: 'playback',
+        label: 'Playback',
+        icon: <Icons.Play size={14} />,
+        testId: 'dock-tab-playback',
+        content: (
+          <div className="flowchart-dock-playback">
+            <PlaybackControls
+              currentJourney={playback.currentJourney}
+              currentStep={playback.currentStep}
+              isPlaying={playback.isPlaying}
+              handlePlay={playback.handlePlay}
+              handlePause={playback.handlePause}
+              handleNext={playback.handleNext}
+              handlePrev={playback.handlePrev}
+              handleReset={playback.handleReset}
+            />
+          </div>
+        )
+      });
+    }
+
+    // Zoom Tab
+    tabs.push({
+      id: 'zoom',
+      label: 'Zoom',
+      icon: <Icons.Search size={14} />,
+      testId: 'dock-tab-zoom',
+      content: (
+        <div className="flowchart-dock-zoom">
+          {cameraControls ? (
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', justifyContent: 'center' }}>
+              <Button
+                size="sm"
+                variant="ghost"
+                onClick={cameraControls.handleZoomIn}
+                title="Zoom In"
+                data-testid="flowchart-zoom-in"
+                className="flowchart-btn flex items-center justify-center"
+              >
+                <Icons.ZoomIn size={14} style={{ marginRight: '6px' }} />
+                Zoom In
+              </Button>
+              <Button
+                size="sm"
+                variant="ghost"
+                onClick={cameraControls.handleZoomOut}
+                title="Zoom Out"
+                data-testid="flowchart-zoom-out"
+                className="flowchart-btn flex items-center justify-center"
+              >
+                <Icons.ZoomOut size={14} style={{ marginRight: '6px' }} />
+                Zoom Out
+              </Button>
+              <Button
+                size="sm"
+                variant="ghost"
+                onClick={cameraControls.handleFitToScreen}
+                title="Fit Screen"
+                data-testid="flowchart-fit-screen"
+                className="flowchart-btn flex items-center justify-center"
+              >
+                <Icons.Locate size={14} style={{ marginRight: '6px' }} />
+                Fit Screen
+              </Button>
+            </div>
+          ) : (
+            <div style={{ textAlign: 'center', fontSize: '12px', color: 'var(--ctp-subtext0)', padding: '8px' }}>
+              Camera controls not loaded
+            </div>
+          )}
+        </div>
+      )
+    });
+
+    // ── Action-only tabs (no content panel) ──
+
+    // Fullscreen toggle
+    tabs.push({
+      id: 'fullscreen',
+      label: isFullscreen ? 'Exit Fullscreen' : 'Fullscreen',
+      icon: isFullscreen ? <Minimize size={14} /> : <Maximize size={14} />,
+      testId: 'flowchart-fullscreen-toggle',
+      separator: true,
+      onClick: () => setIsFullscreen(!isFullscreen),
+    });
+
+    // Inspector sidebar toggle (only in fullscreen)
+    if (isFullscreen) {
+      tabs.push({
+        id: 'inspector',
+        label: isSidebarOpen ? 'Close Inspector' : 'Inspector',
+        icon: <PanelRight size={14} />,
+        testId: 'flowchart-sidebar-toggle',
+        onClick: () => setIsSidebarOpen(!isSidebarOpen),
+      });
+    }
+
+    return tabs;
+  }, [activeSteps, activeStep, handleStepClick, instanceId, playback, cameraControls, isFullscreen, isSidebarOpen, visibleViewKeys, actionBarItems, activeViewKey, localSchema.journeys]);
+
   return (
     <div className={`flowchart-section${isFullscreen ? ' fullscreen' : ''}`} data-testid="flowchart-section">
       <div className="flowchart-header-container">
         {title && <h3 className="flowchart-title" data-testid="flowchart-title">{title}</h3>}
-
-        <div style={{ display: 'flex', gap: '8px', alignItems: 'center', flexWrap: 'wrap' }}>
-         {/* Fullscreen toggle */}
-           <button
-             className="flowchart-fullscreen-toggle"
-             onClick={() => setIsFullscreen(!isFullscreen)}
-             title={isFullscreen ? 'Exit fullscreen' : 'Enter fullscreen'}
-             data-testid="flowchart-fullscreen-toggle"
-           >
-             {isFullscreen ? <Minimize size={14} /> : <Maximize size={14} />}
-           </button>
-
-           {/* Inspector sidebar toggle */}
-           {isFullscreen && (
-             <button
-               className="flowchart-fullscreen-toggle"
-               onClick={() => setIsSidebarOpen(!isSidebarOpen)}
-               title={isSidebarOpen ? 'Close inspector' : 'Open inspector'}
-               data-testid="flowchart-sidebar-toggle"
-             >
-               <PanelRight size={14} />
-             </button>
-           )}
-
-          {/* View tabs */}
-          {visibleViewKeys.length > 1 && (
-            <div className="flowchart-view-tabs" data-testid="flowchart-view-tabs">
-              {visibleViewKeys.map(vk => {
-                const view = localSchema.views[vk];
-                if (!view) return null;
-                const Icon = (view.icon in DYNAMIC_ICONS) ? DYNAMIC_ICONS[view.icon as keyof typeof DYNAMIC_ICONS] : Workflow;
-                return (
-                  <button
-                    key={vk}
-                    onClick={() => setActiveViewKey(vk)}
-                    className={`flowchart-view-tab-btn ${activeViewKey === vk ? 'active' : ''}`}
-                  >
-                    <Icon size={14} />
-                    <span>{view.name}</span>
-                  </button>
-                );
-              })}
-            </div>
-          )}
-        </div>
       </div>
-
-      {localSchema.journeys.length > 0 && (
-        <div className="flowchart-journey-bar" data-testid="flowchart-journey-bar">
-          <div className="flowchart-journey-selector">
-            <span className="flowchart-journey-label">Story / Journey:</span>
-            <select
-              id="flowchart-journey-select"
-              className="flowchart-journey-select"
-              value={playback.currentJourneyId}
-              onChange={(e) => {
-                playback.setCurrentJourneyId(e.target.value);
-                setActiveStep(null);
-              }}
-              data-testid="flowchart-journey-select"
-            >
-              {localSchema.journeys.map(j => (
-                <option key={j.id} value={j.id}>
-                  {j.label}
-                </option>
-              ))}
-            </select>
-          </div>
-          {playback.currentJourney?.description && (
-            <div className="flowchart-journey-description" data-testid="flowchart-journey-description">
-              {playback.currentJourney.description}
-            </div>
-          )}
-        </div>
-      )}
-
-      {playback.currentJourney && (
-        <PlaybackControls
-          currentJourney={playback.currentJourney}
-          currentStep={playback.currentStep}
-          isPlaying={playback.isPlaying}
-          handlePlay={playback.handlePlay}
-          handlePause={playback.handlePause}
-          handleNext={playback.handleNext}
-          handlePrev={playback.handlePrev}
-          handleReset={playback.handleReset}
-        />
-      )}
 
       {/* Canvas View */}
       <div className="flowchart-canvas-wrapper" style={{ position: 'relative' }}>
@@ -405,6 +562,7 @@ export function Flowchart({ title, schema = INITIAL_SCHEMA }: FlowchartProps) {
           onEnterFullscreen={() => setIsFullscreen(true)}
           focusAfterViewSwitch={focusAfterViewSwitch}
           onCameraFocused={() => setFocusAfterViewSwitch(null)}
+          onCameraControls={setCameraControls}
         />
 
         {/* Inspector Sidebar */}
@@ -427,8 +585,21 @@ export function Flowchart({ title, schema = INITIAL_SCHEMA }: FlowchartProps) {
           />
         )}
 
+        {/* Floating unified controls dock overlay at bottom-center */}
+        <div className="flowchart-controls-dock-container" data-testid="flowchart-controls-dock">
+          <ExpandableTabs
+            tabs={dockTabs}
+            activeTabId={activeDockTabId}
+            onTabChange={setActiveDockTabId}
+            className="flowchart-controls-dock"
+            contentClassName="flowchart-controls-dock-content"
+          />
+        </div>
+
         {activeStep && (
-          <button
+          <Button
+            variant="outline"
+            size="sm"
             onClick={() => {
               setActiveStep(null);
               playback.resetAll();
@@ -436,46 +607,17 @@ export function Flowchart({ title, schema = INITIAL_SCHEMA }: FlowchartProps) {
             className="flowchart-btn animate-fade-in"
             style={{
               position: 'absolute',
-              top: '16px',
-              right: '16px',
+              top: '12px',
+              right: '12px',
               zIndex: 10,
-              padding: '6px 16px',
-              borderRadius: '20px',
-              fontSize: '12px',
-              fontWeight: 'bold',
-              backgroundColor: 'var(--ctp-crust)',
-              color: 'var(--ctp-text)',
-              border: '1px solid var(--border-light)',
-              boxShadow: '0 4px 12px rgba(0, 0, 0, 0.25)',
-              cursor: 'pointer',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '4px'
             }}
           >
             Clear Focus &times;
-          </button>
+          </Button>
         )}
-
-        <StepCarousel
-          activeSteps={activeSteps}
-          activeStep={activeStep}
-          handleStepClick={handleStepClick}
-          instanceId={instanceId}
-        />
       </div>
 
-      {isFullscreen && (
-        <button
-          className="flowchart-fullscreen-exit"
-          onClick={() => setIsFullscreen(false)}
-          title="Exit fullscreen (Escape)"
-          data-testid="flowchart-fullscreen-exit"
-        >
-          <X size={14} />
-          Exit
-        </button>
-      )}
+
     </div>
   );
 }

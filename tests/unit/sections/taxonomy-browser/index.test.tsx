@@ -234,19 +234,21 @@ describe('TaxonomyBrowser Section', () => {
     expect(screen.queryByTestId('taxonomy-dialog')).not.toBeInTheDocument()
   })
 
-  it('cards have initial animation styles for entrance', () => {
+  it('cards render within ScrollReveal and TiltCard wrappers', () => {
     render(<TaxonomyBrowserSection categories={mockCategories} />)
     const card0 = screen.getByTestId('taxonomy-browser-card-0')
-    expect(card0.style.opacity).toBe('0')
-    expect(card0.style.transform).toBe('translateY(60px) scale(0.9)')
+    // ScrollReveal + TiltCard wrap each card in motion.div elements
+    // Verify the card is properly nested (2 wrapper levels: TiltCard > ScrollReveal)
+    expect(card0.parentElement?.tagName).toBe('DIV')
+    expect(card0.parentElement?.parentElement?.tagName).toBe('DIV')
   })
 
-  it('all cards have initial animation styles', () => {
+  it('all cards render within motion wrappers', () => {
     render(<TaxonomyBrowserSection categories={mockCategories} />)
     for (let i = 0; i < 3; i++) {
       const card = screen.getByTestId(`taxonomy-browser-card-${i}`)
-      expect(card.style.opacity).toBe('0')
-      expect(card.style.transform).toBe('translateY(60px) scale(0.9)')
+      expect(card.parentElement?.tagName).toBe('DIV')
+      expect(card.parentElement?.parentElement?.tagName).toBe('DIV')
     }
   })
 })

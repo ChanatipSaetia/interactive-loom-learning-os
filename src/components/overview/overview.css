@@ -1,297 +1,168 @@
 .overview-page {
+  @apply mx-auto w-full;
   max-width: 960px;
+}
+
+.overview-header {
+  @apply mb-8;
 }
 
 .overview-page-title {
   font-family: var(--font-display);
-  font-size: 48px;
-  font-weight: 400;
-  line-height: 1.2;
-  letter-spacing: -0.48px;
+  @apply text-4xl font-normal tracking-tight mb-2;
   color: var(--ctp-lavender);
-  margin-bottom: var(--spacing-sm);
+}
+
+html[data-theme='medicare'] .overview-page-title,
+html[data-theme='recipebook'] .overview-page-title {
+  color: var(--foreground);
 }
 
 .overview-page-subtitle {
-  font-size: var(--text-body-large);
-  color: var(--body-muted);
-  margin-bottom: var(--spacing-xxl);
-  line-height: 1.4;
+  @apply text-base text-muted-foreground leading-relaxed;
 }
 
 /* Controls (search + filters) */
 .overview-controls {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--spacing-lg);
-  align-items: center;
-  margin-bottom: var(--spacing-xl);
+  @apply flex flex-wrap items-center gap-4 mb-6;
 }
 
 .overview-search {
-  position: relative;
-  flex: 1;
-  min-width: 240px;
+  @apply relative flex-1 min-w-[240px];
 }
 
 .overview-search-icon {
-  position: absolute;
-  left: var(--spacing-md);
-  top: 50%;
-  transform: translateY(-50%);
-  color: var(--muted);
-  pointer-events: none;
+  @apply absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground pointer-events-none;
 }
 
 .overview-search-input {
-  width: 100%;
-  padding: var(--spacing-sm) var(--spacing-lg) var(--spacing-sm) 36px;
-  border: 1px solid var(--border-light);
-  border-radius: var(--radius-sm);
-  font-size: var(--text-body);
-  color: var(--ink);
-  background-color: var(--soft-stone);
-  outline: none;
-  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+  @apply w-full rounded-md border border-border bg-card text-sm text-foreground outline-none transition-colors;
+  @apply px-4 py-2 pl-10;
 }
 
 .overview-search-input:focus {
-  border-color: var(--action-blue);
+  @apply border-ring;
   box-shadow: 0 0 0 2px rgba(140, 170, 238, 0.15);
 }
 
 .overview-search-input::placeholder {
-  color: var(--muted);
+  @apply text-muted-foreground;
 }
 
 .overview-filters {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--spacing-xs);
-}
-
-.overview-filter-chip {
-  padding: var(--spacing-xs) var(--spacing-md);
-  border: 1px solid var(--border-light);
-  border-radius: var(--radius-full);
-  font-size: var(--text-caption);
-  color: var(--body-muted);
-  background-color: var(--soft-stone);
-  cursor: pointer;
-  transition: border-color 0.15s ease, background-color 0.15s ease, color 0.15s ease;
-}
-
-.overview-filter-chip:hover {
-  border-color: var(--ctp-mauve);
-  color: var(--ctp-mauve);
-}
-
-.overview-filter-chip-active {
-  border-color: var(--ctp-mauve);
-  background-color: rgba(202, 158, 230, 0.15);
-  color: var(--ctp-mauve);
+  @apply flex flex-wrap gap-2;
 }
 
 /* Table */
 .overview-table-wrapper {
-  border: 1px solid var(--border-light);
-  border-radius: var(--radius-sm);
-  overflow: hidden;
+  @apply rounded-md border border-border overflow-hidden;
 }
 
 .overview-table {
-  width: 100%;
+  @apply w-full;
   border-collapse: collapse;
 }
 
 .overview-table-header {
-  padding: var(--spacing-md) var(--spacing-lg);
-  text-align: left;
-  font-size: var(--text-caption);
-  font-weight: 600;
+  @apply px-4 py-3 text-left text-[13px] font-semibold uppercase tracking-wider border-b border-border;
   color: var(--ctp-overlay2);
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
   font-family: var(--font-mono);
-  border-bottom: 1px solid var(--border-light);
   background-color: var(--ctp-mantle);
-  white-space: nowrap;
+}
+
+html[data-theme='medicare'] .overview-table-header,
+html[data-theme='recipebook'] .overview-table-header {
+  background-color: var(--muted);
+  color: var(--muted-foreground);
 }
 
 .overview-table-header-button {
-  display: flex;
-  align-items: center;
-  gap: var(--spacing-xs);
-  background: none;
-  border: none;
-  cursor: pointer;
-  font-size: var(--text-caption);
-  font-weight: 600;
+  @apply flex items-center gap-2 bg-none border-none cursor-pointer text-[13px] font-semibold uppercase tracking-wider transition-colors p-0;
   color: var(--ctp-overlay2);
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
   font-family: var(--font-mono);
-  padding: 0;
-  transition: color 0.15s ease;
+}
+
+html[data-theme='medicare'] .overview-table-header-button,
+html[data-theme='recipebook'] .overview-table-header-button {
+  color: var(--muted-foreground);
 }
 
 .overview-table-header-button:hover {
-  color: var(--ctp-text);
-}
-
-.overview-sort-icon {
-  color: var(--muted);
-  flex-shrink: 0;
+  @apply text-foreground;
 }
 
 .overview-table-row {
-  transition: background-color 0.12s ease;
+  @apply transition-colors;
 }
 
 .overview-table-row:hover {
-  background-color: rgba(140, 170, 238, 0.07);
+  @apply bg-accent;
 }
 
 .overview-table-cell {
-  padding: var(--spacing-md) var(--spacing-lg);
-  font-size: var(--text-body);
-  color: var(--ink);
-  border-bottom: 1px solid var(--card-border);
-  vertical-align: middle;
+  @apply px-4 py-3 text-base border-b border-border align-middle;
 }
 
 .overview-table-link {
+  @apply no-underline font-medium transition-colors;
   color: var(--action-blue);
-  text-decoration: none;
-  font-weight: 500;
   font-family: var(--font-body);
-  transition: color 0.15s ease;
 }
 
 .overview-table-link:hover {
-  text-decoration: underline;
+  @apply underline;
   color: var(--focus-blue);
 }
 
 .overview-table-category {
-  display: inline-block;
-  padding: 2px var(--spacing-sm);
-  border-radius: var(--radius-full);
-  font-size: var(--text-micro);
-  font-family: var(--font-mono);
+  @apply inline-block rounded-full px-2 py-0.5 text-[11px] font-mono border;
   color: var(--ctp-mauve);
   background-color: rgba(202, 158, 230, 0.12);
-  border: 1px solid rgba(202, 158, 230, 0.25);
+  border-color: rgba(202, 158, 230, 0.25);
 }
 
 .overview-table-description {
-  color: var(--body-muted);
+  @apply text-muted-foreground;
   max-width: 400px;
 }
 
 .overview-table-empty {
-  padding: var(--spacing-xxl) var(--spacing-lg);
-  text-align: center;
-  color: var(--muted);
-  font-size: var(--text-body);
+  @apply px-4 py-8 text-center text-muted-foreground;
 }
 
 /* Pagination */
 .overview-pagination {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-top: var(--spacing-lg);
-  flex-wrap: wrap;
-  gap: var(--spacing-md);
+  @apply flex items-center justify-between mt-4 flex-wrap gap-4;
 }
 
 .overview-pagination-info {
-  font-size: var(--text-caption);
-  color: var(--muted);
-  font-family: var(--font-mono);
+  @apply text-[13px] text-muted-foreground font-mono;
 }
 
 .overview-pagination-controls {
-  display: flex;
-  align-items: center;
-  gap: var(--spacing-xxs);
+  @apply flex items-center gap-1;
 }
 
 .overview-pagination-button {
-  padding: var(--spacing-sm) var(--spacing-md);
-  border: 1px solid var(--border-light);
-  border-radius: var(--radius-sm);
-  font-size: var(--text-caption);
-  color: var(--ink);
-  background-color: var(--soft-stone);
-  cursor: pointer;
-  transition: border-color 0.15s ease, background-color 0.15s ease;
-  font-family: var(--font-body);
+  @apply px-3 py-2 rounded-md border border-border bg-card text-[13px] cursor-pointer transition-colors disabled:opacity-35 disabled:cursor-not-allowed font-normal;
 }
 
 .overview-pagination-button:hover:not(:disabled) {
-  border-color: var(--action-blue);
-  background-color: var(--pale-blue);
-}
-
-.overview-pagination-button:disabled {
-  opacity: 0.35;
-  cursor: not-allowed;
-}
-
-.overview-pagination-page {
-  width: 32px;
-  height: 32px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border: 1px solid var(--border-light);
-  border-radius: var(--radius-sm);
-  font-size: var(--text-caption);
-  color: var(--ink);
-  background-color: var(--soft-stone);
-  cursor: pointer;
-  transition: border-color 0.15s ease, background-color 0.15s ease;
-  font-family: var(--font-mono);
-}
-
-.overview-pagination-page:hover {
-  border-color: var(--action-blue);
-  background-color: var(--pale-blue);
-}
-
-.overview-pagination-page-active {
-  border-color: var(--ctp-blue);
-  background-color: var(--ctp-blue);
-  color: var(--ctp-crust);
-  font-weight: 600;
+  @apply border-ring bg-accent;
 }
 
 .overview-rows-per-page {
-  display: flex;
-  align-items: center;
-  gap: var(--spacing-sm);
+  @apply flex items-center gap-2;
 }
 
 .overview-rows-label {
-  font-size: var(--text-caption);
-  color: var(--muted);
+  @apply text-[13px] text-muted-foreground;
 }
 
 .overview-rows-select {
-  padding: var(--spacing-xxs) var(--spacing-sm);
-  border: 1px solid var(--border-light);
-  border-radius: var(--radius-sm);
-  font-size: var(--text-caption);
-  color: var(--ink);
-  background-color: var(--soft-stone);
-  cursor: pointer;
-  font-family: var(--font-body);
-  transition: border-color 0.15s ease;
+  @apply px-2 py-1 rounded-md border border-border bg-card text-[13px] cursor-pointer transition-colors outline-none;
 }
 
 .overview-rows-select:focus {
-  outline: none;
-  border-color: var(--action-blue);
+  @apply border-ring;
 }

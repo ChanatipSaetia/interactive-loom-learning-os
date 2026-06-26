@@ -22,13 +22,13 @@ export const orderSchema: UnifiedFlowchartSchema = {
       type: TYPES.AGGREGATE,
       stateMachine: {
         states: [
-          { id: 'PENDING', label: 'Pending', color: '#838ba7' },
-          { id: 'INVENTORY_LOCKED', label: 'Inventory Locked', color: '#8caaee' },
-          { id: 'PAYMENT_AUTHORIZED', label: 'Payment Auth', color: '#e5c890' },
-          { id: 'FRAUD_CLEARED', label: 'Fraud Cleared', color: '#a6d189' },
-          { id: 'CONFIRMED', label: 'Confirmed', color: '#81c8be' },
-          { id: 'FRAUD_REVIEW', label: 'Fraud Review', color: '#ed879e' },
-          { id: 'CANCELLED', label: 'Cancelled', color: '#e78284' },
+          { id: 'PENDING', label: 'Pending', color: 'var(--ctp-overlay1)' },
+          { id: 'INVENTORY_LOCKED', label: 'Inventory Locked', color: 'var(--ctp-blue)' },
+          { id: 'PAYMENT_AUTHORIZED', label: 'Payment Auth', color: 'var(--ctp-yellow)' },
+          { id: 'FRAUD_CLEARED', label: 'Fraud Cleared', color: 'var(--ctp-green)' },
+          { id: 'CONFIRMED', label: 'Confirmed', color: 'var(--ctp-teal)' },
+          { id: 'FRAUD_REVIEW', label: 'Fraud Review', color: 'var(--ctp-maroon)' },
+          { id: 'CANCELLED', label: 'Cancelled', color: 'var(--ctp-red)' },
         ],
         initialState: 'PENDING',
       },
@@ -455,10 +455,10 @@ export const orderSchema: UnifiedFlowchartSchema = {
         { id: 'evt_order_cancelled', grid: [24, 4] },
       ],
       groups: [
-        { id: 'es_g1', title: 'Checkout & Inventory', desc: 'Order Placed triggers checkout. Inventory checked and locked with time-based expiry.', nodeIds: ['customer','evt_order_placed','pol_process_checkout','cmd_checkout','order_checkout','order_db','pol_check_inventory','cmd_check_inventory','inventory_service','evt_inventory_checked','pol_lock_inventory','cmd_lock_inventory','evt_inventory_locked'], color: 'rgba(140,170,238,0.12)', borderColor: '#8caaee', textColor: '#c6d0f5' },
-        { id: 'es_g2', title: 'Payment Authorization', desc: 'Inventory lock triggers Stripe authorization. Webhook confirms funds held.', nodeIds: ['pol_authorize','cmd_authorize_payment','stripe','evt_payment_authorized'], color: 'rgba(244,184,228,0.12)', borderColor: '#f4b8e4', textColor: '#c6d0f5' },
-        { id: 'es_g3', title: 'Fraud Evaluation & Auto-Approve', desc: 'Fraud engine scores order. Low-risk auto-approved: payment captured, order confirmed.', nodeIds: ['pol_evaluate_fraud','cmd_evaluate_fraud','fraud_service','evt_fraud_evaluated','pol_route_risk','fraud_policy','pol_auto_approve','cmd_approve_order','order_fulfill','evt_order_approved','evt_order_confirmed'], color: 'rgba(229,200,144,0.12)', borderColor: '#e5c890', textColor: '#c6d0f5' },
-        { id: 'es_g4', title: 'Fraud Review & Decision', desc: 'High-risk orders flagged for Risk Ops analyst. Manual review leads to approval or cancellation.', nodeIds: ['pol_flag_review','evt_fraud_flagged','cmd_review_order','risk_analyst','evt_review_decision','pol_finalize_review','evt_order_cancelled'], color: 'rgba(231,130,132,0.12)', borderColor: '#e78284', textColor: '#c6d0f5' },
+        { id: 'es_g1', title: 'Checkout & Inventory', desc: 'Order Placed triggers checkout. Inventory checked and locked with time-based expiry.', nodeIds: ['customer','evt_order_placed','pol_process_checkout','cmd_checkout','order_checkout','order_db','pol_check_inventory','cmd_check_inventory','inventory_service','evt_inventory_checked','pol_lock_inventory','cmd_lock_inventory','evt_inventory_locked'], color: 'rgba(140,170,238,0.12)', borderColor: 'var(--ctp-blue)', textColor: 'var(--ctp-text)' },
+        { id: 'es_g2', title: 'Payment Authorization', desc: 'Inventory lock triggers Stripe authorization. Webhook confirms funds held.', nodeIds: ['pol_authorize','cmd_authorize_payment','stripe','evt_payment_authorized'], color: 'rgba(244,184,228,0.12)', borderColor: 'var(--ctp-pink)', textColor: 'var(--ctp-text)' },
+        { id: 'es_g3', title: 'Fraud Evaluation & Auto-Approve', desc: 'Fraud engine scores order. Low-risk auto-approved: payment captured, order confirmed.', nodeIds: ['pol_evaluate_fraud','cmd_evaluate_fraud','fraud_service','evt_fraud_evaluated','pol_route_risk','fraud_policy','pol_auto_approve','cmd_approve_order','order_fulfill','evt_order_approved','evt_order_confirmed'], color: 'rgba(229,200,144,0.12)', borderColor: 'var(--ctp-yellow)', textColor: 'var(--ctp-text)' },
+        { id: 'es_g4', title: 'Fraud Review & Decision', desc: 'High-risk orders flagged for Risk Ops analyst. Manual review leads to approval or cancellation.', nodeIds: ['pol_flag_review','evt_fraud_flagged','cmd_review_order','risk_analyst','evt_review_decision','pol_finalize_review','evt_order_cancelled'], color: 'rgba(231,130,132,0.12)', borderColor: 'var(--ctp-red)', textColor: 'var(--ctp-text)' },
       ]
     }
   },

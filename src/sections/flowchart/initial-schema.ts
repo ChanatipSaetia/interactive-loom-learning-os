@@ -96,9 +96,9 @@ export const INITIAL_SCHEMA: UnifiedFlowchartSchema = {
         { id: 'sys_portal', grid: [18, 2] }
       ],
       groups: [
-        { id: 'g1', title: 'Ingestion Subdomain', desc: 'Handles secure file uploads and initial storage state before processing.', nodeIds: ['user_editor', 'cmd_up', 'agg_pipe', 'evt_up'], color: 'rgba(140, 170, 238, 0.12)', borderColor: '#8caaee', textColor: '#c6d0f5' },
-        { id: 'g2', title: 'Quality Assurance & Routing', desc: 'Evaluates structural integrity of the parsed markdown and loops in humans for anomaly correction.', nodeIds: ['pol_pass', 'pol_fail', 'user_reviewer', 'cmd_fix', 'cmd_reject', 'risk_tbl', 'evt_rejected', 'pol_notify'], color: 'rgba(229, 200, 144, 0.12)', borderColor: '#e5c890', textColor: '#c6d0f5' },
-        { id: 'g3', title: 'Vectorization Infrastructure', desc: 'Manages API interactions for AI embeddings and final persistence to OpenSearch clusters.', nodeIds: ['pol_emb', 'cmd_req_emb', 'api_emb', 'evt_vec', 'pol_db', 'cmd_os', 'db_os', 'evt_idx', 'sys_portal'], color: 'rgba(244, 184, 228, 0.12)', borderColor: '#f4b8e4', textColor: '#c6d0f5' }
+        { id: 'g1', title: 'Ingestion Subdomain', desc: 'Handles secure file uploads and initial storage state before processing.', nodeIds: ['user_editor', 'cmd_up', 'agg_pipe', 'evt_up'], color: 'rgba(140, 170, 238, 0.12)', borderColor: 'var(--ctp-blue)', textColor: 'var(--ctp-text)' },
+        { id: 'g2', title: 'Quality Assurance & Routing', desc: 'Evaluates structural integrity of the parsed markdown and loops in humans for anomaly correction.', nodeIds: ['pol_pass', 'pol_fail', 'user_reviewer', 'cmd_fix', 'cmd_reject', 'risk_tbl', 'evt_rejected', 'pol_notify'], color: 'rgba(229, 200, 144, 0.12)', borderColor: 'var(--ctp-yellow)', textColor: 'var(--ctp-text)' },
+        { id: 'g3', title: 'Vectorization Infrastructure', desc: 'Manages API interactions for AI embeddings and final persistence to OpenSearch clusters.', nodeIds: ['pol_emb', 'cmd_req_emb', 'api_emb', 'evt_vec', 'pol_db', 'cmd_os', 'db_os', 'evt_idx', 'sys_portal'], color: 'rgba(244, 184, 228, 0.12)', borderColor: 'var(--ctp-pink)', textColor: 'var(--ctp-text)' }
       ]
     }
   },

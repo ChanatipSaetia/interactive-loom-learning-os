@@ -11,37 +11,27 @@
    Top navigation bar
 ============================================= */
 .topnav {
-  position: sticky;
-  top: 0;
-  z-index: 100;
-  display: flex;
-  align-items: center;
-  gap: var(--spacing-xl);
-  height: 52px;
-  padding: 0 var(--spacing-xxl);
-  background-color: var(--ctp-crust);
-  border-bottom: 1px solid var(--border-light);
-  flex-shrink: 0;
+  @apply sticky top-0 z-50 flex items-center gap-6 flex-shrink-0;
+  @apply h-[52px] px-6 bg-background border-b border-border;
 }
 
 .topnav-brand {
-  flex-shrink: 0;
+  @apply flex-shrink-0;
 }
 
 .topnav-title {
   font-family: var(--font-display);
-  font-size: 15px;
-  font-weight: 600;
-  letter-spacing: -0.1px;
+  @apply text-[15px] font-semibold tracking-tight whitespace-nowrap;
   color: var(--ctp-lavender);
-  white-space: nowrap;
+}
+
+html[data-theme='medicare'] .topnav-title,
+html[data-theme='recipebook'] .topnav-title {
+  color: var(--foreground);
 }
 
 .topnav-links {
-  display: flex;
-  align-items: center;
-  gap: 2px;
-  overflow-x: auto;
+  @apply flex items-center gap-1 overflow-x-auto;
   scrollbar-width: none;
 }
 
@@ -49,85 +39,57 @@
   display: none;
 }
 
-.topnav-link {
-  padding: 5px var(--spacing-md);
-  border-radius: var(--radius-sm);
-  font-size: var(--text-button);
-  color: var(--ctp-overlay2);
-  text-decoration: none;
-  white-space: nowrap;
-  transition: color 0.15s ease, background-color 0.15s ease;
+.topnav-nav-group {
+  @apply inline-flex items-center gap-1;
 }
 
-.topnav-link:hover {
-  color: var(--ctp-text);
-  background-color: rgba(140, 170, 238, 0.08);
+.topnav-link {
+  @apply no-underline whitespace-nowrap;
 }
 
 .topnav-link-active {
-  color: var(--ctp-blue);
-  background-color: rgba(140, 170, 238, 0.12);
-}
-
-.topnav-link-active:hover {
-  color: var(--ctp-lavender);
-  background-color: rgba(186, 187, 241, 0.12);
-}
-
-.topnav-divider {
-  width: 1px;
-  height: 18px;
-  background-color: var(--border-light);
-  margin: 0 var(--spacing-xs);
-  flex-shrink: 0;
+  @apply text-primary;
 }
 
 /* =============================================
    Main content
 ============================================= */
 .main-content {
-  flex: 1;
+  @apply flex-1 bg-background overflow-y-auto;
   padding: var(--spacing-xxl) calc(var(--spacing-xxl) * 1.5);
-  background-color: var(--canvas);
-  overflow-y: auto;
 }
 
 /* =============================================
    Topic page
 ============================================= */
 .topic-page {
+  @apply mx-auto;
   max-width: 860px;
-  margin: 0 auto;
 }
 
 .topic-page-title {
   font-family: var(--font-display);
-  font-size: var(--text-card-heading);
-  font-weight: 400;
-  line-height: 1.2;
-  letter-spacing: -0.32px;
+  @apply text-2xl font-normal tracking-tight border-b border-border;
+  @apply pb-3 mb-8;
   color: var(--ctp-lavender);
-  margin-bottom: var(--spacing-xxl);
-  padding-bottom: var(--spacing-md);
-  border-bottom: 1px solid var(--border-light);
+}
+
+html[data-theme='medicare'] .topic-page-title,
+html[data-theme='recipebook'] .topic-page-title {
+  color: var(--foreground);
 }
 
 .topic-page-placeholder {
-  color: var(--muted);
-  font-size: var(--text-body);
+  @apply text-muted-foreground;
 }
 
 .topic-loading {
-  color: var(--muted);
-  font-size: var(--text-body);
-  padding: var(--spacing-xl) 0;
+  @apply text-muted-foreground py-6;
 }
 
 .section-missing {
+  @apply text-sm p-3 rounded border;
   color: var(--ctp-red);
-  font-size: var(--text-caption);
-  padding: var(--spacing-md);
-  border: 1px solid var(--ctp-red);
-  border-radius: var(--radius-sm);
+  border-color: var(--ctp-red);
   background-color: rgba(231, 130, 132, 0.08);
 }

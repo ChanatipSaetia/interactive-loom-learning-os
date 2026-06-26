@@ -119,8 +119,8 @@ export const accountabilitySchema: UnifiedFlowchartSchema = {
           desc: 'Business Owner and Technical Owner must both authorize. Neither can act alone.',
           nodeIds: ['business_owner', 'technical_owner', 'cmd_propose', 'dual_key', 'evt_change_proposed', 'pol_dual_key', 'cmd_authorize', 'evt_authorized'],
           color: 'rgba(140, 170, 238, 0.12)',
-          borderColor: '#8caaee',
-          textColor: '#c6d0f5',
+          borderColor: 'var(--ctp-blue)',
+          textColor: 'var(--ctp-text)',
         },
         {
           id: 'g2',
@@ -128,8 +128,8 @@ export const accountabilitySchema: UnifiedFlowchartSchema = {
           desc: 'Data Owner and Model Oversight report to the dual-key owners and audit the active agent system.',
           nodeIds: ['data_owner', 'model_oversight', 'pol_deploy', 'cmd_deploy', 'agent_system', 'evt_deployed'],
           color: 'rgba(202, 158, 230, 0.12)',
-          borderColor: '#ca9ee6',
-          textColor: '#c6d0f5',
+          borderColor: 'var(--ctp-mauve)',
+          textColor: 'var(--ctp-text)',
         },
       ]
     }

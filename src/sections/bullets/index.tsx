@@ -1,4 +1,4 @@
-import { useRef, useEffect } from 'react'
+import { motion } from 'motion/react'
 import './bullets.css'
 
 export interface BulletItem {
@@ -28,48 +28,66 @@ function BulletItemRow({
   ordered: boolean
   animate: boolean
 }) {
-  const rowRef = useRef<HTMLLIElement>(null)
-
-  useEffect(() => {
-    if (!animate) return
-    const el = rowRef.current
-    if (!el) return
-    el.style.opacity = '0'
-    el.style.transform = `translateX(-12px)`
-    const delay = (depth * 150) + (index * 80)
-    const timer = setTimeout(() => {
-      el.style.transition = 'opacity 0.3s ease, transform 0.3s ease'
-      el.style.opacity = '1'
-      el.style.transform = 'translateX(0)'
-      setTimeout(() => {
-        el.style.transition = ''
-      }, 350)
-    }, delay)
-    return () => clearTimeout(timer)
-  }, [animate, depth, index, path])
+  const staggerDelay = (depth * 150 + index * 80) / 1000
 
   return (
-    <li
-      ref={rowRef}
+    <motion.li
       className="bullet-item"
       data-testid={`bullet-item-${path}`}
+      initial={animate ? { opacity: 0, x: -12 } : {}}
+      whileInView={animate ? { opacity: 1, x: 0 } : {}}
+      viewport={animate ? { once: true, amount: 0.3 } : {}}
+      transition={
+        animate
+          ? { duration: 0.3, ease: [0.25, 1, 0.5, 1], delay: staggerDelay }
+          : {}
+      }
     >
       <div className="bullet-item-row">
         {ordered ? (
-          <span className="bullet-marker bullet-marker-ordered" data-testid={`bullet-number-${path}`}>
-          </span>
+          <motion.span
+            className="bullet-marker bullet-marker-ordered"
+            data-testid={`bullet-number-${path}`}
+            initial={animate ? { opacity: 0 } : {}}
+            whileInView={animate ? { opacity: 1 } : {}}
+            viewport={animate ? { once: true, amount: 0.3 } : {}}
+            transition={
+              animate
+                ? { duration: 0.3, ease: [0.25, 1, 0.5, 1], delay: staggerDelay }
+                : {}
+            }
+          />
         ) : (
-          <span className="bullet-marker bullet-marker-unordered" data-testid={`bullet-marker-${path}`}>
+          <motion.span
+            className="bullet-marker bullet-marker-unordered"
+            data-testid={`bullet-marker-${path}`}
+            initial={animate ? { opacity: 0 } : {}}
+            whileInView={animate ? { opacity: 1 } : {}}
+            viewport={animate ? { once: true, amount: 0.3 } : {}}
+            transition={
+              animate
+                ? { duration: 0.3, ease: [0.25, 1, 0.5, 1], delay: staggerDelay }
+                : {}
+            }
+          >
             &#8226;
-          </span>
+          </motion.span>
         )}
 
-        <span
+        <motion.span
           className="bullet-text"
           data-testid={`bullet-text-${path}`}
+          initial={animate ? { opacity: 0, x: -8 } : {}}
+          whileInView={animate ? { opacity: 1, x: 0 } : {}}
+          viewport={animate ? { once: true, amount: 0.3 } : {}}
+          transition={
+            animate
+              ? { duration: 0.3, ease: [0.25, 1, 0.5, 1], delay: staggerDelay + 0.05 }
+              : {}
+          }
         >
           {item.text}
-        </span>
+        </motion.span>
       </div>
 
       {item.children && item.children.length > 0 && (
@@ -90,7 +108,7 @@ function BulletItemRow({
           ))}
         </ul>
       )}
-    </li>
+    </motion.li>
   )
 }
 

@@ -22,13 +22,13 @@ export const docPipelineSchema: UnifiedFlowchartSchema = {
       type: TYPES.AGGREGATE,
       stateMachine: {
         states: [
-          { id: 'QUEUED', label: 'Queued', color: '#838ba7' },
-          { id: 'EXTRACTING', label: 'Extracting', color: '#8caaee' },
-          { id: 'VALIDATING', label: 'Validating', color: '#e5c890' },
-          { id: 'HIGH_CONFIDENCE', label: 'Approved', color: '#a6d189' },
-          { id: 'LOW_CONFIDENCE', label: 'Pending Audit', color: '#ed879e' },
-          { id: 'AUDITED', label: 'Audited', color: '#ca9ee6' },
-          { id: 'COMPLETED', label: 'Completed', color: '#81c8be' },
+          { id: 'QUEUED', label: 'Queued', color: 'var(--ctp-overlay1)' },
+          { id: 'EXTRACTING', label: 'Extracting', color: 'var(--ctp-blue)' },
+          { id: 'VALIDATING', label: 'Validating', color: 'var(--ctp-yellow)' },
+          { id: 'HIGH_CONFIDENCE', label: 'Approved', color: 'var(--ctp-green)' },
+          { id: 'LOW_CONFIDENCE', label: 'Pending Audit', color: 'var(--ctp-maroon)' },
+          { id: 'AUDITED', label: 'Audited', color: 'var(--ctp-mauve)' },
+          { id: 'COMPLETED', label: 'Completed', color: 'var(--ctp-teal)' },
         ],
         initialState: 'QUEUED',
       },
@@ -326,10 +326,10 @@ export const docPipelineSchema: UnifiedFlowchartSchema = {
         { id: 'approved_doc', grid: [11, 0] },
       ],
       groups: [
-        { id: 'es_g1', title: 'Upload & OCR Extraction', desc: 'Document upload triggers OCR extraction pipeline via external OCR service. Raw fields stored in database.', nodeIds: ['user','evt_uploaded','pol_process','cmd_ocr','ocr_service','orch_extract','db','evt_extracted'], color: 'rgba(140,170,238,0.12)', borderColor: '#8caaee', textColor: '#c6d0f5' },
-        { id: 'es_g2', title: 'LLM Validation', desc: 'Extracted fields sent to LLM API for semantic validation and confidence scoring.', nodeIds: ['pol_validate','cmd_validate','llm_api','orch_validate','field_validator','evt_validated'], color: 'rgba(244,184,228,0.12)', borderColor: '#f4b8e4', textColor: '#c6d0f5' },
-        { id: 'es_g3', title: 'Confidence Routing', desc: 'Policy routes documents by aggregate confidence: above threshold auto-approves, below flags for audit.', nodeIds: ['pol_route','confidence_router','evt_approved','evt_completed','evt_flagged','approved_doc'], color: 'rgba(229,200,144,0.12)', borderColor: '#e5c890', textColor: '#c6d0f5' },
-        { id: 'es_g4', title: 'Human Audit Loop', desc: 'Low-confidence documents dispatched to auditor who corrects fields, then finalized.', nodeIds: ['pol_audit','cmd_audit','auditor','evt_corrected','pol_finalize'], color: 'rgba(231,130,132,0.12)', borderColor: '#e78284', textColor: '#c6d0f5' },
+        { id: 'es_g1', title: 'Upload & OCR Extraction', desc: 'Document upload triggers OCR extraction pipeline via external OCR service. Raw fields stored in database.', nodeIds: ['user','evt_uploaded','pol_process','cmd_ocr','ocr_service','orch_extract','db','evt_extracted'], color: 'rgba(140,170,238,0.12)', borderColor: 'var(--ctp-blue)', textColor: 'var(--ctp-text)' },
+        { id: 'es_g2', title: 'LLM Validation', desc: 'Extracted fields sent to LLM API for semantic validation and confidence scoring.', nodeIds: ['pol_validate','cmd_validate','llm_api','orch_validate','field_validator','evt_validated'], color: 'rgba(244,184,228,0.12)', borderColor: 'var(--ctp-pink)', textColor: 'var(--ctp-text)' },
+        { id: 'es_g3', title: 'Confidence Routing', desc: 'Policy routes documents by aggregate confidence: above threshold auto-approves, below flags for audit.', nodeIds: ['pol_route','confidence_router','evt_approved','evt_completed','evt_flagged','approved_doc'], color: 'rgba(229,200,144,0.12)', borderColor: 'var(--ctp-yellow)', textColor: 'var(--ctp-text)' },
+        { id: 'es_g4', title: 'Human Audit Loop', desc: 'Low-confidence documents dispatched to auditor who corrects fields, then finalized.', nodeIds: ['pol_audit','cmd_audit','auditor','evt_corrected','pol_finalize'], color: 'rgba(231,130,132,0.12)', borderColor: 'var(--ctp-red)', textColor: 'var(--ctp-text)' },
       ]
     }
   },

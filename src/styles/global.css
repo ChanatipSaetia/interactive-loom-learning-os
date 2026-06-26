@@ -1,14 +1,6 @@
 @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+Thai:wght@100..900&display=swap');
 @import './variables.css';
 
-*,
-*::before,
-*::after {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
-}
-
 html {
   font-size: 16px;
   -webkit-font-smoothing: antialiased;
@@ -16,32 +8,42 @@ html {
   color-scheme: dark;
 }
 
+html[data-theme='medicare'],
+html[data-theme='recipebook'] {
+  color-scheme: light;
+}
+
+html[data-theme='medicare'] input,
+html[data-theme='medicare'] select,
+html[data-theme='medicare'] textarea,
+html[data-theme='recipebook'] input,
+html[data-theme='recipebook'] select,
+html[data-theme='recipebook'] textarea {
+  color-scheme: light;
+}
+
 body {
   font-family: var(--font-body);
-  font-size: var(--text-body);
-  line-height: 1.5;
-  color: var(--ink);
-  background-color: var(--canvas);
+  @apply text-base leading-relaxed text-foreground bg-background;
   letter-spacing: 0.01em;
 }
 
 a {
-  color: var(--action-blue);
-  text-decoration: underline;
+  @apply text-primary underline;
 }
 
 button {
   font-family: var(--font-body);
-  cursor: pointer;
-  border: none;
+  @apply cursor-pointer;
   background: none;
+  box-sizing: border-box;
 }
 
 input,
 select,
 textarea {
   font-family: var(--font-body);
-  font-size: var(--text-body);
+  @apply text-base;
   color-scheme: dark;
 }
 
@@ -50,10 +52,8 @@ textarea {
   color: var(--ctp-text);
 }
 
-/* Scrollbar */
 ::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
+  @apply w-1.5 h-1.5;
 }
 
 ::-webkit-scrollbar-track {
@@ -61,8 +61,8 @@ textarea {
 }
 
 ::-webkit-scrollbar-thumb {
+  @apply rounded-full;
   background: var(--ctp-surface2);
-  border-radius: var(--radius-full);
 }
 
 ::-webkit-scrollbar-thumb:hover {

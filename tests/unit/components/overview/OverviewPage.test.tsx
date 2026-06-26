@@ -61,7 +61,7 @@ describe('OverviewPage', () => {
   test('filter chip "All" is active by default', () => {
     renderOverview()
     const allChip = screen.getByTestId('filter-chip-all')
-    expect(allChip).toHaveClass('overview-filter-chip-active')
+    expect(allChip).toHaveClass('bg-primary')
   })
 
   test('clicking category filter narrows results', () => {

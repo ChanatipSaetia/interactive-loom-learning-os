@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react';
 import { StateMachineWidget } from './state-machine-widget';
 import { JsonPayloadViewer } from './json-payload-viewer';
+import { Dropdown } from '../../../components/motion/dropdown';
 import { PROCESS_GROUP_STATE_MAP, STEP_EVENT_TO_STATE_MAP } from '../types';
 import type {
   UnifiedFlowchartSchema,
@@ -142,7 +143,9 @@ export function InspectorSidebar({
       })
       .map(vk => ({
         key: vk,
-        name: schema.views[vk].name
+        name: schema.views[vk].name,
+        titleInView: detailsEntity.viewTitles?.[vk] || detailsEntity.title,
+        typeInView: viewTypes[vk]
       }));
   }, [detailsEntity, schema.views, onSwitchView]);
 
@@ -224,16 +227,24 @@ export function InspectorSidebar({
                             fontSize: '11px',
                             textAlign: 'left',
                             cursor: 'pointer',
-                            transition: 'all 0.15s ease'
+                            transition: 'all 0.15s ease',
+                            display: 'flex',
+                            flexDirection: 'column',
+                            gap: '2px'
                           }}
                           onMouseEnter={(e) => {
-                            (e.target as HTMLElement).style.borderColor = 'var(--ctp-blue)';
+                            const btn = e.currentTarget;
+                            if (btn) btn.style.borderColor = 'var(--ctp-blue)';
                           }}
                           onMouseLeave={(e) => {
-                            (e.target as HTMLElement).style.borderColor = 'var(--border-light)';
+                            const btn = e.currentTarget;
+                            if (btn) btn.style.borderColor = 'var(--border-light)';
                           }}
                         >
-                          {v.name}
+                          <span style={{ fontWeight: '600', color: 'var(--ctp-blue)' }}>{v.name}</span>
+                          <span style={{ fontSize: '10px', color: 'var(--ctp-subtext0)' }}>
+                            {v.titleInView} {v.typeInView && <span style={{ opacity: 0.7, fontSize: '9px', fontFamily: 'var(--font-mono)' }}>({v.typeInView})</span>}
+                          </span>
                         </button>
                       ))}
                     </div>
@@ -259,18 +270,18 @@ export function InspectorSidebar({
             )}
             {smEntities.length > 0 && (
               <div className="inspector-aggregate-selector" data-testid="inspector-aggregate-selector">
-                <select
-                  className="flowchart-journey-select"
+                <Dropdown
                   value={resolvedAggregateId || smEntities[0]?.id || ''}
-                  onChange={(e) => handleAggregateChange(e.target.value)}
+                  onChange={handleAggregateChange}
+                  options={smEntities.map(opt => ({ value: opt.id, label: opt.title }))}
                   data-testid="inspector-aggregate-select"
-                >
-                  {smEntities.map(opt => (
-                    <option key={opt.id} value={opt.id}>
-                      {opt.title}
-                    </option>
-                  ))}
-                </select>
+                  native={true}
+                  showChevron={false}
+                  triggerClassName="flowchart-journey-select"
+                  className="flowchart-journey-dropdown"
+                  optionsClassName="flowchart-journey-options"
+                  optionClassName="flowchart-journey-option"
+                />
               </div>
             )}
             {selectedEntity && selectedEntity.stateMachine && (

@@ -1,6 +1,8 @@
-import { useState, useCallback, useEffect, useRef, useMemo } from 'react'
+import { useState, useCallback, useEffect, useMemo } from 'react'
 import * as Dialog from '@radix-ui/react-dialog'
 import { Check, X, Star } from 'lucide-react'
+import { Button, MagneticButton } from '../../components/motion/button'
+import { Dropdown } from '../../components/motion/dropdown'
 import './tradeoff-sandbox.css'
 
 export interface MetricDef {
@@ -99,92 +101,46 @@ function FloatingDropdown({
   stepIdx: number
   instanceId?: string
 }) {
-  const [open, setOpen] = useState(false)
-  const dropdownRef = useRef<HTMLDivElement | null>(null)
-
-  useEffect(() => {
-    if (!open) return
-    const handler = (e: MouseEvent) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
-        setOpen(false)
-      }
-    }
-    document.addEventListener('mousedown', handler)
-    return () => document.removeEventListener('mousedown', handler)
-  }, [open])
-
-  useEffect(() => {
-    setOpen(false)
-  }, [chosenChoiceId])
-
-  const handleSelect = useCallback(
-    (choiceId: string) => {
-      onSelect(choiceId)
-      setOpen(false)
-    },
-    [onSelect],
-  )
-
-  const handleToggle = useCallback(() => {
-    setOpen((prev) => !prev)
-  }, [])
-
-  const recommendedId = step.recommended
-
   const getTestId = (id: string) => instanceId ? `${instanceId}-${id}` : id
 
+  const options = step.choices.map((choice) => ({
+    value: choice.id,
+    label: choice.label,
+    isRecommended: step.recommended === choice.id,
+    "data-testid": getTestId(`dropdown-option-${scenarioIdx}-${stepIdx}-${choice.id}`),
+  }))
+
   return (
-    <div className="step-dropdown-wrapper" ref={dropdownRef} data-testid={getTestId(`step-dropdown-wrapper-${scenarioIdx}-${stepIdx}`)}>
-      <button
-        className="step-dropdown-trigger"
-        type="button"
-        onClick={handleToggle}
-        onKeyDown={(e) => {
-          if (e.key === 'Enter' || e.key === ' ') {
-            e.preventDefault()
-            handleToggle()
-          }
-        }}
-        aria-haspopup="listbox"
-        aria-expanded={open}
-        data-testid={getTestId(`step-dropdown-trigger-${scenarioIdx}-${stepIdx}`)}
-      >
-        <span className="dropdown-chevron" data-testid={getTestId(`dropdown-chevron-${scenarioIdx}-${stepIdx}`)}>▼</span>
-      </button>
-      {open && (
-        <ul className="step-dropdown-menu" role="listbox" data-testid={getTestId(`step-dropdown-menu-${scenarioIdx}-${stepIdx}`)}>
-          {step.choices.map((choice) => {
-            const isRecommended = recommendedId === choice.id
-            const isSelected = chosenChoiceId === choice.id
-            return (
-              <li
-                key={choice.id}
-                role="option"
-                aria-selected={isSelected}
-                className={`dropdown-option${isSelected ? ' dropdown-option-selected' : ''}${isRecommended ? ' dropdown-option-recommended' : ''}`}
-                onClick={() => handleSelect(choice.id)}
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter' || e.key === ' ') {
-                    e.preventDefault()
-                    handleSelect(choice.id)
-                  }
-                }}
-                tabIndex={0}
-                data-testid={getTestId(`dropdown-option-${scenarioIdx}-${stepIdx}-${choice.id}`)}
-              >
-                <span className="dropdown-option-label">{choice.label}</span>
-                {isRecommended && (
-                  <span className="recommended-badge" data-testid={getTestId(`recommended-badge-${scenarioIdx}-${stepIdx}-${choice.id}`)} title="Recommended">
-                    <Star size={12} style={{ fill: 'currentColor' }} />
-                    <span style={{ display: 'none' }}>Recommended</span>
-                  </span>
-                )}
-              </li>
-            )
-          })}
-        </ul>
+    <Dropdown
+      value={chosenChoiceId || ''}
+      onChange={onSelect}
+      options={options}
+      data-testid={getTestId(`step-dropdown-wrapper-${scenarioIdx}-${stepIdx}`)}
+      triggerTestId={getTestId(`step-dropdown-trigger-${scenarioIdx}-${stepIdx}`)}
+      optionsTestId={getTestId(`step-dropdown-menu-${scenarioIdx}-${stepIdx}`)}
+      className="step-dropdown-wrapper"
+      triggerClassName="step-dropdown-trigger"
+      optionsClassName="step-dropdown-menu"
+      optionClassName="step-dropdown-option-item"
+      placeholder="Select choice"
+      renderOption={(opt) => (
+        <div
+          className={`dropdown-option${chosenChoiceId === opt.value ? ' dropdown-option-selected' : ''}${opt.isRecommended ? ' dropdown-option-recommended' : ''} flex items-center justify-between w-full`}
+        >
+          <span className="dropdown-option-label">{opt.label}</span>
+          {opt.isRecommended && (
+            <span
+              className="recommended-badge"
+              data-testid={getTestId(`recommended-badge-${scenarioIdx}-${stepIdx}-${opt.value}`)}
+              title="Recommended"
+            >
+              <Star size={12} style={{ fill: 'currentColor' }} />
+              <span style={{ display: 'none' }}>Recommended</span>
+            </span>
+          )}
+        </div>
       )}
-    </div>
+    />
   )
 }
 
@@ -246,7 +202,9 @@ function StepSection({
                 <span style={{ display: 'none' }}>Recommended</span>
               </span>
             )}
-            <button
+            <Button
+              size="icon"
+              variant="ghost"
               className="drop-zone-info"
               onClick={onOpenDetails}
               data-testid={getTestId(`drop-zone-info-${scenarioIdx}-${stepIdx}`)}
@@ -254,15 +212,17 @@ function StepSection({
               title="View details"
             >
               ⓘ
-            </button>
-            <button
+            </Button>
+            <Button
+              size="icon"
+              variant="ghost"
               className="drop-zone-remove"
               onClick={onClear}
               data-testid={getTestId(`drop-zone-remove-${scenarioIdx}-${stepIdx}`)}
               aria-label="Remove choice"
             >
               ✕
-            </button>
+            </Button>
           </div>
         ) : (
           <span className="drop-zone-placeholder" data-testid={getTestId(`drop-zone-placeholder-${scenarioIdx}-${stepIdx}`)}>
@@ -381,8 +341,6 @@ function DetailsModal({
 
 function TradeoffSandboxSection({ title, scenarios, instanceId }: TradeoffSandboxSectionProps) {
   const [scenarioIdx, setScenarioIdx] = useState(0)
-  const [scenarioDropdownOpen, setScenarioDropdownOpen] = useState(false)
-  const scenarioDropdownRef = useRef<HTMLDivElement | null>(null)
   const [compareOpen, setCompareOpen] = useState(false)
 
   const [chosenIds, setChosenIds] = useState<Record<string, string>>({})
@@ -395,17 +353,6 @@ function TradeoffSandboxSection({ title, scenarios, instanceId }: TradeoffSandbo
     setChosenIds({})
     setDetailsTarget(null)
   }, [scenarioIdx])
-
-  useEffect(() => {
-    if (!scenarioDropdownOpen) return
-    const handler = (e: MouseEvent) => {
-      if (scenarioDropdownRef.current && !scenarioDropdownRef.current.contains(e.target as Node)) {
-        setScenarioDropdownOpen(false)
-      }
-    }
-    document.addEventListener('mousedown', handler)
-    return () => document.removeEventListener('mousedown', handler)
-  }, [scenarioDropdownOpen])
 
   const handleChoiceSelect = useCallback((stepId: string, choiceId: string) => {
     setChosenIds((prev) => {
@@ -494,36 +441,23 @@ function TradeoffSandboxSection({ title, scenarios, instanceId }: TradeoffSandbo
           <label htmlFor="scenario-select" className="scenario-label">
             Scenario:
           </label>
-          <div className="scenario-dropdown" ref={scenarioDropdownRef} data-testid={getTestId("scenario-dropdown")}>
-            <button
-              id="scenario-select"
-              className="scenario-select"
-              type="button"
-              onClick={() => setScenarioDropdownOpen(!scenarioDropdownOpen)}
-              data-testid={getTestId("scenario-select")}
-              aria-haspopup="listbox"
-              aria-expanded={scenarioDropdownOpen}
-            >
-              {scenario.title}
-            </button>
-            {scenarioDropdownOpen && (
-              <ul className="scenario-options" role="listbox">
-                {scenarios.map((s, idx) => (
-                  <li
-                    key={s.id}
-                    className={`scenario-option${idx === scenarioIdx ? ' scenario-option-active' : ''}`}
-                    role="option"
-                    aria-selected={idx === scenarioIdx}
-                    onClick={() => {
-                      setScenarioIdx(idx)
-                      setScenarioDropdownOpen(false)
-                    }}
-                  >
-                    {s.title}
-                  </li>
-                ))}
-              </ul>
-            )}
+          <div className="scenario-dropdown" data-testid={getTestId("scenario-dropdown")}>
+            <Dropdown
+              value={scenario.id}
+              onChange={(val) => {
+                const idx = scenarios.findIndex(s => s.id === val);
+                if (idx !== -1) {
+                  setScenarioIdx(idx);
+                }
+              }}
+              options={scenarios.map(s => ({ value: s.id, label: s.title }))}
+              triggerTestId={getTestId("scenario-select")}
+              triggerClassName="scenario-select"
+              optionsClassName="scenario-options"
+              optionClassName="scenario-option"
+              optionActiveClassName="scenario-option-active"
+              showChevron={false}
+            />
           </div>
         </div>
       )}
@@ -538,9 +472,9 @@ function TradeoffSandboxSection({ title, scenarios, instanceId }: TradeoffSandbo
 
       <Dialog.Root open={compareOpen} onOpenChange={setCompareOpen}>
         <Dialog.Trigger asChild>
-          <button className="compare-all-button" data-testid={getTestId("compare-all-button")}>
+          <MagneticButton variant="outline" size="md" className="compare-all-button" data-testid={getTestId("compare-all-button")}>
             Compare All
-          </button>
+          </MagneticButton>
         </Dialog.Trigger>
         <Dialog.Portal>
           <Dialog.Overlay

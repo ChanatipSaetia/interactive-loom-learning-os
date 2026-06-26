@@ -133,20 +133,24 @@ export function useCamera({ positionedNodesRef }: UseCameraOptions): UseCameraRe
     e.preventDefault();
     const delta = -e.deltaY * 0.0015;
     const currentScale = transformRef.current.scale;
+    const currentTx = transformRef.current.translateX;
+    const currentTy = transformRef.current.translateY;
     const newScale = Math.min(3, Math.max(0.15, currentScale * (1 + delta)));
+
     const svgEl = svgRef.current;
     if (!svgEl) return;
     const rect = svgEl.getBoundingClientRect();
-    const mouseX = e.clientX - rect.left - rect.width / 2;
-    const mouseY = e.clientY - rect.top - rect.height / 2;
-    const svgMouseX = mouseX / currentScale;
-    const svgMouseY = mouseY / currentScale;
-    const scaleFactor = newScale / currentScale;
-    setTransform(prev => ({
+    const mouseX = e.clientX - rect.left;
+    const mouseY = e.clientY - rect.top;
+
+    const svgMouseX = (mouseX - currentTx) / currentScale;
+    const svgMouseY = (mouseY - currentTy) / currentScale;
+
+    setTransform({
       scale: newScale,
-      translateX: prev.translateX + svgMouseX * (1 - scaleFactor),
-      translateY: prev.translateY + svgMouseY * (1 - scaleFactor)
-    }));
+      translateX: currentTx - svgMouseX * (newScale - currentScale),
+      translateY: currentTy - svgMouseY * (newScale - currentScale)
+    });
   }, []);
 
   const onSvgTouchStartNative = useCallback((e: TouchEvent) => {
@@ -188,20 +192,24 @@ export function useCamera({ positionedNodesRef }: UseCameraOptions): UseCameraRe
       const dist = Math.hypot(t2.clientX - t1.clientX, t2.clientY - t1.clientY);
       const scaleRatio = dist / pinchRef.current.initialDist;
       const currentScale = transformRef.current.scale;
+      const currentTx = transformRef.current.translateX;
+      const currentTy = transformRef.current.translateY;
       const newScale = Math.min(3, Math.max(0.15, pinchRef.current.initialScale * scaleRatio));
+
       const svgEl = svgRef.current;
       if (!svgEl) return;
       const rect = svgEl.getBoundingClientRect();
       const centerX = (t1.clientX + t2.clientX) / 2 - rect.left;
       const centerY = (t1.clientY + t2.clientY) / 2 - rect.top;
-      const svgCenterX = (centerX - rect.width / 2) / currentScale;
-      const svgCenterY = (centerY - rect.height / 2) / currentScale;
-      const scaleFactor = newScale / currentScale;
-      setTransform(prev => ({
+
+      const svgCenterX = (centerX - currentTx) / currentScale;
+      const svgCenterY = (centerY - currentTy) / currentScale;
+
+      setTransform({
         scale: newScale,
-        translateX: prev.translateX + svgCenterX * (1 - scaleFactor),
-        translateY: prev.translateY + svgCenterY * (1 - scaleFactor)
-      }));
+        translateX: currentTx - svgCenterX * (newScale - currentScale),
+        translateY: currentTy - svgCenterY * (newScale - currentScale)
+      });
       return;
     }
     if (e.touches.length === 1 && isPanningRef.current) {
@@ -224,11 +232,47 @@ export function useCamera({ positionedNodesRef }: UseCameraOptions): UseCameraRe
   }, []);
 
   const handleZoomIn = useCallback(() => {
-    setTransform(prev => ({ ...prev, scale: Math.min(3, prev.scale + 0.1) }));
+    const svgEl = svgRef.current;
+    if (!svgEl) return;
+    const rect = svgEl.getBoundingClientRect();
+    const centerX = rect.width / 2;
+    const centerY = rect.height / 2;
+
+    const currentScale = transformRef.current.scale;
+    const currentTx = transformRef.current.translateX;
+    const currentTy = transformRef.current.translateY;
+    const newScale = Math.min(3, currentScale + 0.1);
+
+    const svgCenterX = (centerX - currentTx) / currentScale;
+    const svgCenterY = (centerY - currentTy) / currentScale;
+
+    setTransform({
+      scale: newScale,
+      translateX: currentTx - svgCenterX * (newScale - currentScale),
+      translateY: currentTy - svgCenterY * (newScale - currentScale)
+    });
   }, []);
 
   const handleZoomOut = useCallback(() => {
-    setTransform(prev => ({ ...prev, scale: Math.max(0.15, prev.scale - 0.1) }));
+    const svgEl = svgRef.current;
+    if (!svgEl) return;
+    const rect = svgEl.getBoundingClientRect();
+    const centerX = rect.width / 2;
+    const centerY = rect.height / 2;
+
+    const currentScale = transformRef.current.scale;
+    const currentTx = transformRef.current.translateX;
+    const currentTy = transformRef.current.translateY;
+    const newScale = Math.max(0.15, currentScale - 0.1);
+
+    const svgCenterX = (centerX - currentTx) / currentScale;
+    const svgCenterY = (centerY - currentTy) / currentScale;
+
+    setTransform({
+      scale: newScale,
+      translateX: currentTx - svgCenterX * (newScale - currentScale),
+      translateY: currentTy - svgCenterY * (newScale - currentScale)
+    });
   }, []);
 
   return {
