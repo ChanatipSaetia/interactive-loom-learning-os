@@ -49,7 +49,7 @@ export function StandardView({
           let yVal = group.y ?? 100;
           let hVal = group.h ?? 180;
           if (typeof group.row === 'number') {
-            const laneHeight = 160;
+            const laneHeight = spacing.rowSpacing;
             const centerY = group.row * spacing.rowSpacing + spacing.offsetY;
             yVal = centerY - laneHeight / 2;
             hVal = laneHeight;

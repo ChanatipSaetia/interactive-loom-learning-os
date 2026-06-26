@@ -66,7 +66,7 @@ export function FlowchartView({
       STATE_MACHINE: { colSpacing: 140, rowSpacing: 150, offsetX: 60, offsetY: 80 },
       SYS_ARCH: { colSpacing: 140, rowSpacing: 130, offsetX: 80, offsetY: 100 },
       DATA_FLOW: { colSpacing: 140, rowSpacing: 130, offsetX: 100, offsetY: 100 },
-      SWIMLANES: { colSpacing: 140, rowSpacing: 190, offsetX: 160, offsetY: 75 },
+      SWIMLANES: { colSpacing: 140, rowSpacing: 130, offsetX: 160, offsetY: 75 },
       SEQUENCE: { colSpacing: 100, rowSpacing: 48, offsetX: 60, offsetY: 80 },
     };
     const base = defaults[viewKey] || { colSpacing: 140, rowSpacing: 150, offsetX: 100, offsetY: 100 };

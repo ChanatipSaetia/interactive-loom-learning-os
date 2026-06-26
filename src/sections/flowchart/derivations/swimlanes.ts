@@ -6,7 +6,8 @@ export function deriveSwimlanes(
   schema: UnifiedFlowchartSchema,
   getCollapsedId: (id: string) => string,
   getESNode: (id: string) => FlowchartViewNode | undefined,
-  esNodes: FlowchartViewNode[] | undefined
+  esNodes: FlowchartViewNode[] | undefined,
+  sysNodes?: FlowchartViewNode[]
 ) {
   const swimNodes: FlowchartViewNode[] = [];
   const localAddedNodes = new Set<string>();
@@ -49,8 +50,8 @@ export function deriveSwimlanes(
 
   const nodeIds = swimNodes.map(n => n.id);
   const nodeSet = new Set(nodeIds);
-  const laidOutSwimNodes = layoutSwimlanes(swimNodes, nodeIds, nodeSet, updatedRelations, 'SWIMLANES', schema.entities, esNodes);
-  const swimGroups = generateDynamicSwimlaneGroups(schema, laidOutSwimNodes, esNodes);
+  const laidOutSwimNodes = layoutSwimlanes(swimNodes, nodeIds, nodeSet, updatedRelations, 'SWIMLANES', schema.entities, esNodes, sysNodes);
+  const swimGroups = generateDynamicSwimlaneGroups(schema, laidOutSwimNodes, esNodes, sysNodes);
 
   return {
     nodes: laidOutSwimNodes,
@@ -166,7 +167,8 @@ function getSortedActiveLanes(
   entities: Record<string, FlowchartEntity>,
   relations: FlowchartRelation[],
   esNodes: FlowchartViewNode[] | undefined,
-  nodeIds: string[]
+  nodeIds: string[],
+  sysNodes?: FlowchartViewNode[]
 ): string[] {
   const activeLanes = new Set<string>();
   nodeIds.forEach(id => {
@@ -176,20 +178,7 @@ function getSortedActiveLanes(
     }
   });
 
-  const actors: string[] = [];
-  const aggregates: string[] = [];
-  const externals: string[] = [];
-
-  activeLanes.forEach(laneId => {
-    const type = getEntityType(entities[laneId]);
-    if (type === TYPES.USER) {
-      actors.push(laneId);
-    } else if (type === TYPES.EXTERNAL) {
-      externals.push(laneId);
-    } else {
-      aggregates.push(laneId);
-    }
-  });
+  const lanes = Array.from(activeLanes);
 
   const sortByAppearance = (a: string, b: string) => {
     const colA = getEntityFirstAppearance(entities, relations, esNodes, a);
@@ -198,21 +187,35 @@ function getSortedActiveLanes(
     return a.localeCompare(b);
   };
 
-  actors.sort(sortByAppearance);
-  aggregates.sort(sortByAppearance);
-  externals.sort(sortByAppearance);
+  lanes.sort(sortByAppearance);
 
-  return [...actors, ...aggregates, ...externals];
+  return lanes;
+}
+
+function computeLaneYAssignments(
+  sortedLanes: string[],
+  sysNodes?: FlowchartViewNode[]
+): Map<string, number> {
+  const assignedY = new Map<string, number>();
+  
+  sortedLanes.forEach((laneId, idx) => {
+    assignedY.set(laneId, idx);
+  });
+  
+  return assignedY;
 }
 
 export function generateDynamicSwimlaneGroups(
   schema: UnifiedFlowchartSchema,
   laidOutSwimNodes: FlowchartViewNode[],
-  esNodes?: FlowchartViewNode[]
+  esNodes?: FlowchartViewNode[],
+  sysNodes?: FlowchartViewNode[]
 ): FlowchartViewGroup[] {
   const nodeIds = laidOutSwimNodes.map(n => n.id);
   const resolvedEsNodes = esNodes || schema.views.EVENT_STORMING?.nodes;
-  const sortedLanes = getSortedActiveLanes(schema.entities, schema.relations, resolvedEsNodes, nodeIds);
+  const resolvedSysNodes = sysNodes || schema.views.SYS_ARCH?.nodes;
+  const sortedLanes = getSortedActiveLanes(schema.entities, schema.relations, resolvedEsNodes, nodeIds, resolvedSysNodes);
+  const laneYMap = computeLaneYAssignments(sortedLanes, resolvedSysNodes);
 
   const tint = (accent: string) => `color-mix(in srgb, ${accent} 5%, transparent)`;
 
@@ -225,7 +228,7 @@ export function generateDynamicSwimlaneGroups(
     return 'var(--ctp-blue)';
   };
 
-  return sortedLanes.map((laneId, idx) => {
+  return sortedLanes.map((laneId) => {
     const entity = schema.entities[laneId];
     const type = getEntityType(entity);
     const accent = getAccent(type);
@@ -235,7 +238,7 @@ export function generateDynamicSwimlaneGroups(
       id: `lane_${laneId}`,
       title: title,
       isLane: true,
-      row: idx,
+      row: laneYMap.get(laneId) ?? 0,
       color: tint(accent),
       borderColor: `color-mix(in srgb, ${accent} 35%, var(--ctp-surface2))`,
       textColor: accent
@@ -250,7 +253,8 @@ export function layoutSwimlanes(
   relations: FlowchartRelation[],
   viewKey: string,
   entities: Record<string, FlowchartEntity>,
-  esNodes?: FlowchartViewNode[]
+  esNodes?: FlowchartViewNode[],
+  sysNodes?: FlowchartViewNode[]
 ): FlowchartViewNode[] {
   const { adj, inDegree } = buildCycleFreeGraph(nodeIds, relations, viewKey, nodeSet);
   const col = computeTopologicalColumns(nodeIds, inDegree, adj);
@@ -262,18 +266,14 @@ export function layoutSwimlanes(
   });
   const sortedCols = Array.from(colGroups.keys()).sort((a, b) => a - b);
 
-  const sortedLanes = getSortedActiveLanes(entities, relations, esNodes, nodeIds);
+  const sortedLanes = getSortedActiveLanes(entities, relations, esNodes, nodeIds, sysNodes);
+  const laneYMap = computeLaneYAssignments(sortedLanes, sysNodes);
 
   const row = new Map<string, number>();
   nodeIds.forEach(id => {
     const laneId = findHandlingEntity(entities, relations, id);
     if (laneId) {
-      const idx = sortedLanes.indexOf(laneId);
-      if (idx !== -1) {
-        row.set(id, idx);
-      } else {
-        row.set(id, 0);
-      }
+      row.set(id, laneYMap.get(laneId) ?? 0);
     } else {
       row.set(id, 0);
     }
@@ -283,6 +283,25 @@ export function layoutSwimlanes(
   const spacedCol = new Map<string, number>();
   compactedCol.forEach((val, key) => {
     spacedCol.set(key, val * 2);
+  });
+
+  nodeIds.forEach(id => {
+    if (getEntityType(entities[id]) === TYPES.DATABASE) {
+      const inRels = relations.filter(r => 
+        r.to === id && (!r.views || r.views.includes('SWIMLANES')) && nodeSet.has(r.from)
+      );
+      let targetParent = inRels.find(r => getEntityType(entities[r.from]) === TYPES.PROCESS)?.from;
+      if (!targetParent && inRels.length > 0) {
+        targetParent = inRels[0].from;
+      }
+      
+      if (targetParent) {
+        const parentCol = spacedCol.get(targetParent);
+        if (parentCol !== undefined) {
+          spacedCol.set(id, parentCol);
+        }
+      }
+    }
   });
 
   return nodes.map(n => ({
