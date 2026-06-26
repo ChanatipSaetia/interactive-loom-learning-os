@@ -127,47 +127,11 @@ export function StandardView({
           ? `url(#flowchart-arrow-highlight-${viewInstanceId})`
           : `url(#flowchart-arrow-${viewInstanceId})`;
 
-        let midX = 0, midY = 0;
-        let isHandledBy = false;
+        let midX = relEntry.midX || 0;
+        let midY = relEntry.midY || 0;
+        let isHandledBy = !!rel.handledBy;
 
-        if (viewKey === 'STATE_MACHINE') {
-          const fx = fromNode.x || 0;
-          const fy = fromNode.y || 0;
-          const tx = toNode.x || 0;
-          const ty = toNode.y || 0;
-          const dx = tx - fx;
-          const dy = ty - fy;
-          let cx1 = fx + dx * 0.25;
-          let cy1 = fy + dy * 0.25;
-          let cx2 = fx + dx * 0.75;
-          let cy2 = fy + dy * 0.75;
-
-          const curvature = 40;
-          if (Math.abs(dx) > Math.abs(dy)) {
-            cy1 -= curvature;
-            cy2 -= curvature;
-          } else {
-            cx1 += curvature;
-            cx2 += curvature;
-          }
-
-          midX = (fx + tx) / 2;
-          midY = (fy + ty) / 2;
-          if (Math.abs(dx) > Math.abs(dy)) {
-            midY -= curvature * 0.75;
-          } else {
-            midX += curvature * 0.75;
-          }
-        } else {
-          isHandledBy = !!rel.handledBy;
-          if (isHandledBy) {
-            midX = (fromNode.x || 0) + ((toNode.x || 0) - (fromNode.x || 0)) * 0.25;
-            midY = (fromNode.y || 0) + ((toNode.y || 0) - (fromNode.y || 0)) * 0.25;
-          } else {
-            midX = ((fromNode.x || 0) + (toNode.x || 0)) / 2;
-            midY = ((fromNode.y || 0) + (toNode.y || 0)) / 2;
-          }
-        }
+        // If it is handledBy, we can shift it slightly if we want, but using layout midX is standard.
 
         const edgeId = `edge-${rel.id}`;
         let labelText = rel.label;
