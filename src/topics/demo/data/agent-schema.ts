@@ -78,11 +78,6 @@ export const agentSchema: UnifiedFlowchartSchema = {
     },
 
     // DBs & Externals
-    'filesystem': {
-      title: 'Filesystem',
-      desc: 'Stores local instructions, skill definitions, and domain knowledge.',
-      type: TYPES.DATABASE,
-    },
     'llm': {
       title: 'LLM Engine',
       desc: 'Generates plans, reasons about data, and makes tool-use decisions.',
@@ -161,12 +156,7 @@ export const agentSchema: UnifiedFlowchartSchema = {
       desc: 'A new agent session ID was allocated (multiple events from one command).',
       type: TYPES.EVENT
     },
-    'evt_fs_read': {
-      title: 'Filesystem Read',
-      viewTitles: { DATA_FLOW: 'FS Context Loaded' },
-      desc: 'Domain knowledge and skills loaded from Database.',
-      type: TYPES.EVENT
-    },
+
     'evt_reasoned': {
       title: 'LLM Response Generated',
       viewTitles: { DATA_FLOW: 'Reasoning Output' },
@@ -258,9 +248,7 @@ export const agentSchema: UnifiedFlowchartSchema = {
     { id: 'r3', from: 'orch_agent', to: 'evt_started', views: ['EVENT_STORMING'] },
     { id: 'r4', from: 'orch_agent', to: 'evt_session_created', views: ['EVENT_STORMING'] },
     
-    // DB interaction
-    { id: 'r5', from: 'orch_agent', to: 'filesystem', views: ['EVENT_STORMING'] },
-    { id: 'r6', from: 'filesystem', to: 'evt_fs_read', views: ['EVENT_STORMING'] }, // DB Event (Requirement #1)
+
     
     // Core Loop
     { id: 'r7', from: 'evt_started', to: 'pol_plan', views: ['EVENT_STORMING'] },
@@ -324,11 +312,9 @@ export const agentSchema: UnifiedFlowchartSchema = {
         { id: 'dev_user', grid: [0, 1] },
         { id: 'cmd_run_agent', grid: [1, 1] },
         { id: 'orch_agent', grid: [2, 1] },
-        { id: 'filesystem', grid: [2, 0] },
         
         { id: 'evt_started', grid: [3, 1] },
         { id: 'evt_session_created', grid: [3, 2] },
-        { id: 'evt_fs_read', grid: [3, 0] },
         
         { id: 'pol_plan', grid: [4, 1] },
         { id: 'cmd_call_llm', grid: [5, 1] },
@@ -376,7 +362,7 @@ export const agentSchema: UnifiedFlowchartSchema = {
         { id: 'evt_qa_rejected', grid: [19, 2] }
       ],
       groups: [
-        { id: 'g1', title: 'Initialization', desc: 'Sets up task and context.', nodeIds: ['dev_user', 'cmd_run_agent', 'orch_agent', 'filesystem', 'evt_started', 'evt_session_created', 'evt_fs_read'], color: 'rgba(140, 170, 238, 0.12)', borderColor: 'var(--ctp-blue)', textColor: 'var(--ctp-text)' },
+        { id: 'g1', title: 'Initialization', desc: 'Sets up task and context.', nodeIds: ['dev_user', 'cmd_run_agent', 'orch_agent', 'evt_started', 'evt_session_created'], color: 'rgba(140, 170, 238, 0.12)', borderColor: 'var(--ctp-blue)', textColor: 'var(--ctp-text)' },
         { id: 'g2', title: 'Cognition & Actions Loop', desc: 'LLM reasoning and branching.', nodeIds: ['pol_plan', 'cmd_call_llm', 'llm_reason_ref', 'evt_reasoned', 'pol_route', 'cmd_execute_tool', 'tools_ref', 'mcp_servers', 'subagents', 'evt_tool_executed', 'evt_mcp_called', 'evt_subagent_spawned', 'pol_eval'], color: 'rgba(244, 184, 228, 0.12)', borderColor: 'var(--ctp-pink)', textColor: 'var(--ctp-text)' },
         { id: 'g3', title: 'Feedback & Completion', desc: 'User feedback loop and final output generation.', nodeIds: ['pol_notify_user', 'cmd_send_message', 'orch_notify_ref', 'evt_message_sent', 'dev_user_ref', 'cmd_provide_feedback', 'orch_plan_ref', 'evt_feedback_received', 'pol_complete', 'cmd_complete', 'llm_final_ref', 'evt_done'], color: 'rgba(166, 218, 149, 0.12)', borderColor: 'var(--ctp-green)', textColor: 'var(--ctp-text)' },
         { id: 'g4', title: 'QA Review', desc: 'Different actor reviews the result.', nodeIds: ['qa_user', 'cmd_review_result', 'orch_qa_ref', 'evt_qa_approved', 'evt_qa_rejected'], color: 'rgba(237, 135, 150, 0.12)', borderColor: 'var(--ctp-red)', textColor: 'var(--ctp-text)' }
