@@ -184,21 +184,21 @@
 
   /* Accents (MediCare+ palette) */
   --ctp-blue:      #0077b6;   /* primary — Med Blue */
-  --ctp-sapphire:  #0096c7;
-  --ctp-lavender:  #023e8a;   /* headings / brand accent */
-  --ctp-sky:       #48cae4;   /* secondary — Light Blue */
-  --ctp-teal:      #0096c7;
-  --ctp-mauve:     #0077b6;   /* generic accent → primary */
-  --ctp-pink:      #48cae4;
-  --ctp-rosewater: #90e0ef;   /* tertiary — Pale Cyan */
-  --ctp-flamingo:  #90e0ef;
+  --ctp-sapphire:  #0284c7;   /* Service */
+  --ctp-lavender:  #6366f1;   /* Read Model — Indigo */
+  --ctp-sky:       #48cae4;   /* Process — Light Blue */
+  --ctp-teal:      #0d9488;   /* Database — Teal */
+  --ctp-mauve:     #8b5cf6;   /* Policy — Purple */
+  --ctp-pink:      #db2777;   /* Data Object — Pink */
+  --ctp-rosewater: #fda4af;   /* Core System — Rosewater */
+  --ctp-flamingo:  #f43f5e;   /* cursor — Flamingo */
 
   /* Status */
-  --ctp-green:     #059669;   /* success */
-  --ctp-yellow:    #d97706;   /* warning */
-  --ctp-peach:     #d97706;
-  --ctp-red:       #dc2626;   /* error */
-  --ctp-maroon:    #dc2626;
+  --ctp-green:     #059669;   /* Success / External API */
+  --ctp-yellow:    #d97706;   /* Warning / Actor */
+  --ctp-peach:     #ea580c;   /* Event — Orange */
+  --ctp-red:       #dc2626;   /* Error / Hotspot */
+  --ctp-maroon:    #be123c;   /* Decision */
 
   /* Selection / highlight tints reused by semantic tokens */
   --pale-green:    rgba(5, 150, 105, 0.10);
@@ -252,22 +252,22 @@
   --ctp-text:      #1c1917;   /* primary foreground */
 
   /* Accents (RecipeBook palette) */
-  --ctp-blue:      #65a30d;   /* primary — olive green */
-  --ctp-sapphire:  #4d7c0f;
-  --ctp-lavender:  #4d7c0f;   /* headings / brand accent */
-  --ctp-sky:       #84cc16;
-  --ctp-teal:      #059669;
-  --ctp-mauve:     #ea580c;   /* generic accent → warm orange */
-  --ctp-pink:      #dc2626;   /* secondary — favorites/red */
-  --ctp-rosewater: #fef9c3;   /* tertiary — tip highlight */
-  --ctp-flamingo:  #fde68a;
+  --ctp-blue:      #2b6cb0;   /* Command — Denim Blue */
+  --ctp-sapphire:  #2563eb;   /* Service */
+  --ctp-lavender:  #5a67d8;   /* Read Model — Indigo */
+  --ctp-sky:       #4299e1;   /* Process — Warm Sky Blue */
+  --ctp-teal:      #0d9488;   /* Database — Teal */
+  --ctp-mauve:     #805ad5;   /* Policy — Purple */
+  --ctp-pink:      #db2777;   /* Data Object — Rose Pink */
+  --ctp-rosewater: #fda4af;   /* Core System — Rosewater */
+  --ctp-flamingo:  #fca5a5;   /* tip highlight — Flamingo Rose */
 
   /* Status */
-  --ctp-green:     #059669;   /* success */
-  --ctp-yellow:    #d97706;   /* warning */
-  --ctp-peach:     #ea580c;
-  --ctp-red:       #ef4444;   /* error */
-  --ctp-maroon:    #dc2626;
+  --ctp-green:     #059669;   /* Success / External API */
+  --ctp-yellow:    #d97706;   /* Warning / Actor */
+  --ctp-peach:     #ea580c;   /* Event — Terracotta Orange */
+  --ctp-red:       #ef4444;   /* Error / Hotspot */
+  --ctp-maroon:    #be123c;   /* Decision */
 
   /* Selection / highlight tints reused by semantic tokens */
   --pale-green:    rgba(101, 163, 13, 0.12);
@@ -324,22 +324,22 @@
   --ctp-text:      #FFF0F5;   /* primary foreground */
 
   /* Accents (Pink Cat Boo palette) */
-  --ctp-blue:      #fe7c8e;   /* primary — vivid pink */
-  --ctp-sapphire:  #f3b4bf;   /* lighter pink (scrollbar, separators) */
-  --ctp-lavender:  #e6a1ff;   /* tag attributes / purple tint */
-  --ctp-sky:       #a2c2eb;   /* library functions / cool blue */
-  --ctp-teal:      #3bc089;   /* warnings / success green */
-  --ctp-mauve:     #DCBFF2;   /* storage type / soft purple */
-  --ctp-pink:      #FA508C;   /* tag names / strong pink */
-  --ctp-rosewater: #EBA4AC;   /* class variables / rose */
-  --ctp-flamingo:  #ffedf0;   /* cursor / softest pink */
+  --ctp-blue:      #79c0ff;   /* Command — Soft Neon Blue */
+  --ctp-sapphire:  #79c0ff;   /* Service */
+  --ctp-lavender:  #e6a1ff;   /* Read Model — Lavender */
+  --ctp-sky:       #a2c2eb;   /* Process — Cool Blue */
+  --ctp-teal:      #80cbc4;   /* Database — Soft Teal */
+  --ctp-mauve:     #DCBFF2;   /* Policy — Soft Purple */
+  --ctp-pink:      #FA508C;   /* Data Object — Strong Pink */
+  --ctp-rosewater: #EBA4AC;   /* Core System — Rosewater */
+  --ctp-flamingo:  #ffedf0;   /* cursor — Softest Pink */
 
   /* Status */
-  --ctp-green:     #3bc089;   /* success */
-  --ctp-yellow:    #d0963a;   /* warning / gold accent */
-  --ctp-peach:     #ffc85b;   /* function names */
-  --ctp-red:       #ff62a5;   /* error */
-  --ctp-maroon:    #ff38a2;   /* numbers */
+  --ctp-green:     #3bc089;   /* Success / External API */
+  --ctp-yellow:    #ffcb6b;   /* Actor — Soft Yellow */
+  --ctp-peach:     #ff9e79;   /* Event — Soft Neon Orange */
+  --ctp-red:       #ff5370;   /* Error / Hotspot */
+  --ctp-maroon:    #f07178;   /* Decision */
 
   /* Selection / highlight tints reused by semantic tokens */
   --pale-green:    rgba(59, 192, 137, 0.12);
