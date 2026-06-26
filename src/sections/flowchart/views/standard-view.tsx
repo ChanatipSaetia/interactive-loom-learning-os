@@ -31,9 +31,7 @@ export function StandardView({
   activeNodeIds,
   highlightedNodeId,
   spacing,
-  setActiveNodePopup,
   handleNodeClick,
-  prevHighlightedNodeId,
   isFullscreen
 }: StandardViewProps) {
   const minX = positioned.length > 0 ? Math.min(...positioned.map(n => n.x || 0)) : 0;
@@ -116,112 +114,123 @@ export function StandardView({
 
       {/* Edges */}
       {routedRelations.map((relEntry, idx) => {
-        // Here routedRelations is the mapped structure from index.tsx: { ...rel, path, startX, startY, endX, endY, midX, midY }
-        const rel = relEntry;
-        const { path, startX, endX, midX, midY } = relEntry;
-
+        const rel = relEntry as any;
         const fromNode = nodeMap.get(rel.from);
         const toNode = nodeMap.get(rel.to);
         if (!fromNode || !toNode) return null;
 
-        let isHighlighted = activeNodeIds && activeNodeIds.includes(rel.from) && activeNodeIds.includes(rel.to);
-        if (viewKey === 'STATE_MACHINE') {
-          isHighlighted = prevHighlightedNodeId === rel.from && highlightedNodeId === rel.to;
-        }
-        const isFaded = activeNodeIds !== null && !isHighlighted;
-        const isHandledBy = !!rel.handledBy;
-        const isVertical = fromNode.x === toNode.x;
+        const isHighlightedNode = highlightedNodeId === rel.from || highlightedNodeId === rel.to;
+        const isFaded = activeNodeIds !== null && !activeNodeIds.includes(rel.from) && !activeNodeIds.includes(rel.to);
+        const strokeColor = isHighlightedNode ? 'var(--ctp-blue)' : 'var(--ctp-surface2)';
+        const strokeWidth = isHighlightedNode ? 2.5 : 1.5;
+        const marker = isHighlightedNode
+          ? `url(#flowchart-arrow-highlight-${viewInstanceId})`
+          : `url(#flowchart-arrow-${viewInstanceId})`;
 
-        let labelText = rel.label || '';
+        let midX = 0, midY = 0;
+        let isHandledBy = false;
+
+        if (viewKey === 'STATE_MACHINE') {
+          const fx = fromNode.x || 0;
+          const fy = fromNode.y || 0;
+          const tx = toNode.x || 0;
+          const ty = toNode.y || 0;
+          const dx = tx - fx;
+          const dy = ty - fy;
+          let cx1 = fx + dx * 0.25;
+          let cy1 = fy + dy * 0.25;
+          let cx2 = fx + dx * 0.75;
+          let cy2 = fy + dy * 0.75;
+
+          const curvature = 40;
+          if (Math.abs(dx) > Math.abs(dy)) {
+            cy1 -= curvature;
+            cy2 -= curvature;
+          } else {
+            cx1 += curvature;
+            cx2 += curvature;
+          }
+
+          midX = (fx + tx) / 2;
+          midY = (fy + ty) / 2;
+          if (Math.abs(dx) > Math.abs(dy)) {
+            midY -= curvature * 0.75;
+          } else {
+            midX += curvature * 0.75;
+          }
+        } else {
+          isHandledBy = !!rel.handledBy;
+          if (isHandledBy) {
+            midX = (fromNode.x || 0) + ((toNode.x || 0) - (fromNode.x || 0)) * 0.25;
+            midY = (fromNode.y || 0) + ((toNode.y || 0) - (fromNode.y || 0)) * 0.25;
+          } else {
+            midX = ((fromNode.x || 0) + (toNode.x || 0)) / 2;
+            midY = ((fromNode.y || 0) + (toNode.y || 0)) / 2;
+          }
+        }
+
+        const edgeId = `edge-${rel.id}`;
+        let labelText = rel.label;
         if (!labelText) {
-          const fromType = schema.entities[rel.from]?.type || 'default';
-          const toType = schema.entities[rel.to]?.type || 'default';
+          const fromType = schema.entities[rel.from]?.type || schema.entities[rel.from]?.viewTypes?.EVENT_STORMING || 'default';
+          const toType = schema.entities[rel.to]?.type || schema.entities[rel.to]?.viewTypes?.EVENT_STORMING || 'default';
           if (fromType === 'COMMAND' && toType === 'EVENT') labelText = 'emits';
           if (fromType === 'EVENT' && toType === 'POLICY') labelText = 'triggers';
           if (fromType === 'POLICY' && toType === 'COMMAND') labelText = 'invokes';
         }
 
-        const segmentLength = Math.abs((endX || 0) - (startX || 0));
-        if (labelText && labelText.length > 18 && segmentLength < 180) {
-          labelText = labelText.substring(0, 15) + '...';
-        }
-
         return (
-          <g 
-            key={rel.id} 
-            data-testid={`flowchart-edge-${viewKey}-${idx}`} 
-            style={{ transition: 'opacity 0.3s', opacity: isFaded ? 0.1 : 0.8 }}
-            onMouseEnter={() => {
-              if (rel.label || isHandledBy) {
-                const desc = isHandledBy ? 'Handled by orchestrator runtime process flow.' : (rel.label || '');
-                setTooltip({ description: desc, x: midX || 0, y: midY || 0 });
-              }
-            }}
-            onMouseLeave={() => setTooltip(null)}
-          >
-            {/* Invisible wider interactive hover trigger path */}
+          <g key={edgeId} opacity={isFaded ? 0.1 : 0.8} style={{ transition: 'opacity 0.3s' }}>
             <path
-              d={path}
-              stroke="transparent"
-              strokeWidth="10"
+              id={edgeId}
+              d={rel.path}
               fill="none"
-              style={{ cursor: 'pointer' }}
-            />
-            <path
-              d={path}
-              stroke="var(--ctp-surface2)"
-              strokeWidth="1.5"
-              fill="none"
-              strokeOpacity="0.3"
-              markerEnd={isHandledBy ? '' : `url(#flowchart-arrow-${viewInstanceId})`}
-            />
-            <path
-              id={`edge-${rel.id}`}
-              d={path}
-              stroke={isHighlighted ? 'var(--ctp-blue)' : (isHandledBy ? 'var(--ctp-green)' : (rel.dashed ? 'var(--ctp-yellow)' : 'var(--ctp-blue)'))}
-              strokeWidth={isHighlighted ? '2.5' : (isHandledBy ? '2' : '1.5')}
-              fill="none"
-              strokeOpacity={isHighlighted ? '0.95' : (isHandledBy ? '0.8' : '0.55')}
-              strokeDasharray={isHandledBy ? 'none' : (rel.dashed ? '4 4' : '8 8')}
-              markerEnd={isHandledBy ? `url(#flowchart-arrow-${viewInstanceId})` : (isHighlighted ? `url(#flowchart-arrow-highlight-${viewInstanceId})` : `url(#flowchart-arrow-${viewInstanceId})`)}
-              className={rel.dashed ? '' : 'flowchart-edge-animated'}
+              stroke={strokeColor}
+              strokeWidth={strokeWidth}
+              strokeDasharray={rel.dashed ? '4 4' : 'none'}
+              markerEnd={marker}
+              className="flowchart-edge"
+              data-testid={`flowchart-edge-${viewKey}-${idx}`}
             />
             {isHandledBy && viewKey !== 'SYS_ARCH' && (
-              <text
-                x={(midX || 0) + (isVertical ? 12 : 0)}
-                y={(midY || 0) - 6}
-                textAnchor={isVertical ? 'start' : 'middle'}
-                fill="var(--ctp-green)"
-                fontSize="11"
-                fontWeight="600"
-                opacity={isHighlighted ? '0.95' : '0.75'}
-                style={{ pointerEvents: 'none', userSelect: 'none' }}
-              >
-                handled by
-              </text>
+              <g transform={`translate(${midX}, ${midY})`}>
+                <rect x="-8" y="-8" width="16" height="16" rx="8" fill="var(--ctp-surface0)" stroke="var(--ctp-surface2)" />
+                <text x="0" y="3" textAnchor="middle" fontSize="10" fill="var(--ctp-text)" fontFamily="var(--font-mono)">⚡</text>
+              </g>
             )}
             {!isHandledBy && labelText && viewKey !== 'SYS_ARCH' && (
-              <text
-                x={(midX || 0) + (isVertical ? 8 : 0)}
-                y={(midY || 0) - 4}
-                textAnchor={isVertical ? 'start' : 'middle'}
-                fill={isHighlighted ? 'var(--ctp-blue)' : 'var(--ctp-subtext0)'}
-                fontSize="11"
-                fontFamily="var(--font-mono)"
-                fontWeight="500"
-                opacity={isHighlighted ? '0.95' : '0.75'}
-                style={{ pointerEvents: 'none', userSelect: 'none' }}
-              >
-                {labelText}
-              </text>
+              <g transform={`translate(${midX}, ${midY})`}>
+                <rect
+                  x={-labelText.length * 3.5 - 6}
+                  y="-10"
+                  width={labelText.length * 7 + 12}
+                  height="20"
+                  rx="10"
+                  fill="var(--ctp-base)"
+                  stroke={isHighlightedNode ? 'var(--ctp-blue)' : 'var(--ctp-surface1)'}
+                  strokeWidth="1"
+                />
+                <text
+                  x="0"
+                  y="3"
+                  textAnchor="middle"
+                  fill={isHighlightedNode ? 'var(--ctp-blue)' : 'var(--ctp-subtext0)'}
+                  fontSize="10"
+                  fontFamily="var(--font-mono)"
+                  fontWeight={isHighlightedNode ? "600" : "500"}
+                  style={{ pointerEvents: 'none', userSelect: 'none' }}
+                >
+                  {labelText}
+                </text>
+              </g>
             )}
-            {/* Animated particle dot for index.tsx loop */}
+            {/* Animated particle dot */}
             <circle
               className="flowchart-edge-particle"
               r="4"
-              fill={isHighlighted ? 'var(--ctp-blue)' : 'var(--ctp-yellow)'}
+              fill={isHighlightedNode ? 'var(--ctp-blue)' : 'var(--ctp-yellow)'}
               opacity="0"
-              data-edge-id={`edge-${rel.id}`}
+              data-edge-id={edgeId}
               data-testid={`flowchart-particle-${viewKey}`}
             />
           </g>
@@ -266,7 +275,7 @@ export function StandardView({
               e.stopPropagation();
               handleNodeClick(node.id, node.x, node.y);
             }}
-            onMouseEnter={(e) => {
+            onMouseEnter={() => {
               if (entity.desc) {
                 setTooltip({ description: entity.desc, x: node.x || 0, y: (node.y || 0) - nH / 2 });
               }
