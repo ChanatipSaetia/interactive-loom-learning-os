@@ -179,8 +179,33 @@ export function StandardView({
           if (fromType === 'POLICY' && toType === 'COMMAND') labelText = 'invokes';
         }
 
+        const segmentLength = Math.abs((relEntry.endX || 0) - (relEntry.startX || 0));
+        let displayLabel = labelText;
+        if (displayLabel && displayLabel.length > 18 && segmentLength < 180) {
+          displayLabel = displayLabel.substring(0, 15) + '...';
+        }
+
         return (
-          <g key={edgeId} opacity={isFaded ? 0.1 : 0.8} style={{ transition: 'opacity 0.3s' }}>
+          <g 
+            key={edgeId} 
+            opacity={isFaded ? 0.1 : 0.8} 
+            style={{ transition: 'opacity 0.3s' }}
+            onMouseEnter={() => {
+              if (labelText || isHandledBy) {
+                const desc = isHandledBy ? 'Handled by orchestrator runtime process flow.' : labelText;
+                if (desc) setTooltip({ description: desc, x: midX || 0, y: midY || 0 });
+              }
+            }}
+            onMouseLeave={() => setTooltip(null)}
+          >
+            {/* Invisible wider interactive hover trigger path */}
+            <path
+              d={rel.path}
+              stroke="transparent"
+              strokeWidth="15"
+              fill="none"
+              style={{ cursor: 'pointer' }}
+            />
             <path
               id={edgeId}
               d={rel.path}
@@ -191,19 +216,20 @@ export function StandardView({
               markerEnd={marker}
               className="flowchart-edge"
               data-testid={`flowchart-edge-${viewKey}-${idx}`}
+              style={{ pointerEvents: 'none' }}
             />
             {isHandledBy && viewKey !== 'SYS_ARCH' && (
-              <g transform={`translate(${midX}, ${midY})`}>
+              <g transform={`translate(${midX}, ${midY})`} style={{ pointerEvents: 'none' }}>
                 <rect x="-8" y="-8" width="16" height="16" rx="8" fill="var(--ctp-surface0)" stroke="var(--ctp-surface2)" />
                 <text x="0" y="3" textAnchor="middle" fontSize="10" fill="var(--ctp-text)" fontFamily="var(--font-mono)">⚡</text>
               </g>
             )}
-            {!isHandledBy && labelText && viewKey !== 'SYS_ARCH' && (
-              <g transform={`translate(${midX}, ${midY})`}>
+            {!isHandledBy && displayLabel && viewKey !== 'SYS_ARCH' && (
+              <g transform={`translate(${midX}, ${midY})`} style={{ pointerEvents: 'none' }}>
                 <rect
-                  x={-labelText.length * 3.5 - 6}
+                  x={-displayLabel.length * 3.5 - 6}
                   y="-10"
-                  width={labelText.length * 7 + 12}
+                  width={displayLabel.length * 7 + 12}
                   height="20"
                   rx="10"
                   fill="var(--ctp-base)"
@@ -218,9 +244,8 @@ export function StandardView({
                   fontSize="10"
                   fontFamily="var(--font-mono)"
                   fontWeight={isHighlightedNode ? "600" : "500"}
-                  style={{ pointerEvents: 'none', userSelect: 'none' }}
                 >
-                  {labelText}
+                  {displayLabel}
                 </text>
               </g>
             )}
