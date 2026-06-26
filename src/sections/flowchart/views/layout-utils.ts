@@ -11,6 +11,7 @@ export function computeDynamicSpacing(
   const { rowCount, colCount } = info;
 
   if (viewKey === 'SEQUENCE') return base;
+  if (viewKey === 'EVENT_STORMING') return base;
 
   let rowSpacing = base.rowSpacing;
   if (rowCount > 2) {

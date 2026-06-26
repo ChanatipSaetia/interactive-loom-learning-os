@@ -148,90 +148,168 @@ export function layoutEventStorming(
   const col = new Map<string, number>();
   nodeIds.forEach(id => col.set(id, -1));
 
-  const assignTimelineColumns = (startNodes: string[]) => {
-    const queue: string[] = [];
-    const pushCount = new Map<string, number>();
-
-    startNodes.forEach(node => {
-      col.set(node, Math.max(0, col.get(node)!));
-      queue.push(node);
-      pushCount.set(node, 1);
-    });
-
-    while (queue.length > 0) {
-      const u = queue.shift()!;
-      const uCol = col.get(u)!;
-
-      const targets = Array.from(timelineAdj.get(u) || []);
-      targets.forEach(v => {
-        const nextCol = uCol + 1;
-        if (nextCol > col.get(v)!) {
-          col.set(v, nextCol);
-          const count = pushCount.get(v) || 0;
-          if (count < nodes.length) {
-            pushCount.set(v, count + 1);
-            queue.push(v);
-          }
-        }
-      });
-    }
-  };
-
   let sources = timelineNodes.filter(id => timelineInDegree.get(id) === 0);
   if (sources.length === 0 && timelineNodes.length > 0) {
     sources = [timelineNodes[0]];
   }
 
-  assignTimelineColumns(sources);
-
-  let unreached = timelineNodes.filter(id => col.get(id) === -1);
-  while (unreached.length > 0) {
-    unreached.sort((a, b) => timelineInDegree.get(a)! - timelineInDegree.get(b)!);
-    const nextSrc = unreached[0];
-    col.set(nextSrc, 0);
-    assignTimelineColumns([nextSrc]);
-    unreached = timelineNodes.filter(id => col.get(id) === -1);
-  }
-
-  const stackCommands = new Set<string>();
-  relations.forEach(rel => {
-    const isForView = !rel.views || rel.views.includes(viewKey);
-    if (isForView && rel.handledBy && nodeSet.has(rel.from) && nodeSet.has(rel.to)) {
-      if (getRole(rel.from) === 'timeline' && getRole(rel.to) === 'handler') {
-        stackCommands.add(rel.from);
-      }
-    }
+  const groupStartNodes = timelineNodes.filter(u => {
+    const uEntity = entities[u];
+    const uType = uEntity?.type || uEntity?.viewTypes?.EVENT_STORMING || 'default';
+    return uType === TYPES.COMMAND || timelineInDegree.get(u) === 0;
   });
 
-  const sortedTimelineByCol = timelineNodes
-    .filter(id => col.get(id)! >= 0)
-    .sort((a, b) => col.get(a)! - col.get(b)!);
+  const groups: { start: string; nodes: Set<string>; internalCol: Map<string, number> }[] = [];
+  const assignedToGroup = new Set<string>();
 
-  const gapBeforeCols = new Set<number>();
-  sortedTimelineByCol.forEach((id, idx) => {
-    if (stackCommands.has(id) && idx > 0) {
-      const prevCol = col.get(sortedTimelineByCol[idx - 1])!;
-      const thisCol = col.get(id)!;
-      if (thisCol - prevCol === 1) {
-        gapBeforeCols.add(thisCol);
-      }
+  const processGroup = (startNode: string) => {
+    const groupNodes = new Set<string>();
+    const internalCol = new Map<string, number>();
+    
+    const q: string[] = [startNode];
+    internalCol.set(startNode, 0);
+    groupNodes.add(startNode);
+    assignedToGroup.add(startNode);
+
+    while(q.length > 0) {
+      const u = q.shift()!;
+      const uCol = internalCol.get(u)!;
+      const uEntity = entities[u];
+      const uType = uEntity?.type || uEntity?.viewTypes?.EVENT_STORMING || 'default';
+
+      const targets = Array.from(timelineAdj.get(u) || []);
+      const outPolicies = targets.filter(tgt => {
+        const tgtEntity = entities[tgt];
+        const tgtType = tgtEntity?.type || tgtEntity?.viewTypes?.EVENT_STORMING || 'default';
+        return tgtType === TYPES.POLICY;
+      });
+
+      targets.forEach(v => {
+        const vEntity = entities[v];
+        const vType = vEntity?.type || vEntity?.viewTypes?.EVENT_STORMING || 'default';
+
+        if (vType === TYPES.COMMAND || (assignedToGroup.has(v) && !groupNodes.has(v))) {
+          return;
+        }
+
+        let dist = 1;
+        if (uType === TYPES.EVENT && vType === TYPES.POLICY && outPolicies.length > 1) {
+          dist = 2;
+        }
+
+        const nextCol = uCol + dist;
+        if (!internalCol.has(v) || nextCol > internalCol.get(v)!) {
+          internalCol.set(v, nextCol);
+          groupNodes.add(v);
+          assignedToGroup.add(v);
+          q.push(v);
+        }
+      });
     }
+    groups.push({ start: startNode, nodes: groupNodes, internalCol });
+  };
+
+  groupStartNodes.forEach(startNode => {
+    if (!assignedToGroup.has(startNode)) processGroup(startNode);
   });
 
-  const sortedGapCols = Array.from(gapBeforeCols).sort((a, b) => b - a);
-  sortedGapCols.forEach(gapCol => {
-    timelineNodes.forEach(id => {
-      const c = col.get(id)!;
-      if (c >= gapCol) {
-        col.set(id, c + 1);
+  timelineNodes.forEach(node => {
+    if (!assignedToGroup.has(node)) processGroup(node);
+  });
+
+  const groupIndexMap = new Map<string, number>();
+  groups.forEach((g, idx) => {
+    g.nodes.forEach(n => groupIndexMap.set(n, idx));
+  });
+
+  const groupAdj = new Map<number, Set<number>>();
+  const groupInDegree = new Map<number, number>();
+  groups.forEach((_, idx) => {
+    groupAdj.set(idx, new Set());
+    groupInDegree.set(idx, 0);
+  });
+
+  timelineNodes.forEach(u => {
+    const uGroup = groupIndexMap.get(u)!;
+    const targets = Array.from(timelineAdj.get(u) || []);
+    targets.forEach(v => {
+      const vGroup = groupIndexMap.get(v)!;
+      if (uGroup !== vGroup) {
+        if (!groupAdj.get(uGroup)!.has(vGroup)) {
+          groupAdj.get(uGroup)!.add(vGroup);
+          groupInDegree.set(vGroup, groupInDegree.get(vGroup)! + 1);
+        }
       }
     });
   });
 
+  const groupBaseCol = new Map<number, number>();
+  groups.forEach((_, idx) => groupBaseCol.set(idx, 1));
+
+  const groupQueue: number[] = [];
+  groups.forEach((_, idx) => {
+    if (groupInDegree.get(idx) === 0) groupQueue.push(idx);
+  });
+
+  while(groupQueue.length > 0) {
+    const gIdx = groupQueue.shift()!;
+    const baseCol = groupBaseCol.get(gIdx)!;
+    
+    let maxInternalCol = 0;
+    groups[gIdx].internalCol.forEach(c => {
+      if (c > maxInternalCol) maxInternalCol = c;
+    });
+
+    groupAdj.get(gIdx)!.forEach(nextGIdx => {
+      const nextGroup = groups[nextGIdx];
+      let hasActorOnLeft = false;
+      
+      nextGroup.nodes.forEach(u => {
+        if (nextGroup.internalCol.get(u) === 0) {
+          handlerNodes.forEach(h => {
+            if (timelineOfHandler.get(h) === u) {
+              const hEntity = entities[h];
+              const hType = hEntity?.type || hEntity?.viewTypes?.EVENT_STORMING || 'default';
+              if (hType === TYPES.USER) hasActorOnLeft = true;
+            }
+          });
+        }
+      });
+      
+      const padding = hasActorOnLeft ? 3 : 2;
+      const nextBaseCol = baseCol + maxInternalCol + padding;
+
+      if (nextBaseCol > groupBaseCol.get(nextGIdx)!) {
+        groupBaseCol.set(nextGIdx, nextBaseCol);
+      }
+      const deg = groupInDegree.get(nextGIdx)! - 1;
+      groupInDegree.set(nextGIdx, deg);
+      if (deg === 0) groupQueue.push(nextGIdx);
+    });
+  }
+
+  timelineNodes.forEach(id => {
+    const gIdx = groupIndexMap.get(id)!;
+    const bCol = groupBaseCol.get(gIdx)!;
+    const iCol = groups[gIdx].internalCol.get(id)!;
+    col.set(id, bCol + iCol);
+  });
+
+
+
   handlerNodes.forEach(h => {
     if (timelineOfHandler.has(h)) {
       const cmd = timelineOfHandler.get(h)!;
-      col.set(h, col.get(cmd) !== undefined && col.get(cmd)! >= 0 ? col.get(cmd)! : 0);
+      const cmdCol = col.get(cmd) !== undefined && col.get(cmd)! >= 0 ? col.get(cmd)! : 1;
+      
+      const hEntity = entities[h];
+      const hType = hEntity?.type || hEntity?.viewTypes?.EVENT_STORMING || 'default';
+      
+      if (hType === TYPES.USER) {
+        col.set(h, Math.max(0, cmdCol - 1));
+      } else {
+        col.set(h, cmdCol);
+      }
     }
   });
 
@@ -291,11 +369,33 @@ export function layoutEventStorming(
   });
 
   handlerNodes.forEach(h => {
-    row.set(h, 1);
+    if (timelineOfHandler.has(h)) {
+      const cmd = timelineOfHandler.get(h)!;
+      const cmdRow = row.get(cmd) !== undefined ? row.get(cmd)! : 2;
+      const cmdCol = col.get(cmd) !== undefined && col.get(cmd)! >= 0 ? col.get(cmd)! : 1;
+      
+      const hEntity = entities[h];
+      const hType = hEntity?.type || hEntity?.viewTypes?.EVENT_STORMING || 'default';
+      
+      if (hType === TYPES.USER) {
+        row.set(h, cmdRow);
+        col.set(h, Math.max(0, cmdCol - 1));
+      } else {
+        row.set(h, cmdRow - 0.625);
+        col.set(h, cmdCol);
+      }
+    } else {
+      row.set(h, 1);
+    }
   });
 
   dbNodes.forEach(d => {
-    row.set(d, 0);
+    if (handlerOfDb.has(d)) {
+      const h = handlerOfDb.get(d)!;
+      row.set(d, (row.get(h) !== undefined ? row.get(h)! : 1) - 1);
+    } else {
+      row.set(d, 0);
+    }
   });
 
   const orphansByCol = new Map<number, string[]>();
