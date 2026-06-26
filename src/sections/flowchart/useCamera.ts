@@ -1,4 +1,4 @@
-import { useCallback, useRef, useState, type MutableRefObject } from 'react';
+import { useCallback, useRef, useState, useEffect, type MutableRefObject } from 'react';
 import { animate } from 'animejs';
 import type { FlowchartViewNode, TransformState, PinchState } from './types';
 
@@ -274,6 +274,21 @@ export function useCamera({ positionedNodesRef }: UseCameraOptions): UseCameraRe
       translateY: currentTy - svgCenterY * (newScale - currentScale)
     });
   }, []);
+
+  useEffect(() => {
+    const svgEl = svgRef.current;
+    if (!svgEl) return;
+
+    svgEl.addEventListener('wheel', onWheelNative, { passive: false });
+    svgEl.addEventListener('touchstart', onSvgTouchStartNative, { passive: false });
+    svgEl.addEventListener('touchmove', onTouchMoveNative, { passive: false });
+
+    return () => {
+      svgEl.removeEventListener('wheel', onWheelNative);
+      svgEl.removeEventListener('touchstart', onSvgTouchStartNative);
+      svgEl.removeEventListener('touchmove', onTouchMoveNative);
+    };
+  }, [onWheelNative, onSvgTouchStartNative, onTouchMoveNative]);
 
   return {
     transform,
