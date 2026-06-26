@@ -56,11 +56,11 @@ export const ICONS = {
 } as const;
 
 export const ICON_ANIMATIONS = {
-  [TYPES.EVENT]: 'anim-icon-zap', [TYPES.COMMAND]: 'anim-icon-blink', [TYPES.AGGREGATE]: 'anim-icon-float-heavy',
-  [TYPES.POLICY]: 'anim-icon-pulse', [TYPES.READ_MODEL]: 'anim-icon-scan', [TYPES.USER]: 'anim-icon-wobble',
-  [TYPES.EXTERNAL]: 'anim-icon-drift', [TYPES.HOTSPOT]: 'anim-icon-ring', [TYPES.SERVICE]: 'anim-icon-float-heavy',
-  [TYPES.DATABASE]: 'anim-icon-pulse', [TYPES.PROCESS]: 'anim-icon-spin-slow', [TYPES.DATA_OBJECT]: 'anim-icon-float',
-  [TYPES.DECISION]: 'anim-icon-wobble', [TYPES.CORE_SYSTEM]: 'anim-icon-pulse'
+  [TYPES.EVENT]: '', [TYPES.COMMAND]: '', [TYPES.AGGREGATE]: '',
+  [TYPES.POLICY]: '', [TYPES.READ_MODEL]: '', [TYPES.USER]: '',
+  [TYPES.EXTERNAL]: '', [TYPES.HOTSPOT]: '', [TYPES.SERVICE]: '',
+  [TYPES.DATABASE]: '', [TYPES.PROCESS]: '', [TYPES.DATA_OBJECT]: '',
+  [TYPES.DECISION]: '', [TYPES.CORE_SYSTEM]: ''
 } as const;
 
 export const DYNAMIC_ICONS = { Component, Server, Share2, Layers, List };

@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, memo } from 'react';
 import * as Icons from 'lucide-react';
 import { COLORS, BORDER_COLORS, ICONS, ICON_ANIMATIONS, NODE_W, NODE_H, wrapTooltipText } from '../types';
 import type { UnifiedFlowchartSchema, FlowchartViewNode, FlowchartViewGroup } from '../types';
@@ -12,7 +12,7 @@ export interface SequenceViewProps {
   highlightedNodeId: string | null;
 }
 
-export function SequenceView({
+export const SequenceView = memo(function SequenceView({
   viewKey,
   viewInstanceId,
   schema,
@@ -540,4 +540,4 @@ export function SequenceView({
       })()}
     </>
   );
-}
+});
