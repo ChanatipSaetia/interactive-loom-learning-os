@@ -469,6 +469,7 @@ export function FlowchartView({
                  schema={schema}
                  view={view}
                  activeNodeIds={activeNodeIds}
+                 highlightedNodeId={highlightedNodeId}
                />
              ) : (
                <StandardView 
