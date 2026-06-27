@@ -1,5 +1,5 @@
 .tradeoff-sandbox {
-  @apply mb-8;
+  @apply mb-16;
 }
 
 
@@ -70,7 +70,7 @@
 /* ─── Scenario Banner ────────────────────────────────── */
 
 .scenario-banner {
-  @apply p-3 rounded-[var(--radius-xs)] mb-4;
+  @apply p-3 rounded-[var(--radius-xs)] mb-6;
   background-color: rgba(140, 170, 238, 0.08);
 }
 
@@ -83,7 +83,7 @@
 /* ─── Feedback Banner ─────────────────────────────────── */
 
 .feedback-banner {
-  @apply px-4 py-3 rounded-[var(--radius-sm)] mb-4 border border-border;
+  @apply px-4 py-3 rounded-[var(--radius-sm)] mb-6 border border-border;
   background-color: var(--ctp-base);
   transition: border-color 0.2s ease, background-color 0.2s ease;
 }
@@ -180,11 +180,11 @@
 }
 
 .compare-step {
-  @apply rounded-[var(--radius-sm)] border border-border p-3;
+  @apply rounded-[var(--radius-sm)] border border-border p-5;
 }
 
 .compare-step-title {
-  @apply font-normal leading-[1.3] mt-0 mb-3;
+  @apply font-normal leading-[1.3] mt-0 mb-5;
   font-size: var(--text-card-heading);
   color: var(--ink);
 }
@@ -194,7 +194,7 @@
 }
 
 .compare-card {
-  @apply rounded-[var(--radius-sm)] border border-border px-3 py-2;
+  @apply rounded-[var(--radius-sm)] border border-border px-4 py-3;
   background-color: rgba(140, 170, 238, 0.04);
 }
 
@@ -436,18 +436,18 @@
 /* ─── Layout ─────────────────────────────────────────── */
 
 .tradeoff-layout {
-  @apply flex flex-col gap-5;
+  @apply flex flex-col gap-8;
 }
 
 /* ─── Metric Dashboard ──────────────────────────────── */
 
 .metric-dashboard {
-  @apply rounded-[var(--radius-sm)] border border-border px-4 py-3;
+  @apply rounded-[var(--radius-sm)] border border-border px-6 py-5;
   background-color: var(--ctp-crust);
 }
 
 .dashboard-header {
-  @apply flex items-center justify-between mb-3;
+  @apply flex items-center justify-between mb-5;
 }
 
 .dashboard-title {
@@ -505,7 +505,7 @@
 }
 
 .step-section {
-  @apply rounded-[var(--radius-sm)] border border-border p-4 bg-card flex-shrink-0 w-[260px];
+  @apply rounded-[var(--radius-sm)] border border-border p-6 bg-card flex-shrink-0 w-[300px];
   transition: border-color 0.15s ease;
 }
 
@@ -514,7 +514,7 @@
 }
 
 .step-header {
-  @apply flex items-start justify-between gap-2 mb-1.5;
+  @apply flex items-start justify-between gap-2 mb-3;
 }
 
 .step-title {
@@ -524,7 +524,7 @@
 }
 
 .step-description {
-  @apply mt-0 mb-3;
+  @apply mt-0 mb-5;
   font-size: 11px;
   line-height: 1.3;
   opacity: 0.8;

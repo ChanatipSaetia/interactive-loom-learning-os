@@ -644,18 +644,7 @@ function TradeoffSandboxSection({ title, scenarios, instanceId }: TradeoffSandbo
   const totalSteps = scenario.steps.length
   const placedCount = Object.keys(chosenIds).length
 
-  let feedbackText = ''
-  let feedbackState: 'empty' | 'partial' | 'complete' = 'empty'
-  if (placedCount === 0) {
-    feedbackText = 'Make your first choice to begin evaluating trade-offs.'
-    feedbackState = 'empty'
-  } else if (placedCount < totalSteps) {
-    feedbackText = `${placedCount} of ${totalSteps} decisions made — review your metrics and continue.`
-    feedbackState = 'partial'
-  } else {
-    feedbackText = 'All decisions made — review your final architecture trade-offs.'
-    feedbackState = 'complete'
-  }
+
 
   const detailsChoice = useMemo(() => {
     if (!detailsTarget) return null
@@ -676,152 +665,151 @@ function TradeoffSandboxSection({ title, scenarios, instanceId }: TradeoffSandbo
         </h3>
       )}
 
-      {scenarios.length > 1 && (
-        <div className="scenario-selector">
-          <label htmlFor="scenario-select" className="scenario-label">
-            Scenario:
-          </label>
-          <div className="scenario-dropdown" data-testid={getTestId("scenario-dropdown")}>
-            <Dropdown
-              value={scenario.id}
-              onChange={(val) => {
-                const idx = scenarios.findIndex(s => s.id === val);
-                if (idx !== -1) {
-                  setScenarioIdx(idx);
-                }
-              }}
-              options={scenarios.map(s => ({ value: s.id, label: s.title }))}
-              triggerTestId={getTestId("scenario-select")}
-              triggerClassName="scenario-select"
-              optionsClassName="scenario-options"
-              optionClassName="scenario-option"
-              optionActiveClassName="scenario-option-active"
-              showChevron={false}
-            />
+      <div className="flex items-center justify-between w-full mb-3">
+        {scenarios.length > 1 ? (
+          <div className="scenario-selector !mb-0">
+            <label htmlFor="scenario-select" className="scenario-label">
+              Scenario:
+            </label>
+            <div className="scenario-dropdown" data-testid={getTestId("scenario-dropdown")}>
+              <Dropdown
+                value={scenario.id}
+                onChange={(val) => {
+                  const idx = scenarios.findIndex(s => s.id === val);
+                  if (idx !== -1) {
+                    setScenarioIdx(idx);
+                  }
+                }}
+                options={scenarios.map(s => ({ value: s.id, label: s.title }))}
+                triggerTestId={getTestId("scenario-select")}
+                triggerClassName="scenario-select"
+                optionsClassName="scenario-options"
+                optionClassName="scenario-option"
+                optionActiveClassName="scenario-option-active"
+                showChevron={false}
+              />
+            </div>
           </div>
-        </div>
-      )}
+        ) : <div />}
+
+        <Dialog.Root open={compareOpen} onOpenChange={setCompareOpen}>
+          <Dialog.Trigger asChild>
+            <MagneticButton variant="outline" size="md" className="compare-all-button !mb-0" data-testid={getTestId("compare-all-button")}>
+              Compare All
+            </MagneticButton>
+          </Dialog.Trigger>
+          <Dialog.Portal>
+            <Dialog.Overlay
+              className="compare-overlay"
+              data-testid="compare-overlay"
+              onClick={() => setCompareOpen(false)}
+            />
+            <Dialog.Content className="compare-dialog" data-testid="compare-dialog">
+              <Dialog.Title className="compare-dialog-title" data-testid="compare-dialog-title">
+                Compare All Options
+              </Dialog.Title>
+              <Dialog.Description className="compare-dialog-description">
+                Side-by-side comparison of all choices for this scenario.
+              </Dialog.Description>
+              <Dialog.Close
+                className="compare-dialog-close"
+                data-testid="compare-dialog-close"
+              >
+                ✕
+              </Dialog.Close>
+
+              <div className="compare-scenarios" data-testid="compare-scenarios">
+                {scenario.steps.map((step, sIdx) => (
+                  <div key={step.id} className="compare-step" data-testid={`compare-step-${sIdx}`}>
+                    <h5 className="compare-step-title" data-testid={`compare-step-title-${sIdx}`}>
+                      {step.title}
+                    </h5>
+                    <div className="compare-grid" data-testid={`compare-grid-${sIdx}`}>
+                      {step.choices.map((choice) => {
+                        const isChosen = chosenIds[step.id] === choice.id
+                        const isRecommended = step.recommended === choice.id
+                        return (
+                          <div
+                            key={choice.id}
+                            className={`compare-card${isChosen ? ' compare-card-chosen' : ''}${isRecommended ? ' compare-card-recommended' : ''}`}
+                            data-testid={`compare-card-${sIdx}-${choice.id}`}
+                          >
+                            <div className="compare-card-header">
+                              <span
+                                className="compare-card-label"
+                                data-testid={`compare-card-label-${sIdx}-${choice.id}`}
+                              >
+                                {choice.label}
+                              </span>
+                              {isRecommended && (
+                                <span className="compare-recommended-badge" data-testid={`compare-recommended-badge-${sIdx}-${choice.id}`} title="Recommended">
+                                  <Star size={14} style={{ fill: 'currentColor' }} />
+                                  <span style={{ display: 'none' }}>Recommended</span>
+                                </span>
+                              )}
+                              {isChosen && (
+                                <span className="compare-badge" data-testid={`compare-badge-${sIdx}-${choice.id}`} title="Selected">
+                                  <Check size={14} strokeWidth={3} />
+                                  <span style={{ display: 'none' }}>Selected</span>
+                                </span>
+                              )}
+                            </div>
+
+                            {choice.pros.length > 0 && (
+                              <ul className="compare-pros" data-testid={`compare-pros-${sIdx}-${choice.id}`}>
+                                {choice.pros.map((pro, pIdx) => (
+                                  <li
+                                    key={pIdx}
+                                    className="compare-pro"
+                                    data-testid={`compare-pro-${sIdx}-${choice.id}-${pIdx}`}
+                                  >
+                                    <Check className="compare-icon compare-icon-pro" />
+                                    <div className="compare-procon-content">
+                                      <span className="compare-procon-title">{pro.title}</span>
+                                      {pro.description && (
+                                        <span className="compare-procon-desc">{pro.description}</span>
+                                      )}
+                                    </div>
+                                  </li>
+                                ))}
+                              </ul>
+                            )}
+
+                            {choice.cons.length > 0 && (
+                              <ul className="compare-cons" data-testid={`compare-cons-${sIdx}-${choice.id}`}>
+                                {choice.cons.map((con, cIdx) => (
+                                  <li
+                                    key={cIdx}
+                                    className="compare-con"
+                                    data-testid={`compare-con-${sIdx}-${choice.id}-${cIdx}`}
+                                  >
+                                    <X className="compare-icon compare-icon-con" />
+                                    <div className="compare-procon-content">
+                                      <span className="compare-procon-title">{con.title}</span>
+                                      {con.description && (
+                                        <span className="compare-procon-desc">{con.description}</span>
+                                      )}
+                                    </div>
+                                  </li>
+                                ))}
+                              </ul>
+                            )}
+                          </div>
+                        )
+                      })}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </Dialog.Content>
+          </Dialog.Portal>
+        </Dialog.Root>
+      </div>
 
       <div className="scenario-banner" data-testid={getTestId("scenario-banner")}>
         <p className="scenario-description">{scenario.description}</p>
       </div>
 
-      <div className={`feedback-banner feedback-banner-${feedbackState}`} data-testid={getTestId("feedback-banner")}>
-        <span className="feedback-text" data-testid={getTestId("feedback-text")}>{feedbackText}</span>
-      </div>
-
-      <Dialog.Root open={compareOpen} onOpenChange={setCompareOpen}>
-        <Dialog.Trigger asChild>
-          <MagneticButton variant="outline" size="md" className="compare-all-button" data-testid={getTestId("compare-all-button")}>
-            Compare All
-          </MagneticButton>
-        </Dialog.Trigger>
-        <Dialog.Portal>
-          <Dialog.Overlay
-            className="compare-overlay"
-            data-testid="compare-overlay"
-            onClick={() => setCompareOpen(false)}
-          />
-          <Dialog.Content className="compare-dialog" data-testid="compare-dialog">
-            <Dialog.Title className="compare-dialog-title" data-testid="compare-dialog-title">
-              Compare All Options
-            </Dialog.Title>
-            <Dialog.Description className="compare-dialog-description">
-              Side-by-side comparison of all choices for this scenario.
-            </Dialog.Description>
-            <Dialog.Close
-              className="compare-dialog-close"
-              data-testid="compare-dialog-close"
-            >
-              ✕
-            </Dialog.Close>
-
-            <div className="compare-scenarios" data-testid="compare-scenarios">
-              {scenario.steps.map((step, sIdx) => (
-                <div key={step.id} className="compare-step" data-testid={`compare-step-${sIdx}`}>
-                  <h5 className="compare-step-title" data-testid={`compare-step-title-${sIdx}`}>
-                    {step.title}
-                  </h5>
-                  <div className="compare-grid" data-testid={`compare-grid-${sIdx}`}>
-                    {step.choices.map((choice) => {
-                      const isChosen = chosenIds[step.id] === choice.id
-                      const isRecommended = step.recommended === choice.id
-                      return (
-                        <div
-                          key={choice.id}
-                          className={`compare-card${isChosen ? ' compare-card-chosen' : ''}${isRecommended ? ' compare-card-recommended' : ''}`}
-                          data-testid={`compare-card-${sIdx}-${choice.id}`}
-                        >
-                          <div className="compare-card-header">
-                            <span
-                              className="compare-card-label"
-                              data-testid={`compare-card-label-${sIdx}-${choice.id}`}
-                            >
-                              {choice.label}
-                            </span>
-                            {isRecommended && (
-                              <span className="compare-recommended-badge" data-testid={`compare-recommended-badge-${sIdx}-${choice.id}`} title="Recommended">
-                                <Star size={14} style={{ fill: 'currentColor' }} />
-                                <span style={{ display: 'none' }}>Recommended</span>
-                              </span>
-                            )}
-                            {isChosen && (
-                              <span className="compare-badge" data-testid={`compare-badge-${sIdx}-${choice.id}`} title="Selected">
-                                <Check size={14} strokeWidth={3} />
-                                <span style={{ display: 'none' }}>Selected</span>
-                              </span>
-                            )}
-                          </div>
-
-                          {choice.pros.length > 0 && (
-                            <ul className="compare-pros" data-testid={`compare-pros-${sIdx}-${choice.id}`}>
-                              {choice.pros.map((pro, pIdx) => (
-                                <li
-                                  key={pIdx}
-                                  className="compare-pro"
-                                  data-testid={`compare-pro-${sIdx}-${choice.id}-${pIdx}`}
-                                >
-                                  <Check className="compare-icon compare-icon-pro" />
-                                  <div className="compare-procon-content">
-                                    <span className="compare-procon-title">{pro.title}</span>
-                                    {pro.description && (
-                                      <span className="compare-procon-desc">{pro.description}</span>
-                                    )}
-                                  </div>
-                                </li>
-                              ))}
-                            </ul>
-                          )}
-
-                          {choice.cons.length > 0 && (
-                            <ul className="compare-cons" data-testid={`compare-cons-${sIdx}-${choice.id}`}>
-                              {choice.cons.map((con, cIdx) => (
-                                <li
-                                  key={cIdx}
-                                  className="compare-con"
-                                  data-testid={`compare-con-${sIdx}-${choice.id}-${cIdx}`}
-                                >
-                                  <X className="compare-icon compare-icon-con" />
-                                  <div className="compare-procon-content">
-                                    <span className="compare-procon-title">{con.title}</span>
-                                    {con.description && (
-                                      <span className="compare-procon-desc">{con.description}</span>
-                                    )}
-                                  </div>
-                                </li>
-                              ))}
-                            </ul>
-                          )}
-                        </div>
-                      )
-                    })}
-                  </div>
-                </div>
-              ))}
-            </div>
-          </Dialog.Content>
-        </Dialog.Portal>
-      </Dialog.Root>
 
       {detailsChoice && (
         <DetailsModal
