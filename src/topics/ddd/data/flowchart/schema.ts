@@ -203,7 +203,7 @@ export const dddSchema: UnifiedFlowchartSchema = {
       nodes: [
         { id: 'domain_expert', grid: [0, 2] },
         { id: 'evt_discover_domain', grid: [1, 1] },
-        { id: 'cmd_discover', grid: [1, 2] },
+        { id: 'cmd_discover', grid: [1, 2], root: true },
         { id: 'ubiquitous-language', grid: [2, 1] },
         { id: 'cmd_event_storm', grid: [2, 2] },
         { id: 'evt_language_emerges', grid: [3, 1] },

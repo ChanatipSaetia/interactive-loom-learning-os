@@ -37,6 +37,7 @@ export const accountabilitySchema: UnifiedFlowchartSchema = {
       title: 'Propose Agent Change',
       desc: 'Initiate a change request to the agent scope or model.',
       type: TYPES.COMMAND,
+      root: true,
     },
     evt_change_proposed: {
       title: 'Change Proposed',

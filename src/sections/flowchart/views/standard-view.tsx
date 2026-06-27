@@ -52,9 +52,10 @@ export const StandardView = memo(function StandardView({
           let yVal = group.y ?? 100;
           let hVal = group.h ?? 180;
           if (typeof group.row === 'number') {
-            const laneHeight = spacing.rowSpacing;
-            const centerY = group.row * spacing.rowSpacing + spacing.offsetY;
-            yVal = centerY - laneHeight / 2;
+            const span = group.rowSpan ?? 1;
+            const laneHeight = spacing.rowSpacing * span;
+            const firstRowCenterY = group.row * spacing.rowSpacing + spacing.offsetY;
+            yVal = firstRowCenterY - spacing.rowSpacing / 2;
             hVal = laneHeight;
           }
           return (

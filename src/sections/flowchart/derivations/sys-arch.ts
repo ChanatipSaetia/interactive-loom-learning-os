@@ -104,6 +104,54 @@ export function deriveSysArch(
     }
   });
 
+  // Reconnect orphaned boundary nodes (User / External) to the Core System.
+  //
+  // A boundary node is orphaned when it only ever reaches the rest of the flow
+  // through another boundary node (e.g. a Command handled directly by an External
+  // with no internal Aggregate in between). deriveRelations deliberately drops
+  // such boundary->boundary edges, which would otherwise leave the node with no
+  // connection at all. In SYS_ARCH every participant talks to the system via the
+  // center, so wire these orphans straight to it.
+  const connectedNodeIds = new Set<string>();
+  finalSysRelations.forEach(r => {
+    connectedNodeIds.add(r.from);
+    connectedNodeIds.add(r.to);
+  });
+
+  sysNodes.forEach(n => {
+    if (n.id === centerId) return;
+    if (connectedNodeIds.has(n.id)) return;
+
+    const ent = schema.entities[n.id];
+    const type = getEntityType(ent);
+    if (type !== TYPES.EXTERNAL && type !== TYPES.USER) return;
+
+    // Determine direction from the original Event Storming flow: if the node is
+    // the target of any ES relation, the system calls into it (center -> node),
+    // otherwise it feeds the system (node -> center).
+    const hasIncoming = schema.relations.some(r =>
+      (!r.views || r.views.includes('EVENT_STORMING')) &&
+      getCollapsedId(r.to) === n.id &&
+      getCollapsedId(r.from) !== n.id
+    );
+
+    if (hasIncoming) {
+      finalSysRelations.push({
+        id: `sys_orphan_${n.id}_from_center`,
+        from: centerId,
+        to: n.id,
+        views: ['SYS_ARCH']
+      });
+    } else {
+      finalSysRelations.push({
+        id: `sys_orphan_${n.id}_to_center`,
+        from: n.id,
+        to: centerId,
+        views: ['SYS_ARCH']
+      });
+    }
+  });
+
   const updatedRelations = [
     ...schema.relations.filter(r => !r.views || !r.views.includes('SYS_ARCH')),
     ...finalSysRelations

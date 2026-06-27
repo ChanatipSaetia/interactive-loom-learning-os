@@ -189,68 +189,121 @@ export function deriveSequence(
   ];
 
   const seqGroups: FlowchartViewGroup[] = [];
-  const policyEntities = Object.entries(schema.entities).filter(
-    ([, entity]) => getEntityType(entity) === TYPES.POLICY
+
+  // An alt/opt combined fragment is drawn whenever a single Event fans out to
+  // multiple Policies (alternative reactions to the same fact). The Event is the
+  // branch point; each downstream Policy chain is one alternative. With >= 2
+  // Policies the fragment is an `alt` (mutually exclusive alternatives); a lone
+  // optional Policy reaction would be an `opt`.
+  const eventEntities = Object.entries(schema.entities).filter(
+    ([, entity]) => getEntityType(entity) === TYPES.EVENT
   );
 
-  policyEntities.forEach(([polId, polEntity]) => {
-    const esOutgoing = schema.relations.filter(
-      r => (!r.views || r.views.includes('EVENT_STORMING')) && getCollapsedId(r.from) === polId
+  eventEntities.forEach(([evtId, evtEntity]) => {
+    // Policies triggered directly by this Event.
+    const policyRels = schema.relations.filter(
+      r =>
+        (!r.views || r.views.includes('EVENT_STORMING')) &&
+        getCollapsedId(r.from) === evtId &&
+        getEntityType(schema.entities[getCollapsedId(r.to)]) === TYPES.POLICY
     );
 
-    if (esOutgoing.length >= 2) {
-      const downstreamNodeIds = new Set<string>();
-      const queue = esOutgoing.map(r => getCollapsedId(r.to));
-      queue.forEach(id => downstreamNodeIds.add(id));
+    if (policyRels.length < 2) return;
 
-      const visited = new Set<string>(queue);
-      while (queue.length > 0) {
-        const curr = queue.shift()!;
-        const out = schema.relations.filter(
-          r => (!r.views || r.views.includes('EVENT_STORMING')) && getCollapsedId(r.from) === curr
-        );
-        out.forEach(r => {
-          const toCollapsed = getCollapsedId(r.to);
-          if (!visited.has(toCollapsed)) {
-            visited.add(toCollapsed);
-            downstreamNodeIds.add(toCollapsed);
-            queue.push(toCollapsed);
-          }
-        });
-      }
+    const fragmentKind = 'alt';
 
-      const enclosedSeqRels = combinedSeqRelations.filter(
-        r => downstreamNodeIds.has(getCollapsedId(r.from)) || downstreamNodeIds.has(getCollapsedId(r.to))
+    // Bounded BFS: walk each alternative branch only until it produces its first
+    // Event — the point where that alternative's outcome materialises (and, in a
+    // cyclic flow, where it typically loops back upstream). Without this stop the
+    // agent loop lets every branch reach almost every node, so all fragments would
+    // span the whole diagram and stack on top of one another.
+    const branchNodeIds = new Set<string>();
+    const queue = policyRels.map(r => getCollapsedId(r.to));
+    const visited = new Set<string>(queue);
+    queue.forEach(id => branchNodeIds.add(id));
+
+    while (queue.length > 0) {
+      const curr = queue.shift()!;
+      // Reaching an Event closes the branch: include it but do not expand past it.
+      if (getEntityType(schema.entities[curr]) === TYPES.EVENT) continue;
+      const out = schema.relations.filter(
+        r => (!r.views || r.views.includes('EVENT_STORMING')) && getCollapsedId(r.from) === curr
       );
-
-      if (enclosedSeqRels.length > 0) {
-        const participantIds = new Set<string>();
-        enclosedSeqRels.forEach(r => {
-          participantIds.add(getCollapsedId(r.from));
-          participantIds.add(getCollapsedId(r.to));
-        });
-
-        const relIndices = enclosedSeqRels.map(r => combinedSeqRelations.indexOf(r));
-        const minRelIdx = Math.min(...relIndices);
-        const maxRelIdx = Math.max(...relIndices);
-
-        const msgStartY = 132;
-        const msgSpacing = 40;
-        const y = msgStartY + minRelIdx * msgSpacing - 12;
-        const h = (maxRelIdx - minRelIdx + 1) * msgSpacing + 24;
-
-        seqGroups.push({
-          id: `seq_group_${polId}`,
-          title: polEntity.title,
-          nodeIds: Array.from(participantIds),
-          y,
-          h,
-          color: 'color-mix(in srgb, var(--ctp-mauve) 5%, transparent)',
-          borderColor: 'var(--ctp-mauve)',
-          textColor: 'var(--ctp-mauve)'
-        });
-      }
+      out.forEach(r => {
+        const toCollapsed = getCollapsedId(r.to);
+        if (!visited.has(toCollapsed)) {
+          visited.add(toCollapsed);
+          branchNodeIds.add(toCollapsed);
+          queue.push(toCollapsed);
+        }
+      });
     }
+
+    // Chronological span of the branch = the ES order of its Command/Event nodes,
+    // plus the branch-point Event itself so the box opens at the fork.
+    const esRelIndexOf = (nodeId: string): number => {
+      let idx = schema.relations.findIndex(
+        r => (!r.views || r.views.includes('EVENT_STORMING')) && getCollapsedId(r.to) === nodeId
+      );
+      if (idx === -1) {
+        idx = schema.relations.findIndex(
+          r => (!r.views || r.views.includes('EVENT_STORMING')) && getCollapsedId(r.from) === nodeId
+        );
+      }
+      return idx;
+    };
+
+    const branchChrono = Array.from(branchNodeIds)
+      .filter(id => {
+        const t = getEntityType(schema.entities[id]);
+        return t === TYPES.COMMAND || t === TYPES.EVENT;
+      })
+      .map(esRelIndexOf)
+      .filter(idx => idx !== -1);
+
+    const evtChrono = esRelIndexOf(evtId);
+    if (evtChrono !== -1) branchChrono.push(evtChrono);
+
+    if (branchChrono.length === 0) return;
+    const minChrono = Math.min(...branchChrono);
+    const maxChrono = Math.max(...branchChrono);
+
+    // Enclose only the sequence messages whose chronological slot falls inside the
+    // branch span. Because combinedSeqRelations is already sorted by
+    // chronologicalIndex, this selects a contiguous block and the box hugs just
+    // this fork's alternative paths.
+    const enclosedSeqRels = combinedSeqRelations.filter(r => {
+      const c = r.chronologicalIndex;
+      return typeof c === 'number' && c >= minChrono && c <= maxChrono;
+    });
+
+    if (enclosedSeqRels.length === 0) return;
+
+    const participantIds = new Set<string>();
+    enclosedSeqRels.forEach(r => {
+      participantIds.add(getCollapsedId(r.from));
+      participantIds.add(getCollapsedId(r.to));
+    });
+
+    const relIndices = enclosedSeqRels.map(r => combinedSeqRelations.indexOf(r));
+    const minRelIdx = Math.min(...relIndices);
+    const maxRelIdx = Math.max(...relIndices);
+
+    const msgStartY = 132;
+    const msgSpacing = 40;
+    const y = msgStartY + minRelIdx * msgSpacing - 12;
+    const h = (maxRelIdx - minRelIdx + 1) * msgSpacing + 24;
+
+    seqGroups.push({
+      id: `seq_group_${evtId}`,
+      title: `${fragmentKind}: ${evtEntity.title}`,
+      nodeIds: Array.from(participantIds),
+      y,
+      h,
+      color: 'color-mix(in srgb, var(--ctp-mauve) 5%, transparent)',
+      borderColor: 'var(--ctp-mauve)',
+      textColor: 'var(--ctp-mauve)'
+    });
   });
 
   const nodeIds = seqNodes.map(n => n.id);

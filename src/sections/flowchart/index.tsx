@@ -109,8 +109,15 @@ export function Flowchart({ title, schema = INITIAL_SCHEMA }: FlowchartProps) {
     if (!playback.activeNodeIds || playback.activeNodeIds.length === 0) {
       return { activeNodeIds: null as string[] | null, activeRelationIds: null as string[] | null };
     }
+    // Nodes that are actually part of the active step. Used for relation
+    // matching: a collapsed ref (e.g. orch_qa_ref) keeps its own identity here
+    // so the canonical target's unrelated edges are not dragged in.
+    const activeForRelations = new Set(playback.activeNodeIds);
+
+    // Node highlight set is additionally expanded to each active node's
+    // collapsedTo target, so the shared canonical node lights up in collapsed
+    // views (SYS_ARCH, SWIMLANES) where the ref is drawn as that single node.
     const entityIds = new Set(playback.activeNodeIds);
-    // Expand: for each node ID, also include its collapsedTo target
     playback.activeNodeIds.forEach(id => {
       const ent = localSchema.entities[id];
       if (ent?.collapsedTo) {
@@ -118,38 +125,38 @@ export function Flowchart({ title, schema = INITIAL_SCHEMA }: FlowchartProps) {
       }
     });
 
-    // Find relations whose intermediate path includes any highlighted node
+    // Find relations whose intermediate path includes any active node
     const relIds = new Set<string>();
-    localSchema.relations.forEach(rel => {
-      // Check if any highlighted node lies on the path between rel.from and rel.to
-      // in the EVENT_STORMING graph
-      const intermediateIds = new Set<string>();
-      const findPath = (from: string, to: string, visited: Set<string>): boolean => {
-        const outgoing = localSchema.relations.filter(r =>
-          (!r.views || r.views.includes('EVENT_STORMING')) && r.from === from
-        );
-        for (const r of outgoing) {
-          if (r.to === to) return true;
-          if (visited.has(r.to)) continue;
-          visited.add(r.to);
-          intermediateIds.add(r.to);
-          if (findPath(r.to, to, visited)) return true;
-        }
-        return false;
-      };
+    // Return the intermediate nodes lying on a path from `from` to `to` in the
+    // EVENT_STORMING graph, or null when no path exists. Only nodes on the
+    // successful path are returned — dead-end DFS branches are excluded so a
+    // sibling branch (e.g. tool route) cannot falsely contribute its nodes.
+    const findPathIntermediates = (
+      from: string,
+      to: string,
+      visited: Set<string>
+    ): string[] | null => {
+      const outgoing = localSchema.relations.filter(r =>
+        (!r.views || r.views.includes('EVENT_STORMING')) && r.from === from
+      );
+      for (const r of outgoing) {
+        if (r.to === to) return [];
+        if (visited.has(r.to)) continue;
+        visited.add(r.to);
+        const rest = findPathIntermediates(r.to, to, visited);
+        if (rest) return [r.to, ...rest];
+      }
+      return null;
+    };
 
-      if (entityIds.has(rel.from) || entityIds.has(rel.to)) {
+    localSchema.relations.forEach(rel => {
+      if (activeForRelations.has(rel.from) || activeForRelations.has(rel.to)) {
         relIds.add(rel.id);
-      } else {
-        const visited = new Set<string>([rel.from]);
-        if (findPath(rel.from, rel.to, visited)) {
-          for (const mid of intermediateIds) {
-            if (entityIds.has(mid)) {
-              relIds.add(rel.id);
-              break;
-            }
-          }
-        }
+        return;
+      }
+      const path = findPathIntermediates(rel.from, rel.to, new Set<string>([rel.from]));
+      if (path && path.some(mid => activeForRelations.has(mid))) {
+        relIds.add(rel.id);
       }
     });
 

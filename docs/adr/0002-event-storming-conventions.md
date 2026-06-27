@@ -5,61 +5,60 @@ The Flowchart component supports an Event Storming View. To produce correct, rea
 
 ## Decision
 
-### Row System
+### Layout Algorithm
 
-```
-y:50     — Support layer (Database, Read Model)
-y:150    — Handler layer (Aggregate, Actor, External System)
-y:250    — Timeline (Event, Command, Policy — left to right, chronological)
-y:450    — Branch row 1 (failure/alternative paths)
-y:650    — Branch row 2 (further alternatives)
-```
+The Event Storming layout is computed dynamically from the schema's entities and relations, not from hardcoded grid coordinates. The algorithm proceeds in phases:
 
-### What Goes Where
+**Phase 1: Grouping** (see [grouping.ts](../../src/sections/flowchart/derivations/event-storming/grouping.ts))
+- Groups are built per-command via directional BFS: `Command → Handler → Events → Policies`
+- Each group contains a command, its handler, connected events, policies, actors, externals, and DBs
+- BFS stops at the next command (which starts its own group)
+- Orphan nodes (not reachable from any command) become single-node groups
 
-| Element | Row | Why |
-|---------|-----|-----|
-| **Event** (orange) | Timeline | Facts that happened, flow chronologically |
-| **Command** (blue) | Timeline | Imperative verb, part of the flow sequence |
-| **Policy** (green) | Timeline | Business rule, bridges event → command |
-| **Aggregate** (brown) | Above timeline | Owns the command it handles |
-| **Actor** (yellow) | Above/below timeline | Initiates or handles commands |
-| **External System** (teal) | Above timeline | External service that handles commands |
-| **Database** (teal) | Above handler | Supporting storage for the aggregate |
-| **Branch paths** | Below timeline | Diverge from branch point, each at distinct y |
+**Phase 2: Positioning** (see [positions.ts](../../src/sections/flowchart/derivations/event-storming/positions.ts))
 
-### Stacking Rule
+### Root Identification
 
-A single logical unit stacks vertically:
+- The root group is identified by a `root: true` flag on a `FlowchartViewNode` in the schema
+- Fallback: first group by schema order with no incoming edges
 
-```
-          [Database]
-              ↑
-          [Aggregate]        ← HANDLER (above)
-      ────[handled by]───
-      [Policy] [Command] [Event]   ← TIMELINE (inline)
-```
+### X-Axis: Chronological Depth Columns
 
-- Command and its handler share the **same x-coordinate**
-- Handler sits directly above, connected by a **straight vertical arrow**
-- Policy → Command → Event flow **horizontally** on the timeline
+- BFS from root assigns each group a depth (root = 0, children = parent depth + 1)
+- Groups at the same depth share an X column
+- Column width = max group width in that layer + gap (1.5 units)
+- Flow progresses left to right chronologically
 
-### Spacing Rules
+### Y-Axis: Symmetric Branching
 
-```
-Within a stack:   ~140px between elements (tight, adjacent)
-Between stacks:   ~160px gap (visual separation)
-Branch offset:    +200px per branch level (y:450, y:650, ...)
-```
+- Root group is centered at Y = 0
+- Children spread symmetrically around their parent's Y position
+- For N siblings: offsets = `-(N-1)/2` to `+(N-1)/2` in steps of 1
+- Multiple parents: child's Y = average of all parents' Y positions
+- Example: parent at Y=0 with 3 children → children at Y = -1, 0, 1
 
-### Drawing Rules
+### Collision Resolution (Post-Layout)
 
-| Connection | Style | Meaning |
-|------------|-------|---------|
-| Timeline flow | Curved bezier, dashed stroke | Sequential progression |
-| `handled by` | Straight vertical, solid green (#a6d189), labeled | Command → handler ownership |
-| Loop-back | Dashed line | Retry/replan cycle |
-| Branch split | Diverge to lower y | Alternative paths |
+- After initial Y assignment, detect groups in the same X column with overlapping Y ranges
+- Push apart by minimum spacing (1.0 units) iteratively until no collisions remain
+- Groups sorted by Y; each group pushed below the previous group's bounding box + padding
+
+### Within-Group Layout
+
+Each group's internal layout uses a 3-column grid:
+
+| Column | Content | X |
+|--------|---------|---|
+| -1 | Actor (triggers command) | CMD_COL - 1 |
+| 0 | Handler (above), Command (below) | CMD_COL |
+| 1 | Events | EVT_COL |
+| 2 | Policies | POL_COL |
+
+- Commands and handlers share the same X column
+- Actors sit to the left of their command
+- Events stack in column 1
+- Policies in column 2; branching policies get extra horizontal offset
+- DBs and externals positioned relative to their connected handler
 
 ### Flow Pattern (always)
 
@@ -86,8 +85,10 @@ Event → Policy → Command ═══> Handler → Event
 
 ## Consequences
 
+- Schema uses `root: true` on `FlowchartEntity` (propagates to `FlowchartViewNode` during auto-derivation) or directly on `FlowchartViewNode` for explicit views
 - Schema uses `handledBy: boolean` on relations to mark command → handler connections
 - Rendering draws `handledBy` as straight vertical lines when nodes share the same x
-- Nodes are duplicated when the same aggregate appears in multiple stacks (e.g., `orch_plan`, `orch_eval`) rather than reused
-- Branch paths (failure, alternative) shift to lower y-coordinates instead of inline
+- Nodes are duplicated when the same aggregate appears in multiple groups rather than reused
+- Layout is computed at runtime, not stored in schema grid coordinates
 - Commands are always named as imperative verbs, not nouns (e.g., `Create Plan` not `Planner`)
+- Branching flows spread symmetrically above and below the parent, not just below

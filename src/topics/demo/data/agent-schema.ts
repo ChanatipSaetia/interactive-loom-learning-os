@@ -1,6 +1,19 @@
 import { TYPES } from '../../../sections/flowchart'
 import type { UnifiedFlowchartSchema } from '../../../sections/flowchart'
 
+/**
+ * AGENT SCHEMA REFERENCE
+ *
+ * This schema serves as the reference for AI agents generating flowchart schemas.
+ * Key conventions:
+ *
+ * - Set `root: true` on exactly ONE entity (the starting Command of the Event Storming flow)
+ * - The root entity determines the entry point and chronological anchor for layout
+ * - Commands flow left-to-right from the root; branching spreads vertically symmetrically
+ * - Use `collapsedTo` to map duplicate aggregate/external references to a single canonical node
+ * - Relations use `handledBy: true` for Command → Handler connections
+ */
+
 export const agentSchema: UnifiedFlowchartSchema = {
   entities: {
     // Actors
@@ -90,7 +103,8 @@ export const agentSchema: UnifiedFlowchartSchema = {
     'cmd_run_agent': {
       title: 'Run Agent',
       desc: 'Trigger the agent orchestrator with custom user guidelines.',
-      type: TYPES.COMMAND
+      type: TYPES.COMMAND,
+      root: true
     },
     'cmd_call_llm': {
       title: 'Call LLM',
@@ -308,10 +322,10 @@ export const agentSchema: UnifiedFlowchartSchema = {
       steps: [
         { nodeIds: ['dev_user', 'cmd_run_agent', 'orch_agent', 'evt_started', 'evt_session_created'], description: 'Dev requests task. Multiple events generated.' },
         { nodeIds: ['pol_plan', 'cmd_call_llm', 'llm_reason', 'evt_reasoned'], description: 'LLM reasons about task.', processGroup: 'planning' },
-        { nodeIds: ['pol_route', 'cmd_execute_tool', 'tools_router', 'evt_tool_executed'], description: 'Tools execute successfully.', processGroup: 'execution' },
+        { nodeIds: ['pol_route', 'cmd_execute_tool', 'tools_router', 'subagents', 'evt_subagent_spawned', 'evt_tool_executed'], description: 'Tools execute successfully, spawning subagents.', processGroup: 'execution' },
         { nodeIds: ['pol_mcp', 'cmd_call_mcp', 'mcp_servers', 'evt_mcp_called'], description: 'MCP server called.', processGroup: 'execution' },
         { nodeIds: ['pol_eval', 'cmd_complete', 'llm_final', 'evt_done'], description: 'LLM compiles final answer.', processGroup: 'evaluation' },
-        { nodeIds: ['qa_user', 'cmd_review_result', 'orch_qa_ref', 'evt_qa_approved'], description: 'QA reviews and approves.' }
+        { nodeIds: ['pol_qa_review', 'cmd_review_result', 'qa_user', 'orch_qa_ref', 'evt_qa_approved'], description: 'Task submitted for QA review; QA approves.' }
       ]
     },
     {

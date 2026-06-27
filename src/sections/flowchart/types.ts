@@ -211,6 +211,8 @@ export interface FlowchartEntity {
   branchLabel?: string;
   /** Canonical entity ID this node collapses to in derived views (SYS_ARCH, SWIMLANES, etc.). */
   collapsedTo?: string;
+  /** Marks this entity as the root/starting point for the Event Storming layout. Set exactly one entity per schema. */
+  root?: boolean;
 }
 
 export interface FlowchartRelation {
@@ -229,6 +231,8 @@ export interface FlowchartViewNode {
   x?: number;
   y?: number;
   grid?: [number, number];
+  /** Marks this node as the root/starting point for Event Storming layout. */
+  root?: boolean;
 }
 
 export interface FlowchartViewGroup {
@@ -241,6 +245,8 @@ export interface FlowchartViewGroup {
   textColor?: string;
   isLane?: boolean;
   row?: number;
+  /** Number of grid rows this lane band spans (defaults to 1). */
+  rowSpan?: number;
   y?: number;
   h?: number;
 }

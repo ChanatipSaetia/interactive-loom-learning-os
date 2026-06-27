@@ -1,6 +1,6 @@
 import type { UnifiedFlowchartSchema } from '../types';
 import { MASTER_MAPPING_MATRIX, TYPES } from '../types';
-import { getEntityType, policyShouldMapToDecision, computeLayoutInfo } from './utils';
+import { getEntityType, policyShouldMapToDecision, countOutgoingRelations, countOutgoingPolicies, computeLayoutInfo } from './utils';
 import { layoutEventStorming } from './event-storming';
 import { deriveSysArch } from './sys-arch';
 import { deriveSwimlanes } from './swimlanes';
@@ -162,16 +162,24 @@ if (mutableViews.EVENT_STORMING) {
       Object.entries(mapping).forEach(([vk, mappedType]) => {
         if (mappedType) {
           if (esType === TYPES.POLICY && (vk === 'SWIMLANES' || vk === 'DATA_FLOW')) {
-            if (policyShouldMapToDecision(newSchema, nodeId, esType)) {
-              derivedTypes[vk] = TYPES.DECISION;
-            } else {
-              derivedTypes[vk] = TYPES.PROCESS;
-            }
+            // In the activity view a Policy is a Decision only when it is itself a
+            // genuine fork (>= 2 outgoing). Single-edge Policies fanned out from a
+            // branching Event are represented by that Event's Decision instead.
+            const isFork = vk === 'SWIMLANES'
+              ? countOutgoingRelations(newSchema, nodeId) >= 2
+              : policyShouldMapToDecision(newSchema, nodeId, esType);
+            derivedTypes[vk] = isFork ? TYPES.DECISION : TYPES.PROCESS;
           } else {
             derivedTypes[vk] = mappedType;
           }
         }
       });
+
+      // A branching Event (>= 2 outgoing Policies) becomes the Decision diamond in
+      // the activity view, sitting in the lane of whoever produced the event.
+      if (esType === TYPES.EVENT && countOutgoingPolicies(newSchema, nodeId) >= 2) {
+        derivedTypes.SWIMLANES = TYPES.DECISION;
+      }
     }
 
     finalEntities[nodeId] = {

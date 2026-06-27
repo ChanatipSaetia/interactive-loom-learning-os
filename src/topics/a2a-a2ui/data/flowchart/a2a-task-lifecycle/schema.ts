@@ -42,6 +42,7 @@ export const a2aTaskLifecycleSchema: UnifiedFlowchartSchema = {
       title: 'Fetch Agent Card',
       desc: 'Client requests Agent Card from /.well-known/agent-card.',
       type: TYPES.COMMAND,
+      root: true,
     },
     evt_discovered: {
       title: 'Agent Card Retrieved',

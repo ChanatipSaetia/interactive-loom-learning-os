@@ -57,6 +57,7 @@ export const runtimeControlsSchema: UnifiedFlowchartSchema = {
       title: 'Run Tool Call',
       desc: 'Agent initiates a tool call against a business system.',
       type: TYPES.COMMAND,
+      root: true,
     },
     orchestrator: {
       title: 'AI Agent',

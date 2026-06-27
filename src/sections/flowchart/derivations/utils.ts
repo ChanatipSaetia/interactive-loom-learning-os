@@ -11,6 +11,19 @@ export function countOutgoingRelations(schema: UnifiedFlowchartSchema, entityId:
   ).length;
 }
 
+/**
+ * Number of Policies an Event fans out to. An Event with >= 2 outgoing Policies is
+ * a branch point: in the activity (SWIMLANES) view it renders as the single
+ * Decision diamond, with each Policy collapsing into a guard-labelled edge.
+ */
+export function countOutgoingPolicies(schema: UnifiedFlowchartSchema, entityId: string): number {
+  return schema.relations.filter(r =>
+    (!r.views || r.views.includes('EVENT_STORMING')) &&
+    r.from === entityId &&
+    getEntityType(schema.entities[r.to]) === TYPES.POLICY
+  ).length;
+}
+
 export function policyShouldMapToDecision(schema: UnifiedFlowchartSchema, entityId: string, entityType: string): boolean {
   if (entityType !== TYPES.POLICY) return true;
   
@@ -101,7 +114,14 @@ export function deriveRelations(
             const bothBoundary = isBoundaryType(startEntity) && isBoundaryType(endEntity);
             const hasIntermediates = intermediateNodeIds.length > 0 || pathNodeIds.length > 0;
             
-            if (bothBoundary && hasIntermediates) {
+            // The flow enters the destination via a genuine command dispatch
+            // (handledBy) when the destination boundary node is the handler of a
+            // Command on this path — e.g. `cmd_call_mcp -> mcp_servers`. That is a
+            // real invocation and must survive, mirroring how an External that
+            // handles a command into an internal node (e.g. Execute Tool) is kept.
+            const isHandledDispatch = !!rel.handledBy;
+
+            if (bothBoundary && hasIntermediates && !isHandledDispatch) {
               const hasDirectESRel = schema.relations.some(r =>
                 (!r.views || r.views.includes('EVENT_STORMING')) &&
                 ((r.from === collapsedStart && r.to === collapsedNext) ||
