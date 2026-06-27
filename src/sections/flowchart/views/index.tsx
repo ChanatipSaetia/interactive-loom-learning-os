@@ -4,8 +4,20 @@ import * as Icons from 'lucide-react';
 
 import { ZoomToolbar } from '../zoom-toolbar';
 import { useCamera } from '../useCamera';
-import { NODE_W, NODE_H, ICONS, COLORS } from '../types';
+import { NODE_W, NODE_H, ICONS, COLORS, TYPES } from '../types';
 import type { UnifiedFlowchartSchema } from '../types';
+
+// Views whose timeline reads left-to-right. In these, edges between flow nodes
+// (Command/Event/Policy and their per-view equivalents) should leave the
+// right side of the source and enter the left side of the target.
+const HORIZONTAL_FLOW_VIEWS = new Set(['EVENT_STORMING', 'SWIMLANES', 'DATA_FLOW']);
+
+// The per-view node types that participate in the horizontal timeline flow.
+const FLOW_TYPES_BY_VIEW: Record<string, Set<string>> = {
+  EVENT_STORMING: new Set([TYPES.COMMAND, TYPES.EVENT, TYPES.POLICY]),
+  SWIMLANES: new Set([TYPES.PROCESS, TYPES.DECISION]),
+  DATA_FLOW: new Set([TYPES.DATA_OBJECT, TYPES.DECISION]),
+};
 import { computeDynamicSpacing, routeManhattanPath } from './layout-utils';
 import { SequenceView } from './sequence-view';
 import { StandardView } from './standard-view';
@@ -149,12 +161,33 @@ export function FlowchartView({
         });
       });
 
+      let sideFrom = startPt.side;
+      let sideTo = endPt.side;
+
+      // In the horizontal timeline views, force flow-node edges to exit the
+      // right of the source and enter the left of the target so Command →
+      // Event → Policy chains read cleanly left-to-right. Only applies when the
+      // target sits to the right of the source (forward flow); backward edges
+      // keep the distance-optimised sides to avoid crossing through nodes.
+      if (HORIZONTAL_FLOW_VIEWS.has(viewKey)) {
+        const flowTypes = FLOW_TYPES_BY_VIEW[viewKey];
+        const typeOf = (id: string) => {
+          const e = schema.entities[id];
+          return e?.viewTypes?.[viewKey] || e?.type || 'default';
+        };
+        const bothFlow = flowTypes.has(typeOf(rel.from)) && flowTypes.has(typeOf(rel.to));
+        if (bothFlow && colB > colA) {
+          sideFrom = 'R';
+          sideTo = 'L';
+        }
+      }
+
       return {
         rel,
         fromId: rel.from,
         toId: rel.to,
-        sideFrom: startPt.side,
-        sideTo: endPt.side,
+        sideFrom,
+        sideTo,
         fromNode,
         toNode,
         colA, rowA, colB, rowB
