@@ -6,11 +6,8 @@ export const getEntityType = (entity: FlowchartEntity | undefined): string => {
 };
 
 export function countOutgoingRelations(schema: UnifiedFlowchartSchema, entityId: string): number {
-  const instances = Object.keys(schema.entities).filter(
-    id => (schema.entities[id]?.collapsedTo || id) === entityId || id === entityId
-  );
   return schema.relations.filter(r =>
-    (!r.views || r.views.includes('EVENT_STORMING')) && instances.includes(r.from)
+    (!r.views || r.views.includes('EVENT_STORMING')) && r.from === entityId
   ).length;
 }
 
@@ -56,9 +53,7 @@ export function deriveRelations(
   const relations: FlowchartRelation[] = [];
   const visitedPaths = new Set<string>();
 
-  const getCollapsedId = (id: string): string => {
-    return schema.entities[id]?.collapsedTo || id;
-  };
+  const getCollapsedId = (id: string): string => schema.entities[id]?.collapsedTo || id;
 
   participantIds.forEach(startId => {
     const collapsedStart = getCollapsedId(startId);

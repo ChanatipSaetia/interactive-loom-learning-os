@@ -202,10 +202,6 @@ export interface FlowchartEntity {
   type?: string;
   /** Deprecated: use `type` instead. Retained for backward compatibility. */
   viewTypes?: Record<string, string>;
-  /** Reference IDs that refer to this canonical entity. */
-  refs?: string[];
-  /** Maps this fine-grained entity to a collapsed/high-level entity ID in other views. */
-  collapsedTo?: string;
   /** JSON payload for a specific DFD node (shown in inspector during playback). */
   jsonPayload?: Record<string, unknown>;
   color?: string;
@@ -213,6 +209,8 @@ export interface FlowchartEntity {
   stateMachine?: FlowchartStateMachine;
   /** Store branching condition label when multiple policies are merged */
   branchLabel?: string;
+  /** Canonical entity ID this node collapses to in derived views (SYS_ARCH, SWIMLANES, etc.). */
+  collapsedTo?: string;
 }
 
 export interface FlowchartRelation {

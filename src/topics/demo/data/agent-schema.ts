@@ -5,14 +5,14 @@ export const agentSchema: UnifiedFlowchartSchema = {
   entities: {
     // Actors
     'dev_user': {
-      title: 'Developer',
+      title: 'Developer (Initiator)',
       desc: 'The developer initiating instructions and goals.',
-      type: TYPES.USER,
-      refs: ['dev_user_ref']
+      type: TYPES.USER
     },
-    'dev_user_ref': {
-      title: 'Developer',
-      desc: 'The same developer providing feedback.',
+
+    'dev_user_feedback': {
+      title: 'Developer (Feedback)',
+      desc: 'The same developer providing feedback after being prompted.',
       type: TYPES.USER,
       collapsedTo: 'dev_user'
     },
@@ -24,11 +24,10 @@ export const agentSchema: UnifiedFlowchartSchema = {
     },
 
     // Aggregates
-    'orchestrator': {
-      title: 'Orchestrator',
-      desc: 'Core agent runtime owning the planning and coordination loops.',
+    'orch_agent': {
+      title: 'Agent Orchestrator',
+      desc: 'Manages step coordination, memory updates, and loop state.',
       type: TYPES.AGGREGATE,
-      refs: ['orch_agent', 'orch_plan_ref', 'orch_qa_ref', 'orch_notify_ref'],
       stateMachine: {
         states: [
           { id: 'IDLE', label: 'Idle', color: 'var(--ctp-overlay1)' },
@@ -40,61 +39,41 @@ export const agentSchema: UnifiedFlowchartSchema = {
         initialState: 'IDLE'
       },
     },
-    'orch_agent': {
-      title: 'Agent Orchestrator',
-      desc: 'Manages step coordination, memory updates, and loop state.',
-      type: TYPES.AGGREGATE,
-      collapsedTo: 'orchestrator'
-    },
     'orch_plan_ref': {
-      title: 'Agent Orchestrator',
-      desc: 'Processes developer feedback.',
+      title: 'Orchestrator (Plan)',
+      desc: 'Processes developer feedback and replans.',
       type: TYPES.AGGREGATE,
-      collapsedTo: 'orchestrator'
+      collapsedTo: 'orch_agent'
     },
     'orch_qa_ref': {
-      title: 'Agent Orchestrator',
-      desc: 'Processes QA review.',
+      title: 'Orchestrator (QA)',
+      desc: 'Processes QA review results.',
       type: TYPES.AGGREGATE,
-      collapsedTo: 'orchestrator'
+      collapsedTo: 'orch_agent'
     },
     'orch_notify_ref': {
-      title: 'Agent Orchestrator',
+      title: 'Orchestrator (Notify)',
       desc: 'Handles sending messages to user interface.',
       type: TYPES.AGGREGATE,
-      collapsedTo: 'orchestrator'
+      collapsedTo: 'orch_agent'
     },
-    'tools': {
-      title: 'Tools Router',
-      desc: 'Dispatches task executions to local filesystem scripts, subagents, or external APIs.',
-      type: TYPES.AGGREGATE,
-      refs: ['tools_ref']
-    },
-    'tools_ref': {
+    'tools_router': {
       title: 'Tools Router',
       desc: 'Handles command routing and executes operations.',
-      type: TYPES.AGGREGATE,
-      collapsedTo: 'tools'
+      type: TYPES.AGGREGATE
     },
 
-    // DBs & Externals
-    'llm': {
-      title: 'LLM Engine',
-      desc: 'Generates plans, reasons about data, and makes tool-use decisions.',
-      type: TYPES.EXTERNAL,
-      refs: ['llm_reason_ref', 'llm_final_ref']
-    },
-    'llm_reason_ref': {
-      title: 'LLM Engine',
+    // Externals
+    'llm_reason': {
+      title: 'LLM (Reason)',
       desc: 'Generates execution plans and makes tool decisions.',
-      type: TYPES.EXTERNAL,
-      collapsedTo: 'llm'
+      type: TYPES.EXTERNAL
     },
-    'llm_final_ref': {
-      title: 'LLM Engine',
+    'llm_final': {
+      title: 'LLM (Final)',
       desc: 'Synthesizes final answer from tool execution outputs.',
       type: TYPES.EXTERNAL,
-      collapsedTo: 'llm'
+      collapsedTo: 'llm_reason'
     },
     'mcp_servers': {
       title: 'MCP Servers',
@@ -258,25 +237,23 @@ export const agentSchema: UnifiedFlowchartSchema = {
     // Start
     { id: 'r1', from: 'dev_user', to: 'cmd_run_agent', views: ['EVENT_STORMING'] },
     { id: 'r2', from: 'cmd_run_agent', to: 'orch_agent', handledBy: true, views: ['EVENT_STORMING'] },
-    
-    // One Command results in multiple events (Requirement #5)
+
+    // One Command results in multiple events
     { id: 'r3', from: 'orch_agent', to: 'evt_started', views: ['EVENT_STORMING'] },
     { id: 'r4', from: 'orch_agent', to: 'evt_session_created', views: ['EVENT_STORMING'] },
-    
 
-    
     // Core Loop
     { id: 'r7', from: 'evt_started', to: 'pol_plan', views: ['EVENT_STORMING'] },
     { id: 'r8', from: 'evt_feedback_received', to: 'pol_plan', views: ['EVENT_STORMING'] },
-    
+
     { id: 'r9', from: 'pol_plan', to: 'cmd_call_llm', views: ['EVENT_STORMING'] },
-    { id: 'r10', from: 'cmd_call_llm', to: 'llm_reason_ref', handledBy: true, views: ['EVENT_STORMING'] },
-    { id: 'r11', from: 'llm_reason_ref', to: 'evt_reasoned', views: ['EVENT_STORMING'] }, // External Event (Requirement #1)
-    
-    // Branching: Tool Route (Requirement #2)
+    { id: 'r10', from: 'cmd_call_llm', to: 'llm_reason', handledBy: true, views: ['EVENT_STORMING'] },
+    { id: 'r11', from: 'llm_reason', to: 'evt_reasoned', views: ['EVENT_STORMING'] },
+
+    // Branching: Tool Route
     { id: 'r12', from: 'evt_reasoned', to: 'pol_route', views: ['EVENT_STORMING'], label: 'Needs Tool' },
     { id: 'r13', from: 'pol_route', to: 'cmd_execute_tool', views: ['EVENT_STORMING'] },
-    { id: 'r14', from: 'cmd_execute_tool', to: 'tools_ref', handledBy: true, views: ['EVENT_STORMING'] },
+    { id: 'r14', from: 'cmd_execute_tool', to: 'tools_router', handledBy: true, views: ['EVENT_STORMING'] },
 
     // Branching: MCP Call
     { id: 'r12a', from: 'evt_reasoned', to: 'pol_mcp', views: ['EVENT_STORMING'], label: 'Needs MCP' },
@@ -285,41 +262,40 @@ export const agentSchema: UnifiedFlowchartSchema = {
     { id: 'r12d', from: 'mcp_servers', to: 'evt_mcp_called', views: ['EVENT_STORMING'] },
 
     // Tool interactions with Externals
-    { id: 'r16', from: 'tools_ref', to: 'subagents', views: ['EVENT_STORMING'] },
+    { id: 'r16', from: 'tools_router', to: 'subagents', views: ['EVENT_STORMING'] },
 
-    // Events from tools and externals (Requirement #1)
-    { id: 'r17', from: 'tools_ref', to: 'evt_tool_executed', views: ['EVENT_STORMING'] },
+    // Events from tools and externals
+    { id: 'r17', from: 'tools_router', to: 'evt_tool_executed', views: ['EVENT_STORMING'] },
     { id: 'r19', from: 'subagents', to: 'evt_subagent_spawned', views: ['EVENT_STORMING'] },
 
     { id: 'r20', from: 'evt_tool_executed', to: 'pol_eval', views: ['EVENT_STORMING'] },
-    
-    // Branching: Same actor feedback (Requirement #3)
+
+    // Branching: Same actor feedback
     { id: 'r21', from: 'evt_tool_executed', to: 'pol_notify_user', views: ['EVENT_STORMING'], label: 'Needs Input' },
     { id: 'r21a', from: 'pol_notify_user', to: 'cmd_send_message', views: ['EVENT_STORMING'] },
     { id: 'r21b', from: 'cmd_send_message', to: 'orch_notify_ref', handledBy: true, views: ['EVENT_STORMING'] },
     { id: 'r21c', from: 'orch_notify_ref', to: 'evt_message_sent', views: ['EVENT_STORMING'] },
-    { id: 'r21d', from: 'evt_message_sent', to: 'dev_user_ref', views: ['EVENT_STORMING'], label: 'Prompt User' },
-    { id: 'r22', from: 'dev_user_ref', to: 'cmd_provide_feedback', views: ['EVENT_STORMING'] },
+    { id: 'r21d', from: 'evt_message_sent', to: 'dev_user_feedback', views: ['EVENT_STORMING'], label: 'Prompt User' },
+    { id: 'r22', from: 'dev_user_feedback', to: 'cmd_provide_feedback', views: ['EVENT_STORMING'] },
     { id: 'r23', from: 'cmd_provide_feedback', to: 'orch_plan_ref', handledBy: true, views: ['EVENT_STORMING'] },
     { id: 'r24', from: 'orch_plan_ref', to: 'evt_feedback_received', views: ['EVENT_STORMING'] },
 
-    // Branching: Direct Completion (Requirement #2)
+    // Branching: Direct Completion
     { id: 'r25', from: 'evt_reasoned', to: 'pol_complete', views: ['EVENT_STORMING'], label: 'Final Answer' },
-    
+
     // Converge to Complete
     { id: 'r26', from: 'pol_eval', to: 'cmd_complete', views: ['EVENT_STORMING'] },
     { id: 'r27', from: 'pol_complete', to: 'cmd_complete', views: ['EVENT_STORMING'] },
-    
-    { id: 'r28', from: 'cmd_complete', to: 'llm_final_ref', handledBy: true, views: ['EVENT_STORMING'] },
-    { id: 'r29', from: 'llm_final_ref', to: 'evt_done', views: ['EVENT_STORMING'] },
 
+    { id: 'r28', from: 'cmd_complete', to: 'llm_final', handledBy: true, views: ['EVENT_STORMING'] },
+    { id: 'r29', from: 'llm_final', to: 'evt_done', views: ['EVENT_STORMING'] },
 
-    // Different Actor: QA Review (Requirement #4)
+    // Different Actor: QA Review
     { id: 'r30', from: 'evt_done', to: 'pol_qa_review', views: ['EVENT_STORMING'] },
     { id: 'r30a', from: 'pol_qa_review', to: 'cmd_review_result', views: ['EVENT_STORMING'] },
     { id: 'r30b', from: 'cmd_review_result', to: 'orch_qa_ref', handledBy: true, views: ['EVENT_STORMING'] },
     { id: 'r30c', from: 'cmd_review_result', to: 'qa_user', views: ['EVENT_STORMING'], label: 'Ready for QA' },
-    
+
     // Branching at QA
     { id: 'r33', from: 'orch_qa_ref', to: 'evt_qa_approved', views: ['EVENT_STORMING'], label: 'Approve' },
     { id: 'r34', from: 'orch_qa_ref', to: 'evt_qa_rejected', views: ['EVENT_STORMING'], label: 'Reject' }
@@ -331,10 +307,10 @@ export const agentSchema: UnifiedFlowchartSchema = {
       description: 'Agent uses tools successfully and passes QA.',
       steps: [
         { nodeIds: ['dev_user', 'cmd_run_agent', 'orch_agent', 'evt_started', 'evt_session_created'], description: 'Dev requests task. Multiple events generated.' },
-        { nodeIds: ['pol_plan', 'cmd_call_llm', 'llm_reason_ref', 'evt_reasoned'], description: 'LLM reasons about task.', processGroup: 'planning' },
-        { nodeIds: ['pol_route', 'cmd_execute_tool', 'tools_ref', 'evt_tool_executed'], description: 'Tools execute successfully.', processGroup: 'execution' },
+        { nodeIds: ['pol_plan', 'cmd_call_llm', 'llm_reason', 'evt_reasoned'], description: 'LLM reasons about task.', processGroup: 'planning' },
+        { nodeIds: ['pol_route', 'cmd_execute_tool', 'tools_router', 'evt_tool_executed'], description: 'Tools execute successfully.', processGroup: 'execution' },
         { nodeIds: ['pol_mcp', 'cmd_call_mcp', 'mcp_servers', 'evt_mcp_called'], description: 'MCP server called.', processGroup: 'execution' },
-        { nodeIds: ['pol_eval', 'cmd_complete', 'llm_final_ref', 'evt_done'], description: 'LLM compiles final answer.', processGroup: 'evaluation' },
+        { nodeIds: ['pol_eval', 'cmd_complete', 'llm_final', 'evt_done'], description: 'LLM compiles final answer.', processGroup: 'evaluation' },
         { nodeIds: ['qa_user', 'cmd_review_result', 'orch_qa_ref', 'evt_qa_approved'], description: 'QA reviews and approves.' }
       ]
     },
@@ -343,10 +319,10 @@ export const agentSchema: UnifiedFlowchartSchema = {
       label: 'Feedback Loop',
       description: 'Agent needs more info from same actor.',
       steps: [
-        { nodeIds: ['pol_route', 'cmd_execute_tool', 'tools_ref', 'evt_tool_executed'], description: 'Tool returns an error or asks user for input.', processGroup: 'execution' },
+        { nodeIds: ['pol_route', 'cmd_execute_tool', 'tools_router', 'evt_tool_executed'], description: 'Tool returns an error or asks user for input.', processGroup: 'execution' },
         { nodeIds: ['pol_notify_user', 'cmd_send_message', 'orch_notify_ref', 'evt_message_sent'], description: 'System sends message to user.' },
-        { nodeIds: ['dev_user_ref', 'cmd_provide_feedback', 'orch_plan_ref', 'evt_feedback_received'], description: 'Dev provides missing info.' },
-        { nodeIds: ['evt_feedback_received', 'pol_plan', 'cmd_call_llm', 'llm_reason_ref', 'evt_reasoned'], description: 'Agent replans with new context.', processGroup: 'planning' }
+        { nodeIds: ['dev_user_feedback', 'cmd_provide_feedback', 'orch_plan_ref', 'evt_feedback_received'], description: 'Dev provides missing info.' },
+        { nodeIds: ['evt_feedback_received', 'pol_plan', 'cmd_call_llm', 'llm_reason', 'evt_reasoned'], description: 'Agent replans with new context.', processGroup: 'planning' }
       ]
     },
     {
@@ -354,9 +330,8 @@ export const agentSchema: UnifiedFlowchartSchema = {
       label: 'Direct LLM Answer',
       description: 'No tools needed.',
       steps: [
-        { nodeIds: ['evt_reasoned', 'pol_complete', 'cmd_complete', 'llm_final_ref', 'evt_done'], description: 'LLM skips tools and directly answers.', processGroup: 'evaluation' }
+        { nodeIds: ['evt_reasoned', 'pol_complete', 'cmd_complete', 'llm_final', 'evt_done'], description: 'LLM skips tools and directly answers.', processGroup: 'evaluation' }
       ]
     }
   ]
 }
-
