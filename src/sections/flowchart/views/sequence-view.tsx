@@ -9,6 +9,7 @@ export interface SequenceViewProps {
   schema: UnifiedFlowchartSchema;
   view: { nodes: FlowchartViewNode[]; groups?: FlowchartViewGroup[] };
   activeNodeIds: string[] | null;
+  activeRelationIds: string[] | null;
   highlightedNodeId: string | null;
 }
 
@@ -18,6 +19,7 @@ export const SequenceView = memo(function SequenceView({
   schema,
   view,
   activeNodeIds,
+  activeRelationIds,
   highlightedNodeId
 }: SequenceViewProps) {
   const [tooltip, setTooltip] = useState<{ description: string; x: number; y: number } | null>(null);
@@ -131,7 +133,8 @@ export const SequenceView = memo(function SequenceView({
         const edgeId = `seq-edge-${rel.id}`;
         const isHoveredEdge = hoveredEdgeId === edgeId;
         const isHighlightedNode = highlightedNodeId === rel.from || highlightedNodeId === rel.to;
-        const isEdgeActive = isHighlightedNode || isHoveredEdge || !!(activeNodeIds?.includes(rel.from) || activeNodeIds?.includes(rel.to));
+        const isRelationActive = activeRelationIds?.includes(rel.id) || false;
+        const isEdgeActive = isHighlightedNode || isHoveredEdge || isRelationActive || !!(activeNodeIds?.includes(rel.from) || activeNodeIds?.includes(rel.to));
 
         const isEvent = rel.dashed;
         const strokeColor = isEvent ? 'var(--ctp-peach)' : 'var(--ctp-blue)';
@@ -313,21 +316,6 @@ export const SequenceView = memo(function SequenceView({
                 transition: 'opacity 0.3s, filter 0.3s',
               }}
             >
-              {isHighlighted && (
-                <rect
-                  x="-20"
-                  y="-15"
-                  width={NODE_W + 40}
-                  height={NODE_H + 30}
-                  rx="14"
-                  fill="none"
-                  stroke="var(--ctp-blue)"
-                  strokeWidth="2"
-                  strokeDasharray="4 4"
-                  opacity="0.5"
-                  style={{ animation: 'flowchart-spin 10s linear infinite' }}
-                />
-              )}
               <rect
                 x={0} y={0}
                 width={NODE_W} height={NODE_H}

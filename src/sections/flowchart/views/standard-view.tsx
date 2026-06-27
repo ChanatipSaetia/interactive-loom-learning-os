@@ -12,6 +12,7 @@ export interface StandardViewProps {
   nodeMap: Map<string, FlowchartViewNode>;
   routedRelations: (FlowchartRelation & { path: string, startX: number, startY: number, endX: number, endY: number, midX: number, midY: number })[];
   activeNodeIds: string[] | null;
+  activeRelationIds: string[] | null;
   highlightedNodeId: string | null;
   spacing: { colSpacing: number; rowSpacing: number; offsetX: number; offsetY: number };
   setActiveNodePopup: (popup: any) => void;
@@ -29,6 +30,7 @@ export const StandardView = memo(function StandardView({
   nodeMap,
   routedRelations,
   activeNodeIds,
+  activeRelationIds,
   highlightedNodeId,
   spacing,
   handleNodeClick,
@@ -62,7 +64,7 @@ export const StandardView = memo(function StandardView({
                 width={maxX - minX + 500}
                 height={hVal}
                 fill={group.color || 'color-mix(in srgb, var(--ctp-lavender) 12%, transparent)'}
-                stroke={group.borderColor || 'var(--ctp-surface2)'}
+                stroke={group.borderColor || 'var(--ctp-overlay1)'}
                 strokeWidth="1.5"
               />
               <text
@@ -123,10 +125,11 @@ export const StandardView = memo(function StandardView({
         const edgeId = `edge-${rel.id}`;
         const isHoveredEdge = hoveredEdgeId === edgeId;
         const isHighlightedNode = highlightedNodeId === rel.from || highlightedNodeId === rel.to;
-        const isEdgeActive = isHighlightedNode || isHoveredEdge;
+        const isRelationActive = activeRelationIds?.includes(rel.id) || false;
+        const isEdgeActive = isHighlightedNode || isHoveredEdge || isRelationActive;
 
-        const isFaded = activeNodeIds !== null && !activeNodeIds.includes(rel.from) && !activeNodeIds.includes(rel.to);
-        const strokeColor = isEdgeActive ? 'var(--ctp-blue)' : 'var(--ctp-surface2)';
+        const isFaded = activeNodeIds !== null && !activeNodeIds.includes(rel.from) && !activeNodeIds.includes(rel.to) && !isRelationActive;
+        const strokeColor = isEdgeActive ? 'var(--ctp-blue)' : 'var(--ctp-overlay1)';
         const strokeWidth = isEdgeActive ? 2.5 : 1.5;
         const marker = isEdgeActive
           ? `url(#flowchart-arrow-highlight-${viewInstanceId})`
@@ -288,22 +291,6 @@ export const StandardView = memo(function StandardView({
               cursor: isFullscreen ? 'pointer' : 'default'
             }}
           >
-            {isHighlighted && (
-              <rect
-                x="-20"
-                y="-15"
-                width={nW + 40}
-                height={nH + 30}
-                rx="14"
-                fill="none"
-                stroke="var(--ctp-blue)"
-                strokeWidth="2"
-                strokeDasharray="4 4"
-                opacity="0.5"
-                style={{ animation: 'flowchart-spin 10s linear infinite' }}
-              />
-            )}
-
             {viewType === TYPES.DECISION ? (
               <polygon
                 points={`${nW/2},0 ${nW},${nH/2} ${nW/2},${nH} 0,${nH/2}`}

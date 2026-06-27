@@ -16,6 +16,7 @@ export interface FlowchartViewProps {
   viewKey: string;
   schema: UnifiedFlowchartSchema;
   activeNodeIds: string[] | null;
+  activeRelationIds: string[] | null;
   highlightedNodeId: string | null;
   prevHighlightedNodeId: string | null;
   currentStep: number;
@@ -41,6 +42,7 @@ export function FlowchartView({
   viewKey,
   schema,
   activeNodeIds,
+  activeRelationIds,
   highlightedNodeId,
   prevHighlightedNodeId,
   currentStep,
@@ -433,7 +435,7 @@ export function FlowchartView({
               <feDropShadow dx="0" dy="0" stdDeviation="6" floodColor="var(--ctp-blue)" floodOpacity="0.6" />
             </filter>
             <marker id={`flowchart-arrow-${viewInstanceId}`} markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto">
-              <path d="M 0 0 L 7 3 L 0 6 Z" fill="var(--ctp-surface2)" />
+              <path d="M 0 0 L 7 3 L 0 6 Z" fill="var(--ctp-overlay1)" />
             </marker>
             <marker id={`flowchart-arrow-highlight-${viewInstanceId}`} markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto">
               <path d="M 0 0 L 7 3 L 0 6 Z" fill="var(--ctp-blue)" />
@@ -467,26 +469,28 @@ export function FlowchartView({
               fill={`url(#dotGrid-${viewInstanceId})`}
               style={{ pointerEvents: 'none' }}
             />
-             {isSequenceView ? (
-               <SequenceView 
-                 viewKey={viewKey}
-                 viewInstanceId={viewInstanceId}
-                 schema={schema}
-                 view={view}
-                 activeNodeIds={activeNodeIds}
-                 highlightedNodeId={highlightedNodeId}
-               />
-             ) : (
-               <StandardView 
-                 viewKey={viewKey}
-                 viewInstanceId={viewInstanceId}
-                 schema={schema}
-                 view={view}
-                 positioned={positioned}
-                 nodeMap={nodeMap}
-                 routedRelations={routedRelations}
-                 activeNodeIds={activeNodeIds}
-                 highlightedNodeId={highlightedNodeId}
+            {isSequenceView ? (
+                <SequenceView 
+                  viewKey={viewKey}
+                  viewInstanceId={viewInstanceId}
+                  schema={schema}
+                  view={view}
+                  activeNodeIds={activeNodeIds}
+                  activeRelationIds={activeRelationIds}
+                  highlightedNodeId={highlightedNodeId}
+                />
+              ) : (
+                <StandardView 
+                  viewKey={viewKey}
+                  viewInstanceId={viewInstanceId}
+                  schema={schema}
+                  view={view}
+                  positioned={positioned}
+                  nodeMap={nodeMap}
+                  routedRelations={routedRelations}
+                  activeNodeIds={activeNodeIds}
+                  activeRelationIds={activeRelationIds}
+                  highlightedNodeId={highlightedNodeId}
                  spacing={spacing}
                  setActiveNodePopup={setActiveNodePopup}
                  handleNodeClick={handleNodeClick}

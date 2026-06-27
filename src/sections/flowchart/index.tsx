@@ -103,6 +103,68 @@ export function Flowchart({ title, schema = INITIAL_SCHEMA }: FlowchartProps) {
   // Playback state (shared across all views in grid mode)
   const playback = usePlaybackState({ schema: localSchema });
 
+  // Resolve active node/relation IDs across all views from journey step data
+  const resolvedHighlights = useMemo(() => {
+    if (!playback.activeNodeIds || playback.activeNodeIds.length === 0) {
+      return { activeNodeIds: null as string[] | null, activeRelationIds: null as string[] | null };
+    }
+    const entityIds = new Set(playback.activeNodeIds);
+    // Expand: for each node ID, also include its collapsedTo target
+    playback.activeNodeIds.forEach(id => {
+      const ent = localSchema.entities[id];
+      if (ent?.collapsedTo) {
+        entityIds.add(ent.collapsedTo);
+      }
+    });
+
+    // Find relations whose intermediate path includes any highlighted node
+    const relIds = new Set<string>();
+    localSchema.relations.forEach(rel => {
+      // Check if any highlighted node lies on the path between rel.from and rel.to
+      // in the EVENT_STORMING graph
+      const intermediateIds = new Set<string>();
+      const findPath = (from: string, to: string, visited: Set<string>): boolean => {
+        const outgoing = localSchema.relations.filter(r =>
+          (!r.views || r.views.includes('EVENT_STORMING')) && r.from === from
+        );
+        for (const r of outgoing) {
+          if (r.to === to) return true;
+          if (visited.has(r.to)) continue;
+          visited.add(r.to);
+          intermediateIds.add(r.to);
+          if (findPath(r.to, to, visited)) return true;
+        }
+        return false;
+      };
+
+      if (entityIds.has(rel.from) || entityIds.has(rel.to)) {
+        relIds.add(rel.id);
+      } else {
+        const visited = new Set<string>([rel.from]);
+        if (findPath(rel.from, rel.to, visited)) {
+          for (const mid of intermediateIds) {
+            if (entityIds.has(mid)) {
+              relIds.add(rel.id);
+              break;
+            }
+          }
+        }
+      }
+    });
+
+    // In SYS_ARCH: if an active relation connects to temp_center (Core System), highlight it too
+    relIds.forEach(relId => {
+      const rel = localSchema.relations.find(r => r.id === relId);
+      if (rel && (rel.from === 'temp_center' || rel.to === 'temp_center')) {
+        entityIds.add('temp_center');
+      }
+    });
+
+    return {
+      activeNodeIds: Array.from(entityIds),
+      activeRelationIds: relIds.size > 0 ? Array.from(relIds) : null
+    };
+  }, [playback.activeNodeIds, localSchema.entities, localSchema.relations]);
 
   // Sync active step with current playback step
   const activeSteps = useMemo(() => {
@@ -549,7 +611,8 @@ export function Flowchart({ title, schema = INITIAL_SCHEMA }: FlowchartProps) {
         <FlowchartView
           viewKey={activeViewKey}
           schema={localSchema}
-          activeNodeIds={playback.activeNodeIds}
+          activeNodeIds={resolvedHighlights.activeNodeIds}
+          activeRelationIds={resolvedHighlights.activeRelationIds}
           highlightedNodeId={highlightedNodeId}
           prevHighlightedNodeId={prevHighlightedNodeId}
           currentStep={playback.currentStep}
