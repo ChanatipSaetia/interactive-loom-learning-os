@@ -43,7 +43,7 @@ export * from './flashcards' // WordTerm[]
 ```
 
 ## 3. Assemble the Topic in `sections.ts`
-Your `sections.ts` will export an array of `SectionConfig` objects. Each section has a specific `type` and requires specific `props` fed from your `data/` folder.
+Your `sections.ts` will export an array of `SectionConfig` objects. Each section has a specific `type` and requires specific `props` fed from your `data/` folder. The order of the sections in this array determines the display order in the UI. You can arrange the sections in any sequence depending on how you want to organize the learning content.
 
 Here are the 6 available section types, their objectives, and how you assign content to them:
 
