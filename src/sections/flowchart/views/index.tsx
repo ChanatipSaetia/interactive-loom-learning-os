@@ -108,6 +108,29 @@ export function FlowchartView({
     if (!view || isSequenceView) return [];
     const activeRelations = schema.relations.filter(r => r.views?.includes(viewKey));
 
+    // Map of occupied grid cells -> node id, so a port can avoid exiting or
+    // entering through a side where an adjacent node sits (which would make the
+    // edge cross through that neighbour). Cells are quantised to the nearest
+    // half-row/half-col to catch the fractional offsets used by handlers/dbs.
+    const cellKey = (col: number, row: number) => `${Math.round(col * 2)},${Math.round(row * 2)}`;
+    const occupied = new Map<string, string>();
+    positioned.forEach(n => {
+      if (n.grid) occupied.set(cellKey(n.grid[0], n.grid[1]), n.id);
+    });
+    // Is the cell immediately on `side` of (col,row) taken by a node other than
+    // `selfId` and `otherId` (the two endpoints of the edge being routed)?
+    const sideBlocked = (
+      col: number, row: number, side: string, selfId: string, otherId: string,
+    ): boolean => {
+      let dc = 0, dr = 0;
+      if (side === 'R') dc = 1;
+      else if (side === 'L') dc = -1;
+      else if (side === 'T') dr = -1;
+      else if (side === 'B') dr = 1;
+      const occ = occupied.get(cellKey(col + dc, row + dr));
+      return occ !== undefined && occ !== selfId && occ !== otherId;
+    };
+
     const relSides = activeRelations.map(rel => {
       const fromNode = nodeMap.get(rel.from);
       const toNode = nodeMap.get(rel.to);
@@ -152,6 +175,13 @@ export function FlowchartView({
           if (ep.side === 'L' && dx < 0) penalty += 500;
           if (ep.side === 'T' && dy < 0) penalty += 500;
           if (ep.side === 'B' && dy > 0) penalty += 500;
+
+          // Strongly discourage ports on a side that an adjacent in-grid node
+          // occupies: tunnelling an edge straight through a neighbouring node is
+          // worse than taking a slightly longer route, so this outweighs the
+          // directional penalty above and pushes the port to a clear side.
+          if (sideBlocked(colA, rowA, sp.side, rel.from, rel.to)) penalty += 800;
+          if (sideBlocked(colB, rowB, ep.side, rel.to, rel.from)) penalty += 800;
 
           if (penalty < minPenalty) {
             minPenalty = penalty;
