@@ -123,6 +123,11 @@ export const agentSchema: UnifiedFlowchartSchema = {
       desc: 'Dispatch execution to the appropriate tool script or subagent.',
       type: TYPES.COMMAND
     },
+    'cmd_call_mcp': {
+      title: 'Call MCP',
+      desc: 'Invoke MCP server tool with parameters from LLM.',
+      type: TYPES.COMMAND
+    },
     'cmd_provide_feedback': {
       title: 'Provide Feedback',
       desc: 'Same actor providing additional context or corrections.',
@@ -228,6 +233,11 @@ export const agentSchema: UnifiedFlowchartSchema = {
       desc: 'Check if LLM requested a tool, execute if present.',
       type: TYPES.POLICY
     },
+    'pol_mcp': {
+      title: 'Trigger MCP Call',
+      desc: 'LLM requested an MCP server tool, dispatch to MCP.',
+      type: TYPES.POLICY
+    },
     'pol_complete': {
       title: 'Trigger Completion',
       desc: 'Directly complete if LLM returns final answer.',
@@ -267,14 +277,18 @@ export const agentSchema: UnifiedFlowchartSchema = {
     { id: 'r12', from: 'evt_reasoned', to: 'pol_route', views: ['EVENT_STORMING'], label: 'Needs Tool' },
     { id: 'r13', from: 'pol_route', to: 'cmd_execute_tool', views: ['EVENT_STORMING'] },
     { id: 'r14', from: 'cmd_execute_tool', to: 'tools_ref', handledBy: true, views: ['EVENT_STORMING'] },
-    
+
+    // Branching: MCP Call
+    { id: 'r12a', from: 'evt_reasoned', to: 'pol_mcp', views: ['EVENT_STORMING'], label: 'Needs MCP' },
+    { id: 'r12b', from: 'pol_mcp', to: 'cmd_call_mcp', views: ['EVENT_STORMING'] },
+    { id: 'r12c', from: 'cmd_call_mcp', to: 'mcp_servers', handledBy: true, views: ['EVENT_STORMING'] },
+    { id: 'r12d', from: 'mcp_servers', to: 'evt_mcp_called', views: ['EVENT_STORMING'] },
+
     // Tool interactions with Externals
-    { id: 'r15', from: 'tools_ref', to: 'mcp_servers', views: ['EVENT_STORMING'] },
     { id: 'r16', from: 'tools_ref', to: 'subagents', views: ['EVENT_STORMING'] },
-    
+
     // Events from tools and externals (Requirement #1)
     { id: 'r17', from: 'tools_ref', to: 'evt_tool_executed', views: ['EVENT_STORMING'] },
-    { id: 'r18', from: 'mcp_servers', to: 'evt_mcp_called', views: ['EVENT_STORMING'] },
     { id: 'r19', from: 'subagents', to: 'evt_subagent_spawned', views: ['EVENT_STORMING'] },
 
     { id: 'r20', from: 'evt_tool_executed', to: 'pol_eval', views: ['EVENT_STORMING'] },
@@ -318,7 +332,8 @@ export const agentSchema: UnifiedFlowchartSchema = {
       steps: [
         { nodeIds: ['dev_user', 'cmd_run_agent', 'orch_agent', 'evt_started', 'evt_session_created'], description: 'Dev requests task. Multiple events generated.' },
         { nodeIds: ['pol_plan', 'cmd_call_llm', 'llm_reason_ref', 'evt_reasoned'], description: 'LLM reasons about task.', processGroup: 'planning' },
-        { nodeIds: ['pol_route', 'cmd_execute_tool', 'tools_ref', 'mcp_servers', 'evt_mcp_called', 'evt_tool_executed'], description: 'Tools execute successfully.', processGroup: 'execution' },
+        { nodeIds: ['pol_route', 'cmd_execute_tool', 'tools_ref', 'evt_tool_executed'], description: 'Tools execute successfully.', processGroup: 'execution' },
+        { nodeIds: ['pol_mcp', 'cmd_call_mcp', 'mcp_servers', 'evt_mcp_called'], description: 'MCP server called.', processGroup: 'execution' },
         { nodeIds: ['pol_eval', 'cmd_complete', 'llm_final_ref', 'evt_done'], description: 'LLM compiles final answer.', processGroup: 'evaluation' },
         { nodeIds: ['qa_user', 'cmd_review_result', 'orch_qa_ref', 'evt_qa_approved'], description: 'QA reviews and approves.' }
       ]
