@@ -665,7 +665,7 @@ function TradeoffSandboxSection({ title, scenarios, instanceId }: TradeoffSandbo
         </h3>
       )}
 
-      <div className="flex items-center justify-between w-full mb-3">
+      <div className="flex flex-col md:flex-row items-start md:items-center justify-between w-full mb-3 gap-3">
         {scenarios.length > 1 ? (
           <div className="scenario-selector !mb-0">
             <label htmlFor="scenario-select" className="scenario-label">

@@ -42,6 +42,11 @@
 .flowchart-canvas-wrapper {
   @apply flex relative w-full gap-0 rounded-[var(--radius-sm)] border border-border overflow-hidden;
   background-color: var(--ctp-base);
+  font-family: var(--font-body);
+}
+
+.react-flow {
+  font-family: var(--font-body) !important;
 }
 
 .flowchart-canvas-inner {

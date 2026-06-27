@@ -155,8 +155,8 @@ export default function FlashcardDeck({ title, terms = [] }: FlashcardDeckProps)
 
   // tabs list config
   const tabsList = [
-    { id: 'guidelines' as const, label: 'Guidelines', icon: <BookOpen className="w-4 h-4 text-primary" /> },
-    { id: 'dialogue' as const, label: 'AI Dialogue', icon: <MessageSquare className="w-4 h-4 text-primary" /> }
+    { id: 'guidelines' as const, label: 'Guidelines', icon: <BookOpen className="w-4 h-4" /> },
+    { id: 'dialogue' as const, label: 'AI Dialogue', icon: <MessageSquare className="w-4 h-4" /> }
   ];
 
   return (
@@ -177,21 +177,21 @@ export default function FlashcardDeck({ title, terms = [] }: FlashcardDeckProps)
       </div>
 
       {/* Main Flashcard Row layout with Side Navigation */}
-      <div className="flex items-center justify-center w-full gap-3 md:gap-8 mt-4">
+      <div className="flex items-center justify-center w-full gap-4 md:gap-8 mt-4">
         
-        {/* Left Arrow Button */}
+        {/* Desktop Left Arrow Button */}
         <Button
-          id="prev-term-btn"
+          id="prev-term-btn-desktop"
           variant="ghost"
           size="icon"
           onClick={handlePrev}
-          className="flex-shrink-0 rounded-full w-12 h-12 md:w-16 md:h-16 border border-border/50 bg-muted/10 hover:bg-card hover:border-primary/50 hover:shadow-md transition-all text-muted-foreground hover:text-primary z-20"
+          className="hidden md:flex flex-shrink-0 rounded-full w-16 h-16 border border-border/50 bg-muted/10 hover:bg-card hover:border-primary/50 hover:shadow-md transition-all text-muted-foreground hover:text-primary z-20"
         >
-          <ChevronLeft className="w-6 h-6 md:w-8 md:h-8" />
+          <ChevronLeft className="w-8 h-8" />
         </Button>
 
         {/* Outer 3D Perspective Canvas */}
-        <div className="relative w-full max-w-[280px] sm:max-w-md md:max-w-3xl h-[540px] perspective-1000 flex-1">
+        <div className="relative w-full max-w-full sm:max-w-md md:max-w-3xl h-[480px] md:h-[540px] perspective-1000 flex-1">
           
           {/* Layered Deck Stack Background Cards */}
           <div className="absolute inset-0 bg-card border border-border translate-x-3 translate-y-3 rounded-lg opacity-30 -z-20 pointer-events-none transition-all duration-300"></div>
@@ -227,7 +227,7 @@ export default function FlashcardDeck({ title, terms = [] }: FlashcardDeckProps)
                   id="flashcard-front"
                   onClick={() => { if (!isFlipped) setIsFlipped(true); }}
                   style={{ backfaceVisibility: 'hidden', WebkitBackfaceVisibility: 'hidden' }}
-                  className={`absolute inset-0 p-8 md:p-10 bg-card border border-border shadow-sm flex flex-col justify-between backface-hidden select-none transition-opacity duration-300 ${isFlipped ? 'pointer-events-none opacity-0' : 'pointer-events-auto opacity-100'} cursor-pointer hover:border-primary/50 rounded-lg`}
+                  className={`absolute inset-0 p-6 md:p-10 bg-card border border-border shadow-sm flex flex-col justify-between backface-hidden select-none transition-opacity duration-300 ${isFlipped ? 'pointer-events-none opacity-0' : 'pointer-events-auto opacity-100'} cursor-pointer hover:border-primary/50 rounded-lg`}
                 >
                   {/* Visual Draft Crosshairs */}
                   <div className="absolute top-3 left-3 text-muted-foreground/30 font-mono text-[10px] pointer-events-none flex items-center space-x-1">
@@ -256,7 +256,7 @@ export default function FlashcardDeck({ title, terms = [] }: FlashcardDeckProps)
 
                   {/* Large Word Display */}
                   <div className="my-auto text-left">
-                    <h2 className="text-4xl md:text-5xl font-light tracking-tight text-foreground font-display leading-[1.15] mb-4">
+                    <h2 className="text-3xl md:text-5xl font-light tracking-tight text-foreground font-display leading-[1.15] mb-3 md:mb-4">
                       {currentTerm.word}
                     </h2>
                     
@@ -284,7 +284,7 @@ export default function FlashcardDeck({ title, terms = [] }: FlashcardDeckProps)
                 {/* CARD BACK: Dark Mode Interactive Alignment Blueprints */}
                 <div 
                   onClick={() => setIsFlipped(false)}
-                  className={`absolute inset-0 p-8 bg-card text-foreground rounded-lg border border-border shadow-md flex flex-col justify-between backface-hidden rotateY-180 overflow-y-auto scrollbar-thin select-none transition-opacity duration-300 ${isFlipped ? 'pointer-events-auto opacity-100' : 'pointer-events-none opacity-0'} cursor-pointer`}
+                  className={`absolute inset-0 p-5 md:p-8 bg-card text-foreground rounded-lg border border-border shadow-md flex flex-col justify-between backface-hidden rotateY-180 overflow-y-auto scrollbar-thin select-none transition-opacity duration-300 ${isFlipped ? 'pointer-events-auto opacity-100' : 'pointer-events-none opacity-0'} cursor-pointer`}
                   style={{ backfaceVisibility: 'hidden', transform: 'rotateY(180deg)' }}
                 >
                   <div className="flex-1 flex flex-col h-full">
@@ -395,15 +395,37 @@ export default function FlashcardDeck({ title, terms = [] }: FlashcardDeckProps)
           </AnimatePresence>
         </div>
 
-        {/* Right Arrow Button */}
+        {/* Desktop Right Arrow Button */}
         <Button
-          id="next-term-btn"
+          id="next-term-btn-desktop"
           variant="ghost"
           size="icon"
           onClick={handleNext}
-          className="flex-shrink-0 rounded-full w-12 h-12 md:w-16 md:h-16 border border-border/50 bg-muted/10 hover:bg-card hover:border-primary/50 hover:shadow-md transition-all text-muted-foreground hover:text-primary z-20"
+          className="hidden md:flex flex-shrink-0 rounded-full w-16 h-16 border border-border/50 bg-muted/10 hover:bg-card hover:border-primary/50 hover:shadow-md transition-all text-muted-foreground hover:text-primary z-20"
         >
-          <ChevronRight className="w-6 h-6 md:w-8 md:h-8" />
+          <ChevronRight className="w-8 h-8" />
+        </Button>
+      </div>
+
+      {/* Mobile Navigation Row (Hidden on Desktop) */}
+      <div className="flex md:hidden items-center justify-center w-full gap-6 mt-6">
+        <Button
+          id="prev-term-btn-mobile"
+          variant="ghost"
+          size="icon"
+          onClick={handlePrev}
+          className="flex-shrink-0 rounded-full w-14 h-14 border border-border/50 bg-muted/10 hover:bg-card hover:border-primary/50 shadow-sm transition-all text-muted-foreground hover:text-primary"
+        >
+          <ChevronLeft className="w-6 h-6" />
+        </Button>
+        <Button
+          id="next-term-btn-mobile"
+          variant="ghost"
+          size="icon"
+          onClick={handleNext}
+          className="flex-shrink-0 rounded-full w-14 h-14 border border-border/50 bg-muted/10 hover:bg-card hover:border-primary/50 shadow-sm transition-all text-muted-foreground hover:text-primary"
+        >
+          <ChevronRight className="w-6 h-6" />
         </Button>
       </div>
     </div>

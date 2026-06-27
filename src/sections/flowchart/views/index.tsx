@@ -336,36 +336,38 @@ export function FlowchartView({
     positionedNodesRef
   });
 
+  const { focusOnNodes, handleZoomIn, handleZoomOut, fitToScreen } = camera;
+
   useEffect(() => {
     if (viewKey === 'STATE_MACHINE') {
       if (highlightedNodeId) {
-        camera.focusOnNodes([highlightedNodeId]);
+        focusOnNodes([highlightedNodeId]);
       }
     } else {
       if (activeNodeIds && activeNodeIds.length > 0) {
-        camera.focusOnNodes(activeNodeIds);
+        focusOnNodes(activeNodeIds);
       }
     }
-  }, [viewKey, activeNodeIds, highlightedNodeId, camera]);
+  }, [viewKey, activeNodeIds, highlightedNodeId, focusOnNodes]);
 
   const hasFocusedRef = useRef(false);
   useEffect(() => {
     if (focusAfterViewSwitch && !hasFocusedRef.current) {
       hasFocusedRef.current = true;
-      camera.focusOnNodes([focusAfterViewSwitch]);
+      focusOnNodes([focusAfterViewSwitch]);
       onCameraFocused?.();
     }
-  }, [focusAfterViewSwitch, camera, onCameraFocused]);
+  }, [focusAfterViewSwitch, focusOnNodes, onCameraFocused]);
 
   useEffect(() => {
     if (onCameraControls) {
       onCameraControls({
-        handleZoomIn: camera.handleZoomIn,
-        handleZoomOut: camera.handleZoomOut,
-        handleFitToScreen: () => camera.fitToScreen(minX, maxX, minY, maxY)
+        handleZoomIn,
+        handleZoomOut,
+        handleFitToScreen: () => fitToScreen(minX, maxX, minY, maxY)
       });
     }
-  }, [camera, onCameraControls, minX, maxX, minY, maxY]);
+  }, [handleZoomIn, handleZoomOut, fitToScreen, onCameraControls, minX, maxX, minY, maxY]);
 
   const particlesRef = useRef<{ id: string, anim: any }[]>([]);
 

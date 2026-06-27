@@ -1,4 +1,4 @@
-import { useState, useCallback, useRef, type ComponentType } from 'react'
+import { useState, useCallback, useRef, forwardRef, type ComponentType } from 'react'
 import { motion, AnimatePresence } from 'motion/react'
 import * as Dialog from '@radix-ui/react-dialog'
 import { ScrollReveal } from '../../components/motion/scroll-reveal'
@@ -36,6 +36,10 @@ const colorAccentMap: Record<string, string> = {
   red: 'var(--ctp-red)',
 }
 
+const MotionDiv = forwardRef<HTMLDivElement, any>((props, ref) => (
+  <motion.div ref={ref} {...props} />
+));
+
 function TaxonomyModal({
   category: propCategory,
   open,
@@ -60,11 +64,11 @@ function TaxonomyModal({
 
   return (
     <Dialog.Root open={open} onOpenChange={onOpenChange}>
-      <Dialog.Portal forceMount>
-        <AnimatePresence>
-          {open && (
+      <AnimatePresence>
+        {open && (
+          <Dialog.Portal forceMount>
             <Dialog.Overlay asChild forceMount key="overlay">
-              <motion.div
+              <MotionDiv
                 className="taxonomy-overlay"
                 data-testid="taxonomy-overlay"
                 initial={{ opacity: 0 }}
@@ -73,8 +77,6 @@ function TaxonomyModal({
                 onClick={() => onOpenChange(false)}
               />
             </Dialog.Overlay>
-          )}
-          {open && (
             <Dialog.Content
               ref={dialogRef}
               className="taxonomy-dialog"
@@ -83,7 +85,7 @@ function TaxonomyModal({
               asChild
               key="content"
             >
-              <motion.div
+              <MotionDiv
                 initial={{ opacity: 0, scale: 0.95, x: '-50%' }}
                 animate={{ opacity: 1, scale: 1, x: '-50%' }}
                 exit={{ opacity: 0, scale: 0.95, x: '-50%' }}
@@ -184,11 +186,11 @@ function TaxonomyModal({
                     </div>
                   </div>
                 </div>
-              </motion.div>
+              </MotionDiv>
             </Dialog.Content>
-          )}
-        </AnimatePresence>
-      </Dialog.Portal>
+          </Dialog.Portal>
+        )}
+      </AnimatePresence>
     </Dialog.Root>
   )
 }
