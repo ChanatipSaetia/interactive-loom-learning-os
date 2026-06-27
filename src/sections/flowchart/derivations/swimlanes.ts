@@ -29,6 +29,9 @@ export function deriveSwimlanes(
       // so the activity view shows where a branch terminates and its handling
       // lane (e.g. MCP Servers, Subagent Pool) stays visible instead of vanishing.
       include = countOutgoingPolicies(schema, id) >= 2 || countOutgoingRelations(schema, id) === 0;
+    } else if (type === TYPES.USER) {
+      // Actors are represented as lanes in the activity view, not as nodes.
+      include = false;
     } else {
       include = !!MASTER_MAPPING_MATRIX[type]?.SWIMLANES;
     }
