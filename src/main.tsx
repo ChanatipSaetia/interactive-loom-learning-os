@@ -16,6 +16,7 @@ import FlashcardDeck from './sections/flashcards'
 
 // Topic registration
 import DemoTopic from './topics/demo'
+import MotorcycleTopic from './topics/motorcycle'
 
 
 SectionRegistry.register('text', TextSection as ComponentType<unknown>)
@@ -25,6 +26,7 @@ SectionRegistry.register('tradeoff-sandbox', TradeoffSandboxSection as Component
 SectionRegistry.register('taxonomy-browser', TaxonomyBrowserSection as ComponentType<unknown>)
 SectionRegistry.register('flashcards', FlashcardDeck as ComponentType<unknown>)
 TopicRegistry.register('demo', DemoTopic)
+TopicRegistry.register('motorcycle', MotorcycleTopic)
 
 
 createRoot(document.getElementById('root')!).render(

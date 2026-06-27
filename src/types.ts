@@ -6,4 +6,9 @@ export interface WordTerm {
   shortDefinition: string;
   detailedDefinition: string;
   whyItMatters: string;
+  dialogue?: {
+    user: string;
+    aiThoughts: string;
+    aiQuestion: string;
+  };
 }

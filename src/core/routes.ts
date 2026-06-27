@@ -1,5 +1,6 @@
 import type { SectionConfig } from './registry'
 import { demoSections } from '../topics/demo/sections'
+import { motorcycleSections } from '../topics/motorcycle/sections'
 
 export interface TopicRoute {
   id: string
@@ -18,5 +19,13 @@ export const routes: TopicRoute[] = [
     category: 'Architecture',
     description: 'Explore AI Agent system architecture with LLM, tools, and memory',
     sections: demoSections,
+  },
+  {
+    id: 'motorcycle',
+    label: 'คู่มือผู้ใช้มอเตอร์ไซค์ (Motorcycle Guide)',
+    path: '/topics/motorcycle',
+    category: 'Mechanical',
+    description: 'เรียนรู้การทำงาน การบำรุงรักษา และการแก้ปัญหาเบื้องต้นของรถมอเตอร์ไซค์',
+    sections: motorcycleSections,
   },
  ]

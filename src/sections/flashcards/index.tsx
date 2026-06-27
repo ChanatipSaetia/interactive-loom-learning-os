@@ -5,65 +5,7 @@ import { ChevronLeft, ChevronRight, RotateCw, Volume2, Terminal, HelpCircle, Mes
 import { Button } from '../../components/motion/button';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '../../components/motion/tabs';
 
-// Generates simulated interactive dialogue for each design term
-const getMockChatForTerm = (id: string, word: string) => {
-  switch (id) {
-    case 'hierarchy':
-      return {
-        user: `I want to design a profile card focusing on ${word}.`,
-        aiThoughts: `Applying ${word} principles. Identifying primary element (Username) and secondary element (Followers). Target contrast ratio: 5.5:1.`,
-        aiQuestion: "Which typography hierarchy fits your brand's density: a bold Swiss modernist style (heavy weights, tight gaps) or a clean minimal layout with high scale contrast?"
-      };
-    case 'whitespace':
-      return {
-        user: `I want to design a form layout focusing on ${word}.`,
-        aiThoughts: `Applying ${word} principles. Removing all unnecessary physical borders. Organizing form fields by vertical spacing flow.`,
-        aiQuestion: "Should I make the container margins ultra-airy and generous (p-8 and space-y-8) or keep it moderately compact for high data visibility?"
-      };
-    case 'contrast':
-      return {
-        user: `I want to design a dark hero section focusing on ${word}.`,
-        aiThoughts: `Applying ${word} principles. Reading background luminance. Setting contrast constraints to WCAG compliance thresholds.`,
-        aiQuestion: "Should we enforce AAA contrast level with pure white elements (#FFFFFF) or should we use an eye-safe, tinted premium slate gray (#E2E8F0)?"
-      };
-    case 'affordance':
-      return {
-        user: `I want to design an action button focusing on ${word}.`,
-        aiThoughts: `Applying ${word} principles. Mapping user focus/hover paths. Designing a spring-physics micro-transition for active states.`,
-        aiQuestion: "Which tactile affordance style do you prefer: a physical scale-down bounce on click (active:scale-95) or an ambient shadow glow on hover?"
-      };
-    case 'consistency':
-      return {
-        user: `I want to design a product list focusing on ${word}.`,
-        aiThoughts: `Applying ${word} principles. Locking corner radiuses to a uniform global standard. Aligning padding on an 8px grid constraint.`,
-        aiQuestion: "What visual motif should we synchronize across the list: completely sharp editorial corners (rounded-none) or subtle modern organic radii (rounded-lg)?"
-      };
-    case 'fluidity':
-      return {
-        user: `I want to design a dashboard grid focusing on ${word}.`,
-        aiThoughts: `Applying ${word} principles. Converting static pixel sizes into proportional viewport units. Setting flex auto-wrap breakpoints.`,
-        aiQuestion: "How should the grid adapt to viewport compression: auto-collapse into single column under 640px, or reflow with a flexible auto-fit container?"
-      };
-    case 'typography':
-      return {
-        user: `I want to design a landing page focusing on ${word}.`,
-        aiThoughts: `Applying ${word} principles. Analyzing headline weight relative to readable copy. Auditing font family combinations.`,
-        aiQuestion: "What brand mood do you want to convey: a high-contrast editorial serif look, or a tech-forward minimalist geometric mono vibe?"
-      };
-    case 'animations':
-      return {
-        user: `I want to design navigation links focusing on ${word}.`,
-        aiThoughts: `Applying ${word} principles. Setting transition durations. Replacing instant visual cuts with smooth physical timing curves.`,
-        aiQuestion: "Do you want these micro-animations to feel snappy and immediate (duration-150 ease-out) or organic and playful (spring-based ease-in-out)?"
-      };
-    default:
-      return {
-        user: `I want to design a layout focusing on ${word}.`,
-        aiThoughts: `Analyzing ${word} guidelines...`,
-        aiQuestion: "Which design direction aligns best with your layout goals?"
-      };
-  }
-};
+
 
 type BackTabId = 'guidelines' | 'dialogue';
 
@@ -83,7 +25,7 @@ export default function FlashcardDeck({ title, terms = [] }: FlashcardDeckProps)
   }
 
   const currentTerm = terms[currentIndex];
-  const simulatedChat = getMockChatForTerm(currentTerm.id, currentTerm.word);
+  const simulatedChat = currentTerm.dialogue;
 
   // Reset back tabs when switching cards
   useEffect(() => {
@@ -154,10 +96,12 @@ export default function FlashcardDeck({ title, terms = [] }: FlashcardDeckProps)
   };
 
   // tabs list config
-  const tabsList = [
-    { id: 'guidelines' as const, label: 'Guidelines', icon: <BookOpen className="w-4 h-4" /> },
-    { id: 'dialogue' as const, label: 'AI Dialogue', icon: <MessageSquare className="w-4 h-4" /> }
+  const tabsList: { id: BackTabId; label: string; icon: JSX.Element }[] = [
+    { id: 'guidelines', label: 'Guidelines', icon: <BookOpen className="w-4 h-4" /> }
   ];
+  if (simulatedChat) {
+    tabsList.push({ id: 'dialogue', label: 'AI Dialogue', icon: <MessageSquare className="w-4 h-4" /> });
+  }
 
   return (
     <div className="flex flex-col w-full h-full max-w-5xl mx-auto" id="flashcard-deck">
@@ -348,42 +292,44 @@ export default function FlashcardDeck({ title, terms = [] }: FlashcardDeckProps)
                           </div>
                         </TabsContent>
 
-                        <TabsContent value="dialogue" className="space-y-6 text-left font-sans mt-0">
-                          {/* Dialogue Simulation (User + AI Alignment) */}
-                          <div className="border border-border bg-muted/10 p-5 rounded-md space-y-6 font-mono text-sm">
-                            <div className="flex items-center space-x-3 border-b border-border pb-3 mb-2">
-                              <MessageSquare className="w-5 h-5 text-primary" />
-                              <span className="text-xs font-bold tracking-widest text-muted-foreground uppercase">Interactive Dialogue Simulation</span>
-                            </div>
-                            
-                            {/* User Prompts */}
-                            <div className="space-y-2">
-                              <span className="text-xs text-primary uppercase tracking-widest font-bold block">● User (General Concept directive):</span>
-                              <div className="pl-4 border-l-2 border-primary/40 text-foreground leading-relaxed">
-                                "{simulatedChat.user}"
+                        {simulatedChat && (
+                          <TabsContent value="dialogue" className="space-y-6 text-left font-sans mt-0">
+                            {/* Dialogue Simulation (User + AI Alignment) */}
+                            <div className="border border-border bg-muted/10 p-5 rounded-md space-y-6 font-mono text-sm">
+                              <div className="flex items-center space-x-3 border-b border-border pb-3 mb-2">
+                                <MessageSquare className="w-5 h-5 text-primary" />
+                                <span className="text-xs font-bold tracking-widest text-muted-foreground uppercase">Interactive Dialogue Simulation</span>
+                              </div>
+                              
+                              {/* User Prompts */}
+                              <div className="space-y-2">
+                                <span className="text-xs text-primary uppercase tracking-widest font-bold block">● User (General Concept directive):</span>
+                                <div className="pl-4 border-l-2 border-primary/40 text-foreground leading-relaxed">
+                                  "{simulatedChat.user}"
+                                </div>
+                              </div>
+
+                              {/* AI Thinks */}
+                              <div className="space-y-2">
+                                <span className="text-xs text-accent-foreground uppercase tracking-widest font-bold block">● AI Reason (Evaluates parameters):</span>
+                                <div className="pl-4 border-l-2 border-border text-muted-foreground italic leading-relaxed">
+                                  {simulatedChat.aiThoughts}
+                                </div>
+                              </div>
+
+                              {/* AI Asks Back to Align */}
+                              <div className="bg-primary/5 border border-primary/20 p-4 rounded-md mt-4">
+                                <span className="text-xs text-primary uppercase tracking-widest font-bold flex items-center mb-2">
+                                  <HelpCircle className="w-4 h-4 mr-2 text-primary" />
+                                  AI Alignment Inquiry (Asks back):
+                                </span>
+                                <p className="text-foreground leading-relaxed font-sans text-base font-medium">
+                                  "{simulatedChat.aiQuestion}"
+                                </p>
                               </div>
                             </div>
-
-                            {/* AI Thinks */}
-                            <div className="space-y-2">
-                              <span className="text-xs text-accent-foreground uppercase tracking-widest font-bold block">● AI Reason (Evaluates parameters):</span>
-                              <div className="pl-4 border-l-2 border-border text-muted-foreground italic leading-relaxed">
-                                {simulatedChat.aiThoughts}
-                              </div>
-                            </div>
-
-                            {/* AI Asks Back to Align */}
-                            <div className="bg-primary/5 border border-primary/20 p-4 rounded-md mt-4">
-                              <span className="text-xs text-primary uppercase tracking-widest font-bold flex items-center mb-2">
-                                <HelpCircle className="w-4 h-4 mr-2 text-primary" />
-                                AI Alignment Inquiry (Asks back):
-                              </span>
-                              <p className="text-foreground leading-relaxed font-sans text-base font-medium">
-                                "{simulatedChat.aiQuestion}"
-                              </p>
-                            </div>
-                          </div>
-                        </TabsContent>
+                          </TabsContent>
+                        )}
                       </div>
                     </Tabs>
                   </div>
