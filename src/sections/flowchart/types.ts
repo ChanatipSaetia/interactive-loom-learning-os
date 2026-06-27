@@ -310,7 +310,8 @@ export interface FlowchartViewConfig {
 export interface UnifiedFlowchartSchema {
   entities: Record<string, FlowchartEntity>;
   relations: FlowchartRelation[];
-  views: Record<string, FlowchartViewConfig>;
+  /** Optional: when absent, views are auto-derived from entities & relations. */
+  views?: Record<string, FlowchartViewConfig>;
   journeys: FlowchartJourney[];
 }
 

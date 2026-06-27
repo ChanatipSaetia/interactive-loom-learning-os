@@ -58,7 +58,7 @@ export function FlowchartView({
   onCameraFocused,
   onCameraControls
 }: FlowchartViewProps) {
-  const view = schema.views[viewKey];
+  const view = schema.views![viewKey];
   const isSequenceView = viewKey === 'SEQUENCE';
 
   const spacing = useMemo(() => {

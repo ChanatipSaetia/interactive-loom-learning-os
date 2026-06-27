@@ -45,15 +45,15 @@ describe('Policy branching mapping (#69)', () => {
     const result = autoDeriveViews(schema);
 
     // Policy should NOT appear in SWIMLANES (linear, 1 outgoing)
-    const swimNodeIds = result.views.SWIMLANES!.nodes.map(n => n.id);
+    const swimNodeIds = result.views!.SWIMLANES!.nodes.map(n => n.id);
     expect(swimNodeIds).not.toContain('pol');
 
     // Policy should NOT appear in DATA_FLOW (linear, 1 outgoing)
-    const dfNodeIds = result.views.DATA_FLOW!.nodes.map(n => n.id);
+    const dfNodeIds = result.views!.DATA_FLOW!.nodes.map(n => n.id);
     expect(dfNodeIds).not.toContain('pol');
 
     // Policy SHOULD still appear in EVENT_STORMING (source of truth)
-    const esNodeIds = result.views.EVENT_STORMING.nodes.map(n => n.id);
+    const esNodeIds = result.views!.EVENT_STORMING.nodes.map(n => n.id);
     expect(esNodeIds).toContain('pol');
 
     // Policy viewTypes should NOT include Decision for SWIMLANES/DATA_FLOW
@@ -93,11 +93,11 @@ describe('Policy branching mapping (#69)', () => {
     const result = autoDeriveViews(schema);
 
     // Policy SHOULD appear in SWIMLANES as Decision (branching, 2 outgoing)
-    const swimNodeIds = result.views.SWIMLANES!.nodes.map(n => n.id);
+    const swimNodeIds = result.views!.SWIMLANES!.nodes.map(n => n.id);
     expect(swimNodeIds).toContain('pol');
 
     // Policy SHOULD appear in DATA_FLOW as Decision (branching, 2 outgoing)
-    const dfNodeIds = result.views.DATA_FLOW!.nodes.map(n => n.id);
+    const dfNodeIds = result.views!.DATA_FLOW!.nodes.map(n => n.id);
     expect(dfNodeIds).toContain('pol');
 
     // Policy viewTypes should include Decision for SWIMLANES/DATA_FLOW
@@ -128,10 +128,10 @@ describe('Policy branching mapping (#69)', () => {
 
     const result = autoDeriveViews(schema);
 
-    const swimNodeIds = result.views.SWIMLANES!.nodes.map(n => n.id);
+    const swimNodeIds = result.views!.SWIMLANES!.nodes.map(n => n.id);
     expect(swimNodeIds).not.toContain('pol');
 
-    const dfNodeIds = result.views.DATA_FLOW!.nodes.map(n => n.id);
+    const dfNodeIds = result.views!.DATA_FLOW!.nodes.map(n => n.id);
     expect(dfNodeIds).not.toContain('pol');
   });
 
@@ -159,12 +159,12 @@ describe('Policy branching mapping (#69)', () => {
     const result = autoDeriveViews(schema);
 
     // Command maps to Process in SWIMLANES regardless of outgoing count
-    const swimNodeIds = result.views.SWIMLANES!.nodes.map(n => n.id);
+    const swimNodeIds = result.views!.SWIMLANES!.nodes.map(n => n.id);
     expect(swimNodeIds).toContain('cmd');
     expect(swimNodeIds).toContain('agg');
 
     // User always appears in DATA_FLOW
-    const dfNodeIds = result.views.DATA_FLOW!.nodes.map(n => n.id);
+    const dfNodeIds = result.views!.DATA_FLOW!.nodes.map(n => n.id);
     expect(dfNodeIds).toContain('user');
   });
 });
@@ -212,13 +212,13 @@ describe('Dynamic layout (#68)', () => {
 
       const result = autoDeriveViews(schema);
 
-      expect(result.views.SYS_ARCH?.layoutInfo).toBeDefined();
-      expect(result.views.SWIMLANES?.layoutInfo).toBeDefined();
-      expect(result.views.SEQUENCE?.layoutInfo).toBeDefined();
-      expect(result.views.DATA_FLOW?.layoutInfo).toBeDefined();
+      expect(result.views!.SYS_ARCH?.layoutInfo).toBeDefined();
+      expect(result.views!.SWIMLANES?.layoutInfo).toBeDefined();
+      expect(result.views!.SEQUENCE?.layoutInfo).toBeDefined();
+      expect(result.views!.DATA_FLOW?.layoutInfo).toBeDefined();
 
-      expect(result.views.EVENT_STORMING.layoutInfo).toBeDefined();
-      expect(result.views.EVENT_STORMING.layoutInfo!.nodeCount).toBe(5);
+      expect(result.views!.EVENT_STORMING.layoutInfo).toBeDefined();
+      expect(result.views!.EVENT_STORMING.layoutInfo!.nodeCount).toBe(5);
     });
 
     it('layoutInfo rowCount and colCount reflect grid dimensions', () => {
@@ -258,7 +258,7 @@ describe('Dynamic layout (#68)', () => {
       );
 
       const result = autoDeriveViews(schema);
-      const info = result.views.EVENT_STORMING.layoutInfo!;
+      const info = result.views!.EVENT_STORMING.layoutInfo!;
 
       expect(info.colCount).toBeGreaterThanOrEqual(9);
       expect(info.rowCount).toBeGreaterThanOrEqual(1);
@@ -292,7 +292,7 @@ describe('Dynamic layout (#68)', () => {
       );
 
       const result = autoDeriveViews(schema);
-      const esNodes = result.views.EVENT_STORMING.nodes;
+      const esNodes = result.views!.EVENT_STORMING.nodes;
       const nodeMap = new Map(esNodes.map(n => [n.id, n.grid]));
 
       // DB should be at row 0
@@ -337,7 +337,7 @@ describe('Dynamic layout (#68)', () => {
 
       const schema = baseSchema(entities, relations, nodes);
       const result = autoDeriveViews(schema);
-      const info = result.views.EVENT_STORMING.layoutInfo!;
+      const info = result.views!.EVENT_STORMING.layoutInfo!;
 
       // With 9 timeline nodes in a chain, rows should expand dynamically
       expect(info.rowCount).toBeGreaterThanOrEqual(2);
@@ -366,7 +366,7 @@ describe('Dynamic layout (#68)', () => {
       );
 
       const result = autoDeriveViews(schema);
-      const esNodes = result.views.EVENT_STORMING.nodes;
+      const esNodes = result.views!.EVENT_STORMING.nodes;
       const nodeMap = new Map(esNodes.map(n => [n.id, n.grid!]));
 
       // Columns should increase along the chain
@@ -415,13 +415,13 @@ describe('Dynamic layout (#68)', () => {
       );
 
       const result = autoDeriveViews(schema);
-      const sysNodes = result.views.SYS_ARCH!.nodes;
+      const sysNodes = result.views!.SYS_ARCH!.nodes;
       const rowValues = sysNodes.map(n => n.grid![1]);
       const maxRow = Math.max(...rowValues);
 
       // With reduced gap of 1, check that the row indices layout correctly
       expect(maxRow).toBeGreaterThanOrEqual(2);
-      expect(result.views.SYS_ARCH!.layoutInfo!.rowCount).toBeGreaterThan(2);
+      expect(result.views!.SYS_ARCH!.layoutInfo!.rowCount).toBeGreaterThan(2);
     });
 
     it('places users to the left of other nodes in SYS_ARCH', () => {
@@ -443,7 +443,7 @@ describe('Dynamic layout (#68)', () => {
       );
 
       const result = autoDeriveViews(schema);
-      const sysNodes = result.views.SYS_ARCH!.nodes;
+      const sysNodes = result.views!.SYS_ARCH!.nodes;
       const nodeMap = new Map(sysNodes.map(n => [n.id, n.grid!]));
 
       const userCol = nodeMap.get('user')?.[0];
@@ -478,7 +478,7 @@ describe('Dynamic layout (#68)', () => {
       );
 
       const result = autoDeriveViews(schema);
-      const swimNodes = result.views.SWIMLANES!.nodes;
+      const swimNodes = result.views!.SWIMLANES!.nodes;
       const nodeMap = new Map(swimNodes.map(n => [n.id, n.grid!]));
 
       const userCol = nodeMap.get('user')?.[0];
@@ -512,7 +512,7 @@ describe('Dynamic layout (#68)', () => {
       );
 
       const result = autoDeriveViews(schema);
-      const seqNodes = result.views.SEQUENCE!.nodes;
+      const seqNodes = result.views!.SEQUENCE!.nodes;
 
       seqNodes.forEach(n => {
         expect(n.grid![1]).toBe(0);
@@ -538,7 +538,7 @@ describe('Dynamic layout (#68)', () => {
       );
 
       const result = autoDeriveViews(schema);
-      const seqNodes = result.views.SEQUENCE!.nodes;
+      const seqNodes = result.views!.SEQUENCE!.nodes;
       const nodeMap = new Map(seqNodes.map(n => [n.id, n.grid!]));
 
       const userCol = nodeMap.get('user')?.[0];
@@ -573,7 +573,7 @@ describe('Dynamic layout (#68)', () => {
       );
 
       const result = autoDeriveViews(schema);
-      const dfNodes = result.views.DATA_FLOW!.nodes;
+      const dfNodes = result.views!.DATA_FLOW!.nodes;
       const nodeMap = new Map(dfNodes.map(n => [n.id, n.grid!]));
 
       const userRow = nodeMap.get('user')?.[1];
@@ -604,7 +604,7 @@ describe('Dynamic layout (#68)', () => {
       );
 
       const result = autoDeriveViews(schema);
-      const dfNodes = result.views.DATA_FLOW!.nodes;
+      const dfNodes = result.views!.DATA_FLOW!.nodes;
       const nodeMap = new Map(dfNodes.map(n => [n.id, n.grid!]));
 
       const userCol = nodeMap.get('user')?.[0];
@@ -646,7 +646,7 @@ describe('Dynamic layout (#68)', () => {
 
       // Check each derived view for no overlapping nodes within the same column
       ['SYS_ARCH', 'SWIMLANES', 'DATA_FLOW'].forEach(viewKey => {
-        const view = result.views[viewKey as keyof typeof result.views];
+        const view = result.views![viewKey];
         if (!view) return;
 
         const colRows = new Map<number, Set<number>>();

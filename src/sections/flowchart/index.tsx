@@ -73,7 +73,7 @@ export function Flowchart({ title, schema = INITIAL_SCHEMA }: FlowchartProps) {
     setLocalSchema(autoDeriveViews(schema));
   }, [schema]);
 
-  const viewKeys = useMemo(() => Object.keys(localSchema.views), [localSchema]);
+  const viewKeys = useMemo(() => Object.keys(localSchema.views!!), [localSchema]);
   const [activeViewKey, setActiveViewKey] = useState<string>(viewKeys[0] || 'EVENT_STORMING');
 
   useEffect(() => {
@@ -83,9 +83,10 @@ export function Flowchart({ title, schema = INITIAL_SCHEMA }: FlowchartProps) {
   }, [viewKeys, activeViewKey]);
 
   const activeView = useMemo(() => {
-    return (localSchema.views as Record<string, typeof localSchema.views[keyof typeof localSchema.views]>)[activeViewKey] || { name: 'Empty', icon: 'Workflow', nodes: [], groups: [] };
+    const views = localSchema.views!;
+    return (views as Record<string, typeof views[keyof typeof views]>)[activeViewKey] || { name: 'Empty', icon: 'Workflow', nodes: [], groups: [] };
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [localSchema.views, activeViewKey]);
+  }, [localSchema.views!, activeViewKey]);
 
   // Popup state for node related views
   const [activeNodePopup, setActiveNodePopup] = useState<{
@@ -234,7 +235,7 @@ export function Flowchart({ title, schema = INITIAL_SCHEMA }: FlowchartProps) {
   }, [localSchema, playback.currentJourneyId, playback.currentStep]);
 
   const activeStateMachineAggregateId = useMemo(() => {
-    const smView = localSchema.views.STATE_MACHINE;
+    const smView = localSchema.views!.STATE_MACHINE;
     if (smView) {
       // Find the node ID in the STATE_MACHINE view that does NOT contain "_state_" (which is the subject Aggregate node itself)
       const aggNode = smView.nodes.find(n => !n.id.includes('_state_'));
@@ -243,12 +244,12 @@ export function Flowchart({ title, schema = INITIAL_SCHEMA }: FlowchartProps) {
     // Fallback: check static entities
     const firstWithSM = Object.entries(localSchema.entities).find(([, entity]) => !!entity.stateMachine);
     return firstWithSM ? firstWithSM[0] : null;
-  }, [localSchema.views, localSchema.entities]);
+  }, [localSchema.views!, localSchema.entities]);
 
   const highlightedNodeId = useMemo(() => {
     if (activeViewKey === 'STATE_MACHINE' && activeStateMachineAggregateId) {
       // Find all state nodes in the view. We want to fall back to the initial one if activeStateId is not set.
-      const smView = localSchema.views.STATE_MACHINE;
+      const smView = localSchema.views!.STATE_MACHINE;
       if (smView) {
         const stateNodes = smView.nodes.filter(n => n.id.includes('_state_')) || [];
         const activeState = activeStateId || (stateNodes[0] ? stateNodes[0].id.replace(`${activeStateMachineAggregateId}_state_`, '') : 'IDLE');
@@ -264,7 +265,7 @@ export function Flowchart({ title, schema = INITIAL_SCHEMA }: FlowchartProps) {
       }
     }
     return playback.highlightedNodeId;
-  }, [activeViewKey, activeStateMachineAggregateId, activeStateId, playback.highlightedNodeId, localSchema.views, localSchema.entities]);
+  }, [activeViewKey, activeStateMachineAggregateId, activeStateId, playback.highlightedNodeId, localSchema.views!, localSchema.entities]);
 
   const [prevHighlightedNodeId, setPrevHighlightedNodeId] = useState<string | null>(null);
   const lastHighlightedId = useRef<string | null>(null);
@@ -333,14 +334,14 @@ export function Flowchart({ title, schema = INITIAL_SCHEMA }: FlowchartProps) {
      }
 
     const otherViews = Object.keys(entity.viewTypes || {})
-      .filter(vk => vk !== activeViewKey && localSchema.views[vk])
+      .filter(vk => vk !== activeViewKey && localSchema.views![vk])
       .map(vk => ({
         key: vk,
-        name: localSchema.views[vk].name,
+        name: localSchema.views![vk].name,
         type: entity.viewTypes?.[vk] || ''
       }));
 
-    const smView = localSchema.views.STATE_MACHINE;
+    const smView = localSchema.views!.STATE_MACHINE;
     const aggNode = smView?.nodes.find(n => !n.id.includes('_state_'));
     const isSmSubject = (aggNode && aggNode.id === canonicalId) || !!entity.stateMachine;
 
@@ -367,7 +368,7 @@ export function Flowchart({ title, schema = INITIAL_SCHEMA }: FlowchartProps) {
         });
       }
     }
-  }, [activeViewKey, localSchema.entities, localSchema.views, isFullscreen, sidebarManuallyClosed]);
+  }, [activeViewKey, localSchema.entities, localSchema.views!, isFullscreen, sidebarManuallyClosed]);
 
   const handleStepClick = (step: FlowchartStepLinear | FlowchartStepBranchOption) => {
     if (activeStep?.id === step.id) {
@@ -402,7 +403,7 @@ export function Flowchart({ title, schema = INITIAL_SCHEMA }: FlowchartProps) {
 
   const actionBarItems = useMemo(() => {
     return visibleViewKeys.map(vk => {
-      const view = localSchema.views[vk];
+      const view = localSchema.views![vk];
       const name = view?.name || vk;
       
       let IconComponent: ComponentType<{ size?: number | string; className?: string }> = Workflow;
@@ -426,7 +427,7 @@ export function Flowchart({ title, schema = INITIAL_SCHEMA }: FlowchartProps) {
         onClick: () => setActiveViewKey(vk)
       };
     });
-  }, [visibleViewKeys, localSchema.views, activeViewKey]);
+  }, [visibleViewKeys, localSchema.views!, activeViewKey]);
 
   const dockTabs = useMemo<ExpandableTabItem[]>(() => {
     const tabs: ExpandableTabItem[] = [];

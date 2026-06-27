@@ -86,7 +86,7 @@ describe('Issue #56: E-Commerce Order Processing Topic', () => {
 
   it('schema has all 5 views', () => {
     const compiledSchema = autoDeriveViews(orderSchema)
-    const viewNames = Object.keys(compiledSchema.views)
+    const viewNames = Object.keys(compiledSchema.views!)
     expect(viewNames).toContain('EVENT_STORMING')
     expect(viewNames).toContain('SYS_ARCH')
     expect(viewNames).toContain('DATA_FLOW')
@@ -173,7 +173,7 @@ describe('Issue #56: E-Commerce Order Processing Topic', () => {
   })
 
   it('EVENT_STORMING view has 4 groups', () => {
-    const esView = orderSchema.views.EVENT_STORMING
+    const esView = orderSchema.views!.EVENT_STORMING
     expect(esView.groups.length).toBe(4)
     const groupTitles = esView.groups.map((g) => g.title)
     expect(groupTitles).toContain('Checkout & Inventory')
@@ -184,7 +184,7 @@ describe('Issue #56: E-Commerce Order Processing Topic', () => {
 
   it('SWIMLANES view has dynamic per-entity lane groups', () => {
     const compiledSchema = autoDeriveViews(orderSchema)
-    const slView = compiledSchema.views.SWIMLANES
+    const slView = compiledSchema.views!.SWIMLANES
     expect(slView).toBeDefined()
     expect(slView.groups.length).toBe(6)
     slView.groups.forEach(g => {

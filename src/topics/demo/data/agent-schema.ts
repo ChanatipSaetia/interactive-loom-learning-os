@@ -237,6 +237,11 @@ export const agentSchema: UnifiedFlowchartSchema = {
       title: 'Trigger Evaluation',
       desc: 'Send execution output back to LLM or wait for feedback.',
       type: TYPES.POLICY
+    },
+    'pol_qa_review': {
+      title: 'Trigger QA Review',
+      desc: 'When task completes, submit output for quality assurance review.',
+      type: TYPES.POLICY
     }
   },
   relations: [
@@ -296,79 +301,15 @@ export const agentSchema: UnifiedFlowchartSchema = {
 
 
     // Different Actor: QA Review (Requirement #4)
-    { id: 'r30', from: 'evt_done', to: 'qa_user', views: ['EVENT_STORMING'], label: 'Ready for QA' },
-    { id: 'r31', from: 'qa_user', to: 'cmd_review_result', views: ['EVENT_STORMING'] },
-    { id: 'r32', from: 'cmd_review_result', to: 'orch_qa_ref', handledBy: true, views: ['EVENT_STORMING'] },
+    { id: 'r30', from: 'evt_done', to: 'pol_qa_review', views: ['EVENT_STORMING'] },
+    { id: 'r30a', from: 'pol_qa_review', to: 'cmd_review_result', views: ['EVENT_STORMING'] },
+    { id: 'r30b', from: 'cmd_review_result', to: 'orch_qa_ref', handledBy: true, views: ['EVENT_STORMING'] },
+    { id: 'r30c', from: 'cmd_review_result', to: 'qa_user', views: ['EVENT_STORMING'], label: 'Ready for QA' },
     
     // Branching at QA
     { id: 'r33', from: 'orch_qa_ref', to: 'evt_qa_approved', views: ['EVENT_STORMING'], label: 'Approve' },
     { id: 'r34', from: 'orch_qa_ref', to: 'evt_qa_rejected', views: ['EVENT_STORMING'], label: 'Reject' }
   ],
-  views: {
-    EVENT_STORMING: {
-      name: 'Event Storming',
-      icon: 'Component',
-      nodes: [
-        { id: 'dev_user', grid: [0, 1] },
-        { id: 'cmd_run_agent', grid: [1, 1] },
-        { id: 'orch_agent', grid: [2, 1] },
-        
-        { id: 'evt_started', grid: [3, 1] },
-        { id: 'evt_session_created', grid: [3, 2] },
-        
-        { id: 'pol_plan', grid: [4, 1] },
-        { id: 'cmd_call_llm', grid: [5, 1] },
-        { id: 'llm_reason_ref', grid: [6, 1] },
-        { id: 'evt_reasoned', grid: [7, 1] },
-        
-        // Branch A: Tools
-        { id: 'pol_route', grid: [8, 0] },
-        { id: 'cmd_execute_tool', grid: [9, 0] },
-        { id: 'tools_ref', grid: [10, 0] },
-        { id: 'mcp_servers', grid: [10, -1] },
-        { id: 'subagents', grid: [10, -2] },
-        
-        { id: 'evt_tool_executed', grid: [11, 0] },
-        { id: 'evt_mcp_called', grid: [11, -1] },
-        { id: 'evt_subagent_spawned', grid: [11, -2] },
-        
-        { id: 'pol_eval', grid: [12, 0] },
-        
-        // Same Actor feedback
-        { id: 'pol_notify_user', grid: [12, 2] },
-        { id: 'cmd_send_message', grid: [13, 2] },
-        { id: 'orch_notify_ref', grid: [14, 2] },
-        { id: 'evt_message_sent', grid: [15, 2] },
-
-        { id: 'dev_user_ref', grid: [15, 2] },
-        { id: 'cmd_provide_feedback', grid: [16, 2] },
-        { id: 'orch_plan_ref', grid: [17, 2] },
-        { id: 'evt_feedback_received', grid: [18, 2] },
-
-        // Branch B: Direct Complete
-        { id: 'pol_complete', grid: [8, 3] },
-        
-        // Completion
-        { id: 'cmd_complete', grid: [13, 1] },
-        { id: 'llm_final_ref', grid: [14, 1] },
-        { id: 'evt_done', grid: [15, 1] },
-
-        
-        // QA
-        { id: 'qa_user', grid: [16, 1] },
-        { id: 'cmd_review_result', grid: [17, 1] },
-        { id: 'orch_qa_ref', grid: [18, 1] },
-        { id: 'evt_qa_approved', grid: [19, 0] },
-        { id: 'evt_qa_rejected', grid: [19, 2] }
-      ],
-      groups: [
-        { id: 'g1', title: 'Initialization', desc: 'Sets up task and context.', nodeIds: ['dev_user', 'cmd_run_agent', 'orch_agent', 'evt_started', 'evt_session_created'], color: 'rgba(140, 170, 238, 0.12)', borderColor: 'var(--ctp-blue)', textColor: 'var(--ctp-text)' },
-        { id: 'g2', title: 'Cognition & Actions Loop', desc: 'LLM reasoning and branching.', nodeIds: ['pol_plan', 'cmd_call_llm', 'llm_reason_ref', 'evt_reasoned', 'pol_route', 'cmd_execute_tool', 'tools_ref', 'mcp_servers', 'subagents', 'evt_tool_executed', 'evt_mcp_called', 'evt_subagent_spawned', 'pol_eval'], color: 'rgba(244, 184, 228, 0.12)', borderColor: 'var(--ctp-pink)', textColor: 'var(--ctp-text)' },
-        { id: 'g3', title: 'Feedback & Completion', desc: 'User feedback loop and final output generation.', nodeIds: ['pol_notify_user', 'cmd_send_message', 'orch_notify_ref', 'evt_message_sent', 'dev_user_ref', 'cmd_provide_feedback', 'orch_plan_ref', 'evt_feedback_received', 'pol_complete', 'cmd_complete', 'llm_final_ref', 'evt_done'], color: 'rgba(166, 218, 149, 0.12)', borderColor: 'var(--ctp-green)', textColor: 'var(--ctp-text)' },
-        { id: 'g4', title: 'QA Review', desc: 'Different actor reviews the result.', nodeIds: ['qa_user', 'cmd_review_result', 'orch_qa_ref', 'evt_qa_approved', 'evt_qa_rejected'], color: 'rgba(237, 135, 150, 0.12)', borderColor: 'var(--ctp-red)', textColor: 'var(--ctp-text)' }
-      ]
-    }
-  },
   journeys: [
     {
       id: 'happy-path',

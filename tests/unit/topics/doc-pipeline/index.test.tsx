@@ -86,7 +86,7 @@ describe('Issue #55: Doc Pipeline Topic', () => {
 
   it('doc-pipeline schema has all 5 views', () => {
     const compiledSchema = autoDeriveViews(docPipelineSchema)
-    const viewNames = Object.keys(compiledSchema.views)
+    const viewNames = Object.keys(compiledSchema.views!)
     expect(viewNames).toContain('EVENT_STORMING')
     expect(viewNames).toContain('SYS_ARCH')
     expect(viewNames).toContain('DATA_FLOW')

@@ -555,7 +555,7 @@ describe('Flowchart auto-derivation engine', () => {
     console.log(pathList);
     console.log('--- SYS_ARCH DERIVED NODES ---');
     import('../../../../src/sections/flowchart/derivations').then(({ autoDeriveViews }) => {
-      console.log(JSON.stringify(autoDeriveViews(agentSchema).views.SYS_ARCH?.nodes, null, 2));
+      console.log(JSON.stringify(autoDeriveViews(agentSchema).views!.SYS_ARCH?.nodes, null, 2));
     });
   });
 

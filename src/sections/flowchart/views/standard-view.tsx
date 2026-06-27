@@ -268,7 +268,7 @@ export const StandardView = memo(function StandardView({
           ? (Icons as unknown as Record<string, React.ComponentType<{ size?: number; className?: string; color?: string }>>)[iconName]
           : null;
         
-        const hasLinks = Object.keys(entity.viewTypes || {}).filter(vk => vk !== viewKey && schema.views[vk]).length > 0;
+        const hasLinks = Object.keys(entity.viewTypes || {}).filter(vk => vk !== viewKey && schema.views![vk]).length > 0;
 
         return (
           <g

@@ -11,7 +11,18 @@ import { deriveStateMachine } from './state-machine';
 export function autoDeriveViews(schema: UnifiedFlowchartSchema): UnifiedFlowchartSchema {
   let mutableEntities = { ...schema.entities };
   let mutableRelations = [...schema.relations];
-  let mutableViews = { ...schema.views };
+  let mutableViews = { ...(schema.views || {}) };
+
+  // Auto-generate EVENT_STORMING view from entities if not provided
+  if (!mutableViews.EVENT_STORMING) {
+    const entityIds = Object.keys(mutableEntities);
+    mutableViews.EVENT_STORMING = {
+      name: 'Event Storming',
+      icon: 'Component',
+      nodes: entityIds.map(id => ({ id })),
+      groups: []
+    };
+  }
 
   if (mutableViews.EVENT_STORMING) {
     const view = mutableViews.EVENT_STORMING;

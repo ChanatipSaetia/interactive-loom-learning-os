@@ -215,7 +215,7 @@ export function generateDynamicSwimlaneGroups(
   esNodes?: FlowchartViewNode[]
 ): FlowchartViewGroup[] {
   const nodeIds = laidOutSwimNodes.map(n => n.id);
-  const resolvedEsNodes = esNodes || schema.views.EVENT_STORMING?.nodes;
+  const resolvedEsNodes = esNodes || schema.views!.EVENT_STORMING?.nodes;
   const sortedLanes = getSortedActiveLanes(schema.entities, schema.relations, resolvedEsNodes, nodeIds);
   const laneYMap = computeLaneYAssignments(sortedLanes);
 

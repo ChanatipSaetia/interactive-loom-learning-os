@@ -36,7 +36,7 @@ export function InspectorSidebar({
   const [activeTab, setActiveTab] = useState<InspectorTab>('details');
 
   const smEntities = useMemo(() => {
-    const smView = schema.views?.STATE_MACHINE;
+    const smView = schema.views!?.STATE_MACHINE;
     if (smView) {
       // Find the aggregate node (non state-node)
       const aggNode = smView.nodes.find(n => !n.id.includes('_state_'));
@@ -77,7 +77,7 @@ export function InspectorSidebar({
       }
     }
     return result;
-  }, [schema.entities, schema.views]);
+  }, [schema.entities, schema.views!]);
 
   const [internalAggregateId, setInternalAggregateId] = useState<string | null>(null);
   const resolvedAggregateId = controlledAggregateId !== undefined
@@ -172,17 +172,17 @@ export function InspectorSidebar({
     const viewTypes = detailsEntity.viewTypes || {};
     return Object.keys(viewTypes)
       .filter(vk => {
-        if (!schema.views[vk]) return false;
+        if (!schema.views![vk]) return false;
         if (vk === 'STATE_MACHINE') return false;
         return true;
       })
       .map(vk => ({
         key: vk,
-        name: schema.views[vk].name,
+        name: schema.views![vk].name,
         titleInView: detailsEntity.viewTitles?.[vk] || detailsEntity.title,
         typeInView: viewTypes[vk]
       }));
-  }, [detailsEntity, schema.views, onSwitchView]);
+  }, [detailsEntity, schema.views!, onSwitchView]);
 
   const tabs: { id: InspectorTab; label: string }[] = [
     { id: 'details', label: 'Details' },
@@ -198,7 +198,7 @@ export function InspectorSidebar({
 
   // A state can link to the STATE_MACHINE view when that view exists and a
   // state-machine aggregate is selected.
-  const canLinkToStateMachine = !!onSwitchView && !!schema.views['STATE_MACHINE'] && !!resolvedAggregateId;
+  const canLinkToStateMachine = !!onSwitchView && !!schema.views!['STATE_MACHINE'] && !!resolvedAggregateId;
 
   const handleStateClick = (stateId: string) => {
     if (!onSwitchView || !resolvedAggregateId) return;

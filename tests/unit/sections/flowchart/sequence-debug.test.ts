@@ -5,7 +5,7 @@ import { agentSchema } from '../../../../src/topics/demo/data/agent-schema';
 describe('Sequence Debug', () => {
   it('logs sequence relations', () => {
     const result = autoDeriveViews(agentSchema);
-    const seqView = result.views.SEQUENCE!;
+    const seqView = result.views!.SEQUENCE!;
     console.log('=== SEQUENCE COLUMNS ===');
     console.log(seqView.nodes.map(n => ({ id: n.id, grid: n.grid })));
     
