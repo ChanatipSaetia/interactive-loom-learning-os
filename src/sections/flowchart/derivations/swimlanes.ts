@@ -113,6 +113,22 @@ function findHandlingEntity(
     return getCollapsedId(nodeId);
   }
 
+  // An activity wired directly to a USER actor belongs in that actor's lane —
+  // the user is who performs (or receives) the activity. This takes priority
+  // over the deeper handler search so e.g. "Review Result" sits in the QA
+  // Engineer lane rather than the upstream LLM lane it descends from.
+  const directUser = relations.find(r => {
+    const isES = !r.views || r.views.includes('EVENT_STORMING');
+    if (!isES) return false;
+    if (r.from === nodeId && getEntityType(entities[r.to]) === TYPES.USER) return true;
+    if (r.to === nodeId && getEntityType(entities[r.from]) === TYPES.USER) return true;
+    return false;
+  });
+  if (directUser) {
+    const userId = directUser.from === nodeId ? directUser.to : directUser.from;
+    return getCollapsedId(userId);
+  }
+
   let queue: { id: string; depth: number }[] = [{ id: nodeId, depth: 0 }];
   let visited = new Set<string>([nodeId]);
 
