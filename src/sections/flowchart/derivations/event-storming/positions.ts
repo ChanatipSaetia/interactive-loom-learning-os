@@ -45,27 +45,33 @@ export function calculatePositions(
     rootGroupIdx = inDegreeZero ?? (groups.length > 0 ? 0 : -1);
   }
 
-  // BFS from root to calculate depth. Guard the degenerate case where there
-  // are no groups at all (e.g. views with no command/timeline nodes), so we
-  // never seed the queue with an index that is absent from groupChildren.
+  // Calculate each group's depth (its column) as the LONGEST path from the
+  // root, not the shortest. A group reachable by both a short and a long path
+  // (e.g. "Complete Task", which the root can reach directly but which also
+  // sits downstream of the tool/MCP branches) must be drawn to the right of
+  // ALL of its ancestors. Shortest-path (BFS first-visit) depth pulled such
+  // groups left, overlapping them onto earlier columns.
   const groupDepth = new Map<number, number>();
   if (rootGroupIdx >= 0 && groupChildren.has(rootGroupIdx)) {
-    const visited = new Set<number>();
-    const queue: number[] = [rootGroupIdx];
-    visited.add(rootGroupIdx);
-    groupDepth.set(rootGroupIdx, 0);
+    groupOrder.forEach(gi => groupDepth.set(gi, 0));
 
-    while (queue.length > 0) {
-      const gi = queue.shift()!;
-      const depth = groupDepth.get(gi)!;
+    // Longest-path DFS from the root. Each group's depth is the maximum number
+    // of edges along any acyclic path from the root, so a group always sits to
+    // the right of every ancestor. Edges leading back to a group already on the
+    // current DFS path are cycle back-edges and are skipped, which keeps the
+    // longest *simple* path finite even though the flow contains feedback loops.
+    const onPath = new Set<number>();
+    const visit = (gi: number, depth: number) => {
+      if (onPath.has(gi)) return;            // back-edge into current path
+      if (depth <= (groupDepth.get(gi) ?? -1) && depth !== 0) return; // no deeper path found
+      groupDepth.set(gi, depth);
+      onPath.add(gi);
       for (const child of groupChildren.get(gi) ?? []) {
-        if (!visited.has(child)) {
-          visited.add(child);
-          groupDepth.set(child, depth + 1);
-          queue.push(child);
-        }
+        visit(child, depth + 1);
       }
-    }
+      onPath.delete(gi);
+    };
+    visit(rootGroupIdx, 0);
   }
 
   // Assign depth to unvisited groups (disconnected components)
