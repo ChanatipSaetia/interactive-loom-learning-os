@@ -24,6 +24,7 @@ export const SequenceView = memo(function SequenceView({
 }: SequenceViewProps) {
   const [tooltip, setTooltip] = useState<{ description: string; x: number; y: number } | null>(null);
   const [hoveredEdgeId, setHoveredEdgeId] = useState<string | null>(null);
+  const [hoveredEdgeNodeIds, setHoveredEdgeNodeIds] = useState<string[] | null>(null);
 
   const seqRelations = useMemo(
     () => schema.relations.filter(r => r.views?.includes('SEQUENCE')),
@@ -160,12 +161,14 @@ export const SequenceView = memo(function SequenceView({
             style={{ transition: 'opacity 0.3s' }}
             onMouseEnter={() => {
               setHoveredEdgeId(edgeId);
+              setHoveredEdgeNodeIds([rel.from, rel.to]);
               if (rel.label) {
                 setTooltip({ description: rel.label, x: isSelf ? x1 + 40 : midX, y });
               }
             }}
             onMouseLeave={() => {
               setHoveredEdgeId(null);
+              setHoveredEdgeNodeIds(null);
               setTooltip(null);
             }}
             data-testid={`flowchart-seq-msg-${viewKey}-${idx}`}
@@ -294,8 +297,9 @@ export const SequenceView = memo(function SequenceView({
           ? (Icons as unknown as Record<string, React.ComponentType<{ size?: number; className?: string; color?: string }>>)[iconName]
           : null;
 
-        const isHighlighted = (activeNodeIds && activeNodeIds.includes(nodeId)) || (highlightedNodeId === nodeId);
-        const isDimmed = activeNodeIds !== null && !isHighlighted;
+        const isHoveredNode = hoveredEdgeNodeIds && hoveredEdgeNodeIds.includes(nodeId);
+        const isHighlighted = (activeNodeIds && activeNodeIds.includes(nodeId)) || isHoveredNode || (highlightedNodeId === nodeId);
+        const isDimmed = activeNodeIds !== null && !isHighlighted && hoveredEdgeId === null;
 
         const colX = colIdx * COL_W + START_X;
         const x = colX - NODE_W / 2;

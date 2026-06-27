@@ -41,6 +41,7 @@ export const StandardView = memo(function StandardView({
 
   const [tooltip, setTooltip] = useState<{ description: string; x: number; y: number } | null>(null);
   const [hoveredEdgeId, setHoveredEdgeId] = useState<string | null>(null);
+  const [hoveredEdgeNodeIds, setHoveredEdgeNodeIds] = useState<string[] | null>(null);
 
   return (
     <>
@@ -163,6 +164,7 @@ export const StandardView = memo(function StandardView({
             style={{ transition: 'opacity 0.3s' }}
             onMouseEnter={() => {
               setHoveredEdgeId(edgeId);
+              setHoveredEdgeNodeIds([rel.from, rel.to]);
               if (labelText || isHandledBy) {
                 const desc = isHandledBy ? 'Handled by orchestrator runtime process flow.' : labelText;
                 if (desc) setTooltip({ description: desc, x: midX || 0, y: midY || 0 });
@@ -170,6 +172,7 @@ export const StandardView = memo(function StandardView({
             }}
             onMouseLeave={() => {
               setHoveredEdgeId(null);
+              setHoveredEdgeNodeIds(null);
               setTooltip(null);
             }}
           >
@@ -252,8 +255,9 @@ export const StandardView = memo(function StandardView({
         const x = (node.x || 0) - nW / 2;
         const y = (node.y || 0) - nH / 2;
         const isStepHighlighted = activeNodeIds && activeNodeIds.includes(node.id);
-        const isHighlighted = isStepHighlighted || (highlightedNodeId === node.id);
-        const isDimmed = activeNodeIds !== null && !isHighlighted;
+        const isHoveredNode = hoveredEdgeNodeIds && hoveredEdgeNodeIds.includes(node.id);
+        const isHighlighted = isStepHighlighted || isHoveredNode || (highlightedNodeId === node.id);
+        const isDimmed = activeNodeIds !== null && !isHighlighted && hoveredEdgeId === null;
         
         const nodeFill = entity.color || (COLORS as any)[viewType as keyof typeof COLORS] || COLORS.default;
         const strokeColor = entity.strokeColor || BORDER_COLORS[viewType as keyof typeof BORDER_COLORS] || BORDER_COLORS.default;
