@@ -1,4 +1,5 @@
 import type { SectionConfig } from '../../core/registry'
+import { VOCABULARY_TERMS } from './data/aesthetics-glossary'
 import {
   agentSchema,
   agentTextParagraphs,
@@ -51,6 +52,12 @@ export const demoSections: SectionConfig[] = [
     props: {
       title: 'AI Agent Capability Taxonomy',
       categories: taxonomyCategories,
+    },
+  },
+  {
+    type: 'flashcards',
+    props: {
+      terms: VOCABULARY_TERMS,
     },
   },
 ]

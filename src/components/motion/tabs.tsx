@@ -10,6 +10,7 @@ type Ctx = {
   setValue: (v: string) => void;
   layoutId: string;
   variant: Variant;
+  disableLayoutAnimation?: boolean;
 };
 
 const TabsCtx = createContext<Ctx | null>(null);
@@ -32,6 +33,7 @@ export function Tabs({
   value,
   onValueChange,
   variant = "pill",
+  disableLayoutAnimation,
   children,
   className,
   ...rest
@@ -40,6 +42,7 @@ export function Tabs({
   value?: string;
   onValueChange?: (v: string) => void;
   variant?: Variant;
+  disableLayoutAnimation?: boolean;
   children: ReactNode;
   className?: string;
   [key: string]: unknown;
@@ -55,8 +58,8 @@ export function Tabs({
   };
   return (
     <MotionConfig transition={reduce ? { duration: 0 } : transition}>
-      <TabsCtx.Provider value={{ value: current, setValue, layoutId, variant }}>
-        <motion.div layoutRoot className={className} {...rest}>
+      <TabsCtx.Provider value={{ value: current, setValue, layoutId, variant, disableLayoutAnimation }}>
+        <motion.div layoutRoot={!disableLayoutAnimation} className={className} {...rest}>
           {children}
         </motion.div>
       </TabsCtx.Provider>
@@ -90,7 +93,7 @@ export function TabsTrigger({
   className?: string;
   indicatorClassName?: string;
 }) {
-  const { value: current, setValue, layoutId, variant } = useTabs();
+  const { value: current, setValue, layoutId, variant, disableLayoutAnimation } = useTabs();
   const active = current === value;
 
   if (variant === "underline") {
@@ -107,7 +110,7 @@ export function TabsTrigger({
         )}
       >
         {children}
-        {active ? (
+        {active && !disableLayoutAnimation ? (
         <motion.span
           layoutId={layoutId}
           className={cn(
@@ -115,6 +118,13 @@ export function TabsTrigger({
             indicatorClassName,
           )}
         />
+        ) : active && disableLayoutAnimation ? (
+          <span
+            className={cn(
+              "absolute -bottom-px left-0 right-0 h-px bg-primary",
+              indicatorClassName,
+            )}
+          />
         ) : null}
       </button>
     );
@@ -124,9 +134,18 @@ export function TabsTrigger({
 
   return (
     <div className="relative">
-      {active ? (
+      {active && !disableLayoutAnimation ? (
         <motion.span
           layoutId={layoutId}
+          style={{ borderRadius: variant === "pill" ? 9999 : 8 }}
+          className={cn(
+            "absolute inset-0 bg-primary",
+            radius,
+            indicatorClassName,
+          )}
+        />
+      ) : active && disableLayoutAnimation ? (
+        <span
           style={{ borderRadius: variant === "pill" ? 9999 : 8 }}
           className={cn(
             "absolute inset-0 bg-primary",
@@ -155,7 +174,6 @@ export function TabsTrigger({
 
 export function TabsContent({ value, children, className }: { value: string; children: ReactNode; className?: string }) {
   const { value: current } = useTabs();
-  const reduce = useReducedMotion();
   const active = current === value;
   if (!active) {
     return (
@@ -167,9 +185,9 @@ export function TabsContent({ value, children, className }: { value: string; chi
   return (
     <motion.div
       key={value}
-      initial={{ opacity: 0, y: reduce ? 0 : 4 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.18, ease: EASE_OUT }}
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.15, ease: EASE_OUT }}
       className={cn("mt-4", className)}
     >
       {children}
