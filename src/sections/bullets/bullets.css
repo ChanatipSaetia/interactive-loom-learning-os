@@ -2,10 +2,7 @@
   @apply mb-8;
 }
 
-.bullets-section-title {
-  @apply font-normal text-[color:var(--ctp-mauve)] mb-3 leading-[1.3];
-  font-size: var(--text-feature-heading);
-}
+
 
 .bullets-list {
   @apply list-none p-0 m-0 flex flex-col gap-1.5;
@@ -20,11 +17,11 @@
 }
 
 .bullet-item-row {
-  @apply flex items-start gap-2 leading-[1.5];
+  @apply flex items-start gap-2 leading-[1.75];
 }
 
 .bullet-marker {
-  @apply flex-shrink-0 text-center leading-[1.5] mt-0.5 w-3;
+  @apply flex-shrink-0 text-center leading-[1.75] mt-0.5 w-3;
   font-size: var(--text-body);
   color: var(--muted);
 }
@@ -42,12 +39,12 @@
 }
 
 .bullet-marker-unordered {
-  @apply leading-[1.5] text-[10px];
+  @apply leading-[1.75] text-[10px];
   color: var(--ctp-mauve);
 }
 
 .bullet-text {
-  @apply text-foreground leading-[1.5] flex-1;
+  @apply text-foreground leading-[1.75] flex-1;
   font-size: var(--text-body);
 }
 

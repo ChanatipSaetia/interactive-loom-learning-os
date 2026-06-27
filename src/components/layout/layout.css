@@ -67,10 +67,14 @@ html[data-theme='recipebook'] .topnav-title {
   max-width: 860px;
 }
 
+[data-testid$="-topic"] {
+  @apply flex flex-col gap-[40px];
+}
+
 .topic-page-title {
   font-family: var(--font-display);
-  @apply text-2xl font-normal tracking-tight border-b border-border;
-  @apply pb-3 mb-8;
+  @apply text-4xl font-bold tracking-tight border-b border-border;
+  @apply pb-4 mb-12;
   color: var(--ctp-lavender);
 }
 
@@ -78,6 +82,52 @@ html[data-theme='medicare'] .topic-page-title,
 html[data-theme='recipebook'] .topic-page-title {
   color: var(--foreground);
 }
+
+/* =============================================
+   Shared Section Titles
+============================================= */
+.text-section-title,
+.bullets-section-title,
+.flowchart-title,
+.taxonomy-browser-title,
+.tradeoff-sandbox-title,
+.flashcard-title {
+  font-family: var(--font-display);
+  @apply text-2xl font-bold tracking-tight text-foreground m-0 mb-8 pt-2;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.text-section-title::before,
+.bullets-section-title::before,
+.flowchart-title::before,
+.taxonomy-browser-title::before,
+.tradeoff-sandbox-title::before,
+.flashcard-title::before {
+  content: "";
+  display: block;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--ctp-lavender), var(--ctp-blue));
+  box-shadow: 0 0 12px rgba(186, 187, 241, 0.4);
+  flex-shrink: 0;
+}
+
+.text-section-title::after,
+.bullets-section-title::after,
+.flowchart-title::after,
+.taxonomy-browser-title::after,
+.tradeoff-sandbox-title::after,
+.flashcard-title::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(90deg, var(--border) 0%, transparent 100%);
+}
+
+
 
 .topic-page-placeholder {
   @apply text-muted-foreground;

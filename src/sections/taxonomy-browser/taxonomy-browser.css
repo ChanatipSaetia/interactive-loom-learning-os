@@ -2,11 +2,7 @@
   @apply mb-8;
 }
 
-.taxonomy-browser-title {
-  @apply font-normal leading-[1.3] mb-4;
-  font-size: var(--text-feature-heading);
-  color: var(--ctp-mauve);
-}
+
 
 .taxonomy-browser-grid {
   @apply grid grid-cols-1 gap-4;

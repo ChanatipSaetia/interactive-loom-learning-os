@@ -68,10 +68,11 @@ const getMockChatForTerm = (id: string, word: string) => {
 type BackTabId = 'guidelines' | 'dialogue';
 
 export interface FlashcardDeckProps {
+  title?: string;
   terms?: WordTerm[];
 }
 
-export default function FlashcardDeck({ terms = [] }: FlashcardDeckProps) {
+export default function FlashcardDeck({ title, terms = [] }: FlashcardDeckProps) {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isFlipped, setIsFlipped] = useState(false);
   const [direction, setDirection] = useState(0); // -1 for left, 1 for right
@@ -161,15 +162,14 @@ export default function FlashcardDeck({ terms = [] }: FlashcardDeckProps) {
   return (
     <div className="flex flex-col w-full h-full max-w-5xl mx-auto" id="flashcard-deck">
       
-      {/* Top Deck Info */}
-      <div className="flex items-center justify-between mb-5 border-b border-border pb-4">
-        <div className="flex items-center space-x-3">
-          <div className="w-6 h-6 bg-primary text-primary-foreground flex items-center justify-center font-bold text-xs rounded-sm">G</div>
-          <span className="text-sm uppercase tracking-widest font-bold text-muted-foreground">Aesthetics Glossary</span>
-        </div>
+      {/* Top Deck Info with Standard Heading */}
+      <div className="flex items-center w-full mb-8 pt-2">
+        <h3 className="flashcard-title flex-1 !m-0 !p-0" data-testid="flashcard-title">
+          {title || "Aesthetics Glossary"}
+        </h3>
         
         {/* Polished Item Counter */}
-        <div className="flex items-center space-x-2 px-3.5 py-1.5 rounded-full bg-muted/10 border border-border shadow-sm font-mono text-xs font-bold tracking-widest">
+        <div className="flex-shrink-0 flex items-center space-x-2 px-3.5 py-1.5 rounded-full bg-muted/10 border border-border shadow-sm font-mono text-xs font-bold tracking-widest ml-4">
           <span className="text-primary text-sm">{String(currentIndex + 1).padStart(2, '0')}</span>
           <span className="text-muted-foreground/30">/</span>
           <span className="text-muted-foreground">{String(terms.length).padStart(2, '0')}</span>

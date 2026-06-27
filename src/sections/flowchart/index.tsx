@@ -610,8 +610,8 @@ export function Flowchart({ title, schema = INITIAL_SCHEMA }: FlowchartProps) {
 
   return (
     <div className={`flowchart-section${isFullscreen ? ' fullscreen' : ''}`} data-testid="flowchart-section">
-      <div className="flowchart-header-container">
-        {title && <h3 className="flowchart-title" data-testid="flowchart-title">{title}</h3>}
+      <div className="flowchart-header-container w-full">
+        {title && <h3 className="flowchart-title w-full" data-testid="flowchart-title">{title}</h3>}
       </div>
 
       {/* Canvas View */}

@@ -11,12 +11,7 @@
   @apply flex justify-between items-center flex-wrap gap-3;
 }
 
-.flowchart-title {
-  @apply font-normal m-0 leading-[1.3];
-  font-family: var(--font-body);
-  font-size: var(--text-feature-heading);
-  color: var(--ctp-mauve);
-}
+
 
 /* ---- View tabs ---- */
 .flowchart-view-tabs {
