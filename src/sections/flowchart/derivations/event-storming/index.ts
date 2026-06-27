@@ -19,6 +19,7 @@ export function layoutEventStorming(
     viewKey,
     entities,
     getRole,
+    nodes,
   );
 
   // Phase 2: Calculate positions

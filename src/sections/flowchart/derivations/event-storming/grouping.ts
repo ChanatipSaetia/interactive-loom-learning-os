@@ -1,4 +1,4 @@
-import type { FlowchartRelation, FlowchartEntity } from '../../types';
+import type { FlowchartRelation, FlowchartEntity, FlowchartViewNode } from '../../types';
 import { TYPES } from '../../types';
 
 export interface FlowGroup {
@@ -11,6 +11,8 @@ export interface FlowGroup {
   policies: string[];
   dbs: string[];
   allNodes: Set<string>;
+  /** True when this group contains the root node of the Event Storming flow. */
+  isRoot: boolean;
 }
 
 export interface GroupingResult {
@@ -30,11 +32,15 @@ export function buildGroups(
   viewKey: string,
   entities: Record<string, FlowchartEntity>,
   getRole: (id: string) => 'db' | 'handler' | 'timeline',
+  nodes: FlowchartViewNode[],
 ): GroupingResult {
   const rels = relations.filter(rel => {
     const isForView = !rel.views || rel.views.includes(viewKey);
     return isForView && nodeSet.has(rel.from) && nodeSet.has(rel.to);
   });
+
+  // Find root node ID
+  const rootNodeId = nodes.find(n => n.root)?.id;
 
   const outEdges = new Map<string, string[]>();
   nodeIds.forEach(id => outEdges.set(id, []));
@@ -104,6 +110,7 @@ export function buildGroups(
       policies: [],
       dbs: [],
       allNodes: new Set(),
+      isRoot: false,
     };
 
     // Seed: command + handler + actor
@@ -188,6 +195,7 @@ export function buildGroups(
       }
     }
 
+    if (rootNodeId && g.allNodes.has(rootNodeId)) g.isRoot = true;
     groups.push(g);
     g.allNodes.forEach(id => assigned.add(id));
   };
@@ -210,8 +218,10 @@ export function buildGroups(
         policies: [],
         dbs: [],
         allNodes: new Set(),
+        isRoot: false,
       };
       addNodeToGroup(g, id);
+      if (rootNodeId && g.allNodes.has(rootNodeId)) g.isRoot = true;
       groups.push(g);
       assigned.add(id);
     }
@@ -234,18 +244,34 @@ export function buildGroups(
   });
 
   const topoOrder: number[] = [];
+  const enqueued = new Set<number>();
   const q: number[] = [];
-  groups.forEach((_, i) => { if (groupInDeg.get(i) === 0) q.push(i); });
-  if (q.length === 0 && groups.length > 0) q.push(0);
+  const enqueue = (i: number) => {
+    if (!enqueued.has(i)) { enqueued.add(i); q.push(i); }
+  };
+  groups.forEach((_, i) => { if (groupInDeg.get(i) === 0) enqueue(i); });
+  // Cyclic graph: no zero-in-degree node exists. Seed with the root group
+  // (or group 0) to break the cycle deterministically.
+  if (q.length === 0 && groups.length > 0) {
+    const rootIdx = groups.findIndex(g => g.isRoot);
+    enqueue(rootIdx >= 0 ? rootIdx : 0);
+  }
 
   while (q.length > 0) {
     const gi = q.shift()!;
     topoOrder.push(gi);
     groupOut.get(gi)!.forEach(next => {
       groupInDeg.set(next, groupInDeg.get(next)! - 1);
-      if (groupInDeg.get(next) === 0) q.push(next);
+      // Only enqueue once: with back-edges (cycles) a node's in-degree can be
+      // driven to 0 after it was already seeded, which previously produced a
+      // duplicate index in groupOrder and corrupted the depth layers.
+      if (groupInDeg.get(next)! <= 0) enqueue(next);
     });
   }
+
+  // Any group never reached (left inside a cycle) is appended once so every
+  // group is positioned exactly once.
+  groups.forEach((_, i) => { if (!enqueued.has(i)) { enqueued.add(i); topoOrder.push(i); } });
 
   return { groups, groupOrder: topoOrder };
 }

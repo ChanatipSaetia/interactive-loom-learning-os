@@ -19,7 +19,7 @@ export function autoDeriveViews(schema: UnifiedFlowchartSchema): UnifiedFlowchar
     mutableViews.EVENT_STORMING = {
       name: 'Event Storming',
       icon: 'Component',
-      nodes: entityIds.map(id => ({ id })),
+      nodes: entityIds.map(id => ({ id, root: mutableEntities[id]?.root })),
       groups: []
     };
   }
