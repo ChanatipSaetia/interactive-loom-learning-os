@@ -16,11 +16,7 @@ import FlashcardDeck from './sections/flashcards'
 
 // Topic registration
 import DemoTopic from './topics/demo'
-import AiOperatingModelTopic from './topics/ai-operating-model'
-import DddTopic from './topics/ddd'
-import A2aA2uiTopic from './topics/a2a-a2ui'
-import DocPipelineTopic from './topics/doc-pipeline'
-import EcommerceOrdersTopic from './topics/ecommerce-orders'
+
 
 SectionRegistry.register('text', TextSection as ComponentType<unknown>)
 SectionRegistry.register('bullets', BulletsSection as ComponentType<unknown>)
@@ -29,11 +25,7 @@ SectionRegistry.register('tradeoff-sandbox', TradeoffSandboxSection as Component
 SectionRegistry.register('taxonomy-browser', TaxonomyBrowserSection as ComponentType<unknown>)
 SectionRegistry.register('flashcards', FlashcardDeck as ComponentType<unknown>)
 TopicRegistry.register('demo', DemoTopic)
-TopicRegistry.register('ai-operating-model', AiOperatingModelTopic)
-TopicRegistry.register('ddd', DddTopic)
-TopicRegistry.register('a2a-a2ui', A2aA2uiTopic)
-TopicRegistry.register('doc-pipeline', DocPipelineTopic)
-TopicRegistry.register('ecommerce-orders', EcommerceOrdersTopic)
+
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
