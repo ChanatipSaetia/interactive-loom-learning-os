@@ -431,8 +431,9 @@ export function FlowchartView({
             <filter id={`flowchart-tooltip-shadow-${viewInstanceId}`} x="-20%" y="-20%" width="140%" height="140%">
               <feDropShadow dx="0" dy="2" stdDeviation="4" floodColor="#000000" floodOpacity="0.4" />
             </filter>
-            <filter id={`flowchart-glow-${viewInstanceId}`} x="-20%" y="-20%" width="140%" height="140%">
-              <feDropShadow dx="0" dy="0" stdDeviation="6" floodColor="var(--ctp-blue)" floodOpacity="0.6" />
+            <filter id={`flowchart-glow-${viewInstanceId}`} x="-50%" y="-50%" width="200%" height="200%">
+              <feDropShadow dx="0" dy="0" stdDeviation="4" floodColor="var(--ctp-blue)" floodOpacity="0.8" />
+              <feDropShadow dx="0" dy="0" stdDeviation="10" floodColor="var(--ctp-blue)" floodOpacity="0.5" />
             </filter>
             <marker id={`flowchart-arrow-${viewInstanceId}`} markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto">
               <path d="M 0 0 L 7 3 L 0 6 Z" fill="var(--ctp-overlay1)" />
