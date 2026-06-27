@@ -1,6 +1,6 @@
 import type { UnifiedFlowchartSchema, FlowchartRelation, FlowchartViewNode, FlowchartViewGroup, FlowchartEntity } from '../types';
 import { TYPES, MASTER_MAPPING_MATRIX } from '../types';
-import { getEntityType, deriveRelations, buildCycleFreeGraph, computeTopologicalColumns, compactColumns, computeLayoutInfo } from './utils';
+import { getEntityType, deriveRelations, buildCycleFreeGraph, computeTopologicalColumns, compactColumns, computeLayoutInfo, countOutgoingRelations, countOutgoingPolicies } from './utils';
 
 export function deriveSwimlanes(
   schema: UnifiedFlowchartSchema,
@@ -16,23 +16,46 @@ export function deriveSwimlanes(
     const esNode = getESNode(id);
     if (!esNode) return;
 
-    const swimType = MASTER_MAPPING_MATRIX[type]?.SWIMLANES;
-    if (swimType) {
-      const collapsedId = getCollapsedId(id);
-      if (localAddedNodes.has(collapsedId)) return;
-      localAddedNodes.add(collapsedId);
-
-      swimNodes.push({
-        id: collapsedId,
-        grid: [esNode.grid ? esNode.grid[0] : 0, 0]
-      });
+    // Decide whether this entity is rendered as a node in the activity view.
+    let include: boolean;
+    if (type === TYPES.POLICY) {
+      // Only a genuine fork (>= 2 outgoing) stays as a Decision. A single-edge
+      // Policy is a pass-through guard and is not rendered; its branch is shown
+      // on the edge leaving the triggering Event's Decision instead.
+      include = countOutgoingRelations(schema, id) >= 2;
+    } else if (type === TYPES.EVENT) {
+      // A branching Event (>= 2 outgoing Policies) is the Decision diamond.
+      // A terminal Event (no outgoing relations) is a dead-end end-state: keep it
+      // so the activity view shows where a branch terminates and its handling
+      // lane (e.g. MCP Servers, Subagent Pool) stays visible instead of vanishing.
+      include = countOutgoingPolicies(schema, id) >= 2 || countOutgoingRelations(schema, id) === 0;
+    } else {
+      include = !!MASTER_MAPPING_MATRIX[type]?.SWIMLANES;
     }
+    if (!include) return;
+
+    const collapsedId = getCollapsedId(id);
+    if (localAddedNodes.has(collapsedId)) return;
+    localAddedNodes.add(collapsedId);
+
+    swimNodes.push({
+      id: collapsedId,
+      grid: [esNode.grid ? esNode.grid[0] : 0, 0]
+    });
   });
 
   const getSwimlaneLabel = (pathNodeIds: string[], startInstanceId: string): { label: string } => {
     const startEntity = schema.entities[startInstanceId];
     if (startEntity?.branchLabel) {
       return { label: startEntity.branchLabel };
+    }
+
+    // Edges leaving a branching Event's Decision pass through a single-edge
+    // Policy that was collapsed away — surface that Policy's branch as the guard.
+    const polNode = pathNodeIds.find(id => getEntityType(schema.entities[id]) === TYPES.POLICY);
+    if (polNode) {
+      const policy = schema.entities[polNode];
+      return { label: policy.branchLabel || policy.title };
     }
 
     const evtNode = pathNodeIds.find(id => getEntityType(schema.entities[id]) === TYPES.EVENT);
@@ -104,7 +127,7 @@ function findHandlingEntity(
     }
 
     const inRels = relations.filter(r =>
-      (!r.views || r.views.includes('EVENT_STORMING') || r.views.includes('SWIMLANES')) && r.to === id
+      (!r.views || r.views.includes('EVENT_STORMING')) && r.to === id
     );
     for (const r of inRels) {
       if (!visited.has(r.from)) {
@@ -128,7 +151,7 @@ function findHandlingEntity(
     }
 
     const outRels = relations.filter(r =>
-      (!r.views || r.views.includes('EVENT_STORMING') || r.views.includes('SWIMLANES')) && r.from === id
+      (!r.views || r.views.includes('EVENT_STORMING')) && r.from === id
     );
     for (const r of outRels) {
       if (!visited.has(r.to)) {
@@ -197,18 +220,6 @@ function getSortedActiveLanes(
   return lanes;
 }
 
-function computeLaneYAssignments(
-  sortedLanes: string[]
-): Map<string, number> {
-  const assignedY = new Map<string, number>();
-  
-  sortedLanes.forEach((laneId, idx) => {
-    assignedY.set(laneId, idx);
-  });
-  
-  return assignedY;
-}
-
 export function generateDynamicSwimlaneGroups(
   schema: UnifiedFlowchartSchema,
   laidOutSwimNodes: FlowchartViewNode[],
@@ -217,7 +228,19 @@ export function generateDynamicSwimlaneGroups(
   const nodeIds = laidOutSwimNodes.map(n => n.id);
   const resolvedEsNodes = esNodes || schema.views!.EVENT_STORMING?.nodes;
   const sortedLanes = getSortedActiveLanes(schema.entities, schema.relations, resolvedEsNodes, nodeIds);
-  const laneYMap = computeLaneYAssignments(sortedLanes);
+
+  // Derive each lane's vertical band straight from the laid-out nodes so that
+  // multi-row lanes (see layoutSwimlanes) get a tall enough band and the lanes
+  // below them start at the correct row.
+  const laneBand = new Map<string, { min: number; max: number }>();
+  laidOutSwimNodes.forEach(n => {
+    const lane = findHandlingEntity(schema.entities, schema.relations, n.id);
+    if (!lane) return;
+    const r = n.grid?.[1] ?? 0;
+    const band = laneBand.get(lane);
+    if (!band) laneBand.set(lane, { min: r, max: r });
+    else { band.min = Math.min(band.min, r); band.max = Math.max(band.max, r); }
+  });
 
   const tint = (accent: string) => `color-mix(in srgb, ${accent} 5%, transparent)`;
 
@@ -236,11 +259,14 @@ export function generateDynamicSwimlaneGroups(
     const accent = getAccent(type);
     const title = entity?.viewTitles?.SWIMLANES || entity?.title || laneId;
 
+    const band = laneBand.get(laneId);
+
     return {
       id: `lane_${laneId}`,
       title: title,
       isLane: true,
-      row: laneYMap.get(laneId) ?? 0,
+      row: band ? band.min : 0,
+      rowSpan: band ? band.max - band.min + 1 : 1,
       color: tint(accent),
       borderColor: `color-mix(in srgb, ${accent} 35%, var(--ctp-surface2))`,
       textColor: accent
@@ -268,17 +294,6 @@ export function layoutSwimlanes(
   const sortedCols = Array.from(colGroups.keys()).sort((a, b) => a - b);
 
   const sortedLanes = getSortedActiveLanes(entities, relations, esNodes, nodeIds);
-  const laneYMap = computeLaneYAssignments(sortedLanes);
-
-  const row = new Map<string, number>();
-  nodeIds.forEach(id => {
-    const laneId = findHandlingEntity(entities, relations, id);
-    if (laneId) {
-      row.set(id, laneYMap.get(laneId) ?? 0);
-    } else {
-      row.set(id, 0);
-    }
-  });
 
   const compactedCol = compactColumns(sortedCols, col);
   const spacedCol = new Map<string, number>();
@@ -303,6 +318,54 @@ export function layoutSwimlanes(
         }
       }
     }
+  });
+
+  // Multi-row lanes: a lane may hold several nodes that resolve to the same
+  // column (e.g. two Commands a Decision fans out to). Stack them on separate
+  // sub-rows within the lane so they never overlap, and push following lanes
+  // down by however many sub-rows each lane consumed.
+  const laneOf = new Map<string, string>();
+  nodeIds.forEach(id => {
+    laneOf.set(id, findHandlingEntity(entities, relations, id) ?? (sortedLanes[0] ?? id));
+  });
+
+  const subRow = new Map<string, number>();
+  const laneRowCount = new Map<string, number>();
+  const orderedLanes = sortedLanes.length > 0 ? sortedLanes : Array.from(new Set(laneOf.values()));
+
+  orderedLanes.forEach(lane => {
+    const laneNodeIds = nodeIds
+      .filter(id => laneOf.get(id) === lane)
+      .sort((a, b) => (spacedCol.get(a)! - spacedCol.get(b)!));
+
+    const occupiedColsPerRow: Set<number>[] = [];
+    laneNodeIds.forEach(id => {
+      const c = spacedCol.get(id)!;
+      let r = 0;
+      while (r < occupiedColsPerRow.length && occupiedColsPerRow[r].has(c)) r++;
+      if (r === occupiedColsPerRow.length) occupiedColsPerRow.push(new Set<number>());
+      occupiedColsPerRow[r].add(c);
+      subRow.set(id, r);
+    });
+    laneRowCount.set(lane, Math.max(1, occupiedColsPerRow.length));
+  });
+
+  // Sub-rows stacked inside the same lane sit closer together than the full
+  // inter-lane row pitch, so a lane that fans out to several nodes stays compact.
+  // Lanes are still separated by a full row of band padding (the trailing +1).
+  const SUBROW_GAP = 0.55;
+  const laneStartRow = new Map<string, number>();
+  let accRow = 0;
+  orderedLanes.forEach(lane => {
+    laneStartRow.set(lane, accRow);
+    const laneRows = laneRowCount.get(lane) ?? 1;
+    accRow += (laneRows - 1) * SUBROW_GAP + 1;
+  });
+
+  const row = new Map<string, number>();
+  nodeIds.forEach(id => {
+    const lane = laneOf.get(id)!;
+    row.set(id, (laneStartRow.get(lane) ?? 0) + (subRow.get(id) ?? 0) * SUBROW_GAP);
   });
 
   return nodes.map(n => ({
