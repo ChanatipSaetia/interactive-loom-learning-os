@@ -61,7 +61,33 @@ When defining a `UnifiedFlowchartSchema` for a flowchart, strictly follow these 
   - Actor example (`demo` topic): `dev_user_feedback` collapses to `dev_user` (same developer, two interaction points).
 - **Command Handlers:** Relations from a `COMMAND` to its handler (an `AGGREGATE` or `EXTERNAL`) must use `handledBy: true`. Point each handler relation at the per-step duplicate (e.g. `cmd_compression -> engine2` with `handledBy: true`), not the canonical node, so each step has its own handler instance.
 - **View Targeting:** Relations should specify `views: ['EVENT_STORMING']` to ensure they render correctly in the Event Storming view.
-- **Node Types:** Standardize on `TYPES.USER`, `TYPES.AGGREGATE`, `TYPES.EXTERNAL`, `TYPES.COMMAND`, `TYPES.EVENT`, and `TYPES.POLICY`.
+- **Node Types:** The flowchart supports two categories of node types — **source types** you set directly in the schema, and **derived types** generated automatically by the layout engine for other views.
+
+  **Source types** (set `type` directly on entities):
+
+  | Type | `TYPES` key | Description | Example |
+  |---|---|---|---|
+  | Event | `TYPES.EVENT` | Something that happened; result of work | `evt_started`, `evt_tool_executed` |
+  | Command | `TYPES.COMMAND` | An action or intent to do work | `cmd_run_agent`, `cmd_call_llm` |
+  | Policy | `TYPES.POLICY` | A rule that decides which command to issue next | `pol_plan`, `pol_route` |
+  | Aggregate | `TYPES.AGGREGATE` | A component within the system/library being discussed | `orch_agent`, `tools_router`, LangChain's `AgentExecutor` |
+  | External API | `TYPES.EXTERNAL` | A real external system outside your control, called via API/network | LLM API (OpenAI), MCP servers, subagents |
+  | Actor | `TYPES.USER` | A human user or actor initiating actions | `dev_user`, `qa_user` |
+  | Read Model | `TYPES.READ_MODEL` | A query-optimized data projection | CQRS read model, materialized view |
+  | Risk | `TYPES.HOTSPOT` | An area of uncertainty or risk in the design | unresolved integration point |
+
+  **Derived types** (generated automatically, **do not set** in the schema):
+
+  | Derived Type | Source Type | Appears in views |
+  |---|---|---|
+  | `DECISION` | `POLICY` with >= 2 outgoing relations | Swimlanes, Data Flow |
+  | `PROCESS` | `COMMAND` | Swimlanes |
+  | `DATA_OBJECT` | `EVENT`, `READ_MODEL` | Data Flow, State Machine |
+  | `SERVICE` | `AGGREGATE` | System Architecture, Sequence |
+  | `CORE_SYSTEM` | — | — |
+
+  The derivation is controlled by `MASTER_MAPPING_MATRIX` in `src/sections/flowchart/types.ts`.
+
 - **Aggregate vs. External Systems:** Use `AGGREGATE` for components that belong to the system or library being discussed (e.g., an `AgentExecutor`, `RunnableSequence`, or `PromptTemplate` inside LangChain). Use `EXTERNAL` for real external systems outside your control that are called via API, network, or file — e.g., a database, LLM API (OpenAI, Anthropic), message queue, or third-party service.
 
 ```typescript
