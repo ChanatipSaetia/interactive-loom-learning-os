@@ -89,6 +89,11 @@ When defining a `UnifiedFlowchartSchema` for a flowchart, strictly follow these 
   The derivation is controlled by `MASTER_MAPPING_MATRIX` in `src/sections/flowchart/types.ts`.
 
 - **Aggregate vs. External Systems:** Use `AGGREGATE` for components that belong to the system or library being discussed (e.g., an `AgentExecutor`, `RunnableSequence`, or `PromptTemplate` inside LangChain). Use `EXTERNAL` for real external systems outside your control that are called via API, network, or file — e.g., a database, LLM API (OpenAI, Anthropic), message queue, or third-party service.
+- **Splitting Flowcharts into Independent Graphs:** When a topic has multiple subsystems, split them into separate schemas if they share **no `COMMAND` or `EVENT` entities** between them. Sharing `AGGREGATE` or `EXTERNAL` entities is fine — those do not require keeping flows together. Each independent graph gets its own schema with exactly ONE `root: true` node.
+  - Example (`motorcycle` topic): 4 independent schemas — `engineSchema` (4-stroke cycle), `chokeSchema` (cold start), `fuelInjectSchema` (EFI), `brakeSchema` (braking) — none share commands or events.
+- **Multiple Journeys per Schema:** Each schema should include multiple `journeys` to cover different execution paths through the same flow. At minimum, include a happy path. Add journeys for error paths, alternative routes, feedback loops, and edge cases. Use `nodeIds` (array) in each step to group nodes that appear together in that step, and `processGroup` to organize steps into phases.
+  - Reference (`demo` topic): 3 journeys covering happy path (tool execution + QA pass), feedback loop (agent asks user for input → replans), and direct LLM answer (skips tools). Each journey reuses nodes from the same schema to tell a different story.
+- **Multiple Flowchart Sections:** A topic can have multiple `flowchart` sections, one per independent schema. Order them so foundational concepts appear first, then related systems.
 
 ```typescript
   {
