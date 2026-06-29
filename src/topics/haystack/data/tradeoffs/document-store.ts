@@ -56,5 +56,43 @@ export const documentStoreStep: TradeoffStep = {
       ],
       whyThisFits: 'OpenSearch is the recommended production backend. Its native hybrid search, full DSL access, and robust metadata filtering make it the most flexible choice for enterprise Haystack deployments.',
     },
+    {
+      id: 'azure-search',
+      label: 'Azure AI Search',
+      description: 'Managed cloud search service with semantic ranker and Azure AI integration.',
+      metrics: { accuracy: 22, latency: 0, complexity: 5, cost: -10 },
+      pros: [
+        { title: 'Fully managed', description: 'No infrastructure to maintain, auto-scaling included' },
+        { title: 'Semantic ranker', description: 'Azure-built semantic reranking out of the box' },
+        { title: 'Azure AI integration', description: 'Native integration with Azure OpenAI for embeddings and generation' },
+        { title: 'Hybrid + vector search', description: 'BM25, vector, and hybrid search with semantic ranking' },
+        { title: 'Enterprise features', description: 'Role-based access, private endpoints, managed identity' },
+      ],
+      cons: [
+        { title: 'Azure lock-in', description: 'Tied to Azure ecosystem and billing' },
+        { title: 'Per-query cost', description: 'Semantic ranker adds per-request charges' },
+        { title: 'Haystack integration via connector', description: 'Requires haystack-azure-search-connector package' },
+      ],
+      whenToUse: 'Best when already in Azure ecosystem or needing managed semantic search without infrastructure overhead.',
+    },
+    {
+      id: 'google-search',
+      label: 'Google Vertex AI Search',
+      description: 'Google Cloud search with generative AI grounding and enterprise knowledge base.',
+      metrics: { accuracy: 20, latency: -5, complexity: 5, cost: -15 },
+      pros: [
+        { title: 'Generative AI grounding', description: 'Built-in RAG with Gemini models for grounded answers' },
+        { title: 'Enterprise knowledge base', description: 'Pre-built connectors for G Suite, Sharepoint, and data warehouses' },
+        { title: 'Multi-modal search', description: 'Search across text, images, and video with unified index' },
+        { title: 'Google scale', description: 'Leverages Google search quality at cloud scale' },
+      ],
+      cons: [
+        { title: 'GCP lock-in', description: 'Tied to Google Cloud Platform' },
+        { title: 'Higher cost', description: 'Premium pricing for generative AI features' },
+        { title: 'Less pipeline control', description: 'Managed service abstracts away retrieval internals' },
+        { title: 'Haystack integration via custom component', description: 'Requires building a custom Haystack connector' },
+      ],
+      whenToUse: 'Best for GCP enterprises needing generative AI search with minimal pipeline customization.',
+    },
   ],
 }

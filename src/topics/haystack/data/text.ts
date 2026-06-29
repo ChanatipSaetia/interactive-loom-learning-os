@@ -52,6 +52,8 @@ export const haystackCapabilityBullets: BulletItem[] = [
       { text: 'OpenSearchDocumentStore (production hybrid)' },
       { text: 'ElasticsearchDocumentStore (enterprise)' },
       { text: 'Chroma, Weaviate, PostgreSQL, Pinecone, MongoDB' },
+      { text: 'Azure AI Search (managed semantic, haystack-azure-search-connector)' },
+      { text: 'Google Vertex AI Search (generative grounding, custom component)' },
     ],
   },
   {
