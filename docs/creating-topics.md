@@ -54,7 +54,27 @@ Here are the 6 available section types, their objectives, and how you assign con
 When defining a `UnifiedFlowchartSchema` for a flowchart, strictly follow these conventions (as seen in the `demo` and `motorcycle` topics):
 - **Root Node:** Set `root: true` on exactly ONE entity, which should be the starting `COMMAND` of the Event Storming flow. This determines the entry point and chronological anchor for the layout.
 - **Standard Flow (per step):** Each step in the process follows the full cycle: `EVENT` → `POLICY` → `COMMAND` → `AGGREGATE`/`EXTERNAL` (via `handledBy`) → `EVENT`. The reacting `POLICY` triggers the next `COMMAND`, which is handled by the component that produces the resulting `EVENT`. Do not skip the `POLICY` or `COMMAND` — every step that "does work" should be a `COMMAND` handled by an `AGGREGATE`/`EXTERNAL`, not a direct `EVENT` → `AGGREGATE` jump.
-- **Direction & Branching:** The flow progresses left-to-right from the root. Branching **must** happen through `POLICY` nodes — an `EVENT` connects to one or more `POLICIES`, and each `POLICY` triggers exactly one `COMMAND`. Never branch `POLICY → multiple COMMANDs` or `EVENT → multiple COMMANDs`. When 1 `EVENT` triggers 2 or more `POLICIES`, the layout engine spreads these branches vertically and symmetrically. A branching point (`EVENT` with >= 2 outgoing `POLICIES`) renders as the single Decision diamond in the Swimlanes/Data Flow views.
+- **Direction & Branching:** The flow progresses left-to-right from the root. Branching **must** follow the pattern `EVENT → multiple POLICYs → one COMMAND each`.
+
+  **Correct branching:**
+  ```
+  EVENT ──→ POLICY A ──→ COMMAND A → AGGREGATE → EVENT
+            └──→ POLICY B ──→ COMMAND B → AGGREGATE → EVENT
+  ```
+
+  **Incorrect branching (never do this):**
+  ```
+  EVENT ──→ POLICY ──→ COMMAND A
+                      └──→ COMMAND B
+  ```
+
+  Each branch gets its own `POLICY` node. The `POLICY` represents the decision for that path, and each `POLICY` triggers exactly one `COMMAND`. Never branch `POLICY → multiple COMMANDs` or `EVENT → multiple COMMANDs`. When 1 `EVENT` triggers 2 or more `POLICIES`, the layout engine spreads these branches vertically and symmetrically. A branching point (`EVENT` with >= 2 outgoing `POLICIES`) renders as the single Decision diamond in the Swimlanes/Data Flow views.
+
+  Example (`motorcycle` choke schema):
+  ```
+  evt_rich_mix ──→ policy_choke_start ──→ cmd_cold_start → engine_warm → ...
+                   └──→ policy_choke_forget ──→ cmd_ride_choke → choke_valve3 → evt_choke_forget
+  ```
 - **Duplicate-and-Collapse for repeated handlers:** A single canonical `AGGREGATE`, `EXTERNAL`, or `USER` (actor) is often involved in multiple steps of the flow. **Create a separate duplicate entity for each step it participates in, and map every duplicate back to the canonical node with `collapsedTo`.** This is required to complete the `handledBy` chain so the layout and derived views (Sequence, Swimlanes, Data Flow) resolve correctly.
   - Aggregate example (`motorcycle` topic): `engine`, `engine2`, `engine3`, `engine4` are four duplicates each handling one stroke (intake / compression / combustion / exhaust), all `collapsedTo: 'engine'`.
   - External example (`demo` topic): `llm_reason` and `llm_final` (collapsed to `llm_reason`); `orch_agent` with `orch_plan_ref`, `orch_qa_ref`, `orch_notify_ref` all collapsing to `orch_agent`.
@@ -91,8 +111,22 @@ When defining a `UnifiedFlowchartSchema` for a flowchart, strictly follow these 
 - **Aggregate vs. External Systems:** Use `AGGREGATE` for components that belong to the system or library being discussed (e.g., an `AgentExecutor`, `RunnableSequence`, or `PromptTemplate` inside LangChain). Use `EXTERNAL` for real external systems outside your control that are called via API, network, or file — e.g., a database, LLM API (OpenAI, Anthropic), message queue, or third-party service.
 - **Splitting Flowcharts into Independent Graphs:** When a topic has multiple subsystems, split them into separate schemas if they share **no `COMMAND` or `EVENT` entities** between them. Sharing `AGGREGATE` or `EXTERNAL` entities is fine — those do not require keeping flows together. Each independent graph gets its own schema with exactly ONE `root: true` node.
   - Example (`motorcycle` topic): 4 independent schemas — `engineSchema` (4-stroke cycle), `chokeSchema` (cold start), `fuelInjectSchema` (EFI), `brakeSchema` (braking) — none share commands or events.
-- **Multiple Journeys per Schema:** Each schema should include multiple `journeys` to cover different execution paths through the same flow. Each journey follows **one branch** from the flowchart. At minimum, include a happy path. Add journeys for error paths, alternative routes, feedback loops, and edge cases. Use `nodeIds` (array) in each step to group nodes that appear together in that step, and `processGroup` to organize steps into phases. See `motorcycle` topic: choke schema has cold start + forgot choke journeys, brake schema has normal + fade journeys, fuel injection schema has normal + cold enrichment journeys.
-  - Reference (`demo` topic): 3 journeys covering happy path (tool execution + QA pass), feedback loop (agent asks user for input → replans), and direct LLM answer (skips tools). Each journey reuses nodes from the same schema to tell a different story.
+- **Multiple Journeys per Schema:** Each schema should include multiple `journeys` to cover different execution paths through the same flow. Each journey follows **one branch** from the flowchart — a journey is a step-by-step walkthrough of one path from start to finish.
+
+  **Journey conventions:**
+  - Each journey starts from the same root `COMMAND` and follows one branch through the flowchart
+  - A journey should not jump between branches — it tells one coherent story from start to finish
+  - At minimum, include a happy path. Add journeys for error paths, alternative routes, and edge cases
+  - Use `nodeIds` (array) in each step to group nodes that appear together at that step
+  - Use `processGroup` to organize steps into phases (optional)
+  - Label each journey with a short name that distinguishes its branch
+
+  Example (`motorcycle` topic — 7 journeys across 4 schemas):
+  - `engineSchema`: 1 journey (linear 4-stroke cycle, no branches)
+  - `chokeSchema`: 2 journeys — cold start (happy path: open choke → start → warm → close choke), forgot choke (error path: open choke → ride with choke on → rich mix failure)
+  - `fuelInjectSchema`: 2 journeys — normal injection (throttle → ECU → inject → precise mix), auto cold enrichment (throttle → ECU detects cold → auto rich mix)
+  - `brakeSchema`: 2 journeys — normal braking (apply brake → hydraulic pressure → caliper squeeze → wheel slows), brake fade (apply brake → overheating → fade → reduced performance)
+  - Reference (`demo` topic): 3 journeys covering happy path (tool execution + QA pass), feedback loop (agent asks user for input → replans), and direct LLM answer (skips tools)
 - **Multiple Flowchart Sections:** A topic can have multiple `flowchart` sections, one per independent schema. Order them so foundational concepts appear first, then related systems.
 
 ```typescript
