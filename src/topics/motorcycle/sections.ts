@@ -6,6 +6,7 @@ import {
   motorcycleFlashcards,
   motorcycleTradeoffs,
   engineSchema,
+  brakeSchema,
   problemTaxonomy,
 } from './data'
 
@@ -40,8 +41,15 @@ export const motorcycleSections: SectionConfig[] = [
   {
     type: 'flowchart',
     props: {
-      title: 'การทำงานของระบบต่างๆ (System Workflows)',
+      title: 'ระบบเครื่องยนต์และเชื้อเพลิง (Engine & Fuel Systems)',
       schema: engineSchema,
+    },
+  },
+  {
+    type: 'flowchart',
+    props: {
+      title: 'ระบบเบรก (Brake System)',
+      schema: brakeSchema,
     },
   },
   // 5. Explore trade-offs — experiment after understanding the mechanisms

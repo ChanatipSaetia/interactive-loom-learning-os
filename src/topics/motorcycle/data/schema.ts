@@ -1,6 +1,10 @@
 import { TYPES } from '../../../sections/flowchart'
 import type { UnifiedFlowchartSchema } from '../../../sections/flowchart'
 
+/**
+ * Engine + Carburetor + Choke + Fuel Injection
+ * All related to fuel delivery and combustion.
+ */
 export const engineSchema: UnifiedFlowchartSchema = {
   entities: {
     // === Actors ===
@@ -8,12 +12,6 @@ export const engineSchema: UnifiedFlowchartSchema = {
       type: TYPES.USER,
       title: 'ผู้ขับขี่ (Rider)',
       desc: 'ผู้ใช้งานมอเตอร์ไซค์'
-    },
-    'rider_brake': {
-      type: TYPES.USER,
-      title: 'ผู้ขับขี่ (เหยียบเบรก)',
-      desc: 'ผู้ขับขี่กดเบรกเพื่อหยุดรถ',
-      collapsedTo: 'rider'
     },
     'rider_choke': {
       type: TYPES.USER,
@@ -141,85 +139,6 @@ export const engineSchema: UnifiedFlowchartSchema = {
       type: TYPES.EVENT,
       title: 'ล้อหมุนขับเคลื่อน',
       desc: 'รถเคลื่อนที่'
-    },
-
-    // === Brake System ===
-    'cmd_brake': {
-      type: TYPES.COMMAND,
-      title: 'กดคันเบรก (Apply Brake)',
-      desc: 'ผู้ขับขี่กดคันเบรกหน้าหรือหลัง'
-    },
-    'brake_master': {
-      type: TYPES.AGGREGATE,
-      title: 'กระปุกเบรก (Brake Master Cylinder)',
-      desc: 'เปลี่ยนแรงกดเป็นแรงดันไฮดรอลิก'
-    },
-    'evt_brake_pressure': {
-      type: TYPES.EVENT,
-      title: 'น้ำมันเบรกดันไปแคลิเพอร์',
-      desc: 'แรงดันไฮดรอลิกส่งผ่านท่อเบรก'
-    },
-    'policy_brake': {
-      type: TYPES.POLICY,
-      title: 'แคลิเพอร์รับแรงดัน (Caliper Activates)',
-      desc: 'ลูกสูบในแคลิเพอร์เลื่อนออก'
-    },
-    'cmd_caliper_squeeze': {
-      type: TYPES.COMMAND,
-      title: 'กดผ้าเบรกเข้าจานเบรก',
-      desc: 'ผ้าเบรกประกบจานเบรกทั้งสองด้าน'
-    },
-    'brake_caliper': {
-      type: TYPES.AGGREGATE,
-      title: 'แคลิเพอร์และจานเบรก (Brake Caliper & Disc)',
-      desc: 'ระบบสร้างแรงเสียดทานเพื่อหน่วงล้อ'
-    },
-    'brake_caliper2': {
-      type: TYPES.AGGREGATE,
-      title: 'แคลิเพอร์และจานเบรก (Brake Caliper & Disc) 2',
-      desc: 'เบรกจม',
-      collapsedTo: 'brake_caliper'
-    },
-    'brake_caliper3': {
-      type: TYPES.AGGREGATE,
-      title: 'แคลิเพอร์และจานเบรก (Brake Caliper & Disc) 3',
-      desc: 'เบรกปกติ',
-      collapsedTo: 'brake_caliper'
-    },
-    'evt_wheel_slowed': {
-      type: TYPES.EVENT,
-      title: 'ล้อช้าลง (Wheel Slowed)',
-      desc: 'พลังงานจลน์เปลี่ยนเป็นความร้อน รถชะลอความเร็ว'
-    },
-    'evt_brake_heat': {
-      type: TYPES.EVENT,
-      title: 'เกิดความร้อน (Brake Heat)',
-      desc: 'จานเบรกและผ้าเบรกมีความร้อนสูง'
-    },
-    'policy_brake_overheat': {
-      type: TYPES.POLICY,
-      title: 'เบรกร้อนเกินไป (Brake Overheat Check)',
-      desc: 'หากเบรกใช้งานหนักเกินไป จะเกิดอาการเบรกจม'
-    },
-    'evt_brake_fade': {
-      type: TYPES.EVENT,
-      title: 'เบรกจม (Brake Fade)',
-      desc: 'ประสิทธิภาพเบรกลดลงเพราะความร้อนสูง'
-    },
-    'cmd_brake_fade': {
-      type: TYPES.COMMAND,
-      title: 'เบรกจม (Brake Fade Action)',
-      desc: 'ประสิทธิภาพเบรกลดลงเพราะความร้อนสูง'
-    },
-    'evt_brake_normal': {
-      type: TYPES.EVENT,
-      title: 'รถหยุดหรือช้าลงตามต้องการ',
-      desc: 'เบรกทำงานปกติ'
-    },
-    'cmd_brake_normal': {
-      type: TYPES.COMMAND,
-      title: 'รถหยุดหรือช้าลงตามต้องการ (Normal Brake)',
-      desc: 'เบรกทำงานปกติ'
     },
 
     // === Choke / Cold Start System ===
@@ -403,23 +322,6 @@ export const engineSchema: UnifiedFlowchartSchema = {
     { id: 'rel_shift_trans', from: 'shift_gear', to: 'transmission', handledBy: true },
     { id: 'rel_trans_wheel', from: 'transmission', to: 'wheel_spin' },
 
-    // === Brake System Flow ===
-    { id: 'rel_rider_brake', from: 'rider_brake', to: 'cmd_brake' },
-    { id: 'rel_brake_master', from: 'cmd_brake', to: 'brake_master', handledBy: true },
-    { id: 'rel_master_pressure', from: 'brake_master', to: 'evt_brake_pressure' },
-    { id: 'rel_pressure_policy', from: 'evt_brake_pressure', to: 'policy_brake' },
-    { id: 'rel_policy_caliper', from: 'policy_brake', to: 'cmd_caliper_squeeze' },
-    { id: 'rel_caliper_squeeze', from: 'cmd_caliper_squeeze', to: 'brake_caliper', handledBy: true },
-    { id: 'rel_caliper_slow', from: 'brake_caliper', to: 'evt_wheel_slowed' },
-    { id: 'rel_caliper_heat', from: 'brake_caliper', to: 'evt_brake_heat' },
-    { id: 'rel_heat_check', from: 'evt_brake_heat', to: 'policy_brake_overheat' },
-    { id: 'rel_overheat_fade', from: 'policy_brake_overheat', to: 'cmd_brake_fade', label: 'ร้อนเกินไป' },
-    { id: 'rel_fade_caliper', from: 'cmd_brake_fade', to: 'brake_caliper2', handledBy: true },
-    { id: 'rel_fade_evt', from: 'brake_caliper2', to: 'evt_brake_fade' },
-    { id: 'rel_overheat_normal', from: 'policy_brake_overheat', to: 'cmd_brake_normal', label: 'ปกติ' },
-    { id: 'rel_normal_caliper', from: 'cmd_brake_normal', to: 'brake_caliper3', handledBy: true },
-    { id: 'rel_normal_evt', from: 'brake_caliper3', to: 'evt_brake_normal' },
-
     // === Choke / Cold Start Flow ===
     { id: 'rel_rider_choke', from: 'rider_choke', to: 'cmd_choke_on' },
     { id: 'rel_choke_valve', from: 'cmd_choke_on', to: 'choke_valve', handledBy: true },
@@ -470,22 +372,6 @@ export const engineSchema: UnifiedFlowchartSchema = {
       ]
     },
     {
-      id: 'brake-system',
-      label: 'ระบบเบรก (Braking System)',
-      description: 'การทำงานตั้งแต่กดเบรกจนถึงรถหยุดหรือช้าลง รวมถึงกรณีเบรกจม',
-      steps: [
-        { nodeId: 'cmd_brake', description: 'ผู้ขับขี่กดคันเบรกหน้าหรือหลัง' },
-        { nodeId: 'brake_master', description: 'กระปุกเบรกเปลี่ยนแรงกดเป็นแรงดันไฮดรอลิกในน้ำมันเบรก' },
-        { nodeId: 'evt_brake_pressure', description: 'แรงดันส่งผ่านท่อเบรกไปยังแคลิเพอร์ที่ล้อ' },
-        { nodeId: 'cmd_caliper_squeeze', description: 'ลูกสูบในแคลิเพอร์เลื่อนออก กดผ้าเบรกประกบจานเบรกทั้งสองด้าน' },
-        { nodeId: 'brake_caliper', description: 'แรงเสียดทานระหว่างผ้าเบรกและจานเบรก หน่วงการหมุนของล้อ' },
-        { nodeId: 'evt_wheel_slowed', description: 'พลังงานจลน์ของรถเปลี่ยนเป็นความร้อน รถช้าลง' },
-        { nodeId: 'evt_brake_heat', description: 'จานเบรกและผ้าเบรกมีความร้อนสูงขึ้น' },
-        { nodeId: 'evt_brake_normal', description: 'รถหยุดหรือช้าลงตามที่ต้องการ' },
-        { nodeId: 'evt_brake_fade', description: 'หากเบรกหนักต่อเนื่องความร้อนสูงเกินไป จะเกิดอาการเบรกจม (ประสิทธิภาพลด)' },
-      ]
-    },
-    {
       id: 'choke-cold-start',
       label: 'ระบบโช้คและการสตาร์ทเครื่องเย็น (Choke & Cold Start)',
       description: 'การทำงานของโช้คในรถคาร์บูเรเตอร์ เมื่อต้องการสตาร์ทเครื่องเย็น',
@@ -515,6 +401,136 @@ export const engineSchema: UnifiedFlowchartSchema = {
         { nodeId: 'evt_fuel_atomized', description: 'น้ำมันถูกทำให้เป็นละอองละเอียด ผสมกับอากาศ' },
         { nodeId: 'evt_precise_mix', description: 'ได้อัตราส่วนที่แม่นยำตามสภาวะการทำงาน ประหยัดน้ำมันและสตาร์ทง่าย' },
         { nodeId: 'evt_inject_cold_auto', description: 'เมื่อเครื่องเย็น ECU จะเพิ่มส่วนผสมอัตโนมัติ ไม่ต้องใช้โช้ค' },
+      ]
+    },
+  ]
+}
+
+/**
+ * Brake System
+ * Completely independent from engine/fuel systems.
+ */
+export const brakeSchema: UnifiedFlowchartSchema = {
+  entities: {
+    // === Actors ===
+    'rider_brake': {
+      type: TYPES.USER,
+      title: 'ผู้ขับขี่ (Rider)',
+      desc: 'ผู้ใช้งานมอเตอร์ไซค์'
+    },
+
+    // === Brake System ===
+    'cmd_brake': {
+      type: TYPES.COMMAND,
+      title: 'กดคันเบรก (Apply Brake)',
+      desc: 'ผู้ขับขี่กดคันเบรกหน้าหรือหลัง',
+      root: true
+    },
+    'brake_master': {
+      type: TYPES.AGGREGATE,
+      title: 'กระปุกเบรก (Brake Master Cylinder)',
+      desc: 'เปลี่ยนแรงกดเป็นแรงดันไฮดรอลิก'
+    },
+    'evt_brake_pressure': {
+      type: TYPES.EVENT,
+      title: 'น้ำมันเบรกดันไปแคลิเพอร์',
+      desc: 'แรงดันไฮดรอลิกส่งผ่านท่อเบรก'
+    },
+    'policy_brake': {
+      type: TYPES.POLICY,
+      title: 'แคลิเพอร์รับแรงดัน (Caliper Activates)',
+      desc: 'ลูกสูบในแคลิเพอร์เลื่อนออก'
+    },
+    'cmd_caliper_squeeze': {
+      type: TYPES.COMMAND,
+      title: 'กดผ้าเบรกเข้าจานเบรก',
+      desc: 'ผ้าเบรกประกบจานเบรกทั้งสองด้าน'
+    },
+    'brake_caliper': {
+      type: TYPES.AGGREGATE,
+      title: 'แคลิเพอร์และจานเบรก (Brake Caliper & Disc)',
+      desc: 'ระบบสร้างแรงเสียดทานเพื่อหน่วงล้อ'
+    },
+    'brake_caliper2': {
+      type: TYPES.AGGREGATE,
+      title: 'แคลิเพอร์และจานเบรก (Brake Caliper & Disc) 2',
+      desc: 'เบรกจม',
+      collapsedTo: 'brake_caliper'
+    },
+    'brake_caliper3': {
+      type: TYPES.AGGREGATE,
+      title: 'แคลิเพอร์และจานเบรก (Brake Caliper & Disc) 3',
+      desc: 'เบรกปกติ',
+      collapsedTo: 'brake_caliper'
+    },
+    'evt_wheel_slowed': {
+      type: TYPES.EVENT,
+      title: 'ล้อช้าลง (Wheel Slowed)',
+      desc: 'พลังงานจลน์เปลี่ยนเป็นความร้อน รถชะลอความเร็ว'
+    },
+    'evt_brake_heat': {
+      type: TYPES.EVENT,
+      title: 'เกิดความร้อน (Brake Heat)',
+      desc: 'จานเบรกและผ้าเบรกมีความร้อนสูง'
+    },
+    'policy_brake_overheat': {
+      type: TYPES.POLICY,
+      title: 'เบรกร้อนเกินไป (Brake Overheat Check)',
+      desc: 'หากเบรกใช้งานหนักเกินไป จะเกิดอาการเบรกจม'
+    },
+    'evt_brake_fade': {
+      type: TYPES.EVENT,
+      title: 'เบรกจม (Brake Fade)',
+      desc: 'ประสิทธิภาพเบรกลดลงเพราะความร้อนสูง'
+    },
+    'cmd_brake_fade': {
+      type: TYPES.COMMAND,
+      title: 'เบรกจม (Brake Fade Action)',
+      desc: 'ประสิทธิภาพเบรกลดลงเพราะความร้อนสูง'
+    },
+    'evt_brake_normal': {
+      type: TYPES.EVENT,
+      title: 'รถหยุดหรือช้าลงตามต้องการ',
+      desc: 'เบรกทำงานปกติ'
+    },
+    'cmd_brake_normal': {
+      type: TYPES.COMMAND,
+      title: 'รถหยุดหรือช้าลงตามต้องการ (Normal Brake)',
+      desc: 'เบรกทำงานปกติ'
+    },
+  },
+  relations: [
+    { id: 'rel_rider_brake', from: 'rider_brake', to: 'cmd_brake' },
+    { id: 'rel_brake_master', from: 'cmd_brake', to: 'brake_master', handledBy: true },
+    { id: 'rel_master_pressure', from: 'brake_master', to: 'evt_brake_pressure' },
+    { id: 'rel_pressure_policy', from: 'evt_brake_pressure', to: 'policy_brake' },
+    { id: 'rel_policy_caliper', from: 'policy_brake', to: 'cmd_caliper_squeeze' },
+    { id: 'rel_caliper_squeeze', from: 'cmd_caliper_squeeze', to: 'brake_caliper', handledBy: true },
+    { id: 'rel_caliper_slow', from: 'brake_caliper', to: 'evt_wheel_slowed' },
+    { id: 'rel_caliper_heat', from: 'brake_caliper', to: 'evt_brake_heat' },
+    { id: 'rel_heat_check', from: 'evt_brake_heat', to: 'policy_brake_overheat' },
+    { id: 'rel_overheat_fade', from: 'policy_brake_overheat', to: 'cmd_brake_fade', label: 'ร้อนเกินไป' },
+    { id: 'rel_fade_caliper', from: 'cmd_brake_fade', to: 'brake_caliper2', handledBy: true },
+    { id: 'rel_fade_evt', from: 'brake_caliper2', to: 'evt_brake_fade' },
+    { id: 'rel_overheat_normal', from: 'policy_brake_overheat', to: 'cmd_brake_normal', label: 'ปกติ' },
+    { id: 'rel_normal_caliper', from: 'cmd_brake_normal', to: 'brake_caliper3', handledBy: true },
+    { id: 'rel_normal_evt', from: 'brake_caliper3', to: 'evt_brake_normal' },
+  ],
+  journeys: [
+    {
+      id: 'brake-system',
+      label: 'ระบบเบรก (Braking System)',
+      description: 'การทำงานตั้งแต่กดเบรกจนถึงรถหยุดหรือช้าลง รวมถึงกรณีเบรกจม',
+      steps: [
+        { nodeId: 'cmd_brake', description: 'ผู้ขับขี่กดคันเบรกหน้าหรือหลัง' },
+        { nodeId: 'brake_master', description: 'กระปุกเบรกเปลี่ยนแรงกดเป็นแรงดันไฮดรอลิกในน้ำมันเบรก' },
+        { nodeId: 'evt_brake_pressure', description: 'แรงดันส่งผ่านท่อเบรกไปยังแคลิเพอร์ที่ล้อ' },
+        { nodeId: 'cmd_caliper_squeeze', description: 'ลูกสูบในแคลิเพอร์เลื่อนออก กดผ้าเบรกประกบจานเบรกทั้งสองด้าน' },
+        { nodeId: 'brake_caliper', description: 'แรงเสียดทานระหว่างผ้าเบรกและจานเบรก หน่วงการหมุนของล้อ' },
+        { nodeId: 'evt_wheel_slowed', description: 'พลังงานจลน์ของรถเปลี่ยนเป็นความร้อน รถช้าลง' },
+        { nodeId: 'evt_brake_heat', description: 'จานเบรกและผ้าเบรกมีความร้อนสูงขึ้น' },
+        { nodeId: 'evt_brake_normal', description: 'รถหยุดหรือช้าลงตามที่ต้องการ' },
+        { nodeId: 'evt_brake_fade', description: 'หากเบรกหนักต่อเนื่องความร้อนสูงเกินไป จะเกิดอาการเบรกจม (ประสิทธิภาพลด)' },
       ]
     },
   ]
