@@ -390,7 +390,7 @@ export function Flowchart({ title, schema = INITIAL_SCHEMA }: FlowchartProps) {
   };
 
   const [activeDockTabId, setActiveDockTabId] = useState<string | null>(() => {
-    return schema.journeys && schema.journeys.length > 0 ? 'steps' : null;
+    return (schema.journeys && schema.journeys.length > 0) || viewKeys.length > 1 ? 'views' : null;
   });
   const [cameraControls, setCameraControls] = useState<{
     handleZoomIn: () => void;

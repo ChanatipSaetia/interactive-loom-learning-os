@@ -974,7 +974,7 @@
 
 /* Fullscreen toggle button - fixed top-left */
 .flowchart-fullscreen-toggle-btn {
-  @apply absolute top-4 left-4 z-[1001] flex items-center justify-center w-9 h-9 rounded-[var(--radius-sm)] border border-border cursor-pointer shadow-lg;
+  @apply absolute top-4 left-4 z-10 flex items-center justify-center w-9 h-9 rounded-[var(--radius-sm)] border border-border cursor-pointer shadow-lg;
   font-family: var(--font-body);
   color: var(--ctp-overlay1);
   background: var(--ctp-crust);
@@ -987,16 +987,7 @@
   border-color: var(--ctp-blue);
 }
 
-/* In minimal mode, hide the button and show only on hover of the canvas wrapper */
-.flowchart-section:not(.fullscreen) .flowchart-fullscreen-toggle-btn {
-  opacity: 0;
-  pointer-events: none;
-}
-
-.flowchart-section:not(.fullscreen) .flowchart-canvas-wrapper:hover .flowchart-fullscreen-toggle-btn {
-  opacity: 1;
-  pointer-events: auto;
-}
+/* Fullscreen button always visible */
 
 /* Inspector toggle button - fixed top-right */
 .flowchart-inspector-toggle {
