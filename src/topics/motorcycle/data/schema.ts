@@ -2,8 +2,8 @@ import { TYPES } from '../../../sections/flowchart'
 import type { UnifiedFlowchartSchema } from '../../../sections/flowchart'
 
 /**
- * Engine + Carburetor + Choke + Fuel Injection
- * All related to fuel delivery and combustion.
+ * Engine 4-Stroke Cycle + Transmission
+ * Independent flow: throttle → 4-stroke → transmission → wheel spin
  */
 export const engineSchema: UnifiedFlowchartSchema = {
   entities: {
@@ -12,12 +12,6 @@ export const engineSchema: UnifiedFlowchartSchema = {
       type: TYPES.USER,
       title: 'ผู้ขับขี่ (Rider)',
       desc: 'ผู้ใช้งานมอเตอร์ไซค์'
-    },
-    'rider_choke': {
-      type: TYPES.USER,
-      title: 'ผู้ขับขี่ (เปิดโช้ค)',
-      desc: 'ผู้ขับขี่เปิดโช้คเพื่อสตาร์ทเครื่องเย็น',
-      collapsedTo: 'rider'
     },
 
     // === Acceleration / 4-Stroke Engine ===
@@ -140,12 +134,85 @@ export const engineSchema: UnifiedFlowchartSchema = {
       title: 'ล้อหมุนขับเคลื่อน',
       desc: 'รถเคลื่อนที่'
     },
+  },
+  relations: [
+    // === Acceleration Flow ===
+    { id: 'rel_throttle', from: 'rider', to: 'throttle' },
+    { id: 'rel_throttle_carb', from: 'throttle', to: 'carburetor', handledBy: true },
+    { id: 'rel_carb_fuel', from: 'carburetor', to: 'fuel_mix' },
+    { id: 'rel_throttle_fuel', from: 'throttle', to: 'fuel_mix' },
+
+    // Intake
+    { id: 'rel_fuel_p1', from: 'fuel_mix', to: 'policy_start' },
+    { id: 'rel_p1_in', from: 'policy_start', to: 'intake' },
+    { id: 'rel_in_eng', from: 'intake', to: 'engine', handledBy: true },
+    { id: 'rel_eng_ein', from: 'engine', to: 'evt_intake' },
+
+    // Compression
+    { id: 'rel_ein_p2', from: 'evt_intake', to: 'policy_comp' },
+    { id: 'rel_p2_cmp', from: 'policy_comp', to: 'compression' },
+    { id: 'rel_cmp_eng', from: 'compression', to: 'engine2', handledBy: true },
+    { id: 'rel_eng_ecmp', from: 'engine2', to: 'evt_comp' },
+
+     // Combustion
+    { id: 'rel_ecmp_p3', from: 'evt_comp', to: 'policy_comb' },
+    { id: 'rel_p3_cmb', from: 'policy_comb', to: 'combustion' },
+    { id: 'rel_cmb_eng', from: 'combustion', to: 'engine3', handledBy: true },
+    { id: 'rel_eng_ecmb', from: 'engine3', to: 'evt_comb' },
+
+    // Exhaust
+    { id: 'rel_ecmb_p4', from: 'evt_comb', to: 'policy_exh' },
+    { id: 'rel_p4_exh', from: 'policy_exh', to: 'exhaust' },
+    { id: 'rel_exh_eng', from: 'exhaust', to: 'engine4', handledBy: true },
+    { id: 'rel_eng_exh', from: 'engine4', to: 'power_transfer' },
+
+    // Transmission
+    { id: 'rel_power_trans', from: 'power_transfer', to: 'policy_trans' },
+    { id: 'rel_trans_shift', from: 'policy_trans', to: 'shift_gear' },
+    { id: 'rel_shift_trans', from: 'shift_gear', to: 'transmission', handledBy: true },
+    { id: 'rel_trans_wheel', from: 'transmission', to: 'wheel_spin' },
+  ],
+  journeys: [
+    {
+      id: '4-stroke-cycle',
+      label: 'วัฏจักรเครื่องยนต์ 4 จังหวะ และการส่งกำลัง',
+      description: 'ขั้นตอนการทำงานตั้งแต่บิดคันเร่งจนถึงการส่งกำลังไปที่ล้อ',
+      steps: [
+        { nodeId: 'throttle', description: 'ผู้ขับขี่บิดคันเร่งเพื่อเพิ่มความเร็ว' },
+        { nodeId: 'carburetor', description: 'คาร์บูเรเตอร์ผสมน้ำมันและอากาศ' },
+        { nodeId: 'intake', description: '1. ดูด: วาล์วไอดีเปิด ลูกสูบเลื่อนลง ดูดไอดีเข้ากระบอกสูบ' },
+        { nodeId: 'compression', description: '2. อัด: ลูกสูบเลื่อนขึ้น อัดไอดีให้มีความหนาแน่นเตรียมจุดระเบิด' },
+        { nodeId: 'combustion', description: '3. ระเบิด: หัวเทียนจุดประกายไฟ ดันลูกสูบลงอย่างแรง สร้างกำลัง' },
+        { nodeId: 'exhaust', description: '4. คาย: วาล์วไอเสียเปิด ลูกสูบเลื่อนขึ้นดันไอเสียออก' },
+        { nodeId: 'power_transfer', description: 'กำลังจากการจุดระเบิดส่งผ่านก้านสูบลงสู่เพลาข้อเหวี่ยง' },
+        { nodeId: 'shift_gear', description: 'เกียร์ทดรอบและส่งกำลังผ่านโซ่/สายพาน' },
+        { nodeId: 'transmission', description: 'ระบบเกียร์และโซ่/สายพาน รับกำลังมาเพื่อทดรอบ' },
+        { nodeId: 'wheel_spin', description: 'ส่งกำลังไปที่ล้อหลัง ทำให้มอเตอร์ไซค์ขับเคลื่อนไปข้างหน้า' },
+      ]
+    },
+  ]
+}
+
+/**
+ * Choke / Cold Start System
+ * Independent flow: choke on → rich mix → cold start → engine warm → choke off
+ * Shares no COMMANDs or EVENTs with engine graph.
+ */
+export const chokeSchema: UnifiedFlowchartSchema = {
+  entities: {
+    // === Actors ===
+    'rider_choke': {
+      type: TYPES.USER,
+      title: 'ผู้ขับขี่ (Rider)',
+      desc: 'ผู้ใช้งานมอเตอร์ไซค์'
+    },
 
     // === Choke / Cold Start System ===
     'cmd_choke_on': {
       type: TYPES.COMMAND,
       title: 'เปิดโช้ค (Turn Choke On)',
-      desc: 'ปิดช่องอากาศบางส่วนเพื่อเพิ่มสัดส่วนน้ำมัน'
+      desc: 'ปิดช่องอากาศบางส่วนเพื่อเพิ่มสัดส่วนน้ำมัน',
+      root: true
     },
     'choke_valve': {
       type: TYPES.AGGREGATE,
@@ -182,8 +249,7 @@ export const engineSchema: UnifiedFlowchartSchema = {
     'engine_warm': {
       type: TYPES.AGGREGATE,
       title: 'เครื่องยนต์อุ่นตัว (Engine Warms Up)',
-      desc: 'อุณหภูมิเครื่องยนต์สูงขึ้นเรื่อยๆ',
-      collapsedTo: 'engine'
+      desc: 'อุณหภูมิเครื่องยนต์สูงขึ้นเรื่อยๆ'
     },
     'evt_engine_warm': {
       type: TYPES.EVENT,
@@ -215,12 +281,63 @@ export const engineSchema: UnifiedFlowchartSchema = {
       title: 'ขี่รถโดยลืมปิดโช้ค (Ride With Choke)',
       desc: 'บิดคันเร่งขณะที่โช้คยังเปิดอยู่'
     },
+  },
+  relations: [
+    { id: 'rel_rider_choke', from: 'rider_choke', to: 'cmd_choke_on' },
+    { id: 'rel_choke_valve', from: 'cmd_choke_on', to: 'choke_valve', handledBy: true },
+    { id: 'rel_choke_rich', from: 'choke_valve', to: 'evt_rich_mix' },
+    { id: 'rel_rich_policy', from: 'evt_rich_mix', to: 'policy_choke_use' },
+    { id: 'rel_choke_to_intake', from: 'policy_choke_use', to: 'cmd_cold_start', label: 'สตาร์ทเครื่อง' },
+    { id: 'rel_cold_engine', from: 'cmd_cold_start', to: 'engine_warm', handledBy: true },
+    { id: 'rel_engine_warm', from: 'engine_warm', to: 'evt_engine_warm' },
+    { id: 'rel_warm_policy', from: 'evt_engine_warm', to: 'policy_choke_off' },
+    { id: 'rel_choke_off_cmd', from: 'policy_choke_off', to: 'cmd_choke_off' },
+    { id: 'rel_choke_off_valve', from: 'cmd_choke_off', to: 'choke_valve2', handledBy: true },
+    { id: 'rel_choke_off_normal', from: 'choke_valve2', to: 'evt_normal_mix' },
+    { id: 'rel_choke_forget', from: 'policy_choke_use', to: 'cmd_ride_choke', label: 'ลืมปิดโช้ค', dashed: true },
+    { id: 'rel_ride_choke_valve', from: 'cmd_ride_choke', to: 'choke_valve3', handledBy: true },
+    { id: 'rel_ride_choke_evt', from: 'choke_valve3', to: 'evt_choke_forget' },
+  ],
+  journeys: [
+    {
+      id: 'choke-cold-start',
+      label: 'ระบบโช้คและการสตาร์ทเครื่องเย็น (Choke & Cold Start)',
+      description: 'การทำงานของโช้คในรถคาร์บูเรเตอร์ เมื่อต้องการสตาร์ทเครื่องเย็น',
+      steps: [
+        { nodeId: 'cmd_choke_on', description: 'ผู้ขับขี่เปิดโช้ค (หรือบิดคิลสวิตช์ที่รวมโช้ค) ก่อนสตาร์ทเครื่องเย็น' },
+        { nodeId: 'choke_valve', description: 'วาล์วโช้คปิดช่องอากาศบางส่วน จำกัดปริมาณอากาศที่เข้าสู่คาร์บูเรเตอร์' },
+        { nodeId: 'evt_rich_mix', description: 'สัดส่วนน้ำมัน:อากาศเพิ่มขึ้น (ส่วนผสมรวยน้ำมัน) เหมาะกับเครื่องเย็น' },
+        { nodeId: 'cmd_cold_start', description: 'เครื่องยนต์เริ่มทำงานด้วยส่วนผสมที่รวยน้ำมัน' },
+        { nodeId: 'engine_warm', description: 'เครื่องยนต์ค่อยๆ อุ่นตัว อุณหภูมิสูงขึ้นเรื่อยๆ' },
+        { nodeId: 'evt_engine_warm', description: 'เครื่องอุ่นถึงอุณหภูมิทำงานปกติแล้ว' },
+        { nodeId: 'cmd_choke_off', description: 'ปิดโช้ค เปิดช่องอากาศกลับสู่ปกติ' },
+        { nodeId: 'evt_normal_mix', description: 'ส่วนผสมกลับสู่อัตราส่วนมาตรฐาน เครื่องทำงานเรียบ' },
+        { nodeId: 'evt_choke_forget', description: 'หากลืมปิดโช้คขณะวิ่ง จะทำให้หัวเทียนสกปรก กินน้ำมัน และรถเร่งไม่ขึ้น' },
+      ]
+    },
+  ]
+}
+
+/**
+ * Fuel Injection System (EFI)
+ * Independent flow: throttle → ECU → injector → atomized fuel
+ * Shares no COMMANDs or EVENTs with engine or choke graphs.
+ */
+export const fuelInjectSchema: UnifiedFlowchartSchema = {
+  entities: {
+    // === Actors ===
+    'rider_inject': {
+      type: TYPES.USER,
+      title: 'ผู้ขับขี่ (Rider)',
+      desc: 'ผู้ใช้งานมอเตอร์ไซค์'
+    },
 
     // === Fuel Injection System ===
     'cmd_inject_throttle': {
       type: TYPES.COMMAND,
       title: 'บิดคันเร่ง (Injector Mode)',
-      desc: 'เซ็นเซอร์ส่งสัญญาณไปยัง ECU'
+      desc: 'เซ็นเซอร์ส่งสัญญาณไปยัง ECU',
+      root: true
     },
     'ecu_inject': {
       type: TYPES.AGGREGATE,
@@ -286,60 +403,7 @@ export const engineSchema: UnifiedFlowchartSchema = {
     },
   },
   relations: [
-    // === Acceleration Flow ===
-    { id: 'rel_throttle', from: 'rider', to: 'throttle' },
-    { id: 'rel_throttle_carb', from: 'throttle', to: 'carburetor', handledBy: true },
-    { id: 'rel_carb_fuel', from: 'carburetor', to: 'fuel_mix' },
-    { id: 'rel_throttle_fuel', from: 'throttle', to: 'fuel_mix' },
-
-    // Intake
-    { id: 'rel_fuel_p1', from: 'fuel_mix', to: 'policy_start' },
-    { id: 'rel_p1_in', from: 'policy_start', to: 'intake' },
-    { id: 'rel_in_eng', from: 'intake', to: 'engine', handledBy: true },
-    { id: 'rel_eng_ein', from: 'engine', to: 'evt_intake' },
-
-    // Compression
-    { id: 'rel_ein_p2', from: 'evt_intake', to: 'policy_comp' },
-    { id: 'rel_p2_cmp', from: 'policy_comp', to: 'compression' },
-    { id: 'rel_cmp_eng', from: 'compression', to: 'engine2', handledBy: true },
-    { id: 'rel_eng_ecmp', from: 'engine2', to: 'evt_comp' },
-
-     // Combustion
-    { id: 'rel_ecmp_p3', from: 'evt_comp', to: 'policy_comb' },
-    { id: 'rel_p3_cmb', from: 'policy_comb', to: 'combustion' },
-    { id: 'rel_cmb_eng', from: 'combustion', to: 'engine3', handledBy: true },
-    { id: 'rel_eng_ecmb', from: 'engine3', to: 'evt_comb' },
-
-    // Exhaust
-    { id: 'rel_ecmb_p4', from: 'evt_comb', to: 'policy_exh' },
-    { id: 'rel_p4_exh', from: 'policy_exh', to: 'exhaust' },
-    { id: 'rel_exh_eng', from: 'exhaust', to: 'engine4', handledBy: true },
-    { id: 'rel_eng_exh', from: 'engine4', to: 'power_transfer' },
-
-    // Transmission
-    { id: 'rel_power_trans', from: 'power_transfer', to: 'policy_trans' },
-    { id: 'rel_trans_shift', from: 'policy_trans', to: 'shift_gear' },
-    { id: 'rel_shift_trans', from: 'shift_gear', to: 'transmission', handledBy: true },
-    { id: 'rel_trans_wheel', from: 'transmission', to: 'wheel_spin' },
-
-    // === Choke / Cold Start Flow ===
-    { id: 'rel_rider_choke', from: 'rider_choke', to: 'cmd_choke_on' },
-    { id: 'rel_choke_valve', from: 'cmd_choke_on', to: 'choke_valve', handledBy: true },
-    { id: 'rel_choke_rich', from: 'choke_valve', to: 'evt_rich_mix' },
-    { id: 'rel_rich_policy', from: 'evt_rich_mix', to: 'policy_choke_use' },
-    { id: 'rel_choke_to_intake', from: 'policy_choke_use', to: 'cmd_cold_start', label: 'สตาร์ทเครื่อง' },
-    { id: 'rel_cold_engine', from: 'cmd_cold_start', to: 'engine_warm', handledBy: true },
-    { id: 'rel_engine_warm', from: 'engine_warm', to: 'evt_engine_warm' },
-    { id: 'rel_warm_policy', from: 'evt_engine_warm', to: 'policy_choke_off' },
-    { id: 'rel_choke_off_cmd', from: 'policy_choke_off', to: 'cmd_choke_off' },
-    { id: 'rel_choke_off_valve', from: 'cmd_choke_off', to: 'choke_valve2', handledBy: true },
-    { id: 'rel_choke_off_normal', from: 'choke_valve2', to: 'evt_normal_mix' },
-    { id: 'rel_choke_forget', from: 'policy_choke_use', to: 'cmd_ride_choke', label: 'ลืมปิดโช้ค', dashed: true },
-    { id: 'rel_ride_choke_valve', from: 'cmd_ride_choke', to: 'choke_valve3', handledBy: true },
-    { id: 'rel_ride_choke_evt', from: 'choke_valve3', to: 'evt_choke_forget' },
-
-    // === Fuel Injection Flow ===
-    { id: 'rel_inj_throttle', from: 'rider', to: 'cmd_inject_throttle', label: 'บิดคันเร่ง (Injector)' },
+    { id: 'rel_inj_throttle', from: 'rider_inject', to: 'cmd_inject_throttle' },
     { id: 'rel_inj_ecu', from: 'cmd_inject_throttle', to: 'ecu_inject', handledBy: true },
     { id: 'rel_ecu_sensor', from: 'ecu_inject', to: 'evt_sensor_read' },
     { id: 'rel_sensor_calc', from: 'evt_sensor_read', to: 'policy_calc_fuel' },
@@ -354,39 +418,6 @@ export const engineSchema: UnifiedFlowchartSchema = {
     { id: 'rel_cold_auto_evt', from: 'fuel_injector3', to: 'evt_inject_cold_auto' },
   ],
   journeys: [
-    {
-      id: '4-stroke-cycle',
-      label: 'วัฏจักรเครื่องยนต์ 4 จังหวะ และการส่งกำลัง',
-      description: 'ขั้นตอนการทำงานตั้งแต่บิดคันเร่งจนถึงการส่งกำลังไปที่ล้อ',
-      steps: [
-        { nodeId: 'throttle', description: 'ผู้ขับขี่บิดคันเร่งเพื่อเพิ่มความเร็ว' },
-        { nodeId: 'carburetor', description: 'คาร์บูเรเตอร์ผสมน้ำมันและอากาศ' },
-        { nodeId: 'intake', description: '1. ดูด: วาล์วไอดีเปิด ลูกสูบเลื่อนลง ดูดไอดีเข้ากระบอกสูบ' },
-        { nodeId: 'compression', description: '2. อัด: ลูกสูบเลื่อนขึ้น อัดไอดีให้มีความหนาแน่นเตรียมจุดระเบิด' },
-        { nodeId: 'combustion', description: '3. ระเบิด: หัวเทียนจุดประกายไฟ ดันลูกสูบลงอย่างแรง สร้างกำลัง' },
-        { nodeId: 'exhaust', description: '4. คาย: วาล์วไอเสียเปิด ลูกสูบเลื่อนขึ้นดันไอเสียออก' },
-        { nodeId: 'power_transfer', description: 'กำลังจากการจุดระเบิดส่งผ่านก้านสูบลงสู่เพลาข้อเหวี่ยง' },
-        { nodeId: 'shift_gear', description: 'เกียร์ทดรอบและส่งกำลังผ่านโซ่/สายพาน' },
-        { nodeId: 'transmission', description: 'ระบบเกียร์และโซ่/สายพาน รับกำลังมาเพื่อทดรอบ' },
-        { nodeId: 'wheel_spin', description: 'ส่งกำลังไปที่ล้อหลัง ทำให้มอเตอร์ไซค์ขับเคลื่อนไปข้างหน้า' },
-      ]
-    },
-    {
-      id: 'choke-cold-start',
-      label: 'ระบบโช้คและการสตาร์ทเครื่องเย็น (Choke & Cold Start)',
-      description: 'การทำงานของโช้คในรถคาร์บูเรเตอร์ เมื่อต้องการสตาร์ทเครื่องเย็น',
-      steps: [
-        { nodeId: 'cmd_choke_on', description: 'ผู้ขับขี่เปิดโช้ค (หรือบิดคิลสวิตช์ที่รวมโช้ค) ก่อนสตาร์ทเครื่องเย็น' },
-        { nodeId: 'choke_valve', description: 'วาล์วโช้คปิดช่องอากาศบางส่วน จำกัดปริมาณอากาศที่เข้าสู่คาร์บูเรเตอร์' },
-        { nodeId: 'evt_rich_mix', description: 'สัดส่วนน้ำมัน:อากาศเพิ่มขึ้น (ส่วนผสมรวยน้ำมัน) เหมาะกับเครื่องเย็น' },
-        { nodeId: 'cmd_cold_start', description: 'เครื่องยนต์เริ่มทำงานด้วยส่วนผสมที่รวยน้ำมัน' },
-        { nodeId: 'engine_warm', description: 'เครื่องยนต์ค่อยๆ อุ่นตัว อุณหภูมิสูงขึ้นเรื่อยๆ' },
-        { nodeId: 'evt_engine_warm', description: 'เครื่องอุ่นถึงอุณหภูมิทำงานปกติแล้ว' },
-        { nodeId: 'cmd_choke_off', description: 'ปิดโช้ค เปิดช่องอากาศกลับสู่ปกติ' },
-        { nodeId: 'evt_normal_mix', description: 'ส่วนผสมกลับสู่อัตราส่วนมาตรฐาน เครื่องทำงานเรียบ' },
-        { nodeId: 'evt_choke_forget', description: 'หากลืมปิดโช้คขณะวิ่ง จะทำให้หัวเทียนสกปรก กินน้ำมัน และรถเร่งไม่ขึ้น' },
-      ]
-    },
     {
       id: 'fuel-injection',
       label: 'ระบบหัวฉีด (Fuel Injection)',
@@ -408,7 +439,7 @@ export const engineSchema: UnifiedFlowchartSchema = {
 
 /**
  * Brake System
- * Completely independent from engine/fuel systems.
+ * Completely independent from all other systems.
  */
 export const brakeSchema: UnifiedFlowchartSchema = {
   entities: {

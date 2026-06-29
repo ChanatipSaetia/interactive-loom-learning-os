@@ -6,6 +6,8 @@ import {
   motorcycleFlashcards,
   motorcycleTradeoffs,
   engineSchema,
+  chokeSchema,
+  fuelInjectSchema,
   brakeSchema,
   problemTaxonomy,
 } from './data'
@@ -41,8 +43,22 @@ export const motorcycleSections: SectionConfig[] = [
   {
     type: 'flowchart',
     props: {
-      title: 'ระบบเครื่องยนต์และเชื้อเพลิง (Engine & Fuel Systems)',
+      title: 'เครื่องยนต์ 4 จังหวะและการส่งกำลัง (4-Stroke Engine)',
       schema: engineSchema,
+    },
+  },
+  {
+    type: 'flowchart',
+    props: {
+      title: 'ระบบโช้คและการสตาร์ทเครื่องเย็น (Choke & Cold Start)',
+      schema: chokeSchema,
+    },
+  },
+  {
+    type: 'flowchart',
+    props: {
+      title: 'ระบบหัวฉีด (Fuel Injection)',
+      schema: fuelInjectSchema,
     },
   },
   {
