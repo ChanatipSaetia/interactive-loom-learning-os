@@ -241,6 +241,16 @@ export const chokeSchema: UnifiedFlowchartSchema = {
       title: 'ใช้ส่วนผสมรวยน้ำมัน (Rich Mix Decision)',
       desc: 'เลือกเส้นทาง: สตาร์ทเครื่องหรือใช้งานต่อ'
     },
+    'policy_choke_start': {
+      type: TYPES.POLICY,
+      title: 'เลือกสตาร์ทเครื่อง (Choose Cold Start)',
+      desc: 'สตาร์ทเครื่องด้วยส่วนผสมรวยน้ำมัน'
+    },
+    'policy_choke_forget': {
+      type: TYPES.POLICY,
+      title: 'ลืมปิดโช้ค (Forgot Choke)',
+      desc: 'บิดคันเร่งขณะที่โช้คยังเปิดอยู่'
+    },
     'cmd_cold_start': {
       type: TYPES.COMMAND,
       title: 'สตาร์ทเครื่องเย็น (Cold Start Engine)',
@@ -287,14 +297,16 @@ export const chokeSchema: UnifiedFlowchartSchema = {
     { id: 'rel_choke_valve', from: 'cmd_choke_on', to: 'choke_valve', handledBy: true },
     { id: 'rel_choke_rich', from: 'choke_valve', to: 'evt_rich_mix' },
     { id: 'rel_rich_policy', from: 'evt_rich_mix', to: 'policy_choke_use' },
-    { id: 'rel_choke_to_intake', from: 'policy_choke_use', to: 'cmd_cold_start', label: 'สตาร์ทเครื่อง' },
+    { id: 'rel_choke_start', from: 'evt_rich_mix', to: 'policy_choke_start', label: 'สตาร์ทเครื่อง' },
+    { id: 'rel_start_to_intake', from: 'policy_choke_start', to: 'cmd_cold_start' },
     { id: 'rel_cold_engine', from: 'cmd_cold_start', to: 'engine_warm', handledBy: true },
     { id: 'rel_engine_warm', from: 'engine_warm', to: 'evt_engine_warm' },
     { id: 'rel_warm_policy', from: 'evt_engine_warm', to: 'policy_choke_off' },
     { id: 'rel_choke_off_cmd', from: 'policy_choke_off', to: 'cmd_choke_off' },
     { id: 'rel_choke_off_valve', from: 'cmd_choke_off', to: 'choke_valve2', handledBy: true },
     { id: 'rel_choke_off_normal', from: 'choke_valve2', to: 'evt_normal_mix' },
-    { id: 'rel_choke_forget', from: 'policy_choke_use', to: 'cmd_ride_choke', label: 'ลืมปิดโช้ค', dashed: true },
+    { id: 'rel_choke_forget', from: 'evt_rich_mix', to: 'policy_choke_forget', label: 'ลืมปิดโช้ค', dashed: true },
+    { id: 'rel_forget_to_ride', from: 'policy_choke_forget', to: 'cmd_ride_choke' },
     { id: 'rel_ride_choke_valve', from: 'cmd_ride_choke', to: 'choke_valve3', handledBy: true },
     { id: 'rel_ride_choke_evt', from: 'choke_valve3', to: 'evt_choke_forget' },
   ],
@@ -365,6 +377,16 @@ export const fuelInjectSchema: UnifiedFlowchartSchema = {
       title: 'คำนวณอัตราส่วนผสม (Calculate Fuel Ratio)',
       desc: 'ECU คำนวณปริมาณน้ำมันที่ควรฉีด'
     },
+    'policy_fuel_normal': {
+      type: TYPES.POLICY,
+      title: 'ฉีดน้ำมันปกติ (Normal Injection)',
+      desc: 'ECU สั่งหัวฉีดพ่นน้ำมันตามสภาวะปกติ'
+    },
+    'policy_fuel_cold': {
+      type: TYPES.POLICY,
+      title: 'เพิ่มส่วนผสมอัตโนมัติ (Auto Cold Enrichment)',
+      desc: 'ECU เพิ่มน้ำมันอัตโนมัติเมื่อเครื่องเย็น'
+    },
     'cmd_inject_fuel': {
       type: TYPES.COMMAND,
       title: 'สั่งงานหัวฉีด (Activate Injector)',
@@ -424,7 +446,10 @@ export const fuelInjectSchema: UnifiedFlowchartSchema = {
     { id: 'rel_atomize_precise', from: 'evt_fuel_atomized', to: 'cmd_precise_mix' },
     { id: 'rel_precise_injector', from: 'cmd_precise_mix', to: 'fuel_injector2', handledBy: true },
     { id: 'rel_precise_evt', from: 'fuel_injector2', to: 'evt_precise_mix' },
-    { id: 'rel_inject_cold', from: 'policy_calc_fuel', to: 'cmd_inject_cold', label: 'เครื่องเย็น' },
+    { id: 'rel_calc_normal', from: 'evt_fuel_atomized', to: 'policy_fuel_normal', label: 'ปกติ' },
+    { id: 'rel_normal_to_precise', from: 'policy_fuel_normal', to: 'cmd_precise_mix' },
+    { id: 'rel_calc_cold', from: 'evt_fuel_atomized', to: 'policy_fuel_cold', label: 'เครื่องเย็น', dashed: true },
+    { id: 'rel_cold_to_inject', from: 'policy_fuel_cold', to: 'cmd_inject_cold' },
     { id: 'rel_cold_injector', from: 'cmd_inject_cold', to: 'fuel_injector3', handledBy: true },
     { id: 'rel_cold_auto_evt', from: 'fuel_injector3', to: 'evt_inject_cold_auto' },
   ],
@@ -534,6 +559,16 @@ export const brakeSchema: UnifiedFlowchartSchema = {
       title: 'เบรกร้อนเกินไป (Brake Overheat Check)',
       desc: 'หากเบรกใช้งานหนักเกินไป จะเกิดอาการเบรกจม'
     },
+    'policy_brake_normal': {
+      type: TYPES.POLICY,
+      title: 'เบรกทำงานปกติ (Normal Brake)',
+      desc: 'เบรกทำงานตามสภาวะปกติ'
+    },
+    'policy_brake_fade': {
+      type: TYPES.POLICY,
+      title: 'เบรกจม (Brake Fade)',
+      desc: 'ประสิทธิภาพเบรกลดลงเพราะความร้อนสูง'
+    },
     'evt_brake_fade': {
       type: TYPES.EVENT,
       title: 'เบรกจม (Brake Fade)',
@@ -565,10 +600,12 @@ export const brakeSchema: UnifiedFlowchartSchema = {
     { id: 'rel_caliper_slow', from: 'brake_caliper', to: 'evt_wheel_slowed' },
     { id: 'rel_caliper_heat', from: 'brake_caliper', to: 'evt_brake_heat' },
     { id: 'rel_heat_check', from: 'evt_brake_heat', to: 'policy_brake_overheat' },
-    { id: 'rel_overheat_fade', from: 'policy_brake_overheat', to: 'cmd_brake_fade', label: 'ร้อนเกินไป' },
+    { id: 'rel_overheat_fade', from: 'evt_brake_heat', to: 'policy_brake_fade', label: 'ร้อนเกินไป', dashed: true },
+    { id: 'rel_fade_to_action', from: 'policy_brake_fade', to: 'cmd_brake_fade' },
     { id: 'rel_fade_caliper', from: 'cmd_brake_fade', to: 'brake_caliper2', handledBy: true },
     { id: 'rel_fade_evt', from: 'brake_caliper2', to: 'evt_brake_fade' },
-    { id: 'rel_overheat_normal', from: 'policy_brake_overheat', to: 'cmd_brake_normal', label: 'ปกติ' },
+    { id: 'rel_overheat_normal', from: 'evt_brake_heat', to: 'policy_brake_normal', label: 'ปกติ' },
+    { id: 'rel_normal_to_action', from: 'policy_brake_normal', to: 'cmd_brake_normal' },
     { id: 'rel_normal_caliper', from: 'cmd_brake_normal', to: 'brake_caliper3', handledBy: true },
     { id: 'rel_normal_evt', from: 'brake_caliper3', to: 'evt_brake_normal' },
   ],
