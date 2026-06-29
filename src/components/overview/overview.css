@@ -22,13 +22,13 @@ html[data-theme='recipebook'] .overview-page-title {
   @apply text-base text-muted-foreground leading-relaxed;
 }
 
-/* Controls (search + filters) */
+/* Controls — two rows on mobile, one row on sm+ */
 .overview-controls {
-  @apply flex flex-wrap items-center gap-4 mb-6;
+  @apply flex flex-col sm:flex-row items-start sm:items-center gap-2 mb-4;
 }
 
 .overview-search {
-  @apply relative flex-1 min-w-[240px];
+  @apply relative w-full sm:flex-1 min-w-[160px];
 }
 
 .overview-search-icon {
@@ -49,90 +49,64 @@ html[data-theme='recipebook'] .overview-page-title {
   @apply text-muted-foreground;
 }
 
-.overview-filters {
-  @apply flex flex-wrap gap-2;
+/* Dropdowns — full width row on mobile, inline on sm+ */
+.overview-dropdowns {
+  @apply flex flex-row items-center gap-2 w-full sm:w-auto;
 }
 
-/* Table */
-.overview-table-wrapper {
-  @apply rounded-md border border-border overflow-hidden;
+.overview-sort-select {
+  @apply px-2 py-1 rounded-md border border-border bg-card text-[13px] cursor-pointer transition-colors outline-none;
 }
 
-.overview-table {
-  @apply w-full;
-  border-collapse: collapse;
+.overview-sort-select:focus {
+  @apply border-ring;
 }
 
-.overview-table-header {
-  @apply px-4 py-3 text-left text-[13px] font-semibold uppercase tracking-wider border-b border-border;
-  color: var(--ctp-overlay2);
-  font-family: var(--font-mono);
-  background-color: var(--ctp-mantle);
+/* Cards */
+.overview-cards {
+  @apply flex flex-col gap-3;
 }
 
-html[data-theme='medicare'] .overview-table-header,
-html[data-theme='recipebook'] .overview-table-header {
-  background-color: var(--muted);
-  color: var(--muted-foreground);
+.overview-card {
+  @apply block rounded-lg border border-border bg-card px-4 py-3 transition-colors no-underline;
 }
 
-.overview-table-header-button {
-  @apply flex items-center gap-2 bg-none border-none cursor-pointer text-[13px] font-semibold uppercase tracking-wider transition-colors p-0;
-  color: var(--ctp-overlay2);
-  font-family: var(--font-mono);
+.overview-card:hover {
+  @apply border-ring bg-accent;
 }
 
-html[data-theme='medicare'] .overview-table-header-button,
-html[data-theme='recipebook'] .overview-table-header-button {
-  color: var(--muted-foreground);
+.overview-card-header {
+  @apply flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1 mb-1;
 }
 
-.overview-table-header-button:hover {
-  @apply text-foreground;
-}
-
-.overview-table-row {
-  @apply transition-colors;
-}
-
-.overview-table-row:hover {
-  @apply bg-accent;
-}
-
-.overview-table-cell {
-  @apply px-4 py-3 text-base border-b border-border align-middle;
-}
-
-.overview-table-link {
-  @apply no-underline font-medium transition-colors;
+.overview-card-title {
+  @apply font-medium text-base transition-colors;
   color: var(--action-blue);
   font-family: var(--font-body);
 }
 
-.overview-table-link:hover {
-  @apply underline;
+.overview-card:hover .overview-card-title {
   color: var(--focus-blue);
 }
 
-.overview-table-category {
-  @apply inline-block rounded-full px-2 py-0.5 text-[11px] font-mono border;
+.overview-card-category {
+  @apply inline-block rounded-full px-2 py-0.5 text-[11px] font-mono border self-start;
   color: var(--ctp-mauve);
   background-color: rgba(202, 158, 230, 0.12);
   border-color: rgba(202, 158, 230, 0.25);
 }
 
-.overview-table-description {
-  @apply text-muted-foreground;
-  max-width: 400px;
+.overview-card-description {
+  @apply text-sm text-muted-foreground leading-relaxed m-0;
 }
 
-.overview-table-empty {
-  @apply px-4 py-8 text-center text-muted-foreground;
+.overview-empty {
+  @apply py-8 text-center text-muted-foreground rounded-lg border border-border;
 }
 
 /* Pagination */
 .overview-pagination {
-  @apply flex items-center justify-between mt-4 flex-wrap gap-4;
+  @apply flex flex-row items-center justify-between mt-4 gap-3 flex-wrap;
 }
 
 .overview-pagination-info {

@@ -9,7 +9,7 @@ export function App() {
   return (
     <div className="app-layout">
       <ScrollProgress variant="bar" position="top" height={3} />
-      <TopNav topics={routes} />
+      <TopNav />
       <main className="main-content">
         <Routes>
           <Route path="/" element={<OverviewPage topics={routes} />} />

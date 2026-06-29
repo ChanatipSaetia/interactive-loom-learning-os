@@ -21,7 +21,7 @@
 
 .topnav-title {
   font-family: var(--font-display);
-  @apply text-[15px] font-semibold tracking-tight whitespace-nowrap;
+  @apply text-[15px] font-semibold tracking-tight whitespace-nowrap no-underline cursor-pointer;
   color: var(--ctp-lavender);
 }
 

@@ -1,8 +1,7 @@
-import { useState } from 'react'
+import { useState, useRef, useEffect, useMemo } from 'react'
 import { Link } from 'react-router-dom'
-import { Search, ChevronUp, ChevronDown, ChevronsUpDown } from 'lucide-react'
+import { Search, ChevronDown, Check } from 'lucide-react'
 import type { TopicRoute } from '../../core/routes'
-import { useTopicFiltering, type SortDirection, type SortColumn } from '../../core/hooks/useTopicFiltering'
 import { usePagination } from '../../core/hooks/usePagination'
 import { ScrollReveal } from '../motion/scroll-reveal'
 import { Dropdown } from '../motion/dropdown'
@@ -11,47 +10,168 @@ import './overview.css'
 
 const rowsPerPageOptions = [5, 10, 20]
 
+const SORT_OPTIONS = [
+  { value: '', label: 'Sort by' },
+  { value: 'label-asc', label: 'Topic (A-Z)' },
+  { value: 'label-desc', label: 'Topic (Z-A)' },
+  { value: 'category-asc', label: 'Category (A-Z)' },
+  { value: 'category-desc', label: 'Category (Z-A)' },
+  { value: 'description-asc', label: 'Description (A-Z)' },
+  { value: 'description-desc', label: 'Description (Z-A)' },
+]
+
+function parseSortValue(val: string): { column: string; direction: string } {
+  if (!val) return { column: '', direction: '' }
+  const [column, direction] = val.split('-')
+  return { column, direction }
+}
+
+function MultiSelectDropdown({
+  options,
+  selected,
+  onChange,
+  placeholder,
+  dataTestId,
+}: {
+  options: string[]
+  selected: string[]
+  onChange: (values: string[]) => void
+  placeholder?: string
+  dataTestId?: string
+}) {
+  const [isOpen, setIsOpen] = useState(false)
+  const ref = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    const handleOutside = (e: MouseEvent) => {
+      if (ref.current && !ref.current.contains(e.target as Node)) {
+        setIsOpen(false)
+      }
+    }
+    document.addEventListener('mousedown', handleOutside)
+    return () => document.removeEventListener('mousedown', handleOutside)
+  }, [])
+
+  const allSelected = selected.length === options.length
+  const displayLabel = allSelected
+    ? 'All'
+    : selected.length === 0
+      ? placeholder || 'Filter'
+      : `${selected.length} selected`
+
+  const toggleOption = (opt: string) => {
+    const next = selected.includes(opt)
+      ? selected.filter((s) => s !== opt)
+      : [...selected, opt]
+    onChange(next)
+  }
+
+  const toggleAll = () => {
+    onChange(allSelected ? [] : options)
+  }
+
+  return (
+    <div ref={ref} className="relative inline-block min-w-[140px]" data-testid={dataTestId}>
+      <button
+        type="button"
+        onClick={() => setIsOpen((p) => !p)}
+        className="flex h-9 w-full items-center justify-between gap-2 rounded-lg border border-border bg-card px-3 py-2 text-sm text-foreground transition-colors hover:border-accent outline-none focus:border-accent"
+        aria-haspopup="listbox"
+        aria-expanded={isOpen}
+      >
+        <span className="truncate">{displayLabel}</span>
+        <ChevronDown
+          className={cn(
+            "h-4 w-4 shrink-0 text-muted-foreground transition-transform duration-200",
+            isOpen && "rotate-180",
+          )}
+        />
+      </button>
+      {isOpen && (
+        <div
+          className="absolute top-full left-0 z-50 mt-1 w-full max-h-[240px] overflow-y-auto rounded-lg border border-border bg-card p-1 shadow-lg"
+          role="listbox"
+        >
+          <button
+            type="button"
+            onClick={toggleAll}
+            className="flex w-full items-center gap-2 rounded-md px-2 py-1.5 text-sm text-muted-foreground transition-colors hover:bg-primary/5 hover:text-foreground"
+          >
+            <span className="flex h-4 w-4 items-center justify-center rounded border border-border">
+              {allSelected && <Check className="h-3 w-3" />}
+            </span>
+            <span className="font-medium">All</span>
+          </button>
+          {options.map((opt) => {
+            const checked = selected.includes(opt)
+            return (
+              <button
+                key={opt}
+                type="button"
+                onClick={() => toggleOption(opt)}
+                className="flex w-full items-center gap-2 rounded-md px-2 py-1.5 text-sm text-muted-foreground transition-colors hover:bg-primary/5 hover:text-foreground"
+                role="option"
+                aria-selected={checked}
+                data-testid={`filter-chip-${opt}`}
+              >
+                <span className="flex h-4 w-4 items-center justify-center rounded border border-border">
+                  {checked && <Check className="h-3 w-3" />}
+                </span>
+                <span>{opt}</span>
+              </button>
+            )
+          })}
+        </div>
+      )}
+    </div>
+  )
+}
+
 export function OverviewPage({ topics }: { topics: TopicRoute[] }) {
   const [search, setSearch] = useState('')
-  const [activeCategory, setActiveCategory] = useState('all')
-  const [sortColumn, setSortColumn] = useState<SortColumn>(null)
-  const [sortDirection, setSortDirection] = useState<SortDirection>(null)
+  const [selectedCategories, setSelectedCategories] = useState<string[]>([])
+  const [sortValue, setSortValue] = useState('')
   const [currentPage, setCurrentPage] = useState(1)
   const [rowsPerPage, setRowsPerPage] = useState(10)
 
-  const { categories, filteredTopics } = useTopicFiltering({
-    topics, search, activeCategory, sortColumn, sortDirection,
-  })
+  const { column: sortColumn, direction: sortDirection } = parseSortValue(sortValue)
+
+  const categories = useMemo(() => {
+    const cats = new Set(topics.map((t) => t.category))
+    return Array.from(cats).sort()
+  }, [topics])
+
+  const filteredTopics = useMemo(() => {
+    let result = [...topics]
+
+    if (search.trim()) {
+      const q = search.toLowerCase()
+      result = result.filter(
+        (t) =>
+          t.label.toLowerCase().includes(q) ||
+          t.description.toLowerCase().includes(q),
+      )
+    }
+
+    if (selectedCategories.length > 0) {
+      result = result.filter((t) => selectedCategories.includes(t.category))
+    }
+
+    if (sortColumn && sortDirection) {
+      result.sort((a, b) => {
+        const aVal = (a as unknown as Record<string, string>)[sortColumn]
+        const bVal = (b as unknown as Record<string, string>)[sortColumn]
+        const cmp = aVal.localeCompare(bVal)
+        return sortDirection === 'asc' ? cmp : -cmp
+      })
+    }
+
+    return result
+  }, [topics, search, selectedCategories, sortColumn, sortDirection])
 
   const { pageItems: pagedTopics, totalPages, startIdx, endIdx, totalItems } = usePagination({
     items: filteredTopics, page: currentPage, pageSize: rowsPerPage,
   })
-
-  const handleSort = (column: SortColumn) => {
-    if (sortColumn === column) {
-      if (sortDirection === 'asc') {
-        setSortDirection('desc')
-      } else if (sortDirection === 'desc') {
-        setSortColumn(null)
-        setSortDirection(null)
-      } else {
-        setSortDirection('asc')
-      }
-    } else {
-      setSortColumn(column)
-      setSortDirection('asc')
-    }
-    setCurrentPage(1)
-  }
-
-  const getSortIcon = (column: SortColumn) => {
-    if (sortColumn !== column) {
-      return <ChevronsUpDown className="h-3.5 w-3.5" />
-    }
-    return sortDirection === 'asc'
-      ? <ChevronUp className="h-3.5 w-3.5" />
-      : <ChevronDown className="h-3.5 w-3.5" />
-  }
 
   return (
     <div className="overview-page">
@@ -64,105 +184,64 @@ export function OverviewPage({ topics }: { topics: TopicRoute[] }) {
         </div>
       </ScrollReveal>
 
-      <ScrollReveal delay={0.1}>
-        <div className="overview-controls">
-          <div className="overview-search">
-            <Search className="overview-search-icon h-4 w-4" />
-            <input
-              type="text"
-              className="overview-search-input"
-              placeholder="Search topics..."
-              value={search}
-              onChange={(e) => { setSearch(e.target.value); setCurrentPage(1) }}
-              data-testid="overview-search"
-            />
-          </div>
-
-          <div className="overview-filters" data-testid="overview-filters">
-            {categories.map((cat) => (
-              <button
-                key={cat}
-                className={cn(
-                  "overview-filter-chip rounded-full border px-3.5 py-1.5 text-sm font-medium transition-colors",
-                  activeCategory === cat
-                    ? "bg-primary border-primary text-primary-foreground overview-filter-chip-active"
-                    : "border-border bg-card text-muted-foreground hover:text-foreground hover:bg-accent",
-                )}
-                onClick={() => { setActiveCategory(cat); setCurrentPage(1) }}
-                data-testid={`filter-chip-${cat}`}
-              >
-                {cat === 'all' ? 'All' : cat}
-              </button>
-            ))}
-          </div>
+      <div className="overview-controls">
+        <div className="overview-search">
+          <Search className="overview-search-icon h-4 w-4" />
+          <input
+            type="text"
+            className="overview-search-input"
+            placeholder="Search topics..."
+            value={search}
+            onChange={(e) => { setSearch(e.target.value); setCurrentPage(1) }}
+            data-testid="overview-search"
+          />
         </div>
-      </ScrollReveal>
+
+        <div className="overview-dropdowns">
+          <MultiSelectDropdown
+            options={categories}
+            selected={selectedCategories}
+            onChange={(vals) => { setSelectedCategories(vals); setCurrentPage(1) }}
+            placeholder="Categories"
+            dataTestId="overview-filters"
+          />
+
+          <Dropdown
+            value={sortValue}
+            onChange={(val) => { setSortValue(val); setCurrentPage(1) }}
+            options={SORT_OPTIONS}
+            data-testid="sort-dropdown"
+            triggerClassName="overview-sort-select"
+            className="overview-sort-dropdown min-w-[130px]"
+            native={true}
+          />
+        </div>
+      </div>
 
       <ScrollReveal delay={0.15}>
-        <div className="overview-table-wrapper">
-          <table className="overview-table" data-testid="overview-table">
-            <thead>
-              <tr>
-                <th className="overview-table-header">
-                  <button
-                    className="overview-table-header-button"
-                    onClick={() => handleSort('label')}
-                    data-testid="sort-label"
-                  >
-                    Topic {getSortIcon('label')}
-                  </button>
-                </th>
-                <th className="overview-table-header">
-                  <button
-                    className="overview-table-header-button"
-                    onClick={() => handleSort('category')}
-                    data-testid="sort-category"
-                  >
-                    Category {getSortIcon('category')}
-                  </button>
-                </th>
-                <th className="overview-table-header">
-                  <button
-                    className="overview-table-header-button"
-                    onClick={() => handleSort('description')}
-                    data-testid="sort-description"
-                  >
-                    Description {getSortIcon('description')}
-                  </button>
-                </th>
-              </tr>
-            </thead>
-            <tbody>
-              {pagedTopics.length === 0 ? (
-                <tr>
-                  <td colSpan={3} className="overview-table-empty">
-                    No topics found.
-                  </td>
-                </tr>
-              ) : (
-                pagedTopics.map((topic, idx) => (
-                  <ScrollReveal key={topic.id} as="tr" delay={0.2 + idx * 0.05} y={8} blur={4} className="overview-table-row">
-                      <td className="overview-table-cell">
-                        <Link
-                          to={topic.path}
-                          className="overview-table-link"
-                          data-testid={`topic-link-${topic.id}`}
-                        >
-                          {topic.label}
-                        </Link>
-                      </td>
-                      <td className="overview-table-cell">
-                        <span className="overview-table-category">{topic.category}</span>
-                      </td>
-                      <td className="overview-table-cell overview-table-description">
-                        {topic.description}
-                      </td>
-                  </ScrollReveal>
-                ))
-              )}
-            </tbody>
-          </table>
-        </div>
+        {pagedTopics.length === 0 ? (
+          <div className="overview-empty" data-testid="overview-table">
+            No topics found.
+          </div>
+        ) : (
+          <div className="overview-cards" data-testid="overview-table">
+            {pagedTopics.map((topic, idx) => (
+              <ScrollReveal key={topic.id} delay={0.2 + idx * 0.05} y={8} blur={4}>
+                <Link
+                  to={topic.path}
+                  className="overview-card"
+                  data-testid={`topic-link-${topic.id}`}
+                >
+                  <div className="overview-card-header">
+                    <span className="overview-card-title">{topic.label}</span>
+                    <span className="overview-card-category">{topic.category}</span>
+                  </div>
+                  <p className="overview-card-description">{topic.description}</p>
+                </Link>
+              </ScrollReveal>
+            ))}
+          </div>
+        )}
       </ScrollReveal>
 
       {totalItems > 0 && (
