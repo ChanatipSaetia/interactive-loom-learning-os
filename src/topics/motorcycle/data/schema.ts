@@ -174,6 +174,18 @@ export const engineSchema: UnifiedFlowchartSchema = {
       title: 'แคลิเพอร์และจานเบรก (Brake Caliper & Disc)',
       desc: 'ระบบสร้างแรงเสียดทานเพื่อหน่วงล้อ'
     },
+    'brake_caliper2': {
+      type: TYPES.AGGREGATE,
+      title: 'แคลิเพอร์และจานเบรก (Brake Caliper & Disc) 2',
+      desc: 'เบรกจม',
+      collapsedTo: 'brake_caliper'
+    },
+    'brake_caliper3': {
+      type: TYPES.AGGREGATE,
+      title: 'แคลิเพอร์และจานเบรก (Brake Caliper & Disc) 3',
+      desc: 'เบรกปกติ',
+      collapsedTo: 'brake_caliper'
+    },
     'evt_wheel_slowed': {
       type: TYPES.EVENT,
       title: 'ล้อช้าลง (Wheel Slowed)',
@@ -220,6 +232,18 @@ export const engineSchema: UnifiedFlowchartSchema = {
       type: TYPES.AGGREGATE,
       title: 'วาล์วโช้ค (Choke Valve)',
       desc: 'ควบคุมปริมาณอากาศที่เข้าสู่คาร์บูเรเตอร์'
+    },
+    'choke_valve2': {
+      type: TYPES.AGGREGATE,
+      title: 'วาล์วโช้ค (Choke Valve) 2',
+      desc: 'วาล์วโช้คในขั้นตอนปิดโช้ค',
+      collapsedTo: 'choke_valve'
+    },
+    'choke_valve3': {
+      type: TYPES.AGGREGATE,
+      title: 'วาล์วโช้ค (Choke Valve) 3',
+      desc: 'วาล์วโช้คในขั้นตอนลืมปิดโช้ค',
+      collapsedTo: 'choke_valve'
     },
     'evt_rich_mix': {
       type: TYPES.EVENT,
@@ -304,6 +328,18 @@ export const engineSchema: UnifiedFlowchartSchema = {
       title: 'หัวฉีด (Fuel Injector)',
       desc: 'พ่นละอองน้ำมันเชื้อเพลิงเข้าสู่ท่อไอดี'
     },
+    'fuel_injector2': {
+      type: TYPES.AGGREGATE,
+      title: 'หัวฉีด (Fuel Injector) 2',
+      desc: 'หัวฉีดในขั้นตอนส่วนผสมแม่นยำ',
+      collapsedTo: 'fuel_injector'
+    },
+    'fuel_injector3': {
+      type: TYPES.AGGREGATE,
+      title: 'หัวฉีด (Fuel Injector) 3',
+      desc: 'หัวฉีดในขั้นตอนเพิ่มส่วนผสมอัตโนมัติ',
+      collapsedTo: 'fuel_injector'
+    },
     'evt_fuel_atomized': {
       type: TYPES.EVENT,
       title: 'ละอองน้ำมันเข้าสู่ท่อไอดี',
@@ -378,9 +414,11 @@ export const engineSchema: UnifiedFlowchartSchema = {
     { id: 'rel_caliper_heat', from: 'brake_caliper', to: 'evt_brake_heat' },
     { id: 'rel_heat_check', from: 'evt_brake_heat', to: 'policy_brake_overheat' },
     { id: 'rel_overheat_fade', from: 'policy_brake_overheat', to: 'cmd_brake_fade', label: 'ร้อนเกินไป' },
-    { id: 'rel_fade_evt', from: 'cmd_brake_fade', to: 'evt_brake_fade' },
+    { id: 'rel_fade_caliper', from: 'cmd_brake_fade', to: 'brake_caliper2', handledBy: true },
+    { id: 'rel_fade_evt', from: 'brake_caliper2', to: 'evt_brake_fade' },
     { id: 'rel_overheat_normal', from: 'policy_brake_overheat', to: 'cmd_brake_normal', label: 'ปกติ' },
-    { id: 'rel_normal_evt', from: 'cmd_brake_normal', to: 'evt_brake_normal' },
+    { id: 'rel_normal_caliper', from: 'cmd_brake_normal', to: 'brake_caliper3', handledBy: true },
+    { id: 'rel_normal_evt', from: 'brake_caliper3', to: 'evt_brake_normal' },
 
     // === Choke / Cold Start Flow ===
     { id: 'rel_rider_choke', from: 'rider_choke', to: 'cmd_choke_on' },
@@ -392,9 +430,11 @@ export const engineSchema: UnifiedFlowchartSchema = {
     { id: 'rel_engine_warm', from: 'engine_warm', to: 'evt_engine_warm' },
     { id: 'rel_warm_policy', from: 'evt_engine_warm', to: 'policy_choke_off' },
     { id: 'rel_choke_off_cmd', from: 'policy_choke_off', to: 'cmd_choke_off' },
-    { id: 'rel_choke_off_normal', from: 'cmd_choke_off', to: 'evt_normal_mix' },
+    { id: 'rel_choke_off_valve', from: 'cmd_choke_off', to: 'choke_valve2', handledBy: true },
+    { id: 'rel_choke_off_normal', from: 'choke_valve2', to: 'evt_normal_mix' },
     { id: 'rel_choke_forget', from: 'policy_choke_use', to: 'cmd_ride_choke', label: 'ลืมปิดโช้ค', dashed: true },
-    { id: 'rel_ride_choke_evt', from: 'cmd_ride_choke', to: 'evt_choke_forget' },
+    { id: 'rel_ride_choke_valve', from: 'cmd_ride_choke', to: 'choke_valve3', handledBy: true },
+    { id: 'rel_ride_choke_evt', from: 'choke_valve3', to: 'evt_choke_forget' },
 
     // === Fuel Injection Flow ===
     { id: 'rel_inj_throttle', from: 'rider', to: 'cmd_inject_throttle', label: 'บิดคันเร่ง (Injector)' },
@@ -405,9 +445,11 @@ export const engineSchema: UnifiedFlowchartSchema = {
     { id: 'rel_inject_fuel_act', from: 'cmd_inject_fuel', to: 'fuel_injector', handledBy: true },
     { id: 'rel_inject_atomize', from: 'fuel_injector', to: 'evt_fuel_atomized' },
     { id: 'rel_atomize_precise', from: 'evt_fuel_atomized', to: 'cmd_precise_mix' },
-    { id: 'rel_precise_evt', from: 'cmd_precise_mix', to: 'evt_precise_mix' },
+    { id: 'rel_precise_injector', from: 'cmd_precise_mix', to: 'fuel_injector2', handledBy: true },
+    { id: 'rel_precise_evt', from: 'fuel_injector2', to: 'evt_precise_mix' },
     { id: 'rel_inject_cold', from: 'policy_calc_fuel', to: 'cmd_inject_cold', label: 'เครื่องเย็น' },
-    { id: 'rel_cold_auto_evt', from: 'cmd_inject_cold', to: 'evt_inject_cold_auto' },
+    { id: 'rel_cold_injector', from: 'cmd_inject_cold', to: 'fuel_injector3', handledBy: true },
+    { id: 'rel_cold_auto_evt', from: 'fuel_injector3', to: 'evt_inject_cold_auto' },
   ],
   journeys: [
     {
