@@ -62,6 +62,7 @@ When defining a `UnifiedFlowchartSchema` for a flowchart, strictly follow these 
 - **Command Handlers:** Relations from a `COMMAND` to its handler (an `AGGREGATE` or `EXTERNAL`) must use `handledBy: true`. Point each handler relation at the per-step duplicate (e.g. `cmd_compression -> engine2` with `handledBy: true`), not the canonical node, so each step has its own handler instance.
 - **View Targeting:** Relations should specify `views: ['EVENT_STORMING']` to ensure they render correctly in the Event Storming view.
 - **Node Types:** Standardize on `TYPES.USER`, `TYPES.AGGREGATE`, `TYPES.EXTERNAL`, `TYPES.COMMAND`, `TYPES.EVENT`, and `TYPES.POLICY`.
+- **Aggregate vs. External Systems:** Use `AGGREGATE` for components that belong to the system or library being discussed (e.g., an `AgentExecutor`, `RunnableSequence`, or `PromptTemplate` inside LangChain). Use `EXTERNAL` for real external systems outside your control that are called via API, network, or file — e.g., a database, LLM API (OpenAI, Anthropic), message queue, or third-party service.
 
 ```typescript
   {
