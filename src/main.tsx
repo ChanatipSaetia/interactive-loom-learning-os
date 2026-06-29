@@ -17,6 +17,7 @@ import FlashcardDeck from './sections/flashcards'
 // Topic registration
 import DemoTopic from './topics/demo'
 import MotorcycleTopic from './topics/motorcycle'
+import HaystackTopic from './topics/haystack'
 
 
 SectionRegistry.register('text', TextSection as ComponentType<unknown>)
@@ -27,6 +28,7 @@ SectionRegistry.register('taxonomy-browser', TaxonomyBrowserSection as Component
 SectionRegistry.register('flashcards', FlashcardDeck as ComponentType<unknown>)
 TopicRegistry.register('demo', DemoTopic)
 TopicRegistry.register('motorcycle', MotorcycleTopic)
+TopicRegistry.register('haystack', HaystackTopic)
 
 
 createRoot(document.getElementById('root')!).render(

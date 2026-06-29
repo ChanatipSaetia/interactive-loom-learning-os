@@ -1,6 +1,7 @@
 import type { SectionConfig } from './registry'
 import { demoSections } from '../topics/demo/sections'
 import { motorcycleSections } from '../topics/motorcycle/sections'
+import { haystackSections } from '../topics/haystack/sections'
 
 export interface TopicRoute {
   id: string
@@ -27,5 +28,13 @@ export const routes: TopicRoute[] = [
     category: 'Mechanical',
     description: 'เรียนรู้การทำงาน การบำรุงรักษา และการแก้ปัญหาเบื้องต้นของรถมอเตอร์ไซค์',
     sections: motorcycleSections,
+  },
+  {
+    id: 'haystack',
+    label: 'Haystack 2.x - AI Search Framework',
+    path: '/topics/haystack',
+    category: 'Architecture',
+    description: 'Build modern search applications with LLMs using pipelines, components, and document stores',
+    sections: haystackSections,
   },
  ]
