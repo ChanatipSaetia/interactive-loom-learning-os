@@ -39,6 +39,24 @@ export const engineSchema: UnifiedFlowchartSchema = {
       title: 'กระบอกสูบ (Cylinder / Engine)',
       desc: 'เครื่องยนต์'
     },
+    'engine2': {
+      type: TYPES.AGGREGATE,
+      title: 'กระบอกสูบ (Cylinder / Engine) 2',
+      desc: 'เครื่องยนต์',
+      collapsedTo: 'engine'
+    },
+    'engine3': {
+      type: TYPES.AGGREGATE,
+      title: 'กระบอกสูบ (Cylinder / Engine) 3',
+      desc: 'เครื่องยนต์',
+      collapsedTo: 'engine'
+    },
+    'engine4': {
+      type: TYPES.AGGREGATE,
+      title: 'กระบอกสูบ (Cylinder / Engine) 4',
+      desc: 'เครื่องยนต์',
+      collapsedTo: 'engine'
+    },
     'evt_intake': {
       type: TYPES.EVENT,
       title: 'ไอดีเต็มกระบอกสูบ',
@@ -104,31 +122,36 @@ export const engineSchema: UnifiedFlowchartSchema = {
     { id: 'rel_throttle', from: 'rider', to: 'throttle' },
     { id: 'rel_throttle_ecu', from: 'throttle', to: 'ecu', handledBy: true },
     { id: 'rel_ecu_fuel', from: 'ecu', to: 'fuel_mix' },
-    
+    { id: 'rel_throttle_fuel', from: 'throttle', to: 'fuel_mix' },
+
     // Intake
     { id: 'rel_fuel_p1', from: 'fuel_mix', to: 'policy_start' },
     { id: 'rel_p1_in', from: 'policy_start', to: 'intake' },
     { id: 'rel_in_eng', from: 'intake', to: 'engine', handledBy: true },
     { id: 'rel_eng_ein', from: 'engine', to: 'evt_intake' },
-    
+    { id: 'rel_int_ein', from: 'intake', to: 'evt_intake' },
+
     // Compression
     { id: 'rel_ein_p2', from: 'evt_intake', to: 'policy_comp' },
     { id: 'rel_p2_cmp', from: 'policy_comp', to: 'compression' },
-    { id: 'rel_cmp_eng', from: 'compression', to: 'engine', handledBy: true },
-    { id: 'rel_eng_ecmp', from: 'engine', to: 'evt_comp' },
-    
+    { id: 'rel_cmp_eng', from: 'compression', to: 'engine2', handledBy: true },
+    { id: 'rel_eng_ecmp', from: 'engine2', to: 'evt_comp' },
+    { id: 'rel_cmp_ecmp', from: 'compression', to: 'evt_comp' },
+
     // Combustion
     { id: 'rel_ecmp_p3', from: 'evt_comp', to: 'policy_comb' },
     { id: 'rel_p3_cmb', from: 'policy_comb', to: 'combustion' },
-    { id: 'rel_cmb_eng', from: 'combustion', to: 'engine', handledBy: true },
-    { id: 'rel_eng_ecmb', from: 'engine', to: 'evt_comb' },
-    
+    { id: 'rel_cmb_eng', from: 'combustion', to: 'engine3', handledBy: true },
+    { id: 'rel_eng_ecmb', from: 'engine3', to: 'evt_comp' },
+    { id: 'rel_cmb_ecmb', from: 'combustion', to: 'evt_comp' },
+
     // Exhaust
-    { id: 'rel_ecmb_p4', from: 'evt_comb', to: 'policy_exh' },
+    { id: 'rel_ecmb_p4', from: 'evt_comp', to: 'policy_exh' },
     { id: 'rel_p4_exh', from: 'policy_exh', to: 'exhaust' },
-    { id: 'rel_exh_eng', from: 'exhaust', to: 'engine', handledBy: true },
-    { id: 'rel_eng_power', from: 'engine', to: 'power_transfer' },
-    
+    { id: 'rel_exh_eng', from: 'exhaust', to: 'engine4', handledBy: true },
+    { id: 'rel_eng_exh', from: 'engine4', to: 'power_transfer' },
+    { id: 'rel_exh_power', from: 'exhaust', to: 'power_transfer' },
+
     // Transmission
     { id: 'rel_power_trans', from: 'power_transfer', to: 'transmission' },
     { id: 'rel_trans_wheel', from: 'transmission', to: 'wheel_spin' }
