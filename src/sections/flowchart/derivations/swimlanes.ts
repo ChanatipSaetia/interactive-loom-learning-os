@@ -372,7 +372,7 @@ export function layoutSwimlanes(
   // Sub-rows stacked inside the same lane sit closer together than the full
   // inter-lane row pitch, so a lane that fans out to several nodes stays compact.
   // Lanes are still separated by a full row of band padding (the trailing +1).
-  const SUBROW_GAP = 0.55;
+  const SUBROW_GAP = 0.75;
   const laneStartRow = new Map<string, number>();
   let accRow = 0;
   orderedLanes.forEach(lane => {

@@ -107,6 +107,16 @@ export const engineSchema: UnifiedFlowchartSchema = {
       title: 'ส่งกำลังลงข้อเหวี่ยง',
       desc: 'สร้างแรงบิด (Power Transfer)'
     },
+    'policy_trans': {
+      type: TYPES.POLICY,
+      title: 'เริ่มส่งกำลัง (Start Transmission)',
+      desc: 'ระบบส่งกำลังเตรียมรับแรงบิด'
+    },
+    'shift_gear': {
+      type: TYPES.COMMAND,
+      title: 'ส่งกำลังทดรอบ (Shift Gear)',
+      desc: 'เกียร์ทดรอบและส่งกำลังผ่านโซ่'
+    },
     'transmission': {
       type: TYPES.AGGREGATE,
       title: 'เกียร์และโซ่ (Transmission)',
@@ -138,22 +148,24 @@ export const engineSchema: UnifiedFlowchartSchema = {
     { id: 'rel_eng_ecmp', from: 'engine2', to: 'evt_comp' },
     { id: 'rel_cmp_ecmp', from: 'compression', to: 'evt_comp' },
 
-    // Combustion
+     // Combustion
     { id: 'rel_ecmp_p3', from: 'evt_comp', to: 'policy_comb' },
     { id: 'rel_p3_cmb', from: 'policy_comb', to: 'combustion' },
     { id: 'rel_cmb_eng', from: 'combustion', to: 'engine3', handledBy: true },
-    { id: 'rel_eng_ecmb', from: 'engine3', to: 'evt_comp' },
-    { id: 'rel_cmb_ecmb', from: 'combustion', to: 'evt_comp' },
+    { id: 'rel_eng_ecmb', from: 'engine3', to: 'evt_comb' },
+    { id: 'rel_cmb_ecmb', from: 'combustion', to: 'evt_comb' },
 
     // Exhaust
-    { id: 'rel_ecmb_p4', from: 'evt_comp', to: 'policy_exh' },
+    { id: 'rel_ecmb_p4', from: 'evt_comb', to: 'policy_exh' },
     { id: 'rel_p4_exh', from: 'policy_exh', to: 'exhaust' },
     { id: 'rel_exh_eng', from: 'exhaust', to: 'engine4', handledBy: true },
     { id: 'rel_eng_exh', from: 'engine4', to: 'power_transfer' },
     { id: 'rel_exh_power', from: 'exhaust', to: 'power_transfer' },
 
     // Transmission
-    { id: 'rel_power_trans', from: 'power_transfer', to: 'transmission' },
+    { id: 'rel_power_trans', from: 'power_transfer', to: 'policy_trans' },
+    { id: 'rel_trans_shift', from: 'policy_trans', to: 'shift_gear' },
+    { id: 'rel_shift_trans', from: 'shift_gear', to: 'transmission', handledBy: true },
     { id: 'rel_trans_wheel', from: 'transmission', to: 'wheel_spin' }
   ],
   journeys: [
@@ -169,6 +181,7 @@ export const engineSchema: UnifiedFlowchartSchema = {
         { nodeId: 'combustion', description: '3. ระเบิด: หัวเทียนจุดประกายไฟ ดันลูกสูบลงอย่างแรง สร้างกำลัง' },
         { nodeId: 'exhaust', description: '4. คาย: วาล์วไอเสียเปิด ลูกสูบเลื่อนขึ้นดันไอเสียออก' },
         { nodeId: 'power_transfer', description: 'กำลังจากการจุดระเบิดส่งผ่านก้านสูบลงสู่เพลาข้อเหวี่ยง' },
+        { nodeId: 'shift_gear', description: 'เกียร์ทดรอบและส่งกำลังผ่านโซ่/สายพาน' },
         { nodeId: 'transmission', description: 'ระบบเกียร์และโซ่/สายพาน รับกำลังมาเพื่อทดรอบ' },
         { nodeId: 'wheel_spin', description: 'ส่งกำลังไปที่ล้อหลัง ทำให้มอเตอร์ไซค์ขับเคลื่อนไปข้างหน้า' },
       ]

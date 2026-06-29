@@ -1,6 +1,6 @@
 import type { UnifiedFlowchartSchema, FlowchartRelation, FlowchartViewNode, FlowchartEntity } from '../types';
 import { TYPES, MASTER_MAPPING_MATRIX } from '../types';
-import { getEntityType, deriveRelations, buildCycleFreeGraph, computeTopologicalColumns, compactColumns, isType, computeLayoutInfo } from './utils';
+import { getEntityType, deriveRelations, buildCycleFreeGraph, computeTopologicalColumns, compactColumns, isType, computeLayoutInfo, countOutgoingPolicies } from './utils';
 
 export function deriveDataFlow(
   schema: UnifiedFlowchartSchema,
@@ -14,6 +14,22 @@ export function deriveDataFlow(
     const type = getEntityType(entity);
     const esNode = getESNode(id);
     if (!esNode) return;
+
+    // Exclude POLICY nodes from data flow — they don't represent data transformations.
+    if (type === TYPES.POLICY) return;
+
+    // Keep branching Events (>= 2 outgoing Policies) as Decision nodes.
+    if (type === TYPES.EVENT && countOutgoingPolicies(schema, id) >= 2) {
+      const collapsedId = getCollapsedId(id);
+      if (!localAddedNodes.has(collapsedId)) {
+        localAddedNodes.add(collapsedId);
+        dfNodes.push({
+          id: collapsedId,
+          grid: [esNode.grid ? esNode.grid[0] : 0, 0]
+        });
+      }
+      return;
+    }
 
     const dfType = MASTER_MAPPING_MATRIX[type]?.DATA_FLOW;
     if (dfType) {
@@ -93,9 +109,25 @@ export function deriveDataFlow(
 
   const dfRelations = deriveRelations(schema, 'DATA_FLOW', localAddedNodes, getDataFlowLabel);
 
+  // When multiple edges exist between the same pair of nodes, keep only the one
+  // that goes through an aggregate (its label contains "[aggregate]", "[db]", or "[external]").
+  const dedupedDfRelations = dfRelations.filter(rel => {
+    const hasComponent = rel.label && /\[(aggregate|db|external)\]/.test(rel.label);
+    if (hasComponent) return true;
+
+    // Check if another relation between the same pair exists with a component.
+    const dominated = dfRelations.some(other =>
+      other !== rel &&
+      other.from === rel.from &&
+      other.to === rel.to &&
+      other.label && /\[(aggregate|db|external)\]/.test(other.label)
+    );
+    return !dominated;
+  });
+
   const updatedRelations = [
     ...schema.relations.filter(r => !r.views || !r.views.includes('DATA_FLOW')),
-    ...dfRelations
+    ...dedupedDfRelations
   ];
 
   const nodeIds = dfNodes.map(n => n.id);

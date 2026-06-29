@@ -22,27 +22,45 @@ export function deriveSequence(
   const getSequenceLabel = (pathNodeIds: string[], startId: string): { label: string; dashed?: boolean } => {
     const collapsedStart = getCollapsedId(startId);
 
-    // Find all events on this path and turn them into self-loops on the sender participant!
+     // Find events and commands on this path and create self-loops on the participant
+    // that handles them (the AGGREGATE), not every participant whose path touches them.
     pathNodeIds.forEach(id => {
       const entity = schema.entities[id];
-      if (entity && getEntityType(entity) === TYPES.EVENT) {
-        const loopKey = `${collapsedStart}-${id}`;
+      const entityType = getEntityType(entity);
+
+      if (entityType === TYPES.EVENT) {
+        // Find the AGGREGATE that produces this event (preferred over COMMAND).
+        const aggRel = schema.relations.find(r =>
+          (!r.views || r.views.includes('EVENT_STORMING')) &&
+          r.to === id && !r.handledBy &&
+          getEntityType(schema.entities[r.from]) === TYPES.AGGREGATE
+        );
+        const cmdRel = schema.relations.find(r =>
+          (!r.views || r.views.includes('EVENT_STORMING')) &&
+          r.to === id && !r.handledBy &&
+          getEntityType(schema.entities[r.from]) === TYPES.COMMAND
+        );
+        const producingParticipant = aggRel
+          ? getCollapsedId(aggRel.from)
+          : (cmdRel ? getCollapsedId(cmdRel.from) : collapsedStart);
+
+        const loopKey = `${producingParticipant}-${id}`;
         if (!visitedSelfLoops.has(loopKey)) {
           visitedSelfLoops.add(loopKey);
-          let chronologicalIndex = schema.relations.findIndex(r => 
-            (!r.views || r.views.includes('EVENT_STORMING')) && 
+          let chronologicalIndex = schema.relations.findIndex(r =>
+            (!r.views || r.views.includes('EVENT_STORMING')) &&
             r.to === id
           );
           if (chronologicalIndex === -1) {
-            chronologicalIndex = schema.relations.findIndex(r => 
-              (!r.views || r.views.includes('EVENT_STORMING')) && 
+            chronologicalIndex = schema.relations.findIndex(r =>
+              (!r.views || r.views.includes('EVENT_STORMING')) &&
               r.from === id
             );
           }
           selfLoops.push({
-            id: `derived_sequence_self_${collapsedStart}_${id}_${selfLoops.length}`,
-            from: collapsedStart,
-            to: collapsedStart,
+            id: `derived_sequence_self_${producingParticipant}_${id}_${selfLoops.length}`,
+            from: producingParticipant,
+            to: producingParticipant,
             views: ['SEQUENCE'],
             label: entity.title,
             dashed: true,
@@ -50,22 +68,80 @@ export function deriveSequence(
           });
         }
       }
+
+      if (entityType === TYPES.COMMAND) {
+        // If a COMMAND is handled by an AGGREGATE, self-loop on that AGGREGATE
+        // (same participant executes the command internally).
+        const handledByRel = schema.relations.find(r =>
+          (!r.views || r.views.includes('EVENT_STORMING')) &&
+          r.from === id && r.handledBy &&
+          getEntityType(schema.entities[r.to]) === TYPES.AGGREGATE
+        );
+        if (!handledByRel) return;
+
+        const handlingParticipant = getCollapsedId(handledByRel.to);
+        const loopKey = `${handlingParticipant}-${id}`;
+        if (!visitedSelfLoops.has(loopKey)) {
+          visitedSelfLoops.add(loopKey);
+          let chronologicalIndex = schema.relations.findIndex(r =>
+            (!r.views || r.views.includes('EVENT_STORMING')) &&
+            r.from === id
+          );
+          if (chronologicalIndex === -1) {
+            chronologicalIndex = schema.relations.findIndex(r =>
+              (!r.views || r.views.includes('EVENT_STORMING')) &&
+              r.to === id
+            );
+          }
+          selfLoops.push({
+            id: `derived_sequence_self_${handlingParticipant}_${id}_${selfLoops.length}`,
+            from: handlingParticipant,
+            to: handlingParticipant,
+            views: ['SEQUENCE'],
+            label: entity.title,
+            dashed: false,
+            chronologicalIndex: chronologicalIndex !== -1 ? chronologicalIndex : 999
+          });
+        }
+      }
     });
 
-    const evtNode = pathNodeIds.find(id => getEntityType(schema.entities[id]) === TYPES.EVENT);
+   const evtNode = pathNodeIds.find(id => getEntityType(schema.entities[id]) === TYPES.EVENT);
     const cmdNode = pathNodeIds.find(id => getEntityType(schema.entities[id]) === TYPES.COMMAND);
 
+    // Determine the destination participant from the path.
+    const lastPathNode = pathNodeIds[pathNodeIds.length - 1];
+    const destParticipant = lastPathNode ? getCollapsedId(lastPathNode) : collapsedStart;
+
+    const cmdIsHandledByDest = (cmdId: string, dest: string) => {
+      // Check if this command is handled by the destination AGGREGATE (via handledBy relation).
+      const handledByRel = schema.relations.find(r =>
+        (!r.views || r.views.includes('EVENT_STORMING')) &&
+        r.from === cmdId && r.handledBy &&
+        getEntityType(schema.entities[r.to]) === TYPES.AGGREGATE &&
+        getCollapsedId(r.to) === dest
+      );
+      return !!handledByRel;
+    };
+
     if (evtNode && cmdNode) {
-      // Don't combine them! The event is already a self-loop. Only return the command title.
-      return {
-        label: schema.entities[cmdNode].title,
-        dashed: false
-      };
+      // Don't combine them! The event is already a self-loop.
+      // If the command is handled by the destination AGGREGATE, it's a self-loop there,
+      // so skip the inter-participant message.
+      if (!cmdIsHandledByDest(cmdNode, destParticipant)) {
+        return {
+          label: schema.entities[cmdNode].title,
+          dashed: false
+        };
+      }
+      return { label: '', dashed: false };
     }
     if (evtNode) {
       return { label: schema.entities[evtNode].title, dashed: true };
     }
     if (cmdNode) {
+      // If the command is handled by the destination AGGREGATE, skip the inter-participant message.
+      if (cmdIsHandledByDest(cmdNode, destParticipant)) return { label: '', dashed: false };
       return { label: schema.entities[cmdNode].title, dashed: false };
     }
 
@@ -170,7 +246,118 @@ export function deriveSequence(
     ...selfLoops
   ];
 
-  combinedSeqRelations.sort((a, b) => {
+  // Replace BFS command-labeled edges with explicit initiator→handler edges.
+  // The BFS uses the first COMMAND on each path as the label, which produces
+  // spurious edges (e.g. rider→engine labelled "throttle" when "intake" is
+  // the command handled by engine). Instead, for every COMMAND with a
+  // handledBy relation, explicitly create an edge from the participant that
+  // initiates the command to the AGGREGATE that handles it.
+  const cmdHandledByMap = new Map<string, { handler: string; title: string; rel: FlowchartRelation }>();
+  schema.relations
+    .filter(r =>
+      (!r.views || r.views.includes('EVENT_STORMING')) &&
+      r.handledBy &&
+      getEntityType(schema.entities[r.from]) === TYPES.COMMAND &&
+      getEntityType(schema.entities[r.to]) === TYPES.AGGREGATE
+    )
+    .forEach(r => {
+      cmdHandledByMap.set(r.from, {
+        handler: getCollapsedId(r.to),
+        title: schema.entities[r.from].title,
+        rel: r
+      });
+    });
+
+  const cmdTitles = new Set(Array.from(cmdHandledByMap.values()).map(v => v.title));
+
+  const findInitiator = (cmdId: string): string | null => {
+    const direct = schema.relations.find(r =>
+      (!r.views || r.views.includes('EVENT_STORMING')) &&
+      r.to === cmdId &&
+      (getEntityType(schema.entities[r.from]) === TYPES.USER ||
+       getEntityType(schema.entities[r.from]) === TYPES.AGGREGATE ||
+       getEntityType(schema.entities[r.from]) === TYPES.EXTERNAL ||
+       getEntityType(schema.entities[r.from]) === TYPES.DATABASE)
+    );
+    if (direct) return getCollapsedId(direct.from);
+
+    const policies = schema.relations.filter(r =>
+      (!r.views || r.views.includes('EVENT_STORMING')) &&
+      r.to === cmdId && getEntityType(schema.entities[r.from]) === TYPES.POLICY
+    );
+    for (const pr of policies) {
+      const events = schema.relations.filter(r =>
+        (!r.views || r.views.includes('EVENT_STORMING')) &&
+        r.to === pr.from && getEntityType(schema.entities[r.from]) === TYPES.EVENT
+      );
+      for (const er of events) {
+        const evtCollapsed = getCollapsedId(er.from);
+        const fromParticipant = schema.relations.find(r =>
+          (!r.views || r.views.includes('EVENT_STORMING')) &&
+          r.from === evtCollapsed &&
+          (getEntityType(schema.entities[r.from]) === TYPES.USER ||
+           getEntityType(schema.entities[r.from]) === TYPES.AGGREGATE ||
+           getEntityType(schema.entities[r.from]) === TYPES.EXTERNAL ||
+           getEntityType(schema.entities[r.from]) === TYPES.DATABASE)
+        );
+        if (fromParticipant) return getCollapsedId(fromParticipant.from);
+
+        const toParticipant = schema.relations.find(r =>
+          (!r.views || r.views.includes('EVENT_STORMING')) &&
+          r.to === evtCollapsed &&
+          (getEntityType(schema.entities[r.from]) === TYPES.USER ||
+           getEntityType(schema.entities[r.from]) === TYPES.AGGREGATE ||
+           getEntityType(schema.entities[r.from]) === TYPES.EXTERNAL ||
+           getEntityType(schema.entities[r.from]) === TYPES.DATABASE)
+        );
+        if (toParticipant) return getCollapsedId(toParticipant.from);
+      }
+    }
+    return null;
+  };
+
+  // Classify each handled command as either dispatched (initiator ≠ handler →
+  // shown as a single inter-participant arrow) or self-handled (initiator ===
+  // handler → shown as a command self-loop on that aggregate).
+  const explicitCmdEdges: FlowchartRelation[] = [];
+  const selfHandledCmdTitles = new Set<string>();
+  for (const [cmdId, { handler, title, rel }] of cmdHandledByMap) {
+    const initiator = findInitiator(cmdId);
+    if (!initiator) continue;
+    if (initiator === handler) {
+      // Self-handled: keep the command self-loop (created by getSequenceLabel).
+      selfHandledCmdTitles.add(title);
+      continue;
+    }
+    // Dispatched: emit a single inter-participant arrow initiator→handler.
+    explicitCmdEdges.push({
+      id: `derived_seq_cmd_${cmdId}`,
+      from: initiator,
+      to: handler,
+      views: ['SEQUENCE'],
+      label: title,
+      dashed: false,
+      chronologicalIndex: schema.relations.indexOf(rel)
+    });
+  }
+
+  const nonCmdAndEventLoops = combinedSeqRelations.filter(r => {
+    // Drop empty-label inter-participant edges (getSequenceLabel returns '' when a
+    // command is handled by the destination); keep empty-label self-loops if any.
+    if (!r.label) return r.from === r.to;
+    if (!cmdTitles.has(r.label)) return true;
+    // Command-labelled edge. Keep only the self-loop for a self-handled command;
+    // drop everything else (BFS inter-participant edges and the redundant
+    // self-loop of a dispatched command). explicitCmdEdges supplies the dispatch.
+    return r.from === r.to && selfHandledCmdTitles.has(r.label);
+  });
+
+  const filteredRelations = [
+    ...nonCmdAndEventLoops,
+    ...explicitCmdEdges
+  ];
+
+  filteredRelations.sort((a, b) => {
     const aIdx = a.chronologicalIndex ?? 999;
     const bIdx = b.chronologicalIndex ?? 999;
     if (aIdx !== bIdx) return aIdx - bIdx;
@@ -185,7 +372,7 @@ export function deriveSequence(
 
   const updatedRelations = [
     ...schema.relations.filter(r => !r.views || !r.views.includes('SEQUENCE')),
-    ...combinedSeqRelations
+    ...filteredRelations
   ];
 
   const seqGroups: FlowchartViewGroup[] = [];
@@ -269,10 +456,10 @@ export function deriveSequence(
     const maxChrono = Math.max(...branchChrono);
 
     // Enclose only the sequence messages whose chronological slot falls inside the
-    // branch span. Because combinedSeqRelations is already sorted by
+    // branch span. Because filteredRelations is already sorted by
     // chronologicalIndex, this selects a contiguous block and the box hugs just
     // this fork's alternative paths.
-    const enclosedSeqRels = combinedSeqRelations.filter(r => {
+    const enclosedSeqRels = filteredRelations.filter(r => {
       const c = r.chronologicalIndex;
       return typeof c === 'number' && c >= minChrono && c <= maxChrono;
     });
@@ -285,7 +472,7 @@ export function deriveSequence(
       participantIds.add(getCollapsedId(r.to));
     });
 
-    const relIndices = enclosedSeqRels.map(r => combinedSeqRelations.indexOf(r));
+    const relIndices = enclosedSeqRels.map(r => filteredRelations.indexOf(r));
     const minRelIdx = Math.min(...relIndices);
     const maxRelIdx = Math.max(...relIndices);
 

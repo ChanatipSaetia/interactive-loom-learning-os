@@ -152,10 +152,13 @@ export const StandardView = memo(function StandardView({
           if (fromType === 'POLICY' && toType === 'COMMAND') labelText = 'invokes';
         }
 
-        const segmentLength = Math.abs((relEntry.endX || 0) - (relEntry.startX || 0));
+       const segmentLength = Math.abs((relEntry.endX || 0) - (relEntry.startX || 0));
         let displayLabel = labelText;
         if (displayLabel && displayLabel.length > 18 && segmentLength < 180) {
           displayLabel = displayLabel.substring(0, 15) + '...';
+        }
+        if (displayLabel && displayLabel.length * 7 + 12 > 70) {
+          displayLabel = displayLabel.substring(0, 7) + '...';
         }
 
         return (
@@ -207,31 +210,36 @@ export const StandardView = memo(function StandardView({
                 <text x="0" y="3" textAnchor="middle" fontSize="10" fill="var(--ctp-text)" fontFamily="var(--font-mono)">⚡</text>
               </g>
             )}
-            {!isHandledBy && displayLabel && viewKey !== 'SYS_ARCH' && (
-              <g transform={`translate(${midX}, ${midY})`} style={{ pointerEvents: 'none' }}>
-                <rect
-                  x={-displayLabel.length * 3.5 - 6}
-                  y="-10"
-                  width={displayLabel.length * 7 + 12}
-                  height="20"
-                  rx="10"
-                  fill="var(--ctp-base)"
-                  stroke={isEdgeActive ? 'var(--ctp-blue)' : 'var(--ctp-surface1)'}
-                  strokeWidth="1"
-                />
-                <text
-                  x="0"
-                  y="3"
-                  textAnchor="middle"
-                  fill={isEdgeActive ? 'var(--ctp-blue)' : 'var(--ctp-subtext0)'}
-                  fontSize="10"
-                  fontFamily="var(--font-mono)"
-                  fontWeight={isEdgeActive ? "600" : "500"}
-                >
-                  {displayLabel}
-                </text>
-              </g>
-            )}
+            {!isHandledBy && displayLabel && viewKey !== 'SYS_ARCH' && (() => {
+                const rawWidth = displayLabel.length * 7 + 12;
+                const maxWidth = 70;
+                const clampedWidth = Math.min(rawWidth, maxWidth);
+                return (
+                  <g transform={`translate(${midX}, ${midY})`} style={{ pointerEvents: 'none' }}>
+                    <rect
+                      x={-clampedWidth / 2}
+                      y="-10"
+                      width={clampedWidth}
+                      height="20"
+                      rx="10"
+                      fill="var(--ctp-base)"
+                      stroke={isEdgeActive ? 'var(--ctp-blue)' : 'var(--ctp-surface1)'}
+                      strokeWidth="1"
+                    />
+                    <text
+                      x="0"
+                      y="3"
+                      textAnchor="middle"
+                      fill={isEdgeActive ? 'var(--ctp-blue)' : 'var(--ctp-subtext0)'}
+                      fontSize="10"
+                      fontFamily="var(--font-mono)"
+                      fontWeight={isEdgeActive ? "600" : "500"}
+                    >
+                      {displayLabel}
+                    </text>
+                  </g>
+                );
+              })()}
             {/* Animated particle dot */}
             <circle
               className="flowchart-edge-particle"

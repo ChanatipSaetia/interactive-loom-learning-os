@@ -88,7 +88,7 @@ export function deriveRelations(
     while (queue.length > 0) {
       const { startingInstanceId, currentId, path, intermediateNodeIds } = queue.shift()!;
 
-      const outRels = schema.relations.filter(r => 
+      const outRels = schema.relations.filter(r =>
         (!r.views || r.views.includes('EVENT_STORMING')) && r.from === currentId
       );
 
