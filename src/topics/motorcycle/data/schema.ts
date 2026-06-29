@@ -301,18 +301,29 @@ export const chokeSchema: UnifiedFlowchartSchema = {
   journeys: [
     {
       id: 'choke-cold-start',
-      label: 'ระบบโช้คและการสตาร์ทเครื่องเย็น (Choke & Cold Start)',
-      description: 'การทำงานของโช้คในรถคาร์บูเรเตอร์ เมื่อต้องการสตาร์ทเครื่องเย็น',
+      label: 'สตาร์ทเครื่องเย็น (Cold Start)',
+      description: 'เปิดโช้ค → สตาร์ท → เครื่องอุ่น → ปิดโช้ค → ผสมส่วนปกติ',
       steps: [
-        { nodeId: 'cmd_choke_on', description: 'ผู้ขับขี่เปิดโช้ค (หรือบิดคิลสวิตช์ที่รวมโช้ค) ก่อนสตาร์ทเครื่องเย็น' },
-        { nodeId: 'choke_valve', description: 'วาล์วโช้คปิดช่องอากาศบางส่วน จำกัดปริมาณอากาศที่เข้าสู่คาร์บูเรเตอร์' },
-        { nodeId: 'evt_rich_mix', description: 'สัดส่วนน้ำมัน:อากาศเพิ่มขึ้น (ส่วนผสมรวยน้ำมัน) เหมาะกับเครื่องเย็น' },
-        { nodeId: 'cmd_cold_start', description: 'เครื่องยนต์เริ่มทำงานด้วยส่วนผสมที่รวยน้ำมัน' },
-        { nodeId: 'engine_warm', description: 'เครื่องยนต์ค่อยๆ อุ่นตัว อุณหภูมิสูงขึ้นเรื่อยๆ' },
+        { nodeId: 'cmd_choke_on', description: 'ผู้ขับขี่เปิดโช้คก่อนสตาร์ทเครื่องเย็น' },
+        { nodeId: 'choke_valve', description: 'วาล์วโช้คปิดช่องอากาศบางส่วน จำกัดอากาศเข้าคาร์บู' },
+        { nodeId: 'evt_rich_mix', description: 'ส่วนผสมรวยน้ำมัน (น้ำมัน:อากาศสูงกว่าปกติ)' },
+        { nodeId: 'cmd_cold_start', description: 'เครื่องยนต์เริ่มทำงานด้วยส่วนผสมรวยน้ำมัน' },
+        { nodeId: 'engine_warm', description: 'เครื่องยนต์ค่อยๆ อุ่นตัว อุณหภูมิสูงขึ้น' },
         { nodeId: 'evt_engine_warm', description: 'เครื่องอุ่นถึงอุณหภูมิทำงานปกติแล้ว' },
         { nodeId: 'cmd_choke_off', description: 'ปิดโช้ค เปิดช่องอากาศกลับสู่ปกติ' },
-        { nodeId: 'evt_normal_mix', description: 'ส่วนผสมกลับสู่อัตราส่วนมาตรฐาน เครื่องทำงานเรียบ' },
-        { nodeId: 'evt_choke_forget', description: 'หากลืมปิดโช้คขณะวิ่ง จะทำให้หัวเทียนสกปรก กินน้ำมัน และรถเร่งไม่ขึ้น' },
+        { nodeId: 'evt_normal_mix', description: 'ส่วนผสมกลับสู่มาตรฐาน เครื่องทำงานเรียบ' },
+      ]
+    },
+    {
+      id: 'choke-forgot-off',
+      label: 'ลืมปิดโช้ค (Forgot to Turn Off Choke)',
+      description: 'เปิดโช้ค → ลืมปิด → วิ่งโช้คค้าง → รถเร่งไม่ขึ้น',
+      steps: [
+        { nodeId: 'cmd_choke_on', description: 'ผู้ขับขี่เปิดโช้คก่อนสตาร์ทเครื่องเย็น' },
+        { nodeId: 'choke_valve', description: 'วาล์วโช้คปิดช่องอากาศบางส่วน' },
+        { nodeId: 'evt_rich_mix', description: 'ส่วนผสมรวยน้ำมัน' },
+        { nodeId: 'cmd_ride_choke', description: 'บิดคันเร่งขณะที่โช้คยังเปิดอยู่' },
+        { nodeId: 'evt_choke_forget', description: 'หัวเทียนสกปรก กินน้ำมัน รถเร่งไม่ขึ้น' },
       ]
     },
   ]
@@ -419,19 +430,33 @@ export const fuelInjectSchema: UnifiedFlowchartSchema = {
   ],
   journeys: [
     {
-      id: 'fuel-injection',
-      label: 'ระบบหัวฉีด (Fuel Injection)',
-      description: 'การทำงานของระบบฉีดเชื้อเพลิงอิเล็กทรอนิกส์ (EFI) ที่ใช้แทนคาร์บูเรเตอร์',
+      id: 'fuel-injection-normal',
+      label: 'หัวฉีดปกติ (Normal Fuel Injection)',
+      description: 'บิดคันเร่ง → ECU คำนวณ → หัวฉีดพ่น → ละอองน้ำมัน → ผสมส่วนแม่นยำ',
       steps: [
         { nodeId: 'cmd_inject_throttle', description: 'ผู้ขับขี่บิดคันเร่ง เซ็นเซอร์ตรวจวัดการบิด' },
         { nodeId: 'ecu_inject', description: 'กล่อง ECU รับสัญญาณจากเซ็นเซอร์หลายตัว' },
-        { nodeId: 'evt_sensor_read', description: 'ข้อมูลรอบเครื่อง ตำแหน่งคันเร่ง อุณหภูมิเครื่อง ปริมาณอากาศเข้า ถูกส่งไปยัง ECU' },
-        { nodeId: 'policy_calc_fuel', description: 'ECU คำนวณปริมาณน้ำมันที่เหมาะสมตามสภาวะปัจจุบัน' },
+        { nodeId: 'evt_sensor_read', description: 'ข้อมูลรอบเครื่อง ตำแหน่งคันเร่ง อุณหภูมิเครื่อง อากาศเข้า' },
+        { nodeId: 'policy_calc_fuel', description: 'ECU คำนวณปริมาณน้ำมันที่เหมาะสมตามสภาวะ' },
         { nodeId: 'cmd_inject_fuel', description: 'ECU ส่งพัลส์ไฟฟ้าเปิดหัวฉีด' },
-        { nodeId: 'fuel_injector', description: 'หัวฉีดพ่นละอองน้ำมันเชื้อเพลิงเข้าสู่ท่อไอดี' },
-        { nodeId: 'evt_fuel_atomized', description: 'น้ำมันถูกทำให้เป็นละอองละเอียด ผสมกับอากาศ' },
-        { nodeId: 'evt_precise_mix', description: 'ได้อัตราส่วนที่แม่นยำตามสภาวะการทำงาน ประหยัดน้ำมันและสตาร์ทง่าย' },
-        { nodeId: 'evt_inject_cold_auto', description: 'เมื่อเครื่องเย็น ECU จะเพิ่มส่วนผสมอัตโนมัติ ไม่ต้องใช้โช้ค' },
+        { nodeId: 'fuel_injector', description: 'หัวฉีดพ่นละอองน้ำมันเข้าสู่ท่อไอดี' },
+        { nodeId: 'evt_fuel_atomized', description: 'น้ำมันเป็นละอองละเอียด ผสมกับอากาศ' },
+        { nodeId: 'cmd_precise_mix', description: 'ใช้ส่วนผสมที่คำนวณแม่นยำตามสภาวะ' },
+        { nodeId: 'evt_precise_mix', description: 'ได้อัตราส่วนแม่นยำ ประหยัดน้ำมันและสตาร์ทง่าย' },
+      ]
+    },
+    {
+      id: 'fuel-injection-cold',
+      label: 'เพิ่มส่วนผสมอัตโนมัติ (Auto Cold Enrichment)',
+      description: 'บิดคันเร่ง → ECU ตรวจเครื่องเย็น → เพิ่มน้ำมันอัตโนมัติ',
+      steps: [
+        { nodeId: 'cmd_inject_throttle', description: 'ผู้ขับขี่บิดคันเร่ง เซ็นเซอร์ตรวจวัดการบิด' },
+        { nodeId: 'ecu_inject', description: 'กล่อง ECU รับสัญญาณจากเซ็นเซอร์หลายตัว' },
+        { nodeId: 'evt_sensor_read', description: 'ข้อมูลรอบเครื่อง ตำแหน่งคันเร่ง อุณหภูมิเครื่อง อากาศเข้า' },
+        { nodeId: 'policy_calc_fuel', description: 'ECU ตรวจพบเครื่องเย็น สั่งเพิ่มส่วนผสม' },
+        { nodeId: 'cmd_inject_cold', description: 'ECU เพิ่มปริมาณน้ำมันอัตโนมัติ' },
+        { nodeId: 'fuel_injector3', description: 'หัวฉีดพ่นน้ำมันมากขึ้นเพื่อช่วยสตาร์ทเครื่องเย็น' },
+        { nodeId: 'evt_inject_cold_auto', description: 'ไม่ต้องใช้โช้ค ระบบปรับอัตโนมัติ' },
       ]
     },
   ]
@@ -549,19 +574,34 @@ export const brakeSchema: UnifiedFlowchartSchema = {
   ],
   journeys: [
     {
-      id: 'brake-system',
-      label: 'ระบบเบรก (Braking System)',
-      description: 'การทำงานตั้งแต่กดเบรกจนถึงรถหยุดหรือช้าลง รวมถึงกรณีเบรกจม',
+      id: 'brake-normal',
+      label: 'เบรกปกติ (Normal Braking)',
+      description: 'กดเบรก → ไฮดรอลิก → แคลิเพอร์ประกบจาน → รถช้าลง',
       steps: [
         { nodeId: 'cmd_brake', description: 'ผู้ขับขี่กดคันเบรกหน้าหรือหลัง' },
-        { nodeId: 'brake_master', description: 'กระปุกเบรกเปลี่ยนแรงกดเป็นแรงดันไฮดรอลิกในน้ำมันเบรก' },
+        { nodeId: 'brake_master', description: 'กระปุกเบรกเปลี่ยนแรงกดเป็นแรงดันไฮดรอลิก' },
         { nodeId: 'evt_brake_pressure', description: 'แรงดันส่งผ่านท่อเบรกไปยังแคลิเพอร์ที่ล้อ' },
-        { nodeId: 'cmd_caliper_squeeze', description: 'ลูกสูบในแคลิเพอร์เลื่อนออก กดผ้าเบรกประกบจานเบรกทั้งสองด้าน' },
-        { nodeId: 'brake_caliper', description: 'แรงเสียดทานระหว่างผ้าเบรกและจานเบรก หน่วงการหมุนของล้อ' },
-        { nodeId: 'evt_wheel_slowed', description: 'พลังงานจลน์ของรถเปลี่ยนเป็นความร้อน รถช้าลง' },
+        { nodeId: 'cmd_caliper_squeeze', description: 'ลูกสูบแคลิเพอร์ดันผ้าเบรกประกบจานเบรก' },
+        { nodeId: 'brake_caliper', description: 'แรงเสียดทานหน่วงการหมุนของล้อ' },
+        { nodeId: 'evt_wheel_slowed', description: 'พลังงานจลน์เปลี่ยนเป็นความร้อน รถช้าลง' },
         { nodeId: 'evt_brake_heat', description: 'จานเบรกและผ้าเบรกมีความร้อนสูงขึ้น' },
-        { nodeId: 'evt_brake_normal', description: 'รถหยุดหรือช้าลงตามที่ต้องการ' },
-        { nodeId: 'evt_brake_fade', description: 'หากเบรกหนักต่อเนื่องความร้อนสูงเกินไป จะเกิดอาการเบรกจม (ประสิทธิภาพลด)' },
+        { nodeId: 'cmd_brake_normal', description: 'เบรกทำงานปกติตามสภาวะ' },
+        { nodeId: 'evt_brake_normal', description: 'รถหยุดหรือช้าลงตามต้องการ' },
+      ]
+    },
+    {
+      id: 'brake-fade',
+      label: 'เบรกจม (Brake Fade)',
+      description: 'กดเบรก → เบรกหนักต่อเนื่อง → ร้อนเกิน → ประสิทธิภาพลด',
+      steps: [
+        { nodeId: 'cmd_brake', description: 'ผู้ขับขี่กดคันเบรกหน้าหรือหลัง' },
+        { nodeId: 'brake_master', description: 'กระปุกเบรกเปลี่ยนแรงกดเป็นแรงดันไฮดรอลิก' },
+        { nodeId: 'evt_brake_pressure', description: 'แรงดันส่งผ่านท่อเบรกไปยังแคลิเพอร์' },
+        { nodeId: 'cmd_caliper_squeeze', description: 'ลูกสูบแคลิเพอร์ดันผ้าเบรกประกบจานเบรก' },
+        { nodeId: 'brake_caliper', description: 'แรงเสียดทานหน่วงการหมุนของล้อ' },
+        { nodeId: 'evt_brake_heat', description: 'เบรกใช้งานหนักต่อเนื่อง ความร้อนสะสมสูง' },
+        { nodeId: 'cmd_brake_fade', description: 'ความร้อนสูงเกินค่าจำกัด' },
+        { nodeId: 'evt_brake_fade', description: 'ประสิทธิภาพเบรกลดลง (เบรกจม) ต้องหยุดพักให้เบรกเย็นลง' },
       ]
     },
   ]
