@@ -10,6 +10,7 @@ import {
 } from './data'
 
 export const motorcycleSections: SectionConfig[] = [
+  // 1. Intro — set context
   {
     type: 'text',
     props: {
@@ -18,13 +19,15 @@ export const motorcycleSections: SectionConfig[] = [
       paragraphs: motorcycleIntroParagraphs,
     },
   },
+  // 2. Vocabulary — teach key terms before they appear in diagrams
   {
-    type: 'flowchart',
+    type: 'flashcards',
     props: {
-      title: 'การทำงานของเครื่องยนต์ (Engine Workflow)',
-      schema: engineSchema,
+      title: 'คำศัพท์ที่ต้องรู้ (Vocabulary)',
+      terms: motorcycleFlashcards,
     },
   },
+  // 3. Core explanation — explain concepts after vocabulary is established
   {
     type: 'bullets',
     props: {
@@ -33,6 +36,15 @@ export const motorcycleSections: SectionConfig[] = [
       items: maintenanceBullets,
     },
   },
+  // 4. How it works — flowchart relies on vocabulary and concepts above
+  {
+    type: 'flowchart',
+    props: {
+      title: 'การทำงานของระบบต่างๆ (System Workflows)',
+      schema: engineSchema,
+    },
+  },
+  // 5. Explore trade-offs — experiment after understanding the mechanisms
   {
     type: 'tradeoff-sandbox',
     props: {
@@ -40,13 +52,7 @@ export const motorcycleSections: SectionConfig[] = [
       scenarios: motorcycleTradeoffs,
     },
   },
-  {
-    type: 'flashcards',
-    props: {
-      title: 'คำศัพท์ที่ต้องรู้ (Vocabulary)',
-      terms: motorcycleFlashcards,
-    },
-  },
+  // 6. Taxonomy — clarify confusing problem categories
   {
     type: 'taxonomy-browser',
     props: {
@@ -54,6 +60,7 @@ export const motorcycleSections: SectionConfig[] = [
       categories: problemTaxonomy,
     },
   },
+  // 7. Conclusion — reinforce with actionable questions
   {
     type: 'text',
     props: {
