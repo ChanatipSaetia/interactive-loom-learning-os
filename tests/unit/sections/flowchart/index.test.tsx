@@ -31,17 +31,17 @@ const mockSchema: UnifiedFlowchartSchema = {
       id: 'journey-a',
       label: 'Journey A',
       steps: [
-        { nodeId: 'user', description: 'Journey A Step 1' },
-        { nodeId: 'agent', description: 'Journey A Step 2' },
-        { nodeId: 'llm', description: 'Journey A Step 3' }
+        { nodeIds: ['user'], title: 'Step 1', reason: 'Journey A Step 1' },
+        { nodeIds: ['agent'], title: 'Step 2', reason: 'Journey A Step 2' },
+        { nodeIds: ['llm'], title: 'Step 3', reason: 'Journey A Step 3' }
       ]
     },
     {
       id: 'journey-b',
       label: 'Journey B',
       steps: [
-        { nodeId: 'agent', description: 'Journey B Step 1' },
-        { nodeId: 'llm', description: 'Journey B Step 2' }
+        { nodeIds: ['agent'], title: 'Step 1', reason: 'Journey B Step 1' },
+        { nodeIds: ['llm'], title: 'Step 2', reason: 'Journey B Step 2' }
       ]
     }
   ]
@@ -853,8 +853,8 @@ describe('Flowchart inspector sidebar', () => {
         id: 'j1',
         label: 'Test Journey',
         steps: [
-          { nodeId: 'user', description: 'Step 1' },
-          { nodeId: 'orchestrator', description: 'Step 2' },
+          { nodeIds: ['user'], title: 'Step 1', reason: 'User action' },
+          { nodeIds: ['orchestrator'], title: 'Step 2', reason: 'Orchestrator action' },
         ],
       },
     ],

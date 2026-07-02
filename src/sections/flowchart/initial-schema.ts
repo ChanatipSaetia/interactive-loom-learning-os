@@ -108,11 +108,11 @@ export const INITIAL_SCHEMA: UnifiedFlowchartSchema = {
       label: 'Document Ingest Happy Path',
       description: 'Follow a document as it is uploaded, converted, validated, and indexed with a high confidence score.',
       steps: [
-        { nodeIds: ['user_editor', 'cmd_up', 'agg_pipe', 'evt_up'], description: 'Ingestion Stack — Content Editor uploads PDF → Upload Command triggered → Pipeline initiated → Document Uploaded event published.', processGroup: 'planning' },
-        { nodeIds: ['pol_conv', 'cmd_md', 'evt_md'], description: 'Conversion Stack — Policy fires → Async Worker converts → Markdown produced → Markdown Converted event published.', processGroup: 'execution' },
-        { nodeIds: ['pol_pass', 'evt_app'], description: 'Quality Check (Pass) — Score >90%, auto-approve → Markdown Approved event published.', processGroup: 'execution' },
-        { nodeIds: ['pol_emb', 'cmd_req_emb', 'api_emb', 'evt_vec'], description: 'Vectorization Stack — Policy fires → Embedding API called → LLM generates vectors → Embeddings Generated.', processGroup: 'execution' },
-        { nodeIds: ['pol_db', 'cmd_os', 'db_os', 'evt_idx', 'sys_portal'], description: 'Indexing Stack — Policy routes to DB → Index command formats data → Written to OpenSearch → Document available on Portal.', processGroup: 'evaluation' },
+        { nodeIds: ['user_editor', 'cmd_up', 'agg_pipe', 'evt_up'], title: 'Ingestion', reason: 'Content Editor uploads PDF, Upload Command triggered, Pipeline initiated, Document Uploaded event published.', processGroup: 'planning' },
+        { nodeIds: ['pol_conv', 'cmd_md', 'evt_md'], title: 'Conversion', reason: 'Policy fires, Async Worker converts to Markdown, Markdown Converted event published.', processGroup: 'execution' },
+        { nodeIds: ['pol_pass', 'evt_app'], title: 'Quality Check (Pass)', reason: 'Score above 90%, auto-approved, Markdown Approved event published.', processGroup: 'execution' },
+        { nodeIds: ['pol_emb', 'cmd_req_emb', 'api_emb', 'evt_vec'], title: 'Vectorization', reason: 'Embedding API called, LLM generates vectors, Embeddings Generated.', processGroup: 'execution' },
+        { nodeIds: ['pol_db', 'cmd_os', 'db_os', 'evt_idx', 'sys_portal'], title: 'Indexing', reason: 'Policy routes to DB, Index command formats data, Written to OpenSearch, Document available on Portal.', processGroup: 'evaluation' },
       ]
     },
     {
@@ -120,10 +120,10 @@ export const INITIAL_SCHEMA: UnifiedFlowchartSchema = {
       label: 'Manual Review & Recovery Path',
       description: 'What happens when parsing quality drops below confidence thresholds and requires a human review.',
       steps: [
-        { nodeIds: ['user_editor', 'cmd_up', 'evt_md'], description: 'Ingestion → Conversion — Scanned document uploaded, Worker processes messy structure, produces low-quality markdown.', processGroup: 'planning' },
-        { nodeIds: ['pol_fail', 'risk_tbl'], description: 'Quality Check (Fail) — Score <90%, auto-approval halted. Hotspot: PDF table columns parsed as garbage.', processGroup: 'execution' },
-        { nodeIds: ['user_reviewer', 'cmd_fix'], description: 'Human Review — Reviewer notified, manually fixes layout formats.', processGroup: 'execution' },
-        { nodeIds: ['evt_app', 'api_emb', 'db_os'], description: 'Recovery Complete — Markdown Approved → Vectors generated → Saved to OpenSearch.', processGroup: 'evaluation' },
+        { nodeIds: ['user_editor', 'cmd_up', 'evt_md'], title: 'Ingestion → Conversion', reason: 'Scanned document uploaded, Worker processes messy structure, produces low-quality markdown.', processGroup: 'planning' },
+        { nodeIds: ['pol_fail', 'risk_tbl'], title: 'Quality Check (Fail)', reason: 'Score below 90%, auto-approval halted. Hotspot: PDF table columns parsed as garbage.', processGroup: 'execution' },
+        { nodeIds: ['user_reviewer', 'cmd_fix'], title: 'Human Review', reason: 'Reviewer notified, manually fixes layout formats.', processGroup: 'execution' },
+        { nodeIds: ['evt_app', 'api_emb', 'db_os'], title: 'Recovery Complete', reason: 'Markdown Approved, vectors generated, saved to OpenSearch.', processGroup: 'evaluation' },
       ]
     }
   ]

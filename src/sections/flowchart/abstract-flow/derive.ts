@@ -1,4 +1,4 @@
-import type { AbstractFlow, LinearStep, BranchStep } from './types';
+import type { AbstractFlow, LinearStep, BranchStep, BranchOption, FlowStep } from './types';
 import { isLinearStep, isBranchStep } from './types';
 import { TYPES } from '../types';
 import type { UnifiedFlowchartSchema, FlowchartEntity, FlowchartRelation } from '../types';
@@ -23,6 +23,9 @@ export function deriveSchema(flow: AbstractFlow): UnifiedFlowchartSchema {
 
   // Map abstract IDs to generated entity IDs
   const idMap = new Map<string, string>();
+
+  // Track per-step handler/delegate entity IDs (for Event Storming highlighting)
+  const stepHandlerMap = new Map<string, { handler: string; delegate?: string }>();
 
   // --- Phase 1: Declare actors ---
   for (const [id, actor] of Object.entries(flow.actors)) {
@@ -52,10 +55,14 @@ export function deriveSchema(flow: AbstractFlow): UnifiedFlowchartSchema {
   let isFirstStep = true;
   for (const step of flow.steps) {
     if (isLinearStep(step)) {
-      processLinearStep(step, entities, relations, relCounter, idMap, systemRefCount, isFirstStep);
+      const { handler, delegate } = processLinearStep(step, entities, relations, relCounter, idMap, systemRefCount, isFirstStep);
+      stepHandlerMap.set(step.id, { handler, delegate });
       isFirstStep = false;
     } else if (isBranchStep(step)) {
-      processBranchStep(step, entities, relations, relCounter, idMap, systemRefCount);
+      const handlers = processBranchStep(step, entities, relations, relCounter, idMap, systemRefCount);
+      for (const { stepId, handler, delegate } of handlers) {
+        stepHandlerMap.set(stepId, { handler, delegate });
+      }
     }
   }
 
@@ -64,11 +71,18 @@ export function deriveSchema(flow: AbstractFlow): UnifiedFlowchartSchema {
     id: j.id,
     label: j.label,
     description: j.description,
-    steps: j.steps.map(s => ({
-      nodeId: resolveNodeId(s.nodeId, idMap),
-      description: s.description,
-      processGroup: s.processGroup,
-    })),
+    steps: j.steps.map(s => {
+      const stepData = findStepById(s.stepId, flow.steps);
+      const nodeIds = stepData
+        ? collectNodeIds(s.stepId, stepData, entities, idMap, stepHandlerMap.get(s.stepId))
+        : [resolveNodeId(s.stepId, idMap)];
+      return {
+        nodeIds,
+        title: s.name,
+        reason: s.description,
+        processGroup: s.processGroup,
+      };
+    }),
   }));
 
   return {
@@ -122,7 +136,7 @@ function processLinearStep(
   idMap: Map<string, string>,
   systemRefCount: Map<string, number>,
   isFirstStep: boolean,
-): void {
+): { handler: string; delegate?: string } {
   // Create command entity
   const cmdId = `cmd_${step.id}`;
   entities[cmdId] = {
@@ -183,8 +197,9 @@ function processLinearStep(
   });
 
   // Handler → delegate (side relation, not in event chain)
+  let delegateId: string | undefined;
   if (step.delegatesTo) {
-    const delegateId = getSystemEntityId(
+    delegateId = getSystemEntityId(
       step.delegatesTo.id,
       entities,
       systemRefCount,
@@ -232,6 +247,8 @@ function processLinearStep(
       });
     }
   }
+
+  return { handler: handlerId, delegate: delegateId };
 }
 
 function processBranchStep(
@@ -241,7 +258,7 @@ function processBranchStep(
   relCounter: { current: number },
   idMap: Map<string, string>,
   systemRefCount: Map<string, number>,
-): void {
+): Array<{ stepId: string; handler: string; delegate?: string }> {
   // Create branch event entity
   const branchEventId = `evt_${step.event}`;
   if (!entities[branchEventId]) {
@@ -254,6 +271,7 @@ function processBranchStep(
   idMap.set(step.event, branchEventId);
 
   // Process each branch
+  const handlerInfo: Array<{ stepId: string; handler: string; delegate?: string }> = [];
   for (const branch of step.branches) {
     // Branch policy
     const polId = `pol_${branch.id}`;
@@ -309,8 +327,9 @@ function processBranchStep(
     });
 
     // Handler → delegate (side relation, not in event chain)
+    let delegateId: string | undefined;
     if (branch.delegatesTo) {
-      const delegateId = getSystemEntityId(
+      delegateId = getSystemEntityId(
         branch.delegatesTo.id,
         entities,
         systemRefCount,
@@ -324,6 +343,8 @@ function processBranchStep(
         views: ['EVENT_STORMING'],
       });
     }
+
+    handlerInfo.push({ stepId: branch.id, handler: handlerId, delegate: delegateId });
 
     // Handler → ResultEvents (always from handler)
     for (const evt of branch.resultEvents) {
@@ -359,8 +380,66 @@ function processBranchStep(
       }
     }
   }
+  return handlerInfo;
 }
 
 function resolveNodeId(nodeId: string, idMap: Map<string, string>): string {
   return idMap.get(nodeId) || nodeId;
+}
+
+/** Find a linear step or branch option by id. */
+function findStepById(
+  stepId: string,
+  steps: FlowStep[],
+): LinearStep | BranchOption | undefined {
+  for (const step of steps) {
+    if (step.type === 'linear' && step.id === stepId) return step;
+    if (step.type === 'branch') {
+      const branch = step.branches.find(b => b.id === stepId);
+      if (branch) return branch;
+    }
+  }
+}
+
+/** Collect all generated entity IDs from a step's full chain. */
+function collectNodeIds(
+  stepId: string,
+  step: LinearStep | BranchOption,
+  entities: Record<string, FlowchartEntity>,
+  idMap: Map<string, string>,
+  handlerInfo?: { handler: string; delegate?: string },
+): string[] {
+  const ids: string[] = [];
+
+  // Policy (for non-root linear steps and all branch options)
+  if (step.policy) {
+    const polId = `pol_${stepId}`;
+    if (entities[polId]) ids.push(polId);
+  }
+
+  // Command
+  const cmdId = `cmd_${stepId}`;
+  if (entities[cmdId]) ids.push(cmdId);
+
+  // Handler — use per-step entity (may be a duplicate in Event Storming)
+  if (handlerInfo) {
+    ids.push(handlerInfo.handler);
+  } else {
+    ids.push(resolveNodeId(step.handledBy.id, idMap));
+  }
+
+  // Delegate (optional) — use per-step entity
+  if (handlerInfo?.delegate) {
+    ids.push(handlerInfo.delegate);
+  } else if (step.delegatesTo) {
+    ids.push(resolveNodeId(step.delegatesTo.id, idMap));
+  }
+
+  // Result events
+  for (const evt of step.resultEvents) {
+    const eventId = `evt_${evt.id}`;
+    if (entities[eventId]) ids.push(eventId);
+  }
+
+  return ids;
 }

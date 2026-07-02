@@ -245,6 +245,7 @@ function mapStep(raw: OKFStepRaw): import('../../sections/flowchart/abstract-flo
       ...(b.delegatesTo ? { delegatesTo: ref(b.delegatesTo) } : {}),
       resultEvents: b.resultEvents,
       continuesAs: b.continuesAs,
+      ...(b.description ? { description: b.description } : {}),
     })),
   }
 }

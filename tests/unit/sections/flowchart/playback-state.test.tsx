@@ -31,9 +31,9 @@ const baseSchema: UnifiedFlowchartSchema = {
       label: 'First Journey',
       description: 'Tests playback state',
       steps: [
-        { nodeIds: ['node_a'], description: 'Step 1: Node A' },
-        { nodeIds: ['node_b'], description: 'Step 2: Node B' },
-        { nodeIds: ['node_a', 'node_c'], description: 'Step 3: Node A and C' },
+        { nodeIds: ['node_a'], title: 'Step 1', reason: 'Node A' },
+        { nodeIds: ['node_b'], title: 'Step 2', reason: 'Node B' },
+        { nodeIds: ['node_a', 'node_c'], title: 'Step 3', reason: 'Node A and C' },
       ],
     },
     {
@@ -41,8 +41,8 @@ const baseSchema: UnifiedFlowchartSchema = {
       label: 'Second Journey',
       description: 'Second journey for switching',
       steps: [
-        { nodeIds: ['node_c'], description: 'Step 1: Node C' },
-        { nodeIds: ['node_a', 'node_b', 'node_c'], description: 'Step 2: All nodes' },
+        { nodeIds: ['node_c'], title: 'Step 1', reason: 'Node C' },
+        { nodeIds: ['node_a', 'node_b', 'node_c'], title: 'Step 2', reason: 'All nodes' },
       ],
     },
   ],

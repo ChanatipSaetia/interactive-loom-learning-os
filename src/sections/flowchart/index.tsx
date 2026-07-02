@@ -117,13 +117,17 @@ export function Flowchart({ title, schema = INITIAL_SCHEMA }: FlowchartProps) {
     // Node highlight set is additionally expanded to each active node's
     // collapsedTo target, so the shared canonical node lights up in collapsed
     // views (SYS_ARCH, SWIMLANES) where the ref is drawn as that single node.
+    // In EVENT_STORMING, duplicates are rendered separately and should NOT
+    // also highlight the canonical entity.
     const entityIds = new Set(playback.activeNodeIds);
-    playback.activeNodeIds.forEach(id => {
-      const ent = localSchema.entities[id];
-      if (ent?.collapsedTo) {
-        entityIds.add(ent.collapsedTo);
-      }
-    });
+    if (activeViewKey !== 'EVENT_STORMING') {
+      playback.activeNodeIds.forEach(id => {
+        const ent = localSchema.entities[id];
+        if (ent?.collapsedTo) {
+          entityIds.add(ent.collapsedTo);
+        }
+      });
+    }
 
     // Find relations whose intermediate path includes any active node
     const relIds = new Set<string>();
@@ -180,17 +184,13 @@ export function Flowchart({ title, schema = INITIAL_SCHEMA }: FlowchartProps) {
       return activeView.steps;
     }
     if (playback.currentJourney && playback.currentJourney.steps.length > 0) {
-      return playback.currentJourney.steps.map((step, idx) => {
-        const ids = step.nodeIds || (step.nodeId ? [step.nodeId] : []);
-        const primaryNode = ids[0] || step.nodeId || '';
-        return {
-          id: `journey-step-${idx}`,
-          type: 'linear' as const,
-          nodeIds: ids,
-          title: localSchema.entities[primaryNode]?.title || `Step ${idx + 1}`,
-          reason: step.description
-        };
-      });
+      return playback.currentJourney.steps.map((step, idx) => ({
+        id: `journey-step-${idx}`,
+        type: 'linear' as const,
+        nodeIds: step.nodeIds,
+        title: step.title,
+        reason: step.reason,
+      }));
     }
     return [];
   }, [activeView.steps, playback.currentJourney, localSchema.entities]);

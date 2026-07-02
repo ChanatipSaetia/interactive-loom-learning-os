@@ -60,9 +60,9 @@ const mockSchema = {
       id: 'test-journey',
       label: 'Test Journey',
       steps: [
-        { nodeIds: ['evt_goal'], description: 'Goal step' },
-        { nodeIds: ['orchestrator'], description: 'Planning step', processGroup: 'planning' },
-        { nodeIds: ['orchestrator'], description: 'Execution step', processGroup: 'execution' },
+        { nodeIds: ['evt_goal'], title: 'Goal', reason: 'Goal step' },
+        { nodeIds: ['orchestrator'], title: 'Planning', reason: 'Planning step', processGroup: 'planning' },
+        { nodeIds: ['orchestrator'], title: 'Execution', reason: 'Execution step', processGroup: 'execution' },
       ],
     },
   ],
@@ -96,8 +96,8 @@ const multiAggSchema: UnifiedFlowchartSchema = {
       id: 'order-journey',
       label: 'Order Journey',
       steps: [
-        { nodeIds: ['evt_order'], description: 'Order placed' },
-        { nodeIds: ['order_service'], description: 'Processing', processGroup: 'execution' },
+        { nodeIds: ['evt_order'], title: 'Order Placed', reason: 'Customer places an order' },
+        { nodeIds: ['order_service'], title: 'Processing', reason: 'Order service processes the order', processGroup: 'execution' },
       ],
     },
   ],
@@ -138,7 +138,7 @@ const detailsSchema: UnifiedFlowchartSchema = {
       id: 'd-journey',
       label: 'Agent Journey',
       steps: [
-        { nodeIds: ['evt_reasoned'], description: 'Reasoned' },
+        { nodeIds: ['evt_reasoned'], title: 'Reasoned', reason: 'LLM has generated reasoning' },
       ],
     },
   ],

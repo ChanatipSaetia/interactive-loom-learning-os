@@ -85,13 +85,14 @@ export interface OKFBranchRaw {
   delegatesTo?: string
   resultEvents: Array<{ id: string; title: string; desc?: string }>
   continuesAs?: string
+  description?: string
 }
 
 export interface OKFJourneyRaw {
   id: string
   label: string
   description: string
-  steps: Array<{ nodeId: string; description: string; processGroup?: 'planning' | 'execution' | 'evaluation' | 'escalation' }>
+  steps: Array<{ stepId: string; name: string; description: string; processGroup?: 'planning' | 'execution' | 'evaluation' | 'escalation' }>
 }
 
 export interface OKFTradeoffScenarioRaw {

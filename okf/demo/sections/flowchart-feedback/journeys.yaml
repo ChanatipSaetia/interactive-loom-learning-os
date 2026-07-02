@@ -2,29 +2,36 @@
   label: "QA Pass"
   description: "Output passes evaluation on first attempt"
   steps:
-    - nodeId: fb_evaluated
-      description: "QA reviewer evaluates the agent output"
+    - stepId: fb_check
+      name: "Evaluate Output"
+      description: "QA evaluator reviews the output against quality criteria."
       processGroup: evaluation
-    - nodeId: fb_accepted
-      description: "Output meets quality criteria and is accepted"
+    - stepId: fb_pass
+      name: "Accept Output"
+      description: "Output meets all criteria and is approved without revision."
       processGroup: evaluation
 
 - id: fb_journey_revise
   label: "Revision Loop"
   description: "Output fails evaluation, triggering a revision cycle"
   steps:
-    - nodeId: fb_evaluated
-      description: "QA reviewer finds issues with the output"
+    - stepId: fb_check
+      name: "Evaluate Output"
+      description: "QA evaluator reviews the output and finds it does not meet criteria."
       processGroup: evaluation
-    - nodeId: fb_revision
-      description: "Orchestrator triggers revision based on feedback"
+    - stepId: fb_fail
+      name: "Trigger Revision"
+      description: "Output fails evaluation. Revision flag is raised to start the correction cycle."
       processGroup: escalation
-    - nodeId: fb_stored
-      description: "Failure context is stored in memory for next attempt"
+    - stepId: fb_store
+      name: "Store Failure Context"
+      description: "Failure details and feedback are stored in memory so the LLM can reference them during revision."
       processGroup: execution
-    - nodeId: fb_regenerated
-      description: "LLM generates improved output using failure context"
+    - stepId: fb_rerun
+      name: "Regenerate with Context"
+      description: "LLM receives the stored failure context and regenerates the output with corrections."
       processGroup: planning
-    - nodeId: fb_evaluated
-      description: "Revised output goes through evaluation again"
+    - stepId: fb_check
+      name: "Re-Evaluate"
+      description: "Revised output is evaluated again to check if it now meets quality criteria."
       processGroup: evaluation

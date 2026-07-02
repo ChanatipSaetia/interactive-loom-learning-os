@@ -2,79 +2,58 @@
   label: "Happy Path"
   description: "Agent uses tools successfully and passes QA."
   steps:
-    - nodeId: run_agent
-      description: "Dev requests task. Multiple events generated."
+    - stepId: run_agent
+      name: "Launch Agent"
+      description: "Developer submits a task. Orchestrator agent starts a new session and begins planning."
       processGroup: planning
-    - nodeId: started
-      description: "Agent started, session created."
+    - stepId: call_llm
+      name: "LLM Planning"
+      description: "Agent sends the task context to the LLM for reasoning. LLM decides whether to use tools, call MCP, or finish."
       processGroup: planning
-    - nodeId: call_llm
-      description: "LLM reasons about task."
-      processGroup: planning
-    - nodeId: reasoned
-      description: "LLM generates response with tool calls."
-      processGroup: planning
-    - nodeId: execute_tool
-      description: "Tools execute successfully, spawning subagents."
+    - stepId: execute_tool
+      name: "Execute Tool"
+      description: "LLM requests a tool. Tools router dispatches and runs it, returning the output back to the agent."
       processGroup: execution
-    - nodeId: tool_executed
-      description: "Tool execution returns results."
+    - stepId: call_mcp
+      name: "Call MCP Server"
+      description: "LLM requests an external API via MCP protocol. MCP server processes the call and returns the result."
       processGroup: execution
-    - nodeId: call_mcp
-      description: "MCP server called."
-      processGroup: execution
-    - nodeId: mcp_called
-      description: "MCP interaction completes."
-      processGroup: execution
-    - nodeId: eval
-      description: "LLM compiles final answer."
+    - stepId: eval
+      name: "Compile Answer"
+      description: "LLM integrates all tool results and MCP responses into a coherent final answer."
       processGroup: evaluation
-    - nodeId: done
-      description: "Task completed with verified solution."
-      processGroup: evaluation
-    - nodeId: qa_review
-      description: "Task submitted for QA review; QA approves."
-    - nodeId: qa_approved
-      description: "Output passes QA standards."
+    - stepId: qa_review
+      name: "QA Review"
+      description: "Orchestrator agent reviews the final output against QA standards before delivery."
 
 - id: feedback-loop
   label: "Feedback Loop"
   description: "Agent needs more info from same actor."
   steps:
-    - nodeId: execute_tool
-      description: "Tool returns an error or asks user for input."
+    - stepId: execute_tool
+      name: "Execute Tool"
+      description: "LLM requests a tool. Tools router dispatches and runs it, but the result indicates missing input."
       processGroup: execution
-    - nodeId: tool_executed
-      description: "Tool execution needs user input."
-      processGroup: execution
-    - nodeId: send_message
-      description: "System sends message to user."
-    - nodeId: message_sent
-      description: "User is prompted for input."
-    - nodeId: provide_feedback
-      description: "Dev provides missing info."
-    - nodeId: feedback_received
-      description: "Feedback received by orchestrator."
-    - nodeId: call_llm
-      description: "Agent replans with new context."
-      processGroup: planning
-    - nodeId: reasoned
-      description: "LLM generates updated response."
+    - stepId: send_message
+      name: "Request Input"
+      description: "Orchestrator agent detects missing information and sends a notification to the user."
+    - stepId: provide_feedback
+      name: "Provide Feedback"
+      description: "Developer responds with the requested information. Orchestrator captures the feedback and resumes."
+    - stepId: call_llm
+      name: "LLM Re-Planning"
+      description: "Agent re-sends the task context with the new feedback to the LLM for updated reasoning."
       processGroup: planning
 
 - id: direct-llm
   label: "Direct LLM Answer"
   description: "No tools needed."
   steps:
-    - nodeId: call_llm
-      description: "LLM reasons about task."
+    - stepId: call_llm
+      name: "LLM Planning"
+      description: "Agent sends the task to the LLM. The LLM determines no tools are needed and generates a direct answer."
       processGroup: planning
-    - nodeId: reasoned
-      description: "LLM has direct answer."
-      processGroup: planning
-    - nodeId: direct_complete
-      description: "LLM skips tools and directly answers."
-      processGroup: evaluation
-    - nodeId: done
-      description: "Task completed with direct answer."
+    - stepId: direct_complete
+      name: "Complete Task"
+      description: "LLM produces the final answer directly, skipping tool execution and MCP calls."
       processGroup: evaluation

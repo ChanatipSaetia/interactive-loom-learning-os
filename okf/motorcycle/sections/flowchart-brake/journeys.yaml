@@ -2,41 +2,26 @@
   label: เบรกปกติ (Normal Braking)
   description: กดเบรก → ไฮดรอลิก → แคลิเพอร์ประกบจาน → รถช้าลง
   steps:
-    - nodeId: brake
-      description: ผู้ขับขี่กดคันเบรกหน้าหรือหลัง
-    - nodeId: brake_pressure
-      description: กระปุกเบรกเปลี่ยนแรงกดเป็นแรงดันไฮดรอลิก
-    - nodeId: brake_pressure
-      description: แรงดันส่งผ่านท่อเบรกไปยังแคลิเพอร์ที่ล้อ
-    - nodeId: caliper_squeeze
-      description: ลูกสูบแคลิเพอร์ดันผ้าเบรกประกบจานเบรก
-    - nodeId: wheel_slowed
-      description: แรงเสียดทานหน่วงการหมุนของล้อ
-    - nodeId: wheel_slowed
-      description: พลังงานจลน์เปลี่ยนเป็นความร้อน รถช้าลง
-    - nodeId: brake_heat
-      description: จานเบรกและผ้าเบรกมีความร้อนสูงขึ้น
-    - nodeId: brake_normal
-      description: เบรกทำงานปกติตามสภาวะ
-    - nodeId: brake_normal
-      description: รถหยุดหรือช้าลงตามต้องการ
+    - stepId: brake
+      name: "กดเบรก"
+      description: "ผู้ขับขี่กดแฮนด์เบรก หรือแป้นเบรก เพื่อสั่งให้ระบบเบรกทำงาน"
+    - stepId: caliper_squeeze
+      name: "แคลิเพอร์ประกบจาน"
+      description: "แรงไฮดรอลิกส่งต่อเข้าแคลิเพอร์ กดผ้าเบรกประกบจานเบรกทั้งสองด้าน"
+    - stepId: brake_normal
+      name: "รถช้าลง"
+      description: "แรงเสียดทานระหว่างผ้าเบรกและจานเบรกทำให้ล้อช้าลง รถหยุดหรือลดความเร็วตามที่ต้องการ"
+
 - id: "brake-fade"
   label: เบรกจม (Brake Fade)
   description: กดเบรก → เบรกหนักต่อเนื่อง → ร้อนเกิน → ประสิทธิภาพลด
   steps:
-    - nodeId: brake
-      description: ผู้ขับขี่กดคันเบรกหน้าหรือหลัง
-    - nodeId: brake_pressure
-      description: กระปุกเบรกเปลี่ยนแรงกดเป็นแรงดันไฮดรอลิก
-    - nodeId: brake_pressure
-      description: แรงดันส่งผ่านท่อเบรกไปยังแคลิเพอร์
-    - nodeId: caliper_squeeze
-      description: ลูกสูบแคลิเพอร์ดันผ้าเบรกประกบจานเบรก
-    - nodeId: brake_heat
-      description: แรงเสียดทานหน่วงการหมุนของล้อ
-    - nodeId: brake_heat
-      description: เบรกใช้งานหนักต่อเนื่อง ความร้อนสะสมสูง
-    - nodeId: brake_fade
-      description: ความร้อนสูงเกินค่าจำกัด
-    - nodeId: brake_fade
-      description: ประสิทธิภาพเบรกลดลง (เบรกจม) ต้องหยุดพักให้เบรกเย็นลง
+    - stepId: brake
+      name: "กดเบรก"
+      description: "ผู้ขับขี่กดเบรกเพื่อลดความเร็ว"
+    - stepId: caliper_squeeze
+      name: "แคลิเพอร์ประกบจาน"
+      description: "แคลิเพอร์กดผ้าเบรกประกบจานเบรก ใช้แรงเสียดทานในการหยุดล้อ"
+    - stepId: brake_fade
+      name: "เบรกจม"
+      description: "เบรกหนักต่อเนื่องทำให้จานและผ้าเบรกร้อนเกินจุดทนทาน แรงเสียดทานลด เบรกไม่ทำงานเต็มประสิทธิภาพ"

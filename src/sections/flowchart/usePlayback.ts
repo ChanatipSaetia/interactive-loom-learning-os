@@ -62,16 +62,15 @@ export function usePlayback({ schema, activeViewKey, nodeMap, onNodeFocus }: Use
   }, []);
 
   const currentStepData = currentJourney?.steps[currentStep];
-  const highlightedNodeId = currentStepData?.nodeId || currentStepData?.nodeIds?.[0] || null;
+  const highlightedNodeId = currentStepData?.nodeIds?.[0] || null;
   const prevStepData = currentStep > 0 ? currentJourney?.steps[currentStep - 1] : undefined;
-  const prevHighlightedNodeId = prevStepData?.nodeId || prevStepData?.nodeIds?.[0] || null;
+  const prevHighlightedNodeId = prevStepData?.nodeIds?.[0] || null;
 
   // Active node IDs for highlighting
   const activeNodeIds = useMemo(() => {
     if (currentStep < 0 || !currentStepData) return null;
-    const ids = currentStepData.nodeIds || (currentStepData.nodeId ? [currentStepData.nodeId] : []);
-    if (ids.length === 0) return null;
-    return ids;
+    if (currentStepData.nodeIds.length === 0) return null;
+    return currentStepData.nodeIds;
   }, [currentStep, currentStepData]);
 
   // Playback timer loop

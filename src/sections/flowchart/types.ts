@@ -254,9 +254,12 @@ export interface FlowchartViewGroup {
 export type ProcessGroup = 'planning' | 'execution' | 'evaluation' | 'escalation';
 
 export interface FlowchartStep {
-  nodeId?: string;
-  nodeIds?: string[];
-  description: string;
+  /** All node IDs in the referenced step's chain, populated by derivation. */
+  nodeIds: string[];
+  /** Short name from the journey step. */
+  title: string;
+  /** Long description from the journey step. */
+  reason: string;
   processGroup?: ProcessGroup;
 }
 

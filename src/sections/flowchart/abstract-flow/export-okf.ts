@@ -253,7 +253,7 @@ function generateJourneyConcept(journey: {
   id: string;
   label: string;
   description: string;
-  steps: Array<{ nodeId: string; description: string; processGroup?: string }>;
+  steps: Array<{ stepId: string; description?: string; processGroup?: string }>;
 }): string {
   let body = `## ${journey.label}
 
@@ -262,12 +262,12 @@ ${journey.description}
 `;
 
   body += `### Steps\n\n`;
-  body += `| # | Node | Description |\n`;
+  body += `| # | Step | Description |\n`;
   body += `|---|---|---|\n`;
 
   journey.steps.forEach((s, i) => {
     const processGroup = s.processGroup ? ` (\`${s.processGroup}\`)` : '';
-    body += `| ${i + 1} | \`${s.nodeId}\`${processGroup} | ${s.description} |\n`;
+    body += `| ${i + 1} | \`${s.stepId}\`${processGroup} | ${s.description ?? ''} |\n`;
   });
 
   return `${frontmatter({

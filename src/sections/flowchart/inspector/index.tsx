@@ -116,7 +116,7 @@ export function InspectorSidebar({
 
   const payloadEntity = useMemo((): FlowchartEntity | null => {
     if (!currentStepData) return null;
-    const nodeId = currentStepData.nodeIds?.[0] || currentStepData.nodeId;
+    const nodeId = currentStepData.nodeIds?.[0];
     if (!nodeId) return null;
     const entity = schema.entities[nodeId];
     if (entity?.jsonPayload) return entity;
@@ -158,7 +158,7 @@ export function InspectorSidebar({
     }
     // Fall back to current playback step's node
     if (currentStepData) {
-      const nodeId = currentStepData.nodeIds?.[0] || currentStepData.nodeId;
+      const nodeId = currentStepData.nodeIds?.[0];
       if (nodeId) {
         return schema.entities[nodeId] || null;
       }

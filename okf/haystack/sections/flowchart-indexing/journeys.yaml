@@ -2,27 +2,22 @@
   label: Indexing Pipeline
   description: "Raw files are converted, chunked, embedded, and stored."
   steps:
-    - nodeId: start_indexing
-      description: Developer triggers indexing with raw files.
-    - nodeId: files_loaded
-      description: Files loaded and ready for conversion.
-    - nodeId: convert_files
-      description: Files parsed into structured Documents.
+    - stepId: start_indexing
+      name: "Start Indexing"
+      description: "Files are loaded from a document directory. Indexing begins by reading all supported file formats."
+    - stepId: convert_files
+      name: "Convert to Text"
+      description: "Documents in various formats (PDF, DOCX, TXT) are converted to plain text for uniform processing."
       processGroup: execution
-    - nodeId: docs_converted
-      description: Documents ready for chunking.
-    - nodeId: split_texts
-      description: Documents chunked into smaller pieces.
+    - stepId: split_texts
+      name: "Split into Chunks"
+      description: "Large text documents are split into smaller, overlapping chunks to fit model context windows."
       processGroup: execution
-    - nodeId: texts_chunked
-      description: Chunks ready for embedding.
-    - nodeId: compute_embeddings
-      description: Dense vectors computed for each chunk.
+    - stepId: compute_embeddings
+      name: "Compute Embeddings"
+      description: "Each text chunk is passed through an embedding model to produce a vector representation for semantic search."
       processGroup: execution
-    - nodeId: embeddings_ready
-      description: Embeddings ready for storage.
-    - nodeId: write_docs
-      description: Documents persisted to Document Store.
+    - stepId: write_docs
+      name: "Store in Document Store"
+      description: "Chunks and their embeddings are saved to the document store (e.g., SQLite, FAISS) for later retrieval."
       processGroup: execution
-    - nodeId: docs_indexed
-      description: All documents indexed and searchable.

@@ -2,46 +2,39 @@
   label: RAG Query Pipeline
   description: "Query is embedded, documents retrieved, ranked, and LLM generates answer."
   steps:
-    - nodeId: submit_query
-      description: "User submits a natural-language query."
-    - nodeId: query_received
-      description: Query enters the system.
-    - nodeId: embed_query
-      description: Query converted to dense vector.
+    - stepId: submit_query
+      name: "Submit Query"
+      description: "User types a question into the chat interface. The query enters the RAG pipeline."
+    - stepId: embed_query
+      name: "Embed Query"
+      description: "The query text is passed through the same embedding model used during indexing, producing a vector for comparison."
       processGroup: planning
-    - nodeId: query_embedded
-      description: Vector embedding ready.
-    - nodeId: retrieve
-      description: Relevant documents fetched from Document Store.
+    - stepId: retrieve
+      name: "Retrieve Documents"
+      description: "The query vector is compared against stored document embeddings using similarity search. Top-k matching chunks are returned."
       processGroup: execution
-    - nodeId: docs_retrieved
-      description: Candidate documents retrieved.
-    - nodeId: rank
-      description: "Documents re-ranked by relevance."
+    - stepId: rank
+      name: "Rank Results"
+      description: "Retrieved chunks are re-scored and ranked by a cross-encoder model for higher precision."
       processGroup: evaluation
-    - nodeId: docs_ranked
-      description: Documents sorted by relevance score.
-    - nodeId: build_prompt
-      description: Retrieved documents assembled into prompt context.
+    - stepId: build_prompt
+      name: "Build Prompt"
+      description: "Ranked chunks are combined with the original query into a prompt template for the LLM."
       processGroup: planning
-    - nodeId: prompt_ready
-      description: Prompt ready for LLM.
-    - nodeId: generate_answer
-      description: LLM generates final answer from context.
+    - stepId: generate_answer
+      name: "Generate Answer"
+      description: "LLM reads the enriched prompt and generates a grounded answer based on the retrieved context."
       processGroup: execution
-    - nodeId: answer_generated
-      description: Final response returned to user.
+
 - id: "simple-retrieval"
-  label: Simple Retrieval (No LLM)
-  description: Query is embedded and documents retrieved directly without RAG.
+  label: "Simple Retrieval (No LLM)"
+  description: "Query is embedded and documents retrieved directly without RAG."
   steps:
-    - nodeId: embed_query
-      description: Query converted to dense vector.
+    - stepId: embed_query
+      name: "Embed Query"
+      description: "The query is converted to a vector using the embedding model."
       processGroup: planning
-    - nodeId: query_embedded
-      description: Vector embedding ready.
-    - nodeId: retrieve
-      description: Documents returned directly from Document Store.
+    - stepId: retrieve
+      name: "Retrieve Documents"
+      description: "Vector similarity search finds matching document chunks, which are returned directly without LLM generation."
       processGroup: execution
-    - nodeId: docs_retrieved
-      description: Documents returned to user.

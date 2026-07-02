@@ -2,37 +2,26 @@
   label: หัวฉีดปกติ (Normal Fuel Injection)
   description: บิดคันเร่ง → ECU คำนวณ → หัวฉีดพ่น → ละอองน้ำมัน → ผสมส่วนแม่นยำ
   steps:
-    - nodeId: inject_throttle
-      description: ผู้ขับขี่บิดคันเร่ง เซ็นเซอร์ตรวจวัดการบิด
-    - nodeId: sensor_read
-      description: กล่อง ECU รับสัญญาณจากเซ็นเซอร์หลายตัว
-    - nodeId: sensor_read
-      description: ข้อมูลรอบเครื่อง ตำแหน่งคันเร่ง อุณหภูมิเครื่อง อากาศเข้า
-    - nodeId: inject_fuel
-      description: ECU คำนวณปริมาณน้ำมันที่เหมาะสมตามสภาวะ
-    - nodeId: fuel_atomized
-      description: หัวฉีดพ่นละอองน้ำมันเข้าสู่ท่อไอดี
-    - nodeId: fuel_atomized
-      description: น้ำมันเป็นละอองละเอียด ผสมกับอากาศ
-    - nodeId: precise_mix
-      description: ใช้ส่วนผสมที่คำนวณแม่นยำตามสภาวะ
-    - nodeId: precise_mix
-      description: ได้อัตราส่วนแม่นยำ ประหยัดน้ำมันและสตาร์ทง่าย
+    - stepId: inject_throttle
+      name: "บิดคันเร่ง"
+      description: "ผู้ขับขี่บิดคันเร่ง เซนเซอร์ส่งสัญญาณปริมาณอากาศเข้าเครื่องไปยัง ECU"
+    - stepId: inject_fuel
+      name: "พ่นหัวฉีด"
+      description: "ECU คำนวณปริมาณน้ำมันที่เหมาะสม สั่งหัวฉีดพ่นน้ำมันเป็นละอองฝอย"
+    - stepId: precise_mix
+      name: "ผสมส่วนแม่นยำ"
+      description: "ละอองน้ำมันผสมกับอากาศในอัตราส่วนที่ ECU คำนวณไว้ ให้การเผาไหม้สมบูรณ์"
+
 - id: "fuel-injection-cold"
   label: เพิ่มส่วนผสมอัตโนมัติ (Auto Cold Enrichment)
   description: บิดคันเร่ง → ECU ตรวจเครื่องเย็น → เพิ่มน้ำมันอัตโนมัติ
   steps:
-    - nodeId: inject_throttle
-      description: ผู้ขับขี่บิดคันเร่ง เซ็นเซอร์ตรวจวัดการบิด
-    - nodeId: sensor_read
-      description: กล่อง ECU รับสัญญาณจากเซ็นเซอร์หลายตัว
-    - nodeId: sensor_read
-      description: ข้อมูลรอบเครื่อง ตำแหน่งคันเร่ง อุณหภูมิเครื่อง อากาศเข้า
-    - nodeId: inject_fuel
-      description: ECU ตรวจพบเครื่องเย็น สั่งเพิ่มส่วนผสม
-    - nodeId: inject_cold
-      description: ECU เพิ่มปริมาณน้ำมันอัตโนมัติ
-    - nodeId: inject_cold_auto
-      description: หัวฉีดพ่นน้ำมันมากขึ้นเพื่อช่วยสตาร์ทเครื่องเย็น
-    - nodeId: inject_cold_auto
-      description: ไม่ต้องใช้โช้ค ระบบปรับอัตโนมัติ
+    - stepId: inject_throttle
+      name: "บิดคันเร่ง"
+      description: "ผู้ขับขี่บิดคันเร่ง เซนเซอร์ส่งข้อมูลไปยัง ECU"
+    - stepId: inject_fuel
+      name: "พ่นหัวฉีด"
+      description: "ECU คำนวณปริมาณน้ำมันพื้นฐานจากข้อมูลเซนเซอร์"
+    - stepId: inject_cold
+      name: "เพิ่มส่วนผสม"
+      description: "เซนเซอร์ตรวจพบอุณหภูมิเครื่องเย็น ECU สั่งเพิ่มปริมาณน้ำมันเพื่อสตาร์ทง่าย"

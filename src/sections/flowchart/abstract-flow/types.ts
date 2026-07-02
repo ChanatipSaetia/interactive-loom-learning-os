@@ -59,6 +59,8 @@ export interface BranchOption extends FlowStepBase {
   /** Optional secondary system the handler delegates to (sequential chain). */
   delegatesTo?: Ref;
   resultEvents: ResultEvent[];
+  /** Optional description for this branch option. */
+  description?: string;
 }
 
 export type FlowStep = LinearStep | BranchStep;
@@ -81,11 +83,13 @@ export interface SystemDecl {
   };
 }
 
-/** Journey step references a node and provides custom description. */
+/** Journey step references a flow step by id with required name and description. */
 export interface JourneyStepRef {
-  /** Node ID (entity ID) in the derived schema. */
-  nodeId: string;
-  /** Custom description for this journey step. */
+  /** Step id (linear step id or branch option id). */
+  stepId: string;
+  /** Short name shown as the step title in the sidebar. */
+  name: string;
+  /** Longer explanation shown below the name during playback. */
   description: string;
   /** Optional process group for state machine mapping. */
   processGroup?: 'planning' | 'execution' | 'evaluation' | 'escalation';
