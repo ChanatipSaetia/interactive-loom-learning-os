@@ -1,0 +1,16 @@
+type: taxonomy-category
+icon: ListTodo
+title: "Plan-and-Execute"
+subtitle: "Separate Planning from Execution"
+color: green
+description: "The agent first creates a detailed step-by-step plan, then executes each step sequentially, checking off completion and adjusting as needed."
+details: "Planning phase generates a structured list of subtasks with dependencies. Execution phase processes each subtask, marking completion. If a step fails, the agent can replan just that step without redoing the entire plan."
+analogy: "Like a project manager who writes a Gantt chart before the team starts working."
+primaryFocus: "Structured multi-step task decomposition"
+inScope:
+  - "Explicit plan generation before execution"
+  - "Sequential step processing"
+  - "Plan adjustment on failure"
+outOfScope:
+  - "Reactive, unplanned behavior"
+  - "Real-time streaming responses"

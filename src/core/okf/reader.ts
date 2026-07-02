@@ -3,15 +3,18 @@ import * as Icons from 'lucide-react'
 import type { ComponentType } from 'react'
 import type { AbstractFlow, ActorDecl, SystemDecl, FlowJourney } from '../../sections/flowchart/abstract-flow/types'
 import { ref } from '../../sections/flowchart/abstract-flow/types'
-import type { TradeoffScenario } from '../../sections/tradeoff-sandbox'
-import type { TaxonomyCategory } from '../../sections/taxonomy-browser'
 import type { BulletItem } from '../../sections/bullets'
 import type { WordTerm } from '../../types'
 import type {
   OKFBundled,
-  OKFBundledMeta,
-  OKFContent,
-  OKFSectionRaw,
+  OKFSectionMeta,
+  OKFSectionData,
+  OKFTextSectionData,
+  OKFBulletSectionData,
+  OKFFlowSectionData,
+  OKFTradeoffSectionData,
+  OKFTaxonomySectionData,
+  OKFFlashcardSectionData,
   OKFStepRaw,
   OKFJourneyRaw,
   OKFTradeoffScenarioRaw,
@@ -31,73 +34,156 @@ function parseFrontmatter(content: string): { meta: Record<string, unknown>; bod
   return { meta: parseYaml(match[1]), body: match[2] }
 }
 
-async function fetchYaml(path: string): Promise<unknown> {
+async function fetchText(path: string): Promise<string> {
   const res = await fetch(`${OKF_BASE}/${path}`)
   if (!res.ok) throw new Error(`OKF fetch failed: ${path} (${res.status})`)
-  return parseYaml(await res.text())
+  return res.text()
+}
+
+async function fetchYaml<T>(path: string): Promise<T> {
+  const text = await fetchText(path)
+  return parseYaml(text) as T
 }
 
 async function fetchMarkdown(path: string): Promise<{ meta: Record<string, unknown>; body: string }> {
-  const res = await fetch(`${OKF_BASE}/${path}`)
-  if (!res.ok) throw new Error(`OKF fetch failed: ${path} (${res.status})`)
-  return parseFrontmatter(await res.text())
+  const text = await fetchText(path)
+  return parseFrontmatter(text)
 }
 
 // --- Bundle loading ---
 
-function discoverFilesFromManifest(related: string[], subdir: string): string[] {
-  const basename = subdir.split('/').pop()!
+function discoverSectionFiles(related: string[], sectionPath: string): string[] {
+  const normalized = sectionPath.replace(/\/$/, '')
   return related
-    .filter((r) => r.startsWith(basename + '/') && r.endsWith('.yaml'))
-    .map((r) => r.split('/').pop()!)
+    .filter((r) => r.startsWith(normalized + '/'))
+    .filter((r) => r.endsWith('.yaml'))
+    .map((r) => {
+      const after = r.replace(normalized + '/', '')
+      return after
+    })
 }
 
 export async function loadOKFBundle(topicId: string): Promise<OKFBundled> {
   const metaRes = await fetchMarkdown(`${topicId}/okf.md`)
+  const sectionPaths = (metaRes.meta.sections as string[]) ?? []
   const related = (metaRes.meta.related as string[]) ?? []
 
-  const tradeoffFiles = discoverFilesFromManifest(related, `${topicId}/tradeoffs`)
-  const taxonomyFiles = discoverFilesFromManifest(related, `${topicId}/taxonomies`)
+  const sections = await Promise.all(
+    sectionPaths.map(async (sectionPath) => {
+      const sectionFile = sectionPath.endsWith('section.md')
+        ? sectionPath
+        : `${sectionPath}/section.md`
 
-  const [actorsRaw, systemsRaw, stepsRaw, journeysRaw, glossaryRaw, contentRes] = await Promise.all([
-    fetchYaml(`${topicId}/flows/actors.yaml`) as Promise<Record<string, { title: string; desc: string }>>,
-    fetchYaml(`${topicId}/flows/systems.yaml`) as Promise<Record<string, { title: string; desc: string; type: string; stateMachine?: any }>>,
-    fetchYaml(`${topicId}/flows/steps.yaml`) as Promise<OKFStepRaw[]>,
-    fetchYaml(`${topicId}/flows/journeys.yaml`) as Promise<OKFJourneyRaw[]>,
-    fetchYaml(`${topicId}/glossary.yaml`) as Promise<OKFGlossaryRaw[]>,
-    fetchMarkdown(`${topicId}/content.md`),
-  ])
+      const sectionRes = await fetchMarkdown(`${topicId}/${sectionFile}`)
+      const meta: OKFSectionMeta = {
+        type: (sectionRes.meta.type as string) ?? 'text',
+        title: (sectionRes.meta.title as string) ?? '',
+        heading: (sectionRes.meta.heading as string) ?? undefined,
+        ordered: (sectionRes.meta.ordered as boolean) ?? undefined,
+        resource: (sectionRes.meta.resource as string) ?? '.',
+      }
 
-  const tradeoffPromises = tradeoffFiles.map((f) =>
-    fetchYaml(`${topicId}/tradeoffs/${f}`) as Promise<OKFTradeoffScenarioRaw>
+      const sectionDir = sectionFile.replace(/\/section\.md$/, '')
+      const resourceFiles = discoverSectionFiles(related, sectionDir)
+      const sectionBasePath = `${topicId}/${sectionDir}`
+
+      const data = await loadSectionResource(meta.type, sectionBasePath, resourceFiles, meta.resource, sectionRes.body)
+      return { meta, data }
+    })
   )
-  const taxonomyPromises = taxonomyFiles.map((f) =>
-    fetchYaml(`${topicId}/taxonomies/${f}`) as Promise<OKFTaxonomyRaw>
-  )
 
-  const [tradeoffsRaw, taxonomyRaw] = await Promise.all([
-    Promise.all(tradeoffPromises),
-    Promise.all(taxonomyPromises),
+  return sections
+}
+
+async function loadSectionResource(
+  type: string,
+  basePath: string,
+  resourceFiles: string[],
+  resource: string,
+  sectionBody: string
+): Promise<OKFSectionData> {
+  switch (type) {
+    case 'text':
+      return loadTextSection(basePath, resource, sectionBody)
+    case 'bullets':
+      return loadBulletsSection(basePath, resource, resourceFiles)
+    case 'flowchart':
+      return loadFlowchartSection(basePath, resourceFiles)
+    case 'tradeoff-sandbox':
+      return loadTradeoffSection(basePath, resourceFiles)
+    case 'taxonomy-browser':
+      return loadTaxonomySection(basePath, resourceFiles)
+    case 'flashcards':
+      return loadFlashcardSection(basePath, resource, resourceFiles)
+    default:
+      throw new Error(`Unknown section type: ${type}`)
+  }
+}
+
+async function loadTextSection(basePath: string, resource: string, sectionBody: string): Promise<OKFTextSectionData> {
+  const contentFile = resource !== '.' ? resource : 'content.md'
+  try {
+    const contentRes = await fetchMarkdown(`${basePath}/${contentFile}`)
+    const paragraphs = parseParagraphs(contentRes.body)
+    return { type: 'text', paragraphs }
+  } catch {
+    const paragraphs = parseParagraphs(sectionBody)
+    return { type: 'text', paragraphs }
+  }
+}
+
+async function loadBulletsSection(basePath: string, resource: string, resourceFiles: string[]): Promise<OKFBulletSectionData> {
+  const itemsFile = resource !== '.' ? resource : resourceFiles.find((f) => f === 'items.yaml')
+  if (itemsFile) {
+    const raw = await fetchYaml<any[]>(`${basePath}/${itemsFile}`)
+    const items = raw.map((r) => ({
+      text: r.text as string,
+      children: (r.children ?? []).map((c: any) => ({ text: c.text as string })),
+    })) as BulletItem[]
+    return { type: 'bullets', items }
+  }
+  return { type: 'bullets', items: [] }
+}
+
+async function loadFlowchartSection(basePath: string, _resourceFiles: string[]): Promise<OKFFlowSectionData> {
+  const [actorsRaw, systemsRaw, stepsRaw, journeysRaw] = await Promise.all([
+    fetchYaml<Record<string, { title: string; desc: string }>>(`${basePath}/actors.yaml`),
+    fetchYaml<Record<string, { title: string; desc: string; type: string; stateMachine?: any }>>(`${basePath}/systems.yaml`),
+    fetchYaml<OKFStepRaw[]>(`${basePath}/steps.yaml`),
+    fetchYaml<OKFJourneyRaw[]>(`${basePath}/journeys.yaml`),
   ])
+  const flow = mapFlow(actorsRaw, systemsRaw, stepsRaw, journeysRaw)
+  return { type: 'flowchart', flow }
+}
 
-  const meta: OKFBundledMeta = {
-    type: (metaRes.meta.type as string) ?? 'topic',
-    title: (metaRes.meta.title as string) ?? '',
-    description: (metaRes.meta.description as string) ?? '',
-    tags: (metaRes.meta.tags as string[]) ?? [],
-    sections: (metaRes.meta.sections as OKFSectionRaw[]) ?? undefined,
+async function loadTradeoffSection(basePath: string, resourceFiles: string[]): Promise<OKFTradeoffSectionData> {
+  const scenarioFiles = resourceFiles.filter((f) => !f.endsWith('section.yaml'))
+  const promises = scenarioFiles.map((f) =>
+    fetchYaml<OKFTradeoffScenarioRaw>(`${basePath}/${f}`)
+  )
+  const raw = await Promise.all(promises)
+  const scenarios = raw.map(mapTradeoffScenario)
+  return { type: 'tradeoff-sandbox', scenarios }
+}
+
+async function loadTaxonomySection(basePath: string, resourceFiles: string[]): Promise<OKFTaxonomySectionData> {
+  const categoryFiles = resourceFiles.filter((f) => !f.endsWith('section.yaml'))
+  const promises = categoryFiles.map((f) =>
+    fetchYaml<OKFTaxonomyRaw>(`${basePath}/${f}`)
+  )
+  const raw = await Promise.all(promises)
+  const categories = raw.map(mapTaxonomyCategory)
+  return { type: 'taxonomy-browser', categories }
+}
+
+async function loadFlashcardSection(basePath: string, resource: string, resourceFiles: string[]): Promise<OKFFlashcardSectionData> {
+  const glossaryFile = resource !== '.' ? resource : resourceFiles.find((f) => f === 'glossary.yaml')
+  if (glossaryFile) {
+    const raw = await fetchYaml<OKFGlossaryRaw[]>(`${basePath}/${glossaryFile}`)
+    const terms = raw.map(mapGlossaryTerm)
+    return { type: 'flashcards', terms }
   }
-
-  const content = parseContentMarkdown(contentRes.body)
-
-  return {
-    meta,
-    flow: mapFlow(actorsRaw, systemsRaw, stepsRaw, journeysRaw),
-    tradeoffs: tradeoffsRaw.map(mapTradeoffScenario),
-    taxonomy: taxonomyRaw.map(mapTaxonomyCategory),
-    glossary: glossaryRaw.map(mapGlossaryTerm),
-    content,
-  }
+  return { type: 'flashcards', terms: [] }
 }
 
 // --- Flow mapping ---
@@ -174,7 +260,7 @@ function mapJourney(raw: OKFJourneyRaw): FlowJourney {
 
 // --- Tradeoff mapping ---
 
-function mapTradeoffScenario(raw: OKFTradeoffScenarioRaw): TradeoffScenario {
+function mapTradeoffScenario(raw: OKFTradeoffScenarioRaw): import('../../sections/tradeoff-sandbox').TradeoffScenario {
   return {
     id: raw.id,
     title: raw.title,
@@ -208,7 +294,7 @@ function mapTradeoffScenario(raw: OKFTradeoffScenarioRaw): TradeoffScenario {
 
 // --- Taxonomy mapping ---
 
-function mapTaxonomyCategory(raw: OKFTaxonomyRaw): TaxonomyCategory {
+function mapTaxonomyCategory(raw: OKFTaxonomyRaw): import('../../sections/taxonomy-browser').TaxonomyCategory {
   const iconKey = raw.icon as keyof typeof Icons
   const IconComponent = (Icons as Record<string, unknown>)[iconKey] as ComponentType<any>
   return {
@@ -242,52 +328,15 @@ function mapGlossaryTerm(raw: OKFGlossaryRaw): WordTerm {
 
 // --- Content parsing ---
 
-function parseContentMarkdown(body: string): OKFContent {
+function parseParagraphs(body: string): string[] {
   const paragraphs: string[] = []
-  const lifecycleMarkdown: string[] = []
-  const capabilityBullets: BulletItem[] = []
-
-  const whatIsMatch = body.match(/## What is an AI Agent\?\s*\n([\s\S]*?)(?=##|$)/)
-  if (whatIsMatch) {
-    const lines = whatIsMatch[1].trim().split('\n').filter((l) => l.trim())
-    for (const line of lines) {
-      const trimmed = line.trim()
-      if (!trimmed.startsWith('#') && !trimmed.match(/^\d+\./) && !trimmed.startsWith('-')) {
-        paragraphs.push(trimmed)
-      }
-    }
-  }
-
-  const lifecycleMatch = body.match(/## Agent Lifecycle\s*\n([\s\S]*?)(?=##|$)/)
-  if (lifecycleMatch) {
-    lifecycleMarkdown.push('## Agent Lifecycle\n\n' + lifecycleMatch[1].trim())
-  }
-
-  const capsMatch = body.match(/## Key Agent Capabilities\s*\n([\s\S]*?)(?=##|$)/)
-  if (capsMatch) {
-    capabilityBullets.push(...parseBulletList(capsMatch[1].trim()))
-  }
-
-  return { paragraphs, lifecycleMarkdown, capabilityBullets }
-}
-
-function parseBulletList(text: string): BulletItem[] {
-  const items: BulletItem[] = []
-  const lines = text.split('\n').filter((l) => l.trim())
-
+  const lines = body.trim().split('\n').filter((l) => l.trim())
   for (const line of lines) {
-    const topLevel = line.match(/^(\s*)-\s+(.+)/)
-    if (topLevel) {
-      const indent = topLevel[1].length
-      const text = topLevel[2].trim()
-      if (indent === 0) {
-        items.push({ text })
-      } else if (items.length > 0) {
-        const parent = items[items.length - 1]
-        if (!parent.children) parent.children = []
-        parent.children.push({ text })
-      }
+    const trimmed = line.trim()
+    if (trimmed && !trimmed.startsWith('#')) {
+      const cleaned = trimmed.replace(/^\d+\.\s+/, '').replace(/^-+\s+/, '')
+      paragraphs.push(cleaned)
     }
   }
-  return items
+  return paragraphs
 }

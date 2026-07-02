@@ -1,5 +1,7 @@
 import { defineConfig, loadEnv } from 'vite'
 import react from '@vitejs/plugin-react'
+import sirv from 'sirv'
+import path from 'path'
 
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd(), '')
@@ -7,7 +9,15 @@ export default defineConfig(({ mode }) => {
 
   return {
     base: basePath,
-    plugins: [react()],
+    plugins: [
+      react(),
+      {
+        name: 'serve-okf',
+        configureServer(server) {
+          server.middlewares.use('/okf', sirv(path.resolve('okf'), { dev: true, single: false }))
+        },
+      },
+    ],
     server: {
       port: Number(env.VITE_PORT) || 5173,
       open: false

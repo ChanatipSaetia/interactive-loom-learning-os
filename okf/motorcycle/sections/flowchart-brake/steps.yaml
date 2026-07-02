@@ -1,0 +1,47 @@
+- type: linear
+  id: brake
+  initiatedBy: rider
+  command: กดคันเบรก (Apply Brake)
+  policy: แคลิเพอร์รับแรงดัน (Caliper Activates)
+  handledBy: brake_master
+  resultEvents:
+    - id: brake_pressure
+      title: น้ำมันเบรกดันไปแคลิเพอร์
+      desc: แรงดันไฮดรอลิกส่งผ่านท่อเบรก
+  continuesAs: caliper_squeeze
+- type: linear
+  id: caliper_squeeze
+  policy: แคลิเพอร์รับแรงดัน (Caliper Activates)
+  command: กดผ้าเบรกเข้าจานเบรก
+  handledBy: brake_caliper
+  resultEvents:
+    - id: wheel_slowed
+      title: ล้อช้าลง (Wheel Slowed)
+      desc: พลังงานจลน์เปลี่ยนเป็นความร้อน รถชะลอความเร็ว
+    - id: brake_heat
+      title: เกิดความร้อน (Brake Heat)
+      desc: จานเบรกและผ้าเบรกมีความร้อนสูง
+  continuesAs: "brake-branch"
+- type: branch
+  id: "brake-branch"
+  event: brake_heat
+  branches:
+    - id: brake_normal
+      label: ปกติ
+      policy: เบรกทำงานปกติ (Normal Brake)
+      command: รถหยุดหรือช้าลงตามต้องการ (Normal Brake)
+      handledBy: brake_caliper
+      resultEvents:
+        - id: brake_normal
+          title: รถหยุดหรือช้าลงตามต้องการ
+          desc: เบรกทำงานปกติ
+    - id: brake_fade
+      label: ร้อนเกินไป
+      dashed: true
+      policy: เบรกจม (Brake Fade)
+      command: เบรกจม (Brake Fade Action)
+      handledBy: brake_caliper
+      resultEvents:
+        - id: brake_fade
+          title: เบรกจม (Brake Fade)
+          desc: ประสิทธิภาพเบรกลดลงเพราะความร้อนสูง

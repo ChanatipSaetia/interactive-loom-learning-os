@@ -1,0 +1,166 @@
+id: realtime-chat
+title: "Real-Time Chat & Collab System"
+description: "Design a real-time collaborative system: WebAssembly compute, Node.js services, Redis pub/sub, Kubernetes orchestration. Balance latency, consistency, and cost."
+metrics:
+  - id: latency
+    label: Low Latency
+    baseValue: 40
+    min: 0
+    max: 100
+    direction: higher
+  - id: consistency
+    label: Consistency
+    baseValue: 50
+    min: 0
+    max: 100
+    direction: higher
+  - id: devex
+    label: Developer Experience
+    baseValue: 50
+    min: 0
+    max: 100
+    direction: higher
+  - id: ops-cost
+    label: Ops Cost
+    baseValue: 50
+    min: 0
+    max: 100
+    direction: higher
+steps:
+  - id: compute
+    title: "Compute Layer"
+    description: "Choose the client-side and server-side compute strategy."
+    recommended: wasm-workers
+    choices:
+      - id: client-js
+        label: "Client-side JS"
+        description: "All computation runs in the browser using JavaScript."
+        metrics:
+          latency: 15
+          consistency: -5
+          devex: 10
+          ops-cost: 15
+        pros:
+          - title: "Zero server cost"
+            description: "All compute happens client-side"
+          - title: "Instant feedback"
+            description: "No network round-trip for computation"
+        cons:
+          - title: "Device dependency"
+            description: "Performance varies by device"
+          - title: "Limited parallelism"
+            description: "Browser threads are constrained"
+        whenToUse: "Good for simple tools where server infrastructure is not justified."
+      - id: wasm-workers
+        label: "Wasm + Web Workers"
+        description: "WebAssembly modules run in Web Workers for parallel compute."
+        metrics:
+          latency: 20
+          consistency: 5
+          devex: -5
+          ops-cost: 10
+        pros:
+          - title: "Near-native performance"
+            description: "Wasm executes close to hardware speed"
+          - title: "True parallelism"
+            description: "Multiple workers run concurrently"
+          - title: "Language agnostic"
+            description: "Compile from Rust, C++, Go"
+        cons:
+          - title: "Complex build pipeline"
+            description: "Wasm toolchain adds complexity"
+          - title: "Larger binary size"
+            description: "Wasm modules increase bundle"
+        whyThisFits: "Real-time collaboration requires low-latency, parallel compute that Wasm + Workers deliver efficiently."
+
+  - id: state
+    title: "State Management"
+    description: "How to manage shared mutable state across participants."
+    recommended: redis-ops
+    choices:
+      - id: websocket-local
+        label: "WebSocket + Local State"
+        description: "Each client maintains local state, synced via WebSocket."
+        metrics:
+          latency: 10
+          consistency: -10
+          devex: 15
+          ops-cost: 10
+        pros:
+          - title: "Simple architecture"
+            description: "No shared state store needed"
+          - title: "Optimistic updates"
+            description: "UI updates immediately before sync"
+        cons:
+          - title: "Conflict resolution"
+            description: "Concurrent edits cause conflicts"
+          - title: "Eventual consistency"
+            description: "State may diverge temporarily"
+        whenToUse: "Suitable for low-conflict scenarios like chat messaging."
+      - id: redis-ops
+        label: "Redis CRDT Ops"
+        description: "Redis stores CRDT operations for conflict-free sync."
+        metrics:
+          latency: 5
+          consistency: 20
+          devex: -10
+          ops-cost: -5
+        pros:
+          - title: "Conflict-free"
+            description: "CRDTs guarantee convergence"
+          - title: "Strong consistency"
+            description: "All participants see same state"
+          - title: "Fast operations"
+            description: "Redis in-memory ops are sub-millisecond"
+        cons:
+          - title: "CRDT learning curve"
+            description: "Understanding CRDT types is non-trivial"
+          - title: "Redis dependency"
+            description: "Requires managed Redis instance"
+        whyThisFits: "Real-time collab demands strong consistency and conflict resolution that CRDTs provide natively."
+
+  - id: orchestration
+    title: "Deployment & Scaling"
+    description: "How to deploy and scale the real-time infrastructure."
+    recommended: kubernetes
+    choices:
+      - id: serverless
+        label: Serverless
+        description: "AWS Lambda / Cloud Functions with managed WebSocket API."
+        metrics:
+          latency: -10
+          consistency: 5
+          devex: 10
+          ops-cost: 15
+        pros:
+          - title: "Zero ops"
+            description: "Fully managed scaling and deployment"
+          - title: "Pay per use"
+            description: "No idle resource costs"
+        cons:
+          - title: "Cold start latency"
+            description: "First request incurs startup delay"
+          - title: "WebSocket limits"
+            description: "Long-lived connections cost more"
+        whenToUse: "Good for variable workloads with predictable spike patterns."
+      - id: kubernetes
+        label: Kubernetes
+        description: "Containerized services on K8s with horizontal pod autoscaling."
+        metrics:
+          latency: 10
+          consistency: 10
+          devex: -10
+          ops-cost: -10
+        pros:
+          - title: "Predictable latency"
+            description: "Always-warm containers"
+          - title: "Fine-grained scaling"
+            description: "Per-service autoscaling"
+          - title: "Stateful support"
+            description: "StatefulSets for Redis, databases"
+        cons:
+          - title: "Complex setup"
+            description: "K8s manifests and Helm charts"
+          - title: "Minimum resource cost"
+            description: "Always-on pods have baseline cost"
+        whyThisFits: "Real-time systems need predictable latency and always-warm connections that Kubernetes guarantees."

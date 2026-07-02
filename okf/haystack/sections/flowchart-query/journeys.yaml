@@ -1,0 +1,47 @@
+- id: "rag-query"
+  label: RAG Query Pipeline
+  description: "Query is embedded, documents retrieved, ranked, and LLM generates answer."
+  steps:
+    - nodeId: submit_query
+      description: "User submits a natural-language query."
+    - nodeId: query_received
+      description: Query enters the system.
+    - nodeId: embed_query
+      description: Query converted to dense vector.
+      processGroup: planning
+    - nodeId: query_embedded
+      description: Vector embedding ready.
+    - nodeId: retrieve
+      description: Relevant documents fetched from Document Store.
+      processGroup: execution
+    - nodeId: docs_retrieved
+      description: Candidate documents retrieved.
+    - nodeId: rank
+      description: "Documents re-ranked by relevance."
+      processGroup: evaluation
+    - nodeId: docs_ranked
+      description: Documents sorted by relevance score.
+    - nodeId: build_prompt
+      description: Retrieved documents assembled into prompt context.
+      processGroup: planning
+    - nodeId: prompt_ready
+      description: Prompt ready for LLM.
+    - nodeId: generate_answer
+      description: LLM generates final answer from context.
+      processGroup: execution
+    - nodeId: answer_generated
+      description: Final response returned to user.
+- id: "simple-retrieval"
+  label: Simple Retrieval (No LLM)
+  description: Query is embedded and documents retrieved directly without RAG.
+  steps:
+    - nodeId: embed_query
+      description: Query converted to dense vector.
+      processGroup: planning
+    - nodeId: query_embedded
+      description: Vector embedding ready.
+    - nodeId: retrieve
+      description: Documents returned directly from Document Store.
+      processGroup: execution
+    - nodeId: docs_retrieved
+      description: Documents returned to user.

@@ -1,0 +1,8 @@
+ecu:
+  title: กล่อง ECU (Electronic Control Unit)
+  desc: สมองกลคำนวณปริมาณน้ำมันที่แม่นยำ
+  type: aggregate
+fuel_injector:
+  title: หัวฉีด (Fuel Injector)
+  desc: พ่นละอองน้ำมันเชื้อเพลิงเข้าสู่ท่อไอดี
+  type: aggregate

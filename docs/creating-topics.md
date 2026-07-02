@@ -5,243 +5,486 @@ The objective of creating a new topic is to create comprehensive content for tha
 
 Creating a new interactive topic in the Interactive Loom Learning OS is done by assembling a sequence of modular "sections". The key architectural principle is strict separation of content (data) from structure (UI).
 
-Below is the step-by-step process based on the `demo` topic implementation.
+All topic content lives in `public/okf/[topic-id]/` as markdown manifests and YAML data files. The reader pipeline loads sections dynamically — no TypeScript compilation needed.
 
 ## 1. Create the Directory Structure
-Create a new directory for your topic under `src/topics/[topic-name]/`.
 
-A standard topic directory includes:
-- `data/`: A directory storing all raw data payloads separated by type.
-- `sections.ts`: Defines the sequence of sections, mapping the raw data to section props.
-- `index.tsx`: The main React component that renders the sections.
+Each topic has its own folder under `public/okf/`:
 
-## 2. Isolate Content in the `data/` Directory
-To keep the structure clean, all content should live in `src/topics/[topic-name]/data/`. You should export these variables through `data/index.ts`.
-
-Example `data/text.ts` (for Text and Bullet sections):
-```typescript
-import type { BulletItem } from '../../../sections/bullets'
-
-export const myTopicParagraphs: string[] = [
-  'Paragraph 1...',
-  'Paragraph 2...',
-]
-
-export const myTopicBullets: BulletItem[] = [
-  { text: 'Capability 1', children: [{ text: 'Sub-capability 1' }] },
-  { text: 'Capability 2' },
-]
+```
+public/okf/[topic-id]/
+  okf.md                          # topic manifest: section paths + file discovery
+  sections/
+    intro/
+      section.md                  # frontmatter: type, title, resource
+      content.md                  # paragraph text
+    flowchart/
+      section.md
+      actors.yaml
+      systems.yaml
+      steps.yaml
+      journeys.yaml
+    lifecycle/
+      section.md
+      content.md
+    capabilities/
+      section.md
+      items.yaml
+    tradeoffs/
+      section.md
+      scenario-1.yaml
+      scenario-2.yaml
+    taxonomy/
+      section.md
+      category-1.yaml
+      category-2.yaml
+    flashcards/
+      section.md
+      glossary.yaml
 ```
 
-Example `data/index.ts` (aggregating exports):
-```typescript
-export * from './text'
-export * from './schema'     // UnifiedFlowchartSchema
-export * from './taxonomy'   // TaxonomyCategory[]
-export * from './tradeoffs'  // TradeoffScenario[]
-export * from './flashcards' // WordTerm[]
+**Adding a new section is simple:** create a folder with `section.md` + data files, then append the path to `okf.md` sections list.
+
+## 2. Create the Topic Manifest (`okf.md`)
+
+The manifest has two purposes: list sections (display order) and declare discoverable data files (browser can't list directories).
+
+```yaml
+---
+type: topic
+title: "Topic Display Title"
+description: "One-line description for the topic card"
+tags:
+  - tag1
+  - tag2
+sections:
+  - sections/intro/section.md
+  - sections/flowchart/section.md
+  - sections/lifecycle/section.md
+  - sections/capabilities/section.md
+  - sections/tradeoffs/section.md
+  - sections/taxonomy/section.md
+  - sections/flashcards/section.md
+related:
+  # All YAML data files the reader needs to discover
+  - sections/flowchart/actors.yaml
+  - sections/flowchart/systems.yaml
+  - sections/flowchart/steps.yaml
+  - sections/flowchart/journeys.yaml
+  - sections/tradeoffs/enterprise-web.yaml
+  - sections/tradeoffs/realtime-chat.yaml
+  - sections/taxonomy/orchestrator-workers.yaml
+  - sections/taxonomy/memory-context.yaml
+  - sections/capabilities/items.yaml
+  - sections/flashcards/glossary.yaml
+---
+
+# Topic Display Title
+
+Optional markdown body for reference (not loaded by the reader).
 ```
 
-## 3. Assemble the Topic in `sections.ts`
-Your `sections.ts` will export an array of `SectionConfig` objects. Each section has a specific `type` and requires specific `props` fed from your `data/` folder. The order of the sections in this array determines the display order in the UI. Order the sections to follow a meaningful learning progression rather than an arbitrary sequence — see [Recommended Section Order](#recommended-section-order) below.
+**`sections`** — ordered list of section manifest paths (display order in the UI).
+**`related`** — all discoverable YAML data files. Every `.yaml` file referenced by any section must appear here (the reader filters this list to find per-section data).
 
-Here are the 6 available section types, their objectives, and how you assign content to them:
+## 3. Section Types
 
-### 1. `flowchart`
-**Objective:** Show how the action (command), event, and policy relate to actor aggregates and other external systems. It shows the flow of the process and provides multiple views (e.g. Event Storming, Sequence, Swimlanes) to make complex architectures easy to understand.
+Each section is a folder with a `section.md` manifest (YAML frontmatter) and data files.
+
+### Section frontmatter fields
+
+| Field | Required | Description |
+|---|---|---|
+| `type` | yes | Section renderer: `text`, `bullets`, `flowchart`, `tradeoff-sandbox`, `taxonomy-browser`, `flashcards` |
+| `title` | yes | Display title shown above the section content |
+| `resource` | yes | `"."` for directory (multiple data files), or `"filename.yaml"` for a single file |
+| `heading` | no | Sub-heading displayed below the title |
+| `ordered` | no | `true` for numbered lists, `false` for bullets (only for `bullets` type) |
+
+### `text` section
+Paragraph-based content. Each non-empty, non-heading line in `content.md` becomes a paragraph. Numbered items (1., 2., 3.) and bullet points (-) are stripped of their prefix.
+
+```yaml
+---
+type: text
+title: "Introduction Title"
+heading: "Sub-heading (optional)"
+resource: content.md
+---
+```
+
+**Data file (`content.md`):**
+```markdown
+An **AI agent** is a software system that perceives its environment, reasons about a goal, and takes autonomous actions.
+
+Modern agents combine a large language model with a memory store, a tool registry, and a feedback loop.
+
+The key design decision is the **orchestration strategy**: single-agent vs multi-agent, synchronous ReAct loop vs async event-driven pipeline.
+```
+
+### `bullets` section
+Bulleted or numbered list items with optional children.
+
+```yaml
+---
+type: bullets
+title: "Key Capabilities"
+ordered: false
+resource: items.yaml
+---
+```
+
+**Data file (`items.yaml`):**
+```yaml
+- text: "Tool use — call external APIs, run code, browse the web"
+  children:
+    - text: "Web search (Tavily, Brave, Google)"
+    - text: "Code execution (sandboxed interpreter)"
+- text: "Long-horizon planning via chain-of-thought or ReAct"
+- text: "Persistent memory across sessions (vector store)"
+```
+
+### `flowchart` section
+Event Storming flowchart with multiple views (Event Storming, Sequence, Swimlanes, Data Flow, System Architecture). Always uses `resource: "."` — the reader loads 4 fixed YAML files: `actors.yaml`, `systems.yaml`, `steps.yaml`, `journeys.yaml`.
+
+```yaml
+---
+type: flowchart
+title: "System Architecture"
+resource: "."
+---
+```
+
+**Data files:**
+
+`actors.yaml` — human actors:
+```yaml
+dev_user:
+  title: "Developer (Initiator)"
+  desc: "Starts the agent run"
+qa_user:
+  title: "QA Engineer"
+  desc: "Reviews and approves the final result"
+```
+
+`systems.yaml` — system components:
+```yaml
+orch_agent:
+  title: "Agent Orchestrator"
+  desc: "Central orchestrator that plans and delegates"
+  type: "aggregate"
+llm_api:
+  title: "LLM"
+  desc: "Language model inference API"
+  type: "external"
+```
+
+`steps.yaml` — process steps (linear or branching):
+```yaml
+- type: linear
+  id: step_1
+  initiatedBy: dev_user
+  command: cmd_start
+  handledBy: orch_agent
+  resultEvents:
+    - id: evt_started
+      title: "Agent Started"
+  continuesAs: step_2
+- type: branch
+  id: step_branch
+  event: evt_decision
+  branches:
+    - id: branch_a
+      label: "Happy path"
+      policy: pol_approve
+      command: cmd_approve
+      handledBy: qa_user
+      resultEvents:
+        - id: evt_approved
+          title: "Approved"
+    - id: branch_b
+      label: "Needs revision"
+      dashed: true
+      policy: pol_revise
+      command: cmd_revise
+      handledBy: orch_agent
+      resultEvents:
+        - id: evt_revision
+          title: "Revision Started"
+```
+
+`journeys.yaml` — walkthrough paths through the flow:
+```yaml
+- id: journey_happy
+  label: "Happy Path"
+  description: "Agent completes the task in one pass"
+  steps:
+    - nodeId: evt_started
+      description: "Developer triggers the agent run"
+      processGroup: planning
+    - nodeId: evt_approved
+      description: "QA approves the result"
+      processGroup: evaluation
+```
 
 **Event Storming Node and Relation Conventions:**
-When defining a `UnifiedFlowchartSchema` for a flowchart, strictly follow these conventions (as seen in the `demo` and `motorcycle` topics):
-- **Root Node:** Set `root: true` on exactly ONE entity, which should be the starting `COMMAND` of the Event Storming flow. This determines the entry point and chronological anchor for the layout.
-- **Standard Flow (per step):** Each step in the process follows the full cycle: `EVENT` → `POLICY` → `COMMAND` → `AGGREGATE`/`EXTERNAL` (via `handledBy`) → `EVENT`. The reacting `POLICY` triggers the next `COMMAND`, which is handled by the component that produces the resulting `EVENT`. Do not skip the `POLICY` or `COMMAND` — every step that "does work" should be a `COMMAND` handled by an `AGGREGATE`/`EXTERNAL`, not a direct `EVENT` → `AGGREGATE` jump.
-- **Direction & Branching:** The flow progresses left-to-right from the root. Branching **must** follow the pattern `EVENT → multiple POLICYs → one COMMAND each`.
+See [Event Storming Conventions](#event-storming-conventions) below for the full rules on flow structure, branching, duplicate-and-collapse, and node types.
 
-  **Correct branching:**
-  ```
-  EVENT ──→ POLICY A ──→ COMMAND A → AGGREGATE → EVENT
-            └──→ POLICY B ──→ COMMAND B → AGGREGATE → EVENT
-  ```
+### `tradeoff-sandbox` section
+Interactive decision sandbox with metrics dashboard. Each scenario is a separate YAML file. Uses `resource: "."`.
 
-  **Incorrect branching (never do this):**
-  ```
-  EVENT ──→ POLICY ──→ COMMAND A
-                      └──→ COMMAND B
-  ```
-
-  Each branch gets its own `POLICY` node. The `POLICY` represents the decision for that path, and each `POLICY` triggers exactly one `COMMAND`. Never branch `POLICY → multiple COMMANDs` or `EVENT → multiple COMMANDs`. When 1 `EVENT` triggers 2 or more `POLICIES`, the layout engine spreads these branches vertically and symmetrically. A branching point (`EVENT` with >= 2 outgoing `POLICIES`) renders as the single Decision diamond in the Swimlanes/Data Flow views.
-
-  Example (`motorcycle` choke schema):
-  ```
-  evt_rich_mix ──→ policy_choke_start ──→ cmd_cold_start → engine_warm → ...
-                   └──→ policy_choke_forget ──→ cmd_ride_choke → choke_valve3 → evt_choke_forget
-  ```
-- **Duplicate-and-Collapse for repeated handlers:** A single canonical `AGGREGATE`, `EXTERNAL`, or `USER` (actor) is often involved in multiple steps of the flow. **Create a separate duplicate entity for each step it participates in, and map every duplicate back to the canonical node with `collapsedTo`.** This is required to complete the `handledBy` chain so the layout and derived views (Sequence, Swimlanes, Data Flow) resolve correctly.
-  - Aggregate example (`motorcycle` topic): `engine`, `engine2`, `engine3`, `engine4` are four duplicates each handling one stroke (intake / compression / combustion / exhaust), all `collapsedTo: 'engine'`.
-  - External example (`demo` topic): `llm_reason` and `llm_final` (collapsed to `llm_reason`); `orch_agent` with `orch_plan_ref`, `orch_qa_ref`, `orch_notify_ref` all collapsing to `orch_agent`.
-  - Actor example (`demo` topic): `dev_user_feedback` collapses to `dev_user` (same developer, two interaction points).
-- **Command Handlers:** Relations from a `COMMAND` to its handler (an `AGGREGATE` or `EXTERNAL`) must use `handledBy: true`. Point each handler relation at the per-step duplicate (e.g. `cmd_compression -> engine2` with `handledBy: true`), not the canonical node, so each step has its own handler instance.
-- **View Targeting:** Relations should specify `views: ['EVENT_STORMING']` to ensure they render correctly in the Event Storming view.
-- **Node Types:** The flowchart supports two categories of node types — **source types** you set directly in the schema, and **derived types** generated automatically by the layout engine for other views.
-
-  **Source types** (set `type` directly on entities):
-
-  | Type | `TYPES` key | Description | Example |
-  |---|---|---|---|
-  | Event | `TYPES.EVENT` | Something that happened; result of work | `evt_started`, `evt_tool_executed` |
-  | Command | `TYPES.COMMAND` | An action or intent to do work | `cmd_run_agent`, `cmd_call_llm` |
-  | Policy | `TYPES.POLICY` | A rule that decides which command to issue next | `pol_plan`, `pol_route` |
-  | Aggregate | `TYPES.AGGREGATE` | A component within the system/library being discussed | `orch_agent`, `tools_router`, LangChain's `AgentExecutor` |
-  | External API | `TYPES.EXTERNAL` | A real external system outside your control, called via API/network | LLM API (OpenAI), MCP servers, subagents |
-  | Actor | `TYPES.USER` | A human user or actor initiating actions | `dev_user`, `qa_user` |
-  | Read Model | `TYPES.READ_MODEL` | A query-optimized data projection | CQRS read model, materialized view |
-  | Risk | `TYPES.HOTSPOT` | An area of uncertainty or risk in the design | unresolved integration point |
-
-  **Derived types** (generated automatically, **do not set** in the schema):
-
-  | Derived Type | Source Type | Appears in views |
-  |---|---|---|
-  | `DECISION` | `POLICY` with >= 2 outgoing relations | Swimlanes, Data Flow |
-  | `PROCESS` | `COMMAND` | Swimlanes |
-  | `DATA_OBJECT` | `EVENT`, `READ_MODEL` | Data Flow, State Machine |
-  | `SERVICE` | `AGGREGATE` | System Architecture, Sequence |
-  | `CORE_SYSTEM` | — | — |
-
-  The derivation is controlled by `MASTER_MAPPING_MATRIX` in `src/sections/flowchart/types.ts`.
-
-- **Aggregate vs. External Systems:** Use `AGGREGATE` for components that belong to the system or library being discussed (e.g., an `AgentExecutor`, `RunnableSequence`, or `PromptTemplate` inside LangChain). Use `EXTERNAL` for real external systems outside your control that are called via API, network, or file — e.g., a database, LLM API (OpenAI, Anthropic), message queue, or third-party service.
-- **Splitting Flowcharts into Independent Graphs:** When a topic has multiple subsystems, split them into separate schemas if they share **no `COMMAND` or `EVENT` entities** between them. Sharing `AGGREGATE` or `EXTERNAL` entities is fine — those do not require keeping flows together. Each independent graph gets its own schema with exactly ONE `root: true` node.
-  - Example (`motorcycle` topic): 4 independent schemas — `engineSchema` (4-stroke cycle), `chokeSchema` (cold start), `fuelInjectSchema` (EFI), `brakeSchema` (braking) — none share commands or events.
-- **Multiple Journeys per Schema:** Each schema should include multiple `journeys` to cover different execution paths through the same flow. Each journey follows **one branch** from the flowchart — a journey is a step-by-step walkthrough of one path from start to finish.
-
-  **Journey conventions:**
-  - Each journey starts from the same root `COMMAND` and follows one branch through the flowchart
-  - A journey should not jump between branches — it tells one coherent story from start to finish
-  - At minimum, include a happy path. Add journeys for error paths, alternative routes, and edge cases
-  - Use `nodeIds` (array) in each step to group nodes that appear together at that step
-  - Use `processGroup` to organize steps into phases (optional)
-  - Label each journey with a short name that distinguishes its branch
-
-  Example (`motorcycle` topic — 7 journeys across 4 schemas):
-  - `engineSchema`: 1 journey (linear 4-stroke cycle, no branches)
-  - `chokeSchema`: 2 journeys — cold start (happy path: open choke → start → warm → close choke), forgot choke (error path: open choke → ride with choke on → rich mix failure)
-  - `fuelInjectSchema`: 2 journeys — normal injection (throttle → ECU → inject → precise mix), auto cold enrichment (throttle → ECU detects cold → auto rich mix)
-  - `brakeSchema`: 2 journeys — normal braking (apply brake → hydraulic pressure → caliper squeeze → wheel slows), brake fade (apply brake → overheating → fade → reduced performance)
-  - Reference (`demo` topic): 3 journeys covering happy path (tool execution + QA pass), feedback loop (agent asks user for input → replans), and direct LLM answer (skips tools)
-- **Multiple Flowchart Sections:** A topic can have multiple `flowchart` sections, one per independent schema. Order them so foundational concepts appear first, then related systems.
-
-```typescript
-  {
-    type: 'flowchart',
-    props: {
-      title: 'System Architecture',
-      schema: myTopicSchema,
-    },
-  },
+```yaml
+---
+type: tradeoff-sandbox
+title: "Architecture Trade-offs"
+resource: "."
+---
 ```
 
-### 2. `tradeoff-sandbox`
-**Objective:** Used when the topic has multiple choices that can be selected depending on different situations. It allows the user to understand the impact of selecting each choice and see the resulting metrics change immediately.
-```typescript
-  {
-    type: 'tradeoff-sandbox',
-    props: {
-      title: 'Architecture Trade-offs',
-      scenarios: myTopicTradeoffs,
-    },
-  },
+**Data file (one per scenario, e.g. `scenario-1.yaml`):**
+```yaml
+id: enterprise-web
+title: "Enterprise Web Application"
+description: "Build a scalable enterprise web app."
+metrics:
+  - id: performance
+    label: Performance
+    baseValue: 50
+    min: 0
+    max: 100
+    direction: higher
+  - id: cost
+    label: Cost Efficiency
+    baseValue: 50
+    min: 0
+    max: 100
+    direction: higher
+steps:
+  - id: frontend
+    title: "Frontend Framework"
+    description: "Choose the client-side rendering approach."
+    recommended: next-ssr
+    choices:
+      - id: react-spa
+        label: "React SPA"
+        description: "Single-page application with client-side routing."
+        metrics:
+          performance: 10
+          cost: 5
+        pros:
+          - title: "Rich ecosystem"
+            description: "Vast library support and community"
+        cons:
+          - title: "SEO challenges"
+            description: "Requires SSR or SSG for search indexing"
+        whenToUse: "Useful for admin dashboards and internal tools."
+      - id: next-ssr
+        label: "Next.js SSR"
+        description: "Server-side rendered React with hybrid rendering."
+        metrics:
+          performance: 15
+          cost: -5
+        pros:
+          - title: "Better SEO"
+            description: "Server-rendered HTML for crawlers"
+        cons:
+          - title: "Server dependency"
+            description: "Requires Node.js server runtime"
+        whyThisFits: "Enterprise apps benefit from SSR for SEO and faster first paint."
 ```
 
-### 3. `taxonomy-browser`
-**Objective:** Used for clearing up ambiguous taxonomy or concepts that people normally don't understand and misunderstand frequently.
-```typescript
-  {
-    type: 'taxonomy-browser',
-    props: {
-      title: 'Capability Taxonomy',
-      categories: myTopicTaxonomies,
-    },
-  },
+### `taxonomy-browser` section
+Card grid of concept categories with expandable detail views. Each category is a separate YAML file. Uses `resource: "."`.
+
+```yaml
+---
+type: taxonomy-browser
+title: "Capability Taxonomy"
+resource: "."
+---
 ```
 
-### 4. `flashcards`
-**Objective:** Used to make the user familiar with the vocabulary of the topic and how to use those terms along with the AI.
-```typescript
-  {
-    type: 'flashcards',
-    props: {
-      terms: myTopicFlashcards,
-    },
-  },
+**Data file (one per category, e.g. `orchestrator-workers.yaml`):**
+```yaml
+type: taxonomy-category
+icon: GitFork
+title: "Hierarchical Orchestration"
+subtitle: "Orchestrator-Workers"
+color: mauve
+description: "A central manager agent decomposes goals, delegates tasks, and synthesizes output."
+details: "Ideal for complex, multi-step workflows requiring strict quality control."
+analogy: "Like a manager delegating tasks to developers."
+primaryFocus: "Task decomposition, delegation, and output synthesis"
+inScope:
+  - "Central director"
+  - "Specialized sub-agents"
+outOfScope:
+  - "Peer-to-peer unstructured negotiation"
 ```
 
-### 5. `text` and `bullets`
-**Objective:** Normal and arbitrary sections used if the other specialized sections cannot provide a proper understanding of the important points of the topic.
-```typescript
-  {
-    type: 'text',
-    props: {
-      title: 'Introduction',
-      heading: 'Sub-heading',
-      paragraphs: myTopicParagraphs,
-    },
-  },
-  {
-    type: 'bullets',
-    props: {
-      title: 'Key Capabilities',
-      ordered: false,
-      items: myTopicBullets,
-    },
-  },
+The `icon` field uses a [Lucide icon name](https://lucide.dev/icons/) (e.g., `GitFork`, `Brain`, `Workflow`). The `color` field uses a Catppuccin color name (e.g., `mauve`, `rose`, `sky`, `green`, `peach`, `red`, `yellow`, `teal`).
+
+### `flashcards` section
+Vocabulary flashcards with flip animation showing definition, pronunciation, and AI dialogue. Uses `resource: glossary.yaml`.
+
+```yaml
+---
+type: flashcards
+title: "Key Vocabulary"
+resource: glossary.yaml
+---
 ```
 
-### Recommended Section Order
-
-Order sections so the learner builds understanding progressively: introduce the idea, give them the vocabulary, then show how it works, then let them explore trade-offs, and finally reinforce. A good default progression:
-
-1. **Intro (`text`)** — Set the context: what the topic is, why it matters, and what the learner will be able to do afterward.
-2. **Glossary / vocabulary (`flashcards` or `taxonomy-browser`)** — Teach the key terms *before* they appear in diagrams and explanations, so the learner isn't decoding jargon and concepts at the same time. Use `taxonomy-browser` when terms are frequently confused or misunderstood; use `flashcards` to drill recall.
-3. **Core explanation (`text` / `bullets`)** — Explain the main concepts and key capabilities now that the vocabulary is established.
-4. **How it works (`flowchart`)** — Show the process flow (Event Storming, Sequence, Swimlanes). This relies on the vocabulary and concepts introduced above.
-5. **Explore trade-offs (`tradeoff-sandbox`)** — Once the learner understands the mechanism, let them experiment with the decisions and see the impact of each choice.
-6. **Reinforce (`flashcards`)** — Optionally close with recall drills to consolidate the vocabulary and key takeaways.
-
-This is a guideline, not a rigid template. Adapt the order to the topic — but always put understanding-enablers (intro, glossary) before the sections that depend on them (flowchart, trade-offs). The general principle: **never make the learner rely on something they haven't been taught yet.**
-
-## 4. Render the Topic in `index.tsx`
-Use the `SectionRenderer` to dynamically render the configuration defined in `sections.ts`.
-
-```tsx
-// src/topics/my-topic/index.tsx
-import { SectionRenderer } from '../../components/layout/TopicShell'
-import { myTopicSections } from './sections'
-
-export default function MyTopic() {
-  return (
-    <div className="my-topic" data-testid="my-topic">
-      {myTopicSections.map((section, idx) => (
-        <SectionRenderer key={idx} config={section} />
-      ))}
-    </div>
-  )
-}
+**Data file (`glossary.yaml`):**
+```yaml
+- id: hierarchy
+  word: "Visual Hierarchy"
+  pronunciation: "vizh-oo-uhl hahy-er-ahr-kee"
+  category: hierarchy
+  shortDefinition: "Arranging UI elements in order of visual importance."
+  detailedDefinition: "Visual hierarchy guides the user's eyes through an interface."
+  whyItMatters: "Without hierarchy, all elements compete for attention equally."
+  dialogue:
+    user: "Make this look good"
+    aiThoughts: "The user wants aesthetics but hasn't specified hierarchy priorities."
+    aiQuestion: "Which element should be most prominent: the headline, the CTA button, or the hero image?"
 ```
 
-## 5. Register the Route
-Once your topic is defined, register it in `src/core/routes.ts` by appending it to the `routes` array.
+## 4. Register the Route
+
+Register the topic in `src/core/routes.ts`:
 
 ```typescript
-import { myTopicSections } from '../topics/my-topic/sections'
+import type { OKFBundled } from './okf/types'
+import { loadOKFBundle } from './okf/reader'
+import { useOKFBundled } from './okf/sections'
+
+// In your topic route config or router setup:
+// The OKF reader loads the manifest and sections at runtime.
+// Add the topic to your route list with the topicId matching the folder name.
 
 export const routes: TopicRoute[] = [
-  // ... existing routes
+  // ...
   {
     id: 'my-topic',
-    label: 'My Awesome Topic',
+    label: 'My Topic',
     path: '/topics/my-topic',
     category: 'Architecture',
-    description: 'A brief description of the topic that appears in the overview.',
-    sections: myTopicSections,
+    description: 'Description shown on the topic card.',
+    loadBundle: () => loadOKFBundle('my-topic'),
   },
 ]
 ```
+
+## 5. Adding a New Section
+
+To add a section to an existing topic:
+
+1. Create the folder under `public/okf/[topic-id]/sections/[section-name]/`
+2. Create `section.md` with frontmatter (`type`, `title`, `resource`)
+3. Add data files in the folder
+4. Append section path to `okf.md` `sections` list
+5. Add all `.yaml` data files to `okf.md` `related` list
+
+No TypeScript changes needed — the reader discovers and loads sections at runtime.
+
+### Multiple sections of the same type
+
+You can have multiple flowcharts, tradeoff sandboxes, or taxonomy browsers in one topic. Each gets its own folder:
+
+```
+sections/
+  flowchart/          # primary flowchart
+  flowchart-lifecycle/ # second flowchart (different schema)
+  tradeoffs/          # primary tradeoff sandbox
+  tradeoffs-deploy/   # second tradeoff sandbox
+  taxonomy/           # primary taxonomy
+  taxonomy-patterns/  # second taxonomy
+```
+
+Each `section.md` declares its own `type` and `title`. The `related` list in `okf.md` includes all data files from all sections.
+
+## Recommended Section Order
+
+Order sections so the learner builds understanding progressively — each section should prepare the ground for the next one:
+
+1. **Intro (`text`)** — Set the context: what the topic is, why it matters. Gives the learner a mental anchor before diving deeper.
+2. **Glossary / vocabulary (`flashcards`)** — Teach key terms and their pronunciation before they appear in diagrams, text, or trade-offs. If the learner doesn't know the words, everything else is noise.
+3. **Concept categories (`taxonomy-browser`)** — Show the landscape of concepts and how they relate. Gives the learner a map of what's coming so individual sections feel connected, not isolated.
+4. **Core explanation (`text` / `bullets`)** — Explain main concepts, learning goals, or capabilities in prose. Builds on the vocabulary and taxonomy the learner just saw.
+5. **How it works (`flowchart`)** — Show the process flow. Now the learner can read node labels and understand what each entity does because the terms were taught earlier.
+6. **Apply (`bullets`)** — Practical checklists, maintenance steps, or reference material. The learner can now act on this because they understand the underlying mechanics.
+7. **Explore trade-offs (`tradeoff-sandbox`)** — Let the learner experiment with decisions. Placed after everything is taught so choices feel meaningful, not arbitrary.
+8. **Reinforce (`flashcards`)** — Optionally close with recall drills if there's a separate second flashcard deck. The first flashcards are glossary (section 2); these are practice.
+
+**Rule: never reference a term, concept, or mechanism in section N that hasn't been introduced in section N-1 or earlier.**
+
+## Event Storming Conventions
+
+When defining flowchart data in `steps.yaml`, follow these conventions:
+
+### Standard flow (per step)
+Each step follows the full cycle: `EVENT` → `POLICY` → `COMMAND` → `AGGREGATE`/`EXTERNAL` (via `handledBy`) → `EVENT`. Never skip `POLICY` or `COMMAND` — every step that "does work" must be a `COMMAND` handled by an `AGGREGATE`/`EXTERNAL`.
+
+### Direction & Branching
+The flow progresses left-to-right. Branching **must** follow the pattern `EVENT → multiple POLICYs → one COMMAND each`:
+
+**Correct:**
+```
+EVENT → POLICY A → COMMAND A → AGGREGATE → EVENT
+        POLICY B → COMMAND B → AGGREGATE → EVENT
+```
+
+**Incorrect (never do this):**
+```
+EVENT → POLICY → COMMAND A
+                      COMMAND B
+```
+
+Each branch gets its own `POLICY` node. When 1 `EVENT` triggers 2+ `POLICYs`, the layout engine spreads branches vertically. A branching point renders as the Decision diamond in Swimlanes/Data Flow views.
+
+### Duplicate-and-Collapse for repeated handlers
+A single canonical `AGGREGATE`, `EXTERNAL`, or `USER` involved in multiple steps must be **duplicated per step**. Each duplicate maps back to the canonical node via `collapsedTo` in `systems.yaml` or `actors.yaml`. This ensures the `handledBy` chain is complete for layout and derived views.
+
+Example:
+```yaml
+# systems.yaml
+orch_agent:
+  title: "Agent Orchestrator"
+  desc: "Main orchestrator"
+  type: "aggregate"
+orch_plan:
+  title: "Agent Orchestrator"
+  desc: "Planning step"
+  type: "aggregate"
+  collapsedTo: "orch_agent"
+orch_exec:
+  title: "Agent Orchestrator"
+  desc: "Execution step"
+  type: "aggregate"
+  collapsedTo: "orch_agent"
+```
+
+Each step's `handledBy` points at the per-step duplicate, not the canonical node.
+
+### Node Types
+| Type | Description | Example |
+|---|---|---|
+| Actor (`USER`) | Human user or initiator | `dev_user`, `qa_user` |
+| Event | Something that happened | `evt_started`, `evt_tool_executed` |
+| Command | Action or intent to do work | `cmd_run_agent`, `cmd_call_llm` |
+| Policy | Rule deciding next command | `pol_plan`, `pol_route` |
+| Aggregate | System component | `orch_agent`, `tools_router` |
+| External | External system/API | LLM API, MCP servers, databases |
+| Read Model | Query-optimized projection | CQRS read model |
+| Risk | Uncertainty or design risk | Unresolved integration point |
+
+### Aggregate vs. External Systems
+- **Aggregate:** Components that belong to the system being discussed (e.g., `AgentExecutor`, `RunnableSequence` in LangChain)
+- **External:** Real external systems outside your control, called via API/network (e.g., LLM API, MCP servers, databases)
+
+### Multiple Flowcharts
+When a topic has multiple subsystems that share **no `COMMAND` or `EVENT` entities**, split them into separate flowchart sections. Sharing `AGGREGATE` or `EXTERNAL` entities is fine — those don't require keeping flows together. Each flowchart gets exactly ONE root node (the starting `COMMAND`).
+
+### Multiple Journeys per Flowchart
+Include multiple journeys to cover different execution paths. Each journey follows **one branch** from start to finish — never jump between branches. At minimum, include a happy path. Add journeys for error paths, alternatives, and edge cases.

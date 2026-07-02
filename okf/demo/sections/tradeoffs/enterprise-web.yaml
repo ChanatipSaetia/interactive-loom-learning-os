@@ -1,0 +1,172 @@
+id: enterprise-web
+title: "Enterprise Web Application"
+description: "Build a scalable enterprise web app: React SPA, Node.js microservices, PostgreSQL, deployed on Cloud PaaS. Evaluate trade-offs across frontend, backend, and infrastructure decisions."
+metrics:
+  - id: performance
+    label: Performance
+    baseValue: 50
+    min: 0
+    max: 100
+    direction: higher
+  - id: scalability
+    label: Scalability
+    baseValue: 50
+    min: 0
+    max: 100
+    direction: higher
+  - id: complexity
+    label: Complexity
+    baseValue: 30
+    min: 0
+    max: 100
+    direction: lower
+  - id: cost
+    label: Cost Efficiency
+    baseValue: 50
+    min: 0
+    max: 100
+    direction: higher
+steps:
+  - id: frontend
+    title: "Frontend Framework"
+    description: "Choose the client-side rendering approach."
+    recommended: next-ssr
+    choices:
+      - id: react-spa
+        label: "React SPA"
+        description: "Single-page application with client-side routing and state management."
+        metrics:
+          performance: 10
+          scalability: 5
+          complexity: 5
+          cost: 5
+        pros:
+          - title: "Rich ecosystem"
+            description: "Vast library support and community"
+          - title: "Smooth UX"
+            description: "Client-side transitions feel native"
+        cons:
+          - title: "SEO challenges"
+            description: "Requires SSR or SSG for search indexing"
+          - title: "Larger initial bundle"
+            description: "Full framework must load first"
+        whenToUse: "Useful for admin dashboards and internal tools where SEO is not a concern and developer familiarity with React is high."
+      - id: next-ssr
+        label: "Next.js SSR"
+        description: "Server-side rendered React with hybrid static/dynamic rendering."
+        metrics:
+          performance: 15
+          scalability: 10
+          complexity: 10
+          cost: -5
+        pros:
+          - title: "Better SEO"
+            description: "Server-rendered HTML for crawlers"
+          - title: "Faster first paint"
+            description: "HTML delivered from server"
+          - title: "Hybrid rendering"
+            description: "Mix static and dynamic pages"
+        cons:
+          - title: "Server dependency"
+            description: "Requires Node.js server runtime"
+          - title: "More complex deploy"
+            description: "SSR adds deployment surface"
+        whyThisFits: "Enterprise web applications benefit from server-side rendering for SEO, faster perceived performance, and the ability to mix static public pages with dynamic user-specific content."
+
+  - id: backend
+    title: "Backend Architecture"
+    description: "Decide how to structure the server-side logic."
+    recommended: modular-monolith
+    choices:
+      - id: microservices
+        label: Microservices
+        description: "Independent services communicating via REST/gRPC."
+        metrics:
+          performance: -5
+          scalability: 20
+          complexity: 20
+          cost: -10
+        pros:
+          - title: "Independent scaling"
+            description: "Scale hot services without scaling all"
+          - title: "Tech diversity"
+            description: "Each service can use best-fit language"
+          - title: "Fault isolation"
+            description: "One service failure does not crash all"
+        cons:
+          - title: "Network overhead"
+            description: "Inter-service calls add latency"
+          - title: "Operational cost"
+            description: "More services to monitor and deploy"
+          - title: "Distributed tracing"
+            description: "Debugging spans multiple services"
+        whenToUse: "Consider when your team has significant DevOps experience and specific services have vastly different scaling requirements."
+      - id: modular-monolith
+        label: "Modular Monolith"
+        description: "Single deployable with strict module boundaries."
+        metrics:
+          performance: 10
+          scalability: -5
+          complexity: -10
+          cost: 15
+        pros:
+          - title: "Simpler deployment"
+            description: "One artifact to deploy"
+          - title: "Fast local calls"
+            description: "In-process communication, no network"
+          - title: "Easier debugging"
+            description: "Single stack trace, one log file"
+        cons:
+          - title: "Monolithic scaling"
+            description: "Must scale entire app, not parts"
+          - title: "Tight coupling risk"
+            description: "Module boundaries can degrade over time"
+        whyThisFits: "Starting with a modular monolith reduces operational overhead while maintaining clean boundaries. It can be split into microservices later if specific modules need independent scaling."
+
+  - id: database
+    title: "Data Storage"
+    description: "Choose the primary persistence layer."
+    recommended: postgresql
+    choices:
+      - id: postgresql
+        label: PostgreSQL
+        description: "Relational database with ACID compliance and JSON support."
+        metrics:
+          performance: 5
+          scalability: 5
+          complexity: -5
+          cost: 5
+        pros:
+          - title: "ACID compliance"
+            description: "Guaranteed data integrity"
+          - title: "JSON support"
+            description: "Semi-structured data without NoSQL"
+          - title: "Mature ecosystem"
+            description: "Well-understood tooling and patterns"
+        cons:
+          - title: "Schema migrations"
+            description: "Schema changes require planning"
+          - title: "Vertical scaling limits"
+            description: "Read replicas needed for scale"
+        whyThisFits: "Enterprise applications require strong data integrity, complex querying, and reliable transactions. PostgreSQL provides all of this with the flexibility of JSON columns for semi-structured data."
+      - id: mongo
+        label: MongoDB
+        description: "Document database with flexible schema and horizontal scaling."
+        metrics:
+          performance: 10
+          scalability: 15
+          complexity: 5
+          cost: -5
+        pros:
+          - title: "Flexible schema"
+            description: "No migrations for evolving models"
+          - title: "Horizontal scaling"
+            description: "Sharding built into the platform"
+          - title: "Fast writes"
+            description: "Document model suits high-throughput inserts"
+        cons:
+          - title: "No ACID joins"
+            description: "Multi-document transactions are limited"
+          - title: "Schema drift risk"
+            description: "Without enforcement, data quality varies"
+        whenToUse: "Best for content management systems, catalog data, or high-throughput event logging where strict consistency is less critical."

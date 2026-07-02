@@ -1,0 +1,8 @@
+choke_valve:
+  title: วาล์วโช้ค (Choke Valve)
+  desc: ควบคุมปริมาณอากาศที่เข้าสู่คาร์บูเรเตอร์
+  type: aggregate
+engine_warm:
+  title: เครื่องยนต์อุ่นตัว (Engine Warms Up)
+  desc: อุณหภูมิเครื่องยนต์สูงขึ้นเรื่อยๆ
+  type: aggregate

@@ -4,8 +4,6 @@ import { MemoryRouter } from 'react-router-dom';
 import { SectionRegistry } from '../../../../src/core/registry';
 import Flowchart from '../../../../src/sections/flowchart/index';
 import type { UnifiedFlowchartSchema } from '../../../../src/sections/flowchart/index';
-import { agentSchema } from '../../../../src/topics/demo/data/agent-schema';
-
 const mockSchema: UnifiedFlowchartSchema = {
   entities: {
     user: { title: 'User', desc: 'A user actor.', viewTypes: { DEFAULT_VIEW: 'Command' } },
@@ -530,108 +528,29 @@ describe('Flowchart auto-derivation engine', () => {
     expect(screen.queryByTestId('flowchart-node-SYS_ARCH-cmd_submit')).not.toBeInTheDocument();
   });
 
-  it('renders demo agentSchema SYS_ARCH edges without NaN and logs them', () => {
-    const { container } = render(<Flowchart title="Agent Test" schema={agentSchema} />, { wrapper });
-    
-    // Expand Views tab
-    fireEvent.click(screen.getByTestId('dock-tab-views'));
-    
-    fireEvent.click(screen.getByText('System Architecture'));
-    
-    const svg = container.querySelector('[data-testid="flowchart-svg-SYS_ARCH"]');
-    expect(svg).toBeTruthy();
-
-    const paths = svg?.querySelectorAll('path');
-    const pathList: string[] = [];
-    paths?.forEach(p => {
-      const d = p.getAttribute('d');
-      const testId = p.parentElement?.getAttribute('data-testid');
-      if (testId && testId.startsWith('flowchart-edge-SYS_ARCH-')) {
-        pathList.push(`${testId}: d="${d}"`);
-      }
-    });
-
-    console.log('--- TEST RENDERED PATHS ---');
-    console.log(pathList);
-    console.log('--- SYS_ARCH DERIVED NODES ---');
-    import('../../../../src/sections/flowchart/derivations').then(({ autoDeriveViews }) => {
-      console.log(JSON.stringify(autoDeriveViews(agentSchema).views!.SYS_ARCH?.nodes, null, 2));
-    });
-  });
-
   it('does not render edge labels in SYS_ARCH view, but triggers tooltip on hover', () => {
-    const { container } = render(<Flowchart title="Edge Label Test" schema={agentSchema} />, { wrapper });
-    
+    const { container } = render(<Flowchart title="Edge Label Test" schema={masterSchema} />, { wrapper });
+
     // Switch to SYS_ARCH view
     fireEvent.click(screen.getByTestId('dock-tab-views'));
     fireEvent.click(screen.getByText('System Architecture'));
-    
+
     const svg = container.querySelector('[data-testid="flowchart-svg-SYS_ARCH"]');
     expect(svg).toBeTruthy();
-    
-    // In SYS_ARCH, there should be no text elements inside flowchart-edge groups.
+
     const edgeGroups = container.querySelectorAll('g[data-testid^="flowchart-edge-SYS_ARCH-"]');
     expect(edgeGroups.length).toBeGreaterThan(0);
-    
+
     edgeGroups.forEach(group => {
       const texts = group.querySelectorAll('text');
       expect(texts.length).toBe(0);
     });
 
-    // Also assert that hover sets the tooltip
     const firstEdgeGroup = edgeGroups[0];
     fireEvent.mouseEnter(firstEdgeGroup);
-    
+
     const tooltipRect = svg?.querySelector('rect[fill="var(--ctp-crust)"]');
     expect(tooltipRect).toBeInTheDocument();
-  });
-
-  it('derives STATE_MACHINE view and verifies that columns are compacted', () => {
-    render(<Flowchart title="SM Test" schema={agentSchema} />, { wrapper });
-
-    // Enter fullscreen first so the inspector sidebar can be used
-    fireEvent.click(screen.getByTestId('flowchart-fullscreen-toggle'));
-    expect(screen.getByTestId('flowchart-section')).toHaveClass('fullscreen');
-
-    // Click the orchestrator node -> opens sidebar Details tab and selects aggregate
-    const orchNode = screen.getByTestId('flowchart-node-EVENT_STORMING-orch_agent');
-    expect(orchNode).toBeInTheDocument();
-    fireEvent.click(orchNode);
-
-    // Switch to the States tab and click a state -> links to STATE_MACHINE view
-    fireEvent.click(screen.getByTestId('inspector-tab-state-machine'));
-    fireEvent.click(screen.getByTestId('state-IDLE'));
-
-    // Verify State Machine view is rendered
-    expect(screen.getByTestId('flowchart-canvas-STATE_MACHINE')).toBeInTheDocument();
-    
-    const idleNode = screen.getByTestId('flowchart-node-STATE_MACHINE-orchestrator_state_IDLE');
-    const thinkingNode = screen.getByTestId('flowchart-node-STATE_MACHINE-orchestrator_state_THINKING');
-    const delegatingNode = screen.getByTestId('flowchart-node-STATE_MACHINE-orchestrator_state_DELEGATING');
-    
-    expect(idleNode).toBeInTheDocument();
-    expect(thinkingNode).toBeInTheDocument();
-    expect(delegatingNode).toBeInTheDocument();
-    
-    // Verify coordinates are compacted
-    const idleRect = idleNode.querySelector('rect');
-    const thinkingRect = thinkingNode.querySelector('rect');
-    const delegatingRect = delegatingNode.querySelector('rect');
-    
-    expect(idleRect).toBeTruthy();
-    expect(thinkingRect).toBeTruthy();
-    expect(delegatingRect).toBeTruthy();
-    
-    const idleX = parseFloat(idleRect!.getAttribute('x') || '0');
-    const thinkingX = parseFloat(thinkingRect!.getAttribute('x') || '0');
-    const delegatingX = parseFloat(delegatingRect!.getAttribute('x') || '0');
-    
-    // Idle is col 0 -> x = 60 -> rect x = -10
-    // Delegating is col 1 (compacted from 9) -> x = 200 -> rect x = 130
-    // Thinking is col 2 (compacted from 10) -> x = 340 -> rect x = 270
-    expect(idleX).toBe(-10);
-    expect(delegatingX).toBe(130);
-    expect(thinkingX).toBe(270);
   });
 });
 

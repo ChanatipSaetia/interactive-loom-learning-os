@@ -1,0 +1,19 @@
+type: "taxonomy-category"
+icon: Layers
+title: Indexing Pipeline
+subtitle: Offline ETL Processing
+color: blue
+description: "An Indexing Pipeline processes raw data (PDFs, HTML, Markdown) into structured, searchable Documents. It runs offline or as a batch job, converting files, splitting text, computing embeddings, and writing to the Document Store."
+details: "The indexing pipeline is strictly decoupled from the query pipeline. It runs independently and its output is the Document Store. Common components: FileConverter → TextSplitter → DocumentEmbedder → DocumentWriter."
+analogy: "Like a library cataloging system — books are received, classified, tagged, and shelved before anyone can search for them."
+primaryFocus: "File conversion, text chunking, embedding computation, and document persistence."
+inScope:
+  - PDF/HTML/Markdown conversion
+  - Text splitting and chunking
+  - Embedding computation
+  - Metadata extraction
+  - Duplicate detection
+outOfScope:
+  - "Real-time query processing"
+  - LLM answer generation
+  - "User-facing search"

@@ -1,0 +1,118 @@
+- type: linear
+  id: run_agent
+  initiatedBy: dev_user
+  command: "Run Agent"
+  policy: "Trigger Planning"
+  handledBy: orch_agent
+  resultEvents:
+    - id: started
+      title: "Agent Started"
+      desc: "Task received, environment setup complete."
+    - id: session_created
+      title: "Session Created"
+      desc: "A new agent session ID was allocated."
+  continuesAs: call_llm
+
+- type: linear
+  id: call_llm
+  policy: "Trigger Planning"
+  command: "Call LLM"
+  handledBy: llm
+  resultEvents:
+    - id: reasoned
+      title: "LLM Response Generated"
+      desc: "Thinking thoughts and requested tool calls retrieved."
+  continuesAs: reason-branch
+
+- type: branch
+  id: reason-branch
+  event: reasoned
+  branches:
+    - id: execute_tool
+      label: "Needs Tool"
+      policy: "Trigger Tool Call"
+      command: "Execute Tool"
+      handledBy: tools_router
+      resultEvents:
+        - id: tool_executed
+          title: "Tool Executed"
+          desc: "Result status and stdout output returned from execution."
+        - id: subagent_spawned
+          title: "Subagent Spawned"
+          desc: "Background task delegated."
+      continuesAs: eval
+    - id: call_mcp
+      label: "Needs MCP"
+      policy: "Trigger MCP Call"
+      command: "Call MCP"
+      handledBy: mcp_servers
+      resultEvents:
+        - id: mcp_called
+          title: "MCP Server Called"
+          desc: "External API hit through MCP."
+      continuesAs: eval
+    - id: direct_complete
+      label: "Final Answer"
+      policy: "Trigger Completion"
+      command: "Complete Task"
+      handledBy: llm
+      resultEvents:
+        - id: done
+          title: "Task Completed"
+          desc: "Agent finishes loops and returns the verified solution."
+      continuesAs: qa_review
+
+- type: linear
+  id: eval
+  policy: "Trigger Evaluation"
+  command: "Compile Answer"
+  handledBy: llm
+  resultEvents:
+    - id: done
+      title: "Task Completed"
+      desc: "Agent finishes loops and returns the verified solution."
+  continuesAs: notify-branch
+
+- type: branch
+  id: notify-branch
+  event: tool_executed
+  branches:
+    - id: send_message
+      label: "Needs Input"
+      policy: "Trigger User Notification"
+      command: "Send Message"
+      handledBy: orch_agent
+      resultEvents:
+        - id: message_sent
+          title: "Message Sent"
+          desc: "User is notified and presented with input prompt."
+      continuesAs: provide_feedback
+
+- type: linear
+  id: provide_feedback
+  initiatedBy: dev_user
+  policy: "Trigger Planning"
+  command: "Provide Feedback"
+  handledBy: orch_agent
+  resultEvents:
+    - id: feedback_received
+      title: "Feedback Received"
+      desc: "User provided new input to correct course."
+  continuesAs: call_llm
+
+- type: branch
+  id: qa-branch
+  event: done
+  branches:
+    - id: qa_review
+      label: "Ready for QA"
+      policy: "Trigger QA Review"
+      command: "Review Result"
+      handledBy: orch_agent
+      resultEvents:
+        - id: qa_approved
+          title: "QA Approved"
+          desc: "The output passed QA standards."
+        - id: qa_rejected
+          title: "QA Rejected"
+          desc: "The output failed QA standards."

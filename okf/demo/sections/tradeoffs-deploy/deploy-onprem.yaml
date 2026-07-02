@@ -1,0 +1,119 @@
+id: deploy-onprem
+title: "On-Premises Deployment"
+description: "Self-host the agent platform in a private data center. Evaluate trade-offs around data sovereignty, hardware requirements, and maintenance burden."
+metrics:
+  - id: cost
+    label: Cost Efficiency
+    baseValue: 40
+    min: 0
+    max: 100
+    direction: higher
+  - id: security
+    label: Data Sovereignty
+    baseValue: 70
+    min: 0
+    max: 100
+    direction: higher
+  - id: scalability
+    label: Scalability
+    baseValue: 30
+    min: 0
+    max: 100
+    direction: higher
+  - id: time-to-market
+    label: Time to Production
+    baseValue: 20
+    min: 0
+    max: 100
+    direction: higher
+steps:
+  - id: llm-hosting
+    title: "LLM Hosting"
+    description: "Where the language model runs."
+    recommended: open-source-local
+    choices:
+      - id: open-source-local
+        label: "Open-Source Model (Local)"
+        description: "Run open-weight models on local GPUs (Llama, Mistral, Mixtral)."
+        metrics:
+          cost: 5
+          security: 30
+          scalability: -10
+          time-to-market: 10
+        pros:
+          - title: "Full data privacy"
+            description: "No data leaves your infrastructure"
+          - title: "No API costs"
+            description: "One-time GPU investment, unlimited inference"
+          - title: "Model customization"
+            description: "Fine-tune on domain-specific data"
+        cons:
+          - title: "GPU costs"
+            description: "High-end GPUs are expensive to buy and maintain"
+          - title: "Smaller model capacity"
+            description: "Local models are smaller than cloud flagship models"
+        whyThisFits: "When data sovereignty is non-negotiable (healthcare, finance, government), local models are the only viable option."
+      - id: remote-api
+        label: "Remote LLM API"
+        description: "Call cloud LLMs from on-prem agents (OpenAI, Anthropic)."
+        metrics:
+          cost: 10
+          security: -30
+          scalability: 20
+          time-to-market: 25
+        pros:
+          - title: "Best model quality"
+            description: "Access to state-of-the-art models"
+          - title: "Simplest to start"
+            description: "No GPU infrastructure needed"
+        cons:
+          - title: "Data leaves premises"
+            description: "All prompts and responses go to cloud provider"
+          - title: "API dependency"
+            description: "Outages or rate limits affect availability"
+        whenToUse: "When model quality matters more than data privacy."
+  - id: infra-management
+    title: "Infrastructure Management"
+    description: "How to manage the on-prem agent platform."
+    recommended: kubernetes
+    choices:
+      - id: bare-metal
+        label: "Bare Metal + Scripts"
+        description: "Manual deployment with shell scripts and systemd."
+        metrics:
+          cost: 15
+          security: 10
+          scalability: -15
+          time-to-market: -10
+        pros:
+          - title: "Maximum control"
+            description: "Every component is visible and configurable"
+          - title: "No abstraction overhead"
+            description: "No container runtime or orchestration layer"
+        cons:
+          - title: "No auto-healing"
+            description: "Crashed services stay down until noticed"
+          - title: "Scaling is manual"
+            description: "Adding capacity means provisioning new servers"
+        whenToUse: "For small teams with stable, low-traffic agent workloads."
+      - id: kubernetes
+        label: "Kubernetes"
+        description: "Container orchestration with auto-scaling and self-healing."
+        metrics:
+          cost: -10
+          security: 5
+          scalability: 25
+          time-to-market: -5
+        pros:
+          - title: "Auto-healing"
+            description: "Crashed pods restart automatically"
+          - title: "Horizontal scaling"
+            description: "Scale agent replicas by CPU/memory metrics"
+          - title: "Rolling updates"
+            description: "Zero-downtime deployments"
+        cons:
+          - title: "Complexity"
+            description: "Steep learning curve for operators"
+          - title: "Resource overhead"
+            description: "Control plane and sidecars consume GPU/memory"
+        whyThisFits: "Production agent platforms need reliability and scaling that Kubernetes provides out of the box."

@@ -1,0 +1,30 @@
+- id: fb_journey_pass
+  label: "QA Pass"
+  description: "Output passes evaluation on first attempt"
+  steps:
+    - nodeId: fb_evaluated
+      description: "QA reviewer evaluates the agent output"
+      processGroup: evaluation
+    - nodeId: fb_accepted
+      description: "Output meets quality criteria and is accepted"
+      processGroup: evaluation
+
+- id: fb_journey_revise
+  label: "Revision Loop"
+  description: "Output fails evaluation, triggering a revision cycle"
+  steps:
+    - nodeId: fb_evaluated
+      description: "QA reviewer finds issues with the output"
+      processGroup: evaluation
+    - nodeId: fb_revision
+      description: "Orchestrator triggers revision based on feedback"
+      processGroup: escalation
+    - nodeId: fb_stored
+      description: "Failure context is stored in memory for next attempt"
+      processGroup: execution
+    - nodeId: fb_regenerated
+      description: "LLM generates improved output using failure context"
+      processGroup: planning
+    - nodeId: fb_evaluated
+      description: "Revised output goes through evaluation again"
+      processGroup: evaluation

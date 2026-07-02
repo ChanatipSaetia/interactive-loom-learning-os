@@ -1,0 +1,15 @@
+type: taxonomy-category
+icon: GitFork
+title: "Hierarchical Orchestration"
+subtitle: "Orchestrator-Workers"
+color: mauve
+description: "A central manager agent (orchestrator) decomposes goals, delegates tasks to specialized worker agents, collects results, and synthesizes the final output."
+details: "Ideal for complex, multi-step workflows requiring strict quality control, consensus, or routing."
+analogy: "Like a software engineering manager delegating backend, frontend, and QA tasks to developers."
+primaryFocus: "Task decomposition, delegation, and output synthesis"
+inScope:
+  - "Central director"
+  - "Specialized sub-agents"
+  - "Dynamic task routing"
+outOfScope:
+  - "Peer-to-peer unstructured negotiation"

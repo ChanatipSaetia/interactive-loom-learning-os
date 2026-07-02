@@ -1,0 +1,63 @@
+- type: linear
+  id: submit_query
+  initiatedBy: end_user
+  command: Submit Query
+  policy: Embed Query
+  handledBy: text_embedder
+  resultEvents:
+    - id: query_received
+      title: Query Received
+      desc: "Natural-language question enters the system."
+  continuesAs: embed_query
+- type: linear
+  id: embed_query
+  policy: Embed Query
+  command: Embed Query
+  handledBy: text_embedder
+  delegatesTo: query_embedding_model
+  resultEvents:
+    - id: query_embedded
+      title: Query Embedded
+      desc: Query converted to dense vector representation.
+  continuesAs: retrieve
+- type: linear
+  id: retrieve
+  policy: Retrieve
+  command: Retrieve Documents
+  handledBy: retriever
+  delegatesTo: doc_store
+  resultEvents:
+    - id: docs_retrieved
+      title: Documents Retrieved
+      desc: Candidate documents fetched from Document Store.
+  continuesAs: rank
+- type: linear
+  id: rank
+  policy: Rank
+  command: Rank Documents
+  handledBy: ranker
+  resultEvents:
+    - id: docs_ranked
+      title: Documents Ranked
+      desc: Documents sorted by relevance score.
+  continuesAs: build_prompt
+- type: linear
+  id: build_prompt
+  policy: RAG Assembly
+  command: Build Prompt
+  handledBy: prompt_builder
+  resultEvents:
+    - id: prompt_ready
+      title: Prompt Assembled
+      desc: Context and query combined into LLM prompt.
+  continuesAs: generate_answer
+- type: linear
+  id: generate_answer
+  policy: Generate
+  command: Generate Answer
+  handledBy: llm_generator
+  delegatesTo: llm_api
+  resultEvents:
+    - id: answer_generated
+      title: Answer Generated
+      desc: LLM produces final response.

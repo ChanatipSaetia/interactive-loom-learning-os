@@ -1,0 +1,6 @@
+dev_user:
+  title: "Developer (Initiator)"
+  desc: "The developer initiating instructions and goals."
+qa_user:
+  title: "QA Engineer"
+  desc: "The QA engineer reviewing results."

@@ -2,14 +2,25 @@ import { render, screen, waitFor } from '@testing-library/react'
 import { MemoryRouter, Routes, Route } from 'react-router-dom'
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 import * as registryModule from '../../../../src/core/registry'
-import { TopicRegistry } from '../../../../src/core/topic-registry'
+import * as okfSections from '../../../../src/core/okf/sections'
+import * as routesModule from '../../../../src/core/routes'
 import { TopicShell, SectionRenderer } from '../../../../src/components/layout/TopicShell'
+import type { TopicRoute } from '../../../../src/core/routes'
 import type { SectionConfig } from '../../../../src/core/registry'
 
 const mockSectionComponent = vi.fn(() => <div data-testid="mock-registered-section" />)
-const mockTopicComponent = vi.fn(() => <div data-testid="mock-topic-content" />)
 
-function renderTopicShell(path = '/demo/rest-vs-websocket') {
+const mockTopics: TopicRoute[] = [
+  { id: 'demo', label: 'AI Agent Architecture (Demo)', path: '/demo/ai-agent', category: 'Architecture', description: 'Demo topic' },
+]
+
+function renderTopicShell(path = '/demo/rest-vs-websocket', topics: TopicRoute[] = mockTopics) {
+  vi.spyOn(routesModule, 'useTopics').mockReturnValue({
+    topics,
+    loading: false,
+    error: null,
+  })
+
   return render(
     <MemoryRouter initialEntries={[path]}>
       <Routes>
@@ -19,22 +30,26 @@ function renderTopicShell(path = '/demo/rest-vs-websocket') {
   )
 }
 
-describe('US-12: TopicShell lazy loading and Suspense', () => {
+describe('TopicShell OKF loading', () => {
   beforeEach(() => {
     vi.clearAllMocks()
     registryModule.SectionRegistry.clear()
     registryModule.SectionRegistry.register('test-section', mockSectionComponent)
-    TopicRegistry.clear()
-    TopicRegistry.register('demo', mockTopicComponent)
   })
 
   afterEach(() => {
     registryModule.SectionRegistry.clear()
-    TopicRegistry.clear()
     vi.restoreAllMocks()
   })
 
   it('TopicShell renders topic page for known route', async () => {
+    vi.spyOn(okfSections, 'useOKFBundled').mockReturnValue({
+      bundle: null,
+      loading: false,
+      error: null,
+      reload: vi.fn(),
+    })
+
     renderTopicShell('/demo/rest-vs-websocket')
 
     await waitFor(() => {
@@ -46,20 +61,36 @@ describe('US-12: TopicShell lazy loading and Suspense', () => {
     expect(topicTitle).toBeInTheDocument()
   })
 
-  it('TopicShell uses Suspense boundary for lazy loading', async () => {
-    renderTopicShell('/demo/rest-vs-websocket')
-
-    await waitFor(() => {
-      const topicPage = document.querySelector('.topic-page')
-      expect(topicPage).toBeInTheDocument()
+  it('TopicShell shows loading state', async () => {
+    vi.spyOn(okfSections, 'useOKFBundled').mockReturnValue({
+      bundle: null,
+      loading: true,
+      error: null,
+      reload: vi.fn(),
     })
 
-    const topicPage = document.querySelector('.topic-page')
-    expect(topicPage).toHaveAttribute('data-topic-id', 'demo')
+    renderTopicShell('/demo/rest-vs-websocket')
+
+    const loading = await screen.findByText('Loading topic data...')
+    expect(loading).toBeInTheDocument()
+  })
+
+  it('TopicShell shows error state', async () => {
+    vi.spyOn(okfSections, 'useOKFBundled').mockReturnValue({
+      bundle: null,
+      loading: false,
+      error: new Error('Network error'),
+      reload: vi.fn(),
+    })
+
+    renderTopicShell('/demo/rest-vs-websocket')
+
+    const error = await screen.findByText(/Failed to load topic/)
+    expect(error).toBeInTheDocument()
   })
 
   it('TopicShell shows not found for unknown topic', () => {
-    renderTopicShell('/nonexistent/path')
+    renderTopicShell('/nonexistent/path', [])
 
     const title = screen.getByText('Topic Not Found')
     expect(title).toBeInTheDocument()

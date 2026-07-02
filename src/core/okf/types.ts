@@ -1,33 +1,65 @@
-export interface OKFBundled {
-  meta: OKFBundledMeta
-  flow: import('../../sections/flowchart/abstract-flow/types').AbstractFlow
-  tradeoffs: import('../../sections/tradeoff-sandbox').TradeoffScenario[]
-  taxonomy: import('../../sections/taxonomy-browser').TaxonomyCategory[]
-  glossary: import('../../types').WordTerm[]
-  content: OKFContent
+import type { AbstractFlow } from '../../sections/flowchart/abstract-flow/types'
+import type { TradeoffScenario } from '../../sections/tradeoff-sandbox'
+import type { TaxonomyCategory } from '../../sections/taxonomy-browser'
+import type { BulletItem } from '../../sections/bullets'
+import type { WordTerm } from '../../types'
+
+// --- Per-section bundle ---
+
+export type OKFBundled = OKFBundledSection[]
+
+export interface OKFBundledSection {
+  meta: OKFSectionMeta
+  data: OKFSectionData
 }
 
-export interface OKFSectionRaw {
+export interface OKFSectionMeta {
   type: string
   title?: string
   heading?: string
-  contentKey?: string
   ordered?: boolean
+  resource: string
 }
 
-export interface OKFBundledMeta {
-  type: string
-  title: string
-  description: string
-  tags: string[]
-  sections?: OKFSectionRaw[]
-}
+export type OKFSectionData =
+  | OKFTextSectionData
+  | OKFBulletSectionData
+  | OKFFlowSectionData
+  | OKFTradeoffSectionData
+  | OKFTaxonomySectionData
+  | OKFFlashcardSectionData
 
-export interface OKFContent {
+export interface OKFTextSectionData {
+  type: 'text'
   paragraphs: string[]
-  lifecycleMarkdown: string[]
-  capabilityBullets: import('../../sections/bullets').BulletItem[]
 }
+
+export interface OKFBulletSectionData {
+  type: 'bullets'
+  items: BulletItem[]
+}
+
+export interface OKFFlowSectionData {
+  type: 'flowchart'
+  flow: AbstractFlow
+}
+
+export interface OKFTradeoffSectionData {
+  type: 'tradeoff-sandbox'
+  scenarios: TradeoffScenario[]
+}
+
+export interface OKFTaxonomySectionData {
+  type: 'taxonomy-browser'
+  categories: TaxonomyCategory[]
+}
+
+export interface OKFFlashcardSectionData {
+  type: 'flashcards'
+  terms: WordTerm[]
+}
+
+// --- Raw types (YAML parsing) ---
 
 export interface OKFStepRaw {
   type: 'linear' | 'branch'

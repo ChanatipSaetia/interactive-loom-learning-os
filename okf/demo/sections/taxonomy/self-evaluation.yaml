@@ -1,0 +1,16 @@
+type: taxonomy-category
+icon: Scale
+title: "Self-Evaluation"
+subtitle: "Quality Assurance"
+color: peach
+description: "The agent evaluates its own output against success criteria, identifies failures, and triggers re-planning or correction loops."
+details: "Self-evaluation can be rule-based (checklist), LLM-based (self-critique), or hybrid (automated tests + LLM judgment)."
+analogy: "A developer reviewing their own code before submitting a PR."
+primaryFocus: "Output validation and autonomous correction"
+inScope:
+  - "Self-critique"
+  - "Automated testing"
+  - "Success criteria checking"
+  - "Re-planning on failure"
+outOfScope:
+  - "Blind execution without verification"

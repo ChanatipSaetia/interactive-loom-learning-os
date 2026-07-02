@@ -1,0 +1,80 @@
+- id: happy-path
+  label: "Happy Path"
+  description: "Agent uses tools successfully and passes QA."
+  steps:
+    - nodeId: run_agent
+      description: "Dev requests task. Multiple events generated."
+      processGroup: planning
+    - nodeId: started
+      description: "Agent started, session created."
+      processGroup: planning
+    - nodeId: call_llm
+      description: "LLM reasons about task."
+      processGroup: planning
+    - nodeId: reasoned
+      description: "LLM generates response with tool calls."
+      processGroup: planning
+    - nodeId: execute_tool
+      description: "Tools execute successfully, spawning subagents."
+      processGroup: execution
+    - nodeId: tool_executed
+      description: "Tool execution returns results."
+      processGroup: execution
+    - nodeId: call_mcp
+      description: "MCP server called."
+      processGroup: execution
+    - nodeId: mcp_called
+      description: "MCP interaction completes."
+      processGroup: execution
+    - nodeId: eval
+      description: "LLM compiles final answer."
+      processGroup: evaluation
+    - nodeId: done
+      description: "Task completed with verified solution."
+      processGroup: evaluation
+    - nodeId: qa_review
+      description: "Task submitted for QA review; QA approves."
+    - nodeId: qa_approved
+      description: "Output passes QA standards."
+
+- id: feedback-loop
+  label: "Feedback Loop"
+  description: "Agent needs more info from same actor."
+  steps:
+    - nodeId: execute_tool
+      description: "Tool returns an error or asks user for input."
+      processGroup: execution
+    - nodeId: tool_executed
+      description: "Tool execution needs user input."
+      processGroup: execution
+    - nodeId: send_message
+      description: "System sends message to user."
+    - nodeId: message_sent
+      description: "User is prompted for input."
+    - nodeId: provide_feedback
+      description: "Dev provides missing info."
+    - nodeId: feedback_received
+      description: "Feedback received by orchestrator."
+    - nodeId: call_llm
+      description: "Agent replans with new context."
+      processGroup: planning
+    - nodeId: reasoned
+      description: "LLM generates updated response."
+      processGroup: planning
+
+- id: direct-llm
+  label: "Direct LLM Answer"
+  description: "No tools needed."
+  steps:
+    - nodeId: call_llm
+      description: "LLM reasons about task."
+      processGroup: planning
+    - nodeId: reasoned
+      description: "LLM has direct answer."
+      processGroup: planning
+    - nodeId: direct_complete
+      description: "LLM skips tools and directly answers."
+      processGroup: evaluation
+    - nodeId: done
+      description: "Task completed with direct answer."
+      processGroup: evaluation

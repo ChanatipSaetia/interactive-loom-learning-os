@@ -1,0 +1,15 @@
+type: taxonomy-category
+icon: Users
+title: "Peer Collaboration"
+subtitle: "Decentralized Network"
+color: green
+description: "Independent agents interact directly, negotiate, and collaborate to solve a problem without a centralized manager."
+details: "Useful for negotiation, multi-perspective debates, or open-ended creative tasks."
+analogy: "A brainstorming session among design peers sharing ideas, voting, and converging on a solution."
+primaryFocus: "Peer negotiation, debate, and consensus mechanisms"
+inScope:
+  - "Debate loops"
+  - "Voting consensus"
+  - "Agent-to-agent negotiation"
+outOfScope:
+  - "Rigid hierarchical command lines"

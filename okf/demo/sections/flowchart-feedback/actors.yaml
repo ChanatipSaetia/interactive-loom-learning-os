@@ -1,0 +1,6 @@
+dev_user:
+  title: "Developer (Feedback Source)"
+  desc: "Provides feedback on agent output"
+qa_user:
+  title: "QA Reviewer"
+  desc: "Evaluates agent output quality"

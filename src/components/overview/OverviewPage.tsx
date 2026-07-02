@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect, useMemo } from 'react'
 import { Link } from 'react-router-dom'
 import { Search, ChevronDown, Check } from 'lucide-react'
-import type { TopicRoute } from '../../core/routes'
+import { useTopics } from '../../core/routes'
 import { usePagination } from '../../core/hooks/usePagination'
 import { ScrollReveal } from '../motion/scroll-reveal'
 import { Dropdown } from '../motion/dropdown'
@@ -127,7 +127,8 @@ function MultiSelectDropdown({
   )
 }
 
-export function OverviewPage({ topics }: { topics: TopicRoute[] }) {
+export function OverviewPage() {
+  const { topics, loading } = useTopics()
   const [search, setSearch] = useState('')
   const [selectedCategories, setSelectedCategories] = useState<string[]>([])
   const [sortValue, setSortValue] = useState('')
@@ -172,6 +173,14 @@ export function OverviewPage({ topics }: { topics: TopicRoute[] }) {
   const { pageItems: pagedTopics, totalPages, startIdx, endIdx, totalItems } = usePagination({
     items: filteredTopics, page: currentPage, pageSize: rowsPerPage,
   })
+
+  if (loading) {
+    return (
+      <div className="overview-page">
+        <div className="topic-loading">Loading topics...</div>
+      </div>
+    )
+  }
 
   return (
     <div className="overview-page">

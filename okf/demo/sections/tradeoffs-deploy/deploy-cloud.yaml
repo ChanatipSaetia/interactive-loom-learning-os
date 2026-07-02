@@ -1,0 +1,115 @@
+id: deploy-cloud
+title: "Cloud PaaS Deployment"
+description: "Deploy the agent platform on a managed cloud platform (AWS, GCP, Azure). Evaluate trade-offs between managed services vs self-hosted components."
+metrics:
+  - id: cost
+    label: Cost Efficiency
+    baseValue: 50
+    min: 0
+    max: 100
+    direction: higher
+  - id: latency
+    label: Response Latency
+    baseValue: 50
+    min: 0
+    max: 100
+    direction: higher
+  - id: control
+    label: Customization Control
+    baseValue: 30
+    min: 0
+    max: 100
+    direction: higher
+  - id: ops-overhead
+    label: Operational Overhead
+    baseValue: 60
+    min: 0
+    max: 100
+    direction: lower
+steps:
+  - id: compute
+    title: "Compute Strategy"
+    description: "How to run agent orchestration logic."
+    recommended: serverless
+    choices:
+      - id: containers
+        label: "Managed Containers"
+        description: "Kubernetes or ECS for always-on agent processes."
+        metrics:
+          cost: -10
+          latency: 15
+          control: 20
+          ops-overhead: 10
+        pros:
+          - title: "Persistent state"
+            description: "Agents stay warm, no cold start penalty"
+          - title: "Full control"
+            description: "Configure memory, CPU, networking"
+        cons:
+          - title: "Higher base cost"
+            description: "Always-running instances cost money even idle"
+          - title: "Scaling complexity"
+            description: "Must configure autoscaling policies"
+        whenToUse: "When agents need persistent connections or low-latency responses."
+      - id: serverless
+        label: "Serverless Functions"
+        description: "Event-driven execution with auto-scaling."
+        metrics:
+          cost: 20
+          latency: -10
+          control: -10
+          ops-overhead: -20
+        pros:
+          - title: "Pay per use"
+            description: "No cost when idle, scales to zero"
+          - title: "Zero ops"
+            description: "Platform handles scaling and availability"
+        cons:
+          - title: "Cold starts"
+            description: "First invocation after idle has latency penalty"
+          - title: "Execution limits"
+            description: "Time and memory caps constrain complex agents"
+        whyThisFits: "Most agent workloads are bursty — serverless matches the cost profile and eliminates ops overhead for intermittent tasks."
+  - id: llm-access
+    title: "LLM Access Pattern"
+    description: "How agents reach the language model."
+    recommended: api-gateway
+    choices:
+      - id: direct-api
+        label: "Direct API Calls"
+        description: "Agent functions call LLM provider directly."
+        metrics:
+          cost: -5
+          latency: 10
+          control: 5
+          ops-overhead: -5
+        pros:
+          - title: "Simplest setup"
+            description: "No middleware to configure"
+          - title: "Lower latency"
+            description: "Fewer network hops"
+        cons:
+          - title: "No rate limiting"
+            description: "Must implement in each agent function"
+          - title: "Key management"
+            description: "API keys embedded in each function"
+        whenToUse: "For prototypes and single-agent deployments."
+      - id: api-gateway
+        label: "API Gateway Proxy"
+        description: "Centralized proxy with rate limiting and caching."
+        metrics:
+          cost: 5
+          latency: -5
+          control: 15
+          ops-overhead: 5
+        pros:
+          - title: "Centralized control"
+            description: "Rate limits, caching, retries in one place"
+          - title: "Key isolation"
+            description: "Single proxy holds API credentials"
+        cons:
+          - title: "Added latency"
+            description: "One extra network hop per call"
+          - title: "Single point of failure"
+            description: "Gateway outage blocks all agents"
+        whyThisFits: "Multi-agent systems benefit from centralized rate limiting, cost tracking, and credential management."

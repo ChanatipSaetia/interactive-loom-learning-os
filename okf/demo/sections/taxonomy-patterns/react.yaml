@@ -1,0 +1,16 @@
+type: taxonomy-category
+icon: Cpu
+title: "ReAct (Reason + Act)"
+subtitle: "Thought-Action-Observation Loop"
+color: sky
+description: "The agent alternates between reasoning (Thought) and taking action (Act), then observes the result (Observation) to inform the next reasoning step."
+details: "Each cycle: the agent thinks about what to do, executes a tool call or generates text, reads the result, and decides the next step. This loop continues until the goal is achieved or a max iteration limit is reached."
+analogy: "Like a scientist who hypothesizes, runs an experiment, observes results, and revises the hypothesis."
+primaryFocus: "Step-by-step reasoning with tool grounding"
+inScope:
+  - "Thought chain before each action"
+  - "Tool execution and observation"
+  - "Self-correction based on observations"
+outOfScope:
+  - "Parallel task execution"
+  - "Long-term memory across sessions"

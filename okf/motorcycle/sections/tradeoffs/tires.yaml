@@ -1,0 +1,54 @@
+id: tires
+title: ประเภทยางรถมอเตอร์ไซค์
+description: ประเภทยางมีผลต่อความปลอดภัยเมื่อเกิดการรั่วซึม และความสะดวกในการปะยาง
+metrics:
+  - id: safety
+    label: ความปลอดภัยเมื่อยางรั่ว
+    baseValue: 0
+  - id: convenience
+    label: ความสะดวกในการปะยาง
+    baseValue: 0
+  - id: price
+    label: ความประหยัด (ราคายางและล้อ)
+    baseValue: 0
+    direction: lower
+steps:
+  - id: "tire-type"
+    title: เลือกประเภทยาง
+    description: เลือกลักษณะยางที่ใช้กับล้อรถของคุณ
+    recommended: tubeless
+    choices:
+      - id: tubeless
+        label: แบบไม่มียางใน (Tubeless)
+        description: ใช้ร่วมกับล้อแม็ก หากโดนตะปูตำลมจะค่อยๆ ซึมออก ไม่แบนทันที
+        metrics:
+          safety: 90
+          convenience: 95
+          price: -70
+        pros:
+          - title: ปลอดภัยสูง
+            description: ลมไม่รั่วออกทันทีเมื่อโดนตะปู รถไม่ส่ายเสียอาการ
+          - title: ปะยางง่าย
+            description: สามารถแทงไหมอุดรูรั่วได้เลย ไม่ต้องถอดล้อ
+        cons:
+          - title: ต้นทุนสูง
+            description: ต้องใช้ร่วมกับล้อแม็กซึ่งมีราคาแพง
+        whyThisFits: เพิ่มความปลอดภัยสูงสุด ลดปัญหาจอดตายกลางทางจากยางรั่ว
+      - id: "tube-type"
+        label: แบบมียางใน (Tube Type)
+        description: มักใช้กับล้อซี่ลวด หากโดนตะปูตำยางจะแบนทันที
+        metrics:
+          safety: 30
+          convenience: 40
+          price: -30
+        pros:
+          - title: ราคาถูก
+            description: ยางและล้อซี่ลวดมีราคาถูกกว่า
+          - title: รับแรงกระแทกได้ดี
+            description: ล้อซี่ลวดมีความยืดหยุ่นสูง เหมาะกับทางวิบาก
+        cons:
+          - title: อันตรายถ้ายางรั่วตอนวิ่งเร็ว
+            description: ยางจะแบนทันที รถอาจจะเสียการควบคุม
+          - title: ปะยาก
+            description: ต้องถอดล้อเพื่องัดยางในออกมาปะ
+        whenToUse: เหมาะสำหรับรถคลาสสิก ล้อซี่ลวด หรือรถวิบากลุยป่า

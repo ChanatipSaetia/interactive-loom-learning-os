@@ -1,0 +1,24 @@
+file_converter:
+  title: File Converter
+  desc: "Converts PDF, HTML, Markdown, or other formats into Document objects."
+  type: aggregate
+text_splitter:
+  title: Text Splitter
+  desc: "Breaks large documents into smaller, semantically coherent chunks."
+  type: aggregate
+doc_embedder:
+  title: Document Embedder
+  desc: Computes dense vector embeddings for each text chunk.
+  type: aggregate
+embedding_model:
+  title: Embedding Model
+  desc: "External model (SentenceTransformers, OpenAI, etc.) that generates vector embeddings."
+  type: external
+doc_writer:
+  title: Document Writer
+  desc: Writes or overwrites documents into the Document Store.
+  type: aggregate
+doc_store:
+  title: Document Store
+  desc: "Persistent database (OpenSearch, Elasticsearch, Chroma, etc.) storing indexed documents."
+  type: external

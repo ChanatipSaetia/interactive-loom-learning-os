@@ -1,0 +1,16 @@
+type: taxonomy-category
+icon: Database
+title: "Memory & Context"
+subtitle: "State Management"
+color: blue
+description: "The agent stores and retrieves information across interactions, maintaining context through vector embeddings, conversation history, and external knowledge bases."
+details: "Memory systems include short-term (working memory within a session), long-term (persisted across sessions via embeddings), and external memory (RAG over documents)."
+analogy: "Like a researcher who takes notes, bookmarks references, and builds a personal knowledge base over years."
+primaryFocus: "Context retention, retrieval, and working memory management"
+inScope:
+  - "Vector embeddings"
+  - "Conversation history"
+  - "RAG retrieval"
+  - "Working memory"
+outOfScope:
+  - "One-shot generation without memory"

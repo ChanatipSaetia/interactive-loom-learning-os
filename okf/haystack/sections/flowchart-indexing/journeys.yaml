@@ -1,0 +1,28 @@
+- id: "indexing-flow"
+  label: Indexing Pipeline
+  description: "Raw files are converted, chunked, embedded, and stored."
+  steps:
+    - nodeId: start_indexing
+      description: Developer triggers indexing with raw files.
+    - nodeId: files_loaded
+      description: Files loaded and ready for conversion.
+    - nodeId: convert_files
+      description: Files parsed into structured Documents.
+      processGroup: execution
+    - nodeId: docs_converted
+      description: Documents ready for chunking.
+    - nodeId: split_texts
+      description: Documents chunked into smaller pieces.
+      processGroup: execution
+    - nodeId: texts_chunked
+      description: Chunks ready for embedding.
+    - nodeId: compute_embeddings
+      description: Dense vectors computed for each chunk.
+      processGroup: execution
+    - nodeId: embeddings_ready
+      description: Embeddings ready for storage.
+    - nodeId: write_docs
+      description: Documents persisted to Document Store.
+      processGroup: execution
+    - nodeId: docs_indexed
+      description: All documents indexed and searchable.

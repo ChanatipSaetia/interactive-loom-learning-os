@@ -1,0 +1,8 @@
+brake_master:
+  title: กระปุกเบรก (Brake Master Cylinder)
+  desc: เปลี่ยนแรงกดเป็นแรงดันไฮดรอลิก
+  type: aggregate
+brake_caliper:
+  title: "แคลิเพอร์และจานเบรก (Brake Caliper & Disc)"
+  desc: ระบบสร้างแรงเสียดทานเพื่อหน่วงล้อ
+  type: aggregate

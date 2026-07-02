@@ -1,0 +1,38 @@
+orch_agent:
+  title: "Agent Orchestrator"
+  desc: "Manages step coordination, memory updates, and loop state."
+  type: aggregate
+  stateMachine:
+    states:
+      - id: IDLE
+        label: Idle
+        color: "var(--ctp-overlay1)"
+      - id: THINKING
+        label: Thinking
+        color: "var(--ctp-blue)"
+      - id: EXECUTING_TOOL
+        label: Executing Tool
+        color: "var(--ctp-green)"
+      - id: WAITING_FEEDBACK
+        label: Waiting Feedback
+        color: "var(--ctp-peach)"
+      - id: COMPLETED
+        label: Completed
+        color: "var(--ctp-teal)"
+    initialState: IDLE
+tools_router:
+  title: "Tools Router"
+  desc: "Handles command routing and executes operations."
+  type: aggregate
+llm:
+  title: "LLM"
+  desc: "Generates execution plans, makes tool decisions, and synthesizes answers."
+  type: external
+mcp_servers:
+  title: "MCP Servers"
+  desc: "Model Context Protocol servers providing structured tools."
+  type: external
+subagents:
+  title: "Subagent Pool"
+  desc: "Dynamic spawned subagents delegated to run isolated journeys concurrently."
+  type: external

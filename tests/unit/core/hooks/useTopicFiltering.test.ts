@@ -4,9 +4,9 @@ import { useTopicFiltering, type SortColumn, type SortDirection } from '../../..
 import type { TopicRoute } from '../../../../src/core/routes'
 
 const mockTopics: TopicRoute[] = [
-  { id: 'demo', label: 'REST API vs WebSocket', path: '/demo/rest-vs-websocket', category: 'Architecture', description: 'Compare REST API and WebSocket communication patterns', sections: [] },
-  { id: 'grpc', label: 'gRPC Basics', path: '/demo/grpc-basics', category: 'Networking', description: 'Learn gRPC protocol fundamentals', sections: [] },
-  { id: 'events', label: 'Event-Driven Architecture', path: '/demo/events', category: 'Architecture', description: 'Understanding event-driven systems', sections: [] },
+  { id: 'demo', label: 'REST API vs WebSocket', path: '/demo/rest-vs-websocket', category: 'Architecture', description: 'Compare REST API and WebSocket communication patterns' },
+  { id: 'grpc', label: 'gRPC Basics', path: '/demo/grpc-basics', category: 'Networking', description: 'Learn gRPC protocol fundamentals' },
+  { id: 'events', label: 'Event-Driven Architecture', path: '/demo/events', category: 'Architecture', description: 'Understanding event-driven systems' },
 ]
 
 describe('useTopicFiltering', () => {
@@ -171,9 +171,9 @@ describe('useTopicFiltering', () => {
 
   it('sort is stable - equal values preserve original order', () => {
     const stableTopics: TopicRoute[] = [
-      { id: 'a', label: 'Same', path: '/a', category: 'Cat1', description: 'First', sections: [] },
-      { id: 'b', label: 'Same', path: '/b', category: 'Cat1', description: 'Second', sections: [] },
-      { id: 'c', label: 'Same', path: '/c', category: 'Cat1', description: 'Third', sections: [] },
+      { id: 'a', label: 'Same', path: '/a', category: 'Cat1', description: 'First' },
+      { id: 'b', label: 'Same', path: '/b', category: 'Cat1', description: 'Second' },
+      { id: 'c', label: 'Same', path: '/c', category: 'Cat1', description: 'Third' },
     ]
 
     const { result, rerender } = renderHook(

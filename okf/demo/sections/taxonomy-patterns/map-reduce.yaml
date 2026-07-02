@@ -1,0 +1,16 @@
+type: taxonomy-category
+icon: GitMerge
+title: "Map-Reduce Agent"
+subtitle: "Parallel Processing with Aggregation"
+color: violet
+description: "The problem is decomposed into independent sub-problems, each solved by a separate agent instance in parallel, then results are combined by a reduce step."
+details: "Map phase: the orchestrator splits the task and spawns parallel workers. Each worker solves its subtask independently. Reduce phase: a final aggregation step merges all results into a coherent answer."
+analogy: "Like dividing a book among multiple proofreaders, then compiling their notes into one edit list."
+primaryFocus: "Parallel independent task processing"
+inScope:
+  - "Task decomposition into independent units"
+  - "Parallel worker execution"
+  - "Result aggregation and synthesis"
+outOfScope:
+  - "Tasks with inter-step dependencies"
+  - "Sequential reasoning chains"

@@ -1,0 +1,32 @@
+text_embedder:
+  title: Text Embedder
+  desc: Converts the user query into a dense vector for semantic search.
+  type: aggregate
+query_embedding_model:
+  title: Embedding Model
+  desc: External model that generates query embeddings.
+  type: external
+retriever:
+  title: Retriever
+  desc: Searches the Document Store for relevant documents.
+  type: aggregate
+doc_store:
+  title: Document Store
+  desc: Stores indexed documents for retrieval.
+  type: external
+ranker:
+  title: Ranker
+  desc: "Re-ranks retrieved documents by relevance to the query."
+  type: aggregate
+prompt_builder:
+  title: Prompt Builder
+  desc: Assembles retrieved documents into an LLM prompt template.
+  type: aggregate
+llm_generator:
+  title: LLM Generator
+  desc: Generates the final answer from the prompt using an LLM.
+  type: aggregate
+llm_api:
+  title: LLM API
+  desc: "External LLM service (OpenAI, Anthropic, etc.)."
+  type: external

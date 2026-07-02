@@ -1,0 +1,15 @@
+type: taxonomy-category
+icon: ShieldCheck
+title: "Supervisor Router"
+subtitle: "Dynamic Routing"
+color: peach
+description: "A supervisor agent monitors shared state, routes tasks dynamically to appropriate workers based on the current state, and decides when the overall goal is achieved."
+details: "Best for open-ended problem solving where the path to the solution is non-linear and depends on intermediate findings."
+analogy: "A triage doctor in an emergency room routing patients to specialists based on their symptoms."
+primaryFocus: "State-based routing and completion evaluation"
+inScope:
+  - "State-driven routing"
+  - "Dynamic task assignment"
+  - "Supervisor evaluations"
+outOfScope:
+  - "Deterministic linear pipelines"

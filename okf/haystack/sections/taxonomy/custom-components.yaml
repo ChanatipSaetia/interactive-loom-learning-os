@@ -1,0 +1,19 @@
+type: "taxonomy-category"
+icon: GitBranch
+title: Custom Components
+subtitle: Extensibility Layer
+color: peach
+description: "Custom Components let you inject any Python logic into a Haystack pipeline. You define inputs, outputs, and the processing logic, then the framework handles serialization, type validation, and pipeline wiring."
+details: "A custom component requires the @component decorator, a run() method with typed inputs, and output type declarations. Use dataclasses.replace() for document mutations and copy.deepcopy() for nested structures. Components can be packaged and shared as integrations."
+analogy: "Like building a custom shelf unit for your library — you design it to fit your specific storage needs, then plug it into the existing cataloging system."
+primaryFocus: "Custom preprocessing, proprietary algorithms, external API integrations, and specialized ranking logic."
+inScope:
+  - "@component decorator pattern"
+  - Typed input/output sockets
+  - Pipeline serialization compatibility
+  - Component testing
+  - Integration packaging
+outOfScope:
+  - "Built-in component replacement"
+  - Document Store implementation
+  - Pipeline orchestration

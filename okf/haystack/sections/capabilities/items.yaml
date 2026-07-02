@@ -1,0 +1,48 @@
+- text: Pipeline Architecture
+  children:
+    - text: Directed multigraphs with branching and loops
+
+    - text: AsyncPipeline for parallel component execution
+
+    - text: Smart connections with implicit type adaptation
+
+    - text: "SuperComponents for composable sub-pipelines"
+
+- text: Component Ecosystem
+  children:
+    - text: "Embedders (SentenceTransformers, OpenAI, Azure)"
+
+    - text: "Retrievers (BM25, Embedding, Hybrid, SPLADE)"
+
+    - text: "Rankers (Transformer, Cohere, Reciprocal Rank Fusion)"
+
+    - text: "Converters (PDF, HTML, Markdown, Tesseract OCR)"
+
+- text: Document Store Backends
+  children:
+    - text: InMemoryDocumentStore (prototyping)
+
+    - text: OpenSearchDocumentStore (production hybrid)
+
+    - text: ElasticsearchDocumentStore (enterprise)
+
+    - text: "Chroma, Weaviate, PostgreSQL, Pinecone, MongoDB"
+
+    - text: "Azure AI Search (managed semantic, haystack-azure-search-connector)"
+
+    - text: "Google Vertex AI Search (generative grounding, custom component)"
+
+- text: Agentic Features
+  children:
+    - text: Agent component with ReAct loop
+
+    - text: "Multi-agent systems with delegation"
+
+    - text: Tool integration via MCP and custom tools
+
+    - text: Memory stores for conversation history
+
+- text: Full serialization and deserialization (YAML)
+
+- text: Pipeline visualization as Mermaid graphs
+

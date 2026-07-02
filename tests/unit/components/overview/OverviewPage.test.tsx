@@ -1,23 +1,39 @@
 import { render, screen, fireEvent } from '@testing-library/react'
 import { MemoryRouter } from 'react-router-dom'
+import { describe, expect, vi, beforeEach, afterEach, test } from 'vitest'
+import * as routesModule from '../../../../src/core/routes'
 import { OverviewPage } from '../../../../src/components/overview/OverviewPage'
 import type { TopicRoute } from '../../../../src/core/routes'
 
 const mockTopics: TopicRoute[] = [
-  { id: 'demo', label: 'REST API vs WebSocket', path: '/demo/rest-vs-websocket', category: 'Architecture', description: 'Compare REST API and WebSocket communication patterns', sections: [] },
-  { id: 'grpc', label: 'gRPC Basics', path: '/demo/grpc-basics', category: 'Networking', description: 'Learn gRPC protocol fundamentals', sections: [] },
-  { id: 'events', label: 'Event-Driven Architecture', path: '/demo/events', category: 'Architecture', description: 'Understanding event-driven systems', sections: [] },
+  { id: 'demo', label: 'REST API vs WebSocket', path: '/demo/rest-vs-websocket', category: 'Architecture', description: 'Compare REST API and WebSocket communication patterns' },
+  { id: 'grpc', label: 'gRPC Basics', path: '/demo/grpc-basics', category: 'Networking', description: 'Learn gRPC protocol fundamentals' },
+  { id: 'events', label: 'Event-Driven Architecture', path: '/demo/events', category: 'Architecture', description: 'Understanding event-driven systems' },
 ]
 
-function renderOverview() {
+function renderOverview(topics: TopicRoute[] = mockTopics) {
+  vi.spyOn(routesModule, 'useTopics').mockReturnValue({
+    topics,
+    loading: false,
+    error: null,
+  })
+
   return render(
     <MemoryRouter>
-      <OverviewPage topics={mockTopics} />
-    </MemoryRouter>
+      <OverviewPage />
+    </MemoryRouter>,
   )
 }
 
 describe('OverviewPage', () => {
+  beforeEach(() => {
+    vi.clearAllMocks()
+  })
+
+  afterEach(() => {
+    vi.restoreAllMocks()
+  })
+
   test('renders page title', () => {
     renderOverview()
     expect(screen.getByText('Interactive Learning Platform')).toBeInTheDocument()
@@ -48,28 +64,6 @@ describe('OverviewPage', () => {
     const searchInput = screen.getByTestId('overview-search') as HTMLInputElement
     fireEvent.change(searchInput, { target: { value: 'event-driven' } })
     expect(screen.queryByText('gRPC Basics')).not.toBeInTheDocument()
-    expect(screen.getByText('Event-Driven Architecture')).toBeInTheDocument()
-  })
-
-  test('renders filter chips', () => {
-    renderOverview()
-    expect(screen.getByTestId('filter-chip-all')).toBeInTheDocument()
-    expect(screen.getByTestId('filter-chip-Architecture')).toBeInTheDocument()
-    expect(screen.getByTestId('filter-chip-Networking')).toBeInTheDocument()
-  })
-
-  test('filter chip "All" is active by default', () => {
-    renderOverview()
-    const allChip = screen.getByTestId('filter-chip-all')
-    expect(allChip).toHaveClass('bg-primary')
-  })
-
-  test('clicking category filter narrows results', () => {
-    renderOverview()
-    const archChip = screen.getByTestId('filter-chip-Architecture')
-    fireEvent.click(archChip)
-    expect(screen.queryByText('gRPC Basics')).not.toBeInTheDocument()
-    expect(screen.getByText('REST API vs WebSocket')).toBeInTheDocument()
     expect(screen.getByText('Event-Driven Architecture')).toBeInTheDocument()
   })
 

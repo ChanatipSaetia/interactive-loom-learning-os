@@ -1,0 +1,9 @@
+- text: "Tool use — call external APIs, run code, browse the web"
+  children:
+    - text: "Web search (Tavily, Brave, Google)"
+    - text: "Code execution (sandboxed interpreter)"
+    - text: "Browser automation (Playwright)"
+- text: "Long-horizon planning via chain-of-thought or ReAct"
+- text: "Persistent memory across sessions (vector store)"
+- text: "Self-evaluation and automatic re-planning on failure"
+- text: "Multi-agent coordination (delegating sub-tasks)"

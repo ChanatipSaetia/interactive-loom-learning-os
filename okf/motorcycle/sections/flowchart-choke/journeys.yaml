@@ -1,0 +1,34 @@
+- id: "choke-cold-start"
+  label: สตาร์ทเครื่องเย็น (Cold Start)
+  description: เปิดโช้ค → สตาร์ท → เครื่องอุ่น → ปิดโช้ค → ผสมส่วนปกติ
+  steps:
+    - nodeId: choke_on
+      description: ผู้ขับขี่เปิดโช้คก่อนสตาร์ทเครื่องเย็น
+    - nodeId: rich_mix
+      description: วาล์วโช้คปิดช่องอากาศบางส่วน จำกัดอากาศเข้าคาร์บู
+    - nodeId: rich_mix
+      description: "ส่วนผสมรวยน้ำมัน (น้ำมัน:อากาศสูงกว่าปกติ)"
+    - nodeId: cold_start
+      description: เครื่องยนต์เริ่มทำงานด้วยส่วนผสมรวยน้ำมัน
+    - nodeId: engine_warm
+      description: เครื่องยนต์ค่อยๆ อุ่นตัว อุณหภูมิสูงขึ้น
+    - nodeId: engine_warm
+      description: เครื่องอุ่นถึงอุณหภูมิทำงานปกติแล้ว
+    - nodeId: choke_off
+      description: ปิดโช้ค เปิดช่องอากาศกลับสู่ปกติ
+    - nodeId: normal_mix
+      description: ส่วนผสมกลับสู่มาตรฐาน เครื่องทำงานเรียบ
+- id: "choke-forgot-off"
+  label: ลืมปิดโช้ค (Forgot to Turn Off Choke)
+  description: เปิดโช้ค → ลืมปิด → วิ่งโช้คค้าง → รถเร่งไม่ขึ้น
+  steps:
+    - nodeId: choke_on
+      description: ผู้ขับขี่เปิดโช้คก่อนสตาร์ทเครื่องเย็น
+    - nodeId: rich_mix
+      description: วาล์วโช้คปิดช่องอากาศบางส่วน
+    - nodeId: rich_mix
+      description: ส่วนผสมรวยน้ำมัน
+    - nodeId: ride_choke
+      description: บิดคันเร่งขณะที่โช้คยังเปิดอยู่
+    - nodeId: choke_forget
+      description: หัวเทียนสกปรก กินน้ำมัน รถเร่งไม่ขึ้น

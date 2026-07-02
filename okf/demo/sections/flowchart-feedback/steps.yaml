@@ -1,0 +1,52 @@
+- type: linear
+  id: fb_check
+  initiatedBy: qa_user
+  command: cmd_evaluate
+  handledBy: evaluator
+  resultEvents:
+    - id: fb_evaluated
+      title: "Output Evaluated"
+  continuesAs: fb_decision
+
+- type: branch
+  id: fb_decision
+  event: fb_evaluated
+  branches:
+    - id: fb_pass
+      label: "Pass"
+      policy: fb_accept
+      command: cmd_accept
+      handledBy: orch_feedback
+      resultEvents:
+        - id: fb_accepted
+          title: "Output Accepted"
+    - id: fb_fail
+      label: "Needs Revision"
+      dashed: true
+      policy: fb_revise
+      command: cmd_revise
+      handledBy: orch_feedback
+      resultEvents:
+        - id: fb_revision
+          title: "Revision Triggered"
+      continuesAs: fb_store
+
+- type: linear
+  id: fb_store
+  event: fb_revision
+  command: cmd_store_failure
+  handledBy: memory_store
+  resultEvents:
+    - id: fb_stored
+      title: "Failure Context Stored"
+  continuesAs: fb_rerun
+
+- type: linear
+  id: fb_rerun
+  event: fb_stored
+  command: cmd_rerun
+  handledBy: llm_feedback
+  resultEvents:
+    - id: fb_regenerated
+      title: "Output Regenerated"
+  continuesAs: fb_check

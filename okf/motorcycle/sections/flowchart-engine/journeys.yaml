@@ -1,0 +1,22 @@
+- id: "4-stroke-cycle"
+  label: วัฏจักรเครื่องยนต์ 4 จังหวะ และการส่งกำลัง
+  description: ขั้นตอนการทำงานตั้งแต่บิดคันเร่งจนถึงการส่งกำลังไปที่ล้อ
+  steps:
+    - nodeId: throttle
+      description: ผู้ขับขี่บิดคันเร่งเพื่อเพิ่มความเร็ว
+    - nodeId: fuel_mix
+      description: คาร์บูเรเตอร์ผสมน้ำมันและอากาศ
+    - nodeId: intake
+      description: "1. ดูด: วาล์วไอดีเปิด ลูกสูบเลื่อนลง ดูดไอดีเข้ากระบอกสูบ"
+    - nodeId: comp
+      description: "2. อัด: ลูกสูบเลื่อนขึ้น อัดไอดีให้มีความหนาแน่นเตรียมจุดระเบิด"
+    - nodeId: comb
+      description: "3. ระเบิด: หัวเทียนจุดประกายไฟ ดันลูกสูบลงอย่างแรง สร้างกำลัง"
+    - nodeId: power_transfer
+      description: "4. คาย: วาล์วไอเสียเปิด ลูกสูบเลื่อนขึ้นดันไอเสียออก"
+    - nodeId: power_transfer
+      description: กำลังจากการจุดระเบิดส่งผ่านก้านสูบลงสู่เพลาข้อเหวี่ยง
+    - nodeId: transmission
+      description: เกียร์ทดรอบและส่งกำลังผ่านโซ่/สายพาน
+    - nodeId: wheel_spin
+      description: ส่งกำลังไปที่ล้อหลัง ทำให้มอเตอร์ไซค์ขับเคลื่อนไปข้างหน้า

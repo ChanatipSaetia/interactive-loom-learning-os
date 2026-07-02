@@ -1,0 +1,16 @@
+orch_feedback:
+  title: "Agent Orchestrator"
+  desc: "Receives feedback and triggers re-planning"
+  type: "aggregate"
+evaluator:
+  title: "Self-Evaluator"
+  desc: "Checks output against success criteria"
+  type: "aggregate"
+llm_feedback:
+  title: "LLM"
+  desc: "Re-generates output based on feedback"
+  type: "external"
+memory_store:
+  title: "Memory Store"
+  desc: "Stores failed attempts for context"
+  type: "external"

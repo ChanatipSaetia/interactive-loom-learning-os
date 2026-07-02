@@ -1,0 +1,19 @@
+type: "taxonomy-category"
+icon: Zap
+title: Query Pipeline
+subtitle: "Real-Time Retrieval"
+color: green
+description: "A Query Pipeline executes in real-time to answer user queries. It embeds the query, retrieves relevant documents, optionally ranks them, and may invoke an LLM for RAG-based answering."
+details: "Query pipelines are latency-sensitive. They typically chain: TextEmbedder → Retriever → Ranker → PromptBuilder → LLM. The pipeline can be simplified to just Retriever for pure search without LLM generation."
+analogy: "Like a librarian who receives your question, finds relevant books from the catalog, and presents the most relevant pages."
+primaryFocus: "Query embedding, document retrieval, ranking, and LLM-powered answer generation."
+inScope:
+  - Query embedding
+  - Semantic search
+  - Hybrid retrieval (BM25 + vectors)
+  - Document ranking
+  - RAG prompt assembly
+outOfScope:
+  - File conversion
+  - Batch indexing
+  - Document persistence

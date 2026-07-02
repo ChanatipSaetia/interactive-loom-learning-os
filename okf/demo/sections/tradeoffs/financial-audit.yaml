@@ -1,0 +1,168 @@
+id: financial-audit
+title: "High-Security Financial Auditing Platform"
+description: "Build a compliance-critical auditing system: Angular frontend, Java monolith, PostgreSQL, deployed on-premise. Prioritize security, auditability, and regulatory compliance."
+metrics:
+  - id: security
+    label: Security
+    baseValue: 50
+    min: 0
+    max: 100
+    direction: higher
+  - id: compliance
+    label: Compliance
+    baseValue: 40
+    min: 0
+    max: 100
+    direction: higher
+  - id: maintainability
+    label: Maintainability
+    baseValue: 40
+    min: 0
+    max: 100
+    direction: higher
+  - id: time-market
+    label: Time to Market
+    baseValue: 40
+    min: 0
+    max: 100
+    direction: higher
+steps:
+  - id: ui
+    title: "UI Framework"
+    description: "Choose the frontend framework for the audit dashboard."
+    recommended: angular
+    choices:
+      - id: angular
+        label: Angular
+        description: "Enterprise-grade framework with built-in structure."
+        metrics:
+          security: 10
+          compliance: 10
+          maintainability: 15
+          time-market: -5
+        pros:
+          - title: "Built-in structure"
+            description: "Enforced architecture reduces tech debt"
+          - title: "Type safety"
+            description: "Full TypeScript stack"
+          - title: "Enterprise support"
+            description: "Long-term stability and support"
+        cons:
+          - title: "Steeper learning curve"
+            description: "Angular concepts take time to master"
+          - title: "Larger bundle"
+            description: "Framework overhead increases size"
+        whyThisFits: "Financial platforms benefit from Angular's enforced structure, reducing the risk of architectural drift over long project lifecycles."
+      - id: react
+        label: React
+        description: "Flexible library with vast ecosystem."
+        metrics:
+          security: 0
+          compliance: -5
+          maintainability: 5
+          time-market: 10
+        pros:
+          - title: "Large ecosystem"
+            description: "Vast component libraries"
+          - title: "Faster prototyping"
+            description: "Less boilerplate than Angular"
+        cons:
+          - title: "Architecture choices"
+            description: "Team must decide on patterns"
+          - title: "Fragmented state management"
+            description: "Multiple solutions (Redux, Zustand, Jotai)"
+        whenToUse: "When team has React expertise and rapid prototyping is prioritized over long-term maintainability."
+
+  - id: backend
+    title: "Backend Architecture"
+    description: "Choose the server-side technology for processing audit data."
+    recommended: spring-boot
+    choices:
+      - id: spring-boot
+        label: "Spring Boot"
+        description: "Java framework with enterprise security and transaction management."
+        metrics:
+          security: 20
+          compliance: 15
+          maintainability: 10
+          time-market: -10
+        pros:
+          - title: "Mature security"
+            description: "Spring Security covers OAuth2, SAML, JWT"
+          - title: "Transaction management"
+            description: "Declarative @Transactional"
+          - title: "Audit framework"
+            description: "Spring Data Audit support built-in"
+        cons:
+          - title: "Verbose configuration"
+            description: "Annotation-heavy codebase"
+          - title: "Slower iteration"
+            description: "Java compilation adds dev cycle time"
+        whyThisFits: "Financial auditing requires battle-tested security frameworks and ACID transaction management that Spring Boot provides."
+      - id: node-express
+        label: "Node.js + Express"
+        description: "Lightweight JavaScript runtime for rapid development."
+        metrics:
+          security: -5
+          compliance: -10
+          maintainability: 5
+          time-market: 15
+        pros:
+          - title: "Rapid development"
+            description: "Less boilerplate, faster iteration"
+          - title: "Unified language"
+            description: "JavaScript across full stack"
+        cons:
+          - title: "Security requires discipline"
+            description: "No built-in enterprise security"
+          - title: "Transaction complexity"
+            description: "Multi-db transactions are challenging"
+        whenToUse: "When time-to-market is critical and the team has strong security discipline."
+
+  - id: deployment
+    title: "Deployment Strategy"
+    description: "Choose where and how to deploy the audit platform."
+    recommended: on-premise
+    choices:
+      - id: on-premise
+        label: "On-Premise"
+        description: "Deploy within the organization's own data center."
+        metrics:
+          security: 20
+          compliance: 20
+          maintainability: -5
+          time-market: -10
+        pros:
+          - title: "Full control"
+            description: "Complete ownership of infrastructure"
+          - title: "Data sovereignty"
+            description: "Financial data never leaves premises"
+          - title: "Audit trail"
+            description: "Physical access logging"
+        cons:
+          - title: "High CapEx"
+            description: "Hardware procurement and maintenance"
+          - title: "Slower updates"
+            description: "Patch management is manual"
+        whyThisFits: "Financial institutions often require on-premise deployment for regulatory compliance and data sovereignty."
+      - id: cloud
+        label: "Cloud (AWS/Azure)"
+        description: "Managed cloud infrastructure with compliance certifications."
+        metrics:
+          security: 5
+          compliance: 5
+          maintainability: 15
+          time-market: 15
+        pros:
+          - title: "Managed security"
+            description: "Provider handles infrastructure security"
+          - title: "Compliance ready"
+            description: "SOC2, PCI-DSS certifications"
+          - title: "Fast deployment"
+            description: "Infrastructure as Code"
+        cons:
+          - title: "Vendor lock-in"
+            description: "Cloud-specific services"
+          - title: "Data residency"
+            description: "May not meet local regulations"
+        whenToUse: "When the organization trusts cloud providers and values speed over full infrastructure control."

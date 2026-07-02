@@ -1,0 +1,16 @@
+type: taxonomy-category
+icon: Wrench
+title: "Tool Use"
+subtitle: "Action Execution"
+color: green
+description: "The agent invokes external tools — APIs, code interpreters, web browsers, file systems — to extend its capabilities beyond pure text generation."
+details: "Tool use transforms the agent from a passive text generator into an active agent that can modify its environment."
+analogy: "Like a developer using CLI tools, IDE features, and version control to complete a task."
+primaryFocus: "External tool invocation and result integration"
+inScope:
+  - "API calls"
+  - "Code execution"
+  - "Web browsing"
+  - "File I/O"
+outOfScope:
+  - "Pure text completion"

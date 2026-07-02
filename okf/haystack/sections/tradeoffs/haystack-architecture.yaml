@@ -1,0 +1,293 @@
+id: "haystack-architecture"
+title: Haystack Architecture Decisions
+description: "Design a production search system with Haystack. Evaluate trade-offs across retrieval strategy, document store choice, and pipeline pattern."
+metrics:
+  - id: accuracy
+    label: Search Accuracy
+    baseValue: 50
+    min: 0
+    max: 100
+    direction: higher
+  - id: latency
+    label: Low Latency
+    baseValue: 50
+    min: 0
+    max: 100
+    direction: higher
+  - id: complexity
+    label: Complexity
+    baseValue: 30
+    min: 0
+    max: 100
+    direction: lower
+  - id: cost
+    label: Cost Efficiency
+    baseValue: 50
+    min: 0
+    max: 100
+    direction: higher
+steps:
+  - id: retrieval
+    title: Retrieval Strategy
+    description: Choose how your system finds relevant documents.
+    recommended: hybrid
+    choices:
+      - id: "bm25-only"
+        label: BM25 (Keyword)
+        description: Pure keyword matching based on term frequency and inverse document frequency.
+        metrics:
+          accuracy: -15
+          latency: 20
+          complexity: -15
+          cost: 20
+        pros:
+          - title: Fast execution
+            description: "No embedding computation needed, direct keyword lookup"
+          - title: Exact matching
+            description: "Perfect for proper nouns, IDs, and specific terms"
+          - title: No model cost
+            description: No embedding API calls or model hosting required
+        cons:
+          - title: No semantic understanding
+            description: Cannot match synonyms or paraphrased queries
+          - title: Language dependent
+            description: Requires stemming and stopword handling per language
+        whenToUse: "Best when users search for exact terms, product codes, or known identifiers."
+      - id: "dense-only"
+        label: Dense Vector
+        description: Semantic similarity search using embedding vectors.
+        metrics:
+          accuracy: 5
+          latency: -10
+          complexity: 5
+          cost: -10
+        pros:
+          - title: Semantic matching
+            description: Finds conceptually similar documents even with different wording
+          - title: Language agnostic
+            description: Multilingual embeddings work across languages
+          - title: Robust to typos
+            description: Vector similarity tolerates minor spelling errors
+        cons:
+          - title: Embedding cost
+            description: Every query and document needs vector computation
+          - title: Misses exact terms
+            description: May overlook documents with specific keywords
+        whenToUse: "Best for conceptual search, research, and natural-language questions."
+      - id: hybrid
+        label: Hybrid (BM25 + Dense)
+        description: Combines keyword and semantic search with Reciprocal Rank Fusion.
+        metrics:
+          accuracy: 25
+          latency: -5
+          complexity: 10
+          cost: -5
+        pros:
+          - title: Best of both worlds
+            description: Catches exact terms AND semantic matches
+          - title: RRF fusion
+            description: Reciprocal Rank Fusion combines scores without tuning
+          - title: Production standard
+            description: Industry best practice for enterprise search
+        cons:
+          - title: Moderate overhead
+            description: Runs two retrieval passes per query
+          - title: Dual indexing
+            description: Documents need both keyword and vector indexes
+        whyThisFits: "Hybrid retrieval is the recommended production default. It provides the accuracy of semantic search while preserving the exact-match capability of BM25, with minimal latency overhead from RRF fusion."
+  - id: "document-store"
+    title: Document Store Backend
+    description: Choose where to store and index your documents.
+    recommended: opensearch
+    choices:
+      - id: "in-memory"
+        label: InMemoryDocumentStore
+        description: "In-process memory store with no external dependencies."
+        metrics:
+          accuracy: -10
+          latency: 25
+          complexity: -25
+          cost: 20
+        pros:
+          - title: Zero setup
+            description: No external database to install or configure
+          - title: Fastest for small data
+            description: No network latency for document access
+          - title: Ideal for prototyping
+            description: Perfect for tutorials and quick experiments
+        cons:
+          - title: No persistence
+            description: Data lost when process restarts
+          - title: No scaling
+            description: Cannot handle large document collections
+          - title: No distribution
+            description: "Single-process, single-machine only"
+        whenToUse: "Use during development, testing, and when dataset fits in memory."
+      - id: chroma
+        label: Chroma
+        description: Lightweight vector database focused on embedding search.
+        metrics:
+          accuracy: 0
+          latency: 5
+          complexity: -5
+          cost: 10
+        pros:
+          - title: Simple API
+            description: "Minimal configuration, easy to self-host"
+          - title: "Embedding-first"
+            description: Optimized for dense vector operations
+          - title: Good developer UX
+            description: Clean Python client and local mode
+        cons:
+          - title: No BM25
+            description: "Vector-only, no keyword search built-in"
+          - title: Limited filtering
+            description: Metadata filtering is basic compared to OpenSearch
+        whenToUse: "Good for embedding-only pipelines with moderate scale."
+      - id: opensearch
+        label: OpenSearch
+        description: "Full-featured search engine with hybrid search and rich filtering."
+        metrics:
+          accuracy: 20
+          latency: -5
+          complexity: 15
+          cost: 0
+        pros:
+          - title: Hybrid search native
+            description: BM25 + vectors + RRF fusion in one query
+          - title: Full OpenSearch DSL
+            description: Inject custom queries for maximum control
+          - title: Rich metadata filtering
+            description: Complex boolean filters on document metadata
+          - title: Enterprise scale
+            description: "Horizontal scaling, replication, and high availability"
+        cons:
+          - title: Infrastructure cost
+            description: Requires running OpenSearch cluster
+          - title: Configuration complexity
+            description: "Mapping, shard settings, and cluster management"
+        whyThisFits: "OpenSearch is the recommended production backend. Its native hybrid search, full DSL access, and robust metadata filtering make it the most flexible choice for enterprise Haystack deployments."
+      - id: "azure-search"
+        label: Azure AI Search
+        description: Managed cloud search service with semantic ranker and Azure AI integration.
+        metrics:
+          accuracy: 22
+          latency: 0
+          complexity: 5
+          cost: -10
+        pros:
+          - title: Fully managed
+            description: "No infrastructure to maintain, auto-scaling included"
+          - title: Semantic ranker
+            description: "Azure-built semantic reranking out of the box"
+          - title: Azure AI integration
+            description: Native integration with Azure OpenAI for embeddings and generation
+          - title: Hybrid + vector search
+            description: "BM25, vector, and hybrid search with semantic ranking"
+          - title: Enterprise features
+            description: "Role-based access, private endpoints, managed identity"
+        cons:
+          - title: "Azure lock-in"
+            description: Tied to Azure ecosystem and billing
+          - title: "Per-query cost"
+            description: "Semantic ranker adds per-request charges"
+          - title: Haystack integration via connector
+            description: "Requires haystack-azure-search-connector package"
+        whenToUse: Best when already in Azure ecosystem or needing managed semantic search without infrastructure overhead.
+      - id: "google-search"
+        label: Google Vertex AI Search
+        description: Google Cloud search with generative AI grounding and enterprise knowledge base.
+        metrics:
+          accuracy: 20
+          latency: -5
+          complexity: 5
+          cost: -15
+        pros:
+          - title: Generative AI grounding
+            description: "Built-in RAG with Gemini models for grounded answers"
+          - title: Enterprise knowledge base
+            description: "Pre-built connectors for G Suite, Sharepoint, and data warehouses"
+          - title: "Multi-modal search"
+            description: "Search across text, images, and video with unified index"
+          - title: Google scale
+            description: Leverages Google search quality at cloud scale
+        cons:
+          - title: "GCP lock-in"
+            description: Tied to Google Cloud Platform
+          - title: Higher cost
+            description: Premium pricing for generative AI features
+          - title: Less pipeline control
+            description: Managed service abstracts away retrieval internals
+          - title: Haystack integration via custom component
+            description: Requires building a custom Haystack connector
+        whenToUse: Best for GCP enterprises needing generative AI search with minimal pipeline customization.
+  - id: "pipeline-pattern"
+    title: Pipeline Pattern
+    description: Choose the execution model for your Haystack pipeline.
+    recommended: "standard-pipeline"
+    choices:
+      - id: "standard-pipeline"
+        label: Standard Pipeline
+        description: Sequential execution with optional branching for parallel paths.
+        metrics:
+          accuracy: 0
+          latency: 5
+          complexity: -20
+          cost: 10
+        pros:
+          - title: Simplest model
+            description: "Linear data flow, easy to debug and reason about"
+          - title: Type validation
+            description: Pipeline validates all connections before execution
+          - title: Serialization
+            description: Save and load pipelines as YAML for deployment
+        cons:
+          - title: Sequential bottleneck
+            description: "Independent components still run one-by-one"
+          - title: "No built-in loops"
+            description: Requires Pipeline with loops for iterative patterns
+        whyThisFits: "Start with a Standard Pipeline for most use cases. It covers RAG, document search, and basic branching with minimal complexity. Upgrade to AsyncPipeline or loops only when you have a measured performance or control-flow need."
+      - id: "async-pipeline"
+        label: Async Pipeline
+        description: Parallel execution of independent components and branches.
+        metrics:
+          accuracy: 0
+          latency: 20
+          complexity: 10
+          cost: -5
+        pros:
+          - title: Parallel execution
+            description: Independent branches run concurrently
+          - title: Reduced latency
+            description: Multiple retrievers or LLM calls run simultaneously
+          - title: I/O optimization
+            description: "Network-bound operations overlap efficiently"
+        cons:
+          - title: Async complexity
+            description: Requires understanding of async/await patterns
+          - title: Debugging harder
+            description: "Non-deterministic execution order complicates tracing"
+        whenToUse: "Use when your pipeline has independent branches (e.g., multi-retriever fan-out) and latency is critical."
+      - id: "agent-loop"
+        label: Agent with Loops
+        description: "Self-correcting pipeline with iterative feedback and tool use."
+        metrics:
+          accuracy: 20
+          latency: -25
+          complexity: 25
+          cost: -15
+        pros:
+          - title: "Self-correction"
+            description: Agent retries with refined approach on failure
+          - title: Tool use
+            description: Agent dynamically calls tools during execution
+          - title: "Multi-step reasoning"
+            description: "Complex goals decomposed into tool-assisted steps"
+        cons:
+          - title: High latency
+            description: "Multiple LLM calls per query, often 3-10 iterations"
+          - title: Unpredictable cost
+            description: Token usage scales with number of iterations
+          - title: Loop safety
+            description: Must set max iterations to prevent infinite loops
+        whenToUse: "Use for complex tasks requiring reasoning, tool use, or multi-step problem solving where accuracy justifies the latency."

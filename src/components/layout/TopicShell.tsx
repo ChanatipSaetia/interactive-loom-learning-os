@@ -1,8 +1,9 @@
-import { Suspense, lazy, useMemo } from 'react'
+import { useMemo } from 'react'
 import { useParams } from 'react-router-dom'
-import { routes } from '../../core/routes'
-import { SectionRegistry, type SectionConfig } from '../../core/registry'
-import { TopicRegistry } from '../../core/topic-registry'
+import { useTopics } from '../../core/routes'
+import type { SectionConfig } from '../../core/registry'
+import { SectionRegistry } from '../../core/registry'
+import { useOKFBundled, bundleToSections } from '../../core/okf/sections'
 
 interface SectionRendererProps {
   config: SectionConfig
@@ -22,8 +23,9 @@ function SectionRenderer({ config }: SectionRendererProps) {
 
 export function TopicShell() {
   const { topicId } = useParams()
+  const { topics } = useTopics()
 
-  const topic = useMemo(() => routes.find((r) => r.id === topicId), [topicId])
+  const topic = useMemo(() => topics.find((r) => r.id === topicId), [topicId, topics])
 
   if (!topic) {
     return (
@@ -34,17 +36,23 @@ export function TopicShell() {
     )
   }
 
-  const resolvedTopicId = topicId ?? ''
-  const TopicComponent = TopicRegistry.get(resolvedTopicId)
-  const TopicContent = TopicComponent
-    ? lazy(async () => ({ default: TopicComponent }))
-    : null
+  const { bundle, loading, error } = useOKFBundled(topicId ?? '')
+  const sections = useMemo(() => bundle ? bundleToSections(bundle) : [], [bundle])
 
-  if (!TopicContent) {
+  if (loading) {
     return (
       <div className="topic-page" data-topic-id={topic.id}>
         <h2 className="topic-page-title">{topic.label}</h2>
-        <p className="topic-page-placeholder">Topic component not found.</p>
+        <div className="topic-loading">Loading topic data...</div>
+      </div>
+    )
+  }
+
+  if (error) {
+    return (
+      <div className="topic-page" data-topic-id={topic.id}>
+        <h2 className="topic-page-title">{topic.label}</h2>
+        <div className="topic-error">Failed to load topic: {error.message}</div>
       </div>
     )
   }
@@ -52,9 +60,9 @@ export function TopicShell() {
   return (
     <div className="topic-page" data-topic-id={topic.id}>
       <h2 className="topic-page-title">{topic.label}</h2>
-      <Suspense fallback={<div className="topic-loading">Loading...</div>}>
-        <TopicContent />
-      </Suspense>
+      {sections.map((section, idx) => (
+        <SectionRenderer key={idx} config={section} />
+      ))}
     </div>
   )
 }

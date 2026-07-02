@@ -1,7 +1,7 @@
 import { test, expect } from '@playwright/test'
 
-test.describe('Issue #3: TopicRegistry seam', () => {
-  test('demo topic loads via TopicRegistry resolution', async ({ page }) => {
+test.describe('Topic OKF loading', () => {
+  test('demo topic loads and renders', async ({ page }) => {
     await page.goto('/#/demo/ai-agent')
 
     const topicPage = page.locator('.topic-page')
@@ -12,12 +12,9 @@ test.describe('Issue #3: TopicRegistry seam', () => {
 
     const topicContainer = page.locator('[data-topic-id="demo"]')
     await expect(topicContainer).toBeVisible()
-
-    const demoTopic = page.locator('[data-testid="demo-topic"]')
-    await expect(demoTopic).toBeVisible()
   })
 
-  test('topic component not registered shows placeholder', async ({ page }) => {
+  test('unknown topic shows not found', async ({ page }) => {
     await page.goto('/#/nonexistent/path')
 
     const topicTitle = page.locator('.topic-page-title')

@@ -1,0 +1,19 @@
+type: "taxonomy-category"
+icon: Database
+title: Document Store
+subtitle: Persistent Storage
+color: mauve
+description: The Document Store is the central persistence layer where indexed Documents live. It is not a pipeline component but a database accessed by pipeline components. Haystack supports multiple backends with different capabilities.
+details: "Choose InMemoryDocumentStore for prototyping. For production, OpenSearchDocumentStore and ElasticsearchDocumentStore offer hybrid search (BM25 + vectors + metadata filtering). Vector-only stores like Chroma and Weaviate are suitable for pure embedding search."
+analogy: Like the physical shelves of a library — where all the cataloged books are stored and retrieved from.
+primaryFocus: "Document persistence, vector indexing, keyword indexing, and metadata filtering."
+inScope:
+  - Vector similarity search
+  - BM25 keyword search
+  - Metadata filtering
+  - "Duplicate policies (OVERWRITE, SKIP, FAIL)"
+  - Custom document schemas
+outOfScope:
+  - Text conversion
+  - Embedding computation
+  - Prompt templating

@@ -1,0 +1,15 @@
+type: taxonomy-category
+icon: Shuffle
+title: "Sequential Choreography"
+subtitle: "Chain of Agents"
+color: blue
+description: "Agents work in a pipeline, passing data sequentially. Each agent receives input from the previous step, performs its specialized task, and hands off to the next."
+details: "Best for structured pipelines where steps are predictable (e.g. Code Gen -> Lint -> Test -> Fix)."
+analogy: "An assembly line in a factory where each worker installs a specific part of a car."
+primaryFocus: "Linear hand-offs and deterministic stage-gate processing"
+inScope:
+  - "Sequential pipeline"
+  - "Stage-gate validation"
+  - "Incremental improvement"
+outOfScope:
+  - "Dynamic backtracking or ad-hoc loops"

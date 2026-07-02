@@ -1,0 +1,12 @@
+carburetor:
+  title: คาร์บูเรเตอร์ (Carburetor)
+  desc: ระบบผสมน้ำมันและอากาศด้วยกลไก (รถรุ่นเก่า)
+  type: aggregate
+engine:
+  title: กระบอกสูบ (Cylinder / Engine)
+  desc: เครื่องยนต์
+  type: aggregate
+transmission:
+  title: เกียร์และโซ่ (Transmission)
+  desc: ระบบส่งกำลังสู่ล้อ
+  type: aggregate

@@ -1,0 +1,3 @@
+end_user:
+  title: End User
+  desc: "Submits a natural-language query to the search system."

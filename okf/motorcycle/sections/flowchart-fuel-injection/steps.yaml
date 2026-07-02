@@ -1,0 +1,44 @@
+- type: linear
+  id: inject_throttle
+  initiatedBy: rider
+  command: บิดคันเร่ง (Injector Mode)
+  policy: คำนวณอัตราส่วนผสม (Calculate Fuel Ratio)
+  handledBy: ecu
+  resultEvents:
+    - id: sensor_read
+      title: รับค่าจากเซ็นเซอร์ (Sensor Data)
+      desc: ข้อมูลรอบเครื่อง ตำแหน่งคันเร่ง อุณหภูมิเครื่อง อากาศเข้า
+  continuesAs: inject_fuel
+- type: linear
+  id: inject_fuel
+  policy: คำนวณอัตราส่วนผสม (Calculate Fuel Ratio)
+  command: สั่งงานหัวฉีด (Activate Injector)
+  handledBy: fuel_injector
+  resultEvents:
+    - id: fuel_atomized
+      title: ละอองน้ำมันเข้าสู่ท่อไอดี
+      desc: น้ำมันถูกทำให้เป็นละอองละเอียดผสมกับอากาศ
+  continuesAs: "fuel-branch"
+- type: branch
+  id: "fuel-branch"
+  event: fuel_atomized
+  branches:
+    - id: precise_mix
+      label: ปกติ
+      policy: ฉีดน้ำมันปกติ (Normal Injection)
+      command: ใช้ส่วนผสมแม่นยำ (Use Precise Mixture)
+      handledBy: fuel_injector
+      resultEvents:
+        - id: precise_mix
+          title: ส่วนผสมแม่นยำ (Precise Mixture)
+          desc: อัตราส่วนที่แม่นยำตามสภาวะการทำงาน
+    - id: inject_cold
+      label: เครื่องเย็น
+      dashed: true
+      policy: เพิ่มส่วนผสมอัตโนมัติ (Auto Cold Enrichment)
+      command: เพิ่มส่วนผสมอัตโนมัติ (Auto Cold Enrichment Action)
+      handledBy: fuel_injector
+      resultEvents:
+        - id: inject_cold_auto
+          title: เพิ่มส่วนผสมอัตโนมัติ (Auto Cold Enrichment)
+          desc: ECU เพิ่มน้ำมันอัตโนมัติเมื่อเครื่องเย็น

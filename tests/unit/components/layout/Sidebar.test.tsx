@@ -4,7 +4,7 @@ import { Sidebar } from '../../../../src/components/layout/Sidebar'
 import type { TopicRoute } from '../../../../src/core/routes'
 
 const mockTopics: TopicRoute[] = [
-  { id: 'demo', label: 'REST API vs WebSocket', path: '/demo/rest-vs-websocket', category: 'Architecture', description: 'Compare patterns', sections: [] }
+  { id: 'demo', label: 'REST API vs WebSocket', path: '/demo/rest-vs-websocket', category: 'Architecture', description: 'Compare patterns' }
 ]
 
 function renderSidebar() {

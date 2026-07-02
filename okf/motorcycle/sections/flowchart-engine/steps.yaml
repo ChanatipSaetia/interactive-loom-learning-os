@@ -1,0 +1,60 @@
+- type: linear
+  id: throttle
+  initiatedBy: rider
+  command: บิดคันเร่ง
+  policy: เริ่มวัฏจักรดูด (Start Intake)
+  handledBy: carburetor
+  resultEvents:
+    - id: fuel_mix
+      title: จ่ายน้ำมันและอากาศ
+      desc: ผสมเชื้อเพลิงเข้าเครื่อง
+  continuesAs: intake
+- type: linear
+  id: intake
+  policy: เริ่มวัฏจักรดูด (Start Intake)
+  command: ดูดไอดี (Intake)
+  handledBy: engine
+  resultEvents:
+    - id: intake
+      title: ไอดีเต็มกระบอกสูบ
+      desc: ดูดไอดีเสร็จสิ้น
+  continuesAs: compression
+- type: linear
+  id: compression
+  policy: เริ่มวัฏจักรอัด (Start Comp)
+  command: อัดไอดี (Compression)
+  handledBy: engine
+  resultEvents:
+    - id: comp
+      title: แรงดันถึงจุดสูงสุด
+      desc: อัดไอดีเสร็จสิ้น
+  continuesAs: combustion
+- type: linear
+  id: combustion
+  policy: สั่งจุดระเบิด (Start Comb)
+  command: จุดระเบิด (Combustion)
+  handledBy: engine
+  resultEvents:
+    - id: comb
+      title: แรงระเบิดดันลูกสูบ
+      desc: การระเบิดเสร็จสิ้น
+  continuesAs: exhaust
+- type: linear
+  id: exhaust
+  policy: เริ่มวัฏจักรคาย (Start Exh)
+  command: คายไอเสีย (Exhaust)
+  handledBy: engine
+  resultEvents:
+    - id: power_transfer
+      title: ส่งกำลังลงข้อเหวี่ยง
+      desc: สร้างแรงบิด (Power Transfer)
+  continuesAs: transmission
+- type: linear
+  id: transmission
+  policy: เริ่มส่งกำลัง (Start Transmission)
+  command: ส่งกำลังทดรอบ (Shift Gear)
+  handledBy: transmission
+  resultEvents:
+    - id: wheel_spin
+      title: ล้อหมุนขับเคลื่อน
+      desc: รถเคลื่อนที่

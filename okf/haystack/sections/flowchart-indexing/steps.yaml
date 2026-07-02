@@ -1,0 +1,52 @@
+- type: linear
+  id: start_indexing
+  initiatedBy: dev_user
+  command: Start Indexing
+  policy: Trigger Conversion
+  handledBy: file_converter
+  resultEvents:
+    - id: files_loaded
+      title: Files Loaded
+      desc: Raw data files are available for processing.
+  continuesAs: convert_files
+- type: linear
+  id: convert_files
+  policy: Trigger Conversion
+  command: Convert Files
+  handledBy: file_converter
+  resultEvents:
+    - id: docs_converted
+      title: Documents Converted
+      desc: Raw files transformed into structured Document objects.
+  continuesAs: split_texts
+- type: linear
+  id: split_texts
+  policy: Trigger Splitting
+  command: Split Texts
+  handledBy: text_splitter
+  resultEvents:
+    - id: texts_chunked
+      title: Texts Chunked
+      desc: "Documents split into smaller, searchable chunks."
+  continuesAs: compute_embeddings
+- type: linear
+  id: compute_embeddings
+  policy: Trigger Embedding
+  command: Compute Embeddings
+  handledBy: doc_embedder
+  delegatesTo: embedding_model
+  resultEvents:
+    - id: embeddings_ready
+      title: Embeddings Computed
+      desc: Dense vectors attached to each document chunk.
+  continuesAs: write_docs
+- type: linear
+  id: write_docs
+  policy: Trigger Write
+  command: Write Documents
+  handledBy: doc_writer
+  delegatesTo: doc_store
+  resultEvents:
+    - id: docs_indexed
+      title: Documents Indexed
+      desc: All documents stored and searchable in the Document Store.
