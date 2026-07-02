@@ -623,6 +623,7 @@ function TradeoffSandboxSection({ title, scenarios, instanceId }: TradeoffSandbo
   }, [])
 
   const currentValues = useMemo(() => {
+    if (!scenario) return {}
     const values: Record<string, number> = {}
     scenario.metrics.forEach((m) => {
       values[m.id] = m.baseValue
@@ -641,13 +642,13 @@ function TradeoffSandboxSection({ title, scenarios, instanceId }: TradeoffSandbo
     return values
   }, [scenario, chosenIds])
 
-  const totalSteps = scenario.steps.length
+  const totalSteps = scenario?.steps.length ?? 0
   const placedCount = Object.keys(chosenIds).length
 
 
 
   const detailsChoice = useMemo(() => {
-    if (!detailsTarget) return null
+    if (!detailsTarget || !scenario) return null
     const step = scenario.steps.find((s) => s.id === detailsTarget.stepId)
     if (!step) return null
     const choice = step.choices.find((c) => c.id === detailsTarget.choiceId)
@@ -656,6 +657,10 @@ function TradeoffSandboxSection({ title, scenarios, instanceId }: TradeoffSandbo
   }, [detailsTarget, scenario])
 
   const getTestId = (id: string) => instanceId ? `${instanceId}-${id}` : id
+
+  if (!scenario) {
+    return <div className="tradeoff-sandbox-empty">No tradeoff scenarios available.</div>
+  }
 
   return (
     <div className="tradeoff-sandbox" data-testid={getTestId("tradeoff-sandbox")}>
