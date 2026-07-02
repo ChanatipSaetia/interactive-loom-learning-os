@@ -8,6 +8,25 @@ tags:
   - llm
   - orchestrator
 resource: flows/
+sections:
+  - type: text
+    title: "What is an AI Agent?"
+    heading: "Autonomous Goal-Directed Systems"
+    contentKey: paragraphs
+  - type: flowchart
+    title: "AI Agent Architecture"
+  - type: text
+    title: "Agent Lifecycle"
+    contentKey: lifecycleMarkdown
+  - type: bullets
+    title: "Key Agent Capabilities"
+    ordered: false
+    contentKey: capabilityBullets
+  - type: tradeoff-sandbox
+    title: "Architecture Trade-off Sandbox"
+  - type: taxonomy-browser
+    title: "AI Agent Capability Taxonomy"
+  - type: flashcards
 related:
   - flows/actors.yaml
   - flows/systems.yaml
