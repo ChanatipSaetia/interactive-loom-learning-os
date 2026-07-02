@@ -1,5 +1,5 @@
 export * from './flashcards'
-export * from './schema'
+export { indexingFlow, queryFlow } from './flow'
 export * from './text'
 export * from './taxonomy'
 export * from './tradeoffs'

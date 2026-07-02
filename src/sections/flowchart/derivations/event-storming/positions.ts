@@ -89,8 +89,8 @@ export function calculatePositions(
   const inEdges = new Map<string, string[]>();
   nodes.forEach(n => { outEdges.set(n.id, []); inEdges.set(n.id, []); });
   rels.forEach(rel => {
-    outEdges.get(rel.from)!.push(rel.to);
-    inEdges.get(rel.to)!.push(rel.from);
+    if (outEdges.has(rel.from)) outEdges.get(rel.from)!.push(rel.to);
+    if (inEdges.has(rel.to)) inEdges.get(rel.to)!.push(rel.from);
   });
 
   groupOrder.forEach(gi => {

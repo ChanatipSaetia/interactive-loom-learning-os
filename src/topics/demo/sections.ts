@@ -1,13 +1,16 @@
 import type { SectionConfig } from '../../core/registry'
+import { deriveSchema } from '../../sections/flowchart/abstract-flow/derive'
 import { VOCABULARY_TERMS } from './data/aesthetics-glossary'
 import {
-  agentSchema,
+  agentFlow,
   agentTextParagraphs,
   agentLifecycleMarkdown,
   agentCapabilityBullets,
   tradeoffSandboxScenarios,
   taxonomyCategories,
 } from './data'
+
+const agentSchema = deriveSchema(agentFlow)
 
 export const demoSections: SectionConfig[] = [
   {

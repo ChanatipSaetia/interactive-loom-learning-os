@@ -1,16 +1,22 @@
 import type { SectionConfig } from '../../core/registry'
+import { deriveSchema } from '../../sections/flowchart/abstract-flow/derive'
 import {
   motorcycleIntroParagraphs,
   motorcycleQuestionsParagraphs,
   maintenanceBullets,
   motorcycleFlashcards,
   motorcycleTradeoffs,
-  engineSchema,
-  chokeSchema,
-  fuelInjectSchema,
-  brakeSchema,
+  engineFlow,
+  chokeFlow,
+  fuelInjectFlow,
+  brakeFlow,
   problemTaxonomy,
 } from './data'
+
+const engineSchema = deriveSchema(engineFlow)
+const chokeSchema = deriveSchema(chokeFlow)
+const fuelInjectSchema = deriveSchema(fuelInjectFlow)
+const brakeSchema = deriveSchema(brakeFlow)
 
 export const motorcycleSections: SectionConfig[] = [
   // 1. Intro — set context

@@ -44,7 +44,7 @@ export function buildGroups(
 
   const outEdges = new Map<string, string[]>();
   nodeIds.forEach(id => outEdges.set(id, []));
-  rels.forEach(rel => outEdges.get(rel.from)!.push(rel.to));
+  rels.forEach(rel => { if (outEdges.has(rel.from)) outEdges.get(rel.from)!.push(rel.to); });
 
   const timelineNodes = nodeIds.filter(id => getRole(id) === 'timeline');
   const cmdNodes = timelineNodes.filter(id => entityType(entities, id) === TYPES.COMMAND);

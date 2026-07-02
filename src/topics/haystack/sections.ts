@@ -1,14 +1,18 @@
 import type { SectionConfig } from '../../core/registry'
+import { deriveSchema } from '../../sections/flowchart/abstract-flow/derive'
 import {
   HAYSTACK_VOCABULARY,
   haystackIntroParagraphs,
   haystackCoreParagraphs,
   haystackCapabilityBullets,
-  indexingSchema,
-  querySchema,
+  indexingFlow,
+  queryFlow,
   HAYSTACK_TAXONOMY,
   haystackTradeoffScenario,
 } from './data'
+
+const indexingSchema = deriveSchema(indexingFlow)
+const querySchema = deriveSchema(queryFlow)
 
 export const haystackSections: SectionConfig[] = [
   {
