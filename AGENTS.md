@@ -38,13 +38,24 @@ Reference schemas: `src/topics/demo/data/agent-schema.ts`, `src/topics/motorcycl
 npm run dev         # dev server
 npm run build       # production build
 npm run test        # unit tests (Vitest)
-npm run test:e2e    # E2E tests (Playwright)
 npm run lint        # lint
 npm run typecheck   # type check
 ```
 
 Run `npm run typecheck` and `npm run test` before considering flowchart/derivation
 changes complete.
+
+## E2E Testing
+
+Use the **Playwright MCP** tools (`playwright_browser_*`) for E2E testing instead of
+`npm run test:e2e`. Navigate to the running dev server and verify behavior interactively:
+
+1. Check if the dev server is already running; if not, start it with `npm run dev`
+2. Use `playwright_browser_navigate` to visit `http://localhost:5173`
+3. Use `playwright_browser_snapshot` to inspect the page and interact with elements
+4. Verify UI behavior, animations, section rendering, and interactivity manually
+
+This approach gives immediate feedback without maintaining Playwright test files.
 
 ## Conventions
 

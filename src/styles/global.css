@@ -68,3 +68,31 @@ textarea {
 ::-webkit-scrollbar-thumb:hover {
   background: var(--ctp-overlay0);
 }
+
+/* ======================================
+   Topic progress bar
+====================================== */
+.topic-progress-bar {
+  position: relative;
+  @apply w-full h-7 mb-4 rounded-full overflow-hidden;
+  background: var(--ctp-mantle);
+  border: 1px solid var(--ctp-surface1);
+}
+
+.topic-progress-fill {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  @apply transition-all duration-300 ease-out;
+  background: var(--ctp-green);
+  opacity: 0.35;
+}
+
+.topic-progress-label {
+  position: absolute;
+  inset: 0;
+  @apply flex items-center justify-center text-xs font-medium;
+  color: var(--ctp-subtext0);
+  letter-spacing: 0.02em;
+}

@@ -28,6 +28,8 @@ export type OKFSectionData =
   | OKFTradeoffSectionData
   | OKFTaxonomySectionData
   | OKFFlashcardSectionData
+  | OKFQuizSectionData
+  | OKFConceptMapSectionData
 
 export interface OKFTextSectionData {
   type: 'text'
@@ -57,6 +59,74 @@ export interface OKFTaxonomySectionData {
 export interface OKFFlashcardSectionData {
   type: 'flashcards'
   terms: WordTerm[]
+}
+
+export interface OKFQuizSectionData {
+  type: 'quiz'
+  questions: OKFQuizQuestion[]
+}
+
+export interface OKFQuizQuestion {
+  id: string
+  question: string
+  choices: OKFQuizChoice[]
+  hint?: string
+}
+
+export interface OKFQuizChoice {
+  id: string
+  text: string
+  correct: boolean
+  explanation: string
+}
+
+// --- Concept Map section ---
+
+export interface OKFConceptMapSectionData {
+  type: 'concept-map'
+  nodes: Record<string, OKFConceptNode>
+  edges: OKFConceptEdge[]
+}
+
+export interface OKFConceptNode {
+  id: string
+  title: string
+  definition: string
+  category: string
+}
+
+export interface OKFConceptEdge {
+  from: string
+  to: string
+  label?: string
+}
+
+// --- Raw types for concept map YAML ---
+
+export interface OKFConceptNodeRaw {
+  title: string
+  definition: string
+  category: string
+}
+
+export interface OKFConceptEdgeRaw {
+  from: string
+  to: string
+  label?: string
+}
+
+export interface OKFConceptMapRaw {
+  nodes: Record<string, OKFConceptNodeRaw>
+  edges: OKFConceptEdgeRaw[]
+}
+
+// --- Raw types (YAML parsing) ---
+
+export interface OKFQuizQuestionRaw {
+  id: string
+  question: string
+  choices: Array<{ id: string; text: string; correct: boolean; explanation: string }>
+  hint?: string
 }
 
 // --- Raw types (YAML parsing) ---

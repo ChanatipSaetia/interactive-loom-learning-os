@@ -1,0 +1,183 @@
+.concept-map-section {
+  @apply mb-8;
+}
+
+.concept-map-title {
+  font-size: var(--text-card-heading);
+  @apply mb-4 text-foreground font-light tracking-tight;
+}
+
+.concept-map-layout {
+  @apply flex gap-4 h-[500px];
+}
+
+.concept-map-canvas-wrapper {
+  @apply flex-1 relative rounded-lg overflow-hidden border border-border bg-background;
+}
+
+.concept-map-svg {
+  @apply w-full h-full;
+}
+
+.cm-edge {
+  stroke: var(--ctp-surface2);
+  stroke-width: 3;
+  transition: stroke 0.2s ease, opacity 0.2s ease;
+}
+
+.cm-edge-highlight {
+  stroke: var(--ctp-blue);
+  stroke-width: 4.5;
+}
+
+.cm-edge-dimmed {
+  opacity: 0.15;
+}
+
+.cm-edge-label {
+  font-size: 10px;
+  fill: var(--ctp-text);
+  font-family: var(--font-mono);
+  transition: fill 0.2s ease, opacity 0.2s ease;
+}
+
+.cm-edge-label-bg {
+  fill: var(--ctp-mantle);
+  stroke: var(--ctp-surface1);
+  stroke-width: 0.5;
+  transition: fill 0.2s ease, opacity 0.2s ease;
+}
+
+.cm-node-group {
+  transition: opacity 0.2s ease;
+}
+
+.cm-node-highlight circle {
+  transition: stroke-width 0.15s ease;
+}
+
+.cm-node-dimmed {
+  opacity: 0.2;
+}
+
+.cm-node-selected circle {
+  stroke-width: 3;
+  filter: drop-shadow(0 0 6px var(--ctp-blue));
+}
+
+.cm-node-title {
+  font-size: 11px;
+  font-weight: 600;
+  font-family: var(--font-body);
+  pointer-events: none;
+}
+
+.cm-node-category {
+  font-size: 8px;
+  font-family: var(--font-mono);
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  pointer-events: none;
+}
+
+.concept-map-toolbar {
+  @apply absolute top-3 right-3 flex flex-col gap-1.5 z-10;
+}
+
+.concept-map-toolbar-btn {
+  @apply w-8 h-8 flex items-center justify-center rounded-md border border-border bg-card text-muted-foreground hover:text-foreground hover:border-primary transition-all shadow-sm;
+}
+
+.concept-map-legend {
+  @apply absolute bottom-3 left-3 flex flex-wrap gap-2 z-10;
+  background: var(--ctp-mantle);
+  border: 1px solid var(--ctp-surface1);
+  border-radius: 8px;
+  padding: 6px 10px;
+}
+
+.concept-map-legend-item {
+  @apply flex items-center gap-1.5;
+  font-size: 10px;
+  font-family: var(--font-mono);
+  color: var(--ctp-subtext0);
+}
+
+.concept-map-legend-dot {
+  @apply w-2 h-2 rounded-full;
+}
+
+.concept-map-panel {
+  width: 300px;
+  @apply flex-shrink-0 bg-card border border-border rounded-lg p-4 flex flex-col gap-3;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.2);
+}
+
+.concept-map-panel-header {
+  @apply flex items-center justify-between;
+}
+
+.concept-map-panel-category {
+  @apply flex items-center gap-2;
+  font-size: 10px;
+  font-family: var(--font-mono);
+  color: var(--ctp-subtext0);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.concept-map-panel-dot {
+  @apply w-2 h-2 rounded-full;
+}
+
+.concept-map-panel-close {
+  @apply w-6 h-6 flex items-center justify-center rounded text-muted-foreground hover:text-foreground transition-colors;
+}
+
+.concept-map-panel-title {
+  font-size: var(--text-feature-heading);
+  @apply text-foreground font-light tracking-tight;
+}
+
+.concept-map-panel-def {
+  font-size: var(--text-body);
+  @apply text-muted-foreground leading-relaxed;
+}
+
+.concept-map-panel-connections {
+  @apply pt-2 border-t border-border;
+}
+
+.concept-map-panel-connections-label {
+  font-size: 10px;
+  font-family: var(--font-mono);
+  @apply text-muted-foreground uppercase tracking-widest;
+}
+
+.concept-map-panel-connection-list {
+  @apply flex flex-col gap-1 mt-2;
+}
+
+.concept-map-panel-connection-item {
+  @apply flex items-center gap-2 px-2 py-1.5 rounded text-left text-sm text-foreground hover:bg-muted transition-colors;
+  font-family: var(--font-body);
+}
+
+.concept-map-panel-connection-dot {
+  @apply w-2 h-2 rounded-full flex-shrink-0;
+}
+
+@media (max-width: 768px) {
+  .concept-map-layout {
+    @apply flex-col h-auto;
+  }
+
+  .concept-map-canvas-wrapper {
+    @apply h-[400px];
+  }
+
+  .concept-map-panel {
+    @apply w-full;
+  }
+}

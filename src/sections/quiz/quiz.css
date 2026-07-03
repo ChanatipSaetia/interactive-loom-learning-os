@@ -1,0 +1,191 @@
+.quiz-section {
+  @apply mb-8 max-w-3xl mx-auto;
+}
+
+.quiz-section-title {
+  @apply text-xl font-semibold mb-6 text-foreground;
+  font-family: var(--font-display);
+}
+
+/* Score bar */
+.quiz-score-bar {
+  @apply flex items-center gap-3 mb-6 p-3 rounded-lg border border-border;
+  background-color: rgba(81, 87, 109, 0.1);
+}
+
+.quiz-score-label {
+  @apply text-xs font-mono uppercase tracking-widest text-muted-foreground font-bold;
+}
+
+.quiz-score-track {
+  @apply flex-1 h-2 rounded-full overflow-hidden;
+  background-color: rgba(81, 87, 109, 0.3);
+}
+
+.quiz-score-fill {
+  @apply h-full rounded-full transition-all duration-500 ease-out;
+  background: var(--ctp-green);
+}
+
+.quiz-score-text {
+  @apply text-sm font-mono font-bold text-foreground min-w-[5rem] text-right;
+}
+
+/* Questions list */
+.quiz-questions-list {
+  @apply flex flex-col gap-6;
+}
+
+/* Question card */
+.quiz-question-card {
+  @apply p-5 rounded-lg bg-card border border-border shadow-sm;
+}
+
+.quiz-question-header {
+  @apply flex items-center justify-between mb-3;
+}
+
+.quiz-question-number {
+  @apply text-xs font-mono uppercase tracking-widest font-bold px-2.5 py-1 rounded-full;
+  background: var(--ctp-blue);
+  color: var(--ctp-crust);
+}
+
+.quiz-question-counter {
+  @apply text-xs font-mono text-muted-foreground;
+}
+
+.quiz-question-text {
+  @apply text-base font-medium text-foreground mb-4 leading-relaxed;
+}
+
+/* Hint */
+.quiz-hint {
+  @apply flex items-start gap-2 mb-4 p-3 rounded-md border;
+  border-color: rgba(81, 87, 109, 0.5);
+  background-color: rgba(81, 87, 109, 0.1);
+}
+
+.quiz-hint-icon {
+  @apply w-4 h-4 flex-shrink-0 mt-0.5;
+  color: var(--ctp-yellow);
+}
+
+.quiz-hint span {
+  @apply text-sm text-muted-foreground italic;
+}
+
+/* Choices */
+.quiz-choices {
+  @apply flex flex-col gap-2;
+}
+
+.quiz-choice {
+  @apply flex items-center gap-3 w-full text-left p-3.5 rounded-lg border transition-all duration-200;
+  border-color: rgba(81, 87, 109, 0.6);
+  background-color: rgba(81, 87, 109, 0.05);
+}
+
+.quiz-choice:hover:not(:disabled) {
+  border-color: rgba(140, 170, 238, 0.5);
+  background-color: rgba(81, 87, 109, 0.2);
+}
+
+.quiz-choice:disabled {
+  @apply cursor-default;
+}
+
+.quiz-choice-label {
+  @apply flex-shrink-0 w-7 h-7 flex items-center justify-center rounded-full text-xs font-mono font-bold border border-border;
+  background: var(--ctp-surface0);
+  color: var(--ctp-subtext0);
+}
+
+.quiz-choice-text {
+  @apply flex-1 text-sm text-foreground leading-relaxed;
+}
+
+.quiz-choice-feedback-icon {
+  @apply w-5 h-5 flex-shrink-0;
+}
+
+.quiz-choice-feedback-correct {
+  color: var(--ctp-green);
+}
+
+.quiz-choice-feedback-wrong {
+  color: var(--ctp-red);
+}
+
+/* Choice states */
+.quiz-choice-correct {
+  border-color: var(--ctp-green);
+  background: rgba(166, 209, 137, 0.08);
+}
+
+.quiz-choice-correct .quiz-choice-label {
+  background: var(--ctp-green);
+  color: var(--ctp-crust);
+  border-color: var(--ctp-green);
+}
+
+.quiz-choice-wrong {
+  border-color: var(--ctp-red);
+  background: rgba(231, 130, 132, 0.08);
+}
+
+.quiz-choice-wrong .quiz-choice-label {
+  background: var(--ctp-red);
+  color: var(--ctp-crust);
+  border-color: var(--ctp-red);
+}
+
+.quiz-choice-dimmed {
+  @apply opacity-40;
+}
+
+/* Explanation */
+.quiz-explanation {
+  @apply mt-4 overflow-hidden;
+}
+
+.quiz-explanation-correct {
+  @apply p-4 rounded-md border;
+  border-color: var(--ctp-green);
+  background: rgba(166, 209, 137, 0.06);
+}
+
+.quiz-explanation-wrong {
+  @apply p-4 rounded-md border;
+  border-color: var(--ctp-red);
+  background: rgba(231, 130, 132, 0.06);
+}
+
+.quiz-explanation-result {
+  @apply flex items-center gap-2 mb-1.5 font-mono text-xs uppercase tracking-widest font-bold;
+}
+
+.quiz-explanation-correct .quiz-explanation-result {
+  color: var(--ctp-green);
+}
+
+.quiz-explanation-wrong .quiz-explanation-result {
+  color: var(--ctp-red);
+}
+
+.quiz-explanation-icon {
+  @apply w-4 h-4;
+}
+
+.quiz-explanation-text {
+  @apply text-sm text-foreground leading-relaxed;
+}
+
+/* Navigation */
+.quiz-nav {
+  @apply flex items-center justify-between mt-6 pt-4 border-t border-border;
+}
+
+.quiz-nav-btn {
+  @apply text-sm text-muted-foreground hover:text-foreground;
+}

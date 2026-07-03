@@ -1,0 +1,82 @@
+nodes:
+  orchestrator:
+    title: "Orchestrator"
+    definition: "Central agent that decomposes goals and delegates tasks to specialized workers."
+    category: pattern
+  workers:
+    title: "Workers"
+    definition: "Specialized sub-agents that execute delegated tasks within their domain expertise."
+    category: pattern
+  react_loop:
+    title: "ReAct Loop"
+    definition: "Reason-act cycle: reason about goal, take action, observe result, repeat."
+    category: mechanism
+  memory:
+    title: "Memory"
+    definition: "Persistent context store that retains information across interactions and sessions."
+    category: system
+  tools:
+    title: "Tools"
+    definition: "External capabilities (APIs, code execution, search) that agents invoke to interact with the world."
+    category: concept
+  planner:
+    title: "Planner"
+    definition: "Component that breaks complex goals into ordered sub-tasks and manages dependencies."
+    category: role
+  critic:
+    title: "Critic"
+    definition: "Evaluation module that reviews outputs for quality, accuracy, and alignment before finalizing."
+    category: role
+  prompt_template:
+    title: "Prompt Template"
+    definition: "Structured text pattern that guides the language model's behavior and output format."
+    category: data
+  context_window:
+    title: "Context Window"
+    definition: "Token-limited input space where conversation history, instructions, and data reside."
+    category: concept
+  feedback_loop:
+    title: "Feedback Loop"
+    definition: "Process where output is fed back as input to refine or correct subsequent actions."
+    category: mechanism
+
+edges:
+  - from: orchestrator
+    to: workers
+    label: "delegates to"
+  - from: orchestrator
+    to: planner
+    label: "uses"
+  - from: workers
+    to: react_loop
+    label: "executes"
+  - from: workers
+    to: tools
+    label: "invokes"
+  - from: react_loop
+    to: memory
+    label: "reads from"
+  - from: react_loop
+    to: feedback_loop
+    label: "forms"
+  - from: planner
+    to: context_window
+    label: "constrained by"
+  - from: critic
+    to: workers
+    label: "reviews"
+  - from: critic
+    to: feedback_loop
+    label: "feeds into"
+  - from: prompt_template
+    to: orchestrator
+    label: "configures"
+  - from: prompt_template
+    to: workers
+    label: "guides"
+  - from: memory
+    to: context_window
+    label: "fits within"
+  - from: feedback_loop
+    to: orchestrator
+    label: "informs"

@@ -15,11 +15,15 @@ import type {
   OKFTradeoffSectionData,
   OKFTaxonomySectionData,
   OKFFlashcardSectionData,
+  OKFQuizSectionData,
+  OKFConceptMapSectionData,
   OKFStepRaw,
   OKFJourneyRaw,
   OKFTradeoffScenarioRaw,
   OKFTaxonomyRaw,
   OKFGlossaryRaw,
+  OKFQuizQuestionRaw,
+  OKFConceptMapRaw,
 } from './types'
 
 const OKF_BASE = '/okf'
@@ -115,6 +119,10 @@ async function loadSectionResource(
       return loadTaxonomySection(basePath, resourceFiles)
     case 'flashcards':
       return loadFlashcardSection(basePath, resource, resourceFiles)
+    case 'quiz':
+      return loadQuizSection(basePath, resource, resourceFiles)
+    case 'concept-map':
+      return loadConceptMapSection(basePath, resource)
     default:
       throw new Error(`Unknown section type: ${type}`)
   }
@@ -184,6 +192,23 @@ async function loadFlashcardSection(basePath: string, resource: string, resource
     return { type: 'flashcards', terms }
   }
   return { type: 'flashcards', terms: [] }
+}
+
+async function loadQuizSection(basePath: string, resource: string, resourceFiles: string[]): Promise<OKFQuizSectionData> {
+  const questionsFile = resource !== '.' ? resource : resourceFiles.find((f) => f === 'questions.yaml')
+  if (questionsFile) {
+    const raw = await fetchYaml<OKFQuizQuestionRaw[]>(`${basePath}/${questionsFile}`)
+    const questions = raw.map(mapQuizQuestion)
+    return { type: 'quiz', questions }
+  }
+  return { type: 'quiz', questions: [] }
+}
+
+async function loadConceptMapSection(basePath: string, resource: string): Promise<OKFConceptMapSectionData> {
+  const conceptsFile = resource !== '.' ? resource : 'concepts.yaml'
+  const raw = await fetchYaml<OKFConceptMapRaw>(`${basePath}/${conceptsFile}`)
+  const { nodes, edges } = mapConceptMap(raw)
+  return { type: 'concept-map', nodes, edges }
 }
 
 // --- Flow mapping ---
@@ -325,6 +350,42 @@ function mapGlossaryTerm(raw: OKFGlossaryRaw): WordTerm {
     whyItMatters: raw.whyItMatters,
     dialogue: raw.dialogue,
   }
+}
+
+// --- Quiz mapping ---
+
+function mapQuizQuestion(raw: OKFQuizQuestionRaw): import('./types').OKFQuizQuestion {
+  return {
+    id: raw.id,
+    question: raw.question,
+    choices: raw.choices.map((c) => ({
+      id: c.id,
+      text: c.text,
+      correct: c.correct,
+      explanation: c.explanation,
+    })),
+    hint: raw.hint,
+  }
+}
+
+// --- Concept Map mapping ---
+
+function mapConceptMap(raw: OKFConceptMapRaw): { nodes: Record<string, import('./types').OKFConceptNode>; edges: import('./types').OKFConceptEdge[] } {
+  const nodes: Record<string, import('./types').OKFConceptNode> = {}
+  for (const [id, node] of Object.entries(raw.nodes)) {
+    nodes[id] = {
+      id,
+      title: node.title,
+      definition: node.definition,
+      category: node.category,
+    }
+  }
+  const edges = raw.edges.map((e) => ({
+    from: e.from,
+    to: e.to,
+    label: e.label,
+  }))
+  return { nodes, edges }
 }
 
 // --- Content parsing ---

@@ -1,0 +1,84 @@
+- id: q_orchestration
+  question: "Which orchestration strategy suits a multi-step workflow needing strict quality control?"
+  choices:
+    - id: a
+      text: "Hierarchical Orchestrator-Workers"
+      correct: true
+      explanation: "A central manager decomposes goals, delegates, and synthesizes."
+    - id: b
+      text: "Peer-to-peer negotiation"
+      correct: false
+      explanation: "Peer negotiation works for decentralized systems but lacks centralized quality gates."
+    - id: c
+      text: "Single-agent ReAct loop"
+      correct: false
+      explanation: "A single ReAct agent handles simple tasks but struggles with complex multi-step decomposition."
+  hint: "Think about who enforces quality in each model."
+
+- id: q_memory
+  question: "What type of memory allows an agent to retain information across separate sessions?"
+  choices:
+    - id: a
+      text: "Short-term context window"
+      correct: false
+      explanation: "The context window is limited to the current conversation and resets each session."
+    - id: b
+      text: "Long-term persistent storage"
+      correct: true
+      explanation: "Persistent storage (vectors, graphs, documents) survives across sessions and enables recall."
+    - id: c
+      text: "System prompt injection"
+      correct: false
+      explanation: "System prompts provide static instructions but don't store learned information between sessions."
+  hint: "Consider where data lives beyond the current chat."
+
+- id: q_reflexion
+  question: "In the Reflexion pattern, what does the agent do after a failed attempt?"
+  choices:
+    - id: a
+      text: "Restarts from scratch with no memory"
+      correct: false
+      explanation: "Restarting without memory defeats the purpose of learning from failure."
+    - id: b
+      text: "Appends verbal reasoning about what went wrong to its memory"
+      correct: true
+      explanation: "Reflexion adds self-reflection to memory, guiding the agent's next attempt with lessons learned."
+    - id: c
+      text: "Asks the user for manual correction"
+      correct: false
+      explanation: "Reflexion is designed to be self-improving without human intervention."
+  hint: "Think about how humans learn from mistakes."
+
+- id: q_map_reduce
+  question: "The Map-Reduce pattern is most useful when:"
+  choices:
+    - id: a
+      text: "A single complex task needs step-by-step planning"
+      correct: false
+      explanation: "Map-Reduce focuses on parallel processing, not sequential planning."
+    - id: b
+      text: "Independent subtasks can be processed in parallel and combined"
+      correct: true
+      explanation: "Map distributes work across workers, Reduce synthesizes partial results into a final answer."
+    - id: c
+      text: "Real-time conversation is needed with a user"
+      correct: false
+      explanation: "Map-Reduce is batch-oriented and optimized for throughput, not latency."
+  hint: "Consider parallel vs sequential processing."
+
+- id: q_tool_use
+  question: "Why do agents use tools instead of relying solely on their internal knowledge?"
+  choices:
+    - id: a
+      text: "Tools provide access to current, external data the model was never trained on"
+      correct: true
+      explanation: "Tools let agents search the web, run code, access APIs — bridging the knowledge cutoff gap."
+    - id: b
+      text: "Tools make the agent run faster"
+      correct: false
+      explanation: "Tool calls typically add latency. Their value is accuracy and recency, not speed."
+    - id: c
+      text: "Tools replace the need for a language model"
+      correct: false
+      explanation: "Tools augment the LLM; they don't replace the reasoning capability of the model."
+  hint: "Think about the limitations of a model's training data."

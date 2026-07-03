@@ -31,19 +31,7 @@ log() {
     echo "[$(date '+%Y-%m-%d %H:%M:%S')] $*" | tee -a "$LOOP_LOG"
 }
 
-strip_ansi() {
-    sed -u 's/\x1b\[[0-9;]*[mK]//g; s/\r//g'
-}
 
-filter_opencode() {
-    strip_ansi | grep -iE \
-        'Error|error:|ERROR|Build|PASS|FAIL|passed|failed|tests|commit|write|modified|deleted|created' |
-        grep -vE '^\s*(filesystem|bash|read|write|edit|glob|grep)\s' |
-        grep -vE '^\s*⚙' |
-        grep -vE '^\s*>' |
-        grep -vE '^\s*$' |
-        grep -vE '^[0-9]+$'
-}
 
 log "=== Ralph Loop: $PROJECT started ==="
 log "Max iterations: $MAX"
@@ -125,11 +113,11 @@ while [ $iteration -lt $MAX ]; do
     # Fetch the issue body for context
     ISSUE_BODY=$(gh issue view "$CURRENT_ISSUE_NUM" --json body --jq '.body' 2>/dev/null || echo "")
 
-    # Run opencode — output to logs/ralph.log
+    # Run opencode — output to terminal and log
     opencode run $MODEL_FLAG \
         @progress.txt @AGENTS.md @prompt.md $STEERING_FLAG . \
         "Implement issue $CURRENT_ISSUE. Issue body: $ISSUE_BODY. Follow the instructions in prompt.md exactly." \
-        >> "$LOOP_LOG" 2>&1 &
+        2>&1 | tee -a "$LOOP_LOG" &
     OPENCODE_PID=$!
     wait $OPENCODE_PID || true
     OPENCODE_PID=""

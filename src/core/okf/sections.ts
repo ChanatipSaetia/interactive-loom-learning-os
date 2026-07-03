@@ -56,6 +56,13 @@ export function bundleToSections(bundle: OKFBundled): SectionConfig[] {
       case 'flashcards':
         props.terms = data.terms
         break
+      case 'quiz':
+        props.questions = data.questions
+        break
+      case 'concept-map':
+        props.nodes = data.nodes
+        props.edges = data.edges
+        break
     }
 
     return { type: meta.type, props }

@@ -18,6 +18,8 @@ sections:
   - sections/taxonomy/section.md
   - sections/taxonomy-patterns/section.md
   - sections/flashcards/section.md
+  - sections/quiz/section.md
+  - sections/concept-map/section.md
 related:
   - sections/flowchart/actors.yaml
   - sections/flowchart/systems.yaml
@@ -46,6 +48,8 @@ related:
   - sections/taxonomy-patterns/reflexion.yaml
   - sections/capabilities/items.yaml
   - sections/flashcards/glossary.yaml
+  - sections/quiz/questions.yaml
+  - sections/concept-map/concepts.yaml
 ---
 
 # AI Agent Architecture (Demo)

@@ -12,6 +12,8 @@ import Flowchart from './sections/flowchart'
 import TradeoffSandboxSection from './sections/tradeoff-sandbox'
 import TaxonomyBrowserSection from './sections/taxonomy-browser'
 import FlashcardDeck from './sections/flashcards'
+import QuizSection from './sections/quiz'
+import ConceptMapSection from './sections/concept-map'
 
 SectionRegistry.register('text', TextSection as ComponentType<unknown>)
 SectionRegistry.register('bullets', BulletsSection as ComponentType<unknown>)
@@ -19,6 +21,8 @@ SectionRegistry.register('flowchart', Flowchart as ComponentType<unknown>)
 SectionRegistry.register('tradeoff-sandbox', TradeoffSandboxSection as ComponentType<unknown>)
 SectionRegistry.register('taxonomy-browser', TaxonomyBrowserSection as ComponentType<unknown>)
 SectionRegistry.register('flashcards', FlashcardDeck as ComponentType<unknown>)
+SectionRegistry.register('quiz', QuizSection as ComponentType<unknown>)
+SectionRegistry.register('concept-map', ConceptMapSection as ComponentType<unknown>)
 
 
 createRoot(document.getElementById('root')!).render(
