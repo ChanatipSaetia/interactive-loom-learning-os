@@ -2,35 +2,59 @@
   @apply mb-8;
 }
 
-
-
 .bullets-list {
-  @apply list-none p-0 m-0 flex flex-col gap-1.5;
+  @apply grid grid-cols-1 gap-5 list-none p-0 m-0 items-start;
 }
 
-.bullets-list-ordered {
-  counter-reset: ordered-bullet;
+@media (min-width: 768px) {
+  .bullets-list {
+    @apply grid-cols-2;
+  }
 }
 
-.bullet-item {
-  @apply list-none m-0 p-0;
+/* Card-Style Parent Groups */
+.bullets-card {
+  @apply rounded-[var(--radius-sm)] border border-border p-5 flex flex-col gap-4;
+  background: var(--ctp-surface0);
+  height: fit-content;
+  transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
+.bullets-card-collapsible .bullets-card-header {
+  @apply cursor-pointer select-none;
+}
+
+.bullets-card-collapsible:hover {
+  transform: translateY(-2px);
+  border-color: var(--ctp-surface2);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.12);
+}
+
+.bullets-card-header {
+  @apply flex items-center justify-between gap-3 w-full;
+}
+
+/* Hover Micro-Interactions */
 .bullet-item-row {
-  @apply flex items-start gap-2 leading-[1.75];
+  @apply flex items-start gap-2.5 leading-[1.6] flex-1;
+  border-radius: var(--radius-xs);
+  padding: 4px 8px;
+  transition: background-color 0.15s ease, transform 0.15s ease;
+}
+
+.bullet-item-row:hover {
+  background: color-mix(in srgb, var(--ctp-blue) 6%, transparent);
 }
 
 .bullet-marker {
-  @apply flex-shrink-0 text-center leading-[1.75] mt-0.5 w-3;
-  font-size: var(--text-body);
-  color: var(--muted);
+  @apply flex-shrink-0 text-center leading-[1.6] mt-0.5 w-4 font-normal;
+  font-size: 15px;
 }
 
 .bullet-marker-ordered {
   counter-increment: ordered-bullet;
   @apply flex items-center justify-center font-semibold;
   font-size: var(--text-caption);
-  color: var(--ctp-blue);
   font-family: var(--font-mono);
 }
 
@@ -39,15 +63,43 @@
 }
 
 .bullet-marker-unordered {
-  @apply leading-[1.75] text-[10px];
-  color: var(--ctp-mauve);
+  @apply flex items-center justify-center font-bold;
 }
 
 .bullet-text {
-  @apply text-foreground leading-[1.75] flex-1;
+  @apply text-foreground leading-[1.6] flex-1;
   font-size: var(--text-body);
 }
 
+.bullet-text-parent {
+  @apply font-semibold;
+  color: var(--ink);
+  font-size: var(--text-body-large);
+}
+
+/* Collapsible Groups */
+.bullets-chevron-wrapper {
+  @apply flex items-center justify-center flex-shrink-0;
+  width: 18px;
+  height: 18px;
+}
+
+.bullets-chevron {
+  color: var(--ctp-overlay2);
+  transition: color 0.2s ease;
+}
+
+.bullets-card-header:hover .bullets-chevron {
+  color: var(--ctp-text);
+}
+
 .bullet-children {
-  @apply list-none pt-1.5 pl-4 m-0 flex flex-col gap-0.5 border-l-2 border-border;
+  @apply list-none pt-2 m-0 flex flex-col gap-2;
+  margin-left: 14px;
+  padding-left: 14px;
+  border-left: 1.5px solid var(--ctp-surface1);
+}
+
+.bullet-item {
+  @apply list-none m-0 p-0;
 }

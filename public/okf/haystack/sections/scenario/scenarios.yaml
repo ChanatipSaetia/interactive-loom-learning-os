@@ -1,0 +1,31 @@
+id: haystack-design
+title: "Designing a Search System"
+intro: "Your company needs a search system for its knowledge base. You've chosen Haystack. How do you design it?"
+nodes:
+  start:
+    prompt: "Your knowledge base has 50,000 documents in multiple languages. Users search with natural language questions. What retrieval strategy do you choose?"
+    choices:
+      - id: bm25
+        text: "BM25 keyword search only — it's fast and simple"
+        next: bm25-outcome
+      - id: vector
+        text: "Dense vector search — captures semantic meaning across languages"
+        next: vector-outcome
+      - id: hybrid
+        text: "Hybrid BM25 + vectors with Reciprocal Rank Fusion"
+        next: hybrid-outcome
+  bm25-outcome:
+    outcome:
+      verdict: "Users find exact product codes but struggle with conceptual questions. Cross-language queries fail entirely."
+      lesson: "BM25 alone cannot handle semantic understanding or cross-language matching. For natural language questions, you need vector search."
+      rating: c
+  vector-outcome:
+    outcome:
+      verdict: "Conceptual queries work well, but users miss documents with specific IDs, codes, or exact terms."
+      lesson: "Vector search misses exact keyword matches. A hybrid approach covering both strengths is the production standard."
+      rating: b-minus
+  hybrid-outcome:
+    outcome:
+      verdict: "Users find both conceptual answers and exact terms. The RRF fusion combines scores seamlessly without tuning."
+      lesson: "Hybrid retrieval is the recommended production default — it covers the full spectrum of search needs."
+      rating: a

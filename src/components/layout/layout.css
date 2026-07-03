@@ -55,7 +55,7 @@ html[data-theme='recipebook'] .topnav-title {
    Main content
 ============================================= */
 .main-content {
-  @apply flex-1 bg-background overflow-y-auto;
+  @apply flex-1 bg-background;
   padding: var(--spacing-xxl) calc(var(--spacing-xxl) * 1.5);
 }
 
@@ -68,7 +68,7 @@ html[data-theme='recipebook'] .topnav-title {
 }
 
 [data-testid$="-topic"] {
-  @apply flex flex-col gap-[40px];
+  @apply flex flex-col gap-[56px];
 }
 
 .topic-page-title {
@@ -97,7 +97,7 @@ html[data-theme='recipebook'] .topic-page-title {
 .quiz-section-title,
 .concept-map-title {
   font-family: var(--font-display);
-  @apply text-2xl font-bold tracking-tight text-foreground m-0 mb-8 pt-2;
+  @apply text-2xl font-bold tracking-tight text-foreground m-0 mb-8 pt-6;
   display: flex;
   align-items: center;
   gap: 1rem;

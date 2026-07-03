@@ -291,7 +291,7 @@ export default function ScenarioSection({
 
   return (
     <div className="scenario-section" data-testid="scenario-section">
-      {title && phase === 'intro' && (
+      {title && (
         <h3 className="scenario-section-title" data-testid="scenario-title">
           {title}
         </h3>

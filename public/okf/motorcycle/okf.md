@@ -10,6 +10,7 @@ tags:
   - thai
 sections:
   - sections/intro/section.md
+  - sections/concept-map/section.md
   - sections/flashcards/section.md
   - sections/taxonomy/section.md
   - sections/questions/section.md
@@ -18,7 +19,10 @@ sections:
   - sections/flowchart-fuel-injection/section.md
   - sections/flowchart-brake/section.md
   - sections/maintenance/section.md
+  - sections/quiz/section.md
   - sections/tradeoffs/section.md
+  - sections/scenario/section.md
+  - sections/decision-tree/section.md
 related:
   - sections/flowchart-engine/actors.yaml
   - sections/flowchart-engine/systems.yaml
@@ -44,6 +48,10 @@ related:
   - sections/taxonomy/green-3.yaml
   - sections/maintenance/items.yaml
   - sections/flashcards/glossary.yaml
+  - sections/concept-map/concepts.yaml
+  - sections/quiz/questions.yaml
+  - sections/scenario/scenarios.yaml
+  - sections/decision-tree/tree.yaml
 ---
 
 # รถมอเตอร์ไซค์ (Motorcycle)

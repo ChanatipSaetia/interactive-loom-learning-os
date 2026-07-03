@@ -1,0 +1,131 @@
+nodes:
+  engine:
+    title: "เครื่องยนต์ (Engine)"
+    category: system
+  piston:
+    title: "ลูกสูบ (Piston)"
+    category: mechanism
+  crankshaft:
+    title: "เพลาข้อเหวี่ยง (Crankshaft)"
+    category: mechanism
+  carburetor:
+    title: "คาร์บูเรเตอร์ (Carburetor)"
+    category: mechanism
+  injector:
+    title: "หัวฉีด (Fuel Injector)"
+    category: mechanism
+  ecu:
+    title: "กล่อง ECU"
+    category: system
+  spark-plug:
+    title: "หัวเทียน (Spark Plug)"
+    category: mechanism
+  intake-valve:
+    title: "วาล์วไอดี (Intake Valve)"
+    category: mechanism
+  exhaust-valve:
+    title: "วาล์วไอเสีย (Exhaust Valve)"
+    category: mechanism
+  transmission:
+    title: "ระบบเกียร์ (Transmission)"
+    category: system
+  sprocket:
+    title: "สเตอร์ (Sprocket)"
+    category: mechanism
+  brake-disc:
+    title: "จานเบรก (Brake Disc)"
+    category: mechanism
+  brake-caliper:
+    title: "แคลิเพอร์เบรก (Brake Caliper)"
+    category: mechanism
+  brake-master:
+    title: "กระปุกเบรก (Master Cylinder)"
+    category: mechanism
+  choke:
+    title: "โช้ค (Choke)"
+    category: mechanism
+  gasket:
+    title: "ปะเก็น (Gasket)"
+    category: mechanism
+  four-stroke:
+    title: "4 จังหวะ"
+    category: process
+  fuel-system:
+    title: "ระบบน้ำมัน"
+    category: concept
+  brake-system:
+    title: "ระบบเบรก"
+    category: concept
+  drivetrain:
+    title: "ระบบส่งกำลัง"
+    category: concept
+  brake-fade:
+    title: "เบรกจม (Brake Fade)"
+    category: concept
+edges:
+  - from: piston
+    to: crankshaft
+    label: "หมุน"
+  - from: crankshaft
+    to: transmission
+    label: "ส่งกำลัง"
+  - from: transmission
+    to: sprocket
+    label: "ส่งถึง"
+  - from: carburetor
+    to: engine
+    label: "จ่ายน้ำมัน"
+  - from: injector
+    to: engine
+    label: "จ่ายน้ำมัน"
+  - from: ecu
+    to: injector
+    label: "ควบคุม"
+  - from: spark-plug
+    to: engine
+    label: "จุดระเบิด"
+  - from: intake-valve
+    to: engine
+    label: "รับอากาศเข้า"
+  - from: exhaust-valve
+    to: engine
+    label: "ปล่อยไอเสียออก"
+  - from: four-stroke
+    to: piston
+    label: "กำหนดจังหวะ"
+  - from: fuel-system
+    to: carburetor
+    label: "ใช้"
+  - from: fuel-system
+    to: injector
+    label: "ใช้"
+  - from: choke
+    to: carburetor
+    label: "ปรับ"
+  - from: brake-system
+    to: brake-disc
+    label: "ใช้"
+  - from: brake-system
+    to: brake-caliper
+    label: "ใช้"
+  - from: brake-system
+    to: brake-master
+    label: "ใช้"
+  - from: brake-caliper
+    to: brake-disc
+    label: "ประกบ"
+  - from: brake-master
+    to: brake-caliper
+    label: "ส่งแรงดัน"
+  - from: brake-fade
+    to: brake-disc
+    label: "เกิดจากความร้อน"
+  - from: gasket
+    to: engine
+    label: "ซีล"
+  - from: drivetrain
+    to: transmission
+    label: "รวม"
+  - from: drivetrain
+    to: sprocket
+    label: "รวม"

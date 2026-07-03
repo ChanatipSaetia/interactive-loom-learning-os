@@ -1,5 +1,5 @@
 .scenario-section {
-  @apply mb-8 max-w-2xl mx-auto;
+  @apply mb-8;
 }
 
 /* Intro card */

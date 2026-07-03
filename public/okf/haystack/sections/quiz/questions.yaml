@@ -1,0 +1,167 @@
+- id: q1
+  question: "What is a Haystack Pipeline?"
+  hint: "Think about how components are connected."
+  choices:
+    - id: a
+      text: "A linear sequence of function calls"
+      correct: false
+      explanation: "Pipelines are more flexible than linear sequences — they support branching and loops."
+    - id: b
+      text: "A directed multigraph of components with typed connections"
+      correct: true
+      explanation: "Correct. A Pipeline connects Components via typed input/output sockets and validates type compatibility at connection time."
+    - id: c
+      text: "A database schema for storing documents"
+      correct: false
+      explanation: "That describes a Document Store, not a Pipeline."
+    - id: d
+      text: "A YAML configuration file format"
+      correct: false
+      explanation: "Pipelines can be serialized to YAML, but they are runtime objects, not file formats."
+
+- id: q2
+  question: "Which component is NOT part of a Pipeline?"
+  hint: "One of these lives outside the pipeline graph."
+  choices:
+    - id: a
+      text: "Retriever"
+      correct: false
+      explanation: "Retrievers are pipeline components that query a Document Store."
+    - id: b
+      text: "Embedder"
+      correct: false
+      explanation: "Embedders are pipeline components that convert text to vectors."
+    - id: c
+      text: "Document Store"
+      correct: true
+      explanation: "Correct. The Document Store is an external database accessed by components, not a pipeline component itself."
+    - id: d
+      text: "Ranker"
+      correct: false
+      explanation: "Rankers are pipeline components that re-score documents."
+
+- id: q3
+  question: "What is the primary advantage of hybrid retrieval?"
+  hint: "Hybrid combines two approaches."
+  choices:
+    - id: a
+      text: "It is faster than any single retrieval method"
+      correct: false
+      explanation: "Hybrid retrieval actually runs two passes, so it has slightly higher latency."
+    - id: b
+      text: "It eliminates the need for embeddings"
+      correct: false
+      explanation: "Hybrid retrieval still requires embeddings for the dense vector side."
+    - id: c
+      text: "It catches both exact keyword matches and semantic similarities"
+      correct: true
+      explanation: "Correct. Hybrid retrieval combines BM25 (exact keyword) with dense vectors (semantic) using Reciprocal Rank Fusion."
+    - id: d
+      text: "It requires less infrastructure than single-method retrieval"
+      correct: false
+      explanation: "Hybrid retrieval needs both keyword and vector indexes, requiring more infrastructure."
+
+- id: q4
+  question: "What does a SuperComponent do?"
+  hint: "Think about code organization."
+  choices:
+    - id: a
+      text: "Speeds up pipeline execution"
+      correct: false
+      explanation: "SuperComponents are for organization, not performance."
+    - id: b
+      text: "Wraps a sub-pipeline into a single reusable component"
+      correct: true
+      explanation: "Correct. A SuperComponent hides internal wiring behind a clean interface, making complex graphs easier to manage."
+    - id: c
+      text: "Converts between document formats"
+      correct: false
+      explanation: "That is the job of converter components."
+    - id: d
+      text: "Provides backup for failed components"
+      correct: false
+      explanation: "SuperComponents don't handle failover; they organize pipeline structure."
+
+- id: q5
+  question: "Which Document Store backend supports native hybrid search?"
+  hint: "Look for backends that combine BM25 and vectors."
+  choices:
+    - id: a
+      text: "Chroma"
+      correct: false
+      explanation: "Chroma is vector-only and does not support BM25."
+    - id: b
+      text: "InMemoryDocumentStore"
+      correct: false
+      explanation: "While it supports both BM25 and vectors, it is meant for prototyping, not production hybrid search."
+    - id: c
+      text: "OpenSearch"
+      correct: true
+      explanation: "Correct. OpenSearch provides native hybrid search with BM25 + vectors + RRF fusion in a single query."
+    - id: d
+      text: "Weaviate"
+      correct: false
+      explanation: "Weaviate is primarily a vector database with limited keyword search support."
+
+- id: q6
+  question: "What is the purpose of a Ranker in Haystack?"
+  hint: "Rankers come after Retrievers."
+  choices:
+    - id: a
+      text: "To convert documents to embeddings"
+      correct: false
+      explanation: "That is the job of an Embedder."
+    - id: b
+      text: "To re-score and re-order retrieved documents by relevance"
+      correct: true
+      explanation: "Correct. Rankers take documents from a Retriever and apply more sophisticated scoring models."
+    - id: c
+      text: "To store documents in the Document Store"
+      correct: false
+      explanation: "That is the job of a DocumentWriter."
+    - id: d
+      text: "To split text into chunks"
+      correct: false
+      explanation: "That is the job of a TextSplitter."
+
+- id: q7
+  question: "When should you use AsyncPipeline over a standard Pipeline?"
+  hint: "Consider execution patterns."
+  choices:
+    - id: a
+      text: "Always, since it is faster"
+      correct: false
+      explanation: "AsyncPipeline adds complexity. Use it only when parallel execution provides benefit."
+    - id: b
+      text: "When your pipeline has independent branches that benefit from parallel execution"
+      correct: true
+      explanation: "Correct. AsyncPipeline runs independent branches concurrently, reducing latency for pipelines with fan-out patterns."
+    - id: c
+      text: "When you need loop support"
+      correct: false
+      explanation: "Loops are supported in the standard Pipeline, not only AsyncPipeline."
+    - id: d
+      text: "When working with InMemoryDocumentStore"
+      correct: false
+      explanation: "The choice of Document Store doesn't determine whether to use AsyncPipeline."
+
+- id: q8
+  question: "What field in a Haystack Document enables metadata filtering?"
+  hint: "Documents carry more than just text and embeddings."
+  choices:
+    - id: a
+      text: "content"
+      correct: false
+      explanation: "The content field holds the text, not metadata."
+    - id: b
+      text: "embedding"
+      correct: false
+      explanation: "The embedding field holds the vector representation."
+    - id: c
+      text: "metadata"
+      correct: true
+      explanation: "Correct. The metadata field is a dict of key-value pairs that enables structured filtering."
+    - id: d
+      text: "score"
+      correct: false
+      explanation: "The score field holds the relevance score from retrieval."

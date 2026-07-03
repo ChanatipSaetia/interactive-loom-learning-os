@@ -1,5 +1,5 @@
 .quiz-section {
-  @apply mb-8 max-w-3xl mx-auto;
+  @apply mb-8;
 }
 
 /* Score bar */

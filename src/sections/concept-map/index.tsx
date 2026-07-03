@@ -59,6 +59,26 @@ function getNodeWidth(title: string): number {
   return Math.min(200, Math.max(100, title.length * 8 + 40))
 }
 
+function getViewportDimensions(cW: number, cH: number): { viewW: number; viewH: number } {
+  const ratio = cW / cH
+  const baseRatio = 1400 / 900
+  let viewW = ratio >= baseRatio ? Math.round(900 * ratio) : 1400
+  let viewH = ratio >= baseRatio ? 900 : Math.round(1400 / ratio)
+
+  // Clamp height to a maximum of 1400 to avoid overly tall viewports
+  if (viewH > 1400) {
+    viewH = 1400
+    viewW = Math.round(1400 * ratio)
+  }
+  // Clamp width to a maximum of 2800 to avoid overly wide viewports
+  if (viewW > 2800) {
+    viewW = 2800
+    viewH = Math.round(2800 / ratio)
+  }
+
+  return { viewW, viewH }
+}
+
 function getCategoryColor(category: string): string {
   return CATEGORY_COLORS[category] ?? CATEGORY_COLORS.default
 }
@@ -146,9 +166,7 @@ function ConceptMapSection({ title, nodes, edges }: ConceptMapSectionProps) {
     const rect = containerRef.current.getBoundingClientRect()
     const cW = Math.max(rect.width, 300)
     const cH = Math.max(rect.height, 300)
-    const ratio = cW / cH
-    const VIEW_H = 900
-    const VIEW_W = Math.round(900 * ratio)
+    const { viewW: VIEW_W, viewH: VIEW_H } = getViewportDimensions(cW, cH)
     setViewBox(`0 0 ${VIEW_W} ${VIEW_H}`)
     const laid = simulateLayout(nodeIds, nodes, edges, VIEW_W, VIEW_H)
     setLayoutNodes(laid)
@@ -354,9 +372,7 @@ function ConceptMapSection({ title, nodes, edges }: ConceptMapSectionProps) {
     const rect = containerRef.current.getBoundingClientRect()
     const cW = Math.max(rect.width, 300)
     const cH = Math.max(rect.height, 300)
-    const ratio = cW / cH
-    const VIEW_H = 900
-    const VIEW_W = Math.round(900 * ratio)
+    const { viewW: VIEW_W, viewH: VIEW_H } = getViewportDimensions(cW, cH)
 
     let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity
     for (const id of nodeIds) {

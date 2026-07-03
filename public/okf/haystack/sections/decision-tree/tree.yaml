@@ -1,0 +1,83 @@
+id: haystack-advisor
+title: "Haystack Setup Advisor"
+root: goal
+nodes:
+  goal:
+    prompt: "What are you building?"
+    choices:
+      - id: simple-search
+        text: "Simple document search (no LLM answers)"
+        next: data-size
+        rationale: "Pure search is the most straightforward Haystack use case."
+      - id: rag-system
+        text: "RAG system (LLM answers from documents)"
+        next: rag-complexity
+        rationale: "RAG adds LLM components but Haystack pipelines make it straightforward."
+        recommended: true
+      - id: agentic
+        text: "Agentic system (tools, loops, multi-agent)"
+        next: agent-rec
+        rationale: "Agentic systems require loop pipelines and the Agent component."
+  data-size:
+    prompt: "How many documents?"
+    choices:
+      - id: small
+        text: "Under 10,000 documents"
+        next: rec-simple
+        rationale: "Smaller datasets work well with simpler setups."
+      - id: large
+        text: "10,000+ documents"
+        next: rec-production
+        rationale: "Large datasets need production-grade infrastructure."
+  rag-complexity:
+    prompt: "How complex are the queries?"
+    choices:
+      - id: straightforward
+        text: "Straightforward questions with clear answers in documents"
+        next: rec-rag-basic
+        rationale: "Most RAG systems start with a basic pipeline."
+        recommended: true
+      - id: complex
+        text: "Complex reasoning requiring multi-step retrieval"
+        next: rec-rag-advanced
+        rationale: "Complex queries may need ranking, multi-retriever, or agent patterns."
+  agent-rec:
+    leaf:
+      recommendation: "Use the Agent component with a loop-enabled Pipeline."
+      explanation: "Haystack's Agent component provides a ReAct loop. Combine it with custom tools and a Document Store for agentic search."
+      tradeoffs:
+        - "Higher latency from multiple LLM calls"
+        - "Requires max iteration limits to prevent infinite loops"
+        - "More expensive due to token usage"
+  rec-simple:
+    leaf:
+      recommendation: "Start with InMemoryDocumentStore + BM25Retriever in a Standard Pipeline."
+      explanation: "For small datasets, the in-memory store gives zero setup and fast prototyping. BM25 handles keyword search without embedding overhead."
+      tradeoffs:
+        - "No persistence across restarts"
+        - "No semantic search capability"
+        - "Upgrade to a production Document Store when scaling"
+  rec-production:
+    leaf:
+      recommendation: "Use OpenSearchDocumentStore with HybridRetriever and AsyncPipeline."
+      explanation: "OpenSearch provides native hybrid search at scale. AsyncPipeline parallelizes independent branches for lower latency on large datasets."
+      tradeoffs:
+        - "Requires running OpenSearch infrastructure"
+        - "Higher initial setup complexity"
+        - "AsyncPipeline adds debugging complexity"
+  rec-rag-basic:
+    leaf:
+      recommendation: "Standard Pipeline: TextEmbedder → EmbeddingRetriever → Ranker → PromptBuilder → LLM."
+      explanation: "This is the canonical RAG pipeline in Haystack. Wire the components in sequence and the framework handles type validation and execution."
+      tradeoffs:
+        - "Single retrieval pass may miss edge cases"
+        - "No self-correction on bad answers"
+        - "Consider multi-retriever or agent patterns for higher accuracy"
+  rec-rag-advanced:
+    leaf:
+      recommendation: "Multi-retriever pipeline with Ranker + Agent with self-correction loop."
+      explanation: "Use multiple Retrievers (BM25 + Embedding), fuse with ReciprocalRankFusion, add a Ranker, then route to an Agent for multi-step reasoning."
+      tradeoffs:
+        - "Highest latency from multiple retrieval + agent iterations"
+        - "Most expensive setup with multiple LLM calls"
+        - "Best accuracy for complex, multi-hop questions"

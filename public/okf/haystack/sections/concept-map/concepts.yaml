@@ -1,0 +1,116 @@
+nodes:
+  component:
+    title: "Component"
+    category: mechanism
+  pipeline:
+    title: "Pipeline"
+    category: mechanism
+  document-store:
+    title: "Document Store"
+    category: system
+  document:
+    title: "Document"
+    category: data
+  retriever:
+    title: "Retriever"
+    category: mechanism
+  embedder:
+    title: "Embedder"
+    category: mechanism
+  ranker:
+    title: "Ranker"
+    category: mechanism
+  indexing-pipeline:
+    title: "Indexing Pipeline"
+    category: process
+  query-pipeline:
+    title: "Query Pipeline"
+    category: process
+  rag:
+    title: "RAG"
+    category: pattern
+  metadata-filtering:
+    title: "Metadata Filtering"
+    category: mechanism
+  custom-component:
+    title: "Custom Component"
+    category: concept
+  supercomponent:
+    title: "SuperComponent"
+    category: concept
+  bm25:
+    title: "BM25"
+    category: pattern
+  vector-search:
+    title: "Vector Search"
+    category: pattern
+  hybrid-retrieval:
+    title: "Hybrid Retrieval"
+    category: pattern
+  async-pipeline:
+    title: "AsyncPipeline"
+    category: mechanism
+edges:
+  - from: component
+    to: pipeline
+    label: "wired into"
+  - from: pipeline
+    to: document-store
+    label: "accesses"
+  - from: document-store
+    to: document
+    label: "stores"
+  - from: retriever
+    to: document-store
+    label: "queries"
+  - from: retriever
+    to: document
+    label: "returns"
+  - from: embedder
+    to: document
+    label: "embeds"
+  - from: ranker
+    to: document
+    label: "re-scores"
+  - from: indexing-pipeline
+    to: embedder
+    label: "uses"
+  - from: indexing-pipeline
+    to: document-store
+    label: "writes to"
+  - from: query-pipeline
+    to: retriever
+    label: "uses"
+  - from: query-pipeline
+    to: ranker
+    label: "uses"
+  - from: query-pipeline
+    to: embedder
+    label: "uses"
+  - from: rag
+    to: query-pipeline
+    label: "extends"
+  - from: metadata-filtering
+    to: document-store
+    label: "filters"
+  - from: custom-component
+    to: component
+    label: "is a"
+  - from: supercomponent
+    to: pipeline
+    label: "wraps"
+  - from: bm25
+    to: retriever
+    label: "strategy"
+  - from: vector-search
+    to: retriever
+    label: "strategy"
+  - from: hybrid-retrieval
+    to: bm25
+    label: "combines"
+  - from: hybrid-retrieval
+    to: vector-search
+    label: "combines"
+  - from: async-pipeline
+    to: pipeline
+    label: "extends"

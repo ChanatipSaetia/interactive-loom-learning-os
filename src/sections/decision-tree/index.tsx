@@ -285,7 +285,7 @@ export default function DecisionTreeSection({
 
   return (
     <div className="dt-section" data-testid="dt-section">
-      {title && phase === 'intro' && (
+      {title && (
         <h3 className="dt-section-title" data-testid="dt-title">
           {title}
         </h3>

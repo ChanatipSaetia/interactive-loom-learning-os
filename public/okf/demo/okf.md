@@ -10,17 +10,17 @@ tags:
   - orchestrator
 sections:
   - sections/intro/section.md
-  - sections/flowchart/section.md
-  - sections/flowchart-feedback/section.md
-  - sections/lifecycle/section.md
-  - sections/capabilities/section.md
-  - sections/tradeoffs/section.md
-  - sections/tradeoffs-deploy/section.md
+  - sections/concept-map/section.md
+  - sections/flashcards/section.md
   - sections/taxonomy/section.md
   - sections/taxonomy-patterns/section.md
-  - sections/flashcards/section.md
+  - sections/lifecycle/section.md
+  - sections/capabilities/section.md
+  - sections/flowchart/section.md
+  - sections/flowchart-feedback/section.md
   - sections/quiz/section.md
-  - sections/concept-map/section.md
+  - sections/tradeoffs/section.md
+  - sections/tradeoffs-deploy/section.md
   - sections/scenario/section.md
   - sections/decision-tree/section.md
 related:

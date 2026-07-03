@@ -149,4 +149,66 @@ describe('ConceptMap Section', () => {
     expect(Registry.get('concept-map')).toBeUndefined()
     void mod
   })
+
+  it('calculates dynamic viewBox based on width/height ratio', () => {
+    const originalGetBoundingClientRect = Element.prototype.getBoundingClientRect
+
+    try {
+      // Mock wide screen: width 1600, height 800 (ratio = 2.0 >= 1.555...)
+      // VIEW_H should be fixed to 900, VIEW_W should be scaled to 900 * 2 = 1800
+      Element.prototype.getBoundingClientRect = vi.fn().mockReturnValue({
+        width: 1600,
+        height: 800,
+        top: 0,
+        left: 0,
+        bottom: 800,
+        right: 1600,
+        x: 0,
+        y: 0,
+        toJSON: () => {},
+      })
+
+      const { rerender } = render(<ConceptMapSection nodes={mockNodes} edges={mockEdges} />)
+      const svg = screen.getByTestId('concept-map-svg')
+      expect(svg).toHaveAttribute('viewBox', '0 0 1800 900')
+
+      // Mock tall screen: width 800, height 1600 (ratio = 0.5 < 1.555...)
+      // VIEW_H should be clamped to 1400, VIEW_W should scale to 1400 * 0.5 = 700
+      Element.prototype.getBoundingClientRect = vi.fn().mockReturnValue({
+        width: 800,
+        height: 1600,
+        top: 0,
+        left: 0,
+        bottom: 1600,
+        right: 800,
+        x: 0,
+        y: 0,
+        toJSON: () => {},
+      })
+
+      // Rerender with new dimensions to trigger useEffect
+      rerender(<ConceptMapSection nodes={{ ...mockNodes }} edges={mockEdges} />)
+      expect(svg).toHaveAttribute('viewBox', '0 0 700 1400')
+
+      // Mock slightly wide screen: width 1200, height 900 (ratio = 1.333... < 1.555...)
+      // VIEW_W should be fixed to 1400, VIEW_H should be scaled to 1400 / 1.333... = 1050
+      Element.prototype.getBoundingClientRect = vi.fn().mockReturnValue({
+        width: 1200,
+        height: 900,
+        top: 0,
+        left: 0,
+        bottom: 900,
+        right: 1200,
+        x: 0,
+        y: 0,
+        toJSON: () => {},
+      })
+
+      rerender(<ConceptMapSection nodes={mockNodes} edges={mockEdges} />)
+      expect(svg).toHaveAttribute('viewBox', '0 0 1400 1050')
+    } finally {
+      Element.prototype.getBoundingClientRect = originalGetBoundingClientRect
+    }
+  })
 })
+
