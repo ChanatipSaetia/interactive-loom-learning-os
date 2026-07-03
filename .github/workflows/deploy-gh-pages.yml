@@ -36,6 +36,9 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      - name: Update OKF build manifest
+        run: node --experimental-strip-types scripts/update-okf-manifest.js
+
       - name: Build
         run: npm run build
 

@@ -2,6 +2,7 @@
 type: topic
 title: "AI Agent Architecture (Demo)"
 description: "Explore AI Agent system architecture with LLM, tools, and memory"
+category: Architecture
 tags:
   - ai-agent
   - architecture

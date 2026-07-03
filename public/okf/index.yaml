@@ -1,0 +1,16 @@
+# Auto-generated — do not edit manually
+- id: demo
+  label: AI Agent Architecture (Demo)
+  path: /topics/demo
+  category: Architecture
+  description: Explore AI Agent system architecture with LLM, tools, and memory
+- id: haystack
+  label: Haystack 2.x - AI Search Framework
+  path: /topics/haystack
+  category: Architecture
+  description: Build search and RAG applications with composable Haystack pipelines
+- id: motorcycle
+  label: รถมอเตอร์ไซค์ (Motorcycle)
+  path: /topics/motorcycle
+  category: Mechanical
+  description: เข้าใจส่วนประกอบ การทำงาน และการบำรุงรักษารถมอเตอร์ไซค์

@@ -2,6 +2,7 @@
 type: topic
 title: "รถมอเตอร์ไซค์ (Motorcycle)"
 description: "เข้าใจส่วนประกอบ การทำงาน และการบำรุงรักษารถมอเตอร์ไซค์"
+category: Mechanical
 tags:
   - motorcycle
   - engine

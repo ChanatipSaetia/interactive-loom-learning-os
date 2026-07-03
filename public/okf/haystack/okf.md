@@ -2,6 +2,7 @@
 type: topic
 title: "Haystack 2.x - AI Search Framework"
 description: "Build search and RAG applications with composable Haystack pipelines"
+category: Architecture
 tags:
   - haystack
   - search
