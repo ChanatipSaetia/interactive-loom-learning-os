@@ -30,6 +30,8 @@ export type OKFSectionData =
   | OKFFlashcardSectionData
   | OKFQuizSectionData
   | OKFConceptMapSectionData
+  | OKFScenarioSectionData
+  | OKFDecisionTreeSectionData
 
 export interface OKFTextSectionData {
   type: 'text'
@@ -210,4 +212,97 @@ export interface OKFGlossaryRaw {
   detailedDefinition: string
   whyItMatters: string
   dialogue?: { user: string; aiThoughts: string; aiQuestion: string }
+}
+
+// --- Scenario section types ---
+
+export type ScenarioRating = 'a' | 'b-plus' | 'b-minus' | 'c'
+
+export interface OKFScenarioSectionData {
+  type: 'scenario'
+  id: string
+  title: string
+  intro: string
+  nodes: Record<string, OKFScenarioNode>
+  startNode: string
+}
+
+export interface OKFScenarioNode {
+  id: string
+  prompt?: string
+  choices?: OKFScenarioChoice[]
+  outcome?: OKFScenarioOutcome
+}
+
+export interface OKFScenarioChoice {
+  id: string
+  text: string
+  next: string
+}
+
+export interface OKFScenarioOutcome {
+  verdict: string
+  lesson: string
+  rating: ScenarioRating
+}
+
+// --- Raw types for scenario YAML ---
+
+export interface OKFScenarioRaw {
+  id: string
+  title: string
+  intro: string
+  nodes: Record<string, OKFScenarioNodeRaw>
+}
+
+export interface OKFScenarioNodeRaw {
+  prompt?: string
+  choices?: Array<{ id: string; text: string; next: string }>
+  outcome?: { verdict: string; lesson: string; rating: ScenarioRating }
+}
+
+// --- Decision Tree section types ---
+
+export interface OKFDecisionTreeSectionData {
+  type: 'decision-tree'
+  id: string
+  title: string
+  root: string
+  nodes: Record<string, OKFDecisionTreeNode>
+}
+
+export interface OKFDecisionTreeNode {
+  id: string
+  prompt?: string
+  choices?: OKFDecisionTreeChoice[]
+  leaf?: OKFDecisionTreeLeaf
+}
+
+export interface OKFDecisionTreeChoice {
+  id: string
+  text: string
+  next: string
+  rationale?: string
+  recommended?: boolean
+}
+
+export interface OKFDecisionTreeLeaf {
+  recommendation: string
+  explanation: string
+  tradeoffs?: string[]
+}
+
+// --- Raw types for decision tree YAML ---
+
+export interface OKFDecisionTreeRaw {
+  id: string
+  title: string
+  root: string
+  nodes: Record<string, OKFDecisionTreeNodeRaw>
+}
+
+export interface OKFDecisionTreeNodeRaw {
+  prompt?: string
+  choices?: Array<{ id: string; text: string; next: string; rationale?: string; recommended?: boolean }>
+  leaf?: { recommendation: string; explanation: string; tradeoffs?: string[] }
 }

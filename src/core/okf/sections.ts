@@ -63,6 +63,19 @@ export function bundleToSections(bundle: OKFBundled): SectionConfig[] {
         props.nodes = data.nodes
         props.edges = data.edges
         break
+      case 'scenario':
+        props.id = data.id
+        props.title = data.title
+        props.intro = data.intro
+        props.nodes = data.nodes
+        props.startNode = data.startNode
+        break
+      case 'decision-tree':
+        props.id = data.id
+        props.title = data.title
+        props.root = data.root
+        props.nodes = data.nodes
+        break
     }
 
     return { type: meta.type, props }

@@ -1,0 +1,72 @@
+id: agent_architecture
+title: "Agent Architecture Decision Guide"
+root: scale_question
+nodes:
+  scale_question:
+    prompt: "How many concurrent tasks will the agent handle?"
+    choices:
+      - id: single
+        text: "One at a time"
+        next: memory_question
+        rationale: "Single-task agents are simpler to build and debug."
+      - id: parallel
+        text: "Many at once"
+        next: orchestrator_question
+        recommended: true
+        rationale: "Most production agents need parallel task handling for throughput."
+  memory_question:
+    prompt: "Does the agent need to remember past interactions?"
+    choices:
+      - id: yes
+        text: "Yes, across sessions"
+        next: leaf_vector_db
+        rationale: "Persistent memory enables learning from past interactions."
+      - id: no
+        text: "No, stateless is fine"
+        next: leaf_simple
+        recommended: true
+        rationale: "Stateless agents are easier to scale horizontally."
+  orchestrator_question:
+    prompt: "Do tasks require coordination between sub-agents?"
+    choices:
+      - id: yes_coord
+        text: "Yes, tasks depend on each other"
+        next: leaf_orchestrator
+        recommended: true
+        rationale: "Orchestrator pattern handles complex multi-step workflows."
+      - id: no_coord
+        text: "No, tasks are independent"
+        next: leaf_fan_out
+        rationale: "Independent tasks can be distributed without coordination."
+  leaf_simple:
+    leaf:
+      recommendation: "Use a simple single-agent ReAct loop."
+      explanation: "For single-task agents without memory needs, a basic ReAct (Reason-Act) loop is sufficient. The agent observes, reasons, takes an action, and repeats."
+      tradeoffs:
+        - "Minimal setup — no external dependencies"
+        - "No long-term memory between sessions"
+        - "Easy to debug and reason about"
+  leaf_vector_db:
+    leaf:
+      recommendation: "Use a single-agent ReAct loop with vector store memory."
+      explanation: "For single-task agents that need persistent memory, add a vector store for Retrieval-Augmented Generation (RAG). This lets the agent recall relevant past interactions."
+      tradeoffs:
+        - "Adds database dependency"
+        - "Enables long-term learning from interactions"
+        - "Increases latency for memory lookups"
+  leaf_orchestrator:
+    leaf:
+      recommendation: "Use an Orchestrator-Workers pattern."
+      explanation: "A central orchestrator decomposes complex goals, delegates to specialized worker agents, and aggregates results. Best for workflows where tasks depend on each other."
+      tradeoffs:
+        - "Orchestrator becomes a single point of failure"
+        - "Handles complex multi-step workflows elegantly"
+        - "More agents to monitor and debug"
+  leaf_fan_out:
+    leaf:
+      recommendation: "Use a Fan-Out/Fan-In pattern."
+      explanation: "Dispatch independent tasks to parallel workers and aggregate results. Simple and highly scalable when tasks don't depend on each other."
+      tradeoffs:
+        - "No coordination overhead between tasks"
+        - "Limited to independent work items"
+        - "Result aggregation can be complex"

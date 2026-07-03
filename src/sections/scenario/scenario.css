@@ -1,0 +1,148 @@
+.scenario-section {
+  @apply mb-8 max-w-2xl mx-auto;
+}
+
+.scenario-section-title {
+  @apply mb-6 text-foreground font-light tracking-tight;
+  font-size: var(--text-card-heading);
+  font-family: var(--font-display);
+}
+
+/* Intro card */
+.scenario-intro {
+  @apply rounded-lg overflow-hidden;
+}
+
+.scenario-intro-card {
+  @apply p-6 rounded-lg border border-border bg-card shadow-sm flex flex-col gap-4;
+}
+
+.scenario-intro-icon {
+  @apply w-10 h-10 flex items-center justify-center rounded-full;
+  color: var(--ctp-blue);
+  background: color-mix(in srgb, var(--ctp-blue) 12%, var(--ctp-surface0));
+}
+
+.scenario-intro-title {
+  @apply text-foreground font-light tracking-tight;
+  font-size: var(--text-feature-heading);
+  font-family: var(--font-display);
+}
+
+.scenario-intro-text {
+  @apply text-muted-foreground leading-relaxed;
+  font-size: var(--text-body);
+}
+
+.scenario-start-btn {
+  @apply self-start mt-2;
+}
+
+/* Decision display */
+.scenario-decision {
+  @apply flex flex-col gap-4;
+}
+
+.scenario-decision-header {
+  @apply flex items-center justify-between;
+}
+
+.scenario-step-counter {
+  @apply text-xs font-mono uppercase tracking-widest font-bold px-2.5 py-1 rounded-full;
+  background: var(--ctp-blue);
+  color: var(--ctp-crust);
+}
+
+.scenario-back-btn {
+  @apply text-xs text-muted-foreground hover:text-foreground;
+}
+
+.scenario-decision-prompt {
+  @apply text-foreground leading-relaxed;
+  font-size: var(--text-card-heading);
+  font-family: var(--font-display);
+  font-weight: 400;
+}
+
+/* Choices */
+.scenario-choices {
+  @apply flex flex-col gap-2;
+}
+
+.scenario-choice {
+  @apply flex items-center gap-3 w-full text-left p-4 rounded-lg border transition-all duration-200;
+  border-color: rgba(81, 87, 109, 0.6);
+  background-color: rgba(81, 87, 109, 0.05);
+}
+
+.scenario-choice:hover {
+  border-color: rgba(140, 170, 238, 0.5);
+  background-color: rgba(81, 87, 109, 0.2);
+}
+
+.scenario-choice-text {
+  @apply flex-1 text-sm text-foreground leading-relaxed;
+}
+
+.scenario-choice-arrow {
+  @apply w-4 h-4 flex-shrink-0 text-muted-foreground;
+}
+
+/* Outcome display */
+.scenario-outcome {
+  @apply rounded-lg overflow-hidden;
+}
+
+.scenario-outcome-card {
+  @apply p-6 rounded-lg border shadow-sm flex flex-col gap-5;
+  transition: border-color 0.3s ease, background-color 0.3s ease;
+}
+
+.scenario-outcome-header {
+  @apply flex items-center gap-3;
+}
+
+.scenario-outcome-icon {
+  @apply w-5 h-5 flex-shrink-0;
+}
+
+.scenario-outcome-title {
+  @apply text-sm font-mono uppercase tracking-widest font-bold text-muted-foreground;
+}
+
+.scenario-rating-badge {
+  @apply ml-auto px-3 py-1 rounded-full text-xs font-mono font-bold uppercase tracking-wider;
+}
+
+.scenario-outcome-body {
+  @apply flex flex-col gap-4;
+}
+
+.scenario-outcome-block {
+  @apply flex flex-col gap-1.5;
+}
+
+.scenario-outcome-block-label {
+  @apply text-xs font-mono uppercase tracking-widest font-bold;
+  color: var(--ctp-subtext0);
+}
+
+.scenario-outcome-block-text {
+  @apply text-foreground leading-relaxed;
+  font-size: var(--text-body);
+}
+
+.scenario-outcome-footer {
+  @apply pt-3 border-t;
+  border-color: rgba(81, 87, 109, 0.3);
+}
+
+@media (max-width: 640px) {
+  .scenario-outcome-header {
+    @apply flex-wrap;
+  }
+
+  .scenario-rating-badge {
+    @apply ml-0 mt-2;
+  }
+}

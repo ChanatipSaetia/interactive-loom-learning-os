@@ -1,0 +1,6 @@
+## [2025-07-03 09:30 UTC] Issue #81 Complete
+- What was built: Concept map section type with interactive knowledge graph. Force-directed SVG graph rendering, node click opens detail panel with definition, hover highlights connected edges/nodes, pan/zoom support, Catppuccin Frappé category-based node coloring.
+- Files: src/sections/concept-map/index.tsx, src/sections/concept-map/concept-map.css, src/core/okf/types.ts (OKFConceptMapSectionData), src/core/okf/reader.ts (loadConceptMapSection), src/core/okf/sections.ts (adapter case), src/main.tsx (registry), okf/demo/sections/concept-map/
+- Tests added: 24 unit tests in tests/unit/sections/concept-map/index.test.tsx covering rendering, click/hover interactions, toolbar, legend, panel, dimming
+- E2E verified via Playwright MCP
+- Learnings: All infrastructure (types, reader, sections adapter, registry) was already wired up from prior iteration. Component with full force-directed simulation, pan/zoom, and detail panel was in place. Only needed verification.

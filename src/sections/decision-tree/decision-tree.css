@@ -1,0 +1,242 @@
+.dt-section {
+  @apply mb-8 max-w-2xl mx-auto;
+}
+
+.dt-section-title {
+  @apply mb-6 text-foreground font-light tracking-tight;
+  font-size: var(--text-card-heading);
+  font-family: var(--font-display);
+}
+
+/* Intro card */
+.dt-intro {
+  @apply rounded-lg overflow-hidden;
+}
+
+.dt-intro-card {
+  @apply p-6 rounded-lg border border-border bg-card shadow-sm flex flex-col gap-4;
+}
+
+.dt-intro-icon {
+  @apply w-10 h-10 flex items-center justify-center rounded-full;
+  color: var(--ctp-green);
+  background: color-mix(in srgb, var(--ctp-green) 12%, var(--ctp-surface0));
+}
+
+.dt-intro-title {
+  @apply text-foreground font-light tracking-tight;
+  font-size: var(--text-feature-heading);
+  font-family: var(--font-display);
+}
+
+.dt-intro-text {
+  @apply text-muted-foreground leading-relaxed;
+  font-size: var(--text-body);
+}
+
+.dt-start-btn {
+  @apply self-start mt-2;
+}
+
+/* Breadcrumb */
+.dt-breadcrumb {
+  @apply flex flex-wrap items-center gap-0 mb-4 px-1;
+}
+
+.dt-breadcrumb-item {
+  @apply flex items-center gap-0;
+}
+
+.dt-breadcrumb-arrow {
+  @apply w-3 h-3 text-muted-foreground mx-1 opacity-50;
+}
+
+.dt-breadcrumb-label {
+  @apply text-xs font-mono px-2 py-1 rounded-md transition-colors duration-200;
+  color: var(--ctp-subtext1);
+  background: color-mix(in srgb, var(--ctp-overlay0) 10%, transparent);
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.dt-breadcrumb-label-active {
+  color: var(--ctp-text);
+  background: color-mix(in srgb, var(--ctp-overlay0) 20%, transparent);
+}
+
+.dt-breadcrumb-step-num {
+  @apply inline-flex items-center justify-center w-4 h-4 rounded-full text-[9px] font-bold;
+  background: var(--ctp-blue);
+  color: var(--ctp-crust);
+}
+
+.dt-breadcrumb-check {
+  @apply text-[9px];
+  color: var(--ctp-green);
+}
+
+/* Decision display */
+.dt-decision {
+  @apply flex flex-col gap-4;
+}
+
+.dt-decision-header {
+  @apply flex items-center justify-between;
+}
+
+.dt-step-counter {
+  @apply text-xs font-mono uppercase tracking-widest font-bold px-2.5 py-1 rounded-full;
+  background: var(--ctp-green);
+  color: var(--ctp-crust);
+}
+
+.dt-decision-prompt {
+  @apply text-foreground leading-relaxed;
+  font-size: var(--text-card-heading);
+  font-family: var(--font-display);
+  font-weight: 400;
+}
+
+/* Choices */
+.dt-choices {
+  @apply flex flex-col gap-2;
+}
+
+.dt-choice {
+  @apply flex flex-col gap-2 w-full text-left p-4 rounded-lg border transition-all duration-200;
+  border-color: rgba(81, 87, 109, 0.6);
+  background-color: rgba(81, 87, 109, 0.05);
+}
+
+.dt-choice:hover {
+  border-color: rgba(140, 170, 238, 0.5);
+  background-color: rgba(81, 87, 109, 0.2);
+}
+
+.dt-choice-recommended {
+  border-color: rgba(166, 209, 137, 0.5);
+  background-color: rgba(166, 209, 137, 0.06);
+}
+
+.dt-choice-recommended:hover {
+  border-color: rgba(166, 209, 137, 0.7);
+  background-color: rgba(166, 209, 137, 0.12);
+}
+
+.dt-choice-header {
+  @apply flex items-center justify-between gap-2;
+}
+
+.dt-choice-text {
+  @apply flex-1 text-sm text-foreground leading-relaxed font-medium;
+}
+
+.dt-recommended-badge {
+  @apply inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-mono font-bold uppercase tracking-wider flex-shrink-0;
+  background: var(--ctp-green);
+  color: var(--ctp-crust);
+}
+
+.dt-recommended-icon {
+  @apply w-3 h-3;
+}
+
+.dt-choice-rationale {
+  @apply text-xs leading-relaxed;
+  color: var(--ctp-subtext1);
+}
+
+.dt-choice-arrow {
+  @apply w-4 h-4 flex-shrink-0 text-muted-foreground self-end mt-1;
+}
+
+/* Leaf display */
+.dt-leaf {
+  @apply rounded-lg overflow-hidden;
+}
+
+.dt-leaf-card {
+  @apply p-6 rounded-lg border shadow-sm flex flex-col gap-5;
+  border-color: rgba(166, 209, 137, 0.4);
+  background-color: rgba(166, 209, 137, 0.04);
+}
+
+.dt-leaf-header {
+  @apply flex items-center gap-3;
+}
+
+.dt-leaf-icon {
+  @apply w-5 h-5 flex-shrink-0;
+  color: var(--ctp-green);
+}
+
+.dt-leaf-heading {
+  @apply text-sm font-mono uppercase tracking-widest font-bold text-muted-foreground;
+}
+
+.dt-leaf-body {
+  @apply flex flex-col gap-4;
+}
+
+.dt-leaf-recommendation {
+  @apply p-4 rounded-lg;
+  background: color-mix(in srgb, var(--ctp-green) 8%, var(--ctp-surface0));
+  border-left: 3px solid var(--ctp-green);
+}
+
+.dt-leaf-rec-text {
+  @apply text-foreground leading-relaxed;
+  font-size: var(--text-body);
+}
+
+.dt-leaf-explanation {
+  @apply flex flex-col gap-1.5;
+}
+
+.dt-leaf-tradeoffs {
+  @apply flex flex-col gap-1.5;
+}
+
+.dt-leaf-block-label {
+  @apply text-xs font-mono uppercase tracking-widest font-bold;
+  color: var(--ctp-subtext0);
+}
+
+.dt-leaf-block-text {
+  @apply text-foreground leading-relaxed;
+  font-size: var(--text-body);
+}
+
+.dt-leaf-tradeoff-list {
+  @apply list-none pl-0 m-0 flex flex-col gap-1.5;
+}
+
+.dt-leaf-tradeoff-item {
+  @apply text-sm leading-relaxed flex items-start gap-2;
+  color: var(--ctp-subtext1);
+}
+
+.dt-leaf-tradeoff-item::before {
+  content: '–';
+  @apply flex-shrink-0 mt-0.5 text-muted-foreground;
+}
+
+.dt-leaf-footer {
+  @apply pt-3 border-t;
+  border-color: rgba(81, 87, 109, 0.3);
+}
+
+@media (max-width: 640px) {
+  .dt-breadcrumb {
+    @apply flex-col items-start gap-1;
+  }
+
+  .dt-breadcrumb-arrow {
+    @apply hidden;
+  }
+
+  .dt-choice-header {
+    @apply flex-col items-start gap-1;
+  }
+}

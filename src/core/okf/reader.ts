@@ -17,6 +17,8 @@ import type {
   OKFFlashcardSectionData,
   OKFQuizSectionData,
   OKFConceptMapSectionData,
+  OKFScenarioSectionData,
+  OKFDecisionTreeSectionData,
   OKFStepRaw,
   OKFJourneyRaw,
   OKFTradeoffScenarioRaw,
@@ -24,6 +26,8 @@ import type {
   OKFGlossaryRaw,
   OKFQuizQuestionRaw,
   OKFConceptMapRaw,
+  OKFScenarioRaw,
+  OKFDecisionTreeRaw,
 } from './types'
 
 const OKF_BASE = '/okf'
@@ -123,6 +127,10 @@ async function loadSectionResource(
       return loadQuizSection(basePath, resource, resourceFiles)
     case 'concept-map':
       return loadConceptMapSection(basePath, resource)
+    case 'scenario':
+      return loadScenarioSection(basePath, resource)
+    case 'decision-tree':
+      return loadDecisionTreeSection(basePath, resource)
     default:
       throw new Error(`Unknown section type: ${type}`)
   }
@@ -209,6 +217,12 @@ async function loadConceptMapSection(basePath: string, resource: string): Promis
   const raw = await fetchYaml<OKFConceptMapRaw>(`${basePath}/${conceptsFile}`)
   const { nodes, edges } = mapConceptMap(raw)
   return { type: 'concept-map', nodes, edges }
+}
+
+async function loadScenarioSection(basePath: string, resource: string): Promise<OKFScenarioSectionData> {
+  const scenariosFile = resource !== '.' ? resource : 'scenarios.yaml'
+  const raw = await fetchYaml<OKFScenarioRaw>(`${basePath}/${scenariosFile}`)
+  return mapScenario(raw)
 }
 
 // --- Flow mapping ---
@@ -386,6 +400,79 @@ function mapConceptMap(raw: OKFConceptMapRaw): { nodes: Record<string, import('.
     label: e.label,
   }))
   return { nodes, edges }
+}
+
+async function loadDecisionTreeSection(basePath: string, resource: string): Promise<OKFDecisionTreeSectionData> {
+  const treeFile = resource !== '.' ? resource : 'tree.yaml'
+  const raw = await fetchYaml<OKFDecisionTreeRaw>(`${basePath}/${treeFile}`)
+  return mapDecisionTree(raw)
+}
+
+function mapDecisionTree(raw: OKFDecisionTreeRaw): OKFDecisionTreeSectionData {
+  const nodes: Record<string, import('./types').OKFDecisionTreeNode> = {}
+  for (const [id, node] of Object.entries(raw.nodes)) {
+    const mappedNode: import('./types').OKFDecisionTreeNode = { id }
+    if (node.prompt) {
+      mappedNode.prompt = node.prompt
+    }
+    if (node.choices) {
+      mappedNode.choices = node.choices.map((c) => ({
+        id: c.id,
+        text: c.text,
+        next: c.next,
+        rationale: c.rationale,
+        recommended: c.recommended,
+      }))
+    }
+    if (node.leaf) {
+      mappedNode.leaf = {
+        recommendation: node.leaf.recommendation,
+        explanation: node.leaf.explanation,
+        tradeoffs: node.leaf.tradeoffs,
+      }
+    }
+    nodes[id] = mappedNode
+  }
+  return {
+    type: 'decision-tree',
+    id: raw.id,
+    title: raw.title,
+    root: raw.root,
+    nodes,
+  }
+}
+
+function mapScenario(raw: OKFScenarioRaw): OKFScenarioSectionData {
+  const nodes: Record<string, import('./types').OKFScenarioNode> = {}
+  for (const [id, node] of Object.entries(raw.nodes)) {
+    const mappedNode: import('./types').OKFScenarioNode = { id }
+    if (node.prompt) {
+      mappedNode.prompt = node.prompt
+    }
+    if (node.choices) {
+      mappedNode.choices = node.choices.map((c) => ({
+        id: c.id,
+        text: c.text,
+        next: c.next,
+      }))
+    }
+    if (node.outcome) {
+      mappedNode.outcome = {
+        verdict: node.outcome.verdict,
+        lesson: node.outcome.lesson,
+        rating: node.outcome.rating,
+      }
+    }
+    nodes[id] = mappedNode
+  }
+  return {
+    type: 'scenario',
+    id: raw.id,
+    title: raw.title,
+    intro: raw.intro,
+    nodes,
+    startNode: 'start',
+  }
 }
 
 // --- Content parsing ---

@@ -20,6 +20,8 @@ sections:
   - sections/flashcards/section.md
   - sections/quiz/section.md
   - sections/concept-map/section.md
+  - sections/scenario/section.md
+  - sections/decision-tree/section.md
 related:
   - sections/flowchart/actors.yaml
   - sections/flowchart/systems.yaml
@@ -50,6 +52,8 @@ related:
   - sections/flashcards/glossary.yaml
   - sections/quiz/questions.yaml
   - sections/concept-map/concepts.yaml
+  - sections/scenario/scenarios.yaml
+  - sections/decision-tree/tree.yaml
 ---
 
 # AI Agent Architecture (Demo)
@@ -68,3 +72,5 @@ This topic explores how modern AI agents work — autonomous systems that percei
 - **sections/taxonomy/** — 8 capability taxonomy categories
 - **sections/taxonomy-patterns/** — 4 agent design patterns (ReAct, Plan-Execute, Map-Reduce, Reflexion)
 - **sections/flashcards/** — Flashcard vocabulary terms
+- **sections/scenario/** — Branching narrative scenario exercises
+- **sections/decision-tree/** — Reference decision tree with guided if-then paths
