@@ -94,12 +94,12 @@ function simulateLayout(
       for (let j = i + 1; j < simNodes.length; j++) {
         const a = simNodes[i]
         const b = simNodes[j]
-        let dx = b.x - a.x
-        let dy = b.y - a.y
-        let dist = Math.sqrt(dx * dx + dy * dy) || 1
-        const force = REPULSION / (dist * dist)
-        const fx = (dx / dist) * force * cooling
-        const fy = (dy / dist) * force * cooling
+        const dxB = b.x - a.x
+        const dyB = b.y - a.y
+        const distB = Math.sqrt(dxB * dxB + dyB * dyB) || 1
+        const force = REPULSION / (distB * distB)
+        const fx = (dxB / distB) * force * cooling
+        const fy = (dyB / distB) * force * cooling
         a.vx -= fx
         a.vy -= fy
         b.vx += fx
@@ -187,7 +187,7 @@ function ConceptMapSection({ title, nodes, edges }: ConceptMapSectionProps) {
     const centerX = (w - w * 0.6) / 2
     const centerY = (h - h * 0.6) / 2
     setTransform({ scale: 0.6, translateX: centerX, translateY: centerY })
-  }, [nodes, edges])
+  }, [nodes, edges, nodeIds])
 
   // Native event listeners for wheel, touch (like flowchart useCamera)
   useEffect(() => {
@@ -432,8 +432,8 @@ function ConceptMapSection({ title, nodes, edges }: ConceptMapSectionProps) {
                 const isConnected = isEdgeConnected(edge)
                 const isDimmed = hoveredNode && !isConnected
 
-                let dx = to.x - from.x
-                let dy = to.y - from.y
+                const dx = to.x - from.x
+                const dy = to.y - from.y
                 const dist = Math.sqrt(dx * dx + dy * dy) || 1
                 const nx = dx / dist
                 const ny = dy / dist
