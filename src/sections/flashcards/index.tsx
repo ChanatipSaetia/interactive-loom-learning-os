@@ -107,7 +107,7 @@ export default function FlashcardDeck({ title, terms = [] }: FlashcardDeckProps)
     <div className="flex flex-col w-full h-full max-w-5xl mx-auto" id="flashcard-deck">
       
       {/* Top Deck Info with Standard Heading */}
-      <div className="flex items-center w-full mb-8 pt-2">
+      <div className="flashcards-header flex items-center w-full">
         <h3 className="flashcard-title flex-1 !m-0 !p-0" data-testid="flashcard-title">
           {title || "Aesthetics Glossary"}
         </h3>

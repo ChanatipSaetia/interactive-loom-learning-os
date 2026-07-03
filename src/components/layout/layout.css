@@ -82,7 +82,14 @@ html[data-theme='recipebook'] .topnav-title {
   margin-top: 0 !important;
 }
 
-.topic-page-title + * > h3 {
+.topic-page-title + * > h3,
+.topic-page-title + * > div > h3 {
+  padding-top: 0 !important;
+  margin-top: 0 !important;
+}
+
+.topic-page-title + * .flowchart-header-container,
+.topic-page-title + * .flashcards-header {
   padding-top: 0 !important;
   margin-top: 0 !important;
 }
@@ -167,4 +174,32 @@ html[data-theme='recipebook'] .topic-page-title {
   color: var(--ctp-red);
   border-color: var(--ctp-red);
   background-color: rgba(231, 130, 132, 0.08);
+}
+
+/* =============================================
+   Sticky Header Container for Grandchild Titles
+============================================= */
+.flowchart-header-container,
+.flashcards-header {
+  position: sticky;
+  top: 52px;
+  z-index: 10;
+  background-color: var(--background);
+  @apply pt-3 md:pt-6 pb-2 mb-8;
+}
+
+/* Reset sticky properties for titles inside sticky containers to avoid double-sticking */
+.flowchart-header-container .flowchart-title,
+.flashcards-header .flashcard-title {
+  position: static !important;
+  background-color: transparent !important;
+  padding-top: 0 !important;
+  margin-bottom: 0 !important;
+}
+
+/* Reset sticky styling during fullscreen mode */
+.flowchart-section.fullscreen .flowchart-header-container {
+  position: static !important;
+  padding-top: 0.5rem !important;
+  margin-bottom: 0.5rem !important;
 }
