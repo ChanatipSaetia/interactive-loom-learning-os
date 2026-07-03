@@ -21,6 +21,23 @@ export default defineConfig(({ mode }) => {
     server: {
       port: Number(env.VITE_PORT) || 5173,
       open: false
+    },
+    build: {
+      chunkSizeWarningLimit: 1200,
+      rollupOptions: {
+        output: {
+          manualChunks(id) {
+            if (id.includes('node_modules')) {
+              if (id.includes('anime')) return 'vendor-anime'
+              return 'vendor'
+            }
+            if (id.includes('/src/sections/')) {
+              const match = id.match(/\/src\/sections\/([a-z0-9-]+)/)
+              return match ? `section-${match[1]}` : 'sections'
+            }
+          }
+        }
+      }
     }
   }
 })

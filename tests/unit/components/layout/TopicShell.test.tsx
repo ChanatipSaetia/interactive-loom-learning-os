@@ -8,7 +8,8 @@ import { TopicShell, SectionRenderer } from '../../../../src/components/layout/T
 import type { TopicRoute } from '../../../../src/core/routes'
 import type { SectionConfig } from '../../../../src/core/registry'
 
-const mockSectionComponent = vi.fn(() => <div data-testid="mock-registered-section" />)
+const MockSectionComponent = vi.fn(() => <div data-testid="mock-registered-section" />)
+const mockSectionLoader = () => Promise.resolve({ default: MockSectionComponent })
 
 const mockTopics: TopicRoute[] = [
   { id: 'demo', label: 'AI Agent Architecture (Demo)', path: '/demo/ai-agent', category: 'Architecture', description: 'Demo topic' },
@@ -34,7 +35,7 @@ describe('TopicShell OKF loading', () => {
   beforeEach(() => {
     vi.clearAllMocks()
     registryModule.SectionRegistry.clear()
-    registryModule.SectionRegistry.register('test-section', mockSectionComponent)
+    registryModule.SectionRegistry.register('test-section', mockSectionLoader)
   })
 
   afterEach(() => {
@@ -96,7 +97,7 @@ describe('TopicShell OKF loading', () => {
     expect(title).toBeInTheDocument()
   })
 
-  it('SectionRenderer renders registered section type', () => {
+  it('SectionRenderer renders registered section type', async () => {
     const config: SectionConfig = { type: 'test-section', props: {} }
     render(
       <MemoryRouter>
@@ -104,8 +105,10 @@ describe('TopicShell OKF loading', () => {
       </MemoryRouter>,
     )
 
-    expect(screen.getByTestId('mock-registered-section')).toBeInTheDocument()
-    expect(mockSectionComponent).toHaveBeenCalled()
+    await waitFor(() => {
+      expect(screen.getByTestId('mock-registered-section')).toBeInTheDocument()
+    })
+    expect(MockSectionComponent).toHaveBeenCalled()
   })
 
   it('SectionRenderer shows missing message for unregistered type', () => {

@@ -1,33 +1,20 @@
-import { StrictMode, type ComponentType } from 'react'
+import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import { HashRouter } from 'react-router-dom'
 import { App } from './App'
 import { SectionRegistry } from './core/registry'
 import './styles/app.css'
 
-// Section registration
-import TextSection from './sections/text'
-import BulletsSection from './sections/bullets'
-import Flowchart from './sections/flowchart'
-import TradeoffSandboxSection from './sections/tradeoff-sandbox'
-import TaxonomyBrowserSection from './sections/taxonomy-browser'
-import FlashcardDeck from './sections/flashcards'
-import QuizSection from './sections/quiz'
-import ConceptMapSection from './sections/concept-map'
-import ScenarioSection from './sections/scenario'
-import DecisionTreeSection from './sections/decision-tree'
-
-SectionRegistry.register('text', TextSection as ComponentType<unknown>)
-SectionRegistry.register('bullets', BulletsSection as ComponentType<unknown>)
-SectionRegistry.register('flowchart', Flowchart as ComponentType<unknown>)
-SectionRegistry.register('tradeoff-sandbox', TradeoffSandboxSection as ComponentType<unknown>)
-SectionRegistry.register('taxonomy-browser', TaxonomyBrowserSection as ComponentType<unknown>)
-SectionRegistry.register('flashcards', FlashcardDeck as ComponentType<unknown>)
-SectionRegistry.register('quiz', QuizSection as ComponentType<unknown>)
-SectionRegistry.register('concept-map', ConceptMapSection as ComponentType<unknown>)
-SectionRegistry.register('scenario', ScenarioSection as ComponentType<unknown>)
-SectionRegistry.register('decision-tree', DecisionTreeSection as ComponentType<unknown>)
-
+SectionRegistry.register('text', () => import('./sections/text'))
+SectionRegistry.register('bullets', () => import('./sections/bullets'))
+SectionRegistry.register('flowchart', () => import('./sections/flowchart'))
+SectionRegistry.register('tradeoff-sandbox', () => import('./sections/tradeoff-sandbox'))
+SectionRegistry.register('taxonomy-browser', () => import('./sections/taxonomy-browser'))
+SectionRegistry.register('flashcards', () => import('./sections/flashcards'))
+SectionRegistry.register('quiz', () => import('./sections/quiz'))
+SectionRegistry.register('concept-map', () => import('./sections/concept-map'))
+SectionRegistry.register('scenario', () => import('./sections/scenario'))
+SectionRegistry.register('decision-tree', () => import('./sections/decision-tree'))
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>

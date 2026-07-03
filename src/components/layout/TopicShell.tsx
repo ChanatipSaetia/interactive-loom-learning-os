@@ -1,4 +1,4 @@
-import { useMemo } from 'react'
+import { Suspense, useMemo } from 'react'
 import { useParams } from 'react-router-dom'
 import { useTopics } from '../../core/routes'
 import type { SectionConfig } from '../../core/registry'
@@ -19,7 +19,11 @@ function SectionRenderer({ config }: SectionRendererProps) {
       </div>
     )
   }
-  return <Component {...config.props} />
+  return (
+    <Suspense fallback={<div className="section-loading">Loading section...</div>}>
+      <Component {...config.props} />
+    </Suspense>
+  )
 }
 
 function ProgressIndicator({ total, topicId }: { total: number; topicId: string }) {

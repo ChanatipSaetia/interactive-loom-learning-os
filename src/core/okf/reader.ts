@@ -390,7 +390,6 @@ function mapConceptMap(raw: OKFConceptMapRaw): { nodes: Record<string, import('.
     nodes[id] = {
       id,
       title: node.title,
-      definition: node.definition,
       category: node.category,
     }
   }

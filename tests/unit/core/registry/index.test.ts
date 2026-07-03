@@ -3,6 +3,7 @@ import { SectionRegistry } from '../../../../src/core/registry'
 import type { ComponentType } from 'react'
 
 const MockComponent: ComponentType<unknown> = () => null
+const mockLoader = () => Promise.resolve({ default: MockComponent })
 
 describe('SectionRegistry', () => {
   beforeEach(() => {
@@ -10,8 +11,8 @@ describe('SectionRegistry', () => {
   })
 
   it('registers a section type', () => {
-    SectionRegistry.register('text', MockComponent)
-    expect(SectionRegistry.get('text')).toBe(MockComponent)
+    SectionRegistry.register('text', mockLoader)
+    expect(SectionRegistry.get('text')).toBeDefined()
   })
 
   it('returns undefined for unregistered type', () => {
@@ -19,8 +20,8 @@ describe('SectionRegistry', () => {
   })
 
   it('lists all registered section types', () => {
-    SectionRegistry.register('text', MockComponent)
-    SectionRegistry.register('bullets', MockComponent)
+    SectionRegistry.register('text', mockLoader)
+    SectionRegistry.register('bullets', mockLoader)
     const list = SectionRegistry.list()
     expect(list).toContain('text')
     expect(list).toContain('bullets')
@@ -29,13 +30,14 @@ describe('SectionRegistry', () => {
 
   it('overrides existing registration', () => {
     const AnotherComponent: ComponentType<unknown> = () => null
-    SectionRegistry.register('text', MockComponent)
-    SectionRegistry.register('text', AnotherComponent)
-    expect(SectionRegistry.get('text')).toBe(AnotherComponent)
+    const anotherLoader = () => Promise.resolve({ default: AnotherComponent })
+    SectionRegistry.register('text', mockLoader)
+    SectionRegistry.register('text', anotherLoader)
+    expect(SectionRegistry.get('text')).toBeDefined()
   })
 
   it('clears all registrations', () => {
-    SectionRegistry.register('text', MockComponent)
+    SectionRegistry.register('text', mockLoader)
     SectionRegistry.clear()
     expect(SectionRegistry.list()).toHaveLength(0)
   })

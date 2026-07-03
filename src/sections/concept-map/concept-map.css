@@ -3,7 +3,7 @@
 }
 
 .concept-map-layout {
-  @apply flex gap-4 h-[500px];
+  @apply flex gap-4 h-[480px] w-full;
 }
 
 .concept-map-canvas-wrapper {
@@ -31,10 +31,9 @@
 
 .cm-edge-label {
   font-size: 10px;
-  fill: var(--ctp-subtext2);
+  fill: var(--muted-foreground);
   font-family: var(--font-mono);
   transition: fill 0.2s ease, opacity 0.2s ease;
-  opacity: 0.3;
 }
 
 .cm-edge-label-bg {
@@ -42,7 +41,6 @@
   stroke: var(--ctp-surface1);
   stroke-width: 0.5;
   transition: fill 0.2s ease, opacity 0.2s ease, stroke 0.2s ease;
-  opacity: 0.3;
 }
 
 .cm-edge-label-highlight {
@@ -63,7 +61,6 @@
 .cm-edge-label-bg.cm-edge-label-dimmed {
   opacity: 0.05;
 }
-
 .cm-node-group {
   transition: opacity 0.2s ease;
 }
@@ -184,16 +181,3 @@
   @apply w-2 h-2 rounded-full flex-shrink-0;
 }
 
-@media (max-width: 768px) {
-  .concept-map-layout {
-    @apply flex-col h-auto;
-  }
-
-  .concept-map-canvas-wrapper {
-    @apply h-[400px];
-  }
-
-  .concept-map-panel {
-    @apply w-full;
-  }
-}

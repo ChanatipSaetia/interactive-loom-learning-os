@@ -1,13 +1,11 @@
 import { useState, useEffect, useRef, useCallback, useMemo } from 'react'
-import { motion, AnimatePresence } from 'motion/react'
-import { X, ZoomIn, ZoomOut, Maximize2 } from 'lucide-react'
+import { ZoomIn, ZoomOut, Maximize2 } from 'lucide-react'
 import { forceSimulation, forceManyBody, forceLink, forceCenter, forceCollide } from 'd3-force'
 import './concept-map.css'
 
 export interface ConceptNode {
   id: string
   title: string
-  definition: string
   category: string
   x?: number
   y?: number
@@ -87,15 +85,13 @@ function simulateLayout(
 
   const simLinks = edges.map((e) => ({ source: e.from, target: e.to }))
 
-  const MIN_EDGE_LENGTH = 200
-
   const sim = forceSimulation(simNodes)
     .force('charge', forceManyBody().strength(-3000))
-    .force('link', forceLink(simLinks).id((d: any) => d.id).distance(300).strength(0.6))
+    .force('link', forceLink(simLinks).id((d: any) => d.id).distance(100).strength(0.6))
     .force('center', forceCenter(width / 2, height / 2).strength(0.08))
-    .force('collide', forceCollide().radius((d: any) => Math.max(d.rx, d.ry) + MIN_EDGE_LENGTH / 2).strength(1.0))
+    .force('collide', forceCollide().radius((d: any) => Math.sqrt(d.rx * d.rx + d.ry * d.ry)).strength(1.0).iterations(4))
 
-  for (let i = 0; i < 500; i++) {
+  for (let i = 0; i < 3000; i++) {
     sim.tick()
     simNodes.forEach((n: any) => {
       n.x = Math.max(n.rx, Math.min(width - n.rx, n.x))
@@ -108,7 +104,6 @@ function simulateLayout(
     result[n.id] = {
       id: n.id,
       title: n.title,
-      definition: n.definition,
       category: n.category,
       x: n.x,
       y: n.y,
@@ -121,9 +116,9 @@ function ConceptMapSection({ title, nodes, edges }: ConceptMapSectionProps) {
   const svgRef = useRef<SVGSVGElement | null>(null)
   const containerRef = useRef<HTMLDivElement | null>(null)
   const [hoveredNode, setHoveredNode] = useState<string | null>(null)
-  const [selectedNode, setSelectedNode] = useState<string | null>(null)
   const [transform, setTransform] = useState<TransformState>({ scale: 1, translateX: 0, translateY: 0 })
   const [layoutNodes, setLayoutNodes] = useState<Record<string, ConceptNode>>({})
+  const [viewBox, setViewBox] = useState('0 0 1400 900')
   const [isPanning, setIsPanning] = useState(false)
   const transformRef = useRef(transform)
   const isPanningRef = useRef(false)
@@ -149,14 +144,33 @@ function ConceptMapSection({ title, nodes, edges }: ConceptMapSectionProps) {
   useEffect(() => {
     if (!containerRef.current) return
     const rect = containerRef.current.getBoundingClientRect()
-    const w = rect.width || 800
-    const h = rect.height || 500
-    const laid = simulateLayout(nodeIds, nodes, edges, w, h)
+    const cW = Math.max(rect.width, 300)
+    const cH = Math.max(rect.height, 300)
+    const ratio = cW / cH
+    const VIEW_H = 900
+    const VIEW_W = Math.round(900 * ratio)
+    setViewBox(`0 0 ${VIEW_W} ${VIEW_H}`)
+    const laid = simulateLayout(nodeIds, nodes, edges, VIEW_W, VIEW_H)
     setLayoutNodes(laid)
 
-    const centerX = (w - w * 0.6) / 2
-    const centerY = (h - h * 0.6) / 2
-    setTransform({ scale: 0.6, translateX: centerX, translateY: centerY })
+    let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity
+    for (const id of nodeIds) {
+      const n = laid[id]
+      if (!n?.x || !n?.y) continue
+      const hw = getNodeWidth(n.title) / 2 + 20
+      const hh = NODE_HEIGHT / 2 + 20
+      if (n.x - hw < minX) minX = n.x - hw
+      if (n.y - hh < minY) minY = n.y - hh
+      if (n.x + hw > maxX) maxX = n.x + hw
+      if (n.y + hh > maxY) maxY = n.y + hh
+    }
+    const contentW = maxX - minX
+    const contentH = maxY - minY
+    const padding = 40
+    const scale = Math.min((VIEW_W - padding * 2) / contentW, (VIEW_H - padding * 2) / contentH, 1.5)
+    const centerX = (VIEW_W - contentW * scale) / 2 - minX * scale
+    const centerY = (VIEW_H - contentH * scale) / 2 - minY * scale
+    setTransform({ scale, translateX: centerX, translateY: centerY })
   }, [nodes, edges, nodeIds])
 
   // Native event listeners for wheel, touch (like flowchart useCamera)
@@ -338,16 +352,31 @@ function ConceptMapSection({ title, nodes, edges }: ConceptMapSectionProps) {
   const handleReset = useCallback(() => {
     if (!containerRef.current) return
     const rect = containerRef.current.getBoundingClientRect()
-    const w = rect.width || 800
-    const h = rect.height || 500
-    const centerX = (w - w * 0.6) / 2
-    const centerY = (h - h * 0.6) / 2
-    setTransform({ scale: 0.6, translateX: centerX, translateY: centerY })
-  }, [])
+    const cW = Math.max(rect.width, 300)
+    const cH = Math.max(rect.height, 300)
+    const ratio = cW / cH
+    const VIEW_H = 900
+    const VIEW_W = Math.round(900 * ratio)
 
-  const handleNodeClick = useCallback((id: string) => {
-    setSelectedNode((prev) => (prev === id ? null : id))
-  }, [])
+    let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity
+    for (const id of nodeIds) {
+      const n = layoutNodes[id]
+      if (!n?.x || !n?.y) continue
+      const hw = getNodeWidth(n.title) / 2 + 20
+      const hh = NODE_HEIGHT / 2 + 20
+      if (n.x - hw < minX) minX = n.x - hw
+      if (n.y - hh < minY) minY = n.y - hh
+      if (n.x + hw > maxX) maxX = n.x + hw
+      if (n.y + hh > maxY) maxY = n.y + hh
+    }
+    const contentW = maxX - minX
+    const contentH = maxY - minY
+    const padding = 40
+    const scale = Math.min((VIEW_W - padding * 2) / contentW, (VIEW_H - padding * 2) / contentH, 1.5)
+    const centerX = (VIEW_W - contentW * scale) / 2 - minX * scale
+    const centerY = (VIEW_H - contentH * scale) / 2 - minY * scale
+    setTransform({ scale, translateX: centerX, translateY: centerY })
+  }, [nodeIds, layoutNodes])
 
   const isNodeHovered = (id: string): boolean => {
     if (!hoveredNode) return false
@@ -359,8 +388,6 @@ function ConceptMapSection({ title, nodes, edges }: ConceptMapSectionProps) {
     if (!hoveredNode) return false
     return edge.from === hoveredNode || edge.to === hoveredNode
   }
-
-  const selectedNodeData = selectedNode ? layoutNodes[selectedNode] : null
 
   return (
     <div className="concept-map-section" data-testid="concept-map-section">
@@ -376,7 +403,9 @@ function ConceptMapSection({ title, nodes, edges }: ConceptMapSectionProps) {
             ref={svgRef}
             className="concept-map-svg"
             data-testid="concept-map-svg"
-            viewBox="0 0 800 500"
+            viewBox={viewBox}
+            width="100%"
+            height="100%"
             style={{ cursor: isPanning ? 'grabbing' : 'grab' }}
             onMouseDown={handleMouseDown}
             onMouseMove={(e) => handlePointerMove(e.clientX, e.clientY)}
@@ -471,7 +500,6 @@ function ConceptMapSection({ title, nodes, edges }: ConceptMapSectionProps) {
 
                 const isHov = isNodeHovered(id)
                 const isDimmed = hoveredNode && !isHov
-                const isSelected = selectedNode === id
                 const color = getCategoryColor(node.category)
                 const fill = getCategoryFill(node.category)
                 const nodeW = getNodeWidth(node.title)
@@ -482,15 +510,10 @@ function ConceptMapSection({ title, nodes, edges }: ConceptMapSectionProps) {
                 return (
                   <g
                     key={id}
-                    className={`cm-node-group ${isHov ? 'cm-node-highlight' : ''} ${isDimmed ? 'cm-node-dimmed' : ''} ${isSelected ? 'cm-node-selected' : ''}`}
+                    className={`cm-node-group ${isHov ? 'cm-node-highlight' : ''} ${isDimmed ? 'cm-node-dimmed' : ''}`}
                     data-testid={`concept-map-node-${id}`}
-                    onClick={(e) => {
-                      e.stopPropagation()
-                      handleNodeClick(id)
-                    }}
                     onMouseEnter={() => setHoveredNode(id)}
                     onMouseLeave={() => setHoveredNode(null)}
-                    cursor="pointer"
                   >
                     <rect
                       x={nodeX}
@@ -500,7 +523,7 @@ function ConceptMapSection({ title, nodes, edges }: ConceptMapSectionProps) {
                       rx={8}
                       fill={fill}
                       stroke={color}
-                      strokeWidth={isSelected ? 3 : 2}
+                      strokeWidth={isHov ? 3 : 2}
                       data-testid={`concept-map-node-circle-${id}`}
                     />
                     <text
@@ -583,67 +606,6 @@ function ConceptMapSection({ title, nodes, edges }: ConceptMapSectionProps) {
             ))}
           </div>
         </div>
-
-        <AnimatePresence>
-          {selectedNodeData && (
-            <motion.div
-              className="concept-map-panel"
-              data-testid="concept-map-panel"
-              initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: 20 }}
-              transition={{ duration: 0.2 }}
-            >
-              <div className="concept-map-panel-header">
-                <div className="concept-map-panel-category">
-                  <span
-                    className="concept-map-panel-dot"
-                    style={{ backgroundColor: getCategoryColor(selectedNodeData.category) }}
-                  />
-                  <span>{selectedNodeData.category}</span>
-                </div>
-                <button
-                  className="concept-map-panel-close"
-                  data-testid="concept-map-panel-close"
-                  onClick={() => setSelectedNode(null)}
-                >
-                  <X className="w-4 h-4" />
-                </button>
-              </div>
-              <h4 className="concept-map-panel-title" data-testid="concept-map-panel-title">
-                {selectedNodeData.title}
-              </h4>
-              <p className="concept-map-panel-def" data-testid="concept-map-panel-definition">
-                {selectedNodeData.definition}
-              </p>
-              {connectedNodes.get(selectedNodeData.id)?.size && (
-                <div className="concept-map-panel-connections">
-                  <span className="concept-map-panel-connections-label">Connected to:</span>
-                  <div className="concept-map-panel-connection-list">
-                    {Array.from(connectedNodes.get(selectedNodeData.id) ?? []).map((connId) => {
-                      const connNode = layoutNodes[connId]
-                      if (!connNode) return null
-                      return (
-                        <button
-                          key={connId}
-                          className="concept-map-panel-connection-item"
-                          data-testid={`concept-map-panel-connection-${connId}`}
-                          onClick={() => setSelectedNode(connId)}
-                        >
-                          <span
-                            className="concept-map-panel-connection-dot"
-                            style={{ backgroundColor: getCategoryColor(connNode.category) }}
-                          />
-                          {connNode.title}
-                        </button>
-                      )
-                    })}
-                  </div>
-                </div>
-              )}
-            </motion.div>
-          )}
-        </AnimatePresence>
       </div>
     </div>
   )

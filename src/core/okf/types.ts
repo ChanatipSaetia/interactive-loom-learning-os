@@ -93,7 +93,6 @@ export interface OKFConceptMapSectionData {
 export interface OKFConceptNode {
   id: string
   title: string
-  definition: string
   category: string
 }
 
@@ -107,7 +106,6 @@ export interface OKFConceptEdge {
 
 export interface OKFConceptNodeRaw {
   title: string
-  definition: string
   category: string
 }
 

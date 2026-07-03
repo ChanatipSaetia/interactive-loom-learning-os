@@ -8,19 +8,16 @@ const mockNodes: Record<string, ConceptNode> = {
   orchestrator: {
     id: 'orchestrator',
     title: 'Orchestrator',
-    definition: 'Central agent that decomposes goals and delegates tasks.',
     category: 'pattern',
   },
   workers: {
     id: 'workers',
     title: 'Workers',
-    definition: 'Specialized sub-agents that execute delegated tasks.',
     category: 'pattern',
   },
   react_loop: {
     id: 'react_loop',
     title: 'ReAct Loop',
-    definition: 'Reason-act cycle: reason about goal, take action, observe result.',
     category: 'mechanism',
   },
 }
@@ -91,61 +88,6 @@ describe('ConceptMap Section', () => {
     render(<ConceptMapSection nodes={mockNodes} edges={mockEdges} />)
     expect(screen.getByTestId('concept-map-legend-pattern')).toBeInTheDocument()
     expect(screen.getByTestId('concept-map-legend-mechanism')).toBeInTheDocument()
-  })
-
-  it('opens detail panel when node is clicked', () => {
-    render(<ConceptMapSection nodes={mockNodes} edges={mockEdges} />)
-    const node = screen.getByTestId('concept-map-node-orchestrator')
-    fireEvent.click(node)
-    expect(screen.getByTestId('concept-map-panel')).toBeInTheDocument()
-  })
-
-  it('shows correct definition in detail panel', () => {
-    render(<ConceptMapSection nodes={mockNodes} edges={mockEdges} />)
-    const node = screen.getByTestId('concept-map-node-orchestrator')
-    fireEvent.click(node)
-    expect(screen.getByTestId('concept-map-panel-title')).toHaveTextContent('Orchestrator')
-    expect(screen.getByTestId('concept-map-panel-definition')).toHaveTextContent(
-      'Central agent that decomposes goals and delegates tasks.'
-    )
-  })
-
-  it('closes detail panel when close button is clicked', () => {
-    render(<ConceptMapSection nodes={mockNodes} edges={mockEdges} />)
-    const node = screen.getByTestId('concept-map-node-orchestrator')
-    fireEvent.click(node)
-    expect(screen.getByTestId('concept-map-panel')).toBeInTheDocument()
-    const closeBtn = screen.getByTestId('concept-map-panel-close')
-    fireEvent.click(closeBtn)
-    expect(screen.queryByTestId('concept-map-panel')).not.toBeInTheDocument()
-  })
-
-  it('toggles panel off when clicking same node again', () => {
-    render(<ConceptMapSection nodes={mockNodes} edges={mockEdges} />)
-    const node = screen.getByTestId('concept-map-node-orchestrator')
-    fireEvent.click(node)
-    expect(screen.getByTestId('concept-map-panel')).toBeInTheDocument()
-    fireEvent.click(node)
-    expect(screen.queryByTestId('concept-map-panel')).not.toBeInTheDocument()
-  })
-
-  it('shows connected nodes in detail panel', () => {
-    render(<ConceptMapSection nodes={mockNodes} edges={mockEdges} />)
-    const node = screen.getByTestId('concept-map-node-workers')
-    fireEvent.click(node)
-    expect(screen.getByTestId('concept-map-panel-connection-orchestrator')).toBeInTheDocument()
-    expect(screen.getByTestId('concept-map-panel-connection-react_loop')).toBeInTheDocument()
-  })
-
-  it('switches detail panel when clicking another connected node', () => {
-    render(<ConceptMapSection nodes={mockNodes} edges={mockEdges} />)
-    const node1 = screen.getByTestId('concept-map-node-orchestrator')
-    fireEvent.click(node1)
-    expect(screen.getByTestId('concept-map-panel-title')).toHaveTextContent('Orchestrator')
-
-    const connNode = screen.getByTestId('concept-map-panel-connection-workers')
-    fireEvent.click(connNode)
-    expect(screen.getByTestId('concept-map-panel-title')).toHaveTextContent('Workers')
   })
 
   it('zoom in button adjusts transform', () => {
