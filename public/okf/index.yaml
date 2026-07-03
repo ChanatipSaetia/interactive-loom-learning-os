@@ -1,4 +1,9 @@
 # Auto-generated — do not edit manually
+- id: chinese101-day1
+  label: ภาษาจีนเบื้องต้น (Day 1) — Chinese 101
+  path: /topics/chinese101-day1
+  category: Language
+  description: เริ่มเรียนภาษาจีนด้วยคำทักทาย ตัวเลข และประโยคพื้นฐาน
 - id: demo
   label: AI Agent Architecture (Demo)
   path: /topics/demo
@@ -14,13 +19,10 @@
   path: /topics/motorcycle
   category: Mechanical
   description: เข้าใจส่วนประกอบ การทำงาน และการบำรุงรักษารถมอเตอร์ไซค์
-- id: chinese101-day1
-  label: ภาษาจีนเบื้องต้น (Day 1)
-  path: /topics/chinese101-day1
-  category: Language
-  description: เริ่มเรียนภาษาจีนด้วยคำทักทาย ตัวเลข และประโยคพื้นฐาน
 - id: poe2-flicker-monk
-  label: PoE 2 Flicker Strike Monk
+  label: PoE 2 Flicker Strike Monk — Budget Build Guide
   path: /topics/poe2-flicker-monk
   category: Gaming
-  description: Budget Flicker Strike + Falling Thunder Martial Artist Monk build guide for PoE 2 patch 0.5
+  description: >-
+    Master the Flicker Strike + Falling Thunder Martial Artist Monk build in
+    Path of Exile 2 patch 0.5
