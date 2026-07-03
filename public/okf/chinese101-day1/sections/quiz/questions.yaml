@@ -1,0 +1,135 @@
+- id: q1
+  question: "'你好' (nǐ hǎo) แปลว่าอะไร?"
+  hint: "เป็นคำทักทายพื้นฐานที่สุด"
+  choices:
+    - id: a
+      text: "ขอบคุณ"
+      correct: false
+      explanation: "ไม่ถูก '谢谢' (xiè xie) คือขอบคุณ"
+    - id: b
+      text: "สวัสดี"
+      correct: true
+      explanation: "ถูกต้อง! '你好' (nǐ hǎo) แปลว่า สวัสดี"
+    - id: c
+      text: "ลาก่อน"
+      correct: false
+      explanation: "ไม่ถูก '再见' (zài jiàn) คือนั่น"
+
+- id: q2
+  question: "ตัวเลข '五' อ่านว่าอะไร?"
+  hint: "ออกเสียงคล้าย 'อู่'"
+  choices:
+    - id: a
+      text: "wǔ (อู่)"
+      correct: true
+      explanation: "ถูกต้อง! '五' (wǔ) = ห้า"
+    - id: b
+      text: "sì (ซื่อ)"
+      correct: false
+      explanation: "ไม่ถูก '四' (sì) = สี่"
+    - id: c
+      text: "shí (สือ)"
+      correct: false
+      explanation: "ไม่ถูก '十' (shí) = สิบ"
+
+- id: q3
+  question: "ภาษาจีนกลางมีกี่เสียง?"
+  hint: "เสียงคือระดับเสียงที่ใช้แยกความหมาย"
+  choices:
+    - id: a
+      text: "2 เสียง"
+      correct: false
+      explanation: "ไม่ถูก ภาษาจีนมีมากกว่า 2 เสียง"
+    - id: b
+      text: "4 เสียง"
+      correct: true
+      explanation: "ถูกต้อง! ภาษาจีนกลางมี 4 เสียง (ไม่รวมเสียงเบา)"
+    - id: c
+      text: "6 เสียง"
+      correct: false
+      explanation: "ไม่ถูก ภาษาจีนกลางมี 4 เสียงหลัก (ภาษาจีนท้องถิ่นอื่นๆ อาจมีมากกว่า)"
+
+- id: q4
+  question: "'再见' (zài jiàn) แปลว่าอะไร?"
+  hint: "ใช้ตอนจบการสนทนา"
+  choices:
+    - id: a
+      text: "สวัสดี"
+      correct: false
+      explanation: "ไม่ถูก '你好' (nǐ hǎo) คือนั่น"
+    - id: b
+      text: "ลาก่อน"
+      correct: true
+      explanation: "ถูกต้อง! '再见' (zài jiàn) = ลาก่อน/พบกันใหม่"
+    - id: c
+      text: "ขอบคุณ"
+      correct: false
+      explanation: "ไม่ถูก '谢谢' (xiè xie) คือนั่น"
+
+- id: q5
+  question: "จะแนะนำตัวเองว่า 'ฉันชื่อสมชาย' เป็นจีนยังไง?"
+  hint: "ใช้ '我叫' (wǒ jiào) = ฉันชื่อ"
+  choices:
+    - id: a
+      text: "我叫สมชาย"
+      correct: true
+      explanation: "ถูกต้อง! '我叫' + ชื่อ = ฉันชื่อ..."
+    - id: b
+      text: "你叫สมชาย"
+      correct: false
+      explanation: "ไม่ถูก '你叫' = คุณชื่อ"
+    - id: c
+      text: "你好สมชาย"
+      correct: false
+      explanation: "ไม่ถูก '你好' = สวัสดี"
+
+- id: q6
+  question: "'十' (shí) คือเลขอะไร?"
+  hint: "เป็นเลขสุดท้ายของบทนี้"
+  choices:
+    - id: a
+      text: "เก้า"
+      correct: false
+      explanation: "ไม่ถูก '九' (jiǔ) = เก้า"
+    - id: b
+      text: "แปด"
+      correct: false
+      explanation: "ไม่ถูก '八' (bā) = แปด"
+    - id: c
+      text: "สิบ"
+      correct: true
+      explanation: "ถูกต้อง! '十' (shí) = สิบ"
+
+- id: q7
+  question: "คำว่า '吗' (ma) ในประโยค '你好吗？' ทำหน้าที่อะไร?"
+  hint: "เปลี่ยนประโยคบอกเล่าเป็นคำถาม"
+  choices:
+    - id: a
+      text: "ทำให้ประโยคเป็นคำถาม"
+      correct: true
+      explanation: "ถูกต้อง! '吗' (ma) เป็นคำช่วยเปลี่ยนประโยคเป็นคำถาม"
+    - id: b
+      text: "ทำให้ประโยคเป็นประโยคปฏิเสธ"
+      correct: false
+      explanation: "ไม่ถูก '不' (bù) คือนั่น"
+    - id: c
+      text: "ทำให้ประโยคเป็นคำขอบคุณ"
+      correct: false
+      explanation: "ไม่ถูก '谢谢' (xiè xie) คือนั่น"
+
+- id: q8
+  question: "'谢谢' (xiè xie) แปลว่าอะไร?"
+  hint: "พูดเมื่อมีคนช่วยเหลือ"
+  choices:
+    - id: a
+      text: "ขอโทษ"
+      correct: false
+      explanation: "ไม่ถูก '对不起' (duì bu qǐ) คือนั่น"
+    - id: b
+      text: "สวัสดี"
+      correct: false
+      explanation: "ไม่ถูก '你好' (nǐ hǎo) คือนั่น"
+    - id: c
+      text: "ขอบคุณ"
+      correct: true
+      explanation: "ถูกต้อง! '谢谢' (xiè xie) = ขอบคุณ"

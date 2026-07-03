@@ -14,3 +14,8 @@
   path: /topics/motorcycle
   category: Mechanical
   description: เข้าใจส่วนประกอบ การทำงาน และการบำรุงรักษารถมอเตอร์ไซค์
+- id: chinese101-day1
+  label: ภาษาจีนเบื้องต้น (Day 1)
+  path: /topics/chinese101-day1
+  category: Language
+  description: เริ่มเรียนภาษาจีนด้วยคำทักทาย ตัวเลข และประโยคพื้นฐาน

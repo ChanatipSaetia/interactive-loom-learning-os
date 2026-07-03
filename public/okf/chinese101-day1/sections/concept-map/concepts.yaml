@@ -1,0 +1,60 @@
+nodes:
+  pinyin:
+    title: "พินอิน (拼音)"
+    category: concept
+  tones:
+    title: "4 เสียง (声调)"
+    category: concept
+  characters:
+    title: "อักษรจีน (汉字)"
+    category: concept
+  greeting:
+    title: "คำทักทาย"
+    category: phrase
+  numbers:
+    title: "ตัวเลข 1-10"
+    category: phrase
+  self-intro:
+    title: "แนะนำตัวเอง"
+    category: phrase
+  topic:
+    title: "ประธาน"
+    category: grammar
+  comment:
+    title: "ขยายความ"
+    category: grammar
+  sentence:
+    title: "ประโยคพื้นฐาน"
+    category: grammar
+
+edges:
+  - from: pinyin
+    to: tones
+    label: "ใช้ระบุ"
+  - from: pinyin
+    to: characters
+    label: "อ่าน"
+  - from: characters
+    to: tones
+    label: "มี"
+  - from: greeting
+    to: characters
+    label: "ประกอบด้วย"
+  - from: numbers
+    to: characters
+    label: "ประกอบด้วย"
+  - from: self-intro
+    to: characters
+    label: "ประกอบด้วย"
+  - from: topic
+    to: sentence
+    label: "สร้าง"
+  - from: comment
+    to: sentence
+    label: "สร้าง"
+  - from: sentence
+    to: greeting
+    label: "ใช้"
+  - from: sentence
+    to: self-intro
+    label: "ใช้"

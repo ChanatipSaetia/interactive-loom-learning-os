@@ -1,6 +1,6 @@
 import { useState, useCallback, useMemo } from 'react'
 import { motion, AnimatePresence } from 'motion/react'
-import { Check, X, Lightbulb, ChevronRight, ChevronLeft } from 'lucide-react'
+import { Check, X, Lightbulb, ChevronRight, ChevronLeft, ChevronDown } from 'lucide-react'
 import type { OKFQuizQuestion } from '../../core/okf/types'
 import { Button } from '../../components/motion/button'
 import './quiz.css'
@@ -13,19 +13,24 @@ export interface QuizSectionProps {
 const CHOICE_LABELS = ['A', 'B', 'C', 'D', 'E', 'F']
 
 type AnswersMap = Record<number, string>
+type HintsOpenMap = Record<number, boolean>
 
 function QuestionCard({
   question,
   index,
   total,
   selectedChoice,
+  hintOpen,
   onAnswer,
+  onToggleHint,
 }: {
   question: OKFQuizQuestion
   index: number
   total: number
   selectedChoice: string | null
+  hintOpen: boolean
   onAnswer: (questionIndex: number, choiceId: string) => void
+  onToggleHint: (questionIndex: number) => void
 }) {
   const revealed = selectedChoice !== null
 
@@ -57,8 +62,27 @@ function QuestionCard({
 
       {question.hint && !revealed && (
         <div className="quiz-hint" data-testid={`quiz-hint-${index}`}>
-          <Lightbulb className="quiz-hint-icon" />
-          <span>{question.hint}</span>
+          <button
+            className="quiz-hint-toggle"
+            onClick={() => onToggleHint(index)}
+            aria-label="Toggle hint"
+          >
+            <Lightbulb className="quiz-hint-icon" />
+            <ChevronDown className={`quiz-hint-chevron ${hintOpen ? 'quiz-hint-chevron-open' : ''}`} />
+          </button>
+          <AnimatePresence>
+            {hintOpen && (
+              <motion.span
+                className="quiz-hint-text"
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: 'auto' }}
+                exit={{ opacity: 0, height: 0 }}
+                transition={{ duration: 0.2, ease: [0.25, 1, 0.5, 1] }}
+              >
+                {question.hint}
+              </motion.span>
+            )}
+          </AnimatePresence>
         </div>
       )}
 
@@ -136,6 +160,7 @@ function QuestionCard({
 export default function QuizSection({ title, questions = [] }: QuizSectionProps) {
   const [currentIndex, setCurrentIndex] = useState(0)
   const [answers, setAnswers] = useState<AnswersMap>({})
+  const [hintsOpen, setHintsOpen] = useState<HintsOpenMap>({})
 
   if (questions.length === 0) {
     return <div className="p-8 text-center text-muted-foreground font-mono text-sm">No quiz questions provided.</div>
@@ -143,6 +168,10 @@ export default function QuizSection({ title, questions = [] }: QuizSectionProps)
 
   const handleAnswer = useCallback((questionIndex: number, choiceId: string) => {
     setAnswers((prev) => ({ ...prev, [questionIndex]: choiceId }))
+  }, [])
+
+  const handleToggleHint = useCallback((questionIndex: number) => {
+    setHintsOpen((prev) => ({ ...prev, [questionIndex]: !prev[questionIndex] }))
   }, [])
 
   const score = useMemo(() => {
@@ -194,7 +223,9 @@ export default function QuizSection({ title, questions = [] }: QuizSectionProps)
           index={currentIndex}
           total={questions.length}
           selectedChoice={answers[currentIndex] ?? null}
+          hintOpen={!!hintsOpen[currentIndex]}
           onAnswer={handleAnswer}
+          onToggleHint={handleToggleHint}
         />
       </div>
 

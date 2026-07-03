@@ -56,18 +56,34 @@
 
 /* Hint */
 .quiz-hint {
-  @apply flex items-start gap-2 mb-4 p-3 rounded-md border;
+  @apply mb-4 rounded-md border overflow-hidden;
   border-color: rgba(81, 87, 109, 0.5);
   background-color: rgba(81, 87, 109, 0.1);
 }
 
+.quiz-hint-toggle {
+  @apply flex items-center gap-2 w-full p-3 bg-transparent border-0 cursor-pointer;
+}
+
+.quiz-hint-toggle:hover {
+  background-color: rgba(81, 87, 109, 0.15);
+}
+
 .quiz-hint-icon {
-  @apply w-4 h-4 flex-shrink-0 mt-0.5;
+  @apply w-4 h-4 flex-shrink-0;
   color: var(--ctp-yellow);
 }
 
-.quiz-hint span {
-  @apply text-sm text-muted-foreground italic;
+.quiz-hint-chevron {
+  @apply w-4 h-4 flex-shrink-0 text-muted-foreground transition-transform duration-200;
+}
+
+.quiz-hint-chevron-open {
+  @apply rotate-180;
+}
+
+.quiz-hint-text {
+  @apply block px-3 pb-3 text-sm text-muted-foreground italic;
 }
 
 /* Choices */
