@@ -1,0 +1,118 @@
+id: flicker-advisor
+title: "Flicker Monk Setup Advisor"
+root: stage
+nodes:
+  stage:
+    prompt: "What stage of the league are you at?"
+    choices:
+      - id: league-start
+        text: "League start (Acts 1-4)"
+        next: weapon-check
+        rationale: "Early league priorities differ from endgame."
+        recommended: true
+      - id: mid-league
+        text: "Mid-league (mapping, some endgame gear)"
+        next: charge-choice
+      - id: endgame
+        text: "Late league (Uber endgame target)"
+        next: uber-check
+
+  weapon-check:
+    prompt: "What weapon do you currently have?"
+    choices:
+      - id: has-staff
+        text: "A Quarterstaff with Lightning Damage"
+        next: rec-league-start-good
+        rationale: "You have the correct weapon type."
+        recommended: true
+      - id: has-dreaming
+        text: "Dreaming Quarterstaff"
+        next: rec-switch-staff
+      - id: no-staff
+        text: "No Quarterstaff yet"
+        next: rec-get-staff
+
+  rec-league-start-good:
+    leaf:
+      recommendation: "Focus on reaching 4000 ES for Chaos Inoculation."
+      explanation: "You have the right weapon. Priority now is gearing toward CI: ES/Evasion hybrid armor, Spirit nodes for auras, and Shavronne's Satchel. Take CI at ~4000 ES."
+      tradeoffs:
+        - "Don't rush CI without Shavronne's Satchel — instant recovery is mandatory"
+        - "Early league charge generation: use Hollow Focus + Killing Palm bells"
+        - "Aim for 60% Crit Chance on Whirling Assault for Cast on Critical uptime"
+
+  rec-switch-staff:
+    leaf:
+      recommendation: "Switch to any non-Dreaming Quarterstaff immediately."
+      explanation: "Dreaming Quarterstaff has 0% base Crit Chance, which breaks Cast on Critical, Nova Projectiles crit scaling, and every crit mechanic in this build. Any other Quarterstaff is better."
+      tradeoffs:
+        - "Even a basic staff with Lightning Damage outperforms the Dreaming variant for this build"
+        - "Look for: flat Lightning Damage, % Increased Critical Damage, Attack Speed"
+        - "Oisin's Oath requires Leech Phys Damage as Mana somewhere on gear"
+
+  rec-get-staff:
+    leaf:
+      recommendation: "Acquire a Quarterstaff (avoid Dreaming) as your top priority."
+      explanation: "The Quarterstaff is the build's foundation — it sockets Falling Thunder, Flicker Strike, and other skills. Look for flat Lightning Damage, Crit stats, and Attack Speed."
+      tradeoffs:
+        - "League starter staffs are cheap on trade (1-3 Divine equivalent)"
+        - "Focus on getting ES/Evasion body armor simultaneously"
+        - "Don't invest in jewelry until you have a staff and body armor"
+
+  charge-choice:
+    prompt: "How are you generating Power Charges for boss fights?"
+    choices:
+      - id: hollow-focus-charges
+        text: "Hollow Focus + Killing Palm bell culling"
+        next: rec-buy-ailiths
+      - id: ailiths-charges
+        text: "Ailith's Chimes + Combo"
+        next: rec-mid-optimized
+        recommended: true
+
+  rec-buy-ailiths:
+    leaf:
+      recommendation: "Buy Ailith's Chimes now — prices have dropped mid-league."
+      explanation: "Ailith's Chimes converts Combo expenditure into Power Charges instantly. The Hollow Focus method works but is manual and slow for boss fights."
+      tradeoffs:
+        - "Mid-league Ailith's Chimes is affordable (check trade for current price)"
+        - "Requires Mantra of Destruction + Delayed Gratification link"
+        - "Once acquired, boss charge generation becomes one-click"
+
+  rec-mid-optimized:
+    leaf:
+      recommendation: "You're on the right path. Focus on defense upgrades and Stonefist glove optimization."
+      explanation: "With Ailith's Chimes, your charge generation is optimal. Now prioritize: Subterfuge Mask helmet (400+ ES), Heart of the Well for Chaos Damage, and Stonefist gloves with Physical + 2 elemental prefixes."
+      tradeoffs:
+        - "Target 6000+ ES and 75% Evasion for endgame survivability"
+        - "Heart of the Well enables Herald of Ice explosions via Chaos Damage"
+        - "Glove Stonefist multiplier is the single biggest damage upgrade"
+
+  uber-check:
+    prompt: "What's your endgame target?"
+    choices:
+      - id: map-bosses
+        text: "Clear map bosses and regular endgame"
+        next: rec-standard-endgame
+        recommended: true
+      - id: uber-pinnacles
+        text: "One-shot Uber Pinnacle bosses"
+        next: rec-uber-setup
+
+  rec-standard-endgame:
+    leaf:
+      recommendation: "Standard endgame setup: 6500 ES, 75% Evasion, CI, Shavronne's, Ailith's Chimes."
+      explanation: "For regular endgame, focus on solid defenses and reliable damage. No Uber-specific gear needed."
+      tradeoffs:
+        - "35% MS boots for mapping, no need for Powertread"
+        - "Standard Quarterstaff with Lightning Damage + Crit + Attack Speed suffices"
+        - "Heart of the Well is valuable but not mandatory for standard endgame"
+
+  rec-uber-setup:
+    leaf:
+      recommendation: "Uber endgame: add Powertread, Farrul's Rune + Fenumus' Rune, Uul-Netol's Embrace."
+      explanation: "Uber Pinnacle bosses require maximum damage. Swap Powertread boots for bossing, equip Farrul's Rune + Fenumus' Rune for Herald explosion synergy, and target Uul-Netol's Embrace + Rite of Passage."
+      tradeoffs:
+        - "Powertread replaces MS boots only for Uber bossing — swap back for mapping"
+        - "Uul-Netol's Embrace + Rite of Passage is extremely expensive (giga-invest)"
+        - "Consider Jiquani's Thesis Perfect Core helmet for mana (optional uber luxury)"

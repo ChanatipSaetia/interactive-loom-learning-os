@@ -1,0 +1,19 @@
+type: taxonomy-category
+icon: HeartPulse
+title: "Defense Layers"
+subtitle: "ES/Evasion Hybrid, CI, Deflection"
+color: green
+description: "Multi-layered defense combining Energy Shield, Evasion, Deflection, and Chaos Inoculation."
+details: "The build uses ES/Evasion hybrid bases across all armor, Subterfuge Mask for bonus Evasion from helmet ES, Deflection on body armor and boots, and Chaos Inoculation for chaos immunity at endgame. Ghost Dance provides ES recovery."
+analogy: "Defense in layers — if one fails, the next catches you."
+primaryFocus: "Survivability through stacking complementary defenses"
+inScope:
+  - "ES/Evasion hybrid gear (Sleek Jacket body base)"
+  - "Chaos Inoculation at ~4000+ ES"
+  - "Subterfuge Mask — +2 Evasion per 1 ES on helmet"
+  - "Deflection suffix on body armor and boots"
+  - "Stun Threshold passive nodes"
+  - "Ghost Dance for ES recovery (essential with CI)"
+outOfScope:
+  - "Armour-based defenses"
+  - "Block-based defenses"

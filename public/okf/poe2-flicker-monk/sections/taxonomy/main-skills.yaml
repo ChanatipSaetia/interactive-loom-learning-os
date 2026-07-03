@@ -1,0 +1,15 @@
+type: taxonomy-category
+icon: Zap
+title: "Main Damage Skills"
+subtitle: "Falling Thunder & Flicker Strike"
+color: yellow
+description: "Your two primary skills that clear maps and melt bosses."
+details: "Falling Thunder fires lightning projectiles per Power Charge consumed in a 360-degree burst. Flicker Strike dashes through enemies, teleporting you while dealing damage. Both scale with Power Charges and critical strikes."
+analogy: "Falling Thunder is your area denial, Flicker Strike is your mobility tool — but both kill."
+primaryFocus: "Power Charge consumption and critical strike damage"
+inScope:
+  - "Falling Thunder (Lv20) + Elemental Armament, Nova Projectiles, Ricochet, Pinpoint Critical, Ice Bite"
+  - "Flicker Strike (Lv20) + Blindside, Concentrated Area, Close Combat, Perpetual Charge, Hit and Run"
+  - "Both socketed in Quarterstaff"
+outOfScope:
+  - "Single-target focused attacks without AoE potential"

@@ -1,0 +1,143 @@
+- id: flicker-strike
+  word: "Flicker Strike"
+  pronunciation: "FLIK-er strike"
+  category: skill
+  shortDefinition: "Dash through enemies, dealing melee damage."
+  detailedDefinition: "Your character flickers through enemies in the direction of movement, dealing melee physical damage. Links with Perpetual Charge to extend duration and reduce charge consumption chance."
+  whyItMatters: "Primary mobility and clearing skill. Teleporting through packs while dealing damage is the build's signature feel."
+  dialogue:
+    user: "How do I clear maps fast?"
+    aiThoughts: "The player wants mapping efficiency."
+    aiQuestion: "Use Flicker Strike to dash through packs, then follow up with Falling Thunder on dense groups."
+
+- id: falling-thunder
+  word: "Falling Thunder"
+  pronunciation: "FAL-ing THUN-der"
+  category: skill
+  shortDefinition: "Fire lightning projectiles per Power Charge consumed."
+  detailedDefinition: "A lightning attack that fires one projectile per Power Charge consumed, dealing increased damage per projectile. Combined with Nova Projectiles, it creates a 360-degree AoE burst."
+  whyItMatters: "Your main AoE clear skill. With 6-8 charges and Nova Projectiles, you fill the screen with lightning."
+  dialogue:
+    user: "What's my nuke button?"
+    aiThoughts: "Player needs to know the main AoE skill."
+    aiQuestion: "Falling Thunder fires a projectile per charge consumed — stack charges first for maximum devastation."
+
+- id: combo
+  word: "Combo"
+  pronunciation: "KOM-boh"
+  category: mechanic
+  shortDefinition: "Stack counter that buffs damage and enables charge generation."
+  detailedDefinition: "A stacking mechanic gained through melee hits. Martial Adept doubles your Combo gain. At 20 stacks on Mantra of Destruction, you can expend Combo for Power Charges via Ailith's Chimes."
+  whyItMatters: "The bridge between hitting things and generating Power Charges for your main skills."
+  dialogue:
+    user: "How do I get more charges for bossing?"
+    aiThoughts: "Player needs charge generation explained."
+    aiQuestion: "Build Combo through Whirling Assault, then expend it into charges with Ailith's Chimes."
+
+- id: power-charges
+  word: "Power Charges"
+  pronunciation: "POW-er CHARJZ"
+  category: mechanic
+  shortDefinition: "Temporary buffs that enhance linked skills."
+  detailedDefinition: "A currency of temporary buffs (max 5 normally, up to 8 with +1 mods). Consumed by Falling Thunder for projectiles, by Charged Staff for lightning damage, and by Flicker Strike for increased damage."
+  whyItMatters: "Everything in this build scales with Power Charges. More charges = more projectiles = more damage."
+  dialogue:
+    user: "Why does everyone talk about charges?"
+    aiThoughts: "Player doesn't grasp charge centrality."
+    aiQuestion: "Each charge becomes a Falling Thunder projectile and boosts your Flicker Strike damage. They're the build's fuel."
+
+- id: martial-artist
+  word: "Martial Artist"
+  pronunciation: "MAR-shul AR-tist"
+  category: ascendancy
+  shortDefinition: "Monk ascendancy focused on close combat mastery."
+  detailedDefinition: "The Martial Artist ascendancy provides: Way of the Stonefist (glove damage multiplier), Martial Adept (doubled Combo gain + ES recharge), Martial Master (all attacks build Combo), Hollow Focus Technique (bell stun/crit), and Runic Meridians (extra rune sockets)."
+  whyItMatters: "Core ascendancy that makes the build viable. Stonefist alone is a massive damage multiplier."
+  dialogue:
+    user: "Which ascendancy do I take?"
+    aiThoughts: "Player needs ascendancy guidance."
+    aiQuestion: "Martial Artist is mandatory. Prioritize Way of the Stonefist for damage and Martial Master for Combo retention."
+
+- id: stonefist
+  word: "Way of the Stonefist"
+  pronunciation: "way of the STONE-fist"
+  category: ascendancy
+  shortDefinition: "Converts flat glove damage into extra damage percentages."
+  detailedDefinition: "Flat Physical Damage and flat Elemental Damage on your Gloves become % Extra Damage of that type. Gloves with Physical + 2 elemental prefixes create a massive multiplicative damage multiplier."
+  whyItMatters: "Single biggest damage node in the ascendancy. A well-rolled pair of gloves multiplies all damage."
+  dialogue:
+    user: "What glove stats do I need?"
+    aiThoughts: "Player needs to understand Stonefist gearing."
+    aiQuestion: "You need flat Physical Damage + 2 flat Elemental Damage types on your gloves for the Stonefist multiplier."
+
+- id: chaos-inoculation
+  word: "Chaos Inoculation"
+  pronunciation: "KAY-os in-ok-yoo-LAY-shun"
+  category: defense
+  shortDefinition: "Sets max Life to 1 but grants chaos immunity."
+  detailedDefinition: "A notable passive that sets maximum Life to 1 in exchange for 100% Chaos Resistance. Requires sufficient base Energy Shield to survive. Taken at approximately 4000+ ES."
+  whyItMatters: "Essential endgame defense. Chaos damage has a 2x multiplier against ES, so CI eliminates that vulnerability."
+  dialogue:
+    user: "When should I take CI?"
+    aiThoughts: "Player needs CI timing."
+    aiQuestion: "Take Chaos Inoculation once you reach 4000+ ES and have Shavronne's Satchel for instant recovery."
+
+- id: subterfuge-mask
+  word: "Subterfuge Mask"
+  pronunciation: "sub-TUR-fyoo MASK"
+  category: defense
+  shortDefinition: "+2 Evasion per 1 ES on helmet."
+  detailedDefinition: "A passive node that converts Energy Shield on your helmet into Evasion Rating. A 400 ES helmet generates an additional 800 Evasion, stacking with your body armor evasion."
+  whyItMatters: "Free evasion from your helmet. Combined with high-ES helmet and body armor, creates physical hit mitigation."
+  dialogue:
+    user: "What helmet should I get?"
+    aiThoughts: "Player needs helmet guidance for Subterfuge."
+    aiQuestion: "Get a high-ES helmet (350-450 ES). Subterfuge Mask converts it into bonus Evasion."
+
+- id: ailiths-chimes
+  word: "Ailith's Chimes"
+  pronunciation: "EYE-liths CHIMZ"
+  category: item
+  shortDefinition: "Unique support gem that converts Combo to Power Charges."
+  detailedDefinition: "When linked with Mantra of Destruction and Delayed Gratification, expending Combo through the skill grants Power Charges instead of its normal effect. The primary endgame charge generation method."
+  whyItMatters: "The endgame charge engine. Without it, you rely on the slower Killing Palm + Hollow Focus method."
+  dialogue:
+    user: "Is Ailith's Chimes worth buying?"
+    aiThoughts: "Player weighs the investment."
+    aiQuestion: "Ailith's Chimes transforms boss charge generation from manual to instant. Budget alternative exists early league."
+
+- id: trinity
+  word: "Trinity"
+  pronunciation: "trih-NIH-tee"
+  category: aura
+  shortDefinition: "Multiplies lowest 2 elements to match highest."
+  detailedDefinition: "An aura that multiplies your two lowest elemental damage types to match your highest. Requires balanced Fire/Cold/Lightning across weapon, rings, and gems. Free Trinity amulets exist to save Spirit."
+  whyItMatters: "Massive elemental damage multiplier. Ensures Falling Thunder's mixed damage output is optimized."
+  dialogue:
+    user: "Why can't my Trinity activate?"
+    aiThoughts: "Player has unbalanced elements."
+    aiQuestion: "Check your damage breakdown — Trinity needs overlap between all three elements. Balance your staff and ring rolls."
+
+- id: nova-projectiles
+  word: "Nova Projectiles"
+  pronunciation: "NOH-vuh pro-JEK-tyulz"
+  category: support
+  shortDefinition: "Spreads projectiles in a 360-degree circle."
+  detailedDefinition: "Support gem that causes projectiles to spread outward in all directions from you. In patch 0.5, its 40% Less Damage penalty was removed, making it a pure AoE enabler."
+  whyItMatters: "What makes Falling Thunder a screen-clearer instead of a directional skill. No longer has a damage penalty."
+  dialogue:
+    user: "Why did Nova Projectiles get buffed?"
+    aiThoughts: "Player curious about 0.5 change."
+    aiQuestion: "The 40% Less Damage was removed in 0.5 — now it's pure 360-degree AoE with no tradeoff."
+
+- id: quarterstaff
+  word: "Quarterstaff"
+  pronunciation: "KWAR-tur-STAF"
+  category: gear
+  shortDefinition: "Two-handed melee weapon socketing main skills."
+  detailedDefinition: "Your primary weapon. Holds Falling Thunder, Flicker Strike, and other skills. Prioritize flat Lightning Damage, % Increased Critical Damage, Attack Speed, and Leech Physical Damage as Mana."
+  whyItMatters: "Skill socket hub and primary damage source. Avoid Dreaming Quarterstaff — it has 0% base Crit Chance."
+  dialogue:
+    user: "Can I use a Dreaming Quarterstaff?"
+    aiThoughts: "Player doesn't know the crit issue."
+    aiQuestion: "No — Dreaming Quarterstaff has 0% base Crit, crippling this crit-focused build. Use any other Quarterstaff."

@@ -1,0 +1,116 @@
+- type: linear
+  id: step_enter
+  initiatedBy: player
+  command: cmd_enter_map
+  handledBy: whirling_assault
+  resultEvents:
+    - id: evt_clear_packs
+      title: "Clear Packs with Whirling Assault"
+  continuesAs: step_charges
+
+- type: linear
+  id: step_charges
+  initiatedBy: player
+  command: cmd_generate_charges
+  handledBy: cast_on_crit
+  resultEvents:
+    - id: evt_power_charges
+      title: "Power Charges Generated"
+  continuesAs: step_clear_branch
+
+- type: branch
+  id: step_clear_branch
+  event: evt_power_charges
+  branches:
+    - id: branch_ft
+      label: "Falling Thunder (dense packs)"
+      policy: pol_dense_pack
+      command: cmd_falling_thunder
+      handledBy: falling_thunder
+      resultEvents:
+        - id: evt_pack_cleared
+          title: "Pack Wiped (360 Lightning)"
+      continuesAs: step_heralds
+    - id: branch_fs
+      label: "Flicker Strike (mobility)"
+      policy: pol_mobility
+      command: cmd_flicker_strike
+      handledBy: flicker_strike
+      resultEvents:
+        - id: evt_repositioned
+          title: "Dashed Through Pack"
+      continuesAs: step_heralds
+
+- type: linear
+  id: step_heralds
+  initiatedBy: player
+  command: cmd_heralds_trigger
+  handledBy: heralds2
+  resultEvents:
+    - id: evt_explosions
+      title: "Herald Explosions Clean Up"
+  continuesAs: step_boss_check
+
+- type: branch
+  id: step_boss_check
+  event: evt_explosions
+  branches:
+    - id: branch_mapping
+      label: "Continue Mapping"
+      dashed: true
+      policy: pol_more_packs
+      command: cmd_loop_map
+      handledBy: whirling_assault
+      resultEvents:
+        - id: evt_mapping_loop
+          title: "Loop Back to Clear More"
+    - id: branch_boss
+      label: "Boss Fight"
+      policy: pol_engage_boss
+      command: cmd_boss_combo
+      handledBy: mantra_destruction
+      resultEvents:
+        - id: evt_combo_ready
+          title: "20 Combo Stacks Built"
+      continuesAs: step_boss_charges
+
+- type: linear
+  id: step_boss_charges
+  initiatedBy: player
+  command: cmd_expend_combo
+  handledBy: ailiths_chimes
+  resultEvents:
+    - id: evt_boss_charges
+      title: "Boss Power Charges Ready"
+  continuesAs: step_boss_nuke
+
+- type: linear
+  id: step_boss_nuke
+  initiatedBy: player
+  command: cmd_charged_staff_buff
+  handledBy: charged_staff
+  resultEvents:
+    - id: evt_buffed
+      title: "Charged Staff Lightning Buff Active"
+  continuesAs: step_boss_commit
+
+- type: branch
+  id: step_boss_commit
+  event: evt_buffed
+  branches:
+    - id: branch_fs_boss
+      label: "Flicker Strike Boss"
+      policy: pol_flicker_boss
+      command: cmd_flicker_boss
+      handledBy: flicker_strike
+      resultEvents:
+        - id: evt_boss_dead
+          title: "Boss One-Shotted"
+    - id: branch_ft_boss
+      label: "Falling Thunder Boss"
+      policy: pol_thunder_boss
+      command: cmd_thunder_boss
+      handledBy: falling_thunder
+      resultEvents:
+        - id: evt_boss_dead2
+          title: "Boss One-Shotted"

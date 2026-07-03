@@ -1,0 +1,9 @@
+player:
+  title: "Player"
+  desc: "Martial Artist Monk controlling skills and gear"
+boss:
+  title: "Boss Enemy"
+  desc: "Map boss or Pinnacle boss"
+pack:
+  title: "Mob Pack"
+  desc: "Group of regular enemies"

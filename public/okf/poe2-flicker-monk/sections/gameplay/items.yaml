@@ -1,0 +1,34 @@
+- text: "Enter map and spam Whirling Assault to clear initial packs and generate Power Charges"
+  children:
+    - text: "Cast on Critical triggers Profane Ritual on crits, converting corpses into Power Charges"
+    - text: "Maintain minimum 60% Crit Chance on Whirling Assault for reliable charge generation"
+    - text: "Oisin's Oath on Whirling Assault converts Elemental Damage to Mana Leech"
+- text: "Spend Power Charges on Falling Thunder + Nova Projectiles for 360-degree pack clearing"
+  children:
+    - text: "Each consumed charge fires one projectile — 6-8 charges = 6-8 lightning projectiles"
+    - text: "Nova Projectiles spreads them in a full circle with no damage penalty (patch 0.5)"
+    - text: "Herald of Thunder and Herald of Ice trigger explosions on hit"
+- text: "Alternate with Flicker Strike to dash through packs and reposition"
+  children:
+    - text: "Flicker Strike consumes charges for increased damage"
+    - text: "Perpetual Charge extends duration and reduces charge consumption chance"
+    - text: "Use for mobility between packs or tight areas where Falling Thunder is less effective"
+- text: "For bosses, build 20 Combo stacks on Mantra of Destruction with Whirling Assault"
+  children:
+    - text: "Hit boss repeatedly with Whirling Assault to accumulate Combo"
+    - text: "Martial Adept doubles Combo gain speed"
+- text: "Expend Combo through Delayed Gratification + Ailith's Chimes for Power Charges"
+  children:
+    - text: "Ailith's Chimes converts expended Combo into a full set of Power Charges"
+    - text: "Alternative: Hand of Chayula + Culmination II + Ailith's Chimes"
+    - text: "Pre-Ailith's: use Shattering Palm + Living Lightning II minions to cull Hollow Focus bells"
+- text: "Mark boss with Hand of Chayula, activate Charged Staff, then commit to Flicker Strike or Falling Thunder"
+  children:
+    - text: "Charged Staff provides massive Lightning damage buff per charge consumed"
+    - text: "For Uber bosses, swap to Powertread boots for guaranteed one-shot"
+    - text: "If boss survives, regenerate charges and repeat the cycle"
+- text: "Gear progression: starter Quarterstaff → Shavronne's Satchel → Chaos Inoculation → Ailith's Chimes → endgame"
+  children:
+    - text: "Take CI at approximately 4000 ES with Shavronne's Satchel and Instant Life Flask"
+    - text: "Heart of the Well Timeless Jewel adds Chaos Damage for Herald of Ice explosions"
+    - text: "High budget: Uul-Netol's Embrace + Rite of Passage for maximum damage"

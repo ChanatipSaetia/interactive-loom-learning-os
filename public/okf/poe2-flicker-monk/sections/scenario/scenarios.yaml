@@ -1,0 +1,91 @@
+id: build-journey
+title: "Your League Journey"
+intro: "You've decided to play the Flicker Strike Monk. How you gear up determines your endgame ceiling. Make choices through the league and see where they lead."
+nodes:
+  start:
+    prompt: "League day 1. You've picked Martial Artist Monk. What's your first priority?"
+    choices:
+      - id: get-staff
+        text: "Find a Quarterstaff (not Dreaming) with Lightning Damage"
+        next: staff-found
+      - id: grab-dreaming
+        text: "Grab the shiny Dreaming Quarterstaff you found"
+        next: dreaming-disaster
+      - id: skip-weapon
+        text: "Focus on defenses first, weapon later"
+        next: weak-clear
+
+  staff-found:
+    prompt: "You have a decent Quarterstaff. Act 2 is progressing. What's next?"
+    choices:
+      - id: build-es
+        text: "Gear toward 4000 ES for Chaos Inoculation"
+        next: ci-ready
+      - id: chase-damage
+        text: "Chase damage gear — Stonefist gloves with flat damage"
+        next: glass-cannon
+      - id: balanced
+        text: "Balance ES/Evasion armor with Stonefist gloves"
+        next: balanced-path
+
+  dreaming-disaster:
+    outcome:
+      verdict: "Your Cast on Critical never triggers. Charge generation is dead. The build doesn't function."
+      lesson: "Dreaming Quarterstaff has 0% base Crit Chance, which breaks every crit-dependent mechanic. Always use a non-Dreaming Quarterstaff."
+      rating: c
+
+  weak-clear:
+    outcome:
+      verdict: "You survive but clear maps painfully slow. Without a proper staff, Falling Thunder lacks damage."
+      lesson: "Weapon is the foundation. Get a Quarterstaff with Lightning Damage first, then layer defenses."
+      rating: c
+
+  ci-ready:
+    prompt: "You hit 4000 ES. Time to take Chaos Inoculation. What's your recovery plan?"
+    choices:
+      - id: shavronnes
+        text: "Get Shavronne's Satchel with Instant Life Flask"
+        next: ci-viable
+      - id: skip-shavronnes
+        text: "CI without Shavronne's — I'll manage"
+        next: ci-death
+
+  glass-cannon:
+    outcome:
+      verdict: "High damage but one-shot by chaos hits. Without CI or proper defenses, you die in juiced maps."
+      lesson: "Damage without survivability is meaningless. Balance offense and defense — get ES/Evasion hybrid armor and plan for CI."
+      rating: c
+
+  balanced-path:
+    prompt: "Good balance. Mid-league, you face a choice: invest in Ailith's Chimes or keep the budget setup?"
+    choices:
+      - id: buy-ailiths
+        text: "Buy Ailith's Chimes for instant Combo-to-charge conversion"
+        next: smooth-endgame
+      - id: keep-budget
+        text: "Stick with Hollow Focus + Killing Palm — it works fine"
+        next: budget-endgame
+
+  ci-viable:
+    outcome:
+      verdict: "With Shavronne's Satchel and Instant Life Flask, you recover ES instantly after hits. CI is now safe."
+      lesson: "Shavronne's Satchel is mandatory for CI builds. The Instant Life Flask heals ES on use, preventing death from big hits."
+      rating: a
+
+  ci-death:
+    outcome:
+      verdict: "A big chaos hit (now blocked by CI) was survivable before, but a physical hit melts your raw ES without Life buffer. You die repeatedly."
+      lesson: "Never take CI without Shavronne's Satchel. Instant recovery is the difference between life and death."
+      rating: c
+
+  smooth-endgame:
+    outcome:
+      verdict: "Ailith's Chimes transforms boss fights. Build 20 Combo, click, get charges, one-shot bosses. Clean endgame."
+      lesson: "Ailith's Chimes is the best mid-to-late league investment. The quality of life upgrade for charge generation is enormous."
+      rating: a
+
+  budget-endgame:
+    outcome:
+      verdict: "Hollow Focus + Killing Palm works but feels manual. You clear endgame content but boss fights take longer."
+      lesson: "Budget charge generation is viable but clunky. Ailith's Chimes is worth buying when prices drop mid-league."
+      rating: b-plus

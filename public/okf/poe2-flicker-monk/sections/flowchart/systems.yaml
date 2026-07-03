@@ -1,0 +1,49 @@
+whirling_assault:
+  title: "Whirling Assault"
+  desc: "AoE melee attack, builds Combo, generates charges via Cast on Critical"
+  type: "aggregate"
+falling_thunder:
+  title: "Falling Thunder"
+  desc: "Lightning projectile per Power Charge, 360-degree via Nova Projectiles"
+  type: "aggregate"
+flicker_strike:
+  title: "Flicker Strike"
+  desc: "Dash through enemies, teleporting while dealing damage"
+  type: "aggregate"
+charged_staff:
+  title: "Charged Staff"
+  desc: "Buff skill consuming Power Charges for Lightning damage"
+  type: "aggregate"
+mantra_destruction:
+  title: "Mantra of Destruction"
+  desc: "Holds Combo stacks, expended for Power Charges via Ailith's Chimes"
+  type: "aggregate"
+ailiths_chimes:
+  title: "Ailith's Chimes"
+  desc: "Converts Combo expenditure into Power Charges"
+  type: "external"
+cast_on_crit:
+  title: "Cast on Critical"
+  desc: "Triggers Profane Ritual on crits, consuming corpses for charges"
+  type: "external"
+hollow_focus:
+  title: "Hollow Focus Technique"
+  desc: "Spawns primed bells for Killing Palm charge generation (budget alternative)"
+  type: "external"
+heralds:
+  title: "Herald of Thunder + Ice"
+  desc: "Mark enemies for elemental explosions"
+  type: "aggregate"
+heralds2:
+  title: "Herald of Thunder + Ice"
+  desc: "Explosions triggered on enemy death"
+  type: "aggregate"
+  collapsedTo: "heralds"
+trinity:
+  title: "Trinity Aura"
+  desc: "Multiplies lowest 2 elements to match highest"
+  type: "external"
+ci:
+  title: "Chaos Inoculation"
+  desc: "100% Chaos Resistance, sets Life to 1"
+  type: "external"

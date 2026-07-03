@@ -1,0 +1,16 @@
+type: taxonomy-category
+icon: Sparkles
+title: "Support & Buff Skills"
+subtitle: "Charged Staff, Whirling Assault, Cast on Critical"
+color: sky
+description: "Skills that buff your main attacks and sustain Power Charges during mapping."
+details: "Charged Staff consumes Power Charges for a massive Lightning damage buff to attacks. Whirling Assault builds Combo for charge generation. Cast on Critical triggers Profane Ritual on crits to sustain Power Charges during mapping."
+analogy: "These are your backstage crew — they make the main skills shine."
+primaryFocus: "Charge sustainability and damage multiplication"
+inScope:
+  - "Charged Staff (Lv20) + Prolonged Duration, Innervate, Culling Strike"
+  - "Whirling Assault (Lv20) + Practiced Combo, Rage III, Pinpoint Critical, Magnified Area, Oisin's Oath"
+  - "Cast on Critical (Lv20) + Profane Ritual Lv7, Charge Profusion, Overabundance, Boundless Energy, Energy Retention"
+  - "Oisin's Oath converts Elemental Damage to Mana Leech (requires Leech Phys Damage as Mana on gear)"
+outOfScope:
+  - "Direct damage dealing in isolation"

@@ -1,0 +1,134 @@
+id: budget-league-starter
+title: "Budget League Starter"
+description: "Minimum investment to clear all content. Everything obtainable through drops and cheap trade."
+metrics:
+  - id: damage
+    label: Damage Output
+    baseValue: 35
+    min: 0
+    max: 100
+    direction: higher
+  - id: clear-speed
+    label: Clear Speed
+    baseValue: 45
+    min: 0
+    max: 100
+    direction: higher
+  - id: survivability
+    label: Survivability
+    baseValue: 50
+    min: 0
+    max: 100
+    direction: higher
+  - id: cost
+    label: Cost Efficiency
+    baseValue: 90
+    min: 0
+    max: 100
+    direction: higher
+steps:
+  - id: weapon
+    title: "Weapon Choice"
+    description: "Quarterstaff is mandatory. Avoid Dreaming Quarterstaff (0% Crit base)."
+    recommended: any-staff
+    choices:
+      - id: any-staff
+        label: "Any Quarterstaff (non-Dreaming)"
+        description: "Any Quarterstaff with Lightning Damage and Crit stats."
+        metrics:
+          damage: 10
+          clear-speed: 5
+          survivability: 0
+          cost: 10
+        pros:
+          - title: "Cheap and available"
+            description: "Found in early acts and cheap on trade"
+        cons:
+          - title: "No leech line"
+            description: "May lack Leech Phys Damage as Mana for Oisin's Oath"
+        whyThisFits: "League starter doesn't need perfect rolls. Any non-Dreaming staff works."
+      - id: dreaming-staff
+        label: "Dreaming Quarterstaff"
+        description: "Unique with high damage but 0% Crit base."
+        metrics:
+          damage: -5
+          clear-speed: -10
+          survivability: 0
+          cost: 5
+        pros:
+          - title: "Good raw numbers"
+            description: "High Lightning Damage on the unique"
+        cons:
+          - title: "0% Crit base"
+            description: "Cripples Cast on Critical and all crit-dependent mechanics"
+        whenToUse: "Avoid entirely. The 0% Crit base makes this build unviable."
+  - id: armor
+    title: "Body Armor"
+    description: "ES/Evasion hybrid base for layered defense."
+    recommended: sleek-jacket
+    choices:
+      - id: sleek-jacket
+        label: "Sleek Jacket (ES/EV hybrid)"
+        description: "Hybrid Evasion + Energy Shield base."
+        metrics:
+          damage: 0
+          clear-speed: 0
+          survivability: 10
+          cost: 8
+        pros:
+          - title: "Layered defense"
+            description: "Stacks Evasion with ES for physical hit mitigation"
+        cons:
+          - title: "Early rolls may be poor"
+            description: "Budget pieces may have low values"
+        whyThisFits: "Hybrid base aligns with the build's ES/Evasion defense strategy."
+      - id: pure-es
+        label: "Pure Energy Shield Armor"
+        description: "Only ES, no Evasion."
+        metrics:
+          damage: 0
+          clear-speed: 0
+          survivability: 5
+          cost: 5
+        pros:
+          - title: "Simple to find"
+            description: "More available on trade"
+        cons:
+          - title: "No Evasion layer"
+            description: "Missing physical hit mitigation entirely"
+        whenToUse: "Acceptable early game before finding hybrid bases."
+  - id: charges
+    title: "Power Charge Generation"
+    description: "Budget alternative to Ailith's Chimes."
+    recommended: hollow-focus
+    choices:
+      - id: hollow-focus
+        label: "Hollow Focus + Killing Palm"
+        description: "Kill primed Hollow Focus bells with Killing Palm for charges."
+        metrics:
+          damage: 5
+          clear-speed: -5
+          survivability: 0
+          cost: 15
+        pros:
+          - title: "Free"
+            description: "Uses built-in ascendancy nodes, no expensive items needed"
+        cons:
+          - title: "Manual process"
+            description: "Requires casting Hollow Focus, then Killing Palm into the bells"
+        whyThisFits: "Best budget method. Reliable charge generation with zero investment."
+      - id: ailiths-budget
+        label: "Early Ailith's Chimes"
+        description: "Buy Ailith's Chimes early for Combo-based generation."
+        metrics:
+          damage: 10
+          clear-speed: 10
+          survivability: 0
+          cost: -15
+        pros:
+          - title: "Instant charges"
+            description: "One click to convert Combo to charges"
+        cons:
+          - title: "Expensive early league"
+            description: "Ailith's Chimes is costly in early league currency"
+        whenToUse: "Worth buying mid-league when prices drop."

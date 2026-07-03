@@ -19,3 +19,8 @@
   path: /topics/chinese101-day1
   category: Language
   description: เริ่มเรียนภาษาจีนด้วยคำทักทาย ตัวเลข และประโยคพื้นฐาน
+- id: poe2-flicker-monk
+  label: PoE 2 Flicker Strike Monk
+  path: /topics/poe2-flicker-monk
+  category: Gaming
+  description: Budget Flicker Strike + Falling Thunder Martial Artist Monk build guide for PoE 2 patch 0.5

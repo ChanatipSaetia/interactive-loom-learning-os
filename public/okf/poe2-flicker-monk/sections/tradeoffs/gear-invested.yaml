@@ -1,0 +1,169 @@
+id: invested-endgame
+title: "Invested Endgame"
+description: "High-budget Uber endgame build that one-shots Pinnacle bosses. For late-league investment."
+metrics:
+  - id: damage
+    label: Damage Output
+    baseValue: 70
+    min: 0
+    max: 100
+    direction: higher
+  - id: clear-speed
+    label: Clear Speed
+    baseValue: 75
+    min: 0
+    max: 100
+    direction: higher
+  - id: survivability
+    label: Survivability
+    baseValue: 80
+    min: 0
+    max: 100
+    direction: higher
+  - id: cost
+    label: Cost Efficiency
+    baseValue: 25
+    min: 0
+    max: 100
+    direction: higher
+steps:
+  - id: weapon
+    title: "Weapon — Invested Quarterstaff"
+    description: "High-budget staff with Farrul's Rune + Fenumus' Rune for Herald explosions."
+    recommended: rune-staff
+    choices:
+      - id: rune-staff
+        label: "Staff + Farrul's Rune + Fenumus' Rune"
+        description: "Chaos Damage from Fenumus' Rune triggers Armor Break + Herald of Ice explosions."
+        metrics:
+          damage: 20
+          clear-speed: 15
+          survivability: 0
+          cost: -15
+        pros:
+          - title: "Explosive Herald synergy"
+            description: "Chaos Damage triggers Herald of Ice explosions on every hit"
+        cons:
+          - title: "Requires Uul-Netol's Embrace"
+            description: "Full synergy needs the golden unique charm"
+        whyThisFits: "Maximum damage configuration. Uul-Netol's Embrace + Rite of Passage variant."
+      - id: elemental-staff
+        label: "3-Line Elemental Staff"
+        description: "Staff with Lightning + Cold + Fire flat damage."
+        metrics:
+          damage: 12
+          clear-speed: 8
+          survivability: 0
+          cost: -8
+        pros:
+          - title: "Trinity optimization"
+            description: "Balanced elements for Trinity multiplier"
+        cons:
+          - title: "No Herald explosion synergy"
+            description: "Lacks Chaos Damage for Armor Break explosions"
+        whenToUse: "Solid alternative when runestones or Fenumus' Rune are unavailable."
+  - id: helmet
+    title: "Helmet — Subterfuge Mask Optimization"
+    description: "High-ES helmet for maximum Evasion conversion."
+    recommended: high-es-helmet
+    choices:
+      - id: high-es-helmet
+        label: "400+ ES Helmet + Subterfuge Mask"
+        description: "400 ES converts to 800 Evasion via Subterfuge Mask."
+        metrics:
+          damage: 0
+          clear-speed: 0
+          survivability: 15
+          cost: -10
+        pros:
+          - title: "Massive physical mitigation"
+            description: "800 bonus Evasion on top of body armor Evasion"
+        cons:
+          - title: "Expensive perfect rolls"
+            description: "Helmet with ES + Crit + Resistances + Attributes is costly"
+        whyThisFits: "Core defense layer. High-ES helmet is mandatory for Subterfuge Mask viability."
+      - id: jiquani
+        label: "Jiquani's Thesis Perfect Core"
+        description: "Uber unique helmet for massive Mana pool."
+        metrics:
+          damage: 5
+          clear-speed: 5
+          survivability: 5
+          cost: -20
+        pros:
+          - title: "Solves mana issues"
+            description: "Near-infinite mana for skill spam"
+        cons:
+          - title: "Extremely expensive"
+            description: "One of the most costly unique helmets in the game"
+        whenToUse: "Giga-invest endgame only. Not needed for normal endgame."
+  - id: boots
+    title: "Boots — Powertread for Uber Bosses"
+    description: "Swap into Powertread boots for Uber Pinnacle boss fights."
+    recommended: powertread
+    choices:
+      - id: powertread
+        label: "Powertread (Uber boss swap)"
+        description: "Massive power charge conversion for guaranteed one-shot."
+        metrics:
+          damage: 25
+          clear-speed: 10
+          survivability: 0
+          cost: -15
+        pros:
+          - title: "Guaranteed one-shot"
+            description: "Powertread's charge conversion pushes damage over the threshold"
+        cons:
+          - title: "Boss-only swap"
+            description: "Loses movement speed for mapping, only viable for bossing"
+        whyThisFits: "For Uber Pinnacle bosses where one-shot is mandatory."
+      - id: ms-boots
+        label: "35% MS Boots (mapping)"
+        description: "Movement speed boots for map clearing."
+        metrics:
+          damage: 0
+          clear-speed: 10
+          survivability: 5
+          cost: -5
+        pros:
+          - title: "Faster mapping"
+            description: "35% MS significantly improves map clear pace"
+        cons:
+          - title: "No Uber boss one-shot"
+            description: "Insufficient damage without Powertread's conversion"
+        whenToUse: "Primary boots for mapping. Swap to Powertread only for Uber bosses."
+  - id: jewel
+    title: "Timeless Jewel — Heart of the Well"
+    description: "Adds Chaos Damage for Herald of Ice explosion synergy."
+    recommended: hotw
+    choices:
+      - id: hotw
+        label: "Heart of the Well"
+        description: "Grants Extra Damage as Chaos across 16 linked passives."
+        metrics:
+          damage: 15
+          clear-speed: 10
+          survivability: 5
+          cost: -12
+        pros:
+          - title: "Chaos Damage for explosions"
+            description: "Enables Herald of Ice explosions via Armor Break from Chaos Damage"
+        cons:
+          - title: "Expensive to roll well"
+            description: "Perfect prefixes on all 6 notables require investment"
+        whyThisFits: "Synergizes with Fenumus' Rune + Herald of Ice for screen-clearing explosions."
+      - id: no-timeless
+        label: "No Timeless Jewel"
+        description: "Skip Timeless Jewel, focus on other upgrades."
+        metrics:
+          damage: -5
+          clear-speed: -5
+          survivability: 0
+          cost: 10
+        pros:
+          - title: "Saves currency"
+            description: "Timeless Jewels are expensive to roll properly"
+        cons:
+          - title: "Misses explosion synergy"
+            description: "Without Chaos Damage, Herald of Ice explosions don't trigger as reliably"
+        whenToUse: "Budget endgame. Add when you have excess currency."

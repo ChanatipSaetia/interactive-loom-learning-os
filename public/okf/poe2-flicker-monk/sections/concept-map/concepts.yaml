@@ -1,0 +1,104 @@
+nodes:
+  flicker-strike:
+    title: "Flicker Strike"
+    category: skill
+  falling-thunder:
+    title: "Falling Thunder"
+    category: skill
+  charged-staff:
+    title: "Charged Staff"
+    category: skill
+  martial-artist:
+    title: "Martial Artist"
+    category: ascendancy
+  combo:
+    title: "Combo System"
+    category: mechanic
+  power-charges:
+    title: "Power Charges"
+    category: mechanic
+  ailiths-chimes:
+    title: "Ailith's Chimes"
+    category: item
+  stonefist:
+    title: "Way of the Stonefist"
+    category: ascendancy
+  hollow-focus:
+    title: "Hollow Focus Technique"
+    category: ascendancy
+  herald-thunder:
+    title: "Herald of Thunder"
+    category: herald
+  herald-ice:
+    title: "Herald of Ice"
+    category: herald
+  trinity:
+    title: "Trinity Aura"
+    category: aura
+  chaos-inoculation:
+    title: "Chaos Inoculation"
+    category: defense
+  subterfuge-mask:
+    title: "Subterfuge Mask"
+    category: defense
+  quarterstaff:
+    title: "Quarterstaff"
+    category: gear
+  mana-leech:
+    title: "Mana Leech"
+    category: mechanic
+  nova-projectiles:
+    title: "Nova Projectiles"
+    category: support
+  cast-on-crit:
+    title: "Cast on Critical"
+    category: mechanic
+edges:
+  - from: flicker-strike
+    to: power-charges
+    label: "consumes for damage"
+  - from: falling-thunder
+    to: power-charges
+    label: "fires per charge"
+  - from: falling-thunder
+    to: nova-projectiles
+    label: "360-degree spread"
+  - from: charged-staff
+    to: power-charges
+    label: "consumes for buff"
+  - from: charged-staff
+    to: herald-thunder
+    label: "triggers explosions"
+  - from: martial-artist
+    to: combo
+    label: "doubles gain"
+  - from: martial-artist
+    to: stonefist
+    label: "glove multiplier"
+  - from: combo
+    to: ailiths-chimes
+    label: "converts to charges"
+  - from: hollow-focus
+    to: power-charges
+    label: "bell cull charges"
+  - from: quarterstaff
+    to: mana-leech
+    label: "sustains mana"
+  - from: cast-on-crit
+    to: power-charges
+    label: "mapping charges"
+  - from: trinity
+    to: falling-thunder
+    label: "multiplies elements"
+  - from: herald-thunder
+    to: falling-thunder
+    label: "amplifies explosions"
+  - from: herald-ice
+    to: falling-thunder
+    label: "freeze + explosion"
+  - from: chaos-inoculation
+    to: subterfuge-mask
+    label: "stacked defenses"
+  - from: ailiths-chimes
+    to: combo
+    label: "consumes combo"

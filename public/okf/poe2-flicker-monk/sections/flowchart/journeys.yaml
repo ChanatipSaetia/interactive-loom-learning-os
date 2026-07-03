@@ -1,0 +1,36 @@
+- id: journey_mapping
+  label: "Mapping Flow"
+  description: "Standard map clearing: generate charges, clear with Falling Thunder or Flicker Strike, loop"
+  steps:
+    - nodeId: evt_clear_packs
+      description: "Enter map, open with Whirling Assault for initial clear and charge generation"
+      processGroup: initiation
+    - nodeId: evt_power_charges
+      description: "Cast on Critical triggers Profane Ritual on crits, generating Power Charges"
+      processGroup: charge-gen
+    - nodeId: evt_pack_cleared
+      description: "Spend charges on Falling Thunder for 360-degree lightning burst"
+      processGroup: clear
+    - nodeId: evt_explosions
+      description: "Herald of Thunder and Herald of Ice explode marked enemies"
+      processGroup: cleanup
+    - nodeId: evt_mapping_loop
+      description: "Loop back to clear next pack"
+      processGroup: loop
+
+- id: journey_boss
+  label: "Boss Fight Flow"
+  description: "Boss engagement: build Combo, convert to charges, buff with Charged Staff, one-shot"
+  steps:
+    - nodeId: evt_combo_ready
+      description: "Build 20 Combo stacks on boss via Whirling Assault"
+      processGroup: preparation
+    - nodeId: evt_boss_charges
+      description: "Expend Combo through Ailith's Chimes for Power Charges"
+      processGroup: charge-gen
+    - nodeId: evt_buffed
+      description: "Activate Charged Staff for massive Lightning damage buff"
+      processGroup: buff
+    - nodeId: evt_boss_dead2
+      description: "Commit to Falling Thunder or Flicker Strike for the kill"
+      processGroup: execution
