@@ -37,7 +37,7 @@ jobs:
         run: npm ci
 
       - name: Update OKF build manifest
-        run: node --experimental-strip-types scripts/update-okf-manifest.js
+        run: node scripts/update-okf-manifest.js
 
       - name: Build
         run: npm run build

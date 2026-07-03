@@ -1,8 +1,13 @@
 import * as fs from 'fs'
 import * as path from 'path'
 import * as yaml from 'js-yaml'
+import { fileURLToPath } from 'url'
 
-const OKF_DIR = path.resolve('public', 'okf')
+const __filename = fileURLToPath(import.meta.url)
+const __dirname = path.dirname(__filename)
+const ROOT = path.resolve(__dirname, '..')
+
+const OKF_DIR = path.join(ROOT, 'public', 'okf')
 const INDEX_PATH = path.join(OKF_DIR, 'index.yaml')
 
 function parseFrontmatter(content) {
