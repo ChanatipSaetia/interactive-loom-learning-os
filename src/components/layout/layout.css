@@ -68,14 +68,23 @@ html[data-theme='recipebook'] .topnav-title {
 }
 
 [data-testid$="-topic"] {
-  @apply flex flex-col gap-[56px];
+  @apply flex flex-col gap-8 md:gap-[56px];
 }
 
 .topic-page-title {
   font-family: var(--font-display);
   @apply text-4xl font-bold tracking-tight border-b border-border;
-  @apply pb-4 mb-12;
+  @apply pb-4 mb-6 md:mb-12;
   color: var(--ctp-lavender);
+}
+
+.topic-page-title + * {
+  margin-top: 0 !important;
+}
+
+.topic-page-title + * > h3 {
+  padding-top: 0 !important;
+  margin-top: 0 !important;
 }
 
 html[data-theme='medicare'] .topic-page-title,
@@ -97,7 +106,7 @@ html[data-theme='recipebook'] .topic-page-title {
 .quiz-section-title,
 .concept-map-title {
   font-family: var(--font-display);
-  @apply text-2xl font-bold tracking-tight text-foreground m-0 mb-8 pt-6;
+  @apply text-2xl font-bold tracking-tight text-foreground m-0 mb-8 pt-3 md:pt-6;
   display: flex;
   align-items: center;
   gap: 1rem;
