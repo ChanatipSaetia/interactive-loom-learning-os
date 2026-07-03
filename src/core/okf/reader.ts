@@ -30,7 +30,7 @@ import type {
   OKFDecisionTreeRaw,
 } from './types'
 
-const OKF_BASE = '/okf'
+const OKF_BASE = `${import.meta.env.BASE_URL}okf`
 
 function parseYaml<T>(text: string): T {
   return yaml.load(text) as T

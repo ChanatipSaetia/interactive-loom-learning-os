@@ -17,7 +17,7 @@ interface OKFIndexEntry {
   description?: string
 }
 
-const OKF_BASE = '/okf'
+const OKF_BASE = `${import.meta.env.BASE_URL}okf`
 
 function parseFrontmatter(content: string): { meta: Record<string, unknown>; body: string } {
   const match = content.match(/^---\s*\n([\s\S]*?)\n---\s*\n?([\s\S]*)$/)
