@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef, useCallback, useMemo } from 'react'
 import { motion, AnimatePresence } from 'motion/react'
 import { X, ZoomIn, ZoomOut, Maximize2 } from 'lucide-react'
+import { forceSimulation, forceManyBody, forceLink, forceCenter, forceCollide } from 'd3-force'
 import './concept-map.css'
 
 export interface ConceptNode {
@@ -54,12 +55,11 @@ const CATEGORY_FILLS: Record<string, string> = {
   default: 'color-mix(in srgb, var(--ctp-lavender) 15%, var(--ctp-surface0))',
 }
 
-const NODE_RADIUS = 32
-const SIMULATION_STEPS = 200
-const REPULSION = 40000
-const ATTRACTION = 0.005
-const CENTER_GRAVITY = 0.008
-const DAMPING = 0.85
+const NODE_HEIGHT = 56
+
+function getNodeWidth(title: string): number {
+  return Math.min(200, Math.max(100, title.length * 8 + 40))
+}
 
 function getCategoryColor(category: string): string {
   return CATEGORY_COLORS[category] ?? CATEGORY_COLORS.default
@@ -78,71 +78,41 @@ function simulateLayout(
 ): Record<string, ConceptNode> {
   const simNodes = nodeIds.map((id) => ({
     ...nodes[id],
-    x: (Math.random() - 0.5) * width * 0.5 + width / 2,
-    y: (Math.random() - 0.5) * height * 0.5 + height / 2,
-    vx: 0,
-    vy: 0,
+    id,
+    x: width / 2 + (Math.random() - 0.5) * 100,
+    y: height / 2 + (Math.random() - 0.5) * 100,
+    rx: getNodeWidth(nodes[id].title) / 2 + 20,
+    ry: NODE_HEIGHT / 2 + 20,
   }))
 
-  const nodeMap = new Map<string, typeof simNodes[0]>()
-  simNodes.forEach((n) => nodeMap.set(n.id, n))
+  const simLinks = edges.map((e) => ({ source: e.from, target: e.to }))
 
-  for (let step = 0; step < SIMULATION_STEPS; step++) {
-    const cooling = 1 - step / SIMULATION_STEPS
+  const MIN_EDGE_LENGTH = 200
 
-    for (let i = 0; i < simNodes.length; i++) {
-      for (let j = i + 1; j < simNodes.length; j++) {
-        const a = simNodes[i]
-        const b = simNodes[j]
-        const dxB = b.x - a.x
-        const dyB = b.y - a.y
-        const distB = Math.sqrt(dxB * dxB + dyB * dyB) || 1
-        const force = REPULSION / (distB * distB)
-        const fx = (dxB / distB) * force * cooling
-        const fy = (dyB / distB) * force * cooling
-        a.vx -= fx
-        a.vy -= fy
-        b.vx += fx
-        b.vy += fy
-      }
-    }
+  const sim = forceSimulation(simNodes)
+    .force('charge', forceManyBody().strength(-3000))
+    .force('link', forceLink(simLinks).id((d: any) => d.id).distance(300).strength(0.6))
+    .force('center', forceCenter(width / 2, height / 2).strength(0.08))
+    .force('collide', forceCollide().radius((d: any) => Math.max(d.rx, d.ry) + MIN_EDGE_LENGTH / 2).strength(1.0))
 
-    for (const edge of edges) {
-      const a = nodeMap.get(edge.from)
-      const b = nodeMap.get(edge.to)
-      if (!a || !b) continue
-      const dx = b.x - a.x
-      const dy = b.y - a.y
-      const dist = Math.sqrt(dx * dx + dy * dy) || 1
-      const force = dist * ATTRACTION * cooling
-      const fx = (dx / dist) * force
-      const fy = (dy / dist) * force
-      a.vx += fx
-      a.vy += fy
-      b.vx -= fx
-      b.vy -= fy
-    }
-
-    for (const node of simNodes) {
-      const dx = width / 2 - node.x
-      const dy = height / 2 - node.y
-      node.vx += dx * CENTER_GRAVITY * cooling
-      node.vy += dy * CENTER_GRAVITY * cooling
-    }
-
-    for (const node of simNodes) {
-      node.vx *= DAMPING
-      node.vy *= DAMPING
-      node.x += node.vx
-      node.y += node.vy
-      node.x = Math.max(NODE_RADIUS + 20, Math.min(width - NODE_RADIUS - 20, node.x))
-      node.y = Math.max(NODE_RADIUS + 20, Math.min(height - NODE_RADIUS - 20, node.y))
-    }
+  for (let i = 0; i < 500; i++) {
+    sim.tick()
+    simNodes.forEach((n: any) => {
+      n.x = Math.max(n.rx, Math.min(width - n.rx, n.x))
+      n.y = Math.max(n.ry, Math.min(height - n.ry, n.y))
+    })
   }
 
   const result: Record<string, ConceptNode> = {}
   for (const n of simNodes) {
-    result[n.id] = { id: n.id, title: n.title, definition: n.definition, category: n.category, x: n.x, y: n.y }
+    result[n.id] = {
+      id: n.id,
+      title: n.title,
+      definition: n.definition,
+      category: n.category,
+      x: n.x,
+      y: n.y,
+    }
   }
   return result
 }
@@ -438,24 +408,36 @@ function ConceptMapSection({ title, nodes, edges }: ConceptMapSectionProps) {
                 const nx = dx / dist
                 const ny = dy / dist
 
-                const x1 = from.x + nx * NODE_RADIUS
-                const y1 = from.y + ny * NODE_RADIUS
-                const x2 = to.x - nx * NODE_RADIUS
-                const y2 = to.y - ny * NODE_RADIUS
+                const fromHW = getNodeWidth(from.title) / 2
+                const fromHH = NODE_HEIGHT / 2
+                const toHW = getNodeWidth(to.title) / 2
+                const toHH = NODE_HEIGHT / 2
+
+                const intersectRect = (cx: number, cy: number, hw: number, hh: number, dxn: number, dyn: number) => {
+                  const absDx = Math.abs(dxn)
+                  const absDy = Math.abs(dyn)
+                  let t = Infinity
+                  if (absDx > 0) t = Math.min(t, hw / absDx)
+                  if (absDy > 0) t = Math.min(t, hh / absDy)
+                  return { x: cx + dxn * t, y: cy + dyn * t }
+                }
+
+                const p1 = intersectRect(from.x, from.y, fromHW, fromHH, nx, ny)
+                const p2 = intersectRect(to.x, to.y, toHW, toHH, -nx, -ny)
 
                 return (
                   <g key={`edge-${edge.from}-${edge.to}-${idx}`} data-testid={`concept-map-edge-${idx}`}>
                     <line
-                      x1={x1}
-                      y1={y1}
-                      x2={x2}
-                      y2={y2}
+                      x1={p1.x}
+                      y1={p1.y}
+                      x2={p2.x}
+                      y2={p2.y}
                       className={`cm-edge ${isConnected ? 'cm-edge-highlight' : ''} ${isDimmed ? 'cm-edge-dimmed' : ''}`}
                       data-testid={`concept-map-edge-line-${idx}`}
                     />
                     {edge.label && (() => {
-                      const lx = (x1 + x2) / 2
-                      const ly = (y1 + y2) / 2 - 6
+                      const lx = (p1.x + p2.x) / 2
+                      const ly = (p1.y + p2.y) / 2 - 6
                       const tw = edge.label.length * 6 + 10
                       return (
                         <>
@@ -465,12 +447,12 @@ function ConceptMapSection({ title, nodes, edges }: ConceptMapSectionProps) {
                             width={tw}
                             height={15}
                             rx={4}
-                            className="cm-edge-label-bg"
+                            className={`cm-edge-label-bg ${isConnected ? 'cm-edge-label-highlight' : ''} ${isDimmed ? 'cm-edge-label-dimmed' : ''}`}
                           />
                           <text
                             x={lx}
                             y={ly}
-                            className="cm-edge-label"
+                            className={`cm-edge-label ${isConnected ? 'cm-edge-label-highlight' : ''} ${isDimmed ? 'cm-edge-label-dimmed' : ''}`}
                             textAnchor="middle"
                             data-testid={`concept-map-edge-label-${idx}`}
                           >
@@ -492,6 +474,10 @@ function ConceptMapSection({ title, nodes, edges }: ConceptMapSectionProps) {
                 const isSelected = selectedNode === id
                 const color = getCategoryColor(node.category)
                 const fill = getCategoryFill(node.category)
+                const nodeW = getNodeWidth(node.title)
+                const nodeH = NODE_HEIGHT
+                const nodeX = node.x - nodeW / 2
+                const nodeY = node.y - nodeH / 2
 
                 return (
                   <g
@@ -506,10 +492,12 @@ function ConceptMapSection({ title, nodes, edges }: ConceptMapSectionProps) {
                     onMouseLeave={() => setHoveredNode(null)}
                     cursor="pointer"
                   >
-                    <circle
-                      cx={node.x}
-                      cy={node.y}
-                      r={NODE_RADIUS}
+                    <rect
+                      x={nodeX}
+                      y={nodeY}
+                      width={nodeW}
+                      height={nodeH}
+                      rx={8}
                       fill={fill}
                       stroke={color}
                       strokeWidth={isSelected ? 3 : 2}
@@ -517,18 +505,18 @@ function ConceptMapSection({ title, nodes, edges }: ConceptMapSectionProps) {
                     />
                     <text
                       x={node.x}
-                      y={node.y - 2}
+                      y={node.y - 6}
                       textAnchor="middle"
                       dominantBaseline="middle"
                       className="cm-node-title"
                       fill="var(--ctp-text)"
                       data-testid={`concept-map-node-title-${id}`}
                     >
-                      {node.title.length > 14 ? node.title.slice(0, 13) + '…' : node.title}
+                      {node.title}
                     </text>
                     <text
                       x={node.x}
-                      y={node.y + 14}
+                      y={node.y + 12}
                       textAnchor="middle"
                       dominantBaseline="middle"
                       className="cm-node-category"
@@ -537,10 +525,12 @@ function ConceptMapSection({ title, nodes, edges }: ConceptMapSectionProps) {
                       {node.category}
                     </text>
                     {isHov && (
-                      <circle
-                        cx={node.x}
-                        cy={node.y}
-                        r={NODE_RADIUS + 5}
+                      <rect
+                        x={nodeX - 5}
+                        y={nodeY - 5}
+                        width={nodeW + 10}
+                        height={nodeH + 10}
+                        rx={10}
                         fill="none"
                         stroke={color}
                         strokeWidth={1.5}

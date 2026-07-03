@@ -2,11 +2,6 @@
   @apply mb-8;
 }
 
-.concept-map-title {
-  font-size: var(--text-card-heading);
-  @apply mb-4 text-foreground font-light tracking-tight;
-}
-
 .concept-map-layout {
   @apply flex gap-4 h-[500px];
 }
@@ -36,16 +31,37 @@
 
 .cm-edge-label {
   font-size: 10px;
-  fill: var(--ctp-text);
+  fill: var(--ctp-subtext2);
   font-family: var(--font-mono);
   transition: fill 0.2s ease, opacity 0.2s ease;
+  opacity: 0.3;
 }
 
 .cm-edge-label-bg {
   fill: var(--ctp-mantle);
   stroke: var(--ctp-surface1);
   stroke-width: 0.5;
-  transition: fill 0.2s ease, opacity 0.2s ease;
+  transition: fill 0.2s ease, opacity 0.2s ease, stroke 0.2s ease;
+  opacity: 0.3;
+}
+
+.cm-edge-label-highlight {
+  fill: var(--ctp-blue);
+  opacity: 1;
+}
+
+.cm-edge-label-bg.cm-edge-label-highlight {
+  fill: color-mix(in srgb, var(--ctp-blue) 15%, var(--ctp-mantle));
+  stroke: var(--ctp-blue);
+  opacity: 1;
+}
+
+.cm-edge-label-dimmed {
+  opacity: 0.05;
+}
+
+.cm-edge-label-bg.cm-edge-label-dimmed {
+  opacity: 0.05;
 }
 
 .cm-node-group {

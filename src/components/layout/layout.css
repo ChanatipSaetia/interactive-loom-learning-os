@@ -91,7 +91,11 @@ html[data-theme='recipebook'] .topic-page-title {
 .flowchart-title,
 .taxonomy-browser-title,
 .tradeoff-sandbox-title,
-.flashcard-title {
+.flashcard-title,
+.dt-section-title,
+.scenario-section-title,
+.quiz-section-title,
+.concept-map-title {
   font-family: var(--font-display);
   @apply text-2xl font-bold tracking-tight text-foreground m-0 mb-8 pt-2;
   display: flex;
@@ -104,7 +108,11 @@ html[data-theme='recipebook'] .topic-page-title {
 .flowchart-title::before,
 .taxonomy-browser-title::before,
 .tradeoff-sandbox-title::before,
-.flashcard-title::before {
+.flashcard-title::before,
+.dt-section-title::before,
+.scenario-section-title::before,
+.quiz-section-title::before,
+.concept-map-title::before {
   content: "";
   display: block;
   width: 10px;
@@ -120,7 +128,11 @@ html[data-theme='recipebook'] .topic-page-title {
 .flowchart-title::after,
 .taxonomy-browser-title::after,
 .tradeoff-sandbox-title::after,
-.flashcard-title::after {
+.flashcard-title::after,
+.dt-section-title::after,
+.scenario-section-title::after,
+.quiz-section-title::after,
+.concept-map-title::after {
   content: "";
   flex: 1;
   height: 1px;

@@ -2,12 +2,6 @@
   @apply mb-8 max-w-2xl mx-auto;
 }
 
-.scenario-section-title {
-  @apply mb-6 text-foreground font-light tracking-tight;
-  font-size: var(--text-card-heading);
-  font-family: var(--font-display);
-}
-
 /* Intro card */
 .scenario-intro {
   @apply rounded-lg overflow-hidden;

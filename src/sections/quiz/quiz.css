@@ -2,11 +2,6 @@
   @apply mb-8 max-w-3xl mx-auto;
 }
 
-.quiz-section-title {
-  @apply text-xl font-semibold mb-6 text-foreground;
-  font-family: var(--font-display);
-}
-
 /* Score bar */
 .quiz-score-bar {
   @apply flex items-center gap-3 mb-6 p-3 rounded-lg border border-border;
