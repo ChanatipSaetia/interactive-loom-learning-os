@@ -106,10 +106,14 @@ html[data-theme='recipebook'] .topic-page-title {
 .quiz-section-title,
 .concept-map-title {
   font-family: var(--font-display);
-  @apply text-2xl font-bold tracking-tight text-foreground m-0 mb-8 pt-3 md:pt-6;
+  @apply text-2xl font-bold tracking-tight text-foreground m-0 mb-8 pt-3 md:pt-6 pb-2;
   display: flex;
   align-items: center;
   gap: 1rem;
+  position: sticky;
+  top: 52px;
+  z-index: 10;
+  background-color: var(--background);
 }
 
 .text-section-title::before,
