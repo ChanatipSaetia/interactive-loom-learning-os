@@ -41,6 +41,18 @@ public/okf/[topic-id]/
     flashcards/
       section.md
       glossary.yaml
+    quiz/
+      section.md
+      questions.yaml
+    concept-map/
+      section.md
+      concepts.yaml
+    scenario/
+      section.md
+      scenarios.yaml
+    decision-tree/
+      section.md
+      tree.yaml
 ```
 
 **Adding a new section is simple:** create a folder with `section.md` + data files, then append the path to `okf.md` sections list.
@@ -59,12 +71,16 @@ tags:
   - tag2
 sections:
   - sections/intro/section.md
-  - sections/flowchart/section.md
+  - sections/concept-map/section.md
+  - sections/flashcards/section.md
+  - sections/taxonomy/section.md
   - sections/lifecycle/section.md
   - sections/capabilities/section.md
+  - sections/flowchart/section.md
+  - sections/quiz/section.md
   - sections/tradeoffs/section.md
-  - sections/taxonomy/section.md
-  - sections/flashcards/section.md
+  - sections/scenario/section.md
+  - sections/decision-tree/section.md
 related:
   # All YAML data files the reader needs to discover
   - sections/flowchart/actors.yaml
@@ -77,6 +93,10 @@ related:
   - sections/taxonomy/memory-context.yaml
   - sections/capabilities/items.yaml
   - sections/flashcards/glossary.yaml
+  - sections/quiz/questions.yaml
+  - sections/concept-map/concepts.yaml
+  - sections/scenario/scenarios.yaml
+  - sections/decision-tree/tree.yaml
 ---
 
 # Topic Display Title
@@ -95,7 +115,7 @@ Each section is a folder with a `section.md` manifest (YAML frontmatter) and dat
 
 | Field | Required | Description |
 |---|---|---|
-| `type` | yes | Section renderer: `text`, `bullets`, `flowchart`, `tradeoff-sandbox`, `taxonomy-browser`, `flashcards` |
+| `type` | yes | Section renderer: `text`, `bullets`, `flowchart`, `tradeoff-sandbox`, `taxonomy-browser`, `flashcards`, `quiz`, `concept-map`, `scenario`, `decision-tree` |
 | `title` | yes | Display title shown above the section content |
 | `resource` | yes | `"."` for directory (multiple data files), or `"filename.yaml"` for a single file |
 | `heading` | no | Sub-heading displayed below the title |
@@ -324,6 +344,154 @@ outOfScope:
 
 The `icon` field uses a [Lucide icon name](https://lucide.dev/icons/) (e.g., `GitFork`, `Brain`, `Workflow`). The `color` field uses a Catppuccin color name (e.g., `mauve`, `rose`, `sky`, `green`, `peach`, `red`, `yellow`, `teal`).
 
+### `quiz` section
+Multiple-choice questions with instant feedback, hints, score tracking, and prev/next navigation. Each choice includes an explanation revealed on selection. Uses `resource: questions.yaml`.
+
+```yaml
+---
+type: quiz
+title: "Knowledge Check"
+resource: questions.yaml
+---
+```
+
+**Data file (`questions.yaml`):**
+```yaml
+- id: q1
+  question: "What is the primary role of an orchestrator agent?"
+  hint: "Think about how work gets divided."
+  choices:
+    - id: a
+      text: "Directly execute all tasks"
+      correct: false
+      explanation: "The orchestrator delegates work rather than executing it directly."
+    - id: b
+      text: "Decompose goals, delegate tasks, and synthesize output"
+      correct: true
+      explanation: "Correct. The orchestrator breaks down complex goals and coordinates specialized workers."
+    - id: c
+      text: "Store conversation history"
+      correct: false
+      explanation: "Memory handling is a separate concern, usually delegated to a memory component."
+```
+
+### `concept-map` section
+Force-directed graph visualization of interconnected concepts. Nodes are grouped by category with distinct colors. Supports zoom, pan, and hover-to-highlight connections. Gives learners a bird's-eye view of how concepts relate. Uses `resource: concepts.yaml`.
+
+```yaml
+---
+type: concept-map
+title: "Concept Map"
+resource: concepts.yaml
+---
+```
+
+**Data file (`concepts.yaml`):**
+```yaml
+nodes:
+  orchestrator:
+    title: "Orchestrator"
+    category: pattern
+  worker:
+    title: "Worker Agent"
+    category: role
+  memory:
+    title: "Memory Store"
+    category: mechanism
+edges:
+  - from: orchestrator
+    to: worker
+    label: "delegates to"
+  - from: orchestrator
+    to: memory
+    label: "reads from"
+```
+
+**Node `category`** determines the visual color. Supported categories: `pattern`, `mechanism`, `concept`, `role`, `system`, `data`, `process`, plus any custom category (falls back to lavender).
+
+### `scenario` section
+Branching narrative where the learner makes choices that lead to an outcome rated on a letter grade (A = Excellent, B+ = Good, B- = Fair, C = Needs Improvement). Includes step counter, back navigation, and restart. Purpose: learn through consequences — the learner experiences the impact of decisions. Uses `resource: scenarios.yaml`.
+
+```yaml
+---
+type: scenario
+title: "Architecture Decision Scenario"
+resource: scenarios.yaml
+---
+```
+
+**Data file (`scenarios.yaml`):**
+```yaml
+id: arch-decision
+title: "Scaling Challenge"
+intro: "Your service is growing fast. How do you handle the load?"
+nodes:
+  start:
+    prompt: "Traffic spikes 10x. What's your first move?"
+    choices:
+      - id: scale-horizontally
+        text: "Add more instances behind a load balancer"
+        next: monitor-result
+      - id: optimize-first
+        text: "Profile and optimize the bottleneck"
+        next: optimize-result
+  monitor-result:
+    outcome:
+      verdict: "You handled the spike but incurred higher infrastructure costs."
+      lesson: "Horizontal scaling works but always pair it with auto-scaling policies."
+      rating: b-plus
+  optimize-result:
+    outcome:
+      verdict: "You found the bottleneck and resolved it with minimal cost."
+      lesson: "Optimization before scaling often reveals you don't need more resources."
+      rating: a
+```
+
+### `decision-tree` section
+Guided Q&A that leads to a tailored recommendation. Each step presents a question with choices that include rationale and optional "recommended" badges. A breadcrumb trail tracks the path. The leaf node delivers a recommendation with explanation and trade-offs. Purpose: diagnostic tool — "answer these questions, get a recommendation for your situation." Uses `resource: tree.yaml`.
+
+```yaml
+---
+type: decision-tree
+title: "Choose Your Agent Architecture"
+resource: tree.yaml
+---
+```
+
+**Data file (`tree.yaml`):**
+```yaml
+id: agent-arch
+title: "Agent Architecture Advisor"
+root: complexity
+nodes:
+  complexity:
+    prompt: "How complex is your task?"
+    choices:
+      - id: simple
+        text: "Single-step, well-defined"
+        next: rec-simple
+        rationale: "Simple tasks don't need complex orchestration."
+        recommended: true
+      - id: complex
+        text: "Multi-step with dependencies"
+        next: rec-complex
+        rationale: "Complex tasks benefit from structured decomposition."
+  rec-simple:
+    leaf:
+      recommendation: "Use a single-agent ReAct loop."
+      explanation: "For well-defined tasks, a single agent with tool use is sufficient and avoids orchestration overhead."
+      tradeoffs:
+        - "Limited to tasks the agent can solve in one session"
+        - "No parallel execution of subtasks"
+  rec-complex:
+    leaf:
+      recommendation: "Use hierarchical orchestrator-workers."
+      explanation: "A central orchestrator decomposes the task, delegates to specialized workers, and synthesizes results."
+      tradeoffs:
+        - "Higher latency from orchestration overhead"
+        - "More complex to configure and debug"
+```
+
 ### `flashcards` section
 Vocabulary flashcards with flip animation showing definition, pronunciation, and AI dialogue. Uses `resource: glossary.yaml`.
 
@@ -409,13 +577,17 @@ Each `section.md` declares its own `type` and `title`. The `related` list in `ok
 Order sections so the learner builds understanding progressively — each section should prepare the ground for the next one:
 
 1. **Intro (`text`)** — Set the context: what the topic is, why it matters. Gives the learner a mental anchor before diving deeper.
-2. **Glossary / vocabulary (`flashcards`)** — Teach key terms and their pronunciation before they appear in diagrams, text, or trade-offs. If the learner doesn't know the words, everything else is noise.
-3. **Concept categories (`taxonomy-browser`)** — Show the landscape of concepts and how they relate. Gives the learner a map of what's coming so individual sections feel connected, not isolated.
-4. **Core explanation (`text` / `bullets`)** — Explain main concepts, learning goals, or capabilities in prose. Builds on the vocabulary and taxonomy the learner just saw.
-5. **How it works (`flowchart`)** — Show the process flow. Now the learner can read node labels and understand what each entity does because the terms were taught earlier.
-6. **Apply (`bullets`)** — Practical checklists, maintenance steps, or reference material. The learner can now act on this because they understand the underlying mechanics.
-7. **Explore trade-offs (`tradeoff-sandbox`)** — Let the learner experiment with decisions. Placed after everything is taught so choices feel meaningful, not arbitrary.
-8. **Reinforce (`flashcards`)** — Optionally close with recall drills if there's a separate second flashcard deck. The first flashcards are glossary (section 2); these are practice.
+2. **Concept map (`concept-map`)** — Visual bird's-eye view of how concepts interrelate. Placed early so the learner has a spatial map before individual concepts are explored in depth.
+3. **Glossary / vocabulary (`flashcards`)** — Teach key terms and their pronunciation before they appear in diagrams, text, or trade-offs. If the learner doesn't know the words, everything else is noise.
+4. **Concept categories (`taxonomy-browser`)** — Show the landscape of concepts and how they relate. Gives the learner a map of what's coming so individual sections feel connected, not isolated.
+5. **Core explanation (`text` / `bullets`)** — Explain main concepts, learning goals, or capabilities in prose. Builds on the vocabulary and taxonomy the learner just saw.
+6. **How it works (`flowchart`)** — Show the process flow. Now the learner can read node labels and understand what each entity does because the terms were taught earlier.
+7. **Apply (`bullets`)** — Practical checklists, maintenance steps, or reference material. The learner can now act on this because they understand the underlying mechanics.
+8. **Knowledge check (`quiz`)** — Multiple-choice questions to verify understanding. Score tracking gives immediate feedback. Placed after core content is taught so questions test learned material.
+9. **Explore trade-offs (`tradeoff-sandbox`)** — Let the learner experiment with decisions. Placed after everything is taught so choices feel meaningful, not arbitrary.
+10. **Scenario (`scenario`)** — Branching narrative where the learner makes decisions and faces consequences. Graded outcomes make the learning stick. Requires full context from prior sections.
+11. **Decision guide (`decision-tree`)** — Diagnostic Q&A that leads to a tailored recommendation. Learner applies knowledge to their own situation. Best placed after all concepts are understood.
+12. **Reinforce (`flashcards`)** — Optionally close with recall drills if there's a separate second flashcard deck. The first flashcards are glossary (section 3); these are practice.
 
 **Rule: never reference a term, concept, or mechanism in section N that hasn't been introduced in section N-1 or earlier.**
 
