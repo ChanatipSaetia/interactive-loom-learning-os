@@ -207,7 +207,7 @@ export default function FlashcardDeck({ title, terms = [] }: FlashcardDeckProps)
                   <div className="absolute bottom-3 right-3 text-muted-foreground/30 font-bold text-[10px] pointer-events-none">+</div>
 
                   {/* Top Toolbar */}
-                  <div className="flex items-center justify-between border-b border-border pb-4 mb-6 z-10">
+                  <div className="flex items-center justify-between border-b border-border pb-4 mb-6 h-9 z-10">
                     {getCategoryBadge(currentTerm.category)}
                     
                     <div className="flex items-center space-x-3">
@@ -269,10 +269,16 @@ export default function FlashcardDeck({ title, terms = [] }: FlashcardDeckProps)
                   className={`absolute inset-0 p-6 md:p-10 bg-card text-foreground rounded-lg border border-border shadow-md flex flex-col justify-between backface-hidden rotateY-180 overflow-y-auto scrollbar-thin select-none transition-opacity duration-300 ${isFlipped ? 'pointer-events-auto opacity-100' : 'pointer-events-none opacity-0'}`}
                   style={{ backfaceVisibility: 'hidden', transform: 'rotateY(180deg)' }}
                 >
+                  {/* Visual Draft Crosshairs */}
+                  <div className="absolute top-3 left-3 text-muted-foreground/30 font-bold text-[10px] pointer-events-none">+</div>
+                  <div className="absolute top-3 right-3 text-muted-foreground/30 font-bold text-[10px] pointer-events-none">+</div>
+                  <div className="absolute bottom-3 left-3 text-muted-foreground/30 font-bold text-[10px] pointer-events-none">+</div>
+                  <div className="absolute bottom-3 right-3 text-muted-foreground/30 font-bold text-[10px] pointer-events-none">+</div>
+
                   <div className="flex-1 flex flex-col h-full">
                     
                     {/* Card Back Header */}
-                    <div className="flex items-center justify-between border-b border-border pb-4 mb-6">
+                    <div className="flex items-center justify-between border-b border-border pb-4 mb-6 h-9">
                       <span className="text-xs font-mono uppercase tracking-widest text-muted-foreground font-bold flex items-center">
                         <Terminal className="w-4 h-4 mr-2 text-primary" /> AI ALIGNMENT SPEC
                       </span>
