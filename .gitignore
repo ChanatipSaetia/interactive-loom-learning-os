@@ -43,4 +43,5 @@ logs/
 .mcp.json
 .playwright-mcp/
 
+src/topics/backoffice_tiamongthai/*
 test-results/*

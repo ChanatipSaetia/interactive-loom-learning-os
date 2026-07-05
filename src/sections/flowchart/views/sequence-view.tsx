@@ -250,6 +250,7 @@ export const SequenceView = memo(function SequenceView({
                   fontSize="10"
                   fontFamily="var(--font-mono)"
                   fontWeight={isEdgeActive ? "600" : "500"}
+                  data-testid={`flowchart-seq-msg-label-${viewKey}-${idx}`}
                 >
                   {displayLabel}
                 </text>
@@ -309,6 +310,7 @@ export const SequenceView = memo(function SequenceView({
             {/* Top Node */}
             <g
               transform={`translate(${x}, ${TOP_Y})`}
+              data-testid={`flowchart-seq-top-${viewKey}-${nodeId}`}
               onMouseEnter={() => {
                 if (entity.desc) {
                   setTooltip({ description: entity.desc, x: colX, y: TOP_Y - 10 });
@@ -405,6 +407,7 @@ export const SequenceView = memo(function SequenceView({
             {/* Bottom Node */}
             <g
               transform={`translate(${x}, ${BOTTOM_Y})`}
+              data-testid={`flowchart-seq-bottom-${viewKey}-${nodeId}`}
               style={{
                 opacity: isDimmed ? 0.25 : 1,
                 transition: 'opacity 0.3s, filter 0.3s',

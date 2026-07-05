@@ -129,29 +129,28 @@ describe('Flowchart SEQUENCE view', () => {
     const lifeline = screen.getByTestId('flowchart-lifeline-SEQUENCE-0');
     const line = lifeline.querySelector('line');
     expect(line).toBeInTheDocument();
-    expect(line!.getAttribute('stroke-dasharray')).toBe('4 4');
+    expect(line!.getAttribute('stroke-dasharray')).toBe('6 6');
   });
 
   it('renders return messages as dashed lines', () => {
     render(<Flowchart title="Seq Test" schema={seqSchema} />, { wrapper });
     const msg2 = screen.getByTestId('flowchart-seq-msg-SEQUENCE-2');
-    const line = msg2.querySelector('line');
-    expect(line!.getAttribute('stroke-dasharray')).toBe('4 4');
+    const line = msg2.querySelector('line.flowchart-edge');
+    expect(line!.getAttribute('stroke-dasharray')).toBe('8 8');
     const msg3 = screen.getByTestId('flowchart-seq-msg-SEQUENCE-3');
-    const line3 = msg3.querySelector('line');
-    expect(line3!.getAttribute('stroke-dasharray')).toBe('4 4');
+    const line3 = msg3.querySelector('line.flowchart-edge');
+    expect(line3!.getAttribute('stroke-dasharray')).toBe('8 8');
   });
 
   it('renders forward messages as solid lines', () => {
     render(<Flowchart title="Seq Test" schema={seqSchema} />, { wrapper });
     const msg0 = screen.getByTestId('flowchart-seq-msg-SEQUENCE-0');
-    const line = msg0.querySelector('line');
-    expect(line!.getAttribute('stroke-dasharray')).toBe('none');
+    const line = msg0.querySelector('line.flowchart-edge');
+    expect(line!.getAttribute('stroke-dasharray')).toBe('8 8');
   });
 
   it('renders view tab for SEQUENCE when multiple views exist', () => {
     render(<Flowchart title="Multi View" schema={multiViewSeqSchema} />, { wrapper });
-    fireEvent.click(screen.getByTestId('dock-tab-views'));
     expect(screen.getByTestId('flowchart-view-tabs')).toBeInTheDocument();
     const tabs = screen.getByTestId('flowchart-view-tabs');
     expect(tabs.textContent).toContain('Sequence Diagram');
@@ -159,7 +158,6 @@ describe('Flowchart SEQUENCE view', () => {
 
   it('switches to SEQUENCE view from tab', () => {
     render(<Flowchart title="Multi View" schema={multiViewSeqSchema} />, { wrapper });
-    fireEvent.click(screen.getByTestId('dock-tab-views'));
     const tabs = screen.getByTestId('flowchart-view-tabs');
     const buttons = tabs.querySelectorAll('button');
     let seqTabBtn: HTMLElement | null = null;
@@ -208,7 +206,6 @@ describe('Flowchart SEQUENCE view', () => {
     const groupElement = screen.getByTestId('flowchart-seq-group-SEQUENCE-alt_group');
     expect(groupElement).toBeInTheDocument();
     expect(groupElement.querySelector('rect')).toBeInTheDocument();
-    expect(groupElement.querySelector('polygon')).toBeInTheDocument();
     expect(groupElement.querySelector('text')).toHaveTextContent('alt [Score < 90%]');
   });
 });

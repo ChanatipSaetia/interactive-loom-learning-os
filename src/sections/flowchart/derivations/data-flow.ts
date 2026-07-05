@@ -1,6 +1,6 @@
 import type { UnifiedFlowchartSchema, FlowchartRelation, FlowchartViewNode, FlowchartEntity } from '../types';
 import { TYPES, MASTER_MAPPING_MATRIX } from '../types';
-import { getEntityType, deriveRelations, buildCycleFreeGraph, computeTopologicalColumns, compactColumns, isType, computeLayoutInfo, countOutgoingPolicies } from './utils';
+import { getEntityType, deriveRelations, buildCycleFreeGraph, computeTopologicalColumns, compactColumns, isType, computeLayoutInfo, countOutgoingPolicies, policyShouldMapToDecision } from './utils';
 
 export function deriveDataFlow(
   schema: UnifiedFlowchartSchema,
@@ -15,8 +15,8 @@ export function deriveDataFlow(
     const esNode = getESNode(id);
     if (!esNode) return;
 
-    // Exclude POLICY nodes from data flow — they don't represent data transformations.
-    if (type === TYPES.POLICY) return;
+    // Exclude POLICY nodes from data flow unless they are branching (represent decisions).
+    if (type === TYPES.POLICY && !policyShouldMapToDecision(schema, id, type)) return;
 
     // Keep branching Events (>= 2 outgoing Policies) as Decision nodes.
     if (type === TYPES.EVENT && countOutgoingPolicies(schema, id) >= 2) {

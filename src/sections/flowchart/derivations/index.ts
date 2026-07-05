@@ -168,7 +168,9 @@ if (mutableViews.EVENT_STORMING) {
             const isFork = vk === 'SWIMLANES'
               ? countOutgoingRelations(newSchema, nodeId) >= 2
               : policyShouldMapToDecision(newSchema, nodeId, esType);
-            derivedTypes[vk] = isFork ? TYPES.DECISION : TYPES.PROCESS;
+            if (isFork) {
+              derivedTypes[vk] = TYPES.DECISION;
+            }
           } else {
             derivedTypes[vk] = mappedType;
           }

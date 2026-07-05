@@ -28,7 +28,7 @@ interface UsePlaybackStateReturn {
 }
 
 export function usePlaybackState({ schema }: UsePlaybackStateOptions): UsePlaybackStateReturn {
-  const [currentJourneyId, setCurrentJourneyIdState] = useState('');
+  const [currentJourneyId, setCurrentJourneyIdState] = useState(() => schema.journeys?.[0]?.id || '');
   const [currentStep, setCurrentStep] = useState(-1);
   const [isPlaying, setIsPlaying] = useState(false);
 

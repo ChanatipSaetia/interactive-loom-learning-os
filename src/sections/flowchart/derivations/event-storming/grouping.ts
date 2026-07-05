@@ -188,6 +188,10 @@ export function buildGroups(
           if (tgtRole === 'handler' && tgtType === TYPES.USER && !g.allNodes.has(tgt)) {
             addNodeToGroup(g, tgt);
           }
+          // Event -> DB (CQRS update read model, add without traverse)
+          if (tgtRole === 'db' && !g.allNodes.has(tgt)) {
+            addNodeToGroup(g, tgt);
+          }
         }
 
         // Policy -> [STOP, next command starts its own group]

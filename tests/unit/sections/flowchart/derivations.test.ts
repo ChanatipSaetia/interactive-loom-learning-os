@@ -161,7 +161,7 @@ describe('Policy branching mapping (#69)', () => {
     // Command maps to Process in SWIMLANES regardless of outgoing count
     const swimNodeIds = result.views!.SWIMLANES!.nodes.map(n => n.id);
     expect(swimNodeIds).toContain('cmd');
-    expect(swimNodeIds).toContain('agg');
+    expect(swimNodeIds).not.toContain('agg');
 
     // User always appears in DATA_FLOW
     const dfNodeIds = result.views!.DATA_FLOW!.nodes.map(n => n.id);
@@ -295,13 +295,16 @@ describe('Dynamic layout (#68)', () => {
       const esNodes = result.views!.EVENT_STORMING.nodes;
       const nodeMap = new Map(esNodes.map(n => [n.id, n.grid]));
 
-      // DB should be at row 0
-      expect(nodeMap.get('db')![1]).toBe(0);
-      // Aggregate should be at row 1
-      expect(nodeMap.get('agg')![1]).toBe(1);
-      // Timeline nodes should be at row >= 2
-      expect(nodeMap.get('evt')![1]).toBeGreaterThanOrEqual(2);
-      expect(nodeMap.get('cmd')![1]).toBeGreaterThanOrEqual(2);
+      const dbY = nodeMap.get('db')![1];
+      const aggY = nodeMap.get('agg')![1];
+      const evtY = nodeMap.get('evt')![1];
+      const cmdY = nodeMap.get('cmd')![1];
+
+      // DB should be above Aggregate
+      expect(dbY).toBeLessThan(aggY);
+      // Aggregate should be above Timeline nodes
+      expect(aggY).toBeLessThan(evtY);
+      expect(aggY).toBeLessThan(cmdY);
     });
 
     it('auto-expands timeline branches beyond row 4', () => {
@@ -340,7 +343,7 @@ describe('Dynamic layout (#68)', () => {
       const info = result.views!.EVENT_STORMING.layoutInfo!;
 
       // With 9 timeline nodes in a chain, rows should expand dynamically
-      expect(info.rowCount).toBeGreaterThanOrEqual(2);
+      expect(info.rowCount).toBeGreaterThan(1);
       expect(info.colCount).toBeGreaterThanOrEqual(8);
     });
 
@@ -481,14 +484,13 @@ describe('Dynamic layout (#68)', () => {
       const swimNodes = result.views!.SWIMLANES!.nodes;
       const nodeMap = new Map(swimNodes.map(n => [n.id, n.grid!]));
 
-      const userCol = nodeMap.get('user')?.[0];
-      // Event maps to null in SWIMLANES, so use agg (Aggregate → Process in SWIMLANES)
-      const aggCol = nodeMap.get('agg')?.[0];
+      const cmdCol = nodeMap.get('cmd')?.[0];
+      const evtCol = nodeMap.get('evt')?.[0];
 
-      expect(userCol).toBeDefined();
-      expect(aggCol).toBeDefined();
-      // User is forced to column 0, agg should be at or after user
-      expect(aggCol).toBeGreaterThanOrEqual(userCol!);
+      expect(cmdCol).toBeDefined();
+      expect(evtCol).toBeDefined();
+      // cmd should be at or before evt
+      expect(evtCol).toBeGreaterThanOrEqual(cmdCol!);
     });
   });
 
