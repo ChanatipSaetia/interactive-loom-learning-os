@@ -19,6 +19,8 @@ import type {
   OKFConceptMapSectionData,
   OKFScenarioSectionData,
   OKFDecisionTreeSectionData,
+  OKFImageGallerySectionData,
+  OKFGalleryRaw,
   OKFStepRaw,
   OKFJourneyRaw,
   OKFTradeoffScenarioRaw,
@@ -131,6 +133,8 @@ async function loadSectionResource(
       return loadScenarioSection(basePath, resource)
     case 'decision-tree':
       return loadDecisionTreeSection(basePath, resource)
+    case 'image-gallery':
+      return loadImageGallerySection(basePath, resource, resourceFiles)
     default:
       throw new Error(`Unknown section type: ${type}`)
   }
@@ -223,6 +227,15 @@ async function loadScenarioSection(basePath: string, resource: string): Promise<
   const scenariosFile = resource !== '.' ? resource : 'scenarios.yaml'
   const raw = await fetchYaml<OKFScenarioRaw>(`${basePath}/${scenariosFile}`)
   return mapScenario(raw)
+}
+
+async function loadImageGallerySection(basePath: string, resource: string, resourceFiles: string[]): Promise<OKFImageGallerySectionData> {
+  const galleryFile = resource !== '.' ? resource : resourceFiles.find((f) => f === 'gallery.yaml')
+  if (galleryFile) {
+    const raw = await fetchYaml<OKFGalleryRaw>(`${basePath}/${galleryFile}`)
+    return { type: 'image-gallery', items: raw }
+  }
+  return { type: 'image-gallery', items: [] }
 }
 
 // --- Flow mapping ---
@@ -359,6 +372,7 @@ function mapGlossaryTerm(raw: OKFGlossaryRaw): WordTerm {
     word: raw.word,
     pronunciation: raw.pronunciation,
     category: raw.category,
+    image: raw.image,
     shortDefinition: raw.shortDefinition,
     detailedDefinition: raw.detailedDefinition,
     whyItMatters: raw.whyItMatters,

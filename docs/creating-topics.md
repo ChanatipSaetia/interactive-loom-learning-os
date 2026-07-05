@@ -510,6 +510,7 @@ resource: glossary.yaml
   word: "Visual Hierarchy"
   pronunciation: "vizh-oo-uhl hahy-er-ahr-kee"
   category: hierarchy
+  image: "https://example.com/visual-hierarchy.webp"   # optional — public URL; renders as hero image on card front
   shortDefinition: "Arranging UI elements in order of visual importance."
   detailedDefinition: "Visual hierarchy guides the user's eyes through an interface."
   whyItMatters: "Without hierarchy, all elements compete for attention equally."
@@ -518,6 +519,41 @@ resource: glossary.yaml
     aiThoughts: "The user wants aesthetics but hasn't specified hierarchy priorities."
     aiQuestion: "Which element should be most prominent: the headline, the CTA button, or the hero image?"
 ```
+
+**`image` field (optional):** A fully-qualified public URL (`https://…`). When present, a 16:7 hero image appears below the category toolbar on the card front. When absent, the card displays text-only — no layout shift. Broken URLs are silently hidden via `onError`.
+
+### `image-gallery` section
+Responsive image grid with hover-zoom thumbnails and a full-screen lightbox. Keyboard navigable (← → Escape). Images load lazily; broken URLs display an "Image unavailable" placeholder skeleton. Uses `resource: gallery.yaml`.
+
+```yaml
+---
+type: image-gallery
+title: "Skill Showcase"
+resource: gallery.yaml
+---
+```
+
+**Data file (`gallery.yaml`):**
+```yaml
+- id: flicker-strike-in-action
+  url: "https://example.com/poe2/flicker-action.webp"   # required — public URL
+  caption: "Flicker Strike teleporting through a pack"   # required — shown in lightbox and on hover
+  credit: "Source: Path of Exile 2 wiki"                 # optional — attribution line
+
+- id: falling-thunder-nova
+  url: "https://example.com/poe2/falling-thunder.webp"
+  caption: "Falling Thunder with Nova Projectiles support — full-screen AoE"
+```
+
+**Fields:**
+| Field | Required | Description |
+|---|---|---|
+| `id` | yes | Unique slug for the image |
+| `url` | yes | Fully-qualified public HTTPS URL |
+| `caption` | yes | Displayed in lightbox and as hover overlay on the grid card |
+| `credit` | no | Optional source attribution shown below caption |
+
+**Grid layout:** 1 column on mobile, 2 on tablet (`sm:`), 3 on desktop (`md:`). Click any card to open the lightbox. Press ← / → to navigate, Escape to close.
 
 ## 4. Register the Route
 

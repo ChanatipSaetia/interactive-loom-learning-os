@@ -32,6 +32,7 @@ export type OKFSectionData =
   | OKFConceptMapSectionData
   | OKFScenarioSectionData
   | OKFDecisionTreeSectionData
+  | OKFImageGallerySectionData
 
 export interface OKFTextSectionData {
   type: 'text'
@@ -206,11 +207,30 @@ export interface OKFGlossaryRaw {
   word: string
   pronunciation: string
   category: string
+  image?: string
   shortDefinition: string
   detailedDefinition: string
   whyItMatters: string
   dialogue?: { user: string; aiThoughts: string; aiQuestion: string }
 }
+
+// --- Image Gallery section types ---
+
+export interface OKFGalleryItem {
+  id: string
+  url: string
+  caption: string
+  credit?: string
+}
+
+export interface OKFImageGallerySectionData {
+  type: 'image-gallery'
+  items: OKFGalleryItem[]
+}
+
+// --- Raw types for image-gallery YAML ---
+
+export type OKFGalleryRaw = OKFGalleryItem[]
 
 // --- Scenario section types ---
 

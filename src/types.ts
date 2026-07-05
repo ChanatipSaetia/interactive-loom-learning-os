@@ -3,6 +3,7 @@ export interface WordTerm {
   word: string;
   pronunciation: string;
   category: string;
+  image?: string;
   shortDefinition: string;
   detailedDefinition: string;
   whyItMatters: string;

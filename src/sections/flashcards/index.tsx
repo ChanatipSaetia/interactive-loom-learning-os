@@ -219,6 +219,19 @@ export default function FlashcardDeck({ title, terms = [] }: FlashcardDeckProps)
                     </div>
                   </div>
 
+                  {/* Optional Hero Image */}
+                  {currentTerm.image && (
+                    <div className="w-full flex justify-center items-center mb-4 flex-shrink-0 bg-muted/5 rounded-md p-2 border border-border/20" style={{ minHeight: '80px', maxHeight: '160px' }}>
+                      <img
+                        src={currentTerm.image}
+                        alt={currentTerm.word}
+                        loading="lazy"
+                        className="max-h-[140px] max-w-full object-contain rounded"
+                        onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = 'none' }}
+                      />
+                    </div>
+                  )}
+
                   {/* Large Word Display */}
                   <div className="my-auto text-left">
                     <h2 className="text-3xl md:text-5xl font-light tracking-tight text-foreground font-display leading-[1.15] mb-3 md:mb-4">

@@ -76,6 +76,9 @@ export function bundleToSections(bundle: OKFBundled): SectionConfig[] {
         props.root = data.root
         props.nodes = data.nodes
         break
+      case 'image-gallery':
+        props.items = data.items
+        break
     }
 
     return { type: meta.type, props }

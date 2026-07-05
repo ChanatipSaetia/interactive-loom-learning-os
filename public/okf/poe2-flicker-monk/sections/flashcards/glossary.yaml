@@ -2,6 +2,7 @@
   word: "Flicker Strike"
   pronunciation: "FLIK-er strike"
   category: skill
+  image: "https://cdn.mobalytics.gg/cdn-cgi/image/format=auto,width=96/assets/poe-2/images/game/Art/2DArt/SkillIcons/MonkFlickerStrikeTeleport.webp"
   shortDefinition: "Dash through enemies, dealing melee damage."
   detailedDefinition: "Your character flickers through enemies in the direction of movement, dealing melee physical damage. Links with Perpetual Charge to extend duration and reduce charge consumption chance."
   whyItMatters: "Primary mobility and clearing skill. Teleporting through packs while dealing damage is the build's signature feel."
@@ -14,6 +15,7 @@
   word: "Falling Thunder"
   pronunciation: "FAL-ing THUN-der"
   category: skill
+  image: "https://www.poe2wiki.net/images/a/a9/Falling_Thunder_inventory_icon.png"
   shortDefinition: "Fire lightning projectiles per Power Charge consumed."
   detailedDefinition: "A lightning attack that fires one projectile per Power Charge consumed, dealing increased damage per projectile. Combined with Nova Projectiles, it creates a 360-degree AoE burst."
   whyItMatters: "Your main AoE clear skill. With 6-8 charges and Nova Projectiles, you fill the screen with lightning."
@@ -38,6 +40,7 @@
   word: "Power Charges"
   pronunciation: "POW-er CHARJZ"
   category: mechanic
+  image: "https://www.poe2wiki.net/images/a/a9/Falling_Thunder_inventory_icon.png"
   shortDefinition: "Temporary buffs that enhance linked skills."
   detailedDefinition: "A currency of temporary buffs (max 5 normally, up to 8 with +1 mods). Consumed by Falling Thunder for projectiles, by Charged Staff for lightning damage, and by Flicker Strike for increased damage."
   whyItMatters: "Everything in this build scales with Power Charges. More charges = more projectiles = more damage."
@@ -50,6 +53,7 @@
   word: "Martial Artist"
   pronunciation: "MAR-shul AR-tist"
   category: ascendancy
+  image: "https://www.poe2wiki.net/images/e/e9/Monk_portrait.png"
   shortDefinition: "Monk ascendancy focused on close combat mastery."
   detailedDefinition: "The Martial Artist ascendancy provides: Way of the Stonefist (glove damage multiplier), Martial Adept (doubled Combo gain + ES recharge), Martial Master (all attacks build Combo), Hollow Focus Technique (bell stun/crit), and Runic Meridians (extra rune sockets)."
   whyItMatters: "Core ascendancy that makes the build viable. Stonefist alone is a massive damage multiplier."
@@ -62,6 +66,7 @@
   word: "Way of the Stonefist"
   pronunciation: "way of the STONE-fist"
   category: ascendancy
+  image: "https://www.poe2wiki.net/images/6/6b/MartialArtistHandWraps_%28MartialArtist%29_passive_skill_icon.png"
   shortDefinition: "Converts flat glove damage into extra damage percentages."
   detailedDefinition: "Flat Physical Damage and flat Elemental Damage on your Gloves become % Extra Damage of that type. Gloves with Physical + 2 elemental prefixes create a massive multiplicative damage multiplier."
   whyItMatters: "Single biggest damage node in the ascendancy. A well-rolled pair of gloves multiplies all damage."
@@ -74,6 +79,7 @@
   word: "Chaos Inoculation"
   pronunciation: "KAY-os in-ok-yoo-LAY-shun"
   category: defense
+  image: "https://www.poewiki.net/images/7/78/KeystoneChaosInoculation_passive_skill_icon.png"
   shortDefinition: "Sets max Life to 1 but grants chaos immunity."
   detailedDefinition: "A notable passive that sets maximum Life to 1 in exchange for 100% Chaos Resistance. Requires sufficient base Energy Shield to survive. Taken at approximately 4000+ ES."
   whyItMatters: "Essential endgame defense. Chaos damage has a 2x multiplier against ES, so CI eliminates that vulnerability."
@@ -86,6 +92,7 @@
   word: "Subterfuge Mask"
   pronunciation: "sub-TUR-fyoo MASK"
   category: defense
+  image: "https://www.poe2wiki.net/images/9/91/EvasionandEnergyShieldNode_passive_skill_icon.png"
   shortDefinition: "+2 Evasion per 1 ES on helmet."
   detailedDefinition: "A passive node that converts Energy Shield on your helmet into Evasion Rating. A 400 ES helmet generates an additional 800 Evasion, stacking with your body armor evasion."
   whyItMatters: "Free evasion from your helmet. Combined with high-ES helmet and body armor, creates physical hit mitigation."
@@ -98,6 +105,7 @@
   word: "Ailith's Chimes"
   pronunciation: "EYE-liths CHIMZ"
   category: item
+  image: "https://www.poe2wiki.net/images/7/78/Ailith%27s_Chimes_inventory_icon.png"
   shortDefinition: "Unique support gem that converts Combo to Power Charges."
   detailedDefinition: "When linked with Mantra of Destruction and Delayed Gratification, expending Combo through the skill grants Power Charges instead of its normal effect. The primary endgame charge generation method."
   whyItMatters: "The endgame charge engine. Without it, you rely on the slower Killing Palm + Hollow Focus method."
@@ -110,6 +118,7 @@
   word: "Trinity"
   pronunciation: "trih-NIH-tee"
   category: aura
+  image: "https://www.poewiki.net/images/2/29/Trinity_Support_inventory_icon.png"
   shortDefinition: "Multiplies lowest 2 elements to match highest."
   detailedDefinition: "An aura that multiplies your two lowest elemental damage types to match your highest. Requires balanced Fire/Cold/Lightning across weapon, rings, and gems. Free Trinity amulets exist to save Spirit."
   whyItMatters: "Massive elemental damage multiplier. Ensures Falling Thunder's mixed damage output is optimized."
@@ -122,6 +131,7 @@
   word: "Nova Projectiles"
   pronunciation: "NOH-vuh pro-JEK-tyulz"
   category: support
+  image: "https://www.poe2wiki.net/images/d/de/Nova_Projectiles_I_inventory_icon.png"
   shortDefinition: "Spreads projectiles in a 360-degree circle."
   detailedDefinition: "Support gem that causes projectiles to spread outward in all directions from you. In patch 0.5, its 40% Less Damage penalty was removed, making it a pure AoE enabler."
   whyItMatters: "What makes Falling Thunder a screen-clearer instead of a directional skill. No longer has a damage penalty."
@@ -134,6 +144,7 @@
   word: "Quarterstaff"
   pronunciation: "KWAR-tur-STAF"
   category: gear
+  image: "https://www.poe2wiki.net/images/5/55/Crescent_Quarterstaff_inventory_icon.png"
   shortDefinition: "Two-handed melee weapon socketing main skills."
   detailedDefinition: "Your primary weapon. Holds Falling Thunder, Flicker Strike, and other skills. Prioritize flat Lightning Damage, % Increased Critical Damage, Attack Speed, and Leech Physical Damage as Mana."
   whyItMatters: "Skill socket hub and primary damage source. Avoid Dreaming Quarterstaff — it has 0% base Crit Chance."

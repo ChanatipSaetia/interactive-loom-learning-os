@@ -22,6 +22,7 @@ sections:
   - sections/tradeoffs/section.md
   - sections/scenario/section.md
   - sections/decision-tree/section.md
+  - sections/image-gallery/section.md
 related:
   - sections/concept-map/concepts.yaml
   - sections/flashcards/glossary.yaml
@@ -39,6 +40,7 @@ related:
   - sections/tradeoffs/gear-invested.yaml
   - sections/scenario/scenarios.yaml
   - sections/decision-tree/tree.yaml
+  - sections/image-gallery/gallery.yaml
 ---
 
 # PoE 2 Flicker Strike Monk — Budget Build Guide

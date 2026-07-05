@@ -15,6 +15,7 @@ SectionRegistry.register('quiz', () => import('./sections/quiz'))
 SectionRegistry.register('concept-map', () => import('./sections/concept-map'))
 SectionRegistry.register('scenario', () => import('./sections/scenario'))
 SectionRegistry.register('decision-tree', () => import('./sections/decision-tree'))
+SectionRegistry.register('image-gallery', () => import('./sections/image-gallery'))
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
