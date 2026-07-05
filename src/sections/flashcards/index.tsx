@@ -197,15 +197,8 @@ export default function FlashcardDeck({ title, terms = [] }: FlashcardDeckProps)
                 {/* CARD FRONT: Clean Editorial Grid Design */}
                 <div
                   id="flashcard-front"
-                  onClick={(e) => {
-                    const target = e.target as HTMLElement;
-                    if (target.closest('button') || target.closest('a') || target.closest('.tabs-list')) {
-                      return;
-                    }
-                    if (!isFlipped) setIsFlipped(true);
-                  }}
                   style={{ backfaceVisibility: 'hidden', WebkitBackfaceVisibility: 'hidden' }}
-                  className={`absolute inset-0 p-6 md:p-10 bg-card border border-border shadow-sm flex flex-col justify-between backface-hidden select-none transition-opacity duration-300 ${isFlipped ? 'pointer-events-none opacity-0' : 'pointer-events-auto opacity-100'} cursor-pointer hover:border-primary/50 rounded-lg`}
+                  className={`absolute inset-0 p-6 md:p-10 bg-card border border-border shadow-sm flex flex-col justify-between backface-hidden select-none transition-opacity duration-300 ${isFlipped ? 'pointer-events-none opacity-0' : 'pointer-events-auto opacity-100'} rounded-lg`}
                 >
                   {/* Visual Draft Crosshairs */}
                   <div className="absolute top-3 left-3 text-muted-foreground/30 font-mono text-[10px] pointer-events-none flex items-center space-x-1">
@@ -217,22 +210,31 @@ export default function FlashcardDeck({ title, terms = [] }: FlashcardDeckProps)
                   <div className="absolute bottom-3 right-3 text-muted-foreground/30 font-bold text-[10px] pointer-events-none">+</div>
 
                   {/* Top Toolbar */}
-                  <div className="flex items-center justify-between z-10">
+                  <div className="flex items-center justify-between border-b border-border pb-4 mb-6 z-10">
                     {getCategoryBadge(currentTerm.category)}
                     
-                    <Button 
-                      id="speak-word-btn"
-                      variant="ghost"
-                      size="icon"
-                      onClick={speakWord}
-                      onTouchStart={(e) => e.stopPropagation()}
-                      onTouchEnd={(e) => e.stopPropagation()}
-                      onMouseDown={(e) => e.stopPropagation()}
-                      className="hidden md:flex text-muted-foreground hover:text-foreground relative z-30 touch-manipulation after:absolute after:inset-[-12px] after:content-['']"
-                      title="Speak word"
-                    >
-                      <Volume2 className="w-5 h-5" />
-                    </Button>
+                    <div className="flex items-center space-x-3">
+                      <Button 
+                        id="speak-word-btn"
+                        variant="ghost"
+                        size="icon"
+                        onClick={speakWord}
+                        onTouchStart={(e) => e.stopPropagation()}
+                        onTouchEnd={(e) => e.stopPropagation()}
+                        onMouseDown={(e) => e.stopPropagation()}
+                        className="hidden md:flex text-muted-foreground hover:text-foreground relative z-30 touch-manipulation after:absolute after:inset-[-12px] after:content-['']"
+                        title="Speak word"
+                      >
+                        <Volume2 className="w-5 h-5" />
+                      </Button>
+
+                      <button 
+                        onClick={(e) => { e.stopPropagation(); setIsFlipped(true); }}
+                        className="text-xs text-muted-foreground hover:text-foreground uppercase tracking-widest font-mono cursor-pointer transition-colors"
+                      >
+                        Flip card ↺
+                      </button>
+                    </div>
                   </div>
 
                   {/* Large Word Display */}
@@ -255,23 +257,19 @@ export default function FlashcardDeck({ title, terms = [] }: FlashcardDeckProps)
                     </div>
                   </div>
 
-                  {/* Guidelines Footer Overlay */}
-                  <div className="bg-muted/20 rounded-md py-4 px-5 border border-border flex items-center space-x-3 text-xs text-muted-foreground font-mono tracking-wide z-10">
-                    <RotateCw className="w-4 h-4 text-muted-foreground animate-spin-slow flex-shrink-0" />
-                    <span>Click card to inspect AI dialogue and alignment specs</span>
-                  </div>
+                  {/* Guidelines Footer Overlay (Interactive Flip Button) */}
+                  <button
+                    onClick={(e) => { e.stopPropagation(); setIsFlipped(true); }}
+                    className="bg-muted/20 hover:bg-muted/40 text-muted-foreground hover:text-foreground transition-all duration-200 w-full rounded-md py-4 px-5 border border-border flex items-center justify-center space-x-3 text-xs font-mono tracking-wide z-10 cursor-pointer"
+                  >
+                    <RotateCw className="w-4 h-4 animate-spin-slow flex-shrink-0" />
+                    <span>Flip card to inspect AI dialogue and alignment specs</span>
+                  </button>
                 </div>
 
                 {/* CARD BACK: Dark Mode Interactive Alignment Blueprints */}
                 <div 
-                  onClick={(e) => {
-                    const target = e.target as HTMLElement;
-                    if (target.closest('button') || target.closest('a') || target.closest('[role="tab"]') || target.closest('.tabs-list')) {
-                      return;
-                    }
-                    setIsFlipped(false);
-                  }}
-                  className={`absolute inset-0 p-5 md:p-8 bg-card text-foreground rounded-lg border border-border shadow-md flex flex-col justify-between backface-hidden rotateY-180 overflow-y-auto scrollbar-thin select-none transition-opacity duration-300 ${isFlipped ? 'pointer-events-auto opacity-100' : 'pointer-events-none opacity-0'} cursor-pointer`}
+                  className={`absolute inset-0 p-5 md:p-8 bg-card text-foreground rounded-lg border border-border shadow-md flex flex-col justify-between backface-hidden rotateY-180 overflow-y-auto scrollbar-thin select-none transition-opacity duration-300 ${isFlipped ? 'pointer-events-auto opacity-100' : 'pointer-events-none opacity-0'}`}
                   style={{ backfaceVisibility: 'hidden', transform: 'rotateY(180deg)' }}
                 >
                   <div className="flex-1 flex flex-col h-full">
