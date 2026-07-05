@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'motion/react';
+import { motion, AnimatePresence, Variants } from 'motion/react';
 import { WordTerm } from '../../types';
 import { ChevronLeft, ChevronRight, RotateCw, Volume2, Terminal, HelpCircle, MessageSquare, BookOpen } from 'lucide-react';
 import { Button } from '../../components/motion/button';
@@ -20,17 +20,17 @@ export default function FlashcardDeck({ title, terms = [] }: FlashcardDeckProps)
   const [direction, setDirection] = useState(0); // -1 for left, 1 for right
   const [activeBackTab, setActiveBackTab] = useState<BackTabId>('guidelines');
 
+  // Reset back tabs when switching cards
+  useEffect(() => {
+    setActiveBackTab('guidelines');
+  }, [currentIndex]);
+
   if (!terms || terms.length === 0) {
     return <div className="p-8 text-center text-muted-foreground font-mono text-sm">No vocabulary terms provided.</div>;
   }
 
   const currentTerm = terms[currentIndex];
   const simulatedChat = currentTerm.dialogue;
-
-  // Reset back tabs when switching cards
-  useEffect(() => {
-    setActiveBackTab('guidelines');
-  }, [currentIndex]);
 
   const handleNext = () => {
     setDirection(1);
@@ -48,11 +48,39 @@ export default function FlashcardDeck({ title, terms = [] }: FlashcardDeckProps)
     }, 100);
   };
 
-  const speakWord = (e: React.MouseEvent) => {
+  const speakWord = (e: React.SyntheticEvent) => {
     e.stopPropagation();
     if ('speechSynthesis' in window) {
       window.speechSynthesis.cancel();
-      const utterance = new SpeechSynthesisUtterance(currentTerm.word.split('(')[0].trim());
+      const textToSpeak = currentTerm.word.split('(')[0].trim();
+      const utterance = new SpeechSynthesisUtterance(textToSpeak);
+      
+      // Auto-detect language code based on characters
+      let lang = 'en-US';
+      if (/[\u4e00-\u9fa5]/.test(textToSpeak)) {
+        lang = 'zh-CN';
+      } else if (/[\u0e00-\u0e7f]/.test(textToSpeak)) {
+        lang = 'th-TH';
+      } else if (/[\u3040-\u30ff\u31f0-\u31ff\u4e00-\u9faf]/.test(textToSpeak)) {
+        lang = 'ja-JP';
+      } else if (/[\uac00-\ud7af]/.test(textToSpeak)) {
+        lang = 'ko-KR';
+      }
+      
+      utterance.lang = lang;
+
+      // Attempt to set a matching voice for the target language if voices are loaded
+      const voices = window.speechSynthesis.getVoices();
+      if (voices.length > 0) {
+        const matchingVoice = voices.find(v => 
+          v.lang.toLowerCase() === lang.toLowerCase() || 
+          v.lang.toLowerCase().replace('_', '-').startsWith(lang.toLowerCase())
+        );
+        if (matchingVoice) {
+          utterance.voice = matchingVoice;
+        }
+      }
+
       utterance.rate = 0.85;
       utterance.pitch = 1.0;
       window.speechSynthesis.speak(utterance);
@@ -75,7 +103,7 @@ export default function FlashcardDeck({ title, terms = [] }: FlashcardDeckProps)
   };
 
   // Card slide transition variants
-  const slideVariants: any = {
+  const slideVariants: Variants = {
     initial: (dir: number) => ({
       x: dir > 0 ? 120 : -120,
       opacity: 0,
@@ -169,7 +197,13 @@ export default function FlashcardDeck({ title, terms = [] }: FlashcardDeckProps)
                 {/* CARD FRONT: Clean Editorial Grid Design */}
                 <div
                   id="flashcard-front"
-                  onClick={() => { if (!isFlipped) setIsFlipped(true); }}
+                  onClick={(e) => {
+                    const target = e.target as HTMLElement;
+                    if (target.closest('button') || target.closest('a') || target.closest('.tabs-list')) {
+                      return;
+                    }
+                    if (!isFlipped) setIsFlipped(true);
+                  }}
                   style={{ backfaceVisibility: 'hidden', WebkitBackfaceVisibility: 'hidden' }}
                   className={`absolute inset-0 p-6 md:p-10 bg-card border border-border shadow-sm flex flex-col justify-between backface-hidden select-none transition-opacity duration-300 ${isFlipped ? 'pointer-events-none opacity-0' : 'pointer-events-auto opacity-100'} cursor-pointer hover:border-primary/50 rounded-lg`}
                 >
@@ -190,8 +224,11 @@ export default function FlashcardDeck({ title, terms = [] }: FlashcardDeckProps)
                       id="speak-word-btn"
                       variant="ghost"
                       size="icon"
-                      onClick={speakWord} 
-                      className="text-muted-foreground hover:text-foreground"
+                      onClick={speakWord}
+                      onTouchStart={(e) => e.stopPropagation()}
+                      onTouchEnd={(e) => e.stopPropagation()}
+                      onMouseDown={(e) => e.stopPropagation()}
+                      className="hidden md:flex text-muted-foreground hover:text-foreground relative z-30 touch-manipulation after:absolute after:inset-[-12px] after:content-['']"
                       title="Speak word"
                     >
                       <Volume2 className="w-5 h-5" />
@@ -227,7 +264,13 @@ export default function FlashcardDeck({ title, terms = [] }: FlashcardDeckProps)
 
                 {/* CARD BACK: Dark Mode Interactive Alignment Blueprints */}
                 <div 
-                  onClick={() => setIsFlipped(false)}
+                  onClick={(e) => {
+                    const target = e.target as HTMLElement;
+                    if (target.closest('button') || target.closest('a') || target.closest('[role="tab"]') || target.closest('.tabs-list')) {
+                      return;
+                    }
+                    setIsFlipped(false);
+                  }}
                   className={`absolute inset-0 p-5 md:p-8 bg-card text-foreground rounded-lg border border-border shadow-md flex flex-col justify-between backface-hidden rotateY-180 overflow-y-auto scrollbar-thin select-none transition-opacity duration-300 ${isFlipped ? 'pointer-events-auto opacity-100' : 'pointer-events-none opacity-0'} cursor-pointer`}
                   style={{ backfaceVisibility: 'hidden', transform: 'rotateY(180deg)' }}
                 >
@@ -360,16 +403,26 @@ export default function FlashcardDeck({ title, terms = [] }: FlashcardDeckProps)
           variant="ghost"
           size="icon"
           onClick={handlePrev}
-          className="flex-shrink-0 rounded-full w-14 h-14 border border-border/50 bg-muted/10 hover:bg-card hover:border-primary/50 shadow-sm transition-all text-muted-foreground hover:text-primary"
+          className="flex-shrink-0 rounded-full w-14 h-14 border-border/50 bg-muted/10 hover:bg-card hover:border-primary/50 shadow-sm transition-all text-muted-foreground hover:text-primary"
         >
           <ChevronLeft className="w-6 h-6" />
+        </Button>
+        <Button
+          id="speak-term-btn-mobile"
+          variant="outline"
+          size="icon"
+          onClick={speakWord}
+          className="flex-shrink-0 rounded-full w-14 h-14 border-primary/40 bg-primary/10 hover:bg-primary/20 text-primary shadow-sm transition-all"
+          title="Speak word"
+        >
+          <Volume2 className="w-6 h-6" />
         </Button>
         <Button
           id="next-term-btn-mobile"
           variant="ghost"
           size="icon"
           onClick={handleNext}
-          className="flex-shrink-0 rounded-full w-14 h-14 border border-border/50 bg-muted/10 hover:bg-card hover:border-primary/50 shadow-sm transition-all text-muted-foreground hover:text-primary"
+          className="flex-shrink-0 rounded-full w-14 h-14 border-border/50 bg-muted/10 hover:bg-card hover:border-primary/50 shadow-sm transition-all text-muted-foreground hover:text-primary"
         >
           <ChevronRight className="w-6 h-6" />
         </Button>
