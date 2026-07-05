@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence, Variants } from 'motion/react';
 import { WordTerm } from '../../types';
-import { ChevronLeft, ChevronRight, RotateCw, Volume2, Terminal, HelpCircle, MessageSquare, BookOpen } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Volume2, Terminal, HelpCircle, MessageSquare, BookOpen } from 'lucide-react';
 import { Button } from '../../components/motion/button';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '../../components/motion/tabs';
 
@@ -68,19 +68,6 @@ export default function FlashcardDeck({ title, terms = [] }: FlashcardDeckProps)
       }
       
       utterance.lang = lang;
-
-      // Attempt to set a matching voice for the target language if voices are loaded
-      const voices = window.speechSynthesis.getVoices();
-      if (voices.length > 0) {
-        const matchingVoice = voices.find(v => 
-          v.lang.toLowerCase() === lang.toLowerCase() || 
-          v.lang.toLowerCase().replace('_', '-').startsWith(lang.toLowerCase())
-        );
-        if (matchingVoice) {
-          utterance.voice = matchingVoice;
-        }
-      }
-
       utterance.rate = 0.85;
       utterance.pitch = 1.0;
       window.speechSynthesis.speak(utterance);
@@ -198,7 +185,7 @@ export default function FlashcardDeck({ title, terms = [] }: FlashcardDeckProps)
                 <div
                   id="flashcard-front"
                   style={{ backfaceVisibility: 'hidden', WebkitBackfaceVisibility: 'hidden' }}
-                  className={`absolute inset-0 p-6 md:p-10 bg-card border border-border shadow-sm flex flex-col justify-between backface-hidden select-none transition-opacity duration-300 ${isFlipped ? 'pointer-events-none opacity-0' : 'pointer-events-auto opacity-100'} rounded-lg`}
+                  className={`absolute inset-0 p-6 md:p-10 bg-card border border-border shadow-sm flex flex-col justify-between backface-hidden transition-opacity duration-300 ${isFlipped ? 'pointer-events-none opacity-0 z-0' : 'pointer-events-auto opacity-100 z-10'} rounded-lg`}
                 >
                   {/* Visual Draft Crosshairs */}
                   <div className="absolute top-3 left-3 text-muted-foreground/30 font-bold text-[10px] pointer-events-none">+</div>
@@ -211,19 +198,17 @@ export default function FlashcardDeck({ title, terms = [] }: FlashcardDeckProps)
                     {getCategoryBadge(currentTerm.category)}
                     
                     <div className="flex items-center space-x-3">
-                      <Button 
+                      <button 
                         id="speak-word-btn"
-                        variant="ghost"
-                        size="icon"
-                        onClick={speakWord}
-                        onTouchStart={(e) => e.stopPropagation()}
-                        onTouchEnd={(e) => e.stopPropagation()}
-                        onMouseDown={(e) => e.stopPropagation()}
-                        className="hidden md:flex text-muted-foreground hover:text-foreground relative z-30 touch-manipulation after:absolute after:inset-[-12px] after:content-['']"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          speakWord(e);
+                        }}
+                        className="hidden md:flex items-center justify-center w-8 h-8 rounded-full border border-border/60 bg-muted/10 hover:bg-card hover:border-primary/50 text-muted-foreground hover:text-primary transition-all duration-200 cursor-pointer relative z-30 touch-manipulation after:absolute after:inset-[-12px] after:content-['']"
                         title="Speak word"
                       >
-                        <Volume2 className="w-5 h-5" />
-                      </Button>
+                        <Volume2 className="w-4 h-4" />
+                      </button>
 
                       <button 
                         onClick={(e) => { e.stopPropagation(); setIsFlipped(true); }}
@@ -253,20 +238,11 @@ export default function FlashcardDeck({ title, terms = [] }: FlashcardDeckProps)
                       </p>
                     </div>
                   </div>
-
-                  {/* Guidelines Footer Overlay (Interactive Flip Button) */}
-                  <button
-                    onClick={(e) => { e.stopPropagation(); setIsFlipped(true); }}
-                    className="bg-muted/20 hover:bg-muted/40 text-muted-foreground hover:text-foreground transition-all duration-200 w-full rounded-md py-4 px-5 border border-border flex items-center justify-center space-x-3 text-xs font-mono tracking-wide z-10 cursor-pointer"
-                  >
-                    <RotateCw className="w-4 h-4 animate-spin-slow flex-shrink-0" />
-                    <span>Flip card to inspect AI dialogue and alignment specs</span>
-                  </button>
                 </div>
 
                 {/* CARD BACK: Dark Mode Interactive Alignment Blueprints */}
                 <div 
-                  className={`absolute inset-0 p-6 md:p-10 bg-card text-foreground rounded-lg border border-border shadow-md flex flex-col justify-between backface-hidden rotateY-180 overflow-y-auto scrollbar-thin select-none transition-opacity duration-300 ${isFlipped ? 'pointer-events-auto opacity-100' : 'pointer-events-none opacity-0'}`}
+                  className={`absolute inset-0 p-6 md:p-10 bg-card text-foreground rounded-lg border border-border shadow-md flex flex-col justify-between backface-hidden rotateY-180 overflow-y-auto scrollbar-thin transition-opacity duration-300 ${isFlipped ? 'pointer-events-auto opacity-100 z-10' : 'pointer-events-none opacity-0 z-0'}`}
                   style={{ backfaceVisibility: 'hidden', transform: 'rotateY(180deg)' }}
                 >
                   {/* Visual Draft Crosshairs */}
@@ -408,16 +384,17 @@ export default function FlashcardDeck({ title, terms = [] }: FlashcardDeckProps)
         >
           <ChevronLeft className="w-6 h-6" />
         </Button>
-        <Button
+        <button
           id="speak-term-btn-mobile"
-          variant="outline"
-          size="icon"
-          onClick={speakWord}
-          className="flex-shrink-0 rounded-full w-14 h-14 border-primary/40 bg-primary/10 hover:bg-primary/20 text-primary shadow-sm transition-all"
+          onClick={(e) => {
+            e.stopPropagation();
+            speakWord(e);
+          }}
+          className="flex-shrink-0 flex items-center justify-center rounded-full w-14 h-14 border border-primary/40 bg-primary/10 hover:bg-primary/20 text-primary shadow-sm transition-all duration-200 cursor-pointer"
           title="Speak word"
         >
           <Volume2 className="w-6 h-6" />
-        </Button>
+        </button>
         <Button
           id="next-term-btn-mobile"
           variant="ghost"
