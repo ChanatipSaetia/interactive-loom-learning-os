@@ -201,10 +201,7 @@ export default function FlashcardDeck({ title, terms = [] }: FlashcardDeckProps)
                   className={`absolute inset-0 p-6 md:p-10 bg-card border border-border shadow-sm flex flex-col justify-between backface-hidden select-none transition-opacity duration-300 ${isFlipped ? 'pointer-events-none opacity-0' : 'pointer-events-auto opacity-100'} rounded-lg`}
                 >
                   {/* Visual Draft Crosshairs */}
-                  <div className="absolute top-3 left-3 text-muted-foreground/30 font-mono text-[10px] pointer-events-none flex items-center space-x-1">
-                    <span className="font-bold">+</span>
-                    <span>SYS_0{currentIndex * 4}</span>
-                  </div>
+                  <div className="absolute top-3 left-3 text-muted-foreground/30 font-bold text-[10px] pointer-events-none">+</div>
                   <div className="absolute top-3 right-3 text-muted-foreground/30 font-bold text-[10px] pointer-events-none">+</div>
                   <div className="absolute bottom-3 left-3 text-muted-foreground/30 font-bold text-[10px] pointer-events-none">+</div>
                   <div className="absolute bottom-3 right-3 text-muted-foreground/30 font-bold text-[10px] pointer-events-none">+</div>
@@ -269,7 +266,7 @@ export default function FlashcardDeck({ title, terms = [] }: FlashcardDeckProps)
 
                 {/* CARD BACK: Dark Mode Interactive Alignment Blueprints */}
                 <div 
-                  className={`absolute inset-0 p-5 md:p-8 bg-card text-foreground rounded-lg border border-border shadow-md flex flex-col justify-between backface-hidden rotateY-180 overflow-y-auto scrollbar-thin select-none transition-opacity duration-300 ${isFlipped ? 'pointer-events-auto opacity-100' : 'pointer-events-none opacity-0'}`}
+                  className={`absolute inset-0 p-6 md:p-10 bg-card text-foreground rounded-lg border border-border shadow-md flex flex-col justify-between backface-hidden rotateY-180 overflow-y-auto scrollbar-thin select-none transition-opacity duration-300 ${isFlipped ? 'pointer-events-auto opacity-100' : 'pointer-events-none opacity-0'}`}
                   style={{ backfaceVisibility: 'hidden', transform: 'rotateY(180deg)' }}
                 >
                   <div className="flex-1 flex flex-col h-full">
