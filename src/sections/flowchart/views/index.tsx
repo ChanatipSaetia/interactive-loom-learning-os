@@ -93,8 +93,8 @@ export function FlowchartView({
     if (!view || isSequenceView) return [];
     return view.nodes.map(n => ({
       ...n,
-      x: n.grid ? n.grid[0] * spacing.colSpacing + spacing.offsetX : 0,
-      y: n.grid ? n.grid[1] * spacing.rowSpacing + spacing.offsetY : 0
+      x: n.grid ? n.grid[0] * spacing.colSpacing + spacing.offsetX : (n.x !== undefined ? n.x : 0),
+      y: n.grid ? n.grid[1] * spacing.rowSpacing + spacing.offsetY : (n.y !== undefined ? n.y : 0)
     }));
   }, [view, spacing, isSequenceView]);
 
@@ -134,12 +134,12 @@ export function FlowchartView({
     const relSides = activeRelations.map(rel => {
       const fromNode = nodeMap.get(rel.from);
       const toNode = nodeMap.get(rel.to);
-      if (!fromNode || !toNode || fromNode.grid === undefined || toNode.grid === undefined) return null;
+      if (!fromNode || !toNode) return null;
 
-      const colA = fromNode.grid[0];
-      const rowA = fromNode.grid[1];
-      const colB = toNode.grid[0];
-      const rowB = toNode.grid[1];
+      const colA = fromNode.grid ? fromNode.grid[0] : Math.round(((fromNode.x || 0) - spacing.offsetX) / spacing.colSpacing);
+      const rowA = fromNode.grid ? fromNode.grid[1] : Math.round(((fromNode.y || 0) - spacing.offsetY) / spacing.rowSpacing);
+      const colB = toNode.grid ? toNode.grid[0] : Math.round(((toNode.x || 0) - spacing.offsetX) / spacing.colSpacing);
+      const rowB = toNode.grid ? toNode.grid[1] : Math.round(((toNode.y || 0) - spacing.offsetY) / spacing.rowSpacing);
 
       let startPts = [
         { side: 'T', x: fromNode.x, y: fromNode.y - NODE_H / 2 },

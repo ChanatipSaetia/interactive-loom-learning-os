@@ -1,9 +1,21 @@
-import { describe, it, expect, beforeEach, vi } from 'vitest';
+import { describe, it, expect, beforeEach, beforeAll, vi } from 'vitest';
 import { render, screen, fireEvent, act } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import { SectionRegistry } from '../../../../src/core/registry';
 import Flowchart from '../../../../src/sections/flowchart/index';
 import type { UnifiedFlowchartSchema } from '../../../../src/sections/flowchart/index';
+
+/* eslint-disable @typescript-eslint/no-explicit-any */
+beforeAll(() => {
+  if (typeof window !== 'undefined') {
+    const proto = (window as any).SVGElement?.prototype || (window as any).Element?.prototype;
+    if (proto) {
+      proto.getTotalLength = () => 100;
+      proto.getPointAtLength = (len: number) => ({ x: len, y: len } as any);
+    }
+  }
+});
+/* eslint-enable @typescript-eslint/no-explicit-any */
 const mockSchema: UnifiedFlowchartSchema = {
   entities: {
     user: { title: 'User', desc: 'A user actor.', viewTypes: { DEFAULT_VIEW: 'Command' } },
@@ -355,7 +367,7 @@ describe('Flowchart particle animation', () => {
 
   it('renders particle circle when journeys provided', () => {
     render(<Flowchart title="Test" schema={mockSchema} />, { wrapper });
-    expect(screen.getByTestId('flowchart-particle-DEFAULT_VIEW')).toBeInTheDocument();
+    expect(screen.getAllByTestId('flowchart-particle-DEFAULT_VIEW')[0]).toBeInTheDocument();
   });
 
   it('does not render particle when no journeys', () => {
@@ -365,7 +377,7 @@ describe('Flowchart particle animation', () => {
 
   it('particle is invisible at step 0', () => {
     render(<Flowchart title="Test" schema={mockSchema} />, { wrapper });
-    const particle = screen.getByTestId('flowchart-particle-DEFAULT_VIEW');
+    const particle = screen.getAllByTestId('flowchart-particle-DEFAULT_VIEW')[0];
     expect(particle.getAttribute('opacity')).toBe('0');
   });
 
@@ -373,7 +385,7 @@ describe('Flowchart particle animation', () => {
     render(<Flowchart title="Test" schema={mockSchema} />, { wrapper });
     const nextBtn = screen.getByTestId('flowchart-btn-next');
     fireEvent.click(nextBtn);
-    const particle = screen.getByTestId('flowchart-particle-DEFAULT_VIEW');
+    const particle = screen.getAllByTestId('flowchart-particle-DEFAULT_VIEW')[0];
     expect(particle).toBeInTheDocument();
   });
 });
@@ -534,7 +546,7 @@ describe('Flowchart auto-derivation engine', () => {
     const svg = container.querySelector('[data-testid="flowchart-svg-SYS_ARCH"]');
     expect(svg).toBeTruthy();
 
-    const edgeGroups = container.querySelectorAll('g[data-testid^="flowchart-edge-SYS_ARCH-"]');
+    const edgeGroups = container.querySelectorAll('[data-testid^="flowchart-edge-SYS_ARCH-"]');
     expect(edgeGroups.length).toBeGreaterThan(0);
 
     edgeGroups.forEach(group => {
@@ -943,9 +955,6 @@ describe('Flowchart inspector sidebar', () => {
   it('manually closing sidebar prevents playback step changes from reopening it', () => {
     render(<Flowchart title="Test" schema={smSchema} />, { wrapper });
     fireEvent.click(screen.getByTestId('flowchart-fullscreen-toggle'));
-
-    // Open journey tab to reveal playback controls
-    fireEvent.click(screen.getByTestId('dock-tab-journey'));
 
     // Click node to open sidebar
     fireEvent.click(screen.getByTestId('flowchart-node-EVENT_STORMING-orchestrator'));

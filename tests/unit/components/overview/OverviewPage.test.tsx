@@ -75,10 +75,10 @@ describe('OverviewPage', () => {
 
   test('sort by label ascending', () => {
     renderOverview()
-    const sortBtn = screen.getByTestId('sort-label')
-    fireEvent.click(sortBtn)
+    const sortSelect = screen.getByTestId('sort-dropdown')
+    fireEvent.change(sortSelect, { target: { value: 'label-asc' } })
     expect(screen.getByText('Event-Driven Architecture')).toBeInTheDocument()
-  })
+  });
 
   test('renders pagination controls', () => {
     renderOverview()
@@ -105,10 +105,11 @@ describe('OverviewPage', () => {
     expect(screen.getByText('No topics found.')).toBeInTheDocument()
   })
 
-  test('table has sortable column headers', () => {
+  test('has sort dropdown with correct options', () => {
     renderOverview()
-    expect(screen.getByTestId('sort-label')).toBeInTheDocument()
-    expect(screen.getByTestId('sort-category')).toBeInTheDocument()
-    expect(screen.getByTestId('sort-description')).toBeInTheDocument()
-  })
+    const sortSelect = screen.getByTestId('sort-dropdown') as HTMLSelectElement
+    expect(sortSelect).toBeInTheDocument()
+    expect(sortSelect.options[1].value).toBe('label-asc')
+    expect(sortSelect.options[2].value).toBe('label-desc')
+  });
 })

@@ -64,6 +64,7 @@ describe('Quiz Section', () => {
   it('renders hint when present', () => {
     render(<QuizSection questions={mockQuestions} />)
     expect(screen.getByTestId('quiz-hint-0')).toBeInTheDocument()
+    fireEvent.click(screen.getByLabelText('Toggle hint'))
     expect(screen.getByTestId('quiz-hint-0')).toHaveTextContent('Count on your fingers.')
   })
 
