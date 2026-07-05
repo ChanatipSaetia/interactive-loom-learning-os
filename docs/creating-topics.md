@@ -204,20 +204,21 @@ llm_api:
 - type: linear
   id: step_1
   initiatedBy: dev_user
-  command: cmd_start
+  command: "Start Agent Run"
+  policy: "Trigger Execution Plan"
   handledBy: orch_agent
   resultEvents:
     - id: evt_started
       title: "Agent Started"
-  continuesAs: step_2
+  continuesAs: step_branch
 - type: branch
   id: step_branch
-  event: evt_decision
+  event: evt_started
   branches:
     - id: branch_a
       label: "Happy path"
-      policy: pol_approve
-      command: cmd_approve
+      policy: "If Plan Approved"
+      command: "Approve and Release"
       handledBy: qa_user
       resultEvents:
         - id: evt_approved
@@ -225,8 +226,8 @@ llm_api:
     - id: branch_b
       label: "Needs revision"
       dashed: true
-      policy: pol_revise
-      command: cmd_revise
+      policy: "If Plan Rejected"
+      command: "Request Revision"
       handledBy: orch_agent
       resultEvents:
         - id: evt_revision
@@ -598,6 +599,9 @@ When defining flowchart data in `steps.yaml`, follow these conventions:
 ### Standard flow (per step)
 Each step follows the full cycle: `EVENT` → `POLICY` → `COMMAND` → `AGGREGATE`/`EXTERNAL` (via `handledBy`) → `EVENT`. Never skip `POLICY` or `COMMAND` — every step that "does work" must be a `COMMAND` handled by an `AGGREGATE`/`EXTERNAL`.
 
+- **Policy Inclusion:** Every non-root linear step and all branch options must specify a `policy` field in the steps YAML file (except the first user-initiated root step which is triggered directly by an actor).
+- **Natural Language:** Both `command` and `policy` values must be written in natural language (e.g. `command: "Start Agent Run"`, `policy: "If Plan Approved"`) rather than code-like identifiers (e.g. `cmd_start`, `pol_approve`). They render directly as human-readable nodes in the flow diagram.
+
 ### Direction & Branching
 The flow progresses left-to-right. Branching **must** follow the pattern `EVENT → multiple POLICYs → one COMMAND each`:
 
@@ -644,8 +648,8 @@ Each step's `handledBy` points at the per-step duplicate, not the canonical node
 |---|---|---|
 | Actor (`USER`) | Human user or initiator | `dev_user`, `qa_user` |
 | Event | Something that happened | `evt_started`, `evt_tool_executed` |
-| Command | Action or intent to do work | `cmd_run_agent`, `cmd_call_llm` |
-| Policy | Rule deciding next command | `pol_plan`, `pol_route` |
+| Command | Action or intent to do work | `"Start Agent Run"`, `"Call LLM API"` |
+| Policy | Rule deciding next command | `"On Execution Complete"`, `"Check Review Score"` |
 | Aggregate | System component | `orch_agent`, `tools_router` |
 | External | External system/API | LLM API, MCP servers, databases |
 | Read Model | Query-optimized projection | CQRS read model |

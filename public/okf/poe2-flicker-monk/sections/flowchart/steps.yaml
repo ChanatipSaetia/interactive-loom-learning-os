@@ -1,7 +1,8 @@
 - type: linear
   id: step_enter
   initiatedBy: player
-  command: cmd_enter_map
+  command: "Enter Map & Initiate Attack"
+  policy: "Trigger Run"
   handledBy: whirling_assault
   resultEvents:
     - id: evt_clear_packs
@@ -10,8 +11,8 @@
 
 - type: linear
   id: step_charges
-  initiatedBy: player
-  command: cmd_generate_charges
+  command: "Generate Power Charges"
+  policy: "On Critical Strike Hit"
   handledBy: cast_on_crit
   resultEvents:
     - id: evt_power_charges
@@ -24,8 +25,8 @@
   branches:
     - id: branch_ft
       label: "Falling Thunder (dense packs)"
-      policy: pol_dense_pack
-      command: cmd_falling_thunder
+      policy: "If Pack is Dense"
+      command: "Cast Falling Thunder"
       handledBy: falling_thunder
       resultEvents:
         - id: evt_pack_cleared
@@ -33,8 +34,8 @@
       continuesAs: step_heralds
     - id: branch_fs
       label: "Flicker Strike (mobility)"
-      policy: pol_mobility
-      command: cmd_flicker_strike
+      policy: "If Pack is Scattered"
+      command: "Cast Flicker Strike"
       handledBy: flicker_strike
       resultEvents:
         - id: evt_repositioned
@@ -43,8 +44,8 @@
 
 - type: linear
   id: step_heralds
-  initiatedBy: player
-  command: cmd_heralds_trigger
+  command: "Trigger Herald Explosions"
+  policy: "On Enemy Death"
   handledBy: heralds2
   resultEvents:
     - id: evt_explosions
@@ -58,16 +59,16 @@
     - id: branch_mapping
       label: "Continue Mapping"
       dashed: true
-      policy: pol_more_packs
-      command: cmd_loop_map
+      policy: "If More Packs Remain"
+      command: "Loop Back to Clear"
       handledBy: whirling_assault
       resultEvents:
         - id: evt_mapping_loop
           title: "Loop Back to Clear More"
     - id: branch_boss
       label: "Boss Fight"
-      policy: pol_engage_boss
-      command: cmd_boss_combo
+      policy: "If Boss Encountered"
+      command: "Build Combo Stacks"
       handledBy: mantra_destruction
       resultEvents:
         - id: evt_combo_ready
@@ -76,8 +77,8 @@
 
 - type: linear
   id: step_boss_charges
-  initiatedBy: player
-  command: cmd_expend_combo
+  command: "Expend Combo Stacks"
+  policy: "On 20 Combo Stacks"
   handledBy: ailiths_chimes
   resultEvents:
     - id: evt_boss_charges
@@ -86,8 +87,8 @@
 
 - type: linear
   id: step_boss_nuke
-  initiatedBy: player
-  command: cmd_charged_staff_buff
+  command: "Activate Charged Staff Buff"
+  policy: "On Boss Power Charges Ready"
   handledBy: charged_staff
   resultEvents:
     - id: evt_buffed
@@ -100,16 +101,16 @@
   branches:
     - id: branch_fs_boss
       label: "Flicker Strike Boss"
-      policy: pol_flicker_boss
-      command: cmd_flicker_boss
+      policy: "Prefer Flicker Strike"
+      command: "Cast Flicker Strike on Boss"
       handledBy: flicker_strike
       resultEvents:
         - id: evt_boss_dead
           title: "Boss One-Shotted"
     - id: branch_ft_boss
       label: "Falling Thunder Boss"
-      policy: pol_thunder_boss
-      command: cmd_thunder_boss
+      policy: "Prefer Falling Thunder"
+      command: "Cast Falling Thunder on Boss"
       handledBy: falling_thunder
       resultEvents:
         - id: evt_boss_dead2

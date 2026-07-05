@@ -2,35 +2,44 @@
   label: "Mapping Flow"
   description: "Standard map clearing: generate charges, clear with Falling Thunder or Flicker Strike, loop"
   steps:
-    - nodeId: evt_clear_packs
+    - stepId: step_enter
+      name: "Enter Map"
       description: "Enter map, open with Whirling Assault for initial clear and charge generation"
-      processGroup: initiation
-    - nodeId: evt_power_charges
+      processGroup: planning
+    - stepId: step_charges
+      name: "Generate Power Charges"
       description: "Cast on Critical triggers Profane Ritual on crits, generating Power Charges"
-      processGroup: charge-gen
-    - nodeId: evt_pack_cleared
+      processGroup: execution
+    - stepId: branch_ft
+      name: "Clear with Falling Thunder"
       description: "Spend charges on Falling Thunder for 360-degree lightning burst"
-      processGroup: clear
-    - nodeId: evt_explosions
+      processGroup: execution
+    - stepId: step_heralds
+      name: "Trigger Herald Explosions"
       description: "Herald of Thunder and Herald of Ice explode marked enemies"
-      processGroup: cleanup
-    - nodeId: evt_mapping_loop
+      processGroup: execution
+    - stepId: branch_mapping
+      name: "Loop Back to Clear"
       description: "Loop back to clear next pack"
-      processGroup: loop
+      processGroup: evaluation
 
 - id: journey_boss
   label: "Boss Fight Flow"
   description: "Boss engagement: build Combo, convert to charges, buff with Charged Staff, one-shot"
   steps:
-    - nodeId: evt_combo_ready
+    - stepId: branch_boss
+      name: "Build Combo Stacks"
       description: "Build 20 Combo stacks on boss via Whirling Assault"
-      processGroup: preparation
-    - nodeId: evt_boss_charges
+      processGroup: planning
+    - stepId: step_boss_charges
+      name: "Expend Combo for Charges"
       description: "Expend Combo through Ailith's Chimes for Power Charges"
-      processGroup: charge-gen
-    - nodeId: evt_buffed
+      processGroup: execution
+    - stepId: step_boss_nuke
+      name: "Activate Charged Staff"
       description: "Activate Charged Staff for massive Lightning damage buff"
-      processGroup: buff
-    - nodeId: evt_boss_dead2
+      processGroup: execution
+    - stepId: branch_ft_boss
+      name: "Cast Falling Thunder on Boss"
       description: "Commit to Falling Thunder or Flicker Strike for the kill"
       processGroup: execution
