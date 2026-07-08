@@ -1,7 +1,4 @@
----
-type: topic
-title: "Haystack 2.x - AI Search Framework"
-description: "Build search and RAG applications with composable Haystack pipelines"
+# App metadata for haystack topic bundle
 category: Architecture
 tags:
   - haystack
@@ -9,19 +6,6 @@ tags:
   - rag
   - llm
   - embeddings
-sections:
-  - sections/intro/section.md
-  - sections/concept-map/section.md
-  - sections/flashcards/section.md
-  - sections/taxonomy/section.md
-  - sections/core-concepts/section.md
-  - sections/capabilities/section.md
-  - sections/flowchart-indexing/section.md
-  - sections/flowchart-query/section.md
-  - sections/quiz/section.md
-  - sections/tradeoffs/section.md
-  - sections/scenario/section.md
-  - sections/decision-tree/section.md
 related:
   - sections/flowchart-indexing/actors.yaml
   - sections/flowchart-indexing/systems.yaml
@@ -46,6 +30,3 @@ related:
   - sections/quiz/questions.yaml
   - sections/scenario/scenarios.yaml
   - sections/decision-tree/tree.yaml
----
-
-# Haystack 2.x - AI Search Framework

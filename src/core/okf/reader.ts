@@ -73,10 +73,36 @@ function discoverSectionFiles(related: string[], sectionPath: string): string[] 
     })
 }
 
+function parseIndexMdSections(body: string): string[] {
+  const sections: string[] = []
+  const lines = body.split('\n')
+  for (const rawLine of lines) {
+    const line = rawLine.trim()
+    const linkMatch = line.match(/^\*\s+\[([^\]]+)\]\(([^)]+)\)\s*(?:—\s*(.+))?$/)
+    if (linkMatch) {
+      const href = linkMatch[2].trim()
+      if (href.includes('/section.md')) {
+        const sectionPath = href.replace(/^\.\//, '')
+        sections.push(sectionPath)
+      }
+    }
+  }
+  return sections
+}
+
 export async function loadOKFBundle(topicId: string): Promise<OKFBundled> {
-  const metaRes = await fetchMarkdown(`${topicId}/okf.md`)
-  const sectionPaths = (metaRes.meta.sections as string[]) ?? []
-  const related = (metaRes.meta.related as string[]) ?? []
+  const indexMdRes = await fetchMarkdown(`${topicId}/index.md`)
+  const sectionPaths = parseIndexMdSections(indexMdRes.body)
+
+  let related: string[] = []
+  try {
+    const yamlRes = await fetch(`${OKF_BASE}/${topicId}/index.yaml`)
+    if (yamlRes.ok) {
+      const yamlText = await yamlRes.text()
+      const parsed = parseYaml<Record<string, unknown>>(yamlText)
+      related = (parsed.related as string[]) ?? []
+    }
+  } catch { /* related stays empty */ }
 
   const sections = await Promise.all(
     sectionPaths.map(async (sectionPath) => {

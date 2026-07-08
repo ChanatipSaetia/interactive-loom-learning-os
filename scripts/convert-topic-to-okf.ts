@@ -217,18 +217,19 @@ function convertTradeoffs(topicId, sectionName, title, scenarios) {
 
 function generateManifest(topicId, config) {
   const { title, description, tags, sections, related } = config;
-  const fm = `---
-type: topic
-title: "${title}"
-description: "${description}"
+  const indexYaml = `# App metadata for ${topicId} topic bundle
+category: "${config.category || 'Uncategorized'}"
 tags:
 ${tags.map(t => `  - ${t}`).join('\n')}
-sections:
-${sections.map(s => `  - ${s}`).join('\n')}
 related:
-${related.map(r => `  - ${r}`).join('\n')}
----`;
-  writeFile(`public/okf/${topicId}/okf.md`, `${fm}\n\n# ${title}`);
+${related.map(r => `  - ${r}`).join('\n')}`;
+  writeFile(`public/okf/${topicId}/index.yaml`, indexYaml);
+
+  const indexMd = `# ${title}\n\n${description}\n\n## Sections\n\n${sections.map(s => {
+    const sectionName = s.replace('sections/', '').replace('/section.md', '').replace(/-/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
+    return `* [${sectionName}](${s})`;
+  }).join('\n')}`;
+  writeFile(`public/okf/${topicId}/index.md`, indexMd);
 }
 
 // ── Topic: Haystack ──────────────────────────────────────────────────────
@@ -257,6 +258,7 @@ async function convertHaystack() {
   convertFlashcards('haystack', 'flashcards', 'Key Vocabulary', HAYSTACK_VOCABULARY);
 
   generateManifest('haystack', {
+    category: 'Architecture',
     title: 'Haystack 2.x - AI Search Framework',
     description: 'Build search and RAG applications with composable Haystack pipelines',
     tags: ['haystack', 'search', 'rag', 'llm', 'embeddings'],
@@ -320,6 +322,7 @@ async function convertMotorcycle() {
   convertFlashcards('motorcycle', 'flashcards', 'คำศัพท์สำคัญ', motorcycleFlashcards);
 
   generateManifest('motorcycle', {
+    category: 'Mechanical',
     title: 'รถมอเตอร์ไซค์ (Motorcycle)',
     description: 'เข้าใจส่วนประกอบ การทำงาน และการบำรุงรักษารถมอเตอร์ไซค์',
     tags: ['motorcycle', 'engine', 'mechanical', 'thai'],

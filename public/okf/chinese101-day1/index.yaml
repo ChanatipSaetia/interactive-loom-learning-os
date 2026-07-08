@@ -1,0 +1,12 @@
+# App metadata for chinese101-day1 topic bundle
+category: Language
+tags:
+  - chinese
+  - mandarin
+  - hsk1
+  - beginner
+related:
+  - sections/flashcards/glossary.yaml
+  - sections/concept-map/concepts.yaml
+  - sections/quiz/questions.yaml
+  - sections/scenario/scenarios.yaml

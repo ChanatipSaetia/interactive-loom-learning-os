@@ -1,28 +1,10 @@
----
-type: topic
-title: "รถมอเตอร์ไซค์ (Motorcycle)"
-description: "เข้าใจส่วนประกอบ การทำงาน และการบำรุงรักษารถมอเตอร์ไซค์"
+# App metadata for motorcycle topic bundle
 category: Mechanical
 tags:
   - motorcycle
   - engine
   - mechanical
   - thai
-sections:
-  - sections/intro/section.md
-  - sections/concept-map/section.md
-  - sections/flashcards/section.md
-  - sections/taxonomy/section.md
-  - sections/questions/section.md
-  - sections/flowchart-engine/section.md
-  - sections/flowchart-choke/section.md
-  - sections/flowchart-fuel-injection/section.md
-  - sections/flowchart-brake/section.md
-  - sections/maintenance/section.md
-  - sections/quiz/section.md
-  - sections/tradeoffs/section.md
-  - sections/scenario/section.md
-  - sections/decision-tree/section.md
 related:
   - sections/flowchart-engine/actors.yaml
   - sections/flowchart-engine/systems.yaml
@@ -52,6 +34,3 @@ related:
   - sections/quiz/questions.yaml
   - sections/scenario/scenarios.yaml
   - sections/decision-tree/tree.yaml
----
-
-# รถมอเตอร์ไซค์ (Motorcycle)

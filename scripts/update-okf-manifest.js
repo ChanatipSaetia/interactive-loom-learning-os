@@ -8,32 +8,39 @@ const __dirname = path.dirname(__filename)
 const ROOT = path.resolve(__dirname, '..')
 
 const OKF_DIR = path.join(ROOT, 'public', 'okf')
-const INDEX_PATH = path.join(OKF_DIR, 'index.yaml')
+const INDEX_PATH = path.join(ROOT, 'public', 'index.yaml')
 
-function parseFrontmatter(content) {
-  const match = content.match(/^---\s*\n([\s\S]*?)\n---\s*\n?([\s\S]*)$/)
-  if (!match) return {}
-  return yaml.load(match[1])
+function parseIndexMd(content) {
+  const titleMatch = content.match(/^#+\s+(.+)$/m)
+  return { title: titleMatch ? titleMatch[1].trim() : null }
 }
 
 const entries = []
 
 for (const name of fs.readdirSync(OKF_DIR)) {
   const dirPath = path.join(OKF_DIR, name)
-  const okfMd = path.join(dirPath, 'okf.md')
+  const indexYaml = path.join(dirPath, 'index.yaml')
+  const indexMd = path.join(dirPath, 'index.md')
 
   if (!fs.statSync(dirPath).isDirectory()) continue
-  if (!fs.existsSync(okfMd)) continue
+  if (!fs.existsSync(indexYaml)) continue
 
-  const content = fs.readFileSync(okfMd, 'utf-8')
-  const meta = parseFrontmatter(content)
+  const yamlContent = fs.readFileSync(indexYaml, 'utf-8')
+  const meta = yaml.load(yamlContent)
+
+  let description = ''
+  if (fs.existsSync(indexMd)) {
+    const indexMdContent = fs.readFileSync(indexMd, 'utf-8')
+    const lines = indexMdContent.split('\n').filter(l => l.trim() && !l.startsWith('#') && !l.startsWith('*'))
+    description = lines[0]?.trim() || ''
+  }
 
   entries.push({
     id: name,
     label: meta.title || name,
     path: `/topics/${name}`,
     category: meta.category || 'Uncategorized',
-    description: meta.description || '',
+    description: description || '',
   })
 }
 

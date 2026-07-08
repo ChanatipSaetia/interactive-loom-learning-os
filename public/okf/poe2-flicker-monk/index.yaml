@@ -1,7 +1,4 @@
----
-type: topic
-title: "PoE 2 Flicker Strike Monk — Budget Build Guide"
-description: "Master the Flicker Strike + Falling Thunder Martial Artist Monk build in Path of Exile 2 patch 0.5"
+# App metadata for poe2-flicker-monk topic bundle
 category: Gaming
 tags:
   - path-of-exile-2
@@ -11,18 +8,6 @@ tags:
   - budget-build
   - flicker-strike
   - falling-thunder
-sections:
-  - sections/intro/section.md
-  - sections/concept-map/section.md
-  - sections/flashcards/section.md
-  - sections/taxonomy/section.md
-  - sections/gameplay/section.md
-  - sections/flowchart/section.md
-  - sections/quiz/section.md
-  - sections/tradeoffs/section.md
-  - sections/scenario/section.md
-  - sections/decision-tree/section.md
-  - sections/image-gallery/section.md
 related:
   - sections/concept-map/concepts.yaml
   - sections/flashcards/glossary.yaml
@@ -41,6 +26,3 @@ related:
   - sections/scenario/scenarios.yaml
   - sections/decision-tree/tree.yaml
   - sections/image-gallery/gallery.yaml
----
-
-# PoE 2 Flicker Strike Monk — Budget Build Guide
