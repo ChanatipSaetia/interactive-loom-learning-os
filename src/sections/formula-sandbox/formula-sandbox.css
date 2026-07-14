@@ -1,50 +1,52 @@
-.formula-sandbox-section {
-  margin-bottom: 0;
-}
-
-.sandbox-grid-layout {
+/* ---------------------------------------------------- */
+/* COMPONENT 1: SYSTEM DYNAMICS / FORMULA SANDBOX      */
+/* ---------------------------------------------------- */
+.sandbox-layout {
   display: grid;
   grid-template-columns: 1fr;
   gap: 24px;
 }
 
 @media (min-width: 992px) {
-  .sandbox-grid-layout {
+  .sandbox-layout {
     grid-template-columns: 1.2fr 1fr;
     gap: 28px;
   }
 }
 
-.sandbox-controls-column {
+.controls-panel {
   display: flex;
   flex-direction: column;
   gap: 24px;
 }
 
-.sandbox-slider-group {
+.slider-group {
   display: flex;
   flex-direction: column;
   gap: 10px;
 }
 
-.sandbox-slider-meta {
+.slider-header {
   display: flex;
   justify-content: space-between;
   font-size: 13.5px;
   font-weight: 500;
 }
 
-.sandbox-slider-label {
+.slider-label {
   color: var(--ctp-subtext1);
+  display: flex;
+  align-items: center;
+  gap: 6px;
 }
 
-.sandbox-slider-val {
+.slider-value {
   font-family: var(--font-mono);
   color: var(--ctp-sky);
   font-weight: 600;
 }
 
-.sandbox-range-input {
+.range-input {
   -webkit-appearance: none;
   width: 100%;
   height: 8px;
@@ -54,7 +56,7 @@
   transition: background 0.3s;
 }
 
-.sandbox-range-input::-webkit-slider-thumb {
+.range-input::-webkit-slider-thumb {
   -webkit-appearance: none;
   appearance: none;
   width: 24px;
@@ -66,13 +68,30 @@
   box-shadow: 0 0 10px rgba(153, 209, 219, 0.4);
 }
 
-.sandbox-range-input::-webkit-slider-thumb:hover {
+.range-input::-webkit-slider-thumb:hover {
   transform: scale(1.1);
   background: var(--ctp-lavender);
 }
 
-/* Computed Metrics Column */
-.sandbox-metrics-column {
+.formula-explanation {
+  background: var(--ctp-mantle);
+  border-radius: 12px;
+  padding: 16px;
+  border: 1px dashed rgba(198, 208, 245, 0.08);
+  font-size: 13px;
+  color: var(--ctp-subtext0);
+}
+
+.formula-explanation code {
+  font-family: var(--font-mono);
+  color: var(--ctp-yellow);
+  background: var(--ctp-surface0);
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+
+/* Simulation Output Metrics */
+.sandbox-metrics {
   background: var(--ctp-mantle);
   border-radius: 12px;
   padding: 20px;
@@ -82,33 +101,30 @@
   gap: 20px;
 }
 
-.sandbox-metrics-header {
-  font-size: 13px;
-  font-weight: 700;
-  text-transform: uppercase;
-  color: var(--ctp-overlay2);
-  letter-spacing: 0.5px;
-  margin-bottom: 4px;
+@media (min-width: 768px) {
+  .sandbox-metrics {
+    padding: 24px;
+  }
 }
 
-.sandbox-metric-row {
+.sim-metric-row {
   display: flex;
   flex-direction: column;
   gap: 6px;
 }
 
-.sandbox-metric-meta {
+.sim-metric-meta {
   display: flex;
   justify-content: space-between;
   font-size: 13.5px;
   align-items: center;
 }
 
-.sandbox-metric-name {
+.sim-metric-name {
   color: var(--ctp-subtext1);
 }
 
-.sandbox-metric-val {
+.sim-metric-val {
   font-family: var(--font-mono);
   font-weight: 600;
   background: transparent;
@@ -120,16 +136,17 @@
   transition: all 0.2s ease;
 }
 
-.sandbox-metric-val:hover {
+.sim-metric-val:hover {
   background-color: var(--ctp-surface0);
+  color: var(--ctp-pink);
 }
 
-.sandbox-metric-val.green { color: var(--ctp-green); }
-.sandbox-metric-val.peach { color: var(--ctp-peach); }
-.sandbox-metric-val.red { color: var(--ctp-red); }
-.sandbox-metric-val.sky { color: var(--ctp-sky); }
+.sim-metric-val.green { color: var(--ctp-green); }
+.sim-metric-val.peach { color: var(--ctp-peach); }
+.sim-metric-val.red { color: var(--ctp-red); }
+.sim-metric-val.sky { color: var(--ctp-sky); }
 
-.sandbox-gauge-track {
+.gauge-bg {
   height: 10px;
   background: var(--ctp-surface0);
   border-radius: 5px;
@@ -137,17 +154,17 @@
   position: relative;
 }
 
-.sandbox-gauge-fill {
+.gauge-fill {
   height: 100%;
   border-radius: 5px;
   width: 0%;
   transition: width 0.2s cubic-bezier(0.4, 0, 0.2, 1), background-color 0.3s;
 }
 
-.sandbox-gauge-fill.green { background-color: var(--ctp-green); }
-.sandbox-gauge-fill.peach { background-color: var(--ctp-peach); }
-.sandbox-gauge-fill.red { background-color: var(--ctp-red); }
-.sandbox-gauge-fill.sky { background-color: var(--ctp-sky); }
+.gauge-fill.green { background-color: var(--ctp-green); }
+.gauge-fill.peach { background-color: var(--ctp-peach); }
+.gauge-fill.red { background-color: var(--ctp-red); }
+.gauge-fill.sky { background-color: var(--ctp-sky); }
 
 /* HUD highlight variables helper */
 .hud-highlight {

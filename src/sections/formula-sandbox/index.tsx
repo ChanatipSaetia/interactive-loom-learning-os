@@ -158,17 +158,20 @@ export function FormulaSandbox({ title, variables = [], metrics = [] }: FormulaS
         <h3 className="tradeoff-sandbox-title">{title}</h3>
       )}
 
-      <div className="sandbox-grid-layout">
-        <div className="sandbox-controls-column">
+      <div className="sandbox-layout">
+        <div className="controls-panel">
           {variables.map((v) => (
-            <div key={v.id} className="sandbox-slider-group">
-              <div className="sandbox-slider-meta">
-                <span className="sandbox-slider-label">{v.label}</span>
-                <span className="sandbox-slider-val">{variablesState[v.id]}</span>
+            <div key={v.id} className="slider-group">
+              <div className="slider-header">
+                <span className="slider-label">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ marginRight: '6px', display: 'inline-block', verticalAlign: 'middle' }}><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>
+                  {v.label}
+                </span>
+                <span className="slider-value">{variablesState[v.id]}</span>
               </div>
               <input
                 type="range"
-                className="sandbox-range-input"
+                className="range-input"
                 min={v.min}
                 max={v.max}
                 step={v.step}
@@ -177,11 +180,17 @@ export function FormulaSandbox({ title, variables = [], metrics = [] }: FormulaS
               />
             </div>
           ))}
+
+          <div className="formula-explanation">
+            <strong>System Formulas:</strong><br />
+            • Metrics are dynamically estimated using target variables.<br />
+            • Values scale based on theoretical formulas mapping system properties.
+          </div>
         </div>
 
-        <div className="sandbox-metrics-column">
+        <div className="sandbox-metrics">
           <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', marginBottom: '16px' }}>
-            <h4 className="sandbox-metrics-header" style={{ margin: 0 }}>Computed Metrics</h4>
+            <h4 style={{ fontSize: '13px', fontWeight: '700', textTransform: 'uppercase', color: 'var(--ctp-overlay2)', letterSpacing: '0.5px', margin: 0 }}>Computed Metrics</h4>
             <span style={{ fontSize: '12px', color: 'var(--ctp-subtext0)', fontStyle: 'italic' }}>
               * Values are dynamic formula-based estimates.
             </span>
@@ -203,10 +212,10 @@ export function FormulaSandbox({ title, variables = [], metrics = [] }: FormulaS
               .map((v) => v.label)
 
             return (
-              <div key={m.id} className="sandbox-metric-row">
-                <div className="sandbox-metric-meta">
+              <div key={m.id} className="sim-metric-row">
+                <div className="sim-metric-meta">
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
-                    <span className="sandbox-metric-name">{m.label}</span>
+                    <span className="sim-metric-name">{m.label}</span>
                     {variablesUsed.length > 0 && (
                       <span style={{ fontSize: '11px', color: 'var(--ctp-subtext1)', fontFamily: 'monospace' }}>
                         Inputs: {variablesUsed.join(', ')}
@@ -214,16 +223,16 @@ export function FormulaSandbox({ title, variables = [], metrics = [] }: FormulaS
                     )}
                   </div>
                   <button
-                    className={`sandbox-metric-val ${valColorClass}`}
+                    className={`sim-metric-val ${valColorClass}`}
                     onClick={() => handleMetricClick(m)}
                     title="Click to view HUD details"
                   >
                     {display}
                   </button>
                 </div>
-                <div className="sandbox-gauge-track">
+                <div className="gauge-bg">
                   <div
-                    className={`sandbox-gauge-fill ${valColorClass}`}
+                    className={`gauge-fill ${valColorClass}`}
                     style={{ width: gaugeWidth }}
                   />
                 </div>
