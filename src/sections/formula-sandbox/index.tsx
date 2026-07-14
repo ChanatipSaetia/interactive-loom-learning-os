@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import { useHUD } from '../../core/context/HUDContext'
 import type { OKFFormulaVariable, OKFFormulaMetric } from '../../core/okf/types'
 import './formula-sandbox.css'
@@ -26,6 +26,79 @@ function evaluateFormula(formulaStr: string, variablesState: Record<string, numb
   }
 }
 
+function computeMetricRange(formulaStr: string, variables: OKFFormulaVariable[]): { min: number; max: number } {
+  let combos: Record<string, number>[] = [{}]
+  
+  for (const v of variables) {
+    const values: number[] = []
+    const stepsCount = Math.max(1, Math.floor((v.max - v.min) / v.step))
+    for (let i = 0; i <= stepsCount; i++) {
+      values.push(v.min + i * v.step)
+    }
+    if (values[values.length - 1] < v.max) {
+      values.push(v.max)
+    }
+
+    const nextCombos: Record<string, number>[] = []
+    for (const c of combos) {
+      for (const val of values) {
+        nextCombos.push({ ...c, [v.id]: val })
+      }
+    }
+    combos = nextCombos
+  }
+
+  let min = Infinity
+  let max = -Infinity
+
+  for (const c of combos) {
+    const val = evaluateFormula(formulaStr, c)
+    if (val < min) min = val
+    if (val > max) max = val
+  }
+
+  if (min === Infinity || max === -Infinity || min === max) {
+    return { min: 0, max: 100 }
+  }
+
+  return { min, max }
+}
+
+function getMetricUnitAndFormat(metric: OKFFormulaMetric, val: number): { unit: string; display: string } {
+  const match = metric.label.match(/\(([^)]+)\)/)
+  const unit = match ? match[1] : ''
+
+  if (unit === '$') {
+    return { unit, display: `$${Number(val).toFixed(2)}` }
+  }
+  
+  const formattedVal = Number.isInteger(val) ? val.toString() : val.toFixed(1)
+  return { unit, display: `${formattedVal} ${unit}`.trim() }
+}
+
+function getMetricColorClass(id: string, val: number, range: { min: number; max: number }): string {
+  const isCostOrLatency = 
+    id.includes('cost') || 
+    id.includes('latency') || 
+    id.includes('fatigue') || 
+    id.includes('overhead')
+  
+  const span = range.max - range.min
+  if (span === 0) return 'sky'
+  
+  const ratio = (val - range.min) / span
+  
+  if (isCostOrLatency) {
+    if (ratio < 0.35) return 'green'
+    if (ratio < 0.7) return 'peach'
+    return 'red'
+  } else {
+    if (ratio > 0.65) return 'green'
+    if (ratio > 0.3) return 'peach'
+    return 'red'
+  }
+}
+
 export function FormulaSandbox({ title, variables = [], metrics = [] }: FormulaSandboxProps) {
   const { openHUD } = useHUD()
 
@@ -40,6 +113,15 @@ export function FormulaSandbox({ title, variables = [], metrics = [] }: FormulaS
 
   // Computed metrics
   const [computedMetrics, setComputedMetrics] = useState<Record<string, number>>({})
+
+  // Precompute ranges
+  const metricRanges = useMemo(() => {
+    const ranges: Record<string, { min: number; max: number }> = {}
+    metrics.forEach((m) => {
+      ranges[m.id] = computeMetricRange(m.formula, variables)
+    })
+    return ranges
+  }, [metrics, variables])
 
   useEffect(() => {
     const updated: Record<string, number> = {}
@@ -57,39 +139,17 @@ export function FormulaSandbox({ title, variables = [], metrics = [] }: FormulaS
   }
 
   const handleMetricClick = (metric: OKFFormulaMetric) => {
-    const val = computedMetrics[metric.id]
-    const unit = metric.id === 'cost' ? '' : (metric.id === 'latency' ? ' ms' : '%')
-    const formattedVal = metric.id === 'cost' ? `$${Number(val).toFixed(2)}` : `${val}${unit}`
+    const val = computedMetrics[metric.id] || 0
+    const { display } = getMetricUnitAndFormat(metric, val)
 
     const bodyContent = `
-      <strong>Current Value:</strong> <span class="hud-highlight">${formattedVal}</span><br/><br/>
+      <strong>Current Value:</strong> <span class="hud-highlight">${display}</span><br/><br/>
       <strong>Definition:</strong> ${metric.description}<br/><br/>
       ${metric.analogy ? `<strong>Analogy:</strong><div class="hud-card">${metric.analogy}</div><br/>` : ''}
       ${metric.inScope && metric.inScope.length > 0 ? `<strong>In Scope:</strong><ul>${metric.inScope.map(i => `<li>${i}</li>`).join('')}</ul><br/>` : ''}
       ${metric.outOfScope && metric.outOfScope.length > 0 ? `<strong>Out of Scope:</strong><ul>${metric.outOfScope.map(o => `<li>${o}</li>`).join('')}</ul>` : ''}
     `
     openHUD(metric.label, bodyContent)
-  }
-
-  // Helper to determine color classes for metrics
-  const getMetricClass = (id: string, val: number) => {
-    if (id === 'recall') {
-      return val > 75 ? 'green' : val > 45 ? 'peach' : 'red'
-    }
-    if (id === 'latency') {
-      return val < 700 ? 'green' : val < 1200 ? 'sky' : 'red'
-    }
-    if (id === 'cost') {
-      return val < 1.50 ? 'green' : val < 3.00 ? 'peach' : 'red'
-    }
-    return 'sky'
-  }
-
-  const getGaugeWidth = (id: string, val: number) => {
-    if (id === 'recall') return `${val}%`
-    if (id === 'latency') return `${Math.min((val / 2000) * 100, 100)}%`
-    if (id === 'cost') return `${Math.min((val / 5.00) * 100, 100)}%`
-    return '50%'
   }
 
   return (
@@ -120,29 +180,51 @@ export function FormulaSandbox({ title, variables = [], metrics = [] }: FormulaS
         </div>
 
         <div className="sandbox-metrics-column">
-          <h4 className="sandbox-metrics-header">Computed Metrics</h4>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', marginBottom: '16px' }}>
+            <h4 className="sandbox-metrics-header" style={{ margin: 0 }}>Computed Metrics</h4>
+            <span style={{ fontSize: '12px', color: 'var(--ctp-subtext0)', fontStyle: 'italic' }}>
+              * Values are dynamic formula-based estimates.
+            </span>
+          </div>
           {metrics.map((m) => {
             const val = computedMetrics[m.id] || 0
-            const valColorClass = getMetricClass(m.id, val)
-            const unit = m.id === 'cost' ? '' : (m.id === 'latency' ? ' ms' : '%')
-            const displayVal = m.id === 'cost' ? `$${Number(val).toFixed(2)}` : `${val}${unit}`
+            const range = metricRanges[m.id] || { min: 0, max: 100 }
+            const valColorClass = getMetricColorClass(m.id, val, range)
+            const { display } = getMetricUnitAndFormat(m, val)
+
+            // Calculate gauge percentage
+            const span = range.max - range.min
+            const percentage = span > 0 ? ((val - range.min) / span) * 100 : 0
+            const gaugeWidth = `${Math.max(0, Math.min(percentage, 100))}%`
+
+            // Identify variables used in formula for params checklist
+            const variablesUsed = variables
+              .filter((v) => new RegExp(`\\b${v.id}\\b`).test(m.formula))
+              .map((v) => v.label)
 
             return (
               <div key={m.id} className="sandbox-metric-row">
                 <div className="sandbox-metric-meta">
-                  <span className="sandbox-metric-name">{m.label}</span>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
+                    <span className="sandbox-metric-name">{m.label}</span>
+                    {variablesUsed.length > 0 && (
+                      <span style={{ fontSize: '11px', color: 'var(--ctp-subtext1)', fontFamily: 'monospace' }}>
+                        Inputs: {variablesUsed.join(', ')}
+                      </span>
+                    )}
+                  </div>
                   <button
                     className={`sandbox-metric-val ${valColorClass}`}
                     onClick={() => handleMetricClick(m)}
                     title="Click to view HUD details"
                   >
-                    {displayVal}
+                    {display}
                   </button>
                 </div>
                 <div className="sandbox-gauge-track">
                   <div
                     className={`sandbox-gauge-fill ${valColorClass}`}
-                    style={{ width: getGaugeWidth(m.id, val) }}
+                    style={{ width: gaugeWidth }}
                   />
                 </div>
               </div>
