@@ -586,6 +586,93 @@ resource: gallery.yaml
 
 **Grid layout:** 1 column on mobile, 2 on tablet (`sm:`), 3 on desktop (`md:`). Click any card to open the lightbox. Press ← / → to navigate, Escape to close.
 
+### `formula-sandbox` section
+Interactive slider-based sandbox for exploring dynamic quantitative formulas and system constraints. Clicking computed metrics opens the sliding HUD Drawer with detailed definition, analogy, in-scope, and out-of-scope specifications.
+
+```yaml
+---
+type: formula-sandbox
+title: "System Dynamics Sandbox"
+resource: sandbox.yaml
+---
+```
+
+**Data file (`sandbox.yaml`):**
+```yaml
+variables:
+  - id: chunk_size
+    label: "Chunk Size (characters)"
+    min: 100
+    max: 2000
+    step: 50
+    defaultValue: 500
+  - id: overlap
+    label: "Chunk Overlap (%)"
+    min: 0
+    max: 50
+    step: 5
+    defaultValue: 10
+metrics:
+  - id: recall
+    label: "Search Recall Accuracy"
+    formula: "Math.round((Math.log2(chunk_size) * (1 + (overlap / 70))) * 6.5)"
+    description: "Definition explanation of the metric."
+    analogy: "Cognitive analogy details."
+    inScope:
+      - "Item in scope A"
+    outOfScope:
+      - "Item out of scope B"
+```
+
+### `reflection-sequence` section
+Active recall challenge where learners reassemble steps chronologically using drag-and-drop or mobile-friendly tap-to-move selections.
+
+```yaml
+---
+type: reflection-sequence
+title: "Flowchart Sequence Builder"
+resource: sequence.yaml
+---
+```
+
+**Data file (`sequence.yaml`):**
+```yaml
+prompt: "Arrange the steps in the correct chronological order:"
+items:
+  - id: drag-feature-req
+    text: "Define Feature Request"
+  - id: drag-sprint-backlog
+    text: "Sprint Backlog Ready"
+solution:
+  - drag-feature-req
+  - drag-sprint-backlog
+```
+
+### `reflection-template` section
+Synthesis template challenge where learners drag word chips (or tap chips and blanks) to fill in inline zones `{zone-X}` inside a markdown paragraph.
+
+```yaml
+---
+type: reflection-template
+title: "Self-Explanation Template"
+resource: template.yaml
+---
+```
+
+**Data file (`template.yaml`):**
+```yaml
+prompt: "Complete the statement explaining chunk size properties:"
+template: "Reducing chunk size results in {zone-1} individual content segments."
+chips:
+  - id: chip-smaller
+    text: "smaller"
+  - id: chip-larger
+    text: "larger"
+solution:
+  zone-1: "chip-smaller"
+explanation: "<strong>Correct!</strong> Detailed review commentary shown upon validation check."
+```
+
 ## 4. Register the Topic
 
 Topics are auto-discovered — no TypeScript changes needed. Two files must be updated:
@@ -747,12 +834,14 @@ Order sections so the learner builds understanding progressively — each sectio
 4. **Concept categories (`taxonomy-browser`)** — Show the landscape of concepts and how they relate. Gives the learner a map of what's coming so individual sections feel connected, not isolated.
 5. **Core explanation (`text` / `bullets`)** — Explain main concepts, learning goals, or capabilities in prose. Builds on the vocabulary and taxonomy the learner just saw.
 6. **How it works (`flowchart`)** — Show the process flow. Now the learner can read node labels and understand what each entity does because the terms were taught earlier.
-7. **Apply (`bullets`)** — Practical checklists, maintenance steps, or reference material. The learner can now act on this because they understand the underlying mechanics.
-8. **Knowledge check (`quiz`)** — Multiple-choice questions to verify understanding. Score tracking gives immediate feedback. Placed after core content is taught so questions test learned material.
-9. **Explore trade-offs (`tradeoff-sandbox`)** — Let the learner experiment with decisions. Placed after everything is taught so choices feel meaningful, not arbitrary.
-10. **Scenario (`scenario`)** — Branching narrative where the learner makes decisions and faces consequences. Graded outcomes make the learning stick. Requires full context from prior sections.
-11. **Decision guide (`decision-tree`)** — Diagnostic Q&A that leads to a tailored recommendation. Learner applies knowledge to their own situation. Best placed after all concepts are understood.
-12. **Reinforce (`flashcards`)** — Optionally close with recall drills if there's a separate second flashcard deck. The first flashcards are glossary (section 3); these are practice.
+7. **Sequence check (`reflection-sequence`)** — Drag-and-drop chronological flowchart step ordering challenge. Placed immediately after the flowchart to transition passive flowchart recognition into active process recall.
+8. **Apply (`bullets`)** — Practical checklists, maintenance steps, or reference material. The learner can now act on this because they understand the underlying mechanics.
+9. **Knowledge check (`quiz`)** — Multiple-choice questions to verify understanding. Score tracking gives immediate feedback. Placed after core content is taught so questions test learned material.
+10. **Explore trade-offs (`tradeoff-sandbox` / `formula-sandbox`)** — Let the learner experiment with structural options and quantitative parameters. The formula sandbox allows real-time numerical causality exploration (e.g., chunk size vs cost) with sliding metric HUD details.
+11. **Self-Explanation (`reflection-template`)** — Blank-filling synthesis template placed right after the formula sandbox to force the learner to conceptualize and explain the tradeoffs they observed.
+12. **Scenario (`scenario`)** — Branching narrative where the learner makes decisions and faces consequences. Graded outcomes make the learning stick. Requires full context from prior sections.
+13. **Decision guide (`decision-tree`)** — Diagnostic Q&A that leads to a tailored recommendation. Learner applies knowledge to their own situation. Best placed after all concepts are understood.
+14. **Reinforce (`flashcards`)** — Optionally close with recall drills if there's a separate second flashcard deck. The first flashcards are glossary (section 3); these are practice.
 
 **Rule: never reference a term, concept, or mechanism in section N that hasn't been introduced in section N-1 or earlier.**
 
