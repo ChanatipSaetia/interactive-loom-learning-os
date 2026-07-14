@@ -23,6 +23,8 @@ import type {
   OKFFormulaSandboxSectionData,
   OKFReflectionSequenceSectionData,
   OKFReflectionTemplateSectionData,
+  OKFReflectionSequenceChallenge,
+  OKFReflectionTemplateChallenge,
   OKFGalleryRaw,
   OKFStepRaw,
   OKFJourneyRaw,
@@ -554,24 +556,48 @@ async function loadFormulaSandboxSection(basePath: string, resource: string): Pr
 async function loadReflectionSequenceSection(basePath: string, resource: string): Promise<OKFReflectionSequenceSectionData> {
   const file = resource !== '.' ? resource : 'sequence.yaml'
   const raw = await fetchYaml<OKFReflectionSequenceRaw>(`${basePath}/${file}`)
+  
+  let challenges: OKFReflectionSequenceChallenge[] = []
+  if (raw.challenges && Array.isArray(raw.challenges)) {
+    challenges = raw.challenges
+  } else if (raw.prompt && raw.items && raw.solution) {
+    challenges = [
+      {
+        prompt: raw.prompt,
+        items: raw.items,
+        solution: raw.solution,
+      }
+    ]
+  }
+
   return {
     type: 'reflection-sequence',
-    prompt: raw.prompt,
-    items: raw.items,
-    solution: raw.solution,
+    challenges,
   }
 }
 
 async function loadReflectionTemplateSection(basePath: string, resource: string): Promise<OKFReflectionTemplateSectionData> {
   const file = resource !== '.' ? resource : 'template.yaml'
   const raw = await fetchYaml<OKFReflectionTemplateRaw>(`${basePath}/${file}`)
+
+  let challenges: OKFReflectionTemplateChallenge[] = []
+  if (raw.challenges && Array.isArray(raw.challenges)) {
+    challenges = raw.challenges
+  } else if (raw.prompt && raw.template && raw.chips && raw.solution) {
+    challenges = [
+      {
+        prompt: raw.prompt,
+        template: raw.template,
+        chips: raw.chips,
+        solution: raw.solution,
+        explanation: raw.explanation,
+      }
+    ]
+  }
+
   return {
     type: 'reflection-template',
-    prompt: raw.prompt,
-    template: raw.template,
-    chips: raw.chips,
-    solution: raw.solution,
-    explanation: raw.explanation,
+    challenges,
   }
 }
 

@@ -1,5 +1,5 @@
 import React, { useState, useMemo, useCallback } from 'react'
-import { CheckCircle2, AlertCircle } from 'lucide-react'
+import { CheckCircle2, AlertCircle, ChevronLeft, ChevronRight } from 'lucide-react'
 import './reflection-template.css'
 
 export interface ChipItem {
@@ -7,8 +7,7 @@ export interface ChipItem {
   text: string
 }
 
-export interface ReflectionTemplateProps {
-  title?: string
+export interface ReflectionTemplateChallenge {
   prompt: string
   template: string
   chips: ChipItem[]
@@ -16,15 +15,29 @@ export interface ReflectionTemplateProps {
   explanation?: string
 }
 
-export function ReflectionTemplate({
-  title,
+export interface ReflectionTemplateProps {
+  title?: string
+  prompt?: string
+  template?: string
+  chips?: ChipItem[]
+  solution?: Record<string, string>
+  explanation?: string
+  challenges?: ReflectionTemplateChallenge[]
+}
+
+function ReflectionTemplateSingle({
   prompt,
-  template = '',
-  chips = [],
-  solution = {},
+  template,
+  chips,
+  solution,
   explanation,
-}: ReflectionTemplateProps) {
-  // Extract zone IDs from the template string
+}: {
+  prompt: string
+  template: string
+  chips: ChipItem[]
+  solution: Record<string, string>
+  explanation?: string
+}) {
   const zoneIds = useMemo(() => {
     const ids: string[] = []
     const regex = /\{zone-([a-zA-Z0-9_-]+)\}/g
@@ -35,7 +48,6 @@ export function ReflectionTemplate({
     return ids
   }, [template])
 
-  // Map of zoneId -> ChipItem or null
   const [blanks, setBlanks] = useState<Record<string, ChipItem | null>>(() => {
     const initial: Record<string, ChipItem | null> = {}
     zoneIds.forEach((id) => {
@@ -44,10 +56,7 @@ export function ReflectionTemplate({
     return initial
   })
 
-  // Selected chip ID for mobile tap fallback
   const [selectedChipId, setSelectedChipId] = useState<string | null>(null)
-
-  // Verification feedback state
   const [feedback, setFeedback] = useState<{ text: string; type: 'success' | 'error' | '' }>({
     text: '',
     type: '',
@@ -57,19 +66,16 @@ export function ReflectionTemplate({
     return Object.values(blanks).some((item) => item?.id === id)
   }, [blanks])
 
-  // --- Drag and Drop Handlers ---
   const handleDragStart = (e: React.DragEvent, id: string) => {
     e.dataTransfer.setData('text/plain', id)
-    setSelectedChipId(null) // clear tap selection
+    setSelectedChipId(null)
   }
 
   const handleDragOver = (e: React.DragEvent) => {
     e.preventDefault()
   }
 
-  // --- Common slot updates ---
   const placeChipInZone = useCallback((zoneId: string, chip: ChipItem) => {
-    // If the chip is already in another zone, clear it there
     const previousZoneId = Object.keys(blanks).find(
       (key) => blanks[key]?.id === chip.id
     )
@@ -102,10 +108,8 @@ export function ReflectionTemplate({
     }
   }, [chips, placeChipInZone])
 
-  // --- Mobile Tap-to-Move Fallback Handlers ---
   const handleChipTap = (id: string) => {
     if (isChipUsed(id)) return
-
     if (selectedChipId === id) {
       setSelectedChipId(null)
     } else {
@@ -115,11 +119,9 @@ export function ReflectionTemplate({
 
   const handleZoneTap = useCallback((zoneId: string) => {
     if (blanks[zoneId]) {
-      // If filled, clear it
       removeChipFromZone(zoneId)
       return
     }
-
     if (selectedChipId) {
       const chip = chips.find((x) => x.id === selectedChipId)
       if (chip) {
@@ -129,7 +131,6 @@ export function ReflectionTemplate({
     }
   }, [blanks, selectedChipId, chips, placeChipInZone, removeChipFromZone])
 
-  // --- Verification ---
   const handleVerify = () => {
     let unfilled = false
     let correctCount = 0
@@ -166,7 +167,6 @@ export function ReflectionTemplate({
     }
   }
 
-  // Segment the template text to render inline boxes
   const renderedSentence = useMemo(() => {
     const segments = template.split(/(\{zone-[a-zA-Z0-9_-]+\})/g)
     return segments.map((seg, idx) => {
@@ -193,58 +193,120 @@ export function ReflectionTemplate({
   }, [template, blanks, selectedChipId, handleDrop, handleZoneTap])
 
   return (
+    <div className="template-body">
+      <div className="template-prompt">{prompt}</div>
+
+      <div className="template-sentence-container">{renderedSentence}</div>
+
+      <div className="template-chips-bank">
+        {chips.map((chip) => {
+          const used = isChipUsed(chip.id)
+          const isSelected = selectedChipId === chip.id
+
+          return (
+            <div
+              key={chip.id}
+              draggable={!used}
+              onDragStart={(e) => handleDragStart(e, chip.id)}
+              onClick={() => handleChipTap(chip.id)}
+              className={`template-chip-item ${used ? 'used' : ''} ${isSelected ? 'selected' : ''}`}
+            >
+              {chip.text}
+            </div>
+          )
+        })}
+      </div>
+
+      <div className="template-footer">
+        <button className="template-verify-btn" onClick={handleVerify}>
+          Verify Explanation
+        </button>
+
+        {feedback.text && (
+          <div className={`template-feedback-msg ${feedback.type}`}>
+            {feedback.type === 'success' ? (
+              <CheckCircle2 size={16} className="feedback-icon" />
+            ) : (
+              <AlertCircle size={16} className="feedback-icon" />
+            )}
+            <div
+              className="feedback-text-content"
+              dangerouslySetInnerHTML={{ __html: feedback.text }}
+            />
+          </div>
+        )}
+      </div>
+    </div>
+  )
+}
+
+export function ReflectionTemplate({
+  title,
+  prompt = '',
+  template = '',
+  chips = [],
+  solution = {},
+  explanation,
+  challenges,
+}: ReflectionTemplateProps) {
+  const normalizedChallenges = challenges && challenges.length > 0
+    ? challenges
+    : [{ prompt, template, chips, solution, explanation }]
+
+  const [currentIndex, setCurrentIndex] = useState(0)
+
+  const currentChallenge = normalizedChallenges[currentIndex]
+
+  const handlePrev = () => {
+    setCurrentIndex((prev) => Math.max(prev - 1, 0))
+  }
+
+  const handleNext = () => {
+    setCurrentIndex((prev) => Math.min(prev + 1, normalizedChallenges.length - 1))
+  }
+
+  return (
     <div className="reflection-template-section" data-testid="reflection-section">
       {title && (
         <h3 className="bullets-section-title">{title}</h3>
       )}
 
-      <div className="template-body">
-        <div className="template-prompt">{prompt}</div>
+      {/* Single Challenge Renderer with index key to reset state */}
+      <ReflectionTemplateSingle
+        key={currentIndex}
+        prompt={currentChallenge.prompt}
+        template={currentChallenge.template}
+        chips={currentChallenge.chips}
+        solution={currentChallenge.solution}
+        explanation={currentChallenge.explanation}
+      />
 
-        {/* Dynamic Sentence template area */}
-        <div className="template-sentence-container">{renderedSentence}</div>
-
-        {/* Source Word Chips Pool */}
-        <div className="template-chips-bank">
-          {chips.map((chip) => {
-            const used = isChipUsed(chip.id)
-            const isSelected = selectedChipId === chip.id
-
-            return (
-              <div
-                key={chip.id}
-                draggable={!used}
-                onDragStart={(e) => handleDragStart(e, chip.id)}
-                onClick={() => handleChipTap(chip.id)}
-                className={`template-chip-item ${used ? 'used' : ''} ${isSelected ? 'selected' : ''}`}
-              >
-                {chip.text}
-              </div>
-            )
-          })}
-        </div>
-
-        {/* Action Button & Verification feedback */}
-        <div className="template-footer">
-          <button className="template-verify-btn" onClick={handleVerify}>
-            Verify Explanation
+      {/* Pagination Controls */}
+      {normalizedChallenges.length > 1 && (
+        <div className="quiz-nav" style={{ marginTop: '24px', borderTop: '1px solid rgba(198, 208, 245, 0.05)', paddingTop: '16px' }}>
+          <button
+            onClick={handlePrev}
+            disabled={currentIndex === 0}
+            className="quiz-nav-btn"
+            style={{ display: 'inline-flex', alignItems: 'center', opacity: currentIndex === 0 ? 0.4 : 1, cursor: currentIndex === 0 ? 'not-allowed' : 'pointer' }}
+          >
+            <ChevronLeft size={16} style={{ marginRight: '4px' }} />
+            Previous Scenario
           </button>
-
-          {feedback.text && (
-            <div className={`template-feedback-msg ${feedback.type}`}>
-              {feedback.type === 'success' ? (
-                <CheckCircle2 size={16} className="feedback-icon" />
-              ) : (
-                <AlertCircle size={16} className="feedback-icon" />
-              )}
-              <div
-                className="feedback-text-content"
-                dangerouslySetInnerHTML={{ __html: feedback.text }}
-              />
-            </div>
-          )}
+          <span style={{ color: 'var(--ctp-subtext0)', fontSize: '14px', fontFamily: 'monospace' }}>
+            {currentIndex + 1} / {normalizedChallenges.length}
+          </span>
+          <button
+            onClick={handleNext}
+            disabled={currentIndex === normalizedChallenges.length - 1}
+            className="quiz-nav-btn"
+            style={{ display: 'inline-flex', alignItems: 'center', opacity: currentIndex === normalizedChallenges.length - 1 ? 0.4 : 1, cursor: currentIndex === normalizedChallenges.length - 1 ? 'not-allowed' : 'pointer' }}
+          >
+            Next Scenario
+            <ChevronRight size={16} style={{ marginLeft: '4px' }} />
+          </button>
         </div>
-      </div>
+      )}
     </div>
   )
 }

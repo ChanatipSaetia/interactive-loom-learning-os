@@ -84,16 +84,10 @@ export function bundleToSections(bundle: OKFBundled): SectionConfig[] {
         props.metrics = data.metrics
         break
       case 'reflection-sequence':
-        props.prompt = data.prompt
-        props.items = data.items
-        props.solution = data.solution
+        props.challenges = data.challenges
         break
       case 'reflection-template':
-        props.prompt = data.prompt
-        props.template = data.template
-        props.chips = data.chips
-        props.solution = data.solution
-        props.explanation = data.explanation
+        props.challenges = data.challenges
         break
     }
 

@@ -62,20 +62,28 @@ export interface OKFFormulaSandboxSectionData {
   metrics: OKFFormulaMetric[]
 }
 
-export interface OKFReflectionSequenceSectionData {
-  type: 'reflection-sequence'
+export interface OKFReflectionSequenceChallenge {
   prompt: string
   items: Array<{ id: string; text: string; icon?: string }>
   solution: string[]
 }
 
-export interface OKFReflectionTemplateSectionData {
-  type: 'reflection-template'
+export interface OKFReflectionSequenceSectionData {
+  type: 'reflection-sequence'
+  challenges: OKFReflectionSequenceChallenge[]
+}
+
+export interface OKFReflectionTemplateChallenge {
   prompt: string
   template: string
   chips: Array<{ id: string; text: string }>
   solution: Record<string, string>
   explanation?: string
+}
+
+export interface OKFReflectionTemplateSectionData {
+  type: 'reflection-template'
+  challenges: OKFReflectionTemplateChallenge[]
 }
 
 export interface OKFTextSectionData {
@@ -377,16 +385,18 @@ export interface OKFFormulaSandboxRaw {
 }
 
 export interface OKFReflectionSequenceRaw {
-  prompt: string
-  items: Array<{ id: string; text: string; icon?: string }>
-  solution: string[]
+  prompt?: string
+  items?: Array<{ id: string; text: string; icon?: string }>
+  solution?: string[]
+  challenges?: OKFReflectionSequenceChallenge[]
 }
 
 export interface OKFReflectionTemplateRaw {
-  prompt: string
-  template: string
-  chips: Array<{ id: string; text: string }>
-  solution: Record<string, string>
+  prompt?: string
+  template?: string
+  chips?: Array<{ id: string; text: string }>
+  solution?: Record<string, string>
   explanation?: string
+  challenges?: OKFReflectionTemplateChallenge[]
 }
 
