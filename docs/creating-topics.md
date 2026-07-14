@@ -3,7 +3,26 @@
 ## Objective
 The objective of creating a new topic is to create comprehensive content for that topic, so the user can learn and fully understand the concept, and ultimately be ready to use AI or communicate effectively about that topic.
 
-Creating a new interactive topic in the Interactive Loom Learning OS is done by assembling a sequence of modular "sections". The key architectural principle is strict separation of content (data) from structure (UI).
+Creating new interactive topics in the Interactive Loom Learning OS is done by assembling a sequence of modular "sections". The key architectural principle is strict separation of content (data) from structure (UI).
+
+## Every Section Type at a Glance
+
+| Section Type | Mental Model Focus | Data Input Format | Local UI State | Animations & Micro-interactions |
+|---|---|---|---|---|
+| `text` | Anchored conceptual narrative | Markdown strings (paragraphs) | None | Scroll-triggered fade-in |
+| `bullets` | Hierarchical taxonomy / breakdown | Nested recursive nodes (`children`) | Expanded/Collapsed states | Staggered fade/slide-in, chevron rotation |
+| `flowchart` | Dynamic process flows & swimlanes | `actors.yaml`, `systems.yaml`, `steps.yaml`, `journeys.yaml` | Active step, fullscreen toggle, view mode tabs | anime.js path drawing, camera centering, highlights |
+| `tradeoff-sandbox` | Architectural tradeoffs & strategy matrix | Scenarios with choices, pros/cons list | Selected choice per step, metrics scores state | Bar gauge expansion transitions, pros/cons fade-in |
+| `taxonomy-browser` | Concept categorized grids & properties | Category yaml files (color, analogy, scopes) | Selected category card, expanded card state | Cards zoom, pulse rings, grid shifts |
+| `quiz` | Knowledge check & validation | Multiple-choice questions (`questions.yaml`) | Selected answer, verified state, index | Score counters, card transitions, correct/incorrect badges |
+| `concept-map` | Semantic relationships & groupings | Node lists with categories + Directed edges | Zoom, Pan, Active Hover node | D3-force simulation layout, link highlights |
+| `scenario` | Consequence-driven branching narratives | Choice DAG with rated outcome leaf nodes | History breadcrumbs, current node ID | Staggered choice cards, verdict slides |
+| `decision-tree` | Diagnostic logic & situation recommendations | Directed Q&A nodes with rationale/rec badges | Answer path history, active leaf recommendation | Path counter indicators, stagger fade-in cards |
+| `flashcards` | Vocabulary recall & dialogue scenario | Vocabulary card deck + Pronunciation + AI dialogue | Card flipped state, active card index | Flip rotation animation, slider transitions |
+| `image-gallery` | Visual showcase & screenshots | Image list (`gallery.yaml`) with captions | Fullscreen lightbox index, active image | Keyboard controls transitions, zoom-on-hover |
+| `formula-sandbox` | Quantitative parameter & system dynamics | Sliders inputs (`variables`) + Math expressions (`metrics`) | Variable values record, computed metrics | Real-time slider adjustments, HUD drawer side-slide |
+| `reflection-sequence` | Chronological process ordering active recall | Unordered cards list + Correct solution array | Placed items record, selected item ID, verify feedback | Card drag feedback, mobile tap highlight glows, verify alerts |
+| `reflection-template` | Reasoning synthesis & tradeoff explanation | Inline text template with zones + Chips pool | Filled zones record, active chip selection, verify feedback | Inline chip placements, blank borders glow, verification message |
 
 ## OKF Bundle Structure
 
