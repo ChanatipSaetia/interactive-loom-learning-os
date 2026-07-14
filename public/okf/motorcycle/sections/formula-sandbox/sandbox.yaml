@@ -1,0 +1,48 @@
+variables:
+  - id: bore_size
+    label: "Cylinder Bore Size (mm)"
+    min: 50
+    max: 100
+    step: 2
+    defaultValue: 54
+  - id: stroke_length
+    label: "Piston Stroke Length (mm)"
+    min: 40
+    max: 90
+    step: 2
+    defaultValue: 54
+  - id: rpm
+    label: "Engine Speed (RPM)"
+    min: 1000
+    max: 12000
+    step: 500
+    defaultValue: 6000
+
+metrics:
+  - id: recall
+    label: "Engine Displacement (cc)"
+    formula: "Math.round(Math.PI * Math.pow(bore_size / 20, 2) * (stroke_length / 10))"
+    description: "The total volume swept by the piston within the cylinder block."
+    analogy: "Cup volume. A larger diameter cup holds more liquid with every scoop."
+    inScope:
+      - "Cylinder swept volume"
+    outOfScope:
+      - "Combustion chamber clearance volume"
+  - id: latency
+    label: "Calculated Horsepower (hp)"
+    formula: "Math.round((Math.PI * Math.pow(bore_size / 20, 2) * (stroke_length / 10)) * (rpm / 16000))"
+    description: "Estimated mechanical power produced by the engine at this speed."
+    analogy: "Speed times load. The faster and harder you pull a cart, the more work you do."
+    inScope:
+      - "Volumetric efficiency proxy"
+    outOfScope:
+      - "Drivetrain transmission losses"
+  - id: cost
+    label: "Fuel Efficiency (km/L)"
+    formula: "Math.round(Math.max(10, 80 - (bore_size * 0.4) - (rpm / 250)))"
+    description: "Estimated travel distance covered per liter of fuel burned."
+    analogy: "Caloric burn. A larger runner sprinting faster consumes calories much quicker."
+    inScope:
+      - "Thermal fuel combustion rates"
+    outOfScope:
+      - "Wind resistance and rider weight factors"

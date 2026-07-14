@@ -11,4 +11,7 @@ related:
   - sections/quiz/questions.yaml
   - sections/scenario/scenarios.yaml
   - sections/reflection-sequence/sequence.yaml
+  - sections/formula-sandbox/sandbox.yaml
+  - sections/reflection-template/template.yaml
+
 

@@ -1,0 +1,42 @@
+variables:
+  - id: top_k
+    label: "Top K Documents Retrieved"
+    min: 1
+    max: 20
+    step: 1
+    defaultValue: 5
+  - id: document_overlap
+    label: "Document Chunk Overlap (chars)"
+    min: 0
+    max: 500
+    step: 50
+    defaultValue: 100
+
+metrics:
+  - id: recall
+    label: "Retrieval Recall Rate"
+    formula: "Math.round(50 + (top_k * 2.2) + (document_overlap / 15))"
+    description: "The percentage of relevant documents successfully fetched from the Document Store."
+    analogy: "Like casting a wider net—the larger K is, the more fish (information) you bring in."
+    inScope:
+      - "Retrieved chunk coverage"
+    outOfScope:
+      - "LLM reasoning capacity"
+  - id: latency
+    label: "Generation Latency (ms)"
+    formula: "Math.round(150 + (top_k * 65) + (document_overlap * 0.3))"
+    description: "The time elapsed before the generator API finishes writing the final response tokens."
+    analogy: "Reading speed. If you give a student 20 pages of text, they will take longer to summarize it than 2 pages."
+    inScope:
+      - "Token processing latency"
+    outOfScope:
+      - "Database indexing time"
+  - id: cost
+    label: "Estimated Ingest API Cost ($)"
+    formula: "Math.round(top_k * 3.5 + (document_overlap / 25))"
+    description: "Financial projection of prompt tokens processed by external generator APIs."
+    analogy: "Toll fee. You pay per word of context sent to the API."
+    inScope:
+      - "Prompt context tokens cost"
+    outOfScope:
+      - "Vector database storage costs"

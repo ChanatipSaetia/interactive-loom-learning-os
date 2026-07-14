@@ -25,3 +25,6 @@ related:
   - sections/decision-tree-channel/tree.yaml
   - sections/decision-tree-estimation/tree.yaml
   - sections/reflection-sequence/sequence.yaml
+  - sections/formula-sandbox/sandbox.yaml
+  - sections/reflection-template/template.yaml
+

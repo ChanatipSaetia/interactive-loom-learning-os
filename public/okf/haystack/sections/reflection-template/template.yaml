@@ -1,0 +1,33 @@
+challenges:
+  - prompt: "Complete the statement explaining Top K retrieval characteristics (Part 1):"
+    template: "Increasing Top K in a Haystack query pipeline leads to {zone-1} retrieval recall, because the retriever fetches more candidate text blocks. However, this also causes {zone-2} generation latency and {zone-3} API token cost."
+    chips:
+      - id: "chip-higher"
+        text: "higher"
+      - id: "chip-lower"
+        text: "lower"
+      - id: "chip-increased"
+        text: "increased"
+      - id: "chip-decreased"
+        text: "decreased"
+    solution:
+      zone-1: "chip-higher"
+      zone-2: "chip-increased"
+      zone-3: "chip-increased"
+    explanation: "<strong>Correct!</strong> Fetching more candidate files raises search recall rate but also forces the LLM generator to read more context, multiplying API cost and duration latency."
+  - prompt: "Complete the statement explaining chunk overlaps (Part 2):"
+    template: "Adding larger chunk overlaps helps prevent semantic {zone-1} at text boundaries. However, it also duplicate text segments, which {zone-2} total context length and {zone-3} cost."
+    chips:
+      - id: "chip-loss"
+        text: "information loss"
+      - id: "chip-gain"
+        text: "gains"
+      - id: "chip-raises"
+        text: "raises"
+      - id: "chip-drops"
+        text: "drops"
+    solution:
+      zone-1: "chip-loss"
+      zone-2: "chip-raises"
+      zone-3: "chip-raises"
+    explanation: "<strong>Correct!</strong> Overlaps block boundary sentence splits, but they add duplicate strings that cost more to send to generator APIs."

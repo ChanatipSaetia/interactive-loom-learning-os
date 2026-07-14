@@ -18,4 +18,6 @@
 * [Build Setup Advisor](sections/decision-tree/section.md)
 * [Stats & DPS Calculator](sections/formula-sandbox/section.md) — Calculate DPS
 * [Skill Combination Challenge](sections/reflection-sequence/section.md) — Order skills
+* [Combat Stats Evaluation](sections/reflection-template/section.md) — Explain stats tradeoffs
+
 

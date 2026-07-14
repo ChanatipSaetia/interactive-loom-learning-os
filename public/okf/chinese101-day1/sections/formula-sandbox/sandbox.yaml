@@ -1,0 +1,42 @@
+variables:
+  - id: daily_practice_mins
+    label: "Daily Practice Duration (minutes)"
+    min: 10
+    max: 120
+    step: 10
+    defaultValue: 30
+  - id: spacing_multiplier
+    label: "Spaced Repetition Interval Multiplier"
+    min: 1
+    max: 5
+    step: 0.5
+    defaultValue: 2.5
+
+metrics:
+  - id: recall
+    label: "Long-Term Word Retention (%)"
+    formula: "Math.round(Math.min(99, 40 + (daily_practice_mins * 0.15) + (spacing_multiplier * 9)))"
+    description: "The percentage of vocabulary items correctly recalled after a 30-day delay period."
+    analogy: "Muscle memory. Periodic light weights are more permanent than a single extreme workout session."
+    inScope:
+      - "Pinyin and tone recall rates"
+    outOfScope:
+      - "Complex grammar synthesis"
+  - id: latency
+    label: "Cognitive Fatigue Index"
+    formula: "Math.round(Math.max(5, (daily_practice_mins * 0.8) - (spacing_multiplier * 6)))"
+    description: "Estimated levels of mental exhaustion and burnout, which limits long-term study consistency."
+    analogy: "Soreness. Studying 2 hours straight without rest burns out concentration fast."
+    inScope:
+      - "Daily study session fatigue"
+    outOfScope:
+      - "General stress level variables"
+  - id: cost
+    label: "Vocabulary Words Retained"
+    formula: "Math.round((daily_practice_mins * 0.7) * (spacing_multiplier * 0.5))"
+    description: "The absolute number of active vocabulary words fully integrated into active recall over 30 days."
+    analogy: "Harvest yield. Reaping small amounts daily at correct times yields more fruit than harvesting immature plants."
+    inScope:
+      - "Active recall vocabulary count"
+    outOfScope:
+      - "Passive recognition lists"

@@ -15,7 +15,10 @@ Learn why project management is necessary and how to run effective, lean meeting
 * [Knowledge Check](sections/quiz/section.md) — Check your Agile facts
 * [Process Trade-offs](sections/tradeoffs/section.md) — Tweak PM process overhead
 * [Sequence Builder Challenge](sections/reflection-sequence/section.md) — Order task pipelines
+* [Meeting Cost Simulator](sections/formula-sandbox/section.md) — Calculate meeting cost & lost time
+* [Meeting Efficiency Challenge](sections/reflection-template/section.md) — Explain async tradeoffs
 * [Scheduling Scenarios](sections/scenario-schedule/section.md) — Deal with scheduling conflicts
 * [Meeting Bloat Scenarios](sections/scenario-meeting-bloat/section.md) — Mitigate useless meetings
 * [Communication Channel Guide](sections/decision-tree-channel/section.md) — Find the right channel
 * [Estimation Guide](sections/decision-tree-estimation/section.md) — Select estimation style
+

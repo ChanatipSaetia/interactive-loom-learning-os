@@ -20,4 +20,7 @@
 * [สถานการณ์ตัดสินใจ](sections/scenario/section.md)
 * [วินิจฉัยปัญหารถมอเตอร์ไซค์](sections/decision-tree/section.md)
 * [เรียงลำดับการทำงานของเครื่องยนต์](sections/reflection-sequence/section.md) — 4-Stroke sequence
+* [เครื่องคำนวณและทดลองขนาดเครื่องยนต์](sections/formula-sandbox/section.md) — Engine performance sandbox
+* [ประเมินสมรรถนะเครื่องยนต์](sections/reflection-template/section.md) — Engine dynamics template
+
 

@@ -1,0 +1,49 @@
+variables:
+  - id: attendees_count
+    label: "Meeting Attendees (Engineers)"
+    min: 2
+    max: 15
+    step: 1
+    defaultValue: 6
+  - id: duration_minutes
+    label: "Meeting Duration (minutes)"
+    min: 15
+    max: 120
+    step: 15
+    defaultValue: 45
+  - id: average_hourly_rate
+    label: "Average Engineer Hourly Rate ($)"
+    min: 50
+    max: 150
+    step: 10
+    defaultValue: 80
+
+metrics:
+  - id: recall
+    label: "Direct Meeting Cost ($)"
+    formula: "Math.round((attendees_count * duration_minutes * average_hourly_rate) / 60)"
+    description: "The direct financial expense spent on wages for engineers during the duration of the sync."
+    analogy: "Burning bills. The more cooks in the kitchen for a simple dinner, the more hourly wages you pay."
+    inScope:
+      - "Attendee base wages"
+    outOfScope:
+      - "Meeting software subscriptions"
+  - id: latency
+    label: "Maker Focus Time Lost (hrs)"
+    formula: "Math.round((attendees_count * (duration_minutes + 30)) / 60)"
+    description: "The total productivity hours lost, factoring in a 30-minute recovery/context-switching cost per attendee."
+    analogy: "Stopping the assembly line. Every time a worker pauses to look at a calendar invite, it takes time to get back in the zone."
+    inScope:
+      - "Context switching recovery penalty"
+      - "Meeting runtime duration"
+    outOfScope:
+      - "Normal break time intervals"
+  - id: cost
+    label: "Company Overhead Index"
+    formula: "Math.round(((attendees_count * duration_minutes * average_hourly_rate) / 60) * 1.6)"
+    description: "Adjusted cost index calculating long-term development friction and delay penalties."
+    analogy: "Interest rates. Delaying code features to discuss them adds interest onto target shipping timelines."
+    inScope:
+      - "Workflow block cost factors"
+    outOfScope:
+      - "Product pricing dynamics"

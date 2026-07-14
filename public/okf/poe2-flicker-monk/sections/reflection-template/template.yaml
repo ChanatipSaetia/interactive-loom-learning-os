@@ -1,0 +1,31 @@
+challenges:
+  - prompt: "Complete the statement explaining Attack Speed vs Base Damage stats (Part 1):"
+    template: "Increasing Attack Speed multiplies the total hits landed per second, which directly {zone-1} total build DPS. However, swinging faster also {zone-2} the Spirit mana reservation needed to sustain aggressive stance buffs."
+    chips:
+      - id: "chip-increases"
+        text: "increases"
+      - id: "chip-decreases"
+        text: "decreases"
+      - id: "chip-raises"
+        text: "raises"
+      - id: "chip-lowers"
+        text: "lowers"
+    solution:
+      zone-1: "chip-increases"
+      zone-2: "chip-raises"
+    explanation: "<strong>Correct!</strong> Attack speed directly multiplies dps but also drains dynamic Spirit costs, requiring higher aura reservation metrics."
+  - prompt: "Complete the statement explaining Critical Strike properties (Part 2):"
+    template: "Tuning Critical Strike Chance to 100% guarantees critical hits, which leads to a {zone-1} estimated build DPS. It also {zone-2} the chance to inflict Shock ailment on enemies."
+    chips:
+      - id: "chip-higher"
+        text: "higher"
+      - id: "chip-lower"
+        text: "lower"
+      - id: "chip-increases"
+        text: "increases"
+      - id: "chip-decreases"
+        text: "decreases"
+    solution:
+      zone-1: "chip-higher"
+      zone-2: "chip-increases"
+    explanation: "<strong>Correct!</strong> Perfect crits lead to higher peak hits and guarantee shock infliction, multiplying base damage output."

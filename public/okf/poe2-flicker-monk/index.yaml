@@ -28,4 +28,6 @@ related:
   - sections/image-gallery/gallery.yaml
   - sections/formula-sandbox/sandbox.yaml
   - sections/reflection-sequence/sequence.yaml
+  - sections/reflection-template/template.yaml
+
 

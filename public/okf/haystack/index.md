@@ -18,4 +18,7 @@
 * [Architecture Decision Scenario](sections/scenario/section.md)
 * [Choose Your Haystack Setup](sections/decision-tree/section.md)
 * [Pipeline Sequence Challenge](sections/reflection-sequence/section.md) — Order RAG components
+* [Retrieval Parameter Sandbox](sections/formula-sandbox/section.md) — Dynamic RAG tradeoffs
+* [Retrieval Evaluation Challenge](sections/reflection-template/section.md) — Explain recall tradeoffs
+
 
