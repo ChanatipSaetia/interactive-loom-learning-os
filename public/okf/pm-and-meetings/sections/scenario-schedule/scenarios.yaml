@@ -1,0 +1,45 @@
+id: slipping_schedule
+title: "Saving a Slipping Schedule"
+intro: "A critical release is scheduled in 2 weeks, but progress has slowed down. Features are piling up, and developers seem blocked. As the team lead, how do you handle this?"
+nodes:
+  start:
+    prompt: "What is your first move to identify the issue?"
+    choices:
+      - id: status_meeting
+        text: "Schedule a 1-hour status meeting with all 10 developers."
+        next: outcome_status_meeting
+      - id: async_audit
+        text: "Audit the board asynchronously, review PR blockers, and post a Slack thread."
+        next: next_audit_step
+      - id: micromanage
+        text: "Ask for daily status emails from every engineer detailing what they did each hour."
+        next: outcome_micromanage
+  next_audit_step:
+    prompt: "You found that 2 backend engineers are blocked waiting for database schema approval. How do you resolve this?"
+    choices:
+      - id: schema_huddle
+        text: "Call a focused, 15-minute huddle with the DB admin and the blocked backend engineers."
+        next: outcome_focused_huddle
+      - id: company_meeting
+        text: "Add database schema review to the agenda of the next weekly team sync."
+        next: outcome_weekly_sync
+  outcome_status_meeting:
+    outcome:
+      verdict: "The 1-hour meeting cost 10 engineering hours. Developers spent most of the time listening to updates irrelevant to them."
+      lesson: "Status meetings with large groups waste valuable coding time. Keep status updates async and meetings small."
+      rating: c
+  outcome_micromanage:
+    outcome:
+      verdict: "Writing hourly reports added administrative burden and destroyed developer morale. Several developers started looking for new jobs."
+      lesson: "Micromanagement breeds distrust and wastes time. Trust your developers and monitor work deliverables, not hours."
+      rating: c
+  outcome_focused_huddle:
+    outcome:
+      verdict: "The 15-minute focused huddle successfully unblocked the backend team. The database schema was approved immediately, and the feature was delivered on time."
+      lesson: "Targeted huddles with only the necessary people resolve blocks quickly without disrupting the wider team."
+      rating: a
+  outcome_weekly_sync:
+    outcome:
+      verdict: "Waiting for the weekly sync delayed the backend engineers by 4 days, causing the release to slip."
+      lesson: "Blockers should be resolved immediately. Delaying resolution to fit standard meeting schedules hurts momentum."
+      rating: b-minus

@@ -1,0 +1,72 @@
+id: process-overhead
+title: "PM Framework Overhead"
+description: "Select the process framework for task management and iteration planning."
+metrics:
+  - id: velocity
+    label: "Team Velocity"
+    baseValue: 50
+    min: 0
+    max: 100
+    direction: higher
+  - id: overhead
+    label: "Process Overhead"
+    baseValue: 40
+    min: 0
+    max: 100
+    direction: lower
+  - id: alignment
+    label: "Team Alignment"
+    baseValue: 50
+    min: 0
+    max: 100
+    direction: higher
+  - id: maker_time
+    label: "Maker Focus Time"
+    baseValue: 60
+    min: 0
+    max: 100
+    direction: higher
+steps:
+  - id: pm_framework
+    title: "Process Ceremony Level"
+    description: "Determine how tasks are assigned and tracked."
+    recommended: kanban_async
+    choices:
+      - id: heavy_scrum
+        label: "High-Ceremony Scrum"
+        description: "Strict two-week sprints with daily syncs, planning, refinement, and retrospectives."
+        metrics:
+          velocity: 5
+          overhead: 30
+          alignment: 20
+          maker_time: -25
+        pros:
+          - title: "High Predictability"
+            description: "Clear sprint commitments help forecast releases."
+          - title: "Structured feedback"
+            description: "Retrospectives and reviews occur on a set cadence."
+        cons:
+          - title: "Ceremony Bloat"
+            description: "Up to 10-15% of sprint capacity is consumed in meetings."
+          - title: "Rigid Timelines"
+            description: "Changing direction mid-sprint is discouraged."
+        whenToUse: "Necessary for large enterprises with multiple team dependencies and strict delivery schedules."
+      - id: kanban_async
+        label: "Lean/Async Kanban"
+        description: "Continuous workflow tracked on a visual board, with async updates and huddles."
+        metrics:
+          velocity: 15
+          overhead: -20
+          alignment: -5
+          maker_time: 25
+        pros:
+          - title: "Low Overhead"
+            description: "Minimizes meetings, maximizing developers' focus blocks."
+          - title: "Dynamic Scope"
+            description: "Priorities can be adjusted instantly as business needs change."
+        cons:
+          - title: "Lower Predictability"
+            description: "Harder to forecast exact release dates far in advance."
+          - title: "High Discipline Needed"
+            description: "Engineers must proactively update their task cards."
+        whyThisFits: "For small to mid-sized engineering teams, a lean Kanban approach keeps meetings low, maximizing developer throughput and focus."

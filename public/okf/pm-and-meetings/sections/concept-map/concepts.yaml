@@ -1,0 +1,44 @@
+nodes:
+  project_goal:
+    title: "Project Goal"
+    category: pattern
+  backlog:
+    title: "Task Backlog"
+    category: data
+  standup:
+    title: "Daily Sync"
+    category: process
+  retro:
+    title: "Retrospective"
+    category: process
+  async_update:
+    title: "Async Update"
+    category: process
+  blocker:
+    title: "Blocker"
+    category: data
+  team:
+    title: "Engineering Team"
+    category: role
+  pm:
+    title: "Project Manager"
+    category: role
+edges:
+  - from: pm
+    to: backlog
+    label: "prioritizes"
+  - from: team
+    to: backlog
+    label: "executes from"
+  - from: standup
+    to: blocker
+    label: "surfaces"
+  - from: retro
+    to: team
+    label: "improves"
+  - from: async_update
+    to: project_goal
+    label: "tracks"
+  - from: blocker
+    to: pm
+    label: "escalated to"

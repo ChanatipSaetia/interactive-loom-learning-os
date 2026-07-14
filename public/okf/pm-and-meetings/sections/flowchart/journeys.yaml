@@ -1,0 +1,45 @@
+- id: happy-path
+  label: "Happy Path (Lean & Async)"
+  description: "Features delivered smoothly using written updates and zero focus disruption."
+  steps:
+    - stepId: request_feature
+      name: "Log Feature"
+      description: "Project Manager defines and documents the feature request in the backlog."
+      processGroup: planning
+    - stepId: plan_sprint
+      name: "Commit to Sprint"
+      description: "The team defines goals and commits tasks from backlog to the sprint."
+      processGroup: planning
+    - stepId: daily_execution
+      name: "Coding and Testing"
+      description: "Engineers write code and run test suites locally and in CI."
+      processGroup: execution
+    - stepId: branch_no_blocker
+      name: "Provide Async Update"
+      description: "Because there are no blockers, engineers submit status updates via Slack, protecting maker time."
+      processGroup: execution
+    - stepId: review_cycle
+      name: "Conduct Retrospective"
+      description: "At the end of the sprint, the team reflects and logs improvements."
+      processGroup: evaluation
+
+- id: blocked-path
+  label: "Blocked Path (Fast Resolution)"
+  description: "Blocker encountered, raised in sync, and unblocked immediately by the PM."
+  steps:
+    - stepId: daily_execution
+      name: "Coding and Testing"
+      description: "Engineers write code but hit an unexpected dependency blocker."
+      processGroup: execution
+    - stepId: branch_blocked
+      name: "Raise Blocker"
+      description: "The engineer flags the blocker immediately in the standup channel."
+      processGroup: execution
+    - stepId: resolve_blocker
+      name: "Unblock Developer"
+      description: "The Project Manager coordinates with the external team to resolve the dependency."
+      processGroup: execution
+    - stepId: daily_execution
+      name: "Resume Execution"
+      description: "Once unblocked, the engineer resumes code development."
+      processGroup: execution

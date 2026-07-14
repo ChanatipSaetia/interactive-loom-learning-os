@@ -1,0 +1,17 @@
+type: taxonomy-category
+icon: Clock
+title: "Daily Sync (Standup)"
+subtitle: "15-Minute Alignment"
+color: peach
+description: "A quick daily sync to align the team on the day's goals and identify blockers immediately."
+details: "Held daily at the same time. Each member briefly shares what they completed, what they plan to do, and any blockers they face. Keep discussion high-level and timeboxed to 15 minutes."
+analogy: "Like a sports team huddle before a play — fast, focused, and preparing for the immediate next move."
+primaryFocus: "Blocker identification and team alignment"
+inScope:
+  - "Stating what you're working on today"
+  - "Raising blockers that prevent progress"
+  - "Flagging dependencies with other team members"
+outOfScope:
+  - "Debugging code or solving technical problems"
+  - "Giving detailed feature design reviews"
+  - "Project managers asking for detailed status justifications"

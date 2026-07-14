@@ -1,0 +1,93 @@
+id: communication-strategy
+title: "Communication Strategy"
+description: "Select the primary channel for design feedback and general updates. Evaluate how choices affect velocity, alignment, overhead, and focus time."
+metrics:
+  - id: velocity
+    label: "Team Velocity"
+    baseValue: 50
+    min: 0
+    max: 100
+    direction: higher
+  - id: overhead
+    label: "Process Overhead"
+    baseValue: 40
+    min: 0
+    max: 100
+    direction: lower
+  - id: alignment
+    label: "Team Alignment"
+    baseValue: 50
+    min: 0
+    max: 100
+    direction: higher
+  - id: maker_time
+    label: "Maker Focus Time"
+    baseValue: 60
+    min: 0
+    max: 100
+    direction: higher
+steps:
+  - id: comms_channel
+    title: "Primary Design Loop Channel"
+    description: "Choose how the engineering team reviews technical proposals and updates."
+    recommended: async_doc
+    choices:
+      - id: meeting_sync
+        label: "Synchronous Meetings"
+        description: "Schedule recurring meetings for all status updates and design discussions."
+        metrics:
+          velocity: -10
+          overhead: 25
+          alignment: 15
+          maker_time: -25
+        pros:
+          - title: "Immediate Feedback"
+            description: "Questions are resolved instantly on the call."
+          - title: "High Alignment"
+            description: "Easier to resolve heated arguments in real-time."
+        cons:
+          - title: "Context Switching"
+            description: "Breaks developers' coding flow repeatedly."
+          - title: "Poor Record Keeping"
+            description: "Decisions are lost if not explicitly documented afterward."
+        whenToUse: "Best for highly ambiguous, urgent incidents or critical cross-team alignments."
+      - id: async_doc
+        label: "Async Design Docs (RFCs)"
+        description: "Write structural proposals and request comments asynchronously."
+        metrics:
+          velocity: 15
+          overhead: -15
+          alignment: 10
+          maker_time: 25
+        pros:
+          - title: "No Interruption"
+            description: "Team reviews proposals on their own schedule."
+          - title: "High Focus"
+            description: "Written feedback is usually more detailed and thoughtful."
+          - title: "Permanent Archive"
+            description: "Comments and reasoning remain saved as future reference."
+        cons:
+          - title: "Slower Alignment Loop"
+            description: "It takes 24-48 hours to collect feedback."
+          - title: "Passive Reading Overhead"
+            description: "Requires writing discipline from authors."
+        whyThisFits: "Async design docs protect valuable focus time, improve discussion quality, and establish a permanent knowledge base."
+      - id: chat_threads
+        label: "Slack Chat Threads"
+        description: "Discuss design plans inside ad-hoc Slack threads."
+        metrics:
+          velocity: 5
+          overhead: 5
+          alignment: -10
+          maker_time: -10
+        pros:
+          - title: "Fast Discussion"
+            description: "Quick comments can be posted within minutes."
+          - title: "Low Friction"
+            description: "No need to write structured documentation."
+        cons:
+          - title: "Chat Fatigue"
+            description: "Engineers feel pressured to monitor Slack constantly."
+          - title: "Lost Context"
+            description: "Important decisions get buried in chat history."
+        whenToUse: "Best for small, simple details or casual peer-to-peer alignment."

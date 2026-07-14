@@ -1,0 +1,17 @@
+type: taxonomy-category
+icon: FileText
+title: "Asynchronous Updates"
+subtitle: "Meeting Replacement"
+color: mauve
+description: "Sharing status updates in writing, completely replacing status-check meetings."
+details: "Updates are written down in Slack, Discord, Notion, or Jira. Teammates read and reply at their convenience. This allows the team to stay informed without interrupting active work."
+analogy: "Like a newspaper or status feed — you read it when you have a coffee break, not while you are performing surgery."
+primaryFocus: "Protecting focus time and reducing meeting count"
+inScope:
+  - "Writing bulleted, clear daily or weekly updates"
+  - "Reading others' updates and commenting if relevant"
+  - "Flagging blockers in text with tags for visibility"
+outOfScope:
+  - "Writing long novels that take 20 minutes to read"
+  - "Holding a live call to read written updates aloud"
+  - "Ignoring updates completely and causing communication gaps"

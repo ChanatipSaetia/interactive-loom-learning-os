@@ -1,0 +1,17 @@
+type: taxonomy-category
+icon: RefreshCw
+title: "Retrospective"
+subtitle: "Continuous Improvement"
+color: green
+description: "A safe-space reflection meeting to evaluate processes and make concrete improvements for the next cycle."
+details: "Held at the end of a sprint. The team discusses what went well, what went poorly, and brainstorms solutions to process bottlenecks. The output is 1 or 2 high-priority action items."
+analogy: "Like a Formula 1 pit stop review — looking at telemetry and teamwork to see how to shave seconds off the next lap."
+primaryFocus: "Continuous improvement and team dynamics"
+inScope:
+  - "Highlighting process or communication bottlenecks"
+  - "Appreciating team members who helped out"
+  - "Creating 1-2 actionable improvement items"
+outOfScope:
+  - "Blaming individuals for project delays"
+  - "Complaining without suggesting constructive changes"
+  - "Listing 10 items that the team won't realistically implement"

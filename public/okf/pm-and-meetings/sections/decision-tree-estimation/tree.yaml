@@ -1,0 +1,51 @@
+id: estimation_advisor
+title: "Task Sizing & Estimation Advisor"
+root: task_nature
+nodes:
+  task_nature:
+    prompt: "What kind of task are you estimating?"
+    choices:
+      - id: repetitive
+        text: "Repetitive, standard work (e.g. adding a standard CRUD endpoint)"
+        next: leaf_range_days
+        rationale: "Familiar tasks have low risk and are easy to estimate in days."
+      - id: novel
+        text: "Novel, complex work (e.g. integrating a new third-party system)"
+        next: novel_uncertainty
+        recommended: true
+        rationale: "Complex tasks have unknowns that make day-based estimates highly inaccurate."
+  novel_uncertainty:
+    prompt: "How well-understood are the requirements and integration details?"
+    choices:
+      - id: well_understood
+        text: "We know what to do, but it requires substantial architectural effort"
+        next: leaf_story_points
+        recommended: true
+        rationale: "Relative sizing (story points) helps compare effort without locking dates."
+      - id: high_unknowns
+        text: "We have high uncertainty and don't know the API capabilities"
+        next: leaf_spike_task
+        rationale: "Do not estimate tasks with high unknowns. Run a spike first."
+  leaf_range_days:
+    leaf:
+      recommendation: "Use Range-based Man-Days (e.g., 1-2 days)."
+      explanation: "Since the task is standard, a range of man-days is simple to communicate and carries low risk."
+      tradeoffs:
+        - "Easy for stakeholders to understand"
+        - "Protects team if minor bugs occur"
+  leaf_story_points:
+    leaf:
+      recommendation: "Use Relative Story Points (e.g. 5 or 8 points)."
+      explanation: "Use relative sizing to compare the task's complexity against a reference task. This decouples effort from exact calendar days."
+      tradeoffs:
+        - "Avoids micro-managing deadlines"
+        - "Leverages historical velocity for forecasting"
+        - "May confuse stakeholders unfamiliar with Agile points"
+  leaf_spike_task:
+    leaf:
+      recommendation: "Schedule a timeboxed research Spike (1 man-day maximum)."
+      explanation: "Stop trying to estimate the feature. Schedule a 1-day spike task to write a prototype, test the API, and document findings. After the spike is done, estimate the feature."
+      tradeoffs:
+        - "Saves hours of wrong estimations"
+        - "Creates a clear path forward before committing"
+        - "Adds minor planning delay"

@@ -1,0 +1,17 @@
+type: taxonomy-category
+icon: Calendar
+title: "Sprint Planning"
+subtitle: "Cycle Scope Definition"
+color: sky
+description: "A collaborative session at the start of a cycle to commit to a scope of work aligned with product goals."
+details: "The team reviews prioritized backlog items, estimates effort (points or days), discusses dependencies, and commits to a realistic sprint goal. This sets the focus for the next 1-2 weeks."
+analogy: "Like packing a backpack for a hike — you only bring what you need and what actually fits, ensuring you don't over-commit."
+primaryFocus: "Scope commitment and sprint goal definition"
+inScope:
+  - "Clarifying requirements of backlog tasks"
+  - "Estimating effort level and capacity"
+  - "Selecting tasks that fit within velocity"
+outOfScope:
+  - "Writing code or starting implementation"
+  - "Adding random, un-prioritized ideas to the sprint"
+  - "Creating tasks without clear acceptance criteria"

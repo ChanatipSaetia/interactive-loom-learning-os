@@ -1,0 +1,17 @@
+type: taxonomy-category
+icon: Compass
+title: "Project Planning"
+subtitle: "Milestones & Sizing"
+color: yellow
+description: "Breaking down epics into clean milestones and sizing tasks collectively using lean guidelines."
+details: "Lean project planning involves continuous decomposition: breaking big requirements into smaller, independent user stories. Estimations (e.g. man-days or story points) are estimated collectively by the builders themselves to prevent unrealistic pressure."
+analogy: "Like planning a road trip — you decide the major stops (milestones) and estimate how long each leg takes as a range, rather than plotting every turn to the exact second."
+primaryFocus: "Continuous decomposition and collaborative sizing"
+inScope:
+  - "Decomposing large requirements into single-focus stories"
+  - "Collaboratively estimating tasks using ranges or points"
+  - "Prototyping/spiking unknowns before final estimation"
+outOfScope:
+  - "Estimating long-term tasks to the exact hour"
+  - "Allowing managers to assign task estimates unilaterally"
+  - "Assuming perfect delivery without factoring buffer/dependencies"

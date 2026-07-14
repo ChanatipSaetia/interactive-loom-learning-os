@@ -1,0 +1,18 @@
+pm:
+  title: "Project Manager"
+  desc: "Responsible for goal setting, prioritization, and removing blockers."
+pm_resolver:
+  title: "Project Manager"
+  desc: "Responsible for goal setting, prioritization, and removing blockers."
+  collapsedTo: "pm"
+dev:
+  title: "Software Engineer"
+  desc: "Responsible for technical execution, writing code, and surfacing blockers."
+dev_blocked:
+  title: "Software Engineer"
+  desc: "Responsible for technical execution, writing code, and surfacing blockers."
+  collapsedTo: "dev"
+dev_retro:
+  title: "Software Engineer"
+  desc: "Responsible for technical execution, writing code, and surfacing blockers."
+  collapsedTo: "dev"

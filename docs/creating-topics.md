@@ -630,16 +630,20 @@ No TypeScript changes needed — the reader discovers and loads sections at runt
 
 ### Multiple sections of the same type
 
-You can have multiple flowcharts, tradeoff sandboxes, or taxonomy browsers in one topic. Each gets its own folder:
+You can have multiple sections of any interactive type (such as flowcharts, tradeoff sandboxes, taxonomy browsers, scenario sessions, or decision trees) in one topic. Each gets its own folder:
 
 ```
 sections/
-  flowchart/          # primary flowchart
-  flowchart-lifecycle/ # second flowchart (different schema)
-  tradeoffs/          # primary tradeoff sandbox
-  tradeoffs-deploy/   # second tradeoff sandbox
-  taxonomy/           # primary taxonomy
-  taxonomy-patterns/  # second taxonomy
+  flowchart/           # primary flowchart
+  flowchart-lifecycle/  # second flowchart (different schema)
+  tradeoffs/           # primary tradeoff sandbox
+  tradeoffs-deploy/    # second tradeoff sandbox
+  taxonomy/            # primary taxonomy
+  taxonomy-patterns/   # second taxonomy
+  scenario/            # primary scenario session
+  scenario-meeting/    # second scenario session
+  decision-tree/       # primary decision tree
+  decision-tree-est/   # second decision tree
 ```
 
 Each `section.md` declares its own `type` and `title`. The `related` list in `index.yaml` includes all data files from all sections.
@@ -731,6 +735,7 @@ Start the dev server and navigate to `http://localhost:5173/` to see the topic c
 ```bash
 npm run dev
 ```
+
 
 ## Recommended Section Order
 

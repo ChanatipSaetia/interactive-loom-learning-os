@@ -1,0 +1,79 @@
+- type: linear
+  id: request_feature
+  initiatedBy: pm
+  command: "Define Feature Request"
+  policy: "Align with Product Vision"
+  handledBy: backlog
+  resultEvents:
+    - id: evt_request_defined
+      title: "Feature Request Logged"
+      desc: "Requirements and user stories defined."
+  continuesAs: plan_sprint
+
+- type: linear
+  id: plan_sprint
+  command: "Plan Sprint Tasks"
+  policy: "Trigger Cycle Planning"
+  handledBy: backlog_plan
+  resultEvents:
+    - id: evt_sprint_planned
+      title: "Sprint Backlog Ready"
+      desc: "Tasks committed and assigned for the cycle."
+  continuesAs: daily_execution
+
+- type: linear
+  id: daily_execution
+  command: "Deliver Code Changes"
+  policy: "Trigger Daily Execution"
+  handledBy: dev
+  resultEvents:
+    - id: evt_work_in_progress
+      title: "Work In Progress"
+      desc: "Code being written, tests running."
+  continuesAs: sync_branch
+
+- type: branch
+  id: sync_branch
+  event: evt_work_in_progress
+  branches:
+    - id: branch_no_blocker
+      label: "No Blockers"
+      policy: "On Daily Sync"
+      command: "Provide Async Update"
+      handledBy: slack_async
+      resultEvents:
+        - id: evt_async_updated
+          title: "Async Update Logged"
+          desc: "Focus maintained, status updated."
+      continuesAs: review_cycle
+    - id: branch_blocked
+      label: "Blocked Work"
+      policy: "On Blocker Encountered"
+      command: "Raise Blocker in Standup"
+      handledBy: dev_blocked
+      resultEvents:
+        - id: evt_blocker_raised
+          title: "Blocker Raised"
+          desc: "Dependency, bug, or clarity issue flagged."
+      continuesAs: resolve_blocker
+
+- type: linear
+  id: resolve_blocker
+  command: "Unblock Team Member"
+  policy: "Trigger Blocker Resolution"
+  handledBy: pm_resolver
+  resultEvents:
+    - id: evt_blocker_resolved
+      title: "Blocker Resolved"
+      desc: "Solution provided, work can resume."
+  continuesAs: daily_execution
+
+- type: linear
+  id: review_cycle
+  command: "Conduct Retrospective"
+  policy: "On Cycle End"
+  handledBy: dev_retro
+  resultEvents:
+    - id: evt_retro_completed
+      title: "Retrospective Logged"
+      desc: "Action items captured for continuous improvement."

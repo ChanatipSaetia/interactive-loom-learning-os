@@ -1,0 +1,45 @@
+id: meeting_bloat
+title: "Taming Meeting Bloat"
+intro: "A developer on your team, Alex, is highly talented but schedules a 30-minute meeting for every minor technical question, interrupting multiple senior developers. How do you handle this?"
+nodes:
+  start:
+    prompt: "What is your initial response?"
+    choices:
+      - id: join_meetings
+        text: "Attend all of Alex's meetings to monitor and guide the discussion."
+        next: outcome_join_meetings
+      - id: set_guidelines
+        text: "Set a clear policy on Slack: questions must be written in public channels first before scheduling a meeting."
+        next: next_guideline_step
+      - id: block_meetings
+        text: "Tell Alex that developers are banned from scheduling meetings without your approval."
+        next: outcome_block_meetings
+  next_guideline_step:
+    prompt: "Alex posts a complex question on Slack but doesn't get a reply for 2 hours. He is getting restless. What do you do?"
+    choices:
+      - id: async_reminder
+        text: "Gently ping the team in public to reply, or answer it yourself in text."
+        next: outcome_async_unblocked
+      - id: quick_huddle
+        text: "Launch a 5-minute huddle on Slack with just Alex to resolve it directly."
+        next: outcome_huddle_success
+  outcome_join_meetings:
+    outcome:
+      verdict: "You spent half your day in micro-meetings. Senior developers are still being disrupted, and you have no time left for project management."
+      lesson: "Attending meetings doesn't solve the root cause. You must establish communication guidelines to protect team time."
+      rating: c
+  outcome_block_meetings:
+    outcome:
+      verdict: "Alex felt micromanaged and stopped asking questions. He built the wrong database design, which required 3 days of refactoring later."
+      lesson: "Banning meetings entirely creates communication silos and high rework costs. Transition them to async or micro-sync huddles instead."
+      rating: c
+  outcome_async_unblocked:
+    outcome:
+      verdict: "Alex was unblocked asynchronously. The entire solution was documented in public Slack for others to read, and no meetings were held."
+      lesson: "Public async channels build a searchable knowledge base and prevent redundant meetings."
+      rating: a
+  outcome_huddle_success:
+    outcome:
+      verdict: "The 5-minute huddle quickly unblocked Alex. The discussion was timeboxed, only involved the necessary person, and saved hours of focus time."
+      lesson: "Focused huddles are an excellent tool to resolve complex technical blockers quickly without scheduling a calendar invite."
+      rating: a

@@ -1,0 +1,127 @@
+id: estimations-and-planning
+title: "Planning & Estimations"
+description: "Select the estimation methodology and planning horizon for your team. Analyze the impact on velocity, alignment, focus time, and overhead."
+metrics:
+  - id: velocity
+    label: "Team Velocity"
+    baseValue: 50
+    min: 0
+    max: 100
+    direction: higher
+  - id: overhead
+    label: "Process Overhead"
+    baseValue: 40
+    min: 0
+    max: 100
+    direction: lower
+  - id: alignment
+    label: "Team Alignment"
+    baseValue: 50
+    min: 0
+    max: 100
+    direction: higher
+  - id: maker_time
+    label: "Maker Focus Time"
+    baseValue: 60
+    min: 0
+    max: 100
+    direction: higher
+steps:
+  - id: estimation_method
+    title: "Estimation Sizing"
+    description: "How does the team size upcoming tasks?"
+    recommended: range_days
+    choices:
+      - id: exact_mandays
+        label: "Exact Man-Days"
+        description: "Estimate tasks to the exact day/hour count (e.g. 'This task takes exactly 4 days')."
+        metrics:
+          velocity: -5
+          overhead: 20
+          alignment: 10
+          maker_time: -15
+        pros:
+          - title: "Apparent Clarity"
+            description: "Stakeholders get a precise date/timeline quickly."
+          - title: "Easy Budgeting"
+            description: "Direct mapping of time to project cost."
+        cons:
+          - title: "The Planning Fallacy"
+            description: "Software engineering has high unknowns; exact day counts are rarely accurate."
+          - title: "Pressure & Cutting Corners"
+            description: "Engineers rush code or skip testing to hit arbitrary date estimates."
+        whenToUse: "Useful when building standard, highly repetitive tasks with zero technical risk."
+      - id: range_days
+        label: "Range-based Estimations"
+        description: "Estimate tasks in ranges (e.g., 2-4 days) based on technical confidence."
+        metrics:
+          velocity: 10
+          overhead: 5
+          alignment: 15
+          maker_time: 15
+        pros:
+          - title: "Accurate Uncertainty"
+            description: "Ranges honestly communicate technical risk to stakeholders."
+          - title: "Reduces Planning Pressure"
+            description: "Engineers have a buffer for testing and bug fixing."
+        cons:
+          - title: "Vague Timelines"
+            description: "Project roadmaps become probabilistic ranges rather than fixed lines."
+        whyThisFits: "Range-based estimates balance stakeholder expectations with technical realities, reducing rushed delivery and protecting code quality."
+      - id: story_points
+        label: "Relative Story Points"
+        description: "Size tasks relatively using Fibonacci numbers (1, 2, 3, 5, 8) representing complexity, not time."
+        metrics:
+          velocity: 15
+          overhead: 10
+          alignment: 20
+          maker_time: 10
+        pros:
+          - title: "Focus on Complexity"
+            description: "Decouples planning from time constraints, focusing on effort."
+          - title: "Predictable Velocity"
+            description: "Planning improves as team averages points completed over cycles."
+        cons:
+          - title: "Stakeholder Confusion"
+            description: "Requires training stakeholders to understand points instead of dates."
+        whenToUse: "Best for mature Agile teams working in stable environments."
+
+  - id: planning_horizon
+    title: "Planning Horizon"
+    description: "How far in advance are feature roadmaps locked?"
+    recommended: rolling_wave
+    choices:
+      - id: gantt_upfront
+        label: "Upfront Gantt Planning"
+        description: "Map out the entire 6-month project backlog with detailed dependencies upfront."
+        metrics:
+          velocity: -15
+          overhead: 30
+          alignment: 5
+          maker_time: -20
+        pros:
+          - title: "Clear Roadmap"
+            description: "Full visibility of all planned milestones for the business."
+        cons:
+          - title: "High Planning Waste"
+            description: "Upfront plans degrade as requirements change, requiring heavy re-planning sessions."
+          - title: "Ignores Reality"
+            description: "Assumes technical requirements won't change mid-project."
+        whenToUse: "Only appropriate for physical infrastructure integrations or fixed-price contracts."
+      - id: rolling_wave
+        label: "Rolling Wave Planning"
+        description: "Plan the next milestone in detail, while keeping long-term goals high-level."
+        metrics:
+          velocity: 10
+          overhead: -10
+          alignment: 15
+          maker_time: 20
+        pros:
+          - title: "Low Overhead"
+            description: "Zero time spent planning details that will change anyway."
+          - title: "High Adaptability"
+            description: "Easily pivot features based on feedback from the current cycle."
+        cons:
+          - title: "Reduced Long-Term View"
+            description: "Stakeholders must tolerate flexible scopes for future quarters."
+        whyThisFits: "Rolling wave planning minimizes upfront waste, keeping plans aligned with live learnings while preserving developer focus."

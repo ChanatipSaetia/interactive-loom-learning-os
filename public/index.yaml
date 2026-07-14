@@ -19,6 +19,13 @@
   path: /topics/motorcycle
   category: Mechanical
   description: เข้าใจส่วนประกอบ การทำงาน และการบำรุงรักษารถมอเตอร์ไซค์
+- id: pm-and-meetings
+  label: IT Project Management & Meetings
+  path: /topics/pm-and-meetings
+  category: Project Management
+  description: >-
+    Learn why project management is necessary and how to run effective, lean
+    meetings without wasting developers' focus time.
 - id: poe2-flicker-monk
   label: PoE 2 Flicker Strike Monk — Budget Build Guide
   path: /topics/poe2-flicker-monk

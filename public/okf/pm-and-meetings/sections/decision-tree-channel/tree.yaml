@@ -1,0 +1,84 @@
+id: comm_channel_advisor
+title: "Communication Channel Advisor"
+root: issue_nature
+nodes:
+  issue_nature:
+    prompt: "What is the primary goal of this communication?"
+    choices:
+      - id: status_sharing
+        text: "Share progress updates or report status"
+        next: leaf_slack_update
+        rationale: "Status updates rarely benefit from real-time discussion."
+      - id: problem_solving
+        text: "Solve a complex technical problem or brainstorm"
+        next: brain_complexity
+        recommended: true
+        rationale: "Solving complex issues often requires interactive collaboration."
+      - id: decision_making
+        text: "Make a key decision (e.g. architecture design)"
+        next: decision_scope
+        rationale: "Decisions need documentation but might benefit from discussion first."
+  brain_complexity:
+    prompt: "How well-defined is the problem?"
+    choices:
+      - id: clear_problem
+        text: "We know the problem, we need feedback on solutions"
+        next: leaf_async_rfc
+        rationale: "Proposals can be reviewed asynchronously to protect focus."
+      - id: ambiguous_problem
+        text: "We don't know the problem or have zero alignment"
+        next: leaf_focused_huddle
+        recommended: true
+        rationale: "Ambiguous situations benefit from high-bandwidth syncs."
+  decision_scope:
+    prompt: "Who does the decision affect?"
+    choices:
+      - id: small_scope
+        text: "Only 2 or 3 team members"
+        next: leaf_small_chat
+        rationale: "Small groups can align quickly in chat or a 5-min call."
+      - id: large_scope
+        text: "The entire team or multiple teams"
+        next: leaf_async_proposal
+        recommended: true
+        rationale: "Large decisions must be documented and reviewed asynchronously."
+  leaf_slack_update:
+    leaf:
+      recommendation: "Write an Async Slack or Jira update."
+      explanation: "Do NOT schedule a meeting. Write a clear, bulleted summary of progress, next steps, and blockers. Post it where the team can read it on their own time."
+      tradeoffs:
+        - "Saves hours of developer focus time"
+        - "Requires team discipline to read and update"
+        - "No meeting overhead"
+  leaf_async_rfc:
+    leaf:
+      recommendation: "Write a Design Doc or RFC (Request for Comments)."
+      explanation: "Document the proposed solutions, pros, and cons. Share the document with the team and give them 24-48 hours to comment asynchronously."
+      tradeoffs:
+        - "Permanent record of technical decisions"
+        - "Allows developers to review when not coding"
+        - "May take slightly longer to finalize"
+  leaf_focused_huddle:
+    leaf:
+      recommendation: "Schedule a focused, timeboxed 15-minute huddle."
+      explanation: "Invite ONLY the essential people. Write a clear agenda beforehand. Start the meeting by defining the problem, brainstorm solutions, and end with assigned action items."
+      tradeoffs:
+        - "High bandwidth and alignment"
+        - "Saves time by keeping the meeting small and brief"
+        - "Interrupts engineer focus time (keep it rare)"
+  leaf_small_chat:
+    leaf:
+      recommendation: "Resolve in a Slack thread or a quick huddle."
+      explanation: "Don't send a calendar invite. Discuss in a group chat thread. If it gets complicated, launch a quick 5-minute huddle immediately to resolve it."
+      tradeoffs:
+        - "Fast and low friction"
+        - "Decisions should still be documented briefly"
+        - "Does not clutter calendars"
+  leaf_async_proposal:
+    leaf:
+      recommendation: "Create an RFC document first, followed by a short sync if needed."
+      explanation: "Write the proposal first so everyone can read the context. After everyone has commented on the doc, hold a brief meeting only to resolve final disagreements, not to present the proposal."
+      tradeoffs:
+        - "Ensures everyone comes prepared"
+        - "Meetings are much shorter and highly focused"
+        - "Requires upfront effort to write the document"
