@@ -125,28 +125,7 @@ function getMetricUnitAndFormat(metric: OKFFormulaMetric, val: number): { unit: 
   return { unit, display: `${formattedVal} ${unit}`.trim() }
 }
 
-function getMetricColorClass(id: string, val: number, range: { min: number; max: number }): string {
-  const isCostOrLatency = 
-    id.includes('cost') || 
-    id.includes('latency') || 
-    id.includes('fatigue') || 
-    id.includes('overhead')
-  
-  const span = range.max - range.min
-  if (span === 0) return 'sky'
-  
-  const ratio = (val - range.min) / span
-  
-  if (isCostOrLatency) {
-    if (ratio < 0.35) return 'green'
-    if (ratio < 0.7) return 'peach'
-    return 'red'
-  } else {
-    if (ratio > 0.65) return 'green'
-    if (ratio > 0.3) return 'peach'
-    return 'red'
-  }
-}
+
 
 export function FormulaSandbox({ title, variables = [], metrics = [] }: FormulaSandboxProps) {
   const { openHUD } = useHUD()
@@ -254,7 +233,6 @@ export function FormulaSandbox({ title, variables = [], metrics = [] }: FormulaS
           {metrics.map((m) => {
             const val = computedMetrics[m.id] || 0
             const range = metricRanges[m.id] || { min: 0, max: 100 }
-            const valColorClass = getMetricColorClass(m.id, val, range)
             const { display } = getMetricUnitAndFormat(m, val)
 
             const span = range.max - range.min
@@ -266,7 +244,7 @@ export function FormulaSandbox({ title, variables = [], metrics = [] }: FormulaS
                 <div className="sim-metric-meta">
                   <span className="sim-metric-name">{m.label}</span>
                   <button
-                    className={`sim-metric-val ${valColorClass}`}
+                    className="sim-metric-val sky"
                     onClick={() => handleMetricClick(m)}
                     title="Click to view HUD details"
                   >
@@ -275,7 +253,7 @@ export function FormulaSandbox({ title, variables = [], metrics = [] }: FormulaS
                 </div>
                 <div className="gauge-bg">
                   <div
-                    className={`gauge-fill ${valColorClass}`}
+                    className="gauge-fill sky"
                     style={{ width: gaugeWidth }}
                   />
                 </div>
