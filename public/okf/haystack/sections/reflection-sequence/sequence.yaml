@@ -1,18 +1,37 @@
-prompt: "Arrange the components of a RAG query pipeline in the correct chronological execution order:"
-items:
-  - id: user_query
-    text: "User Query Ingest"
-  - id: text_embedder
-    text: "Sentence Embedder (Vectorize)"
-  - id: vector_retriever
-    text: "Vector Retriever Lookup"
-  - id: prompt_builder
-    text: "Prompt Builder (Format Context)"
-  - id: llm_generator
-    text: "LLM Answer Generation"
-solution:
-  - user_query
-  - text_embedder
-  - vector_retriever
-  - prompt_builder
-  - llm_generator
+challenges:
+  - prompt: "Arrange the components of a RAG query pipeline in the correct chronological execution order (Part 1):"
+    items:
+      - id: user_query
+        text: "User Query Ingest"
+      - id: text_embedder
+        text: "Sentence Embedder (Vectorize)"
+      - id: vector_retriever
+        text: "Vector Retriever Lookup"
+      - id: prompt_builder
+        text: "Prompt Builder (Format Context)"
+      - id: llm_generator
+        text: "LLM Answer Generation"
+    solution:
+      - user_query
+      - text_embedder
+      - vector_retriever
+      - prompt_builder
+      - llm_generator
+  - prompt: "Arrange the components of a RAG indexing pipeline in the correct chronological execution order (Part 2):"
+    items:
+      - id: source_docs
+        text: "Source Document Load"
+      - id: text_converter
+        text: "Text Converter Extraction"
+      - id: doc_splitter
+        text: "Document Splitter (Chunking)"
+      - id: doc_embedder
+        text: "Document Embedder (Vectorize)"
+      - id: doc_writer
+        text: "Document Writer (Save Store)"
+    solution:
+      - source_docs
+      - text_converter
+      - doc_splitter
+      - doc_embedder
+      - doc_writer

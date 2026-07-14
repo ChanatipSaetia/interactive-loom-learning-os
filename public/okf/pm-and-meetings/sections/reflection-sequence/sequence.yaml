@@ -1,18 +1,37 @@
-prompt: "Order the stages of a standard IT feature development sprint loop:"
-items:
-  - id: define_requirements
-    text: "Define Requirements & PRD"
-  - id: sprint_planning
-    text: "Sprint Planning"
-  - id: development
-    text: "Development & Code Review"
-  - id: qa_verification
-    text: "QA Verification"
-  - id: production_release
-    text: "Production Release"
-solution:
-  - define_requirements
-  - sprint_planning
-  - development
-  - qa_verification
-  - production_release
+challenges:
+  - prompt: "Order the stages of a standard IT feature development sprint loop (Part 1):"
+    items:
+      - id: define_requirements
+        text: "Define Requirements & PRD"
+      - id: sprint_planning
+        text: "Sprint Planning"
+      - id: development
+        text: "Development & Code Review"
+      - id: qa_verification
+        text: "QA Verification"
+      - id: production_release
+        text: "Production Release"
+    solution:
+      - define_requirements
+      - sprint_planning
+      - development
+      - qa_verification
+      - production_release
+  - prompt: "Order the steps of a typical Sprint Retrospective meeting agenda (Part 2):"
+    items:
+      - id: retro_warmup
+        text: "Warm Up & Set Stage"
+      - id: retro_gather
+        text: "Gather Data (What went well / didn't)"
+      - id: retro_insights
+        text: "Generate Insights (Analyze why)"
+      - id: retro_actions
+        text: "Decide Actions (Define tickets)"
+      - id: retro_close
+        text: "Close Retrospective"
+    solution:
+      - retro_warmup
+      - retro_gather
+      - retro_insights
+      - retro_actions
+      - retro_close

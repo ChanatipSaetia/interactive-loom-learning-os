@@ -1,15 +1,31 @@
-prompt: "Order the stages of a 4-Stroke internal combustion engine cycle chronologically:"
-items:
-  - id: intake_stroke
-    text: "Intake Stroke"
-  - id: compression_stroke
-    text: "Compression Stroke"
-  - id: power_stroke
-    text: "Power Stroke"
-  - id: exhaust_stroke
-    text: "Exhaust Stroke"
-solution:
-  - intake_stroke
-  - compression_stroke
-  - power_stroke
-  - exhaust_stroke
+challenges:
+  - prompt: "Order the stages of a 4-Stroke internal combustion engine cycle chronologically (Part 1):"
+    items:
+      - id: intake_stroke
+        text: "Intake Stroke"
+      - id: compression_stroke
+        text: "Compression Stroke"
+      - id: power_stroke
+        text: "Power Stroke"
+      - id: exhaust_stroke
+        text: "Exhaust Stroke"
+    solution:
+      - intake_stroke
+      - compression_stroke
+      - power_stroke
+      - exhaust_stroke
+  - prompt: "เรียงลำดับขั้นตอนการเปลี่ยนน้ำมันเครื่องมอเตอร์ไซค์ให้ถูกต้อง (Part 2):"
+    items:
+      - id: warm_engine
+        text: "สตาร์ทเครื่องยนต์เพื่ออุ่นเครื่อง (Warm Up)"
+      - id: drain_oil
+        text: "ถอดน็อตถ่ายน้ำมันเพื่อระบายน้ำมันเก่า (Drain)"
+      - id: change_filter
+        text: "เปลี่ยนกรองน้ำมันเครื่องใหม่ (Replace Filter)"
+      - id: fill_oil
+        text: "เติมน้ำมันเครื่องใหม่ตามปริมาณที่กำหนด (Refill)"
+    solution:
+      - warm_engine
+      - drain_oil
+      - change_filter
+      - fill_oil

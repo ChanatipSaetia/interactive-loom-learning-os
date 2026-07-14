@@ -644,7 +644,7 @@ metrics:
 ```
 
 ### `reflection-sequence` section
-Active recall challenge where learners reassemble steps chronologically using drag-and-drop or mobile-friendly tap-to-move selections.
+Active recall challenge where learners reassemble steps chronologically using drag-and-drop or mobile-friendly tap-to-move selections. Multiple scenarios or tests can be configured within a single section using a `challenges` array.
 
 ```yaml
 ---
@@ -656,6 +656,7 @@ resource: sequence.yaml
 
 **Data file (`sequence.yaml`):**
 ```yaml
+# Single Challenge Format:
 prompt: "Arrange the steps in the correct chronological order:"
 items:
   - id: drag-feature-req
@@ -665,10 +666,31 @@ items:
 solution:
   - drag-feature-req
   - drag-sprint-backlog
+
+# OR Multiple Scenario Challenges Format:
+challenges:
+  - prompt: "Arrange the steps in the correct chronological order to model the product feature loop (Part 1):"
+    items:
+      - id: "drag-feature-req"
+        text: "Define Feature Request"
+      - id: "drag-sprint-backlog"
+        text: "Sprint Backlog Ready"
+    solution:
+      - "drag-feature-req"
+      - "drag-sprint-backlog"
+  - prompt: "Arrange the steps in the correct chronological order to model the deployment pipeline (Part 2):"
+    items:
+      - id: "drag-build"
+        text: "Build Artifacts"
+      - id: "drag-deploy"
+        text: "Deploy to Production"
+    solution:
+      - "drag-build"
+      - "drag-deploy"
 ```
 
 ### `reflection-template` section
-Synthesis template challenge where learners drag word chips (or tap chips and blanks) to fill in inline zones `{zone-X}` inside a markdown paragraph.
+Synthesis template challenge where learners drag word chips (or tap chips and blanks) to fill in inline zones `{zone-X}` inside a markdown paragraph. Multiple scenarios or tests can be configured within a single section using a `challenges` array.
 
 ```yaml
 ---
@@ -680,6 +702,7 @@ resource: template.yaml
 
 **Data file (`template.yaml`):**
 ```yaml
+# Single Challenge Format:
 prompt: "Complete the statement explaining chunk size properties:"
 template: "Reducing chunk size results in {zone-1} individual content segments."
 chips:
@@ -690,6 +713,30 @@ chips:
 solution:
   zone-1: "chip-smaller"
 explanation: "<strong>Correct!</strong> Detailed review commentary shown upon validation check."
+
+# OR Multiple Scenario Challenges Format:
+challenges:
+  - prompt: "Complete the statement explaining chunk size and overlap properties (Part 1):"
+    template: "Reducing chunk size results in {zone-1} individual content segments."
+    chips:
+      - id: "chip-smaller"
+        text: "smaller"
+      - id: "chip-larger"
+        text: "larger"
+    solution:
+      zone-1: "chip-smaller"
+    explanation: "<strong>Correct!</strong> Description."
+  - prompt: "Complete the statement explaining larger chunk sizes (Part 2):"
+    template: "Increasing chunk size yields {zone-1} individual database entries."
+    chips:
+      - id: "chip-fewer"
+        text: "fewer"
+      - id: "chip-more"
+        text: "more"
+    solution:
+      zone-1: "chip-fewer"
+    explanation: "<strong>Correct!</strong> Description."
+```
 ```
 
 ## 4. Register the Topic

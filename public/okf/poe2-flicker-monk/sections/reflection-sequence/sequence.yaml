@@ -1,15 +1,31 @@
-prompt: "Order the combat skills in the correct sequence to maximize lightning conversion and trigger Falling Thunder Nova:"
-items:
-  - id: cast_tempest
-    text: "Cast Tempest (Create Lightning Zone)"
-  - id: stack_charges
-    text: "Generate Power Charges"
-  - id: execute_flicker
-    text: "Execute Flicker Strike"
-  - id: trigger_thunder
-    text: "Trigger Falling Thunder Nova"
-solution:
-  - cast_tempest
-  - stack_charges
-  - execute_flicker
-  - trigger_thunder
+challenges:
+  - prompt: "Order the combat skills in the correct sequence to maximize lightning conversion and trigger Falling Thunder Nova (Part 1):"
+    items:
+      - id: cast_tempest
+        text: "Cast Tempest (Create Lightning Zone)"
+      - id: stack_charges
+        text: "Generate Power Charges"
+      - id: execute_flicker
+        text: "Execute Flicker Strike"
+      - id: trigger_thunder
+        text: "Trigger Falling Thunder Nova"
+    solution:
+      - cast_tempest
+      - stack_charges
+      - execute_flicker
+      - trigger_thunder
+  - prompt: "Order the preparation stages to activate your defensive auras before entering combat (Part 2):"
+    items:
+      - id: reserve_spirit
+        text: "Reserve Mana & Spirit"
+      - id: grace_aura
+        text: "Enable Grace (Evasion Boost)"
+      - id: tempest_shield
+        text: "Cast Tempest Shield (Block/Shock)"
+      - id: wrath_aura
+        text: "Activate Wrath (Lightning Damage)"
+    solution:
+      - reserve_spirit
+      - grace_aura
+      - tempest_shield
+      - wrath_aura

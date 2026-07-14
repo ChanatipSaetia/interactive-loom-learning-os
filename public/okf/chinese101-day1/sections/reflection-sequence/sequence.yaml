@@ -1,15 +1,31 @@
-prompt: "Arrange the words in the correct Chinese grammatical sequence to say: 'Are you busy today?'"
-items:
-  - id: subject
-    text: "你 (You)"
-  - id: time
-    text: "今天 (Today)"
-  - id: predicate
-    text: "忙 (Busy)"
-  - id: particle
-    text: "嗎 (Question particle ?)"
-solution:
-  - subject
-  - time
-  - predicate
-  - particle
+challenges:
+  - prompt: "Arrange the words in the correct Chinese grammatical sequence to say: 'Are you busy today?' (Part 1):"
+    items:
+      - id: subject
+        text: "你 (You)"
+      - id: time
+        text: "今天 (Today)"
+      - id: predicate
+        text: "忙 (Busy)"
+      - id: particle
+        text: "嗎 (Question particle ?)"
+    solution:
+      - subject
+      - time
+      - predicate
+      - particle
+  - prompt: "Arrange the words in the correct Chinese grammatical sequence to say: 'What is your name?' (Part 2):"
+    items:
+      - id: name_subject
+        text: "你 (You)"
+      - id: name_verb
+        text: "叫 (Called)"
+      - id: name_what
+        text: "什麼 (What)"
+      - id: name_noun
+        text: "名字 (Name)"
+    solution:
+      - name_subject
+      - name_verb
+      - name_what
+      - name_noun
