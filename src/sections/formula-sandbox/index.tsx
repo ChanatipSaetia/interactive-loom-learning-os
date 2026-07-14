@@ -3,6 +3,55 @@ import { useHUD } from '../../core/context/HUDContext'
 import type { OKFFormulaVariable, OKFFormulaMetric } from '../../core/okf/types'
 import './formula-sandbox.css'
 
+/**
+ * Convert a JS formula string to human-readable math notation.
+ * e.g. "Math.round(Math.PI * Math.pow(bore_size / 20, 2) * (stroke_length / 10))"
+ * →    "π × (Bore Size ÷ 20)² × (Stroke Length ÷ 10)"
+ */
+function humanizeFormula(
+  formulaStr: string,
+  variables: OKFFormulaVariable[],
+): string {
+  let f = formulaStr.trim()
+
+  // 1. Strip outer Math.round / Math.floor / Math.ceil
+  f = f.replace(/^Math\.(round|floor|ceil)\((.+)\)$/, '$2')
+
+  // 2. Strip outer Math.min / Math.max (keep inner args)
+  //    Math.min(99, expr) → expr   or   Math.max(5, expr) → expr
+  //    We keep ALL args separated by commas, the learner sees the bounds.
+  f = f.replace(/Math\.min\(([^,]+),\s*/g, 'min($1, ')
+  f = f.replace(/Math\.max\(([^,]+),\s*/g, 'max($1, ')
+
+  // 3. Math.pow(x, 2) → (x)²   Math.pow(x, 3) → (x)³
+  f = f.replace(/Math\.pow\(([^,]+),\s*2\)/g, '($1)²')
+  f = f.replace(/Math\.pow\(([^,]+),\s*3\)/g, '($1)³')
+  f = f.replace(/Math\.pow\(([^,]+),\s*([^)]+)\)/g, '($1)^$2')
+
+  // 4. Math.log2(x) → log₂(x)
+  f = f.replace(/Math\.log2\(/g, 'log₂(')
+
+  // 5. Math.PI → π
+  f = f.replace(/Math\.PI/g, 'π')
+
+  // 6. Replace variable IDs with their labels
+  //    Sort by length desc so longer IDs get replaced first
+  const sorted = [...variables].sort((a, b) => b.id.length - a.id.length)
+  for (const v of sorted) {
+    const regex = new RegExp(`\\b${v.id}\\b`, 'g')
+    f = f.replace(regex, v.label)
+  }
+
+  // 7. Replace arithmetic operators with math symbols
+  f = f.replace(/\s*\*\s*/g, ' × ')
+  f = f.replace(/\s*\/\s*/g, ' ÷ ')
+
+  // 8. Clean up extra whitespace
+  f = f.replace(/\s{2,}/g, ' ').trim()
+
+  return f
+}
+
 export interface FormulaSandboxProps {
   title?: string
   variables: OKFFormulaVariable[]
@@ -183,12 +232,15 @@ export function FormulaSandbox({ title, variables = [], metrics = [] }: FormulaS
 
           <div className="formula-explanation">
             <strong>System Formulas:</strong><br />
-            {metrics.map((m, idx) => (
-              <span key={m.id}>
-                • {m.label}: <code>{m.formula}</code>
-                {idx < metrics.length - 1 && <br />}
-              </span>
-            ))}
+            {metrics.map((m, idx) => {
+              const cleanLabel = m.label.replace(/\s*\([^)]*\)\s*$/, '')
+              return (
+                <span key={m.id}>
+                  • {cleanLabel} = <code>{humanizeFormula(m.formula, variables)}</code>
+                  {idx < metrics.length - 1 && <br />}
+                </span>
+              )
+            })}
           </div>
         </div>
 

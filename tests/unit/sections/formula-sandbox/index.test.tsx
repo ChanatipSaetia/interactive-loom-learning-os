@@ -49,9 +49,9 @@ describe('FormulaSandbox Component', () => {
     expect(screen.getByText('Variable A')).toBeInTheDocument()
     expect(screen.getByText('Variable B')).toBeInTheDocument()
 
-    // Verify formulas are displayed in explanation box
-    expect(screen.getByText('var_a + var_b')).toBeInTheDocument()
-    expect(screen.getByText('var_a * var_b')).toBeInTheDocument()
+    // Verify formulas are displayed in humanized form
+    expect(screen.getByText('Variable A + Variable B')).toBeInTheDocument()
+    expect(screen.getByText('Variable A × Variable B')).toBeInTheDocument()
 
     // Sum should be 20 + 4 = 24
     expect(screen.getByText('24 units')).toBeInTheDocument()
