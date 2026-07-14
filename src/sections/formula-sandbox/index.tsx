@@ -209,6 +209,19 @@ export function FormulaSandbox({ title, variables = [], metrics = [] }: FormulaS
 
       <div className="sandbox-layout">
         <div className="controls-panel">
+          <div className="formula-explanation">
+            <strong>System Formulas:</strong><br />
+            {metrics.map((m, idx) => {
+              const cleanLabel = m.label.replace(/\s*\([^)]*\)\s*$/, '')
+              return (
+                <span key={m.id}>
+                  • {cleanLabel} = <code>{humanizeFormula(m.formula, variables)}</code>
+                  {idx < metrics.length - 1 && <br />}
+                </span>
+              )
+            })}
+          </div>
+
           {variables.map((v) => (
             <div key={v.id} className="slider-group">
               <div className="slider-header">
@@ -244,7 +257,6 @@ export function FormulaSandbox({ title, variables = [], metrics = [] }: FormulaS
             const valColorClass = getMetricColorClass(m.id, val, range)
             const { display } = getMetricUnitAndFormat(m, val)
 
-            // Calculate gauge percentage
             const span = range.max - range.min
             const percentage = span > 0 ? ((val - range.min) / span) * 100 : 0
             const gaugeWidth = `${Math.max(0, Math.min(percentage, 100))}%`
@@ -268,19 +280,6 @@ export function FormulaSandbox({ title, variables = [], metrics = [] }: FormulaS
                   />
                 </div>
               </div>
-            )
-          })}
-        </div>
-
-        <div className="formula-explanation">
-          <strong>System Formulas:</strong><br />
-          {metrics.map((m, idx) => {
-            const cleanLabel = m.label.replace(/\s*\([^)]*\)\s*$/, '')
-            return (
-              <span key={m.id}>
-                • {cleanLabel} = <code>{humanizeFormula(m.formula, variables)}</code>
-                {idx < metrics.length - 1 && <br />}
-              </span>
             )
           })}
         </div>
