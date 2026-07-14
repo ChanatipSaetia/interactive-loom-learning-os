@@ -1,0 +1,51 @@
+variables:
+  - id: chunk_size
+    label: "Chunk Size (characters)"
+    min: 100
+    max: 2000
+    step: 50
+    defaultValue: 500
+  - id: overlap
+    label: "Chunk Overlap (%)"
+    min: 0
+    max: 50
+    step: 5
+    defaultValue: 10
+  - id: overhead
+    label: "LLM Query Overhead (ms)"
+    min: 100
+    max: 1500
+    step: 50
+    defaultValue: 400
+
+metrics:
+  - id: recall
+    label: "Search Recall Accuracy"
+    formula: "Math.round((Math.log2(chunk_size) * (1 + (overlap / 70))) * 6.5)"
+    description: "The percentage of relevant reference documents successfully retrieved from the vector database for a given query context."
+    analogy: "Like casting a wider net when fishing. You catch the targeted fish (better recall), but you also bring up a lot of seaweed and debris (noise)."
+    inScope:
+      - "Top-K retrieval threshold tuning"
+      - "Overlap redundancy checks"
+    outOfScope:
+      - "Text generation formatting logic"
+  - id: latency
+    label: "Inference Query Latency"
+    formula: "Math.round(overhead + (chunk_size * 0.4) + (overlap * 4))"
+    description: "Total execution time from query launch to receiving the synthesized answer from the LLM endpoint."
+    analogy: "A long email takes longer to read and reply to than a short text message, regardless of how fast you write."
+    inScope:
+      - "Inference processing speed"
+      - "Network communication payload sizes"
+    outOfScope:
+      - "Vector database index creation time"
+  - id: cost
+    label: "Estimated API Token Cost (Per 1k Queries)"
+    formula: "(chunk_size * 1.5 * 5) * 0.000015"
+    description: "Financial cost spent per 1,000 requests query traffic on API tokens."
+    analogy: "Mailing heavy boxes. Shipping five 10lb boxes costs double compared to five 5lb boxes."
+    inScope:
+      - "Input prompt token pricing schemas"
+      - "Completion context generation sizes"
+    outOfScope:
+      - "Hosting compute system pricing"

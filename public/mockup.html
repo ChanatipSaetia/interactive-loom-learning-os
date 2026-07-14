@@ -1,0 +1,1447 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Topic OS: Conceptual Learning Sandbox</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    /* Catppuccin Frappé Palette and Design System Settings */
+    :root {
+      --ctp-rosewater: #f2d5cf;
+      --ctp-flamingo: #eebebe;
+      --ctp-pink: #f4b8e4;
+      --ctp-mauve: #ca9ee6;
+      --ctp-red: #e78284;
+      --ctp-maroon: #ea999c;
+      --ctp-peach: #ef9f76;
+      --ctp-yellow: #e5c890;
+      --ctp-green: #a6d189;
+      --ctp-teal: #81c8be;
+      --ctp-sky: #99d1db;
+      --ctp-sapphire: #85c1dc;
+      --ctp-blue: #8ca0f3;
+      --ctp-lavender: #babbf1;
+      --ctp-text: #c6d0f5;
+      --ctp-subtext1: #b5bfe2;
+      --ctp-subtext0: #a5adce;
+      --ctp-overlay2: #949cbb;
+      --ctp-overlay1: #838ba7;
+      --ctp-overlay0: #737994;
+      --ctp-surface2: #626880;
+      --ctp-surface1: #51576d;
+      --ctp-surface0: #414559;
+      --ctp-base: #303446;
+      --ctp-mantle: #292c3c;
+      --ctp-crust: #232634;
+
+      --font-sans: 'Outfit', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      --font-mono: 'JetBrains Mono', monospace;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: var(--ctp-crust);
+      color: var(--ctp-text);
+      font-family: var(--font-sans);
+      line-height: 1.5;
+      padding: 16px;
+      overflow-x: hidden;
+    }
+
+    @media (min-width: 768px) {
+      body {
+        padding: 24px;
+      }
+    }
+
+    header {
+      max-width: 1200px;
+      margin: 0 auto 24px auto;
+      padding: 20px;
+      background: linear-gradient(135deg, var(--ctp-mantle), var(--ctp-base));
+      border: 1px solid rgba(198, 208, 245, 0.05);
+      border-radius: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+    }
+
+    @media (min-width: 768px) {
+      header {
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 32px;
+        padding: 24px;
+      }
+    }
+
+    .header-title h1 {
+      font-size: 22px;
+      font-weight: 700;
+      background: linear-gradient(120deg, var(--ctp-lavender), var(--ctp-mauve), var(--ctp-sky));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 4px;
+    }
+
+    @media (min-width: 768px) {
+      .header-title h1 {
+        font-size: 28px;
+      }
+    }
+
+    .header-title p {
+      color: var(--ctp-subtext0);
+      font-size: 13px;
+    }
+
+    .badge-container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .badge {
+      font-size: 11px;
+      font-weight: 600;
+      padding: 6px 12px;
+      border-radius: 9999px;
+      background: var(--ctp-surface0);
+      border: 1px solid rgba(198, 208, 245, 0.1);
+      color: var(--ctp-lavender);
+    }
+
+    .badge.active {
+      background: rgba(202, 158, 230, 0.15);
+      border-color: var(--ctp-mauve);
+      color: var(--ctp-mauve);
+    }
+
+    /* Main Layout */
+    .dashboard-grid {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+    }
+
+    /* Section Panels */
+    .panel {
+      background-color: var(--ctp-base);
+      border: 1px solid rgba(198, 208, 245, 0.05);
+      border-radius: 16px;
+      padding: 20px;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+      transition: border-color 0.3s ease;
+    }
+
+    @media (min-width: 768px) {
+      .panel {
+        padding: 28px;
+      }
+    }
+
+    .panel:hover {
+      border-color: rgba(198, 208, 245, 0.1);
+    }
+
+    .panel-header {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      margin-bottom: 20px;
+      border-bottom: 1px solid rgba(198, 208, 245, 0.05);
+      padding-bottom: 14px;
+    }
+
+    @media (min-width: 768px) {
+      .panel-header {
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: center;
+      }
+    }
+
+    .panel-title {
+      font-size: 18px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      color: var(--ctp-subtext1);
+    }
+
+    @media (min-width: 768px) {
+      .panel-title {
+        font-size: 20px;
+      }
+    }
+
+    .panel-icon {
+      color: var(--ctp-mauve);
+      display: flex;
+      align-items: center;
+    }
+
+    .panel-subtitle {
+      font-size: 12px;
+      color: var(--ctp-subtext0);
+    }
+
+    /* ---------------------------------------------------- */
+    /* COMPONENT 1: SYSTEM DYNAMICS / FORMULA SANDBOX      */
+    /* ---------------------------------------------------- */
+    .sandbox-layout {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 24px;
+    }
+
+    @media (min-width: 992px) {
+      .sandbox-layout {
+        grid-template-columns: 1.2fr 1fr;
+        gap: 28px;
+      }
+    }
+
+    .controls-panel {
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+    }
+
+    .slider-group {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .slider-header {
+      display: flex;
+      justify-content: space-between;
+      font-size: 13.5px;
+      font-weight: 500;
+    }
+
+    .slider-label {
+      color: var(--ctp-subtext1);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .slider-value {
+      font-family: var(--font-mono);
+      color: var(--ctp-sky);
+      font-weight: 600;
+    }
+
+    .range-input {
+      -webkit-appearance: none;
+      width: 100%;
+      height: 8px;
+      border-radius: 4px;
+      background: var(--ctp-surface0);
+      outline: none;
+      transition: background 0.3s;
+    }
+
+    .range-input::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      background: var(--ctp-sky);
+      cursor: pointer;
+      transition: all 0.15s ease;
+      box-shadow: 0 0 10px rgba(153, 209, 219, 0.4);
+    }
+
+    .range-input::-webkit-slider-thumb:hover {
+      transform: scale(1.1);
+      background: var(--ctp-lavender);
+    }
+
+    .formula-explanation {
+      background: var(--ctp-mantle);
+      border-radius: 12px;
+      padding: 16px;
+      border: 1px dashed rgba(198, 208, 245, 0.08);
+      font-size: 13px;
+      color: var(--ctp-subtext0);
+    }
+
+    .formula-explanation code {
+      font-family: var(--font-mono);
+      color: var(--ctp-yellow);
+      background: var(--ctp-surface0);
+      padding: 2px 6px;
+      border-radius: 4px;
+    }
+
+    /* Simulation Output Metrics */
+    .sandbox-metrics {
+      background: var(--ctp-mantle);
+      border-radius: 12px;
+      padding: 20px;
+      border: 1px solid rgba(198, 208, 245, 0.05);
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    @media (min-width: 768px) {
+      .sandbox-metrics {
+        padding: 24px;
+      }
+    }
+
+    .sim-metric-row {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .sim-metric-meta {
+      display: flex;
+      justify-content: space-between;
+      font-size: 13.5px;
+    }
+
+    .sim-metric-name {
+      color: var(--ctp-subtext1);
+    }
+
+    .sim-metric-val {
+      font-family: var(--font-mono);
+      font-weight: 600;
+      cursor: pointer;
+      text-decoration: underline dashed rgba(198, 208, 245, 0.3);
+      transition: color 0.2s ease;
+    }
+
+    .sim-metric-val:hover {
+      color: var(--ctp-pink);
+    }
+
+    .sim-metric-val.green { color: var(--ctp-green); }
+    .sim-metric-val.peach { color: var(--ctp-peach); }
+    .sim-metric-val.red { color: var(--ctp-red); }
+    .sim-metric-val.sky { color: var(--ctp-sky); }
+
+    .gauge-bg {
+      height: 10px;
+      background: var(--ctp-surface0);
+      border-radius: 5px;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .gauge-fill {
+      height: 100%;
+      border-radius: 5px;
+      width: 0%;
+      transition: width 0.2s cubic-bezier(0.4, 0, 0.2, 1), background-color 0.3s;
+    }
+
+    /* ---------------------------------------------------- */
+    /* COMPONENT 2: ACTIVE REFLECTION / SEQUENCE BUILDER  */
+    /* ---------------------------------------------------- */
+    .reflection-area {
+      background: var(--ctp-mantle);
+      border-radius: 12px;
+      padding: 16px;
+    }
+
+    @media (min-width: 768px) {
+      .reflection-area {
+        padding: 24px;
+      }
+    }
+
+    .reflection-prompt {
+      font-size: 14.5px;
+      color: var(--ctp-subtext1);
+      margin-bottom: 20px;
+      font-weight: 500;
+    }
+
+    .drag-items-container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 24px;
+      padding: 14px;
+      background: rgba(48, 52, 70, 0.3);
+      border-radius: 8px;
+    }
+
+    .drag-item {
+      background: var(--ctp-surface0);
+      border: 1px solid rgba(198, 208, 245, 0.1);
+      border-radius: 8px;
+      padding: 12px 18px;
+      font-size: 13.5px;
+      font-weight: 600;
+      cursor: pointer;
+      user-select: none;
+      transition: all 0.2s ease;
+      color: var(--ctp-text);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      min-height: 44px;
+    }
+
+    .drag-item:hover {
+      border-color: var(--ctp-lavender);
+      background: var(--ctp-surface1);
+    }
+
+    .drag-item.selected-item {
+      border-color: var(--ctp-mauve);
+      background: rgba(202, 158, 230, 0.12);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(202, 158, 230, 0.25);
+    }
+
+    .drag-item.used {
+      opacity: 0.2;
+      pointer-events: none;
+    }
+
+    .drop-targets-list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-bottom: 24px;
+    }
+
+    .drop-slot {
+      background: rgba(48, 52, 70, 0.4);
+      border: 1.5px dashed rgba(198, 208, 245, 0.15);
+      border-radius: 8px;
+      min-height: 52px;
+      display: flex;
+      align-items: center;
+      padding: 0 16px;
+      gap: 14px;
+      position: relative;
+      transition: all 0.2s ease;
+      cursor: pointer;
+    }
+
+    .drop-slot.dragover, .drop-slot.highlight-target {
+      border-color: var(--ctp-lavender);
+      background: rgba(186, 187, 241, 0.08);
+    }
+
+    .slot-num {
+      font-family: var(--font-mono);
+      font-size: 12px;
+      color: var(--ctp-overlay1);
+      width: 20px;
+    }
+
+    .drop-slot-placeholder {
+      font-size: 13.5px;
+      color: var(--ctp-overlay0);
+      pointer-events: none;
+    }
+
+    .slot-content {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .remove-btn {
+      cursor: pointer;
+      color: var(--ctp-overlay1);
+      display: flex;
+      align-items: center;
+      transition: color 0.2s ease;
+      padding: 8px;
+    }
+
+    .remove-btn:hover {
+      color: var(--ctp-red);
+    }
+
+    .reflection-footer {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    @media (min-width: 768px) {
+      .reflection-footer {
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: center;
+      }
+    }
+
+    .action-btn {
+      background: var(--ctp-lavender);
+      color: var(--ctp-crust);
+      border: none;
+      padding: 12px 24px;
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 14px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      min-height: 48px;
+      width: 100%;
+    }
+
+    @media (min-width: 768px) {
+      .action-btn {
+        width: auto;
+      }
+    }
+
+    .action-btn:hover {
+      background: var(--ctp-blue);
+      transform: translateY(-1px);
+    }
+
+    .feedback-msg {
+      font-size: 14px;
+      font-weight: 500;
+      display: none;
+      align-items: center;
+      gap: 8px;
+      background: var(--ctp-surface0);
+      padding: 12px 20px;
+      border-radius: 8px;
+      flex-grow: 1;
+      margin-left: 0;
+      width: 100%;
+    }
+
+    @media (min-width: 768px) {
+      .feedback-msg {
+        margin-left: 20px;
+        width: auto;
+      }
+    }
+
+    .feedback-msg.success {
+      color: var(--ctp-green);
+      display: flex;
+      border-left: 4px solid var(--ctp-green);
+      background: rgba(166, 209, 137, 0.04);
+    }
+
+    .feedback-msg.error {
+      color: var(--ctp-red);
+      display: flex;
+      border-left: 4px solid var(--ctp-red);
+      background: rgba(231, 130, 132, 0.04);
+    }
+
+    /* ---------------------------------------------------- */
+    /* COMPONENT 4: ACTIVE REFLECTION / SELF-EXPLANATION  */
+    /* ---------------------------------------------------- */
+    .self-explanation-card {
+      background: var(--ctp-mantle);
+      border-radius: 12px;
+      padding: 18px;
+      border: 1px solid rgba(198, 208, 245, 0.05);
+    }
+
+    @media (min-width: 768px) {
+      .self-explanation-card {
+        padding: 24px;
+      }
+    }
+
+    .sentence-template {
+      font-size: 15px;
+      color: var(--ctp-text);
+      line-height: 2.4;
+      background: var(--ctp-base);
+      border: 1px solid rgba(198, 208, 245, 0.05);
+      border-radius: 12px;
+      padding: 18px;
+      margin-bottom: 24px;
+    }
+
+    @media (min-width: 768px) {
+      .sentence-template {
+        font-size: 16px;
+        padding: 24px;
+      }
+    }
+
+    .blank-dropzone {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 110px;
+      height: 34px;
+      background: var(--ctp-surface0);
+      border: 1.5px dashed var(--ctp-overlay0);
+      border-radius: 6px;
+      vertical-align: middle;
+      margin: 4px 6px;
+      padding: 0 12px;
+      font-size: 13.5px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      color: var(--ctp-mauve);
+      user-select: none;
+    }
+
+    .blank-dropzone.dragover, .blank-dropzone.highlight-target {
+      border-color: var(--ctp-lavender);
+      background: rgba(186, 187, 241, 0.08);
+      transform: scale(1.03);
+    }
+
+    .blank-dropzone.filled {
+      border-style: solid;
+      border-color: var(--ctp-mauve);
+      background: rgba(202, 158, 230, 0.08);
+    }
+
+    .chips-bank {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 24px;
+      padding: 14px;
+      background: rgba(48, 52, 70, 0.3);
+      border-radius: 8px;
+      min-height: 60px;
+    }
+
+    .chip-item {
+      background: var(--ctp-surface0);
+      border: 1px solid rgba(198, 208, 245, 0.1);
+      border-radius: 6px;
+      padding: 8px 16px;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--ctp-text);
+      cursor: pointer;
+      user-select: none;
+      transition: all 0.2s ease;
+      min-height: 38px;
+      display: flex;
+      align-items: center;
+    }
+
+    .chip-item:hover {
+      border-color: var(--ctp-lavender);
+      background: var(--ctp-surface1);
+    }
+
+    .chip-item.selected-item {
+      border-color: var(--ctp-mauve);
+      background: rgba(202, 158, 230, 0.12);
+      box-shadow: 0 4px 12px rgba(202, 158, 230, 0.25);
+    }
+
+    .chip-item.used {
+      opacity: 0.2;
+      pointer-events: none;
+    }
+
+    .btn-verify {
+      background: var(--ctp-lavender);
+      color: var(--ctp-crust);
+      font-weight: 600;
+      border: none;
+      padding: 12px 24px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 14px;
+      transition: all 0.2s ease;
+      min-height: 48px;
+      width: 100%;
+    }
+
+    @media (min-width: 768px) {
+      .btn-verify {
+        width: auto;
+      }
+    }
+
+    .btn-verify:hover {
+      background: var(--ctp-blue);
+      transform: translateY(-1px);
+    }
+
+    .feedback-message {
+      font-size: 14px;
+      font-weight: 500;
+      display: none;
+      align-items: flex-start;
+      gap: 8px;
+      background: var(--ctp-surface0);
+      padding: 14px 20px;
+      border-radius: 8px;
+      flex: 1;
+      margin-left: 0;
+      margin-top: 16px;
+      width: 100%;
+      line-height: 1.5;
+    }
+
+    @media (min-width: 768px) {
+      .feedback-message {
+        margin-left: 20px;
+        margin-top: 0;
+        width: auto;
+      }
+    }
+
+    .feedback-message.success {
+      display: flex;
+      border-left: 4px solid var(--ctp-green);
+      color: var(--ctp-green);
+      background: rgba(166, 209, 137, 0.04);
+    }
+
+    .feedback-message.error {
+      display: flex;
+      border-left: 4px solid var(--ctp-red);
+      color: var(--ctp-red);
+      background: rgba(231, 130, 132, 0.04);
+    }
+
+    /* ---------------------------------------------------- */
+    /* IN-CONTEXT FLOATING HUD DRAWER (SOLUTION)            */
+    /* ---------------------------------------------------- */
+    .hud-drawer {
+      position: fixed;
+      top: 0;
+      right: -380px;
+      width: 340px;
+      height: 100vh;
+      background: var(--ctp-mantle);
+      border-left: 1px solid rgba(198, 208, 245, 0.08);
+      box-shadow: -8px 0 32px rgba(0, 0, 0, 0.35);
+      z-index: 100;
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      transition: right 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+    }
+
+    .hud-drawer.open {
+      right: 0;
+    }
+
+    .hud-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid rgba(198, 208, 245, 0.05);
+      padding-bottom: 12px;
+    }
+
+    .hud-title {
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--ctp-lavender);
+    }
+
+    .hud-close {
+      cursor: pointer;
+      color: var(--ctp-overlay1);
+      padding: 4px;
+      transition: color 0.2s ease;
+    }
+
+    .hud-close:hover {
+      color: var(--ctp-red);
+    }
+
+    .hud-body {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      font-size: 13.5px;
+      color: var(--ctp-subtext0);
+      line-height: 1.6;
+    }
+
+    .hud-body strong {
+      color: var(--ctp-text);
+    }
+
+    .hud-card {
+      background: var(--ctp-surface0);
+      border-radius: 8px;
+      padding: 12px;
+      border-left: 3px solid var(--ctp-mauve);
+      font-size: 13px;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="header-title">
+      <h1>Topic OS: Conceptual Learning Sandbox</h1>
+      <p>Mobile Responsive Prototype (Formula Sandbox, Step Sequence, and Self-Explanation)</p>
+    </div>
+    <div class="badge-container">
+      <div class="badge flex-center">Catppuccin Frappé</div>
+      <div class="badge active">Touch-Friendly UI</div>
+    </div>
+  </header>
+
+  <div class="dashboard-grid">
+
+    <!-- COMPONENT 1: FORMULA / SYSTEM DYNAMICS SANDBOX -->
+    <div class="panel">
+      <div class="panel-header">
+        <h2 class="panel-title">
+          <span class="panel-icon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="21" x2="4" y2="14"/><line x1="4" y1="10" x2="4" y2="3"/><line x1="12" y1="21" x2="12" y2="12"/><line x1="12" y1="8" x2="12" y2="3"/><line x1="20" y1="21" x2="20" y2="16"/><line x1="20" y1="12" x2="20" y2="3"/><line x1="2" y1="14" x2="6" y2="14"/><line x1="10" y1="8" x2="14" y2="8"/><line x1="18" y1="16" x2="22" y2="16"/></svg>
+          </span>
+          RAG Pipeline: Parameter Dynamics & Formula Sandbox
+        </h2>
+        <span class="panel-subtitle">Click underlined metrics to toggle floating HUD documentation</span>
+      </div>
+
+      <div class="sandbox-layout">
+        <div class="controls-panel">
+          <div class="slider-group">
+            <div class="slider-header">
+              <span class="slider-label">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>
+                Chunk Size (characters)
+              </span>
+              <span id="val-chunk-size" class="slider-value">500</span>
+            </div>
+            <input type="range" class="range-input" id="slide-chunk-size" min="100" max="2000" step="50" value="500" oninput="updateSimulation()">
+          </div>
+
+          <div class="slider-group">
+            <div class="slider-header">
+              <span class="slider-label">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m22 8-6 4 6 4V8Z"/><rect width="14" height="12" x="2" y="6" rx="2" ry="2"/></svg>
+                Chunk Overlap (%)
+              </span>
+              <span id="val-overlap" class="slider-value">10%</span>
+            </div>
+            <input type="range" class="range-input" id="slide-overlap" min="0" max="50" step="5" value="10" oninput="updateSimulation()">
+          </div>
+
+          <div class="slider-group">
+            <div class="slider-header">
+              <span class="slider-label">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                LLM Query Overhead (ms)
+              </span>
+              <span id="val-overhead" class="slider-value">400 ms</span>
+            </div>
+            <input type="range" class="range-input" id="slide-overhead" min="100" max="1500" step="50" value="400" oninput="updateSimulation()">
+          </div>
+
+          <div class="formula-explanation">
+            <strong>System Formulas:</strong><br>
+            • Cost Calculation: <code>Token Cost = (Chunk Size * 1.5 * Chunks Sent) * $0.000015</code><br>
+            • Recall Accuracy: <code>Recall = Log(Chunk Size) * (1 + Overlap / 100) / 10.5</code> (Max 98%)
+          </div>
+        </div>
+
+        <div class="sandbox-metrics">
+          <h4 style="font-size: 13px; font-weight: 700; text-transform: uppercase; color: var(--ctp-overlay2); letter-spacing: 0.5px">Computed RAG Metrics</h4>
+          
+          <div class="sim-metric-row">
+            <div class="sim-metric-meta">
+              <span class="sim-metric-name">Search Recall Accuracy</span>
+              <span id="metric-recall" class="sim-metric-val green" onclick="openHUD('recall')">65%</span>
+            </div>
+            <div class="gauge-bg">
+              <div id="gauge-recall" class="gauge-fill" style="width: 65%; background-color: var(--ctp-green);"></div>
+            </div>
+          </div>
+
+          <div class="sim-metric-row">
+            <div class="sim-metric-meta">
+              <span class="sim-metric-name">Inference Query Latency</span>
+              <span id="metric-latency" class="sim-metric-val sky" onclick="openHUD('latency')">850 ms</span>
+            </div>
+            <div class="gauge-bg">
+              <div id="gauge-latency" class="gauge-fill" style="width: 50%; background-color: var(--ctp-sky);"></div>
+            </div>
+          </div>
+
+          <div class="sim-metric-row">
+            <div class="sim-metric-meta">
+              <span class="sim-metric-name">Estimated API Token Cost (Per 1k Queries)</span>
+              <span id="metric-cost" class="sim-metric-val peach" onclick="openHUD('cost')">$2.25</span>
+            </div>
+            <div class="gauge-bg">
+              <div id="gauge-cost" class="gauge-fill" style="width: 35%; background-color: var(--ctp-peach);"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- COMPONENT 2: ACTIVE REFLECTION / SEQUENCE BUILDER -->
+    <div class="panel">
+      <div class="panel-header">
+        <h2 class="panel-title">
+          <span class="panel-icon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+          </span>
+          Active Reflection: Flowchart Sequence Builder (Bridge C)
+        </h2>
+        <span class="panel-subtitle">Tap an item below, then tap a slot to place it (or Drag and Drop)</span>
+      </div>
+
+      <div class="reflection-area">
+        <div class="reflection-prompt">
+          Arrange the steps in the correct chronological order to model the product feature loop:
+        </div>
+
+        <div class="drag-items-container" id="source-pool">
+          <div class="drag-item" draggable="true" id="drag-sprint-backlog" ondragstart="drag(event)" onclick="handleSequenceTap(event)">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1zM4 22v-7"/></svg>
+            Sprint Backlog Ready
+          </div>
+          <div class="drag-item" draggable="true" id="drag-deliver-code" ondragstart="drag(event)" onclick="handleSequenceTap(event)">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+            Deliver Code Changes
+          </div>
+          <div class="drag-item" draggable="true" id="drag-review" ondragstart="drag(event)" onclick="handleSequenceTap(event)">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+            Sprint Review
+          </div>
+          <div class="drag-item" draggable="true" id="drag-feature-req" ondragstart="drag(event)" onclick="handleSequenceTap(event)">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+            Define Feature Request
+          </div>
+        </div>
+
+        <div class="drop-targets-list">
+          <div class="drop-slot" id="slot-1" ondragover="allowDrop(event)" ondragleave="dragLeave(event)" ondrop="dropSequence(event, 1)" onclick="handleSlotTap(event, 1)">
+            <span class="slot-num">01</span>
+            <div class="slot-content" id="slot-content-1">
+              <span class="drop-slot-placeholder">Drop starting step here</span>
+            </div>
+          </div>
+
+          <div class="drop-slot" id="slot-2" ondragover="allowDrop(event)" ondragleave="dragLeave(event)" ondrop="dropSequence(event, 2)" onclick="handleSlotTap(event, 2)">
+            <span class="slot-num">02</span>
+            <div class="slot-content" id="slot-content-2">
+              <span class="drop-slot-placeholder">Drop planning step here</span>
+            </div>
+          </div>
+
+          <div class="drop-slot" id="slot-3" ondragover="allowDrop(event)" ondragleave="dragLeave(event)" ondrop="dropSequence(event, 3)" onclick="handleSlotTap(event, 3)">
+            <span class="slot-num">03</span>
+            <div class="slot-content" id="slot-content-3">
+              <span class="drop-slot-placeholder">Drop execution step here</span>
+            </div>
+          </div>
+
+          <div class="drop-slot" id="slot-4" ondragover="allowDrop(event)" ondragleave="dragLeave(event)" ondrop="dropSequence(event, 4)" onclick="handleSlotTap(event, 4)">
+            <span class="slot-num">04</span>
+            <div class="slot-content" id="slot-content-4">
+              <span class="drop-slot-placeholder">Drop evaluation step here</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="reflection-footer">
+          <button class="action-btn" onclick="checkAnswers()">Verify Sequence Model</button>
+          <div id="check-feedback" class="feedback-msg"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- COMPONENT 3: ACTIVE REFLECTION / SELF-EXPLANATION TEMPLATE -->
+    <div class="panel">
+      <div class="panel-header">
+        <h2 class="panel-title">
+          <span class="panel-icon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+          </span>
+          Active Reflection: Self-Explanation Template
+        </h2>
+        <span class="panel-subtitle">Tap a word chip, then tap a blank to place it (or Drag and Drop)</span>
+      </div>
+
+      <div class="self-explanation-card">
+        <div class="reflection-prompt">
+          Complete the statement explaining chunk size and overlap properties:
+        </div>
+
+        <div class="sentence-template">
+          Reducing chunk size results in
+          <div class="blank-dropzone" id="zone-1" ondragover="allowDrop(event)" ondragleave="dragLeave(event)" ondrop="dropSelfExplanation(event, 1)" onclick="handleZoneTap(event, 1)">[ ? ]</div>
+          individual content segments. This allows semantic matching algorithms to find
+          <div class="blank-dropzone" id="zone-2" ondragover="allowDrop(event)" ondragleave="dragLeave(event)" ondrop="dropSelfExplanation(event, 2)" onclick="handleZoneTap(event, 2)">[ ? ]</div>
+          refined context points, which improves precision. However, it also demands
+          <div class="blank-dropzone" id="zone-3" ondragover="allowDrop(event)" ondragleave="dragLeave(event)" ondrop="dropSelfExplanation(event, 3)" onclick="handleZoneTap(event, 3)">[ ? ]</div>
+          overlap percentages to prevent split-sentence data loss, which subsequently
+          <div class="blank-dropzone" id="zone-4" ondragover="allowDrop(event)" ondragleave="dragLeave(event)" ondrop="dropSelfExplanation(event, 4)" onclick="handleZoneTap(event, 4)">[ ? ]</div>
+          total RAG ingestion cost.
+        </div>
+
+        <div class="chips-bank" id="words-source">
+          <div class="chip-item" draggable="true" id="chip-smaller" ondragstart="drag(event)" onclick="handleChipTap(event)">smaller</div>
+          <div class="chip-item" draggable="true" id="chip-larger" ondragstart="drag(event)" onclick="handleChipTap(event)">larger</div>
+          <div class="chip-item" draggable="true" id="chip-more" ondragstart="drag(event)" onclick="handleChipTap(event)">more precise</div>
+          <div class="chip-item" draggable="true" id="chip-less" ondragstart="drag(event)" onclick="handleChipTap(event)">coarser</div>
+          <div class="chip-item" draggable="true" id="chip-higher" ondragstart="drag(event)" onclick="handleChipTap(event)">higher</div>
+          <div class="chip-item" draggable="true" id="chip-lower" ondragstart="drag(event)" onclick="handleChipTap(event)">lower</div>
+          <div class="chip-item" draggable="true" id="chip-increases" ondragstart="drag(event)" onclick="handleChipTap(event)">increases</div>
+          <div class="chip-item" draggable="true" id="chip-decreases" ondragstart="drag(event)" onclick="handleChipTap(event)">decreases</div>
+        </div>
+
+        <div class="reflection-footer">
+          <button class="btn-verify" onclick="verifyReflection()">Verify Explanation</button>
+          <div id="reflection-feedback" class="feedback-message"></div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- FLOATING HUD DRAWER (CONTEXT SOLUTION MOCKUP) -->
+  <div class="hud-drawer" id="hud-drawer">
+    <div class="hud-header">
+      <span class="hud-title" id="hud-title">HUD Inspector</span>
+      <span class="hud-close" onclick="closeHUD()">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </span>
+    </div>
+    <div class="hud-body" id="hud-body">
+      Select a metric to load in-context documentation.
+    </div>
+  </div>
+
+  <script>
+    /* ---------------------------------------------------- */
+    /* MOBILE SELECTION STATE                               */
+    /* ---------------------------------------------------- */
+    let selectedSequenceItem = null;
+    let selectedChipItem = null;
+
+    /* ---------------------------------------------------- */
+    /* IN-CONTEXT FLOATING HUD DOCUMENTATION DATA           */
+    /* ---------------------------------------------------- */
+    const hudDatabase = {
+      'recall': {
+        title: "Search Recall Accuracy",
+        body: `
+          <strong>Definition:</strong> The percentage of relevant reference documents successfully retrieved from the vector database for a given query context.<br><br>
+          <strong>Dynamic Relationship:</strong><br>
+          • <em>Higher:</em> Achieved by increasing chunk size (capturing broader semantic concepts) or overlap (preventing boundary cutoff).<br>
+          • <em>Trade-offs:</em> Higher recall means larger token payloads, directly inflating context window size and costing more API tokens.
+          <div class="hud-card">
+            <strong>Analogy:</strong> Like casting a wider net when fishing. You catch the targeted fish (better recall), but you also bring up a lot of seaweed and debris (noise).
+          </div>
+        `
+      },
+      'latency': {
+        title: "Inference Query Latency",
+        body: `
+          <strong>Definition:</strong> Total execution time from query launch to receiving the synthesized answer from the LLM endpoint.<br><br>
+          <strong>Dynamic Relationship:</strong><br>
+          • <em>Affected by:</em> Net bandwidth, size of prompt payload (number of characters), and LLM generation tokens.<br>
+          • <em>Equation details:</em> Latency increases linearly with chunk size because more raw text must be digested by the model.
+          <div class="hud-card">
+            <strong>Analogy:</strong> A long email takes longer to read and reply to than a short text message, regardless of how fast you write.
+          </div>
+        `
+      },
+      'cost': {
+        title: "API Token cost",
+        body: `
+          <strong>Definition:</strong> Financial cost spent per 1,000 requests query traffic on API tokens.<br><br>
+          <strong>Dynamic Relationship:</strong><br>
+          • <em>Calculated by:</em> <code>(Chunk Size × 1.5 × Number of Chunks) × Cost per Token</code>.<br>
+          • <em>Impact points:</em> Doubling chunk size and keeping retrieval numbers static doubles the token payload cost immediately.
+          <div class="hud-card">
+            <strong>Analogy:</strong> Mailing heavy boxes. Shipping five 10lb boxes costs double compared to five 5lb boxes.
+          </div>
+        `
+      }
+    };
+
+    function openHUD(metricKey) {
+      const data = hudDatabase[metricKey];
+      if (!data) return;
+
+      document.getElementById('hud-title').innerText = data.title;
+      document.getElementById('hud-body').innerHTML = data.body;
+      document.getElementById('hud-drawer').classList.add('open');
+    }
+
+    function closeHUD() {
+      document.getElementById('hud-drawer').classList.remove('open');
+    }
+
+    /* ---------------------------------------------------- */
+    /* FORMULA SYSTEM DYNAMICS LOGIC                        */
+    /* ---------------------------------------------------- */
+    function updateSimulation() {
+      const chunkSize = parseInt(document.getElementById('slide-chunk-size').value);
+      const overlap = parseInt(document.getElementById('slide-overlap').value);
+      const overhead = parseInt(document.getElementById('slide-overhead').value);
+
+      document.getElementById('val-chunk-size').innerText = chunkSize;
+      document.getElementById('val-overlap').innerText = overlap + "%";
+      document.getElementById('val-overhead').innerText = overhead + " ms";
+
+      let recall = Math.round((Math.log2(chunkSize) * (1 + (overlap / 70))) * 6.5);
+      if (recall > 98) recall = 98;
+      if (recall < 20) recall = 20;
+
+      let latency = Math.round(overhead + (chunkSize * 0.4) + (overlap * 4));
+      let cost = ((chunkSize * 1.5 * 5) * 0.000015).toFixed(2);
+
+      const recallVal = document.getElementById('metric-recall');
+      const recallFill = document.getElementById('gauge-recall');
+      recallVal.innerText = recall + "%";
+      recallFill.style.width = recall + "%";
+      if (recall > 75) {
+        recallVal.className = "sim-metric-val green";
+        recallFill.style.backgroundColor = "var(--ctp-green)";
+      } else if (recall > 45) {
+        recallVal.className = "sim-metric-val peach";
+        recallFill.style.backgroundColor = "var(--ctp-peach)";
+      } else {
+        recallVal.className = "sim-metric-val red";
+        recallFill.style.backgroundColor = "var(--ctp-red)";
+      }
+
+      const latencyVal = document.getElementById('metric-latency');
+      const latencyFill = document.getElementById('gauge-latency');
+      latencyVal.innerText = latency + " ms";
+      let latPct = (latency / 2000) * 100;
+      if (latPct > 100) latPct = 100;
+      latencyFill.style.width = latPct + "%";
+      if (latency < 700) {
+        latencyVal.className = "sim-metric-val green";
+        latencyFill.style.backgroundColor = "var(--ctp-green)";
+      } else if (latency < 1200) {
+        latencyVal.className = "sim-metric-val sky";
+        latencyFill.style.backgroundColor = "var(--ctp-sky)";
+      } else {
+        latencyVal.className = "sim-metric-val red";
+        latencyFill.style.backgroundColor = "var(--ctp-red)";
+      }
+
+      const costVal = document.getElementById('metric-cost');
+      const costFill = document.getElementById('gauge-cost');
+      costVal.innerText = "$" + cost;
+      let costPct = (cost / 5.00) * 100;
+      if (costPct > 100) costPct = 100;
+      costFill.style.width = costPct + "%";
+      if (cost < 1.50) {
+        costVal.className = "sim-metric-val green";
+        costFill.style.backgroundColor = "var(--ctp-green)";
+      } else if (cost < 3.00) {
+        costVal.className = "sim-metric-val peach";
+        costFill.style.backgroundColor = "var(--ctp-peach)";
+      } else {
+        costVal.className = "sim-metric-val red";
+        costFill.style.backgroundColor = "var(--ctp-red)";
+      }
+    }
+
+    /* ---------------------------------------------------- */
+    /* SHARED DRAG AND DROP UTILS                           */
+    /* ---------------------------------------------------- */
+    function drag(ev) {
+      ev.dataTransfer.setData("text", ev.target.id);
+      clearSequenceSelection();
+      clearChipSelection();
+    }
+
+    function allowDrop(ev) {
+      ev.preventDefault();
+      ev.currentTarget.classList.add('dragover');
+    }
+
+    function dragLeave(ev) {
+      ev.currentTarget.classList.remove('dragover');
+    }
+
+    /* ---------------------------------------------------- */
+    /* COMPONENT 2: SEQUENCE BUILDER DRAG & TAP LOGIC       */
+    /* ---------------------------------------------------- */
+    const correctSequence = ['drag-feature-req', 'drag-sprint-backlog', 'drag-deliver-code', 'drag-review'];
+
+    function handleSequenceTap(ev) {
+      const clickedItem = ev.currentTarget;
+      
+      if (selectedSequenceItem === clickedItem) {
+        clearSequenceSelection();
+      } else {
+        clearSequenceSelection();
+        selectedSequenceItem = clickedItem;
+        selectedSequenceItem.classList.add('selected-item');
+        
+        document.querySelectorAll('.drop-slot').forEach(slot => {
+          if (!slot.querySelector('.drag-item')) {
+            slot.classList.add('highlight-target');
+          }
+        });
+      }
+    }
+
+    function clearSequenceSelection() {
+      if (selectedSequenceItem) {
+        selectedSequenceItem.classList.remove('selected-item');
+        selectedSequenceItem = null;
+      }
+      document.querySelectorAll('.drop-slot').forEach(slot => {
+        slot.classList.remove('highlight-target');
+      });
+    }
+
+    function handleSlotTap(ev, slotNum) {
+      const slot = ev.currentTarget;
+      
+      if (ev.target.closest('.remove-btn') || ev.target.closest('.drag-item')) {
+        return;
+      }
+
+      if (selectedSequenceItem) {
+        placeSequenceItem(slotNum, selectedSequenceItem);
+        clearSequenceSelection();
+      }
+    }
+
+    function placeSequenceItem(slotNum, itemNode) {
+      const contentSlot = document.getElementById(`slot-content-${slotNum}`);
+      const existingItem = contentSlot.querySelector('.drag-item');
+      
+      if (existingItem) {
+        document.getElementById('source-pool').appendChild(existingItem);
+      }
+      
+      contentSlot.innerHTML = '';
+      contentSlot.appendChild(itemNode);
+      itemNode.classList.remove('selected-item');
+      
+      const removeBtn = document.createElement('span');
+      removeBtn.className = 'remove-btn';
+      removeBtn.innerHTML = `
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      `;
+      removeBtn.onclick = () => removeSlotItem(slotNum, itemNode);
+      contentSlot.appendChild(removeBtn);
+    }
+
+    function dropSequence(ev, slotNum) {
+      ev.preventDefault();
+      ev.currentTarget.classList.remove('dragover');
+      
+      const dataId = ev.dataTransfer.getData("text");
+      const draggedNode = document.getElementById(dataId);
+      
+      if (!dataId.startsWith('drag-')) return;
+      
+      placeSequenceItem(slotNum, draggedNode);
+    }
+
+    function removeSlotItem(slotNum, node) {
+      document.getElementById('source-pool').appendChild(node);
+      const contentSlot = document.getElementById(`slot-content-${slotNum}`);
+      contentSlot.innerHTML = `<span class="drop-slot-placeholder">Drop step here</span>`;
+      clearSequenceSelection();
+    }
+
+    function checkAnswers() {
+      let isCorrect = true;
+      let emptyCount = 0;
+      
+      for (let i = 1; i <= 4; i++) {
+        const slotContent = document.getElementById(`slot-content-${i}`);
+        const item = slotContent.querySelector('.drag-item');
+        
+        if (!item) {
+          emptyCount++;
+          isCorrect = false;
+          continue;
+        }
+        
+        if (item.id !== correctSequence[i - 1]) {
+          isCorrect = false;
+        }
+      }
+
+      const feedback = document.getElementById('check-feedback');
+      feedback.className = 'feedback-msg';
+
+      if (emptyCount > 0) {
+        feedback.innerText = "Please fill all sequence slots before checking.";
+        feedback.classList.add('error');
+        return;
+      }
+
+      if (isCorrect) {
+        feedback.innerText = "Correct! You have accurately mapped the Scrum cycle structure.";
+        feedback.classList.add('success');
+      } else {
+        feedback.innerText = "Incorrect order. Consider the flowchart sequence dependencies and retry.";
+        feedback.classList.add('error');
+      }
+    }
+
+    /* ---------------------------------------------------- */
+    /* COMPONENT 3: SELF-EXPLANATION DRAG & TAP LOGIC       */
+    /* ---------------------------------------------------- */
+    const correctChoices = {
+      'zone-1': 'chip-smaller',
+      'zone-2': 'chip-more',
+      'zone-3': 'chip-higher',
+      'zone-4': 'chip-increases'
+    };
+
+    function handleChipTap(ev) {
+      const clickedChip = ev.currentTarget;
+      
+      if (selectedChipItem === clickedChip) {
+        clearChipSelection();
+      } else {
+        clearChipSelection();
+        selectedChipItem = clickedChip;
+        selectedChipItem.classList.add('selected-item');
+        
+        document.querySelectorAll('.blank-dropzone').forEach(zone => {
+          if (!zone.getAttribute('data-chip-id')) {
+            zone.classList.add('highlight-target');
+          }
+        });
+      }
+    }
+
+    function clearChipSelection() {
+      if (selectedChipItem) {
+        selectedChipItem.classList.remove('selected-item');
+        selectedChipItem = null;
+      }
+      document.querySelectorAll('.blank-dropzone').forEach(zone => {
+        zone.classList.remove('highlight-target');
+      });
+    }
+
+    function handleZoneTap(ev, zoneNum) {
+      const zone = ev.currentTarget;
+      const existingChipId = zone.getAttribute('data-chip-id');
+      
+      if (existingChipId) {
+        resetZone(zoneNum);
+        clearChipSelection();
+      } else if (selectedChipItem) {
+        placeChipItem(zoneNum, selectedChipItem);
+        clearChipSelection();
+      }
+    }
+
+    function placeChipItem(zoneNum, chipNode) {
+      const zone = document.getElementById(`zone-${zoneNum}`);
+      const oldChipId = zone.getAttribute('data-chip-id');
+      
+      if (oldChipId) {
+        document.getElementById(oldChipId).classList.remove('used');
+      }
+
+      zone.innerText = chipNode.innerText;
+      zone.setAttribute('data-chip-id', chipNode.id);
+      zone.classList.add('filled');
+      chipNode.classList.add('used');
+      chipNode.classList.remove('selected-item');
+    }
+
+    function dropSelfExplanation(ev, zoneNum) {
+      ev.preventDefault();
+      ev.currentTarget.classList.remove('dragover');
+
+      const chipId = ev.dataTransfer.getData("text");
+      const chipElement = document.getElementById(chipId);
+      
+      if (!chipId.startsWith('chip-')) return;
+      
+      placeChipItem(zoneNum, chipElement);
+    }
+
+    function resetZone(zoneNum) {
+      const zone = document.getElementById(`zone-${zoneNum}`);
+      const chipId = zone.getAttribute('data-chip-id');
+      if (chipId) {
+        document.getElementById(chipId).classList.remove('used');
+        zone.innerText = "[ ? ]";
+        zone.removeAttribute('data-chip-id');
+        zone.classList.remove('filled');
+      }
+      clearChipSelection();
+    }
+
+    function verifyReflection() {
+      let score = 0;
+      let unfilled = false;
+
+      for (let i = 1; i <= 4; i++) {
+        const zone = document.getElementById(`zone-${i}`);
+        const placedChipId = zone.getAttribute('data-chip-id');
+        
+        if (!placedChipId) {
+          unfilled = true;
+          break;
+        }
+
+        if (placedChipId === correctChoices[`zone-${i}`]) {
+          score++;
+        }
+      }
+
+      const feedback = document.getElementById('reflection-feedback');
+      feedback.className = 'feedback-message';
+
+      if (unfilled) {
+        feedback.innerText = "Please fill in all blanks within the sentence structure before checking.";
+        feedback.classList.add('error');
+        return;
+      }
+
+      if (score === 4) {
+        feedback.innerHTML = `
+          <strong>Correct! Excellent RAG tradeoff analysis.</strong><br>
+          By dropping the chunk size, you query <em>smaller</em> segments. This gives <em>more precise</em> matching vectors. However, you must increase overlap percentage (<em>higher</em>) to keep from cutting sentences in half. In turn, you send more text to context window, which <em>increases</em> final token costs.
+        `;
+        feedback.classList.add('success');
+      } else {
+        feedback.innerHTML = `
+          <strong>Incorrect reasoning paths.</strong><br>
+          Adjust the slides in the Formula Sandbox above to see how changing Chunk Size and Overlaps affects cost, latencies, and semantic recall score. Compare the parameters and try again.
+        `;
+        feedback.classList.add('error');
+      }
+    }
+  </script>
+</body>
+</html>

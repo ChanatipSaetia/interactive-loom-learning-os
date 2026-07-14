@@ -203,3 +203,80 @@ html[data-theme='recipebook'] .topic-page-title {
   padding-top: 0.5rem !important;
   margin-bottom: 0.5rem !important;
 }
+
+/* =============================================
+   HUD Drawer (Context overlay HUD)
+   ============================================= */
+.hud-drawer {
+  position: fixed;
+  top: 0;
+  right: -380px;
+  width: 340px;
+  height: 100vh;
+  background-color: var(--ctp-mantle);
+  border-left: 1px solid rgba(198, 208, 245, 0.08);
+  box-shadow: -8px 0 32px rgba(0, 0, 0, 0.35);
+  z-index: 100;
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  transition: right 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+
+.hud-drawer.open {
+  right: 0;
+}
+
+.hud-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid rgba(198, 208, 245, 0.05);
+  padding-bottom: 12px;
+}
+
+.hud-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--ctp-lavender);
+}
+
+.hud-close {
+  cursor: pointer;
+  color: var(--ctp-overlay1);
+  padding: 4px;
+  background: transparent;
+  border: none;
+  display: flex;
+  align-items: center;
+  transition: color 0.2s ease;
+}
+
+.hud-close:hover {
+  color: var(--ctp-red);
+}
+
+.hud-body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  font-size: 13.5px;
+  color: var(--ctp-subtext0);
+  line-height: 1.6;
+  overflow-y: auto;
+}
+
+.hud-body strong {
+  color: var(--ctp-text);
+}
+
+.hud-card {
+  background: var(--ctp-surface0);
+  border-radius: 8px;
+  padding: 12px;
+  border-left: 3px solid var(--ctp-mauve);
+  font-size: 13px;
+}
+

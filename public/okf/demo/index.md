@@ -21,3 +21,7 @@
 * [Deployment Trade-offs](sections/tradeoffs-deploy/section.md)
 * [Branching Scenarios](sections/scenario/section.md)
 * [Agent Architecture Decision Guide](sections/decision-tree/section.md)
+* [RAG Parameter Sandbox](sections/formula-sandbox/section.md)
+* [Sequence Builder Challenge](sections/reflection-sequence/section.md)
+* [Self-Explanation Synthesis](sections/reflection-template/section.md)
+

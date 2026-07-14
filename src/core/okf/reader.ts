@@ -20,6 +20,9 @@ import type {
   OKFScenarioSectionData,
   OKFDecisionTreeSectionData,
   OKFImageGallerySectionData,
+  OKFFormulaSandboxSectionData,
+  OKFReflectionSequenceSectionData,
+  OKFReflectionTemplateSectionData,
   OKFGalleryRaw,
   OKFStepRaw,
   OKFJourneyRaw,
@@ -30,6 +33,9 @@ import type {
   OKFConceptMapRaw,
   OKFScenarioRaw,
   OKFDecisionTreeRaw,
+  OKFFormulaSandboxRaw,
+  OKFReflectionSequenceRaw,
+  OKFReflectionTemplateRaw,
 } from './types'
 
 const OKF_BASE = `${import.meta.env.BASE_URL}okf`
@@ -161,6 +167,12 @@ async function loadSectionResource(
       return loadDecisionTreeSection(basePath, resource)
     case 'image-gallery':
       return loadImageGallerySection(basePath, resource, resourceFiles)
+    case 'formula-sandbox':
+      return loadFormulaSandboxSection(basePath, resource)
+    case 'reflection-sequence':
+      return loadReflectionSequenceSection(basePath, resource)
+    case 'reflection-template':
+      return loadReflectionTemplateSection(basePath, resource)
     default:
       throw new Error(`Unknown section type: ${type}`)
   }
@@ -528,3 +540,38 @@ function parseParagraphs(body: string): string[] {
   }
   return paragraphs
 }
+
+async function loadFormulaSandboxSection(basePath: string, resource: string): Promise<OKFFormulaSandboxSectionData> {
+  const file = resource !== '.' ? resource : 'sandbox.yaml'
+  const raw = await fetchYaml<OKFFormulaSandboxRaw>(`${basePath}/${file}`)
+  return {
+    type: 'formula-sandbox',
+    variables: raw.variables,
+    metrics: raw.metrics,
+  }
+}
+
+async function loadReflectionSequenceSection(basePath: string, resource: string): Promise<OKFReflectionSequenceSectionData> {
+  const file = resource !== '.' ? resource : 'sequence.yaml'
+  const raw = await fetchYaml<OKFReflectionSequenceRaw>(`${basePath}/${file}`)
+  return {
+    type: 'reflection-sequence',
+    prompt: raw.prompt,
+    items: raw.items,
+    solution: raw.solution,
+  }
+}
+
+async function loadReflectionTemplateSection(basePath: string, resource: string): Promise<OKFReflectionTemplateSectionData> {
+  const file = resource !== '.' ? resource : 'template.yaml'
+  const raw = await fetchYaml<OKFReflectionTemplateRaw>(`${basePath}/${file}`)
+  return {
+    type: 'reflection-template',
+    prompt: raw.prompt,
+    template: raw.template,
+    chips: raw.chips,
+    solution: raw.solution,
+    explanation: raw.explanation,
+  }
+}
+

@@ -16,6 +16,9 @@ SectionRegistry.register('concept-map', () => import('./sections/concept-map'))
 SectionRegistry.register('scenario', () => import('./sections/scenario'))
 SectionRegistry.register('decision-tree', () => import('./sections/decision-tree'))
 SectionRegistry.register('image-gallery', () => import('./sections/image-gallery'))
+SectionRegistry.register('formula-sandbox', () => import('./sections/formula-sandbox'))
+SectionRegistry.register('reflection-sequence', () => import('./sections/reflection-sequence'))
+SectionRegistry.register('reflection-template', () => import('./sections/reflection-template'))
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>

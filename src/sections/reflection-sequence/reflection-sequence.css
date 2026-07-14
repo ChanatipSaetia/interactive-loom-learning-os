@@ -1,0 +1,214 @@
+.sequence-section {
+  margin-bottom: 0;
+}
+
+.sequence-body {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.sequence-prompt {
+  font-size: 14.5px;
+  color: var(--ctp-subtext1);
+  font-weight: 500;
+}
+
+.sequence-source-pool {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  background: rgba(48, 52, 70, 0.3);
+  padding: 14px;
+  border-radius: 8px;
+  min-height: 60px;
+}
+
+.sequence-drag-item {
+  background: var(--ctp-surface0);
+  border: 1px solid rgba(198, 208, 245, 0.1);
+  border-radius: 8px;
+  padding: 12px 18px;
+  font-size: 13.5px;
+  font-weight: 600;
+  cursor: pointer;
+  user-select: none;
+  transition: all 0.2s ease;
+  color: var(--ctp-text);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+}
+
+.sequence-drag-item:hover:not(.placed) {
+  border-color: var(--ctp-lavender);
+  background: var(--ctp-surface1);
+}
+
+.sequence-drag-item.selected {
+  border-color: var(--ctp-mauve);
+  background: rgba(202, 158, 230, 0.12);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(202, 158, 230, 0.25);
+}
+
+.sequence-drag-item.placed {
+  opacity: 0.25;
+  pointer-events: none;
+  cursor: default;
+}
+
+/* Slots List */
+.sequence-slots-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.sequence-drop-slot {
+  background: rgba(48, 52, 70, 0.4);
+  border: 1.5px dashed rgba(198, 208, 245, 0.15);
+  border-radius: 8px;
+  min-height: 52px;
+  display: flex;
+  align-items: center;
+  padding: 0 16px;
+  gap: 14px;
+  position: relative;
+  transition: all 0.2s ease;
+  cursor: pointer;
+}
+
+.sequence-drop-slot.highlight-target {
+  border-color: var(--ctp-lavender);
+  background: rgba(186, 187, 241, 0.08);
+}
+
+.sequence-drop-slot.filled {
+  border-style: solid;
+  border-color: rgba(198, 208, 245, 0.15);
+  background: rgba(48, 52, 70, 0.6);
+}
+
+.sequence-slot-num {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--ctp-overlay1);
+  width: 20px;
+}
+
+.sequence-slot-content {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.sequence-slot-placeholder {
+  font-size: 13.5px;
+  color: var(--ctp-overlay0);
+  pointer-events: none;
+}
+
+.sequence-placed-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+}
+
+.sequence-placed-text {
+  font-size: 13.5px;
+  font-weight: 600;
+  color: var(--ctp-lavender);
+}
+
+.sequence-remove-btn {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  color: var(--ctp-overlay1);
+  display: flex;
+  align-items: center;
+  transition: color 0.2s ease;
+  padding: 8px;
+}
+
+.sequence-remove-btn:hover {
+  color: var(--ctp-red);
+}
+
+/* Footer & Buttons */
+.sequence-footer {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+@media (min-width: 768px) {
+  .sequence-footer {
+    flex-direction: row;
+    align-items: center;
+  }
+}
+
+.sequence-verify-btn {
+  background: var(--ctp-lavender);
+  color: var(--ctp-crust);
+  border: none;
+  padding: 12px 24px;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  min-height: 48px;
+  width: 100%;
+}
+
+@media (min-width: 768px) {
+  .sequence-verify-btn {
+    width: auto;
+  }
+}
+
+.sequence-verify-btn:hover {
+  background: var(--ctp-blue);
+  transform: translateY(-1px);
+}
+
+.sequence-feedback-msg {
+  font-size: 14px;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--ctp-surface0);
+  padding: 12px 20px;
+  border-radius: 8px;
+  flex-grow: 1;
+  width: 100%;
+}
+
+@media (min-width: 768px) {
+  .sequence-feedback-msg {
+    width: auto;
+  }
+}
+
+.sequence-feedback-msg.success {
+  color: var(--ctp-green);
+  border-left: 4px solid var(--ctp-green);
+  background: rgba(166, 209, 137, 0.04);
+}
+
+.sequence-feedback-msg.error {
+  color: var(--ctp-red);
+  border-left: 4px solid var(--ctp-red);
+  background: rgba(231, 130, 132, 0.04);
+}
+
+.feedback-icon {
+  flex-shrink: 0;
+}

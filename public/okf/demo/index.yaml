@@ -37,3 +37,7 @@ related:
   - sections/concept-map/concepts.yaml
   - sections/scenario/scenarios.yaml
   - sections/decision-tree/tree.yaml
+  - sections/formula-sandbox/sandbox.yaml
+  - sections/reflection-sequence/sequence.yaml
+  - sections/reflection-template/template.yaml
+

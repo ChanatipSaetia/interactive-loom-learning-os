@@ -33,6 +33,50 @@ export type OKFSectionData =
   | OKFScenarioSectionData
   | OKFDecisionTreeSectionData
   | OKFImageGallerySectionData
+  | OKFFormulaSandboxSectionData
+  | OKFReflectionSequenceSectionData
+  | OKFReflectionTemplateSectionData
+
+export interface OKFFormulaVariable {
+  id: string
+  label: string
+  min: number
+  max: number
+  step: number
+  defaultValue: number
+}
+
+export interface OKFFormulaMetric {
+  id: string
+  label: string
+  formula: string
+  description: string
+  analogy?: string
+  inScope?: string[]
+  outOfScope?: string[]
+}
+
+export interface OKFFormulaSandboxSectionData {
+  type: 'formula-sandbox'
+  variables: OKFFormulaVariable[]
+  metrics: OKFFormulaMetric[]
+}
+
+export interface OKFReflectionSequenceSectionData {
+  type: 'reflection-sequence'
+  prompt: string
+  items: Array<{ id: string; text: string; icon?: string }>
+  solution: string[]
+}
+
+export interface OKFReflectionTemplateSectionData {
+  type: 'reflection-template'
+  prompt: string
+  template: string
+  chips: Array<{ id: string; text: string }>
+  solution: Record<string, string>
+  explanation?: string
+}
 
 export interface OKFTextSectionData {
   type: 'text'
@@ -324,3 +368,25 @@ export interface OKFDecisionTreeNodeRaw {
   choices?: Array<{ id: string; text: string; next: string; rationale?: string; recommended?: boolean }>
   leaf?: { recommendation: string; explanation: string; tradeoffs?: string[] }
 }
+
+// --- Raw types for formula and reflection sections ---
+
+export interface OKFFormulaSandboxRaw {
+  variables: OKFFormulaVariable[]
+  metrics: OKFFormulaMetric[]
+}
+
+export interface OKFReflectionSequenceRaw {
+  prompt: string
+  items: Array<{ id: string; text: string; icon?: string }>
+  solution: string[]
+}
+
+export interface OKFReflectionTemplateRaw {
+  prompt: string
+  template: string
+  chips: Array<{ id: string; text: string }>
+  solution: Record<string, string>
+  explanation?: string
+}
+

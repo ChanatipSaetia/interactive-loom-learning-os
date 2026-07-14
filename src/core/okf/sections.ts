@@ -79,6 +79,22 @@ export function bundleToSections(bundle: OKFBundled): SectionConfig[] {
       case 'image-gallery':
         props.items = data.items
         break
+      case 'formula-sandbox':
+        props.variables = data.variables
+        props.metrics = data.metrics
+        break
+      case 'reflection-sequence':
+        props.prompt = data.prompt
+        props.items = data.items
+        props.solution = data.solution
+        break
+      case 'reflection-template':
+        props.prompt = data.prompt
+        props.template = data.template
+        props.chips = data.chips
+        props.solution = data.solution
+        props.explanation = data.explanation
+        break
     }
 
     return { type: meta.type, props }

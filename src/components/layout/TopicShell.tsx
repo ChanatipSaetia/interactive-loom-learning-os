@@ -5,6 +5,8 @@ import type { SectionConfig } from '../../core/registry'
 import { SectionRegistry } from '../../core/registry'
 import { useOKFBundled, bundleToSections } from '../../core/okf/sections'
 import { ProgressProvider } from '../../core/progress'
+import { HUDProvider, useHUD } from '../../core/context/HUDContext'
+import { X } from 'lucide-react'
 
 interface SectionRendererProps {
   config: SectionConfig
@@ -26,6 +28,21 @@ function SectionRenderer({ config }: SectionRendererProps) {
   )
 }
 
+function HUDDrawer() {
+  const { isOpen, title, body, closeHUD } = useHUD()
+
+  return (
+    <div className={`hud-drawer ${isOpen ? 'open' : ''}`} data-testid="hud-drawer">
+      <div className="hud-header">
+        <span className="hud-title">{title}</span>
+        <button className="hud-close" onClick={closeHUD} aria-label="Close details">
+          <X size={18} />
+        </button>
+      </div>
+      <div className="hud-body" dangerouslySetInnerHTML={{ __html: body }} />
+    </div>
+  )
+}
 
 function TopicShellInner() {
   const { topicId } = useParams()
@@ -69,6 +86,7 @@ function TopicShellInner() {
       {sections.map((section, idx) => (
         <SectionRenderer key={idx} config={section} />
       ))}
+      <HUDDrawer />
     </div>
   )
 }
@@ -76,7 +94,9 @@ function TopicShellInner() {
 export function TopicShell() {
   return (
     <ProgressProvider>
-      <TopicShellInner />
+      <HUDProvider>
+        <TopicShellInner />
+      </HUDProvider>
     </ProgressProvider>
   )
 }
