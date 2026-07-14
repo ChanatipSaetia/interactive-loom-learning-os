@@ -49,8 +49,9 @@ describe('FormulaSandbox Component', () => {
     expect(screen.getByText('Variable A')).toBeInTheDocument()
     expect(screen.getByText('Variable B')).toBeInTheDocument()
 
-    // Verify inputs checklist display
-    expect(screen.getAllByText('Inputs: Variable A, Variable B')).toHaveLength(2)
+    // Verify formulas are displayed in explanation box
+    expect(screen.getByText('var_a + var_b')).toBeInTheDocument()
+    expect(screen.getByText('var_a * var_b')).toBeInTheDocument()
 
     // Sum should be 20 + 4 = 24
     expect(screen.getByText('24 units')).toBeInTheDocument()

@@ -183,8 +183,12 @@ export function FormulaSandbox({ title, variables = [], metrics = [] }: FormulaS
 
           <div className="formula-explanation">
             <strong>System Formulas:</strong><br />
-            • Metrics are dynamically estimated using target variables.<br />
-            • Values scale based on theoretical formulas mapping system properties.
+            {metrics.map((m, idx) => (
+              <span key={m.id}>
+                • {m.label}: <code>{m.formula}</code>
+                {idx < metrics.length - 1 && <br />}
+              </span>
+            ))}
           </div>
         </div>
 
@@ -206,22 +210,10 @@ export function FormulaSandbox({ title, variables = [], metrics = [] }: FormulaS
             const percentage = span > 0 ? ((val - range.min) / span) * 100 : 0
             const gaugeWidth = `${Math.max(0, Math.min(percentage, 100))}%`
 
-            // Identify variables used in formula for params checklist
-            const variablesUsed = variables
-              .filter((v) => new RegExp(`\\b${v.id}\\b`).test(m.formula))
-              .map((v) => v.label)
-
             return (
               <div key={m.id} className="sim-metric-row">
                 <div className="sim-metric-meta">
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
-                    <span className="sim-metric-name">{m.label}</span>
-                    {variablesUsed.length > 0 && (
-                      <span style={{ fontSize: '11px', color: 'var(--ctp-subtext1)', fontFamily: 'monospace' }}>
-                        Inputs: {variablesUsed.join(', ')}
-                      </span>
-                    )}
-                  </div>
+                  <span className="sim-metric-name">{m.label}</span>
                   <button
                     className={`sim-metric-val ${valColorClass}`}
                     onClick={() => handleMetricClick(m)}
