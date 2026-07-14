@@ -16,3 +16,6 @@
 * [Gear Investment Levels](sections/tradeoffs/section.md)
 * [Build Progression Scenario](sections/scenario/section.md)
 * [Build Setup Advisor](sections/decision-tree/section.md)
+* [Stats & DPS Calculator](sections/formula-sandbox/section.md) — Calculate DPS
+* [Skill Combination Challenge](sections/reflection-sequence/section.md) — Order skills
+

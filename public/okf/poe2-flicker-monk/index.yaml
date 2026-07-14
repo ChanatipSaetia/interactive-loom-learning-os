@@ -26,3 +26,6 @@ related:
   - sections/scenario/scenarios.yaml
   - sections/decision-tree/tree.yaml
   - sections/image-gallery/gallery.yaml
+  - sections/formula-sandbox/sandbox.yaml
+  - sections/reflection-sequence/sequence.yaml
+

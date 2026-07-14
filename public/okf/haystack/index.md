@@ -17,3 +17,5 @@
 * [Architecture Trade-offs](sections/tradeoffs/section.md)
 * [Architecture Decision Scenario](sections/scenario/section.md)
 * [Choose Your Haystack Setup](sections/decision-tree/section.md)
+* [Pipeline Sequence Challenge](sections/reflection-sequence/section.md) — Order RAG components
+

@@ -1,0 +1,18 @@
+prompt: "Arrange the components of a RAG query pipeline in the correct chronological execution order:"
+items:
+  - id: user_query
+    text: "User Query Ingest"
+  - id: text_embedder
+    text: "Sentence Embedder (Vectorize)"
+  - id: vector_retriever
+    text: "Vector Retriever Lookup"
+  - id: prompt_builder
+    text: "Prompt Builder (Format Context)"
+  - id: llm_generator
+    text: "LLM Answer Generation"
+solution:
+  - user_query
+  - text_embedder
+  - vector_retriever
+  - prompt_builder
+  - llm_generator

@@ -1,0 +1,15 @@
+prompt: "Order the combat skills in the correct sequence to maximize lightning conversion and trigger Falling Thunder Nova:"
+items:
+  - id: cast_tempest
+    text: "Cast Tempest (Create Lightning Zone)"
+  - id: stack_charges
+    text: "Generate Power Charges"
+  - id: execute_flicker
+    text: "Execute Flicker Strike"
+  - id: trigger_thunder
+    text: "Trigger Falling Thunder Nova"
+solution:
+  - cast_tempest
+  - stack_charges
+  - execute_flicker
+  - trigger_thunder

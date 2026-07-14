@@ -1,0 +1,15 @@
+prompt: "Arrange the words in the correct Chinese grammatical sequence to say: 'Are you busy today?'"
+items:
+  - id: subject
+    text: "你 (You)"
+  - id: time
+    text: "今天 (Today)"
+  - id: predicate
+    text: "忙 (Busy)"
+  - id: particle
+    text: "嗎 (Question particle ?)"
+solution:
+  - subject
+  - time
+  - predicate
+  - particle

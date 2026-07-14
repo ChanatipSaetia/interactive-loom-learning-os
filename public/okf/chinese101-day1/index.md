@@ -8,3 +8,5 @@
 ## Interactive
 * [ทดสอบความรู้](sections/quiz/section.md)
 * [สถานการณ์: ที่สนามบินปักกิ่ง](sections/scenario/section.md)
+* [เรียงประโยคภาษาจีน](sections/reflection-sequence/section.md) — Chinese sentence order
+

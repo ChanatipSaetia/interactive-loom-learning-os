@@ -30,3 +30,5 @@ related:
   - sections/quiz/questions.yaml
   - sections/scenario/scenarios.yaml
   - sections/decision-tree/tree.yaml
+  - sections/reflection-sequence/sequence.yaml
+

@@ -1,0 +1,15 @@
+prompt: "Order the stages of a 4-Stroke internal combustion engine cycle chronologically:"
+items:
+  - id: intake_stroke
+    text: "Intake Stroke"
+  - id: compression_stroke
+    text: "Compression Stroke"
+  - id: power_stroke
+    text: "Power Stroke"
+  - id: exhaust_stroke
+    text: "Exhaust Stroke"
+solution:
+  - intake_stroke
+  - compression_stroke
+  - power_stroke
+  - exhaust_stroke

@@ -1,0 +1,49 @@
+variables:
+  - id: attack_speed
+    label: "Attack Speed (Attacks / sec)"
+    min: 2
+    max: 10
+    step: 0.5
+    defaultValue: 4.5
+  - id: crit_chance
+    label: "Critical Strike Chance (%)"
+    min: 5
+    max: 100
+    step: 5
+    defaultValue: 40
+  - id: lightning_damage
+    label: "Base Lightning Damage"
+    min: 100
+    max: 2000
+    step: 50
+    defaultValue: 400
+
+metrics:
+  - id: recall
+    label: "Estimated Build DPS"
+    formula: "Math.round(attack_speed * lightning_damage * (1 + (crit_chance / 100) * 1.5))"
+    description: "Calculates the total damage output per second of Flicker Strike incorporating attack speed, flat damage, and critical multiplier."
+    analogy: "Like striking multiple times with high accuracy—if you swing fast and hit critical pressure points, the total force multiplies exponentially."
+    inScope:
+      - "Critical strike multiplier factor"
+      - "Flat lightning base hits"
+    outOfScope:
+      - "Monster elemental resistances"
+  - id: latency
+    label: "Spirit Mana Reservation"
+    formula: "Math.round(150 + (attack_speed * 15))"
+    description: "The total Spirit resource reserved to maintain persistent aura builds (like Wrath and Grace) at this rate of attack speed."
+    analogy: "The background energy required to sustain a continuous sprint—the faster you move, the more oxygen you reserve constantly."
+    inScope:
+      - "Aura reservation costs"
+    outOfScope:
+      - "Direct action mana costs"
+  - id: cost
+    label: "Shock Infliction Chance (%)"
+    formula: "Math.round(crit_chance * 0.9)"
+    description: "The likelihood of applying the Shock elemental ailment on target hits, increasing their damage taken by up to 50%."
+    analogy: "Static build-up. The more consistently you strike metal, the more sparks ignite the target."
+    inScope:
+      - "Shock application chance"
+    outOfScope:
+      - "Shock damage amplification calculations"

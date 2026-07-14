@@ -1,0 +1,27 @@
+category: Project Management
+tags:
+  - project-management
+  - agile
+  - meetings
+  - productivity
+related:
+  - sections/flowchart/actors.yaml
+  - sections/flowchart/systems.yaml
+  - sections/flowchart/steps.yaml
+  - sections/flowchart/journeys.yaml
+  - sections/tradeoffs/communication-strategy.yaml
+  - sections/tradeoffs/process-overhead.yaml
+  - sections/tradeoffs/estimations-and-planning.yaml
+  - sections/taxonomy/daily-standup.yaml
+  - sections/taxonomy/sprint-planning.yaml
+  - sections/taxonomy/retrospective.yaml
+  - sections/taxonomy/async-status.yaml
+  - sections/taxonomy/project-planning.yaml
+  - sections/flashcards/glossary.yaml
+  - sections/quiz/questions.yaml
+  - sections/concept-map/concepts.yaml
+  - sections/scenario-schedule/scenarios.yaml
+  - sections/scenario-meeting-bloat/scenarios.yaml
+  - sections/decision-tree-channel/tree.yaml
+  - sections/decision-tree-estimation/tree.yaml
+  - sections/reflection-sequence/sequence.yaml

@@ -1,0 +1,18 @@
+prompt: "Order the stages of a standard IT feature development sprint loop:"
+items:
+  - id: define_requirements
+    text: "Define Requirements & PRD"
+  - id: sprint_planning
+    text: "Sprint Planning"
+  - id: development
+    text: "Development & Code Review"
+  - id: qa_verification
+    text: "QA Verification"
+  - id: production_release
+    text: "Production Release"
+solution:
+  - define_requirements
+  - sprint_planning
+  - development
+  - qa_verification
+  - production_release

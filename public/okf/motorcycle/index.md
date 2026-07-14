@@ -19,3 +19,5 @@
 * [ทางเลือกและการตัดสินใจ](sections/tradeoffs/section.md)
 * [สถานการณ์ตัดสินใจ](sections/scenario/section.md)
 * [วินิจฉัยปัญหารถมอเตอร์ไซค์](sections/decision-tree/section.md)
+* [เรียงลำดับการทำงานของเครื่องยนต์](sections/reflection-sequence/section.md) — 4-Stroke sequence
+

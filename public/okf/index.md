@@ -15,3 +15,7 @@ okf_version: "0.1"
 
 ## Mechanical
 * [รถมอเตอร์ไซค์ (Motorcycle)](motorcycle/index.md) — เข้าใจส่วนประกอบ การทำงาน และการบำรุงรักษารถมอเตอร์ไซค์
+
+## Project Management
+* [IT Project Management & Meetings](pm-and-meetings/index.md) — Learn why project management is necessary and how to run effective, lean meetings without wasting developers' focus time.
+
