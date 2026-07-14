@@ -78,7 +78,7 @@
   border-radius: 12px;
   padding: 16px;
   border: 1px dashed rgba(198, 208, 245, 0.08);
-  font-size: 11.5px;
+  font-size: 10px;
   color: var(--ctp-subtext0);
   order: 3;
 }
