@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { CheckCircle2, AlertCircle, X, ChevronLeft, ChevronRight } from 'lucide-react'
 import './reflection-sequence.css'
 
@@ -243,6 +243,10 @@ export function ReflectionSequence({
     : [{ prompt, items, solution }]
 
   const [currentIndex, setCurrentIndex] = useState(0)
+
+  useEffect(() => {
+    setCurrentIndex(0)
+  }, [challenges])
 
   const currentChallenge = normalizedChallenges[currentIndex]
 

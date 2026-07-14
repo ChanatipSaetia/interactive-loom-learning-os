@@ -84,7 +84,7 @@ function TopicShellInner() {
     <div className="topic-page" data-topic-id={topic.id} data-testid={`${topic.id}-topic`}>
       <h2 className="topic-page-title">{topic.label}</h2>
       {sections.map((section, idx) => (
-        <SectionRenderer key={idx} config={section} />
+        <SectionRenderer key={`${topic.id}-${idx}`} config={section} />
       ))}
       <HUDDrawer />
     </div>
