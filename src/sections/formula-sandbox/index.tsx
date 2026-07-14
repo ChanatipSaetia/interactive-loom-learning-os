@@ -229,19 +229,6 @@ export function FormulaSandbox({ title, variables = [], metrics = [] }: FormulaS
               />
             </div>
           ))}
-
-          <div className="formula-explanation">
-            <strong>System Formulas:</strong><br />
-            {metrics.map((m, idx) => {
-              const cleanLabel = m.label.replace(/\s*\([^)]*\)\s*$/, '')
-              return (
-                <span key={m.id}>
-                  • {cleanLabel} = <code>{humanizeFormula(m.formula, variables)}</code>
-                  {idx < metrics.length - 1 && <br />}
-                </span>
-              )
-            })}
-          </div>
         </div>
 
         <div className="sandbox-metrics">
@@ -281,6 +268,19 @@ export function FormulaSandbox({ title, variables = [], metrics = [] }: FormulaS
                   />
                 </div>
               </div>
+            )
+          })}
+        </div>
+
+        <div className="formula-explanation">
+          <strong>System Formulas:</strong><br />
+          {metrics.map((m, idx) => {
+            const cleanLabel = m.label.replace(/\s*\([^)]*\)\s*$/, '')
+            return (
+              <span key={m.id}>
+                • {cleanLabel} = <code>{humanizeFormula(m.formula, variables)}</code>
+                {idx < metrics.length - 1 && <br />}
+              </span>
             )
           })}
         </div>

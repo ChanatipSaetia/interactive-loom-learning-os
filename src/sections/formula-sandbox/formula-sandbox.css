@@ -80,6 +80,14 @@
   border: 1px dashed rgba(198, 208, 245, 0.08);
   font-size: 13px;
   color: var(--ctp-subtext0);
+  order: 3;
+}
+
+@media (min-width: 992px) {
+  .formula-explanation {
+    grid-column: 1;
+    order: unset;
+  }
 }
 
 .formula-explanation code {
