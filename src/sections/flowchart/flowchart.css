@@ -164,7 +164,7 @@
 
 .flowchart-sidebar-add-btn:hover {
   border-color: var(--ctp-blue);
-  background: rgba(140, 170, 238, 0.1);
+  background: color-mix(in srgb, var(--ctp-blue) 10%, transparent);
 }
 
 /* Sidebar list items */
@@ -293,7 +293,7 @@
 
 .flowchart-sidebar-danger-btn:hover {
   border-color: var(--ctp-red);
-  background: rgba(231, 130, 132, 0.1);
+  background: color-mix(in srgb, var(--ctp-red) 10%, transparent);
 }
 
 /* Sidebar — connections tab */
@@ -326,14 +326,14 @@
 .flowchart-sidebar-primary-btn {
   @apply font-medium text-sm rounded-[var(--radius-xs)] border border-border py-[7px] cursor-pointer;
   font-family: var(--font-body);
-  background: rgba(140, 170, 238, 0.12);
+  background: color-mix(in srgb, var(--ctp-blue) 12%, transparent);
   color: var(--ctp-blue);
   transition: border-color 0.15s ease, background-color 0.15s ease;
 }
 
 .flowchart-sidebar-primary-btn:hover {
   border-color: var(--ctp-blue);
-  background: rgba(140, 170, 238, 0.2);
+  background: color-mix(in srgb, var(--ctp-blue) 20%, transparent);
 }
 
 .flowchart-relation-item {
@@ -481,7 +481,7 @@
 }
 
 .flowchart-journey-option-active {
-  background-color: rgba(140, 170, 238, 0.1);
+  background-color: color-mix(in srgb, var(--ctp-blue) 10%, transparent);
   color: var(--ctp-blue);
 }
 
@@ -580,7 +580,7 @@
 }
 
 .flowchart-node-highlighted {
-  filter: drop-shadow(0 0 4px rgba(140, 170, 238, 0.9)) drop-shadow(0 0 12px rgba(140, 170, 238, 0.5));
+  filter: drop-shadow(0 0 4px color-mix(in srgb, var(--ctp-blue) 90%, transparent)) drop-shadow(0 0 12px color-mix(in srgb, var(--ctp-blue) 50%, transparent));
 }
 
 .flowchart-particle {
@@ -659,8 +659,8 @@
 }
 
 @keyframes icon-ring {
-  0%, 100% { transform: scale(1); filter: drop-shadow(0 0 0px rgba(243,139,168,0)); }
-  50% { transform: scale(1.08); filter: drop-shadow(0 0 3px rgba(243,139,168,0.7)); }
+  0%, 100% { transform: scale(1); filter: drop-shadow(0 0 0px color-mix(in srgb, var(--ctp-pink) 0%, transparent)); }
+  50% { transform: scale(1.08); filter: drop-shadow(0 0 3px color-mix(in srgb, var(--ctp-pink) 70%, transparent)); }
 }
 .anim-icon-ring {
   animation: icon-ring 2s ease-in-out infinite;
@@ -686,7 +686,7 @@
 
 .flowchart-node-group.has-links:hover .flowchart-node-rect {
   stroke-width: 2.2px !important;
-  filter: drop-shadow(0 0 6px rgba(140, 170, 238, 0.55)) !important;
+  filter: drop-shadow(0 0 6px color-mix(in srgb, var(--ctp-blue) 55%, transparent)) !important;
 }
 
 .flowchart-node-group.has-links:hover .flowchart-node-link-icon {
@@ -822,7 +822,7 @@
   @apply font-semibold uppercase tracking-[0.5px] text-[10px] rounded-[var(--radius-xs)] px-2 py-[3px];
   font-family: var(--font-mono);
   color: var(--ctp-teal);
-  background: rgba(129, 200, 190, 0.1);
+  background: color-mix(in srgb, var(--ctp-teal) 10%, transparent);
 }
 
 .inspector-payload-code {
@@ -849,7 +849,7 @@
 
 .flowchart-grid-modal-overlay {
   @apply fixed inset-0 flex items-center justify-center p-6 z-[999];
-  background-color: rgba(17, 17, 27, 0.85); /* ctp-crust with opacity */
+  background-color: color-mix(in srgb, var(--ctp-crust) 85%, transparent); /* ctp-crust with opacity */
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
   animation: flowchart-fade-in 0.25s ease-out;
@@ -1008,7 +1008,7 @@
 .flowchart-inspector-toggle.active {
   color: var(--ctp-blue);
   border-color: var(--ctp-blue);
-  background: rgba(140, 170, 238, 0.08);
+  background: color-mix(in srgb, var(--ctp-blue) 8%, transparent);
 }
 
 /* ==========================================================================
@@ -1082,7 +1082,7 @@
 
 /* Override active indicator background to match flowchart theme */
 .flowchart-view-tab-list > div:has(button[aria-selected="true"]) > span {
-  background-color: rgba(140, 170, 238, 0.12) !important;
+  background-color: color-mix(in srgb, var(--ctp-blue) 12%, transparent) !important;
 }
 
 /* Keep text dark on translucent indicator */

@@ -19,7 +19,7 @@
   color: var(--ctp-text);
   line-height: 2.5;
   background: var(--ctp-mantle);
-  border: 1px solid rgba(198, 208, 245, 0.05);
+  border: 1px solid color-mix(in srgb, var(--ctp-text) 5%, transparent);
   border-radius: 12px;
   padding: 18px;
 }
@@ -53,14 +53,14 @@
 
 .reflection-blank-dropzone.highlight-target {
   border-color: var(--ctp-lavender);
-  background: rgba(186, 187, 241, 0.08);
+  background: color-mix(in srgb, var(--ctp-lavender) 8%, transparent);
   transform: scale(1.03);
 }
 
 .reflection-blank-dropzone.filled {
   border-style: solid;
   border-color: var(--ctp-mauve);
-  background: rgba(202, 158, 230, 0.08);
+  background: color-mix(in srgb, var(--ctp-mauve) 8%, transparent);
 }
 
 /* Source Chips */
@@ -69,14 +69,14 @@
   flex-wrap: wrap;
   gap: 10px;
   padding: 14px;
-  background: rgba(48, 52, 70, 0.3);
+  background: color-mix(in srgb, var(--ctp-base) 30%, transparent);
   border-radius: 8px;
   min-height: 60px;
 }
 
 .template-chip-item {
   background: var(--ctp-surface0);
-  border: 1px solid rgba(198, 208, 245, 0.1);
+  border: 1px solid color-mix(in srgb, var(--ctp-text) 10%, transparent);
   border-radius: 6px;
   padding: 8px 16px;
   font-size: 13px;
@@ -97,8 +97,8 @@
 
 .template-chip-item.selected {
   border-color: var(--ctp-mauve);
-  background: rgba(202, 158, 230, 0.12);
-  box-shadow: 0 4px 12px rgba(202, 158, 230, 0.25);
+  background: color-mix(in srgb, var(--ctp-mauve) 12%, transparent);
+  box-shadow: 0 4px 12px color-mix(in srgb, var(--ctp-mauve) 25%, transparent);
 }
 
 .template-chip-item.used {
@@ -168,13 +168,13 @@
 .template-feedback-msg.success {
   color: var(--ctp-green);
   border-left: 4px solid var(--ctp-green);
-  background: rgba(166, 209, 137, 0.04);
+  background: color-mix(in srgb, var(--ctp-green) 4%, transparent);
 }
 
 .template-feedback-msg.error {
   color: var(--ctp-red);
   border-left: 4px solid var(--ctp-red);
-  background: rgba(231, 130, 132, 0.04);
+  background: color-mix(in srgb, var(--ctp-red) 4%, transparent);
 }
 
 .feedback-text-content {

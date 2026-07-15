@@ -252,10 +252,10 @@ function StepComparisonModal({
                           className="metric-delta-badge text-xs px-2 py-0.5 rounded font-medium border"
                           style={{
                             backgroundColor: isNeutral
-                              ? 'rgba(140, 170, 238, 0.1)'
+                              ? 'color-mix(in srgb, var(--ctp-blue) 10%, transparent)'
                               : isGood
-                              ? 'rgba(166, 209, 137, 0.1)'
-                              : 'rgba(231, 130, 132, 0.1)',
+                              ? 'color-mix(in srgb, var(--ctp-green) 10%, transparent)'
+                              : 'color-mix(in srgb, var(--ctp-red) 10%, transparent)',
                             color: badgeColor,
                             borderColor: badgeColor,
                           }}

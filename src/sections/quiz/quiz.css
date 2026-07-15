@@ -5,7 +5,7 @@
 /* Score bar */
 .quiz-score-bar {
   @apply flex items-center gap-3 mb-6 p-3 rounded-lg border border-border;
-  background-color: rgba(81, 87, 109, 0.1);
+  background-color: color-mix(in srgb, var(--ctp-surface1) 10%, transparent);
 }
 
 .quiz-score-label {
@@ -14,7 +14,7 @@
 
 .quiz-score-track {
   @apply flex-1 h-2 rounded-full overflow-hidden;
-  background-color: rgba(81, 87, 109, 0.3);
+  background-color: color-mix(in srgb, var(--ctp-surface1) 30%, transparent);
 }
 
 .quiz-score-fill {
@@ -57,8 +57,8 @@
 /* Hint */
 .quiz-hint {
   @apply mb-4 rounded-md border overflow-hidden;
-  border-color: rgba(81, 87, 109, 0.5);
-  background-color: rgba(81, 87, 109, 0.1);
+  border-color: color-mix(in srgb, var(--ctp-surface1) 50%, transparent);
+  background-color: color-mix(in srgb, var(--ctp-surface1) 10%, transparent);
 }
 
 .quiz-hint-toggle {
@@ -66,7 +66,7 @@
 }
 
 .quiz-hint-toggle:hover {
-  background-color: rgba(81, 87, 109, 0.15);
+  background-color: color-mix(in srgb, var(--ctp-surface1) 15%, transparent);
 }
 
 .quiz-hint-icon {
@@ -93,13 +93,13 @@
 
 .quiz-choice {
   @apply flex items-center gap-3 w-full text-left p-3.5 rounded-lg border transition-all duration-200;
-  border-color: rgba(81, 87, 109, 0.6);
-  background-color: rgba(81, 87, 109, 0.05);
+  border-color: color-mix(in srgb, var(--ctp-surface1) 60%, transparent);
+  background-color: color-mix(in srgb, var(--ctp-surface1) 5%, transparent);
 }
 
 .quiz-choice:hover:not(:disabled) {
-  border-color: rgba(140, 170, 238, 0.5);
-  background-color: rgba(81, 87, 109, 0.2);
+  border-color: color-mix(in srgb, var(--ctp-blue) 50%, transparent);
+  background-color: color-mix(in srgb, var(--ctp-surface1) 20%, transparent);
 }
 
 .quiz-choice:disabled {
@@ -131,7 +131,7 @@
 /* Choice states */
 .quiz-choice-correct {
   border-color: var(--ctp-green);
-  background: rgba(166, 209, 137, 0.08);
+  background: color-mix(in srgb, var(--ctp-green) 8%, transparent);
 }
 
 .quiz-choice-correct .quiz-choice-label {
@@ -142,7 +142,7 @@
 
 .quiz-choice-wrong {
   border-color: var(--ctp-red);
-  background: rgba(231, 130, 132, 0.08);
+  background: color-mix(in srgb, var(--ctp-red) 8%, transparent);
 }
 
 .quiz-choice-wrong .quiz-choice-label {
@@ -163,13 +163,13 @@
 .quiz-explanation-correct {
   @apply p-4 rounded-md border;
   border-color: var(--ctp-green);
-  background: rgba(166, 209, 137, 0.06);
+  background: color-mix(in srgb, var(--ctp-green) 6%, transparent);
 }
 
 .quiz-explanation-wrong {
   @apply p-4 rounded-md border;
   border-color: var(--ctp-red);
-  background: rgba(231, 130, 132, 0.06);
+  background: color-mix(in srgb, var(--ctp-red) 6%, transparent);
 }
 
 .quiz-explanation-result {

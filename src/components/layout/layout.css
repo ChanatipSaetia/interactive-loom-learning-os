@@ -139,7 +139,7 @@ html[data-theme='recipebook'] .topic-page-title {
   height: 10px;
   border-radius: 50%;
   background: linear-gradient(135deg, var(--ctp-lavender), var(--ctp-blue));
-  box-shadow: 0 0 12px rgba(186, 187, 241, 0.4);
+  box-shadow: 0 0 12px color-mix(in srgb, var(--ctp-lavender) 40%, transparent);
   flex-shrink: 0;
 }
 
@@ -173,7 +173,7 @@ html[data-theme='recipebook'] .topic-page-title {
   @apply text-sm p-3 rounded border;
   color: var(--ctp-red);
   border-color: var(--ctp-red);
-  background-color: rgba(231, 130, 132, 0.08);
+  background-color: color-mix(in srgb, var(--ctp-red) 8%, transparent);
 }
 
 /* =============================================
@@ -214,7 +214,7 @@ html[data-theme='recipebook'] .topic-page-title {
   width: 340px;
   height: 100vh;
   background-color: var(--ctp-mantle);
-  border-left: 1px solid rgba(198, 208, 245, 0.08);
+  border-left: 1px solid color-mix(in srgb, var(--ctp-text) 8%, transparent);
   box-shadow: -8px 0 32px rgba(0, 0, 0, 0.35);
   z-index: 100;
   padding: 24px;
@@ -232,7 +232,7 @@ html[data-theme='recipebook'] .topic-page-title {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  border-bottom: 1px solid rgba(198, 208, 245, 0.05);
+  border-bottom: 1px solid color-mix(in srgb, var(--ctp-text) 5%, transparent);
   padding-bottom: 12px;
 }
 

@@ -274,7 +274,7 @@ export function ReflectionSequence({
 
       {/* Pagination Controls */}
       {normalizedChallenges.length > 1 && (
-        <div className="quiz-nav" style={{ marginTop: '24px', borderTop: '1px solid rgba(198, 208, 245, 0.05)', paddingTop: '16px' }}>
+        <div className="quiz-nav" style={{ marginTop: '24px', borderTop: '1px solid color-mix(in srgb, var(--ctp-text) 5%, transparent)', paddingTop: '16px' }}>
           <button
             onClick={handlePrev}
             disabled={currentIndex === 0}

@@ -65,13 +65,13 @@
 
 .scenario-choice {
   @apply flex items-center gap-3 w-full text-left p-4 rounded-lg border transition-all duration-200;
-  border-color: rgba(81, 87, 109, 0.6);
-  background-color: rgba(81, 87, 109, 0.05);
+  border-color: color-mix(in srgb, var(--ctp-surface1) 60%, transparent);
+  background-color: color-mix(in srgb, var(--ctp-surface1) 5%, transparent);
 }
 
 .scenario-choice:hover {
-  border-color: rgba(140, 170, 238, 0.5);
-  background-color: rgba(81, 87, 109, 0.2);
+  border-color: color-mix(in srgb, var(--ctp-blue) 50%, transparent);
+  background-color: color-mix(in srgb, var(--ctp-surface1) 20%, transparent);
 }
 
 .scenario-choice-text {
@@ -128,7 +128,7 @@
 
 .scenario-outcome-footer {
   @apply pt-3 border-t;
-  border-color: rgba(81, 87, 109, 0.3);
+  border-color: color-mix(in srgb, var(--ctp-surface1) 30%, transparent);
 }
 
 @media (max-width: 640px) {

@@ -77,7 +77,7 @@
   background: var(--ctp-mantle);
   border-radius: 12px;
   padding: 16px;
-  border: 1px dashed rgba(198, 208, 245, 0.08);
+  border: 1px dashed color-mix(in srgb, var(--ctp-text) 8%, transparent);
   font-size: 10px;
   color: var(--ctp-subtext0);
 }
@@ -95,7 +95,7 @@
   background: var(--ctp-mantle);
   border-radius: 12px;
   padding: 20px;
-  border: 1px solid rgba(198, 208, 245, 0.05);
+  border: 1px solid color-mix(in srgb, var(--ctp-text) 5%, transparent);
   display: flex;
   flex-direction: column;
   gap: 20px;
@@ -130,7 +130,7 @@
   background: transparent;
   border: none;
   cursor: pointer;
-  text-decoration: underline dashed rgba(198, 208, 245, 0.3);
+  text-decoration: underline dashed color-mix(in srgb, var(--ctp-text) 30%, transparent);
   padding: 2px 6px;
   border-radius: 4px;
   transition: all 0.2s ease;

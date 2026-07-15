@@ -42,7 +42,7 @@ html[data-theme='recipebook'] .overview-page-title {
 
 .overview-search-input:focus {
   @apply border-ring;
-  box-shadow: 0 0 0 2px rgba(140, 170, 238, 0.15);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--ctp-blue) 15%, transparent);
 }
 
 .overview-search-input::placeholder {
@@ -92,8 +92,8 @@ html[data-theme='recipebook'] .overview-page-title {
 .overview-card-category {
   @apply inline-block rounded-full px-2 py-0.5 text-[11px] font-mono border self-start;
   color: var(--ctp-mauve);
-  background-color: rgba(202, 158, 230, 0.12);
-  border-color: rgba(202, 158, 230, 0.25);
+  background-color: color-mix(in srgb, var(--ctp-mauve) 12%, transparent);
+  border-color: color-mix(in srgb, var(--ctp-mauve) 25%, transparent);
 }
 
 .overview-card-description {

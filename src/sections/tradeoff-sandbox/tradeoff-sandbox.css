@@ -58,12 +58,12 @@
 }
 
 .scenario-option:hover {
-  background-color: rgba(140, 170, 238, 0.12);
+  background-color: color-mix(in srgb, var(--ctp-blue) 12%, transparent);
 }
 
 .scenario-option-active {
   @apply font-semibold;
-  background-color: rgba(140, 170, 238, 0.15);
+  background-color: color-mix(in srgb, var(--ctp-blue) 15%, transparent);
   color: var(--ctp-blue);
 }
 
@@ -71,7 +71,7 @@
 
 .scenario-banner {
   @apply p-3 rounded-[var(--radius-xs)] mb-6;
-  background-color: rgba(140, 170, 238, 0.08);
+  background-color: color-mix(in srgb, var(--ctp-blue) 8%, transparent);
 }
 
 .scenario-description {
@@ -195,7 +195,7 @@
 
 .compare-card {
   @apply rounded-[var(--radius-sm)] border border-border px-4 py-3;
-  background-color: rgba(140, 170, 238, 0.04);
+  background-color: color-mix(in srgb, var(--ctp-blue) 4%, transparent);
 }
 
 .compare-card-chosen {
@@ -216,7 +216,7 @@
 .compare-badge {
   @apply inline-flex items-center justify-center rounded-full w-6 h-6 flex-shrink-0;
   color: var(--ctp-green);
-  background-color: rgba(166, 209, 137, 0.15);
+  background-color: color-mix(in srgb, var(--ctp-green) 15%, transparent);
 }
 
 .compare-pros {
@@ -273,7 +273,7 @@
 .compare-recommended-badge {
   @apply inline-flex items-center justify-center rounded-full w-6 h-6 flex-shrink-0;
   color: var(--ctp-green);
-  background-color: rgba(166, 209, 137, 0.15);
+  background-color: color-mix(in srgb, var(--ctp-green) 15%, transparent);
 }
 
 /* ─── Details Modal ───────────────────────────────────── */
@@ -334,7 +334,7 @@
 .details-recommended-badge {
   @apply inline-flex items-center justify-center rounded-full w-6 h-6 flex-shrink-0;
   color: var(--ctp-green);
-  background-color: rgba(166, 209, 137, 0.15);
+  background-color: color-mix(in srgb, var(--ctp-green) 15%, transparent);
 }
 
 .details-description {
@@ -369,7 +369,7 @@
 
 .details-con-item {
   @apply flex items-start gap-2 px-3 py-2 rounded-[var(--radius-xs)] border-l-4;
-  background-color: rgba(231, 130, 132, 0.08);
+  background-color: color-mix(in srgb, var(--ctp-red) 8%, transparent);
   border-left-color: var(--error);
 }
 
@@ -416,7 +416,7 @@
 
 .details-alternative-box {
   @apply px-4 py-3 rounded-[var(--radius-sm)] border-l-4;
-  background-color: rgba(239, 159, 118, 0.08);
+  background-color: color-mix(in srgb, var(--ctp-peach) 8%, transparent);
   border-left-color: var(--ctp-peach);
 }
 
@@ -571,7 +571,7 @@
 }
 
 .dropdown-option:hover {
-  background-color: rgba(140, 170, 238, 0.12);
+  background-color: color-mix(in srgb, var(--ctp-blue) 12%, transparent);
 }
 
 .dropdown-option:focus {
@@ -595,7 +595,7 @@
 .recommended-badge {
   @apply inline-flex items-center justify-center rounded-full w-5 h-5 flex-shrink-0;
   color: var(--ctp-green);
-  background-color: rgba(166, 209, 137, 0.15);
+  background-color: color-mix(in srgb, var(--ctp-green) 15%, transparent);
 }
 
 /* ─── Drop Zone ──────────────────────────────────────── */
@@ -608,7 +608,7 @@
 
 .drop-zone:hover {
   border-color: var(--action-blue);
-  background-color: rgba(140, 170, 238, 0.05);
+  background-color: color-mix(in srgb, var(--ctp-blue) 5%, transparent);
 }
 
 .drop-zone-filled {
@@ -644,7 +644,7 @@
 .drop-zone-recommended-badge {
   @apply inline-flex items-center justify-center rounded-full w-5 h-5 flex-shrink-0;
   color: var(--ctp-green);
-  background-color: rgba(166, 209, 137, 0.15);
+  background-color: color-mix(in srgb, var(--ctp-green) 15%, transparent);
 }
 
 .drop-zone-info {
@@ -694,7 +694,7 @@
 
 .compare-card.cursor-pointer:hover {
   border-color: var(--action-blue);
-  background-color: rgba(140, 170, 238, 0.08);
+  background-color: color-mix(in srgb, var(--ctp-blue) 8%, transparent);
 }
 
 .compare-card-active {

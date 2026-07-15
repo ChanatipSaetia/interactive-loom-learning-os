@@ -86,7 +86,7 @@
 
 .taxonomy-dialog-close:hover {
   color: var(--ctp-text);
-  background-color: rgba(140, 170, 238, 0.1);
+  background-color: color-mix(in srgb, var(--ctp-blue) 10%, transparent);
   transform: rotate(90deg);
 }
 
@@ -182,7 +182,7 @@
 .taxonomy-modal-analogy {
   @apply rounded-[var(--radius-xs)] border-l-4 px-3 py-2 mt-0 mb-3 italic leading-[1.5];
   border-left-color: var(--ctp-peach);
-  background-color: rgba(253, 224, 209, 0.06);
+  background-color: color-mix(in srgb, var(--ctp-peach) 6%, transparent);
   font-size: var(--text-body);
   color: var(--ctp-subtext1);
 }

@@ -18,7 +18,7 @@
   display: flex;
   flex-wrap: wrap;
   gap: 10px;
-  background: rgba(48, 52, 70, 0.3);
+  background: color-mix(in srgb, var(--ctp-base) 30%, transparent);
   padding: 14px;
   border-radius: 8px;
   min-height: 60px;
@@ -26,7 +26,7 @@
 
 .sequence-drag-item {
   background: var(--ctp-surface0);
-  border: 1px solid rgba(198, 208, 245, 0.1);
+  border: 1px solid color-mix(in srgb, var(--ctp-text) 10%, transparent);
   border-radius: 8px;
   padding: 12px 18px;
   font-size: 13.5px;
@@ -48,9 +48,9 @@
 
 .sequence-drag-item.selected {
   border-color: var(--ctp-mauve);
-  background: rgba(202, 158, 230, 0.12);
+  background: color-mix(in srgb, var(--ctp-mauve) 12%, transparent);
   transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(202, 158, 230, 0.25);
+  box-shadow: 0 4px 12px color-mix(in srgb, var(--ctp-mauve) 25%, transparent);
 }
 
 .sequence-drag-item.placed {
@@ -67,8 +67,8 @@
 }
 
 .sequence-drop-slot {
-  background: rgba(48, 52, 70, 0.4);
-  border: 1.5px dashed rgba(198, 208, 245, 0.15);
+  background: color-mix(in srgb, var(--ctp-base) 40%, transparent);
+  border: 1.5px dashed color-mix(in srgb, var(--ctp-text) 15%, transparent);
   border-radius: 8px;
   min-height: 52px;
   display: flex;
@@ -82,13 +82,13 @@
 
 .sequence-drop-slot.highlight-target {
   border-color: var(--ctp-lavender);
-  background: rgba(186, 187, 241, 0.08);
+  background: color-mix(in srgb, var(--ctp-lavender) 8%, transparent);
 }
 
 .sequence-drop-slot.filled {
   border-style: solid;
-  border-color: rgba(198, 208, 245, 0.15);
-  background: rgba(48, 52, 70, 0.6);
+  border-color: color-mix(in srgb, var(--ctp-text) 15%, transparent);
+  background: color-mix(in srgb, var(--ctp-base) 60%, transparent);
 }
 
 .sequence-slot-num {
@@ -200,13 +200,13 @@
 .sequence-feedback-msg.success {
   color: var(--ctp-green);
   border-left: 4px solid var(--ctp-green);
-  background: rgba(166, 209, 137, 0.04);
+  background: color-mix(in srgb, var(--ctp-green) 4%, transparent);
 }
 
 .sequence-feedback-msg.error {
   color: var(--ctp-red);
   border-left: 4px solid var(--ctp-red);
-  background: rgba(231, 130, 132, 0.04);
+  background: color-mix(in srgb, var(--ctp-red) 4%, transparent);
 }
 
 .feedback-icon {

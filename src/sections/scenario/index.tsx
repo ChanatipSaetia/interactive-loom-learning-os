@@ -21,10 +21,10 @@ const RATING_COLORS: Record<ScenarioRating, string> = {
 }
 
 const RATING_BG: Record<ScenarioRating, string> = {
-  'a': 'rgba(166, 209, 137, 0.08)',
+  'a': 'color-mix(in srgb, var(--ctp-green) 8%, transparent)',
   'b-plus': 'rgba(117, 191, 165, 0.08)',
   'b-minus': 'rgba(213, 199, 136, 0.08)',
-  'c': 'rgba(231, 130, 132, 0.08)',
+  'c': 'color-mix(in srgb, var(--ctp-red) 8%, transparent)',
 }
 
 const RATING_LABELS: Record<ScenarioRating, string> = {
