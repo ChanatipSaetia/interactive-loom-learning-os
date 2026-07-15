@@ -280,3 +280,10 @@ html[data-theme='recipebook'] .topic-page-title {
   font-size: 13px;
 }
 
+/* Container spacing for interactive sections */
+.loom-sections-container {
+  display: flex;
+  flex-direction: column;
+  gap: 48px;
+}
+

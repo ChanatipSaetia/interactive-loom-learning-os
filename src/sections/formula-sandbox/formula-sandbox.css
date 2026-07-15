@@ -1,6 +1,10 @@
 /* ---------------------------------------------------- */
 /* COMPONENT 1: SYSTEM DYNAMICS / FORMULA SANDBOX      */
 /* ---------------------------------------------------- */
+.formula-sandbox-section {
+  @apply mb-8;
+}
+
 .sandbox-layout {
   display: grid;
   grid-template-columns: 1fr;
