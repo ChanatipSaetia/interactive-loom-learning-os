@@ -4,6 +4,9 @@ node_modules/
 # Build output
 dist/
 dist-ssr/
+dist-lib/
+public/loom-sections.umd.js
+public/loom-sections.css
 *.local
 
 # Environment
