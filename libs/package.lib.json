@@ -1,6 +1,6 @@
 {
   "name": "loom-learning-sections",
-  "version": "1.0.7",
+  "version": "1.0.8",
   "description": "Standalone React component library for rendering interactive learning sections from JSON data. Load via CDN, provide OKF JSON, get rendered sections. Full documentation included in docs/.",
   "main": "loom-sections.umd.js",
   "module": "loom-sections.js",

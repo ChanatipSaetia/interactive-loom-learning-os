@@ -430,6 +430,7 @@ function injectThemeStyle(containerId: string, tokens: Record<string, string>): 
 /**
  * Inject baseline CDN styles (sticky offset, default bg) so a theme `<style>`
  * injected at the same `#id` specificity can override them.
+ * Also configures the centered max-width (860px) and default responsive padding.
  */
 function injectBaselineStyle(containerId: string): () => void {
   const styleId = `loom-baseline-${containerId}`
@@ -437,12 +438,21 @@ function injectBaselineStyle(containerId: string): () => void {
 
   const style = document.createElement('style')
   style.id = styleId
-  style.textContent = [
-    `#${containerId} {`,
-    `  --loom-title-sticky-top: 0px;`,
-    `  --loom-section-bg: var(--ctp-base, #303446);`,
-    `}`,
-  ].join('\n')
+  style.textContent = `
+    #${containerId} {
+      --loom-title-sticky-top: 0px;
+      --loom-section-bg: var(--ctp-base, #303446);
+      max-width: 860px;
+      margin: 0 auto;
+      padding: 32px 24px;
+      box-sizing: border-box;
+    }
+    @media (max-width: 768px) {
+      #${containerId} {
+        padding: 20px 16px;
+      }
+    }
+  `
   document.head.appendChild(style)
 
   return () => {
@@ -611,6 +621,16 @@ function ThemeSelectorWidget({
   function applyTheme(entry: ThemeEntry) {
     setActive(entry.name)
     const containerId = ensureContainerId(sectionsContainer)
+    
+    // Set data-theme on html and the container so all variables resolve properly
+    if (entry.name && entry.name !== 'frappe') {
+      document.documentElement.setAttribute('data-theme', entry.name)
+      sectionsContainer.setAttribute('data-theme', entry.name)
+    } else {
+      document.documentElement.removeAttribute('data-theme')
+      sectionsContainer.removeAttribute('data-theme')
+    }
+
     injectThemeStyle(containerId, entry.tokens)
   }
 
@@ -704,6 +724,15 @@ const LoomSections: LoomSectionsAPI = {
     // Ensure container has an ID (needed for theme scoping)
     const containerId = ensureContainerId(container)
 
+    // Set data-theme on html and container for built-in themes
+    if (options?.theme !== undefined && typeof options.theme === 'string') {
+      document.documentElement.setAttribute('data-theme', options.theme)
+      container.setAttribute('data-theme', options.theme)
+    } else {
+      document.documentElement.removeAttribute('data-theme')
+      container.removeAttribute('data-theme')
+    }
+
     // Inject baseline CDN style (--loom-title-sticky-top, --loom-section-bg defaults).
     // Using a <style> tag (not inline style) so theme injection at the same
     // #id specificity can override these values.
@@ -732,6 +761,8 @@ const LoomSections: LoomSectionsAPI = {
       root?.unmount()
       cleanupTheme?.()
       cleanupBaseline?.()
+      document.documentElement.removeAttribute('data-theme')
+      container.removeAttribute('data-theme')
     }
   },
 
@@ -743,16 +774,19 @@ const LoomSections: LoomSectionsAPI = {
     const entries = resolveThemeEntries(options?.themes)
     const position = options?.position ?? 'top-right'
 
-    // Detect which theme is currently active on the sections container
-    const existingStyleId = `loom-theme-${sectionsContainer.id}`
-    const existingStyle = document.getElementById(existingStyleId)
-    // Best-effort: match the first token of an existing style against known presets
-    let initialTheme = entries[0]?.name ?? 'frappe'
-    if (existingStyle) {
-      for (const e of entries) {
-        if (existingStyle.textContent?.includes(e.tokens['--ctp-base'] ?? '')) {
-          initialTheme = e.name
-          break
+    // Detect which theme is currently active
+    const activeGlobalTheme = document.documentElement.getAttribute('data-theme')
+    let initialTheme = activeGlobalTheme ?? 'frappe'
+    if (!entries.some(e => e.name === initialTheme)) {
+      const existingStyleId = `loom-theme-${sectionsContainer.id}`
+      const existingStyle = document.getElementById(existingStyleId)
+      initialTheme = entries[0]?.name ?? 'frappe'
+      if (existingStyle) {
+        for (const e of entries) {
+          if (existingStyle.textContent?.includes(e.tokens['--ctp-base'] ?? '')) {
+            initialTheme = e.name
+            break
+          }
         }
       }
     }

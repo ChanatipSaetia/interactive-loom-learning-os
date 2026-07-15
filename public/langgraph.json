@@ -12,6 +12,35 @@
     }
   },
   {
+    "type": "bullets",
+    "props": {
+      "title": "Why Use LangGraph?",
+      "ordered": false,
+      "items": [
+        {
+          "text": "Built-in Persistence",
+          "children": [
+            { "text": "Enables human-in-the-loop approvals out-of-the-box" },
+            { "text": "Provides full time-travel debugging/replayability" }
+          ]
+        },
+        {
+          "text": "Support for Cycles",
+          "children": [
+            { "text": "Crucial for agent loops that refine actions based on tool results" }
+          ]
+        },
+        {
+          "text": "Fine-grained Control",
+          "children": [
+            { "text": "Allows orchestrating complex workflows beyond standard chain-based architectures" }
+          ]
+        }
+      ],
+      "animate": true
+    }
+  },
+  {
     "type": "concept-map",
     "props": {
       "title": "LangGraph Architecture",
@@ -31,6 +60,62 @@
         { "from": "stategraph", "to": "checkpointer", "label": "persists state via" },
         { "from": "nodes", "to": "state", "label": "reads/updates" },
         { "from": "edges", "to": "state", "label": "routes based on" }
+      ]
+    }
+  },
+  {
+    "type": "taxonomy-browser",
+    "props": {
+      "title": "Core Abstractions of LangGraph",
+      "categories": [
+        {
+          "icon": "Network",
+          "title": "StateGraph",
+          "subtitle": "Builder class",
+          "description": "The foundational framework class used to build the graph topology.",
+          "details": "You define the graph schema (State), add Nodes for action execution, and connect them with normal or conditional Edges.",
+          "analogy": "Like a blueprint defining nodes and pathways.",
+          "primaryFocus": "Defining the flow and structure of the agent application.",
+          "inScope": ["Adding nodes", "Adding edges", "Compiling with memory"],
+          "outOfScope": ["Executing individual prompt templates"],
+          "color": "#8caaee"
+        },
+        {
+          "icon": "Activity",
+          "title": "Nodes",
+          "subtitle": "Graph Nodes",
+          "description": "Independent function steps that do work and optionally modify the state.",
+          "details": "Each node receives the current state and returns a dict containing updates to the state variables.",
+          "analogy": "Like assembly line workstations doing a specific job.",
+          "primaryFocus": "Executing actions (e.g. invoking LLM, querying database).",
+          "inScope": ["Python functions", "LangChain runnables"],
+          "outOfScope": ["Routing control flow logic"],
+          "color": "#ca9ee6"
+        },
+        {
+          "icon": "ArrowRightLeft",
+          "title": "Edges",
+          "subtitle": "Routing Edges",
+          "description": "Direct connections or routing functions mapping flow between nodes.",
+          "details": "Standard edges define direct paths. Conditional edges use routing functions to compute the next node dynamically.",
+          "analogy": "Like switches on a railway system routing the train.",
+          "primaryFocus": "Routing execution flow between nodes.",
+          "inScope": ["Direct edges", "Conditional routing functions"],
+          "outOfScope": ["Modifying the state database directly"],
+          "color": "#e78284"
+        },
+        {
+          "icon": "ShieldAlert",
+          "title": "Checkpointer",
+          "subtitle": "Persistence Layer",
+          "description": "Saves snapshots of the state at each step of graph execution.",
+          "details": "Allows human-in-the-loop interactions, time travel debugging, error recovery, and chat session state memory.",
+          "analogy": "Like checkpoints in a game allowing you to reload.",
+          "primaryFocus": "State persistence and execution control.",
+          "inScope": ["Memory savers", "Database savers (PostgreSQL, SQLite)", "Human approvals"],
+          "outOfScope": ["Defining node execution logic"],
+          "color": "#a6d189"
+        }
       ]
     }
   },
@@ -279,7 +364,86 @@
           }
         ]
       }
-    },
+    }
+  },
+  {
+    "type": "scenario",
+    "props": {
+      "id": "sc-langgraph-human-in-the-loop",
+      "title": "Human-in-the-loop Approval Scenario",
+      "intro": "You are designing an autonomous coding agent. It is about to execute a terminal command. How do you construct the workflow?",
+      "startNode": "decide-design",
+      "nodes": {
+        "decide-design": {
+          "id": "decide-design",
+          "prompt": "Your agent needs to run arbitrary bash commands to install dependencies. How do you handle safety approvals?",
+          "choices": [
+            { "id": "c1", "text": "Run commands automatically without approval", "next": "auto-fail" },
+            { "id": "c2", "text": "Configure an interrupt before the execution node using a Checkpointer", "next": "interrupt-success" }
+          ]
+        },
+        "auto-fail": {
+          "id": "auto-fail",
+          "outcome": {
+            "verdict": "Security Risk & High Cost",
+            "lesson": "Running arbitrary bash commands automatically can cause server compromise or delete local files without confirmation. Always use human-in-the-loop checks for high-risk operations.",
+            "rating": "c"
+          }
+        },
+        "interrupt-success": {
+          "id": "interrupt-success",
+          "outcome": {
+            "verdict": "Excellent Safety Practice",
+            "lesson": "By adding an interrupt boundary (e.g. compile(checkpointer=MemorySaver(), interrupt_before=['execute_bash'])), the execution halts. A human reviewer can approve or rewrite the state dynamically, avoiding unauthorized runs.",
+            "rating": "a"
+          }
+        }
+      }
+    }
+  },
+  {
+    "type": "decision-tree",
+    "props": {
+      "id": "dt-langgraph-routing",
+      "title": "Choosing between LCEL and LangGraph",
+      "root": "routing-root",
+      "nodes": {
+        "routing-root": {
+          "id": "routing-root",
+          "prompt": "Does your LLM application require loops/cycles or human approval steps?",
+          "choices": [
+            { "id": "c1", "text": "Yes, requires cyclic logic or human-in-the-loop approval", "next": "use-langgraph", "recommended": true, "rationale": "Cycles and persistence are LangGraph's core primitives." },
+            { "id": "c2", "text": "No, it is a single direct sequence of steps", "next": "check-complexity", "rationale": "For simple linear pipelines, standard LCEL is lighter." }
+          ]
+        },
+        "check-complexity": {
+          "id": "check-complexity",
+          "prompt": "Do you need persistent session memory across chat runs?",
+          "choices": [
+            { "id": "c1", "text": "Yes, multi-turn conversation memory with checkpoints", "next": "use-langgraph", "recommended": true, "rationale": "LangGraph checkpointers handle chat memory out-of-the-box." },
+            { "id": "c2", "text": "No, simple request-response or single retrieval call", "next": "use-lcel", "rationale": "Standard LangChain LCEL keeps deployment simpler." }
+          ]
+        },
+        "use-langgraph": {
+          "id": "use-langgraph",
+          "leaf": {
+            "recommendation": "Use LangGraph",
+            "explanation": "LangGraph provides the state management, cyclic loops, checkpointer boundaries, and interrupt handling needed for advanced agent workflows.",
+            "tradeoffs": ["Steeper learning curve", "Requires state schema setup"]
+          }
+        },
+        "use-lcel": {
+          "id": "use-lcel",
+          "leaf": {
+            "recommendation": "Use LangChain LCEL",
+            "explanation": "Standard LangChain Expression Language (LCEL) is lightweight, easier to debug, and optimal for acyclic, single-run pipelines.",
+            "tradeoffs": ["No built-in cycle routing", "Must manage memory state manually"]
+          }
+        }
+      }
+    }
+  },
+  {
     "type": "tradeoff-sandbox",
     "props": {
       "title": "Framework Trade-offs: LCEL vs. LangGraph",
@@ -338,6 +502,34 @@
     }
   },
   {
+    "type": "formula-sandbox",
+    "props": {
+      "title": "LangGraph Execution Costs",
+      "variables": [
+        { "id": "nodeCount", "label": "Graph Nodes", "min": 2, "max": 20, "step": 1, "defaultValue": 5 },
+        { "id": "llmCost", "label": "Avg LLM Call Cost ($)", "min": 0.001, "max": 0.20, "step": 0.001, "defaultValue": 0.01 },
+        { "id": "loops", "label": "Avg Cycles/Execution", "min": 1, "max": 10, "step": 1, "defaultValue": 2 }
+      ],
+      "metrics": [
+        {
+          "id": "total-llm-calls",
+          "label": "Total LLM Calls / Run",
+          "formula": "nodeCount * loops",
+          "description": "Estimated total number of LLM invocations during a single cyclic execution run.",
+          "analogy": "Think of it as number of iterations times graph size."
+        },
+        {
+          "id": "run-cost",
+          "label": "Estimated Cost per Run",
+          "formula": "(nodeCount * loops) * llmCost",
+          "description": "Estimated token consumption cost for executing the workflow once.",
+          "inScope": ["API call tokens", "Input tokens", "Output tokens"],
+          "outOfScope": ["Database checkpointer storage cost", "Human reviewer time cost"]
+        }
+      ]
+    }
+  },
+  {
     "type": "quiz",
     "props": {
       "title": "LangGraph Knowledge Check",
@@ -380,6 +572,29 @@
             { "id": "5", "text": "Invoke graph with initial state dict.", "icon": "play" }
           ],
           "solution": ["1", "2", "3", "4", "5"]
+        }
+      ]
+    }
+  },
+  {
+    "type": "reflection-template",
+    "props": {
+      "title": "State Routing Verification",
+      "challenges": [
+        {
+          "prompt": "Complete the definition of the two primary graph routing primitives in LangGraph:",
+          "template": "A standard {zone-edge} connects two nodes directly, whereas a {zone-conditional_edge} dynamically routes flow using a custom routing function based on the shared {zone-state} context.",
+          "chips": [
+            { "id": "edge", "text": "Edge" },
+            { "id": "conditional_edge", "text": "Conditional Edge" },
+            { "id": "state", "text": "State" }
+          ],
+          "solution": {
+            "zone-edge": "edge",
+            "zone-conditional_edge": "conditional_edge",
+            "zone-state": "state"
+          },
+          "explanation": "Edges define paths. Conditional edges compute next destinations. Both read/interact with the shared State."
         }
       ]
     }

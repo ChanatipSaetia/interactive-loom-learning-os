@@ -11,7 +11,7 @@ Standalone React component library for rendering interactive learning sections f
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>My Learning Page</title>
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/loom-learning-sections@1.0.7/loom-sections.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/loom-learning-sections@1.0.8/loom-sections.css">
   <style>
     /* Center the container and add padding */
     #loom-root {
@@ -28,7 +28,7 @@ Standalone React component library for rendering interactive learning sections f
   <!-- Container where Loom Sections will render -->
   <div id="loom-root"></div>
 
-  <script src="https://cdn.jsdelivr.net/npm/loom-learning-sections@1.0.7/loom-sections.umd.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/loom-learning-sections@1.0.8/loom-sections.umd.js"></script>
   <script>
     const okfSections = [
       {
@@ -1004,7 +1004,7 @@ Use a modern ES module script block (`type="module"`) to fetch the JSON file loc
 <head>
   <meta charset="UTF-8">
   <title>Loom App</title>
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/loom-learning-sections@1.0.7/loom-sections.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/loom-learning-sections@1.0.8/loom-sections.css">
   <style>
     #loom-root {
       max-width: 860px;
@@ -1017,7 +1017,7 @@ Use a modern ES module script block (`type="module"`) to fetch the JSON file loc
   <div id="theme-picker" style="max-width: 860px; margin: 16px auto; display: flex; justify-content: flex-end;"></div>
   <div id="loom-root"></div>
 
-  <script src="https://cdn.jsdelivr.net/npm/loom-learning-sections@1.0.7/loom-sections.umd.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/loom-learning-sections@1.0.8/loom-sections.umd.js"></script>
   <script type="module">
     try {
       const response = await fetch('./curriculum.json');
@@ -1070,7 +1070,7 @@ Embed the array directly inside your script tag:
 <head>
   <meta charset="UTF-8">
   <title>Loom App (Embedded)</title>
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/loom-learning-sections@1.0.7/loom-sections.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/loom-learning-sections@1.0.8/loom-sections.css">
   <style>
     #loom-root {
       max-width: 860px;
@@ -1083,7 +1083,7 @@ Embed the array directly inside your script tag:
   <div id="theme-picker" style="max-width: 860px; margin: 16px auto; display: flex; justify-content: flex-end;"></div>
   <div id="loom-root"></div>
 
-  <script src="https://cdn.jsdelivr.net/npm/loom-learning-sections@1.0.7/loom-sections.umd.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/loom-learning-sections@1.0.8/loom-sections.umd.js"></script>
   <script>
     const okfSections = [
       {

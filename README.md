@@ -122,8 +122,8 @@ You do not need to clone this repository to render interactive learning sections
 ### Load CDN Assets
 Include the CSS and UMD Javascript files directly in your HTML:
 ```html
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/loom-learning-sections@1.0.7/loom-sections.css">
-<script src="https://cdn.jsdelivr.net/npm/loom-learning-sections@1.0.7/loom-sections.umd.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/loom-learning-sections@1.0.8/loom-sections.css">
+<script src="https://cdn.jsdelivr.net/npm/loom-learning-sections@1.0.8/loom-sections.umd.js"></script>
 ```
 
 For setup directions (including Local JSON loading, CORS handling, and code templates), check [docs/cdn-library.md](docs/cdn-library.md).
