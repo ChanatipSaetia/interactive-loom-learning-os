@@ -17,6 +17,7 @@ export default defineConfig(({ mode }) => {
         'process.browser': 'true',
       },
       build: {
+        outDir: 'dist-lib',
         lib: {
           entry: './libs/loom-sections.tsx',
           name: 'LoomSections',

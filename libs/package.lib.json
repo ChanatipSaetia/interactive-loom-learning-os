@@ -1,0 +1,33 @@
+{
+  "name": "loom-learning-sections",
+  "version": "1.0.5",
+  "description": "Standalone React component library for rendering interactive learning sections from JSON data. Load via CDN, provide OKF JSON, get rendered sections. Full documentation included in docs/.",
+  "main": "loom-sections.umd.js",
+  "module": "loom-sections.js",
+  "style": "loom-sections.css",
+  "files": [
+    "loom-sections.umd.js",
+    "loom-sections.js",
+    "loom-sections.css",
+    "docs/"
+  ],
+  "keywords": [
+    "education",
+    "interactive",
+    "learning",
+    "react",
+    "components",
+    "cdn",
+    "flowchart",
+    "event-storming"
+  ],
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ChanatipSaetia/interactive-loom-learning-os"
+  },
+  "homepage": "https://github.com/ChanatipSaetia/interactive-loom-learning-os#readme",
+  "bugs": {
+    "url": "https://github.com/ChanatipSaetia/interactive-loom-learning-os/issues"
+  }
+}

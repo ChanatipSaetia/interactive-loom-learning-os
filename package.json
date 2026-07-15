@@ -8,6 +8,7 @@
     "build": "tsc -b && vite build",
     "build:lib": "BUILD_MODE=lib vite build",
     "build:all": "tsc -b && BUILD_MODE=lib vite build && vite build",
+    "publish:lib": "npm run build:lib && cp -r docs dist-lib/docs && cp libs/package.lib.json dist-lib/package.json && npm publish dist-lib/ --access public",
     "test": "vitest run",
     "test:e2e": "playwright test",
     "lint": "eslint . --ext .ts,.tsx --report-unused-disable-directives --max-warnings 0",
