@@ -11,7 +11,7 @@ Standalone React component library for rendering interactive learning sections f
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>My Learning Page</title>
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/loom-learning-sections@1.0.0/dist/loom-sections.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/loom-learning-sections@1.0.2/loom-sections.css">
   <style>
     /* Optional: override theme variables */
     :root {
@@ -26,7 +26,7 @@ Standalone React component library for rendering interactive learning sections f
 <body>
   <div id="loom-root"></div>
 
-  <script src="https://cdn.jsdelivr.net/npm/loom-learning-sections@1.0.0/dist/loom-sections.umd.cjs"></script>
+  <script src="https://cdn.jsdelivr.net/npm/loom-learning-sections@1.0.2/loom-sections.umd.js"></script>
   <script>
     const okfSections = [
       {
@@ -841,7 +841,7 @@ The library uses Catppuccin Frappé theme. Override these CSS custom properties:
 Instead of embedding JSON inline, load from a file:
 
 ```html
-<script src="https://cdn.jsdelivr.net/npm/loom-learning-sections@1.0.0/dist/loom-sections.umd.cjs"></script>
+<script src="https://cdn.jsdelivr.net/npm/loom-learning-sections@1.0.2/loom-sections.umd.js"></script>
 <script type="module">
   const response = await fetch('./my-okf-data.json');
   const sections = await response.json();

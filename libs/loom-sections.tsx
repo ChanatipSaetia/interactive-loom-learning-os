@@ -19,6 +19,7 @@ import '../src/sections/decision-tree/decision-tree.css'
 import '../src/sections/formula-sandbox/formula-sandbox.css'
 import '../src/sections/reflection-sequence/reflection-sequence.css'
 import '../src/sections/reflection-template/reflection-template.css'
+import { deriveSchema } from '../src/sections/flowchart/abstract-flow/derive'
 
 // Import all section components directly
 import TextSection from '../src/sections/text'
@@ -73,9 +74,27 @@ function SectionRenderer({ config }: { config: SectionConfig }) {
       </div>
     )
   }
+
+  const adaptedProps = useMemo(() => {
+    if (config.type === 'flowchart' && config.props?.schema) {
+      const rawSchema = config.props.schema as any
+      if (rawSchema.actors && rawSchema.steps && !rawSchema.entities) {
+        try {
+          return {
+            ...config.props,
+            schema: deriveSchema(rawSchema),
+          }
+        } catch (e) {
+          console.error('Failed to auto-derive flowchart schema:', e)
+        }
+      }
+    }
+    return config.props
+  }, [config.type, config.props])
+
   return (
     <Suspense fallback={<div className="section-loading">Loading section...</div>}>
-      <Component {...config.props} />
+      <Component {...adaptedProps} />
     </Suspense>
   )
 }

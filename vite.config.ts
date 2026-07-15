@@ -20,7 +20,7 @@ export default defineConfig(({ mode }) => {
         lib: {
           entry: './libs/loom-sections.tsx',
           name: 'LoomSections',
-          fileName: 'loom-sections',
+          fileName: (format) => `loom-sections.${format === 'umd' ? 'umd.js' : 'js'}`,
           formats: ['umd', 'es'],
         },
         cssCodeSplit: false,

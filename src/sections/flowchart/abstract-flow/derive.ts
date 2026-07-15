@@ -149,7 +149,7 @@ function processLinearStep(
 
   // Actor → command (for root step)
   if (step.initiatedBy) {
-    const actorId = idMap.get(step.initiatedBy.id);
+    const actorId = idMap.get(getId(step.initiatedBy));
     if (actorId) {
       relations.push({
         id: getNextRelId(relCounter),
@@ -180,7 +180,7 @@ function processLinearStep(
 
   // Get handler entity (auto-duplicate)
   const handlerId = getSystemEntityId(
-    step.handledBy.id,
+    getId(step.handledBy),
     entities,
     systemRefCount,
     idMap,
@@ -200,7 +200,7 @@ function processLinearStep(
   let delegateId: string | undefined;
   if (step.delegatesTo) {
     delegateId = getSystemEntityId(
-      step.delegatesTo.id,
+      getId(step.delegatesTo),
       entities,
       systemRefCount,
       idMap,
@@ -292,7 +292,7 @@ function processBranchStep(
 
     // Get handler (auto-duplicate)
     const handlerId = getSystemEntityId(
-      branch.handledBy.id,
+      getId(branch.handledBy),
       entities,
       systemRefCount,
       idMap,
@@ -330,7 +330,7 @@ function processBranchStep(
     let delegateId: string | undefined;
     if (branch.delegatesTo) {
       delegateId = getSystemEntityId(
-        branch.delegatesTo.id,
+        getId(branch.delegatesTo),
         entities,
         systemRefCount,
         idMap,
@@ -425,14 +425,14 @@ function collectNodeIds(
   if (handlerInfo) {
     ids.push(handlerInfo.handler);
   } else {
-    ids.push(resolveNodeId(step.handledBy.id, idMap));
+    ids.push(resolveNodeId(getId(step.handledBy), idMap));
   }
 
   // Delegate (optional) — use per-step entity
   if (handlerInfo?.delegate) {
     ids.push(handlerInfo.delegate);
   } else if (step.delegatesTo) {
-    ids.push(resolveNodeId(step.delegatesTo.id, idMap));
+    ids.push(resolveNodeId(getId(step.delegatesTo), idMap));
   }
 
   // Result events
@@ -442,4 +442,9 @@ function collectNodeIds(
   }
 
   return ids;
+}
+
+function getId(ref: any): string {
+  if (typeof ref === 'string') return ref;
+  return ref?.id || '';
 }
