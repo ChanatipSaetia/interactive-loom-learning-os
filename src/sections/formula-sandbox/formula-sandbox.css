@@ -78,8 +78,11 @@
   border-radius: 12px;
   padding: 16px;
   border: 1px dashed color-mix(in srgb, var(--ctp-text) 8%, transparent);
-  font-size: 10px;
+  font-size: 11px;
   color: var(--ctp-subtext0);
+  overflow-wrap: break-word;
+  word-break: break-word;
+  line-height: 1.6;
 }
 
 .formula-explanation code {
@@ -88,6 +91,9 @@
   background: var(--ctp-surface0);
   padding: 2px 6px;
   border-radius: 4px;
+  white-space: normal;
+  word-break: break-word;
+  overflow-wrap: break-word;
 }
 
 /* Simulation Output Metrics */

@@ -34,17 +34,17 @@ function humanizeFormula(
   // 5. Math.PI → π
   f = f.replace(/Math\.PI/g, 'π')
 
-  // 6. Replace variable IDs with their labels
+  // 6. Replace arithmetic operators with math symbols
+  f = f.replace(/\s*\*\s*/g, ' × ')
+  f = f.replace(/\s*\/\s*/g, ' ÷ ')
+
+  // 7. Replace variable IDs with their labels
   //    Sort by length desc so longer IDs get replaced first
   const sorted = [...variables].sort((a, b) => b.id.length - a.id.length)
   for (const v of sorted) {
     const regex = new RegExp(`\\b${v.id}\\b`, 'g')
     f = f.replace(regex, v.label)
   }
-
-  // 7. Replace arithmetic operators with math symbols
-  f = f.replace(/\s*\*\s*/g, ' × ')
-  f = f.replace(/\s*\/\s*/g, ' ÷ ')
 
   // 8. Clean up extra whitespace
   f = f.replace(/\s{2,}/g, ' ').trim()
