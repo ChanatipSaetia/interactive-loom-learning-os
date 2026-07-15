@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Loom UMD: Standalone OKF Parser Playground</title>
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+  <!-- Loom Sections Stylesheet from CDN -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/loom-learning-sections@1.0.3/loom-sections.css">
+
+  <!-- Loom Sections UMD Bundle from CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/loom-learning-sections@1.0.3/loom-sections.umd.js"></script>
+
+  <style>
+    :root {
+      --ctp-crust: #232634;
+      --ctp-base: #303446;
+      --ctp-mantle: #292c3c;
+      --ctp-text: #c6d0f5;
+      --ctp-green: #a6d189;
+      --ctp-mauve: #ca9ee6;
+      --font-sans: 'Outfit', sans-serif;
+    }
+
+    body {
+      background-color: var(--ctp-crust);
+      color: var(--ctp-text);
+      font-family: var(--font-sans);
+      margin: 0;
+      padding: 24px;
+    }
+
+    .container {
+      max-width: 1000px;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+    }
+
+    header {
+      padding: 32px;
+      background: linear-gradient(135deg, var(--ctp-mantle), var(--ctp-base));
+      border: 1px solid rgba(198, 208, 245, 0.08);
+      border-radius: 24px;
+      text-align: center;
+    }
+
+    header h1 {
+      font-size: 2.2rem;
+      margin-bottom: 8px;
+    }
+
+    header p {
+      font-size: 1.1rem;
+      opacity: 0.8;
+    }
+
+    .status-badge {
+      display: inline-block;
+      margin-top: 12px;
+      padding: 6px 12px;
+      border-radius: 12px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      background: rgba(166, 209, 137, 0.1);
+      border: 1px solid var(--ctp-green);
+      color: var(--ctp-green);
+    }
+
+    .error-container {
+      background: rgba(231, 130, 132, 0.15);
+      border: 1px solid #e78284;
+      color: #e78284;
+      padding: 16px 24px;
+      border-radius: 16px;
+      display: none;
+      font-family: 'JetBrains Mono', monospace;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>Loom Standalone OKF Parser</h1>
+      <p>Verifying UMD loadAndRenderOKF method loading sections dynamically</p>
+      <div id="status" class="status-badge">Compiling index...</div>
+    </header>
+
+    <div id="error-view" class="error-container"></div>
+
+    <!-- Container where Loom Sections will render -->
+    <div id="loom-root"></div>
+  </div>
+
+  <script>
+    async function loadOKFPlayground() {
+      const statusBadge = document.getElementById('status');
+      const errorView = document.getElementById('error-view');
+
+      try {
+        statusBadge.textContent = 'Fetching and rendering OKF Catalog...';
+        // Use the newly exported UMD API: LoomSections.loadAndRenderOKF(container, okfBaseUrl, topicId)
+        await LoomSections.loadAndRenderOKF(document.getElementById('loom-root'), 'okf-data', '.');
+        statusBadge.textContent = 'OKF Playground Loaded Successfully!';
+      } catch (error) {
+        statusBadge.textContent = 'Error loading OKF Playground';
+        statusBadge.style.color = '#e78284';
+        statusBadge.style.borderColor = '#e78284';
+        statusBadge.style.background = 'rgba(231,130,132,0.1)';
+        
+        errorView.style.display = 'block';
+        errorView.innerHTML = `<strong>Loader Error:</strong> ${error.message}<br><small>Make sure you serve this directory via a local web server (e.g. <code>npx serve .</code>) to bypass CORS restrictions.</small>`;
+      }
+    }
+
+    // Initialize loading
+    window.addEventListener('DOMContentLoaded', loadOKFPlayground);
+  </script>
+</body>
+</html>

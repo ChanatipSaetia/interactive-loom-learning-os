@@ -38,7 +38,12 @@ import type {
   OKFReflectionTemplateRaw,
 } from './types'
 
-const OKF_BASE = `${import.meta.env.BASE_URL}okf`
+function getOkfBase(): string {
+  if (typeof window !== 'undefined' && (window as any).__OKF_BASE_OVERRIDE__) {
+    return (window as any).__OKF_BASE_OVERRIDE__
+  }
+  return `${import.meta.env.BASE_URL || '/'}okf`
+}
 
 function parseYaml<T>(text: string): T {
   return yaml.load(text) as T
@@ -51,7 +56,8 @@ function parseFrontmatter(content: string): { meta: Record<string, unknown>; bod
 }
 
 async function fetchText(path: string): Promise<string> {
-  const res = await fetch(`${OKF_BASE}/${path}`)
+  const base = getOkfBase()
+  const res = await fetch(`${base}/${path}`)
   if (!res.ok) throw new Error(`OKF fetch failed: ${path} (${res.status})`)
   return res.text()
 }
@@ -102,7 +108,8 @@ export async function loadOKFBundle(topicId: string): Promise<OKFBundled> {
 
   let related: string[] = []
   try {
-    const yamlRes = await fetch(`${OKF_BASE}/${topicId}/index.yaml`)
+    const base = getOkfBase()
+    const yamlRes = await fetch(`${base}/${topicId}/index.yaml`)
     if (yamlRes.ok) {
       const yamlText = await yamlRes.text()
       const parsed = parseYaml<Record<string, unknown>>(yamlText)

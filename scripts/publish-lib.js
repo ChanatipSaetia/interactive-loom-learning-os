@@ -31,7 +31,7 @@ try {
 // Step 3: Create package.json inside dist/
 const pkgJson = {
   name: 'loom-learning-sections',
-  version: '1.0.2',
+  version: '1.0.3',
   description: 'Standalone React component library for rendering interactive learning sections from JSON data.',
   main: 'loom-sections.umd.js',
   module: 'loom-sections.js',

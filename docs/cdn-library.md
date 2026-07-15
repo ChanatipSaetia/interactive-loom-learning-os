@@ -11,7 +11,7 @@ Standalone React component library for rendering interactive learning sections f
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>My Learning Page</title>
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/loom-learning-sections@1.0.2/loom-sections.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/loom-learning-sections@1.0.3/loom-sections.css">
   <style>
     /* Optional: override theme variables */
     :root {
@@ -26,7 +26,7 @@ Standalone React component library for rendering interactive learning sections f
 <body>
   <div id="loom-root"></div>
 
-  <script src="https://cdn.jsdelivr.net/npm/loom-learning-sections@1.0.2/loom-sections.umd.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/loom-learning-sections@1.0.3/loom-sections.umd.js"></script>
   <script>
     const okfSections = [
       {
@@ -878,12 +878,12 @@ Use a modern ES module script block (`type="module"`) to fetch the JSON file loc
 <head>
   <meta charset="UTF-8">
   <title>Loom App</title>
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/loom-learning-sections@1.0.2/loom-sections.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/loom-learning-sections@1.0.3/loom-sections.css">
 </head>
 <body style="background-color: #232634; color: #c6d0f5;">
   <div id="loom-root"></div>
 
-  <script src="https://cdn.jsdelivr.net/npm/loom-learning-sections@1.0.2/loom-sections.umd.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/loom-learning-sections@1.0.3/loom-sections.umd.js"></script>
   <script type="module">
     try {
       const response = await fetch('./curriculum.json');
@@ -928,12 +928,12 @@ Embed the array directly inside your script tag:
 <head>
   <meta charset="UTF-8">
   <title>Loom App (Embedded)</title>
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/loom-learning-sections@1.0.2/loom-sections.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/loom-learning-sections@1.0.3/loom-sections.css">
 </head>
 <body style="background-color: #232634; color: #c6d0f5;">
   <div id="loom-root"></div>
 
-  <script src="https://cdn.jsdelivr.net/npm/loom-learning-sections@1.0.2/loom-sections.umd.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/loom-learning-sections@1.0.3/loom-sections.umd.js"></script>
   <script>
     const okfSections = [
       {
@@ -960,45 +960,6 @@ Embed the array directly inside your script tag:
 | **Ease of Maintenance** | High. Non-developers can modify the curriculum content without touching HTML. | Medium. Need to modify script tags directly inside the HTML file. |
 | **Caching** | Excellent. Browser caches the HTML structure and JSON files independently. | Low. Whole HTML must be reloaded and parsed for any minor content update. |
 
-## AI Prompt: Generate Custom Topics via Static HTML + CDN
-
-You can use the following system prompt to direct any coding AI (such as Claude, ChatGPT, or Gemini) to generate a fully compliant, beautiful, standalone interactive learning page using the `loom-learning-sections` library.
-
-### Copy-Pasteable AI System Prompt
-
-```text
-You are an expert curriculum designer and developer. Your task is to generate a standalone interactive learning page on a user-specified topic. The page must render utilizing the 'loom-learning-sections' CDN library.
-
-Follow these strict specifications:
-
-1. HTML structure and CDN resources:
-   - Load the styles: <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/loom-learning-sections@1.0.2/loom-sections.css">
-   - Load the logic script: <script src="https://cdn.jsdelivr.net/npm/loom-learning-sections@1.0.2/loom-sections.umd.js"></script>
-   - Declare the DOM container: <div id="loom-root"></div>
-   - Initialize and render: LoomSections.render(document.getElementById("loom-root"), sectionsArray);
-
-2. Design system requirements (Catppuccin Frappé Dark Theme):
-   - Background color of the body should be '#232634' (var(--ctp-crust)).
-   - Default text color should be '#c6d0f5' (var(--ctp-text)).
-   - Structure should match Cohere styling: flat surfaces, thin borders, generous whitespace, Outfit font family (from Google Fonts).
-
-3. Content data schemas (choose the appropriate section types to structure the learning content):
-   - 'text': props { title, heading, paragraphs (markdown strings), animate }
-   - 'bullets': props { title, ordered, items: Array<{text, children}>, animate }
-   - 'taxonomy-browser': props { title, categories: Array<{icon (PascalCase Lucide icon), title, subtitle, description, details, analogy, primaryFocus, inScope, outOfScope, color}> }
-   - 'tradeoff-sandbox': props { title, scenarios: Array<{id, title, description, metrics: Array<{id, label, baseValue, min, max, direction}>, steps: Array<{id, title, description, recommended, choices: Array<{id, label, description, metrics, pros, cons, whyThisFits, whenToUse}>}>}> }
-   - 'flowchart': props { title, schema: { actors: Record<string, {title, desc}>, systems: Record<string, {title, desc, type: "aggregate"|"external"}>, steps: Array<FlowStep>, journeys: Array<FlowJourney>} }
-   - 'quiz': props { title, questions: Array<{id, question, choices: Array<{id, text, correct, explanation}>, hint}> }
-   - 'reflection-sequence': props { title, challenges: Array<{prompt, items: Array<{id, text, icon}>, solution: Array<string>}> }
-
-For reference on specific schemas, constraints (e.g. event-storming flow rules), and styling variables, check the official documentation:
-- Root guide: https://github.com/chanatipsaetia/interactive-loom-learning-os/blob/main/docs/cdn-library.md
-- Flowchart schemas: https://github.com/chanatipsaetia/interactive-loom-learning-os/blob/main/docs/creating-topics.md
-
-Deliver your output in one of the following structures depending on the user's choice:
-- Structure A (Embedded): A single standalone HTML file with the curriculum sections embedded directly in the script tag.
-- Structure B (Decoupled): A 'curriculum.json' file containing the section array, and a side-by-side 'index.html' file that fetches 'curriculum.json' locally (explaining to the user that they must test it using a local HTTP server like `npx serve .` to bypass CORS constraints).
-```
 
 ## Troubleshooting
 

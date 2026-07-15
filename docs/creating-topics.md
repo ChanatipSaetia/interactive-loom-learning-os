@@ -1,28 +1,13 @@
 # Guideline: How to Create a New Topic
 
+This document is a technical reference guide for directory structures, content schemas, and registration requirements for creating interactive topics inside the Loom Learning OS.
+
+For a detailed explanation of the **educational objectives, progressive section ordering logic, and mental models** of each section type, refer to the [Section Reference & Mental Models Guide](sections-reference.md).
+
 ## Objective
-The objective of creating a new topic is to create comprehensive content for that topic, so the user can learn and fully understand the concept, and ultimately be ready to use AI or communicate effectively about that topic.
+The procedural goal of creating a new topic is to construct a content directory containing YAML/Markdown files under the Open Knowledge Format (OKF) specification, which the reader parses and renders dynamically at runtime.
 
-Creating new interactive topics in the Interactive Loom Learning OS is done by assembling a sequence of modular "sections". The key architectural principle is strict separation of content (data) from structure (UI).
-
-## Every Section Type at a Glance
-
-| Section Type | Mental Model Focus | Data Input Format | Local UI State | Animations & Micro-interactions |
-|---|---|---|---|---|
-| `text` | Anchored conceptual narrative | Markdown strings (paragraphs) | None | Scroll-triggered fade-in |
-| `bullets` | Hierarchical taxonomy / breakdown | Nested recursive nodes (`children`) | Expanded/Collapsed states | Staggered fade/slide-in, chevron rotation |
-| `flowchart` | Dynamic process flows & swimlanes | `actors.yaml`, `systems.yaml`, `steps.yaml`, `journeys.yaml` | Active step, fullscreen toggle, view mode tabs | anime.js path drawing, camera centering, highlights |
-| `tradeoff-sandbox` | Architectural tradeoffs & strategy matrix | Scenarios with choices, pros/cons list | Selected choice per step, metrics scores state | Bar gauge expansion transitions, pros/cons fade-in |
-| `taxonomy-browser` | Concept categorized grids & properties | Category yaml files (color, analogy, scopes) | Selected category card, expanded card state | Cards zoom, pulse rings, grid shifts |
-| `quiz` | Knowledge check & validation | Multiple-choice questions (`questions.yaml`) | Selected answer, verified state, index | Score counters, card transitions, correct/incorrect badges |
-| `concept-map` | Semantic relationships & groupings | Node lists with categories + Directed edges | Zoom, Pan, Active Hover node | D3-force simulation layout, link highlights |
-| `scenario` | Consequence-driven branching narratives | Choice DAG with rated outcome leaf nodes | History breadcrumbs, current node ID | Staggered choice cards, verdict slides |
-| `decision-tree` | Diagnostic logic & situation recommendations | Directed Q&A nodes with rationale/rec badges | Answer path history, active leaf recommendation | Path counter indicators, stagger fade-in cards |
-| `flashcards` | Vocabulary recall & dialogue scenario | Vocabulary card deck + Pronunciation + AI dialogue | Card flipped state, active card index | Flip rotation animation, slider transitions |
-| `image-gallery` | Visual showcase & screenshots | Image list (`gallery.yaml`) with captions | Fullscreen lightbox index, active image | Keyboard controls transitions, zoom-on-hover |
-| `formula-sandbox` | Quantitative parameter & system dynamics | Sliders inputs (`variables`) + Math expressions (`metrics`) | Variable values record, computed metrics | Real-time slider adjustments, HUD drawer side-slide |
-| `reflection-sequence` | Chronological process ordering active recall | Unordered cards list + Correct solution array | Placed items record, selected item ID, verify feedback | Card drag feedback, mobile tap highlight glows, verify alerts |
-| `reflection-template` | Reasoning synthesis & tradeoff explanation | Inline text template with zones + Chips pool | Filled zones record, active chip selection, verify feedback | Inline chip placements, blank borders glow, verification message |
+The key architectural principle is strict separation of content (data) from structure (UI).
 
 ## OKF Bundle Structure
 
@@ -890,96 +875,10 @@ npm run dev
 ```
 
 
-## Recommended Section Order
+## Recommended Section Order & Pedagogy
 
-Order sections so the learner builds understanding progressively — each section should prepare the ground for the next one:
-
-1. **Intro (`text`)** — Set the context: what the topic is, why it matters. Gives the learner a mental anchor before diving deeper.
-2. **Concept map (`concept-map`)** — Visual bird's-eye view of how concepts interrelate. Placed early so the learner has a spatial map before individual concepts are explored in depth.
-3. **Glossary / vocabulary (`flashcards`)** — Teach key terms and their pronunciation before they appear in diagrams, text, or trade-offs. If the learner doesn't know the words, everything else is noise.
-4. **Concept categories (`taxonomy-browser`)** — Show the landscape of concepts and how they relate. Gives the learner a map of what's coming so individual sections feel connected, not isolated.
-5. **Core explanation (`text` / `bullets`)** — Explain main concepts, learning goals, or capabilities in prose. Builds on the vocabulary and taxonomy the learner just saw.
-6. **How it works (`flowchart`)** — Show the process flow. Now the learner can read node labels and understand what each entity does because the terms were taught earlier.
-7. **Sequence check (`reflection-sequence`)** — Drag-and-drop chronological flowchart step ordering challenge. Placed immediately after the flowchart to transition passive flowchart recognition into active process recall.
-8. **Apply (`bullets`)** — Practical checklists, maintenance steps, or reference material. The learner can now act on this because they understand the underlying mechanics.
-9. **Knowledge check (`quiz`)** — Multiple-choice questions to verify understanding. Score tracking gives immediate feedback. Placed after core content is taught so questions test learned material.
-10. **Explore trade-offs (`tradeoff-sandbox` / `formula-sandbox`)** — Let the learner experiment with structural options and quantitative parameters. The formula sandbox allows real-time numerical causality exploration (e.g., chunk size vs cost) with sliding metric HUD details.
-11. **Self-Explanation (`reflection-template`)** — Blank-filling synthesis template placed right after the formula sandbox to force the learner to conceptualize and explain the tradeoffs they observed.
-12. **Scenario (`scenario`)** — Branching narrative where the learner makes decisions and faces consequences. Graded outcomes make the learning stick. Requires full context from prior sections.
-13. **Decision guide (`decision-tree`)** — Diagnostic Q&A that leads to a tailored recommendation. Learner applies knowledge to their own situation. Best placed after all concepts are understood.
-14. **Reinforce (`flashcards`)** — Optionally close with recall drills if there's a separate second flashcard deck. The first flashcards are glossary (section 3); these are practice.
-
-**Rule: never reference a term, concept, or mechanism in section N that hasn't been introduced in section N-1 or earlier.**
+For guidelines on how to order your sections progressively to build learner comprehension, and to see a comparison of the educational focus of all 14 section types, refer to the [Section Reference & Mental Models Guide](sections-reference.md).
 
 ## Event Storming Conventions
 
-When defining flowchart data in `steps.yaml`, follow these conventions:
-
-### Standard flow (per step)
-Each step follows the full cycle: `EVENT` → `POLICY` → `COMMAND` → `AGGREGATE`/`EXTERNAL` (via `handledBy`) → `EVENT`. Never skip `POLICY` or `COMMAND` — every step that "does work" must be a `COMMAND` handled by an `AGGREGATE`/`EXTERNAL`.
-
-- **Policy Inclusion:** Every non-root linear step and all branch options must specify a `policy` field in the steps YAML file (except the first user-initiated root step which is triggered directly by an actor).
-- **Natural Language:** Both `command` and `policy` values must be written in natural language (e.g. `command: "Start Agent Run"`, `policy: "If Plan Approved"`) rather than code-like identifiers (e.g. `cmd_start`, `pol_approve`). They render directly as human-readable nodes in the flow diagram.
-
-### Direction & Branching
-The flow progresses left-to-right. Branching **must** follow the pattern `EVENT → multiple POLICYs → one COMMAND each`:
-
-**Correct:**
-```
-EVENT → POLICY A → COMMAND A → AGGREGATE → EVENT
-        POLICY B → COMMAND B → AGGREGATE → EVENT
-```
-
-**Incorrect (never do this):**
-```
-EVENT → POLICY → COMMAND A
-                      COMMAND B
-```
-
-Each branch gets its own `POLICY` node. When 1 `EVENT` triggers 2+ `POLICYs`, the layout engine spreads branches vertically. A branching point renders as the Decision diamond in Swimlanes/Data Flow views.
-
-### Duplicate-and-Collapse for repeated handlers
-A single canonical `AGGREGATE`, `EXTERNAL`, or `USER` involved in multiple steps must be **duplicated per step**. Each duplicate maps back to the canonical node via `collapsedTo` in `systems.yaml` or `actors.yaml`. This ensures the `handledBy` chain is complete for layout and derived views.
-
-Example:
-```yaml
-# systems.yaml
-orch_agent:
-  title: "Agent Orchestrator"
-  desc: "Main orchestrator"
-  type: "aggregate"
-orch_plan:
-  title: "Agent Orchestrator"
-  desc: "Planning step"
-  type: "aggregate"
-  collapsedTo: "orch_agent"
-orch_exec:
-  title: "Agent Orchestrator"
-  desc: "Execution step"
-  type: "aggregate"
-  collapsedTo: "orch_agent"
-```
-
-Each step's `handledBy` points at the per-step duplicate, not the canonical node.
-
-### Node Types
-| Type | Description | Example |
-|---|---|---|
-| Actor (`USER`) | Human user or initiator | `dev_user`, `qa_user` |
-| Event | Something that happened | `evt_started`, `evt_tool_executed` |
-| Command | Action or intent to do work | `"Start Agent Run"`, `"Call LLM API"` |
-| Policy | Rule deciding next command | `"On Execution Complete"`, `"Check Review Score"` |
-| Aggregate | System component | `orch_agent`, `tools_router` |
-| External | External system/API | LLM API, MCP servers, databases |
-| Read Model | Query-optimized projection | CQRS read model |
-| Risk | Uncertainty or design risk | Unresolved integration point |
-
-### Aggregate vs. External Systems
-- **Aggregate:** Components that belong to the system being discussed (e.g., `AgentExecutor`, `RunnableSequence` in LangChain)
-- **External:** Real external systems outside your control, called via API/network (e.g., LLM API, MCP servers, databases)
-
-### Multiple Flowcharts
-When a topic has multiple subsystems that share **no `COMMAND` or `EVENT` entities**, split them into separate flowchart sections. Sharing `AGGREGATE` or `EXTERNAL` entities is fine — those don't require keeping flows together. Each flowchart gets exactly ONE root node (the starting `COMMAND`).
-
-### Multiple Journeys per Flowchart
-Include multiple journeys to cover different execution paths. Each journey follows **one branch** from start to finish — never jump between branches. At minimum, include a happy path. Add journeys for error paths, alternatives, and edge cases.
+Flowcharts inside the Loom Learning OS are built on Event Storming principles. For the authoritative guidelines on how to structure flowchart nodes, branching rules, duplicate-and-collapse mapping (`collapsedTo`), node types, and journeys configuration, refer to the [Event Storming Conventions Guide](event-storming-conventions.md).

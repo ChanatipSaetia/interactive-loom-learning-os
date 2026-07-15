@@ -1,0 +1,12 @@
+- id: q1
+  question: "Is this static OKF playground running standalone without Vite build?"
+  hint: "Think about UMD CDN imports."
+  choices:
+    - id: a
+      text: "No, it requires full node compilation"
+      correct: false
+      explanation: "No, UMD links are loaded directly in the index.html."
+    - id: b
+      text: "Yes, it parses and renders using script tags from CDN"
+      correct: true
+      explanation: "Correct! We load js-yaml and the Loom sections UMD bundle from CDN directly."

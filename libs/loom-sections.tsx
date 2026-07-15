@@ -1,6 +1,8 @@
 import { createRoot, type Root } from 'react-dom/client'
 import { Suspense, useMemo, type ComponentType } from 'react'
 import type { SectionConfig } from '../src/core/registry'
+import { loadOKFBundle } from '../src/core/okf/reader'
+import { bundleToSections } from '../src/core/okf/sections'
 import { Registry } from '../src/core/registry/generic-registry'
 import { HUDProvider } from '../src/core/context/HUDContext'
 import { ProgressProvider } from '../src/core/progress/context'
@@ -116,6 +118,7 @@ function SectionsContainer({ sections }: { sections: SectionConfig[] }) {
 interface LoomSectionsAPI {
   render: (container: HTMLElement, sections: SectionConfig[]) => () => void
   registerSection: (type: string, component: ComponentType<any>) => void
+  loadAndRenderOKF: (container: HTMLElement, okfBaseUrl: string, topicId: string) => Promise<() => void>
 }
 
 const LoomSections: LoomSectionsAPI = {
@@ -140,6 +143,15 @@ const LoomSections: LoomSectionsAPI = {
 
   registerSection(type: string, component: ComponentType<any>) {
     registry.register(type, component)
+  },
+
+  async loadAndRenderOKF(container: HTMLElement, okfBaseUrl: string, topicId: string) {
+    if (typeof window !== 'undefined') {
+      (window as any).__OKF_BASE_OVERRIDE__ = okfBaseUrl
+    }
+    const bundle = await loadOKFBundle(topicId)
+    const sections = bundleToSections(bundle)
+    return LoomSections.render(container, sections)
   },
 }
 
