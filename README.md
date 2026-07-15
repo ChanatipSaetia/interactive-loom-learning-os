@@ -117,10 +117,27 @@ tests/
   e2e/                 # E2E tests (Playwright)
 ```
 
-## Design System
+## Standalone CDN Usage (No Repository Required)
 
-The UI uses the Catppuccin Frappé palette for a dark theme, with Cohere structural design principles: flat surfaces, thin borders, pill CTAs, restrained typography, and generous whitespace. See [DESIGN.md](DESIGN.md) for the full design specification.
+You do not need to set up or clone this repository to build and render interactive curriculum pages. You can load the `loom-learning-sections` component library directly via CDN (using jsDelivr) on any static web page.
+
+### 1. Load CDN Assets
+Include the CSS and Javascript UMD bundles in your static HTML:
+- **CSS**: `https://cdn.jsdelivr.net/npm/loom-learning-sections@1.0.2/loom-sections.css`
+- **JS**: `https://cdn.jsdelivr.net/npm/loom-learning-sections@1.0.2/loom-sections.umd.js`
+
+### 2. Loading Options
+You can structure your learning page in two ways:
+- **Option A: Local JSON File (Recommended)** — Store your curriculum in a separate `curriculum.json` file in the same folder and fetch it locally. (Requires a local HTTP server like `npx serve` to bypass browser CORS rules).
+- **Option B: Embedded Inline JS** — Define the section data arrays directly inside the HTML file's script tags.
+
+### 3. Prompting AIs to Generate Topics
+We have prepared a copy-pasteable, optimized system prompt that you can feed into AI coding assistants (Gemini, Claude, ChatGPT) to auto-generate fully styled, interactive topic pages. 
+- Refer to the [AI System Prompt Guide](docs/cdn-library.md#ai-prompt-generate-custom-topics-via-static-html--cdn).
+
+For detailed API specifications, layouts, and rendering setup, see [docs/cdn-library.md](docs/cdn-library.md).
 
 ## License
 
 MIT
+

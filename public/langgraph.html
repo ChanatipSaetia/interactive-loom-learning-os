@@ -247,6 +247,85 @@
       flex-direction: column;
       gap: 40px;
     }
+
+    /* Tab switcher container and buttons */
+    .tab-container {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 16px;
+      border-bottom: 1px solid rgba(198, 208, 245, 0.1);
+      padding-bottom: 12px;
+    }
+
+    .tab-btn {
+      background: rgba(198, 208, 245, 0.04);
+      border: 1px solid rgba(198, 208, 245, 0.1);
+      color: var(--ctp-subtext1);
+      padding: 8px 16px;
+      border-radius: 10px;
+      font-family: var(--font-sans);
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .tab-btn:hover {
+      background: rgba(198, 208, 245, 0.08);
+      color: var(--ctp-text);
+      transform: translateY(-1px);
+    }
+
+    .tab-btn.active {
+      background: rgba(140, 160, 243, 0.15);
+      border-color: var(--ctp-blue);
+      color: var(--ctp-blue);
+      box-shadow: 0 4px 12px rgba(140, 160, 243, 0.1);
+    }
+
+    .tab-content {
+      display: none;
+    }
+
+    .tab-content.active {
+      display: block;
+      animation: fadeIn 0.3s ease;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(4px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Status indicator custom styles */
+    .status-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 12px;
+      font-weight: 600;
+      padding: 4px 10px;
+      border-radius: 6px;
+      margin-left: 12px;
+      vertical-align: middle;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .status-badge.success {
+      background: rgba(166, 209, 137, 0.15);
+      color: var(--ctp-green);
+      border: 1px solid rgba(166, 209, 137, 0.3);
+    }
+
+    .status-badge.warning {
+      background: rgba(229, 200, 144, 0.15);
+      color: var(--ctp-yellow);
+      border: 1px solid rgba(229, 200, 144, 0.3);
+    }
   </style>
 </head>
 <body>
@@ -263,29 +342,79 @@
         </p>
       </div>
     </header>
-
     <!-- CDN Guide Card -->
     <div class="cdn-card">
       <h2>
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="color: var(--ctp-blue)"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
-        How to use the CDN library
+        How to load Loom Sections
       </h2>
       <p>
-        To render interactive sections on any static website, include the CSS library, the UMD Javascript bundle, and initialize sections using <code>LoomSections.render()</code>:
+        You can choose to load the section data dynamically from a local JSON file (cleaner separation) or embed it inline directly inside your HTML.
       </p>
-      
-      <div class="code-wrapper">
-        <button class="copy-btn" onclick="copyBoilerplate()">Copy Code</button>
-        <pre id="code-content"><code>&lt;!DOCTYPE html&gt;
+
+      <!-- Tab switcher -->
+      <div class="tab-container">
+        <button class="tab-btn active" onclick="switchTab('json-tab')">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+          Option A: Local JSON File (Recommended)
+        </button>
+        <button class="tab-btn" onclick="switchTab('inline-tab')">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+          Option B: Embedded Inline JS
+        </button>
+      </div>
+
+      <!-- JSON Tab content -->
+      <div id="json-tab" class="tab-content active">
+        <div class="code-wrapper">
+          <button class="copy-btn" onclick="copyCode('json-code')">Copy Code</button>
+          <pre><code id="json-code">&lt;!DOCTYPE html&gt;
 &lt;html lang="en"&gt;
 &lt;head&gt;
   &lt;meta charset="UTF-8"&gt;
-  &lt;title&gt;Loom Learning App&lt;/title&gt;
+  &lt;title&gt;Loom Learning App (Local JSON)&lt;/title&gt;
   &lt;!-- Load Loom Sections CSS Library --&gt;
   &lt;link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/loom-learning-sections@1.0.2/loom-sections.css"&gt;
 &lt;/head&gt;
-&lt;body style="background-color: #232634;"&gt;
-  &lt;!-- Container to render our interactive experience --&gt;
+&lt;body style="background-color: #232634; color: #c6d0f5; font-family: sans-serif;"&gt;
+  &lt;div id="loom-root"&gt;&lt;/div&gt;
+
+  &lt;!-- Load Loom Sections Javascript UMD Bundle --&gt;
+  &lt;script src="https://cdn.jsdelivr.net/npm/loom-learning-sections@1.0.2/loom-sections.umd.js"&gt;&lt;/script&gt;
+  &lt;script type="module"&gt;
+    try {
+      // 1. Read the JSON file created in the same folder
+      const response = await fetch('./langgraph.json');
+      if (!response.ok) throw new Error('HTTP error ' + response.status);
+      const sections = await response.json();
+      
+      // 2. Render sections
+      LoomSections.render(document.getElementById("loom-root"), sections);
+    } catch (err) {
+      console.error('Failed to load JSON file:', err);
+    }
+  &lt;/script&gt;
+&lt;/body&gt;
+&lt;/html&gt;</code></pre>
+        </div>
+        <div class="alert-banner" style="background: rgba(137, 180, 250, 0.08); border-left: 4px solid var(--ctp-blue); color: var(--ctp-blue);">
+          <strong>Setup instruction:</strong> Create a file named <code>langgraph.json</code> in the same folder as your HTML file. Load the page via a local HTTP server (like <code>npx serve .</code> or <code>python3 -m http.server</code>) to avoid CORS browser blocks on <code>file://</code> protocol.
+        </div>
+      </div>
+
+      <!-- Inline Tab content -->
+      <div id="inline-tab" class="tab-content">
+        <div class="code-wrapper">
+          <button class="copy-btn" onclick="copyCode('inline-code')">Copy Code</button>
+          <pre><code id="inline-code">&lt;!DOCTYPE html&gt;
+&lt;html lang="en"&gt;
+&lt;head&gt;
+  &lt;meta charset="UTF-8"&gt;
+  &lt;title&gt;Loom Learning App (Embedded)&lt;/title&gt;
+  &lt;!-- Load Loom Sections CSS Library --&gt;
+  &lt;link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/loom-learning-sections@1.0.2/loom-sections.css"&gt;
+&lt;/head&gt;
+&lt;body style="background-color: #232634; color: #c6d0f5; font-family: sans-serif;"&gt;
   &lt;div id="loom-root"&gt;&lt;/div&gt;
 
   &lt;!-- Load Loom Sections Javascript UMD Bundle --&gt;
@@ -293,32 +422,34 @@
   &lt;script&gt;
     const okfSections = [
       {
-        type: "text",
-        props: {
-          title: "Introduction",
-          paragraphs: [
-            "# Welcome to Interactive Learning\nThis page loads sections via CDN!"
-          ]
+        "type": "text",
+        "props": {
+          "title": "Welcome",
+          "paragraphs": ["# Welcome to Interactive Learning\nThis page loads sections via embedded inline JS!"]
         }
       }
+      // Add other sections here...
     ];
     
-    // Render Loom sections into container
+    // Render sections directly from the javascript array
     LoomSections.render(document.getElementById("loom-root"), okfSections);
   &lt;/script&gt;
 &lt;/body&gt;
 &lt;/html&gt;</code></pre>
-      </div>
-
-      <div class="alert-banner" style="background: rgba(166, 209, 137, 0.08); border-left: 4px solid var(--ctp-green); color: var(--ctp-green);">
-        <strong>CDN Live Note:</strong> This file is successfully loading the UMD stylesheet and script directly from the public registry CDN.
+        </div>
+        <div class="alert-banner">
+          <strong>Prototyping hint:</strong> Best for offline testing, single standalone HTML files, or environments without a static file server. However, it mixes structure (HTML) with curriculum data (JSON).
+        </div>
       </div>
     </div>
 
     <!-- Interactive Workspace -->
     <div class="sandbox-container">
-      <div class="sandbox-header">
+      <div class="sandbox-header" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;">
         <h2>Live Rendered Topic: Building Stateful Agents with LangGraph</h2>
+        <div id="loader-status">
+          <span class="status-badge warning">Checking loading source...</span>
+        </div>
       </div>
 
       <!-- Container where Loom Sections will render -->
@@ -331,35 +462,54 @@
   <script src="https://cdn.jsdelivr.net/npm/loom-learning-sections@1.0.2/loom-sections.umd.js"></script>
   
   <script>
-    // Copy boilerplate helper
-    function copyBoilerplate() {
-      const code = document.getElementById("code-content").innerText;
+    // Tab switching logic
+    function switchTab(tabId) {
+      // Deactivate all tabs
+      document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+      document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+      
+      // Activate selected tab
+      const selectedBtn = document.querySelector(`[onclick="switchTab('${tabId}')"]`);
+      if (selectedBtn) selectedBtn.classList.add('active');
+      
+      const selectedContent = document.getElementById(tabId);
+      if (selectedContent) selectedContent.classList.add('active');
+    }
+
+    // Copy code helper
+    function copyCode(codeId) {
+      const codeElement = document.getElementById(codeId);
+      if (!codeElement) return;
+      
+      const code = codeElement.innerText;
       navigator.clipboard.writeText(code).then(() => {
-        const btn = document.querySelector(".copy-btn");
+        // Find copy button inside the same tab-content
+        const btn = codeElement.closest('.code-wrapper').querySelector('.copy-btn');
+        const originalText = btn.innerText;
         btn.innerText = "Copied!";
-        setTimeout(() => { btn.innerText = "Copy Code"; }, 2000);
+        setTimeout(() => { btn.innerText = originalText; }, 2000);
       });
     }
 
-    // Define the LangGraph curriculum sections
-    const langGraphSections = [
+    // Fallback embedded curriculum data
+    const fallbackSections = [
       {
-        type: "text",
-        props: {
-          title: "Understanding LangGraph",
-          heading: "Stateful Agentic Workflows & Multi-Agent Loops",
-          paragraphs: [
+        "type": "text",
+        "props": {
+          "title": "Understanding LangGraph",
+          "heading": "Stateful Agentic Workflows & Multi-Agent Loops",
+          "paragraphs": [
             "Traditional LLM pipelines are structured as **Directed Acyclic Graphs (DAGs)**. While linear structures (like standard LangChain Runnables/LCEL) excel at simple input-output logic, they struggle with complex agent behaviors that require **iteration, error correction, and cyclic loops**.",
             "**LangGraph** solves this by letting you define LLM orchestrations as stateful graphs. It models application workflows as a set of **Nodes** (which perform work) connected by **Edges** (which route control flow). The system maintains a shared **State** database that transitions through node operations. Let's explore the core primitives of LangGraph visually."
           ],
-          animate: true
+          "animate": true
         }
       },
       {
-        type: "concept-map",
-        props: {
-          title: "LangGraph Architecture",
-          nodes: {
+        "type": "concept-map",
+        "props": {
+          "title": "LangGraph Architecture",
+          "nodes": {
             "langgraph": { "id": "langgraph", "title": "LangGraph Engine", "category": "Framework" },
             "stategraph": { "id": "stategraph", "title": "StateGraph", "category": "Builder" },
             "state": { "id": "state", "title": "Shared State", "category": "Data Model" },
@@ -367,7 +517,7 @@
             "edges": { "id": "edges", "title": "Edges (Routing)", "category": "Flow" },
             "checkpointer": { "id": "checkpointer", "title": "Checkpointer", "category": "Persistence" }
           },
-          edges: [
+          "edges": [
             { "from": "langgraph", "to": "stategraph", "label": "provides" },
             { "from": "stategraph", "to": "state", "label": "declares" },
             { "from": "stategraph", "to": "nodes", "label": "registers" },
@@ -379,10 +529,10 @@
         }
       },
       {
-        type: "flashcards",
-        props: {
-          title: "Core Primitives Glossary",
-          terms: [
+        "type": "flashcards",
+        "props": {
+          "title": "Core Primitives Glossary",
+          "terms": [
             {
               "id": "term-stategraph",
               "word": "StateGraph",
@@ -432,11 +582,11 @@
         }
       },
       {
-        type: "flowchart",
-        props: {
-          title: "Agent Research Loop Flowchart",
-          schema: {
-            actors: {
+        "type": "flowchart",
+        "props": {
+          "title": "Agent Research Loop Flowchart",
+          "schema": {
+            "actors": {
               "user": {
                 "title": "Human User",
                 "desc": "Initiates query and reviews final answer."
@@ -447,7 +597,7 @@
                 "collapsedTo": "user"
               }
             },
-            systems: {
+            "systems": {
               "agent_orch": {
                 "title": "Agent Orchestrator",
                 "desc": "Coordinates the research loop steps and state updates.",
@@ -488,7 +638,7 @@
                 "collapsedTo": "llm_api"
               }
             },
-            steps: [
+            "steps": [
               {
                 "type": "linear",
                 "id": "step-start",
@@ -592,7 +742,7 @@
                 ]
               }
             ],
-            journeys: [
+            "journeys": [
               {
                 "id": "happy-path",
                 "label": "Direct Answer Path",
@@ -626,10 +776,10 @@
         }
       },
       {
-        type: "tradeoff-sandbox",
-        props: {
-          title: "Framework Trade-offs: LCEL vs. LangGraph",
-          scenarios: [
+        "type": "tradeoff-sandbox",
+        "props": {
+          "title": "Framework Trade-offs: LCEL vs. LangGraph",
+          "scenarios": [
             {
               "id": "framework-scenario",
               "title": "Orchestrator System Architecture",
@@ -684,10 +834,10 @@
         }
       },
       {
-        type: "quiz",
-        props: {
-          title: "LangGraph Knowledge Check",
-          questions: [
+        "type": "quiz",
+        "props": {
+          "title": "LangGraph Knowledge Check",
+          "questions": [
             {
               "id": "q-checkpointer",
               "question": "What is the primary role of a checkpointer in LangGraph?",
@@ -712,10 +862,10 @@
         }
       },
       {
-        type: "reflection-sequence",
-        props: {
-          title: "LangGraph Implementation Sequence",
-          challenges: [
+        "type": "reflection-sequence",
+        "props": {
+          "title": "LangGraph Implementation Sequence",
+          "challenges": [
             {
               "prompt": "Arrange the steps to configure and execute a LangGraph application:",
               "items": [
@@ -732,8 +882,49 @@
       }
     ];
 
-    // Render LangGraph sections into our target root
-    LoomSections.render(document.getElementById("loom-root"), langGraphSections);
+    // Dynamic rendering function with fetch + fallback
+    async function initLoomSections() {
+      const container = document.getElementById("loom-root");
+      const statusContainer = document.getElementById("loader-status");
+      
+      try {
+        statusContainer.innerHTML = `<span class="status-badge warning">Loading via fetch...</span>`;
+        
+        // Attempt to fetch local JSON database
+        const response = await fetch('./langgraph.json');
+        if (!response.ok) {
+          throw new Error(`Failed to fetch: ${response.status} ${response.statusText}`);
+        }
+        
+        const sections = await response.json();
+        
+        // Render from fetched sections
+        LoomSections.render(container, sections);
+        
+        // Update status badge to success
+        statusContainer.innerHTML = `
+          <span class="status-badge success" style="cursor: help;" title="Sections successfully loaded from local file: langgraph.json">
+            ✅ Loaded via Local JSON
+          </span>
+        `;
+        console.log('🎉 Loom Sections successfully loaded from local langgraph.json!');
+      } catch (err) {
+        console.warn('⚠️ Fetching local JSON failed (possibly due to CORS or file protocol). Falling back to embedded array.', err);
+        
+        // Render from fallback hardcoded JS array
+        LoomSections.render(container, fallbackSections);
+        
+        // Update status badge to show fallback warning
+        statusContainer.innerHTML = `
+          <span class="status-badge warning" style="cursor: help;" title="CORS restricts local fetching over file://. Open page with a local server (e.g. npx serve) to test local JSON loading.">
+            ⚠️ Loaded via Embedded fallback
+          </span>
+        `;
+      }
+    }
+
+    // Run loader when page loads
+    window.addEventListener('DOMContentLoaded', initLoomSections);
   </script>
 </body>
 </html>
