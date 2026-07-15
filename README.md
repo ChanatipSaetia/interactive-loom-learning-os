@@ -142,15 +142,15 @@ Do not generate any files yet. First, ask me to specify:
    - Option B (Static CDN Page with local OKF catalog): An HTML file loading sections from a local OKF bundle folder (e.g. './okf-data') using the UMD method 'LoomSections.loadAndRenderOKF(container, okfBaseUrl, topicId)'.
    - Option C (Repository OKF Catalog Bundle): A multi-file directory structure to be placed under 'public/okf/[topic-id]/' inside this repository (index.md, index.yaml, and subfolders containing yaml/markdown files).
 
-Once I provide the topic and layout choice, you MUST fetch and read the specifications from the following documentation files (hosted on npm CDN, accessible to all AI tools):
+Once I provide the topic and layout choice, you MUST fetch and read the specifications from the following documentation files (hosted on GitHub master branch, accessible to all AI tools):
 1. CDN Integration Specification (for Option A & B UMD setup):
-https://cdn.jsdelivr.net/npm/loom-learning-sections@latest/docs/cdn-library.md
+https://raw.githubusercontent.com/ChanatipSaetia/interactive-loom-learning-os/master/docs/cdn-library.md
 2. OKF Topic Creation Manual (for Option B & C schemas):
-https://cdn.jsdelivr.net/npm/loom-learning-sections@latest/docs/creating-topics.md
+https://raw.githubusercontent.com/ChanatipSaetia/interactive-loom-learning-os/master/docs/creating-topics.md
 3. Progressive section ordering rules & mental models (All Options):
-https://cdn.jsdelivr.net/npm/loom-learning-sections@latest/docs/sections-reference.md
+https://raw.githubusercontent.com/ChanatipSaetia/interactive-loom-learning-os/master/docs/sections-reference.md
 4. Flowchart Event Storming conventions & nodes structure (All Options):
-https://cdn.jsdelivr.net/npm/loom-learning-sections@latest/docs/event-storming-conventions.md
+https://raw.githubusercontent.com/ChanatipSaetia/interactive-loom-learning-os/master/docs/event-storming-conventions.md
 
 Then generate the complete curriculum structure matching the specs.
 ```
