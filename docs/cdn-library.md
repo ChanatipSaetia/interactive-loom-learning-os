@@ -11,22 +11,24 @@ Standalone React component library for rendering interactive learning sections f
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>My Learning Page</title>
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/loom-learning-sections@1.0.3/loom-sections.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/loom-learning-sections@1.0.7/loom-sections.css">
   <style>
-    /* Optional: override theme variables */
-    :root {
-      --ctp-base: #1e1e2e;
-      --ctp-mantle: #181825;
-      --ctp-surface0: #313244;
-      --ctp-text: #cdd6f4;
-      /* ... see full variable list below ... */
+    /* Center the container and add padding */
+    #loom-root {
+      max-width: 860px;
+      margin: 0 auto;
+      padding: 16px;
     }
   </style>
 </head>
 <body>
+  <!-- Theme selector widget mounts here -->
+  <div id="theme-picker" style="max-width: 860px; margin: 16px auto; display: flex; justify-content: flex-end;"></div>
+  
+  <!-- Container where Loom Sections will render -->
   <div id="loom-root"></div>
 
-  <script src="https://cdn.jsdelivr.net/npm/loom-learning-sections@1.0.3/loom-sections.umd.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/loom-learning-sections@1.0.7/loom-sections.umd.js"></script>
   <script>
     const okfSections = [
       {
@@ -51,7 +53,18 @@ Standalone React component library for rendering interactive learning sections f
       }
     ];
 
-    LoomSections.render(document.getElementById("loom-root"), okfSections);
+    // 1. Render sections
+    LoomSections.render(document.getElementById("loom-root"), okfSections, {
+      title: "My Learning Topic",
+      theme: "frappe"
+    });
+
+    // 2. Render theme selector
+    LoomSections.renderThemeSelector(
+      document.getElementById("theme-picker"),
+      document.getElementById("loom-root"),
+      { position: "inline" }
+    );
   </script>
 </body>
 </html>
@@ -59,7 +72,7 @@ Standalone React component library for rendering interactive learning sections f
 
 ## API Reference
 
-### `LoomSections.render(container, sections)`
+### `LoomSections.render(container, sections, options?)`
 
 Render sections into a DOM container.
 
@@ -67,17 +80,91 @@ Render sections into a DOM container.
 |---|---|---|
 | `container` | `HTMLElement` | DOM element to render into |
 | `sections` | `SectionConfig[]` | Array of section configurations |
+| `options` | `RenderOptions` | Optional — title, theme (see [RenderOptions](#renderoptions)) |
 
 ```javascript
-LoomSections.render(document.getElementById("root"), sections);
+LoomSections.render(document.getElementById("root"), sections, {
+  title: "My Learning Topic",
+  theme: "frappe",
+});
 ```
 
 Returns a cleanup function. Call it to unmount:
 
 ```javascript
-const cleanup = LoomSections.render(el, sections);
-cleanup(); // unmounts React root
+const cleanup = LoomSections.render(el, sections, { theme: "mocha" });
+cleanup(); // unmounts React root and removes injected theme styles
 ```
+
+### `RenderOptions`
+
+```typescript
+interface RenderOptions {
+  title?: string
+  theme?: BuiltInTheme | Record<string, string>
+}
+
+type BuiltInTheme = 'frappe' | 'latte' | 'mocha' | 'macchiato'
+```
+
+| Field | Type | Description |
+|---|---|---|
+| `title` | `string` | When provided, the library renders a styled gradient header above the sections containing this text. |
+| `theme` | `BuiltInTheme \| Record<string, string>` | Preset name or partial CSS token map. Applied as a scoped `<style>` tag tied to the container element. |
+
+---
+
+### `LoomSections.renderThemeSelector(widgetContainer, sectionsContainer, options?)`
+
+Mount a floating colour-swatch picker that lets users switch between themes live.
+Swapping a theme only replaces the scoped `<style>` tag — no React remount.
+
+| Parameter | Type | Description |
+|---|---|---|
+| `widgetContainer` | `HTMLElement` | DOM element to mount the picker into |
+| `sectionsContainer` | `HTMLElement` | The **same** container passed to `render()` — the picker retargets its theme here |
+| `options` | `ThemeSelectorOptions` | Optional — which themes to show, where to position the widget |
+
+```javascript
+// 1. Render sections first
+LoomSections.render(document.getElementById("loom-root"), sections, {
+  title: "My Learning Topic",
+  theme: "frappe",
+});
+
+// 2. Mount the theme picker inline next to the status badge
+LoomSections.renderThemeSelector(
+  document.getElementById("theme-picker"),
+  document.getElementById("loom-root"),
+  { position: "inline" }   // or "top-right" | "top-left" | "bottom-right" | "bottom-left"
+);
+```
+
+Returns a cleanup function that unmounts the widget:
+
+```javascript
+const cleanupPicker = LoomSections.renderThemeSelector(pickerEl, rootEl);
+cleanupPicker(); // unmounts only the picker; sections remain
+```
+
+### `ThemeSelectorOptions`
+
+```typescript
+interface ThemeSelectorOptions {
+  themes?: Array<
+    BuiltInTheme |
+    { name: string; label: string; tokens: Record<string, string> }
+  >
+  position?: 'top-right' | 'top-left' | 'bottom-right' | 'bottom-left' | 'inline'
+}
+```
+
+| Field | Type | Description |
+|---|---|---|
+| `themes` | `Array<…>` | Which themes to show. Default: all four built-in Catppuccin flavours. Custom entries use `name`/`label`/`tokens`. |
+| `position` | `string` | `'inline'` renders inside the container; other values use `position: fixed` at the named viewport corner. Default: `'top-right'`. |
+
+---
 
 ### `LoomSections.registerSection(type, componentFactory)`
 
@@ -797,6 +884,45 @@ Fill-in-the-blank challenge with draggable chips.
 
 ---
 
+## Theming
+
+Pass a `theme` in `RenderOptions` to apply colour palette overrides to the render container without touching global CSS.
+
+### Built-in presets
+
+| Preset | Palette | Background | Typical use |
+|---|---|---|---|
+| `"frappe"` | Catppuccin Frappé | `#303446` (dark grey-blue) | Default — matches the Loom app |
+| `"mocha"` | Catppuccin Mocha | `#1e1e2e` (darker) | Deep dark mode |
+| `"macchiato"` | Catppuccin Macchiato | `#24273a` (blue-dark) | Mid dark mode |
+| `"latte"` | Catppuccin Latte | `#eff1f5` (light) | Light mode |
+
+```javascript
+LoomSections.render(container, sections, { theme: "mocha" });
+```
+
+### Custom token map
+
+Pass a partial `Record<string, string>` to override individual CSS custom properties:
+
+```javascript
+LoomSections.render(container, sections, {
+  theme: {
+    "--ctp-base": "#0d1117",
+    "--ctp-mantle": "#090c10",
+    "--ctp-blue": "#58a6ff",
+    "--ctp-text": "#e6edf3",
+  },
+});
+```
+
+> [!NOTE]
+> The injected `<style>` is scoped to the container element (`#container-id { … }`), so
+> multiple independent `render()` calls on the same page each get their own isolated theme.
+> The style tag is automatically removed when the cleanup function returned by `render()` is called.
+
+---
+
 ## CSS Theme Variables
 
 The library uses Catppuccin Frappé theme. Override these CSS custom properties:
@@ -878,18 +1004,34 @@ Use a modern ES module script block (`type="module"`) to fetch the JSON file loc
 <head>
   <meta charset="UTF-8">
   <title>Loom App</title>
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/loom-learning-sections@1.0.3/loom-sections.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/loom-learning-sections@1.0.7/loom-sections.css">
+  <style>
+    #loom-root {
+      max-width: 860px;
+      margin: 0 auto;
+      padding: 16px;
+    }
+  </style>
 </head>
 <body style="background-color: #232634; color: #c6d0f5;">
+  <div id="theme-picker" style="max-width: 860px; margin: 16px auto; display: flex; justify-content: flex-end;"></div>
   <div id="loom-root"></div>
 
-  <script src="https://cdn.jsdelivr.net/npm/loom-learning-sections@1.0.3/loom-sections.umd.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/loom-learning-sections@1.0.7/loom-sections.umd.js"></script>
   <script type="module">
     try {
       const response = await fetch('./curriculum.json');
       if (!response.ok) throw new Error('Failed to load JSON');
       const sections = await response.json();
-      LoomSections.render(document.getElementById('loom-root'), sections);
+      LoomSections.render(document.getElementById('loom-root'), sections, {
+        title: "Stateful Agents",
+        theme: "frappe"
+      });
+      LoomSections.renderThemeSelector(
+        document.getElementById('theme-picker'),
+        document.getElementById('loom-root'),
+        { position: 'inline' }
+      );
     } catch (err) {
       console.error('Error loading sections:', err);
     }
@@ -928,12 +1070,20 @@ Embed the array directly inside your script tag:
 <head>
   <meta charset="UTF-8">
   <title>Loom App (Embedded)</title>
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/loom-learning-sections@1.0.3/loom-sections.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/loom-learning-sections@1.0.7/loom-sections.css">
+  <style>
+    #loom-root {
+      max-width: 860px;
+      margin: 0 auto;
+      padding: 16px;
+    }
+  </style>
 </head>
 <body style="background-color: #232634; color: #c6d0f5;">
+  <div id="theme-picker" style="max-width: 860px; margin: 16px auto; display: flex; justify-content: flex-end;"></div>
   <div id="loom-root"></div>
 
-  <script src="https://cdn.jsdelivr.net/npm/loom-learning-sections@1.0.3/loom-sections.umd.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/loom-learning-sections@1.0.7/loom-sections.umd.js"></script>
   <script>
     const okfSections = [
       {
@@ -945,7 +1095,15 @@ Embed the array directly inside your script tag:
       }
     ];
 
-    LoomSections.render(document.getElementById('loom-root'), okfSections);
+    LoomSections.render(document.getElementById('loom-root'), okfSections, {
+      title: "Embedded Lesson",
+      theme: "frappe"
+    });
+    LoomSections.renderThemeSelector(
+      document.getElementById('theme-picker'),
+      document.getElementById('loom-root'),
+      { position: 'inline' }
+    );
   </script>
 </body>
 </html>

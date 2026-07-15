@@ -8,7 +8,12 @@ const __dirname = path.dirname(__filename);
 const rootDir = path.resolve(__dirname, '..');
 const distDir = path.resolve(rootDir, 'dist');
 
-console.log('🚀 Starting packaging process for loom-learning-sections...');
+// Read canonical version from libs/package.lib.json
+const libPkgPath = path.resolve(rootDir, 'libs/package.lib.json');
+const libPkg = JSON.parse(fs.readFileSync(libPkgPath, 'utf-8'));
+const VERSION = libPkg.version;
+
+console.log(`🚀 Starting packaging process for loom-learning-sections@${VERSION}...`);
 
 // Step 1: Run typecheck
 try {
@@ -30,9 +35,9 @@ try {
 
 // Step 3: Create package.json inside dist/
 const pkgJson = {
-  name: 'loom-learning-sections',
-  version: '1.0.3',
-  description: 'Standalone React component library for rendering interactive learning sections from JSON data.',
+  name: libPkg.name,
+  version: VERSION,
+  description: libPkg.description,
   main: 'loom-sections.umd.js',
   module: 'loom-sections.js',
   style: 'loom-sections.css',
@@ -41,18 +46,11 @@ const pkgJson = {
     'loom-sections.js',
     'loom-sections.css'
   ],
-  keywords: [
-    'react',
-    'loom',
-    'interactive',
-    'learning',
-    'sections',
-    'flowchart',
-    'tradeoffs',
-    'quiz'
-  ],
-  author: '',
-  license: 'MIT',
+  keywords: libPkg.keywords,
+  license: libPkg.license,
+  repository: libPkg.repository,
+  homepage: libPkg.homepage,
+  bugs: libPkg.bugs,
   publishConfig: {
     access: 'public'
   }
@@ -61,6 +59,7 @@ const pkgJson = {
 const pkgJsonPath = path.resolve(distDir, 'package.json');
 fs.writeFileSync(pkgJsonPath, JSON.stringify(pkgJson, null, 2), 'utf-8');
 console.log('✅ Created package.json in dist/');
+
 
 // Step 4: Copy README.md (cdn-library.md) to dist/
 const readmeSrc = path.resolve(rootDir, 'docs/cdn-library.md');

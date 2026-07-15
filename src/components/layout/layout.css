@@ -118,9 +118,9 @@ html[data-theme='recipebook'] .topic-page-title {
   align-items: center;
   gap: 1rem;
   position: sticky;
-  top: 52px;
+  top: var(--loom-title-sticky-top, 52px);
   z-index: 10;
-  background-color: var(--background);
+  background-color: var(--loom-section-bg, var(--background));
 }
 
 .text-section-title::before,
@@ -182,9 +182,9 @@ html[data-theme='recipebook'] .topic-page-title {
 .flowchart-header-container,
 .flashcards-header {
   position: sticky;
-  top: 52px;
+  top: var(--loom-title-sticky-top, 52px);
   z-index: 10;
-  background-color: var(--background);
+  background-color: var(--loom-section-bg, var(--background));
   @apply pt-3 md:pt-6 pb-2 mb-8;
 }
 
