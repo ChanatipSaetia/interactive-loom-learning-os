@@ -1,12 +1,12 @@
 import { useState, useCallback, useRef, forwardRef, type ComponentType } from 'react'
 import { motion, AnimatePresence } from 'motion/react'
 import * as Dialog from '@radix-ui/react-dialog'
+import * as Icons from 'lucide-react'
 import { ScrollReveal } from '../../components/motion/scroll-reveal'
 import './taxonomy-browser.css'
 
 export interface TaxonomyCategory {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  icon: ComponentType<any>
+  icon: string
   title: string
   subtitle: string
   description: string
@@ -16,6 +16,12 @@ export interface TaxonomyCategory {
   inScope: string[]
   outOfScope: string[]
   color: string
+}
+
+function resolveIcon(name: string): ComponentType<any> {
+  const iconKey = name as keyof typeof Icons
+  const icon = (Icons as unknown as Record<string, ComponentType<any>>)[iconKey]
+  return icon || Icons.Circle
 }
 
 export interface TaxonomyBrowserSectionProps {
@@ -59,7 +65,7 @@ function TaxonomyModal({
   const category = open ? propCategory : (lastCategory || propCategory)
   if (!category) return null
 
-  const Icon = category.icon
+  const Icon = resolveIcon(category.icon)
   const accent = colorAccentMap[category.color] ?? 'var(--ctp-blue)'
 
   return (
@@ -217,7 +223,7 @@ function TaxonomyBrowserSection({ title, categories }: TaxonomyBrowserSectionPro
       )}
       <div className="taxonomy-browser-grid" data-testid="taxonomy-browser-grid">
         {categories.map((cat, idx) => {
-          const Icon = cat.icon
+          const Icon = resolveIcon(cat.icon)
           const accent = colorAccentMap[cat.color] ?? 'var(--ctp-blue)'
           return (
             <ScrollReveal key={idx} delay={idx * 0.1}>

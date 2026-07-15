@@ -3,7 +3,42 @@ import react from '@vitejs/plugin-react'
 
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd(), '')
+  const isLib = env.BUILD_MODE === 'lib'
   const basePath = env.VITE_BASE_PATH || (process.env.GITHUB_ACTIONS ? '/interactive-loom-learning-os/' : '/')
+
+  if (isLib) {
+    return {
+      base: '/',
+      plugins: [
+        react(),
+      ],
+      define: {
+        'process.env': JSON.stringify({}),
+        'process.browser': 'true',
+      },
+      build: {
+        lib: {
+          entry: './libs/loom-sections.tsx',
+          name: 'LoomSections',
+          fileName: 'loom-sections',
+          formats: ['umd', 'es'],
+        },
+        cssCodeSplit: false,
+        sourcemap: false,
+        minify: 'esbuild',
+        rollupOptions: {
+          external: [],
+          output: {
+            inlineDynamicImports: true,
+            assetFileNames: (assetInfo) => {
+              if (assetInfo.name === 'style.css') return 'loom-sections.css'
+              return assetInfo.name
+            },
+          },
+        },
+      },
+    }
+  }
 
   return {
     base: basePath,

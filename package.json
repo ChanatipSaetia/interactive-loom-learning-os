@@ -6,6 +6,8 @@
   "scripts": {
     "dev": "vite --host 0.0.0.0",
     "build": "tsc -b && vite build",
+    "build:lib": "BUILD_MODE=lib vite build",
+    "build:all": "tsc -b && BUILD_MODE=lib vite build && vite build",
     "test": "vitest run",
     "test:e2e": "playwright test",
     "lint": "eslint . --ext .ts,.tsx --report-unused-disable-directives --max-warnings 0",

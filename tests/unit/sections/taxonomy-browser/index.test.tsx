@@ -3,11 +3,9 @@ import { render, screen, fireEvent } from '@testing-library/react'
 import { SectionRegistry } from '../../../../src/core/registry'
 import TaxonomyBrowserSection from '../../../../src/sections/taxonomy-browser'
 
-const MockIcon = () => <svg data-testid="mock-icon" />
-
 const mockCategories = [
   {
-    icon: MockIcon,
+    icon: "BookOpen",
     title: 'Category One',
     subtitle: 'Subtitle One',
     description: 'Description for the first category.',
@@ -19,7 +17,7 @@ const mockCategories = [
     color: 'blue',
   },
   {
-    icon: MockIcon,
+    icon: "BookOpen",
     title: 'Category Two',
     subtitle: 'Subtitle Two',
     description: 'Description for the second category.',
@@ -31,7 +29,7 @@ const mockCategories = [
     color: 'peach',
   },
   {
-    icon: MockIcon,
+    icon: "BookOpen",
     title: 'Category Three',
     subtitle: 'Subtitle Three',
     description: 'Description for the third category.',

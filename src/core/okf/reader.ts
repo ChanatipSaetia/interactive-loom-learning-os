@@ -1,6 +1,4 @@
 import * as yaml from 'js-yaml'
-import * as Icons from 'lucide-react'
-import type { ComponentType } from 'react'
 import type { AbstractFlow, ActorDecl, SystemDecl, FlowJourney } from '../../sections/flowchart/abstract-flow/types'
 import { ref } from '../../sections/flowchart/abstract-flow/types'
 import type { BulletItem } from '../../sections/bullets'
@@ -388,10 +386,8 @@ function mapTradeoffScenario(raw: OKFTradeoffScenarioRaw): import('../../section
 // --- Taxonomy mapping ---
 
 function mapTaxonomyCategory(raw: OKFTaxonomyRaw): import('../../sections/taxonomy-browser').TaxonomyCategory {
-  const iconKey = raw.icon as keyof typeof Icons
-  const IconComponent = (Icons as Record<string, unknown>)[iconKey] as ComponentType<any>
   return {
-    icon: IconComponent,
+    icon: raw.icon,
     title: raw.title,
     subtitle: raw.subtitle,
     description: raw.description,
