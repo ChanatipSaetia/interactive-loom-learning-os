@@ -959,6 +959,10 @@ The library uses Catppuccin Frappé theme. Override these CSS custom properties:
 
   /* Semantic aliases */
   --font-body: system-ui, -apple-system, sans-serif;
+
+  /* Layout variables specific to Loom CDN container */
+  --loom-title-sticky-top: 0px;                  /* Sticky top offset for section headers */
+  --loom-section-bg: var(--ctp-base, #303446);   /* Background color for sticky headers */
 }
 ```
 
