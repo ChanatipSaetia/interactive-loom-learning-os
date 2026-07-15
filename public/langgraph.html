@@ -3,26 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Loom Sections: CDN Showcase & LangGraph Tutorial</title>
-  
-  <!-- Inline on-page error debugger -->
-  <script>
-    window.addEventListener('error', function(event) {
-      const errorDiv = document.createElement('div');
-      errorDiv.style.position = 'fixed';
-      errorDiv.style.top = '0';
-      errorDiv.style.left = '0';
-      errorDiv.style.width = '100%';
-      errorDiv.style.background = '#e78284';
-      errorDiv.style.color = '#232634';
-      errorDiv.style.padding = '16px';
-      errorDiv.style.zIndex = '99999';
-      errorDiv.style.fontFamily = 'monospace';
-      errorDiv.style.fontSize = '14px';
-      errorDiv.innerHTML = '<strong>Uncaught Error:</strong> ' + event.message + ' at ' + (event.filename || 'unknown script') + ':' + event.lineno;
-      document.body.appendChild(errorDiv);
-    });
-  </script>
+  <title>Loom Sections: Building Stateful Agents with LangGraph</title>
   
   <!-- Font setup -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -30,474 +11,57 @@
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
   
   <!-- Load Loom CSS from the public CDN -->
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/loom-learning-sections@1.0.8/loom-sections.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/loom-learning-sections@1.0.9/loom-sections.css">
   
   <style>
-    /* Design tokens matching Catppuccin Frappé palette */
-    :root {
-      --ctp-rosewater: #f2d5cf;
-      --ctp-flamingo: #eebebe;
-      --ctp-pink: #f4b8e4;
-      --ctp-mauve: #ca9ee6;
-      --ctp-red: #e78284;
-      --ctp-maroon: #ea999c;
-      --ctp-peach: #ef9f76;
-      --ctp-yellow: #e5c890;
-      --ctp-green: #a6d189;
-      --ctp-teal: #81c8be;
-      --ctp-sky: #99d1db;
-      --ctp-sapphire: #85c1dc;
-      --ctp-blue: #8ca0f3;
-      --ctp-lavender: #babbf1;
-      --ctp-text: #c6d0f5;
-      --ctp-subtext1: #b5bfe2;
-      --ctp-subtext0: #a5adce;
-      --ctp-overlay2: #949cbb;
-      --ctp-overlay1: #838ba7;
-      --ctp-overlay0: #737994;
-      --ctp-surface2: #626880;
-      --ctp-surface1: #51576d;
-      --ctp-surface0: #414559;
-      --ctp-base: #303446;
-      --ctp-mantle: #292c3c;
-      --ctp-crust: #232634;
-
-      --font-sans: 'Outfit', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-      --font-mono: 'JetBrains Mono', monospace;
-    }
-
-    * {
-      box-sizing: border-box;
+    body {
+      background-color: var(--ctp-crust, #11111b);
+      color: var(--ctp-text, #c6d0f5);
+      font-family: 'Outfit', sans-serif;
+      line-height: 1.6;
       margin: 0;
       padding: 0;
     }
-
-    body {
-      background-color: var(--ctp-crust);
-      color: var(--ctp-text);
-      font-family: var(--font-sans);
-      line-height: 1.6;
-      padding: 24px;
-      overflow-x: hidden;
-    }
-
-    .container {
-      max-width: 1200px;
-      margin: 0 auto;
-      display: flex;
-      flex-direction: column;
-      gap: 32px;
-    }
-
-    /* Premium Header */
-    header {
-      padding: 32px;
-      background: linear-gradient(135deg, var(--ctp-mantle), var(--ctp-base));
-      border: 1px solid rgba(198, 208, 245, 0.08);
-      border-radius: 24px;
-      box-shadow: 0 12px 40px rgba(0, 0, 0, 0.3);
-      position: relative;
-      overflow: hidden;
-    }
-
-    header::before {
-      content: '';
-      position: absolute;
-      top: -50%;
-      left: -50%;
-      width: 200%;
-      height: 200%;
-      background: radial-gradient(circle, rgba(202, 158, 230, 0.08) 0%, transparent 60%);
-      pointer-events: none;
-    }
-
-    .header-content {
-      position: relative;
-      z-index: 1;
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-    }
-
-    .badge {
-      display: inline-flex;
-      align-self: flex-start;
-      background: rgba(140, 160, 243, 0.15);
-      color: var(--ctp-blue);
-      border: 1px solid rgba(140, 160, 243, 0.3);
-      padding: 6px 12px;
-      border-radius: 100px;
-      font-size: 12px;
-      font-weight: 600;
-      letter-spacing: 0.5px;
-      text-transform: uppercase;
-    }
-
-    h1 {
-      font-size: 32px;
-      font-weight: 800;
-      background: linear-gradient(120deg, var(--ctp-lavender), var(--ctp-mauve), var(--ctp-sky));
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      line-height: 1.2;
-    }
-
-    .subtitle {
-      font-size: 16px;
-      color: var(--ctp-subtext1);
-      max-width: 800px;
-    }
-
-    /* Copyable CDN Guide Card */
-    .cdn-card {
-      background: var(--ctp-base);
-      border: 1px solid rgba(198, 208, 245, 0.06);
-      border-radius: 20px;
-      padding: 24px;
-      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2);
-    }
-
-    .cdn-card h2 {
-      font-size: 20px;
-      font-weight: 600;
-      color: var(--ctp-lavender);
-      margin-bottom: 12px;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-
-    .cdn-card p {
-      font-size: 14.5px;
-      color: var(--ctp-subtext0);
-      margin-bottom: 16px;
-    }
-
-    .code-wrapper {
-      position: relative;
-      background: var(--ctp-mantle);
-      border-radius: 12px;
-      padding: 16px;
-      border: 1px solid rgba(198, 208, 245, 0.05);
-      font-family: var(--font-mono);
-      font-size: 13px;
-      overflow-x: auto;
-      max-height: 380px;
-    }
-
-    .code-wrapper pre {
-      margin: 0;
-      color: var(--ctp-rosewater);
-    }
-
-    .copy-btn {
-      position: absolute;
-      top: 12px;
-      right: 12px;
-      background: var(--ctp-surface0);
-      border: 1px solid rgba(198, 208, 245, 0.1);
-      color: var(--ctp-text);
-      padding: 6px 12px;
-      border-radius: 6px;
-      font-size: 12px;
-      font-weight: 500;
-      cursor: pointer;
-      transition: all 0.2s ease;
-    }
-
-    .copy-btn:hover {
-      background: var(--ctp-surface1);
-      color: #fff;
-    }
-
-    .alert-banner {
-      margin-top: 16px;
-      background: rgba(229, 200, 144, 0.08);
-      border-left: 4px solid var(--ctp-yellow);
-      padding: 12px 16px;
-      border-radius: 8px;
-      font-size: 13.5px;
-      color: var(--ctp-yellow);
-    }
-
-    /* Learning Sandbox container */
-    .sandbox-container {
-      background: var(--ctp-base);
-      border: 1px solid rgba(198, 208, 245, 0.06);
-      border-radius: 24px;
-      padding: 32px;
-      box-shadow: 0 16px 48px rgba(0, 0, 0, 0.25);
-    }
-
-    .sandbox-header {
-      margin-bottom: 24px;
-      border-bottom: 1px solid rgba(198, 208, 245, 0.08);
-      padding-bottom: 16px;
-    }
-
-    .sandbox-header h2 {
-      font-size: 22px;
-      font-weight: 700;
-      color: var(--ctp-lavender);
-    }
-
-    /* Adjust UMD rendering styles to fit nicely in static layout */
-    .loom-sections-container {
-      display: flex;
-      flex-direction: column;
-      gap: 40px;
-    }
-
-    /* Tab switcher container and buttons */
-    .tab-container {
-      display: flex;
-      gap: 12px;
-      margin-bottom: 16px;
-      border-bottom: 1px solid rgba(198, 208, 245, 0.1);
-      padding-bottom: 12px;
-    }
-
-    .tab-btn {
-      background: rgba(198, 208, 245, 0.04);
-      border: 1px solid rgba(198, 208, 245, 0.1);
-      color: var(--ctp-subtext1);
-      padding: 8px 16px;
-      border-radius: 10px;
-      font-family: var(--font-sans);
-      font-size: 14px;
-      font-weight: 600;
-      cursor: pointer;
-      transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-
-    .tab-btn:hover {
-      background: rgba(198, 208, 245, 0.08);
-      color: var(--ctp-text);
-      transform: translateY(-1px);
-    }
-
-    .tab-btn.active {
-      background: rgba(140, 160, 243, 0.15);
-      border-color: var(--ctp-blue);
-      color: var(--ctp-blue);
-      box-shadow: 0 4px 12px rgba(140, 160, 243, 0.1);
-    }
-
-    .tab-content {
-      display: none;
-    }
-
-    .tab-content.active {
-      display: block;
-      animation: fadeIn 0.3s ease;
-    }
-
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(4px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-
-    /* Status indicator custom styles */
     .status-badge {
       display: inline-flex;
       align-items: center;
       gap: 6px;
-      font-size: 12px;
+      font-size: 11px;
+      font-family: 'JetBrains Mono', monospace;
       font-weight: 600;
-      padding: 4px 10px;
-      border-radius: 6px;
-      margin-left: 12px;
-      vertical-align: middle;
+      padding: 4px 8px;
+      border-radius: 4px;
       text-transform: uppercase;
       letter-spacing: 0.5px;
+      margin-left: 8px;
     }
-
     .status-badge.success {
-      background: rgba(166, 209, 137, 0.15);
+      background: rgba(166, 209, 137, 0.12);
       color: var(--ctp-green);
-      border: 1px solid rgba(166, 209, 137, 0.3);
+      border: 1px solid rgba(166, 209, 137, 0.25);
     }
-
     .status-badge.warning {
-      background: rgba(229, 200, 144, 0.15);
+      background: rgba(229, 200, 144, 0.12);
       color: var(--ctp-yellow);
-      border: 1px solid rgba(229, 200, 144, 0.3);
+      border: 1px solid rgba(229, 200, 144, 0.25);
     }
   </style>
 </head>
 <body>
 
-  <div class="container">
-    
-    <!-- Premium Header -->
-    <header>
-      <div class="header-content">
-        <span class="badge">CDN Deployment Mode</span>
-        <h1>Interactive Learning OS</h1>
-        <p class="subtitle">
-          Learn how to bundle and load interactive learning sections via CDN links, and explore a live-rendered curriculum on <strong>LangGraph</strong> state machines.
-        </p>
-      </div>
-    </header>
-    <!-- CDN Guide Card -->
-    <div class="cdn-card">
-      <h2>
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="color: var(--ctp-blue)"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
-        How to load Loom Sections
-      </h2>
-      <p>
-        You can choose to load the section data dynamically from a local JSON file (cleaner separation) or embed it inline directly inside your HTML.
-      </p>
-
-      <!-- Tab switcher -->
-      <div class="tab-container">
-        <button class="tab-btn active" onclick="switchTab('json-tab')">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
-          Option A: Local JSON File (Recommended)
-        </button>
-        <button class="tab-btn" onclick="switchTab('inline-tab')">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
-          Option B: Embedded Inline JS
-        </button>
-      </div>
-
-      <!-- JSON Tab content -->
-      <div id="json-tab" class="tab-content active">
-        <div class="code-wrapper">
-          <button class="copy-btn" onclick="copyCode('json-code')">Copy Code</button>
-          <pre><code id="json-code">&lt;!DOCTYPE html&gt;
-&lt;html lang="en"&gt;
-&lt;head&gt;
-  &lt;meta charset="UTF-8"&gt;
-  &lt;title&gt;Loom Learning App (Local JSON)&lt;/title&gt;
-  &lt;!-- Load Loom Sections CSS Library --&gt;
-  &lt;link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/loom-learning-sections@1.0.8/loom-sections.css"&gt;
-&lt;/head&gt;
-&lt;body style="background-color: #232634; color: #c6d0f5; font-family: sans-serif;"&gt;
-  &lt;div id="loom-root"&gt;&lt;/div&gt;
-
-  &lt;!-- Load Loom Sections Javascript UMD Bundle --&gt;
-  &lt;script src="https://cdn.jsdelivr.net/npm/loom-learning-sections@1.0.8/loom-sections.umd.js"&gt;&lt;/script&gt;
-  &lt;script type="module"&gt;
-    try {
-      // 1. Read the JSON file created in the same folder
-      const response = await fetch('./langgraph.json');
-      if (!response.ok) throw new Error('HTTP error ' + response.status);
-      const sections = await response.json();
-      
-      // 2. Render sections with optional title + theme
-      LoomSections.render(document.getElementById("loom-root"), sections, {
-        title: "My Learning Topic",  // rendered as a header above sections
-        theme: "frappe",             // built-in: "frappe" | "latte" | "mocha" | "macchiato"
-      });
-    } catch (err) {
-      console.error('Failed to load JSON file:', err);
-    }
-  &lt;/script&gt;
-&lt;/body&gt;
-&lt;/html&gt;</code></pre>
-        </div>
-        <div class="alert-banner" style="background: rgba(137, 180, 250, 0.08); border-left: 4px solid var(--ctp-blue); color: var(--ctp-blue);">
-          <strong>Setup instruction:</strong> Create a file named <code>langgraph.json</code> in the same folder as your HTML file. Load the page via a local HTTP server (like <code>npx serve .</code> or <code>python3 -m http.server</code>) to avoid CORS browser blocks on <code>file://</code> protocol.
-        </div>
-      </div>
-
-      <!-- Inline Tab content -->
-      <div id="inline-tab" class="tab-content">
-        <div class="code-wrapper">
-          <button class="copy-btn" onclick="copyCode('inline-code')">Copy Code</button>
-          <pre><code id="inline-code">&lt;!DOCTYPE html&gt;
-&lt;html lang="en"&gt;
-&lt;head&gt;
-  &lt;meta charset="UTF-8"&gt;
-  &lt;title&gt;Loom Learning App (Embedded)&lt;/title&gt;
-  &lt;!-- Load Loom Sections CSS Library --&gt;
-  &lt;link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/loom-learning-sections@1.0.8/loom-sections.css"&gt;
-&lt;/head&gt;
-&lt;body style="background-color: #232634; color: #c6d0f5; font-family: sans-serif;"&gt;
-  &lt;div id="loom-root"&gt;&lt;/div&gt;
-
-  &lt;!-- Load Loom Sections Javascript UMD Bundle --&gt;
-  &lt;script src="https://cdn.jsdelivr.net/npm/loom-learning-sections@1.0.8/loom-sections.umd.js"&gt;&lt;/script&gt;
-  &lt;script&gt;
-    const okfSections = [
-      {
-        "type": "text",
-        "props": {
-          "title": "Welcome",
-          "paragraphs": ["# Welcome to Interactive Learning\nThis page loads sections via embedded inline JS!"]
-        }
-      }
-      // Add other sections here...
-    ];
-    
-    // Render sections with optional title + theme
-    LoomSections.render(document.getElementById("loom-root"), okfSections, {
-      title: "My Learning Topic",  // rendered as a header above sections
-      theme: "mocha",              // or pass a token map: { "--ctp-base": "#1e1e2e" }
-    });
-  &lt;/script&gt;
-&lt;/body&gt;
-&lt;/html&gt;</code></pre>
-        </div>
-        <div class="alert-banner">
-          <strong>Prototyping hint:</strong> Best for offline testing, single standalone HTML files, or environments without a static file server. However, it mixes structure (HTML) with curriculum data (JSON).
-        </div>
-      </div>
-    </div>
-
-    <!-- Interactive Workspace -->
-    <div class="sandbox-container">
-      <div class="sandbox-header" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;">
-        <!-- Theme selector widget mounts here -->
-        <div id="theme-picker"></div>
-        <div id="loader-status">
-          <span class="status-badge warning">Checking loading source...</span>
-        </div>
-      </div>
-
-      <!-- Container where Loom Sections will render -->
-      <div id="loom-root"></div>
-    </div>
-
+  <!-- Theme selector widget mounts here -->
+  <div id="theme-picker-container" style="max-width: 860px; margin: 20px auto 0; padding: 0 24px; display: flex; justify-content: flex-end; align-items: center; gap: 8px; box-sizing: border-box;">
+    <div id="theme-picker"></div>
+    <div id="loader-status"></div>
   </div>
+  
+  <!-- Container where Loom Sections will render -->
+  <div id="loom-root"></div>
 
   <!-- Load Loom Sections JS from the public CDN -->
-  <script src="https://cdn.jsdelivr.net/npm/loom-learning-sections@1.0.8/loom-sections.umd.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/loom-learning-sections@1.0.9/loom-sections.umd.js"></script>
   
   <script>
-    // Tab switching logic
-    function switchTab(tabId) {
-      // Deactivate all tabs
-      document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
-      document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
-      
-      // Activate selected tab
-      const selectedBtn = document.querySelector(`[onclick="switchTab('${tabId}')"]`);
-      if (selectedBtn) selectedBtn.classList.add('active');
-      
-      const selectedContent = document.getElementById(tabId);
-      if (selectedContent) selectedContent.classList.add('active');
-    }
-
-    // Copy code helper
-    function copyCode(codeId) {
-      const codeElement = document.getElementById(codeId);
-      if (!codeElement) return;
-      
-      const code = codeElement.innerText;
-      navigator.clipboard.writeText(code).then(() => {
-        // Find copy button inside the same tab-content
-        const btn = codeElement.closest('.code-wrapper').querySelector('.copy-btn');
-        const originalText = btn.innerText;
-        btn.innerText = "Copied!";
-        setTimeout(() => { btn.innerText = originalText; }, 2000);
-      });
-    }
-
     // Fallback embedded curriculum data
     const fallbackSections = [
       {
