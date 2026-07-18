@@ -27,6 +27,20 @@ const mockEdges: ConceptEdge[] = [
   { from: 'workers', to: 'react_loop', label: 'uses' },
 ]
 
+const mockDisconnectedNodes: Record<string, ConceptNode> = {
+  orchestrator: { id: 'orchestrator', title: 'Orchestrator', category: 'pattern' },
+  workers: { id: 'workers', title: 'Workers', category: 'pattern' },
+  react_loop: { id: 'react_loop', title: 'ReAct Loop', category: 'mechanism' },
+  benchmark: { id: 'benchmark', title: 'Benchmark', category: 'concept' },
+  metric: { id: 'metric', title: 'Metric', category: 'data' },
+}
+
+const mockDisconnectedEdges: ConceptEdge[] = [
+  { from: 'orchestrator', to: 'workers', label: 'delegates to' },
+  { from: 'workers', to: 'react_loop', label: 'uses' },
+  { from: 'benchmark', to: 'metric', label: 'defines' },
+]
+
 describe('ConceptMap Section', () => {
   beforeEach(() => {
     SectionRegistry.clear()
@@ -148,6 +162,79 @@ describe('ConceptMap Section', () => {
     const { SectionRegistry: Registry } = await import('../../../../src/core/registry')
     expect(Registry.get('concept-map')).toBeUndefined()
     void mod
+  })
+
+  it('renders pulsing glow rect on entry point node', () => {
+    render(<ConceptMapSection nodes={mockNodes} edges={mockEdges} />)
+    const entryNode = screen.getByTestId('concept-map-node-orchestrator')
+    const pulseRect = entryNode.querySelector('.cm-entry-pulse')
+    expect(pulseRect).not.toBeNull()
+  })
+
+  it('shows prev/next buttons when multiple disconnected graphs exist', () => {
+    render(<ConceptMapSection nodes={mockDisconnectedNodes} edges={mockDisconnectedEdges} />)
+    expect(screen.getByTestId('concept-map-graph-prev')).toBeInTheDocument()
+    expect(screen.getByTestId('concept-map-graph-next')).toBeInTheDocument()
+  })
+
+  it('does not show prev/next buttons for single graph', () => {
+    render(<ConceptMapSection nodes={mockNodes} edges={mockEdges} />)
+    expect(screen.queryByTestId('concept-map-graph-prev')).not.toBeInTheDocument()
+    expect(screen.queryByTestId('concept-map-graph-next')).not.toBeInTheDocument()
+  })
+
+  it('displays graph counter badge when multiple graphs exist', () => {
+    render(<ConceptMapSection nodes={mockDisconnectedNodes} edges={mockDisconnectedEdges} />)
+    const badge = screen.getByTestId('concept-map-graph-badge')
+    expect(badge).toHaveTextContent('1 / 2')
+  })
+
+  it('switches graph on next button click', () => {
+    render(<ConceptMapSection nodes={mockDisconnectedNodes} edges={mockDisconnectedEdges} />)
+    const nextBtn = screen.getByTestId('concept-map-graph-next')
+    fireEvent.click(nextBtn)
+    const badge = screen.getByTestId('concept-map-graph-badge')
+    expect(badge).toHaveTextContent('2 / 2')
+  })
+
+  it('switches graph on prev button click', () => {
+    render(<ConceptMapSection nodes={mockDisconnectedNodes} edges={mockDisconnectedEdges} />)
+    const nextBtn = screen.getByTestId('concept-map-graph-next')
+    fireEvent.click(nextBtn)
+    const prevBtn = screen.getByTestId('concept-map-graph-prev')
+    fireEvent.click(prevBtn)
+    const badge = screen.getByTestId('concept-map-graph-badge')
+    expect(badge).toHaveTextContent('1 / 2')
+  })
+
+  it('larger graph is shown first', () => {
+    render(<ConceptMapSection nodes={mockDisconnectedNodes} edges={mockDisconnectedEdges} />)
+    expect(screen.getByTestId('concept-map-node-orchestrator')).toBeInTheDocument()
+    expect(screen.queryByTestId('concept-map-node-benchmark')).not.toBeInTheDocument()
+  })
+
+  it('BFS layout positions entry node at top', () => {
+    const originalGetBoundingClientRect = Element.prototype.getBoundingClientRect
+
+    try {
+      Element.prototype.getBoundingClientRect = vi.fn().mockReturnValue({
+        width: 1400,
+        height: 900,
+        top: 0,
+        left: 0,
+        bottom: 900,
+        right: 1400,
+        x: 0,
+        y: 0,
+        toJSON: () => {},
+      })
+
+      render(<ConceptMapSection nodes={mockNodes} edges={mockEdges} />)
+      const entryNode = screen.getByTestId('concept-map-node-orchestrator')
+      expect(entryNode).toBeInTheDocument()
+    } finally {
+      Element.prototype.getBoundingClientRect = originalGetBoundingClientRect
+    }
   })
 
   it('calculates dynamic viewBox based on width/height ratio', () => {

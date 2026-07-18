@@ -61,6 +61,14 @@
 .cm-edge-label-bg.cm-edge-label-dimmed {
   opacity: 0.05;
 }
+
+.cm-edge-label-group {
+  pointer-events: none;
+}
+
+.cm-edge-label-group-highlight {
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.4));
+}
 .cm-node-group {
   transition: opacity 0.2s ease;
 }
@@ -76,6 +84,34 @@
 .cm-node-selected circle {
   stroke-width: 3;
   filter: drop-shadow(0 0 6px var(--ctp-blue));
+}
+
+@keyframes cm-entry-pulse {
+  0%, 100% {
+    opacity: 0.6;
+    filter: drop-shadow(0 0 3px var(--ctp-peach));
+  }
+  50% {
+    opacity: 1;
+    filter: drop-shadow(0 0 12px var(--ctp-peach)) drop-shadow(0 0 6px var(--ctp-red));
+  }
+}
+
+.cm-entry-pulse {
+  animation: cm-entry-pulse 1.2s ease-in-out infinite;
+  pointer-events: none;
+}
+
+.concept-map-header {
+  @apply flex items-center gap-3 mb-3;
+}
+
+.concept-map-graph-badge {
+  @apply inline-flex items-center px-2 py-0.5 rounded text-xs font-medium;
+  background: var(--ctp-surface0);
+  color: var(--ctp-subtext0);
+  font-family: var(--font-mono);
+  border: 1px solid var(--ctp-surface1);
 }
 
 .cm-node-title {

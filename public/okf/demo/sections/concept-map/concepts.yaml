@@ -39,6 +39,26 @@ nodes:
     title: "Feedback Loop"
     definition: "Process where output is fed back as input to refine or correct subsequent actions."
     category: mechanism
+  benchmark:
+    title: "Benchmark"
+    definition: "Standardized test suite for measuring agent performance across tasks."
+    category: concept
+  metric:
+    title: "Metric"
+    definition: "Quantitative measure used to evaluate agent capability or output quality."
+    category: data
+  human_eval:
+    title: "Human Evaluation"
+    definition: "Direct human assessment of agent outputs for quality and alignment."
+    category: process
+  automated_eval:
+    title: "Automated Evaluation"
+    definition: "LLM-judge or script-based assessment that scores agent outputs without human involvement."
+    category: process
+  reward_model:
+    title: "Reward Model"
+    definition: "Supervised model trained to predict human preferences for ranking outputs."
+    category: system
 
 edges:
   - from: orchestrator
@@ -80,3 +100,18 @@ edges:
   - from: feedback_loop
     to: orchestrator
     label: "informs"
+  - from: benchmark
+    to: metric
+    label: "defines"
+  - from: human_eval
+    to: metric
+    label: "produces"
+  - from: automated_eval
+    to: metric
+    label: "produces"
+  - from: reward_model
+    to: automated_eval
+    label: "powers"
+  - from: reward_model
+    to: benchmark
+    label: "trained on"
