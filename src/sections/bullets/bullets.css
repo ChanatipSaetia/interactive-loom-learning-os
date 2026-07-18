@@ -4,6 +4,7 @@
 
 .bullets-list {
   @apply grid grid-cols-1 gap-5 list-none p-0 m-0 items-start;
+  counter-reset: ordered-bullet;
 }
 
 @media (min-width: 768px) {
