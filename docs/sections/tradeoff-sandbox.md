@@ -15,6 +15,11 @@ sections/tradeoffs/
 
 The `resource: "."` value tells the loader to read **all `.yaml` files** in the directory as separate scenarios. Each YAML file is one scenario object.
 
+> [!NOTE]
+> **Multiple Scenarios & Multiple Choices/Options per Step**
+> - **Multiple Scenarios**: A single `tradeoff-sandbox` section can load **multiple scenarios** (e.g. `gear-budget.yaml` and `gear-invested.yaml`). When `resource: "."` is set, every `.yaml` file in the section folder becomes a scenario selectable from the UI dropdown.
+> - **Multiple Options/Choices per Step**: For each step in a scenario, you can define **multiple choices/options** (2, 3, 4 or more choices per decision step). Each choice specifies its metric deltas, pros, cons, and contextual recommendations (`whyThisFits` / `whenToUse`).
+
 ## `section.md` Frontmatter
 
 ```yaml

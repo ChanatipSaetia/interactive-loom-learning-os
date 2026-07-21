@@ -89,6 +89,7 @@ For optimal cognitive progression, structure your topic's sections in the follow
 - **Mental Model Focus**: Structural design decisions and metrics balancing.
 - **Interactivity**: Choice selectors per step modifying active metrics bar gauges.
 - **Pedagogical Rationale**: Teaches that there are no "perfect" architectures — only trade-offs. Changes in one choice immediately reflect in the metrics (e.g., Monolith vs. Microservice).
+- **Multiple Scenarios & Choices**: A single `tradeoff-sandbox` section can load multiple scenarios (e.g., budget vs invested gear, or process overhead vs communication strategy). Furthermore, each decision step inside a scenario can define multiple choices/options (2, 3, 4 or more options per decision point).
 
 ### `taxonomy-browser`
 - **Mental Model Focus**: Categorized lists of patterns, configurations, or subsystems.
