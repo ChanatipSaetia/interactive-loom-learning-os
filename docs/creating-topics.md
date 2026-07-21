@@ -283,6 +283,13 @@ llm_api:
       processGroup: evaluation
 ```
 
+> [!TIP]
+> **Splitting Large Systems into Multiple Connected Flowchart Sections**
+> If a topic has a complex domain or multi-stage system, **split it into multiple connected flowchart sections** (e.g. `sections/flowchart-engine/`, `sections/flowchart-fuel-injection/`, `sections/flowchart-brake/`).
+> - Each flowchart section folder contains its own `section.md`, `actors.yaml`, `systems.yaml`, `steps.yaml`, and `journeys.yaml`.
+> - **Multiple Journeys per Section**: Each section's `journeys.yaml` can define multiple journeys (e.g., mapping vs boss fight flow, intake/compression vs combustion/exhaust).
+> - **Connecting Flowcharts**: Result events or continuation steps of one section connect conceptually to initiating commands in the next section. Shared systems use `collapsedTo` to link back to canonical nodes.
+
 **Event Storming Node and Relation Conventions:**
 See [Event Storming Conventions](#event-storming-conventions) below for the full rules on flow structure, branching, duplicate-and-collapse, and node types.
 

@@ -249,6 +249,52 @@ A YAML **list** of `FlowJourney` objects. A journey groups a named subset of ste
 
 ---
 
+## Splitting into Multiple Connected Flowchart Sections & Multiple Journeys
+
+For complex systems or multi-stage processes, avoid dumping a monolithic 50-step flowchart into a single section. Instead, **split the process into multiple connected flowchart sections** (e.g., `sections/flowchart-engine/`, `sections/flowchart-fuel-injection/`, `sections/flowchart-brake/`).
+
+### 1. Multiple Flowchart Directories
+Each flowchart section gets its own folder under `sections/`:
+```
+sections/
+├── flowchart-engine/
+│   ├── section.md           # title: "4-Stroke Engine Cycle"
+│   ├── actors.yaml
+│   ├── systems.yaml
+│   ├── steps.yaml
+│   └── journeys.yaml
+├── flowchart-fuel-injection/
+│   ├── section.md           # title: "Fuel Injection System (EFI)"
+│   ├── actors.yaml
+│   ├── systems.yaml
+│   ├── steps.yaml
+│   └── journeys.yaml
+```
+
+### 2. Multiple Journeys per Section
+Each flowchart section's `journeys.yaml` can define **multiple journeys** targeting different scenarios within that subsystem:
+
+```yaml
+# sections/flowchart-engine/journeys.yaml
+- id: journey_intake_compression
+  label: "Intake & Compression Strokes"
+  description: "Walkthrough of air-fuel mixture intake and piston compression"
+  steps: [...]
+
+- id: journey_combustion_exhaust
+  label: "Combustion & Exhaust Strokes"
+  description: "Walkthrough of spark ignition, power stroke, and valve exhaust"
+  steps: [...]
+```
+
+### 3. Connecting Flowcharts Across Sections
+When flowchart sections represent connected stages of an end-to-end system:
+- **Conceptual Handoffs**: The final result events or continuation steps of section $A$ connect to the initiating actor commands of section $B$.
+- **Canonical System Collapsing (`collapsedTo`)**: Systems shared across multiple flowchart sections (e.g., `Engine Control Unit`, `Event Bus`, or `Database`) map back to canonical node IDs using `collapsedTo` so handledBy chains remain consistent across sections.
+- **Index Registration**: Register each flowchart section manifest (`sections/flowchart-*/section.md`) in `index.md` and add all its YAML data files to `index.yaml` under `related`.
+
+---
+
 ## Real Example
 
 From `public/okf/poe2-flicker-monk/sections/flowchart/` — see the actual files for a complete working schema.
