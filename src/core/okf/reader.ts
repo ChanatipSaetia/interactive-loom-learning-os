@@ -56,11 +56,29 @@ function parseFrontmatter(content: string): { meta: Record<string, unknown>; bod
   return { meta: parseYaml(match[1]), body: match[2] }
 }
 
+const bundleCache = new Map<string, OKFBundled>()
+const textFetchCache = new Map<string, Promise<string>>()
+
+export function getCachedOKFBundle(topicId: string): OKFBundled | undefined {
+  return bundleCache.get(topicId)
+}
+
+export function clearOKFCache(): void {
+  bundleCache.clear()
+  textFetchCache.clear()
+}
+
 async function fetchText(path: string): Promise<string> {
-  const base = getOkfBase()
-  const res = await fetch(`${base}/${path}`)
-  if (!res.ok) throw new Error(`OKF fetch failed: ${path} (${res.status})`)
-  return res.text()
+  let pending = textFetchCache.get(path)
+  if (!pending) {
+    const base = getOkfBase()
+    pending = fetch(`${base}/${path}`).then(async (res) => {
+      if (!res.ok) throw new Error(`OKF fetch failed: ${path} (${res.status})`)
+      return res.text()
+    })
+    textFetchCache.set(path, pending)
+  }
+  return pending
 }
 
 async function fetchYaml<T>(path: string): Promise<T> {
@@ -104,19 +122,30 @@ function parseIndexMdSections(body: string): string[] {
 }
 
 export async function loadOKFBundle(topicId: string): Promise<OKFBundled> {
-  const indexMdRes = await fetchMarkdown(`${topicId}/index.md`)
+  const cached = bundleCache.get(topicId)
+  if (cached) return cached
+
+  // Fetch index.md and index.yaml concurrently at t=0
+  const [indexMdRes, related] = await Promise.all([
+    fetchMarkdown(`${topicId}/index.md`),
+    (async () => {
+      try {
+        const yamlData = await fetchYaml<Record<string, unknown>>(`${topicId}/index.yaml`)
+        return (yamlData.related as string[]) ?? []
+      } catch {
+        return []
+      }
+    })(),
+  ])
+
   const sectionPaths = parseIndexMdSections(indexMdRes.body)
 
-  let related: string[] = []
-  try {
-    const base = getOkfBase()
-    const yamlRes = await fetch(`${base}/${topicId}/index.yaml`)
-    if (yamlRes.ok) {
-      const yamlText = await yamlRes.text()
-      const parsed = parseYaml<Record<string, unknown>>(yamlText)
-      related = (parsed.related as string[]) ?? []
-    }
-  } catch { /* related stays empty */ }
+  // Pre-fire fetches for all section.md files and related files concurrently at t=0
+  const prefetchPaths = [
+    ...sectionPaths.map((sp) => `${topicId}/${sp.endsWith('section.md') ? sp : `${sp}/section.md`}`),
+    ...related.map((rel) => `${topicId}/${rel}`),
+  ]
+  prefetchPaths.forEach((path) => fetchText(path).catch(() => {}))
 
   const sections = await Promise.all(
     sectionPaths.map(async (sectionPath) => {
@@ -143,6 +172,7 @@ export async function loadOKFBundle(topicId: string): Promise<OKFBundled> {
     })
   )
 
+  bundleCache.set(topicId, sections)
   return sections
 }
 

@@ -1,17 +1,19 @@
 import { useState, useEffect, useCallback } from 'react'
 import type { SectionConfig } from '../registry'
 import { deriveSchema } from '../../sections/flowchart/abstract-flow/derive'
-import { loadOKFBundle } from './reader'
+import { loadOKFBundle, getCachedOKFBundle } from './reader'
 import type { OKFBundled } from './types'
 
 export function useOKFBundled(topicId: string) {
-  const [bundle, setBundle] = useState<OKFBundled | null>(null)
-  const [loading, setLoading] = useState(true)
+  const [bundle, setBundle] = useState<OKFBundled | null>(() => getCachedOKFBundle(topicId) ?? null)
+  const [loading, setLoading] = useState(!getCachedOKFBundle(topicId))
   const [error, setError] = useState<Error | null>(null)
 
   const load = useCallback(async () => {
     try {
-      setLoading(true)
+      if (!getCachedOKFBundle(topicId)) {
+        setLoading(true)
+      }
       const data = await loadOKFBundle(topicId)
       setBundle(data)
       setError(null)
