@@ -28,7 +28,7 @@ interface UseCameraReturn {
 
 export function useCamera({ positionedNodesRef }: UseCameraOptions): UseCameraReturn {
   const svgRef = useRef<SVGSVGElement | null>(null);
-  const [transform, setTransform] = useState<TransformState>({ scale: 0.9, translateX: 50, translateY: 100 });
+  const [transform, setTransform] = useState<TransformState>({ scale: 0.5, translateX: 50, translateY: 100 });
   const transformRef = useRef(transform);
   useEffectSyncRef(transform, transformRef);
 
@@ -88,7 +88,7 @@ export function useCamera({ positionedNodesRef }: UseCameraOptions): UseCameraRe
     const targetScale = Math.min(
       (viewportW - padding * 2) / bboxW,
       (viewportH - padding * 2) / bboxH,
-      0.8
+      0.5
     );
     const centerX = (minX + maxX) / 2;
     const centerY = (minY + maxY) / 2;
@@ -103,11 +103,11 @@ export function useCamera({ positionedNodesRef }: UseCameraOptions): UseCameraRe
     const H = svgRef.current.clientHeight || 500;
     const nx = minX + (maxX - minX) / 2;
     const ny = minY + (maxY - minY) / 2;
-    animateTo(W / 2 - nx * 0.45, H / 2 - ny * 0.45, 0.45);
+    animateTo(W / 2 - nx * 0.4, H / 2 - ny * 0.4, 0.4);
   }, [animateTo]);
 
   const resetTransform = useCallback(() => {
-    animateTo(50, 100, 0.45);
+    animateTo(50, 100, 0.4);
   }, [animateTo]);
 
   // Interaction handlers

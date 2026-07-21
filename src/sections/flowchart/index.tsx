@@ -522,8 +522,17 @@ export function Flowchart({ title, schema = INITIAL_SCHEMA }: FlowchartProps) {
           <div className="flowchart-dock-steps">
             {playback.currentJourney && (
               <div className="flowchart-dock-steps-controls">
-                <div className="flowchart-dock-journey-title" data-testid="flowchart-dock-journey-title">
-                  {playback.currentJourney.label}
+                <div className="flowchart-dock-journey-title-wrapper">
+                  <div
+                    className="flowchart-dock-journey-title"
+                    data-testid="flowchart-dock-journey-title"
+                    title={playback.currentJourney.label}
+                  >
+                    {playback.currentJourney.label}
+                  </div>
+                  <div className="flowchart-dock-journey-tooltip" aria-hidden="true">
+                    {playback.currentJourney.label}
+                  </div>
                 </div>
                 <div className="flowchart-dock-playback">
                   <PlaybackControls

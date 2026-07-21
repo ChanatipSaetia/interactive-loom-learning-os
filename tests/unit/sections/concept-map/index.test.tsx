@@ -87,7 +87,7 @@ describe('ConceptMap Section', () => {
 
   it('renders edge labels', () => {
     render(<ConceptMapSection nodes={mockNodes} edges={mockEdges} />)
-    expect(screen.getByTestId('concept-map-edge-label-0')).toHaveTextContent('delegates to')
+    expect(screen.getByTestId('concept-map-edge-label-0')).toHaveTextContent('deleg...')
     expect(screen.getByTestId('concept-map-edge-label-1')).toHaveTextContent('uses')
   })
 
@@ -213,7 +213,7 @@ describe('ConceptMap Section', () => {
     expect(screen.queryByTestId('concept-map-node-benchmark')).not.toBeInTheDocument()
   })
 
-  it('BFS layout positions entry node at top', () => {
+  it('mindmap layout renders entry node at center', () => {
     const originalGetBoundingClientRect = Element.prototype.getBoundingClientRect
 
     try {
@@ -296,6 +296,52 @@ describe('ConceptMap Section', () => {
     } finally {
       Element.prototype.getBoundingClientRect = originalGetBoundingClientRect
     }
+  })
+
+  it('centers starting node and expands top and down in a planar row layout', () => {
+    const crossingNodes: Record<string, ConceptNode> = {
+      root: { id: 'root', title: 'Root', category: 'concept' },
+      n1_left: { id: 'n1_left', title: 'Level1 Left', category: 'concept' },
+      n1_right: { id: 'n1_right', title: 'Level1 Right', category: 'concept' },
+      n2_a: { id: 'n2_a', title: 'Level2 A', category: 'concept' },
+      n2_b: { id: 'n2_b', title: 'Level2 B', category: 'concept' },
+    }
+
+    const crossingEdges: ConceptEdge[] = [
+      { from: 'root', to: 'n1_left' },
+      { from: 'root', to: 'n1_right' },
+      { from: 'n1_left', to: 'n2_b' },
+      { from: 'n1_right', to: 'n2_a' },
+    ]
+
+    render(<ConceptMapSection nodes={crossingNodes} edges={crossingEdges} />)
+
+    const rootNode = screen.getByTestId('concept-map-node-root')
+    const nodeA = screen.getByTestId('concept-map-node-n2_a')
+    const nodeB = screen.getByTestId('concept-map-node-n2_b')
+
+    expect(rootNode).toBeInTheDocument()
+    expect(nodeA).toBeInTheDocument()
+    expect(nodeB).toBeInTheDocument()
+  })
+
+  it('truncates edge labels longer than 5 characters before hover and reveals full text on hover', () => {
+    const longLabelNodes: Record<string, ConceptNode> = {
+      n1: { id: 'n1', title: 'Node 1', category: 'concept' },
+      n2: { id: 'n2', title: 'Node 2', category: 'concept' },
+    }
+    const longLabelEdges: ConceptEdge[] = [
+      { from: 'n1', to: 'n2', label: 'orchestrates' },
+    ]
+
+    render(<ConceptMapSection nodes={longLabelNodes} edges={longLabelEdges} />)
+
+    const labelEl = screen.getByTestId('concept-map-edge-label-0')
+    expect(labelEl).toHaveTextContent('orche...')
+
+    const node1 = screen.getByTestId('concept-map-node-n1')
+    fireEvent.mouseEnter(node1)
+    expect(labelEl).toHaveTextContent('orchestrates')
   })
 })
 

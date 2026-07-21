@@ -24,13 +24,13 @@ export function StepCarousel({
       style={{
         width: '100%',
         display: 'flex',
-        gap: '16px',
+        gap: '10px',
         overflowX: 'auto',
-        paddingBottom: inline ? '4px' : '16px',
-        paddingTop: inline ? '4px' : '8px',
+        paddingBottom: inline ? '2px' : '12px',
+        paddingTop: inline ? '2px' : '6px',
         alignItems: 'center',
-        paddingLeft: inline ? '4px' : '24px',
-        paddingRight: inline ? '4px' : '24px',
+        paddingLeft: inline ? '2px' : '16px',
+        paddingRight: inline ? '2px' : '16px',
         pointerEvents: 'auto',
         scrollBehavior: 'smooth'
       }}
@@ -45,9 +45,9 @@ export function StepCarousel({
               onClick={() => handleStepClick(step)}
               style={{
                 flexShrink: 0,
-                width: '256px',
-                padding: '12px',
-                borderRadius: '12px',
+                width: '150px',
+                padding: '8px 10px',
+                borderRadius: '8px',
                 cursor: 'pointer',
                 border: '1px solid',
                 borderColor: isActive ? 'var(--ctp-blue)' : 'var(--border-light)',
@@ -62,17 +62,17 @@ export function StepCarousel({
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'space-between',
-                  marginBottom: '8px'
+                  marginBottom: '4px'
                 }}
               >
                 <span
                   style={{
-                    fontSize: '9px',
+                    fontSize: '8.5px',
                     fontWeight: 800,
                     textTransform: 'uppercase',
-                    letterSpacing: '1px',
-                    padding: '2px 8px',
-                    borderRadius: '4px',
+                    letterSpacing: '0.8px',
+                    padding: '1px 6px',
+                    borderRadius: '3px',
                     backgroundColor: isActive ? 'var(--ctp-blue)' : 'var(--ctp-surface1)',
                     color: isActive ? 'var(--ctp-crust)' : 'var(--ctp-text)'
                   }}
@@ -82,15 +82,29 @@ export function StepCarousel({
               </div>
               <h3
                 style={{
-                  margin: '0 0 4px 0',
-                  fontSize: '14px',
+                  margin: '0 0 2px 0',
+                  fontSize: '12.5px',
                   fontWeight: 'bold',
-                  color: isActive ? 'var(--ctp-blue)' : 'var(--ctp-text)'
+                  color: isActive ? 'var(--ctp-blue)' : 'var(--ctp-text)',
+                  whiteSpace: 'nowrap',
+                  overflow: 'hidden',
+                  textOverflow: 'ellipsis'
                 }}
               >
                 {step.title}
               </h3>
-              <p style={{ margin: 0, fontSize: '11px', color: 'var(--ctp-subtext0)' }}>
+              <p
+                style={{
+                  margin: 0,
+                  fontSize: '10.5px',
+                  lineHeight: '1.3',
+                  color: 'var(--ctp-subtext0)',
+                  display: '-webkit-box',
+                  WebkitLineClamp: 2,
+                  WebkitBoxOrient: 'vertical',
+                  overflow: 'hidden'
+                }}
+              >
                 {step.reason}
               </p>
             </div>
@@ -105,9 +119,9 @@ export function StepCarousel({
                 flexShrink: 0,
                 display: 'flex',
                 flexDirection: 'column',
-                gap: '8px',
-                paddingLeft: '20px',
-                marginLeft: '8px',
+                gap: '6px',
+                paddingLeft: '14px',
+                marginLeft: '4px',
                 borderLeft: '2px dashed var(--ctp-overlay1)',
                 position: 'relative',
                 pointerEvents: 'none'
@@ -116,7 +130,7 @@ export function StepCarousel({
               <div
                 style={{
                   position: 'absolute',
-                  left: '-11px',
+                  left: '-9px',
                   top: '50%',
                   transform: 'translateY(-50%)',
                   backgroundColor: 'var(--ctp-base)',
@@ -130,7 +144,7 @@ export function StepCarousel({
                   pointerEvents: 'none'
                 }}
               >
-                <GitBranch size={12} />
+                <GitBranch size={10} />
               </div>
               {step.branches.map((branch: FlowchartStepBranchOption) => {
                 const isActive = activeStep?.id === branch.id;
@@ -140,9 +154,9 @@ export function StepCarousel({
                     key={branch.id}
                     onClick={() => handleStepClick(branch)}
                     style={{
-                      width: '224px',
-                      padding: '10px',
-                      borderRadius: '8px',
+                      width: '140px',
+                      padding: '6px 8px',
+                      borderRadius: '6px',
                       cursor: 'pointer',
                       border: '1px solid',
                       borderColor: isActive ? 'var(--ctp-blue)' : 'var(--border-light)',
@@ -157,21 +171,35 @@ export function StepCarousel({
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'space-between',
-                        marginBottom: '4px'
+                        marginBottom: '2px'
                       }}
                     >
                       <h3
                         style={{
                           margin: 0,
-                          fontSize: '12px',
+                          fontSize: '11.5px',
                           fontWeight: 'bold',
-                          color: isActive ? 'var(--ctp-blue)' : 'var(--ctp-text)'
+                          color: isActive ? 'var(--ctp-blue)' : 'var(--ctp-text)',
+                          whiteSpace: 'nowrap',
+                          overflow: 'hidden',
+                          textOverflow: 'ellipsis'
                         }}
                       >
                         {branch.title}
                       </h3>
                     </div>
-                    <p style={{ margin: 0, fontSize: '10px', color: 'var(--ctp-subtext0)' }}>
+                    <p
+                      style={{
+                        margin: 0,
+                        fontSize: '10px',
+                        lineHeight: '1.25',
+                        color: 'var(--ctp-subtext0)',
+                        display: '-webkit-box',
+                        WebkitLineClamp: 2,
+                        WebkitBoxOrient: 'vertical',
+                        overflow: 'hidden'
+                      }}
+                    >
                       {branch.reason}
                     </p>
                   </div>

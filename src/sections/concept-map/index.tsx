@@ -141,130 +141,269 @@ function findConnectedComponents(
   return components.sort((a, b) => b.nodeIds.length - a.nodeIds.length)
 }
 
-function findEntryPoint(nodeIds: string[], edges: ConceptEdge[]): string {
-  const inDegree = new Map<string, number>()
-  const outDegree = new Map<string, number>()
-  for (const id of nodeIds) {
-    inDegree.set(id, 0)
-    outDegree.set(id, 0)
-  }
-  for (const e of edges) {
-    if (inDegree.has(e.from) && inDegree.has(e.to)) {
-      outDegree.set(e.from, (outDegree.get(e.from) ?? 0) + 1)
-      inDegree.set(e.to, (inDegree.get(e.to) ?? 0) + 1)
-    }
-  }
-
-  const roots = nodeIds.filter((id) => (inDegree.get(id) ?? 0) === 0)
-
-  if (roots.length > 0) {
-    const adj = new Map<string, Set<string>>()
-    for (const id of nodeIds) adj.set(id, new Set())
-    for (const e of edges) {
-      if (adj.has(e.from)) adj.get(e.from)?.add(e.to)
-    }
-
-    const reachability = new Map<string, number>()
-    for (const root of roots) {
-      const visited = new Set<string>([root])
-      const queue = [root]
-      while (queue.length > 0) {
-        const curr = queue.shift()!
-        for (const neighbor of adj.get(curr) ?? []) {
-          if (!visited.has(neighbor)) {
-            visited.add(neighbor)
-            queue.push(neighbor)
-          }
-        }
-      }
-      reachability.set(root, visited.size)
-    }
-
-    let best = roots[0]
-    let bestReach = 0
-    for (const root of roots) {
-      const reach = reachability.get(root) ?? 0
-      if (reach > bestReach || (reach === bestReach && (outDegree.get(root) ?? 0) > (outDegree.get(best) ?? 0))) {
-        best = root
-        bestReach = reach
-      }
-    }
-    return best
-  }
-
-  let best = nodeIds[0]
-  let bestDeg = 0
-  for (const id of nodeIds) {
-    const deg = (inDegree.get(id) ?? 0) + (outDegree.get(id) ?? 0)
-    if (deg > bestDeg) {
-      best = id
-      bestDeg = deg
-    }
-  }
-  return best
+function findEntryPoint(nodeIds: string[], _edges: ConceptEdge[]): string {
+  return nodeIds[0]
 }
 
-function layoutBFS(
+export interface ConceptEdgeAnchor {
+  p1: { x: number; y: number }
+  p2: { x: number; y: number }
+}
+
+export interface ConceptLayoutResult {
+  nodes: Record<string, ConceptNode>
+  edgeAnchors: Record<string, ConceptEdgeAnchor>
+}
+
+function getBoundaryAnchor(
+  cx: number,
+  cy: number,
+  hw: number,
+  hh: number,
+  tx: number,
+  ty: number,
+  rx: number = 16
+): { x: number; y: number } {
+  const dx = tx - cx
+  const dy = ty - cy
+  const dist = Math.sqrt(dx * dx + dy * dy) || 1
+  const nx = dx / dist
+  const ny = dy / dist
+
+  const absNx = Math.abs(nx)
+  const absNy = Math.abs(ny)
+  let t = Infinity
+  if (absNx > 0) t = Math.min(t, hw / absNx)
+  if (absNy > 0) t = Math.min(t, hh / absNy)
+
+  let x = cx + nx * t
+  let y = cy + ny * t
+
+  const innerHW = hw - rx
+  const innerHH = hh - rx
+
+  if (Math.abs(x - cx) > innerHW && Math.abs(y - cy) > innerHH) {
+    const cornerCx = cx + Math.sign(nx) * innerHW
+    const cornerCy = cy + Math.sign(ny) * innerHH
+    const cDx = x - cornerCx
+    const cDy = y - cornerCy
+    const cDist = Math.sqrt(cDx * cDx + cDy * cDy) || 1
+    x = cornerCx + (cDx / cDist) * rx
+    y = cornerCy + (cDy / cDist) * rx
+  }
+
+  return { x: Math.round(x * 100) / 100, y: Math.round(y * 100) / 100 }
+}
+
+function layoutTopDownPlanar(
   component: GraphComponent,
   nodes: Record<string, ConceptNode>,
   width: number,
-  _height: number
-): Record<string, ConceptNode> {
+  height: number
+): ConceptLayoutResult {
   const { nodeIds: compNodeIds, entryPointId } = component
-  const LEVEL_GAP = 120
-  const NODE_GAP = 20
-  const PADDING = 60
 
-  const adj = new Map<string, string[]>([])
-  for (const id of compNodeIds) adj.set(id, [])
+  const adj = new Map<string, string[]>()
+  const undirAdj = new Map<string, string[]>()
+  for (const id of compNodeIds) {
+    adj.set(id, [])
+    undirAdj.set(id, [])
+  }
   for (const e of component.edges) {
     if (adj.has(e.from)) adj.get(e.from)?.push(e.to)
+    if (undirAdj.has(e.from) && undirAdj.has(e.to)) {
+      undirAdj.get(e.from)?.push(e.to)
+      undirAdj.get(e.to)?.push(e.from)
+    }
   }
 
-  const levels = new Map<string, number>()
+  const relativeRow = new Map<string, number>()
+  relativeRow.set(entryPointId, 0)
+
   const visited = new Set<string>([entryPointId])
-  levels.set(entryPointId, 0)
   const queue = [entryPointId]
+
   while (queue.length > 0) {
     const curr = queue.shift()!
-    for (const neighbor of adj.get(curr) ?? []) {
+    const currRow = relativeRow.get(curr)!
+    for (const neighbor of undirAdj.get(curr) ?? []) {
       if (!visited.has(neighbor)) {
         visited.add(neighbor)
-        levels.set(neighbor, levels.get(curr)! + 1)
+        relativeRow.set(neighbor, currRow + 1)
         queue.push(neighbor)
       }
     }
   }
 
-  const maxLevel = Math.max(0, ...Array.from(levels.values()))
-  const levelGroups = new Map<number, string[]>()
-  for (const [id, lvl] of levels) {
-    if (!levelGroups.has(lvl)) levelGroups.set(lvl, [])
-    levelGroups.get(lvl)?.push(id)
-  }
-
-  const result: Record<string, ConceptNode> = {}
-
-  for (let lvl = 0; lvl <= maxLevel; lvl++) {
-    const group = levelGroups.get(lvl) ?? []
-    const totalWidth = group.reduce((sum, id) => sum + getNodeWidth(nodes[id].title) + NODE_GAP, -NODE_GAP)
-    let startX = (width - totalWidth) / 2
-    const y = PADDING + lvl * LEVEL_GAP
-
-    for (const id of group) {
-      const nw = getNodeWidth(nodes[id].title)
-      result[id] = {
-        id,
-        title: nodes[id].title,
-        category: nodes[id].category,
-        x: startX + nw / 2,
-        y: y,
+  if (visited.size < compNodeIds.length) {
+    for (const id of compNodeIds) {
+      if (!visited.has(id)) {
+        visited.add(id)
+        let minNeighborRow = Infinity
+        for (const neighbor of undirAdj.get(id) ?? []) {
+          if (relativeRow.has(neighbor)) {
+            minNeighborRow = Math.min(minNeighborRow, relativeRow.get(neighbor)!)
+          }
+        }
+        relativeRow.set(id, minNeighborRow !== Infinity ? minNeighborRow + 1 : 1)
       }
-      startX += nw + NODE_GAP
     }
   }
 
-  return result
+  const rowGroups = new Map<number, string[]>()
+  for (const [id, r] of relativeRow) {
+    if (!rowGroups.has(r)) rowGroups.set(r, [])
+    rowGroups.get(r)?.push(id)
+  }
+
+  const sortedRowKeys = Array.from(rowGroups.keys()).sort((a, b) => a - b)
+
+  const xPositions = new Map<string, number>()
+  xPositions.set(entryPointId, 0)
+
+  for (const r of sortedRowKeys) {
+    if (r === 0) continue
+    const group = rowGroups.get(r) ?? []
+    const totalW = (group.length - 1) * 220
+    group.forEach((id, idx) => {
+      const initialX = group.length === 1 ? 0 : -totalW / 2 + idx * 220
+      xPositions.set(id, initialX)
+    })
+  }
+
+  const centerX = width / 2
+  const centerY = height / 2
+  const ROW_GAP = 140
+  const EDGE_MARGIN = 80
+
+  for (let sweep = 0; sweep < 4; sweep++) {
+    const isForward = sweep % 2 === 0
+    const keysToSweep = isForward ? [...sortedRowKeys] : [...sortedRowKeys].reverse()
+
+    for (const r of keysToSweep) {
+      if (r === 0) continue
+      const group = rowGroups.get(r) ?? []
+      if (group.length === 0) continue
+
+      const nodeXList = group.map((id) => {
+        const neighbors = undirAdj.get(id) ?? []
+        const adjacentRowNeighbors = neighbors.filter((nid) => relativeRow.get(nid) !== r && xPositions.has(nid))
+        const sameRowNeighbors = neighbors.filter((nid) => relativeRow.get(nid) === r && xPositions.has(nid))
+
+        let targetX = xPositions.get(id) ?? 0
+        const currHW = getNodeWidth(nodes[id]?.title ?? id) / 2
+        const currHH = NODE_HEIGHT / 2
+        const currY = centerY + r * ROW_GAP
+
+        if (adjacentRowNeighbors.length > 0 || sameRowNeighbors.length > 0) {
+          let sumX = 0
+          let totalWeight = 0
+
+          for (const nid of adjacentRowNeighbors) {
+            const nX = xPositions.get(nid)!
+            const nRow = relativeRow.get(nid)!
+            const nY = centerY + nRow * ROW_GAP
+            const nHW = getNodeWidth(nodes[nid]?.title ?? nid) / 2
+            const nHH = NODE_HEIGHT / 2
+            const ancN = getBoundaryAnchor(nX, nY, nHW, nHH, targetX, currY, 16)
+            const ancCurr = getBoundaryAnchor(targetX, currY, currHW, currHH, nX, nY, 16)
+            const anchorOffset = ancN.x - (ancCurr.x - targetX)
+            sumX += anchorOffset * 1.0
+            totalWeight += 1.0
+          }
+
+          for (const nid of sameRowNeighbors) {
+            const nX = xPositions.get(nid)!
+            sumX += nX * 1.5
+            totalWeight += 1.5
+          }
+
+          if (totalWeight > 0) {
+            targetX = sumX / totalWeight
+          }
+        }
+        const width = currHW * 2
+        return { id, targetX, width }
+      })
+
+      nodeXList.sort((a, b) => {
+        if (Math.abs(a.targetX - b.targetX) > 0.001) {
+          return a.targetX - b.targetX
+        }
+        return compNodeIds.indexOf(a.id) - compNodeIds.indexOf(b.id)
+      })
+
+      if (nodeXList.length === 1) {
+        xPositions.set(nodeXList[0].id, nodeXList[0].targetX)
+      } else {
+        const xs = nodeXList.map((item) => item.targetX)
+
+        for (let i = 1; i < nodeXList.length; i++) {
+          const prevHW = nodeXList[i - 1].width / 2
+          const currHW = nodeXList[i].width / 2
+          const minRequiredDist = prevHW + currHW + EDGE_MARGIN
+          if (xs[i] - xs[i - 1] < minRequiredDist) {
+            xs[i] = xs[i - 1] + minRequiredDist
+          }
+        }
+
+        for (let i = nodeXList.length - 2; i >= 0; i--) {
+          const currHW = nodeXList[i].width / 2
+          const nextHW = nodeXList[i + 1].width / 2
+          const minRequiredDist = currHW + nextHW + EDGE_MARGIN
+          if (xs[i + 1] - xs[i] < minRequiredDist) {
+            xs[i] = xs[i + 1] - minRequiredDist
+          }
+        }
+
+        const avgTarget = nodeXList.reduce((sum, item) => sum + item.targetX, 0) / nodeXList.length
+        const avgPlaced = xs.reduce((sum, val) => sum + val, 0) / xs.length
+        const shiftX = avgTarget - avgPlaced
+
+        nodeXList.forEach((item, idx) => {
+          xPositions.set(item.id, Math.round((xs[idx] + shiftX) * 100) / 100)
+        })
+      }
+
+      rowGroups.set(r, nodeXList.map((item) => item.id))
+    }
+  }
+
+  const resultNodes: Record<string, ConceptNode> = {}
+
+  for (const id of compNodeIds) {
+    const r = relativeRow.get(id) ?? 0
+    const relX = xPositions.get(id) ?? 0
+    const x = centerX + relX
+    const y = centerY + r * ROW_GAP
+
+    resultNodes[id] = {
+      id,
+      title: nodes[id].title,
+      category: nodes[id].category,
+      x: Math.round(x * 100) / 100,
+      y: Math.round(y * 100) / 100,
+    }
+  }
+
+  const edgeAnchors: Record<string, ConceptEdgeAnchor> = {}
+  for (const e of component.edges) {
+    const from = resultNodes[e.from]
+    const to = resultNodes[e.to]
+    if (from?.x !== undefined && from?.y !== undefined && to?.x !== undefined && to?.y !== undefined) {
+      const fromHW = getNodeWidth(from.title) / 2
+      const fromHH = NODE_HEIGHT / 2
+      const toHW = getNodeWidth(to.title) / 2
+      const toHH = NODE_HEIGHT / 2
+
+      const p1 = getBoundaryAnchor(from.x, from.y, fromHW, fromHH, to.x, to.y, 16)
+      const p2 = getBoundaryAnchor(to.x, to.y, toHW, toHH, from.x, from.y, 16)
+      const key = `${e.from}->${e.to}`
+      edgeAnchors[key] = { p1, p2 }
+    }
+  }
+
+  return { nodes: resultNodes, edgeAnchors }
 }
 
 function ConceptMapSection({ title, nodes, edges }: ConceptMapSectionProps) {
@@ -273,6 +412,7 @@ function ConceptMapSection({ title, nodes, edges }: ConceptMapSectionProps) {
   const [hoveredNode, setHoveredNode] = useState<string | null>(null)
   const [transform, setTransform] = useState<TransformState>({ scale: 1, translateX: 0, translateY: 0 })
   const [layoutNodes, setLayoutNodes] = useState<Record<string, ConceptNode>>({})
+  const [edgeAnchors, setEdgeAnchors] = useState<Record<string, ConceptEdgeAnchor>>({})
   const [viewBox, setViewBox] = useState('0 0 1400 900')
   const [isPanning, setIsPanning] = useState(false)
   const [graphs, setGraphs] = useState<GraphComponent[]>([])
@@ -322,29 +462,19 @@ function ConceptMapSection({ title, nodes, edges }: ConceptMapSectionProps) {
     if (!graph) return
 
     setEntryPointId(graph.entryPointId)
-    const laid = layoutBFS(graph, nodes, VIEW_W, VIEW_H)
-    setLayoutNodes(laid)
+    const layoutResult = layoutTopDownPlanar(graph, nodes, VIEW_W, VIEW_H)
+    setLayoutNodes(layoutResult.nodes)
+    setEdgeAnchors(layoutResult.edgeAnchors)
 
-    let minX = Infinity, maxX = -Infinity, maxY = -Infinity
-    for (const id of graph.nodeIds) {
-      const n = laid[id]
-      if (!n?.x || !n?.y) continue
-      const hw = getNodeWidth(n.title) / 2 + 20
-      const hh = NODE_HEIGHT / 2 + 20
-      if (n.x - hw < minX) minX = n.x - hw
-      if (n.x + hw > maxX) maxX = n.x + hw
-      if (n.y + hh > maxY) maxY = n.y + hh
-    }
-    const contentW = maxX - minX
-    const contentH = maxY - 60
-    const padding = 40
-    const scale = Math.min((VIEW_W - padding * 2) / contentW, (VIEW_H - padding * 2) / contentH, 1.5)
-    const centerX = (VIEW_W - contentW * scale) / 2 - minX * scale
-    const entryNode = laid[graph.entryPointId]
-    const entryY = entryNode?.y ?? 60
-    const topPadding = 50
-    const centerY = topPadding - entryY * scale
-    setTransform({ scale, translateX: centerX, translateY: centerY })
+    const initialScale = 1.5
+    const startNode = layoutResult.nodes[graph.entryPointId]
+    const startX = startNode?.x ?? VIEW_W / 2
+    const startY = startNode?.y ?? VIEW_H / 2
+
+    const translateX = VIEW_W / 2 - startX * initialScale
+    const translateY = VIEW_H / 2 - startY * initialScale
+
+    setTransform({ scale: initialScale, translateX, translateY })
   }, [allNodeIds, edges, nodes, currentGraphIndex])
 
   useEffect(() => {
@@ -539,26 +669,15 @@ function ConceptMapSection({ title, nodes, edges }: ConceptMapSectionProps) {
     const cH = Math.max(rect.height, 300)
     const { viewW: VIEW_W, viewH: VIEW_H } = getViewportDimensions(cW, cH)
 
-    let minX = Infinity, maxX = -Infinity, maxY = -Infinity
-    for (const id of currentGraph.nodeIds) {
-      const n = layoutNodes[id]
-      if (!n?.x || !n?.y) continue
-      const hw = getNodeWidth(n.title) / 2 + 20
-      const hh = NODE_HEIGHT / 2 + 20
-      if (n.x - hw < minX) minX = n.x - hw
-      if (n.x + hw > maxX) maxX = n.x + hw
-      if (n.y + hh > maxY) maxY = n.y + hh
-    }
-    const contentW = maxX - minX
-    const contentH = maxY - 60
-    const padding = 40
-    const scale = Math.min((VIEW_W - padding * 2) / contentW, (VIEW_H - padding * 2) / contentH, 1.5)
-    const centerX = (VIEW_W - contentW * scale) / 2 - minX * scale
-    const entryNode = layoutNodes[currentGraph.entryPointId]
-    const entryY = entryNode?.y ?? 60
-    const topPadding = 50
-    const centerY = topPadding - entryY * scale
-    setTransform({ scale, translateX: centerX, translateY: centerY })
+    const initialScale = 1.5
+    const startNode = layoutNodes[currentGraph.entryPointId]
+    const startX = startNode?.x ?? VIEW_W / 2
+    const startY = startNode?.y ?? VIEW_H / 2
+
+    const translateX = VIEW_W / 2 - startX * initialScale
+    const translateY = VIEW_H / 2 - startY * initialScale
+
+    setTransform({ scale: initialScale, translateX, translateY })
   }, [currentGraph, layoutNodes])
 
   const isNodeHovered = (id: string): boolean => {
@@ -603,7 +722,7 @@ function ConceptMapSection({ title, nodes, edges }: ConceptMapSectionProps) {
             onMouseLeave={handlePointerUp}
           >
             <g
-              transform={`translate(${transform.translateX}, ${transform.translateY}) scale(${transform.scale})`}
+              transform={`translate(${transform.translateX}, ${transform. translateY}) scale(${transform.scale})`}
             >
               <rect
                 x="-2000"
@@ -621,28 +740,15 @@ function ConceptMapSection({ title, nodes, edges }: ConceptMapSectionProps) {
                 const isConnected = isEdgeConnected(edge)
                 const isDimmed = hoveredNode && !isConnected
 
-                const dx = to.x - from.x
-                const dy = to.y - from.y
-                const dist = Math.sqrt(dx * dx + dy * dy) || 1
-                const nx = dx / dist
-                const ny = dy / dist
-
                 const fromHW = getNodeWidth(from.title) / 2
                 const fromHH = NODE_HEIGHT / 2
                 const toHW = getNodeWidth(to.title) / 2
                 const toHH = NODE_HEIGHT / 2
 
-                const intersectRect = (cx: number, cy: number, hw: number, hh: number, dxn: number, dyn: number) => {
-                  const absDx = Math.abs(dxn)
-                  const absDy = Math.abs(dyn)
-                  let t = Infinity
-                  if (absDx > 0) t = Math.min(t, hw / absDx)
-                  if (absDy > 0) t = Math.min(t, hh / absDy)
-                  return { x: cx + dxn * t, y: cy + dyn * t }
-                }
-
-                const p1 = intersectRect(from.x, from.y, fromHW, fromHH, nx, ny)
-                const p2 = intersectRect(to.x, to.y, toHW, toHH, -nx, -ny)
+                const edgeKey = `${edge.from}->${edge.to}`
+                const anchor = edgeAnchors[edgeKey]
+                const p1 = anchor?.p1 ?? getBoundaryAnchor(from.x, from.y, fromHW, fromHH, to.x, to.y, 16)
+                const p2 = anchor?.p2 ?? getBoundaryAnchor(to.x, to.y, toHW, toHH, from.x, from.y, 16)
 
                 return (
                   <g key={`edge-${edge.from}-${edge.to}-${idx}`} data-testid={`concept-map-edge-${idx}`}>
@@ -684,7 +790,7 @@ function ConceptMapSection({ title, nodes, edges }: ConceptMapSectionProps) {
                       y={nodeY}
                       width={nodeW}
                       height={nodeH}
-                      rx={8}
+                      rx={16}
                       fill={fill}
                       stroke={color}
                       strokeWidth={isHov ? 3 : 2}
@@ -718,7 +824,7 @@ function ConceptMapSection({ title, nodes, edges }: ConceptMapSectionProps) {
                         y={nodeY}
                         width={nodeW}
                         height={nodeH}
-                        rx={8}
+                        rx={16}
                         fill="none"
                         stroke={color}
                         strokeWidth={2}
@@ -730,7 +836,7 @@ function ConceptMapSection({ title, nodes, edges }: ConceptMapSectionProps) {
                         y={nodeY - 5}
                         width={nodeW + 10}
                         height={nodeH + 10}
-                        rx={10}
+                        rx={18}
                         fill="none"
                         stroke={color}
                         strokeWidth={1.5}
@@ -750,38 +856,31 @@ function ConceptMapSection({ title, nodes, edges }: ConceptMapSectionProps) {
                 const isConnected = isEdgeConnected(edge)
                 const isDimmed = hoveredNode && !isConnected
 
-                const dx = to.x - from.x
-                const dy = to.y - from.y
-                const dist = Math.sqrt(dx * dx + dy * dy) || 1
-                const nx = dx / dist
-                const ny = dy / dist
-
                 const fromHW = getNodeWidth(from.title) / 2
                 const fromHH = NODE_HEIGHT / 2
                 const toHW = getNodeWidth(to.title) / 2
                 const toHH = NODE_HEIGHT / 2
 
-                const intersectRect = (cx: number, cy: number, hw: number, hh: number, dxn: number, dyn: number) => {
-                  const absDx = Math.abs(dxn)
-                  const absDy = Math.abs(dyn)
-                  let t = Infinity
-                  if (absDx > 0) t = Math.min(t, hw / absDx)
-                  if (absDy > 0) t = Math.min(t, hh / absDy)
-                  return { x: cx + dxn * t, y: cy + dyn * t }
-                }
-
-                const p1 = intersectRect(from.x, from.y, fromHW, fromHH, nx, ny)
-                const p2 = intersectRect(to.x, to.y, toHW, toHH, -nx, -ny)
+                const edgeKey = `${edge.from}->${edge.to}`
+                const anchor = edgeAnchors[edgeKey]
+                const p1 = anchor?.p1 ?? getBoundaryAnchor(from.x, from.y, fromHW, fromHH, to.x, to.y, 16)
+                const p2 = anchor?.p2 ?? getBoundaryAnchor(to.x, to.y, toHW, toHH, from.x, from.y, 16)
 
                 const lx = (p1.x + p2.x) / 2
                 const ly = (p1.y + p2.y) / 2 - 6
-                const tw = edge.label.length * 6 + 10
+
+                const displayLabel = !isConnected && edge.label.length > 5
+                  ? `${edge.label.slice(0, 5)}...`
+                  : edge.label
+
+                const tw = displayLabel.length * 6 + 10
 
                 return (
                   <g
                     key={`edge-label-${idx}`}
                     className={`cm-edge-label-group ${isConnected ? 'cm-edge-label-group-highlight' : ''} ${isDimmed ? 'cm-edge-label-dimmed' : ''}`}
                   >
+                    <title>{edge.label}</title>
                     <rect
                       x={lx - tw / 2}
                       y={ly - 8}
@@ -797,7 +896,7 @@ function ConceptMapSection({ title, nodes, edges }: ConceptMapSectionProps) {
                       textAnchor="middle"
                       data-testid={`concept-map-edge-label-${idx}`}
                     >
-                      {edge.label}
+                      {displayLabel}
                     </text>
                   </g>
                 )

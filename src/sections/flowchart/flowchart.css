@@ -493,12 +493,16 @@
 
 /* ---- Playback controls ---- */
 .flowchart-playback {
-  @apply flex items-center gap-[2px] rounded-[var(--radius-sm)] border border-border p-[3px] self-start;
+  @apply flex items-center gap-0.5 rounded-[var(--radius-sm)] border border-border p-0.5 self-start;
   background: var(--ctp-mantle);
 }
 
+.flowchart-playback .flowchart-btn {
+  @apply h-7 w-7 p-1;
+}
+
 .flowchart-btn {
-  @apply flex items-center justify-center p-[5px] border-none rounded-[var(--radius-xs)] bg-transparent cursor-pointer;
+  @apply flex items-center justify-center p-1 border-none rounded-[var(--radius-xs)] bg-transparent cursor-pointer;
   color: var(--ctp-overlay1);
   transition: color 0.15s ease, background-color 0.15s ease;
   font-family: var(--font-body);
@@ -514,7 +518,7 @@
 }
 
 .flowchart-progress {
-  @apply text-[11px] ml-1.5 min-w-[42px] text-center;
+  @apply text-[11px] ml-1 px-1 min-w-[36px] text-center;
   font-family: var(--font-mono);
   color: var(--ctp-overlay1);
 }
@@ -1145,11 +1149,11 @@
 }
 
 .flowchart-dock-playback {
-  @apply flex justify-end py-1 whitespace-nowrap flex-shrink-0;
+  @apply flex justify-end py-0.5 whitespace-nowrap flex-shrink-0;
 }
 
 .flowchart-dock-playback .flowchart-playback {
-  @apply bg-transparent p-0 border-none shadow-none flex-nowrap;
+  @apply bg-transparent p-0 border-none shadow-none flex-nowrap gap-0.5;
 }
 
 .flowchart-dock-zoom {
@@ -1188,7 +1192,7 @@
 }
 
 .flowchart-dock-steps {
-  @apply flex flex-col gap-2;
+  @apply flex flex-col gap-0;
 }
 
 /* Mobile responsive: icon-only tabs, dynamic journey height */
@@ -1243,15 +1247,63 @@
     max-height: none;
     overflow: visible;
   }
+
+  .flowchart-dock-steps-controls {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+  }
+
+  .flowchart-dock-journey-title-wrapper {
+    width: 100%;
+  }
+
+  .flowchart-dock-playback {
+    width: 100%;
+    justify-content: flex-start;
+  }
 }
 
 .flowchart-dock-steps-controls {
-  @apply flex items-center justify-between w-full mb-2 gap-4 px-1;
+  @apply flex items-center justify-between w-full mb-0 gap-2 px-0.5;
+}
+
+.flowchart-dock-journey-title-wrapper {
+  @apply relative inline-flex items-center min-w-0 max-w-full flex-1;
 }
 
 .flowchart-dock-journey-title {
-  @apply text-xs font-bold text-left;
+  @apply text-xs font-bold text-left whitespace-nowrap overflow-hidden text-ellipsis flex-1 min-w-0 cursor-default;
   color: var(--primary);
   letter-spacing: 0.05em;
   text-transform: uppercase;
+}
+
+.flowchart-dock-journey-title-wrapper:hover .flowchart-dock-journey-tooltip {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+}
+
+.flowchart-dock-journey-tooltip {
+  position: absolute;
+  bottom: calc(100% + 6px);
+  left: 0;
+  transform: translateY(4px);
+  background: var(--ctp-mantle);
+  color: var(--ctp-text);
+  border: 1px solid var(--border-light);
+  padding: 4px 8px;
+  border-radius: var(--radius-xs);
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: none;
+  letter-spacing: normal;
+  white-space: nowrap;
+  pointer-events: none;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.15s ease, transform 0.15s ease, visibility 0.15s ease;
+  z-index: 50;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
 }

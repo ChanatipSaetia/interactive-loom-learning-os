@@ -34,7 +34,7 @@ export function PlaybackControls({
         data-testid="flowchart-btn-prev"
         aria-label="Previous"
       >
-        <SkipBack size={18} className="flowchart-btn-icon" />
+        <SkipBack size={16} className="flowchart-btn-icon" />
       </Button>
       <Button
         size="icon"
@@ -45,7 +45,7 @@ export function PlaybackControls({
         data-testid="flowchart-btn-play"
         aria-label="Play"
       >
-        <Play size={18} className="flowchart-btn-icon" />
+        <Play size={16} className="flowchart-btn-icon" />
       </Button>
       <Button
         size="icon"
@@ -56,7 +56,7 @@ export function PlaybackControls({
         data-testid="flowchart-btn-pause"
         aria-label="Pause"
       >
-        <Pause size={18} className="flowchart-btn-icon" />
+        <Pause size={16} className="flowchart-btn-icon" />
       </Button>
       <Button
         size="icon"
@@ -67,7 +67,7 @@ export function PlaybackControls({
         data-testid="flowchart-btn-next"
         aria-label="Next"
       >
-        <SkipForward size={18} className="flowchart-btn-icon" />
+        <SkipForward size={16} className="flowchart-btn-icon" />
       </Button>
       <Button
         size="icon"
@@ -78,7 +78,7 @@ export function PlaybackControls({
         data-testid="flowchart-btn-reset"
         aria-label="Reset"
       >
-        <RotateCcw size={18} className="flowchart-btn-icon" />
+        <RotateCcw size={16} className="flowchart-btn-icon" />
       </Button>
       <span className="flowchart-progress" data-testid="flowchart-progress">
         {currentStep === -1 ? 0 : currentStep + 1} / {currentJourney.steps.length}
