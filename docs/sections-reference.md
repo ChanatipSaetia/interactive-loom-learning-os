@@ -79,6 +79,7 @@ For optimal cognitive progression, structure your topic's sections in the follow
 - **Mental Model Focus**: Event Storming process flows, system boundaries, and actor swimlanes.
 - **Interactivity**: Dynamic view switching (Swimlanes, System Architecture, State Machine, Sequence views), drag-to-pan, scroll-to-zoom, and journey walkthroughs.
 - **Pedagogical Rationale**: Demystifies multi-step distributed system states. Connects human actions, business commands, system components, and result events into a unified process.
+- **Multi-Flowchart & Journey Guidelines**: For complex processes, split monolithic diagrams into multiple connected flowchart sections (e.g., `sections/flowchart-engine/`, `sections/flowchart-fuel-injection/`). Each flowchart section folder defines its own `section.md`, `actors.yaml`, `systems.yaml`, `steps.yaml`, and `journeys.yaml` (with multiple journeys per section). Shared systems connect across sections using `collapsedTo` canonical node mapping.
 
 ### `tradeoff-sandbox`
 - **Mental Model Focus**: Structural design decisions and metrics balancing.
