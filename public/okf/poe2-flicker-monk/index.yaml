@@ -9,25 +9,25 @@ tags:
   - flicker-strike
   - falling-thunder
 related:
-  - sections/concept-map/concepts.yaml
-  - sections/flashcards/glossary.yaml
-  - sections/taxonomy/main-skills.yaml
-  - sections/taxonomy/support-gems.yaml
-  - sections/taxonomy/utility-skills.yaml
-  - sections/taxonomy/defenses.yaml
-  - sections/gameplay/items.yaml
-  - sections/flowchart/actors.yaml
-  - sections/flowchart/systems.yaml
-  - sections/flowchart/steps.yaml
-  - sections/flowchart/journeys.yaml
-  - sections/quiz/questions.yaml
+  # - sections/concept-map/concepts.yaml
+  # - sections/flashcards/glossary.yaml
+  # - sections/taxonomy/main-skills.yaml
+  # - sections/taxonomy/support-gems.yaml
+  # - sections/taxonomy/utility-skills.yaml
+  # - sections/taxonomy/defenses.yaml
+  # - sections/gameplay/items.yaml
+  # - sections/flowchart/actors.yaml
+  # - sections/flowchart/systems.yaml
+  # - sections/flowchart/steps.yaml
+  # - sections/flowchart/journeys.yaml
+  # - sections/quiz/questions.yaml
   - sections/tradeoffs/gear-budget.yaml
-  - sections/tradeoffs/gear-invested.yaml
-  - sections/scenario/scenarios.yaml
-  - sections/decision-tree/tree.yaml
-  - sections/image-gallery/gallery.yaml
-  - sections/formula-sandbox/sandbox.yaml
-  - sections/reflection-sequence/sequence.yaml
-  - sections/reflection-template/template.yaml
+  # - sections/tradeoffs/gear-invested.yaml
+  # - sections/scenario/scenarios.yaml
+  # - sections/decision-tree/tree.yaml
+  # - sections/image-gallery/gallery.yaml
+  # - sections/formula-sandbox/sandbox.yaml
+  # - sections/reflection-sequence/sequence.yaml
+  # - sections/reflection-template/template.yaml
 
 

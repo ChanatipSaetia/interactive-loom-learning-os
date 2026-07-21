@@ -89,8 +89,9 @@ export function Dropdown({
   return (
     <div
       ref={containerRef}
-      className={cn("relative inline-block min-w-[200px]", className)}
+      className={cn("relative inline-block min-w-0 sm:min-w-[200px] max-w-full", className)}
       data-testid={native ? undefined : testId}
+      data-lenis-prevent
     >
       {/* Visually hidden native select for testing and accessibility compatibility */}
       {native && (
@@ -126,14 +127,14 @@ export function Dropdown({
         onClick={() => setIsOpen((prev) => !prev)}
         onKeyDown={handleKeyDown}
         className={cn(
-          "flex h-9 w-full items-center justify-between gap-2 rounded-lg border border-border bg-card px-3 py-2 text-sm text-foreground transition-colors hover:border-accent disabled:pointer-events-none disabled:opacity-50 outline-none focus:border-accent",
+          "flex h-9 w-full max-w-full min-w-0 items-center justify-between gap-2 rounded-lg border border-border bg-card px-3 py-2 text-sm text-foreground transition-colors hover:border-accent disabled:pointer-events-none disabled:opacity-50 outline-none focus:border-accent",
           triggerClassName
         )}
         aria-haspopup="listbox"
         aria-expanded={isOpen}
         data-testid={triggerTestId}
       >
-        <span className="truncate">{selectedOption?.label ?? placeholder}</span>
+        <span className="truncate min-w-0 flex-1">{selectedOption?.label ?? placeholder}</span>
         {showChevron && (
           <ChevronDown
             className={cn(
@@ -150,6 +151,7 @@ export function Dropdown({
             role="listbox"
             aria-label="Options"
             data-testid={optionsTestId}
+            data-lenis-prevent
             className={cn(
               "absolute top-full left-0 z-50 mt-1 max-h-[240px] w-full overflow-y-auto rounded-lg border border-border bg-card p-1 shadow-lg outline-none",
               optionsClassName
@@ -185,7 +187,7 @@ export function Dropdown({
                     optionClassName
                   )}
                 >
-                  {renderOption ? renderOption(opt) : <span className="truncate">{opt.label}</span>}
+                  {renderOption ? renderOption(opt) : <span className="whitespace-normal break-words">{opt.label}</span>}
                 </li>
               );
             })}

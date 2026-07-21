@@ -151,15 +151,17 @@ function StepComparisonModal({
   const goNext = () => setActiveIdx(i => (i + 1) % choices.length)
 
   return (
-    <Dialog.Root open={open} onOpenChange={onOpenChange}>
+    <Dialog.Root open={open} onOpenChange={onOpenChange} modal={true}>
       <Dialog.Portal>
         <Dialog.Overlay
           className="compare-overlay"
           data-testid="compare-overlay"
+          data-lenis-prevent
         />
         <Dialog.Content
           className="compare-dialog step-compare-dialog"
           data-testid={getTestId(`step-dropdown-menu-${scenarioIdx}-${stepIdx}`)}
+          data-lenis-prevent
           onKeyDown={(e) => {
             if (e.key === 'ArrowUp') { e.preventDefault(); goPrev() }
             if (e.key === 'ArrowDown') { e.preventDefault(); goNext() }
@@ -172,8 +174,11 @@ function StepComparisonModal({
           <Dialog.Title className="compare-dialog-title" data-testid={getTestId(`compare-dialog-title-step-${stepIdx}`)}>
             Step {stepIdx + 1} of {totalSteps}: {step.title} Options
           </Dialog.Title>
-          <Dialog.Description className="compare-dialog-description">
-            Compare options for this architecture decision.
+          <Dialog.Description
+            className="text-xs text-muted-foreground mt-1 mb-3 leading-normal block"
+            data-testid={getTestId(`step-description-${scenarioIdx}-${stepIdx}`)}
+          >
+            {step.description}
           </Dialog.Description>
           <Dialog.Close
             className="compare-dialog-close"
@@ -182,7 +187,7 @@ function StepComparisonModal({
             ✕
           </Dialog.Close>
 
-          <div className="step-compare-grid">
+          <div className="step-compare-grid" data-lenis-prevent>
             {choices.map((choice, idx) => {
               const isChosen = chosenChoiceId === choice.id
               const isRecommended = step.recommended === choice.id
@@ -249,7 +254,7 @@ function StepComparisonModal({
                       return (
                         <span
                           key={mid}
-                          className="metric-delta-badge text-xs px-2 py-0.5 rounded font-medium border"
+                          className="metric-delta-badge"
                           style={{
                             backgroundColor: isNeutral
                               ? 'color-mix(in srgb, var(--ctp-blue) 10%, transparent)'
@@ -268,7 +273,7 @@ function StepComparisonModal({
 
                   {choice.pros.length > 0 && (
                     <div className="details-section mt-2">
-                      <h5 className="details-section-title text-[11px] font-semibold uppercase tracking-wider mb-1">Pros</h5>
+                      <h5 className="details-section-title">Pros</h5>
                       <ul className="details-pros flex flex-col gap-1.5" data-testid={getTestId(`compare-pros-${stepIdx}-${choice.id}`)}>
                         {choice.pros.map((pro, pIdx) => (
                           <li key={pIdx} className="details-pro-item flex items-start gap-2 px-2.5 py-1.5 rounded-[var(--radius-xs)] border-l-4" data-testid={getTestId(`compare-pro-${stepIdx}-${choice.id}-${pIdx}`)}>
@@ -287,7 +292,7 @@ function StepComparisonModal({
 
                   {choice.cons.length > 0 && (
                     <div className="details-section mt-2">
-                      <h5 className="details-section-title text-[11px] font-semibold uppercase tracking-wider mb-1">Cons</h5>
+                      <h5 className="details-section-title">Cons</h5>
                       <ul className="details-cons flex flex-col gap-1.5" data-testid={getTestId(`compare-cons-${stepIdx}-${choice.id}`)}>
                         {choice.cons.map((con, cIdx) => (
                           <li key={cIdx} className="details-con-item flex items-start gap-2 px-2.5 py-1.5 rounded-[var(--radius-xs)] border-l-4" data-testid={getTestId(`compare-con-${stepIdx}-${choice.id}-${cIdx}`)}>
@@ -372,9 +377,22 @@ function StepSection({
           {step.title}
         </h4>
       </div>
-      <p className="step-description" data-testid={getTestId(`step-description-${scenarioIdx}-${stepIdx}`)}>
+      <span
+        data-testid={getTestId(`step-description-${scenarioIdx}-${stepIdx}`)}
+        style={{
+          position: 'absolute',
+          width: '1px',
+          height: '1px',
+          padding: '0',
+          margin: '-1px',
+          overflow: 'hidden',
+          clip: 'rect(0, 0, 0, 0)',
+          whiteSpace: 'nowrap',
+          border: '0',
+        }}
+      >
         {step.description}
-      </p>
+      </span>
 
       <div
         className={`drop-zone${chosenChoice ? ' drop-zone-filled' : ''} p-0 overflow-hidden relative flex items-center`}
@@ -486,14 +504,15 @@ function DetailsModal({
   const isRecommended = step.recommended === choice.id
 
   return (
-    <Dialog.Root open onOpenChange={onClose}>
+    <Dialog.Root open onOpenChange={onClose} modal={true}>
       <Dialog.Portal>
         <Dialog.Overlay
           className="details-overlay"
           data-testid="details-overlay"
           onClick={onClose}
+          data-lenis-prevent
         />
-        <Dialog.Content className="details-dialog" data-testid="details-dialog">
+        <Dialog.Content className="details-dialog" data-testid="details-dialog" data-lenis-prevent>
           <Dialog.Title className="details-dialog-title" data-testid="details-dialog-title">
             Choice Details
           </Dialog.Title>
@@ -670,9 +689,9 @@ function TradeoffSandboxSection({ title, scenarios, instanceId }: TradeoffSandbo
         </h3>
       )}
 
-      <div className="flex flex-col md:flex-row items-start md:items-center justify-between w-full mb-3 gap-3">
+      <div className="flex flex-col md:flex-row items-start md:items-center justify-between w-full mb-3 gap-3 min-w-0">
         {scenarios.length > 1 ? (
-          <div className="scenario-selector !mb-0">
+          <div className="scenario-selector !mb-0 min-w-0 max-w-full">
             <label htmlFor="scenario-select" className="scenario-label">
               Scenario:
             </label>
@@ -687,17 +706,18 @@ function TradeoffSandboxSection({ title, scenarios, instanceId }: TradeoffSandbo
                 }}
                 options={scenarios.map(s => ({ value: s.id, label: s.title }))}
                 triggerTestId={getTestId("scenario-select")}
+                optionsTestId={getTestId("scenario-options")}
                 triggerClassName="scenario-select"
                 optionsClassName="scenario-options"
                 optionClassName="scenario-option"
                 optionActiveClassName="scenario-option-active"
-                showChevron={false}
+                showChevron={true}
               />
             </div>
           </div>
         ) : <div />}
 
-        <Dialog.Root open={compareOpen} onOpenChange={setCompareOpen}>
+        <Dialog.Root open={compareOpen} onOpenChange={setCompareOpen} modal={true}>
           <Dialog.Trigger asChild>
             <MagneticButton variant="outline" size="md" className="compare-all-button !mb-0" data-testid={getTestId("compare-all-button")}>
               Compare All
@@ -708,8 +728,9 @@ function TradeoffSandboxSection({ title, scenarios, instanceId }: TradeoffSandbo
               className="compare-overlay"
               data-testid="compare-overlay"
               onClick={() => setCompareOpen(false)}
+              data-lenis-prevent
             />
-            <Dialog.Content className="compare-dialog" data-testid="compare-dialog">
+            <Dialog.Content className="compare-dialog" data-testid="compare-dialog" data-lenis-prevent>
               <Dialog.Title className="compare-dialog-title" data-testid="compare-dialog-title">
                 Compare All Options
               </Dialog.Title>
@@ -723,7 +744,7 @@ function TradeoffSandboxSection({ title, scenarios, instanceId }: TradeoffSandbo
                 ✕
               </Dialog.Close>
 
-              <div className="compare-scenarios" data-testid="compare-scenarios">
+              <div className="compare-scenarios" data-testid="compare-scenarios" data-lenis-prevent>
                 {scenario.steps.map((step, sIdx) => (
                   <div key={step.id} className="compare-step" data-testid={`compare-step-${sIdx}`}>
                     <h5 className="compare-step-title" data-testid={`compare-step-title-${sIdx}`}>

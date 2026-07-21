@@ -6,6 +6,7 @@ html {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   color-scheme: dark;
+  overflow-x: hidden;
 }
 
 html[data-theme='medicare'],
@@ -26,6 +27,7 @@ body {
   font-family: var(--font-body);
   @apply text-base leading-relaxed text-foreground bg-background;
   letter-spacing: 0.01em;
+  overflow-x: hidden;
 }
 
 a {

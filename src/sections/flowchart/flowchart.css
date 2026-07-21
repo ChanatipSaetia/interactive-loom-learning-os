@@ -931,7 +931,7 @@
    ========================================================================== */
 
 .flowchart-section.fullscreen {
-  @apply fixed inset-0 w-screen h-screen z-[999] flex flex-col gap-3 p-4 overflow-auto;
+  @apply fixed inset-0 w-full h-screen z-[999] flex flex-col gap-3 p-4 overflow-auto;
   background-color: var(--ctp-crust);
   animation: flowchart-fade-in 0.2s ease-out;
 }

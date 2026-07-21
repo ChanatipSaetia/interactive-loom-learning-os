@@ -12,8 +12,8 @@ export function App() {
       <SmoothScroll>
         <div className="app-layout">
           <TopNav />
-          <ScrollProgress variant="bar" position="top" height={3} className="z-[100]" />
           <main className="main-content">
+            <ScrollProgress variant="bar" position="top" height={3} className="z-[100]" />
             <Routes>
               <Route path="/" element={<OverviewPage />} />
               <Route path="/topics/:topicId/*" element={<TopicShell />} />

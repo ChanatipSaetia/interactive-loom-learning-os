@@ -1,5 +1,5 @@
 .tradeoff-sandbox {
-  @apply mb-16;
+  @apply mb-16 w-full max-w-full min-w-0;
 }
 
 
@@ -7,26 +7,30 @@
 /* ─── Scenario Selector ──────────────────────────────── */
 
 .scenario-selector {
-  @apply flex flex-col md:flex-row md:items-center justify-start gap-2 mb-3 w-full md:w-auto;
+  @apply flex flex-col md:flex-row md:items-center justify-start gap-2 mb-3 w-full md:w-auto max-w-full;
 }
 
 .scenario-label {
-  @apply font-medium;
+  @apply font-medium shrink-0;
   font-size: var(--text-caption);
   color: var(--ink);
 }
 
 .scenario-dropdown {
-  @apply relative w-full md:w-auto;
+  @apply relative w-full md:w-auto max-w-full min-w-0;
 }
 
 .scenario-select {
-  @apply font-normal leading-[1.3] px-4 py-3 w-full md:w-[300px] rounded-[var(--radius-sm)] border border-border cursor-pointer text-left flex items-center justify-between gap-2;
-  font-size: var(--text-feature-heading);
+  @apply font-normal leading-[1.3] px-3 py-1.5 w-full md:w-[260px] max-w-full min-w-0 rounded-[var(--radius-sm)] border border-border cursor-pointer text-left flex items-center justify-between gap-2 overflow-hidden;
+  font-size: var(--text-body);
   font-family: var(--font-body);
   background-color: var(--ctp-base);
   color: var(--ink);
   transition: border-color 0.15s ease, background-color 0.15s ease;
+}
+
+.scenario-select>span {
+  @apply truncate min-w-0 flex-1 overflow-hidden text-ellipsis whitespace-nowrap;
 }
 
 .scenario-select:hover {
@@ -37,24 +41,22 @@
   @apply outline-none ring-2 ring-[var(--focus-blue)] ring-offset-[-2px];
 }
 
-.scenario-select::after {
-  content: '';
-  @apply w-[14px] h-[14px] flex-shrink-0 bg-no-repeat bg-center;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%238caaee' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
-}
-
 .scenario-options {
-  @apply absolute top-full left-0 w-full md:w-[300px] m-0 p-1.5 list-none rounded-[var(--radius-sm)] border border-border z-[10] max-h-[200px] overflow-y-auto;
+  @apply absolute top-full left-0 w-full md:w-[260px] max-w-full m-0 p-1 list-none rounded-[var(--radius-sm)] border border-border z-[10] max-h-[200px] overflow-y-auto;
   margin-top: 4px;
   background-color: var(--ctp-base);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
 }
 
 .scenario-option {
-  @apply font-normal leading-[1.3] px-4 py-3 rounded-[var(--radius-xs)] cursor-pointer;
-  font-size: var(--text-feature-heading);
+  @apply font-normal leading-[1.3] px-3 py-1.5 rounded-[var(--radius-xs)] cursor-pointer whitespace-normal break-words min-w-0;
+  font-size: var(--text-body);
   color: var(--ink);
   transition: background-color 0.12s ease, color 0.12s ease;
+}
+
+.scenario-option>span {
+  @apply whitespace-normal break-words;
 }
 
 .scenario-option:hover {
@@ -130,11 +132,12 @@
 .compare-overlay {
   @apply fixed inset-0 z-[50];
   background-color: rgba(0, 0, 0, 0.4);
+  overscroll-behavior: contain;
+  touch-action: none;
 }
 
 .compare-dialog {
-  @apply fixed top-[80px] left-1/2 z-[51] w-[90vw] max-w-[680px] max-h-[calc(100vh-160px)] rounded-[var(--radius-md)] border border-border p-6;
-  transform: translate(-50%, 0);
+  @apply fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-[51] w-[90vw] max-w-[600px] max-h-[80vh] rounded-[var(--radius-md)] border border-border p-4 shadow-2xl;
   background-color: var(--ctp-base);
   display: flex;
   flex-direction: column;
@@ -146,7 +149,7 @@
 }
 
 .compare-dialog-title {
-  @apply font-normal leading-[1.3] mt-0 mb-4;
+  @apply font-normal leading-[1.3] mt-0 mb-2.5;
   font-size: var(--text-feature-heading);
   color: var(--ctp-mauve);
 }
@@ -176,15 +179,17 @@
 /* ─── Compare Grid ──────────────────────────────────── */
 
 .compare-scenarios {
-  @apply flex flex-col gap-4 overflow-y-auto flex-1 min-h-0 pr-2;
+  @apply flex flex-col gap-4 flex-1 min-h-0 overflow-y-auto pr-2;
+  overscroll-behavior: contain;
+  touch-action: pan-y;
 }
 
 .compare-step {
-  @apply rounded-[var(--radius-sm)] border border-border p-5;
+  @apply rounded-[var(--radius-sm)] border border-border p-3.5;
 }
 
 .compare-step-title {
-  @apply font-normal leading-[1.3] mt-0 mb-5;
+  @apply font-normal leading-[1.3] mt-0 mb-2.5;
   font-size: var(--text-card-heading);
   color: var(--ink);
 }
@@ -194,7 +199,7 @@
 }
 
 .compare-card {
-  @apply rounded-[var(--radius-sm)] border border-border px-4 py-3;
+  @apply rounded-[var(--radius-sm)] border border-border px-3 py-2;
   background-color: color-mix(in srgb, var(--ctp-blue) 4%, transparent);
 }
 
@@ -224,8 +229,8 @@
 }
 
 .compare-pro {
-  @apply leading-[1.4] flex items-start gap-1.5;
-  font-size: 11px;
+  @apply leading-[1.25] flex items-start gap-1;
+  font-size: 9.5px;
   color: var(--body-muted);
 }
 
@@ -234,13 +239,13 @@
 }
 
 .compare-con {
-  @apply leading-[1.4] flex items-start gap-1.5;
-  font-size: 11px;
+  @apply leading-[1.25] flex items-start gap-1;
+  font-size: 9.5px;
   color: var(--body-muted);
 }
 
 .compare-icon {
-  @apply flex-shrink-0 w-[14px] h-[14px] mt-0.5;
+  @apply flex-shrink-0 w-[11px] h-[11px] mt-0.5;
 }
 
 .compare-icon-pro {
@@ -256,19 +261,18 @@
 }
 
 .compare-procon-title {
-  @apply font-medium leading-[1.3];
-  font-size: var(--text-caption);
+  @apply font-medium leading-[1.25];
+  font-size: 10px;
   color: var(--ink);
 }
 
 .compare-procon-desc {
-  @apply leading-[1.3];
-  font-size: var(--text-micro);
+  @apply leading-[1.25];
+  font-size: 9px;
   color: var(--body-muted);
 }
 
-.compare-card-recommended {
-}
+.compare-card-recommended {}
 
 .compare-recommended-badge {
   @apply inline-flex items-center justify-center rounded-full w-6 h-6 flex-shrink-0;
@@ -276,17 +280,25 @@
   background-color: color-mix(in srgb, var(--ctp-green) 15%, transparent);
 }
 
+.metric-delta-badge {
+  @apply inline-flex items-center px-1.5 py-0.5 rounded-[var(--radius-xs)] font-medium border leading-tight;
+  font-size: 8px;
+}
+
 /* ─── Details Modal ───────────────────────────────────── */
 
 .details-overlay {
   @apply fixed inset-0 z-[50];
   background-color: rgba(0, 0, 0, 0.4);
+  overscroll-behavior: contain;
+  touch-action: none;
 }
 
 .details-dialog {
-  @apply fixed top-[80px] left-1/2 z-[51] w-[90vw] max-w-[480px] max-h-[calc(100vh-160px)] overflow-y-auto rounded-[var(--radius-md)] border border-border p-6;
-  transform: translate(-50%, 0);
+  @apply fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-[51] w-[90vw] max-w-[420px] max-h-[80vh] overflow-y-auto rounded-[var(--radius-md)] border border-border p-4 shadow-2xl;
   background-color: var(--ctp-base);
+  overscroll-behavior: contain;
+  touch-action: pan-y;
 }
 
 .details-dialog:focus {
@@ -322,7 +334,7 @@
 }
 
 .details-header {
-  @apply mb-4;
+  @apply mb-3;
 }
 
 .details-choice-label {
@@ -348,33 +360,33 @@
 }
 
 .details-section-title {
-  @apply font-normal leading-[1.3] mt-0 mb-2;
-  font-size: var(--text-feature-heading);
+  @apply font-semibold uppercase tracking-wider leading-[1.2] mt-0 mb-1.5;
+  font-size: 10px;
   color: var(--ink);
 }
 
 .details-pros {
-  @apply list-none p-0 flex flex-col gap-2;
+  @apply list-none p-0 flex flex-col gap-1;
 }
 
 .details-pro-item {
-  @apply flex items-start gap-2 px-3 py-2 rounded-[var(--radius-xs)] border-l-4;
+  @apply flex items-start gap-1.5 px-2 py-1 rounded-[var(--radius-xs)] border-l-2;
   background-color: var(--pale-green);
   border-left-color: var(--ctp-green);
 }
 
 .details-cons {
-  @apply list-none p-0 flex flex-col gap-2;
+  @apply list-none p-0 flex flex-col gap-1;
 }
 
 .details-con-item {
-  @apply flex items-start gap-2 px-3 py-2 rounded-[var(--radius-xs)] border-l-4;
+  @apply flex items-start gap-1.5 px-2 py-1 rounded-[var(--radius-xs)] border-l-2;
   background-color: color-mix(in srgb, var(--ctp-red) 8%, transparent);
   border-left-color: var(--error);
 }
 
 .details-icon {
-  @apply flex-shrink-0 w-4 h-4 mt-0.5;
+  @apply flex-shrink-0 w-3 h-3 mt-0.5;
 }
 
 .details-icon-pro {
@@ -386,14 +398,14 @@
 }
 
 .details-procon-title {
-  @apply font-medium leading-[1.4] block;
-  font-size: var(--text-body);
+  @apply font-medium leading-[1.25] block;
+  font-size: 11px;
   color: var(--ink);
 }
 
 .details-procon-desc {
-  @apply leading-[1.4] block mt-0.5;
-  font-size: var(--text-caption);
+  @apply leading-[1.25] block mt-0.5;
+  font-size: 10px;
   color: var(--body-muted);
 }
 
@@ -434,13 +446,13 @@
 /* ─── Layout ─────────────────────────────────────────── */
 
 .tradeoff-layout {
-  @apply flex flex-col gap-8;
+  @apply flex flex-col gap-8 w-full max-w-full min-w-0;
 }
 
 /* ─── Metric Dashboard ──────────────────────────────── */
 
 .metric-dashboard {
-  @apply rounded-[var(--radius-sm)] border border-border px-6 py-5;
+  @apply rounded-[var(--radius-sm)] border border-border px-6 py-5 w-full max-w-full min-w-0;
   background-color: var(--ctp-crust);
 }
 
@@ -499,11 +511,13 @@
 /* ─── Steps Panel ────────────────────────────────────── */
 
 .steps-panel {
-  @apply flex flex-nowrap overflow-x-auto gap-4 pb-2;
+  @apply flex flex-nowrap overflow-x-auto gap-4 pb-2 w-full max-w-full min-w-0;
+  overscroll-behavior-x: contain;
+  touch-action: pan-x;
 }
 
 .step-section {
-  @apply rounded-[var(--radius-sm)] border border-border p-6 bg-card flex-shrink-0 w-[300px];
+  @apply rounded-[var(--radius-sm)] border border-border p-4 bg-card flex-shrink-0 w-[230px];
   transition: border-color 0.15s ease;
 }
 
@@ -512,19 +526,19 @@
 }
 
 .step-header {
-  @apply flex items-start justify-between gap-2 mb-3;
+  @apply flex items-start justify-between gap-2 mb-1.5 min-w-0 overflow-hidden;
 }
 
 .step-title {
-  @apply font-normal leading-[1.3] m-0 flex-1;
-  font-size: var(--text-card-heading);
+  @apply font-semibold leading-[1.3] m-0 flex-1 truncate min-w-0 overflow-hidden text-ellipsis whitespace-nowrap;
+  font-size: var(--text-body);
   color: var(--ink);
 }
 
 .step-description {
-  @apply mt-0 mb-5;
+  @apply mt-0 mb-3;
   font-size: 11px;
-  line-height: 1.3;
+  line-height: 1.35;
   opacity: 0.8;
   color: var(--body-muted);
 }
@@ -683,9 +697,9 @@
 }
 
 .step-compare-grid {
-  @apply flex flex-col gap-3 mt-4 overflow-y-auto pr-1.5;
-  flex: 1;
-  min-height: 0;
+  @apply flex flex-col gap-3 mt-3 flex-1 min-h-0 overflow-y-auto pr-1.5;
+  overscroll-behavior: contain;
+  touch-action: pan-y;
 }
 
 .compare-card.cursor-pointer {
@@ -703,14 +717,16 @@
 }
 
 .step-compare-dialog {
-  max-width: 60vw;
-  height: 75vh;
+  max-width: 52vw;
+  max-height: 80vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
 }
 
 @media (max-width: 1024px) {
   .step-compare-dialog {
-    max-width: 80vw;
-    height: 80vh;
+    max-width: 75vw;
   }
 }
 
@@ -754,6 +770,7 @@
   min-width: 36px;
   text-align: center;
 }
+
 @media (max-width: 768px) {
   .step-compare-dialog {
     max-width: 90vw;
