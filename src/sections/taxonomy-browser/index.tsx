@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'motion/react'
 import * as Dialog from '@radix-ui/react-dialog'
 import * as Icons from 'lucide-react'
 import { ScrollReveal } from '../../components/motion/scroll-reveal'
+import { useSound } from '../../context/SoundContext'
 import './taxonomy-browser.css'
 
 export interface TaxonomyCategory {
@@ -57,12 +58,14 @@ function TaxonomyModal({
 }) {
   const dialogRef = useRef<HTMLDivElement | null>(null)
   const [lastCategory, setLastCategory] = useState<TaxonomyCategory | undefined>(propCategory)
+  const { playSound } = useSound()
 
-  if (open && propCategory && propCategory !== lastCategory) {
+  if (propCategory && propCategory !== lastCategory) {
     setLastCategory(propCategory)
   }
 
-  const category = open ? propCategory : (lastCategory || propCategory)
+  const category = propCategory || lastCategory
+
   if (!category) return null
 
   const Icon = resolveIcon(category.icon)
@@ -80,7 +83,10 @@ function TaxonomyModal({
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
-                onClick={() => onOpenChange(false)}
+                onClick={() => {
+                  playSound('click')
+                  onOpenChange(false)
+                }}
               />
             </Dialog.Overlay>
             <Dialog.Content
@@ -108,6 +114,7 @@ function TaxonomyModal({
                 <Dialog.Close
                   className="taxonomy-dialog-close"
                   data-testid="taxonomy-dialog-close"
+                  onClick={() => playSound('click')}
                 >
                   ✕
                 </Dialog.Close>
@@ -204,6 +211,7 @@ function TaxonomyModal({
 
 function TaxonomyBrowserSection({ title, categories }: TaxonomyBrowserSectionProps) {
   const [selectedIdx, setSelectedIdx] = useState<number | null>(null)
+  const { playSound } = useSound()
 
   const handleOpenChange = useCallback((open: boolean) => {
     if (!open) {
@@ -212,8 +220,10 @@ function TaxonomyBrowserSection({ title, categories }: TaxonomyBrowserSectionPro
   }, [])
 
   const handleCardClick = useCallback((idx: number) => {
+    playSound('click')
     setSelectedIdx(idx)
-  }, [])
+  }, [playSound])
+
 
   return (
     <div className="taxonomy-browser-section" data-testid="taxonomy-browser-section">

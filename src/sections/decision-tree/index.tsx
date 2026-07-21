@@ -1,8 +1,9 @@
 import { useState, useCallback, useMemo } from 'react'
 import { motion, AnimatePresence } from 'motion/react'
-import { RotateCcw, ArrowRight, ThumbsUp, ChevronRight } from 'lucide-react'
+import { RotateCcw, ArrowRight, ChevronRight, ThumbsUp } from 'lucide-react'
 import type { OKFDecisionTreeNode, OKFDecisionTreeChoice } from '../../core/okf/types'
 import { Button } from '../../components/motion/button'
+import { useSound } from '../../context/SoundContext'
 import './decision-tree.css'
 
 export interface DecisionTreeSectionProps {
@@ -98,13 +99,12 @@ function LeafDisplay({ node, onReset }: { node: OKFDecisionTreeNode; onReset: ()
 
         <div className="dt-leaf-footer">
           <Button
-            variant="outline"
-            size="sm"
-            onClick={onReset}
+            className="dt-reset-btn"
             data-testid="dt-reset-btn"
+            onClick={onReset}
           >
-            <RotateCcw className="w-4 h-4 mr-2" />
-            Start Over
+            <RotateCcw className="dt-reset-icon" />
+            Restart Advisor
           </Button>
         </div>
       </div>
@@ -112,32 +112,46 @@ function LeafDisplay({ node, onReset }: { node: OKFDecisionTreeNode; onReset: ()
   )
 }
 
-function ChoiceButton({ choice, index, onClick }: { choice: OKFDecisionTreeChoice; index: number; onClick: () => void }) {
+function ChoiceButton({
+  choice,
+  index,
+  onClick,
+}: {
+  choice: OKFDecisionTreeChoice
+  index: number
+  onClick: () => void
+}) {
+  const optionLetter = String.fromCharCode(65 + index)
+
   return (
-    <motion.button
+    <motion.div
+      key={choice.id}
       className={`dt-choice ${choice.recommended ? 'dt-choice-recommended' : ''}`}
       data-testid={`dt-choice-${choice.id}`}
       onClick={onClick}
       initial={{ opacity: 0, y: 8 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.2, delay: index * 0.06, ease: [0.25, 1, 0.5, 1] }}
+      transition={{ duration: 0.2, delay: index * 0.05, ease: [0.25, 1, 0.5, 1] }}
     >
-      <div className="dt-choice-header">
-        <span className="dt-choice-text">{choice.text}</span>
-        {choice.recommended && (
-          <span className="dt-recommended-badge" data-testid={`dt-recommended-${choice.id}`}>
-            <ThumbsUp className="dt-recommended-icon" />
-            Recommended
-          </span>
+      <div className="dt-choice-badge" aria-hidden="true">
+        {optionLetter}
+      </div>
+      <div className="dt-choice-content">
+        <span className="dt-choice-label">
+          {choice.text}
+          {choice.recommended && (
+            <span className="dt-recommended-badge" data-testid={`dt-recommended-${choice.id}`}>
+              <ThumbsUp className="dt-recommended-icon" />
+              Recommended
+            </span>
+          )}
+        </span>
+        {choice.rationale && (
+          <span className="dt-choice-desc" data-testid={`dt-rationale-${choice.id}`}>{choice.rationale}</span>
         )}
       </div>
-      {choice.rationale && (
-        <span className="dt-choice-rationale" data-testid={`dt-rationale-${choice.id}`}>
-          {choice.rationale}
-        </span>
-      )}
       <ArrowRight className="dt-choice-arrow" />
-    </motion.button>
+    </motion.div>
   )
 }
 
@@ -204,31 +218,31 @@ function IntroDisplay({ title, onStart }: { title?: string; onStart: () => void 
       transition={{ duration: 0.3, ease: [0.25, 1, 0.5, 1] }}
     >
       <div className="dt-intro-card">
-        <div className="dt-intro-icon" data-testid="dt-intro-icon">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-            <path d="M16 3h5v5" />
-            <path d="M8 3H3v5" />
-            <path d="M12 22v-8.3a4 4 0 0 0-1.172-2.872L3 3" />
-            <path d="M21 3l-7.872 7.872A4 4 0 0 0 12 13.7V22" />
-          </svg>
+        <div className="dt-intro-header">
+          <div className="dt-intro-icon" data-testid="dt-intro-icon">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <path d="M16 3h5v5" />
+              <path d="M8 3H3v5" />
+              <path d="M12 22v-8.3a4 4 0 0 0-1.172-2.872L3 3" />
+              <path d="M21 3l-7.872 7.872A4 4 0 0 0 12 13.7V22" />
+            </svg>
+          </div>
+          {title && (
+            <h3 className="dt-intro-title" data-testid="dt-intro-title">
+              {title}
+            </h3>
+          )}
         </div>
-        {title && (
-          <h3 className="dt-intro-title" data-testid="dt-intro-title">
-            {title}
-          </h3>
-        )}
         <p className="dt-intro-text" data-testid="dt-intro-text">
-          Answer a series of questions to find the right recommendation for your situation.
+          Interactive diagnostic advisor. Answer questions step-by-step to arrive at an architectural recommendation.
         </p>
         <Button
-          variant="primary"
-          size="sm"
-          onClick={onStart}
-          data-testid="dt-start-btn"
           className="dt-start-btn"
+          data-testid="dt-start-btn"
+          onClick={onStart}
         >
-          Begin
-          <ArrowRight className="w-4 h-4 ml-2" />
+          Start Diagnosis
+          <ArrowRight className="dt-btn-arrow" />
         </Button>
       </div>
     </motion.div>
@@ -243,8 +257,9 @@ export default function DecisionTreeSection({
   const [phase, setPhase] = useState<'intro' | 'playing' | 'leaf'>('intro')
   const [currentNodeId, setCurrentNodeId] = useState(root)
   const [history, setHistory] = useState<HistoryEntry[]>([{ nodeId: root }])
+  const { playSound } = useSound()
 
-  const currentNode = useMemo(() => nodes[currentNodeId], [nodes, currentNodeId])
+  const currentNode = nodes[currentNodeId]
 
   const nodeTitles = useMemo(() => {
     const titles = new Map<string, string>()
@@ -259,25 +274,29 @@ export default function DecisionTreeSection({
   }, [currentNode])
 
   const handleStart = useCallback(() => {
+    playSound('stepNext')
     setPhase('playing')
-  }, [])
+  }, [playSound])
 
   const handleChoose = useCallback((choiceId: string, nextId: string) => {
     setHistory((prev) => [...prev, { nodeId: nextId, choiceId }])
     const nextNode = nodes[nextId]
     if (nextNode?.leaf && !nextNode.choices) {
+      playSound('success')
       setCurrentNodeId(nextId)
       setPhase('leaf')
     } else {
+      playSound('click')
       setCurrentNodeId(nextId)
     }
-  }, [nodes])
+  }, [nodes, playSound])
 
   const handleReset = useCallback(() => {
+    playSound('click')
     setPhase('intro')
     setCurrentNodeId(root)
     setHistory([{ nodeId: root }])
-  }, [root])
+  }, [root, playSound])
 
   if (Object.keys(nodes).length === 0) {
     return <div className="p-8 text-center text-muted-foreground font-mono text-sm">No decision tree data provided.</div>

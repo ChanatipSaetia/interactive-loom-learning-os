@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import { CheckCircle2, AlertCircle, X, ChevronLeft, ChevronRight } from 'lucide-react'
+import { useSound } from '../../context/SoundContext'
 import './reflection-sequence.css'
 
 export interface SequenceItem {
@@ -31,6 +32,7 @@ function ReflectionSequenceSingle({
   items: SequenceItem[]
   solution: string[]
 }) {
+  const { playSound } = useSound()
   const [slots, setSlots] = useState<Record<number, SequenceItem | null>>(() => {
     const initial: Record<number, SequenceItem | null> = {}
     for (let i = 0; i < items.length; i++) {
@@ -68,6 +70,7 @@ function ReflectionSequenceSingle({
 
   const handleItemTap = (id: string) => {
     if (isPlaced(id)) return
+    playSound('click')
     if (selectedItemId === id) {
       setSelectedItemId(null)
     } else {
@@ -90,6 +93,7 @@ function ReflectionSequenceSingle({
   }
 
   const placeItemInSlot = (slotIndex: number, item: SequenceItem) => {
+    playSound('stepNext')
     const previousSlotIndex = Object.keys(slots).find(
       (key) => slots[parseInt(key)]?.id === item.id
     )
@@ -105,6 +109,7 @@ function ReflectionSequenceSingle({
   }
 
   const removeItemFromSlot = (slotIndex: number) => {
+    playSound('stepPrev')
     setSlots((prev) => ({
       ...prev,
       [slotIndex]: null,
@@ -129,6 +134,7 @@ function ReflectionSequenceSingle({
     }
 
     if (filledCount < solution.length) {
+      playSound('boundary')
       setFeedback({
         text: 'Please place all steps in slots before verifying.',
         type: 'error',
@@ -137,17 +143,20 @@ function ReflectionSequenceSingle({
     }
 
     if (isCorrect) {
+      playSound('success')
       setFeedback({
         text: 'Correct! You have mapped the process flow sequence accurately.',
         type: 'success',
       })
     } else {
+      playSound('error')
       setFeedback({
         text: 'Incorrect sequence. Analyze dependencies and try rearranging the steps.',
         type: 'error',
       })
     }
   }
+
 
   return (
     <div className="sequence-body">

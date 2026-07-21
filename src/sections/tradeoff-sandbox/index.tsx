@@ -3,6 +3,7 @@ import * as Dialog from '@radix-ui/react-dialog'
 import { Check, X, Star, Plus, Info, ChevronLeft, ChevronRight } from 'lucide-react'
 import { Button, MagneticButton } from '../../components/motion/button'
 import { Dropdown } from '../../components/motion/dropdown'
+import { useSound } from '../../context/SoundContext'
 import './tradeoff-sandbox.css'
 
 export interface MetricDef {
@@ -601,6 +602,7 @@ function DetailsModal({
 function TradeoffSandboxSection({ title, scenarios, instanceId }: TradeoffSandboxSectionProps) {
   const [scenarioIdx, setScenarioIdx] = useState(0)
   const [compareOpen, setCompareOpen] = useState(false)
+  const { playSound } = useSound()
 
   const [chosenIds, setChosenIds] = useState<Record<string, string>>({})
 
@@ -614,6 +616,7 @@ function TradeoffSandboxSection({ title, scenarios, instanceId }: TradeoffSandbo
   }, [scenarioIdx])
 
   const handleChoiceSelect = useCallback((stepId: string, choiceId: string) => {
+    playSound('click')
     setChosenIds((prev) => {
       const current = prev[stepId]
       if (current === choiceId) {
@@ -623,15 +626,17 @@ function TradeoffSandboxSection({ title, scenarios, instanceId }: TradeoffSandbo
       }
       return { ...prev, [stepId]: choiceId }
     })
-  }, [])
+  }, [playSound])
 
   const handleClearChoice = useCallback((stepId: string) => {
+    playSound('click')
     setChosenIds((prev) => {
       const next = { ...prev }
       delete next[stepId]
       return next
     })
-  }, [])
+  }, [playSound])
+
 
   const handleOpenDetails = useCallback((stepId: string, choiceId: string) => {
     setDetailsTarget({ stepId, choiceId })

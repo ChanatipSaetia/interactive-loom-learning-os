@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'motion/react'
 import { RotateCcw, ArrowRight, CheckCircle2, AlertCircle } from 'lucide-react'
 import type { OKFScenarioNode, ScenarioRating } from '../../core/okf/types'
 import { Button } from '../../components/motion/button'
+import { useSound } from '../../context/SoundContext'
 import './scenario.css'
 
 export interface ScenarioSectionProps {
@@ -159,20 +160,26 @@ function DecisionDisplay({
       </h4>
 
       <div className="scenario-choices" data-testid="scenario-choices">
-        {node.choices?.map((choice, idx) => (
-          <motion.button
-            key={choice.id}
-            className="scenario-choice"
-            data-testid={`scenario-choice-${choice.id}`}
-            onClick={() => onChoose(choice.id, choice.next)}
-            initial={{ opacity: 0, y: 8 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.2, delay: idx * 0.06, ease: [0.25, 1, 0.5, 1] }}
-          >
-            <span className="scenario-choice-text">{choice.text}</span>
-            <ArrowRight className="scenario-choice-arrow" />
-          </motion.button>
-        ))}
+        {node.choices?.map((choice, idx) => {
+          const optionLetter = String.fromCharCode(65 + idx)
+          return (
+            <motion.button
+              key={choice.id}
+              className="scenario-choice"
+              data-testid={`scenario-choice-${choice.id}`}
+              onClick={() => onChoose(choice.id, choice.next)}
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.2, delay: idx * 0.06, ease: [0.25, 1, 0.5, 1] }}
+            >
+              <div className="scenario-choice-badge" aria-hidden="true">
+                {optionLetter}
+              </div>
+              <span className="scenario-choice-text">{choice.text}</span>
+              <ArrowRight className="scenario-choice-arrow" />
+            </motion.button>
+          )
+        })}
       </div>
     </motion.div>
   )
@@ -196,18 +203,20 @@ function IntroDisplay({
       transition={{ duration: 0.3, ease: [0.25, 1, 0.5, 1] }}
     >
       <div className="scenario-intro-card">
-        <div className="scenario-intro-icon" data-testid="scenario-intro-icon">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-            <path d="M12 2L2 7l10 5 10-5-10-5z" />
-            <path d="M2 17l10 5 10-5" />
-            <path d="M2 12l10 5 10-5" />
-          </svg>
+        <div className="scenario-intro-header">
+          <div className="scenario-intro-icon" data-testid="scenario-intro-icon">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <path d="M12 2L2 7l10 5 10-5-10-5z" />
+              <path d="M2 17l10 5 10-5" />
+              <path d="M2 12l10 5 10-5" />
+            </svg>
+          </div>
+          {title && (
+            <h3 className="scenario-intro-title" data-testid="scenario-intro-title">
+              {title}
+            </h3>
+          )}
         </div>
-        {title && (
-          <h3 className="scenario-intro-title" data-testid="scenario-intro-title">
-            {title}
-          </h3>
-        )}
         {intro && (
           <p className="scenario-intro-text" data-testid="scenario-intro-text">
             {intro}
@@ -237,6 +246,7 @@ export default function ScenarioSection({
   const [phase, setPhase] = useState<'intro' | 'playing' | 'outcome'>('intro')
   const [currentNodeId, setCurrentNodeId] = useState(startNode)
   const [history, setHistory] = useState<HistoryEntry[]>([{ nodeId: startNode }])
+  const { playSound } = useSound()
 
   const currentNode = useMemo(() => nodes[currentNodeId], [nodes, currentNodeId])
 
@@ -253,21 +263,29 @@ export default function ScenarioSection({
   }, [currentNode, nodes])
 
   const handleStart = useCallback(() => {
+    playSound('stepNext')
     setPhase('playing')
-  }, [])
+  }, [playSound])
 
   const handleChoose = useCallback((choiceId: string, nextId: string) => {
     setHistory((prev) => [...prev, { nodeId: nextId, choiceId }])
     const nextNode = nodes[nextId]
     if (nextNode?.outcome) {
+      if (nextNode.outcome.rating === 'a' || nextNode.outcome.rating === 'b-plus') {
+        playSound('success')
+      } else {
+        playSound('error')
+      }
       setCurrentNodeId(nextId)
       setPhase('outcome')
     } else {
+      playSound('click')
       setCurrentNodeId(nextId)
     }
-  }, [nodes])
+  }, [nodes, playSound])
 
   const handleBack = useCallback(() => {
+    playSound('stepPrev')
     setHistory((prev) => {
       if (prev.length <= 1) return prev
       const newHistory = prev.slice(0, -1)
@@ -275,13 +293,15 @@ export default function ScenarioSection({
       setCurrentNodeId(lastEntry.nodeId)
       return newHistory
     })
-  }, [])
+  }, [playSound])
 
   const handleRestart = useCallback(() => {
+    playSound('click')
     setPhase('intro')
     setCurrentNodeId(startNode)
     setHistory([{ nodeId: startNode }])
-  }, [startNode])
+  }, [startNode, playSound])
+
 
   if (Object.keys(nodes).length === 0) {
     return <div className="p-8 text-center text-muted-foreground font-mono text-sm">No scenario data provided.</div>

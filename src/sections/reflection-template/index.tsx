@@ -1,5 +1,6 @@
 import React, { useState, useMemo, useCallback, useEffect } from 'react'
 import { CheckCircle2, AlertCircle, ChevronLeft, ChevronRight } from 'lucide-react'
+import { useSound } from '../../context/SoundContext'
 import './reflection-template.css'
 
 export interface ChipItem {
@@ -38,6 +39,7 @@ function ReflectionTemplateSingle({
   solution: Record<string, string>
   explanation?: string
 }) {
+  const { playSound } = useSound()
   const zoneIds = useMemo(() => {
     const ids: string[] = []
     const regex = /\{zone-([a-zA-Z0-9_-]+)\}/g
@@ -76,6 +78,7 @@ function ReflectionTemplateSingle({
   }
 
   const placeChipInZone = useCallback((zoneId: string, chip: ChipItem) => {
+    playSound('stepNext')
     const previousZoneId = Object.keys(blanks).find(
       (key) => blanks[key]?.id === chip.id
     )
@@ -89,15 +92,16 @@ function ReflectionTemplateSingle({
       return next
     })
     setFeedback({ text: '', type: '' })
-  }, [blanks])
+  }, [blanks, playSound])
 
   const removeChipFromZone = useCallback((zoneId: string) => {
+    playSound('stepPrev')
     setBlanks((prev) => ({
       ...prev,
       [zoneId]: null,
     }))
     setFeedback({ text: '', type: '' })
-  }, [])
+  }, [playSound])
 
   const handleDrop = useCallback((e: React.DragEvent, zoneId: string) => {
     e.preventDefault()
@@ -110,6 +114,7 @@ function ReflectionTemplateSingle({
 
   const handleChipTap = (id: string) => {
     if (isChipUsed(id)) return
+    playSound('click')
     if (selectedChipId === id) {
       setSelectedChipId(null)
     } else {
@@ -147,6 +152,7 @@ function ReflectionTemplateSingle({
     }
 
     if (unfilled) {
+      playSound('boundary')
       setFeedback({
         text: 'Please fill in all blanks within the sentence structure before checking.',
         type: 'error',
@@ -155,17 +161,20 @@ function ReflectionTemplateSingle({
     }
 
     if (correctCount === zoneIds.length) {
+      playSound('success')
       setFeedback({
         text: explanation || 'Correct! You have successfully completed the explanation template.',
         type: 'success',
       })
     } else {
+      playSound('error')
       setFeedback({
         text: 'Incorrect reasoning. Adjust parameters and review the tradeoffs before retrying.',
         type: 'error',
       })
     }
   }
+
 
   const renderedSentence = useMemo(() => {
     const segments = template.split(/(\{zone-[a-zA-Z0-9_-]+\})/g)

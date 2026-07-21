@@ -1,6 +1,7 @@
 import { Play, Pause, SkipForward, SkipBack, RotateCcw } from 'lucide-react';
 import { Button } from '../../components/motion/button';
 import type { FlowchartJourney } from './types';
+import { useSound } from '../../context/SoundContext';
 
 interface PlaybackControlsProps {
   currentJourney: FlowchartJourney;
@@ -23,6 +24,37 @@ export function PlaybackControls({
   handlePrev,
   handleReset
 }: PlaybackControlsProps) {
+  const { playSound } = useSound();
+
+  const onPrevClick = () => {
+    playSound('stepPrev');
+    handlePrev();
+  };
+
+  const onNextClick = () => {
+    if (currentStep >= currentJourney.steps.length - 2) {
+      playSound('complete');
+    } else {
+      playSound('stepNext');
+    }
+    handleNext();
+  };
+
+  const onPlayClick = () => {
+    playSound('click');
+    handlePlay();
+  };
+
+  const onPauseClick = () => {
+    playSound('click');
+    handlePause();
+  };
+
+  const onResetClick = () => {
+    playSound('click');
+    handleReset();
+  };
+
   return (
     <div className="flowchart-playback animate-fade-in" data-testid="flowchart-playback">
       <Button
@@ -30,7 +62,7 @@ export function PlaybackControls({
         variant="ghost"
         className="flowchart-btn"
         disabled={currentStep <= 0}
-        onClick={handlePrev}
+        onClick={onPrevClick}
         data-testid="flowchart-btn-prev"
         aria-label="Previous"
       >
@@ -41,7 +73,7 @@ export function PlaybackControls({
         variant="ghost"
         className="flowchart-btn"
         disabled={isPlaying || currentStep >= currentJourney.steps.length - 1}
-        onClick={handlePlay}
+        onClick={onPlayClick}
         data-testid="flowchart-btn-play"
         aria-label="Play"
       >
@@ -52,7 +84,7 @@ export function PlaybackControls({
         variant="ghost"
         className="flowchart-btn"
         disabled={!isPlaying}
-        onClick={handlePause}
+        onClick={onPauseClick}
         data-testid="flowchart-btn-pause"
         aria-label="Pause"
       >
@@ -63,7 +95,7 @@ export function PlaybackControls({
         variant="ghost"
         className="flowchart-btn"
         disabled={currentStep >= currentJourney.steps.length - 1}
-        onClick={handleNext}
+        onClick={onNextClick}
         data-testid="flowchart-btn-next"
         aria-label="Next"
       >
@@ -74,7 +106,7 @@ export function PlaybackControls({
         variant="ghost"
         className="flowchart-btn"
         disabled={currentStep <= 0}
-        onClick={handleReset}
+        onClick={onResetClick}
         data-testid="flowchart-btn-reset"
         aria-label="Reset"
       >
@@ -86,3 +118,4 @@ export function PlaybackControls({
     </div>
   );
 }
+

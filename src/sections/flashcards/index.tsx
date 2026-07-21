@@ -4,8 +4,7 @@ import { WordTerm } from '../../types';
 import { ChevronLeft, ChevronRight, Volume2, Terminal, HelpCircle, MessageSquare, BookOpen } from 'lucide-react';
 import { Button } from '../../components/motion/button';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '../../components/motion/tabs';
-
-
+import { useSound } from '../../context/SoundContext';
 
 type BackTabId = 'guidelines' | 'dialogue';
 
@@ -19,6 +18,7 @@ export default function FlashcardDeck({ title, terms = [] }: FlashcardDeckProps)
   const [isFlipped, setIsFlipped] = useState(false);
   const [direction, setDirection] = useState(0); // -1 for left, 1 for right
   const [activeBackTab, setActiveBackTab] = useState<BackTabId>('guidelines');
+  const { playSound } = useSound();
 
   // Reset back tabs when switching cards
   useEffect(() => {
@@ -33,6 +33,7 @@ export default function FlashcardDeck({ title, terms = [] }: FlashcardDeckProps)
   const simulatedChat = currentTerm.dialogue;
 
   const handleNext = () => {
+    playSound('stepNext');
     setDirection(1);
     setIsFlipped(false);
     setTimeout(() => {
@@ -41,6 +42,7 @@ export default function FlashcardDeck({ title, terms = [] }: FlashcardDeckProps)
   };
 
   const handlePrev = () => {
+    playSound('stepPrev');
     setDirection(-1);
     setIsFlipped(false);
     setTimeout(() => {
@@ -211,7 +213,7 @@ export default function FlashcardDeck({ title, terms = [] }: FlashcardDeckProps)
                       </button>
 
                       <button 
-                        onClick={(e) => { e.stopPropagation(); setIsFlipped(true); }}
+                        onClick={(e) => { e.stopPropagation(); playSound('flip'); setIsFlipped(true); }}
                         className="text-xs text-muted-foreground hover:text-foreground uppercase tracking-widest font-mono cursor-pointer transition-colors"
                       >
                         Flip card ↺
@@ -272,7 +274,7 @@ export default function FlashcardDeck({ title, terms = [] }: FlashcardDeckProps)
                         <Terminal className="w-4 h-4 mr-2 text-primary" /> AI ALIGNMENT SPEC
                       </span>
                       <button 
-                        onClick={(e) => { e.stopPropagation(); setIsFlipped(false); }}
+                        onClick={(e) => { e.stopPropagation(); playSound('flip'); setIsFlipped(false); }}
                         className="text-xs text-muted-foreground hover:text-foreground uppercase tracking-widest font-mono cursor-pointer transition-colors"
                       >
                         Flip card ↺

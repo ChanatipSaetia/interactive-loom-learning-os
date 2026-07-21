@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'motion/react'
 import { Check, X, Lightbulb, ChevronRight, ChevronLeft, ChevronDown } from 'lucide-react'
 import type { OKFQuizQuestion } from '../../core/okf/types'
 import { Button } from '../../components/motion/button'
+import { useSound } from '../../context/SoundContext'
 import './quiz.css'
 
 export interface QuizSectionProps {
@@ -161,6 +162,7 @@ export default function QuizSection({ title, questions = [] }: QuizSectionProps)
   const [currentIndex, setCurrentIndex] = useState(0)
   const [answers, setAnswers] = useState<AnswersMap>({})
   const [hintsOpen, setHintsOpen] = useState<HintsOpenMap>({})
+  const { playSound } = useSound()
 
   if (questions.length === 0) {
     return <div className="p-8 text-center text-muted-foreground font-mono text-sm">No quiz questions provided.</div>
@@ -168,11 +170,20 @@ export default function QuizSection({ title, questions = [] }: QuizSectionProps)
 
   const handleAnswer = useCallback((questionIndex: number, choiceId: string) => {
     setAnswers((prev) => ({ ...prev, [questionIndex]: choiceId }))
-  }, [])
+    const q = questions[questionIndex]
+    const choice = q?.choices.find((c) => c.id === choiceId)
+    if (choice?.correct) {
+      playSound('success')
+    } else {
+      playSound('error')
+    }
+  }, [questions, playSound])
 
   const handleToggleHint = useCallback((questionIndex: number) => {
+    playSound('click')
     setHintsOpen((prev) => ({ ...prev, [questionIndex]: !prev[questionIndex] }))
-  }, [])
+  }, [playSound])
+
 
   const score = useMemo(() => {
     let correct = 0
