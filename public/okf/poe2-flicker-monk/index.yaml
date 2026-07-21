@@ -11,10 +11,10 @@ tags:
 related:
   # - sections/concept-map/concepts.yaml
   # - sections/flashcards/glossary.yaml
-  # - sections/taxonomy/main-skills.yaml
-  # - sections/taxonomy/support-gems.yaml
-  # - sections/taxonomy/utility-skills.yaml
-  # - sections/taxonomy/defenses.yaml
+  - sections/taxonomy/main-skills.yaml
+  - sections/taxonomy/support-gems.yaml
+  - sections/taxonomy/utility-skills.yaml
+  - sections/taxonomy/defenses.yaml
   # - sections/gameplay/items.yaml
   # - sections/flowchart/actors.yaml
   # - sections/flowchart/systems.yaml

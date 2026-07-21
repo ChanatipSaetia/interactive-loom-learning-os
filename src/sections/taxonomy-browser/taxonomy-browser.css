@@ -35,6 +35,27 @@
 
 .taxonomy-browser-card-body {
   @apply flex flex-col gap-1.5;
+  overflow-y: auto;
+  max-height: 12rem;
+  scrollbar-width: thin;
+  scrollbar-color: var(--ctp-surface0) transparent;
+}
+
+.taxonomy-browser-card-body::-webkit-scrollbar {
+  width: 4px;
+}
+
+.taxonomy-browser-card-body::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.taxonomy-browser-card-body::-webkit-scrollbar-thumb {
+  background: var(--ctp-surface0);
+  border-radius: var(--radius-xs);
+}
+
+.taxonomy-browser-card-body::-webkit-scrollbar-thumb:hover {
+  background: var(--ctp-surface1);
 }
 
 .taxonomy-browser-subtitle {
@@ -94,37 +115,40 @@
   @apply outline-none ring-2 ring-[var(--focus-blue)] ring-offset-2;
 }
 
-/* ─── Scrollable Content ──────────────────────────────────── */
+/* ─── Scrollable Sections ─────────────────────────────────── */
 
-.taxonomy-modal-scroll {
+.taxonomy-modal-sections-scroll {
   @apply overflow-y-auto px-6 py-6;
-  max-height: calc(100vh - 160px);
+  flex: 1;
+  min-height: 0;
+  overscroll-behavior: contain;
   scrollbar-width: thin;
   scrollbar-color: var(--ctp-surface0) var(--ctp-mantle);
 }
 
-.taxonomy-modal-scroll::-webkit-scrollbar {
+.taxonomy-modal-sections-scroll::-webkit-scrollbar {
   width: 8px;
 }
 
-.taxonomy-modal-scroll::-webkit-scrollbar-track {
+.taxonomy-modal-sections-scroll::-webkit-scrollbar-track {
   background: var(--ctp-mantle);
   border-radius: var(--radius-xs);
 }
 
-.taxonomy-modal-scroll::-webkit-scrollbar-thumb {
+.taxonomy-modal-sections-scroll::-webkit-scrollbar-thumb {
   background: var(--ctp-surface0);
   border-radius: var(--radius-xs);
 }
 
-.taxonomy-modal-scroll::-webkit-scrollbar-thumb:hover {
+.taxonomy-modal-sections-scroll::-webkit-scrollbar-thumb:hover {
   background: var(--ctp-surface1);
 }
 
 /* ─── Header ──────────────────────────────────────────────── */
 
 .taxonomy-modal-header {
-  @apply flex flex-col items-center text-center gap-2 mb-6 pb-4 border-b border-border;
+  @apply flex flex-col items-center text-center gap-2 px-6 pt-6 pb-4 border-b border-border;
+  flex-shrink: 0;
 }
 
 .taxonomy-modal-icon {

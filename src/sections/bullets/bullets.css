@@ -7,6 +7,10 @@
   counter-reset: ordered-bullet;
 }
 
+.bullets-list-ordered > .bullets-card {
+  counter-increment: ordered-bullet;
+}
+
 @media (min-width: 768px) {
   .bullets-list {
     @apply grid-cols-2;
@@ -52,17 +56,34 @@
   font-size: 15px;
 }
 
+/* ── Ordered markers ────────────────────────────────────────────────────── */
+
+/* Top-level: increment & display the top counter on the card header marker */
+.bullets-list-ordered > .bullets-card > .bullets-card-header .bullet-marker-ordered::before {
+  content: counter(ordered-bullet) '.';
+}
+
+/* Sub-level: each nested ordered list gets its own independent counter */
+.bullet-children-ordered {
+  counter-reset: bullet-sub;
+}
+
+.bullet-children-ordered > .bullet-item .bullet-marker-ordered {
+  counter-increment: bullet-sub;
+}
+
+.bullet-children-ordered > .bullet-item > .bullet-item-row .bullet-marker-ordered::before {
+  content: counter(bullet-sub, lower-alpha) '.';
+}
+
+/* Shared styling for all ordered markers */
 .bullet-marker-ordered {
-  counter-increment: ordered-bullet;
   @apply flex items-center justify-center font-semibold;
   font-size: var(--text-caption);
   font-family: var(--font-mono);
 }
 
-.bullet-marker-ordered::before {
-  content: counter(ordered-bullet) '.';
-}
-
+/* ── Unordered markers ──────────────────────────────────────────────────── */
 .bullet-marker-unordered {
   @apply flex items-center justify-center font-bold;
 }

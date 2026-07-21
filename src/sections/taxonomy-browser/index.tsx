@@ -112,22 +112,23 @@ function TaxonomyModal({
                   ✕
                 </Dialog.Close>
 
-                <div className="taxonomy-modal-scroll">
-                  {/* Header */}
-                  <div className="taxonomy-modal-header">
-                    <div className="taxonomy-modal-icon" style={{ color: accent }}>
-                      <Icon size={32} strokeWidth={1.5} />
-                    </div>
-                    {category.subtitle && (
-                      <p className="taxonomy-modal-subtitle" style={{ color: accent }}>
-                        {category.subtitle}
-                      </p>
-                    )}
-                    <h2 className="taxonomy-modal-title" style={{ color: accent }}>
-                      {category.title}
-                    </h2>
+                {/* Header — always visible, never scrolls */}
+                <div className="taxonomy-modal-header">
+                  <div className="taxonomy-modal-icon" style={{ color: accent }}>
+                    <Icon size={32} strokeWidth={1.5} />
                   </div>
+                  {category.subtitle && (
+                    <p className="taxonomy-modal-subtitle" style={{ color: accent }}>
+                      {category.subtitle}
+                    </p>
+                  )}
+                  <h2 className="taxonomy-modal-title" style={{ color: accent }}>
+                    {category.title}
+                  </h2>
+                </div>
 
+                {/* Sections — scrollable */}
+                <div className="taxonomy-modal-sections-scroll" data-lenis-prevent>
                   {/* Overview */}
                   <div className="taxonomy-modal-section" data-testid="taxonomy-modal-overview">
                     <h3 className="taxonomy-modal-section-title">Overview</h3>
