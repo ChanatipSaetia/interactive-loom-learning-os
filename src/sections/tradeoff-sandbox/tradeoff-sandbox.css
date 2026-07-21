@@ -517,7 +517,7 @@
 }
 
 .step-section {
-  @apply rounded-[var(--radius-sm)] border border-border p-4 bg-card flex-shrink-0 w-[230px];
+  @apply relative rounded-[var(--radius-sm)] border border-border p-4 bg-card flex-1 min-w-[210px];
   transition: border-color 0.15s ease;
 }
 
