@@ -11,7 +11,7 @@ Standalone React component library for rendering interactive learning sections f
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>My Learning Page</title>
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/loom-learning-sections@1.1.1/loom-sections.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/loom-learning-sections@1.2.0/loom-sections.css">
   <style>
     /* Center the container and add padding */
     #loom-root {
@@ -28,7 +28,7 @@ Standalone React component library for rendering interactive learning sections f
   <!-- Container where Loom Sections will render -->
   <div id="loom-root"></div>
 
-  <script src="https://cdn.jsdelivr.net/npm/loom-learning-sections@1.1.1/loom-sections.umd.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/loom-learning-sections@1.2.0/loom-sections.umd.js"></script>
   <script>
     const okfSections = [
       {
@@ -194,6 +194,27 @@ interface SectionConfig {
 ```
 
 ## Section Types
+
+This section is a quick reference for the CDN `props` format used in inline JSON. For the full **OKF file-based schema** (how sections are structured in `public/okf/<topic>/sections/`), see the dedicated docs in [`docs/sections/`](sections/README.md).
+
+| Type | OKF Schema Doc | Mental Model |
+|---|---|---|
+| `text` | [sections/text.md](sections/text.md) | Anchored conceptual narrative |
+| `bullets` | [sections/bullets.md](sections/bullets.md) | Hierarchical breakdown |
+| `concept-map` | [sections/concept-map.md](sections/concept-map.md) | Semantic relationships |
+| `flashcards` | [sections/flashcards.md](sections/flashcards.md) | Vocabulary recall |
+| `taxonomy-browser` | [sections/taxonomy-browser.md](sections/taxonomy-browser.md) | Concept category grid |
+| `flowchart` | [sections/flowchart.md](sections/flowchart.md) | Process flows & swimlanes |
+| `reflection-sequence` | [sections/reflection-sequence.md](sections/reflection-sequence.md) | Step ordering challenge |
+| `quiz` | [sections/quiz.md](sections/quiz.md) | Knowledge check |
+| `tradeoff-sandbox` | [sections/tradeoff-sandbox.md](sections/tradeoff-sandbox.md) | Trade-off explorer |
+| `formula-sandbox` | [sections/formula-sandbox.md](sections/formula-sandbox.md) | Quantitative simulator |
+| `reflection-template` | [sections/reflection-template.md](sections/reflection-template.md) | Fill-in-the-blank synthesis |
+| `scenario` | [sections/scenario.md](sections/scenario.md) | Branching narrative |
+| `decision-tree` | [sections/decision-tree.md](sections/decision-tree.md) | Diagnostic advisor |
+| `image-gallery` | [sections/image-gallery.md](sections/image-gallery.md) | Visual showcase |
+
+---
 
 ### `text`
 
@@ -1008,7 +1029,7 @@ Use a modern ES module script block (`type="module"`) to fetch the JSON file loc
 <head>
   <meta charset="UTF-8">
   <title>Loom App</title>
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/loom-learning-sections@1.1.1/loom-sections.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/loom-learning-sections@1.2.0/loom-sections.css">
   <style>
     #loom-root {
       max-width: 860px;
@@ -1021,7 +1042,7 @@ Use a modern ES module script block (`type="module"`) to fetch the JSON file loc
   <div id="theme-picker" style="max-width: 860px; margin: 16px auto; display: flex; justify-content: flex-end;"></div>
   <div id="loom-root"></div>
 
-  <script src="https://cdn.jsdelivr.net/npm/loom-learning-sections@1.1.1/loom-sections.umd.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/loom-learning-sections@1.2.0/loom-sections.umd.js"></script>
   <script type="module">
     try {
       const response = await fetch('./curriculum.json');
@@ -1074,7 +1095,7 @@ Embed the array directly inside your script tag:
 <head>
   <meta charset="UTF-8">
   <title>Loom App (Embedded)</title>
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/loom-learning-sections@1.1.1/loom-sections.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/loom-learning-sections@1.2.0/loom-sections.css">
   <style>
     #loom-root {
       max-width: 860px;
@@ -1087,7 +1108,7 @@ Embed the array directly inside your script tag:
   <div id="theme-picker" style="max-width: 860px; margin: 16px auto; display: flex; justify-content: flex-end;"></div>
   <div id="loom-root"></div>
 
-  <script src="https://cdn.jsdelivr.net/npm/loom-learning-sections@1.1.1/loom-sections.umd.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/loom-learning-sections@1.2.0/loom-sections.umd.js"></script>
   <script>
     const okfSections = [
       {

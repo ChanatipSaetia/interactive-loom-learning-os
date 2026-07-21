@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,13 +9,15 @@
   <!-- Google Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link
+    href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
+    rel="stylesheet">
 
   <!-- Loom Sections Stylesheet from CDN -->
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/loom-learning-sections@1.1.1/loom-sections.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/loom-learning-sections@1.2.0/loom-sections.css">
 
   <!-- Loom Sections UMD Bundle from CDN -->
-  <script src="https://cdn.jsdelivr.net/npm/loom-learning-sections@1.1.1/loom-sections.umd.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/loom-learning-sections@1.2.0/loom-sections.umd.js"></script>
 
   <style>
     :root {
@@ -84,6 +87,7 @@
     }
   </style>
 </head>
+
 <body>
   <div class="container">
     <header>
@@ -113,7 +117,7 @@
         statusBadge.style.color = '#e78284';
         statusBadge.style.borderColor = '#e78284';
         statusBadge.style.background = 'rgba(231,130,132,0.1)';
-        
+
         errorView.style.display = 'block';
         errorView.innerHTML = `<strong>Loader Error:</strong> ${error.message}<br><small>Make sure you serve this directory via a local web server (e.g. <code>npx serve .</code>) to bypass CORS restrictions.</small>`;
       }
@@ -123,4 +127,5 @@
     window.addEventListener('DOMContentLoaded', loadOKFPlayground);
   </script>
 </body>
+
 </html>

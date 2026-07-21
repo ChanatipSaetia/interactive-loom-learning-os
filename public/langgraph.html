@@ -1,18 +1,21 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Loom Sections: Building Stateful Agents with LangGraph</title>
-  
+
   <!-- Font setup -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
-  
+  <link
+    href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
+    rel="stylesheet">
+
   <!-- Load Loom CSS from the public CDN -->
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/loom-learning-sections@1.1.1/loom-sections.css">
-  
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/loom-learning-sections@1.2.0/loom-sections.css">
+
   <style>
     body {
       background-color: var(--ctp-crust, #11111b);
@@ -22,6 +25,7 @@
       margin: 0;
       padding: 0;
     }
+
     .status-badge {
       display: inline-flex;
       align-items: center;
@@ -35,11 +39,13 @@
       letter-spacing: 0.5px;
       margin-left: 8px;
     }
+
     .status-badge.success {
       background: rgba(166, 209, 137, 0.12);
       color: var(--ctp-green);
       border: 1px solid rgba(166, 209, 137, 0.25);
     }
+
     .status-badge.warning {
       background: rgba(229, 200, 144, 0.12);
       color: var(--ctp-yellow);
@@ -47,20 +53,22 @@
     }
   </style>
 </head>
+
 <body>
 
   <!-- Theme selector widget mounts here -->
-  <div id="theme-picker-container" style="max-width: 860px; margin: 20px auto 0; padding: 0 24px; display: flex; justify-content: flex-end; align-items: center; gap: 8px; box-sizing: border-box;">
+  <div id="theme-picker-container"
+    style="max-width: 860px; margin: 20px auto 0; padding: 0 24px; display: flex; justify-content: flex-end; align-items: center; gap: 8px; box-sizing: border-box;">
     <div id="theme-picker"></div>
     <div id="loader-status"></div>
   </div>
-  
+
   <!-- Container where Loom Sections will render -->
   <div id="loom-root"></div>
 
   <!-- Load Loom Sections JS from the public CDN -->
-  <script src="https://cdn.jsdelivr.net/npm/loom-learning-sections@1.1.1/loom-sections.umd.js"></script>
-  
+  <script src="https://cdn.jsdelivr.net/npm/loom-learning-sections@1.2.0/loom-sections.umd.js"></script>
+
   <script>
     // Fallback embedded curriculum data
     const fallbackSections = [
@@ -476,18 +484,18 @@
     async function initLoomSections() {
       const container = document.getElementById("loom-root");
       const statusContainer = document.getElementById("loader-status");
-      
+
       try {
         statusContainer.innerHTML = `<span class="status-badge warning">Loading via fetch...</span>`;
-        
+
         // Attempt to fetch local JSON database
         const response = await fetch('./langgraph.json');
         if (!response.ok) {
           throw new Error(`Failed to fetch: ${response.status} ${response.statusText}`);
         }
-        
+
         const sections = await response.json();
-        
+
         // Render from fetched sections
         LoomSections.render(container, sections, {
           title: "Building Stateful Agents with LangGraph",
@@ -500,7 +508,7 @@
           container,
           { position: "inline" }
         );
-        
+
         // Update status badge to success
         statusContainer.innerHTML = `
           <span class="status-badge success" style="cursor: help;" title="Sections successfully loaded from local file: langgraph.json">
@@ -510,7 +518,7 @@
         console.log('🎉 Loom Sections successfully loaded from local langgraph.json!');
       } catch (err) {
         console.warn('⚠️ Fetching local JSON failed (possibly due to CORS or file protocol). Falling back to embedded array.', err);
-        
+
         // Render from fallback hardcoded JS array
         LoomSections.render(container, fallbackSections, {
           title: "Building Stateful Agents with LangGraph",
@@ -523,7 +531,7 @@
           container,
           { position: "inline" }
         );
-        
+
         // Update status badge to show fallback warning
         statusContainer.innerHTML = `
           <span class="status-badge warning" style="cursor: help;" title="CORS restricts local fetching over file://. Open page with a local server (e.g. npx serve) to test local JSON loading.">
@@ -537,4 +545,5 @@
     window.addEventListener('DOMContentLoaded', initLoomSections);
   </script>
 </body>
+
 </html>

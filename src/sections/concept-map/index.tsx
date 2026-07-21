@@ -567,13 +567,7 @@ function ConceptMapSection({ title, nodes, edges }: ConceptMapSectionProps) {
       if (e.touches.length === 1 && isPanningRef.current) {
         e.preventDefault()
         const touch = e.touches[0]
-        const dx = touch.clientX - panStartRef.current.x
-        const dy = touch.clientY - panStartRef.current.y
-        setTransform(() => ({
-          scale: transformRef.current.scale,
-          translateX: panStartRef.current.baseTranslateX + dx,
-          translateY: panStartRef.current.baseTranslateY + dy,
-        }))
+        handlePointerMove(touch.clientX, touch.clientY)
       }
     }
 
@@ -598,8 +592,17 @@ function ConceptMapSection({ title, nodes, edges }: ConceptMapSectionProps) {
 
   const handlePointerMove = useCallback((clientX: number, clientY: number) => {
     if (isPanningRef.current) {
-      const dx = clientX - panStartRef.current.x
-      const dy = clientY - panStartRef.current.y
+      const svgEl = svgRef.current
+      // Scale screen-pixel deltas to SVG viewBox units so panning is 1:1 with the mouse.
+      // Without this, panning feels sluggish when viewBox >> rendered size.
+      let ratio = 1
+      if (svgEl) {
+        const rendered = svgEl.getBoundingClientRect()
+        const vb = svgEl.viewBox.baseVal
+        if (rendered.width > 0 && vb.width > 0) ratio = vb.width / rendered.width
+      }
+      const dx = (clientX - panStartRef.current.x) * ratio
+      const dy = (clientY - panStartRef.current.y) * ratio
       setTransform(() => ({
         scale: transformRef.current.scale,
         translateX: panStartRef.current.baseTranslateX + dx,
