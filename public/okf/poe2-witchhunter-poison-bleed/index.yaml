@@ -15,12 +15,13 @@ related:
   - sections/taxonomy/support-gems.yaml
   - sections/taxonomy/defenses.yaml
   - sections/taxonomy/ascendancy.yaml
-  # - sections/combat-flow/actors.yaml
-  # - sections/combat-flow/systems.yaml
-  # - sections/combat-flow/steps.yaml
-  # - sections/combat-flow/journeys.yaml
+  - sections/combat-flow/actors.yaml
+  - sections/combat-flow/systems.yaml
+  - sections/combat-flow/steps.yaml
+  - sections/combat-flow/journeys.yaml
   - sections/dot-calculator/sandbox.yaml
-  # - sections/gear-tradeoffs/budget.yaml
-  # - sections/gear-tradeoffs/invested.yaml
+  - sections/gear-tradeoffs/budget.yaml
+  - sections/gear-tradeoffs/invested.yaml
   - sections/build-journey/scenarios.yaml
   - sections/setup-advisor/tree.yaml
+  - sections/image-gallery/gallery.yaml

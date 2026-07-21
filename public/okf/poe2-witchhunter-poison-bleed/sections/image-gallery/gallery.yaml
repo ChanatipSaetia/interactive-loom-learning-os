@@ -1,0 +1,24 @@
+- id: mercenary-portrait
+  url: "https://www.poe2wiki.net/images/9/93/Mercenary_portrait.png"
+  caption: "Mercenary — ranged STR/DEX class wielding Crossbows and grenades"
+  credit: "Source: poe2wiki.net"
+
+- id: gas-grenade-icon
+  url: "https://www.poe2wiki.net/images/6/60/Gas_Grenade_inventory_icon.png"
+  caption: "Gas Grenade — bouncing canister that leaves an expanding poison cloud on impact"
+  credit: "Source: poe2wiki.net"
+
+- id: barrage-icon
+  url: "https://www.poe2wiki.net/images/8/86/Barrage_inventory_icon.png"
+  caption: "Barrage — rapid volley of projectiles, each hit applying Bleed and Poison"
+  credit: "Source: poe2wiki.net"
+
+- id: poison-ailment
+  url: "https://www.poe2wiki.net/images/d/d3/Poisoned_debuff_icon.png"
+  caption: "Poison — chaos damage over time, 20% of Physical+Chaos hit damage per tick"
+  credit: "Source: poe2wiki.net"
+
+- id: at-mixture-icon
+  url: "https://www.poe2wiki.net/images/3/34/At_Mixture_inventory_icon.png"
+  caption: "At Mixture — +20% Bleed magnitude vs poisoned targets and +20% Poison vs bleeding"
+  credit: "Source: poe2wiki.net"

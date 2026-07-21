@@ -76,31 +76,36 @@ function evaluateFormula(formulaStr: string, variablesState: Record<string, numb
 }
 
 function computeMetricRange(formulaStr: string, variables: OKFFormulaVariable[]): { min: number; max: number } {
-  let combos: Record<string, number>[] = [{}]
-  
+  // Phase 1: evaluate all 2^V corner points (each var at its min or max).
+  // This scales as 2^V — fine up to ~20 variables.
+  const cornerCombos: Record<string, number>[] = [{}]
   for (const v of variables) {
-    const values: number[] = []
-    const stepsCount = Math.max(1, Math.floor((v.max - v.min) / v.step))
-    for (let i = 0; i <= stepsCount; i++) {
-      values.push(v.min + i * v.step)
+    const next: Record<string, number>[] = []
+    for (const c of cornerCombos) {
+      next.push({ ...c, [v.id]: v.min })
+      next.push({ ...c, [v.id]: v.max })
     }
-    if (values[values.length - 1] < v.max) {
-      values.push(v.max)
-    }
+    cornerCombos.length = 0
+    cornerCombos.push(...next)
+  }
 
-    const nextCombos: Record<string, number>[] = []
-    for (const c of combos) {
-      for (const val of values) {
-        nextCombos.push({ ...c, [v.id]: val })
-      }
+  // Phase 2: add a bounded random sample (max 256 evaluations) for non-linear formulas.
+  const MAX_SAMPLES = 256
+  const randomCombos: Record<string, number>[] = []
+  for (let i = 0; i < MAX_SAMPLES; i++) {
+    const combo: Record<string, number> = {}
+    for (const v of variables) {
+      const steps = Math.floor((v.max - v.min) / v.step)
+      const step = Math.floor(Math.random() * (steps + 1))
+      combo[v.id] = Math.min(v.min + step * v.step, v.max)
     }
-    combos = nextCombos
+    randomCombos.push(combo)
   }
 
   let min = Infinity
   let max = -Infinity
 
-  for (const c of combos) {
+  for (const c of [...cornerCombos, ...randomCombos]) {
     const val = evaluateFormula(formulaStr, c)
     if (val < min) min = val
     if (val > max) max = val
@@ -152,9 +157,14 @@ export function FormulaSandbox({ title, variables = [], metrics = [] }: FormulaS
   }, [metrics, variables])
 
   useEffect(() => {
+    // Evaluate metrics in order, accumulating results so that derived metrics
+    // (e.g. total_dot_dps = bleed_dps + poison_dps) can reference earlier ones.
+    const accumulated: Record<string, number> = { ...variablesState }
     const updated: Record<string, number> = {}
     metrics.forEach((m) => {
-      updated[m.id] = evaluateFormula(m.formula, variablesState)
+      const val = evaluateFormula(m.formula, accumulated)
+      updated[m.id] = val
+      accumulated[m.id] = val
     })
     setComputedMetrics(updated)
   }, [variablesState, metrics])

@@ -1,6 +1,5 @@
 ---
-type: text
+type: intro
 title: "The Dual Pestilence Witchhunter"
-heading: "Poison + Bleed DoT Mercenary Build — PoE 2 v0.5"
-resource: content.md
+resource: content.yaml
 ---

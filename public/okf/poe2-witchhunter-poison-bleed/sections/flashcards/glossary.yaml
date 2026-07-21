@@ -2,6 +2,7 @@
   word: "Witchhunter"
   pronunciation: "WITCH-hun-ter"
   category: ascendancy
+  image: "https://www.poe2wiki.net/images/thumb/9/93/Mercenary_portrait.png/96px-Mercenary_portrait.png"
   shortDefinition: "Third Mercenary ascendancy focused on ballista summons and precision attacks."
   detailedDefinition: "The Witchhunter ascendancy specializes in summoning ballistas that fire projectiles, combined with precision-based offense. Key nodes include Ballista summons, attack speed scaling, and ailment-focused damage multipliers."
   whyItMatters: "Core ascendancy for this build. Provides ballista summons for sustained ailment application and precision nodes that amplify poison and bleed damage."
@@ -14,6 +15,7 @@
   word: "No Mercy"
   pronunciation: "noh MER-si"
   category: ascendancy
+  image: "https://www.poe2wiki.net/images/thumb/b/b1/No_Mercy_passive_icon.png/48px-No_Mercy_passive_icon.png"
   shortDefinition: "Ascendancy node giving up to 40% more damage based on enemy missing Concentration."
   detailedDefinition: "A notable Witchhunter node that grants increasing More Damage as the target's Concentration drops. At maximum effect, enemies with no remaining Concentration take 40% More Damage from all sources."
   whyItMatters: "Massive damage multiplier against boss-tier enemies with Concentration bars. Synergizes with sustained ailment damage that keeps pressure on fleeing targets."
@@ -26,6 +28,7 @@
   word: "Obsessive Rituals"
   pronunciation: "ob-SESS-iv RIT-yuh-lz"
   category: ascendancy
+  image: "https://www.poe2wiki.net/images/thumb/0/07/Obsessive_Rituals_passive_icon.png/48px-Obsessive_Rituals_passive_icon.png"
   shortDefinition: "50% less Armour and Evasion in exchange for offensive power."
   detailedDefinition: "A Witchhunter notable that trades 50% less Armour and 50% less Evasion Rating for substantial offensive gains, including ailment magnitude and attack speed. Intentional fragility for maximum damage output."
   whyItMatters: "Defines the build's risk-reward identity. You sacrifice physical defense to become an ailment damage specialist — positioning and ballista distance become your real defense."
@@ -38,6 +41,7 @@
   word: "Sorcery Ward"
   pronunciation: "SOR-uh-see WAR-d"
   category: skill
+  image: "https://www.poe2wiki.net/images/8/82/Sorcery_Ward_inventory_icon.png"
   shortDefinition: "Barrier mechanic that absorbs damage and recharges over time."
   detailedDefinition: "A defensive skill unique to the Mercenary that creates a damage-absorbing barrier. The ward recharges gradually over time, providing a reliable layer of damage mitigation without requiring active management."
   whyItMatters: "Primary defense layer after taking Obsessive Rituals. Compensates for lost Armour/Evasion with a rechargeable damage shield."
@@ -50,6 +54,7 @@
   word: "Poison"
   pronunciation: "POY-zun"
   category: ailment
+  image: "https://www.poe2wiki.net/images/d/d3/Poisoned_debuff_icon.png"
   shortDefinition: "Chaos damage over time with base magnitude equal to 20% of Physical + Chaos damage from the hit."
   detailedDefinition: "An ailment that deals chaos damage over time. The base magnitude captures 20% of the combined Physical and Chaos damage from the triggering hit. Duration scales with attack speed and skill modifiers, allowing multiple overlapping stacks."
   whyItMatters: "One half of the dual-ailment engine. Poison's chaos damage type bypasses enemy resistance more reliably than elemental ailments at endgame."
@@ -62,6 +67,7 @@
   word: "Bleeding"
   pronunciation: "BLEE-ding"
   category: ailment
+  image: "https://www.poe2wiki.net/images/1/19/Bleeding_debuff_icon.png"
   shortDefinition: "Physical damage over time with base magnitude of 15% of Physical damage, doubled while target moves."
   detailedDefinition: "A physical damage over time ailment. Base magnitude captures 15% of the Physical damage from the triggering hit. Critically, bleeding damage doubles while the affected target is moving, making it exceptionally strong against mobile enemies."
   whyItMatters: "The other half of the dual-ailment engine. The movement damage multiplier makes bleeding synergize with kiting plays and area denial setups."
@@ -74,6 +80,7 @@
   word: "Magnitude"
   pronunciation: "MAG-nih-tood"
   category: mechanic
+  image: "https://www.poe2wiki.net/images/thumb/d/d0/Magnitude_passive_icon.png/48px-Magnitude_passive_icon.png"
   shortDefinition: "The base damage value captured by an ailment before modifiers are applied."
   detailedDefinition: "The snapshot value that determines how much damage a single ailment instance deals per tick. For poison, magnitude = 20% of (Physical + Chaos) from the hit. For bleeding, magnitude = 15% of Physical from the hit. All % more magnitude modifiers multiply this base value."
   whyItMatters: "The fundamental stat to optimize. Every damage node in this build funnels into magnitude — higher magnitude means stronger ticks per stack."
@@ -86,6 +93,7 @@
   word: "Poison 3"
   pronunciation: "POY-zun three"
   category: keystone
+  image: "https://www.poe2wiki.net/images/thumb/f/f9/Poison_passive_icon.png/48px-Poison_passive_icon.png"
   shortDefinition: "Gives more poison magnitude against enemies that are also bleeding."
   detailedDefinition: "A keystone passive that significantly increases poison magnitude specifically when the target is also affected by bleeding. This creates a conditional damage spike that rewards maintaining both ailments simultaneously."
   whyItMatters: "Core keystone that justifies the dual-ailment approach. Without it, poison and bleed operate independently. With it, they multiply each other's value."
@@ -98,6 +106,7 @@
   word: "Bleed 3"
   pronunciation: "BLEED three"
   category: keystone
+  image: "https://www.poe2wiki.net/images/thumb/5/50/Bleed_passive_icon.png/48px-Bleed_passive_icon.png"
   shortDefinition: "Gives more bleeding magnitude against enemies that are also poisoned."
   detailedDefinition: "A keystone passive that significantly increases bleeding magnitude specifically when the target is also affected by poison. Paired with Poison 3, it creates a symmetric dual-ailment amplification loop."
   whyItMatters: "The mirror keystone to Poison 3. Together they ensure both ailments are always stronger when stacked, making the dual-ailment strategy mandatory rather than optional."
@@ -110,6 +119,7 @@
   word: "At Mixture"
   pronunciation: "at MIX-chur"
   category: support
+  image: "https://www.poe2wiki.net/images/3/34/At_Mixture_inventory_icon.png"
   shortDefinition: "20% more bleeding magnitude against poisoned enemies and 20% more poison magnitude against bleeding enemies."
   detailedDefinition: "A support gem that provides bidirectional ailment magnitude bonuses. When linked to a physical attack, it increases bleeding magnitude by 20% on poisoned targets and poison magnitude by 20% on bleeding targets, amplifying the dual-ailment synergy."
   whyItMatters: "Stacks multiplicatively with Poison 3 and Bleed 3 keystones, creating a compounding damage loop that makes dual ailments dramatically stronger than either alone."
@@ -122,6 +132,7 @@
   word: "Gas Grenade"
   pronunciation: "gas gre-NAYD"
   category: skill
+  image: "https://www.poe2wiki.net/images/6/60/Gas_Grenade_inventory_icon.png"
   shortDefinition: "Fires a bouncing grenade that causes poison gas burst and leaves a growing poison cloud."
   detailedDefinition: "An attack skill that launches a bouncing grenade, dealing an initial poison gas burst on impact and leaving a poison cloud that grows in radius over time. Excellent for area denial and applying poison to multiple enemies simultaneously."
   whyItMatters: "Primary clearing and poison-application skill. The growing cloud ensures sustained poison uptime on groups, feeding into the Poison 3 / Bleed 3 synergy."
@@ -134,6 +145,7 @@
   word: "Barrage"
   pronunciation: "buh-RAJ"
   category: skill
+  image: "https://www.poe2wiki.net/images/8/86/Barrage_inventory_icon.png"
   shortDefinition: "Fires a rapid volley of projectiles, empowered to repeat multiple times."
   detailedDefinition: "An attack skill that fires a volley of projectiles in the target direction. When empowered through passive nodes or support gems, Barrage repeats multiple times in a single activation, making it effective for applying bleeding through repeated physical hits."
   whyItMatters: "Strong single-target and AoE option for applying bleeding. Each projectile attempt is a separate hit chance, maximizing bleed application rate."
@@ -146,6 +158,7 @@
   word: "Concentration"
   pronunciation: "kon-sen-tray-SHUN"
   category: mechanic
+  image: "https://www.poe2wiki.net/images/c/c2/Concentration_debuff_icon.png"
   shortDefinition: "Enemy resource that causes them to flee when depleted; No Mercy scales damage based on missing Concentration."
   detailedDefinition: "A mechanic present on Expedition and Delve enemies where they possess a Concentration bar. When depleted, the enemy enters a fleeing state, attempting to escape the arena. The No Mercy ascendancy node converts their missing Concentration into More Damage dealt against them."
   whyItMatters: "The damage-scaling engine for No Mercy. Pushing Concentration to zero maximizes your damage output on bosses that use this mechanic."
@@ -158,6 +171,7 @@
   word: "Escalating Poison"
   pronunciation: "es-kal-AY-ting POY-zun"
   category: mechanic
+  image: "https://www.poe2wiki.net/images/thumb/e/e2/Escalating_Poison_passive_icon.png/48px-Escalating_Poison_passive_icon.png"
   shortDefinition: "Increases the maximum number of poison stacks maintainable on a single target."
   detailedDefinition: "A mechanic or node that raises the cap on poison stacks per target. By default, a limited number of poison instances can exist on one enemy. Escalating Poison increases this cap, allowing more simultaneous poison ticks and higher total damage output."
   whyItMatters: "Directly multiplies poison damage by allowing more stacks. Combined with high magnitude, escalating poison turns single-target encounters into chaos damage fountains."
