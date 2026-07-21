@@ -5,6 +5,11 @@
   @apply mb-8;
 }
 
+.formula-sandbox-section-title {
+  @apply text-lg font-semibold tracking-tight text-foreground mb-4 flex items-center gap-2;
+  font-family: var(--font-display);
+}
+
 .sandbox-layout {
   display: grid;
   grid-template-columns: 1fr;
@@ -22,6 +27,12 @@
   display: flex;
   flex-direction: column;
   gap: 24px;
+  padding: 24px;
+  border-radius: 1rem;
+  border: 1px solid color-mix(in srgb, var(--border) 80%, transparent);
+  background-color: color-mix(in srgb, var(--card) 85%, transparent);
+  backdrop-filter: blur(12px);
+  box-shadow: 0 8px 30px -6px rgba(0, 0, 0, 0.2);
 }
 
 .slider-group {
@@ -42,12 +53,17 @@
   display: flex;
   align-items: center;
   gap: 6px;
+  font-weight: 600;
 }
 
 .slider-value {
   font-family: var(--font-mono);
   color: var(--ctp-sky);
-  font-weight: 600;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 6px;
+  background: color-mix(in srgb, var(--ctp-sky) 15%, transparent);
+  border: 1px solid color-mix(in srgb, var(--ctp-sky) 30%, transparent);
 }
 
 .range-input {
@@ -55,7 +71,7 @@
   width: 100%;
   height: 8px;
   border-radius: 4px;
-  background: color-mix(in srgb, var(--ctp-surface1) 40%, transparent);
+  background: color-mix(in srgb, var(--ctp-surface1) 50%, transparent);
   outline: none;
   transition: background 0.3s;
 }
@@ -68,21 +84,22 @@
   border-radius: 50%;
   background: var(--ctp-sky);
   cursor: pointer;
-  transition: all 0.15s ease;
-  box-shadow: 0 0 12px color-mix(in srgb, var(--ctp-sky) 50%, transparent);
+  transition: all 0.2s ease;
+  box-shadow: 0 0 14px color-mix(in srgb, var(--ctp-sky) 60%, transparent);
 }
 
 .range-input::-webkit-slider-thumb:hover {
-  transform: scale(1.15);
+  transform: scale(1.18);
   background: var(--ctp-lavender);
+  box-shadow: 0 0 18px color-mix(in srgb, var(--ctp-lavender) 70%, transparent);
 }
 
 .formula-explanation {
-  background: var(--card);
+  background: color-mix(in srgb, var(--card) 60%, transparent);
   border-radius: 12px;
   padding: 18px;
-  border: 1px dashed var(--border);
-  font-size: 12px;
+  border: 1px dashed color-mix(in srgb, var(--border) 70%, transparent);
+  font-size: 12.5px;
   color: var(--ctp-subtext0);
   overflow-wrap: break-word;
   word-break: break-word;
@@ -93,36 +110,38 @@
 .formula-explanation code {
   font-family: var(--font-mono);
   color: var(--ctp-yellow);
-  background: color-mix(in srgb, var(--ctp-yellow) 12%, transparent);
+  background: color-mix(in srgb, var(--ctp-yellow) 15%, transparent);
   padding: 2px 6px;
   border-radius: 6px;
   white-space: normal;
   word-break: break-word;
   overflow-wrap: break-word;
+  font-weight: 600;
 }
 
 /* Simulation Output Metrics */
 .sandbox-metrics {
-  background: var(--card);
-  border-radius: 12px;
-  padding: 20px;
-  border: 1px solid var(--border);
+  background-color: color-mix(in srgb, var(--card) 85%, transparent);
+  border-radius: 1rem;
+  padding: 24px;
+  border: 1px solid color-mix(in srgb, var(--border) 80%, transparent);
+  backdrop-filter: blur(12px);
   display: flex;
   flex-direction: column;
-  gap: 20px;
-  box-shadow: 0 4px 20px -4px rgba(0, 0, 0, 0.12);
+  gap: 22px;
+  box-shadow: 0 8px 30px -6px rgba(0, 0, 0, 0.2);
 }
 
 @media (min-width: 768px) {
   .sandbox-metrics {
-    padding: 24px;
+    padding: 26px;
   }
 }
 
 .sim-metric-row {
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 8px;
 }
 
 .sim-metric-meta {
@@ -134,17 +153,18 @@
 
 .sim-metric-name {
   color: var(--ctp-subtext1);
+  font-weight: 600;
 }
 
 .sim-metric-val {
   font-family: var(--font-mono);
-  font-weight: 600;
+  font-weight: 700;
   background: transparent;
   border: none;
   cursor: pointer;
   text-decoration: underline dashed color-mix(in srgb, var(--ctp-text) 30%, transparent);
-  padding: 2px 6px;
-  border-radius: 4px;
+  padding: 2px 8px;
+  border-radius: 6px;
   transition: all 0.2s ease;
 }
 
@@ -160,7 +180,7 @@
 
 .gauge-bg {
   height: 10px;
-  background: color-mix(in srgb, var(--ctp-surface1) 30%, transparent);
+  background: color-mix(in srgb, var(--ctp-surface1) 50%, transparent);
   border-radius: 6px;
   overflow: hidden;
   position: relative;
@@ -170,13 +190,25 @@
   height: 100%;
   border-radius: 6px;
   width: 0%;
-  transition: width 0.2s cubic-bezier(0.4, 0, 0.2, 1), background-color 0.3s;
+  transition: width 0.25s cubic-bezier(0.4, 0, 0.2, 1), background-color 0.3s;
 }
 
-.gauge-fill.green { background-color: var(--ctp-green); }
-.gauge-fill.peach { background-color: var(--ctp-peach); }
-.gauge-fill.red { background-color: var(--ctp-red); }
-.gauge-fill.sky { background-color: var(--ctp-sky); }
+.gauge-fill.green {
+  background-color: var(--ctp-green);
+  box-shadow: 0 0 10px color-mix(in srgb, var(--ctp-green) 40%, transparent);
+}
+.gauge-fill.peach {
+  background-color: var(--ctp-peach);
+  box-shadow: 0 0 10px color-mix(in srgb, var(--ctp-peach) 40%, transparent);
+}
+.gauge-fill.red {
+  background-color: var(--ctp-red);
+  box-shadow: 0 0 10px color-mix(in srgb, var(--ctp-red) 40%, transparent);
+}
+.gauge-fill.sky {
+  background-color: var(--ctp-sky);
+  box-shadow: 0 0 10px color-mix(in srgb, var(--ctp-sky) 40%, transparent);
+}
 
 /* HUD highlight variables helper */
 .hud-highlight {

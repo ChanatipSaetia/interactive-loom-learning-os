@@ -2,24 +2,32 @@
   @apply mb-8;
 }
 
+.quiz-section-title {
+  @apply text-lg font-semibold tracking-tight text-foreground mb-4 flex items-center gap-2;
+  font-family: var(--font-display);
+}
+
 /* Score bar */
 .quiz-score-bar {
-  @apply flex items-center gap-3 mb-6 p-4 rounded-xl border border-border bg-card shadow-sm;
-  box-shadow: 0 4px 20px -4px rgba(0, 0, 0, 0.12);
+  @apply flex items-center gap-4 mb-6 p-4 rounded-2xl border shadow-md backdrop-blur-md;
+  border-color: color-mix(in srgb, var(--border) 70%, transparent);
+  background-color: color-mix(in srgb, var(--card) 85%, transparent);
+  box-shadow: 0 6px 24px -4px rgba(0, 0, 0, 0.18);
 }
 
 .quiz-score-label {
-  @apply text-xs font-mono uppercase tracking-widest text-muted-foreground font-bold;
+  @apply text-xs font-mono uppercase tracking-widest text-muted-foreground font-bold flex items-center gap-1.5;
 }
 
 .quiz-score-track {
-  @apply flex-1 h-2.5 rounded-full overflow-hidden shadow-inner;
-  background-color: color-mix(in srgb, var(--ctp-surface1) 30%, transparent);
+  @apply flex-1 h-3 rounded-full overflow-hidden shadow-inner relative;
+  background-color: color-mix(in srgb, var(--ctp-surface0) 60%, transparent);
 }
 
 .quiz-score-fill {
   @apply h-full rounded-full transition-all duration-500 ease-out;
-  background: linear-gradient(90deg, color-mix(in srgb, var(--ctp-blue) 40%, var(--ctp-green)), var(--ctp-green));
+  background: linear-gradient(90deg, var(--ctp-blue) 0%, var(--ctp-teal) 50%, var(--ctp-green) 100%);
+  box-shadow: 0 0 12px color-mix(in srgb, var(--ctp-green) 40%, transparent);
 }
 
 .quiz-score-text {
@@ -33,43 +41,46 @@
 
 /* Question card */
 .quiz-question-card {
-  @apply p-6 rounded-xl bg-card border border-border shadow-sm flex flex-col;
-  box-shadow: 0 4px 20px -4px rgba(0, 0, 0, 0.12);
+  @apply p-6 rounded-2xl border shadow-lg flex flex-col backdrop-blur-md relative overflow-hidden;
+  border-color: color-mix(in srgb, var(--border) 80%, transparent);
+  background-color: color-mix(in srgb, var(--card) 85%, transparent);
+  box-shadow: 0 8px 30px -6px rgba(0, 0, 0, 0.2);
 }
 
 .quiz-question-header {
-  @apply flex items-center justify-between mb-4;
+  @apply flex items-center justify-between mb-4 pb-3;
+  border-bottom: 1px solid color-mix(in srgb, var(--border) 50%, transparent);
 }
 
 .quiz-question-number {
-  @apply text-xs font-mono uppercase tracking-widest font-bold px-3 py-1 rounded-full border;
+  @apply text-xs font-mono uppercase tracking-widest font-bold px-3 py-1 rounded-full border flex items-center gap-1.5;
   background: color-mix(in srgb, var(--ctp-blue) 15%, transparent);
   color: var(--ctp-blue);
   border-color: color-mix(in srgb, var(--ctp-blue) 30%, transparent);
 }
 
 .quiz-question-counter {
-  @apply text-xs font-mono text-muted-foreground;
+  @apply text-xs font-mono text-muted-foreground font-medium;
 }
 
 .quiz-question-text {
-  @apply text-base font-semibold text-foreground mb-4 leading-relaxed;
-  font-family: var(--font-body);
+  @apply text-base md:text-lg font-bold text-foreground mb-5 leading-snug;
+  font-family: var(--font-display);
 }
 
 /* Hint */
 .quiz-hint {
-  @apply mb-4 rounded-xl border overflow-hidden transition-all;
-  border-color: color-mix(in srgb, var(--ctp-yellow) 25%, transparent);
-  background-color: color-mix(in srgb, var(--ctp-yellow) 6%, transparent);
+  @apply mb-5 rounded-xl border overflow-hidden transition-all;
+  border-color: color-mix(in srgb, var(--ctp-yellow) 35%, transparent);
+  background-color: color-mix(in srgb, var(--ctp-yellow) 8%, transparent);
 }
 
 .quiz-hint-toggle {
-  @apply flex items-center gap-2 w-full p-3.5 bg-transparent border-0 cursor-pointer text-xs font-mono font-medium text-foreground;
+  @apply flex items-center gap-2.5 w-full p-3.5 bg-transparent border-0 cursor-pointer text-xs font-mono font-semibold text-foreground transition-colors;
 }
 
 .quiz-hint-toggle:hover {
-  background-color: color-mix(in srgb, var(--ctp-yellow) 12%, transparent);
+  background-color: color-mix(in srgb, var(--ctp-yellow) 14%, transparent);
 }
 
 .quiz-hint-icon {
@@ -78,7 +89,7 @@
 }
 
 .quiz-hint-chevron {
-  @apply w-4 h-4 flex-shrink-0 text-muted-foreground transition-transform duration-200;
+  @apply w-4 h-4 flex-shrink-0 text-muted-foreground transition-transform duration-200 ml-auto;
 }
 
 .quiz-hint-chevron-open {
@@ -86,24 +97,26 @@
 }
 
 .quiz-hint-text {
-  @apply block px-3.5 pb-3 text-sm text-muted-foreground leading-relaxed;
+  @apply block px-4 pb-3.5 text-sm text-muted-foreground leading-relaxed font-medium;
 }
 
 /* Choices */
 .quiz-choices {
-  @apply flex flex-col gap-2.5;
+  @apply flex flex-col gap-3;
 }
 
 .quiz-choice {
-  @apply flex items-center gap-3.5 w-full text-left p-4 rounded-xl border bg-card transition-all duration-200 cursor-pointer;
-  border-color: var(--border);
+  @apply flex items-center gap-4 w-full text-left p-4 rounded-xl border transition-all duration-200 cursor-pointer relative overflow-hidden;
+  border-color: color-mix(in srgb, var(--border) 80%, transparent);
+  background-color: color-mix(in srgb, var(--card) 90%, transparent);
+  box-shadow: 0 3px 12px rgba(0, 0, 0, 0.08);
 }
 
 .quiz-choice:hover:not(:disabled) {
-  border-color: var(--ring);
-  background-color: color-mix(in srgb, var(--card) 95%, var(--accent));
-  transform: translateY(-1px);
-  box-shadow: 0 4px 16px -2px rgba(0, 0, 0, 0.12);
+  border-color: color-mix(in srgb, var(--ctp-blue) 60%, transparent);
+  background-color: color-mix(in srgb, var(--ctp-surface0) 40%, var(--card));
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px -4px rgba(0, 0, 0, 0.18), 0 0 12px color-mix(in srgb, var(--ctp-blue) 15%, transparent);
 }
 
 .quiz-choice:disabled {
@@ -111,13 +124,20 @@
 }
 
 .quiz-choice-label {
-  @apply flex-shrink-0 w-7 h-7 flex items-center justify-center rounded-full text-xs font-mono font-bold border border-border;
-  background: color-mix(in srgb, var(--ctp-overlay0) 12%, transparent);
+  @apply flex-shrink-0 w-7 h-7 flex items-center justify-center rounded-lg text-xs font-mono font-bold border transition-colors;
+  background: color-mix(in srgb, var(--ctp-surface0) 80%, transparent);
   color: var(--ctp-subtext0);
+  border-color: color-mix(in srgb, var(--ctp-overlay0) 30%, transparent);
+}
+
+.quiz-choice:hover:not(:disabled) .quiz-choice-label {
+  background: var(--ctp-blue);
+  color: var(--ctp-crust);
+  border-color: var(--ctp-blue);
 }
 
 .quiz-choice-text {
-  @apply flex-1 text-sm text-foreground leading-relaxed font-medium;
+  @apply flex-1 text-sm text-foreground leading-relaxed font-semibold;
 }
 
 .quiz-choice-feedback-icon {
@@ -134,27 +154,27 @@
 
 /* Choice states */
 .quiz-choice-correct {
-  border-color: var(--ctp-green);
-  background: color-mix(in srgb, var(--ctp-green) 8%, var(--card));
-  box-shadow: 0 0 0 1px color-mix(in srgb, var(--ctp-green) 30%, transparent);
+  border-color: var(--ctp-green) !important;
+  background: color-mix(in srgb, var(--ctp-green) 12%, var(--card)) !important;
+  box-shadow: 0 0 18px color-mix(in srgb, var(--ctp-green) 25%, transparent) !important;
 }
 
 .quiz-choice-correct .quiz-choice-label {
-  background: var(--ctp-green);
-  color: var(--ctp-crust);
-  border-color: var(--ctp-green);
+  background: var(--ctp-green) !important;
+  color: var(--ctp-crust) !important;
+  border-color: var(--ctp-green) !important;
 }
 
 .quiz-choice-wrong {
-  border-color: var(--ctp-red);
-  background: color-mix(in srgb, var(--ctp-red) 8%, var(--card));
-  box-shadow: 0 0 0 1px color-mix(in srgb, var(--ctp-red) 30%, transparent);
+  border-color: var(--ctp-red) !important;
+  background: color-mix(in srgb, var(--ctp-red) 12%, var(--card)) !important;
+  box-shadow: 0 0 18px color-mix(in srgb, var(--ctp-red) 25%, transparent) !important;
 }
 
 .quiz-choice-wrong .quiz-choice-label {
-  background: var(--ctp-red);
-  color: var(--ctp-crust);
-  border-color: var(--ctp-red);
+  background: var(--ctp-red) !important;
+  color: var(--ctp-crust) !important;
+  border-color: var(--ctp-red) !important;
 }
 
 .quiz-choice-dimmed {
@@ -163,23 +183,25 @@
 
 /* Explanation */
 .quiz-explanation {
-  @apply mt-4 overflow-hidden rounded-xl;
+  @apply mt-5 overflow-hidden rounded-xl;
 }
 
 .quiz-explanation-correct {
   @apply p-4 rounded-xl border;
-  border-color: color-mix(in srgb, var(--ctp-green) 40%, transparent);
-  background: color-mix(in srgb, var(--ctp-green) 8%, var(--card));
+  border-color: color-mix(in srgb, var(--ctp-green) 45%, transparent);
+  background: color-mix(in srgb, var(--ctp-green) 10%, var(--card));
+  box-shadow: 0 4px 16px color-mix(in srgb, var(--ctp-green) 10%, transparent);
 }
 
 .quiz-explanation-wrong {
   @apply p-4 rounded-xl border;
-  border-color: color-mix(in srgb, var(--ctp-red) 40%, transparent);
-  background: color-mix(in srgb, var(--ctp-red) 8%, var(--card));
+  border-color: color-mix(in srgb, var(--ctp-red) 45%, transparent);
+  background: color-mix(in srgb, var(--ctp-red) 10%, var(--card));
+  box-shadow: 0 4px 16px color-mix(in srgb, var(--ctp-red) 10%, transparent);
 }
 
 .quiz-explanation-result {
-  @apply flex items-center gap-2 mb-1.5 font-mono text-xs uppercase tracking-widest font-bold;
+  @apply flex items-center gap-2 mb-2 font-mono text-xs uppercase tracking-widest font-bold;
 }
 
 .quiz-explanation-correct .quiz-explanation-result {
@@ -195,14 +217,21 @@
 }
 
 .quiz-explanation-text {
-  @apply text-sm text-foreground leading-relaxed font-normal;
+  @apply text-sm text-foreground leading-relaxed font-medium;
 }
 
 /* Navigation */
 .quiz-nav {
-  @apply flex items-center justify-between mt-6 pt-4 border-t border-border;
+  @apply flex items-center justify-between mt-6 pt-4;
+  border-top: 1px solid color-mix(in srgb, var(--border) 50%, transparent);
 }
 
 .quiz-nav-btn {
   @apply text-sm font-medium text-muted-foreground hover:text-foreground transition-colors;
+}
+
+@media (max-width: 640px) {
+  .quiz-choice {
+    @apply p-3.5 gap-3;
+  }
 }

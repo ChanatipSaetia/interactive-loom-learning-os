@@ -2,6 +2,11 @@
   margin-bottom: 0;
 }
 
+.sequence-section-title {
+  @apply text-lg font-semibold tracking-tight text-foreground mb-4 flex items-center gap-2;
+  font-family: var(--font-display);
+}
+
 .sequence-body {
   display: flex;
   flex-direction: column;
@@ -11,7 +16,7 @@
 .sequence-prompt {
   font-size: 14.5px;
   color: var(--ctp-subtext1);
-  font-weight: 500;
+  font-weight: 600;
 }
 
 .sequence-source-pool {
@@ -19,15 +24,16 @@
   flex-wrap: wrap;
   gap: 10px;
   background: color-mix(in srgb, var(--card) 60%, var(--ctp-mantle));
-  border: 1px solid var(--border);
-  padding: 16px;
-  border-radius: 12px;
+  border: 1px solid color-mix(in srgb, var(--border) 70%, transparent);
+  padding: 18px;
+  border-radius: 1rem;
   min-height: 64px;
+  backdrop-filter: blur(10px);
 }
 
 .sequence-drag-item {
-  background: var(--card);
-  border: 1px solid var(--border);
+  background-color: color-mix(in srgb, var(--card) 90%, transparent);
+  border: 1px solid color-mix(in srgb, var(--border) 80%, transparent);
   border-radius: 10px;
   padding: 12px 18px;
   font-size: 13.5px;
@@ -44,15 +50,15 @@
 }
 
 .sequence-drag-item:hover:not(.placed) {
-  border-color: var(--ring);
-  background: color-mix(in srgb, var(--card) 95%, var(--accent));
+  border-color: color-mix(in srgb, var(--ctp-mauve) 60%, transparent);
+  background: color-mix(in srgb, var(--ctp-surface0) 40%, var(--card));
   transform: translateY(-2px);
   box-shadow: 0 6px 20px -4px rgba(0, 0, 0, 0.16);
 }
 
 .sequence-drag-item.selected {
   border-color: var(--ctp-mauve);
-  background: color-mix(in srgb, var(--ctp-mauve) 12%, var(--card));
+  background: color-mix(in srgb, var(--ctp-mauve) 16%, var(--card));
   transform: translateY(-2px);
   box-shadow: 0 0 0 1px var(--ctp-mauve), 0 6px 20px -4px color-mix(in srgb, var(--ctp-mauve) 30%, transparent);
 }
@@ -72,7 +78,7 @@
 
 .sequence-drop-slot {
   background: color-mix(in srgb, var(--card) 40%, transparent);
-  border: 1.5px dashed var(--border);
+  border: 1.5px dashed color-mix(in srgb, var(--border) 80%, transparent);
   border-radius: 12px;
   min-height: 52px;
   display: flex;
@@ -86,19 +92,21 @@
 
 .sequence-drop-slot.highlight-target {
   border-color: var(--ctp-blue);
-  background: color-mix(in srgb, var(--ctp-blue) 8%, transparent);
+  background: color-mix(in srgb, var(--ctp-blue) 12%, transparent);
+  box-shadow: 0 0 14px color-mix(in srgb, var(--ctp-blue) 30%, transparent);
 }
 
 .sequence-drop-slot.filled {
   border-style: solid;
-  border-color: var(--border);
-  background: var(--card);
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+  border-color: color-mix(in srgb, var(--border) 80%, transparent);
+  background-color: color-mix(in srgb, var(--card) 85%, transparent);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
 }
 
 .sequence-slot-num {
   font-family: var(--font-mono);
   font-size: 12px;
+  font-weight: 700;
   color: var(--ctp-overlay1);
   width: 20px;
 }
@@ -114,6 +122,7 @@
   font-size: 13.5px;
   color: var(--ctp-overlay0);
   pointer-events: none;
+  font-weight: 500;
 }
 
 .sequence-placed-wrapper {
@@ -159,12 +168,12 @@
 }
 
 .sequence-verify-btn {
-  background: var(--ctp-blue);
+  background: linear-gradient(135deg, var(--ctp-blue) 0%, color-mix(in srgb, var(--ctp-blue) 85%, black) 100%);
   color: var(--ctp-crust);
-  border: none;
+  border: 1px solid color-mix(in srgb, var(--ctp-blue) 40%, transparent);
   padding: 12px 24px;
-  border-radius: 10px;
-  font-weight: 600;
+  border-radius: 12px;
+  font-weight: 700;
   font-size: 14px;
   cursor: pointer;
   transition: all 0.2s ease;
@@ -179,9 +188,9 @@
 }
 
 .sequence-verify-btn:hover {
-  background: color-mix(in srgb, var(--ctp-blue) 85%, white);
-  transform: translateY(-1px);
-  box-shadow: 0 4px 16px color-mix(in srgb, var(--ctp-blue) 40%, transparent);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px color-mix(in srgb, var(--ctp-blue) 35%, transparent);
+  filter: brightness(1.08);
 }
 
 .sequence-feedback-msg {
@@ -190,12 +199,13 @@
   display: flex;
   align-items: center;
   gap: 8px;
-  background: var(--card);
-  border: 1px solid var(--border);
-  padding: 12px 20px;
-  border-radius: 12px;
+  background-color: color-mix(in srgb, var(--card) 85%, transparent);
+  border: 1px solid color-mix(in srgb, var(--border) 70%, transparent);
+  padding: 14px 20px;
+  border-radius: 1rem;
   flex-grow: 1;
   width: 100%;
+  backdrop-filter: blur(10px);
 }
 
 @media (min-width: 768px) {
@@ -207,13 +217,15 @@
 .sequence-feedback-msg.success {
   color: var(--ctp-green);
   border-left: 4px solid var(--ctp-green);
-  background: color-mix(in srgb, var(--ctp-green) 6%, var(--card));
+  background: color-mix(in srgb, var(--ctp-green) 10%, var(--card));
+  box-shadow: 0 4px 16px color-mix(in srgb, var(--ctp-green) 10%, transparent);
 }
 
 .sequence-feedback-msg.error {
   color: var(--ctp-red);
   border-left: 4px solid var(--ctp-red);
-  background: color-mix(in srgb, var(--ctp-red) 6%, var(--card));
+  background: color-mix(in srgb, var(--ctp-red) 10%, var(--card));
+  box-shadow: 0 4px 16px color-mix(in srgb, var(--ctp-red) 10%, transparent);
 }
 
 .feedback-icon {
