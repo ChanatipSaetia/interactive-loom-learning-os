@@ -135,22 +135,26 @@ You can copy and send the following user prompt directly to coding models (such 
 Copy-paste this block into your AI chat session:
 
 ```text
-Do not generate any files yet. First, ask me to specify:
+Create page for [TOPIC]: Do not generate any files yet. First, ask me to specify:
+
 1. The topic I want to create a curriculum page for.
 2. My preferred output format:
-   - Option A (Embedded CDN Page): A single static HTML file with the curriculum sections array embedded directly inside a script tag (completely standalone).
-   - Option B (Static CDN Page with local OKF catalog): An HTML file loading sections from a local OKF bundle folder (e.g. './okf-data') using the UMD method 'LoomSections.loadAndRenderOKF(container, okfBaseUrl, topicId)'.
-   - Option C (Repository OKF Catalog Bundle): A multi-file directory structure to be placed under 'public/okf/[topic-id]/' inside this repository (index.md, index.yaml, and subfolders containing yaml/markdown files).
+   * Option A (Embedded CDN Page): A single static HTML file with the curriculum sections array embedded directly inside a script tag (completely standalone).
+   * Option B (Static CDN Page with local OKF catalog): An HTML file loading sections from a local OKF bundle folder (e.g. './okf-data') using the UMD method 'LoomSections.loadAndRenderOKF(container, okfBaseUrl, topicId)'.
+   * Option C (Repository OKF Catalog Bundle): A multi-file directory structure to be placed under 'public/okf/[topic-id]/' inside this repository (index.md, index.yaml, and subfolders containing yaml/markdown files).
 
 Once I provide the topic and layout choice, you MUST fetch and read the specifications from the following documentation files (hosted on GitHub master branch, accessible to all AI tools):
-1. CDN Integration Specification (for Option A & B UMD setup):
-https://raw.githubusercontent.com/ChanatipSaetia/interactive-loom-learning-os/master/docs/cdn-library.md
-2. OKF Topic Creation Manual (for Option B & C schemas):
-https://raw.githubusercontent.com/ChanatipSaetia/interactive-loom-learning-os/master/docs/creating-topics.md
-3. Progressive section ordering rules & mental models (All Options):
-https://raw.githubusercontent.com/ChanatipSaetia/interactive-loom-learning-os/master/docs/sections-reference.md
-4. Flowchart Event Storming conventions & nodes structure (All Options):
-https://raw.githubusercontent.com/ChanatipSaetia/interactive-loom-learning-os/master/docs/event-storming-conventions.md
+
+1. CDN Integration Specification (for Option A & B UMD setup): https://raw.githubusercontent.com/ChanatipSaetia/interactive-loom-learning-os/master/docs/cdn-library.md
+2. OKF Topic Creation Manual (for Option B & C schemas): https://raw.githubusercontent.com/ChanatipSaetia/interactive-loom-learning-os/master/docs/creating-topics.md
+3. Progressive section ordering rules & mental models (All Options): https://raw.githubusercontent.com/ChanatipSaetia/interactive-loom-learning-os/master/docs/sections-reference.md
+4. Flowchart Event Storming conventions & nodes structure (All Options): https://raw.githubusercontent.com/ChanatipSaetia/interactive-loom-learning-os/master/docs/event-storming-conventions.md
+
+For a MORE COMPREHENSIVE build, also pull the per-section-type reference docs and the worked example bundle from this directory (fetch the repo tarball via codeload.github.com if GitHub's tree UI blocks direct access — it does):
+https://github.com/ChanatipSaetia/interactive-loom-learning-os/tree/master/docs/sections
+— this includes docs/sections/README.md plus one .md per section type (text, bullets, concept-map, flashcards, taxonomy-browser, flowchart, reflection-sequence, quiz, tradeoff-sandbox, formula-sandbox, reflection-template, scenario, decision-tree, image-gallery), and a full worked example at public/okf/poe2-flicker-monk/ showing real field usage, image-gallery sourcing, and multi-file taxonomy/tradeoff sections.
+
+CDN version: pin to loom-learning-sections@1.2.0 for the stylesheet and UMD script (both <link> and <script src>) unless I specify a different version.
 
 Then generate the complete curriculum structure matching the specs.
 ```
