@@ -14,6 +14,7 @@ Each section type has its own dedicated reference document. Each doc covers:
 
 | Type | Doc | Mental Model |
 |---|---|---|
+| `intro` | [intro.md](intro.md) | Topic hero overview, rationale & learning roadmap |
 | `text` | [text.md](text.md) | Anchored conceptual narrative |
 | `bullets` | [bullets.md](bullets.md) | Hierarchical taxonomy / breakdown |
 | `concept-map` | [concept-map.md](concept-map.md) | Semantic relationships & groupings |
@@ -70,6 +71,10 @@ Every section folder contains a `section.md` file with YAML frontmatter that ide
 type: flashcards           # section type identifier
 title: "Key Vocabulary"    # display title (optional for most types)
 resource: glossary.yaml    # path to data file, relative to section.md
+intro:                     # optional section briefing (What, Why, What's Next)
+  what: "Interactive flashcard drill covering essential agentic systems vocabulary."
+  why: "Solidifies precise terminology needed to understand complex architectural trade-offs."
+  next: "Next: Categorize system patterns in the Taxonomy Browser."
 ---
 ```
 

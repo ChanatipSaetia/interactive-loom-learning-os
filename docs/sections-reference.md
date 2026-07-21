@@ -21,7 +21,7 @@ Rather than dumping monolithic documentation on the reader, a topic page structu
 
 For optimal cognitive progression, structure your topic's sections in the following sequence. Each step prepares the learner for the subsequent one:
 
-1. **Intro (`text`)** — Set the context: what the topic is, why it matters. Gives the learner a mental anchor before diving deeper.
+1. **Topic Hero Briefing (`intro`)** — Set the context: What the concept/topic is (definition & meaning), what it covers, why it matters, and an interactive roadmap of upcoming modules.
 2. **Concept map (`concept-map`)** — Visual bird's-eye view of how concepts interrelate. Placed early so the learner has a spatial map before individual concepts are explored in depth.
 3. **Glossary / vocabulary (`flashcards`)** — Teach key terms and their pronunciation before they appear in diagrams, text, or trade-offs. If the learner doesn't know the words, everything else is noise.
 4. **Concept categories (`taxonomy-browser`)** — Show the landscape of concepts and how they relate. Gives the learner a map of what's coming so individual sections feel connected, not isolated.
@@ -50,6 +50,7 @@ For optimal cognitive progression, structure your topic's sections in the follow
 
 | Section Type | Mental Model Focus | Data Input Format | Local UI State | Animations & Micro-interactions |
 |---|---|---|---|---|
+| `intro` | Topic hero overview, rationale & learning roadmap | `content.yaml` (definition, what, why, roadmap) | None | Entrance keyframes, touch-swipe horizontal roadmap track |
 | `text` | Anchored conceptual narrative | Markdown strings (paragraphs) | None | Scroll-triggered fade-in |
 | `bullets` | Hierarchical taxonomy / breakdown | Nested recursive nodes (`children`) | Expanded/Collapsed states | Staggered fade/slide-in, chevron rotation |
 | `flowchart` | Dynamic process flows & swimlanes | `actors.yaml`, `systems.yaml`, `steps.yaml`, `journeys.yaml` | Active step, fullscreen toggle, view mode tabs | anime.js path drawing, camera centering, highlights |

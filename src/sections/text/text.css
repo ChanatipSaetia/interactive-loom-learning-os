@@ -3,12 +3,13 @@
 }
 
 .text-section-heading {
-  @apply font-normal text-foreground mb-4 leading-[1.2] tracking-[-0.32px];
+  @apply font-semibold text-foreground mb-4 leading-[1.2] tracking-tight;
   font-size: var(--text-card-heading);
+  font-family: var(--font-display);
 }
 
 .text-section-content {
-  @apply flex flex-col gap-3;
+  @apply flex flex-col gap-3.5;
 }
 
 .text-paragraph {
@@ -18,20 +19,20 @@
 
 .text-paragraph strong {
   @apply font-semibold;
-  color: var(--ctp-pink);
+  color: var(--ctp-mauve);
 }
 
 .text-inline-code {
-  @apply text-[0.875em] px-1.5 py-0.5 rounded-[var(--radius-xs)] border border-border;
-  font-family: var(--font-mono);
-  background-color: var(--soft-stone);
+  @apply text-[0.875em] px-2 py-0.5 rounded-md border border-border font-mono;
+  background-color: color-mix(in srgb, var(--ctp-mauve) 10%, var(--card));
+  border-color: color-mix(in srgb, var(--ctp-mauve) 20%, transparent);
   color: var(--ctp-mauve);
 }
 
 .text-link {
-  @apply underline;
+  @apply underline transition-colors;
   color: var(--action-blue);
-  text-underline-offset: 2px;
+  text-underline-offset: 3px;
 }
 
 .text-link:hover {

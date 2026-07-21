@@ -15,33 +15,30 @@
 
 /* ---- View tabs ---- */
 .flowchart-view-tabs {
-  @apply flex gap-[2px] rounded-[var(--radius-sm)] border border-border p-[3px];
-  background: var(--ctp-mantle);
+  @apply flex gap-1 rounded-xl border border-border p-1 bg-card shadow-sm;
 }
 
 .flowchart-view-tab-btn {
-  @apply flex items-center gap-[6px] px-3 py-[5px] rounded-[var(--radius-xs)] border-none bg-transparent cursor-pointer whitespace-nowrap;
-  font-family: var(--font-body);
-  font-size: 12px;
-  font-weight: 500;
+  @apply flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg border-none bg-transparent cursor-pointer whitespace-nowrap text-xs font-mono font-medium transition-all;
+  font-family: var(--font-mono);
   color: var(--ctp-overlay1);
-  transition: color 0.15s ease, background-color 0.15s ease;
 }
 
 .flowchart-view-tab-btn:hover {
-  @apply text-foreground;
-  background: var(--ctp-surface0);
+  @apply text-foreground bg-accent;
 }
 
 .flowchart-view-tab-btn.active {
   color: var(--ctp-blue);
-  background: var(--ctp-base);
+  background: color-mix(in srgb, var(--ctp-blue) 15%, transparent);
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--ctp-blue) 30%, transparent);
 }
 
 /* ---- Canvas wrapper ---- */
 .flowchart-canvas-wrapper {
-  @apply flex relative w-full gap-0 rounded-[var(--radius-sm)] border border-border overflow-hidden;
+  @apply flex relative w-full gap-0 rounded-xl border border-border overflow-hidden shadow-sm;
   background-color: var(--ctp-base);
+  box-shadow: 0 4px 20px -4px rgba(0, 0, 0, 0.15);
   font-family: var(--font-body);
 }
 
@@ -74,20 +71,20 @@
 
 /* ---- Zoom toolbar overlay ---- */
 .flowchart-zoom-toolbar {
-  @apply absolute top-3 left-3 flex flex-col gap-[2px] z-[10] rounded-[var(--radius-sm)] border border-border p-[3px];
-  background: var(--ctp-mantle);
+  @apply absolute top-3 left-3 flex flex-col gap-1 z-[10] rounded-xl border border-border p-1 shadow-md;
+  background: color-mix(in srgb, var(--ctp-mantle) 90%, var(--card));
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
 }
 
 .flowchart-zoom-toolbar button {
-  @apply flex items-center justify-center w-[30px] h-[30px] border-none bg-transparent rounded-[var(--radius-xs)] cursor-pointer;
+  @apply flex items-center justify-center w-8 h-8 border-none bg-transparent rounded-lg cursor-pointer transition-colors;
   color: var(--ctp-overlay1);
-  transition: color 0.15s ease, background-color 0.15s ease;
   font-family: var(--font-body);
 }
 
 .flowchart-zoom-toolbar button:hover {
-  @apply text-foreground;
-  background: var(--ctp-surface0);
+  @apply text-foreground bg-accent;
 }
 
 /* ---- Sidebar editor ---- */
@@ -96,8 +93,8 @@
   width: 300px;
   height: 480px;
   background-color: var(--ctp-crust);
-  border-left: 1px solid var(--border-light);
-  transition: transform 0.25s ease, margin-right 0.25s ease;
+  border-left: 1px solid var(--border);
+  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), margin-right 0.25s cubic-bezier(0.16, 1, 0.3, 1);
   z-index: 20;
   transform: translateX(100%);
   margin-right: -300px;

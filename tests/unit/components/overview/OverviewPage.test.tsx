@@ -80,15 +80,19 @@ describe('OverviewPage', () => {
     expect(screen.getByText('Event-Driven Architecture')).toBeInTheDocument()
   });
 
-  test('renders pagination controls', () => {
+  test('renders pagination controls in grid view', () => {
     renderOverview()
+    const gridToggleBtn = screen.getByLabelText('Switch to All Topics Grid View')
+    fireEvent.click(gridToggleBtn)
     expect(screen.getByTestId('overview-pagination')).toBeInTheDocument()
     expect(screen.getByTestId('pagination-prev')).toBeInTheDocument()
     expect(screen.getByTestId('pagination-next')).toBeInTheDocument()
   })
 
-  test('rows per page select renders', () => {
+  test('rows per page select renders in grid view', () => {
     renderOverview()
+    const gridToggleBtn = screen.getByLabelText('Switch to All Topics Grid View')
+    fireEvent.click(gridToggleBtn)
     expect(screen.getByTestId('rows-per-page')).toBeInTheDocument()
   })
 
@@ -96,6 +100,32 @@ describe('OverviewPage', () => {
     renderOverview()
     expect(screen.getAllByText('Architecture').length).toBeGreaterThanOrEqual(1)
     expect(screen.getAllByText('Networking').length).toBeGreaterThanOrEqual(1)
+  })
+
+  test('renders category shelf headers in shelves view', () => {
+    renderOverview()
+    expect(screen.getByRole('heading', { name: 'Architecture' })).toBeInTheDocument()
+    expect(screen.getByRole('heading', { name: 'Networking' })).toBeInTheDocument()
+  })
+
+  test('toggles between shelves and grid views', () => {
+    renderOverview()
+    const gridToggleBtn = screen.getByLabelText('Switch to All Topics Grid View')
+    const shelvesToggleBtn = screen.getByLabelText('Switch to Category Shelves View')
+
+    fireEvent.click(gridToggleBtn)
+    expect(screen.getByTestId('overview-pagination')).toBeInTheDocument()
+
+    fireEvent.click(shelvesToggleBtn)
+    expect(screen.queryByTestId('overview-pagination')).not.toBeInTheDocument()
+  })
+
+  test('filters topics when clicking category selection card', () => {
+    renderOverview()
+    const networkingCard = screen.getByTestId('category-card-Networking')
+    fireEvent.click(networkingCard)
+    expect(screen.queryByText('REST API vs WebSocket')).not.toBeInTheDocument()
+    expect(screen.getByText('gRPC Basics')).toBeInTheDocument()
   })
 
   test('empty state when no topics match search', () => {
@@ -109,7 +139,10 @@ describe('OverviewPage', () => {
     renderOverview()
     const sortSelect = screen.getByTestId('sort-dropdown') as HTMLSelectElement
     expect(sortSelect).toBeInTheDocument()
-    expect(sortSelect.options[1].value).toBe('label-asc')
-    expect(sortSelect.options[2].value).toBe('label-desc')
-  });
+    const values = Array.from(sortSelect.options).map((opt) => opt.value)
+    expect(values).toContain('updated-desc')
+    expect(values).toContain('label-asc')
+    expect(values).toContain('label-desc')
+  })
 })
+

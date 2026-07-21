@@ -1,0 +1,45 @@
+estimatedTime: "6 min read"
+moduleCount: 13
+
+what:
+  definition: "Flicker Strike Monk is a high-mobility PoE 2 melee build that spends Power Charges to instantly teleport and strike enemies continuously without cooldown."
+  summary: "Comprehensive build guide and mechanics breakdown for the PoE 2 Flicker Strike Invoker Monk."
+  bullets:
+    - "Power Charge generation loops & Flicker Strike reset mechanics"
+    - "Invoker Monk ascendancy skill synergy & elemental scaling"
+    - "Budget-friendly gear milestones and DPS calculations"
+  tags:
+    - "PoE 2"
+    - "Flicker Strike"
+    - "Invoker Monk"
+    - "Build Mechanics"
+
+why:
+  summary: "Flicker Strike offers extreme mobility and burst DPS, but misconfiguring charge generation leads to skill downtime in endgame bosses."
+  impact: "Mastering charge generation loops ensures permanent skill uptime, high clear speed, and boss deletion."
+
+roadmap:
+  - sectionId: "concept-map"
+    title: "Mechanics Map"
+    type: "concept-map"
+    description: "Map connections between charges, ascendancies, and strike skills."
+  - sectionId: "flashcards"
+    title: "Key Vocabulary"
+    type: "flashcards"
+    description: "Master PoE 2 terminology and damage scaling definitions."
+  - sectionId: "taxonomy"
+    title: "Skill Arsenal"
+    type: "taxonomy-browser"
+    description: "Explore core skills, gems, and passive node categories."
+  - sectionId: "flowchart"
+    title: "Combat Flow"
+    type: "flowchart"
+    description: "Trace event-driven skill execution and charge reset policies."
+  - sectionId: "tradeoffs"
+    title: "Gear Sandboxes"
+    type: "tradeoff-sandbox"
+    description: "Compare budget vs endgame gear setups and stat trade-offs."
+  - sectionId: "formula-sandbox"
+    title: "DPS Calculator"
+    type: "formula-sandbox"
+    description: "Calculate attack speed, crit multiplier, and effective DPS."

@@ -137,6 +137,129 @@ html[data-theme='recipebook'] .overview-page-title {
   @apply px-2 py-1 rounded-md border border-border bg-card text-[13px] cursor-pointer transition-colors outline-none;
 }
 
+/* Category Selection Header Cards */
+.overview-category-selector {
+  @apply mb-6;
+}
+
+.overview-category-cards {
+  @apply grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-2.5;
+}
+
+.overview-category-card {
+  @apply flex flex-col justify-between p-3 rounded-xl border border-border bg-card text-left transition-all outline-none cursor-pointer;
+  min-height: 76px;
+}
+
+.overview-category-card:hover {
+  @apply border-ring bg-accent;
+  transform: translateY(-1px);
+}
+
+.overview-category-card.active {
+  border-color: var(--ctp-mauve, #cba6f7);
+  background: radial-gradient(circle at top left, color-mix(in srgb, var(--ctp-mauve, #cba6f7) 12%, transparent), transparent 90%), var(--card);
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--ctp-mauve) 30%, transparent);
+}
+
+.overview-category-card-header {
+  @apply flex items-center justify-between gap-1 mb-1;
+}
+
+.overview-category-card-title {
+  @apply text-xs font-semibold tracking-tight text-foreground truncate;
+  font-family: var(--font-body);
+}
+
+.overview-category-card.active .overview-category-card-title {
+  color: var(--ctp-mauve, #cba6f7);
+}
+
+.overview-category-card-count {
+  @apply inline-flex items-center justify-center rounded-full px-1.5 py-0.5 text-[10px] font-mono font-medium shrink-0;
+  color: var(--ctp-text);
+  background: color-mix(in srgb, var(--ctp-mauve) 15%, transparent);
+}
+
+.overview-category-card-sub {
+  @apply text-[11px] text-muted-foreground m-0 truncate;
+}
+
+/* View toggle */
+.overview-view-toggle {
+  @apply flex items-center rounded-lg border border-border bg-card p-0.5 shrink-0;
+}
+
+.overview-toggle-btn {
+  @apply p-1.5 rounded-md text-muted-foreground transition-colors hover:text-foreground;
+}
+
+.overview-toggle-btn.active {
+  @apply text-primary font-medium;
+  background-color: color-mix(in srgb, var(--primary) 15%, transparent);
+}
+
+/* Category Shelves */
+.overview-shelves {
+  @apply flex flex-col gap-6;
+}
+
+.overview-shelf {
+  @apply flex flex-col gap-3 rounded-xl border border-border bg-card p-4 transition-colors;
+  background-color: color-mix(in srgb, var(--card) 30%, transparent);
+}
+
+.overview-shelf:hover {
+  border-color: color-mix(in srgb, var(--ctp-mauve) 30%, var(--border));
+}
+
+.overview-shelf-header {
+  @apply flex items-center justify-between pb-1 border-b border-border;
+}
+
+.overview-shelf-title {
+  @apply text-lg font-semibold tracking-tight m-0;
+  color: var(--ctp-mauve, #cba6f7);
+  font-family: var(--font-display);
+}
+
+.overview-shelf-count {
+  @apply inline-flex items-center justify-center rounded-full px-2 py-0.5 text-xs font-mono font-medium;
+  color: var(--ctp-text);
+  background: color-mix(in srgb, var(--ctp-mauve) 15%, transparent);
+}
+
+/* Badges */
+.overview-badge-new {
+  @apply inline-flex items-center gap-1 rounded-md px-1.5 py-0.5 text-[10px] font-bold tracking-wider uppercase;
+  color: var(--ctp-base, #1e1e2e);
+  background-color: var(--ctp-peach, #fab387);
+}
+
+.overview-badge-updated {
+  @apply inline-flex items-center gap-1 rounded-md px-1.5 py-0.5 text-[10px] font-bold tracking-wider uppercase;
+  color: var(--ctp-teal, #94e2d5);
+  background-color: color-mix(in srgb, var(--ctp-teal) 15%, transparent);
+  border: 1px solid color-mix(in srgb, var(--ctp-teal) 30%, transparent);
+}
+
+/* Card Footer */
+.overview-card-footer {
+  @apply flex items-center gap-2 mt-2 pt-2 border-t border-border flex-wrap;
+}
+
+.overview-card-difficulty {
+  @apply text-[11px] font-medium rounded px-1.5 py-0.5;
+  color: var(--ctp-blue, #89b4fa);
+  background-color: color-mix(in srgb, var(--ctp-blue) 12%, transparent);
+}
+
+.overview-card-tag {
+  @apply text-[11px] font-mono text-muted-foreground transition-colors hover:text-foreground;
+}
+
 .overview-rows-select:focus {
   @apply border-ring;
 }
+
+

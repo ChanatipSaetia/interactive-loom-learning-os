@@ -1,24 +1,37 @@
-# Auto-generated — do not edit manually
+# Open Knowledge Format Index
 - id: chinese101-day1
   label: ภาษาจีนเบื้องต้น (Day 1) — Chinese 101
   path: /topics/chinese101-day1
   category: Language
   description: เริ่มเรียนภาษาจีนด้วยคำทักทาย ตัวเลข และประโยคพื้นฐาน
+  updatedAt: "2026-07-15"
+  tags: ["Chinese", "Language", "Beginner"]
+  difficulty: "Beginner"
 - id: demo
   label: AI Agent Architecture (Demo)
   path: /topics/demo
   category: Architecture
   description: Explore AI Agent system architecture with LLM, tools, and memory
+  updatedAt: "2026-07-21"
+  isNew: true
+  tags: ["AI", "Architecture", "LLM", "Flowchart"]
+  difficulty: "Intermediate"
 - id: haystack
   label: Haystack 2.x - AI Search Framework
   path: /topics/haystack
   category: Architecture
   description: Build search and RAG applications with composable Haystack pipelines
+  updatedAt: "2026-07-18"
+  tags: ["RAG", "Search", "Python", "Pipelines"]
+  difficulty: "Intermediate"
 - id: motorcycle
   label: รถมอเตอร์ไซค์ (Motorcycle)
   path: /topics/motorcycle
   category: Mechanical
   description: เข้าใจส่วนประกอบ การทำงาน และการบำรุงรักษารถมอเตอร์ไซค์
+  updatedAt: "2026-07-10"
+  tags: ["Mechanical", "Engineering", "Motorcycle"]
+  difficulty: "Beginner"
 - id: pm-and-meetings
   label: IT Project Management & Meetings
   path: /topics/pm-and-meetings
@@ -26,6 +39,9 @@
   description: >-
     Learn why project management is necessary and how to run effective, lean
     meetings without wasting developers' focus time.
+  updatedAt: "2026-07-19"
+  tags: ["Management", "Agile", "Meetings"]
+  difficulty: "Beginner"
 - id: poe2-flicker-monk
   label: PoE 2 Flicker Strike Monk — Budget Build Guide
   path: /topics/poe2-flicker-monk
@@ -33,3 +49,8 @@
   description: >-
     Master the Flicker Strike + Falling Thunder Martial Artist Monk build in
     Path of Exile 2 patch 0.5
+  updatedAt: "2026-07-21"
+  isNew: true
+  tags: ["Gaming", "PoE2", "Build Guide", "Monk"]
+  difficulty: "Advanced"
+

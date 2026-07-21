@@ -1,0 +1,41 @@
+estimatedTime: "7 min read"
+moduleCount: 14
+
+what:
+  definition: "IT Project Management คือกระบวนการวางแผน ควบคุมการดำเนินงาน และบริหารจัดการทรัพยากรเพื่อให้โครงการซอฟต์แวร์ส่งมอบได้ทันเวลา ตรงตามข้อกำหนด และอยู่ในงบประมาณที่กำหนด"
+  summary: "คู่มือการบริหารโครงการซอฟต์แวร์และการตัดวงจรประชุมไร้ประสิทธิภาพ (Meeting Bloat) ในทีมไอที"
+  bullets:
+    - "วงจรการบริหารโครงการไอทีและกรอบการทำงาน Agile / Scrum"
+    - "การบริหารช่องทางสื่อสารและการตัดสินใจเลือกการสื่อสารแบบ Async vs Sync"
+    - "การคำนวณต้นทุนเวลาประชุมและผลกระทบต่อสมาธิของนักพัฒนา (Maker's Schedule)"
+  tags:
+    - "Project Management"
+    - "Agile / Scrum"
+    - "Async Communication"
+    - "Meeting Bloat"
+
+why:
+  summary: "การนัดประชุมโดยไม่มีเป้าหมายที่ชัดเจนทำลายสมาธิในการเขียนโค้ดของนักพัฒนา และทำให้โครงการล่าช้าโดยไม่จำเป็น"
+  impact: "การใช้การสื่อสารแบบ Async และกำหนดกรอบการประชุมที่ชัดเจน ช่วยเพิ่มเวลาโฟกัส (Maker Time) ได้มากกว่า 40%"
+
+roadmap:
+  - sectionId: "concept-map"
+    title: "แผนผังความสัมพันธ์"
+    type: "concept-map"
+    description: "เชื่อมโยงกระบวนการบริหารโครงการ สื่อสาร และเครื่องมือติดตามงาน"
+  - sectionId: "flashcards"
+    title: "คำศัพท์การบริหารโครงการ"
+    type: "flashcards"
+    description: "ทบทวนคำศัพท์ Agile, Sprint, Backlog, และ Async Communication"
+  - sectionId: "flowchart"
+    title: "ขั้นตอนการดำเนินงาน"
+    type: "flowchart"
+    description: "แกะรอยการทำงานในรอบ Sprint และการตัดสินใจส่งมอบงาน"
+  - sectionId: "tradeoffs"
+    title: "วิเคราะห์การสื่อสาร"
+    type: "tradeoff-sandbox"
+    description: "เปรียบเทียบข้อดีข้อเสียของ Sync Meetings vs Async Docs"
+  - sectionId: "formula-sandbox"
+    title: "คำนวณต้นทุนการประชุม"
+    type: "formula-sandbox"
+    description: "คำนวณมูลค่าเงินและเวลาที่เสียไปจากการประชุมที่ไม่จำเป็น"

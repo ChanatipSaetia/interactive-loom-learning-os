@@ -4,8 +4,8 @@
 
 /* Score bar */
 .quiz-score-bar {
-  @apply flex items-center gap-3 mb-6 p-3 rounded-lg border border-border;
-  background-color: color-mix(in srgb, var(--ctp-surface1) 10%, transparent);
+  @apply flex items-center gap-3 mb-6 p-4 rounded-xl border border-border bg-card shadow-sm;
+  box-shadow: 0 4px 20px -4px rgba(0, 0, 0, 0.12);
 }
 
 .quiz-score-label {
@@ -13,13 +13,13 @@
 }
 
 .quiz-score-track {
-  @apply flex-1 h-2 rounded-full overflow-hidden;
+  @apply flex-1 h-2.5 rounded-full overflow-hidden shadow-inner;
   background-color: color-mix(in srgb, var(--ctp-surface1) 30%, transparent);
 }
 
 .quiz-score-fill {
   @apply h-full rounded-full transition-all duration-500 ease-out;
-  background: var(--ctp-green);
+  background: linear-gradient(90deg, color-mix(in srgb, var(--ctp-blue) 40%, var(--ctp-green)), var(--ctp-green));
 }
 
 .quiz-score-text {
@@ -33,17 +33,19 @@
 
 /* Question card */
 .quiz-question-card {
-  @apply p-5 rounded-lg bg-card border border-border shadow-sm;
+  @apply p-6 rounded-xl bg-card border border-border shadow-sm flex flex-col;
+  box-shadow: 0 4px 20px -4px rgba(0, 0, 0, 0.12);
 }
 
 .quiz-question-header {
-  @apply flex items-center justify-between mb-3;
+  @apply flex items-center justify-between mb-4;
 }
 
 .quiz-question-number {
-  @apply text-xs font-mono uppercase tracking-widest font-bold px-2.5 py-1 rounded-full;
-  background: var(--ctp-blue);
-  color: var(--ctp-crust);
+  @apply text-xs font-mono uppercase tracking-widest font-bold px-3 py-1 rounded-full border;
+  background: color-mix(in srgb, var(--ctp-blue) 15%, transparent);
+  color: var(--ctp-blue);
+  border-color: color-mix(in srgb, var(--ctp-blue) 30%, transparent);
 }
 
 .quiz-question-counter {
@@ -51,22 +53,23 @@
 }
 
 .quiz-question-text {
-  @apply text-base font-medium text-foreground mb-4 leading-relaxed;
+  @apply text-base font-semibold text-foreground mb-4 leading-relaxed;
+  font-family: var(--font-body);
 }
 
 /* Hint */
 .quiz-hint {
-  @apply mb-4 rounded-md border overflow-hidden;
-  border-color: color-mix(in srgb, var(--ctp-surface1) 50%, transparent);
-  background-color: color-mix(in srgb, var(--ctp-surface1) 10%, transparent);
+  @apply mb-4 rounded-xl border overflow-hidden transition-all;
+  border-color: color-mix(in srgb, var(--ctp-yellow) 25%, transparent);
+  background-color: color-mix(in srgb, var(--ctp-yellow) 6%, transparent);
 }
 
 .quiz-hint-toggle {
-  @apply flex items-center gap-2 w-full p-3 bg-transparent border-0 cursor-pointer;
+  @apply flex items-center gap-2 w-full p-3.5 bg-transparent border-0 cursor-pointer text-xs font-mono font-medium text-foreground;
 }
 
 .quiz-hint-toggle:hover {
-  background-color: color-mix(in srgb, var(--ctp-surface1) 15%, transparent);
+  background-color: color-mix(in srgb, var(--ctp-yellow) 12%, transparent);
 }
 
 .quiz-hint-icon {
@@ -83,23 +86,24 @@
 }
 
 .quiz-hint-text {
-  @apply block px-3 pb-3 text-sm text-muted-foreground italic;
+  @apply block px-3.5 pb-3 text-sm text-muted-foreground leading-relaxed;
 }
 
 /* Choices */
 .quiz-choices {
-  @apply flex flex-col gap-2;
+  @apply flex flex-col gap-2.5;
 }
 
 .quiz-choice {
-  @apply flex items-center gap-3 w-full text-left p-3.5 rounded-lg border transition-all duration-200;
-  border-color: color-mix(in srgb, var(--ctp-surface1) 60%, transparent);
-  background-color: color-mix(in srgb, var(--ctp-surface1) 5%, transparent);
+  @apply flex items-center gap-3.5 w-full text-left p-4 rounded-xl border bg-card transition-all duration-200 cursor-pointer;
+  border-color: var(--border);
 }
 
 .quiz-choice:hover:not(:disabled) {
-  border-color: color-mix(in srgb, var(--ctp-blue) 50%, transparent);
-  background-color: color-mix(in srgb, var(--ctp-surface1) 20%, transparent);
+  border-color: var(--ring);
+  background-color: color-mix(in srgb, var(--card) 95%, var(--accent));
+  transform: translateY(-1px);
+  box-shadow: 0 4px 16px -2px rgba(0, 0, 0, 0.12);
 }
 
 .quiz-choice:disabled {
@@ -108,12 +112,12 @@
 
 .quiz-choice-label {
   @apply flex-shrink-0 w-7 h-7 flex items-center justify-center rounded-full text-xs font-mono font-bold border border-border;
-  background: var(--ctp-surface0);
+  background: color-mix(in srgb, var(--ctp-overlay0) 12%, transparent);
   color: var(--ctp-subtext0);
 }
 
 .quiz-choice-text {
-  @apply flex-1 text-sm text-foreground leading-relaxed;
+  @apply flex-1 text-sm text-foreground leading-relaxed font-medium;
 }
 
 .quiz-choice-feedback-icon {
@@ -131,7 +135,8 @@
 /* Choice states */
 .quiz-choice-correct {
   border-color: var(--ctp-green);
-  background: color-mix(in srgb, var(--ctp-green) 8%, transparent);
+  background: color-mix(in srgb, var(--ctp-green) 8%, var(--card));
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--ctp-green) 30%, transparent);
 }
 
 .quiz-choice-correct .quiz-choice-label {
@@ -142,7 +147,8 @@
 
 .quiz-choice-wrong {
   border-color: var(--ctp-red);
-  background: color-mix(in srgb, var(--ctp-red) 8%, transparent);
+  background: color-mix(in srgb, var(--ctp-red) 8%, var(--card));
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--ctp-red) 30%, transparent);
 }
 
 .quiz-choice-wrong .quiz-choice-label {
@@ -157,19 +163,19 @@
 
 /* Explanation */
 .quiz-explanation {
-  @apply mt-4 overflow-hidden;
+  @apply mt-4 overflow-hidden rounded-xl;
 }
 
 .quiz-explanation-correct {
-  @apply p-4 rounded-md border;
-  border-color: var(--ctp-green);
-  background: color-mix(in srgb, var(--ctp-green) 6%, transparent);
+  @apply p-4 rounded-xl border;
+  border-color: color-mix(in srgb, var(--ctp-green) 40%, transparent);
+  background: color-mix(in srgb, var(--ctp-green) 8%, var(--card));
 }
 
 .quiz-explanation-wrong {
-  @apply p-4 rounded-md border;
-  border-color: var(--ctp-red);
-  background: color-mix(in srgb, var(--ctp-red) 6%, transparent);
+  @apply p-4 rounded-xl border;
+  border-color: color-mix(in srgb, var(--ctp-red) 40%, transparent);
+  background: color-mix(in srgb, var(--ctp-red) 8%, var(--card));
 }
 
 .quiz-explanation-result {
@@ -189,7 +195,7 @@
 }
 
 .quiz-explanation-text {
-  @apply text-sm text-foreground leading-relaxed;
+  @apply text-sm text-foreground leading-relaxed font-normal;
 }
 
 /* Navigation */
@@ -198,5 +204,5 @@
 }
 
 .quiz-nav-btn {
-  @apply text-sm text-muted-foreground hover:text-foreground;
+  @apply text-sm font-medium text-muted-foreground hover:text-foreground transition-colors;
 }

@@ -7,6 +7,10 @@ export interface TopicRoute {
   path: string
   category: string
   description: string
+  updatedAt?: string
+  isNew?: boolean
+  tags?: string[]
+  difficulty?: string
 }
 
 interface OKFIndexEntry {
@@ -15,6 +19,10 @@ interface OKFIndexEntry {
   path?: string
   category?: string
   description?: string
+  updatedAt?: string
+  isNew?: boolean
+  tags?: string[]
+  difficulty?: string
 }
 
 const OKF_BASE = `${import.meta.env.BASE_URL}okf`
@@ -30,12 +38,12 @@ async function discoverFromIndexMd(): Promise<TopicRoute[] | null> {
   const res = await fetch(`${OKF_BASE}/index.md`)
   if (!res.ok) return null
   const text = await res.text()
-  const body = parseFrontmatter(text).body
-  const topics = parseIndexMd(body)
+  const { meta, body } = parseFrontmatter(text)
+  const topics = parseIndexMd(body, meta)
   return topics.length ? topics : null
 }
 
-function parseIndexMd(body: string): TopicRoute[] {
+function parseIndexMd(body: string, globalMeta?: Record<string, unknown>): TopicRoute[] {
   const topics: TopicRoute[] = []
   let currentCategory = 'Uncategorized'
   const lines = body.split('\n')
@@ -53,12 +61,19 @@ function parseIndexMd(body: string): TopicRoute[] {
       const href = linkMatch[2].trim()
       const description = linkMatch[3] ? linkMatch[3].trim() : ''
       const id = href.replace(/\/index\.md$/, '').replace(/^\//, '')
+      
+      const itemMeta = (globalMeta?.topics as Record<string, unknown>)?.[id] as Record<string, unknown> | undefined
+
       topics.push({
         id,
         label,
         path: `/topics/${id}`,
         category: currentCategory,
         description,
+        updatedAt: itemMeta?.updatedAt as string | undefined,
+        isNew: itemMeta?.isNew as boolean | undefined,
+        tags: itemMeta?.tags as string[] | undefined,
+        difficulty: itemMeta?.difficulty as string | undefined,
       })
     }
   }
@@ -68,15 +83,36 @@ function parseIndexMd(body: string): TopicRoute[] {
 export async function discoverTopics(): Promise<TopicRoute[]> {
   try {
     const mdTopics = await discoverFromIndexMd()
-    if (mdTopics) return mdTopics
+    
+    // Always fetch index.yaml to merge metadata if index.yaml exists
+    let yamlMap: Record<string, OKFIndexEntry> = {}
+    try {
+      const res = await fetch(`${BASE_URL}index.yaml`)
+      if (res.ok) {
+        const parsed = yaml.load(await res.text()) as OKFIndexEntry[]
+        if (Array.isArray(parsed)) {
+          yamlMap = Object.fromEntries(parsed.map((item) => [item.id, item]))
+        }
+      }
+    } catch { /* ignore fallback */ }
 
-    const res = await fetch(`${BASE_URL}index.yaml`)
-    if (!res.ok) return []
-    const index = yaml.load(await res.text()) as OKFIndexEntry[]
-    if (!Array.isArray(index)) return []
+    if (mdTopics) {
+      return mdTopics.map((t) => {
+        const yamlMeta = yamlMap[t.id]
+        return {
+          ...t,
+          updatedAt: t.updatedAt ?? yamlMeta?.updatedAt,
+          isNew: t.isNew ?? yamlMeta?.isNew,
+          tags: t.tags ?? yamlMeta?.tags,
+          difficulty: t.difficulty ?? yamlMeta?.difficulty,
+        }
+      })
+    }
+
+    if (Object.keys(yamlMap).length === 0) return []
 
     const topics = await Promise.all(
-      index.map(async (entry) => {
+      Object.values(yamlMap).map(async (entry) => {
         let meta: Record<string, unknown> = {}
         try {
           const yamlRes = await fetch(`${OKF_BASE}/${entry.id}/index.yaml`)
@@ -91,6 +127,10 @@ export async function discoverTopics(): Promise<TopicRoute[]> {
           path: entry.path ?? (meta.path as string) ?? `/${entry.id}`,
           category: entry.category ?? (meta.category as string) ?? 'Uncategorized',
           description: entry.description ?? (meta.description as string) ?? '',
+          updatedAt: entry.updatedAt ?? (meta.updatedAt as string) ?? (meta.updated_at as string),
+          isNew: entry.isNew ?? (meta.isNew as boolean) ?? (meta.is_new as boolean),
+          tags: entry.tags ?? (meta.tags as string[]),
+          difficulty: entry.difficulty ?? (meta.difficulty as string),
         }
       })
     )

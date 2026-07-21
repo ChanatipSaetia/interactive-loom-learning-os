@@ -36,8 +36,18 @@ export function bundleToSections(bundle: OKFBundled): SectionConfig[] {
     if (meta.title) props.title = meta.title
     if (meta.heading) props.heading = meta.heading
     if (meta.ordered !== undefined) props.ordered = meta.ordered
+    if (meta.intro) props.intro = meta.intro
 
     switch (data.type) {
+      case 'intro':
+        props.title = data.title ?? meta.title
+        props.subtitle = data.subtitle
+        props.estimatedTime = data.estimatedTime
+        props.moduleCount = data.moduleCount
+        props.what = data.what
+        props.why = data.why
+        props.roadmap = data.roadmap
+        break
       case 'text':
         props.paragraphs = data.paragraphs
         break

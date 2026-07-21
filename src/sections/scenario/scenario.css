@@ -4,21 +4,23 @@
 
 /* Intro card */
 .scenario-intro {
-  @apply rounded-lg overflow-hidden;
+  @apply rounded-xl overflow-hidden;
 }
 
 .scenario-intro-card {
-  @apply p-6 rounded-lg border border-border bg-card shadow-sm flex flex-col gap-4;
+  @apply p-6 rounded-xl border border-border bg-card shadow-sm flex flex-col gap-4;
+  box-shadow: 0 4px 20px -4px rgba(0, 0, 0, 0.12);
 }
 
 .scenario-intro-icon {
-  @apply w-10 h-10 flex items-center justify-center rounded-full;
+  @apply w-11 h-11 flex items-center justify-center rounded-full shadow-sm;
   color: var(--ctp-blue);
-  background: color-mix(in srgb, var(--ctp-blue) 12%, var(--ctp-surface0));
+  background: color-mix(in srgb, var(--ctp-blue) 15%, var(--ctp-surface0));
+  border: 1px solid color-mix(in srgb, var(--ctp-blue) 25%, transparent);
 }
 
 .scenario-intro-title {
-  @apply text-foreground font-light tracking-tight;
+  @apply text-foreground font-semibold tracking-tight;
   font-size: var(--text-feature-heading);
   font-family: var(--font-display);
 }
@@ -34,7 +36,7 @@
 
 /* Decision display */
 .scenario-decision {
-  @apply flex flex-col gap-4;
+  @apply flex flex-col gap-5;
 }
 
 .scenario-decision-header {
@@ -42,53 +44,60 @@
 }
 
 .scenario-step-counter {
-  @apply text-xs font-mono uppercase tracking-widest font-bold px-2.5 py-1 rounded-full;
-  background: var(--ctp-blue);
-  color: var(--ctp-crust);
+  @apply text-xs font-mono uppercase tracking-widest font-bold px-3 py-1 rounded-full border;
+  background: color-mix(in srgb, var(--ctp-blue) 15%, transparent);
+  color: var(--ctp-blue);
+  border-color: color-mix(in srgb, var(--ctp-blue) 30%, transparent);
 }
 
 .scenario-back-btn {
-  @apply text-xs text-muted-foreground hover:text-foreground;
+  @apply text-xs font-mono text-muted-foreground hover:text-foreground transition-colors;
 }
 
 .scenario-decision-prompt {
-  @apply text-foreground leading-relaxed;
+  @apply text-foreground leading-relaxed font-semibold tracking-tight;
   font-size: var(--text-card-heading);
   font-family: var(--font-display);
-  font-weight: 400;
 }
 
 /* Choices */
 .scenario-choices {
-  @apply flex flex-col gap-2;
+  @apply flex flex-col gap-3;
 }
 
 .scenario-choice {
-  @apply flex items-center gap-3 w-full text-left p-4 rounded-lg border transition-all duration-200;
-  border-color: color-mix(in srgb, var(--ctp-surface1) 60%, transparent);
-  background-color: color-mix(in srgb, var(--ctp-surface1) 5%, transparent);
+  @apply flex items-center gap-3.5 w-full text-left p-5 rounded-xl border bg-card transition-all duration-200 cursor-pointer;
+  border-color: var(--border);
+  box-shadow: 0 2px 10px rgba(0,0,0,0.06);
 }
 
 .scenario-choice:hover {
-  border-color: color-mix(in srgb, var(--ctp-blue) 50%, transparent);
-  background-color: color-mix(in srgb, var(--ctp-surface1) 20%, transparent);
+  transform: translateY(-1px);
+  border-color: var(--ring);
+  background-color: color-mix(in srgb, var(--card) 95%, var(--accent));
+  box-shadow: 0 6px 20px -4px rgba(0, 0, 0, 0.15);
 }
 
 .scenario-choice-text {
-  @apply flex-1 text-sm text-foreground leading-relaxed;
+  @apply flex-1 text-sm text-foreground leading-relaxed font-medium;
 }
 
 .scenario-choice-arrow {
-  @apply w-4 h-4 flex-shrink-0 text-muted-foreground;
+  @apply w-4 h-4 flex-shrink-0 text-muted-foreground transition-transform;
+}
+
+.scenario-choice:hover .scenario-choice-arrow {
+  @apply text-primary transform translate-x-1;
 }
 
 /* Outcome display */
 .scenario-outcome {
-  @apply rounded-lg overflow-hidden;
+  @apply rounded-xl overflow-hidden;
 }
 
 .scenario-outcome-card {
-  @apply p-6 rounded-lg border shadow-sm flex flex-col gap-5;
+  @apply p-6 rounded-xl border bg-card shadow-md flex flex-col gap-5;
+  box-shadow: 0 8px 30px -6px rgba(0, 0, 0, 0.18);
   transition: border-color 0.3s ease, background-color 0.3s ease;
 }
 
@@ -101,11 +110,11 @@
 }
 
 .scenario-outcome-title {
-  @apply text-sm font-mono uppercase tracking-widest font-bold text-muted-foreground;
+  @apply text-xs font-mono uppercase tracking-widest font-bold text-muted-foreground;
 }
 
 .scenario-rating-badge {
-  @apply ml-auto px-3 py-1 rounded-full text-xs font-mono font-bold uppercase tracking-wider;
+  @apply ml-auto px-3 py-1 rounded-full text-xs font-mono font-bold uppercase tracking-wider border;
 }
 
 .scenario-outcome-body {
@@ -127,8 +136,7 @@
 }
 
 .scenario-outcome-footer {
-  @apply pt-3 border-t;
-  border-color: color-mix(in srgb, var(--ctp-surface1) 30%, transparent);
+  @apply pt-3 border-t border-border;
 }
 
 @media (max-width: 640px) {

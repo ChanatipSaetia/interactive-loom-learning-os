@@ -80,7 +80,7 @@ graph TD
 2. **Actions**:
    - Determine target topic ID (kebab-case, e.g., `agent-orchestration` or `cache-invalidation`).
    - Define section progression following progressive disclosure:
-     - **Foundations**: `text`, `bullets`, `flashcards`
+     - **Foundations**: `intro` (Topic Hero Briefing with definition, what, why, and roadmap), `text`, `bullets`, `flashcards`
      - **Core Concepts**: `concept-map`, `taxonomy-browser`
      - **Architecture & Flow**: `flowchart` (Event Storming)
      - **Interactive Sandbox / Application**: `tradeoff-sandbox`, `scenario`, `decision-tree`, `formula-sandbox`

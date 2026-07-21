@@ -13,15 +13,49 @@ export interface OKFBundledSection {
   data: OKFSectionData
 }
 
+export interface OKFSectionIntro {
+  what?: string
+  why?: string
+  next?: string
+}
+
 export interface OKFSectionMeta {
   type: string
   title?: string
   heading?: string
   ordered?: boolean
   resource: string
+  intro?: OKFSectionIntro
+}
+
+export interface OKFIntroRoadmapStep {
+  sectionId?: string
+  title: string
+  type: string
+  description: string
+}
+
+export interface OKFIntroSectionData {
+  type: 'intro'
+  title?: string
+  subtitle?: string
+  estimatedTime?: string
+  moduleCount?: number
+  what: {
+    definition?: string
+    summary: string
+    bullets?: string[]
+    tags?: string[]
+  }
+  why: {
+    summary: string
+    impact?: string
+  }
+  roadmap?: OKFIntroRoadmapStep[]
 }
 
 export type OKFSectionData =
+  | OKFIntroSectionData
   | OKFTextSectionData
   | OKFBulletSectionData
   | OKFFlowSectionData

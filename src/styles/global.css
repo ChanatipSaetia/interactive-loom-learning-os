@@ -65,6 +65,7 @@ textarea {
 ::-webkit-scrollbar-thumb {
   @apply rounded-full;
   background: var(--ctp-surface2);
+  transition: background-color 0.2s ease;
 }
 
 ::-webkit-scrollbar-thumb:hover {
@@ -76,9 +77,9 @@ textarea {
 ====================================== */
 .topic-progress-bar {
   position: relative;
-  @apply w-full h-7 mb-4 rounded-full overflow-hidden;
-  background: var(--ctp-mantle);
-  border: 1px solid var(--ctp-surface1);
+  @apply w-full h-6 mb-5 rounded-full overflow-hidden shadow-inner;
+  background: color-mix(in srgb, var(--ctp-mantle) 80%, var(--card));
+  border: 1px solid var(--border);
 }
 
 .topic-progress-fill {
@@ -86,15 +87,17 @@ textarea {
   top: 0;
   left: 0;
   height: 100%;
-  @apply transition-all duration-300 ease-out;
-  background: var(--ctp-green);
-  opacity: 0.35;
+  @apply transition-all duration-300 ease-out rounded-full;
+  background: linear-gradient(90deg, color-mix(in srgb, var(--ctp-blue) 40%, var(--ctp-green)), var(--ctp-green));
+  opacity: 0.5;
+  box-shadow: 0 0 12px color-mix(in srgb, var(--ctp-green) 40%, transparent);
 }
 
 .topic-progress-label {
   position: absolute;
   inset: 0;
-  @apply flex items-center justify-center text-xs font-medium;
-  color: var(--ctp-subtext0);
-  letter-spacing: 0.02em;
+  @apply flex items-center justify-center text-xs font-mono font-medium tracking-wider uppercase;
+  color: var(--ctp-text);
+  letter-spacing: 0.04em;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.4);
 }

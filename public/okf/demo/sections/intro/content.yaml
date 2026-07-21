@@ -1,0 +1,45 @@
+estimatedTime: "8 min read"
+moduleCount: 6
+
+what:
+  definition: "An AI Agent is an autonomous goal-directed software system that uses LLMs to perceive environment state, reason over goals, select tools, and execute multi-step workflows."
+  summary: "Comprehensive conceptual and interactive guide to building stateful, resilient AI agent systems."
+  bullets:
+    - "Event-driven policy, command, and result event loops"
+    - "Spatial knowledge graph of components, memory, and tools"
+    - "Quantitative trade-off analysis balancing latency, cost, and reliability"
+  tags:
+    - "Event Storming"
+    - "Knowledge Graph"
+    - "Trade-off Sandbox"
+    - "Decision Advisor"
+
+why:
+  summary: "Single-prompt LLM wrappers break when tasked with complex multi-step enterprise workflows requiring memory and tool selection."
+  impact: "Agentic architectures introduce dynamic policy execution, self-evaluation, and deterministic failure recovery."
+
+roadmap:
+  - sectionId: "concept-map"
+    title: "Knowledge Graph"
+    type: "concept-map"
+    description: "Map spatial relationships between agent components, memory modules, and tools."
+  - sectionId: "flashcards"
+    title: "Vocabulary Drill"
+    type: "flashcards"
+    description: "Master essential terminology and system definitions."
+  - sectionId: "taxonomy"
+    title: "Capability Taxonomy"
+    type: "taxonomy-browser"
+    description: "Browse architectural patterns, scopes, and analogies."
+  - sectionId: "flowchart"
+    title: "Event Storming Flow"
+    type: "flowchart"
+    description: "Trace dynamic execution loops, policies, and async commands."
+  - sectionId: "tradeoffs"
+    title: "Trade-off Sandbox"
+    type: "tradeoff-sandbox"
+    description: "Evaluate latency, throughput, and cost parameters."
+  - sectionId: "quiz"
+    title: "Assessment Quiz"
+    type: "quiz"
+    description: "Validate understanding and key architectural concepts."

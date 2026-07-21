@@ -21,10 +21,13 @@ function SectionRenderer({ config }: SectionRendererProps) {
       </div>
     )
   }
+
   return (
-    <Suspense fallback={<div className="section-loading">Loading section...</div>}>
-      <Component {...config.props} />
-    </Suspense>
+    <div className="section-wrapper" data-section-type={config.type}>
+      <Suspense fallback={<div className="section-loading">Loading section...</div>}>
+        <Component {...config.props} />
+      </Suspense>
+    </div>
   )
 }
 

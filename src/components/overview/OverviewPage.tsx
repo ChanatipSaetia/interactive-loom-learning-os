@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect, useMemo } from 'react'
 import { Link } from 'react-router-dom'
-import { Search, ChevronDown, Check } from 'lucide-react'
-import { useTopics } from '../../core/routes'
+import { Search, ChevronDown, Check, Layers, LayoutGrid, Sparkles, Clock } from 'lucide-react'
+import { useTopics, type TopicRoute } from '../../core/routes'
 import { usePagination } from '../../core/hooks/usePagination'
 import { ScrollReveal } from '../motion/scroll-reveal'
 import { Dropdown } from '../motion/dropdown'
@@ -12,6 +12,7 @@ const rowsPerPageOptions = [5, 10, 20]
 
 const SORT_OPTIONS = [
   { value: '', label: 'Sort by' },
+  { value: 'updated-desc', label: 'Recently Updated / Newest' },
   { value: 'label-asc', label: 'Topic (A-Z)' },
   { value: 'label-desc', label: 'Topic (Z-A)' },
   { value: 'category-asc', label: 'Category (A-Z)' },
@@ -127,6 +128,47 @@ function MultiSelectDropdown({
   )
 }
 
+function TopicCard({ topic }: { topic: TopicRoute }) {
+  return (
+    <Link
+      to={topic.path}
+      className="overview-card"
+      data-testid={`topic-link-${topic.id}`}
+    >
+      <div className="overview-card-header">
+        <div className="flex items-center gap-2 flex-wrap">
+          <span className="overview-card-title">{topic.label}</span>
+          {topic.isNew && (
+            <span className="overview-badge-new">
+              <Sparkles className="h-3 w-3" /> NEW
+            </span>
+          )}
+          {topic.updatedAt && !topic.isNew && (
+            <span className="overview-badge-updated">
+              <Clock className="h-3 w-3" /> UPDATED
+            </span>
+          )}
+        </div>
+        <span className="overview-card-category">{topic.category}</span>
+      </div>
+      <p className="overview-card-description">{topic.description}</p>
+      
+      {((topic.tags && topic.tags.length > 0) || topic.difficulty) && (
+        <div className="overview-card-footer">
+          {topic.difficulty && (
+            <span className="overview-card-difficulty">{topic.difficulty}</span>
+          )}
+          {topic.tags && topic.tags.map((tag) => (
+            <span key={tag} className="overview-card-tag">
+              #{tag}
+            </span>
+          ))}
+        </div>
+      )}
+    </Link>
+  )
+}
+
 export function OverviewPage() {
   const { topics, loading } = useTopics()
   const [search, setSearch] = useState('')
@@ -134,13 +176,23 @@ export function OverviewPage() {
   const [sortValue, setSortValue] = useState('')
   const [currentPage, setCurrentPage] = useState(1)
   const [rowsPerPage, setRowsPerPage] = useState(10)
+  const [viewMode, setViewMode] = useState<'shelves' | 'grid'>('shelves')
 
   const { column: sortColumn, direction: sortDirection } = parseSortValue(sortValue)
 
-  const categories = useMemo(() => {
-    const cats = new Set(topics.map((t) => t.category))
-    return Array.from(cats).sort()
+  // Map of categories and their topic counts
+  const categoryStats = useMemo(() => {
+    const map = new Map<string, number>()
+    topics.forEach((t) => {
+      const cat = t.category || 'Uncategorized'
+      map.set(cat, (map.get(cat) || 0) + 1)
+    })
+    return Array.from(map.entries()).sort((a, b) => a[0].localeCompare(b[0]))
   }, [topics])
+
+  const categories = useMemo(() => {
+    return categoryStats.map(([cat]) => cat)
+  }, [categoryStats])
 
   const filteredTopics = useMemo(() => {
     let result = [...topics]
@@ -150,7 +202,8 @@ export function OverviewPage() {
       result = result.filter(
         (t) =>
           t.label.toLowerCase().includes(q) ||
-          t.description.toLowerCase().includes(q),
+          t.description.toLowerCase().includes(q) ||
+          (t.tags && t.tags.some((tag) => tag.toLowerCase().includes(q))),
       )
     }
 
@@ -160,8 +213,14 @@ export function OverviewPage() {
 
     if (sortColumn && sortDirection) {
       result.sort((a, b) => {
-        const aVal = (a as unknown as Record<string, string>)[sortColumn]
-        const bVal = (b as unknown as Record<string, string>)[sortColumn]
+        if (sortColumn === 'updated') {
+          const aDate = a.updatedAt || '0'
+          const bDate = b.updatedAt || '0'
+          const cmp = aDate.localeCompare(bDate)
+          return sortDirection === 'asc' ? cmp : -cmp
+        }
+        const aVal = String((a as unknown as Record<string, string>)[sortColumn] || '')
+        const bVal = String((b as unknown as Record<string, string>)[sortColumn] || '')
         const cmp = aVal.localeCompare(bVal)
         return sortDirection === 'asc' ? cmp : -cmp
       })
@@ -169,6 +228,28 @@ export function OverviewPage() {
 
     return result
   }, [topics, search, selectedCategories, sortColumn, sortDirection])
+
+  // Grouped topics by Category for Shelves view
+  const categoryShelves = useMemo(() => {
+    const map = new Map<string, TopicRoute[]>()
+    filteredTopics.forEach((topic) => {
+      const cat = topic.category || 'Uncategorized'
+      if (!map.has(cat)) map.set(cat, [])
+      map.get(cat)!.push(topic)
+    })
+    return Array.from(map.entries())
+  }, [filteredTopics])
+
+  const handleCategoryCardClick = (category: string) => {
+    if (category === 'ALL') {
+      setSelectedCategories([])
+    } else if (selectedCategories.includes(category) && selectedCategories.length === 1) {
+      setSelectedCategories([])
+    } else {
+      setSelectedCategories([category])
+    }
+    setCurrentPage(1)
+  }
 
   const { pageItems: pagedTopics, totalPages, startIdx, endIdx, totalItems } = usePagination({
     items: filteredTopics, page: currentPage, pageSize: rowsPerPage,
@@ -182,15 +263,63 @@ export function OverviewPage() {
     )
   }
 
+  const isAllSelected = selectedCategories.length === 0
+
   return (
     <div className="overview-page">
       <ScrollReveal>
         <div className="overview-header">
           <h2 className="overview-page-title">Interactive Learning Platform</h2>
           <p className="overview-page-subtitle">
-            Browse and search topics with interactive diagrams, animations, and exercises.
+            Select a category to explore topics with interactive diagrams, animations, and trade-off sandboxes.
           </p>
         </div>
+      </ScrollReveal>
+
+      {/* Category Selection Cards */}
+      <ScrollReveal delay={0.1}>
+        <section className="overview-category-selector" aria-label="Category Selection">
+          <div className="overview-category-cards">
+            <button
+              type="button"
+              onClick={() => handleCategoryCardClick('ALL')}
+              className={cn(
+                "overview-category-card",
+                isAllSelected && "active",
+              )}
+            >
+              <div className="overview-category-card-header">
+                <span className="overview-category-card-title">All Topics</span>
+                <span className="overview-category-card-count">{topics.length}</span>
+              </div>
+              <p className="overview-category-card-sub">View full curriculum catalog</p>
+            </button>
+
+            {categoryStats.map(([cat, count]) => {
+              const isSelected = selectedCategories.includes(cat)
+              return (
+                <button
+                  key={cat}
+                  type="button"
+                  onClick={() => handleCategoryCardClick(cat)}
+                  className={cn(
+                    "overview-category-card",
+                    isSelected && "active",
+                  )}
+                  data-testid={`category-card-${cat}`}
+                >
+                  <div className="overview-category-card-header">
+                    <span className="overview-category-card-title">{cat}</span>
+                    <span className="overview-category-card-count">{count}</span>
+                  </div>
+                  <p className="overview-category-card-sub">
+                    {count === 1 ? '1 topic' : `${count} topics`}
+                  </p>
+                </button>
+              )
+            })}
+          </div>
+        </section>
       </ScrollReveal>
 
       <div className="overview-controls">
@@ -199,7 +328,7 @@ export function OverviewPage() {
           <input
             type="text"
             className="overview-search-input"
-            placeholder="Search topics..."
+            placeholder="Search topics or #tags..."
             value={search}
             onChange={(e) => { setSearch(e.target.value); setCurrentPage(1) }}
             data-testid="overview-search"
@@ -224,36 +353,72 @@ export function OverviewPage() {
             className="overview-sort-dropdown min-w-[130px]"
             native={true}
           />
+
+          <div className="overview-view-toggle">
+            <button
+              type="button"
+              className={cn(
+                "overview-toggle-btn",
+                viewMode === 'shelves' && "active",
+              )}
+              onClick={() => setViewMode('shelves')}
+              title="Category Shelves View"
+              aria-label="Switch to Category Shelves View"
+            >
+              <Layers className="h-4 w-4" />
+            </button>
+            <button
+              type="button"
+              className={cn(
+                "overview-toggle-btn",
+                viewMode === 'grid' && "active",
+              )}
+              onClick={() => setViewMode('grid')}
+              title="All Topics Grid View"
+              aria-label="Switch to All Topics Grid View"
+            >
+              <LayoutGrid className="h-4 w-4" />
+            </button>
+          </div>
         </div>
       </div>
 
       <ScrollReveal delay={0.15}>
-        {pagedTopics.length === 0 ? (
+        {filteredTopics.length === 0 ? (
           <div className="overview-empty" data-testid="overview-table">
             No topics found.
           </div>
-        ) : (
-          <div className="overview-cards" data-testid="overview-table">
-            {pagedTopics.map((topic, idx) => (
-              <ScrollReveal key={topic.id} delay={0.2 + idx * 0.05} y={8} blur={4}>
-                <Link
-                  to={topic.path}
-                  className="overview-card"
-                  data-testid={`topic-link-${topic.id}`}
-                >
-                  <div className="overview-card-header">
-                    <span className="overview-card-title">{topic.label}</span>
-                    <span className="overview-card-category">{topic.category}</span>
+        ) : viewMode === 'shelves' ? (
+          /* CATEGORY SHELVES VIEW */
+          <div className="overview-shelves" data-testid="overview-table">
+            {categoryShelves.map(([category, catTopics]) => (
+              <div key={category} className="overview-shelf">
+                <div className="overview-shelf-header">
+                  <div className="flex items-center gap-2">
+                    <h3 className="overview-shelf-title">{category}</h3>
+                    <span className="overview-shelf-count">{catTopics.length}</span>
                   </div>
-                  <p className="overview-card-description">{topic.description}</p>
-                </Link>
-              </ScrollReveal>
+                </div>
+                <div className="overview-cards">
+                  {catTopics.map((topic) => (
+                    <TopicCard key={topic.id} topic={topic} />
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
+        ) : (
+          /* FLAT GRID VIEW (with pagination) */
+          <div className="overview-cards" data-testid="overview-table">
+            {pagedTopics.map((topic) => (
+              <TopicCard key={topic.id} topic={topic} />
             ))}
           </div>
         )}
       </ScrollReveal>
 
-      {totalItems > 0 && (
+      {/* Pagination controls for Grid View */}
+      {viewMode === 'grid' && totalItems > 0 && (
         <ScrollReveal delay={0.3}>
           <div className="overview-pagination" data-testid="overview-pagination">
             <div className="overview-pagination-info">
@@ -316,3 +481,4 @@ export function OverviewPage() {
     </div>
   )
 }
+

@@ -17,22 +17,24 @@
   }
 }
 
-/* Card-Style Parent Groups */
+/* Card-Style Parent Groups (Aligned with Overview Card aesthetic) */
 .bullets-card {
-  @apply rounded-[var(--radius-sm)] border border-border p-5 flex flex-col gap-4;
-  background: var(--ctp-surface0);
+  @apply rounded-xl border border-border p-5 flex flex-col gap-4 bg-card;
   height: fit-content;
-  transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+  box-shadow: 0 4px 20px -4px rgba(0, 0, 0, 0.12);
+  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.25s ease, box-shadow 0.25s ease, background-color 0.25s ease;
 }
 
 .bullets-card-collapsible .bullets-card-header {
   @apply cursor-pointer select-none;
 }
 
-.bullets-card-collapsible:hover {
+.bullets-card-collapsible:hover,
+.bullets-card:hover {
   transform: translateY(-2px);
-  border-color: var(--ctp-surface2);
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.12);
+  border-color: color-mix(in srgb, var(--ring) 40%, var(--border));
+  box-shadow: 0 8px 24px -6px rgba(0, 0, 0, 0.2);
+  background-color: color-mix(in srgb, var(--card) 95%, var(--accent));
 }
 
 .bullets-card-header {
@@ -42,17 +44,17 @@
 /* Hover Micro-Interactions */
 .bullet-item-row {
   @apply flex items-start gap-2.5 leading-[1.6] flex-1;
-  border-radius: var(--radius-xs);
-  padding: 4px 8px;
+  border-radius: var(--radius-sm);
+  padding: 5px 10px;
   transition: background-color 0.15s ease, transform 0.15s ease;
 }
 
 .bullet-item-row:hover {
-  background: color-mix(in srgb, var(--ctp-blue) 6%, transparent);
+  background: color-mix(in srgb, var(--ctp-blue) 8%, transparent);
 }
 
 .bullet-marker {
-  @apply flex-shrink-0 text-center leading-[1.6] mt-0.5 w-4 font-normal;
+  @apply flex-shrink-0 text-center leading-[1.6] mt-0.5 w-5 font-normal;
   font-size: 15px;
 }
 
@@ -78,14 +80,14 @@
 
 /* Shared styling for all ordered markers */
 .bullet-marker-ordered {
-  @apply flex items-center justify-center font-semibold;
+  @apply flex items-center justify-center font-semibold text-primary;
   font-size: var(--text-caption);
   font-family: var(--font-mono);
 }
 
 /* ── Unordered markers ──────────────────────────────────────────────────── */
 .bullet-marker-unordered {
-  @apply flex items-center justify-center font-bold;
+  @apply flex items-center justify-center font-bold text-primary;
 }
 
 .bullet-text {
@@ -94,32 +96,38 @@
 }
 
 .bullet-text-parent {
-  @apply font-semibold;
+  @apply font-semibold tracking-tight;
   color: var(--ink);
   font-size: var(--text-body-large);
+  font-family: var(--font-body);
 }
 
 /* Collapsible Groups */
 .bullets-chevron-wrapper {
-  @apply flex items-center justify-center flex-shrink-0;
-  width: 18px;
-  height: 18px;
+  @apply flex items-center justify-center flex-shrink-0 rounded-full p-1 transition-colors;
+  width: 24px;
+  height: 24px;
+  background-color: color-mix(in srgb, var(--ctp-overlay0) 12%, transparent);
 }
 
 .bullets-chevron {
   color: var(--ctp-overlay2);
-  transition: color 0.2s ease;
+  transition: color 0.2s ease, transform 0.2s ease;
+}
+
+.bullets-card-header:hover .bullets-chevron-wrapper {
+  background-color: color-mix(in srgb, var(--ctp-blue) 15%, transparent);
 }
 
 .bullets-card-header:hover .bullets-chevron {
-  color: var(--ctp-text);
+  color: var(--ctp-blue);
 }
 
 .bullet-children {
   @apply list-none pt-2 m-0 flex flex-col gap-2;
   margin-left: 14px;
   padding-left: 14px;
-  border-left: 1.5px solid var(--ctp-surface1);
+  border-left: 2px solid color-mix(in srgb, var(--ctp-surface1) 50%, transparent);
 }
 
 .bullet-item {

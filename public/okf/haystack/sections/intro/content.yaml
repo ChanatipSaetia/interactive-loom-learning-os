@@ -1,0 +1,41 @@
+estimatedTime: "7 min read"
+moduleCount: 10
+
+what:
+  definition: "Haystack 2.x is an open-source Python framework designed to build composable, production-grade LLM applications, semantic search, and RAG pipelines."
+  summary: "Comprehensive guide to Haystack 2.x — the open-source LLM orchestration and RAG pipeline framework."
+  bullets:
+    - "Pipeline DAG architecture for DocumentStores, Retrievers, and Generators"
+    - "Hybrid search combining BM25 keyword matching and dense vector embeddings"
+    - "Production component validation, error handling, and latency optimization"
+  tags:
+    - "Haystack 2.x"
+    - "RAG Pipelines"
+    - "Vector Search"
+    - "LLM Orchestration"
+
+why:
+  summary: "Basic RAG tutorials break down in production due to static chunking, retriever mismatch, and unhandled component state errors."
+  impact: "Haystack 2.x provides modular component validation, typed pipeline connections, and seamless model switching."
+
+roadmap:
+  - sectionId: "concept-map"
+    title: "Knowledge Graph"
+    type: "concept-map"
+    description: "Map spatial relationships between DocumentStores, Retrievers, and Generators."
+  - sectionId: "flashcards"
+    title: "Key Vocabulary"
+    type: "flashcards"
+    description: "Master Haystack terminology and component definitions."
+  - sectionId: "taxonomy"
+    title: "Component Taxonomy"
+    type: "taxonomy-browser"
+    description: "Explore retrievers, rankers, prompt builders, and LLM integrators."
+  - sectionId: "flowchart-query"
+    title: "Query Pipeline Flow"
+    type: "flowchart"
+    description: "Trace event storming step execution in query and indexing pipelines."
+  - sectionId: "tradeoffs"
+    title: "RAG Trade-off Sandbox"
+    type: "tradeoff-sandbox"
+    description: "Balance chunk sizes, top-k retrieval, embedding dimensions, and cost."

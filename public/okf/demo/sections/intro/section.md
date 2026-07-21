@@ -1,8 +1,6 @@
 ---
-type: text
-title: "What is an AI Agent?"
-heading: "Autonomous Goal-Directed Systems"
-resource: content.md
+type: intro
+resource: content.yaml
 ---
 
 # What is an AI Agent?

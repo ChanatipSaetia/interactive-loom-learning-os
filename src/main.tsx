@@ -5,6 +5,7 @@ import { App } from './App'
 import { SectionRegistry } from './core/registry'
 import './styles/app.css'
 
+SectionRegistry.register('intro', () => import('./sections/intro'))
 SectionRegistry.register('text', () => import('./sections/text'))
 SectionRegistry.register('bullets', () => import('./sections/bullets'))
 SectionRegistry.register('flowchart', () => import('./sections/flowchart'))

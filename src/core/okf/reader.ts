@@ -7,6 +7,7 @@ import type {
   OKFBundled,
   OKFSectionMeta,
   OKFSectionData,
+  OKFIntroSectionData,
   OKFTextSectionData,
   OKFBulletSectionData,
   OKFFlowSectionData,
@@ -130,6 +131,7 @@ export async function loadOKFBundle(topicId: string): Promise<OKFBundled> {
         heading: (sectionRes.meta.heading as string) ?? undefined,
         ordered: (sectionRes.meta.ordered as boolean) ?? undefined,
         resource: (sectionRes.meta.resource as string) ?? '.',
+        intro: (sectionRes.meta.intro as any) ?? undefined,
       }
 
       const sectionDir = sectionFile.replace(/\/section\.md$/, '')
@@ -152,6 +154,8 @@ async function loadSectionResource(
   sectionBody: string
 ): Promise<OKFSectionData> {
   switch (type) {
+    case 'intro':
+      return loadIntroSection(basePath, resource)
     case 'text':
       return loadTextSection(basePath, resource, sectionBody)
     case 'bullets':
@@ -601,6 +605,30 @@ async function loadReflectionTemplateSection(basePath: string, resource: string)
   return {
     type: 'reflection-template',
     challenges,
+  }
+}
+
+async function loadIntroSection(basePath: string, resource: string): Promise<OKFIntroSectionData> {
+  const file = resource && resource !== '.' ? resource : 'content.yaml'
+  try {
+    const raw = await fetchYaml<any>(`${basePath}/${file}`)
+    return {
+      type: 'intro',
+      title: raw.title,
+      subtitle: raw.subtitle,
+      estimatedTime: raw.estimatedTime,
+      moduleCount: raw.moduleCount,
+      what: raw.what ?? { summary: '' },
+      why: raw.why ?? { summary: '' },
+      roadmap: raw.roadmap ?? [],
+    }
+  } catch (e) {
+    return {
+      type: 'intro',
+      what: { summary: '' },
+      why: { summary: '' },
+      roadmap: [],
+    }
   }
 }
 

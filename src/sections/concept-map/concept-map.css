@@ -7,7 +7,8 @@
 }
 
 .concept-map-canvas-wrapper {
-  @apply flex-1 relative rounded-lg overflow-hidden border border-border bg-background;
+  @apply flex-1 relative rounded-xl overflow-hidden border border-border bg-card shadow-sm;
+  box-shadow: 0 4px 20px -4px rgba(0, 0, 0, 0.12);
 }
 
 .concept-map-svg {
@@ -69,6 +70,7 @@
 .cm-edge-label-group-highlight {
   filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.4));
 }
+
 .cm-node-group {
   transition: opacity 0.2s ease;
 }
@@ -83,7 +85,7 @@
 
 .cm-node-selected circle {
   stroke-width: 3;
-  filter: drop-shadow(0 0 6px var(--ctp-blue));
+  filter: drop-shadow(0 0 8px var(--ctp-blue));
 }
 
 @keyframes cm-entry-pulse {
@@ -107,11 +109,10 @@
 }
 
 .concept-map-graph-badge {
-  @apply inline-flex items-center px-2 py-0.5 rounded text-xs font-medium;
-  background: var(--ctp-surface0);
-  color: var(--ctp-subtext0);
-  font-family: var(--font-mono);
-  border: 1px solid var(--ctp-surface1);
+  @apply inline-flex items-center px-2.5 py-1 rounded-full text-xs font-mono font-medium;
+  color: var(--ctp-mauve);
+  background: color-mix(in srgb, var(--ctp-mauve) 12%, transparent);
+  border: 1px solid color-mix(in srgb, var(--ctp-mauve) 25%, transparent);
 }
 
 .cm-node-title {
@@ -135,15 +136,17 @@
 }
 
 .concept-map-toolbar-btn {
-  @apply w-8 h-8 flex items-center justify-center rounded-md border border-border bg-card text-muted-foreground hover:text-foreground hover:border-primary transition-all shadow-sm;
+  @apply w-8 h-8 flex items-center justify-center rounded-lg border border-border bg-card text-muted-foreground hover:text-foreground hover:border-ring hover:bg-accent transition-all shadow-sm;
 }
 
 .concept-map-legend {
   @apply absolute bottom-3 left-3 flex flex-wrap gap-2 z-10;
-  background: var(--ctp-mantle);
-  border: 1px solid var(--ctp-surface1);
-  border-radius: 8px;
-  padding: 6px 10px;
+  background: color-mix(in srgb, var(--ctp-mantle) 88%, var(--card));
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 6px 12px;
 }
 
 .concept-map-legend-item {
@@ -159,8 +162,8 @@
 
 .concept-map-panel {
   width: 300px;
-  @apply flex-shrink-0 bg-card border border-border rounded-lg p-4 flex flex-col gap-3;
-  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.2);
+  @apply flex-shrink-0 bg-card border border-border rounded-xl p-5 flex flex-col gap-3.5;
+  box-shadow: 0 8px 30px -6px rgba(0, 0, 0, 0.25);
 }
 
 .concept-map-panel-header {
@@ -181,12 +184,13 @@
 }
 
 .concept-map-panel-close {
-  @apply w-6 h-6 flex items-center justify-center rounded text-muted-foreground hover:text-foreground transition-colors;
+  @apply w-7 h-7 flex items-center justify-center rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted transition-colors;
 }
 
 .concept-map-panel-title {
   font-size: var(--text-feature-heading);
-  @apply text-foreground font-light tracking-tight;
+  font-family: var(--font-display);
+  @apply text-foreground font-semibold tracking-tight;
 }
 
 .concept-map-panel-def {
@@ -195,21 +199,21 @@
 }
 
 .concept-map-panel-connections {
-  @apply pt-2 border-t border-border;
+  @apply pt-3 border-t border-border;
 }
 
 .concept-map-panel-connections-label {
   font-size: 10px;
   font-family: var(--font-mono);
-  @apply text-muted-foreground uppercase tracking-widest;
+  @apply text-muted-foreground uppercase tracking-widest font-semibold;
 }
 
 .concept-map-panel-connection-list {
-  @apply flex flex-col gap-1 mt-2;
+  @apply flex flex-col gap-1.5 mt-2;
 }
 
 .concept-map-panel-connection-item {
-  @apply flex items-center gap-2 px-2 py-1.5 rounded text-left text-sm text-foreground hover:bg-muted transition-colors;
+  @apply flex items-center gap-2 px-2.5 py-1.5 rounded-lg text-left text-sm text-foreground hover:bg-muted hover:border-ring transition-colors border border-transparent;
   font-family: var(--font-body);
 }
 
