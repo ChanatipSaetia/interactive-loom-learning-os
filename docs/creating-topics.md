@@ -301,8 +301,9 @@ See [Event Storming Conventions](#event-storming-conventions) below for the full
 Interactive decision sandbox with metrics dashboard. Uses `resource: "."` — each `.yaml` file in the section directory represents one scenario.
 
 > [!TIP]
-> **Multiple Scenarios & Multiple Options per Scenario Step**
+> **Multiple Scenarios, Multiple Steps & Multiple Options per Scenario Step**
 > - **Multiple Scenarios**: A single `tradeoff-sandbox` section can contain **multiple scenarios** (e.g., `sections/tradeoffs/gear-budget.yaml` and `sections/tradeoffs/gear-invested.yaml`, or `sections/tradeoffs/fuel-system.yaml` and `sections/tradeoffs/engine-oil.yaml`). The UI renders a dropdown allowing users to switch between scenarios.
+> - **Multiple Steps per Scenario**: Each scenario contains **multiple sequential decision steps** (`steps[]`, e.g. step 1: Weapon Choice, step 2: Body Armor, step 3: Power Charge Generation).
 > - **Multiple Options/Choices**: Each decision step inside a scenario can define **multiple choices/options** (2, 3, 4 or more options for each decision point). Each choice modifies scenario metrics with deltas and specifies pros, cons, and contextual recommendations (`whyThisFits` / `whenToUse`).
 
 ```yaml
