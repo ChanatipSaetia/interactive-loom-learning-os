@@ -197,6 +197,9 @@ interface SectionConfig {
 
 For detailed schema specifications, prop definitions, file structures, and examples for each section type, see the dedicated reference documents in [`docs/sections/`](sections/README.md).
 
+> [!NOTE]
+> A topic configuration array (`sections`) can include **multiple instances of ANY section type** (e.g. multiple `text` sections, multiple `flowchart` sections, multiple `tradeoff-sandbox` sections, or multiple `scenario` and `decision-tree` sections).
+
 | Type | Reference Documentation | Mental Model |
 |---|---|---|
 | `text` | [sections/text.md](sections/text.md) | Anchored conceptual narrative |

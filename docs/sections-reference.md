@@ -40,6 +40,10 @@ For optimal cognitive progression, structure your topic's sections in the follow
 > **The Golden Ordering Rule**
 > Never reference a term, concept, or mechanism in section $N$ that has not been explicitly introduced in section $N-1$ or earlier.
 
+> [!NOTE]
+> **Multiple Sections of Any Type Allowed**
+> Topics are not limited to a single instance per section type. A single topic can include **multiple sections of ANY type** (e.g., multiple `text` sections, multiple `flowchart` sections, multiple `tradeoff-sandbox` sections, or multiple `scenario` and `decision-tree` sections). Arrange them in whatever sequence best serves the learning progression.
+
 ---
 
 ## Every Section Type at a Glance

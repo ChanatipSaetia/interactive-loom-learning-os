@@ -146,6 +146,10 @@ related:
 
 Each section is a folder with a `section.md` manifest (YAML frontmatter) and data files.
 
+> [!NOTE]
+> **Multiple Sections of Any Type Allowed**
+> A topic is not restricted to a single instance of each section type. A topic can contain **multiple sections of the exact same type** (e.g. multiple `text` sections, multiple `flowchart` sections like `sections/flowchart-engine/` and `sections/flowchart-brake/`, multiple `scenario` sections, or multiple `decision-tree` sections like `sections/decision-tree-channel/` and `sections/decision-tree-estimation/`). Each section instance lives in its own directory under `sections/` with its own `section.md` manifest and data files.
+
 ### Section frontmatter fields
 
 | Field | Required | Description |
