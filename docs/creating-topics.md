@@ -2,7 +2,11 @@
 
 This document is a technical reference guide for directory structures, content schemas, and registration requirements for creating interactive topics inside the Loom Learning OS.
 
-For a detailed explanation of the **educational objectives, progressive section ordering logic, and mental models** of each section type, refer to the [Section Reference & Mental Models Guide](sections-reference.md).
+## Reference Guides & Documentation
+
+- **[Section Types Reference](sections/README.md)** — Detailed directory layout, frontmatter descriptors, YAML/Markdown schemas, and examples for each section type.
+- **[Event Storming Conventions](event-storming-conventions.md)** — Authoritative rules for flowchart process cycles, branching logic, duplicate-and-collapse mapping (`collapsedTo`), node types, and journeys.
+- **[Section Reference & Mental Models Guide](sections-reference.md)** — Educational objectives, progressive section ordering logic, and cognitive mental models for all section types.
 
 ## Objective
 The procedural goal of creating a new topic is to construct a content directory containing YAML/Markdown files under the Open Knowledge Format (OKF) specification, which the reader parses and renders dynamically at runtime.
@@ -144,7 +148,7 @@ related:
 
 ## 3. Section Types
 
-Each section is a folder with a `section.md` manifest (YAML frontmatter) and data files.
+Each section is a folder with a `section.md` manifest (YAML frontmatter) and data files. For detailed schema specifications, parameter tables, and examples for each section type, see the [Section Types Reference](sections/README.md).
 
 > [!NOTE]
 > **Multiple Sections of Any Type Allowed**
@@ -295,7 +299,7 @@ llm_api:
 > - **Connecting Flowcharts**: Result events or continuation steps of one section connect conceptually to initiating commands in the next section. Shared systems use `collapsedTo` to link back to canonical nodes.
 
 **Event Storming Node and Relation Conventions:**
-See [Event Storming Conventions](#event-storming-conventions) below for the full rules on flow structure, branching, duplicate-and-collapse, and node types.
+See the [Event Storming Conventions Guide](event-storming-conventions.md) for full rules on flow structure, branching, duplicate-and-collapse mapping (`collapsedTo`), node types, and journeys.
 
 ### `tradeoff-sandbox` section
 Interactive decision sandbox with metrics dashboard. Uses `resource: "."` — each `.yaml` file in the section directory represents one scenario.
@@ -892,10 +896,8 @@ npm run dev
 ```
 
 
-## Recommended Section Order & Pedagogy
+## Related Reference Documents
 
-For guidelines on how to order your sections progressively to build learner comprehension, and to see a comparison of the educational focus of all 14 section types, refer to the [Section Reference & Mental Models Guide](sections-reference.md).
-
-## Event Storming Conventions
-
-Flowcharts inside the Loom Learning OS are built on Event Storming principles. For the authoritative guidelines on how to structure flowchart nodes, branching rules, duplicate-and-collapse mapping (`collapsedTo`), node types, and journeys configuration, refer to the [Event Storming Conventions Guide](event-storming-conventions.md).
+- **[Section Types Reference](sections/README.md)** — Individual schemas, frontmatter fields, and example configurations for all 14 section types.
+- **[Event Storming Conventions Guide](event-storming-conventions.md)** — Authoritative rules for structuring flowchart steps, branching paths, duplicate-and-collapse mapping (`collapsedTo`), and journey walkthroughs.
+- **[Section Reference & Mental Models Guide](sections-reference.md)** — Pedagogical ordering rules, mental models, and educational objectives for topic design.
