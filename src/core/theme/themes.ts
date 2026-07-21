@@ -23,6 +23,7 @@ export const THEMES: ThemeOption[] = [
   { id: 'medicare', label: 'MediCare+' },
   { id: 'recipebook', label: 'RecipeBook' },
   { id: 'pinkcatboo', label: 'PinkCatBoo' },
+  { id: 'eink', label: 'E-Ink (Paper)', icon: '📄' },
 ]
 
 export const DEFAULT_THEME_ID = ''

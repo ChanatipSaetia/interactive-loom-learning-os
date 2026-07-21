@@ -10,7 +10,8 @@ html {
 }
 
 html[data-theme='medicare'],
-html[data-theme='recipebook'] {
+html[data-theme='recipebook'],
+html[data-theme='eink'] {
   color-scheme: light;
 }
 
@@ -19,7 +20,10 @@ html[data-theme='medicare'] select,
 html[data-theme='medicare'] textarea,
 html[data-theme='recipebook'] input,
 html[data-theme='recipebook'] select,
-html[data-theme='recipebook'] textarea {
+html[data-theme='recipebook'] textarea,
+html[data-theme='eink'] input,
+html[data-theme='eink'] select,
+html[data-theme='eink'] textarea {
   color-scheme: light;
 }
 
@@ -100,4 +104,36 @@ textarea {
   color: var(--ctp-text);
   letter-spacing: 0.04em;
   text-shadow: 0 1px 2px rgba(0, 0, 0, 0.4);
+}
+
+/* ======================================
+   E-Ink: suppress all animations
+   E-ink displays ghost on rapid refreshes;
+   disable every transition and animation
+   app-wide when this theme is active.
+====================================== */
+html[data-theme='eink'] *,
+html[data-theme='eink'] *::before,
+html[data-theme='eink'] *::after {
+  animation-duration: 0.001ms !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: 0.001ms !important;
+  transition-delay: 0ms !important;
+}
+
+html[data-theme='eink'] ::selection {
+  background-color: rgba(26, 58, 110, 0.20);
+  color: #1A1A18;
+}
+
+html[data-theme='eink'] ::-webkit-scrollbar-track {
+  background: #EDE9DF;
+}
+
+html[data-theme='eink'] ::-webkit-scrollbar-thumb {
+  background: #8A8880;
+}
+
+html[data-theme='eink'] ::-webkit-scrollbar-thumb:hover {
+  background: #5C5A54;
 }

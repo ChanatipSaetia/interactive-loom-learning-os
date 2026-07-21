@@ -346,3 +346,75 @@
   --pale-blue:     rgba(254, 124, 142, 0.14);
   --pale-pink:     rgba(71, 37, 65, 0.60);
 }
+
+/* ============================================================
+   Theme: E-Ink (Paper)
+   Optimised for e-paper / e-ink displays and high-contrast
+   reading environments.
+
+   Design principles:
+   · Off-white background (#F4F0E8) avoids ghosting from pure white.
+   · Near-black charcoal (#1A1A18) prevents harsh refresh artifacts.
+   · All accents use luminance hierarchy (dark hues on light paper).
+   · No transparency-heavy values — solid edges render crisply.
+   · Animations/transitions are suppressed globally for this theme.
+============================================================ */
+[data-theme='eink'] {
+  /* shadcn semantic tokens — high-contrast light */
+  --background:             #F4F0E8;
+  --foreground:             #1A1A18;
+  --card:                   #ECEADE;
+  --card-foreground:        #1A1A18;
+  --primary:                #1A3A6E;
+  --primary-foreground:     #F4F0E8;
+  --secondary:              #E0DDD2;
+  --secondary-foreground:   #1A1A18;
+  --muted:                  #E0DDD2;
+  --muted-foreground:       #4A4A42;
+  --accent:                 #DDD8C8;
+  --accent-foreground:      #1A1A18;
+  --border:                 #B0ADA0;
+  --input:                  #E0DDD2;
+  --ring:                   #1A3A6E;
+  --destructive:            #7A1A1A;
+  --destructive-foreground: #F4F0E8;
+
+  /* Surfaces — warm paper tones */
+  --ctp-crust:     #FFFFFF;   /* topnav / sidebar header (pure white for max contrast) */
+  --ctp-mantle:    #EDE9DF;   /* secondary surface */
+  --ctp-base:      #F4F0E8;   /* page / canvas background */
+  --ctp-surface0:  #ECEADE;   /* cards, elevated surfaces */
+  --ctp-surface1:  #D8D5C8;   /* subtle border */
+  --ctp-surface2:  #B0ADA0;   /* strong border / divider */
+
+  /* Overlays / muted text — structured grey scale */
+  --ctp-overlay0:  #8A8880;
+  --ctp-overlay1:  #5C5A54;
+  --ctp-overlay2:  #4A4A42;
+  --ctp-subtext0:  #3C3A34;
+  --ctp-subtext1:  #2A2820;
+  --ctp-text:      #1A1A18;   /* primary foreground — near-black charcoal */
+
+  /* Accents — dark, ink-like hues on paper for crisp legibility */
+  --ctp-blue:      #1A3A6E;   /* Command — Dark Navy */
+  --ctp-sapphire:  #1E4080;   /* Service — Deep Blue */
+  --ctp-lavender:  #3A2A6E;   /* Read Model — Deep Indigo */
+  --ctp-sky:       #1A4A5E;   /* Process — Dark Slate Blue */
+  --ctp-teal:      #1A4A3A;   /* Database — Dark Teal */
+  --ctp-mauve:     #4A1A6E;   /* Policy — Deep Plum */
+  --ctp-pink:      #6E1A3A;   /* Data Object — Maroon */
+  --ctp-rosewater: #6E3A2A;   /* Core System — Dark Terracotta */
+  --ctp-flamingo:  #5E2A1A;   /* cursor — Deep Rust */
+
+  /* Status — deep, saturated tones readable without color reliance */
+  --ctp-green:     #1A5C2A;   /* Success / External API — Forest Green */
+  --ctp-yellow:    #5C3A00;   /* Warning / Actor — Dark Amber */
+  --ctp-peach:     #7A2A00;   /* Event — Dark Burnt Orange */
+  --ctp-red:       #7A1A1A;   /* Error / Hotspot — Dark Crimson */
+  --ctp-maroon:    #5E1A28;   /* Decision — Deep Burgundy */
+
+  /* Selection / highlight tints — subtle, print-like */
+  --pale-green:    rgba(26, 92, 42, 0.10);
+  --pale-blue:     rgba(26, 58, 110, 0.10);
+  --pale-pink:     rgba(110, 26, 58, 0.10);
+}
