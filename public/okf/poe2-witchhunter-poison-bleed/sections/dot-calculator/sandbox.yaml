@@ -1,0 +1,82 @@
+variables:
+  - id: attack_speed
+    label: "Attacks per Second"
+    min: 1
+    max: 8
+    step: 0.25
+    defaultValue: 3.5
+  - id: physical_damage
+    label: "Physical Damage per Hit"
+    min: 100
+    max: 3000
+    step: 50
+    defaultValue: 800
+  - id: chaos_damage
+    label: "Chaos Damage per Hit"
+    min: 0
+    max: 2000
+    step: 50
+    defaultValue: 400
+  - id: bleed_magnitude
+    label: "% Bleed Magnitude"
+    min: 15
+    max: 200
+    step: 5
+    defaultValue: 60
+  - id: poison_magnitude
+    label: "% Poison Magnitude"
+    min: 20
+    max: 250
+    step: 5
+    defaultValue: 75
+  - id: dot_duration
+    label: "DoT Duration (seconds)"
+    min: 3
+    max: 12
+    step: 0.5
+    defaultValue: 6
+
+metrics:
+  - id: bleed_dps
+    label: "Bleed DPS"
+    formula: "Math.round((physical_damage * bleed_magnitude / 100) * (attack_speed / dot_duration) * 5)"
+    description: "Physical damage per second from bleeding. Base magnitude is 15% of physical hit damage, scaled by your bleed magnitude modifiers. Multiplied by 5x for average map damage over duration."
+    analogy: "Like a deep wound that won't stop flowing—the deeper the cut and the slower the healing, the more blood pours out over time."
+    inScope:
+      - "Bleed magnitude scaling"
+      - "Physical damage conversion to bleed"
+    outOfScope:
+      - "Bleed chance on hit"
+      - "Monster bleed resistance"
+  - id: poison_dps
+    label: "Poison DPS"
+    formula: "Math.round(((physical_damage + chaos_damage) * poison_magnitude / 100) * (attack_speed / dot_duration) * 3)"
+    description: "Chaos damage per second from poison. Base magnitude is 20% of combined Physical + Chaos hit damage, scaled by poison magnitude modifiers."
+    analogy: "A spreading toxin that eats away at health—the more potent the venom and the longer it lingers, the greater the toll."
+    inScope:
+      - "Poison magnitude scaling"
+      - "Combined physical and chaos damage"
+    outOfScope:
+      - "Poison chance on hit"
+      - "Monster chaos resistance"
+  - id: total_dot_dps
+    label: "Total DoT DPS"
+    formula: "bleed_dps + poison_dps"
+    description: "Combined damage per second from both poison and bleed ticking simultaneously on the target."
+    analogy: "Two wounds working in concert—each independently draining, together overwhelming the target's recovery."
+    inScope:
+      - "Simultaneous bleed and poison ticks"
+    outOfScope:
+      - "Direct hit damage"
+      - "Other ailment sources"
+  - id: hits_to_fill
+    label: "Hits to Fill Poison Slots"
+    formula: "Math.ceil(6 / attack_speed)"
+    description: "Number of hits needed to fill all 6 default poison slots on a target. Higher attack speed means faster slot fill."
+    analogy: "Loading six darts into a spinning wheel—each hit places one dart, and faster spinning means the wheel fills quicker."
+    inScope:
+      - "Default 6 poison slot limit"
+      - "Attack speed to slot fill rate"
+    outOfScope:
+      - "Increased poison slots from items or skills"
+      - "Poison tick rate modifications"

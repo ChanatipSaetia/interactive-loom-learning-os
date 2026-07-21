@@ -1,0 +1,50 @@
+gas_grenade:
+  title: "Gas Grenade"
+  desc: "Projectile skill deploying poison cloud on ground for area DoT"
+  type: "aggregate"
+gas_grenade_apply:
+  title: "Gas Grenade"
+  desc: "Throw grenade to apply poison cloud on mob pack"
+  type: "aggregate"
+  collapsedTo: "gas_grenade"
+gas_grenade_boss:
+  title: "Gas Grenade"
+  desc: "Throw grenade to apply poison cloud on boss"
+  type: "aggregate"
+  collapsedTo: "gas_grenade"
+barrage:
+  title: "Barrage"
+  desc: "Rapid-hit projectile skill applying bleed through multiple attack hits"
+  type: "aggregate"
+barrage_pack:
+  title: "Barrage"
+  desc: "Fire barrage at pack to apply bleed alongside existing poison"
+  type: "aggregate"
+  collapsedTo: "barrage"
+barrage_boss:
+  title: "Barrage"
+  desc: "Fire barrage at boss to apply bleed alongside existing poison"
+  type: "aggregate"
+  collapsedTo: "barrage"
+dot_system:
+  title: "DoT System"
+  desc: "Game damage-over-time system ticking poison and bleed simultaneously"
+  type: "aggregate"
+dot_tick:
+  title: "DoT System"
+  desc: "Poison and bleed ticks stack on mob pack for rapid melt"
+  type: "aggregate"
+  collapsedTo: "dot_system"
+dot_boss:
+  title: "DoT System"
+  desc: "Poison and bleed ticks stack on boss for sustained damage"
+  type: "aggregate"
+  collapsedTo: "dot_system"
+no_mercy:
+  title: "No Mercy"
+  desc: "Ascendancy buff granting damage multiplier based on missing Concentration"
+  type: "external"
+sorcery_ward:
+  title: "Sorcery Ward"
+  desc: "Ward-based barrier absorbing incoming damage as defense layer"
+  type: "external"

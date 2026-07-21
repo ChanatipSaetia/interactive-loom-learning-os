@@ -1,0 +1,18 @@
+type: taxonomy-category
+icon: Target
+title: "Ascendancy"
+subtitle: "Witchhunter — No Mercy, Obsessive Rituals, Sorcery Ward"
+color: red
+description: "Witchhunter ascendancy nodes that define the build's identity around precision, DoT mastery, and calculated risk."
+details: "No Mercy is the core node, granting increased damage to affected enemies and scaling with DoT stacks — it rewards sustained engagements and multiple debuffs. Obsessive Rituals removes defensive passive nodes from the tree and converts them to offensive scaling, forcing reliance on Sorcery Ward and movement. Sorcery Ward integration across the ascendancy provides the barrier mechanic that replaces the sacrificed passive defenses."
+analogy: "You traded safety for lethality — every node you gave up came back as damage, but now you survive through skill and Ward."
+primaryFocus: "DoT damage scaling through No Mercy with Ward-based survivability"
+inScope:
+  - "No Mercy — increased damage to enemies affected by DoTs, scales with stack count"
+  - "Obsessive Rituals — removes defensive nodes, converts to offensive scaling"
+  - "Sorcery Ward ascendancy integration for barrier damage absorption"
+  - "Poison and Bleed-specific ascendancy notables"
+  - "Attack speed and mobility nodes tied to Witchhunter identity"
+outOfScope:
+  - "Ascendancy nodes from other classes (Inquisitor, Ascendant, etc.)"
+  - "Spell-focused ascendancy pathways"

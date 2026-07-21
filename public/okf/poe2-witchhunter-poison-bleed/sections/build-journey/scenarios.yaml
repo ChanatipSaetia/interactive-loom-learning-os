@@ -1,0 +1,77 @@
+id: league-journey
+title: "Your Witchhunter Journey"
+intro: "You've chosen the Poison + Bleed Witchhunter build for this league. Your decisions will shape your success."
+nodes:
+  start:
+    prompt: "League day 1. You've created your Witchhunter. What's your first priority?"
+    choices:
+      - id: get-bow
+        text: "Find a Bow with Attack Speed and Physical Damage"
+        next: bow-found
+      - id: tree-first
+        text: "Rush to the passive tree for Poison and Bleed clusters"
+        next: tree-first-bad
+
+  bow-found:
+    prompt: "You have a decent bow. What support gems are you linking?"
+    choices:
+      - id: dot-supports
+        text: "Poison 3 + Bleed 3 + At Mixture for dual DoT synergy"
+        next: dot-ready
+      - id: raw-damage
+        text: "Raw damage supports like Elemental Damage"
+        next: raw-damage-path
+
+  tree-first-bad:
+    prompt: "You skipped gearing and went straight to the tree. Your attacks tickle without proper damage."
+    choices:
+      - id: backtrack-gear
+        text: "Go back and get proper weapon and DoT supports"
+        next: bow-found
+      - id: push-anyway
+        text: "Push through with physical damage"
+        next: struggle
+
+  dot-ready:
+    prompt: "Dual DoTs are ticking beautifully. What's your endgame defense strategy?"
+    choices:
+      - id: ward-movement
+        text: "Sorcery Ward + constant movement for evasion"
+        next: smooth-sailing
+      - id: stack-defenses
+        text: "Ignore Obsessive Rituals and stack Armour/Evasion"
+        next: defensive-clunky
+
+  raw-damage-path:
+    prompt: "Your hits hard but you're missing the dual DoT synergy multiplier."
+    choices:
+      - id: switch-dot
+        text: "Reroll gems to include At Mixture and dual ailment supports"
+        next: dot-ready
+      - id: stay-raw
+        text: "Keep raw damage approach"
+        next: mediocre
+
+  smooth-sailing:
+    outcome:
+      verdict: "You're clearing maps with screens of poison clouds while bleed melts bosses. No Mercy shreds enemies as their Concentration drops."
+      lesson: "Dual DoT synergy + defensive mobility = optimal Witchhunter playstyle."
+      rating: a
+
+  defensive-clunky:
+    outcome:
+      verdict: "Stacking defenses works but wastes the Obsessive Rituals node's offensive potential. Your damage output suffers."
+      lesson: "Witchhunter's Obsessive Rituals is a trade-off — embrace the fragility for massive damage."
+      rating: b-plus
+
+  mediocre:
+    outcome:
+      verdict: "Raw damage clears content but you're missing the exponential scaling from dual ailment synergy."
+      lesson: "At Mixture + Poison 3 + Bleed 3 is mandatory for this build. Single DoT is always weaker."
+      rating: b-minus
+
+  struggle:
+    outcome:
+      verdict: "Physical hits without DoT supports make you irrelevant in endgame. Maps take forever to clear."
+      lesson: "This build is DoT-focused. Skipping ailment supports defeats the entire purpose."
+      rating: c

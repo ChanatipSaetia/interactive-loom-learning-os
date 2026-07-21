@@ -1,0 +1,103 @@
+id: witchhunter-advisor
+title: "Witchhunter Poison + Bleed Setup Advisor"
+root: stage
+nodes:
+  stage:
+    prompt: "What stage of the league are you at?"
+    choices:
+      - id: league-start
+        text: "League start (Acts 1-5)"
+        next: ls-gear
+        rationale: "Early league priorities differ from endgame."
+        recommended: true
+      - id: mid-league
+        text: "Mid-league (mapping, some endgame gear)"
+        next: mid-gear
+      - id: late-league
+        text: "Late league (high-tier maps, Uber target)"
+        next: late-gear
+
+  ls-gear:
+    prompt: "What weapon do you have?"
+    choices:
+      - id: ls-has-bow
+        text: "A Bow with Physical Damage and Attack Speed"
+        next: ls-bow-good
+        recommended: true
+      - id: ls-no-bow
+        text: "No proper bow yet"
+        next: ls-no-bow-rec
+
+  ls-bow-good:
+    leaf:
+      recommendation: "Link Poison 3, Bleed 3, and At Mixture into your bow immediately."
+      explanation: "With a physical bow, you can apply both Bleed and Poison. At Mixture creates the dual-DoT synergy where each ailment boosts the other's magnitude by 20%. Focus on reaching the Poison and Bleed clusters in the passive tree."
+      tradeoffs:
+        - "Early game, prioritize ailment chance over magnitude — consistent application matters more"
+        - "Take No Mercy ascendancy node first for Concentration-based damage bonus"
+        - "Budget flasks: Life Leech flask is your best early survival tool"
+
+  ls-no-bow-rec:
+    leaf:
+      recommendation: "Find any Bow with Physical Damage. Attack Speed is the priority stat."
+      explanation: "You need a bow for this build. Any physical bow works league start. Avoid bows with only elemental damage — you need Physical for Bleed. Attack Speed > Raw Damage early game because more hits = more DoT applications."
+      tradeoffs:
+        - "A cheap 1-socket bow with At Mixture is better than a 6L without it"
+        - "Gradually upgrade: more sockets → more supports → exponential DoT growth"
+
+  mid-gear:
+    prompt: "How's your passive tree progress?"
+    choices:
+      - id: mid-tree-good
+        text: "Allocated to Poison + Bleed clusters with Notables"
+        next: mid-tree-good-rec
+        recommended: true
+      - id: mid-tree-bad
+        text: "Still near Mercenary start, minimal allocation"
+        next: mid-tree-bad-rec
+
+  mid-tree-good-rec:
+    leaf:
+      recommendation: "Invest in Serpent's Kiss bow and Body and Soul chest piece."
+      explanation: "Mid-league is when unique items transform your build. Serpent's Kiss adds lifesteal and damage. Body and Soul gives massive Spirit for aura sustainability. Start allocating to RFLAS belt for survivability."
+      tradeoffs:
+        - "Serpent's Kiss is the best-in-slot bow for this build — prioritize saving for it"
+        - "Obsessive Rituals means you need good movement mechanics to survive"
+        - "Consider Sorcery Ward skill for an extra damage buffer"
+
+  mid-tree-bad-rec:
+    leaf:
+      recommendation: "Rush Poison and Bleed magnitude clusters in the passive tree."
+      explanation: "Without tree allocation, your DoTs underperform. Allocate to the nearest Poison and Bleed notables first, then extend toward magnitude and duration clusters. The dual-DoT synergy from At Mixture scales with tree investment."
+      tradeoffs:
+        - "Short allocation to key nodes > long allocation to mediocre nodes"
+        - "Consider using a Vaal orb to relocate your start if stuck"
+
+  late-gear:
+    prompt: "What's your endgame target?"
+    choices:
+      - id: late-mapping
+        text: "Fast map clearing and efficient farming"
+        next: late-mapping-rec
+        recommended: true
+      - id: late-uber
+        text: "Uber bosses and Vaal Overmap"
+        next: late-uber-rec
+
+  late-mapping-rec:
+    leaf:
+      recommendation: "Maximize clear speed with Gas Grenade cloud coverage and high Attack Speed."
+      explanation: "For mapping, you want screen-filling poison clouds from Gas Grenade while Barrage applies Bleed. Stack Attack Speed, Area of Effect, and DoT duration. RFLAS belt + Body and Soul + two life rings for safe mapping."
+      tradeoffs:
+        - "Clear speed > single-target in mapping builds — more maps cleared = more profit"
+        - "Gas Grenade clouds persist and overlap, creating AoE poison zones"
+        - "Movement speed is implicit DPS — faster mapping = more clears per hour"
+
+  late-uber-rec:
+    leaf:
+      recommendation: "Shift to maximum single-target DoT magnitude with crafted modifiers."
+      explanation: "Uber bosses require sustained single-target DoT. Craft 'More Magnitude of Poison' and 'More Magnitude of Bleeding' on your gear. Stack Duration over Clear Speed. No Mercy becomes critical as boss Concentration drains. Sorcery Ward is mandatory for survival."
+      tradeoffs:
+        - "Single-target focus means terrible clear — use a separate clearing skill or accept slow mapping"
+        - "Crafted 'More%' modifiers are worth the investment for Uber attempts"
+        - "Practice boss mechanics — Obsessive Rituals leaves you fragile"

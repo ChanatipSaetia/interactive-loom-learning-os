@@ -1,0 +1,16 @@
+type: taxonomy-category
+icon: Crosshair
+title: "Main Damage Skills"
+subtitle: "Gas Grenade & Barrage"
+color: green
+description: "Your two primary skills that clear maps through poison DoT stacking and bleed physical damage."
+details: "Gas Grenade throws a canister that shatters into poison gas clouds, dealing damage over time to enemies caught in the area. Barrage fires a rapid volley of projectiles across the screen, applying bleed through each individual hit. Gas Grenade excels at zone control and sustained DPS, while Barrage provides high attack-speed-driven application rate."
+analogy: "Gas Grenade is your area-denial toxin, Barrage is your shredding barrage — both stack debuffs relentlessly."
+primaryFocus: "DoT application rate and cumulative poison/bleed stacking"
+inScope:
+  - "Gas Grenade (Lv20) + Elemental Armament, At Mixture, Nova Projectiles, Faster Projectiles, Multifire"
+  - "Barrage (Lv20) + Bleed 3 supports, At Mixture, Multifire, Faster Attacks, Close Combat"
+  - "Both benefit from DoT duration, DoT magnitude, and attack speed"
+outOfScope:
+  - "Instant-damage spell skills"
+  - "Trigger-based skills as primary damage"

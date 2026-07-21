@@ -1,0 +1,72 @@
+- type: linear
+  id: step_poison_pack
+  initiatedBy: player
+  command: "Engage Pack with Gas Grenade"
+  policy: "On Pack Encounter"
+  handledBy: gas_grenade_apply
+  resultEvents:
+    - id: evt_poison_deployed
+      title: "Poison Cloud Deployed"
+  continuesAs: step_bleed_pack
+
+- type: linear
+  id: step_bleed_pack
+  command: "Apply Bleed with Barrage"
+  policy: "After Poison Cloud Deployed"
+  handledBy: barrage_pack
+  resultEvents:
+    - id: evt_ailments_active
+      title: "Both Ailments Active"
+  continuesAs: step_dots_pack
+
+- type: linear
+  id: step_dots_pack
+  command: "Let DoTs Deal Damage"
+  policy: "With Both Poison and Bleed Applied"
+  handledBy: dot_tick
+  resultEvents:
+    - id: evt_pack_melted
+      title: "Pack Melted"
+  continuesAs: step_clear_branch
+
+- type: branch
+  id: step_clear_branch
+  event: evt_pack_melted
+  branches:
+    - id: branch_next_pack
+      label: "Move to Next Pack"
+      dashed: true
+      policy: "If More Packs Remain"
+      command: "Proceed to Next Pack"
+      handledBy: gas_grenade_apply
+      resultEvents:
+        - id: evt_loop_pack
+          title: "Loop Back to Clear More"
+    - id: branch_boss
+      label: "Boss Fight"
+      policy: "If Boss Encountered"
+      command: "Begin Boss Engagement"
+      handledBy: gas_grenade_boss
+      resultEvents:
+        - id: evt_boss_poisoned
+          title: "Boss Poisoned"
+      continuesAs: step_bleed_boss
+
+- type: linear
+  id: step_bleed_boss
+  command: "Apply Bleed to Boss with Barrage"
+  policy: "After Boss Poisoned"
+  handledBy: barrage_boss
+  resultEvents:
+    - id: evt_boss_dual_ailmented
+      title: "Boss Dual Ailmented"
+  continuesAs: step_dots_boss
+
+- type: linear
+  id: step_dots_boss
+  command: "Let DoTs Tick on Boss"
+  policy: "With Both Poison and Bleed on Boss"
+  handledBy: dot_boss
+  resultEvents:
+    - id: evt_boss_defeated
+      title: "Boss Defeated"

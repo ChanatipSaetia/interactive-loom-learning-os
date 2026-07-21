@@ -1,0 +1,177 @@
+id: budget-league-starter
+title: "Budget League Starter"
+description: "Minimum investment to clear all content with dual DoTs"
+metrics:
+  - id: damage
+    label: Damage Output
+    baseValue: 30
+    min: 0
+    max: 100
+    direction: higher
+  - id: survivability
+    label: Survivability
+    baseValue: 45
+    min: 0
+    max: 100
+    direction: higher
+  - id: clear-speed
+    label: Clear Speed
+    baseValue: 35
+    min: 0
+    max: 100
+    direction: higher
+  - id: spirit-cost
+    label: Spirit Cost
+    baseValue: 30
+    min: 0
+    max: 100
+    direction: lower
+steps:
+  - id: weapon
+    title: "Weapon"
+    description: "Bow is the core weapon for Poison + Bleed. Crossbow offers a defensive alternative."
+    recommended: bow
+    choices:
+      - id: bow
+        label: "Bow"
+        description: "Standard bow with Attack Speed and Damage."
+        metrics:
+          damage: 10
+          survivability: 0
+          clear-speed: 5
+          spirit-cost: 0
+        pros:
+          - title: "Better attack speed"
+            description: "Faster attacks stack Poison quicker and refresh Bleed more often"
+          - title: "Wider stat pool"
+            description: "More bow uniques and implicit stats support Attack Speed builds"
+        cons:
+          - title: "No built-in defense"
+            description: "Standard bows rarely offer defensive modifiers"
+        whyThisFits: "Attack Speed is the priority for Poison stacking. Bow gives the best clear speed foundation."
+      - id: crossbow
+        label: "Crossbow"
+        description: "Crossbow with Life and Damage."
+        metrics:
+          damage: 5
+          survivability: 5
+          clear-speed: 0
+          spirit-cost: 0
+        pros:
+          - title: "Defensive implicit"
+            description: "Life on crossbow adds a layer of survivability early"
+        cons:
+          - title: "Slower attack speed"
+            description: "Lower attack speed means slower Poison stacking and Bleed refresh"
+        whenToUse: "Viable if struggling with survivability early league, but clear speed will suffer."
+  - id: body-armour
+    title: "Body Armour"
+    description: "Evasion chest for physical hit mitigation vs Hybrid ES/Evasion for balanced defense."
+    recommended: evasion-chest
+    choices:
+      - id: evasion-chest
+        label: "Evasion Chest"
+        description: "High Evasion chest piece for maximum physical hit mitigation."
+        metrics:
+          damage: 0
+          survivability: 15
+          clear-speed: 0
+          spirit-cost: 0
+        pros:
+          - title: "Strong physical mitigation"
+            description: "Evasion completely negates physical hits when above the threshold"
+          - title: "Cheaper to find"
+            description: "High-evasion bases are common and affordable early league"
+        cons:
+          - title: "No ES layer"
+            description: "Vulnerable to magic hits that bypass Evasion and elemental damage"
+        whyThisFits: "Physical hit mitigation is the most important defense layer. Evasion chest maximizes it."
+      - id: hybrid-es-evasion
+        label: "Hybrid ES/Evasion Chest"
+        description: "Hybrid base with both Energy Shield and Evasion."
+        metrics:
+          damage: 5
+          survivability: 10
+          clear-speed: 0
+          spirit-cost: 0
+        pros:
+          - title: "Dual defense layers"
+            description: "Covers both physical hits and elemental/magic damage"
+        cons:
+          - title: "Lower Evasion value"
+            description: "Hybrid bases have less Evasion than pure evasion bases at the same item level"
+        whenToUse: "Better mid-to-late league when you can afford well-rolled hybrid bases."
+  - id: belt
+    title: "Belt"
+    description: "RFLAS for Spirit reduction and defense vs Stocking Belt for offense."
+    recommended: rflas
+    choices:
+      - id: rflas
+        label: "RFLAS"
+        description: "Rare Flat Life And Spirit belt with high Life and Spirit Reservation Reduction."
+        metrics:
+          damage: 0
+          survivability: 15
+          clear-speed: 0
+          spirit-cost: 5
+        pros:
+          - title: "Spirit reservation reduction"
+            description: "Frees Spirit budget for more notables and ascendancy nodes"
+          - title: "Massive Life pool"
+            description: "300+ Life on belt is the best defensive belt option"
+        cons:
+          - title: "Increases Spirit cost"
+            description: "Spirit Reservation Reduction means you spend more Spirit overall"
+        whyThisFits: "Spirit budget management is critical. RFLAS enables more defensive nodes while adding Life."
+      - id: stocking-belt
+        label: "Stocking Belt"
+        description: "Stocking Belt with Attack Speed and Damage modifiers."
+        metrics:
+          damage: 10
+          survivability: 0
+          clear-speed: 5
+          spirit-cost: 0
+        pros:
+          - title: "Attack speed boost"
+            description: "Faster Poison stacking and overall damage output"
+        cons:
+          - title: "No defensive value"
+            description: "Sacrifices a large chunk of Life for offensive stats"
+        whenToUse: "When Spirit budget is not a concern and damage is the bottleneck."
+  - id: flask
+    title: "Flask"
+    description: "Life Leech Flask for sustain vs Mana Leech Flask for Spirit efficiency."
+    recommended: life-leech-flask
+    choices:
+      - id: life-leech-flask
+        label: "Life Leech Flask"
+        description: "Life Flask with Life Regeneration per second and Life Leech."
+        metrics:
+          damage: 0
+          survivability: 10
+          clear-speed: 0
+          spirit-cost: 0
+        pros:
+          - title: "Active sustain"
+            description: "Life Leech provides constant healing during map clears"
+          - title: "Burst recovery"
+            description: "Life Flask charges quickly for emergency survivability"
+        cons:
+          - title: "No Spirit benefit"
+            description: "Does not help with Spirit budget management"
+        whyThisFits: "Survivability is the priority for budget builds. Life Leech Flask keeps you alive in tough maps."
+      - id: mana-leech-flask
+        label: "Mana Leech Flask"
+        description: "Mana Flask with Mana Regeneration and Mana Leech."
+        metrics:
+          damage: 5
+          survivability: 0
+          clear-speed: 0
+          spirit-cost: 10
+        pros:
+          - title: "Spirit efficiency"
+            description: "Reduces Spirit budget pressure from Spirit-spending nodes"
+        cons:
+          - title: "No defensive value"
+            description: "Loses Life Leech sustain, making maps more dangerous"
+        whenToUse: "When Spirit budget is extremely tight and you cannot afford Spirit-reducing gear elsewhere."

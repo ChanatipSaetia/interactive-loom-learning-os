@@ -1,0 +1,19 @@
+type: taxonomy-category
+icon: Shield
+title: "Defenses"
+subtitle: "Sorcery Ward, Movement Evasion & Flasks"
+color: sky
+description: "Defense layers combining Sorcery Ward barriers, movement-based evasion, and life leech sustainability."
+details: "Sorcery Ward creates a barrier that absorbs damage and triggers effects when broken, giving you a second layer beyond life. The Witchhunter excels at movement-based evasion through high attack speed and mobility skills. Life flasks with leech recovery form the baseline sustain. Obsessive Rituals trades defense nodes for offense, creating a risk-reward balance you must manage through positioning and Ward uptime."
+analogy: "Sorcery Ward is your bubble, movement is your insurance, and Obsessive Rituals means you earn your safety through skill."
+primaryFocus: "Ward barrier management and movement-based survival"
+inScope:
+  - "Sorcery Ward barrier (skill + passive investment) for second health pool"
+  - "Movement speed and evasion rating from Witchhunter passives"
+  - "Life flasks with quick application and leech recovery"
+  - "Obsessive Rituals trade-off — defensive passives sacrificed for offensive scaling"
+  - "Positioning and kiting as primary avoidance"
+outOfScope:
+  - "Energy Shield-based defenses"
+  - "Armour-based mitigation"
+  - "Block-based survivability"

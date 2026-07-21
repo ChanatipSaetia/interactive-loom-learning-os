@@ -1,0 +1,9 @@
+player:
+  title: "Witchhunter Player"
+  desc: "Witchhunter controlling Gas Grenade, Barrage, and ascendancy buffs"
+pack:
+  title: "Mob Pack"
+  desc: "Group of regular map enemies"
+boss:
+  title: "Map Boss"
+  desc: "Map boss or league boss encounter"

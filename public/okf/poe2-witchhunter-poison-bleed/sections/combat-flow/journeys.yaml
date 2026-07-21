@@ -1,0 +1,37 @@
+- id: journey_pack_clear
+  label: "Pack Clearing Flow"
+  description: "Engage a mob pack with Gas Grenade for poison, layer Barrage for bleed, then let dual DoTs melt the pack"
+  steps:
+    - stepId: step_poison_pack
+      name: "Deploy Poison Cloud"
+      description: "Throw Gas Grenade at the mob pack to deploy a poison cloud"
+      processGroup: planning
+    - stepId: step_bleed_pack
+      name: "Apply Bleed"
+      description: "Fire Barrage into the pack to layer bleed on top of poison"
+      processGroup: execution
+    - stepId: step_dots_pack
+      name: "DoTs Melt Pack"
+      description: "Poison and bleed tick simultaneously for rapid pack clear"
+      processGroup: execution
+    - stepId: branch_next_pack
+      name: "Move to Next Pack"
+      description: "Loop back to engage the next mob pack"
+      processGroup: evaluation
+
+- id: journey_boss_fight
+  label: "Boss Fight Flow"
+  description: "Apply dual ailments to a boss with Gas Grenade and Barrage, then let sustained DoTs defeat the boss"
+  steps:
+    - stepId: branch_boss
+      name: "Begin Boss Engagement"
+      description: "Throw Gas Grenade at the boss to apply poison cloud"
+      processGroup: planning
+    - stepId: step_bleed_boss
+      name: "Apply Bleed to Boss"
+      description: "Fire Barrage at the boss to layer bleed on top of poison"
+      processGroup: execution
+    - stepId: step_dots_boss
+      name: "DoTs Tick on Boss"
+      description: "Sustained poison and bleed ticks steadily damage the boss until defeated"
+      processGroup: execution

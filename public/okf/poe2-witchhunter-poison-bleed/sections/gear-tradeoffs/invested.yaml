@@ -1,0 +1,179 @@
+id: invested-endgame
+title: "Invested Endgame"
+description: "Optimal gear choices for high-tier map clearing and bossing"
+metrics:
+  - id: damage
+    label: Damage Output
+    baseValue: 55
+    min: 0
+    max: 100
+    direction: higher
+  - id: survivability
+    label: Survivability
+    baseValue: 55
+    min: 0
+    max: 100
+    direction: higher
+  - id: clear-speed
+    label: Clear Speed
+    baseValue: 55
+    min: 0
+    max: 100
+    direction: higher
+  - id: spirit-cost
+    label: Spirit Cost
+    baseValue: 50
+    min: 0
+    max: 100
+    direction: lower
+steps:
+  - id: unique-weapon
+    title: "Unique Weapon"
+    description: "Serpent's Kiss for Poison damage vs crafted high DPS bow for raw damage."
+    recommended: serpents-kiss
+    choices:
+      - id: serpents-kiss
+        label: "Serpent's Kiss Bow"
+        description: "Unique bow with Poison Damage over Time and increased Attack Speed."
+        metrics:
+          damage: 20
+          survivability: 0
+          clear-speed: 0
+          spirit-cost: 5
+        pros:
+          - title: "Massive Poison amplification"
+            description: "Increased Poison Damage over Time scales all Poison DoTs significantly"
+          - title: "Attack Speed synergy"
+            description: "Built-in Attack Speed stacks Poison faster and refreshes Bleed more often"
+        cons:
+          - title: "Higher Spirit cost"
+            description: "Spirit Reservation Reduction from unique modifiers increases Spirit spend"
+          - title: "Single-element focus"
+            description: "Less flexible if switching between Poison and Bleed emphasis"
+        whyThisFits: "Poison Damage is the core multiplier for the build. Serpent's Kiss amplifies it directly."
+      - id: crafted-bow
+        label: "High DPS Crafted Bow"
+        description: "Crafted bow with maximum Attack Speed, Damage, and Area of Effect."
+        metrics:
+          damage: 15
+          survivability: 0
+          clear-speed: 10
+          spirit-cost: 0
+        pros:
+          - title: "Higher clear speed"
+            description: "Area of Effect and raw Attack Speed clear maps faster"
+        cons:
+          - title: "No Poison multiplier"
+            description: "Lacks the Poison Damage over Time bonus from Serpent's Kiss"
+        whenToUse: "When map clear speed is prioritized over bossing damage, or Spirit budget is tight."
+  - id: unique-chest
+    title: "Unique Chest"
+    description: "Body and Soul for Spirit efficiency and survivability vs Abyssus for balanced offense/defense."
+    recommended: body-and-soul
+    choices:
+      - id: body-and-soul
+        label: "Body and Soul"
+        description: "Unique chest with Spirit Reservation Reduction and Life Regeneration."
+        metrics:
+          damage: 0
+          survivability: 15
+          clear-speed: 0
+          spirit-cost: 0
+        pros:
+          - title: "Spirit budget relief"
+            description: "Spirit Reservation Reduction enables more Spirit-spending notables"
+          - title: "Life regeneration"
+            description: "Passive Life Regen provides constant sustain in maps"
+        cons:
+          - title: "No offensive stats"
+            description: "Purely defensive item with zero damage contribution"
+        whyThisFits: "Spirit budget is the constraint for Witchhunter. Body and Soul unlocks the full tree."
+      - id: abyssus
+        label: "Abyssus"
+        description: "Unique chest with Life, Resistance, and Damage over Time multipliers."
+        metrics:
+          damage: 10
+          survivability: 10
+          clear-speed: 0
+          spirit-cost: 0
+        pros:
+          - title: "Balanced offense and defense"
+            description: "DoT multiplier directly boosts Poison and Bleed damage"
+        cons:
+          - title: "No Spirit benefit"
+            description: "Does not help with Spirit budget, limiting tree options"
+        whenToUse: "When Spirit budget is already optimized and you need a damage boost."
+  - id: rings
+    title: "Rings"
+    description: "High-life rings for survivability vs damage-focused rings for raw DPS."
+    recommended: high-life-rings
+    choices:
+      - id: high-life-rings
+        label: "Two High-Life Rings"
+        description: "Two rings with 90+ Life, Resistances, and Attribute totals."
+        metrics:
+          damage: 0
+          survivability: 15
+          clear-speed: 0
+          spirit-cost: 0
+        pros:
+          - title: "Massive Life pool"
+            description: "180+ Life from two rings is significant survivability"
+          - title: "Resistance caps"
+            description: "Resistances on rings help reach 75% all elements"
+        cons:
+          - title: "No offensive contribution"
+            description: "Purely defensive slots with zero damage modifiers"
+        whyThisFits: "Life pool is the most reliable defense layer. Two high-life rings maximize it cheaply."
+      - id: damage-rings
+        label: "Damage Rings"
+        description: "Rings with Damage over Time, Attack Speed, and Critical Strike modifiers."
+        metrics:
+          damage: 15
+          survivability: -5
+          clear-speed: 0
+          spirit-cost: 0
+        pros:
+          - title: "Direct damage boost"
+            description: "DoT multipliers and Attack Speed increase overall DPS"
+        cons:
+          - title: "Reduced survivability"
+            description: "Less Life means less room for error in high-tier maps"
+        whenToUse: "When survivability is already sufficient and damage is the bottleneck."
+  - id: helmet
+    title: "Helmet"
+    description: "Evasion helm for physical mitigation vs Hybrid DoT helm for balanced offense/defense."
+    recommended: evasion-helm
+    choices:
+      - id: evasion-helm
+        label: "Evasion Helmet"
+        description: "High Evasion helmet with Resistances and Attributes."
+        metrics:
+          damage: 0
+          survivability: 10
+          clear-speed: 0
+          spirit-cost: 0
+        pros:
+          - title: "Physical hit mitigation"
+            description: "Evasion on helmet stacks with body armor for near-immunity to physical hits"
+          - title: "Cheaper to roll"
+            description: "Evasion helmets are easier to find with good rolls than hybrid bases"
+        cons:
+          - title: "No offensive stats"
+            description: "Purely defensive item with no damage contribution"
+        whyThisFits: "Physical mitigation is the most impactful defense layer. Evasion helm completes the setup."
+      - id: hybrid-dot-helm
+        label: "Hybrid DoT Helmet"
+        description: "Helmet with DoT multipliers and moderate Evasion."
+        metrics:
+          damage: 10
+          survivability: 5
+          clear-speed: 0
+          spirit-cost: 0
+        pros:
+          - title: "Damage and defense balance"
+            description: "DoT multipliers boost Poison and Bleed while maintaining some Evasion"
+        cons:
+          - title: "Lower Evasion value"
+            description: "Less physical mitigation than a pure evasion helmet"
+        whenToUse: "When you need a damage boost and can afford reduced physical mitigation."

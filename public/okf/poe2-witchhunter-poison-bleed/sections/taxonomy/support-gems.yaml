@@ -1,0 +1,19 @@
+type: taxonomy-category
+icon: Gem
+title: "Support Gems"
+subtitle: "Poison, Bleed, At Mixture & Utility Supports"
+color: mauve
+description: "Support gems that amplify your DoT damage, extend duration, and optimize the poison/bleed trade-off."
+details: "At Mixture is the keystone support — it converts a portion of your poison or bleed damage into the other DoT type, ensuring both debuffs contribute. Elemental Armament converts elemental damage to your chosen element for Gas Grenade. Poison and Bleed supports increase damage per stack independently. Multifire and Faster Projectiles boost application rate across both skills."
+analogy: "At Mixture is your damage blender — it makes poison and bleed work together instead of competing."
+primaryFocus: "Maximizing combined DoT output through At Mixture synergy"
+inScope:
+  - "At Mixture — converts portion of Poison to Bleed and Bleed to Poison"
+  - "Elemental Armament (Lightning) for Gas Grenade elemental conversion"
+  - "Poison 3 supports: Increased Duration, More Damage, Number of Poisons"
+  - "Bleed 3 supports: Increased Duration, More Physical Damage, Number of Bleeds"
+  - "Multifire, Faster Projectiles, Faster Attacks for application rate"
+  - "Culling Strike for boss kill cleanup"
+outOfScope:
+  - "Support gems for non-DoT skills"
+  - "Instant damage multiplication supports"
