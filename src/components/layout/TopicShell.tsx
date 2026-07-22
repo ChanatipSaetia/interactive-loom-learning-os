@@ -9,6 +9,8 @@ import { HUDProvider, useHUD } from '../../core/context/HUDContext'
 import { EditorProvider, useEditor } from '../../core/context/EditorContext'
 import { EditSectionToggle } from './EditSectionToggle'
 import { SplitPaneLayout } from './SplitPaneLayout'
+import { EditorPanel } from '../editor/EditorPanel'
+import { useSectionEditorBuffer } from '../../core/hooks/useSectionEditorBuffer'
 import { X } from 'lucide-react'
 
 interface SectionRendererProps {
@@ -58,15 +60,57 @@ function SectionEditToolbar({ sectionIndex }: { sectionIndex: number }) {
   )
 }
 
-function EditorPlaceholderPanel() {
+function LivePreviewSection({ config }: { config: SectionConfig }) {
   return (
-    <div className="editor-panel-placeholder" data-testid="editor-panel-placeholder">
-      <div className="editor-panel-header">
-        <h3>Section Editor</h3>
+    <div className="editor-preview-wrapper" data-testid="editor-preview-wrapper">
+      <SectionRenderer config={config} />
+    </div>
+  )
+}
+
+function EditorModeView({ topicLabel }: { topicLabel: string }) {
+  const { activeSection } = useEditor()
+
+  const {
+    data: editedData,
+    rawText,
+    parseError,
+    setVisualFormField,
+    setRawText,
+  } = useSectionEditorBuffer(activeSection)
+
+  const previewConfig = useMemo(() => {
+    if (!activeSection) return null
+    const original = bundleToSections([activeSection])[0]
+    return {
+      type: original.type,
+      props: { ...original.props, ...editedData },
+    }
+  }, [activeSection, editedData])
+
+  if (!activeSection || !previewConfig) {
+    return null
+  }
+
+  return (
+    <div>
+      <div className="editor-mode-header">
+        <h2 className="topic-page-title">{topicLabel}</h2>
+        <EditSectionToggle />
       </div>
-      <div className="editor-panel-body">
-        <p>Editor panel will appear here when a section is selected for editing.</p>
-      </div>
+      <SplitPaneLayout
+        leftPanel={
+          <EditorPanel
+            sectionData={editedData}
+            parseError={parseError}
+            onVisualFormChange={setVisualFormField}
+            onRawTextChange={setRawText}
+            rawText={rawText}
+          />
+        }
+        rightPanel={<LivePreviewSection config={previewConfig} />}
+      />
+      <HUDDrawer />
     </div>
   )
 }
@@ -74,7 +118,7 @@ function EditorPlaceholderPanel() {
 function TopicShellInner() {
   const { topicId } = useParams()
   const { topics } = useTopics()
-  const { editMode, activeSectionIndex } = useEditor()
+  const { editMode } = useEditor()
 
   const topic = useMemo(() => topics.find((r) => r.id === topicId), [topicId, topics])
 
@@ -108,27 +152,10 @@ function TopicShellInner() {
     )
   }
 
-  const activeSectionConfig =
-    activeSectionIndex !== null && activeSectionIndex < sections.length
-      ? sections[activeSectionIndex]
-      : null
-
-  if (editMode && activeSectionConfig) {
+  if (editMode) {
     return (
       <div className="topic-page editor-mode" data-topic-id={topic.id} data-testid={`${topic.id}-topic`}>
-        <div className="editor-mode-header">
-          <h2 className="topic-page-title">{topic.label}</h2>
-          <EditSectionToggle />
-        </div>
-        <SplitPaneLayout
-          leftPanel={<EditorPlaceholderPanel />}
-          rightPanel={
-            <div className="editor-preview-panel" data-testid="editor-preview-panel">
-              <SectionRenderer config={activeSectionConfig} />
-            </div>
-          }
-        />
-        <HUDDrawer />
+        <EditorModeView topicLabel={topic.label} />
       </div>
     )
   }
@@ -147,13 +174,22 @@ function TopicShellInner() {
   )
 }
 
+function TopicShellWithBundle() {
+  const { topicId } = useParams()
+  const { bundle } = useOKFBundled(topicId ?? '')
+
+  return (
+    <EditorProvider bundle={bundle}>
+      <TopicShellInner />
+    </EditorProvider>
+  )
+}
+
 export function TopicShell() {
   return (
     <ProgressProvider>
       <HUDProvider>
-        <EditorProvider>
-          <TopicShellInner />
-        </EditorProvider>
+        <TopicShellWithBundle />
       </HUDProvider>
     </ProgressProvider>
   )

@@ -493,8 +493,277 @@
 }
 
 /* =============================================
-   Responsive: Collapse split pane on small screens
-   ============================================= */
+    Editor Panel
+    ============================================= */
+.editor-panel {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 0;
+}
+
+.editor-panel .editor-panel-header {
+  flex-shrink: 0;
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--border);
+  background-color: color-mix(in srgb, var(--ctp-mantle) 60%, var(--card));
+}
+
+.editor-panel .editor-panel-header h3 {
+  font-family: var(--font-display);
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--primary);
+  margin: 0;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+/* =============================================
+    Editor Tab Bar
+    ============================================= */
+.editor-tab-bar {
+  display: flex;
+  flex-shrink: 0;
+  border-bottom: 1px solid var(--border);
+  background-color: color-mix(in srgb, var(--ctp-mantle) 40%, var(--card));
+  padding: 0 8px;
+  gap: 2px;
+}
+
+.editor-tab {
+  flex: 1;
+  padding: 10px 16px;
+  border: none;
+  border-radius: 8px 8px 0 0;
+  background: transparent;
+  color: var(--ctp-overlay1);
+  font-size: 12.5px;
+  font-weight: 500;
+  font-family: var(--font-body, var(--font-sans));
+  cursor: pointer;
+  transition: all 0.2s ease;
+  position: relative;
+}
+
+.editor-tab:hover {
+  color: var(--ctp-text);
+  background-color: color-mix(in srgb, var(--ctp-surface0) 50%, transparent);
+}
+
+.editor-tab.active {
+  color: var(--primary);
+  background-color: color-mix(in srgb, var(--primary) 10%, transparent);
+}
+
+.editor-tab.active::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 16px;
+  right: 16px;
+  height: 2px;
+  background: var(--primary);
+  border-radius: 2px 2px 0 0;
+}
+
+/* =============================================
+    Editor Panel Body
+    ============================================= */
+.editor-panel-body {
+  flex: 1;
+  min-height: 0;
+  overflow: auto;
+  padding: 16px 20px;
+}
+
+/* =============================================
+    Visual Form Editor
+    ============================================= */
+.visual-form {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.visual-form-field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.visual-form-field--array {
+  gap: 8px;
+}
+
+.visual-form-label {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.visual-form-field--bool .visual-form-label {
+  flex-direction: row;
+  align-items: center;
+  gap: 8px;
+}
+
+.visual-form-key {
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--ctp-overlay1);
+}
+
+.visual-form-input {
+  width: 100%;
+  padding: 8px 10px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background-color: var(--background);
+  color: var(--ctp-text);
+  font-size: 13px;
+  font-family: var(--font-body, var(--font-sans));
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  box-sizing: border-box;
+}
+
+.visual-form-input:focus {
+  outline: none;
+  border-color: color-mix(in srgb, var(--primary) 50%, transparent);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--primary) 15%, transparent);
+}
+
+.visual-form-input::placeholder {
+  color: var(--ctp-overlay0);
+}
+
+.visual-form-textarea {
+  width: 100%;
+  padding: 8px 10px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background-color: var(--background);
+  color: var(--ctp-text);
+  font-size: 13px;
+  font-family: var(--font-mono, monospace);
+  line-height: 1.5;
+  resize: vertical;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  box-sizing: border-box;
+}
+
+.visual-form-textarea:focus {
+  outline: none;
+  border-color: color-mix(in srgb, var(--primary) 50%, transparent);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--primary) 15%, transparent);
+}
+
+.visual-form-value {
+  font-size: 13px;
+  color: var(--ctp-text);
+  padding: 8px 10px;
+  background-color: color-mix(in srgb, var(--ctp-surface0) 40%, transparent);
+  border-radius: 6px;
+  border: 1px solid color-mix(in srgb, var(--border) 40%, transparent);
+}
+
+.visual-form-empty {
+  font-size: 12px;
+  color: var(--ctp-overlay0);
+  font-style: italic;
+  padding: 4px 0;
+}
+
+.visual-form-string-list {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.visual-form-object-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.visual-form-nested {
+  border: 1px solid color-mix(in srgb, var(--border) 50%, transparent);
+  border-radius: 8px;
+  padding: 10px 14px;
+  margin: 0;
+  background-color: color-mix(in srgb, var(--ctp-surface0) 20%, transparent);
+}
+
+.visual-form-nested legend {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--primary);
+  padding: 0 6px;
+}
+
+/* =============================================
+    Raw YAML Editor
+    ============================================= */
+.raw-yaml-editor {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  height: 100%;
+}
+
+.raw-yaml-textarea {
+  flex: 1;
+  min-height: 200px;
+  padding: 12px 14px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background-color: var(--ctp-mantle);
+  color: var(--ctp-text);
+  font-size: 12.5px;
+  font-family: var(--font-mono, monospace);
+  line-height: 1.6;
+  resize: none;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  tab-size: 2;
+}
+
+.raw-yaml-textarea:focus {
+  outline: none;
+  border-color: color-mix(in srgb, var(--primary) 50%, transparent);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--primary) 15%, transparent);
+}
+
+.raw-yaml-textarea::placeholder {
+  color: var(--ctp-overlay0);
+}
+
+.raw-yaml-error {
+  padding: 8px 12px;
+  border-radius: 6px;
+  background-color: color-mix(in srgb, var(--ctp-red) 12%, transparent);
+  border: 1px solid color-mix(in srgb, var(--ctp-red) 30%, transparent);
+  color: var(--ctp-red);
+  font-size: 12px;
+  font-family: var(--font-mono, monospace);
+  line-height: 1.4;
+}
+
+/* =============================================
+    Editor Preview Wrapper
+    ============================================= */
+.editor-preview-wrapper {
+  height: 100%;
+  overflow: auto;
+  padding: var(--spacing-xxl);
+  display: flex;
+  flex-direction: column;
+}
+
+/* =============================================
+    Responsive: Collapse split pane on small screens
+    ============================================= */
 @media (max-width: 768px) {
   .split-pane-layout {
     flex-direction: column;
@@ -503,7 +772,7 @@
   .split-pane-left {
     width: 100% !important;
     min-width: unset;
-    min-height: 200px;
+    min-height: 300px;
     border-right: none;
     border-bottom: 1px solid var(--border);
   }
@@ -511,7 +780,7 @@
   .split-pane-right {
     width: 100% !important;
     min-width: unset;
-    min-height: 200px;
+    min-height: 300px;
   }
 
   .split-pane-divider {

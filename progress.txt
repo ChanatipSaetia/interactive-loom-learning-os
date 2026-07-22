@@ -1,3 +1,10 @@
+## [2026-07-23 02:50 UTC] Issue #87 Complete
+- What was built: OKF Editor HUD toggle button and split-pane layout container. Added EditSectionToggle button to each section's toolbar (appears on hover), EditorContext for edit mode state management, SplitPaneLayout with draggable resizable divider. Clicking "Edit" transforms topic view into split-pane (editor panel left, live preview right). Clicking "Done" reverts to full-screen section view. Responsive: panes stack vertically on mobile.
+- Files: src/core/context/EditorContext.tsx, src/components/layout/EditSectionToggle.tsx, src/components/layout/SplitPaneLayout.tsx, src/components/layout/TopicShell.tsx (integrated EditorProvider and edit mode rendering), src/components/layout/layout.css (split-pane, editor-mode, toggle button styles)
+- Tests added: 7 new unit tests in tests/unit/components/layout/TopicShell.test.tsx covering edit mode entry/exit, split-pane rendering, divider, toggle button state, editor panel placeholder
+- E2E verified via Playwright MCP: edit mode toggle, split-pane layout, Done button exit
+- Learnings: TopicShellInner needed to be wrapped in EditorProvider. Edit buttons only render in full-screen mode; editor mode needs its own "Done" toggle in the header. CSS custom properties (--border, --primary, --card, --ctp-mantle etc.) from Catppuccin theme work well for split-pane styling.
+
 ## [2025-07-03 09:30 UTC] Issue #81 Complete
 - What was built: Concept map section type with interactive knowledge graph. Force-directed SVG graph rendering, node click opens detail panel with definition, hover highlights connected edges/nodes, pan/zoom support, Catppuccin Frappé category-based node coloring.
 - Files: src/sections/concept-map/index.tsx, src/sections/concept-map/concept-map.css, src/core/okf/types.ts (OKFConceptMapSectionData), src/core/okf/reader.ts (loadConceptMapSection), src/core/okf/sections.ts (adapter case), src/main.tsx (registry), okf/demo/sections/concept-map/

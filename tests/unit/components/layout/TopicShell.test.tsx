@@ -1,4 +1,4 @@
-import { render, screen, waitFor } from '@testing-library/react'
+import { render, screen, waitFor, fireEvent } from '@testing-library/react'
 import { MemoryRouter, Routes, Route } from 'react-router-dom'
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 import * as registryModule from '../../../../src/core/registry'
@@ -7,6 +7,7 @@ import * as routesModule from '../../../../src/core/routes'
 import { TopicShell, SectionRenderer } from '../../../../src/components/layout/TopicShell'
 import type { TopicRoute } from '../../../../src/core/routes'
 import type { SectionConfig } from '../../../../src/core/registry'
+import type { OKFBundledSection } from '../../../../src/core/okf/types'
 
 const MockSectionComponent = vi.fn(() => <div data-testid="mock-registered-section" />)
 const mockSectionLoader = () => Promise.resolve({ default: MockSectionComponent })
@@ -126,7 +127,7 @@ describe('TopicShell OKF loading', () => {
 })
 
 describe('TopicShell Editor Mode', () => {
-  const mockBundle = [
+  const mockBundle: OKFBundledSection[] = [
     {
       meta: { type: 'text', title: 'Test Section', resource: 'test.md' },
       data: { type: 'text', paragraphs: ['Hello world'] },
@@ -168,7 +169,7 @@ describe('TopicShell Editor Mode', () => {
     })
   })
 
-  it('entering edit mode shows split-pane layout', async () => {
+  it('editor panel shows Visual Form tab active by default in edit mode', async () => {
     renderTopicShell('/demo/rest-vs-websocket')
 
     await waitFor(() => {
@@ -176,17 +177,41 @@ describe('TopicShell Editor Mode', () => {
       expect(editButtons.length).toBeGreaterThanOrEqual(2)
     })
 
-    const firstEditBtn = document.querySelector('[data-testid="edit-section-toggle-0"]')
-    expect(firstEditBtn).not.toBeNull()
-    firstEditBtn?.click()
+    const firstEditBtn = screen.getByTestId('edit-section-toggle-0')
+    fireEvent.click(firstEditBtn)
+
+    await waitFor(() => {
+      const visualForm = document.querySelector('[data-testid="visual-form-editor"]')
+      expect(visualForm).toBeInTheDocument()
+      const formTab = document.querySelector('[data-testid="editor-tab-form"]')
+      expect(formTab?.classList.contains('active')).toBe(true)
+    })
+  })
+
+  it('entering edit mode shows split-pane layout with editor panel', async () => {
+    renderTopicShell('/demo/rest-vs-websocket')
+
+    await waitFor(() => {
+      const editButtons = document.querySelectorAll('[data-testid^="edit-section-toggle-"]')
+      expect(editButtons.length).toBeGreaterThanOrEqual(2)
+    })
+
+    const firstEditBtn = screen.getByTestId('edit-section-toggle-0')
+    fireEvent.click(firstEditBtn)
 
     await waitFor(() => {
       const splitPane = document.querySelector('[data-testid="split-pane-layout"]')
       expect(splitPane).toBeInTheDocument()
-      const editorPanel = document.querySelector('.editor-panel-placeholder')
+      const editorPanel = document.querySelector('[data-testid="editor-panel"]')
       expect(editorPanel).toBeInTheDocument()
-      const previewPanel = document.querySelector('[data-testid="editor-preview-panel"]')
-      expect(previewPanel).toBeInTheDocument()
+      const tabBar = document.querySelector('[data-testid="editor-tab-bar"]')
+      expect(tabBar).toBeInTheDocument()
+      const formTab = document.querySelector('[data-testid="editor-tab-form"]')
+      expect(formTab).toBeInTheDocument()
+      const rawTab = document.querySelector('[data-testid="editor-tab-raw"]')
+      expect(rawTab).toBeInTheDocument()
+      const previewWrapper = document.querySelector('[data-testid="editor-preview-wrapper"]')
+      expect(previewWrapper).toBeInTheDocument()
     })
   })
 
@@ -198,15 +223,15 @@ describe('TopicShell Editor Mode', () => {
       expect(editButtons.length).toBeGreaterThanOrEqual(2)
     })
 
-    const firstEditBtn = document.querySelector('[data-testid="edit-section-toggle-0"]')
-    firstEditBtn?.click()
+    const firstEditBtn = screen.getByTestId('edit-section-toggle-0')
+    fireEvent.click(firstEditBtn)
 
     await waitFor(() => {
       expect(document.querySelector('[data-testid="split-pane-layout"]')).toBeInTheDocument()
     })
 
-    const doneBtn = document.querySelector('[data-testid="edit-section-toggle-default"]')
-    doneBtn?.click()
+    const doneBtn = screen.getByTestId('edit-section-toggle-default')
+    fireEvent.click(doneBtn)
 
     await waitFor(() => {
       const splitPane = document.querySelector('[data-testid="split-pane-layout"]')
