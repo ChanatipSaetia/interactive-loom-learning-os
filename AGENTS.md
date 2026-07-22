@@ -8,9 +8,9 @@ Interactive learning platform with animated flowcharts, trade-off sandboxes, tax
 browsers, visual OKF section editor, and progressive content. React + Vite + anime.js, Catppuccin Frappé theme.
 See [README.md](README.md) for the tech stack, scripts, and project structure.
 
-## Key docs
+## Key docs & Source of Truth
 
-Read the relevant doc before starting work — do not duplicate its content here.
+Read the relevant doc before starting work — **all documentation in `docs/` and key markdown specs are authoritative single-sources-of-truth. Trust and adhere strictly to the guidelines, schemas, and architectural decisions documented in them.**
 
 | Topic | Doc |
 |---|---|
@@ -67,6 +67,7 @@ This approach gives immediate feedback without maintaining Playwright test files
 
 ## Conventions
 
+- Trust documentation in `docs/` and root spec docs as authoritative truth.
 - Keep content (data) strictly separate from structure (UI) — content lives in `public/okf/` or `src/topics/<topic>/data/`.
 - Only commit, push, or open PRs when explicitly requested.
 - Use the issue tracker and triage conventions in [docs/agents/](docs/agents/).

@@ -8,7 +8,7 @@ You are an autonomous developer running in a Ralph Loop with OpenCode.
 2. Run `gh issue list --label ready-for-agent --state open --json number,title,body` to find the next ready-for-agent issue
 3. Pick the oldest open issue with `ready-for-agent` label
 4. Read `progress.txt` — apply learnings from prior iterations
-5. Read `AGENTS.md` and `grill-log-okf-section-editor.md` — follow all conventions, schemas, and architectural decisions strictly
+5. Read `AGENTS.md` and key docs (`grill-log-okf-section-editor.md`, `docs/creating-topics.md`, etc.) — treat documentation as authoritative source of truth and follow conventions, schemas, and architectural decisions strictly
 6. Explore relevant source files (`src/core/okf/`, `src/components/`, `vite.config.ts`, etc.) to understand current state
 7. Implement ONLY that one issue
 8. Write unit tests for business logic (isolated, no infrastructure) in `tests/unit/`
@@ -38,6 +38,7 @@ You are an autonomous developer running in a Ralph Loop with OpenCode.
 ## Critical Rules
 
 - ONE issue per run — never start a second issue
+- Trust documentation in `docs/` and root spec docs as authoritative source of truth
 - Run typecheck → lint → unit tests, then verify with Playwright MCP
 - Always update `progress.txt` before exiting
 - Close the GitHub issue only after all checks pass
