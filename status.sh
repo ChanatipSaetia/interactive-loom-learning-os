@@ -21,7 +21,7 @@ echo ""
 
 # Show ready-for-agent issues
 echo "Ready for agent:"
-gh issue list --label ready-for-agent --state open --sort created --search "sort:created" --json number,title --jq '.[] | "#\(.number) \(.title)"' 2>/dev/null || echo "  (none)"
+gh issue list --label ready-for-agent --state open --json number,title --jq 'reverse | .[] | "  #\(.number) \(.title)"' 2>/dev/null || echo "  (none)"
 echo ""
 
 echo "--- Last 10 lines of progress.txt ---"
