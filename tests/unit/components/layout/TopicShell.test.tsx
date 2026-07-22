@@ -124,3 +124,177 @@ describe('TopicShell OKF loading', () => {
     expect(missing).toHaveTextContent('Section type not registered: unknown-type')
   })
 })
+
+describe('TopicShell Editor Mode', () => {
+  const mockBundle = [
+    {
+      meta: { type: 'text', title: 'Test Section', resource: 'test.md' },
+      data: { type: 'text', paragraphs: ['Hello world'] },
+    },
+    {
+      meta: { type: 'bullets', title: 'Test Bullets', resource: 'test.md' },
+      data: { type: 'bullets', items: [{ text: 'Item 1' }] },
+    },
+  ]
+
+  beforeEach(() => {
+    vi.clearAllMocks()
+    registryModule.SectionRegistry.clear()
+    registryModule.SectionRegistry.register('text', mockSectionLoader)
+    registryModule.SectionRegistry.register('bullets', mockSectionLoader)
+    vi.spyOn(okfSections, 'useOKFBundled').mockReturnValue({
+      bundle: mockBundle,
+      loading: false,
+      error: null,
+      reload: vi.fn(),
+    })
+    vi.spyOn(okfSections, 'bundleToSections').mockReturnValue([
+      { type: 'text', props: { title: 'Test Section', paragraphs: ['Hello world'] } },
+      { type: 'bullets', props: { title: 'Test Bullets', items: [{ text: 'Item 1' }] } },
+    ])
+  })
+
+  afterEach(() => {
+    registryModule.SectionRegistry.clear()
+    vi.restoreAllMocks()
+  })
+
+  it('renders edit section toggle buttons for each section', async () => {
+    renderTopicShell('/demo/rest-vs-websocket')
+
+    await waitFor(() => {
+      const editButtons = document.querySelectorAll('[data-testid^="edit-section-toggle-"]')
+      expect(editButtons.length).toBeGreaterThanOrEqual(2)
+    })
+  })
+
+  it('entering edit mode shows split-pane layout', async () => {
+    renderTopicShell('/demo/rest-vs-websocket')
+
+    await waitFor(() => {
+      const editButtons = document.querySelectorAll('[data-testid^="edit-section-toggle-"]')
+      expect(editButtons.length).toBeGreaterThanOrEqual(2)
+    })
+
+    const firstEditBtn = document.querySelector('[data-testid="edit-section-toggle-0"]')
+    expect(firstEditBtn).not.toBeNull()
+    firstEditBtn?.click()
+
+    await waitFor(() => {
+      const splitPane = document.querySelector('[data-testid="split-pane-layout"]')
+      expect(splitPane).toBeInTheDocument()
+      const editorPanel = document.querySelector('.editor-panel-placeholder')
+      expect(editorPanel).toBeInTheDocument()
+      const previewPanel = document.querySelector('[data-testid="editor-preview-panel"]')
+      expect(previewPanel).toBeInTheDocument()
+    })
+  })
+
+  it('exiting edit mode restores full-screen view', async () => {
+    renderTopicShell('/demo/rest-vs-websocket')
+
+    await waitFor(() => {
+      const editButtons = document.querySelectorAll('[data-testid^="edit-section-toggle-"]')
+      expect(editButtons.length).toBeGreaterThanOrEqual(2)
+    })
+
+    const firstEditBtn = document.querySelector('[data-testid="edit-section-toggle-0"]')
+    firstEditBtn?.click()
+
+    await waitFor(() => {
+      expect(document.querySelector('[data-testid="split-pane-layout"]')).toBeInTheDocument()
+    })
+
+    const doneBtn = document.querySelector('[data-testid="edit-section-toggle-default"]')
+    doneBtn?.click()
+
+    await waitFor(() => {
+      const splitPane = document.querySelector('[data-testid="split-pane-layout"]')
+      expect(splitPane).not.toBeInTheDocument()
+      const sectionWrappers = document.querySelectorAll('.section-with-toolbar')
+      expect(sectionWrappers.length).toBeGreaterThanOrEqual(2)
+    })
+  })
+})
+
+describe('EditSectionToggle', () => {
+  it('shows Edit label when not in edit mode', async () => {
+    registryModule.SectionRegistry.clear()
+    registryModule.SectionRegistry.register('text', mockSectionLoader)
+    vi.spyOn(okfSections, 'useOKFBundled').mockReturnValue({
+      bundle: [
+        {
+          meta: { type: 'text', title: 'Test', resource: 'test.md' },
+          data: { type: 'text', paragraphs: ['Hello'] },
+        },
+      ],
+      loading: false,
+      error: null,
+      reload: vi.fn(),
+    })
+    vi.spyOn(okfSections, 'bundleToSections').mockReturnValue([
+      { type: 'text', props: { title: 'Test', paragraphs: ['Hello'] } },
+    ])
+
+    renderTopicShell('/demo/rest-vs-websocket')
+
+    await waitFor(() => {
+      const editBtn = document.querySelector('[data-testid="edit-section-toggle-0"]')
+      expect(editBtn).not.toBeNull()
+      expect(editBtn?.textContent).toContain('Edit')
+      expect(editBtn?.classList.contains('active')).toBe(false)
+    })
+  })
+})
+
+describe('SplitPaneLayout', () => {
+  beforeEach(() => {
+    vi.clearAllMocks()
+  })
+
+  afterEach(() => {
+    vi.restoreAllMocks()
+  })
+
+  it('renders left and right panels', async () => {
+    const { SplitPaneLayout } = await import(
+      '../../../../src/components/layout/SplitPaneLayout'
+    )
+
+    render(
+      <MemoryRouter>
+        <SplitPaneLayout
+          leftPanel={<div data-testid="left-content">Left</div>}
+          rightPanel={<div data-testid="right-content">Right</div>}
+        />
+      </MemoryRouter>,
+    )
+
+    await waitFor(() => {
+      const container = document.querySelector('[data-testid="split-pane-layout"]')
+      expect(container).toBeInTheDocument()
+      expect(screen.getByTestId('left-content')).toBeInTheDocument()
+      expect(screen.getByTestId('right-content')).toBeInTheDocument()
+    })
+  })
+
+  it('renders the divider separator', async () => {
+    const { SplitPaneLayout } = await import(
+      '../../../../src/components/layout/SplitPaneLayout'
+    )
+
+    render(
+      <MemoryRouter>
+        <SplitPaneLayout
+          leftPanel={<div>Left</div>}
+          rightPanel={<div>Right</div>}
+        />
+      </MemoryRouter>,
+    )
+
+    await waitFor(() => {
+      const divider = document.querySelector('[data-testid="split-pane-divider"]')
+      expect(divider).toBeInTheDocument()
+    })
+  })
+})

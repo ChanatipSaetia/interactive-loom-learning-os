@@ -54,8 +54,8 @@ textarea {
 }
 
 ::selection {
-  background-color: rgba(140, 170, 238, 0.30);
-  color: var(--ctp-text);
+  background-color: color-mix(in srgb, var(--primary) 30%, transparent);
+  color: var(--foreground);
 }
 
 ::-webkit-scrollbar {
@@ -92,9 +92,9 @@ textarea {
   left: 0;
   height: 100%;
   @apply transition-all duration-300 ease-out rounded-full;
-  background: linear-gradient(90deg, color-mix(in srgb, var(--ctp-blue) 40%, var(--ctp-green)), var(--ctp-green));
+  background: linear-gradient(90deg, color-mix(in srgb, var(--primary) 40%, var(--secondary)), var(--primary));
   opacity: 0.5;
-  box-shadow: 0 0 12px color-mix(in srgb, var(--ctp-green) 40%, transparent);
+  box-shadow: 0 0 12px color-mix(in srgb, var(--primary) 40%, transparent);
 }
 
 .topic-progress-label {

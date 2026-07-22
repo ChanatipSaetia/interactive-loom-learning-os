@@ -54,22 +54,22 @@
   font-weight: 600;
   cursor: pointer;
   transition: all 0.2s ease;
-  color: var(--ctp-mauve);
+  color: var(--primary);
   user-select: none;
 }
 
 .reflection-blank-dropzone.highlight-target {
-  border-color: var(--ctp-blue);
-  background: color-mix(in srgb, var(--ctp-blue) 15%, transparent);
+  border-color: var(--primary);
+  background: color-mix(in srgb, var(--primary) 15%, transparent);
   transform: scale(1.04);
-  box-shadow: 0 0 14px color-mix(in srgb, var(--ctp-blue) 35%, transparent);
+  box-shadow: 0 0 14px color-mix(in srgb, var(--primary) 35%, transparent);
 }
 
 .reflection-blank-dropzone.filled {
   border-style: solid;
-  border-color: var(--ctp-mauve);
-  background: color-mix(in srgb, var(--ctp-mauve) 14%, var(--card));
-  box-shadow: 0 2px 10px color-mix(in srgb, var(--ctp-mauve) 18%, transparent);
+  border-color: var(--primary);
+  background: color-mix(in srgb, var(--primary) 14%, var(--card));
+  box-shadow: 0 2px 10px color-mix(in srgb, var(--primary) 18%, transparent);
 }
 
 /* Source Chips */
@@ -103,16 +103,16 @@
 }
 
 .template-chip-item:hover:not(.used) {
-  border-color: color-mix(in srgb, var(--ctp-mauve) 60%, transparent);
+  border-color: color-mix(in srgb, var(--primary) 60%, transparent);
   background: color-mix(in srgb, var(--ctp-surface0) 40%, var(--card));
   transform: translateY(-2px);
   box-shadow: 0 6px 18px rgba(0, 0, 0, 0.15);
 }
 
 .template-chip-item.selected {
-  border-color: var(--ctp-mauve);
-  background: color-mix(in srgb, var(--ctp-mauve) 16%, var(--card));
-  box-shadow: 0 0 0 1px var(--ctp-mauve), 0 4px 16px color-mix(in srgb, var(--ctp-mauve) 30%, transparent);
+  border-color: var(--primary);
+  background: color-mix(in srgb, var(--primary) 16%, var(--card));
+  box-shadow: 0 0 0 1px var(--primary), 0 4px 16px color-mix(in srgb, var(--primary) 30%, transparent);
 }
 
 .template-chip-item.used {
@@ -136,9 +136,9 @@
 }
 
 .template-verify-btn {
-  background: linear-gradient(135deg, var(--ctp-blue) 0%, color-mix(in srgb, var(--ctp-blue) 85%, black) 100%);
-  color: var(--ctp-crust);
-  border: 1px solid color-mix(in srgb, var(--ctp-blue) 40%, transparent);
+  background: var(--primary);
+  color: var(--primary-foreground);
+  border: 1px solid color-mix(in srgb, var(--primary) 40%, transparent);
   padding: 12px 24px;
   border-radius: 12px;
   font-weight: 700;
@@ -157,7 +157,7 @@
 
 .template-verify-btn:hover {
   transform: translateY(-2px);
-  box-shadow: 0 6px 20px color-mix(in srgb, var(--ctp-blue) 35%, transparent);
+  box-shadow: 0 6px 20px color-mix(in srgb, var(--primary) 35%, transparent);
   filter: brightness(1.08);
 }
 

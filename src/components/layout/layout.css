@@ -27,16 +27,12 @@
 .topnav-title {
   font-family: var(--font-display);
   @apply text-[15px] font-semibold tracking-tight whitespace-nowrap no-underline cursor-pointer transition-colors;
-  color: var(--ctp-lavender);
+  color: var(--primary);
 }
 
 .topnav-title:hover {
-  color: var(--ctp-blue);
-}
-
-html[data-theme='medicare'] .topnav-title,
-html[data-theme='recipebook'] .topnav-title {
-  color: var(--foreground);
+  color: var(--primary);
+  opacity: 0.85;
 }
 
 .topnav-links {
@@ -87,10 +83,7 @@ html[data-theme='recipebook'] .topnav-title {
   @apply text-4xl font-bold tracking-tight border-b border-border;
   @apply pb-4 mb-0;
   margin-bottom: 0 !important;
-  color: var(--ctp-lavender);
-  background: linear-gradient(135deg, var(--ctp-lavender), var(--ctp-blue));
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
+  color: var(--primary);
 }
 
 .topic-page-title + * {
@@ -107,13 +100,6 @@ html[data-theme='recipebook'] .topnav-title {
 .topic-page-title + * .flashcards-header {
   padding-top: 0 !important;
   margin-top: 0 !important;
-}
-
-html[data-theme='medicare'] .topic-page-title,
-html[data-theme='recipebook'] .topic-page-title {
-  color: var(--foreground);
-  -webkit-text-fill-color: initial;
-  background: none;
 }
 
 /* =============================================
@@ -140,6 +126,7 @@ html[data-theme='recipebook'] .topic-page-title {
   background-color: color-mix(in srgb, var(--loom-section-bg, var(--background)) 92%, transparent);
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
+  border-bottom: 1px solid color-mix(in srgb, var(--secondary) 30%, transparent);
 }
 
 .text-section-title::before,
@@ -157,8 +144,8 @@ html[data-theme='recipebook'] .topic-page-title {
   width: 10px;
   height: 10px;
   border-radius: 50%;
-  background: linear-gradient(135deg, var(--ctp-lavender), var(--ctp-blue));
-  box-shadow: 0 0 12px color-mix(in srgb, var(--ctp-lavender) 50%, transparent);
+  background: linear-gradient(135deg, var(--primary), var(--secondary));
+  box-shadow: 0 0 12px color-mix(in srgb, var(--secondary) 60%, transparent);
   flex-shrink: 0;
 }
 
@@ -174,8 +161,8 @@ html[data-theme='recipebook'] .topic-page-title {
 .concept-map-title::after {
   content: "";
   flex: 1;
-  height: 1px;
-  background: linear-gradient(90deg, var(--border) 0%, transparent 100%);
+  height: 2px;
+  background: linear-gradient(90deg, var(--secondary) 0%, color-mix(in srgb, var(--primary) 30%, transparent) 50%, transparent 100%);
 }
 
 .topic-page-placeholder {
@@ -184,6 +171,11 @@ html[data-theme='recipebook'] .topic-page-title {
 
 .topic-loading {
   @apply text-muted-foreground py-6;
+}
+
+.section-wrapper {
+  --loom-section-bg: var(--background);
+  position: relative;
 }
 
 .section-missing {
@@ -261,7 +253,7 @@ html[data-theme='recipebook'] .topic-page-title {
   font-size: 16px;
   font-weight: 600;
   font-family: var(--font-display);
-  color: var(--ctp-lavender);
+  color: var(--primary);
 }
 
 .hud-close {
@@ -301,7 +293,7 @@ html[data-theme='recipebook'] .topic-page-title {
   border-radius: 12px;
   padding: 14px;
   border: 1px solid var(--border);
-  border-left: 3px solid var(--ctp-mauve);
+  border-left: 3px solid var(--primary);
   font-size: 13px;
   box-shadow: 0 4px 16px rgba(0,0,0,0.12);
 }
@@ -311,5 +303,236 @@ html[data-theme='recipebook'] .topic-page-title {
   display: flex;
   flex-direction: column;
   gap: 48px;
+}
+
+/* =============================================
+   Section Edit Toolbar
+   ============================================= */
+.section-with-toolbar {
+  position: relative;
+}
+
+.section-edit-toolbar {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  z-index: 20;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.section-with-toolbar:hover .section-edit-toolbar {
+  opacity: 1;
+}
+
+/* =============================================
+   Edit Section Toggle Button
+   ============================================= */
+.edit-section-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border: 1px solid color-mix(in srgb, var(--border) 60%, transparent);
+  border-radius: 8px;
+  background-color: color-mix(in srgb, var(--card) 90%, transparent);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  color: var(--ctp-overlay1);
+  font-size: 12px;
+  font-family: var(--font-body, var(--font-sans));
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+}
+
+.edit-section-toggle:hover {
+  color: var(--primary);
+  border-color: color-mix(in srgb, var(--primary) 40%, transparent);
+  background-color: color-mix(in srgb, var(--primary) 8%, var(--card));
+}
+
+.edit-section-toggle.active {
+  color: var(--primary);
+  border-color: color-mix(in srgb, var(--primary) 50%, transparent);
+  background-color: color-mix(in srgb, var(--primary) 12%, var(--card));
+}
+
+.edit-section-toggle-label {
+  font-weight: 500;
+}
+
+/* =============================================
+   Editor Mode - Full Page Layout
+   ============================================= */
+.topic-page.editor-mode {
+  max-width: 100%;
+  height: calc(100vh - 52px - var(--spacing-xxl) * 2);
+  min-height: 500px;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.editor-mode-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-shrink: 0;
+  margin-bottom: 16px;
+}
+
+.editor-mode-header .topic-page-title {
+  margin-bottom: 0;
+  padding-bottom: 8px;
+}
+
+/* =============================================
+   Split Pane Layout
+   ============================================= */
+.split-pane-layout {
+  display: flex;
+  flex: 1;
+  min-height: 0;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  overflow: hidden;
+  background-color: var(--card);
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.08);
+}
+
+.split-pane-left {
+  min-width: 280px;
+  overflow: auto;
+  background-color: color-mix(in srgb, var(--ctp-mantle) 50%, var(--card));
+  border-right: 1px solid var(--border);
+}
+
+.split-pane-right {
+  min-width: 280px;
+  overflow: auto;
+  background-color: var(--background);
+}
+
+.split-pane-divider {
+  width: 6px;
+  cursor: col-resize;
+  background: transparent;
+  position: relative;
+  flex-shrink: 0;
+  transition: background-color 0.15s ease;
+}
+
+.split-pane-divider::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 2px;
+  height: 40px;
+  background-color: color-mix(in srgb, var(--border) 60%, transparent);
+  border-radius: 2px;
+  transition: all 0.15s ease;
+}
+
+.split-pane-divider:hover {
+  background-color: color-mix(in srgb, var(--primary) 6%, transparent);
+}
+
+.split-pane-divider:hover::after {
+  height: 60px;
+  background-color: color-mix(in srgb, var(--primary) 40%, transparent);
+}
+
+/* =============================================
+   Editor Panel Placeholder
+   ============================================= */
+.editor-panel-placeholder {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  padding: 24px;
+}
+
+.editor-panel-header {
+  margin-bottom: 20px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--border);
+}
+
+.editor-panel-header h3 {
+  font-family: var(--font-display);
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--primary);
+  margin: 0;
+}
+
+.editor-panel-body {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.editor-panel-body p {
+  color: var(--ctp-subtext0);
+  font-size: 13px;
+  text-align: center;
+  line-height: 1.6;
+}
+
+/* =============================================
+   Editor Preview Panel
+   ============================================= */
+.editor-preview-panel {
+  height: 100%;
+  overflow: auto;
+  padding: var(--spacing-xxl);
+}
+
+/* =============================================
+   Responsive: Collapse split pane on small screens
+   ============================================= */
+@media (max-width: 768px) {
+  .split-pane-layout {
+    flex-direction: column;
+  }
+
+  .split-pane-left {
+    width: 100% !important;
+    min-width: unset;
+    min-height: 200px;
+    border-right: none;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .split-pane-right {
+    width: 100% !important;
+    min-width: unset;
+    min-height: 200px;
+  }
+
+  .split-pane-divider {
+    width: 100%;
+    height: 6px;
+    cursor: row-resize;
+  }
+
+  .split-pane-divider::after {
+    width: 40px;
+    height: 2px;
+  }
+
+  .split-pane-divider:hover::after {
+    width: 60px;
+    height: 2px;
+  }
+
+  .topic-page.editor-mode {
+    height: auto;
+    min-height: unset;
+  }
 }
 

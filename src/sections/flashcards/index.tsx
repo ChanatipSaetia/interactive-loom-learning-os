@@ -85,7 +85,7 @@ export default function FlashcardDeck({ title, terms = [] }: FlashcardDeckProps)
       accessibility: 'Accessibility'
     };
     return (
-      <span className="px-3 py-1.5 text-xs font-mono font-bold uppercase tracking-widest bg-muted/30 text-muted-foreground border border-border/50 rounded-full">
+      <span className="px-3 py-1.5 text-xs font-mono font-bold uppercase tracking-widest bg-[color-mix(in_srgb,var(--secondary)_14%,transparent)] text-[var(--secondary)] border border-[color-mix(in_srgb,var(--secondary)_35%,transparent)] rounded-full">
         {labels[category] || category}
       </span>
     );

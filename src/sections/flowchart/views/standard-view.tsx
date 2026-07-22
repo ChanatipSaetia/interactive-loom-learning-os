@@ -131,7 +131,7 @@ export const StandardView = memo(function StandardView({
         const isEdgeActive = isHighlightedNode || isHoveredEdge || isRelationActive;
 
         const isFaded = activeNodeIds !== null && !activeNodeIds.includes(rel.from) && !activeNodeIds.includes(rel.to) && !isRelationActive;
-        const strokeColor = isEdgeActive ? 'var(--ctp-blue)' : 'var(--ctp-overlay1)';
+        const strokeColor = isEdgeActive ? 'var(--secondary)' : 'var(--ctp-overlay1)';
         const strokeWidth = isEdgeActive ? 2.5 : 1.5;
         const marker = isEdgeActive
           ? `url(#flowchart-arrow-highlight-${viewInstanceId})`
@@ -201,7 +201,7 @@ export const StandardView = memo(function StandardView({
               data-testid={`flowchart-edge-${viewKey}-${idx}`}
               style={{ 
                 pointerEvents: 'none',
-                filter: isEdgeActive ? 'drop-shadow(0 0 6px var(--ctp-blue))' : undefined 
+                filter: isEdgeActive ? 'drop-shadow(0 0 6px var(--secondary))' : undefined 
               }}
             />
             {isHandledBy && viewKey !== 'SYS_ARCH' && (
@@ -223,14 +223,14 @@ export const StandardView = memo(function StandardView({
                       height="20"
                       rx="10"
                       fill="var(--ctp-base)"
-                      stroke={isEdgeActive ? 'var(--ctp-blue)' : 'var(--ctp-surface1)'}
+                      stroke={isEdgeActive ? 'var(--secondary)' : 'var(--ctp-surface1)'}
                       strokeWidth="1"
                     />
                     <text
                       x="0"
                       y="3"
                       textAnchor="middle"
-                      fill={isEdgeActive ? 'var(--ctp-blue)' : 'var(--ctp-subtext0)'}
+                      fill={isEdgeActive ? 'var(--secondary)' : 'var(--ctp-subtext0)'}
                       fontSize="10"
                       fontFamily="var(--font-mono)"
                       fontWeight={isEdgeActive ? "600" : "500"}
@@ -244,7 +244,7 @@ export const StandardView = memo(function StandardView({
             <circle
               className="flowchart-edge-particle"
               r="4"
-              fill={isHighlightedNode ? 'var(--ctp-blue)' : 'var(--ctp-yellow)'}
+              fill={isHighlightedNode ? 'var(--secondary)' : 'var(--ctp-yellow)'}
               opacity="0"
               data-edge-id={edgeId}
               data-testid={`flowchart-particle-${viewKey}`}

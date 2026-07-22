@@ -22,7 +22,8 @@
   margin: 1.5rem 0 2rem 0;
   padding: 1.25rem 1.5rem;
   background: var(--ctp-mantle, #1e1e2e);
-  border: 1px solid var(--ctp-surface0, #313244);
+  border: 1px solid color-mix(in srgb, var(--secondary) 35%, var(--border));
+  border-left: 4px solid var(--secondary);
   border-radius: 16px;
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
   backdrop-filter: blur(12px);
@@ -31,8 +32,8 @@
 }
 
 .section-intro-container:hover {
-  border-color: var(--ctp-surface1, #45475a);
-  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.3), 0 0 20px rgba(137, 180, 250, 0.08);
+  border-color: color-mix(in srgb, var(--secondary) 75%, var(--primary));
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.3), 0 0 20px color-mix(in srgb, var(--secondary) 25%, transparent);
 }
 
 .section-intro-header {
@@ -48,10 +49,10 @@
   align-items: center;
   gap: 0.5rem;
   padding: 0.35rem 0.75rem;
-  background: rgba(137, 180, 250, 0.1);
-  border: 1px solid rgba(137, 180, 250, 0.25);
+  background: color-mix(in srgb, var(--secondary) 14%, transparent);
+  border: 1px solid color-mix(in srgb, var(--secondary) 35%, transparent);
   border-radius: 9999px;
-  color: var(--ctp-blue, #89b4fa);
+  color: var(--secondary);
 }
 
 .section-intro-badge-icon {
@@ -69,9 +70,9 @@
   font-size: 0.68rem;
   font-weight: 600;
   padding: 0.1rem 0.4rem;
-  background: var(--ctp-surface0, #313244);
+  background: color-mix(in srgb, var(--secondary) 20%, transparent);
   border-radius: 4px;
-  color: var(--ctp-subtext0, #a6adc8);
+  color: var(--secondary);
   text-transform: lowercase;
 }
 
@@ -91,10 +92,10 @@
 
 .section-intro-tab-group {
   display: flex;
-  background: var(--ctp-crust, #11111b);
+  background: var(--card);
   padding: 3px;
   border-radius: 8px;
-  border: 1px solid var(--ctp-surface0, #313244);
+  border: 1px solid color-mix(in srgb, var(--primary) 35%, var(--border));
 }
 
 .section-intro-tab {
@@ -114,13 +115,10 @@
 }
 
 .section-intro-tab.active {
-  background: var(--ctp-surface0, #313244);
-  color: var(--ctp-mauve, #cba6f7);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
-}
-
-.section-intro-tab.tab-what.active {
-  color: var(--ctp-blue, #89b4fa);
+  background: color-mix(in srgb, var(--primary) 14%, transparent);
+  color: var(--primary);
+  border: 1px solid color-mix(in srgb, var(--primary) 35%, transparent);
+  box-shadow: 0 2px 8px color-mix(in srgb, var(--primary) 15%, transparent);
 }
 
 .section-intro-tab.tab-why.active {
@@ -178,7 +176,7 @@
 }
 
 .card-what {
-  border-top: 3px solid var(--ctp-blue, #89b4fa);
+  border-top: 3px solid var(--primary);
 }
 
 .card-why {
@@ -205,8 +203,8 @@
 }
 
 .icon-what {
-  background: rgba(137, 180, 250, 0.15);
-  color: var(--ctp-blue, #89b4fa);
+  background: color-mix(in srgb, var(--primary) 15%, transparent);
+  color: var(--primary);
 }
 
 .icon-why {

@@ -248,7 +248,7 @@ function StepComparisonModal({
                       const isGood = (direction === 'higher' && delta > 0) || (direction === 'lower' && delta < 0)
                       const isNeutral = delta === 0
                       const badgeColor = isNeutral
-                        ? 'var(--ctp-blue)'
+                        ? 'var(--secondary)'
                         : isGood
                         ? 'var(--ctp-green)'
                         : 'var(--ctp-red)'
@@ -258,7 +258,7 @@ function StepComparisonModal({
                           className="metric-delta-badge"
                           style={{
                             backgroundColor: isNeutral
-                              ? 'color-mix(in srgb, var(--ctp-blue) 10%, transparent)'
+                              ? 'color-mix(in srgb, var(--secondary) 10%, transparent)'
                               : isGood
                               ? 'color-mix(in srgb, var(--ctp-green) 10%, transparent)'
                               : 'color-mix(in srgb, var(--ctp-red) 10%, transparent)',

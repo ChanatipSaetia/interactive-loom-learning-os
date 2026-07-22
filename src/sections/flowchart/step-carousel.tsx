@@ -50,8 +50,8 @@ export function StepCarousel({
                 borderRadius: '8px',
                 cursor: 'pointer',
                 border: '1px solid',
-                borderColor: isActive ? 'var(--ctp-blue)' : 'var(--border-light)',
-                backgroundColor: isActive ? 'var(--ctp-surface0)' : 'var(--ctp-base)',
+                borderColor: isActive ? 'var(--secondary)' : 'var(--border-light)',
+                backgroundColor: isActive ? 'color-mix(in srgb, var(--secondary) 12%, var(--card))' : 'var(--ctp-base)',
                 transition: 'all 0.3s ease',
                 opacity: activeStep && !isActive ? 0.6 : 1,
                 pointerEvents: 'auto'
@@ -73,8 +73,9 @@ export function StepCarousel({
                     letterSpacing: '0.8px',
                     padding: '1px 6px',
                     borderRadius: '3px',
-                    backgroundColor: isActive ? 'var(--ctp-blue)' : 'var(--ctp-surface1)',
-                    color: isActive ? 'var(--ctp-crust)' : 'var(--ctp-text)'
+                    backgroundColor: isActive ? 'color-mix(in srgb, var(--secondary) 25%, transparent)' : 'var(--ctp-surface1)',
+                    color: isActive ? 'var(--secondary)' : 'var(--ctp-text)',
+                    border: isActive ? '1px solid color-mix(in srgb, var(--secondary) 50%, transparent)' : 'none'
                   }}
                 >
                   Phase {idx + 1}
@@ -85,7 +86,7 @@ export function StepCarousel({
                   margin: '0 0 2px 0',
                   fontSize: '12.5px',
                   fontWeight: 'bold',
-                  color: isActive ? 'var(--ctp-blue)' : 'var(--ctp-text)',
+                  color: isActive ? 'var(--secondary)' : 'var(--ctp-text)',
                   whiteSpace: 'nowrap',
                   overflow: 'hidden',
                   textOverflow: 'ellipsis'
@@ -122,7 +123,7 @@ export function StepCarousel({
                 gap: '6px',
                 paddingLeft: '14px',
                 marginLeft: '4px',
-                borderLeft: '2px dashed var(--ctp-overlay1)',
+                borderLeft: '2px dashed var(--secondary)',
                 position: 'relative',
                 pointerEvents: 'none'
               }}
@@ -134,10 +135,10 @@ export function StepCarousel({
                   top: '50%',
                   transform: 'translateY(-50%)',
                   backgroundColor: 'var(--ctp-base)',
-                  border: '2px solid var(--ctp-overlay1)',
+                  border: '2px solid var(--secondary)',
                   borderRadius: '50%',
                   padding: '2px',
-                  color: 'var(--ctp-text)',
+                  color: 'var(--secondary)',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
@@ -159,8 +160,8 @@ export function StepCarousel({
                       borderRadius: '6px',
                       cursor: 'pointer',
                       border: '1px solid',
-                      borderColor: isActive ? 'var(--ctp-blue)' : 'var(--border-light)',
-                      backgroundColor: isActive ? 'var(--ctp-surface0)' : 'var(--ctp-base)',
+                      borderColor: isActive ? 'var(--secondary)' : 'var(--border-light)',
+                      backgroundColor: isActive ? 'color-mix(in srgb, var(--secondary) 12%, var(--card))' : 'var(--ctp-base)',
                       transition: 'all 0.3s ease',
                       opacity: activeStep && !isActive ? 0.6 : 1,
                       pointerEvents: 'auto'
@@ -179,7 +180,7 @@ export function StepCarousel({
                           margin: 0,
                           fontSize: '11.5px',
                           fontWeight: 'bold',
-                          color: isActive ? 'var(--ctp-blue)' : 'var(--ctp-text)',
+                          color: isActive ? 'var(--secondary)' : 'var(--ctp-text)',
                           whiteSpace: 'nowrap',
                           overflow: 'hidden',
                           textOverflow: 'ellipsis'

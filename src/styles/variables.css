@@ -15,8 +15,8 @@
   --card-foreground: var(--ctp-text);
   --primary:       var(--ctp-blue);
   --primary-foreground: var(--ctp-crust);
-  --secondary:     var(--ctp-surface1);
-  --secondary-foreground: var(--ctp-text);
+  --secondary:     var(--ctp-teal);
+  --secondary-foreground: var(--ctp-crust);
   --muted:         var(--ctp-surface1);
   --muted-foreground: var(--ctp-overlay2);
   --accent:        var(--ctp-surface1);
@@ -154,8 +154,8 @@
   --card-foreground:   #0f172a;
   --primary:           #0077b6;
   --primary-foreground: #ffffff;
-  --secondary:         #e2e8f0;
-  --secondary-foreground: #0f172a;
+  --secondary:         #0d9488;
+  --secondary-foreground: #ffffff;
   --muted:             #e2e8f0;
   --muted-foreground:  #64748b;
   --accent:            #e2e8f0;
@@ -223,8 +223,8 @@
   --card-foreground:   #1c1917;
   --primary:           #65a30d;
   --primary-foreground: #ffffff;
-  --secondary:         #e7e5e4;
-  --secondary-foreground: #1c1917;
+  --secondary:         #d97706;
+  --secondary-foreground: #ffffff;
   --muted:             #e7e5e4;
   --muted-foreground:  #78716c;
   --accent:            #e7e5e4;
@@ -288,31 +288,31 @@
    semantic-token resolution — no component styles need changing.
 ============================================================ */
 [data-theme='pinkcatboo'] {
-  /* shadcn semantic tokens — dark rose */
+  /* PinkCatBoo palette by ftsamoyed (Rose Pink, Lavender Purple, Banana Yellow, Sky Blue) */
   --background:        #202330;
-  --foreground:        #FFF0F5;
-  --card:              #2d2f42;
-  --card-foreground:   #FFF0F5;
-  --primary:           #fe7c8e;
+  --foreground:        #f8fafc;
+  --card:              #282a3a;
+  --card-foreground:   #f8fafc;
+  --primary:           #ff809f;   /* Rose Pink */
   --primary-foreground: #202330;
-  --secondary:         #2d2f42;
-  --secondary-foreground: #FFF0F5;
-  --muted:             #2d2f42;
+  --secondary:         #d8b4fe;   /* Light Purple / Lavender */
+  --secondary-foreground: #202330;
+  --muted:             #282a3a;
   --muted-foreground:  #9498a1;
-  --accent:            #472541;
-  --accent-foreground: #FFF0F5;
-  --border:            rgba(148, 152, 161, 0.27);
+  --accent:            #3c283f;
+  --accent-foreground: #f8fafc;
+  --border:            rgba(216, 180, 254, 0.25);
   --input:             #202330;
-  --ring:              #fe7c8e;
-  --destructive:       #ff62a5;
-  --destructive-foreground: #202330;
+  --ring:              #ff809f;
+  --destructive:       #ff5370;
+  --destructive-foreground: #ffffff;
 
-  /* Surfaces (dark) */
-  --ctp-crust:     #1a1c2a;   /* darkest: topnav / sidebar header */
-  --ctp-mantle:    #2d2f42;   /* secondary surface */
+  /* Surfaces */
+  --ctp-crust:     #181a24;   /* darkest: topnav / sidebar header */
+  --ctp-mantle:    #282a3a;   /* secondary surface */
   --ctp-base:      #202330;   /* page / canvas background */
-  --ctp-surface0:  #2d2f42;   /* cards, panels, elevated surfaces */
-  --ctp-surface1:  rgba(148, 152, 161, 0.27); /* subtle border */
+  --ctp-surface0:  #282a3a;   /* cards, panels, elevated surfaces */
+  --ctp-surface1:  rgba(216, 180, 254, 0.22); /* subtle border */
   --ctp-surface2:  #9498a1;   /* strong border / divider */
 
   /* Overlays / muted text */
@@ -321,30 +321,30 @@
   --ctp-overlay2:  #9498a1;
   --ctp-subtext0:  #9498a1;
   --ctp-subtext1:  #c0c4cf;
-  --ctp-text:      #FFF0F5;   /* primary foreground */
+  --ctp-text:      #f8fafc;   /* primary text */
 
-  /* Accents (Pink Cat Boo palette) */
-  --ctp-blue:      #79c0ff;   /* Command — Soft Neon Blue */
-  --ctp-sapphire:  #79c0ff;   /* Service */
-  --ctp-lavender:  #e6a1ff;   /* Read Model — Lavender */
-  --ctp-sky:       #a2c2eb;   /* Process — Cool Blue */
-  --ctp-teal:      #80cbc4;   /* Database — Soft Teal */
-  --ctp-mauve:     #DCBFF2;   /* Policy — Soft Purple */
-  --ctp-pink:      #FA508C;   /* Data Object — Strong Pink */
-  --ctp-rosewater: #EBA4AC;   /* Core System — Rosewater */
-  --ctp-flamingo:  #ffedf0;   /* cursor — Softest Pink */
+  /* Accents (PinkCatBoo palette) */
+  --ctp-blue:      #7dd3fc;   /* Sky Blue */
+  --ctp-sapphire:  #38bdf8;   /* Service */
+  --ctp-lavender:  #d8b4fe;   /* Read Model — Lavender */
+  --ctp-sky:       #7dd3fc;   /* Process — Sky Blue */
+  --ctp-teal:      #81e6d9;   /* Database — Soft Teal */
+  --ctp-mauve:     #d8b4fe;   /* Policy — Light Purple */
+  --ctp-pink:      #ff809f;   /* Data Object — Rose Pink */
+  --ctp-rosewater: #fca5a5;   /* Core System — Rosewater */
+  --ctp-flamingo:  #ffe4e6;   /* cursor — Softest Pink */
 
   /* Status */
-  --ctp-green:     #3bc089;   /* Success / External API */
-  --ctp-yellow:    #ffcb6b;   /* Actor — Soft Yellow */
-  --ctp-peach:     #ff9e79;   /* Event — Soft Neon Orange */
+  --ctp-green:     #4ade80;   /* Success / External API */
+  --ctp-yellow:    #fde047;   /* Actor — Banana Yellow */
+  --ctp-peach:     #fb923c;   /* Event — Warm Orange */
   --ctp-red:       #ff5370;   /* Error / Hotspot */
-  --ctp-maroon:    #f07178;   /* Decision */
+  --ctp-maroon:    #f87171;   /* Decision */
 
-  /* Selection / highlight tints reused by semantic tokens */
-  --pale-green:    rgba(59, 192, 137, 0.12);
-  --pale-blue:     rgba(254, 124, 142, 0.14);
-  --pale-pink:     rgba(71, 37, 65, 0.60);
+  /* Selection / highlight tints */
+  --pale-green:    rgba(74, 222, 128, 0.14);
+  --pale-blue:     rgba(125, 211, 252, 0.14);
+  --pale-pink:     rgba(255, 128, 159, 0.16);
 }
 
 /* ============================================================
@@ -367,8 +367,8 @@
   --card-foreground:        #1A1A18;
   --primary:                #1A3A6E;
   --primary-foreground:     #F4F0E8;
-  --secondary:              #E0DDD2;
-  --secondary-foreground:   #1A1A18;
+  --secondary:              #1A4A3A;
+  --secondary-foreground:   #F4F0E8;
   --muted:                  #E0DDD2;
   --muted-foreground:       #4A4A42;
   --accent:                 #DDD8C8;

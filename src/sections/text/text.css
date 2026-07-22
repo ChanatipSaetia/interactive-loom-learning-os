@@ -18,23 +18,43 @@
 }
 
 .text-paragraph strong {
-  @apply font-semibold;
-  color: var(--ctp-mauve);
+  @apply font-bold;
+  color: var(--primary);
+}
+
+.text-paragraph mark,
+.text-paragraph em {
+  font-style: normal;
+  font-weight: 600;
+  color: var(--primary);
 }
 
 .text-inline-code {
-  @apply text-[0.875em] px-2 py-0.5 rounded-md border border-border font-mono;
-  background-color: color-mix(in srgb, var(--ctp-mauve) 10%, var(--card));
-  border-color: color-mix(in srgb, var(--ctp-mauve) 20%, transparent);
-  color: var(--ctp-mauve);
+  @apply text-[0.875em] px-2 py-0.5 rounded-md border font-mono font-semibold;
+  background-color: color-mix(in srgb, var(--ctp-crust) 90%, var(--card));
+  border-color: color-mix(in srgb, var(--secondary) 40%, transparent);
+  color: var(--secondary);
+}
+
+pre {
+  @apply p-4 rounded-xl border my-4 overflow-x-auto font-mono text-sm shadow-sm;
+  background-color: var(--ctp-crust);
+  border-color: var(--border);
+}
+
+pre .text-inline-code,
+pre code {
+  @apply bg-transparent border-none p-0 text-foreground font-mono text-sm font-normal;
+  color: var(--ctp-text);
 }
 
 .text-link {
   @apply underline transition-colors;
-  color: var(--action-blue);
+  color: var(--primary);
   text-underline-offset: 3px;
 }
 
 .text-link:hover {
-  color: var(--focus-blue);
+  color: var(--primary);
+  opacity: 0.85;
 }

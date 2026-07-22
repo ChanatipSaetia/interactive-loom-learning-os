@@ -269,14 +269,14 @@ export function InspectorSidebar({
                           }}
                           onMouseEnter={(e) => {
                             const btn = e.currentTarget;
-                            if (btn) btn.style.borderColor = 'var(--ctp-blue)';
+                            if (btn) btn.style.borderColor = 'var(--primary)';
                           }}
                           onMouseLeave={(e) => {
                             const btn = e.currentTarget;
                             if (btn) btn.style.borderColor = 'var(--border-light)';
                           }}
                         >
-                          <span style={{ fontWeight: '600', color: 'var(--ctp-blue)' }}>{v.name}</span>
+                          <span style={{ fontWeight: '600', color: 'var(--primary)' }}>{v.name}</span>
                           <span style={{ fontSize: '11px', color: 'var(--ctp-subtext0)' }}>
                             {v.titleInView} {v.typeInView && <span style={{ opacity: 0.7, fontSize: '10px', fontFamily: 'var(--font-mono)' }}>({v.typeInView})</span>}
                           </span>

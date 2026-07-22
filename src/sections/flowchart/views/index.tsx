@@ -497,19 +497,19 @@ export function FlowchartView({
               <feDropShadow dx="0" dy="2" stdDeviation="4" floodColor="#000000" floodOpacity="0.4" />
             </filter>
             <filter id={`flowchart-glow-${viewInstanceId}`} x="-50%" y="-50%" width="200%" height="200%">
-              <feDropShadow dx="0" dy="0" stdDeviation="4" floodColor="var(--ctp-blue)" floodOpacity="0.8" />
-              <feDropShadow dx="0" dy="0" stdDeviation="10" floodColor="var(--ctp-blue)" floodOpacity="0.5" />
+              <feDropShadow dx="0" dy="0" stdDeviation="4" floodColor="var(--secondary)" floodOpacity="0.8" />
+              <feDropShadow dx="0" dy="0" stdDeviation="10" floodColor="var(--secondary)" floodOpacity="0.5" />
             </filter>
             <marker id={`flowchart-arrow-${viewInstanceId}`} markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto">
               <path d="M 0 0 L 7 3 L 0 6 Z" fill="var(--ctp-overlay1)" />
             </marker>
             <marker id={`flowchart-arrow-highlight-${viewInstanceId}`} markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto">
-              <path d="M 0 0 L 7 3 L 0 6 Z" fill="var(--ctp-blue)" />
+              <path d="M 0 0 L 7 3 L 0 6 Z" fill="var(--secondary)" />
             </marker>
             {isSequenceView && (
               <>
                 <marker id={`seq-arrow-cmd-${viewInstanceId}`} markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto">
-                  <path d="M 0 0 L 7 3 L 0 6 Z" fill="var(--ctp-blue)" />
+                  <path d="M 0 0 L 7 3 L 0 6 Z" fill="var(--secondary)" />
                 </marker>
                 <marker id={`seq-arrow-evt-${viewInstanceId}`} markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto">
                   <path d="M 0 0 L 7 3 L 0 6 Z" fill="var(--ctp-peach)" />

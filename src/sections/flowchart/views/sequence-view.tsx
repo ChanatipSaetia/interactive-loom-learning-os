@@ -239,14 +239,14 @@ export const SequenceView = memo(function SequenceView({
                   height="20"
                   rx="10"
                   fill="var(--ctp-base)"
-                  stroke={isEdgeActive ? 'var(--ctp-blue)' : 'var(--ctp-surface1)'}
+                  stroke={isEdgeActive ? 'var(--secondary)' : 'var(--ctp-surface1)'}
                   strokeWidth="1"
                 />
                 <text
                   x="0"
                   y="3"
                   textAnchor="middle"
-                  fill={isEdgeActive ? 'var(--ctp-blue)' : 'var(--ctp-subtext0)'}
+                  fill={isEdgeActive ? 'var(--secondary)' : 'var(--ctp-subtext0)'}
                   fontSize="10"
                   fontFamily="var(--font-mono)"
                   fontWeight={isEdgeActive ? "600" : "500"}
@@ -276,8 +276,8 @@ export const SequenceView = memo(function SequenceView({
             width={10}
             height={BOTTOM_Y - lifelineStart - 8}
             rx="3"
-            fill="color-mix(in srgb, var(--ctp-blue) 12%, transparent)"
-            stroke="var(--ctp-blue)"
+            fill="color-mix(in srgb, var(--secondary) 12%, transparent)"
+            stroke="var(--secondary)"
             strokeWidth="1"
           />
         );
@@ -327,7 +327,7 @@ export const SequenceView = memo(function SequenceView({
                 width={NODE_W} height={NODE_H}
                 rx="8"
                 fill={nodeFill}
-                stroke={isHighlighted ? 'var(--ctp-blue)' : strokeColor}
+                stroke={isHighlighted ? 'var(--secondary)' : strokeColor}
                 strokeWidth={isHighlighted ? "2.5" : "1.5"}
                 className={`flowchart-node-rect ${isHighlighted ? 'flowchart-node-highlighted' : ''}`}
               />
@@ -418,7 +418,7 @@ export const SequenceView = memo(function SequenceView({
                 width={NODE_W} height={NODE_H}
                 rx="8"
                 fill={nodeFill}
-                stroke={isHighlighted ? 'var(--ctp-blue)' : strokeColor}
+                stroke={isHighlighted ? 'var(--secondary)' : strokeColor}
                 strokeWidth={isHighlighted ? "2.5" : "1.5"}
                 className={`flowchart-node-rect ${isHighlighted ? 'flowchart-node-highlighted' : ''}`}
               />

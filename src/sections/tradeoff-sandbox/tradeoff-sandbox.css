@@ -42,7 +42,7 @@
 
 .scenario-select:focus {
   @apply outline-none border-ring;
-  box-shadow: 0 0 0 2px color-mix(in srgb, var(--ctp-blue) 20%, transparent);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--primary) 20%, transparent);
 }
 
 .scenario-options {
@@ -63,20 +63,20 @@
 }
 
 .scenario-option:hover {
-  background-color: color-mix(in srgb, var(--ctp-blue) 12%, transparent);
+  background-color: color-mix(in srgb, var(--primary) 12%, transparent);
 }
 
 .scenario-option-active {
   @apply font-semibold;
-  background-color: color-mix(in srgb, var(--ctp-blue) 16%, transparent);
-  color: var(--ctp-blue);
+  background-color: color-mix(in srgb, var(--primary) 16%, transparent);
+  color: var(--primary);
 }
 
 /* ─── Scenario Banner ────────────────────────────────── */
 
 .scenario-banner {
   @apply p-4 rounded-xl mb-6 border border-border bg-card shadow-sm;
-  background-color: color-mix(in srgb, var(--ctp-blue) 6%, var(--card));
+  background-color: color-mix(in srgb, var(--primary) 6%, var(--card));
 }
 
 .scenario-description {
@@ -97,8 +97,8 @@
 }
 
 .feedback-banner-partial {
-  border-color: color-mix(in srgb, var(--action-blue) 50%, transparent);
-  background-color: color-mix(in srgb, var(--action-blue) 8%, var(--card));
+  border-color: color-mix(in srgb, var(--secondary) 50%, transparent);
+  background-color: color-mix(in srgb, var(--secondary) 8%, var(--card));
 }
 
 .feedback-banner-complete {
@@ -114,19 +114,21 @@
 /* ─── Compare All Button ────────────────────────────── */
 
 .compare-all-button {
-  @apply inline-flex items-center gap-1.5 px-4 py-2 rounded-[var(--radius-sm)] border border-[var(--action-blue)] bg-transparent cursor-pointer mb-4 text-sm;
-  color: var(--action-blue);
+  @apply inline-flex items-center gap-1.5 px-4 py-2 rounded-[var(--radius-sm)] border bg-transparent cursor-pointer mb-4 text-sm font-medium;
+  border-color: color-mix(in srgb, var(--secondary) 50%, transparent);
+  color: var(--secondary);
   font-family: var(--font-body);
   transition: background-color 0.15s ease, color 0.15s ease;
 }
 
 .compare-all-button:hover {
-  background-color: var(--action-blue);
-  color: var(--ctp-base);
+  background-color: color-mix(in srgb, var(--secondary) 14%, transparent);
+  color: var(--secondary);
 }
 
 .compare-all-button:focus {
-  @apply outline-none ring-2 ring-[var(--focus-blue)] ring-offset-2;
+  @apply outline-none ring-2 ring-offset-2;
+  --tw-ring-color: var(--secondary);
 }
 
 /* ─── Compare Modal ─────────────────────────────────── */
@@ -201,8 +203,7 @@
 }
 
 .compare-card {
-  @apply rounded-[var(--radius-sm)] border border-border px-3 py-2;
-  background-color: color-mix(in srgb, var(--ctp-blue) 4%, transparent);
+  @apply rounded-[var(--radius-sm)] border border-border px-3 py-2 bg-card;
 }
 
 .compare-card-chosen {
@@ -454,7 +455,8 @@
 /* ─── Metric Dashboard ──────────────────────────────── */
 
 .metric-dashboard {
-  @apply rounded-xl border border-border px-6 py-5 w-full max-w-full min-w-0 bg-card shadow-sm;
+  @apply rounded-xl border px-6 py-5 w-full max-w-full min-w-0 bg-card shadow-sm;
+  border-color: color-mix(in srgb, var(--secondary) 35%, var(--border));
   box-shadow: 0 4px 20px -4px rgba(0, 0, 0, 0.12);
 }
 
@@ -470,9 +472,9 @@
 
 .progress-indicator {
   @apply font-mono font-medium rounded-full px-2.5 py-1 border text-xs;
-  color: var(--ctp-blue);
-  background-color: color-mix(in srgb, var(--ctp-blue) 12%, transparent);
-  border-color: color-mix(in srgb, var(--ctp-blue) 25%, transparent);
+  color: var(--secondary);
+  background-color: color-mix(in srgb, var(--secondary) 14%, transparent);
+  border-color: color-mix(in srgb, var(--secondary) 35%, transparent);
 }
 
 .metric-bars {
@@ -496,7 +498,7 @@
 .metric-value {
   @apply font-semibold font-mono text-xs;
   font-size: var(--text-caption);
-  color: var(--ctp-blue);
+  color: var(--primary);
 }
 
 .metric-track {
@@ -506,7 +508,7 @@
 
 .metric-fill {
   @apply h-full rounded-full;
-  background: linear-gradient(90deg, color-mix(in srgb, var(--ctp-blue) 40%, var(--ctp-mauve)), var(--ctp-blue));
+  background: linear-gradient(90deg, color-mix(in srgb, var(--primary) 40%, var(--secondary)), var(--primary));
   transition: width 0.4s ease;
 }
 
@@ -519,14 +521,15 @@
 }
 
 .step-section {
-  @apply relative rounded-xl border border-border p-5 bg-card flex-1 min-w-[220px] shadow-sm;
+  @apply relative rounded-xl border p-5 flex-1 min-w-[220px] bg-card shadow-sm;
+  border-color: color-mix(in srgb, var(--secondary) 35%, var(--border));
   box-shadow: 0 4px 16px -4px rgba(0, 0, 0, 0.1);
   transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
 }
 
 .step-section:hover {
   transform: translateY(-1px);
-  border-color: color-mix(in srgb, var(--ring) 40%, var(--border));
+  border-color: color-mix(in srgb, var(--secondary) 75%, var(--primary));
 }
 
 .step-section-unselected {
@@ -566,13 +569,14 @@
 }
 
 .step-dropdown-trigger:hover {
-  border-color: var(--action-blue);
-  color: var(--action-blue);
-  background-color: var(--pale-blue);
+  border-color: var(--secondary);
+  color: var(--secondary);
+  background-color: color-mix(in srgb, var(--secondary) 14%, transparent);
 }
 
 .step-dropdown-trigger:focus {
-  @apply outline-none ring-2 ring-[var(--focus-blue)] ring-offset-2;
+  @apply outline-none ring-2 ring-offset-2;
+  --tw-ring-color: var(--secondary);
 }
 
 .dropdown-chevron {
@@ -581,10 +585,7 @@
 }
 
 .step-dropdown-menu {
-  @apply absolute top-full right-0 min-w-[200px] m-0 p-1.5 list-none rounded-[var(--radius-sm)] border border-border z-[10] max-h-[240px] overflow-y-auto;
-  margin-top: 4px;
-  background-color: var(--ctp-base);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+  @apply absolute left-0 top-full mt-1.5 z-40 min-w-[200px] max-w-[280px] p-1.5 rounded-[var(--radius-sm)] border border-border bg-card shadow-lg flex flex-col gap-1;
 }
 
 .dropdown-option {
@@ -595,11 +596,12 @@
 }
 
 .dropdown-option:hover {
-  background-color: color-mix(in srgb, var(--ctp-blue) 12%, transparent);
+  background-color: color-mix(in srgb, var(--secondary) 14%, transparent);
 }
 
 .dropdown-option:focus {
-  @apply outline-none ring-2 ring-[var(--focus-blue)] ring-offset-[-2px];
+  @apply outline-none ring-2 ring-offset-[-2px];
+  --tw-ring-color: var(--secondary);
 }
 
 .dropdown-option-selected {
@@ -631,8 +633,8 @@
 }
 
 .drop-zone:hover {
-  border-color: var(--action-blue);
-  background-color: color-mix(in srgb, var(--ctp-blue) 5%, transparent);
+  border-color: var(--secondary);
+  background-color: color-mix(in srgb, var(--secondary) 10%, transparent);
 }
 
 .drop-zone-filled {
@@ -673,17 +675,18 @@
 
 .drop-zone-info {
   @apply bg-none border-none cursor-pointer rounded-[var(--radius-xs)] px-0.5 py-0.5 leading-none font-normal flex items-center justify-center;
-  color: var(--action-blue);
+  color: var(--secondary);
   transition: color 0.15s ease, background-color 0.15s ease;
 }
 
 .drop-zone-info:hover {
   color: var(--ctp-lavender);
-  background-color: var(--pale-blue);
+  background-color: color-mix(in srgb, var(--secondary) 14%, transparent);
 }
 
 .drop-zone-info:focus {
-  @apply outline-none ring-2 ring-[var(--focus-blue)] ring-offset-2;
+  @apply outline-none ring-2 ring-offset-2;
+  --tw-ring-color: var(--secondary);
 }
 
 .drop-zone-remove {
@@ -717,12 +720,12 @@
 }
 
 .compare-card.cursor-pointer:hover {
-  border-color: var(--action-blue);
-  background-color: color-mix(in srgb, var(--ctp-blue) 8%, transparent);
+  border-color: var(--secondary);
+  background-color: color-mix(in srgb, var(--secondary) 12%, var(--card));
 }
 
 .compare-card-active {
-  outline: 2px solid var(--action-blue);
+  outline: 2px solid var(--secondary);
   outline-offset: 2px;
 }
 
@@ -768,9 +771,9 @@
 }
 
 .step-compare-nav-btn:hover {
-  border-color: var(--action-blue);
-  background-color: var(--pale-blue);
-  color: var(--action-blue);
+  border-color: var(--secondary);
+  background-color: color-mix(in srgb, var(--secondary) 14%, transparent);
+  color: var(--secondary);
 }
 
 .step-compare-nav-counter {

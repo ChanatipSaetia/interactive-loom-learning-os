@@ -10,12 +10,7 @@
 .overview-page-title {
   font-family: var(--font-display);
   @apply text-4xl font-normal tracking-tight mb-2;
-  color: var(--ctp-lavender);
-}
-
-html[data-theme='medicare'] .overview-page-title,
-html[data-theme='recipebook'] .overview-page-title {
-  color: var(--foreground);
+  color: var(--primary);
 }
 
 .overview-page-subtitle {
@@ -42,7 +37,7 @@ html[data-theme='recipebook'] .overview-page-title {
 
 .overview-search-input:focus {
   @apply border-ring;
-  box-shadow: 0 0 0 2px color-mix(in srgb, var(--ctp-blue) 15%, transparent);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--primary) 15%, transparent);
 }
 
 .overview-search-input::placeholder {
@@ -81,19 +76,20 @@ html[data-theme='recipebook'] .overview-page-title {
 
 .overview-card-title {
   @apply font-medium text-base transition-colors;
-  color: var(--action-blue);
+  color: var(--primary);
   font-family: var(--font-body);
 }
 
 .overview-card:hover .overview-card-title {
-  color: var(--focus-blue);
+  color: var(--primary);
+  opacity: 0.85;
 }
 
 .overview-card-category {
   @apply inline-block rounded-full px-2 py-0.5 text-[11px] font-mono border self-start;
-  color: var(--ctp-mauve);
-  background-color: color-mix(in srgb, var(--ctp-mauve) 12%, transparent);
-  border-color: color-mix(in srgb, var(--ctp-mauve) 25%, transparent);
+  color: var(--primary);
+  background-color: color-mix(in srgb, var(--primary) 12%, transparent);
+  border-color: color-mix(in srgb, var(--primary) 25%, transparent);
 }
 
 .overview-card-description {
@@ -157,9 +153,9 @@ html[data-theme='recipebook'] .overview-page-title {
 }
 
 .overview-category-card.active {
-  border-color: var(--ctp-mauve, #cba6f7);
-  background: radial-gradient(circle at top left, color-mix(in srgb, var(--ctp-mauve, #cba6f7) 12%, transparent), transparent 90%), var(--card);
-  box-shadow: 0 0 0 1px color-mix(in srgb, var(--ctp-mauve) 30%, transparent);
+  border-color: var(--primary);
+  background: radial-gradient(circle at top left, color-mix(in srgb, var(--primary) 12%, transparent), transparent 90%), var(--card);
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--primary) 30%, transparent);
 }
 
 .overview-category-card-header {
@@ -172,13 +168,13 @@ html[data-theme='recipebook'] .overview-page-title {
 }
 
 .overview-category-card.active .overview-category-card-title {
-  color: var(--ctp-mauve, #cba6f7);
+  color: var(--primary);
 }
 
 .overview-category-card-count {
   @apply inline-flex items-center justify-center rounded-full px-1.5 py-0.5 text-[10px] font-mono font-medium shrink-0;
-  color: var(--ctp-text);
-  background: color-mix(in srgb, var(--ctp-mauve) 15%, transparent);
+  color: var(--foreground);
+  background: color-mix(in srgb, var(--primary) 15%, transparent);
 }
 
 .overview-category-card-sub {
@@ -210,7 +206,7 @@ html[data-theme='recipebook'] .overview-page-title {
 }
 
 .overview-shelf:hover {
-  border-color: color-mix(in srgb, var(--ctp-mauve) 30%, var(--border));
+  border-color: color-mix(in srgb, var(--primary) 30%, var(--border));
 }
 
 .overview-shelf-header {
@@ -219,14 +215,14 @@ html[data-theme='recipebook'] .overview-page-title {
 
 .overview-shelf-title {
   @apply text-lg font-semibold tracking-tight m-0;
-  color: var(--ctp-mauve, #cba6f7);
+  color: var(--primary);
   font-family: var(--font-display);
 }
 
 .overview-shelf-count {
   @apply inline-flex items-center justify-center rounded-full px-2 py-0.5 text-xs font-mono font-medium;
-  color: var(--ctp-text);
-  background: color-mix(in srgb, var(--ctp-mauve) 15%, transparent);
+  color: var(--foreground);
+  background: color-mix(in srgb, var(--primary) 15%, transparent);
 }
 
 /* Badges */
@@ -250,8 +246,8 @@ html[data-theme='recipebook'] .overview-page-title {
 
 .overview-card-difficulty {
   @apply text-[11px] font-medium rounded px-1.5 py-0.5;
-  color: var(--ctp-blue, #89b4fa);
-  background-color: color-mix(in srgb, var(--ctp-blue) 12%, transparent);
+  color: var(--primary);
+  background-color: color-mix(in srgb, var(--primary) 12%, transparent);
 }
 
 .overview-card-tag {

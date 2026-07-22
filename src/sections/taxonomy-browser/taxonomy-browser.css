@@ -25,18 +25,18 @@
 
 .taxonomy-browser-card {
   @apply rounded-2xl border p-5 md:p-6 flex flex-col gap-4 cursor-pointer backdrop-blur-md shadow-md relative overflow-hidden;
-  border-color: color-mix(in srgb, var(--border) 80%, transparent);
-  background-color: color-mix(in srgb, var(--card) 85%, transparent);
-  border-top: 3px solid var(--ctp-blue);
+  border-color: color-mix(in srgb, var(--secondary) 35%, var(--border));
+  background-color: color-mix(in srgb, var(--card) 95%, transparent);
+  border-top: 3px solid var(--secondary);
   box-shadow: 0 4px 20px -4px rgba(0, 0, 0, 0.12);
   transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.25s ease, box-shadow 0.25s ease, background-color 0.25s ease;
 }
 
 .taxonomy-browser-card:hover {
   transform: translateY(-3px);
-  border-color: color-mix(in srgb, var(--ctp-blue) 60%, transparent);
-  background-color: color-mix(in srgb, var(--ctp-surface0) 40%, var(--card));
-  box-shadow: 0 10px 30px -6px rgba(0, 0, 0, 0.22), 0 0 16px color-mix(in srgb, var(--ctp-blue) 15%, transparent);
+  border-color: color-mix(in srgb, var(--secondary) 75%, var(--primary));
+  background-color: color-mix(in srgb, var(--secondary) 12%, var(--card));
+  box-shadow: 0 10px 30px -6px rgba(0, 0, 0, 0.22), 0 0 16px color-mix(in srgb, var(--secondary) 20%, transparent);
 }
 
 .taxonomy-browser-card-icon {
@@ -69,8 +69,10 @@
 }
 
 .taxonomy-browser-subtitle {
-  @apply font-mono tracking-[0.08em] uppercase m-0 text-[11px] font-bold;
-  color: var(--ctp-mauve);
+  @apply font-mono tracking-[0.08em] uppercase m-0 text-[11px] font-bold px-2 py-0.5 rounded;
+  color: var(--secondary);
+  background: color-mix(in srgb, var(--secondary) 14%, transparent);
+  width: fit-content;
 }
 
 .taxonomy-browser-card-title {
@@ -116,7 +118,7 @@
 
 .taxonomy-dialog-close:hover {
   color: var(--ctp-text);
-  background-color: color-mix(in srgb, var(--ctp-blue) 15%, transparent);
+  background-color: color-mix(in srgb, var(--primary) 15%, transparent);
   transform: rotate(90deg);
 }
 

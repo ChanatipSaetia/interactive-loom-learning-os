@@ -52,10 +52,10 @@
 }
 
 .chapter-badge {
-  background: color-mix(in srgb, var(--ctp-mauve) 14%, transparent);
-  border: 1px solid color-mix(in srgb, var(--ctp-mauve) 35%, transparent);
-  color: var(--ctp-mauve);
-  box-shadow: 0 2px 8px color-mix(in srgb, var(--ctp-mauve) 15%, transparent);
+  background: color-mix(in srgb, var(--primary) 14%, transparent);
+  border: 1px solid color-mix(in srgb, var(--primary) 35%, transparent);
+  color: var(--primary);
+  box-shadow: 0 2px 8px color-mix(in srgb, var(--primary) 15%, transparent);
 }
 
 .sparkle-pulse {
@@ -63,9 +63,9 @@
 }
 
 .meta-badge {
-  background: color-mix(in srgb, var(--ctp-surface0) 70%, transparent);
-  border: 1px solid color-mix(in srgb, var(--ctp-overlay0) 25%, transparent);
-  color: var(--ctp-subtext1);
+  background: color-mix(in srgb, var(--secondary) 14%, transparent);
+  border: 1px solid color-mix(in srgb, var(--secondary) 35%, transparent);
+  color: var(--secondary);
 }
 
 .topic-intro-title {
@@ -99,9 +99,9 @@
 
 .topic-intro-block {
   padding: 1.5rem;
-  background: color-mix(in srgb, var(--card) 85%, transparent);
+  background: color-mix(in srgb, var(--card) 95%, transparent);
   backdrop-filter: blur(10px);
-  border: 1px solid color-mix(in srgb, var(--border) 80%, transparent);
+  border: 1px solid color-mix(in srgb, var(--secondary) 35%, var(--border));
   border-radius: 16px;
   display: flex;
   flex-direction: column;
@@ -111,17 +111,17 @@
 }
 
 .topic-intro-block:hover {
-  border-color: color-mix(in srgb, var(--ctp-mauve) 50%, transparent);
+  border-color: color-mix(in srgb, var(--secondary) 75%, var(--primary));
   box-shadow: 0 8px 30px -6px rgba(0, 0, 0, 0.25);
   transform: translateY(-2px);
 }
 
 .pillar-definition {
-  border-left: 4px solid var(--ctp-mauve);
+  border-left: 4px solid var(--secondary);
 }
 
 .pillar-what {
-  border-left: 4px solid var(--ctp-blue);
+  border-left: 4px solid var(--primary);
 }
 
 .pillar-why {
@@ -144,13 +144,13 @@
 }
 
 .icon-definition {
-  background: color-mix(in srgb, var(--ctp-mauve) 18%, transparent);
-  color: var(--ctp-mauve);
+  background: color-mix(in srgb, var(--secondary) 22%, transparent);
+  color: var(--secondary);
 }
 
 .icon-what {
-  background: color-mix(in srgb, var(--ctp-blue) 18%, transparent);
-  color: var(--ctp-blue);
+  background: color-mix(in srgb, var(--primary) 18%, transparent);
+  color: var(--primary);
 }
 
 .icon-why {
@@ -200,7 +200,7 @@
 }
 
 .bullet-icon {
-  color: var(--ctp-blue);
+  color: var(--secondary);
   margin-top: 2px;
   flex-shrink: 0;
 }
@@ -214,12 +214,12 @@
 
 .pillar-tag {
   padding: 0.2rem 0.55rem;
-  background: color-mix(in srgb, var(--ctp-blue) 12%, transparent);
-  border: 1px solid color-mix(in srgb, var(--ctp-blue) 30%, transparent);
+  background: color-mix(in srgb, var(--secondary) 18%, transparent);
+  border: 1px solid color-mix(in srgb, var(--secondary) 40%, transparent);
   border-radius: 6px;
   font-size: 0.72rem;
   font-weight: 600;
-  color: var(--ctp-blue);
+  color: var(--secondary);
 }
 
 .pillar-impact-box {
@@ -264,7 +264,7 @@
 }
 
 .roadmap-icon {
-  color: var(--ctp-green);
+  color: var(--primary);
 }
 
 .roadmap-title {
@@ -302,9 +302,9 @@
 
 .roadmap-step-card:hover {
   background: color-mix(in srgb, var(--ctp-surface0) 90%, transparent);
-  border-color: color-mix(in srgb, var(--ctp-green) 50%, transparent);
+  border-color: color-mix(in srgb, var(--primary) 50%, transparent);
   transform: translateY(-2px);
-  box-shadow: 0 4px 16px color-mix(in srgb, var(--ctp-green) 12%, transparent);
+  box-shadow: 0 4px 16px color-mix(in srgb, var(--primary) 12%, transparent);
 }
 
 .step-number {
@@ -313,11 +313,12 @@
   justify-content: center;
   width: 26px;
   height: 26px;
-  background: color-mix(in srgb, var(--ctp-green) 18%, transparent);
+  background: color-mix(in srgb, var(--secondary) 18%, transparent);
+  border: 1px solid color-mix(in srgb, var(--secondary) 40%, transparent);
   border-radius: 50%;
   font-size: 0.78rem;
   font-weight: 700;
-  color: var(--ctp-green);
+  color: var(--secondary);
   flex-shrink: 0;
 }
 
@@ -334,7 +335,7 @@
   font-size: 0.62rem;
   font-weight: 700;
   text-transform: uppercase;
-  color: var(--ctp-mauve);
+  color: var(--primary);
   letter-spacing: 0.05em;
 }
 
@@ -364,7 +365,7 @@
 }
 
 .roadmap-step-card:hover .step-arrow {
-  color: var(--ctp-green);
+  color: var(--primary);
   transform: translateX(3px);
 }
 

@@ -40,9 +40,9 @@ function BulletItemRow({
   // Stagger delays
   const staggerDelay = (depth * 150 + index * 80) / 1000
 
-  // Determine marker content based on depth, all using the same accent color
+  // Determine marker content and theme color based on depth
   let markerContent = '◆'
-  const markerColor = 'var(--ctp-blue)'
+  const markerColor = depth === 0 ? 'var(--primary)' : 'var(--secondary)'
 
   if (depth === 0) {
     markerContent = '◆'

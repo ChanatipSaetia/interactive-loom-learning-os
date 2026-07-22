@@ -19,7 +19,8 @@
 
 /* Card-Style Parent Groups (Aligned with Overview Card aesthetic) */
 .bullets-card {
-  @apply rounded-xl border border-border p-5 flex flex-col gap-4 bg-card;
+  @apply rounded-xl border p-5 flex flex-col gap-4 bg-card;
+  border-color: color-mix(in srgb, var(--secondary) 35%, var(--border));
   height: fit-content;
   box-shadow: 0 4px 20px -4px rgba(0, 0, 0, 0.12);
   transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.25s ease, box-shadow 0.25s ease, background-color 0.25s ease;
@@ -32,9 +33,9 @@
 .bullets-card-collapsible:hover,
 .bullets-card:hover {
   transform: translateY(-2px);
-  border-color: color-mix(in srgb, var(--ring) 40%, var(--border));
+  border-color: color-mix(in srgb, var(--secondary) 75%, var(--primary));
   box-shadow: 0 8px 24px -6px rgba(0, 0, 0, 0.2);
-  background-color: color-mix(in srgb, var(--card) 95%, var(--accent));
+  background-color: color-mix(in srgb, var(--card) 95%, var(--secondary));
 }
 
 .bullets-card-header {
@@ -50,7 +51,7 @@
 }
 
 .bullet-item-row:hover {
-  background: color-mix(in srgb, var(--ctp-blue) 8%, transparent);
+  background: color-mix(in srgb, var(--primary) 8%, transparent);
 }
 
 .bullet-marker {
@@ -80,14 +81,16 @@
 
 /* Shared styling for all ordered markers */
 .bullet-marker-ordered {
-  @apply flex items-center justify-center font-semibold text-primary;
+  @apply flex items-center justify-center font-semibold;
+  color: var(--secondary);
   font-size: var(--text-caption);
   font-family: var(--font-mono);
 }
 
 /* ── Unordered markers ──────────────────────────────────────────────────── */
 .bullet-marker-unordered {
-  @apply flex items-center justify-center font-bold text-primary;
+  @apply flex items-center justify-center font-bold;
+  color: var(--secondary);
 }
 
 .bullet-text {
@@ -107,27 +110,27 @@
   @apply flex items-center justify-center flex-shrink-0 rounded-full p-1 transition-colors;
   width: 24px;
   height: 24px;
-  background-color: color-mix(in srgb, var(--ctp-overlay0) 12%, transparent);
+  background-color: color-mix(in srgb, var(--secondary) 20%, transparent);
 }
 
 .bullets-chevron {
-  color: var(--ctp-overlay2);
+  color: var(--secondary);
   transition: color 0.2s ease, transform 0.2s ease;
 }
 
 .bullets-card-header:hover .bullets-chevron-wrapper {
-  background-color: color-mix(in srgb, var(--ctp-blue) 15%, transparent);
+  background-color: color-mix(in srgb, var(--secondary) 35%, transparent);
 }
 
 .bullets-card-header:hover .bullets-chevron {
-  color: var(--ctp-blue);
+  color: var(--secondary-foreground);
 }
 
 .bullet-children {
   @apply list-none pt-2 m-0 flex flex-col gap-2;
   margin-left: 14px;
   padding-left: 14px;
-  border-left: 2px solid color-mix(in srgb, var(--ctp-surface1) 50%, transparent);
+  border-left: 2px solid color-mix(in srgb, var(--secondary) 75%, transparent);
 }
 
 .bullet-item {

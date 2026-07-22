@@ -50,17 +50,17 @@
 }
 
 .sequence-drag-item:hover:not(.placed) {
-  border-color: color-mix(in srgb, var(--ctp-mauve) 60%, transparent);
+  border-color: color-mix(in srgb, var(--primary) 60%, transparent);
   background: color-mix(in srgb, var(--ctp-surface0) 40%, var(--card));
   transform: translateY(-2px);
   box-shadow: 0 6px 20px -4px rgba(0, 0, 0, 0.16);
 }
 
 .sequence-drag-item.selected {
-  border-color: var(--ctp-mauve);
-  background: color-mix(in srgb, var(--ctp-mauve) 16%, var(--card));
+  border-color: var(--primary);
+  background: color-mix(in srgb, var(--primary) 16%, var(--card));
   transform: translateY(-2px);
-  box-shadow: 0 0 0 1px var(--ctp-mauve), 0 6px 20px -4px color-mix(in srgb, var(--ctp-mauve) 30%, transparent);
+  box-shadow: 0 0 0 1px var(--primary), 0 6px 20px -4px color-mix(in srgb, var(--primary) 30%, transparent);
 }
 
 .sequence-drag-item.placed {
@@ -91,9 +91,9 @@
 }
 
 .sequence-drop-slot.highlight-target {
-  border-color: var(--ctp-blue);
-  background: color-mix(in srgb, var(--ctp-blue) 12%, transparent);
-  box-shadow: 0 0 14px color-mix(in srgb, var(--ctp-blue) 30%, transparent);
+  border-color: var(--primary);
+  background: color-mix(in srgb, var(--primary) 12%, transparent);
+  box-shadow: 0 0 14px color-mix(in srgb, var(--primary) 30%, transparent);
 }
 
 .sequence-drop-slot.filled {
@@ -135,7 +135,7 @@
 .sequence-placed-text {
   font-size: 13.5px;
   font-weight: 600;
-  color: var(--ctp-lavender);
+  color: var(--primary);
 }
 
 .sequence-remove-btn {
@@ -168,9 +168,9 @@
 }
 
 .sequence-verify-btn {
-  background: linear-gradient(135deg, var(--ctp-blue) 0%, color-mix(in srgb, var(--ctp-blue) 85%, black) 100%);
-  color: var(--ctp-crust);
-  border: 1px solid color-mix(in srgb, var(--ctp-blue) 40%, transparent);
+  background: var(--primary);
+  color: var(--primary-foreground);
+  border: 1px solid color-mix(in srgb, var(--primary) 40%, transparent);
   padding: 12px 24px;
   border-radius: 12px;
   font-weight: 700;
@@ -189,7 +189,7 @@
 
 .sequence-verify-btn:hover {
   transform: translateY(-2px);
-  box-shadow: 0 6px 20px color-mix(in srgb, var(--ctp-blue) 35%, transparent);
+  box-shadow: 0 6px 20px color-mix(in srgb, var(--primary) 35%, transparent);
   filter: brightness(1.08);
 }
 

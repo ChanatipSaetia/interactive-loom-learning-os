@@ -22,7 +22,7 @@
 }
 
 .cm-edge-highlight {
-  stroke: var(--ctp-blue);
+  stroke: var(--primary);
   stroke-width: 4.5;
 }
 
@@ -45,13 +45,13 @@
 }
 
 .cm-edge-label-highlight {
-  fill: var(--ctp-blue);
+  fill: var(--primary);
   opacity: 1;
 }
 
 .cm-edge-label-bg.cm-edge-label-highlight {
-  fill: color-mix(in srgb, var(--ctp-blue) 15%, var(--ctp-mantle));
-  stroke: var(--ctp-blue);
+  fill: color-mix(in srgb, var(--primary) 15%, var(--ctp-mantle));
+  stroke: var(--primary);
   opacity: 1;
 }
 
@@ -85,7 +85,7 @@
 
 .cm-node-selected circle {
   stroke-width: 3;
-  filter: drop-shadow(0 0 8px var(--ctp-blue));
+  filter: drop-shadow(0 0 8px var(--primary));
 }
 
 @keyframes cm-entry-pulse {
@@ -110,9 +110,9 @@
 
 .concept-map-graph-badge {
   @apply inline-flex items-center px-2.5 py-1 rounded-full text-xs font-mono font-medium;
-  color: var(--ctp-mauve);
-  background: color-mix(in srgb, var(--ctp-mauve) 12%, transparent);
-  border: 1px solid color-mix(in srgb, var(--ctp-mauve) 25%, transparent);
+  color: var(--secondary);
+  background: color-mix(in srgb, var(--secondary) 14%, transparent);
+  border: 1px solid color-mix(in srgb, var(--secondary) 35%, transparent);
 }
 
 .cm-node-title {
@@ -141,10 +141,10 @@
 
 .concept-map-legend {
   @apply absolute bottom-3 left-3 flex flex-wrap gap-2 z-10;
-  background: color-mix(in srgb, var(--ctp-mantle) 88%, var(--card));
+  background: color-mix(in srgb, var(--ctp-mantle) 70%, var(--secondary));
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
-  border: 1px solid var(--border);
+  border: 1px solid color-mix(in srgb, var(--secondary) 45%, var(--border));
   border-radius: 10px;
   padding: 6px 12px;
 }
@@ -162,7 +162,9 @@
 
 .concept-map-panel {
   width: 300px;
-  @apply flex-shrink-0 bg-card border border-border rounded-xl p-5 flex flex-col gap-3.5;
+  @apply flex-shrink-0 border rounded-xl p-5 flex flex-col gap-3.5;
+  border-color: color-mix(in srgb, var(--secondary) 50%, var(--border));
+  background-color: color-mix(in srgb, var(--card) 85%, var(--secondary));
   box-shadow: 0 8px 30px -6px rgba(0, 0, 0, 0.25);
 }
 
