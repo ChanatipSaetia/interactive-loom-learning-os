@@ -5,7 +5,7 @@ Guidance for AI agents working in the **Interactive Loom Learning OS** repo.
 ## Project overview
 
 Interactive learning platform with animated flowcharts, trade-off sandboxes, taxonomy
-browsers, and progressive content. React + Vite + anime.js, Catppuccin Frappé theme.
+browsers, visual OKF section editor, and progressive content. React + Vite + anime.js, Catppuccin Frappé theme.
 See [README.md](README.md) for the tech stack, scripts, and project structure.
 
 ## Key docs
@@ -15,10 +15,19 @@ Read the relevant doc before starting work — do not duplicate its content here
 | Topic | Doc |
 |---|---|
 | Creating / editing topics & flowchart schemas | [docs/creating-topics.md](docs/creating-topics.md) |
+| Visual OKF Section Editor & live preview architecture | [grill-log-okf-section-editor.md](grill-log-okf-section-editor.md) |
 | Domain language, architecture, ADRs | [docs/agents/domain.md](docs/agents/domain.md) |
 | Issue tracker (GitHub Issues + `gh`) | [docs/agents/issue-tracker.md](docs/agents/issue-tracker.md) |
 | Triage labels | [docs/agents/triage-labels.md](docs/agents/triage-labels.md) |
 | Design system | [DESIGN.md](DESIGN.md) |
+
+## Working on OKF Sections & Editor Architecture
+
+- OKF schemas and types live in `src/core/okf/types.ts` (`OKFSectionMeta`, `OKFSectionData`, and specific section data interfaces like `OKFQuizSectionData`, `OKFConceptMapSectionData`, `OKFTradeoffSectionData`, etc.).
+- Dynamic OKF parsing and loading pipeline lives in `src/core/okf/reader.ts` and `src/core/okf/sections.ts`.
+- The OKF Section Editor uses a split view (Editor Panel on left, Live Section Component Preview on right) with bi-directionally synchronized 'Visual Form' and 'Raw YAML/Markdown' tabs.
+- Disk saving in development mode is handled via Vite dev server plugin middleware (`POST /api/okf/save-section`), updating `public/okf/[topic-id]/sections/[section-name]/` directly on disk.
+- Errors in YAML syntax or schema validation must present non-blocking inline warning bars while keeping the last valid data state in the Live Preview pane.
 
 ## Working on topics & flowcharts
 
@@ -42,8 +51,7 @@ npm run lint        # lint
 npm run typecheck   # type check
 ```
 
-Run `npm run typecheck` and `npm run test` before considering flowchart/derivation
-changes complete.
+Run `npm run typecheck` and `npm run test` before considering flowchart, derivation, or section editor changes complete.
 
 ## E2E Testing
 
@@ -59,6 +67,6 @@ This approach gives immediate feedback without maintaining Playwright test files
 
 ## Conventions
 
-- Keep content (data) strictly separate from structure (UI) — content lives in `src/topics/<topic>/data/`.
+- Keep content (data) strictly separate from structure (UI) — content lives in `public/okf/` or `src/topics/<topic>/data/`.
 - Only commit, push, or open PRs when explicitly requested.
 - Use the issue tracker and triage conventions in [docs/agents/](docs/agents/).
