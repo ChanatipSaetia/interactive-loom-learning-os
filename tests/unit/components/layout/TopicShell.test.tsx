@@ -181,7 +181,7 @@ describe('TopicShell Editor Mode', () => {
     fireEvent.click(firstEditBtn)
 
     await waitFor(() => {
-      const visualForm = document.querySelector('[data-testid="visual-form-editor"]')
+      const visualForm = document.querySelector('[data-testid="dynamic-schema-form"], [data-testid="quiz-form-editor"], [data-testid="flashcards-form-editor"], [data-testid="concept-map-form-editor"]')
       expect(visualForm).toBeInTheDocument()
       const formTab = document.querySelector('[data-testid="editor-tab-form"]')
       expect(formTab?.classList.contains('active')).toBe(true)

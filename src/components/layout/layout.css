@@ -805,3 +805,51 @@
   }
 }
 
+/* =============================================
+    Form Action Buttons (Add/Remove)
+    ============================================= */
+.form-add-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 6px 12px;
+  border: 1px dashed color-mix(in srgb, var(--border) 70%, transparent);
+  border-radius: 6px;
+  background: transparent;
+  color: var(--ctp-overlay1);
+  font-size: 12px;
+  font-family: var(--font-body, var(--font-sans));
+  cursor: pointer;
+  transition: all 0.2s ease;
+  margin-top: 4px;
+}
+
+.form-add-btn:hover {
+  color: var(--primary);
+  border-color: color-mix(in srgb, var(--primary) 40%, transparent);
+  background-color: color-mix(in srgb, var(--primary) 6%, transparent);
+}
+
+.form-remove-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  border: none;
+  border-radius: 4px;
+  background: transparent;
+  color: var(--ctp-overlay0);
+  font-size: 16px;
+  line-height: 1;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  margin-left: 4px;
+  float: right;
+}
+
+.form-remove-btn:hover {
+  color: var(--ctp-red);
+  background-color: color-mix(in srgb, var(--ctp-red) 12%, transparent);
+}
+

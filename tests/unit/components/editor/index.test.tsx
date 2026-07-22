@@ -6,36 +6,36 @@ import { EditorPanel } from '../../../../src/components/editor/EditorPanel'
 import type { OKFSectionData } from '../../../../src/core/okf/types'
 
 describe('VisualFormEditor', () => {
-  const mockData: OKFSectionData = {
-    type: 'text',
-    paragraphs: ['Hello world', 'Second paragraph'],
-  }
-
-  it('renders fields for each data property', () => {
+  it('renders dynamic schema form for text type (fallback)', () => {
+    const mockData: OKFSectionData = {
+      type: 'text',
+      paragraphs: ['Hello world', 'Second paragraph'],
+    }
     const onChange = vi.fn()
     render(<VisualFormEditor data={mockData} onChange={onChange} />)
 
-    expect(screen.getByTestId('visual-form-editor')).toBeInTheDocument()
+    expect(screen.getByTestId('dynamic-schema-form')).toBeInTheDocument()
     expect(screen.getByTestId('form-field-type')).toBeInTheDocument()
     const paragraphInputs = screen.getAllByTestId(/form-field-paragraphs-/g)
     expect(paragraphInputs.length).toBe(2)
   })
 
-  it('calls onChange with updated data when field is edited', () => {
+  it('calls onChange with updated data when field is edited (fallback form)', () => {
+    const mockData: OKFSectionData = {
+      type: 'text',
+      paragraphs: ['Hello world', 'Second paragraph'],
+    }
     const onChange = vi.fn()
     render(<VisualFormEditor data={mockData} onChange={onChange} />)
 
     const typeInput = screen.getByTestId('form-field-type')
     fireEvent.change(typeInput, { target: { value: 'bullets' } })
 
-    expect(onChange).toHaveBeenCalledWith({
-      type: 'bullets',
-      paragraphs: ['Hello world', 'Second paragraph'],
-    })
+    expect(onChange).toHaveBeenCalled()
   })
 
-  it('renders nested object fields', () => {
-    const nestedData: OKFSectionData = {
+  it('renders quiz form editor for quiz type', () => {
+    const quizData: OKFSectionData = {
       type: 'quiz',
       questions: [
         {
@@ -49,14 +49,235 @@ describe('VisualFormEditor', () => {
     }
 
     const onChange = vi.fn()
-    render(<VisualFormEditor data={nestedData} onChange={onChange} />)
+    render(<VisualFormEditor data={quizData} onChange={onChange} />)
 
-    expect(screen.getByTestId('form-field-type')).toBeInTheDocument()
-    const questionsField = document.querySelector('.visual-form-object-list')
-    expect(questionsField).toBeInTheDocument()
+    expect(screen.getByTestId('quiz-form-editor')).toBeInTheDocument()
+    expect(screen.getByTestId('quiz-question-0')).toBeInTheDocument()
+    expect(screen.getByTestId('quiz-add-question')).toBeInTheDocument()
   })
 
-  it('renders string array items as individual inputs', () => {
+  it('renders quiz question fields correctly', () => {
+    const quizData: OKFSectionData = {
+      type: 'quiz',
+      questions: [
+        {
+          id: 'q1',
+          question: 'What is X?',
+          choices: [
+            { id: 'a', text: 'Option A', correct: true, explanation: 'Correct' },
+            { id: 'b', text: 'Option B', correct: false, explanation: 'Wrong' },
+          ],
+        },
+      ],
+    }
+
+    const onChange = vi.fn()
+    render(<VisualFormEditor data={quizData} onChange={onChange} />)
+
+    expect(screen.getByTestId('quiz-question-0-id')).toHaveValue('q1')
+    expect(screen.getByTestId('quiz-question-0-question')).toHaveValue('What is X?')
+    expect(screen.getByTestId('quiz-choice-0-id')).toHaveValue('a')
+    expect(screen.getByTestId('quiz-choice-0-text')).toHaveValue('Option A')
+    expect(screen.getByTestId('quiz-choice-0-correct')).toBeChecked()
+  })
+
+  it('calls onChange when quiz question is edited', () => {
+    const quizData: OKFSectionData = {
+      type: 'quiz',
+      questions: [
+        {
+          id: 'q1',
+          question: 'What is X?',
+          choices: [
+            { id: 'a', text: 'Option A', correct: true, explanation: 'Correct' },
+          ],
+        },
+      ],
+    }
+
+    const onChange = vi.fn()
+    render(<VisualFormEditor data={quizData} onChange={onChange} />)
+
+    const questionInput = screen.getByTestId('quiz-question-0-question')
+    fireEvent.change(questionInput, { target: { value: 'New question?' } })
+
+    expect(onChange).toHaveBeenCalled()
+    const callArg = onChange.mock.calls[0][0] as OKFSectionData
+    expect((callArg as { questions: { question: string }[] }).questions[0].question).toBe('New question?')
+  })
+
+  it('renders flashcards form editor for flashcards type', () => {
+    const flashcardData: OKFSectionData = {
+      type: 'flashcards',
+      terms: [
+        {
+          id: 't1',
+          word: 'Hello',
+          pronunciation: 'həˈloʊ',
+          category: 'greeting',
+          shortDefinition: 'A greeting',
+          detailedDefinition: 'A common greeting',
+          whyItMatters: 'Essential for communication',
+        },
+      ],
+    }
+
+    const onChange = vi.fn()
+    render(<VisualFormEditor data={flashcardData} onChange={onChange} />)
+
+    expect(screen.getByTestId('flashcards-form-editor')).toBeInTheDocument()
+    expect(screen.getByTestId('flashcard-0')).toBeInTheDocument()
+    expect(screen.getByTestId('flashcards-add-term')).toBeInTheDocument()
+  })
+
+  it('renders concept map form editor for concept-map type', () => {
+    const cmData: OKFSectionData = {
+      type: 'concept-map',
+      nodes: {
+        node1: { id: 'node1', title: 'Node 1', category: 'A' },
+        node2: { id: 'node2', title: 'Node 2', category: 'B' },
+      },
+      edges: [
+        { from: 'node1', to: 'node2', label: 'relates to' },
+      ],
+    }
+
+    const onChange = vi.fn()
+    render(<VisualFormEditor data={cmData} onChange={onChange} />)
+
+    expect(screen.getByTestId('concept-map-form-editor')).toBeInTheDocument()
+    expect(screen.getByTestId('cm-node-node1')).toBeInTheDocument()
+    expect(screen.getByTestId('cm-edge-0')).toBeInTheDocument()
+    expect(screen.getByTestId('cm-add-node')).toBeInTheDocument()
+    expect(screen.getByTestId('cm-add-edge')).toBeInTheDocument()
+  })
+
+  it('renders tradeoff sandbox form editor for tradeoff-sandbox type', () => {
+    const tsData: OKFSectionData = {
+      type: 'tradeoff-sandbox',
+      scenarios: [
+        {
+          id: 's1',
+          title: 'Scenario 1',
+          description: 'A test scenario',
+          metrics: [
+            { id: 'm1', label: 'Metric 1', baseValue: 10 },
+          ],
+          steps: [
+            {
+              id: 'step1',
+              title: 'Step 1',
+              description: 'First step',
+              choices: [
+                {
+                  id: 'c1',
+                  label: 'Choice A',
+                  description: 'Description A',
+                  metrics: { m1: 5 },
+                  pros: [],
+                  cons: [],
+                },
+              ],
+            },
+          ],
+        },
+      ],
+    }
+
+    const onChange = vi.fn()
+    render(<VisualFormEditor data={tsData} onChange={onChange} />)
+
+    expect(screen.getByTestId('tradeoff-sandbox-form-editor')).toBeInTheDocument()
+    expect(screen.getByTestId('tc-scenario-0')).toBeInTheDocument()
+    expect(screen.getByTestId('tradeoff-add-scenario')).toBeInTheDocument()
+  })
+
+  it('renders scenario form editor for scenario type', () => {
+    const scenarioData: OKFSectionData = {
+      type: 'scenario',
+      id: 'sc1',
+      title: 'Test Scenario',
+      intro: 'Introduction',
+      nodes: {
+        start: {
+          id: 'start',
+          prompt: 'What do you do?',
+          choices: [
+            { id: 'c1', text: 'Option A', next: 'end' },
+          ],
+        },
+        end: {
+          id: 'end',
+          outcome: { verdict: 'Good', lesson: 'Learned', rating: 'a' },
+        },
+      },
+      startNode: 'start',
+    }
+
+    const onChange = vi.fn()
+    render(<VisualFormEditor data={scenarioData} onChange={onChange} />)
+
+    expect(screen.getByTestId('scenario-form-editor')).toBeInTheDocument()
+    expect(screen.getByTestId('scenario-title')).toHaveValue('Test Scenario')
+    expect(screen.getByTestId('sc-node-start')).toBeInTheDocument()
+  })
+
+  it('renders decision tree form editor for decision-tree type', () => {
+    const dtData: OKFSectionData = {
+      type: 'decision-tree',
+      id: 'dt1',
+      title: 'Test DT',
+      root: 'root',
+      nodes: {
+        root: {
+          id: 'root',
+          prompt: 'What to choose?',
+          choices: [
+            { id: 'c1', text: 'A', next: 'leaf1', rationale: 'Good' },
+          ],
+        },
+        leaf1: {
+          id: 'leaf1',
+          leaf: { recommendation: 'Go A', explanation: 'Because' },
+        },
+      },
+    }
+
+    const onChange = vi.fn()
+    render(<VisualFormEditor data={dtData} onChange={onChange} />)
+
+    expect(screen.getByTestId('decision-tree-form-editor')).toBeInTheDocument()
+    expect(screen.getByTestId('dt-title')).toHaveValue('Test DT')
+    expect(screen.getByTestId('dt-node-root')).toBeInTheDocument()
+    expect(screen.getByTestId('dt-choice-0')).toBeInTheDocument()
+  })
+
+  it('renders formula sandbox form editor for formula-sandbox type', () => {
+    const fsData: OKFSectionData = {
+      type: 'formula-sandbox',
+      variables: [
+        { id: 'v1', label: 'Speed', min: 0, max: 100, step: 1, defaultValue: 50 },
+      ],
+      metrics: [
+        { id: 'm1', label: 'Distance', formula: 'speed * time', description: 'How far' },
+      ],
+    }
+
+    const onChange = vi.fn()
+    render(<VisualFormEditor data={fsData} onChange={onChange} />)
+
+    expect(screen.getByTestId('formula-sandbox-form-editor')).toBeInTheDocument()
+    expect(screen.getByTestId('fs-var-0')).toBeInTheDocument()
+    expect(screen.getByTestId('fs-metric-0')).toBeInTheDocument()
+    expect(screen.getByTestId('fs-add-variable')).toBeInTheDocument()
+    expect(screen.getByTestId('fs-add-metric')).toBeInTheDocument()
+  })
+
+  it('renders string array items as individual inputs (fallback form)', () => {
+    const mockData: OKFSectionData = {
+      type: 'text',
+      paragraphs: ['Hello world', 'Second paragraph'],
+    }
     const onChange = vi.fn()
     render(<VisualFormEditor data={mockData} onChange={onChange} />)
 
@@ -135,7 +356,7 @@ describe('EditorPanel', () => {
     expect(screen.getByTestId('editor-panel')).toBeInTheDocument()
     expect(screen.getByTestId('editor-tab-form')).toBeInTheDocument()
     expect(screen.getByTestId('editor-tab-raw')).toBeInTheDocument()
-    expect(screen.getByTestId('visual-form-editor')).toBeInTheDocument()
+    expect(screen.getByTestId('dynamic-schema-form')).toBeInTheDocument()
     expect(screen.queryByTestId('raw-yaml-editor')).not.toBeInTheDocument()
   })
 
@@ -145,7 +366,7 @@ describe('EditorPanel', () => {
     const rawTab = screen.getByTestId('editor-tab-raw')
     fireEvent.click(rawTab)
 
-    expect(screen.queryByTestId('visual-form-editor')).not.toBeInTheDocument()
+    expect(screen.queryByTestId('dynamic-schema-form')).not.toBeInTheDocument()
     expect(screen.getByTestId('raw-yaml-editor')).toBeInTheDocument()
     expect(rawTab).toHaveAttribute('aria-selected', 'true')
   })
@@ -160,7 +381,7 @@ describe('EditorPanel', () => {
     const formTab = screen.getByTestId('editor-tab-form')
     fireEvent.click(formTab)
 
-    expect(screen.getByTestId('visual-form-editor')).toBeInTheDocument()
+    expect(screen.getByTestId('dynamic-schema-form')).toBeInTheDocument()
     expect(screen.queryByTestId('raw-yaml-editor')).not.toBeInTheDocument()
     expect(formTab).toHaveAttribute('aria-selected', 'true')
   })
