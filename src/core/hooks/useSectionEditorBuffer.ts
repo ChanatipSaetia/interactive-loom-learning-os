@@ -1,12 +1,16 @@
 import { useState, useEffect, useRef, useCallback } from 'react'
 import * as yaml from 'js-yaml'
 import type { OKFBundledSection, OKFSectionMeta, OKFSectionData } from '../okf/types'
+import type { ValidationError } from '../okf/validate'
+import { parseAndValidateYAML } from '../okf/validate'
+
+const DEBOUNCE_MS = 300
 
 interface EditorBufferState {
   meta: OKFSectionMeta
   data: OKFSectionData
   rawText: string
-  parseError: string | null
+  validationErrors: ValidationError[]
   isDirty: boolean
 }
 
@@ -21,6 +25,8 @@ export function useSectionEditorBuffer(
 ): EditorBufferReturn {
   const sourceRef = useRef(sourceSection)
   const syncing = useRef(false)
+  const debounceTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const pendingRaw = useRef<string | null>(null)
 
   const stringifiedRef = useRef('')
 
@@ -29,8 +35,17 @@ export function useSectionEditorBuffer(
     const meta = sourceSection?.meta ?? { type: 'text', title: '', resource: '.' }
     const raw = yaml.dump(data, { lineWidth: -1, noRefs: true })
     stringifiedRef.current = raw
-    return { meta, data, rawText: raw, parseError: null, isDirty: false }
+    return { meta, data, rawText: raw, validationErrors: [], isDirty: false }
   })
+
+  // Cleanup debounce timer on unmount
+  useEffect(() => {
+    return () => {
+      if (debounceTimer.current) {
+        clearTimeout(debounceTimer.current)
+      }
+    }
+  }, [])
 
   useEffect(() => {
     if (sourceSection && sourceSection !== sourceRef.current) {
@@ -39,9 +54,49 @@ export function useSectionEditorBuffer(
       const meta = sourceSection.meta
       const raw = yaml.dump(data, { lineWidth: -1, noRefs: true })
       stringifiedRef.current = raw
-      setState({ meta, data, rawText: raw, parseError: null, isDirty: false })
+      setState({ meta, data, rawText: raw, validationErrors: [], isDirty: false })
     }
   }, [sourceSection])
+
+  const flushDebounced = useCallback(() => {
+    const raw = pendingRaw.current
+    if (raw === null) return
+    pendingRaw.current = null
+
+    const metaType = sourceRef.current?.meta?.type
+    const result = parseAndValidateYAML(raw, metaType)
+
+    const sourceData = sourceRef.current?.data
+    let dirty = false
+    if (sourceData && result.data) {
+      const normalized = yaml.dump(result.data, { lineWidth: -1, noRefs: true })
+      dirty = normalized !== yaml.dump(sourceData, { lineWidth: -1, noRefs: true })
+    } else if (result.data) {
+      dirty = true
+    }
+
+    if (result.data && result.errors.length === 0) {
+      // Valid: update data and clear errors
+      syncing.current = true
+      setState((prev) => ({
+        ...prev,
+        data: result.data!,
+        rawText: raw,
+        validationErrors: [],
+        isDirty: dirty,
+      }))
+      syncing.current = false
+      onChange?.()
+    } else if (result.errors.length > 0) {
+      // Invalid: keep last-good data (prev.data), show errors, update rawText
+      setState((prev) => ({
+        ...prev,
+        rawText: raw,
+        validationErrors: result.errors,
+        isDirty: dirty,
+      }))
+    }
+  }, [onChange])
 
   const setVisualFormField = useCallback(
     (data: OKFSectionData) => {
@@ -50,7 +105,13 @@ export function useSectionEditorBuffer(
       stringifiedRef.current = raw
       const sourceData = sourceRef.current?.data
       const dirty = sourceData ? raw !== yaml.dump(sourceData, { lineWidth: -1, noRefs: true }) : false
-      setState((prev) => ({ ...prev, data, rawText: raw, parseError: null, isDirty: dirty }))
+      setState((prev) => ({
+        ...prev,
+        data,
+        rawText: raw,
+        validationErrors: [],
+        isDirty: dirty,
+      }))
       onChange?.()
     },
     [onChange]
@@ -59,29 +120,27 @@ export function useSectionEditorBuffer(
   const setRawText = useCallback(
     (text: string) => {
       if (syncing.current) return
-      try {
-        const parsed = yaml.load(text) as OKFSectionData
-        stringifiedRef.current = text
-        syncing.current = true
-        const sourceData = sourceRef.current?.data
-        const normalized = yaml.dump(parsed, { lineWidth: -1, noRefs: true })
-        const dirty = sourceData ? normalized !== yaml.dump(sourceData, { lineWidth: -1, noRefs: true }) : false
-        setState((prev) => ({ ...prev, data: parsed, rawText: text, parseError: null, isDirty: dirty }))
-        onChange?.()
-      } catch (e) {
-        const message = e instanceof Error ? e.message : String(e)
-        setState((prev) => ({ ...prev, rawText: text, parseError: message }))
+
+      // Cancel previous debounce
+      if (debounceTimer.current) {
+        clearTimeout(debounceTimer.current)
       }
-      syncing.current = false
+
+      // Update rawText immediately for responsive UX
+      setState((prev) => ({ ...prev, rawText: text }))
+
+      // Store pending and schedule debounced validation
+      pendingRaw.current = text
+      debounceTimer.current = setTimeout(flushDebounced, DEBOUNCE_MS)
     },
-    [onChange]
+    [flushDebounced]
   )
 
   return {
     meta: state.meta,
     data: state.data,
     rawText: state.rawText,
-    parseError: state.parseError,
+    validationErrors: state.validationErrors,
     isDirty: state.isDirty,
     setVisualFormField,
     setRawText,

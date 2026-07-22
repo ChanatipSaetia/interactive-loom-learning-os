@@ -4,6 +4,7 @@ import { VisualFormEditor } from '../../../../src/components/editor/VisualFormEd
 import { RawYAMLEditor } from '../../../../src/components/editor/RawYAMLEditor'
 import { EditorPanel } from '../../../../src/components/editor/EditorPanel'
 import type { OKFSectionData } from '../../../../src/core/okf/types'
+import type { ValidationError } from '../../../../src/core/okf/validate'
 
 describe('VisualFormEditor', () => {
   it('renders dynamic schema form for text type (fallback)', () => {
@@ -292,7 +293,7 @@ describe('RawYAMLEditor', () => {
     const initialText = 'type: text\nparagraphs:\n  - Hello'
 
     render(
-      <RawYAMLEditor text={initialText} error={null} onChange={onChange} />
+      <RawYAMLEditor text={initialText} errors={[]} onChange={onChange} />
     )
 
     expect(screen.getByTestId('raw-yaml-editor')).toBeInTheDocument()
@@ -303,7 +304,7 @@ describe('RawYAMLEditor', () => {
   it('calls onChange when text is edited', () => {
     const onChange = vi.fn()
     render(
-      <RawYAMLEditor text="type: text" error={null} onChange={onChange} />
+      <RawYAMLEditor text="type: text" errors={[]} onChange={onChange} />
     )
 
     const textarea = screen.getByTestId('raw-yaml-textarea')
@@ -312,35 +313,110 @@ describe('RawYAMLEditor', () => {
     expect(onChange).toHaveBeenCalledWith('type: bullets')
   })
 
-  it('displays parse error banner', () => {
+  it('displays syntax error banner', () => {
     const onChange = vi.fn()
+    const errors: ValidationError[] = [
+      {
+        kind: 'syntax',
+        message: 'unexpected end of the stream',
+        line: 3,
+      },
+    ]
+
     render(
-      <RawYAMLEditor
-        text="invalid: ["
-        error="Unexpected token x in JSON at position 0"
-        onChange={onChange}
-      />
+      <RawYAMLEditor text="invalid: [" errors={errors} onChange={onChange} />
     )
 
-    const errorEl = screen.getByTestId('raw-yaml-error')
-    expect(errorEl).toBeInTheDocument()
-    expect(errorEl).toHaveTextContent('Unexpected token')
+    const banner = screen.getByTestId('yaml-validation-banner')
+    expect(banner).toBeInTheDocument()
+    const syntaxGroup = screen.getByTestId('yaml-syntax-error-group')
+    expect(syntaxGroup).toBeInTheDocument()
+    expect(syntaxGroup).toHaveTextContent('YAML Syntax Error')
+    expect(syntaxGroup).toHaveTextContent('unexpected end of the stream')
   })
 
-  it('does not show error banner when error is null', () => {
+  it('displays schema error banner with field context', () => {
     const onChange = vi.fn()
+    const errors: ValidationError[] = [
+      {
+        kind: 'schema',
+        field: 'paragraphs',
+        message: 'Missing required field: "paragraphs"',
+      },
+    ]
+
     render(
-      <RawYAMLEditor text="type: text" error={null} onChange={onChange} />
+      <RawYAMLEditor text="type: text" errors={errors} onChange={onChange} />
     )
 
-    expect(screen.queryByTestId('raw-yaml-error')).not.toBeInTheDocument()
+    const banner = screen.getByTestId('yaml-validation-banner')
+    expect(banner).toBeInTheDocument()
+    const schemaGroup = screen.getByTestId('yaml-schema-error-group')
+    expect(schemaGroup).toBeInTheDocument()
+    expect(schemaGroup).toHaveTextContent('Schema Validation Error')
+    const fieldEl = screen.getByTestId('yaml-error-field')
+    expect(fieldEl).toHaveTextContent('paragraphs')
+  })
+
+  it('displays line number for syntax errors', () => {
+    const onChange = vi.fn()
+    const errors: ValidationError[] = [
+      {
+        kind: 'syntax',
+        message: 'bad indentation',
+        line: 5,
+      },
+    ]
+
+    render(
+      <RawYAMLEditor text="some yaml" errors={errors} onChange={onChange} />
+    )
+
+    const lineEl = screen.getByTestId('yaml-error-line')
+    expect(lineEl).toHaveTextContent('Line 5')
+  })
+
+  it('does not show error banner when errors array is empty', () => {
+    const onChange = vi.fn()
+    render(
+      <RawYAMLEditor text="type: text" errors={[]} onChange={onChange} />
+    )
+
+    expect(screen.queryByTestId('yaml-validation-banner')).not.toBeInTheDocument()
+  })
+
+  it('displays both syntax and schema errors together', () => {
+    const onChange = vi.fn()
+    const errors: ValidationError[] = [
+      {
+        kind: 'syntax',
+        message: 'syntax error',
+        line: 1,
+      },
+      {
+        kind: 'schema',
+        field: 'type',
+        message: 'Missing required field: "type"',
+      },
+    ]
+
+    render(
+      <RawYAMLEditor text="invalid" errors={errors} onChange={onChange} />
+    )
+
+    expect(screen.getByTestId('yaml-syntax-error-group')).toBeInTheDocument()
+    expect(screen.getByTestId('yaml-schema-error-group')).toBeInTheDocument()
+    const items = screen.getAllByTestId('yaml-syntax-error-item')
+    expect(items.length).toBe(1)
+    const schemaItems = screen.getAllByTestId('yaml-schema-error-item')
+    expect(schemaItems.length).toBe(1)
   })
 })
 
 describe('EditorPanel', () => {
   const mockProps = {
     sectionData: { type: 'text', paragraphs: ['Hello'] } as OKFSectionData,
-    parseError: null as string | null,
+    validationErrors: [] as ValidationError[],
     onVisualFormChange: vi.fn(),
     onRawTextChange: vi.fn(),
     rawText: 'type: text\nparagraphs:\n  - Hello',
@@ -386,16 +462,22 @@ describe('EditorPanel', () => {
     expect(formTab).toHaveAttribute('aria-selected', 'true')
   })
 
-  it('shows parse error in raw YAML tab', () => {
+  it('shows validation errors in raw YAML tab', () => {
     const propsWithErrors = {
       ...mockProps,
-      parseError: 'Bad YAML syntax',
+      validationErrors: [
+        {
+          kind: 'syntax' as const,
+          message: 'Bad YAML syntax',
+          line: 2,
+        },
+      ],
     }
 
     render(<EditorPanel {...propsWithErrors} />)
 
     fireEvent.click(screen.getByTestId('editor-tab-raw'))
-    expect(screen.getByTestId('raw-yaml-error')).toBeInTheDocument()
-    expect(screen.getByTestId('raw-yaml-error')).toHaveTextContent('Bad YAML syntax')
+    expect(screen.getByTestId('yaml-validation-banner')).toBeInTheDocument()
+    expect(screen.getByTestId('yaml-syntax-error-group')).toBeInTheDocument()
   })
 })

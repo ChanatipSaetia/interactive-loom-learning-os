@@ -751,6 +751,82 @@
 }
 
 /* =============================================
+    YAML Validation Banner
+    ============================================= */
+.yaml-validation-banner {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 10px 12px;
+  border-radius: 8px;
+  background-color: color-mix(in srgb, var(--ctp-red) 8%, transparent);
+  border: 1px solid color-mix(in srgb, var(--ctp-red) 25%, transparent);
+  animation: yaml-banner-fade-in 0.2s ease;
+}
+
+@keyframes yaml-banner-fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.yaml-error-group {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.yaml-error-group + .yaml-error-group {
+  margin-top: 6px;
+  padding-top: 6px;
+  border-top: 1px solid color-mix(in srgb, var(--ctp-red) 20%, transparent);
+}
+
+.yaml-error-group-title {
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--ctp-red);
+  opacity: 0.85;
+}
+
+.yaml-error-item {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  font-size: 12px;
+  font-family: var(--font-mono, monospace);
+  line-height: 1.4;
+  color: var(--ctp-red);
+}
+
+.yaml-error-line {
+  font-size: 10px;
+  font-weight: 600;
+  color: color-mix(in srgb, var(--ctp-red) 80%, var(--ctp-overlay1));
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.yaml-error-field {
+  font-size: 10px;
+  font-weight: 600;
+  color: color-mix(in srgb, var(--ctp-maroon) 70%, var(--ctp-overlay1));
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.yaml-error-message {
+  color: var(--ctp-red);
+}
+
+/* =============================================
     Editor Preview Wrapper
     ============================================= */
 .editor-preview-wrapper {

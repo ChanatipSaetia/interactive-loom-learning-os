@@ -74,7 +74,7 @@ function EditorModeView({ topicLabel }: { topicLabel: string }) {
   const {
     data: editedData,
     rawText,
-    parseError,
+    validationErrors,
     setVisualFormField,
     setRawText,
   } = useSectionEditorBuffer(activeSection)
@@ -102,7 +102,7 @@ function EditorModeView({ topicLabel }: { topicLabel: string }) {
         leftPanel={
           <EditorPanel
             sectionData={editedData}
-            parseError={parseError}
+            validationErrors={validationErrors}
             onVisualFormChange={setVisualFormField}
             onRawTextChange={setRawText}
             rawText={rawText}

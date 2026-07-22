@@ -2,12 +2,13 @@ import { useState, useCallback } from 'react'
 import { VisualFormEditor } from './VisualFormEditor'
 import { RawYAMLEditor } from './RawYAMLEditor'
 import type { OKFSectionData } from '../../core/okf/types'
+import type { ValidationError } from '../../core/okf/validate'
 
 type EditorTab = 'form' | 'raw'
 
 interface EditorPanelProps {
   sectionData: OKFSectionData
-  parseError: string | null
+  validationErrors: ValidationError[]
   onVisualFormChange: (data: OKFSectionData) => void
   onRawTextChange: (text: string) => void
   rawText: string
@@ -15,7 +16,7 @@ interface EditorPanelProps {
 
 export function EditorPanel({
   sectionData,
-  parseError,
+  validationErrors,
   onVisualFormChange,
   onRawTextChange,
   rawText,
@@ -55,7 +56,7 @@ export function EditorPanel({
         {activeTab === 'form' ? (
           <VisualFormEditor data={sectionData} onChange={onVisualFormChange} />
         ) : (
-          <RawYAMLEditor text={rawText} error={parseError} onChange={onRawTextChange} />
+          <RawYAMLEditor text={rawText} errors={validationErrors} onChange={onRawTextChange} />
         )}
       </div>
     </div>
