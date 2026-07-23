@@ -8,4 +8,6 @@ export { DecisionTreeFormEditor } from './DecisionTreeFormEditor'
 export { FormulaSandboxFormEditor } from './FormulaSandboxFormEditor'
 export { FlowchartFormEditor } from './FlowchartFormEditor'
 export { IntroFormEditor } from './IntroFormEditor'
+export { TextFormEditor } from './TextFormEditor'
+export { BulletsFormEditor } from './BulletsFormEditor'
 

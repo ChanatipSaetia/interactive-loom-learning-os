@@ -9,6 +9,8 @@ import {
   FormulaSandboxFormEditor,
   FlowchartFormEditor,
   IntroFormEditor,
+  TextFormEditor,
+  BulletsFormEditor,
   DynamicSchemaForm,
 } from './forms'
 
@@ -56,6 +58,14 @@ export function VisualFormEditor({ data, onChange }: VisualFormEditorProps) {
 
   if (isType(data, 'flowchart')) {
     return <FlowchartFormEditor data={data} onChange={onChange} />
+  }
+
+  if (isType(data, 'text')) {
+    return <TextFormEditor data={data} onChange={onChange} />
+  }
+
+  if (isType(data, 'bullets')) {
+    return <BulletsFormEditor data={data} onChange={onChange} />
   }
 
   return (

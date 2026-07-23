@@ -7,7 +7,7 @@ import type { OKFSectionData } from '../../../../src/core/okf/types'
 import type { ValidationError } from '../../../../src/core/okf/validate'
 
 describe('VisualFormEditor', () => {
-  it('renders dynamic schema form for text type (fallback)', () => {
+  it('renders text form editor for text type', () => {
     const mockData: OKFSectionData = {
       type: 'text',
       paragraphs: ['Hello world', 'Second paragraph'],
@@ -15,24 +15,30 @@ describe('VisualFormEditor', () => {
     const onChange = vi.fn()
     render(<VisualFormEditor data={mockData} onChange={onChange} />)
 
-    expect(screen.getByTestId('dynamic-schema-form')).toBeInTheDocument()
-    expect(screen.getByTestId('form-field-type')).toBeInTheDocument()
-    const paragraphInputs = screen.getAllByTestId(/form-field-paragraphs-/g)
-    expect(paragraphInputs.length).toBe(2)
+    expect(screen.getByTestId('text-form-editor')).toBeInTheDocument()
+    expect(screen.getByTestId('text-paragraph-input-0')).toBeInTheDocument()
+    expect(screen.getByTestId('text-add-paragraph')).toBeInTheDocument()
+
+    // Test guide modal
+    fireEvent.click(screen.getByTestId('text-editor-help-btn'))
+    expect(screen.getByTestId('text-help-modal')).toBeInTheDocument()
   })
 
-  it('calls onChange with updated data when field is edited (fallback form)', () => {
+  it('renders bullets form editor for bullets type', () => {
     const mockData: OKFSectionData = {
-      type: 'text',
-      paragraphs: ['Hello world', 'Second paragraph'],
+      type: 'bullets',
+      items: [{ text: 'Bullet Item 1' }],
     }
     const onChange = vi.fn()
     render(<VisualFormEditor data={mockData} onChange={onChange} />)
 
-    const typeInput = screen.getByTestId('form-field-type')
-    fireEvent.change(typeInput, { target: { value: 'bullets' } })
+    expect(screen.getByTestId('bullets-form-editor')).toBeInTheDocument()
+    expect(screen.getByTestId('bullet-item-card-0')).toBeInTheDocument()
+    expect(screen.getByTestId('bullets-add-item')).toBeInTheDocument()
 
-    expect(onChange).toHaveBeenCalled()
+    // Test guide modal
+    fireEvent.click(screen.getByTestId('bullets-editor-help-btn'))
+    expect(screen.getByTestId('bullets-help-modal')).toBeInTheDocument()
   })
 
   it('renders quiz form editor for quiz type', () => {
@@ -481,12 +487,12 @@ describe('VisualFormEditor', () => {
   })
 
   it('renders string array items as individual inputs (fallback form)', () => {
-    const mockData: OKFSectionData = {
-      type: 'text',
+    const mockData = {
+      type: 'custom-fallback',
       paragraphs: ['Hello world', 'Second paragraph'],
     }
     const onChange = vi.fn()
-    render(<VisualFormEditor data={mockData} onChange={onChange} />)
+    render(<VisualFormEditor data={mockData as unknown as OKFSectionData} onChange={onChange} />)
 
     const paragraphInputs = screen.getAllByTestId('form-field-paragraphs-0')
     expect(paragraphInputs.length).toBe(1)
@@ -643,7 +649,7 @@ describe('EditorPanel', () => {
     expect(screen.getByTestId('editor-panel')).toBeInTheDocument()
     expect(screen.getByTestId('editor-tab-form')).toBeInTheDocument()
     expect(screen.getByTestId('editor-tab-raw')).toBeInTheDocument()
-    expect(screen.getByTestId('dynamic-schema-form')).toBeInTheDocument()
+    expect(screen.getByTestId('text-form-editor')).toBeInTheDocument()
     expect(screen.queryByTestId('raw-yaml-editor')).not.toBeInTheDocument()
   })
 
@@ -653,7 +659,7 @@ describe('EditorPanel', () => {
     const rawTab = screen.getByTestId('editor-tab-raw')
     fireEvent.click(rawTab)
 
-    expect(screen.queryByTestId('dynamic-schema-form')).not.toBeInTheDocument()
+    expect(screen.queryByTestId('text-form-editor')).not.toBeInTheDocument()
     expect(screen.getByTestId('raw-yaml-editor')).toBeInTheDocument()
     expect(rawTab).toHaveAttribute('aria-selected', 'true')
   })
@@ -668,7 +674,7 @@ describe('EditorPanel', () => {
     const formTab = screen.getByTestId('editor-tab-form')
     fireEvent.click(formTab)
 
-    expect(screen.getByTestId('dynamic-schema-form')).toBeInTheDocument()
+    expect(screen.getByTestId('text-form-editor')).toBeInTheDocument()
     expect(screen.queryByTestId('raw-yaml-editor')).not.toBeInTheDocument()
     expect(formTab).toHaveAttribute('aria-selected', 'true')
   })
