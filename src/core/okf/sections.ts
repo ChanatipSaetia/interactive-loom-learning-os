@@ -57,7 +57,7 @@ export function bundleToSections(bundle: OKFBundled): SectionConfig[] {
         props.items = data.items
         break
       case 'flowchart':
-        props.schema = deriveSchema(data.flow)
+        props.schema = data.flow ? deriveSchema(data.flow) : (data as any).schema
         break
       case 'tradeoff-sandbox':
         props.scenarios = data.scenarios

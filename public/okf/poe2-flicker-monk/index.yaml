@@ -16,10 +16,10 @@ related:
   - sections/taxonomy/utility-skills.yaml
   - sections/taxonomy/defenses.yaml
   # - sections/gameplay/items.yaml
-  # - sections/flowchart/actors.yaml
-  # - sections/flowchart/systems.yaml
-  # - sections/flowchart/steps.yaml
-  # - sections/flowchart/journeys.yaml
+  - sections/flowchart/actors.yaml
+  - sections/flowchart/systems.yaml
+  - sections/flowchart/steps.yaml
+  - sections/flowchart/journeys.yaml
   # - sections/quiz/questions.yaml
   - sections/tradeoffs/gear-budget.yaml
   # - sections/tradeoffs/gear-invested.yaml

@@ -53,7 +53,7 @@ For optimal cognitive progression, structure your topic's sections in the follow
 | `intro` | Topic hero overview, rationale & learning roadmap | `content.yaml` (definition, what, why, roadmap) | None | Entrance keyframes, touch-swipe horizontal roadmap track |
 | `text` | Anchored conceptual narrative | Markdown strings (paragraphs) | None | Scroll-triggered fade-in |
 | `bullets` | Hierarchical taxonomy / breakdown | Nested recursive nodes (`children`) | Expanded/Collapsed states | Staggered fade/slide-in, chevron rotation |
-| `flowchart` | Dynamic process flows & swimlanes | `actors.yaml`, `systems.yaml`, `steps.yaml`, `journeys.yaml` | Active step, fullscreen toggle, view mode tabs | anime.js path drawing, camera centering, highlights |
+| `flowchart` | Dynamic process flows & swimlanes | `actors.yaml`, `systems.yaml`, `steps.yaml`, `journeys.yaml` (or JSON `schema` / `flow`) | Active step, fullscreen toggle, view mode tabs | anime.js path drawing, camera centering, highlights |
 | `tradeoff-sandbox` | Architectural tradeoffs & strategy matrix | Scenarios with choices, pros/cons list | Selected choice per step, metrics scores state | Bar gauge expansion transitions, pros/cons fade-in |
 | `taxonomy-browser` | Concept categorized grids & properties | Category yaml files (color, analogy, scopes) | Selected category card, expanded card state | Cards zoom, pulse rings, grid shifts |
 | `quiz` | Knowledge check & validation | Multiple-choice questions (`questions.yaml`) | Selected answer, verified state, index | Score counters, card transitions, correct/incorrect badges |

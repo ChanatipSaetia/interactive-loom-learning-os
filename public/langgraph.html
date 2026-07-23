@@ -14,7 +14,7 @@
     rel="stylesheet">
 
   <!-- Load Loom CSS from the public CDN -->
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/loom-learning-sections@1.3.0/loom-sections.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/loom-learning-sections@1.3.2/loom-sections.css">
 
   <style>
     body {
@@ -45,12 +45,6 @@
       color: var(--ctp-green);
       border: 1px solid rgba(166, 209, 137, 0.25);
     }
-
-    .status-badge.warning {
-      background: rgba(229, 200, 144, 0.12);
-      color: var(--ctp-yellow);
-      border: 1px solid rgba(229, 200, 144, 0.25);
-    }
   </style>
 </head>
 
@@ -67,478 +61,1336 @@
   <div id="loom-root"></div>
 
   <!-- Load Loom Sections JS from the public CDN -->
-  <script src="https://cdn.jsdelivr.net/npm/loom-learning-sections@1.3.0/loom-sections.umd.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/loom-learning-sections@1.3.2/loom-sections.umd.js"></script>
 
   <script>
-    // Fallback embedded curriculum data
-    const fallbackSections = [
-      {
-        "type": "text",
-        "props": {
-          "title": "Understanding LangGraph",
-          "heading": "Stateful Agentic Workflows & Multi-Agent Loops",
-          "paragraphs": [
-            "Traditional LLM pipelines are structured as **Directed Acyclic Graphs (DAGs)**. While linear structures (like standard LangChain Runnables/LCEL) excel at simple input-output logic, they struggle with complex agent behaviors that require **iteration, error correction, and cyclic loops**.",
-            "**LangGraph** solves this by letting you define LLM orchestrations as stateful graphs. It models application workflows as a set of **Nodes** (which perform work) connected by **Edges** (which route control flow). The system maintains a shared **State** database that transitions through node operations. Let's explore the core primitives of LangGraph visually."
-          ],
-          "animate": true
-        }
-      },
-      {
-        "type": "bullets",
-        "props": {
-          "title": "Why Use LangGraph?",
-          "ordered": false,
-          "items": [
+    // Embedded static curriculum data
+    const okfSections = [
+  {
+    "type": "text",
+    "props": {
+      "title": "Understanding LangGraph",
+      "heading": "Stateful Agentic Workflows & Multi-Agent Loops",
+      "paragraphs": [
+        "Traditional LLM pipelines are structured as **Directed Acyclic Graphs (DAGs)**. While linear structures (like standard LangChain Runnables/LCEL) excel at simple input-output logic, they struggle with complex agent behaviors that require **iteration, error correction, and cyclic loops**.",
+        "**LangGraph** solves this by letting you define LLM orchestrations as stateful graphs. It models application workflows as a set of **Nodes** (which perform work) connected by **Edges** (which route control flow). The system maintains a shared **State** database that transitions through node operations. Let's explore the core primitives of LangGraph visually."
+      ],
+      "animate": true
+    }
+  },
+  {
+    "type": "bullets",
+    "props": {
+      "title": "Why Use LangGraph?",
+      "ordered": false,
+      "items": [
+        {
+          "text": "Built-in Persistence",
+          "children": [
             {
-              "text": "Built-in Persistence",
-              "children": [
-                { "text": "Enables human-in-the-loop approvals out-of-the-box" },
-                { "text": "Provides full time-travel debugging/replayability" }
-              ]
+              "text": "Enables human-in-the-loop approvals out-of-the-box"
             },
             {
-              "text": "Support for Cycles",
-              "children": [
-                { "text": "Crucial for agent loops that refine actions based on tool results" }
-              ]
-            },
-            {
-              "text": "Fine-grained Control",
-              "children": [
-                { "text": "Allows orchestrating complex workflows beyond standard chain-based architectures" }
-              ]
+              "text": "Provides full time-travel debugging/replayability"
             }
-          ],
-          "animate": true
+          ]
+        },
+        {
+          "text": "Support for Cycles",
+          "children": [
+            {
+              "text": "Crucial for agent loops that refine actions based on tool results"
+            }
+          ]
+        },
+        {
+          "text": "Fine-grained Control",
+          "children": [
+            {
+              "text": "Allows orchestrating complex workflows beyond standard chain-based architectures"
+            }
+          ]
+        }
+      ],
+      "animate": true
+    }
+  },
+  {
+    "type": "concept-map",
+    "props": {
+      "title": "LangGraph Architecture",
+      "nodes": {
+        "langgraph": {
+          "id": "langgraph",
+          "title": "LangGraph Engine",
+          "category": "Framework"
+        },
+        "stategraph": {
+          "id": "stategraph",
+          "title": "StateGraph",
+          "category": "Builder"
+        },
+        "state": {
+          "id": "state",
+          "title": "Shared State",
+          "category": "Data Model"
+        },
+        "nodes": {
+          "id": "nodes",
+          "title": "Nodes (Actions)",
+          "category": "Behavior"
+        },
+        "edges": {
+          "id": "edges",
+          "title": "Edges (Routing)",
+          "category": "Flow"
+        },
+        "checkpointer": {
+          "id": "checkpointer",
+          "title": "Checkpointer",
+          "category": "Persistence"
         }
       },
-      {
-        "type": "concept-map",
-        "props": {
-          "title": "LangGraph Architecture",
-          "nodes": {
-            "langgraph": { "id": "langgraph", "title": "LangGraph Engine", "category": "Framework" },
-            "stategraph": { "id": "stategraph", "title": "StateGraph", "category": "Builder" },
-            "state": { "id": "state", "title": "Shared State", "category": "Data Model" },
-            "nodes": { "id": "nodes", "title": "Nodes (Actions)", "category": "Behavior" },
-            "edges": { "id": "edges", "title": "Edges (Routing)", "category": "Flow" },
-            "checkpointer": { "id": "checkpointer", "title": "Checkpointer", "category": "Persistence" }
+      "edges": [
+        {
+          "from": "langgraph",
+          "to": "stategraph",
+          "label": "provides"
+        },
+        {
+          "from": "stategraph",
+          "to": "state",
+          "label": "declares"
+        },
+        {
+          "from": "stategraph",
+          "to": "nodes",
+          "label": "registers"
+        },
+        {
+          "from": "stategraph",
+          "to": "edges",
+          "label": "routes between"
+        },
+        {
+          "from": "stategraph",
+          "to": "checkpointer",
+          "label": "persists state via"
+        },
+        {
+          "from": "nodes",
+          "to": "state",
+          "label": "reads/updates"
+        },
+        {
+          "from": "edges",
+          "to": "state",
+          "label": "routes based on"
+        }
+      ]
+    }
+  },
+  {
+    "type": "taxonomy-browser",
+    "props": {
+      "title": "Core Abstractions of LangGraph",
+      "categories": [
+        {
+          "icon": "Network",
+          "title": "StateGraph",
+          "subtitle": "Builder class",
+          "description": "The foundational framework class used to build the graph topology.",
+          "details": "You define the graph schema (State), add Nodes for action execution, and connect them with normal or conditional Edges.",
+          "analogy": "Like a blueprint defining nodes and pathways.",
+          "primaryFocus": "Defining the flow and structure of the agent application.",
+          "inScope": [
+            "Adding nodes",
+            "Adding edges",
+            "Compiling with memory"
+          ],
+          "outOfScope": [
+            "Executing individual prompt templates"
+          ],
+          "color": "#8caaee"
+        },
+        {
+          "icon": "Activity",
+          "title": "Nodes",
+          "subtitle": "Graph Nodes",
+          "description": "Independent function steps that do work and optionally modify the state.",
+          "details": "Each node receives the current state and returns a dict containing updates to the state variables.",
+          "analogy": "Like assembly line workstations doing a specific job.",
+          "primaryFocus": "Executing actions (e.g. invoking LLM, querying database).",
+          "inScope": [
+            "Python functions",
+            "LangChain runnables"
+          ],
+          "outOfScope": [
+            "Routing control flow logic"
+          ],
+          "color": "#ca9ee6"
+        },
+        {
+          "icon": "ArrowRightLeft",
+          "title": "Edges",
+          "subtitle": "Routing Edges",
+          "description": "Direct connections or routing functions mapping flow between nodes.",
+          "details": "Standard edges define direct paths. Conditional edges use routing functions to compute the next node dynamically.",
+          "analogy": "Like switches on a railway system routing the train.",
+          "primaryFocus": "Routing execution flow between nodes.",
+          "inScope": [
+            "Direct edges",
+            "Conditional routing functions"
+          ],
+          "outOfScope": [
+            "Modifying the state database directly"
+          ],
+          "color": "#e78284"
+        },
+        {
+          "icon": "ShieldAlert",
+          "title": "Checkpointer",
+          "subtitle": "Persistence Layer",
+          "description": "Saves snapshots of the state at each step of graph execution.",
+          "details": "Allows human-in-the-loop interactions, time travel debugging, error recovery, and chat session state memory.",
+          "analogy": "Like checkpoints in a game allowing you to reload.",
+          "primaryFocus": "State persistence and execution control.",
+          "inScope": [
+            "Memory savers",
+            "Database savers (PostgreSQL, SQLite)",
+            "Human approvals"
+          ],
+          "outOfScope": [
+            "Defining node execution logic"
+          ],
+          "color": "#a6d189"
+        }
+      ]
+    }
+  },
+  {
+    "type": "flashcards",
+    "props": {
+      "title": "Core Primitives Glossary",
+      "terms": [
+        {
+          "id": "term-stategraph",
+          "word": "StateGraph",
+          "pronunciation": "/steɪt ɡræf/",
+          "category": "Structure",
+          "shortDefinition": "The foundational class for building graphs in LangGraph.",
+          "detailedDefinition": "StateGraph is initialized with a state schema (like a TypedDict). Nodes and edges are added to this object, which is then compiled into a runnable execution loop.",
+          "whyItMatters": "Compiling a StateGraph returns an executable class that respects state transitions, human-in-the-loop steps, and checkpointers."
+        },
+        {
+          "id": "term-shared-state",
+          "word": "Shared State",
+          "pronunciation": "/ʃeəd steɪt/",
+          "category": "Data",
+          "shortDefinition": "The shared memory context updated as nodes execute.",
+          "detailedDefinition": "Every node takes the current state as input and returns an update. This update is merged into the overall State schema rather than overwriting it completely, preserving context.",
+          "whyItMatters": "Enables distributed nodes to collaborate on a single task, writing and reading files, message lists, or evaluation scores."
+        },
+        {
+          "id": "term-reducer",
+          "word": "Reducer",
+          "pronunciation": "/rɪˈdjuː.sər/",
+          "category": "Orchestration",
+          "shortDefinition": "Functions defining how node updates are merged into the state.",
+          "detailedDefinition": "By default, LangGraph overwrites state keys with new values. A Reducer allows you to specify custom update behavior, e.g., appending items to a list of messages using operator.add.",
+          "whyItMatters": "Crucial for chat logs where nodes must append new message items instead of overwriting the entire history."
+        },
+        {
+          "id": "term-conditional-edge",
+          "word": "Conditional Edge",
+          "pronunciation": "/kənˈdɪʃ.ən.əl edʒ/",
+          "category": "Flow",
+          "shortDefinition": "A routing edge that dynamically determines the next node based on state.",
+          "detailedDefinition": "Unlike normal edges that connect fixed nodes, conditional edges invoke a routing function that returns the ID of the next destination node.",
+          "whyItMatters": "Allows graphs to execute branch logic or exit loops (e.g. decision routing based on LLM confidence)."
+        },
+        {
+          "id": "term-checkpointer",
+          "word": "Checkpointer",
+          "pronunciation": "/ˈtʃek.pɔɪn.tər/",
+          "category": "Persistence",
+          "shortDefinition": "A persistence layer saving state snapshots at each node boundary.",
+          "detailedDefinition": "Checkpointers write state to memory, databases (e.g. SQLite, PostgreSQL), or Redis. They enable crash recovery, thread branching, time travel, and manual approvals.",
+          "whyItMatters": "Allows you to pause execution, inspect the state, get human approval (human-in-the-loop), and resume or rewind steps."
+        }
+      ]
+    }
+  },
+  {
+    "type": "flowchart",
+    "props": {
+      "title": "Agent Research Loop Flowchart",
+      "schema": {
+        "entities": {
+          "user": {
+            "title": "Human User",
+            "desc": "Initiates query and reviews final answer.",
+            "type": "Actor"
           },
-          "edges": [
-            { "from": "langgraph", "to": "stategraph", "label": "provides" },
-            { "from": "stategraph", "to": "state", "label": "declares" },
-            { "from": "stategraph", "to": "nodes", "label": "registers" },
-            { "from": "stategraph", "to": "edges", "label": "routes between" },
-            { "from": "stategraph", "to": "checkpointer", "label": "persists state via" },
-            { "from": "nodes", "to": "state", "label": "reads/updates" },
-            { "from": "edges", "to": "state", "label": "routes based on" }
-          ]
-        }
-      },
-      {
-        "type": "taxonomy-browser",
-        "props": {
-          "title": "Core Abstractions of LangGraph",
-          "categories": [
-            {
-              "icon": "Network",
-              "title": "StateGraph",
-              "subtitle": "Builder class",
-              "description": "The foundational framework class used to build the graph topology.",
-              "details": "You define the graph schema (State), add Nodes for action execution, and connect them with normal or conditional Edges.",
-              "analogy": "Like a blueprint defining nodes and pathways.",
-              "primaryFocus": "Defining the flow and structure of the agent application.",
-              "inScope": ["Adding nodes", "Adding edges", "Compiling with memory"],
-              "outOfScope": ["Executing individual prompt templates"],
-              "color": "#8caaee"
-            },
-            {
-              "icon": "Activity",
-              "title": "Nodes",
-              "subtitle": "Graph Nodes",
-              "description": "Independent function steps that do work and optionally modify the state.",
-              "details": "Each node receives the current state and returns a dict containing updates to the state variables.",
-              "analogy": "Like assembly line workstations doing a specific job.",
-              "primaryFocus": "Executing actions (e.g. invoking LLM, querying database).",
-              "inScope": ["Python functions", "LangChain runnables"],
-              "outOfScope": ["Routing control flow logic"],
-              "color": "#ca9ee6"
-            },
-            {
-              "icon": "ArrowRightLeft",
-              "title": "Edges",
-              "subtitle": "Routing Edges",
-              "description": "Direct connections or routing functions mapping flow between nodes.",
-              "details": "Standard edges define direct paths. Conditional edges use routing functions to compute the next node dynamically.",
-              "analogy": "Like switches on a railway system routing the train.",
-              "primaryFocus": "Routing execution flow between nodes.",
-              "inScope": ["Direct edges", "Conditional routing functions"],
-              "outOfScope": ["Modifying the state database directly"],
-              "color": "#e78284"
-            },
-            {
-              "icon": "ShieldAlert",
-              "title": "Checkpointer",
-              "subtitle": "Persistence Layer",
-              "description": "Saves snapshots of the state at each step of graph execution.",
-              "details": "Allows human-in-the-loop interactions, time travel debugging, error recovery, and chat session state memory.",
-              "analogy": "Like checkpoints in a game allowing you to reload.",
-              "primaryFocus": "State persistence and execution control.",
-              "inScope": ["Memory savers", "Database savers (PostgreSQL, SQLite)", "Human approvals"],
-              "outOfScope": ["Defining node execution logic"],
-              "color": "#a6d189"
-            }
-          ]
-        }
-      },
-      {
-        "type": "flashcards",
-        "props": {
-          "title": "Core Primitives Glossary",
-          "terms": [
-            {
-              "id": "term-stategraph",
-              "word": "StateGraph",
-              "pronunciation": "/steɪt ɡræf/",
-              "category": "Structure",
-              "shortDefinition": "The foundational class for building graphs in LangGraph.",
-              "detailedDefinition": "StateGraph is initialized with a state schema (like a TypedDict). Nodes and edges are added to this object, which is then compiled into a runnable execution loop.",
-              "whyItMatters": "Compiling a StateGraph returns an executable class that respects state transitions, human-in-the-loop steps, and checkpointers."
-            },
-            {
-              "id": "term-shared-state",
-              "word": "Shared State",
-              "pronunciation": "/ʃeəd steɪt/",
-              "category": "Data",
-              "shortDefinition": "The shared memory context updated as nodes execute.",
-              "detailedDefinition": "Every node takes the current state as input and returns an update. This update is merged into the overall State schema rather than overwriting it completely, preserving context.",
-              "whyItMatters": "Enables distributed nodes to collaborate on a single task, writing and reading files, message lists, or evaluation scores."
-            },
-            {
-              "id": "term-reducer",
-              "word": "Reducer",
-              "pronunciation": "/rɪˈdjuː.sər/",
-              "category": "Orchestration",
-              "shortDefinition": "Functions defining how node updates are merged into the state.",
-              "detailedDefinition": "By default, LangGraph overwrites state keys with new values. A Reducer allows you to specify custom update behavior, e.g., appending items to a list of messages using operator.add.",
-              "whyItMatters": "Crucial for chat logs where nodes must append new message items instead of overwriting the entire history."
-            },
-            {
-              "id": "term-conditional-edge",
-              "word": "Conditional Edge",
-              "pronunciation": "/kənˈdɪʃ.ən.əl edʒ/",
-              "category": "Flow",
-              "shortDefinition": "A routing edge that dynamically determines the next node based on state.",
-              "detailedDefinition": "Unlike normal edges that connect fixed nodes, conditional edges invoke a routing function that returns the ID of the next destination node.",
-              "whyItMatters": "Allows graphs to execute branch logic or exit loops (e.g. decision routing based on LLM confidence)."
-            },
-            {
-              "id": "term-checkpointer",
-              "word": "Checkpointer",
-              "pronunciation": "/ˈtʃek.pɔɪn.tər/",
-              "category": "Persistence",
-              "shortDefinition": "A persistence layer saving state snapshots at each node boundary.",
-              "detailedDefinition": "Checkpointers write state to memory, databases (e.g. SQLite, PostgreSQL), or Redis. They enable crash recovery, thread branching, time travel, and manual approvals.",
-              "whyItMatters": "Allows you to pause execution, inspect the state, get human approval (human-in-the-loop), and resume or rewind steps."
-            }
-          ]
-        }
-      },
-      {
-        "type": "scenario",
-        "props": {
-          "id": "sc-langgraph-human-in-the-loop",
-          "title": "Human-in-the-loop Approval Scenario",
-          "intro": "You are designing an autonomous coding agent. It is about to execute a terminal command. How do you construct the workflow?",
-          "startNode": "decide-design",
-          "nodes": {
-            "decide-design": {
-              "id": "decide-design",
-              "prompt": "Your agent needs to run arbitrary bash commands to install dependencies. How do you handle safety approvals?",
-              "choices": [
-                { "id": "c1", "text": "Run commands automatically without approval", "next": "auto-fail" },
-                { "id": "c2", "text": "Configure an interrupt before the execution node using a Checkpointer", "next": "interrupt-success" }
-              ]
-            },
-            "auto-fail": {
-              "id": "auto-fail",
-              "outcome": {
-                "verdict": "Security Risk & High Cost",
-                "lesson": "Running arbitrary bash commands automatically can cause server compromise or delete local files without confirmation. Always use human-in-the-loop checks for high-risk operations.",
-                "rating": "c"
+          "agent_orch": {
+            "title": "Agent Orchestrator",
+            "desc": "Coordinates research loop steps and state updates.",
+            "type": "Aggregate"
+          },
+          "search_tool": {
+            "title": "Web Search API",
+            "desc": "Retrieves real-time search engine results.",
+            "type": "External API"
+          },
+          "llm_api": {
+            "title": "LLM Service",
+            "desc": "Executes prompt generation and structured analysis.",
+            "type": "External API"
+          },
+          "pol_step-start": {
+            "title": "User Initiates Session",
+            "desc": "User Initiates Session",
+            "type": "Policy",
+            "root": false
+          },
+          "cmd_step-start": {
+            "title": "Submit Query",
+            "desc": "Submit Query",
+            "type": "Command"
+          },
+          "evt_evt-query-submitted": {
+            "title": "Query Submitted",
+            "desc": "User query written to state.",
+            "type": "Event"
+          },
+          "pol_step-plan": {
+            "title": "On Query Submission",
+            "desc": "On Query Submission",
+            "type": "Policy",
+            "root": false
+          },
+          "cmd_step-plan": {
+            "title": "Determine Search Strategy",
+            "desc": "Determine Search Strategy",
+            "type": "Command"
+          },
+          "evt_evt-plan-created": {
+            "title": "Plan Created",
+            "desc": "Specific research terms identified.",
+            "type": "Event"
+          },
+          "pol_branch-search": {
+            "title": "If Search Needed",
+            "desc": "If Search Needed",
+            "type": "Policy"
+          },
+          "cmd_branch-search": {
+            "title": "Perform Search",
+            "desc": "Perform Search",
+            "type": "Command"
+          },
+          "evt_evt-search-done": {
+            "title": "Search Executed",
+            "desc": "Raw results loaded into State.",
+            "type": "Event"
+          },
+          "pol_branch-direct": {
+            "title": "If Direct Answer Ready",
+            "desc": "If Direct Answer Ready",
+            "type": "Policy"
+          },
+          "cmd_branch-direct": {
+            "title": "Synthesize Direct Response",
+            "desc": "Synthesize Direct Response",
+            "type": "Command"
+          },
+          "llm_api1": {
+            "title": "LLM Service 1",
+            "desc": "Executes prompt generation and structured analysis.",
+            "type": "External API",
+            "collapsedTo": "llm_api"
+          },
+          "evt_evt-direct-ready": {
+            "title": "Response Formatted",
+            "desc": "Response finalized from static memory.",
+            "type": "Event"
+          },
+          "pol_step-process": {
+            "title": "When Raw Results Returned",
+            "desc": "When Raw Results Returned",
+            "type": "Policy",
+            "root": false
+          },
+          "cmd_step-process": {
+            "title": "Ingest Search Context",
+            "desc": "Ingest Search Context",
+            "type": "Command"
+          },
+          "agent_orch1": {
+            "title": "Agent Orchestrator 1",
+            "desc": "Coordinates research loop steps and state updates.",
+            "type": "Aggregate",
+            "collapsedTo": "agent_orch"
+          },
+          "evt_evt-ingested": {
+            "title": "Context Ingested",
+            "desc": "State updated with clean search tokens.",
+            "type": "Event"
+          },
+          "pol_branch-loop": {
+            "title": "If Gaps Found",
+            "desc": "If Gaps Found",
+            "type": "Policy"
+          },
+          "cmd_branch-loop": {
+            "title": "Refine Research Query",
+            "desc": "Refine Research Query",
+            "type": "Command"
+          },
+          "agent_orch2": {
+            "title": "Agent Orchestrator 2",
+            "desc": "Coordinates research loop steps and state updates.",
+            "type": "Aggregate",
+            "collapsedTo": "agent_orch"
+          },
+          "evt_evt-plan-refined": {
+            "title": "Plan Refined",
+            "desc": "New search questions appended.",
+            "type": "Event"
+          },
+          "pol_branch-complete": {
+            "title": "If Data Complete",
+            "desc": "If Data Complete",
+            "type": "Policy"
+          },
+          "cmd_branch-complete": {
+            "title": "Draft Final Synthesis",
+            "desc": "Draft Final Synthesis",
+            "type": "Command"
+          },
+          "agent_orch3": {
+            "title": "Agent Orchestrator 3",
+            "desc": "Coordinates research loop steps and state updates.",
+            "type": "Aggregate",
+            "collapsedTo": "agent_orch"
+          },
+          "evt_evt-draft-ready": {
+            "title": "Response Formatted",
+            "desc": "Answer compiled into markdown.",
+            "type": "Event"
+          },
+          "pol_step-output": {
+            "title": "When Response Formatted",
+            "desc": "When Response Formatted",
+            "type": "Policy",
+            "root": false
+          },
+          "cmd_step-output": {
+            "title": "Return Solution to User",
+            "desc": "Return Solution to User",
+            "type": "Command"
+          },
+          "evt_evt-finished": {
+            "title": "Loop Terminated",
+            "desc": "Orchestrator exits, returning response.",
+            "type": "Event"
+          }
+        },
+        "relations": [
+          {
+            "id": "r1",
+            "from": "user",
+            "to": "pol_step-start",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r2",
+            "from": "pol_step-start",
+            "to": "cmd_step-start",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r3",
+            "from": "cmd_step-start",
+            "to": "agent_orch",
+            "handledBy": true,
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r4",
+            "from": "agent_orch",
+            "to": "evt_evt-query-submitted",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r5",
+            "from": "evt_evt-query-submitted",
+            "to": "pol_step-plan",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r6",
+            "from": "pol_step-plan",
+            "to": "cmd_step-plan",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r7",
+            "from": "cmd_step-plan",
+            "to": "llm_api",
+            "handledBy": true,
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r8",
+            "from": "llm_api",
+            "to": "evt_evt-plan-created",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r9",
+            "from": "evt_evt-plan-created",
+            "to": "pol_step-router",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r10",
+            "from": "evt_evt-plan-created",
+            "to": "pol_branch-search",
+            "label": "Requires Real-time Data",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r11",
+            "from": "pol_branch-search",
+            "to": "cmd_branch-search",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r12",
+            "from": "cmd_branch-search",
+            "to": "search_tool",
+            "handledBy": true,
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r13",
+            "from": "search_tool",
+            "to": "evt_evt-search-done",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r14",
+            "from": "evt_evt-search-done",
+            "to": "pol_step-process",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r15",
+            "from": "evt_evt-plan-created",
+            "to": "pol_branch-direct",
+            "label": "Conversational Reply",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r16",
+            "from": "pol_branch-direct",
+            "to": "cmd_branch-direct",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r17",
+            "from": "cmd_branch-direct",
+            "to": "llm_api1",
+            "handledBy": true,
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r18",
+            "from": "llm_api1",
+            "to": "evt_evt-direct-ready",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r19",
+            "from": "evt_evt-direct-ready",
+            "to": "pol_step-output",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r20",
+            "from": "pol_step-process",
+            "to": "cmd_step-process",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r21",
+            "from": "cmd_step-process",
+            "to": "agent_orch1",
+            "handledBy": true,
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r22",
+            "from": "agent_orch1",
+            "to": "evt_evt-ingested",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r23",
+            "from": "evt_evt-ingested",
+            "to": "pol_step-eval-router",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r24",
+            "from": "evt_evt-ingested",
+            "to": "pol_branch-loop",
+            "label": "Incomplete Information",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r25",
+            "from": "pol_branch-loop",
+            "to": "cmd_branch-loop",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r26",
+            "from": "cmd_branch-loop",
+            "to": "agent_orch2",
+            "handledBy": true,
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r27",
+            "from": "agent_orch2",
+            "to": "evt_evt-plan-refined",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r28",
+            "from": "evt_evt-plan-refined",
+            "to": "pol_step-plan",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r29",
+            "from": "evt_evt-ingested",
+            "to": "pol_branch-complete",
+            "label": "Information Sufficient",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r30",
+            "from": "pol_branch-complete",
+            "to": "cmd_branch-complete",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r31",
+            "from": "cmd_branch-complete",
+            "to": "agent_orch3",
+            "handledBy": true,
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r32",
+            "from": "agent_orch3",
+            "to": "evt_evt-draft-ready",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r33",
+            "from": "evt_evt-draft-ready",
+            "to": "pol_step-output",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r34",
+            "from": "pol_step-output",
+            "to": "cmd_step-output",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r35",
+            "from": "cmd_step-output",
+            "to": "user",
+            "handledBy": true,
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r36",
+            "from": "user",
+            "to": "evt_evt-finished",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          }
+        ],
+        "journeys": [
+          {
+            "id": "happy-path",
+            "label": "Direct Answer Path",
+            "description": "User asks a basic question, router maps to direct answer, bypasses search loop.",
+            "steps": [
+              {
+                "nodeIds": [
+                  "pol_step-start",
+                  "cmd_step-start",
+                  "agent_orch",
+                  "evt_evt-query-submitted"
+                ],
+                "title": "Start",
+                "reason": "User query starts orchestrator."
+              },
+              {
+                "nodeIds": [
+                  "pol_step-plan",
+                  "cmd_step-plan",
+                  "llm_api",
+                  "evt_evt-plan-created"
+                ],
+                "title": "Plan",
+                "reason": "LLM checks query classification."
+              },
+              {
+                "nodeIds": [
+                  "pol_branch-direct",
+                  "cmd_branch-direct",
+                  "llm_api1",
+                  "evt_evt-direct-ready"
+                ],
+                "title": "Direct Reply",
+                "reason": "Query is classified as basic; direct reply generated."
+              },
+              {
+                "nodeIds": [
+                  "pol_step-output",
+                  "cmd_step-output",
+                  "user",
+                  "evt_evt-finished"
+                ],
+                "title": "Present",
+                "reason": "Session finishes cleanly."
               }
-            },
-            "interrupt-success": {
-              "id": "interrupt-success",
-              "outcome": {
-                "verdict": "Excellent Safety Practice",
-                "lesson": "By adding an interrupt boundary (e.g. compile(checkpointer=MemorySaver(), interrupt_before=['execute_bash'])), the execution halts. A human reviewer can approve or rewrite the state dynamically, avoiding unauthorized runs.",
-                "rating": "a"
+            ]
+          },
+          {
+            "id": "search-path",
+            "label": "Research Loop & Refinement Path",
+            "description": "Query requires external search; router performs search, evaluates findings, loops back to refine, and completes.",
+            "steps": [
+              {
+                "nodeIds": [
+                  "pol_step-start",
+                  "cmd_step-start",
+                  "agent_orch",
+                  "evt_evt-query-submitted"
+                ],
+                "title": "Start Session",
+                "reason": "User submits deep research query."
+              },
+              {
+                "nodeIds": [
+                  "pol_step-plan",
+                  "cmd_step-plan",
+                  "llm_api",
+                  "evt_evt-plan-created"
+                ],
+                "title": "Identify Terms",
+                "reason": "Initial search terms planned."
+              },
+              {
+                "nodeIds": [
+                  "pol_branch-search",
+                  "cmd_branch-search",
+                  "search_tool",
+                  "evt_evt-search-done"
+                ],
+                "title": "Search Engine API",
+                "reason": "Search executed, data written to State."
+              },
+              {
+                "nodeIds": [
+                  "pol_step-process",
+                  "cmd_step-process",
+                  "agent_orch1",
+                  "evt_evt-ingested"
+                ],
+                "title": "Ingest Results",
+                "reason": "Agent updates state with search context."
+              },
+              {
+                "nodeIds": [
+                  "pol_branch-loop",
+                  "cmd_branch-loop",
+                  "agent_orch2",
+                  "evt_evt-plan-refined"
+                ],
+                "title": "Refine Path",
+                "reason": "State has gaps; agent loop triggers query refinement."
+              },
+              {
+                "nodeIds": [
+                  "pol_step-plan",
+                  "cmd_step-plan",
+                  "llm_api",
+                  "evt_evt-plan-created"
+                ],
+                "title": "Plan Re-evaluation",
+                "reason": "New search query parsed by LLM."
+              },
+              {
+                "nodeIds": [
+                  "pol_branch-search",
+                  "cmd_branch-search",
+                  "search_tool",
+                  "evt_evt-search-done"
+                ],
+                "title": "Second Search",
+                "reason": "Search executed with updated query criteria."
+              },
+              {
+                "nodeIds": [
+                  "pol_step-process",
+                  "cmd_step-process",
+                  "agent_orch1",
+                  "evt_evt-ingested"
+                ],
+                "title": "Ingest Second Search",
+                "reason": "Results updated in State."
+              },
+              {
+                "nodeIds": [
+                  "pol_branch-complete",
+                  "cmd_branch-complete",
+                  "agent_orch3",
+                  "evt_evt-draft-ready"
+                ],
+                "title": "Draft Answer",
+                "reason": "Data is sufficient; draft is compiled."
+              },
+              {
+                "nodeIds": [
+                  "pol_step-output",
+                  "cmd_step-output",
+                  "user",
+                  "evt_evt-finished"
+                ],
+                "title": "Present Answer",
+                "reason": "Final synthesis displayed."
               }
+            ]
+          }
+        ]
+      }
+    }
+  },
+  {
+    "type": "scenario",
+    "props": {
+      "id": "sc-langgraph-human-in-the-loop",
+      "title": "Human-in-the-loop Approval Scenario",
+      "intro": "You are designing an autonomous coding agent. It is about to execute a terminal command. How do you construct the workflow?",
+      "startNode": "decide-design",
+      "nodes": {
+        "decide-design": {
+          "id": "decide-design",
+          "prompt": "Your agent needs to run arbitrary bash commands to install dependencies. How do you handle safety approvals?",
+          "choices": [
+            {
+              "id": "c1",
+              "text": "Run commands automatically without approval",
+              "next": "auto-fail"
+            },
+            {
+              "id": "c2",
+              "text": "Configure an interrupt before the execution node using a Checkpointer",
+              "next": "interrupt-success"
             }
+          ]
+        },
+        "auto-fail": {
+          "id": "auto-fail",
+          "outcome": {
+            "verdict": "Security Risk & High Cost",
+            "lesson": "Running arbitrary bash commands automatically can cause server compromise or delete local files without confirmation. Always use human-in-the-loop checks for high-risk operations.",
+            "rating": "c"
+          }
+        },
+        "interrupt-success": {
+          "id": "interrupt-success",
+          "outcome": {
+            "verdict": "Excellent Safety Practice",
+            "lesson": "By adding an interrupt boundary (e.g. compile(checkpointer=MemorySaver(), interrupt_before=[\"execute_bash\"])), the execution halts. A human reviewer can approve or rewrite the state dynamically, avoiding unauthorized runs.",
+            "rating": "a"
           }
         }
-      },
-      {
-        "type": "decision-tree",
-        "props": {
-          "id": "dt-langgraph-routing",
-          "title": "Choosing between LCEL and LangGraph",
-          "root": "routing-root",
-          "nodes": {
-            "routing-root": {
-              "id": "routing-root",
-              "prompt": "Does your LLM application require loops/cycles or human approval steps?",
-              "choices": [
-                { "id": "c1", "text": "Yes, requires cyclic logic or human-in-the-loop approval", "next": "use-langgraph", "recommended": true, "rationale": "Cycles and persistence are LangGraph's core primitives." },
-                { "id": "c2", "text": "No, it is a single direct sequence of steps", "next": "check-complexity", "rationale": "For simple linear pipelines, standard LCEL is lighter." }
-              ]
+      }
+    }
+  },
+  {
+    "type": "decision-tree",
+    "props": {
+      "id": "dt-langgraph-routing",
+      "title": "Choosing between LCEL and LangGraph",
+      "root": "routing-root",
+      "nodes": {
+        "routing-root": {
+          "id": "routing-root",
+          "prompt": "Does your LLM application require loops/cycles or human approval steps?",
+          "choices": [
+            {
+              "id": "c1",
+              "text": "Yes, requires cyclic logic or human-in-the-loop approval",
+              "next": "use-langgraph",
+              "recommended": true,
+              "rationale": "Cycles and persistence are LangGraph's core primitives."
             },
-            "check-complexity": {
-              "id": "check-complexity",
-              "prompt": "Do you need persistent session memory across chat runs?",
-              "choices": [
-                { "id": "c1", "text": "Yes, multi-turn conversation memory with checkpoints", "next": "use-langgraph", "recommended": true, "rationale": "LangGraph checkpointers handle chat memory out-of-the-box." },
-                { "id": "c2", "text": "No, simple request-response or single retrieval call", "next": "use-lcel", "rationale": "Standard LangChain LCEL keeps deployment simpler." }
-              ]
-            },
-            "use-langgraph": {
-              "id": "use-langgraph",
-              "leaf": {
-                "recommendation": "Use LangGraph",
-                "explanation": "LangGraph provides the state management, cyclic loops, checkpointer boundaries, and interrupt handling needed for advanced agent workflows.",
-                "tradeoffs": ["Steeper learning curve", "Requires state schema setup"]
-              }
-            },
-            "use-lcel": {
-              "id": "use-lcel",
-              "leaf": {
-                "recommendation": "Use LangChain LCEL",
-                "explanation": "Standard LangChain Expression Language (LCEL) is lightweight, easier to debug, and optimal for acyclic, single-run pipelines.",
-                "tradeoffs": ["No built-in cycle routing", "Must manage memory state manually"]
-              }
+            {
+              "id": "c2",
+              "text": "No, it is a single direct sequence of steps",
+              "next": "check-complexity",
+              "rationale": "For simple linear pipelines, standard LCEL is lighter."
             }
+          ]
+        },
+        "check-complexity": {
+          "id": "check-complexity",
+          "prompt": "Do you need persistent session memory across chat runs?",
+          "choices": [
+            {
+              "id": "c1",
+              "text": "Yes, multi-turn conversation memory with checkpoints",
+              "next": "use-langgraph",
+              "recommended": true,
+              "rationale": "LangGraph checkpointers handle chat memory out-of-the-box."
+            },
+            {
+              "id": "c2",
+              "text": "No, simple request-response or single retrieval call",
+              "next": "use-lcel",
+              "rationale": "Standard LangChain LCEL keeps deployment simpler."
+            }
+          ]
+        },
+        "use-langgraph": {
+          "id": "use-langgraph",
+          "leaf": {
+            "recommendation": "Use LangGraph",
+            "explanation": "LangGraph provides the state management, cyclic loops, checkpointer boundaries, and interrupt handling needed for advanced agent workflows.",
+            "tradeoffs": [
+              "Steeper learning curve",
+              "Requires state schema setup"
+            ]
+          }
+        },
+        "use-lcel": {
+          "id": "use-lcel",
+          "leaf": {
+            "recommendation": "Use LangChain LCEL",
+            "explanation": "Standard LangChain Expression Language (LCEL) is lightweight, easier to debug, and optimal for acyclic, single-run pipelines.",
+            "tradeoffs": [
+              "No built-in cycle routing",
+              "Must manage memory state manually"
+            ]
           }
         }
-      },
-      {
-        "type": "tradeoff-sandbox",
-        "props": {
-          "title": "Framework Trade-offs: LCEL vs. LangGraph",
-          "scenarios": [
+      }
+    }
+  },
+  {
+    "type": "tradeoff-sandbox",
+    "props": {
+      "title": "Framework Trade-offs: LCEL vs. LangGraph",
+      "scenarios": [
+        {
+          "id": "framework-scenario",
+          "title": "Orchestrator System Architecture",
+          "description": "Choose your LLM application framework.",
+          "metrics": [
             {
-              "id": "framework-scenario",
-              "title": "Orchestrator System Architecture",
-              "description": "Choose your LLM application framework.",
-              "metrics": [
-                { "id": "flexibility", "label": "Loop/Cyclic Flexibility", "baseValue": 5, "min": 1, "max": 10, "direction": "higher" },
-                { "id": "simplicity", "label": "Development Simplicity", "baseValue": 8, "min": 1, "max": 10, "direction": "higher" },
-                { "id": "control", "label": "State Control (Time Travel)", "baseValue": 3, "min": 1, "max": 10, "direction": "higher" }
-              ],
-              "steps": [
+              "id": "flexibility",
+              "label": "Loop/Cyclic Flexibility",
+              "baseValue": 5,
+              "min": 1,
+              "max": 10,
+              "direction": "higher"
+            },
+            {
+              "id": "simplicity",
+              "label": "Development Simplicity",
+              "baseValue": 8,
+              "min": 1,
+              "max": 10,
+              "direction": "higher"
+            },
+            {
+              "id": "control",
+              "label": "State Control (Time Travel)",
+              "baseValue": 3,
+              "min": 1,
+              "max": 10,
+              "direction": "higher"
+            }
+          ],
+          "steps": [
+            {
+              "id": "step-framework",
+              "title": "Framework Type",
+              "description": "Select the framework style for your pipeline.",
+              "recommended": "choice-langgraph",
+              "choices": [
                 {
-                  "id": "step-framework",
-                  "title": "Framework Type",
-                  "description": "Select the framework style for your pipeline.",
-                  "recommended": "choice-langgraph",
-                  "choices": [
+                  "id": "choice-lcel",
+                  "label": "LangChain LCEL (DAG)",
+                  "description": "Linear chain execution with streaming.",
+                  "metrics": {
+                    "flexibility": -2,
+                    "simplicity": 1,
+                    "control": -1
+                  },
+                  "pros": [
                     {
-                      "id": "choice-lcel",
-                      "label": "LangChain LCEL (DAG)",
-                      "description": "Linear chain execution with streaming.",
-                      "metrics": { "flexibility": -2, "simplicity": 1, "control": -1 },
-                      "pros": [
-                        { "title": "Low Overhead", "description": "Fast execution, simple syntax, easy debugging." }
-                      ],
-                      "cons": [
-                        { "title": "No Loops", "description": "Cannot express state feedback loops or retry graphs natively." },
-                        { "title": "No Persistence", "description": "Must build custom databases to save middle-of-run variables." }
-                      ],
-                      "whyThisFits": "Perfect for simple Q&A, formatting, or straightforward retrieval pipelines.",
-                      "whenToUse": "Use when application is guaranteed acyclic and linear."
+                      "title": "Low Overhead",
+                      "description": "Fast execution, simple syntax, easy debugging."
+                    }
+                  ],
+                  "cons": [
+                    {
+                      "title": "No Loops",
+                      "description": "Cannot express state feedback loops or retry graphs natively."
                     },
                     {
-                      "id": "choice-langgraph",
-                      "label": "LangGraph (State Machine)",
-                      "description": "Stateful agent graphs supporting loops.",
-                      "metrics": { "flexibility": 4, "simplicity": -3, "control": 6 },
-                      "pros": [
-                        { "title": "Cyclic Support", "description": "Expressed loops are native and easily compiled." },
-                        { "title": "Checkpointers", "description": "Persistent memory enables time travel and human approval." }
-                      ],
-                      "cons": [
-                        { "title": "Steeper Learning Curve", "description": "Requires state schema structures and reducer definitions." }
-                      ],
-                      "whyThisFits": "Crucial for complex research agents, autonomous coding loops, and human-in-the-loop steps.",
-                      "whenToUse": "Use when cycles are present or persistent state tracking is needed."
+                      "title": "No Persistence",
+                      "description": "Must build custom databases to save middle-of-run variables."
                     }
-                  ]
+                  ],
+                  "whyThisFits": "Perfect for simple Q&A, formatting, or straightforward retrieval pipelines.",
+                  "whenToUse": "Use when application is guaranteed acyclic and linear."
+                },
+                {
+                  "id": "choice-langgraph",
+                  "label": "LangGraph (State Machine)",
+                  "description": "Stateful agent graphs supporting loops.",
+                  "metrics": {
+                    "flexibility": 4,
+                    "simplicity": -3,
+                    "control": 6
+                  },
+                  "pros": [
+                    {
+                      "title": "Cyclic Support",
+                      "description": "Expressed loops are native and easily compiled."
+                    },
+                    {
+                      "title": "Checkpointers",
+                      "description": "Persistent memory enables time travel and human approval."
+                    }
+                  ],
+                  "cons": [
+                    {
+                      "title": "Steeper Learning Curve",
+                      "description": "Requires state schema structures and reducer definitions."
+                    }
+                  ],
+                  "whyThisFits": "Crucial for complex research agents, autonomous coding loops, and human-in-the-loop steps.",
+                  "whenToUse": "Use when cycles are present or persistent state tracking is needed."
                 }
               ]
             }
           ]
         }
-      },
-      {
-        "type": "formula-sandbox",
-        "props": {
-          "title": "LangGraph Execution Costs",
-          "variables": [
-            { "id": "nodeCount", "label": "Graph Nodes", "min": 2, "max": 20, "step": 1, "defaultValue": 5 },
-            { "id": "llmCost", "label": "Avg LLM Call Cost ($)", "min": 0.001, "max": 0.20, "step": 0.001, "defaultValue": 0.01 },
-            { "id": "loops", "label": "Avg Cycles/Execution", "min": 1, "max": 10, "step": 1, "defaultValue": 2 }
+      ]
+    }
+  },
+  {
+    "type": "formula-sandbox",
+    "props": {
+      "title": "LangGraph Execution Costs",
+      "variables": [
+        {
+          "id": "nodeCount",
+          "label": "Graph Nodes",
+          "min": 2,
+          "max": 20,
+          "step": 1,
+          "defaultValue": 5
+        },
+        {
+          "id": "llmCost",
+          "label": "Avg LLM Call Cost ($)",
+          "min": 0.001,
+          "max": 0.2,
+          "step": 0.001,
+          "defaultValue": 0.01
+        },
+        {
+          "id": "loops",
+          "label": "Avg Cycles/Execution",
+          "min": 1,
+          "max": 10,
+          "step": 1,
+          "defaultValue": 2
+        }
+      ],
+      "metrics": [
+        {
+          "id": "total-llm-calls",
+          "label": "Total LLM Calls / Run",
+          "formula": "nodeCount * loops",
+          "description": "Estimated total number of LLM invocations during a single cyclic execution run.",
+          "analogy": "Think of it as number of iterations times graph size."
+        },
+        {
+          "id": "run-cost",
+          "label": "Estimated Cost per Run",
+          "formula": "(nodeCount * loops) * llmCost",
+          "description": "Estimated token consumption cost for executing the workflow once.",
+          "inScope": [
+            "API call tokens",
+            "Input tokens",
+            "Output tokens"
           ],
-          "metrics": [
+          "outOfScope": [
+            "Database checkpointer storage cost",
+            "Human reviewer time cost"
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "type": "quiz",
+    "props": {
+      "title": "LangGraph Knowledge Check",
+      "questions": [
+        {
+          "id": "q-checkpointer",
+          "question": "What is the primary role of a checkpointer in LangGraph?",
+          "choices": [
             {
-              "id": "total-llm-calls",
-              "label": "Total LLM Calls / Run",
-              "formula": "nodeCount * loops",
-              "description": "Estimated total number of LLM invocations during a single cyclic execution run.",
-              "analogy": "Think of it as number of iterations times graph size."
+              "id": "a",
+              "text": "To convert markdown data into prompt templates.",
+              "correct": false,
+              "explanation": "Prompt templates are standard formatting schemas, not persistence utilities."
             },
             {
-              "id": "run-cost",
-              "label": "Estimated Cost per Run",
-              "formula": "(nodeCount * loops) * llmCost",
-              "description": "Estimated token consumption cost for executing the workflow once.",
-              "inScope": ["API call tokens", "Input tokens", "Output tokens"],
-              "outOfScope": ["Database checkpointer storage cost", "Human reviewer time cost"]
-            }
-          ]
-        }
-      },
-      {
-        "type": "quiz",
-        "props": {
-          "title": "LangGraph Knowledge Check",
-          "questions": [
-            {
-              "id": "q-checkpointer",
-              "question": "What is the primary role of a checkpointer in LangGraph?",
-              "choices": [
-                { "id": "a", "text": "To convert markdown data into prompt templates.", "correct": false, "explanation": "Prompt templates are standard formatting schemas, not persistence utilities." },
-                { "id": "b", "text": "To save state snapshots, enabling time-travel, manual approvals, and resume control.", "correct": true, "explanation": "Correct! Checkpointers store state history to allow stepping back or waiting on human input." },
-                { "id": "c", "text": "To compile graph nodes into standard Python binaries.", "correct": false, "explanation": "LangGraph executes on standard runtimes; checkpointers handle memory, not compilation." }
-              ],
-              "hint": "Think about memory snapshots and persistence."
+              "id": "b",
+              "text": "To save state snapshots, enabling time-travel, manual approvals, and resume control.",
+              "correct": true,
+              "explanation": "Correct! Checkpointers store state history to allow stepping back or waiting on human input."
             },
             {
-              "id": "q-reducer",
-              "question": "How do you append message list outputs without overwriting previous state?",
-              "choices": [
-                { "id": "a", "text": "Nodes automatically concatenate arrays by default.", "correct": false, "explanation": "By default, LangGraph overwrites state keys with the latest node value." },
-                { "id": "b", "text": "By defining a State key with a Reducer function (e.g. `messages: Annotated[list, add]`).", "correct": true, "explanation": "Correct! Reducers tell LangGraph how to aggregate node returns into the parent state." },
-                { "id": "c", "text": "By using a direct link from node output to the memory cache.", "correct": false, "explanation": "Memory cache requires state schemas to handle merging behavior using reducers." }
-              ],
-              "hint": "Look for the concept defining state aggregation logic."
+              "id": "c",
+              "text": "To compile graph nodes into standard Python binaries.",
+              "correct": false,
+              "explanation": "LangGraph executes on standard runtimes; checkpointers handle memory, not compilation."
             }
-          ]
-        }
-      },
-      {
-        "type": "reflection-sequence",
-        "props": {
-          "title": "LangGraph Implementation Sequence",
-          "challenges": [
+          ],
+          "hint": "Think about memory snapshots and persistence."
+        },
+        {
+          "id": "q-reducer",
+          "question": "How do you append message list outputs without overwriting previous state?",
+          "choices": [
             {
-              "prompt": "Arrange the steps to configure and execute a LangGraph application:",
-              "items": [
-                { "id": "1", "text": "Define State schema with keys and reducers.", "icon": "layers" },
-                { "id": "2", "text": "Initialize StateGraph with the state schema.", "icon": "settings" },
-                { "id": "3", "text": "Add nodes (functions) and edges (transitions).", "icon": "git-commit" },
-                { "id": "4", "text": "Compile the graph (with an optional Checkpointer).", "icon": "shield" },
-                { "id": "5", "text": "Invoke graph with initial state dict.", "icon": "play" }
-              ],
-              "solution": ["1", "2", "3", "4", "5"]
-            }
-          ]
-        }
-      },
-      {
-        "type": "reflection-template",
-        "props": {
-          "title": "State Routing Verification",
-          "challenges": [
+              "id": "a",
+              "text": "Nodes automatically concatenate arrays by default.",
+              "correct": false,
+              "explanation": "By default, LangGraph overwrites state keys with the latest node value."
+            },
             {
-              "prompt": "Complete the definition of the two primary graph routing primitives in LangGraph:",
-              "template": "A standard {zone-edge} connects two nodes directly, whereas a {zone-conditional_edge} dynamically routes flow using a custom routing function based on the shared {zone-state} context.",
-              "chips": [
-                { "id": "edge", "text": "Edge" },
-                { "id": "conditional_edge", "text": "Conditional Edge" },
-                { "id": "state", "text": "State" }
-              ],
-              "solution": {
-                "zone-edge": "edge",
-                "zone-conditional_edge": "conditional_edge",
-                "zone-state": "state"
-              },
-              "explanation": "Edges define paths. Conditional edges compute next destinations. Both read/interact with the shared State."
+              "id": "b",
+              "text": "By defining a State key with a Reducer function (e.g. `messages: Annotated[list, add]`).",
+              "correct": true,
+              "explanation": "Correct! Reducers tell LangGraph how to aggregate node returns into the parent state."
+            },
+            {
+              "id": "c",
+              "text": "By using a direct link from node output to the memory cache.",
+              "correct": false,
+              "explanation": "Memory cache requires state schemas to handle merging behavior using reducers."
             }
+          ],
+          "hint": "Look for the concept defining state aggregation logic."
+        }
+      ]
+    }
+  },
+  {
+    "type": "reflection-sequence",
+    "props": {
+      "title": "LangGraph Implementation Sequence",
+      "challenges": [
+        {
+          "prompt": "Arrange the steps to configure and execute a LangGraph application:",
+          "items": [
+            {
+              "id": "1",
+              "text": "Define State schema with keys and reducers.",
+              "icon": "layers"
+            },
+            {
+              "id": "2",
+              "text": "Initialize StateGraph with the state schema.",
+              "icon": "settings"
+            },
+            {
+              "id": "3",
+              "text": "Add nodes (functions) and edges (transitions).",
+              "icon": "git-commit"
+            },
+            {
+              "id": "4",
+              "text": "Compile the graph (with an optional Checkpointer).",
+              "icon": "shield"
+            },
+            {
+              "id": "5",
+              "text": "Invoke graph with initial state dict.",
+              "icon": "play"
+            }
+          ],
+          "solution": [
+            "1",
+            "2",
+            "3",
+            "4",
+            "5"
           ]
         }
-      }
-    ];
+      ]
+    }
+  },
+  {
+    "type": "reflection-template",
+    "props": {
+      "title": "State Routing Verification",
+      "challenges": [
+        {
+          "prompt": "Complete the definition of the two primary graph routing primitives in LangGraph:",
+          "template": "A standard {zone-edge} connects two nodes directly, whereas a {zone-conditional_edge} dynamically routes flow using a custom routing function based on the shared {zone-state} context.",
+          "chips": [
+            {
+              "id": "edge",
+              "text": "Edge"
+            },
+            {
+              "id": "conditional_edge",
+              "text": "Conditional Edge"
+            },
+            {
+              "id": "state",
+              "text": "State"
+            }
+          ],
+          "solution": {
+            "zone-edge": "edge",
+            "zone-conditional_edge": "conditional_edge",
+            "zone-state": "state"
+          },
+          "explanation": "Edges define paths. Conditional edges compute next destinations. Both read/interact with the shared State."
+        }
+      ]
+    }
+  }
+];
 
-    // Dynamic rendering function with fetch + fallback
-    async function initLoomSections() {
+    function initLoomSections() {
       const container = document.getElementById("loom-root");
       const statusContainer = document.getElementById("loader-status");
 
-      try {
-        statusContainer.innerHTML = `<span class="status-badge warning">Loading via fetch...</span>`;
+      // Render statically embedded sections
+      LoomSections.render(container, okfSections, {
+        title: "Building Stateful Agents with LangGraph",
+        theme: "frappe",
+      });
 
-        // Attempt to fetch local JSON database
-        const response = await fetch('./langgraph.json');
-        if (!response.ok) {
-          throw new Error(`Failed to fetch: ${response.status} ${response.statusText}`);
-        }
+      // Mount theme selector widget
+      LoomSections.renderThemeSelector(
+        document.getElementById("theme-picker"),
+        container,
+        { position: "inline" }
+      );
 
-        const sections = await response.json();
-
-        // Render from fetched sections
-        LoomSections.render(container, sections, {
-          title: "Building Stateful Agents with LangGraph",
-          theme: "frappe",
-        });
-
-        // Mount theme selector widget
-        LoomSections.renderThemeSelector(
-          document.getElementById("theme-picker"),
-          container,
-          { position: "inline" }
-        );
-
-        // Update status badge to success
-        statusContainer.innerHTML = `
-          <span class="status-badge success" style="cursor: help;" title="Sections successfully loaded from local file: langgraph.json">
-            ✅ Loaded via Local JSON
-          </span>
-        `;
-        console.log('🎉 Loom Sections successfully loaded from local langgraph.json!');
-      } catch (err) {
-        console.warn('⚠️ Fetching local JSON failed (possibly due to CORS or file protocol). Falling back to embedded array.', err);
-
-        // Render from fallback hardcoded JS array
-        LoomSections.render(container, fallbackSections, {
-          title: "Building Stateful Agents with LangGraph",
-          theme: "frappe",
-        });
-
-        // Mount theme selector widget
-        LoomSections.renderThemeSelector(
-          document.getElementById("theme-picker"),
-          container,
-          { position: "inline" }
-        );
-
-        // Update status badge to show fallback warning
-        statusContainer.innerHTML = `
-          <span class="status-badge warning" style="cursor: help;" title="CORS restricts local fetching over file://. Open page with a local server (e.g. npx serve) to test local JSON loading.">
-            ⚠️ Loaded via Embedded fallback
-          </span>
-        `;
-      }
+      // Update status badge
+      statusContainer.innerHTML = `
+        <span class="status-badge success" title="Rendered completely statically from embedded array">
+          ⚡ Static Page Mode
+        </span>
+      `;
     }
 
     // Run loader when page loads

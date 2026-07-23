@@ -11,7 +11,7 @@ Standalone React component library for rendering interactive learning sections f
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>My Learning Page</title>
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/loom-learning-sections@1.3.0/loom-sections.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/loom-learning-sections@1.3.2/loom-sections.css">
   <style>
     /* Center the container and add padding */
     #loom-root {
@@ -28,7 +28,7 @@ Standalone React component library for rendering interactive learning sections f
   <!-- Container where Loom Sections will render -->
   <div id="loom-root"></div>
 
-  <script src="https://cdn.jsdelivr.net/npm/loom-learning-sections@1.3.0/loom-sections.umd.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/loom-learning-sections@1.3.2/loom-sections.umd.js"></script>
   <script>
     const okfSections = [
       {
@@ -343,7 +343,7 @@ Use a modern ES module script block (`type="module"`) to fetch the JSON file loc
 <head>
   <meta charset="UTF-8">
   <title>Loom App</title>
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/loom-learning-sections@1.3.0/loom-sections.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/loom-learning-sections@1.3.2/loom-sections.css">
   <style>
     #loom-root {
       max-width: 860px;
@@ -356,7 +356,7 @@ Use a modern ES module script block (`type="module"`) to fetch the JSON file loc
   <div id="theme-picker" style="max-width: 860px; margin: 16px auto; display: flex; justify-content: flex-end;"></div>
   <div id="loom-root"></div>
 
-  <script src="https://cdn.jsdelivr.net/npm/loom-learning-sections@1.3.0/loom-sections.umd.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/loom-learning-sections@1.3.2/loom-sections.umd.js"></script>
   <script type="module">
     try {
       const response = await fetch('./curriculum.json');
@@ -409,7 +409,7 @@ Embed the array directly inside your script tag:
 <head>
   <meta charset="UTF-8">
   <title>Loom App (Embedded)</title>
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/loom-learning-sections@1.3.0/loom-sections.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/loom-learning-sections@1.3.2/loom-sections.css">
   <style>
     #loom-root {
       max-width: 860px;
@@ -422,7 +422,7 @@ Embed the array directly inside your script tag:
   <div id="theme-picker" style="max-width: 860px; margin: 16px auto; display: flex; justify-content: flex-end;"></div>
   <div id="loom-root"></div>
 
-  <script src="https://cdn.jsdelivr.net/npm/loom-learning-sections@1.3.0/loom-sections.umd.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/loom-learning-sections@1.3.2/loom-sections.umd.js"></script>
   <script>
     const okfSections = [
       {
@@ -465,7 +465,7 @@ Embed the array directly inside your script tag:
 | Blank page | Check browser console for errors. Verify CDN links are correct and accessible. |
 | Sections not rendering | Verify `sections` array matches the schema. Check `type` string matches exactly (e.g., `"flowchart"` not `"Flowchart"`). |
 | Missing styles | Ensure the CSS file is loaded: `<link rel="stylesheet" href="...loom-sections.css">` |
-| Flowchart not showing | Verify `schema` has all required fields: `actors`, `systems`, `steps`, `journeys`. Each step must reference valid actor/system IDs. |
+| Flowchart not showing | Pass either a pre-derived `schema` (`entities`, `relations`, `journeys`) or raw `flow` / `schema` (`actors`, `systems`, `steps`, `journeys`). The renderer automatically derives views if `entities` is omitted. If loading via OKF YAML files, ensure all four source files exist (`actors.yaml`, `systems.yaml`, `steps.yaml`, `journeys.yaml`). |
 | Taxonomy icon missing | Use exact PascalCase Lucide icon name (e.g., `"BookOpen"` not `"book-open"` or `"bookopen"`). |
 | CORS error on `file://` | Use a local HTTP server instead of opening HTML directly. `npx serve .` works well. |
 | Bundle load fails | Check network tab. CDN may be blocked. Verify version tag matches published version. |

@@ -17,7 +17,7 @@ EVENT ──> POLICY ──> COMMAND ──> AGGREGATE/EXTERNAL (handledBy) ─�
 
 ### Flow Cycle Rules:
 1. **Never jump directly** from `EVENT → AGGREGATE` or skip command/policy nodes. Every action that performs work must be represented as a `COMMAND` handled by an `AGGREGATE` or `EXTERNAL` system.
-2. **Policy Inclusion**: Every non-root linear step and all branch options must specify a `policy` field in the steps YAML file (except the first user-initiated root step which is triggered directly by an actor).
+2. **Policy Inclusion**: Every linear step (including the root step) and all branch options specify a `policy` field in the steps YAML file. The engine generates a `POLICY` node for every step in the chain (`ACTOR → POLICY → COMMAND` for root steps, and `EVENT → POLICY → COMMAND` for downstream steps).
 3. **Natural Language**: Values for `command` and `policy` fields must be written in natural language (e.g. `command: "Start Agent Run"`, `policy: "If Plan Approved"`) rather than code-like variable identifiers (e.g. `cmd_start`, `pol_approve`). They render directly as text labels in the flowchart nodes.
 
 ---

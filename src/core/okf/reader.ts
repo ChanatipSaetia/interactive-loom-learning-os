@@ -246,7 +246,7 @@ async function loadBulletsSection(basePath: string, resource: string, resourceFi
 async function loadFlowchartSection(basePath: string, _resourceFiles: string[]): Promise<OKFFlowSectionData> {
   const [actorsRaw, systemsRaw, stepsRaw, journeysRaw] = await Promise.all([
     fetchYaml<Record<string, { title: string; desc: string }>>(`${basePath}/actors.yaml`),
-    fetchYaml<Record<string, { title: string; desc: string; type: string; stateMachine?: any }>>(`${basePath}/systems.yaml`),
+    fetchYaml<Record<string, { title: string; desc: string; type: string; collapsedTo?: string; stateMachine?: any }>>(`${basePath}/systems.yaml`),
     fetchYaml<OKFStepRaw[]>(`${basePath}/steps.yaml`),
     fetchYaml<OKFJourneyRaw[]>(`${basePath}/journeys.yaml`),
   ])
@@ -327,7 +327,7 @@ async function loadImageGallerySection(basePath: string, resource: string, resou
 
 function mapFlow(
   actorsRaw: Record<string, { title: string; desc: string }>,
-  systemsRaw: Record<string, { title: string; desc: string; type: string; stateMachine?: any }>,
+  systemsRaw: Record<string, { title: string; desc: string; type: string; collapsedTo?: string; stateMachine?: any }>,
   stepsRaw: OKFStepRaw[],
   journeysRaw: OKFJourneyRaw[]
 ): AbstractFlow {
@@ -343,6 +343,7 @@ function mapFlow(
       desc: s.desc,
       type: s.type as 'aggregate' | 'external',
       stateMachine: s.stateMachine,
+      ...(s.collapsedTo ? { collapsedTo: s.collapsedTo } : {}),
     }
   }
 

@@ -500,9 +500,9 @@ function SectionRenderer({ config, sectionIndex }: { config: SectionConfig; sect
   }
 
   const adaptedProps = useMemo(() => {
-    if (config.type === 'flowchart' && config.props?.schema) {
-      const rawSchema = config.props.schema as any
-      if (rawSchema.actors && rawSchema.steps && !rawSchema.entities) {
+    if (config.type === 'flowchart') {
+      const rawSchema = config.props?.schema || (config.props as any)?.flow
+      if (rawSchema && !rawSchema.entities && (rawSchema.actors || rawSchema.steps || rawSchema.systems)) {
         try {
           return {
             ...config.props,

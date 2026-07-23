@@ -81,6 +81,8 @@ export interface SystemDecl {
     states: Array<{ id: string; label: string; color: string }>;
     initialState: string;
   };
+  /** ID of the canonical node this duplicate collapses into (mirrors FlowchartEntity.collapsedTo). */
+  collapsedTo?: string;
 }
 
 /** Journey step references a flow step by id with required name and description. */

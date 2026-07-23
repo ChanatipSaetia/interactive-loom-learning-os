@@ -249,6 +249,47 @@ A YAML **list** of `FlowJourney` objects. A journey groups a named subset of ste
 
 ---
 
+## CDN & Static Page Usage
+
+When rendering a `flowchart` section via the CDN library (`LoomSections.render`), you can provide your diagram data in one of two formats under `props`:
+
+### Option A: Pre-derived Schema (`props.schema`)
+Pass a pre-derived `UnifiedFlowchartSchema` object containing `entities`, `relations`, and `journeys`. The component will auto-derive visual views (`EVENT_STORMING`, `SYS_ARCH`, `SWIMLANES`, etc.) automatically.
+
+```json
+{
+  "type": "flowchart",
+  "props": {
+    "title": "Agent Research Loop Flowchart",
+    "schema": {
+      "entities": { ... },
+      "relations": [ ... ],
+      "journeys": [ ... ]
+    }
+  }
+}
+```
+
+### Option B: Raw Abstract Flow (`props.flow` or `props.schema`)
+Pass raw un-derived `actors`, `systems`, `steps`, and `journeys`. The library will run `deriveSchema()` automatically during rendering.
+
+```json
+{
+  "type": "flowchart",
+  "props": {
+    "title": "Agent Research Loop Flowchart",
+    "flow": {
+      "actors": { ... },
+      "systems": { ... },
+      "steps": [ ... ],
+      "journeys": [ ... ]
+    }
+  }
+}
+```
+
+---
+
 ## Splitting into Multiple Connected Flowchart Sections & Multiple Journeys
 
 For complex systems or multi-stage processes, avoid dumping a monolithic 50-step flowchart into a single section. Instead, **split the process into multiple connected flowchart sections** (e.g., `sections/flowchart-engine/`, `sections/flowchart-fuel-injection/`, `sections/flowchart-brake/`).

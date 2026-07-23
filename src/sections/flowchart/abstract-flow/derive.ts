@@ -18,6 +18,11 @@ export function deriveSchema(flow: AbstractFlow): UnifiedFlowchartSchema {
   const relations: FlowchartRelation[] = [];
   const relCounter = { current: 0 };
 
+  const actors = flow?.actors || {};
+  const systems = flow?.systems || {};
+  const steps = flow?.steps || [];
+  const journeysList = flow?.journeys || [];
+
   // Track how many times each system ref has been used (for auto-duplication)
   const systemRefCount = new Map<string, number>();
 
@@ -28,7 +33,7 @@ export function deriveSchema(flow: AbstractFlow): UnifiedFlowchartSchema {
   const stepHandlerMap = new Map<string, { handler: string; delegate?: string }>();
 
   // --- Phase 1: Declare actors ---
-  for (const [id, actor] of Object.entries(flow.actors)) {
+  for (const [id, actor] of Object.entries(actors)) {
     const entityId = id;
     entities[entityId] = {
       title: actor.title,
@@ -39,13 +44,15 @@ export function deriveSchema(flow: AbstractFlow): UnifiedFlowchartSchema {
   }
 
   // --- Phase 2: Declare systems (canonical entities only) ---
-  for (const [id, sys] of Object.entries(flow.systems)) {
+  for (const [id, sys] of Object.entries(systems)) {
     const entityId = id;
     entities[entityId] = {
       title: sys.title,
       desc: sys.desc,
       type: sys.type === 'aggregate' ? TYPES.AGGREGATE : TYPES.EXTERNAL,
       stateMachine: sys.stateMachine,
+      // Preserve user-declared collapsedTo (e.g. heralds2.collapsedTo: "heralds" from systems.yaml)
+      ...(sys.collapsedTo ? { collapsedTo: sys.collapsedTo } : {}),
     };
     idMap.set(id, entityId);
     systemRefCount.set(id, 0);
@@ -53,7 +60,7 @@ export function deriveSchema(flow: AbstractFlow): UnifiedFlowchartSchema {
 
   // --- Phase 3: Process steps ---
   let isFirstStep = true;
-  for (const step of flow.steps) {
+  for (const step of steps) {
     if (isLinearStep(step)) {
       const { handler, delegate } = processLinearStep(step, entities, relations, relCounter, idMap, systemRefCount, isFirstStep);
       stepHandlerMap.set(step.id, { handler, delegate });
@@ -67,12 +74,12 @@ export function deriveSchema(flow: AbstractFlow): UnifiedFlowchartSchema {
   }
 
   // --- Phase 4: Build journeys ---
-  const journeys = flow.journeys.map(j => ({
+  const journeys = journeysList.map(j => ({
     id: j.id,
     label: j.label,
     description: j.description,
-    steps: j.steps.map(s => {
-      const stepData = findStepById(s.stepId, flow.steps);
+    steps: (j.steps || []).map(s => {
+      const stepData = findStepById(s.stepId, steps);
       const nodeIds = stepData
         ? collectNodeIds(s.stepId, stepData, entities, idMap, stepHandlerMap.get(s.stepId))
         : [resolveNodeId(s.stepId, idMap)];
@@ -137,46 +144,48 @@ function processLinearStep(
   systemRefCount: Map<string, number>,
   isFirstStep: boolean,
 ): { handler: string; delegate?: string } {
+  // Create policy entity (always — even for root step)
+  const polId = `pol_${step.id}`;
+  entities[polId] = {
+    title: step.policy,
+    desc: step.description || step.policy,
+    type: TYPES.POLICY,
+    root: isFirstStep && !step.initiatedBy,
+  };
+
   // Create command entity
   const cmdId = `cmd_${step.id}`;
   entities[cmdId] = {
     title: step.command,
     desc: step.description || step.command,
     type: TYPES.COMMAND,
-    root: isFirstStep,
   };
   idMap.set(step.id, cmdId);
 
-  // Actor → command (for root step)
-  if (step.initiatedBy) {
-    const actorId = idMap.get(getId(step.initiatedBy));
-    if (actorId) {
-      relations.push({
-        id: getNextRelId(relCounter),
-        from: actorId,
-        to: cmdId,
-        views: ['EVENT_STORMING'],
-      });
+  if (isFirstStep) {
+    // Root step: ACTOR → POLICY → COMMAND (or just mark policy as root when no actor)
+    if (step.initiatedBy) {
+      const actorId = idMap.get(getId(step.initiatedBy));
+      if (actorId) {
+        relations.push({
+          id: getNextRelId(relCounter),
+          from: actorId,
+          to: polId,
+          views: ['EVENT_STORMING'],
+        });
+      }
+    } else {
+      entities[polId].root = true;
     }
   }
 
-  // For non-root steps: create policy and link event → policy → command
-  if (!isFirstStep) {
-    const polId = `pol_${step.id}`;
-    entities[polId] = {
-      title: step.policy,
-      desc: step.description || step.policy,
-      type: TYPES.POLICY,
-    };
-
-    // Policy → Command
-    relations.push({
-      id: getNextRelId(relCounter),
-      from: polId,
-      to: cmdId,
-      views: ['EVENT_STORMING'],
-    });
-  }
+  // Policy → Command (always)
+  relations.push({
+    id: getNextRelId(relCounter),
+    from: polId,
+    to: cmdId,
+    views: ['EVENT_STORMING'],
+  });
 
   // Get handler entity (auto-duplicate)
   const handlerId = getSystemEntityId(
@@ -411,11 +420,9 @@ function collectNodeIds(
 ): string[] {
   const ids: string[] = [];
 
-  // Policy (for non-root linear steps and all branch options)
-  if (step.policy) {
-    const polId = `pol_${stepId}`;
-    if (entities[polId]) ids.push(polId);
-  }
+  // Policy — always present (root and non-root steps both get a POLICY node now)
+  const polId = `pol_${stepId}`;
+  if (entities[polId]) ids.push(polId);
 
   // Command
   const cmdId = `cmd_${stepId}`;
