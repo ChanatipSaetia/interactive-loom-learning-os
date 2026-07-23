@@ -22,34 +22,38 @@ export default function FlashcardDeck({ title, terms = [] }: FlashcardDeckProps)
   const [isHelpOpen, setIsHelpOpen] = useState(false);
   const { playSound } = useSound();
 
-  // Reset back tabs when switching cards
+  // Auto-clamp currentIndex if terms array shrinks or changes
   useEffect(() => {
-    setActiveBackTab('guidelines');
-  }, [currentIndex]);
+    if (terms.length > 0 && currentIndex >= terms.length) {
+      setCurrentIndex(terms.length - 1);
+    }
+  }, [terms.length, currentIndex]);
 
   if (!terms || terms.length === 0) {
     return <div className="p-8 text-center text-muted-foreground font-mono text-sm">No vocabulary terms provided.</div>;
   }
 
-  const currentTerm = terms[currentIndex];
+  const safeIndex = Math.min(currentIndex, Math.max(0, terms.length - 1));
+  const currentTerm = terms[safeIndex];
+
+  if (!currentTerm) {
+    return <div className="p-8 text-center text-muted-foreground font-mono text-sm">No vocabulary terms provided.</div>;
+  }
+
   const simulatedChat = currentTerm.dialogue;
 
   const handleNext = () => {
     playSound('stepNext');
     setDirection(1);
     setIsFlipped(false);
-    setTimeout(() => {
-      setCurrentIndex((prev) => (prev + 1) % terms.length);
-    }, 100);
+    setCurrentIndex((prev) => (prev + 1) % terms.length);
   };
 
   const handlePrev = () => {
     playSound('stepPrev');
     setDirection(-1);
     setIsFlipped(false);
-    setTimeout(() => {
-      setCurrentIndex((prev) => (prev - 1 + terms.length) % terms.length);
-    }, 100);
+    setCurrentIndex((prev) => (prev - 1 + terms.length) % terms.length);
   };
 
   const speakWord = (e: React.SyntheticEvent) => {
@@ -134,7 +138,7 @@ export default function FlashcardDeck({ title, terms = [] }: FlashcardDeckProps)
         
         {/* Polished Item Counter */}
         <div className="flex-shrink-0 flex items-center space-x-2 px-3.5 py-1.5 rounded-full bg-muted/10 border border-border shadow-sm font-mono text-xs font-bold tracking-widest ml-4">
-          <span className="text-primary text-sm">{String(currentIndex + 1).padStart(2, '0')}</span>
+          <span className="text-primary text-sm">{String(safeIndex + 1).padStart(2, '0')}</span>
           <span className="text-muted-foreground/30">/</span>
           <span className="text-muted-foreground">{String(terms.length).padStart(2, '0')}</span>
         </div>
@@ -174,7 +178,7 @@ export default function FlashcardDeck({ title, terms = [] }: FlashcardDeckProps)
 
           <AnimatePresence initial={false} custom={direction} mode="wait">
             <motion.div
-              key={currentIndex}
+              key={safeIndex}
               custom={direction}
               variants={slideVariants}
               initial="initial"
