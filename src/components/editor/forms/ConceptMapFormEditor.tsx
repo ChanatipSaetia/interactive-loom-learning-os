@@ -1,4 +1,6 @@
-import { useCallback } from 'react'
+import { useState, useCallback } from 'react'
+import { Share2, GitCommit, Plus, Trash2, HelpCircle } from 'lucide-react'
+import { ConceptMapHelpModal } from '../../../sections/concept-map/ConceptMapHelpModal'
 import type {
   OKFConceptMapSectionData,
   OKFConceptNode,
@@ -31,44 +33,62 @@ function ConceptNodeEditor({
   )
 
   return (
-    <fieldset className="visual-form-nested" data-testid={`cm-node-${nodeId}`}>
-      <legend>
-        {node.title || nodeId} {canRemove ? <button className="form-remove-btn" onClick={onRemove} data-testid={`cm-node-remove-${nodeId}`}>×</button> : null}
-      </legend>
-      <div className="visual-form-field">
-        <label className="visual-form-label">
-          <span className="visual-form-key">ID</span>
-          <input
-            className="visual-form-input"
-            value={node.id}
-            onChange={(e) => handleFieldChange('id', e.target.value)}
-            data-testid={`cm-node-${nodeId}-id`}
-          />
-        </label>
+    <div className="visual-form-card" data-testid={`cm-node-${nodeId}`}>
+      <div className="visual-form-card-header">
+        <span className="card-header-title">
+          <Share2 size={13} /> Node: <code className="card-code-pill">{node.title || nodeId}</code>
+        </span>
+        {canRemove && (
+          <button
+            className="form-remove-btn"
+            onClick={onRemove}
+            data-testid={`cm-node-remove-${nodeId}`}
+            type="button"
+            title="Remove node"
+          >
+            <Trash2 size={13} />
+          </button>
+        )}
       </div>
-      <div className="visual-form-field">
-        <label className="visual-form-label">
-          <span className="visual-form-key">Title</span>
-          <input
-            className="visual-form-input"
-            value={node.title}
-            onChange={(e) => handleFieldChange('title', e.target.value)}
-            data-testid={`cm-node-${nodeId}-title`}
-          />
-        </label>
+
+      <div className="visual-form-card-body">
+        <div className="visual-form-grid-3">
+          <div className="visual-form-field">
+            <label className="visual-form-label">
+              <span className="visual-form-key">ID</span>
+              <input
+                className="visual-form-input"
+                value={node.id}
+                onChange={(e) => handleFieldChange('id', e.target.value)}
+                data-testid={`cm-node-${nodeId}-id`}
+              />
+            </label>
+          </div>
+          <div className="visual-form-field">
+            <label className="visual-form-label">
+              <span className="visual-form-key">Title</span>
+              <input
+                className="visual-form-input"
+                value={node.title}
+                onChange={(e) => handleFieldChange('title', e.target.value)}
+                data-testid={`cm-node-${nodeId}-title`}
+              />
+            </label>
+          </div>
+          <div className="visual-form-field">
+            <label className="visual-form-label">
+              <span className="visual-form-key">Category</span>
+              <input
+                className="visual-form-input"
+                value={node.category}
+                onChange={(e) => handleFieldChange('category', e.target.value)}
+                data-testid={`cm-node-${nodeId}-category`}
+              />
+            </label>
+          </div>
+        </div>
       </div>
-      <div className="visual-form-field">
-        <label className="visual-form-label">
-          <span className="visual-form-key">Category</span>
-          <input
-            className="visual-form-input"
-            value={node.category}
-            onChange={(e) => handleFieldChange('category', e.target.value)}
-            data-testid={`cm-node-${nodeId}-category`}
-          />
-        </label>
-      </div>
-    </fieldset>
+    </div>
   )
 }
 
@@ -95,61 +115,83 @@ function ConceptEdgeEditor({
   )
 
   return (
-    <fieldset className="visual-form-nested" data-testid={`cm-edge-${index}`}>
-      <legend>
-        Edge {index + 1} {canRemove ? <button className="form-remove-btn" onClick={onRemove} data-testid={`cm-edge-remove-${index}`}>×</button> : null}
-      </legend>
-      <div className="visual-form-field">
-        <label className="visual-form-label">
-          <span className="visual-form-key">From</span>
-          <select
-            className="visual-form-input"
-            value={edge.from}
-            onChange={(e) => handleFieldChange('from', e.target.value)}
-            data-testid={`cm-edge-${index}-from`}
+    <div className="visual-form-card" data-testid={`cm-edge-${index}`}>
+      <div className="visual-form-card-header">
+        <span className="card-header-title">
+          <GitCommit size={13} /> Edge #{index + 1}: <code className="card-code-pill">{edge.from} → {edge.to}</code>
+        </span>
+        {canRemove && (
+          <button
+            className="form-remove-btn"
+            onClick={onRemove}
+            data-testid={`cm-edge-remove-${index}`}
+            type="button"
+            title="Remove edge"
           >
-            {nodeIds.map((id) => (
-              <option key={id} value={id}>
-                {id}
-              </option>
-            ))}
-          </select>
-        </label>
+            <Trash2 size={13} />
+          </button>
+        )}
       </div>
-      <div className="visual-form-field">
-        <label className="visual-form-label">
-          <span className="visual-form-key">To</span>
-          <select
-            className="visual-form-input"
-            value={edge.to}
-            onChange={(e) => handleFieldChange('to', e.target.value)}
-            data-testid={`cm-edge-${index}-to`}
-          >
-            {nodeIds.map((id) => (
-              <option key={id} value={id}>
-                {id}
-              </option>
-            ))}
-          </select>
-        </label>
+
+      <div className="visual-form-card-body">
+        <div className="visual-form-grid-3">
+          <div className="visual-form-field">
+            <label className="visual-form-label">
+              <span className="visual-form-key">From</span>
+              <select
+                className="visual-form-select"
+                value={edge.from}
+                onChange={(e) => handleFieldChange('from', e.target.value)}
+                data-testid={`cm-edge-${index}-from`}
+              >
+                {nodeIds.map((id) => (
+                  <option key={id} value={id}>
+                    {id}
+                  </option>
+                ))}
+              </select>
+            </label>
+          </div>
+          <div className="visual-form-field">
+            <label className="visual-form-label">
+              <span className="visual-form-key">To</span>
+              <select
+                className="visual-form-select"
+                value={edge.to}
+                onChange={(e) => handleFieldChange('to', e.target.value)}
+                data-testid={`cm-edge-${index}-to`}
+              >
+                {nodeIds.map((id) => (
+                  <option key={id} value={id}>
+                    {id}
+                  </option>
+                ))}
+              </select>
+            </label>
+          </div>
+          <div className="visual-form-field">
+            <label className="visual-form-label">
+              <span className="visual-form-key">Relation Label</span>
+              <input
+                className="visual-form-input"
+                value={edge.label ?? ''}
+                onChange={(e) => handleFieldChange('label', e.target.value)}
+                placeholder="(optional)"
+                data-testid={`cm-edge-${index}-label`}
+              />
+            </label>
+          </div>
+        </div>
       </div>
-      <div className="visual-form-field">
-        <label className="visual-form-label">
-          <span className="visual-form-key">Label</span>
-          <input
-            className="visual-form-input"
-            value={edge.label ?? ''}
-            onChange={(e) => handleFieldChange('label', e.target.value)}
-            placeholder="(optional)"
-            data-testid={`cm-edge-${index}-label`}
-          />
-        </label>
-      </div>
-    </fieldset>
+    </div>
   )
 }
 
+type ConceptMapSubTab = 'nodes' | 'edges'
+
 export function ConceptMapFormEditor({ data, onChange }: ConceptMapFormEditorProps) {
+  const [activeTab, setActiveTab] = useState<ConceptMapSubTab>('nodes')
+  const [isHelpOpen, setIsHelpOpen] = useState(false)
   const nodeIds = Object.keys(data.nodes)
 
   const handleNodeChange = useCallback(
@@ -222,52 +264,101 @@ export function ConceptMapFormEditor({ data, onChange }: ConceptMapFormEditorPro
 
   return (
     <div className="visual-form" data-testid="concept-map-form-editor">
-      <div className="visual-form-field visual-form-field--array">
-        <span className="visual-form-key">Nodes ({Object.keys(data.nodes).length})</span>
-        <div className="visual-form-object-list">
-          {Object.entries(data.nodes).map(([id, node]) => (
-            <ConceptNodeEditor
-              key={id}
-              nodeId={id}
-              node={node}
-              onChange={(updated) => handleNodeChange(id, updated)}
-              onRemove={() => handleRemoveNode(id)}
-              canRemove={Object.keys(data.nodes).length > 1}
-            />
-          ))}
-        </div>
+      {/* Editor Sub-Tabs */}
+      <div className="flowchart-sub-tabs" data-testid="cm-sub-tabs" style={{ marginBottom: '16px' }}>
         <button
-          className="form-add-btn"
-          onClick={handleAddNode}
-          data-testid="cm-add-node"
+          className={`flowchart-sub-tab ${activeTab === 'nodes' ? 'active' : ''}`}
+          onClick={() => setActiveTab('nodes')}
+          data-testid="cm-tab-nodes"
+          type="button"
         >
-          + Add Node
+          <Share2 size={14} />
+          <span>Nodes</span>
+          <span className="sub-tab-badge">{Object.keys(data.nodes).length}</span>
+        </button>
+        <button
+          className={`flowchart-sub-tab ${activeTab === 'edges' ? 'active' : ''}`}
+          onClick={() => setActiveTab('edges')}
+          data-testid="cm-tab-edges"
+          type="button"
+        >
+          <GitCommit size={14} />
+          <span>Edges</span>
+          <span className="sub-tab-badge">{data.edges.length}</span>
+        </button>
+
+        <button
+          className="cm-help-btn"
+          onClick={() => setIsHelpOpen(true)}
+          data-testid="cm-editor-help-btn"
+          type="button"
+          style={{ marginLeft: 'auto' }}
+        >
+          <HelpCircle size={13} />
+          <span>Guide</span>
         </button>
       </div>
 
-      <div className="visual-form-field visual-form-field--array">
-        <span className="visual-form-key">Edges ({data.edges.length})</span>
-        <div className="visual-form-object-list">
-          {data.edges.map((edge, i) => (
-            <ConceptEdgeEditor
-              key={i}
-              edge={edge}
-              index={i}
-              nodeIds={nodeIds}
-              onChange={(updated) => handleEdgeChange(i, updated)}
-              onRemove={() => handleRemoveEdge(i)}
-              canRemove={data.edges.length > 0}
-            />
-          ))}
+      <ConceptMapHelpModal isOpen={isHelpOpen} onClose={() => setIsHelpOpen(false)} />
+
+      {/* Nodes Sub-Tab */}
+      {activeTab === 'nodes' && (
+        <div className="visual-form-field visual-form-field--array" data-testid="cm-nodes-tab-content">
+          <div className="visual-form-section-header">
+            <span className="visual-form-key">Concept Nodes ({Object.keys(data.nodes).length})</span>
+            <button
+              className="form-add-btn"
+              onClick={handleAddNode}
+              data-testid="cm-add-node"
+              type="button"
+            >
+              <Plus size={13} /> Add Node
+            </button>
+          </div>
+          <div className="visual-form-object-list">
+            {Object.entries(data.nodes).map(([id, node]) => (
+              <ConceptNodeEditor
+                key={id}
+                nodeId={id}
+                node={node}
+                onChange={(updated) => handleNodeChange(id, updated)}
+                onRemove={() => handleRemoveNode(id)}
+                canRemove={Object.keys(data.nodes).length > 1}
+              />
+            ))}
+          </div>
         </div>
-        <button
-          className="form-add-btn"
-          onClick={handleAddEdge}
-          data-testid="cm-add-edge"
-        >
-          + Add Edge
-        </button>
-      </div>
+      )}
+
+      {/* Edges Sub-Tab */}
+      {activeTab === 'edges' && (
+        <div className="visual-form-field visual-form-field--array" data-testid="cm-edges-tab-content">
+          <div className="visual-form-section-header">
+            <span className="visual-form-key">Concept Edges ({data.edges.length})</span>
+            <button
+              className="form-add-btn"
+              onClick={handleAddEdge}
+              data-testid="cm-add-edge"
+              type="button"
+            >
+              <Plus size={13} /> Add Edge
+            </button>
+          </div>
+          <div className="visual-form-object-list">
+            {data.edges.map((edge, i) => (
+              <ConceptEdgeEditor
+                key={i}
+                edge={edge}
+                index={i}
+                nodeIds={nodeIds}
+                onChange={(updated) => handleEdgeChange(i, updated)}
+                onRemove={() => handleRemoveEdge(i)}
+                canRemove={data.edges.length > 0}
+              />
+            ))}
+          </div>
+        </div>
+      )}
     </div>
   )
 }

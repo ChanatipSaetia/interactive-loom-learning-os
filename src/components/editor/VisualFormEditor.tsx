@@ -7,6 +7,8 @@ import {
   ScenarioFormEditor,
   DecisionTreeFormEditor,
   FormulaSandboxFormEditor,
+  FlowchartFormEditor,
+  IntroFormEditor,
   DynamicSchemaForm,
 } from './forms'
 
@@ -20,6 +22,10 @@ function isType<T extends OKFSectionData['type']>(data: OKFSectionData, type: T)
 }
 
 export function VisualFormEditor({ data, onChange }: VisualFormEditorProps) {
+  if (isType(data, 'intro')) {
+    return <IntroFormEditor data={data} onChange={onChange} />
+  }
+
   if (isType(data, 'quiz')) {
     return <QuizFormEditor data={data} onChange={onChange} />
   }
@@ -48,6 +54,10 @@ export function VisualFormEditor({ data, onChange }: VisualFormEditorProps) {
     return <FormulaSandboxFormEditor data={data} onChange={onChange} />
   }
 
+  if (isType(data, 'flowchart')) {
+    return <FlowchartFormEditor data={data} onChange={onChange} />
+  }
+
   return (
     <DynamicSchemaForm
       data={data as unknown as Record<string, unknown>}
@@ -55,3 +65,4 @@ export function VisualFormEditor({ data, onChange }: VisualFormEditorProps) {
     />
   )
 }
+

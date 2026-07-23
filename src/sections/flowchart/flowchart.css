@@ -1310,3 +1310,310 @@
   z-index: 50;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
 }
+
+/* ==========================================================================
+   Flowchart Help Modal Styles
+   ========================================================================== */
+
+.flowchart-help-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  border-radius: 9999px;
+  border: 1px solid color-mix(in srgb, var(--primary) 35%, transparent);
+  background: color-mix(in srgb, var(--primary) 10%, transparent);
+  color: var(--primary);
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.flowchart-help-btn:hover {
+  background: color-mix(in srgb, var(--primary) 20%, transparent);
+  border-color: var(--primary);
+  transform: translateY(-1px);
+}
+
+.flowchart-help-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.65);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  z-index: 999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  animation: fadeIn 0.2s ease-out;
+}
+
+.flowchart-help-modal {
+  width: 100%;
+  max-width: 680px;
+  max-height: 85vh;
+  background: var(--ctp-mantle);
+  border: 1px solid color-mix(in srgb, var(--primary) 30%, var(--border));
+  border-radius: var(--radius-lg, 16px);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  color: var(--ctp-text);
+  font-family: var(--font-body);
+}
+
+.flowchart-help-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--border-light, var(--border));
+  background: var(--ctp-crust);
+}
+
+.flowchart-help-title-group {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.flowchart-help-icon {
+  color: var(--primary);
+}
+
+.flowchart-help-title {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--ctp-text);
+}
+
+.flowchart-help-close-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border: none;
+  background: transparent;
+  color: var(--ctp-overlay1);
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.flowchart-help-close-btn:hover {
+  background: var(--ctp-surface0);
+  color: var(--ctp-text);
+}
+
+.flowchart-help-body {
+  padding: 20px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.flowchart-help-section {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.flowchart-help-section-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--primary);
+}
+
+.flowchart-help-section-title h3 {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-family: var(--font-mono);
+}
+
+.flowchart-help-desc {
+  margin: 0;
+  font-size: 13px;
+  color: var(--ctp-subtext0);
+  line-height: 1.5;
+}
+
+/* Event Storming Cycle Flow Diagram */
+.flowchart-help-cycle-flow {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 12px 14px;
+  background: var(--ctp-base);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  margin-top: 4px;
+}
+
+.cycle-pill {
+  padding: 4px 10px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  font-family: var(--font-mono);
+}
+
+.cycle-arrow {
+  color: var(--ctp-overlay0);
+}
+
+.cycle-pill--event {
+  background: color-mix(in srgb, var(--ctp-peach) 18%, transparent);
+  color: var(--ctp-peach);
+  border: 1px solid color-mix(in srgb, var(--ctp-peach) 40%, transparent);
+}
+
+.cycle-pill--policy {
+  background: color-mix(in srgb, var(--ctp-mauve) 18%, transparent);
+  color: var(--ctp-mauve);
+  border: 1px solid color-mix(in srgb, var(--ctp-mauve) 40%, transparent);
+}
+
+.cycle-pill--command {
+  background: color-mix(in srgb, var(--ctp-blue) 18%, transparent);
+  color: var(--ctp-blue);
+  border: 1px solid color-mix(in srgb, var(--ctp-blue) 40%, transparent);
+}
+
+.cycle-pill--handler {
+  background: color-mix(in srgb, var(--ctp-pink) 18%, transparent);
+  color: var(--ctp-pink);
+  border: 1px solid color-mix(in srgb, var(--ctp-pink) 40%, transparent);
+}
+
+/* Node Types Grid */
+.flowchart-help-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+  gap: 10px;
+  margin-top: 4px;
+}
+
+.flowchart-help-card {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 10px 12px;
+  background: var(--ctp-base);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+}
+
+.flowchart-help-card p {
+  margin: 0;
+  font-size: 12px;
+  color: var(--ctp-subtext0);
+  line-height: 1.4;
+}
+
+.card-badge {
+  display: inline-block;
+  align-self: flex-start;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: 600;
+  font-family: var(--font-mono);
+}
+
+.card-badge--event {
+  background: color-mix(in srgb, var(--ctp-peach) 20%, transparent);
+  color: var(--ctp-peach);
+}
+
+.card-badge--policy {
+  background: color-mix(in srgb, var(--ctp-mauve) 20%, transparent);
+  color: var(--ctp-mauve);
+}
+
+.card-badge--command {
+  background: color-mix(in srgb, var(--ctp-blue) 20%, transparent);
+  color: var(--ctp-blue);
+}
+
+.card-badge--aggregate {
+  background: color-mix(in srgb, var(--ctp-pink) 20%, transparent);
+  color: var(--ctp-pink);
+}
+
+.card-badge--external {
+  background: color-mix(in srgb, var(--ctp-teal) 20%, transparent);
+  color: var(--ctp-teal);
+}
+
+.card-badge--user {
+  background: color-mix(in srgb, var(--ctp-yellow) 20%, transparent);
+  color: var(--ctp-yellow);
+}
+
+/* Help List */
+.flowchart-help-list {
+  margin: 4px 0 0 0;
+  padding-left: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 13px;
+  color: var(--ctp-subtext0);
+}
+
+.flowchart-help-list strong {
+  color: var(--ctp-text);
+}
+
+.flowchart-help-card-header {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--ctp-text);
+}
+
+.flowchart-help-instructions {
+  background: var(--ctp-base);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 12px 16px;
+  margin-top: 4px;
+}
+
+.flowchart-help-steps-list {
+  margin: 0;
+  padding-left: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  font-size: 12px;
+  color: var(--ctp-subtext0);
+  line-height: 1.5;
+}
+
+.flowchart-help-steps-list strong {
+  color: var(--ctp-text);
+}
+
+.flowchart-help-steps-list code {
+  background: var(--ctp-surface0);
+  color: var(--primary);
+  padding: 1px 5px;
+  border-radius: 4px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+}
+

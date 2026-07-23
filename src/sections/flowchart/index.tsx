@@ -11,6 +11,7 @@ import { StepCarousel } from './step-carousel';
 import { usePlaybackState } from './usePlaybackState';
 import { autoDeriveViews } from './derivations';
 import { InspectorSidebar } from './inspector';
+import { FlowchartHelpModal } from './FlowchartHelpModal';
 import {
   EventStormingIcon,
   SystemArchitectureIcon,
@@ -619,11 +620,25 @@ export function Flowchart({ title, schema = INITIAL_SCHEMA }: FlowchartProps) {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activeSteps, activeStep, handleStepClick, instanceId, playback, cameraControls, isFullscreen, visibleViewKeys, actionBarItems, activeViewKey, localSchema.journeys]);
 
+  const [isHelpOpen, setIsHelpOpen] = useState(false);
+
   return (
     <div className={`flowchart-section${isFullscreen ? ' fullscreen' : ''}`} data-testid="flowchart-section">
-      <div className="flowchart-header-container w-full">
-        {title && <h3 className="flowchart-title w-full" data-testid="flowchart-title">{title}</h3>}
+      <div className="flowchart-header-container w-full flex items-center justify-between">
+        {title && <h3 className="flowchart-title" data-testid="flowchart-title">{title}</h3>}
+        <button
+          className="flowchart-help-btn ml-auto"
+          onClick={() => setIsHelpOpen(true)}
+          data-testid="flowchart-help-btn"
+          type="button"
+          title="Flowchart & Event Storming Concepts Guide"
+        >
+          <Icons.HelpCircle size={14} />
+          <span>Help & Guide</span>
+        </button>
       </div>
+
+      <FlowchartHelpModal isOpen={isHelpOpen} onClose={() => setIsHelpOpen(false)} />
 
       {/* Canvas View */}
       <div className="flowchart-canvas-wrapper" style={{ position: 'relative' }}>

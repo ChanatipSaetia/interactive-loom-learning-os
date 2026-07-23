@@ -141,17 +141,21 @@ function renderArrayField(
         <span className="visual-form-key">{key}</span>
         <div className="visual-form-object-list">
           {objArray.map((item, i) => (
-            <fieldset className="visual-form-nested" key={i}>
-              <legend>#{i + 1}</legend>
-              <DynamicSchemaForm
-                data={item}
-                onChange={(updated) => {
-                  const updatedArr = [...objArray]
-                  updatedArr[i] = updated
-                  onChange(key, updatedArr as unknown[])
-                }}
-              />
-            </fieldset>
+            <div className="visual-form-card" key={i}>
+              <div className="visual-form-card-header">
+                <span className="card-header-title">Item #{i + 1}</span>
+              </div>
+              <div className="visual-form-card-body">
+                <DynamicSchemaForm
+                  data={item}
+                  onChange={(updated) => {
+                    const updatedArr = [...objArray]
+                    updatedArr[i] = updated
+                    onChange(key, updatedArr as unknown[])
+                  }}
+                />
+              </div>
+            </div>
           ))}
         </div>
       </div>
@@ -186,13 +190,17 @@ export function DynamicSchemaForm({ data, onChange }: DynamicSchemaFormProps) {
         if (typeof value === 'object' && value !== null) {
           return (
             <div className="visual-form-field" key={key}>
-              <fieldset className="visual-form-nested">
-                <legend>{key}</legend>
-                <DynamicSchemaForm
-                  data={value as Record<string, unknown>}
-                  onChange={(updated) => handleFieldChange(key, updated)}
-                />
-              </fieldset>
+              <div className="visual-form-card">
+                <div className="visual-form-card-header">
+                  <span className="card-header-title">{key}</span>
+                </div>
+                <div className="visual-form-card-body">
+                  <DynamicSchemaForm
+                    data={value as Record<string, unknown>}
+                    onChange={(updated) => handleFieldChange(key, updated)}
+                  />
+                </div>
+              </div>
             </div>
           )
         }
@@ -202,3 +210,4 @@ export function DynamicSchemaForm({ data, onChange }: DynamicSchemaFormProps) {
     </div>
   )
 }
+

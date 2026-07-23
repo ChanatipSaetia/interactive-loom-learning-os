@@ -198,7 +198,7 @@ export default function ImageGallery({ title, items = [] }: ImageGalleryProps) {
   }
 
   return (
-    <div className="w-full max-w-5xl mx-auto" id="image-gallery">
+    <div className="w-full max-w-full" id="image-gallery">
       <div className="flex items-center w-full mb-6">
         <h3 className="flex-1 !m-0 !p-0 font-display font-light text-foreground tracking-tight text-2xl md:text-3xl">
           {title || 'Image Gallery'}

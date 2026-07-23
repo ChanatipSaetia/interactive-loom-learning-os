@@ -63,7 +63,7 @@
 ============================================= */
 .main-content {
   @apply flex-1 bg-background;
-  padding: var(--spacing-xxl) calc(var(--spacing-xxl) * 1.5);
+  padding: 0;
 }
 
 /* =============================================
@@ -71,7 +71,9 @@
 ============================================= */
 .topic-page {
   @apply mx-auto;
-  max-width: 860px;
+  max-width: 100%;
+  width: 100%;
+  padding: 20px 24px;
 }
 
 [data-testid$="-topic"] {
@@ -367,7 +369,9 @@
    ============================================= */
 .topic-page.editor-mode {
   max-width: 100%;
-  height: calc(100vh - 52px - var(--spacing-xxl) * 2);
+  width: 100%;
+  height: calc(100vh - 52px);
+  padding: 12px 16px 16px 16px;
   min-height: 500px;
   display: flex;
   flex-direction: column;
@@ -483,13 +487,31 @@
   line-height: 1.6;
 }
 
+.main-content:has(.editor-mode) {
+  padding: 12px 16px;
+}
+
 /* =============================================
    Editor Preview Panel
    ============================================= */
 .editor-preview-panel {
   height: 100%;
   overflow: auto;
-  padding: var(--spacing-xxl);
+  padding: 16px 20px;
+}
+
+.editor-preview-panel #flashcard-deck,
+.editor-preview-panel .topic-intro-section,
+.editor-preview-panel .tradeoff-sandbox,
+.editor-preview-panel .scenario-section,
+.editor-preview-panel .quiz-section,
+.editor-preview-panel .concept-map-section,
+.editor-preview-panel .dt-section,
+.editor-preview-panel .formula-sandbox-section {
+  max-width: 100% !important;
+  width: 100% !important;
+  margin-left: 0 !important;
+  margin-right: 0 !important;
 }
 
 /* =============================================
@@ -583,17 +605,83 @@
 .visual-form {
   display: flex;
   flex-direction: column;
-  gap: 14px;
+  gap: 16px;
+}
+
+/* Sub-Tabs for Flowchart / Complex Forms */
+.flowchart-sub-tabs {
+  display: flex;
+  gap: 4px;
+  padding: 4px;
+  background-color: color-mix(in srgb, var(--ctp-mantle) 70%, var(--card));
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  margin-bottom: 8px;
+}
+
+.flowchart-sub-tab {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 6px 10px;
+  border: none;
+  border-radius: 6px;
+  background: transparent;
+  color: var(--ctp-subtext0);
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.flowchart-sub-tab:hover {
+  color: var(--ctp-text);
+  background-color: color-mix(in srgb, var(--ctp-surface0) 50%, transparent);
+}
+
+.flowchart-sub-tab.active {
+  color: var(--primary);
+  background-color: color-mix(in srgb, var(--primary) 12%, var(--card));
+  font-weight: 600;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
+}
+
+.sub-tab-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 5px;
+  border-radius: 9px;
+  background-color: color-mix(in srgb, var(--ctp-surface1) 80%, transparent);
+  color: var(--ctp-text);
+  font-size: 10px;
+  font-weight: 600;
+}
+
+.flowchart-sub-tab.active .sub-tab-badge {
+  background-color: var(--primary);
+  color: var(--ctp-base);
+}
+
+.visual-form-section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
 }
 
 .visual-form-field {
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 6px;
 }
 
 .visual-form-field--array {
-  gap: 8px;
+  gap: 10px;
 }
 
 .visual-form-label {
@@ -606,33 +694,36 @@
   flex-direction: row;
   align-items: center;
   gap: 8px;
+  cursor: pointer;
 }
 
 .visual-form-key {
   font-size: 11px;
   font-weight: 600;
   text-transform: uppercase;
-  letter-spacing: 0.04em;
-  color: var(--ctp-overlay1);
+  letter-spacing: 0.05em;
+  color: var(--ctp-subtext0);
 }
 
-.visual-form-input {
+.visual-form-input,
+.visual-form-select {
   width: 100%;
-  padding: 8px 10px;
+  padding: 7px 10px;
   border: 1px solid var(--border);
   border-radius: 6px;
-  background-color: var(--background);
+  background-color: color-mix(in srgb, var(--ctp-mantle) 50%, var(--background));
   color: var(--ctp-text);
-  font-size: 13px;
+  font-size: 12.5px;
   font-family: var(--font-body, var(--font-sans));
   transition: border-color 0.2s ease, box-shadow 0.2s ease;
   box-sizing: border-box;
 }
 
-.visual-form-input:focus {
+.visual-form-input:focus,
+.visual-form-select:focus {
   outline: none;
-  border-color: color-mix(in srgb, var(--primary) 50%, transparent);
-  box-shadow: 0 0 0 2px color-mix(in srgb, var(--primary) 15%, transparent);
+  border-color: color-mix(in srgb, var(--primary) 60%, transparent);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--primary) 20%, transparent);
 }
 
 .visual-form-input::placeholder {
@@ -644,9 +735,9 @@
   padding: 8px 10px;
   border: 1px solid var(--border);
   border-radius: 6px;
-  background-color: var(--background);
+  background-color: color-mix(in srgb, var(--ctp-mantle) 50%, var(--background));
   color: var(--ctp-text);
-  font-size: 13px;
+  font-size: 12.5px;
   font-family: var(--font-mono, monospace);
   line-height: 1.5;
   resize: vertical;
@@ -656,14 +747,14 @@
 
 .visual-form-textarea:focus {
   outline: none;
-  border-color: color-mix(in srgb, var(--primary) 50%, transparent);
-  box-shadow: 0 0 0 2px color-mix(in srgb, var(--primary) 15%, transparent);
+  border-color: color-mix(in srgb, var(--primary) 60%, transparent);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--primary) 20%, transparent);
 }
 
 .visual-form-value {
-  font-size: 13px;
+  font-size: 12.5px;
   color: var(--ctp-text);
-  padding: 8px 10px;
+  padding: 7px 10px;
   background-color: color-mix(in srgb, var(--ctp-surface0) 40%, transparent);
   border-radius: 6px;
   border: 1px solid color-mix(in srgb, var(--border) 40%, transparent);
@@ -676,32 +767,188 @@
   padding: 4px 0;
 }
 
+.visual-form-grid-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.visual-form-grid-3 {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 10px;
+}
+
 .visual-form-string-list {
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 6px;
 }
 
 .visual-form-object-list {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 12px;
 }
 
+/* Card Containers replacing legacy fieldsets */
+.visual-form-card,
 .visual-form-nested {
-  border: 1px solid color-mix(in srgb, var(--border) 50%, transparent);
+  border: 1px solid color-mix(in srgb, var(--border) 60%, transparent);
   border-radius: 8px;
-  padding: 10px 14px;
+  padding: 12px;
   margin: 0;
-  background-color: color-mix(in srgb, var(--ctp-surface0) 20%, transparent);
+  background-color: color-mix(in srgb, var(--ctp-surface0) 25%, transparent);
+  transition: border-color 0.2s ease, background-color 0.2s ease;
+}
+
+.visual-form-card:hover,
+.visual-form-nested:hover {
+  border-color: color-mix(in srgb, var(--primary) 35%, var(--border));
+  background-color: color-mix(in srgb, var(--ctp-surface0) 35%, transparent);
+}
+
+.visual-form-card--sub {
+  padding: 8px 10px;
+  background-color: color-mix(in srgb, var(--ctp-mantle) 40%, transparent);
+}
+
+.visual-form-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid color-mix(in srgb, var(--border) 40%, transparent);
+}
+
+.card-header-title {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--ctp-text);
+}
+
+.card-code-pill {
+  font-family: var(--font-mono, monospace);
+  font-size: 11px;
+  padding: 2px 6px;
+  border-radius: 4px;
+  background-color: color-mix(in srgb, var(--ctp-surface1) 60%, transparent);
+  color: var(--primary);
+}
+
+.visual-form-card-body {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
 }
 
 .visual-form-nested legend {
   font-size: 11px;
   font-weight: 600;
   color: var(--primary);
-  padding: 0 6px;
+  padding: 0 8px;
 }
+
+/* Styled Action Buttons */
+.form-add-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 5px 10px;
+  border: 1px solid color-mix(in srgb, var(--primary) 40%, transparent);
+  border-radius: 6px;
+  background-color: color-mix(in srgb, var(--primary) 12%, transparent);
+  color: var(--primary);
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.form-add-btn:hover {
+  background-color: color-mix(in srgb, var(--primary) 22%, transparent);
+  border-color: var(--primary);
+}
+
+.form-add-btn--sm {
+  padding: 3px 8px;
+  font-size: 11px;
+}
+
+.form-remove-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px;
+  border: 1px solid color-mix(in srgb, var(--ctp-red) 30%, transparent);
+  border-radius: 4px;
+  background-color: transparent;
+  color: var(--ctp-red);
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.form-remove-btn:hover {
+  background-color: color-mix(in srgb, var(--ctp-red) 15%, transparent);
+  border-color: var(--ctp-red);
+}
+
+.form-action-group {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.form-reorder-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  padding: 0;
+  border: 1px solid color-mix(in srgb, var(--border) 60%, transparent);
+  border-radius: 4px;
+  background-color: color-mix(in srgb, var(--ctp-surface0) 40%, transparent);
+  color: var(--ctp-subtext0);
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.form-reorder-btn:hover:not(:disabled) {
+  background-color: color-mix(in srgb, var(--primary) 15%, transparent);
+  color: var(--primary);
+  border-color: color-mix(in srgb, var(--primary) 40%, transparent);
+}
+
+.form-reorder-btn:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+.visual-form-empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 24px 16px;
+  background: color-mix(in srgb, var(--ctp-mantle) 50%, transparent);
+  border: 1px dashed color-mix(in srgb, var(--border) 80%, transparent);
+  border-radius: 8px;
+  text-align: center;
+  color: var(--ctp-subtext0);
+  font-size: 12px;
+}
+
+.visual-form-empty-state svg {
+  color: var(--ctp-overlay0);
+}
+
+
 
 /* =============================================
     Raw YAML Editor

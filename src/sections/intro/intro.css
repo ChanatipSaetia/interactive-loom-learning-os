@@ -428,3 +428,213 @@
     padding: 0.75rem 0.85rem;
   }
 }
+
+/* ==========================================================================
+   Intro Help Modal Styles
+   ========================================================================== */
+
+.intro-help-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 12px;
+  border-radius: 9999px;
+  border: 1px solid color-mix(in srgb, var(--primary) 35%, transparent);
+  background: color-mix(in srgb, var(--primary) 10%, transparent);
+  color: var(--primary);
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.intro-help-btn:hover {
+  background: color-mix(in srgb, var(--primary) 20%, transparent);
+  border-color: var(--primary);
+  transform: translateY(-1px);
+}
+
+.intro-help-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.65);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  z-index: 999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  animation: heroFadeIn 0.2s ease-out;
+}
+
+.intro-help-modal {
+  width: 100%;
+  max-width: 650px;
+  max-height: 85vh;
+  background: var(--ctp-mantle);
+  border: 1px solid color-mix(in srgb, var(--primary) 30%, var(--border));
+  border-radius: var(--radius-lg, 16px);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  color: var(--ctp-text);
+  font-family: var(--font-body);
+}
+
+.intro-help-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--border-light, var(--border));
+  background: var(--ctp-crust);
+}
+
+.intro-help-title-group {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.intro-help-icon {
+  color: var(--primary);
+}
+
+.intro-help-title {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--ctp-text);
+}
+
+.intro-help-close-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border: none;
+  background: transparent;
+  color: var(--ctp-overlay1);
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.intro-help-close-btn:hover {
+  background: var(--ctp-surface0);
+  color: var(--ctp-text);
+}
+
+.intro-help-body {
+  padding: 20px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.intro-help-section {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.intro-help-section-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--primary);
+}
+
+.intro-help-section-title h3 {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-family: var(--font-mono);
+}
+
+.intro-help-desc {
+  margin: 0;
+  font-size: 13px;
+  color: var(--ctp-subtext0);
+  line-height: 1.5;
+}
+
+.intro-help-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 10px;
+  margin-top: 4px;
+}
+
+.intro-help-card {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 10px 12px;
+  background: var(--ctp-base);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+}
+
+.intro-help-card p {
+  margin: 0;
+  font-size: 12px;
+  color: var(--ctp-subtext0);
+  line-height: 1.4;
+}
+
+.intro-help-card code {
+  background: var(--ctp-surface0);
+  color: var(--primary);
+  padding: 1px 4px;
+  border-radius: 4px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+}
+
+.card-badge--hero {
+  background: color-mix(in srgb, var(--primary) 20%, transparent);
+  color: var(--primary);
+}
+
+.card-badge--def {
+  background: color-mix(in srgb, var(--secondary) 20%, transparent);
+  color: var(--secondary);
+}
+
+.card-badge--what {
+  background: color-mix(in srgb, var(--ctp-teal) 20%, transparent);
+  color: var(--ctp-teal);
+}
+
+.card-badge--why {
+  background: color-mix(in srgb, var(--ctp-yellow) 20%, transparent);
+  color: var(--ctp-yellow);
+}
+
+.card-badge--roadmap {
+  background: color-mix(in srgb, var(--ctp-mauve) 20%, transparent);
+  color: var(--ctp-mauve);
+}
+
+.intro-help-list {
+  margin: 4px 0 0 0;
+  padding-left: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 12.5px;
+  color: var(--ctp-subtext0);
+  line-height: 1.5;
+}
+
+.intro-help-list strong {
+  color: var(--ctp-text);
+}
+

@@ -1,6 +1,7 @@
 .overview-page {
   @apply mx-auto w-full;
-  max-width: 960px;
+  max-width: 1200px;
+  padding: 20px 24px;
 }
 
 .overview-header {

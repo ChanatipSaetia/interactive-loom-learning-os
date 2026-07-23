@@ -127,8 +127,13 @@ describe('VisualFormEditor', () => {
     render(<VisualFormEditor data={flashcardData} onChange={onChange} />)
 
     expect(screen.getByTestId('flashcards-form-editor')).toBeInTheDocument()
+    expect(screen.getByTestId('fc-sub-tabs')).toBeInTheDocument()
     expect(screen.getByTestId('flashcard-0')).toBeInTheDocument()
     expect(screen.getByTestId('flashcards-add-term')).toBeInTheDocument()
+
+    // Test guide button
+    fireEvent.click(screen.getByTestId('flashcards-editor-help-btn'))
+    expect(screen.getByTestId('fc-help-modal')).toBeInTheDocument()
   })
 
   it('renders concept map form editor for concept-map type', () => {
@@ -147,10 +152,18 @@ describe('VisualFormEditor', () => {
     render(<VisualFormEditor data={cmData} onChange={onChange} />)
 
     expect(screen.getByTestId('concept-map-form-editor')).toBeInTheDocument()
+    expect(screen.getByTestId('cm-sub-tabs')).toBeInTheDocument()
     expect(screen.getByTestId('cm-node-node1')).toBeInTheDocument()
-    expect(screen.getByTestId('cm-edge-0')).toBeInTheDocument()
     expect(screen.getByTestId('cm-add-node')).toBeInTheDocument()
+
+    // Switch to Edges tab
+    fireEvent.click(screen.getByTestId('cm-tab-edges'))
+    expect(screen.getByTestId('cm-edge-0')).toBeInTheDocument()
     expect(screen.getByTestId('cm-add-edge')).toBeInTheDocument()
+
+    // Test guide button
+    fireEvent.click(screen.getByTestId('cm-editor-help-btn'))
+    expect(screen.getByTestId('cm-help-modal')).toBeInTheDocument()
   })
 
   it('renders tradeoff sandbox form editor for tradeoff-sandbox type', () => {
@@ -189,8 +202,13 @@ describe('VisualFormEditor', () => {
     render(<VisualFormEditor data={tsData} onChange={onChange} />)
 
     expect(screen.getByTestId('tradeoff-sandbox-form-editor')).toBeInTheDocument()
+    expect(screen.getByTestId('to-sub-tabs')).toBeInTheDocument()
     expect(screen.getByTestId('tc-scenario-0')).toBeInTheDocument()
     expect(screen.getByTestId('tradeoff-add-scenario')).toBeInTheDocument()
+
+    // Test guide button
+    fireEvent.click(screen.getByTestId('tradeoff-editor-help-btn'))
+    expect(screen.getByTestId('to-help-modal')).toBeInTheDocument()
   })
 
   it('renders scenario form editor for scenario type', () => {
@@ -219,8 +237,16 @@ describe('VisualFormEditor', () => {
     render(<VisualFormEditor data={scenarioData} onChange={onChange} />)
 
     expect(screen.getByTestId('scenario-form-editor')).toBeInTheDocument()
+    expect(screen.getByTestId('sc-sub-tabs')).toBeInTheDocument()
     expect(screen.getByTestId('scenario-title')).toHaveValue('Test Scenario')
+
+    // Switch to Nodes tab
+    fireEvent.click(screen.getByTestId('sc-tab-nodes'))
     expect(screen.getByTestId('sc-node-start')).toBeInTheDocument()
+
+    // Test guide button
+    fireEvent.click(screen.getByTestId('scenario-editor-help-btn'))
+    expect(screen.getByTestId('sc-help-modal')).toBeInTheDocument()
   })
 
   it('renders decision tree form editor for decision-tree type', () => {
@@ -248,9 +274,13 @@ describe('VisualFormEditor', () => {
     render(<VisualFormEditor data={dtData} onChange={onChange} />)
 
     expect(screen.getByTestId('decision-tree-form-editor')).toBeInTheDocument()
-    expect(screen.getByTestId('dt-title')).toHaveValue('Test DT')
+    expect(screen.getByTestId('dt-sub-tabs')).toBeInTheDocument()
     expect(screen.getByTestId('dt-node-root')).toBeInTheDocument()
     expect(screen.getByTestId('dt-choice-0')).toBeInTheDocument()
+
+    // Test guide button
+    fireEvent.click(screen.getByTestId('dt-editor-help-btn'))
+    expect(screen.getByTestId('dt-help-modal')).toBeInTheDocument()
   })
 
   it('renders formula sandbox form editor for formula-sandbox type', () => {
@@ -268,10 +298,183 @@ describe('VisualFormEditor', () => {
     render(<VisualFormEditor data={fsData} onChange={onChange} />)
 
     expect(screen.getByTestId('formula-sandbox-form-editor')).toBeInTheDocument()
+    expect(screen.getByTestId('fs-sub-tabs')).toBeInTheDocument()
     expect(screen.getByTestId('fs-var-0')).toBeInTheDocument()
-    expect(screen.getByTestId('fs-metric-0')).toBeInTheDocument()
     expect(screen.getByTestId('fs-add-variable')).toBeInTheDocument()
+
+    // Switch to Metrics tab
+    fireEvent.click(screen.getByTestId('fs-tab-metrics'))
+    expect(screen.getByTestId('fs-metric-0')).toBeInTheDocument()
     expect(screen.getByTestId('fs-add-metric')).toBeInTheDocument()
+
+    // Test guide button
+    fireEvent.click(screen.getByTestId('formula-editor-help-btn'))
+    expect(screen.getByTestId('fm-help-modal')).toBeInTheDocument()
+  })
+
+  it('renders flowchart form editor with sub-tabs for flowchart type', () => {
+    const flowchartData: OKFSectionData = {
+      type: 'flowchart',
+      flow: {
+        actors: {
+          user: { title: 'User', desc: 'Main user' },
+        },
+        systems: {
+          engine: { title: 'Engine', desc: 'Core system', type: 'aggregate' },
+        },
+        steps: [
+          {
+            id: 'step_1',
+            type: 'linear',
+            policy: 'Start policy',
+            command: 'Run command',
+            handledBy: { _tag: 'ref', id: 'engine' },
+            resultEvents: [{ id: 'evt_1', title: 'Started' }],
+          },
+        ],
+        journeys: [
+          {
+            id: 'j1',
+            label: 'Main Journey',
+            description: 'Main path',
+            steps: [{ stepId: 'step_1', name: 'Step 1', description: 'Start' }],
+          },
+        ],
+      },
+    }
+
+    const onChange = vi.fn()
+    render(<VisualFormEditor data={flowchartData} onChange={onChange} />)
+
+    expect(screen.getByTestId('flowchart-form-editor')).toBeInTheDocument()
+    expect(screen.getByTestId('flowchart-sub-tabs')).toBeInTheDocument()
+    expect(screen.getByTestId('flowchart-content-steps')).toBeInTheDocument()
+
+    // Switch sub-tabs
+    fireEvent.click(screen.getByTestId('flowchart-tab-actors'))
+    expect(screen.getByTestId('flowchart-content-actors')).toBeInTheDocument()
+    expect(screen.getByTestId('flowchart-actor-user')).toBeInTheDocument()
+
+    fireEvent.click(screen.getByTestId('flowchart-tab-systems'))
+    expect(screen.getByTestId('flowchart-content-systems')).toBeInTheDocument()
+    expect(screen.getByTestId('flowchart-system-engine')).toBeInTheDocument()
+
+    fireEvent.click(screen.getByTestId('flowchart-tab-journeys'))
+    expect(screen.getByTestId('flowchart-content-journeys')).toBeInTheDocument()
+    expect(screen.getByTestId('flowchart-journey-0')).toBeInTheDocument()
+  })
+
+  it('supports branch step rendering, branch options editing, and type toggling in flowchart editor', () => {
+    const flowchartData: OKFSectionData = {
+      type: 'flowchart',
+      flow: {
+        actors: {},
+        systems: { engine: { title: 'Engine', desc: 'Core', type: 'aggregate' } },
+        steps: [
+          {
+            id: 'branch_step_1',
+            type: 'branch',
+            event: 'reasoned',
+            branches: [
+              {
+                id: 'exec_tool',
+                label: 'Execute Tool',
+                policy: 'Tool Policy',
+                command: 'Tool Command',
+                handledBy: { _tag: 'ref', id: 'engine' },
+                resultEvents: [{ id: 'evt_exec', title: 'Executed' }],
+              },
+            ],
+          },
+        ],
+        journeys: [
+          {
+            id: 'j1',
+            label: 'Journey 1',
+            description: 'Test',
+            steps: [{ stepId: 'exec_tool', name: 'Tool Step', description: 'Executes tool' }],
+          },
+        ],
+      },
+    }
+
+    const onChange = vi.fn()
+    render(<VisualFormEditor data={flowchartData} onChange={onChange} />)
+
+    // Check branch step element rendering
+    expect(screen.getByTestId('flowchart-step-0')).toBeInTheDocument()
+    expect(screen.getByTestId('flowchart-step-0-event')).toHaveValue('reasoned')
+    expect(screen.getByTestId('flowchart-step-0-branch-0')).toBeInTheDocument()
+    expect(screen.getByTestId('flowchart-step-0-branch-0-id')).toHaveValue('exec_tool')
+    expect(screen.getByTestId('flowchart-step-0-branch-0-label')).toHaveValue('Execute Tool')
+
+    // Add branch path
+    fireEvent.click(screen.getByTestId('flowchart-step-0-add-branch-opt'))
+    expect(onChange).toHaveBeenCalled()
+
+    // Test Journey dropdown option for branch path ID
+    fireEvent.click(screen.getByTestId('flowchart-tab-journeys'))
+    const stepIdSelect = screen.getByTestId('flowchart-journey-0-step-0-stepId')
+    expect(stepIdSelect).toHaveValue('exec_tool')
+  })
+
+  it('supports system state machine toggling and editing in flowchart editor', () => {
+    const flowchartData: OKFSectionData = {
+      type: 'flowchart',
+      flow: {
+        actors: {},
+        systems: {
+          sys1: { title: 'System 1', desc: 'Desc', type: 'aggregate' },
+        },
+        steps: [],
+        journeys: [],
+      },
+    }
+
+    const onChange = vi.fn()
+    render(<VisualFormEditor data={flowchartData} onChange={onChange} />)
+
+    fireEvent.click(screen.getByTestId('flowchart-tab-systems'))
+    expect(screen.getByTestId('flowchart-system-sys1')).toBeInTheDocument()
+
+    // Toggle state machine
+    fireEvent.click(screen.getByTestId('flowchart-system-sys1-toggle-sm'))
+    expect(onChange).toHaveBeenCalled()
+  })
+
+  it('renders intro form editor for intro section type', () => {
+    const introData: OKFSectionData = {
+      type: 'intro',
+      title: 'Test Topic',
+      subtitle: 'Subtitle',
+      estimatedTime: '15 mins',
+      moduleCount: 4,
+      what: {
+        definition: 'Core definition',
+        summary: 'What summary',
+        bullets: ['Bullet 1'],
+        tags: ['tag1'],
+      },
+      why: {
+        summary: 'Why summary',
+        impact: 'Key takeaway',
+      },
+      roadmap: [
+        { sectionId: 'flowchart', title: 'Flowchart', type: 'flowchart', description: 'Flowchart step' },
+      ],
+    }
+
+    const onChange = vi.fn()
+    render(<VisualFormEditor data={introData} onChange={onChange} />)
+
+    expect(screen.getByTestId('intro-form-editor')).toBeInTheDocument()
+    expect(screen.getByTestId('intro-field-title')).toHaveValue('Test Topic')
+    expect(screen.getByTestId('intro-field-definition')).toHaveValue('Core definition')
+    expect(screen.getByTestId('intro-add-bullet')).toBeInTheDocument()
+
+    // Test guide button
+    fireEvent.click(screen.getByTestId('intro-editor-help-btn'))
+    expect(screen.getByTestId('intro-help-modal')).toBeInTheDocument()
   })
 
   it('renders string array items as individual inputs (fallback form)', () => {
@@ -286,6 +489,7 @@ describe('VisualFormEditor', () => {
     expect(paragraphInputs.length).toBe(1)
   })
 })
+
 
 describe('RawYAMLEditor', () => {
   it('renders textarea with initial text', () => {

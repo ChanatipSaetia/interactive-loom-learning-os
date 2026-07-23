@@ -1,5 +1,8 @@
-/* Decision Tree Help Modal Styles */
-.dt-help-btn {
+/* ==========================================================================
+   Flashcards Help Modal & Editor Styles
+   ========================================================================== */
+
+.fc-help-btn {
   display: inline-flex;
   align-items: center;
   gap: 6px;
@@ -14,13 +17,13 @@
   transition: all 0.15s ease;
 }
 
-.dt-help-btn:hover {
+.fc-help-btn:hover {
   background: color-mix(in srgb, var(--primary) 20%, transparent);
   border-color: var(--primary);
   transform: translateY(-1px);
 }
 
-.dt-help-overlay {
+.fc-help-overlay {
   position: fixed;
   inset: 0;
   background: rgba(0, 0, 0, 0.65);
@@ -34,7 +37,7 @@
   animation: fadeIn 0.2s ease-out;
 }
 
-.dt-help-modal {
+.fc-help-modal {
   width: 100%;
   max-width: 660px;
   max-height: 85vh;
@@ -49,7 +52,7 @@
   font-family: var(--font-body);
 }
 
-.dt-help-header {
+.fc-help-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -58,24 +61,24 @@
   background: var(--ctp-crust);
 }
 
-.dt-help-title-group {
+.fc-help-title-group {
   display: flex;
   align-items: center;
   gap: 10px;
 }
 
-.dt-help-icon {
+.fc-help-icon {
   color: var(--primary);
 }
 
-.dt-help-title {
+.fc-help-title {
   margin: 0;
   font-size: 16px;
   font-weight: 600;
   color: var(--ctp-text);
 }
 
-.dt-help-close-btn {
+.fc-help-close-btn {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -89,12 +92,12 @@
   transition: all 0.15s ease;
 }
 
-.dt-help-close-btn:hover {
+.fc-help-close-btn:hover {
   background: var(--ctp-surface0);
   color: var(--ctp-text);
 }
 
-.dt-help-body {
+.fc-help-body {
   padding: 20px;
   overflow-y: auto;
   display: flex;
@@ -102,20 +105,20 @@
   gap: 20px;
 }
 
-.dt-help-section {
+.fc-help-section {
   display: flex;
   flex-direction: column;
   gap: 8px;
 }
 
-.dt-help-section-title {
+.fc-help-section-title {
   display: flex;
   align-items: center;
   gap: 8px;
   color: var(--primary);
 }
 
-.dt-help-section-title h3 {
+.fc-help-section-title h3 {
   margin: 0;
   font-size: 14px;
   font-weight: 600;
@@ -124,21 +127,21 @@
   font-family: var(--font-mono);
 }
 
-.dt-help-desc {
+.fc-help-desc {
   margin: 0;
   font-size: 13px;
   color: var(--ctp-subtext0);
   line-height: 1.5;
 }
 
-.dt-help-grid {
+.fc-help-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
   gap: 10px;
   margin-top: 4px;
 }
 
-.dt-help-card {
+.fc-help-card {
   display: flex;
   flex-direction: column;
   gap: 6px;
@@ -148,14 +151,14 @@
   border-radius: 10px;
 }
 
-.dt-help-card p {
+.fc-help-card p {
   margin: 0;
   font-size: 12px;
   color: var(--ctp-subtext0);
   line-height: 1.4;
 }
 
-.dt-help-card code {
+.fc-help-card code {
   background: var(--ctp-surface0);
   color: var(--primary);
   padding: 1px 4px;
@@ -164,17 +167,27 @@
   font-size: 11px;
 }
 
-.card-badge--node {
+.card-badge--front {
   background: color-mix(in srgb, var(--primary) 20%, transparent);
   color: var(--primary);
 }
 
-.card-badge--leaf {
+.card-badge--back {
   background: color-mix(in srgb, var(--secondary) 20%, transparent);
   color: var(--secondary);
 }
 
-.dt-help-list {
+.card-badge--field {
+  background: color-mix(in srgb, var(--ctp-teal) 20%, transparent);
+  color: var(--ctp-teal);
+}
+
+.card-badge--dialogue {
+  background: color-mix(in srgb, var(--ctp-mauve) 20%, transparent);
+  color: var(--ctp-mauve);
+}
+
+.fc-help-list {
   margin: 4px 0 0 0;
   padding-left: 18px;
   display: flex;
@@ -185,6 +198,6 @@
   line-height: 1.5;
 }
 
-.dt-help-list strong {
+.fc-help-list strong {
   color: var(--ctp-text);
 }

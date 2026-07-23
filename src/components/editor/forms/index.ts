@@ -6,3 +6,6 @@ export { TradeoffSandboxFormEditor } from './TradeoffSandboxFormEditor'
 export { ScenarioFormEditor } from './ScenarioFormEditor'
 export { DecisionTreeFormEditor } from './DecisionTreeFormEditor'
 export { FormulaSandboxFormEditor } from './FormulaSandboxFormEditor'
+export { FlowchartFormEditor } from './FlowchartFormEditor'
+export { IntroFormEditor } from './IntroFormEditor'
+

@@ -232,6 +232,7 @@ export interface OKFStepRaw {
   continuesAs?: string
   event?: string
   branches?: OKFBranchRaw[]
+  description?: string
 }
 
 export interface OKFBranchRaw {

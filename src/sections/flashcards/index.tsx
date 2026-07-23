@@ -5,6 +5,7 @@ import { ChevronLeft, ChevronRight, Volume2, Terminal, HelpCircle, MessageSquare
 import { Button } from '../../components/motion/button';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '../../components/motion/tabs';
 import { useSound } from '../../context/SoundContext';
+import { FlashcardsHelpModal } from './FlashcardsHelpModal';
 
 type BackTabId = 'guidelines' | 'dialogue';
 
@@ -18,6 +19,7 @@ export default function FlashcardDeck({ title, terms = [] }: FlashcardDeckProps)
   const [isFlipped, setIsFlipped] = useState(false);
   const [direction, setDirection] = useState(0); // -1 for left, 1 for right
   const [activeBackTab, setActiveBackTab] = useState<BackTabId>('guidelines');
+  const [isHelpOpen, setIsHelpOpen] = useState(false);
   const { playSound } = useSound();
 
   // Reset back tabs when switching cards
@@ -98,17 +100,17 @@ export default function FlashcardDeck({ title, terms = [] }: FlashcardDeckProps)
       opacity: 0,
       scale: 0.96
     }),
-    active: {
+    animate: {
       x: 0,
       opacity: 1,
       scale: 1,
-      transition: { type: 'spring' as const, damping: 24, stiffness: 180 }
+      transition: { duration: 0.35, ease: [0.16, 1, 0.3, 1] }
     },
     exit: (dir: number) => ({
       x: dir > 0 ? -120 : 120,
       opacity: 0,
       scale: 0.96,
-      transition: { ease: 'easeInOut', duration: 0.18 }
+      transition: { duration: 0.25, ease: [0.7, 0, 0.84, 0] }
     })
   };
 
@@ -121,7 +123,8 @@ export default function FlashcardDeck({ title, terms = [] }: FlashcardDeckProps)
   }
 
   return (
-    <div className="flex flex-col w-full h-full max-w-5xl mx-auto" id="flashcard-deck">
+    <div className="flex flex-col w-full h-full max-w-full" id="flashcard-deck">
+      <FlashcardsHelpModal isOpen={isHelpOpen} onClose={() => setIsHelpOpen(false)} />
       
       {/* Top Deck Info with Standard Heading */}
       <div className="flashcards-header flex items-center w-full">
@@ -135,6 +138,17 @@ export default function FlashcardDeck({ title, terms = [] }: FlashcardDeckProps)
           <span className="text-muted-foreground/30">/</span>
           <span className="text-muted-foreground">{String(terms.length).padStart(2, '0')}</span>
         </div>
+
+        <button
+          className="fc-help-btn ml-3"
+          onClick={() => setIsHelpOpen(true)}
+          data-testid="flashcard-help-btn"
+          type="button"
+          title="Flashcard Deck Concepts Guide"
+        >
+          <HelpCircle size={13} />
+          <span>Help & Guide</span>
+        </button>
       </div>
 
       {/* Main Flashcard Row layout with Side Navigation */}
