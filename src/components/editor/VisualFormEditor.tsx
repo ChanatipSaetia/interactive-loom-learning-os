@@ -11,6 +11,7 @@ import {
   IntroFormEditor,
   TextFormEditor,
   BulletsFormEditor,
+  TaxonomyBrowserFormEditor,
   DynamicSchemaForm,
 } from './forms'
 
@@ -66,6 +67,10 @@ export function VisualFormEditor({ data, onChange }: VisualFormEditorProps) {
 
   if (isType(data, 'bullets')) {
     return <BulletsFormEditor data={data} onChange={onChange} />
+  }
+
+  if (isType(data, 'taxonomy-browser')) {
+    return <TaxonomyBrowserFormEditor data={data} onChange={onChange} />
   }
 
   return (

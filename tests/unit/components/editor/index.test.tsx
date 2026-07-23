@@ -41,6 +41,43 @@ describe('VisualFormEditor', () => {
     expect(screen.getByTestId('bullets-help-modal')).toBeInTheDocument()
   })
 
+  it('renders taxonomy browser form editor for taxonomy-browser type', () => {
+    const mockData: OKFSectionData = {
+      type: 'taxonomy-browser',
+      categories: [
+        {
+          icon: 'Layers',
+          title: 'Presentation Layer',
+          subtitle: 'UI/UX',
+          description: 'Desc',
+          details: 'Details',
+          analogy: 'Analogy',
+          primaryFocus: 'Focus',
+          inScope: ['Scope 1'],
+          outOfScope: ['Out 1'],
+          color: 'blue',
+        },
+      ],
+    }
+    const onChange = vi.fn()
+    render(<VisualFormEditor data={mockData} onChange={onChange} />)
+
+    expect(screen.getByTestId('taxonomy-browser-form-editor')).toBeInTheDocument()
+    expect(screen.getByTestId('taxonomy-category-card-0')).toBeInTheDocument()
+    expect(screen.getByTestId('taxonomy-add-category')).toBeInTheDocument()
+
+    // Test sub-tabs (Identity, Content, Scope)
+    fireEvent.click(screen.getByTestId('taxonomy-tab-content-0'))
+    expect(screen.getByTestId('taxonomy-0-description')).toBeInTheDocument()
+
+    fireEvent.click(screen.getByTestId('taxonomy-tab-scope-0'))
+    expect(screen.getByTestId('taxonomy-0-inscope-0')).toBeInTheDocument()
+
+    // Test guide modal
+    fireEvent.click(screen.getByTestId('taxonomy-editor-help-btn'))
+    expect(screen.getByTestId('taxonomy-help-modal')).toBeInTheDocument()
+  })
+
   it('renders quiz form editor for quiz type', () => {
     const quizData: OKFSectionData = {
       type: 'quiz',
