@@ -1,190 +1,360 @@
 /* ==========================================================================
-   Scenario Section Component Styles
+   Scenario Section — Full Component Styles (vanilla CSS, no @apply)
+   Class names are matched exactly to src/sections/scenario/index.tsx
    ========================================================================== */
 
 .scenario-section {
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
+  margin-bottom: 2rem;
 }
 
-.scenario-card {
-  background: var(--ctp-mantle);
-  border: 1px solid color-mix(in srgb, var(--primary) 25%, var(--border));
-  border-radius: var(--radius-lg, 16px);
-  padding: 24px;
-  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.25);
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-}
-
-.scenario-header {
-  border-bottom: 1px solid var(--border);
-  padding-bottom: 14px;
-}
-
-.scenario-prompt {
-  margin: 0;
-  font-size: 18px;
+.scenario-section-title {
+  font-size: 1.125rem;
   font-weight: 600;
+  letter-spacing: -0.02em;
   color: var(--ctp-text);
-  line-height: 1.45;
-  font-family: var(--font-display, var(--font-sans));
+  margin-bottom: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-family: var(--font-display);
 }
+
+/* ─── Intro card ──────────────────────────────────────────────── */
 
 .scenario-intro {
-  font-size: 14px;
-  color: var(--ctp-subtext0);
-  line-height: 1.5;
-  margin-top: 6px;
+  border-radius: 1rem;
+  overflow: hidden;
+  position: relative;
 }
 
-/* Choices Grid */
+.scenario-intro-card {
+  padding: 1.75rem;
+  border-radius: 1rem;
+  border: 1px solid var(--border, var(--ctp-overlay0));
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  position: relative;
+  overflow: hidden;
+  backdrop-filter: blur(12px);
+  background: linear-gradient(135deg, color-mix(in srgb, var(--ctp-surface0) 60%, var(--ctp-base)) 0%, var(--ctp-base) 100%);
+  box-shadow: 0 8px 32px -6px rgba(0, 0, 0, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+}
+
+.scenario-intro-card::before {
+  content: '';
+  position: absolute;
+  top: -50px;
+  right: -50px;
+  width: 180px;
+  height: 180px;
+  border-radius: 50%;
+  background: radial-gradient(circle, color-mix(in srgb, var(--ctp-blue) 25%, transparent) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+.scenario-intro-header {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.scenario-intro-icon {
+  width: 3rem;
+  height: 3rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 1rem;
+  flex-shrink: 0;
+  transition: transform 0.3s ease;
+  color: var(--ctp-blue);
+  background: color-mix(in srgb, var(--ctp-blue) 18%, var(--ctp-surface0));
+  border: 1px solid color-mix(in srgb, var(--ctp-blue) 35%, transparent);
+  box-shadow: 0 4px 14px color-mix(in srgb, var(--ctp-blue) 20%, transparent);
+}
+
+.scenario-intro-title {
+  color: var(--ctp-text);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  font-size: 1.25rem;
+  font-family: var(--font-display);
+  margin: 0;
+}
+
+.scenario-intro-text {
+  color: var(--ctp-subtext0);
+  line-height: 1.65;
+  font-size: 0.875rem;
+  max-width: 42rem;
+  margin: 0;
+}
+
+/* The start button uses the `Button` component + className override */
+.scenario-start-btn {
+  align-self: flex-start;
+  margin-top: 0.5rem;
+}
+
+/* ─── Decision card ───────────────────────────────────────────── */
+
+.scenario-decision {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  padding: 1.5rem;
+  border-radius: 1rem;
+  border: 1px solid color-mix(in srgb, var(--border, var(--ctp-overlay0)) 80%, transparent);
+  backdrop-filter: blur(12px);
+  position: relative;
+  overflow: hidden;
+  background-color: color-mix(in srgb, var(--ctp-mantle) 80%, transparent);
+  box-shadow: 0 8px 30px -6px rgba(0, 0, 0, 0.2);
+}
+
+.scenario-decision-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid color-mix(in srgb, var(--border, var(--ctp-overlay0)) 50%, transparent);
+}
+
+.scenario-step-counter {
+  font-size: 0.75rem;
+  font-family: var(--font-mono);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  font-weight: 700;
+  padding: 0.2rem 0.875rem;
+  border-radius: 9999px;
+  border: 1px solid color-mix(in srgb, var(--ctp-blue) 30%, transparent);
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+  background: color-mix(in srgb, var(--ctp-blue) 15%, transparent);
+  color: var(--ctp-blue);
+}
+
+/* back btn — uses Button ghost + className override */
+.scenario-back-btn {
+  font-size: 0.75rem;
+  font-family: var(--font-mono);
+  color: var(--ctp-subtext0);
+  padding: 0.2rem 0.75rem;
+  border-radius: 0.5rem;
+  border: 1px solid transparent;
+  background: transparent;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.scenario-back-btn:hover {
+  color: var(--ctp-text);
+  border-color: color-mix(in srgb, var(--border, var(--ctp-overlay0)) 60%, transparent);
+  background: color-mix(in srgb, var(--ctp-surface0) 40%, transparent);
+}
+
+.scenario-decision-prompt {
+  color: var(--ctp-text);
+  line-height: 1.4;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  font-size: 1.125rem;
+  font-family: var(--font-display);
+  margin: 0;
+}
+
+/* ─── Choices ─────────────────────────────────────────────────── */
+
 .scenario-choices {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 0.875rem;
 }
 
 .scenario-choice {
   display: flex;
-  align-items: flex-start;
-  gap: 14px;
-  padding: 14px 18px;
-  border-radius: 12px;
-  background: var(--ctp-base);
-  border: 1px solid var(--border);
-  cursor: pointer;
-  transition: all 0.2s ease;
+  align-items: center;
+  gap: 1rem;
+  width: 100%;
   text-align: left;
+  padding: 1rem;
+  border-radius: 0.75rem;
+  border: 1px solid color-mix(in srgb, var(--border, var(--ctp-overlay0)) 80%, transparent);
+  transition: all 0.2s ease;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+  background-color: color-mix(in srgb, var(--ctp-base) 90%, transparent);
+  box-shadow: 0 3px 14px rgba(0, 0, 0, 0.08);
 }
 
 .scenario-choice:hover {
-  border-color: var(--primary);
-  background: color-mix(in srgb, var(--primary) 8%, var(--ctp-base));
-  transform: translateX(3px);
+  transform: translateX(4px);
+  border-color: color-mix(in srgb, var(--ctp-blue) 60%, transparent);
+  background-color: color-mix(in srgb, var(--ctp-surface0) 40%, var(--ctp-base));
+  box-shadow: 0 4px 20px color-mix(in srgb, var(--ctp-blue) 15%, transparent);
 }
 
 .scenario-choice-badge {
+  width: 1.75rem;
+  height: 1.75rem;
+  flex-shrink: 0;
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 28px;
-  height: 28px;
-  border-radius: 8px;
-  background: var(--ctp-surface0);
-  color: var(--ctp-subtext0);
+  border-radius: 0.5rem;
+  font-size: 0.75rem;
   font-family: var(--font-mono);
-  font-size: 13px;
   font-weight: 700;
-  flex-shrink: 0;
+  border: 1px solid color-mix(in srgb, var(--ctp-overlay0) 30%, transparent);
+  transition: all 0.15s ease;
+  background: color-mix(in srgb, var(--ctp-surface0) 80%, transparent);
+  color: var(--ctp-subtext0);
 }
 
-.scenario-choice-content {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-  flex: 1;
+.scenario-choice:hover .scenario-choice-badge {
+  background: var(--ctp-blue);
+  color: var(--ctp-crust);
+  border-color: var(--ctp-blue);
 }
 
 .scenario-choice-text {
-  font-size: 14.5px;
-  font-weight: 600;
+  flex: 1;
+  font-size: 0.9rem;
   color: var(--ctp-text);
+  line-height: 1.5;
+  font-weight: 600;
 }
 
-.scenario-choice-desc {
-  font-size: 13px;
-  color: var(--ctp-subtext0);
-  line-height: 1.45;
+.scenario-choice-arrow {
+  width: 1rem;
+  height: 1rem;
+  flex-shrink: 0;
+  color: var(--ctp-overlay0);
+  transition: all 0.2s ease;
+  margin-left: auto;
 }
 
-/* Outcome Card & Rating Badges */
+.scenario-choice:hover .scenario-choice-arrow {
+  color: var(--ctp-blue);
+  transform: translateX(4px);
+}
+
+/* ─── Outcome display ─────────────────────────────────────────── */
+
 .scenario-outcome {
-  margin-top: 8px;
+  border-radius: 1rem;
+  overflow: hidden;
+  position: relative;
 }
 
 .scenario-outcome-card {
-  background: var(--ctp-crust);
-  border: 1px solid var(--border);
-  border-radius: 16px;
-  padding: 24px;
+  padding: 1.75rem;
+  border-radius: 1rem;
+  border: 1px solid transparent; /* border color set via inline style */
+  backdrop-filter: blur(12px);
   display: flex;
   flex-direction: column;
-  gap: 18px;
+  gap: 1.5rem;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 12px 40px -8px rgba(0, 0, 0, 0.2);
 }
 
 .scenario-outcome-header {
   display: flex;
   align-items: center;
-  gap: 10px;
-  border-bottom: 1px solid var(--border);
-  padding-bottom: 12px;
+  gap: 0.75rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid color-mix(in srgb, var(--border, var(--ctp-overlay0)) 50%, transparent);
 }
 
 .scenario-outcome-icon {
-  width: 20px;
-  height: 20px;
+  width: 1.5rem;
+  height: 1.5rem;
+  flex-shrink: 0;
+  /* color comes from the parent via inline styles or inherited ctp vars */
 }
 
 .scenario-outcome-title {
-  margin: 0;
-  font-size: 16px;
+  font-size: 0.75rem;
+  font-family: var(--font-mono);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
   font-weight: 700;
   color: var(--ctp-text);
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
+  margin: 0;
 }
 
+/* Rating badge — colors set via inline styles in component */
 .scenario-rating-badge {
   margin-left: auto;
-  font-family: var(--font-mono);
-  font-size: 11px;
-  font-weight: 700;
-  padding: 3px 10px;
+  padding: 0.2rem 0.875rem;
   border-radius: 9999px;
+  font-size: 0.7rem;
+  font-family: var(--font-mono);
+  font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: 0.05em;
+  letter-spacing: 0.08em;
 }
 
 .scenario-outcome-body {
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 1rem;
 }
 
 .scenario-outcome-block {
+  padding: 1rem;
+  border-radius: 0.75rem;
+  border: 1px solid color-mix(in srgb, var(--border, var(--ctp-overlay0)) 60%, transparent);
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 0.5rem;
+  background-color: color-mix(in srgb, var(--ctp-mantle) 60%, transparent);
 }
 
 .scenario-outcome-block-label {
+  font-size: 0.7rem;
   font-family: var(--font-mono);
-  font-size: 11.5px;
-  font-weight: 700;
-  color: var(--primary);
   text-transform: uppercase;
-  letter-spacing: 0.05em;
+  letter-spacing: 0.1em;
+  font-weight: 700;
+  color: var(--ctp-subtext0);
 }
 
 .scenario-outcome-block-text {
+  color: var(--ctp-text);
+  line-height: 1.65;
+  font-size: 0.9rem;
   margin: 0;
-  font-size: 13.5px;
-  color: var(--ctp-subtext0);
-  line-height: 1.5;
 }
 
 .scenario-outcome-footer {
+  padding-top: 1rem;
   display: flex;
-  justify-content: flex-end;
-  border-top: 1px solid var(--border);
-  padding-top: 14px;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 1rem;
+  border-top: 1px solid color-mix(in srgb, var(--border, var(--ctp-overlay0)) 50%, transparent);
 }
 
-.scenario-reset-btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
+/* ─── Responsive ──────────────────────────────────────────────── */
+
+@media (max-width: 640px) {
+  .scenario-choice {
+    padding: 0.875rem;
+    gap: 0.75rem;
+  }
+
+  .scenario-intro-card,
+  .scenario-decision,
+  .scenario-outcome-card {
+    padding: 1.25rem;
+  }
 }
