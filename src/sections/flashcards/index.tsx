@@ -170,7 +170,7 @@ export default function FlashcardDeck({ title, terms = [] }: FlashcardDeckProps)
         </Button>
 
         {/* Outer 3D Perspective Canvas */}
-        <div className="relative w-full max-w-full sm:max-w-md md:max-w-3xl h-[480px] md:h-[540px] perspective-1000 flex-1">
+        <div className="relative w-full max-w-full h-[480px] md:h-[540px] perspective-1000 flex-1">
           
           {/* Layered Deck Stack Background Cards */}
           <div className="absolute inset-0 bg-card border border-border translate-x-3 translate-y-3 rounded-lg opacity-30 -z-20 pointer-events-none transition-all duration-300"></div>
