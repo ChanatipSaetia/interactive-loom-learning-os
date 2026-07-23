@@ -296,7 +296,7 @@ describe('VisualFormEditor', () => {
 
     expect(screen.getByTestId('tradeoff-sandbox-form-editor')).toBeInTheDocument()
     expect(screen.getByTestId('to-sub-tabs')).toBeInTheDocument()
-    expect(screen.getByTestId('tc-scenario-0')).toBeInTheDocument()
+    expect(screen.getByTestId('to-scenario-0')).toBeInTheDocument()
     expect(screen.getByTestId('tradeoff-add-scenario')).toBeInTheDocument()
 
     // Test guide button
