@@ -541,6 +541,43 @@
   letter-spacing: 0.05em;
 }
 
+.editor-type-selector-bar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  background-color: color-mix(in srgb, var(--ctp-mantle) 80%, var(--card));
+  border-bottom: 1px solid var(--border);
+}
+
+.editor-type-label {
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--ctp-subtext0);
+  white-space: nowrap;
+}
+
+.editor-type-select {
+  flex: 1;
+  padding: 6px 10px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background-color: var(--card);
+  color: var(--ctp-text);
+  font-size: 12.5px;
+  font-weight: 500;
+  cursor: pointer;
+  outline: none;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.editor-type-select:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--primary) 20%, transparent);
+}
+
 /* =============================================
     Editor Tab Bar
     ============================================= */

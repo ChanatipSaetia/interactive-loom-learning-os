@@ -738,6 +738,20 @@ describe('EditorPanel', () => {
     expect(mockProps.onDownload).toHaveBeenCalled()
   })
 
+  it('renders section type selector dropdown and converts section type on change', () => {
+    render(<EditorPanel {...mockProps} />)
+
+    const typeSelect = screen.getByTestId('editor-type-select') as HTMLSelectElement
+    expect(typeSelect).toBeInTheDocument()
+    expect(typeSelect.value).toBe('text')
+
+    fireEvent.change(typeSelect, { target: { value: 'flashcards' } })
+
+    expect(mockProps.onVisualFormChange).toHaveBeenCalledWith(
+      expect.objectContaining({ type: 'flashcards' })
+    )
+  })
+
   it('shows saving text when isSaving is true', () => {
     render(<EditorPanel {...mockProps} isDirty={true} isSaving={true} />)
 
