@@ -1,6 +1,6 @@
-# Loom Sections CDN Library
+# Loom Sections CDN Library (v1.4.0)
 
-Standalone React component library for rendering interactive learning sections from JSON data. Load via CDN, provide OKF JSON, get rendered sections.
+Standalone React component library for rendering interactive learning sections from JSON data. Load via CDN, provide OKF JSON, get rendered sections with native top navigation banner, audio controls, and animated theme switcher.
 
 ## Quick Start
 
@@ -11,24 +11,13 @@ Standalone React component library for rendering interactive learning sections f
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>My Learning Page</title>
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/loom-learning-sections@1.3.2/loom-sections.css">
-  <style>
-    /* Center the container and add padding */
-    #loom-root {
-      max-width: 860px;
-      margin: 0 auto;
-      padding: 16px;
-    }
-  </style>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/loom-learning-sections@1.4.0/loom-sections.css">
 </head>
 <body>
-  <!-- Theme selector widget mounts here -->
-  <div id="theme-picker" style="max-width: 860px; margin: 16px auto; display: flex; justify-content: flex-end;"></div>
-  
   <!-- Container where Loom Sections will render -->
   <div id="loom-root"></div>
 
-  <script src="https://cdn.jsdelivr.net/npm/loom-learning-sections@1.3.2/loom-sections.umd.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/loom-learning-sections@1.4.0/loom-sections.umd.js"></script>
   <script>
     const okfSections = [
       {
@@ -53,18 +42,17 @@ Standalone React component library for rendering interactive learning sections f
       }
     ];
 
-    // 1. Render sections
+    // Render sections with header banner, audio toggle, and main web theme switcher enabled
     LoomSections.render(document.getElementById("loom-root"), okfSections, {
       title: "My Learning Topic",
-      theme: "frappe"
+      theme: "frappe",
+      header: {
+        brandTitle: "Learning OS",
+        showAudioToggle: true,
+        showThemePicker: true,
+        statusBadge: "⚡ Live"
+      }
     });
-
-    // 2. Render theme selector
-    LoomSections.renderThemeSelector(
-      document.getElementById("theme-picker"),
-      document.getElementById("loom-root"),
-      { position: "inline" }
-    );
   </script>
 </body>
 </html>
@@ -80,20 +68,25 @@ Render sections into a DOM container.
 |---|---|---|
 | `container` | `HTMLElement` | DOM element to render into |
 | `sections` | `SectionConfig[]` | Array of section configurations |
-| `options` | `RenderOptions` | Optional — title, theme (see [RenderOptions](#renderoptions)) |
+| `options` | `RenderOptions` | Optional — title, theme, header, editable (see [RenderOptions](#renderoptions)) |
 
 ```javascript
 LoomSections.render(document.getElementById("root"), sections, {
   title: "My Learning Topic",
   theme: "frappe",
+  header: {
+    brandTitle: "Learning OS",
+    showAudioToggle: true,
+    showThemePicker: true
+  }
 });
 ```
 
 Returns a cleanup function. Call it to unmount:
 
 ```javascript
-const cleanup = LoomSections.render(el, sections, { theme: "mocha" });
-cleanup(); // unmounts React root and removes injected theme styles
+const cleanup = LoomSections.render(el, sections, { theme: "medicare" });
+cleanup(); // unmounts React root
 ```
 
 ### `RenderOptions`
@@ -102,67 +95,42 @@ cleanup(); // unmounts React root and removes injected theme styles
 interface RenderOptions {
   title?: string
   theme?: BuiltInTheme | Record<string, string>
+  editable?: boolean
+  topicId?: string
+  bundle?: OKFBundled
+  header?: boolean | HeaderOptions
 }
 
-type BuiltInTheme = 'frappe' | 'latte' | 'mocha' | 'macchiato'
+interface HeaderOptions {
+  brandTitle?: string      // Top banner brand text (default: 'Learning OS')
+  showAudioToggle?: boolean // Sound FX toggle button (default: true)
+  showThemePicker?: boolean // Animated theme switcher (default: true)
+  statusBadge?: string     // Optional status pill badge (e.g. '⚡ Live')
+}
+
+type BuiltInTheme = 'frappe' | 'medicare' | 'recipebook' | 'pinkcatboo' | 'eink' | string
 ```
 
 | Field | Type | Description |
 |---|---|---|
-| `title` | `string` | When provided, the library renders a styled gradient header above the sections containing this text. |
-| `theme` | `BuiltInTheme \| Record<string, string>` | Preset name or partial CSS token map. Applied as a scoped `<style>` tag tied to the container element. |
+| `title` | `string` | When provided, the library renders a styled page header above the sections containing this text. |
+| `theme` | `BuiltInTheme` | Theme identifier matching the main web application (`frappe`, `medicare`, `recipebook`, `pinkcatboo`, `eink`). |
+| `header` | `boolean \| HeaderOptions` | Embeds the main website's top navigation bar containing audio toggle, theme switcher, and container shell. |
 
 ---
 
-### `LoomSections.renderThemeSelector(widgetContainer, sectionsContainer, options?)`
+### `LoomSections.renderThemeSelector(widgetContainer, sectionsContainer?, options?)`
 
-Mount a floating colour-swatch picker that lets users switch between themes live.
-Swapping a theme only replaces the scoped `<style>` tag — no React remount.
+Mount the main website's animated `<ThemeToggle />` button directly into a target DOM container.
 
 | Parameter | Type | Description |
 |---|---|---|
-| `widgetContainer` | `HTMLElement` | DOM element to mount the picker into |
-| `sectionsContainer` | `HTMLElement` | The **same** container passed to `render()` — the picker retargets its theme here |
-| `options` | `ThemeSelectorOptions` | Optional — which themes to show, where to position the widget |
+| `widgetContainer` | `HTMLElement` | DOM element to mount the theme toggle into |
 
 ```javascript
-// 1. Render sections first
-LoomSections.render(document.getElementById("loom-root"), sections, {
-  title: "My Learning Topic",
-  theme: "frappe",
-});
-
-// 2. Mount the theme picker inline next to the status badge
-LoomSections.renderThemeSelector(
-  document.getElementById("theme-picker"),
-  document.getElementById("loom-root"),
-  { position: "inline" }   // or "top-right" | "top-left" | "bottom-right" | "bottom-left"
-);
+// Mount theme selector widget
+LoomSections.renderThemeSelector(document.getElementById("theme-picker"));
 ```
-
-Returns a cleanup function that unmounts the widget:
-
-```javascript
-const cleanupPicker = LoomSections.renderThemeSelector(pickerEl, rootEl);
-cleanupPicker(); // unmounts only the picker; sections remain
-```
-
-### `ThemeSelectorOptions`
-
-```typescript
-interface ThemeSelectorOptions {
-  themes?: Array<
-    BuiltInTheme |
-    { name: string; label: string; tokens: Record<string, string> }
-  >
-  position?: 'top-right' | 'top-left' | 'bottom-right' | 'bottom-left' | 'inline'
-}
-```
-
-| Field | Type | Description |
-|---|---|---|
-| `themes` | `Array<…>` | Which themes to show. Default: all four built-in Catppuccin flavours. Custom entries use `name`/`label`/`tokens`. |
-| `position` | `string` | `'inline'` renders inside the container; other values use `position: fixed` at the named viewport corner. Default: `'top-right'`. |
 
 ---
 

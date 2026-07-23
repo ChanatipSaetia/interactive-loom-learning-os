@@ -59,6 +59,34 @@
 }
 
 /* =============================================
+   Status badge
+============================================= */
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  font-family: var(--font-mono, monospace);
+  font-weight: 600;
+  padding: 4px 8px;
+  border-radius: 4px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.status-badge.success {
+  background: rgba(166, 209, 137, 0.12);
+  color: var(--ctp-green, #a6d189);
+  border: 1px solid rgba(166, 209, 137, 0.25);
+}
+
+.status-badge.warning {
+  background: rgba(229, 200, 144, 0.12);
+  color: var(--ctp-yellow, #e5c890);
+  border: 1px solid rgba(229, 200, 144, 0.25);
+}
+
+/* =============================================
    Main content
 ============================================= */
 .main-content {
