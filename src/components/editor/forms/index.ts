@@ -11,4 +11,6 @@ export { IntroFormEditor } from './IntroFormEditor'
 export { TextFormEditor } from './TextFormEditor'
 export { BulletsFormEditor } from './BulletsFormEditor'
 export { TaxonomyBrowserFormEditor } from './TaxonomyBrowserFormEditor'
+export { ReflectionSequenceFormEditor } from './ReflectionSequenceFormEditor'
+export { ReflectionTemplateFormEditor } from './ReflectionTemplateFormEditor'
 

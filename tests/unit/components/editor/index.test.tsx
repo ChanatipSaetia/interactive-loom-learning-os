@@ -78,6 +78,53 @@ describe('VisualFormEditor', () => {
     expect(screen.getByTestId('taxonomy-help-modal')).toBeInTheDocument()
   })
 
+  it('renders reflection sequence form editor for reflection-sequence type', () => {
+    const mockData: OKFSectionData = {
+      type: 'reflection-sequence',
+      challenges: [
+        {
+          prompt: 'Order steps:',
+          items: [{ id: 's1', text: 'Step 1' }],
+          solution: ['s1'],
+        },
+      ],
+    }
+    const onChange = vi.fn()
+    render(<VisualFormEditor data={mockData} onChange={onChange} />)
+
+    expect(screen.getByTestId('reflection-sequence-form-editor')).toBeInTheDocument()
+    expect(screen.getByTestId('sequence-challenge-card-0')).toBeInTheDocument()
+    expect(screen.getByTestId('reflection-sequence-add-challenge')).toBeInTheDocument()
+
+    // Test guide modal
+    fireEvent.click(screen.getByTestId('reflection-sequence-editor-help-btn'))
+    expect(screen.getByTestId('reflection-sequence-help-modal')).toBeInTheDocument()
+  })
+
+  it('renders reflection template form editor for reflection-template type', () => {
+    const mockData: OKFSectionData = {
+      type: 'reflection-template',
+      challenges: [
+        {
+          prompt: 'Fill blanks:',
+          template: 'Uses {zone-1}',
+          chips: [{ id: 'c1', text: 'Chip 1' }],
+          solution: { 'zone-1': 'c1' },
+        },
+      ],
+    }
+    const onChange = vi.fn()
+    render(<VisualFormEditor data={mockData} onChange={onChange} />)
+
+    expect(screen.getByTestId('reflection-template-form-editor')).toBeInTheDocument()
+    expect(screen.getByTestId('template-challenge-card-0')).toBeInTheDocument()
+    expect(screen.getByTestId('reflection-template-add-challenge')).toBeInTheDocument()
+
+    // Test guide modal
+    fireEvent.click(screen.getByTestId('reflection-template-editor-help-btn'))
+    expect(screen.getByTestId('reflection-template-help-modal')).toBeInTheDocument()
+  })
+
   it('renders quiz form editor for quiz type', () => {
     const quizData: OKFSectionData = {
       type: 'quiz',

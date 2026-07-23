@@ -12,6 +12,8 @@ import {
   TextFormEditor,
   BulletsFormEditor,
   TaxonomyBrowserFormEditor,
+  ReflectionSequenceFormEditor,
+  ReflectionTemplateFormEditor,
   DynamicSchemaForm,
 } from './forms'
 
@@ -71,6 +73,14 @@ export function VisualFormEditor({ data, onChange }: VisualFormEditorProps) {
 
   if (isType(data, 'taxonomy-browser')) {
     return <TaxonomyBrowserFormEditor data={data} onChange={onChange} />
+  }
+
+  if (isType(data, 'reflection-sequence')) {
+    return <ReflectionSequenceFormEditor data={data} onChange={onChange} />
+  }
+
+  if (isType(data, 'reflection-template')) {
+    return <ReflectionTemplateFormEditor data={data} onChange={onChange} />
   }
 
   return (
