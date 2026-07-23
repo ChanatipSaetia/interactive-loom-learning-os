@@ -122,8 +122,8 @@ You do not need to clone this repository to render interactive learning sections
 ### Load CDN Assets
 Include the CSS and UMD Javascript files directly in your HTML:
 ```html
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/loom-learning-sections@1.2.0/loom-sections.css">
-<script src="https://cdn.jsdelivr.net/npm/loom-learning-sections@1.2.0/loom-sections.umd.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/loom-learning-sections@1.3.0/loom-sections.css">
+<script src="https://cdn.jsdelivr.net/npm/loom-learning-sections@1.3.0/loom-sections.umd.js"></script>
 ```
 
 For setup directions (including Local JSON loading, CORS handling, and code templates), check [docs/cdn-library.md](docs/cdn-library.md).
@@ -154,7 +154,7 @@ For a MORE COMPREHENSIVE build, also pull the per-section-type reference docs an
 https://github.com/ChanatipSaetia/interactive-loom-learning-os/tree/master/docs/sections
 — this includes docs/sections/README.md plus one .md per section type (text, bullets, concept-map, flashcards, taxonomy-browser, flowchart, reflection-sequence, quiz, tradeoff-sandbox, formula-sandbox, reflection-template, scenario, decision-tree, image-gallery), and a full worked example at public/okf/poe2-flicker-monk/ showing real field usage, image-gallery sourcing, and multi-file taxonomy/tradeoff sections.
 
-CDN version: pin to loom-learning-sections@1.2.0 for the stylesheet and UMD script (both <link> and <script src>) unless I specify a different version.
+CDN version: pin to loom-learning-sections@1.3.0 for the stylesheet and UMD script (both <link> and <script src>) unless I specify a different version.
 
 Then generate the complete curriculum structure matching the specs.
 ```

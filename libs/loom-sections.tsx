@@ -1,15 +1,24 @@
 import { createRoot, type Root } from 'react-dom/client'
-import React, { Suspense, useMemo, type ComponentType } from 'react'
+import React, { Suspense, useMemo, useEffect, type ComponentType } from 'react'
 import type { SectionConfig } from '../src/core/registry'
 import { loadOKFBundle } from '../src/core/okf/reader'
 import { bundleToSections } from '../src/core/okf/sections'
 import { Registry } from '../src/core/registry/generic-registry'
-import { HUDProvider } from '../src/core/context/HUDContext'
+import { HUDProvider, useHUD } from '../src/core/context/HUDContext'
 import { ProgressProvider } from '../src/core/progress/context'
+import { EditorProvider, useEditor, useEditorSafe } from '../src/core/context/EditorContext'
+import { EditSectionToggle } from '../src/components/layout/EditSectionToggle'
+import { SplitPaneLayout } from '../src/components/layout/SplitPaneLayout'
+import { EditorPanel } from '../src/components/editor/EditorPanel'
+import { useSectionEditorBuffer } from '../src/core/hooks/useSectionEditorBuffer'
+import { ToastProvider, useToast } from '../src/components/ui/Toast'
+import { X } from 'lucide-react'
+import type { OKFBundled } from '../src/core/okf/types'
 
 // Import section CSS
 import '../src/styles/global.css'
 import '../src/components/layout/layout.css'
+import '../src/sections/intro/intro.css'
 import '../src/sections/text/text.css'
 import '../src/sections/bullets/bullets.css'
 import '../src/sections/flowchart/flowchart.css'
@@ -25,6 +34,7 @@ import '../src/sections/reflection-template/reflection-template.css'
 import { deriveSchema } from '../src/sections/flowchart/abstract-flow/derive'
 
 // Import all section components directly
+import IntroSection from '../src/sections/intro'
 import TextSection from '../src/sections/text'
 import BulletsSection from '../src/sections/bullets'
 import FlowchartSection from '../src/sections/flowchart'
@@ -46,6 +56,7 @@ const registry = new Registry<ComponentType<any>>()
 
 // Auto-register all built-in sections
 const SECTIONS: Record<string, ComponentType<any>> = {
+  intro: IntroSection,
   text: TextSection,
   bullets: BulletsSection,
   flowchart: FlowchartSection,
@@ -348,7 +359,7 @@ const THEMES: Record<BuiltInTheme, Record<string, string>> = {
 // --- Render options ---
 
 /**
- * Optional configuration passed as the third argument to `LoomSections.render()`.
+ * Optional configuration passed to `LoomSections.render()` or `loadAndRenderOKF()`.
  */
 export interface RenderOptions {
   /**
@@ -358,24 +369,26 @@ export interface RenderOptions {
   title?: string
   /**
    * Theme to apply.
-   * - A built-in preset name: `"frappe"` | `"latte"` | `"mocha"` | `"macchiato"`
-   * - Or a partial record of CSS custom property overrides, e.g.
-   *   `{ "--ctp-base": "#1e1e2e", "--ctp-blue": "#89b4fa" }`
-   *
-   * The library injects a `<style>` tag scoped to the render container so
-   * multiple independent `render()` calls on the same page stay isolated.
    */
   theme?: BuiltInTheme | Record<string, string>
+  /**
+   * Enable OKF section editing (default: true).
+   */
+  editable?: boolean
+  /**
+   * Topic ID for disk save API calls (default: '.').
+   */
+  topicId?: string
+  /**
+   * Raw OKF bundle data.
+   */
+  bundle?: OKFBundled
 }
 
 // --- Theme injection helpers ---
 
 let _themeCounter = 0
 
-/**
- * Ensure the container has a unique ID we can use as a CSS scope anchor.
- * Returns the (possibly newly assigned) ID.
- */
 function ensureContainerId(container: HTMLElement): string {
   if (!container.id) {
     container.id = `loom-root-${++_themeCounter}`
@@ -383,9 +396,6 @@ function ensureContainerId(container: HTMLElement): string {
   return container.id
 }
 
-/**
- * Resolve a theme option to a flat token map.
- */
 function resolveTokens(theme: BuiltInTheme | Record<string, string>): Record<string, string> {
   if (typeof theme === 'string') {
     return THEMES[theme] ?? {}
@@ -393,11 +403,6 @@ function resolveTokens(theme: BuiltInTheme | Record<string, string>): Record<str
   return theme
 }
 
-/**
- * Inject a `<style>` tag scoped to `#containerId` and return a cleanup fn.
- * Also automatically sets `background-color`, `color`, and `--loom-section-bg`
- * from the token map so the container visually re-skins (not just CSS vars).
- */
 function injectThemeStyle(containerId: string, tokens: Record<string, string>): () => void {
   const styleId = `loom-theme-${containerId}`
   document.getElementById(styleId)?.remove()
@@ -409,8 +414,6 @@ function injectThemeStyle(containerId: string, tokens: Record<string, string>): 
     .map(([prop, value]) => `  ${prop}: ${value};`)
     .join('\n')
 
-  // Extra visual declarations so the container itself re-skins,
-  // and sticky section title backgrounds match the theme background.
   const extraDeclarations = [
     base ? `  background-color: ${base};` : '',
     text ? `  color: ${text};` : '',
@@ -427,11 +430,6 @@ function injectThemeStyle(containerId: string, tokens: Record<string, string>): 
   }
 }
 
-/**
- * Inject baseline CDN styles (sticky offset, default bg) so a theme `<style>`
- * injected at the same `#id` specificity can override them.
- * Also configures the centered max-width (860px) and default responsive padding.
- */
 function injectBaselineStyle(containerId: string): () => void {
   const styleId = `loom-baseline-${containerId}`
   document.getElementById(styleId)?.remove()
@@ -491,7 +489,7 @@ function PageHeader({ title }: { title: string }) {
 
 // --- Section renderer ---
 
-function SectionRenderer({ config }: { config: SectionConfig }) {
+function SectionRenderer({ config, sectionIndex }: { config: SectionConfig; sectionIndex?: number }) {
   const Component = useMemo(() => registry.get(config.type), [config.type])
   if (!Component) {
     return (
@@ -519,24 +517,168 @@ function SectionRenderer({ config }: { config: SectionConfig }) {
   }, [config.type, config.props])
 
   return (
-    <Suspense fallback={<div className="section-loading">Loading section...</div>}>
-      <Component {...adaptedProps} />
-    </Suspense>
+    <div className="section-wrapper" data-section-type={config.type} data-section-index={sectionIndex ?? 0}>
+      <Suspense fallback={<div className="section-loading">Loading section...</div>}>
+        <Component sectionIndex={sectionIndex ?? 0} {...adaptedProps} />
+      </Suspense>
+    </div>
   )
 }
 
-// --- Sections container ---
+// --- HUD Drawer ---
 
-function SectionsContainer({ sections, title }: { sections: SectionConfig[]; title?: string }) {
+function HUDDrawer() {
+  const { isOpen, title, body, closeHUD } = useHUD()
+
   return (
-    <>
+    <div className={`hud-drawer ${isOpen ? 'open' : ''}`} data-testid="hud-drawer">
+      <div className="hud-header">
+        <span className="hud-title">{title}</span>
+        <button className="hud-close" onClick={closeHUD} aria-label="Close details">
+          <X size={18} />
+        </button>
+      </div>
+      <div className="hud-body" dangerouslySetInnerHTML={{ __html: body }} />
+    </div>
+  )
+}
+
+// --- Live Editor Mode View ---
+
+function LivePreviewSection({ config }: { config: SectionConfig }) {
+  const { activeSectionIndex } = useEditor()
+  return (
+    <div className="editor-preview-wrapper" data-testid="editor-preview-wrapper">
+      <SectionRenderer config={config} sectionIndex={activeSectionIndex ?? 0} />
+    </div>
+  )
+}
+
+function EditorModeView({ topicLabel, topicId }: { topicLabel: string; topicId: string }) {
+  const { activeSection, activeSectionIndex } = useEditor()
+  const { showToast } = useToast()
+
+  const {
+    data: editedData,
+    rawText,
+    validationErrors,
+    isDirty,
+    isSaving,
+    setVisualFormField,
+    setRawText,
+    saveToDisk,
+    downloadFiles,
+  } = useSectionEditorBuffer(activeSection)
+
+  useEffect(() => {
+    if (activeSection && editedData) {
+      activeSection.data = editedData
+    }
+  }, [activeSection, editedData])
+
+  const previewConfig = useMemo(() => {
+    if (!activeSection) return null
+    const original = bundleToSections([activeSection])[0]
+    return {
+      type: original.type,
+      props: { ...original.props, ...editedData },
+    }
+  }, [activeSection, editedData])
+
+  const sectionName = useMemo(() => {
+    if (!activeSection) return ''
+    return activeSection.sectionFolder ?? `section-${activeSectionIndex ?? 0}`
+  }, [activeSection, activeSectionIndex])
+
+  const handleSave = async () => {
+    if (!sectionName || !isDirty) return
+    try {
+      await saveToDisk(topicId, sectionName)
+      showToast('success', 'Section saved to disk')
+    } catch (e: unknown) {
+      const msg = e instanceof Error ? e.message : String(e)
+      showToast('error', `Save failed: ${msg}. Downloading files instead...`)
+      downloadFiles()
+    }
+  }
+
+  const handleDownload = () => {
+    downloadFiles()
+  }
+
+  if (!activeSection || !previewConfig) {
+    return null
+  }
+
+  return (
+    <div>
+      <div className="editor-mode-header">
+        <h2 className="topic-page-title">{topicLabel}</h2>
+        <EditSectionToggle />
+      </div>
+      <SplitPaneLayout
+        leftPanel={
+          <EditorPanel
+            sectionData={editedData}
+            validationErrors={validationErrors}
+            onVisualFormChange={setVisualFormField}
+            onRawTextChange={setRawText}
+            rawText={rawText}
+            isDirty={isDirty}
+            isSaving={isSaving}
+            onSave={handleSave}
+            onDownload={handleDownload}
+          />
+        }
+        rightPanel={<LivePreviewSection config={previewConfig} />}
+      />
+      <HUDDrawer />
+    </div>
+  )
+}
+
+// --- Main App Content ---
+
+function LoomAppContent({
+  sections,
+  title,
+  topicId,
+  editable,
+}: {
+  sections: SectionConfig[]
+  title?: string
+  topicId: string
+  editable: boolean
+}) {
+  const editor = useEditorSafe()
+  const editMode = editor?.editMode ?? false
+  const bundle = editor?.bundle
+
+  const displaySections = useMemo(() => {
+    if (bundle && bundle.length > 0) {
+      return bundleToSections(bundle)
+    }
+    return sections
+  }, [bundle, sections])
+
+  if (editable && editMode) {
+    return (
+      <div className="topic-page editor-mode">
+        <EditorModeView topicLabel={title || 'Section Editor'} topicId={topicId} />
+      </div>
+    )
+  }
+
+  return (
+    <div className="topic-page">
       {title && <PageHeader title={title} />}
       <div className="loom-sections-container">
-        {sections.map((section, idx) => (
-          <SectionRenderer key={`${section.type}-${idx}`} config={section} />
+        {displaySections.map((section, idx) => (
+          <SectionRenderer key={`${section.type}-${idx}`} config={section} sectionIndex={idx} />
         ))}
       </div>
-    </>
+      <HUDDrawer />
+    </div>
   )
 }
 
@@ -548,19 +690,15 @@ function SectionsContainer({ sections, title }: { sections: SectionConfig[]; tit
 export interface ThemeSelectorOptions {
   /**
    * Which themes to list. Defaults to all four built-in Catppuccin flavours.
-   * Each entry is either a preset name or a custom `{ name, label, tokens }` object.
    */
   themes?: Array<BuiltInTheme | { name: string; label: string; tokens: Record<string, string> }>
   /**
    * Where to anchor the floating widget on the page.
-   * - `'inline'` — renders in-flow inside `widgetContainer` (use for custom placement).
-   * - All other values position the widget `position: fixed` at a corner of the viewport.
    * @default 'top-right'
    */
   position?: 'top-right' | 'top-left' | 'bottom-right' | 'bottom-left' | 'inline'
 }
 
-/** Preset metadata displayed in the swatch panel. */
 const THEME_META: Record<BuiltInTheme, { label: string; swatch: string; icon: string }> = {
   frappe:     { label: 'Catppuccin', swatch: '#303446', icon: '🎨' },
   medicare:   { label: 'MediCare+',  swatch: '#fafcff', icon: '🌙' },
@@ -576,7 +714,6 @@ type ThemeEntry = { name: string; label: string; icon: string; swatch: string; t
 function resolveThemeEntries(
   raw?: ThemeSelectorOptions['themes'],
 ): ThemeEntry[] {
-  // Default: the 4 themes that match the main Loom website
   const list = raw ?? (['frappe', 'medicare', 'recipebook', 'pinkcatboo'] as BuiltInTheme[])
   return list.map((t) => {
     if (typeof t === 'string') {
@@ -622,7 +759,6 @@ function ThemeSelectorWidget({
     setActive(entry.name)
     const containerId = ensureContainerId(sectionsContainer)
     
-    // Set data-theme on html and the container so all variables resolve properly
     if (entry.name && entry.name !== 'frappe') {
       document.documentElement.setAttribute('data-theme', entry.name)
       sectionsContainer.setAttribute('data-theme', entry.name)
@@ -652,7 +788,6 @@ function ThemeSelectorWidget({
       }}
       title="Switch theme"
     >
-      {/* Active theme label */}
       <span
         style={{
           fontSize: '12px',
@@ -671,7 +806,6 @@ function ThemeSelectorWidget({
       <span style={{ width: '1px', height: '14px', background: 'rgba(198,208,245,0.15)', margin: '0 4px', flexShrink: 0 }} />
       {entries.map((entry) => {
         const isActive = entry.name === active
-        // Use a ring on light swatches for visibility against light page backgrounds
         const isLight = entry.swatch.startsWith('#f') || entry.swatch.startsWith('#e')
         return (
           <button
@@ -706,6 +840,7 @@ function ThemeSelectorWidget({
 
 interface LoomSectionsAPI {
   render: (container: HTMLElement, sections: SectionConfig[], options?: RenderOptions) => () => void
+  renderOKF: (container: HTMLElement, bundle: OKFBundled, options?: RenderOptions) => () => void
   renderThemeSelector: (
     widgetContainer: HTMLElement,
     sectionsContainer: HTMLElement,
@@ -721,10 +856,8 @@ const LoomSections: LoomSectionsAPI = {
     let cleanupBaseline: (() => void) | null = null
     let cleanupTheme: (() => void) | null = null
 
-    // Ensure container has an ID (needed for theme scoping)
     const containerId = ensureContainerId(container)
 
-    // Set data-theme on html and container for built-in themes
     if (options?.theme !== undefined && typeof options.theme === 'string') {
       document.documentElement.setAttribute('data-theme', options.theme)
       container.setAttribute('data-theme', options.theme)
@@ -733,26 +866,41 @@ const LoomSections: LoomSectionsAPI = {
       container.removeAttribute('data-theme')
     }
 
-    // Inject baseline CDN style (--loom-title-sticky-top, --loom-section-bg defaults).
-    // Using a <style> tag (not inline style) so theme injection at the same
-    // #id specificity can override these values.
     cleanupBaseline = injectBaselineStyle(containerId)
 
-    // Inject scoped theme styles — overrides the baseline
     if (options?.theme !== undefined) {
       const tokens = resolveTokens(options.theme)
       cleanupTheme = injectThemeStyle(containerId, tokens)
     }
 
     const title = options?.title
+    const editable = options?.editable ?? true
+    const topicId = options?.topicId ?? '.'
+    const bundleOption = options?.bundle
 
-    const App = () => (
-      <ProgressProvider>
-        <HUDProvider>
-          <SectionsContainer sections={sections} title={title} />
-        </HUDProvider>
-      </ProgressProvider>
-    )
+    const App = () => {
+      const syntheticBundle: OKFBundled = useMemo(() => {
+        if (bundleOption) return bundleOption
+        return sections.map((sec, idx) => ({
+          meta: { type: sec.type, title: (sec.props?.title as string) || sec.type, resource: '.' },
+          data: { type: sec.type, ...sec.props } as any,
+          sectionFolder: `section-${idx}`,
+          sectionBody: '',
+        }))
+      }, [sections])
+
+      return (
+        <ProgressProvider>
+          <HUDProvider>
+            <ToastProvider>
+              <EditorProvider bundle={syntheticBundle}>
+                <LoomAppContent sections={sections} title={title} topicId={topicId} editable={editable} />
+              </EditorProvider>
+            </ToastProvider>
+          </HUDProvider>
+        </ProgressProvider>
+      )
+    }
 
     root = createRoot(container)
     root.render(<App />)
@@ -766,6 +914,15 @@ const LoomSections: LoomSectionsAPI = {
     }
   },
 
+  renderOKF(container: HTMLElement, bundle: OKFBundled, options?: RenderOptions) {
+    const sections = bundleToSections(bundle)
+    return LoomSections.render(container, sections, {
+      ...options,
+      bundle,
+      editable: options?.editable ?? true,
+    })
+  },
+
   renderThemeSelector(
     widgetContainer: HTMLElement,
     sectionsContainer: HTMLElement,
@@ -774,7 +931,6 @@ const LoomSections: LoomSectionsAPI = {
     const entries = resolveThemeEntries(options?.themes)
     const position = options?.position ?? 'top-right'
 
-    // Detect which theme is currently active
     const activeGlobalTheme = document.documentElement.getAttribute('data-theme')
     let initialTheme = activeGlobalTheme ?? 'frappe'
     if (!entries.some(e => e.name === initialTheme)) {
@@ -816,8 +972,11 @@ const LoomSections: LoomSectionsAPI = {
       (window as any).__OKF_BASE_OVERRIDE__ = okfBaseUrl
     }
     const bundle = await loadOKFBundle(topicId)
-    const sections = bundleToSections(bundle)
-    return LoomSections.render(container, sections, options)
+    return LoomSections.renderOKF(container, bundle, {
+      ...options,
+      topicId,
+      editable: options?.editable ?? true,
+    })
   },
 }
 
@@ -829,3 +988,4 @@ export type { BulletItem } from '../src/sections/bullets'
 export type { TradeoffScenario, MetricDef, TradeoffChoice, TradeoffStep, TradeoffProCon } from '../src/sections/tradeoff-sandbox'
 export type { TaxonomyCategory } from '../src/sections/taxonomy-browser'
 export type { WordTerm } from '../src/types'
+

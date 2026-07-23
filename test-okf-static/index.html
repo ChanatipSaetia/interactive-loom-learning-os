@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Loom UMD: Standalone OKF Parser Playground</title>
+  <title>Loom UMD: Standalone OKF Parser & Editor Playground</title>
 
   <!-- Google Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -13,11 +13,11 @@
     href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
     rel="stylesheet">
 
-  <!-- Loom Sections Stylesheet from CDN -->
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/loom-learning-sections@1.2.0/loom-sections.css">
+  <!-- Loom Sections Stylesheet (tries local dist-lib first, falls back to CDN version 1.3.0) -->
+  <link rel="stylesheet" href="../dist-lib/loom-sections.css" onerror="this.onerror=null;this.href='https://cdn.jsdelivr.net/npm/loom-learning-sections@1.3.0/loom-sections.css';">
 
-  <!-- Loom Sections UMD Bundle from CDN -->
-  <script src="https://cdn.jsdelivr.net/npm/loom-learning-sections@1.2.0/loom-sections.umd.js"></script>
+  <!-- Loom Sections UMD Bundle (tries local dist-lib first, falls back to CDN version 1.3.0) -->
+  <script src="../dist-lib/loom-sections.umd.js" onerror="this.onerror=null;this.src='https://cdn.jsdelivr.net/npm/loom-learning-sections@1.3.0/loom-sections.umd.js';"></script>
 
   <style>
     :root {
@@ -91,8 +91,8 @@
 <body>
   <div class="container">
     <header>
-      <h1>Loom Standalone OKF Parser</h1>
-      <p>Verifying UMD loadAndRenderOKF method loading sections dynamically</p>
+      <h1>Loom Standalone OKF Parser & Editor</h1>
+      <p>Verifying UMD loadAndRenderOKF method loading & editing OKF sections dynamically</p>
       <div id="status" class="status-badge">Compiling index...</div>
     </header>
 
@@ -103,23 +103,113 @@
   </div>
 
   <script>
+    // Embedded sample OKF bundle for offline file:// static execution without local web server
+    const SAMPLE_OKF_BUNDLE = [
+      {
+        meta: { type: 'intro', title: 'System Architecture & OKF Overview', resource: '.' },
+        data: {
+          type: 'intro',
+          title: 'System Architecture & OKF Overview',
+          subtitle: 'Interactive learning platform powered by Open Knowledge Format (OKF)',
+          estimatedTime: '10 min',
+          moduleCount: 4,
+          what: { summary: 'An interactive learning platform with animated flowcharts, trade-off sandboxes, taxonomy browsers, and live OKF section editing.' },
+          why: { summary: 'Enables rapid conceptual learning and live content authoring without complex tooling.' },
+          roadmap: ['1. Architectural Concepts', '2. Practice Quiz', '3. Concept Map']
+        },
+        sectionFolder: '01-intro',
+        sectionBody: ''
+      },
+      {
+        meta: { type: 'text', title: 'Core Concepts & Principles', resource: '.' },
+        data: {
+          type: 'text',
+          paragraphs: [
+            'Open Knowledge Format (OKF) separates structural UI presentation from raw learning content.',
+            'Each section can be edited in real time using the Visual Schema Form or Raw YAML text editor tab.'
+          ]
+        },
+        sectionFolder: '02-text',
+        sectionBody: ''
+      },
+      {
+        meta: { type: 'bullets', title: 'Key Features & Capabilities', resource: '.' },
+        data: {
+          type: 'bullets',
+          items: [
+            { text: 'Standalone UMD CDN Bundle: Runs anywhere without npm serve or Node server.' },
+            { text: 'Bi-directional Real-Time Sync: Edits in Visual Form update Raw YAML instantly.' },
+            { text: 'Live Preview Pane: Renders updated component state immediately as you type.' },
+            { text: 'Offline File Downloads: Export section.md and data.yaml files straight from the browser.' }
+          ]
+        },
+        sectionFolder: '03-bullets',
+        sectionBody: ''
+      },
+      {
+        meta: { type: 'quiz', title: 'Knowledge Check Quiz', resource: '.' },
+        data: {
+          type: 'quiz',
+          questions: [
+            {
+              id: 'q1',
+              question: 'Can this static HTML example edit its OKF without running a local web server (npm serve)?',
+              choices: [
+                { id: 'c1', text: 'Yes, it works directly on file:// or static hosting with in-memory rendering and file export.', correct: true, explanation: 'Correct! LoomSections supports direct in-memory bundle rendering and Blob file downloads.' },
+                { id: 'c2', text: 'No, a backend server is strictly required.', correct: false, explanation: 'Incorrect! LoomSections works 100% serverless.' }
+              ],
+              hint: 'Check LoomSections.renderOKF capabilities.'
+            }
+          ]
+        },
+        sectionFolder: '04-quiz',
+        sectionBody: ''
+      },
+      {
+        meta: { type: 'concept-map', title: 'Architecture Concept Map', resource: '.' },
+        data: {
+          type: 'concept-map',
+          nodes: {
+            'okf-spec': { id: 'okf-spec', title: 'OKF Schema Specification', category: 'core' },
+            'umd-bundle': { id: 'umd-bundle', title: 'Standalone UMD Library', category: 'distribution' },
+            'visual-editor': { id: 'visual-editor', title: 'Visual Section Editor', category: 'editor' }
+          },
+          edges: [
+            { from: 'okf-spec', to: 'umd-bundle', label: 'compiled into' },
+            { from: 'umd-bundle', to: 'visual-editor', label: 'powers' }
+          ]
+        },
+        sectionFolder: '05-concept-map',
+        sectionBody: ''
+      }
+    ];
+
     async function loadOKFPlayground() {
       const statusBadge = document.getElementById('status');
       const errorView = document.getElementById('error-view');
+      const container = document.getElementById('loom-root');
 
+      const options = {
+        editable: true,
+        title: 'Interactive OKF Catalog & Visual Editor'
+      };
+
+      // 1. If running locally directly via file:// URL protocol, use inline bundle (no fetch CORS issues)
+      if (window.location.protocol === 'file:') {
+        statusBadge.textContent = 'Loaded Offline OKF Playground (file:// static mode)';
+        LoomSections.renderOKF(container, SAMPLE_OKF_BUNDLE, options);
+        return;
+      }
+
+      // 2. If running via HTTP/HTTPS server, attempt dynamic OKF fetch, falling back to embedded bundle if needed
       try {
         statusBadge.textContent = 'Fetching and rendering OKF Catalog...';
-        // Use the newly exported UMD API: LoomSections.loadAndRenderOKF(container, okfBaseUrl, topicId)
-        await LoomSections.loadAndRenderOKF(document.getElementById('loom-root'), 'okf-data', '.');
-        statusBadge.textContent = 'OKF Playground Loaded Successfully!';
+        await LoomSections.loadAndRenderOKF(container, 'okf-data', '.', options);
+        statusBadge.textContent = 'OKF Playground & Editor Loaded Successfully!';
       } catch (error) {
-        statusBadge.textContent = 'Error loading OKF Playground';
-        statusBadge.style.color = '#e78284';
-        statusBadge.style.borderColor = '#e78284';
-        statusBadge.style.background = 'rgba(231,130,132,0.1)';
-
-        errorView.style.display = 'block';
-        errorView.innerHTML = `<strong>Loader Error:</strong> ${error.message}<br><small>Make sure you serve this directory via a local web server (e.g. <code>npx serve .</code>) to bypass CORS restrictions.</small>`;
+        console.warn('Fetch failed, loading embedded OKF sample bundle:', error);
+        statusBadge.textContent = 'OKF Playground Loaded (Embedded Static Fallback)';
+        LoomSections.renderOKF(container, SAMPLE_OKF_BUNDLE, options);
       }
     }
 
