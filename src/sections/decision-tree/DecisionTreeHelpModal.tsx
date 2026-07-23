@@ -1,6 +1,6 @@
 import { useEffect } from 'react'
-import { X, HelpCircle, GitBranch, Share2 } from 'lucide-react'
-import './decision-tree.css'
+import { X, HelpCircle, GitBranch, CheckSquare, Share2, Plus } from 'lucide-react'
+import '../../sections/flowchart/flowchart.css'
 
 interface DecisionTreeHelpModalProps {
   isOpen: boolean
@@ -11,9 +11,7 @@ export function DecisionTreeHelpModal({ isOpen, onClose }: DecisionTreeHelpModal
   useEffect(() => {
     if (!isOpen) return
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') {
-        onClose()
-      }
+      if (e.key === 'Escape') onClose()
     }
     document.addEventListener('keydown', handleKeyDown)
     return () => document.removeEventListener('keydown', handleKeyDown)
@@ -23,27 +21,27 @@ export function DecisionTreeHelpModal({ isOpen, onClose }: DecisionTreeHelpModal
 
   return (
     <div
-      className="dt-help-overlay"
+      className="flowchart-help-overlay"
       onClick={onClose}
       data-testid="dt-help-overlay"
     >
       <div
-        className="dt-help-modal"
+        className="flowchart-help-modal"
         onClick={(e) => e.stopPropagation()}
         data-testid="dt-help-modal"
         role="dialog"
         aria-labelledby="dt-help-title"
       >
-        {/* Modal Header */}
-        <div className="dt-help-header">
-          <div className="dt-help-title-group">
-            <HelpCircle className="dt-help-icon" size={20} />
-            <h2 id="dt-help-title" className="dt-help-title">
-              Decision Tree Concepts & Guide
+        {/* Header */}
+        <div className="flowchart-help-header">
+          <div className="flowchart-help-title-group">
+            <HelpCircle className="flowchart-help-icon" size={20} />
+            <h2 id="dt-help-title" className="flowchart-help-title">
+              Decision Tree — Concepts &amp; Authoring Guide
             </h2>
           </div>
           <button
-            className="dt-help-close-btn"
+            className="flowchart-help-close-btn"
             onClick={onClose}
             data-testid="dt-help-close"
             aria-label="Close help guide"
@@ -53,41 +51,79 @@ export function DecisionTreeHelpModal({ isOpen, onClose }: DecisionTreeHelpModal
           </button>
         </div>
 
-        {/* Modal Body */}
-        <div className="dt-help-body">
-          {/* Section 1: Overview */}
-          <section className="dt-help-section">
-            <div className="dt-help-section-title">
+        {/* Body */}
+        <div className="flowchart-help-body">
+
+          {/* Section 1: What is a Decision Tree */}
+          <section className="flowchart-help-section">
+            <div className="flowchart-help-section-title">
               <GitBranch size={16} />
               <h3>What is a Decision Tree?</h3>
             </div>
-            <p className="dt-help-desc">
-              A <strong>Decision Tree</strong> guides learners through branching decision paths. Each node represents a question or decision point, leading to sub-nodes or final recommendation leaves.
+            <p className="flowchart-help-desc">
+              A <strong>Decision Tree</strong> guides learners through an interactive series of branching
+              questions. Each node presents a prompt with selectable choices that lead to other nodes or
+              final recommendation leaves. Great for teaching architectural trade-offs and decision-making frameworks.
             </p>
           </section>
 
-          {/* Section 2: Node Anatomy */}
-          <section className="dt-help-section">
-            <div className="dt-help-section-title">
+          {/* Section 2: Node Types */}
+          <section className="flowchart-help-section">
+            <div className="flowchart-help-section-title">
               <Share2 size={16} />
-              <h3>Tree Nodes & Options</h3>
+              <h3>Node Types</h3>
             </div>
-            <div className="dt-help-grid">
-              <div className="dt-help-card">
-                <div className="card-badge card-badge--node">Decision Node</div>
+            <div className="flowchart-help-grid">
+              <div className="flowchart-help-card">
+                <div className="flowchart-help-card-header">
+                  <GitBranch size={14} className="text-primary" />
+                  <strong>Decision Node</strong>
+                </div>
                 <p>
-                  Contains a <code>label</code> (question title), <code>description</code>, and a set of branching <code>options</code> pointing to next node IDs.
+                  Presents a <code>prompt</code> (the question) and a list of <code>choices</code>.
+                  Each choice has an <code>id</code>, <code>text</code>, optional <code>rationale</code>,
+                  and a <code>next</code> pointer to another node ID.
+                  Mark one choice as <code>recommended</code> to highlight it with a badge.
                 </p>
               </div>
-
-              <div className="dt-help-card">
-                <div className="card-badge card-badge--leaf">Recommendation Leaf</div>
+              <div className="flowchart-help-card">
+                <div className="flowchart-help-card-header">
+                  <CheckSquare size={14} className="text-secondary" />
+                  <strong>Leaf Node (Recommendation)</strong>
+                </div>
                 <p>
-                  A final node with specific recommendation text, trade-offs, and architectural guidance.
+                  A terminal node with a final <code>recommendation</code> (the verdict),
+                  an <code>explanation</code> of why, and a list of <code>tradeoffs</code>
+                  (pros/cons bullets). Rendered as the success card after all decisions are made.
                 </p>
               </div>
             </div>
           </section>
+
+          {/* Section 3: Authoring Tips */}
+          <section className="flowchart-help-section">
+            <div className="flowchart-help-section-title">
+              <Plus size={16} />
+              <h3>Authoring Tips</h3>
+            </div>
+            <ul className="flowchart-help-list">
+              <li>
+                <strong>Start Node:</strong> Set <code>root</code> in Tree Settings to the ID of the first decision node.
+              </li>
+              <li>
+                <strong>Choice → Next:</strong> Every choice's <code>next</code> must point to an existing node ID.
+                The sidebar dropdown shows all available IDs.
+              </li>
+              <li>
+                <strong>Leaf nodes:</strong> Nodes with no choices and a <code>leaf</code> object are terminal.
+                Ensure every branch terminates at a leaf.
+              </li>
+              <li>
+                <strong>Recommended:</strong> Tick the checkbox on at most one choice per node to highlight the preferred path.
+              </li>
+            </ul>
+          </section>
+
         </div>
       </div>
     </div>

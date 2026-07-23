@@ -1,5 +1,5 @@
 import { useState, useCallback } from 'react'
-import { GitCommit, Settings, HelpCircle, Trash2 } from 'lucide-react'
+import { GitBranch, CheckSquare, HelpCircle, Trash2, Plus, Settings } from 'lucide-react'
 import { DecisionTreeHelpModal } from '../../../sections/decision-tree/DecisionTreeHelpModal'
 import '../../../sections/decision-tree/decision-tree.css'
 import type {
@@ -14,7 +14,9 @@ interface DecisionTreeFormEditorProps {
   onChange: (data: OKFDecisionTreeSectionData) => void
 }
 
-function DecisionTreeChoiceEditor({
+// ─── Sub-components ───────────────────────────────────────────────────────────
+
+function ChoiceRow({
   choice,
   index,
   nodeIds,
@@ -24,42 +26,45 @@ function DecisionTreeChoiceEditor({
   choice: OKFDecisionTreeChoice
   index: number
   nodeIds: string[]
-  onChange: (choice: OKFDecisionTreeChoice) => void
+  onChange: (c: OKFDecisionTreeChoice) => void
   onRemove: () => void
 }) {
+  const letter = String.fromCharCode(65 + index)
   return (
-    <div className="visual-form-card visual-form-card--sub" data-testid={`dt-choice-${index}`}>
-      <div className="visual-form-card-header">
-        <span className="card-header-title">
-          <span className="card-code-pill">Choice {String.fromCharCode(65 + index)}</span>
-        </span>
-        <button
-          className="form-remove-btn"
-          onClick={onRemove}
-          data-testid={`dt-choice-remove-${index}`}
-          type="button"
-          title="Remove choice"
-        >
+    <div className="node-detail-choice" data-testid={`dt-choice-${index}`}>
+      <div className="node-detail-choice-header">
+        <span className="node-detail-choice-badge">{letter}</span>
+        <span className="node-detail-choice-label">{choice.text || <em style={{ opacity: 0.5 }}>Untitled choice</em>}</span>
+        <label className="node-detail-recommended-toggle" title="Mark as recommended path">
+          <input
+            type="checkbox"
+            checked={choice.recommended ?? false}
+            onChange={(e) => onChange({ ...choice, recommended: e.target.checked })}
+            data-testid={`dt-choice-${index}-recommended`}
+          />
+          <span>Recommended</span>
+        </label>
+        <button className="form-remove-btn" onClick={onRemove} type="button" title="Remove choice" data-testid={`dt-choice-remove-${index}`}>
           <Trash2 size={12} />
         </button>
       </div>
-
-      <div className="visual-form-card-body">
+      <div className="node-detail-choice-body">
         <div className="visual-form-grid-2">
           <div className="visual-form-field">
             <label className="visual-form-label">
-              <span className="visual-form-key">ID</span>
+              <span className="visual-form-key">Choice Text</span>
               <input
                 className="visual-form-input"
-                value={choice.id}
-                onChange={(e) => onChange({ ...choice, id: e.target.value })}
-                data-testid={`dt-choice-${index}-id`}
+                value={choice.text}
+                placeholder="e.g. Use a message queue"
+                onChange={(e) => onChange({ ...choice, text: e.target.value })}
+                data-testid={`dt-choice-${index}-text`}
               />
             </label>
           </div>
           <div className="visual-form-field">
             <label className="visual-form-label">
-              <span className="visual-form-key">Next Node</span>
+              <span className="visual-form-key">Next Node →</span>
               <select
                 className="visual-form-select"
                 value={choice.next}
@@ -73,271 +78,194 @@ function DecisionTreeChoiceEditor({
             </label>
           </div>
         </div>
-
         <div className="visual-form-field">
           <label className="visual-form-label">
-            <span className="visual-form-key">Text</span>
-            <input
-              className="visual-form-input"
-              value={choice.text}
-              onChange={(e) => onChange({ ...choice, text: e.target.value })}
-              data-testid={`dt-choice-${index}-text`}
-            />
-          </label>
-        </div>
-
-        <div className="visual-form-field">
-          <label className="visual-form-label">
-            <span className="visual-form-key">Rationale</span>
+            <span className="visual-form-key">Rationale <span style={{ fontWeight: 400, opacity: 0.6 }}>(optional — shown as sub-text)</span></span>
             <textarea
               className="visual-form-textarea"
               value={choice.rationale ?? ''}
+              placeholder="Why would someone choose this?"
               onChange={(e) => onChange({ ...choice, rationale: e.target.value })}
               rows={2}
               data-testid={`dt-choice-${index}-rationale`}
             />
           </label>
         </div>
-
-        <div className="visual-form-field visual-form-field--bool">
-          <label className="visual-form-label">
-            <input
-              type="checkbox"
-              checked={choice.recommended ?? false}
-              onChange={(e) => onChange({ ...choice, recommended: e.target.checked })}
-              data-testid={`dt-choice-${index}-recommended`}
-            />
-            <span className="visual-form-key">Recommended</span>
-          </label>
-        </div>
       </div>
     </div>
   )
 }
 
-function DecisionTreeLeafEditor({
-  leaf,
+function TradeoffList({
+  items,
   onChange,
 }: {
-  leaf: OKFDecisionTreeLeaf
-  onChange: (leaf: OKFDecisionTreeLeaf) => void
+  items: string[]
+  onChange: (items: string[]) => void
 }) {
   return (
-    <div className="visual-form-card visual-form-card--sub" data-testid="dt-leaf">
-      <div className="visual-form-card-header">
-        <span className="card-header-title" style={{ color: 'var(--primary)' }}>
-          Leaf (Outcome Recommendation)
-        </span>
-      </div>
-
-      <div className="visual-form-card-body">
-        <div className="visual-form-field">
-          <label className="visual-form-label">
-            <span className="visual-form-key">Recommendation</span>
-            <textarea
-              className="visual-form-textarea"
-              value={leaf.recommendation}
-              onChange={(e) => onChange({ ...leaf, recommendation: e.target.value })}
-              rows={2}
-              data-testid="dt-leaf-recommendation"
-            />
-          </label>
-        </div>
-        <div className="visual-form-field">
-          <label className="visual-form-label">
-            <span className="visual-form-key">Explanation</span>
-            <textarea
-              className="visual-form-textarea"
-              value={leaf.explanation}
-              onChange={(e) => onChange({ ...leaf, explanation: e.target.value })}
-              rows={3}
-              data-testid="dt-leaf-explanation"
-            />
-          </label>
-        </div>
-      </div>
-    </div>
-  )
-}
-
-function DecisionTreeNodeEditor({
-  nodeId,
-  node,
-  nodeIds,
-  onChange,
-  onRemove,
-  canRemove,
-}: {
-  nodeId: string
-  node: OKFDecisionTreeNode
-  nodeIds: string[]
-  onChange: (node: OKFDecisionTreeNode) => void
-  onRemove: () => void
-  canRemove: boolean
-}) {
-  const handleChoiceChange = useCallback(
-    (ci: number, updatedChoice: OKFDecisionTreeChoice) => {
-      const choices = node.choices ? [...node.choices] : []
-      choices[ci] = updatedChoice
-      onChange({ ...node, choices })
-    },
-    [node, onChange]
-  )
-
-  const handleLeafChange = useCallback(
-    (updatedLeaf: OKFDecisionTreeLeaf) => {
-      onChange({ ...node, leaf: updatedLeaf })
-    },
-    [node, onChange]
-  )
-
-  return (
-    <div className="visual-form-card" data-testid={`dt-node-${nodeId}`}>
-      <div className="visual-form-card-header">
-        <span className="card-header-title">
-          <GitCommit size={13} /> Node: <code className="card-code-pill">{nodeId}</code>
-        </span>
-        {canRemove && (
+    <div className="node-detail-tradeoffs">
+      {items.map((item, i) => (
+        <div key={i} className="node-detail-tradeoff-row">
+          <span className="node-detail-tradeoff-bullet">•</span>
+          <input
+            className="visual-form-input"
+            value={item}
+            placeholder="Trade-off point…"
+            onChange={(e) => {
+              const next = [...items]
+              next[i] = e.target.value
+              onChange(next)
+            }}
+            data-testid={`dt-tradeoff-${i}`}
+          />
           <button
             className="form-remove-btn"
-            onClick={onRemove}
-            data-testid={`dt-node-remove-${nodeId}`}
             type="button"
-            title="Remove node"
+            onClick={() => onChange(items.filter((_, j) => j !== i))}
+            title="Remove"
           >
-            <Trash2 size={13} />
+            <Trash2 size={12} />
           </button>
-        )}
-      </div>
-
-      <div className="visual-form-card-body">
-        <div className="visual-form-field">
-          <label className="visual-form-label">
-            <span className="visual-form-key">Prompt</span>
-            <textarea
-              className="visual-form-textarea"
-              value={node.prompt ?? ''}
-              onChange={(e) => onChange({ ...node, prompt: e.target.value })}
-              rows={2}
-              data-testid={`dt-node-${nodeId}-prompt`}
-            />
-          </label>
         </div>
-
-        {node.choices && (
-          <div className="visual-form-field visual-form-field--array">
-            <span className="visual-form-key">Choices ({node.choices.length})</span>
-            <div className="visual-form-object-list">
-              {node.choices.map((choice, ci) => (
-                <DecisionTreeChoiceEditor
-                  key={choice.id || ci}
-                  choice={choice}
-                  index={ci}
-                  nodeIds={nodeIds}
-                  onChange={(updated) => handleChoiceChange(ci, updated)}
-                  onRemove={() => {
-                    const choices = node.choices?.filter((_, j) => j !== ci)
-                    onChange({ ...node, choices })
-                  }}
-                />
-              ))}
-            </div>
-          </div>
-        )}
-
-        {node.leaf && (
-          <DecisionTreeLeafEditor
-            leaf={node.leaf}
-            onChange={handleLeafChange}
-          />
-        )}
-      </div>
+      ))}
+      <button
+        className="node-detail-add-btn"
+        type="button"
+        onClick={() => onChange([...items, ''])}
+        data-testid="dt-add-tradeoff"
+      >
+        <Plus size={12} />
+        Add Trade-off
+      </button>
     </div>
   )
 }
 
-type DecisionTreeSubTab = 'nodes' | 'settings'
+// ─── Node type helpers ────────────────────────────────────────────────────────
+
+function isLeafNode(node: OKFDecisionTreeNode): boolean {
+  return !!(node.leaf)
+}
+
+function NodeIcon({ node }: { node: OKFDecisionTreeNode }) {
+  if (isLeafNode(node)) return <CheckSquare size={14} style={{ color: 'var(--secondary)' }} />
+  return <GitBranch size={14} style={{ color: 'var(--primary)' }} />
+}
+
+// ─── Main exported component ──────────────────────────────────────────────────
 
 export function DecisionTreeFormEditor({ data, onChange }: DecisionTreeFormEditorProps) {
-  const [activeTab, setActiveTab] = useState<DecisionTreeSubTab>('nodes')
+  const [selectedNodeId, setSelectedNodeId] = useState<string>(() => Object.keys(data.nodes)[0] ?? '')
   const [isHelpOpen, setIsHelpOpen] = useState(false)
+  const [showSettings, setShowSettings] = useState(false)
+
   const nodeIds = Object.keys(data.nodes)
+  const selectedNode: OKFDecisionTreeNode | undefined = data.nodes[selectedNodeId]
 
   const handleNodeChange = useCallback(
     (nodeId: string, updatedNode: OKFDecisionTreeNode) => {
-      onChange({
-        ...data,
-        nodes: { ...data.nodes, [nodeId]: updatedNode },
-      })
+      onChange({ ...data, nodes: { ...data.nodes, [nodeId]: updatedNode } })
     },
     [data, onChange]
   )
+
+  const handleAddNode = useCallback(() => {
+    const newId = `node_${Date.now()}`
+    const newNode: OKFDecisionTreeNode = { id: newId, prompt: '', choices: [] }
+    onChange({ ...data, nodes: { ...data.nodes, [newId]: newNode } })
+    setSelectedNodeId(newId)
+  }, [data, onChange])
 
   const handleRemoveNode = useCallback(
     (nodeId: string) => {
       const newNodes = { ...data.nodes }
       delete newNodes[nodeId]
       onChange({ ...data, nodes: newNodes })
+      const remaining = Object.keys(newNodes)
+      setSelectedNodeId(remaining[0] ?? '')
     },
     [data, onChange]
   )
 
+  const handleChoiceChange = useCallback(
+    (ci: number, choice: OKFDecisionTreeChoice) => {
+      if (!selectedNode) return
+      const choices = [...(selectedNode.choices ?? [])]
+      choices[ci] = choice
+      handleNodeChange(selectedNodeId, { ...selectedNode, choices })
+    },
+    [selectedNode, selectedNodeId, handleNodeChange]
+  )
+
+  const handleLeafChange = useCallback(
+    (leaf: OKFDecisionTreeLeaf) => {
+      if (!selectedNode) return
+      handleNodeChange(selectedNodeId, { ...selectedNode, leaf })
+    },
+    [selectedNode, selectedNodeId, handleNodeChange]
+  )
+
+  const toggleNodeType = useCallback(() => {
+    if (!selectedNode) return
+    if (isLeafNode(selectedNode)) {
+      // Switch to decision
+      const { leaf: _leaf, ...rest } = selectedNode
+      handleNodeChange(selectedNodeId, { ...rest, prompt: selectedNode.prompt ?? '', choices: [] })
+    } else {
+      // Switch to leaf
+      const { choices: _choices, ...rest } = selectedNode
+      handleNodeChange(selectedNodeId, { ...rest, leaf: { recommendation: '', explanation: '', tradeoffs: [] } })
+    }
+  }, [selectedNode, selectedNodeId, handleNodeChange])
+
   return (
     <div className="visual-form" data-testid="decision-tree-form-editor">
-      {/* Sub-Tabs */}
-      <div className="flowchart-sub-tabs" data-testid="dt-sub-tabs" style={{ marginBottom: '16px' }}>
-        <button
-          className={`flowchart-sub-tab ${activeTab === 'nodes' ? 'active' : ''}`}
-          onClick={() => setActiveTab('nodes')}
-          data-testid="dt-tab-nodes"
-          type="button"
-        >
-          <GitCommit size={14} />
-          <span>Tree Nodes</span>
-          <span className="sub-tab-badge">{Object.keys(data.nodes).length}</span>
-        </button>
-        <button
-          className={`flowchart-sub-tab ${activeTab === 'settings' ? 'active' : ''}`}
-          onClick={() => setActiveTab('settings')}
-          data-testid="dt-tab-settings"
-          type="button"
-        >
-          <Settings size={14} />
-          <span>Tree Settings</span>
-        </button>
 
+      {/* ── Top toolbar ── */}
+      <div className="node-editor-toolbar">
+        <span className="node-editor-toolbar-title">
+          <GitBranch size={14} />
+          Decision Tree
+        </span>
         <button
-          className="dt-help-btn"
+          className="node-editor-toolbar-btn"
+          onClick={() => setShowSettings((v) => !v)}
+          type="button"
+          title="Tree settings"
+          data-testid="dt-settings-toggle"
+        >
+          <Settings size={13} />
+          Settings
+        </button>
+        <button
+          className="flowchart-help-btn"
           onClick={() => setIsHelpOpen(true)}
           data-testid="dt-editor-help-btn"
           type="button"
-          style={{ marginLeft: 'auto' }}
         >
           <HelpCircle size={13} />
-          <span>Guide</span>
+          Guide
         </button>
       </div>
 
-      <DecisionTreeHelpModal isOpen={isHelpOpen} onClose={() => setIsHelpOpen(false)} />
-
-      {/* Settings Sub-Tab */}
-      {activeTab === 'settings' && (
-        <div className="visual-form-card" data-testid="dt-settings-tab-content">
+      {/* ── Settings panel (collapsible) ── */}
+      {showSettings && (
+        <div className="visual-form-card" style={{ marginBottom: '0.75rem' }} data-testid="dt-settings-panel">
           <div className="visual-form-card-header">
-            <span className="card-header-title">
-              <Settings size={14} /> Tree Settings & Root Config
-            </span>
+            <span className="card-header-title"><Settings size={13} /> Tree Settings</span>
           </div>
           <div className="visual-form-card-body">
             <div className="visual-form-grid-2">
               <div className="visual-form-field">
                 <label className="visual-form-label">
-                  <span className="visual-form-key">Decision Tree ID</span>
+                  <span className="visual-form-key">Title</span>
                   <input
                     className="visual-form-input"
-                    value={data.id}
-                    onChange={(e) => onChange({ ...data, id: e.target.value })}
-                    data-testid="dt-id"
+                    value={data.title}
+                    onChange={(e) => onChange({ ...data, title: e.target.value })}
+                    data-testid="dt-title"
+                    placeholder="Section title"
                   />
                 </label>
               </div>
@@ -357,15 +285,14 @@ export function DecisionTreeFormEditor({ data, onChange }: DecisionTreeFormEdito
                 </label>
               </div>
             </div>
-
             <div className="visual-form-field">
               <label className="visual-form-label">
-                <span className="visual-form-key">Title</span>
+                <span className="visual-form-key">Section ID</span>
                 <input
                   className="visual-form-input"
-                  value={data.title}
-                  onChange={(e) => onChange({ ...data, title: e.target.value })}
-                  data-testid="dt-title"
+                  value={data.id}
+                  onChange={(e) => onChange({ ...data, id: e.target.value })}
+                  data-testid="dt-id"
                 />
               </label>
             </div>
@@ -373,27 +300,216 @@ export function DecisionTreeFormEditor({ data, onChange }: DecisionTreeFormEdito
         </div>
       )}
 
-      {/* Nodes Sub-Tab */}
-      {activeTab === 'nodes' && (
-        <div className="visual-form-field visual-form-field--array" data-testid="dt-nodes-tab-content">
-          <div className="visual-form-section-header">
-            <span className="visual-form-key">Decision Tree Nodes ({Object.keys(data.nodes).length})</span>
+      {/* ── Two-column layout: sidebar + detail ── */}
+      <div className="node-editor-layout">
+
+        {/* Sidebar: node list */}
+        <div className="node-editor-sidebar">
+          <div className="node-editor-sidebar-header">
+            <span>Nodes</span>
+            <span className="sub-tab-badge">{nodeIds.length}</span>
           </div>
-          <div className="visual-form-object-list">
-            {Object.entries(data.nodes).map(([id, node]) => (
-              <DecisionTreeNodeEditor
-                key={id}
-                nodeId={id}
-                node={node}
-                nodeIds={nodeIds}
-                onChange={(updated) => handleNodeChange(id, updated)}
-                onRemove={() => handleRemoveNode(id)}
-                canRemove={Object.keys(data.nodes).length > 1}
-              />
-            ))}
+          <div className="node-editor-list" data-testid="dt-node-list">
+            {nodeIds.map((id) => {
+              const node = data.nodes[id]
+              const isSelected = id === selectedNodeId
+              return (
+                <button
+                  key={id}
+                  className={`node-editor-list-item ${isSelected ? 'node-editor-list-item--active' : ''}`}
+                  onClick={() => setSelectedNodeId(id)}
+                  type="button"
+                  data-testid={`dt-node-item-${id}`}
+                >
+                  <NodeIcon node={node} />
+                  <span className="node-editor-list-item-id">{id}</span>
+                  {data.root === id && (
+                    <span className="node-editor-list-root-badge">root</span>
+                  )}
+                </button>
+              )
+            })}
           </div>
+          <button
+            className="node-editor-add-btn"
+            onClick={handleAddNode}
+            type="button"
+            data-testid="dt-add-node"
+          >
+            <Plus size={13} />
+            Add Node
+          </button>
         </div>
-      )}
+
+        {/* Detail panel: selected node */}
+        <div className="node-editor-detail">
+          {!selectedNode ? (
+            <div className="node-editor-empty">
+              <GitBranch size={32} style={{ opacity: 0.3 }} />
+              <p>No node selected. Add a node from the sidebar.</p>
+            </div>
+          ) : (
+            <>
+              {/* Node ID + type toggle header */}
+              <div className="node-detail-header">
+                <div className="visual-form-field" style={{ flex: 1 }}>
+                  <label className="visual-form-label">
+                    <span className="visual-form-key">Node ID</span>
+                    <input
+                      className="visual-form-input"
+                      value={selectedNodeId}
+                      onChange={(e) => {
+                        const newId = e.target.value
+                        if (!newId || newId === selectedNodeId) return
+                        const newNodes: typeof data.nodes = {}
+                        for (const [k, v] of Object.entries(data.nodes)) {
+                          newNodes[k === selectedNodeId ? newId : k] = v
+                        }
+                        // Fix any choice.next pointing to old id
+                        for (const node of Object.values(newNodes)) {
+                          if (node.choices) {
+                            node.choices = node.choices.map((c) =>
+                              c.next === selectedNodeId ? { ...c, next: newId } : c
+                            )
+                          }
+                        }
+                        onChange({
+                          ...data,
+                          root: data.root === selectedNodeId ? newId : data.root,
+                          nodes: newNodes,
+                        })
+                        setSelectedNodeId(newId)
+                      }}
+                      data-testid="dt-node-id"
+                    />
+                  </label>
+                </div>
+                <div className="node-detail-type-toggle">
+                  <button
+                    className={`node-detail-type-btn ${!isLeafNode(selectedNode) ? 'node-detail-type-btn--active' : ''}`}
+                    onClick={() => { if (isLeafNode(selectedNode)) toggleNodeType() }}
+                    type="button"
+                    data-testid="dt-type-decision"
+                  >
+                    <GitBranch size={13} /> Decision
+                  </button>
+                  <button
+                    className={`node-detail-type-btn ${isLeafNode(selectedNode) ? 'node-detail-type-btn--active node-detail-type-btn--leaf' : ''}`}
+                    onClick={() => { if (!isLeafNode(selectedNode)) toggleNodeType() }}
+                    type="button"
+                    data-testid="dt-type-leaf"
+                  >
+                    <CheckSquare size={13} /> Leaf
+                  </button>
+                </div>
+                {nodeIds.length > 1 && (
+                  <button
+                    className="form-remove-btn"
+                    onClick={() => handleRemoveNode(selectedNodeId)}
+                    type="button"
+                    title="Remove this node"
+                    data-testid={`dt-node-remove-${selectedNodeId}`}
+                  >
+                    <Trash2 size={13} />
+                  </button>
+                )}
+              </div>
+
+              {/* Decision node fields */}
+              {!isLeafNode(selectedNode) && (
+                <div className="node-detail-body" data-testid="dt-decision-fields">
+                  <div className="visual-form-field">
+                    <label className="visual-form-label">
+                      <span className="visual-form-key">Prompt <span style={{ fontWeight: 400, opacity: 0.6 }}>(the question learners see)</span></span>
+                      <textarea
+                        className="visual-form-textarea"
+                        value={selectedNode.prompt ?? ''}
+                        placeholder="e.g. Your service is receiving 10× normal traffic. What do you do first?"
+                        onChange={(e) => handleNodeChange(selectedNodeId, { ...selectedNode, prompt: e.target.value })}
+                        rows={3}
+                        data-testid="dt-node-prompt"
+                      />
+                    </label>
+                  </div>
+
+                  <div className="node-detail-section-label">
+                    <span>Choices</span>
+                    <span className="sub-tab-badge">{(selectedNode.choices ?? []).length}</span>
+                  </div>
+                  {(selectedNode.choices ?? []).map((choice, ci) => (
+                    <ChoiceRow
+                      key={choice.id || ci}
+                      choice={choice}
+                      index={ci}
+                      nodeIds={nodeIds}
+                      onChange={(c) => handleChoiceChange(ci, c)}
+                      onRemove={() => {
+                        const newChoices = (selectedNode.choices ?? []).filter((_, j) => j !== ci)
+                        handleNodeChange(selectedNodeId, { ...selectedNode, choices: newChoices })
+                      }}
+                    />
+                  ))}
+                  <button
+                    className="node-detail-add-btn"
+                    type="button"
+                    onClick={() => {
+                      const choices = [...(selectedNode.choices ?? []), {
+                        id: `choice_${Date.now()}`,
+                        text: '',
+                        next: nodeIds[0] ?? '',
+                        recommended: false,
+                      }]
+                      handleNodeChange(selectedNodeId, { ...selectedNode, choices })
+                    }}
+                    data-testid="dt-add-choice"
+                  >
+                    <Plus size={12} /> Add Choice
+                  </button>
+                </div>
+              )}
+
+              {/* Leaf node fields */}
+              {isLeafNode(selectedNode) && selectedNode.leaf && (
+                <div className="node-detail-body" data-testid="dt-leaf-fields">
+                  <div className="visual-form-field">
+                    <label className="visual-form-label">
+                      <span className="visual-form-key">Recommendation <span style={{ fontWeight: 400, opacity: 0.6 }}>(the final verdict)</span></span>
+                      <textarea
+                        className="visual-form-textarea"
+                        value={selectedNode.leaf.recommendation}
+                        placeholder="e.g. Use a circuit breaker pattern with exponential back-off"
+                        onChange={(e) => handleLeafChange({ ...selectedNode.leaf!, recommendation: e.target.value })}
+                        rows={3}
+                        data-testid="dt-leaf-recommendation"
+                      />
+                    </label>
+                  </div>
+                  <div className="visual-form-field">
+                    <label className="visual-form-label">
+                      <span className="visual-form-key">Explanation</span>
+                      <textarea
+                        className="visual-form-textarea"
+                        value={selectedNode.leaf.explanation}
+                        placeholder="Why is this the right approach?"
+                        onChange={(e) => handleLeafChange({ ...selectedNode.leaf!, explanation: e.target.value })}
+                        rows={3}
+                        data-testid="dt-leaf-explanation"
+                      />
+                    </label>
+                  </div>
+                  <div className="node-detail-section-label">Trade-offs</div>
+                  <TradeoffList
+                    items={selectedNode.leaf.tradeoffs ?? []}
+                    onChange={(tradeoffs) => handleLeafChange({ ...selectedNode.leaf!, tradeoffs })}
+                  />
+                </div>
+              )}
+            </>
+          )}
+        </div>
+      </div>
+
+      <DecisionTreeHelpModal isOpen={isHelpOpen} onClose={() => setIsHelpOpen(false)} />
     </div>
   )
 }

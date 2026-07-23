@@ -1470,3 +1470,381 @@
   opacity: 0.9;
 }
 
+
+/* ==========================================================================
+   Node Editor Layout — Sidebar + Detail panel
+   Used by: DecisionTreeFormEditor, ScenarioFormEditor
+   ========================================================================== */
+
+/* Toolbar */
+.node-editor-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.75rem;
+}
+
+.node-editor-toolbar-title {
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+  font-size: 0.8rem;
+  font-family: var(--font-mono);
+  font-weight: 600;
+  color: var(--ctp-subtext0);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  flex: 1;
+}
+
+.node-editor-toolbar-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  padding: 0.3rem 0.75rem;
+  border-radius: 0.5rem;
+  font-size: 0.75rem;
+  font-weight: 500;
+  font-family: var(--font-mono);
+  border: 1px solid color-mix(in srgb, var(--border) 70%, transparent);
+  background: color-mix(in srgb, var(--ctp-surface0) 50%, transparent);
+  color: var(--ctp-subtext1);
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.node-editor-toolbar-btn:hover {
+  background: color-mix(in srgb, var(--primary) 12%, var(--ctp-surface0));
+  border-color: color-mix(in srgb, var(--primary) 30%, transparent);
+  color: var(--primary);
+}
+
+/* Two-column split */
+.node-editor-layout {
+  display: flex;
+  gap: 0.75rem;
+  min-height: 400px;
+  align-items: flex-start;
+}
+
+/* Sidebar */
+.node-editor-sidebar {
+  width: 220px;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  border: 1px solid color-mix(in srgb, var(--border) 70%, transparent);
+  border-radius: 0.75rem;
+  overflow: hidden;
+  background: color-mix(in srgb, var(--ctp-mantle) 80%, transparent);
+}
+
+.node-editor-sidebar-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.6rem 0.875rem;
+  font-size: 0.7rem;
+  font-family: var(--font-mono);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--ctp-subtext0);
+  border-bottom: 1px solid color-mix(in srgb, var(--border) 50%, transparent);
+  background: color-mix(in srgb, var(--ctp-crust) 60%, transparent);
+}
+
+.node-editor-list {
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  max-height: 340px;
+}
+
+.node-editor-list-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 0.875rem;
+  font-size: 0.8rem;
+  font-family: var(--font-mono);
+  font-weight: 500;
+  color: var(--ctp-subtext1);
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid color-mix(in srgb, var(--border) 30%, transparent);
+  cursor: pointer;
+  text-align: left;
+  transition: background 0.12s ease, color 0.12s ease;
+  width: 100%;
+}
+
+.node-editor-list-item:last-child {
+  border-bottom: none;
+}
+
+.node-editor-list-item:hover {
+  background: color-mix(in srgb, var(--primary) 8%, transparent);
+  color: var(--ctp-text);
+}
+
+.node-editor-list-item--active {
+  background: color-mix(in srgb, var(--primary) 14%, transparent);
+  color: var(--primary);
+  font-weight: 600;
+  border-right: 2px solid var(--primary);
+}
+
+.node-editor-list-item-id {
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.node-editor-list-root-badge {
+  font-size: 0.6rem;
+  font-family: var(--font-mono);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  padding: 0.1rem 0.4rem;
+  border-radius: 9999px;
+  background: color-mix(in srgb, var(--primary) 20%, transparent);
+  color: var(--primary);
+  border: 1px solid color-mix(in srgb, var(--primary) 35%, transparent);
+  flex-shrink: 0;
+}
+
+.node-editor-add-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.375rem;
+  padding: 0.5rem;
+  font-size: 0.75rem;
+  font-family: var(--font-mono);
+  font-weight: 600;
+  border: none;
+  border-top: 1px solid color-mix(in srgb, var(--border) 50%, transparent);
+  background: transparent;
+  color: var(--ctp-subtext0);
+  cursor: pointer;
+  transition: all 0.15s ease;
+  width: 100%;
+}
+
+.node-editor-add-btn:hover {
+  background: color-mix(in srgb, var(--primary) 10%, transparent);
+  color: var(--primary);
+}
+
+/* Detail panel */
+.node-editor-detail {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  border: 1px solid color-mix(in srgb, var(--border) 70%, transparent);
+  border-radius: 0.75rem;
+  overflow: hidden;
+  background: color-mix(in srgb, var(--ctp-mantle) 60%, transparent);
+}
+
+.node-editor-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  padding: 3rem 2rem;
+  color: var(--ctp-subtext0);
+  font-size: 0.875rem;
+}
+
+.node-detail-header {
+  display: flex;
+  align-items: flex-end;
+  gap: 0.75rem;
+  padding: 0.875rem 1rem;
+  border-bottom: 1px solid color-mix(in srgb, var(--border) 50%, transparent);
+  background: color-mix(in srgb, var(--ctp-crust) 50%, transparent);
+  flex-wrap: wrap;
+}
+
+.node-detail-type-toggle {
+  display: flex;
+  gap: 0.25rem;
+  flex-shrink: 0;
+}
+
+.node-detail-type-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.3rem 0.75rem;
+  border-radius: 0.5rem;
+  font-size: 0.75rem;
+  font-weight: 500;
+  font-family: var(--font-mono);
+  border: 1px solid color-mix(in srgb, var(--border) 60%, transparent);
+  background: transparent;
+  color: var(--ctp-subtext0);
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.node-detail-type-btn--active {
+  background: color-mix(in srgb, var(--primary) 18%, transparent);
+  border-color: color-mix(in srgb, var(--primary) 40%, transparent);
+  color: var(--primary);
+  font-weight: 700;
+}
+
+.node-detail-type-btn--leaf.node-detail-type-btn--active {
+  background: color-mix(in srgb, var(--secondary) 18%, transparent);
+  border-color: color-mix(in srgb, var(--secondary) 40%, transparent);
+  color: var(--secondary);
+}
+
+.node-detail-body {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  padding: 1rem;
+  overflow-y: auto;
+  max-height: 500px;
+}
+
+.node-detail-section-label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.7rem;
+  font-family: var(--font-mono);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--ctp-subtext0);
+  padding-top: 0.25rem;
+  border-top: 1px solid color-mix(in srgb, var(--border) 40%, transparent);
+  margin-top: 0.25rem;
+}
+
+/* Choice rows */
+.node-detail-choice {
+  border: 1px solid color-mix(in srgb, var(--border) 60%, transparent);
+  border-radius: 0.625rem;
+  overflow: hidden;
+  background: color-mix(in srgb, var(--ctp-surface0) 30%, transparent);
+}
+
+.node-detail-choice-header {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 0.75rem;
+  background: color-mix(in srgb, var(--ctp-crust) 50%, transparent);
+  border-bottom: 1px solid color-mix(in srgb, var(--border) 40%, transparent);
+}
+
+.node-detail-choice-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.5rem;
+  height: 1.5rem;
+  border-radius: 0.375rem;
+  background: color-mix(in srgb, var(--primary) 18%, transparent);
+  color: var(--primary);
+  border: 1px solid color-mix(in srgb, var(--primary) 30%, transparent);
+  font-size: 0.7rem;
+  font-family: var(--font-mono);
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.node-detail-choice-label {
+  flex: 1;
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: var(--ctp-subtext1);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.node-detail-recommended-toggle {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  font-size: 0.7rem;
+  font-family: var(--font-mono);
+  color: var(--ctp-subtext0);
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.node-detail-choice-body {
+  padding: 0.75rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.625rem;
+}
+
+/* Tradeoffs */
+.node-detail-tradeoffs {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.node-detail-tradeoff-row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.node-detail-tradeoff-bullet {
+  color: var(--secondary);
+  font-size: 1rem;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+/* Add button (inside detail) */
+.node-detail-add-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  padding: 0.375rem 0.75rem;
+  border-radius: 0.5rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  font-family: var(--font-mono);
+  border: 1px dashed color-mix(in srgb, var(--primary) 40%, transparent);
+  background: color-mix(in srgb, var(--primary) 8%, transparent);
+  color: var(--primary);
+  cursor: pointer;
+  transition: all 0.15s ease;
+  align-self: flex-start;
+}
+
+.node-detail-add-btn:hover {
+  background: color-mix(in srgb, var(--primary) 16%, transparent);
+  border-style: solid;
+}
+
+@media (max-width: 640px) {
+  .node-editor-layout {
+    flex-direction: column;
+  }
+
+  .node-editor-sidebar {
+    width: 100%;
+  }
+
+  .node-editor-list {
+    max-height: 180px;
+  }
+}
