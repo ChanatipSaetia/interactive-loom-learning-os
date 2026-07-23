@@ -1,0 +1,45 @@
+- id: journey_plain
+  label: "ทุเรียนทอดเปล่า"
+  description: "กระบวนการทำทุเรียนทอดแบบไม่เคลือบน้ำตาล"
+  steps:
+    - nodeId: evt_flesh_ready
+      description: "แยกเนื้อทุเรียนดิบออกจากเมล็ด"
+      processGroup: prep
+    - nodeId: evt_sliced
+      description: "หั่นเป็นชิ้นบางสม่ำเสมอ"
+      processGroup: prep
+    - nodeId: evt_oil_hot
+      description: "ตั้งน้ำมันให้ร้อน เติมน้ำเกลือ"
+      processGroup: cook
+    - nodeId: evt_fried
+      description: "ทอดจนสีทองกรอบ"
+      processGroup: cook
+    - nodeId: evt_drained
+      description: "สะเด็ดน้ำมันบนกระดาษซับมัน"
+      processGroup: finish
+    - nodeId: evt_plain_done
+      description: "เสิร์ฟทุเรียนทอดเปล่า"
+      processGroup: serve
+
+- id: journey_sugar
+  label: "ทุเรียนทอดเคลือบน้ำตาล"
+  description: "กระบวนการทำทุเรียนทอดแบบเคลือบน้ำตาล"
+  steps:
+    - nodeId: evt_flesh_ready
+      description: "แยกเนื้อทุเรียนดิบออกจากเมล็ด"
+      processGroup: prep
+    - nodeId: evt_sliced
+      description: "หั่นเป็นชิ้นบางสม่ำเสมอ"
+      processGroup: prep
+    - nodeId: evt_oil_hot
+      description: "ตั้งน้ำมันให้ร้อน เติมน้ำเกลือ"
+      processGroup: cook
+    - nodeId: evt_fried
+      description: "ทอดจนสีทองกรอบ"
+      processGroup: cook
+    - nodeId: evt_drained
+      description: "สะเด็ดน้ำมันบนกระดาษซับมัน"
+      processGroup: finish
+    - nodeId: evt_sugar_done
+      description: "熬น้ำตาลเคลือบแล้วเสิร์ฟ"
+      processGroup: serve

@@ -1,0 +1,16 @@
+durian_raw:
+  title: "ทุเรียนดิบ"
+  desc: "ทุเรียนอ่อน เนื้อแน่น"
+  type: "aggregate"
+knife:
+  title: "มีด+เขียง"
+  desc: "อุปกรณ์หั่น"
+  type: "external"
+pan_oil:
+  title: "กระทะน้ำมัน"
+  desc: "น้ำมันร้อน 170-180°C"
+  type: "external"
+sugar_bowl:
+  title: "น้ำตาล"
+  desc: "น้ำตาลทรายหรือน้ำตาลปี๊บ"
+  type: "external"

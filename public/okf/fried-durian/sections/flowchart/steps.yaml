@@ -1,0 +1,75 @@
+- type: linear
+  id: step_1
+  initiatedBy: cook
+  command: "แยกเนื้อทุเรียน"
+  policy: "เลือกทุเรียนดิบ เนื้อแน่น"
+  handledBy: durian_raw
+  resultEvents:
+    - id: evt_flesh_ready
+      title: "เนื้อทุเรียนพร้อม"
+  continuesAs: step_2
+
+- type: linear
+  id: step_2
+  initiatedBy: cook
+  command: "หั่นชิ้นบาง"
+  policy: "หั่นชิ้นบางสม่ำเสมอ"
+  handledBy: knife
+  resultEvents:
+    - id: evt_sliced
+      title: "หั่นเสร็จ"
+  continuesAs: step_3
+
+- type: linear
+  id: step_3
+  initiatedBy: cook
+  command: "ตั้งน้ำมันร้อน"
+  policy: "อุ่นน้ำมัน 170-180°C เติมน้ำเกลือ"
+  handledBy: pan_oil
+  resultEvents:
+    - id: evt_oil_hot
+      title: "น้ำมันร้อนพร้อมทอด"
+  continuesAs: step_4
+
+- type: linear
+  id: step_4
+  initiatedBy: cook
+  command: "ทอดทุเรียน"
+  policy: "ทอดไฟกลางจนสีทองกรอบ"
+  handledBy: pan_oil
+  resultEvents:
+    - id: evt_fried
+      title: "ทอดเสร็จ"
+  continuesAs: step_5
+
+- type: linear
+  id: step_5
+  initiatedBy: cook
+  command: "สะเด็ดน้ำมัน"
+  policy: "ยกขึ้นพักบนกระดาษซับมัน"
+  handledBy: knife
+  resultEvents:
+    - id: evt_drained
+      title: "สะเด็ดน้ำมันเสร็จ"
+  continuesAs: step_branch
+
+- type: branch
+  id: step_branch
+  event: evt_drained
+  branches:
+    - id: branch_plain
+      label: "แบบเปล่า"
+      policy: "ไม่เคลือบน้ำตาล"
+      command: "เสิร์ฟทันที"
+      handledBy: durian_raw
+      resultEvents:
+        - id: evt_plain_done
+          title: "ทุเรียนทอดเปล่าพร้อมทาน"
+    - id: branch_sugar
+      label: "เคลือบน้ำตาล"
+      policy: "เคลือบน้ำตาล"
+      command: "熬น้ำตาลแล้วคลุก"
+      handledBy: sugar_bowl
+      resultEvents:
+        - id: evt_sugar_done
+          title: "ทุเรียนทอดเคลือบน้ำตาลพร้อมทาน"

@@ -1,0 +1,173 @@
+id: durian-choice
+title: "เลือกส่วนผสมและวิธีการ"
+description: "ทำทุเรียนทอด โดยเลือกประเภททุเรียน วิธีการทอด และเคลือบ"
+metrics:
+  - id: crispiness
+    label: "ความกรอบ"
+    baseValue: 50
+    min: 0
+    max: 100
+    direction: higher
+  - id: flavor
+    label: "กลิ่นทุเรียน"
+    baseValue: 50
+    min: 0
+    max: 100
+    direction: higher
+  - id: sweetness
+    label: "ความหวาน"
+    baseValue: 30
+    min: 0
+    max: 100
+    direction: higher
+  - id: difficulty
+    label: "ความง่าย"
+    baseValue: 50
+    min: 0
+    max: 100
+    direction: higher
+steps:
+  - id: durian_type
+    title: "เลือกพันธุ์ทุเรียน"
+    description: "พันธุ์ทุเรียนส่งผลต่อเนื้อสัมผัสและรสชาติ"
+    recommended: monthong
+    choices:
+      - id: monthong
+        label: "หมอนทอง"
+        description: "เนื้อเยอะ เมล็ดเล็ก หาได้ง่าย"
+        metrics:
+          crispiness: 10
+          flavor: 5
+          difficulty: 10
+        pros:
+          - title: "เนื้อเยอะ"
+            description: "ได้ชิ้นทุเรียนเยอะจากผลเดียว"
+          - title: "หาได้ง่าย"
+            description: "พันธุ์หลักที่ปลูกทั่วไทย"
+        cons:
+          - title: "กลิ่นไม่จัด"
+            description: "กลิ่นทุเรียนไม่เข้มข้นเท่าพันธุ์อื่น"
+        whyThisFits: "หมอนทองเหมาะสำหรับมือใหม่ เนื้อเยอะหั่นง่าย"
+      - id: chanee
+        label: "ชะนี"
+        description: "เนื้อน้อยลง แต่กลิ่นและรสจัดกว่า"
+        metrics:
+          crispiness: 5
+          flavor: 15
+          difficulty: -5
+        pros:
+          - title: "กลิ่นหอมจัด"
+            description: "กลิ่นทุเรียนเข้มข้น"
+          - title: "รสหวานมัน"
+            description: "เนื้อทุเรียนชะนีหวานมันกว่า"
+        cons:
+          - title: "เนื้อน้อย"
+            description: "ได้ชิ้นทุเรียนน้อยกว่าหมอนทอง"
+        whenToUse: "ใช้เมื่อต้องการทุเรียนทอดกลิ่นหอมจัด"
+      - id: kan_yao
+        label: "ก้านยาว"
+        description: "เนื้อบาง เมล็ดแบน กลิ่นหอม"
+        metrics:
+          crispiness: 5
+          flavor: 10
+          difficulty: -5
+        pros:
+          - title: "เมล็ดแบน"
+            description: "แยกเนื้อออกง่าย"
+        cons:
+          - title: "หั่นยาก"
+            description: "เนื้อบาง อาจขาดง่ายตอนหั่น"
+        whenToUse: "ใช้เมื่อต้องการความสมดุลระหว่างกลิ่นและความง่าย"
+
+  - id: frying_method
+    title: "เลือกวิธีการทอด"
+    description: "วิธีการทอดส่งผลต่อความกรอบและปริมาณน้ำมัน"
+    recommended: shallow_fry
+    choices:
+      - id: deep_fry
+        label: "ทอดน้ำมันท่วม"
+        description: "ใส่ทุเรียนในน้ำมันที่ท่วมชิ้น"
+        metrics:
+          crispiness: 15
+          sweetness: 0
+          difficulty: -5
+        pros:
+          - title: "กรอบเท่ากันทุกด้าน"
+            description: "ชิ้นทุเรียนสัมผัสความร้อนสม่ำเสมอ"
+        cons:
+          - title: "ใช้น้ำมันเยอะ"
+            description: "ต้องใช้น้ำมันปริมาณมาก"
+        whenToUse: "ใช้เมื่อต้องการความกรอบสูงสุด"
+      - id: shallow_fry
+        label: "ทอดน้ำมันน้อย"
+        description: "ใช้น้ำมันแค่ครึ่งชิ้น กลับด้านเอง"
+        metrics:
+          crispiness: 0
+          difficulty: 10
+        pros:
+          - title: "ประหยัดน้ำมัน"
+            description: "ใช้น้ำมันน้อยลง"
+          - title: "ควบคุมง่าย"
+            description: "เห็นชิ้นทุเรียนชัด ควบคุมการทอดง่าย"
+        cons:
+          - title: "ต้องกลับด้าน"
+            description: "ต้องคอยกลับด้านเพื่อให้สุกเท่ากัน"
+        whyThisFits: "ทอดน้ำมันน้อยประหยัดและควบคุมง่าย เหมาะกับมือใหม่"
+
+  - id: coating
+    title: "เลือกการเคลือบ"
+    description: "เคลือบหรือไม่เคลือบ ส่งผลต่อรสชาติ"
+    recommended: sugar_coat
+    choices:
+      - id: no_coat
+        label: "ไม่เคลือบ (แบบเปล่า)"
+        description: "ทอดเสร็จทานได้เลย เน้นรสธรรมชาติ"
+        metrics:
+          crispiness: 5
+          flavor: 10
+          sweetness: -10
+          difficulty: 10
+        pros:
+          - title: "ง่ายที่สุด"
+            description: "ทอดเสร็จทานได้เลย"
+          - title: "เน้นกลิ่นทุเรียนแท้"
+            description: "ไม่มีการปรุงแต่ง"
+        cons:
+          - title: "รสชาติเรียบง่าย"
+            description: "อาจจืดสำหรับบางคน"
+        whenToUse: "ใช้เมื่อชอบรสธรรมชาติของทุเรียน"
+      - id: sugar_coat
+        label: "เคลือบน้ำตาลทราย"
+        description: "คลุกน้ำตาลทรายให้เคลือบบางๆ"
+        metrics:
+          crispiness: -5
+          sweetness: 20
+          difficulty: 0
+        pros:
+          - title: "หวานกรอบอร่อย"
+            description: "รสชาติหวานสมดุลกับความกรอบ"
+          - title: "เป็นที่ยอมรับ"
+            description: "รูปแบบยอดนิยม"
+        cons:
+          - title: "ความกรอบลดลงบ้าง"
+            description: "น้ำตาลดูดความชื้น ทำให้กรอบน้อยลง"
+        whyThisFits: "เคลือบน้ำตาลเป็นแบบยอดนิยม หวานกรอบอร่อย"
+      - id: palm_sugar
+        label: "เคลือบน้ำตาลปี๊บ"
+        description: "ใช้น้ำตาลปี๊บ熬ละลายเคลือบ"
+        metrics:
+          crispiness: -10
+          sweetness: 15
+          flavor: 10
+          difficulty: -10
+        pros:
+          - title: "รสหวานลึก"
+            description: "น้ำตาลปี๊บมีกลิ่นหอมอ้อย"
+          - title: "สีสันสวยงาม"
+            description: "สีน้ำตาลทองสวย"
+        cons:
+          - title: "ทำยากกว่า"
+            description: "ต้อง熬น้ำตาลปี๊บให้ละลายพอดี"
+          - title: "ความกรอบลดลง"
+            description: "น้ำตาลปี๊บมีความชื้นมากกว่า"
+        whenToUse: "ใช้เมื่อต้องการรสชาติลึกและสีสันสวย"

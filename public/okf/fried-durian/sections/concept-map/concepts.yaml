@@ -1,0 +1,96 @@
+nodes:
+  durian_raw:
+    title: "ทุเรียนดิบ/อ่อน"
+    category: ingredient
+  durian_flesh:
+    title: "เนื้อทุเรียน"
+    category: ingredient
+  oil:
+    title: "น้ำมันพืช"
+    category: ingredient
+  salt_water:
+    title: "น้ำเกลือ"
+    category: ingredient
+  sugar:
+    title: "น้ำตาลทราย/ปี๊บ"
+    category: ingredient
+  pan:
+    title: "กระทะ"
+    category: tool
+  slicing:
+    title: "หั่นชิ้นบาง"
+    category: process
+  frying:
+    title: "ทอด"
+    category: process
+  draining:
+    title: "สะเด็ดน้ำมัน"
+    category: process
+  coating:
+    title: "เคลือบน้ำตาล"
+    category: process
+  crispy:
+    title: "กรอบ"
+    category: quality
+  golden:
+    title: "สีทอง"
+    category: quality
+  aroma:
+    title: "กลิ่นหอมทุเรียน"
+    category: quality
+  plain_fried:
+    title: "ทุเรียนทอดเปล่า"
+    category: result
+  sugar_coated:
+    title: "ทุเรียนทอดเคลือบน้ำตาล"
+    category: result
+  jemut_jemut:
+    title: "เจมุดเจมุดทุเรียน"
+    category: result
+
+edges:
+  - from: durian_raw
+    to: durian_flesh
+    label: "แยกเนื้อ"
+  - from: durian_flesh
+    to: slicing
+    label: "ผ่านขั้นตอน"
+  - from: slicing
+    to: frying
+    label: "นำไป"
+  - from: oil
+    to: frying
+    label: "ใช้"
+  - from: salt_water
+    to: frying
+    label: "เติมตอนทอด"
+  - from: pan
+    to: frying
+    label: "ใช้"
+  - from: frying
+    to: draining
+    label: "แล้ว"
+  - from: draining
+    to: crispy
+    label: "ได้"
+  - from: draining
+    to: golden
+    label: "ได้"
+  - from: frying
+    to: aroma
+    label: "เกิด"
+  - from: draining
+    to: plain_fried
+    label: "สำเร็จเป็น"
+  - from: sugar
+    to: coating
+    label: "ใช้"
+  - from: draining
+    to: coating
+    label: "นำไป"
+  - from: coating
+    to: sugar_coated
+    label: "สำเร็จเป็น"
+  - from: durian_flesh
+    to: jemut_jemut
+    label: "นวด+ทอดเป็น"

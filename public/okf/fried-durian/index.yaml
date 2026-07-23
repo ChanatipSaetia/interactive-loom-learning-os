@@ -1,0 +1,22 @@
+# App metadata for fried-durian topic bundle
+category: Cooking
+tags:
+  - durian
+  - fried-durian
+  - cooking
+  - thai-snack
+  - thai
+related:
+  - sections/flashcards/glossary.yaml
+  - sections/concept-map/concepts.yaml
+  - sections/taxonomy/plain.yaml
+  - sections/taxonomy/sugar-coated.yaml
+  - sections/taxonomy/jemut-jemut.yaml
+  - sections/ingredients/items.yaml
+  - sections/flowchart/actors.yaml
+  - sections/flowchart/systems.yaml
+  - sections/flowchart/steps.yaml
+  - sections/flowchart/journeys.yaml
+  - sections/quiz/questions.yaml
+  - sections/tradeoffs/cooking.yaml
+  - sections/decision-tree/tree.yaml
