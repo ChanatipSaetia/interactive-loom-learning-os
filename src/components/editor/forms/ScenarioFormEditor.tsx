@@ -1,6 +1,7 @@
 import { useState, useCallback } from 'react'
 import { Layers, Film, Settings, HelpCircle, Trash2 } from 'lucide-react'
 import { ScenarioHelpModal } from '../../../sections/scenario/ScenarioHelpModal'
+import '../../../sections/scenario/scenario.css'
 import type {
   OKFScenarioSectionData,
   OKFScenarioNode,

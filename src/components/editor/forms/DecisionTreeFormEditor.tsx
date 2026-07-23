@@ -1,6 +1,7 @@
 import { useState, useCallback } from 'react'
 import { GitCommit, Settings, HelpCircle, Trash2 } from 'lucide-react'
 import { DecisionTreeHelpModal } from '../../../sections/decision-tree/DecisionTreeHelpModal'
+import '../../../sections/decision-tree/decision-tree.css'
 import type {
   OKFDecisionTreeSectionData,
   OKFDecisionTreeNode,

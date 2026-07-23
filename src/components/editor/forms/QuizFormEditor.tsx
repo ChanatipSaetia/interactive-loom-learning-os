@@ -1,6 +1,7 @@
 import { useState, useCallback } from 'react'
 import { HelpCircle, CheckCircle2, CheckSquare, Settings, Plus, Trash2 } from 'lucide-react'
 import { QuizHelpModal } from '../../../sections/quiz/QuizHelpModal'
+import '../../../sections/quiz/quiz.css'
 import type { OKFQuizSectionData, OKFQuizQuestion, OKFQuizChoice } from '../../../core/okf/types'
 
 interface QuizFormEditorProps {

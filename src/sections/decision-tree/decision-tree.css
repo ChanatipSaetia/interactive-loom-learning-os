@@ -1,190 +1,276 @@
-/* Decision Tree Help Modal Styles */
-.dt-help-btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  padding: 4px 12px;
-  border-radius: 9999px;
-  border: 1px solid color-mix(in srgb, var(--primary) 35%, transparent);
-  background: color-mix(in srgb, var(--primary) 10%, transparent);
-  color: var(--primary);
-  font-size: 12px;
-  font-weight: 500;
-  cursor: pointer;
-  transition: all 0.15s ease;
-}
+/* ==========================================================================
+   Decision Tree Component Styles
+   ========================================================================== */
 
-.dt-help-btn:hover {
-  background: color-mix(in srgb, var(--primary) 20%, transparent);
-  border-color: var(--primary);
-  transform: translateY(-1px);
-}
-
-.dt-help-overlay {
-  position: fixed;
-  inset: 0;
-  background: rgba(0, 0, 0, 0.65);
-  backdrop-filter: blur(6px);
-  -webkit-backdrop-filter: blur(6px);
-  z-index: 999;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 16px;
-  animation: fadeIn 0.2s ease-out;
-}
-
-.dt-help-modal {
-  width: 100%;
-  max-width: 660px;
-  max-height: 85vh;
-  background: var(--ctp-mantle);
-  border: 1px solid color-mix(in srgb, var(--primary) 30%, var(--border));
-  border-radius: var(--radius-lg, 16px);
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-  color: var(--ctp-text);
-  font-family: var(--font-body);
-}
-
-.dt-help-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 16px 20px;
-  border-bottom: 1px solid var(--border-light, var(--border));
-  background: var(--ctp-crust);
-}
-
-.dt-help-title-group {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-.dt-help-icon {
-  color: var(--primary);
-}
-
-.dt-help-title {
-  margin: 0;
-  font-size: 16px;
-  font-weight: 600;
-  color: var(--ctp-text);
-}
-
-.dt-help-close-btn {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 32px;
-  height: 32px;
-  border: none;
-  background: transparent;
-  color: var(--ctp-overlay1);
-  border-radius: 8px;
-  cursor: pointer;
-  transition: all 0.15s ease;
-}
-
-.dt-help-close-btn:hover {
-  background: var(--ctp-surface0);
-  color: var(--ctp-text);
-}
-
-.dt-help-body {
-  padding: 20px;
-  overflow-y: auto;
+.dt-section {
   display: flex;
   flex-direction: column;
   gap: 20px;
 }
 
-.dt-help-section {
+/* Breadcrumb Navigation */
+.dt-breadcrumb {
   display: flex;
-  flex-direction: column;
-  gap: 8px;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px;
+  padding: 10px 16px;
+  background: var(--ctp-crust);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  font-family: var(--font-mono);
+  font-size: 12px;
 }
 
-.dt-help-section-title {
+.dt-breadcrumb-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.dt-breadcrumb-arrow {
+  width: 14px;
+  height: 14px;
+  color: var(--ctp-overlay0);
+}
+
+.dt-breadcrumb-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 3px 8px;
+  border-radius: 6px;
+  background: var(--ctp-surface0);
+  color: var(--ctp-subtext0);
+  transition: all 0.15s ease;
+}
+
+.dt-breadcrumb-label-active {
+  background: color-mix(in srgb, var(--primary) 20%, transparent);
+  color: var(--primary);
+  font-weight: 600;
+}
+
+.dt-breadcrumb-step-num {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  border-radius: 9999px;
+  background: var(--primary);
+  color: var(--ctp-base);
+  font-size: 10px;
+  font-weight: 700;
+}
+
+.dt-breadcrumb-check {
+  color: var(--ctp-green);
+  font-weight: 700;
+}
+
+/* Decision Node Container */
+.dt-node {
+  background: var(--ctp-mantle);
+  border: 1px solid color-mix(in srgb, var(--primary) 25%, var(--border));
+  border-radius: var(--radius-lg, 16px);
+  padding: 24px;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.25);
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.dt-node-header {
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 14px;
+}
+
+.dt-node-prompt {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--ctp-text);
+  line-height: 1.45;
+  font-family: var(--font-display, var(--font-sans));
+}
+
+/* Choices Options Grid */
+.dt-choices {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.dt-choice {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  padding: 14px 18px;
+  border-radius: 12px;
+  background: var(--ctp-base);
+  border: 1px solid var(--border);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.dt-choice:hover {
+  border-color: var(--primary);
+  background: color-mix(in srgb, var(--primary) 8%, var(--ctp-base));
+  transform: translateX(3px);
+}
+
+.dt-choice-recommended {
+  border-color: color-mix(in srgb, var(--ctp-green) 40%, var(--border));
+  background: color-mix(in srgb, var(--ctp-green) 5%, var(--ctp-base));
+}
+
+.dt-choice-badge {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
+  background: var(--ctp-surface0);
+  color: var(--ctp-subtext0);
+  font-family: var(--font-mono);
+  font-size: 13px;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.dt-choice-content {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  flex: 1;
+}
+
+.dt-choice-label {
+  font-size: 14.5px;
+  font-weight: 600;
+  color: var(--ctp-text);
   display: flex;
   align-items: center;
   gap: 8px;
-  color: var(--primary);
 }
 
-.dt-help-section-title h3 {
-  margin: 0;
-  font-size: 14px;
+.dt-recommended-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 11px;
   font-weight: 600;
+  color: var(--ctp-green);
+  background: color-mix(in srgb, var(--ctp-green) 15%, transparent);
+  padding: 2px 8px;
+  border-radius: 9999px;
+  text-transform: uppercase;
+}
+
+.dt-recommended-icon {
+  width: 12px;
+  height: 12px;
+}
+
+.dt-choice-desc {
+  font-size: 13px;
+  color: var(--ctp-subtext0);
+  line-height: 1.45;
+}
+
+/* Leaf Recommendation Result Card */
+.dt-leaf {
+  margin-top: 8px;
+}
+
+.dt-leaf-card {
+  background: var(--ctp-crust);
+  border: 1px solid color-mix(in srgb, var(--ctp-green) 40%, var(--border));
+  border-radius: 16px;
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.dt-leaf-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 12px;
+}
+
+.dt-leaf-icon {
+  color: var(--ctp-green);
+}
+
+.dt-leaf-heading {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--ctp-green);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.dt-leaf-body {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.dt-leaf-recommendation {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--ctp-text);
+  line-height: 1.5;
+}
+
+.dt-leaf-block-label {
+  font-family: var(--font-mono);
+  font-size: 11.5px;
+  font-weight: 700;
+  color: var(--primary);
   text-transform: uppercase;
   letter-spacing: 0.05em;
-  font-family: var(--font-mono);
+  display: block;
+  margin-bottom: 4px;
 }
 
-.dt-help-desc {
+.dt-leaf-block-text {
   margin: 0;
-  font-size: 13px;
+  font-size: 13.5px;
   color: var(--ctp-subtext0);
   line-height: 1.5;
 }
 
-.dt-help-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-  gap: 10px;
-  margin-top: 4px;
-}
-
-.dt-help-card {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-  padding: 10px 12px;
-  background: var(--ctp-base);
-  border: 1px solid var(--border);
-  border-radius: 10px;
-}
-
-.dt-help-card p {
-  margin: 0;
-  font-size: 12px;
-  color: var(--ctp-subtext0);
-  line-height: 1.4;
-}
-
-.dt-help-card code {
-  background: var(--ctp-surface0);
-  color: var(--primary);
-  padding: 1px 4px;
-  border-radius: 4px;
-  font-family: var(--font-mono);
-  font-size: 11px;
-}
-
-.card-badge--node {
-  background: color-mix(in srgb, var(--primary) 20%, transparent);
-  color: var(--primary);
-}
-
-.card-badge--leaf {
-  background: color-mix(in srgb, var(--secondary) 20%, transparent);
-  color: var(--secondary);
-}
-
-.dt-help-list {
+.dt-leaf-tradeoff-list {
   margin: 4px 0 0 0;
   padding-left: 18px;
   display: flex;
   flex-direction: column;
   gap: 6px;
-  font-size: 12.5px;
+  font-size: 13px;
   color: var(--ctp-subtext0);
-  line-height: 1.5;
 }
 
-.dt-help-list strong {
-  color: var(--ctp-text);
+.dt-leaf-footer {
+  display: flex;
+  justify-content: flex-end;
+  border-top: 1px solid var(--border);
+  padding-top: 14px;
+}
+
+.dt-reset-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.dt-reset-icon {
+  width: 14px;
+  height: 14px;
 }
