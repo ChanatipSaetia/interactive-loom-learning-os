@@ -3,6 +3,7 @@ import * as yaml from 'js-yaml'
 import type { OKFBundledSection, OKFSectionMeta, OKFSectionData } from '../okf/types'
 import type { ValidationError } from '../okf/validate'
 import { parseAndValidateYAML } from '../okf/validate'
+import { buildSectionSaveFiles, buildDownloadFiles, triggerDownload } from '../util/okfSave'
 
 const DEBOUNCE_MS = 300
 
@@ -12,11 +13,15 @@ interface EditorBufferState {
   rawText: string
   validationErrors: ValidationError[]
   isDirty: boolean
+  isSaving: boolean
 }
 
 interface EditorBufferReturn extends EditorBufferState {
+  sectionBody: string
   setVisualFormField: (data: OKFSectionData) => void
   setRawText: (text: string) => void
+  saveToDisk: (topicId: string, sectionName: string) => Promise<boolean>
+  downloadFiles: () => void
 }
 
 export function useSectionEditorBuffer(
@@ -35,7 +40,7 @@ export function useSectionEditorBuffer(
     const meta = sourceSection?.meta ?? { type: 'text', title: '', resource: '.' }
     const raw = yaml.dump(data, { lineWidth: -1, noRefs: true })
     stringifiedRef.current = raw
-    return { meta, data, rawText: raw, validationErrors: [], isDirty: false }
+    return { meta, data, rawText: raw, validationErrors: [], isDirty: false, isSaving: false }
   })
 
   // Cleanup debounce timer on unmount
@@ -54,7 +59,7 @@ export function useSectionEditorBuffer(
       const meta = sourceSection.meta
       const raw = yaml.dump(data, { lineWidth: -1, noRefs: true })
       stringifiedRef.current = raw
-      setState({ meta, data, rawText: raw, validationErrors: [], isDirty: false })
+      setState({ meta, data, rawText: raw, validationErrors: [], isDirty: false, isSaving: false })
     }
   }, [sourceSection])
 
@@ -136,13 +141,53 @@ export function useSectionEditorBuffer(
     [flushDebounced]
   )
 
+  const saveToDisk = useCallback(async (topicId: string, sectionName: string): Promise<boolean> => {
+    const sectionBody = sourceRef.current?.sectionBody ?? ''
+    const files = buildSectionSaveFiles(state.meta, state.rawText, sectionBody)
+
+    setState((prev) => ({ ...prev, isSaving: true }))
+
+    try {
+      const res = await fetch('/api/okf/save-section', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          topicId,
+          sectionName,
+          sectionMd: files.sectionMd,
+          dataYaml: files.dataYaml,
+        }),
+      })
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({ error: 'Save failed' }))
+        throw new Error(err.error ?? 'Save failed')
+      }
+      setState((prev) => ({ ...prev, isDirty: false, isSaving: false }))
+      return true
+    } catch (e: unknown) {
+      setState((prev) => ({ ...prev, isSaving: false }))
+      throw e
+    }
+  }, [state.meta, state.rawText])
+
+  const downloadFiles = useCallback(() => {
+    const sectionBody = sourceRef.current?.sectionBody ?? ''
+    const downloads = buildDownloadFiles(state.meta, state.rawText, sectionBody)
+    triggerDownload(downloads.sectionMd)
+    setTimeout(() => triggerDownload(downloads.dataYaml), 200)
+  }, [state.meta, state.rawText])
+
   return {
     meta: state.meta,
     data: state.data,
     rawText: state.rawText,
     validationErrors: state.validationErrors,
     isDirty: state.isDirty,
+    isSaving: state.isSaving,
+    sectionBody: sourceRef.current?.sectionBody ?? '',
     setVisualFormField,
     setRawText,
+    saveToDisk,
+    downloadFiles,
   }
 }

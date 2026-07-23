@@ -420,6 +420,10 @@ describe('EditorPanel', () => {
     onVisualFormChange: vi.fn(),
     onRawTextChange: vi.fn(),
     rawText: 'type: text\nparagraphs:\n  - Hello',
+    isDirty: false,
+    isSaving: false,
+    onSave: vi.fn(),
+    onDownload: vi.fn(),
   }
 
   beforeEach(() => {
@@ -479,5 +483,58 @@ describe('EditorPanel', () => {
     fireEvent.click(screen.getByTestId('editor-tab-raw'))
     expect(screen.getByTestId('yaml-validation-banner')).toBeInTheDocument()
     expect(screen.getByTestId('yaml-syntax-error-group')).toBeInTheDocument()
+  })
+
+  it('shows save and download buttons', () => {
+    render(<EditorPanel {...mockProps} />)
+
+    expect(screen.getByTestId('editor-save-btn')).toBeInTheDocument()
+    expect(screen.getByTestId('editor-download-btn')).toBeInTheDocument()
+  })
+
+  it('disables save button when not dirty', () => {
+    render(<EditorPanel {...mockProps} />)
+
+    const saveBtn = screen.getByTestId('editor-save-btn')
+    expect(saveBtn).toBeDisabled()
+  })
+
+  it('enables save button when dirty', () => {
+    render(<EditorPanel {...mockProps} isDirty={true} />)
+
+    const saveBtn = screen.getByTestId('editor-save-btn')
+    expect(saveBtn).not.toBeDisabled()
+  })
+
+  it('disables save button when saving', () => {
+    render(<EditorPanel {...mockProps} isDirty={true} isSaving={true} />)
+
+    const saveBtn = screen.getByTestId('editor-save-btn')
+    expect(saveBtn).toBeDisabled()
+  })
+
+  it('calls onSave when save button is clicked', () => {
+    render(<EditorPanel {...mockProps} isDirty={true} />)
+
+    const saveBtn = screen.getByTestId('editor-save-btn')
+    fireEvent.click(saveBtn)
+
+    expect(mockProps.onSave).toHaveBeenCalled()
+  })
+
+  it('calls onDownload when download button is clicked', () => {
+    render(<EditorPanel {...mockProps} />)
+
+    const downloadBtn = screen.getByTestId('editor-download-btn')
+    fireEvent.click(downloadBtn)
+
+    expect(mockProps.onDownload).toHaveBeenCalled()
+  })
+
+  it('shows saving text when isSaving is true', () => {
+    render(<EditorPanel {...mockProps} isDirty={true} isSaving={true} />)
+
+    const saveBtn = screen.getByTestId('editor-save-btn')
+    expect(saveBtn).toHaveTextContent('Saving...')
   })
 })

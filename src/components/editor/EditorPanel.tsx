@@ -1,4 +1,5 @@
 import { useState, useCallback } from 'react'
+import { Save, Download } from 'lucide-react'
 import { VisualFormEditor } from './VisualFormEditor'
 import { RawYAMLEditor } from './RawYAMLEditor'
 import type { OKFSectionData } from '../../core/okf/types'
@@ -12,6 +13,10 @@ interface EditorPanelProps {
   onVisualFormChange: (data: OKFSectionData) => void
   onRawTextChange: (text: string) => void
   rawText: string
+  isDirty: boolean
+  isSaving: boolean
+  onSave: () => void
+  onDownload: () => void
 }
 
 export function EditorPanel({
@@ -20,6 +25,10 @@ export function EditorPanel({
   onVisualFormChange,
   onRawTextChange,
   rawText,
+  isDirty,
+  isSaving,
+  onSave,
+  onDownload,
 }: EditorPanelProps) {
   const [activeTab, setActiveTab] = useState<EditorTab>('form')
 
@@ -31,6 +40,27 @@ export function EditorPanel({
     <div className="editor-panel" data-testid="editor-panel">
       <div className="editor-panel-header">
         <h3>Section Editor</h3>
+        <div className="editor-actions">
+          <button
+            className="editor-action-btn editor-action-btn--save"
+            data-testid="editor-save-btn"
+            onClick={onSave}
+            disabled={!isDirty || isSaving}
+            title="Save to disk"
+          >
+            <Save size={13} />
+            {isSaving ? 'Saving...' : 'Save'}
+          </button>
+          <button
+            className="editor-action-btn"
+            data-testid="editor-download-btn"
+            onClick={onDownload}
+            title="Download section.md and data.yaml"
+          >
+            <Download size={13} />
+            Download
+          </button>
+        </div>
       </div>
       <div className="editor-tab-bar" data-testid="editor-tab-bar">
         <button

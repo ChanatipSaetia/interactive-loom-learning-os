@@ -24,7 +24,7 @@ import type {
   OKFReflectionTemplateSectionData,
   OKFReflectionSequenceChallenge,
   OKFReflectionTemplateChallenge,
-  OKFGalleryRaw,
+  OKFGalleryItem,
   OKFStepRaw,
   OKFJourneyRaw,
   OKFTradeoffScenarioRaw,
@@ -35,8 +35,6 @@ import type {
   OKFScenarioRaw,
   OKFDecisionTreeRaw,
   OKFFormulaSandboxRaw,
-  OKFReflectionSequenceRaw,
-  OKFReflectionTemplateRaw,
 } from './types'
 
 function getOkfBase(): string {
@@ -148,7 +146,7 @@ export async function loadOKFBundle(topicId: string): Promise<OKFBundled> {
   prefetchPaths.forEach((path) => fetchText(path).catch(() => {}))
 
   const sections = await Promise.all(
-    sectionPaths.map(async (sectionPath) => {
+    sectionPaths.map(async (sectionPath, idx) => {
       const sectionFile = sectionPath.endsWith('section.md')
         ? sectionPath
         : `${sectionPath}/section.md`
@@ -168,7 +166,8 @@ export async function loadOKFBundle(topicId: string): Promise<OKFBundled> {
       const sectionBasePath = `${topicId}/${sectionDir}`
 
       const data = await loadSectionResource(meta.type, sectionBasePath, resourceFiles, meta.resource, sectionRes.body)
-      return { meta, data }
+      const folderName = sectionDir.split('/').pop() ?? `section-${idx}`
+      return { meta, data, sectionBody: sectionRes.body, sectionFolder: folderName }
     })
   )
 
@@ -258,28 +257,31 @@ async function loadFlowchartSection(basePath: string, _resourceFiles: string[]):
 async function loadTradeoffSection(basePath: string, resourceFiles: string[]): Promise<OKFTradeoffSectionData> {
   const scenarioFiles = resourceFiles.filter((f) => !f.endsWith('section.yaml'))
   const promises = scenarioFiles.map((f) =>
-    fetchYaml<OKFTradeoffScenarioRaw>(`${basePath}/${f}`)
+    fetchYaml<any>(`${basePath}/${f}`)
   )
   const raw = await Promise.all(promises)
-  const scenarios = raw.map(mapTradeoffScenario)
+  const scenariosArr = Array.isArray(raw[0]) ? raw[0] : (raw[0]?.scenarios ?? raw)
+  const scenarios = (scenariosArr as OKFTradeoffScenarioRaw[]).map(mapTradeoffScenario)
   return { type: 'tradeoff-sandbox', scenarios }
 }
 
 async function loadTaxonomySection(basePath: string, resourceFiles: string[]): Promise<OKFTaxonomySectionData> {
   const categoryFiles = resourceFiles.filter((f) => !f.endsWith('section.yaml'))
   const promises = categoryFiles.map((f) =>
-    fetchYaml<OKFTaxonomyRaw>(`${basePath}/${f}`)
+    fetchYaml<any>(`${basePath}/${f}`)
   )
   const raw = await Promise.all(promises)
-  const categories = raw.map(mapTaxonomyCategory)
+  const categoriesArr = Array.isArray(raw[0]) ? raw[0] : (raw[0]?.categories ?? raw)
+  const categories = (categoriesArr as OKFTaxonomyRaw[]).map(mapTaxonomyCategory)
   return { type: 'taxonomy-browser', categories }
 }
 
 async function loadFlashcardSection(basePath: string, resource: string, resourceFiles: string[]): Promise<OKFFlashcardSectionData> {
   const glossaryFile = resource !== '.' ? resource : resourceFiles.find((f) => f === 'glossary.yaml')
   if (glossaryFile) {
-    const raw = await fetchYaml<OKFGlossaryRaw[]>(`${basePath}/${glossaryFile}`)
-    const terms = raw.map(mapGlossaryTerm)
+    const raw = await fetchYaml<any>(`${basePath}/${glossaryFile}`)
+    const termsArr = Array.isArray(raw) ? raw : (raw.terms ?? [])
+    const terms = (termsArr as OKFGlossaryRaw[]).map(mapGlossaryTerm)
     return { type: 'flashcards', terms }
   }
   return { type: 'flashcards', terms: [] }
@@ -288,8 +290,9 @@ async function loadFlashcardSection(basePath: string, resource: string, resource
 async function loadQuizSection(basePath: string, resource: string, resourceFiles: string[]): Promise<OKFQuizSectionData> {
   const questionsFile = resource !== '.' ? resource : resourceFiles.find((f) => f === 'questions.yaml')
   if (questionsFile) {
-    const raw = await fetchYaml<OKFQuizQuestionRaw[]>(`${basePath}/${questionsFile}`)
-    const questions = raw.map(mapQuizQuestion)
+    const raw = await fetchYaml<any>(`${basePath}/${questionsFile}`)
+    const questionsArr = Array.isArray(raw) ? raw : (raw.questions ?? [])
+    const questions = (questionsArr as OKFQuizQuestionRaw[]).map(mapQuizQuestion)
     return { type: 'quiz', questions }
   }
   return { type: 'quiz', questions: [] }
@@ -297,22 +300,25 @@ async function loadQuizSection(basePath: string, resource: string, resourceFiles
 
 async function loadConceptMapSection(basePath: string, resource: string): Promise<OKFConceptMapSectionData> {
   const conceptsFile = resource !== '.' ? resource : 'concepts.yaml'
-  const raw = await fetchYaml<OKFConceptMapRaw>(`${basePath}/${conceptsFile}`)
-  const { nodes, edges } = mapConceptMap(raw)
+  const raw = await fetchYaml<any>(`${basePath}/${conceptsFile}`)
+  const unwrapped = raw.nodes && raw.edges && !Array.isArray(raw.nodes) ? raw : { nodes: raw.nodes ?? {}, edges: raw.edges ?? [] }
+  const { nodes, edges } = mapConceptMap(unwrapped as OKFConceptMapRaw)
   return { type: 'concept-map', nodes, edges }
 }
 
 async function loadScenarioSection(basePath: string, resource: string): Promise<OKFScenarioSectionData> {
   const scenariosFile = resource !== '.' ? resource : 'scenarios.yaml'
-  const raw = await fetchYaml<OKFScenarioRaw>(`${basePath}/${scenariosFile}`)
-  return mapScenario(raw)
+  const raw = await fetchYaml<any>(`${basePath}/${scenariosFile}`)
+  const unwrapped = raw.nodes && raw.id ? raw : { id: raw.id, title: raw.title, intro: raw.intro, nodes: raw.nodes }
+  return mapScenario(unwrapped as OKFScenarioRaw)
 }
 
 async function loadImageGallerySection(basePath: string, resource: string, resourceFiles: string[]): Promise<OKFImageGallerySectionData> {
   const galleryFile = resource !== '.' ? resource : resourceFiles.find((f) => f === 'gallery.yaml')
   if (galleryFile) {
-    const raw = await fetchYaml<OKFGalleryRaw>(`${basePath}/${galleryFile}`)
-    return { type: 'image-gallery', items: raw }
+    const raw = await fetchYaml<any>(`${basePath}/${galleryFile}`)
+    const itemsArr = Array.isArray(raw) ? raw : (raw.items ?? [])
+    return { type: 'image-gallery', items: itemsArr as OKFGalleryItem[] }
   }
   return { type: 'image-gallery', items: [] }
 }
@@ -494,8 +500,9 @@ function mapConceptMap(raw: OKFConceptMapRaw): { nodes: Record<string, import('.
 
 async function loadDecisionTreeSection(basePath: string, resource: string): Promise<OKFDecisionTreeSectionData> {
   const treeFile = resource !== '.' ? resource : 'tree.yaml'
-  const raw = await fetchYaml<OKFDecisionTreeRaw>(`${basePath}/${treeFile}`)
-  return mapDecisionTree(raw)
+  const raw = await fetchYaml<any>(`${basePath}/${treeFile}`)
+  const unwrapped = raw.nodes && raw.id && raw.root ? raw : { id: raw.id, title: raw.title, root: raw.root, nodes: raw.nodes }
+  return mapDecisionTree(unwrapped as OKFDecisionTreeRaw)
 }
 
 function mapDecisionTree(raw: OKFDecisionTreeRaw): OKFDecisionTreeSectionData {
@@ -582,18 +589,19 @@ function parseParagraphs(body: string): string[] {
 
 async function loadFormulaSandboxSection(basePath: string, resource: string): Promise<OKFFormulaSandboxSectionData> {
   const file = resource !== '.' ? resource : 'sandbox.yaml'
-  const raw = await fetchYaml<OKFFormulaSandboxRaw>(`${basePath}/${file}`)
+  const raw = await fetchYaml<any>(`${basePath}/${file}`)
+  const unwrapped = raw.variables && raw.metrics ? raw : { variables: raw.variables ?? [], metrics: raw.metrics ?? [] }
   return {
     type: 'formula-sandbox',
-    variables: raw.variables,
-    metrics: raw.metrics,
+    variables: (unwrapped as OKFFormulaSandboxRaw).variables,
+    metrics: (unwrapped as OKFFormulaSandboxRaw).metrics,
   }
 }
 
 async function loadReflectionSequenceSection(basePath: string, resource: string): Promise<OKFReflectionSequenceSectionData> {
   const file = resource !== '.' ? resource : 'sequence.yaml'
-  const raw = await fetchYaml<OKFReflectionSequenceRaw>(`${basePath}/${file}`)
-  
+  const raw = await fetchYaml<any>(`${basePath}/${file}`)
+
   let challenges: OKFReflectionSequenceChallenge[] = []
   if (raw.challenges && Array.isArray(raw.challenges)) {
     challenges = raw.challenges
@@ -615,7 +623,7 @@ async function loadReflectionSequenceSection(basePath: string, resource: string)
 
 async function loadReflectionTemplateSection(basePath: string, resource: string): Promise<OKFReflectionTemplateSectionData> {
   const file = resource !== '.' ? resource : 'template.yaml'
-  const raw = await fetchYaml<OKFReflectionTemplateRaw>(`${basePath}/${file}`)
+  const raw = await fetchYaml<any>(`${basePath}/${file}`)
 
   let challenges: OKFReflectionTemplateChallenge[] = []
   if (raw.challenges && Array.isArray(raw.challenges)) {

@@ -929,3 +929,103 @@
   background-color: color-mix(in srgb, var(--ctp-red) 12%, transparent);
 }
 
+/* =============================================
+    Toast Notifications
+    ============================================= */
+.toast-container {
+  position: fixed;
+  top: 64px;
+  right: 20px;
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  pointer-events: none;
+}
+
+.toast {
+  padding: 10px 16px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 500;
+  font-family: var(--font-body, var(--font-sans));
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+  pointer-events: auto;
+  animation: toast-slide-in 0.25s ease;
+  max-width: 360px;
+}
+
+.toast--success {
+  background-color: color-mix(in srgb, var(--ctp-green) 15%, var(--ctp-mantle));
+  border: 1px solid color-mix(in srgb, var(--ctp-green) 40%, transparent);
+  color: var(--ctp-green);
+}
+
+.toast--error {
+  background-color: color-mix(in srgb, var(--ctp-red) 15%, var(--ctp-mantle));
+  border: 1px solid color-mix(in srgb, var(--ctp-red) 40%, transparent);
+  color: var(--ctp-red);
+}
+
+@keyframes toast-slide-in {
+  from {
+    opacity: 0;
+    transform: translateX(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+/* =============================================
+    Editor Action Buttons
+    ============================================= */
+.editor-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px solid color-mix(in srgb, var(--border) 50%, transparent);
+}
+
+.editor-action-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 6px 12px;
+  border: 1px solid color-mix(in srgb, var(--border) 60%, transparent);
+  border-radius: 6px;
+  background: transparent;
+  color: var(--ctp-overlay1);
+  font-size: 11.5px;
+  font-weight: 500;
+  font-family: var(--font-body, var(--font-sans));
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.editor-action-btn:hover {
+  color: var(--ctp-text);
+  border-color: color-mix(in srgb, var(--ctp-overlay0) 60%, transparent);
+  background-color: color-mix(in srgb, var(--ctp-surface0) 40%, transparent);
+}
+
+.editor-action-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.editor-action-btn--save {
+  color: var(--ctp-green);
+  border-color: color-mix(in srgb, var(--ctp-green) 30%, transparent);
+}
+
+.editor-action-btn--save:hover:not(:disabled) {
+  color: var(--ctp-green);
+  background-color: color-mix(in srgb, var(--ctp-green) 10%, transparent);
+  border-color: color-mix(in srgb, var(--ctp-green) 50%, transparent);
+}
+

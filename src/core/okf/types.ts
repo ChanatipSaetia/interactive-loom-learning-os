@@ -11,6 +11,8 @@ export type OKFBundled = OKFBundledSection[]
 export interface OKFBundledSection {
   meta: OKFSectionMeta
   data: OKFSectionData
+  sectionBody?: string
+  sectionFolder?: string
 }
 
 export interface OKFSectionIntro {

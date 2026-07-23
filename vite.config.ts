@@ -1,5 +1,46 @@
 import { defineConfig, loadEnv } from 'vite'
 import react from '@vitejs/plugin-react'
+import type { Plugin } from 'vite'
+import fs from 'fs'
+import path from 'path'
+
+function okfSavePlugin(): Plugin {
+  return {
+    name: 'okf-save-plugin',
+    configureServer(server) {
+      server.middlewares.use((req, res, next) => {
+        if (req.method === 'POST' && req.url === '/api/okf/save-section') {
+          let body = ''
+          req.on('data', (chunk) => { body += chunk })
+          req.on('end', () => {
+            try {
+              const { topicId, sectionName, sectionMd, dataYaml } = JSON.parse(body)
+              if (!topicId || !sectionName || sectionMd == null || dataYaml == null) {
+                res.writeHead(400, { 'Content-Type': 'application/json' })
+                res.end(JSON.stringify({ error: 'Missing required fields: topicId, sectionName, sectionMd, dataYaml' }))
+                return
+              }
+
+              const dir = path.resolve(process.cwd(), 'public', 'okf', topicId, 'sections', sectionName)
+              fs.mkdirSync(dir, { recursive: true })
+              fs.writeFileSync(path.join(dir, 'section.md'), sectionMd, 'utf-8')
+              fs.writeFileSync(path.join(dir, 'data.yaml'), dataYaml, 'utf-8')
+
+              res.writeHead(200, { 'Content-Type': 'application/json' })
+              res.end(JSON.stringify({ ok: true }))
+            } catch (e: unknown) {
+              const msg = e instanceof Error ? e.message : String(e)
+              res.writeHead(500, { 'Content-Type': 'application/json' })
+              res.end(JSON.stringify({ error: msg }))
+            }
+          })
+        } else {
+          next()
+        }
+      })
+    },
+  }
+}
 
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd(), '')
@@ -45,6 +86,7 @@ export default defineConfig(({ mode }) => {
     base: basePath,
     plugins: [
       react(),
+      okfSavePlugin(),
     ],
     server: {
       port: Number(env.VITE_PORT) || 5173,

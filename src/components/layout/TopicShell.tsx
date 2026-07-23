@@ -11,6 +11,7 @@ import { EditSectionToggle } from './EditSectionToggle'
 import { SplitPaneLayout } from './SplitPaneLayout'
 import { EditorPanel } from '../editor/EditorPanel'
 import { useSectionEditorBuffer } from '../../core/hooks/useSectionEditorBuffer'
+import { ToastProvider, useToast } from '../ui/Toast'
 import { X } from 'lucide-react'
 
 interface SectionRendererProps {
@@ -69,14 +70,20 @@ function LivePreviewSection({ config }: { config: SectionConfig }) {
 }
 
 function EditorModeView({ topicLabel }: { topicLabel: string }) {
-  const { activeSection } = useEditor()
+  const { topicId } = useParams()
+  const { activeSection, activeSectionIndex } = useEditor()
+  const { showToast } = useToast()
 
   const {
     data: editedData,
     rawText,
     validationErrors,
+    isDirty,
+    isSaving,
     setVisualFormField,
     setRawText,
+    saveToDisk,
+    downloadFiles,
   } = useSectionEditorBuffer(activeSection)
 
   const previewConfig = useMemo(() => {
@@ -87,6 +94,26 @@ function EditorModeView({ topicLabel }: { topicLabel: string }) {
       props: { ...original.props, ...editedData },
     }
   }, [activeSection, editedData])
+
+  const sectionName = useMemo(() => {
+    if (!activeSection) return ''
+    return activeSection.sectionFolder ?? `section-${activeSectionIndex ?? 0}`
+  }, [activeSection, activeSectionIndex])
+
+  const handleSave = async () => {
+    if (!topicId || !sectionName || !isDirty) return
+    try {
+      await saveToDisk(topicId, sectionName)
+      showToast('success', 'Section saved to disk')
+    } catch (e: unknown) {
+      const msg = e instanceof Error ? e.message : String(e)
+      showToast('error', `Save failed: ${msg}`)
+    }
+  }
+
+  const handleDownload = () => {
+    downloadFiles()
+  }
 
   if (!activeSection || !previewConfig) {
     return null
@@ -106,6 +133,10 @@ function EditorModeView({ topicLabel }: { topicLabel: string }) {
             onVisualFormChange={setVisualFormField}
             onRawTextChange={setRawText}
             rawText={rawText}
+            isDirty={isDirty}
+            isSaving={isSaving}
+            onSave={handleSave}
+            onDownload={handleDownload}
           />
         }
         rightPanel={<LivePreviewSection config={previewConfig} />}
@@ -189,7 +220,9 @@ export function TopicShell() {
   return (
     <ProgressProvider>
       <HUDProvider>
-        <TopicShellWithBundle />
+        <ToastProvider>
+          <TopicShellWithBundle />
+        </ToastProvider>
       </HUDProvider>
     </ProgressProvider>
   )
