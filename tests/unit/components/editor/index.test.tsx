@@ -127,9 +127,12 @@ describe('VisualFormEditor', () => {
     render(<VisualFormEditor data={flashcardData} onChange={onChange} />)
 
     expect(screen.getByTestId('flashcards-form-editor')).toBeInTheDocument()
-    expect(screen.getByTestId('fc-sub-tabs')).toBeInTheDocument()
     expect(screen.getByTestId('flashcard-0')).toBeInTheDocument()
     expect(screen.getByTestId('flashcards-add-term')).toBeInTheDocument()
+
+    // Test dialogue toggle
+    fireEvent.click(screen.getByTestId('flashcard-0-toggle-dialogue'))
+    expect(screen.getByTestId('flashcard-0-dialogue-user')).toBeInTheDocument()
 
     // Test guide button
     fireEvent.click(screen.getByTestId('flashcards-editor-help-btn'))
