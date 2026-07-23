@@ -670,9 +670,9 @@ function LoomAppContent({
   }
 
   return (
-    <div className="topic-page">
+    <div className="topic-page topic-container">
       {title && <PageHeader title={title} />}
-      <div className="loom-sections-container">
+      <div className="loom-sections-container topic-content topic-container-content">
         {displaySections.map((section, idx) => (
           <SectionRenderer key={`${section.type}-${idx}`} config={section} sectionIndex={idx} />
         ))}

@@ -186,11 +186,13 @@ function TopicShellInner() {
   }
 
   return (
-    <div className="topic-page" data-topic-id={topic.id} data-testid={`${topic.id}-topic`}>
+    <div className="topic-page topic-container" data-topic-id={topic.id} data-testid={`${topic.id}-topic`}>
       <h2 className="topic-page-title">{topic.label}</h2>
-      {sections.map((section, idx) => (
-        <SectionRenderer key={`${topic.id}-${idx}`} config={section} sectionIndex={idx} />
-      ))}
+      <div className="topic-content topic-container-content">
+        {sections.map((section, idx) => (
+          <SectionRenderer key={`${topic.id}-${idx}`} config={section} sectionIndex={idx} />
+        ))}
+      </div>
       <HUDDrawer />
     </div>
   )
