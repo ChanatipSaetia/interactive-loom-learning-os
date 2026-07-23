@@ -588,14 +588,18 @@ body:has(.editor-mode) {
 
 .split-pane-left {
   min-width: 280px;
-  overflow: auto;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
   background-color: color-mix(in srgb, var(--ctp-mantle) 50%, var(--card));
   border-right: 1px solid var(--border);
 }
 
 .split-pane-right {
   min-width: 280px;
-  overflow: auto;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
   background-color: var(--background);
 }
 
@@ -677,12 +681,28 @@ body:has(.editor-mode) {
 /* =============================================
    Editor Preview Panel
    ============================================= */
+.editor-preview-wrapper,
 .editor-preview-panel {
+  flex: 1;
+  min-height: 0;
   height: 100%;
-  overflow: auto;
+  overflow-y: auto;
   padding: 16px 20px;
+  box-sizing: border-box;
 }
 
+.editor-preview-wrapper #flashcard-deck,
+.editor-preview-wrapper .topic-intro-section,
+.editor-preview-wrapper .tradeoff-sandbox,
+.editor-preview-wrapper .scenario-section,
+.editor-preview-wrapper .quiz-section,
+.editor-preview-wrapper .concept-map-section,
+.editor-preview-wrapper .dt-section,
+.editor-preview-wrapper .formula-sandbox-section,
+.editor-preview-wrapper .flowchart-section,
+.editor-preview-wrapper .taxonomy-browser-section,
+.editor-preview-wrapper .reflection-template-section,
+.editor-preview-wrapper .sequence-section,
 .editor-preview-panel #flashcard-deck,
 .editor-preview-panel .topic-intro-section,
 .editor-preview-panel .tradeoff-sandbox,
