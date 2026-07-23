@@ -32,8 +32,11 @@ public/okf/[topic-id]/
 ├── index.yaml                      # App metadata (category, tags, list of ALL related YAML files)
 └── sections/
     ├── intro/
-    │   ├── section.md              # Frontmatter: type, title, resource
-    │   └── content.md              # Markdown text data
+    │   ├── section.md              # Frontmatter: type: intro, title, resource: content.yaml
+    │   └── content.yaml            # What, Why, and Roadmap data
+    ├── text/
+    │   ├── section.md              # Frontmatter: type: text, title, resource: content.md
+    │   └── content.md              # Markdown paragraph text data
     ├── flowchart/
     │   ├── section.md              # resource: "."
     │   ├── actors.yaml

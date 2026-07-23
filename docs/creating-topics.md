@@ -28,7 +28,7 @@ public/
     │   └── sections/
     │       └── intro/
     │           ├── section.md    # Section manifest (frontmatter)
-    │           └── content.md    # Section data
+    │           └── content.yaml  # What, Why, and Roadmap data
     └── my-topic/
         ├── index.md
         ├── index.yaml
@@ -52,7 +52,10 @@ public/okf/[topic-id]/
   index.yaml                      # App metadata: category, tags, related data files
   sections/
     intro/
-      section.md                  # frontmatter: type, title, resource
+      section.md                  # frontmatter: type: intro, title, resource: content.yaml
+      content.yaml                # What, Why, and Roadmap data
+    text/
+      section.md                  # frontmatter: type: text, title, resource: content.md
       content.md                  # paragraph text
     flowchart/
       section.md
