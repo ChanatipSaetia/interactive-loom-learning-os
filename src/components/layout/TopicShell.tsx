@@ -16,9 +16,10 @@ import { X } from 'lucide-react'
 
 interface SectionRendererProps {
   config: SectionConfig
+  sectionIndex: number
 }
 
-function SectionRenderer({ config }: SectionRendererProps) {
+function SectionRenderer({ config, sectionIndex }: SectionRendererProps) {
   const Component = SectionRegistry.get(config.type)
   if (!Component) {
     return (
@@ -29,9 +30,9 @@ function SectionRenderer({ config }: SectionRendererProps) {
   }
 
   return (
-    <div className="section-wrapper" data-section-type={config.type}>
+    <div className="section-wrapper" data-section-type={config.type} data-section-index={sectionIndex}>
       <Suspense fallback={<div className="section-loading">Loading section...</div>}>
-        <Component {...config.props} />
+        <Component sectionIndex={sectionIndex} {...config.props} />
       </Suspense>
     </div>
   )
@@ -53,18 +54,11 @@ function HUDDrawer() {
   )
 }
 
-function SectionEditToolbar({ sectionIndex }: { sectionIndex: number }) {
-  return (
-    <div className="section-edit-toolbar" data-testid={`section-edit-toolbar-${sectionIndex}`}>
-      <EditSectionToggle sectionIndex={sectionIndex} />
-    </div>
-  )
-}
-
 function LivePreviewSection({ config }: { config: SectionConfig }) {
+  const { activeSectionIndex } = useEditor()
   return (
     <div className="editor-preview-wrapper" data-testid="editor-preview-wrapper">
-      <SectionRenderer config={config} />
+      <SectionRenderer config={config} sectionIndex={activeSectionIndex ?? 0} />
     </div>
   )
 }
@@ -195,10 +189,7 @@ function TopicShellInner() {
     <div className="topic-page" data-topic-id={topic.id} data-testid={`${topic.id}-topic`}>
       <h2 className="topic-page-title">{topic.label}</h2>
       {sections.map((section, idx) => (
-        <div key={`${topic.id}-${idx}`} className="section-with-toolbar">
-          <SectionRenderer config={section} />
-          <SectionEditToolbar sectionIndex={idx} />
-        </div>
+        <SectionRenderer key={`${topic.id}-${idx}`} config={section} sectionIndex={idx} />
       ))}
       <HUDDrawer />
     </div>

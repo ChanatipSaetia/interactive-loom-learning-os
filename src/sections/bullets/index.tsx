@@ -1,6 +1,8 @@
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'motion/react'
 import { ChevronDown } from 'lucide-react'
+import { SectionTitleBar } from '../../components/layout/SectionTitleBar'
+import { BulletsHelpModal } from './BulletsHelpModal'
 import './bullets.css'
 
 export interface BulletItem {
@@ -13,6 +15,7 @@ export interface BulletsSectionProps {
   items: BulletItem[]
   ordered?: boolean
   animate?: boolean
+  sectionIndex?: number
 }
 
 
@@ -212,17 +215,17 @@ function BulletItemRow({
   )
 }
 
-function BulletsSection({ title, items, ordered = false, animate = true }: BulletsSectionProps) {
+function BulletsSection({ title, items, ordered = false, animate = true, sectionIndex = 0 }: BulletsSectionProps) {
   return (
     <div
       className="bullets-section"
       data-testid="bullets-section"
     >
-      {title && (
-        <h3 className="bullets-section-title" data-testid="bullets-title">
-          {title}
-        </h3>
-      )}
+      <SectionTitleBar
+        title={title}
+        sectionIndex={sectionIndex}
+        HelpModal={BulletsHelpModal}
+      />
 
       <ul
         className={`bullets-list ${ordered ? 'bullets-list-ordered' : 'bullets-list-unordered'}`}

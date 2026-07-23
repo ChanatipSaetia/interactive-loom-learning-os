@@ -102,7 +102,7 @@ describe('TopicShell OKF loading', () => {
     const config: SectionConfig = { type: 'test-section', props: {} }
     render(
       <MemoryRouter>
-        <SectionRenderer config={config} />
+        <SectionRenderer config={config} sectionIndex={0} />
       </MemoryRouter>,
     )
 
@@ -116,7 +116,7 @@ describe('TopicShell OKF loading', () => {
     const config: SectionConfig = { type: 'unknown-type', props: {} }
     render(
       <MemoryRouter>
-        <SectionRenderer config={config} />
+        <SectionRenderer config={config} sectionIndex={0} />
       </MemoryRouter>,
     )
 

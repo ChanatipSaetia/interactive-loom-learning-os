@@ -4,6 +4,8 @@ import * as Dialog from '@radix-ui/react-dialog'
 import * as Icons from 'lucide-react'
 import { ScrollReveal } from '../../components/motion/scroll-reveal'
 import { useSound } from '../../context/SoundContext'
+import { SectionTitleBar } from '../../components/layout/SectionTitleBar'
+import { TaxonomyHelpModal } from './TaxonomyHelpModal'
 import './taxonomy-browser.css'
 
 export interface TaxonomyCategory {
@@ -28,6 +30,7 @@ function resolveIcon(name: string): ComponentType<any> {
 export interface TaxonomyBrowserSectionProps {
   title?: string
   categories: TaxonomyCategory[]
+  sectionIndex?: number
 }
 
 const colorAccentMap: Record<string, string> = {
@@ -209,7 +212,7 @@ function TaxonomyModal({
   )
 }
 
-function TaxonomyBrowserSection({ title, categories }: TaxonomyBrowserSectionProps) {
+function TaxonomyBrowserSection({ title, categories, sectionIndex = 0 }: TaxonomyBrowserSectionProps) {
   const [selectedIdx, setSelectedIdx] = useState<number | null>(null)
   const { playSound } = useSound()
 
@@ -227,11 +230,7 @@ function TaxonomyBrowserSection({ title, categories }: TaxonomyBrowserSectionPro
 
   return (
     <div className="taxonomy-browser-section" data-testid="taxonomy-browser-section">
-      {title && (
-        <h3 className="taxonomy-browser-title" data-testid="taxonomy-browser-title">
-          {title}
-        </h3>
-      )}
+      <SectionTitleBar title={title} sectionIndex={sectionIndex} HelpModal={TaxonomyHelpModal} />
       <div className="taxonomy-browser-grid" data-testid="taxonomy-browser-grid">
         {categories.map((cat, idx) => {
           const Icon = resolveIcon(cat.icon)

@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react'
 import { CheckCircle2, AlertCircle, X, ChevronLeft, ChevronRight } from 'lucide-react'
 import { useSound } from '../../context/SoundContext'
+import { SectionTitleBar } from '../../components/layout/SectionTitleBar'
+import { ReflectionSequenceHelpModal } from './ReflectionSequenceHelpModal'
 import './reflection-sequence.css'
 
 export interface SequenceItem {
@@ -21,6 +23,7 @@ export interface ReflectionSequenceProps {
   items?: SequenceItem[]
   solution?: string[]
   challenges?: ReflectionSequenceChallenge[]
+  sectionIndex?: number
 }
 
 function ReflectionSequenceSingle({
@@ -246,6 +249,7 @@ export function ReflectionSequence({
   items = [],
   solution = [],
   challenges,
+  sectionIndex = 0,
 }: ReflectionSequenceProps) {
   const normalizedChallenges = challenges && challenges.length > 0
     ? challenges
@@ -269,9 +273,7 @@ export function ReflectionSequence({
 
   return (
     <div className="sequence-section" data-testid="sequence-section">
-      {title && (
-        <h3 className="bullets-section-title">{title}</h3>
-      )}
+      <SectionTitleBar title={title} sectionIndex={sectionIndex} HelpModal={ReflectionSequenceHelpModal} />
 
       {/* Single Challenge Renderer with index key to reset state */}
       <ReflectionSequenceSingle
@@ -283,24 +285,22 @@ export function ReflectionSequence({
 
       {/* Pagination Controls */}
       {normalizedChallenges.length > 1 && (
-        <div className="quiz-nav" style={{ marginTop: '24px', borderTop: '1px solid color-mix(in srgb, var(--ctp-text) 5%, transparent)', paddingTop: '16px' }}>
+        <div className="sequence-nav">
           <button
             onClick={handlePrev}
             disabled={currentIndex === 0}
-            className="quiz-nav-btn"
-            style={{ display: 'inline-flex', alignItems: 'center', opacity: currentIndex === 0 ? 0.4 : 1, cursor: currentIndex === 0 ? 'not-allowed' : 'pointer' }}
+            className="sequence-nav-btn"
           >
             <ChevronLeft size={16} style={{ marginRight: '4px' }} />
             Previous Scenario
           </button>
-          <span style={{ color: 'var(--ctp-subtext0)', fontSize: '14px', fontFamily: 'monospace' }}>
+          <span className="sequence-nav-counter">
             {currentIndex + 1} / {normalizedChallenges.length}
           </span>
           <button
             onClick={handleNext}
             disabled={currentIndex === normalizedChallenges.length - 1}
-            className="quiz-nav-btn"
-            style={{ display: 'inline-flex', alignItems: 'center', opacity: currentIndex === normalizedChallenges.length - 1 ? 0.4 : 1, cursor: currentIndex === normalizedChallenges.length - 1 ? 'not-allowed' : 'pointer' }}
+            className="sequence-nav-btn"
           >
             Next Scenario
             <ChevronRight size={16} style={{ marginLeft: '4px' }} />

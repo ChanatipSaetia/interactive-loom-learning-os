@@ -2,6 +2,51 @@
    Quiz Section Component & Help Modal Styles
    ========================================================================== */
 
+.quiz-section {
+  @apply flex flex-col gap-5 w-full;
+}
+
+.quiz-section-title {
+  @apply font-semibold text-foreground tracking-tight;
+  font-size: var(--text-card-heading);
+  font-family: var(--font-display);
+}
+
+/* Score Bar */
+.quiz-score-bar {
+  @apply flex items-center gap-3 rounded-xl border border-border bg-card px-4 py-3 shadow-sm;
+}
+
+.quiz-score-label {
+  @apply font-mono text-xs font-bold uppercase tracking-widest text-muted-foreground shrink-0;
+}
+
+.quiz-score-track {
+  @apply flex-1 h-2 rounded-full bg-card overflow-hidden;
+}
+
+.quiz-score-fill {
+  @apply h-full rounded-full transition-all duration-500 ease-out;
+  background: linear-gradient(90deg, var(--primary), var(--secondary));
+}
+
+.quiz-score-text {
+  @apply font-mono text-xs font-bold text-foreground shrink-0;
+}
+
+.quiz-questions-list {
+  @apply flex flex-col gap-4;
+}
+
+/* Navigation */
+.quiz-nav {
+  @apply flex items-center justify-between gap-3 mt-2;
+}
+
+.quiz-nav-btn {
+  @apply text-muted-foreground hover:text-foreground;
+}
+
 /* Quiz Question Container Card */
 .quiz-question-card {
   background: var(--ctp-mantle);
@@ -263,4 +308,138 @@
   background: color-mix(in srgb, var(--primary) 20%, transparent);
   border-color: var(--primary);
   transform: translateY(-1px);
+}
+
+.qz-help-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.65);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  animation: fadeIn 0.2s ease-out;
+}
+
+.qz-help-modal {
+  width: 100%;
+  max-width: 660px;
+  max-height: 85vh;
+  background: var(--ctp-mantle);
+  border: 1px solid color-mix(in srgb, var(--primary) 30%, var(--border));
+  border-radius: var(--radius-lg, 16px);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  color: var(--ctp-text);
+  font-family: var(--font-body);
+}
+
+.qz-help-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--border-light, var(--border));
+  background: var(--ctp-crust);
+}
+
+.qz-help-title-group {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.qz-help-icon {
+  color: var(--primary);
+}
+
+.qz-help-title {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--ctp-text);
+}
+
+.qz-help-close-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border: none;
+  background: transparent;
+  color: var(--ctp-overlay1);
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.qz-help-close-btn:hover {
+  background: var(--ctp-surface0);
+  color: var(--ctp-text);
+}
+
+.qz-help-body {
+  padding: 20px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.qz-help-section {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.qz-help-section-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--primary);
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.qz-help-section-title h3 {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--ctp-text);
+}
+
+.qz-help-desc {
+  margin: 0;
+  font-size: 13.5px;
+  color: var(--ctp-subtext0);
+  line-height: 1.5;
+}
+
+.qz-help-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 12px;
+}
+
+.qz-help-card {
+  padding: 14px;
+  background: var(--ctp-surface0);
+  border: 1px solid var(--border-light, var(--border));
+  border-radius: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.qz-help-card p {
+  margin: 0;
+  font-size: 13px;
+  color: var(--ctp-subtext0);
+  line-height: 1.45;
 }

@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef, useCallback, useMemo } from 'react'
-import { ZoomIn, ZoomOut, Maximize2, ChevronLeft, ChevronRight, HelpCircle } from 'lucide-react'
+import { ZoomIn, ZoomOut, Maximize2, ChevronLeft, ChevronRight } from 'lucide-react'
 import { ConceptMapHelpModal } from './ConceptMapHelpModal'
+import { SectionTitleBar } from '../../components/layout/SectionTitleBar'
 import './concept-map.css'
 
 export interface ConceptNode {
@@ -23,6 +24,7 @@ export interface ConceptMapSectionProps {
   title?: string
   nodes: Record<string, ConceptNode>
   edges: ConceptEdge[]
+  sectionIndex?: number
 }
 
 interface TransformState {
@@ -407,7 +409,7 @@ function layoutTopDownPlanar(
   return { nodes: resultNodes, edgeAnchors }
 }
 
-function ConceptMapSection({ title, nodes, edges }: ConceptMapSectionProps) {
+function ConceptMapSection({ title, nodes, edges, sectionIndex = 0 }: ConceptMapSectionProps) {
   const svgRef = useRef<SVGSVGElement | null>(null)
   const containerRef = useRef<HTMLDivElement | null>(null)
   const [hoveredNode, setHoveredNode] = useState<string | null>(null)
@@ -695,36 +697,17 @@ function ConceptMapSection({ title, nodes, edges }: ConceptMapSectionProps) {
     return edge.from === hoveredNode || edge.to === hoveredNode
   }
 
-  const [isHelpOpen, setIsHelpOpen] = useState(false)
-
   return (
     <div className="concept-map-section" data-testid="concept-map-section">
-      <ConceptMapHelpModal isOpen={isHelpOpen} onClose={() => setIsHelpOpen(false)} />
-
       <div className="concept-map-header" style={{ justifyContent: 'space-between' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-          {title && (
-            <h3 className="concept-map-title" data-testid="concept-map-title">
-              {title}
-            </h3>
-          )}
+          <SectionTitleBar title={title} sectionIndex={sectionIndex} HelpModal={ConceptMapHelpModal} />
           {graphs.length > 1 && (
             <span className="concept-map-graph-badge" data-testid="concept-map-graph-badge">
               {currentGraphIndex + 1} / {graphs.length}
             </span>
           )}
         </div>
-
-        <button
-          className="cm-help-btn"
-          onClick={() => setIsHelpOpen(true)}
-          data-testid="concept-map-help-btn"
-          type="button"
-          title="Concept Map Guide & Concepts"
-        >
-          <HelpCircle size={13} />
-          <span>Help & Guide</span>
-        </button>
       </div>
 
       <div className="concept-map-layout" ref={containerRef}>

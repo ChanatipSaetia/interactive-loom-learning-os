@@ -4,6 +4,7 @@ import { Button } from '../../components/motion/button';
 import { Dropdown } from '../../components/motion/dropdown';
 import { ExpandableTabs, type ExpandableTabItem } from '../../components/motion/expandable-tabs';
 import { Tabs, TabsList, TabsTrigger } from '../../components/motion/tabs';
+import { SectionTitleBar } from '../../components/layout/SectionTitleBar';
 
 import { FlowchartView } from './views';
 import { PlaybackControls } from './playback-controls';
@@ -64,7 +65,7 @@ const Workflow = Icons.Workflow;
 export { TYPES, COLORS, BORDER_COLORS, ICONS, ICON_ANIMATIONS, DYNAMIC_ICONS, NODE_W, NODE_H, INITIAL_SCHEMA, PROCESS_GROUP_STATE_MAP, STEP_EVENT_TO_STATE_MAP };
 export type { UnifiedFlowchartSchema, FlowchartEntity, FlowchartRelation, FlowchartViewNode, FlowchartViewGroup, FlowchartStep, FlowchartStepData, FlowchartStepLinear, FlowchartStepBranchOption, FlowchartJourney, FlowchartViewConfig, FlowchartProps, ProcessGroup, FlowchartStateMachineState, FlowchartStateMachine };
 
-export function Flowchart({ title, schema = INITIAL_SCHEMA }: FlowchartProps) {
+export function Flowchart({ title, schema = INITIAL_SCHEMA, sectionIndex = 0 }: FlowchartProps) {
   const rawId = useId();
   const instanceId = useMemo(() => rawId.replace(/:/g, ''), [rawId]);
 
@@ -620,25 +621,9 @@ export function Flowchart({ title, schema = INITIAL_SCHEMA }: FlowchartProps) {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activeSteps, activeStep, handleStepClick, instanceId, playback, cameraControls, isFullscreen, visibleViewKeys, actionBarItems, activeViewKey, localSchema.journeys]);
 
-  const [isHelpOpen, setIsHelpOpen] = useState(false);
-
   return (
     <div className={`flowchart-section${isFullscreen ? ' fullscreen' : ''}`} data-testid="flowchart-section">
-      <div className="flowchart-header-container w-full flex items-center justify-between">
-        {title && <h3 className="flowchart-title" data-testid="flowchart-title">{title}</h3>}
-        <button
-          className="flowchart-help-btn ml-auto"
-          onClick={() => setIsHelpOpen(true)}
-          data-testid="flowchart-help-btn"
-          type="button"
-          title="Flowchart & Event Storming Concepts Guide"
-        >
-          <Icons.HelpCircle size={14} />
-          <span>Help & Guide</span>
-        </button>
-      </div>
-
-      <FlowchartHelpModal isOpen={isHelpOpen} onClose={() => setIsHelpOpen(false)} />
+      <SectionTitleBar title={title} sectionIndex={sectionIndex} HelpModal={FlowchartHelpModal} />
 
       {/* Canvas View */}
       <div className="flowchart-canvas-wrapper" style={{ position: 'relative' }}>

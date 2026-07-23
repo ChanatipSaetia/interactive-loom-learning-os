@@ -4,6 +4,8 @@ import { RotateCcw, ArrowRight, ChevronRight, ThumbsUp } from 'lucide-react'
 import type { OKFDecisionTreeNode, OKFDecisionTreeChoice } from '../../core/okf/types'
 import { Button } from '../../components/motion/button'
 import { useSound } from '../../context/SoundContext'
+import { SectionTitleBar } from '../../components/layout/SectionTitleBar'
+import { DecisionTreeHelpModal } from './DecisionTreeHelpModal'
 import './decision-tree.css'
 
 export interface DecisionTreeSectionProps {
@@ -11,6 +13,7 @@ export interface DecisionTreeSectionProps {
   title?: string
   root?: string
   nodes?: Record<string, OKFDecisionTreeNode>
+  sectionIndex?: number
 }
 
 type HistoryEntry = { nodeId: string; choiceId?: string }
@@ -253,6 +256,7 @@ export default function DecisionTreeSection({
   title,
   root = 'root',
   nodes = {},
+  sectionIndex = 0,
 }: DecisionTreeSectionProps) {
   const [phase, setPhase] = useState<'intro' | 'playing' | 'leaf'>('intro')
   const [currentNodeId, setCurrentNodeId] = useState(root)
@@ -304,11 +308,7 @@ export default function DecisionTreeSection({
 
   return (
     <div className="dt-section" data-testid="dt-section">
-      {title && (
-        <h3 className="dt-section-title" data-testid="dt-title">
-          {title}
-        </h3>
-      )}
+      <SectionTitleBar title={title} sectionIndex={sectionIndex} HelpModal={DecisionTreeHelpModal} />
 
       <AnimatePresence mode="wait">
         {phase === 'intro' && (

@@ -4,11 +4,14 @@ import { Check, X, Lightbulb, ChevronRight, ChevronLeft, ChevronDown } from 'luc
 import type { OKFQuizQuestion } from '../../core/okf/types'
 import { Button } from '../../components/motion/button'
 import { useSound } from '../../context/SoundContext'
+import { SectionTitleBar } from '../../components/layout/SectionTitleBar'
+import { QuizHelpModal } from './QuizHelpModal'
 import './quiz.css'
 
 export interface QuizSectionProps {
   title?: string
   questions?: OKFQuizQuestion[]
+  sectionIndex?: number
 }
 
 const CHOICE_LABELS = ['A', 'B', 'C', 'D', 'E', 'F']
@@ -158,7 +161,7 @@ function QuestionCard({
   )
 }
 
-export default function QuizSection({ title, questions = [] }: QuizSectionProps) {
+export default function QuizSection({ title, questions = [], sectionIndex = 0 }: QuizSectionProps) {
   const [currentIndex, setCurrentIndex] = useState(0)
   const [answers, setAnswers] = useState<AnswersMap>({})
   const [hintsOpen, setHintsOpen] = useState<HintsOpenMap>({})
@@ -208,11 +211,12 @@ export default function QuizSection({ title, questions = [] }: QuizSectionProps)
 
   return (
     <div className="quiz-section" data-testid="quiz-section">
-      {title && (
-        <h3 className="quiz-section-title" data-testid="quiz-title">
-          {title}
-        </h3>
-      )}
+      <SectionTitleBar
+        title={title}
+        sectionIndex={sectionIndex}
+        HelpModal={QuizHelpModal}
+        titleTestId="quiz-title"
+      />
 
       <div className="quiz-score-bar" data-testid="quiz-score-bar">
         <span className="quiz-score-label">Score</span>

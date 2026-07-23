@@ -1,6 +1,8 @@
 import { useState, useEffect, useMemo } from 'react'
 import { useHUD } from '../../core/context/HUDContext'
 import type { OKFFormulaVariable, OKFFormulaMetric } from '../../core/okf/types'
+import { SectionTitleBar } from '../../components/layout/SectionTitleBar'
+import { FormulaHelpModal } from './FormulaHelpModal'
 import './formula-sandbox.css'
 
 /**
@@ -56,6 +58,7 @@ export interface FormulaSandboxProps {
   title?: string
   variables: OKFFormulaVariable[]
   metrics: OKFFormulaMetric[]
+  sectionIndex?: number
 }
 
 function evaluateFormula(formulaStr: string, variablesState: Record<string, number>): number {
@@ -132,7 +135,7 @@ function getMetricUnitAndFormat(metric: OKFFormulaMetric, val: number): { unit: 
 
 
 
-export function FormulaSandbox({ title, variables = [], metrics = [] }: FormulaSandboxProps) {
+export function FormulaSandbox({ title, variables = [], metrics = [], sectionIndex = 0 }: FormulaSandboxProps) {
   const { openHUD } = useHUD()
 
   // Initialize variables state
@@ -192,9 +195,7 @@ export function FormulaSandbox({ title, variables = [], metrics = [] }: FormulaS
 
   return (
     <div className="formula-sandbox-section" data-testid="formula-sandbox-section">
-      {title && (
-        <h3 className="tradeoff-sandbox-title">{title}</h3>
-      )}
+      <SectionTitleBar title={title} sectionIndex={sectionIndex} HelpModal={FormulaHelpModal} />
 
       <div className="sandbox-layout">
         <div className="controls-panel">

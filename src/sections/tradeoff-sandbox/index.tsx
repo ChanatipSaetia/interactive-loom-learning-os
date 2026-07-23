@@ -4,6 +4,8 @@ import { Check, X, Star, Plus, Info, ChevronLeft, ChevronRight } from 'lucide-re
 import { Button, MagneticButton } from '../../components/motion/button'
 import { Dropdown } from '../../components/motion/dropdown'
 import { useSound } from '../../context/SoundContext'
+import { SectionTitleBar } from '../../components/layout/SectionTitleBar'
+import { TradeoffHelpModal } from './TradeoffHelpModal'
 import './tradeoff-sandbox.css'
 
 export interface MetricDef {
@@ -51,6 +53,7 @@ export interface TradeoffSandboxSectionProps {
   title?: string
   scenarios: TradeoffScenario[]
   instanceId?: string
+  sectionIndex?: number
 }
 
 function MetricBar({ metric, value, max, instanceId }: { metric: MetricDef; value: number; max: number; instanceId?: string }) {
@@ -599,7 +602,7 @@ function DetailsModal({
   )
 }
 
-function TradeoffSandboxSection({ title, scenarios, instanceId }: TradeoffSandboxSectionProps) {
+function TradeoffSandboxSection({ title, scenarios, instanceId, sectionIndex = 0 }: TradeoffSandboxSectionProps) {
   const [scenarioIdx, setScenarioIdx] = useState(0)
   const [compareOpen, setCompareOpen] = useState(false)
   const { playSound } = useSound()
@@ -688,11 +691,7 @@ function TradeoffSandboxSection({ title, scenarios, instanceId }: TradeoffSandbo
 
   return (
     <div className="tradeoff-sandbox" data-testid={getTestId("tradeoff-sandbox")}>
-      {title && (
-        <h3 className="tradeoff-sandbox-title" data-testid={getTestId("tradeoff-sandbox-title")}>
-          {title}
-        </h3>
-      )}
+      <SectionTitleBar title={title} sectionIndex={sectionIndex} HelpModal={TradeoffHelpModal} />
 
       <div className="flex flex-col md:flex-row items-start md:items-center justify-between w-full mb-3 gap-3 min-w-0">
         {scenarios.length > 1 ? (

@@ -1,6 +1,8 @@
 import { useMemo } from 'react'
 import { marked } from 'marked'
 import { ScrollReveal } from '../../components/motion/scroll-reveal'
+import { SectionTitleBar } from '../../components/layout/SectionTitleBar'
+import { TextHelpModal } from './TextHelpModal'
 import './text.css'
 
 export interface TextSectionProps {
@@ -8,11 +10,12 @@ export interface TextSectionProps {
   heading?: string
   paragraphs: string[]
   animate?: boolean
+  sectionIndex?: number
 }
 
 marked.use({ async: false, breaks: true })
 
-function TextSection({ title, heading, paragraphs, animate = false }: TextSectionProps) {
+function TextSection({ title, heading, paragraphs, animate = false, sectionIndex = 0 }: TextSectionProps) {
   const renderedParagraphs = useMemo(
     () =>
       paragraphs.map((p) => {
@@ -32,11 +35,11 @@ function TextSection({ title, heading, paragraphs, animate = false }: TextSectio
 
   const content = (
     <>
-      {title && (
-        <h3 className="text-section-title" data-testid="text-title">
-          {title}
-        </h3>
-      )}
+      <SectionTitleBar
+        title={title}
+        sectionIndex={sectionIndex}
+        HelpModal={TextHelpModal}
+      />
 
       {heading && (
         <h4 className="text-section-heading" data-testid="text-heading">

@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { X, ChevronLeft, ChevronRight, ImageOff } from 'lucide-react';
+import { SectionTitleBar } from '../../components/layout/SectionTitleBar';
 
 export interface GalleryItem {
   id: string;
@@ -12,6 +13,7 @@ export interface GalleryItem {
 export interface ImageGalleryProps {
   title?: string;
   items?: GalleryItem[];
+  sectionIndex?: number;
 }
 
 function GalleryImage({ item, onClick }: { item: GalleryItem; onClick: () => void }) {
@@ -186,7 +188,7 @@ function Lightbox({
   );
 }
 
-export default function ImageGallery({ title, items = [] }: ImageGalleryProps) {
+export default function ImageGallery({ title, items = [], sectionIndex = 0 }: ImageGalleryProps) {
   const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
 
   if (!items || items.length === 0) {
@@ -199,10 +201,8 @@ export default function ImageGallery({ title, items = [] }: ImageGalleryProps) {
 
   return (
     <div className="w-full max-w-full" id="image-gallery">
+      <SectionTitleBar title={title || 'Image Gallery'} sectionIndex={sectionIndex} />
       <div className="flex items-center w-full mb-6">
-        <h3 className="flex-1 !m-0 !p-0 font-display font-light text-foreground tracking-tight text-2xl md:text-3xl">
-          {title || 'Image Gallery'}
-        </h3>
         <div className="flex-shrink-0 flex items-center px-3.5 py-1.5 rounded-full bg-muted/10 border border-border font-mono text-xs font-bold tracking-widest text-muted-foreground ml-4">
           {String(items.length).padStart(2, '0')} images
         </div>

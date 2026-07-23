@@ -98,8 +98,7 @@
   margin-top: 0 !important;
 }
 
-.topic-page-title + * .flowchart-header-container,
-.topic-page-title + * .flashcards-header {
+.topic-page-title + * .flowchart-header-container {
   padding-top: 0 !important;
   margin-top: 0 !important;
 }
@@ -107,6 +106,7 @@
 /* =============================================
    Shared Section Titles
 ============================================= */
+.section-unified-title,
 .text-section-title,
 .bullets-section-title,
 .flowchart-title,
@@ -128,9 +128,9 @@
   background-color: color-mix(in srgb, var(--loom-section-bg, var(--background)) 92%, transparent);
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
-  border-bottom: 1px solid color-mix(in srgb, var(--secondary) 30%, transparent);
 }
 
+.section-unified-title::before,
 .text-section-title::before,
 .bullets-section-title::before,
 .flowchart-title::before,
@@ -151,6 +151,7 @@
   flex-shrink: 0;
 }
 
+.section-unified-title::after,
 .text-section-title::after,
 .bullets-section-title::after,
 .flowchart-title::after,
@@ -190,8 +191,7 @@
 /* =============================================
    Sticky Header Container for Grandchild Titles
 ============================================= */
-.flowchart-header-container,
-.flashcards-header {
+.flowchart-header-container {
   position: sticky;
   top: var(--loom-title-sticky-top, 52px);
   z-index: 10;
@@ -202,8 +202,7 @@
 }
 
 /* Reset sticky properties for titles inside sticky containers to avoid double-sticking */
-.flowchart-header-container .flowchart-title,
-.flashcards-header .flashcard-title {
+.flowchart-header-container .flowchart-title {
   position: static !important;
   background-color: transparent !important;
   padding-top: 0 !important;
@@ -308,28 +307,204 @@
 }
 
 /* =============================================
-   Section Edit Toolbar
-   ============================================= */
-.section-with-toolbar {
-  position: relative;
+    Section Title Bar
+    ============================================= */
+.section-title-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 12px;
 }
 
-.section-edit-toolbar {
-  position: absolute;
-  top: 8px;
-  right: 8px;
-  z-index: 20;
-  opacity: 0;
-  transition: opacity 0.2s ease;
+.section-title-bar-title {
+  flex: 1;
+  min-width: 0;
 }
 
-.section-with-toolbar:hover .section-edit-toolbar {
-  opacity: 1;
+.section-title-bar-actions,
+.section-title-bar-actions {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  flex-shrink: 0;
 }
 
 /* =============================================
-   Edit Section Toggle Button
-   ============================================= */
+    Section Action Buttons (Edit, Help)
+    ============================================= */
+.section-action-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border: 1px solid transparent;
+  border-radius: 6px;
+  background-color: transparent;
+  color: var(--ctp-overlay2);
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.section-action-btn:hover {
+  color: var(--primary);
+  background-color: color-mix(in srgb, var(--primary) 10%, transparent);
+  border-color: color-mix(in srgb, var(--primary) 30%, transparent);
+}
+
+.section-action-btn.active {
+  color: var(--primary);
+  background-color: color-mix(in srgb, var(--primary) 12%, var(--card));
+  border-color: color-mix(in srgb, var(--primary) 40%, transparent);
+}
+
+/* =============================================
+    Section Help Modal
+    ============================================= */
+.section-help-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  padding: 16px;
+}
+
+.section-help-modal {
+  background-color: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  max-width: 520px;
+  width: 100%;
+  max-height: 80vh;
+  overflow-y: auto;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+}
+
+.section-help-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--border);
+}
+
+.section-help-title-group {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.section-help-icon {
+  color: var(--primary);
+  flex-shrink: 0;
+}
+
+.section-help-title {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--ctp-text);
+}
+
+.section-help-close-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border: none;
+  border-radius: 6px;
+  background: transparent;
+  color: var(--ctp-overlay2);
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.section-help-close-btn:hover {
+  background-color: color-mix(in srgb, var(--ctp-red) 15%, transparent);
+  color: var(--ctp-red);
+}
+
+.section-help-body {
+  padding: 20px;
+}
+
+.section-help-section {
+  margin-bottom: 16px;
+}
+
+.section-help-section:last-child {
+  margin-bottom: 0;
+}
+
+.section-help-section-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+  color: var(--primary);
+}
+
+.section-help-section-title h3 {
+  margin: 0;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.section-help-desc {
+  margin: 0;
+  font-size: 12px;
+  line-height: 1.6;
+  color: var(--ctp-overlay2);
+}
+
+.section-help-tips {
+  margin: 0;
+  padding-left: 16px;
+  list-style: disc;
+}
+
+.section-help-tips li {
+  font-size: 12px;
+  line-height: 1.6;
+  color: var(--ctp-overlay2);
+  margin-bottom: 4px;
+}
+
+.section-help-tips li strong {
+  color: var(--ctp-text);
+}
+
+.section-help-footer {
+  padding: 12px 20px;
+  border-top: 1px solid var(--border);
+  display: flex;
+  justify-content: flex-end;
+}
+
+.section-help-btn-primary {
+  padding: 6px 16px;
+  border: 1px solid color-mix(in srgb, var(--primary) 50%, transparent);
+  border-radius: 6px;
+  background-color: color-mix(in srgb, var(--primary) 15%, var(--card));
+  color: var(--primary);
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.section-help-btn-primary:hover {
+  background-color: color-mix(in srgb, var(--primary) 25%, var(--card));
+}
+
+/* Legacy: keep edit-section-toggle for editor mode header */
 .edit-section-toggle {
   display: inline-flex;
   align-items: center;

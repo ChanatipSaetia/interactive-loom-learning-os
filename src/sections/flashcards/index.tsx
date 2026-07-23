@@ -6,20 +6,21 @@ import { Button } from '../../components/motion/button';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '../../components/motion/tabs';
 import { useSound } from '../../context/SoundContext';
 import { FlashcardsHelpModal } from './FlashcardsHelpModal';
+import { SectionTitleBar } from '../../components/layout/SectionTitleBar';
 
 type BackTabId = 'guidelines' | 'dialogue';
 
 export interface FlashcardDeckProps {
   title?: string;
   terms?: WordTerm[];
+  sectionIndex?: number;
 }
 
-export default function FlashcardDeck({ title, terms = [] }: FlashcardDeckProps) {
+export default function FlashcardDeck({ title, terms = [], sectionIndex = 0 }: FlashcardDeckProps) {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isFlipped, setIsFlipped] = useState(false);
   const [direction, setDirection] = useState(0); // -1 for left, 1 for right
   const [activeBackTab, setActiveBackTab] = useState<BackTabId>('guidelines');
-  const [isHelpOpen, setIsHelpOpen] = useState(false);
   const { playSound } = useSound();
 
   // Auto-clamp currentIndex if terms array shrinks or changes
@@ -128,32 +129,20 @@ export default function FlashcardDeck({ title, terms = [] }: FlashcardDeckProps)
 
   return (
     <div className="flex flex-col w-full h-full max-w-full" id="flashcard-deck">
-      <FlashcardsHelpModal isOpen={isHelpOpen} onClose={() => setIsHelpOpen(false)} />
-      
-      {/* Top Deck Info with Standard Heading */}
-      <div className="flashcards-header flex items-center w-full">
-        <h3 className="flashcard-title flex-1 !m-0 !p-0" data-testid="flashcard-title">
-          {title || "Aesthetics Glossary"}
-        </h3>
-        
-        {/* Polished Item Counter */}
-        <div className="flex-shrink-0 flex items-center space-x-2 px-3.5 py-1.5 rounded-full bg-muted/10 border border-border shadow-sm font-mono text-xs font-bold tracking-widest ml-4">
-          <span className="text-primary text-sm">{String(safeIndex + 1).padStart(2, '0')}</span>
-          <span className="text-muted-foreground/30">/</span>
-          <span className="text-muted-foreground">{String(terms.length).padStart(2, '0')}</span>
-        </div>
 
-        <button
-          className="fc-help-btn ml-3"
-          onClick={() => setIsHelpOpen(true)}
-          data-testid="flashcard-help-btn"
-          type="button"
-          title="Flashcard Deck Concepts Guide"
-        >
-          <HelpCircle size={13} />
-          <span>Help & Guide</span>
-        </button>
-      </div>
+      {/* Top Deck Info with Standard Heading */}
+      <SectionTitleBar
+        title={title || "Aesthetics Glossary"}
+        sectionIndex={sectionIndex}
+        HelpModal={FlashcardsHelpModal}
+        extraActions={
+          <div className="flex-shrink-0 flex items-center space-x-2 px-3 py-1 rounded-full bg-muted/10 border border-border shadow-sm font-mono text-xs font-bold tracking-widest mr-2">
+            <span className="text-primary text-xs">{String(safeIndex + 1).padStart(2, '0')}</span>
+            <span className="text-muted-foreground/30">/</span>
+            <span className="text-muted-foreground text-xs">{String(terms.length).padStart(2, '0')}</span>
+          </div>
+        }
+      />
 
       {/* Main Flashcard Row layout with Side Navigation */}
       <div className="flex items-center justify-center w-full gap-4 md:gap-8 mt-4">

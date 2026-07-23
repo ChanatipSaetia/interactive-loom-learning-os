@@ -1,7 +1,8 @@
-import React, { useState } from 'react'
-import { Sparkles, Target, Lightbulb, MapPin, Clock, Layers, ArrowRight, CheckCircle2, BookOpen, HelpCircle } from 'lucide-react'
+import React from 'react'
+import { Sparkles, Target, Lightbulb, MapPin, Clock, Layers, ArrowRight, CheckCircle2, BookOpen } from 'lucide-react'
 import type { OKFIntroRoadmapStep } from '../../core/okf/types'
 import { IntroHelpModal } from './IntroHelpModal'
+import { SectionTitleBar } from '../../components/layout/SectionTitleBar'
 import './intro.css'
 
 export interface IntroSectionProps {
@@ -20,6 +21,7 @@ export interface IntroSectionProps {
     impact?: string
   }
   roadmap?: OKFIntroRoadmapStep[]
+  sectionIndex?: number
 }
 
 const IntroSection: React.FC<IntroSectionProps> = ({
@@ -30,8 +32,8 @@ const IntroSection: React.FC<IntroSectionProps> = ({
   what,
   why,
   roadmap = [],
+  sectionIndex = 0,
 }) => {
-  const [isHelpOpen, setIsHelpOpen] = useState(false)
 
   const handleScrollToSection = (sectionId?: string) => {
     if (!sectionId) return
@@ -45,7 +47,7 @@ const IntroSection: React.FC<IntroSectionProps> = ({
 
   return (
     <div className="topic-intro-section" data-testid="intro-section">
-      <IntroHelpModal isOpen={isHelpOpen} onClose={() => setIsHelpOpen(false)} />
+      <SectionTitleBar title={title} sectionIndex={sectionIndex} HelpModal={IntroHelpModal} />
 
       {/* Optional Hero Header - only rendered if title/subtitle/badges are provided */}
       {hasHeroHeader && (
@@ -69,18 +71,6 @@ const IntroSection: React.FC<IntroSectionProps> = ({
                 <span>{moduleCount} Modules</span>
               </div>
             )}
-
-            <button
-              className="intro-help-btn"
-              onClick={() => setIsHelpOpen(true)}
-              data-testid="intro-help-btn"
-              type="button"
-              style={{ marginLeft: 'auto' }}
-              title="Topic Intro & Overview Guide"
-            >
-              <HelpCircle size={13} />
-              <span>Help & Guide</span>
-            </button>
           </div>
 
           {title && <h1 className="topic-intro-title" data-testid="intro-title">{title}</h1>}

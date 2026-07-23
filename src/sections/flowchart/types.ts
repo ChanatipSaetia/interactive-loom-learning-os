@@ -325,6 +325,7 @@ export interface UnifiedFlowchartSchema {
 export interface FlowchartProps {
   title?: string;
   schema?: UnifiedFlowchartSchema;
+  sectionIndex?: number;
 }
 
 export interface TransformState {

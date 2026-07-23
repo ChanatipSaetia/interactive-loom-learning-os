@@ -1,6 +1,8 @@
 import React, { useState, useMemo, useCallback, useEffect } from 'react'
 import { CheckCircle2, AlertCircle, ChevronLeft, ChevronRight } from 'lucide-react'
 import { useSound } from '../../context/SoundContext'
+import { SectionTitleBar } from '../../components/layout/SectionTitleBar'
+import { ReflectionTemplateHelpModal } from './ReflectionTemplateHelpModal'
 import './reflection-template.css'
 
 export interface ChipItem {
@@ -24,6 +26,7 @@ export interface ReflectionTemplateProps {
   solution?: Record<string, string>
   explanation?: string
   challenges?: ReflectionTemplateChallenge[]
+  sectionIndex?: number
 }
 
 function ReflectionTemplateSingle({
@@ -257,6 +260,7 @@ export function ReflectionTemplate({
   solution = {},
   explanation,
   challenges,
+  sectionIndex = 0,
 }: ReflectionTemplateProps) {
   const normalizedChallenges = challenges && challenges.length > 0
     ? challenges
@@ -280,9 +284,7 @@ export function ReflectionTemplate({
 
   return (
     <div className="reflection-template-section" data-testid="reflection-section">
-      {title && (
-        <h3 className="bullets-section-title">{title}</h3>
-      )}
+      <SectionTitleBar title={title} sectionIndex={sectionIndex} HelpModal={ReflectionTemplateHelpModal} />
 
       {/* Single Challenge Renderer with index key to reset state */}
       <ReflectionTemplateSingle

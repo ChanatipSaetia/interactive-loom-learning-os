@@ -68,3 +68,7 @@ export function useEditor() {
   }
   return context
 }
+
+export function useEditorSafe() {
+  return useContext(EditorContext)
+}

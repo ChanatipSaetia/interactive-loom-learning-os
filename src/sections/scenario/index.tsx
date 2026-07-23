@@ -4,6 +4,8 @@ import { RotateCcw, ArrowRight, CheckCircle2, AlertCircle } from 'lucide-react'
 import type { OKFScenarioNode, ScenarioRating } from '../../core/okf/types'
 import { Button } from '../../components/motion/button'
 import { useSound } from '../../context/SoundContext'
+import { SectionTitleBar } from '../../components/layout/SectionTitleBar'
+import { ScenarioHelpModal } from './ScenarioHelpModal'
 import './scenario.css'
 
 export interface ScenarioSectionProps {
@@ -12,6 +14,7 @@ export interface ScenarioSectionProps {
   intro?: string
   nodes?: Record<string, OKFScenarioNode>
   startNode?: string
+  sectionIndex?: number
 }
 
 const RATING_COLORS: Record<ScenarioRating, string> = {
@@ -242,6 +245,7 @@ export default function ScenarioSection({
   intro,
   nodes = {},
   startNode = 'start',
+  sectionIndex = 0,
 }: ScenarioSectionProps) {
   const [phase, setPhase] = useState<'intro' | 'playing' | 'outcome'>('intro')
   const [currentNodeId, setCurrentNodeId] = useState(startNode)
@@ -311,11 +315,7 @@ export default function ScenarioSection({
 
   return (
     <div className="scenario-section" data-testid="scenario-section">
-      {title && (
-        <h3 className="scenario-section-title" data-testid="scenario-title">
-          {title}
-        </h3>
-      )}
+      <SectionTitleBar title={title} sectionIndex={sectionIndex} HelpModal={ScenarioHelpModal} />
 
       <AnimatePresence mode="wait">
         {phase === 'intro' && (
