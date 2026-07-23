@@ -182,7 +182,7 @@ export default function FlashcardDeck({ title, terms = [] }: FlashcardDeckProps)
               custom={direction}
               variants={slideVariants}
               initial="initial"
-              animate="active"
+              animate="animate"
               exit="exit"
               className="absolute w-full h-full"
             >
