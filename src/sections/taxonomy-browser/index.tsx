@@ -230,7 +230,7 @@ function TaxonomyBrowserSection({ title, categories, sectionIndex = 0 }: Taxonom
 
   return (
     <div className="taxonomy-browser-section" data-testid="taxonomy-browser-section">
-      <SectionTitleBar title={title} sectionIndex={sectionIndex} HelpModal={TaxonomyHelpModal} />
+      <SectionTitleBar title={title} sectionIndex={sectionIndex} HelpModal={TaxonomyHelpModal} titleTestId="taxonomy-browser-title" />
       <div className="taxonomy-browser-grid" data-testid="taxonomy-browser-grid">
         {categories.map((cat, idx) => {
           const Icon = resolveIcon(cat.icon)

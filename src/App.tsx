@@ -4,6 +4,7 @@ import { OverviewPage } from './components/overview/OverviewPage'
 import { TopicShell } from './components/layout/TopicShell'
 import { ScrollProgress } from './components/motion/scroll-progress'
 import { SmoothScroll } from './components/motion/smooth-scroll'
+import { EditorProvider } from './core/context/EditorContext'
 import { TopicsProvider } from './core/routes'
 import { SoundProvider } from './context/SoundContext'
 
@@ -11,19 +12,21 @@ export function App() {
   return (
     <SoundProvider>
       <TopicsProvider>
-        <SmoothScroll>
-          <div className="app-layout">
-            <TopNav />
-            <main className="main-content">
-              <ScrollProgress variant="bar" position="top" height={3} className="z-[100]" />
-              <Routes>
-                <Route path="/" element={<OverviewPage />} />
-                <Route path="/topics/:topicId/*" element={<TopicShell />} />
-                <Route path="/:topicId/*" element={<TopicShell />} />
-              </Routes>
-            </main>
-          </div>
-        </SmoothScroll>
+        <EditorProvider>
+          <SmoothScroll>
+            <div className="app-layout">
+              <TopNav />
+              <main className="main-content">
+                <ScrollProgress variant="bar" position="top" height={3} className="z-[100]" />
+                <Routes>
+                  <Route path="/" element={<OverviewPage />} />
+                  <Route path="/topics/:topicId/*" element={<TopicShell />} />
+                  <Route path="/:topicId/*" element={<TopicShell />} />
+                </Routes>
+              </main>
+            </div>
+          </SmoothScroll>
+        </EditorProvider>
       </TopicsProvider>
     </SoundProvider>
   )

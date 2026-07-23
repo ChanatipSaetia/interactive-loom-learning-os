@@ -315,7 +315,7 @@ export default function ScenarioSection({
 
   return (
     <div className="scenario-section" data-testid="scenario-section">
-      <SectionTitleBar title={title} sectionIndex={sectionIndex} HelpModal={ScenarioHelpModal} />
+      <SectionTitleBar title={title} sectionIndex={sectionIndex} HelpModal={ScenarioHelpModal} titleTestId="scenario-title" />
 
       <AnimatePresence mode="wait">
         {phase === 'intro' && (

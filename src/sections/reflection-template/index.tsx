@@ -284,7 +284,7 @@ export function ReflectionTemplate({
 
   return (
     <div className="reflection-template-section" data-testid="reflection-section">
-      <SectionTitleBar title={title} sectionIndex={sectionIndex} HelpModal={ReflectionTemplateHelpModal} />
+      <SectionTitleBar title={title} sectionIndex={sectionIndex} HelpModal={ReflectionTemplateHelpModal} titleTestId="reflection-template-title" />
 
       {/* Single Challenge Renderer with index key to reset state */}
       <ReflectionTemplateSingle

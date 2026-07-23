@@ -39,6 +39,7 @@ function TextSection({ title, heading, paragraphs, animate = false, sectionIndex
         title={title}
         sectionIndex={sectionIndex}
         HelpModal={TextHelpModal}
+        titleTestId="text-title"
       />
 
       {heading && (

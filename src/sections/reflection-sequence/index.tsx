@@ -273,7 +273,7 @@ export function ReflectionSequence({
 
   return (
     <div className="sequence-section" data-testid="sequence-section">
-      <SectionTitleBar title={title} sectionIndex={sectionIndex} HelpModal={ReflectionSequenceHelpModal} />
+      <SectionTitleBar title={title} sectionIndex={sectionIndex} HelpModal={ReflectionSequenceHelpModal} titleTestId="reflection-sequence-title" />
 
       {/* Single Challenge Renderer with index key to reset state */}
       <ReflectionSequenceSingle

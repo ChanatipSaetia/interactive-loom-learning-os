@@ -623,7 +623,7 @@ export function Flowchart({ title, schema = INITIAL_SCHEMA, sectionIndex = 0 }: 
 
   return (
     <div className={`flowchart-section${isFullscreen ? ' fullscreen' : ''}`} data-testid="flowchart-section">
-      <SectionTitleBar title={title} sectionIndex={sectionIndex} HelpModal={FlowchartHelpModal} />
+      <SectionTitleBar title={title} sectionIndex={sectionIndex} HelpModal={FlowchartHelpModal} titleTestId="flowchart-title" />
 
       {/* Canvas View */}
       <div className="flowchart-canvas-wrapper" style={{ position: 'relative' }}>

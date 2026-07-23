@@ -9,7 +9,13 @@ import type { TopicRoute } from '../../../../src/core/routes'
 import type { SectionConfig } from '../../../../src/core/registry'
 import type { OKFBundledSection } from '../../../../src/core/okf/types'
 
-const MockSectionComponent = vi.fn(() => <div data-testid="mock-registered-section" />)
+import { SectionTitleBar } from '../../../../src/components/layout/SectionTitleBar'
+
+const MockSectionComponent = vi.fn(({ sectionIndex }: { sectionIndex?: number }) => (
+  <div data-testid="mock-registered-section">
+    <SectionTitleBar title="Mock Section" sectionIndex={sectionIndex ?? 0} />
+  </div>
+))
 const mockSectionLoader = () => Promise.resolve({ default: MockSectionComponent })
 
 const mockTopics: TopicRoute[] = [
@@ -236,7 +242,7 @@ describe('TopicShell Editor Mode', () => {
     await waitFor(() => {
       const splitPane = document.querySelector('[data-testid="split-pane-layout"]')
       expect(splitPane).not.toBeInTheDocument()
-      const sectionWrappers = document.querySelectorAll('.section-with-toolbar')
+      const sectionWrappers = document.querySelectorAll('.section-wrapper')
       expect(sectionWrappers.length).toBeGreaterThanOrEqual(2)
     })
   })
@@ -266,7 +272,7 @@ describe('EditSectionToggle', () => {
     await waitFor(() => {
       const editBtn = document.querySelector('[data-testid="edit-section-toggle-0"]')
       expect(editBtn).not.toBeNull()
-      expect(editBtn?.textContent).toContain('Edit')
+      expect(editBtn?.getAttribute('aria-label')).toContain('Edit section')
       expect(editBtn?.classList.contains('active')).toBe(false)
     })
   })

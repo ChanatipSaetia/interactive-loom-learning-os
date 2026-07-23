@@ -195,7 +195,7 @@ export function FormulaSandbox({ title, variables = [], metrics = [], sectionInd
 
   return (
     <div className="formula-sandbox-section" data-testid="formula-sandbox-section">
-      <SectionTitleBar title={title} sectionIndex={sectionIndex} HelpModal={FormulaHelpModal} />
+      <SectionTitleBar title={title} sectionIndex={sectionIndex} HelpModal={FormulaHelpModal} titleTestId="formula-sandbox-title" />
 
       <div className="sandbox-layout">
         <div className="controls-panel">

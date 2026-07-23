@@ -701,7 +701,7 @@ function ConceptMapSection({ title, nodes, edges, sectionIndex = 0 }: ConceptMap
     <div className="concept-map-section" data-testid="concept-map-section">
       <div className="concept-map-header" style={{ justifyContent: 'space-between' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-          <SectionTitleBar title={title} sectionIndex={sectionIndex} HelpModal={ConceptMapHelpModal} />
+          <SectionTitleBar title={title} sectionIndex={sectionIndex} HelpModal={ConceptMapHelpModal} titleTestId="concept-map-title" />
           {graphs.length > 1 && (
             <span className="concept-map-graph-badge" data-testid="concept-map-graph-badge">
               {currentGraphIndex + 1} / {graphs.length}

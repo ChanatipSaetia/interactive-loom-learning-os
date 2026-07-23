@@ -308,7 +308,7 @@ export default function DecisionTreeSection({
 
   return (
     <div className="dt-section" data-testid="dt-section">
-      <SectionTitleBar title={title} sectionIndex={sectionIndex} HelpModal={DecisionTreeHelpModal} />
+      <SectionTitleBar title={title} sectionIndex={sectionIndex} HelpModal={DecisionTreeHelpModal} titleTestId="dt-title" />
 
       <AnimatePresence mode="wait">
         {phase === 'intro' && (

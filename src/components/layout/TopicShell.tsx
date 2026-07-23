@@ -1,4 +1,4 @@
-import { Suspense, useMemo } from 'react'
+import { Suspense, useMemo, useEffect } from 'react'
 import { useParams } from 'react-router-dom'
 import { useTopics } from '../../core/routes'
 import type { SectionConfig } from '../../core/registry'
@@ -6,7 +6,7 @@ import { SectionRegistry } from '../../core/registry'
 import { useOKFBundled, bundleToSections } from '../../core/okf/sections'
 import { ProgressProvider } from '../../core/progress'
 import { HUDProvider, useHUD } from '../../core/context/HUDContext'
-import { EditorProvider, useEditor } from '../../core/context/EditorContext'
+import { EditorProvider, useEditor, useEditorSafe } from '../../core/context/EditorContext'
 import { EditSectionToggle } from './EditSectionToggle'
 import { SplitPaneLayout } from './SplitPaneLayout'
 import { EditorPanel } from '../editor/EditorPanel'
@@ -199,12 +199,29 @@ function TopicShellInner() {
 function TopicShellWithBundle() {
   const { topicId } = useParams()
   const { bundle } = useOKFBundled(topicId ?? '')
+  const editor = useEditorSafe()
 
-  return (
-    <EditorProvider bundle={bundle}>
-      <TopicShellInner />
-    </EditorProvider>
-  )
+  useEffect(() => {
+    if (editor?.setBundle) {
+      editor.setBundle(bundle ?? null)
+    }
+  }, [bundle, editor])
+
+  useEffect(() => {
+    if (editor?.editMode) {
+      editor.setEditMode(false)
+    }
+  }, [topicId])
+
+  if (!editor) {
+    return (
+      <EditorProvider bundle={bundle}>
+        <TopicShellInner />
+      </EditorProvider>
+    )
+  }
+
+  return <TopicShellInner />
 }
 
 export function TopicShell() {

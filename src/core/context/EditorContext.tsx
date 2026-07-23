@@ -9,14 +9,17 @@ export interface EditorContextValue {
   setEditMode: (mode: boolean) => void
   setActiveSectionIndex: (index: number | null) => void
   toggleEdit: (index?: number | null) => void
+  setBundle: (bundle: OKFBundled | null) => void
 }
 
 const EditorContext = createContext<EditorContextValue | null>(null)
 
 export function EditorProvider({ children, bundle }: { children: ReactNode; bundle?: OKFBundled | null | undefined }) {
-  const resolvedBundle = bundle ?? null
+  const [internalBundle, setInternalBundle] = useState<OKFBundled | null>(bundle ?? null)
   const [editMode, setEditModeState] = useState(false)
   const [activeSectionIndex, setActiveSectionIndexState] = useState<number | null>(null)
+
+  const resolvedBundle = bundle !== undefined ? (bundle ?? null) : internalBundle
 
   const activeSection =
     activeSectionIndex !== null && resolvedBundle && activeSectionIndex < resolvedBundle.length
@@ -32,6 +35,10 @@ export function EditorProvider({ children, bundle }: { children: ReactNode; bund
 
   const setActiveSectionIndex = useCallback((index: number | null) => {
     setActiveSectionIndexState(index)
+  }, [])
+
+  const setBundle = useCallback((b: OKFBundled | null) => {
+    setInternalBundle(b)
   }, [])
 
   const toggleEdit = useCallback((index?: number | null) => {
@@ -54,6 +61,7 @@ export function EditorProvider({ children, bundle }: { children: ReactNode; bund
         setEditMode,
         setActiveSectionIndex,
         toggleEdit,
+        setBundle,
       }}
     >
       {children}

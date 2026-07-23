@@ -330,12 +330,8 @@ describe('VisualFormEditor', () => {
     render(<VisualFormEditor data={scenarioData} onChange={onChange} />)
 
     expect(screen.getByTestId('scenario-form-editor')).toBeInTheDocument()
-    expect(screen.getByTestId('sc-sub-tabs')).toBeInTheDocument()
-    expect(screen.getByTestId('scenario-title')).toHaveValue('Test Scenario')
-
-    // Switch to Nodes tab
-    fireEvent.click(screen.getByTestId('sc-tab-nodes'))
-    expect(screen.getByTestId('sc-node-start')).toBeInTheDocument()
+    expect(screen.getByTestId('sc-node-list')).toBeInTheDocument()
+    expect(screen.getByTestId('sc-node-item-start')).toBeInTheDocument()
 
     // Test guide button
     fireEvent.click(screen.getByTestId('scenario-editor-help-btn'))
@@ -367,8 +363,8 @@ describe('VisualFormEditor', () => {
     render(<VisualFormEditor data={dtData} onChange={onChange} />)
 
     expect(screen.getByTestId('decision-tree-form-editor')).toBeInTheDocument()
-    expect(screen.getByTestId('dt-sub-tabs')).toBeInTheDocument()
-    expect(screen.getByTestId('dt-node-root')).toBeInTheDocument()
+    expect(screen.getByTestId('dt-node-list')).toBeInTheDocument()
+    expect(screen.getByTestId('dt-node-item-root')).toBeInTheDocument()
     expect(screen.getByTestId('dt-choice-0')).toBeInTheDocument()
 
     // Test guide button

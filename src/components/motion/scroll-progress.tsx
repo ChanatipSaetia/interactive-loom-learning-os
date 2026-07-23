@@ -6,6 +6,7 @@ import {
   useTransform,
 } from "motion/react";
 import { useSmoothScroll } from "./smooth-scroll";
+import { useEditorSafe } from "../../core/context/EditorContext";
 import { cn } from "../../lib/utils";
 
 const PROGRESS_SPRING = { stiffness: 120, damping: 30, mass: 0.6 };
@@ -42,6 +43,9 @@ function useProgressValue(source: MotionValue<number> | undefined, spring: boole
 }
 
 export function ScrollProgress(props: ScrollProgressProps) {
+  const editor = useEditorSafe();
+  if (editor?.editMode) return null;
+
   if (props.variant === "circle") return <ScrollProgressCircle {...props} />;
   return <ScrollProgressBar {...props} />;
 }

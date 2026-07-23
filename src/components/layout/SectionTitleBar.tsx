@@ -46,7 +46,7 @@ export function SectionTitleBar({
         {extraActions}
         <button
           className={`section-action-btn ${isActive ? 'active' : ''}`}
-          data-testid={`section-edit-btn-${sectionIndex}`}
+          data-testid={`edit-section-toggle-${sectionIndex}`}
           onClick={() => editor?.toggleEdit(sectionIndex)}
           aria-label={editor?.editMode ? 'Exit edit mode' : 'Edit section'}
           title={editor?.editMode ? 'Exit edit mode' : 'Edit section'}
@@ -76,7 +76,7 @@ export function SectionTitleBar({
         {extraActions}
         <button
           className={`section-action-btn ${isActive ? 'active' : ''}`}
-          data-testid={`section-edit-btn-${sectionIndex}`}
+          data-testid={`edit-section-toggle-${sectionIndex}`}
           onClick={() => editor?.toggleEdit(sectionIndex)}
           aria-label={editor?.editMode ? 'Exit edit mode' : 'Edit section'}
           title={editor?.editMode ? 'Exit edit mode' : 'Edit section'}

@@ -691,7 +691,7 @@ function TradeoffSandboxSection({ title, scenarios, instanceId, sectionIndex = 0
 
   return (
     <div className="tradeoff-sandbox" data-testid={getTestId("tradeoff-sandbox")}>
-      <SectionTitleBar title={title} sectionIndex={sectionIndex} HelpModal={TradeoffHelpModal} />
+      <SectionTitleBar title={title} sectionIndex={sectionIndex} HelpModal={TradeoffHelpModal} titleTestId={getTestId("tradeoff-sandbox-title")} />
 
       <div className="flex flex-col md:flex-row items-start md:items-center justify-between w-full mb-3 gap-3 min-w-0">
         {scenarios.length > 1 ? (

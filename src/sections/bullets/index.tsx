@@ -225,6 +225,7 @@ function BulletsSection({ title, items, ordered = false, animate = true, section
         title={title}
         sectionIndex={sectionIndex}
         HelpModal={BulletsHelpModal}
+        titleTestId="bullets-title"
       />
 
       <ul

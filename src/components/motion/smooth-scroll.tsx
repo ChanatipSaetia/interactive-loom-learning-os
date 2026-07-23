@@ -10,6 +10,7 @@ import {
   useMemo,
   useRef,
 } from "react";
+import { useEditorSafe } from "../../core/context/EditorContext";
 
 const EASE_SCROLL = (t: number) => Math.min(1, 1.001 - 2 ** (-10 * t));
 
@@ -87,17 +88,31 @@ function LenisBridge({
   velocity: MotionValue<number>;
   lenisRef: { current: Lenis | null };
 }) {
+  const editor = useEditorSafe();
+  const editMode = editor?.editMode ?? false;
+
   const lenis = useLenis((instance) => {
     scrollY.set(instance.scroll);
     progress.set(instance.progress);
     velocity.set(instance.velocity);
   });
+
   useEffect(() => {
     lenisRef.current = lenis ?? null;
     return () => {
       lenisRef.current = null;
     };
   }, [lenis, lenisRef]);
+
+  useEffect(() => {
+    if (!lenis) return;
+    if (editMode) {
+      lenis.stop();
+    } else {
+      lenis.start();
+    }
+  }, [lenis, editMode]);
+
   return null;
 }
 
