@@ -16,6 +16,8 @@ import { SoundProvider } from '../src/context/SoundContext'
 import { AudioToggle } from '../src/components/layout/AudioToggle'
 import { ThemeToggle } from '../src/components/motion/theme-toggle'
 import { X } from 'lucide-react'
+import { SectionErrorBoundary } from '../src/components/common/SectionErrorBoundary'
+import { validateSectionData, validateYAMLContent, formatPayloadAsPrompt, type OKFValidationErrorPayload } from '../src/core/okf/validate'
 import type { OKFBundled } from '../src/core/okf/types'
 
 // Import section CSS
@@ -189,9 +191,11 @@ function SectionRenderer({ config, sectionIndex }: { config: SectionConfig; sect
 
   return (
     <div className="section-wrapper" data-section-type={config.type} data-section-index={sectionIndex ?? 0}>
-      <Suspense fallback={<div className="section-loading">Loading section...</div>}>
-        <Component sectionIndex={sectionIndex ?? 0} {...adaptedProps} />
-      </Suspense>
+      <SectionErrorBoundary sectionName={config.type}>
+        <Suspense fallback={<div className="section-loading">Loading section...</div>}>
+          <Component sectionIndex={sectionIndex ?? 0} {...adaptedProps} />
+        </Suspense>
+      </SectionErrorBoundary>
     </div>
   )
 }
@@ -423,6 +427,9 @@ interface LoomSectionsAPI {
   ) => () => void
   registerSection: (type: string, component: ComponentType<any>) => void
   loadAndRenderOKF: (container: HTMLElement, okfBaseUrl: string, topicId: string, options?: RenderOptions) => Promise<() => void>
+  validateSection: (data: unknown, metaType?: string) => OKFValidationErrorPayload[]
+  validateYAML: (rawYaml: string, metaType?: string) => { data: any; errors: OKFValidationErrorPayload[] }
+  formatValidationPrompt: (errors: OKFValidationErrorPayload[], rawSource?: string) => string
 }
 
 const LoomSections: LoomSectionsAPI = {
@@ -521,6 +528,18 @@ const LoomSections: LoomSectionsAPI = {
       topicId,
       editable: options?.editable ?? true,
     })
+  },
+
+  validateSection(data: unknown, metaType?: string) {
+    return validateSectionData(data, metaType)
+  },
+
+  validateYAML(rawYaml: string, metaType?: string) {
+    return validateYAMLContent(rawYaml, metaType)
+  },
+
+  formatValidationPrompt(errors: OKFValidationErrorPayload[], rawSource?: string) {
+    return formatPayloadAsPrompt(errors, rawSource)
   },
 }
 

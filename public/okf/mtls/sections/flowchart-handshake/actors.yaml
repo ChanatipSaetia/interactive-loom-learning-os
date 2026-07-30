@@ -1,0 +1,6 @@
+client_dev:
+  title: "Client Developer"
+  desc: "Integrates mTLS into client application"
+server_admin:
+  title: "Server Administrator"
+  desc: "Configures server CA trust and certificate requirements"

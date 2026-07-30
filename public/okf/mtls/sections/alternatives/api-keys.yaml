@@ -1,0 +1,17 @@
+type: taxonomy-category
+icon: CreditCard
+title: "Simple API Key Authentication"
+subtitle: "Shared secret in a header — the simplest way to identify a caller"
+color: yellow
+description: "The client includes a static or rotating secret key in each request header. The server looks up the key to authorize access. No certificates, no handshakes, no PKI."
+details: "API keys are a shared secret between client and server, typically passed as X-API-Key or Authorization: ApiKey header. They're trivial to integrate: generate a key, distribute it out-of-band, and check it on the server side. Rotation is manual or assisted through a dashboard. The simplicity comes with trade-offs: keys are usually sent over TLS but not cryptographically bound to the connection, they're harder to revoke instantly at scale, and they provide no mutual authentication — only the client proves identity, never the server. Still, for many internal tooling and partner integrations, the operational savings are worth the security gap."
+analogy: "Like a keycard for a building: it works as long as you have it and someone didn't copy it, but there's no handshake verifying the building is the real one."
+primaryFocus: "Minimal-friction integration for third-party and partner access"
+inScope:
+  - "Third-party integrations where partners can't manage certificates"
+  - "Internal tooling and CI/CD pipelines with low-security requirements"
+  - "Public APIs where simplicity drives adoption and TLS provides transport security"
+outOfScope:
+  - "Zero-trust environments requiring mutual authentication"
+  - "High-value service meshes where key exfiltration risks are unacceptable"
+  - "Regulated industries mandating cryptographic identity proofs"

@@ -1,0 +1,129 @@
+nodes:
+  mtls:
+    title: "mTLS"
+    category: pattern
+  tls:
+    title: "TLS"
+    category: pattern
+  certificate:
+    title: "Certificate"
+    category: data
+  ca:
+    title: "CA (Certificate Authority)"
+    category: system
+  pki:
+    title: "PKI"
+    category: system
+  client_certificate:
+    title: "Client Certificate"
+    category: data
+  server_certificate:
+    title: "Server Certificate"
+    category: data
+  spiffe:
+    title: "SPIFFE"
+    category: pattern
+  spire:
+    title: "SPIRE"
+    category: system
+  jwt:
+    title: "JWT"
+    category: data
+  oauth2:
+    title: "OAuth2"
+    category: pattern
+  zero_trust:
+    title: "Zero Trust"
+    category: concept
+  service_mesh:
+    title: "Service Mesh"
+    category: system
+  certificate_chain:
+    title: "Certificate Chain"
+    category: data
+  key_pair:
+    title: "Key Pair"
+    category: data
+  trust_store:
+    title: "Trust Store"
+    category: system
+  workload_identity:
+    title: "Workload Identity"
+    category: concept
+  mutual_authentication:
+    title: "Mutual Authentication"
+    category: process
+
+edges:
+  - from: mtls
+    to: tls
+    label: "extends"
+  - from: mtls
+    to: mutual_authentication
+    label: "realizes"
+  - from: mtls
+    to: client_certificate
+    label: "requires"
+  - from: mtls
+    to: server_certificate
+    label: "requires"
+  - from: mtls
+    to: zero_trust
+    label: "enables"
+  - from: certificate
+    to: pki
+    label: "part of"
+  - from: ca
+    to: certificate
+    label: "issues"
+  - from: ca
+    to: pki
+    label: "core of"
+  - from: client_certificate
+    to: certificate
+    label: "type of"
+  - from: server_certificate
+    to: certificate
+    label: "type of"
+  - from: certificate
+    to: key_pair
+    label: "binds"
+  - from: certificate
+    to: certificate_chain
+    label: "linked in"
+  - from: certificate_chain
+    to: trust_store
+    label: "validated by"
+  - from: spiffe
+    to: workload_identity
+    label: "standardizes"
+  - from: spire
+    to: spiffe
+    label: "implements"
+  - from: spiffe
+    to: mtls
+    label: "uses"
+  - from: spiffe
+    to: jwt
+    label: "issues"
+  - from: jwt
+    to: mtls
+    label: "alternative to"
+  - from: oauth2
+    to: jwt
+    label: "issues"
+  - from: oauth2
+    to: mtls
+    label: "alternative to"
+  - from: service_mesh
+    to: mtls
+    label: "deploys"
+  - from: service_mesh
+    to: zero_trust
+    label: "enforces"
+  - from: trust_store
+    to: ca
+    label: "anchors at"
+  - from: mutual_authentication
+    to: zero_trust
+    label: "supports"

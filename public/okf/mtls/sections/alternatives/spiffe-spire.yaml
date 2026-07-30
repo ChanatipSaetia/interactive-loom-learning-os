@@ -1,0 +1,17 @@
+type: taxonomy-category
+icon: Fingerprint
+title: "SPIFFE/SPIRE Workload Identity"
+subtitle: "Automated certificate provisioning for cloud-native workloads"
+color: green
+description: "SPIFFE defines a standard identity format (SPIFFE ID) and SPIRE implements a trust domain that automatically mints, rotates, and distributes short-lived X.509 certificates to workloads."
+details: "Instead of manually managing a PKI, you deploy a SPIRE Server that acts as a local CA. Agents on each node attest the workload (by socket, TLS, Kubernetes tokens, or AWS IAM roles), then issue a short-lived certificate. Services fetch their identity and trust bundle through the SPIFFE Workload API on a Unix socket. This removes the certificate lifecycle burden from application code while retaining mTLS-grade cryptographic guarantees. The trade-off is infrastructure complexity: you operate SPIRE servers, agents, and node-level attestation pipelines."
+analogy: "Like a passport office inside your data center: workloads show proof of who they are, the office prints an expiring visa on the spot, and everyone trusts that office."
+primaryFocus: "Zero-touch certificate lifecycle in dynamic cloud-native environments"
+inScope:
+  - "Kubernetes clusters with frequent pod churn and ephemeral workloads"
+  - "Organizations wanting mTLS security without baking PKI into each app"
+  - "Multi-service environments needing a unified trust domain"
+outOfScope:
+  - "Simple two-service integrations where deploying SPIRE is overkill"
+  - "Edge devices or IoT where agent footprint and attestation complexity is prohibitive"
+  - "Third-party SaaS clients that cannot run a SPIRE agent"

@@ -1,0 +1,17 @@
+type: taxonomy-category
+icon: Key
+title: "JWT-Based Authentication"
+subtitle: "Stateless bearer tokens with embedded claims and signatures"
+color: sky
+description: "A JSON Web Token carries signed claims about the caller's identity and permissions. The server validates the signature on every request without needing a session store or callback."
+details: "JWTs are typically obtained via an initial auth flow (OAuth2, login endpoint) and then presented in the Authorization header. The issuer signs tokens with a private key; verifiers check with the corresponding public key. This eliminates per-request round-trips to an auth server and scales horizontally with ease. However, tokens have a finite lifetime — short-lived tokens mean frequent re-authentication, while long-lived tokens increase exposure if compromised. Revocation is also difficult since tokens are stateless by design."
+analogy: "Like a signed conference badge: once issued and validated at the door, each session attendee checks the badge's hologram stamp instead of calling registration."
+primaryFocus: "Lightweight, stateless authentication that scales to high-throughput APIs"
+inScope:
+  - "Microservices that need fast per-request auth without database lookups"
+  - "Single-page applications and mobile clients with intermittent connectivity"
+  - "Federated identity where a central IdP issues tokens for downstream consumers"
+outOfScope:
+  - "Service-to-service auth where you can't centralize token issuance"
+  - "Environments requiring real-time revocation (tokens remain valid until expiry)"
+  - "Replacing network-layer encryption — JWTs should always ride on TLS, not plaintext"

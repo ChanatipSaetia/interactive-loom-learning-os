@@ -1,0 +1,69 @@
+- id: mtls_happy_path
+  label: "Successful mTLS Handshake"
+  description: "All certificates are valid, encrypted channel established"
+  steps:
+    - stepId: init_connection
+      name: "Initiate Connection"
+      description: "Client developer initiates the TLS connection."
+      processGroup: initiation
+    - stepId: server_hello_step
+      name: "Server Hello"
+      description: "Server responds with ServerHello containing TLS parameters."
+      processGroup: handshake
+    - stepId: server_cert_step
+      name: "Server Certificate"
+      description: "Server presents its certificate chain for identity verification."
+      processGroup: identity
+    - stepId: server_req_cert_step
+      name: "Certificate Request"
+      description: "Server requests the client certificate for mutual authentication."
+      processGroup: identity
+    - stepId: client_cert_step
+      name: "Client Certificate"
+      description: "Client sends its certificate in response to the request."
+      processGroup: identity
+    - stepId: verify_happy
+      name: "Verify Client Certificate"
+      description: "Server validates the client certificate against trusted CA."
+      processGroup: verification
+    - stepId: client_verify_step
+      name: "Verify Server Certificate"
+      description: "Client validates the server certificate against trusted CA."
+      processGroup: verification
+    - stepId: key_exchange_step
+      name: "Key Exchange"
+      description: "Both parties exchange and derive session keys."
+      processGroup: encryption
+    - stepId: handshake_complete
+      name: "Handshake Complete"
+      description: "Encrypted mTLS channel is established and ready for communication."
+      processGroup: encryption
+
+- id: mtls_rejected_path
+  label: "Certificate Rejected"
+  description: "Client certificate fails validation, connection terminated"
+  steps:
+    - stepId: init_connection
+      name: "Initiate Connection"
+      description: "Client developer initiates the TLS connection."
+      processGroup: initiation
+    - stepId: server_hello_step
+      name: "Server Hello"
+      description: "Server responds with ServerHello containing TLS parameters."
+      processGroup: handshake
+    - stepId: server_cert_step
+      name: "Server Certificate"
+      description: "Server presents its certificate chain for identity verification."
+      processGroup: identity
+    - stepId: server_req_cert_step
+      name: "Certificate Request"
+      description: "Server requests the client certificate for mutual authentication."
+      processGroup: identity
+    - stepId: client_cert_step
+      name: "Client Certificate"
+      description: "Client sends its certificate in response to the request."
+      processGroup: identity
+    - stepId: verify_rejected
+      name: "Certificate Rejected"
+      description: "Server finds the client certificate invalid and terminates the connection."
+      processGroup: verification

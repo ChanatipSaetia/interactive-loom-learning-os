@@ -1,0 +1,112 @@
+- type: linear
+  id: init_connection
+  initiatedBy: client_dev
+  command: "Initiate TLS Connection"
+  policy: "Start mTLS Handshake"
+  handledBy: client_hello
+  resultEvents:
+    - id: connection_initiated
+      title: "Connection Initiated"
+      desc: "TLS connection request sent by client"
+  continuesAs: server_hello_step
+
+- type: linear
+  id: server_hello_step
+  policy: "On ClientHello Received"
+  command: "Send ServerHello"
+  handledBy: server_hello
+  resultEvents:
+    - id: server_hello_sent
+      title: "ServerHello Sent"
+      desc: "Server responds with supported TLS parameters"
+  continuesAs: server_cert_step
+
+- type: linear
+  id: server_cert_step
+  policy: "Present Server Identity"
+  command: "Send Server Certificate"
+  handledBy: server_cert
+  resultEvents:
+    - id: server_cert_sent
+      title: "Server Certificate Sent"
+      desc: "Server presents its certificate chain"
+  continuesAs: server_req_cert_step
+
+- type: linear
+  id: server_req_cert_step
+  policy: "Require Mutual Auth"
+  command: "Request Client Certificate"
+  handledBy: server_req_cert
+  resultEvents:
+    - id: client_cert_requested
+      title: "Client Certificate Requested"
+      desc: "Server requests client authentication"
+  continuesAs: client_cert_step
+
+- type: linear
+  id: client_cert_step
+  policy: "On CertificateRequest"
+  command: "Send Client Certificate"
+  handledBy: client_cert
+  resultEvents:
+    - id: client_cert_sent
+      title: "Client Certificate Sent"
+      desc: "Client presents its certificate"
+  continuesAs: verify_branch
+
+- type: branch
+  id: verify_branch
+  event: client_cert_sent
+  branches:
+    - id: verify_happy
+      label: "Valid Certificate"
+      policy: "Validate Client Identity"
+      command: "Verify Client Certificate Against Trusted CA"
+      handledBy: server_verify
+      resultEvents:
+        - id: client_cert_verified
+          title: "Client Certificate Verified"
+          desc: "Server validates client certificate successfully"
+      continuesAs: client_verify_step
+    - id: verify_rejected
+      label: "Invalid Certificate"
+      dashed: true
+      policy: "Client Certificate Invalid"
+      command: "Terminate Connection"
+      handledBy: server_verify_fail
+      resultEvents:
+        - id: connection_terminated
+          title: "Connection Terminated"
+          desc: "Server rejects invalid client certificate and closes connection"
+
+- type: linear
+  id: client_verify_step
+  policy: "Validate Server Identity"
+  command: "Verify Server Certificate Against Trusted CA"
+  handledBy: client_verify
+  resultEvents:
+    - id: server_cert_verified
+      title: "Server Certificate Verified"
+      desc: "Client validates server certificate successfully"
+  continuesAs: key_exchange_step
+
+- type: linear
+  id: key_exchange_step
+  policy: "All Certificates Valid"
+  command: "Exchange Session Keys"
+  handledBy: key_exchange
+  resultEvents:
+    - id: keys_established
+      title: "Session Keys Established"
+      desc: "Both parties derive shared encryption keys"
+  continuesAs: handshake_complete
+
+- type: linear
+  id: handshake_complete
+  policy: "Keys Exchanged"
+  command: "Begin Encrypted Communication"
+  handledBy: handshake_done
+  resultEvents:
+    - id: channel_established
+      title: "Encrypted Channel Established"
+      desc: "Secure mTLS connection is active"

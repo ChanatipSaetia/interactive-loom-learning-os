@@ -1,0 +1,17 @@
+type: taxonomy-category
+icon: Network
+title: "Service Mesh Automated mTLS"
+subtitle: "Sidecar proxies handle all TLS — your application stays oblivious"
+color: teal
+description: "A service mesh like Istio, Linkerd, or Consul Connect injects sidecar proxies that automatically establish mTLS between services, with a built-in CA and transparent certificate rotation."
+details: "Each service gets a co-located proxy (Envoy, Linkerd, etc.) that terminates TLS for inbound and initiates TLS for outbound traffic. The mesh control plane acts as the CA, issuing short-lived certificates and distributing root trust bundles. Application code makes plain HTTP calls to localhost; the sidecar handles the cryptographic details. This delivers mTLS security with near-zero application changes. The costs are operational: sidecar memory/CPU overhead, mesh control plane complexity, and an additional network hop per request. For large Kubernetes deployments, the trade-off usually favors the mesh."
+analogy: "Like a secure relay station between every building in a campus — packages go through a guarded checkpoint that verifies sender and receiver, and the couriers inside each building never see the process."
+primaryFocus: "Transparent mTLS at scale without modifying application code"
+inScope:
+  - "Large Kubernetes clusters with dozens to hundreds of services"
+  - "Organizations standardizing on a service mesh for traffic management anyway"
+  - "Teams that want mTLS security without cert management in application code"
+outOfScope:
+  - "Small deployments where sidecar overhead dominates resource budgets"
+  - "Bare-metal or VM environments lacking mesh deployment tooling"
+  - "Third-party external clients that cannot route through your mesh"

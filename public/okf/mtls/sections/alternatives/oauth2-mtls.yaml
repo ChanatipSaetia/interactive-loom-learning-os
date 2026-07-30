@@ -1,0 +1,17 @@
+type: taxonomy-category
+icon: ShieldCheck
+title: "OAuth2 with Client Certificates"
+subtitle: "Combining OAuth2 authorization with mTLS client binding"
+color: peach
+description: "Extends standard OAuth2 flows by binding the client's TLS certificate to the token request, so access tokens are only valid when presented with the cert that requested them."
+details: "RFC 8705 defines how to include a SANS_DNS or SANS_URI from the client certificate as a cnf (confirmation) claim in the issued token. The resource server then checks that the presenting client's certificate matches the bound claim. This gives you OAuth2's rich authorization framework — scopes, consent, token types — while anchoring the token to a specific mTLS identity. Integration is moderate: clients need certificate management, and resource servers must validate the cnf claim. The approach is ideal when third-party apps need OAuth2 scopes but you require stronger binding than a shared secret."
+analogy: "Like a library card (OAuth2 token) that only works when presented alongside a government ID (client cert) — the card alone is insufficient."
+primaryFocus: "Strong authorization with cryptographic client binding for third-party integrations"
+inScope:
+  - "APIs offering OAuth2 scopes but requiring client cert binding for sensitive resources"
+  - "Third-party partner integrations where you control authorization policies but not PKI"
+  - "Replacing OAuth2 client_secret with cert-bound tokens for higher security"
+outOfScope:
+  - "Simple internal services that don't need OAuth2's authorization granularity"
+  - "Environments where clients cannot handle certificate-based TLS"
+  - "Consumer-facing apps where certificate provisioning is a UX barrier"
