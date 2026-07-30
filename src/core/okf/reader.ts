@@ -672,3 +672,17 @@ async function loadIntroSection(basePath: string, resource: string): Promise<OKF
   }
 }
 
+// --- Delivery Port Integration ---
+// Storage adapter singleton for use by delivery layer (Phase 3.2)
+// Imported at end of file to avoid circular dependency with adapter's import of loadOKFBundle
+
+import { InRepoStorageAdapter } from '../delivery/adapters/in-repo-storage'
+
+/**
+ * Singleton storage adapter instance conforming to OKFStoragePort.
+ * Used by the delivery layer for section read/write operations.
+ * The adapter delegates readSection to loadOKFBundle (cached) to avoid
+ * duplicating multi-file resource resolution logic.
+ */
+export const inRepoStorage = new InRepoStorageAdapter()
+

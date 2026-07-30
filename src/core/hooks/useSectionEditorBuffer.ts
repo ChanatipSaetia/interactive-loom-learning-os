@@ -5,6 +5,7 @@ import type { ValidationError, SemanticValidationError, SchemaValidationError, Y
 import { validateOKFSection } from '../validation/gateway'
 import type { ValidationDiagnostic, ValidationResult } from '../validation/gateway'
 import { buildSectionSaveFiles, buildDownloadFiles, triggerDownload } from '../util/okfSave'
+import { inRepoStorage } from '../okf/reader'
 
 const DEBOUNCE_MS = 300
 
@@ -223,27 +224,15 @@ export function useSectionEditorBuffer(
     setState((prev) => ({ ...prev, isSaving: true }))
 
     try {
-      const res = await fetch('/api/okf/save-section', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          topicId,
-          sectionName,
-          sectionMd: files.sectionMd,
-          dataYaml: files.dataYaml,
-        }),
-      })
-      if (!res.ok) {
-        const err = await res.json().catch(() => ({ error: 'Save failed' }))
-        throw new Error(err.error ?? 'Save failed')
-      }
+      // Use storage adapter for disk persistence (Phase 3.2 delivery port)
+      await inRepoStorage.saveSection(topicId, sectionName, state.data, files.sectionMd)
       setState((prev) => ({ ...prev, isDirty: false, isSaving: false }))
       return true
     } catch (e: unknown) {
       setState((prev) => ({ ...prev, isSaving: false }))
       throw e
     }
-  }, [state.meta, state.rawText])
+  }, [state.meta, state.rawText, state.data])
 
   const downloadFiles = useCallback(() => {
     const sectionBody = sourceRef.current?.sectionBody ?? ''
