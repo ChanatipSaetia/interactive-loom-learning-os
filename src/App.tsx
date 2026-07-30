@@ -6,11 +6,11 @@ import { ScrollProgress } from './components/motion/scroll-progress'
 import { SmoothScroll } from './components/motion/smooth-scroll'
 import { EditorProvider } from './core/context/EditorContext'
 import { TopicsProvider } from './core/routes'
-import { SoundProvider } from './context/SoundContext'
+import { UISystemProvider } from './core/ui-system'
 
 export function App() {
   return (
-    <SoundProvider>
+    <UISystemProvider>
       <TopicsProvider>
         <EditorProvider>
           <SmoothScroll>
@@ -28,7 +28,7 @@ export function App() {
           </SmoothScroll>
         </EditorProvider>
       </TopicsProvider>
-    </SoundProvider>
+    </UISystemProvider>
   )
 }
 
