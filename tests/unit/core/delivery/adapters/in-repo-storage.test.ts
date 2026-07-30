@@ -14,7 +14,7 @@ describe('InRepoStorageAdapter', () => {
   beforeEach(() => {
     vi.clearAllMocks()
     adapter = new InRepoStorageAdapter()
-    ;(global.fetch as any) = vi.fn()
+    ;(globalThis.fetch as any) = vi.fn()
   })
 
   describe('readSection', () => {
@@ -55,7 +55,7 @@ describe('InRepoStorageAdapter', () => {
   describe('saveSection', () => {
     it('sends POST request to save endpoint', async () => {
       const mockFetch = vi.fn().mockResolvedValue({ ok: true, text: () => Promise.resolve('{}') })
-      ;(global.fetch as any) = mockFetch
+      ;(globalThis.fetch as any) = mockFetch
 
       const testData: OKFIntroSectionData = {
         type: 'intro',
@@ -81,7 +81,7 @@ describe('InRepoStorageAdapter', () => {
         ok: false,
         text: () => Promise.resolve('Validation failed'),
       })
-      ;(global.fetch as any) = mockFetch
+      ;(globalThis.fetch as any) = mockFetch
 
       const testData: OKFIntroSectionData = {
         type: 'intro',
@@ -104,7 +104,7 @@ describe('InRepoStorageAdapter', () => {
             '---\nokf_version: "0.1"\n---\n## Category\n* [Demo Topic](demo/index.md) — Test\n* [Motorcycle](motorcycle/index.md) — Vehicles'
           ),
       })
-      ;(global.fetch as any) = mockFetch
+      ;(globalThis.fetch as any) = mockFetch
 
       const topics = await adapter.listTopics()
 
@@ -115,7 +115,7 @@ describe('InRepoStorageAdapter', () => {
 
     it('returns empty array when fetch fails', async () => {
       const mockFetch = vi.fn().mockResolvedValue({ ok: false })
-      ;(global.fetch as any) = mockFetch
+      ;(globalThis.fetch as any) = mockFetch
 
       const topics = await adapter.listTopics()
       expect(topics).toEqual([])
@@ -129,7 +129,7 @@ describe('InRepoStorageAdapter', () => {
             '---\nokf_version: "0.1"\n---\n## Cat\n* [Demo](demo/index.md)\n## Other\n* [Demo Again](demo/index.md)'
           ),
       })
-      ;(global.fetch as any) = mockFetch
+      ;(globalThis.fetch as any) = mockFetch
 
       const topics = await adapter.listTopics()
       expect(topics).toEqual(['demo'])

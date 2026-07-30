@@ -40,7 +40,8 @@ export class WebAppRuntimeAdapter implements OKFRuntimePort {
    * Render a single section configuration as a React node by resolving
    * the type against the SectionRegistry.
    */
-  renderSection(config: SectionConfig): ReactNode {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  renderSection(config: SectionConfig, _sectionIndex?: number): ReactNode {
     return renderSectionElement(config)
   }
 

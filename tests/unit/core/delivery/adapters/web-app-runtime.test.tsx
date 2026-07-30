@@ -1,5 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { WebAppRuntimeAdapter } from '../../../../../src/core/delivery/adapters/web-app-runtime'
+import type { OKFBundled } from '../../../../../src/core/okf/types'
 
 vi.mock('../../../../../src/core/okf/reader', () => ({
   loadOKFBundle: vi.fn(),
@@ -36,7 +37,7 @@ describe('WebAppRuntimeAdapter', () => {
           sectionFolder: 'intro',
         },
       ]
-      vi.mocked(loadOKFBundle).mockResolvedValue(mockBundle)
+      vi.mocked(loadOKFBundle).mockResolvedValue(mockBundle as unknown as OKFBundled)
 
       const result = await adapter.loadTopicBundle('demo')
 

@@ -1,9 +1,8 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { createRoot, type Root } from 'react-dom/client'
-import { Suspense, useMemo, useEffect, type ComponentType } from 'react'
+import { useMemo, useEffect, type ComponentType } from 'react'
 import type { SectionConfig } from '../src/core/registry'
-import { loadOKFBundle } from '../src/core/okf/reader'
 import { bundleToSections } from '../src/core/okf/sections'
-import { Registry } from '../src/core/registry/generic-registry'
 import { HUDProvider, useHUD } from '../src/core/context/HUDContext'
 import { ProgressProvider } from '../src/core/progress/context'
 import { EditorProvider, useEditor, useEditorSafe } from '../src/core/context/EditorContext'
@@ -16,9 +15,11 @@ import { SoundProvider } from '../src/context/SoundContext'
 import { AudioToggle } from '../src/components/layout/AudioToggle'
 import { ThemeToggle } from '../src/components/motion/theme-toggle'
 import { X } from 'lucide-react'
-import { SectionErrorBoundary } from '../src/components/common/SectionErrorBoundary'
-import { validateSectionData, validateYAMLContent, formatPayloadAsPrompt, type OKFValidationErrorPayload } from '../src/core/okf/validate'
+import { type OKFValidationErrorPayload } from '../src/core/okf/validate'
 import type { OKFBundled } from '../src/core/okf/types'
+
+// SingleHTMLEmbedAdapter — delegates bundle loading, rendering, validation
+import { singleEmbedAdapter, registerEmbedSection } from '../src/core/delivery/adapters/single-html-embed'
 
 // Import section CSS
 import '../src/styles/global.css'
@@ -36,7 +37,6 @@ import '../src/sections/decision-tree/decision-tree.css'
 import '../src/sections/formula-sandbox/formula-sandbox.css'
 import '../src/sections/reflection-sequence/reflection-sequence.css'
 import '../src/sections/reflection-template/reflection-template.css'
-import { deriveSchema } from '../src/sections/flowchart/abstract-flow/derive'
 
 // Import all section components directly
 import IntroSection from '../src/sections/intro'
@@ -55,11 +55,8 @@ import FormulaSandboxSection from '../src/sections/formula-sandbox'
 import ReflectionSequenceSection from '../src/sections/reflection-sequence'
 import ReflectionTemplateSection from '../src/sections/reflection-template'
 
-// --- Section registry ---
+// --- Auto-register all built-in sections with the adapter ---
 
-const registry = new Registry<ComponentType<any>>()
-
-// Auto-register all built-in sections
 const SECTIONS: Record<string, ComponentType<any>> = {
   intro: IntroSection,
   text: TextSection,
@@ -79,7 +76,7 @@ const SECTIONS: Record<string, ComponentType<any>> = {
 }
 
 for (const [type, component] of Object.entries(SECTIONS)) {
-  registry.register(type, component)
+  registerEmbedSection(type, component)
 }
 
 export type BuiltInTheme = 'frappe' | 'medicare' | 'recipebook' | 'pinkcatboo' | 'eink' | string
@@ -160,44 +157,10 @@ function PageHeader({ title }: { title: string }) {
   )
 }
 
-// --- Section renderer ---
+// --- Section renderer (delegates to adapter) ---
 
 function SectionRenderer({ config, sectionIndex }: { config: SectionConfig; sectionIndex?: number }) {
-  const Component = useMemo(() => registry.get(config.type), [config.type])
-  if (!Component) {
-    return (
-      <div className="section-missing" data-section-type={config.type}>
-        Section type not registered: {config.type}
-      </div>
-    )
-  }
-
-  const adaptedProps = useMemo(() => {
-    if (config.type === 'flowchart') {
-      const rawSchema = config.props?.schema || (config.props as any)?.flow
-      if (rawSchema && !rawSchema.entities && (rawSchema.actors || rawSchema.steps || rawSchema.systems)) {
-        try {
-          return {
-            ...config.props,
-            schema: deriveSchema(rawSchema),
-          }
-        } catch (e) {
-          console.error('Failed to auto-derive flowchart schema:', e)
-        }
-      }
-    }
-    return config.props
-  }, [config.type, config.props])
-
-  return (
-    <div className="section-wrapper" data-section-type={config.type} data-section-index={sectionIndex ?? 0}>
-      <SectionErrorBoundary sectionName={config.type}>
-        <Suspense fallback={<div className="section-loading">Loading section...</div>}>
-          <Component sectionIndex={sectionIndex ?? 0} {...adaptedProps} />
-        </Suspense>
-      </SectionErrorBoundary>
-    </div>
-  )
+  return singleEmbedAdapter.runtime.renderSection(config, sectionIndex)
 }
 
 // --- HUD Drawer ---
@@ -460,6 +423,7 @@ const LoomSections: LoomSectionsAPI = {
           sectionFolder: `section-${idx}`,
           sectionBody: '',
         }))
+      // eslint-disable-next-line react-hooks/exhaustive-deps
       }, [sections])
 
       return (
@@ -502,7 +466,9 @@ const LoomSections: LoomSectionsAPI = {
 
   renderThemeSelector(
     widgetContainer: HTMLElement,
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     _sectionsContainer?: HTMLElement,
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     _options?: ThemeSelectorOptions,
   ) {
     let widgetRoot: Root | null = createRoot(widgetContainer)
@@ -515,14 +481,14 @@ const LoomSections: LoomSectionsAPI = {
   },
 
   registerSection(type: string, component: ComponentType<any>) {
-    registry.register(type, component)
+    registerEmbedSection(type, component)
   },
 
   async loadAndRenderOKF(container: HTMLElement, okfBaseUrl: string, topicId: string, options?: RenderOptions) {
     if (typeof window !== 'undefined') {
       (window as any).__OKF_BASE_OVERRIDE__ = okfBaseUrl
     }
-    const bundle = await loadOKFBundle(topicId)
+    const bundle = await singleEmbedAdapter.runtime.loadTopicBundle(topicId)
     return LoomSections.renderOKF(container, bundle, {
       ...options,
       topicId,
@@ -531,15 +497,61 @@ const LoomSections: LoomSectionsAPI = {
   },
 
   validateSection(data: unknown, metaType?: string) {
-    return validateSectionData(data, metaType)
+    const result = singleEmbedAdapter.runtime.validatePayload(data, metaType)
+    // Convert ValidationGateway diagnostics to legacy OKFValidationErrorPayload format
+    return result.diagnostics.map((d) => ({
+      tier: d.tier === 1 ? 'syntax' as const : d.tier === 2 ? 'schema' as const : 'semantic' as const,
+      field: d.field,
+      line: d.line,
+      column: d.column,
+      message: d.message,
+      fixHint: d.fixHint,
+    }))
   },
 
   validateYAML(rawYaml: string, metaType?: string) {
-    return validateYAMLContent(rawYaml, metaType)
+    const result = singleEmbedAdapter.runtime.validatePayload(rawYaml, metaType)
+    return {
+      data: result.payload,
+      errors: result.diagnostics.map((d) => ({
+        tier: d.tier === 1 ? 'syntax' as const : d.tier === 2 ? 'schema' as const : 'semantic' as const,
+        field: d.field,
+        line: d.line,
+        column: d.column,
+        message: d.message,
+        fixHint: d.fixHint,
+      })),
+    }
   },
 
   formatValidationPrompt(errors: OKFValidationErrorPayload[], rawSource?: string) {
-    return formatPayloadAsPrompt(errors, rawSource)
+    // Reuse existing format helper for backward compatibility
+    if (errors.length === 0) return 'No validation errors found.'
+
+    let prompt = `# OKF Section Validation Error Report\n\n`
+    prompt += `The following ${errors.length} error(s) were found during OKF section validation. Please fix the files accordingly.\n\n`
+
+    errors.forEach((err, idx) => {
+      prompt += `### Error ${idx + 1}: [Tier: ${err.tier.toUpperCase()}] ${err.file || err.sectionName || 'Section'}\n`
+      if (err.file) prompt += `- **File**: \`${err.file}\`\n`
+      if (err.sectionName) prompt += `- **Section**: \`${err.sectionName}\`\n`
+      if (err.field) prompt += `- **Field Path**: \`${err.field}\`\n`
+      if (err.line) prompt += `- **Location**: Line ${err.line}${err.column ? `, Column ${err.column}` : ''}\n`
+      prompt += `- **Message**: ${err.message}\n`
+      if (err.fixHint) prompt += `- **Suggested Fix**: ${err.fixHint}\n`
+      if (err.snippet) {
+        prompt += `- **Snippet**:\n\`\`\`yaml\n${err.snippet}\n\`\`\`\n`
+      }
+      prompt += `\n`
+    })
+
+    if (rawSource) {
+      prompt += `## Source Snippet\n\`\`\`yaml\n${rawSource}\n\`\`\`\n`
+    }
+
+    prompt += `\n**Instructions for AI**: Update the specified file(s) to resolve the schema/syntax/semantic validation errors listed above while preserving valid section content.`
+
+    return prompt
   },
 }
 
@@ -551,4 +563,3 @@ export type { BulletItem } from '../src/sections/bullets'
 export type { TradeoffScenario, MetricDef, TradeoffChoice, TradeoffStep, TradeoffProCon } from '../src/sections/tradeoff-sandbox'
 export type { TaxonomyCategory } from '../src/sections/taxonomy-browser'
 export type { WordTerm } from '../src/types'
-

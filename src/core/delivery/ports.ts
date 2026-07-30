@@ -94,9 +94,10 @@ export interface OKFRuntimePort {
    * against the registered component for that section type.
    *
    * @param config - Section type and props
+   * @param sectionIndex - Optional zero-based index for data attributes
    * @returns Renderable ReactNode
    */
-  renderSection(config: SectionConfig): ReactNode
+  renderSection(config: SectionConfig, sectionIndex?: number): ReactNode
 
   /**
    * Validate a section data payload through the 3-Tier Validation
