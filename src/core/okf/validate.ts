@@ -23,12 +23,14 @@ export interface YAMLSyntaxError {
   message: string
   line?: number
   snippet?: string
+  fixHint?: string
 }
 
 export interface SchemaValidationError {
   kind: 'schema'
   field: string
   message: string
+  fixHint?: string
 }
 
 export interface SemanticValidationError {

@@ -1358,6 +1358,108 @@ body:has(.editor-mode) {
   color: var(--ctp-red);
 }
 
+.yaml-error-hint {
+  font-size: 10px;
+  font-family: var(--font-body, var(--font-sans));
+  font-style: italic;
+  color: var(--ctp-overlay2);
+  margin-top: 2px;
+  padding-left: 4px;
+  border-left: 2px solid color-mix(in srgb, var(--ctp-yellow) 40%, transparent);
+}
+
+.yaml-error-snippet {
+  font-size: 10px;
+  font-family: var(--font-mono, monospace);
+  color: var(--ctp-overlay1);
+  background-color: color-mix(in srgb, var(--ctp-mantle) 80%, transparent);
+  padding: 2px 6px;
+  border-radius: 3px;
+  margin-top: 2px;
+  display: inline-block;
+}
+
+/* =============================================
+    Editor Diagnostic Banner (non-blocking inline warnings)
+    ============================================= */
+.editor-diagnostic-banner {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 8px 12px;
+  border-bottom: 1px solid var(--border);
+  background-color: color-mix(in srgb, var(--ctp-mantle) 60%, var(--card));
+  animation: yaml-banner-fade-in 0.2s ease;
+}
+
+.editor-diagnostic-group {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.editor-diagnostic-group + .editor-diagnostic-group {
+  margin-top: 4px;
+  padding-top: 4px;
+  border-top: 1px solid color-mix(in srgb, var(--border) 40%, transparent);
+}
+
+.editor-diagnostic-group-header {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.editor-diagnostic-group-title {
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.editor-diagnostic-group[data-testid="editor-diagnostic-error-group"] .editor-diagnostic-group-title {
+  color: var(--ctp-red);
+}
+
+.editor-diagnostic-group[data-testid="editor-diagnostic-warning-group"] .editor-diagnostic-group-title {
+  color: var(--ctp-yellow, #e5c890);
+}
+
+.editor-diagnostic-group[data-testid="editor-diagnostic-error-group"] .editor-diagnostic-group-header svg {
+  color: var(--ctp-red);
+}
+
+.editor-diagnostic-group[data-testid="editor-diagnostic-warning-group"] .editor-diagnostic-group-header svg {
+  color: var(--ctp-yellow, #e5c890);
+}
+
+.editor-diagnostic-item {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  font-size: 11px;
+  line-height: 1.4;
+}
+
+.editor-diagnostic-message {
+  color: var(--ctp-red);
+  font-family: var(--font-mono, monospace);
+}
+
+.editor-diagnostic-group[data-testid="editor-diagnostic-warning-group"] .editor-diagnostic-message {
+  color: var(--ctp-yellow, #e5c890);
+}
+
+.editor-diagnostic-hint {
+  font-size: 10px;
+  font-family: var(--font-body, var(--font-sans));
+  font-style: italic;
+  color: var(--ctp-overlay2);
+  padding-left: 6px;
+  border-left: 2px solid color-mix(in srgb, var(--ctp-yellow) 30%, transparent);
+  line-height: 1.3;
+}
+
 /* =============================================
     Editor Preview Wrapper
     ============================================= */

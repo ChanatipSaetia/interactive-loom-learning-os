@@ -43,6 +43,8 @@ describe('useSectionEditorBuffer', () => {
     expect(result.current.meta).toEqual(mockTextSection.meta)
     expect(result.current.rawText).toBe(yaml.dump(mockTextSection.data, { lineWidth: -1, noRefs: true }))
     expect(result.current.validationErrors).toEqual([])
+    expect(result.current.validationDiagnostics).toEqual([])
+    expect(result.current.validationStatus).toBe('valid')
     expect(result.current.isDirty).toBe(false)
   })
 
@@ -60,6 +62,8 @@ describe('useSectionEditorBuffer', () => {
     expect(result.current.meta).toEqual(mockQuizSection.meta)
     expect(result.current.isDirty).toBe(false)
     expect(result.current.validationErrors).toEqual([])
+    expect(result.current.validationDiagnostics).toEqual([])
+    expect(result.current.validationStatus).toBe('valid')
   })
 
   it('updates data and raw text when visual form changes', () => {
@@ -74,6 +78,7 @@ describe('useSectionEditorBuffer', () => {
     expect(result.current.data).toEqual(newData)
     expect(result.current.rawText).toBe(yaml.dump(newData, { lineWidth: -1, noRefs: true }))
     expect(result.current.validationErrors).toEqual([])
+    expect(result.current.validationStatus).toBe('valid')
     expect(result.current.isDirty).toBe(true)
     expect(onChange).toHaveBeenCalled()
   })
@@ -99,6 +104,7 @@ describe('useSectionEditorBuffer', () => {
 
     expect(result.current.data).toEqual(expectedParsed)
     expect(result.current.validationErrors).toEqual([])
+    expect(result.current.validationStatus).toBe('valid')
     expect(result.current.isDirty).toBe(true)
     expect(onChange).toHaveBeenCalled()
   })
@@ -121,6 +127,8 @@ describe('useSectionEditorBuffer', () => {
     })
 
     expect(result.current.validationErrors.length).toBeGreaterThan(0)
+    expect(result.current.validationDiagnostics.length).toBeGreaterThan(0)
+    expect(result.current.validationStatus).toBe('error')
     expect(result.current.data).toEqual(validData)
   })
 
@@ -137,6 +145,7 @@ describe('useSectionEditorBuffer', () => {
     })
 
     expect(result.current.validationErrors.length).toBeGreaterThan(0)
+    expect(result.current.validationDiagnostics.length).toBeGreaterThan(0)
     const schemaErr = result.current.validationErrors.find((e) => e.kind === 'schema')
     expect(schemaErr).toBeTruthy()
     if (schemaErr?.kind === 'schema') {
@@ -166,6 +175,8 @@ describe('useSectionEditorBuffer', () => {
     })
 
     expect(result.current.validationErrors).toEqual([])
+    expect(result.current.validationDiagnostics).toEqual([])
+    expect(result.current.validationStatus).toBe('valid')
     expect(result.current.data).toEqual(yaml.load(validYaml))
   })
 
@@ -222,6 +233,7 @@ describe('useSectionEditorBuffer', () => {
     expect(result.current.meta).toEqual({ type: 'text', title: '', resource: '.' })
     expect(result.current.isDirty).toBe(false)
     expect(result.current.validationErrors).toEqual([])
+    expect(result.current.validationStatus).toBe('valid')
   })
 
   it('debounces rapid raw text changes', () => {
@@ -268,5 +280,94 @@ describe('useSectionEditorBuffer', () => {
     // Data should still be the last good state, not corrupted
     expect(result.current.data).toEqual(originalData)
     expect(result.current.validationErrors.length).toBeGreaterThan(0)
+  })
+
+  // ---- Gateway integration tests ----
+
+  it('exposes validationDiagnostics from ValidationGateway', () => {
+    const { result } = renderHook(() => useSectionEditorBuffer(mockTextSection))
+
+    act(() => {
+      result.current.setRawText('type: text')
+    })
+    act(() => { vi.runAllTimers() })
+
+    expect(result.current.validationDiagnostics.length).toBeGreaterThan(0)
+    const diag = result.current.validationDiagnostics[0]
+    expect(diag.tier).toBe(2)
+    expect(diag.fixHint).toBeDefined()
+  })
+
+  it('validationStatus reflects gateway status (valid)', () => {
+    const { result } = renderHook(() => useSectionEditorBuffer(mockTextSection))
+
+    expect(result.current.validationStatus).toBe('valid')
+
+    act(() => {
+      result.current.setRawText('type: text\nparagraphs:\n  - Valid')
+    })
+    act(() => { vi.runAllTimers() })
+
+    expect(result.current.validationStatus).toBe('valid')
+  })
+
+  it('validationStatus reflects gateway status (error)', () => {
+    const { result } = renderHook(() => useSectionEditorBuffer(mockTextSection))
+
+    act(() => {
+      result.current.setRawText('invalid yaml: [')
+    })
+    act(() => { vi.runAllTimers() })
+
+    expect(result.current.validationStatus).toBe('error')
+  })
+
+  it('live preview retains lastValidData during syntax errors', () => {
+    const { result } = renderHook(() => useSectionEditorBuffer(mockTextSection))
+    const lastGoodData = { ...result.current.data }
+
+    // Introduce syntax error
+    act(() => {
+      result.current.setRawText('type: text\n  bad_indent: true')
+    })
+    act(() => { vi.runAllTimers() })
+
+    expect(result.current.validationStatus).toBe('error')
+    // Data should retain last valid state
+    expect(result.current.data).toEqual(lastGoodData)
+  })
+
+  it('live preview retains lastValidData through intermediate valid state then error', () => {
+    const { result } = renderHook(() => useSectionEditorBuffer(mockTextSection))
+
+    // Step 1: Make a valid edit
+    act(() => {
+      result.current.setRawText('type: text\nparagraphs:\n  - Updated paragraph')
+    })
+    act(() => { vi.runAllTimers() })
+    expect(result.current.data).toEqual({ type: 'text', paragraphs: ['Updated paragraph'] })
+
+    // Step 2: Introduce error - preview should keep the valid edit
+    act(() => {
+      result.current.setRawText('type: text\nparagraphs: [unclosed')
+    })
+    act(() => { vi.runAllTimers() })
+
+    expect(result.current.validationStatus).toBe('error')
+    expect(result.current.data).toEqual({ type: 'text', paragraphs: ['Updated paragraph'] })
+  })
+
+  it('legacy validationErrors are derived from gateway diagnostics', () => {
+    const { result } = renderHook(() => useSectionEditorBuffer(mockTextSection))
+
+    act(() => {
+      result.current.setRawText('type: text')
+    })
+    act(() => { vi.runAllTimers() })
+
+    expect(result.current.validationErrors.length).toBeGreaterThan(0)
+    expect(result.current.validationDiagnostics.length).toBeGreaterThan(0)
+    // Same count since each diagnostic maps to one legacy error
+    expect(result.current.validationErrors.length).toBe(result.current.validationDiagnostics.length)
   })
 })

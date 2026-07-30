@@ -1,9 +1,10 @@
-import { useState, useCallback, type ChangeEvent } from 'react'
-import { Save, Download, Layers } from 'lucide-react'
+import { useState, useCallback, useMemo, type ChangeEvent } from 'react'
+import { Save, Download, Layers, AlertTriangle, AlertCircle } from 'lucide-react'
 import { VisualFormEditor } from './VisualFormEditor'
 import { RawYAMLEditor } from './RawYAMLEditor'
 import type { OKFSectionData } from '../../core/okf/types'
 import type { ValidationError } from '../../core/okf/validate'
+import type { ValidationDiagnostic } from '../../core/validation/gateway'
 
 type EditorTab = 'form' | 'raw'
 
@@ -197,9 +198,59 @@ export function createDefaultSectionData(type: string): OKFSectionData {
   }
 }
 
+function DiagnosticBanner({ diagnostics }: { diagnostics: ValidationDiagnostic[] }) {
+  if (diagnostics.length === 0) return null
+
+  const errors = diagnostics.filter((d) => d.tier === 1 || d.tier === 2)
+  const warnings = diagnostics.filter((d) => d.tier === 3)
+
+  return (
+    <div className="editor-diagnostic-banner" data-testid="editor-diagnostic-banner" role="alert">
+      {errors.length > 0 && (
+        <div className="editor-diagnostic-group" data-testid="editor-diagnostic-error-group">
+          <div className="editor-diagnostic-group-header">
+            <AlertCircle size={12} />
+            <span className="editor-diagnostic-group-title">Validation Errors</span>
+          </div>
+          {errors.map((d, i) => (
+            <div key={i} className="editor-diagnostic-item" data-testid="editor-diagnostic-error-item">
+              <div className="editor-diagnostic-message">{d.message}</div>
+              {d.fixHint && (
+                <div className="editor-diagnostic-hint" data-testid="editor-diagnostic-fix-hint">
+                  {d.fixHint}
+                </div>
+              )}
+            </div>
+          ))}
+        </div>
+      )}
+      {warnings.length > 0 && (
+        <div className="editor-diagnostic-group" data-testid="editor-diagnostic-warning-group">
+          <div className="editor-diagnostic-group-header">
+            <AlertTriangle size={12} />
+            <span className="editor-diagnostic-group-title">Validation Warnings</span>
+          </div>
+          {warnings.map((d, i) => (
+            <div key={i} className="editor-diagnostic-item" data-testid="editor-diagnostic-warning-item">
+              <div className="editor-diagnostic-message">{d.message}</div>
+              {d.fixHint && (
+                <div className="editor-diagnostic-hint" data-testid="editor-diagnostic-fix-hint">
+                  {d.fixHint}
+                </div>
+              )}
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  )
+}
+
 interface EditorPanelProps {
   sectionData: OKFSectionData
   validationErrors: ValidationError[]
+  validationDiagnostics?: ValidationDiagnostic[]
+  validationStatus?: 'valid' | 'warning' | 'error'
   onVisualFormChange: (data: OKFSectionData) => void
   onRawTextChange: (text: string) => void
   rawText: string
@@ -212,6 +263,7 @@ interface EditorPanelProps {
 export function EditorPanel({
   sectionData,
   validationErrors,
+  validationDiagnostics,
   onVisualFormChange,
   onRawTextChange,
   rawText,
@@ -221,6 +273,13 @@ export function EditorPanel({
   onDownload,
 }: EditorPanelProps) {
   const [activeTab, setActiveTab] = useState<EditorTab>('form')
+
+  const diagnosticDiagnostics = useMemo(
+    () => validationDiagnostics ?? [],
+    [validationDiagnostics]
+  )
+
+  const hasDiagnostics = diagnosticDiagnostics.length > 0
 
   const handleTabChange = useCallback((tab: EditorTab) => {
     setActiveTab(tab)
@@ -284,6 +343,10 @@ export function EditorPanel({
           ))}
         </select>
       </div>
+
+      {hasDiagnostics && (
+        <DiagnosticBanner diagnostics={diagnosticDiagnostics} />
+      )}
 
       <div className="editor-tab-bar" data-testid="editor-tab-bar">
         <button

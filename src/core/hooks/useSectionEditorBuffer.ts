@@ -1,8 +1,9 @@
 import { useState, useEffect, useRef, useCallback } from 'react'
 import * as yaml from 'js-yaml'
 import type { OKFBundledSection, OKFSectionMeta, OKFSectionData } from '../okf/types'
-import type { ValidationError } from '../okf/validate'
-import { parseAndValidateYAML } from '../okf/validate'
+import type { ValidationError, SemanticValidationError, SchemaValidationError, YAMLSyntaxError } from '../okf/validate'
+import { validateOKFSection } from '../validation/gateway'
+import type { ValidationDiagnostic, ValidationResult } from '../validation/gateway'
 import { buildSectionSaveFiles, buildDownloadFiles, triggerDownload } from '../util/okfSave'
 
 const DEBOUNCE_MS = 300
@@ -12,6 +13,8 @@ interface EditorBufferState {
   data: OKFSectionData
   rawText: string
   validationErrors: ValidationError[]
+  validationDiagnostics: ValidationDiagnostic[]
+  validationStatus: ValidationResult['status']
   isDirty: boolean
   isSaving: boolean
 }
@@ -24,6 +27,34 @@ interface EditorBufferReturn extends EditorBufferState {
   downloadFiles: () => void
 }
 
+// Convert gateway diagnostics to legacy ValidationError[] for backward-compatible UI
+function diagnosticsToLegacyErrors(diagnostics: ValidationDiagnostic[]): ValidationError[] {
+  return diagnostics.map((d) => {
+    if (d.tier === 1) {
+      return {
+        kind: 'syntax' as const,
+        message: d.message,
+        line: d.line,
+        snippet: undefined,
+      } as YAMLSyntaxError
+    } else if (d.tier === 3) {
+      return {
+        kind: 'semantic' as const,
+        field: d.field || 'root',
+        message: d.message,
+        fixHint: d.fixHint,
+      } as SemanticValidationError
+    } else {
+      return {
+        kind: 'schema' as const,
+        field: d.field || 'root',
+        message: d.message,
+        fixHint: d.fixHint,
+      } as SchemaValidationError
+    }
+  })
+}
+
 export function useSectionEditorBuffer(
   sourceSection: OKFBundledSection | null,
   onChange?: () => void
@@ -33,6 +64,9 @@ export function useSectionEditorBuffer(
   const debounceTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
   const pendingRaw = useRef<string | null>(null)
 
+  // Persist last-valid data across invalid edits so Live Preview never blanks
+  const lastValidDataRef = useRef<OKFSectionData | null>(null)
+
   const stringifiedRef = useRef('')
 
   const [state, setState] = useState<EditorBufferState>(() => {
@@ -40,7 +74,17 @@ export function useSectionEditorBuffer(
     const meta = sourceSection?.meta ?? { type: 'text', title: '', resource: '.' }
     const raw = yaml.dump(data, { lineWidth: -1, noRefs: true })
     stringifiedRef.current = raw
-    return { meta, data, rawText: raw, validationErrors: [], isDirty: false, isSaving: false }
+    lastValidDataRef.current = data
+    return {
+      meta,
+      data,
+      rawText: raw,
+      validationErrors: [],
+      validationDiagnostics: [],
+      validationStatus: 'valid',
+      isDirty: false,
+      isSaving: false,
+    }
   })
 
   // Cleanup debounce timer on unmount
@@ -59,7 +103,17 @@ export function useSectionEditorBuffer(
       const meta = sourceSection.meta
       const raw = yaml.dump(data, { lineWidth: -1, noRefs: true })
       stringifiedRef.current = raw
-      setState({ meta, data, rawText: raw, validationErrors: [], isDirty: false, isSaving: false })
+      lastValidDataRef.current = data
+      setState({
+        meta,
+        data,
+        rawText: raw,
+        validationErrors: [],
+        validationDiagnostics: [],
+        validationStatus: 'valid',
+        isDirty: false,
+        isSaving: false,
+      })
     }
   }, [sourceSection])
 
@@ -69,35 +123,45 @@ export function useSectionEditorBuffer(
     pendingRaw.current = null
 
     const metaType = sourceRef.current?.meta?.type
-    const result = parseAndValidateYAML(raw, metaType)
+    const result = validateOKFSection(raw, metaType)
 
     const sourceData = sourceRef.current?.data
     let dirty = false
-    if (sourceData && result.data) {
-      const normalized = yaml.dump(result.data, { lineWidth: -1, noRefs: true })
+    if (sourceData && result.payload) {
+      const normalized = yaml.dump(result.payload, { lineWidth: -1, noRefs: true })
       dirty = normalized !== yaml.dump(sourceData, { lineWidth: -1, noRefs: true })
-    } else if (result.data) {
+    } else if (result.payload) {
       dirty = true
     }
 
-    if (result.data && result.errors.length === 0) {
-      // Valid: update data and clear errors
+    const legacyErrors = diagnosticsToLegacyErrors(result.diagnostics)
+
+    if (result.status === 'valid' || (result.status === 'warning' && result.payload)) {
+      // Valid or warnings-only: update data with validated payload, clear/carry errors
+      const newData = result.payload as unknown as OKFSectionData
+      lastValidDataRef.current = newData
       syncing.current = true
       setState((prev) => ({
         ...prev,
-        data: result.data!,
+        data: newData,
         rawText: raw,
-        validationErrors: [],
+        validationErrors: legacyErrors,
+        validationDiagnostics: result.diagnostics,
+        validationStatus: result.status,
         isDirty: dirty,
       }))
       syncing.current = false
       onChange?.()
-    } else if (result.errors.length > 0) {
-      // Invalid: keep last-good data (prev.data), show errors, update rawText
+    } else if (result.diagnostics.length > 0) {
+      // Error: keep last-valid data for Live Preview, show diagnostics
+      const previewData = lastValidDataRef.current
       setState((prev) => ({
         ...prev,
+        data: previewData ?? prev.data,
         rawText: raw,
-        validationErrors: result.errors,
+        validationErrors: legacyErrors,
+        validationDiagnostics: result.diagnostics,
+        validationStatus: result.status,
         isDirty: dirty,
       }))
     }
@@ -110,11 +174,22 @@ export function useSectionEditorBuffer(
       stringifiedRef.current = raw
       const sourceData = sourceRef.current?.data
       const dirty = sourceData ? raw !== yaml.dump(sourceData, { lineWidth: -1, noRefs: true }) : false
+
+      // Validate the visual form data immediately through the gateway
+      const result = validateOKFSection(raw, data.type)
+      const legacyErrors = diagnosticsToLegacyErrors(result.diagnostics)
+
+      if (result.status === 'valid' || result.status === 'warning') {
+        lastValidDataRef.current = data
+      }
+
       setState((prev) => ({
         ...prev,
-        data,
+        data: lastValidDataRef.current ?? data,
         rawText: raw,
-        validationErrors: [],
+        validationErrors: legacyErrors,
+        validationDiagnostics: result.diagnostics,
+        validationStatus: result.status,
         isDirty: dirty,
       }))
       onChange?.()
@@ -182,6 +257,8 @@ export function useSectionEditorBuffer(
     data: state.data,
     rawText: state.rawText,
     validationErrors: state.validationErrors,
+    validationDiagnostics: state.validationDiagnostics,
+    validationStatus: state.validationStatus,
     isDirty: state.isDirty,
     isSaving: state.isSaving,
     sectionBody: sourceRef.current?.sectionBody ?? '',

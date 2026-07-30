@@ -704,6 +704,48 @@ describe('RawYAMLEditor', () => {
     const schemaItems = screen.getAllByTestId('yaml-schema-error-item')
     expect(schemaItems.length).toBe(1)
   })
+
+  it('displays semantic error group with fixHint', () => {
+    const onChange = vi.fn()
+    const errors: ValidationError[] = [
+      {
+        kind: 'semantic',
+        field: 'nodes.start.choices[0].next',
+        message: 'Choice targets non-existent node "missing".',
+        fixHint: 'Update next to point to a valid node.',
+      },
+    ]
+
+    render(
+      <RawYAMLEditor text="type: scenario" errors={errors} onChange={onChange} />
+    )
+
+    const semanticGroup = screen.getByTestId('yaml-semantic-error-group')
+    expect(semanticGroup).toBeInTheDocument()
+    expect(semanticGroup).toHaveTextContent('Semantic Reference Error')
+    const hint = screen.getByTestId('yaml-error-hint')
+    expect(hint).toHaveTextContent('Update next to point to a valid node.')
+  })
+
+  it('displays schema error with fixHint', () => {
+    const onChange = vi.fn()
+    const errors: ValidationError[] = [
+      {
+        kind: 'schema',
+        field: 'paragraphs',
+        message: 'Missing required field',
+        fixHint: 'Add the paragraphs field.',
+      },
+    ]
+
+    render(
+      <RawYAMLEditor text="type: text" errors={errors} onChange={onChange} />
+    )
+
+    const hint = screen.getByTestId('yaml-error-hint')
+    expect(hint).toBeInTheDocument()
+    expect(hint).toHaveTextContent('Add the paragraphs field.')
+  })
 })
 
 describe('EditorPanel', () => {
@@ -843,5 +885,103 @@ describe('EditorPanel', () => {
 
     const saveBtn = screen.getByTestId('editor-save-btn')
     expect(saveBtn).toHaveTextContent('Saving...')
+  })
+
+  it('does not show diagnostic banner when no diagnostics', () => {
+    render(<EditorPanel {...mockProps} />)
+
+    expect(screen.queryByTestId('editor-diagnostic-banner')).not.toBeInTheDocument()
+  })
+
+  it('shows diagnostic banner with error diagnostics', () => {
+    const propsWithDiagnostics = {
+      ...mockProps,
+      validationDiagnostics: [
+        {
+          tier: 2 as const,
+          field: 'paragraphs',
+          message: 'Missing required field "paragraphs"',
+          fixHint: 'Add the paragraphs field with an array of strings.',
+        },
+      ],
+    }
+
+    render(<EditorPanel {...propsWithDiagnostics} />)
+
+    const banner = screen.getByTestId('editor-diagnostic-banner')
+    expect(banner).toBeInTheDocument()
+
+    const errorGroup = screen.getByTestId('editor-diagnostic-error-group')
+    expect(errorGroup).toBeInTheDocument()
+    expect(errorGroup).toHaveTextContent('Validation Errors')
+    expect(errorGroup).toHaveTextContent('Missing required field')
+  })
+
+  it('shows fixHint in diagnostic banner', () => {
+    const propsWithDiagnostics = {
+      ...mockProps,
+      validationDiagnostics: [
+        {
+          tier: 2 as const,
+          field: 'paragraphs',
+          message: 'Missing required field',
+          fixHint: 'Add the paragraphs field.',
+        },
+      ],
+    }
+
+    render(<EditorPanel {...propsWithDiagnostics} />)
+
+    const hint = screen.getByTestId('editor-diagnostic-fix-hint')
+    expect(hint).toBeInTheDocument()
+    expect(hint).toHaveTextContent('Add the paragraphs field.')
+  })
+
+  it('shows warning diagnostics separately from errors', () => {
+    const propsWithWarnings = {
+      ...mockProps,
+      validationDiagnostics: [
+        {
+          tier: 3 as const,
+          field: 'nodes.start.choices[0].next',
+          message: 'Choice targets unknown node "nonexistent".',
+          fixHint: 'Set "next" to a valid node ID.',
+        },
+      ],
+    }
+
+    render(<EditorPanel {...propsWithWarnings} />)
+
+    const banner = screen.getByTestId('editor-diagnostic-banner')
+    expect(banner).toBeInTheDocument()
+
+    const warningGroup = screen.getByTestId('editor-diagnostic-warning-group')
+    expect(warningGroup).toBeInTheDocument()
+    expect(warningGroup).toHaveTextContent('Validation Warnings')
+  })
+
+  it('shows both error and warning diagnostic groups together', () => {
+    const propsWithMixed = {
+      ...mockProps,
+      validationDiagnostics: [
+        {
+          tier: 2 as const,
+          field: 'paragraphs',
+          message: 'Expected array',
+          fixHint: 'Use array format.',
+        },
+        {
+          tier: 3 as const,
+          field: 'nodes.a.next',
+          message: 'Unknown node ref',
+          fixHint: 'Use valid node ID.',
+        },
+      ],
+    }
+
+    render(<EditorPanel {...propsWithMixed} />)
+
+    expect(screen.getByTestId('editor-diagnostic-error-group')).toBeInTheDocument()
+    expect(screen.getByTestId('editor-diagnostic-warning-group')).toBeInTheDocument()
   })
 })

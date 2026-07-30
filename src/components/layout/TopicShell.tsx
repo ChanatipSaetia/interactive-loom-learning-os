@@ -72,6 +72,8 @@ function EditorModeView({ topicLabel }: { topicLabel: string }) {
     data: editedData,
     rawText,
     validationErrors,
+    validationDiagnostics,
+    validationStatus,
     isDirty,
     isSaving,
     setVisualFormField,
@@ -124,6 +126,8 @@ function EditorModeView({ topicLabel }: { topicLabel: string }) {
           <EditorPanel
             sectionData={editedData}
             validationErrors={validationErrors}
+            validationDiagnostics={validationDiagnostics}
+            validationStatus={validationStatus}
             onVisualFormChange={setVisualFormField}
             onRawTextChange={setRawText}
             rawText={rawText}
