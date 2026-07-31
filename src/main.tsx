@@ -5,18 +5,18 @@ import { App } from './App'
 import { SectionRegistry } from './core/registry'
 import './styles/app.css'
 
-SectionRegistry.register('intro', () => import('./sections/intro'))
-SectionRegistry.register('text', () => import('./sections/text'))
-SectionRegistry.register('bullets', () => import('./sections/bullets'))
+SectionRegistry.register('intro', () => import('./core/subdomains/progressive-content/components/intro'))
+SectionRegistry.register('text', () => import('./core/subdomains/progressive-content/components/text'))
+SectionRegistry.register('bullets', () => import('./core/subdomains/progressive-content/components/bullets'))
 SectionRegistry.register('flowchart', () => import('./core/subdomains/process-simulation/components/flowchart'))
 SectionRegistry.register('tradeoff-sandbox', () => import('./core/subdomains/tradeoff-sandbox/components/tradeoff-sandbox'))
-SectionRegistry.register('taxonomy-browser', () => import('./sections/taxonomy-browser'))
+SectionRegistry.register('taxonomy-browser', () => import('./core/subdomains/progressive-content/components/taxonomy-browser'))
 SectionRegistry.register('flashcards', () => import('./sections/flashcards'))
 SectionRegistry.register('quiz', () => import('./sections/quiz'))
 SectionRegistry.register('concept-map', () => import('./sections/concept-map'))
 SectionRegistry.register('scenario', () => import('./core/subdomains/process-simulation/components/scenario'))
 SectionRegistry.register('decision-tree', () => import('./core/subdomains/tradeoff-sandbox/components/decision-tree'))
-SectionRegistry.register('image-gallery', () => import('./sections/image-gallery'))
+SectionRegistry.register('image-gallery', () => import('./core/subdomains/progressive-content/components/image-gallery'))
 SectionRegistry.register('formula-sandbox', () => import('./core/subdomains/tradeoff-sandbox/components/formula-sandbox'))
 SectionRegistry.register('reflection-sequence', () => import('./core/subdomains/reflection-synthesis/components/reflection-sequence'))
 SectionRegistry.register('reflection-template', () => import('./core/subdomains/reflection-synthesis/components/reflection-template'))

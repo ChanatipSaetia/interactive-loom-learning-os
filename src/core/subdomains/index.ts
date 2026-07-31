@@ -126,16 +126,16 @@ export type {
   GalleryItem,
 } from './progressive-content'
 
-export { TextSection } from './progressive-content'
+export { TextSection, TextHelpModal } from './progressive-content'
 export type { TextSectionProps } from './progressive-content'
 
-export { IntroSection } from './progressive-content'
+export { IntroSection, IntroHelpModal } from './progressive-content'
 export type { IntroSectionProps } from './progressive-content'
 
-export { BulletsSection } from './progressive-content'
+export { BulletsSection, BulletsHelpModal } from './progressive-content'
 export type { BulletsSectionProps, BulletItemType } from './progressive-content'
 
-export { TaxonomyBrowserSection } from './progressive-content'
+export { TaxonomyBrowserSection, TaxonomyHelpModal } from './progressive-content'
 export type {
   TaxonomyBrowserSectionProps,
   TaxonomyCategoryType,

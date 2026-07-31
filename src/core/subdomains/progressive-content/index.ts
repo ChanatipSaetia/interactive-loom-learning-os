@@ -17,16 +17,16 @@ export type {
   GalleryItem,
 } from './schema'
 
-export { TextSection } from './components/TextSection'
+export { TextSection, TextHelpModal } from './components/TextSection'
 export type { TextSectionProps } from './components/TextSection'
 
-export { IntroSection } from './components/IntroSection'
+export { IntroSection, IntroHelpModal } from './components/IntroSection'
 export type { IntroSectionProps } from './components/IntroSection'
 
-export { BulletsSection } from './components/BulletsSection'
+export { BulletsSection, BulletsHelpModal } from './components/BulletsSection'
 export type { BulletsSectionProps, BulletItemType } from './components/BulletsSection'
 
-export { TaxonomyBrowserSection } from './components/TaxonomyBrowserSection'
+export { TaxonomyBrowserSection, TaxonomyHelpModal } from './components/TaxonomyBrowserSection'
 export type { TaxonomyBrowserSectionProps, TaxonomyCategoryType } from './components/TaxonomyBrowserSection'
 
 export { ImageGallerySection } from './components/ImageGallerySection'

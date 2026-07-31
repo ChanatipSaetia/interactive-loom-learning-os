@@ -1,7 +1,7 @@
 import { useMemo } from 'react'
 import { marked } from 'marked'
-import { ScrollReveal } from '../../components/motion/scroll-reveal'
-import { SectionTitleBar } from '../../components/layout/SectionTitleBar'
+import { ScrollReveal } from '../../../../../components/motion/scroll-reveal'
+import { SectionTitleBar } from '../../../../../components/layout/SectionTitleBar'
 import { TextHelpModal } from './TextHelpModal'
 import './text.css'
 

@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { X, ChevronLeft, ChevronRight, ImageOff } from 'lucide-react';
-import { SectionTitleBar } from '../../components/layout/SectionTitleBar';
+import { SectionTitleBar } from '../../../../../components/layout/SectionTitleBar';
 
 export interface GalleryItem {
   id: string;

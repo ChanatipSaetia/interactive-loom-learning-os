@@ -2,7 +2,7 @@ import * as yaml from 'js-yaml'
 import type { AbstractFlow, ActorDecl, SystemDecl, FlowJourney } from '../subdomains/process-simulation/components/flowchart/abstract-flow/types'
 import type { TradeoffScenario } from '../subdomains/tradeoff-sandbox/components/tradeoff-sandbox'
 import { ref } from '../subdomains/process-simulation/components/flowchart/abstract-flow/types'
-import type { BulletItem } from '../../sections/bullets'
+import type { BulletItem } from '../subdomains/progressive-content/components/bullets'
 import type { WordTerm } from '../../types'
 import type {
   OKFBundled,
@@ -484,7 +484,7 @@ function mapTradeoffScenario(raw: OKFTradeoffScenarioRaw): TradeoffScenario {
 
 // --- Taxonomy mapping ---
 
-function mapTaxonomyCategory(raw: OKFTaxonomyRaw): import('../../sections/taxonomy-browser').TaxonomyCategory {
+function mapTaxonomyCategory(raw: OKFTaxonomyRaw): import('../subdomains/progressive-content/components/taxonomy-browser').TaxonomyCategory {
   return {
     icon: raw.icon,
     title: raw.title,

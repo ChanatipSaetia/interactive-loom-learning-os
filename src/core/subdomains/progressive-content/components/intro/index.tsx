@@ -1,8 +1,8 @@
 import React from 'react'
 import { Sparkles, Target, Lightbulb, MapPin, Clock, Layers, ArrowRight, CheckCircle2, BookOpen } from 'lucide-react'
-import type { OKFIntroRoadmapStep } from '../../core/okf/types'
+import type { OKFIntroRoadmapStep } from '../../../../../core/okf/types'
 import { IntroHelpModal } from './IntroHelpModal'
-import { SectionTitleBar } from '../../components/layout/SectionTitleBar'
+import { SectionTitleBar } from '../../../../../components/layout/SectionTitleBar'
 import './intro.css'
 
 export interface IntroSectionProps {
@@ -49,7 +49,6 @@ const IntroSection: React.FC<IntroSectionProps> = ({
     <div className="topic-intro-section" data-testid="intro-section">
       <SectionTitleBar title={title} sectionIndex={sectionIndex} HelpModal={IntroHelpModal} />
 
-      {/* Optional Hero Header - only rendered if title/subtitle/badges are provided */}
       {hasHeroHeader && (
         <div className="topic-intro-hero">
           <div className="topic-intro-badges">
@@ -78,7 +77,6 @@ const IntroSection: React.FC<IntroSectionProps> = ({
         </div>
       )}
 
-      {/* Row 1: DEFINITION CARD (Full Width Row) */}
       {what?.definition && (
         <div className="topic-intro-definition-row">
           <div className="topic-intro-block pillar-definition" data-testid="intro-definition">
@@ -94,10 +92,8 @@ const IntroSection: React.FC<IntroSectionProps> = ({
         </div>
       )}
 
-      {/* Row 2: WHAT & WHY CARDS (2-Column Grid) */}
       {(what || why) && (
         <div className="topic-intro-pillars">
-          {/* WHAT BLOCK */}
           {what && (
             <div className="topic-intro-block pillar-what" data-testid="intro-what-card">
               <div className="pillar-header">
@@ -130,7 +126,6 @@ const IntroSection: React.FC<IntroSectionProps> = ({
             </div>
           )}
 
-          {/* WHY BLOCK */}
           {why && (
             <div className="topic-intro-block pillar-why" data-testid="intro-why-card">
               <div className="pillar-header">
@@ -153,7 +148,6 @@ const IntroSection: React.FC<IntroSectionProps> = ({
         </div>
       )}
 
-      {/* Row 3: LEARNING ROADMAP PREVIEW */}
       {roadmap && roadmap.length > 0 && (
         <div className="topic-intro-roadmap" data-testid="intro-roadmap">
           <div className="roadmap-header">

@@ -1,6 +1,6 @@
 import { render, screen, fireEvent } from '@testing-library/react'
 import { describe, it, expect, vi } from 'vitest'
-import { BulletsHelpModal } from '../../../../src/sections/bullets/BulletsHelpModal'
+import { BulletsHelpModal } from '../../../../src/core/subdomains/progressive-content/components/bullets/BulletsHelpModal'
 
 describe('BulletsHelpModal', () => {
   it('does not render when isOpen is false', () => {

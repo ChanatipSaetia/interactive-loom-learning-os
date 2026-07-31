@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'motion/react'
 import { ChevronDown } from 'lucide-react'
-import { SectionTitleBar } from '../../components/layout/SectionTitleBar'
+import { SectionTitleBar } from '../../../../../components/layout/SectionTitleBar'
 import { BulletsHelpModal } from './BulletsHelpModal'
 import './bullets.css'
 
@@ -40,10 +40,8 @@ function BulletItemRow({
   const hasChildren = item.children && item.children.length > 0
   const isTopLevel = depth === 0
 
-  // Stagger delays
   const staggerDelay = (depth * 150 + index * 80) / 1000
 
-  // Determine marker content and theme color based on depth
   let markerContent = '◆'
   const markerColor = depth === 0 ? 'var(--primary)' : 'var(--secondary)'
 
@@ -154,7 +152,6 @@ function BulletItemRow({
     )
   }
 
-  // Nested levels (depth > 0)
   return (
     <motion.li
       className="bullet-item"

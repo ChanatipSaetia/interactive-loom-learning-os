@@ -1,2 +1,3 @@
-export { default as BulletsSection } from '../../../../sections/bullets'
-export type { BulletsSectionProps, BulletItem as BulletItemType } from '../../../../sections/bullets'
+export { default as BulletsSection } from './bullets'
+export type { BulletsSectionProps, BulletItem as BulletItemType } from './bullets'
+export { BulletsHelpModal } from './bullets/BulletsHelpModal'

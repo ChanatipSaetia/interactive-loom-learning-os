@@ -1,2 +1,3 @@
-export { default as IntroSection } from '../../../../sections/intro'
-export type { IntroSectionProps } from '../../../../sections/intro'
+export { default as IntroSection } from './intro'
+export type { IntroSectionProps } from './intro'
+export { IntroHelpModal } from './intro/IntroHelpModal'

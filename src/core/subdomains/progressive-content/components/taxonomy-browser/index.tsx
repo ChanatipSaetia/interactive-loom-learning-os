@@ -2,9 +2,9 @@ import { useState, useCallback, useRef, forwardRef, type ComponentType } from 'r
 import { motion, AnimatePresence } from 'motion/react'
 import * as Dialog from '@radix-ui/react-dialog'
 import * as Icons from 'lucide-react'
-import { ScrollReveal } from '../../components/motion/scroll-reveal'
-import { useSound } from '../../context/SoundContext'
-import { SectionTitleBar } from '../../components/layout/SectionTitleBar'
+import { ScrollReveal } from '../../../../../components/motion/scroll-reveal'
+import { useSound } from '../../../../../context/SoundContext'
+import { SectionTitleBar } from '../../../../../components/layout/SectionTitleBar'
 import { TaxonomyHelpModal } from './TaxonomyHelpModal'
 import './taxonomy-browser.css'
 
@@ -122,7 +122,6 @@ function TaxonomyModal({
                   ✕
                 </Dialog.Close>
 
-                {/* Header — always visible, never scrolls */}
                 <div className="taxonomy-modal-header">
                   <div className="taxonomy-modal-icon" style={{ color: accent }}>
                     <Icon size={32} strokeWidth={1.5} />
@@ -137,15 +136,12 @@ function TaxonomyModal({
                   </h2>
                 </div>
 
-                {/* Sections — scrollable */}
                 <div className="taxonomy-modal-sections-scroll" data-lenis-prevent>
-                  {/* Overview */}
                   <div className="taxonomy-modal-section" data-testid="taxonomy-modal-overview">
                     <h3 className="taxonomy-modal-section-title">Overview</h3>
                     <p className="taxonomy-modal-text">{category.description}</p>
                   </div>
 
-                  {/* Deep Dive */}
                   <div className="taxonomy-modal-section taxonomy-modal-deepdive" data-testid="taxonomy-modal-deepdive">
                     <h3 className="taxonomy-modal-section-title">Deep Dive</h3>
                     <div className="taxonomy-modal-elevated">
@@ -153,7 +149,6 @@ function TaxonomyModal({
                     </div>
                   </div>
 
-                  {/* Scope & Boundaries */}
                   <div className="taxonomy-modal-section" data-testid="taxonomy-modal-scope">
                     <h3 className="taxonomy-modal-section-title">Scope & Boundaries</h3>
 

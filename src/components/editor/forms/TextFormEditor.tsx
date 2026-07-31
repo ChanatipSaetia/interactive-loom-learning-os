@@ -1,6 +1,6 @@
 import { useState, useCallback } from 'react'
 import { Plus, Trash2, HelpCircle, ArrowUp, ArrowDown, Type, Bold, Italic, Code, Link as LinkIcon, FileText } from 'lucide-react'
-import { TextHelpModal } from '../../../sections/text/TextHelpModal'
+import { TextHelpModal } from '../../../core/subdomains/progressive-content/components/text/TextHelpModal'
 import type { OKFTextSectionData } from '../../../core/okf/types'
 
 interface TextFormEditorProps {

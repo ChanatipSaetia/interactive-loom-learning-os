@@ -1,6 +1,6 @@
 import { useState, useCallback } from 'react'
 import { Plus, Trash2, HelpCircle, ArrowUp, ArrowDown, List, Layers, CornerDownRight } from 'lucide-react'
-import { BulletsHelpModal } from '../../../sections/bullets/BulletsHelpModal'
+import { BulletsHelpModal } from '../../../core/subdomains/progressive-content/components/bullets/BulletsHelpModal'
 import type { OKFBulletSectionData } from '../../../core/okf/types'
 
 export interface BulletItem {

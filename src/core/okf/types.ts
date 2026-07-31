@@ -1,7 +1,7 @@
 import type { AbstractFlow } from '../subdomains/process-simulation/components/flowchart/abstract-flow/types'
 import type { TradeoffScenario } from '../subdomains/tradeoff-sandbox/components/tradeoff-sandbox'
-import type { TaxonomyCategory } from '../../sections/taxonomy-browser'
-import type { BulletItem } from '../../sections/bullets'
+import type { TaxonomyCategory } from '../subdomains/progressive-content/components/taxonomy-browser'
+import type { BulletItem } from '../subdomains/progressive-content/components/bullets'
 import type { WordTerm } from '../../types'
 
 // --- Per-section bundle ---
