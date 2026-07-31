@@ -1,7 +1,7 @@
 /* ==========================================================================
    Scenario Section — Full Component Styles (vanilla CSS, no @apply)
    Accent colors use --primary / --secondary design tokens.
-   Class names matched exactly to src/sections/scenario/index.tsx
+   Class names matched exactly to component implementation
    ========================================================================== */
 
 .scenario-section {

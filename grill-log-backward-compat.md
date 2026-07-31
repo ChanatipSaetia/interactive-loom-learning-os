@@ -4,6 +4,7 @@
 
 **Topic:** Removal of Legacy `src/sections/` Layer & DDD Consolidation
 **Date:** 2026-07-31
+**Status:** COMPLETE — Phase 6 documentation realignment finished 2026-07-31
 
 ---
 
@@ -43,7 +44,7 @@
 - **Import Strategy**: Centralized barrel export through `src/core/subdomains/index.ts` and bounded context entry points.
 - **Sub-module Strategy**: Internal utilities (e.g. `abstract-flow/`) live directly inside `src/core/subdomains/[subdomain]/[submodule]/` with public contracts re-exported through the subdomain's `index.ts`.
 - **Help Modals Strategy**: Editor help modals are co-located in subdomain component folders and re-exported via `src/core/subdomains/index.ts`.
-- **Documentation Strategy**: Update `AGENTS.md` to establish `src/core/subdomains/` as canonical and mark `src/sections/` as deprecated immediately, removing legacy rules after Phase 5.
+- **Documentation Strategy**: Update `AGENTS.md` to establish `src/core/subdomains/` as canonical. Legacy `src/sections/` references removed from all docs after Phase 5 (completed Phase 6).
 
 ## Implied Stories
 
@@ -53,5 +54,5 @@
 4. **Phase 3 — `reflection-synthesis` Migration**: Relocate `reflection-sequence` and `reflection-template` components/modals to `src/core/subdomains/reflection-synthesis/`; update callers; delete legacy section folders.
 5. **Phase 4 — `progressive-content` Migration**: Relocate `text`, `intro`, `bullets`, `taxonomy-browser`, and `image-gallery` components/modals to `src/core/subdomains/progressive-content/`; update callers; delete legacy section folders.
 6. **Phase 5 — `practice-assessment` Migration & Directory Cleanup**: Relocate `quiz`, `flashcards`, and `concept-map` components/modals to `src/core/subdomains/practice-assessment/`; update callers; delete `src/sections/` directory completely.
-7. **Phase 6 — Final Documentation Realignment**: Update `AGENTS.md` and `docs/agents/domain.md` removing all legacy `src/sections/` mentions; run full suite verification.
+7. **Phase 6 — Final Documentation Realignment**: Update `AGENTS.md` and `docs/agents/domain.md` removing all legacy `src/sections/` mentions; run full suite verification. **Status: COMPLETE**
 

@@ -37,7 +37,7 @@ When refactoring or extending core sections, follow the Strategic & Tactical DDD
      - `schema.ts`: Co-located Zod structural schemas (`SectionSchema`).
      - `events.ts`: Domain event type definitions (`SectionEvents`).
      - `index.ts`: Bounded Context entry point exporting contract interfaces.
-    * *Rule:* `src/core/subdomains/` and its barrel export `src/core/subdomains/index.ts` are the canonical sources for section implementations, schemas, and help modals. New code MUST import from the barrel (`src/core/subdomains`) or a subdomain path (`src/core/subdomains/[subdomain]`). The legacy `src/sections/` directory is deprecated and being systematically removed across Phase 0-5 migration issues.
+     * *Rule:* `src/core/subdomains/` and its barrel export `src/core/subdomains/index.ts` are the canonical sources for section implementations, schemas, and help modals. New code MUST import from the barrel (`src/core/subdomains`) or a subdomain path (`src/core/subdomains/[subdomain]`). The legacy `src/sections/` directory has been fully migrated and removed.
 
 
 2. **3-Tier Validation Gateway (`src/core/validation/gateway.ts`):**

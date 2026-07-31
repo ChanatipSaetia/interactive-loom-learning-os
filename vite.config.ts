@@ -128,10 +128,7 @@ export default defineConfig(({ mode }) => {
               if (id.includes('anime')) return 'vendor-anime'
               return 'vendor'
             }
-            if (id.includes('/src/sections/')) {
-              const match = id.match(/\/src\/sections\/([a-z0-9-]+)/)
-              return match ? `section-${match[1]}` : 'sections'
-            }
+
           }
         }
       }

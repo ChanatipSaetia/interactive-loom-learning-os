@@ -33,7 +33,7 @@
 
 **A:** Option 1 (Dedicated Bounded Context Modules in `src/core/subdomains/[subdomain]/` with temporary re-exports in `src/sections/`).
 
-**Decision:** Core section types will be organized into 5 Bounded Context folders inside `src/core/subdomains/[subdomain]/`, collocating Zod schemas (`SectionSchema`), event contracts (`SectionEvents`), and component renderers (`SectionRenderer`), maintaining backward-compatible re-exports in `src/sections/`.
+**Decision:** Core section types are organized into 5 Bounded Context folders inside `src/core/subdomains/[subdomain]/`, collocating Zod schemas (`SectionSchema`), event contracts (`SectionEvents`), and component renderers (`SectionRenderer`). The legacy `src/sections/` directory has been fully removed (Phase 6 complete).
 
 ---
 
@@ -75,7 +75,7 @@
   2. Phase 2: 3-Tier Validation Gateway & Tell-Back Protocol
   3. Phase 3: Delivery & Storage Context Decoupling (Ports & Adapters)
   4. Phase 4: UI System & Sensory Contracts
-- **Phase 1 Strategy:** Group 15 section types into 5 Bounded Context folders under `src/core/subdomains/[subdomain]/`, collocating Zod schemas (`SectionSchema`), event contracts (`SectionEvents`), and component renderers (`SectionRenderer`), maintaining backward-compatible re-exports in `src/sections/`.
+- **Phase 1 Strategy:** Group 15 section types into 5 Bounded Context folders under `src/core/subdomains/[subdomain]/`, collocating Zod schemas (`SectionSchema`), event contracts (`SectionEvents`), and component renderers (`SectionRenderer`). All section types have been migrated and the legacy `src/sections/` directory removed (Phase 6 complete).
 - **Phase 2 Strategy:** Centralized `ValidationGateway` in `src/core/validation/gateway.ts` executing Tier 1 (YAML syntax), Tier 2 (Structural Zod Schemas), and Tier 3 (Semantic Reference Integrity checks), emitting structured `ValidationResult` objects with `fixHint` diagnostic markers and non-blocking `lastValidData` fallbacks.
 - **Phase 3 Strategy:** Decouple storage and runtime delivery mechanisms using Hexagonal Ports & Adapters (`OKFStoragePort` and `OKFRuntimePort` in `src/core/delivery/ports.ts`) with concrete adapters for `InRepoStorage`, `WebAppRuntime`, and `SingleHTMLEmbed`.
 - **Phase 4 Strategy:** Consolidate theme tokens, UI component primitives, audio triggers, and motion variants into `src/core/ui-system/`, exposing `UISystemContract` via `useUISystem()`.
@@ -93,6 +93,7 @@
 9. **Phase 3.2 - InRepo & WebApp Runtime Adapters:** Implement `InRepoStorageAdapter` and `WebAppRuntimeAdapter`.
 10. **Phase 3.3 - Single HTML Embed Adapter:** Refactor `libs/loom-sections.tsx` to utilize `SingleHTMLEmbedAdapter`.
 11. **Phase 4.1 - UISystemContext & Contract Consolidation:** Create `src/core/ui-system/` unifying `ThemeContract`, `UIComponentRegistryContract`, and `SensoryFeedbackContract`.
+12. **Phase 6 - Documentation Realignment & Final Audit:** Remove all legacy `src/sections/` references from docs, update AGENTS.md and domain.md, verify full workspace with typecheck/lint/test. **Status: COMPLETE**
 
 
 
