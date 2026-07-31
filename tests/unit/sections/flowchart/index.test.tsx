@@ -2,8 +2,8 @@ import { describe, it, expect, beforeEach, beforeAll, vi } from 'vitest';
 import { render, screen, fireEvent, act } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import { SectionRegistry } from '../../../../src/core/registry';
-import Flowchart from '../../../../src/sections/flowchart/index';
-import type { UnifiedFlowchartSchema } from '../../../../src/sections/flowchart/index';
+import Flowchart from '../../../../src/core/subdomains/process-simulation/components/flowchart';
+import type { UnifiedFlowchartSchema } from '../../../../src/core/subdomains/process-simulation/components/flowchart';
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 beforeAll(() => {
@@ -146,7 +146,7 @@ describe('Flowchart component', () => {
 
   it('does not self-register with SectionRegistry', async () => {
     vi.resetModules();
-    const mod = await import('../../../../src/sections/flowchart/index');
+    const mod = await import('../../../../src/core/subdomains/process-simulation/components/flowchart');
     const { SectionRegistry: Registry } = await import('../../../../src/core/registry');
     expect(Registry.get('flowchart')).toBeUndefined();
     void mod;

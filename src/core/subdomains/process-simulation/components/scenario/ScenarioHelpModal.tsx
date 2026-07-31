@@ -1,6 +1,6 @@
 import { useEffect } from 'react'
 import { X, HelpCircle, Film, GitBranch, Award, CheckCircle, Star } from 'lucide-react'
-import '../../sections/flowchart/flowchart.css'
+import '../flowchart/flowchart.css'
 
 interface ScenarioHelpModalProps {
   isOpen: boolean

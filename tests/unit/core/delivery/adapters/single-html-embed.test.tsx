@@ -18,7 +18,7 @@ vi.mock('../../../../../src/core/validation/gateway', () => ({
   validateOKFSection: vi.fn(),
 }))
 
-vi.mock('../../../../../src/sections/flowchart/abstract-flow/derive', () => ({
+vi.mock('../../../../../../src/core/subdomains/process-simulation/components/flowchart/abstract-flow/derive', () => ({
   deriveSchema: vi.fn((input) => ({ ...input, entities: {}, relations: [] })),
 }))
 

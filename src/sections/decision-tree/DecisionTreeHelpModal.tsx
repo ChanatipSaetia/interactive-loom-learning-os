@@ -1,6 +1,6 @@
 import { useEffect } from 'react'
 import { X, HelpCircle, GitBranch, CheckSquare, Share2, Plus } from 'lucide-react'
-import '../../sections/flowchart/flowchart.css'
+import '../../core/subdomains/process-simulation/components/flowchart/flowchart.css'
 
 interface DecisionTreeHelpModalProps {
   isOpen: boolean

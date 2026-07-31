@@ -1,7 +1,7 @@
 import { Play, Pause, SkipForward, SkipBack, RotateCcw } from 'lucide-react';
-import { Button } from '../../components/motion/button';
+import { Button } from '../../../../../components/motion/button';
 import type { FlowchartJourney } from './types';
-import { useSound } from '../../context/SoundContext';
+import { useSound } from '../../../../../context/SoundContext';
 
 interface PlaybackControlsProps {
   currentJourney: FlowchartJourney;

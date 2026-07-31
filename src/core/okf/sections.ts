@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react'
 import type { SectionConfig } from '../registry'
-import { deriveSchema } from '../../sections/flowchart/abstract-flow/derive'
+import { deriveSchema } from '../subdomains/process-simulation/components/flowchart/abstract-flow/derive'
 import { loadOKFBundle, getCachedOKFBundle } from './reader'
 import type { OKFBundled } from './types'
 

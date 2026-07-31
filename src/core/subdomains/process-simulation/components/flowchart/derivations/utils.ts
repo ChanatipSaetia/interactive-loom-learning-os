@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any, @typescript-eslint/no-unused-vars */
 import type { UnifiedFlowchartSchema, FlowchartRelation, FlowchartEntity, LayoutInfo } from '../types';
 import { TYPES } from '../types';
 

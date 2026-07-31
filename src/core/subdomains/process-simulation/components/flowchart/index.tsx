@@ -1,10 +1,10 @@
 import { useCallback, useEffect, useMemo, useId, useRef, useState, type ComponentType } from 'react';
 import * as Icons from 'lucide-react';
-import { Button } from '../../components/motion/button';
-import { Dropdown } from '../../components/motion/dropdown';
-import { ExpandableTabs, type ExpandableTabItem } from '../../components/motion/expandable-tabs';
-import { Tabs, TabsList, TabsTrigger } from '../../components/motion/tabs';
-import { SectionTitleBar } from '../../components/layout/SectionTitleBar';
+import { Button } from '../../../../../components/motion/button';
+import { Dropdown } from '../../../../../components/motion/dropdown';
+import { ExpandableTabs, type ExpandableTabItem } from '../../../../../components/motion/expandable-tabs';
+import { Tabs, TabsList, TabsTrigger } from '../../../../../components/motion/tabs';
+import { SectionTitleBar } from '../../../../../components/layout/SectionTitleBar';
 
 import { FlowchartView } from './views';
 import { PlaybackControls } from './playback-controls';
@@ -75,7 +75,7 @@ export function Flowchart({ title, schema = INITIAL_SCHEMA, sectionIndex = 0 }: 
     setLocalSchema(autoDeriveViews(schema));
   }, [schema]);
 
-  const viewKeys = useMemo(() => Object.keys(localSchema.views!!), [localSchema]);
+  const viewKeys = useMemo(() => Object.keys(localSchema.views!), [localSchema]);
   const [activeViewKey, setActiveViewKey] = useState<string>(viewKeys[0] || 'EVENT_STORMING');
 
   useEffect(() => {

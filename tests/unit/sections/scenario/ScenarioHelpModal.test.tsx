@@ -1,6 +1,6 @@
 import { render, screen, fireEvent } from '@testing-library/react'
 import { describe, it, expect, vi } from 'vitest'
-import { ScenarioHelpModal } from '../../../../src/sections/scenario/ScenarioHelpModal'
+import { ScenarioHelpModal } from '../../../../src/core/subdomains/process-simulation/components/scenario/ScenarioHelpModal'
 
 describe('ScenarioHelpModal', () => {
   it('does not render when isOpen is false', () => {

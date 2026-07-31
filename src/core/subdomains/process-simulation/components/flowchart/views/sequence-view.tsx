@@ -1,4 +1,6 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useState, useMemo, memo } from 'react';
+import React from 'react';
 import * as Icons from 'lucide-react';
 import { COLORS, BORDER_COLORS, ICONS, ICON_ANIMATIONS, NODE_W, NODE_H, wrapTooltipText } from '../types';
 import type { UnifiedFlowchartSchema, FlowchartViewNode, FlowchartViewGroup } from '../types';

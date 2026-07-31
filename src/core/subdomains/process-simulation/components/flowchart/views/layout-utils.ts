@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { NODE_W, NODE_H } from '../types';
 
 const MIN_ROW_SPACING = 120;

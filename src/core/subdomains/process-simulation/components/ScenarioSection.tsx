@@ -1,2 +1,2 @@
-export { default as ScenarioSection } from '../../../../sections/scenario'
-export type { ScenarioSectionProps } from '../../../../sections/scenario'
+export { default as ScenarioSection } from './scenario'
+export type { ScenarioSectionProps } from './scenario'

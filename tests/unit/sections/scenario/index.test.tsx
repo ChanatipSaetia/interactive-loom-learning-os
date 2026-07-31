@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeEach } from 'vitest'
 import { render, screen, fireEvent } from '@testing-library/react'
 import { SectionRegistry } from '../../../../src/core/registry'
-import ScenarioSection from '../../../../src/sections/scenario'
+import ScenarioSection from '../../../../src/core/subdomains/process-simulation/components/scenario'
 import type { OKFScenarioNode } from '../../../../src/core/okf/types'
 
 const mockNodes: Record<string, OKFScenarioNode> = {
@@ -247,7 +247,7 @@ describe('Scenario Section', () => {
 
   it('does not self-register with SectionRegistry', async () => {
     vi.resetModules()
-    const mod = await import('../../../../src/sections/scenario')
+    const mod = await import('../../../../src/core/subdomains/process-simulation/components/scenario')
     const { SectionRegistry: Registry } = await import('../../../../src/core/registry')
     expect(Registry.get('scenario')).toBeUndefined()
     void mod

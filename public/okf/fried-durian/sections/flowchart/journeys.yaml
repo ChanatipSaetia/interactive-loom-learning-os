@@ -2,44 +2,56 @@
   label: "ทุเรียนทอดเปล่า"
   description: "กระบวนการทำทุเรียนทอดแบบไม่เคลือบน้ำตาล"
   steps:
-    - nodeId: evt_flesh_ready
+    - stepId: step_1
+      name: "เตรียมเนื้อทุเรียน"
       description: "แยกเนื้อทุเรียนดิบออกจากเมล็ด"
-      processGroup: prep
-    - nodeId: evt_sliced
-      description: "หั่นเป็นชิ้นบางสม่ำเสมอ"
-      processGroup: prep
-    - nodeId: evt_oil_hot
-      description: "ตั้งน้ำมันให้ร้อน เติมน้ำเกลือ"
-      processGroup: cook
-    - nodeId: evt_fried
-      description: "ทอดจนสีทองกรอบ"
-      processGroup: cook
-    - nodeId: evt_drained
-      description: "สะเด็ดน้ำมันบนกระดาษซับมัน"
-      processGroup: finish
-    - nodeId: evt_plain_done
-      description: "เสิร์ฟทุเรียนทอดเปล่า"
-      processGroup: serve
+      processGroup: planning
+    - stepId: step_2
+      name: "หั่นทุเรียน"
+      description: "หั่นเป็นชิ้นบางสม่ำเสมอเตรียมพร้อมทอด"
+      processGroup: planning
+    - stepId: step_3
+      name: "เตรียมน้ำมันทอด"
+      description: "ตั้งน้ำมันให้ร้อน 170-180°C เติมน้ำเกลือ"
+      processGroup: execution
+    - stepId: step_4
+      name: "ทอดทุเรียน"
+      description: "ทอดไฟกลางจนเหลืองทองกรอบ"
+      processGroup: execution
+    - stepId: step_5
+      name: "สะเด็ดน้ำมัน"
+      description: "ยกขึ้นพักบนกระดาษซับมัน"
+      processGroup: evaluation
+    - stepId: branch_plain
+      name: "เสิร์ฟทุเรียนทอดเปล่า"
+      description: "จัดเสิร์ฟทุเรียนทอดเปล่ากรอบอร่อย"
+      processGroup: evaluation
 
 - id: journey_sugar
   label: "ทุเรียนทอดเคลือบน้ำตาล"
   description: "กระบวนการทำทุเรียนทอดแบบเคลือบน้ำตาล"
   steps:
-    - nodeId: evt_flesh_ready
+    - stepId: step_1
+      name: "เตรียมเนื้อทุเรียน"
       description: "แยกเนื้อทุเรียนดิบออกจากเมล็ด"
-      processGroup: prep
-    - nodeId: evt_sliced
-      description: "หั่นเป็นชิ้นบางสม่ำเสมอ"
-      processGroup: prep
-    - nodeId: evt_oil_hot
-      description: "ตั้งน้ำมันให้ร้อน เติมน้ำเกลือ"
-      processGroup: cook
-    - nodeId: evt_fried
-      description: "ทอดจนสีทองกรอบ"
-      processGroup: cook
-    - nodeId: evt_drained
-      description: "สะเด็ดน้ำมันบนกระดาษซับมัน"
-      processGroup: finish
-    - nodeId: evt_sugar_done
-      description: "熬น้ำตาลเคลือบแล้วเสิร์ฟ"
-      processGroup: serve
+      processGroup: planning
+    - stepId: step_2
+      name: "หั่นทุเรียน"
+      description: "หั่นเป็นชิ้นบางสม่ำเสมอเตรียมพร้อมทอด"
+      processGroup: planning
+    - stepId: step_3
+      name: "เตรียมน้ำมันทอด"
+      description: "ตั้งน้ำมันให้ร้อน 170-180°C เติมน้ำเกลือ"
+      processGroup: execution
+    - stepId: step_4
+      name: "ทอดทุเรียน"
+      description: "ทอดไฟกลางจนเหลืองทองกรอบ"
+      processGroup: execution
+    - stepId: step_5
+      name: "สะเด็ดน้ำมัน"
+      description: "ยกขึ้นพักบนกระดาษซับมัน"
+      processGroup: evaluation
+    - stepId: branch_sugar
+      name: "เคลือบน้ำตาลเสิร์ฟ"
+      description: "เคี่ยวน้ำตาลคลุกเคลือบแล้วเสิร์ฟ"
+      processGroup: evaluation

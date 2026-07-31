@@ -19,7 +19,7 @@ import { Registry } from '../../registry/generic-registry'
 import { loadOKFBundle } from '../../okf/reader'
 import { bundleToSections } from '../../okf/sections'
 import { validateOKFSection } from '../../validation/gateway'
-import { deriveSchema } from '../../../sections/flowchart/abstract-flow/derive'
+import { deriveSchema } from '../../subdomains/process-simulation/components/flowchart/abstract-flow/derive'
 import { SectionErrorBoundary } from '../../../components/common/SectionErrorBoundary'
 
 // ============================================================================

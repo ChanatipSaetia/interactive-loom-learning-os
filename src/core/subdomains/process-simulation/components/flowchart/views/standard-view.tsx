@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useState, memo } from 'react';
 import * as Icons from 'lucide-react';
 import { COLORS, BORDER_COLORS, ICONS, ICON_ANIMATIONS, NODE_W, NODE_H, wrapTooltipText, TYPES } from '../types';
@@ -137,9 +138,9 @@ export const StandardView = memo(function StandardView({
           ? `url(#flowchart-arrow-highlight-${viewInstanceId})`
           : `url(#flowchart-arrow-${viewInstanceId})`;
 
-        let midX = relEntry.midX || 0;
-        let midY = relEntry.midY || 0;
-        let isHandledBy = !!rel.handledBy;
+        const midX = relEntry.midX || 0;
+        const midY = relEntry.midY || 0;
+        const isHandledBy = !!rel.handledBy;
 
         // If it is handledBy, we can shift it slightly if we want, but using layout midX is standard.
 

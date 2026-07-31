@@ -1,27 +1,72 @@
 #!/bin/bash
 # ralph.sh — Autonomous Ralph Loop runner (GitHub issues driven)
-# Usage: ./ralph.sh [max_iterations] [model]
+# Usage: ./ralph.sh [max_iterations] [model] [engine]
+#        ./ralph.sh --engine agy|opencode [max_iterations] [model]
+#        ./ralph.sh --agy|--opencode [max_iterations] [model]
+# Options:
+#   --engine <agy|opencode>, -e <agy|opencode>   Engine to use (default: opencode or ENGINE env var)
+#   --agy                                        Shortcut for --engine agy
+#   --opencode                                   Shortcut for --engine opencode
 # Picks up issues labeled 'ready-for-agent', implements them, and closes on success.
 
-# Add opencode to PATH — try common locations so the skill works anywhere
-if ! command -v opencode &>/dev/null; then
-    for _p in "$HOME/.opencode/bin" "$HOME/.local/bin" /usr/local/bin /usr/bin; do
-        if [ -x "$_p/opencode" ]; then
-            export PATH="$_p:$PATH"
-            break
-        fi
-    done
+# Ensure opencode and agy are in PATH — try common locations
+for _p in "$HOME/.opencode/bin" "$HOME/.gemini/bin" "$HOME/.local/bin" /usr/local/bin /usr/bin; do
+    if [ -d "$_p" ] && [[ ":$PATH:" != *":$_p:"* ]]; then
+        export PATH="$_p:$PATH"
+    fi
+done
+
+MAX=21
+MODEL=""
+ENGINE="${ENGINE:-opencode}"
+
+POSITIONAL=()
+while [[ $# -gt 0 ]]; do
+    case "$1" in
+        --engine=*)
+            ENGINE="${1#*=}"
+            shift
+            ;;
+        --engine|-e)
+            ENGINE="$2"
+            shift 2
+            ;;
+        --agy)
+            ENGINE="agy"
+            shift
+            ;;
+        --opencode)
+            ENGINE="opencode"
+            shift
+            ;;
+        *)
+            POSITIONAL+=("$1")
+            shift
+            ;;
+    esac
+done
+
+set -- "${POSITIONAL[@]}"
+
+for arg in "$@"; do
+    if [[ "$arg" =~ ^[0-9]+$ ]]; then
+        MAX="$arg"
+    elif [[ "$arg" == "agy" || "$arg" == "opencode" ]]; then
+        ENGINE="$arg"
+    else
+        MODEL="$arg"
+    fi
+done
+
+MODEL_FLAG=""
+if [ -n "$MODEL" ]; then
+    MODEL_FLAG="--model $MODEL"
 fi
 
-MAX=${1:-21}
-MODEL_FLAG=""
-if [ -n "$2" ]; then
-    MODEL_FLAG="--model $2"
-fi
 iteration=0
 stuck_issue=""
 stuck_count=0
-OPENCODE_PID=""
+AGENT_PID=""
 PROJECT="$(basename $(pwd))"
 
 mkdir -p logs
@@ -31,11 +76,29 @@ log() {
     echo "[$(date '+%Y-%m-%d %H:%M:%S')] $*" | tee -a "$LOOP_LOG"
 }
 
+strip_ansi() {
+    sed -u 's/\x1b\[[0-9;]*[mK]//g; s/\r//g'
+}
 
+filter_output() {
+    strip_ansi | grep -iE \
+        'Error|error:|ERROR|Build|PASS|FAIL|passed|failed|tests|commit|write|modified|deleted|created' |
+        grep -vE '^\s*(filesystem|bash|read|write|edit|glob|grep)\s' |
+        grep -vE '^\s*⚙' |
+        grep -vE '^\s*>' |
+        grep -vE '^\s*$' |
+        grep -vE '^[0-9]+$'
+}
 
 log "=== Ralph Loop: $PROJECT started ==="
+log "Engine: $ENGINE"
 log "Max iterations: $MAX"
-[ -n "$MODEL_FLAG" ] && log "Model override: $2" || log "Model: (opencode default)"
+[ -n "$MODEL_FLAG" ] && log "Model override: $MODEL" || log "Model: ($ENGINE default)"
+
+if ! command -v "$ENGINE" &>/dev/null; then
+    log "ERROR: Command '$ENGINE' not found in PATH."
+    exit 1
+fi
 
 if [ ! -d .git ]; then
     git init
@@ -55,13 +118,13 @@ if [ -f bot-listener.sh ]; then
     ./bot-listener.sh $$ &
     BOT_LISTENER_PID=$!
     log "[bot] Telegram listener started (PID: $BOT_LISTENER_PID)"
-    ./notify.sh "Ralph Loop started! Project: $PROJECT | Max: $MAX | Use /status /log /llama /stop"
+    ./notify.sh "Ralph Loop started! Project: $PROJECT | Engine: $ENGINE | Max: $MAX | Use /status /log /llama /stop"
 fi
 
 cleanup() {
-    if [ -n "$OPENCODE_PID" ] && kill -0 "$OPENCODE_PID" 2>/dev/null; then
-        kill "$OPENCODE_PID" 2>/dev/null
-        log "[ralph] opencode child stopped"
+    if [ -n "$AGENT_PID" ] && kill -0 "$AGENT_PID" 2>/dev/null; then
+        kill "$AGENT_PID" 2>/dev/null
+        log "[ralph] $ENGINE child stopped"
     fi
     if [ -n "$BOT_LISTENER_PID" ] && kill -0 "$BOT_LISTENER_PID" 2>/dev/null; then
         kill "$BOT_LISTENER_PID" 2>/dev/null
@@ -113,14 +176,20 @@ while [ $iteration -lt $MAX ]; do
     # Fetch the issue body for context
     ISSUE_BODY=$(gh issue view "$CURRENT_ISSUE_NUM" --json body --jq '.body' 2>/dev/null || echo "")
 
-    # Run opencode — output to terminal and log
-    opencode run $MODEL_FLAG \
-        @progress.txt @AGENTS.md @prompt.md $STEERING_FLAG . \
-        "Implement issue $CURRENT_ISSUE. Issue body: $ISSUE_BODY. Follow the instructions in prompt.md exactly." \
-        2>&1 | tee -a "$LOOP_LOG" &
-    OPENCODE_PID=$!
-    wait $OPENCODE_PID || true
-    OPENCODE_PID=""
+    # Run selected engine — output to terminal and log
+    if [ "$ENGINE" = "agy" ]; then
+        agy -p "Implement issue $CURRENT_ISSUE. Issue body: $ISSUE_BODY. Read progress.txt, AGENTS.md, prompt.md, and STEERING.md (if present) and follow the instructions in prompt.md exactly." \
+            $MODEL_FLAG --dangerously-skip-permissions \
+            2>&1 | tee -a "$LOOP_LOG" &
+    else
+        opencode run $MODEL_FLAG \
+            @progress.txt @AGENTS.md @prompt.md $STEERING_FLAG . \
+            "Implement issue $CURRENT_ISSUE. Issue body: $ISSUE_BODY. Follow the instructions in prompt.md exactly." \
+            2>&1 | tee -a "$LOOP_LOG" &
+    fi
+    AGENT_PID=$!
+    wait $AGENT_PID || true
+    AGENT_PID=""
 
     # Check if the issue was closed
     ISSUE_STATE=$(gh issue view "$CURRENT_ISSUE_NUM" --json state --jq '.state' 2>/dev/null || echo "OPEN")

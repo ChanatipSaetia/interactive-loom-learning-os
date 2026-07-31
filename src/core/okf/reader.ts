@@ -1,6 +1,6 @@
 import * as yaml from 'js-yaml'
-import type { AbstractFlow, ActorDecl, SystemDecl, FlowJourney } from '../../sections/flowchart/abstract-flow/types'
-import { ref } from '../../sections/flowchart/abstract-flow/types'
+import type { AbstractFlow, ActorDecl, SystemDecl, FlowJourney } from '../subdomains/process-simulation/components/flowchart/abstract-flow/types'
+import { ref } from '../subdomains/process-simulation/components/flowchart/abstract-flow/types'
 import type { BulletItem } from '../../sections/bullets'
 import type { WordTerm } from '../../types'
 import type {
@@ -403,7 +403,7 @@ function mapFlow(
   }
 }
 
-function mapStep(raw: OKFStepRaw): import('../../sections/flowchart/abstract-flow/types').FlowStep {
+function mapStep(raw: OKFStepRaw): import('../subdomains/process-simulation/components/flowchart/abstract-flow/types').FlowStep {
   const stepType = raw.type ?? (raw.branches ? 'branch' : 'linear')
   if (stepType === 'linear') {
     return {

@@ -1,5 +1,5 @@
 import { ZoomIn, ZoomOut, Locate } from 'lucide-react';
-import { Button } from '../../components/motion/button';
+import { Button } from '../../../../../components/motion/button';
 
 interface ZoomToolbarProps {
   handleZoomIn: () => void;

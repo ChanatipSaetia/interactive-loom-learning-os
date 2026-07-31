@@ -1,4 +1,4 @@
-export { Flowchart } from '../../../../sections/flowchart'
+export { Flowchart } from './flowchart'
 export type {
   UnifiedFlowchartSchema,
   FlowchartEntity,
@@ -15,4 +15,4 @@ export type {
   ProcessGroup,
   FlowchartStateMachineState,
   FlowchartStateMachine,
-} from '../../../../sections/flowchart'
+} from './flowchart'

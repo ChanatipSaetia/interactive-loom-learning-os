@@ -9,9 +9,9 @@ import { deriveDataFlow } from './data-flow';
 import { deriveStateMachine } from './state-machine';
 
 export function autoDeriveViews(schema: UnifiedFlowchartSchema): UnifiedFlowchartSchema {
-  let mutableEntities = { ...schema.entities };
-  let mutableRelations = [...schema.relations];
-  let mutableViews = { ...(schema.views || {}) };
+  const mutableEntities = { ...schema.entities };
+  const mutableRelations = [...schema.relations];
+  const mutableViews = { ...(schema.views || {}) };
 
   // Auto-generate EVENT_STORMING view from entities if not provided
   if (!mutableViews.EVENT_STORMING) {
@@ -50,7 +50,7 @@ if (mutableViews.EVENT_STORMING) {
       laidOutNodes = layoutEventStorming(view.nodes, nodeIds, nodeSet, mutableRelations, viewKey, mutableEntities, getRole);
     }
 
-    let groups = view.groups;
+    const groups = view.groups;
     laidOutViews[viewKey] = {
       ...view,
       nodes: laidOutNodes,

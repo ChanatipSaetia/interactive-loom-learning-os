@@ -1,7 +1,7 @@
 import { useState, useCallback } from 'react'
 import { GitBranch, Star, HelpCircle, Trash2, Plus, Settings, Film } from 'lucide-react'
-import { ScenarioHelpModal } from '../../../sections/scenario/ScenarioHelpModal'
-import '../../../sections/scenario/scenario.css'
+import { ScenarioHelpModal } from '../../../core/subdomains/process-simulation/components/scenario/ScenarioHelpModal'
+import '../../../core/subdomains/process-simulation/components/scenario/scenario.css'
 import type {
   OKFScenarioSectionData,
   OKFScenarioNode,

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useEffect, useMemo, useRef } from 'react';
 import { animate } from 'animejs';
 import * as Icons from 'lucide-react';
@@ -141,14 +142,14 @@ export function FlowchartView({
       const colB = toNode.grid ? toNode.grid[0] : Math.round(((toNode.x || 0) - spacing.offsetX) / spacing.colSpacing);
       const rowB = toNode.grid ? toNode.grid[1] : Math.round(((toNode.y || 0) - spacing.offsetY) / spacing.rowSpacing);
 
-      let startPts = [
+      const startPts = [
         { side: 'T', x: fromNode.x, y: fromNode.y - NODE_H / 2 },
         { side: 'R', x: fromNode.x + NODE_W / 2, y: fromNode.y },
         { side: 'B', x: fromNode.x, y: fromNode.y + NODE_H / 2 },
         { side: 'L', x: fromNode.x - NODE_W / 2, y: fromNode.y }
       ];
 
-      let endPts = [
+      const endPts = [
         { side: 'T', x: toNode.x, y: toNode.y - NODE_H / 2 },
         { side: 'R', x: toNode.x + NODE_W / 2, y: toNode.y },
         { side: 'B', x: toNode.x, y: toNode.y + NODE_H / 2 },

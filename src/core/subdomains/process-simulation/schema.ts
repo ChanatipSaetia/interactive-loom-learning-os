@@ -118,17 +118,92 @@ export const FlowchartViewConfigSchema = z.object({
   layoutInfo: LayoutInfoSchema.optional(),
 })
 
+// --- AbstractFlow Raw Step & Journey Schemas ---
+
+export const FlowchartResultEventSchema = z.object({
+  id: z.string().min(1, { message: 'Result event must have a non-empty id.' }),
+  title: z.string().min(1, { message: 'Result event must have a non-empty title.' }),
+  desc: z.string().optional(),
+})
+
+export const FlowchartRawLinearStepSchema = z.object({
+  id: z.string().min(1, { message: 'Step id cannot be empty.' }),
+  type: z.literal('linear').optional(),
+  initiatedBy: z.union([z.string(), z.object({ id: z.string() })]).optional(),
+  policy: z.string().optional(),
+  command: z.string().optional(),
+  handledBy: z.union([z.string(), z.object({ id: z.string() })]).optional(),
+  delegatesTo: z.union([z.string(), z.object({ id: z.string() })]).optional(),
+  resultEvents: z.array(FlowchartResultEventSchema).min(1, {
+    message: 'Linear step must define at least one result event in resultEvents array.',
+  }),
+  continuesAs: z.string().optional(),
+  description: z.string().optional(),
+})
+
+export const FlowchartRawBranchOptionSchema = z.object({
+  id: z.string().min(1, { message: 'Branch option id cannot be empty.' }),
+  label: z.string().optional(),
+  dashed: z.boolean().optional(),
+  policy: z.string().optional(),
+  command: z.string().optional(),
+  handledBy: z.union([z.string(), z.object({ id: z.string() })]).optional(),
+  delegatesTo: z.union([z.string(), z.object({ id: z.string() })]).optional(),
+  resultEvents: z.array(FlowchartResultEventSchema).min(1, {
+    message: 'Branch option step must define at least one result event in resultEvents array.',
+  }),
+  continuesAs: z.string().optional(),
+  description: z.string().optional(),
+})
+
+export const FlowchartRawBranchStepSchema = z.object({
+  id: z.string().min(1, { message: 'Branch step id cannot be empty.' }),
+  type: z.literal('branch'),
+  event: z.string().min(1, { message: 'Branch step event cannot be empty.' }),
+  branches: z.array(FlowchartRawBranchOptionSchema).min(1, {
+    message: 'Branch step must define at least one branch option.',
+  }),
+})
+
+export const FlowchartRawStepSchema = z.union([
+  FlowchartRawBranchStepSchema,
+  FlowchartRawLinearStepSchema,
+])
+
+export const FlowchartRawJourneyStepRefSchema = z.object({
+  stepId: z.string().min(1, { message: 'Journey step reference must define a non-empty stepId.' }),
+  name: z.string().min(1, { message: 'Journey step name cannot be empty.' }),
+  description: z.string().min(1, { message: 'Journey step description cannot be empty.' }),
+  processGroup: z.string().optional(),
+})
+
+export const FlowchartRawJourneySchema = z.object({
+  id: z.string().min(1, { message: 'Journey must define a non-empty id.' }),
+  label: z.string().min(1, { message: 'Journey must define a non-empty label.' }),
+  description: z.string().min(1, { message: 'Journey description cannot be empty.' }),
+  steps: z.array(FlowchartRawJourneyStepRefSchema).min(1, {
+    message: 'Journey must define at least 1 journey step in steps array.',
+  }),
+})
+
 export const FlowchartSectionSchema = z.object({
   type: z.literal('flowchart').optional(),
   entities: z.record(z.string(), FlowchartEntitySchema).optional(),
   relations: z.array(FlowchartRelationSchema).optional(),
   views: z.record(z.string(), FlowchartViewConfigSchema).optional(),
-  journeys: z.array(FlowchartJourneySchema).optional(),
+  journeys: z.array(FlowchartRawJourneySchema).optional(),
+  steps: z.array(FlowchartRawStepSchema).optional(),
   flow: z.object({
     actors: z.unknown().optional(),
     systems: z.unknown().optional(),
-    steps: z.unknown().optional(),
-    journeys: z.unknown().optional(),
+    steps: z.union([
+      z.array(FlowchartRawStepSchema).min(1, { message: 'Flowchart steps array cannot be empty.' }),
+      z.object({ steps: z.array(FlowchartRawStepSchema).min(1, { message: 'Flowchart steps array cannot be empty.' }) }),
+    ]).optional(),
+    journeys: z.union([
+      z.array(FlowchartRawJourneySchema).min(1, { message: 'Flowchart journeys array cannot be empty.' }),
+      z.object({ journeys: z.array(FlowchartRawJourneySchema).min(1, { message: 'Flowchart journeys array cannot be empty.' }) }),
+    ]).optional(),
   }).optional(),
 })
 

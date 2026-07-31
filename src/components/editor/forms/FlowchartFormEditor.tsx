@@ -1,6 +1,6 @@
 import { useState, useCallback } from 'react'
 import { Users, Server, GitCommit, GitBranch, Compass, Plus, Trash2, HelpCircle } from 'lucide-react'
-import { FlowchartHelpModal } from '../../../sections/flowchart/FlowchartHelpModal'
+import { FlowchartHelpModal } from '../../../core/subdomains/process-simulation/components/flowchart/FlowchartHelpModal'
 import type { OKFFlowSectionData } from '../../../core/okf/types'
 import type {
   AbstractFlow,
@@ -13,8 +13,8 @@ import type {
   FlowJourney,
   JourneyStepRef,
   ResultEvent,
-} from '../../../sections/flowchart/abstract-flow/types'
-import { ref } from '../../../sections/flowchart/abstract-flow/types'
+} from '../../../core/subdomains/process-simulation/components/flowchart/abstract-flow/types'
+import { ref } from '../../../core/subdomains/process-simulation/components/flowchart/abstract-flow/types'
 
 interface FlowchartFormEditorProps {
   data: OKFFlowSectionData

@@ -1,38 +1,42 @@
-systems:
-  - id: "http_controller"
-    label: "Express HTTP Controller (Driving Adapter)"
-    type: "EXTERNAL"
-  - id: "create_order_port"
-    label: "CreateOrderUseCase (Driving Port)"
-    type: "SYSTEM"
-  - id: "order_aggregate"
-    label: "Order Aggregate (Domain Core)"
-    type: "AGGREGATE"
-  - id: "order_repo_port"
-    label: "OrderRepositoryPort (Driven Port)"
-    type: "SYSTEM"
-  - id: "postgres_adapter"
-    label: "PostgresOrderAdapter (Driven Adapter)"
-    type: "EXTERNAL"
+order_aggregate:
+  title: "Order Aggregate (Domain Core)"
+  desc: "Core domain business entity maintaining state and business invariants."
+  type: aggregate
+  stateMachine:
+    states:
+      - id: DRAFT
+        label: Draft
+        color: "var(--ctp-overlay1)"
+      - id: CREATING
+        label: Creating
+        color: "var(--ctp-blue)"
+      - id: VALIDATED
+        label: Validated
+        color: "var(--ctp-mauve)"
+      - id: PERSISTING
+        label: Persisting
+        color: "var(--ctp-peach)"
+      - id: PERSISTED
+        label: Persisted
+        color: "var(--ctp-green)"
+    initialState: DRAFT
 
-  # Step-specific duplicates for handledBy chains
-  - id: "http_controller_s1"
-    label: "Express HTTP Controller"
-    type: "EXTERNAL"
-    collapsedTo: "http_controller"
-  - id: "create_order_port_s2"
-    label: "CreateOrderUseCase Port"
-    type: "SYSTEM"
-    collapsedTo: "create_order_port"
-  - id: "order_aggregate_s3"
-    label: "Order Aggregate Core"
-    type: "AGGREGATE"
-    collapsedTo: "order_aggregate"
-  - id: "order_repo_port_s4"
-    label: "OrderRepositoryPort"
-    type: "SYSTEM"
-    collapsedTo: "order_repo_port"
-  - id: "postgres_adapter_s5"
-    label: "PostgresOrderAdapter"
-    type: "EXTERNAL"
-    collapsedTo: "postgres_adapter"
+http_controller:
+  title: "Express HTTP Controller (Driving Adapter)"
+  desc: "Receives HTTP REST requests and translates DTOs into domain commands."
+  type: external
+
+create_order_port:
+  title: "CreateOrderUseCase (Driving Port)"
+  desc: "Inbound application port interface exposing order creation operations."
+  type: external
+
+order_repo_port:
+  title: "OrderRepositoryPort (Driven Port)"
+  desc: "Outbound infrastructure port interface for order persistence."
+  type: external
+
+postgres_adapter:
+  title: "PostgresOrderAdapter (Driven Adapter)"
+  desc: "Outbound database adapter executing SQL queries against Postgres."
+  type: external

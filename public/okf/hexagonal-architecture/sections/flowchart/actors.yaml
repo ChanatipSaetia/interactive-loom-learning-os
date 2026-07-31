@@ -1,4 +1,3 @@
-actors:
-  - id: "customer"
-    label: "Online Customer"
-    role: "User"
+customer:
+  title: "Online Customer (Initiator)"
+  desc: "Customer submitting purchase orders via Web UI."

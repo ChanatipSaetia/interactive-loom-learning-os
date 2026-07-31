@@ -1,5 +1,5 @@
 import { describe, it } from 'vitest';
-import { autoDeriveViews } from '../../../../src/sections/flowchart/derivations';
+import { autoDeriveViews } from '../../../../src/core/subdomains/process-simulation/components/flowchart/derivations';
 
 describe('Sequence Debug', () => {
   it('logs sequence relations', () => {

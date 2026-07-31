@@ -1,7 +1,7 @@
 import { useMemo, useState } from 'react';
 import { StateMachineWidget } from './state-machine-widget';
 import { JsonPayloadViewer } from './json-payload-viewer';
-import { Dropdown } from '../../../components/motion/dropdown';
+import { Dropdown } from '../../../../../../components/motion/dropdown';
 import { PROCESS_GROUP_STATE_MAP, STEP_EVENT_TO_STATE_MAP } from '../types';
 import type {
   UnifiedFlowchartSchema,
@@ -36,7 +36,7 @@ export function InspectorSidebar({
   const [activeTab, setActiveTab] = useState<InspectorTab>('details');
 
   const smEntities = useMemo(() => {
-    const smView = schema.views!?.STATE_MACHINE;
+    const smView = schema.views?.STATE_MACHINE;
     if (smView) {
       // Find the aggregate node (non state-node)
       const aggNode = smView.nodes.find(n => !n.id.includes('_state_'));
