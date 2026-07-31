@@ -37,11 +37,11 @@ export interface ValidationResult<T = unknown> {
 
 // --- Schema Registry — Dynamically resolved from Bounded Contexts ---
 
-import * as ProgressiveContent from '../subdomains/progressive-content'
-import * as ProcessSimulation from '../subdomains/process-simulation'
-import * as TradeoffSandbox from '../subdomains/tradeoff-sandbox'
-import * as ReflectionSynthesis from '../subdomains/reflection-synthesis'
-import * as PracticeAssessment from '../subdomains/practice-assessment'
+import * as ProgressiveContent from '../subdomains/progressive-content/schema'
+import * as ProcessSimulation from '../subdomains/process-simulation/schema'
+import * as TradeoffSandbox from '../subdomains/tradeoff-sandbox/schema'
+import * as ReflectionSynthesis from '../subdomains/reflection-synthesis/schema'
+import * as PracticeAssessment from '../subdomains/practice-assessment/schema'
 
 interface SchemaEntry {
   schema: z.ZodTypeAny
@@ -182,7 +182,7 @@ function zodErrorToDiagnostic(issue: z.ZodIssue, context?: ValidationContext): V
   }
 }
 
-function tier2Validate(
+export function tier2Validate(
   data: unknown,
   sectionType: string,
   context?: ValidationContext

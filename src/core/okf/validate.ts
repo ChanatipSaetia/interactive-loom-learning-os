@@ -115,7 +115,6 @@ const TYPE_SCHEMA: Record<string, FieldRule[]> = {
     { field: 'id', required: true, expectedType: 'string' },
     { field: 'title', required: true, expectedType: 'string' },
     { field: 'nodes', required: true, expectedType: 'object' },
-    { field: 'startNode', required: true, expectedType: 'string' },
   ],
   'decision-tree': [
     { field: 'type', required: true, expectedType: 'string' },

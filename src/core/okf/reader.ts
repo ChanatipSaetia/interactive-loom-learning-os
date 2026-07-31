@@ -95,7 +95,7 @@ function discoverSectionFiles(related: string[], sectionPath: string): string[] 
   const normalized = sectionPath.replace(/\/$/, '')
   return related
     .filter((r) => r.startsWith(normalized + '/'))
-    .filter((r) => r.endsWith('.yaml'))
+    .filter((r) => r.endsWith('.yaml') || r.endsWith('.yml') || r.endsWith('.md'))
     .map((r) => {
       const after = r.replace(normalized + '/', '')
       return after
@@ -326,44 +326,93 @@ async function loadImageGallerySection(basePath: string, resource: string, resou
 // --- Flow mapping ---
 
 function mapFlow(
-  actorsRaw: Record<string, { title: string; desc: string }>,
-  systemsRaw: Record<string, { title: string; desc: string; type: string; collapsedTo?: string; stateMachine?: any }>,
-  stepsRaw: OKFStepRaw[],
-  journeysRaw: OKFJourneyRaw[]
+  actorsRaw: any,
+  systemsRaw: any,
+  stepsRaw: any,
+  journeysRaw: any
 ): AbstractFlow {
+  // Unwrap actors (array, dict, or object with 'actors' key)
+  const unwrapActors = (actorsRaw && typeof actorsRaw === 'object' && 'actors' in actorsRaw) ? actorsRaw.actors : (actorsRaw ?? {})
   const actors: Record<string, ActorDecl> = {}
-  for (const [id, a] of Object.entries(actorsRaw)) {
-    actors[id] = { title: a.title, desc: a.desc }
+  if (Array.isArray(unwrapActors)) {
+    for (const a of unwrapActors) {
+      if (a && (a.id || a.name)) {
+        const id = a.id ?? a.name
+        actors[id] = { title: a.label ?? a.title ?? a.name ?? id, desc: a.role ?? a.desc }
+      }
+    }
+  } else if (unwrapActors && typeof unwrapActors === 'object') {
+    for (const [id, a] of Object.entries(unwrapActors as Record<string, any>)) {
+      if (a) {
+        actors[id] = { title: a.label ?? a.title ?? a.name ?? id, desc: a.role ?? a.desc }
+      }
+    }
   }
 
+  // Unwrap systems (array, dict, or object with 'systems' key)
+  const unwrapSystems = (systemsRaw && typeof systemsRaw === 'object' && 'systems' in systemsRaw) ? systemsRaw.systems : (systemsRaw ?? {})
   const systems: Record<string, SystemDecl> = {}
-  for (const [id, s] of Object.entries(systemsRaw)) {
-    systems[id] = {
-      title: s.title,
-      desc: s.desc,
-      type: s.type as 'aggregate' | 'external',
-      stateMachine: s.stateMachine,
-      ...(s.collapsedTo ? { collapsedTo: s.collapsedTo } : {}),
+  if (Array.isArray(unwrapSystems)) {
+    for (const s of unwrapSystems) {
+      if (s && (s.id || s.name)) {
+        const id = s.id ?? s.name
+        systems[id] = {
+          title: s.label ?? s.title ?? s.name ?? id,
+          desc: s.desc,
+          type: (s.type === 'AGGREGATE' || s.type === 'aggregate') ? 'aggregate' : 'external',
+          stateMachine: s.stateMachine,
+          ...(s.collapsedTo ? { collapsedTo: s.collapsedTo } : {}),
+        }
+      }
     }
+  } else if (unwrapSystems && typeof unwrapSystems === 'object') {
+    for (const [id, s] of Object.entries(unwrapSystems as Record<string, any>)) {
+      if (s) {
+        systems[id] = {
+          title: s.label ?? s.title ?? id,
+          desc: s.desc,
+          type: (s.type === 'AGGREGATE' || s.type === 'aggregate') ? 'aggregate' : 'external',
+          stateMachine: s.stateMachine,
+          ...(s.collapsedTo ? { collapsedTo: s.collapsedTo } : {}),
+        }
+      }
+    }
+  }
+
+  // Unwrap steps (array or object with 'steps' key)
+  let stepsArr: OKFStepRaw[] = []
+  if (Array.isArray(stepsRaw)) {
+    stepsArr = stepsRaw
+  } else if (stepsRaw && typeof stepsRaw === 'object' && Array.isArray((stepsRaw as any).steps)) {
+    stepsArr = (stepsRaw as any).steps
+  }
+
+  // Unwrap journeys (array or object with 'journeys' key)
+  let journeysArr: OKFJourneyRaw[] = []
+  if (Array.isArray(journeysRaw)) {
+    journeysArr = journeysRaw
+  } else if (journeysRaw && typeof journeysRaw === 'object' && Array.isArray((journeysRaw as any).journeys)) {
+    journeysArr = (journeysRaw as any).journeys
   }
 
   return {
     actors,
     systems,
-    steps: stepsRaw.map(mapStep),
-    journeys: journeysRaw.map(mapJourney),
+    steps: stepsArr.map(mapStep),
+    journeys: journeysArr.map(mapJourney),
   }
 }
 
 function mapStep(raw: OKFStepRaw): import('../../sections/flowchart/abstract-flow/types').FlowStep {
-  if (raw.type === 'linear') {
+  const stepType = raw.type ?? (raw.branches ? 'branch' : 'linear')
+  if (stepType === 'linear') {
     return {
       type: 'linear' as const,
       id: raw.id,
       ...(raw.initiatedBy ? { initiatedBy: ref(raw.initiatedBy) } : {}),
-      policy: raw.policy!,
-      command: raw.command!,
-      handledBy: ref(raw.handledBy!),
+      policy: raw.policy ?? raw.event ?? '',
+      command: raw.command ?? '',
+      handledBy: ref(raw.handledBy ?? ''),
       ...(raw.delegatesTo ? { delegatesTo: ref(raw.delegatesTo) } : {}),
       resultEvents: raw.resultEvents ?? [],
       continuesAs: raw.continuesAs,
@@ -392,9 +441,9 @@ function mapStep(raw: OKFStepRaw): import('../../sections/flowchart/abstract-flo
 function mapJourney(raw: OKFJourneyRaw): FlowJourney {
   return {
     id: raw.id,
-    label: raw.label,
+    label: raw.label ?? (raw as any).title ?? raw.id,
     description: raw.description,
-    steps: raw.steps,
+    steps: Array.isArray(raw.steps) ? raw.steps : [],
   }
 }
 
@@ -461,7 +510,7 @@ function mapGlossaryTerm(raw: OKFGlossaryRaw): WordTerm {
     shortDefinition: raw.shortDefinition,
     detailedDefinition: raw.detailedDefinition,
     whyItMatters: raw.whyItMatters,
-    dialogue: raw.dialogue,
+    dialogue: raw.dialogue as any,
   }
 }
 

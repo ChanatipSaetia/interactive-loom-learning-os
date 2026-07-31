@@ -13,7 +13,7 @@ export const TradeoffMetricDefSchema = z.object({
 
 export const TradeoffProConSchema = z.object({
   title: z.string(),
-  description: z.string(),
+  description: z.string().optional(),
 })
 
 export const TradeoffChoiceSchema = z.object({
@@ -30,7 +30,7 @@ export const TradeoffChoiceSchema = z.object({
 export const TradeoffStepSchema = z.object({
   id: z.string(),
   title: z.string(),
-  description: z.string(),
+  description: z.string().optional(),
   choices: z.array(TradeoffChoiceSchema),
   recommended: z.string().optional(),
 })
@@ -38,7 +38,7 @@ export const TradeoffStepSchema = z.object({
 export const TradeoffScenarioSchema = z.object({
   id: z.string(),
   title: z.string(),
-  description: z.string(),
+  description: z.string().optional(),
   metrics: z.array(TradeoffMetricDefSchema),
   steps: z.array(TradeoffStepSchema),
 })
@@ -95,22 +95,28 @@ export const DecisionTreeLeafSchema = z.object({
 })
 
 export const DecisionTreeChoiceSchema = z.object({
-  id: z.string(),
-  text: z.string(),
-  next: z.string(),
+  id: z.string().optional(),
+  text: z.string().optional(),
+  label: z.string().optional(),
+  next: z.string().optional(),
+  target: z.string().optional(),
   rationale: z.string().optional(),
   recommended: z.boolean().optional(),
 })
 
 export const DecisionTreeNodeSchema = z.object({
-  id: z.string(),
+  id: z.string().optional(),
   prompt: z.string().optional(),
+  text: z.string().optional(),
+  title: z.string().optional(),
   choices: z.array(DecisionTreeChoiceSchema).optional(),
+  options: z.array(DecisionTreeChoiceSchema).optional(),
   leaf: DecisionTreeLeafSchema.optional(),
+  recommendation: z.string().optional(),
 })
 
 export const DecisionTreeSectionSchema = z.object({
-  type: z.literal('decision-tree'),
+  type: z.literal('decision-tree').optional(),
   id: z.string(),
   title: z.string(),
   root: z.string(),

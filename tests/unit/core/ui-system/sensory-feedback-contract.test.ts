@@ -47,29 +47,29 @@ describe('SensoryFeedbackContract', () => {
     })
 
     it('MOTION_SLIDE_UP has y offset transitions', () => {
-      expect(MOTION_SLIDE_UP.hidden.y).toBe(20)
-      expect(MOTION_SLIDE_UP.visible.y).toBe(0)
+      expect((MOTION_SLIDE_UP.hidden as any).y).toBe(20)
+      expect((MOTION_SLIDE_UP.visible as any).y).toBe(0)
     })
 
     it('MOTION_SCALE has scale transitions', () => {
-      expect(MOTION_SCALE.hidden.scale).toBe(0.95)
-      expect(MOTION_SCALE.visible.scale).toBe(1)
+      expect((MOTION_SCALE.hidden as any).scale).toBe(0.95)
+      expect((MOTION_SCALE.visible as any).scale).toBe(1)
     })
 
     it('MOTION_BLUR_IN has filter transitions', () => {
-      expect(MOTION_BLUR_IN.hidden.filter).toBe('blur(8px)')
-      expect(MOTION_BLUR_IN.visible.filter).toBe('blur(0px)')
+      expect((MOTION_BLUR_IN.hidden as any).filter).toBe('blur(8px)')
+      expect((MOTION_BLUR_IN.visible as any).filter).toBe('blur(0px)')
     })
 
     it('MOTION_STAGGER_CONTAINER has staggerChildren', () => {
-      expect(MOTION_STAGGER_CONTAINER.visible.transition).toHaveProperty('staggerChildren')
+      expect((MOTION_STAGGER_CONTAINER.visible as any).transition).toHaveProperty('staggerChildren')
     })
 
     it('MOTION_STAGGER_CHILD has opacity and y transitions', () => {
-      expect(MOTION_STAGGER_CHILD.hidden.opacity).toBe(0)
-      expect(MOTION_STAGGER_CHILD.hidden.y).toBe(12)
-      expect(MOTION_STAGGER_CHILD.visible.opacity).toBe(1)
-      expect(MOTION_STAGGER_CHILD.visible.y).toBe(0)
+      expect((MOTION_STAGGER_CHILD.hidden as any).opacity).toBe(0)
+      expect((MOTION_STAGGER_CHILD.hidden as any).y).toBe(12)
+      expect((MOTION_STAGGER_CHILD.visible as any).opacity).toBe(1)
+      expect((MOTION_STAGGER_CHILD.visible as any).y).toBe(0)
     })
 
     it('MOTION_PRESS has scale and spring transition', () => {
@@ -77,8 +77,8 @@ describe('SensoryFeedbackContract', () => {
     })
 
     it('MOTION_DRAWER has x offset transitions', () => {
-      expect(MOTION_DRAWER.hidden.x).toBe('100%')
-      expect(MOTION_DRAWER.visible.x).toBe(0)
+      expect((MOTION_DRAWER.hidden as any).x).toBe('100%')
+      expect((MOTION_DRAWER.visible as any).x).toBe(0)
     })
   })
 

@@ -32,8 +32,8 @@ export interface ReflectionTemplateProps {
 function ReflectionTemplateSingle({
   prompt,
   template,
-  chips,
-  solution,
+  chips = [],
+  solution = {},
   explanation,
 }: {
   prompt: string

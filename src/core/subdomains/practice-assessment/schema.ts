@@ -57,9 +57,12 @@ export type FlashcardsSectionData = z.infer<typeof FlashcardsSectionSchema>
 // --- Concept Map Section Schema ---
 
 export const ConceptNodeSchema = z.object({
-  id: z.string(),
-  title: z.string(),
-  category: z.string(),
+  id: z.string().optional(),
+  title: z.string().optional(),
+  label: z.string().optional(),
+  category: z.string().optional(),
+}).refine((d) => Boolean(d.title || d.label), {
+  message: 'Concept node requires title or label property',
 })
 
 export const ConceptEdgeSchema = z.object({

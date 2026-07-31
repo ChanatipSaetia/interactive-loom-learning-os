@@ -167,10 +167,6 @@ export default function QuizSection({ title, questions = [], sectionIndex = 0 }:
   const [hintsOpen, setHintsOpen] = useState<HintsOpenMap>({})
   const { playSound } = useSound()
 
-  if (questions.length === 0) {
-    return <div className="p-8 text-center text-muted-foreground font-mono text-sm">No quiz questions provided.</div>
-  }
-
   const handleAnswer = useCallback((questionIndex: number, choiceId: string) => {
     setAnswers((prev) => ({ ...prev, [questionIndex]: choiceId }))
     const q = questions[questionIndex]
@@ -186,7 +182,6 @@ export default function QuizSection({ title, questions = [], sectionIndex = 0 }:
     playSound('click')
     setHintsOpen((prev) => ({ ...prev, [questionIndex]: !prev[questionIndex] }))
   }, [playSound])
-
 
   const score = useMemo(() => {
     let correct = 0
@@ -206,6 +201,10 @@ export default function QuizSection({ title, questions = [], sectionIndex = 0 }:
   const handlePrev = useCallback(() => {
     setCurrentIndex((prev) => Math.max(prev - 1, 0))
   }, [])
+
+  if (questions.length === 0) {
+    return <div className="p-8 text-center text-muted-foreground font-mono text-sm">No quiz questions provided.</div>
+  }
 
   const currentQuestion = questions[currentIndex]
 

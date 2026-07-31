@@ -5,7 +5,6 @@ import {
   useUISystem,
   CTP,
   MOTION_FADE,
-  UIComponentRegistry,
 } from '../../../../src/core/ui-system'
 
 describe('UISystemProvider', () => {
@@ -16,7 +15,7 @@ describe('UISystemProvider', () => {
         <span data-testid="theme-tokens">{JSON.stringify(ui.theme.tokens.ctp.base)}</span>
         <span data-testid="sound-muted">{String(ui.sensory.sound.isMuted)}</span>
         <span data-testid="sound-volume">{String(ui.sensory.sound.volume)}</span>
-        <span data-testid="motion-fade">{JSON.stringify(ui.sensory.motion.fade.hidden.opacity)}</span>
+        <span data-testid="motion-fade">{JSON.stringify((ui.sensory.motion.fade.hidden as any).opacity)}</span>
         <span data-testid="components-card">{String(!!ui.components.Card)}</span>
         <span data-testid="components-badge">{String(!!ui.components.Badge)}</span>
         <span data-testid="components-modal">{String(!!ui.components.Modal)}</span>
@@ -50,7 +49,7 @@ describe('UISystemProvider', () => {
         <TestConsumer />
       </UISystemProvider>,
     )
-    expect(screen.getByTestId('motion-fade').textContent).toBe(JSON.stringify(MOTION_FADE.hidden.opacity))
+    expect(screen.getByTestId('motion-fade').textContent).toBe(JSON.stringify((MOTION_FADE.hidden as any).opacity))
   })
 
   it('provides all UI component primitives', () => {

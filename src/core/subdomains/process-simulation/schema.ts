@@ -119,10 +119,17 @@ export const FlowchartViewConfigSchema = z.object({
 })
 
 export const FlowchartSectionSchema = z.object({
-  entities: z.record(z.string(), FlowchartEntitySchema),
-  relations: z.array(FlowchartRelationSchema),
+  type: z.literal('flowchart').optional(),
+  entities: z.record(z.string(), FlowchartEntitySchema).optional(),
+  relations: z.array(FlowchartRelationSchema).optional(),
   views: z.record(z.string(), FlowchartViewConfigSchema).optional(),
-  journeys: z.array(FlowchartJourneySchema),
+  journeys: z.array(FlowchartJourneySchema).optional(),
+  flow: z.object({
+    actors: z.unknown().optional(),
+    systems: z.unknown().optional(),
+    steps: z.unknown().optional(),
+    journeys: z.unknown().optional(),
+  }).optional(),
 })
 
 export type FlowchartSectionData = z.infer<typeof FlowchartSectionSchema>
@@ -138,24 +145,29 @@ export const ScenarioOutcomeSchema = z.object({
 })
 
 export const ScenarioChoiceSchema = z.object({
-  id: z.string(),
-  text: z.string(),
-  next: z.string(),
+  id: z.string().optional(),
+  text: z.string().optional(),
+  label: z.string().optional(),
+  next: z.string().optional(),
+  nextNode: z.string().optional(),
 })
 
 export const ScenarioNodeSchema = z.object({
-  id: z.string(),
+  id: z.string().optional(),
   prompt: z.string().optional(),
+  text: z.string().optional(),
   choices: z.array(ScenarioChoiceSchema).optional(),
   outcome: ScenarioOutcomeSchema.optional(),
 })
 
 export const ScenarioSectionSchema = z.object({
+  type: z.literal('scenario').optional(),
   id: z.string(),
   title: z.string(),
-  intro: z.string(),
+  intro: z.string().optional(),
   nodes: z.record(z.string(), ScenarioNodeSchema),
-  startNode: z.string(),
+  startNode: z.string().optional(),
+  initialNode: z.string().optional(),
 })
 
 export type ScenarioSectionData = z.infer<typeof ScenarioSectionSchema>
