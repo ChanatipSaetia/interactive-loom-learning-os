@@ -8,11 +8,12 @@ You are an autonomous developer running in a Ralph Loop with OpenCode in the **I
 2. Run `gh issue list --label ready-for-agent --state open --json number,title,body` to find open ready-for-agent issues.
 3. Pick the oldest open issue with `ready-for-agent` label. Ensure any listed dependencies in `Blocked by` are already resolved/closed before starting.
 4. Read `progress.txt` — apply learnings from prior iterations.
-5. Read `AGENTS.md`, `docs/agents/domain.md`, and `grill-log-refactoring.md` — treat documentation as authoritative single-source-of-truth. Adhere strictly to the guidelines, schemas, ports, and architectural decisions.
+5. Read `AGENTS.md`, `docs/agents/domain.md`, `grill-log-refactoring.md`, and `grill-log-backward-compat.md` — treat documentation as authoritative single-source-of-truth. Adhere strictly to the guidelines, schemas, ports, and architectural decisions.
 6. Read the detailed issue description and the issue comments posted on GitHub (`gh issue view <N> --comments`) to get full implementation details, code type shapes, and file path requirements.
-7. Explore relevant source files (`src/core/subdomains/`, `src/core/validation/`, `src/core/delivery/`, `src/sections/`, etc.) to understand current state.
+7. Explore relevant source files (`src/core/subdomains/`, `src/core/validation/`, `src/core/delivery/`, etc.) to understand current state.
 8. Implement ONLY that one issue.
-   - For subdomain refactoring (Phase 1): Create `src/core/subdomains/[subdomain]/` with `components/`, `schema.ts`, `events.ts`, and `index.ts`. Always maintain backward-compatible re-exports in `src/sections/[type]/index.ts`.
+   - For subdomain barrel setup (Phase 0): Create `src/core/subdomains/index.ts` re-exporting all subdomains; update `AGENTS.md`.
+   - For subdomain migration (Phases 1-5): Move section components, sub-modules (e.g. `abstract-flow`), and help modals directly into `src/core/subdomains/[subdomain]/`, update all callers (editor forms, OKF pipeline, `libs/loom-sections.tsx`), and delete corresponding legacy `src/sections/` folders.
    - For validation gateway (Phase 2): Implement Tier 1-3 validation in `src/core/validation/gateway.ts` emitting `ValidationResult` with `fixHint` diagnostics and non-blocking `lastValidData` preview fallbacks.
    - For delivery ports/adapters (Phase 3): Implement `OKFStoragePort` and `OKFRuntimePort` in `src/core/delivery/ports.ts` and adapters in `src/core/delivery/adapters/`.
    - For UI system (Phase 4): Consolidate theme, primitives, audio, and motion into `src/core/ui-system/` exposing `UISystemContract`.
@@ -41,9 +42,10 @@ You are an autonomous developer running in a Ralph Loop with OpenCode in the **I
 ## Critical Rules
 
 - ONE issue per run — never start a second issue
-- Trust documentation in `docs/` and `grill-log-refactoring.md` as authoritative source of truth
-- Always maintain 100% backward compatibility for existing section type imports (`src/sections/*`)
+- Trust documentation in `docs/`, `grill-log-refactoring.md`, and `grill-log-backward-compat.md` as authoritative source of truth
+- Use `src/core/subdomains/index.ts` as the canonical entry point for section components; delete legacy `src/sections/` directories as specified in each issue
 - Run typecheck → lint → unit tests, then verify with Playwright MCP
 - Always update `progress.txt` before exiting
 - Close the GitHub issue only after all checks pass
 - Check `STEERING.md` at the start of every iteration — it may have changed
+

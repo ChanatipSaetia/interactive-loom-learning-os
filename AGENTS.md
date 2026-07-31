@@ -16,6 +16,7 @@ Read the relevant doc before starting work — **all documentation in `docs/` an
 |---|---|
 | Domain Architecture, DDD Subdomains & Contracts | [docs/agents/domain.md](docs/agents/domain.md) |
 | Architecture Refactoring Roadmap & Grill Log | [grill-log-refactoring.md](grill-log-refactoring.md) |
+| Backward Compatibility Removal & DDD Consolidation | [grill-log-backward-compat.md](grill-log-backward-compat.md) |
 | Visual OKF Section Editor & Live Preview | [grill-log-okf-section-editor.md](grill-log-okf-section-editor.md) |
 | OKF Section Validation & Diagnostics | [grill-log-okf-section-validation.md](grill-log-okf-section-validation.md) |
 | Creating / editing topics & flowchart schemas | [docs/creating-topics.md](docs/creating-topics.md) |
@@ -23,7 +24,7 @@ Read the relevant doc before starting work — **all documentation in `docs/` an
 
 ## Working on DDD Subdomains, Validation Gateway & Delivery Ports
 
-When refactoring or extending core sections, follow the Strategic & Tactical DDD specification in [docs/agents/domain.md](docs/agents/domain.md) and the decision log in [grill-log-refactoring.md](grill-log-refactoring.md):
+When refactoring or extending core sections, follow the Strategic & Tactical DDD specification in [docs/agents/domain.md](docs/agents/domain.md) and the decision logs in [grill-log-refactoring.md](grill-log-refactoring.md) and [grill-log-backward-compat.md](grill-log-backward-compat.md):
 
 1. **5 Core Learning Subdomains (`src/core/subdomains/`):**
    * **`process-simulation`**: `flowchart`, `scenario`
@@ -32,11 +33,12 @@ When refactoring or extending core sections, follow the Strategic & Tactical DDD
    * **`progressive-content`**: `text`, `intro`, `bullets`, `taxonomy-browser`, `image-gallery`
    * **`practice-assessment`**: `quiz`, `flashcards`, `concept-map`
    * *Rule:* Each subdomain directory (`src/core/subdomains/[subdomain]/`) MUST contain:
-     - `components/`: React section components.
+     - `components/`: React section components & editor help modals.
      - `schema.ts`: Co-located Zod structural schemas (`SectionSchema`).
      - `events.ts`: Domain event type definitions (`SectionEvents`).
      - `index.ts`: Bounded Context entry point exporting contract interfaces.
-   * *Rule:* Always maintain backward-compatible re-exports in legacy paths (`src/sections/[type]/index.ts`) so existing topic loaders never break.
+    * *Rule:* `src/core/subdomains/` and its barrel export `src/core/subdomains/index.ts` are the canonical sources for section implementations, schemas, and help modals. New code MUST import from the barrel (`src/core/subdomains`) or a subdomain path (`src/core/subdomains/[subdomain]`). The legacy `src/sections/` directory is deprecated and being systematically removed across Phase 0-5 migration issues.
+
 
 2. **3-Tier Validation Gateway (`src/core/validation/gateway.ts`):**
    * Tier 1 (Syntax): YAML syntax & frontmatter parsing.
