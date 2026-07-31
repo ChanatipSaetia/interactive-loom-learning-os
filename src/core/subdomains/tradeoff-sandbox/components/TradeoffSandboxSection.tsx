@@ -1,4 +1,4 @@
-export { default as TradeoffSandboxSection } from '../../../../sections/tradeoff-sandbox'
+export { default as TradeoffSandboxSection } from './tradeoff-sandbox'
 export type {
   TradeoffSandboxSectionProps,
   TradeoffScenario,
@@ -6,4 +6,4 @@ export type {
   TradeoffChoice,
   TradeoffProCon,
   MetricDef,
-} from '../../../../sections/tradeoff-sandbox'
+} from './tradeoff-sandbox'

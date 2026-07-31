@@ -1,0 +1,40 @@
+type: intro
+title: Hexagonal Architecture
+subtitle: Isolate core domain logic from external technologies, frameworks, databases, and UI drivers
+estimatedTime: 25 mins
+moduleCount: 6
+what:
+  definition: An architectural pattern originated by Alistair Cockburn that isolates application core logic using inbound and outbound Ports and Adapters.
+  summary: Hexagonal Architecture (also known as Ports & Adapters) decouples core business domain logic from external dependencies like HTTP controllers, databases, message brokers, and third-party APIs through explicit contracts called Ports, implemented by Adapters.
+  bullets:
+    - Driving (Primary) Ports & Adapters handle incoming user requests.
+    - Driven (Secondary) Ports & Adapters handle outgoing persistence and external service calls.
+    - Domain logic stays pure with zero framework dependencies.
+why:
+  summary: Traditional layered architectures tend to leak database entities and framework concerns into application code, making software hard to test, refactor, or migrate. Ports & Adapters allow developers to test business logic completely in memory without databases or HTTP servers.
+  impact: Enables fast in-memory unit testing and painless framework migrations.
+roadmap:
+  - id: vocab
+    title: 1. Core Vocabulary
+    type: flashcards
+    description: Understand Ports, Adapters, Driving vs Driven boundaries, and Dependency Inversion.
+  - id: map
+    title: 2. Domain Topology
+    type: concept-map
+    description: Visualize entity relationships in a semantic graph.
+  - id: taxonomy
+    title: 3. Adapter Taxonomies
+    type: taxonomy-browser
+    description: Categorize Primary (Driving) UI/API drivers vs Secondary (Driven) Persistence drivers.
+  - id: flow
+    title: 4. Execution Flow
+    type: flowchart
+    description: Trace request cycles from HTTP Adapters through Ports into Domain Aggregates.
+  - id: tradeoffs
+    title: 5. Architectural Trade-offs
+    type: tradeoff-sandbox
+    description: Compare Hexagonal Architecture vs Layered Monolith vs Microservices.
+  - id: assessment
+    title: 6. Active Recall & Quiz
+    type: quiz
+    description: Test your synthesis with sequencing challenges and checkpoint quizzes.

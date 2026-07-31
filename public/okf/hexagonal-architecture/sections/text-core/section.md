@@ -1,5 +1,6 @@
 ---
 type: text
-title: "The Mechanics of Dependency Inversion"
-resource: content.md
+title: The Mechanics of Dependency Inversion
+resource: data.yaml
 ---
+

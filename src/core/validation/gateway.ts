@@ -37,11 +37,11 @@ export interface ValidationResult<T = unknown> {
 
 // --- Schema Registry — Dynamically resolved from Bounded Contexts ---
 
-import * as ProgressiveContent from '../subdomains/progressive-content/schema'
-import * as ProcessSimulation from '../subdomains/process-simulation/schema'
-import * as TradeoffSandbox from '../subdomains/tradeoff-sandbox/schema'
-import * as ReflectionSynthesis from '../subdomains/reflection-synthesis/schema'
-import * as PracticeAssessment from '../subdomains/practice-assessment/schema'
+import * as ProgressiveContent from '../subdomains/progressive-content/schema.ts'
+import * as ProcessSimulation from '../subdomains/process-simulation/schema.ts'
+import * as TradeoffSandbox from '../subdomains/tradeoff-sandbox/schema.ts'
+import * as ReflectionSynthesis from '../subdomains/reflection-synthesis/schema.ts'
+import * as PracticeAssessment from '../subdomains/practice-assessment/schema.ts'
 
 interface SchemaEntry {
   schema: z.ZodTypeAny
@@ -740,7 +740,7 @@ export function validateOKFSectionFile(
 
   if (fmResult) {
     typeHint = (fmResult.frontmatter.type as string) || undefined
-    body = fmResult.body
+    body = fmResult.body.trim() ? fmResult.body : rawContent
   }
 
   return validateOKFSection(body, typeHint, context)

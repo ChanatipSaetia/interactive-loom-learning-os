@@ -1,5 +1,6 @@
 ---
 type: intro
-title: "Hexagonal Architecture (Ports & Adapters)"
-resource: content.yaml
+title: Hexagonal Architecture (Ports & Adapters)
+resource: data.yaml
 ---
+
