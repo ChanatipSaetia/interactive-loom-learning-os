@@ -17,10 +17,11 @@ Before generating content schemas or structuring sections, refer to these author
 
 | Reference | Document Path | Key Contents |
 |---|---|---|
-| **Topic Guideline** | [`docs/creating-topics.md`](file:///Users/chanatipsaetia/Work/interactive-loom-learning-os/docs/creating-topics.md) | Bundle layout, file specs, registration requirements |
-| **Section Schemas** | [`docs/sections/README.md`](file:///Users/chanatipsaetia/Work/interactive-loom-learning-os/docs/sections/README.md) | Frontmatter & YAML specs for all 15 section types |
-| **Event Storming** | [`docs/event-storming-conventions.md`](file:///Users/chanatipsaetia/Work/interactive-loom-learning-os/docs/event-storming-conventions.md) | Flowchart cycles, `handledBy`, `collapsedTo`, journeys |
-| **Pedagogy & Models** | [`docs/sections-reference.md`](file:///Users/chanatipsaetia/Work/interactive-loom-learning-os/docs/sections-reference.md) | Curriculum ordering, cognitive mental models |
+| **Domain Architecture** | [`docs/agents/domain.md`](docs/agents/domain.md) | Strategic & Tactical DDD Architecture (5 Core Subdomains, Validation Gateway, Delivery Ports) |
+| **Topic Guideline** | [`docs/creating-topics.md`](docs/creating-topics.md) | Bundle layout, file specs, registration requirements |
+| **Section Schemas** | [`docs/sections/README.md`](docs/sections/README.md) | Frontmatter & YAML specs for all 15 section types mapped to Core Subdomains |
+| **Event Storming** | [`docs/event-storming-conventions.md`](docs/event-storming-conventions.md) | Flowchart cycles (`EVENT → POLICY → COMMAND → AGGREGATE`), `handledBy`, `collapsedTo`, journeys |
+| **Pedagogy & Models** | [`docs/sections-reference.md`](docs/sections-reference.md) | Curriculum ordering, cognitive mental models, subdomain mapping |
 
 ---
 
@@ -82,17 +83,17 @@ graph TD
 1. **Goal**: Design a pedagogically sound section sequence and map retrieved references to specific section types.
 2. **Actions**:
    - Determine target topic ID (kebab-case, e.g., `agent-orchestration` or `cache-invalidation`).
-   - Define section progression following progressive disclosure:
-     - **Foundations**: `intro` (Topic Hero Briefing with definition, what, why, and roadmap), `text`, `bullets`, `flashcards`
-     - **Core Concepts**: `concept-map`, `taxonomy-browser`
-     - **Architecture & Flow**: `flowchart` (Event Storming)
-     - **Interactive Sandbox / Application**: `tradeoff-sandbox`, `scenario`, `decision-tree`, `formula-sandbox`
-     - **Reflection & Assessment**: `reflection-sequence`, `reflection-template`, `quiz`
+   - Define section progression following progressive disclosure across the **5 Core Learning Subdomains** ([`docs/agents/domain.md`](docs/agents/domain.md)):
+     - **Progressive Content (`src/core/subdomains/progressive-content/`)**: `intro` (Topic Hero Briefing with definition, what, why, and roadmap), `text`, `bullets`, `taxonomy-browser`, `image-gallery`
+     - **Process Simulation (`src/core/subdomains/process-simulation/`)**: `flowchart` (Event Storming), `scenario` (Branching consequence narrative)
+     - **Trade-off Sandbox (`src/core/subdomains/tradeoff-sandbox/`)**: `tradeoff-sandbox`, `formula-sandbox`, `decision-tree`
+     - **Reflection & Synthesis (`src/core/subdomains/reflection-synthesis/`)**: `reflection-sequence`, `reflection-template`
+     - **Practice & Assessment (`src/core/subdomains/practice-assessment/`)**: `quiz`, `flashcards`, `concept-map`
    - For each planned section, define:
      - Directory path (`sections/[section-name]/`)
      - Section type (`type`)
      - Display title and optional heading
-     - Educational purpose & mental model target (refer to [`docs/sections-reference.md`](file:///Users/chanatipsaetia/Work/interactive-loom-learning-os/docs/sections-reference.md))
+     - Educational purpose & mental model target (refer to [`docs/sections-reference.md`](docs/sections-reference.md))
      - Reference excerpt & target data scope assigned to this section
 
 ---
@@ -109,12 +110,15 @@ graph TD
        2. Section `type`, `title`, and `heading`.
        3. Educational purpose and mental model.
        4. Relevant reference excerpts from Phase 1.
-       5. Direct instructions referencing [`docs/sections/README.md`](file:///Users/chanatipsaetia/Work/interactive-loom-learning-os/docs/sections/README.md) for frontmatter and schema requirements.
+       5. Direct instructions referencing [`docs/sections/README.md`](docs/sections/README.md) for frontmatter and schema requirements.
        6. Special constraints:
-          - If `flowchart`: Must conform to [`docs/event-storming-conventions.md`](file:///Users/chanatipsaetia/Work/interactive-loom-learning-os/docs/event-storming-conventions.md). Complete cycle `EVENT → POLICY → COMMAND → AGGREGATE/EXTERNAL → EVENT`. HandledBy points to duplicate node; duplicate node maps via `collapsedTo`.
+          - If `flowchart`: Must conform to [`docs/event-storming-conventions.md`](docs/event-storming-conventions.md). Complete cycle `EVENT → POLICY → COMMAND → AGGREGATE/EXTERNAL → EVENT`. HandledBy points to duplicate node; duplicate node maps via `collapsedTo`.
           - If `taxonomy-browser`: Icons must be valid [Lucide icons](https://lucide.dev/icons/); colors must be Catppuccin palette (`mauve`, `rose`, `sky`, `green`, `peach`, `red`, `yellow`, `teal`).
      - **Wait for the subagent to complete** `section.md` and all related `.yaml`/`.md` files.
-     - Validate file existence and basic schema format before proceeding to the next section.
+     - Validate file existence and run 3-tier validation checks before proceeding to the next section:
+       ```bash
+       npm run okf:validate
+       ```
 
 ---
 
@@ -162,5 +166,6 @@ graph TD
        ```
    - **Update Fallback Manifest**:
      - Run `node scripts/update-okf-manifest.js` to update `public/index.yaml`.
-   - **Verify Build**:
+   - **Verify 3-Tier Validation Gateway & Build**:
+     - Run `npm run okf:validate` to execute Tier 1 (YAML syntax), Tier 2 (Structural Zod schema), and Tier 3 (Semantic reference integrity) checks.
      - Run `npm run typecheck` and `npm run test`.

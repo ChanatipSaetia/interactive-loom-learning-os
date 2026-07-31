@@ -12,23 +12,23 @@ Each section type has its own dedicated reference document. Each doc covers:
 
 ## Section Types
 
-| Type | Doc | Mental Model |
-|---|---|---|
-| `intro` | [intro.md](intro.md) | Topic hero overview, rationale & learning roadmap |
-| `text` | [text.md](text.md) | Anchored conceptual narrative |
-| `bullets` | [bullets.md](bullets.md) | Hierarchical taxonomy / breakdown |
-| `concept-map` | [concept-map.md](concept-map.md) | Semantic relationships & groupings |
-| `flashcards` | [flashcards.md](flashcards.md) | Vocabulary recall & dialogue |
-| `taxonomy-browser` | [taxonomy-browser.md](taxonomy-browser.md) | Concept categorized grids & properties |
-| `flowchart` | [flowchart.md](flowchart.md) | Dynamic process flows & swimlanes |
-| `reflection-sequence` | [reflection-sequence.md](reflection-sequence.md) | Chronological step ordering |
-| `quiz` | [quiz.md](quiz.md) | Knowledge check & validation |
-| `tradeoff-sandbox` | [tradeoff-sandbox.md](tradeoff-sandbox.md) | Architectural trade-offs & strategy |
-| `formula-sandbox` | [formula-sandbox.md](formula-sandbox.md) | Quantitative parameter dynamics |
-| `reflection-template` | [reflection-template.md](reflection-template.md) | Reasoning synthesis & explanation |
-| `scenario` | [scenario.md](scenario.md) | Consequence-driven branching narrative |
-| `decision-tree` | [decision-tree.md](decision-tree.md) | Diagnostic logic & recommendations |
-| `image-gallery` | [image-gallery.md](image-gallery.md) | Visual showcase & screenshots |
+| Type | Doc | Mental Model | Core Subdomain Path (`src/core/subdomains/`) |
+|---|---|---|---|
+| `intro` | [intro.md](intro.md) | Topic hero overview, rationale & learning roadmap | `progressive-content` |
+| `text` | [text.md](text.md) | Anchored conceptual narrative | `progressive-content` |
+| `bullets` | [bullets.md](bullets.md) | Hierarchical taxonomy / breakdown | `progressive-content` |
+| `concept-map` | [concept-map.md](concept-map.md) | Semantic relationships & groupings | `practice-assessment` |
+| `flashcards` | [flashcards.md](flashcards.md) | Vocabulary recall & dialogue | `practice-assessment` |
+| `taxonomy-browser` | [taxonomy-browser.md](taxonomy-browser.md) | Concept categorized grids & properties | `progressive-content` |
+| `flowchart` | [flowchart.md](flowchart.md) | Dynamic process flows & swimlanes | `process-simulation` |
+| `reflection-sequence` | [reflection-sequence.md](reflection-sequence.md) | Chronological step ordering | `reflection-synthesis` |
+| `quiz` | [quiz.md](quiz.md) | Knowledge check & validation | `practice-assessment` |
+| `tradeoff-sandbox` | [tradeoff-sandbox.md](tradeoff-sandbox.md) | Architectural trade-offs & strategy | `tradeoff-sandbox` |
+| `formula-sandbox` | [formula-sandbox.md](formula-sandbox.md) | Quantitative parameter dynamics | `tradeoff-sandbox` |
+| `reflection-template` | [reflection-template.md](reflection-template.md) | Reasoning synthesis & explanation | `reflection-synthesis` |
+| `scenario` | [scenario.md](scenario.md) | Consequence-driven branching narrative | `process-simulation` |
+| `decision-tree` | [decision-tree.md](decision-tree.md) | Diagnostic logic & recommendations | `tradeoff-sandbox` |
+| `image-gallery` | [image-gallery.md](image-gallery.md) | Visual showcase & screenshots | `progressive-content` |
 
 ---
 

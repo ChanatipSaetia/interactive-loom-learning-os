@@ -48,23 +48,23 @@ For optimal cognitive progression, structure your topic's sections in the follow
 
 ## Every Section Type at a Glance
 
-| Section Type | Mental Model Focus | Data Input Format | Local UI State | Animations & Micro-interactions |
-|---|---|---|---|---|
-| `intro` | Topic hero overview, rationale & learning roadmap | `content.yaml` (definition, what, why, roadmap) | None | Entrance keyframes, touch-swipe horizontal roadmap track |
-| `text` | Anchored conceptual narrative | Markdown strings (paragraphs) | None | Scroll-triggered fade-in |
-| `bullets` | Hierarchical taxonomy / breakdown | Nested recursive nodes (`children`) | Expanded/Collapsed states | Staggered fade/slide-in, chevron rotation |
-| `flowchart` | Dynamic process flows & swimlanes | `actors.yaml`, `systems.yaml`, `steps.yaml`, `journeys.yaml` (or JSON `schema` / `flow`) | Active step, fullscreen toggle, view mode tabs | anime.js path drawing, camera centering, highlights |
-| `tradeoff-sandbox` | Architectural tradeoffs & strategy matrix | Scenarios with choices, pros/cons list | Selected choice per step, metrics scores state | Bar gauge expansion transitions, pros/cons fade-in |
-| `taxonomy-browser` | Concept categorized grids & properties | Category yaml files (color, analogy, scopes) | Selected category card, expanded card state | Cards zoom, pulse rings, grid shifts |
-| `quiz` | Knowledge check & validation | Multiple-choice questions (`questions.yaml`) | Selected answer, verified state, index | Score counters, card transitions, correct/incorrect badges |
-| `concept-map` | Semantic relationships & groupings | Node lists with categories + Directed edges | Zoom, Pan, Active Hover node | D3-force simulation layout, link highlights |
-| `scenario` | Consequence-driven branching narratives | Choice DAG with rated outcome leaf nodes | History breadcrumbs, current node ID | Staggered choice cards, verdict slides |
-| `decision-tree` | Diagnostic logic & situation recommendations | Directed Q&A nodes with rationale/rec badges | Answer path history, active leaf recommendation | Path counter indicators, stagger fade-in cards |
-| `flashcards` | Vocabulary recall & dialogue scenario | Vocabulary card deck + Pronunciation + AI dialogue | Card flipped state, active card index | Flip rotation animation, slider transitions |
-| `image-gallery` | Visual showcase & screenshots | Image list (`gallery.yaml`) with captions | Fullscreen lightbox index, active image | Keyboard controls transitions, zoom-on-hover |
-| `formula-sandbox` | Quantitative parameter & system dynamics | Sliders inputs (`variables`) + Math expressions (`metrics`) | Variable values record, computed metrics | Real-time slider adjustments, HUD drawer side-slide |
-| `reflection-sequence` | Chronological process ordering active recall | Unordered cards list + Correct solution array | Placed items record, selected item ID, verify feedback | Card drag feedback, mobile tap highlight glows, verify alerts |
-| `reflection-template` | Reasoning synthesis & tradeoff explanation | Inline text template with zones + Chips pool | Filled zones record, active chip selection, verify feedback | Inline chip placements, blank borders glow, verification message |
+| Section Type | Mental Model Focus | Data Input Format | Local UI State | Animations & Micro-interactions | Core Subdomain Path (`src/core/subdomains/`) |
+|---|---|---|---|---|---|
+| `intro` | Topic hero overview, rationale & learning roadmap | `content.yaml` | None | Entrance keyframes, touch-swipe horizontal roadmap track | `progressive-content` |
+| `text` | Anchored conceptual narrative | Markdown strings | None | Scroll-triggered fade-in | `progressive-content` |
+| `bullets` | Hierarchical taxonomy / breakdown | Nested recursive nodes | Expanded/Collapsed states | Staggered fade/slide-in, chevron rotation | `progressive-content` |
+| `flowchart` | Dynamic process flows & swimlanes | `actors.yaml`, `systems.yaml`, `steps.yaml`, `journeys.yaml` | Active step, fullscreen toggle, view mode tabs | anime.js path drawing, camera centering, highlights | `process-simulation` |
+| `tradeoff-sandbox` | Architectural tradeoffs & strategy matrix | Scenarios with choices, pros/cons list | Selected choice per step, metrics scores state | Bar gauge expansion transitions, pros/cons fade-in | `tradeoff-sandbox` |
+| `taxonomy-browser` | Concept categorized grids & properties | Category yaml files | Selected category card, expanded card state | Cards zoom, pulse rings, grid shifts | `progressive-content` |
+| `quiz` | Knowledge check & validation | Multiple-choice questions (`questions.yaml`) | Selected answer, verified state, index | Score counters, card transitions, correct/incorrect badges | `practice-assessment` |
+| `concept-map` | Semantic relationships & groupings | Node lists + Directed edges | Zoom, Pan, Active Hover node | D3-force simulation layout, link highlights | `practice-assessment` |
+| `scenario` | Consequence-driven branching narratives | Choice DAG with rated outcome leaf nodes | History breadcrumbs, current node ID | Staggered choice cards, verdict slides | `process-simulation` |
+| `decision-tree` | Diagnostic logic & situation recommendations | Directed Q&A nodes | Answer path history, active leaf recommendation | Path counter indicators, stagger fade-in cards | `tradeoff-sandbox` |
+| `flashcards` | Vocabulary recall & dialogue scenario | Vocabulary card deck + Pronunciation | Card flipped state, active card index | Flip rotation animation, slider transitions | `practice-assessment` |
+| `image-gallery` | Visual showcase & screenshots | Image list (`gallery.yaml`) | Fullscreen lightbox index, active image | Keyboard controls transitions, zoom-on-hover | `progressive-content` |
+| `formula-sandbox` | Quantitative parameter & system dynamics | Sliders (`variables`) + Math expressions | Variable values record, computed metrics | Real-time slider adjustments, HUD drawer side-slide | `tradeoff-sandbox` |
+| `reflection-sequence` | Chronological process ordering active recall | Unordered cards list + Solution array | Placed items record, selected item ID | Card drag feedback, mobile tap highlight glows | `reflection-synthesis` |
+| `reflection-template` | Reasoning synthesis & tradeoff explanation | Inline text template + Chips pool | Filled zones record, active chip selection | Inline chip placements, blank borders glow | `reflection-synthesis` |
 
 ---
 

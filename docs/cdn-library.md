@@ -436,4 +436,14 @@ Embed the array directly inside your script tag:
 | Flowchart not showing | Pass either a pre-derived `schema` (`entities`, `relations`, `journeys`) or raw `flow` / `schema` (`actors`, `systems`, `steps`, `journeys`). The renderer automatically derives views if `entities` is omitted. If loading via OKF YAML files, ensure all four source files exist (`actors.yaml`, `systems.yaml`, `steps.yaml`, `journeys.yaml`). |
 | Taxonomy icon missing | Use exact PascalCase Lucide icon name (e.g., `"BookOpen"` not `"book-open"` or `"bookopen"`). |
 | CORS error on `file://` | Use a local HTTP server instead of opening HTML directly. `npx serve .` works well. |
-| Bundle load fails | Check network tab. CDN may be blocked. Verify version tag matches published version. |
+| Bundle load fails | Check network tag. CDN may be blocked. Verify version tag matches published version. |
+
+---
+
+## Library Architecture & Delivery Ports
+
+The standalone CDN library (`libs/loom-sections.tsx`) is powered by the **Hexagonal SingleHTMLEmbedAdapter** (`src/core/delivery/adapters/single-html-embed.tsx`), implementing `OKFRuntimePort` ([src/core/delivery/ports.ts](file:///home/chanatip/interactive_loom_learning_os/src/core/delivery/ports.ts)) and backed by the **3-Tier Validation Gateway** ([src/core/validation/gateway.ts](file:///home/chanatip/interactive_loom_learning_os/src/core/validation/gateway.ts)).
+
+* **Standalone Runtime Port:** Operates independently of SPA routing overhead.
+* **Validation Gateway Integration:** Exposed API functions (`LoomSections.validateSection`, `LoomSections.validateYAML`) invoke the centralized 3-tier validation gateway and return structured `ValidationResult` diagnostics with `fixHint` annotations.
+

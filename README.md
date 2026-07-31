@@ -94,16 +94,31 @@ interactive-loom-learning-os/
 │   ├── langgraph.html         # Standalone CDN showcase file
 │   └── langgraph.json         # Standalone showcase curriculum data
 ├── src/
-│   ├── core/                  # OKF parser, dynamic routing, HUD/progress states
-│   ├── sections/              # Components & logic for the 14 section types
-│   ├── components/            # Sidebar, top nav, scroll and layout utilities
+│   ├── core/                  # Core Learning OS DDD engine
+│   │   ├── subdomains/        # 5 Core Bounded Contexts (ProcessSimulation, TradeoffSandbox, etc.)
+│   │   │   ├── process-simulation/   # flowchart, scenario
+│   │   │   ├── tradeoff-sandbox/     # tradeoff-sandbox, formula-sandbox, decision-tree
+│   │   │   ├── reflection-synthesis/ # reflection-sequence, reflection-template
+│   │   │   ├── progressive-content/  # text, intro, bullets, taxonomy-browser, image-gallery
+│   │   │   └── practice-assessment/  # quiz, flashcards, concept-map
+│   │   ├── validation/        # 3-Tier ValidationGateway & Tell-Back Protocol (gateway.ts)
+│   │   ├── delivery/          # Hexagonal Ports (ports.ts) & Adapters (in-repo, web-app, embed)
+│   │   ├── ui-system/         # UISystemProvider & Contracts (theme, primitives, sound, motion)
+│   │   ├── okf/               # OKF bundle reader and section parser
+│   │   └── registry/          # Dynamic SectionRegistry loader
+│   ├── sections/              # Backward-compatible re-exports for the 15 section types
+│   ├── components/            # Layout, sidebar, editor split-pane, and UI primitives
 │   ├── styles/                # Catppuccin theme stylesheets and resets
 │   ├── App.tsx                # Base router setup
 │   └── main.tsx               # App entrypoint registering section renderers
+├── libs/
+│   └── loom-sections.tsx      # Standalone UMD CDN embed library bundle
 ├── scripts/
 │   ├── update-okf-manifest.js # Script compiling the dynamic public topic indexes
 │   └── publish-lib.js         # Script packaging the standalone CDN library bundle
 ├── docs/
+│   ├── agents/
+│   │   └── domain.md          # Strategic & Tactical DDD Architecture Specification
 │   ├── creating-topics.md     # Technical schemas & OKF configuration guide
 │   ├── sections-reference.md  # Section mental models & ordering pedagogy
 │   ├── event-storming-conventions.md # Flowchart conventions & node semantics

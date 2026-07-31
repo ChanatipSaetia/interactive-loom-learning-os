@@ -128,11 +128,11 @@ Bounded Contexts define the solution space boundaries. Each Bounded Context main
   3. **Section & Page Composition Engine:** Consumes theme tokens, UI primitives, sound cues, and motion presets from `UISystemContext` to compose and render complete, interactive section pages for all supporting contexts.
 
 #### B. Core Section Sub-Contexts (The 5 Learning Modalities)
-* **`ProcessSimulationSubContext`**: Flowcharts & Guided Scenarios.
-* **`TradeoffSandboxSubContext`**: Trade-off Sandboxes, Formula Sandboxes, Decision Trees.
-* **`ReflectionSynthesisSubContext`**: Reflection Sequences & Reflection Templates.
-* **`ProgressiveContentSubContext`**: Rich Text, Bullets, Taxonomy Browsers, Image Galleries.
-* **`PracticeAssessmentSubContext`**: Quizzes, Flashcards, Concept Maps.
+* **`ProcessSimulationSubContext`** ([src/core/subdomains/process-simulation/](file:///home/chanatip/interactive_loom_learning_os/src/core/subdomains/process-simulation)): Flowcharts & Guided Scenarios.
+* **`TradeoffSandboxSubContext`** ([src/core/subdomains/tradeoff-sandbox/](file:///home/chanatip/interactive_loom_learning_os/src/core/subdomains/tradeoff-sandbox)): Trade-off Sandboxes, Formula Sandboxes, Decision Trees.
+* **`ReflectionSynthesisSubContext`** ([src/core/subdomains/reflection-synthesis/](file:///home/chanatip/interactive_loom_learning_os/src/core/subdomains/reflection-synthesis)): Reflection Sequences & Reflection Templates.
+* **`ProgressiveContentSubContext`** ([src/core/subdomains/progressive-content/](file:///home/chanatip/interactive_loom_learning_os/src/core/subdomains/progressive-content)): Rich Text, Bullets, Taxonomy Browsers, Image Galleries.
+* **`PracticeAssessmentSubContext`** ([src/core/subdomains/practice-assessment/](file:///home/chanatip/interactive_loom_learning_os/src/core/subdomains/practice-assessment)): Quizzes, Flashcards, Concept Maps.
 
 *Rule:* Core Section Sub-Contexts contain **zero hardcoded styling or ad-hoc UI buttons**. They focus purely on interactive domain logic and leave visual page composition to `CoreLearningEngineContext` using `UISystemContract`.
 
@@ -140,15 +140,15 @@ Bounded Contexts define the solution space boundaries. Each Bounded Context main
 
 #### C. The 3 OKF Delivery & Storage Contexts
 
-##### 1. `InRepoOKFStorageContext`
+##### 1. `InRepoOKFStorageContext` ([src/core/delivery/adapters/in-repo-storage.ts](file:///home/chanatip/interactive_loom_learning_os/src/core/delivery/adapters/in-repo-storage.ts))
 * **Ubiquitous Language:** `OKFDiskFile`, `TopicDirectory`, `SectionPath`, `ManifestFile`, `DevServerFileBridge`.
 * **Responsibility:** Manages static physical file layout on disk/public directory (`public/okf/[topic-id]/sections/[section-name]`), handles reading raw YAML/Markdown files, and handles disk writes via Vite dev-server API middleware (`POST /api/okf/save-section`).
 
-##### 2. `SingleHTMLEmbedContext`
+##### 2. `SingleHTMLEmbedContext` ([src/core/delivery/adapters/single-html-embed.tsx](file:///home/chanatip/interactive_loom_learning_os/src/core/delivery/adapters/single-html-embed.tsx))
 * **Ubiquitous Language:** `EmbeddedSectionWidget`, `StandaloneBundle`, `CDNExportHost`, `InlineConfig`.
 * **Responsibility:** Exposes lightweight standalone React component wrappers for rendering single OKF section widgets directly in static HTML pages or third-party sites (`libs/loom-sections.tsx`) without requiring routing or full application shell overhead.
 
-##### 3. `OKFFolderWebAppRuntimeContext`
+##### 3. `OKFFolderWebAppRuntimeContext` ([src/core/delivery/adapters/web-app-runtime.tsx](file:///home/chanatip/interactive_loom_learning_os/src/core/delivery/adapters/web-app-runtime.tsx))
 * **Ubiquitous Language:** `TopicAppShell`, `SectionLoaderPipeline`, `OKFFolderManifest`, `TopicNavigationStream`.
 * **Responsibility:** Orchestrates the full web application experience. Loads an entire OKF topic folder, resolves multi-section rendering sequences, maps URL routes (`/topics/:topicId/*`), and streams section data into the `CoreLearningEngineContext`.
 
@@ -159,7 +159,7 @@ Bounded Contexts define the solution space boundaries. Each Bounded Context main
 * **`AuthoringEditorContext`**: Manages visual split-screen forms, bi-directional sync (Visual Form ↔ Raw YAML source), inline error validation warnings, and draft previews.
 * **`CatalogDiscoveryContext`**: Discovers topic manifests (`index.md`/`index.yaml`), resolves topic routes, and drives search/filtering.
 * **`LearnerProgressContext`**: Subscribes to section events (`SectionCompleted`, `QuizAnswered`) and persists progress history in local storage.
-* **`UISystemContext`**: Controls Catppuccin theme tokens, UI component primitives (`<Button>`, `<Card>`, `<Slider>`), audio sound cues, and motion primitives. Provides `UISystemContract` to Core Sections and the Master Aggregator.
+* **`UISystemContext`** ([src/core/ui-system/](file:///home/chanatip/interactive_loom_learning_os/src/core/ui-system)): Controls Catppuccin theme tokens, UI component primitives (`<Button>`, `<Card>`, `<Slider>`), audio sound cues, and motion primitives. Provides `UISystemContract` to Core Sections and the Master Aggregator.
 
 ---
 
