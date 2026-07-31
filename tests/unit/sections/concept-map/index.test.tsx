@@ -1,8 +1,8 @@
 import { describe, it, expect, beforeEach } from 'vitest'
 import { render, screen, fireEvent } from '@testing-library/react'
 import { SectionRegistry } from '../../../../src/core/registry'
-import ConceptMapSection from '../../../../src/sections/concept-map'
-import type { ConceptNode, ConceptEdge } from '../../../../src/sections/concept-map'
+import ConceptMapSection from '../../../../src/core/subdomains/practice-assessment/components/concept-map'
+import type { ConceptNode, ConceptEdge } from '../../../../src/core/subdomains/practice-assessment/components/concept-map'
 
 const mockNodes: Record<string, ConceptNode> = {
   orchestrator: {
@@ -158,7 +158,7 @@ describe('ConceptMap Section', () => {
 
   it('does not self-register with SectionRegistry', async () => {
     vi.resetModules()
-    const mod = await import('../../../../src/sections/concept-map')
+    const mod = await import('../../../../src/core/subdomains/practice-assessment/components/concept-map')
     const { SectionRegistry: Registry } = await import('../../../../src/core/registry')
     expect(Registry.get('concept-map')).toBeUndefined()
     void mod

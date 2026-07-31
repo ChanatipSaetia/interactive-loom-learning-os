@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeEach } from 'vitest'
 import { render, screen, fireEvent } from '@testing-library/react'
 import { SectionRegistry } from '../../../../src/core/registry'
-import QuizSection from '../../../../src/sections/quiz'
+import QuizSection from '../../../../src/core/subdomains/practice-assessment/components/quiz'
 import type { OKFQuizQuestion } from '../../../../src/core/okf/types'
 
 const mockQuestions: OKFQuizQuestion[] = [
@@ -238,7 +238,7 @@ describe('Quiz Section', () => {
 
   it('does not self-register with SectionRegistry', async () => {
     vi.resetModules()
-    const mod = await import('../../../../src/sections/quiz')
+    const mod = await import('../../../../src/core/subdomains/practice-assessment/components/quiz')
     const { SectionRegistry: Registry } = await import('../../../../src/core/registry')
     expect(Registry.get('quiz')).toBeUndefined()
     void mod

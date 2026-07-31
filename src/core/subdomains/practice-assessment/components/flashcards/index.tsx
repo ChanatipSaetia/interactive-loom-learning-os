@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence, Variants } from 'motion/react';
-import { WordTerm } from '../../types';
+import { WordTerm } from '../../../../../types';
 import { ChevronLeft, ChevronRight, Volume2, Terminal, HelpCircle, MessageSquare, BookOpen } from 'lucide-react';
-import { Button } from '../../components/motion/button';
-import { Tabs, TabsList, TabsTrigger, TabsContent } from '../../components/motion/tabs';
-import { useSound } from '../../context/SoundContext';
+import { Button } from '../../../../../components/motion/button';
+import { Tabs, TabsList, TabsTrigger, TabsContent } from '../../../../../components/motion/tabs';
+import { useSound } from '../../../../../context/SoundContext';
 import { FlashcardsHelpModal } from './FlashcardsHelpModal';
-import { SectionTitleBar } from '../../components/layout/SectionTitleBar';
+import { SectionTitleBar } from '../../../../../components/layout/SectionTitleBar';
 
 type BackTabId = 'guidelines' | 'dialogue';
 

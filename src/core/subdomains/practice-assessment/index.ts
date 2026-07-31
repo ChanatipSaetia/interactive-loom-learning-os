@@ -28,6 +28,10 @@ export type {
   ConceptEdge,
 } from './components/ConceptMapSection'
 
+export { QuizHelpModal } from './components/quiz/QuizHelpModal'
+export { FlashcardsHelpModal } from './components/flashcards/FlashcardsHelpModal'
+export { ConceptMapHelpModal } from './components/concept-map/ConceptMapHelpModal'
+
 export type {
   PracticeAssessmentEvents,
   QuizOptionSelected,

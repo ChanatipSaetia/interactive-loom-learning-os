@@ -1,2 +1,2 @@
-export { default as FlashcardsSection } from '../../../../sections/flashcards'
-export type { FlashcardDeckProps } from '../../../../sections/flashcards'
+export { default as FlashcardsSection } from './flashcards'
+export type { FlashcardDeckProps } from './flashcards'

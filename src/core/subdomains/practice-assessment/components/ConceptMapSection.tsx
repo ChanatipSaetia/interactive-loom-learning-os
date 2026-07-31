@@ -1,2 +1,2 @@
-export { default as ConceptMapSection } from '../../../../sections/concept-map'
-export type { ConceptMapSectionProps, ConceptNode, ConceptEdge } from '../../../../sections/concept-map'
+export { default as ConceptMapSection } from './concept-map'
+export type { ConceptMapSectionProps, ConceptNode, ConceptEdge } from './concept-map'

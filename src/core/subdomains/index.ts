@@ -182,6 +182,10 @@ export type {
   ConceptEdge,
 } from './practice-assessment'
 
+export { QuizHelpModal } from './practice-assessment'
+export { FlashcardsHelpModal } from './practice-assessment'
+export { ConceptMapHelpModal } from './practice-assessment'
+
 export type {
   PracticeAssessmentEvents,
   QuizOptionSelected,

@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef, useCallback, useMemo } from 'react'
 import { ZoomIn, ZoomOut, Maximize2, ChevronLeft, ChevronRight } from 'lucide-react'
 import { ConceptMapHelpModal } from './ConceptMapHelpModal'
-import { SectionTitleBar } from '../../components/layout/SectionTitleBar'
+import { SectionTitleBar } from '../../../../../components/layout/SectionTitleBar'
 import './concept-map.css'
 
 export interface ConceptNode {

@@ -1,2 +1,2 @@
-export { default as QuizSection } from '../../../../sections/quiz'
-export type { QuizSectionProps } from '../../../../sections/quiz'
+export { default as QuizSection } from './quiz'
+export type { QuizSectionProps } from './quiz'

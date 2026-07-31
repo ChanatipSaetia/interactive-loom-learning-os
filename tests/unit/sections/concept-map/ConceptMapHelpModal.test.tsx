@@ -1,6 +1,6 @@
 import { render, screen, fireEvent } from '@testing-library/react'
 import { describe, it, expect, vi } from 'vitest'
-import { ConceptMapHelpModal } from '../../../../src/sections/concept-map/ConceptMapHelpModal'
+import { ConceptMapHelpModal } from '../../../../src/core/subdomains/practice-assessment/components/concept-map/ConceptMapHelpModal'
 
 describe('ConceptMapHelpModal', () => {
   it('does not render when isOpen is false', () => {

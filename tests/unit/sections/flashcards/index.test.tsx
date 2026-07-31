@@ -1,6 +1,6 @@
 import { render, screen } from '@testing-library/react'
 import { describe, it, expect } from 'vitest'
-import FlashcardDeck from '../../../../src/sections/flashcards'
+import FlashcardDeck from '../../../../src/core/subdomains/practice-assessment/components/flashcards'
 
 describe('FlashcardDeck', () => {
   const mockTerms = [

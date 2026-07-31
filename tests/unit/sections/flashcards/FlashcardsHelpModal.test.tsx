@@ -1,6 +1,6 @@
 import { render, screen, fireEvent } from '@testing-library/react'
 import { describe, it, expect, vi } from 'vitest'
-import { FlashcardsHelpModal } from '../../../../src/sections/flashcards/FlashcardsHelpModal'
+import { FlashcardsHelpModal } from '../../../../src/core/subdomains/practice-assessment/components/flashcards/FlashcardsHelpModal'
 
 describe('FlashcardsHelpModal', () => {
   it('does not render when isOpen is false', () => {
