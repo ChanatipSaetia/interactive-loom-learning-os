@@ -1,7 +1,7 @@
 import { useState, useCallback } from 'react'
 import { GitBranch, CheckSquare, HelpCircle, Trash2, Plus, Settings } from 'lucide-react'
-import { DecisionTreeHelpModal } from '../../../sections/decision-tree/DecisionTreeHelpModal'
-import '../../../sections/decision-tree/decision-tree.css'
+import { DecisionTreeHelpModal } from '../../../core/subdomains/tradeoff-sandbox/components/decision-tree/DecisionTreeHelpModal'
+import '../../../core/subdomains/tradeoff-sandbox/components/decision-tree/decision-tree.css'
 import type {
   OKFDecisionTreeSectionData,
   OKFDecisionTreeNode,

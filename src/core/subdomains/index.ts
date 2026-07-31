@@ -64,6 +64,10 @@ export type { FormulaSandboxProps } from './tradeoff-sandbox'
 export { DecisionTreeSection } from './tradeoff-sandbox'
 export type { DecisionTreeSectionProps } from './tradeoff-sandbox'
 
+export { TradeoffHelpModal } from './tradeoff-sandbox'
+export { FormulaHelpModal } from './tradeoff-sandbox'
+export { DecisionTreeHelpModal } from './tradeoff-sandbox'
+
 export type {
   TradeoffSandboxEvents,
   SliderValueChanged,

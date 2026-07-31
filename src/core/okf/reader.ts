@@ -1,5 +1,6 @@
 import * as yaml from 'js-yaml'
 import type { AbstractFlow, ActorDecl, SystemDecl, FlowJourney } from '../subdomains/process-simulation/components/flowchart/abstract-flow/types'
+import type { TradeoffScenario } from '../subdomains/tradeoff-sandbox/components/tradeoff-sandbox'
 import { ref } from '../subdomains/process-simulation/components/flowchart/abstract-flow/types'
 import type { BulletItem } from '../../sections/bullets'
 import type { WordTerm } from '../../types'
@@ -449,7 +450,7 @@ function mapJourney(raw: OKFJourneyRaw): FlowJourney {
 
 // --- Tradeoff mapping ---
 
-function mapTradeoffScenario(raw: OKFTradeoffScenarioRaw): import('../../sections/tradeoff-sandbox').TradeoffScenario {
+function mapTradeoffScenario(raw: OKFTradeoffScenarioRaw): TradeoffScenario {
   return {
     id: raw.id,
     title: raw.title,

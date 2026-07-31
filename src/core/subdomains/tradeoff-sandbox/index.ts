@@ -28,6 +28,14 @@ export type { FormulaSandboxProps } from './components/FormulaSandboxSection'
 export { DecisionTreeSection } from './components/DecisionTreeSection'
 export type { DecisionTreeSectionProps } from './components/DecisionTreeSection'
 
+// Component-level type aliases used by editor forms and embed adapter
+export type { MetricDef } from './components/tradeoff-sandbox'
+
+// Help modals
+export { TradeoffHelpModal } from './components/tradeoff-sandbox/TradeoffHelpModal'
+export { FormulaHelpModal } from './components/formula-sandbox/FormulaHelpModal'
+export { DecisionTreeHelpModal } from './components/decision-tree/DecisionTreeHelpModal'
+
 export type {
   TradeoffSandboxEvents,
   SliderValueChanged,

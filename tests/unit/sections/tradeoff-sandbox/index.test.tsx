@@ -6,7 +6,7 @@ import TradeoffSandboxSection, {
   type TradeoffStep,
   type MetricDef,
   type TradeoffSandboxSectionProps,
-} from '../../../../src/sections/tradeoff-sandbox'
+} from '../../../../src/core/subdomains/tradeoff-sandbox/components/tradeoff-sandbox'
 
 const mockMetrics: MetricDef[] = [
   { id: 'performance', label: 'Performance', baseValue: 50, min: 0, max: 100 },
@@ -673,7 +673,7 @@ describe('TradeoffSandbox Section', () => {
 
   it('does not self-register with SectionRegistry', async () => {
     vi.resetModules()
-    await import('../../../../src/sections/tradeoff-sandbox')
+    await import('../../../../src/core/subdomains/tradeoff-sandbox/components/tradeoff-sandbox')
     const { SectionRegistry: Registry } = await import('../../../../src/core/registry')
     expect(Registry.get('tradeoff-sandbox')).toBeUndefined()
   })

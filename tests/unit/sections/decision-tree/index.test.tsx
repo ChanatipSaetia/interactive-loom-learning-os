@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeEach } from 'vitest'
 import { render, screen, fireEvent } from '@testing-library/react'
 import { SectionRegistry } from '../../../../src/core/registry'
-import DecisionTreeSection from '../../../../src/sections/decision-tree'
+import DecisionTreeSection from '../../../../src/core/subdomains/tradeoff-sandbox/components/decision-tree'
 import type { OKFDecisionTreeNode } from '../../../../src/core/okf/types'
 
 const mockNodes: Record<string, OKFDecisionTreeNode> = {
@@ -250,7 +250,7 @@ describe('DecisionTree Section', () => {
 
   it('does not self-register with SectionRegistry', async () => {
     vi.resetModules()
-    const mod = await import('../../../../src/sections/decision-tree')
+    const mod = await import('../../../../src/core/subdomains/tradeoff-sandbox/components/decision-tree')
     const { SectionRegistry: Registry } = await import('../../../../src/core/registry')
     expect(Registry.get('decision-tree')).toBeUndefined()
     void mod
