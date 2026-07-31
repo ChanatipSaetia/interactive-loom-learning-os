@@ -18,8 +18,8 @@ SectionRegistry.register('scenario', () => import('./core/subdomains/process-sim
 SectionRegistry.register('decision-tree', () => import('./core/subdomains/tradeoff-sandbox/components/decision-tree'))
 SectionRegistry.register('image-gallery', () => import('./sections/image-gallery'))
 SectionRegistry.register('formula-sandbox', () => import('./core/subdomains/tradeoff-sandbox/components/formula-sandbox'))
-SectionRegistry.register('reflection-sequence', () => import('./sections/reflection-sequence'))
-SectionRegistry.register('reflection-template', () => import('./sections/reflection-template'))
+SectionRegistry.register('reflection-sequence', () => import('./core/subdomains/reflection-synthesis/components/reflection-sequence'))
+SectionRegistry.register('reflection-template', () => import('./core/subdomains/reflection-synthesis/components/reflection-template'))
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>

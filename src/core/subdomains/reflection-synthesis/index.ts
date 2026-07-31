@@ -17,6 +17,9 @@ export type { ReflectionSequenceProps } from './components/ReflectionSequenceSec
 export { ReflectionTemplateSection } from './components/ReflectionTemplateSection'
 export type { ReflectionTemplateProps } from './components/ReflectionTemplateSection'
 
+export { ReflectionSequenceHelpModal } from './components/reflection-sequence/ReflectionSequenceHelpModal'
+export { ReflectionTemplateHelpModal } from './components/reflection-template/ReflectionTemplateHelpModal'
+
 export type {
   ReflectionSynthesisEvents,
   ReflectionAnswered,

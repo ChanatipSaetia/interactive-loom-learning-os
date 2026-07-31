@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { CheckCircle2, AlertCircle, X, ChevronLeft, ChevronRight } from 'lucide-react'
-import { useSound } from '../../context/SoundContext'
-import { SectionTitleBar } from '../../components/layout/SectionTitleBar'
+import { useSound } from '../../../../../context/SoundContext'
+import { SectionTitleBar } from '../../../../../components/layout/SectionTitleBar'
 import { ReflectionSequenceHelpModal } from './ReflectionSequenceHelpModal'
 import './reflection-sequence.css'
 

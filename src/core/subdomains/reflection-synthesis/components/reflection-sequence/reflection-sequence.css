@@ -70,7 +70,6 @@
   cursor: default;
 }
 
-/* Slots List */
 .sequence-slots-list {
   display: flex;
   flex-direction: column;
@@ -154,7 +153,6 @@
   color: var(--ctp-red);
 }
 
-/* Footer & Buttons */
 .sequence-footer {
   display: flex;
   flex-direction: column;
@@ -233,7 +231,6 @@
   flex-shrink: 0;
 }
 
-/* Pagination Navigation */
 .sequence-nav {
   @apply flex items-center justify-between gap-3 mt-6 pt-4;
   border-top: 1px solid color-mix(in srgb, var(--ctp-text) 5%, transparent);

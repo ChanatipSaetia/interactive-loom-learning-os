@@ -1,7 +1,7 @@
 import React, { useState, useMemo, useCallback, useEffect } from 'react'
 import { CheckCircle2, AlertCircle, ChevronLeft, ChevronRight } from 'lucide-react'
-import { useSound } from '../../context/SoundContext'
-import { SectionTitleBar } from '../../components/layout/SectionTitleBar'
+import { useSound } from '../../../../../context/SoundContext'
+import { SectionTitleBar } from '../../../../../components/layout/SectionTitleBar'
 import { ReflectionTemplateHelpModal } from './ReflectionTemplateHelpModal'
 import './reflection-template.css'
 
@@ -14,7 +14,7 @@ export interface ReflectionTemplateChallenge {
   prompt: string
   template: string
   chips: ChipItem[]
-  solution: Record<string, string> // zoneId -> chipId
+  solution: Record<string, string>
   explanation?: string
 }
 

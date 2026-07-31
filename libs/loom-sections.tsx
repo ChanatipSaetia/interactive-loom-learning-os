@@ -35,8 +35,8 @@ import '../src/sections/concept-map/concept-map.css'
 import '../src/core/subdomains/process-simulation/components/scenario/scenario.css'
 import '../src/core/subdomains/tradeoff-sandbox/components/decision-tree/decision-tree.css'
 import '../src/core/subdomains/tradeoff-sandbox/components/formula-sandbox/formula-sandbox.css'
-import '../src/sections/reflection-sequence/reflection-sequence.css'
-import '../src/sections/reflection-template/reflection-template.css'
+import '../src/core/subdomains/reflection-synthesis/components/reflection-sequence/reflection-sequence.css'
+import '../src/core/subdomains/reflection-synthesis/components/reflection-template/reflection-template.css'
 
 // Import all section components directly
 import IntroSection from '../src/sections/intro'
@@ -52,8 +52,8 @@ import { ScenarioSection } from '../src/core/subdomains/process-simulation/compo
 import DecisionTreeSection from '../src/core/subdomains/tradeoff-sandbox/components/decision-tree'
 import ImageGallerySection from '../src/sections/image-gallery'
 import FormulaSandboxSection from '../src/core/subdomains/tradeoff-sandbox/components/formula-sandbox'
-import ReflectionSequenceSection from '../src/sections/reflection-sequence'
-import ReflectionTemplateSection from '../src/sections/reflection-template'
+import ReflectionSequenceSection from '../src/core/subdomains/reflection-synthesis/components/reflection-sequence'
+import ReflectionTemplateSection from '../src/core/subdomains/reflection-synthesis/components/reflection-template'
 
 // --- Auto-register all built-in sections with the adapter ---
 

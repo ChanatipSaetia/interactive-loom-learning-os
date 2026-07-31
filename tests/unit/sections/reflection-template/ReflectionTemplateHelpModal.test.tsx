@@ -1,6 +1,6 @@
 import { render, screen, fireEvent } from '@testing-library/react'
 import { describe, it, expect, vi } from 'vitest'
-import { ReflectionTemplateHelpModal } from '../../../../src/sections/reflection-template/ReflectionTemplateHelpModal'
+import { ReflectionTemplateHelpModal } from '../../../../src/core/subdomains/reflection-synthesis/components/reflection-template/ReflectionTemplateHelpModal'
 
 describe('ReflectionTemplateHelpModal', () => {
   it('does not render when isOpen is false', () => {

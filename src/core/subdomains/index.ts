@@ -96,6 +96,9 @@ export type { ReflectionSequenceProps } from './reflection-synthesis'
 export { ReflectionTemplateSection } from './reflection-synthesis'
 export type { ReflectionTemplateProps } from './reflection-synthesis'
 
+export { ReflectionSequenceHelpModal } from './reflection-synthesis'
+export { ReflectionTemplateHelpModal } from './reflection-synthesis'
+
 export type {
   ReflectionSynthesisEvents,
   ReflectionAnswered,

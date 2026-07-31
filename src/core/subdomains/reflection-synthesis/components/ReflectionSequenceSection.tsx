@@ -1,6 +1,6 @@
-export { default as ReflectionSequenceSection } from '../../../../sections/reflection-sequence'
+export { default as ReflectionSequenceSection } from './reflection-sequence'
 export type {
   ReflectionSequenceProps,
   SequenceItem,
   ReflectionSequenceChallenge,
-} from '../../../../sections/reflection-sequence'
+} from './reflection-sequence'
