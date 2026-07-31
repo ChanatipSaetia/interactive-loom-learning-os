@@ -1,11 +1,11 @@
 import { useState, useCallback } from 'react'
 import { Sliders, Binary, HelpCircle, Plus, Trash2 } from 'lucide-react'
-import { FormulaHelpModal } from '../../../core/subdomains/tradeoff-sandbox/components/formula-sandbox/FormulaHelpModal'
+import { FormulaHelpModal } from './FormulaHelpModal'
 import type {
   OKFFormulaSandboxSectionData,
   OKFFormulaVariable,
   OKFFormulaMetric,
-} from '../../../core/okf/types'
+} from '../../../../okf/types'
 
 interface FormulaSandboxFormEditorProps {
   data: OKFFormulaSandboxSectionData

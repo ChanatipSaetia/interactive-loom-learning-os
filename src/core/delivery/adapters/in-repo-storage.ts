@@ -8,7 +8,7 @@
  */
 import type { OKFStoragePort } from '../ports'
 import type { OKFBundledSection, OKFSectionMeta, OKFSectionData } from '../../okf/types'
-import { loadOKFBundle } from '../../okf/reader'
+import { loadOKFBundle, clearOKFCache } from '../../okf/reader'
 import * as yaml from 'js-yaml'
 
 function getOkfBase(): string {
@@ -85,6 +85,8 @@ export class InRepoStorageAdapter implements OKFStoragePort {
       const errorBody = await res.text()
       throw new Error(`Failed to save section: ${errorBody}`)
     }
+
+    clearOKFCache()
   }
 
   /**

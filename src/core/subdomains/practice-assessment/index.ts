@@ -32,6 +32,11 @@ export { QuizHelpModal } from './components/quiz/QuizHelpModal'
 export { FlashcardsHelpModal } from './components/flashcards/FlashcardsHelpModal'
 export { ConceptMapHelpModal } from './components/concept-map/ConceptMapHelpModal'
 
+export { QuizFormEditor } from './components/quiz/QuizFormEditor'
+export { FlashcardsFormEditor } from './components/flashcards/FlashcardsFormEditor'
+export { ConceptMapFormEditor } from './components/concept-map/ConceptMapFormEditor'
+
+
 export type {
   PracticeAssessmentEvents,
   QuizOptionSelected,

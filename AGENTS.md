@@ -33,11 +33,11 @@ When refactoring or extending core sections, follow the Strategic & Tactical DDD
    * **`progressive-content`**: `text`, `intro`, `bullets`, `taxonomy-browser`, `image-gallery`
    * **`practice-assessment`**: `quiz`, `flashcards`, `concept-map`
    * *Rule:* Each subdomain directory (`src/core/subdomains/[subdomain]/`) MUST contain:
-     - `components/`: React section components & editor help modals.
+     - `components/`: React section view renderers, help modals, & visual form editors.
      - `schema.ts`: Co-located Zod structural schemas (`SectionSchema`).
      - `events.ts`: Domain event type definitions (`SectionEvents`).
      - `index.ts`: Bounded Context entry point exporting contract interfaces.
-     * *Rule:* `src/core/subdomains/` and its barrel export `src/core/subdomains/index.ts` are the canonical sources for section implementations, schemas, and help modals. New code MUST import from the barrel (`src/core/subdomains`) or a subdomain path (`src/core/subdomains/[subdomain]`). The legacy `src/sections/` directory has been fully migrated and removed.
+     * *Rule:* `src/core/subdomains/` and its barrel export `src/core/subdomains/index.ts` are the canonical sources for core section implementations, schemas, form editors, and supporting subdomains (`src/core/subdomains/supporting/`: `authoring-editor`, `catalog-discovery`, `learner-progress`). New code MUST import from the barrel (`src/core/subdomains`) or a subdomain path (`src/core/subdomains/[subdomain]`).
 
 
 2. **3-Tier Validation Gateway (`src/core/validation/gateway.ts`):**

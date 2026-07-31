@@ -1,7 +1,7 @@
 import { renderHook, act } from '@testing-library/react'
-import { describe, it, expect, vi, beforeEach } from 'vitest'
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 import * as yaml from 'js-yaml'
-import { useSectionEditorBuffer } from '../../../../src/core/hooks/useSectionEditorBuffer'
+import { useSectionEditorBuffer, formatSectionRawText } from '../../../../src/core/subdomains/supporting/authoring-editor'
 import type { OKFBundledSection, OKFSectionData } from '../../../../src/core/okf/types'
 
 describe('useSectionEditorBuffer', () => {
@@ -17,6 +17,7 @@ describe('useSectionEditorBuffer', () => {
   const mockTextSection: OKFBundledSection = {
     meta: { type: 'text', title: 'Test Section', resource: 'test.md' },
     data: { type: 'text', paragraphs: ['Hello world', 'Second paragraph'] },
+    sectionFolder: 'text-1',
   }
 
   const mockQuizSection: OKFBundledSection = {
@@ -34,6 +35,7 @@ describe('useSectionEditorBuffer', () => {
         },
       ],
     },
+    sectionFolder: 'quiz-1',
   }
 
   it('initializes buffer from source section', () => {
@@ -41,7 +43,7 @@ describe('useSectionEditorBuffer', () => {
 
     expect(result.current.data).toEqual(mockTextSection.data)
     expect(result.current.meta).toEqual(mockTextSection.meta)
-    expect(result.current.rawText).toBe(yaml.dump(mockTextSection.data, { lineWidth: -1, noRefs: true }))
+    expect(result.current.rawText).toBe(formatSectionRawText(mockTextSection.meta, mockTextSection.data))
     expect(result.current.validationErrors).toEqual([])
     expect(result.current.validationDiagnostics).toEqual([])
     expect(result.current.validationStatus).toBe('valid')
@@ -76,7 +78,7 @@ describe('useSectionEditorBuffer', () => {
     })
 
     expect(result.current.data).toEqual(newData)
-    expect(result.current.rawText).toBe(yaml.dump(newData, { lineWidth: -1, noRefs: true }))
+    expect(result.current.rawText).toBe(formatSectionRawText(mockTextSection.meta, newData))
     expect(result.current.validationErrors).toEqual([])
     expect(result.current.validationStatus).toBe('valid')
     expect(result.current.isDirty).toBe(true)

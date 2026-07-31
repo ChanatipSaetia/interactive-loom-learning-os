@@ -1,11 +1,11 @@
 import { useState, useCallback } from 'react'
 import { Share2, GitCommit, Plus, Trash2, HelpCircle } from 'lucide-react'
-import { ConceptMapHelpModal } from '../../../core/subdomains/practice-assessment/components/concept-map/ConceptMapHelpModal'
+import { ConceptMapHelpModal } from './ConceptMapHelpModal'
 import type {
   OKFConceptMapSectionData,
   OKFConceptNode,
   OKFConceptEdge,
-} from '../../../core/okf/types'
+} from '../../../../okf/types'
 
 interface ConceptMapFormEditorProps {
   data: OKFConceptMapSectionData

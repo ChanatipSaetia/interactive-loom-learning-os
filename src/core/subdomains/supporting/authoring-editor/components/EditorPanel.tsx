@@ -1,12 +1,9 @@
-import { useState, useCallback, useMemo, type ChangeEvent } from 'react'
-import { Save, Download, Layers, AlertTriangle, AlertCircle } from 'lucide-react'
+import { useCallback, useMemo, type ChangeEvent } from 'react'
+import { Save, Download, PencilOff, Layers, AlertTriangle, AlertCircle } from 'lucide-react'
 import { VisualFormEditor } from './VisualFormEditor'
-import { RawYAMLEditor } from './RawYAMLEditor'
-import type { OKFSectionData } from '../../core/okf/types'
-import type { ValidationError } from '../../core/okf/validate'
-import type { ValidationDiagnostic } from '../../core/validation/gateway'
-
-type EditorTab = 'form' | 'raw'
+import type { OKFSectionData, OKFSectionMeta } from '../../../../okf/types'
+import type { ValidationError } from '../../../../okf/validate'
+import type { ValidationDiagnostic } from '../../../../validation/gateway'
 
 export const SECTION_TYPES: { type: OKFSectionData['type']; label: string }[] = [
   { type: 'intro', label: 'Intro Hero (intro)' },
@@ -248,42 +245,39 @@ function DiagnosticBanner({ diagnostics }: { diagnostics: ValidationDiagnostic[]
 
 interface EditorPanelProps {
   sectionData: OKFSectionData
-  validationErrors: ValidationError[]
+  sectionMeta?: OKFSectionMeta
+  validationErrors?: ValidationError[]
   validationDiagnostics?: ValidationDiagnostic[]
   validationStatus?: 'valid' | 'warning' | 'error'
   onVisualFormChange: (data: OKFSectionData) => void
-  onRawTextChange: (text: string) => void
-  rawText: string
+  onVisualMetaChange?: (meta: OKFSectionMeta) => void
+  onRawTextChange?: (text: string) => void
+  rawText?: string
   isDirty: boolean
   isSaving: boolean
   onSave: () => void
   onDownload: () => void
+  onDone?: () => void
 }
 
 export function EditorPanel({
   sectionData,
-  validationErrors,
+  sectionMeta,
   validationDiagnostics,
   onVisualFormChange,
-  onRawTextChange,
-  rawText,
+  onVisualMetaChange,
   isDirty,
   isSaving,
   onSave,
   onDownload,
+  onDone,
 }: EditorPanelProps) {
-  const [activeTab, setActiveTab] = useState<EditorTab>('form')
-
   const diagnosticDiagnostics = useMemo(
     () => validationDiagnostics ?? [],
     [validationDiagnostics]
   )
 
   const hasDiagnostics = diagnosticDiagnostics.length > 0
-
-  const handleTabChange = useCallback((tab: EditorTab) => {
-    setActiveTab(tab)
-  }, [])
 
   const handleTypeChange = useCallback(
     (e: ChangeEvent<HTMLSelectElement>) => {
@@ -311,6 +305,17 @@ export function EditorPanel({
             <Save size={13} />
             {isSaving ? 'Saving...' : 'Save'}
           </button>
+          {onDone && (
+            <button
+              className="editor-action-btn editor-action-btn--done"
+              data-testid="editor-done-btn"
+              onClick={onDone}
+              title="Exit edit mode"
+            >
+              <PencilOff size={13} />
+              Done
+            </button>
+          )}
           <button
             className="editor-action-btn"
             data-testid="editor-download-btn"
@@ -348,32 +353,13 @@ export function EditorPanel({
         <DiagnosticBanner diagnostics={diagnosticDiagnostics} />
       )}
 
-      <div className="editor-tab-bar" data-testid="editor-tab-bar">
-        <button
-          className={`editor-tab ${activeTab === 'form' ? 'active' : ''}`}
-          data-testid="editor-tab-form"
-          onClick={() => handleTabChange('form')}
-          aria-selected={activeTab === 'form'}
-          role="tab"
-        >
-          Visual Form
-        </button>
-        <button
-          className={`editor-tab ${activeTab === 'raw' ? 'active' : ''}`}
-          data-testid="editor-tab-raw"
-          onClick={() => handleTabChange('raw')}
-          aria-selected={activeTab === 'raw'}
-          role="tab"
-        >
-          Raw YAML
-        </button>
-      </div>
       <div className="editor-panel-body">
-        {activeTab === 'form' ? (
-          <VisualFormEditor data={sectionData} onChange={onVisualFormChange} />
-        ) : (
-          <RawYAMLEditor text={rawText} errors={validationErrors} onChange={onRawTextChange} />
-        )}
+        <VisualFormEditor
+          data={sectionData}
+          meta={sectionMeta}
+          onChange={onVisualFormChange}
+          onMetaChange={onVisualMetaChange}
+        />
       </div>
     </div>
   )

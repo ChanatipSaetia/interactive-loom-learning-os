@@ -75,8 +75,7 @@ describe('LoomSections UMD / CDN Library', () => {
     })
 
     await waitFor(() => {
-      expect(screen.getByTestId('editor-tab-form')).toBeInTheDocument()
-      expect(screen.getByTestId('editor-tab-raw')).toBeInTheDocument()
+      expect(screen.getByTestId('visual-form-editor')).toBeInTheDocument()
     })
 
     cleanup()

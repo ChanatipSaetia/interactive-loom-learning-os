@@ -20,6 +20,10 @@ export type { ReflectionTemplateProps } from './components/ReflectionTemplateSec
 export { ReflectionSequenceHelpModal } from './components/reflection-sequence/ReflectionSequenceHelpModal'
 export { ReflectionTemplateHelpModal } from './components/reflection-template/ReflectionTemplateHelpModal'
 
+export { ReflectionSequenceFormEditor } from './components/reflection-sequence/ReflectionSequenceFormEditor'
+export { ReflectionTemplateFormEditor } from './components/reflection-template/ReflectionTemplateFormEditor'
+
+
 export type {
   ReflectionSynthesisEvents,
   ReflectionAnswered,

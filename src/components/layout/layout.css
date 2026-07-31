@@ -1663,6 +1663,17 @@ body:has(.editor-mode) {
   border-color: color-mix(in srgb, var(--ctp-green) 50%, transparent);
 }
 
+.editor-action-btn--done {
+  color: var(--ctp-blue);
+  border-color: color-mix(in srgb, var(--ctp-blue) 30%, transparent);
+}
+
+.editor-action-btn--done:hover:not(:disabled) {
+  color: var(--ctp-blue);
+  background-color: color-mix(in srgb, var(--ctp-blue) 10%, transparent);
+  border-color: color-mix(in srgb, var(--ctp-blue) 50%, transparent);
+}
+
 /* ==========================================================================
    Global Help Guide Modal Styles
    ========================================================================== */

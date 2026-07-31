@@ -2,7 +2,7 @@ import { render, screen, fireEvent } from '@testing-library/react'
 import { MemoryRouter } from 'react-router-dom'
 import { describe, expect, vi, beforeEach, afterEach, test } from 'vitest'
 import * as routesModule from '../../../../src/core/routes'
-import { OverviewPage } from '../../../../src/components/overview/OverviewPage'
+import { OverviewPage } from '../../../../src/core/subdomains/supporting/catalog-discovery'
 import type { TopicRoute } from '../../../../src/core/routes'
 
 const mockTopics: TopicRoute[] = [

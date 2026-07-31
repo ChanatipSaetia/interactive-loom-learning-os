@@ -1,7 +1,7 @@
 import { useState, useCallback } from 'react'
 import { Sparkles, BookOpen, Target, Lightbulb, MapPin, Plus, Trash2, HelpCircle } from 'lucide-react'
-import type { OKFIntroSectionData, OKFIntroRoadmapStep } from '../../../core/okf/types'
-import { IntroHelpModal } from '../../../core/subdomains/progressive-content/components/intro/IntroHelpModal'
+import type { OKFIntroSectionData, OKFIntroRoadmapStep } from '../../../../okf/types'
+import { IntroHelpModal } from './IntroHelpModal'
 
 interface IntroFormEditorProps {
   data: OKFIntroSectionData

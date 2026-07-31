@@ -1,8 +1,8 @@
 import { useState, useCallback } from 'react'
 import { Sliders, ListChecks, Plus, Trash2, ThumbsUp, ThumbsDown, HelpCircle, Compass, Star, Binary, ChevronDown, ChevronRight } from 'lucide-react'
-import { TradeoffHelpModal } from '../../../core/subdomains/tradeoff-sandbox/components/tradeoff-sandbox/TradeoffHelpModal'
-import type { OKFTradeoffSectionData } from '../../../core/okf/types'
-import type { TradeoffScenario, TradeoffStep, TradeoffChoice, MetricDef, TradeoffProCon } from '../../../core/subdomains/tradeoff-sandbox/components/tradeoff-sandbox'
+import { TradeoffHelpModal } from './TradeoffHelpModal'
+import type { OKFTradeoffSectionData } from '../../../../okf/types'
+import type { TradeoffScenario, TradeoffStep, TradeoffChoice, MetricDef, TradeoffProCon } from '.'
 
 interface TradeoffSandboxFormEditorProps {
   data: OKFTradeoffSectionData

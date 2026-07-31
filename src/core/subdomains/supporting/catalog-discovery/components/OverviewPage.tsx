@@ -1,11 +1,11 @@
 import { useState, useRef, useEffect, useMemo } from 'react'
 import { Link } from 'react-router-dom'
 import { Search, ChevronDown, Check, Layers, LayoutGrid, Sparkles, Clock } from 'lucide-react'
-import { useTopics, type TopicRoute } from '../../core/routes'
-import { usePagination } from '../../core/hooks/usePagination'
-import { ScrollReveal } from '../motion/scroll-reveal'
-import { Dropdown } from '../motion/dropdown'
-import { cn } from '../../lib/utils'
+import { useTopics, type TopicRoute } from '../../../../routes'
+import { usePagination } from '../../../../hooks/usePagination'
+import { ScrollReveal } from '../../../../../components/motion/scroll-reveal'
+import { Dropdown } from '../../../../../components/motion/dropdown'
+import { cn } from '../../../../../lib/utils'
 import './overview.css'
 
 const rowsPerPageOptions = [5, 10, 20]

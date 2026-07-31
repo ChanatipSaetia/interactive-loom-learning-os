@@ -10,6 +10,10 @@ export type { ScenarioSectionProps } from './components/ScenarioSection'
 export { FlowchartHelpModal } from './components/flowchart/FlowchartHelpModal'
 export { ScenarioHelpModal } from './components/scenario/ScenarioHelpModal'
 
+export { FlowchartFormEditor } from './components/flowchart/FlowchartFormEditor'
+export { ScenarioFormEditor } from './components/scenario/ScenarioFormEditor'
+
+
 export { deriveSchema } from './components/flowchart/abstract-flow/derive'
 export * from './components/flowchart/abstract-flow/types'
 export type { AbstractFlow, ActorDecl, SystemDecl, FlowStep, LinearStep, BranchStep, BranchOption, FlowJourney, JourneyStepRef, ResultEvent, Ref } from './components/flowchart/abstract-flow/types'

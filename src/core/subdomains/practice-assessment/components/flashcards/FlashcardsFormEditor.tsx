@@ -1,8 +1,8 @@
 import { useState, useCallback } from 'react'
 import { Folder, Plus, Trash2, HelpCircle, ArrowUp, ArrowDown, MessageSquare, Image, Layers } from 'lucide-react'
-import { FlashcardsHelpModal } from '../../../core/subdomains/practice-assessment/components/flashcards/FlashcardsHelpModal'
-import type { OKFFlashcardSectionData } from '../../../core/okf/types'
-import type { WordTerm } from '../../../types'
+import { FlashcardsHelpModal } from './FlashcardsHelpModal'
+import type { OKFFlashcardSectionData } from '../../../../okf/types'
+import type { WordTerm } from '../../../../../types'
 
 interface FlashcardsFormEditorProps {
   data: OKFFlashcardSectionData

@@ -156,9 +156,9 @@ Bounded Contexts define the solution space boundaries. Each Bounded Context main
 
 #### D. Other Supporting & Generic Contexts
 
-* **`AuthoringEditorContext`**: Manages visual split-screen forms, bi-directional sync (Visual Form ↔ Raw YAML source), inline error validation warnings, and draft previews.
-* **`CatalogDiscoveryContext`**: Discovers topic manifests (`index.md`/`index.yaml`), resolves topic routes, and drives search/filtering.
-* **`LearnerProgressContext`**: Subscribes to section events (`SectionCompleted`, `QuizAnswered`) and persists progress history in local storage.
+* **`AuthoringEditorContext`** ([src/core/subdomains/supporting/authoring-editor/](file:///home/chanatip/interactive_loom_learning_os/src/core/subdomains/supporting/authoring-editor)): Manages visual split-screen forms, bi-directional sync (Visual Form ↔ Raw YAML source), inline error validation warnings, and draft previews.
+* **`CatalogDiscoveryContext`** ([src/core/subdomains/supporting/catalog-discovery/](file:///home/chanatip/interactive_loom_learning_os/src/core/subdomains/supporting/catalog-discovery)): Discovers topic manifests (`index.md`/`index.yaml`), resolves topic routes, and drives search/filtering.
+* **`LearnerProgressContext`** ([src/core/subdomains/supporting/learner-progress/](file:///home/chanatip/interactive_loom_learning_os/src/core/subdomains/supporting/learner-progress)): Subscribes to section events (`SectionCompleted`, `QuizAnswered`) and persists progress history in local storage.
 * **`UISystemContext`** ([src/core/ui-system/](file:///home/chanatip/interactive_loom_learning_os/src/core/ui-system)): Controls Catppuccin theme tokens, UI component primitives (`<Button>`, `<Card>`, `<Slider>`), audio sound cues, and motion primitives. Provides `UISystemContract` to Core Sections and the Master Aggregator.
 
 ---

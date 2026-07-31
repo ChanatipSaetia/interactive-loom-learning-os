@@ -1,5 +1,4 @@
 type: intro
-title: Hexagonal Architecture
 subtitle: Isolate core domain logic from external technologies, frameworks, databases, and UI drivers
 estimatedTime: 25 mins
 moduleCount: 6

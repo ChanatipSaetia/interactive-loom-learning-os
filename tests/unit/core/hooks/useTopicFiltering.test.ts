@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest'
 import { renderHook, act } from '@testing-library/react'
-import { useTopicFiltering, type SortColumn, type SortDirection } from '../../../../src/core/hooks/useTopicFiltering'
+import { useTopicFiltering, type SortColumn, type SortDirection } from '../../../../src/core/subdomains/supporting/catalog-discovery'
 import type { TopicRoute } from '../../../../src/core/routes'
 
 const mockTopics: TopicRoute[] = [

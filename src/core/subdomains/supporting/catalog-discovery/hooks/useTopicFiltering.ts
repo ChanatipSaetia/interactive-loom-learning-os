@@ -1,5 +1,5 @@
 import { useMemo } from 'react'
-import type { TopicRoute } from '../routes'
+import type { TopicRoute } from '../../../../routes'
 
 export type SortDirection = 'asc' | 'desc' | null
 export type SortColumn = 'label' | 'category' | 'description' | null

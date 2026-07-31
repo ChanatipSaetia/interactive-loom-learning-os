@@ -11,7 +11,7 @@ import {
   defaultSectionProgress,
   type ProgressContextValue,
   type SectionProgress,
-} from '../../../../src/core/progress'
+} from '../../../../src/core/subdomains/supporting/learner-progress'
 
 function ProviderWrapper({ children }: { children: React.ReactNode }) {
   return <ProgressProvider>{children}</ProgressProvider>

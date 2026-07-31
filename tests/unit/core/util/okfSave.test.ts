@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
-import { buildSectionSaveFiles, buildDownloadFiles, triggerDownload } from '../../../../src/core/util/okfSave'
+import { buildSectionSaveFiles, buildDownloadFiles, triggerDownload } from '../../../../src/core/subdomains/supporting/authoring-editor/services/okfSave'
 import type { OKFSectionMeta } from '../../../../src/core/okf/types'
 
 describe('buildSectionSaveFiles', () => {
@@ -38,12 +38,12 @@ describe('buildSectionSaveFiles', () => {
 
   it('omits optional meta fields when not present', () => {
     const minimalMeta: OKFSectionMeta = {
-      type: 'text',
+      type: 'quiz',
       resource: '.',
     }
-    const result = buildSectionSaveFiles(minimalMeta, 'type: text\nparagraphs: []', 'Some body')
+    const result = buildSectionSaveFiles(minimalMeta, 'type: quiz\nquestions: []', 'Some body')
 
-    expect(result.sectionMd).toContain('type: text')
+    expect(result.sectionMd).toContain('type: quiz')
     expect(result.sectionMd).toContain('resource: data.yaml')
     expect(result.sectionMd).not.toContain('title:')
     expect(result.sectionMd).not.toContain('heading:')
@@ -51,18 +51,18 @@ describe('buildSectionSaveFiles', () => {
 
   it('includes ordered field when present', () => {
     const metaWithOrdered: OKFSectionMeta = {
-      type: 'text',
+      type: 'quiz',
       resource: '.',
       ordered: true,
     }
-    const result = buildSectionSaveFiles(metaWithOrdered, 'type: text\nparagraphs: []', 'Body')
+    const result = buildSectionSaveFiles(metaWithOrdered, 'type: quiz\nquestions: []', 'Body')
 
     expect(result.sectionMd).toContain('ordered: true')
   })
 
   it('includes heading field when present', () => {
     const metaWithHeading: OKFSectionMeta = {
-      type: 'text',
+      type: 'quiz',
       title: 'My Section',
       heading: 'Custom Heading',
       resource: '.',
@@ -70,6 +70,26 @@ describe('buildSectionSaveFiles', () => {
     const result = buildSectionSaveFiles(metaWithHeading, 'data', 'Body')
 
     expect(result.sectionMd).toContain('heading: Custom Heading')
+  })
+
+  it('formats text section paragraphs into clean markdown body text without raw YAML or double frontmatter', () => {
+    const textMeta: OKFSectionMeta = {
+      type: 'text',
+      title: 'Text Section Title',
+      resource: '.',
+    }
+    const textData = {
+      type: 'text' as const,
+      paragraphs: ['First markdown paragraph.', 'Second markdown paragraph.'],
+    }
+
+    const dirtyBody = '---\ntype: text\ntitle: Old Title\n---\n\ntype: text\nparagraphs:\n  - Old'
+    const result = buildSectionSaveFiles(textMeta, 'yaml', dirtyBody, textData)
+
+    expect(result.sectionMd).not.toContain('resource: data.yaml')
+    expect(result.sectionMd).toContain('First markdown paragraph.')
+    expect(result.sectionMd).toContain('Second markdown paragraph.')
+    expect(result.sectionMd.match(/---/g)?.length).toBe(2) // Single opening and closing delimiter
   })
 })
 

@@ -1,8 +1,8 @@
 import { useState, useCallback, useMemo } from 'react'
 import { Plus, Trash2, HelpCircle, ArrowUp, ArrowDown, FileCode, Tag, CheckCircle2 } from 'lucide-react'
-import { ReflectionTemplateHelpModal } from '../../../core/subdomains/reflection-synthesis/components/reflection-template/ReflectionTemplateHelpModal'
-import type { OKFReflectionTemplateSectionData, OKFReflectionTemplateChallenge } from '../../../core/okf/types'
-import type { ChipItem } from '../../../core/subdomains/reflection-synthesis/components/reflection-template'
+import { ReflectionTemplateHelpModal } from './ReflectionTemplateHelpModal'
+import type { OKFReflectionTemplateSectionData, OKFReflectionTemplateChallenge } from '../../../../okf/types'
+import type { ChipItem } from '.'
 
 interface ReflectionTemplateFormEditorProps {
   data: OKFReflectionTemplateSectionData

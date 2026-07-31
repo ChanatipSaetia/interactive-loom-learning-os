@@ -1,8 +1,6 @@
 import { render, screen, fireEvent } from '@testing-library/react'
 import { describe, it, expect, vi, beforeEach } from 'vitest'
-import { VisualFormEditor } from '../../../../src/components/editor/VisualFormEditor'
-import { RawYAMLEditor } from '../../../../src/components/editor/RawYAMLEditor'
-import { EditorPanel } from '../../../../src/components/editor/EditorPanel'
+import { VisualFormEditor, RawYAMLEditor, EditorPanel } from '../../../../src/core/subdomains/supporting/authoring-editor'
 import type { OKFSectionData } from '../../../../src/core/okf/types'
 import type { ValidationError } from '../../../../src/core/okf/validate'
 
@@ -765,59 +763,12 @@ describe('EditorPanel', () => {
     vi.clearAllMocks()
   })
 
-  it('renders with Visual Form tab active by default', () => {
+  it('renders Visual Form directly in EditorPanel', () => {
     render(<EditorPanel {...mockProps} />)
 
     expect(screen.getByTestId('editor-panel')).toBeInTheDocument()
-    expect(screen.getByTestId('editor-tab-form')).toBeInTheDocument()
-    expect(screen.getByTestId('editor-tab-raw')).toBeInTheDocument()
+    expect(screen.getByTestId('visual-form-editor')).toBeInTheDocument()
     expect(screen.getByTestId('text-form-editor')).toBeInTheDocument()
-    expect(screen.queryByTestId('raw-yaml-editor')).not.toBeInTheDocument()
-  })
-
-  it('switches to Raw YAML tab on click', () => {
-    render(<EditorPanel {...mockProps} />)
-
-    const rawTab = screen.getByTestId('editor-tab-raw')
-    fireEvent.click(rawTab)
-
-    expect(screen.queryByTestId('text-form-editor')).not.toBeInTheDocument()
-    expect(screen.getByTestId('raw-yaml-editor')).toBeInTheDocument()
-    expect(rawTab).toHaveAttribute('aria-selected', 'true')
-  })
-
-  it('switches back to Visual Form tab on click', () => {
-    render(<EditorPanel {...mockProps} />)
-
-    const rawTab = screen.getByTestId('editor-tab-raw')
-    fireEvent.click(rawTab)
-    expect(screen.getByTestId('raw-yaml-editor')).toBeInTheDocument()
-
-    const formTab = screen.getByTestId('editor-tab-form')
-    fireEvent.click(formTab)
-
-    expect(screen.getByTestId('text-form-editor')).toBeInTheDocument()
-    expect(screen.queryByTestId('raw-yaml-editor')).not.toBeInTheDocument()
-    expect(formTab).toHaveAttribute('aria-selected', 'true')
-  })
-
-  it('shows validation errors in raw YAML tab', () => {
-    const propsWithErrors = {
-      ...mockProps,
-      validationErrors: [
-        {
-          kind: 'syntax' as const,
-          message: 'Bad YAML syntax',
-          line: 2,
-        },
-      ],
-    }
-
-    render(<EditorPanel {...propsWithErrors} />)
-
-    fireEvent.click(screen.getByTestId('editor-tab-raw'))
-    expect(screen.getByTestId('yaml-validation-banner')).toBeInTheDocument()
-    expect(screen.getByTestId('yaml-syntax-error-group')).toBeInTheDocument()
   })
 
   it('shows save and download buttons', () => {

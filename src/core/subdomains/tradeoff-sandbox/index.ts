@@ -36,6 +36,12 @@ export { TradeoffHelpModal } from './components/tradeoff-sandbox/TradeoffHelpMod
 export { FormulaHelpModal } from './components/formula-sandbox/FormulaHelpModal'
 export { DecisionTreeHelpModal } from './components/decision-tree/DecisionTreeHelpModal'
 
+// Form editors
+export { TradeoffSandboxFormEditor } from './components/tradeoff-sandbox/TradeoffSandboxFormEditor'
+export { FormulaSandboxFormEditor } from './components/formula-sandbox/FormulaSandboxFormEditor'
+export { DecisionTreeFormEditor } from './components/decision-tree/DecisionTreeFormEditor'
+
+
 export type {
   TradeoffSandboxEvents,
   SliderValueChanged,

@@ -26,6 +26,8 @@ export type {
 export { ScenarioSection } from './process-simulation'
 export type { ScenarioSectionProps } from './process-simulation'
 
+export { FlowchartFormEditor, ScenarioFormEditor } from './process-simulation'
+
 export type {
   ProcessSimulationEvents,
   StepChanged,
@@ -68,6 +70,12 @@ export { TradeoffHelpModal } from './tradeoff-sandbox'
 export { FormulaHelpModal } from './tradeoff-sandbox'
 export { DecisionTreeHelpModal } from './tradeoff-sandbox'
 
+export {
+  TradeoffSandboxFormEditor,
+  FormulaSandboxFormEditor,
+  DecisionTreeFormEditor,
+} from './tradeoff-sandbox'
+
 export type {
   TradeoffSandboxEvents,
   SliderValueChanged,
@@ -98,6 +106,11 @@ export type { ReflectionTemplateProps } from './reflection-synthesis'
 
 export { ReflectionSequenceHelpModal } from './reflection-synthesis'
 export { ReflectionTemplateHelpModal } from './reflection-synthesis'
+
+export {
+  ReflectionSequenceFormEditor,
+  ReflectionTemplateFormEditor,
+} from './reflection-synthesis'
 
 export type {
   ReflectionSynthesisEvents,
@@ -144,6 +157,13 @@ export type {
 export { ImageGallerySection } from './progressive-content'
 export type { ImageGalleryProps, GalleryItemType } from './progressive-content'
 
+export {
+  TextFormEditor,
+  IntroFormEditor,
+  BulletsFormEditor,
+  TaxonomyBrowserFormEditor,
+} from './progressive-content'
+
 export type {
   ProgressiveContentEvents,
   CategorySelected,
@@ -186,6 +206,12 @@ export { QuizHelpModal } from './practice-assessment'
 export { FlashcardsHelpModal } from './practice-assessment'
 export { ConceptMapHelpModal } from './practice-assessment'
 
+export {
+  QuizFormEditor,
+  FlashcardsFormEditor,
+  ConceptMapFormEditor,
+} from './practice-assessment'
+
 export type {
   PracticeAssessmentEvents,
   QuizOptionSelected,
@@ -193,3 +219,7 @@ export type {
   FlashcardFlipped,
   ConceptMapMatched,
 } from './practice-assessment'
+
+// ─── Supporting Subdomains ─────────────────────────────────────────────
+export * from './supporting'
+

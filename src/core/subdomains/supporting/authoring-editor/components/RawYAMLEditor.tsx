@@ -1,5 +1,5 @@
 import { useCallback } from 'react'
-import type { ValidationError } from '../../core/okf/validate'
+import type { ValidationError } from '../../../../okf/validate'
 
 interface RawYAMLEditorProps {
   text: string

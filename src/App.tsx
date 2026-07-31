@@ -1,6 +1,6 @@
 import { Routes, Route } from 'react-router-dom'
 import { TopNav } from './components/layout/TopNav'
-import { OverviewPage } from './components/overview/OverviewPage'
+import { OverviewPage } from './core/subdomains/supporting/catalog-discovery'
 import { TopicShell } from './components/layout/TopicShell'
 import { ScrollProgress } from './components/motion/scroll-progress'
 import { SmoothScroll } from './components/motion/smooth-scroll'

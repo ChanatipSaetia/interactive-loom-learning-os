@@ -1,7 +1,7 @@
 import { useState, useCallback } from 'react'
 import { Plus, Trash2, HelpCircle, ArrowUp, ArrowDown, ListOrdered, CheckCircle2 } from 'lucide-react'
-import { ReflectionSequenceHelpModal } from '../../../core/subdomains/reflection-synthesis/components/reflection-sequence/ReflectionSequenceHelpModal'
-import type { OKFReflectionSequenceSectionData, OKFReflectionSequenceChallenge } from '../../../core/okf/types'
+import { ReflectionSequenceHelpModal } from './ReflectionSequenceHelpModal'
+import type { OKFReflectionSequenceSectionData, OKFReflectionSequenceChallenge } from '../../../../okf/types'
 
 interface ReflectionSequenceFormEditorProps {
   data: OKFReflectionSequenceSectionData

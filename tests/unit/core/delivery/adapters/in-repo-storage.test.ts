@@ -4,6 +4,7 @@ import type { OKFIntroSectionData } from '../../../../../src/core/okf/types'
 
 vi.mock('../../../../../src/core/okf/reader', () => ({
   loadOKFBundle: vi.fn(),
+  clearOKFCache: vi.fn(),
 }))
 
 import { loadOKFBundle } from '../../../../../src/core/okf/reader'

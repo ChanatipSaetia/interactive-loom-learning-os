@@ -4,13 +4,12 @@ import { useTopics } from '../../core/routes'
 import type { SectionConfig } from '../../core/registry'
 import { SectionRegistry } from '../../core/registry'
 import { useOKFBundled, bundleToSections } from '../../core/okf/sections'
-import { ProgressProvider } from '../../core/progress'
+import { ProgressProvider } from '../../core/subdomains/supporting/learner-progress'
 import { HUDProvider, useHUD } from '../../core/context/HUDContext'
 import { EditorProvider, useEditor, useEditorSafe } from '../../core/context/EditorContext'
 import { EditSectionToggle } from './EditSectionToggle'
 import { SplitPaneLayout } from './SplitPaneLayout'
-import { EditorPanel } from '../editor/EditorPanel'
-import { useSectionEditorBuffer } from '../../core/hooks/useSectionEditorBuffer'
+import { EditorPanel, useSectionEditorBuffer } from '../../core/subdomains/supporting/authoring-editor'
 import { ToastProvider, useToast } from '../ui/Toast'
 import { X } from 'lucide-react'
 
@@ -63,12 +62,13 @@ function LivePreviewSection({ config }: { config: SectionConfig }) {
   )
 }
 
-function EditorModeView({ topicLabel }: { topicLabel: string }) {
+function EditorModeView({ topicLabel, reload }: { topicLabel: string; reload?: () => Promise<void> }) {
   const { topicId } = useParams()
-  const { activeSection, activeSectionIndex } = useEditor()
+  const { activeSection, activeSectionIndex, toggleEdit } = useEditor()
   const { showToast } = useToast()
 
   const {
+    meta: editedMeta,
     data: editedData,
     rawText,
     validationErrors,
@@ -77,6 +77,7 @@ function EditorModeView({ topicLabel }: { topicLabel: string }) {
     isDirty,
     isSaving,
     setVisualFormField,
+    setVisualFormMeta,
     setRawText,
     saveToDisk,
     downloadFiles,
@@ -87,9 +88,14 @@ function EditorModeView({ topicLabel }: { topicLabel: string }) {
     const original = bundleToSections([activeSection])[0]
     return {
       type: original.type,
-      props: { ...original.props, ...editedData },
+      props: {
+        ...original.props,
+        ...editedData,
+        ...(editedMeta.title ? { title: editedMeta.title } : {}),
+        ...(editedMeta.heading ? { heading: editedMeta.heading } : {}),
+      },
     }
-  }, [activeSection, editedData])
+  }, [activeSection, editedData, editedMeta])
 
   const sectionName = useMemo(() => {
     if (!activeSection) return ''
@@ -100,6 +106,9 @@ function EditorModeView({ topicLabel }: { topicLabel: string }) {
     if (!topicId || !sectionName || !isDirty) return
     try {
       await saveToDisk(topicId, sectionName)
+      if (reload) {
+        await reload()
+      }
       showToast('success', 'Section saved to disk')
     } catch (e: unknown) {
       const msg = e instanceof Error ? e.message : String(e)
@@ -125,16 +134,19 @@ function EditorModeView({ topicLabel }: { topicLabel: string }) {
         leftPanel={
           <EditorPanel
             sectionData={editedData}
+            sectionMeta={editedMeta}
             validationErrors={validationErrors}
             validationDiagnostics={validationDiagnostics}
             validationStatus={validationStatus}
             onVisualFormChange={setVisualFormField}
+            onVisualMetaChange={setVisualFormMeta}
             onRawTextChange={setRawText}
             rawText={rawText}
             isDirty={isDirty}
             isSaving={isSaving}
             onSave={handleSave}
             onDownload={handleDownload}
+            onDone={() => toggleEdit()}
           />
         }
         rightPanel={<LivePreviewSection config={previewConfig} />}
@@ -151,7 +163,7 @@ function TopicShellInner() {
 
   const topic = useMemo(() => topics.find((r) => r.id === topicId), [topicId, topics])
 
-  const { bundle, loading, error } = useOKFBundled(topicId ?? '')
+  const { bundle, loading, error, reload } = useOKFBundled(topicId ?? '')
   const sections = useMemo(() => (bundle ? bundleToSections(bundle) : []), [bundle])
 
   if (!topic) {
@@ -184,7 +196,7 @@ function TopicShellInner() {
   if (editMode) {
     return (
       <div className="topic-page editor-mode" data-topic-id={topic.id} data-testid={`${topic.id}-topic`}>
-        <EditorModeView topicLabel={topic.label} />
+        <EditorModeView topicLabel={topic.label} reload={reload} />
       </div>
     )
   }

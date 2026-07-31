@@ -32,6 +32,12 @@ export type { TaxonomyBrowserSectionProps, TaxonomyCategoryType } from './compon
 export { ImageGallerySection } from './components/ImageGallerySection'
 export type { ImageGalleryProps, GalleryItemType } from './components/ImageGallerySection'
 
+export { TextFormEditor } from './components/text/TextFormEditor'
+export { IntroFormEditor } from './components/intro/IntroFormEditor'
+export { BulletsFormEditor } from './components/bullets/BulletsFormEditor'
+export { TaxonomyBrowserFormEditor } from './components/taxonomy-browser/TaxonomyBrowserFormEditor'
+
+
 export type {
   ProgressiveContentEvents,
   CategorySelected,

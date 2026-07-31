@@ -1,8 +1,8 @@
 import { useState, useCallback } from 'react'
 import { Plus, Trash2, HelpCircle, ArrowUp, ArrowDown, Layers, FileText, ShieldCheck, Tag } from 'lucide-react'
-import { TaxonomyHelpModal } from '../../../core/subdomains/progressive-content/components/taxonomy-browser/TaxonomyHelpModal'
-import type { OKFTaxonomySectionData } from '../../../core/okf/types'
-import type { TaxonomyCategory } from '../../../core/subdomains/progressive-content/components/taxonomy-browser'
+import { TaxonomyHelpModal } from './TaxonomyHelpModal'
+import type { OKFTaxonomySectionData } from '../../../../okf/types'
+import type { TaxonomyCategory } from '.'
 
 interface TaxonomyBrowserFormEditorProps {
   data: OKFTaxonomySectionData
