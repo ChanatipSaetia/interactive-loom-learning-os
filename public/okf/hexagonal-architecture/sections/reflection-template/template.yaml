@@ -1,0 +1,22 @@
+type: reflection-template
+challenges:
+  - id: "hexagonal-synthesis"
+    prompt: "Fill in the blank fields to complete the explanation of Hexagonal Architecture mechanics:"
+    template: "In Hexagonal Architecture, the core business logic resides inside the domain hexagon and depends only on {blank1}. External HTTP requests enter the system through {blank2}, which invoke {blank3}. Outbound infrastructure services like databases implement {blank4}, allowing unit tests to swap real databases with {blank5}."
+    chips:
+      - id: "blank1"
+        text: "Port interfaces"
+      - id: "blank2"
+        text: "Driving Adapters"
+      - id: "blank3"
+        text: "Driving Ports"
+      - id: "blank4"
+        text: "Driven Ports"
+      - id: "blank5"
+        text: "In-Memory Adapters"
+    solution:
+      blank1: "Port interfaces"
+      blank2: "Driving Adapters"
+      blank3: "Driving Ports"
+      blank4: "Driven Ports"
+      blank5: "In-Memory Adapters"

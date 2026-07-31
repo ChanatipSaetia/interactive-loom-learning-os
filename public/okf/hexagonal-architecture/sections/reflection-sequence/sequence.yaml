@@ -1,0 +1,21 @@
+type: reflection-sequence
+challenges:
+  - id: "hexagonal-flow"
+    prompt: "Arrange the execution steps of a Hexagonal Architecture request in correct chronological order from HTTP entry to Database persistence:"
+    items:
+      - id: "step-1"
+        text: "HTTP REST Controller (Driving Adapter) receives JSON request"
+      - id: "step-2"
+        text: "Driving Adapter invokes CreateOrderPort interface method"
+      - id: "step-3"
+        text: "Application Core instantiates and executes Order Aggregate logic"
+      - id: "step-4"
+        text: "Application Core calls OrderRepositoryPort (Driven Port) save interface"
+      - id: "step-5"
+        text: "PostgresOrderAdapter (Driven Adapter) converts entity to SQL and executes DB Insert"
+    solution:
+      - "step-1"
+      - "step-2"
+      - "step-3"
+      - "step-4"
+      - "step-5"

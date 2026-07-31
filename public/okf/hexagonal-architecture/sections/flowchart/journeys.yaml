@@ -1,0 +1,10 @@
+journeys:
+  - id: "happy-path"
+    title: "Complete Inbound → Domain → Outbound Request Cycle"
+    description: "Follows an HTTP order placement from Driving Controller through Ports into Domain Core and Postgres Driven Adapter."
+    steps:
+      - "step_checkout"
+      - "step_invoke_port"
+      - "step_domain_logic"
+      - "step_call_driven_port"
+      - "step_db_persist"

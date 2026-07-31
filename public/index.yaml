@@ -19,6 +19,13 @@
   path: /topics/haystack
   category: Architecture
   description: ''
+- id: hexagonal-architecture
+  label: hexagonal-architecture
+  path: /topics/hexagonal-architecture
+  category: Architecture
+  description: >-
+    Decouple core business domain logic from external dependencies, databases,
+    frameworks, and UI drivers using Hexagonal Architecture.
 - id: motorcycle
   label: motorcycle
   path: /topics/motorcycle

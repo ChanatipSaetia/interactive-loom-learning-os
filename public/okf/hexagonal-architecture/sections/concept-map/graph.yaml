@@ -1,0 +1,56 @@
+type: concept-map
+nodes:
+  actor:
+    id: "actor"
+    title: "External Actor / Client"
+    category: "External"
+  driving-adapter:
+    id: "driving-adapter"
+    title: "Driving Adapter (REST / CLI / gRPC)"
+    category: "Primary"
+  driving-port:
+    id: "driving-port"
+    title: "Driving Port (Inbound Interface)"
+    category: "Contract"
+  domain-service:
+    id: "domain-service"
+    title: "Domain Service / Application Core"
+    category: "Core"
+  aggregate:
+    id: "aggregate"
+    title: "Domain Aggregate / Entity"
+    category: "Core"
+  driven-port:
+    id: "driven-port"
+    title: "Driven Port (Outbound Interface)"
+    category: "Contract"
+  driven-adapter:
+    id: "driven-adapter"
+    title: "Driven Adapter (DB / HTTP / Queue)"
+    category: "Secondary"
+  infrastructure:
+    id: "infrastructure"
+    title: "External System / Database / Service"
+    category: "External"
+edges:
+  - from: "actor"
+    to: "driving-adapter"
+    label: "Triggers HTTP / Command"
+  - from: "driving-adapter"
+    to: "driving-port"
+    label: "Invokes DTO Method"
+  - from: "driving-port"
+    to: "domain-service"
+    label: "Implemented By"
+  - from: "domain-service"
+    to: "aggregate"
+    label: "Mutates & Enforces Business Rules"
+  - from: "domain-service"
+    to: "driven-port"
+    label: "Calls Dependency Interface"
+  - from: "driven-adapter"
+    to: "driven-port"
+    label: "Implements Interface"
+  - from: "driven-adapter"
+    to: "infrastructure"
+    label: "Executes SQL / API Call"

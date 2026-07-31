@@ -1,0 +1,4 @@
+actors:
+  - id: "customer"
+    label: "Online Customer"
+    role: "User"

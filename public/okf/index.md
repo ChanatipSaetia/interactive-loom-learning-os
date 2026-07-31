@@ -6,6 +6,8 @@ okf_version: "0.1"
 ## Architecture
 * [AI Agent Architecture (Demo)](demo/index.md) — Explore AI Agent system architecture with LLM, tools, and memory
 * [Haystack 2.x - AI Search Framework](haystack/index.md) — Build search and RAG applications with composable Haystack pipelines
+* [Hexagonal Architecture (Ports & Adapters)](hexagonal-architecture/index.md) — Isolate core business domain logic from external technologies, databases, frameworks, and UI drivers
+
 
 ## Gaming
 * [PoE 2 Flicker Strike Monk](poe2-flicker-monk/index.md) — Master the Flicker Strike + Falling Thunder Martial Artist Monk build in Path of Exile 2 patch 0.5
