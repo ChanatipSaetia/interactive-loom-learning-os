@@ -3,8 +3,7 @@ import fs from 'fs'
 import path from 'path'
 import { fileURLToPath } from 'url'
 import * as yaml from 'js-yaml'
-import { validateYAMLContent, validateSectionData, formatPayloadAsPrompt, type OKFValidationErrorPayload } from '../src/core/okf/validate.ts'
-import { tier2Validate } from '../src/core/validation/gateway.ts'
+import { validateOKFSection, validateOKFSectionFile, formatValidationAsPrompt, tier2Validate, type ValidationDiagnostic, type ValidationResult } from '../src/core/learning-engine/validation/gateway.ts'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 const ROOT = path.join(__dirname, '..')
@@ -32,8 +31,8 @@ function parseParagraphs(body: string): string[] {
     .filter(Boolean)
 }
 
-function loadAndCombineSectionData(folderPath: string, meta: Record<string, unknown>): { data: Record<string, unknown>; syntaxErrors: OKFValidationErrorPayload[] } {
-  const syntaxErrors: OKFValidationErrorPayload[] = []
+function loadAndCombineSectionData(folderPath: string, meta: Record<string, unknown>): { data: Record<string, unknown>; syntaxErrors: ValidationDiagnostic[] } {
+  const syntaxErrors: ValidationDiagnostic[] = []
   const sectionType = meta.type as string | undefined
   const resource = (meta.resource as string) || '.'
   const combined: Record<string, unknown> = { ...meta }
@@ -45,7 +44,6 @@ function loadAndCombineSectionData(folderPath: string, meta: Record<string, unkn
   const parsedFiles: Record<string, unknown> = {}
   for (const file of yamlFiles) {
     const filePath = path.join(folderPath, file)
-    const relPath = path.relative(ROOT, filePath)
     const content = fs.readFileSync(filePath, 'utf-8')
     try {
       const parsed = yaml.load(content)
@@ -55,8 +53,7 @@ function loadAndCombineSectionData(folderPath: string, meta: Record<string, unkn
       const lineMatch = message.match(/line\s+(\d+)/i)
       const colMatch = message.match(/column\s+(\d+)/i)
       syntaxErrors.push({
-        file: relPath,
-        tier: 'syntax',
+        tier: 1,
         line: lineMatch ? parseInt(lineMatch[1], 10) : undefined,
         column: colMatch ? parseInt(colMatch[1], 10) : undefined,
         message: `YAML Syntax Error in ${file}: ${message}`,
@@ -127,9 +124,9 @@ function loadAndCombineSectionData(folderPath: string, meta: Record<string, unkn
   return { data: combined, syntaxErrors }
 }
 
-function validateAll(): { totalFiles: number; errors: OKFValidationErrorPayload[] } {
+function validateAll(): { totalFiles: number; diagnostics: ValidationDiagnostic[] } {
   const topics = getTopics()
-  const errors: OKFValidationErrorPayload[] = []
+  const diagnostics: ValidationDiagnostic[] = []
   let totalFiles = 0
 
   for (const topicId of topics) {
@@ -144,106 +141,64 @@ function validateAll(): { totalFiles: number; errors: OKFValidationErrorPayload[
 
     for (const sectionFolder of sectionFolders) {
       const folderPath = path.join(sectionsPath, sectionFolder)
-      let sectionMeta: Record<string, unknown> = {}
-
-      // 1. Read metadata from section.md if present
       const sectionMdPath = path.join(folderPath, 'section.md')
       if (fs.existsSync(sectionMdPath)) {
         totalFiles++
         const rawMd = fs.readFileSync(sectionMdPath, 'utf-8')
-        const frontmatterMatch = rawMd.match(/^---\s*\n([\s\S]*?)\n---\s*\n?([\s\S]*)$/)
-        if (frontmatterMatch) {
-          try {
-            const parsedMeta = validateYAMLContent(frontmatterMatch[1], undefined, {
-              file: path.relative(ROOT, sectionMdPath),
-              topicId,
-              sectionName: sectionFolder,
-            })
-            if (parsedMeta.errors.length > 0) {
-              const syntaxFm = parsedMeta.errors.filter((e) => e.tier === 'syntax')
-              errors.push(...syntaxFm)
-            }
-            if (parsedMeta.data && typeof parsedMeta.data === 'object') {
-              sectionMeta = parsedMeta.data as Record<string, unknown>
-            }
-          } catch (e: any) {
-            errors.push({
-              file: path.relative(ROOT, sectionMdPath),
-              topicId,
-              sectionName: sectionFolder,
-              tier: 'syntax',
-              message: `YAML Frontmatter Error: ${e.message}`,
-            })
-          }
-        }
-      }
-
-      // 2. Load resource files & validate syntax
-      const { data: combinedData, syntaxErrors } = loadAndCombineSectionData(folderPath, sectionMeta)
-      errors.push(...syntaxErrors)
-
-      const sectionMetaType = combinedData.type as string | undefined
-
-      // 3. Validate Tier 2 (Schema) & Tier 3 (Semantic) on combined section object
-      if (sectionMetaType) {
-        // Run legacy rule checks
-        const legacyErrors = validateSectionData(
-          combinedData,
-          sectionMetaType,
-          {
-            file: path.relative(ROOT, folderPath),
-            topicId,
-            sectionName: sectionFolder,
-          }
-        )
-        errors.push(...legacyErrors)
-
-        // Run strict Zod 3-Tier Validation Gateway checks
         const context = {
-          file: path.relative(ROOT, folderPath),
+          file: path.relative(ROOT, sectionMdPath),
           topicId,
           sectionName: sectionFolder,
         }
-        const t2Res = tier2Validate(combinedData, sectionMetaType, context)
-        const t2Diagnostics: OKFValidationErrorPayload[] = t2Res.diagnostics.map((d) => ({
-          file: d.field ? `${context.file} [${d.field}]` : context.file,
-          topicId,
-          sectionName: sectionFolder,
-          tier: 'schema',
-          field: d.field,
-          message: d.message,
-          fixHint: d.fixHint,
-        }))
-        errors.push(...t2Diagnostics)
+
+        const match = rawMd.match(/^---\s*\n([\s\S]*?)\n---/)
+        let meta: Record<string, unknown> = {}
+        if (match) {
+          try {
+            meta = (yaml.load(match[1]) as Record<string, unknown>) || {}
+          } catch {}
+        }
+
+        const { data, syntaxErrors } = loadAndCombineSectionData(folderPath, meta)
+        diagnostics.push(...syntaxErrors)
+
+        const sectionType = (meta.type as string) || (data.type as string)
+        const res = validateOKFSection(data, sectionType, context)
+        diagnostics.push(...res.diagnostics)
       }
     }
   }
 
-  return { totalFiles, errors }
+  return { totalFiles, diagnostics }
 }
 
 function main() {
-  const { totalFiles, errors } = validateAll()
+  const { totalFiles, diagnostics } = validateAll()
 
   if (isJson) {
-    console.log(JSON.stringify(errors, null, 2))
+    console.log(JSON.stringify(diagnostics, null, 2))
   } else if (isPrompt) {
-    console.log(formatPayloadAsPrompt(errors))
+    const mockRes: ValidationResult<Record<string, unknown>> = {
+      status: diagnostics.length > 0 ? 'error' : 'valid',
+      payload: {},
+      diagnostics,
+    }
+    console.log(formatValidationAsPrompt(mockRes))
   } else {
     console.log(`\n🔍 OKF Comprehensive Section Validation Report`)
     console.log(`━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━`)
     console.log(`Scanned section directories: ${totalFiles}`)
 
-    if (errors.length === 0) {
-      console.log(`\n✅ All OKF section bundles and multi-file resources passed validation clean!`)
+    if (diagnostics.length === 0) {
+      console.log(`\n✅ All OKF section bundles passed validation clean!`)
     } else {
-      console.log(`\n❌ Found ${errors.length} validation error(s):\n`)
-      errors.forEach((err, idx) => {
-        console.log(`[${idx + 1}] ${err.tier.toUpperCase()} ERROR in ${err.file || err.sectionName}`)
-        if (err.field) console.log(`    Field:   ${err.field}`)
-        if (err.line) console.log(`    Line:    ${err.line}${err.column ? `:${err.column}` : ''}`)
-        console.log(`    Message: ${err.message}`)
-        if (err.fixHint) console.log(`    Hint:    ${err.fixHint}`)
+      console.log(`\n❌ Found ${diagnostics.length} validation diagnostic(s):\n`)
+      diagnostics.forEach((diag, idx) => {
+        const fileLabel = (diag as any).file ? ` [${(diag as any).file}]` : ''
+        console.log(`[${idx + 1}] TIER ${diag.tier}${fileLabel} ${diag.field ? `[${diag.field}]` : ''}`)
+        if (diag.line) console.log(`    Line:    ${diag.line}${diag.column ? `:${diag.column}` : ''}`)
+        console.log(`    Message: ${diag.message}`)
+        if (diag.fixHint) console.log(`    Hint:    ${diag.fixHint}`)
         console.log()
       })
       process.exit(1)

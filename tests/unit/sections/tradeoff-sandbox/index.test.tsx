@@ -1,12 +1,12 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest'
 import { render, screen, fireEvent } from '@testing-library/react'
-import { SectionRegistry } from '../../../../src/core/registry'
+import { SectionRegistry } from '../../../../src/core/learning-engine/registry'
 import TradeoffSandboxSection, {
   type TradeoffScenario,
   type TradeoffStep,
   type MetricDef,
   type TradeoffSandboxSectionProps,
-} from '../../../../src/core/subdomains/tradeoff-sandbox/components/tradeoff-sandbox'
+} from '../../../../src/core/learning-engine/sub-contexts/tradeoff-sandbox/components/tradeoff-sandbox'
 
 const mockMetrics: MetricDef[] = [
   { id: 'performance', label: 'Performance', baseValue: 50, min: 0, max: 100 },
@@ -673,8 +673,8 @@ describe('TradeoffSandbox Section', () => {
 
   it('does not self-register with SectionRegistry', async () => {
     vi.resetModules()
-    await import('../../../../src/core/subdomains/tradeoff-sandbox/components/tradeoff-sandbox')
-    const { SectionRegistry: Registry } = await import('../../../../src/core/registry')
+    await import('../../../../src/core/learning-engine/sub-contexts/tradeoff-sandbox/components/tradeoff-sandbox')
+    const { SectionRegistry: Registry } = await import('../../../../src/core/learning-engine/registry')
     expect(Registry.get('tradeoff-sandbox')).toBeUndefined()
   })
 

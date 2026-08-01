@@ -1,6 +1,6 @@
 import { render, screen } from '@testing-library/react'
 import { describe, it, expect } from 'vitest'
-import IntroSection from '../../../../src/core/subdomains/progressive-content/components/intro'
+import IntroSection from '../../../../src/core/learning-engine/sub-contexts/progressive-content/components/intro'
 
 describe('IntroSection', () => {
   it('renders hero title and subtitle', () => {

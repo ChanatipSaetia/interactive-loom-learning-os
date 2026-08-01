@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest'
 import { render, screen, fireEvent } from '@testing-library/react'
-import { ReflectionSequence } from '../../../../src/core/subdomains/reflection-synthesis/components/reflection-sequence'
-import { ReflectionTemplate } from '../../../../src/core/subdomains/reflection-synthesis/components/reflection-template'
+import { ReflectionSequence } from '../../../../src/core/learning-engine/sub-contexts/reflection-synthesis/components/reflection-sequence'
+import { ReflectionTemplate } from '../../../../src/core/learning-engine/sub-contexts/reflection-synthesis/components/reflection-template'
 
 describe('ReflectionSequence Multi-Scenario', () => {
   const challenges = [

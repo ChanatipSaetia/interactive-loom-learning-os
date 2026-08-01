@@ -1,6 +1,6 @@
 import { render, screen, fireEvent } from '@testing-library/react'
 import { describe, it, expect, vi } from 'vitest'
-import { TradeoffHelpModal } from '../../../../src/core/subdomains/tradeoff-sandbox/components/tradeoff-sandbox/TradeoffHelpModal'
+import { TradeoffHelpModal } from '../../../../src/core/learning-engine/sub-contexts/tradeoff-sandbox/components/tradeoff-sandbox/TradeoffHelpModal'
 
 describe('TradeoffHelpModal', () => {
   it('does not render when isOpen is false', () => {

@@ -12,15 +12,15 @@
  */
 import { Suspense, type ComponentType, type ReactNode } from 'react'
 import type { OKFStoragePort, OKFRuntimePort } from '../ports'
-import type { OKFSectionMeta, OKFSectionData, OKFBundled } from '../../okf/types'
-import type { SectionConfig } from '../../registry'
-import type { ValidationResult } from '../../validation/gateway'
-import { Registry } from '../../registry/generic-registry'
-import { loadOKFBundle } from '../../okf/reader'
-import { bundleToSections } from '../../okf/sections'
-import { validateOKFSection } from '../../validation/gateway'
-import { deriveSchema } from '../../subdomains/process-simulation/components/flowchart/abstract-flow/derive'
-import { SectionErrorBoundary } from '../../../components/common/SectionErrorBoundary'
+import type { OKFSectionMeta, OKFSectionData, OKFBundled } from '../../learning-engine/composition/okf/types'
+import type { SectionConfig } from '../../learning-engine/registry'
+import type { ValidationResult } from '../../learning-engine/validation/gateway'
+import { Registry } from '../../learning-engine/registry/generic-registry'
+import { loadOKFBundle } from '../../learning-engine/composition/okf/reader'
+import { bundleToSections } from '../../learning-engine/composition/okf/sections'
+import { validateOKFSection } from '../../learning-engine/validation/gateway'
+import { deriveSchema } from '../../learning-engine/sub-contexts/process-simulation/components/flowchart/abstract-flow/derive'
+import { SectionErrorBoundary } from '../../ui-system/primitives/SectionErrorBoundary'
 
 // ============================================================================
 // Eager Component Registry — populated at module load for standalone embeds

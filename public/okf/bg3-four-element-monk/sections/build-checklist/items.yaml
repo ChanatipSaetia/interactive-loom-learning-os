@@ -1,0 +1,43 @@
+- text: "Ability Scores — Prioritize Dexterity (17+), Constitution (14+), Wisdom (13+)"
+  children:
+    - text: "Dexterity drives AC, hit rate, and unarmed strike damage"
+    - text: "Constitution boosts HP and concentration saves"
+    - text: "Wisdom scales Ki pool and monk features"
+- text: "Core Subclass — Monk of the Four Elements (available at Monk 3)"
+  children:
+    - text: "Select Elemental Attunement for cantrip access"
+    - text: "Use Twin Elemental Wrath every combat"
+    - text: "Save Four Point Attack for bosses at Monk 11+"
+- text: "Essential Gear — Patient-0 Gauntlets (Act 2)"
+  children:
+    - text: "Amplifies unarmed strike damage significantly"
+    - text: "Synergizes with Ki spending for bonus effects"
+- text: "Essential Gear — Strix Cove Monk Cloak (Act 3)"
+  children:
+    - text: "Enables spellcasting outside of combat"
+    - text: "Grants monk features if multiclassing"
+- text: "Recommended Feats — Metamagic Adept"
+  children:
+    - text: "Twinned Spell doubles single-target spell targets"
+    - text: "Quickened Spell enables spell + attack same turn"
+    - text: "Available through feat or Sorcerer 2 multiclass"
+- text: "Recommended Feats — Elemental Attunement"
+  children:
+    - text: "Adds resistance to one element"
+    - text: "Increases damage for that same element"
+- text: "Recommended Feat — Resilient (Constitution)"
+  children:
+    - text: "Ensures concentration spell survival"
+    - text: "Critical for maintaining Conjure Flame and Call Lightning"
+- text: "Spell Priority — Conjure Flame (cantrip)"
+  children:
+    - text: "Persistent zone damage for area control"
+    - text: "Free at Monk 15 with Elemental Mastery"
+- text: "Spell Priority — Ice Knife (2nd level)"
+  children:
+    - text: "Two-part pierce + AoE burst damage"
+    - text: "Twinned Spell targets two enemies simultaneously"
+- text: "Spell Priority — Call Lightning (3rd level)"
+  children:
+    - text: "Sustained multi-round damage zone"
+    - text: "Bonus action lightning strikes each turn"

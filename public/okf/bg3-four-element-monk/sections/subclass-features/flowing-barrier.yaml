@@ -1,0 +1,17 @@
+type: taxonomy-category
+icon: Shield
+title: "Flowing Barrier"
+subtitle: "Monk Level 7"
+color: teal
+description: "Spend Ki to boost your Armor Class defensively."
+details: "As a bonus action, spend 1 or more Ki points to gain +1 AC per Ki spent until the start of your next turn. At Monk 7, this provides crucial survivability against high-damage enemies. Combine with high Dexterity for AC 20+ temporarily."
+analogy: "Hardening your body like a force field for one turn."
+primaryFocus: "Defensive Ki investment for survivability"
+inScope:
+  - "Scales with Ki invested (1 Ki = +1 AC)"
+  - "Bonus action to activate"
+  - "Lasts until start of next turn"
+  - "Stacks with Dexterity and monk AC"
+outOfScope:
+  - "Does not stack with itself (re-cast replaces)"
+  - "Not useful in turns where you need Ki for offense"

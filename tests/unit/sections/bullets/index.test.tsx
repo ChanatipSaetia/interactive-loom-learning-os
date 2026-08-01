@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeEach } from 'vitest'
 import { render, screen } from '@testing-library/react'
-import { SectionRegistry } from '../../../../src/core/registry'
-import BulletsSection, { type BulletItem } from '../../../../src/core/subdomains/progressive-content/components/bullets'
+import { SectionRegistry } from '../../../../src/core/learning-engine/registry'
+import BulletsSection, { type BulletItem } from '../../../../src/core/learning-engine/sub-contexts/progressive-content/components/bullets'
 
 const mockItems: BulletItem[] = [
   { text: 'First item' },
@@ -78,8 +78,8 @@ describe('Bullets Section', () => {
 
   it('does not self-register with SectionRegistry', async () => {
     vi.resetModules()
-    const mod = await import('../../../../src/core/subdomains/progressive-content/components/bullets')
-    const { SectionRegistry: Registry } = await import('../../../../src/core/registry')
+    const mod = await import('../../../../src/core/learning-engine/sub-contexts/progressive-content/components/bullets')
+    const { SectionRegistry: Registry } = await import('../../../../src/core/learning-engine/registry')
     expect(Registry.get('bullets')).toBeUndefined()
     void mod
   })

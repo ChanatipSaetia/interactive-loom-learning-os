@@ -12,13 +12,13 @@ import {
   type InputHTMLAttributes,
   type ReactNode,
 } from 'react'
-import { cn } from '../../lib/utils'
+import { cn } from './utils'
 
 // ---------------------------------------------------------------------------
 // Button — re-export from existing motion component
 // ---------------------------------------------------------------------------
 
-import { Button } from '../../components/motion/button'
+import { Button } from './motion/button'
 
 export {
   Button,
@@ -30,7 +30,7 @@ export {
   type StatefulButtonProps,
   type ButtonState,
   type MagneticButtonProps,
-} from '../../components/motion/button'
+} from './motion/button'
 
 // ---------------------------------------------------------------------------
 // Card

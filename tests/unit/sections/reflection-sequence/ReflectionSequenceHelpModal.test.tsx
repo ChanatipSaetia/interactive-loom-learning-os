@@ -1,6 +1,6 @@
 import { render, screen, fireEvent } from '@testing-library/react'
 import { describe, it, expect, vi } from 'vitest'
-import { ReflectionSequenceHelpModal } from '../../../../src/core/subdomains/reflection-synthesis/components/reflection-sequence/ReflectionSequenceHelpModal'
+import { ReflectionSequenceHelpModal } from '../../../../src/core/learning-engine/sub-contexts/reflection-synthesis/components/reflection-sequence/ReflectionSequenceHelpModal'
 
 describe('ReflectionSequenceHelpModal', () => {
   it('does not render when isOpen is false', () => {

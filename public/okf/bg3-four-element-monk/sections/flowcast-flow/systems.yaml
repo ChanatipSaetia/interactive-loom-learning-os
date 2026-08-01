@@ -1,0 +1,36 @@
+ki_pool:
+  title: "Ki Pool"
+  desc: "Monk resource that fuels all abilities"
+  type: "aggregate"
+elemental_engine:
+  title: "Elemental Attunement"
+  desc: "Spell casting system from four schools"
+  type: "aggregate"
+unarmed_combat:
+  title: "Unarmed Combat"
+  desc: "Martial strike damage system"
+  type: "aggregate"
+defense_system:
+  title: "Monk Defense"
+  desc: "Flowing Barrier and Patient Defense"
+  type: "aggregate"
+twisted_wrath_handler:
+  title: "Twin Elemental Wrath"
+  desc: "Elemental infusion for unarmed strikes"
+  type: "aggregate"
+  collapsedTo: "elemental_engine"
+four_point_handler:
+  title: "Four Point Attack"
+  desc: "Ultimate four-elemental strike combo"
+  type: "aggregate"
+  collapsedTo: "elemental_engine"
+ki_pool_spend:
+  title: "Ki Pool"
+  desc: "Ki consumption for abilities"
+  type: "aggregate"
+  collapsedTo: "ki_pool"
+ki_pool_defense:
+  title: "Ki Pool"
+  desc: "Ki consumption for defense"
+  type: "aggregate"
+  collapsedTo: "ki_pool"

@@ -6,17 +6,6 @@
  */
 
 import type { Variants } from 'motion/react'
-export {
-  EASE_OUT,
-  EASE_IN_OUT,
-  EASE_DRAWER,
-  SPRING_PRESS,
-  SPRING_SWAP,
-  SPRING_PANEL,
-  SPRING_LAYOUT,
-  SPRING_MOUSE,
-} from '../../lib/ease'
-
 import {
   EASE_OUT,
   EASE_IN_OUT,
@@ -26,7 +15,20 @@ import {
   SPRING_PANEL,
   SPRING_LAYOUT,
   SPRING_MOUSE,
-} from '../../lib/ease'
+} from './motion/ease'
+
+export {
+  EASE_OUT,
+  EASE_IN_OUT,
+  EASE_DRAWER,
+  SPRING_PRESS,
+  SPRING_SWAP,
+  SPRING_PANEL,
+  SPRING_LAYOUT,
+  SPRING_MOUSE,
+}
+
+
 
 // ---------------------------------------------------------------------------
 // Sound types

@@ -1,9 +1,9 @@
 import { describe, it, expect } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
-import { StateMachineWidget } from '../../../../../src/core/subdomains/process-simulation/components/flowchart/inspector/state-machine-widget';
-import { JsonPayloadViewer } from '../../../../../src/core/subdomains/process-simulation/components/flowchart/inspector/json-payload-viewer';
-import { InspectorSidebar } from '../../../../../src/core/subdomains/process-simulation/components/flowchart/inspector';
-import type { FlowchartEntity, UnifiedFlowchartSchema } from '../../../../../src/core/subdomains/process-simulation/components/flowchart';
+import { StateMachineWidget } from '../../../../../src/core/learning-engine/sub-contexts/process-simulation/components/flowchart/inspector/state-machine-widget';
+import { JsonPayloadViewer } from '../../../../../src/core/learning-engine/sub-contexts/process-simulation/components/flowchart/inspector/json-payload-viewer';
+import { InspectorSidebar } from '../../../../../src/core/learning-engine/sub-contexts/process-simulation/components/flowchart/inspector';
+import type { FlowchartEntity, UnifiedFlowchartSchema } from '../../../../../src/core/learning-engine/sub-contexts/process-simulation/components/flowchart';
 
 const mockStateMachine = {
   states: [

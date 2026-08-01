@@ -24,7 +24,7 @@ function okfSavePlugin(): Plugin {
 
               // Validate before disk write — use createRequire to bypass esbuild static analysis
               const require = createRequire(import.meta.url)
-              const { validateOKFSectionFile } = require('./src/core/validation/gateway.ts')
+              const { validateOKFSectionFile } = require('./src/core/learning-engine/validation/gateway.ts')
               const payloadToValidate = (typeof dataYaml === 'string' && dataYaml.trim())
                 ? dataYaml
                 : sectionMd

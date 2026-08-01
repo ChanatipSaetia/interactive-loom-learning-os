@@ -7,8 +7,8 @@
  * section loading logic.
  */
 import type { OKFStoragePort } from '../ports'
-import type { OKFBundledSection, OKFSectionMeta, OKFSectionData } from '../../okf/types'
-import { loadOKFBundle, clearOKFCache } from '../../okf/reader'
+import type { OKFBundledSection, OKFSectionMeta, OKFSectionData } from '../../learning-engine/composition/okf/types'
+import { loadOKFBundle, clearOKFCache } from '../../learning-engine/composition/okf/reader'
 import * as yaml from 'js-yaml'
 
 function getOkfBase(): string {

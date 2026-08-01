@@ -1,24 +1,25 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { WebAppRuntimeAdapter } from '../../../../../src/core/delivery/adapters/web-app-runtime'
-import type { OKFBundled } from '../../../../../src/core/okf/types'
+import type { OKFBundled } from '../../../../../src/core/learning-engine/composition/okf/types'
 
-vi.mock('../../../../../src/core/okf/reader', () => ({
+vi.mock('../../../../../src/core/learning-engine/composition/okf/reader', () => ({
   loadOKFBundle: vi.fn(),
 }))
 
-vi.mock('../../../../../src/core/registry', () => ({
+vi.mock('../../../../../src/core/learning-engine/registry', () => ({
   SectionRegistry: {
     get: vi.fn(),
   },
 }))
 
-vi.mock('../../../../../src/core/validation/gateway', () => ({
+vi.mock('../../../../../src/core/learning-engine/validation/gateway', () => ({
   validateOKFSection: vi.fn(),
 }))
 
-import { loadOKFBundle } from '../../../../../src/core/okf/reader'
-import { SectionRegistry } from '../../../../../src/core/registry'
-import { validateOKFSection } from '../../../../../src/core/validation/gateway'
+import { loadOKFBundle } from '../../../../../src/core/learning-engine/composition/okf/reader'
+import { SectionRegistry } from '../../../../../src/core/learning-engine/registry'
+import { validateOKFSection } from '../../../../../src/core/learning-engine/validation/gateway'
 
 describe('WebAppRuntimeAdapter', () => {
   let adapter: WebAppRuntimeAdapter

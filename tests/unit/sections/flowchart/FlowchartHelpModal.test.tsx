@@ -1,6 +1,6 @@
 import { render, screen, fireEvent } from '@testing-library/react'
 import { describe, it, expect, vi } from 'vitest'
-import { FlowchartHelpModal } from '../../../../src/core/subdomains/process-simulation/components/flowchart/FlowchartHelpModal'
+import { FlowchartHelpModal } from '../../../../src/core/learning-engine/sub-contexts/process-simulation/components/flowchart/FlowchartHelpModal'
 
 describe('FlowchartHelpModal', () => {
   it('does not render when isOpen is false', () => {

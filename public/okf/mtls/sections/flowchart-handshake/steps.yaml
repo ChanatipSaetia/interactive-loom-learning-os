@@ -37,6 +37,7 @@
   policy: "Require Mutual Auth"
   command: "Request Client Certificate"
   handledBy: server_req_cert
+  delegatesTo: server_admin
   resultEvents:
     - id: client_cert_requested
       title: "Client Certificate Requested"
@@ -48,6 +49,7 @@
   policy: "On CertificateRequest"
   command: "Send Client Certificate"
   handledBy: client_cert
+  delegatesTo: key_store
   resultEvents:
     - id: client_cert_sent
       title: "Client Certificate Sent"
@@ -63,6 +65,7 @@
       policy: "Validate Client Identity"
       command: "Verify Client Certificate Against Trusted CA"
       handledBy: server_verify
+      delegatesTo: ca_service
       resultEvents:
         - id: client_cert_verified
           title: "Client Certificate Verified"

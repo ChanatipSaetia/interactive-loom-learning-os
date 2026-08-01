@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest'
 import { render, screen, fireEvent } from '@testing-library/react'
-import FormulaSandbox from '../../../../src/core/subdomains/tradeoff-sandbox/components/formula-sandbox'
-import { HUDProvider } from '../../../../src/core/context/HUDContext'
+import FormulaSandbox from '../../../../src/core/learning-engine/sub-contexts/tradeoff-sandbox/components/formula-sandbox'
+import { HUDProvider } from '../../../../src/core/learning-engine/composition/context/HUDContext'
 
 describe('FormulaSandbox Component', () => {
   const variables = [

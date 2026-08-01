@@ -107,3 +107,22 @@ A flowchart should contain one or more journeys (`journeys.yaml`) that serve as 
 - Each journey must follow **exactly one branch path** from start to finish. Never jump between parallel branches.
 - Include a **Happy Path** journey as the baseline progression.
 - Create secondary journeys for error loops, exceptions, or alternative execution flows.
+
+---
+
+## 6. Flowchart Validation & Connectivity Rules (Tier 3)
+
+All flowchart diagrams are automatically validated via the **3-Tier Validation Gateway** (`src/core/learning-engine/validation/gateway.ts`).
+
+### Tier 3 Semantic Reference Integrity Rules for Flowcharts:
+1. **Actor & System Node Event Connectivity**:
+   - Every `Actor` (User) and `System` (`Aggregate`, `External API`, `Service`, `Database`, `Core System`) node declared in `actors.yaml` or `systems.yaml` (or `entities`) **MUST be connected to at least one Event node** in the flowchart relation graph.
+   - Connected paths are formed via `initiatedBy` (Actor → Policy), `handledBy` (Command → System → Event), and `delegatesTo` (System → Secondary System/Actor/Target).
+   - Duplicate system nodes created via `collapsedTo` are linked back to their canonical system entity. If either the canonical node or any duplicate with `collapsedTo: canonicalId` connects to an Event node, the system is considered connected.
+   - Unconnected nodes emit a Tier 3 warning diagnostic (`Actor/System node "X" is not connected to any Event node`).
+
+2. **Step Link Reference Integrity (`continuesAs`)**:
+   - Every `continuesAs` property in a linear step or branch option must target a valid step ID or branch option ID.
+   - When `continuesAs` targets a linear step or branch option ID, the relation connects to `pol_${stepId}`.
+   - When `continuesAs` targets a branch step ID, the relation connects to the branch step's event `evt_${branchStep.event}`, cleanly linking the process flow into the branch's event trigger.
+

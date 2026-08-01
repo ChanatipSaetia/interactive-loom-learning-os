@@ -12,6 +12,7 @@ okf_version: "0.1"
 ## Gaming
 * [PoE 2 Flicker Strike Monk](poe2-flicker-monk/index.md) — Master the Flicker Strike + Falling Thunder Martial Artist Monk build in Path of Exile 2 patch 0.5
 * [PoE 2 Witchhunter Poison + Bleed](poe2-witchhunter-poison-bleed/index.md) — Dual DoT Mercenary build combining Poison and Bleed ailments in Path of Exile 2 v0.5
+* [BG3 Four Element Monk](bg3-four-element-monk/index.md) — Monk of the Four Elements build combining martial abilities with elemental spellcasting in Baldur's Gate 3
 
 ## Language
 * [ภาษาจีนเบื้องต้น (Day 1) — Chinese 101](chinese101-day1/index.md) — เริ่มเรียนภาษาจีนด้วยคำทักทาย ตัวเลข และประโยคพื้นฐาน

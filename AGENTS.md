@@ -43,7 +43,7 @@ When refactoring or extending core sections, follow the Strategic & Tactical DDD
 2. **3-Tier Validation Gateway (`src/core/validation/gateway.ts`):**
    * Tier 1 (Syntax): YAML syntax & frontmatter parsing.
    * Tier 2 (Structural Schema): Zod schema verification delegated to subdomain `SectionSchema`.
-   * Tier 3 (Semantic Reference Integrity): Cross-reference validation (step links, quiz option bounds, node IDs).
+   * Tier 3 (Semantic Reference Integrity): Cross-reference validation (step links, quiz option bounds, node IDs, and actor/system node connectivity to event nodes).
    * *Rule:* Return standardized `ValidationResult` payloads containing `status`, `payload` (`lastValidData` for non-blocking preview fallbacks), and `diagnostics` with `fixHint` annotations.
 
 3. **Hexagonal Delivery Ports & Adapters (`src/core/delivery/`):**
@@ -69,6 +69,7 @@ When creating a new topic, adding a lesson, or editing a `UnifiedFlowchartSchema
 [docs/creating-topics.md](docs/creating-topics.md). In particular, the **Event Storming Node and Relation Conventions** section is authoritative for schema structure:
 
 - Each step follows the full cycle `EVENT → POLICY → COMMAND → AGGREGATE/EXTERNAL (handledBy) → EVENT` — never jump `EVENT → AGGREGATE` directly.
+- Every `Actor` (User) and `System` (`Aggregate`/`External`) node declared in `actors.yaml` or `systems.yaml` **must be connected to at least one Event node** in the flowchart graph (via `initiatedBy`, `handledBy`, `delegatesTo`, or relation chains).
 - Duplicate any `AGGREGATE`/`EXTERNAL`/`USER` that participates in multiple steps, and map each duplicate back to the canonical node with `collapsedTo`, so the `handledBy` chain is complete. See the `motorcycle` (`engine`/`engine2`/`engine3`/`engine4`) and `demo` (`orch_*_ref`, `llm_final`, `dev_user_feedback`) topics for reference.
 - Point each `handledBy` relation at the per-step duplicate, not the canonical node.
 

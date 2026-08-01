@@ -1,0 +1,89 @@
+- type: linear
+  id: step_1
+  initiatedBy: player
+  command: "Enter Combat Encounter"
+  policy: "Combat Begins"
+  handledBy: ki_pool_spend
+  resultEvents:
+    - id: evt_combat_start
+      title: "Combat Started"
+  continuesAs: step_opening
+
+- type: branch
+  id: step_opening
+  event: evt_combat_start
+  branches:
+    - id: branch_offense
+      label: "Offensive Opening"
+      policy: "If Enemy Within Range"
+      command: "Cast Twin Elemental Wrath"
+      handledBy: twisted_wrath_handler
+      delegatesTo: enemy
+      resultEvents:
+        - id: evt_wrath_active
+          title: "Elemental Strikes Active"
+      continuesAs: step_attack_loop
+    - id: branch_spell
+      label: "Spell Opening"
+      policy: "If Enemy At Range"
+      command: "Cast Elemental Spell"
+      handledBy: elemental_engine
+      resultEvents:
+        - id: evt_spell_cast
+          title: "Spell Damage Dealt"
+    - id: branch_defense
+      label: "Defensive Opening"
+      policy: "If Low HP or High Threat"
+      command: "Activate Flowing Barrier"
+      handledBy: ki_pool_defense
+      resultEvents:
+        - id: evt_barrier_up
+          title: "AC Boosted"
+
+- type: linear
+  id: step_attack_loop
+  initiatedBy: evt_wrath_active
+  command: "Make Unarmed Strikes"
+  policy: "While Wrath Active"
+  handledBy: unarmed_combat
+  resultEvents:
+    - id: evt_damage_dealt
+      title: "Elemental Damage Applied"
+  continuesAs: step_ki_check
+
+- type: branch
+  id: step_ki_check
+  event: evt_damage_dealt
+  branches:
+    - id: branch_four_point
+      label: "Boss Fight — Full Nuke"
+      policy: "If 4 Ki Available and Boss Present"
+      command: "Execute Four Point Attack"
+      handledBy: four_point_handler
+      resultEvents:
+        - id: evt_four_point
+          title: "Four Elemental Strikes Land"
+    - id: branch_sustain
+      label: "Sustain Combat"
+      policy: "If Ki Above Threshold"
+      command: "Continue Twin Elemental Wrath Loop"
+      handledBy: twisted_wrath_handler
+      resultEvents:
+        - id: evt_loop
+          title: "Combat Continues"
+    - id: branch_defensive
+      label: "Defensive Pivot"
+      policy: "If Ki Low or HP Critical"
+      command: "Use Patient Defense or Empty Body"
+      handledBy: defense_system
+      resultEvents:
+        - id: evt_defensive
+          title: "Defensive Position Secured"
+    - id: branch_short_rest
+      label: "End Combat — Short Rest"
+      policy: "If Combat Ends"
+      command: "Short Rest to Recover Ki"
+      handledBy: ki_pool_spend
+      resultEvents:
+        - id: evt_ki_restored
+          title: "Ki Pool Refreshed"

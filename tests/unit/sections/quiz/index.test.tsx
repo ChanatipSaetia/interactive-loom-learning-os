@@ -1,8 +1,8 @@
 import { describe, it, expect, beforeEach } from 'vitest'
 import { render, screen, fireEvent } from '@testing-library/react'
-import { SectionRegistry } from '../../../../src/core/registry'
-import QuizSection from '../../../../src/core/subdomains/practice-assessment/components/quiz'
-import type { OKFQuizQuestion } from '../../../../src/core/okf/types'
+import { SectionRegistry } from '../../../../src/core/learning-engine/registry'
+import QuizSection from '../../../../src/core/learning-engine/sub-contexts/practice-assessment/components/quiz'
+import type { OKFQuizQuestion } from '../../../../src/core/learning-engine/composition/okf/types'
 
 const mockQuestions: OKFQuizQuestion[] = [
   {
@@ -238,8 +238,8 @@ describe('Quiz Section', () => {
 
   it('does not self-register with SectionRegistry', async () => {
     vi.resetModules()
-    const mod = await import('../../../../src/core/subdomains/practice-assessment/components/quiz')
-    const { SectionRegistry: Registry } = await import('../../../../src/core/registry')
+    const mod = await import('../../../../src/core/learning-engine/sub-contexts/practice-assessment/components/quiz')
+    const { SectionRegistry: Registry } = await import('../../../../src/core/learning-engine/registry')
     expect(Registry.get('quiz')).toBeUndefined()
     void mod
   })

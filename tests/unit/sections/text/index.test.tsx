@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeEach } from 'vitest'
 import { render, screen } from '@testing-library/react'
-import { SectionRegistry } from '../../../../src/core/registry'
-import TextSection from '../../../../src/core/subdomains/progressive-content/components/text'
+import { SectionRegistry } from '../../../../src/core/learning-engine/registry'
+import TextSection from '../../../../src/core/learning-engine/sub-contexts/progressive-content/components/text'
 
 describe('Text Section', () => {
   beforeEach(() => {
@@ -69,8 +69,8 @@ describe('Text Section', () => {
 
   it('does not self-register with SectionRegistry', async () => {
     vi.resetModules()
-    const mod = await import('../../../../src/core/subdomains/progressive-content/components/text')
-    const { SectionRegistry: Registry } = await import('../../../../src/core/registry')
+    const mod = await import('../../../../src/core/learning-engine/sub-contexts/progressive-content/components/text')
+    const { SectionRegistry: Registry } = await import('../../../../src/core/learning-engine/registry')
     expect(Registry.get('text')).toBeUndefined()
     void mod
   })

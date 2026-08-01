@@ -1,0 +1,17 @@
+type: taxonomy-category
+icon: Zap
+title: "Four Point Attack"
+subtitle: "Monk Level 11"
+color: sky
+description: "Spend 4 Ki for four guaranteed elemental strikes, one per element."
+details: "Each of four unarmed strikes automatically hits and deals 1d6 of a different elemental damage (Fire, Cold, Lightning, Acid). Cannot miss. Each strike can target a different enemy within reach. This is the build's ultimate ability, consuming your entire Ki pool at most levels."
+analogy: "A four-elemental combo that guarantees hits regardless of AC."
+primaryFocus: "Maximum guaranteed burst damage"
+inScope:
+  - "Four separate strike instances"
+  - "Each can target a different enemy"
+  - "Bypasses AC — always hits"
+  - "Triggers elemental vulnerability on targets"
+outOfScope:
+  - "Cannot be used if you have fewer than 4 Ki"
+  - "Only works at close range"

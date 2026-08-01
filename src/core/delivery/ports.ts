@@ -14,9 +14,9 @@
  */
 
 import type { ReactNode } from 'react'
-import type { OKFSectionMeta, OKFSectionData, OKFBundled } from '../okf/types'
-import type { SectionConfig } from '../registry'
-import type { ValidationResult } from '../validation/gateway'
+import type { OKFSectionMeta, OKFSectionData, OKFBundled } from '../learning-engine/composition/okf/types'
+import type { SectionConfig } from '../learning-engine/registry'
+import type { ValidationResult } from '../learning-engine/validation/gateway'
 
 // ============================================================================
 // Storage Port — read/write/list of OKF section files

@@ -1,0 +1,6 @@
+player:
+  title: "Player (Monk)"
+  desc: "Controls the Four Element Monk"
+enemy:
+  title: "Enemy"
+  desc: "Target of attacks and spells"

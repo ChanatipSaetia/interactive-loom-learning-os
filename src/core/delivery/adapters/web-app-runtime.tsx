@@ -9,12 +9,12 @@
  */
 import type { ReactNode } from 'react'
 import type { OKFRuntimePort } from '../ports'
-import type { OKFSectionData, OKFBundled } from '../../okf/types'
-import type { SectionConfig } from '../../registry'
-import type { ValidationResult } from '../../validation/gateway'
-import { SectionRegistry } from '../../registry'
-import { loadOKFBundle } from '../../okf/reader'
-import { validateOKFSection } from '../../validation/gateway'
+import type { OKFSectionData, OKFBundled } from '../../learning-engine/composition/okf/types'
+import type { SectionConfig } from '../../learning-engine/registry'
+import type { ValidationResult } from '../../learning-engine/validation/gateway'
+import { SectionRegistry } from '../../learning-engine/registry'
+import { loadOKFBundle } from '../../learning-engine/composition/okf/reader'
+import { validateOKFSection } from '../../learning-engine/validation/gateway'
 
 function renderSectionElement(config: SectionConfig): ReactNode {
   const Component = SectionRegistry.get(config.type)

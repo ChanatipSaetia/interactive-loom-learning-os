@@ -1,6 +1,6 @@
 import { render, screen, fireEvent } from '@testing-library/react'
 import { describe, it, expect, vi } from 'vitest'
-import { IntroHelpModal } from '../../../../src/core/subdomains/progressive-content/components/intro/IntroHelpModal'
+import { IntroHelpModal } from '../../../../src/core/learning-engine/sub-contexts/progressive-content/components/intro/IntroHelpModal'
 
 describe('IntroHelpModal', () => {
   it('does not render when isOpen is false', () => {

@@ -1,6 +1,6 @@
 import { render, screen, fireEvent } from '@testing-library/react'
 import { describe, it, expect, vi } from 'vitest'
-import { TaxonomyHelpModal } from '../../../../src/core/subdomains/progressive-content/components/taxonomy-browser/TaxonomyHelpModal'
+import { TaxonomyHelpModal } from '../../../../src/core/learning-engine/sub-contexts/progressive-content/components/taxonomy-browser/TaxonomyHelpModal'
 
 describe('TaxonomyHelpModal', () => {
   it('does not render when isOpen is false', () => {

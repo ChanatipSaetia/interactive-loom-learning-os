@@ -6,29 +6,29 @@ import {
   clearEmbedRegistry,
 } from '../../../../../src/core/delivery/adapters/single-html-embed'
 
-vi.mock('../../../../../src/core/okf/reader', () => ({
+vi.mock('../../../../../src/core/learning-engine/composition/okf/reader', () => ({
   loadOKFBundle: vi.fn(),
 }))
 
-vi.mock('../../../../../src/core/okf/sections', () => ({
+vi.mock('../../../../../src/core/learning-engine/composition/okf/sections', () => ({
   bundleToSections: vi.fn(),
 }))
 
-vi.mock('../../../../../src/core/validation/gateway', () => ({
+vi.mock('../../../../../src/core/learning-engine/validation/gateway', () => ({
   validateOKFSection: vi.fn(),
 }))
 
-vi.mock('../../../../../../src/core/subdomains/process-simulation/components/flowchart/abstract-flow/derive', () => ({
+vi.mock('../../../../../src/core/learning-engine/sub-contexts/process-simulation/components/flowchart/abstract-flow/derive', () => ({
   deriveSchema: vi.fn((input) => ({ ...input, entities: {}, relations: [] })),
 }))
 
-vi.mock('../../../../../src/components/common/SectionErrorBoundary', () => ({
+vi.mock('../../../../../src/core/ui-system/primitives/SectionErrorBoundary', () => ({
   SectionErrorBoundary: ({ children }: { children: React.ReactNode }) => children,
 }))
 
-import { loadOKFBundle } from '../../../../../src/core/okf/reader'
-import { bundleToSections } from '../../../../../src/core/okf/sections'
-import { validateOKFSection } from '../../../../../src/core/validation/gateway'
+import { loadOKFBundle } from '../../../../../src/core/learning-engine/composition/okf/reader'
+import { bundleToSections } from '../../../../../src/core/learning-engine/composition/okf/sections'
+import { validateOKFSection } from '../../../../../src/core/learning-engine/validation/gateway'
 
 describe('SingleHTMLEmbedAdapter', () => {
   let adapter: SingleHTMLEmbedAdapter

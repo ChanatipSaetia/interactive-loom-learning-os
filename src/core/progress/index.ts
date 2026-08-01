@@ -1,1 +1,1 @@
-export * from '../subdomains/supporting/learner-progress'
+export * from '../supporting/learner-progress'

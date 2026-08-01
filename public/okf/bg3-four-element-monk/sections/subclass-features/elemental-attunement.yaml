@@ -1,0 +1,16 @@
+type: taxonomy-category
+icon: Flame
+title: "Elemental Attunement"
+subtitle: "Monk Level 3"
+color: red
+description: "Gain one cantrip from each elemental school: Fire, Cold, Lightning, and Acid."
+details: "Starting cantrips: Produce Flame (Fire), Ray of Frost (Cold), Shocking Grasp (Lightning), Acid Splash (Acid). At Monk 11, you can change each cantrip to another option from the same school on a Long Rest. Cantrips scale with character level, not Monk level."
+analogy: "Like having four elemental toolkits you can swap between."
+primaryFocus: "Baseline spellcasting access without spell slots"
+inScope:
+  - "Produce Flame / Burning Hands (Fire)"
+  - "Ray of Frost / Cone of Cold (Cold at 11)"
+  - "Shocking Grasp / Lightning Bolt (Lightning at 11)"
+  - "Acid Splash / Chromatic Orb (Acid at 11)"
+outOfScope:
+  - "Non-elemental cantrips like Mage Hand"

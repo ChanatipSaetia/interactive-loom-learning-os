@@ -1,0 +1,16 @@
+type: taxonomy-category
+icon: Flame
+title: "Fire Spells"
+subtitle: "Pyromancy"
+color: red
+description: "Fire spells excel at sustained AoE damage and area denial."
+details: "Conjure Flame is your primary fire spell — it creates a persistent damage zone that enemies walk through. Burning Hands is a close-range cone blast. At higher levels, Fireball and Wall of Fire become available through spell upgrades."
+analogy: "Setting the battlefield on fire and watching enemies cook."
+primaryFocus: "Area denial and sustained damage over time"
+inScope:
+  - "Conjure Flame (cantrip — persistent zone damage)"
+  - "Burning Hands (1st level — cone burst)"
+  - "Fireball (3rd level — massive AoE)"
+  - "Wall of Fire (4th level — line barrier)"
+outOfScope:
+  - "Non-damaging fire spells like Produce Flame light"

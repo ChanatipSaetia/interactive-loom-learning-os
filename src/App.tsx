@@ -1,11 +1,11 @@
 import { Routes, Route } from 'react-router-dom'
-import { TopNav } from './components/layout/TopNav'
-import { OverviewPage } from './core/subdomains/supporting/catalog-discovery'
-import { TopicShell } from './components/layout/TopicShell'
-import { ScrollProgress } from './components/motion/scroll-progress'
-import { SmoothScroll } from './components/motion/smooth-scroll'
-import { EditorProvider } from './core/context/EditorContext'
-import { TopicsProvider } from './core/routes'
+import { TopNav } from './core/delivery/web-app-shell/TopNav'
+import { OverviewPage } from './core/supporting/catalog-discovery'
+import { TopicShell } from './core/delivery/web-app-shell/TopicShell'
+import { ScrollProgress } from './core/ui-system/motion/scroll-progress'
+import { SmoothScroll } from './core/ui-system/motion/smooth-scroll'
+import { EditorProvider } from './core/learning-engine/composition/context/EditorContext'
+import { TopicsProvider } from './core/learning-engine/composition/routes'
 import { UISystemProvider } from './core/ui-system'
 
 export function App() {

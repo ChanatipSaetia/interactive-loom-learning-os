@@ -1,0 +1,33 @@
+# App metadata for bg3-four-element-monk topic bundle
+category: Gaming
+tags:
+  - baldurs-gate-3
+  - bg3
+  - monk
+  - four-elements
+  - spellcaster
+  - build-guide
+related:
+  - sections/concept-map/concepts.yaml
+  - sections/flashcards/glossary.yaml
+  - sections/subclass-features/elemental-attunement.yaml
+  - sections/subclass-features/twin-elemental-wrath.yaml
+  - sections/subclass-features/four-point-attack.yaml
+  - sections/subclass-features/flowing-barrier.yaml
+  - sections/subclass-features/elemental-mastery.yaml
+  - sections/subclass-features/empty-body.yaml
+  - sections/elemental-spells/fire-spells.yaml
+  - sections/elemental-spells/cold-spells.yaml
+  - sections/elemental-spells/lightning-spells.yaml
+  - sections/elemental-spells/acid-spells.yaml
+  - sections/flowcast-flow/actors.yaml
+  - sections/flowcast-flow/systems.yaml
+  - sections/flowcast-flow/steps.yaml
+  - sections/flowcast-flow/journeys.yaml
+  - sections/level-progression/sequence.yaml
+  - sections/build-checklist/items.yaml
+  - sections/quiz/questions.yaml
+  - sections/tradeoffs/pure-monk.yaml
+  - sections/tradeoffs/multiclass-sorcerer.yaml
+  - sections/scenario/scenarios.yaml
+  - sections/decision-tree/tree.yaml

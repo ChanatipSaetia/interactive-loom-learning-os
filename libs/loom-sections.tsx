@@ -1,58 +1,59 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { createRoot, type Root } from 'react-dom/client'
 import { useMemo, useEffect, type ComponentType } from 'react'
-import type { SectionConfig } from '../src/core/registry'
-import { bundleToSections } from '../src/core/okf/sections'
-import { HUDProvider, useHUD } from '../src/core/context/HUDContext'
-import { ProgressProvider } from '../src/core/subdomains/supporting/learner-progress'
-import { EditorProvider, useEditor, useEditorSafe } from '../src/core/context/EditorContext'
-import { EditSectionToggle } from '../src/components/layout/EditSectionToggle'
-import { SplitPaneLayout } from '../src/components/layout/SplitPaneLayout'
-import { EditorPanel, useSectionEditorBuffer } from '../src/core/subdomains/supporting/authoring-editor'
-import { ToastProvider, useToast } from '../src/components/ui/Toast'
-import { SoundProvider } from '../src/context/SoundContext'
-import { AudioToggle } from '../src/components/layout/AudioToggle'
-import { ThemeToggle } from '../src/components/motion/theme-toggle'
+import type { SectionConfig } from '../src/core/learning-engine/registry'
+import { bundleToSections } from '../src/core/learning-engine/composition/okf/sections'
+import { HUDProvider, useHUD } from '../src/core/learning-engine/composition/context/HUDContext'
+import { ProgressProvider } from '../src/core/supporting/learner-progress'
+import { EditorProvider, useEditor, useEditorSafe } from '../src/core/learning-engine/composition/context/EditorContext'
+import { EditSectionToggle } from '../src/core/delivery/web-app-shell/EditSectionToggle'
+import { SplitPaneLayout } from '../src/core/delivery/web-app-shell/SplitPaneLayout'
+import { EditorPanel, useSectionEditorBuffer } from '../src/core/supporting/authoring-editor'
+import { ToastProvider, useToast } from '../src/core/ui-system/primitives/Toast'
+import { SoundProvider } from '../src/core/ui-system/sensory/SoundContext'
+import { AudioToggle } from '../src/core/delivery/web-app-shell/AudioToggle'
+import { ThemeToggle } from '../src/core/ui-system/motion/theme-toggle'
 import { X } from 'lucide-react'
-import { type OKFValidationErrorPayload } from '../src/core/okf/validate'
-import type { OKFBundled } from '../src/core/okf/types'
+import { type ValidationDiagnostic } from '../src/core/learning-engine/validation/gateway'
+import type { OKFBundled } from '../src/core/learning-engine/composition/okf/types'
 
 // SingleHTMLEmbedAdapter — delegates bundle loading, rendering, validation
 import { singleEmbedAdapter, registerEmbedSection } from '../src/core/delivery/adapters/single-html-embed'
 
 // Import section CSS
 import '../src/styles/global.css'
-import '../src/components/layout/layout.css'
-import '../src/core/subdomains/progressive-content/components/intro/intro.css'
-import '../src/core/subdomains/progressive-content/components/text/text.css'
-import '../src/core/subdomains/progressive-content/components/bullets/bullets.css'
-import '../src/core/subdomains/process-simulation/components/flowchart/flowchart.css'
-import '../src/core/subdomains/tradeoff-sandbox/components/tradeoff-sandbox/tradeoff-sandbox.css'
-import '../src/core/subdomains/progressive-content/components/taxonomy-browser/taxonomy-browser.css'
-import '../src/core/subdomains/practice-assessment/components/quiz/quiz.css'
-import '../src/core/subdomains/practice-assessment/components/concept-map/concept-map.css'
-import '../src/core/subdomains/process-simulation/components/scenario/scenario.css'
-import '../src/core/subdomains/tradeoff-sandbox/components/decision-tree/decision-tree.css'
-import '../src/core/subdomains/tradeoff-sandbox/components/formula-sandbox/formula-sandbox.css'
-import '../src/core/subdomains/reflection-synthesis/components/reflection-sequence/reflection-sequence.css'
-import '../src/core/subdomains/reflection-synthesis/components/reflection-template/reflection-template.css'
+import '../src/core/delivery/web-app-shell/layout.css'
+import '../src/core/learning-engine/sub-contexts/progressive-content/components/intro/intro.css'
+import '../src/core/learning-engine/sub-contexts/progressive-content/components/text/text.css'
+import '../src/core/learning-engine/sub-contexts/progressive-content/components/bullets/bullets.css'
+import '../src/core/learning-engine/sub-contexts/process-simulation/components/flowchart/flowchart.css'
+import '../src/core/learning-engine/sub-contexts/tradeoff-sandbox/components/tradeoff-sandbox/tradeoff-sandbox.css'
+import '../src/core/learning-engine/sub-contexts/progressive-content/components/taxonomy-browser/taxonomy-browser.css'
+import '../src/core/learning-engine/sub-contexts/practice-assessment/components/flashcards/flashcards.css'
+import '../src/core/learning-engine/sub-contexts/practice-assessment/components/quiz/quiz.css'
+import '../src/core/learning-engine/sub-contexts/practice-assessment/components/concept-map/concept-map.css'
+import '../src/core/learning-engine/sub-contexts/process-simulation/components/scenario/scenario.css'
+import '../src/core/learning-engine/sub-contexts/tradeoff-sandbox/components/decision-tree/decision-tree.css'
+import '../src/core/learning-engine/sub-contexts/tradeoff-sandbox/components/formula-sandbox/formula-sandbox.css'
+import '../src/core/learning-engine/sub-contexts/reflection-synthesis/components/reflection-sequence/reflection-sequence.css'
+import '../src/core/learning-engine/sub-contexts/reflection-synthesis/components/reflection-template/reflection-template.css'
 
 // Import all section components directly
-import IntroSection from '../src/core/subdomains/progressive-content/components/intro'
-import TextSection from '../src/core/subdomains/progressive-content/components/text'
-import BulletsSection from '../src/core/subdomains/progressive-content/components/bullets'
-import { Flowchart as FlowchartSection } from '../src/core/subdomains/process-simulation/components/FlowchartSection'
-import TradeoffSandboxSection from '../src/core/subdomains/tradeoff-sandbox/components/tradeoff-sandbox'
-import TaxonomyBrowserSection from '../src/core/subdomains/progressive-content/components/taxonomy-browser'
-import FlashcardsSection from '../src/core/subdomains/practice-assessment/components/flashcards'
-import QuizSection from '../src/core/subdomains/practice-assessment/components/quiz'
-import ConceptMapSection from '../src/core/subdomains/practice-assessment/components/concept-map'
-import { ScenarioSection } from '../src/core/subdomains/process-simulation/components/ScenarioSection'
-import DecisionTreeSection from '../src/core/subdomains/tradeoff-sandbox/components/decision-tree'
-import ImageGallerySection from '../src/core/subdomains/progressive-content/components/image-gallery'
-import FormulaSandboxSection from '../src/core/subdomains/tradeoff-sandbox/components/formula-sandbox'
-import ReflectionSequenceSection from '../src/core/subdomains/reflection-synthesis/components/reflection-sequence'
-import ReflectionTemplateSection from '../src/core/subdomains/reflection-synthesis/components/reflection-template'
+import IntroSection from '../src/core/learning-engine/sub-contexts/progressive-content/components/intro'
+import TextSection from '../src/core/learning-engine/sub-contexts/progressive-content/components/text'
+import BulletsSection from '../src/core/learning-engine/sub-contexts/progressive-content/components/bullets'
+import { Flowchart as FlowchartSection } from '../src/core/learning-engine/sub-contexts/process-simulation/components/FlowchartSection'
+import TradeoffSandboxSection from '../src/core/learning-engine/sub-contexts/tradeoff-sandbox/components/tradeoff-sandbox'
+import TaxonomyBrowserSection from '../src/core/learning-engine/sub-contexts/progressive-content/components/taxonomy-browser'
+import FlashcardsSection from '../src/core/learning-engine/sub-contexts/practice-assessment/components/flashcards'
+import QuizSection from '../src/core/learning-engine/sub-contexts/practice-assessment/components/quiz'
+import ConceptMapSection from '../src/core/learning-engine/sub-contexts/practice-assessment/components/concept-map'
+import { ScenarioSection } from '../src/core/learning-engine/sub-contexts/process-simulation/components/ScenarioSection'
+import DecisionTreeSection from '../src/core/learning-engine/sub-contexts/tradeoff-sandbox/components/decision-tree'
+import ImageGallerySection from '../src/core/learning-engine/sub-contexts/progressive-content/components/image-gallery'
+import FormulaSandboxSection from '../src/core/learning-engine/sub-contexts/tradeoff-sandbox/components/formula-sandbox'
+import ReflectionSequenceSection from '../src/core/learning-engine/sub-contexts/reflection-synthesis/components/reflection-sequence'
+import ReflectionTemplateSection from '../src/core/learning-engine/sub-contexts/reflection-synthesis/components/reflection-template'
 
 // --- Auto-register all built-in sections with the adapter ---
 
@@ -198,7 +199,7 @@ function EditorModeView({ topicLabel, topicId }: { topicLabel: string; topicId: 
   const {
     data: editedData,
     rawText,
-    validationErrors,
+    validationDiagnostics,
     isDirty,
     isSaving,
     setVisualFormField,
@@ -257,7 +258,7 @@ function EditorModeView({ topicLabel, topicId }: { topicLabel: string; topicId: 
         leftPanel={
           <EditorPanel
             sectionData={editedData}
-            validationErrors={validationErrors}
+            validationDiagnostics={validationDiagnostics}
             onVisualFormChange={setVisualFormField}
             onRawTextChange={setRawText}
             rawText={rawText}
@@ -389,9 +390,9 @@ interface LoomSectionsAPI {
   ) => () => void
   registerSection: (type: string, component: ComponentType<any>) => void
   loadAndRenderOKF: (container: HTMLElement, okfBaseUrl: string, topicId: string, options?: RenderOptions) => Promise<() => void>
-  validateSection: (data: unknown, metaType?: string) => OKFValidationErrorPayload[]
-  validateYAML: (rawYaml: string, metaType?: string) => { data: any; errors: OKFValidationErrorPayload[] }
-  formatValidationPrompt: (errors: OKFValidationErrorPayload[], rawSource?: string) => string
+  validateSection: (data: unknown, metaType?: string) => ValidationDiagnostic[]
+  validateYAML: (rawYaml: string, metaType?: string) => { data: any; errors: ValidationDiagnostic[] }
+  formatValidationPrompt: (errors: ValidationDiagnostic[], rawSource?: string) => string
 }
 
 const LoomSections: LoomSectionsAPI = {
@@ -497,50 +498,29 @@ const LoomSections: LoomSectionsAPI = {
 
   validateSection(data: unknown, metaType?: string) {
     const result = singleEmbedAdapter.runtime.validatePayload(data, metaType)
-    // Convert ValidationGateway diagnostics to legacy OKFValidationErrorPayload format
-    return result.diagnostics.map((d) => ({
-      tier: d.tier === 1 ? 'syntax' as const : d.tier === 2 ? 'schema' as const : 'semantic' as const,
-      field: d.field,
-      line: d.line,
-      column: d.column,
-      message: d.message,
-      fixHint: d.fixHint,
-    }))
+    return result.diagnostics
   },
 
   validateYAML(rawYaml: string, metaType?: string) {
     const result = singleEmbedAdapter.runtime.validatePayload(rawYaml, metaType)
     return {
       data: result.payload,
-      errors: result.diagnostics.map((d) => ({
-        tier: d.tier === 1 ? 'syntax' as const : d.tier === 2 ? 'schema' as const : 'semantic' as const,
-        field: d.field,
-        line: d.line,
-        column: d.column,
-        message: d.message,
-        fixHint: d.fixHint,
-      })),
+      errors: result.diagnostics,
     }
   },
 
-  formatValidationPrompt(errors: OKFValidationErrorPayload[], rawSource?: string) {
-    // Reuse existing format helper for backward compatibility
+  formatValidationPrompt(errors: ValidationDiagnostic[], rawSource?: string) {
     if (errors.length === 0) return 'No validation errors found.'
 
     let prompt = `# OKF Section Validation Error Report\n\n`
     prompt += `The following ${errors.length} error(s) were found during OKF section validation. Please fix the files accordingly.\n\n`
 
     errors.forEach((err, idx) => {
-      prompt += `### Error ${idx + 1}: [Tier: ${err.tier.toUpperCase()}] ${err.file || err.sectionName || 'Section'}\n`
-      if (err.file) prompt += `- **File**: \`${err.file}\`\n`
-      if (err.sectionName) prompt += `- **Section**: \`${err.sectionName}\`\n`
+      prompt += `### Diagnostic ${idx + 1}: [Tier: ${err.tier}]\n`
       if (err.field) prompt += `- **Field Path**: \`${err.field}\`\n`
       if (err.line) prompt += `- **Location**: Line ${err.line}${err.column ? `, Column ${err.column}` : ''}\n`
       prompt += `- **Message**: ${err.message}\n`
       if (err.fixHint) prompt += `- **Suggested Fix**: ${err.fixHint}\n`
-      if (err.snippet) {
-        prompt += `- **Snippet**:\n\`\`\`yaml\n${err.snippet}\n\`\`\`\n`
-      }
       prompt += `\n`
     })
 
@@ -558,7 +538,7 @@ export default LoomSections
 export type { SectionConfig }
 
 // Re-export key types
-export type { BulletItem } from '../src/core/subdomains/progressive-content/components/bullets'
-export type { TradeoffScenario, MetricDef, TradeoffChoice, TradeoffStep, TradeoffProCon } from '../src/core/subdomains/tradeoff-sandbox/components/tradeoff-sandbox'
-export type { TaxonomyCategory } from '../src/core/subdomains/progressive-content/components/taxonomy-browser'
-export type { WordTerm } from '../src/types'
+export type { BulletItem } from '../src/core/learning-engine/sub-contexts/progressive-content/components/bullets'
+export type { TradeoffScenario, MetricDef, TradeoffChoice, TradeoffStep, TradeoffProCon } from '../src/core/learning-engine/sub-contexts/tradeoff-sandbox/components/tradeoff-sandbox'
+export type { TaxonomyCategory } from '../src/core/learning-engine/sub-contexts/progressive-content/components/taxonomy-browser'
+export type { WordTerm } from '../src/core/learning-engine/sub-contexts/practice-assessment'

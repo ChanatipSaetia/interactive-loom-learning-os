@@ -1,0 +1,15 @@
+type: taxonomy-category
+icon: Droplet
+title: "Acid Spells"
+subtitle: "Corrosion"
+color: green
+description: "Acid spells bypass resistance and apply damage-over-time effects."
+details: "Acid Splash is your acid cantrip and hits multiple targets simultaneously. Acid Arrow delivers a delayed burst with a damage-over-time component. Chromatic Orb can be rolled to deal acid damage and benefits from upcasting."
+analogy: "Corrosive pools that dissolve armor and flesh alike."
+primaryFocus: "Resistance penetration and multi-target damage"
+inScope:
+  - "Acid Splash (cantrip — multi-target)"
+  - "Acid Arrow (3rd level — DoT component)"
+  - "Chromatic Orb (2nd level — flexible element)"
+outOfScope:
+  - "Pure single-target acid without DoT"

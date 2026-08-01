@@ -1,5 +1,5 @@
 import { createContext, useContext, useCallback, type ReactNode } from 'react'
-import { SoundProvider, useSound } from '../../context/SoundContext'
+import { SoundProvider, useSound } from './sensory/SoundContext'
 import { DEFAULT_THEME_TOKENS } from './ThemeContract'
 import { UIComponentRegistry } from './UIComponentRegistryContract'
 import {

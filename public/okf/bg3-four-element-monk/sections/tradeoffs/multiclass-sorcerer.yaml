@@ -1,0 +1,115 @@
+id: multiclass-sorcerer
+title: "Monk/Sorcerer Multiclass"
+description: "Dip into Sorcerer for Metamagic. Trades some Ki for Twinned Spell and spell slots."
+metrics:
+  - id: ki-economy
+    label: "Ki Economy"
+    baseValue: 55
+    min: 0
+    max: 100
+    direction: higher
+  - id: spell-power
+    label: "Spell Power"
+    baseValue: 70
+    min: 0
+    max: 100
+    direction: higher
+  - id: survivability
+    label: "Survivability"
+    baseValue: 55
+    min: 0
+    max: 100
+    direction: higher
+  - id: flexibility
+    label: "Build Flexibility"
+    baseValue: 70
+    min: 0
+    max: 100
+    direction: higher
+steps:
+  - id: dip-depth
+    title: "Sorcerer Dip Depth"
+    description: "How many Sorcerer levels to take?"
+    recommended: dip-2
+    choices:
+      - id: dip-2
+        label: "Sorcerer 2 — Metamagic Adept"
+        description: "Minimum dip for Twinned Spell and one other metamagic."
+        metrics:
+          ki-economy: 5
+          spell-power: 10
+          survivability: -5
+          flexibility: 15
+        pros:
+          - title: "Best value"
+            description: "Gets Twinned Spell with minimal level loss"
+        cons:
+          - title: "Delayed monk features"
+            description: "Missing one level of monk progression"
+        whyThisFits: "Optimal dip. Twinned Spell alone justifies the investment."
+      - id: dip-4
+        label: "Sorcerer 4 — Extra Spell Slots"
+        description: "Deeper dip for 3rd level spell slots and more metamagic points."
+        metrics:
+          ki-economy: -10
+          spell-power: 15
+          survivability: -10
+          flexibility: 5
+        pros:
+          - title: "3rd level spells"
+            description: "Access to Fireball, Call Lightning, and more"
+        cons:
+          - title: "Significant monk delay"
+            description: "Missing Four Point Attack and Empty Body progression"
+        whenToUse: "When spell diversity matters more than monk abilities."
+      - id: dip-1
+        label: "Sorcerer 1 — Spellcasting Only"
+        description: "Just get spell slots without Metamagic."
+        metrics:
+          ki-economy: 5
+          spell-power: 0
+          survivability: -5
+          flexibility: -5
+        pros:
+          - title: "Minimal delay"
+            description: "Only one level behind monk progression"
+        cons:
+          - title: "No Metamagic"
+            description: "Missing the key synergy that makes multiclassing worthwhile"
+        whenToUse: "Not recommended. The value is too low without Metamagic."
+
+  - id: metamagic-choice
+    title: "Metamagic Selection"
+    description: "Which two metamagics to prioritize?"
+    recommended: twin-quick
+    choices:
+      - id: twin-quick
+        label: "Twinned + Quickened"
+        description: "Dual-target spells and spell + attack same turn."
+        metrics:
+          ki-economy: 0
+          spell-power: 15
+          survivability: 0
+          flexibility: 15
+        pros:
+          - title: "Maximum versatility"
+            description: "Twinned doubles target count, Quickened enables hybrid turns"
+        cons:
+          - title: "Sorcery point management"
+            description: "Limited metamagic uses per Short Rest"
+        whyThisFits: "The gold standard combo for Four Element Monk."
+      - id: twin-empower
+        label: "Twinned + Empowered"
+        description: "Dual-target spells with reroll damage."
+        metrics:
+          ki-economy: 0
+          spell-power: 10
+          survivability: 0
+          flexibility: 10
+        pros:
+          - title: "Consistent damage"
+            description: "Empowered smooths out dice variance"
+        cons:
+          - title: "Less tactical"
+            description: "Missing Quickened's action economy benefits"
+        whenToUse: "When you prefer consistent damage over tactical flexibility."

@@ -4,6 +4,7 @@
   command: "Engage Pack with Gas Grenade"
   policy: "On Pack Encounter"
   handledBy: gas_grenade_apply
+  delegatesTo: pack
   resultEvents:
     - id: evt_poison_deployed
       title: "Poison Cloud Deployed"
@@ -47,6 +48,7 @@
       policy: "If Boss Encountered"
       command: "Begin Boss Engagement"
       handledBy: gas_grenade_boss
+      delegatesTo: boss
       resultEvents:
         - id: evt_boss_poisoned
           title: "Boss Poisoned"
@@ -57,6 +59,7 @@
   command: "Apply Bleed to Boss with Barrage"
   policy: "After Boss Poisoned"
   handledBy: barrage_boss
+  delegatesTo: no_mercy
   resultEvents:
     - id: evt_boss_dual_ailmented
       title: "Boss Dual Ailmented"
@@ -67,6 +70,7 @@
   command: "Let DoTs Tick on Boss"
   policy: "With Both Poison and Bleed on Boss"
   handledBy: dot_boss
+  delegatesTo: sorcery_ward
   resultEvents:
     - id: evt_boss_defeated
       title: "Boss Defeated"

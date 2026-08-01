@@ -1,0 +1,17 @@
+type: taxonomy-category
+icon: Swords
+title: "Twin Elemental Wrath"
+subtitle: "Monk Level 3"
+color: yellow
+description: "Spend 1 Ki to infuse two unarmed strikes with elemental damage."
+details: "Choose two elements from Fire (1d6), Cold (1d6), Lightning (1d6), or Acid (1d6). Each attuned strike deals its elemental damage on top of normal unarmed strike damage. Lasts until the end of your next turn. Can pick the same element twice for doubled damage on one type."
+analogy: "Temporarily charging your fists with elemental energy before a combo."
+primaryFocus: "Consistent per-hit elemental damage amplification"
+inScope:
+  - "Any two elements from the four schools"
+  - "Stacks with unarmed strike damage dice"
+  - "Works with Patient-0 gauntlet procs"
+  - "Triggers on opportunity attacks"
+outOfScope:
+  - "Does not work with weapon attacks"
+  - "Does not stack with itself (re-cast replaces)"

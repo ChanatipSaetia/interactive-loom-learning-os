@@ -1,6 +1,6 @@
 import { render, screen, fireEvent } from '@testing-library/react'
 import { describe, it, expect, vi } from 'vitest'
-import { DecisionTreeHelpModal } from '../../../../src/core/subdomains/tradeoff-sandbox/components/decision-tree/DecisionTreeHelpModal'
+import { DecisionTreeHelpModal } from '../../../../src/core/learning-engine/sub-contexts/tradeoff-sandbox/components/decision-tree/DecisionTreeHelpModal'
 
 describe('DecisionTreeHelpModal', () => {
   it('does not render when isOpen is false', () => {

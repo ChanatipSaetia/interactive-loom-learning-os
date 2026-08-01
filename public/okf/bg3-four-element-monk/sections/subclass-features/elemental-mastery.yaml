@@ -1,0 +1,17 @@
+type: taxonomy-category
+icon: Sparkles
+title: "Elemental Mastery"
+subtitle: "Monk Level 15"
+color: green
+description: "Elemental spells no longer consume Ki points to cast."
+details: "At Monk 15, casting elemental spells from your attuned schools costs 0 Ki. You can still voluntarily spend Ki to cast them at a higher level. This transforms the build's resource economy, allowing free spell spam while reserving Ki for Twin Elemental Wrath and Four Point Attack."
+analogy: "Your elemental magic becomes an infinite resource."
+primaryFocus: "Ki economy transformation at endgame"
+inScope:
+  - "All elemental spells cast for 0 Ki base cost"
+  - "Optional Ki spend for higher-level casting"
+  - "Enables Conjure Flame spam in every fight"
+  - "Ice Knife and Call Lightning become free utilities"
+outOfScope:
+  - "Non-elemental spells still cost Ki"
+  - "Still limited by spell slot availability for multiclass"

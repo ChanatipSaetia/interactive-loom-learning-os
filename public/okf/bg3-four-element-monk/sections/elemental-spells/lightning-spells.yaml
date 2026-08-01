@@ -1,0 +1,16 @@
+type: taxonomy-category
+icon: Zap
+title: "Lightning Spells"
+subtitle: "Electromancy"
+color: yellow
+description: "Lightning spells chain between targets and push enemies back."
+details: "Shocking Grasp is your lightning cantrip — it deals damage and prevents opportunity attacks. Call Lightning summons a cloud that strikes repeatedly. Chain Lightning jumps between multiple targets for efficient multi-kill potential."
+analogy: "A storm calling down bolts that arc between enemies."
+primaryFocus: "Multi-target chain damage and knockback control"
+inScope:
+  - "Shocking Grasp (cantrip — melee + OA prevention)"
+  - "Call Lightning (3rd level — repeated strikes)"
+  - "Chain Lightning (6th level — multi-target jump)"
+  - "Lightning Bolt (3rd line blast)"
+outOfScope:
+  - "Non-combat lightning effects"

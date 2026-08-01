@@ -1,6 +1,6 @@
 import { render, screen, fireEvent } from '@testing-library/react'
 import { describe, it, expect, vi } from 'vitest'
-import { TextHelpModal } from '../../../../src/core/subdomains/progressive-content/components/text/TextHelpModal'
+import { TextHelpModal } from '../../../../src/core/learning-engine/sub-contexts/progressive-content/components/text/TextHelpModal'
 
 describe('TextHelpModal', () => {
   it('does not render when isOpen is false', () => {

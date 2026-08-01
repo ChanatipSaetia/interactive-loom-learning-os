@@ -4,6 +4,7 @@
   command: "Enter Map & Initiate Attack"
   policy: "Trigger Run"
   handledBy: whirling_assault
+  delegatesTo: pack
   resultEvents:
     - id: evt_clear_packs
       title: "Clear Packs with Whirling Assault"
@@ -28,6 +29,7 @@
       policy: "If Pack is Dense"
       command: "Cast Falling Thunder"
       handledBy: falling_thunder
+      delegatesTo: trinity
       resultEvents:
         - id: evt_pack_cleared
           title: "Pack Wiped (360 Lightning)"
@@ -37,6 +39,7 @@
       policy: "If Pack is Scattered"
       command: "Cast Flicker Strike"
       handledBy: flicker_strike
+      delegatesTo: hollow_focus
       resultEvents:
         - id: evt_repositioned
           title: "Dashed Through Pack"
@@ -70,6 +73,7 @@
       policy: "If Boss Encountered"
       command: "Build Combo Stacks"
       handledBy: mantra_destruction
+      delegatesTo: boss
       resultEvents:
         - id: evt_combo_ready
           title: "20 Combo Stacks Built"
@@ -90,6 +94,7 @@
   command: "Activate Charged Staff Buff"
   policy: "On Boss Power Charges Ready"
   handledBy: charged_staff
+  delegatesTo: ci
   resultEvents:
     - id: evt_buffed
       title: "Charged Staff Lightning Buff Active"

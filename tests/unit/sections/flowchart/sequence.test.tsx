@@ -1,9 +1,9 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
-import { SectionRegistry } from '../../../../src/core/registry';
-import Flowchart from '../../../../src/core/subdomains/process-simulation/components/flowchart';
-import type { UnifiedFlowchartSchema } from '../../../../src/core/subdomains/process-simulation/components/flowchart';
+import { SectionRegistry } from '../../../../src/core/learning-engine/registry';
+import Flowchart from '../../../../src/core/learning-engine/sub-contexts/process-simulation/components/flowchart';
+import type { UnifiedFlowchartSchema } from '../../../../src/core/learning-engine/sub-contexts/process-simulation/components/flowchart';
 
 const seqSchema: UnifiedFlowchartSchema = {
   entities: {

@@ -1,0 +1,16 @@
+type: taxonomy-category
+icon: Snowflake
+title: "Cold Spells"
+subtitle: "Cryomancy"
+color: sky
+description: "Cold spells provide control, slow effects, and burst damage."
+details: "Ray of Frost is your cold cantrip with a built-in slow effect. Ice Knife is the signature cold spell — a two-part attack that pierces a target then explodes around them. Cone of Cold delivers massive frontal AoE at higher levels."
+analogy: "Freezing enemies in place before shattering them."
+primaryFocus: "Crowd control and burst AoE damage"
+inScope:
+  - "Ray of Frost (cantrip — line + slow)"
+  - "Ice Knife (2nd level — pierce + AoE burst)"
+  - "Cone of Cold (5th level — frontal devastation)"
+  - "Cone of Cold with Twinned Spell for dual targets"
+outOfScope:
+  - "Utility-only cold effects"

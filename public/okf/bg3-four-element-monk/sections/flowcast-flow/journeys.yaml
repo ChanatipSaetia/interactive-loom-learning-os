@@ -1,0 +1,58 @@
+- id: journey_offense
+  label: "Offensive Combat Loop"
+  description: "Standard combat flow using Twin Elemental Wrath for sustained damage"
+  steps:
+    - stepId: step_1
+      name: "Combat Start"
+      description: "Player enters combat and assesses the situation"
+      processGroup: opening
+    - stepId: branch_offense
+      name: "Wrath Activation"
+      description: "Twin Elemental Wrath infuses strikes with elemental damage"
+      processGroup: execution
+    - stepId: step_attack_loop
+      name: "Elemental Damage"
+      description: "Unarmed strikes deal physical plus elemental damage"
+      processGroup: execution
+    - stepId: branch_sustain
+      name: "Sustain Loop"
+      description: "Combat continues with sustained elemental strikes"
+      processGroup: evaluation
+
+- id: journey_boss
+  label: "Boss Nuke Flow"
+  description: "Full Ki investment into Four Point Attack for maximum burst"
+  steps:
+    - stepId: step_1
+      name: "Combat Start"
+      description: "Boss engagement begins"
+      processGroup: opening
+    - stepId: branch_offense
+      name: "Wrath Activation"
+      description: "Twin Elemental Wrath activates for opening damage"
+      processGroup: execution
+    - stepId: step_attack_loop
+      name: "Initial Damage"
+      description: "Initial strikes weaken the boss"
+      processGroup: execution
+    - stepId: branch_four_point
+      name: "Four Point Nuke"
+      description: "Four Point Attack unleashes four guaranteed elemental hits"
+      processGroup: escalation
+
+- id: journey_defensive
+  label: "Defensive Survival"
+  description: "Ki spent on defense when overwhelmed"
+  steps:
+    - stepId: step_1
+      name: "Combat Start"
+      description: "Combat starts with high threat level"
+      processGroup: opening
+    - stepId: branch_defense
+      name: "Flowing Barrier"
+      description: "Flowing Barrier boosts AC to avoid damage"
+      processGroup: execution
+    - stepId: branch_defensive
+      name: "Clutch Survival"
+      description: "Patient Defense or Empty Body for clutch survival"
+      processGroup: escalation

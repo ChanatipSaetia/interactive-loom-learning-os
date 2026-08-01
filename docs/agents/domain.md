@@ -214,7 +214,7 @@ When any of the 3 OKF Delivery Contexts (`InRepoOKFStorageContext`, `SingleHTMLE
 * **3-Tier Rigor**:
   * **Tier 1 (Syntax)**: YAML syntax and frontmatter checks.
   * **Tier 2 (Structural Schema)**: Validates against section type structural Zod/TypeScript schema.
-  * **Tier 3 (Semantic Reference Integrity)**: Validates cross-references, node IDs, quiz option index bounds, and flowchart step links.
+  * **Tier 3 (Semantic Reference Integrity)**: Validates cross-references, node IDs, quiz option index bounds, flowchart step links, and ensures all flowchart Actor and System nodes connect to at least one Event node in the relation graph.
 * **Tell-Back Result Handling**:
   * On errors in YAML syntax or schema validation, the engine presents **non-blocking inline warning bars** in the Editor/Runtime while maintaining the `lastValidData` state in the Live Preview pane.
   * Emits structured diagnostic payloads featuring contextual `fixHint` messages for automated AI remediation loops.

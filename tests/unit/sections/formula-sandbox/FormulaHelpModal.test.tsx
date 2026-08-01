@@ -1,6 +1,6 @@
 import { render, screen, fireEvent } from '@testing-library/react'
 import { describe, it, expect, vi } from 'vitest'
-import { FormulaHelpModal } from '../../../../src/core/subdomains/tradeoff-sandbox/components/formula-sandbox/FormulaHelpModal'
+import { FormulaHelpModal } from '../../../../src/core/learning-engine/sub-contexts/tradeoff-sandbox/components/formula-sandbox/FormulaHelpModal'
 
 describe('FormulaHelpModal', () => {
   it('does not render when isOpen is false', () => {

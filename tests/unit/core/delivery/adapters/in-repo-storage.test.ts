@@ -1,13 +1,14 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { InRepoStorageAdapter } from '../../../../../src/core/delivery/adapters/in-repo-storage'
-import type { OKFIntroSectionData } from '../../../../../src/core/okf/types'
+import type { OKFIntroSectionData } from '../../../../../src/core/learning-engine/composition/okf/types'
 
-vi.mock('../../../../../src/core/okf/reader', () => ({
+vi.mock('../../../../../src/core/learning-engine/composition/okf/reader', () => ({
   loadOKFBundle: vi.fn(),
   clearOKFCache: vi.fn(),
 }))
 
-import { loadOKFBundle } from '../../../../../src/core/okf/reader'
+import { loadOKFBundle } from '../../../../../src/core/learning-engine/composition/okf/reader'
 
 describe('InRepoStorageAdapter', () => {
   let adapter: InRepoStorageAdapter

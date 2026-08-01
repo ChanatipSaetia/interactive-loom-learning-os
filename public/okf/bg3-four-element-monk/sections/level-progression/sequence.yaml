@@ -1,0 +1,31 @@
+challenges:
+  - prompt: "Arrange the Four Element Monk milestones in the correct level order:"
+    items:
+      - id: drag_martial_arts
+        text: "Martial Arts — Unarmed strike damage dice"
+      - id: drag_unarmored_movement
+        text: "Unarmored Movement — Speed boost"
+      - id: drag_four_element_monk
+        text: "Four Element Monk — Elemental Attunement & Twin Elemental Wrath"
+      - id: drag_slow_fall
+        text: "Slow Fall — Fall damage immunity"
+      - id: drag_stunning_strike
+        text: "Stunning Strike — Ki stun on hit"
+      - id: drag_flow_barrier
+        text: "Flowing Barrier — Ki to AC conversion"
+      - id: drag_empty_body
+        text: "Empty Body — Teleport & Mirror Image"
+      - id: drag_four_point
+        text: "Four Point Attack — Four guaranteed elemental strikes"
+      - id: drag_elem_mastery
+        text: "Elemental Mastery — Free elemental spells"
+    solution:
+      - drag_martial_arts
+      - drag_unarmored_movement
+      - drag_slow_fall
+      - drag_four_element_monk
+      - drag_stunning_strike
+      - drag_flow_barrier
+      - drag_four_point
+      - drag_empty_body
+      - drag_elem_mastery

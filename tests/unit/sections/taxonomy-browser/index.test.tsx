@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeEach } from 'vitest'
 import { render, screen, fireEvent } from '@testing-library/react'
-import { SectionRegistry } from '../../../../src/core/registry'
-import TaxonomyBrowserSection from '../../../../src/core/subdomains/progressive-content/components/taxonomy-browser'
+import { SectionRegistry } from '../../../../src/core/learning-engine/registry'
+import TaxonomyBrowserSection from '../../../../src/core/learning-engine/sub-contexts/progressive-content/components/taxonomy-browser'
 
 const mockCategories = [
   {
@@ -107,8 +107,8 @@ describe('TaxonomyBrowser Section', () => {
 
   it('does not self-register with SectionRegistry', async () => {
     vi.resetModules()
-    const mod = await import('../../../../src/core/subdomains/progressive-content/components/taxonomy-browser')
-    const { SectionRegistry: Registry } = await import('../../../../src/core/registry')
+    const mod = await import('../../../../src/core/learning-engine/sub-contexts/progressive-content/components/taxonomy-browser')
+    const { SectionRegistry: Registry } = await import('../../../../src/core/learning-engine/registry')
     expect(Registry.get('taxonomy-browser')).toBeUndefined()
     void mod
   })

@@ -249,6 +249,19 @@ A YAML **list** of `FlowJourney` objects. A journey groups a named subset of ste
 
 ---
 
+## Validation & Diagnostics (3-Tier Gateway)
+
+Flowchart sections are automatically checked by the **3-Tier Validation Gateway** (`src/core/learning-engine/validation/gateway.ts`):
+
+- **Tier 1 (YAML Syntax)**: Ensures valid YAML syntax in `actors.yaml`, `systems.yaml`, `steps.yaml`, and `journeys.yaml`.
+- **Tier 2 (Structural Schema)**: Validates structural fields against `FlowchartSectionSchema`.
+- **Tier 3 (Semantic Reference Integrity)**:
+  - **Entity Reference Check**: Validates that all relation `from`/`to` references, journey `nodeIds`, and view `nodes`/`groups` target existing entity IDs.
+  - **Actor & System Node Event Connectivity**: Ensures every `Actor` (User) and `System` (`Aggregate`, `External API`, `Service`, `Database`, `Core System`) node declared in the section is connected to at least one `Event` node in the relation graph. Unconnected nodes trigger a `tier: 3` warning with a `fixHint`.
+  - **State Machine Reference Check**: Ensures `stateMachine.initialState` exists in `stateMachine.states`.
+
+---
+
 ## CDN & Static Page Usage
 
 When rendering a `flowchart` section via the CDN library (`LoomSections.render`), you can provide your diagram data in one of two formats under `props`:

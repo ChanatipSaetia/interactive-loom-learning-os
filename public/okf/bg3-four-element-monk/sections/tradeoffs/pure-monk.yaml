@@ -1,0 +1,115 @@
+id: pure-monk
+title: "Pure Monk 12-13"
+description: "Maximum Ki pool and monk features. Best Four Point Attack access and Flowing Barrier."
+metrics:
+  - id: ki-economy
+    label: "Ki Economy"
+    baseValue: 75
+    min: 0
+    max: 100
+    direction: higher
+  - id: spell-power
+    label: "Spell Power"
+    baseValue: 50
+    min: 0
+    max: 100
+    direction: higher
+  - id: survivability
+    label: "Survivability"
+    baseValue: 70
+    min: 0
+    max: 100
+    direction: higher
+  - id: flexibility
+    label: "Build Flexibility"
+    baseValue: 40
+    min: 0
+    max: 100
+    direction: higher
+steps:
+  - id: ki-management
+    title: "Ki Point Strategy"
+    description: "With 5 Ki at Monk 13, how do you allocate resources?"
+    recommended: balanced-spend
+    choices:
+      - id: balanced-spend
+        label: "Balanced — 1 Ki Wrath + 1 Ki Barrier"
+        description: "Spend 1 Ki for Twin Elemental Wrath, 1 Ki for Flowing Barrier, reserve rest."
+        metrics:
+          ki-economy: 10
+          spell-power: 0
+          survivability: 10
+          flexibility: 5
+        pros:
+          - title: "Sustainable"
+            description: "Maintains both offense and defense every fight"
+        cons:
+          - title: "No Four Point Attack"
+            description: "Leaves only 3 Ki — not enough for Four Point Attack"
+        whyThisFits: "Best general approach. Keeps you alive and damaging without going all-in."
+      - id: all-in-nuke
+        label: "All-In — Four Point Attack Nuke"
+        description: "Save 4 Ki for Four Point Attack burst."
+        metrics:
+          ki-economy: -10
+          spell-power: 15
+          survivability: -15
+          flexibility: -5
+        pros:
+          - title: "Maximum burst"
+            description: "Four guaranteed hits melt bosses"
+        cons:
+          - title: "Leaves you vulnerable"
+            description: "Only 1 Ki left for defense after nuking"
+        whenToUse: "Boss fights where you need maximum damage output."
+      - id: spell-heavy
+        label: "Spell Heavy — Cast multiple spells"
+        description: "Spend Ki on multiple elemental spells per turn."
+        metrics:
+          ki-economy: -5
+          spell-power: 15
+          survivability: -5
+          flexibility: 10
+        pros:
+          - title: "Range and AoE"
+            description: "Covers areas melee can't reach"
+        cons:
+          - title: "Burns Ki fast"
+            description: "Running out of Ki leaves you as a basic monk"
+        whenToUse: "Fights with ranged enemies or large groups."
+
+  - id: gear-focus
+    title: "Gear Priority"
+    description: "Which legendary items matter most?"
+    recommended: patient-zero-first
+    choices:
+      - id: patient-zero-first
+        label: "Patient-0 Gauntlets First"
+        description: "Prioritize Act 2 gauntlets for damage amplification."
+        metrics:
+          ki-economy: 5
+          spell-power: 5
+          survivability: 0
+          flexibility: 5
+        pros:
+          - title: "Massive damage boost"
+            description: "Amplifies every unarmed strike"
+        cons:
+          - title: "Act 2 locked"
+            description: "Can't access until Act 2"
+        whyThisFits: "Best damage investment. Every attack benefits from Patient-0."
+      - id: cloak-first
+        label: "Strix Cove Cloak First"
+        description: "Prioritize Act 3 cloak for out-of-combat utility."
+        metrics:
+          ki-economy: 0
+          spell-power: 5
+          survivability: 5
+          flexibility: 15
+        pros:
+          - title: "Full utility"
+            description: "Casting spells outside combat changes everything"
+        cons:
+          - title: "Act 3 locked"
+            description: "Can't access until Act 3"
+        whenToUse: "Late-game builds that value exploration utility."

@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeEach, vi, afterEach } from 'vitest';
 import { renderHook, act } from '@testing-library/react';
-import { usePlaybackState } from '../../../../src/core/subdomains/process-simulation/components/flowchart/usePlaybackState';
-import type { UnifiedFlowchartSchema } from '../../../../src/core/subdomains/process-simulation/components/flowchart/types';
+import { usePlaybackState } from '../../../../src/core/learning-engine/sub-contexts/process-simulation/components/flowchart/usePlaybackState';
+import type { UnifiedFlowchartSchema } from '../../../../src/core/learning-engine/sub-contexts/process-simulation/components/flowchart/types';
 
 const baseSchema: UnifiedFlowchartSchema = {
   entities: {

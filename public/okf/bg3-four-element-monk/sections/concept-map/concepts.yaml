@@ -1,0 +1,119 @@
+nodes:
+  ki-points:
+    title: "Ki Points"
+    category: mechanic
+  elemental-attunement:
+    title: "Elemental Attunement"
+    category: feature
+  twin-elemental-wrath:
+    title: "Twin Elemental Wrath"
+    category: feature
+  four-point-attack:
+    title: "Four Point Attack"
+    category: feature
+  elemental-mastery:
+    title: "Elemental Mastery"
+    category: feature
+  empty-body:
+    title: "Empty Body"
+    category: feature
+  fire-spells:
+    title: "Fire Spells"
+    category: element
+  cold-spells:
+    title: "Cold Spells"
+    category: element
+  lightning-spells:
+    title: "Lightning Spells"
+    category: element
+  acid-spells:
+    title: "Acid Spells"
+    category: element
+  strix-cove-cloak:
+    title: "Strix Cove Monk Cloak"
+    category: gear
+  sorcerer-multiclass:
+    title: "Sorcerer Multiclass"
+    category: class
+  twinned-spell:
+    title: "Twinned Spell"
+    category: metamagic
+  flowing-barrier:
+    title: "Flowing Barrier"
+    category: feature
+  patient-defense:
+    title: "Patient Defense"
+    category: technique
+  patient-0:
+    title: "Patient-0"
+    category: gear
+  dragon-claw-gloves:
+    title: "Dragon's Claw Gloves"
+    category: gear
+  staff-of-the-woodland-romance:
+    title: "Staff of the Woodland Romance"
+    category: gear
+edges:
+  - from: ki-points
+    to: elemental-attunement
+    label: "fuels cantrip access"
+  - from: ki-points
+    to: twin-elemental-wrath
+    label: "spends 1 Ki"
+  - from: ki-points
+    to: four-point-attack
+    label: "spends 4 Ki"
+  - from: ki-points
+    to: flowing-barrier
+    label: "spends Ki for AC"
+  - from: elemental-attunement
+    to: fire-spells
+    label: "grants cantrips"
+  - from: elemental-attunement
+    to: cold-spells
+    label: "grants cantrips"
+  - from: elemental-attunement
+    to: lightning-spells
+    label: "grants cantrips"
+  - from: elemental-attunement
+    to: acid-spells
+    label: "grants cantrips"
+  - from: twin-elemental-wrath
+    to: fire-spells
+    label: "infuses attacks"
+  - from: twin-elemental-wrath
+    to: cold-spells
+    label: "infuses attacks"
+  - from: four-point-attack
+    to: fire-spells
+    label: "one strike each element"
+  - from: four-point-attack
+    to: cold-spells
+    label: "one strike each element"
+  - from: four-point-attack
+    to: lightning-spells
+    label: "one strike each element"
+  - from: four-point-attack
+    to: acid-spells
+    label: "one strike each element"
+  - from: elemental-mastery
+    to: ki-points
+    label: "restores Ki on cast"
+  - from: sorcerer-multiclass
+    to: twinned-spell
+    label: "unlocks metamagic"
+  - from: twinned-spell
+    to: cold-spells
+    label: "doubles target count"
+  - from: strix-cove-cloak
+    to: elemental-attunement
+    label: "enables casting out of combat"
+  - from: flowing-barrier
+    to: ki-points
+    label: "converts Ki to AC"
+  - from: patient-0
+    to: ki-points
+    label: "boosts damage with Ki"
+  - from: dragon-claw-gloves
+    to: twin-elemental-wrath
+    label: "amplifies infused damage"

@@ -4,7 +4,7 @@ import {
   validateYAMLContent,
   validateSemanticIntegrity,
   formatPayloadAsPrompt,
-} from '../src/core/okf/validate'
+} from '../src/core/learning-engine/validation/gateway'
 
 describe('OKF 3-Tier Section Validator Engine', () => {
   describe('Tier 1: YAML Syntax Validation', () => {

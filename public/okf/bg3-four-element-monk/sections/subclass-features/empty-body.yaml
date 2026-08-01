@@ -1,0 +1,17 @@
+type: taxonomy-category
+icon: Ghost
+title: "Empty Body"
+subtitle: "Monk Level 14"
+color: mauve
+description: "Spend 4 Ki to cast Mirror Image or Teleport at will."
+details: "At Monk 14, spend 4 Ki to cast either Mirror Image (three illusory copies that absorb hits) or Teleport (instant movement to any visible location). These are monk abilities, not spell slots. Teleport is invaluable for repositioning, flanking, and escaping dangerous situations."
+analogy: "Phasing in and out of reality to control the battlefield."
+primaryFocus: "Mobility and defensive utility"
+inScope:
+  - "Mirror Image for hit avoidance"
+  - "Teleport for repositioning and flanking"
+  - "No spell slot consumption"
+  - "Refreshes on Short Rest with Ki"
+outOfScope:
+  - "Costs 4 Ki each cast"
+  - "Cannot cast both in the same activation"

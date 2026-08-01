@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest';
-import { autoDeriveViews } from '../../../../src/core/subdomains/process-simulation/components/flowchart/derivations';
-import type { UnifiedFlowchartSchema, FlowchartEntity, FlowchartRelation, FlowchartViewNode } from '../../../../src/core/subdomains/process-simulation/components/flowchart/types';
-import { TYPES } from '../../../../src/core/subdomains/process-simulation/components/flowchart/types';
+import { autoDeriveViews } from '../../../../src/core/learning-engine/sub-contexts/process-simulation/components/flowchart/derivations';
+import type { UnifiedFlowchartSchema, FlowchartEntity, FlowchartRelation, FlowchartViewNode } from '../../../../src/core/learning-engine/sub-contexts/process-simulation/components/flowchart/types';
+import { TYPES } from '../../../../src/core/learning-engine/sub-contexts/process-simulation/components/flowchart/types';
 
 describe('Policy branching mapping (#69)', () => {
   const baseSchema = (entities: Record<string, FlowchartEntity>, relations: FlowchartRelation[], viewNodes: FlowchartViewNode[]): UnifiedFlowchartSchema => ({

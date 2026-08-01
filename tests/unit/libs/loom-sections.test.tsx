@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest'
 import { screen, fireEvent, act, waitFor } from '@testing-library/react'
 import LoomSections from '../../../libs/loom-sections'
-import type { SectionConfig } from '../../../src/core/registry'
+import type { SectionConfig } from '../../../src/core/learning-engine/registry'
 
 describe('LoomSections UMD / CDN Library', () => {
   let container: HTMLDivElement

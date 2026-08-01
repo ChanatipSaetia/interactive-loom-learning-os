@@ -33,6 +33,7 @@
       policy: "Trigger Tool Call"
       command: "Execute Tool"
       handledBy: tools_router
+      delegatesTo: subagents
       resultEvents:
         - id: tool_executed
           title: "Tool Executed"
@@ -109,6 +110,7 @@
       policy: "Trigger QA Review"
       command: "Review Result"
       handledBy: orch_agent
+      delegatesTo: qa_user
       resultEvents:
         - id: qa_approved
           title: "QA Approved"

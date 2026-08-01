@@ -1,6 +1,6 @@
 import { render, screen, fireEvent } from '@testing-library/react'
 import { describe, it, expect, vi } from 'vitest'
-import { QuizHelpModal } from '../../../../src/core/subdomains/practice-assessment/components/quiz/QuizHelpModal'
+import { QuizHelpModal } from '../../../../src/core/learning-engine/sub-contexts/practice-assessment/components/quiz/QuizHelpModal'
 
 describe('QuizHelpModal', () => {
   it('does not render when isOpen is false', () => {
