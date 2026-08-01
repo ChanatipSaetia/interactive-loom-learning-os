@@ -4,6 +4,7 @@ export {
   BulletsSectionSchema,
   TaxonomyBrowserSectionSchema,
   ImageGallerySectionSchema,
+  PillarLayerSectionSchema,
 } from './schema'
 export type {
   TextSectionData,
@@ -15,6 +16,10 @@ export type {
   TaxonomyCategory,
   ImageGallerySectionData,
   GalleryItem,
+  PillarLayerSectionData,
+  PillarLayerPillar,
+  PillarLayerLayer,
+  PillarLayerBlock,
 } from './schema'
 
 export { TextSection, TextHelpModal } from './components/TextSection'
@@ -32,10 +37,15 @@ export type { TaxonomyBrowserSectionProps, TaxonomyCategoryType } from './compon
 export { ImageGallerySection } from './components/ImageGallerySection'
 export type { ImageGalleryProps, GalleryItemType } from './components/ImageGallerySection'
 
+export { PillarLayerSection } from './components/PillarLayerSection'
+export type { PillarLayerSectionProps } from './components/PillarLayerSection'
+export { PillarLayerHelpModal } from './components/pillar-layer/PillarLayerHelpModal'
+
 export { TextFormEditor } from './components/text/TextFormEditor'
 export { IntroFormEditor } from './components/intro/IntroFormEditor'
 export { BulletsFormEditor } from './components/bullets/BulletsFormEditor'
 export { TaxonomyBrowserFormEditor } from './components/taxonomy-browser/TaxonomyBrowserFormEditor'
+export { PillarLayerFormEditor } from './components/pillar-layer/PillarLayerFormEditor'
 
 
 export type {

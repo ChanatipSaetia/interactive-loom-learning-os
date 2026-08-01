@@ -13,6 +13,7 @@ export const SECTION_TYPES: { type: OKFSectionData['type']; label: string }[] = 
   { type: 'tradeoff-sandbox', label: 'Tradeoff Sandbox (tradeoff-sandbox)' },
   { type: 'decision-tree', label: 'Architectural Decision Tree (decision-tree)' },
   { type: 'taxonomy-browser', label: 'Taxonomy Browser (taxonomy-browser)' },
+  { type: 'pillar-layer', label: 'Pillar & Layer Matrix (pillar-layer)' },
   { type: 'flashcards', label: 'Vocabulary Flashcards (flashcards)' },
   { type: 'quiz', label: 'Interactive Practice Quiz (quiz)' },
   { type: 'concept-map', label: 'Concept Map (concept-map)' },
@@ -102,6 +103,32 @@ export function createDefaultSectionData(type: string): OKFSectionData {
             inScope: ['In Scope Item 1'],
             outOfScope: ['Out of Scope Item 1'],
             color: 'var(--primary)',
+          },
+        ],
+      }
+    case 'pillar-layer':
+      return {
+        type: 'pillar-layer',
+        title: 'System Architecture Matrix',
+        description: 'Multi-layered matrix of capabilities and core infrastructure.',
+        pillars: [
+          { id: 'p-auth', title: 'Identity & Security', subtitle: 'Security Domain', color: 'blue' },
+          { id: 'p-core', title: 'Core Services', subtitle: 'Business Domain', color: 'green' },
+        ],
+        layers: [
+          { id: 'l-gateway', title: 'API & Channel Tier', span: 'full', blocks: [{ title: 'GraphQL Edge Gateway' }] },
+          { id: 'l-services', title: 'Application Services Tier', span: 'matrix' },
+          { id: 'l-infra', title: 'Infrastructure Tier', span: 'matrix' },
+        ],
+        matrix_blocks: [
+          {
+            title: 'OAuth2 / OIDC Provider',
+            description: 'Authentication and session token manager',
+            layer_id: 'l-services',
+            pillar_id: 'p-auth',
+            col_span: 1,
+            row_span: 1,
+            color: 'mauve',
           },
         ],
       }

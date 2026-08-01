@@ -1,0 +1,124 @@
+type: pillar-layer
+title: "Hexagonal Architecture (Ports & Adapters) Contract Matrix"
+description: "Architecture matrix demonstrating how Driving and Driven Port contracts span across boundaries to decouple the Core Domain from external adapters."
+
+pillars:
+  - id: "p-driving"
+    title: "Primary Driving Side"
+    subtitle: "Inbound Drivers & Controllers"
+    color: "blue"
+    icon: "arrow-right-circle"
+
+  - id: "p-domain"
+    title: "Domain Kernel & Application"
+    subtitle: "Hexagon Core (Pure Business Rules)"
+    color: "mauve"
+    icon: "cpu"
+
+  - id: "p-driven"
+    title: "Secondary Driven Side"
+    subtitle: "Outbound Infrastructure Adapters"
+    color: "green"
+    icon: "database"
+
+layers:
+  - id: "l-driving-ports"
+    title: "Driving Input Port Tier"
+    description: "Inbound adapters plug into Driving Port contracts that span across driver and domain boundaries."
+    span: "matrix"
+
+  - id: "l-domain-core"
+    title: "Hexagon Domain Kernel Tier"
+    description: "Pure domain aggregates and business logic isolated from external frameworks."
+    span: "matrix"
+
+  - id: "l-driven-ports"
+    title: "Driven Output Port Tier"
+    description: "Driven Port contracts defined by the domain and implemented by outbound infrastructure adapters."
+    span: "matrix"
+
+  - id: "l-infrastructure"
+    title: "Infrastructure & Data Tier"
+    description: "External message buses, database storage engines, and network gateways."
+    span: "matrix"
+
+matrix_blocks:
+  - id: "b-driving-adapters"
+    title: "Driving Adapters (HTTP, CLI, Webhook)"
+    description: "Inbound protocol drivers that parse requests and call the Driving Input Port."
+    layer_id: "l-driving-ports"
+    pillar_id: "p-driving"
+    col_span: 1
+    row_span: 1
+    color: "blue"
+    tags: ["Adapter", "Inbound Driver", "HTTP/CLI"]
+
+  - id: "b-inbound-port-contract"
+    title: "Driving Input Port Contract Interface"
+    description: "Multi-column Port contract (OrderUseCasePort, PaymentServicePort) defined by Core Domain and invoked by Inbound Drivers."
+    layer_id: "l-driving-ports"
+    pillar_id: "p-domain"
+    col_span: 2
+    row_span: 1
+    color: "sapphire"
+    tags: ["Port Contract", "Spans 2 Columns", "Driving Interface"]
+
+  - id: "b-domain-entities"
+    title: "Pure Domain Aggregates & Invariants"
+    description: "Multi-column Hexagon Kernel encapsulating core business rules, entity state transitions, and domain events."
+    layer_id: "l-domain-core"
+    pillar_id: "p-driving"
+    col_span: 2
+    row_span: 1
+    color: "mauve"
+    tags: ["Hexagon Kernel", "Spans 2 Columns", "DDD Aggregates"]
+
+  - id: "b-domain-calculators"
+    title: "Domain Policy & Business Rules"
+    description: "Stateless domain calculators and business policy rules."
+    layer_id: "l-domain-core"
+    pillar_id: "p-driven"
+    col_span: 1
+    row_span: 1
+    color: "teal"
+    tags: ["Domain Policy", "Business Rules"]
+
+  - id: "b-outbound-port-contract"
+    title: "Driven Output Port Contract Interface"
+    description: "Multi-column Port contract (OKFStoragePort, EventPublisherPort) defined by Core Domain for infrastructure side-effects."
+    layer_id: "l-driven-ports"
+    pillar_id: "p-driving"
+    col_span: 2
+    row_span: 1
+    color: "lavender"
+    tags: ["Port Contract", "Spans 2 Columns", "Driven Interface"]
+
+  - id: "b-driven-adapters"
+    title: "Driven Adapters (PostgreSQL, Redis, SendGrid)"
+    description: "Outbound infrastructure adapters implementing Driven Port contracts for data persistence and external messaging."
+    layer_id: "l-driven-ports"
+    pillar_id: "p-driven"
+    col_span: 1
+    row_span: 1
+    color: "green"
+    tags: ["Adapter", "Outbound Infra", "PostgreSQL/Redis"]
+
+  - id: "b-inbound-infra"
+    title: "External Ingress Message Bus"
+    description: "Kafka & RabbitMQ consumer channels feeding external events to driving adapters."
+    layer_id: "l-infrastructure"
+    pillar_id: "p-driving"
+    col_span: 1
+    row_span: 1
+    color: "maroon"
+    tags: ["Ingress Bus", "Kafka/RabbitMQ"]
+
+  - id: "b-shared-infra"
+    title: "Database Engines & Storage Infrastructure"
+    description: "Multi-column physical infrastructure engines (PostgreSQL Cluster, Redis Cache, Cloud Event Store) hosting driven storage."
+    layer_id: "l-infrastructure"
+    pillar_id: "p-domain"
+    col_span: 2
+    row_span: 1
+    color: "peach"
+    tags: ["Infrastructure", "Spans 2 Columns", "Storage Engine"]

@@ -91,6 +91,9 @@ export function bundleToSections(bundle: OKFBundled): SectionConfig[] {
       case 'image-gallery':
         props.items = data.items
         break
+      case 'pillar-layer':
+        props.section = data
+        break
       case 'formula-sandbox':
         props.variables = data.variables
         props.metrics = data.metrics

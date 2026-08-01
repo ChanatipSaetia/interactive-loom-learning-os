@@ -18,4 +18,5 @@ related:
   - sections/reflection-sequence/sequence.yaml
   - sections/tradeoff-sandbox/scenarios.yaml
   - sections/reflection-template/template.yaml
+  - sections/pillar-layer/matrix.yaml
   - sections/quiz/questions.yaml

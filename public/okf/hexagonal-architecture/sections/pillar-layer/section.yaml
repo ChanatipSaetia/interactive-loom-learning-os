@@ -1,0 +1,98 @@
+type: pillar-layer
+title: "Hexagonal Architecture Port & Adapter Matrix"
+description: "2D matrix mapping primary driving ports, core domain logic, and secondary driven adapters."
+
+pillars:
+  - id: "p-driving"
+    title: "Primary Driving Side"
+    subtitle: "Inbound Adapters & Entrypoints"
+    color: "blue"
+    icon: "arrow-right-circle"
+
+  - id: "p-domain"
+    title: "Core Domain & Application"
+    subtitle: "Hexagon Kernel (Pure Business Logic)"
+    color: "mauve"
+    icon: "cpu"
+
+  - id: "p-driven"
+    title: "Secondary Driven Side"
+    subtitle: "Outbound Infrastructure Adapters"
+    color: "green"
+    icon: "database"
+
+layers:
+  - id: "l-boundary"
+    title: "Interface Boundary Tier"
+    description: "API Gateway, REST controllers, and messaging listeners."
+    span: "full"
+    blocks:
+      - title: "OAuth2 / OIDC Security Edge"
+      - title: "OpenAPI Documentation Generator"
+      - title: "TLS Termination Listener"
+
+  - id: "l-adapters"
+    title: "Adapter Integration Tier"
+    description: "Converts protocol calls to domain use case invocations."
+    span: "matrix"
+
+  - id: "l-core"
+    title: "Hexagon Core Tier"
+    description: "Pure domain entities, value objects, and application services."
+    span: "matrix"
+
+  - id: "l-persistence"
+    title: "Persistence & External Infra Tier"
+    description: "Database repositories, event brokers, and 3rd party APIs."
+    span: "matrix"
+
+matrix_blocks:
+  - id: "b-web-controller"
+    title: "REST & GraphQL Controllers"
+    description: "Handles HTTP requests and maps DTOs to domain commands."
+    layer_id: "l-adapters"
+    pillar_id: "p-driving"
+    col_span: 1
+    row_span: 1
+    color: "blue"
+    tags: ["Inbound", "HTTP", "GraphQL"]
+
+  - id: "b-cli-adapter"
+    title: "CLI Command Adapter"
+    description: "Parses shell flags and invokes domain use cases."
+    layer_id: "l-adapters"
+    pillar_id: "p-driving"
+    col_span: 1
+    row_span: 1
+    color: "teal"
+    tags: ["Inbound", "CLI"]
+
+  - id: "b-use-case-services"
+    title: "Application Use Case Services"
+    description: "Orchestrates domain workflows and enforces invariants."
+    layer_id: "l-core"
+    pillar_id: "p-domain"
+    col_span: 1
+    row_span: 1
+    color: "mauve"
+    tags: ["Core Kernel", "Use Cases"]
+
+  - id: "b-postgres-adapter"
+    title: "PostgreSQL Repository Adapter"
+    description: "Implements OKFStoragePort for persistent relational storage."
+    layer_id: "l-persistence"
+    pillar_id: "p-driven"
+    col_span: 1
+    row_span: 1
+    color: "green"
+    tags: ["Outbound", "PostgreSQL", "DDD Port"]
+
+  - id: "b-kafka-adapter"
+    title: "Kafka Event Publisher Adapter"
+    description: "Emits domain events to external event buses."
+    layer_id: "l-persistence"
+    pillar_id: "p-driven"
+    col_span: 1
+    row_span: 1
+    color: "peach"
+    tags: ["Outbound", "Event Driven"]

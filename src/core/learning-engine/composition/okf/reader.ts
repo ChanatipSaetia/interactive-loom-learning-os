@@ -24,6 +24,7 @@ import type {
   BulletsSectionData,
   TaxonomyBrowserSectionData,
   ImageGallerySectionData,
+  PillarLayerSectionData,
   GalleryItem,
 } from '../../sub-contexts/progressive-content'
 import type {
@@ -209,6 +210,8 @@ async function loadSectionResource(
       return loadDecisionTreeSection(basePath, resource)
     case 'image-gallery':
       return loadImageGallerySection(basePath, resource, resourceFiles)
+    case 'pillar-layer':
+      return loadPillarLayerSection(basePath, resource, resourceFiles)
     case 'formula-sandbox':
       return loadFormulaSandboxSection(basePath, resource)
     case 'reflection-sequence':
@@ -324,6 +327,23 @@ async function loadImageGallerySection(basePath: string, resource: string, resou
   }
   return { type: 'image-gallery', items: [] }
 }
+
+async function loadPillarLayerSection(basePath: string, resource: string, resourceFiles: string[]): Promise<PillarLayerSectionData> {
+  const targetFile = resource !== '.' ? resource : resourceFiles.find((f) => f.endsWith('.yaml') && f !== 'section.yaml')
+  if (targetFile) {
+    const raw = await fetchYaml<any>(`${basePath}/${targetFile}`)
+    return {
+      type: 'pillar-layer',
+      title: raw.title,
+      description: raw.description,
+      pillars: raw.pillars ?? [],
+      layers: raw.layers ?? [],
+      matrix_blocks: raw.matrix_blocks ?? raw.blocks ?? [],
+    }
+  }
+  return { type: 'pillar-layer', pillars: [], layers: [], matrix_blocks: [] }
+}
+
 
 // --- Flow mapping ---
 

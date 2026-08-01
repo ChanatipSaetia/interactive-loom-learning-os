@@ -7,6 +7,7 @@ import {
   formatValidationAsPrompt,
   KNOWN_SECTION_TYPES,
 } from '../../../../../src/core/learning-engine/validation/gateway'
+import type { ValidationDiagnostic } from '../../../../../src/core/learning-engine/validation/types'
 
 // ============================================================================
 // Tier 1: YAML Syntax & Frontmatter
@@ -863,11 +864,150 @@ describe('KNOWN_SECTION_TYPES', () => {
     expect(KNOWN_SECTION_TYPES.has('reflection-template')).toBe(true)
     expect(KNOWN_SECTION_TYPES.has('taxonomy-browser')).toBe(true)
     expect(KNOWN_SECTION_TYPES.has('image-gallery')).toBe(true)
+    expect(KNOWN_SECTION_TYPES.has('pillar-layer')).toBe(true)
     expect(KNOWN_SECTION_TYPES.has('bullets')).toBe(true)
   })
 
-  it('has 15 section types', () => {
-    expect(KNOWN_SECTION_TYPES.size).toBe(15)
+  it('has 16 section types', () => {
+    expect(KNOWN_SECTION_TYPES.size).toBe(16)
+  })
+})
+
+describe('Tier 3 - Pillar-Layer Spatial Validation', () => {
+  const validPillarLayerYaml = `---
+type: pillar-layer
+title: Valid 2D Grid
+pillars:
+  - id: p-auth
+    title: Auth
+  - id: p-core
+    title: Core
+layers:
+  - id: l-services
+    title: Services
+  - id: l-infra
+    title: Infrastructure
+matrix_blocks:
+  - title: Block A
+    layer_id: l-services
+    pillar_id: p-auth
+    col_span: 1
+    row_span: 1
+  - title: Block B
+    layer_id: l-services
+    pillar_id: p-core
+    col_span: 1
+    row_span: 1
+  - title: Block C
+    layer_id: l-infra
+    pillar_id: p-auth
+    col_span: 1
+    row_span: 1
+  - title: Block D
+    layer_id: l-infra
+    pillar_id: p-core
+    col_span: 1
+    row_span: 1
+---
+`
+
+  it('validates a correct non-overlapping 2D grid matrix', () => {
+    const result = validateOKFSection(validPillarLayerYaml)
+    expect(result.status).toBe('valid')
+    expect(result.diagnostics).toHaveLength(0)
+  })
+
+  it('detects unallocated grid gaps when a cell is empty', () => {
+    const gapYaml = `---
+type: pillar-layer
+pillars:
+  - id: p-auth
+    title: Auth
+  - id: p-core
+    title: Core
+layers:
+  - id: l-services
+    title: Services
+matrix_blocks:
+  - title: Block A
+    layer_id: l-services
+    pillar_id: p-auth
+---
+`
+    const result = validateOKFSection(gapYaml)
+    expect(result.status).toBe('error')
+    expect(result.diagnostics.some((d: ValidationDiagnostic) => d.message.includes('GRID_GAP_UNALLOCATED'))).toBe(true)
+  })
+
+  it('detects unknown layer_id and pillar_id references', () => {
+    const badRefYaml = `---
+type: pillar-layer
+pillars:
+  - id: p-auth
+    title: Auth
+layers:
+  - id: l-services
+    title: Services
+matrix_blocks:
+  - title: Bad Block
+    layer_id: unknown-layer
+    pillar_id: unknown-pillar
+---
+`
+    const result = validateOKFSection(badRefYaml)
+    expect(result.status).toBe('error')
+    expect(result.diagnostics.some((d: ValidationDiagnostic) => d.message.includes('INVALID_LAYER_REF'))).toBe(true)
+    expect(result.diagnostics.some((d: ValidationDiagnostic) => d.message.includes('INVALID_PILLAR_REF'))).toBe(true)
+  })
+
+  it('detects out-of-bounds col_span exceeding grid width', () => {
+    const oobYaml = `---
+type: pillar-layer
+pillars:
+  - id: p-auth
+    title: Auth
+layers:
+  - id: l-services
+    title: Services
+matrix_blocks:
+  - title: Wide Block
+    layer_id: l-services
+    pillar_id: p-auth
+    col_span: 3
+---
+`
+    const result = validateOKFSection(oobYaml)
+    expect(result.status).toBe('error')
+    expect(result.diagnostics.some((d: ValidationDiagnostic) => d.message.includes('BOX_OUT_OF_BOUNDS_X'))).toBe(true)
+  })
+
+  it('detects 2D rectangle collision between overlapping blocks', () => {
+    const overlapYaml = `---
+type: pillar-layer
+pillars:
+  - id: p-auth
+    title: Auth
+  - id: p-core
+    title: Core
+layers:
+  - id: l-services
+    title: Services
+matrix_blocks:
+  - title: Block 1
+    layer_id: l-services
+    pillar_id: p-auth
+    col_span: 2
+  - title: Block 2
+    layer_id: l-services
+    pillar_id: p-core
+    col_span: 1
+---
+`
+    const result = validateOKFSection(overlapYaml)
+    expect(result.status).toBe('error')
+    expect(result.diagnostics.some((d: ValidationDiagnostic) => d.message.includes('RECTANGLE_OVERLAP_CONFLICT'))).toBe(true)
+    const diag = result.diagnostics.find((d: ValidationDiagnostic) => d.message.includes('RECTANGLE_OVERLAP_CONFLICT'))
+    expect(diag?.fixHint).toBeDefined()
   })
 })
 

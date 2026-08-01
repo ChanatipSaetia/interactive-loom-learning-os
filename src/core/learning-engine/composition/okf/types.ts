@@ -27,6 +27,7 @@ import type {
   BulletsSectionData,
   TaxonomyBrowserSectionData,
   ImageGallerySectionData,
+  PillarLayerSectionData,
   IntroRoadmapStep,
   GalleryItem,
 } from '../../sub-contexts/progressive-content'
@@ -85,6 +86,7 @@ export type OKFSectionData =
   | FormulaSandboxSectionData
   | ReflectionSequenceSectionData
   | ReflectionTemplateSectionData
+  | PillarLayerSectionData
 
 export type OKFIntroSectionData = IntroSectionData
 export type OKFTextSectionData = TextSectionData
@@ -101,6 +103,8 @@ export type OKFImageGallerySectionData = ImageGallerySectionData
 export type OKFFormulaSandboxSectionData = FormulaSandboxSectionData
 export type OKFReflectionSequenceSectionData = ReflectionSequenceSectionData
 export type OKFReflectionTemplateSectionData = ReflectionTemplateSectionData
+export type OKFPillarLayerSectionData = PillarLayerSectionData
+
 
 export type OKFFormulaVariable = FormulaVariable
 export type OKFFormulaMetric = FormulaMetric

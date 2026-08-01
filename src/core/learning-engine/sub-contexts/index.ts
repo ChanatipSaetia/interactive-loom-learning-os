@@ -128,6 +128,7 @@ export {
   BulletsSectionSchema,
   TaxonomyBrowserSectionSchema,
   ImageGallerySectionSchema,
+  PillarLayerSectionSchema,
 } from './progressive-content'
 
 export type {
@@ -140,6 +141,10 @@ export type {
   TaxonomyCategory,
   ImageGallerySectionData,
   GalleryItem,
+  PillarLayerSectionData,
+  PillarLayerPillar,
+  PillarLayerLayer,
+  PillarLayerBlock,
 } from './progressive-content'
 
 export { TextSection, TextHelpModal } from './progressive-content'
@@ -160,11 +165,15 @@ export type {
 export { ImageGallerySection } from './progressive-content'
 export type { ImageGalleryProps, GalleryItemType } from './progressive-content'
 
+export { PillarLayerSection, PillarLayerHelpModal } from './progressive-content'
+export type { PillarLayerSectionProps } from './progressive-content'
+
 export {
   TextFormEditor,
   IntroFormEditor,
   BulletsFormEditor,
   TaxonomyBrowserFormEditor,
+  PillarLayerFormEditor,
 } from './progressive-content'
 
 export type {

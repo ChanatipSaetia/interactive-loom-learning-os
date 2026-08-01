@@ -17,6 +17,7 @@ SectionRegistry.register('concept-map', () => import('./core/learning-engine/sub
 SectionRegistry.register('scenario', () => import('./core/learning-engine/sub-contexts/process-simulation/components/scenario'))
 SectionRegistry.register('decision-tree', () => import('./core/learning-engine/sub-contexts/tradeoff-sandbox/components/decision-tree'))
 SectionRegistry.register('image-gallery', () => import('./core/learning-engine/sub-contexts/progressive-content/components/image-gallery'))
+SectionRegistry.register('pillar-layer', () => import('./core/learning-engine/sub-contexts/progressive-content/components/pillar-layer'))
 SectionRegistry.register('formula-sandbox', () => import('./core/learning-engine/sub-contexts/tradeoff-sandbox/components/formula-sandbox'))
 SectionRegistry.register('reflection-sequence', () => import('./core/learning-engine/sub-contexts/reflection-synthesis/components/reflection-sequence'))
 SectionRegistry.register('reflection-template', () => import('./core/learning-engine/sub-contexts/reflection-synthesis/components/reflection-template'))
