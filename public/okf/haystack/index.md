@@ -9,6 +9,7 @@
 
 ## Taxonomy
 * [Haystack Component Taxonomy](sections/taxonomy/section.md)
+* [Haystack RAG Pipeline Layer Stack](sections/pillar-layer/section.md) — Layer stack map of orchestration, LLM models, vector indexing, and stores
 
 ## Flows
 * [Indexing Pipeline](sections/flowchart-indexing/section.md)

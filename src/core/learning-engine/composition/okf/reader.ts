@@ -336,12 +336,11 @@ async function loadPillarLayerSection(basePath: string, resource: string, resour
       type: 'pillar-layer',
       title: raw.title,
       description: raw.description,
-      pillars: raw.pillars ?? [],
       layers: raw.layers ?? [],
       matrix_blocks: raw.matrix_blocks ?? raw.blocks ?? [],
     }
   }
-  return { type: 'pillar-layer', pillars: [], layers: [], matrix_blocks: [] }
+  return { type: 'pillar-layer', layers: [], matrix_blocks: [] }
 }
 
 

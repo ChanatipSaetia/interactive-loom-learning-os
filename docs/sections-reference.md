@@ -62,6 +62,7 @@ For optimal cognitive progression, structure your topic's sections in the follow
 | `decision-tree` | Diagnostic logic & situation recommendations | Directed Q&A nodes | Answer path history, active leaf recommendation | Path counter indicators, stagger fade-in cards | `tradeoff-sandbox` |
 | `flashcards` | Vocabulary recall & dialogue scenario | Vocabulary card deck + Pronunciation | Card flipped state, active card index | Flip rotation animation, slider transitions | `practice-assessment` |
 | `image-gallery` | Visual showcase & screenshots | Image list (`gallery.yaml`) | Fullscreen lightbox index, active image | Keyboard controls transitions, zoom-on-hover | `progressive-content` |
+| `pillar-layer` | 2D Grid Architecture Matrix & multi-dimensional structural map | `matrix.yaml` / `section.yaml` | Active block drawer, search query, selected tag pill, hovered pillar/layer | Header highlight scale, block card pop-in, search dimming | `progressive-content` |
 | `formula-sandbox` | Quantitative parameter & system dynamics | Sliders (`variables`) + Math expressions | Variable values record, computed metrics | Real-time slider adjustments, HUD drawer side-slide | `tradeoff-sandbox` |
 | `reflection-sequence` | Chronological process ordering active recall | Unordered cards list + Solution array | Placed items record, selected item ID | Card drag feedback, mobile tap highlight glows | `reflection-synthesis` |
 | `reflection-template` | Reasoning synthesis & tradeoff explanation | Inline text template + Chips pool | Filled zones record, active chip selection | Inline chip placements, blank borders glow | `reflection-synthesis` |
@@ -96,6 +97,11 @@ For optimal cognitive progression, structure your topic's sections in the follow
 - **Mental Model Focus**: Categorized lists of patterns, configurations, or subsystems.
 - **Interactivity**: Grid cards that expand to reveal detailed specs, analogies, and scoping.
 - **Pedagogical Rationale**: Classifies related but distinct concepts (e.g. LLM routing patterns). Employs analogies to bridge theoretical definitions with everyday understanding.
+
+### `pillar-layer`
+- **Mental Model Focus**: Layer Stacked & 2D Grid Architecture Matrix.
+- **Interactivity**: 2D CSS grid with multi-width spanning, L-shaped polygon clip paths, search, tag filter pills, and detail drawer modals.
+- **Pedagogical Rationale**: Demonstrates system assembly using Lego building blocks stacked bottom-to-top across architectural layers, providing active recall through search and polygon slotting.
 
 ### `concept-map`
 - **Mental Model Focus**: Semantic groupings and entity relationships.

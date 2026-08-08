@@ -11,7 +11,7 @@ Decouple core business domain logic from external dependencies, databases, frame
 ## Architecture & Mechanics
 * [Dependency Inversion Mechanics](sections/text-core/section.md) — Core explanation of Ports and Adapters
 * [Order Request Lifecycle](sections/flowchart/section.md) — Event Storming process diagram
-* [Port & Adapter Architecture Matrix](sections/pillar-layer/section.md) — 2D matrix map of driving ports, domain kernel, and driven adapters
+* [Port & Adapter Layer Stack](sections/pillar-layer/section.md) — Layer stack map of driving ports, domain kernel, and driven adapters
 
 ## Practice & Assessment
 * [Order Flow Sequencing](sections/reflection-sequence/section.md) — Process ordering challenge

@@ -393,7 +393,9 @@ export function validateOKFSectionFile(
     if (fmResult.body.trim()) {
       try {
         parsedBody = yaml.load(fmResult.body)
-      } catch {}
+      } catch {
+        // Fallback when body is raw markdown text
+      }
     }
     if (parsedBody && typeof parsedBody === 'object' && !Array.isArray(parsedBody)) {
       payload = { ...fmResult.frontmatter, ...parsedBody }

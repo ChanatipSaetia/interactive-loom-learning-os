@@ -142,7 +142,6 @@ export type {
   ImageGallerySectionData,
   GalleryItem,
   PillarLayerSectionData,
-  PillarLayerPillar,
   PillarLayerLayer,
   PillarLayerBlock,
 } from './progressive-content'

@@ -901,7 +901,7 @@ export function TradeoffSandboxFormEditor({ data, onChange }: TradeoffSandboxFor
             {data.scenarios.map((scenario, i) => (
               <ScenarioEditor
                 key={scenario.id || i}
-                scenario={scenario as any}
+                scenario={scenario as unknown as TradeoffScenario}
                 index={i}
                 onChange={(updated) => handleScenarioChange(i, updated)}
                 onRemove={() => handleRemoveScenario(i)}

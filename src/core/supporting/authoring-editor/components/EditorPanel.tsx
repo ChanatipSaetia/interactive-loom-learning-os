@@ -109,23 +109,18 @@ export function createDefaultSectionData(type: string): OKFSectionData {
     case 'pillar-layer':
       return {
         type: 'pillar-layer',
-        title: 'System Architecture Matrix',
-        description: 'Multi-layered matrix of capabilities and core infrastructure.',
-        pillars: [
-          { id: 'p-auth', title: 'Identity & Security', subtitle: 'Security Domain', color: 'blue' },
-          { id: 'p-core', title: 'Core Services', subtitle: 'Business Domain', color: 'green' },
-        ],
+        title: 'System Architecture Layer Stack',
+        description: 'Multi-layered stack of capabilities and core infrastructure.',
         layers: [
-          { id: 'l-gateway', title: 'API & Channel Tier', span: 'full', blocks: [{ title: 'GraphQL Edge Gateway' }] },
-          { id: 'l-services', title: 'Application Services Tier', span: 'matrix' },
-          { id: 'l-infra', title: 'Infrastructure Tier', span: 'matrix' },
+          { id: 'l-gateway', title: 'API & Channel Tier' },
+          { id: 'l-services', title: 'Application Services Tier' },
+          { id: 'l-infra', title: 'Infrastructure Tier' },
         ],
         matrix_blocks: [
           {
             title: 'OAuth2 / OIDC Provider',
             description: 'Authentication and session token manager',
             layer_id: 'l-services',
-            pillar_id: 'p-auth',
             col_span: 1,
             row_span: 1,
             color: 'mauve',

@@ -1,0 +1,115 @@
+type: pillar-layer
+title: "Haystack RAG Pipeline Layer Stack"
+description: "Component stack map of orchestration pipelines, LLM models, vector indexing, and data stores."
+layers:
+  - id: "l-orchestration"
+    title: "1. Pipeline & Orchestration Tier"
+    description: "Flow control, prompt node routing, and query pipelines."
+  - id: "l-models"
+    title: "2. LLMs & Embeddings Tier"
+    description: "Language models, dense/sparse encoders, and rerankers."
+  - id: "l-retrieval"
+    title: "3. Vector Indexing & Retrieval Tier"
+    description: "Dense vector indexes, BM25 keyword search engines."
+  - id: "l-storage"
+    title: "4. Persistence & Document Storage"
+    description: "Vector databases, SQL stores, and document repositories."
+matrix_blocks:
+  # Layer 1
+  - id: "b-query-pipeline"
+    title: "QueryPipeline Node"
+    description: "Executes end-to-end RAG query flow."
+    layer_id: "l-orchestration"
+    col_offset: 0
+    col_span: 2
+    color: "blue"
+    depends_on: ["b-prompt-node", "b-retriever-node"]
+  - id: "b-indexing-pipeline"
+    title: "IndexingPipeline Node"
+    description: "Parses, chunks, and embeds incoming documents."
+    layer_id: "l-orchestration"
+    col_offset: 2
+    col_span: 2
+    color: "mauve"
+    depends_on: ["b-embedder-node", "b-doc-store-port"]
+
+  # Layer 2
+  - id: "b-prompt-node"
+    title: "PromptNode / Generator"
+    description: "Formats prompt templates for LLM invocation."
+    layer_id: "l-models"
+    col_offset: 0
+    col_span: 1
+    color: "peach"
+    depends_on: ["b-openai-llm"]
+  - id: "b-retriever-node"
+    title: "EmbeddingRetriever"
+    description: "Calculates dense query embeddings and fetches top-K."
+    layer_id: "l-models"
+    col_offset: 1
+    col_span: 1
+    color: "teal"
+    depends_on: ["b-embedder-node", "b-vector-index"]
+  - id: "b-embedder-node"
+    title: "TextEmbedder (bge-large)"
+    description: "Transforms text into 1024-d vector embeddings."
+    layer_id: "l-models"
+    col_offset: 2
+    col_span: 2
+    color: "green"
+    depends_on: ["b-qdrant-db"]
+
+  # Layer 3
+  - id: "b-openai-llm"
+    title: "OpenAI GPT-4o Model API"
+    description: "Generates synthesized answers from retrieved context."
+    layer_id: "l-retrieval"
+    col_offset: 0
+    col_span: 1
+    color: "sapphire"
+  - id: "b-vector-index"
+    title: "HNSW Vector Index"
+    description: "Hierarchical Navigable Small World similarity search."
+    layer_id: "l-retrieval"
+    col_offset: 1
+    col_span: 1
+    color: "lavender"
+    depends_on: ["b-qdrant-db"]
+  - id: "b-doc-store-port"
+    title: "DocumentStore Interface"
+    description: "Abstract storage API for chunk metadata and vectors."
+    layer_id: "l-retrieval"
+    col_offset: 2
+    col_span: 2
+    color: "yellow"
+    depends_on: ["b-qdrant-db", "b-pg-store"]
+
+  # Layer 4 (Bottom - Individual Service Adapters)
+  - id: "b-qdrant-db"
+    title: "Qdrant Vector DB"
+    description: "Stores dense embeddings with payload filtering."
+    layer_id: "l-storage"
+    col_offset: 0
+    col_span: 1
+    color: "red"
+  - id: "b-pg-store"
+    title: "PostgreSQL Document Store"
+    description: "Relational store for raw documents and metadata."
+    layer_id: "l-storage"
+    col_offset: 1
+    col_span: 1
+    color: "sky"
+  - id: "b-faiss-index"
+    title: "In-Memory FAISS Store"
+    description: "Lightweight local vector store for fast prototyping."
+    layer_id: "l-storage"
+    col_offset: 2
+    col_span: 1
+    color: "pink"
+  - id: "b-s3-documents"
+    title: "AWS S3 Object Storage"
+    description: "Blob storage for raw source PDFs and Markdown."
+    layer_id: "l-storage"
+    col_offset: 3
+    col_span: 1
+    color: "maroon"

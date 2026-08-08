@@ -1,124 +1,176 @@
 type: pillar-layer
-title: "Hexagonal Architecture (Ports & Adapters) Contract Matrix"
-description: "Architecture matrix demonstrating how Driving and Driven Port contracts span across boundaries to decouple the Core Domain from external adapters."
-
-pillars:
-  - id: "p-driving"
-    title: "Primary Driving Side"
-    subtitle: "Inbound Drivers & Controllers"
-    color: "blue"
-    icon: "arrow-right-circle"
-
-  - id: "p-domain"
-    title: "Domain Kernel & Application"
-    subtitle: "Hexagon Core (Pure Business Rules)"
-    color: "mauve"
-    icon: "cpu"
-
-  - id: "p-driven"
-    title: "Secondary Driven Side"
-    subtitle: "Outbound Infrastructure Adapters"
-    color: "green"
-    icon: "database"
+title: "Hexagonal Architecture (Ports & Adapters) 5-Tier Stack"
+description: "5-Tier layer stack showing how Driving Inbound Adapters, Port Contracts, Domain Kernel, and individual Driven Storage/Infrastructure Adapters stack together."
 
 layers:
-  - id: "l-driving-ports"
-    title: "Driving Input Port Tier"
-    description: "Inbound adapters plug into Driving Port contracts that span across driver and domain boundaries."
-    span: "matrix"
+  - id: "l-driving-adapters"
+    title: "1. Driving (Inbound) Adapters"
+    description: "External entrypoints that translate HTTP, CLI, or Webhook requests into domain calls."
 
-  - id: "l-domain-core"
-    title: "Hexagon Domain Kernel Tier"
-    description: "Pure domain aggregates and business logic isolated from external frameworks."
-    span: "matrix"
+  - id: "l-driving-ports"
+    title: "2. Driving Input Port Contracts"
+    description: "Inbound interface contracts defined by the domain and invoked by driving adapters."
+
+  - id: "l-domain-kernel"
+    title: "3. Hexagon Core Domain Kernel"
+    description: "Pure business rules, aggregates, entities, and calculation policies."
 
   - id: "l-driven-ports"
-    title: "Driven Output Port Tier"
-    description: "Driven Port contracts defined by the domain and implemented by outbound infrastructure adapters."
-    span: "matrix"
+    title: "4. Driven Output Port Contracts"
+    description: "Outbound interface contracts defined by the domain for persistence, messaging, and notifications."
 
-  - id: "l-infrastructure"
-    title: "Infrastructure & Data Tier"
-    description: "External message buses, database storage engines, and network gateways."
-    span: "matrix"
+  - id: "l-driven-adapters"
+    title: "5. Driven (Outbound) Adapters & Infrastructure"
+    description: "Pluggable infrastructure adapters (PostgreSQL, Redis, Kafka, SendGrid) implementing output ports."
 
 matrix_blocks:
-  - id: "b-driving-adapters"
-    title: "Driving Adapters (HTTP, CLI, Webhook)"
-    description: "Inbound protocol drivers that parse requests and call the Driving Input Port."
-    layer_id: "l-driving-ports"
-    pillar_id: "p-driving"
+  # Layer 1: Driving Adapters
+  - id: "b-http-adapter"
+    title: "HTTP REST API Controller"
+    description: "Parses REST/JSON requests and invokes the OrderUseCasePort."
+    layer_id: "l-driving-adapters"
+    col_offset: 0
     col_span: 1
     row_span: 1
     color: "blue"
-    tags: ["Adapter", "Inbound Driver", "HTTP/CLI"]
+    depends_on: ["b-order-usecase-port"]
 
-  - id: "b-inbound-port-contract"
-    title: "Driving Input Port Contract Interface"
-    description: "Multi-column Port contract (OrderUseCasePort, PaymentServicePort) defined by Core Domain and invoked by Inbound Drivers."
-    layer_id: "l-driving-ports"
-    pillar_id: "p-domain"
+  - id: "b-cli-adapter"
+    title: "CLI Command Runner"
+    description: "Executes terminal commands against input ports."
+    layer_id: "l-driving-adapters"
+    col_offset: 1
+    col_span: 1
+    row_span: 1
+    color: "sky"
+    depends_on: ["b-order-usecase-port"]
+
+  - id: "b-webhook-adapter"
+    title: "Webhook Ingress Listener"
+    description: "Handles asynchronous inbound webhooks from third-party partners."
+    layer_id: "l-driving-adapters"
+    col_offset: 2
     col_span: 2
     row_span: 1
     color: "sapphire"
-    tags: ["Port Contract", "Spans 2 Columns", "Driving Interface"]
+    depends_on: ["b-payment-port"]
 
-  - id: "b-domain-entities"
-    title: "Pure Domain Aggregates & Invariants"
-    description: "Multi-column Hexagon Kernel encapsulating core business rules, entity state transitions, and domain events."
-    layer_id: "l-domain-core"
-    pillar_id: "p-driving"
+  # Layer 2: Driving Input Ports
+  - id: "b-order-usecase-port"
+    title: "OrderUseCasePort (Inbound Contract)"
+    description: "Primary interface defining order placement and management capabilities."
+    layer_id: "l-driving-ports"
+    col_offset: 0
     col_span: 2
     row_span: 1
     color: "mauve"
-    tags: ["Hexagon Kernel", "Spans 2 Columns", "DDD Aggregates"]
+    depends_on: ["b-order-aggregate"]
 
-  - id: "b-domain-calculators"
-    title: "Domain Policy & Business Rules"
-    description: "Stateless domain calculators and business policy rules."
-    layer_id: "l-domain-core"
-    pillar_id: "p-driven"
-    col_span: 1
-    row_span: 1
-    color: "teal"
-    tags: ["Domain Policy", "Business Rules"]
-
-  - id: "b-outbound-port-contract"
-    title: "Driven Output Port Contract Interface"
-    description: "Multi-column Port contract (OKFStoragePort, EventPublisherPort) defined by Core Domain for infrastructure side-effects."
-    layer_id: "l-driven-ports"
-    pillar_id: "p-driving"
+  - id: "b-payment-port"
+    title: "PaymentServicePort (Inbound Contract)"
+    description: "Interface contract for initiating payment authorization flows."
+    layer_id: "l-driving-ports"
+    col_offset: 2
     col_span: 2
     row_span: 1
     color: "lavender"
-    tags: ["Port Contract", "Spans 2 Columns", "Driven Interface"]
+    depends_on: ["b-pricing-policy"]
 
-  - id: "b-driven-adapters"
-    title: "Driven Adapters (PostgreSQL, Redis, SendGrid)"
-    description: "Outbound infrastructure adapters implementing Driven Port contracts for data persistence and external messaging."
-    layer_id: "l-driven-ports"
-    pillar_id: "p-driven"
-    col_span: 1
+  # Layer 3: Hexagon Core Domain Kernel
+  - id: "b-order-aggregate"
+    title: "Order Aggregate & Entities"
+    description: "Encapsulates order invariants, item line validation, and state changes."
+    layer_id: "l-domain-kernel"
+    col_offset: 0
+    col_span: 3
     row_span: 1
     color: "green"
-    tags: ["Adapter", "Outbound Infra", "PostgreSQL/Redis"]
+    depends_on: ["b-repo-port", "b-event-port"]
 
-  - id: "b-inbound-infra"
-    title: "External Ingress Message Bus"
-    description: "Kafka & RabbitMQ consumer channels feeding external events to driving adapters."
-    layer_id: "l-infrastructure"
-    pillar_id: "p-driving"
+  - id: "b-pricing-policy"
+    title: "Pricing & Discount Policy"
+    description: "Stateless domain rules for volume discounts and tax calculations."
+    layer_id: "l-domain-kernel"
+    col_offset: 3
+    col_span: 1
+    row_span: 1
+    color: "teal"
+    depends_on: ["b-cache-port", "b-email-port"]
+
+  # Layer 4: Driven Output Ports
+  - id: "b-repo-port"
+    title: "OrderRepositoryPort"
+    description: "Driven port interface for persistent storage operations."
+    layer_id: "l-driven-ports"
+    col_offset: 0
+    col_span: 1
+    row_span: 1
+    color: "peach"
+    depends_on: ["b-postgres-adapter"]
+
+  - id: "b-cache-port"
+    title: "CachePort"
+    description: "Driven port interface for fast key-value session caching."
+    layer_id: "l-driven-ports"
+    col_offset: 1
+    col_span: 1
+    row_span: 1
+    color: "yellow"
+    depends_on: ["b-redis-adapter"]
+
+  - id: "b-event-port"
+    title: "EventPublisherPort"
+    description: "Driven port interface for publishing domain events."
+    layer_id: "l-driven-ports"
+    col_offset: 2
     col_span: 1
     row_span: 1
     color: "maroon"
-    tags: ["Ingress Bus", "Kafka/RabbitMQ"]
+    depends_on: ["b-kafka-adapter"]
 
-  - id: "b-shared-infra"
-    title: "Database Engines & Storage Infrastructure"
-    description: "Multi-column physical infrastructure engines (PostgreSQL Cluster, Redis Cache, Cloud Event Store) hosting driven storage."
-    layer_id: "l-infrastructure"
-    pillar_id: "p-domain"
-    col_span: 2
+  - id: "b-email-port"
+    title: "NotificationPort"
+    description: "Driven port interface for sending customer notifications."
+    layer_id: "l-driven-ports"
+    col_offset: 3
+    col_span: 1
     row_span: 1
-    color: "peach"
-    tags: ["Infrastructure", "Spans 2 Columns", "Storage Engine"]
+    color: "pink"
+    depends_on: ["b-sendgrid-adapter"]
+
+  # Layer 5: Driven (Outbound) Adapters & Infrastructure (Individual DBs/Services)
+  - id: "b-postgres-adapter"
+    title: "PostgreSQL Order Repository (DB 1)"
+    description: "Relational database persistence adapter implementing OrderRepositoryPort."
+    layer_id: "l-driven-adapters"
+    col_offset: 0
+    col_span: 1
+    row_span: 1
+    color: "blue"
+
+  - id: "b-redis-adapter"
+    title: "Redis Cache & Session Adapter (DB 2)"
+    description: "In-memory caching adapter implementing CachePort."
+    layer_id: "l-driven-adapters"
+    col_offset: 1
+    col_span: 1
+    row_span: 1
+    color: "red"
+
+  - id: "b-kafka-adapter"
+    title: "Kafka Event Stream Publisher (Broker)"
+    description: "Message streaming adapter implementing EventPublisherPort."
+    layer_id: "l-driven-adapters"
+    col_offset: 2
+    col_span: 1
+    row_span: 1
+    color: "mauve"
+
+  - id: "b-sendgrid-adapter"
+    title: "SendGrid Email Dispatcher (SaaS)"
+    description: "Outbound notification adapter implementing NotificationPort."
+    layer_id: "l-driven-adapters"
+    col_offset: 3
+    col_span: 1
+    row_span: 1
+    color: "green"

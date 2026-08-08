@@ -6,56 +6,54 @@ import type { PillarLayerSectionData } from '../../../../src/core/learning-engin
 
 const mockSectionData: PillarLayerSectionData = {
   type: 'pillar-layer',
-  title: 'Microservices Architecture Matrix',
+  title: 'Microservices Layer Architecture',
   description: 'System capabilities and foundational layer overview.',
-  pillars: [
-    { id: 'p-auth', title: 'Identity & Auth', subtitle: 'Security Pillar', color: 'blue' },
-    { id: 'p-commerce', title: 'Commerce', subtitle: 'Domain Pillar', color: 'green' },
-  ],
   layers: [
-    {
-      id: 'l-channels',
-      title: 'Channels & API Gateway',
-      span: 'full',
-      blocks: [{ title: 'GraphQL Gateway' }, { title: 'REST Edge' }],
-    },
-    { id: 'l-services', title: 'Microservices Tier', span: 'matrix' },
-    { id: 'l-infra', title: 'Infrastructure Tier', span: 'matrix' },
+    { id: 'l-channels', title: 'Channels & API Gateway' },
+    { id: 'l-services', title: 'Microservices Tier' },
+    { id: 'l-infra', title: 'Infrastructure Tier' },
   ],
   matrix_blocks: [
+    {
+      id: 'b-channels',
+      title: 'Edge Channels & API Gateway',
+      description: 'GraphQL and REST Edge endpoints.',
+      layer_id: 'l-channels',
+      col_span: 2,
+      row_span: 1,
+      color: 'teal',
+    },
     {
       id: 'b-auth-service',
       title: 'OAuth2 Provider',
       description: 'Issues JWT tokens and validates user profiles.',
       layer_id: 'l-services',
-      pillar_id: 'p-auth',
       col_span: 1,
       row_span: 1,
       color: 'mauve',
-      tags: ['OAuth2', 'Security'],
     },
     {
       id: 'b-cross-cutting',
       title: 'Cross-Cutting IAM Controller',
-      description: 'Spans logic and infra tiers across commerce.',
+      description: 'Spans logic and infra tiers.',
       layer_id: 'l-services',
-      pillar_id: 'p-commerce',
-      col_span: 1,
-      row_span: 2,
+      offsets: [
+        [0, 1],
+        [1, 1],
+      ],
     },
     {
       id: 'b-infra-auth',
       title: 'Auth Key Vault',
       description: 'Manages signing keys.',
       layer_id: 'l-infra',
-      pillar_id: 'p-auth',
       col_span: 1,
       row_span: 1,
     },
   ],
 }
 
-describe('PillarLayer Section (2D CSS Grid Layout Engine & UX)', () => {
+describe('PillarLayer Section (Layer Stacked Architecture)', () => {
   it('parses valid section data with Zod schema', () => {
     const result = PillarLayerSectionSchema.safeParse(mockSectionData)
     expect(result.success).toBe(true)
@@ -70,65 +68,40 @@ describe('PillarLayer Section (2D CSS Grid Layout Engine & UX)', () => {
     )
   })
 
-  it('renders full-width spanning layer across all columns', () => {
+  it('renders multi-column spanning block across columns', () => {
     render(<PillarLayerSection section={mockSectionData} />)
-    const fullWidthLayer = screen.getByTestId('full-width-layer-l-channels')
-    expect(fullWidthLayer).toBeInTheDocument()
-    expect(fullWidthLayer.style.gridColumnStart).toBe('2')
-    expect(fullWidthLayer.style.gridColumnEnd).toBe('4')
-    expect(screen.getByText('GraphQL Gateway')).toBeInTheDocument()
-    expect(screen.getByText('REST Edge')).toBeInTheDocument()
+    const block0 = screen.getByTestId('pillar-layer-block-0')
+    expect(block0.style.gridColumnStart).toBe('2')
+    expect(block0.style.gridColumnEnd).toBe('span 2')
+    expect(block0.style.gridRowStart).toBe('2')
+    expect(block0.style.gridRowEnd).toBe('span 1')
   })
 
   it('renders matrix block with 2D grid placement, row_span, and col_span', () => {
     render(<PillarLayerSection section={mockSectionData} />)
 
-    const block0 = screen.getByTestId('pillar-layer-block-0')
-    expect(block0.style.gridColumnStart).toBe('2')
-    expect(block0.style.gridColumnEnd).toBe('span 1')
-    expect(block0.style.gridRowStart).toBe('3')
-    expect(block0.style.gridRowEnd).toBe('span 1')
-
     const block1 = screen.getByTestId('pillar-layer-block-1')
-    expect(block1.style.gridColumnStart).toBe('3')
+    expect(block1.style.gridColumnStart).toBe('2')
+    expect(block1.style.gridColumnEnd).toBe('span 1')
     expect(block1.style.gridRowStart).toBe('3')
-    expect(block1.style.gridRowEnd).toBe('span 2')
+    expect(block1.style.gridRowEnd).toBe('span 1')
+
+    const block2 = screen.getByTestId('pillar-layer-block-2')
+    expect(block2.style.gridColumnStart).toBe('3')
+    expect(block2.style.gridRowStart).toBe('3')
+    expect(block2.style.gridRowEnd).toBe('span 2')
   })
 
-  it('highlights associated pillar and layer headers on block mouse enter', () => {
+  it('highlights associated layer header on block mouse enter', () => {
     render(<PillarLayerSection section={mockSectionData} />)
-    const block0 = screen.getByTestId('pillar-layer-block-0')
-    const pillarHeader = screen.getByTestId('pillar-header-p-auth')
+    const block1 = screen.getByTestId('pillar-layer-block-1')
     const layerHeader = screen.getByTestId('layer-row-l-services')
 
-    fireEvent.mouseEnter(block0)
-    expect(pillarHeader).toHaveClass('is-highlighted')
+    fireEvent.mouseEnter(block1)
     expect(layerHeader).toHaveClass('is-highlighted')
 
-    fireEvent.mouseLeave(block0)
-    expect(pillarHeader).not.toHaveClass('is-highlighted')
+    fireEvent.mouseLeave(block1)
     expect(layerHeader).not.toHaveClass('is-highlighted')
-  })
-
-  it('opens block detail modal drawer on click', () => {
-    render(<PillarLayerSection section={mockSectionData} />)
-    expect(screen.queryByTestId('pillar-layer-block-dialog')).not.toBeInTheDocument()
-
-    fireEvent.click(screen.getByTestId('pillar-layer-block-0'))
-    expect(screen.getByTestId('pillar-layer-block-dialog')).toBeInTheDocument()
-    expect(screen.getAllByText('OAuth2 Provider').length).toBe(2)
-    expect(screen.getAllByText('Issues JWT tokens and validates user profiles.').length).toBeGreaterThanOrEqual(1)
-    expect(screen.getByText('Pillar: Identity & Auth')).toBeInTheDocument()
-    expect(screen.getByText('Layer: Microservices Tier')).toBeInTheDocument()
-  })
-
-  it('closes block detail modal drawer on close button click', () => {
-    render(<PillarLayerSection section={mockSectionData} />)
-    fireEvent.click(screen.getByTestId('pillar-layer-block-0'))
-    expect(screen.getByTestId('pillar-layer-block-dialog')).toBeInTheDocument()
-
-    fireEvent.click(screen.getByTestId('pillar-layer-block-dialog-close'))
-    expect(screen.queryByTestId('pillar-layer-block-dialog')).not.toBeInTheDocument()
   })
 
   it('opens help guide modal on trigger click', () => {
@@ -137,5 +110,73 @@ describe('PillarLayer Section (2D CSS Grid Layout Engine & UX)', () => {
 
     fireEvent.click(screen.getByTestId('section-help-btn-0'))
     expect(screen.getByTestId('pillar-layer-help-modal')).toBeInTheDocument()
+  })
+
+  it('renders L-shaped block with shape property and clipPath polygon', () => {
+    const lShapeSectionData: PillarLayerSectionData = {
+      ...mockSectionData,
+      matrix_blocks: [
+        mockSectionData.matrix_blocks[0],
+        {
+          id: 'b-l-block',
+          title: 'L-Shaped Microservice Controller',
+          description: 'Spans bottom row and left column stem.',
+          layer_id: 'l-services',
+          col_span: 2,
+          row_span: 2,
+          shape: 'l-bottom-left',
+          color: 'mauve',
+        },
+        {
+          id: 'b-corner-piece',
+          title: 'Corner Filler Service',
+          description: 'Slots into the L-block cutout at top-right.',
+          layer_id: 'l-services',
+          offsets: [[0, 1]],
+          color: 'green',
+        },
+      ],
+    }
+
+    const parseResult = PillarLayerSectionSchema.safeParse(lShapeSectionData)
+    expect(parseResult.success).toBe(true)
+
+    render(<PillarLayerSection section={lShapeSectionData} />)
+    const lBlock = screen.getByTestId('pillar-layer-block-1')
+    expect(lBlock).toHaveClass('shape-l-bottom-left')
+    expect(lBlock.style.clipPath).toBe('polygon(0 0, 50% 0, 50% 50%, 100% 50%, 100% 100%, 0 100%)')
+  })
+
+  it('parses and renders block with Option C relative offsets [dr, dc]', () => {
+    const offsetSectionData: PillarLayerSectionData = {
+      ...mockSectionData,
+      matrix_blocks: [
+        mockSectionData.matrix_blocks[0],
+        {
+          id: 'b-offset-l-block',
+          title: 'Offset-based L-Block',
+          layer_id: 'l-services',
+          offsets: [
+            [0, 0],
+            [1, 0],
+            [1, 1],
+          ],
+          color: 'peach',
+        },
+        {
+          id: 'b-corner-piece',
+          title: 'Corner Filler Service',
+          layer_id: 'l-services',
+          offsets: [[0, 1]],
+        },
+      ],
+    }
+
+    const parseResult = PillarLayerSectionSchema.safeParse(offsetSectionData)
+    expect(parseResult.success).toBe(true)
+
+    render(<PillarLayerSection section={offsetSectionData} />)
+    const offsetBlock = screen.getByTestId('pillar-layer-block-1')
+    expect(offsetBlock.style.clipPath).toBe('polygon(0 0, 50% 0, 50% 50%, 100% 50%, 100% 100%, 0 100%)')
   })
 })

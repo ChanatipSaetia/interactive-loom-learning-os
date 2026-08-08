@@ -33,5 +33,6 @@ related:
   - sections/reflection-sequence/sequence.yaml
   - sections/formula-sandbox/sandbox.yaml
   - sections/reflection-template/template.yaml
+  - sections/pillar-layer/matrix.yaml
 
 

@@ -10,6 +10,7 @@
 ## Taxonomy
 * [AI Agent Capability Taxonomy](sections/taxonomy/section.md)
 * [Agent Design Patterns](sections/taxonomy-patterns/section.md)
+* [Microservice Platform Layer Stack](sections/pillar-layer/section.md) — Layer stack map of clients, gateways, services, and infra adapters
 
 ## Flows
 * [Agent Architecture Flow](sections/flowchart/section.md)

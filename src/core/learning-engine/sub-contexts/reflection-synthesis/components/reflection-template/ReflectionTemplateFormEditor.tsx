@@ -72,7 +72,7 @@ function ChallengeItemEditor({
       const updatedChips = [...chips]
       updatedChips[chipIndex] = { ...updatedChips[chipIndex], [field]: value }
 
-      let updatedSolution = { ...solution }
+      const updatedSolution = { ...solution }
       if (field === 'id' && oldId !== value) {
         Object.keys(updatedSolution).forEach((zoneKey) => {
           if (updatedSolution[zoneKey] === oldId) {

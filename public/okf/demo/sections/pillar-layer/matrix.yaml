@@ -1,0 +1,92 @@
+type: pillar-layer
+title: "Microservice Platform Layer Stack"
+description: "Reference architecture stack map of client applications, API gateways, microservices, and database adapters."
+layers:
+  - id: "l-clients"
+    title: "1. Presentation & Client Layer"
+    description: "Web SPAs, mobile apps, and third-party API clients."
+  - id: "l-gateway"
+    title: "2. API Gateway & Ingress Layer"
+    description: "Routing, rate limiting, and authentication gateways."
+  - id: "l-services"
+    title: "3. Domain Microservices Tier"
+    description: "Core business domain logic and service orchestrators."
+  - id: "l-infra"
+    title: "4. Infrastructure & Database Adapters"
+    description: "Relational DBs, cache nodes, event buses, and external APIs."
+matrix_blocks:
+  # Layer 1
+  - id: "b-web-client"
+    title: "React SPA Web Client"
+    description: "Next.js frontend application consuming REST APIs."
+    layer_id: "l-clients"
+    col_offset: 0
+    col_span: 2
+    color: "blue"
+    depends_on: ["b-envoy-gateway"]
+  - id: "b-mobile-app"
+    title: "iOS / Android Native App"
+    description: "Mobile application using gRPC-Web streams."
+    layer_id: "l-clients"
+    col_offset: 2
+    col_span: 2
+    color: "mauve"
+    depends_on: ["b-envoy-gateway"]
+
+  # Layer 2
+  - id: "b-envoy-gateway"
+    title: "Envoy API Gateway"
+    description: "Handles TLS termination, JWT validation, and CORS."
+    layer_id: "l-gateway"
+    col_offset: 0
+    col_span: 4
+    color: "peach"
+    depends_on: ["b-auth-service", "b-order-service"]
+
+  # Layer 3
+  - id: "b-auth-service"
+    title: "Auth & Identity Service"
+    description: "Issues JWT access tokens and manages user sessions."
+    layer_id: "l-services"
+    col_offset: 0
+    col_span: 2
+    color: "teal"
+    depends_on: ["b-postgres-db", "b-redis-cache"]
+  - id: "b-order-service"
+    title: "Order Fulfillment Service"
+    description: "Processes checkout transactions and inventory checks."
+    layer_id: "l-services"
+    col_offset: 2
+    col_span: 2
+    color: "green"
+    depends_on: ["b-postgres-db", "b-kafka-bus"]
+
+  # Layer 4 (Bottom - Individual Service Adapters)
+  - id: "b-postgres-db"
+    title: "PostgreSQL Database"
+    description: "Primary ACID relational store for user profiles and orders."
+    layer_id: "l-infra"
+    col_offset: 0
+    col_span: 1
+    color: "sapphire"
+  - id: "b-redis-cache"
+    title: "Redis Cluster Cache"
+    description: "In-memory cache for user sessions and rate limits."
+    layer_id: "l-infra"
+    col_offset: 1
+    col_span: 1
+    color: "red"
+  - id: "b-kafka-bus"
+    title: "Apache Kafka Event Bus"
+    description: "Distributed event streaming for order status topics."
+    layer_id: "l-infra"
+    col_offset: 2
+    col_span: 1
+    color: "yellow"
+  - id: "b-sendgrid-api"
+    title: "SendGrid Email API"
+    description: "Outbound HTTP API for order confirmation emails."
+    layer_id: "l-infra"
+    col_offset: 3
+    col_span: 1
+    color: "pink"

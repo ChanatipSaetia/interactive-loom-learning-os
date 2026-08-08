@@ -1,6 +1,6 @@
 ---
 type: pillar-layer
-title: "Port & Adapter Architecture Matrix"
+title: "Port & Adapter Layer Stack"
 resource: matrix.yaml
 intro:
   what: "Interactive 2D spatial layout mapping primary driving entrypoints, pure domain hexagon kernel, and outbound driven infrastructure adapters."

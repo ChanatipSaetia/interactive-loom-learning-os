@@ -1,0 +1,92 @@
+type: pillar-layer
+title: "mTLS Protocol & Security Architecture Stack"
+description: "Layer stack map of application transport protocols, TLS 1.3 cryptographic handshakes, and PKI identity verification."
+layers:
+  - id: "l-app"
+    title: "1. Application Transport Layer"
+    description: "High-level RPC and REST protocols requesting secure transport."
+  - id: "l-tls"
+    title: "2. TLS 1.3 Handshake & Cipher Layer"
+    description: "Cryptographic negotiation, key exchange, and record protocol."
+  - id: "l-tcp"
+    title: "3. Transport & Socket Layer"
+    description: "Reliable stream transport sockets and connection state."
+  - id: "l-pki"
+    title: "4. PKI Certificate & Identity Layer"
+    description: "X.509 certificate authority chain and SPIFFE identity validation."
+matrix_blocks:
+  # Layer 1
+  - id: "b-grpc-client"
+    title: "gRPC Microservice Client"
+    description: "Initiates mutual TLS RPC calls."
+    layer_id: "l-app"
+    col_offset: 0
+    col_span: 2
+    color: "blue"
+    depends_on: ["b-tls-handshake"]
+  - id: "b-http2-ingress"
+    title: "Envoy Ingress Gateway"
+    description: "Terminates inbound mTLS and validates SAN identity."
+    layer_id: "l-app"
+    col_offset: 2
+    col_span: 2
+    color: "mauve"
+    depends_on: ["b-cipher-engine", "b-spiffe-validator"]
+
+  # Layer 2
+  - id: "b-tls-handshake"
+    title: "TLS 1.3 Handshake Controller"
+    description: "Exchanges ClientHello and ServerHello Certificate messages."
+    layer_id: "l-tls"
+    col_offset: 0
+    col_span: 2
+    color: "peach"
+    depends_on: ["b-tcp-socket", "b-spiffe-validator"]
+  - id: "b-cipher-engine"
+    title: "AES-256-GCM Cipher Engine"
+    description: "Provides authenticated symmetric encryption for records."
+    layer_id: "l-tls"
+    col_offset: 2
+    col_span: 2
+    color: "teal"
+    depends_on: ["b-tcp-socket"]
+
+  # Layer 3
+  - id: "b-tcp-socket"
+    title: "TCP Connection Socket"
+    description: "Provides reliable byte stream transport over port 443/8443."
+    layer_id: "l-tcp"
+    col_offset: 0
+    col_span: 4
+    color: "green"
+    depends_on: ["b-ca-trust-store", "b-vault-pki"]
+
+  # Layer 4 (Bottom - Identity & Cryptographic Security Adapters)
+  - id: "b-ca-trust-store"
+    title: "Root CA Trust Store"
+    description: "Stores trusted Root & Intermediate Certificate Authority PEMs."
+    layer_id: "l-pki"
+    col_offset: 0
+    col_span: 1
+    color: "sapphire"
+  - id: "b-spiffe-validator"
+    title: "SPIFFE / SPIRE Workload ID"
+    description: "Validates URI SAN identity (spiffe://cluster.local/ns/prod/sa/order)."
+    layer_id: "l-pki"
+    col_offset: 1
+    col_span: 1
+    color: "lavender"
+  - id: "b-vault-pki"
+    title: "HashiCorp Vault PKI Engine"
+    description: "Issues short-lived X.509 client certificates dynamically."
+    layer_id: "l-pki"
+    col_offset: 2
+    col_span: 1
+    color: "red"
+  - id: "b-hsm-module"
+    title: "Hardware Security Module (HSM)"
+    description: "Hardware key storage protecting Root CA private keys."
+    layer_id: "l-pki"
+    col_offset: 3
+    col_span: 1
+    color: "yellow"
