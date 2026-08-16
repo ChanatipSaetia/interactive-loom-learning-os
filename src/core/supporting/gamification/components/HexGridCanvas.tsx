@@ -259,44 +259,20 @@ export const HexGridCanvas: React.FC<HexGridCanvasProps> = ({
                 </g>
               )}
 
-              {/* Key Item Reward Mini Badge Indicator */}
-              {hasItemReward && (
-                <g transform={`translate(${x - 14}, ${y + 10})`}>
-                  <rect
-                    width="28"
-                    height="14"
-                    rx="7"
-                    fill="#303446"
-                    stroke="#8caaee"
-                    strokeWidth="1"
-                  />
-                  <text
-                    x="14"
-                    y="10.5"
-                    textAnchor="middle"
-                    fontSize="9"
-                    fill="#8caaee"
-                    fontWeight="bold"
-                  >
-                    {node.rewards![0].icon}
-                  </text>
-                </g>
-              )}
-
-              {/* Key Item Quest Beacon on Map (Always Shown for nodes with item rewards) */}
+              {/* Key Item Location Pin Beacon (Anchored directly inside target hex tile) */}
               {node.rewards && node.rewards.length > 0 && (
-                <g transform={`translate(${x - 18}, ${y - 32})`} className="animate-bounce pointer-events-none select-none">
+                <g transform={`translate(${x - 20}, ${y + 14})`} className="pointer-events-none select-none">
                   <rect
-                    width="36"
+                    width="40"
                     height="18"
                     rx="9"
-                    fill="#232634"
+                    fill="#1e1e2e"
                     stroke="#e5c890"
                     strokeWidth="1.5"
                     filter="url(#glow-selected)"
                   />
                   <text
-                    x="18"
+                    x="20"
                     y="12.5"
                     textAnchor="middle"
                     fontSize="11"
