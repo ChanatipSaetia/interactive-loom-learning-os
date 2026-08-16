@@ -923,88 +923,142 @@ export const GamificationDemoView: React.FC = () => {
                 </Badge>
               </div>
 
-              <p className="text-sm text-[#a5adce] leading-relaxed">{selectedNode.description}</p>
+              {selectedNode.status === 'locked' ? (
+                <>
+                  {/* Fog of War Shroud Notice */}
+                  <div className="bg-[#232634] p-4 rounded-xl border border-[#51576d] text-center space-y-1.5">
+                    <span className="text-3xl block">🌫️</span>
+                    <h4 className="text-sm font-bold text-[#e5c890]">Shrouded in Fog of War</h4>
+                    <p className="text-xs text-[#a5adce] leading-relaxed">
+                      Content details are locked. Clear prerequisite nodes to lift the fog and reveal challenges.
+                    </p>
+                  </div>
 
-              {/* 🔑 4.2 Flow Parent Prerequisites Checklist */}
-              {(() => {
-                const autoConns = getAutoFlowConnections(nodes)
-                const parentConns = autoConns.filter((c) => c.toId === selectedNode.id)
-                if (parentConns.length === 0) return null
-                return (
-                  <div className="bg-[#232634] p-3 rounded-xl border border-[#e5c890]/40 space-y-1.5 text-xs">
-                    <span className="font-bold text-[#e5c890] block flex items-center gap-1">
-                      <span>🔑</span>
-                      <span>4.2 Flow Prerequisite Nodes</span>
-                    </span>
-                    {parentConns.map(({ fromId }) => {
-                      const parent = nodes.find((n) => n.id === fromId)
-                      const isParentCleared = parent?.status === 'cleared'
-                      return (
-                        <div key={fromId} className="flex items-center justify-between bg-[#1e1e2e] px-2.5 py-1 rounded-lg">
-                          <span className="text-[#c6d0f5] font-medium">{parent?.title || fromId}</span>
-                          <span className={isParentCleared ? 'text-[#a6d189] font-bold' : 'text-[#e78284] font-semibold'}>
-                            {isParentCleared ? '✓ Cleared' : '❌ Uncleared'}
-                          </span>
+                  {/* 🔑 4.2 Flow Parent Prerequisites Checklist */}
+                  {(() => {
+                    const autoConns = getAutoFlowConnections(nodes)
+                    const parentConns = autoConns.filter((c) => c.toId === selectedNode.id)
+                    if (parentConns.length === 0) return null
+                    return (
+                      <div className="bg-[#232634] p-3 rounded-xl border border-[#e5c890]/40 space-y-1.5 text-xs">
+                        <span className="font-bold text-[#e5c890] block flex items-center gap-1">
+                          <span>🔑</span>
+                          <span>Prerequisite Nodes to Clear</span>
+                        </span>
+                        {parentConns.map(({ fromId }) => {
+                          const parent = nodes.find((n) => n.id === fromId)
+                          const isParentCleared = parent?.status === 'cleared'
+                          return (
+                            <div key={fromId} className="flex items-center justify-between bg-[#1e1e2e] px-2.5 py-1.5 rounded-lg">
+                              <span className="text-[#c6d0f5] font-medium">{parent?.title || fromId}</span>
+                              <span className={isParentCleared ? 'text-[#a6d189] font-bold' : 'text-[#e78284] font-semibold'}>
+                                {isParentCleared ? '✓ Cleared' : '❌ Uncleared'}
+                              </span>
+                            </div>
+                          )
+                        })}
+                      </div>
+                    )
+                  })()}
+
+                  {/* Key Item Reward Provided Preview */}
+                  {selectedNode.rewards && selectedNode.rewards.length > 0 && (
+                    <div className="bg-[#232634] p-3 rounded-xl border border-[#8caaee]/40 flex items-center gap-3">
+                      <span className="text-2xl">{selectedNode.rewards[0].icon}</span>
+                      <div>
+                        <span className="text-xs text-[#a5adce] block">Key Item Reward Provided</span>
+                        <span className="text-sm font-bold text-[#8caaee]">{selectedNode.rewards[0].name}</span>
+                        <span className="text-xs text-[#737994] block">{selectedNode.rewards[0].description}</span>
+                      </div>
+                    </div>
+                  )}
+                </>
+              ) : (
+                <>
+                  <p className="text-sm text-[#a5adce] leading-relaxed">{selectedNode.description}</p>
+
+                  {/* 🔑 4.2 Flow Parent Prerequisites Checklist */}
+                  {(() => {
+                    const autoConns = getAutoFlowConnections(nodes)
+                    const parentConns = autoConns.filter((c) => c.toId === selectedNode.id)
+                    if (parentConns.length === 0) return null
+                    return (
+                      <div className="bg-[#232634] p-3 rounded-xl border border-[#e5c890]/40 space-y-1.5 text-xs">
+                        <span className="font-bold text-[#e5c890] block flex items-center gap-1">
+                          <span>🔑</span>
+                          <span>Prerequisite Nodes</span>
+                        </span>
+                        {parentConns.map(({ fromId }) => {
+                          const parent = nodes.find((n) => n.id === fromId)
+                          const isParentCleared = parent?.status === 'cleared'
+                          return (
+                            <div key={fromId} className="flex items-center justify-between bg-[#1e1e2e] px-2.5 py-1 rounded-lg">
+                              <span className="text-[#c6d0f5] font-medium">{parent?.title || fromId}</span>
+                              <span className={isParentCleared ? 'text-[#a6d189] font-bold' : 'text-[#e78284] font-semibold'}>
+                                {isParentCleared ? '✓ Cleared' : '❌ Uncleared'}
+                              </span>
+                            </div>
+                          )
+                        })}
+                      </div>
+                    )
+                  })()}
+
+                  {/* Stat Buff Modifier Card */}
+                  {selectedNode.buff && (
+                    <div className="bg-[#232634] p-3 rounded-xl border border-[#ca9ee6]/40 flex items-center gap-3">
+                      <span className="text-2xl">✨</span>
+                      <div>
+                        <span className="text-xs text-[#a5adce] block">Section Stat Buff</span>
+                        <span className="text-sm font-bold text-[#ca9ee6]">
+                          +{selectedNode.buff.value}% {selectedNode.buff.label} ({selectedNode.buff.stat})
+                        </span>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Monster Info Card */}
+                  {selectedNode.monster && (
+                    <div className="bg-[#232634] p-3 rounded-xl border border-[#e78284]/30 flex items-center justify-between">
+                      <div className="flex items-center gap-3">
+                        <span className="text-3xl">{selectedNode.monster.icon}</span>
+                        <div>
+                          <span className="text-sm font-bold text-[#e78284]">{selectedNode.monster.name}</span>
+                          <span className="text-xs text-[#a5adce] block">Atk Damage: {selectedNode.monster.damage}</span>
                         </div>
-                      )
-                    })}
-                  </div>
-                )
-              })()}
-
-              {/* Stat Buff Modifier Card */}
-              {selectedNode.buff && (
-                <div className="bg-[#232634] p-3 rounded-xl border border-[#ca9ee6]/40 flex items-center gap-3">
-                  <span className="text-2xl">✨</span>
-                  <div>
-                    <span className="text-xs text-[#a5adce] block">Section Stat Buff</span>
-                    <span className="text-sm font-bold text-[#ca9ee6]">
-                      +{selectedNode.buff.value}% {selectedNode.buff.label} ({selectedNode.buff.stat})
-                    </span>
-                  </div>
-                </div>
-              )}
-
-              {/* Monster Info Card */}
-              {selectedNode.monster && (
-                <div className="bg-[#232634] p-3 rounded-xl border border-[#e78284]/30 flex items-center justify-between">
-                  <div className="flex items-center gap-3">
-                    <span className="text-3xl">{selectedNode.monster.icon}</span>
-                    <div>
-                      <span className="text-sm font-bold text-[#e78284]">{selectedNode.monster.name}</span>
-                      <span className="text-xs text-[#a5adce] block">Atk Damage: {selectedNode.monster.damage}</span>
+                      </div>
+                      <div className="text-right">
+                        <span className="text-xs text-[#a5adce] block">Monster HP</span>
+                        <span className="text-sm font-bold text-[#e78284]">
+                          {selectedNode.monster.currentHp} / {selectedNode.monster.maxHp}
+                        </span>
+                      </div>
                     </div>
-                  </div>
-                  <div className="text-right">
-                    <span className="text-xs text-[#a5adce] block">Monster HP</span>
-                    <span className="text-sm font-bold text-[#e78284]">
-                      {selectedNode.monster.currentHp} / {selectedNode.monster.maxHp}
-                    </span>
-                  </div>
-                </div>
-              )}
+                  )}
 
-              {/* Item Reward Badge */}
-              {selectedNode.rewards && selectedNode.rewards.length > 0 && (
-                <div className="bg-[#232634] p-3 rounded-xl border border-[#8caaee]/30 flex items-center gap-3">
-                  <span className="text-2xl">{selectedNode.rewards[0].icon}</span>
-                  <div>
-                    <span className="text-xs text-[#a5adce] block">Item Reward</span>
-                    <span className="text-sm font-bold text-[#8caaee]">{selectedNode.rewards[0].name}</span>
-                  </div>
-                </div>
-              )}
-
-              {/* Combat Log */}
-              {combatLog.length > 0 && (
-                <div className="bg-[#1e1e2e] p-3 rounded-xl border border-[#414559] max-h-32 overflow-y-auto text-xs space-y-1 font-mono">
-                  <span className="text-[#a5adce] font-bold block mb-1">📜 Combat Log:</span>
-                  {combatLog.slice(0, 4).map((log, i) => (
-                    <div key={i} className="text-[#c6d0f5]">
-                      {log}
+                  {/* Item Reward Badge */}
+                  {selectedNode.rewards && selectedNode.rewards.length > 0 && (
+                    <div className="bg-[#232634] p-3 rounded-xl border border-[#8caaee]/30 flex items-center gap-3">
+                      <span className="text-2xl">{selectedNode.rewards[0].icon}</span>
+                      <div>
+                        <span className="text-xs text-[#a5adce] block">Item Reward</span>
+                        <span className="text-sm font-bold text-[#8caaee]">{selectedNode.rewards[0].name}</span>
+                      </div>
                     </div>
-                  ))}
-                </div>
+                  )}
+
+                  {/* Combat Log */}
+                  {combatLog.length > 0 && (
+                    <div className="bg-[#1e1e2e] p-3 rounded-xl border border-[#414559] max-h-32 overflow-y-auto text-xs space-y-1 font-mono">
+                      <span className="text-[#a5adce] font-bold block mb-1">📜 Combat Log:</span>
+                      {combatLog.slice(0, 4).map((log, i) => (
+                        <div key={i} className="text-[#c6d0f5]">
+                          {log}
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </>
               )}
             </div>
           ) : (

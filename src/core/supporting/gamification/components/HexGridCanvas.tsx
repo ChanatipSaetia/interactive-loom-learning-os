@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react'
-import { Castle, Landmark, Swords, Sparkles, Hammer, Flame } from 'lucide-react'
+import { Castle, Landmark, Swords, Sparkles, Hammer, Flame, CloudFog } from 'lucide-react'
 import { HexNodeData } from '../types'
 import { computeHexGridCoordinates, getAutoFlowConnections } from '../layout'
 
@@ -224,16 +224,9 @@ export const HexGridCanvas: React.FC<HexGridCanvasProps> = ({
                     fill="url(#grad-fog)"
                     opacity="0.85"
                   />
-                  <text
-                    x={x}
-                    y={y + 6}
-                    textAnchor="middle"
-                    fontSize="18"
-                    opacity="0.75"
-                    className="animate-pulse"
-                  >
-                    🌫️
-                  </text>
+                  <g transform={`translate(${x - 12}, ${y - 12})`}>
+                    <CloudFog size={24} color="#a5adce" strokeWidth={2.2} className="animate-pulse" />
+                  </g>
                 </g>
               )}
 
