@@ -83,8 +83,8 @@ export const HexGridCanvas: React.FC<HexGridCanvasProps> = ({
     const handleNativeWheel = (e: WheelEvent) => {
       e.preventDefault()
       e.stopPropagation()
-      // Proportional dampened zoom step for smooth, controlled trackpad & mouse wheel zooming
-      const zoomStep = Math.min(0.04, Math.max(-0.04, -e.deltaY * 0.001))
+      // Directly scale wheel deltaY by a smaller factor without clamping limits
+      const zoomStep = -e.deltaY * 0.0015
       setZoom((prev) => Math.min(2.5, Math.max(0.5, +(prev + zoomStep).toFixed(3))))
     }
 
