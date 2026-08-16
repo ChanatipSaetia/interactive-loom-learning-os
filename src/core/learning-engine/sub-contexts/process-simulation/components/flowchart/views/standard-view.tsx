@@ -126,10 +126,6 @@ export const StandardView = memo(function StandardView({
         const toNode = nodeMap.get(rel.to);
         if (!fromNode || !toNode) return null;
 
-        if (viewKey === 'EVENT_STORMING' && activeRelationIds !== null && !activeRelationIds.includes(rel.id)) {
-          return null;
-        }
-
         const edgeId = `edge-${rel.id}`;
         const isHoveredEdge = hoveredEdgeId === edgeId;
         const isSelectedEdge = selectedEdgeId === edgeId;
