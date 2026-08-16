@@ -95,6 +95,13 @@ export const HexGridCanvas: React.FC<HexGridCanvasProps> = ({
             <stop offset="100%" stopColor="#e78284" />
           </linearGradient>
 
+          {/* Fog of War Shroud Gradient for Locked Hexes */}
+          <linearGradient id="grad-fog" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0%" stopColor="#414559" stopOpacity="0.9" />
+            <stop offset="50%" stopColor="#51576d" stopOpacity="0.8" />
+            <stop offset="100%" stopColor="#232634" stopOpacity="0.95" />
+          </linearGradient>
+
           {/* Menacing Crimson Gradient for Locked Boss Lair */}
           <linearGradient id="grad-boss-locked" x1="0" y1="0" x2="1" y2="1">
             <stop offset="0%" stopColor="#e78284" />
@@ -117,7 +124,7 @@ export const HexGridCanvas: React.FC<HexGridCanvasProps> = ({
           const isLocked = node.status === 'locked'
           const isBoss = node.type === 'boss_lair'
           const isThreatened = node.status === 'threatened'
-          const hasItemReward = node.rewards && node.rewards.length > 0
+          const hasItemReward = node.rewards && node.rewards.length > 0 && !isLocked
 
           // Check if this node is a prerequisite parent to the selected node in 4.2 flow
           const isPrereqParent = autoConnections.some(
@@ -209,34 +216,55 @@ export const HexGridCanvas: React.FC<HexGridCanvasProps> = ({
                 className="transition-all duration-200"
               />
 
-              {/* Hex Center Node Type SVG Icon */}
-              <g
-                transform={`translate(${x - (isBoss ? 14 : 12)}, ${
-                  y - (isBoss ? 14 : 12) - (hasItemReward || isThreatened ? 6 : 0)
-                })`}
-                className="pointer-events-none select-none"
-              >
-                {node.type === 'capital' && (
-                  <Castle size={24} color={isSelected ? '#ef9f76' : '#8caaee'} strokeWidth={2.2} />
-                )}
-                {node.type === 'reading_sanctuary' && (
-                  <Landmark size={24} color={isSelected ? '#ef9f76' : '#a6d189'} strokeWidth={2.2} />
-                )}
-                {node.type === 'quiz_encounter' && (
-                  <Swords size={24} color={isSelected ? '#ef9f76' : '#e78284'} strokeWidth={2.2} />
-                )}
-                {node.type === 'reflection_decryption' && (
-                  <Sparkles size={24} color={isSelected ? '#ef9f76' : '#ca9ee6'} strokeWidth={2.2} />
-                )}
-                {node.type === 'tradeoff_workshop' && (
-                  <Hammer size={24} color={isSelected ? '#ef9f76' : '#e5c890'} strokeWidth={2.2} />
-                )}
-                {node.type === 'boss_lair' && (
-                  <Flame size={28} color={isSelected ? '#ef9f76' : '#ea999c'} strokeWidth={2.5} />
-                )}
-              </g>
+              {/* Fog of War Shroud for Locked Challenges & Workshops */}
+              {isLocked && (
+                <g className="pointer-events-none select-none">
+                  <polygon
+                    points={getHexPolygonPoints(x, y, HEX_RADIUS)}
+                    fill="url(#grad-fog)"
+                    opacity="0.85"
+                  />
+                  <text
+                    x={x}
+                    y={y + 6}
+                    textAnchor="middle"
+                    fontSize="18"
+                    opacity="0.75"
+                    className="animate-pulse"
+                  >
+                    🌫️
+                  </text>
+                </g>
+              )}
 
-
+              {/* Hex Center Node Type SVG Icon (Visible when Unlocked or Cleared) */}
+              {!isLocked && (
+                <g
+                  transform={`translate(${x - (isBoss ? 14 : 12)}, ${
+                    y - (isBoss ? 14 : 12) - (hasItemReward || isThreatened ? 6 : 0)
+                  })`}
+                  className="pointer-events-none select-none"
+                >
+                  {node.type === 'capital' && (
+                    <Castle size={24} color={isSelected ? '#ef9f76' : '#8caaee'} strokeWidth={2.2} />
+                  )}
+                  {node.type === 'reading_sanctuary' && (
+                    <Landmark size={24} color={isSelected ? '#ef9f76' : '#a6d189'} strokeWidth={2.2} />
+                  )}
+                  {node.type === 'quiz_encounter' && (
+                    <Swords size={24} color={isSelected ? '#ef9f76' : '#e78284'} strokeWidth={2.2} />
+                  )}
+                  {node.type === 'reflection_decryption' && (
+                    <Sparkles size={24} color={isSelected ? '#ef9f76' : '#ca9ee6'} strokeWidth={2.2} />
+                  )}
+                  {node.type === 'tradeoff_workshop' && (
+                    <Hammer size={24} color={isSelected ? '#ef9f76' : '#e5c890'} strokeWidth={2.2} />
+                  )}
+                  {node.type === 'boss_lair' && (
+                    <Flame size={28} color={isSelected ? '#ef9f76' : '#ea999c'} strokeWidth={2.5} />
+                  )}
+                </g>
+              )}
 
               {/* Key Item Reward Mini Badge Indicator */}
               {hasItemReward && (
