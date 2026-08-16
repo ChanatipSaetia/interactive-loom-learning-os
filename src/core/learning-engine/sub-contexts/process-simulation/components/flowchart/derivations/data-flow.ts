@@ -80,19 +80,9 @@ export function deriveDataFlow(
     }
 
     if (cmdNode) {
-      const cmdTitle = schema.entities[cmdNode].title;
-      if (dataObjectTitle && componentName) {
-        return { label: `${cmdTitle} (${dataObjectTitle} in ${componentName})` };
-      }
-      if (dataObjectTitle) {
-        return { label: `${cmdTitle} (${dataObjectTitle})` };
-      }
-      return { label: cmdTitle };
+      return { label: schema.entities[cmdNode].title };
     }
 
-    if (dataObjectTitle && componentName) {
-      return { label: `${dataObjectTitle} in ${componentName}` };
-    }
     if (dataObjectTitle) {
       return { label: dataObjectTitle };
     }
