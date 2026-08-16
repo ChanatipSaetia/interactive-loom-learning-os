@@ -131,6 +131,10 @@ export function useCamera({ positionedNodesRef }: UseCameraOptions): UseCameraRe
 
   const onWheelNative = useCallback((e: WheelEvent) => {
     e.preventDefault();
+    e.stopPropagation();
+    if (typeof (e as any).stopImmediatePropagation === 'function') {
+      (e as any).stopImmediatePropagation();
+    }
     const delta = -e.deltaY * 0.0015;
     const currentScale = transformRef.current.scale;
     const currentTx = transformRef.current.translateX;
