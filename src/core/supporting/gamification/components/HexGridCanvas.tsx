@@ -66,8 +66,8 @@ export const HexGridCanvas: React.FC<HexGridCanvasProps> = ({
   )
 
   // Zoom controls
-  const handleZoomIn = () => setZoom((prev) => Math.min(2.5, +(prev + 0.25).toFixed(2)))
-  const handleZoomOut = () => setZoom((prev) => Math.max(0.5, +(prev - 0.25).toFixed(2)))
+  const handleZoomIn = () => setZoom((prev) => Math.min(2.5, +(prev + 0.15).toFixed(2)))
+  const handleZoomOut = () => setZoom((prev) => Math.max(0.5, +(prev - 0.15).toFixed(2)))
   const handleResetPanZoom = () => {
     setZoom(1.0)
     setPan({ x: 0, y: 0 })
@@ -83,8 +83,9 @@ export const HexGridCanvas: React.FC<HexGridCanvasProps> = ({
     const handleNativeWheel = (e: WheelEvent) => {
       e.preventDefault()
       e.stopPropagation()
-      const delta = e.deltaY < 0 ? 0.15 : -0.15
-      setZoom((prev) => Math.min(2.5, Math.max(0.5, +(prev + delta).toFixed(2))))
+      // Proportional dampened zoom step for smooth, controlled trackpad & mouse wheel zooming
+      const zoomStep = Math.min(0.04, Math.max(-0.04, -e.deltaY * 0.001))
+      setZoom((prev) => Math.min(2.5, Math.max(0.5, +(prev + zoomStep).toFixed(3))))
     }
 
     el.addEventListener('wheel', handleNativeWheel, { passive: false })
