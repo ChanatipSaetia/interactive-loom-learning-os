@@ -1,0 +1,16 @@
+type: taxonomy-category
+icon: TrendingUp
+title: "Development & Accomplishment"
+subtitle: "Core Drive 2 — White Hat"
+color: green
+description: "The drive to make progress, develop skills, and overcome challenges. The most common drive in gamification — it powers points, badges, levels, and progress bars."
+details: "Every point and badge must map to genuine progress or mastery. Pair with clear goals and visible progress bars; static counters without meaning decay within weeks."
+analogy: "Like watching a progress bar fill toward the next level."
+primaryFocus: "Progress, mastery, and visible achievement"
+inScope:
+  - "XP and level systems"
+  - "Milestone badges and achievements"
+  - "Progress bars and skill trees"
+outOfScope:
+  - "Badges for trivial actions"
+  - "Points that can be farmed without skill"

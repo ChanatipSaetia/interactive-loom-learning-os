@@ -1,0 +1,16 @@
+type: taxonomy-category
+icon: Users
+title: "Social Influence & Relatedness"
+subtitle: "Core Drive 5 — White Hat"
+color: mauve
+description: "The drive to connect with others — role models, mentorship, friendship, competition, cooperation, and shared recognition."
+details: "Add a social layer: teams, peer recognition, mentors, or cooperative quests. Social mechanics multiply engagement but must be opt-in, or they become pressure."
+analogy: "Like training with a friend who expects you to show up."
+primaryFocus: "Connection, cooperation, and healthy competition"
+inScope:
+  - "Teams and cooperative quests"
+  - "Peer recognition and shout-outs"
+  - "Mentorship and role models"
+outOfScope:
+  - "Shaming mechanics"
+  - "Forced social exposure for introverts"

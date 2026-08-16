@@ -9,6 +9,9 @@ okf_version: "0.1"
 * [Hexagonal Architecture (Ports & Adapters)](hexagonal-architecture/index.md) — Isolate core business domain logic from external technologies, databases, frameworks, and UI drivers
 * [Mutual TLS (mTLS) Security & Protocol Architecture](mtls/index.md) — Mutual authentication, TLS 1.3 handshakes, and SPIFFE identity
 
+## Behavioral Design
+* [Gamification](gamification/index.md) — The psychology of motivation, Octalysis core drives, and reward system design that builds real habits
+
 
 ## Gaming
 * [PoE 2 Flicker Strike Monk](poe2-flicker-monk/index.md) — Master the Flicker Strike + Falling Thunder Martial Artist Monk build in Path of Exile 2 patch 0.5

@@ -24,7 +24,6 @@ export const FlowchartEntitySchema = z.object({
   strokeColor: z.string().optional(),
   stateMachine: FlowchartStateMachineSchema.optional(),
   branchLabel: z.string().optional(),
-  collapsedTo: z.string().optional(),
   root: z.boolean().optional(),
 })
 

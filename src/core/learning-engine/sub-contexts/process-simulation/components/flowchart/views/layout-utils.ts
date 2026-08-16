@@ -74,7 +74,8 @@ export function routeManhattanPath(
   toNode: any,
   positioned: any[],
   spacing: any
-): { pathD: string; midX: number; midY: number } {
+): { pathD: string; midX: number; midY: number; incomingSide: string } {
+  const STUB = 16;
   const candidates: Array<{ type: string; points: Array<{ x: number; y: number }> }> = [];
 
   const candidateXs = new Set<number>();
@@ -85,7 +86,7 @@ export function routeManhattanPath(
   candidateXs.add(endX - 30);
 
   const maxCol = positioned.length > 0 ? Math.max(...positioned.map(n => n.grid?.[0] ?? 0)) : 0;
-  for (let c = 0; c <= maxCol; c++) {
+  for (let c = 0; c <= maxCol + 1; c++) {
     candidateXs.add((c + 0.5) * spacing.colSpacing + spacing.offsetX);
   }
 
@@ -97,11 +98,11 @@ export function routeManhattanPath(
   candidateYs.add(endY - 30);
 
   const maxRow = positioned.length > 0 ? Math.max(...positioned.map(n => n.grid?.[1] ?? 0)) : 0;
-  for (let r = 0; r <= maxRow; r++) {
+  for (let r = 0; r <= maxRow + 1; r++) {
     candidateYs.add((r + 0.5) * spacing.rowSpacing + spacing.offsetY);
   }
 
-  // 1-bend H-V
+  // 1-bend Direct H-V: (startX, startY) -> (endX, startY) -> (endX, endY)
   candidates.push({
     type: '1-bend H-V',
     points: [
@@ -111,7 +112,7 @@ export function routeManhattanPath(
     ]
   });
 
-  // 1-bend V-H
+  // 1-bend Direct V-H: (startX, startY) -> (startX, endY) -> (endX, endY)
   candidates.push({
     type: '1-bend V-H',
     points: [
@@ -121,7 +122,7 @@ export function routeManhattanPath(
     ]
   });
 
-  // H-V-H
+  // 3-segment H-V-H via candidateXs: (startX, startY) -> (midX, startY) -> (midX, endY) -> (endX, endY)
   candidateXs.forEach(midX => {
     candidates.push({
       type: 'H-V-H',
@@ -134,7 +135,7 @@ export function routeManhattanPath(
     });
   });
 
-  // V-H-V
+  // 3-segment V-H-V via candidateYs: (startX, startY) -> (startX, midY) -> (endX, midY) -> (endX, endY)
   candidateYs.forEach(midY => {
     candidates.push({
       type: 'V-H-V',
@@ -157,19 +158,21 @@ export function routeManhattanPath(
     let length = 0;
     const bends = pts.length - 2;
 
+    // Verify initial segment respects exit direction
     const p0 = pts[0];
     const p1 = pts[1];
-    if (sideFrom === 'R' && p1.x < p0.x) return;
-    if (sideFrom === 'L' && p1.x > p0.x) return;
-    if (sideFrom === 'T' && p1.y > p0.y) return;
-    if (sideFrom === 'B' && p1.y < p0.y) return;
+    if (sideFrom === 'R' && p1.x < p0.x + STUB) return;
+    if (sideFrom === 'L' && p1.x > p0.x - STUB) return;
+    if (sideFrom === 'T' && p1.y > p0.y - STUB) return;
+    if (sideFrom === 'B' && p1.y < p0.y + STUB) return;
 
+    // Verify final segment respects entry direction
     const pk = pts[pts.length - 1];
     const pk1 = pts[pts.length - 2];
-    if (sideTo === 'R' && pk1.x < pk.x) return;
-    if (sideTo === 'L' && pk1.x > pk.x) return;
-    if (sideTo === 'T' && pk1.y > pk.y) return;
-    if (sideTo === 'B' && pk1.y < pk.y) return;
+    if (sideTo === 'R' && pk1.x < pk.x + STUB) return;
+    if (sideTo === 'L' && pk1.x > pk.x - STUB) return;
+    if (sideTo === 'T' && pk1.y > pk.y - STUB) return;
+    if (sideTo === 'B' && pk1.y < pk.y + STUB) return;
 
     for (let i = 0; i < pts.length - 1; i++) {
       const segmentStart = pts[i];
@@ -229,6 +232,7 @@ export function routeManhattanPath(
   for (let i = 1; i < bestPath.length; i++) {
     const prev = bestPath[i-1];
     const curr = bestPath[i];
+    if (curr.x === prev.x && curr.y === prev.y) continue;
     if (curr.x === prev.x) {
       pathD += ` V ${curr.y}`;
     } else if (curr.y === prev.y) {
@@ -243,6 +247,7 @@ export function routeManhattanPath(
   return {
     pathD,
     midX: mid.x,
-    midY: mid.y
+    midY: mid.y,
+    incomingSide: sideTo
   };
 }

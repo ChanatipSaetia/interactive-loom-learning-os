@@ -3,7 +3,7 @@
   initiatedBy: player
   command: "Engage Pack with Gas Grenade"
   policy: "On Pack Encounter"
-  handledBy: gas_grenade_apply
+  handledBy: gas_grenade
   delegatesTo: pack
   resultEvents:
     - id: evt_poison_deployed
@@ -14,7 +14,7 @@
   id: step_bleed_pack
   command: "Apply Bleed with Barrage"
   policy: "After Poison Cloud Deployed"
-  handledBy: barrage_pack
+  handledBy: barrage
   resultEvents:
     - id: evt_ailments_active
       title: "Both Ailments Active"
@@ -24,7 +24,7 @@
   id: step_dots_pack
   command: "Let DoTs Deal Damage"
   policy: "With Both Poison and Bleed Applied"
-  handledBy: dot_tick
+  handledBy: dot_system
   resultEvents:
     - id: evt_pack_melted
       title: "Pack Melted"
@@ -39,7 +39,7 @@
       dashed: true
       policy: "If More Packs Remain"
       command: "Proceed to Next Pack"
-      handledBy: gas_grenade_apply
+      handledBy: gas_grenade
       resultEvents:
         - id: evt_loop_pack
           title: "Loop Back to Clear More"
@@ -47,7 +47,7 @@
       label: "Boss Fight"
       policy: "If Boss Encountered"
       command: "Begin Boss Engagement"
-      handledBy: gas_grenade_boss
+      handledBy: gas_grenade
       delegatesTo: boss
       resultEvents:
         - id: evt_boss_poisoned
@@ -58,7 +58,7 @@
   id: step_bleed_boss
   command: "Apply Bleed to Boss with Barrage"
   policy: "After Boss Poisoned"
-  handledBy: barrage_boss
+  handledBy: barrage
   delegatesTo: no_mercy
   resultEvents:
     - id: evt_boss_dual_ailmented
@@ -69,7 +69,7 @@
   id: step_dots_boss
   command: "Let DoTs Tick on Boss"
   policy: "With Both Poison and Bleed on Boss"
-  handledBy: dot_boss
+  handledBy: dot_system
   delegatesTo: sorcery_ward
   resultEvents:
     - id: evt_boss_defeated

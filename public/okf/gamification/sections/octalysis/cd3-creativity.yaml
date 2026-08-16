@@ -1,0 +1,16 @@
+type: taxonomy-category
+icon: Lightbulb
+title: "Empowerment of Creativity & Feedback"
+subtitle: "Core Drive 3 — White Hat"
+color: yellow
+description: "The drive to experiment, make decisions, and get feedback that validates improvement. People engage when they can try new approaches and see the results."
+details: "Offer choice (multiple solutions, customization) and immediate, informative feedback. The feedback loop — act, see result, adjust — is what keeps experimentation alive."
+analogy: "Like a designer iterating on a mockup and watching it get better."
+primaryFocus: "Choice, experimentation, and feedback loops"
+inScope:
+  - "Multiple solution paths"
+  - "User customization and expression"
+  - "Immediate results and analytics feedback"
+outOfScope:
+  - "Single-rail experiences with no choice"
+  - "Delayed or opaque feedback"

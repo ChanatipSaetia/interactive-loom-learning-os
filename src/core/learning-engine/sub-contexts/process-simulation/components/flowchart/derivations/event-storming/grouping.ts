@@ -61,19 +61,23 @@ export function buildGroups(
     }
   });
 
-  // Find actor for each command (user who issues it)
+  // Find actor for each command (user who issues it directly or via Policy)
   const cmdActor = new Map<string, string>();
   cmdNodes.forEach(cmd => {
-    const actor = outEdges.get(cmd)!.find(
-      t => getRole(t) === 'handler' && entityType(entities, t) === TYPES.USER,
-    );
-    if (actor) cmdActor.set(cmd, actor);
-    // Also check incoming: Actor -> Command
-    const incoming = rels.filter(r => r.to === cmd);
-    for (const r of incoming) {
-      if (getRole(r.from) === 'handler' && entityType(entities, r.from) === TYPES.USER) {
-        cmdActor.set(cmd, r.from);
-        break;
+    const directActor = rels.find(r => r.to === cmd && entityType(entities, r.from) === TYPES.USER);
+    if (directActor) {
+      cmdActor.set(cmd, directActor.from);
+      return;
+    }
+    const incomingRels = rels.filter(r => r.to === cmd);
+    for (const r of incomingRels) {
+      const parentId = r.from;
+      if (entityType(entities, parentId) === TYPES.POLICY) {
+        const actorRel = rels.find(r2 => r2.to === parentId && entityType(entities, r2.from) === TYPES.USER);
+        if (actorRel) {
+          cmdActor.set(cmd, actorRel.from);
+          break;
+        }
       }
     }
   });
@@ -122,7 +126,19 @@ export function buildGroups(
     const seedActor = cmdActor.get(seedCmd);
     if (seedActor) addNodeToGroup(g, seedActor);
 
-    // Directional BFS: handler -> events -> policies -> [STOP at command]
+    // Seed: incoming Policies for this command (pol → cmd relations)
+    // Policies are upstream of their command and own the group of the command
+    // they gate (one group per flow cycle), so seed every incoming policy here.
+    rels
+      .filter(r => r.to === seedCmd && entityType(entities, r.from) === TYPES.POLICY)
+      .forEach(r => {
+        if (!assigned.has(r.from)) addNodeToGroup(g, r.from);
+      });
+
+    // Directional BFS: handler -> events -> [STOP at command]
+    // Events do NOT pull their downstream policies into this group: an
+    // EVENT -> POLICY edge crosses the group boundary, and the policy is
+    // owned (seeded) by the group of the command it gates.
     const visited = new Set<string>();
     const queue: string[] = [];
 
@@ -175,16 +191,11 @@ export function buildGroups(
           }
         }
 
-        // Event -> Policy (forward only)
+        // Event -> User (return to actor, add without traverse)
         if (currType === TYPES.EVENT) {
-          if (tgtType === TYPES.POLICY && !g.allNodes.has(tgt)) {
-            addNodeToGroup(g, tgt);
-            if (!visited.has(tgt)) {
-              visited.add(tgt);
-              queue.push(tgt);
-            }
-          }
-          // Event -> User (return to actor, add without traverse)
+          // Event -> Policy: intentionally NOT added here — the policy
+          // belongs to the next command's group (see seeding above), so a
+          // group's events and their trigger policies stay split.
           if (tgtRole === 'handler' && tgtType === TYPES.USER && !g.allNodes.has(tgt)) {
             addNodeToGroup(g, tgt);
           }
@@ -193,9 +204,6 @@ export function buildGroups(
             addNodeToGroup(g, tgt);
           }
         }
-
-        // Policy -> [STOP, next command starts its own group]
-        // Don't traverse from policies to anything
       }
     }
 
@@ -209,8 +217,30 @@ export function buildGroups(
     if (!assigned.has(cmd)) expandGroup(cmd);
   });
 
-  // Orphan nodes (no command owns them) — create single-node groups
+  // Orphan timeline nodes (no command owns them) — create single-node groups
   timelineNodes.forEach(id => {
+    if (!assigned.has(id)) {
+      const g: FlowGroup = {
+        id: groups.length,
+        commands: [],
+        handlers: [],
+        actors: [],
+        externals: [],
+        events: [],
+        policies: [],
+        dbs: [],
+        allNodes: new Set(),
+        isRoot: false,
+      };
+      addNodeToGroup(g, id);
+      if (rootNodeId && g.allNodes.has(rootNodeId)) g.isRoot = true;
+      groups.push(g);
+      assigned.add(id);
+    }
+  });
+
+  // Assign any remaining unassigned nodes (e.g. duplicate actors/handlers)
+  nodeIds.forEach(id => {
     if (!assigned.has(id)) {
       const g: FlowGroup = {
         id: groups.length,

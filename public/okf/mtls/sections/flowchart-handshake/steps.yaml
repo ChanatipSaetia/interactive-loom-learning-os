@@ -3,7 +3,7 @@
   initiatedBy: client_dev
   command: "Initiate TLS Connection"
   policy: "Start mTLS Handshake"
-  handledBy: client_hello
+  handledBy: client
   resultEvents:
     - id: connection_initiated
       title: "Connection Initiated"
@@ -14,7 +14,7 @@
   id: server_hello_step
   policy: "On ClientHello Received"
   command: "Send ServerHello"
-  handledBy: server_hello
+  handledBy: server
   resultEvents:
     - id: server_hello_sent
       title: "ServerHello Sent"
@@ -25,7 +25,7 @@
   id: server_cert_step
   policy: "Present Server Identity"
   command: "Send Server Certificate"
-  handledBy: server_cert
+  handledBy: server
   resultEvents:
     - id: server_cert_sent
       title: "Server Certificate Sent"
@@ -36,7 +36,7 @@
   id: server_req_cert_step
   policy: "Require Mutual Auth"
   command: "Request Client Certificate"
-  handledBy: server_req_cert
+  handledBy: server
   delegatesTo: server_admin
   resultEvents:
     - id: client_cert_requested
@@ -48,7 +48,7 @@
   id: client_cert_step
   policy: "On CertificateRequest"
   command: "Send Client Certificate"
-  handledBy: client_cert
+  handledBy: client
   delegatesTo: key_store
   resultEvents:
     - id: client_cert_sent
@@ -64,7 +64,7 @@
       label: "Valid Certificate"
       policy: "Validate Client Identity"
       command: "Verify Client Certificate Against Trusted CA"
-      handledBy: server_verify
+      handledBy: server
       delegatesTo: ca_service
       resultEvents:
         - id: client_cert_verified
@@ -76,7 +76,7 @@
       dashed: true
       policy: "Client Certificate Invalid"
       command: "Terminate Connection"
-      handledBy: server_verify_fail
+      handledBy: server
       resultEvents:
         - id: connection_terminated
           title: "Connection Terminated"
@@ -86,7 +86,7 @@
   id: client_verify_step
   policy: "Validate Server Identity"
   command: "Verify Server Certificate Against Trusted CA"
-  handledBy: client_verify
+  handledBy: client
   resultEvents:
     - id: server_cert_verified
       title: "Server Certificate Verified"
@@ -97,7 +97,7 @@
   id: key_exchange_step
   policy: "All Certificates Valid"
   command: "Exchange Session Keys"
-  handledBy: key_exchange
+  handledBy: tls_stack
   resultEvents:
     - id: keys_established
       title: "Session Keys Established"
@@ -108,7 +108,7 @@
   id: handshake_complete
   policy: "Keys Exchanged"
   command: "Begin Encrypted Communication"
-  handledBy: handshake_done
+  handledBy: tls_stack
   resultEvents:
     - id: channel_established
       title: "Encrypted Channel Established"

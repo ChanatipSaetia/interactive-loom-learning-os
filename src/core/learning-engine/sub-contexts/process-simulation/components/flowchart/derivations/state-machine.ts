@@ -311,19 +311,6 @@ export function layoutGeneral(
 
   const compactedCol = compactColumns(sortedCols, col);
 
-  if (nodeIds.includes('temp_center')) {
-    const otherCols = nodeIds.filter(id => id !== 'temp_center').map(id => compactedCol.get(id) || 0);
-    const minC = otherCols.length > 0 ? Math.min(...otherCols) : 0;
-    const maxC = otherCols.length > 0 ? Math.max(...otherCols) : 0;
-
-    const otherRows = nodeIds.filter(id => id !== 'temp_center').map(id => row.get(id) || 0);
-    const minR = otherRows.length > 0 ? Math.min(...otherRows) : 0;
-    const maxR = otherRows.length > 0 ? Math.max(...otherRows) : 0;
-
-    compactedCol.set('temp_center', Math.round((minC + maxC) / 2));
-    row.set('temp_center', Math.round((minR + maxR) / 2));
-  }
-
   return nodes.map(n => ({
     ...n,
     grid: [compactedCol.get(n.id)!, row.get(n.id)!]

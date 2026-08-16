@@ -11,7 +11,6 @@ const SYSTEM_TYPES = new Set([
   'external', 'External', 'EXTERNAL', 'external api', 'External API', TYPES.EXTERNAL,
   'service', 'Service', 'SERVICE', TYPES.SERVICE,
   'database', 'Database', 'DATABASE', TYPES.DATABASE,
-  'core system', 'Core System', 'CORE_SYSTEM', TYPES.CORE_SYSTEM,
   'system', 'System', 'SYSTEM',
 ])
 
@@ -231,6 +230,82 @@ export function validateProcessSimulationTier3(
 
         const rawActors = ((data.flow as any)?.actors || data.actors || {}) as Record<string, any>
         const rawSystems = ((data.flow as any)?.systems || data.systems || {}) as Record<string, any>
+        const rawSteps = ((data.flow as any)?.steps || data.steps || []) as any[]
+
+        const getRefId = (ref: any): string => (typeof ref === 'string' ? ref : ref?.id || '')
+
+        // Invariant 1: Every declared actor and system must be attached to at least one step
+        const referencedInSteps = new Set<string>()
+        for (const step of Array.isArray(rawSteps) ? rawSteps : []) {
+          if (step && typeof step === 'object') {
+            if (step.type === 'linear') {
+              if (step.initiatedBy) referencedInSteps.add(getRefId(step.initiatedBy))
+              if (step.handledBy) referencedInSteps.add(getRefId(step.handledBy))
+              if (step.delegatesTo) referencedInSteps.add(getRefId(step.delegatesTo))
+            } else if (step.type === 'branch') {
+              for (const b of step.branches || []) {
+                if (b.initiatedBy) referencedInSteps.add(getRefId(b.initiatedBy))
+                if (b.handledBy) referencedInSteps.add(getRefId(b.handledBy))
+                if (b.delegatesTo) referencedInSteps.add(getRefId(b.delegatesTo))
+              }
+            }
+          }
+        }
+
+        for (const actorId of Object.keys(rawActors)) {
+          if (!referencedInSteps.has(actorId)) {
+            diagnostics.push({
+              tier: 3,
+              field: `actors.${actorId}`,
+              message: `Actor "${actorId}" is declared in actors.yaml but not attached to any step in steps.yaml.`,
+              fixHint: `Reference actor "${actorId}" in a step's initiatedBy field, or remove it from actors.yaml.`,
+              ...ctx,
+            })
+          }
+        }
+
+        for (const sysId of Object.keys(rawSystems)) {
+          if (!referencedInSteps.has(sysId)) {
+            diagnostics.push({
+              tier: 3,
+              field: `systems.${sysId}`,
+              message: `System "${sysId}" is declared in systems.yaml but not attached to any step in steps.yaml.`,
+              fixHint: `Reference system "${sysId}" in a step's handledBy or delegatesTo field, or remove it from systems.yaml.`,
+              ...ctx,
+            })
+          }
+        }
+
+        // Invariant 2: Every command must be handled by an Aggregate/External system in systems.yaml
+        for (const step of Array.isArray(rawSteps) ? rawSteps : []) {
+          if (step && typeof step === 'object') {
+            if (step.type === 'linear') {
+              const h = getRefId(step.handledBy)
+              if (!h || !rawSystems[h]) {
+                diagnostics.push({
+                  tier: 3,
+                  field: `steps.${step.id}`,
+                  message: `Step "${step.id}" command "${step.command}" is handledBy "${h}", which is not a valid system in systems.yaml.`,
+                  fixHint: `Change handledBy in step "${step.id}" to point to a valid Aggregate or External system in systems.yaml.`,
+                  ...ctx,
+                })
+              }
+            } else if (step.type === 'branch') {
+              for (const b of step.branches || []) {
+                const h = getRefId(b.handledBy)
+                if (!h || !rawSystems[h]) {
+                  diagnostics.push({
+                    tier: 3,
+                    field: `steps.${b.id}`,
+                    message: `Branch option "${b.id}" command "${b.command}" is handledBy "${h}", which is not a valid system in systems.yaml.`,
+                    fixHint: `Change handledBy in branch option "${b.id}" to point to a valid Aggregate or External system in systems.yaml.`,
+                    ...ctx,
+                  })
+                }
+              }
+            }
+          }
+        }
 
         for (const [entityId, entity] of Object.entries(entities)) {
           if (!entity || typeof entity !== 'object') continue
@@ -243,18 +318,7 @@ export function validateProcessSimulationTier3(
           // Skip event nodes themselves
           if (EVENT_TYPES.has(typeStr) || entityId.startsWith('evt_')) continue
 
-          let isConnected = connectedToEvent.has(entityId)
-          if (!isConnected) {
-            for (const [dupId, dupEntity] of Object.entries(entities)) {
-              if (dupEntity && typeof dupEntity === 'object' && dupEntity.collapsedTo === entityId) {
-                if (connectedToEvent.has(dupId)) {
-                  isConnected = true
-                  break
-                }
-              }
-            }
-          }
-
+          const isConnected = connectedToEvent.has(entityId)
           if (!isConnected) {
             const roleLabel = isActor ? 'Actor' : 'System'
             diagnostics.push({

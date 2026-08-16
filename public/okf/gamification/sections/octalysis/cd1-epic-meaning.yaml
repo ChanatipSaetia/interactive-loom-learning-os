@@ -1,0 +1,16 @@
+type: taxonomy-category
+icon: Compass
+title: "Epic Meaning & Purpose"
+subtitle: "Core Drive 1 — White Hat"
+color: sky
+description: "Believing you are doing something greater than yourself — a moral or higher purpose. The most powerful drive for long-term commitment."
+details: "Use narrative framing that connects routine tasks to a mission: 'you are saving the environment', not 'click this button'. Works best with community and visible impact."
+analogy: "Like a volunteer feeling their small task feeds a bigger cause."
+primaryFocus: "Mission, cause, and moral framing"
+inScope:
+  - "Story arcs tied to real impact"
+  - "Community missions and shared goals"
+  - "Volunteering and civic engagement apps"
+outOfScope:
+  - "Purely transactional point farming"
+  - "Mechanics that contradict the stated mission"

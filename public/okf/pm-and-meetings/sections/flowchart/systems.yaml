@@ -2,17 +2,24 @@ backlog:
   title: "Task Backlog"
   desc: "The single source of truth for prioritized feature requests and bug fixes."
   type: aggregate
-backlog_plan:
-  title: "Task Backlog"
-  desc: "The single source of truth for prioritized feature requests and bug fixes."
-  type: aggregate
-  collapsedTo: "backlog"
 slack_channel:
   title: "Slack Workspace"
   desc: "Team communication tool for sharing async updates and huddles."
   type: external
-slack_async:
-  title: "Slack Workspace"
-  desc: "Team communication tool for sharing async updates and huddles."
-  type: external
-  collapsedTo: "slack_channel"
+dev_workspace:
+  title: "Developer Workspace"
+  desc: "IDE and local build environment for executing code changes."
+  type: aggregate
+standup_tool:
+  title: "Standup Board"
+  desc: "Team standup and blocker tracking system."
+  type: aggregate
+issue_tracker:
+  title: "Issue Tracker"
+  desc: "Project management system for tracking and resolving blockers."
+  type: aggregate
+retro_board:
+  title: "Retrospective Board"
+  desc: "Feedback and action item board for cycle retrospectives."
+  type: aggregate
+

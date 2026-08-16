@@ -22,6 +22,15 @@
   path: /topics/fried-durian
   category: Cooking
   description: ''
+- id: gamification
+  label: gamification
+  path: /topics/gamification
+  category: Behavioral Design
+  description: >-
+    Why are games so compelling? Learn the psychology of motivation behind
+    gamification, the 8 core drives of the Octalysis framework, and how to
+    design reward systems that build real habits instead of hollow
+    point-farming.
 - id: haystack
   label: haystack
   path: /topics/haystack

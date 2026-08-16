@@ -8,6 +8,8 @@ import { deriveSequence } from './sequence';
 import { deriveDataFlow } from './data-flow';
 import { deriveStateMachine } from './state-machine';
 
+import { buildCanonicalIdMapper } from '../abstract-flow/derive';
+
 export function autoDeriveViews(schema: UnifiedFlowchartSchema): UnifiedFlowchartSchema {
   const mutableEntities = { ...schema.entities };
   const mutableRelations = [...schema.relations];
@@ -89,7 +91,7 @@ if (mutableViews.EVENT_STORMING) {
   const derivedViews = { ...newSchema.views };
 
   const getESNode = (nodeId: string) => esView.nodes.find(n => n.id === nodeId);
-  const getCollapsedId = (id: string) => newSchema.entities[id]?.collapsedTo || id;
+  const getCollapsedId = buildCanonicalIdMapper(newSchema.entities);
 
   if (!derivedViews.SYS_ARCH) {
     const { nodes, groups, relations, layoutInfo } = deriveSysArch(newSchema, getCollapsedId, getESNode);

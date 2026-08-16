@@ -160,12 +160,6 @@ export function calculatePositions(
     if (layer.length === 0) return;
 
     if (depth === 0) {
-      // Depth 0 holds the root plus any independent top-level groups
-      // (multiple entry commands / disconnected components). The root is
-      // anchored at 0; siblings are seeded around 0 and spread top-to-bottom
-      // by the collision pass below. Previously only the root received a Y
-      // here, leaving sibling depth-0 groups with an undefined offset (NaN
-      // positions) and pushing the root far from the rest of the layout.
       let cursor = 0;
       layer.forEach(gi => {
         if (gi === rootGroupIdx) {
@@ -177,7 +171,6 @@ export function calculatePositions(
           cursor += h / 2;
         }
       });
-      // Guarantee the root always has a Y even if it is not in this layer.
       if (!groupOffsetY.has(rootGroupIdx)) groupOffsetY.set(rootGroupIdx, 0);
       return;
     }
@@ -207,16 +200,29 @@ export function calculatePositions(
       parentSets.get(key)!.push(gi);
     });
 
-    // Assign Y within each parent group symmetrically
+    // Assign Y within each parent group symmetrically around parent center Y
     parentSets.forEach((siblings, _key) => {
       const parentYStr = _key.split('|');
       const parentYs = parentYStr.map(p => groupOffsetY.get(parseInt(p)) ?? 0);
       const center = parentYs.reduce((a, b) => a + b, 0) / parentYs.length;
       const n = siblings.length;
 
+      let maxH = 2.0;
+      siblings.forEach(gi => {
+        const b = groupBounds.get(gi);
+        if (b) {
+          const h = b.maxY - b.minY;
+          if (h > maxH) maxH = h;
+        }
+      });
+
+      const stepSpacing = Math.max(maxH + MIN_Y_SPACING, 3.2);
+
       siblings.forEach((gi, idx) => {
-        const offset = idx - (n - 1) / 2;
-        groupOffsetY.set(gi, center + offset);
+        const offset = (idx - (n - 1) / 2) * stepSpacing;
+        const d = groupDepth.get(gi) ?? 0;
+        const wrapY = (n === 1 && d >= 4) ? Math.floor(d / 4) * 1.5 : 0;
+        groupOffsetY.set(gi, center + offset + wrapY);
       });
     });
   });
@@ -227,7 +233,7 @@ export function calculatePositions(
     if (!groupOffsetY.has(gi)) groupOffsetY.set(gi, 0);
   });
 
-  // Post-layout: detect Y collisions within same X column, push apart
+  // Post-layout: detect Y collisions within same X column, push apart symmetrically
   depthCols.forEach(depth => {
     const layer = depthLayers.get(depth)!;
     if (layer.length <= 1) return;
@@ -248,7 +254,10 @@ export function calculatePositions(
         const needed = prevBottom + MIN_Y_SPACING;
 
         if (currTop < needed) {
-          groupOffsetY.set(curr, needed + currH / 2);
+          const overlap = needed - currTop;
+          const half = overlap / 2;
+          groupOffsetY.set(prev, prevCenter - half);
+          groupOffsetY.set(curr, currCenter + half);
           hasCollision = true;
         }
       }
@@ -290,53 +299,82 @@ function computeWithinGroupPositions(
     if (pols.length > 0) branchPolicies.set(evt, pols.length);
   });
 
-  // --- Column 0: Commands stacked with handlers ---
+  // --- Column 0: Commands stacked with handlers, policies, and actors ---
   g.commands.forEach((cmd, cIdx) => {
-    pos.set(cmd, [CMD_COL, 2 + cIdx * 1.5]);
+    const rowY = 2 + cIdx * 1.5;
+    pos.set(cmd, [CMD_COL, rowY]);
 
     // Handler stacked with command (above for aggregate, same row for user).
     // An external/service that runs the command (handledBy) plays the same
     // structural role as an aggregate handler, so treat it identically and
     // stack it in the command column rather than offsetting it sideways.
     const handlerInGroup =
-      g.handlers.find(h => rels.some(r => r.from === cmd && r.to === h && r.handledBy)) ??
-      g.externals.find(h => rels.some(r => r.from === cmd && r.to === h && r.handledBy));
+      g.handlers.find(h => rels.some(r => (r.from === cmd && r.to === h && r.handledBy) || (r.from === h && r.to === cmd))) ??
+      g.externals.find(h => rels.some(r => (r.from === cmd && r.to === h && r.handledBy) || (r.from === h && r.to === cmd)));
     if (handlerInGroup) {
-      pos.set(handlerInGroup, [CMD_COL, 2 + cIdx * 1.5 - 0.625]);
+      pos.set(handlerInGroup, [CMD_COL, rowY - 0.625]);
     }
 
-    // Actor to the left of command
+    // Policies positioned next to their related command (-1 column offset).
+    // A merge point may feed several policies into one command: stack them.
+    const polsForCmd = g.policies.filter(p => rels.some(r => r.from === p && r.to === cmd));
+    polsForCmd.forEach((pol, pIdx) => {
+      pos.set(pol, [CMD_COL - 1, rowY + pIdx * 0.75]);
+    });
+    const polInGroup = polsForCmd[0];
+
+    // Actor next to Policy and on top of Policy (above Policy)
     const actorInGroup = g.actors.find(a => {
-      return rels.some(r => r.from === a && r.to === cmd);
+      if (rels.some(r => r.from === a && r.to === cmd)) return true;
+      if (polInGroup && rels.some(r => r.from === a && r.to === polInGroup)) return true;
+      return false;
     });
     if (actorInGroup) {
-      pos.set(actorInGroup, [CMD_COL - 1, 2 + cIdx * 1.5]);
+      if (polInGroup && pos.has(polInGroup)) {
+        // Place Actor on top of Policy (same X, rowY - 0.625)
+        pos.set(actorInGroup, [pos.get(polInGroup)![0], rowY - 0.625]);
+      } else {
+        // If no policy present, place Actor next to Command on top level
+        pos.set(actorInGroup, [CMD_COL - 1, rowY - 0.625]);
+      }
     }
   });
 
-  // --- Column 1: Events stacked with related nodes ---
+  // --- Column 1+: Events stacked with related nodes, wrapping beyond 4 columns ---
   g.events.forEach((evt, eIdx) => {
-    const isBranch = branchPolicies.get(evt)! > 1;
-    pos.set(evt, [EVT_COL, 2 + eIdx * (isBranch ? 1.5 : 1.2)]);
+    const isBranch = (branchPolicies.get(evt) ?? 0) > 1;
+    const colOffset = (eIdx % 4) * (isBranch ? 1.5 : 1.2);
+    const rowOffset = Math.floor(eIdx / 4) * 1.2;
+    pos.set(evt, [EVT_COL + colOffset, 2 + rowOffset]);
   });
 
-  // --- Column 2+: Policies (gap for branching) ---
+  // --- Policies not yet placed (branch policies: place next to their command) ---
   g.policies.forEach(pol => {
-    const inEvents = inEdges.get(pol)!.filter(f => g.events.includes(f));
-    const srcEvent = inEvents[0];
-    const isBranch = srcEvent && branchPolicies.get(srcEvent)! > 1;
+    if (pos.has(pol)) return; // Already positioned next to its linear command
 
-    if (isBranch && srcEvent) {
-      const srcRow = pos.get(srcEvent)![1];
-      const siblings = g.policies.filter(p => {
-        const pe = inEdges.get(p)!.filter(f => g.events.includes(f));
-        return pe.includes(srcEvent);
-      });
-      const sibIdx = siblings.indexOf(pol);
-      const totalSibs = siblings.length;
-      pos.set(pol, [POL_COL + 0.5, srcRow - (totalSibs - 1) * 0.5 + sibIdx * 1.0]);
+    // Find the command this policy triggers
+    const ownedCmd = g.commands.find(c => rels.some(r => r.from === pol && r.to === c));
+    if (ownedCmd && pos.has(ownedCmd)) {
+      // Place policy 1 column left of its command, same row
+      const [cx, cy] = pos.get(ownedCmd)!;
+      pos.set(pol, [cx - 1, cy]);
     } else {
-      pos.set(pol, [POL_COL, 2 + g.policies.indexOf(pol) * 1.2]);
+      // Fallback: align with source event row
+      const inEvents = inEdges.get(pol)!.filter(f => g.events.includes(f));
+      const srcEvent = inEvents[0];
+      if (srcEvent && pos.has(srcEvent)) {
+        const srcRow = pos.get(srcEvent)![1];
+        const siblings = g.policies.filter(p => {
+          const pe = inEdges.get(p)!.filter(f => g.events.includes(f));
+          return pe.includes(srcEvent);
+        });
+        const sibIdx = siblings.indexOf(pol);
+        const totalSibs = siblings.length;
+        const rowOffset = sibIdx - (totalSibs - 1) / 2;
+        pos.set(pol, [POL_COL, srcRow + rowOffset * 1.5]);
+      } else {
+        pos.set(pol, [POL_COL, 2 + g.policies.indexOf(pol) * 1.5]);
+      }
     }
   });
 
@@ -397,14 +435,22 @@ function computeWithinGroupPositions(
   // --- Additional actors not yet positioned ---
   g.actors.forEach(actor => {
     if (!pos.has(actor)) {
-      const connectedEvent = g.events.find(e =>
-        rels.some(r => r.from === e && r.to === actor),
+      const connectedPol = g.policies.find(p =>
+        rels.some(r => r.from === actor && r.to === p),
       );
-      if (connectedEvent && pos.has(connectedEvent)) {
-        const ePos = pos.get(connectedEvent)!;
-        pos.set(actor, [ePos[0] + 1, ePos[1]]);
+      if (connectedPol && pos.has(connectedPol)) {
+        const pPos = pos.get(connectedPol)!;
+        pos.set(actor, [pPos[0] - 1, pPos[1]]);
       } else {
-        pos.set(actor, [CMD_COL - 1, 2]);
+        const connectedEvent = g.events.find(e =>
+          rels.some(r => r.from === e && r.to === actor),
+        );
+        if (connectedEvent && pos.has(connectedEvent)) {
+          const ePos = pos.get(connectedEvent)!;
+          pos.set(actor, [ePos[0] + 1, ePos[1]]);
+        } else {
+          pos.set(actor, [CMD_COL - 1, 2]);
+        }
       }
     }
   });

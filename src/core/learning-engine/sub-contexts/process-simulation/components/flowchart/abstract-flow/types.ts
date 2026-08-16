@@ -53,6 +53,8 @@ export interface BranchOption extends FlowStepBase {
   label: string;
   /** Whether this branch renders as a dashed line. */
   dashed?: boolean;
+  /** Optional actor that initiates this branch path. */
+  initiatedBy?: Ref;
   policy: string;
   command: string;
   handledBy: Ref;
@@ -81,8 +83,6 @@ export interface SystemDecl {
     states: Array<{ id: string; label: string; color: string }>;
     initialState: string;
   };
-  /** ID of the canonical node this duplicate collapses into (mirrors FlowchartEntity.collapsedTo). */
-  collapsedTo?: string;
 }
 
 /** Journey step references a flow step by id with required name and description. */

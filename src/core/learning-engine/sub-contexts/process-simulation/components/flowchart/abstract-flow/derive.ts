@@ -1,18 +1,44 @@
-/* eslint-disable @typescript-eslint/no-explicit-any, @typescript-eslint/no-unused-vars */
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import type { AbstractFlow, LinearStep, BranchStep, BranchOption, FlowStep } from './types';
 import { isLinearStep, isBranchStep } from './types';
 import { TYPES } from '../types';
 import type { UnifiedFlowchartSchema, FlowchartEntity, FlowchartRelation } from '../types';
 
 /**
+ * Maps entity IDs to their canonical representative based on (title, type) grouping.
+ * Per-step duplicate instances (e.g. engine, engine2, engine3 or dev, dev2) share title and type,
+ * so they resolve to the first declared entity ID of that group.
+ */
+export function buildCanonicalIdMapper(entities: Record<string, FlowchartEntity>): (id: string) => string {
+  const canonicalMap: Record<string, string> = {};
+  const seenKeyToId = new Map<string, string>();
+
+  for (const [id, entity] of Object.entries(entities)) {
+    if (!entity) continue;
+    const type = entity.type || entity.viewTypes?.EVENT_STORMING || 'default';
+    const key = `${entity.title}::${type}`;
+    if (!seenKeyToId.has(key)) {
+      seenKeyToId.set(key, id);
+    }
+    canonicalMap[id] = seenKeyToId.get(key)!;
+  }
+
+  return (id: string) => canonicalMap[id] || id;
+}
+
+/**
  * Derive a UnifiedFlowchartSchema from an AbstractFlow.
  *
  * Rules:
- * - Each unique ref() to a system auto-duplicates with collapsedTo.
- * - First reference to a system creates the canonical entity.
+ * - Each reference to an actor or system per step creates a per-step entity node instance.
+ * - The first reference keeps the canonical base ID; subsequent references generate numbered entity IDs (engine2, engine3).
+ * - All instances of the same actor/system share the exact same title.
  * - Linear steps follow: [initiatedBy →] command → policy → handler → resultEvents.
- * - Branch steps: event → N×(policy → command → handler → resultEvents).
+ * - Branch steps: event → N×([initiatedBy →] policy → command → handler → resultEvents).
  * - continuesAs creates relations from resultEvents to the next step's policy/command.
+ *   Self-edges (target equals the source event) are skipped.
+ * - Actor → policy edges are skipped when the policy already receives an event-driven
+ *   incoming edge from another step's continuesAs.
  */
 export function deriveSchema(flow: AbstractFlow): UnifiedFlowchartSchema {
   const entities: Record<string, FlowchartEntity> = {};
@@ -24,16 +50,32 @@ export function deriveSchema(flow: AbstractFlow): UnifiedFlowchartSchema {
   const steps = flow?.steps || [];
   const journeysList = flow?.journeys || [];
 
-  // Track how many times each system ref has been used (for auto-duplication)
+  // Track how many times each actor / system ref has been used (for per-step instance creation)
+  const actorRefCount = new Map<string, number>();
   const systemRefCount = new Map<string, number>();
 
   // Map abstract IDs to generated entity IDs
   const idMap = new Map<string, string>();
 
-  // Track per-step handler/delegate entity IDs (for Event Storming highlighting)
-  const stepHandlerMap = new Map<string, { handler: string; delegate?: string }>();
+  // Track per-step handler/delegate/actor entity IDs (for Event Storming highlighting and journey nodes)
+  const stepHandlerMap = new Map<string, { handler: string; delegate?: string; actor?: string }>();
 
-  // --- Phase 1: Declare actors ---
+  // Precompute all continuesAs target entity IDs so a policy that already receives
+  // an event-driven incoming edge does not also get an actor edge on the same port.
+  const continuesAsTargets = new Set<string>();
+  for (const step of steps) {
+    if (isLinearStep(step) && step.continuesAs) {
+      continuesAsTargets.add(resolveNextTargetEntity(step.continuesAs, steps));
+    } else if (isBranchStep(step)) {
+      for (const branch of step.branches) {
+        if (branch.continuesAs) {
+          continuesAsTargets.add(resolveNextTargetEntity(branch.continuesAs, steps));
+        }
+      }
+    }
+  }
+
+  // --- Phase 1: Declare actors (canonical entities) ---
   for (const [id, actor] of Object.entries(actors)) {
     const entityId = id;
     entities[entityId] = {
@@ -42,9 +84,10 @@ export function deriveSchema(flow: AbstractFlow): UnifiedFlowchartSchema {
       type: TYPES.USER,
     };
     idMap.set(id, entityId);
+    actorRefCount.set(id, 0);
   }
 
-  // --- Phase 2: Declare systems (canonical entities only) ---
+  // --- Phase 2: Declare systems (canonical entities) ---
   for (const [id, sys] of Object.entries(systems)) {
     const entityId = id;
     entities[entityId] = {
@@ -52,8 +95,6 @@ export function deriveSchema(flow: AbstractFlow): UnifiedFlowchartSchema {
       desc: sys.desc,
       type: sys.type === 'aggregate' ? TYPES.AGGREGATE : TYPES.EXTERNAL,
       stateMachine: sys.stateMachine,
-      // Preserve user-declared collapsedTo (e.g. heralds2.collapsedTo: "heralds" from systems.yaml)
-      ...(sys.collapsedTo ? { collapsedTo: sys.collapsedTo } : {}),
     };
     idMap.set(id, entityId);
     systemRefCount.set(id, 0);
@@ -63,13 +104,13 @@ export function deriveSchema(flow: AbstractFlow): UnifiedFlowchartSchema {
   let isFirstStep = true;
   for (const step of steps) {
     if (isLinearStep(step)) {
-      const { handler, delegate } = processLinearStep(step, entities, relations, relCounter, idMap, systemRefCount, isFirstStep, steps);
-      stepHandlerMap.set(step.id, { handler, delegate });
+      const { handler, delegate, actor } = processLinearStep(step, entities, relations, relCounter, idMap, actorRefCount, systemRefCount, isFirstStep, steps, continuesAsTargets);
+      stepHandlerMap.set(step.id, { handler, delegate, actor });
       isFirstStep = false;
     } else if (isBranchStep(step)) {
-      const handlers = processBranchStep(step, entities, relations, relCounter, idMap, systemRefCount, steps);
-      for (const { stepId, handler, delegate } of handlers) {
-        stepHandlerMap.set(stepId, { handler, delegate });
+      const handlers = processBranchStep(step, entities, relations, relCounter, idMap, actorRefCount, systemRefCount, steps, continuesAsTargets);
+      for (const { stepId, handler, delegate, actor } of handlers) {
+        stepHandlerMap.set(stepId, { handler, delegate, actor });
       }
     }
   }
@@ -93,10 +134,25 @@ export function deriveSchema(flow: AbstractFlow): UnifiedFlowchartSchema {
     }),
   }));
 
+  // --- Phase 5: Deduplicate identical from/to relations ---
+  // A branch fan-out and a continuesAs can both link the same event to the same policy
+  // (e.g. evt_done → pol_qa_review). Keep one edge, preferring the labeled one.
+  const deduped = new Map<string, FlowchartRelation>();
+  for (const r of relations) {
+    const key = `${r.from}→${r.to}`;
+    const existing = deduped.get(key);
+    if (!existing || (!existing.label && r.label)) {
+      deduped.set(key, r);
+    }
+  }
+  relations.length = 0;
+  relations.push(...deduped.values());
+
   return {
     entities,
     relations,
     journeys,
+    rawSteps: steps,
   };
 }
 
@@ -129,7 +185,38 @@ function resolveNextTargetEntity(nextId: string, steps: FlowStep[]): string {
 }
 
 /**
- * Get or create a duplicated entity for a system ref.
+ * Get or create a duplicated entity for an actor ref per step.
+ * First use returns the canonical ID. Subsequent uses create duplicates.
+ */
+function getActorEntityId(
+  actorId: string,
+  entities: Record<string, FlowchartEntity>,
+  actorRefCount: Map<string, number>,
+  idMap: Map<string, string>,
+  stepId: string,
+): string {
+  const count = actorRefCount.get(actorId) ?? 0;
+  actorRefCount.set(actorId, count + 1);
+
+  if (count === 0) {
+    return actorId;
+  }
+
+  const dupId = `${actorId}${count + 1}`;
+  const canonical = entities[actorId];
+  if (canonical) {
+    entities[dupId] = {
+      title: canonical.title,
+      desc: canonical.desc,
+      type: TYPES.USER,
+    };
+  }
+  idMap.set(`${actorId}:${stepId}`, dupId);
+  return dupId;
+}
+
+/**
+ * Get or create a duplicated entity for a system ref per step.
  * First use returns the canonical ID. Subsequent uses create duplicates.
  */
 function getSystemEntityId(
@@ -143,19 +230,19 @@ function getSystemEntityId(
   systemRefCount.set(sysId, count + 1);
 
   if (count === 0) {
-    // First use — return canonical
     return sysId;
   }
 
-  // Subsequent use — create duplicate
-  const dupId = `${sysId}${count}`;
+  const dupId = `${sysId}${count + 1}`;
   const canonical = entities[sysId];
-  entities[dupId] = {
-    ...canonical,
-    title: `${canonical.title} ${count}`,
-    desc: canonical.desc,
-    collapsedTo: sysId,
-  };
+  if (canonical) {
+    entities[dupId] = {
+      title: canonical.title,
+      desc: canonical.desc,
+      type: canonical.type,
+      ...(canonical.stateMachine ? { stateMachine: canonical.stateMachine } : {}),
+    };
+  }
   idMap.set(`${sysId}:${stepId}`, dupId);
   return dupId;
 }
@@ -166,10 +253,12 @@ function processLinearStep(
   relations: FlowchartRelation[],
   relCounter: { current: number },
   idMap: Map<string, string>,
+  actorRefCount: Map<string, number>,
   systemRefCount: Map<string, number>,
   isFirstStep: boolean,
   steps: FlowStep[] = [],
-): { handler: string; delegate?: string } {
+  _continuesAsTargets: Set<string> = new Set(),
+): { handler: string; delegate?: string; actor?: string } {
   // Create policy entity (always — even for root step)
   const polId = `pol_${step.id}`;
   entities[polId] = {
@@ -188,21 +277,21 @@ function processLinearStep(
   };
   idMap.set(step.id, cmdId);
 
-  if (isFirstStep) {
-    // Root step: ACTOR → POLICY → COMMAND (or just mark policy as root when no actor)
-    if (step.initiatedBy) {
-      const actorId = idMap.get(getId(step.initiatedBy));
-      if (actorId) {
-        relations.push({
-          id: getNextRelId(relCounter),
-          from: actorId,
-          to: polId,
-          views: ['EVENT_STORMING'],
-        });
-      }
+  // Handle actor (initiatedBy) if present
+  let actorId: string | undefined;
+  if (step.initiatedBy) {
+    const rawActorId = getId(step.initiatedBy);
+    if (entities[rawActorId] || actorRefCount.has(rawActorId)) {
+      actorId = getActorEntityId(rawActorId, entities, actorRefCount, idMap, step.id);
     } else {
-      entities[polId].root = true;
+      actorId = idMap.get(rawActorId) || rawActorId;
     }
+    relations.push({
+      id: getNextRelId(relCounter),
+      from: actorId,
+      to: polId,
+      views: ['EVENT_STORMING'],
+    });
   }
 
   // Policy → Command (always)
@@ -213,7 +302,7 @@ function processLinearStep(
     views: ['EVENT_STORMING'],
   });
 
-  // Get handler entity (auto-duplicate)
+  // Get handler entity (auto-duplicate per step)
   const handlerId = getSystemEntityId(
     getId(step.handledBy),
     entities,
@@ -269,11 +358,12 @@ function processLinearStep(
     });
   }
 
-  // continuesAs: link result events to next step's policy or branch event
+  // continuesAs: link result events to next step's policy or branch event (skip self-edges)
   if (step.continuesAs) {
     const nextTargetId = resolveNextTargetEntity(step.continuesAs, steps);
     for (const evt of step.resultEvents) {
       const eventId = `evt_${evt.id}`;
+      if (eventId === nextTargetId) continue;
       relations.push({
         id: getNextRelId(relCounter),
         from: eventId,
@@ -283,7 +373,7 @@ function processLinearStep(
     }
   }
 
-  return { handler: handlerId, delegate: delegateId };
+  return { handler: handlerId, delegate: delegateId, actor: actorId };
 }
 
 function processBranchStep(
@@ -292,9 +382,11 @@ function processBranchStep(
   relations: FlowchartRelation[],
   relCounter: { current: number },
   idMap: Map<string, string>,
+  actorRefCount: Map<string, number>,
   systemRefCount: Map<string, number>,
   steps: FlowStep[] = [],
-): Array<{ stepId: string; handler: string; delegate?: string }> {
+  _continuesAsTargets: Set<string> = new Set(),
+): Array<{ stepId: string; handler: string; delegate?: string; actor?: string }> {
   // Create branch event entity
   const branchEventId = `evt_${step.event}`;
   if (!entities[branchEventId]) {
@@ -307,7 +399,7 @@ function processBranchStep(
   idMap.set(step.event, branchEventId);
 
   // Process each branch
-  const handlerInfo: Array<{ stepId: string; handler: string; delegate?: string }> = [];
+  const handlerInfo: Array<{ stepId: string; handler: string; delegate?: string; actor?: string }> = [];
   for (const branch of step.branches) {
     // Branch policy
     const polId = `pol_${branch.id}`;
@@ -326,7 +418,24 @@ function processBranchStep(
     };
     idMap.set(branch.id, cmdId);
 
-    // Get handler (auto-duplicate)
+    // Handle actor if present on branch option
+    let actorId: string | undefined;
+    if (branch.initiatedBy) {
+      const rawActorId = getId(branch.initiatedBy);
+      if (entities[rawActorId] || actorRefCount.has(rawActorId)) {
+        actorId = getActorEntityId(rawActorId, entities, actorRefCount, idMap, branch.id);
+      } else {
+        actorId = idMap.get(rawActorId) || rawActorId;
+      }
+      relations.push({
+        id: getNextRelId(relCounter),
+        from: actorId,
+        to: polId,
+        views: ['EVENT_STORMING'],
+      });
+    }
+
+    // Get handler (auto-duplicate per step)
     const handlerId = getSystemEntityId(
       getId(branch.handledBy),
       entities,
@@ -380,7 +489,7 @@ function processBranchStep(
       });
     }
 
-    handlerInfo.push({ stepId: branch.id, handler: handlerId, delegate: delegateId });
+    handlerInfo.push({ stepId: branch.id, handler: handlerId, delegate: delegateId, actor: actorId });
 
     // Handler → ResultEvents (always from handler)
     for (const evt of branch.resultEvents) {
@@ -402,11 +511,12 @@ function processBranchStep(
       });
     }
 
-    // continuesAs: link branch result events to next step
+    // continuesAs: link branch result events to next step (skip self-edges)
     if (branch.continuesAs) {
       const nextTargetId = resolveNextTargetEntity(branch.continuesAs, steps);
       for (const evt of branch.resultEvents) {
         const eventId = `evt_${evt.id}`;
+        if (eventId === nextTargetId) continue;
         relations.push({
           id: getNextRelId(relCounter),
           from: eventId,
@@ -443,11 +553,18 @@ function collectNodeIds(
   step: LinearStep | BranchOption,
   entities: Record<string, FlowchartEntity>,
   idMap: Map<string, string>,
-  handlerInfo?: { handler: string; delegate?: string },
+  handlerInfo?: { handler: string; delegate?: string; actor?: string },
 ): string[] {
   const ids: string[] = [];
 
-  // Policy — always present (root and non-root steps both get a POLICY node now)
+  // Actor — if present
+  if (handlerInfo?.actor) {
+    ids.push(handlerInfo.actor);
+  } else if (step.initiatedBy) {
+    ids.push(resolveNodeId(getId(step.initiatedBy), idMap));
+  }
+
+  // Policy — always present
   const polId = `pol_${stepId}`;
   if (entities[polId]) ids.push(polId);
 
@@ -455,7 +572,7 @@ function collectNodeIds(
   const cmdId = `cmd_${stepId}`;
   if (entities[cmdId]) ids.push(cmdId);
 
-  // Handler — use per-step entity (may be a duplicate in Event Storming)
+  // Handler — use per-step entity
   if (handlerInfo) {
     ids.push(handlerInfo.handler);
   } else {

@@ -1,0 +1,156 @@
+- type: linear
+  id: start_lesson
+  initiatedBy: learner
+  command: "Start Lesson"
+  policy: "On Lesson Request"
+  handledBy: lesson_engine
+  resultEvents:
+    - id: lesson_started
+      title: "Lesson Started"
+      desc: "Learner opens a lesson; the engine loads content."
+  continuesAs: submit_answers
+
+- type: linear
+  id: submit_answers
+  initiatedBy: learner
+  command: "Submit Answers"
+  policy: "On Submission"
+  handledBy: grading_service
+  resultEvents:
+    - id: exercise_graded
+      title: "Exercise Graded"
+      desc: "Answers evaluated; correctness and XP value determined."
+  continuesAs: grade_branch
+
+- type: branch
+  id: grade_branch
+  event: exercise_graded
+  branches:
+    - id: award_xp
+      label: "Answer Correct"
+      policy: "If Answer Correct"
+      command: "Award XP"
+      handledBy: reward_engine
+      resultEvents:
+        - id: xp_awarded
+          title: "XP Awarded"
+          desc: "Experience points credited to the learner's account."
+      continuesAs: update_progress
+    - id: show_hint
+      label: "Answer Wrong"
+      dashed: true
+      policy: "If Answer Wrong"
+      command: "Show Hint"
+      handledBy: lesson_engine
+      resultEvents:
+        - id: hint_shown
+          title: "Hint Shown"
+          desc: "Partial-credit hint displayed; learner retries the exercise."
+      continuesAs: submit_answers
+
+- type: linear
+  id: update_progress
+  policy: "On XP Awarded"
+  command: "Update Progress"
+  handledBy: progress_store
+  resultEvents:
+    - id: progress_updated
+      title: "Progress Updated"
+      desc: "Skill progress, level thresholds, and badge thresholds recomputed."
+  continuesAs: badge_branch
+
+- type: branch
+  id: badge_branch
+  event: progress_updated
+  branches:
+    - id: unlock_badge
+      label: "Threshold Reached"
+      policy: "If Badge Threshold Reached"
+      command: "Unlock Badge"
+      handledBy: reward_engine
+      resultEvents:
+        - id: badge_unlocked
+          title: "Badge Unlocked"
+          desc: "Achievement badge added to the learner's collection."
+      continuesAs: streak_update
+    - id: continue_lesson
+      label: "No Badge Yet"
+      policy: "If No Badge Earned"
+      command: "Continue Lesson"
+      handledBy: lesson_engine
+      resultEvents:
+        - id: lesson_continued
+          title: "Lesson Continued"
+          desc: "Learner proceeds to the next exercise without a new badge."
+      continuesAs: streak_update
+
+- type: linear
+  id: streak_update
+  policy: "On Lesson Completed"
+  command: "Evaluate Daily Goal"
+  handledBy: streak_tracker
+  resultEvents:
+    - id: goal_evaluated
+      title: "Daily Goal Evaluated"
+      desc: "Streak tracker checks whether today's goal was met."
+  continuesAs: streak_branch
+
+- type: branch
+  id: streak_branch
+  event: goal_evaluated
+  branches:
+    - id: extend_streak
+      label: "Goal Met"
+      policy: "If Daily Goal Met"
+      command: "Extend Streak"
+      handledBy: streak_tracker
+      resultEvents:
+        - id: streak_extended
+          title: "Streak Extended"
+          desc: "Consecutive-day counter incremented; habit reinforced."
+      continuesAs: update_league
+    - id: freeze_streak
+      label: "Goal Missed"
+      dashed: true
+      policy: "If Goal Missed"
+      command: "Apply Streak Freeze"
+      handledBy: streak_tracker
+      resultEvents:
+        - id: streak_frozen
+          title: "Streak Frozen"
+          desc: "Streak protected by a freeze token; no penalty today."
+      continuesAs: update_league
+
+- type: linear
+  id: update_league
+  policy: "On XP Change"
+  command: "Recalculate Standings"
+  handledBy: league_service
+  resultEvents:
+    - id: standings_updated
+      title: "League Standings Updated"
+      desc: "Learner's rank and league tier recomputed."
+  continuesAs: notify_branch
+
+- type: branch
+  id: notify_branch
+  event: standings_updated
+  branches:
+    - id: send_notification
+      label: "Badge or Promotion"
+      policy: "If Badge Unlocked or League Promotion"
+      command: "Send Push Notification"
+      handledBy: push_service
+      resultEvents:
+        - id: notification_sent
+          title: "Notification Sent"
+          desc: "Learner notified of the badge or league promotion."
+    - id: silent_update
+      label: "No Notable Change"
+      policy: "If No Notable Change"
+      command: "Log Silently"
+      handledBy: league_service
+      resultEvents:
+        - id: update_logged
+          title: "Update Logged"
+          desc: "Standings persisted without user-facing notification."

@@ -1,0 +1,104 @@
+nodes:
+  gamification:
+    title: "Gamification"
+    category: concept
+  gamefulness:
+    title: "Gamefulness"
+    category: concept
+  core-drives:
+    title: "Core Drives (Octalysis)"
+    category: concept
+  sdt:
+    title: "Self-Determination Theory"
+    category: concept
+  autonomy:
+    title: "Autonomy"
+    category: mechanism
+  competence:
+    title: "Competence"
+    category: mechanism
+  relatedness:
+    title: "Relatedness"
+    category: mechanism
+  pbl:
+    title: "PBL (Points, Badges, Leaderboards)"
+    category: mechanism
+  xp:
+    title: "XP / Points"
+    category: mechanism
+  badges:
+    title: "Badges"
+    category: mechanism
+  leaderboards:
+    title: "Leaderboards"
+    category: mechanism
+  streaks:
+    title: "Streaks"
+    category: mechanism
+  hook-loop:
+    title: "Hook Loop"
+    category: pattern
+  variable-reward:
+    title: "Variable Reward"
+    category: mechanism
+  overjustification:
+    title: "Overjustification Effect"
+    category: concept
+  dark-patterns:
+    title: "Dark Patterns"
+    category: concept
+edges:
+  - from: gamification
+    to: gamefulness
+    label: "produces"
+  - from: gamification
+    to: pbl
+    label: "uses as surface layer"
+  - from: gamification
+    to: core-drives
+    label: "should target"
+  - from: core-drives
+    to: sdt
+    label: "synthesizes"
+  - from: sdt
+    to: autonomy
+    label: "requires"
+  - from: sdt
+    to: competence
+    label: "requires"
+  - from: sdt
+    to: relatedness
+    label: "requires"
+  - from: pbl
+    to: xp
+    label: "includes"
+  - from: pbl
+    to: badges
+    label: "includes"
+  - from: pbl
+    to: leaderboards
+    label: "includes"
+  - from: xp
+    to: overjustification
+    label: "can trigger"
+  - from: badges
+    to: competence
+    label: "signals"
+  - from: leaderboards
+    to: relatedness
+    label: "leverages"
+  - from: streaks
+    to: dark-patterns
+    label: "can become"
+  - from: hook-loop
+    to: variable-reward
+    label: "contains"
+  - from: variable-reward
+    to: core-drives
+    label: "taps unpredictability"
+  - from: dark-patterns
+    to: core-drives
+    label: "abuses"
+  - from: xp
+    to: core-drives
+    label: "expresses development"

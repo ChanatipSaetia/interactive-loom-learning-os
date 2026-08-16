@@ -1,0 +1,29 @@
+lesson_engine:
+  title: "Lesson Engine"
+  desc: "Delivers lesson content, exercises, and hints."
+  type: aggregate
+grading_service:
+  title: "Grading Service"
+  desc: "Evaluates answers and computes correctness and XP value."
+  type: aggregate
+reward_engine:
+  title: "Reward Engine"
+  desc: "Awards XP, badges, and other reward tokens."
+  type: aggregate
+progress_store:
+  title: "Progress Store"
+  desc: "Persists skill progress, levels, and badge thresholds."
+  type: aggregate
+streak_tracker:
+  title: "Streak Tracker"
+  desc: "Tracks daily goals, streak counters, and freeze tokens."
+  type: aggregate
+league_service:
+  title: "League Service"
+  desc: "Computes league ranks, tiers, and promotions."
+  type: aggregate
+push_service:
+  title: "Push Notification API"
+  desc: "External notification delivery service."
+  type: external
+

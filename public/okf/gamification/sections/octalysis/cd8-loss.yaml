@@ -1,0 +1,16 @@
+type: taxonomy-category
+icon: ShieldOff
+title: "Loss & Avoidance"
+subtitle: "Core Drive 8 — Black Hat"
+color: teal
+description: "The drive to avoid losing what you have — loss aversion. Streaks, expiring items, and demotion threats all exploit the pain of loss, which outweighs the joy of gain."
+details: "Streaks are the canonical example: powerful habit builders, but a snapped streak feels like a loss and can trigger quit. Always pair pressure with an escape valve (freezes, grace periods) or users will burn out."
+analogy: "Like guarding a 30-day streak — the fear of losing it keeps you coming back."
+primaryFocus: "Loss aversion, streaks, and threat of demotion"
+inScope:
+  - "Streaks with freeze/give-away safety valves"
+  - "Progress at risk framing"
+  - "Demotion warnings in leagues"
+outOfScope:
+  - "Guilt-tripping notifications"
+  - "Punitive resets with no recovery path"

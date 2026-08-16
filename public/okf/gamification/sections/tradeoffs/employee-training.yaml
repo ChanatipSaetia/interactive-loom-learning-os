@@ -1,0 +1,179 @@
+id: employee-training
+title: "Employee Training Program"
+description: "Roll out gamification for a corporate upskilling program with 2,000 employees and a fixed quarterly budget."
+metrics:
+  - id: adoption
+    label: Program Adoption
+    baseValue: 50
+    min: 0
+    max: 100
+    direction: higher
+  - id: completion
+    label: Course Completion
+    baseValue: 50
+    min: 0
+    max: 100
+    direction: higher
+  - id: intrinsic
+    label: Intrinsic Engagement
+    baseValue: 50
+    min: 0
+    max: 100
+    direction: higher
+  - id: cost
+    label: Budget Efficiency
+    baseValue: 50
+    min: 0
+    max: 100
+    direction: higher
+steps:
+  - id: framing
+    title: "Program Framing"
+    description: "How is the training program presented?"
+    recommended: narrative-quests
+    choices:
+      - id: points-badges
+        label: "PBL Points & Badges"
+        description: "Classic points per module completed, badges per course."
+        metrics:
+          adoption: 10
+          completion: 5
+          intrinsic: -5
+          cost: 10
+        pros:
+          - title: "Fast to ship"
+            description: "Off-the-shelf PBL is cheap to implement."
+        cons:
+          - title: "Novelty decay"
+            description: "The 'sprinkles and donuts' failure mode — engagement drops within 4 weeks."
+        whenToUse: "One-off compliance campaigns where speed matters most."
+      - id: narrative-quests
+        label: "Narrative Quests"
+        description: "Story arcs that frame modules as quests with a mission."
+        metrics:
+          adoption: 5
+          completion: 15
+          intrinsic: 10
+          cost: -10
+        pros:
+          - title: "Epic meaning"
+            description: "Core Drive 1 — story arcs tie lessons to real work and a bigger purpose."
+        cons:
+          - title: "Authoring cost"
+            description: "Writing quests and story arcs is expensive upfront."
+        whyThisFits: "Quarterly programs with a real business mission benefit from meaning over points."
+      - id: compliance-gates
+        label: "Compliance Gating"
+        description: "Completion enforced by deadlines and demotion warnings."
+        metrics:
+          adoption: -5
+          completion: 10
+          intrinsic: -15
+          cost: 5
+        pros:
+          - title: "Deterministic completion"
+            description: "Guaranteed audit trail and completion rates."
+        cons:
+          - title: "Black-hat pressure"
+            description: "Threat mechanics breed resentment and checkbox behavior."
+        whenToUse: "Regulatory training only — never for upskilling."
+  - id: social-layer
+    title: "Social Layer"
+    description: "What social structure wraps the program?"
+    recommended: cohort-teams
+    choices:
+      - id: leaderboards
+        label: "Department Leaderboards"
+        description: "Rank departments against each other."
+        metrics:
+          adoption: 5
+          completion: 5
+          intrinsic: -5
+          cost: 5
+        pros:
+          - title: "Manager visibility"
+            description: "Leaders can see departmental progress at a glance."
+        cons:
+          - title: "Inter-department rivalry"
+            description: "Demotivates laggards and breeds resentment."
+        whenToUse: "When leadership explicitly wants competitive pressure."
+      - id: cohort-teams
+        label: "Cohort Teams"
+        description: "Small peer teams with shared goals and check-ins."
+        metrics:
+          adoption: 10
+          completion: 10
+          intrinsic: 10
+          cost: -5
+        pros:
+          - title: "Relatedness"
+            description: "Peer accountability and Core Drive 5 without public shaming."
+        cons:
+          - title: "Coordination overhead"
+            description: "Teams need scheduling and a light facilitation layer."
+        whyThisFits: "Corporate peers respond to team accountability, not public ranking."
+      - id: none
+        label: "No Social Layer"
+        description: "Individual tracking only, no social features."
+        metrics:
+          adoption: 0
+          completion: 5
+          intrinsic: 5
+          cost: 10
+        pros:
+          - title: "Privacy"
+            description: "No pressure, no exposure."
+        cons:
+          - title: "Completion drift"
+            description: "Without accountability, completion decays over the quarter."
+        whenToUse: "Sensitive skill areas where peers should not be visible."
+  - id: recognition
+    title: "Recognition Cadence"
+    description: "How often are people recognized?"
+    recommended: micro
+    choices:
+      - id: monthly
+        label: "Monthly Awards"
+        description: "One ceremony per month for top performers."
+        metrics:
+          adoption: 5
+          completion: 5
+          intrinsic: 5
+          cost: 0
+        pros:
+          - title: "Ceremony moment"
+            description: "Leadership visibility at a meaningful cadence."
+        cons:
+          - title: "Narrow reach"
+            description: "Most employees are rarely recognized."
+        whenToUse: "Small teams where monthly coverage is realistic."
+      - id: micro
+        label: "Micro-Recognition (Weekly)"
+        description: "Frequent, small public acknowledgments of progress."
+        metrics:
+          adoption: 10
+          completion: 10
+          intrinsic: 10
+          cost: -10
+        pros:
+          - title: "Frequent feedback"
+            description: "Core Drive 2 — rapid feedback loops keep momentum visible."
+        cons:
+          - title: "Recognition inflation"
+            description: "Kudos must stay meaningful or it becomes noise."
+        whyThisFits: "Broad reach with frequent feedback keeps a 2,000-person program alive."
+      - id: none
+        label: "No Formal Recognition"
+        description: "Quiet tracking, no public or formal recognition."
+        metrics:
+          adoption: -5
+          completion: 0
+          intrinsic: 5
+          cost: 10
+        pros:
+          - title: "Zero cost"
+            description: "Nothing to operate."
+        cons:
+          - title: "Invisible progress"
+            description: "Without recognition, completion decays silently."
+        whenToUse: "Never recommended as the primary design."

@@ -1,0 +1,16 @@
+type: taxonomy-category
+icon: Dice5
+title: "Unpredictability & Curiosity"
+subtitle: "Core Drive 7 — Black Hat"
+color: rose
+description: "The drive to satisfy curiosity and enjoy the unknown — variable rewards, surprise bonuses, and open loops that make people want to know what happens next."
+details: "Randomize reward magnitude (variable-ratio reinforcement) and use narrative open loops. This is the strongest short-term hook — but overuse creates a slot-machine dynamic that users eventually resent."
+analogy: "Like opening a loot crate and not knowing what is inside."
+primaryFocus: "Surprise, curiosity, and variable rewards"
+inScope:
+  - "Randomized bonus XP"
+  - "Mystery rewards and loot"
+  - "Narrative open loops and teasers"
+outOfScope:
+  - "Randomizing core skill progression"
+  - "Loot-box mechanics in regulated contexts"

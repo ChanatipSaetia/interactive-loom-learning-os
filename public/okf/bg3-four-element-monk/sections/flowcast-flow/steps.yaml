@@ -3,7 +3,7 @@
   initiatedBy: player
   command: "Enter Combat Encounter"
   policy: "Combat Begins"
-  handledBy: ki_pool_spend
+  handledBy: ki_pool
   resultEvents:
     - id: evt_combat_start
       title: "Combat Started"
@@ -35,7 +35,7 @@
       label: "Defensive Opening"
       policy: "If Low HP or High Threat"
       command: "Activate Flowing Barrier"
-      handledBy: ki_pool_defense
+      handledBy: ki_pool
       resultEvents:
         - id: evt_barrier_up
           title: "AC Boosted"
@@ -83,7 +83,7 @@
       label: "End Combat — Short Rest"
       policy: "If Combat Ends"
       command: "Short Rest to Recover Ki"
-      handledBy: ki_pool_spend
+      handledBy: ki_pool
       resultEvents:
         - id: evt_ki_restored
           title: "Ki Pool Refreshed"

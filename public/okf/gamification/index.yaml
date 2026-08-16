@@ -1,0 +1,31 @@
+# App metadata for gamification topic bundle
+category: Behavioral Design
+tags:
+  - gamification
+  - behavioral-design
+  - motivation
+  - reward-systems
+related:
+  - sections/intro/content.yaml
+  - sections/core-mechanics/items.yaml
+  - sections/octalysis/cd1-epic-meaning.yaml
+  - sections/octalysis/cd2-development.yaml
+  - sections/octalysis/cd3-creativity.yaml
+  - sections/octalysis/cd4-ownership.yaml
+  - sections/octalysis/cd5-social.yaml
+  - sections/octalysis/cd6-scarcity.yaml
+  - sections/octalysis/cd7-unpredictability.yaml
+  - sections/octalysis/cd8-loss.yaml
+  - sections/reward-loop/actors.yaml
+  - sections/reward-loop/systems.yaml
+  - sections/reward-loop/steps.yaml
+  - sections/reward-loop/journeys.yaml
+  - sections/tradeoffs/learning-app.yaml
+  - sections/tradeoffs/employee-training.yaml
+  - sections/decision-tree/tree.yaml
+  - sections/scenario/scenarios.yaml
+  - sections/reflection-sequence/sequence.yaml
+  - sections/reflection-template/template.yaml
+  - sections/flashcards/glossary.yaml
+  - sections/quiz/questions.yaml
+  - sections/concept-map/concepts.yaml

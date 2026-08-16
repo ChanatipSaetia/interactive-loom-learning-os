@@ -1,0 +1,194 @@
+id: learning-app
+title: "Learning App Rewards"
+description: "Design the reward system for a language-learning app with 1M monthly learners."
+metrics:
+  - id: intrinsic
+    label: Intrinsic Motivation
+    baseValue: 50
+    min: 0
+    max: 100
+    direction: higher
+  - id: retention
+    label: 30-Day Retention
+    baseValue: 50
+    min: 0
+    max: 100
+    direction: higher
+  - id: fairness
+    label: Perceived Fairness
+    baseValue: 50
+    min: 0
+    max: 100
+    direction: higher
+  - id: cost
+    label: Implementation Cost Efficiency
+    baseValue: 50
+    min: 0
+    max: 100
+    direction: higher
+steps:
+  - id: leaderboard
+    title: "Leaderboard Style"
+    description: "Choose how social comparison is presented."
+    recommended: nearest
+    choices:
+      - id: global-top
+        label: "Global Top 10"
+        description: "Show only the very top performers worldwide."
+        metrics:
+          intrinsic: -15
+          retention: 5
+          fairness: -10
+          cost: 5
+        pros:
+          - title: "Prestige for elites"
+            description: "Top spots carry real status and drive power users."
+        cons:
+          - title: "Unreachable gap"
+            description: "The bottom 99% cannot reach the top and stop caring."
+        whenToUse: "Short competitive tournaments or seasonal challenges, not a long-term default."
+      - id: nearest
+        label: "Nearest Competitor (±5)"
+        description: "Show the few peers just above and below the user."
+        metrics:
+          intrinsic: 10
+          retention: 10
+          fairness: 5
+          cost: 0
+        pros:
+          - title: "Reachable targets"
+            description: "A small, winnable gap sustains effort far better than a distant top."
+        cons:
+          - title: "Privacy concerns"
+            description: "Close peer data needs careful anonymization."
+        whyThisFits: "Default for long-running apps — motivation scales with the size of a reachable gap."
+      - id: team
+        label: "Team / Squad Based"
+        description: "Competition between small cooperative teams."
+        metrics:
+          intrinsic: 5
+          retention: 10
+          fairness: 0
+          cost: -10
+        pros:
+          - title: "Relatedness drive"
+            description: "Shared goals reduce individual pressure and build community."
+        cons:
+          - title: "Free-rider problem"
+            description: "Some members coast on the team's total."
+        whenToUse: "When you have a social graph and want cooperative retention."
+      - id: none
+        label: "No Leaderboard"
+        description: "Skip social comparison entirely."
+        metrics:
+          intrinsic: 10
+          retention: -5
+          fairness: 10
+          cost: 10
+        pros:
+          - title: "Zero social anxiety"
+            description: "Introverts and laggards stay comfortable."
+        cons:
+          - title: "No competitive pull"
+            description: "A segment of users loses their main motivator."
+        whenToUse: "Sensitive contexts or products where ranking feels wrong."
+  - id: reward-type
+    title: "Primary Reward Type"
+    description: "What does the user actually earn?"
+    recommended: mastery-feedback
+    choices:
+      - id: xp-points
+        label: "Exchangeable XP"
+        description: "Points that accumulate and can be traded for cosmetic items."
+        metrics:
+          intrinsic: -10
+          retention: 5
+          fairness: 5
+          cost: 5
+        pros:
+          - title: "Instant feedback"
+            description: "Every action produces a visible number going up."
+        cons:
+          - title: "Overjustification risk"
+            description: "Users optimize for points, not skill; inflation makes points meaningless."
+        whenToUse: "Short campaigns where a visible counter matters more than skill growth."
+      - id: mastery-feedback
+        label: "Mastery Feedback"
+        description: "Progress visualization tied to demonstrated skill."
+        metrics:
+          intrinsic: 15
+          retention: 10
+          fairness: 5
+          cost: -10
+        pros:
+          - title: "Real progress"
+            description: "Every increment maps to an actual skill gain — no inflation."
+        cons:
+          - title: "Design effort"
+            description: "Requires per-skill assessment, which is expensive to build."
+        whyThisFits: "For a learning product, Development & Accomplishment (CD2) tied to real mastery is the strongest long-term fuel."
+      - id: social-recognition
+        label: "Social Recognition"
+        description: "Public kudos, mentions, and peer awards."
+        metrics:
+          intrinsic: 5
+          retention: 10
+          fairness: -5
+          cost: 0
+        pros:
+          - title: "Status and relatedness"
+            description: "Peer recognition is cheap to produce and hard to fake."
+        cons:
+          - title: "Recognition fatigue"
+            description: "Constant kudos loses meaning; introverts may opt out."
+        whenToUse: "Community-heavy products with an active peer culture."
+  - id: streak-policy
+    title: "Streak Policy"
+    description: "How does the daily commitment mechanic handle a missed day?"
+    recommended: freeze
+    choices:
+      - id: strict
+        label: "Strict Streak"
+        description: "Miss one day and the streak resets to zero."
+        metrics:
+          intrinsic: -15
+          retention: 10
+          fairness: -5
+          cost: 10
+        pros:
+          - title: "Powerful habit force"
+            description: "Loss aversion drives daily return behavior hard and fast."
+        cons:
+          - title: "Streak anxiety"
+            description: "One missed day wipes weeks of progress and triggers quitting."
+        whenToUse: "Short onboarding ramps, never as a permanent default."
+      - id: freeze
+        label: "Streak with Freezes"
+        description: "Earned freeze tokens protect the streak on missed days."
+        metrics:
+          intrinsic: -5
+          retention: 10
+          fairness: 5
+          cost: 0
+        pros:
+          - title: "Escape valve"
+            description: "Keeps loss aversion but prevents all-or-nothing collapse (the Duolingo model)."
+        cons:
+          - title: "Gaming risk"
+            description: "Freeze tokens can be hoarded or perceived as entitlement."
+        whyThisFits: "Best balance of habit formation and user trust for a daily product."
+      - id: flexible
+        label: "Flexible Weekly Goal"
+        description: "Commit to a weekly quota, not a daily streak."
+        metrics:
+          intrinsic: 10
+          retention: 5
+          fairness: 10
+          cost: -5
+        pros:
+          - title: "Autonomy preserving"
+            description: "Matches real schedules; no daily guilt."
+        cons:
+          - title: "Weaker daily signal"
+            description: "Habit formation is slower without a daily anchor."
+        whenToUse: "Sporadic-learner segments who reject daily commitments."

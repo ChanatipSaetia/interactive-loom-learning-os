@@ -115,14 +115,12 @@ A flowchart should contain one or more journeys (`journeys.yaml`) that serve as 
 All flowchart diagrams are automatically validated via the **3-Tier Validation Gateway** (`src/core/learning-engine/validation/gateway.ts`).
 
 ### Tier 3 Semantic Reference Integrity Rules for Flowcharts:
-1. **Actor & System Node Event Connectivity**:
-   - Every `Actor` (User) and `System` (`Aggregate`, `External API`, `Service`, `Database`, `Core System`) node declared in `actors.yaml` or `systems.yaml` (or `entities`) **MUST be connected to at least one Event node** in the flowchart relation graph.
-   - Connected paths are formed via `initiatedBy` (Actor → Policy), `handledBy` (Command → System → Event), and `delegatesTo` (System → Secondary System/Actor/Target).
-   - Duplicate system nodes created via `collapsedTo` are linked back to their canonical system entity. If either the canonical node or any duplicate with `collapsedTo: canonicalId` connects to an Event node, the system is considered connected.
-   - Unconnected nodes emit a Tier 3 warning diagnostic (`Actor/System node "X" is not connected to any Event node`).
+1. **Actor & System Attachment to Steps**:
+   - Every `Actor` (User) and `System` (`Aggregate`, `External API`, `Service`, `Database`) node declared in `actors.yaml` or `systems.yaml` **MUST be attached to at least one step in steps.yaml** (via `initiatedBy`, `handledBy`, or `delegatesTo`).
+   - Every `Command` derived from steps MUST be handled by a valid Aggregate or External system defined in `systems.yaml`.
+   - Every `Actor` and `System` node in the derived graph MUST be connected to an Event node via step relation chains.
 
 2. **Step Link Reference Integrity (`continuesAs`)**:
    - Every `continuesAs` property in a linear step or branch option must target a valid step ID or branch option ID.
    - When `continuesAs` targets a linear step or branch option ID, the relation connects to `pol_${stepId}`.
    - When `continuesAs` targets a branch step ID, the relation connects to the branch step's event `evt_${branchStep.event}`, cleanly linking the process flow into the branch's event trigger.
-

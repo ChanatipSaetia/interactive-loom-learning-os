@@ -3,6 +3,14 @@
   "watcher": {
     "ignore": ["**/node_modules/**", "**/dist/**", "**/logs/**"]
   },
+  "model": "llama.cpp/Qwen3.8-27B-UD-Q4_K_XL",
+  "compaction": {
+    "auto": true,
+    "prune": true
+  },
+  "limit": {
+    "context": 51200
+  },
   "mcp": {
     "playwright": {
       "type": "local",
