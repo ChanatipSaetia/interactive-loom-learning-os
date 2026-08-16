@@ -135,7 +135,7 @@ export const StandardView = memo(function StandardView({
         const isEdgeActive = isHighlightedNode || isExpanded || isRelationActive;
 
         const isFaded = activeNodeIds !== null && !activeNodeIds.includes(rel.from) && !activeNodeIds.includes(rel.to) && !isRelationActive && !isExpanded;
-        const opacityVal = isExpanded ? 1.0 : (isFaded ? 0.45 : 0.85);
+        const opacityVal = isExpanded ? 1.0 : (isFaded ? 0.70 : 0.90);
         const strokeColor = isEdgeActive ? 'var(--secondary)' : 'var(--ctp-overlay1)';
         const strokeWidth = isEdgeActive ? 2.5 : 1.5;
         // Pick the arrow marker pre-oriented for this edge's incoming side so

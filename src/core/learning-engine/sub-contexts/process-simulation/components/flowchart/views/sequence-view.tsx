@@ -181,7 +181,7 @@ export const SequenceView = memo(function SequenceView({
         const isEdgeActive = isHighlightedNode || isExpanded || isRelationActive;
 
         const isEvent = rel.dashed;
-        const opacityVal = isExpanded ? 1.0 : ((activeNodeIds !== null && !isEdgeActive) ? 0.45 : 0.9);
+        const opacityVal = isExpanded ? 1.0 : ((activeNodeIds !== null && !isEdgeActive) ? 0.70 : 0.9);
         const strokeColor = isEvent ? 'var(--ctp-peach)' : 'var(--ctp-blue)';
         const strokeWidth = isEdgeActive ? 2.5 : 1.5;
 
