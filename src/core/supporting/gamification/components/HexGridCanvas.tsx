@@ -245,10 +245,13 @@ export const HexGridCanvas: React.FC<HexGridCanvasProps> = ({
             const isThreatened = node.status === 'threatened'
             const hasItemReward = node.rewards && node.rewards.length > 0 && !isLocked
 
-            // Check if this node is a prerequisite parent to the selected node in 4.2 flow
-            const isPrereqParent = autoConnections.some(
-              (c) => c.toId === selectedNode?.id && c.fromId === node.id
-            )
+            // Check if this node is a prerequisite parent to the selected node in 4.2 flow or provides required items for Boss
+            const isPrereqParent =
+              autoConnections.some((c) => c.toId === selectedNode?.id && c.fromId === node.id) ||
+              (selectedNode?.type === 'boss_lair' &&
+                selectedNode.requiredItems?.some((reqId) =>
+                  node.rewards?.some((r) => r.id === reqId)
+                ))
             const isConnectedDependency = isPrereqParent
 
             let fillGrad = 'url(#grad-capital)'
