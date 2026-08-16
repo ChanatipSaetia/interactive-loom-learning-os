@@ -1,11 +1,11 @@
-import React, { useState, useMemo } from 'react'
+import React, { useState } from 'react'
 import { HexGridCanvas } from './HexGridCanvas'
 import {
   GlobalCharacterState,
   TopicCampaignState,
   HexNodeData,
 } from '../types'
-import { computeHexGridCoordinates, getAutoFlowConnections } from '../layout'
+import { getAutoFlowConnections } from '../layout'
 import { Button, Card, Badge, Modal } from '../../../ui-system'
 import {
   IntroSection,
@@ -484,8 +484,6 @@ export const GamificationDemoView: React.FC = () => {
   const [nodes, setNodes] = useState<HexNodeData[]>(MOCK_NODES)
   const [selectedNode, setSelectedNode] = useState<HexNodeData | null>(MOCK_NODES[0])
 
-  const computedCoords = useMemo(() => computeHexGridCoordinates(nodes), [nodes])
-
   // Active Section Modal
   const [activeSectionModal, setActiveSectionModal] = useState<HexNodeData | null>(null)
 
@@ -924,14 +922,6 @@ export const GamificationDemoView: React.FC = () => {
                         selectedNode.title
                       )}
                     </h3>
-                    <div className="flex items-center gap-2 text-xs text-[#a5adce]">
-                      <span className="capitalize">{selectedNode.type.replace('_', ' ')}</span>
-                      <span>•</span>
-                      {(() => {
-                        const coord = selectedNode.coordinates || computedCoords.get(selectedNode.id) || { q: 0, r: 0 }
-                        return <span>({coord.q}, {coord.r})</span>
-                      })()}
-                    </div>
                   </div>
                 </div>
                 <Badge
