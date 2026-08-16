@@ -66,8 +66,8 @@ export const HexGridCanvas: React.FC<HexGridCanvasProps> = ({
   )
 
   // Zoom controls
-  const handleZoomIn = () => setZoom((prev) => Math.min(2.5, +(prev + 0.15).toFixed(2)))
-  const handleZoomOut = () => setZoom((prev) => Math.max(0.5, +(prev - 0.15).toFixed(2)))
+  const handleZoomIn = () => setZoom((prev) => +(prev + 0.15).toFixed(2))
+  const handleZoomOut = () => setZoom((prev) => +(prev - 0.15).toFixed(2))
   const handleResetPanZoom = () => {
     setZoom(1.0)
     setPan({ x: 0, y: 0 })
@@ -85,7 +85,7 @@ export const HexGridCanvas: React.FC<HexGridCanvasProps> = ({
       e.stopPropagation()
       // Directly scale wheel deltaY by a smaller factor without clamping limits
       const zoomStep = -e.deltaY * 0.0015
-      setZoom((prev) => Math.min(2.5, Math.max(0.5, +(prev + zoomStep).toFixed(3))))
+      setZoom((prev) => +(prev + zoomStep).toFixed(3))
     }
 
     el.addEventListener('wheel', handleNativeWheel, { passive: false })
