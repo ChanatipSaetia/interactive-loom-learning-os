@@ -216,8 +216,8 @@ export const HexGridCanvas: React.FC<HexGridCanvasProps> = ({
                 className="transition-all duration-200"
               />
 
-              {/* Fog of War Shroud for Locked Challenges & Workshops */}
-              {isLocked && (
+              {/* Fog of War Shroud for Locked Challenges & Workshops (Except Boss Lair) */}
+              {isLocked && !isBoss && (
                 <g className="pointer-events-none select-none">
                   <polygon
                     points={getHexPolygonPoints(x, y, HEX_RADIUS)}
@@ -237,8 +237,8 @@ export const HexGridCanvas: React.FC<HexGridCanvasProps> = ({
                 </g>
               )}
 
-              {/* Hex Center Node Type SVG Icon (Visible when Unlocked or Cleared) */}
-              {!isLocked && (
+              {/* Hex Center Node Type SVG Icon (Always Visible for Boss, or when Unlocked/Cleared) */}
+              {(!isLocked || isBoss) && (
                 <g
                   transform={`translate(${x - (isBoss ? 14 : 12)}, ${
                     y - (isBoss ? 14 : 12) - (hasItemReward || isThreatened ? 6 : 0)
