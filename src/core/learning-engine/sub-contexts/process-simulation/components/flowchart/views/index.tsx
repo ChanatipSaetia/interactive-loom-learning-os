@@ -19,7 +19,7 @@ const FLOW_TYPES_BY_VIEW: Record<string, Set<string>> = {
   SWIMLANES: new Set([TYPES.PROCESS, TYPES.DECISION]),
   DATA_FLOW: new Set([TYPES.DATA_OBJECT, TYPES.DECISION]),
 };
-import { computeDynamicSpacing, routeManhattanPath } from './layout-utils';
+import { computeDynamicSpacing, routeManhattanPath, disambiguateAndBridgePaths } from './layout-utils';
 import { SequenceView } from './sequence-view';
 import { StandardView } from './standard-view';
 
@@ -302,12 +302,12 @@ export function FlowchartView({
       });
     });
 
-    return relSides.map(entry => {
+    const rawRoutes = relSides.map(entry => {
       const ports = relPorts[entry.rel.id];
       if (!ports) return null;
 
       const { startX, startY, endX, endY, sideFrom, sideTo } = ports;
-      const { pathD, midX, midY, incomingSide } = routeManhattanPath(
+      const { pathD, points, midX, midY, incomingSide } = routeManhattanPath(
         startX, startY, endX, endY,
         sideFrom, sideTo,
         entry.fromNode, entry.toNode,
@@ -316,12 +316,20 @@ export function FlowchartView({
 
       return {
         ...entry.rel,
-        path: pathD,
+        pathD,
+        points,
         startX, startY, endX, endY,
         midX, midY,
         incomingSide
       };
-    }).filter(Boolean) as (any & { path: string })[];
+    }).filter(Boolean) as any[];
+
+    const bridgedRoutes = disambiguateAndBridgePaths(rawRoutes);
+
+    return bridgedRoutes.map(r => ({
+      ...r,
+      path: r.pathD
+    })) as (any & { path: string })[];
 
   }, [view, schema.relations, positioned, viewKey, spacing, nodeMap, isSequenceView]);
 

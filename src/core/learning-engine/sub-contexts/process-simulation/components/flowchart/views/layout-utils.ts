@@ -74,7 +74,7 @@ export function routeManhattanPath(
   toNode: any,
   positioned: any[],
   spacing: any
-): { pathD: string; midX: number; midY: number; incomingSide: string } {
+): { pathD: string; points: Array<{ x: number; y: number }>; midX: number; midY: number; incomingSide: string } {
   const STUB = 16;
   const candidates: Array<{ type: string; points: Array<{ x: number; y: number }> }> = [];
 
@@ -150,7 +150,7 @@ export function routeManhattanPath(
 
   let bestPath: Array<{ x: number; y: number }> | null = null;
   let minScore = Infinity;
-  const PADDING = 12;
+  const PADDING = 18;
 
   candidates.forEach(cand => {
     const pts = cand.points;
@@ -188,7 +188,7 @@ export function routeManhattanPath(
         if (i === 0 && isFromNode) return;
         if (i === pts.length - 2 && isToNode) return;
 
-        const pad = (isFromNode || isToNode) ? 0 : PADDING;
+        const pad = (isFromNode || isToNode) ? 4 : PADDING;
         const left = node.x - NODE_W / 2 - pad;
         const right = node.x + NODE_W / 2 + pad;
         const top = node.y - NODE_H / 2 - pad;
@@ -246,8 +246,176 @@ export function routeManhattanPath(
 
   return {
     pathD,
+    points: bestPath,
     midX: mid.x,
     midY: mid.y,
     incomingSide: sideTo
   };
 }
+
+/**
+ * Disambiguates parallel overlapping segments among multiple routes by distributing
+ * co-linear overlapping segments into separate offset tracks, then applies bridge arcs for orthogonal crossings.
+ */
+export function disambiguateAndBridgePaths(
+  routes: Array<{ id: string; points: Array<{ x: number; y: number }>; [key: string]: any }>
+): Array<{ id: string; pathD: string; [key: string]: any }> {
+  const TRACK_GAP = 12;
+
+  // 1. Group horizontal segments that share roughly the same Y coordinate
+  // and overlap in X intervals
+  const hSegments: Array<{ routeIdx: number; segIdx: number; y: number; xMin: number; xMax: number }> = [];
+  routes.forEach((r, rIdx) => {
+    for (let i = 0; i < r.points.length - 1; i++) {
+      const p1 = r.points[i];
+      const p2 = r.points[i + 1];
+      if (p1.y === p2.y && p1.x !== p2.x) {
+        hSegments.push({
+          routeIdx: rIdx,
+          segIdx: i,
+          y: p1.y,
+          xMin: Math.min(p1.x, p2.x),
+          xMax: Math.max(p1.x, p2.x)
+        });
+      }
+    }
+  });
+
+  // Cluster overlapping horizontal segments by Y (within 6px tolerance)
+  const hClusters: Array<typeof hSegments> = [];
+  hSegments.forEach(seg => {
+    let placed = false;
+    for (const cluster of hClusters) {
+      if (Math.abs(cluster[0].y - seg.y) <= 6) {
+        // Check if there's horizontal overlap
+        const overlaps = cluster.some(s => !(seg.xMax <= s.xMin + 5 || seg.xMin >= s.xMax - 5));
+        if (overlaps) {
+          cluster.push(seg);
+          placed = true;
+          break;
+        }
+      }
+    }
+    if (!placed) {
+      hClusters.push([seg]);
+    }
+  });
+
+  // Clone route points to apply offsets
+  const updatedRoutes = routes.map(r => ({
+    ...r,
+    points: r.points.map(p => ({ ...p }))
+  }));
+
+  // Distribute clustered horizontal segments across offset tracks symmetrically
+  hClusters.forEach(cluster => {
+    if (cluster.length <= 1) return;
+    const count = cluster.length;
+    cluster.forEach((seg, idx) => {
+      // Don't offset start or end port points, only internal waypoints
+      const pts = updatedRoutes[seg.routeIdx].points;
+      const isStartSeg = seg.segIdx === 0;
+      const isEndSeg = seg.segIdx === pts.length - 2;
+
+      // Symmetrical offset around original center Y
+      const offset = (idx - (count - 1) / 2) * TRACK_GAP;
+      if (Math.abs(offset) < 0.1) return;
+
+      if (!isStartSeg && !isEndSeg) {
+        pts[seg.segIdx].y += offset;
+        pts[seg.segIdx + 1].y += offset;
+      } else if (isStartSeg && pts.length > 2) {
+        pts[seg.segIdx + 1].y += offset;
+      } else if (isEndSeg && pts.length > 2) {
+        pts[seg.segIdx].y += offset;
+      }
+    });
+  });
+
+  // 2. Now run the bridge arcs generator over the updated routes
+  return addBridgeArcsToPaths(updatedRoutes);
+}
+
+/**
+ * Inserts semicircular bridge arcs onto horizontal segments when crossing vertical segments of other edges.
+ */
+export function addBridgeArcsToPaths(
+  routes: Array<{ id: string; points: Array<{ x: number; y: number }>; [key: string]: any }>
+): Array<{ id: string; pathD: string; [key: string]: any }> {
+  const ARC_RADIUS = 6;
+
+  // Extract all vertical segments across all routes: { x, yMin, yMax, routeId }
+  const vSegments: Array<{ x: number; yMin: number; yMax: number; routeId: string }> = [];
+  routes.forEach(r => {
+    for (let i = 0; i < r.points.length - 1; i++) {
+      const p1 = r.points[i];
+      const p2 = r.points[i + 1];
+      if (p1.x === p2.x && p1.y !== p2.y) {
+        vSegments.push({
+          x: p1.x,
+          yMin: Math.min(p1.y, p2.y),
+          yMax: Math.max(p1.y, p2.y),
+          routeId: r.id
+        });
+      }
+    }
+  });
+
+  return routes.map(r => {
+    const pts = r.points;
+    if (!pts || pts.length < 2) return { ...r, pathD: r.pathD };
+
+    let d = `M ${pts[0].x} ${pts[0].y}`;
+
+    for (let i = 0; i < pts.length - 1; i++) {
+      const p1 = pts[i];
+      const p2 = pts[i + 1];
+
+      if (p1.y === p2.y && p1.x !== p2.x) {
+        // Horizontal segment: check for orthogonal crossings with vertical segments
+        const y = p1.y;
+        const xStart = p1.x;
+        const xEnd = p2.x;
+        const xMin = Math.min(xStart, xEnd);
+        const xMax = Math.max(xStart, xEnd);
+        const isLeftToRight = xEnd > xStart;
+
+        // Find crossings with other routes' vertical segments
+        const crossings: number[] = [];
+        vSegments.forEach(vs => {
+          if (vs.routeId !== r.id) {
+            if (vs.x > xMin + ARC_RADIUS + 2 && vs.x < xMax - ARC_RADIUS - 2 && y > vs.yMin + 2 && y < vs.yMax - 2) {
+              crossings.push(vs.x);
+            }
+          }
+        });
+
+        if (crossings.length > 0) {
+          // Sort crossings in traversal direction
+          crossings.sort((a, b) => isLeftToRight ? a - b : b - a);
+
+          crossings.forEach(crossX => {
+            if (isLeftToRight) {
+              d += ` H ${crossX - ARC_RADIUS}`;
+              d += ` A ${ARC_RADIUS} ${ARC_RADIUS} 0 0 1 ${crossX + ARC_RADIUS} ${y}`;
+            } else {
+              d += ` H ${crossX + ARC_RADIUS}`;
+              d += ` A ${ARC_RADIUS} ${ARC_RADIUS} 0 0 1 ${crossX - ARC_RADIUS} ${y}`;
+            }
+          });
+        }
+        d += ` H ${xEnd}`;
+      } else if (p1.x === p2.x && p1.y !== p2.y) {
+        d += ` V ${p2.y}`;
+      } else {
+        d += ` L ${p2.x} ${p2.y}`;
+      }
+    }
+
+    return {
+      ...r,
+      pathD: d
+    };
+  });
+}
+
