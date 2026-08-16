@@ -80,26 +80,30 @@ export function routeManhattanPath(
 
   const candidateXs = new Set<number>();
   candidateXs.add((startX + endX) / 2);
-  candidateXs.add(startX + 30);
-  candidateXs.add(startX - 30);
-  candidateXs.add(endX + 30);
-  candidateXs.add(endX - 30);
+  candidateXs.add(startX + 24);
+  candidateXs.add(startX - 24);
+  candidateXs.add(endX + 24);
+  candidateXs.add(endX - 24);
 
   const maxCol = positioned.length > 0 ? Math.max(...positioned.map(n => n.grid?.[0] ?? 0)) : 0;
-  for (let c = 0; c <= maxCol + 1; c++) {
+  for (let c = -1; c <= maxCol + 1; c++) {
     candidateXs.add((c + 0.5) * spacing.colSpacing + spacing.offsetX);
+    candidateXs.add((c + 0.3) * spacing.colSpacing + spacing.offsetX);
+    candidateXs.add((c + 0.7) * spacing.colSpacing + spacing.offsetX);
   }
 
   const candidateYs = new Set<number>();
   candidateYs.add((startY + endY) / 2);
-  candidateYs.add(startY + 30);
-  candidateYs.add(startY - 30);
-  candidateYs.add(endY + 30);
-  candidateYs.add(endY - 30);
+  candidateYs.add(startY + 24);
+  candidateYs.add(startY - 24);
+  candidateYs.add(endY + 24);
+  candidateYs.add(endY - 24);
 
   const maxRow = positioned.length > 0 ? Math.max(...positioned.map(n => n.grid?.[1] ?? 0)) : 0;
-  for (let r = 0; r <= maxRow + 1; r++) {
+  for (let r = -1; r <= maxRow + 1; r++) {
     candidateYs.add((r + 0.5) * spacing.rowSpacing + spacing.offsetY);
+    candidateYs.add((r + 0.3) * spacing.rowSpacing + spacing.offsetY);
+    candidateYs.add((r + 0.7) * spacing.rowSpacing + spacing.offsetY);
   }
 
   // 1-bend Direct H-V: (startX, startY) -> (endX, startY) -> (endX, endY)
@@ -260,11 +264,13 @@ export function routeManhattanPath(
 export function disambiguateAndBridgePaths(
   routes: Array<{ id: string; points: Array<{ x: number; y: number }>; [key: string]: any }>
 ): Array<{ id: string; pathD: string; [key: string]: any }> {
-  const TRACK_GAP = 12;
+  const TRACK_GAP = 14;
 
-  // 1. Group horizontal segments that share roughly the same Y coordinate
-  // and overlap in X intervals
+  // 1. Group horizontal segments that share roughly the same Y coordinate and overlap in X
   const hSegments: Array<{ routeIdx: number; segIdx: number; y: number; xMin: number; xMax: number }> = [];
+  // 2. Group vertical segments that share roughly the same X coordinate and overlap in Y
+  const vSegmentsList: Array<{ routeIdx: number; segIdx: number; x: number; yMin: number; yMax: number }> = [];
+
   routes.forEach((r, rIdx) => {
     for (let i = 0; i < r.points.length - 1; i++) {
       const p1 = r.points[i];
@@ -277,18 +283,25 @@ export function disambiguateAndBridgePaths(
           xMin: Math.min(p1.x, p2.x),
           xMax: Math.max(p1.x, p2.x)
         });
+      } else if (p1.x === p2.x && p1.y !== p2.y) {
+        vSegmentsList.push({
+          routeIdx: rIdx,
+          segIdx: i,
+          x: p1.x,
+          yMin: Math.min(p1.y, p2.y),
+          yMax: Math.max(p1.y, p2.y)
+        });
       }
     }
   });
 
-  // Cluster overlapping horizontal segments by Y (within 6px tolerance)
+  // Cluster overlapping horizontal segments by Y (within 8px tolerance)
   const hClusters: Array<typeof hSegments> = [];
   hSegments.forEach(seg => {
     let placed = false;
     for (const cluster of hClusters) {
-      if (Math.abs(cluster[0].y - seg.y) <= 6) {
-        // Check if there's horizontal overlap
-        const overlaps = cluster.some(s => !(seg.xMax <= s.xMin + 5 || seg.xMin >= s.xMax - 5));
+      if (Math.abs(cluster[0].y - seg.y) <= 8) {
+        const overlaps = cluster.some(s => !(seg.xMax <= s.xMin + 6 || seg.xMin >= s.xMax - 6));
         if (overlaps) {
           cluster.push(seg);
           placed = true;
@@ -296,9 +309,24 @@ export function disambiguateAndBridgePaths(
         }
       }
     }
-    if (!placed) {
-      hClusters.push([seg]);
+    if (!placed) hClusters.push([seg]);
+  });
+
+  // Cluster overlapping vertical segments by X (within 8px tolerance)
+  const vClusters: Array<typeof vSegmentsList> = [];
+  vSegmentsList.forEach(seg => {
+    let placed = false;
+    for (const cluster of vClusters) {
+      if (Math.abs(cluster[0].x - seg.x) <= 8) {
+        const overlaps = cluster.some(s => !(seg.yMax <= s.yMin + 6 || seg.yMin >= s.yMax - 6));
+        if (overlaps) {
+          cluster.push(seg);
+          placed = true;
+          break;
+        }
+      }
     }
+    if (!placed) vClusters.push([seg]);
   });
 
   // Clone route points to apply offsets
@@ -312,12 +340,9 @@ export function disambiguateAndBridgePaths(
     if (cluster.length <= 1) return;
     const count = cluster.length;
     cluster.forEach((seg, idx) => {
-      // Don't offset start or end port points, only internal waypoints
       const pts = updatedRoutes[seg.routeIdx].points;
       const isStartSeg = seg.segIdx === 0;
       const isEndSeg = seg.segIdx === pts.length - 2;
-
-      // Symmetrical offset around original center Y
       const offset = (idx - (count - 1) / 2) * TRACK_GAP;
       if (Math.abs(offset) < 0.1) return;
 
@@ -332,7 +357,29 @@ export function disambiguateAndBridgePaths(
     });
   });
 
-  // 2. Now run the bridge arcs generator over the updated routes
+  // Distribute clustered vertical segments across offset tracks symmetrically
+  vClusters.forEach(cluster => {
+    if (cluster.length <= 1) return;
+    const count = cluster.length;
+    cluster.forEach((seg, idx) => {
+      const pts = updatedRoutes[seg.routeIdx].points;
+      const isStartSeg = seg.segIdx === 0;
+      const isEndSeg = seg.segIdx === pts.length - 2;
+      const offset = (idx - (count - 1) / 2) * TRACK_GAP;
+      if (Math.abs(offset) < 0.1) return;
+
+      if (!isStartSeg && !isEndSeg) {
+        pts[seg.segIdx].x += offset;
+        pts[seg.segIdx + 1].x += offset;
+      } else if (isStartSeg && pts.length > 2) {
+        pts[seg.segIdx + 1].x += offset;
+      } else if (isEndSeg && pts.length > 2) {
+        pts[seg.segIdx].x += offset;
+      }
+    });
+  });
+
+  // 2. Run the bridge arcs generator over the updated routes
   return addBridgeArcsToPaths(updatedRoutes);
 }
 
