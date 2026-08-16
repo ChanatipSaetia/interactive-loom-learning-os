@@ -1,4 +1,4 @@
-import React, { useMemo, useState, useRef } from 'react'
+import React, { useMemo, useState, useRef, useEffect } from 'react'
 import { Castle, Landmark, Swords, Sparkles, Hammer, Flame, CloudFog, Plus, Minus, RotateCcw, Move } from 'lucide-react'
 import { HexNodeData } from '../types'
 import { computeHexGridCoordinates, getAutoFlowConnections } from '../layout'
@@ -73,12 +73,25 @@ export const HexGridCanvas: React.FC<HexGridCanvasProps> = ({
     setPan({ x: 0, y: 0 })
   }
 
-  // Mouse wheel zoom
-  const handleWheel = (e: React.WheelEvent) => {
-    e.preventDefault()
-    const delta = e.deltaY < 0 ? 0.15 : -0.15
-    setZoom((prev) => Math.min(2.5, Math.max(0.5, +(prev + delta).toFixed(2))))
-  }
+  const containerRef = useRef<HTMLDivElement>(null)
+
+  // Native non-passive wheel listener to strictly prevent page scroll during canvas zoom
+  useEffect(() => {
+    const el = containerRef.current
+    if (!el) return
+
+    const handleNativeWheel = (e: WheelEvent) => {
+      e.preventDefault()
+      e.stopPropagation()
+      const delta = e.deltaY < 0 ? 0.15 : -0.15
+      setZoom((prev) => Math.min(2.5, Math.max(0.5, +(prev + delta).toFixed(2))))
+    }
+
+    el.addEventListener('wheel', handleNativeWheel, { passive: false })
+    return () => {
+      el.removeEventListener('wheel', handleNativeWheel)
+    }
+  }, [])
 
   // Pointer drag panning (Mouse & Touch)
   const handlePointerDown = (e: React.PointerEvent) => {
@@ -137,11 +150,14 @@ export const HexGridCanvas: React.FC<HexGridCanvasProps> = ({
 
   return (
     <div
+      ref={containerRef}
+      data-lenis-prevent
+      data-lenis-prevent-wheel
+      data-lenis-prevent-touch
       className={`relative w-full h-[580px] bg-[#232634] rounded-2xl border border-[#414559] overflow-hidden shadow-2xl flex items-center justify-center select-none ${
         isDragging ? 'cursor-grabbing' : 'cursor-grab'
       }`}
-      style={{ touchAction: 'none' }}
-      onWheel={handleWheel}
+      style={{ touchAction: 'none', overscrollBehavior: 'contain' }}
       onPointerDown={handlePointerDown}
       onPointerMove={handlePointerMove}
       onPointerUp={handlePointerUp}
