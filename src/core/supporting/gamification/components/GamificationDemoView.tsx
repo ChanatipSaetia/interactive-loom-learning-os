@@ -1002,6 +1002,32 @@ export const GamificationDemoView: React.FC = () => {
               ) : (
                 <>
                   <p className="text-sm text-[#a5adce] leading-relaxed">{selectedNode.description}</p>
+                  {selectedNode.type === 'boss_lair' && (
+                    <div className="bg-[#232634] p-3.5 rounded-xl border border-[#ea999c]/50 space-y-2.5">
+                      <span className="font-bold text-[#ea999c] block flex items-center gap-1.5 text-xs">
+                        <span>🔑</span>
+                        <span>Required Key Items to Unlock & Battle Boss</span>
+                      </span>
+                      <div className="space-y-1.5 text-xs">
+                        {(selectedNode.requiredItems || ['adapter-shield', 'port-blade']).map((itemId) => {
+                          const hasItem = campaign.inventory.some((i) => i.id === itemId)
+                          const providerNode = nodes.find((n) => n.rewards?.some((r) => r.id === itemId))
+                          const itemInfo = providerNode?.rewards?.find((r) => r.id === itemId)
+                          return (
+                            <div key={itemId} className="flex items-center justify-between bg-[#1e1e2e] px-2.5 py-1.5 rounded-lg border border-[#414559]">
+                              <span className="text-[#c6d0f5] font-medium flex items-center gap-1.5">
+                                <span>{itemInfo?.icon || '🗝️'}</span>
+                                <span>{itemInfo?.name || itemId}</span>
+                              </span>
+                              <span className={hasItem ? 'text-[#a6d189] font-bold' : 'text-[#e78284] text-[11px] font-semibold'}>
+                                {hasItem ? '✓ Collected' : `❌ Missing (${providerNode?.title || 'Challenge'})`}
+                              </span>
+                            </div>
+                          )
+                        })}
+                      </div>
+                    </div>
+                  )}
 
                   {/* Capital Intelligence Intel Card: Key Item Locations Revealed */}
                   {selectedNode.type === 'capital' && selectedNode.status === 'cleared' && (
