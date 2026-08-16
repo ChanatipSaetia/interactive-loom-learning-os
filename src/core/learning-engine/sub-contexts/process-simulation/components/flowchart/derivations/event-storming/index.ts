@@ -81,3 +81,30 @@ function resolveCollisions(
 
   return result;
 }
+
+/**
+ * Returns the set of relation IDs where both `from` and `to` belong to the
+ * same FlowGroup — these should be hidden from the EVENT_STORMING view so only
+ * cross-group edges are rendered.
+ */
+export function buildIntraGroupRelationSet(
+  nodeIds: string[],
+  nodeSet: Set<string>,
+  relations: FlowchartRelation[],
+  viewKey: string,
+  entities: Record<string, FlowchartEntity>,
+  getRole: (id: string) => 'db' | 'handler' | 'timeline',
+  nodes: FlowchartViewNode[],
+): Set<string> {
+  const { groups } = buildGroups(nodeIds, nodeSet, relations, viewKey, entities, getRole, nodes);
+  const intraIds = new Set<string>();
+  relations.forEach(rel => {
+    if (!rel.views || !rel.views.includes(viewKey)) return;
+    const fromGroup = groups.find(g => g.allNodes.has(rel.from));
+    const toGroup   = groups.find(g => g.allNodes.has(rel.to));
+    if (fromGroup && toGroup && fromGroup.id === toGroup.id) {
+      intraIds.add(rel.id);
+    }
+  });
+  return intraIds;
+}

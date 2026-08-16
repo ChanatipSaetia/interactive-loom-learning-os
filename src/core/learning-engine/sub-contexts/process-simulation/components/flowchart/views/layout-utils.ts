@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { NODE_W, NODE_H } from '../types';
 
-const MIN_ROW_SPACING = 120;
+const MIN_ROW_SPACING = 80;
 const MAX_ROW_SPACING = 240;
 
 export function computeDynamicSpacing(

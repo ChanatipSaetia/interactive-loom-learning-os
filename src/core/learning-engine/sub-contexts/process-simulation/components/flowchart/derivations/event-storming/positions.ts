@@ -340,12 +340,13 @@ function computeWithinGroupPositions(
     }
   });
 
-  // --- Column 1+: Events stacked with related nodes, wrapping beyond 4 columns ---
+  // --- Column 1: Events stacked vertically below the command row ---
+  // Multiple events in the same step are placed in the same column (EVT_COL),
+  // each one row below the previous, so they read top-to-bottom.
+  const baseEventRow = 2;
+  const EVENT_STACK_GAP = 0.6;
   g.events.forEach((evt, eIdx) => {
-    const isBranch = (branchPolicies.get(evt) ?? 0) > 1;
-    const colOffset = (eIdx % 4) * (isBranch ? 1.5 : 1.2);
-    const rowOffset = Math.floor(eIdx / 4) * 1.2;
-    pos.set(evt, [EVT_COL + colOffset, 2 + rowOffset]);
+    pos.set(evt, [EVT_COL, baseEventRow + eIdx * EVENT_STACK_GAP]);
   });
 
   // --- Policies not yet placed (branch policies: place next to their command) ---

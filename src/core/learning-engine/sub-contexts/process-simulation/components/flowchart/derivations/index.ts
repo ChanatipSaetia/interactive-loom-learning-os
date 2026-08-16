@@ -1,7 +1,7 @@
 import type { UnifiedFlowchartSchema } from '../types';
 import { MASTER_MAPPING_MATRIX, TYPES } from '../types';
 import { getEntityType, policyShouldMapToDecision, countOutgoingRelations, countOutgoingPolicies, computeLayoutInfo } from './utils';
-import { layoutEventStorming } from './event-storming';
+import { layoutEventStorming, buildIntraGroupRelationSet } from './event-storming';
 import { deriveSysArch } from './sys-arch';
 import { deriveSwimlanes } from './swimlanes';
 import { deriveSequence } from './sequence';
@@ -50,6 +50,15 @@ if (mutableViews.EVENT_STORMING) {
     let laidOutNodes = view.nodes;
     if (viewKey === 'EVENT_STORMING') {
       laidOutNodes = layoutEventStorming(view.nodes, nodeIds, nodeSet, mutableRelations, viewKey, mutableEntities, getRole);
+      const intraGroupRelIds = buildIntraGroupRelationSet(nodeIds, nodeSet, mutableRelations, viewKey, mutableEntities, getRole, view.nodes);
+      mutableRelations.forEach((r, idx) => {
+        if (intraGroupRelIds.has(r.id)) {
+          mutableRelations[idx] = {
+            ...r,
+            views: r.views?.filter(v => v !== 'EVENT_STORMING')
+          };
+        }
+      });
     }
 
     const groups = view.groups;
