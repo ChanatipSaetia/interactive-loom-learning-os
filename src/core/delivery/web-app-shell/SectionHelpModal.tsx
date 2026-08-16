@@ -20,13 +20,24 @@ export function SectionHelpModal({ isOpen, onClose }: SectionHelpModalProps) {
   if (!isOpen) return null
 
   return (
-    <div className="section-help-overlay" onClick={onClose} data-testid="section-help-overlay">
+    <div
+      className="section-help-overlay"
+      onClick={onClose}
+      data-testid="section-help-overlay"
+      data-lenis-prevent
+      data-lenis-prevent-wheel
+      data-lenis-prevent-touch
+    >
       <div
         className="section-help-modal"
         onClick={(e) => e.stopPropagation()}
         data-testid="section-help-modal"
         role="dialog"
         aria-labelledby="section-help-title"
+        data-lenis-prevent
+        data-lenis-prevent-wheel
+        data-lenis-prevent-touch
+        style={{ overscrollBehavior: 'contain' }}
       >
         <div className="section-help-header">
           <div className="section-help-title-group">

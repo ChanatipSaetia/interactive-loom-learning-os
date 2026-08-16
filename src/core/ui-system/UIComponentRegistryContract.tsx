@@ -284,25 +284,32 @@ export function Modal({ open, onClose, title, children, maxWidth = 'lg' }: Modal
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/50"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4"
       onClick={onClose}
       role="dialog"
       aria-modal="true"
       aria-label={title}
+      data-lenis-prevent
+      data-lenis-prevent-wheel
+      data-lenis-prevent-touch
     >
       <div
         className={cn(
-          'relative bg-card border border-border rounded-xl shadow-xl w-full mx-4 p-6',
+          'relative bg-card border border-border rounded-xl shadow-xl w-full max-h-[85vh] overflow-y-auto p-6 text-foreground',
           MAX_WIDTH_CLASS[maxWidth],
         )}
         onClick={(e) => e.stopPropagation()}
+        style={{ overscrollBehavior: 'contain' }}
+        data-lenis-prevent
+        data-lenis-prevent-wheel
+        data-lenis-prevent-touch
       >
         {title && (
-          <div className="flex items-center justify-between mb-4">
+          <div className="flex items-center justify-between mb-4 sticky top-0 bg-card pb-2 z-10 border-b border-border">
             <h2 className="text-lg font-semibold text-foreground">{title}</h2>
             <button
               onClick={onClose}
-              className="text-muted-foreground hover:text-foreground transition-colors"
+              className="text-muted-foreground hover:text-foreground transition-colors text-xl font-bold px-2 py-1"
               aria-label="Close"
             >
               ×
