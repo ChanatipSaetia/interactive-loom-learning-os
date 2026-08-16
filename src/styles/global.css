@@ -76,35 +76,7 @@ textarea {
   background: var(--ctp-overlay0);
 }
 
-/* ======================================
-   Topic progress bar
-====================================== */
-.topic-progress-bar {
-  position: relative;
-  @apply w-full h-6 mb-5 rounded-full overflow-hidden shadow-inner;
-  background: color-mix(in srgb, var(--ctp-mantle) 80%, var(--card));
-  border: 1px solid var(--border);
-}
 
-.topic-progress-fill {
-  position: absolute;
-  top: 0;
-  left: 0;
-  height: 100%;
-  @apply transition-all duration-300 ease-out rounded-full;
-  background: linear-gradient(90deg, color-mix(in srgb, var(--primary) 40%, var(--secondary)), var(--primary));
-  opacity: 0.5;
-  box-shadow: 0 0 12px color-mix(in srgb, var(--primary) 40%, transparent);
-}
-
-.topic-progress-label {
-  position: absolute;
-  inset: 0;
-  @apply flex items-center justify-center text-xs font-mono font-medium tracking-wider uppercase;
-  color: var(--ctp-text);
-  letter-spacing: 0.04em;
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.4);
-}
 
 /* ======================================
    E-Ink: suppress all animations
