@@ -220,9 +220,7 @@ export function calculatePositions(
 
       siblings.forEach((gi, idx) => {
         const offset = (idx - (n - 1) / 2) * stepSpacing;
-        const d = groupDepth.get(gi) ?? 0;
-        const wrapY = (n === 1 && d >= 4) ? Math.floor(d / 4) * 1.5 : 0;
-        groupOffsetY.set(gi, center + offset + wrapY);
+        groupOffsetY.set(gi, center + offset);
       });
     });
   });
@@ -265,18 +263,19 @@ export function calculatePositions(
     }
   });
 
-  // Apply offsets to all nodes (groupOffsetY is center of group, not top)
+  // Apply offsets to all nodes
+  // Anchor the baseline command/event/policy flow (row 2) to groupOffsetY
+  // so horizontal chains across steps align at the exact same Y level.
+  const BASELINE_ROW = 2;
   const grid = new Map<string, [number, number]>();
   groupOrder.forEach(gi => {
     const bounds = groupBounds.get(gi)!;
     const internalGrid = groupInternal.get(gi)!;
-    const groupH = bounds.maxY - bounds.minY;
     const centerY = groupOffsetY.get(gi)!;
-    const topY = centerY - groupH / 2;
 
     internalGrid.forEach(([ic, ir], nodeId) => {
       const finalX = (ic - bounds.minX) + groupOffsetX.get(gi)!;
-      const finalY = (ir - bounds.minY) + topY;
+      const finalY = (ir - BASELINE_ROW) + centerY;
       grid.set(nodeId, [finalX, finalY]);
     });
   });
