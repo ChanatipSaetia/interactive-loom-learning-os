@@ -16,6 +16,22 @@ import {
 } from '../../../learning-engine/sub-contexts'
 import type { OKFQuizQuestion } from '../../../learning-engine/composition/okf/types'
 
+// ─── Magic Rune Encryption Helper ───
+const RUNE_CHAR_MAP: Record<string, string> = {
+  a: 'ᚨ', b: 'ᛒ', c: 'ᚲ', d: 'ᛞ', e: 'ᛖ', f: 'ᚠ', g: 'ᚷ', h: 'ᚺ',
+  i: 'ᛁ', j: 'ᛃ', k: 'ᚲ', l: 'ᛚ', m: 'ᛗ', n: 'ᚾ', o: 'ᛟ', p: 'ᛈ',
+  q: 'ᚴ', r: 'ᛱ', s: 'ᛊ', t: 'ᛏ', u: 'ᚢ', v: 'ᚡ', w: 'ᚹ', x: 'ᚷ',
+  y: 'ᛦ', z: 'ᛉ', ' ': ' ',
+}
+
+export function encryptToMagicRunes(text: string): string {
+  return text
+    .toLowerCase()
+    .split('')
+    .map((char) => RUNE_CHAR_MAP[char] || '᚛')
+    .join('')
+}
+
 
 // ─── Real Section Datasets for Hex Nodes ───
 
@@ -893,13 +909,21 @@ export const GamificationDemoView: React.FC = () => {
                   <span className="text-2xl">
                     {selectedNode.type === 'capital' && '🏰'}
                     {selectedNode.type === 'reading_sanctuary' && '🏛️'}
-                    {selectedNode.type === 'quiz_encounter' && '👹'}
-                    {selectedNode.type === 'reflection_decryption' && '🔮'}
-                    {selectedNode.type === 'tradeoff_workshop' && '⚒️'}
+                    {selectedNode.type === 'quiz_encounter' && (selectedNode.status === 'locked' ? '🌫️' : '👹')}
+                    {selectedNode.type === 'reflection_decryption' && (selectedNode.status === 'locked' ? '🌫️' : '🔮')}
+                    {selectedNode.type === 'tradeoff_workshop' && (selectedNode.status === 'locked' ? '🌫️' : '⚒️')}
                     {selectedNode.type === 'boss_lair' && '🐲'}
                   </span>
                   <div>
-                    <h3 className="text-lg font-bold text-[#b5bfe2]">{selectedNode.title}</h3>
+                    <h3 className="text-lg font-bold text-[#b5bfe2]">
+                      {selectedNode.status === 'locked' && selectedNode.type !== 'boss_lair' ? (
+                        <span className="font-mono tracking-widest text-[#ca9ee6] animate-pulse">
+                          {encryptToMagicRunes(selectedNode.title)}
+                        </span>
+                      ) : (
+                        selectedNode.title
+                      )}
+                    </h3>
                     <div className="flex items-center gap-2 text-xs text-[#a5adce]">
                       <span className="capitalize">{selectedNode.type.replace('_', ' ')}</span>
                       <span>•</span>
@@ -925,12 +949,18 @@ export const GamificationDemoView: React.FC = () => {
 
               {selectedNode.status === 'locked' ? (
                 <>
-                  {/* Fog of War Shroud Notice */}
-                  <div className="bg-[#232634] p-4 rounded-xl border border-[#51576d] text-center space-y-1.5">
+                  {/* Fog of War Shroud Notice with Magic Encrypted Rune Text */}
+                  <div className="bg-[#232634] p-4 rounded-xl border border-[#ca9ee6]/50 text-center space-y-2">
                     <span className="text-3xl block">🌫️</span>
-                    <h4 className="text-sm font-bold text-[#e5c890]">Shrouded in Fog of War</h4>
+                    <h4 className="text-sm font-bold text-[#ca9ee6] flex items-center justify-center gap-1.5 font-mono tracking-wider">
+                      <span>🔮</span>
+                      <span>ANCIENT MAGIC CIPHER ENCRYPTED</span>
+                    </h4>
+                    <div className="bg-[#1e1e2e] p-2.5 rounded-lg border border-[#ca9ee6]/30 font-mono text-xs text-[#ca9ee6] tracking-widest break-all select-none animate-pulse">
+                      ᚛ {encryptToMagicRunes(selectedNode.description)} 
+                    </div>
                     <p className="text-xs text-[#a5adce] leading-relaxed">
-                      Content details are locked. Clear prerequisite nodes to lift the fog and reveal challenges.
+                      Title and content are encrypted by ancient fog magic. Clear prerequisite nodes to lift the cipher.
                     </p>
                   </div>
 
@@ -948,9 +978,14 @@ export const GamificationDemoView: React.FC = () => {
                         {parentConns.map(({ fromId }) => {
                           const parent = nodes.find((n) => n.id === fromId)
                           const isParentCleared = parent?.status === 'cleared'
+                          const parentTitle = isParentCleared || parent?.type === 'capital' || parent?.status !== 'locked'
+                            ? (parent?.title || fromId)
+                            : encryptToMagicRunes(parent?.title || fromId)
                           return (
                             <div key={fromId} className="flex items-center justify-between bg-[#1e1e2e] px-2.5 py-1.5 rounded-lg">
-                              <span className="text-[#c6d0f5] font-medium">{parent?.title || fromId}</span>
+                              <span className={`font-medium ${isParentCleared ? 'text-[#c6d0f5]' : 'font-mono text-[#ca9ee6] tracking-wider'}`}>
+                                {parentTitle}
+                              </span>
                               <span className={isParentCleared ? 'text-[#a6d189] font-bold' : 'text-[#e78284] font-semibold'}>
                                 {isParentCleared ? '✓ Cleared' : '❌ Uncleared'}
                               </span>
