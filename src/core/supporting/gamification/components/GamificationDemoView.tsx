@@ -937,7 +937,7 @@ export const GamificationDemoView: React.FC = () => {
                 </Badge>
               </div>
 
-              {selectedNode.status === 'locked' ? (
+              {selectedNode.status === 'locked' && selectedNode.type !== 'boss_lair' ? (
                 <>
                   {/* Fog of War Shroud Notice with Magic Encrypted Rune Text */}
                   <div className="bg-[#232634] p-4 rounded-xl border border-[#ca9ee6]/50 text-center space-y-2">
