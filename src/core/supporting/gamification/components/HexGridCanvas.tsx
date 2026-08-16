@@ -1,5 +1,5 @@
-import React, { useMemo } from 'react'
-import { Castle, Landmark, Swords, Sparkles, Hammer, Flame, CloudFog } from 'lucide-react'
+import React, { useMemo, useState, useRef } from 'react'
+import { Castle, Landmark, Swords, Sparkles, Hammer, Flame, CloudFog, Plus, Minus, RotateCcw, Move } from 'lucide-react'
 import { HexNodeData } from '../types'
 import { computeHexGridCoordinates, getAutoFlowConnections } from '../layout'
 
@@ -38,6 +38,14 @@ export const HexGridCanvas: React.FC<HexGridCanvasProps> = ({
 }) => {
   const selectedNode = nodes.find((n) => n.id === selectedNodeId)
 
+  // Pan and Zoom state
+  const [zoom, setZoom] = useState<number>(1.0)
+  const [pan, setPan] = useState<{ x: number; y: number }>({ x: 0, y: 0 })
+  const [isDragging, setIsDragging] = useState<boolean>(false)
+
+  const dragStartRef = useRef<{ x: number; y: number }>({ x: 0, y: 0 })
+  const touchDistRef = useRef<number | null>(null)
+
   // Dynamically compute axial coordinates for nodes based on 4.2 Node Type Hierarchy
   const computedCoordsMap = useMemo(() => {
     return computeHexGridCoordinates(nodes)
@@ -57,12 +65,95 @@ export const HexGridCanvas: React.FC<HexGridCanvasProps> = ({
     [nodes]
   )
 
-  return (
-    <div className="relative w-full h-[580px] bg-[#232634] rounded-2xl border border-[#414559] overflow-hidden shadow-2xl flex items-center justify-center select-none">
-      {/* Background Grid Pattern */}
-      <div className="absolute inset-0 opacity-15 bg-[radial-gradient(#8caaee_1px,transparent_1px)] [background-size:24px_24px]" />
+  // Zoom controls
+  const handleZoomIn = () => setZoom((prev) => Math.min(2.5, +(prev + 0.25).toFixed(2)))
+  const handleZoomOut = () => setZoom((prev) => Math.max(0.5, +(prev - 0.25).toFixed(2)))
+  const handleResetPanZoom = () => {
+    setZoom(1.0)
+    setPan({ x: 0, y: 0 })
+  }
 
-      {/* SVG Canvas for Connections and Hexes */}
+  // Mouse wheel zoom
+  const handleWheel = (e: React.WheelEvent) => {
+    e.preventDefault()
+    const delta = e.deltaY < 0 ? 0.15 : -0.15
+    setZoom((prev) => Math.min(2.5, Math.max(0.5, +(prev + delta).toFixed(2))))
+  }
+
+  // Pointer drag panning (Mouse & Touch)
+  const handlePointerDown = (e: React.PointerEvent) => {
+    // Initiate pan drag on background canvas or svg element
+    const targetTag = (e.target as HTMLElement).tagName.toLowerCase()
+    if (targetTag === 'svg' || targetTag === 'div' || targetTag === 'rect') {
+      setIsDragging(true)
+      dragStartRef.current = { x: e.clientX - pan.x, y: e.clientY - pan.y }
+    }
+  }
+
+  const handlePointerMove = (e: React.PointerEvent) => {
+    if (!isDragging) return
+    setPan({
+      x: e.clientX - dragStartRef.current.x,
+      y: e.clientY - dragStartRef.current.y,
+    })
+  }
+
+  const handlePointerUp = () => {
+    setIsDragging(false)
+  }
+
+  // Mobile Pinch-to-Zoom Touch Handlers
+  const handleTouchStart = (e: React.TouchEvent) => {
+    if (e.touches.length === 2) {
+      const dx = e.touches[0].clientX - e.touches[1].clientX
+      const dy = e.touches[0].clientY - e.touches[1].clientY
+      touchDistRef.current = Math.hypot(dx, dy)
+    } else if (e.touches.length === 1) {
+      setIsDragging(true)
+      dragStartRef.current = { x: e.touches[0].clientX - pan.x, y: e.touches[0].clientY - pan.y }
+    }
+  }
+
+  const handleTouchMove = (e: React.TouchEvent) => {
+    if (e.touches.length === 2 && touchDistRef.current !== null) {
+      const dx = e.touches[0].clientX - e.touches[1].clientX
+      const dy = e.touches[0].clientY - e.touches[1].clientY
+      const dist = Math.hypot(dx, dy)
+      const factor = dist / touchDistRef.current
+      setZoom((prev) => Math.min(2.5, Math.max(0.5, +(prev * factor).toFixed(2))))
+      touchDistRef.current = dist
+    } else if (e.touches.length === 1 && isDragging) {
+      setPan({
+        x: e.touches[0].clientX - dragStartRef.current.x,
+        y: e.touches[0].clientY - dragStartRef.current.y,
+      })
+    }
+  }
+
+  const handleTouchEnd = () => {
+    setIsDragging(false)
+    touchDistRef.current = null
+  }
+
+  return (
+    <div
+      className={`relative w-full h-[580px] bg-[#232634] rounded-2xl border border-[#414559] overflow-hidden shadow-2xl flex items-center justify-center select-none ${
+        isDragging ? 'cursor-grabbing' : 'cursor-grab'
+      }`}
+      style={{ touchAction: 'none' }}
+      onWheel={handleWheel}
+      onPointerDown={handlePointerDown}
+      onPointerMove={handlePointerMove}
+      onPointerUp={handlePointerUp}
+      onPointerCancel={handlePointerUp}
+      onTouchStart={handleTouchStart}
+      onTouchMove={handleTouchMove}
+      onTouchEnd={handleTouchEnd}
+    >
+      {/* Background Grid Pattern */}
+      <div className="absolute inset-0 opacity-15 bg-[radial-gradient(#8caaee_1px,transparent_1px)] [background-size:24px_24px] pointer-events-none" />
+
+      {/* SVG Canvas for Hexes & Map Render */}
       <svg className="w-full h-full relative z-10" viewBox="0 0 880 560">
         <defs>
           {/* Neon Glow Filters */}
@@ -89,23 +180,24 @@ export const HexGridCanvas: React.FC<HexGridCanvasProps> = ({
           </linearGradient>
           <linearGradient id="grad-reflection" x1="0" y1="0" x2="1" y2="1">
             <stop offset="0%" stopColor="#ca9ee6" />
-            <stop offset="100%" stopColor="#303446" />
+            <stop offset="100%" stopColor="#232634" />
           </linearGradient>
-          <linearGradient id="grad-tradeoff" x1="0" y1="0" x2="1" y2="1">
+          <linearGradient id="grad-workshop" x1="0" y1="0" x2="1" y2="1">
             <stop offset="0%" stopColor="#e5c890" />
             <stop offset="100%" stopColor="#303446" />
           </linearGradient>
+
+          {/* Menacing Crimson Gradient for Boss Lair */}
           <linearGradient id="grad-boss" x1="0" y1="0" x2="1" y2="1">
             <stop offset="0%" stopColor="#ea999c" />
             <stop offset="100%" stopColor="#e78284" />
           </linearGradient>
 
-          {/* Fog of War Shroud Gradient for Locked Hexes */}
-          <linearGradient id="grad-fog" x1="0" y1="0" x2="1" y2="1">
-            <stop offset="0%" stopColor="#414559" stopOpacity="0.9" />
-            <stop offset="50%" stopColor="#51576d" stopOpacity="0.8" />
-            <stop offset="100%" stopColor="#232634" stopOpacity="0.95" />
-          </linearGradient>
+          {/* Fog of War Radial Dark Shroud */}
+          <radialGradient id="grad-fog" cx="50%" cy="50%" r="50%">
+            <stop offset="0%" stopColor="#414559" stopOpacity="0.95" />
+            <stop offset="100%" stopColor="#181825" stopOpacity="0.98" />
+          </radialGradient>
 
           {/* Menacing Crimson Gradient for Locked Boss Lair */}
           <linearGradient id="grad-boss-locked" x1="0" y1="0" x2="1" y2="1">
@@ -120,214 +212,239 @@ export const HexGridCanvas: React.FC<HexGridCanvasProps> = ({
           </linearGradient>
         </defs>
 
-        {/* Draw Hexagon Nodes */}
-        {nodes.map((node) => {
-          const nodeCoord = getNodeCoord(node)
-          const { x, y } = axialToPixel(nodeCoord.q, nodeCoord.r)
-          const isSelected = selectedNodeId === node.id
-          const isCleared = node.status === 'cleared'
-          const isLocked = node.status === 'locked'
-          const isBoss = node.type === 'boss_lair'
-          const isThreatened = node.status === 'threatened'
-          const hasItemReward = node.rewards && node.rewards.length > 0 && !isLocked
+        {/* Pan and Zoom Group Container */}
+        <g
+          transform={`translate(${pan.x}, ${pan.y}) scale(${zoom})`}
+          style={{ transformOrigin: '440px 290px', transition: isDragging ? 'none' : 'transform 0.1s ease-out' }}
+        >
+          {/* Draw Hexagon Nodes */}
+          {nodes.map((node) => {
+            const nodeCoord = getNodeCoord(node)
+            const { x, y } = axialToPixel(nodeCoord.q, nodeCoord.r)
+            const isSelected = selectedNodeId === node.id
+            const isCleared = node.status === 'cleared'
+            const isLocked = node.status === 'locked'
+            const isBoss = node.type === 'boss_lair'
+            const isThreatened = node.status === 'threatened'
+            const hasItemReward = node.rewards && node.rewards.length > 0 && !isLocked
 
-          // Check if this node is a prerequisite parent to the selected node in 4.2 flow
-          const isPrereqParent = autoConnections.some(
-            (c) => c.toId === selectedNode?.id && c.fromId === node.id
-          )
-          const isConnectedDependency = isPrereqParent
+            // Check if this node is a prerequisite parent to the selected node in 4.2 flow
+            const isPrereqParent = autoConnections.some(
+              (c) => c.toId === selectedNode?.id && c.fromId === node.id
+            )
+            const isConnectedDependency = isPrereqParent
 
-          let fillGrad = 'url(#grad-capital)'
-          let strokeColor = '#8caaee'
+            let fillGrad = 'url(#grad-capital)'
+            let strokeColor = '#8caaee'
 
-          if (node.type === 'reading_sanctuary') {
-            fillGrad = 'url(#grad-sanctuary)'
-            strokeColor = '#a6d189'
-          } else if (node.type === 'quiz_encounter') {
-            fillGrad = 'url(#grad-quiz)'
-            strokeColor = '#e78284'
-          } else if (node.type === 'reflection_decryption') {
-            fillGrad = 'url(#grad-reflection)'
-            strokeColor = '#ca9ee6'
-          } else if (node.type === 'tradeoff_workshop') {
-            fillGrad = 'url(#grad-tradeoff)'
-            strokeColor = '#e5c890'
-          } else if (isBoss) {
-            fillGrad = 'url(#grad-boss)'
-            strokeColor = '#ea999c'
-          }
+            if (node.type === 'reading_sanctuary') {
+              fillGrad = 'url(#grad-sanctuary)'
+              strokeColor = '#a6d189'
+            } else if (node.type === 'quiz_encounter') {
+              fillGrad = 'url(#grad-quiz)'
+              strokeColor = '#e78284'
+            } else if (node.type === 'reflection_decryption') {
+              fillGrad = 'url(#grad-reflection)'
+              strokeColor = '#ca9ee6'
+            } else if (node.type === 'tradeoff_workshop') {
+              fillGrad = 'url(#grad-workshop)'
+              strokeColor = '#e5c890'
+            } else if (node.type === 'boss_lair') {
+              fillGrad = 'url(#grad-boss)'
+              strokeColor = '#ea999c'
+            }
 
-          if (isLocked && !isBoss) {
-            fillGrad = 'url(#grad-locked)'
-            strokeColor = '#51576d'
-          } else if (isLocked && isBoss) {
-            fillGrad = 'url(#grad-boss-locked)'
-            strokeColor = '#e78284'
-          }
+            // Locked styling (Grayed out solid look except Boss which remains menacingly visible)
+            if (isLocked && !isBoss) {
+              fillGrad = 'url(#grad-locked)'
+              strokeColor = '#51576d'
+            } else if (isLocked && isBoss) {
+              fillGrad = 'url(#grad-boss-locked)'
+              strokeColor = '#e78284'
+            }
 
-          return (
-            <g
-              key={node.id}
-              onClick={() => onSelectNode(node)}
-              style={{
-                transformOrigin: `${x}px ${y}px`,
-              }}
-              className={`cursor-pointer transition-transform duration-200 ${
-                isSelected ? 'scale-110' : isConnectedDependency ? 'scale-105' : 'scale-100'
-              }`}
-            >
-              {/* Outer Selection / Glow Ring */}
-              {isSelected && (
-                <polygon
-                  points={getHexPolygonPoints(x, y, HEX_RADIUS + 6)}
-                  fill="none"
-                  stroke="#ef9f76"
-                  strokeWidth="3"
-                  filter="url(#glow-selected)"
-                  className="animate-pulse"
-                />
-              )}
+            if (isSelected) strokeColor = '#ef9f76'
+            else if (isConnectedDependency) strokeColor = '#ca9ee6'
 
-              {/* Connected Dependency Node Blinking Outer Ring */}
-              {isConnectedDependency && !isSelected && (
-                <polygon
-                  points={getHexPolygonPoints(x, y, HEX_RADIUS + 5)}
-                  fill="none"
-                  stroke="#e5c890"
-                  strokeWidth="2.5"
-                  filter="url(#glow-selected)"
-                  className="animate-pulse"
-                />
-              )}
-
-              {/* Cleared Neon Outer Ring Glow */}
-              {isCleared && !isSelected && !isConnectedDependency && (
-                <polygon
-                  points={getHexPolygonPoints(x, y, HEX_RADIUS + 3)}
-                  fill="none"
-                  stroke="#a6d189"
-                  strokeWidth="2"
-                  filter="url(#glow-cleared)"
-                  opacity="0.8"
-                />
-              )}
-
-              {/* Main Flat-Topped Hex Tile Polygon */}
-              <polygon
-                points={getHexPolygonPoints(x, y, HEX_RADIUS)}
-                fill={fillGrad}
-                stroke={isSelected ? '#ef9f76' : isConnectedDependency ? '#e5c890' : strokeColor}
-                strokeWidth={isSelected ? 3 : isConnectedDependency ? 2.5 : 2}
-                className="transition-all duration-200"
-              />
-
-              {/* Fog of War Shroud for Locked Challenges & Workshops (Except Boss Lair) */}
-              {isLocked && !isBoss && (
-                <g className="pointer-events-none select-none">
+            return (
+              <g
+                key={node.id}
+                onClick={(e) => {
+                  e.stopPropagation()
+                  onSelectNode(node)
+                }}
+                className="cursor-pointer transition-all duration-300 group"
+              >
+                {/* Outer Border Glow Ring for Selected / Connected Prerequisite Parent Nodes */}
+                {(isSelected || isConnectedDependency) && (
                   <polygon
-                    points={getHexPolygonPoints(x, y, HEX_RADIUS)}
-                    fill="url(#grad-fog)"
-                    opacity="0.85"
-                  />
-                  <g transform={`translate(${x - 12}, ${y - 12})`}>
-                    <CloudFog size={24} color="#a5adce" strokeWidth={2.2} className="animate-pulse" />
-                  </g>
-                </g>
-              )}
-
-              {/* Hex Center Node Type SVG Icon (Always Visible for Boss, or when Unlocked/Cleared) */}
-              {(!isLocked || isBoss) && (
-                <g
-                  transform={`translate(${x - (isBoss ? 14 : 12)}, ${
-                    y - (isBoss ? 14 : 12) - (hasItemReward || isThreatened ? 6 : 0)
-                  })`}
-                  className="pointer-events-none select-none"
-                >
-                  {node.type === 'capital' && (
-                    <Castle size={24} color={isSelected ? '#ef9f76' : '#8caaee'} strokeWidth={2.2} />
-                  )}
-                  {node.type === 'reading_sanctuary' && (
-                    <Landmark size={24} color={isSelected ? '#ef9f76' : '#a6d189'} strokeWidth={2.2} />
-                  )}
-                  {node.type === 'quiz_encounter' && (
-                    <Swords size={24} color={isSelected ? '#ef9f76' : '#e78284'} strokeWidth={2.2} />
-                  )}
-                  {node.type === 'reflection_decryption' && (
-                    <Sparkles size={24} color={isSelected ? '#ef9f76' : '#ca9ee6'} strokeWidth={2.2} />
-                  )}
-                  {node.type === 'tradeoff_workshop' && (
-                    <Hammer size={24} color={isSelected ? '#ef9f76' : '#e5c890'} strokeWidth={2.2} />
-                  )}
-                  {node.type === 'boss_lair' && (
-                    <Flame size={28} color={isSelected ? '#ef9f76' : '#ea999c'} strokeWidth={2.5} />
-                  )}
-                </g>
-              )}
-
-              {/* Key Item Location Beacon (Revealed after finishing the main Capital city) */}
-              {isCapitalCleared && node.rewards && node.rewards.length > 0 && (
-                <g transform={`translate(${x - 14}, ${y + 14})`} className="pointer-events-none select-none">
-                  <rect
-                    width="28"
-                    height="18"
-                    rx="9"
-                    fill="#1e1e2e"
-                    stroke="#e5c890"
-                    strokeWidth="1.5"
+                    points={getHexPolygonPoints(x, y, HEX_RADIUS + 5)}
+                    fill="none"
+                    stroke={isSelected ? '#ef9f76' : '#ca9ee6'}
+                    strokeWidth={isSelected ? '3.5' : '2.5'}
+                    strokeDasharray={isConnectedDependency && !isSelected ? '4,4' : undefined}
                     filter="url(#glow-selected)"
+                    className={isConnectedDependency ? 'animate-pulse' : ''}
                   />
-                  <text
-                    x="14"
-                    y="12.5"
-                    textAnchor="middle"
-                    fontSize="11"
-                    fill="#e5c890"
-                    fontWeight="bold"
+                )}
+
+                {/* Base Flat-Topped Hexagon Tile */}
+                <polygon
+                  points={getHexPolygonPoints(x, y, HEX_RADIUS)}
+                  fill={fillGrad}
+                  stroke={strokeColor}
+                  strokeWidth={isSelected ? '3' : '2'}
+                  filter={isCleared ? 'url(#glow-cleared)' : undefined}
+                  className="transition-all duration-300 group-hover:stroke-[#ef9f76]"
+                />
+
+                {/* Inner Hex Polygon Highlight Ring */}
+                <polygon
+                  points={getHexPolygonPoints(x, y, HEX_RADIUS - 6)}
+                  fill="none"
+                  stroke={strokeColor}
+                  strokeWidth="0.8"
+                  opacity="0.4"
+                />
+
+                {/* Fog of War Shroud for Locked Challenges & Workshops (Except Boss Lair) */}
+                {isLocked && !isBoss && (
+                  <g className="pointer-events-none select-none">
+                    <polygon
+                      points={getHexPolygonPoints(x, y, HEX_RADIUS)}
+                      fill="url(#grad-fog)"
+                      opacity="0.85"
+                    />
+                    <g transform={`translate(${x - 12}, ${y - 12})`}>
+                      <CloudFog size={24} color="#a5adce" strokeWidth={2.2} className="animate-pulse" />
+                    </g>
+                  </g>
+                )}
+
+                {/* Hex Center Node Type SVG Icon (Always Visible for Boss, or when Unlocked/Cleared) */}
+                {(!isLocked || isBoss) && (
+                  <g
+                    transform={`translate(${x - (isBoss ? 14 : 12)}, ${
+                      y - (isBoss ? 14 : 12) - (hasItemReward || isThreatened ? 6 : 0)
+                    })`}
+                    className="pointer-events-none select-none"
                   >
-                    {node.rewards[0].icon}
+                    {node.type === 'capital' && (
+                      <Castle size={24} color={isSelected ? '#ef9f76' : '#8caaee'} strokeWidth={2.2} />
+                    )}
+                    {node.type === 'reading_sanctuary' && (
+                      <Landmark size={24} color={isSelected ? '#ef9f76' : '#a6d189'} strokeWidth={2.2} />
+                    )}
+                    {node.type === 'quiz_encounter' && (
+                      <Swords size={24} color={isSelected ? '#ef9f76' : '#e78284'} strokeWidth={2.2} />
+                    )}
+                    {node.type === 'reflection_decryption' && (
+                      <Sparkles size={24} color={isSelected ? '#ef9f76' : '#ca9ee6'} strokeWidth={2.2} />
+                    )}
+                    {node.type === 'tradeoff_workshop' && (
+                      <Hammer size={24} color={isSelected ? '#ef9f76' : '#e5c890'} strokeWidth={2.2} />
+                    )}
+                    {node.type === 'boss_lair' && (
+                      <Flame size={28} color={isSelected ? '#ef9f76' : '#ea999c'} strokeWidth={2.5} />
+                    )}
+                  </g>
+                )}
+
+                {/* Key Item Location Beacon (Revealed after finishing the main Capital city) */}
+                {isCapitalCleared && node.rewards && node.rewards.length > 0 && (
+                  <g transform={`translate(${x - 14}, ${y + 14})`} className="pointer-events-none select-none">
+                    <rect
+                      width="28"
+                      height="18"
+                      rx="9"
+                      fill="#1e1e2e"
+                      stroke="#e5c890"
+                      strokeWidth="1.5"
+                      filter="url(#glow-selected)"
+                    />
+                    <text
+                      x="14"
+                      y="12.5"
+                      textAnchor="middle"
+                      fontSize="11"
+                      fill="#e5c890"
+                      fontWeight="bold"
+                    >
+                      {node.rewards[0].icon}
+                    </text>
+                  </g>
+                )}
+
+                {/* Threatened Chaos Warning Icon Indicator */}
+                {isThreatened && !hasItemReward && (
+                  <text
+                    x={x + 16}
+                    y={y - 16}
+                    fontSize="14"
+                    className="animate-bounce pointer-events-none select-none"
+                  >
+                    ⚠️
                   </text>
-                </g>
-              )}
+                )}
 
-              {/* Threatened Chaos Warning Icon Indicator */}
-              {isThreatened && !hasItemReward && (
-                <text
-                  x={x + 16}
-                  y={y - 16}
-                  fontSize="14"
-                  className="animate-bounce pointer-events-none select-none"
-                >
-                  ⚠️
-                </text>
-              )}
-
-
-
-              {/* Cleared Checkmark Badge */}
-              {isCleared && (
-                <text
-                  x={x + 18}
-                  y={y - 18}
-                  fontSize="13"
-                  className="pointer-events-none select-none font-bold text-[#a6d189]"
-                >
-                  ✓
-                </text>
-              )}
-            </g>
-          )
-        })}
+                {/* Cleared Checkmark Badge */}
+                {isCleared && (
+                  <text
+                    x={x + 18}
+                    y={y - 18}
+                    fontSize="13"
+                    className="pointer-events-none select-none font-bold text-[#a6d189]"
+                  >
+                    ✓
+                  </text>
+                )}
+              </g>
+            )
+          })}
+        </g>
       </svg>
 
+      {/* Mobile-Friendly Zoom & Pan Controls Overlay */}
+      <div className="absolute top-3 right-3 z-20 flex items-center gap-1.5 bg-[#303446]/90 backdrop-blur-md p-1.5 rounded-xl border border-[#414559] shadow-lg">
+        <button
+          onClick={handleZoomIn}
+          title="Zoom In"
+          className="w-8 h-8 rounded-lg bg-[#232634] hover:bg-[#414559] active:scale-95 text-[#c6d0f5] flex items-center justify-center transition-all border border-[#51576d]"
+        >
+          <Plus size={16} />
+        </button>
+        <button
+          onClick={handleZoomOut}
+          title="Zoom Out"
+          className="w-8 h-8 rounded-lg bg-[#232634] hover:bg-[#414559] active:scale-95 text-[#c6d0f5] flex items-center justify-center transition-all border border-[#51576d]"
+        >
+          <Minus size={16} />
+        </button>
+        <button
+          onClick={handleResetPanZoom}
+          title="Reset Pan & Zoom"
+          className="px-2.5 h-8 rounded-lg bg-[#232634] hover:bg-[#414559] active:scale-95 text-[#8caaee] font-mono text-xs font-semibold flex items-center gap-1 transition-all border border-[#51576d]"
+        >
+          <RotateCcw size={13} />
+          <span>{Math.round(zoom * 100)}%</span>
+        </button>
+      </div>
+
+      {/* Map Pan Drag Hint */}
+      <div className="absolute top-3 left-3 z-20 hidden sm:flex items-center gap-1.5 bg-[#303446]/80 backdrop-blur-sm px-2.5 py-1 rounded-lg border border-[#414559] text-[11px] text-[#a5adce] pointer-events-none">
+        <Move size={12} className="text-[#8caaee]" />
+        <span>Drag canvas to pan • Pinch / Wheel to zoom</span>
+      </div>
+
       {/* Map Control Overlay Legend */}
-      <div className="absolute bottom-3 left-3 bg-[#303446]/90 backdrop-blur-md px-3 py-2 rounded-xl border border-[#414559] flex items-center gap-3 text-xs text-[#c6d0f5]">
-        <div className="flex items-center gap-1"><span className="w-2.5 h-2.5 rounded-full bg-[#8caaee]" /> Capital</div>
-        <div className="flex items-center gap-1"><span className="w-2.5 h-2.5 rounded-full bg-[#a6d189]" /> Sanctuary</div>
-        <div className="flex items-center gap-1"><span className="w-2.5 h-2.5 rounded-full bg-[#e78284]" /> Monster</div>
-        <div className="flex items-center gap-1"><span className="w-2.5 h-2.5 rounded-full bg-[#ca9ee6]" /> Reflection</div>
-        <div className="flex items-center gap-1"><span className="w-2.5 h-2.5 rounded-full bg-[#e5c890]" /> Workshop</div>
-        <div className="flex items-center gap-1"><span className="w-2.5 h-2.5 rounded-full bg-[#ea999c]" /> Boss</div>
-        <div className="flex items-center gap-1 border-l border-[#51576d] pl-3"><span className="w-2.5 h-2.5 rounded-full bg-[#51576d]" /> Locked (Grayed)</div>
+      <div className="absolute bottom-3 left-3 z-20 bg-[#303446]/90 backdrop-blur-md px-3 py-2 rounded-xl border border-[#414559] flex items-center gap-3 text-xs text-[#c6d0f5] max-w-[92vw] overflow-x-auto">
+        <div className="flex items-center gap-1 shrink-0"><span className="w-2.5 h-2.5 rounded-full bg-[#8caaee]" /> Capital</div>
+        <div className="flex items-center gap-1 shrink-0"><span className="w-2.5 h-2.5 rounded-full bg-[#a6d189]" /> Sanctuary</div>
+        <div className="flex items-center gap-1 shrink-0"><span className="w-2.5 h-2.5 rounded-full bg-[#e78284]" /> Monster</div>
+        <div className="flex items-center gap-1 shrink-0"><span className="w-2.5 h-2.5 rounded-full bg-[#ca9ee6]" /> Reflection</div>
+        <div className="flex items-center gap-1 shrink-0"><span className="w-2.5 h-2.5 rounded-full bg-[#e5c890]" /> Workshop</div>
+        <div className="flex items-center gap-1 shrink-0"><span className="w-2.5 h-2.5 rounded-full bg-[#ea999c]" /> Boss</div>
+        <div className="flex items-center gap-1 shrink-0 border-l border-[#51576d] pl-3"><span className="w-2.5 h-2.5 rounded-full bg-[#51576d]" /> Locked (Grayed)</div>
       </div>
     </div>
   )
