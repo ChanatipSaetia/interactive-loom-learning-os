@@ -1054,6 +1054,7 @@ export const GamificationDemoView: React.FC = () => {
 
                   {/* 🔑 4.2 Flow Parent Prerequisites Checklist */}
                   {(() => {
+                    if (selectedNode.type === 'boss_lair') return null
                     const autoConns = getAutoFlowConnections(nodes)
                     const parentConns = autoConns.filter((c) => c.toId === selectedNode.id)
                     if (parentConns.length === 0) return null
