@@ -67,7 +67,7 @@ export const HexGridCanvas: React.FC<HexGridCanvasProps> = ({
 
   // Zoom controls
   const handleZoomIn = () => setZoom((prev) => +(prev + 0.15).toFixed(2))
-  const handleZoomOut = () => setZoom((prev) => +(prev - 0.15).toFixed(2))
+  const handleZoomOut = () => setZoom((prev) => Math.max(0.05, +(prev - 0.15).toFixed(2)))
   const handleResetPanZoom = () => {
     setZoom(1.0)
     setPan({ x: 0, y: 0 })
@@ -83,9 +83,9 @@ export const HexGridCanvas: React.FC<HexGridCanvasProps> = ({
     const handleNativeWheel = (e: WheelEvent) => {
       e.preventDefault()
       e.stopPropagation()
-      // Directly scale wheel deltaY by a smaller factor without clamping limits
+      // Directly scale wheel deltaY by a smaller factor without max limits (clamped to not drop below 0)
       const zoomStep = -e.deltaY * 0.0015
-      setZoom((prev) => +(prev + zoomStep).toFixed(3))
+      setZoom((prev) => Math.max(0.05, +(prev + zoomStep).toFixed(3)))
     }
 
     el.addEventListener('wheel', handleNativeWheel, { passive: false })
@@ -134,7 +134,7 @@ export const HexGridCanvas: React.FC<HexGridCanvasProps> = ({
       const dy = e.touches[0].clientY - e.touches[1].clientY
       const dist = Math.hypot(dx, dy)
       const factor = dist / touchDistRef.current
-      setZoom((prev) => +(prev * factor).toFixed(3))
+      setZoom((prev) => Math.max(0.05, +(prev * factor).toFixed(3)))
       touchDistRef.current = dist
     } else if (e.touches.length === 1 && isDragging) {
       setPan({
