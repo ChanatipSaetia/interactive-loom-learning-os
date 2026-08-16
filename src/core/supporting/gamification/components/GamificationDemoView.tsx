@@ -968,16 +968,17 @@ export const GamificationDemoView: React.FC = () => {
                         {parentConns.map(({ fromId }) => {
                           const parent = nodes.find((n) => n.id === fromId)
                           const isParentCleared = parent?.status === 'cleared'
-                          const parentTitle = isParentCleared || parent?.type === 'capital' || parent?.status !== 'locked'
+                          const isParentUnlocked = parent?.status === 'unlocked'
+                          const parentTitle = isParentCleared || isParentUnlocked || parent?.type === 'capital'
                             ? (parent?.title || fromId)
                             : encryptToMagicRunes(parent?.title || fromId)
                           return (
                             <div key={fromId} className="flex items-center justify-between bg-[#1e1e2e] px-2.5 py-1.5 rounded-lg">
-                              <span className={`font-medium ${isParentCleared ? 'text-[#c6d0f5]' : 'font-mono text-[#ca9ee6] tracking-wider'}`}>
+                              <span className={`font-medium ${isParentCleared || isParentUnlocked ? 'text-[#c6d0f5]' : 'font-mono text-[#ca9ee6] tracking-wider'}`}>
                                 {parentTitle}
                               </span>
-                              <span className={isParentCleared ? 'text-[#a6d189] font-bold' : 'text-[#e78284] font-semibold'}>
-                                {isParentCleared ? '✓ Cleared' : '❌ Uncleared'}
+                              <span className={isParentCleared ? 'text-[#a6d189] font-bold' : isParentUnlocked ? 'text-[#8caaee] font-semibold' : 'text-[#e78284] font-semibold'}>
+                                {isParentCleared ? '✓ Cleared' : isParentUnlocked ? '🔓 Unlocked' : '❌ Locked'}
                               </span>
                             </div>
                           )
@@ -1016,11 +1017,17 @@ export const GamificationDemoView: React.FC = () => {
                         {parentConns.map(({ fromId }) => {
                           const parent = nodes.find((n) => n.id === fromId)
                           const isParentCleared = parent?.status === 'cleared'
+                          const isParentUnlocked = parent?.status === 'unlocked'
+                          const parentTitle = isParentCleared || isParentUnlocked || parent?.type === 'capital'
+                            ? (parent?.title || fromId)
+                            : encryptToMagicRunes(parent?.title || fromId)
                           return (
                             <div key={fromId} className="flex items-center justify-between bg-[#1e1e2e] px-2.5 py-1 rounded-lg">
-                              <span className="text-[#c6d0f5] font-medium">{parent?.title || fromId}</span>
-                              <span className={isParentCleared ? 'text-[#a6d189] font-bold' : 'text-[#e78284] font-semibold'}>
-                                {isParentCleared ? '✓ Cleared' : '❌ Uncleared'}
+                              <span className={`font-medium ${isParentCleared || isParentUnlocked ? 'text-[#c6d0f5]' : 'font-mono text-[#ca9ee6] tracking-wider'}`}>
+                                {parentTitle}
+                              </span>
+                              <span className={isParentCleared ? 'text-[#a6d189] font-bold' : isParentUnlocked ? 'text-[#8caaee] font-semibold' : 'text-[#e78284] font-semibold'}>
+                                {isParentCleared ? '✓ Cleared' : isParentUnlocked ? '🔓 Unlocked' : '❌ Locked'}
                               </span>
                             </div>
                           )
