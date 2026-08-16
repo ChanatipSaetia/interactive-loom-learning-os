@@ -50,15 +50,6 @@ if (mutableViews.EVENT_STORMING) {
     let laidOutNodes = view.nodes;
     if (viewKey === 'EVENT_STORMING') {
       laidOutNodes = layoutEventStorming(view.nodes, nodeIds, nodeSet, mutableRelations, viewKey, mutableEntities, getRole);
-      const intraGroupRelIds = buildIntraGroupRelationSet(nodeIds, nodeSet, mutableRelations, viewKey, mutableEntities, getRole, view.nodes);
-      mutableRelations.forEach((r, idx) => {
-        if (intraGroupRelIds.has(r.id)) {
-          mutableRelations[idx] = {
-            ...r,
-            views: r.views?.filter(v => v !== 'EVENT_STORMING')
-          };
-        }
-      });
     }
 
     const groups = view.groups;
@@ -203,6 +194,38 @@ if (mutableViews.EVENT_STORMING) {
       }
     };
   });
+
+  // Strip intra-group relations from EVENT_STORMING view only so they don't render in ES view,
+  // while keeping them available for other view derivations
+  if (derivedViews.EVENT_STORMING) {
+    const esNodeIds = derivedViews.EVENT_STORMING.nodes.map(n => n.id);
+    const esNodeSet = new Set(esNodeIds);
+    const getRole = (id: string): 'db' | 'handler' | 'timeline' => {
+      const entity = finalEntities[id];
+      const type = entity?.type || entity?.viewTypes?.EVENT_STORMING || 'default';
+      if (type === TYPES.DATABASE) return 'db';
+      if (type === TYPES.AGGREGATE || type === TYPES.EXTERNAL || type === TYPES.SERVICE || type === TYPES.USER) return 'handler';
+      return 'timeline';
+    };
+    const intraGroupRelIds = buildIntraGroupRelationSet(
+      esNodeIds,
+      esNodeSet,
+      newSchema.relations,
+      'EVENT_STORMING',
+      finalEntities,
+      getRole,
+      derivedViews.EVENT_STORMING.nodes
+    );
+    newSchema.relations = newSchema.relations.map(r => {
+      if (intraGroupRelIds.has(r.id)) {
+        return {
+          ...r,
+          views: r.views?.filter(v => v !== 'EVENT_STORMING')
+        };
+      }
+      return r;
+    });
+  }
 
   return {
     ...newSchema,
