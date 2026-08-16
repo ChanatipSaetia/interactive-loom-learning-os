@@ -134,7 +134,7 @@ export const HexGridCanvas: React.FC<HexGridCanvasProps> = ({
       const dy = e.touches[0].clientY - e.touches[1].clientY
       const dist = Math.hypot(dx, dy)
       const factor = dist / touchDistRef.current
-      setZoom((prev) => Math.min(2.5, Math.max(0.5, +(prev * factor).toFixed(2))))
+      setZoom((prev) => +(prev * factor).toFixed(3))
       touchDistRef.current = dist
     } else if (e.touches.length === 1 && isDragging) {
       setPan({
@@ -232,7 +232,7 @@ export const HexGridCanvas: React.FC<HexGridCanvasProps> = ({
         {/* Pan and Zoom Group Container */}
         <g
           transform={`translate(${pan.x}, ${pan.y}) scale(${zoom})`}
-          style={{ transformOrigin: '440px 290px', transition: isDragging ? 'none' : 'transform 0.1s ease-out' }}
+          style={{ transformOrigin: '440px 290px' }}
         >
           {/* Draw Hexagon Nodes */}
           {nodes.map((node) => {
