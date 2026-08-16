@@ -225,6 +225,8 @@ export interface FlowchartRelation {
   yOffset?: number;
   /** Position in the final ordered sequence array, set during single-pass BFS emission. */
   seqIndex?: number;
+  /** The step node IDs that this sequence relation represents (Command, Event, Actor, Aggregate). */
+  stepNodeIds?: string[];
 }
 
 export interface FlowchartViewNode {

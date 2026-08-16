@@ -136,7 +136,15 @@ export function Flowchart({ title, schema = INITIAL_SCHEMA, sectionIndex = 0 }: 
     // Find relations whose intermediate path includes any active node
     const relIds = new Set<string>();
     
-    if (activeViewKey === 'SYS_ARCH' || activeViewKey === 'SWIMLANES' || activeViewKey === 'SEQUENCE') {
+    if (activeViewKey === 'SEQUENCE') {
+      localSchema.relations.forEach(rel => {
+        if (rel.views?.includes('SEQUENCE')) {
+          if (rel.stepNodeIds && rel.stepNodeIds.some(nid => activeForRelations.has(nid))) {
+            relIds.add(rel.id);
+          }
+        }
+      });
+    } else if (activeViewKey === 'SYS_ARCH' || activeViewKey === 'SWIMLANES') {
       const getCanonicalId = buildCanonicalIdMapper(localSchema.entities);
       const activeCanonicalSet = new Set<string>();
       playback.activeNodeIds.forEach(id => {

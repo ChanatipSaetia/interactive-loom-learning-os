@@ -48,6 +48,7 @@ export function deriveSequence(
         label: schema.entities[r.from]?.title ?? '',
         dashed: false,
         chronologicalIndex: idx,
+        stepNodeIds: [r.from, r.to],
       });
     }
 
@@ -82,6 +83,7 @@ export function deriveSequence(
         label: eventEntity?.title ?? '',
         dashed: true,
         chronologicalIndex: idx,
+        stepNodeIds: [r.from, r.to],
       });
     }
   });
