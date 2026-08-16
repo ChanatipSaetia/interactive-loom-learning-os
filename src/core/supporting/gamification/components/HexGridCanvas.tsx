@@ -52,6 +52,11 @@ export const HexGridCanvas: React.FC<HexGridCanvasProps> = ({
     return node.coordinates || computedCoordsMap.get(node.id) || { q: 0, r: 0 }
   }
 
+  const isCapitalCleared = useMemo(
+    () => nodes.find((n) => n.type === 'capital')?.status === 'cleared',
+    [nodes]
+  )
+
   return (
     <div className="relative w-full h-[580px] bg-[#232634] rounded-2xl border border-[#414559] overflow-hidden shadow-2xl flex items-center justify-center select-none">
       {/* Background Grid Pattern */}
@@ -279,6 +284,31 @@ export const HexGridCanvas: React.FC<HexGridCanvasProps> = ({
                     fontWeight="bold"
                   >
                     {node.rewards![0].icon}
+                  </text>
+                </g>
+              )}
+
+              {/* Key Item Quest Beacon on Map (Revealed when Capital is Cleared for locked/unlocked reward nodes) */}
+              {isCapitalCleared && isLocked && node.rewards && node.rewards.length > 0 && (
+                <g transform={`translate(${x - 18}, ${y - 32})`} className="animate-bounce pointer-events-none select-none">
+                  <rect
+                    width="36"
+                    height="18"
+                    rx="9"
+                    fill="#232634"
+                    stroke="#e5c890"
+                    strokeWidth="1.5"
+                    filter="url(#glow-selected)"
+                  />
+                  <text
+                    x="18"
+                    y="12.5"
+                    textAnchor="middle"
+                    fontSize="11"
+                    fill="#e5c890"
+                    fontWeight="bold"
+                  >
+                    📍 {node.rewards[0].icon}
                   </text>
                 </g>
               )}

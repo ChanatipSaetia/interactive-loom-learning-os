@@ -1003,6 +1003,29 @@ export const GamificationDemoView: React.FC = () => {
                 <>
                   <p className="text-sm text-[#a5adce] leading-relaxed">{selectedNode.description}</p>
 
+                  {/* Capital Intelligence Intel Card: Key Item Locations Revealed */}
+                  {selectedNode.type === 'capital' && selectedNode.status === 'cleared' && (
+                    <div className="bg-[#232634] p-3.5 rounded-xl border border-[#e5c890]/50 space-y-2">
+                      <div className="flex items-center gap-2">
+                        <span className="text-xl">📍</span>
+                        <span className="text-xs font-bold text-[#e5c890]">Capital Intel: Key Item Locations Revealed</span>
+                      </div>
+                      <div className="space-y-1.5 text-xs">
+                        {nodes
+                          .filter((n) => n.rewards && n.rewards.length > 0)
+                          .map((n) => (
+                            <div key={n.id} className="flex items-center justify-between bg-[#1e1e2e] px-2.5 py-1.5 rounded-lg">
+                              <span className="text-[#c6d0f5] font-medium flex items-center gap-1.5">
+                                <span>{n.rewards![0].icon}</span>
+                                <span>{n.rewards![0].name}</span>
+                              </span>
+                              <span className="text-[#e5c890] text-[11px] font-semibold">📍 {n.title}</span>
+                            </div>
+                          ))}
+                      </div>
+                    </div>
+                  )}
+
                   {/* 🔑 4.2 Flow Parent Prerequisites Checklist */}
                   {(() => {
                     const autoConns = getAutoFlowConnections(nodes)
