@@ -56,6 +56,7 @@ const COLOR_MAP: Record<string, { fill: number; stroke: number; highlight: numbe
 
 // ─── PROCEDURAL VECTOR EMBLEMS / INSIGNIAS ───
 function drawVectorInsignia(g: Graphics, type: string, color: number, isDefeated: boolean = false) {
+  if (!g || g.destroyed) return
   g.clear()
   const c = isDefeated ? 0x949cbb : color
   const darkC = 0x181825
@@ -257,6 +258,15 @@ export const HexGridCanvas = React.forwardRef<HexGridCanvasRef, HexGridCanvasPro
   const previousNodesRef = useRef<HexNodeData[]>(nodes)
   const newlyUnlockedNodeIdsRef = useRef<Set<string>>(new Set())
   const newlyClearedNodeIdsRef = useRef<Set<string>>(new Set())
+  // Persisted per-node animation start timestamps (performance.now() * 0.001 seconds).
+  // renderPixiScene() fully rebuilds the scene graph on every call (resize, selection
+  // change, isCapitalCleared toggle, etc. all trigger it, not just the "newly
+  // unlocked/cleared" transition). Without persisting the start time here, a re-render
+  // mid-animation would restart the one-shot bomb-blast / fog-reveal FX from t=0 (or,
+  // combined with premature flag consumption, silently drop it forever). These maps let
+  // the animation resume from its real elapsed time across rebuilds instead.
+  const unlockAnimStartRef = useRef<Map<string, number>>(new Map())
+  const clearAnimStartRef = useRef<Map<string, number>>(new Map())
 
   // Keep latest refs for async Pixi render
   const latestPropsRef = useRef({
@@ -329,6 +339,7 @@ export const HexGridCanvas = React.forwardRef<HexGridCanvasRef, HexGridCanvasPro
 
     // Draw procedural animated walking human frame
     const drawHuman = (_walkProgress: number, walkCycle: number) => {
+      if (!humanGfx || humanGfx.destroyed) return
       humanGfx.clear()
 
       const legSwing = Math.sin(walkCycle) * 7
@@ -433,6 +444,7 @@ export const HexGridCanvas = React.forwardRef<HexGridCanvasRef, HexGridCanvasPro
     }
 
     const animateWalk = (currentTime: number) => {
+      if (!mapContainer || mapContainer.destroyed || humanGfx.destroyed || humanContainer.destroyed) return
       const elapsed = currentTime - startTime
       const progress = Math.min(1, elapsed / duration)
 
@@ -453,7 +465,7 @@ export const HexGridCanvas = React.forwardRef<HexGridCanvasRef, HexGridCanvasPro
         puff.circle(0, 15, 2.5).fill({ color: 0x737994, alpha: 0.6 })
         dustContainer.addChild(puff)
         setTimeout(() => {
-          if (dustContainer.children.includes(puff)) {
+          if (!dustContainer.destroyed && dustContainer.children.includes(puff)) {
             dustContainer.removeChild(puff)
             puff.destroy()
           }
@@ -471,7 +483,9 @@ export const HexGridCanvas = React.forwardRef<HexGridCanvasRef, HexGridCanvasPro
         requestAnimationFrame(animateWalk)
       } else {
         // Complete walk into the center of the hex
-        mapContainer.removeChild(humanContainer)
+        if (!mapContainer.destroyed) {
+          mapContainer.removeChild(humanContainer)
+        }
         humanContainer.destroy({ children: true })
         isTransitioningRef.current = false
         onComplete?.()
@@ -510,7 +524,10 @@ export const HexGridCanvas = React.forwardRef<HexGridCanvasRef, HexGridCanvasPro
   // Main render routine for PixiJS
   const renderPixiScene = useCallback(() => {
     const mapContainer = mapContainerRef.current
-    if (!mapContainer) return
+    if (!mapContainer || mapContainer.destroyed) return
+
+    animControllersRef.current = []
+    mapContainer.removeChildren()
 
     const {
       nodes: currentNodes,
@@ -521,9 +538,6 @@ export const HexGridCanvas = React.forwardRef<HexGridCanvasRef, HexGridCanvasPro
     const currentCoords = computeHexGridCoordinates(currentNodes)
     const currentConnections = getAutoFlowConnections(currentNodes)
     const capitalCleared = currentNodes.find((n) => n.type === 'capital')?.status === 'cleared'
-
-    mapContainer.removeChildren()
-    animControllersRef.current = []
 
     // ─── 1. RENDER CURVED DEPENDENCY ARCS FOR SELECTED NODE (TARGET) ───
     if (currentSelected && currentSelected.type !== 'boss_lair') {
@@ -684,7 +698,13 @@ export const HexGridCanvas = React.forwardRef<HexGridCanvasRef, HexGridCanvasPro
       // ─── 4B. NEWLY CLEARED ENCOUNTER BOMB DETONATION ANIMATION ───
       const isNewlyClearedEncounter = newlyClearedNodeIdsRef.current.has(node.id) && (node.type === 'quiz_encounter' || node.type === 'reflection_decryption')
       if (isNewlyClearedEncounter) {
-        newlyClearedNodeIdsRef.current.delete(node.id)
+        // NOTE: do NOT delete the flag here. renderPixiScene() can be re-invoked mid-animation
+        // (resize, selection change, isCapitalCleared toggle, etc.), which rebuilds the entire
+        // scene graph from scratch. If we consumed the flag at build-time, an intervening
+        // rebuild would silently drop the animation forever (flag gone, container destroyed).
+        // Instead the flag — and this node's start timestamp — persist until the animation
+        // reports itself complete (progress >= 1) below, so a mid-flight rebuild simply
+        // recreates the FX resuming from its real elapsed time instead of losing it.
 
         const bombAnimContainer = new Container()
         nodeContainer.addChild(bombAnimContainer)
@@ -708,7 +728,11 @@ export const HexGridCanvas = React.forwardRef<HexGridCanvasRef, HexGridCanvasPro
           return { gfx: pGfx, angle, speed }
         })
 
-        const bombStartTime = performance.now() * 0.001
+        let bombStartTime = clearAnimStartRef.current.get(node.id)
+        if (bombStartTime === undefined) {
+          bombStartTime = performance.now() * 0.001
+          clearAnimStartRef.current.set(node.id, bombStartTime)
+        }
         const bombDuration = 1.1 // 1.1s blast animation
 
         animControllersRef.current.push((t) => {
@@ -737,6 +761,9 @@ export const HexGridCanvas = React.forwardRef<HexGridCanvasRef, HexGridCanvasPro
             })
           } else {
             bombAnimContainer.visible = false
+            // Animation naturally finished — now it's safe to consume the one-shot trigger.
+            newlyClearedNodeIdsRef.current.delete(node.id)
+            clearAnimStartRef.current.delete(node.id)
           }
         })
       }
@@ -1129,11 +1156,12 @@ export const HexGridCanvas = React.forwardRef<HexGridCanvasRef, HexGridCanvasPro
       // 7. LOCKED (Fog of War) OR NEWLY UNLOCKED REVEAL ANIMATION (Clouds parting left & right with glow)
       const isNewlyUnlocked = newlyUnlockedNodeIdsRef.current.has(node.id)
       if (isNewlyUnlocked) {
-        // Consume the one-shot unlock trigger immediately so selecting nodes won't re-trigger it
-        newlyUnlockedNodeIdsRef.current.delete(node.id)
-      }
-
-      if (isNewlyUnlocked) {
+        // NOTE: do NOT delete the flag here (see matching note on the bomb-detonation
+        // animation above). renderPixiScene() can be re-invoked mid-animation by unrelated
+        // triggers (resize, selection change, isCapitalCleared toggle), rebuilding the whole
+        // scene graph. Consuming the flag at build-time meant any such rebuild permanently
+        // dropped the reveal FX before it ever got to play. The flag + start timestamp now
+        // persist until the animation reports itself complete below.
         // Parting Fog Clouds (Left & Right dispersal) + Radiant Golden-Sapphire Unlock Glow
         const revealContainer = new Container()
         nodeContainer.addChild(revealContainer)
@@ -1195,7 +1223,11 @@ export const HexGridCanvas = React.forwardRef<HexGridCanvasRef, HexGridCanvasPro
           return { gfx: g, puff }
         })
 
-        const revealStartTime = performance.now() * 0.001
+        let revealStartTime = unlockAnimStartRef.current.get(node.id)
+        if (revealStartTime === undefined) {
+          revealStartTime = performance.now() * 0.001
+          unlockAnimStartRef.current.set(node.id, revealStartTime)
+        }
         const revealDuration = 1.3 // 1.3s elegant reveal animation
 
         animControllersRef.current.push((t) => {
@@ -1276,6 +1308,9 @@ export const HexGridCanvas = React.forwardRef<HexGridCanvasRef, HexGridCanvasPro
             })
           } else {
             revealContainer.visible = false
+            // Animation naturally finished — now it's safe to consume the one-shot trigger.
+            newlyUnlockedNodeIdsRef.current.delete(node.id)
+            unlockAnimStartRef.current.delete(node.id)
           }
         })
       } else if (isLocked && !isBoss) {
@@ -1385,7 +1420,15 @@ export const HexGridCanvas = React.forwardRef<HexGridCanvasRef, HexGridCanvasPro
   const renderRef = useRef(renderPixiScene)
   renderRef.current = renderPixiScene
 
-  // Detect newly unlocked nodes and newly cleared encounters when nodes prop updates
+  // Detect newly unlocked nodes and newly cleared encounters when nodes prop updates,
+  // then re-render the PixiJS scene exactly once.
+  //
+  // NOTE: this used to be split into two separate effects that both watched `nodes`
+  // (this one, plus the "re-render on data/selection change" effect below). Since the
+  // bomb-blast / fog-reveal animation flags are consumed (deleted) the moment a node is
+  // drawn, having a SECOND effect immediately re-render right after this one wiped out
+  // the animation containers before a single frame was ever painted — the node's status
+  // (checkmark/color) would update correctly, but the celebratory animation never showed.
   useEffect(() => {
     const prevMap = new Map(previousNodesRef.current.map((n) => [n.id, n.status]))
     const newUnlockIds = new Set<string>()
@@ -1401,22 +1444,41 @@ export const HexGridCanvas = React.forwardRef<HexGridCanvasRef, HexGridCanvasPro
       }
     })
 
-    if (newUnlockIds.size > 0 || newClearedIds.size > 0) {
-      newlyUnlockedNodeIdsRef.current = newUnlockIds
-      newlyClearedNodeIdsRef.current = newClearedIds
-      // Re-render scene immediately to start the bomb blast and parting clouds & radiant glow animation
+    const hasNewAnimations = newUnlockIds.size > 0 || newClearedIds.size > 0
+    if (hasNewAnimations) {
+      // Merge into (not replace) the existing sets: a still in-flight animation from an
+      // earlier change (e.g. one node clears while another node's unlock-reveal from a
+      // moment ago hasn't finished its 1.3s yet) must not be clobbered by this new batch.
+      newUnlockIds.forEach((id) => newlyUnlockedNodeIdsRef.current.add(id))
+      newClearedIds.forEach((id) => newlyClearedNodeIdsRef.current.add(id))
+    }
+    previousNodesRef.current = nodes
+
+    // Single render pass per change — this (re)builds containers for any pending
+    // newly-unlocked/newly-cleared ids, resuming in-flight ones via the persisted
+    // unlockAnimStartRef / clearAnimStartRef start timestamps rather than restarting them.
+    if (mapContainerRef.current) {
       renderRef.current()
-      // Clear animation flags after 2.5 seconds
-      const timer = setTimeout(() => {
-        newlyUnlockedNodeIdsRef.current.clear()
-        newlyClearedNodeIdsRef.current.clear()
-      }, 2500)
-      previousNodesRef.current = nodes
-      return () => clearTimeout(timer)
     }
 
-    previousNodesRef.current = nodes
-  }, [nodes])
+    if (hasNewAnimations) {
+      // Safety-net: if one of THIS batch's ids never got consumed by a render pass (e.g.
+      // it isn't currently in the visible node list, so its per-node render block never
+      // ran), drop only those specific ids/timestamps rather than wiping the whole set —
+      // other nodes' animations may still be legitimately in-flight.
+      const timer = setTimeout(() => {
+        newUnlockIds.forEach((id) => {
+          newlyUnlockedNodeIdsRef.current.delete(id)
+          unlockAnimStartRef.current.delete(id)
+        })
+        newClearedIds.forEach((id) => {
+          newlyClearedNodeIdsRef.current.delete(id)
+          clearAnimStartRef.current.delete(id)
+        })
+      }, 2500)
+      return () => clearTimeout(timer)
+    }
+  }, [nodes, selectedNodeId, isCapitalCleared])
 
   // PixiJS canvas initialization & render hook
   const handleInitPixi = useCallback((app: Application, rootContainer: Container) => {
@@ -1428,8 +1490,15 @@ export const HexGridCanvas = React.forwardRef<HexGridCanvasRef, HexGridCanvasPro
 
     // Add 60fps ticker callback
     const tickerCallback = () => {
+      if (!app || !app.renderer || !mapContainer || mapContainer.destroyed) return
       const now = performance.now() * 0.001
-      animControllersRef.current.forEach((fn) => fn(now))
+      animControllersRef.current.forEach((fn) => {
+        try {
+          fn(now)
+        } catch {
+          // ignore destroyed graphics during scene transition
+        }
+      })
     }
     app.ticker.add(tickerCallback)
 
@@ -1446,13 +1515,6 @@ export const HexGridCanvas = React.forwardRef<HexGridCanvasRef, HexGridCanvasPro
     updateMapTransform()
     renderRef.current()
   }, [updateMapTransform])
-
-  // Re-render PixiJS scene when data or selection changes
-  useEffect(() => {
-    if (mapContainerRef.current) {
-      renderRef.current()
-    }
-  }, [nodes, selectedNodeId, isCapitalCleared])
 
   // Zoom controls
   const handleZoomIn = () => setZoom((prev) => Math.min(2.0, +(prev + 0.15).toFixed(2)))
@@ -1540,7 +1602,7 @@ export const HexGridCanvas = React.forwardRef<HexGridCanvasRef, HexGridCanvasPro
       data-lenis-prevent
       data-lenis-prevent-wheel
       data-lenis-prevent-touch
-      className={`relative w-full h-[580px] bg-[#232634] rounded-2xl border border-[#414559] overflow-hidden shadow-2xl flex items-center justify-center select-none ${
+      className={`relative w-full aspect-[16/10] min-h-[320px] max-h-[70vh] bg-[#232634] rounded-2xl border border-[#414559] overflow-hidden shadow-2xl flex items-center justify-center select-none ${
         isDragging ? 'cursor-grabbing' : 'cursor-grab'
       }`}
       style={{ touchAction: 'none', overscrollBehavior: 'contain' }}

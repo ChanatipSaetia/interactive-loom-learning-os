@@ -115,6 +115,9 @@ export const RunicCountdownRing: React.FC<RunicCountdownRingProps> = ({
     stageContainer.addChild(sparksGfx)
 
     const tickerCallback = () => {
+      if (!app || !app.renderer || !stageContainer || stageContainer.destroyed) return
+      if (bgGfx.destroyed || altarGfx.destroyed || magicRingsGfx.destroyed || runeSlotsGfx.destroyed || sparksGfx.destroyed) return
+
       const t = performance.now() * 0.001
       const width = app.screen.width || 800
       const height = app.screen.height || 144
@@ -341,7 +344,7 @@ export const RunicCountdownRing: React.FC<RunicCountdownRingProps> = ({
       </div>
 
       {/* PixiJS Canvas Viewport for Spinning Magic Rings & Left-to-Right Arcane Decryption */}
-      <div className="relative w-full h-36 min-h-[140px] bg-[#181825] rounded-xl border border-[#414559] overflow-hidden shadow-inner">
+      <div className="relative w-full aspect-[11/2] min-h-[120px] max-h-44 bg-[#181825] rounded-xl border border-[#414559] overflow-hidden shadow-inner">
         <PixiCanvasViewport
           className="absolute inset-0 w-full h-full"
           backgroundColor={0x181825}

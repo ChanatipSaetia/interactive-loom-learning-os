@@ -14,11 +14,10 @@ export interface PixiCanvasViewportProps {
 
 /**
  * Reusable React Component for PixiJS canvas viewports.
- * Encapsulates the complete PixiJS lifecycle cleanly in React:
  * 1. Async Application.init() with zero-dimension fallback protection.
- * 2. Absolute positioning and DOM attachment.
- * 3. Robust ResizeObserver for automatic resize handling across tab swaps, drawer opens, and layout changes.
- * 4. Safe teardown and WebGL context destruction.
+ * 2. DOM attachment via containerRef.
+ * 3. ResizeObserver for automatic resize handling.
+ * 4. Teardown via Application.destroy() on unmount.
  */
 export const PixiCanvasViewport: React.FC<PixiCanvasViewportProps> = ({
   className = 'relative w-full h-full overflow-hidden',
@@ -30,82 +29,67 @@ export const PixiCanvasViewport: React.FC<PixiCanvasViewportProps> = ({
   onInit,
   onResize,
 }) => {
-  const containerRef = useRef<HTMLDivElement>(null)
-  const appRef = useRef<Application | null>(null)
-  const onInitRef = useRef(onInit)
-  const onResizeRef = useRef(onResize)
-
-  onInitRef.current = onInit
-  onResizeRef.current = onResize
+  const containerRef = useRef<HTMLDivElement | null>(null)
 
   useEffect(() => {
-    const domElement = containerRef.current
-    if (!domElement) return
-
-    let isDestroyed = false
-    const app = new Application()
+    let app: Application | null = null
     let resizeObserver: ResizeObserver | null = null
     let customCleanup: (() => void) | void = undefined
+    let isMounted = true
 
-    const init = async () => {
-      try {
-        const initialW = domElement.clientWidth || defaultWidth
-        const initialH = domElement.clientHeight || defaultHeight
+    const initPixi = async () => {
+      if (!containerRef.current) return
 
-        await app.init({
-          width: initialW,
-          height: initialH,
-          backgroundColor,
-          backgroundAlpha,
-          antialias: true,
-          resolution: (typeof window !== 'undefined' && window.devicePixelRatio) || 1,
-          autoDensity: true,
-        })
+      const { clientWidth, clientHeight } = containerRef.current
 
-        if (isDestroyed || !domElement) {
-          app.destroy(true, { children: true })
-          return
-        }
+      const pixiApp = new Application()
+      await pixiApp.init({
+        width: clientWidth || defaultWidth,
+        height: clientHeight || defaultHeight,
+        backgroundColor,
+        backgroundAlpha,
+        antialias: true,
+        autoDensity: true,
+        resolution: (typeof window !== 'undefined' && window.devicePixelRatio) || 1,
+      })
 
-        const canvas = app.canvas as HTMLCanvasElement
-        canvas.style.position = 'absolute'
-        canvas.style.inset = '0'
-        canvas.style.width = '100%'
-        canvas.style.height = '100%'
-        canvas.style.display = 'block'
-        canvas.style.userSelect = 'none'
-
-        domElement.appendChild(canvas)
-        appRef.current = app
-
-        const rootContainer = new Container()
-        app.stage.addChild(rootContainer)
-
-        // Run component-specific scene initialization & ticker setup
-        customCleanup = onInitRef.current(app, rootContainer)
-
-        // Observe container resizing (modal transitions, drawer toggles, window resizes)
-        resizeObserver = new ResizeObserver((entries) => {
-          for (const entry of entries) {
-            const { width, height } = entry.contentRect
-            if (width > 0 && height > 0 && appRef.current) {
-              appRef.current.renderer.resize(width, height)
-              if (onResizeRef.current) {
-                onResizeRef.current(width, height, appRef.current)
-              }
-            }
-          }
-        })
-        resizeObserver.observe(domElement)
-      } catch (err) {
-        console.warn('PixiCanvasViewport initialization error:', err)
+      if (!isMounted || !containerRef.current) {
+        // NOTE: rendererDestroyOptions must NOT be the literal `true` — that triggers
+        // PixiJS's GlobalResourceRegistry.release(), which wipes shared/global resource
+        // pools (Batcher's batch pool, CanvasPool, TexturePool) used by EVERY PixiJS
+        // Application on the page, corrupting any other still-alive canvas (e.g. the
+        // HexGridCanvas map rendering underneath this encounter's canvas).
+        pixiApp.destroy({ removeView: true }, { children: true, texture: true })
+        return
       }
+
+      app = pixiApp
+      containerRef.current.appendChild(pixiApp.canvas)
+
+      const rootContainer = new Container()
+      app.stage.addChild(rootContainer)
+
+      // Run component-specific scene initialization & ticker setup
+      customCleanup = onInit(pixiApp, rootContainer)
+
+      // Track size changes of the parent container directly
+      resizeObserver = new ResizeObserver((entries) => {
+        for (const entry of entries) {
+          const { width, height } = entry.contentRect
+          if (width > 0 && height > 0 && app?.renderer) {
+            app.renderer.resize(width, height)
+            onResize?.(width, height, app)
+          }
+        }
+      })
+
+      resizeObserver.observe(containerRef.current)
     }
 
-    init()
+    initPixi()
 
     return () => {
-      isDestroyed = true
+      isMounted = false
       if (resizeObserver) {
         resizeObserver.disconnect()
       }
@@ -116,16 +100,18 @@ export const PixiCanvasViewport: React.FC<PixiCanvasViewportProps> = ({
           // ignore
         }
       }
-      if (appRef.current) {
-        try {
-          appRef.current.destroy(true, { children: true })
-        } catch {
-          // ignore
-        }
-        appRef.current = null
+      if (app) {
+        // See note above: never pass the literal `true` as the first argument here.
+        app.destroy({ removeView: true }, { children: true, texture: true, context: true })
       }
     }
-  }, [backgroundColor, backgroundAlpha, defaultWidth, defaultHeight])
+  }, [backgroundColor, backgroundAlpha, defaultWidth, defaultHeight, onInit, onResize])
 
-  return <div ref={containerRef} className={className} style={style} />
+  return (
+    <div
+      ref={containerRef}
+      className={className}
+      style={style}
+    />
+  )
 }

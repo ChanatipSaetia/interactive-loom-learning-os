@@ -100,6 +100,9 @@ export const CombatStageHeader: React.FC<CombatStageHeaderProps> = ({
 
     // Combat Animation Ticker
     const tickerCallback = () => {
+      if (!app || !app.renderer || !stageContainer || stageContainer.destroyed) return
+      if (groundGfx.destroyed || bgGfx.destroyed || warriorGfx.destroyed || monsterGfx.destroyed) return
+
       const t = performance.now() * 0.001
       const width = app.screen.width || 800
       const height = app.screen.height || 144
@@ -298,7 +301,7 @@ export const CombatStageHeader: React.FC<CombatStageHeaderProps> = ({
   return (
     <div className="flex flex-col gap-2.5">
       {/* PixiJS Tactical Duel Arena Canvas Viewport */}
-      <div className="relative w-full h-36 bg-[#181825] rounded-2xl border border-[#414559] overflow-hidden shadow-inner">
+      <div className="relative w-full aspect-[11/2] min-h-[110px] max-h-44 bg-[#181825] rounded-2xl border border-[#414559] overflow-hidden shadow-inner">
         {/* Reusable React Pixi Canvas Viewport */}
         <PixiCanvasViewport
           className="absolute inset-0 w-full h-full"
