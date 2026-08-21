@@ -330,52 +330,58 @@ export const GamificationCampaignView: React.FC = () => {
     return (
       <div className="min-h-screen bg-[#1e1e2e] text-[#c6d0f5] p-6 lg:p-10 flex flex-col gap-8 font-sans max-w-7xl mx-auto">
         {/* ─── Global Character Profile Hero Banner ─── */}
-        <header className="bg-gradient-to-r from-[#292c3c] via-[#303446] to-[#292c3c] border border-[#414559] rounded-3xl p-5 sm:p-6 lg:p-8 shadow-2xl flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-6">
-            <div className="flex items-center gap-4 sm:gap-5">
-            <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-3xl bg-gradient-to-br from-[#8caaee] via-[#ca9ee6] to-[#f4b8e4] flex items-center justify-center text-3xl sm:text-4xl shadow-xl border border-[#8caaee]/50 shrink-0">
-              🧙‍♂️
-            </div>
-            <div className="min-w-0 flex-1">
-              <div className="flex items-center gap-2 sm:gap-3 flex-wrap">
-                <h1 className="text-xl sm:text-2xl lg:text-3xl font-extrabold text-[#b5bfe2] tracking-tight truncate">
-                  Architecture Champion
-                </h1>
-                <div className="flex items-center gap-1.5">
-                  <Badge variant="secondary" className="bg-[#8caaee]/20 text-[#8caaee] border-[#8caaee]/40 text-xs sm:text-sm px-2.5 py-0.5 sm:px-3 sm:py-1 font-bold">
-                    Lvl {globalChar.level}
-                  </Badge>
-                  {/* Level Up Button / Quick XP Test Trigger */}
-                  <Button
-                    size="sm"
-                    variant="ghost"
-                    className="border border-[#8caaee]/40 hover:bg-[#8caaee]/20 text-[#8caaee] text-[10px] sm:text-xs h-6 sm:h-7 px-2"
-                    onClick={() => portAwardExp(globalChar.nextLevelExp - globalChar.exp)}
-                    title="Level up Champion (+1 Level, +1 Stat Point)"
-                  >
-                    + Level Up
-                  </Button>
-                </div>
+        <header className="bg-gradient-to-r from-[#292c3c] via-[#303446] to-[#292c3c] border border-[#414559] rounded-3xl p-5 sm:p-6 lg:p-7 shadow-2xl flex flex-col gap-5">
+          {/* Row 1: Champion Identity, Level, and EXP Progress */}
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+            <div className="flex items-center gap-4 sm:gap-5 min-w-0">
+              <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl bg-gradient-to-br from-[#8caaee] via-[#ca9ee6] to-[#f4b8e4] flex items-center justify-center text-2xl sm:text-3xl shadow-xl border border-[#8caaee]/50 shrink-0">
+                🧙‍♂️
               </div>
-              <p className="text-xs sm:text-sm text-[#a5adce] mt-1 line-clamp-1 sm:line-clamp-none">
-                Persistent Cross-Campaign Learning Avatar · Level up and forge stats!
-              </p>
-              {/* EXP Bar */}
-              <div className="w-full max-w-xs sm:w-64 lg:w-80 bg-[#232634] h-2.5 sm:h-3 rounded-full overflow-hidden mt-2.5 sm:mt-3 border border-[#414559]">
+              <div className="min-w-0 flex-1">
+                <div className="flex items-center gap-2 sm:gap-3 flex-wrap">
+                  <h1 className="text-lg sm:text-2xl font-extrabold text-[#b5bfe2] tracking-tight truncate">
+                    Architecture Champion
+                  </h1>
+                  <div className="flex items-center gap-1.5">
+                    <Badge variant="secondary" className="bg-[#8caaee]/20 text-[#8caaee] border-[#8caaee]/40 text-xs px-2.5 py-0.5 font-bold">
+                      Lvl {globalChar.level}
+                    </Badge>
+                    <Button
+                      size="sm"
+                      variant="ghost"
+                      className="border border-[#8caaee]/40 hover:bg-[#8caaee]/20 text-[#8caaee] text-[10px] sm:text-xs h-6 px-2"
+                      onClick={() => portAwardExp(globalChar.nextLevelExp - globalChar.exp)}
+                      title="Level up Champion (+1 Level, +1 Stat Point)"
+                    >
+                      + Level Up
+                    </Button>
+                  </div>
+                </div>
+                <p className="text-xs sm:text-sm text-[#a5adce] mt-0.5 line-clamp-1">
+                  Persistent Cross-Campaign Learning Avatar · Level up and forge stats!
+                </p>
+              </div>
+            </div>
+
+            {/* EXP Progress Box */}
+            <div className="w-full sm:w-64 lg:w-72 bg-[#232634]/70 border border-[#414559]/50 rounded-xl p-2.5 space-y-1 shrink-0">
+              <div className="flex items-center justify-between text-[11px] font-mono text-[#a5adce]">
+                <span>EXP Progress</span>
+                <span className="text-[#a6d189] font-bold">{globalChar.exp} / {globalChar.nextLevelExp}</span>
+              </div>
+              <div className="w-full bg-[#181825] h-2 rounded-full overflow-hidden border border-[#414559]/40">
                 <div
                   className="bg-gradient-to-r from-[#8caaee] to-[#a6d189] h-full transition-all duration-500"
                   style={{ width: `${(globalChar.exp / globalChar.nextLevelExp) * 100}%` }}
                 />
               </div>
-              <span className="text-[11px] sm:text-xs font-mono text-[#a5adce] mt-1 sm:mt-1.5 block">
-                {globalChar.exp} / {globalChar.nextLevelExp} EXP to Level {globalChar.level + 1}
-              </span>
             </div>
           </div>
 
-          {/* Stats & Badges Bar (Responsive Grid on Mobile) */}
-          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:gap-6 bg-[#232634]/90 p-4 sm:px-6 sm:py-4 rounded-2xl border border-[#414559] shadow-inner">
-            <div className="grid grid-cols-3 gap-2 sm:flex sm:items-center sm:gap-6">
-              <div className="flex flex-col sm:flex-row items-center sm:items-center gap-1.5 sm:gap-2.5 text-center sm:text-left bg-[#1e1e2e]/50 sm:bg-transparent p-2 sm:p-0 rounded-xl">
+          {/* Row 2: Character Attributes & Badges Navigation Bar */}
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 sm:gap-6 bg-[#232634]/90 p-3 sm:px-6 sm:py-3.5 rounded-2xl border border-[#414559] shadow-inner">
+            <div className="grid grid-cols-3 gap-2 sm:flex sm:items-center sm:gap-8 flex-1">
+              <div className="flex flex-col sm:flex-row items-center gap-1.5 sm:gap-2.5 text-center sm:text-left bg-[#1e1e2e]/50 sm:bg-transparent p-2 sm:p-0 rounded-xl">
                 <span className="text-xl sm:text-2xl">🛡️</span>
                 <div>
                   <span className="text-[10px] sm:text-xs text-[#a5adce] font-semibold block">Armor</span>
@@ -388,9 +394,9 @@ export const GamificationCampaignView: React.FC = () => {
                 )}
               </div>
 
-              <div className="hidden sm:block w-px h-10 bg-[#414559]" />
+              <div className="hidden sm:block w-px h-8 bg-[#414559]" />
 
-              <div className="flex flex-col sm:flex-row items-center sm:items-center gap-1.5 sm:gap-2.5 text-center sm:text-left bg-[#1e1e2e]/50 sm:bg-transparent p-2 sm:p-0 rounded-xl">
+              <div className="flex flex-col sm:flex-row items-center gap-1.5 sm:gap-2.5 text-center sm:text-left bg-[#1e1e2e]/50 sm:bg-transparent p-2 sm:p-0 rounded-xl">
                 <span className="text-xl sm:text-2xl">⚡</span>
                 <div>
                   <span className="text-[10px] sm:text-xs text-[#a5adce] font-semibold block">Evasion</span>
@@ -403,9 +409,9 @@ export const GamificationCampaignView: React.FC = () => {
                 )}
               </div>
 
-              <div className="hidden sm:block w-px h-10 bg-[#414559]" />
+              <div className="hidden sm:block w-px h-8 bg-[#414559]" />
 
-              <div className="flex flex-col sm:flex-row items-center sm:items-center gap-1.5 sm:gap-2.5 text-center sm:text-left bg-[#1e1e2e]/50 sm:bg-transparent p-2 sm:p-0 rounded-xl">
+              <div className="flex flex-col sm:flex-row items-center gap-1.5 sm:gap-2.5 text-center sm:text-left bg-[#1e1e2e]/50 sm:bg-transparent p-2 sm:p-0 rounded-xl">
                 <span className="text-xl sm:text-2xl">💡</span>
                 <div>
                   <span className="text-[10px] sm:text-xs text-[#a5adce] font-semibold block">Intel</span>
@@ -419,7 +425,7 @@ export const GamificationCampaignView: React.FC = () => {
               </div>
             </div>
 
-            <div className="flex flex-row items-center justify-between sm:justify-end gap-2 pt-2.5 sm:pt-0 border-t border-[#414559]/50 sm:border-0 w-full sm:w-auto">
+            <div className="flex flex-row items-center justify-between sm:justify-end gap-2.5 pt-2 sm:pt-0 border-t border-[#414559]/50 sm:border-0 shrink-0">
               {globalChar.unallocatedPoints > 0 && (
                 <Badge
                   variant="success"
@@ -433,9 +439,7 @@ export const GamificationCampaignView: React.FC = () => {
               <Button
                 variant="ghost"
                 onClick={() => setActiveBadgesModal(true)}
-                className={`border border-[#414559] hover:bg-[#414559]/50 text-xs py-1.5 px-3 h-auto shrink-0 flex items-center justify-center ${
-                  globalChar.unallocatedPoints > 0 ? 'flex-1 sm:flex-initial' : 'w-full sm:w-auto'
-                }`}
+                className="border border-[#414559] hover:bg-[#414559]/50 text-xs py-1.5 px-3 h-auto shrink-0 flex items-center justify-center"
               >
                 <Award size={14} className="mr-1.5 text-[#e5c890] shrink-0" />
                 <span>Badges ({globalChar.unlockedBadges.length})</span>
