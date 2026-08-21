@@ -1181,12 +1181,41 @@ export const GamificationCampaignView: React.FC = () => {
                       onEvent={(event: any) => {
                         if (event.type === 'QuizOptionSelected') {
                           handleQuizAnswerCombat(event.isCorrect)
-                          setCombatLog((prev) => [
-                            event.isCorrect
-                              ? `⚔️ Attack Hit! Struck ${activeSectionModal.monster?.name || 'Monster'} with accurate answer!`
-                              : `💔 Attack Missed! Monster retaliated against incorrect answer!`,
-                            ...prev,
-                          ])
+                          if (event.isCorrect) {
+                            pushActionMessage(
+                              `Attack Hit! Struck ${activeSectionModal.monster?.name || 'Monster'} with accurate answer!`,
+                              'exp',
+                              '⚔️'
+                            )
+                          } else {
+                            pushActionMessage(
+                              `Attack Missed! Monster retaliated against incorrect answer!`,
+                              'danger',
+                              '💔'
+                            )
+                          }
+                        }
+                        if (event.type === 'ReflectionAnswered') {
+                          if (event.isCorrect) {
+                            pushActionMessage(
+                              `Runic Rune Decrypted! Correct domain pattern decoded!`,
+                              'success',
+                              '🔮'
+                            )
+                          } else {
+                            pushActionMessage(
+                              `Runic Decryption Failed! Invalid pattern entered!`,
+                              'danger',
+                              '⚠️'
+                            )
+                          }
+                        }
+                        if (event.type === 'ReflectionCompleted') {
+                          pushActionMessage(
+                            `Runic Cipher Solved! Decryption sequence complete!`,
+                            'exp',
+                            '✨'
+                          )
                         }
                       }}
                       onResultChange={(result: any) => {
@@ -1210,6 +1239,13 @@ export const GamificationCampaignView: React.FC = () => {
                               setQuizFailed(true)
                               handleFailSection(activeSectionModal)
                             }
+                          }
+                        }
+                        if (activeSectionModal.type === 'reflection_decryption') {
+                          if (result.status === 'completed') {
+                            handlePassSection(activeSectionModal)
+                          } else if (result.status === 'failed') {
+                            handleFailSection(activeSectionModal)
                           }
                         }
                       }}
