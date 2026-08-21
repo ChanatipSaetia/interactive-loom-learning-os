@@ -44,6 +44,56 @@ function getHexVertices(cx: number, cy: number, radius: number): number[] {
   return points
 }
 
+// ─── PROCEDURAL VECTOR MAGIC RUNE PARTICLES ───
+function drawMagicRuneParticle(g: Graphics, typeIndex: number, color: number, glowColor: number) {
+  if (!g || g.destroyed) return
+  g.clear()
+  // Subtle glowing halo
+  g.circle(0, 0, 4.5).fill({ color: glowColor, alpha: 0.3 })
+
+  switch (typeIndex % 6) {
+    case 0: {
+      // ᛉ Algiz - Arcane Tree Glyph
+      g.moveTo(0, -4).lineTo(0, 4).stroke({ width: 1.4, color: 0xffffff, cap: 'round' })
+      g.moveTo(-3, -3).lineTo(0, -0.5).lineTo(3, -3).stroke({ width: 1.3, color, cap: 'round' })
+      break
+    }
+    case 1: {
+      // ᛟ Diamond Mana Crystal / Othala
+      g.poly([0, -4.5, 3.2, 0, 0, 4.5, -3.2, 0]).fill({ color: glowColor, alpha: 0.65 }).stroke({ width: 1.2, color: 0xffffff })
+      g.circle(0, 0, 1.2).fill({ color: 0xffffff, alpha: 1.0 })
+      break
+    }
+    case 2: {
+      // ᚲ Kenaz - Arcane Beacon Torch Angle
+      g.moveTo(-2.5, -3.5).lineTo(2.2, 0).lineTo(-2.5, 3.5).stroke({ width: 1.4, color: 0xffffff, cap: 'round' })
+      g.circle(2.2, 0, 1.2).fill({ color, alpha: 0.95 })
+      break
+    }
+    case 3: {
+      // ᚠ Fehu - Wisdom Staff with Twin Ascending Wings
+      g.moveTo(-1.5, -4).lineTo(-1.5, 4).stroke({ width: 1.4, color: 0xffffff, cap: 'round' })
+      g.moveTo(-1.5, -2.5).lineTo(2.5, -4).stroke({ width: 1.3, color, cap: 'round' })
+      g.moveTo(-1.5, 0.5).lineTo(2.5, -1).stroke({ width: 1.3, color, cap: 'round' })
+      break
+    }
+    case 4: {
+      // ᛞ Dagaz / Hourglass Matrix Glyph
+      g.moveTo(-2.8, -3.2).lineTo(2.8, 3.2).stroke({ width: 1.3, color, cap: 'round' })
+      g.moveTo(2.8, -3.2).lineTo(-2.8, 3.2).stroke({ width: 1.3, color, cap: 'round' })
+      g.moveTo(-2.8, -3.2).lineTo(-2.8, 3.2).stroke({ width: 1.1, color: 0xffffff, cap: 'round' })
+      g.moveTo(2.8, -3.2).lineTo(2.8, 3.2).stroke({ width: 1.1, color: 0xffffff, cap: 'round' })
+      break
+    }
+    case 5: {
+      // Arcane Concentric Glyphic Orb / Mana Sphere
+      g.circle(0, 0, 3).stroke({ width: 1.2, color: 0xffffff }).fill({ color: glowColor, alpha: 0.7 })
+      g.circle(0, 0, 1.2).fill({ color: 0xffffff, alpha: 1.0 })
+      break
+    }
+  }
+}
+
 import { useGamificationTheme, GamificationThemePalette, getGamificationThemePalette } from '../theme-palette'
 
 // ─── PROCEDURAL VECTOR EMBLEMS / INSIGNIAS ───
@@ -819,8 +869,8 @@ export const HexGridCanvas = React.forwardRef<HexGridCanvasRef, HexGridCanvasPro
       const atkUx = atkDx / atkLen
       const atkUy = atkDy / atkLen
 
-      // 3. ENCOUNTER NODES (QUIZ & REFLECTION): Strike Lunge with Smooth Fireball Blast Shot at Peak Distance
-      if ((node.type === 'quiz_encounter' || node.type === 'reflection_decryption') && !isLocked && isSelected) {
+      // 3. QUIZ ENCOUNTER: Strike Lunge with Smooth Fireball Blast Shot at Peak Distance
+      if (node.type === 'quiz_encounter' && !isLocked && isSelected) {
         if (isCleared) {
           animControllersRef.current.push((t) => {
             innerGfx.alpha = 0.35 + 0.25 * Math.sin(t * 2)
@@ -892,6 +942,82 @@ export const HexGridCanvas = React.forwardRef<HexGridCanvasRef, HexGridCanvasPro
             }
           })
         }
+      }
+
+      // 4. REFLECTION DECRYPTION: Cryptographic Cipher Matrix / Arcane Glyph Orbit & Rotating Runic Matrix
+      if (node.type === 'reflection_decryption' && !isLocked && isSelected) {
+        const cipherContainer = new Container()
+        const matrixRingGfx = new Graphics()
+        const pulseWaveGfx = new Graphics()
+        cipherContainer.addChild(pulseWaveGfx)
+        cipherContainer.addChild(matrixRingGfx)
+        nodeContainer.addChild(cipherContainer)
+
+        // 6 ethereal orbiting ancient magic rune particles (Algiz, Mana Crystal, Kenaz, Fehu, Dagaz, Glyphic Orb)
+        const numMotes = 6
+        const motes = Array.from({ length: numMotes }, (_, i) => {
+          const mGfx = new Graphics()
+          drawMagicRuneParticle(
+            mGfx,
+            i,
+            i % 2 === 0 ? palette.mauveNum : palette.pinkNum,
+            i % 2 === 0 ? palette.mauveNum : palette.sapphireNum
+          )
+          cipherContainer.addChild(mGfx)
+          return {
+            gfx: mGfx,
+            phase: (i * 2 * Math.PI) / numMotes,
+            speed: 1.2 + (i % 2) * 0.4,
+            radius: HEX_RADIUS - 8 + (i % 3) * 6,
+          }
+        })
+
+        animControllersRef.current.push((t) => {
+          // Rotating Concentric Sacred Geometry Ring
+          matrixRingGfx.clear()
+          const rOuter = HEX_RADIUS - 4
+          const rInner = HEX_RADIUS - 12
+          const rot1 = t * 0.8
+          const rot2 = -t * 1.2
+
+          // Segmented Outer Cipher Ring
+          for (let i = 0; i < 4; i++) {
+            const startA = rot1 + (i * Math.PI) / 2
+            const endA = startA + Math.PI / 3.5
+            matrixRingGfx
+              .arc(0, 0, rOuter, startA, endA)
+              .stroke({ width: 1.5, color: palette.mauveNum, alpha: 0.85 })
+          }
+
+          // Inner Sacred Geometry Decryption Diamond / Square
+          const polyPts: number[] = []
+          for (let i = 0; i < 4; i++) {
+            const a = rot2 + (i * Math.PI) / 2
+            polyPts.push(Math.cos(a) * rInner, Math.sin(a) * rInner)
+          }
+          matrixRingGfx.poly(polyPts)
+            .stroke({ width: 1.2, color: palette.pinkNum, alpha: 0.65 })
+
+          // Expanding Arcane Decryption Pulse Waves
+          pulseWaveGfx.clear()
+          const p1 = (t * 0.6) % 1
+          const waveR = 12 + p1 * (HEX_RADIUS + 8)
+          pulseWaveGfx.poly(getHexVertices(0, 0, waveR))
+            .stroke({ width: 2 * (1 - p1), color: palette.mauveNum, alpha: (1 - p1) * 0.75 })
+
+          // Orbiting Sacred Runic Motes
+          motes.forEach(({ gfx, phase, speed, radius }) => {
+            const angle = t * speed + phase
+            const swayR = radius + Math.sin(t * 3 + phase) * 3
+            gfx.position.set(swayR * Math.cos(angle), swayR * Math.sin(angle))
+            gfx.rotation = t * 2 + phase
+            const pulse = 0.5 + 0.5 * Math.sin(t * 4 + phase)
+            gfx.alpha = 0.4 + 0.6 * pulse
+            gfx.scale.set(0.7 + 0.4 * pulse)
+          })
+
+          innerGfx.alpha = 0.4 + 0.3 * Math.sin(t * 2.5)
+        })
       }
 
       // 4. TRADEOFF WORKSHOP: Transmutation Forge / Golden Star Constellation
