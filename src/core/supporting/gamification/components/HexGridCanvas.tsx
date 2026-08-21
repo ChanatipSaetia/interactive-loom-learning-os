@@ -1421,11 +1421,16 @@ export const HexGridCanvas = React.forwardRef<HexGridCanvasRef, HexGridCanvasPro
 
     let isDestroyed = false
     const app = new Application()
+    let resizeObserver: ResizeObserver | null = null
 
     const initPixi = async () => {
       try {
+        const initialW = domElement.clientWidth || 880
+        const initialH = domElement.clientHeight || 580
+
         await app.init({
-          resizeTo: domElement,
+          width: initialW,
+          height: initialH,
           backgroundColor: 0x232634,
           antialias: true,
           resolution: (typeof window !== 'undefined' && window.devicePixelRatio) || 1,
@@ -1458,8 +1463,8 @@ export const HexGridCanvas = React.forwardRef<HexGridCanvasRef, HexGridCanvasPro
           animControllersRef.current.forEach((fn) => fn(now))
         })
 
-        // Handle container element resizing (e.g. flex layout changes, drawer opens)
-        const resizeObserver = new ResizeObserver((entries) => {
+        // Handle container element resizing (e.g. flex layout changes, drawer opens/closes)
+        resizeObserver = new ResizeObserver((entries) => {
           for (const entry of entries) {
             const { width, height } = entry.contentRect
             if (width > 0 && height > 0 && appRef.current) {
@@ -1480,12 +1485,18 @@ export const HexGridCanvas = React.forwardRef<HexGridCanvasRef, HexGridCanvasPro
 
     const handleResize = () => {
       updateMapTransform()
+      if (mapContainerRef.current) {
+        renderPixiScene()
+      }
     }
     window.addEventListener('resize', handleResize)
 
     return () => {
       isDestroyed = true
       window.removeEventListener('resize', handleResize)
+      if (resizeObserver) {
+        resizeObserver.disconnect()
+      }
       if (appRef.current) {
         try {
           appRef.current.destroy(true, { children: true })
