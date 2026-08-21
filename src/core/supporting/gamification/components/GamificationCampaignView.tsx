@@ -477,34 +477,35 @@ export const GamificationCampaignView: React.FC = () => {
               return (
                 <div
                   key={topic.id}
-                  className="bg-[#292c3c]/90 hover:bg-[#303446] border border-[#414559] hover:border-[#8caaee]/60 rounded-2xl p-6 shadow-xl transition-all duration-300 flex flex-col justify-between gap-5 group"
+                  className="bg-[#292c3c]/90 hover:bg-[#303446] border border-[#414559] hover:border-[#8caaee]/60 rounded-2xl p-4 sm:p-5 shadow-xl transition-all duration-300 flex flex-col justify-between gap-3 sm:gap-4 group"
                 >
-                  <div className="space-y-3">
-                    <div className="flex items-start justify-between gap-3">
-                      <div className="flex items-center gap-3">
-                        <div className="w-12 h-12 rounded-2xl bg-[#8caaee]/10 border border-[#8caaee]/30 flex items-center justify-center text-2xl group-hover:scale-110 transition-transform">
+                  <div className="space-y-2.5 sm:space-y-3">
+                    {/* Header: Icon, Title, Category, Status Badge */}
+                    <div className="flex items-center justify-between gap-2.5">
+                      <div className="flex items-center gap-2.5 min-w-0">
+                        <div className="w-10 h-10 sm:w-11 sm:h-11 rounded-xl bg-[#8caaee]/10 border border-[#8caaee]/30 flex items-center justify-center text-xl sm:text-2xl group-hover:scale-105 transition-transform shrink-0">
                           {topic.id === 'gamification' ? '🧠' : '📐'}
                         </div>
-                        <div>
-                          <h3 className="text-lg font-bold text-[#b5bfe2] group-hover:text-[#8caaee] transition-colors">
+                        <div className="min-w-0">
+                          <h3 className="text-sm sm:text-base font-bold text-[#b5bfe2] group-hover:text-[#8caaee] transition-colors truncate">
                             {topic.label}
                           </h3>
-                          <span className="text-xs font-mono text-[#8caaee]">{topic.category}</span>
+                          <span className="text-[10px] sm:text-xs font-mono text-[#8caaee] block truncate">{topic.category}</span>
                         </div>
                       </div>
-                      <Badge variant="default" className="text-[10px] uppercase">
+                      <Badge variant="default" className="text-[9px] uppercase shrink-0 py-0.5 px-2">
                         Hex Campaign
                       </Badge>
                     </div>
 
-                    <p className="text-xs text-[#a5adce] leading-relaxed line-clamp-2">
+                    <p className="text-xs text-[#a5adce] leading-snug line-clamp-2">
                       {topic.description}
                     </p>
 
-                    {/* Earned Topic Badges Section (Compact Icons with Tooltips) */}
+                    {/* Earned Badges Row (Compact inline icons) */}
                     {topicBadges.length > 0 && (
-                      <div className="bg-[#1e1e2e]/70 p-2 rounded-xl border border-[#8caaee]/30 flex items-center justify-between gap-2">
-                        <span className="text-[10px] uppercase font-bold text-[#8caaee] tracking-wider shrink-0">
+                      <div className="bg-[#1e1e2e]/70 px-2.5 py-1.5 rounded-xl border border-[#8caaee]/30 flex items-center justify-between gap-2">
+                        <span className="text-[9px] sm:text-[10px] uppercase font-bold text-[#8caaee] tracking-wider shrink-0">
                           Badges ({topicBadges.length}):
                         </span>
                         <div className="flex items-center gap-1.5 flex-wrap justify-end">
@@ -513,10 +514,10 @@ export const GamificationCampaignView: React.FC = () => {
                               key={badge.id}
                               className="group/badge relative cursor-help"
                             >
-                              <div className="w-8 h-8 rounded-lg bg-[#292c3c] hover:bg-[#303446] border border-[#8caaee]/40 flex items-center justify-center text-lg shadow-sm transition-transform hover:scale-110">
+                              <div className="w-7 h-7 sm:w-7.5 sm:h-7.5 rounded-lg bg-[#292c3c] hover:bg-[#303446] border border-[#8caaee]/40 flex items-center justify-center text-sm sm:text-base shadow-sm transition-transform hover:scale-110">
                                 {badge.icon}
                               </div>
-                              {/* Custom Tooltip */}
+                              {/* Tooltip */}
                               <div className="absolute bottom-full right-0 mb-2 hidden group-hover/badge:flex flex-col w-48 p-2 bg-[#181825] border border-[#8caaee]/50 rounded-xl shadow-2xl z-50 text-left pointer-events-none">
                                 <div className="flex items-center gap-1.5 font-bold text-[#8caaee] text-xs">
                                   <span>{badge.icon}</span>
@@ -540,28 +541,28 @@ export const GamificationCampaignView: React.FC = () => {
                       </div>
                     )}
 
-                    {/* Progress & Difficulty Selector */}
-                    <div className="pt-3 border-t border-[#414559]/50 space-y-2.5">
-                      <div className="flex items-center justify-between text-xs text-[#a5adce]">
-                        <span>Campaign Progress:</span>
+                    {/* Progress and Difficulty Selector Stack */}
+                    <div className="pt-2 border-t border-[#414559]/50 space-y-2">
+                      <div className="flex items-center justify-between text-[11px] sm:text-xs text-[#a5adce]">
+                        <span>Progress:</span>
                         <span className="font-mono font-bold text-[#a6d189]">
                           {clearedCount > 0 ? `${clearedCount} Nodes Cleared` : 'Ready to Start'}
                         </span>
                       </div>
 
-                      {/* Difficulty Selector Chips (Selectable only before starting / locked if active campaign in progress) */}
+                      {/* Difficulty Selector Chips */}
                       <div className="flex items-center justify-between gap-1.5 bg-[#1e1e2e]/70 p-1.5 rounded-xl border border-[#414559]/40">
-                        <span className="text-[10px] text-[#a5adce] font-semibold pl-1">
-                          {clearedCount > 0 ? 'Active Tier:' : 'Select Tier:'}
+                        <span className="text-[10px] text-[#a5adce] font-semibold pl-1 shrink-0">
+                          {clearedCount > 0 ? 'Active:' : 'Tier:'}
                         </span>
-                        <div className="flex items-center gap-1">
+                        <div className="flex items-center gap-1 flex-wrap justify-end">
                           {(['easy', 'normal', 'hard', 'nightmare'] as DifficultyLevel[]).map((diff) => {
                             const conf = DIFFICULTY_CONFIGS[diff]
                             const isActive = selectedDiff === diff
                             const isLocked = clearedCount > 0 && !isActive
 
                             if (isLocked) {
-                              return null // Only display active tier when campaign is in progress
+                              return null
                             }
 
                             return (
@@ -589,7 +590,7 @@ export const GamificationCampaignView: React.FC = () => {
                                       }
                                     }
                                   }}
-                                  className={`text-[10px] font-bold px-2 py-1 rounded-lg transition-all flex items-center gap-1 ${
+                                  className={`text-[9px] sm:text-[10px] font-bold px-1.5 sm:px-2 py-0.5 sm:py-1 rounded-lg transition-all flex items-center gap-1 ${
                                     isActive
                                       ? diff === 'nightmare'
                                         ? 'bg-[#ea999c] text-[#232634] shadow-md scale-105'
@@ -605,18 +606,18 @@ export const GamificationCampaignView: React.FC = () => {
                                   <span className="capitalize">{diff}</span>
                                 </button>
 
-                                {/* Rich Tooltip with Rules Breakdown */}
-                                <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 hidden group-hover/tier:flex flex-col w-52 p-2.5 bg-[#181825] border border-[#414559] rounded-xl shadow-2xl z-50 text-left pointer-events-none">
+                                {/* Rich Tooltip */}
+                                <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 hidden group-hover/tier:flex flex-col w-48 sm:w-52 p-2 sm:p-2.5 bg-[#181825] border border-[#414559] rounded-xl shadow-2xl z-50 text-left pointer-events-none">
                                   <div className="flex items-center gap-1.5 font-bold text-xs text-[#b5bfe2]">
                                     <span>{conf.icon}</span>
                                     <span>{conf.label}</span>
                                   </div>
-                                  <p className="text-[10px] text-[#a5adce] mt-1">
+                                  <p className="text-[10px] text-[#a5adce] mt-0.5 leading-tight">
                                     {conf.description}
                                   </p>
-                                  <div className="mt-2 pt-1.5 border-t border-[#414559]/50 space-y-0.5 text-[9px] font-mono">
+                                  <div className="mt-1.5 pt-1.5 border-t border-[#414559]/50 space-y-0.5 text-[9px] font-mono">
                                     <div className="flex justify-between text-[#e78284]">
-                                      <span>Damage Received:</span>
+                                      <span>Damage:</span>
                                       <span>{conf.damageMultiplier}x</span>
                                     </div>
                                     <div className="flex justify-between text-[#a6d189]">
@@ -624,7 +625,7 @@ export const GamificationCampaignView: React.FC = () => {
                                       <span>{conf.expBonusMultiplier}x</span>
                                     </div>
                                     <div className="flex justify-between text-[#ef9f76]">
-                                      <span>Chaos Buildup:</span>
+                                      <span>Chaos Speed:</span>
                                       <span>{conf.chaosMultiplier}x</span>
                                     </div>
                                   </div>
@@ -637,18 +638,19 @@ export const GamificationCampaignView: React.FC = () => {
                     </div>
                   </div>
 
-                  <div className="flex items-center gap-3 pt-2">
+                  {/* Actions */}
+                  <div className="flex items-center gap-2 pt-1.5">
                     <Button
-                      className="flex-1 bg-gradient-to-r from-[#8caaee] to-[#a6d189] hover:opacity-90 text-[#232634] font-bold text-sm py-2.5 shadow-lg flex items-center justify-center gap-2"
+                      className="flex-1 bg-gradient-to-r from-[#8caaee] to-[#a6d189] hover:opacity-90 text-[#232634] font-bold text-xs sm:text-sm py-2 sm:py-2.5 shadow-lg flex items-center justify-center gap-1.5"
                       onClick={() => handleSelectTopic(topic.id)}
                     >
-                      <Play size={16} fill="currentColor" />
+                      <Play size={14} fill="currentColor" />
                       <span>{clearedCount > 0 ? 'Resume Campaign' : 'Start Campaign'}</span>
                     </Button>
                     {clearedCount > 0 && (
                       <Button
                         variant="ghost"
-                        className="border border-[#e78284]/30 hover:bg-[#e78284]/10 text-[#e78284] text-xs px-3 py-2.5"
+                        className="border border-[#e78284]/30 hover:bg-[#e78284]/10 text-[#e78284] text-xs px-2.5 py-2 sm:py-2.5 h-auto"
                         onClick={async () => {
                           await portResetCampaign(topic.id)
                           // Trigger local state re-render if current
