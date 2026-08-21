@@ -212,6 +212,7 @@ export default function QuizSection({
         questionId: q?.id ?? `q_${questionIndex}`,
         choiceId,
         isCorrect,
+        intelligenceTriggered: !isCorrect && Boolean(showIntelligenceHint),
         timestamp: Date.now(),
       }
       onEvent?.(optionEvent)

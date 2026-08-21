@@ -6,6 +6,8 @@ export interface QuizOptionSelected {
   choiceId: string
   /** Whether the selected choice was correct. */
   isCorrect: boolean
+  /** Whether Arcane Insight (Intelligence) triggered to reveal the correct answer. */
+  intelligenceTriggered?: boolean
   /** Timestamp of the selection. */
   timestamp: number
 }

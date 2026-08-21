@@ -183,6 +183,8 @@ export function useGamification(
       characterAdapter.saveTopicCampaign(topicId, nextState)
       return nextState
     })
+
+    return combatResult
   }, [topicState, globalProfile, campaign, characterAdapter, topicId])
 
   // Apply sanctuary healing ticks

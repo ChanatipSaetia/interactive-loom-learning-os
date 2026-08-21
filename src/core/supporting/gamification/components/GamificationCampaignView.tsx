@@ -228,8 +228,8 @@ export const GamificationCampaignView: React.FC = () => {
 
   // Quiz Combat Result Execution
   const handleQuizAnswerCombat = (isCorrect: boolean) => {
-    if (!selectedNode || !selectedNode.monster) return
-    portResolveQuizAnswer(isCorrect, selectedNode.id)
+    if (!selectedNode || !selectedNode.monster) return undefined
+    return portResolveQuizAnswer(isCorrect, selectedNode.id)
   }
 
   // Healing Sanctuary Action with Chaos Healing Decay
@@ -1178,18 +1178,33 @@ export const GamificationCampaignView: React.FC = () => {
                       intelligenceChance={globalChar.attributes.intelligence}
                       onEvent={(event: any) => {
                         if (event.type === 'QuizOptionSelected') {
-                          handleQuizAnswerCombat(event.isCorrect)
+                          const combatResult = handleQuizAnswerCombat(event.isCorrect)
                           if (event.isCorrect) {
                             pushActionMessage(
                               `Attack Hit! Struck ${activeSectionModal.monster?.name || 'Monster'} with accurate answer!`,
                               'exp',
                               '⚔️'
                             )
+                          } else if (combatResult?.isDodged) {
+                            pushActionMessage(
+                              `Dodged! Fast Evasion speed allowed you to dodge ${activeSectionModal.monster?.name || 'Monster'}'s attack!`,
+                              'success',
+                              '💨'
+                            )
                           } else {
                             pushActionMessage(
                               `Attack Missed! Monster retaliated against incorrect answer!`,
                               'danger',
                               '💔'
+                            )
+                          }
+
+                          // If Intelligence (Arcane Insight) triggered to reveal the answer
+                          if (event.intelligenceTriggered) {
+                            pushActionMessage(
+                              `Arcane Insight! Intelligence revealed the correct answer!`,
+                              'craft',
+                              '💡'
                             )
                           }
                         }
