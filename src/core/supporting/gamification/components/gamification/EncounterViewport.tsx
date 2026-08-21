@@ -59,27 +59,48 @@ export const EncounterViewport: React.FC<EncounterViewportProps> = ({ game }) =>
         node && (
           <>
             {/* Quiz Encounter Duel Stage Header */}
-            {node.type === 'quiz_encounter' && node.monster && (
-              <CombatStageHeader
-                monster={{
-                  ...node.monster,
-                  currentHp: campaign.monsterHpMap?.[node.id] !== undefined
-                    ? campaign.monsterHpMap[node.id]
-                    : (node.monster.currentHp ?? node.monster.maxHp),
-                }}
-                playerAttributes={globalChar.attributes}
-                playerHp={campaign.characterHp}
-                maxPlayerHp={campaign.maxCharacterHp}
-                inventory={campaign.inventory}
-                playerAttackedTimestamp={playerAttackedTimestamp}
-                monsterAttackedTimestamp={monsterAttackedTimestamp}
-                onUseItem={(itemId) => {
-                  if ((itemId === 'product-blade' || itemId === 'port-blade') && node.monster) {
-                    portResolveQuizAnswer(true, node.id)
-                  }
-                }}
-              />
-            )}
+            {(() => {
+              const secConfig = node.sectionRef ? bundleSectionsMap.get(node.sectionRef) : null
+              const isQuiz =
+                node.type === 'quiz_encounter' ||
+                secConfig?.type === 'quiz' ||
+                node.sectionRef?.includes('quiz') ||
+                node.id.includes('quiz')
+
+              if (!isQuiz) return null
+
+              const monsterData = node.monster || {
+                id: `monster-${node.id}`,
+                name: 'Goblin Glitch Fiend',
+                icon: '👹',
+                maxHp: 100,
+                currentHp: 100,
+                damage: 15,
+                type: 'goblin' as const,
+              }
+
+              return (
+                <CombatStageHeader
+                  monster={{
+                    ...monsterData,
+                    currentHp: campaign.monsterHpMap?.[node.id] !== undefined
+                      ? campaign.monsterHpMap[node.id]
+                      : (monsterData.currentHp ?? monsterData.maxHp),
+                  }}
+                  playerAttributes={globalChar.attributes}
+                  playerHp={campaign.characterHp}
+                  maxPlayerHp={campaign.maxCharacterHp}
+                  inventory={campaign.inventory}
+                  playerAttackedTimestamp={playerAttackedTimestamp}
+                  monsterAttackedTimestamp={monsterAttackedTimestamp}
+                  onUseItem={(itemId) => {
+                    if ((itemId === 'product-blade' || itemId === 'port-blade') && node.monster) {
+                      portResolveQuizAnswer(true, node.id)
+                    }
+                  }}
+                />
+              )
+            })()}
 
             {/* Sanctuary Reading Tick Monitor */}
             {node.type === 'reading_sanctuary' && (
