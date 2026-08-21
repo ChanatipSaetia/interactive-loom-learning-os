@@ -1146,7 +1146,16 @@ export const GamificationCampaignView: React.FC = () => {
               {activeSectionModal.type === 'reflection_decryption' && (
                 <RunicCountdownRing
                   isSolved={activeSectionModal.status === 'cleared'}
+                  evasionBonusSeconds={globalChar.attributes.evasion}
+                  intelligenceChance={globalChar.attributes.intelligence}
                   onTimeout={() => handleFailSection(activeSectionModal)}
+                  onStatTriggered={(stat, details) => {
+                    if (stat === 'evasion') {
+                      pushActionMessage(details, 'success', '💨')
+                    } else {
+                      pushActionMessage(details, 'craft', '💡')
+                    }
+                  }}
                 />
               )}
 

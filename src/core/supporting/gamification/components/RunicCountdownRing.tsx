@@ -4,15 +4,39 @@ import { Timer } from 'lucide-react'
 interface RunicCountdownRingProps {
   durationSeconds?: number
   isSolved: boolean
+  evasionBonusSeconds?: number
+  intelligenceChance?: number
   onTimeout: () => void
+  onStatTriggered?: (stat: 'evasion' | 'intelligence', details: string) => void
 }
 
 export const RunicCountdownRing: React.FC<RunicCountdownRingProps> = ({
   durationSeconds = 45,
   isSolved,
+  evasionBonusSeconds = 0,
+  intelligenceChance = 0,
   onTimeout,
+  onStatTriggered,
 }) => {
-  const [timeLeft, setTimeLeft] = useState(durationSeconds)
+  // Evasion provides extra reaction time (+seconds based on Evasion attribute)
+  const totalDuration = durationSeconds + Math.round(evasionBonusSeconds * 0.3)
+  const [timeLeft, setTimeLeft] = useState(totalDuration)
+
+  // Trigger stat notification on mount
+  useEffect(() => {
+    if (evasionBonusSeconds > 0) {
+      const bonus = Math.round(evasionBonusSeconds * 0.3)
+      if (bonus > 0) {
+        onStatTriggered?.('evasion', `+${bonus}s Decryption Time gained from ${evasionBonusSeconds}% Evasion Speed!`)
+      }
+    }
+    if (intelligenceChance > 0) {
+      const hasInsight = Math.random() * 100 < intelligenceChance
+      if (hasInsight) {
+        onStatTriggered?.('intelligence', `Runic Intuition! ${intelligenceChance}% Intelligence stabilized the ancient runes!`)
+      }
+    }
+  }, [])
 
   useEffect(() => {
     if (isSolved) return
