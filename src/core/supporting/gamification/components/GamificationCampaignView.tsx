@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useCallback } from 'react'
 import { HexGridCanvas } from './HexGridCanvas'
 import { NodeInspectorTray } from './NodeInspectorTray'
 import { EncounterDrawer } from './EncounterDrawer'
@@ -159,9 +159,25 @@ export const GamificationCampaignView: React.FC = () => {
   const [topicVictoryModalOpen, setTopicVictoryModalOpen] = useState<boolean>(false)
   const [earnedVictoryBadges, setEarnedVictoryBadges] = useState<import('../types').UnlockedBadge[]>([])
   const [combatLog, setCombatLog] = useState<string[]>([])
+  const [snackbarMessage, setSnackbarMessage] = useState<string | null>(null)
   const [quizAttemptKey, setQuizAttemptKey] = useState<number>(0)
   const [quizFailed, setQuizFailed] = useState<boolean>(false)
   const [activeTradeoffMetrics, setActiveTradeoffMetrics] = useState<Array<{ id: string; label: string; value: number }>>([])
+
+  // Helper to push action messages to both combatLog and bottom-center Snackbar Toast
+  const pushActionMessage = useCallback((msg: string) => {
+    setCombatLog((prev) => [msg, ...prev])
+    setSnackbarMessage(msg)
+  }, [])
+
+  // Auto-dismiss snackbar after 4 seconds
+  useEffect(() => {
+    if (!snackbarMessage) return
+    const timer = setTimeout(() => {
+      setSnackbarMessage(null)
+    }, 4000)
+    return () => clearTimeout(timer)
+  }, [snackbarMessage])
 
   // Check for Zero HP Defeat condition
   useEffect(() => {
@@ -175,10 +191,7 @@ export const GamificationCampaignView: React.FC = () => {
   const handleDefeatRestart = async () => {
     await portResetCampaign(currentTopicId)
     setGameOverModalOpen(false)
-    setCombatLog((prev) => [
-      `☠️ CAMPAIGN DEFEAT: Health dropped to 0! Campaign reset to Capital for a fresh attempt.`,
-      ...prev,
-    ])
+    pushActionMessage(`☠️ CAMPAIGN DEFEAT: Health dropped to 0! Campaign reset to Capital for a fresh attempt.`)
   }
 
   // Launch Section Handler (Increases System Chaos on section entry)
@@ -187,15 +200,13 @@ export const GamificationCampaignView: React.FC = () => {
     setQuizFailed(false)
     setQuizAttemptKey((prev) => prev + 1)
     setActiveSectionModal(node)
-    setCombatLog((prev) => [
-      `🎮 Entered ${node.title} [${node.type.toUpperCase()}]. Active Section Evaluation started!`,
-      ...prev,
-    ])
+    pushActionMessage(`🎮 Entered ${node.title} [${node.type.toUpperCase()}]. Active Section Evaluation started!`)
   }
 
   // Allocate Attribute Point
   const handleAllocateStat = (stat: 'armor' | 'evasion' | 'intelligence') => {
     portAllocateStatPoint(stat)
+    pushActionMessage(`✨ Upgraded ${stat.toUpperCase()}! Stat increased!`)
   }
 
   // Quiz Combat Result Execution
@@ -208,10 +219,7 @@ export const GamificationCampaignView: React.FC = () => {
   const handleRestSanctuary = () => {
     if (!selectedNode) return
     portApplySanctuaryTickHeal(30, selectedNode.id)
-    setCombatLog((prev) => [
-      `🏛️ Sanctuary Rested! Restored character HP and cleansed System Chaos!`,
-      ...prev,
-    ])
+    pushActionMessage(`🏛️ Sanctuary Rested! Restored character HP and cleansed System Chaos!`)
   }
 
   // Trade-off Crafting Buff Action
@@ -223,10 +231,7 @@ export const GamificationCampaignView: React.FC = () => {
       source: synthesizedArtifact?.name || selectedNode.title || 'Trade-off Workshop',
     }
     portApplyCraftedBuff(buffData)
-    setCombatLog((prev) => [
-      `⚒️ Synthesized Artifact "${buffData.source}": +${buffData.value}% ${buffData.stat.toUpperCase()} equipped!`,
-      ...prev,
-    ])
+    pushActionMessage(`⚒️ Synthesized Artifact "${buffData.source}": +${buffData.value}% ${buffData.stat.toUpperCase()} equipped!`)
     handlePassSection(selectedNode)
   }
 
@@ -246,7 +251,7 @@ export const GamificationCampaignView: React.FC = () => {
 
     const reward = targetNode.rewards && targetNode.rewards.length > 0 ? targetNode.rewards[0] : null
     if (reward) {
-      setCombatLog((prev) => [`🎁 COLLECTED ITEM REWARD: ${reward.name} ${reward.icon}!`, ...prev])
+      pushActionMessage(`🎁 COLLECTED ITEM REWARD: ${reward.name} ${reward.icon}!`)
     }
 
     // EXP rewards: 5 for reading & capital, 20 for quiz & decrypt & tradeoff, 50 for boss
@@ -265,10 +270,7 @@ export const GamificationCampaignView: React.FC = () => {
 
     portCompleteNode(targetNode.id)
     portAwardExp(expToAward)
-    setCombatLog((prev) => [
-      `🎉 ENCOUNTER CLEARED: "${targetNode.title}" Completed! +${expToAward} EXP Gained (${DIFFICULTY_CONFIGS[currentDiff]?.label})!`,
-      ...prev,
-    ])
+    pushActionMessage(`🎉 ENCOUNTER CLEARED: "${targetNode.title}" Completed! +${expToAward} EXP Gained (${DIFFICULTY_CONFIGS[currentDiff]?.label})!`)
     setActiveSectionModal(null)
 
     // Trigger Topic Victory Modal upon defeating the Boss Lair
@@ -303,10 +305,7 @@ export const GamificationCampaignView: React.FC = () => {
 
     portTakeDamage(damage)
     const chaosNote = currentChaos > 0 ? ` (amplified by ${currentChaos}% System Chaos)` : ''
-    setCombatLog((prev) => [
-      `❌ SECTION FAILED: "${targetNode.title}"! Character suffered ${damage} damage${chaosNote} [${DIFFICULTY_CONFIGS[currentDiff]?.label}]!`,
-      ...prev,
-    ])
+    pushActionMessage(`❌ SECTION FAILED: "${targetNode.title}"! Suffered ${damage} damage${chaosNote} [${DIFFICULTY_CONFIGS[currentDiff]?.label}]!`)
   }
 
   if (isLoading || !campaign || !globalChar) {
@@ -788,6 +787,16 @@ export const GamificationCampaignView: React.FC = () => {
             </div>
           </div>
         </Modal>
+
+        {/* ─── Bottom Center Action Snackbar Toast (Lobby) ─── */}
+        {snackbarMessage && (
+          <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-[9999] pointer-events-none flex items-center justify-center max-w-[90vw] sm:max-w-md animate-in fade-in slide-in-from-bottom-4 duration-300">
+            <div className="bg-[#181825]/95 backdrop-blur-xl border border-[#8caaee]/40 text-[#c6d0f5] text-xs sm:text-sm font-semibold px-4 py-2.5 rounded-2xl shadow-2xl flex items-center gap-2.5 border-l-4 border-l-[#8caaee]">
+              <span className="shrink-0 text-base">⚡</span>
+              <span className="truncate">{snackbarMessage}</span>
+            </div>
+          </div>
+        )}
       </div>
     )
   }
@@ -1419,6 +1428,16 @@ export const GamificationCampaignView: React.FC = () => {
           </div>
         </div>
       </Modal>
+
+      {/* ─── Bottom Center Action Snackbar Toast ─── */}
+      {snackbarMessage && (
+        <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-[9999] pointer-events-none flex items-center justify-center max-w-[90vw] sm:max-w-md animate-in fade-in slide-in-from-bottom-4 duration-300">
+          <div className="bg-[#181825]/95 backdrop-blur-xl border border-[#8caaee]/40 text-[#c6d0f5] text-xs sm:text-sm font-semibold px-4 py-2.5 rounded-2xl shadow-2xl flex items-center gap-2.5 border-l-4 border-l-[#8caaee]">
+            <span className="shrink-0 text-base">⚡</span>
+            <span className="truncate">{snackbarMessage}</span>
+          </div>
+        </div>
+      )}
 
       {/* ─── Zero HP Campaign Defeat Modal ─── */}
       <Modal open={gameOverModalOpen} onClose={() => {}} maxWidth="sm" title="Campaign Defeat">
