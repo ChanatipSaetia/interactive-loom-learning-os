@@ -94,9 +94,17 @@ export const EncounterViewport: React.FC<EncounterViewportProps> = ({ game }) =>
             )}
 
             {/* Runic Magic Countdown Ring with Dynamic Slot Progression */}
-            {node.type === 'reflection_decryption' && (() => {
+            {(() => {
               const secConfig = node.sectionRef ? bundleSectionsMap.get(node.sectionRef) : null
-              
+              const isReflection =
+                node.type === 'reflection_decryption' ||
+                secConfig?.type === 'reflection-sequence' ||
+                secConfig?.type === 'reflection-template' ||
+                node.sectionRef?.includes('reflection') ||
+                node.id.includes('reflection')
+
+              if (!isReflection) return null
+
               // Build list of sequence challenges with their respective item/step counts
               const sequenceList = Array.isArray(secConfig?.props?.challenges) && secConfig.props.challenges.length > 0
                 ? secConfig.props.challenges.map((ch: any, idx: number) => ({
