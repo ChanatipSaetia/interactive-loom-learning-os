@@ -723,7 +723,69 @@ export const GamificationCampaignView: React.FC = () => {
               )}
             </div>
 
-            <div className="flex justify-end pt-2 border-t border-[#414559]">
+            <div className="flex items-center justify-between pt-3 border-t border-[#414559]">
+              <div className="flex items-center gap-2">
+                <Button
+                  size="sm"
+                  variant="ghost"
+                  className="border border-[#8caaee]/40 hover:bg-[#8caaee]/20 text-[#8caaee] text-[10px] sm:text-xs h-7 px-2.5"
+                  onClick={() => {
+                    const now = new Date().toISOString().split('T')[0]
+                    const demoBadge: import('../types').UnlockedBadge = {
+                      id: `demo-badge-${Date.now()}`,
+                      badgeType: 'topic_completion',
+                      title: 'Architectural Pioneer',
+                      icon: '🎖️',
+                      description: 'Awarded for demonstrating domain architecture mastery across realm modules.',
+                      topicId: currentTopicId,
+                      topicTitle: campaign.topicTitle || 'Architecture Realm',
+                      difficulty: campaign.difficulty || 'normal',
+                      unlockedAt: now,
+                    }
+                    try {
+                      const key = 'loom_gamification_character_global'
+                      const raw = localStorage.getItem(key)
+                      const profile = raw ? JSON.parse(raw) : { level: 1, exp: 0, nextLevelExp: 100, unallocatedPoints: 0, attributes: { armor: 0, evasion: 0, intelligence: 0 }, unlockedBadges: [] }
+                      const updated = {
+                        ...profile,
+                        unlockedBadges: [demoBadge, ...(profile.unlockedBadges || [])],
+                      }
+                      localStorage.setItem(key, JSON.stringify(updated))
+                      window.location.reload()
+                    } catch {
+                      // ignore
+                    }
+                  }}
+                  title="Inject a demo badge into local storage"
+                >
+                  + Add Demo Badge (Local)
+                </Button>
+
+                {globalChar.unlockedBadges.length > 0 && (
+                  <Button
+                    size="sm"
+                    variant="ghost"
+                    className="border border-[#e78284]/30 hover:bg-[#e78284]/10 text-[#e78284] text-[10px] sm:text-xs h-7 px-2.5"
+                    onClick={() => {
+                      try {
+                        const key = 'loom_gamification_character_global'
+                        const raw = localStorage.getItem(key)
+                        if (raw) {
+                          const profile = JSON.parse(raw)
+                          localStorage.setItem(key, JSON.stringify({ ...profile, unlockedBadges: [] }))
+                          window.location.reload()
+                        }
+                      } catch {
+                        // ignore
+                      }
+                    }}
+                    title="Clear all unlocked badges from local storage"
+                  >
+                    Clear Badges
+                  </Button>
+                )}
+              </div>
+
               <Button variant="ghost" onClick={() => setActiveBadgesModal(false)}>
                 Close
               </Button>
@@ -1223,7 +1285,69 @@ export const GamificationCampaignView: React.FC = () => {
             )}
           </div>
 
-          <div className="flex justify-end pt-2 border-t border-[#414559]">
+          <div className="flex items-center justify-between pt-3 border-t border-[#414559]">
+            <div className="flex items-center gap-2">
+              <Button
+                size="sm"
+                variant="ghost"
+                className="border border-[#8caaee]/40 hover:bg-[#8caaee]/20 text-[#8caaee] text-[10px] sm:text-xs h-7 px-2.5"
+                onClick={() => {
+                  const now = new Date().toISOString().split('T')[0]
+                  const demoBadge: import('../types').UnlockedBadge = {
+                    id: `demo-badge-${Date.now()}`,
+                    badgeType: 'topic_completion',
+                    title: 'Architectural Pioneer',
+                    icon: '🎖️',
+                    description: 'Awarded for demonstrating domain architecture mastery across realm modules.',
+                    topicId: currentTopicId,
+                    topicTitle: campaign.topicTitle || 'Architecture Realm',
+                    difficulty: campaign.difficulty || 'normal',
+                    unlockedAt: now,
+                  }
+                  try {
+                    const key = 'loom_gamification_character_global'
+                    const raw = localStorage.getItem(key)
+                    const profile = raw ? JSON.parse(raw) : { level: 1, exp: 0, nextLevelExp: 100, unallocatedPoints: 0, attributes: { armor: 0, evasion: 0, intelligence: 0 }, unlockedBadges: [] }
+                    const updated = {
+                      ...profile,
+                      unlockedBadges: [demoBadge, ...(profile.unlockedBadges || [])],
+                    }
+                    localStorage.setItem(key, JSON.stringify(updated))
+                    window.location.reload()
+                  } catch {
+                    // ignore
+                  }
+                }}
+                title="Inject a demo badge into local storage"
+              >
+                + Add Demo Badge (Local)
+              </Button>
+
+              {globalChar.unlockedBadges.length > 0 && (
+                <Button
+                  size="sm"
+                  variant="ghost"
+                  className="border border-[#e78284]/30 hover:bg-[#e78284]/10 text-[#e78284] text-[10px] sm:text-xs h-7 px-2.5"
+                  onClick={() => {
+                    try {
+                      const key = 'loom_gamification_character_global'
+                      const raw = localStorage.getItem(key)
+                      if (raw) {
+                        const profile = JSON.parse(raw)
+                        localStorage.setItem(key, JSON.stringify({ ...profile, unlockedBadges: [] }))
+                        window.location.reload()
+                      }
+                    } catch {
+                      // ignore
+                    }
+                  }}
+                  title="Clear all unlocked badges from local storage"
+                >
+                  Clear Badges
+                </Button>
+              )}
+            </div>
+
             <Button variant="ghost" onClick={() => setActiveBadgesModal(false)}>
               Close
             </Button>
