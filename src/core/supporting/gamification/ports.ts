@@ -1,4 +1,11 @@
-import type { GlobalCharacterState, TopicCampaignState, CharacterAttributes, ActiveBuff, DifficultyLevel } from './types'
+import type {
+  GlobalCharacterState,
+  TopicCampaignState,
+  CharacterAttributes,
+  ActiveBuff,
+  DifficultyLevel,
+  UnlockedBadge,
+} from './types'
 import type { HexCampaignData } from '../../generic/hex-map'
 
 /**
@@ -37,6 +44,8 @@ export interface GamificationRuntimePort {
   completeNode: (nodeId: string) => void
   takeDamage: (damage: number) => void
   awardExp: (expAmount: number) => void
+  unlockBadge: (badge: UnlockedBadge) => void
+  clearBadges: () => void
   applySanctuaryTickHeal: (activeSeconds: number, nodeId: string) => void
   applyCraftedBuff: (buff: ActiveBuff, vulnerability?: ActiveBuff) => void
   allocateStatPoint: (stat: keyof CharacterAttributes) => void

@@ -337,6 +337,34 @@ export function useGamification(
     })
   }, [characterAdapter])
 
+  // Manually unlock a badge (persisted to Global Character profile)
+  const unlockBadge = useCallback((badge: import('./types').UnlockedBadge) => {
+    setGlobalProfile((prev) => {
+      if (!prev) return null
+      const exists = prev.unlockedBadges.some((b) => b.id === badge.id)
+      if (exists) return prev
+      const nextProfile: GlobalCharacterState = {
+        ...prev,
+        unlockedBadges: [badge, ...prev.unlockedBadges],
+      }
+      characterAdapter.saveGlobalProfile(nextProfile)
+      return nextProfile
+    })
+  }, [characterAdapter])
+
+  // Clear all unlocked badges from Global Character profile
+  const clearBadges = useCallback(() => {
+    setGlobalProfile((prev) => {
+      if (!prev) return null
+      const nextProfile: GlobalCharacterState = {
+        ...prev,
+        unlockedBadges: [],
+      }
+      characterAdapter.saveGlobalProfile(nextProfile)
+      return nextProfile
+    })
+  }, [characterAdapter])
+
   // Reset campaign
   const resetCampaign = useCallback(async (targetTopicId?: string) => {
     const idToReset = targetTopicId || topicId
@@ -376,6 +404,8 @@ export function useGamification(
     completeNode,
     takeDamage,
     awardExp,
+    unlockBadge,
+    clearBadges,
     applySanctuaryTickHeal,
     applyCraftedBuff,
     allocateStatPoint,

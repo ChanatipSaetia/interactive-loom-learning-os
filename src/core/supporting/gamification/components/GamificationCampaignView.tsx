@@ -104,6 +104,8 @@ export const GamificationCampaignView: React.FC = () => {
     completeNode: portCompleteNode,
     takeDamage: portTakeDamage,
     awardExp: portAwardExp,
+    unlockBadge: portUnlockBadge,
+    clearBadges: portClearBadges,
     applySanctuaryTickHeal: portApplySanctuaryTickHeal,
     applyCraftedBuff: portApplyCraftedBuff,
     allocateStatPoint: portAllocateStatPoint,
@@ -737,24 +739,12 @@ export const GamificationCampaignView: React.FC = () => {
                       title: 'Architectural Pioneer',
                       icon: '🎖️',
                       description: 'Awarded for demonstrating domain architecture mastery across realm modules.',
-                      topicId: currentTopicId,
-                      topicTitle: campaign.topicTitle || 'Architecture Realm',
+                      topicId: 'gamification',
+                      topicTitle: 'Gamification Engine',
                       difficulty: campaign.difficulty || 'normal',
                       unlockedAt: now,
                     }
-                    try {
-                      const key = 'loom_gamification_character_global'
-                      const raw = localStorage.getItem(key)
-                      const profile = raw ? JSON.parse(raw) : { level: 1, exp: 0, nextLevelExp: 100, unallocatedPoints: 0, attributes: { armor: 0, evasion: 0, intelligence: 0 }, unlockedBadges: [] }
-                      const updated = {
-                        ...profile,
-                        unlockedBadges: [demoBadge, ...(profile.unlockedBadges || [])],
-                      }
-                      localStorage.setItem(key, JSON.stringify(updated))
-                      window.location.reload()
-                    } catch {
-                      // ignore
-                    }
+                    portUnlockBadge(demoBadge)
                   }}
                   title="Inject a demo badge into local storage"
                 >
@@ -767,17 +757,7 @@ export const GamificationCampaignView: React.FC = () => {
                     variant="ghost"
                     className="border border-[#e78284]/30 hover:bg-[#e78284]/10 text-[#e78284] text-[10px] sm:text-xs h-7 px-2.5"
                     onClick={() => {
-                      try {
-                        const key = 'loom_gamification_character_global'
-                        const raw = localStorage.getItem(key)
-                        if (raw) {
-                          const profile = JSON.parse(raw)
-                          localStorage.setItem(key, JSON.stringify({ ...profile, unlockedBadges: [] }))
-                          window.location.reload()
-                        }
-                      } catch {
-                        // ignore
-                      }
+                      portClearBadges()
                     }}
                     title="Clear all unlocked badges from local storage"
                   >
@@ -1304,19 +1284,7 @@ export const GamificationCampaignView: React.FC = () => {
                     difficulty: campaign.difficulty || 'normal',
                     unlockedAt: now,
                   }
-                  try {
-                    const key = 'loom_gamification_character_global'
-                    const raw = localStorage.getItem(key)
-                    const profile = raw ? JSON.parse(raw) : { level: 1, exp: 0, nextLevelExp: 100, unallocatedPoints: 0, attributes: { armor: 0, evasion: 0, intelligence: 0 }, unlockedBadges: [] }
-                    const updated = {
-                      ...profile,
-                      unlockedBadges: [demoBadge, ...(profile.unlockedBadges || [])],
-                    }
-                    localStorage.setItem(key, JSON.stringify(updated))
-                    window.location.reload()
-                  } catch {
-                    // ignore
-                  }
+                  portUnlockBadge(demoBadge)
                 }}
                 title="Inject a demo badge into local storage"
               >
@@ -1329,17 +1297,7 @@ export const GamificationCampaignView: React.FC = () => {
                   variant="ghost"
                   className="border border-[#e78284]/30 hover:bg-[#e78284]/10 text-[#e78284] text-[10px] sm:text-xs h-7 px-2.5"
                   onClick={() => {
-                    try {
-                      const key = 'loom_gamification_character_global'
-                      const raw = localStorage.getItem(key)
-                      if (raw) {
-                        const profile = JSON.parse(raw)
-                        localStorage.setItem(key, JSON.stringify({ ...profile, unlockedBadges: [] }))
-                        window.location.reload()
-                      }
-                    } catch {
-                      // ignore
-                    }
+                    portClearBadges()
                   }}
                   title="Clear all unlocked badges from local storage"
                 >
