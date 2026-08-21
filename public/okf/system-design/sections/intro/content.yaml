@@ -1,0 +1,7 @@
+what: "System design is the process of defining system architecture, components, modules, interfaces, and data to satisfy requirements."
+why: "Good system design ensures scalability, reliability, and maintainability—critical for systems serving millions of users."
+roadmap:
+  - "Learn core principles of scalable design"
+  - "Practice with quiz challenges"
+  - "Reflect on real-world trade-offs"
+  - "Experiment with design decisions in sandbox"

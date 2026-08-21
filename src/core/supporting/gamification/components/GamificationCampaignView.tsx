@@ -26,7 +26,7 @@ import { Suspense, useMemo as useReactMemo } from 'react'
 import { Map as MapIcon, ArrowLeft, RotateCcw, Award, Play, X } from 'lucide-react'
 
 // Known hexmap topics available in public/hexmaps/
-const KNOWN_HEXMAP_TOPIC_IDS = ['gamification', 'demo']
+const KNOWN_HEXMAP_TOPIC_IDS = ['gamification', 'demo', 'system-design']
 
 export const GamificationCampaignView: React.FC = () => {
   const { topicId: routeTopicId } = useParams<{ topicId?: string }>()

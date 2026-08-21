@@ -1,0 +1,84 @@
+topicId: "system-design"
+topicTitle: "Realm of System Design: Architecture Citadel"
+capitalId: "capital"
+nodes:
+  # Ring 0: Capital Center
+  - id: "capital"
+    title: "Capital of System Design: Architecture Hub"
+    type: "capital"
+    status: "unlocked"
+    sectionRef: "intro"
+    description: "The central hub of system design knowledge. Learn the foundations of scalable architecture!"
+
+  # Ring 1: Learning Sanctuaries
+  - id: "sanctuary-principles"
+    title: "Sanctuary of Core Principles"
+    type: "reading_sanctuary"
+    status: "locked"
+    sectionRef: "text"
+    healingAmount: 30
+    description: "Study the core principles: scalability, reliability, and maintainability."
+
+  # Ring 2: Knowledge Encounters
+  - id: "quiz-chamber"
+    title: "Chamber of Knowledge"
+    type: "quiz_encounter"
+    status: "locked"
+    sectionRef: "quiz"
+    description: "Test your understanding with challenging system design questions!"
+    monster:
+      id: "complexity-creature"
+      name: "Complexity Creature"
+      type: "goblin"
+      maxHp: 100
+      damage: 15
+      icon: "👾"
+    rewards:
+      - id: "clarity-amulet"
+        name: "Amulet of Clarity"
+        icon: "📿"
+        description: "A mystical amulet that brings clarity to complex system designs."
+
+  # Ring 3: Reflection Vault
+  - id: "reflection-vault"
+    title: "Reflection Vault"
+    type: "reflection_decryption"
+    status: "locked"
+    sectionRef: "reflection"
+    description: "Enter the vault of reflection. Analyze real-world trade-offs in system design!"
+    rewards:
+      - id: "insight-crystal"
+        name: "Crystal of Insight"
+        icon: "💎"
+        description: "A crystal that reveals the hidden trade-offs in architectural decisions."
+
+  # Ring 4: Trade-off Workshop
+  - id: "tradeoff-workshop"
+    title: "Trade-off Workshop"
+    type: "tradeoff_workshop"
+    status: "locked"
+    sectionRef: "tradeoff"
+    description: "Experiment with consistency, availability, latency, and cost trade-offs!"
+    tradeoffMapping:
+      consistency: "armor"
+      availability: "evasion"
+      latency: "intelligence"
+      cost_efficiency: "chaos_shield"
+
+  # Final Boss
+  - id: "boss-lair"
+    title: "Lair of Architectural Complexity"
+    type: "boss_lair"
+    status: "locked"
+    sectionRef: "quiz"
+    description: "Face the ultimate system design challenge! Requires both the Amulet of Clarity and Crystal of Insight."
+    requiredItems:
+      - "clarity-amulet"
+      - "insight-crystal"
+    monster:
+      id: "complexity-dragon"
+      name: "Architectural Complexity Dragon"
+      type: "boss"
+      maxHp: 250
+      damage: 40
+      icon: "🐲"

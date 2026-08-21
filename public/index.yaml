@@ -65,3 +65,11 @@
   path: /topics/poe2-witchhunter-poison-bleed
   category: Gaming
   description: ''
+- id: system-design
+  label: system-design
+  path: /topics/system-design
+  category: Architecture
+  description: >-
+    Learn the fundamentals of designing scalable distributed systems. Explore
+    trade-offs in consistency, availability, and partition tolerance, practice
+    with quiz challenges, and reflect on real-world architecture decisions.
