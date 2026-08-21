@@ -73,27 +73,7 @@ export function useGamification(
           setTopicState(normalized)
         } else {
           // Initialize fresh campaign state (1st play)
-          const diff = 'normal'
-          const maxPulses = DIFFICULTY_CONFIGS[diff]?.maxSanctuaryPulses ?? 5
-          const initialTopicState: TopicCampaignState = {
-            topicId,
-            topicTitle: loadedCampaign.topicTitle,
-            difficulty: diff,
-            characterHp: 100,
-            maxCharacterHp: 100,
-            damageTakenInCampaign: 0,
-            turnCount: 0,
-            chaosLevel: 0,
-            maxChaosLevel: 100,
-            decayThreatLevel: 0,
-            isStarted: true,
-            sanctuaryPulsesUsed: 0,
-            maxSanctuaryPulses: maxPulses,
-            inventory: [],
-            clearedNodeIds: [],
-            activeBuffs: [],
-            readingVisitCounts: {},
-          }
+          const initialTopicState = createFreshCampaignState(topicId, loadedCampaign.topicTitle, 'normal')
           setTopicState(initialTopicState)
           await characterAdapter.saveTopicCampaign(topicId, initialTopicState)
 
@@ -124,6 +104,30 @@ export function useGamification(
       mounted = false
     }
   }, [topicId, campaignAdapter, characterAdapter])
+
+  // Helper to create a fresh campaign state
+  const createFreshCampaignState = useCallback((topicId: string, topicTitle: string, difficulty: import('./types').DifficultyLevel = 'normal'): TopicCampaignState => {
+    const maxPulses = DIFFICULTY_CONFIGS[difficulty]?.maxSanctuaryPulses ?? 5
+    return {
+      topicId,
+      topicTitle,
+      difficulty,
+      characterHp: 100,
+      maxCharacterHp: 100,
+      damageTakenInCampaign: 0,
+      turnCount: 0,
+      chaosLevel: 0,
+      maxChaosLevel: 100,
+      decayThreatLevel: 0,
+      isStarted: true,
+      sanctuaryPulsesUsed: 0,
+      maxSanctuaryPulses: maxPulses,
+      inventory: [],
+      clearedNodeIds: [],
+      activeBuffs: [],
+      readingVisitCounts: {},
+    }
+  }, [])
 
   // Change topic campaign difficulty
   const setDifficulty = useCallback((difficulty: import('./types').DifficultyLevel) => {
@@ -422,26 +426,7 @@ export function useGamification(
 
     if (idToReset === topicId && topicId && campaign) {
       const chosenDiff = topicState?.difficulty || 'normal'
-      const maxPulses = DIFFICULTY_CONFIGS[chosenDiff]?.maxSanctuaryPulses ?? 5
-      const freshTopicState: TopicCampaignState = {
-        topicId,
-        topicTitle: campaign.topicTitle,
-        difficulty: chosenDiff,
-        characterHp: 100,
-        maxCharacterHp: 100,
-        damageTakenInCampaign: 0,
-        turnCount: 0,
-        chaosLevel: 0,
-        maxChaosLevel: 100,
-        decayThreatLevel: 0,
-        isStarted: true,
-        sanctuaryPulsesUsed: 0,
-        maxSanctuaryPulses: maxPulses,
-        inventory: [],
-        clearedNodeIds: [],
-        activeBuffs: [],
-        readingVisitCounts: {},
-      }
+      const freshTopicState = createFreshCampaignState(topicId, campaign.topicTitle, chosenDiff)
       setTopicState(freshTopicState)
       await characterAdapter.saveTopicCampaign(topicId, freshTopicState)
 
