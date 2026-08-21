@@ -373,20 +373,10 @@ export const GamificationCampaignView: React.FC = () => {
             </div>
 
             <div className="flex items-center justify-between sm:justify-start gap-2 pt-2 sm:pt-0 border-t border-[#414559]/50 sm:border-0">
-              {globalChar.unallocatedPoints > 0 ? (
+              {globalChar.unallocatedPoints > 0 && (
                 <Badge variant="success" className="animate-pulse px-2.5 py-1 text-[11px] sm:text-xs">
                   {globalChar.unallocatedPoints} Stat Pts!
                 </Badge>
-              ) : (
-                <Button
-                  size="sm"
-                  variant="ghost"
-                  className="border border-[#414559] hover:bg-[#414559]/30 text-[#a5adce] text-[10px] py-1 h-auto"
-                  onClick={() => portAwardExp(50)}
-                  title="Grant +50 EXP to test leveling"
-                >
-                  +50 XP
-                </Button>
               )}
 
               <Button variant="ghost" onClick={() => setActiveBadgesModal(true)} className="border border-[#414559] hover:bg-[#414559]/50 text-xs w-full sm:w-auto py-2">
