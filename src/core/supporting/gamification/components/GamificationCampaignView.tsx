@@ -52,7 +52,35 @@ export const GamificationCampaignView: React.FC = () => {
   // Active topic ID defaults to selected or 'gamification'
   const currentTopicId = selectedTopicId || 'gamification'
 
+  // Per-topic selected difficulty state for Lobby start
+  const [topicDifficulties, setTopicDifficulties] = useState<Record<string, DifficultyLevel>>(() => {
+    const initialMap: Record<string, DifficultyLevel> = {}
+    KNOWN_HEXMAP_TOPIC_IDS.forEach((tid) => {
+      try {
+        const raw = localStorage.getItem(`loom_gamification_campaign_${tid}`)
+        if (raw) {
+          const parsed = JSON.parse(raw)
+          if (parsed.difficulty) initialMap[tid] = parsed.difficulty
+        }
+      } catch {
+        // ignore
+      }
+      if (!initialMap[tid]) initialMap[tid] = 'normal'
+    })
+    return initialMap
+  })
+
   const handleSelectTopic = (topicId: string) => {
+    // Save selected difficulty before switching
+    const chosenDiff = topicDifficulties[topicId] || 'normal'
+    try {
+      const key = `loom_gamification_campaign_${topicId}`
+      const raw = localStorage.getItem(key)
+      const data = raw ? JSON.parse(raw) : {}
+      localStorage.setItem(key, JSON.stringify({ ...data, difficulty: chosenDiff }))
+    } catch {
+      // ignore
+    }
     setSelectedTopicId(topicId)
     setSearchParams({ topic: topicId })
   }
@@ -422,6 +450,10 @@ export const GamificationCampaignView: React.FC = () => {
 
               const isCurrent = topic.id === currentTopicId
               const clearedCount = isCurrent ? campaign.clearedNodeIds.length : topicClearedCount
+              const topicBadges = globalChar.unlockedBadges.filter(
+                (b) => b.topicId === topic.id || b.topicTitle === topic.label
+              )
+              const selectedDiff = topicDifficulties[topic.id] || (isCurrent ? campaign.difficulty : 'normal')
 
               return (
                 <div
@@ -450,6 +482,28 @@ export const GamificationCampaignView: React.FC = () => {
                       {topic.description}
                     </p>
 
+                    {/* Earned Topic Badges Section */}
+                    {topicBadges.length > 0 && (
+                      <div className="bg-[#1e1e2e]/70 p-2.5 rounded-xl border border-[#8caaee]/30 space-y-1.5">
+                        <span className="text-[10px] uppercase font-bold text-[#8caaee] tracking-wider block">
+                          Earned Topic Badges ({topicBadges.length}):
+                        </span>
+                        <div className="flex items-center gap-1.5 flex-wrap">
+                          {topicBadges.map((badge) => (
+                            <Badge
+                              key={badge.id}
+                              variant="secondary"
+                              className="bg-[#8caaee]/20 text-[#8caaee] border-[#8caaee]/40 text-[10px] px-2 py-0.5 flex items-center gap-1"
+                              title={badge.description}
+                            >
+                              <span>{badge.icon}</span>
+                              <span className="truncate max-w-[120px]">{badge.title}</span>
+                            </Badge>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+
                     {/* Progress & Difficulty Selector */}
                     <div className="pt-3 border-t border-[#414559]/50 space-y-2.5">
                       <div className="flex items-center justify-between text-xs text-[#a5adce]">
@@ -465,13 +519,17 @@ export const GamificationCampaignView: React.FC = () => {
                         <div className="flex items-center gap-1">
                           {(['easy', 'normal', 'hard', 'nightmare'] as DifficultyLevel[]).map((diff) => {
                             const conf = DIFFICULTY_CONFIGS[diff]
-                            const isActive = (isCurrent ? campaign.difficulty : 'normal') === diff
+                            const isActive = selectedDiff === diff
                             return (
                               <button
                                 key={diff}
                                 type="button"
                                 onClick={(e) => {
                                   e.stopPropagation()
+                                  setTopicDifficulties((prev) => ({
+                                    ...prev,
+                                    [topic.id]: diff,
+                                  }))
                                   if (isCurrent) {
                                     portSetDifficulty(diff)
                                   } else {
