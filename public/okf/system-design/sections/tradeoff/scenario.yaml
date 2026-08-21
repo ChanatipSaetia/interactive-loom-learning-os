@@ -1,0 +1,113 @@
+- id: ecommerce
+  title: "E-Commerce Platform"
+  description: "You are designing an e-commerce platform. Adjust the trade-offs to find the right balance."
+  metrics:
+    - id: consistency
+      label: "Consistency"
+      baseValue: 50
+      min: 0
+      max: 100
+      direction: "higher"
+    - id: availability
+      label: "Availability"
+      baseValue: 50
+      min: 0
+      max: 100
+      direction: "higher"
+    - id: latency
+      label: "Latency"
+      baseValue: 50
+      min: 0
+      max: 100
+      direction: "lower"
+    - id: cost
+      label: "Cost"
+      baseValue: 50
+      min: 0
+      max: 100
+      direction: "lower"
+  steps:
+    - id: step1
+      title: "Choose Consistency Model"
+      description: "How should data consistency be handled across replicas?"
+      choices:
+        - id: strong
+          label: "Strong Consistency"
+          description: "All nodes see the same data at the same time"
+          metrics:
+            consistency: 90
+            availability: 40
+            latency: 30
+            cost: 70
+          pros:
+            - title: "Data Accuracy"
+              description: "Users always see the latest data"
+            - title: "Simplicity"
+              description: "Easier to reason about system behavior"
+          cons:
+            - title: "Lower Availability"
+              description: "System may be unavailable during failures"
+            - title: "Higher Latency"
+              description: "Waiting for all replicas to confirm"
+          whyThisFits: "Best for inventory and payment systems"
+          whenToUse: "When data accuracy is more important than speed"
+        - id: eventual
+          label: "Eventual Consistency"
+          description: "System is faster, but users might see stale data briefly"
+          metrics:
+            consistency: 40
+            availability: 90
+            latency: 80
+            cost: 50
+          pros:
+            - title: "High Availability"
+              description: "System remains responsive during failures"
+            - title: "Low Latency"
+              description: "Fast responses for users"
+          cons:
+            - title: "Stale Data"
+              description: "Users might see outdated information"
+            - title: "Complexity"
+              description: "Harder to handle conflicts"
+          whyThisFits: "Best for product catalogs and reviews"
+          whenToUse: "When availability and speed matter more than immediate accuracy"
+    - id: step2
+      title: "Choose Deployment Strategy"
+      description: "How should the system be deployed across regions?"
+      choices:
+        - id: single
+          label: "Single Region"
+          description: "All resources in one data center"
+          metrics:
+            consistency: 70
+            availability: 50
+            latency: 60
+            cost: 30
+          pros:
+            - title: "Lower Cost"
+              description: "Single data center reduces infrastructure costs"
+            - title: "Simpler Operations"
+              description: "Easier to manage and monitor"
+          cons:
+            - title: "Single Point of Failure"
+              description: "Region outage affects all users"
+            - title: "Limited Scale"
+              description: "Geographic limitations for users"
+        - id: multi
+          label: "Multi-Region"
+          description: "Deployed across multiple geographic regions"
+          metrics:
+            consistency: 50
+            availability: 90
+            latency: 80
+            cost: 80
+          pros:
+            - title: "Better Availability"
+              description: "Region failures don't take down the system"
+            - title: "Global Performance"
+              description: "Users connect to nearest region"
+          cons:
+            - title: "Higher Cost"
+              description: "Multiple data centers increase expenses"
+            - title: "Complex Consistency"
+              description: "Harder to maintain data consistency"

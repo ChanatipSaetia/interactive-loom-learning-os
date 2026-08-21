@@ -1,7 +1,29 @@
-what: "System design is the process of defining system architecture, components, modules, interfaces, and data to satisfy requirements."
-why: "Good system design ensures scalability, reliability, and maintainability—critical for systems serving millions of users."
+what:
+  definition: "System design is the process of defining the architecture, components, modules, interfaces, and data for a system to satisfy specified requirements."
+  summary: "Learn how to design scalable, reliable, and maintainable distributed systems."
+  bullets:
+    - Scalability through horizontal and vertical scaling
+    - Reliability via redundancy and failover
+    - Maintainability through modularity and testing
+  tags:
+    - architecture
+    - scalability
+    - distributed-systems
+
+why:
+  summary: "Good system design ensures your applications can handle millions of users while remaining reliable and easy to maintain."
+  impact: "Poor design leads to system failures, downtime, and expensive rewrites."
+
 roadmap:
-  - "Learn core principles of scalable design"
-  - "Practice with quiz challenges"
-  - "Reflect on real-world trade-offs"
-  - "Experiment with design decisions in sandbox"
+  - title: "Core Principles"
+    type: "text"
+    description: "Learn scalability, reliability, and maintainability"
+  - title: "Knowledge Check"
+    type: "quiz"
+    description: "Test your understanding with quiz questions"
+  - title: "Design Reflection"
+    type: "reflection"
+    description: "Reflect on real-world trade-offs"
+  - title: "Trade-off Sandbox"
+    type: "tradeoff"
+    description: "Experiment with design decisions"

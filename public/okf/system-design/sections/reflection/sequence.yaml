@@ -1,0 +1,59 @@
+- prompt: "Arrange the 4 phases of Nir Eyal's Hook Model in the correct order"
+  items:
+    - id: action
+      text: "Action (User performs behavior)"
+      icon: "👆"
+    - id: trigger
+      text: "Trigger (External or internal cue)"
+      icon: "🔔"
+    - id: reward
+      text: "Variable Reward (Unpredictable delight)"
+      icon: "🎁"
+    - id: investment
+      text: "Investment (User puts effort into system)"
+      icon: "💎"
+  solution:
+    - trigger
+    - action
+    - reward
+    - investment
+
+- prompt: "Order the steps of designing a scalable system"
+  items:
+    - id: capacity
+      text: "Estimate system capacity requirements"
+      icon: "📊"
+    - id: bottleneck
+      text: "Identify potential bottlenecks"
+      icon: "🔍"
+    - id: decompose
+      text: "Decompose into independent services"
+      icon: "🧩"
+    - id: replicate
+      text: "Add replication and caching"
+      icon: "📋"
+  solution:
+    - capacity
+    - bottleneck
+    - decompose
+    - replicate
+
+- prompt: "Arrange the trade-off decision flow for distributed databases"
+  items:
+    - id: requirement
+      text: "Define data consistency requirements"
+      icon: "📝"
+    - id: failure
+      text: "Define acceptable failure modes"
+      icon: "⚠️"
+    - id: choose
+      text: "Choose CP or AP architecture"
+      icon: "🏗️"
+    - id: implement
+      text: "Implement chosen strategy"
+      icon: "⚙️"
+  solution:
+    - requirement
+    - failure
+    - choose
+    - implement
