@@ -75,14 +75,6 @@ ailiths_chimes:
   desc: "Converts Combo expenditure into Power Charges"
   type: "external"
 
-# Duplicate a system that appears in multiple steps — map it back via collapsedTo
-heralds2:
-  title: "Herald of Thunder + Ice"
-  desc: "Explosions triggered on enemy death"
-  type: "aggregate"
-  collapsedTo: "heralds"    # collapses to the canonical "heralds" node in the UI
-```
-
 `SystemDecl`:
 
 | Field | Type | Required | Description |
@@ -90,7 +82,6 @@ heralds2:
 | `title` | `string` | Yes | Display name |
 | `desc` | `string` | Yes | Description |
 | `type` | `"aggregate" \| "external"` | Yes | Internal aggregate or external system |
-| `collapsedTo` | `string` | No | ID of the canonical node this duplicate collapses into |
 | `stateMachine` | `StateMachine` | No | Optional state machine definition |
 
 `StateMachine`:
@@ -107,7 +98,7 @@ stateMachine:
 ```
 
 > [!IMPORTANT]
-> **Duplicate rule**: If the same system (e.g., `heralds`) participates in multiple separate steps, create a duplicate entry per step (`heralds`, `heralds2`, etc.) and set `collapsedTo` on each duplicate to point back to the canonical node. This keeps the `handledBy` chain correct per step.
+> **Per-step duplication rule**: If the same system or actor participates in multiple separate steps, `deriveSchema` automatically generates per-step node instances in EVENT_STORMING view (sharing exact titles) and collapses them into a single canonical node in derived views (`SYS_ARCH`, `SWIMLANES`, etc.) based on matching title and type. Reference declared canonical system IDs directly in `steps.yaml`.
 >
 > See [event-storming-conventions.md](../event-storming-conventions.md) for the full EVENT → POLICY → COMMAND → AGGREGATE → EVENT cycle rule.
 
@@ -257,7 +248,7 @@ Flowchart sections are automatically checked by the **3-Tier Validation Gateway*
 - **Tier 2 (Structural Schema)**: Validates structural fields against `FlowchartSectionSchema`.
 - **Tier 3 (Semantic Reference Integrity)**:
   - **Entity Reference Check**: Validates that all relation `from`/`to` references, journey `nodeIds`, and view `nodes`/`groups` target existing entity IDs.
-  - **Actor & System Node Event Connectivity**: Ensures every `Actor` (User) and `System` (`Aggregate`, `External API`, `Service`, `Database`, `Core System`) node declared in the section is connected to at least one `Event` node in the relation graph. Unconnected nodes trigger a `tier: 3` warning with a `fixHint`.
+  - **Actor & System Node Event Connectivity**: Ensures every `Actor` (User) and `System` (`Aggregate`, `External API`, `Service`, `Database`) node declared in the section is connected to at least one `Event` node in the relation graph. Unconnected nodes trigger a `tier: 3` warning with a `fixHint`.
   - **State Machine Reference Check**: Ensures `stateMachine.initialState` exists in `stateMachine.states`.
 
 ---

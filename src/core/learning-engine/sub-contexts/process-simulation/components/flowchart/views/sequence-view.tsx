@@ -26,6 +26,7 @@ export const SequenceView = memo(function SequenceView({
 }: SequenceViewProps) {
   const [tooltip, setTooltip] = useState<{ description: string; x: number; y: number } | null>(null);
   const [hoveredEdgeId, setHoveredEdgeId] = useState<string | null>(null);
+  const [selectedEdgeId, setSelectedEdgeId] = useState<string | null>(null);
   const [hoveredEdgeNodeIds, setHoveredEdgeNodeIds] = useState<string[] | null>(null);
 
   const seqRelations = useMemo(
@@ -47,31 +48,69 @@ export const SequenceView = memo(function SequenceView({
   const COL_W = 200;
   const START_X = 140;
   const TOP_Y = 12;
-  const MSG_SPACING = 40;
-  const MSG_START_Y = TOP_Y + NODE_H + 20;
-  const BOTTOM_Y = MSG_START_Y + Math.max(0, seqRelations.length - 1) * MSG_SPACING + 60;
+  const MSG_SPACING = 44;
+  const MSG_START_Y = 160;
+  const lastRelY = seqRelations.length > 0
+    ? MSG_START_Y + (seqRelations.length - 1) * MSG_SPACING + (seqRelations[seqRelations.length - 1].yOffset ?? 0)
+    : MSG_START_Y;
+  const BOTTOM_Y = lastRelY + 60;
 
   return (
     <>
       {/* Sequence Groups / Condition Boundaries */}
       {view.groups && view.groups.map(group => {
         const isFaded = activeNodeIds !== null;
-        const gCols = seqColumns.filter(([, nodeId]) => group.nodeIds?.includes(nodeId));
-        if (gCols.length === 0) return null;
-
-        const minCol = Math.min(...gCols.map(([c]) => c));
-        const maxCol = Math.max(...gCols.map(([c]) => c));
-        const xStart = minCol * COL_W + START_X - NODE_W / 2 - 20;
-        const xEnd = maxCol * COL_W + START_X + NODE_W / 2 + 20;
-        
         const yVal = group.y ?? (TOP_Y + NODE_H / 2);
         const hVal = group.h ?? (BOTTOM_Y - yVal + NODE_H / 2);
+
+        // Calculate horizontal bounds directly from the sequence message lines inside this group
+        // Use exact seqIndex range if available; fall back to Y-range for non-sequence groups
+        const groupRels = (group.seqIndexMin !== undefined && group.seqIndexMax !== undefined)
+          ? seqRelations.filter(rel =>
+              (rel.seqIndex ?? -1) >= group.seqIndexMin! &&
+              (rel.seqIndex ?? -1) <= group.seqIndexMax!
+            )
+          : seqRelations.filter((rel, idx) => {
+              const rY = MSG_START_Y + idx * MSG_SPACING + (rel.yOffset || 0);
+              return rY >= yVal - 10 && rY <= yVal + hVal + 10;
+            });
+
+        let xMin = Infinity;
+        let xMax = -Infinity;
+
+        if (groupRels.length > 0) {
+          groupRels.forEach(rel => {
+            const fromColPair = seqColumns.find(([, id]) => id === rel.from);
+            const toColPair = seqColumns.find(([, id]) => id === rel.to);
+            const cFrom = fromColPair ? fromColPair[0] : 0;
+            const cTo = toColPair ? toColPair[0] : 0;
+
+            const xFrom = cFrom * COL_W + START_X;
+            const xTo = cTo * COL_W + START_X;
+
+            if (rel.from === rel.to) {
+              xMin = Math.min(xMin, xFrom - 15);
+              xMax = Math.max(xMax, xFrom + 85);
+            } else {
+              xMin = Math.min(xMin, Math.min(xFrom, xTo));
+              xMax = Math.max(xMax, Math.max(xFrom, xTo));
+            }
+          });
+        }
+
+        if (!isFinite(xMin) || !isFinite(xMax)) {
+          xMin = START_X;
+          xMax = START_X + COL_W;
+        }
+
+        const xStart = xMin - 16;
+        const xEnd = xMax + 16;
 
         return (
           <g 
             key={group.id} 
             className="flowchart-seq-group" 
-            opacity={isFaded ? 0.15 : 0.85} 
+            opacity={isFaded ? 0.55 : 0.85} 
             style={{ transition: 'opacity 0.3s' }}
             data-testid={`flowchart-seq-group-${viewKey}-${group.id}`}
           >
@@ -130,16 +169,19 @@ export const SequenceView = memo(function SequenceView({
         const [toCol] = toColEntry;
         const x1 = fromCol * COL_W + START_X;
         const x2 = toCol * COL_W + START_X;
-        const y = MSG_START_Y + idx * MSG_SPACING;
+        const y = MSG_START_Y + idx * MSG_SPACING + (rel.yOffset || 0);
         const midX = (x1 + x2) / 2;
         const isSelf = x1 === x2;
         const edgeId = `seq-edge-${rel.id}`;
         const isHoveredEdge = hoveredEdgeId === edgeId;
+        const isSelectedEdge = selectedEdgeId === edgeId;
+        const isExpanded = isHoveredEdge || isSelectedEdge || activeRelationIds?.includes(rel.id);
         const isHighlightedNode = highlightedNodeId === rel.from || highlightedNodeId === rel.to;
         const isRelationActive = activeRelationIds?.includes(rel.id) || false;
-        const isEdgeActive = isHighlightedNode || isHoveredEdge || isRelationActive || !!(activeNodeIds?.includes(rel.from) || activeNodeIds?.includes(rel.to));
+        const isEdgeActive = isHighlightedNode || isExpanded || isRelationActive;
 
         const isEvent = rel.dashed;
+        const opacityVal = isExpanded ? 1.0 : ((activeNodeIds !== null && !isEdgeActive) ? 0.70 : 0.9);
         const strokeColor = isEvent ? 'var(--ctp-peach)' : 'var(--ctp-blue)';
         const strokeWidth = isEdgeActive ? 2.5 : 1.5;
 
@@ -150,41 +192,62 @@ export const SequenceView = memo(function SequenceView({
         let displayLabel = rel.label || '';
         const segmentLength = isSelf ? COL_W - 40 : Math.abs(x2 - x1);
         
-        // Ensure the label pill doesn't exceed the segment length, with a large padding to keep it visually contained
-        const maxAllowedChars = Math.max(5, Math.floor((segmentLength - 80) / 7));
-        if (displayLabel && displayLabel.length > maxAllowedChars) {
-          displayLabel = displayLabel.substring(0, maxAllowedChars - 3) + '...';
+        // Ensure the label pill doesn't exceed the segment length unless expanded
+        if (!isExpanded && displayLabel) {
+          const maxAllowedChars = Math.max(5, Math.floor((segmentLength - 80) / 7));
+          if (displayLabel.length > maxAllowedChars) {
+            displayLabel = displayLabel.substring(0, Math.max(2, maxAllowedChars - 3)) + '...';
+          }
         }
+
+        const toggleSeqEdge = (e: React.SyntheticEvent) => {
+          e.stopPropagation();
+          if (selectedEdgeId === edgeId) {
+            setSelectedEdgeId(null);
+            setHoveredEdgeNodeIds(null);
+            setTooltip(null);
+          } else {
+            setSelectedEdgeId(edgeId);
+            setHoveredEdgeNodeIds([rel.from, rel.to]);
+            if (rel.label) {
+              setTooltip({ description: rel.label, x: isSelf ? x1 + 40 : midX, y });
+            }
+          }
+        };
 
         return (
           <g 
             key={edgeId} 
-            opacity={(activeNodeIds !== null && !isEdgeActive) ? 0.2 : 0.9}
+            className="flowchart-edge-group"
+            opacity={opacityVal} 
             style={{ transition: 'opacity 0.3s' }}
             onMouseEnter={() => {
               setHoveredEdgeId(edgeId);
               setHoveredEdgeNodeIds([rel.from, rel.to]);
-              if (rel.label) {
+              if (!selectedEdgeId && rel.label) {
                 setTooltip({ description: rel.label, x: isSelf ? x1 + 40 : midX, y });
               }
             }}
             onMouseLeave={() => {
               setHoveredEdgeId(null);
-              setHoveredEdgeNodeIds(null);
-              setTooltip(null);
+              if (!selectedEdgeId) {
+                setHoveredEdgeNodeIds(null);
+                setTooltip(null);
+              }
             }}
+            onClick={toggleSeqEdge}
+            onTouchEnd={toggleSeqEdge}
             data-testid={`flowchart-seq-msg-${viewKey}-${idx}`}
           >
             {isSelf ? (
               <>
-                {/* Invisible wider hover path for self-loop */}
+                {/* Invisible wider hit path for self-loop */}
                 <path
                   d={`M ${x1} ${y - 12} h 35 v 24 h -35`}
-                  stroke="#000"
-                  strokeOpacity="0"
+                  stroke="transparent"
                   strokeWidth="20"
                   fill="none"
-                  style={{ cursor: 'pointer' }}
+                  style={{ pointerEvents: 'stroke', cursor: 'pointer' }}
                 />
                 {/* Visible self-loop path */}
                 <path
@@ -203,16 +266,15 @@ export const SequenceView = memo(function SequenceView({
               </>
             ) : (
               <>
-                {/* Invisible wider hover path */}
+                {/* Invisible wider hit path */}
                 <line
                   x1={x1}
                   y1={y}
                   x2={x2}
                   y2={y}
-                  stroke="#000"
-                  strokeOpacity="0"
+                  stroke="transparent"
                   strokeWidth="25"
-                  style={{ cursor: 'pointer' }}
+                  style={{ pointerEvents: 'stroke', cursor: 'pointer' }}
                 />
                 {/* Visible animated dash line */}
                 <line
@@ -233,7 +295,12 @@ export const SequenceView = memo(function SequenceView({
               </>
             )}
             {displayLabel && (
-              <g transform={`translate(${isSelf ? x1 + 30 + (displayLabel.length * 3.5) : midX}, ${y})`} style={{ pointerEvents: 'none' }}>
+              <g 
+                transform={`translate(${isSelf ? x1 + 30 + (displayLabel.length * 3.5) : midX}, ${y})`} 
+                style={{ pointerEvents: 'auto', cursor: 'pointer' }}
+                onClick={toggleSeqEdge}
+                onTouchEnd={toggleSeqEdge}
+              >
                 <rect
                   x={-displayLabel.length * 3.5 - 6}
                   y="-10"
@@ -262,30 +329,7 @@ export const SequenceView = memo(function SequenceView({
         );
       })}
 
-      {/* Sequence activation bars */}
-      {activeNodeIds && activeNodeIds.map(nodeId => {
-        const colEntry = seqColumns.find(([, id]) => id === nodeId);
-        if (!colEntry) return null;
-        const [colIdx] = colEntry;
-        const colX = colIdx * COL_W + START_X;
-        const lifelineStart = TOP_Y + NODE_H + 8;
-        return (
-          <rect
-            key={`seq-activation-${nodeId}`}
-            data-testid={`flowchart-seq-activation-${viewKey}-${nodeId}`}
-            x={colX - 5}
-            y={lifelineStart}
-            width={10}
-            height={BOTTOM_Y - lifelineStart - 8}
-            rx="3"
-            fill="color-mix(in srgb, var(--secondary) 12%, transparent)"
-            stroke="var(--secondary)"
-            strokeWidth="1"
-          />
-        );
-      })}
-
-      {/* Sequence Participants (Rendered last so they are on top) */}
+      {/* Sequence Participants (Rendered on top) */}
       {seqColumns.map(([colIdx, nodeId]) => {
         const entity = schema.entities[nodeId];
         if (!entity) return null;
@@ -301,8 +345,7 @@ export const SequenceView = memo(function SequenceView({
           : null;
 
         const isHoveredNode = hoveredEdgeNodeIds && hoveredEdgeNodeIds.includes(nodeId);
-        const isHighlighted = (activeNodeIds && activeNodeIds.includes(nodeId)) || isHoveredNode || (highlightedNodeId === nodeId);
-        const isDimmed = activeNodeIds !== null && !isHighlighted && hoveredEdgeId === null;
+        const isHighlighted = isHoveredNode || (highlightedNodeId === nodeId);
 
         const colX = colIdx * COL_W + START_X;
         const x = colX - NODE_W / 2;
@@ -320,7 +363,7 @@ export const SequenceView = memo(function SequenceView({
               }}
               onMouseLeave={() => setTooltip(null)}
               style={{
-                opacity: isDimmed ? 0.25 : 1,
+                opacity: 1,
                 transition: 'opacity 0.3s, filter 0.3s',
               }}
             >
@@ -411,7 +454,7 @@ export const SequenceView = memo(function SequenceView({
               transform={`translate(${x}, ${BOTTOM_Y})`}
               data-testid={`flowchart-seq-bottom-${viewKey}-${nodeId}`}
               style={{
-                opacity: isDimmed ? 0.25 : 1,
+                opacity: 1,
                 transition: 'opacity 0.3s, filter 0.3s',
               }}
             >

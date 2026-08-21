@@ -1,0 +1,65 @@
+- id: happy-path
+  label: "Happy Path: Badge Day"
+  description: "Learner answers correctly, earns a badge, extends the streak, and gets a promotion notification."
+  steps:
+    - stepId: start_lesson
+      name: "Start Lesson"
+      description: "Learner opens a lesson; the engine loads the exercises."
+      processGroup: learning
+    - stepId: submit_answers
+      name: "Submit Answers"
+      description: "Learner submits answers; the grading service evaluates correctness and XP value."
+      processGroup: learning
+    - stepId: award_xp
+      name: "Award XP"
+      description: "Answers are correct — the reward engine credits experience points."
+      processGroup: reward
+    - stepId: unlock_badge
+      name: "Unlock Badge"
+      description: "Progress crosses a badge threshold — a new achievement is unlocked."
+      processGroup: reward
+    - stepId: extend_streak
+      name: "Extend Streak"
+      description: "Daily goal met — the streak counter increments and the habit is reinforced."
+      processGroup: habit
+    - stepId: update_league
+      name: "Recalculate Standings"
+      description: "XP change triggers a league standings recalculation."
+      processGroup: competition
+    - stepId: send_notification
+      name: "Send Push Notification"
+      description: "The promotion is celebrated with a push notification."
+      processGroup: feedback
+
+- id: retry-loop
+  label: "Retry Loop & Streak Freeze"
+  description: "Learner answers wrong, retries with a hint, then misses the daily goal and uses a streak freeze."
+  steps:
+    - stepId: submit_answers
+      name: "Submit Answers"
+      description: "Learner submits answers; the grading service finds an incorrect answer."
+      processGroup: learning
+    - stepId: show_hint
+      name: "Show Hint"
+      description: "A partial-credit hint is displayed and the learner retries the exercise."
+      processGroup: learning
+    - stepId: award_xp
+      name: "Award XP"
+      description: "The retry succeeds — XP is credited at the reduced partial-credit rate."
+      processGroup: reward
+    - stepId: continue_lesson
+      name: "Continue Lesson"
+      description: "No badge threshold crossed; the learner moves to the next exercise."
+      processGroup: reward
+    - stepId: freeze_streak
+      name: "Apply Streak Freeze"
+      description: "Daily goal missed — a freeze token protects the streak from resetting."
+      processGroup: habit
+    - stepId: update_league
+      name: "Recalculate Standings"
+      description: "Standings are recalculated; no promotion this time."
+      processGroup: competition
+    - stepId: silent_update
+      name: "Log Silently"
+      description: "The update is persisted quietly without a notification."
+      processGroup: feedback

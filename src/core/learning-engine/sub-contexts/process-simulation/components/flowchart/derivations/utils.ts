@@ -2,6 +2,8 @@
 import type { UnifiedFlowchartSchema, FlowchartRelation, FlowchartEntity, LayoutInfo } from '../types';
 import { TYPES } from '../types';
 
+import { buildCanonicalIdMapper } from '../abstract-flow/derive';
+
 export const getEntityType = (entity: FlowchartEntity | undefined): string => {
   return entity?.type || entity?.viewTypes?.EVENT_STORMING || 'default';
 };
@@ -67,7 +69,7 @@ export function deriveRelations(
   const relations: FlowchartRelation[] = [];
   const visitedPaths = new Set<string>();
 
-  const getCollapsedId = (id: string): string => schema.entities[id]?.collapsedTo || id;
+  const getCollapsedId = buildCanonicalIdMapper(schema.entities);
 
   participantIds.forEach(startId => {
     const collapsedStart = getCollapsedId(startId);
@@ -131,9 +133,22 @@ export function deriveRelations(
               if (!hasDirectESRel) continue;
             }
 
-            const relKey = `${collapsedStart}->${collapsedNext}:${label}`;
-            if (!visitedPaths.has(relKey)) {
-              visitedPaths.add(relKey);
+            const pairKey = [collapsedStart, collapsedNext].sort().join('<->');
+            const existingRel = relations.find(
+              r => r.views?.includes(viewKey) &&
+              ((r.from === collapsedStart && r.to === collapsedNext) || (r.from === collapsedNext && r.to === collapsedStart))
+            );
+            if (existingRel) {
+              if (existingRel.from !== collapsedStart || existingRel.to !== collapsedNext) {
+                existingRel.bidirectional = true;
+              }
+              if (label && existingRel.label && !existingRel.label.includes(label)) {
+                existingRel.label = `${existingRel.label} / ${label}`;
+              } else if (label && !existingRel.label) {
+                existingRel.label = label;
+              }
+            } else if (!visitedPaths.has(pairKey)) {
+              visitedPaths.add(pairKey);
 
               let chronologicalIndex = 999;
               const labelNodeId = pathNodeIds.find(id => {
@@ -158,7 +173,7 @@ export function deriveRelations(
               }
 
               relations.push({
-                id: `derived_${viewKey.toLowerCase()}_rel_${collapsedStart}_${collapsedNext}_${relations.length}`,
+                id: `derived_${viewKey.toLowerCase()}_rel_${collapsedStart}_${collapsedNext}`,
                 from: collapsedStart,
                 to: collapsedNext,
                 views: [viewKey],
@@ -311,16 +326,24 @@ export function isType(entities: Record<string, FlowchartEntity>, id: string, ty
 }
 
 export function computeLayoutInfo(nodes: any[]): LayoutInfo {
-  let maxRow = 0, maxCol = 0;
+  let minRow = Infinity, maxRow = 0, minCol = Infinity, maxCol = 0;
   nodes.forEach(n => {
     if (n.grid) {
+      minRow = Math.min(minRow, n.grid[1]);
       maxRow = Math.max(maxRow, n.grid[1]);
+      minCol = Math.min(minCol, n.grid[0]);
       maxCol = Math.max(maxCol, n.grid[0]);
     }
   });
+  if (minRow === Infinity) minRow = 0;
+  if (minCol === Infinity) minCol = 0;
+
+  const rowDiff = maxRow > minRow ? (maxRow - minRow) : maxRow;
+  const colDiff = maxCol > minCol ? (maxCol - minCol) : maxCol;
+
   return {
-    rowCount: maxRow + 1,
-    colCount: maxCol + 1,
+    rowCount: Math.max(1, Math.ceil(maxRow) + 1, Math.ceil(rowDiff) + 1),
+    colCount: Math.max(1, Math.ceil(maxCol) + 1, Math.ceil(colDiff) + 1),
     nodeCount: nodes.length
   };
 }

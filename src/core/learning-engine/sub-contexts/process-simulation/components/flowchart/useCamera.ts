@@ -131,6 +131,10 @@ export function useCamera({ positionedNodesRef }: UseCameraOptions): UseCameraRe
 
   const onWheelNative = useCallback((e: WheelEvent) => {
     e.preventDefault();
+    e.stopPropagation();
+    if (typeof (e as any).stopImmediatePropagation === 'function') {
+      (e as any).stopImmediatePropagation();
+    }
     const delta = -e.deltaY * 0.0015;
     const currentScale = transformRef.current.scale;
     const currentTx = transformRef.current.translateX;
@@ -156,7 +160,12 @@ export function useCamera({ positionedNodesRef }: UseCameraOptions): UseCameraRe
   const onSvgTouchStartNative = useCallback((e: TouchEvent) => {
     const target = e.target as Element;
     if (target && typeof target.closest === 'function') {
-      if (target.closest('.flowchart-node-group') || target.closest('foreignObject')) {
+      if (
+        target.closest('.flowchart-node-group') ||
+        target.closest('foreignObject') ||
+        target.closest('.flowchart-edge-group') ||
+        target.closest('.flowchart-edge')
+      ) {
         return;
       }
     }
@@ -220,7 +229,15 @@ export function useCamera({ positionedNodesRef }: UseCameraOptions): UseCameraRe
   }, [handlePointerMove]);
 
   const onSvgMouseDown = useCallback((e: React.MouseEvent) => {
-    if ((e.target as Element).closest('.flowchart-node-group') || (e.target as Element).closest('foreignObject')) return;
+    const target = e.target as Element;
+    if (
+      target.closest('.flowchart-node-group') ||
+      target.closest('foreignObject') ||
+      target.closest('.flowchart-edge-group') ||
+      target.closest('.flowchart-edge')
+    ) {
+      return;
+    }
     isPanningRef.current = true;
     setIsPanning(true);
     panStartRef.current = {

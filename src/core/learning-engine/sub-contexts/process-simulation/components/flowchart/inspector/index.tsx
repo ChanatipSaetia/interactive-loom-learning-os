@@ -3,6 +3,7 @@ import { StateMachineWidget } from './state-machine-widget';
 import { JsonPayloadViewer } from './json-payload-viewer';
 import { Dropdown } from '../../../../../../ui-system/motion/dropdown';
 import { PROCESS_GROUP_STATE_MAP, STEP_EVENT_TO_STATE_MAP } from '../types';
+import { buildCanonicalIdMapper } from '../abstract-flow/derive';
 import type {
   UnifiedFlowchartSchema,
   FlowchartStep,
@@ -140,8 +141,10 @@ export function InspectorSidebar({
     if (selectedNodeId) {
       let entity = schema.entities[selectedNodeId];
       if (!entity) return null;
-      if (entity.collapsedTo) {
-        const canonical = schema.entities[entity.collapsedTo];
+      const getCanonicalId = buildCanonicalIdMapper(schema.entities);
+      const canonicalId = getCanonicalId(selectedNodeId);
+      if (canonicalId !== selectedNodeId) {
+        const canonical = schema.entities[canonicalId];
         if (canonical) {
           entity = {
             ...canonical,

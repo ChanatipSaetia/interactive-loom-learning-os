@@ -19,7 +19,7 @@ const FLOW_TYPES_BY_VIEW: Record<string, Set<string>> = {
   SWIMLANES: new Set([TYPES.PROCESS, TYPES.DECISION]),
   DATA_FLOW: new Set([TYPES.DATA_OBJECT, TYPES.DECISION]),
 };
-import { computeDynamicSpacing, routeManhattanPath } from './layout-utils';
+import { computeDynamicSpacing, routeManhattanPath, disambiguateAndBridgePaths } from './layout-utils';
 import { SequenceView } from './sequence-view';
 import { StandardView } from './standard-view';
 
@@ -81,7 +81,7 @@ export function FlowchartView({
       STATE_MACHINE: { colSpacing: 140, rowSpacing: 150, offsetX: 60, offsetY: 80 },
       SYS_ARCH: { colSpacing: 140, rowSpacing: 130, offsetX: 80, offsetY: 100 },
       DATA_FLOW: { colSpacing: 140, rowSpacing: 130, offsetX: 100, offsetY: 100 },
-      SWIMLANES: { colSpacing: 140, rowSpacing: 130, offsetX: 160, offsetY: 75 },
+      SWIMLANES: { colSpacing: 110, rowSpacing: 100, offsetX: 160, offsetY: 75 },
       SEQUENCE: { colSpacing: 100, rowSpacing: 48, offsetX: 60, offsetY: 80 },
     };
     const base = defaults[viewKey] || { colSpacing: 140, rowSpacing: 150, offsetX: 100, offsetY: 100 };
@@ -213,14 +213,17 @@ export function FlowchartView({
         }
       }
 
+      const finalToId = rel.to;
+      const finalToNode = toNode;
+
       return {
         rel,
         fromId: rel.from,
-        toId: rel.to,
+        toId: finalToId,
         sideFrom,
         sideTo,
         fromNode,
-        toNode,
+        toNode: finalToNode,
         colA, rowA, colB, rowB
       };
     }).filter(Boolean) as any[];
@@ -299,12 +302,12 @@ export function FlowchartView({
       });
     });
 
-    return relSides.map(entry => {
+    const rawRoutes = relSides.map(entry => {
       const ports = relPorts[entry.rel.id];
       if (!ports) return null;
 
       const { startX, startY, endX, endY, sideFrom, sideTo } = ports;
-      const { pathD, midX, midY } = routeManhattanPath(
+      const { pathD, points, midX, midY, incomingSide } = routeManhattanPath(
         startX, startY, endX, endY,
         sideFrom, sideTo,
         entry.fromNode, entry.toNode,
@@ -313,11 +316,20 @@ export function FlowchartView({
 
       return {
         ...entry.rel,
-        path: pathD,
+        pathD,
+        points,
         startX, startY, endX, endY,
-        midX, midY
+        midX, midY,
+        incomingSide
       };
-    }).filter(Boolean) as (any & { path: string })[];
+    }).filter(Boolean) as any[];
+
+    const bridgedRoutes = disambiguateAndBridgePaths(rawRoutes);
+
+    return bridgedRoutes.map(r => ({
+      ...r,
+      path: r.pathD
+    })) as (any & { path: string })[];
 
   }, [view, schema.relations, positioned, viewKey, spacing, nodeMap, isSequenceView]);
 
@@ -501,12 +513,31 @@ export function FlowchartView({
               <feDropShadow dx="0" dy="0" stdDeviation="4" floodColor="var(--secondary)" floodOpacity="0.8" />
               <feDropShadow dx="0" dy="0" stdDeviation="10" floodColor="var(--secondary)" floodOpacity="0.5" />
             </filter>
-            <marker id={`flowchart-arrow-${viewInstanceId}`} markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto">
-              <path d="M 0 0 L 7 3 L 0 6 Z" fill="var(--ctp-overlay1)" />
-            </marker>
-            <marker id={`flowchart-arrow-highlight-${viewInstanceId}`} markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto">
-              <path d="M 0 0 L 7 3 L 0 6 Z" fill="var(--secondary)" />
-            </marker>
+            {/* Directional arrow markers, one per target port side (sideTo).
+                Each triangle is pre-oriented to point INTO the target node
+                along the edge's final (incoming) segment, with its tip
+                anchored (refX/refY) exactly on the path endpoint so it lands
+                on the port:
+                  sideTo 'T' -> port on top edge,    edge arrives moving down   -> points down
+                  sideTo 'R' -> port on right edge,  edge arrives moving left   -> points left
+                  sideTo 'B' -> port on bottom edge, edge arrives moving up     -> points up
+                  sideTo 'L' -> port on left edge,   edge arrives moving right  -> points right */}
+            {(['T', 'R', 'B', 'L'] as const).flatMap(side => {
+              const tri = {
+                T: { d: 'M 0 0 L 6 0 L 3 7 Z', refX: 3, refY: 7 }, // tip at bottom, points down
+                R: { d: 'M 7 0 L 0 3 L 7 6 Z', refX: 0, refY: 3 }, // tip at left,   points left
+                B: { d: 'M 0 7 L 6 7 L 3 0 Z', refX: 3, refY: 0 }, // tip at top,    points up
+                L: { d: 'M 0 0 L 7 3 L 0 6 Z', refX: 7, refY: 3 }  // tip at right,  points right
+              }[side];
+              return [
+                <marker key={`arrow-${side}`} id={`flowchart-arrow-${side}-${viewInstanceId}`} markerWidth="8" markerHeight="8" refX={tri.refX} refY={tri.refY}>
+                  <path d={tri.d} fill="var(--ctp-overlay1)" />
+                </marker>,
+                <marker key={`arrow-highlight-${side}`} id={`flowchart-arrow-highlight-${side}-${viewInstanceId}`} markerWidth="8" markerHeight="8" refX={tri.refX} refY={tri.refY}>
+                  <path d={tri.d} fill="var(--secondary)" />
+                </marker>
+              ];
+            })}
             {isSequenceView && (
               <>
                 <marker id={`seq-arrow-cmd-${viewInstanceId}`} markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto">

@@ -1,0 +1,34 @@
+challenges:
+  - prompt: "Arrange the four stages of Nir Eyal's Hook Model in the correct order:"
+    items:
+      - id: hook-trigger
+        text: "A cue appears — notification, habit, or context (Trigger)"
+      - id: hook-action
+        text: "The user performs the simplest possible action (Action)"
+      - id: hook-variable
+        text: "A variable reward is delivered (Variable Reward)"
+      - id: hook-invest
+        text: "The user invests data, effort, or reputation (Investment)"
+    solution:
+      - hook-trigger
+      - hook-action
+      - hook-variable
+      - hook-invest
+  - prompt: "Arrange the reward feedback loop of a gamified learning app in the correct order:"
+    items:
+      - id: rw-submit
+        text: "Learner submits an answer"
+      - id: rw-notify
+        text: "A notification celebrates the milestone"
+      - id: rw-award
+        text: "XP is awarded and the progress bar advances"
+      - id: rw-grade
+        text: "The answer is graded and XP value is computed"
+      - id: rw-badge
+        text: "The badge threshold check unlocks a badge"
+    solution:
+      - rw-submit
+      - rw-grade
+      - rw-award
+      - rw-badge
+      - rw-notify

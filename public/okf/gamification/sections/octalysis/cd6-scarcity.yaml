@@ -1,0 +1,16 @@
+type: taxonomy-category
+icon: Hourglass
+title: "Scarcity & Impatience"
+subtitle: "Core Drive 6 — Black Hat"
+color: red
+description: "The drive toward limited-quantity or limited-time opportunities. 'Only 3 left' and 'ends tonight' create urgency and fear of missing out."
+details: "Use sparingly for genuinely limited opportunities. Fabricated scarcity is a dark pattern — it works once and destroys trust when users see through it."
+analogy: "Like a flash sale that ends at midnight."
+primaryFocus: "Urgency and limited opportunities"
+inScope:
+  - "Genuine limited-time events"
+  - "Seasonal challenges"
+  - "Exclusive early access"
+outOfScope:
+  - "Fake countdown timers"
+  - "Manufactured scarcity that resets daily"

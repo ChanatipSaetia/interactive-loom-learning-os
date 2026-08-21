@@ -1,0 +1,87 @@
+id: mechanic-fit
+title: "Mechanic Fit Advisor"
+root: inherent-fun
+nodes:
+  inherent-fun:
+    prompt: "Is the core activity already intrinsically enjoyable for your target users?"
+    choices:
+      - id: yes-fun
+        text: "Yes — users do it for its own sake"
+        next: fun-what
+        rationale: "If it's already fun, your risk is over-gamifying and crowding out intrinsic motivation."
+      - id: no-fun
+        text: "No — it's a chore, a duty, or a pain"
+        next: chore-what
+        rationale: "Chores need motivation design; the question is which kind."
+  fun-what:
+    prompt: "What is your main goal?"
+    choices:
+      - id: goal-habit
+        text: "Build a daily habit / consistency"
+        next: rec-light-habit
+        rationale: "Habit formation needs a commitment device, not reward inflation."
+      - id: goal-skill
+        text: "Accelerate skill mastery"
+        next: rec-mastery
+        rationale: "Mastery is best served by progress visibility tied to real ability."
+      - id: goal-social
+        text: "Grow a community"
+        next: rec-social
+        rationale: "Communities thrive on relatedness and shared goals."
+  chore-what:
+    prompt: "What kind of activity is it?"
+    choices:
+      - id: short-task
+        text: "Short, repeatable tasks (under 15 minutes)"
+        next: rec-pbl
+        rationale: "Short repeatable tasks map well to points, streaks, and quests."
+      - id: long-project
+        text: "Long, open-ended projects"
+        next: rec-narrative
+        rationale: "Long projects need meaning and milestones, not point churn."
+      - id: sensitive
+        text: "Sensitive context (health, finance, children)"
+        next: rec-careful
+        rationale: "Sensitive contexts demand ethical guardrails before mechanics."
+  rec-light-habit:
+    leaf:
+      recommendation: "Light-touch commitment devices: flexible streaks with freezes, gentle reminders, no leaderboards."
+      explanation: "The activity is already fun, so add the minimum structure that builds consistency. Strict streaks and extrinsic rewards risk overjustification — replacing the joy you already have with anxiety."
+      tradeoffs:
+        - "Weaker pull for sporadic users than hard streaks"
+        - "Requires A/B testing to find the right nudge intensity"
+  rec-mastery:
+    leaf:
+      recommendation: "Mastery-first: skill progress visualization, levels tied to demonstrated ability, badges for genuine milestones."
+      explanation: "Development & Accomplishment (Octalysis CD2) is the strongest drive for learning. Tie every point and badge to a real skill gain, or users will optimize the metric instead of the skill."
+      tradeoffs:
+        - "Needs per-skill assessment design — higher upfront effort"
+        - "Slower early dopamine than raw XP"
+  rec-social:
+    leaf:
+      recommendation: "Social layer first: team quests, cohort teams, opt-in recognition, shared celebrations."
+      explanation: "Social Influence & Relatedness (CD5) drives community growth. Recognition should be opt-in and broad, not a narrow leaderboard that shames the bottom."
+      tradeoffs:
+        - "Requires a minimum viable community size to work"
+        - "Free-riders and social pressure need moderation tools"
+  rec-pbl:
+    leaf:
+      recommendation: "Classic PBL with a twist: XP, badges, and flexible streaks, plus one social element."
+      explanation: "Short repeatable tasks reward well with Development & Accomplishment mechanics. Pair with a light social layer so engagement doesn't decay after the novelty wears off — the 'sprinkles and donuts' failure mode."
+      tradeoffs:
+        - "Extrinsic rewards may crowd out intrinsic motivation over time"
+        - "Points need a clear purpose — status or exchangeable, not both"
+  rec-narrative:
+    leaf:
+      recommendation: "Narrative framing: quests with story arcs, epic meaning & purpose, milestone celebrations."
+      explanation: "Long projects fatigue under point churn. Epic Meaning & Purpose (CD1) — 'this work matters' — sustains effort across weeks, and milestone badges mark real progress."
+      tradeoffs:
+        - "Story and quest design is expensive to author"
+        - "Narrative can feel forced if it doesn't match the work"
+  rec-careful:
+    leaf:
+      recommendation: "Ethics-first design: intrinsic feedback, private progress, no pressure mechanics, opt-in everything."
+      explanation: "In health, finance, and children's contexts, black-hat drives (scarcity, loss aversion, guilt) can cause real harm. Use white-hat drives — meaning, mastery, autonomy — and let users control the intensity."
+      tradeoffs:
+        - "Lower short-term engagement than pressure-based designs"
+        - "Requires ongoing ethics review as mechanics evolve"

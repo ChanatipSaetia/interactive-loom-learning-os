@@ -11,7 +11,7 @@ export interface StandardViewProps {
   view: { nodes: FlowchartViewNode[]; groups?: FlowchartViewGroup[] };
   positioned: FlowchartViewNode[];
   nodeMap: Map<string, FlowchartViewNode>;
-  routedRelations: (FlowchartRelation & { path: string, startX: number, startY: number, endX: number, endY: number, midX: number, midY: number })[];
+  routedRelations: (FlowchartRelation & { path: string, startX: number, startY: number, endX: number, endY: number, midX: number, midY: number, incomingSide?: string })[];
   activeNodeIds: string[] | null;
   activeRelationIds: string[] | null;
   highlightedNodeId: string | null;
@@ -42,6 +42,7 @@ export const StandardView = memo(function StandardView({
 
   const [tooltip, setTooltip] = useState<{ description: string; x: number; y: number } | null>(null);
   const [hoveredEdgeId, setHoveredEdgeId] = useState<string | null>(null);
+  const [selectedEdgeId, setSelectedEdgeId] = useState<string | null>(null);
   const [hoveredEdgeNodeIds, setHoveredEdgeNodeIds] = useState<string[] | null>(null);
 
   return (
@@ -60,7 +61,7 @@ export const StandardView = memo(function StandardView({
             hVal = laneHeight;
           }
           return (
-            <g key={group.id} className="flowchart-swimlane-group" opacity={isFaded ? 0.15 : 0.85} style={{ transition: 'opacity 0.3s' }}>
+            <g key={group.id} className="flowchart-swimlane-group" opacity={isFaded ? 0.55 : 0.85} style={{ transition: 'opacity 0.3s' }}>
               <rect
                 x={minX - 100}
                 y={yVal}
@@ -93,7 +94,7 @@ export const StandardView = memo(function StandardView({
         const gMaxY = Math.max(...gNodes.map(n => (n.y || 0) + NODE_H / 2)) + 30;
 
         return (
-          <g key={group.id} className="flowchart-domain-group" opacity={isFaded ? 0.15 : 1} style={{ transition: 'opacity 0.3s' }}>
+          <g key={group.id} className="flowchart-domain-group" opacity={isFaded ? 0.55 : 1} style={{ transition: 'opacity 0.3s' }}>
             <rect
               x={gMinX}
               y={gMinY}
@@ -127,16 +128,35 @@ export const StandardView = memo(function StandardView({
 
         const edgeId = `edge-${rel.id}`;
         const isHoveredEdge = hoveredEdgeId === edgeId;
+        const isSelectedEdge = selectedEdgeId === edgeId;
+        const isExpanded = isHoveredEdge || isSelectedEdge || activeRelationIds?.includes(rel.id);
         const isHighlightedNode = highlightedNodeId === rel.from || highlightedNodeId === rel.to;
         const isRelationActive = activeRelationIds?.includes(rel.id) || false;
-        const isEdgeActive = isHighlightedNode || isHoveredEdge || isRelationActive;
+        const isEdgeActive = isHighlightedNode || isExpanded || isRelationActive;
 
-        const isFaded = activeNodeIds !== null && !activeNodeIds.includes(rel.from) && !activeNodeIds.includes(rel.to) && !isRelationActive;
+        const isFaded = activeNodeIds !== null && !activeNodeIds.includes(rel.from) && !activeNodeIds.includes(rel.to) && !isRelationActive && !isExpanded;
+        const opacityVal = isExpanded ? 1.0 : (isFaded ? 0.70 : 0.90);
         const strokeColor = isEdgeActive ? 'var(--secondary)' : 'var(--ctp-overlay1)';
         const strokeWidth = isEdgeActive ? 2.5 : 1.5;
+        // Pick the arrow marker pre-oriented for this edge's incoming side so
+        // the tip points into the target port (e.g. sideTo 'L' => arrow
+        // points right into the left port). Fall back to 'L' (the legacy
+        // right-pointing marker) when side info is missing.
+        const incomingSide = relEntry.incomingSide;
+        const markerSide = incomingSide === 'T' || incomingSide === 'R' || incomingSide === 'B' || incomingSide === 'L'
+          ? incomingSide
+          : 'L';
         const marker = isEdgeActive
-          ? `url(#flowchart-arrow-highlight-${viewInstanceId})`
-          : `url(#flowchart-arrow-${viewInstanceId})`;
+          ? `url(#flowchart-arrow-highlight-${markerSide}-${viewInstanceId})`
+          : `url(#flowchart-arrow-${markerSide}-${viewInstanceId})`;
+
+        const sideFrom = (relEntry as any).sideFrom || 'R';
+        const startMarkerSide = ({ T: 'B', B: 'T', L: 'R', R: 'L' } as Record<string, string>)[sideFrom] || 'R';
+        const markerStart = rel.bidirectional
+          ? (isEdgeActive
+              ? `url(#flowchart-arrow-highlight-${startMarkerSide}-${viewInstanceId})`
+              : `url(#flowchart-arrow-${startMarkerSide}-${viewInstanceId})`)
+          : undefined;
 
         const midX = relEntry.midX || 0;
         const midY = relEntry.midY || 0;
@@ -153,42 +173,64 @@ export const StandardView = memo(function StandardView({
           if (fromType === 'POLICY' && toType === 'COMMAND') labelText = 'invokes';
         }
 
-       const segmentLength = Math.abs((relEntry.endX || 0) - (relEntry.startX || 0));
+        const segmentLength = Math.abs((relEntry.endX || 0) - (relEntry.startX || 0));
         let displayLabel = labelText;
-        if (displayLabel && displayLabel.length > 18 && segmentLength < 180) {
-          displayLabel = displayLabel.substring(0, 15) + '...';
+        if (!isExpanded && displayLabel) {
+          if (displayLabel.length > 18 && segmentLength < 180) {
+            displayLabel = displayLabel.substring(0, 15) + '...';
+          }
+          if (displayLabel.length * 7 + 12 > 70) {
+            displayLabel = displayLabel.substring(0, 7) + '...';
+          }
         }
-        if (displayLabel && displayLabel.length * 7 + 12 > 70) {
-          displayLabel = displayLabel.substring(0, 7) + '...';
-        }
+
+        const toggleEdge = (e: React.SyntheticEvent) => {
+          e.stopPropagation();
+          if (selectedEdgeId === edgeId) {
+            setSelectedEdgeId(null);
+            setHoveredEdgeNodeIds(null);
+            setTooltip(null);
+          } else {
+            setSelectedEdgeId(edgeId);
+            setHoveredEdgeNodeIds([rel.from, rel.to]);
+            if (labelText || isHandledBy) {
+              const desc = isHandledBy ? 'Handled by orchestrator runtime process flow.' : labelText;
+              if (desc) setTooltip({ description: desc, x: midX || 0, y: midY || 0 });
+            }
+          }
+        };
 
         return (
           <g 
             key={edgeId} 
-            opacity={isFaded ? 0.1 : 0.8} 
+            className="flowchart-edge-group"
+            opacity={opacityVal} 
             style={{ transition: 'opacity 0.3s' }}
             onMouseEnter={() => {
               setHoveredEdgeId(edgeId);
               setHoveredEdgeNodeIds([rel.from, rel.to]);
-              if (labelText || isHandledBy) {
+              if (!selectedEdgeId && (labelText || isHandledBy)) {
                 const desc = isHandledBy ? 'Handled by orchestrator runtime process flow.' : labelText;
                 if (desc) setTooltip({ description: desc, x: midX || 0, y: midY || 0 });
               }
             }}
             onMouseLeave={() => {
               setHoveredEdgeId(null);
-              setHoveredEdgeNodeIds(null);
-              setTooltip(null);
+              if (!selectedEdgeId) {
+                setHoveredEdgeNodeIds(null);
+                setTooltip(null);
+              }
             }}
+            onClick={toggleEdge}
+            onTouchEnd={toggleEdge}
           >
-            {/* Invisible wider interactive hover trigger path */}
+            {/* Invisible wider interactive hit path for mouse & touch events */}
             <path
               d={rel.path}
-              stroke="#000"
-              strokeOpacity="0"
-              strokeWidth="25"
+              stroke="transparent"
+              strokeWidth="30"
               fill="none"
-              style={{ cursor: 'pointer' }}
+              style={{ pointerEvents: 'stroke', cursor: 'pointer' }}
             />
             <path
               id={edgeId}
@@ -197,6 +239,7 @@ export const StandardView = memo(function StandardView({
               stroke={strokeColor}
               strokeWidth={strokeWidth}
               strokeDasharray={rel.dashed ? '4 4' : '8 8'}
+              markerStart={markerStart}
               markerEnd={marker}
               className="flowchart-edge flowchart-edge-animated"
               data-testid={`flowchart-edge-${viewKey}-${idx}`}
@@ -212,11 +255,15 @@ export const StandardView = memo(function StandardView({
               </g>
             )}
             {!isHandledBy && displayLabel && viewKey !== 'SYS_ARCH' && (() => {
-                const rawWidth = displayLabel.length * 7 + 12;
-                const maxWidth = 70;
-                const clampedWidth = Math.min(rawWidth, maxWidth);
+                const rawWidth = displayLabel.length * 7 + 14;
+                const clampedWidth = isExpanded ? rawWidth : Math.min(rawWidth, 70);
                 return (
-                  <g transform={`translate(${midX}, ${midY})`} style={{ pointerEvents: 'none' }}>
+                  <g 
+                    transform={`translate(${midX}, ${midY})`} 
+                    style={{ pointerEvents: 'auto', cursor: 'pointer' }}
+                    onClick={toggleEdge}
+                    onTouchEnd={toggleEdge}
+                  >
                     <rect
                       x={-clampedWidth / 2}
                       y="-10"
@@ -267,7 +314,7 @@ export const StandardView = memo(function StandardView({
         const isStepHighlighted = activeNodeIds && activeNodeIds.includes(node.id);
         const isHoveredNode = hoveredEdgeNodeIds && hoveredEdgeNodeIds.includes(node.id);
         const isHighlighted = isStepHighlighted || isHoveredNode || (highlightedNodeId === node.id);
-        const isDimmed = activeNodeIds !== null && !isHighlighted && hoveredEdgeId === null;
+        const isDimmed = activeNodeIds !== null && !isHighlighted && hoveredEdgeId === null && selectedEdgeId === null;
         
         const nodeFill = entity.color || (COLORS as any)[viewType as keyof typeof COLORS] || COLORS.default;
         const strokeColor = entity.strokeColor || BORDER_COLORS[viewType as keyof typeof BORDER_COLORS] || BORDER_COLORS.default;
@@ -300,7 +347,7 @@ export const StandardView = memo(function StandardView({
             }}
             onMouseLeave={() => setTooltip(null)}
             style={{
-              opacity: isDimmed ? 0.25 : 1,
+              opacity: isDimmed ? 0.6 : 1,
               transition: 'opacity 0.3s, filter 0.3s',
               cursor: isFullscreen ? 'pointer' : 'default'
             }}

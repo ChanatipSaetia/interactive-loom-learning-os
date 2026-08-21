@@ -49,7 +49,7 @@
   id: step_heralds
   command: "Trigger Herald Explosions"
   policy: "On Enemy Death"
-  handledBy: heralds2
+  handledBy: heralds
   resultEvents:
     - id: evt_explosions
       title: "Herald Explosions Clean Up"

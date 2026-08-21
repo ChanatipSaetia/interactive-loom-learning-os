@@ -34,11 +34,6 @@ heralds:
   title: "Herald of Thunder + Ice"
   desc: "Mark enemies for elemental explosions"
   type: "aggregate"
-heralds2:
-  title: "Herald of Thunder + Ice"
-  desc: "Explosions triggered on enemy death"
-  type: "aggregate"
-  collapsedTo: "heralds"
 trinity:
   title: "Trinity Aura"
   desc: "Multiplies lowest 2 elements to match highest"

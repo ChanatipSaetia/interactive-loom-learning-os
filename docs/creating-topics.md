@@ -5,7 +5,7 @@ This document is a technical reference guide for directory structures, content s
 ## Reference Guides & Documentation
 
 - **[Section Types Reference](sections/README.md)** — Detailed directory layout, frontmatter descriptors, YAML/Markdown schemas, and examples for each section type.
-- **[Event Storming Conventions](event-storming-conventions.md)** — Authoritative rules for flowchart process cycles, branching logic, duplicate-and-collapse mapping (`collapsedTo`), node types, and journeys.
+- **[Event Storming Conventions](event-storming-conventions.md)** — Authoritative rules for flowchart process cycles, branching logic, per-step actor/system duplication, node types, and journeys.
 - **[Section Reference & Mental Models Guide](sections-reference.md)** — Educational objectives, progressive section ordering logic, and cognitive mental models for all section types.
 
 ## Objective
@@ -299,10 +299,10 @@ llm_api:
 > If a topic has a complex domain or multi-stage system, **split it into multiple connected flowchart sections** (e.g. `sections/flowchart-engine/`, `sections/flowchart-fuel-injection/`, `sections/flowchart-brake/`).
 > - Each flowchart section folder contains its own `section.md`, `actors.yaml`, `systems.yaml`, `steps.yaml`, and `journeys.yaml`.
 > - **Multiple Journeys per Section**: Each section's `journeys.yaml` can define multiple journeys (e.g., mapping vs boss fight flow, intake/compression vs combustion/exhaust).
-> - **Connecting Flowcharts**: Result events or continuation steps of one section connect conceptually to initiating commands in the next section. Shared systems use `collapsedTo` to link back to canonical nodes.
+> - **Connecting Flowcharts**: Result events or continuation steps of one section connect conceptually to initiating commands in the next section. Shared systems connect across sections via matching title and type.
 
 **Event Storming Node and Relation Conventions:**
-See the [Event Storming Conventions Guide](event-storming-conventions.md) for full rules on flow structure, branching, duplicate-and-collapse mapping (`collapsedTo`), node types, and journeys.
+See the [Event Storming Conventions Guide](event-storming-conventions.md) for full rules on flow structure, branching, per-step actor/system duplication, node types, and journeys.
 
 ### `tradeoff-sandbox` section
 Interactive decision sandbox with metrics dashboard. Uses `resource: "."` — each `.yaml` file in the section directory represents one scenario.
@@ -902,5 +902,5 @@ npm run dev
 ## Related Reference Documents
 
 - **[Section Types Reference](sections/README.md)** — Individual schemas, frontmatter fields, and example configurations for all 14 section types.
-- **[Event Storming Conventions Guide](event-storming-conventions.md)** — Authoritative rules for structuring flowchart steps, branching paths, duplicate-and-collapse mapping (`collapsedTo`), and journey walkthroughs.
+- **[Event Storming Conventions Guide](event-storming-conventions.md)** — Authoritative rules for structuring flowchart steps, branching paths, per-step actor/system duplication, and journey walkthroughs.
 - **[Section Reference & Mental Models Guide](sections-reference.md)** — Pedagogical ordering rules, mental models, and educational objectives for topic design.

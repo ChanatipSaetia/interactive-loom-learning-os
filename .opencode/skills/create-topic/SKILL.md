@@ -20,7 +20,7 @@ Before generating content schemas or structuring sections, refer to these author
 | **Domain Architecture** | [`docs/agents/domain.md`](docs/agents/domain.md) | Strategic & Tactical DDD Architecture (5 Core Subdomains, Validation Gateway, Delivery Ports) |
 | **Topic Guideline** | [`docs/creating-topics.md`](docs/creating-topics.md) | Bundle layout, file specs, registration requirements |
 | **Section Schemas** | [`docs/sections/README.md`](docs/sections/README.md) | Frontmatter & YAML specs for all 15 section types mapped to Core Subdomains |
-| **Event Storming** | [`docs/event-storming-conventions.md`](docs/event-storming-conventions.md) | Flowchart cycles (`EVENT → POLICY → COMMAND → AGGREGATE`), `handledBy`, `collapsedTo`, journeys |
+| **Event Storming** | [`docs/event-storming-conventions.md`](docs/event-storming-conventions.md) | Flowchart cycles (`EVENT → POLICY → COMMAND → AGGREGATE`), `handledBy`, automatic duplication, journeys |
 | **Pedagogy & Models** | [`docs/sections-reference.md`](docs/sections-reference.md) | Curriculum ordering, cognitive mental models, subdomain mapping |
 
 ---
@@ -112,8 +112,8 @@ graph TD
        4. Relevant reference excerpts from Phase 1.
        5. Direct instructions referencing [`docs/sections/README.md`](docs/sections/README.md) for frontmatter and schema requirements.
        6. Special constraints:
-          - If `flowchart`: Must conform to [`docs/event-storming-conventions.md`](docs/event-storming-conventions.md). Complete cycle `EVENT → POLICY → COMMAND → AGGREGATE/EXTERNAL → EVENT`. HandledBy points to duplicate node; duplicate node maps via `collapsedTo`.
-          - If `taxonomy-browser`: Icons must be valid [Lucide icons](https://lucide.dev/icons/); colors must be Catppuccin palette (`mauve`, `rose`, `sky`, `green`, `peach`, `red`, `yellow`, `teal`).
+           - If `flowchart`: Must conform to [`docs/event-storming-conventions.md`](docs/event-storming-conventions.md). Complete cycle `EVENT → POLICY → COMMAND → AGGREGATE/EXTERNAL → EVENT`. HandledBy points directly to declared system ID; deriveSchema automatically handles per-step node instances.
+           - If `taxonomy-browser`: Icons must be valid [Lucide icons](https://lucide.dev/icons/); colors must be Catppuccin palette (`mauve`, `rose`, `sky`, `green`, `peach`, `red`, `yellow`, `teal`).
      - **Wait for the subagent to complete** `section.md` and all related `.yaml`/`.md` files.
      - Validate file existence and run 3-tier validation checks before proceeding to the next section:
        ```bash

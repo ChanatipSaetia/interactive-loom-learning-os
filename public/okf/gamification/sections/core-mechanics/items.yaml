@@ -1,0 +1,27 @@
+- text: "Points & XP — a mathematical counter that makes invisible progress visible"
+  children:
+    - text: "Experience points (XP) level up as users complete actions"
+    - text: "Points need a clear purpose: status, exchangeable currency, or progress — never all three"
+    - text: "Warning: unmoored points decay fast and invite point-farming over real skill"
+- text: "Badges & Achievements — symbolic markers of accomplishment"
+  children:
+    - text: "Milestone badges: first lesson, 100 lessons, streak records"
+    - text: "Badges must represent genuine accomplishments the user cares about"
+    - text: "A badge for 'opened the app once' signals nothing and erodes trust"
+- text: "Leaderboards — social comparison and competition"
+  children:
+    - text: "Global top-10 boards create prestige but demotivate the bottom 99%"
+    - text: "Nearest-competitor boards (showing peers just above and below you) sustain effort"
+    - text: "Team leaderboards convert zero-sum competition into cooperation"
+- text: "Progression structures — levels, ranks, and tiers"
+  children:
+    - text: "Levels chunk a long journey into reachable milestones"
+    - text: "Rank tiers (Bronze → Silver → Gold) make status legible"
+    - text: "Progress bars toward the next level are the most underestimated motivator"
+- text: "Extended toolkit — streaks, quests, and beyond"
+  children:
+    - text: "Streaks: consecutive-day counters that weaponize loss aversion to build habits"
+    - text: "Quests & challenges: time-boxed goals with narrative framing"
+    - text: "Variable rewards: surprise bonuses and loot-style randomness for peak engagement"
+    - text: "Narrative & identity: avatars, titles, and story arcs that give the activity meaning"
+    - text: "Social layers: cooperation, recognition, and shared celebrations"

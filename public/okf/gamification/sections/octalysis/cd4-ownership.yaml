@@ -1,0 +1,16 @@
+type: taxonomy-category
+icon: Package
+title: "Ownership & Possession"
+subtitle: "Core Drive 4 — White Hat"
+color: peach
+description: "The drive to own, improve, and complete something. People care more about what is 'theirs' — their inventory, their profile, their virtual home."
+details: "Give users assets they accumulate and personalize, and make improvements visible. Completion drives (checklists, collection goals) tap the same ownership psychology."
+analogy: "Like decorating your own room — you polish it because it is yours."
+primaryFocus: "Assets, customization, and completion"
+inScope:
+  - "Inventory and collection systems"
+  - "Profile and avatar customization"
+  - "Personal dashboards and achievements"
+outOfScope:
+  - "Ephemeral assets that disappear"
+  - "Locked content with no path to ownership"

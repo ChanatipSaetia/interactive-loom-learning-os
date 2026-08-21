@@ -251,7 +251,7 @@ async function loadBulletsSection(basePath: string, resource: string, resourceFi
 async function loadFlowchartSection(basePath: string, _resourceFiles: string[]): Promise<FlowchartSectionData> {
   const [actorsRaw, systemsRaw, stepsRaw, journeysRaw] = await Promise.all([
     fetchYaml<Record<string, { title: string; desc: string }>>(`${basePath}/actors.yaml`),
-    fetchYaml<Record<string, { title: string; desc: string; type: string; collapsedTo?: string; stateMachine?: any }>>(`${basePath}/systems.yaml`),
+    fetchYaml<Record<string, { title: string; desc: string; type: string; stateMachine?: any }>>(`${basePath}/systems.yaml`),
     fetchYaml<any[]>(`${basePath}/steps.yaml`),
     fetchYaml<any[]>(`${basePath}/journeys.yaml`),
   ])
@@ -382,7 +382,6 @@ function mapFlow(
           desc: s.desc,
           type: (s.type === 'AGGREGATE' || s.type === 'aggregate') ? 'aggregate' : 'external',
           stateMachine: s.stateMachine,
-          ...(s.collapsedTo ? { collapsedTo: s.collapsedTo } : {}),
         }
       }
     }
@@ -394,7 +393,6 @@ function mapFlow(
           desc: s.desc,
           type: (s.type === 'AGGREGATE' || s.type === 'aggregate') ? 'aggregate' : 'external',
           stateMachine: s.stateMachine,
-          ...(s.collapsedTo ? { collapsedTo: s.collapsedTo } : {}),
         }
       }
     }

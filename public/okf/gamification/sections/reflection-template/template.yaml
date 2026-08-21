@@ -1,0 +1,31 @@
+challenges:
+  - prompt: "Complete the statement about the overjustification effect:"
+    template: "The overjustification effect warns that adding {zone-1} rewards to an activity people already enjoy can {zone-2} their intrinsic motivation."
+    chips:
+      - id: chip-extrinsic
+        text: "extrinsic"
+      - id: chip-intrinsic
+        text: "intrinsic"
+      - id: chip-increase
+        text: "increase"
+      - id: chip-undermine
+        text: "undermine"
+    solution:
+      zone-1: chip-extrinsic
+      zone-2: chip-undermine
+    explanation: "<strong>Correct!</strong> When a reward explains the behavior, people shift their attribution from 'I do this because it's fun' to 'I do this for the reward' — and intrinsic motivation drops once the reward disappears."
+  - prompt: "Complete the statement about the Octalysis white hat / black hat split:"
+    template: "Octalysis's white hat drives are {zone-1} and empowering, while black hat drives rely on pressure such as {zone-2}."
+    chips:
+      - id: chip-intrinsic
+        text: "intrinsic"
+      - id: chip-extrinsic
+        text: "extrinsic"
+      - id: chip-loss-aversion
+        text: "loss aversion"
+      - id: chip-mastery
+        text: "mastery"
+    solution:
+      zone-1: chip-intrinsic
+      zone-2: chip-loss-aversion
+    explanation: "<strong>Correct!</strong> White hat drives (meaning, mastery, creativity, ownership, relatedness) empower users; black hat drives (scarcity, unpredictability, loss) create urgency through pressure. Sustainable design leans on white hat and uses black hat sparingly."

@@ -12,9 +12,10 @@
 
 - type: linear
   id: plan_sprint
+  initiatedBy: pm
   command: "Plan Sprint Tasks"
   policy: "Trigger Cycle Planning"
-  handledBy: backlog_plan
+  handledBy: backlog
   resultEvents:
     - id: evt_sprint_planned
       title: "Sprint Backlog Ready"
@@ -23,9 +24,10 @@
 
 - type: linear
   id: daily_execution
+  initiatedBy: dev
   command: "Deliver Code Changes"
   policy: "Trigger Daily Execution"
-  handledBy: dev
+  handledBy: dev_workspace
   resultEvents:
     - id: evt_work_in_progress
       title: "Work In Progress"
@@ -38,9 +40,10 @@
   branches:
     - id: branch_no_blocker
       label: "No Blockers"
+      initiatedBy: dev
       policy: "On Daily Sync"
       command: "Provide Async Update"
-      handledBy: slack_async
+      handledBy: slack_channel
       resultEvents:
         - id: evt_async_updated
           title: "Async Update Logged"
@@ -48,9 +51,10 @@
       continuesAs: review_cycle
     - id: branch_blocked
       label: "Blocked Work"
+      initiatedBy: dev
       policy: "On Blocker Encountered"
       command: "Raise Blocker in Standup"
-      handledBy: dev_blocked
+      handledBy: standup_tool
       resultEvents:
         - id: evt_blocker_raised
           title: "Blocker Raised"
@@ -59,9 +63,10 @@
 
 - type: linear
   id: resolve_blocker
+  initiatedBy: pm
   command: "Unblock Team Member"
   policy: "Trigger Blocker Resolution"
-  handledBy: pm_resolver
+  handledBy: issue_tracker
   resultEvents:
     - id: evt_blocker_resolved
       title: "Blocker Resolved"
@@ -70,10 +75,12 @@
 
 - type: linear
   id: review_cycle
+  initiatedBy: dev
   command: "Conduct Retrospective"
   policy: "On Cycle End"
-  handledBy: dev_retro
+  handledBy: retro_board
   resultEvents:
     - id: evt_retro_completed
       title: "Retrospective Logged"
       desc: "Action items captured for continuous improvement."
+

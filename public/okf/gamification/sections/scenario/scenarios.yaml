@@ -1,0 +1,92 @@
+id: streak-dilemma
+title: "The Streak Dilemma"
+intro: "You are the product manager of LingoLeap, a language app with 2M monthly users. Engagement dipped last quarter, and the team is debating the streak feature."
+nodes:
+  start:
+    prompt: "Engagement is down. What is your first move?"
+    choices:
+      - id: strict-streak
+        text: "Launch a strict daily streak — miss a day, lose it all"
+        next: strict-launch
+      - id: freeze-streak
+        text: "Launch streaks with freeze tokens and a 7-day goal"
+        next: freeze-launch
+      - id: diagnose-first
+        text: "Run a motivation survey and cohort analysis before shipping"
+        next: diagnose
+  strict-launch:
+    prompt: "Week 3: daily actives spike, but support tickets mention 'streak anxiety'. A viral thread complains that one missed day wipes 200 days. What now?"
+    choices:
+      - id: double-down
+        text: "Double down — anxiety means it's working; push harder with alerts"
+        next: churn
+      - id: add-freeze
+        text: "Add freeze tokens and a 'streak repair' grace card"
+        next: recovered
+      - id: sunset
+        text: "Sunset the feature and apologize"
+        next: sunset
+  freeze-launch:
+    prompt: "Week 6: streaks hold and retention is up 4%. A power user asks for 'streak sharing' with friends. What do you ship next?"
+    choices:
+      - id: share-streak
+        text: "Ship streak sharing — friends see each other's streaks"
+        next: social-boom
+      - id: league
+        text: "Ship monthly leagues with promotion and demotion"
+        next: league-mixed
+      - id: hold
+        text: "Hold off — study which users actually use freezes"
+        next: data-driven
+  diagnose:
+    prompt: "The survey shows two segments: committed daily learners (40%) and sporadic weekend learners (60%). The weekenders say daily streaks 'don't fit my life'. What's your design?"
+    choices:
+      - id: tiered
+        text: "Offer a flexible weekly streak for weekenders, daily streak for committed learners"
+        next: tiered-win
+      - id: force-daily
+        text: "One design for all: daily streak"
+        next: churn
+      - id: no-streak
+        text: "Drop streaks; invest in XP and mastery feedback instead"
+        next: xp-only
+  churn:
+    outcome:
+      verdict: "Streak anxiety turned a habit feature into a source of guilt. Churn among lapsed users tripled, and the viral backlash hurt brand sentiment."
+      lesson: "Pure loss-avoidance (black hat) drives work short-term but burns users out. Always pair pressure with an escape valve."
+      rating: c
+  recovered:
+    outcome:
+      verdict: "Freeze tokens cut abandonment by 30%, and the grace design became a talking point. Retention recovered to baseline plus 2%."
+      lesson: "Recovering from a hard launch is possible, but you paid for it in trust. Design the escape valve before launch."
+      rating: b-minus
+  sunset:
+    outcome:
+      verdict: "Sunsetting restored trust, but the engagement dip continued. The team spent a quarter on a feature that taught users 'streaks = stress'."
+      lesson: "When you can't iterate, a fast sunset is the right call — but diagnose before committing."
+      rating: b-minus
+  social-boom:
+    outcome:
+      verdict: "Streak sharing created friendly daily pings; D7 retention rose 6% among sharers. Some users opted out citing pressure."
+      lesson: "Social relatedness amplifies streaks but must be opt-in with an easy opt-out, or it becomes social pressure."
+      rating: a
+  league-mixed:
+    outcome:
+      verdict: "Leagues lifted the top quartile, but the bottom half quit the monthly cycle. Promotion and demotion felt punitive to newcomers."
+      lesson: "Competitive layers should be optional. Demotion mechanics demotivate exactly the users you need to keep."
+      rating: b-plus
+  data-driven:
+    outcome:
+      verdict: "The freeze-usage study revealed 12% of users rely on freezes monthly. You tuned freeze frequency to the data, and retention improved a further 3%."
+      lesson: "Small, well-instrumented features beat big guesses. Let the data shape the next iteration."
+      rating: a
+  tiered-win:
+    outcome:
+      verdict: "Tiered streaks fit both segments: weekenders kept weekly streaks, committed learners kept daily. Overall habit retention rose 8%."
+      lesson: "Diagnose your segments first. One-size-fits-all motivation design fails mixed cohorts."
+      rating: a
+  xp-only:
+    outcome:
+      verdict: "XP and mastery feedback were steady, but habit formation stalled — weekenders still didn't return daily. Engagement plateaued."
+      lesson: "Intrinsic feedback is necessary but not sufficient for habit loops. Pair it with a commitment device that fits the segment."
+      rating: b-plus

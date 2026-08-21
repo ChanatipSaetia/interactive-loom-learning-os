@@ -120,6 +120,6 @@ When building a topic:
 - **Multiple Section Instances**: You can instantiate any section type as many times as needed (e.g., `sections/scenario-1/`, `sections/scenario-2/`, `sections/decision-tree-a/`, `sections/decision-tree-b/`).
 - **Multiple Flowchart Sections**: For large/complex processes, break monolithic diagrams into separate, connected domain folders (e.g., `sections/flowchart-engine/`, `sections/flowchart-fuel-injection/`, `sections/flowchart-brake/`). Each folder contains its own `section.md`, `actors.yaml`, `systems.yaml`, `steps.yaml`, and `journeys.yaml`.
 - **Multiple Journeys per Section**: Each flowchart section's `journeys.yaml` can define multiple journeys (e.g., mapping vs boss fight, intake/compression vs combustion/exhaust).
-- **Connecting Sections**: Final result events or continuation steps of one section connect conceptually to initiating commands in the next section. Shared systems use `collapsedTo` to link back to canonical nodes across sections.
+- **Connecting Sections**: Final result events or continuation steps of one section connect conceptually to initiating commands in the next section. Shared systems connect across sections via matching title and type.
 
 See [flowchart.md](flowchart.md#splitting-into-multiple-connected-flowchart-sections--multiple-journeys) for full details.

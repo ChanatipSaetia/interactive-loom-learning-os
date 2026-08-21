@@ -1,6 +1,7 @@
 import type { UnifiedFlowchartSchema, FlowchartRelation, FlowchartViewNode, FlowchartViewGroup, FlowchartEntity } from '../types';
 import { TYPES, MASTER_MAPPING_MATRIX } from '../types';
 import { getEntityType, deriveRelations, buildCycleFreeGraph, computeTopologicalColumns, compactColumns, computeLayoutInfo, countOutgoingRelations, countOutgoingPolicies } from './utils';
+import { buildCanonicalIdMapper } from '../abstract-flow/derive';
 
 export function deriveSwimlanes(
   schema: UnifiedFlowchartSchema,
@@ -96,9 +97,7 @@ function findHandlingEntity(
   relations: FlowchartRelation[],
   nodeId: string
 ): string | null {
-  const getCollapsedId = (id: string): string => {
-    return entities[id]?.collapsedTo || id;
-  };
+  const getCollapsedId = buildCanonicalIdMapper(entities);
 
   const isStructuralOrBoundary = (type: string): boolean => {
     return (
@@ -106,8 +105,7 @@ function findHandlingEntity(
       type === TYPES.AGGREGATE ||
       type === TYPES.EXTERNAL ||
       type === TYPES.DATABASE ||
-      type === TYPES.SERVICE ||
-      type === TYPES.CORE_SYSTEM
+      type === TYPES.SERVICE
     );
   };
 
@@ -268,7 +266,6 @@ export function generateDynamicSwimlaneGroups(
     if (type === TYPES.EXTERNAL) return 'var(--ctp-green)';
     if (type === TYPES.DATABASE) return 'var(--ctp-teal)';
     if (type === TYPES.SERVICE) return 'var(--ctp-sapphire)';
-    if (type === TYPES.CORE_SYSTEM) return 'var(--ctp-rosewater)';
     return 'var(--ctp-blue)';
   };
 

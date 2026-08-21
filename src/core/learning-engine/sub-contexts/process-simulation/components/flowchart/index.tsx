@@ -11,6 +11,7 @@ import { PlaybackControls } from './playback-controls';
 import { StepCarousel } from './step-carousel';
 import { usePlaybackState } from './usePlaybackState';
 import { autoDeriveViews } from './derivations';
+import { buildCanonicalIdMapper } from './abstract-flow/derive';
 import { InspectorSidebar } from './inspector';
 import { FlowchartHelpModal } from './FlowchartHelpModal';
 import {
@@ -123,62 +124,81 @@ export function Flowchart({ title, schema = INITIAL_SCHEMA, sectionIndex = 0 }: 
     // also highlight the canonical entity.
     const entityIds = new Set(playback.activeNodeIds);
     if (activeViewKey !== 'EVENT_STORMING') {
+      const getCanonicalId = buildCanonicalIdMapper(localSchema.entities);
       playback.activeNodeIds.forEach(id => {
-        const ent = localSchema.entities[id];
-        if (ent?.collapsedTo) {
-          entityIds.add(ent.collapsedTo);
+        const canonicalId = getCanonicalId(id);
+        if (canonicalId) {
+          entityIds.add(canonicalId);
         }
       });
     }
 
     // Find relations whose intermediate path includes any active node
     const relIds = new Set<string>();
-    // Return the intermediate nodes lying on a path from `from` to `to` in the
-    // EVENT_STORMING graph, or null when no path exists. Only nodes on the
-    // successful path are returned — dead-end DFS branches are excluded so a
-    // sibling branch (e.g. tool route) cannot falsely contribute its nodes.
-    const findPathIntermediates = (
-      from: string,
-      to: string,
-      visited: Set<string>
-    ): string[] | null => {
-      const outgoing = localSchema.relations.filter(r =>
-        (!r.views || r.views.includes('EVENT_STORMING')) && r.from === from
-      );
-      for (const r of outgoing) {
-        if (r.to === to) return [];
-        if (visited.has(r.to)) continue;
-        visited.add(r.to);
-        const rest = findPathIntermediates(r.to, to, visited);
-        if (rest) return [r.to, ...rest];
-      }
-      return null;
-    };
+    
+    if (activeViewKey === 'SEQUENCE') {
+      localSchema.relations.forEach(rel => {
+        if (rel.views?.includes('SEQUENCE')) {
+          if (rel.stepNodeIds && rel.stepNodeIds.some(nid => activeForRelations.has(nid))) {
+            relIds.add(rel.id);
+          }
+        }
+      });
+    } else if (activeViewKey === 'SYS_ARCH' || activeViewKey === 'SWIMLANES') {
+      const getCanonicalId = buildCanonicalIdMapper(localSchema.entities);
+      const activeCanonicalSet = new Set<string>();
+      playback.activeNodeIds.forEach(id => {
+        const cid = getCanonicalId(id);
+        if (cid) activeCanonicalSet.add(cid);
+      });
 
-    localSchema.relations.forEach(rel => {
-      if (activeForRelations.has(rel.from) || activeForRelations.has(rel.to)) {
-        relIds.add(rel.id);
-        return;
-      }
-      const path = findPathIntermediates(rel.from, rel.to, new Set<string>([rel.from]));
-      if (path && path.some(mid => activeForRelations.has(mid))) {
-        relIds.add(rel.id);
-      }
-    });
+      localSchema.relations.forEach(rel => {
+        if (rel.views?.includes(activeViewKey)) {
+          if (activeCanonicalSet.has(rel.from) && activeCanonicalSet.has(rel.to)) {
+            relIds.add(rel.id);
+          }
+        }
+      });
+    } else {
+      // Return the intermediate nodes lying on a path from `from` to `to` in the
+      // EVENT_STORMING graph, or null when no path exists. Only nodes on the
+      // successful path are returned — dead-end DFS branches are excluded so a
+      // sibling branch (e.g. tool route) cannot falsely contribute its nodes.
+      const findPathIntermediates = (
+        from: string,
+        to: string,
+        visited: Set<string>
+      ): string[] | null => {
+        const outgoing = localSchema.relations.filter(r =>
+          (!r.views || r.views.includes('EVENT_STORMING')) && r.from === from
+        );
+        for (const r of outgoing) {
+          if (r.to === to) return [];
+          if (visited.has(r.to)) continue;
+          visited.add(r.to);
+          const rest = findPathIntermediates(r.to, to, visited);
+          if (rest) return [r.to, ...rest];
+        }
+        return null;
+      };
 
-    // In SYS_ARCH: if an active relation connects to temp_center (Core System), highlight it too
-    relIds.forEach(relId => {
-      const rel = localSchema.relations.find(r => r.id === relId);
-      if (rel && (rel.from === 'temp_center' || rel.to === 'temp_center')) {
-        entityIds.add('temp_center');
-      }
-    });
+      localSchema.relations.forEach(rel => {
+        if (activeForRelations.has(rel.from)) {
+          relIds.add(rel.id);
+          return;
+        }
+        const path = findPathIntermediates(rel.from, rel.to, new Set<string>([rel.from]));
+        if (path && path.some(mid => activeForRelations.has(mid))) {
+          relIds.add(rel.id);
+        }
+      });
+    }
 
     return {
       activeNodeIds: Array.from(entityIds),
       activeRelationIds: relIds.size > 0 ? Array.from(relIds) : null
     };
-  }, [playback.activeNodeIds, localSchema.entities, localSchema.relations]);
+  }, [playback.activeNodeIds, localSchema.entities, localSchema.relations, activeViewKey]);
 
   // Sync active step with current playback step
   const activeSteps = useMemo(() => {
@@ -322,25 +342,24 @@ export function Flowchart({ title, schema = INITIAL_SCHEMA, sectionIndex = 0 }: 
     const rawEntity = localSchema.entities[nodeId];
     if (!rawEntity) return;
 
-    // Canonical id is the collapsed-to id when present (the entity that owns
-    // the state machine), otherwise the node id itself.
-    const canonicalId = rawEntity.collapsedTo || nodeId;
+    const getCanonicalId = buildCanonicalIdMapper(localSchema.entities);
+    const canonicalId = getCanonicalId(nodeId);
     let entity = rawEntity;
 
-    if (rawEntity.collapsedTo) {
-      const canonical = localSchema.entities[rawEntity.collapsedTo];
+    if (canonicalId !== nodeId) {
+      const canonical = localSchema.entities[canonicalId];
       if (canonical) {
         entity = {
           ...canonical,
           ...rawEntity,
           stateMachine: rawEntity.stateMachine || canonical.stateMachine,
-            viewTypes: {
-             ...canonical.viewTypes,
-             ...rawEntity.viewTypes
-           }
-         };
-       }
-     }
+          viewTypes: {
+            ...canonical.viewTypes,
+            ...rawEntity.viewTypes
+          }
+        };
+      }
+    }
 
     const otherViews = Object.keys(entity.viewTypes || {})
       .filter(vk => vk !== activeViewKey && localSchema.views![vk])

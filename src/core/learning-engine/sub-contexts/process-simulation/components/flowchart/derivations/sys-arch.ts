@@ -2,6 +2,7 @@
 import type { UnifiedFlowchartSchema, FlowchartRelation, FlowchartViewNode, FlowchartEntity } from '../types';
 import { TYPES, MASTER_MAPPING_MATRIX } from '../types';
 import { getEntityType, deriveRelations, computeLayoutInfo } from './utils';
+import { buildCanonicalIdMapper } from '../abstract-flow/derive';
 
 export function deriveSysArch(
   schema: UnifiedFlowchartSchema,
@@ -46,116 +47,11 @@ export function deriveSysArch(
     return { label: '' };
   };
 
-  const centerId = 'temp_center';
-  const esCols = sysNodes.map(n => {
-    const esNode = getESNode(n.id);
-    return esNode?.grid?.[0] ?? 0;
-  });
-  const minCol = esCols.length > 0 ? Math.min(...esCols) : 0;
-  const maxCol = esCols.length > 0 ? Math.max(...esCols) : 4;
-  const centerCol = Math.max(1, Math.round((minCol + maxCol) / 2));
-  sysNodes.push({
-    id: 'temp_center',
-    grid: [centerCol, 1]
-  });
-  schema.entities['temp_center'] = {
-    title: 'Core System',
-    desc: 'Central coordination and core routing engine.',
-    type: TYPES.CORE_SYSTEM
-  };
-  localAddedNodes.add('temp_center');
-
   const sysRelations = deriveRelations(schema, 'SYS_ARCH', localAddedNodes, getSysArchLabel);
-
-  const finalSysRelations: FlowchartRelation[] = [];
-  const relationKeys = new Set<string>();
-
-  sysRelations.forEach(r => {
-    if (r.from === centerId || r.to === centerId) {
-      const key = `${r.from}->${r.to}`;
-      if (!relationKeys.has(key)) {
-        relationKeys.add(key);
-        finalSysRelations.push(r);
-      }
-    } else {
-      const key1 = `${r.from}->${centerId}`;
-      if (!relationKeys.has(key1)) {
-        relationKeys.add(key1);
-        finalSysRelations.push({
-          id: `${r.id}_to_center`,
-          from: r.from,
-          to: centerId,
-          views: r.views,
-          label: r.label,
-          dashed: r.dashed
-        });
-      }
-      const key2 = `${centerId}->${r.to}`;
-      if (!relationKeys.has(key2)) {
-        relationKeys.add(key2);
-        finalSysRelations.push({
-          id: `${r.id}_from_center`,
-          from: centerId,
-          to: r.to,
-          views: r.views,
-          label: r.label,
-          dashed: r.dashed
-        });
-      }
-    }
-  });
-
-  // Reconnect orphaned boundary nodes (User / External) to the Core System.
-  //
-  // A boundary node is orphaned when it only ever reaches the rest of the flow
-  // through another boundary node (e.g. a Command handled directly by an External
-  // with no internal Aggregate in between). deriveRelations deliberately drops
-  // such boundary->boundary edges, which would otherwise leave the node with no
-  // connection at all. In SYS_ARCH every participant talks to the system via the
-  // center, so wire these orphans straight to it.
-  const connectedNodeIds = new Set<string>();
-  finalSysRelations.forEach(r => {
-    connectedNodeIds.add(r.from);
-    connectedNodeIds.add(r.to);
-  });
-
-  sysNodes.forEach(n => {
-    if (n.id === centerId) return;
-    if (connectedNodeIds.has(n.id)) return;
-
-    const ent = schema.entities[n.id];
-    const type = getEntityType(ent);
-    if (type !== TYPES.EXTERNAL && type !== TYPES.USER) return;
-
-    // Determine direction from the original Event Storming flow: if the node is
-    // the target of any ES relation, the system calls into it (center -> node),
-    // otherwise it feeds the system (node -> center).
-    const hasIncoming = schema.relations.some(r =>
-      (!r.views || r.views.includes('EVENT_STORMING')) &&
-      getCollapsedId(r.to) === n.id &&
-      getCollapsedId(r.from) !== n.id
-    );
-
-    if (hasIncoming) {
-      finalSysRelations.push({
-        id: `sys_orphan_${n.id}_from_center`,
-        from: centerId,
-        to: n.id,
-        views: ['SYS_ARCH']
-      });
-    } else {
-      finalSysRelations.push({
-        id: `sys_orphan_${n.id}_to_center`,
-        from: n.id,
-        to: centerId,
-        views: ['SYS_ARCH']
-      });
-    }
-  });
 
   const updatedRelations = [
     ...schema.relations.filter(r => !r.views || !r.views.includes('SYS_ARCH')),
-    ...finalSysRelations
+    ...sysRelations
   ];
 
   const aggregateIds = sysNodes
@@ -163,7 +59,7 @@ export function deriveSysArch(
     .filter(id => {
       const ent = schema.entities[id];
       const type = getEntityType(ent);
-      return ent && (type === TYPES.AGGREGATE || type === TYPES.DATABASE || type === TYPES.CORE_SYSTEM);
+      return ent && (type === TYPES.AGGREGATE || type === TYPES.DATABASE);
     });
 
   const sysGroups = aggregateIds.length > 0 ? [
@@ -197,9 +93,7 @@ export function layoutSysArch(
   _viewKey: string,
   entities: Record<string, FlowchartEntity>
 ): FlowchartViewNode[] {
-  const getCollapsedId = (id: string): string => {
-    return entities[id]?.collapsedTo || id;
-  };
+  const getCollapsedId = buildCanonicalIdMapper(entities);
 
   const adj = new Map<string, Set<string>>();
   nodeIds.forEach(id => adj.set(id, new Set<string>()));
@@ -216,21 +110,6 @@ export function layoutSysArch(
       adj.get(toId)!.add(fromId);
     }
   });
-
-  const hasCenter = nodeIds.includes('temp_center');
-  const centerId = 'temp_center';
-
-  if (hasCenter) {
-    nodeIds.forEach(id => {
-      if (id === 'temp_center') return;
-      const ent = entities[id];
-      const type = ent?.type || ent?.viewTypes?.EVENT_STORMING || 'default';
-      if (type === TYPES.AGGREGATE || type === TYPES.SERVICE) {
-        adj.get(centerId)!.add(id);
-        adj.get(id)!.add(centerId);
-      }
-    });
-  }
 
   const userNodes = nodeIds.filter(id => {
     const ent = entities[id];
@@ -255,7 +134,7 @@ export function layoutSysArch(
   const parent = new Map<string, string>();
   const hopCount = new Map<string, number>();
 
-  const startNode = hasCenter ? centerId : (internalNodeIds[0] || '');
+  const startNode = internalNodeIds[0] || nodeIds[0] || '';
   if (startNode) {
     queue.push(startNode);
     visited.add(startNode);
@@ -305,14 +184,12 @@ export function layoutSysArch(
     occupied.add(`${x},${y}`);
   };
 
-  if (hasCenter) {
-    occupy(centerId, 0, 0);
-  }
-
   const relativeOffset = new Map<string, [number, number]>();
   const dir = new Map<string, [number, number]>();
-  if (hasCenter) {
-    dir.set(centerId, [0, 0]);
+
+  if (startNode) {
+    occupy(startNode, 0, 0);
+    dir.set(startNode, [0, 0]);
   }
 
   const getOutwardOffsets = (dx: number, dy: number): [number, number][] => {
@@ -327,9 +204,9 @@ export function layoutSysArch(
     return [[dx, dy]];
   };
 
-  const sortedByHop = [...internalNodeIds].sort((a, b) => hopCount.get(a)! - hopCount.get(b)!);
+  const sortedByHop = [...internalNodeIds].sort((a, b) => (hopCount.get(a) ?? 0) - (hopCount.get(b) ?? 0));
 
-  const firstHopNonUsers = (childrenOf.get(centerId) || []);
+  const firstHopNonUsers = startNode ? (childrenOf.get(startNode) || []) : [];
   const SECTORS: [number, number][] = [[0, -1], [1, 0], [0, 1], [1, -1], [1, 1], [-1, -1], [-1, 1]];
   firstHopNonUsers.forEach((id, idx) => {
     const s = SECTORS[idx % SECTORS.length];
@@ -338,8 +215,8 @@ export function layoutSysArch(
   });
 
   sortedByHop.forEach(id => {
-    if (id === centerId) return;
-    if (hopCount.get(id)! <= 1) return;
+    if (id === startNode) return;
+    if ((hopCount.get(id) ?? 0) <= 1) return;
 
     const p = parent.get(id)!;
     const pDir = dir.get(p) || [0, -1];
@@ -353,7 +230,7 @@ export function layoutSysArch(
   });
 
   sortedByHop.forEach(id => {
-    if (id === centerId) return;
+    if (id === startNode) return;
 
     const p = parent.get(id)!;
     const px = relX.get(p) || 0;

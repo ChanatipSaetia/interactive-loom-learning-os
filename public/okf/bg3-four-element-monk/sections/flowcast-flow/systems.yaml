@@ -18,19 +18,8 @@ twisted_wrath_handler:
   title: "Twin Elemental Wrath"
   desc: "Elemental infusion for unarmed strikes"
   type: "aggregate"
-  collapsedTo: "elemental_engine"
 four_point_handler:
   title: "Four Point Attack"
   desc: "Ultimate four-elemental strike combo"
   type: "aggregate"
-  collapsedTo: "elemental_engine"
-ki_pool_spend:
-  title: "Ki Pool"
-  desc: "Ki consumption for abilities"
-  type: "aggregate"
-  collapsedTo: "ki_pool"
-ki_pool_defense:
-  title: "Ki Pool"
-  desc: "Ki consumption for defense"
-  type: "aggregate"
-  collapsedTo: "ki_pool"
+
