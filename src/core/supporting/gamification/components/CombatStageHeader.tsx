@@ -59,6 +59,9 @@ export const CombatStageHeader: React.FC<CombatStageHeaderProps> = ({
     setTimeout(() => setActiveItemFeedback(null), 3000)
   }
 
+  const monsterRef = useRef(monster)
+  monsterRef.current = monster
+
   // PixiJS Animated Duel Scene (Warrior facing off against Monster Fiend)
   useEffect(() => {
     const domElement = canvasContainerRef.current
@@ -66,11 +69,16 @@ export const CombatStageHeader: React.FC<CombatStageHeaderProps> = ({
 
     let isDestroyed = false
     const app = new Application()
+    let resizeObserver: ResizeObserver | null = null
 
     const initPixi = async () => {
       try {
+        const initialW = domElement.clientWidth || 800
+        const initialH = domElement.clientHeight || 144
+
         await app.init({
-          resizeTo: domElement,
+          width: initialW,
+          height: initialH,
           backgroundColor: 0x181825,
           backgroundAlpha: 0.95,
           antialias: true,
@@ -78,13 +86,32 @@ export const CombatStageHeader: React.FC<CombatStageHeaderProps> = ({
           autoDensity: true,
         })
 
-        if (isDestroyed) {
+        if (isDestroyed || !domElement) {
           app.destroy(true, { children: true })
           return
         }
 
+        const canvas = app.canvas as HTMLCanvasElement
+        canvas.style.position = 'absolute'
+        canvas.style.inset = '0'
+        canvas.style.width = '100%'
+        canvas.style.height = '100%'
+        canvas.style.display = 'block'
+        canvas.style.userSelect = 'none'
+
+        domElement.appendChild(canvas)
         appRef.current = app
-        domElement.appendChild(app.canvas)
+
+        // Dynamic ResizeObserver to guarantee WebGL canvas stays synced with DOM parent
+        resizeObserver = new ResizeObserver((entries) => {
+          for (const entry of entries) {
+            const { width, height } = entry.contentRect
+            if (width > 0 && height > 0 && appRef.current) {
+              appRef.current.renderer.resize(width, height)
+            }
+          }
+        })
+        resizeObserver.observe(domElement)
 
         const stageContainer = new Container()
         app.stage.addChild(stageContainer)
@@ -128,8 +155,8 @@ export const CombatStageHeader: React.FC<CombatStageHeaderProps> = ({
         // Combat Animation Ticker
         app.ticker.add(() => {
           const t = performance.now() * 0.001
-          const width = app.screen.width
-          const height = app.screen.height
+          const width = app.screen.width || domElement.clientWidth || 800
+          const height = app.screen.height || domElement.clientHeight || 144
           const centerY = height * 0.58
 
           // Ground Platform
@@ -144,43 +171,42 @@ export const CombatStageHeader: React.FC<CombatStageHeaderProps> = ({
           bgGfx.circle(width * 0.35, centerY - 6, 45).fill({ color: 0x8caaee, alpha: 0.05 * pulse })
           bgGfx.circle(width * 0.65, centerY - 6, 45).fill({ color: 0xe78284, alpha: 0.05 * pulse })
 
-          // ─── 1. DRAW KNIGHT WARRIOR (Left, Facing Right, Scaled 1.15x) ───
-          // Place warrior at 35% width so it is completely visible in center-left, not hidden behind HUD cards
+          // ─── 1. DRAW KNIGHT WARRIOR ───
           const warriorX = Math.max(120, width * 0.36)
           const warriorBob = Math.sin(t * 3.5) * 2.2
-          const swordSlash = Math.sin(t * 3.5) * 4
           warriorContainer.position.set(warriorX, centerY + warriorBob)
           warriorContainer.scale.set(1.15)
 
           warriorGfx.clear()
-
-          // Ground shadow
           warriorGfx.ellipse(0, 16, 12, 4).fill({ color: 0x11111b, alpha: 0.6 })
-
-          // Crimson Cape waving dynamically behind
           warriorGfx.poly([
             -4, -5,
             -18 - Math.sin(t * 4) * 4, 8 + Math.cos(t * 3) * 3,
             -12, 14,
             -2, 2,
-          ]).fill({ color: 0xe78284, alpha: 0.9 })
+          ]).fill({ color: 0xe78284, alpha: 0.95 }).stroke({ width: 1.2, color: 0xea999c })
 
-          // Legs & Sabatons
-          warriorGfx.moveTo(-3, 6).lineTo(-4, 15).stroke({ width: 3.8, color: 0x51576d, cap: 'round' })
-          warriorGfx.moveTo(3, 6).lineTo(4, 15).stroke({ width: 4.0, color: 0x949cbb, cap: 'round' })
-          warriorGfx.circle(-4, 15, 2.2).fill({ color: 0x414559 })
-          warriorGfx.circle(4, 15, 2.5).fill({ color: 0x737994 })
+          // Armored Greaves (Legs & Sabatons)
+          warriorGfx.roundRect(-7, 4, 5, 12, 2).fill({ color: 0x51576d }).stroke({ width: 1, color: 0x737994 })
+          warriorGfx.roundRect(2, 4, 5, 12, 2).fill({ color: 0x51576d }).stroke({ width: 1, color: 0x737994 })
+          warriorGfx.ellipse(-4.5, 15, 4, 2).fill({ color: 0x303446 })
+          warriorGfx.ellipse(4.5, 15, 4, 2).fill({ color: 0x303446 })
 
-          // Cuirass Steel Breastplate
-          warriorGfx.roundRect(-6, -7, 12, 13, 2.5).fill({ color: 0x737994 }).stroke({ width: 1.6, color: 0xc6d0f5 })
-          warriorGfx.moveTo(0, -6).lineTo(0, 4).stroke({ width: 1.5, color: 0x414559 })
-          warriorGfx.poly([0, -4, 2.5, -2, 0, 0, -2.5, -2]).fill({ color: 0xe5c890 })
-          warriorGfx.rect(-6, 2, 12, 2.5).fill({ color: 0x292c3c })
-          warriorGfx.rect(-2, 1.5, 4, 3.5).fill({ color: 0xe5c890 })
+          // Steel Breastplate Torso
+          warriorGfx.poly([
+            -8, -6,
+            8, -6,
+            6, 6,
+            -6, 6,
+          ]).fill({ color: 0x737994 }).stroke({ width: 1.4, color: 0xc6d0f5 })
 
-          // Left Arm & Shield (Heater Kite Shield)
-          const shieldX = -7
-          const shieldY = -1
+          // Chestplate Golden Emblem (Cross / Star)
+          warriorGfx.moveTo(0, -4).lineTo(0, 4).stroke({ width: 1.5, color: 0xe5c890 })
+          warriorGfx.moveTo(-3, 0).lineTo(3, 0).stroke({ width: 1.5, color: 0xe5c890 })
+
+          // Left Arm & Heavy Heater Shield
+          const shieldX = -12
+          const shieldY = -2
           warriorGfx.poly([
             shieldX - 3, shieldY - 7,
             shieldX + 4, shieldY - 7,
@@ -188,49 +214,31 @@ export const CombatStageHeader: React.FC<CombatStageHeaderProps> = ({
             shieldX, shieldY + 8,
             shieldX - 3, shieldY + 3,
           ]).fill({ color: 0x303446, alpha: 0.95 }).stroke({ width: 1.4, color: 0x8caaee })
-          warriorGfx.poly([shieldX + 0.5, shieldY - 4, shieldX + 0.5, shieldY + 4]).stroke({ width: 1.5, color: 0xe5c890 })
 
-          // Right Arm & Gleaming Greatsword Ready Stance
-          const handX = 5 + swordSlash * 0.4
-          const handY = 2
-          warriorGfx.moveTo(3, -4).lineTo(handX, handY).stroke({ width: 3.2, color: 0x949cbb, cap: 'round' })
-          // Broadsword Blade
-          warriorGfx.moveTo(handX + 1, handY - 1).lineTo(handX + 18, handY - 15).stroke({ width: 3.0, color: 0xffffff, cap: 'round' })
-          warriorGfx.moveTo(handX + 2, handY - 2).lineTo(handX + 17, handY - 14).stroke({ width: 1.4, color: 0x8caaee })
-          warriorGfx.moveTo(handX - 2, handY + 1).lineTo(handX + 3, handY - 4).stroke({ width: 2.5, color: 0xe5c890 })
-          warriorGfx.circle(handX - 2.5, handY + 2, 1.6).fill({ color: 0xe78284 })
+          // Right Arm
+          warriorGfx.moveTo(3, -4).lineTo(7, 2).stroke({ width: 3.2, color: 0x949cbb, cap: 'round' })
+          warriorGfx.circle(7, 2, 2.5).fill({ color: 0xe78284 })
 
-          // Pauldrons
-          warriorGfx.poly([-8, -8, -4, -11, -3, -6]).fill({ color: 0x949cbb }).stroke({ width: 1, color: 0xc6d0f5 })
-          warriorGfx.poly([4, -11, 8, -8, 4, -6]).fill({ color: 0x949cbb }).stroke({ width: 1, color: 0xc6d0f5 })
-
-          // Greathelm Helmet with glowing visor slit & golden plume
+          // Greathelm
           warriorGfx.roundRect(-5, -16, 10, 10, 2.5).fill({ color: 0x737994 }).stroke({ width: 1.5, color: 0xc6d0f5 })
           warriorGfx.moveTo(-3, -12).lineTo(4, -12).stroke({ width: 1.5, color: 0x181825 })
-          warriorGfx.moveTo(1.5, -14).lineTo(1.5, -9).stroke({ width: 1.5, color: 0x181825 })
           warriorGfx.circle(2.5, -12, 1.1).fill({ color: 0x8caaee, alpha: 1.0 })
-          warriorGfx.poly([-1, -16, -4, -22, 2, -21, 4, -16]).fill({ color: 0xe5c890 }).stroke({ width: 1, color: 0xef9f76 })
 
-          // ─── 1B. FIRE BLAST ON PLAYER WHEN ATTACKED (Wrong Answer Retaliation) ───
+          // ─── 1B. FIRE BLAST ON PLAYER ───
           playerFireGfx.clear()
           const hitTime = playerHitTimeRef.current
           if (hitTime > 0) {
             const elapsedHit = t - hitTime
-            const hitDuration = 1.0 // 1-second blazing fire effect
+            const hitDuration = 1.0
             if (elapsedHit <= hitDuration) {
               const hitProgress = elapsedHit / hitDuration
               const flameIntensity = Math.sin(hitProgress * Math.PI)
-
-              // Flash warrior red during hit
               warriorGfx.tint = elapsedHit < 0.35 ? 0xff7777 : 0xffffff
 
-              // 5 rising animated flame tongues engulfing the warrior body
               const flameTongues = [
                 { x: -6, y: 6, h: 26, w: 7, phase: 0 },
                 { x: -1, y: 8, h: 34, w: 9, phase: 1.2 },
                 { x: 4, y: 6, h: 28, w: 8, phase: 2.4 },
-                { x: -8, y: -4, h: 22, w: 6, phase: 3.5 },
-                { x: 6, y: -2, h: 24, w: 6, phase: 4.8 },
               ]
 
               flameTongues.forEach(({ x: fx, y: fy, h: fh, w: fw, phase }) => {
@@ -239,43 +247,41 @@ export const CombatStageHeader: React.FC<CombatStageHeaderProps> = ({
                 const curW = fw * flameIntensity
                 const tipY = fy - curH
 
-                // Outer Crimson Flame Tongue
                 playerFireGfx.poly([
                   fx - curW, fy,
                   fx + (Math.sin(t * 14 + phase) * 4), tipY,
                   fx + curW, fy,
                 ]).fill({ color: 0xe78284, alpha: flameIntensity * 0.85 })
 
-                // Inner Bright Orange Flame Tongue
                 playerFireGfx.poly([
-                  fx - curW * 0.55, fy,
-                  fx + (Math.sin(t * 16 + phase) * 2), tipY + curH * 0.3,
-                  fx + curW * 0.55, fy,
+                  fx - (curW * 0.55), fy,
+                  fx + (Math.sin(t * 16 + phase) * 2), tipY + (curH * 0.25),
+                  fx + (curW * 0.55), fy,
                 ]).fill({ color: 0xef9f76, alpha: flameIntensity * 0.95 })
 
-                // Hot White Core
-                playerFireGfx.circle(fx, fy - 4, Math.max(1, 2.5 * flameIntensity)).fill({ color: 0xffffff, alpha: flameIntensity * 0.9 })
+                playerFireGfx.poly([
+                  fx - (curW * 0.25), fy,
+                  fx, tipY + (curH * 0.55),
+                  fx + (curW * 0.25), fy,
+                ]).fill({ color: 0xe5c890, alpha: flameIntensity * 0.95 })
               })
 
-              // Surrounding Fire Ember Sparks drifting upward
-              for (let i = 0; i < 6; i++) {
-                const emberProgress = (elapsedHit * 2 + i * 0.2) % 1
-                const emberX = (i - 2.5) * 6 + Math.sin(t * 8 + i) * 5
-                const emberY = 12 - emberProgress * 36
-                playerFireGfx.circle(emberX, emberY, 1.5 * (1 - emberProgress))
-                  .fill({ color: i % 2 === 0 ? 0xef9f76 : 0xe78284, alpha: (1 - emberProgress) * flameIntensity })
+              for (let k = 0; k < 6; k++) {
+                const sparkAngle = t * 10 + (k * Math.PI) / 3
+                const spDist = 14 + (k % 3) * 6
+                const spX = Math.cos(sparkAngle) * spDist
+                const spY = Math.sin(sparkAngle) * (spDist * 0.8) - 4
+                playerFireGfx.circle(spX, spY, 1.8).fill({ color: 0xe5c890, alpha: flameIntensity })
               }
             } else {
               warriorGfx.tint = 0xffffff
             }
           }
 
-          // ─── 2. DRAW MONSTER FIEND (Right, Facing Left, Scaled 1.15x) ───
+          // ─── 2. DRAW MONSTER FIEND ───
           const monsterX = Math.min(width - 120, width * 0.64)
-          const monsterBob = Math.sin(t * 3.0 + 1.2) * 2.8
-          const monsterLunge = Math.sin(t * 3.0 + 0.5) * 3
-          monsterContainer.position.set(monsterX - monsterLunge, centerY + monsterBob)
-          monsterContainer.scale.set(1.15)
+          const monsterBob = Math.sin(t * 3.0 + 1) * 3
+          monsterContainer.position.set(monsterX, centerY + monsterBob)
 
           monsterGfx.clear()
 
