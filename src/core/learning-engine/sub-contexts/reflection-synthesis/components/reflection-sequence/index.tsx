@@ -39,7 +39,7 @@ function ReflectionSequenceSingle({
   prompt: string
   items: SequenceItem[]
   solution: string[]
-  onVerifyResult?: (isCorrect: boolean) => void
+  onVerifyResult?: (isCorrect: boolean, stepCount: number) => void
 }) {
   const { playSound } = useSound()
   const [slots, setSlots] = useState<Record<number, SequenceItem | null>>(() => {
@@ -154,7 +154,7 @@ function ReflectionSequenceSingle({
         text: 'Please place all sequence steps before verifying.',
         type: 'error',
       })
-      onVerifyResult?.(false)
+      onVerifyResult?.(false, solution.length)
       return
     }
 
@@ -164,14 +164,14 @@ function ReflectionSequenceSingle({
         text: 'Correct! You have mapped the process flow sequence accurately.',
         type: 'success',
       })
-      onVerifyResult?.(true)
+      onVerifyResult?.(true, solution.length)
     } else {
       playSound('error')
       setFeedback({
         text: 'Incorrect sequence. Analyze dependencies and try rearranging the steps.',
         type: 'error',
       })
-      onVerifyResult?.(false)
+      onVerifyResult?.(false, solution.length)
     }
   }
 
@@ -284,7 +284,7 @@ export function ReflectionSequence({
 
   const currentChallenge = normalizedChallenges[currentIndex]
 
-  const handleChallengeVerify = (isCorrect: boolean) => {
+  const handleChallengeVerify = (isCorrect: boolean, stepCount?: number) => {
     const nextCleared = { ...clearedChallenges, [currentIndex]: isCorrect }
     setClearedChallenges(nextCleared)
 
@@ -293,6 +293,7 @@ export function ReflectionSequence({
       type: 'ReflectionAnswered',
       challengeId: `challenge_${currentIndex}`,
       challengeIndex: currentIndex,
+      stepCount: stepCount ?? currentChallenge?.items?.length ?? 3,
       isCorrect,
       timestamp: Date.now(),
     }

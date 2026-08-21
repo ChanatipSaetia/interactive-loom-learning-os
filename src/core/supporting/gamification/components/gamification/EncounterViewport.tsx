@@ -1,4 +1,4 @@
-import React, { Suspense, useState } from 'react'
+import React, { Suspense, useState, useEffect } from 'react'
 import { DIFFICULTY_CONFIGS } from '../../types'
 import { Button } from '../../../../ui-system'
 import { SectionRegistry } from '../../../../learning-engine/registry'
@@ -39,6 +39,14 @@ export const EncounterViewport: React.FC<EncounterViewportProps> = ({ game }) =>
 
   const [playerAttackedTimestamp, setPlayerAttackedTimestamp] = useState<number>(0)
   const [monsterAttackedTimestamp, setMonsterAttackedTimestamp] = useState<number>(0)
+  const [clearedReflectionSlots, setClearedReflectionSlots] = useState<number>(0)
+  const [lastDecryptedSlot, setLastDecryptedSlot] = useState<number | undefined>(undefined)
+
+  // Reset reflection slots when node changes
+  useEffect(() => {
+    setClearedReflectionSlots(0)
+    setLastDecryptedSlot(undefined)
+  }, [node?.id])
 
   if (!globalChar || !campaign) return null
 
@@ -85,22 +93,36 @@ export const EncounterViewport: React.FC<EncounterViewportProps> = ({ game }) =>
               />
             )}
 
-            {/* Runic Magic Countdown Ring */}
-            {node.type === 'reflection_decryption' && (
-              <RunicCountdownRing
-                isSolved={node.status === 'cleared'}
-                evasionBonusSeconds={globalChar.attributes.evasion}
-                intelligenceChance={globalChar.attributes.intelligence}
-                onTimeout={() => handleFailSection(node)}
-                onStatTriggered={(stat, details) => {
-                  if (stat === 'evasion') {
-                    pushActionMessage(details, 'success', '💨')
-                  } else {
-                    pushActionMessage(details, 'craft', '💡')
-                  }
-                }}
-              />
-            )}
+            {/* Runic Magic Countdown Ring with Dynamic Slot Progression */}
+            {node.type === 'reflection_decryption' && (() => {
+              const secConfig = node.sectionRef ? bundleSectionsMap.get(node.sectionRef) : null
+              const totalSlots = Array.isArray(secConfig?.props?.items) && secConfig.props.items.length > 0
+                ? secConfig.props.items.length
+                : (Array.isArray(secConfig?.props?.solution) && secConfig.props.solution.length > 0
+                  ? secConfig.props.solution.length
+                  : (Array.isArray(secConfig?.props?.challenges) && secConfig.props.challenges[0]?.items?.length
+                    ? secConfig.props.challenges[0].items.length
+                    : 4))
+
+              return (
+                <RunicCountdownRing
+                  isSolved={node.status === 'cleared'}
+                  evasionBonusSeconds={globalChar.attributes.evasion}
+                  intelligenceChance={globalChar.attributes.intelligence}
+                  totalSlots={totalSlots}
+                  clearedSlots={clearedReflectionSlots}
+                  lastDecryptedSlot={lastDecryptedSlot}
+                  onTimeout={() => handleFailSection(node)}
+                  onStatTriggered={(stat, details) => {
+                    if (stat === 'evasion') {
+                      pushActionMessage(details, 'success', '💨')
+                    } else {
+                      pushActionMessage(details, 'craft', '💡')
+                    }
+                  }}
+                />
+              )
+            })()}
 
             {/* Trade-off Stat Preview Bar */}
             {node.type === 'tradeoff_workshop' && (
@@ -167,8 +189,11 @@ export const EncounterViewport: React.FC<EncounterViewportProps> = ({ game }) =>
                       }
                       if (event.type === 'ReflectionAnswered') {
                         if (event.isCorrect) {
+                          const slotIdx = typeof event.challengeIndex === 'number' ? event.challengeIndex : clearedReflectionSlots
+                          setLastDecryptedSlot(slotIdx)
+                          setClearedReflectionSlots((prev) => Math.max(prev, slotIdx + 1))
                           pushActionMessage(
-                            `Runic Rune Decrypted! Correct domain pattern decoded!`,
+                            `Runic Rune #${slotIdx + 1} Decrypted! Magic glyph bound to sequence slot!`,
                             'success',
                             '🔮'
                           )
@@ -181,8 +206,9 @@ export const EncounterViewport: React.FC<EncounterViewportProps> = ({ game }) =>
                         }
                       }
                       if (event.type === 'ReflectionCompleted') {
+                        setClearedReflectionSlots(event.totalChallenges ?? 3)
                         pushActionMessage(
-                          `Runic Cipher Solved! Decryption sequence complete!`,
+                          `Runic Cipher Solved! All magic sequence slots unlocked!`,
                           'exp',
                           '✨'
                         )
