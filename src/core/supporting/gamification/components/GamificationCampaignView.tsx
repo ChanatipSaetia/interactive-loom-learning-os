@@ -71,9 +71,43 @@ export const GamificationCampaignView: React.FC = () => {
     return initialMap
   })
 
-  const handleSelectTopic = (topicId: string) => {
-    // Just set the selected topic; useGamification's init() will initialize the full campaign state
-    // (preserving existing progress if the topic was played before, or creating a fresh state with isStarted: true)
+  const handleSelectTopic = async (topicId: string) => {
+    // Check if campaign already exists and has started
+    const raw = localStorage.getItem(`loom_gamification_campaign_${topicId}`)
+    const hasStarted = raw ? (() => {
+      try {
+        const parsed = JSON.parse(raw)
+        return parsed.isStarted === true || (Array.isArray(parsed.clearedNodeIds) && parsed.clearedNodeIds.length > 0)
+      } catch {
+        return false
+      }
+    })() : false
+
+    // Only reset when starting a new campaign (no existing saved state)
+    if (!hasStarted) {
+      const chosenDiff = topicDifficulties[topicId] || 'normal'
+      const maxPulses = DIFFICULTY_CONFIGS[chosenDiff]?.maxSanctuaryPulses ?? 5
+      localStorage.setItem(
+        `loom_gamification_campaign_${topicId}`,
+        JSON.stringify({
+          topicId,
+          difficulty: chosenDiff,
+          maxSanctuaryPulses: maxPulses,
+          characterHp: 100,
+          maxCharacterHp: 100,
+          damageTakenInCampaign: 0,
+          turnCount: 0,
+          chaosLevel: 0,
+          decayThreatLevel: 0,
+          isStarted: true,
+          sanctuaryPulsesUsed: 0,
+          inventory: [],
+          clearedNodeIds: [],
+          activeBuffs: [],
+          readingVisitCounts: {},
+        })
+      )
+    }
     setSelectedTopicId(topicId)
     setSearchParams({ topic: topicId })
   }
@@ -96,8 +130,6 @@ export const GamificationCampaignView: React.FC = () => {
     completeNode: portCompleteNode,
     takeDamage: portTakeDamage,
     awardExp: portAwardExp,
-    unlockBadge: portUnlockBadge,
-    clearBadges: portClearBadges,
     applySanctuaryTickHeal: portApplySanctuaryTickHeal,
     applyCraftedBuff: portApplyCraftedBuff,
     allocateStatPoint: portAllocateStatPoint,
@@ -196,7 +228,7 @@ export const GamificationCampaignView: React.FC = () => {
 
   // Restart campaign on Zero HP defeat (starts new play attempt)
   const handleDefeatRestart = async () => {
-    await portResetCampaign(currentTopicId, true)
+    await portResetCampaign(currentTopicId || undefined, true)
     setGameOverModalOpen(false)
     pushActionMessage(
       `CAMPAIGN DEFEAT: Health dropped to 0! Campaign reset to Capital for a fresh attempt.`,
@@ -299,7 +331,7 @@ export const GamificationCampaignView: React.FC = () => {
     // Trigger Topic Victory Modal upon defeating the Boss Lair
     if (targetNode.type === 'boss_lair') {
       const newlyEarned = evaluateTopicBadges(
-        currentTopicId,
+        currentTopicId || 'unknown',
         campaign?.topicTitle || 'Topic Realm',
         campaign?.difficulty || 'normal',
         campaign?.damageTakenInCampaign || 0,
@@ -368,15 +400,6 @@ export const GamificationCampaignView: React.FC = () => {
                     <Badge variant="secondary" className="bg-[#8caaee]/20 text-[#8caaee] border-[#8caaee]/40 text-xs px-2.5 py-0.5 font-bold">
                       Lvl {globalChar.level}
                     </Badge>
-                    <Button
-                      size="sm"
-                      variant="ghost"
-                      className="border border-[#8caaee]/40 hover:bg-[#8caaee]/20 text-[#8caaee] text-[10px] sm:text-xs h-6 px-2"
-                      onClick={() => portAwardExp(globalChar.nextLevelExp - globalChar.exp)}
-                      title="Level up Champion (+1 Level, +1 Stat Point)"
-                    >
-                      + Level Up
-                    </Button>
                   </div>
                 </div>
                 <p className="text-xs sm:text-sm text-[#a5adce] mt-0.5 line-clamp-1">
@@ -516,12 +539,12 @@ export const GamificationCampaignView: React.FC = () => {
               }
 
               const isCurrent = topic.id === currentTopicId
-              const isStarted = isCurrent ? (campaign.isStarted || campaign.clearedNodeIds.length > 0) : topicStarted
+              const isStarted = isCurrent ? (campaign?.isStarted || (campaign?.clearedNodeIds?.length ?? 0) > 0) : topicStarted
               const playCount = globalChar?.topicPlayCounts?.[topic.id] ?? (isStarted ? 1 : 0)
               const topicBadges = globalChar?.unlockedBadges.filter(
                 (b) => b.topicId === topic.id || b.topicTitle === topic.label
               ) || []
-              const selectedDiff = topicDifficulties[topic.id] || (isCurrent ? campaign.difficulty : 'normal')
+              const selectedDiff = topicDifficulties[topic.id] || (isCurrent && campaign ? campaign.difficulty : 'normal')
 
               return (
                 <div
@@ -597,7 +620,8 @@ export const GamificationCampaignView: React.FC = () => {
                       </div>
                     )}
 
-                    {/* Progress and Difficulty Selector Stack */}
+                    {/* Progress and Difficulty Selector Stack - hidden when localStorage has campaign data */}
+                    {!topicStarted && (
                     <div className="bg-[#1e1e2e]/50 p-2.5 sm:p-3 rounded-xl border border-[#414559]/60 space-y-2">
                       <div className="flex items-center justify-between text-[11px] sm:text-xs">
                         <span className="text-[#a5adce] font-semibold">Realm Challenge Difficulty:</span>
@@ -681,6 +705,7 @@ export const GamificationCampaignView: React.FC = () => {
                         </div>
                       </div>
                     </div>
+                    )}
                   </div>
 
                   {/* Actions */}
@@ -697,29 +722,10 @@ export const GamificationCampaignView: React.FC = () => {
                         variant="ghost"
                         className="border border-[#e78284]/30 hover:bg-[#e78284]/10 text-[#e78284] text-xs px-2.5 py-2 sm:py-2.5 h-auto"
                         onClick={async () => {
-                          // Reset progress for this topic campaign without deleting global profile or iterating playCount
+                          // Remove localStorage data for this topic campaign
                           try {
                             const key = `loom_gamification_campaign_${topic.id}`
-                            const raw = localStorage.getItem(key)
-                            if (raw) {
-                              const parsed = JSON.parse(raw)
-                              localStorage.setItem(
-                                key,
-                                JSON.stringify({
-                                  ...parsed,
-                                  clearedNodeIds: [],
-                                  characterHp: parsed.maxCharacterHp || 100,
-                                  damageTakenInCampaign: 0,
-                                  turnCount: 0,
-                                  chaosLevel: 0,
-                                  decayThreatLevel: 0,
-                                  sanctuaryPulsesUsed: 0,
-                                  inventory: [],
-                                  activeBuffs: [],
-                                  readingVisitCounts: {},
-                                })
-                              )
-                            }
+                            localStorage.removeItem(key)
                           } catch {
                             // ignore
                           }
@@ -728,7 +734,7 @@ export const GamificationCampaignView: React.FC = () => {
                           }
                           window.location.reload()
                         }}
-                        title="Reset Campaign: Clears current run progress back to Capital"
+                        title="Reset Campaign: Removes all saved data for this topic"
                       >
                         <RotateCcw size={14} />
                       </Button>
@@ -816,47 +822,7 @@ export const GamificationCampaignView: React.FC = () => {
               )}
             </div>
 
-            <div className="flex items-center justify-between pt-3 border-t border-[#414559]">
-              <div className="flex items-center gap-2">
-                <Button
-                  size="sm"
-                  variant="ghost"
-                  className="border border-[#8caaee]/40 hover:bg-[#8caaee]/20 text-[#8caaee] text-[10px] sm:text-xs h-7 px-2.5"
-                  onClick={() => {
-                    const now = new Date().toISOString().split('T')[0]
-                    const demoBadge: import('../types').UnlockedBadge = {
-                      id: `demo-badge-${Date.now()}`,
-                      badgeType: 'topic_completion',
-                      title: 'Architectural Pioneer',
-                      icon: '🎖️',
-                      description: 'Awarded for demonstrating domain architecture mastery across realm modules.',
-                      topicId: 'gamification',
-                      topicTitle: 'Gamification Engine',
-                      difficulty: campaign.difficulty || 'normal',
-                      unlockedAt: now,
-                    }
-                    portUnlockBadge(demoBadge)
-                  }}
-                  title="Inject a demo badge into local storage"
-                >
-                  + Add Demo Badge (Local)
-                </Button>
-
-                {globalChar.unlockedBadges.length > 0 && (
-                  <Button
-                    size="sm"
-                    variant="ghost"
-                    className="border border-[#e78284]/30 hover:bg-[#e78284]/10 text-[#e78284] text-[10px] sm:text-xs h-7 px-2.5"
-                    onClick={() => {
-                      portClearBadges()
-                    }}
-                    title="Clear all unlocked badges from local storage"
-                  >
-                    Clear Badges
-                  </Button>
-                )}
-              </div>
-
+            <div className="flex items-center justify-end pt-3 border-t border-[#414559]">
               <Button variant="ghost" onClick={() => setActiveBadgesModal(false)}>
                 Close
               </Button>
@@ -1499,47 +1465,7 @@ export const GamificationCampaignView: React.FC = () => {
             )}
           </div>
 
-          <div className="flex items-center justify-between pt-3 border-t border-[#414559]">
-            <div className="flex items-center gap-2">
-              <Button
-                size="sm"
-                variant="ghost"
-                className="border border-[#8caaee]/40 hover:bg-[#8caaee]/20 text-[#8caaee] text-[10px] sm:text-xs h-7 px-2.5"
-                onClick={() => {
-                  const now = new Date().toISOString().split('T')[0]
-                  const demoBadge: import('../types').UnlockedBadge = {
-                    id: `demo-badge-${Date.now()}`,
-                    badgeType: 'topic_completion',
-                    title: 'Architectural Pioneer',
-                    icon: '🎖️',
-                    description: 'Awarded for demonstrating domain architecture mastery across realm modules.',
-                    topicId: currentTopicId,
-                    topicTitle: campaign.topicTitle || 'Architecture Realm',
-                    difficulty: campaign.difficulty || 'normal',
-                    unlockedAt: now,
-                  }
-                  portUnlockBadge(demoBadge)
-                }}
-                title="Inject a demo badge into local storage"
-              >
-                + Add Demo Badge (Local)
-              </Button>
-
-              {globalChar.unlockedBadges.length > 0 && (
-                <Button
-                  size="sm"
-                  variant="ghost"
-                  className="border border-[#e78284]/30 hover:bg-[#e78284]/10 text-[#e78284] text-[10px] sm:text-xs h-7 px-2.5"
-                  onClick={() => {
-                    portClearBadges()
-                  }}
-                  title="Clear all unlocked badges from local storage"
-                >
-                  Clear Badges
-                </Button>
-              )}
-            </div>
-
+          <div className="flex items-center justify-end pt-3 border-t border-[#414559]">
             <Button variant="ghost" onClick={() => setActiveBadgesModal(false)}>
               Close
             </Button>

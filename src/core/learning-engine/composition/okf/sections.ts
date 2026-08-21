@@ -4,12 +4,13 @@ import { deriveSchema } from '../../sub-contexts/process-simulation/components/f
 import { loadOKFBundle, getCachedOKFBundle } from './reader'
 import type { OKFBundled } from './types'
 
-export function useOKFBundled(topicId: string) {
-  const [bundle, setBundle] = useState<OKFBundled | null>(() => getCachedOKFBundle(topicId) ?? null)
-  const [loading, setLoading] = useState(!getCachedOKFBundle(topicId))
+export function useOKFBundled(topicId: string | null) {
+  const [bundle, setBundle] = useState<OKFBundled | null>(() => (topicId ? getCachedOKFBundle(topicId) ?? null : null))
+  const [loading, setLoading] = useState(!!topicId && !getCachedOKFBundle(topicId))
   const [error, setError] = useState<Error | null>(null)
 
   const load = useCallback(async () => {
+    if (!topicId) return
     try {
       if (!getCachedOKFBundle(topicId)) {
         setLoading(true)
@@ -25,6 +26,7 @@ export function useOKFBundled(topicId: string) {
   }, [topicId])
 
   useEffect(() => {
+    if (!topicId) return
     load()
   }, [load])
 
