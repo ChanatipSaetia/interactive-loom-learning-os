@@ -1,9 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react'
-import { Application, Container, Graphics, Text } from 'pixi.js'
+import { Application, Container, Graphics } from 'pixi.js'
 import { Timer } from 'lucide-react'
-
-// Ancient Arcane Rune Glyph dictionary
-const ARCANE_RUNES = ['ᚠ', 'ᚢ', 'ᚦ', 'ᚨ', 'ᚱ', 'ᚲ', 'ᚷ', 'ᚹ', 'ᚺ', 'ᚾ', 'ᛁ', 'ᛃ', 'ᛈ', 'ᛉ', 'ᛊ', 'ᛏ', 'ᛒ', 'ᛖ', 'ᛗ', 'ᛚ', 'ᛜ', 'ᛞ', 'ᛟ']
 
 interface SequenceChallengeInfo {
   index: number
@@ -127,8 +124,12 @@ export const RunicCountdownRing: React.FC<RunicCountdownRingProps> = ({
 
     const initPixi = async () => {
       try {
+        const clientW = domElement.clientWidth || 800
+        const clientH = domElement.clientHeight || 140
+
         await app.init({
-          resizeTo: domElement,
+          width: clientW,
+          height: clientH,
           backgroundColor: 0x181825,
           backgroundAlpha: 0.95,
           antialias: true,
@@ -144,9 +145,22 @@ export const RunicCountdownRing: React.FC<RunicCountdownRingProps> = ({
         appRef.current = app
         domElement.appendChild(app.canvas)
 
+        // Handle window/container resize
+        const resizeObserver = new ResizeObserver(() => {
+          if (appRef.current && domElement) {
+            const nw = domElement.clientWidth
+            const nh = domElement.clientHeight
+            if (nw > 0 && nh > 0) {
+              appRef.current.renderer.resize(nw, nh)
+            }
+          }
+        })
+        resizeObserver.observe(domElement)
+
         const stageContainer = new Container()
         app.stage.addChild(stageContainer)
 
+        // Persistent Graphics & Container hierarchy
         const backgroundGfx = new Graphics()
         stageContainer.addChild(backgroundGfx)
 
@@ -156,19 +170,13 @@ export const RunicCountdownRing: React.FC<RunicCountdownRingProps> = ({
         const runeSlotsGfx = new Graphics()
         stageContainer.addChild(runeSlotsGfx)
 
-        const runeTextsContainer = new Container()
-        stageContainer.addChild(runeTextsContainer)
-
         const sparksGfx = new Graphics()
         stageContainer.addChild(sparksGfx)
 
-        // Text cache for rune glyphs
-        const textObjects: Text[] = []
-
         app.ticker.add(() => {
           const t = performance.now() * 0.001
-          const width = app.screen.width
-          const height = app.screen.height
+          const width = app.screen.width || domElement.clientWidth || 800
+          const height = app.screen.height || domElement.clientHeight || 140
           const { sequences: seqs, currentSequenceIndex: curIdx, isSolved: solved, activeFillingSeq, filledSlotStep } = stateRef.current
 
           backgroundGfx.clear()
@@ -176,17 +184,12 @@ export const RunicCountdownRing: React.FC<RunicCountdownRingProps> = ({
           runeSlotsGfx.clear()
           sparksGfx.clear()
 
-          // Clear previous text glyphs
-          textObjects.forEach((txt) => txt.destroy())
-          textObjects.length = 0
-          runeTextsContainer.removeChildren()
-
           const numCards = Math.max(1, seqs.length)
           const cardGap = 12
-          const cardWidth = Math.min(320, (width - (numCards + 1) * cardGap) / numCards)
+          const cardWidth = Math.min(340, (width - (numCards + 1) * cardGap) / numCards)
           const totalWidth = numCards * cardWidth + (numCards - 1) * cardGap
-          const startX = (width - totalWidth) / 2
-          const cardHeight = Math.min(108, height - 12)
+          const startX = Math.max(8, (width - totalWidth) / 2)
+          const cardHeight = Math.min(116, height - 16)
           const cardY = (height - cardHeight) / 2
 
           // Render each Sequence Card with its Spinning Magic Ring & Left-to-Right Rune Slots
@@ -207,45 +210,46 @@ export const RunicCountdownRing: React.FC<RunicCountdownRingProps> = ({
               })
 
             // ─── 1. DRAW SACRED GEOMETRY SPINNING MAGIC RING (Left side of card) ───
-            const ringCenterX = cx + 38
+            const ringCenterX = cx + 42
             const ringCenterY = cy + cardHeight / 2
-            const ringRadius = 26
+            const ringRadius = 28
 
             // Outer Magic Glow Aura
             if (isCleared || isCurrent) {
               const auraColor = isCleared ? 0xa6d189 : 0xca9ee6
-              const auraAlpha = (Math.sin(t * 3 + idx) * 0.08 + 0.12)
-              magicRingsGfx.circle(ringCenterX, ringCenterY, ringRadius + 6)
+              const auraAlpha = Math.sin(t * 3 + idx) * 0.08 + 0.15
+              magicRingsGfx.circle(ringCenterX, ringCenterY, ringRadius + 8)
                 .fill({ color: auraColor, alpha: auraAlpha })
             }
 
             // Outer Concentric Glyph Circle
-            const outerSpin = isCleared ? t * 0.8 : isCurrent ? t * 0.4 : 0
+            const outerSpin = isCleared ? t * 0.9 : isCurrent ? t * 0.45 : 0
             magicRingsGfx.circle(ringCenterX, ringCenterY, ringRadius)
-              .stroke({ width: 1.4, color: isCleared ? 0xa6d189 : isCurrent ? 0xca9ee6 : 0x626880, alpha: 0.85 })
+              .stroke({ width: 1.5, color: isCleared ? 0xa6d189 : isCurrent ? 0xca9ee6 : 0x626880, alpha: 0.9 })
 
-            // 12 Outer Ring Rune Tick Marks
+            // Middle Dashed Concentric Circle
+            magicRingsGfx.circle(ringCenterX, ringCenterY, ringRadius - 4)
+              .stroke({ width: 1.0, color: isCleared ? 0xe5c890 : isCurrent ? 0x8caaee : 0x414559, alpha: 0.6 })
+
+            // 12 Outer Ring Rune Tick Marks & Rune Nodes
             for (let i = 0; i < 12; i++) {
               const angle = outerSpin + (i * Math.PI * 2) / 12
-              const r1 = ringRadius - 2.5
-              const r2 = ringRadius + (i % 3 === 0 ? 2.5 : 0)
+              const r1 = ringRadius - 3.5
+              const r2 = ringRadius + (i % 3 === 0 ? 3.5 : 1.0)
               magicRingsGfx.moveTo(ringCenterX + Math.cos(angle) * r1, ringCenterY + Math.sin(angle) * r1)
                 .lineTo(ringCenterX + Math.cos(angle) * r2, ringCenterY + Math.sin(angle) * r2)
-                .stroke({ width: 1.2, color: isCleared ? 0xe5c890 : isCurrent ? 0xca9ee6 : 0x51576d })
+                .stroke({ width: 1.4, color: isCleared ? 0xe5c890 : isCurrent ? 0xca9ee6 : 0x51576d })
+
+              // Mini Orb on 4 cardinal points
+              if (i % 3 === 0) {
+                magicRingsGfx.circle(ringCenterX + Math.cos(angle) * (ringRadius + 3.5), ringCenterY + Math.sin(angle) * (ringRadius + 3.5), 1.5)
+                  .fill({ color: isCleared ? 0xa6d189 : 0xe5c890, alpha: 0.9 })
+              }
             }
 
-            // Inner Rotating Sacred Geometry (Hexagram / Mystic Triangle)
-            const innerSpin = -(isCleared ? t * 1.2 : isCurrent ? t * 0.6 : 0)
-            const innerR = ringRadius * 0.68
-            const polyPoints: number[] = []
-            for (let i = 0; i < 6; i++) {
-              const angle = innerSpin + (i * Math.PI) / 3
-              polyPoints.push(ringCenterX + Math.cos(angle) * innerR, ringCenterY + Math.sin(angle) * innerR)
-            }
-            magicRingsGfx.poly(polyPoints)
-              .stroke({ width: 1.0, color: isCleared ? 0xe5c890 : isCurrent ? 0x8caaee : 0x414559, alpha: 0.75 })
-
-            // Secondary Intersecting Triangle
+            // Inner Rotating Sacred Geometry (Interlocking Dual Triangles / Hexagram)
+            const innerSpin = -(isCleared ? t * 1.3 : isCurrent ? t * 0.65 : 0)
+            const innerR = ringRadius * 0.62
             const tri1: number[] = []
             const tri2: number[] = []
             for (let i = 0; i < 3; i++) {
@@ -254,43 +258,28 @@ export const RunicCountdownRing: React.FC<RunicCountdownRingProps> = ({
               tri1.push(ringCenterX + Math.cos(a1) * innerR, ringCenterY + Math.sin(a1) * innerR)
               tri2.push(ringCenterX + Math.cos(a2) * innerR, ringCenterY + Math.sin(a2) * innerR)
             }
-            magicRingsGfx.poly(tri1).stroke({ width: 0.8, color: isCleared ? 0xa6d189 : 0xca9ee6, alpha: 0.6 })
-            magicRingsGfx.poly(tri2).stroke({ width: 0.8, color: isCleared ? 0xa6d189 : 0xca9ee6, alpha: 0.6 })
+            magicRingsGfx.poly(tri1).stroke({ width: 1.2, color: isCleared ? 0xe5c890 : isCurrent ? 0x8caaee : 0x414559, alpha: 0.8 })
+            magicRingsGfx.poly(tri2).stroke({ width: 1.2, color: isCleared ? 0xa6d189 : isCurrent ? 0xca9ee6 : 0x414559, alpha: 0.8 })
 
-            // Center Magic Core
+            // Center Magic Core with pulsating radiance
             const coreColor = isCleared ? 0xe5c890 : isCurrent ? 0xca9ee6 : 0x414559
-            const corePulse = Math.sin(t * 4 + idx) * 1.5 + 4
+            const corePulse = Math.sin(t * 5 + idx) * 1.5 + 4.5
             magicRingsGfx.circle(ringCenterX, ringCenterY, corePulse)
-              .fill({ color: coreColor, alpha: isCleared ? 0.95 : 0.7 })
+              .fill({ color: coreColor, alpha: isCleared ? 0.95 : 0.75 })
 
             // ─── 2. DRAW LEFT-TO-RIGHT RUNE SLOTS (Right side of card) ───
             const slotsStartX = ringCenterX + ringRadius + 14
             const slotsAreaWidth = cx + cardWidth - slotsStartX - 10
             const itemCount = Math.max(1, seq.itemCount)
             const slotGap = 6
-            const slotWidth = Math.min(42, (slotsAreaWidth - (itemCount - 1) * slotGap) / itemCount)
-            const slotHeight = 36
-            const slotY = cy + cardHeight / 2 + 6
-
-            // Sequence Title Text in Card
-            const titleText = new Text({
-              text: `Magic Ring #${idx + 1} (${itemCount} Steps)`,
-              style: {
-                fontFamily: 'system-ui, sans-serif',
-                fontSize: 11,
-                fontWeight: 'bold',
-                fill: isCleared ? '#a6d189' : isCurrent ? '#ca9ee6' : '#a5adce',
-              },
-            })
-            titleText.position.set(slotsStartX, cy + 12)
-            runeTextsContainer.addChild(titleText)
-            textObjects.push(titleText)
+            const slotWidth = Math.min(44, (slotsAreaWidth - (itemCount - 1) * slotGap) / itemCount)
+            const slotHeight = 38
+            const slotY = cy + cardHeight / 2 - slotHeight / 2 + 8
 
             for (let s = 0; s < itemCount; s++) {
               const sx = slotsStartX + s * (slotWidth + slotGap)
               const isSlotDecrypted = isCleared || (isAnimating && filledSlotStep >= s + 1)
               const isSlotJustFilled = isAnimating && filledSlotStep === s + 1
-              const runeChar = ARCANE_RUNES[(idx * 7 + s * 3 + 2) % ARCANE_RUNES.length]
 
               // Slot Background Box
               runeSlotsGfx.roundRect(sx, slotY, slotWidth, slotHeight, 8)
@@ -302,47 +291,60 @@ export const RunicCountdownRing: React.FC<RunicCountdownRingProps> = ({
                 })
 
               if (isSlotDecrypted) {
-                // Glow Box Highlight
+                // Golden highlight inner border
                 runeSlotsGfx.roundRect(sx + 1, slotY + 1, slotWidth - 2, slotHeight - 2, 7)
                   .stroke({ width: 1.0, color: 0xe5c890, alpha: 0.4 })
 
-                // Render Arcane Rune Character Text
-                const runeText = new Text({
-                  text: runeChar,
-                  style: {
-                    fontFamily: 'serif',
-                    fontSize: 18,
-                    fontWeight: 'bold',
-                    fill: '#e5c890',
-                  },
-                })
-                runeText.anchor.set(0.5)
-                runeText.position.set(sx + slotWidth / 2, slotY + slotHeight / 2)
-                runeTextsContainer.addChild(runeText)
-                textObjects.push(runeText)
+                // Draw Sacred Rune Emblem Glyphs using vectors
+                const runeCenterX = sx + slotWidth / 2
+                const runeCenterY = slotY + slotHeight / 2
+
+                // Center Rune Staff
+                runeSlotsGfx.moveTo(runeCenterX, runeCenterY - 11)
+                  .lineTo(runeCenterX, runeCenterY + 11)
+                  .stroke({ width: 2.2, color: 0xe5c890, alpha: 0.95 })
+
+                // Rune Branches
+                if (s % 3 === 0) {
+                  // Fehu / Algiz style branches
+                  runeSlotsGfx.moveTo(runeCenterX, runeCenterY - 4)
+                    .lineTo(runeCenterX + 6, runeCenterY - 10)
+                    .stroke({ width: 1.8, color: 0xe5c890, alpha: 0.95 })
+                  runeSlotsGfx.moveTo(runeCenterX, runeCenterY + 3)
+                    .lineTo(runeCenterX + 6, runeCenterY - 3)
+                    .stroke({ width: 1.8, color: 0xe5c890, alpha: 0.95 })
+                } else if (s % 3 === 1) {
+                  // Berkana / Thurisaz style chevron
+                  runeSlotsGfx.moveTo(runeCenterX, runeCenterY - 8)
+                    .lineTo(runeCenterX + 6, runeCenterY - 2)
+                    .lineTo(runeCenterX, runeCenterY + 4)
+                    .stroke({ width: 1.8, color: 0xe5c890, alpha: 0.95 })
+                } else {
+                  // Othala / Dagaz diamond
+                  runeSlotsGfx.moveTo(runeCenterX, runeCenterY - 7)
+                    .lineTo(runeCenterX + 5, runeCenterY)
+                    .lineTo(runeCenterX, runeCenterY + 7)
+                    .lineTo(runeCenterX - 5, runeCenterY)
+                    .closePath()
+                    .stroke({ width: 1.8, color: 0xe5c890, alpha: 0.95 })
+                }
               } else {
-                // Step Number Label in Encrypted Slot
-                const numText = new Text({
-                  text: `${s + 1}`,
-                  style: {
-                    fontFamily: 'monospace',
-                    fontSize: 10,
-                    fill: '#51576d',
-                  },
-                })
-                numText.anchor.set(0.5)
-                numText.position.set(sx + slotWidth / 2, slotY + slotHeight / 2)
-                runeTextsContainer.addChild(numText)
-                textObjects.push(numText)
+                // Encrypted Lock Node
+                const lockX = sx + slotWidth / 2
+                const lockY = slotY + slotHeight / 2
+                runeSlotsGfx.rect(lockX - 4, lockY - 1, 8, 7)
+                  .fill({ color: 0x414559, alpha: 0.7 })
+                runeSlotsGfx.arc(lockX, lockY - 1, 3.5, Math.PI, 0)
+                  .stroke({ width: 1.2, color: 0x626880, alpha: 0.7 })
               }
 
               // Sparkles on newly filled slot during cascade
               if (isSlotJustFilled) {
-                for (let k = 0; k < 4; k++) {
-                  const sparkAngle = t * 10 + (k * Math.PI) / 2
+                for (let k = 0; k < 6; k++) {
+                  const sparkAngle = t * 12 + (k * Math.PI) / 3
                   const spX = sx + slotWidth / 2 + Math.cos(sparkAngle) * (slotWidth * 0.55)
                   const spY = slotY + slotHeight / 2 + Math.sin(sparkAngle) * (slotHeight * 0.55)
-                  sparksGfx.circle(spX, spY, 2.0).fill({ color: 0xe5c890, alpha: 0.95 })
+                  sparksGfx.circle(spX, spY, 2.2).fill({ color: 0xe5c890, alpha: 0.95 })
                 }
               }
             }
@@ -414,7 +416,7 @@ export const RunicCountdownRing: React.FC<RunicCountdownRingProps> = ({
       </div>
 
       {/* PixiJS Canvas Viewport for Spinning Magic Rings & Left-to-Right Arcane Decryption */}
-      <div className="relative w-full h-32 bg-[#181825] rounded-xl border border-[#414559] overflow-hidden shadow-inner">
+      <div className="relative w-full h-36 min-h-[140px] bg-[#181825] rounded-xl border border-[#414559] overflow-hidden shadow-inner">
         <div ref={canvasContainerRef} className="absolute inset-0 w-full h-full" />
       </div>
     </div>
