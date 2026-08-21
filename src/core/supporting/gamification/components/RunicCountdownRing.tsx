@@ -124,12 +124,8 @@ export const RunicCountdownRing: React.FC<RunicCountdownRingProps> = ({
 
     const initPixi = async () => {
       try {
-        const clientW = domElement.clientWidth || 800
-        const clientH = domElement.clientHeight || 140
-
         await app.init({
-          width: clientW,
-          height: clientH,
+          resizeTo: domElement,
           backgroundColor: 0x181825,
           backgroundAlpha: 0.95,
           antialias: true,
@@ -145,41 +141,37 @@ export const RunicCountdownRing: React.FC<RunicCountdownRingProps> = ({
         appRef.current = app
         domElement.appendChild(app.canvas)
 
-        // Handle window/container resize
-        const resizeObserver = new ResizeObserver(() => {
-          if (appRef.current && domElement) {
-            const nw = domElement.clientWidth
-            const nh = domElement.clientHeight
-            if (nw > 0 && nh > 0) {
-              appRef.current.renderer.resize(nw, nh)
-            }
-          }
-        })
-        resizeObserver.observe(domElement)
-
         const stageContainer = new Container()
         app.stage.addChild(stageContainer)
 
-        // Persistent Graphics & Container hierarchy
-        const backgroundGfx = new Graphics()
-        stageContainer.addChild(backgroundGfx)
+        // Background Battle Atmosphere / Card panels
+        const bgGfx = new Graphics()
+        stageContainer.addChild(bgGfx)
 
+        // Ground/Altar Base Lines
+        const altarGfx = new Graphics()
+        stageContainer.addChild(altarGfx)
+
+        // Magic Rings Sacred Geometry Layer
         const magicRingsGfx = new Graphics()
         stageContainer.addChild(magicRingsGfx)
 
+        // Left-to-Right Rune Slots Layer
         const runeSlotsGfx = new Graphics()
         stageContainer.addChild(runeSlotsGfx)
 
+        // Sparkle and burst particle layer
         const sparksGfx = new Graphics()
         stageContainer.addChild(sparksGfx)
 
         app.ticker.add(() => {
           const t = performance.now() * 0.001
-          const width = app.screen.width || domElement.clientWidth || 800
-          const height = app.screen.height || domElement.clientHeight || 140
+          const width = app.screen.width
+          const height = app.screen.height
           const { sequences: seqs, currentSequenceIndex: curIdx, isSolved: solved, activeFillingSeq, filledSlotStep } = stateRef.current
 
-          backgroundGfx.clear()
+          bgGfx.clear()
+          altarGfx.clear()
           magicRingsGfx.clear()
           runeSlotsGfx.clear()
           sparksGfx.clear()
@@ -201,7 +193,7 @@ export const RunicCountdownRing: React.FC<RunicCountdownRingProps> = ({
             const isAnimating = activeFillingSeq === idx
 
             // Card Panel Background
-            backgroundGfx.roundRect(cx, cy, cardWidth, cardHeight, 14)
+            bgGfx.roundRect(cx, cy, cardWidth, cardHeight, 14)
               .fill({ color: isCleared ? 0x232634 : isCurrent ? 0x292c3c : 0x181825, alpha: 0.95 })
               .stroke({
                 width: isCleared ? 1.8 : isCurrent ? 1.5 : 1.0,
