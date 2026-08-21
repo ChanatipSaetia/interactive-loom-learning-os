@@ -1,0 +1,4 @@
+app_ticker:
+  title: "App Ticker"
+  desc: "Internal animation clock driven by window.requestAnimationFrame"
+  type: "actor"

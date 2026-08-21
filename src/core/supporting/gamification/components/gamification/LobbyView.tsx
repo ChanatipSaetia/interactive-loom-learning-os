@@ -71,6 +71,7 @@ export const LobbyView: React.FC<LobbyViewProps> = ({ game }) => {
       {/* ─── Global Character Profile Hero Banner ─── */}
       <CharacterHeroBanner
         globalChar={globalChar}
+        derivedStats={game.derivedStats}
         derivedCampaignsStarted={derivedCampaignsStarted}
         onAllocateStat={handleAllocateStat}
         onOpenBadges={() => setActiveBadgesModal(true)}
@@ -93,7 +94,7 @@ export const LobbyView: React.FC<LobbyViewProps> = ({ game }) => {
           </Badge>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 gap-6">
           {hexmapTopics.map((topic) => (
             <TopicCampaignCard
               key={topic.id}

@@ -55,7 +55,7 @@ export const BadgesModal: React.FC<BadgesModalProps> = ({
               </p>
             </div>
           ) : (
-            globalChar.unlockedBadges.map((badge) => (
+            Array.from(new Map(globalChar.unlockedBadges.map((b) => [b.id, b])).values()).map((badge) => (
               <div key={badge.id} className="flex items-center gap-3 p-3.5 rounded-xl bg-[#232634] border border-[#8caaee]/30 hover:border-[#8caaee]/60 transition-colors">
                 <div className="w-12 h-12 rounded-xl bg-[#1e1e2e] border border-[#414559] flex items-center justify-center text-2xl shrink-0">
                   {badge.icon}

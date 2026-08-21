@@ -2,6 +2,7 @@ import type {
   GlobalCharacterState,
   TopicCampaignState,
   CharacterAttributes,
+  DerivedCharacterStats,
   ActiveBuff,
   DifficultyLevel,
   UnlockedBadge,
@@ -34,6 +35,7 @@ export interface GamificationRuntimePort {
   campaign: HexCampaignData | null
   topicState: TopicCampaignState | null
   globalProfile: GlobalCharacterState | null
+  derivedStats: DerivedCharacterStats
   isLoading: boolean
   error: string | null
 

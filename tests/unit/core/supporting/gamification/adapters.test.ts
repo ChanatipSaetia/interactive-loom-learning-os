@@ -13,7 +13,7 @@ describe('Gamification LocalStorageCharacterAdapter', () => {
   it('loads default global character profile when empty', async () => {
     const profile = await adapter.loadGlobalProfile()
     expect(profile.level).toBe(1)
-    expect(profile.attributes.armor).toBe(5)
+    expect(profile.attributes.armor).toBe(0)
   })
 
   it('persists and retrieves updated global profile', async () => {
@@ -50,5 +50,34 @@ describe('Gamification LocalStorageCharacterAdapter', () => {
     await adapter.resetTopicCampaign('demo')
     const afterReset = await adapter.loadTopicCampaign('demo')
     expect(afterReset).toBeNull()
+  })
+
+  it('deduplicates badges by ID when saving and loading global profile', async () => {
+    const duplicateBadges = [
+      {
+        id: 'badge-1',
+        badgeType: 'topic_completion' as const,
+        title: 'Demo Liberator',
+        icon: '🏅',
+        description: 'Liberated demo realm',
+        unlockedAt: '2026-08-22',
+      },
+      {
+        id: 'badge-1',
+        badgeType: 'topic_completion' as const,
+        title: 'Demo Liberator',
+        icon: '🏅',
+        description: 'Liberated demo realm',
+        unlockedAt: '2026-08-22',
+      },
+    ]
+
+    const profile = await adapter.loadGlobalProfile()
+    profile.unlockedBadges = duplicateBadges
+    await adapter.saveGlobalProfile(profile)
+
+    const loaded = await adapter.loadGlobalProfile()
+    expect(loaded.unlockedBadges).toHaveLength(1)
+    expect(loaded.unlockedBadges[0].id).toBe('badge-1')
   })
 })

@@ -1,0 +1,74 @@
+nodes:
+  app:
+    title: "PIXI.Application"
+    category: "Core Entrypoint"
+  renderer:
+    title: "Renderer (WebGL / WebGPU)"
+    category: "GPU Pipeline"
+  stage:
+    title: "Root Stage (Container)"
+    category: "Scene Graph"
+  container:
+    title: "Container"
+    category: "Scene Graph"
+  sprite:
+    title: "Sprite"
+    category: "Display Objects"
+  texture:
+    title: "Texture / BaseTexture"
+    category: "Assets & Memory"
+  graphics:
+    title: "Graphics (Vector)"
+    category: "Display Objects"
+  text:
+    title: "Text / BitmapText"
+    category: "Display Objects"
+  ticker:
+    title: "Ticker (RAF Loop)"
+    category: "Timing & Animation"
+  assets:
+    title: "Assets Loader"
+    category: "Assets & Memory"
+  batch_renderer:
+    title: "BatchRenderer"
+    category: "GPU Pipeline"
+  filters:
+    title: "Filters (GLSL Shaders)"
+    category: "GPU Pipeline"
+edges:
+  - from: "app"
+    to: "renderer"
+    label: "manages"
+  - from: "app"
+    to: "stage"
+    label: "creates root"
+  - from: "app"
+    to: "ticker"
+    label: "runs frame loop"
+  - from: "stage"
+    to: "container"
+    label: "contains"
+  - from: "container"
+    to: "sprite"
+    label: "nests children"
+  - from: "container"
+    to: "graphics"
+    label: "nests children"
+  - from: "container"
+    to: "text"
+    label: "nests children"
+  - from: "sprite"
+    to: "texture"
+    label: "samples visual UVs"
+  - from: "assets"
+    to: "texture"
+    label: "loads & caches"
+  - from: "renderer"
+    to: "batch_renderer"
+    label: "delegates quad drawing"
+  - from: "sprite"
+    to: "filters"
+    label: "applies post-processing"
+  - from: "batch_renderer"
+    to: "texture"
+    label: "binds sampler units"

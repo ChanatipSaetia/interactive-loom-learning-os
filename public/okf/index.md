@@ -8,6 +8,7 @@ okf_version: "0.1"
 * [Haystack 2.x - AI Search Framework](haystack/index.md) — Build search and RAG applications with composable Haystack pipelines
 * [Hexagonal Architecture (Ports & Adapters)](hexagonal-architecture/index.md) — Isolate core business domain logic from external technologies, databases, frameworks, and UI drivers
 * [Mutual TLS (mTLS) Security & Protocol Architecture](mtls/index.md) — Mutual authentication, TLS 1.3 handshakes, and SPIFFE identity
+* [PixiJS — 2D WebGL/WebGPU Rendering Engine](pixijs/index.md) — Master hardware-accelerated 2D graphics, scene graphs, draw-call batching, and GPU render pipelines
 * [System Design](system-design/index.md) — Learn scalable architecture fundamentals, trade-offs, and design patterns
 
 ## Behavioral Design

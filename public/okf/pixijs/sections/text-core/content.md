@@ -1,0 +1,57 @@
+# The Architecture of High-Performance 2D WebGL Rendering
+
+PixiJS is built from the ground up to achieve desktop-class 60+ frames per second (FPS) rendering on the web. While traditional HTML5 Canvas API relies on synchronous CPU drawing commands that become bottlenecked when animating thousands of objects, PixiJS converts your scene graph into optimized GPU vertex buffers.
+
+Understanding how PixiJS orchestrates coordinate spaces, batch rendering passes, and memory management is the key to creating fluid, stutter-free interactive applications.
+
+## 1. Scene Graph Hierarchy & Coordinate Space Propagation
+
+At the heart of PixiJS is the **Display Tree**, rooted at `app.stage`. Every visible element in your application is a node in this tree. When an object moves, scales, or rotates, its transform is computed in two distinct phases:
+
+1. **Local Transform**: The entity's position, rotation, scale, pivot, and skew relative to its immediate parent node.
+2. **World Transform**: A $3 \times 3$ affine transformation matrix (`PIXI.Matrix`) representing the entity's absolute position, rotation, and scale relative to the root canvas coordinate space.
+
+During the render loop, PixiJS performs a hierarchical depth-first traversal of the display tree. It multiplies each child's local transformation matrix by its parent's world matrix:
+
+$$\text{WorldTransform}_{\text{child}} = \text{WorldTransform}_{\text{parent}} \times \text{LocalTransform}_{\text{child}}$$
+
+This cascading matrix multiplication allows complex composite game objects — such as a character holding a weapon with its own attached particle emitter — to move, rotate, and scale effortlessly as a single unit without manual trigonometric calculations.
+
+## 2. Automatic Batch Rendering: Defeating the Draw Call Bottleneck
+
+In WebGL and modern graphics APIs, the CPU communicating with the GPU via individual draw calls (e.g. `gl.drawElements()`) is the single most expensive operation. If an application draws 2,000 sprites with 2,000 individual draw calls, the CPU will spend most of its time in driver overhead, causing framerate drops and stutter.
+
+PixiJS solves this with its internal **BatchRenderer**:
+
+- **Quad Geometry Buffering**: Instead of issuing a draw call for each sprite, PixiJS extracts the four transformed corner vertices of each sprite quad, its UV texture coordinates, vertex colors, and a texture unit index.
+- **Interleaved Buffer Packing**: Thousands of sprite quads are packed into a single continuous float buffer in system RAM and streamed directly to a single WebGL Vertex Buffer Object (VBO).
+- **Multi-Texture Binding**: PixiJS detects the maximum number of simultaneous texture samplers supported by the client GPU (typically 8 to 16 texture units). It binds multiple textures at once and passes the texture index as a vertex attribute, allowing sprites using different textures to render in the exact same draw call.
+
+### What Causes a "Batch Break"?
+
+A batch break occurs when PixiJS is forced to flush its current geometry buffer and issue an immediate draw call before continuing. Batch breaks are triggered by:
+- **Exceeding Texture Unit Limits**: Referencing more unique BaseTextures in consecutive sprites than the GPU supports in a single draw pass.
+- **Blend Mode Switches**: Changing blend modes (e.g., from `NORMAL` to `ADD` or `MULTIPLY`).
+- **Custom Shaders and Filters**: Display objects with custom GLSL shaders or post-processing filters.
+- **Interleaved Vector Graphics**: Mixing un-batched `PIXI.Graphics` paths between standard sprites.
+
+To maintain locked 60 FPS, high-performance applications group sprites by texture atlas and blend mode to minimize batch breaks.
+
+## 3. GPU Memory Management & Avoiding Leaks
+
+WebGL applications run inside a sandboxed browser environment with finite Video RAM (VRAM). Unlike standard JavaScript objects, GPU textures and shader programs cannot be garbage-collected automatically by JavaScript engines like V8.
+
+When you remove a display object from the scene tree (`parent.removeChild(sprite)`), the sprite's JavaScript wrapper may be cleaned up, but the underlying GPU texture buffer remains resident in VRAM.
+
+To completely prevent memory leaks, you must explicitly destroy display objects and their associated texture assets:
+
+```typescript
+// Destroy sprite and its private GPU textures
+sprite.destroy({
+  children: true,      // Recursively destroy all nested children
+  texture: true,       // Destroy the referenced Texture object
+  baseTexture: true,   // Free the raw WebGL GPU texture memory
+});
+```
+
+When using shared texture atlases, set `baseTexture: false` so that destroying one sprite does not invalidate the shared texture atlas used by other active sprites.

@@ -1,0 +1,153 @@
+- id: "pixi-rendering-architecture"
+  title: "2D Rendering & Asset Architecture Strategy"
+  description: "Optimize rendering performance, memory footprint, and visual fidelity for a 2D web game running across mobile and desktop devices."
+  metrics:
+    - id: "fps_performance"
+      label: "FPS Performance"
+      baseValue: 50
+      min: 0
+      max: 100
+      direction: "higher"
+    - id: "draw_calls"
+      label: "Draw Call Overhead"
+      baseValue: 60
+      min: 0
+      max: 100
+      direction: "lower"
+    - id: "memory_footprint"
+      label: "GPU Memory Footprint"
+      baseValue: 45
+      min: 0
+      max: 100
+      direction: "lower"
+    - id: "visual_fidelity"
+      label: "Visual Fidelity & Effects"
+      baseValue: 70
+      min: 0
+      max: 100
+      direction: "higher"
+  steps:
+    - id: "step_assets"
+      title: "1. Asset Packaging & Texture Strategy"
+      description: "Select how image assets, sprites, and animations are bundled and delivered to the GPU."
+      recommended: "atlas_spritesheet"
+      choices:
+        - id: "individual_pngs"
+          label: "Individual Loose PNG Images"
+          description: "Load each character, prop, and particle as separate PNG image files on demand."
+          metrics:
+            fps_performance: -25
+            draw_calls: 35
+            memory_footprint: 10
+            visual_fidelity: 0
+          pros:
+            - title: "Simple asset pipeline"
+              description: "No sprite sheet build step required during development."
+          cons:
+            - title: "Severe batch breaks"
+              description: "Each distinct texture forces a separate GPU draw call."
+            - title: "High HTTP overhead"
+              description: "Dozens of network requests during initial scene load."
+          whyThisFits: "Quick prototypes with fewer than 50 sprites on screen."
+          whenToUse: "Early proof-of-concepts before asset pipeline automation."
+
+        - id: "atlas_spritesheet"
+          label: "Packed Texture Atlas (Spritesheet)"
+          description: "Pack all sprites, UI icons, and animations into unified 2048x2048 PNG/WebP atlases with JSON frames."
+          metrics:
+            fps_performance: 35
+            draw_calls: -35
+            memory_footprint: -15
+            visual_fidelity: 10
+          pros:
+            - title: "Flawless batching"
+              description: "Thousands of sprites render in a single GPU draw call."
+            - title: "Optimized VRAM allocation"
+              description: "Power-of-two GPU textures reduce memory fragmentation."
+          cons:
+            - title: "Build pipeline step"
+              description: "Requires TexturePacker or Spritesheet tool in build process."
+          whyThisFits: "Production games and high-performance interactive apps."
+          whenToUse: "Standard architecture for all production PixiJS applications."
+
+    - id: "step_container"
+      title: "2. Display Architecture for 10,000 Moving Entities"
+      description: "Choose container primitives for managing bullets, particles, and background elements."
+      recommended: "particle_container"
+      choices:
+        - id: "standard_containers"
+          label: "Nested PIXI.Container Tree"
+          description: "Organize all 10,000 entities inside standard nested Container nodes with full transform inheritance."
+          metrics:
+            fps_performance: -30
+            draw_calls: 10
+            memory_footprint: 20
+            visual_fidelity: 15
+          pros:
+            - title: "Full feature set"
+              description: "Supports individual masking, filters, and deep sub-nesting."
+          cons:
+            - title: "Heavy CPU transform overhead"
+              description: "Matrix multiplication for 10,000 nodes drops framerate on mobile CPUs."
+          whyThisFits: "Complex UI screens with deeply nested widgets."
+          whenToUse: "When objects need individual interactive children and masks."
+
+        - id: "particle_container"
+          label: "Flat PIXI.ParticleContainer"
+          description: "Stream flat vertex buffers directly to the GPU using ParticleContainer with locked properties."
+          metrics:
+            fps_performance: 40
+            draw_calls: -25
+            memory_footprint: -20
+            visual_fidelity: -5
+          pros:
+            - title: "Blazing 60+ FPS throughput"
+              description: "Direct GPU buffer streaming handles 50,000+ sprites effortlessly."
+            - title: "Minimal CPU overhead"
+              description: "Bypasses scene-graph matrix traversal."
+          cons:
+            - title: "Restricted feature set"
+              description: "No deep nesting, child masks, or individual child filters."
+          whyThisFits: "Particle systems, bullet hells, weather effects, and data visualizers."
+          whenToUse: "Whenever rendering thousands of flat, identical sprite instances."
+
+    - id: "step_text"
+      title: "3. UI Text & Scoreboard Rendering"
+      description: "Determine the typography strategy for rapidly updating HUD numbers and dialog strings."
+      recommended: "bitmap_text"
+      choices:
+        - id: "canvas_text"
+          label: "PIXI.Text (Canvas Rasterization)"
+          description: "Use standard PIXI.Text with CSS font family, gradient fills, and drop shadows."
+          metrics:
+            fps_performance: -20
+            draw_calls: 15
+            memory_footprint: 25
+            visual_fidelity: 15
+          pros:
+            - title: "Native system font support"
+              description: "Renders any installed font with full CSS styling."
+          cons:
+            - title: "Garbage collection & texture churn"
+              description: "Every number change re-rasterizes offscreen canvas and re-uploads GPU texture."
+          whyThisFits: "Static text labels that never change after scene initialization."
+          whenToUse: "Headings, titles, and localized dialog strings loaded once."
+
+        - id: "bitmap_text"
+          label: "PIXI.BitmapText (Pre-baked Font Atlas)"
+          description: "Render text using pre-baked XML/JSON font atlas glyphs as batched quads."
+          metrics:
+            fps_performance: 25
+            draw_calls: -20
+            memory_footprint: -10
+            visual_fidelity: 5
+          pros:
+            - title: "Zero texture re-upload overhead"
+              description: "Modifying text at 60 FPS creates zero garbage collection pauses."
+            - title: "Fully batched"
+              description: "Draws alongside sprites in the same draw call."
+          cons:
+            - title: "Fixed font sizes"
+              description: "Scaling bitmap fonts beyond native resolution causes pixelation or requires MSDF."
+          whyThisFits: "Rapidly updating HUD counters, combat damage numbers, and health bars."
+          whenToUse: "Any text that changes every frame or requires locked 60 FPS performance."

@@ -6,6 +6,7 @@ import {
   calculateSanctuaryHealing,
   resolveCombatTurn,
   calculateLevelProgress,
+  deriveStatPercentage,
 } from '../../../../../src/core/supporting/gamification/game-rules'
 import type {
   HexNodeData,
@@ -243,5 +244,29 @@ describe('calculateLevelProgress', () => {
     expect(result.nextExp).toBe(20) // 120 - 100
     expect(result.nextNextLevelExp).toBe(150) // Level 2 -> 3 requires 150 EXP
     expect(result.nextUnallocatedPoints).toBe(1)
+  })
+})
+
+// ─── deriveStatPercentage ───────────────────────────────────────────────────
+
+describe('deriveStatPercentage', () => {
+  it('starts at 10% when allocated points is 0 or negative', () => {
+    expect(deriveStatPercentage(0)).toBe(10)
+    expect(deriveStatPercentage(-5)).toBe(10)
+  })
+
+  it('scales gently logarithmically as points increase', () => {
+    expect(deriveStatPercentage(1)).toBe(11)
+    expect(deriveStatPercentage(2)).toBe(12)
+    expect(deriveStatPercentage(5)).toBe(14)
+    expect(deriveStatPercentage(10)).toBe(17)
+    expect(deriveStatPercentage(20)).toBe(22)
+    expect(deriveStatPercentage(50)).toBe(31)
+  })
+
+  it('is capped at 40% around 100 points', () => {
+    expect(deriveStatPercentage(100)).toBe(40)
+    expect(deriveStatPercentage(150)).toBe(40)
+    expect(deriveStatPercentage(200)).toBe(40)
   })
 })

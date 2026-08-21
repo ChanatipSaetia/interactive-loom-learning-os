@@ -159,9 +159,15 @@ export interface UnlockedBadge {
 
 // ─── Global Character & Topic Campaign States ──────────────────────────────
 export interface CharacterAttributes {
-  armor: number // Reduces damage taken
-  evasion: number // % Chance to dodge damage/retry choice
-  intelligence: number // % Chance to get hints / highlight answers
+  armor: number // Raw allocated points
+  evasion: number // Raw allocated points
+  intelligence: number // Raw allocated points
+}
+
+export interface DerivedCharacterStats {
+  armor: number // Derived effective % damage reduction (10% to 40%)
+  evasion: number // Derived effective % dodge chance / bonus seconds (10% to 40%)
+  intelligence: number // Derived effective % hint / reveal chance (10% to 40%)
 }
 
 export interface GlobalCharacterState {

@@ -4,6 +4,7 @@ import { Application, Container, Graphics, Text, TextStyle, FillGradient } from 
 import { HexNodeData } from '../types'
 import { computeHexGridCoordinates, getAutoFlowConnections, isKeyItemLocationRevealed } from '../layout'
 import { PixiCanvasViewport } from './PixiCanvasViewport'
+import { drawWarrior } from './warrior-renderer'
 
 interface HexGridCanvasProps {
   nodes: HexNodeData[]
@@ -340,107 +341,12 @@ export const HexGridCanvas = React.forwardRef<HexGridCanvasRef, HexGridCanvasPro
     // Draw procedural animated walking human frame
     const drawHuman = (_walkProgress: number, walkCycle: number) => {
       if (!humanGfx || humanGfx.destroyed) return
-      humanGfx.clear()
-
-      const legSwing = Math.sin(walkCycle) * 7
-      const armSwing = Math.cos(walkCycle) * 6
       const bob = Math.abs(Math.sin(walkCycle * 2)) * 2.5
-
-      // Shadow on ground
-      humanGfx.ellipse(0, 16, 10, 3.5).fill({ color: 0x181825, alpha: 0.55 })
-
-      // Cape / Crimson Battle Cloak waving behind (to the left since moving right)
-      humanGfx.poly([
-        -4, -5 - bob,
-        -16 - Math.sin(walkCycle) * 4, 7 + Math.cos(walkCycle) * 2.5 - bob,
-        -11, 13 - bob,
-        -2, 2 - bob,
-      ]).fill({ color: 0xe78284, alpha: 0.9 })
-
-      // Left Leg (Back - Steel Greaves)
-      humanGfx.moveTo(-2, 5 - bob)
-        .lineTo(-2 - legSwing, 15)
-        .stroke({ width: 3.5, color: 0x51576d, cap: 'round' })
-      // Left Sabaton / Boot
-      humanGfx.circle(-2 - legSwing + 1, 15, 2.2).fill({ color: 0x414559 })
-
-      // Right Leg (Front - Steel Greaves)
-      humanGfx.moveTo(2, 5 - bob)
-        .lineTo(2 + legSwing, 15)
-        .stroke({ width: 3.8, color: 0x949cbb, cap: 'round' })
-      // Right Sabaton / Boot
-      humanGfx.circle(2 + legSwing + 1.5, 15, 2.4).fill({ color: 0x737994 })
-
-      // Torso / Steel Cuirass (Breastplate with golden trims)
-      humanGfx.roundRect(-5.5, -7 - bob, 11, 13, 2.5).fill({ color: 0x737994, alpha: 1.0 })
-        .stroke({ width: 1.6, color: 0xc6d0f5 })
-      // Center chestplate ridge
-      humanGfx.moveTo(0, -6 - bob).lineTo(0, 4 - bob).stroke({ width: 1.5, color: 0x414559 })
-      // Golden Breastplate Inlay Crest
-      humanGfx.poly([0, -4 - bob, 2.5, -2 - bob, 0, 0 - bob, -2.5, -2 - bob]).fill({ color: 0xe5c890 })
-
-      // Armored Belt & Buckle
-      humanGfx.rect(-5.5, 2 - bob, 11, 2.5).fill({ color: 0x292c3c })
-      humanGfx.rect(-2, 1.5 - bob, 4, 3.5).fill({ color: 0xe5c890 })
-
-      // Left Arm & Kite Shield (Back Arm holding Knight's Heater Shield)
-      const shieldX = -6 - armSwing * 0.5
-      const shieldY = -1 - bob
-      // Shield Rim & Field (Azure & Gold Crest)
-      humanGfx.poly([
-        shieldX - 3, shieldY - 7,
-        shieldX + 4, shieldY - 7,
-        shieldX + 4, shieldY + 3,
-        shieldX, shieldY + 8,
-        shieldX - 3, shieldY + 3,
-      ]).fill({ color: 0x303446, alpha: 0.95 }).stroke({ width: 1.4, color: 0x8caaee })
-      // Shield Gold Cross / Star
-      humanGfx.poly([shieldX + 0.5, shieldY - 4, shieldX + 0.5, shieldY + 4]).stroke({ width: 1.5, color: 0xe5c890 })
-
-      // Right Arm (Front - Armored Gauntlet holding Gleaming Broadsword)
-      const handX = 4 + armSwing * 0.8
-      const handY = 2 - bob
-      humanGfx.moveTo(3, -4 - bob)
-        .lineTo(handX, handY)
-        .stroke({ width: 3.2, color: 0x949cbb, cap: 'round' })
-
-      // Broadsword / Greatsword
-      // Steel Blade
-      humanGfx.moveTo(handX + 1, handY - 1)
-        .lineTo(handX + 16, handY - 14)
-        .stroke({ width: 2.8, color: 0xffffff, cap: 'round' })
-      // Blade Full Core Highlight
-      humanGfx.moveTo(handX + 2, handY - 2)
-        .lineTo(handX + 15, handY - 13)
-        .stroke({ width: 1.2, color: 0x8caaee })
-      // Crossguard
-      humanGfx.moveTo(handX - 2, handY + 1)
-        .lineTo(handX + 3, handY - 4)
-        .stroke({ width: 2.4, color: 0xe5c890 })
-      // Pommel Gem
-      humanGfx.circle(handX - 2.5, handY + 2, 1.5).fill({ color: 0xe78284 })
-
-      // Heavy Pauldrons (Shoulder Armor Plates)
-      humanGfx.poly([-7, -8 - bob, -3, -11 - bob, -2, -6 - bob]).fill({ color: 0x949cbb }).stroke({ width: 1, color: 0xc6d0f5 })
-      humanGfx.poly([3, -11 - bob, 7, -8 - bob, 3, -6 - bob]).fill({ color: 0x949cbb }).stroke({ width: 1, color: 0xc6d0f5 })
-
-      // Armored Warrior Helmet (Greathelm with Visor Slit & Golden Horns/Plume)
-      humanGfx.roundRect(-4.5, -16 - bob, 9, 10, 2.5).fill({ color: 0x737994 })
-        .stroke({ width: 1.5, color: 0xc6d0f5 })
-
-      // Helmet Visor T-Slit (Glowing cyan heroic eyes inside)
-      humanGfx.moveTo(-2.5, -12 - bob).lineTo(3.5, -12 - bob).stroke({ width: 1.4, color: 0x181825 })
-      humanGfx.moveTo(1, -14 - bob).lineTo(1, -9 - bob).stroke({ width: 1.4, color: 0x181825 })
-      // Glowing Eye Glimmer
-      humanGfx.circle(2, -12 - bob, 0.9).fill({ color: 0x8caaee, alpha: 1.0 })
-
-      // Golden Plume / Crest on Helmet
-      humanGfx.poly([
-        -1, -16 - bob,
-        -4, -22 - bob,
-        2, -21 - bob,
-        4, -16 - bob,
-      ]).fill({ color: 0xe5c890 }).stroke({ width: 1, color: 0xef9f76 })
+      drawWarrior(humanGfx, {
+        walkCycle,
+        bob,
+        cloakPhase: walkCycle,
+      })
     }
 
     const animateWalk = (currentTime: number) => {

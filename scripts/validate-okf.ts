@@ -3,11 +3,12 @@ import fs from 'fs'
 import path from 'path'
 import { fileURLToPath } from 'url'
 import * as yaml from 'js-yaml'
-import { validateOKFSection, validateOKFSectionFile, formatValidationAsPrompt, tier2Validate, type ValidationDiagnostic, type ValidationResult } from '../src/core/learning-engine/validation/gateway.ts'
+import { validateOKFSection, validateOKFSectionFile, formatValidationAsPrompt, tier2Validate, validateHexCampaign, type ValidationDiagnostic, type ValidationResult } from '../src/core/learning-engine/validation/gateway.ts'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 const ROOT = path.join(__dirname, '..')
 const OKF_DIR = path.join(ROOT, 'public', 'okf')
+const HEXMAPS_DIR = path.join(ROOT, 'public', 'hexmaps')
 
 // Parse CLI flags
 const args = process.argv.slice(2)
@@ -165,6 +166,31 @@ function validateAll(): { totalFiles: number; diagnostics: ValidationDiagnostic[
         const sectionType = (meta.type as string) || (data.type as string)
         const res = validateOKFSection(data, sectionType, context)
         diagnostics.push(...res.diagnostics)
+      }
+    }
+  }
+
+  // Validate Hex Campaigns in public/hexmaps
+  if (fs.existsSync(HEXMAPS_DIR)) {
+    const hexFiles = fs.readdirSync(HEXMAPS_DIR).filter((f) => f.endsWith('.yaml') || f.endsWith('.yml'))
+    for (const hexFile of hexFiles) {
+      const topicId = path.basename(hexFile, path.extname(hexFile))
+      if (topicArg && topicArg !== topicId) continue
+      totalFiles++
+
+      const hexFilePath = path.join(HEXMAPS_DIR, hexFile)
+      const rawContent = fs.readFileSync(hexFilePath, 'utf-8')
+      const sectionsPath = path.join(OKF_DIR, topicId, 'sections')
+      const availableSectionIds = fs.existsSync(sectionsPath)
+        ? fs.readdirSync(sectionsPath).filter((f) => fs.statSync(path.join(sectionsPath, f)).isDirectory())
+        : []
+
+      const res = validateHexCampaign(rawContent, availableSectionIds)
+      for (const diag of res.diagnostics) {
+        diagnostics.push({
+          ...diag,
+          file: path.relative(ROOT, hexFilePath),
+        } as any)
       }
     }
   }

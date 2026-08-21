@@ -48,6 +48,13 @@
   path: /topics/motorcycle
   category: Mechanical
   description: ''
+- id: pixijs
+  label: pixijs
+  path: /topics/pixijs
+  category: Architecture
+  description: >-
+    Master hardware-accelerated 2D graphics, hierarchical scene graphs,
+    automatic draw-call batching, and high-performance WebGL/WebGPU pipelines.
 - id: pm-and-meetings
   label: pm-and-meetings
   path: /topics/pm-and-meetings

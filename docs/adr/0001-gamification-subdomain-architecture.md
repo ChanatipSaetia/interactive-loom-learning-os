@@ -26,6 +26,11 @@ We decide to implement Gamification using the following architectural boundaries
 4. **Tier 3 Solvability & Reachability Validation**:
    - `validateGamificationTier3()` enforces axial coordinate uniqueness, section file reference resolution against `index.yaml`, boss item reachability (map solvability), and hex graph adjacency connectivity back to the capital hex.
 
+5. **Sanctuary Active-Reading Pulse & Resource Throttling**:
+   - Time-based tick healing (every 10 seconds of active visible reading) consuming from a difficulty-bounded global campaign pulse pool (`maxSanctuaryPulses`, default 5).
+   - Reading pulses automatically pause when character HP is full (`characterHp >= maxCharacterHp`) to prevent wasteful pulse depletion.
+   - Diminishing return multipliers apply based on node visit count ($1.0\times \rightarrow 0.5\times \rightarrow 0.2\times$).
+
 ## Consequences
 
 ### Positive

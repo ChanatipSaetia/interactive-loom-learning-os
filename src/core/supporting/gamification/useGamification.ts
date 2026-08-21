@@ -10,6 +10,7 @@ import {
   resolveCombatTurn,
   calculateLevelProgress,
   evaluateTopicBadges,
+  deriveStatPercentage,
 } from './game-rules'
 
 export function useGamification(
@@ -240,15 +241,15 @@ export function useGamification(
     if (!topicId) return
     setTopicState((prev) => {
       if (!prev || !topicId) return null
+      if (prev.characterHp >= prev.maxCharacterHp) return prev
       const maxPulses = prev.maxSanctuaryPulses ?? DIFFICULTY_CONFIGS[prev.difficulty]?.maxSanctuaryPulses ?? 5
       const currentPulsesUsed = prev.sanctuaryPulsesUsed ?? 0
       if (currentPulsesUsed >= maxPulses) return prev
 
-      const currentVisits = prev.readingVisitCounts?.[nodeId] ?? 0
-      const nextVisits = currentVisits + 1
+      const currentVisits = prev.readingVisitCounts?.[nodeId] ?? 1
       const { effectiveHealing, nextChaosLevel } = calculateSanctuaryTickHealing(
         activeSeconds,
-        nextVisits,
+        currentVisits,
         prev.chaosLevel
       )
 
@@ -258,10 +259,6 @@ export function useGamification(
         characterHp: nextHp,
         chaosLevel: nextChaosLevel,
         sanctuaryPulsesUsed: currentPulsesUsed + 1,
-        readingVisitCounts: {
-          ...prev.readingVisitCounts,
-          [nodeId]: nextVisits,
-        },
       }
       characterAdapter.saveTopicCampaign(topicId, nextState)
       return nextState
@@ -286,16 +283,17 @@ export function useGamification(
     })
   }, [characterAdapter, topicId])
 
-  // Allocate character attribute points
+  // Allocate character attribute points (+1 raw point per allocation)
   const allocateStatPoint = useCallback((stat: keyof CharacterAttributes) => {
     setGlobalProfileState((prev) => {
       if (!prev || prev.unallocatedPoints <= 0) return prev
+      const currentPoints = prev.attributes[stat] ?? 0
       const nextProfile: GlobalCharacterState = {
         ...prev,
         unallocatedPoints: prev.unallocatedPoints - 1,
         attributes: {
           ...prev.attributes,
-          [stat]: prev.attributes[stat] + (stat === 'evasion' ? 2 : 1),
+          [stat]: currentPoints + 1,
         },
       }
       characterAdapter.saveGlobalProfile(nextProfile)
@@ -322,13 +320,18 @@ export function useGamification(
 
   // Complete node and award key items & check topic completion badges if Boss Lair
   const completeNode = useCallback((nodeId: string) => {
-    if (!topicId) return
+    if (!topicId || !campaign) return
+
+    const targetNode = campaign.nodes.find((n) => n.id === nodeId)
+    const isBoss = targetNode?.type === 'boss_lair'
+
     setTopicState((prev) => {
-      if (!prev || !topicId || !campaign) return prev
-      const targetNode = campaign.nodes.find((n) => n.id === nodeId)
-      const nextCleared = !prev.clearedNodeIds.includes(nodeId)
-        ? [...prev.clearedNodeIds, nodeId]
-        : prev.clearedNodeIds
+      if (!prev || !topicId) return null
+      if (prev.clearedNodeIds.includes(nodeId)) {
+        return prev
+      }
+
+      const nextCleared = [...prev.clearedNodeIds, nodeId]
 
       let nextInventory = prev.inventory
       if (targetNode?.rewards) {
@@ -336,32 +339,19 @@ export function useGamification(
         nextInventory = [...prev.inventory, ...newRewards]
       }
 
-      // If Boss Lair is defeated, evaluate topic badges and record campaign success
       let updatedBadges = prev.unlockedBadges || []
-      if (targetNode?.type === 'boss_lair') {
+      if (isBoss) {
         const earned = evaluateTopicBadges(
           topicId,
           prev.topicTitle,
           prev.difficulty,
           prev.damageTakenInCampaign || 0,
           prev.activeBuffs.length > 0,
-          globalProfile?.unlockedBadges || []
+          prev.unlockedBadges || []
         )
-
-        setGlobalProfileState((g) => {
-          if (!g) return g
-          const nextG: GlobalCharacterState = {
-            ...g,
-            unlockedBadges: earned.length > 0 ? [...g.unlockedBadges, ...earned] : g.unlockedBadges,
-            totalCampaignsSucceeded: (g.totalCampaignsSucceeded ?? 0) + 1,
-          }
-          characterAdapter.saveGlobalProfile(nextG)
-          return nextG
-        })
-
-        if (earned.length > 0) {
-          updatedBadges = [...updatedBadges, ...earned]
-        }
+        const currentBadgeIds = new Set(updatedBadges.map((b) => b.id))
+        const uniqueEarned = earned.filter((b) => !currentBadgeIds.has(b.id))
+        updatedBadges = [...updatedBadges, ...uniqueEarned]
       }
 
       const nextState: TopicCampaignState = {
@@ -373,7 +363,31 @@ export function useGamification(
       characterAdapter.saveTopicCampaign(topicId, nextState)
       return nextState
     })
-  }, [campaign, characterAdapter, topicId, globalProfile])
+
+    if (isBoss) {
+      setGlobalProfileState((g) => {
+        if (!g) return g
+        const earned = evaluateTopicBadges(
+          topicId,
+          campaign.topicTitle,
+          topicState?.difficulty || 'normal',
+          topicState?.damageTakenInCampaign || 0,
+          (topicState?.activeBuffs.length || 0) > 0,
+          g.unlockedBadges || []
+        )
+        const existingBadgeIds = new Set(g.unlockedBadges.map((b) => b.id))
+        const uniqueEarned = earned.filter((b) => !existingBadgeIds.has(b.id))
+
+        const nextG: GlobalCharacterState = {
+          ...g,
+          unlockedBadges: uniqueEarned.length > 0 ? [...g.unlockedBadges, ...uniqueEarned] : g.unlockedBadges,
+          totalCampaignsSucceeded: (g.totalCampaignsSucceeded ?? 0) + 1,
+        }
+        characterAdapter.saveGlobalProfile(nextG)
+        return nextG
+      })
+    }
+  }, [campaign, characterAdapter, topicId, topicState])
 
   // Award EXP upon completing all section requirements
   const awardExp = useCallback((expAmount: number) => {
@@ -465,10 +479,21 @@ export function useGamification(
     characterAdapter.saveGlobalProfile(profile)
   }, [characterAdapter])
 
+  // Derived effective percentages calculated from raw points via logarithmic curve
+  const derivedStats: import('./types').DerivedCharacterStats = useMemo(() => {
+    const raw = globalProfile?.attributes || { armor: 0, evasion: 0, intelligence: 0 }
+    return {
+      armor: deriveStatPercentage(raw.armor ?? 0),
+      evasion: deriveStatPercentage(raw.evasion ?? 0),
+      intelligence: deriveStatPercentage(raw.intelligence ?? 0),
+    }
+  }, [globalProfile?.attributes])
+
   return {
     campaign,
     topicState,
     globalProfile,
+    derivedStats,
     isLoading,
     error,
     selectNode,

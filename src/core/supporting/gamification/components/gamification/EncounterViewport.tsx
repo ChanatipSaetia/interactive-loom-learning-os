@@ -1,5 +1,5 @@
 import React, { Suspense, useState, useEffect } from 'react'
-import { DIFFICULTY_CONFIGS } from '../../types'
+import { DIFFICULTY_CONFIGS, MonsterData } from '../../types'
 import { Button } from '../../../../ui-system'
 import { SectionRegistry } from '../../../../learning-engine/registry'
 import { EncounterDrawer } from '../EncounterDrawer'
@@ -19,6 +19,7 @@ export const EncounterViewport: React.FC<EncounterViewportProps> = ({ game }) =>
   const {
     bundleSectionsMap,
     globalChar,
+    derivedStats,
     topicState: campaign,
     quizAttemptKey,
     quizFailed,
@@ -62,10 +63,11 @@ export const EncounterViewport: React.FC<EncounterViewportProps> = ({ game }) =>
             {(() => {
               const secConfig = node.sectionRef ? bundleSectionsMap.get(node.sectionRef) : null
               const isQuiz =
-                node.type === 'quiz_encounter' ||
+                (node.type === 'quiz_encounter' ||
                 secConfig?.type === 'quiz' ||
                 node.sectionRef?.includes('quiz') ||
-                node.id.includes('quiz')
+                node.id.includes('quiz')) &&
+                node.type !== 'boss_lair'
 
               if (!isQuiz) return null
 
@@ -110,6 +112,8 @@ export const EncounterViewport: React.FC<EncounterViewportProps> = ({ game }) =>
                 chaosLevel={campaign.chaosLevel}
                 pulsesUsed={campaign.sanctuaryPulsesUsed ?? 0}
                 maxTicks={campaign.maxSanctuaryPulses ?? DIFFICULTY_CONFIGS[campaign.difficulty || 'normal']?.maxSanctuaryPulses ?? 5}
+                characterHp={campaign.characterHp}
+                maxCharacterHp={campaign.maxCharacterHp}
                 onTickHeal={handleRestSanctuary}
               />
             )}
@@ -142,12 +146,19 @@ export const EncounterViewport: React.FC<EncounterViewportProps> = ({ game }) =>
               return (
                 <RunicCountdownRing
                   isSolved={node.status === 'cleared'}
-                  evasionBonusSeconds={globalChar.attributes.evasion}
-                  intelligenceChance={globalChar.attributes.intelligence}
+                  evasionBonusSeconds={derivedStats.evasion}
+                  intelligenceChance={derivedStats.intelligence}
                   sequences={sequenceList}
                   currentSequenceIndex={clearedReflectionSlots}
                   lastDecryptedSequence={lastDecryptedSlot}
-                  onTimeout={() => handleFailSection(node)}
+                  onTimeout={() => {
+                    // Apply the fail penalty, then close the encounter — otherwise the
+                    // countdown just sits at 0s forever with the modal stuck open (the
+                    // "Close Encounter" button closes via the same setActiveSectionModal
+                    // call, so timing out should behave the same way).
+                    handleFailSection(node)
+                    setActiveSectionModal(null)
+                  }}
                   onStatTriggered={(stat, details) => {
                     if (stat === 'evasion') {
                       pushActionMessage(details, 'success', '💨')
@@ -172,6 +183,32 @@ export const EncounterViewport: React.FC<EncounterViewportProps> = ({ game }) =>
       }
     >
       {node && (() => {
+        // Boss Lair Encounter Climax: Dedicated Key-Item Boss Battle Arena
+        if (node.type === 'boss_lair') {
+          const bossMonster: MonsterData = node.monster || {
+            id: 'topic-boss',
+            name: node.title || 'Topic Boss',
+            icon: '🐲',
+            maxHp: 250,
+            damage: 40,
+            type: 'boss',
+          }
+
+          return (
+            <div className="text-[#c6d0f5] space-y-6 w-full max-w-7xl mx-auto">
+              <BossBattleArena
+                monster={bossMonster}
+                playerAttributes={globalChar.attributes}
+                playerHp={campaign.characterHp}
+                maxPlayerHp={campaign.maxCharacterHp}
+                inventory={campaign.inventory}
+                onVictory={() => handlePassSection(node)}
+                onTakeDamage={(dmg) => handleFailSection(node, dmg)}
+              />
+            </div>
+          )
+        }
+
         const sectionConfig = node.sectionRef ? bundleSectionsMap.get(node.sectionRef) : null
         const DynamicComponent = sectionConfig ? SectionRegistry.get(sectionConfig.type) : null
 
@@ -184,7 +221,7 @@ export const EncounterViewport: React.FC<EncounterViewportProps> = ({ game }) =>
                   <DynamicComponent
                     key={`${node.id}-${quizAttemptKey}`}
                     {...sectionConfig.props}
-                    intelligenceChance={globalChar.attributes.intelligence}
+                    intelligenceChance={derivedStats.intelligence}
                     onEvent={(event: any) => {
                       if (event.type === 'QuizOptionSelected') {
                         const totalQuestions = Array.isArray(sectionConfig?.props?.questions)
@@ -286,10 +323,7 @@ export const EncounterViewport: React.FC<EncounterViewportProps> = ({ game }) =>
                   <div className="pt-4 border-t border-[#414559] flex justify-end">
                     <Button
                       className="bg-gradient-to-r from-[#a6d189] to-[#8caaee] hover:opacity-90 text-[#232634] font-bold text-sm px-6 py-2.5 shadow-lg flex items-center gap-2"
-                      onClick={() => {
-                        handleRestSanctuary()
-                        handlePassSection(node)
-                      }}
+                      onClick={() => handlePassSection(node)}
                     >
                       <span>🏛️</span>
                       <span>Complete Reading & Attune Sanctuary (+5 XP)</span>
@@ -330,17 +364,6 @@ export const EncounterViewport: React.FC<EncounterViewportProps> = ({ game }) =>
                   </div>
                 )}
               </div>
-            ) : node.type === 'boss_lair' && node.monster ? (
-              /* Boss Battle Arena Climax */
-              <BossBattleArena
-                monster={node.monster}
-                playerAttributes={globalChar.attributes}
-                playerHp={campaign.characterHp}
-                maxPlayerHp={campaign.maxCharacterHp}
-                inventory={campaign.inventory}
-                onVictory={() => handlePassSection(node)}
-                onTakeDamage={() => handleFailSection(node)}
-              />
             ) : (
               <div className="p-8 text-center bg-[#232634] rounded-2xl border border-[#414559]">
                 <h3 className="text-lg font-bold text-[#8caaee] mb-2">{node.title}</h3>

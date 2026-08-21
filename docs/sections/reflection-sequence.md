@@ -32,7 +32,7 @@ resource: sequence.yaml    # relative path to the YAML data file
 
 ## `sequence.yaml` — data file
 
-A single object with a `challenges` array. Each challenge is an independent ordering puzzle.
+Supports either an explicit `{ challenges: [...] }` map, a top-level array `[...]` of challenges, or a single flat challenge `{ prompt, items, solution }`. Each challenge is an independent ordering puzzle.
 
 ```yaml
 challenges:

@@ -1,0 +1,62 @@
+- id: "q_tax_1"
+  question: "When should you prefer PIXI.ParticleContainer over a standard PIXI.Container?"
+  choices:
+    - id: "c1"
+      text: "When you need deeply nested hierarchy trees and individual child blur filters"
+      correct: false
+      explanation: "ParticleContainer does not support deep nesting or individual child filters."
+    - id: "c2"
+      text: "When you need to render thousands of flat, high-speed sprites (e.g. bullets, rain, snow) with minimal CPU overhead"
+      correct: true
+      explanation: "ParticleContainer streams flat vertex buffers directly to the GPU shader, bypassing full scene-graph matrix recalculations."
+    - id: "c3"
+      text: "When you are rendering static vector SVG shapes"
+      correct: false
+      explanation: "ParticleContainer is designed exclusively for textured sprite quads."
+    - id: "c4"
+      text: "When you want to display HTML form inputs"
+      correct: false
+      explanation: "HTML inputs are managed in the DOM outside the WebGL canvas."
+  hint: "ParticleContainer sacrifices complex hierarchy features for raw vertex streaming throughput."
+
+- id: "q_tax_2"
+  question: "Why should dynamic 60 FPS numerical counters use PIXI.BitmapText rather than standard PIXI.Text?"
+  choices:
+    - id: "c1"
+      text: "BitmapText creates no CPU canvas rasterization or GPU texture re-upload churn when strings change"
+      correct: true
+      explanation: "PIXI.Text generates a new offscreen HTML5 2D Canvas texture on every text change, creating VRAM churn and GC pauses. BitmapText merely batches pre-uploaded character glyphs."
+    - id: "c2"
+      text: "Standard PIXI.Text cannot render numbers"
+      correct: false
+      explanation: "PIXI.Text can render any Unicode text string."
+    - id: "c3"
+      text: "BitmapText runs on WebAudio instead of WebGL"
+      correct: false
+      explanation: "BitmapText is a WebGL display object."
+    - id: "c4"
+      text: "BitmapText automatically translates text into 12 languages"
+      correct: false
+      explanation: "Localization is an application-level concern."
+  hint: "Think about the memory and CPU cost of offscreen canvas rasterization."
+
+- id: "q_tax_3"
+  question: "What is the optimal display strategy for a complex static vector UI background drawn with PIXI.Graphics?"
+  choices:
+    - id: "c1"
+      text: "Redraw the entire vector path inside the 60 FPS Ticker loop"
+      correct: false
+      explanation: "Redrawing vector paths every frame causes unnecessary CPU triangulation overhead."
+    - id: "c2"
+      text: "Draw the paths once and bake them into a reusable Texture via app.renderer.generateTexture(graphics)"
+      correct: true
+      explanation: "Baking static vector geometry into a RenderTexture allows it to render as an ultra-fast batched sprite quad without recurring CPU triangulation."
+    - id: "c3"
+      text: "Convert the vector path into a raw HTML <video> tag"
+      correct: false
+      explanation: "Video tags are for video streams, not static vector shapes."
+    - id: "c4"
+      text: "Disable the GPU and use software rendering"
+      correct: false
+      explanation: "Software rendering is much slower than GPU acceleration."
+  hint: "Consider baking one-off vector drawings into a GPU texture."

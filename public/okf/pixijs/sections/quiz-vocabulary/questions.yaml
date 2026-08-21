@@ -1,0 +1,41 @@
+- id: "q_voc_1"
+  question: "What is the structural difference between a 'Texture' and a 'BaseTexture' in PixiJS?"
+  choices:
+    - id: "c1"
+      text: "Texture is for 3D meshes; BaseTexture is for 2D sprites"
+      correct: false
+      explanation: "PixiJS is a 2D rendering engine; both handle 2D image data."
+    - id: "c2"
+      text: "BaseTexture holds the actual raw WebGL GPU image resource, while Texture defines a specific UV rectangular crop of that BaseTexture"
+      correct: true
+      explanation: "BaseTexture owns the GPU memory allocation. Multiple Texture instances can reference sub-regions (UV frames) of the same BaseTexture, enabling sprite sheets."
+    - id: "c3"
+      text: "BaseTexture is rendered by CPU, whereas Texture is rendered by GPU"
+      correct: false
+      explanation: "Both are part of the GPU texture management system."
+    - id: "c4"
+      text: "They are identical aliases with no technical distinction"
+      correct: false
+      explanation: "They have distinct responsibilities: GPU resource vs UV sub-region definition."
+  hint: "Think about how a sprite sheet texture atlas shares one large image across dozens of sprite frames."
+
+- id: "q_voc_2"
+  question: "How does the 'Ticker' deltaTime property help maintain consistent movement speed across different monitor refresh rates (60Hz vs 144Hz)?"
+  choices:
+    - id: "c1"
+      text: "It forces all monitors to run at exactly 60 FPS by sleeping the thread"
+      correct: false
+      explanation: "Ticker does not sleep the main JS thread; it measures actual elapsed time."
+    - id: "c2"
+      text: "It provides a frame duration multiplier proportional to 60 FPS, scaling velocity so distance per second remains identical"
+      correct: true
+      explanation: "At 60 FPS, deltaTime is ~1.0. At 120 FPS, deltaTime is ~0.5. Multiplying velocity by deltaTime ensures identical movement speed in physical time."
+    - id: "c3"
+      text: "It skips rendering every second frame on high-refresh monitors"
+      correct: false
+      explanation: "PixiJS renders on every RAF frame to deliver maximum visual smoothness."
+    - id: "c4"
+      text: "It converts pixel measurements to meters automatically"
+      correct: false
+      explanation: "Pixel measurements are preserved; deltaTime scales numerical step changes."
+  hint: "Consider what multiplier is needed when a frame executes in 8.3ms (120Hz) instead of 16.6ms (60Hz)."

@@ -1,0 +1,25 @@
+# App metadata for pixijs topic bundle
+category: Architecture
+tags:
+  - PixiJS
+  - WebGL
+  - WebGPU
+  - 2D Graphics
+  - Rendering Engine
+related:
+  - sections/intro/content.yaml
+  - sections/concept-map/concepts.yaml
+  - sections/reflection-foundations/sequence.yaml
+  - sections/flashcards/glossary.yaml
+  - sections/quiz-vocabulary/questions.yaml
+  - sections/taxonomy-browser/categories.yaml
+  - sections/decision-tree/tree.yaml
+  - sections/quiz-taxonomies/questions.yaml
+  - sections/flowchart/actors.yaml
+  - sections/flowchart/systems.yaml
+  - sections/flowchart/steps.yaml
+  - sections/flowchart/journeys.yaml
+  - sections/reflection-transforms/sequence.yaml
+  - sections/reflection-sequence/sequence.yaml
+  - sections/tradeoff-sandbox/scenarios.yaml
+  - sections/quiz-optimization/questions.yaml

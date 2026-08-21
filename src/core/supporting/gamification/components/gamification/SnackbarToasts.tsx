@@ -11,11 +11,11 @@ export const SnackbarToasts: React.FC<SnackbarToastsProps> = ({ snackbars, onDis
   if (snackbars.length === 0) return null
 
   return (
-    <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-[9999] pointer-events-none flex flex-col-reverse items-center gap-2 max-w-[92vw] sm:max-w-md w-full">
-      {snackbars.map((item) => (
+    <div className="fixed top-6 left-1/2 -translate-x-1/2 z-[9999] pointer-events-none flex flex-col items-center gap-2 max-w-[92vw] sm:max-w-md w-full">
+      {snackbars.slice().reverse().map((item) => (
         <div
           key={item.id}
-          className="w-full flex items-center justify-center animate-in fade-in slide-in-from-bottom-4 duration-300 ease-out"
+          className="w-full flex items-center justify-center animate-in fade-in slide-in-from-top-4 duration-300 ease-out"
         >
           <div
             className={`pointer-events-auto w-full backdrop-blur-xl border text-xs sm:text-sm font-semibold px-3.5 py-2.5 sm:px-4 sm:py-3 rounded-2xl shadow-2xl flex items-center gap-3 border-l-4 transition-all duration-300 relative overflow-hidden ${

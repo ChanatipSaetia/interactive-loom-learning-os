@@ -43,22 +43,22 @@ export const PixiCanvasViewport: React.FC<PixiCanvasViewportProps> = ({
       const { clientWidth, clientHeight } = containerRef.current
 
       const pixiApp = new Application()
-      await pixiApp.init({
-        width: clientWidth || defaultWidth,
-        height: clientHeight || defaultHeight,
-        backgroundColor,
-        backgroundAlpha,
-        antialias: true,
-        autoDensity: true,
-        resolution: (typeof window !== 'undefined' && window.devicePixelRatio) || 1,
-      })
+      try {
+        await pixiApp.init({
+          width: clientWidth || defaultWidth,
+          height: clientHeight || defaultHeight,
+          backgroundColor,
+          backgroundAlpha,
+          antialias: true,
+          autoDensity: true,
+          resolution: (typeof window !== 'undefined' && window.devicePixelRatio) || 1,
+        })
+      } catch {
+        // Fallback gracefully if WebGL/Canvas context is unavailable (e.g., in jsdom/headless tests)
+        return
+      }
 
       if (!isMounted || !containerRef.current) {
-        // NOTE: rendererDestroyOptions must NOT be the literal `true` — that triggers
-        // PixiJS's GlobalResourceRegistry.release(), which wipes shared/global resource
-        // pools (Batcher's batch pool, CanvasPool, TexturePool) used by EVERY PixiJS
-        // Application on the page, corrupting any other still-alive canvas (e.g. the
-        // HexGridCanvas map rendering underneath this encounter's canvas).
         pixiApp.destroy({ removeView: true }, { children: true, texture: true })
         return
       }

@@ -1,0 +1,19 @@
+ticker_manager:
+  title: "Ticker Manager"
+  desc: "Calculates delta time multipliers and triggers frame tick listeners"
+  type: "aggregate"
+
+scene_graph:
+  title: "Scene Graph Tree"
+  desc: "Hierarchical display tree managing local and world transform matrices"
+  type: "aggregate"
+
+batch_renderer:
+  title: "Batch Renderer"
+  desc: "Buffers quad vertices, UV coordinates, and multi-texture indices"
+  type: "aggregate"
+
+webgl_driver:
+  title: "WebGL / WebGPU Driver"
+  desc: "Hardware graphics pipeline executing shader draw calls"
+  type: "external"

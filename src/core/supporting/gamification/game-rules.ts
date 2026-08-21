@@ -220,6 +220,17 @@ export function resolveTimedReflectionDecryption(
   return { success: false, timeBonusExp: 0, damagePenalty }
 }
 
+/**
+ * Derives the effective stat percentage from allocated raw stat points using gentle logarithmic scaling.
+ * Starts at 10% at 0 points, grants ~+1% on early points, and scales smoothly to a cap of 40% around 100 points.
+ * Formula: min(40, round(10 + 30 * ln(1 + 0.05 * points) / ln(6)))
+ */
+export function deriveStatPercentage(points: number): number {
+  if (points <= 0) return 10
+  const scaling = (30 * Math.log(1 + 0.05 * points)) / Math.log(6)
+  return Math.min(40, Math.round(10 + scaling))
+}
+
 export interface CombatTurnResult {
   updatedMonsterHp: number
   isMonsterDefeated: boolean
@@ -243,12 +254,16 @@ export function resolveCombatTurn(
   damageMultiplier: number = 1.0,
   totalQuestions: number = 2
 ): CombatTurnResult {
+  // Derive base stat percentages from raw points
+  const baseArmor = typeof attributes.armor === 'number' ? deriveStatPercentage(attributes.armor) : 10
+  const baseEvasion = typeof attributes.evasion === 'number' ? deriveStatPercentage(attributes.evasion) : 10
+
   // Aggregate buffs
-  const totalArmor = attributes.armor + activeBuffs
+  const totalArmor = baseArmor + activeBuffs
     .filter((b) => b.stat === 'armor' && !b.isPenalty)
     .reduce((sum, b) => sum + b.value, 0)
 
-  const totalEvasion = attributes.evasion + activeBuffs
+  const totalEvasion = baseEvasion + activeBuffs
     .filter((b) => b.stat === 'evasion' && !b.isPenalty)
     .reduce((sum, b) => sum + b.value, 0)
 
@@ -295,24 +310,53 @@ export function resolveCombatTurn(
 }
 
 /**
- * Resolves boss combat actions utilizing key items (Adapter Shield, Port Blade).
+ * Resolves boss combat actions utilizing key items (Adapter Shield, Port Blade, or any collected item reward).
  */
 export function resolveBossItemAction(
-  itemAction: 'adapter_shield' | 'port_blade',
-  boss: MonsterData
+  itemAction: string,
+  boss: MonsterData,
+  itemObj?: ItemReward
 ): { bossDamage: number; shieldActive: boolean; message: string } {
-  if (itemAction === 'adapter_shield') {
+  const normalizedId = itemAction.toLowerCase().replace(/_/g, '-')
+  const itemName = itemObj?.name || (normalizedId.includes('shield') ? 'Adapter Shield' : normalizedId.includes('blade') ? 'Port Blade' : itemAction)
+
+  // Defensive Items (Shields, Aegis, Amulets, Armor)
+  if (
+    normalizedId.includes('shield') ||
+    normalizedId.includes('aegis') ||
+    normalizedId.includes('amulet') ||
+    normalizedId.includes('ward') ||
+    normalizedId.includes('barrier') ||
+    (itemObj?.name && /shield|aegis|amulet|ward|barrier/i.test(itemObj.name))
+  ) {
+    if (normalizedId === 'adapter-shield' || normalizedId === 'adapter_shield') {
+      return {
+        bossDamage: 0,
+        shieldActive: true,
+        message: '🛡️ Activated Adapter Shield! Nullifies the next incoming boss attack completely.',
+      }
+    }
     return {
       bossDamage: 0,
       shieldActive: true,
-      message: '🛡️ Activated Adapter Shield! Nullifies the next incoming boss attack completely.',
+      message: `🛡️ Activated ${itemName}! Nullifies the next incoming attack from ${boss.name} completely.`,
     }
   }
 
+  // Offensive Items (Blades, Swords, Crystals, Product Weapon, etc.)
+  if (normalizedId === 'port-blade' || normalizedId === 'port_blade') {
+    return {
+      bossDamage: 40,
+      shieldActive: false,
+      message: `⚡ Unleashed Port Blade! Slashed ${boss.name} for 40 true damage!`,
+    }
+  }
+
+  const damage = 40
   return {
-    bossDamage: 40,
+    bossDamage: damage,
     shieldActive: false,
-    message: `⚡ Unleashed Port Blade! Slashed ${boss.name} for 40 true damage!`,
+    message: `⚡ Unleashed ${itemName}! Slashed ${boss.name} for ${damage} true damage!`,
   }
 }
 

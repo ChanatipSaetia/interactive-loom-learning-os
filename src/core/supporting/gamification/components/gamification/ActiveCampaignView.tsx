@@ -63,6 +63,7 @@ export const ActiveCampaignView: React.FC<ActiveCampaignViewProps> = ({ game }) 
       {/* ─── Top Global Character Profile Header ─── */}
       <CampaignTopHeader
         globalChar={globalChar}
+        derivedStats={game.derivedStats}
         combatLog={combatLog}
         onReturnToLobby={handleReturnToLobby}
         onAllocateStat={handleAllocateStat}

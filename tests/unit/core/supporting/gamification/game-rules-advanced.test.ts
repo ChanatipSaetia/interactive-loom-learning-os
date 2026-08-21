@@ -100,6 +100,14 @@ describe('Gamification Domain Game Rules Advanced Suite', () => {
   })
 
   describe('resolveCombatTurn with active buffs and difficulty', () => {
+    beforeEach(() => {
+      vi.spyOn(Math, 'random').mockReturnValue(0.99)
+    })
+
+    afterEach(() => {
+      vi.restoreAllMocks()
+    })
+
     it('applies active buffs and vulnerabilities during combat turns', () => {
       const monster = {
         id: 'orc',
@@ -110,16 +118,17 @@ describe('Gamification Domain Game Rules Advanced Suite', () => {
         damage: 20,
         icon: '👹',
       }
-      const attributes = { armor: 5, evasion: 0, intelligence: 10 }
+      const attributes = { armor: 0, evasion: 0, intelligence: 0 }
       const activeBuffs = [
         { stat: 'armor' as const, value: 5, source: 'shield' },
         { stat: 'extra_damage' as const, value: 3, source: 'vulnerability', isPenalty: true },
       ]
 
       // Wrong answer: monster attacks
-      // Damage = max(5, 20 - (5 + 5) + 3) = 13 damage
+      // Base armor at 0 pts = 10%. Total armor = 10 + 5 = 15. Extra vuln = +3.
+      // Damage = max(5, 20 - 15 + 3) = 8 damage
       const result = resolveCombatTurn(monster, attributes, false, activeBuffs)
-      expect(result.playerDamageTaken).toBe(13)
+      expect(result.playerDamageTaken).toBe(8)
     })
 
     it('scales monster damage with difficulty multiplier', () => {
@@ -131,15 +140,17 @@ describe('Gamification Domain Game Rules Advanced Suite', () => {
         damage: 40,
         icon: '🐲',
       }
-      const attributes = { armor: 10, evasion: 0, intelligence: 10 }
+      // 0 armor points derives to 10% base armor
+      const attributes = { armor: 0, evasion: 0, intelligence: 0 }
 
-      // Hard (1.5x damage): 40 * 1.5 = 60. Minus 10 armor = 50 damage
+      // Hard (1.5x damage): 40 * 1.5 = 60. Minus 10 base armor = 50 damage
       const hardResult = resolveCombatTurn(monster, attributes, false, [], 0, 1.5)
       expect(hardResult.playerDamageTaken).toBe(50)
 
-      // Easy (0.7x damage): 40 * 0.7 = 28. Minus 10 armor = 18 damage
+      // Easy (0.7x damage): 40 * 0.7 = 28. Minus 10 base armor = 18 damage
       const easyResult = resolveCombatTurn(monster, attributes, false, [], 0, 0.7)
       expect(easyResult.playerDamageTaken).toBe(18)
     })
   })
 })
+

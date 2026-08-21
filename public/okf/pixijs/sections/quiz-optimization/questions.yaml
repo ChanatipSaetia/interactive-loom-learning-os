@@ -1,0 +1,41 @@
+- id: "q_opt_1"
+  question: "Why should you pass `{ children: true, texture: true, baseTexture: true }` when destroying disposable temporary sprites?"
+  choices:
+    - id: "c1"
+      text: "To ensure both the JavaScript DOM objects and the underlying WebGL VRAM texture allocations are freed immediately"
+      correct: true
+      explanation: "Without texture/baseTexture flags, GPU texture memory remains allocated on the graphics card even after JavaScript garbage collection sweeps the sprite."
+    - id: "c2"
+      text: "To restart the browser's GPU acceleration driver"
+      correct: false
+      explanation: "It manages application-level resource disposal without restarting drivers."
+    - id: "c3"
+      text: "To automatically reload higher-resolution textures"
+      correct: false
+      explanation: "Destroy completely disposes of the resource."
+    - id: "c4"
+      text: "To clear the browser's HTTP cache"
+      correct: false
+      explanation: "HTTP cache is distinct from WebGL GPU video memory."
+  hint: "Think about GPU memory leaks vs JavaScript CPU memory leaks."
+
+- id: "q_opt_2"
+  question: "What is the primary performance drawback of applying post-processing Filters (like BlurFilter) to many individual sprites?"
+  choices:
+    - id: "c1"
+      text: "Each filter pass renders the target into an offscreen framebuffer, forcing render target swaps and interrupting batch rendering"
+      correct: true
+      explanation: "Filters require offscreen render texture passes that break the batch renderer and incur GPU memory bandwidth costs."
+    - id: "c2"
+      text: "Filters delete sprite textures from disk"
+      correct: false
+      explanation: "Disk assets are unaffected."
+    - id: "c3"
+      text: "Filters disable all keyboard input listeners"
+      correct: false
+      explanation: "Input handling is unrelated to shader post-processing."
+    - id: "c4"
+      text: "Filters convert all 2D textures to 3D voxel models"
+      correct: false
+      explanation: "PixiJS remains a 2D rendering pipeline."
+  hint: "Consider the cost of switching WebGL framebuffers for offscreen render targets."

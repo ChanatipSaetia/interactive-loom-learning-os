@@ -42,9 +42,13 @@ export const TopicCampaignCard: React.FC<TopicCampaignCardProps> = ({
 
   const isStarted = isCurrent ? (campaign?.isStarted || (campaign?.clearedNodeIds?.length ?? 0) > 0) : topicStarted
   const playCount = globalChar?.topicPlayCounts?.[topic.id] ?? (isStarted ? 1 : 0)
-  const topicBadges = globalChar?.unlockedBadges.filter(
-    (b) => b.topicId === topic.id || b.topicTitle === topic.label
-  ) || []
+  const topicBadges = Array.from(
+    new Map(
+      (globalChar?.unlockedBadges.filter(
+        (b) => b.topicId === topic.id || b.topicTitle === topic.label
+      ) || []).map((b) => [b.id, b])
+    ).values()
+  )
 
   return (
     <div

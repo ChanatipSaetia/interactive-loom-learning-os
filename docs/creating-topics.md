@@ -5,6 +5,7 @@ This document is a technical reference guide for directory structures, content s
 ## Reference Guides & Documentation
 
 - **[Section Types Reference](sections/README.md)** — Detailed directory layout, frontmatter descriptors, YAML/Markdown schemas, and examples for each section type.
+- **[Creating Hex Campaign Maps](creating-hexmaps.md)** — Authoring tabletop RPG hex maps, monster encounters, key items, and boss chambers.
 - **[Event Storming Conventions](event-storming-conventions.md)** — Authoritative rules for flowchart process cycles, branching logic, per-step actor/system duplication, node types, and journeys.
 - **[Section Reference & Mental Models Guide](sections-reference.md)** — Educational objectives, progressive section ordering logic, and cognitive mental models for all section types.
 

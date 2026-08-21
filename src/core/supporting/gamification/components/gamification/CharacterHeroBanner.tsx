@@ -1,10 +1,12 @@
 import React from 'react'
 import { Award } from 'lucide-react'
-import type { GlobalCharacterState } from '../../types'
+import type { GlobalCharacterState, DerivedCharacterStats } from '../../types'
+import { deriveStatPercentage } from '../../game-rules'
 import { Button, Badge } from '../../../../ui-system'
 
 interface CharacterHeroBannerProps {
   globalChar: GlobalCharacterState
+  derivedStats?: DerivedCharacterStats
   derivedCampaignsStarted: number
   onAllocateStat: (stat: 'armor' | 'evasion' | 'intelligence') => void
   onOpenBadges: () => void
@@ -12,10 +14,15 @@ interface CharacterHeroBannerProps {
 
 export const CharacterHeroBanner: React.FC<CharacterHeroBannerProps> = ({
   globalChar,
+  derivedStats,
   derivedCampaignsStarted,
   onAllocateStat,
   onOpenBadges,
 }) => {
+  const effectiveArmor = derivedStats?.armor ?? deriveStatPercentage(globalChar.attributes.armor ?? 0)
+  const effectiveEvasion = derivedStats?.evasion ?? deriveStatPercentage(globalChar.attributes.evasion ?? 0)
+  const effectiveIntelligence = derivedStats?.intelligence ?? deriveStatPercentage(globalChar.attributes.intelligence ?? 0)
+
   return (
     <header className="bg-gradient-to-r from-[#292c3c] via-[#303446] to-[#292c3c] border border-[#414559] rounded-3xl p-5 sm:p-6 lg:p-7 shadow-2xl flex flex-col gap-5">
       {/* Row 1: Champion Identity, Level, and EXP Progress */}
@@ -63,7 +70,10 @@ export const CharacterHeroBanner: React.FC<CharacterHeroBannerProps> = ({
             <span className="text-xl sm:text-2xl">🛡️</span>
             <div>
               <span className="text-[10px] sm:text-xs text-[#a5adce] font-semibold block">Armor</span>
-              <span className="text-sm sm:text-base font-bold text-[#e5c890]">{globalChar.attributes.armor}%</span>
+              <span className="text-sm sm:text-base font-bold text-[#e5c890]">
+                {globalChar.attributes.armor}{' '}
+                <span className="text-xs font-normal text-[#a5adce]">({effectiveArmor}%)</span>
+              </span>
             </div>
             {globalChar.unallocatedPoints > 0 && (
               <Button size="sm" variant="ghost" className="h-6 w-6 sm:h-7 sm:w-7 p-0 text-[#a6d189] hover:bg-[#a6d189]/20" onClick={() => onAllocateStat('armor')}>
@@ -78,7 +88,10 @@ export const CharacterHeroBanner: React.FC<CharacterHeroBannerProps> = ({
             <span className="text-xl sm:text-2xl">⚡</span>
             <div>
               <span className="text-[10px] sm:text-xs text-[#a5adce] font-semibold block">Evasion</span>
-              <span className="text-sm sm:text-base font-bold text-[#8caaee]">{globalChar.attributes.evasion}%</span>
+              <span className="text-sm sm:text-base font-bold text-[#8caaee]">
+                {globalChar.attributes.evasion}{' '}
+                <span className="text-xs font-normal text-[#a5adce]">({effectiveEvasion}%)</span>
+              </span>
             </div>
             {globalChar.unallocatedPoints > 0 && (
               <Button size="sm" variant="ghost" className="h-6 w-6 sm:h-7 sm:w-7 p-0 text-[#a6d189] hover:bg-[#a6d189]/20" onClick={() => onAllocateStat('evasion')}>
@@ -93,7 +106,10 @@ export const CharacterHeroBanner: React.FC<CharacterHeroBannerProps> = ({
             <span className="text-xl sm:text-2xl">💡</span>
             <div>
               <span className="text-[10px] sm:text-xs text-[#a5adce] font-semibold block">Intel</span>
-              <span className="text-sm sm:text-base font-bold text-[#ca9ee6]">{globalChar.attributes.intelligence}%</span>
+              <span className="text-sm sm:text-base font-bold text-[#ca9ee6]">
+                {globalChar.attributes.intelligence}{' '}
+                <span className="text-xs font-normal text-[#a5adce]">({effectiveIntelligence}%)</span>
+              </span>
             </div>
             {globalChar.unallocatedPoints > 0 && (
               <Button size="sm" variant="ghost" className="h-6 w-6 sm:h-7 sm:w-7 p-0 text-[#a6d189] hover:bg-[#a6d189]/20" onClick={() => onAllocateStat('intelligence')}>

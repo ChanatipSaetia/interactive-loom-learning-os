@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import { Heart } from 'lucide-react'
 import { Badge } from '../../../ui-system'
 
@@ -8,22 +8,51 @@ interface SanctuaryTickMonitorProps {
   chaosLevel?: number
   pulsesUsed?: number
   maxTicks?: number
+  characterHp?: number
+  maxCharacterHp?: number
   onTickHeal: (tickAmount: number) => void
 }
 
 export const SanctuaryTickMonitor: React.FC<SanctuaryTickMonitorProps> = ({
   visitCount,
+  chaosLevel = 0,
   pulsesUsed = 0,
   maxTicks = 5,
+  characterHp,
+  maxCharacterHp,
   onTickHeal,
 }) => {
   const [secondsInSanctuary, setSecondsInSanctuary] = useState(0)
   const [tickProgress, setTickProgress] = useState(0)
-  const [sessionTicks, setSessionTicks] = useState(0)
   const [floatingParticles, setFloatingParticles] = useState<Array<{ id: number; text: string }>>([])
   const [isTabActive, setIsTabActive] = useState<boolean>(
     typeof document !== 'undefined' ? !document.hidden : true
   )
+
+  const isHpFull = typeof characterHp === 'number' && typeof maxCharacterHp === 'number' && characterHp >= maxCharacterHp
+  const isHpFullRef = useRef(isHpFull)
+  isHpFullRef.current = isHpFull
+
+  const secondsRef = useRef(0)
+
+  // Keep latest refs to prevent interval re-instantiation and stale closures
+  const onTickHealRef = useRef(onTickHeal)
+  onTickHealRef.current = onTickHeal
+
+  const pulsesUsedRef = useRef(pulsesUsed)
+  pulsesUsedRef.current = pulsesUsed
+
+  const maxTicksRef = useRef(maxTicks)
+  maxTicksRef.current = maxTicks
+
+  // Diminishing returns multiplier: visit 1 -> 1.0x, visit 2 -> 0.5x, visit 3+ -> 0.2x
+  const decayMultiplier = visitCount <= 1 ? 1.0 : visitCount === 2 ? 0.5 : 0.2
+  const effectiveTickHeal = Math.max(2, Math.round(10 * decayMultiplier) - Math.floor(chaosLevel * 0.05))
+
+  const effectiveTickHealRef = useRef(effectiveTickHeal)
+  effectiveTickHealRef.current = effectiveTickHeal
+
+  const isMaxTicksReached = pulsesUsed >= maxTicks
 
   // Track document visibility state (only heal when user sees the browser)
   useEffect(() => {
@@ -36,47 +65,49 @@ export const SanctuaryTickMonitor: React.FC<SanctuaryTickMonitorProps> = ({
     }
   }, [])
 
-  // Diminishing returns multiplier: visit 1 -> 1.0x, visit 2 -> 0.5x, visit 3+ -> 0.2x
-  const decayMultiplier = visitCount <= 1 ? 1.0 : visitCount === 2 ? 0.5 : 0.2
-  const effectiveTickHeal = Math.max(2, Math.round(10 * decayMultiplier))
-  const currentTotalPulses = pulsesUsed + sessionTicks
-  const isMaxTicksReached = currentTotalPulses >= maxTicks
-
   useEffect(() => {
-    if (isMaxTicksReached) return
-
     const interval = setInterval(() => {
-      // Only count seconds when tab is active and visible
+      // 1. Only count seconds when tab is active and visible
       if (document.hidden) return
 
-      setSecondsInSanctuary((prev) => {
-        const next = prev + 1
-        const progress = ((next % 10) / 10) * 100
-        setTickProgress(progress)
+      // 2. Pause pulse countdown if character is already at full HP
+      if (isHpFullRef.current) return
 
-        // Trigger 10-second tick heal up to maxTicks globally across campaign
-        if (next > 0 && next % 10 === 0) {
-          setSessionTicks((prevSession) => {
-            const nextTotal = pulsesUsed + prevSession + 1
-            if (nextTotal > maxTicks) return prevSession
-            onTickHeal(effectiveTickHeal)
-            const particleId = Date.now()
-            setFloatingParticles((p) => [
-              ...p,
-              { id: particleId, text: `+${effectiveTickHeal} HP Restored (${nextTotal}/${maxTicks})` },
-            ])
-            setTimeout(() => {
-              setFloatingParticles((p) => p.filter((item) => item.id !== particleId))
-            }, 2500)
-            return prevSession + 1
-          })
+      // 3. Stop incrementing if already at max pulses
+      if (pulsesUsedRef.current >= maxTicksRef.current) return
+
+      secondsRef.current += 1
+      const nextSec = secondsRef.current
+
+      // Update visual display state (pure state updaters)
+      setSecondsInSanctuary(nextSec)
+      setTickProgress(((nextSec % 10) / 10) * 100)
+
+      // Trigger 10-second tick heal exactly once outside of setState updaters
+      if (nextSec > 0 && nextSec % 10 === 0) {
+        if (pulsesUsedRef.current < maxTicksRef.current && !isHpFullRef.current) {
+          const healVal = effectiveTickHealRef.current
+          const currentTotal = pulsesUsedRef.current + 1
+          const maxVal = maxTicksRef.current
+
+          onTickHealRef.current(healVal)
+
+          const particleId = Date.now()
+          setFloatingParticles((p) => [
+            ...p,
+            { id: particleId, text: `+${healVal} HP Restored (${currentTotal}/${maxVal})` },
+          ])
+          setTimeout(() => {
+            setFloatingParticles((p) => p.filter((item) => item.id !== particleId))
+          }, 2500)
         }
-        return next
-      })
+      }
     }, 1000)
 
     return () => clearInterval(interval)
-  }, [effectiveTickHeal, isMaxTicksReached, maxTicks, onTickHeal, pulsesUsed])
+  }, [])
+
+  const currentTotalPulses = pulsesUsed
 
   return (
     <div className="flex items-center justify-between gap-4 bg-[#232634] p-3 rounded-2xl border border-[#a6d189]/30 relative overflow-hidden">
@@ -94,7 +125,12 @@ export const SanctuaryTickMonitor: React.FC<SanctuaryTickMonitorProps> = ({
             <Badge variant={isMaxTicksReached ? 'secondary' : 'default'} className="text-[10px]">
               {isMaxTicksReached ? `Depleted (${currentTotalPulses}/${maxTicks})` : `${currentTotalPulses}/${maxTicks} Global Pulses`}
             </Badge>
-            {!isTabActive && (
+            {isHpFull && !isMaxTicksReached && (
+              <Badge variant="secondary" className="text-[10px] bg-[#a6d189]/10 text-[#a6d189] border border-[#a6d189]/30">
+                Full HP (Paused)
+              </Badge>
+            )}
+            {!isTabActive && !isHpFull && !isMaxTicksReached && (
               <Badge variant="warning" className="text-[10px] animate-pulse">
                 Paused (Tab Inactive)
               </Badge>
@@ -103,6 +139,8 @@ export const SanctuaryTickMonitor: React.FC<SanctuaryTickMonitorProps> = ({
           <span className="text-xs text-[#a5adce]">
             {isMaxTicksReached
               ? 'Sanctuary pulses exhausted for this campaign. Revisit or restart campaign.'
+              : isHpFull
+              ? 'Character health is full (100%). Pulse will resume when HP is lost.'
               : !isTabActive
               ? 'Healing is paused while viewing other tabs.'
               : `Active reading: ${secondsInSanctuary}s · Ticks every 10s (${maxTicks - currentTotalPulses} remaining)`}
@@ -126,10 +164,10 @@ export const SanctuaryTickMonitor: React.FC<SanctuaryTickMonitorProps> = ({
       <div className="flex items-center gap-3">
         <div className="text-right">
           <span className="text-[10px] text-[#a5adce] block">
-            {isMaxTicksReached ? 'Exhausted' : !isTabActive ? 'Paused' : 'Next Pulse'}
+            {isMaxTicksReached ? 'Exhausted' : isHpFull ? 'HP Full' : !isTabActive ? 'Paused' : 'Next Pulse'}
           </span>
           <span className="text-xs font-mono font-bold text-[#a6d189]">
-            {isMaxTicksReached ? `${currentTotalPulses}/${maxTicks}` : !isTabActive ? '⏸️' : `${10 - (secondsInSanctuary % 10)}s`}
+            {isMaxTicksReached ? `${currentTotalPulses}/${maxTicks}` : isHpFull ? 'Full ❤️' : !isTabActive ? '⏸️' : `${10 - (secondsInSanctuary % 10)}s`}
           </span>
         </div>
         <div className="w-8 h-8 rounded-full border-2 border-[#303446] relative flex items-center justify-center">

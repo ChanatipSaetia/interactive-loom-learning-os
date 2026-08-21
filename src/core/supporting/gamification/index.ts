@@ -18,6 +18,7 @@ export {
   resolveBossItemAction,
   resolveCombatTurn,
   calculateLevelProgress,
+  deriveStatPercentage,
 } from './game-rules'
 
 export { useGamification } from './useGamification'

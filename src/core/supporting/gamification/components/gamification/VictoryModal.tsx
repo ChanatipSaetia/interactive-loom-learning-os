@@ -77,9 +77,15 @@ export const VictoryModal: React.FC<VictoryModalProps> = ({
             🏆 Badges & Achievements Earned:
           </h4>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 max-h-48 overflow-y-auto pr-1">
-            {(earnedVictoryBadges.length > 0
-              ? earnedVictoryBadges
-              : globalChar.unlockedBadges.filter((b) => b.topicId === currentTopicId || b.topicTitle === campaign.topicTitle)
+            {Array.from(
+              new Map(
+                (earnedVictoryBadges.length > 0
+                  ? earnedVictoryBadges
+                  : globalChar.unlockedBadges.filter(
+                      (b) => b.topicId === currentTopicId || b.topicTitle === campaign.topicTitle
+                    )
+                ).map((b) => [b.id, b])
+              ).values()
             ).map((badge) => (
               <div key={badge.id} className="flex items-center gap-3 p-2.5 rounded-xl bg-[#232634] border border-[#a6d189]/40">
                 <span className="text-2xl shrink-0">{badge.icon}</span>

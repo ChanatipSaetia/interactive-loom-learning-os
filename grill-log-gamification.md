@@ -47,9 +47,9 @@
 
 **Q:** How should Sanctuary Healing be computed to incentivize reading without abuse?
 
-**A:** Time-based reading ticks (e.g. healing every 10 seconds of active reading), with the tick amount decaying based on the number of visits to that sanctuary hex.
+**A:** Time-based reading ticks (e.g. healing every 10 seconds of active reading), with the tick amount decaying based on the number of visits to that sanctuary hex. Pulses draw from a campaign global pulse pool (`maxSanctuaryPulses`) and automatically pause countdown when character HP is at maximum (100%).
 
-**Decision:** Reading Sanctuaries will use a time-based tick healing mechanism (healing every 10 seconds) that decays with repeat visits, directly rewarding genuine reading time.
+**Decision:** Reading Sanctuaries will use a time-based tick healing mechanism (healing every 10 seconds) that decays with repeat visits, draws from a bounded global pulse pool, and pauses countdown at full HP.
 
 
 ## Q6: Trade-off Workshop Buff & Vulnerability Synthesis (Option B)

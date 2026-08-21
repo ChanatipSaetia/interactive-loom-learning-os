@@ -1,14 +1,14 @@
 challenges:
   - prompt: "Arrange the four stages of Nir Eyal's Hook Model in the correct order:"
     items:
-      - id: hook-trigger
-        text: "A cue appears — notification, habit, or context (Trigger)"
       - id: hook-action
         text: "The user performs the simplest possible action (Action)"
-      - id: hook-variable
-        text: "A variable reward is delivered (Variable Reward)"
       - id: hook-invest
         text: "The user invests data, effort, or reputation (Investment)"
+      - id: hook-trigger
+        text: "A cue appears — notification, habit, or context (Trigger)"
+      - id: hook-variable
+        text: "A variable reward is delivered (Variable Reward)"
     solution:
       - hook-trigger
       - hook-action

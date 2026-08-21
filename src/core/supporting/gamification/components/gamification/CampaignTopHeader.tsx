@@ -1,10 +1,12 @@
 import React from 'react'
 import { ArrowLeft, RotateCcw } from 'lucide-react'
-import type { GlobalCharacterState } from '../../types'
+import type { GlobalCharacterState, DerivedCharacterStats } from '../../types'
+import { deriveStatPercentage } from '../../game-rules'
 import { Button, Badge } from '../../../../ui-system'
 
 interface CampaignTopHeaderProps {
   globalChar: GlobalCharacterState
+  derivedStats?: DerivedCharacterStats
   combatLog: string[]
   onReturnToLobby: () => void
   onAllocateStat: (stat: 'armor' | 'evasion' | 'intelligence') => void
@@ -14,12 +16,17 @@ interface CampaignTopHeaderProps {
 
 export const CampaignTopHeader: React.FC<CampaignTopHeaderProps> = ({
   globalChar,
+  derivedStats,
   combatLog,
   onReturnToLobby,
   onAllocateStat,
   onReset,
   onOpenBadges,
 }) => {
+  const effectiveArmor = derivedStats?.armor ?? deriveStatPercentage(globalChar.attributes.armor ?? 0)
+  const effectiveEvasion = derivedStats?.evasion ?? deriveStatPercentage(globalChar.attributes.evasion ?? 0)
+  const effectiveIntelligence = derivedStats?.intelligence ?? deriveStatPercentage(globalChar.attributes.intelligence ?? 0)
+
   return (
     <header className="bg-[#303446]/80 backdrop-blur-xl border border-[#414559] rounded-2xl p-4 sm:p-5 shadow-xl flex flex-col md:flex-row items-stretch md:items-center justify-between gap-4">
       {/* Character Title & Level */}
@@ -63,7 +70,10 @@ export const CampaignTopHeader: React.FC<CampaignTopHeaderProps> = ({
           <span className="text-base sm:text-lg">🛡️</span>
           <div>
             <span className="text-[10px] sm:text-xs text-[#a5adce] block">Armor</span>
-            <span className="text-xs sm:text-sm font-bold text-[#e5c890]">{globalChar.attributes.armor}%</span>
+            <span className="text-xs sm:text-sm font-bold text-[#e5c890]">
+              {globalChar.attributes.armor}{' '}
+              <span className="text-[10px] sm:text-xs font-normal text-[#a5adce]">({effectiveArmor}%)</span>
+            </span>
           </div>
           {globalChar.unallocatedPoints > 0 && (
             <Button size="sm" variant="ghost" className="h-5 w-5 sm:h-6 sm:w-6 p-0 text-[#a6d189]" onClick={() => onAllocateStat('armor')}>
@@ -78,7 +88,10 @@ export const CampaignTopHeader: React.FC<CampaignTopHeaderProps> = ({
           <span className="text-base sm:text-lg">⚡</span>
           <div>
             <span className="text-[10px] sm:text-xs text-[#a5adce] block">Evasion</span>
-            <span className="text-xs sm:text-sm font-bold text-[#8caaee]">{globalChar.attributes.evasion}%</span>
+            <span className="text-xs sm:text-sm font-bold text-[#8caaee]">
+              {globalChar.attributes.evasion}{' '}
+              <span className="text-[10px] sm:text-xs font-normal text-[#a5adce]">({effectiveEvasion}%)</span>
+            </span>
           </div>
           {globalChar.unallocatedPoints > 0 && (
             <Button size="sm" variant="ghost" className="h-5 w-5 sm:h-6 sm:w-6 p-0 text-[#a6d189]" onClick={() => onAllocateStat('evasion')}>
@@ -93,7 +106,10 @@ export const CampaignTopHeader: React.FC<CampaignTopHeaderProps> = ({
           <span className="text-base sm:text-lg">💡</span>
           <div>
             <span className="text-[10px] sm:text-xs text-[#a5adce] block">Intel</span>
-            <span className="text-xs sm:text-sm font-bold text-[#ca9ee6]">{globalChar.attributes.intelligence}%</span>
+            <span className="text-xs sm:text-sm font-bold text-[#ca9ee6]">
+              {globalChar.attributes.intelligence}{' '}
+              <span className="text-[10px] sm:text-xs font-normal text-[#a5adce]">({effectiveIntelligence}%)</span>
+            </span>
           </div>
           {globalChar.unallocatedPoints > 0 && (
             <Button size="sm" variant="ghost" className="h-5 w-5 sm:h-6 sm:w-6 p-0 text-[#a6d189]" onClick={() => onAllocateStat('intelligence')}>

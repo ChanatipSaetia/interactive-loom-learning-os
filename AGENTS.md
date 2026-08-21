@@ -20,6 +20,7 @@ Read the relevant doc before starting work — **all documentation in `docs/` an
 | Visual OKF Section Editor & Live Preview | [grill-log-okf-section-editor.md](grill-log-okf-section-editor.md) |
 | OKF Section Validation & Diagnostics | [grill-log-okf-section-validation.md](grill-log-okf-section-validation.md) |
 | Creating / editing topics & flowchart schemas | [docs/creating-topics.md](docs/creating-topics.md) |
+| Creating Hex Campaign Maps & Boss Encounters | [docs/creating-hexmaps.md](docs/creating-hexmaps.md) |
 | Design system & sensory experience | [DESIGN.md](DESIGN.md) |
 
 ## Working on DDD Subdomains, Validation Gateway & Delivery Ports

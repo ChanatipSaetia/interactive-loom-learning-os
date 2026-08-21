@@ -675,9 +675,11 @@ async function loadReflectionSequenceSection(basePath: string, resource: string)
   const raw = await fetchYaml<any>(`${basePath}/${file}`)
 
   let challenges: ReflectionSequenceChallenge[] = []
-  if (raw.challenges && Array.isArray(raw.challenges)) {
+  if (Array.isArray(raw)) {
+    challenges = raw
+  } else if (raw?.challenges && Array.isArray(raw.challenges)) {
     challenges = raw.challenges
-  } else if (raw.prompt && raw.items && raw.solution) {
+  } else if (raw?.prompt && raw.items && raw.solution) {
     challenges = [
       {
         prompt: raw.prompt,
@@ -698,9 +700,11 @@ async function loadReflectionTemplateSection(basePath: string, resource: string)
   const raw = await fetchYaml<any>(`${basePath}/${file}`)
 
   let challenges: ReflectionTemplateChallenge[] = []
-  if (raw.challenges && Array.isArray(raw.challenges)) {
+  if (Array.isArray(raw)) {
+    challenges = raw
+  } else if (raw?.challenges && Array.isArray(raw.challenges)) {
     challenges = raw.challenges
-  } else if (raw.prompt && raw.template && raw.chips && raw.solution) {
+  } else if (raw?.prompt && raw.template && raw.chips && raw.solution) {
     challenges = [
       {
         prompt: raw.prompt,

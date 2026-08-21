@@ -4,6 +4,7 @@ import { MonsterData, CharacterAttributes, ItemReward } from '../types'
 import { Button } from '../../../ui-system'
 import { Shield, Zap, Sparkles } from 'lucide-react'
 import { PixiCanvasViewport } from './PixiCanvasViewport'
+import { drawWarrior } from './warrior-renderer'
 
 interface CombatStageHeaderProps {
   monster: MonsterData
@@ -126,52 +127,23 @@ export const CombatStageHeader: React.FC<CombatStageHeaderProps> = ({
       warriorContainer.position.set(warriorX, centerY + warriorBob)
       warriorContainer.scale.set(1.15)
 
-      warriorGfx.clear()
-      warriorGfx.ellipse(0, 16, 12, 4).fill({ color: 0x11111b, alpha: 0.6 })
-      warriorGfx.poly([
-        -4, -5,
-        -18 - Math.sin(t * 4) * 4, 8 + Math.cos(t * 3) * 3,
-        -12, 14,
-        -2, 2,
-      ]).fill({ color: 0xe78284, alpha: 0.95 }).stroke({ width: 1.2, color: 0xea999c })
+      // Calculate slash progress for warrior attack motion when monster was attacked
+      let swordSlashProgress = 0
+      const monsterHitTime = monsterHitTimeRef.current
+      if (monsterHitTime > 0) {
+        const elapsedSlash = t - monsterHitTime
+        const slashDuration = 0.65
+        if (elapsedSlash <= slashDuration) {
+          swordSlashProgress = elapsedSlash / slashDuration
+        }
+      }
 
-      // Armored Greaves (Legs & Sabatons)
-      warriorGfx.roundRect(-7, 4, 5, 12, 2).fill({ color: 0x51576d }).stroke({ width: 1, color: 0x737994 })
-      warriorGfx.roundRect(2, 4, 5, 12, 2).fill({ color: 0x51576d }).stroke({ width: 1, color: 0x737994 })
-      warriorGfx.ellipse(-4.5, 15, 4, 2).fill({ color: 0x303446 })
-      warriorGfx.ellipse(4.5, 15, 4, 2).fill({ color: 0x303446 })
-
-      // Steel Breastplate Torso
-      warriorGfx.poly([
-        -8, -6,
-        8, -6,
-        6, 6,
-        -6, 6,
-      ]).fill({ color: 0x737994 }).stroke({ width: 1.4, color: 0xc6d0f5 })
-
-      // Chestplate Golden Emblem (Cross / Star)
-      warriorGfx.moveTo(0, -4).lineTo(0, 4).stroke({ width: 1.5, color: 0xe5c890 })
-      warriorGfx.moveTo(-3, 0).lineTo(3, 0).stroke({ width: 1.5, color: 0xe5c890 })
-
-      // Left Arm & Heavy Heater Shield
-      const shieldX = -12
-      const shieldY = -2
-      warriorGfx.poly([
-        shieldX - 3, shieldY - 7,
-        shieldX + 4, shieldY - 7,
-        shieldX + 4, shieldY + 3,
-        shieldX, shieldY + 8,
-        shieldX - 3, shieldY + 3,
-      ]).fill({ color: 0x303446, alpha: 0.95 }).stroke({ width: 1.4, color: 0x8caaee })
-
-      // Right Arm
-      warriorGfx.moveTo(3, -4).lineTo(7, 2).stroke({ width: 3.2, color: 0x949cbb, cap: 'round' })
-      warriorGfx.circle(7, 2, 2.5).fill({ color: 0xe78284 })
-
-      // Greathelm
-      warriorGfx.roundRect(-5, -16, 10, 10, 2.5).fill({ color: 0x737994 }).stroke({ width: 1.5, color: 0xc6d0f5 })
-      warriorGfx.moveTo(-3, -12).lineTo(4, -12).stroke({ width: 1.5, color: 0x181825 })
-      warriorGfx.circle(2.5, -12, 1.1).fill({ color: 0x8caaee, alpha: 1.0 })
+      drawWarrior(warriorGfx, {
+        walkCycle: 0,
+        bob: 0,
+        cloakPhase: t * 4,
+        swordSlashProgress,
+      })
 
       // ─── 1B. FIRE BLAST ON PLAYER ───
       playerFireGfx.clear()

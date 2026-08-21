@@ -1,12 +1,13 @@
 import { useState, useEffect, useCallback, useMemo } from 'react'
 import { useParams, useSearchParams } from 'react-router-dom'
-import type { HexNodeData, UnlockedBadge, DifficultyLevel } from '../../types'
+import type { HexNodeData, UnlockedBadge, DifficultyLevel, DerivedCharacterStats } from '../../types'
 import { DIFFICULTY_CONFIGS } from '../../types'
 import {
   canUnlockBoss,
   evaluateNodeUnlocks,
   resolveTimedReflectionDecryption,
   evaluateTopicBadges,
+  deriveStatPercentage,
 } from '../../game-rules'
 import { useGamification } from '../../useGamification'
 import { LocalStorageCharacterAdapter } from '../../adapters/local-storage-character-adapter'
@@ -14,7 +15,7 @@ import { useOKFBundled, bundleToSections } from '../../../../learning-engine/com
 import { useTopics } from '../../../../learning-engine/composition/routes'
 
 // Known hexmap topics available in public/hexmaps/
-export const KNOWN_HEXMAP_TOPIC_IDS = ['gamification', 'demo', 'system-design']
+export const KNOWN_HEXMAP_TOPIC_IDS = ['gamification', 'demo', 'system-design', 'pixijs']
 
 export type SnackbarType = 'success' | 'danger' | 'warning' | 'info' | 'craft' | 'exp'
 
@@ -209,6 +210,16 @@ export function useGamificationCampaign() {
     return Object.values(globalChar.topicPlayCounts).reduce((acc, count) => acc + count, 0)
   }, [globalChar?.topicPlayCounts])
 
+  // Derive effective percentages from raw point attributes using logarithmic scaling
+  const derivedStats: DerivedCharacterStats = useMemo(() => {
+    const raw = globalChar?.attributes || { armor: 0, evasion: 0, intelligence: 0 }
+    return {
+      armor: deriveStatPercentage(raw.armor ?? 0),
+      evasion: deriveStatPercentage(raw.evasion ?? 0),
+      intelligence: deriveStatPercentage(raw.intelligence ?? 0),
+    }
+  }, [globalChar?.attributes])
+
   // Helper to push action messages with semantic colors & icons to both combatLog and bottom-center Snackbar Toast
   const pushActionMessage = useCallback((
     text: string,
@@ -273,11 +284,11 @@ export function useGamificationCampaign() {
   }
 
   // Healing Sanctuary Action with Chaos Healing Decay
-  const handleRestSanctuary = () => {
+  const handleRestSanctuary = useCallback((seconds: number = 10) => {
     if (!selectedNode) return
-    portApplySanctuaryTickHeal(30, selectedNode.id)
-    pushActionMessage(`Sanctuary Rested! Restored character HP and cleansed System Chaos!`, 'success', '🏛️')
-  }
+    portApplySanctuaryTickHeal(seconds, selectedNode.id)
+    pushActionMessage(`Sanctuary Rested! Restored character HP through active reading.`, 'success', '🏛️')
+  }, [selectedNode, portApplySanctuaryTickHeal, pushActionMessage])
 
   // Trade-off Crafting Buff Action
   const handleCraftBuff = (synthesizedArtifact?: { name: string; buff: { stat: 'armor' | 'evasion' | 'intelligence' | 'chaos_shield'; value: number; label: string }; vulnerability?: { stat: 'extra_damage' | 'healing_penalty'; value: number; label: string }; durationTurns: number }) => {
@@ -354,13 +365,15 @@ export function useGamificationCampaign() {
   }
 
   // Section Fail / Defeat / Timeout (System Chaos and Difficulty scale damage)
-  const handleFailSection = (targetNode: HexNodeData) => {
+  const handleFailSection = (targetNode: HexNodeData, customDamage?: number) => {
     const currentChaos = campaign?.chaosLevel ?? 0
     const currentDiff = campaign?.difficulty || 'normal'
     const diffDamageMultiplier = DIFFICULTY_CONFIGS[currentDiff]?.damageMultiplier ?? 1.0
     let damage = 25
 
-    if (targetNode.type === 'reflection_decryption') {
+    if (typeof customDamage === 'number') {
+      damage = customDamage
+    } else if (targetNode.type === 'reflection_decryption') {
       const outcome = resolveTimedReflectionDecryption(false, 0, 60, currentChaos, diffDamageMultiplier)
       damage = outcome.damagePenalty
     } else {
@@ -371,7 +384,9 @@ export function useGamificationCampaign() {
     portTakeDamage(damage)
     const chaosNote = currentChaos > 0 ? ` (amplified by ${currentChaos}% System Chaos)` : ''
     pushActionMessage(
-      `SECTION FAILED: "${targetNode.title}"! Suffered ${damage} damage${chaosNote} [${DIFFICULTY_CONFIGS[currentDiff]?.label}]!`,
+      targetNode.type === 'boss_lair'
+        ? `💥 Boss Counterattack! Suffered ${damage} damage!`
+        : `SECTION FAILED: "${targetNode.title}"! Suffered ${damage} damage${chaosNote} [${DIFFICULTY_CONFIGS[currentDiff]?.label}]!`,
       'danger',
       '❌'
     )
@@ -439,6 +454,7 @@ export function useGamificationCampaign() {
     setActiveTradeoffMetrics,
     // Derived
     derivedCampaignsStarted,
+    derivedStats,
     bossNode,
     hasBossItems,
     // Actions

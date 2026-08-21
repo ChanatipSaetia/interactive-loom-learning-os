@@ -10,8 +10,8 @@ const DEFAULT_GLOBAL_PROFILE: GlobalCharacterState = {
   nextLevelExp: 100,
   unallocatedPoints: 0,
   attributes: {
-    armor: 5,
-    evasion: 10,
+    armor: 0,
+    evasion: 0,
     intelligence: 0,
   },
   unlockedBadges: [],
@@ -25,7 +25,13 @@ export class LocalStorageCharacterAdapter implements CharacterStatePort {
     try {
       const raw = localStorage.getItem(GLOBAL_PROFILE_KEY)
       if (raw) {
-        return JSON.parse(raw) as GlobalCharacterState
+        const parsed = JSON.parse(raw) as GlobalCharacterState
+        const uniqueBadges = Array.from(new Map((parsed.unlockedBadges || []).map((b) => [b.id, b])).values())
+        return {
+          ...DEFAULT_GLOBAL_PROFILE,
+          ...parsed,
+          unlockedBadges: uniqueBadges,
+        }
       }
     } catch {
       // Fallback on parse failure
@@ -35,7 +41,12 @@ export class LocalStorageCharacterAdapter implements CharacterStatePort {
 
   async saveGlobalProfile(profile: GlobalCharacterState): Promise<void> {
     try {
-      localStorage.setItem(GLOBAL_PROFILE_KEY, JSON.stringify(profile))
+      const uniqueBadges = Array.from(new Map((profile.unlockedBadges || []).map((b) => [b.id, b])).values())
+      const sanitized: GlobalCharacterState = {
+        ...profile,
+        unlockedBadges: uniqueBadges,
+      }
+      localStorage.setItem(GLOBAL_PROFILE_KEY, JSON.stringify(sanitized))
     } catch (e) {
       console.warn('Failed to save global character profile to localStorage:', e)
     }
