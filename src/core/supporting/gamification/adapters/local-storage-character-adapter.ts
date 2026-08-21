@@ -15,6 +15,9 @@ const DEFAULT_GLOBAL_PROFILE: GlobalCharacterState = {
     intelligence: 0,
   },
   unlockedBadges: [],
+  totalCampaignsStarted: 0,
+  totalCampaignsSucceeded: 0,
+  topicPlayCounts: {},
 }
 
 export class LocalStorageCharacterAdapter implements CharacterStatePort {

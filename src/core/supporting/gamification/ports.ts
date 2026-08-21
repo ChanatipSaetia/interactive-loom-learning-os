@@ -49,5 +49,5 @@ export interface GamificationRuntimePort {
   applySanctuaryTickHeal: (activeSeconds: number, nodeId: string) => void
   applyCraftedBuff: (buff: ActiveBuff, vulnerability?: ActiveBuff) => void
   allocateStatPoint: (stat: keyof CharacterAttributes) => void
-  resetCampaign: (targetTopicId?: string) => Promise<void>
+  resetCampaign: (targetTopicId?: string, isNewPlay?: boolean) => Promise<void>
 }

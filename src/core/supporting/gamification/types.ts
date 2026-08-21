@@ -86,6 +86,7 @@ export interface DifficultyConfig {
   damageMultiplier: number
   expBonusMultiplier: number
   chaosMultiplier: number
+  maxSanctuaryPulses: number
   description: string
 }
 
@@ -97,7 +98,8 @@ export const DIFFICULTY_CONFIGS: Record<DifficultyLevel, DifficultyConfig> = {
     damageMultiplier: 0.7,
     expBonusMultiplier: 1.0,
     chaosMultiplier: 0.5,
-    description: 'Reduced monster damage (-30%) and slower Chaos generation. Ideal for gentle learning.',
+    maxSanctuaryPulses: 8,
+    description: 'Reduced monster damage (-30%) and slower Chaos generation with 8 Sanctuary pulses. Ideal for gentle learning.',
   },
   normal: {
     id: 'normal',
@@ -106,7 +108,8 @@ export const DIFFICULTY_CONFIGS: Record<DifficultyLevel, DifficultyConfig> = {
     damageMultiplier: 1.0,
     expBonusMultiplier: 1.2,
     chaosMultiplier: 1.0,
-    description: 'Balanced challenge with +20% EXP bonus.',
+    maxSanctuaryPulses: 5,
+    description: 'Balanced challenge with 5 Sanctuary pulses and +20% EXP bonus.',
   },
   hard: {
     id: 'hard',
@@ -115,7 +118,8 @@ export const DIFFICULTY_CONFIGS: Record<DifficultyLevel, DifficultyConfig> = {
     damageMultiplier: 1.5,
     expBonusMultiplier: 1.6,
     chaosMultiplier: 1.5,
-    description: '+50% monster damage & accelerated System Chaos. Yields +60% EXP bonus.',
+    maxSanctuaryPulses: 3,
+    description: '+50% monster damage, accelerated Chaos, and limited to 3 Sanctuary pulses. Yields +60% EXP bonus.',
   },
   nightmare: {
     id: 'nightmare',
@@ -124,7 +128,8 @@ export const DIFFICULTY_CONFIGS: Record<DifficultyLevel, DifficultyConfig> = {
     damageMultiplier: 2.0,
     expBonusMultiplier: 2.2,
     chaosMultiplier: 2.0,
-    description: 'Double damage & intense Chaos buildup! Earn +120% EXP bonus for the bravest.',
+    maxSanctuaryPulses: 2,
+    description: 'Double damage, intense Chaos, and only 2 Sanctuary pulses! Earn +120% EXP bonus for the bravest.',
   },
 }
 
@@ -166,6 +171,9 @@ export interface GlobalCharacterState {
   unallocatedPoints: number
   attributes: CharacterAttributes
   unlockedBadges: UnlockedBadge[]
+  totalCampaignsStarted?: number
+  totalCampaignsSucceeded?: number
+  topicPlayCounts?: Record<string, number>
 }
 
 export interface TopicCampaignState {
@@ -179,6 +187,11 @@ export interface TopicCampaignState {
   chaosLevel: number // System Chaos / Entropy (0 to 100). Increases when entering sections, causes healing decay at sanctuaries.
   maxChaosLevel: number
   decayThreatLevel: number // Increases HP loss per turn if hexes neglected
+
+  // Global campaign sanctuary pulse pool & start marker
+  isStarted?: boolean
+  sanctuaryPulsesUsed?: number
+  maxSanctuaryPulses?: number
 
   inventory: ItemReward[]
   clearedNodeIds: string[]

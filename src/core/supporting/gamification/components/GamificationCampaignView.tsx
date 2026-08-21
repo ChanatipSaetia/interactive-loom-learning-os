@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react'
+import React, { useState, useEffect, useCallback, useMemo } from 'react'
 import { HexGridCanvas } from './HexGridCanvas'
 import { NodeInspectorTray } from './NodeInspectorTray'
 import { EncounterDrawer } from './EncounterDrawer'
@@ -50,8 +50,8 @@ export const GamificationCampaignView: React.FC = () => {
     return topics.filter((t) => KNOWN_HEXMAP_TOPIC_IDS.includes(t.id))
   }, [topics])
 
-  // Active topic ID defaults to selected or 'gamification'
-  const currentTopicId = selectedTopicId || 'gamification'
+  // Active topic ID is selectedTopicId (or null when in lobby)
+  const currentTopicId = selectedTopicId
 
   // Per-topic selected difficulty state for Lobby start
   const [topicDifficulties, setTopicDifficulties] = useState<Record<string, DifficultyLevel>>(() => {
@@ -72,16 +72,8 @@ export const GamificationCampaignView: React.FC = () => {
   })
 
   const handleSelectTopic = (topicId: string) => {
-    // Save selected difficulty before switching
-    const chosenDiff = topicDifficulties[topicId] || 'normal'
-    try {
-      const key = `loom_gamification_campaign_${topicId}`
-      const raw = localStorage.getItem(key)
-      const data = raw ? JSON.parse(raw) : {}
-      localStorage.setItem(key, JSON.stringify({ ...data, difficulty: chosenDiff }))
-    } catch {
-      // ignore
-    }
+    // Just set the selected topic; useGamification's init() will initialize the full campaign state
+    // (preserving existing progress if the topic was played before, or creating a fresh state with isStarted: true)
     setSelectedTopicId(topicId)
     setSearchParams({ topic: topicId })
   }
@@ -169,6 +161,12 @@ export const GamificationCampaignView: React.FC = () => {
   const [quizFailed, setQuizFailed] = useState<boolean>(false)
   const [activeTradeoffMetrics, setActiveTradeoffMetrics] = useState<Array<{ id: string; label: string; value: number }>>([])
 
+  // Calculate dynamically derived campaign starts strictly as the sum of global topicPlayCounts
+  const derivedCampaignsStarted = useMemo(() => {
+    if (!globalChar?.topicPlayCounts) return 0
+    return Object.values(globalChar.topicPlayCounts).reduce((acc, count) => acc + count, 0)
+  }, [globalChar?.topicPlayCounts])
+
   // Helper to push action messages with semantic colors & icons to both combatLog and bottom-center Snackbar Toast
   const pushActionMessage = useCallback((
     text: string,
@@ -196,9 +194,9 @@ export const GamificationCampaignView: React.FC = () => {
     }
   }, [campaign?.characterHp, gameOverModalOpen])
 
-  // Restart campaign on Zero HP defeat
+  // Restart campaign on Zero HP defeat (starts new play attempt)
   const handleDefeatRestart = async () => {
-    await portResetCampaign(currentTopicId)
+    await portResetCampaign(currentTopicId, true)
     setGameOverModalOpen(false)
     pushActionMessage(
       `CAMPAIGN DEFEAT: Health dropped to 0! Campaign reset to Capital for a fresh attempt.`,
@@ -337,7 +335,7 @@ export const GamificationCampaignView: React.FC = () => {
     )
   }
 
-  if (isLoading || !campaign || !globalChar) {
+  if (isLoading || !globalChar || (selectedTopicId && !campaign)) {
     return (
       <div className="min-h-screen bg-[#1e1e2e] text-[#c6d0f5] flex items-center justify-center font-mono">
         <div className="text-center space-y-3">
@@ -349,12 +347,8 @@ export const GamificationCampaignView: React.FC = () => {
     )
   }
 
-  // Check Boss Unlock Criteria via domain game rule
-  const bossNode = nodes.find((n) => n.type === 'boss_lair')
-  const hasBossItems = canUnlockBoss(campaign.inventory, bossNode)
-
   // ─── LOBBY VIEW: If no campaign is active, render Global Status & Topic Campaign List ───
-  if (!selectedTopicId) {
+  if (!selectedTopicId || !campaign) {
     return (
       <div className="min-h-screen bg-[#1e1e2e] text-[#c6d0f5] p-6 lg:p-10 flex flex-col gap-8 font-sans max-w-7xl mx-auto">
         {/* ─── Global Character Profile Hero Banner ─── */}
@@ -451,6 +445,18 @@ export const GamificationCampaignView: React.FC = () => {
                   </Button>
                 )}
               </div>
+
+              <div className="hidden sm:block w-px h-8 bg-[#414559]" />
+
+              <div className="flex flex-col sm:flex-row items-center gap-1.5 sm:gap-2.5 text-center sm:text-left bg-[#1e1e2e]/50 sm:bg-transparent p-2 sm:p-0 rounded-xl col-span-3 sm:col-span-1">
+                <span className="text-xl sm:text-2xl">🏆</span>
+                <div>
+                  <span className="text-[10px] sm:text-xs text-[#a5adce] font-semibold block">Campaigns</span>
+                  <span className="text-xs sm:text-sm font-bold font-mono text-[#a6d189]">
+                    {globalChar.totalCampaignsSucceeded ?? 0} <span className="text-[10px] font-normal text-[#a5adce]">won</span> / {derivedCampaignsStarted} <span className="text-[10px] font-normal text-[#a5adce]">started</span>
+                  </span>
+                </div>
+              </div>
             </div>
 
             <div className="flex flex-row items-center justify-between sm:justify-end gap-2.5 pt-2 sm:pt-0 border-t border-[#414559]/50 sm:border-0 shrink-0">
@@ -496,13 +502,13 @@ export const GamificationCampaignView: React.FC = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {hexmapTopics.map((topic) => {
               // Read saved topic state from localStorage if available
-              let topicClearedCount = 0
+              let topicStarted = false
               try {
                 const raw = localStorage.getItem(`loom_gamification_campaign_${topic.id}`)
                 if (raw) {
                   const parsed = JSON.parse(raw)
-                  if (Array.isArray(parsed.clearedNodeIds)) {
-                    topicClearedCount = parsed.clearedNodeIds.length
+                  if (parsed.isStarted === true || (Array.isArray(parsed.clearedNodeIds) && parsed.clearedNodeIds.length > 0)) {
+                    topicStarted = true
                   }
                 }
               } catch {
@@ -510,10 +516,11 @@ export const GamificationCampaignView: React.FC = () => {
               }
 
               const isCurrent = topic.id === currentTopicId
-              const clearedCount = isCurrent ? campaign.clearedNodeIds.length : topicClearedCount
-              const topicBadges = globalChar.unlockedBadges.filter(
+              const isStarted = isCurrent ? (campaign.isStarted || campaign.clearedNodeIds.length > 0) : topicStarted
+              const playCount = globalChar?.topicPlayCounts?.[topic.id] ?? (isStarted ? 1 : 0)
+              const topicBadges = globalChar?.unlockedBadges.filter(
                 (b) => b.topicId === topic.id || b.topicTitle === topic.label
-              )
+              ) || []
               const selectedDiff = topicDifficulties[topic.id] || (isCurrent ? campaign.difficulty : 'normal')
 
               return (
@@ -535,9 +542,16 @@ export const GamificationCampaignView: React.FC = () => {
                           <span className="text-[10px] sm:text-xs font-mono text-[#8caaee] block truncate">{topic.category}</span>
                         </div>
                       </div>
-                      <Badge variant="default" className="text-[9px] uppercase shrink-0 py-0.5 px-2">
-                        Hex Campaign
-                      </Badge>
+                      <div className="flex items-center gap-1.5 shrink-0">
+                        {playCount > 0 && (
+                          <Badge variant="secondary" className="text-[9px] font-mono px-1.5 py-0.5 border border-[#414559]">
+                            🎮 {playCount} {playCount === 1 ? 'Play' : 'Plays'}
+                          </Badge>
+                        )}
+                        <Badge variant="default" className="text-[9px] uppercase py-0.5 px-2">
+                          Hex Campaign
+                        </Badge>
+                      </div>
                     </div>
 
                     <p className="text-xs text-[#a5adce] leading-snug line-clamp-2">
@@ -584,37 +598,26 @@ export const GamificationCampaignView: React.FC = () => {
                     )}
 
                     {/* Progress and Difficulty Selector Stack */}
-                    <div className="pt-2 border-t border-[#414559]/50 space-y-2">
-                      <div className="flex items-center justify-between text-[11px] sm:text-xs text-[#a5adce]">
-                        <span>Progress:</span>
-                        <span className="font-mono font-bold text-[#a6d189]">
-                          {clearedCount > 0 ? `${clearedCount} Nodes Cleared` : 'Ready to Start'}
+                    <div className="bg-[#1e1e2e]/50 p-2.5 sm:p-3 rounded-xl border border-[#414559]/60 space-y-2">
+                      <div className="flex items-center justify-between text-[11px] sm:text-xs">
+                        <span className="text-[#a5adce] font-semibold">Realm Challenge Difficulty:</span>
+                        <span className="font-bold text-[#ef9f76] capitalize">
+                          {DIFFICULTY_CONFIGS[selectedDiff]?.label}
                         </span>
                       </div>
 
                       {/* Difficulty Selector Chips */}
-                      <div className="flex items-center justify-between gap-1.5 bg-[#1e1e2e]/70 p-1.5 rounded-xl border border-[#414559]/40">
-                        <span className="text-[10px] text-[#a5adce] font-semibold pl-1 shrink-0">
-                          {clearedCount > 0 ? 'Active:' : 'Tier:'}
-                        </span>
-                        <div className="flex items-center gap-1 flex-wrap justify-end">
+                      <div className="flex items-center justify-between gap-1 sm:gap-1.5 flex-wrap">
+                        <div className="flex items-center gap-1 sm:gap-1.5 w-full justify-between">
                           {(['easy', 'normal', 'hard', 'nightmare'] as DifficultyLevel[]).map((diff) => {
                             const conf = DIFFICULTY_CONFIGS[diff]
                             const isActive = selectedDiff === diff
-                            const isLocked = clearedCount > 0 && !isActive
-
-                            if (isLocked) {
-                              return null
-                            }
-
                             return (
-                              <div key={diff} className="relative group/tier">
+                              <div key={diff} className="relative group/tier flex-1">
                                 <button
                                   type="button"
-                                  disabled={clearedCount > 0}
                                   onClick={(e) => {
                                     e.stopPropagation()
-                                    if (clearedCount > 0) return
                                     setTopicDifficulties((prev) => ({
                                       ...prev,
                                       [topic.id]: diff,
@@ -632,7 +635,7 @@ export const GamificationCampaignView: React.FC = () => {
                                       }
                                     }
                                   }}
-                                  className={`text-[9px] sm:text-[10px] font-bold px-1.5 sm:px-2 py-0.5 sm:py-1 rounded-lg transition-all flex items-center gap-1 ${
+                                  className={`text-[9px] sm:text-[10px] font-bold px-1.5 sm:px-2 py-0.5 sm:py-1 rounded-lg transition-all flex items-center gap-1 w-full justify-center ${
                                     isActive
                                       ? diff === 'nightmare'
                                         ? 'bg-[#ea999c] text-[#232634] shadow-md scale-105'
@@ -687,21 +690,45 @@ export const GamificationCampaignView: React.FC = () => {
                       onClick={() => handleSelectTopic(topic.id)}
                     >
                       <Play size={14} fill="currentColor" />
-                      <span>{clearedCount > 0 ? 'Resume Campaign' : 'Start Campaign'}</span>
+                      <span>{isStarted ? 'Resume Campaign' : 'Start Campaign'}</span>
                     </Button>
-                    {clearedCount > 0 && (
+                    {isStarted && (
                       <Button
                         variant="ghost"
                         className="border border-[#e78284]/30 hover:bg-[#e78284]/10 text-[#e78284] text-xs px-2.5 py-2 sm:py-2.5 h-auto"
                         onClick={async () => {
-                          await portResetCampaign(topic.id)
-                          // Trigger local state re-render if current
-                          if (!isCurrent) {
-                            localStorage.removeItem(`loom_gamification_campaign_${topic.id}`)
-                            window.location.reload()
+                          // Reset progress for this topic campaign without deleting global profile or iterating playCount
+                          try {
+                            const key = `loom_gamification_campaign_${topic.id}`
+                            const raw = localStorage.getItem(key)
+                            if (raw) {
+                              const parsed = JSON.parse(raw)
+                              localStorage.setItem(
+                                key,
+                                JSON.stringify({
+                                  ...parsed,
+                                  clearedNodeIds: [],
+                                  characterHp: parsed.maxCharacterHp || 100,
+                                  damageTakenInCampaign: 0,
+                                  turnCount: 0,
+                                  chaosLevel: 0,
+                                  decayThreatLevel: 0,
+                                  sanctuaryPulsesUsed: 0,
+                                  inventory: [],
+                                  activeBuffs: [],
+                                  readingVisitCounts: {},
+                                })
+                              )
+                            }
+                          } catch {
+                            // ignore
                           }
+                          if (isCurrent) {
+                            await portResetCampaign(topic.id, false)
+                          }
+                          window.location.reload()
                         }}
-                        title="Reset this topic campaign state"
+                        title="Reset Campaign: Clears current run progress back to Capital"
                       >
                         <RotateCcw size={14} />
                       </Button>
@@ -721,6 +748,26 @@ export const GamificationCampaignView: React.FC = () => {
               <Badge variant="secondary" className="text-xs">
                 {globalChar.unlockedBadges.length} Total Badges
               </Badge>
+            </div>
+
+            {/* Campaign Career Overview */}
+            <div className="grid grid-cols-3 gap-2.5 bg-[#232634] p-3 rounded-xl border border-[#414559]">
+              <div className="text-center p-1.5">
+                <span className="text-[10px] text-[#a5adce] block uppercase font-bold">Campaigns Started</span>
+                <span className="text-base font-bold font-mono text-[#8caaee]">{derivedCampaignsStarted}</span>
+              </div>
+              <div className="text-center p-1.5 border-x border-[#414559]">
+                <span className="text-[10px] text-[#a5adce] block uppercase font-bold">Victories (Cleared)</span>
+                <span className="text-base font-bold font-mono text-[#a6d189]">{globalChar.totalCampaignsSucceeded ?? 0}</span>
+              </div>
+              <div className="text-center p-1.5">
+                <span className="text-[10px] text-[#a5adce] block uppercase font-bold">Win Rate</span>
+                <span className="text-base font-bold font-mono text-[#e5c890]">
+                  {derivedCampaignsStarted > 0
+                    ? `${Math.round(((globalChar.totalCampaignsSucceeded ?? 0) / derivedCampaignsStarted) * 100)}%`
+                    : '0%'}
+                </span>
+              </div>
             </div>
 
             <div className="grid grid-cols-1 gap-3 max-h-[60vh] overflow-y-auto pr-1">
@@ -861,6 +908,10 @@ export const GamificationCampaignView: React.FC = () => {
     )
   }
 
+  // Check Boss Unlock Criteria via domain game rule
+  const bossNode = nodes.find((n) => n.type === 'boss_lair')
+  const hasBossItems = canUnlockBoss(campaign.inventory, bossNode)
+
   // ─── ACTIVE CAMPAIGN VIEW: Map Canvas, HUD, and Section Viewport ───
   return (
     <div className="min-h-screen bg-[#1e1e2e] text-[#c6d0f5] p-6 flex flex-col gap-6 font-sans">
@@ -960,7 +1011,15 @@ export const GamificationCampaignView: React.FC = () => {
               {combatLog[0]}
             </span>
           )}
-          <Button variant="ghost" onClick={() => portResetCampaign()} className="border border-[#e78284]/40 hover:bg-[#e78284]/20 text-[#e78284] text-xs px-2.5 py-1.5">
+          <Button
+            variant="ghost"
+            onClick={async () => {
+              await portResetCampaign(undefined, true)
+              pushActionMessage('Campaign Reset! Started a new play attempt with full HP & pulses.', 'info', '🔄')
+            }}
+            className="border border-[#e78284]/40 hover:bg-[#e78284]/20 text-[#e78284] text-xs px-2.5 py-1.5"
+            title="Reset campaign and start a new play run (+1 Play Count)"
+          >
             <RotateCcw size={13} className="mr-1" />
             Reset
           </Button>
@@ -992,8 +1051,17 @@ export const GamificationCampaignView: React.FC = () => {
               >
                 {DIFFICULTY_CONFIGS[campaign.difficulty || 'normal']?.icon} {campaign.difficulty || 'normal'}
               </Badge>
+              <Badge variant="secondary" className="text-[9px] font-mono px-1.5 py-0 border border-[#414559]">
+                Play #{globalChar?.topicPlayCounts?.[currentTopicId || ''] ?? 1}
+              </Badge>
             </div>
-            <span className="text-[10px] sm:text-xs text-[#a5adce] block">Topic Campaign Active</span>
+            <div className="flex items-center gap-2 text-[10px] sm:text-xs text-[#a5adce]">
+              <span>Topic Campaign Active</span>
+              <span>·</span>
+              <span className="font-mono text-[#a6d189]">
+                🏛️ Pulses: {Math.max(0, (campaign.maxSanctuaryPulses ?? DIFFICULTY_CONFIGS[campaign.difficulty || 'normal']?.maxSanctuaryPulses ?? 5) - (campaign.sanctuaryPulsesUsed ?? 0))}/{campaign.maxSanctuaryPulses ?? DIFFICULTY_CONFIGS[campaign.difficulty || 'normal']?.maxSanctuaryPulses ?? 5}
+              </span>
+            </div>
           </div>
         </div>
 
@@ -1136,8 +1204,10 @@ export const GamificationCampaignView: React.FC = () => {
               {activeSectionModal.type === 'reading_sanctuary' && (
                 <SanctuaryTickMonitor
                   healingAmount={activeSectionModal.healingAmount ?? 40}
-                  visitCount={1}
+                  visitCount={campaign.readingVisitCounts?.[activeSectionModal.id] ?? 1}
                   chaosLevel={campaign.chaosLevel}
+                  pulsesUsed={campaign.sanctuaryPulsesUsed ?? 0}
+                  maxTicks={campaign.maxSanctuaryPulses ?? DIFFICULTY_CONFIGS[campaign.difficulty || 'normal']?.maxSanctuaryPulses ?? 5}
                   onTickHeal={handleRestSanctuary}
                 />
               )}
@@ -1361,6 +1431,26 @@ export const GamificationCampaignView: React.FC = () => {
             <Badge variant="secondary" className="text-xs">
               {globalChar.unlockedBadges.length} Total Badges
             </Badge>
+          </div>
+
+          {/* Campaign Career Overview */}
+          <div className="grid grid-cols-3 gap-2.5 bg-[#232634] p-3 rounded-xl border border-[#414559]">
+            <div className="text-center p-1.5">
+              <span className="text-[10px] text-[#a5adce] block uppercase font-bold">Campaigns Started</span>
+              <span className="text-base font-bold font-mono text-[#8caaee]">{derivedCampaignsStarted}</span>
+            </div>
+            <div className="text-center p-1.5 border-x border-[#414559]">
+              <span className="text-[10px] text-[#a5adce] block uppercase font-bold">Victories (Cleared)</span>
+              <span className="text-base font-bold font-mono text-[#a6d189]">{globalChar.totalCampaignsSucceeded ?? 0}</span>
+            </div>
+            <div className="text-center p-1.5">
+              <span className="text-[10px] text-[#a5adce] block uppercase font-bold">Win Rate</span>
+              <span className="text-base font-bold font-mono text-[#e5c890]">
+                {derivedCampaignsStarted > 0
+                  ? `${Math.round(((globalChar.totalCampaignsSucceeded ?? 0) / derivedCampaignsStarted) * 100)}%`
+                  : '0%'}
+              </span>
+            </div>
           </div>
 
           <div className="grid grid-cols-1 gap-3 max-h-[60vh] overflow-y-auto pr-1">

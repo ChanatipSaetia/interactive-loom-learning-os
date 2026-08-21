@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback, useMemo } from 'react'
 import type { GamificationRuntimePort } from './ports'
-import type { GlobalCharacterState, TopicCampaignState, CharacterAttributes, ActiveBuff } from './types'
+import { DIFFICULTY_CONFIGS, type GlobalCharacterState, type TopicCampaignState, type CharacterAttributes, type ActiveBuff } from './types'
 import type { HexCampaignData } from '../../generic/hex-map'
 import { InRepoStorageAdapter } from '../../delivery/adapters/in-repo-storage'
 import { ValidationGatewayCampaignAdapter } from './adapters/validation-gateway-campaign-adapter'
@@ -13,7 +13,7 @@ import {
 } from './game-rules'
 
 export function useGamification(
-  topicId: string,
+  topicId?: string | null,
   availableSectionIds?: string[]
 ): GamificationRuntimePort {
   const [campaign, setCampaign] = useState<HexCampaignData | null>(null)
@@ -37,8 +37,18 @@ export function useGamification(
       setIsLoading(true)
       setError(null)
       try {
-        const [profile, loadedCampaign, savedTopicState] = await Promise.all([
-          characterAdapter.loadGlobalProfile(),
+        const profile = await characterAdapter.loadGlobalProfile()
+        if (!mounted) return
+        setGlobalProfile(profile)
+
+        // If no topic selected (Lobby mode), do not initialize or write any topic campaign
+        if (!topicId) {
+          setCampaign(null)
+          setTopicState(null)
+          return
+        }
+
+        const [loadedCampaign, savedTopicState] = await Promise.all([
           campaignAdapter.loadCampaign(topicId),
           characterAdapter.loadTopicCampaign(topicId),
         ])
@@ -49,19 +59,26 @@ export function useGamification(
         setCampaign(loadedCampaign)
 
         if (savedTopicState) {
-          // Ensure difficulty and damage tracking are set on older saved states
-          const normalized = {
+          // Ensure difficulty, damage tracking, pulses and play count are initialized
+          const diff = savedTopicState.difficulty || 'normal'
+          const maxPulses = DIFFICULTY_CONFIGS[diff]?.maxSanctuaryPulses ?? 5
+          const normalized: TopicCampaignState = {
             ...savedTopicState,
-            difficulty: savedTopicState.difficulty || 'normal',
+            difficulty: diff,
             damageTakenInCampaign: savedTopicState.damageTakenInCampaign || 0,
+            sanctuaryPulsesUsed: savedTopicState.sanctuaryPulsesUsed ?? 0,
+            maxSanctuaryPulses: maxPulses,
+            isStarted: savedTopicState.isStarted ?? true,
           }
           setTopicState(normalized)
         } else {
-          // Initialize fresh campaign state
+          // Initialize fresh campaign state (1st play)
+          const diff = 'normal'
+          const maxPulses = DIFFICULTY_CONFIGS[diff]?.maxSanctuaryPulses ?? 5
           const initialTopicState: TopicCampaignState = {
             topicId,
             topicTitle: loadedCampaign.topicTitle,
-            difficulty: 'normal',
+            difficulty: diff,
             characterHp: 100,
             maxCharacterHp: 100,
             damageTakenInCampaign: 0,
@@ -69,6 +86,9 @@ export function useGamification(
             chaosLevel: 0,
             maxChaosLevel: 100,
             decayThreatLevel: 0,
+            isStarted: true,
+            sanctuaryPulsesUsed: 0,
+            maxSanctuaryPulses: maxPulses,
             inventory: [],
             clearedNodeIds: [],
             activeBuffs: [],
@@ -76,6 +96,19 @@ export function useGamification(
           }
           setTopicState(initialTopicState)
           await characterAdapter.saveTopicCampaign(topicId, initialTopicState)
+
+          // Record new campaign start and increment topicPlayCounts in global profile
+          const currentPlays = profile.topicPlayCounts?.[topicId] ?? 0
+          const updatedProfile: GlobalCharacterState = {
+            ...profile,
+            totalCampaignsStarted: (profile.totalCampaignsStarted ?? 0) + 1,
+            topicPlayCounts: {
+              ...profile.topicPlayCounts,
+              [topicId]: currentPlays + 1,
+            },
+          }
+          setGlobalProfile(updatedProfile)
+          await characterAdapter.saveGlobalProfile(updatedProfile)
         }
       } catch (err: unknown) {
         if (!mounted) return
@@ -94,9 +127,11 @@ export function useGamification(
 
   // Change topic campaign difficulty
   const setDifficulty = useCallback((difficulty: import('./types').DifficultyLevel) => {
+    if (!topicId) return
     setTopicState((prev) => {
       if (!prev) return null
-      const next = { ...prev, difficulty }
+      const maxPulses = DIFFICULTY_CONFIGS[difficulty]?.maxSanctuaryPulses ?? 5
+      const next = { ...prev, difficulty, maxSanctuaryPulses: maxPulses }
       characterAdapter.saveTopicCampaign(topicId, next)
       return next
     })
@@ -104,7 +139,7 @@ export function useGamification(
 
   // Select node action — Repeat visits to safe havens (sanctuary or capital) generate System Chaos (+15 per repeat visit)
   const selectNode = useCallback((nodeId: string) => {
-    if (!campaign) return
+    if (!campaign || !topicId) return
     const target = campaign.nodes.find((n) => n.id === nodeId)
     const isSafeHaven = target?.type === 'reading_sanctuary' || target?.type === 'capital'
 
@@ -130,12 +165,11 @@ export function useGamification(
       characterAdapter.saveTopicCampaign(topicId, next)
       return next
     })
-    console.debug(`Selected gamification node: ${nodeId}`)
   }, [campaign, characterAdapter, topicId])
 
   // Resolve quiz answer
   const resolveQuizAnswer = useCallback((isCorrect: boolean, nodeMonsterId?: string) => {
-    if (!topicState || !globalProfile || !campaign) return
+    if (!topicState || !globalProfile || !campaign || !topicId) return
 
     const targetNode = campaign.nodes.find((n) => n.id === nodeMonsterId || n.monster?.id === nodeMonsterId)
     const monster = targetNode?.monster ?? {
@@ -187,10 +221,15 @@ export function useGamification(
     return combatResult
   }, [topicState, globalProfile, campaign, characterAdapter, topicId])
 
-  // Apply sanctuary healing ticks
+  // Apply sanctuary healing ticks (consumes from global campaign pulse pool)
   const applySanctuaryTickHeal = useCallback((activeSeconds: number, nodeId: string) => {
+    if (!topicId) return
     setTopicState((prev) => {
-      if (!prev) return null
+      if (!prev || !topicId) return null
+      const maxPulses = prev.maxSanctuaryPulses ?? DIFFICULTY_CONFIGS[prev.difficulty]?.maxSanctuaryPulses ?? 5
+      const currentPulsesUsed = prev.sanctuaryPulsesUsed ?? 0
+      if (currentPulsesUsed >= maxPulses) return prev
+
       const currentVisits = prev.readingVisitCounts?.[nodeId] ?? 0
       const nextVisits = currentVisits + 1
       const { effectiveHealing, nextChaosLevel } = calculateSanctuaryTickHealing(
@@ -204,6 +243,7 @@ export function useGamification(
         ...prev,
         characterHp: nextHp,
         chaosLevel: nextChaosLevel,
+        sanctuaryPulsesUsed: currentPulsesUsed + 1,
         readingVisitCounts: {
           ...prev.readingVisitCounts,
           [nodeId]: nextVisits,
@@ -216,8 +256,9 @@ export function useGamification(
 
   // Apply crafted buff
   const applyCraftedBuff = useCallback((buff: ActiveBuff, vulnerability?: ActiveBuff) => {
+    if (!topicId) return
     setTopicState((prev) => {
-      if (!prev) return null
+      if (!prev || !topicId) return null
       const nextBuffs = [...prev.activeBuffs, buff]
       if (vulnerability) {
         nextBuffs.push(vulnerability)
@@ -250,8 +291,9 @@ export function useGamification(
 
   // Take damage directly (from decryption failure, trap, or timeout)
   const takeDamage = useCallback((damage: number) => {
+    if (!topicId) return
     setTopicState((prev) => {
-      if (!prev) return null
+      if (!prev || !topicId) return null
       const nextHp = Math.max(0, prev.characterHp - damage)
       const nextDamageTaken = (prev.damageTakenInCampaign || 0) + damage
       const nextState: TopicCampaignState = {
@@ -266,8 +308,9 @@ export function useGamification(
 
   // Complete node and award key items & check topic completion badges if Boss Lair
   const completeNode = useCallback((nodeId: string) => {
+    if (!topicId) return
     setTopicState((prev) => {
-      if (!prev || !campaign) return prev
+      if (!prev || !topicId || !campaign) return prev
       const targetNode = campaign.nodes.find((n) => n.id === nodeId)
       const nextCleared = !prev.clearedNodeIds.includes(nodeId)
         ? [...prev.clearedNodeIds, nodeId]
@@ -279,7 +322,7 @@ export function useGamification(
         nextInventory = [...prev.inventory, ...newRewards]
       }
 
-      // If Boss Lair is defeated, evaluate topic badges
+      // If Boss Lair is defeated, evaluate topic badges and record campaign success
       let updatedBadges = prev.unlockedBadges || []
       if (targetNode?.type === 'boss_lair') {
         const earned = evaluateTopicBadges(
@@ -290,17 +333,20 @@ export function useGamification(
           prev.activeBuffs.length > 0,
           globalProfile?.unlockedBadges || []
         )
+
+        setGlobalProfile((g) => {
+          if (!g) return g
+          const nextG: GlobalCharacterState = {
+            ...g,
+            unlockedBadges: earned.length > 0 ? [...g.unlockedBadges, ...earned] : g.unlockedBadges,
+            totalCampaignsSucceeded: (g.totalCampaignsSucceeded ?? 0) + 1,
+          }
+          characterAdapter.saveGlobalProfile(nextG)
+          return nextG
+        })
+
         if (earned.length > 0) {
           updatedBadges = [...updatedBadges, ...earned]
-          setGlobalProfile((g) => {
-            if (!g) return g
-            const nextG = {
-              ...g,
-              unlockedBadges: [...g.unlockedBadges, ...earned],
-            }
-            characterAdapter.saveGlobalProfile(nextG)
-            return nextG
-          })
         }
       }
 
@@ -367,16 +413,20 @@ export function useGamification(
     })
   }, [characterAdapter])
 
-  // Reset campaign
-  const resetCampaign = useCallback(async (targetTopicId?: string) => {
+  // Reset campaign (clears current campaign progress; if isNewPlay = true, increments topicPlayCounts in global profile)
+  const resetCampaign = useCallback(async (targetTopicId?: string, isNewPlay: boolean = false) => {
     const idToReset = targetTopicId || topicId
+    if (!idToReset) return
+
     await characterAdapter.resetTopicCampaign(idToReset)
 
-    if (idToReset === topicId && campaign) {
+    if (idToReset === topicId && topicId && campaign) {
+      const chosenDiff = topicState?.difficulty || 'normal'
+      const maxPulses = DIFFICULTY_CONFIGS[chosenDiff]?.maxSanctuaryPulses ?? 5
       const freshTopicState: TopicCampaignState = {
         topicId,
         topicTitle: campaign.topicTitle,
-        difficulty: topicState?.difficulty || 'normal',
+        difficulty: chosenDiff,
         characterHp: 100,
         maxCharacterHp: 100,
         damageTakenInCampaign: 0,
@@ -384,6 +434,9 @@ export function useGamification(
         chaosLevel: 0,
         maxChaosLevel: 100,
         decayThreatLevel: 0,
+        isStarted: true,
+        sanctuaryPulsesUsed: 0,
+        maxSanctuaryPulses: maxPulses,
         inventory: [],
         clearedNodeIds: [],
         activeBuffs: [],
@@ -391,6 +444,23 @@ export function useGamification(
       }
       setTopicState(freshTopicState)
       await characterAdapter.saveTopicCampaign(topicId, freshTopicState)
+
+      if (isNewPlay) {
+        setGlobalProfile((g) => {
+          if (!g) return g
+          const currentTopicPlays = g.topicPlayCounts?.[idToReset] ?? 1
+          const updatedG: GlobalCharacterState = {
+            ...g,
+            totalCampaignsStarted: (g.totalCampaignsStarted ?? 0) + 1,
+            topicPlayCounts: {
+              ...g.topicPlayCounts,
+              [idToReset]: currentTopicPlays + 1,
+            },
+          }
+          characterAdapter.saveGlobalProfile(updatedG)
+          return updatedG
+        })
+      }
     }
   }, [characterAdapter, topicId, campaign, topicState?.difficulty])
 

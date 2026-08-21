@@ -95,17 +95,31 @@ describe('Gamification Real UI Components', () => {
     expect(screen.getByText('Runic Cipher Decrypted!')).toBeDefined()
   })
 
-  it('renders SanctuaryTickMonitor and calculates decay potency', () => {
+  it('renders SanctuaryTickMonitor and calculates decay potency and global pulse limits', () => {
     const handleTick = vi.fn()
-    render(
+    const { rerender } = render(
       <SanctuaryTickMonitor
         visitCount={2}
+        pulsesUsed={1}
+        maxTicks={5}
         onTickHeal={handleTick}
       />
     )
 
     expect(screen.getByText('Active Reading Sanctuary')).toBeDefined()
     expect(screen.getByText(/50% Potency/i)).toBeDefined()
+    expect(screen.getByText(/1\/5 Global Pulses/i)).toBeDefined()
+
+    // Test depleted state
+    rerender(
+      <SanctuaryTickMonitor
+        visitCount={2}
+        pulsesUsed={5}
+        maxTicks={5}
+        onTickHeal={handleTick}
+      />
+    )
+    expect(screen.getByText(/Depleted \(5\/5\)/i)).toBeDefined()
   })
 
   it('renders BossBattleArena and handles item combos', () => {
