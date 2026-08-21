@@ -259,83 +259,79 @@ export const RunicCountdownRing: React.FC<RunicCountdownRingProps> = ({
             magicRingsGfx.circle(ringCenterX, ringCenterY, corePulse)
               .fill({ color: coreColor, alpha: isCleared ? 0.95 : 0.75 })
 
-            // ─── 2. DRAW LEFT-TO-RIGHT RUNE SLOTS (Right side of card) ───
-            const slotsStartX = ringCenterX + ringRadius + 14
-            const slotsAreaWidth = cx + cardWidth - slotsStartX - 10
+            // ─── 2. DRAW LEFT-TO-RIGHT RUNE SLOTS (Floating illuminated runes connected to ring) ───
+            const slotsStartX = ringCenterX + ringRadius + 16
+            const slotsAreaWidth = cx + cardWidth - slotsStartX - 12
             const itemCount = Math.max(1, seq.itemCount)
-            const slotGap = 6
-            const slotWidth = Math.min(44, (slotsAreaWidth - (itemCount - 1) * slotGap) / itemCount)
-            const slotHeight = 38
-            const slotY = cy + cardHeight / 2 - slotHeight / 2 + 8
+            const slotGap = 8
+            const slotWidth = Math.min(46, (slotsAreaWidth - (itemCount - 1) * slotGap) / itemCount)
+            const slotHeight = 36
+            const slotY = cy + cardHeight / 2 - slotHeight / 2
+
+            // Flow energy beam connecting ring to rune line
+            runeSlotsGfx.moveTo(ringCenterX + ringRadius, cy + cardHeight / 2)
+              .lineTo(slotsStartX + (itemCount - 1) * (slotWidth + slotGap) + slotWidth / 2, cy + cardHeight / 2)
+              .stroke({
+                width: 1.2,
+                color: isCleared ? 0xa6d189 : isCurrent ? 0xca9ee6 : 0x414559,
+                alpha: isCleared ? 0.4 : isCurrent ? 0.3 : 0.15,
+              })
 
             for (let s = 0; s < itemCount; s++) {
               const sx = slotsStartX + s * (slotWidth + slotGap)
               const isSlotDecrypted = isCleared || (isAnimating && filledSlotStep >= s + 1)
               const isSlotJustFilled = isAnimating && filledSlotStep === s + 1
-
-              // Slot Background Box
-              runeSlotsGfx.roundRect(sx, slotY, slotWidth, slotHeight, 8)
-                .fill({ color: isSlotDecrypted ? 0x303446 : 0x181825, alpha: 0.9 })
-                .stroke({
-                  width: isSlotDecrypted ? 1.5 : 1.0,
-                  color: isSlotDecrypted ? 0xca9ee6 : 0x414559,
-                  alpha: isSlotDecrypted ? 0.9 : 0.4,
-                })
+              const runeCenterX = sx + slotWidth / 2
+              const runeCenterY = slotY + slotHeight / 2
 
               if (isSlotDecrypted) {
-                // Golden highlight inner border
-                runeSlotsGfx.roundRect(sx + 1, slotY + 1, slotWidth - 2, slotHeight - 2, 7)
-                  .stroke({ width: 1.0, color: 0xe5c890, alpha: 0.4 })
+                // Soft glowing aura behind decrypted rune (seamless, no border edge)
+                runeSlotsGfx.circle(runeCenterX, runeCenterY, 14)
+                  .fill({ color: 0xe5c890, alpha: isSlotJustFilled ? 0.25 : 0.08 })
 
                 // Draw Sacred Rune Emblem Glyphs using vectors
-                const runeCenterX = sx + slotWidth / 2
-                const runeCenterY = slotY + slotHeight / 2
-
                 // Center Rune Staff
-                runeSlotsGfx.moveTo(runeCenterX, runeCenterY - 11)
-                  .lineTo(runeCenterX, runeCenterY + 11)
+                runeSlotsGfx.moveTo(runeCenterX, runeCenterY - 12)
+                  .lineTo(runeCenterX, runeCenterY + 12)
                   .stroke({ width: 2.2, color: 0xe5c890, alpha: 0.95 })
 
                 // Rune Branches
                 if (s % 3 === 0) {
                   // Fehu / Algiz style branches
                   runeSlotsGfx.moveTo(runeCenterX, runeCenterY - 4)
-                    .lineTo(runeCenterX + 6, runeCenterY - 10)
+                    .lineTo(runeCenterX + 7, runeCenterY - 11)
                     .stroke({ width: 1.8, color: 0xe5c890, alpha: 0.95 })
                   runeSlotsGfx.moveTo(runeCenterX, runeCenterY + 3)
-                    .lineTo(runeCenterX + 6, runeCenterY - 3)
+                    .lineTo(runeCenterX + 7, runeCenterY - 4)
                     .stroke({ width: 1.8, color: 0xe5c890, alpha: 0.95 })
                 } else if (s % 3 === 1) {
                   // Berkana / Thurisaz style chevron
-                  runeSlotsGfx.moveTo(runeCenterX, runeCenterY - 8)
-                    .lineTo(runeCenterX + 6, runeCenterY - 2)
-                    .lineTo(runeCenterX, runeCenterY + 4)
+                  runeSlotsGfx.moveTo(runeCenterX, runeCenterY - 9)
+                    .lineTo(runeCenterX + 7, runeCenterY - 2)
+                    .lineTo(runeCenterX, runeCenterY + 5)
                     .stroke({ width: 1.8, color: 0xe5c890, alpha: 0.95 })
                 } else {
                   // Othala / Dagaz diamond
-                  runeSlotsGfx.moveTo(runeCenterX, runeCenterY - 7)
-                    .lineTo(runeCenterX + 5, runeCenterY)
-                    .lineTo(runeCenterX, runeCenterY + 7)
-                    .lineTo(runeCenterX - 5, runeCenterY)
+                  runeSlotsGfx.moveTo(runeCenterX, runeCenterY - 8)
+                    .lineTo(runeCenterX + 6, runeCenterY)
+                    .lineTo(runeCenterX, runeCenterY + 8)
+                    .lineTo(runeCenterX - 6, runeCenterY)
                     .closePath()
                     .stroke({ width: 1.8, color: 0xe5c890, alpha: 0.95 })
                 }
               } else {
-                // Encrypted Lock Node
-                const lockX = sx + slotWidth / 2
-                const lockY = slotY + slotHeight / 2
-                runeSlotsGfx.rect(lockX - 4, lockY - 1, 8, 7)
-                  .fill({ color: 0x414559, alpha: 0.7 })
-                runeSlotsGfx.arc(lockX, lockY - 1, 3.5, Math.PI, 0)
-                  .stroke({ width: 1.2, color: 0x626880, alpha: 0.7 })
+                // Subtle glowing node circle for encrypted position (no hard box)
+                runeSlotsGfx.circle(runeCenterX, runeCenterY, 4)
+                  .fill({ color: 0x414559, alpha: 0.6 })
+                  .stroke({ width: 1.0, color: 0x626880, alpha: 0.5 })
               }
 
               // Sparkles on newly filled slot during cascade
               if (isSlotJustFilled) {
                 for (let k = 0; k < 6; k++) {
                   const sparkAngle = t * 12 + (k * Math.PI) / 3
-                  const spX = sx + slotWidth / 2 + Math.cos(sparkAngle) * (slotWidth * 0.55)
-                  const spY = slotY + slotHeight / 2 + Math.sin(sparkAngle) * (slotHeight * 0.55)
+                  const spX = runeCenterX + Math.cos(sparkAngle) * 16
+                  const spY = runeCenterY + Math.sin(sparkAngle) * 16
                   sparksGfx.circle(spX, spY, 2.2).fill({ color: 0xe5c890, alpha: 0.95 })
                 }
               }
