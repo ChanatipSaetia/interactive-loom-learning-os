@@ -34,6 +34,7 @@ describe('Gamification LocalStorageCharacterAdapter', () => {
       difficulty: 'normal',
       characterHp: 85,
       maxCharacterHp: 100,
+      damageTakenInCampaign: 15,
       turnCount: 4,
       chaosLevel: 10,
       maxChaosLevel: 100,

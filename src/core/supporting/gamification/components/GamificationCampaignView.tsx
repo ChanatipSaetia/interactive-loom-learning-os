@@ -284,7 +284,7 @@ export const GamificationCampaignView: React.FC = () => {
       <div className="min-h-screen bg-[#1e1e2e] text-[#c6d0f5] p-6 lg:p-10 flex flex-col gap-8 font-sans max-w-7xl mx-auto">
         {/* ─── Global Character Profile Hero Banner ─── */}
         <header className="bg-gradient-to-r from-[#292c3c] via-[#303446] to-[#292c3c] border border-[#414559] rounded-3xl p-5 sm:p-6 lg:p-8 shadow-2xl flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-6">
-          <div className="flex items-center gap-4 sm:gap-5">
+            <div className="flex items-center gap-4 sm:gap-5">
             <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-3xl bg-gradient-to-br from-[#8caaee] via-[#ca9ee6] to-[#f4b8e4] flex items-center justify-center text-3xl sm:text-4xl shadow-xl border border-[#8caaee]/50 shrink-0">
               🧙‍♂️
             </div>
@@ -293,9 +293,21 @@ export const GamificationCampaignView: React.FC = () => {
                 <h1 className="text-xl sm:text-2xl lg:text-3xl font-extrabold text-[#b5bfe2] tracking-tight truncate">
                   Architecture Champion
                 </h1>
-                <Badge variant="secondary" className="bg-[#8caaee]/20 text-[#8caaee] border-[#8caaee]/40 text-xs sm:text-sm px-2.5 py-0.5 sm:px-3 sm:py-1 font-bold">
-                  Lvl {globalChar.level}
-                </Badge>
+                <div className="flex items-center gap-1.5">
+                  <Badge variant="secondary" className="bg-[#8caaee]/20 text-[#8caaee] border-[#8caaee]/40 text-xs sm:text-sm px-2.5 py-0.5 sm:px-3 sm:py-1 font-bold">
+                    Lvl {globalChar.level}
+                  </Badge>
+                  {/* Level Up Button / Quick XP Test Trigger */}
+                  <Button
+                    size="sm"
+                    variant="ghost"
+                    className="border border-[#8caaee]/40 hover:bg-[#8caaee]/20 text-[#8caaee] text-[10px] sm:text-xs h-6 sm:h-7 px-2"
+                    onClick={() => portAwardExp(globalChar.nextLevelExp - globalChar.exp)}
+                    title="Level up Champion (+1 Level, +1 Stat Point)"
+                  >
+                    + Level Up
+                  </Button>
+                </div>
               </div>
               <p className="text-xs sm:text-sm text-[#a5adce] mt-1 line-clamp-1 sm:line-clamp-none">
                 Persistent Cross-Campaign Learning Avatar · Level up and forge stats!
@@ -361,10 +373,20 @@ export const GamificationCampaignView: React.FC = () => {
             </div>
 
             <div className="flex items-center justify-between sm:justify-start gap-2 pt-2 sm:pt-0 border-t border-[#414559]/50 sm:border-0">
-              {globalChar.unallocatedPoints > 0 && (
+              {globalChar.unallocatedPoints > 0 ? (
                 <Badge variant="success" className="animate-pulse px-2.5 py-1 text-[11px] sm:text-xs">
                   {globalChar.unallocatedPoints} Stat Pts!
                 </Badge>
+              ) : (
+                <Button
+                  size="sm"
+                  variant="ghost"
+                  className="border border-[#414559] hover:bg-[#414559]/30 text-[#a5adce] text-[10px] py-1 h-auto"
+                  onClick={() => portAwardExp(50)}
+                  title="Grant +50 EXP to test leveling"
+                >
+                  +50 XP
+                </Button>
               )}
 
               <Button variant="ghost" onClick={() => setActiveBadgesModal(true)} className="border border-[#414559] hover:bg-[#414559]/50 text-xs w-full sm:w-auto py-2">
@@ -530,25 +552,61 @@ export const GamificationCampaignView: React.FC = () => {
 
         {/* ─── Badges Modal ─── */}
         <Modal open={activeBadgesModal} onClose={() => setActiveBadgesModal(false)} maxWidth="md" title="Achievements & Badges">
-          <div className="p-2 text-[#c6d0f5]">
-            <h3 className="text-lg font-bold text-[#b5bfe2] mb-4">🏆 Unlocked Achievements & Badges</h3>
-            <div className="grid grid-cols-1 gap-3 mb-6">
+          <div className="p-2 text-[#c6d0f5] space-y-4">
+            <div className="flex items-center justify-between">
+              <h3 className="text-base sm:text-lg font-bold text-[#b5bfe2]">🏆 Unlocked Topic Achievements</h3>
+              <Badge variant="secondary" className="text-xs">
+                {globalChar.unlockedBadges.length} Total Badges
+              </Badge>
+            </div>
+
+            <div className="grid grid-cols-1 gap-3 max-h-[60vh] overflow-y-auto pr-1">
               {globalChar.unlockedBadges.length === 0 ? (
-                <p className="text-sm text-[#737994] italic p-4 text-center">No badges unlocked yet. Clear encounters and defeat bosses across realm campaigns!</p>
+                <div className="p-8 text-center bg-[#232634] rounded-2xl border border-[#414559] space-y-2">
+                  <span className="text-3xl block">🛡️</span>
+                  <p className="text-sm text-[#b5bfe2] font-semibold">No badges unlocked yet</p>
+                  <p className="text-xs text-[#737994]">
+                    Clear topic encounters, conquer bosses, achieve 0-damage flawless victories, or complete Master/Nightmare difficulty tiers!
+                  </p>
+                </div>
               ) : (
                 globalChar.unlockedBadges.map((badge) => (
-                  <div key={badge.id} className="flex items-center gap-3 p-3 rounded-xl bg-[#232634] border border-[#8caaee]/30">
-                    <span className="text-3xl">{badge.icon}</span>
-                    <div>
-                      <h4 className="text-sm font-bold text-[#8caaee]">{badge.title}</h4>
-                      <p className="text-xs text-[#a5adce]">{badge.description}</p>
-                      <span className="text-[10px] text-[#737994] block mt-1">Unlocked: {badge.unlockedAt}</span>
+                  <div key={badge.id} className="flex items-center gap-3 p-3.5 rounded-xl bg-[#232634] border border-[#8caaee]/30 hover:border-[#8caaee]/60 transition-colors">
+                    <div className="w-12 h-12 rounded-xl bg-[#1e1e2e] border border-[#414559] flex items-center justify-center text-2xl shrink-0">
+                      {badge.icon}
+                    </div>
+                    <div className="min-w-0 flex-1">
+                      <div className="flex items-center gap-2 flex-wrap">
+                        <h4 className="text-sm font-bold text-[#8caaee]">{badge.title}</h4>
+                        {badge.topicTitle && (
+                          <Badge variant="default" className="text-[9px] bg-[#8caaee]/20 text-[#8caaee] border-[#8caaee]/40">
+                            {badge.topicTitle}
+                          </Badge>
+                        )}
+                        {badge.difficulty && (
+                          <Badge
+                            variant="secondary"
+                            className={`text-[9px] uppercase ${
+                              badge.difficulty === 'nightmare'
+                                ? 'bg-[#ea999c]/20 text-[#ea999c] border-[#ea999c]/40'
+                                : badge.difficulty === 'hard'
+                                ? 'bg-[#ef9f76]/20 text-[#ef9f76] border-[#ef9f76]/40'
+                                : 'bg-[#a6d189]/20 text-[#a6d189] border-[#a6d189]/40'
+                            }`}
+                          >
+                            {badge.difficulty}
+                          </Badge>
+                        )}
+                      </div>
+                      <p className="text-xs text-[#a5adce] mt-0.5">{badge.description}</p>
+                      <span className="text-[10px] text-[#737994] font-mono block mt-1">Earned: {badge.unlockedAt}</span>
                     </div>
                   </div>
                 ))
               )}
             </div>
-            <div className="flex justify-end">
+
+            <div className="flex justify-end pt-2 border-t border-[#414559]">
               <Button variant="ghost" onClick={() => setActiveBadgesModal(false)}>
                 Close
               </Button>
@@ -994,25 +1052,61 @@ export const GamificationCampaignView: React.FC = () => {
 
       {/* ─── Badges Modal ─── */}
       <Modal open={activeBadgesModal} onClose={() => setActiveBadgesModal(false)} maxWidth="md" title="Achievements & Badges">
-        <div className="p-2 text-[#c6d0f5]">
-          <h3 className="text-lg font-bold text-[#b5bfe2] mb-4">🏆 Unlocked Achievements & Badges</h3>
-          <div className="grid grid-cols-1 gap-3 mb-6">
+        <div className="p-2 text-[#c6d0f5] space-y-4">
+          <div className="flex items-center justify-between">
+            <h3 className="text-base sm:text-lg font-bold text-[#b5bfe2]">🏆 Unlocked Topic Achievements</h3>
+            <Badge variant="secondary" className="text-xs">
+              {globalChar.unlockedBadges.length} Total Badges
+            </Badge>
+          </div>
+
+          <div className="grid grid-cols-1 gap-3 max-h-[60vh] overflow-y-auto pr-1">
             {globalChar.unlockedBadges.length === 0 ? (
-              <p className="text-sm text-[#737994] italic p-4 text-center">No badges unlocked yet. Clear encounters and defeat bosses across realm campaigns!</p>
+              <div className="p-8 text-center bg-[#232634] rounded-2xl border border-[#414559] space-y-2">
+                <span className="text-3xl block">🛡️</span>
+                <p className="text-sm text-[#b5bfe2] font-semibold">No badges unlocked yet</p>
+                <p className="text-xs text-[#737994]">
+                  Clear topic encounters, conquer bosses, achieve 0-damage flawless victories, or complete Master/Nightmare difficulty tiers!
+                </p>
+              </div>
             ) : (
               globalChar.unlockedBadges.map((badge) => (
-                <div key={badge.id} className="flex items-center gap-3 p-3 rounded-xl bg-[#232634] border border-[#8caaee]/30">
-                  <span className="text-3xl">{badge.icon}</span>
-                  <div>
-                    <h4 className="text-sm font-bold text-[#8caaee]">{badge.title}</h4>
-                    <p className="text-xs text-[#a5adce]">{badge.description}</p>
-                    <span className="text-[10px] text-[#737994] block mt-1">Unlocked: {badge.unlockedAt}</span>
+                <div key={badge.id} className="flex items-center gap-3 p-3.5 rounded-xl bg-[#232634] border border-[#8caaee]/30 hover:border-[#8caaee]/60 transition-colors">
+                  <div className="w-12 h-12 rounded-xl bg-[#1e1e2e] border border-[#414559] flex items-center justify-center text-2xl shrink-0">
+                    {badge.icon}
+                  </div>
+                  <div className="min-w-0 flex-1">
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <h4 className="text-sm font-bold text-[#8caaee]">{badge.title}</h4>
+                      {badge.topicTitle && (
+                        <Badge variant="default" className="text-[9px] bg-[#8caaee]/20 text-[#8caaee] border-[#8caaee]/40">
+                          {badge.topicTitle}
+                        </Badge>
+                      )}
+                      {badge.difficulty && (
+                        <Badge
+                          variant="secondary"
+                          className={`text-[9px] uppercase ${
+                            badge.difficulty === 'nightmare'
+                              ? 'bg-[#ea999c]/20 text-[#ea999c] border-[#ea999c]/40'
+                              : badge.difficulty === 'hard'
+                              ? 'bg-[#ef9f76]/20 text-[#ef9f76] border-[#ef9f76]/40'
+                              : 'bg-[#a6d189]/20 text-[#a6d189] border-[#a6d189]/40'
+                          }`}
+                        >
+                          {badge.difficulty}
+                        </Badge>
+                      )}
+                    </div>
+                    <p className="text-xs text-[#a5adce] mt-0.5">{badge.description}</p>
+                    <span className="text-[10px] text-[#737994] font-mono block mt-1">Earned: {badge.unlockedAt}</span>
                   </div>
                 </div>
               ))
             )}
           </div>
-          <div className="flex justify-end">
+
+          <div className="flex justify-end pt-2 border-t border-[#414559]">
             <Button variant="ghost" onClick={() => setActiveBadgesModal(false)}>
               Close
             </Button>

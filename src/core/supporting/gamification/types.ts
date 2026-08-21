@@ -128,6 +128,30 @@ export const DIFFICULTY_CONFIGS: Record<DifficultyLevel, DifficultyConfig> = {
   },
 }
 
+// ─── Badges & Achievements ──────────────────────────────────────────────────
+export type BadgeType = 'topic_completion' | 'flawless_victory' | 'mastery_clear' | 'tactical_craftsman'
+
+export interface BadgeDefinition {
+  id: string
+  badgeType: BadgeType
+  title: string
+  icon: string
+  description: string
+  topicId?: string
+}
+
+export interface UnlockedBadge {
+  id: string
+  badgeType: BadgeType
+  title: string
+  icon: string
+  description: string
+  topicId?: string
+  topicTitle?: string
+  difficulty?: DifficultyLevel
+  unlockedAt: string
+}
+
 // ─── Global Character & Topic Campaign States ──────────────────────────────
 export interface CharacterAttributes {
   armor: number // Reduces damage taken
@@ -141,13 +165,7 @@ export interface GlobalCharacterState {
   nextLevelExp: number
   unallocatedPoints: number
   attributes: CharacterAttributes
-  unlockedBadges: Array<{
-    id: string
-    title: string
-    icon: string
-    description: string
-    unlockedAt: string
-  }>
+  unlockedBadges: UnlockedBadge[]
 }
 
 export interface TopicCampaignState {
@@ -156,6 +174,7 @@ export interface TopicCampaignState {
   difficulty: DifficultyLevel
   characterHp: number
   maxCharacterHp: number
+  damageTakenInCampaign: number // Tracks if player took 0 damage for Flawless Victory badge
   turnCount: number
   chaosLevel: number // System Chaos / Entropy (0 to 100). Increases when entering sections, causes healing decay at sanctuaries.
   maxChaosLevel: number
@@ -165,4 +184,5 @@ export interface TopicCampaignState {
   clearedNodeIds: string[]
   activeBuffs: ActiveBuff[]
   readingVisitCounts?: Record<string, number>
+  unlockedBadges?: UnlockedBadge[]
 }

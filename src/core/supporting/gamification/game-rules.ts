@@ -368,3 +368,88 @@ export function calculateLevelProgress(
     isLeveledUp: leveledUp,
   }
 }
+
+/**
+ * Evaluates which topic-specific and difficulty badges should be awarded upon boss defeat or topic completion.
+ */
+export function evaluateTopicBadges(
+  topicId: string,
+  topicTitle: string,
+  difficulty: import('./types').DifficultyLevel = 'normal',
+  damageTaken: number = 0,
+  hasCraftedBuff: boolean = false,
+  existingBadges: import('./types').UnlockedBadge[] = []
+): import('./types').UnlockedBadge[] {
+  const newBadges: import('./types').UnlockedBadge[] = []
+  const now = new Date().toISOString().split('T')[0]
+
+  // 1. Topic Completion Badge
+  const completionBadgeId = `badge-complete-${topicId}`
+  if (!existingBadges.some((b) => b.id === completionBadgeId)) {
+    newBadges.push({
+      id: completionBadgeId,
+      badgeType: 'topic_completion',
+      title: `${topicTitle} Liberator`,
+      icon: '🏅',
+      description: `Successfully liberated the ${topicTitle} realm from architectural monsters.`,
+      topicId,
+      topicTitle,
+      difficulty,
+      unlockedAt: now,
+    })
+  }
+
+  // 2. Flawless Victory Badge (0 Damage taken throughout the entire campaign)
+  const flawlessBadgeId = `badge-flawless-${topicId}`
+  if (damageTaken === 0 && !existingBadges.some((b) => b.id === flawlessBadgeId)) {
+    newBadges.push({
+      id: flawlessBadgeId,
+      badgeType: 'flawless_victory',
+      title: `Flawless Strategist: ${topicTitle}`,
+      icon: '⭐',
+      description: `Cleared the entire ${topicTitle} campaign without taking a single point of damage!`,
+      topicId,
+      topicTitle,
+      difficulty,
+      unlockedAt: now,
+    })
+  }
+
+  // 3. Mastery Badge (Cleared on Hard or Nightmare difficulty)
+  if (difficulty === 'hard' || difficulty === 'nightmare') {
+    const masteryBadgeId = `badge-mastery-${topicId}-${difficulty}`
+    if (!existingBadges.some((b) => b.id === masteryBadgeId)) {
+      newBadges.push({
+        id: masteryBadgeId,
+        badgeType: 'mastery_clear',
+        title: `${topicTitle} ${difficulty === 'nightmare' ? 'Grandmaster' : 'Master'}`,
+        icon: difficulty === 'nightmare' ? '☠️' : '⚔️',
+        description: `Conquered the ${topicTitle} realm on ${difficulty.toUpperCase()} difficulty tier!`,
+        topicId,
+        topicTitle,
+        difficulty,
+        unlockedAt: now,
+      })
+    }
+  }
+
+  // 4. Tactical Craftsman (Utilized synthesized trade-off workshop gear)
+  if (hasCraftedBuff) {
+    const craftsmanBadgeId = `badge-craftsman-${topicId}`
+    if (!existingBadges.some((b) => b.id === craftsmanBadgeId)) {
+      newBadges.push({
+        id: craftsmanBadgeId,
+        badgeType: 'tactical_craftsman',
+        title: `Architectural Blacksmith`,
+        icon: '⚒️',
+        description: `Synthesized specialized trade-off gear to conquer ${topicTitle}.`,
+        topicId,
+        topicTitle,
+        difficulty,
+        unlockedAt: now,
+      })
+    }
+  }
+
+  return newBadges
+}

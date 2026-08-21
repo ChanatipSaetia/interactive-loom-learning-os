@@ -9,6 +9,7 @@ import {
   calculateSanctuaryTickHealing,
   resolveCombatTurn,
   calculateLevelProgress,
+  evaluateTopicBadges,
 } from './game-rules'
 
 export function useGamification(
@@ -48,10 +49,11 @@ export function useGamification(
         setCampaign(loadedCampaign)
 
         if (savedTopicState) {
-          // Ensure difficulty is set on older saved states
+          // Ensure difficulty and damage tracking are set on older saved states
           const normalized = {
             ...savedTopicState,
             difficulty: savedTopicState.difficulty || 'normal',
+            damageTakenInCampaign: savedTopicState.damageTakenInCampaign || 0,
           }
           setTopicState(normalized)
         } else {
@@ -62,6 +64,7 @@ export function useGamification(
             difficulty: 'normal',
             characterHp: 100,
             maxCharacterHp: 100,
+            damageTakenInCampaign: 0,
             turnCount: 0,
             chaosLevel: 0,
             maxChaosLevel: 100,
@@ -169,10 +172,11 @@ export function useGamification(
         const newRewards = targetNode.rewards.filter((r) => !prev.inventory.some((i) => i.id === r.id))
         nextInventory = [...prev.inventory, ...newRewards]
       }
-
+      const nextDamageTaken = (prev.damageTakenInCampaign || 0) + combatResult.playerDamageTaken
       const nextState: TopicCampaignState = {
         ...prev,
         characterHp: nextHp,
+        damageTakenInCampaign: nextDamageTaken,
         clearedNodeIds: nextCleared,
         inventory: nextInventory,
       }
@@ -247,16 +251,18 @@ export function useGamification(
     setTopicState((prev) => {
       if (!prev) return null
       const nextHp = Math.max(0, prev.characterHp - damage)
+      const nextDamageTaken = (prev.damageTakenInCampaign || 0) + damage
       const nextState: TopicCampaignState = {
         ...prev,
         characterHp: nextHp,
+        damageTakenInCampaign: nextDamageTaken,
       }
       characterAdapter.saveTopicCampaign(topicId, nextState)
       return nextState
     })
   }, [characterAdapter, topicId])
 
-  // Complete node and award key items
+  // Complete node and award key items & check topic completion badges if Boss Lair
   const completeNode = useCallback((nodeId: string) => {
     setTopicState((prev) => {
       if (!prev || !campaign) return prev
@@ -271,15 +277,41 @@ export function useGamification(
         nextInventory = [...prev.inventory, ...newRewards]
       }
 
+      // If Boss Lair is defeated, evaluate topic badges
+      let updatedBadges = prev.unlockedBadges || []
+      if (targetNode?.type === 'boss_lair') {
+        const earned = evaluateTopicBadges(
+          topicId,
+          prev.topicTitle,
+          prev.difficulty,
+          prev.damageTakenInCampaign || 0,
+          prev.activeBuffs.length > 0,
+          globalProfile?.unlockedBadges || []
+        )
+        if (earned.length > 0) {
+          updatedBadges = [...updatedBadges, ...earned]
+          setGlobalProfile((g) => {
+            if (!g) return g
+            const nextG = {
+              ...g,
+              unlockedBadges: [...g.unlockedBadges, ...earned],
+            }
+            characterAdapter.saveGlobalProfile(nextG)
+            return nextG
+          })
+        }
+      }
+
       const nextState: TopicCampaignState = {
         ...prev,
         clearedNodeIds: nextCleared,
         inventory: nextInventory,
+        unlockedBadges: updatedBadges,
       }
       characterAdapter.saveTopicCampaign(topicId, nextState)
       return nextState
     })
-  }, [campaign, characterAdapter, topicId])
+  }, [campaign, characterAdapter, topicId, globalProfile])
 
   // Award EXP upon completing all section requirements
   const awardExp = useCallback((expAmount: number) => {
@@ -317,6 +349,7 @@ export function useGamification(
         difficulty: topicState?.difficulty || 'normal',
         characterHp: 100,
         maxCharacterHp: 100,
+        damageTakenInCampaign: 0,
         turnCount: 0,
         chaosLevel: 0,
         maxChaosLevel: 100,
