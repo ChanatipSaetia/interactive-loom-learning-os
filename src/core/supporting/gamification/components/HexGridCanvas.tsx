@@ -44,56 +44,6 @@ function getHexVertices(cx: number, cy: number, radius: number): number[] {
   return points
 }
 
-// ─── PROCEDURAL VECTOR MAGIC RUNE PARTICLES ───
-function drawMagicRuneParticle(g: Graphics, typeIndex: number, color: number, glowColor: number) {
-  if (!g || g.destroyed) return
-  g.clear()
-  // Subtle glowing halo
-  g.circle(0, 0, 4.5).fill({ color: glowColor, alpha: 0.3 })
-
-  switch (typeIndex % 6) {
-    case 0: {
-      // ᛉ Algiz - Arcane Tree Glyph
-      g.moveTo(0, -4).lineTo(0, 4).stroke({ width: 1.4, color: 0xffffff, cap: 'round' })
-      g.moveTo(-3, -3).lineTo(0, -0.5).lineTo(3, -3).stroke({ width: 1.3, color, cap: 'round' })
-      break
-    }
-    case 1: {
-      // ᛟ Diamond Mana Crystal / Othala
-      g.poly([0, -4.5, 3.2, 0, 0, 4.5, -3.2, 0]).fill({ color: glowColor, alpha: 0.65 }).stroke({ width: 1.2, color: 0xffffff })
-      g.circle(0, 0, 1.2).fill({ color: 0xffffff, alpha: 1.0 })
-      break
-    }
-    case 2: {
-      // ᚲ Kenaz - Arcane Beacon Torch Angle
-      g.moveTo(-2.5, -3.5).lineTo(2.2, 0).lineTo(-2.5, 3.5).stroke({ width: 1.4, color: 0xffffff, cap: 'round' })
-      g.circle(2.2, 0, 1.2).fill({ color, alpha: 0.95 })
-      break
-    }
-    case 3: {
-      // ᚠ Fehu - Wisdom Staff with Twin Ascending Wings
-      g.moveTo(-1.5, -4).lineTo(-1.5, 4).stroke({ width: 1.4, color: 0xffffff, cap: 'round' })
-      g.moveTo(-1.5, -2.5).lineTo(2.5, -4).stroke({ width: 1.3, color, cap: 'round' })
-      g.moveTo(-1.5, 0.5).lineTo(2.5, -1).stroke({ width: 1.3, color, cap: 'round' })
-      break
-    }
-    case 4: {
-      // ᛞ Dagaz / Hourglass Matrix Glyph
-      g.moveTo(-2.8, -3.2).lineTo(2.8, 3.2).stroke({ width: 1.3, color, cap: 'round' })
-      g.moveTo(2.8, -3.2).lineTo(-2.8, 3.2).stroke({ width: 1.3, color, cap: 'round' })
-      g.moveTo(-2.8, -3.2).lineTo(-2.8, 3.2).stroke({ width: 1.1, color: 0xffffff, cap: 'round' })
-      g.moveTo(2.8, -3.2).lineTo(2.8, 3.2).stroke({ width: 1.1, color: 0xffffff, cap: 'round' })
-      break
-    }
-    case 5: {
-      // Arcane Concentric Glyphic Orb / Mana Sphere
-      g.circle(0, 0, 3).stroke({ width: 1.2, color: 0xffffff }).fill({ color: glowColor, alpha: 0.7 })
-      g.circle(0, 0, 1.2).fill({ color: 0xffffff, alpha: 1.0 })
-      break
-    }
-  }
-}
-
 import { useGamificationTheme, GamificationThemePalette, getGamificationThemePalette } from '../theme-palette'
 
 // ─── PROCEDURAL VECTOR EMBLEMS / INSIGNIAS ───
@@ -952,50 +902,64 @@ export const HexGridCanvas = React.forwardRef<HexGridCanvasRef, HexGridCanvasPro
         }
       }
 
-      // 4. REFLECTION DECRYPTION: Volatile Cryptographic Cipher Bomb / Overload Arcane Shockwaves & Lightning
+      // 4. REFLECTION DECRYPTION: Volatile Cryptographic Cipher Bomb / Clockwise Pulsing Magic Runes & Lightning
       if (node.type === 'reflection_decryption' && !isLocked && isSelected) {
         const cipherContainer = new Container()
-        const pulseWaveGfx = new Graphics()
+        const clockGlowGfx = new Graphics()
         const lightningGfx = new Graphics()
-        cipherContainer.addChild(pulseWaveGfx)
+        cipherContainer.addChild(clockGlowGfx)
         cipherContainer.addChild(lightningGfx)
         nodeContainer.addChild(cipherContainer)
 
-        // 3 volatile orbiting ancient magic rune particles (lower frequency, smooth drifting pace) strictly INSIDE the node
-        const numMotes = 3
-        const motes = Array.from({ length: numMotes }, (_, i) => {
-          const mGfx = new Graphics()
-          drawMagicRuneParticle(
-            mGfx,
-            i,
-            i % 2 === 0 ? palette.redNum : palette.mauveNum,
-            i % 2 === 0 ? palette.maroonNum : palette.peachNum
-          )
-          cipherContainer.addChild(mGfx)
-          return {
-            gfx: mGfx,
-            phase: (i * 2 * Math.PI) / numMotes,
-            speed: 0.5 + (i % 2) * 0.2,
-            radius: 22 + (i % 2) * 3,
-          }
+        const RUNES = ['ᚠ', 'ᚢ', 'ᚦ', 'ᚨ', 'ᚱ', 'ᚲ', 'ᚷ', 'ᚹ', 'ᚺ', 'ᛉ', 'ᛞ', 'ᛟ']
+        const numPips = RUNES.length
+        const clockRadius = 25
+
+        const runeItems = RUNES.map((char, i) => {
+          const pipAngle = (i * 2 * Math.PI) / numPips - Math.PI / 2
+          const px = Math.cos(pipAngle) * clockRadius + 1.2
+          const py = Math.sin(pipAngle) * clockRadius
+
+          const style = new TextStyle({
+            fontSize: 9,
+            fontFamily: 'serif, monospace',
+            fontWeight: 'bold',
+            fill: palette.mauveNum,
+          })
+          const txt = new Text({ text: char, style })
+          txt.anchor.set(0.5, 0.5)
+          txt.position.set(px, py)
+          cipherContainer.addChild(txt)
+          return { txt, style, angle: pipAngle, px, py }
         })
 
         animControllersRef.current.push((t) => {
-          // 1. Rapid Explosive Overload Shockwave Pulse Rings (Ticking Magical Bomb, opacity min 0.1 to max 0.4)
-          pulseWaveGfx.clear()
-          const p1 = (t * 0.9) % 1
-          const p2 = (t * 0.9 + 0.5) % 1
+          // 1. Clockwise Pulsing Magic Rune Dial (Fast Clock / Bomb Ticker Dial)
+          clockGlowGfx.clear()
+          const sweepAngle = (t * 3.6) % (Math.PI * 2)
 
-          const waveR1 = 6 + p1 * (HEX_RADIUS - 8)
-          const waveR2 = 6 + p2 * (HEX_RADIUS - 8)
+          runeItems.forEach(({ txt, style, angle, px, py }) => {
+            // Angular difference behind the clockwise sweep
+            let angleDiff = (sweepAngle - angle) % (Math.PI * 2)
+            if (angleDiff < 0) angleDiff += Math.PI * 2
 
-          pulseWaveGfx
-            .poly(getHexVertices(0, 0, waveR1))
-            .stroke({ width: 2.0 * (1 - p1), color: palette.redNum, alpha: 0.1 + (1 - p1) * 0.3 })
-            .poly(getHexVertices(0, 0, waveR2))
-            .stroke({ width: 1.6 * (1 - p2), color: palette.mauveNum, alpha: 0.1 + (1 - p2) * 0.3 })
+            // Intensity falls off along the trailing tail
+            const intensity = Math.max(0, 1 - angleDiff / (Math.PI * 1.0))
+            const runeAlpha = 0.3 + 0.7 * Math.pow(intensity, 2)
+            txt.alpha = runeAlpha
+            txt.scale.set(0.85 + 0.35 * intensity)
+            style.fill = intensity > 0.6 ? 0xffffff : (intensity > 0.3 ? palette.peachNum : palette.mauveNum)
 
-          // 2. Crackling Volatile Magic Overload Lightning Arcs (Inside hex bounds)
+            // Dynamic glow behind active rune
+            if (intensity > 0.35) {
+              clockGlowGfx.circle(px, py, 6).fill({
+                color: intensity > 0.6 ? palette.redNum : palette.mauveNum,
+                alpha: (intensity - 0.35) * 0.55,
+              })
+            }
+          })
+
+          // 3. Crackling Volatile Magic Overload Lightning Arcs (Inside hex bounds)
           lightningGfx.clear()
           if (Math.sin(t * 16) > 0.3) {
             const boltAngle = t * 7 + Math.sin(t * 12)
@@ -1015,17 +979,6 @@ export const HexGridCanvas = React.forwardRef<HexGridCanvasRef, HexGridCanvasPro
               .lineTo(endX, endY)
               .stroke({ width: 3.0, color: palette.redNum, alpha: 0.4 })
           }
-
-          // 3. Orbiting Volatile Runic Shards (Opacity min 0.1 to max 0.4)
-          motes.forEach(({ gfx, phase, speed, radius }) => {
-            const angle = t * speed + phase
-            const swayR = radius + Math.sin(t * 1.5 + phase) * 1.8
-            gfx.position.set(swayR * Math.cos(angle), swayR * Math.sin(angle))
-            gfx.rotation = t * 0.8 + phase
-            const pulse = 0.5 + 0.5 * Math.sin(t * 2.0 + phase)
-            gfx.alpha = 0.1 + 0.3 * pulse
-            gfx.scale.set(0.75 + 0.25 * pulse)
-          })
 
           innerGfx.alpha = 0.1 + 0.3 * (0.5 + 0.5 * Math.sin(t * 2.0))
         })
