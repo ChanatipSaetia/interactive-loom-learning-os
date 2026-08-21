@@ -356,16 +356,18 @@ export const RunicCountdownRing: React.FC<RunicCountdownRingProps> = ({
           <div>
             <div className="flex items-center gap-2">
               <span className={`text-sm font-extrabold tracking-wide block ${isSolved ? 'text-[var(--ctp-green)]' : 'text-[var(--ctp-mauve)]'}`}>
-                {isSolved ? 'Runic Cipher Decrypted!' : 'Timed Magic Decryption Challenge'}
+                {isSolved ? 'Runic Cipher Decrypted!' : 'Volatile Decryption Altar (Bomb Hazard)'}
               </span>
-              <span className="text-[10px] px-2.5 py-0.5 rounded-full bg-[var(--ctp-crust)] border border-[var(--ctp-mauve)]/40 text-[var(--ctp-mauve)] font-mono font-bold">
+              <span className={`text-[10px] px-2.5 py-0.5 rounded-full bg-[var(--ctp-crust)] font-mono font-bold border ${
+                isSolved ? 'border-[var(--ctp-green)]/40 text-[var(--ctp-green)]' : 'border-[var(--ctp-red)]/40 text-[var(--ctp-red)]'
+              }`}>
                 {clearedCount}/{sequences.length} Circles Active
               </span>
             </div>
             <span className="text-xs text-[var(--ctp-subtext0)]">
               {isSolved
                 ? 'All arcane circles energized! Ancient lifecycle contract deciphered.'
-                : 'Solve each sequence: Magic characters will decrypt left-to-right and activate its spinning magic ring!'}
+                : '⚠️ Volatile Arcane Core: Timeout or failure triggers explosive magic backlash damage (-15~40 HP)!'}
             </span>
           </div>
         </div>

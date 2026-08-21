@@ -160,18 +160,25 @@ function drawVectorInsignia(g: Graphics, type: string, color: number, isDefeated
       break
     }
     case 'reflection_decryption': {
-      // ✨ Cryptographic Matrix / Cipher Core
-      // 4 Tech corner brackets
+      // 🔮 Volatile Cryptographic Matrix & Runic Bomb Core (Sharp hazardous cipher spikes + glowing plasma core)
       const d = 11
-      g.moveTo(-d, -d + 5).lineTo(-d, -d).lineTo(-d + 5, -d).stroke({ width: 1.8, color: c })
-      g.moveTo(d, -d + 5).lineTo(d, -d).lineTo(d - 5, -d).stroke({ width: 1.8, color: c })
-      g.moveTo(-d, d - 5).lineTo(-d, d).lineTo(-d + 5, d).stroke({ width: 1.8, color: c })
-      g.moveTo(d, d - 5).lineTo(d, d).lineTo(d - 5, d).stroke({ width: 1.8, color: c })
+      // 4 hazardous barbed matrix corner brackets
+      g.moveTo(-d, -d + 5).lineTo(-d, -d).lineTo(-d + 5, -d).stroke({ width: 2.0, color: c })
+      g.moveTo(d, -d + 5).lineTo(d, -d).lineTo(d - 5, -d).stroke({ width: 2.0, color: c })
+      g.moveTo(-d, d - 5).lineTo(-d, d).lineTo(-d + 5, d).stroke({ width: 2.0, color: c })
+      g.moveTo(d, d - 5).lineTo(d, d).lineTo(d - 5, d).stroke({ width: 2.0, color: c })
 
-      // Center decryption diamond
-      g.poly([0, -8, 8, 0, 0, 8, -8, 0]).stroke({ width: 1.8, color: c }).fill({ color: darkC, alpha: 0.6 })
-      // Core cipher dot
-      g.circle(0, 0, 2.5).fill({ color: 0xffffff, alpha: 0.95 })
+      // Outer hazardous diagonal sparks
+      g.moveTo(-d, -d).lineTo(-d - 3, -d - 3).stroke({ width: 1.8, color: palette.redNum })
+      g.moveTo(d, -d).lineTo(d + 3, -d - 3).stroke({ width: 1.8, color: palette.redNum })
+      g.moveTo(-d, d).lineTo(-d - 3, d + 3).stroke({ width: 1.8, color: palette.redNum })
+      g.moveTo(d, d).lineTo(d + 3, d + 3).stroke({ width: 1.8, color: palette.redNum })
+
+      // Center volatile decryption diamond
+      g.poly([0, -8, 8, 0, 0, 8, -8, 0]).stroke({ width: 1.8, color: c }).fill({ color: darkC, alpha: 0.7 })
+      // Core glowing bomb spark
+      g.circle(0, 0, 2.8).fill({ color: 0xffffff, alpha: 1.0 })
+      g.circle(0, 0, 5).stroke({ width: 1, color: palette.redNum, alpha: 0.85 })
       break
     }
     case 'tradeoff_workshop': {
@@ -248,8 +255,9 @@ function createHexGradient(type: string, isLocked: boolean, isCleared: boolean =
       gradient.addColorStop(1, palette.crust)
       break
     case 'reflection_decryption':
-      gradient.addColorStop(0, palette.mauve)
-      gradient.addColorStop(0.45, palette.surface0)
+      gradient.addColorStop(0, palette.red)
+      gradient.addColorStop(0.35, palette.mauve)
+      gradient.addColorStop(0.7, palette.maroon)
       gradient.addColorStop(1, palette.crust)
       break
     case 'tradeoff_workshop':
@@ -944,79 +952,82 @@ export const HexGridCanvas = React.forwardRef<HexGridCanvasRef, HexGridCanvasPro
         }
       }
 
-      // 4. REFLECTION DECRYPTION: Cryptographic Cipher Matrix / Arcane Glyph Orbit & Rotating Runic Matrix
+      // 4. REFLECTION DECRYPTION: Volatile Cryptographic Cipher Bomb / Overload Arcane Shockwaves & Lightning
       if (node.type === 'reflection_decryption' && !isLocked && isSelected) {
         const cipherContainer = new Container()
-        const matrixRingGfx = new Graphics()
         const pulseWaveGfx = new Graphics()
+        const lightningGfx = new Graphics()
         cipherContainer.addChild(pulseWaveGfx)
-        cipherContainer.addChild(matrixRingGfx)
+        cipherContainer.addChild(lightningGfx)
         nodeContainer.addChild(cipherContainer)
 
-        // 6 ethereal orbiting ancient magic rune particles (Algiz, Mana Crystal, Kenaz, Fehu, Dagaz, Glyphic Orb)
-        const numMotes = 6
+        // 3 volatile orbiting ancient magic rune particles (lower frequency, smooth drifting pace) strictly INSIDE the node
+        const numMotes = 3
         const motes = Array.from({ length: numMotes }, (_, i) => {
           const mGfx = new Graphics()
           drawMagicRuneParticle(
             mGfx,
             i,
-            i % 2 === 0 ? palette.mauveNum : palette.pinkNum,
-            i % 2 === 0 ? palette.mauveNum : palette.sapphireNum
+            i % 2 === 0 ? palette.redNum : palette.mauveNum,
+            i % 2 === 0 ? palette.maroonNum : palette.peachNum
           )
           cipherContainer.addChild(mGfx)
           return {
             gfx: mGfx,
             phase: (i * 2 * Math.PI) / numMotes,
-            speed: 1.2 + (i % 2) * 0.4,
-            radius: HEX_RADIUS - 8 + (i % 3) * 6,
+            speed: 0.5 + (i % 2) * 0.2,
+            radius: 22 + (i % 2) * 3,
           }
         })
 
         animControllersRef.current.push((t) => {
-          // Rotating Concentric Sacred Geometry Ring
-          matrixRingGfx.clear()
-          const rOuter = HEX_RADIUS - 4
-          const rInner = HEX_RADIUS - 12
-          const rot1 = t * 0.8
-          const rot2 = -t * 1.2
-
-          // Segmented Outer Cipher Ring
-          for (let i = 0; i < 4; i++) {
-            const startA = rot1 + (i * Math.PI) / 2
-            const endA = startA + Math.PI / 3.5
-            matrixRingGfx
-              .arc(0, 0, rOuter, startA, endA)
-              .stroke({ width: 1.5, color: palette.mauveNum, alpha: 0.85 })
-          }
-
-          // Inner Sacred Geometry Decryption Diamond / Square
-          const polyPts: number[] = []
-          for (let i = 0; i < 4; i++) {
-            const a = rot2 + (i * Math.PI) / 2
-            polyPts.push(Math.cos(a) * rInner, Math.sin(a) * rInner)
-          }
-          matrixRingGfx.poly(polyPts)
-            .stroke({ width: 1.2, color: palette.pinkNum, alpha: 0.65 })
-
-          // Expanding Arcane Decryption Pulse Waves
+          // 1. Rapid Explosive Overload Shockwave Pulse Rings (Ticking Magical Bomb, opacity min 0.1 to max 0.4)
           pulseWaveGfx.clear()
-          const p1 = (t * 0.6) % 1
-          const waveR = 12 + p1 * (HEX_RADIUS + 8)
-          pulseWaveGfx.poly(getHexVertices(0, 0, waveR))
-            .stroke({ width: 2 * (1 - p1), color: palette.mauveNum, alpha: (1 - p1) * 0.75 })
+          const p1 = (t * 0.9) % 1
+          const p2 = (t * 0.9 + 0.5) % 1
 
-          // Orbiting Sacred Runic Motes
+          const waveR1 = 6 + p1 * (HEX_RADIUS - 8)
+          const waveR2 = 6 + p2 * (HEX_RADIUS - 8)
+
+          pulseWaveGfx
+            .poly(getHexVertices(0, 0, waveR1))
+            .stroke({ width: 2.0 * (1 - p1), color: palette.redNum, alpha: 0.1 + (1 - p1) * 0.3 })
+            .poly(getHexVertices(0, 0, waveR2))
+            .stroke({ width: 1.6 * (1 - p2), color: palette.mauveNum, alpha: 0.1 + (1 - p2) * 0.3 })
+
+          // 2. Crackling Volatile Magic Overload Lightning Arcs (Inside hex bounds)
+          lightningGfx.clear()
+          if (Math.sin(t * 16) > 0.3) {
+            const boltAngle = t * 7 + Math.sin(t * 12)
+            const boltLen = (HEX_RADIUS - 10) * (0.5 + Math.random() * 0.45)
+            const midX = Math.cos(boltAngle) * (boltLen * 0.5) + (Math.random() - 0.5) * 6
+            const midY = Math.sin(boltAngle) * (boltLen * 0.5) + (Math.random() - 0.5) * 6
+            const endX = Math.cos(boltAngle) * boltLen
+            const endY = Math.sin(boltAngle) * boltLen
+
+            lightningGfx
+              .moveTo(0, 0)
+              .lineTo(midX, midY)
+              .lineTo(endX, endY)
+              .stroke({ width: 1.6, color: 0xffffff, alpha: 0.95 })
+              .moveTo(0, 0)
+              .lineTo(midX, midY)
+              .lineTo(endX, endY)
+              .stroke({ width: 3.0, color: palette.redNum, alpha: 0.4 })
+          }
+
+          // 3. Orbiting Volatile Runic Shards (Opacity min 0.1 to max 0.4)
           motes.forEach(({ gfx, phase, speed, radius }) => {
             const angle = t * speed + phase
-            const swayR = radius + Math.sin(t * 3 + phase) * 3
+            const swayR = radius + Math.sin(t * 1.5 + phase) * 1.8
             gfx.position.set(swayR * Math.cos(angle), swayR * Math.sin(angle))
-            gfx.rotation = t * 2 + phase
-            const pulse = 0.5 + 0.5 * Math.sin(t * 4 + phase)
-            gfx.alpha = 0.4 + 0.6 * pulse
-            gfx.scale.set(0.7 + 0.4 * pulse)
+            gfx.rotation = t * 0.8 + phase
+            const pulse = 0.5 + 0.5 * Math.sin(t * 2.0 + phase)
+            gfx.alpha = 0.1 + 0.3 * pulse
+            gfx.scale.set(0.75 + 0.25 * pulse)
           })
 
-          innerGfx.alpha = 0.4 + 0.3 * Math.sin(t * 2.5)
+          innerGfx.alpha = 0.1 + 0.3 * (0.5 + 0.5 * Math.sin(t * 2.0))
         })
       }
 

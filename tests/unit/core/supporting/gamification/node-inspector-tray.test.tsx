@@ -77,4 +77,27 @@ describe('NodeInspectorTray Component', () => {
     expect(screen.queryByText(/Reward:/i)).toBeNull()
     expect(screen.queryByText(/Adapter Shield/i)).toBeNull()
   })
+
+  it('renders unlocked reflection node with Volatile Arcane Bomb hazard preview', () => {
+    const reflectionNode: HexNodeData = {
+      id: 'reflection-1',
+      title: 'Decryption Altar',
+      type: 'reflection_decryption',
+      status: 'unlocked',
+      description: 'Ancient cryptographic matrix.',
+    }
+
+    render(
+      <NodeInspectorTray
+        selectedNode={reflectionNode}
+        nodes={[reflectionNode]}
+        inventory={[]}
+        onLaunchEncounter={vi.fn()}
+      />
+    )
+
+    expect(screen.getByText('Decryption Altar')).toBeDefined()
+    expect(screen.getByText('Volatile Arcane Bomb')).toBeDefined()
+    expect(screen.getByText(/on Fail\/Timeout/i)).toBeDefined()
+  })
 })

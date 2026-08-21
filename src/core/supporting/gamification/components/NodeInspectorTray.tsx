@@ -2,7 +2,7 @@ import React from 'react'
 import { HexNodeData, ItemReward } from '../types'
 import { encryptToMagicRunes, canUnlockBoss } from '../game-rules'
 import { Button, Badge } from '../../../ui-system'
-import { Swords, Sparkles, Key, CheckCircle, Lock, Play } from 'lucide-react'
+import { Swords, Sparkles, Key, CheckCircle, Lock, Play, Flame } from 'lucide-react'
 
 interface NodeInspectorTrayProps {
   selectedNode: HexNodeData | null
@@ -80,6 +80,15 @@ export const NodeInspectorTray: React.FC<NodeInspectorTrayProps> = ({
         <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2.5 sm:gap-3 flex-wrap">
           {(!isLocked || isCapital) && (
             <div className="flex items-center gap-2 flex-wrap">
+              {/* Reflection Volatile Arcane Bomb Hazard Preview */}
+              {isReflection && !isCleared && (
+                <div className="bg-[var(--ctp-crust)] px-2.5 py-1 rounded-lg border border-[var(--ctp-red)]/50 flex items-center gap-1.5 text-xs text-[var(--ctp-red)] shadow-[0_0_12px_rgba(231,130,132,0.2)]">
+                  <Flame size={13} className="text-[var(--ctp-red)] animate-pulse" />
+                  <span className="font-bold text-[var(--ctp-red)]">Volatile Arcane Bomb</span>
+                  <span className="text-[var(--ctp-subtext0)] font-mono text-[11px]">(-15~40 HP on Fail/Timeout)</span>
+                </div>
+              )}
+
               {/* Monster Preview */}
               {selectedNode.monster && (
                 <div className="bg-[var(--ctp-crust)] px-2.5 py-1 rounded-lg border border-[var(--ctp-red)]/30 flex items-center gap-1.5 text-xs">
