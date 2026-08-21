@@ -3,6 +3,7 @@ import { Plus, Minus, RotateCcw, Move } from 'lucide-react'
 import { Application, Container, Graphics, Text, TextStyle, FillGradient } from 'pixi.js'
 import { HexNodeData } from '../types'
 import { computeHexGridCoordinates, getAutoFlowConnections, isKeyItemLocationRevealed } from '../layout'
+import { PixiCanvasViewport } from './PixiCanvasViewport'
 
 interface HexGridCanvasProps {
   nodes: HexNodeData[]
@@ -1417,97 +1418,33 @@ export const HexGridCanvas = React.forwardRef<HexGridCanvasRef, HexGridCanvasPro
     previousNodesRef.current = nodes
   }, [nodes])
 
-  // Initialize PixiJS Application on mount & Attach Ticker
-  useEffect(() => {
-    const domElement = containerRef.current
-    if (!domElement) return
+  // PixiJS canvas initialization & render hook
+  const handleInitPixi = useCallback((app: Application, rootContainer: Container) => {
+    appRef.current = app
 
-    let isDestroyed = false
-    const app = new Application()
-    let resizeObserver: ResizeObserver | null = null
+    const mapContainer = new Container()
+    rootContainer.addChild(mapContainer)
+    mapContainerRef.current = mapContainer
 
-    const initPixi = async () => {
-      try {
-        const initialW = domElement.clientWidth || 880
-        const initialH = domElement.clientHeight || 580
-
-        await app.init({
-          width: initialW,
-          height: initialH,
-          backgroundColor: 0x232634,
-          antialias: true,
-          resolution: (typeof window !== 'undefined' && window.devicePixelRatio) || 1,
-          autoDensity: true,
-        })
-
-        if (isDestroyed || !domElement) {
-          app.destroy(true, { children: true })
-          return
-        }
-
-        const canvas = app.canvas as HTMLCanvasElement
-        canvas.style.position = 'absolute'
-        canvas.style.inset = '0'
-        canvas.style.width = '100%'
-        canvas.style.height = '100%'
-        canvas.style.display = 'block'
-        canvas.style.userSelect = 'none'
-
-        domElement.appendChild(canvas)
-        appRef.current = app
-
-        const mapContainer = new Container()
-        app.stage.addChild(mapContainer)
-        mapContainerRef.current = mapContainer
-
-        // Add 60fps ticker callback
-        app.ticker.add(() => {
-          const now = performance.now() * 0.001
-          animControllersRef.current.forEach((fn) => fn(now))
-        })
-
-        // Handle container element resizing (e.g. flex layout changes, drawer opens/closes)
-        resizeObserver = new ResizeObserver((entries) => {
-          for (const entry of entries) {
-            const { width, height } = entry.contentRect
-            if (width > 0 && height > 0 && appRef.current) {
-              appRef.current.renderer.resize(width, height)
-              updateMapTransform()
-            }
-          }
-        })
-        resizeObserver.observe(domElement)
-
-        renderRef.current()
-      } catch (err) {
-        console.warn('PixiJS canvas initialization skipped or failed:', err)
-      }
+    // Add 60fps ticker callback
+    const tickerCallback = () => {
+      const now = performance.now() * 0.001
+      animControllersRef.current.forEach((fn) => fn(now))
     }
+    app.ticker.add(tickerCallback)
 
-    initPixi()
-
-    const handleResize = () => {
-      updateMapTransform()
-      renderRef.current()
-    }
-    window.addEventListener('resize', handleResize)
+    renderRef.current()
 
     return () => {
-      isDestroyed = true
-      window.removeEventListener('resize', handleResize)
-      if (resizeObserver) {
-        resizeObserver.disconnect()
-      }
-      if (appRef.current) {
-        try {
-          appRef.current.destroy(true, { children: true })
-        } catch {
-          // ignore
-        }
-        appRef.current = null
-        mapContainerRef.current = null
-      }
+      app.ticker.remove(tickerCallback)
+      appRef.current = null
+      mapContainerRef.current = null
     }
+  }, [])
+
+  const handleResizePixi = useCallback(() => {
+    updateMapTransform()
+    renderRef.current()
   }, [updateMapTransform])
 
   // Re-render PixiJS scene when data or selection changes
@@ -1615,6 +1552,17 @@ export const HexGridCanvas = React.forwardRef<HexGridCanvasRef, HexGridCanvasPro
       onTouchMove={handleTouchMove}
       onTouchEnd={handleTouchEnd}
     >
+      {/* Reusable React Pixi Canvas Viewport */}
+      <PixiCanvasViewport
+        className="absolute inset-0 w-full h-full"
+        backgroundColor={0x232634}
+        backgroundAlpha={1}
+        defaultWidth={880}
+        defaultHeight={580}
+        onInit={handleInitPixi}
+        onResize={handleResizePixi}
+      />
+
       {/* Background Grid Pattern */}
       <div className="absolute inset-0 opacity-15 bg-[radial-gradient(#8caaee_1px,transparent_1px)] [background-size:24px_24px] pointer-events-none" />
 
