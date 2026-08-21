@@ -1379,7 +1379,10 @@ export const HexGridCanvas = React.forwardRef<HexGridCanvasRef, HexGridCanvasPro
     })
 
     updateMapTransform()
-  }, [centerOnNode, triggerWalkTransition, updateMapTransform])
+  }, [centerOnNode, updateMapTransform])
+
+  const renderRef = useRef(renderPixiScene)
+  renderRef.current = renderPixiScene
 
   // Detect newly unlocked nodes and newly cleared encounters when nodes prop updates
   useEffect(() => {
@@ -1401,7 +1404,7 @@ export const HexGridCanvas = React.forwardRef<HexGridCanvasRef, HexGridCanvasPro
       newlyUnlockedNodeIdsRef.current = newUnlockIds
       newlyClearedNodeIdsRef.current = newClearedIds
       // Re-render scene immediately to start the bomb blast and parting clouds & radiant glow animation
-      renderPixiScene()
+      renderRef.current()
       // Clear animation flags after 2.5 seconds
       const timer = setTimeout(() => {
         newlyUnlockedNodeIdsRef.current.clear()
@@ -1412,7 +1415,7 @@ export const HexGridCanvas = React.forwardRef<HexGridCanvasRef, HexGridCanvasPro
     }
 
     previousNodesRef.current = nodes
-  }, [nodes, renderPixiScene])
+  }, [nodes])
 
   // Initialize PixiJS Application on mount & Attach Ticker
   useEffect(() => {
@@ -1475,7 +1478,7 @@ export const HexGridCanvas = React.forwardRef<HexGridCanvasRef, HexGridCanvasPro
         })
         resizeObserver.observe(domElement)
 
-        renderPixiScene()
+        renderRef.current()
       } catch (err) {
         console.warn('PixiJS canvas initialization skipped or failed:', err)
       }
@@ -1485,9 +1488,7 @@ export const HexGridCanvas = React.forwardRef<HexGridCanvasRef, HexGridCanvasPro
 
     const handleResize = () => {
       updateMapTransform()
-      if (mapContainerRef.current) {
-        renderPixiScene()
-      }
+      renderRef.current()
     }
     window.addEventListener('resize', handleResize)
 
@@ -1507,14 +1508,14 @@ export const HexGridCanvas = React.forwardRef<HexGridCanvasRef, HexGridCanvasPro
         mapContainerRef.current = null
       }
     }
-  }, [renderPixiScene, updateMapTransform])
+  }, [updateMapTransform])
 
   // Re-render PixiJS scene when data or selection changes
   useEffect(() => {
     if (mapContainerRef.current) {
-      renderPixiScene()
+      renderRef.current()
     }
-  }, [nodes, selectedNodeId, isCapitalCleared, renderPixiScene])
+  }, [nodes, selectedNodeId, isCapitalCleared])
 
   // Zoom controls
   const handleZoomIn = () => setZoom((prev) => Math.min(2.0, +(prev + 0.15).toFixed(2)))
