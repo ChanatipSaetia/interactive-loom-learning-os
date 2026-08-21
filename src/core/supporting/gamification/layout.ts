@@ -95,6 +95,29 @@ export function getAutoFlowConnections(nodes: HexNodeData[]): Array<{ fromId: st
 }
 
 /**
+ * Game System Rule: Returns true if the main Capital city in the campaign has been visited & cleared.
+ */
+export function isCapitalVisited(nodes: HexNodeData[]): boolean {
+  return nodes.some((n) => n.type === 'capital' && n.status === 'cleared')
+}
+
+/**
+ * Game System Rule: Key Item locations and reward previews are revealed on map tiles and in the inspector
+ * only after the main Capital city is cleared or if the node itself has been cleared.
+ */
+export function isKeyItemLocationRevealed(nodes: HexNodeData[], node: HexNodeData): boolean {
+  return (isCapitalVisited(nodes) || node.status === 'cleared') && !!node.rewards && node.rewards.length > 0
+}
+
+/**
+ * Game System Rule: Retrieves all nodes with revealed key item locations when the Capital city is cleared.
+ */
+export function getRevealedKeyItemNodes(nodes: HexNodeData[]): HexNodeData[] {
+  if (!isCapitalVisited(nodes)) return []
+  return nodes.filter((n) => n.rewards && n.rewards.length > 0)
+}
+
+/**
  * Automatically computes axial hex coordinates (q, r) using flow-graph traversal:
  *   - Nodes are placed in immediate adjacent hex slots (distance = 1) directly next to their prerequisite parent node.
  */

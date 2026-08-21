@@ -1,7 +1,7 @@
 import React, { useMemo, useState, useRef, useEffect } from 'react'
 import { Castle, Landmark, Swords, Sparkles, Hammer, Flame, CloudFog, Plus, Minus, RotateCcw, Move } from 'lucide-react'
 import { HexNodeData } from '../types'
-import { computeHexGridCoordinates, getAutoFlowConnections } from '../layout'
+import { computeHexGridCoordinates, getAutoFlowConnections, isKeyItemLocationRevealed } from '../layout'
 
 interface HexGridCanvasProps {
   nodes: HexNodeData[]
@@ -243,7 +243,7 @@ export const HexGridCanvas: React.FC<HexGridCanvasProps> = ({
             const isLocked = node.status === 'locked'
             const isBoss = node.type === 'boss_lair'
             const isThreatened = node.status === 'threatened'
-            const hasItemReward = node.rewards && node.rewards.length > 0 && !isLocked
+            const hasItemReward = isKeyItemLocationRevealed(nodes, node)
 
             // Check if this node is a prerequisite parent to the selected node in 4.2 flow (Boss does not show prerequisite nodes)
             const isPrereqParent =

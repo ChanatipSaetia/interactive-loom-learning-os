@@ -1,5 +1,11 @@
 import { describe, it, expect } from 'vitest'
-import { computeHexGridCoordinates, getAutoFlowConnections } from '../../../../../src/core/supporting/gamification/layout'
+import {
+  computeHexGridCoordinates,
+  getAutoFlowConnections,
+  isCapitalVisited,
+  isKeyItemLocationRevealed,
+  getRevealedKeyItemNodes,
+} from '../../../../../src/core/supporting/gamification/layout'
 import { HexNodeData } from '../../../../../src/core/supporting/gamification/types'
 
 describe('Hex Grid Auto-Layout Engine (layout.ts)', () => {
@@ -72,5 +78,49 @@ describe('Hex Grid Auto-Layout Engine (layout.ts)', () => {
     expect(connections).toContainEqual({ fromId: 'capital-0', toId: 'sanctuary-1' })
     expect(connections).toContainEqual({ fromId: 'sanctuary-1', toId: 'quiz-1' })
     expect(connections).toContainEqual({ fromId: 'quiz-1', toId: 'boss-1' })
+  })
+
+  it('correctly evaluates game system rule: isCapitalVisited', () => {
+    const unvisitedNodes: HexNodeData[] = [
+      { id: 'capital-0', title: 'Capital', type: 'capital', status: 'unlocked', description: 'Cap' },
+    ]
+    const visitedNodes: HexNodeData[] = [
+      { id: 'capital-0', title: 'Capital', type: 'capital', status: 'cleared', description: 'Cap' },
+    ]
+
+    expect(isCapitalVisited(unvisitedNodes)).toBe(false)
+    expect(isCapitalVisited(visitedNodes)).toBe(true)
+  })
+
+  it('correctly evaluates game system rule: isKeyItemLocationRevealed and getRevealedKeyItemNodes', () => {
+    const unvisitedNodes: HexNodeData[] = [
+      { id: 'capital-0', title: 'Capital', type: 'capital', status: 'unlocked', description: 'Cap' },
+      {
+        id: 'quiz-1',
+        title: 'Challenge',
+        type: 'quiz_encounter',
+        status: 'locked',
+        description: 'Quiz',
+        rewards: [{ id: 'shield', name: 'Shield', icon: '🛡️', description: 'Shield item' }],
+      },
+    ]
+
+    expect(isKeyItemLocationRevealed(unvisitedNodes, unvisitedNodes[1])).toBe(false)
+    expect(getRevealedKeyItemNodes(unvisitedNodes)).toHaveLength(0)
+
+    const visitedNodes: HexNodeData[] = [
+      { id: 'capital-0', title: 'Capital', type: 'capital', status: 'cleared', description: 'Cap' },
+      {
+        id: 'quiz-1',
+        title: 'Challenge',
+        type: 'quiz_encounter',
+        status: 'locked',
+        description: 'Quiz',
+        rewards: [{ id: 'shield', name: 'Shield', icon: '🛡️', description: 'Shield item' }],
+      },
+    ]
+
+    expect(isKeyItemLocationRevealed(visitedNodes, visitedNodes[1])).toBe(true)
+    expect(getRevealedKeyItemNodes(visitedNodes)).toEqual([visitedNodes[1]])
   })
 })

@@ -5,8 +5,20 @@ import {
   TopicCampaignState,
   HexNodeData,
 } from '../types'
-import { getAutoFlowConnections } from '../layout'
-import { Button, Card, Badge, Modal } from '../../../ui-system'
+import {
+  getAutoFlowConnections,
+  isCapitalVisited,
+  getRevealedKeyItemNodes,
+} from '../layout'
+import {
+  encryptToMagicRunes,
+  canUnlockBoss,
+  evaluateNodeUnlocks,
+  calculateSanctuaryHealing,
+  resolveCombatTurn,
+  calculateLevelProgress,
+} from '../game-rules'
+import { Button, Card, Badge, Modal, PageModal } from '../../../ui-system'
 import {
   IntroSection,
   TextSection,
@@ -16,21 +28,6 @@ import {
 } from '../../../learning-engine/sub-contexts'
 import type { OKFQuizQuestion } from '../../../learning-engine/composition/okf/types'
 
-// ─── Magic Rune Encryption Helper ───
-const RUNE_CHAR_MAP: Record<string, string> = {
-  a: 'ᚨ', b: 'ᛒ', c: 'ᚲ', d: 'ᛞ', e: 'ᛖ', f: 'ᚠ', g: 'ᚷ', h: 'ᚺ',
-  i: 'ᛁ', j: 'ᛃ', k: 'ᚲ', l: 'ᛚ', m: 'ᛗ', n: 'ᚾ', o: 'ᛟ', p: 'ᛈ',
-  q: 'ᚴ', r: 'ᛱ', s: 'ᛊ', t: 'ᛏ', u: 'ᚢ', v: 'ᚡ', w: 'ᚹ', x: 'ᚷ',
-  y: 'ᛦ', z: 'ᛉ', ' ': ' ',
-}
-
-export function encryptToMagicRunes(text: string): string {
-  return text
-    .toLowerCase()
-    .split('')
-    .map((char) => RUNE_CHAR_MAP[char] || '᚛')
-    .join('')
-}
 
 
 // ─── Real Section Datasets for Hex Nodes ───
@@ -524,109 +521,82 @@ export const GamificationDemoView: React.FC = () => {
     if (!selectedNode || !selectedNode.monster) return
     const monster = selectedNode.monster
 
-    if (isCorrect) {
-      const updatedHp = Math.max(0, monster.currentHp - 50)
-      const isDead = updatedHp === 0
+    const result = resolveCombatTurn(monster, globalChar.attributes, isCorrect)
 
+    setCombatLog((prev) => [result.combatLogMessage, ...prev])
+
+    if (result.isMonsterDefeated) {
+      // Update monster HP & node status, then evaluate downstream unlocks
       setNodes((prevNodes) => {
-        const updated = prevNodes.map((n) => {
-          if (n.id === selectedNode.id && n.monster) {
-            return {
-              ...n,
-              status: isDead ? ('cleared' as const) : ('unlocked' as const),
-              monster: { ...n.monster, currentHp: updatedHp },
-            }
-          }
-          return n
-        })
-
-        if (!isDead) return updated
-
-        const autoConns = getAutoFlowConnections(updated)
-        return updated.map((n) => {
-          if (n.status === 'locked') {
-            const parentConns = autoConns.filter((c) => c.toId === n.id)
-            if (
-              parentConns.length > 0 &&
-              parentConns.every((c) => updated.find((p) => p.id === c.fromId)?.status === 'cleared')
-            ) {
-              return { ...n, status: 'unlocked' as const }
-            }
-          }
-          return n
-        })
+        const withCleared = prevNodes.map((n) =>
+          n.id === selectedNode.id && n.monster
+            ? { ...n, status: 'cleared' as const, monster: { ...n.monster, currentHp: 0 } }
+            : n
+        )
+        return evaluateNodeUnlocks(withCleared)
       })
 
-      setCombatLog((prev) => [
-        `💥 CRITICAL HIT! You dealt 50 damage to ${monster.name}.`,
-        ...(isDead ? [`🎉 VICTORY! Defeated ${monster.name}! Claimed Adapter Shield 🛡️.`] : []),
-        ...prev,
-      ])
-
-      if (isDead) {
-        const reward = selectedNode.rewards?.[0]
-        if (reward) {
-          setCampaign((c) => ({
-            ...c,
-            inventory: [...c.inventory, reward],
-            clearedNodeIds: [...c.clearedNodeIds, selectedNode.id],
-          }))
-        }
-        setGlobalChar((g) => ({ ...g, exp: Math.min(g.nextLevelExp, g.exp + 60) }))
-      }
-    } else {
-      const dodgeRoll = Math.random() * 100
-      const didDodge = dodgeRoll < globalChar.attributes.evasion
-
-      if (didDodge) {
-        setCombatLog((prev) => [
-          `⚡ EVASION TRIGGERED! You dodged ${monster.name}'s attack completely!`,
-          ...prev,
-        ])
-      } else {
-        const rawDamage = monster.damage
-        const armorReduction = (globalChar.attributes.armor / 100) * rawDamage
-        const finalDamage = Math.max(5, Math.round(rawDamage - armorReduction))
-
+      // Collect item reward
+      const reward = selectedNode.rewards?.[0]
+      if (reward) {
         setCampaign((c) => ({
           ...c,
-          characterHp: Math.max(0, c.characterHp - finalDamage),
+          inventory: [...c.inventory, reward],
+          clearedNodeIds: [...c.clearedNodeIds, selectedNode.id],
         }))
-
-        setCombatLog((prev) => [
-          `💔 WRONG ANSWER! ${monster.name} hit you for ${finalDamage} damage (Armor absorbed ${Math.round(
-            armorReduction
-          )}).`,
-          ...prev,
-        ])
       }
+
+      // Award XP & level progress
+      const levelResult = calculateLevelProgress(
+        globalChar.level,
+        globalChar.exp,
+        40,
+        globalChar.nextLevelExp,
+        globalChar.unallocatedPoints
+      )
+      setGlobalChar((g) => ({
+        ...g,
+        level: levelResult.nextLevel,
+        exp: levelResult.nextExp,
+        nextLevelExp: levelResult.nextNextLevelExp,
+        unallocatedPoints: levelResult.nextUnallocatedPoints,
+      }))
+      if (levelResult.isLeveledUp) {
+        setCombatLog((prev) => [`🎖️ LEVEL UP! Reached Level ${levelResult.nextLevel}! +1 Stat Point!`, ...prev])
+      }
+    } else if (!isCorrect && !result.isDodged && result.playerDamageTaken > 0) {
+      setCampaign((c) => ({
+        ...c,
+        characterHp: Math.max(0, c.characterHp - result.playerDamageTaken),
+      }))
+
+      // Update monster HP for partial hits (correct answers that didn't kill)
+      setNodes((prev) =>
+        prev.map((n) =>
+          n.id === selectedNode.id && n.monster
+            ? { ...n, monster: { ...n.monster, currentHp: result.updatedMonsterHp } }
+            : n
+        )
+      )
+    } else if (isCorrect && !result.isMonsterDefeated) {
+      setNodes((prev) =>
+        prev.map((n) =>
+          n.id === selectedNode.id && n.monster
+            ? { ...n, monster: { ...n.monster, currentHp: result.updatedMonsterHp } }
+            : n
+        )
+      )
     }
   }
 
   // Simulate Section Pass / Complete
   const handlePassSection = (targetNode: HexNodeData) => {
-    // 1. Mark node as cleared & unlock downstream nodes based on 4.2 flow connections
+    // 1. Mark node as cleared & evaluate downstream unlocks via domain engine
     setNodes((prevNodes) => {
-      const updated = prevNodes.map((n) => {
-        if (n.id === targetNode.id) {
-          return { ...n, status: 'cleared' as const }
-        }
-        return n
-      })
-
-      const autoConns = getAutoFlowConnections(updated)
-      return updated.map((n) => {
-        if (n.status === 'locked') {
-          const parentConns = autoConns.filter((c) => c.toId === n.id)
-          if (
-            parentConns.length > 0 &&
-            parentConns.every((c) => updated.find((p) => p.id === c.fromId)?.status === 'cleared')
-          ) {
-            return { ...n, status: 'unlocked' as const }
-          }
-        }
-        return n
-      })
+      const withCleared = prevNodes.map((n) =>
+        n.id === targetNode.id ? { ...n, status: 'cleared' as const } : n
+      )
+      return evaluateNodeUnlocks(withCleared)
     })
 
     // 2. Collect Item Rewards if any
@@ -643,14 +613,25 @@ export const GamificationDemoView: React.FC = () => {
       setCombatLog((prev) => [`🎁 COLLECTED ITEM REWARD: ${reward.name} ${reward.icon}!`, ...prev])
     }
 
-    // 3. Award XP & Log success
+    // 3. Award XP & level progress
+    const levelResult = calculateLevelProgress(
+      globalChar.level,
+      globalChar.exp,
+      50,
+      globalChar.nextLevelExp,
+      globalChar.unallocatedPoints
+    )
     setGlobalChar((prev) => ({
       ...prev,
-      exp: Math.min(prev.nextLevelExp, prev.exp + 50),
+      level: levelResult.nextLevel,
+      exp: levelResult.nextExp,
+      nextLevelExp: levelResult.nextNextLevelExp,
+      unallocatedPoints: levelResult.nextUnallocatedPoints,
     }))
 
     setCombatLog((prev) => [
       `🎉 SECTION PASSED: "${targetNode.title}" Completed! +50 XP Gained!`,
+      ...(levelResult.isLeveledUp ? [`🎖️ LEVEL UP! Reached Level ${levelResult.nextLevel}! +1 Stat Point!`] : []),
       ...prev,
     ])
 
@@ -674,19 +655,17 @@ export const GamificationDemoView: React.FC = () => {
 
   // Healing Sanctuary Action with Chaos Healing Decay
   const handleRestSanctuary = () => {
-    const baseHeal = 30
-    const decayRatio = (campaign.chaosLevel / 100) * 0.5
-    const effectiveHeal = Math.max(10, Math.round(baseHeal * (1 - decayRatio)))
-    const cleansedChaos = 25
+    const baseHeal = activeSectionModal?.healingAmount ?? 30
+    const { effectiveHealing, nextChaosLevel } = calculateSanctuaryHealing(baseHeal, campaign.chaosLevel)
 
     setCampaign((c) => ({
       ...c,
-      characterHp: Math.min(c.maxCharacterHp, c.characterHp + effectiveHeal),
-      chaosLevel: Math.max(0, c.chaosLevel - cleansedChaos),
+      characterHp: Math.min(c.maxCharacterHp, c.characterHp + effectiveHealing),
+      chaosLevel: nextChaosLevel,
     }))
 
     setCombatLog((prev) => [
-      `🏛️ Sanctuary Rested! Restored +${effectiveHeal} HP (Healing decayed from ${baseHeal} HP due to ${campaign.chaosLevel}% Chaos). Cleansed -${cleansedChaos}% Chaos!`,
+      `🏛️ Sanctuary Rested! Restored +${effectiveHealing} HP (Healing decayed from ${baseHeal} HP due to ${campaign.chaosLevel}% Chaos). Cleansed ${campaign.chaosLevel - nextChaosLevel}% Chaos!`,
       ...prev,
     ])
   }
@@ -713,10 +692,9 @@ export const GamificationDemoView: React.FC = () => {
     setActiveSectionModal(null)
   }
 
-  // Check Boss Unlock Criteria
-  const hasBossItems =
-    campaign.inventory.some((i) => i.id === 'adapter-shield') &&
-    campaign.inventory.some((i) => i.id === 'port-blade')
+  // Check Boss Unlock Criteria via domain game rule
+  const bossNode = nodes.find((n) => n.type === 'boss_lair')
+  const hasBossItems = canUnlockBoss(campaign.inventory, bossNode)
 
   return (
     <div className="min-h-screen bg-[#1e1e2e] text-[#c6d0f5] p-6 flex flex-col gap-6 font-sans">
@@ -899,147 +877,155 @@ export const GamificationDemoView: React.FC = () => {
 
         {/* Right Col: Selected Node Inspector Panel */}
         <Card className="bg-[#303446]/80 backdrop-blur-xl border border-[#414559] rounded-2xl flex flex-col justify-between p-5">
-          {selectedNode ? (
-            <div className="flex flex-col gap-4">
-              {/* Node Title & Status Header */}
-              <div className="flex items-center justify-between border-b border-[#414559] pb-3">
-                <div className="flex items-center gap-2">
-                  <span className="text-2xl">
-                    {selectedNode.type === 'capital' && '🏰'}
-                    {selectedNode.type === 'reading_sanctuary' && '🏛️'}
-                    {selectedNode.type === 'quiz_encounter' && (selectedNode.status === 'locked' ? '🌫️' : '👹')}
-                    {selectedNode.type === 'reflection_decryption' && (selectedNode.status === 'locked' ? '🌫️' : '🔮')}
-                    {selectedNode.type === 'tradeoff_workshop' && (selectedNode.status === 'locked' ? '🌫️' : '⚒️')}
-                    {selectedNode.type === 'boss_lair' && '🐲'}
-                  </span>
-                  <div>
-                    <h3 className="text-lg font-bold text-[#b5bfe2]">
-                      {selectedNode.status === 'locked' && selectedNode.type !== 'boss_lair' ? (
-                        <span className="font-mono tracking-widest text-[#ca9ee6] animate-pulse">
-                          {encryptToMagicRunes(selectedNode.title)}
-                        </span>
-                      ) : (
-                        selectedNode.title
-                      )}
-                    </h3>
+          {(() => {
+            const hasCapitalBeenVisited = isCapitalVisited(nodes)
+            if (!selectedNode) return null
+            return (
+              <div className="flex flex-col gap-4">
+                {/* Node Title & Status Header */}
+                <div className="flex items-center justify-between border-b border-[#414559] pb-3">
+                  <div className="flex items-center gap-2">
+                    <span className="text-2xl">
+                      {selectedNode.type === 'capital' && '🏰'}
+                      {selectedNode.type === 'reading_sanctuary' && '🏛️'}
+                      {selectedNode.type === 'quiz_encounter' && (selectedNode.status === 'locked' ? '🌫️' : '👹')}
+                      {selectedNode.type === 'reflection_decryption' && (selectedNode.status === 'locked' ? '🌫️' : '🔮')}
+                      {selectedNode.type === 'tradeoff_workshop' && (selectedNode.status === 'locked' ? '🌫️' : '⚒️')}
+                      {selectedNode.type === 'boss_lair' && '🐲'}
+                    </span>
+                    <div>
+                      <h3 className="text-lg font-bold text-[#b5bfe2]">
+                        {selectedNode.status === 'locked' && selectedNode.type !== 'boss_lair' ? (
+                          <span className="font-mono tracking-widest text-[#ca9ee6] animate-pulse">
+                            {encryptToMagicRunes(selectedNode.title)}
+                          </span>
+                        ) : (
+                          selectedNode.title
+                        )}
+                      </h3>
+                    </div>
                   </div>
-                </div>
-                <Badge
-                  variant={
-                    selectedNode.status === 'cleared'
-                      ? 'success'
+                  <Badge
+                    variant={
+                      selectedNode.status === 'cleared'
+                        ? 'success'
+                        : selectedNode.status === 'unlocked'
+                        ? 'default'
+                        : selectedNode.type === 'boss_lair'
+                        ? 'warning'
+                        : 'secondary'
+                    }
+                  >
+                    {selectedNode.status === 'cleared'
+                      ? '✓ CLEARED'
                       : selectedNode.status === 'unlocked'
-                      ? 'secondary'
-                      : 'outline'
-                  }
-                >
-                  {selectedNode.status.toUpperCase()}
-                </Badge>
-              </div>
+                      ? 'UNLOCKED'
+                      : selectedNode.type === 'boss_lair'
+                      ? 'FINAL BOSS'
+                      : 'LOCKED'}
+                  </Badge>
+                </div>
 
-              {selectedNode.status === 'locked' && selectedNode.type !== 'boss_lair' ? (
-                <>
-                  {/* Fog of War Shroud Notice with Magic Encrypted Rune Text */}
-                  <div className="bg-[#232634] p-4 rounded-xl border border-[#ca9ee6]/50 text-center space-y-2">
-                    <span className="text-3xl block">🌫️</span>
-                    <h4 className="text-sm font-bold text-[#ca9ee6] flex items-center justify-center gap-1.5 font-mono tracking-wider">
-                      <span>🔮</span>
-                      <span>ANCIENT MAGIC CIPHER ENCRYPTED</span>
-                    </h4>
-                    <div className="bg-[#1e1e2e] p-2.5 rounded-lg border border-[#ca9ee6]/30 font-mono text-xs text-[#ca9ee6] tracking-widest break-all select-none animate-pulse">
-                      ᚛ {encryptToMagicRunes(selectedNode.description)} 
-                    </div>
-                    <p className="text-xs text-[#a5adce] leading-relaxed">
-                      Title and content are encrypted by ancient fog magic. Clear prerequisite nodes to lift the cipher.
-                    </p>
-                  </div>
-
-                  {/* 🔑 4.2 Flow Parent Prerequisites Checklist */}
-                  {(() => {
-                    const autoConns = getAutoFlowConnections(nodes)
-                    const parentConns = autoConns.filter((c) => c.toId === selectedNode.id)
-                    if (parentConns.length === 0) return null
-                    return (
-                      <div className="bg-[#232634] p-3 rounded-xl border border-[#e5c890]/40 space-y-1.5 text-xs">
-                        <span className="font-bold text-[#e5c890] block flex items-center gap-1">
-                          <span>🔑</span>
-                          <span>Prerequisite Nodes to Clear</span>
-                        </span>
-                        {parentConns.map(({ fromId }) => {
-                          const parent = nodes.find((n) => n.id === fromId)
-                          const isParentCleared = parent?.status === 'cleared'
-                          const isParentUnlocked = parent?.status === 'unlocked'
-                          const parentTitle = isParentCleared || isParentUnlocked || parent?.type === 'capital'
-                            ? (parent?.title || fromId)
-                            : encryptToMagicRunes(parent?.title || fromId)
-                          return (
-                            <div key={fromId} className="flex items-center justify-between bg-[#1e1e2e] px-2.5 py-1.5 rounded-lg">
-                              <span className={`font-medium ${isParentCleared || isParentUnlocked ? 'text-[#c6d0f5]' : 'font-mono text-[#ca9ee6] tracking-wider'}`}>
-                                {parentTitle}
-                              </span>
-                              <span className={isParentCleared ? 'text-[#a6d189] font-bold' : isParentUnlocked ? 'text-[#8caaee] font-semibold' : 'text-[#e78284] font-semibold'}>
-                                {isParentCleared ? '✓ Cleared' : isParentUnlocked ? '🔓 Unlocked' : '❌ Locked'}
-                              </span>
-                            </div>
-                          )
-                        })}
-                      </div>
-                    )
-                  })()}
-
-                  {/* Key Item Reward Provided Preview */}
-                  {selectedNode.rewards && selectedNode.rewards.length > 0 && (
-                    <div className="bg-[#232634] p-3 rounded-xl border border-[#8caaee]/40 flex items-center gap-3">
-                      <span className="text-2xl">{selectedNode.rewards[0].icon}</span>
-                      <div>
-                        <span className="text-xs text-[#a5adce] block">Key Item Reward Provided</span>
-                        <span className="text-sm font-bold text-[#8caaee]">{selectedNode.rewards[0].name}</span>
-                        <span className="text-xs text-[#737994] block">{selectedNode.rewards[0].description}</span>
-                      </div>
-                    </div>
-                  )}
-                </>
-              ) : (
-                <>
-                  <p className="text-sm text-[#a5adce] leading-relaxed">{selectedNode.description}</p>
-                  {selectedNode.type === 'boss_lair' && (
-                    <div className="bg-[#232634] p-3.5 rounded-xl border border-[#ea999c]/50 space-y-2.5">
-                      <span className="font-bold text-[#ea999c] block flex items-center gap-1.5 text-xs">
-                        <span>🔑</span>
-                        <span>Required Key Items to Unlock & Battle Boss</span>
+                {/* Node Body Details */}
+                {selectedNode.status === 'locked' && selectedNode.type !== 'boss_lair' ? (
+                  <>
+                    <div className="bg-[#232634] p-3 rounded-xl border border-[#ca9ee6]/30 space-y-1.5">
+                      <span className="text-xs text-[#ca9ee6] font-bold block flex items-center gap-1.5">
+                        <span>🔮</span>
+                        <span>ANCIENT MAGIC CIPHER ENCRYPTED</span>
                       </span>
-                      <div className="space-y-1.5 text-xs">
-                        {(selectedNode.requiredItems || ['adapter-shield', 'port-blade']).map((itemId) => {
-                          const hasItem = campaign.inventory.some((i) => i.id === itemId)
-                          const providerNode = nodes.find((n) => n.rewards?.some((r) => r.id === itemId))
-                          const itemInfo = providerNode?.rewards?.find((r) => r.id === itemId)
-                          return (
-                            <div key={itemId} className="flex items-center justify-between bg-[#1e1e2e] px-2.5 py-1.5 rounded-lg border border-[#414559]">
-                              <span className="text-[#c6d0f5] font-medium flex items-center gap-1.5">
-                                <span>{itemInfo?.icon || '🗝️'}</span>
-                                <span>{itemInfo?.name || itemId}</span>
-                              </span>
-                              <span className={hasItem ? 'text-[#a6d189] font-bold' : 'text-[#e78284] text-[11px] font-semibold'}>
-                                {hasItem ? '✓ Collected' : `❌ Missing (${providerNode?.title || 'Challenge'})`}
-                              </span>
-                            </div>
-                          )
-                        })}
+                      <div className="font-mono text-xs text-[#ca9ee6] tracking-widest break-all opacity-80 select-none">
+                        ᚛ {encryptToMagicRunes(selectedNode.description)} ᚜
                       </div>
+                      <p className="text-xs text-[#a5adce] leading-relaxed">
+                        Title and content are encrypted by ancient fog magic. Clear prerequisite nodes to lift the cipher.
+                      </p>
                     </div>
-                  )}
 
-                  {/* Capital Intelligence Intel Card: Key Item Locations Revealed */}
-                  {selectedNode.type === 'capital' && selectedNode.status === 'cleared' && (
-                    <div className="bg-[#232634] p-3.5 rounded-xl border border-[#e5c890]/50 space-y-2">
-                      <div className="flex items-center gap-2">
-                        <span className="text-xl">📍</span>
-                        <span className="text-xs font-bold text-[#e5c890]">Capital Intel: Key Item Locations Revealed</span>
+                    {/* 🔑 4.2 Flow Parent Prerequisites Checklist */}
+                    {(() => {
+                      const autoConns = getAutoFlowConnections(nodes)
+                      const parentConns = autoConns.filter((c) => c.toId === selectedNode.id)
+                      if (parentConns.length === 0) return null
+                      return (
+                        <div className="bg-[#232634] p-3 rounded-xl border border-[#e5c890]/40 space-y-1.5 text-xs">
+                          <span className="font-bold text-[#e5c890] block flex items-center gap-1">
+                            <span>🔑</span>
+                            <span>Prerequisite Nodes to Clear</span>
+                          </span>
+                          {parentConns.map(({ fromId }) => {
+                            const parent = nodes.find((n) => n.id === fromId)
+                            const isParentCleared = parent?.status === 'cleared'
+                            const isParentUnlocked = parent?.status === 'unlocked'
+                            const parentTitle = isParentCleared || isParentUnlocked || parent?.type === 'capital'
+                              ? (parent?.title || fromId)
+                              : encryptToMagicRunes(parent?.title || fromId)
+                            return (
+                              <div key={fromId} className="flex items-center justify-between bg-[#1e1e2e] px-2.5 py-1.5 rounded-lg">
+                                <span className={`font-medium ${isParentCleared || isParentUnlocked ? 'text-[#c6d0f5]' : 'font-mono text-[#ca9ee6] tracking-wider'}`}>
+                                  {parentTitle}
+                                </span>
+                                <span className={isParentCleared ? 'text-[#a6d189] font-bold' : isParentUnlocked ? 'text-[#8caaee] font-semibold' : 'text-[#e78284] font-semibold'}>
+                                  {isParentCleared ? '✓ Cleared' : isParentUnlocked ? '🔓 Unlocked' : '❌ Locked'}
+                                </span>
+                              </div>
+                            )
+                          })}
+                        </div>
+                      )
+                    })()}
+
+                    {/* Key Item Reward Provided Preview (Revealed only after visiting Capital city) */}
+                    {hasCapitalBeenVisited && selectedNode.rewards && selectedNode.rewards.length > 0 && (
+                      <div className="bg-[#232634] p-3 rounded-xl border border-[#8caaee]/40 flex items-center gap-3">
+                        <span className="text-2xl">{selectedNode.rewards[0].icon}</span>
+                        <div>
+                          <span className="text-xs text-[#a5adce] block">Key Item Reward Provided</span>
+                          <span className="text-sm font-bold text-[#8caaee]">{selectedNode.rewards[0].name}</span>
+                          <span className="text-xs text-[#737994] block">{selectedNode.rewards[0].description}</span>
+                        </div>
                       </div>
-                      <div className="space-y-1.5 text-xs">
-                        {nodes
-                          .filter((n) => n.rewards && n.rewards.length > 0)
-                          .map((n) => (
+                    )}
+                  </>
+                ) : (
+                  <>
+                    <p className="text-sm text-[#a5adce] leading-relaxed">{selectedNode.description}</p>
+                    {selectedNode.type === 'boss_lair' && (
+                      <div className="bg-[#232634] p-3.5 rounded-xl border border-[#ea999c]/50 space-y-2.5">
+                        <span className="font-bold text-[#ea999c] block flex items-center gap-1.5 text-xs">
+                          <span>🔑</span>
+                          <span>Required Key Items to Unlock & Battle Boss</span>
+                        </span>
+                        <div className="space-y-1.5 text-xs">
+                          {(selectedNode.requiredItems || ['adapter-shield', 'port-blade']).map((itemId) => {
+                            const hasItem = campaign.inventory.some((i) => i.id === itemId)
+                            const providerNode = nodes.find((n) => n.rewards?.some((r) => r.id === itemId))
+                            const itemInfo = providerNode?.rewards?.find((r) => r.id === itemId)
+                            return (
+                              <div key={itemId} className="flex items-center justify-between bg-[#1e1e2e] px-2.5 py-1.5 rounded-lg border border-[#414559]">
+                                <span className="text-[#c6d0f5] font-medium flex items-center gap-1.5">
+                                  <span>{itemInfo?.icon || '🗝️'}</span>
+                                  <span>{itemInfo?.name || itemId}</span>
+                                </span>
+                                <span className={hasItem ? 'text-[#a6d189] font-bold' : 'text-[#e78284] text-[11px] font-semibold'}>
+                                  {hasItem ? '✓ Collected' : `❌ Missing (${providerNode?.title || 'Challenge'})`}
+                                </span>
+                              </div>
+                            )
+                          })}
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Capital Intelligence Intel Card: Key Item Locations Revealed */}
+                    {selectedNode.type === 'capital' && selectedNode.status === 'cleared' && (
+                      <div className="bg-[#232634] p-3.5 rounded-xl border border-[#e5c890]/50 space-y-2">
+                        <div className="flex items-center gap-2">
+                          <span className="text-xl">📍</span>
+                          <span className="text-xs font-bold text-[#e5c890]">Capital Intel: Key Item Locations Revealed</span>
+                        </div>
+                        <div className="space-y-1.5 text-xs">
+                          {getRevealedKeyItemNodes(nodes).map((n) => (
                             <div key={n.id} className="flex items-center justify-between bg-[#1e1e2e] px-2.5 py-1.5 rounded-lg">
                               <span className="text-[#c6d0f5] font-medium flex items-center gap-1.5">
                                 <span>{n.rewards![0].icon}</span>
@@ -1048,104 +1034,103 @@ export const GamificationDemoView: React.FC = () => {
                               <span className="text-[#e5c890] text-[11px] font-semibold">📍 {n.title}</span>
                             </div>
                           ))}
+                        </div>
                       </div>
-                    </div>
-                  )}
+                    )}
 
-                  {/* 🔑 4.2 Flow Parent Prerequisites Checklist */}
-                  {(() => {
-                    if (selectedNode.type === 'boss_lair') return null
-                    const autoConns = getAutoFlowConnections(nodes)
-                    const parentConns = autoConns.filter((c) => c.toId === selectedNode.id)
-                    if (parentConns.length === 0) return null
-                    return (
-                      <div className="bg-[#232634] p-3 rounded-xl border border-[#e5c890]/40 space-y-1.5 text-xs">
-                        <span className="font-bold text-[#e5c890] block flex items-center gap-1">
-                          <span>🔑</span>
-                          <span>Prerequisite Nodes</span>
-                        </span>
-                        {parentConns.map(({ fromId }) => {
-                          const parent = nodes.find((n) => n.id === fromId)
-                          const isParentCleared = parent?.status === 'cleared'
-                          const isParentUnlocked = parent?.status === 'unlocked'
-                          const parentTitle = isParentCleared || isParentUnlocked || parent?.type === 'capital'
-                            ? (parent?.title || fromId)
-                            : encryptToMagicRunes(parent?.title || fromId)
-                          return (
-                            <div key={fromId} className="flex items-center justify-between bg-[#1e1e2e] px-2.5 py-1 rounded-lg">
-                              <span className={`font-medium ${isParentCleared || isParentUnlocked ? 'text-[#c6d0f5]' : 'font-mono text-[#ca9ee6] tracking-wider'}`}>
-                                {parentTitle}
-                              </span>
-                              <span className={isParentCleared ? 'text-[#a6d189] font-bold' : isParentUnlocked ? 'text-[#8caaee] font-semibold' : 'text-[#e78284] font-semibold'}>
-                                {isParentCleared ? '✓ Cleared' : isParentUnlocked ? '🔓 Unlocked' : '❌ Locked'}
-                              </span>
-                            </div>
-                          )
-                        })}
-                      </div>
-                    )
-                  })()}
+                    {/* 🔑 4.2 Flow Parent Prerequisites Checklist */}
+                    {(() => {
+                      if (selectedNode.type === 'boss_lair') return null
+                      const autoConns = getAutoFlowConnections(nodes)
+                      const parentConns = autoConns.filter((c) => c.toId === selectedNode.id)
+                      if (parentConns.length === 0) return null
+                      return (
+                        <div className="bg-[#232634] p-3 rounded-xl border border-[#e5c890]/40 space-y-1.5 text-xs">
+                          <span className="font-bold text-[#e5c890] block flex items-center gap-1">
+                            <span>🔑</span>
+                            <span>Prerequisite Nodes</span>
+                          </span>
+                          {parentConns.map(({ fromId }) => {
+                            const parent = nodes.find((n) => n.id === fromId)
+                            const isParentCleared = parent?.status === 'cleared'
+                            const isParentUnlocked = parent?.status === 'unlocked'
+                            const parentTitle = isParentCleared || isParentUnlocked || parent?.type === 'capital'
+                              ? (parent?.title || fromId)
+                              : encryptToMagicRunes(parent?.title || fromId)
+                            return (
+                              <div key={fromId} className="flex items-center justify-between bg-[#1e1e2e] px-2.5 py-1 rounded-lg">
+                                <span className={`font-medium ${isParentCleared || isParentUnlocked ? 'text-[#c6d0f5]' : 'font-mono text-[#ca9ee6] tracking-wider'}`}>
+                                  {parentTitle}
+                                </span>
+                                <span className={isParentCleared ? 'text-[#a6d189] font-bold' : isParentUnlocked ? 'text-[#8caaee] font-semibold' : 'text-[#e78284] font-semibold'}>
+                                  {isParentCleared ? '✓ Cleared' : isParentUnlocked ? '🔓 Unlocked' : '❌ Locked'}
+                                </span>
+                              </div>
+                            )
+                          })}
+                        </div>
+                      )
+                    })()}
 
-                  {/* Stat Buff Modifier Card */}
-                  {selectedNode.buff && (
-                    <div className="bg-[#232634] p-3 rounded-xl border border-[#ca9ee6]/40 flex items-center gap-3">
-                      <span className="text-2xl">✨</span>
-                      <div>
-                        <span className="text-xs text-[#a5adce] block">Section Stat Buff</span>
-                        <span className="text-sm font-bold text-[#ca9ee6]">
-                          +{selectedNode.buff.value}% {selectedNode.buff.label} ({selectedNode.buff.stat})
-                        </span>
-                      </div>
-                    </div>
-                  )}
-
-                  {/* Monster Info Card */}
-                  {selectedNode.monster && (
-                    <div className="bg-[#232634] p-3 rounded-xl border border-[#e78284]/30 flex items-center justify-between">
-                      <div className="flex items-center gap-3">
-                        <span className="text-3xl">{selectedNode.monster.icon}</span>
+                    {/* Stat Buff Modifier Card */}
+                    {selectedNode.buff && (
+                      <div className="bg-[#232634] p-3 rounded-xl border border-[#ca9ee6]/40 flex items-center gap-3">
+                        <span className="text-2xl">✨</span>
                         <div>
-                          <span className="text-sm font-bold text-[#e78284]">{selectedNode.monster.name}</span>
-                          <span className="text-xs text-[#a5adce] block">Atk Damage: {selectedNode.monster.damage}</span>
+                          <span className="text-xs text-[#a5adce] block">Section Stat Buff</span>
+                          <span className="text-sm font-bold text-[#ca9ee6]">
+                            +{selectedNode.buff.value}% {selectedNode.buff.label} ({selectedNode.buff.stat})
+                          </span>
                         </div>
                       </div>
-                      <div className="text-right">
-                        <span className="text-xs text-[#a5adce] block">Monster HP</span>
-                        <span className="text-sm font-bold text-[#e78284]">
-                          {selectedNode.monster.currentHp} / {selectedNode.monster.maxHp}
-                        </span>
-                      </div>
-                    </div>
-                  )}
+                    )}
 
-                  {/* Item Reward Badge */}
-                  {selectedNode.rewards && selectedNode.rewards.length > 0 && (
-                    <div className="bg-[#232634] p-3 rounded-xl border border-[#8caaee]/30 flex items-center gap-3">
-                      <span className="text-2xl">{selectedNode.rewards[0].icon}</span>
-                      <div>
-                        <span className="text-xs text-[#a5adce] block">Item Reward</span>
-                        <span className="text-sm font-bold text-[#8caaee]">{selectedNode.rewards[0].name}</span>
-                      </div>
-                    </div>
-                  )}
-
-                  {/* Combat Log */}
-                  {combatLog.length > 0 && (
-                    <div className="bg-[#1e1e2e] p-3 rounded-xl border border-[#414559] max-h-32 overflow-y-auto text-xs space-y-1 font-mono">
-                      <span className="text-[#a5adce] font-bold block mb-1">📜 Combat Log:</span>
-                      {combatLog.slice(0, 4).map((log, i) => (
-                        <div key={i} className="text-[#c6d0f5]">
-                          {log}
+                    {/* Monster Info Card */}
+                    {selectedNode.monster && (
+                      <div className="bg-[#232634] p-3 rounded-xl border border-[#e78284]/30 flex items-center justify-between">
+                        <div className="flex items-center gap-3">
+                          <span className="text-3xl">{selectedNode.monster.icon}</span>
+                          <div>
+                            <span className="text-sm font-bold text-[#e78284]">{selectedNode.monster.name}</span>
+                            <span className="text-xs text-[#a5adce] block">Atk Damage: {selectedNode.monster.damage}</span>
+                          </div>
                         </div>
-                      ))}
-                    </div>
-                  )}
-                </>
-              )}
-            </div>
-          ) : (
-            <div className="text-center py-12 text-[#737994]">Select a hex node on the map to inspect</div>
-          )}
+                        <div className="text-right">
+                          <span className="text-xs text-[#a5adce] block">Monster HP</span>
+                          <span className="text-sm font-bold text-[#e78284]">
+                            {selectedNode.monster.currentHp} / {selectedNode.monster.maxHp}
+                          </span>
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Item Reward Badge (Revealed only after visiting Capital city or clearing node) */}
+                    {(hasCapitalBeenVisited || selectedNode.status === 'cleared') && selectedNode.rewards && selectedNode.rewards.length > 0 && (
+                      <div className="bg-[#232634] p-3 rounded-xl border border-[#8caaee]/30 flex items-center gap-3">
+                        <span className="text-2xl">{selectedNode.rewards[0].icon}</span>
+                        <div>
+                          <span className="text-xs text-[#a5adce] block">Key Item Reward Provided</span>
+                          <span className="text-sm font-bold text-[#8caaee]">{selectedNode.rewards[0].name}</span>
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Combat Log */}
+                    {combatLog.length > 0 && (
+                      <div className="bg-[#1e1e2e] p-3 rounded-xl border border-[#414559] max-h-32 overflow-y-auto text-xs space-y-1 font-mono">
+                        <span className="text-[#a5adce] font-bold block mb-1">📜 Combat Log:</span>
+                        {combatLog.slice(0, 4).map((log, i) => (
+                          <div key={i} className="text-[#c6d0f5]">
+                            {log}
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </>
+                )}
+              </div>
+            )
+          })()}
 
           {/* Action Button: Launches Section Modal */}
           {selectedNode && (
@@ -1169,19 +1154,16 @@ export const GamificationDemoView: React.FC = () => {
       </div>
 
       {/* ─── REAL SECTION MODAL (FULL SCREEN) ─── */}
-      <Modal
+      <PageModal
         open={!!activeSectionModal}
         onClose={() => setActiveSectionModal(null)}
         maxWidth="full"
         title={activeSectionModal?.title}
-      >
-        {activeSectionModal && (
-          <div className="p-6 bg-[#1e1e2e] text-[#c6d0f5] rounded-2xl border border-[#414559] space-y-6 min-h-[88vh] max-h-[92vh] overflow-y-auto w-full max-w-7xl mx-auto">
-
-            {/* Modal Header Badge */}
-            <div className="flex items-center justify-between border-b border-[#414559] pb-3">
-              <div className="flex items-center gap-3">
-                <span className="text-3xl">
+        header={
+          activeSectionModal && (
+            <div id="section-unified-title" className="flex items-center justify-between gap-3">
+              <div className="flex items-center gap-3 min-w-0">
+                <span className="text-2xl shrink-0">
                   {activeSectionModal.type === 'capital' && '🏰'}
                   {activeSectionModal.type === 'reading_sanctuary' && '🏛️'}
                   {activeSectionModal.type === 'quiz_encounter' && '👹'}
@@ -1189,15 +1171,22 @@ export const GamificationDemoView: React.FC = () => {
                   {activeSectionModal.type === 'tradeoff_workshop' && '⚒️'}
                   {activeSectionModal.type === 'boss_lair' && '🐲'}
                 </span>
-                <div>
-                  <h3 className="text-lg font-bold text-[#b5bfe2]">{activeSectionModal.title}</h3>
-                  <span className="text-xs text-[#a5adce] capitalize">{activeSectionModal.type.replace('_', ' ')} Section</span>
+                <div className="min-w-0">
+                  <h2 className="text-base font-bold text-[#b5bfe2] truncate">{activeSectionModal.title}</h2>
+                  <span className="text-xs text-[#a5adce] capitalize">
+                    {activeSectionModal.type.replace(/_/g, ' ')} Section
+                  </span>
                 </div>
               </div>
-              <Badge variant="secondary" className="bg-[#8caaee]/20 text-[#8caaee]">
+              <Badge variant="secondary" className="bg-[#8caaee]/20 text-[#8caaee] shrink-0">
                 Real OKF Section UI
               </Badge>
             </div>
+          )
+        }
+      >
+        {activeSectionModal && (
+          <div className="text-[#c6d0f5] space-y-6 w-full max-w-7xl mx-auto">
 
             {/* ─── 1. Capital (IntroSection) ─── */}
             {activeSectionModal.type === 'capital' && (
@@ -1431,7 +1420,7 @@ export const GamificationDemoView: React.FC = () => {
 
           </div>
         )}
-      </Modal>
+      </PageModal>
 
 
       {/* ─── Badges Modal ─── */}

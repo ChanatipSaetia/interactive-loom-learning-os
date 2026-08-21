@@ -45,6 +45,8 @@ export {
   ModalDescription,
   ModalContent,
   ModalFooter,
+  // PageModal
+  PageModal,
   // Registry
   UIComponentRegistry,
 } from './UIComponentRegistryContract'
@@ -76,6 +78,8 @@ export type {
   ModalDescriptionProps,
   ModalContentProps,
   ModalFooterProps,
+  // PageModal types
+  PageModalProps,
   // Registry type
   UIComponentRegistryContract,
 } from './UIComponentRegistryContract'
