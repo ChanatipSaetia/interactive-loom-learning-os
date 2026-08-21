@@ -206,7 +206,7 @@ export const GamificationCampaignView: React.FC = () => {
     await portResetCampaign(currentTopicId)
     setGameOverModalOpen(false)
     pushActionMessage(
-      `☠️ CAMPAIGN DEFEAT: Health dropped to 0! Campaign reset to Capital for a fresh attempt.`,
+      `CAMPAIGN DEFEAT: Health dropped to 0! Campaign reset to Capital for a fresh attempt.`,
       'danger',
       '☠️'
     )
@@ -219,7 +219,7 @@ export const GamificationCampaignView: React.FC = () => {
     setQuizAttemptKey((prev) => prev + 1)
     setActiveSectionModal(node)
     pushActionMessage(
-      `🎮 Entered ${node.title} [${node.type.toUpperCase()}]. Active Section Evaluation started!`,
+      `Entered ${node.title} [${node.type.toUpperCase()}]. Active Section Evaluation started!`,
       'info',
       '🎮'
     )
@@ -228,7 +228,7 @@ export const GamificationCampaignView: React.FC = () => {
   // Allocate Attribute Point
   const handleAllocateStat = (stat: 'armor' | 'evasion' | 'intelligence') => {
     portAllocateStatPoint(stat)
-    pushActionMessage(`✨ Upgraded ${stat.toUpperCase()}! Stat increased!`, 'success', '✨')
+    pushActionMessage(`Upgraded ${stat.toUpperCase()}! Stat increased!`, 'success', '✨')
   }
 
   // Quiz Combat Result Execution
@@ -241,7 +241,7 @@ export const GamificationCampaignView: React.FC = () => {
   const handleRestSanctuary = () => {
     if (!selectedNode) return
     portApplySanctuaryTickHeal(30, selectedNode.id)
-    pushActionMessage(`🏛️ Sanctuary Rested! Restored character HP and cleansed System Chaos!`, 'success', '🏛️')
+    pushActionMessage(`Sanctuary Rested! Restored character HP and cleansed System Chaos!`, 'success', '🏛️')
   }
 
   // Trade-off Crafting Buff Action
@@ -254,7 +254,7 @@ export const GamificationCampaignView: React.FC = () => {
     }
     portApplyCraftedBuff(buffData)
     pushActionMessage(
-      `⚒️ Synthesized Artifact "${buffData.source}": +${buffData.value}% ${buffData.stat.toUpperCase()} equipped!`,
+      `Synthesized Artifact "${buffData.source}": +${buffData.value}% ${buffData.stat.toUpperCase()} equipped!`,
       'craft',
       '⚒️'
     )
@@ -277,7 +277,7 @@ export const GamificationCampaignView: React.FC = () => {
 
     const reward = targetNode.rewards && targetNode.rewards.length > 0 ? targetNode.rewards[0] : null
     if (reward) {
-      pushActionMessage(`🎁 COLLECTED ITEM REWARD: ${reward.name} ${reward.icon}!`, 'warning', '🎁')
+      pushActionMessage(`COLLECTED ITEM REWARD: ${reward.name}!`, 'warning', reward.icon || '🎁')
     }
 
     // EXP rewards: 5 for reading & capital, 20 for quiz & decrypt & tradeoff, 50 for boss
@@ -297,7 +297,7 @@ export const GamificationCampaignView: React.FC = () => {
     portCompleteNode(targetNode.id)
     portAwardExp(expToAward)
     pushActionMessage(
-      `🎉 ENCOUNTER CLEARED: "${targetNode.title}" Completed! +${expToAward} EXP Gained (${DIFFICULTY_CONFIGS[currentDiff]?.label})!`,
+      `ENCOUNTER CLEARED: "${targetNode.title}" Completed! +${expToAward} EXP Gained (${DIFFICULTY_CONFIGS[currentDiff]?.label})!`,
       'exp',
       '🎉'
     )
@@ -336,7 +336,7 @@ export const GamificationCampaignView: React.FC = () => {
     portTakeDamage(damage)
     const chaosNote = currentChaos > 0 ? ` (amplified by ${currentChaos}% System Chaos)` : ''
     pushActionMessage(
-      `❌ SECTION FAILED: "${targetNode.title}"! Suffered ${damage} damage${chaosNote} [${DIFFICULTY_CONFIGS[currentDiff]?.label}]!`,
+      `SECTION FAILED: "${targetNode.title}"! Suffered ${damage} damage${chaosNote} [${DIFFICULTY_CONFIGS[currentDiff]?.label}]!`,
       'danger',
       '❌'
     )
