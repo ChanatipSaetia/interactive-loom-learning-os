@@ -118,10 +118,16 @@ export const RunicCountdownRing: React.FC<RunicCountdownRingProps> = ({
     let isDestroyed = false
     const app = new Application()
 
+    let resizeObserver: ResizeObserver | null = null
+
     const initPixi = async () => {
       try {
+        const initialW = domElement.clientWidth || 800
+        const initialH = domElement.clientHeight || 144
+
         await app.init({
-          resizeTo: domElement,
+          width: initialW,
+          height: initialH,
           backgroundColor: 0x181825,
           backgroundAlpha: 0.95,
           antialias: true,
@@ -134,8 +140,27 @@ export const RunicCountdownRing: React.FC<RunicCountdownRingProps> = ({
           return
         }
 
+        const canvas = app.canvas as HTMLCanvasElement
+        canvas.style.position = 'absolute'
+        canvas.style.inset = '0'
+        canvas.style.width = '100%'
+        canvas.style.height = '100%'
+        canvas.style.display = 'block'
+        canvas.style.userSelect = 'none'
+
+        domElement.appendChild(canvas)
         appRef.current = app
-        domElement.appendChild(app.canvas)
+
+        // Dynamic ResizeObserver to guarantee WebGL canvas stays synced with DOM parent
+        resizeObserver = new ResizeObserver((entries) => {
+          for (const entry of entries) {
+            const { width, height } = entry.contentRect
+            if (width > 0 && height > 0 && appRef.current) {
+              appRef.current.renderer.resize(width, height)
+            }
+          }
+        })
+        resizeObserver.observe(domElement)
 
         const stageContainer = new Container()
         app.stage.addChild(stageContainer)
@@ -162,8 +187,8 @@ export const RunicCountdownRing: React.FC<RunicCountdownRingProps> = ({
 
         app.ticker.add(() => {
           const t = performance.now() * 0.001
-          const width = app.screen.width
-          const height = app.screen.height
+          const width = app.screen.width || domElement.clientWidth || 800
+          const height = app.screen.height || domElement.clientHeight || 144
           const { sequences: seqs, currentSequenceIndex: curIdx, isSolved: solved, activeFillingSeq, filledSlotStep } = stateRef.current
 
           bgGfx.clear()
@@ -360,6 +385,9 @@ export const RunicCountdownRing: React.FC<RunicCountdownRingProps> = ({
 
     return () => {
       isDestroyed = true
+      if (resizeObserver) {
+        resizeObserver.disconnect()
+      }
       if (appRef.current) {
         appRef.current.destroy(true, { children: true })
         appRef.current = null
