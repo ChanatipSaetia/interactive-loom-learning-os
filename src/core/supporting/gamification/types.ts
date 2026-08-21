@@ -182,11 +182,9 @@ export interface TopicCampaignState {
   difficulty: DifficultyLevel
   characterHp: number
   maxCharacterHp: number
-  damageTakenInCampaign: number // Tracks if player took 0 damage for Flawless Victory badge
+  damageTakenInCampaign: number
   turnCount: number
   chaosLevel: number // System Chaos / Entropy (0 to 100). Increases when entering sections, causes healing decay at sanctuaries.
-  maxChaosLevel: number
-  decayThreatLevel: number // Increases HP loss per turn if hexes neglected
 
   // Global campaign sanctuary pulse pool & start marker
   isStarted?: boolean

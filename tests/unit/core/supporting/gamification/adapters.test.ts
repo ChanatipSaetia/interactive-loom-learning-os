@@ -37,8 +37,6 @@ describe('Gamification LocalStorageCharacterAdapter', () => {
       damageTakenInCampaign: 15,
       turnCount: 4,
       chaosLevel: 10,
-      maxChaosLevel: 100,
-      decayThreatLevel: 0,
       inventory: [{ id: 'shield', name: 'Shield', icon: '🛡️', description: '' }],
       clearedNodeIds: ['capital', 'camp-1'],
       activeBuffs: [],

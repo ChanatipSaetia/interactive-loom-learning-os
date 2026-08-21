@@ -117,8 +117,6 @@ export function useGamification(
       damageTakenInCampaign: 0,
       turnCount: 0,
       chaosLevel: 0,
-      maxChaosLevel: 100,
-      decayThreatLevel: 0,
       isStarted: true,
       sanctuaryPulsesUsed: 0,
       maxSanctuaryPulses: maxPulses,
@@ -155,7 +153,7 @@ export function useGamification(
       // First time visit generates 0 Chaos. Repeat visits add +15 Chaos scaled by difficulty
       const diffMultiplier = prev.difficulty === 'easy' ? 0.5 : prev.difficulty === 'hard' ? 1.5 : prev.difficulty === 'nightmare' ? 2.0 : 1.0
       const chaosIncrement = (isSafeHaven && currentVisits >= 1) ? Math.round(15 * diffMultiplier) : 0
-      const nextChaos = Math.min(prev.maxChaosLevel, prev.chaosLevel + chaosIncrement)
+      const nextChaos = Math.min(100, prev.chaosLevel + chaosIncrement)
 
       const next = {
         ...prev,

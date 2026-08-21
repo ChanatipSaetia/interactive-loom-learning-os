@@ -1089,7 +1089,7 @@ export const GamificationCampaignView: React.FC = () => {
                     ? 'bg-[#e5c890]'
                     : 'bg-[#a6d189]'
                 }`}
-                style={{ width: `${(campaign.chaosLevel / campaign.maxChaosLevel) * 100}%` }}
+                style={{ width: `${(campaign.chaosLevel / 100) * 100}%` }}
               />
             </div>
           </div>
