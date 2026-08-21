@@ -96,22 +96,28 @@ export const EncounterViewport: React.FC<EncounterViewportProps> = ({ game }) =>
             {/* Runic Magic Countdown Ring with Dynamic Slot Progression */}
             {node.type === 'reflection_decryption' && (() => {
               const secConfig = node.sectionRef ? bundleSectionsMap.get(node.sectionRef) : null
-              const totalSlots = Array.isArray(secConfig?.props?.items) && secConfig.props.items.length > 0
-                ? secConfig.props.items.length
-                : (Array.isArray(secConfig?.props?.solution) && secConfig.props.solution.length > 0
-                  ? secConfig.props.solution.length
-                  : (Array.isArray(secConfig?.props?.challenges) && secConfig.props.challenges[0]?.items?.length
-                    ? secConfig.props.challenges[0].items.length
-                    : 4))
+              
+              // Build list of sequence challenges with their respective item/step counts
+              const sequenceList = Array.isArray(secConfig?.props?.challenges) && secConfig.props.challenges.length > 0
+                ? secConfig.props.challenges.map((ch: any, idx: number) => ({
+                    index: idx,
+                    itemCount: Array.isArray(ch.items) ? ch.items.length : 4,
+                    isCleared: idx < clearedReflectionSlots || node.status === 'cleared',
+                  }))
+                : [{
+                    index: 0,
+                    itemCount: Array.isArray(secConfig?.props?.items) ? secConfig.props.items.length : 4,
+                    isCleared: clearedReflectionSlots > 0 || node.status === 'cleared',
+                  }]
 
               return (
                 <RunicCountdownRing
                   isSolved={node.status === 'cleared'}
                   evasionBonusSeconds={globalChar.attributes.evasion}
                   intelligenceChance={globalChar.attributes.intelligence}
-                  totalSlots={totalSlots}
-                  clearedSlots={clearedReflectionSlots}
-                  lastDecryptedSlot={lastDecryptedSlot}
+                  sequences={sequenceList}
+                  currentSequenceIndex={clearedReflectionSlots}
+                  lastDecryptedSequence={lastDecryptedSlot}
                   onTimeout={() => handleFailSection(node)}
                   onStatTriggered={(stat, details) => {
                     if (stat === 'evasion') {
