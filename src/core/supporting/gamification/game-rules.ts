@@ -240,7 +240,8 @@ export function resolveCombatTurn(
   isCorrect: boolean,
   activeBuffs: ActiveBuff[] = [],
   chaosLevel: number = 0,
-  damageMultiplier: number = 1.0
+  damageMultiplier: number = 1.0,
+  totalQuestions: number = 2
 ): CombatTurnResult {
   // Aggregate buffs
   const totalArmor = attributes.armor + activeBuffs
@@ -258,7 +259,9 @@ export function resolveCombatTurn(
   const monsterHp = monster.currentHp ?? monster.maxHp
 
   if (isCorrect) {
-    const updatedMonsterHp = Math.max(0, monsterHp - 50)
+    const questionsCount = Math.max(1, totalQuestions)
+    const damageDealt = Math.ceil(monster.maxHp / questionsCount)
+    const updatedMonsterHp = Math.max(0, monsterHp - damageDealt)
     const isMonsterDefeated = updatedMonsterHp === 0
     return {
       updatedMonsterHp,
@@ -266,8 +269,8 @@ export function resolveCombatTurn(
       playerDamageTaken: 0,
       isDodged: false,
       combatLogMessage: isMonsterDefeated
-        ? `💥 Critical Strike! Dealt 50 damage and DEFEATED ${monster.name}!`
-        : `⚔️ Direct Hit! Dealt 50 damage to ${monster.name} (HP: ${updatedMonsterHp}/${monster.maxHp})`,
+        ? `💥 Critical Strike! Dealt ${damageDealt} damage and DEFEATED ${monster.name}!`
+        : `⚔️ Direct Hit! Dealt ${damageDealt} damage to ${monster.name} (HP: ${updatedMonsterHp}/${monster.maxHp})`,
     }
   }
 

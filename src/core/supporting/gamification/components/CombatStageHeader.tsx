@@ -1,7 +1,8 @@
-import React, { useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
+import { Application, Container, Graphics } from 'pixi.js'
 import { MonsterData, CharacterAttributes, ItemReward } from '../types'
 import { Button } from '../../../ui-system'
-import { Swords, Shield, Zap } from 'lucide-react'
+import { Shield, Zap, Sparkles } from 'lucide-react'
 
 interface CombatStageHeaderProps {
   monster: MonsterData
@@ -11,6 +12,8 @@ interface CombatStageHeaderProps {
   inventory: ItemReward[]
   onUseItem?: (itemId: string) => void
   combatLogMessage?: string
+  playerAttackedTimestamp?: number
+  monsterAttackedTimestamp?: number
 }
 
 export const CombatStageHeader: React.FC<CombatStageHeaderProps> = ({
@@ -21,8 +24,28 @@ export const CombatStageHeader: React.FC<CombatStageHeaderProps> = ({
   inventory,
   onUseItem,
   combatLogMessage,
+  playerAttackedTimestamp = 0,
+  monsterAttackedTimestamp = 0,
 }) => {
   const [activeItemFeedback, setActiveItemFeedback] = useState<string | null>(null)
+  const canvasContainerRef = useRef<HTMLDivElement>(null)
+  const appRef = useRef<Application | null>(null)
+  const playerHitTimeRef = useRef<number>(0)
+  const monsterHitTimeRef = useRef<number>(0)
+
+  // Track when player is attacked (wrong answer)
+  useEffect(() => {
+    if (playerAttackedTimestamp > 0) {
+      playerHitTimeRef.current = performance.now() * 0.001
+    }
+  }, [playerAttackedTimestamp])
+
+  // Track when monster is attacked (correct answer slash)
+  useEffect(() => {
+    if (monsterAttackedTimestamp > 0) {
+      monsterHitTimeRef.current = performance.now() * 0.001
+    }
+  }, [monsterAttackedTimestamp])
 
   const monsterHp = monster.currentHp ?? monster.maxHp
   const monsterHpPercent = Math.max(0, (monsterHp / monster.maxHp) * 100)
@@ -36,85 +59,425 @@ export const CombatStageHeader: React.FC<CombatStageHeaderProps> = ({
     setTimeout(() => setActiveItemFeedback(null), 3000)
   }
 
+  // PixiJS Animated Duel Scene (Warrior facing off against Monster Fiend)
+  useEffect(() => {
+    const domElement = canvasContainerRef.current
+    if (!domElement) return
+
+    let isDestroyed = false
+    const app = new Application()
+
+    const initPixi = async () => {
+      try {
+        await app.init({
+          resizeTo: domElement,
+          backgroundColor: 0x181825,
+          backgroundAlpha: 0.95,
+          antialias: true,
+          resolution: (typeof window !== 'undefined' && window.devicePixelRatio) || 1,
+          autoDensity: true,
+        })
+
+        if (isDestroyed) {
+          app.destroy(true, { children: true })
+          return
+        }
+
+        appRef.current = app
+        domElement.appendChild(app.canvas)
+
+        const stageContainer = new Container()
+        app.stage.addChild(stageContainer)
+
+        // Background Battle Atmosphere / Grid Grid Lines
+        const bgGfx = new Graphics()
+        stageContainer.addChild(bgGfx)
+
+        // Ground Platform
+        const groundGfx = new Graphics()
+        stageContainer.addChild(groundGfx)
+
+        // Center Clash Spark FX
+        const clashGfx = new Graphics()
+        stageContainer.addChild(clashGfx)
+
+        // Sword Slash FX Layer (Hero attacking Monster on correct answer)
+        const slashFxContainer = new Container()
+        stageContainer.addChild(slashFxContainer)
+        const slashWaveGfx = new Graphics()
+        const slashSparksGfx = new Graphics()
+        slashFxContainer.addChild(slashWaveGfx)
+        slashFxContainer.addChild(slashSparksGfx)
+
+        // Left Combatant: Knight Warrior Container
+        const warriorContainer = new Container()
+        stageContainer.addChild(warriorContainer)
+        const warriorGfx = new Graphics()
+        warriorContainer.addChild(warriorGfx)
+
+        // Fire Blast FX on Player when hit
+        const playerFireGfx = new Graphics()
+        warriorContainer.addChild(playerFireGfx)
+
+        // Right Combatant: Monster Fiend Container
+        const monsterContainer = new Container()
+        stageContainer.addChild(monsterContainer)
+        const monsterGfx = new Graphics()
+        monsterContainer.addChild(monsterGfx)
+
+        // Combat Animation Ticker
+        app.ticker.add(() => {
+          const t = performance.now() * 0.001
+          const width = app.screen.width
+          const height = app.screen.height
+          const centerY = height * 0.58
+
+          // Ground Platform
+          groundGfx.clear()
+          const groundY = centerY + 22
+          groundGfx.ellipse(width * 0.5, groundY, width * 0.45, 14).fill({ color: 0x11111b, alpha: 0.85 })
+          groundGfx.moveTo(width * 0.08, groundY).lineTo(width * 0.92, groundY).stroke({ width: 1.5, color: 0x414559, alpha: 0.6 })
+
+          // Ambient Background Energy Ribbons
+          bgGfx.clear()
+          const pulse = Math.sin(t * 2) * 0.15 + 0.85
+          bgGfx.circle(width * 0.35, centerY - 6, 45).fill({ color: 0x8caaee, alpha: 0.05 * pulse })
+          bgGfx.circle(width * 0.65, centerY - 6, 45).fill({ color: 0xe78284, alpha: 0.05 * pulse })
+
+          // ─── 1. DRAW KNIGHT WARRIOR (Left, Facing Right, Scaled 1.15x) ───
+          // Place warrior at 35% width so it is completely visible in center-left, not hidden behind HUD cards
+          const warriorX = Math.max(120, width * 0.36)
+          const warriorBob = Math.sin(t * 3.5) * 2.2
+          const swordSlash = Math.sin(t * 3.5) * 4
+          warriorContainer.position.set(warriorX, centerY + warriorBob)
+          warriorContainer.scale.set(1.15)
+
+          warriorGfx.clear()
+
+          // Ground shadow
+          warriorGfx.ellipse(0, 16, 12, 4).fill({ color: 0x11111b, alpha: 0.6 })
+
+          // Crimson Cape waving dynamically behind
+          warriorGfx.poly([
+            -4, -5,
+            -18 - Math.sin(t * 4) * 4, 8 + Math.cos(t * 3) * 3,
+            -12, 14,
+            -2, 2,
+          ]).fill({ color: 0xe78284, alpha: 0.9 })
+
+          // Legs & Sabatons
+          warriorGfx.moveTo(-3, 6).lineTo(-4, 15).stroke({ width: 3.8, color: 0x51576d, cap: 'round' })
+          warriorGfx.moveTo(3, 6).lineTo(4, 15).stroke({ width: 4.0, color: 0x949cbb, cap: 'round' })
+          warriorGfx.circle(-4, 15, 2.2).fill({ color: 0x414559 })
+          warriorGfx.circle(4, 15, 2.5).fill({ color: 0x737994 })
+
+          // Cuirass Steel Breastplate
+          warriorGfx.roundRect(-6, -7, 12, 13, 2.5).fill({ color: 0x737994 }).stroke({ width: 1.6, color: 0xc6d0f5 })
+          warriorGfx.moveTo(0, -6).lineTo(0, 4).stroke({ width: 1.5, color: 0x414559 })
+          warriorGfx.poly([0, -4, 2.5, -2, 0, 0, -2.5, -2]).fill({ color: 0xe5c890 })
+          warriorGfx.rect(-6, 2, 12, 2.5).fill({ color: 0x292c3c })
+          warriorGfx.rect(-2, 1.5, 4, 3.5).fill({ color: 0xe5c890 })
+
+          // Left Arm & Shield (Heater Kite Shield)
+          const shieldX = -7
+          const shieldY = -1
+          warriorGfx.poly([
+            shieldX - 3, shieldY - 7,
+            shieldX + 4, shieldY - 7,
+            shieldX + 4, shieldY + 3,
+            shieldX, shieldY + 8,
+            shieldX - 3, shieldY + 3,
+          ]).fill({ color: 0x303446, alpha: 0.95 }).stroke({ width: 1.4, color: 0x8caaee })
+          warriorGfx.poly([shieldX + 0.5, shieldY - 4, shieldX + 0.5, shieldY + 4]).stroke({ width: 1.5, color: 0xe5c890 })
+
+          // Right Arm & Gleaming Greatsword Ready Stance
+          const handX = 5 + swordSlash * 0.4
+          const handY = 2
+          warriorGfx.moveTo(3, -4).lineTo(handX, handY).stroke({ width: 3.2, color: 0x949cbb, cap: 'round' })
+          // Broadsword Blade
+          warriorGfx.moveTo(handX + 1, handY - 1).lineTo(handX + 18, handY - 15).stroke({ width: 3.0, color: 0xffffff, cap: 'round' })
+          warriorGfx.moveTo(handX + 2, handY - 2).lineTo(handX + 17, handY - 14).stroke({ width: 1.4, color: 0x8caaee })
+          warriorGfx.moveTo(handX - 2, handY + 1).lineTo(handX + 3, handY - 4).stroke({ width: 2.5, color: 0xe5c890 })
+          warriorGfx.circle(handX - 2.5, handY + 2, 1.6).fill({ color: 0xe78284 })
+
+          // Pauldrons
+          warriorGfx.poly([-8, -8, -4, -11, -3, -6]).fill({ color: 0x949cbb }).stroke({ width: 1, color: 0xc6d0f5 })
+          warriorGfx.poly([4, -11, 8, -8, 4, -6]).fill({ color: 0x949cbb }).stroke({ width: 1, color: 0xc6d0f5 })
+
+          // Greathelm Helmet with glowing visor slit & golden plume
+          warriorGfx.roundRect(-5, -16, 10, 10, 2.5).fill({ color: 0x737994 }).stroke({ width: 1.5, color: 0xc6d0f5 })
+          warriorGfx.moveTo(-3, -12).lineTo(4, -12).stroke({ width: 1.5, color: 0x181825 })
+          warriorGfx.moveTo(1.5, -14).lineTo(1.5, -9).stroke({ width: 1.5, color: 0x181825 })
+          warriorGfx.circle(2.5, -12, 1.1).fill({ color: 0x8caaee, alpha: 1.0 })
+          warriorGfx.poly([-1, -16, -4, -22, 2, -21, 4, -16]).fill({ color: 0xe5c890 }).stroke({ width: 1, color: 0xef9f76 })
+
+          // ─── 1B. FIRE BLAST ON PLAYER WHEN ATTACKED (Wrong Answer Retaliation) ───
+          playerFireGfx.clear()
+          const hitTime = playerHitTimeRef.current
+          if (hitTime > 0) {
+            const elapsedHit = t - hitTime
+            const hitDuration = 1.0 // 1-second blazing fire effect
+            if (elapsedHit <= hitDuration) {
+              const hitProgress = elapsedHit / hitDuration
+              const flameIntensity = Math.sin(hitProgress * Math.PI)
+
+              // Flash warrior red during hit
+              warriorGfx.tint = elapsedHit < 0.35 ? 0xff7777 : 0xffffff
+
+              // 5 rising animated flame tongues engulfing the warrior body
+              const flameTongues = [
+                { x: -6, y: 6, h: 26, w: 7, phase: 0 },
+                { x: -1, y: 8, h: 34, w: 9, phase: 1.2 },
+                { x: 4, y: 6, h: 28, w: 8, phase: 2.4 },
+                { x: -8, y: -4, h: 22, w: 6, phase: 3.5 },
+                { x: 6, y: -2, h: 24, w: 6, phase: 4.8 },
+              ]
+
+              flameTongues.forEach(({ x: fx, y: fy, h: fh, w: fw, phase }) => {
+                const flicker = Math.sin(t * 18 + phase) * 3
+                const curH = (fh + flicker) * flameIntensity
+                const curW = fw * flameIntensity
+                const tipY = fy - curH
+
+                // Outer Crimson Flame Tongue
+                playerFireGfx.poly([
+                  fx - curW, fy,
+                  fx + (Math.sin(t * 14 + phase) * 4), tipY,
+                  fx + curW, fy,
+                ]).fill({ color: 0xe78284, alpha: flameIntensity * 0.85 })
+
+                // Inner Bright Orange Flame Tongue
+                playerFireGfx.poly([
+                  fx - curW * 0.55, fy,
+                  fx + (Math.sin(t * 16 + phase) * 2), tipY + curH * 0.3,
+                  fx + curW * 0.55, fy,
+                ]).fill({ color: 0xef9f76, alpha: flameIntensity * 0.95 })
+
+                // Hot White Core
+                playerFireGfx.circle(fx, fy - 4, Math.max(1, 2.5 * flameIntensity)).fill({ color: 0xffffff, alpha: flameIntensity * 0.9 })
+              })
+
+              // Surrounding Fire Ember Sparks drifting upward
+              for (let i = 0; i < 6; i++) {
+                const emberProgress = (elapsedHit * 2 + i * 0.2) % 1
+                const emberX = (i - 2.5) * 6 + Math.sin(t * 8 + i) * 5
+                const emberY = 12 - emberProgress * 36
+                playerFireGfx.circle(emberX, emberY, 1.5 * (1 - emberProgress))
+                  .fill({ color: i % 2 === 0 ? 0xef9f76 : 0xe78284, alpha: (1 - emberProgress) * flameIntensity })
+              }
+            } else {
+              warriorGfx.tint = 0xffffff
+            }
+          }
+
+          // ─── 2. DRAW MONSTER FIEND (Right, Facing Left, Scaled 1.15x) ───
+          const monsterX = Math.min(width - 120, width * 0.64)
+          const monsterBob = Math.sin(t * 3.0 + 1.2) * 2.8
+          const monsterLunge = Math.sin(t * 3.0 + 0.5) * 3
+          monsterContainer.position.set(monsterX - monsterLunge, centerY + monsterBob)
+          monsterContainer.scale.set(1.15)
+
+          monsterGfx.clear()
+
+          // Ground shadow
+          monsterGfx.ellipse(0, 16, 14, 4.5).fill({ color: 0x11111b, alpha: 0.6 })
+
+          // Fiend Aura Pulse
+          const fiendAura = Math.sin(t * 5) * 0.3 + 0.7
+          monsterGfx.circle(0, -2, 24).fill({ color: 0xe78284, alpha: 0.08 * fiendAura })
+
+          // Pointy Horns / Spikes (Facing Left)
+          monsterGfx.poly([-10, -8, -17, -18, -4, -12]).fill({ color: 0xe78284, alpha: 0.95 })
+          monsterGfx.poly([8, -8, 15, -18, 4, -12]).fill({ color: 0xe78284, alpha: 0.95 })
+
+          // Monster Body / Claws
+          monsterGfx.roundRect(-12, 3, 24, 12, 3).fill({ color: 0x303446, alpha: 0.95 })
+          // Sharp Claws
+          monsterGfx.poly([-12, 13, -16, 17, -10, 15]).fill({ color: 0xea999c })
+          monsterGfx.poly([10, 13, 14, 17, 8, 15]).fill({ color: 0xea999c })
+
+          // Monster Head Face Mask
+          monsterGfx.roundRect(-12, -9, 24, 18, 4).fill({ color: 0xe78284, alpha: 0.95 })
+            .stroke({ width: 1.8, color: 0xea999c })
+
+          // Dark Brow Ridge
+          monsterGfx.moveTo(-12, -4).lineTo(0, -1).lineTo(12, -4).stroke({ width: 2.2, color: 0x181825 })
+
+          // Menacing Glowing Eyes (Looking at warrior to the left)
+          monsterGfx.poly([-9, -5, -4, -2, -10, -2]).fill({ color: 0xffffff, alpha: 1.0 })
+          monsterGfx.poly([7, -5, 2, -2, 8, -2]).fill({ color: 0xffffff, alpha: 1.0 })
+          // Fiery Pupils
+          monsterGfx.circle(-7, -3, 1.4).fill({ color: 0xef9f76, alpha: 1.0 })
+          monsterGfx.circle(4, -3, 1.4).fill({ color: 0xef9f76, alpha: 1.0 })
+
+          // Snarl Maw & Fangs
+          monsterGfx.roundRect(-8, 3, 16, 5, 2).fill({ color: 0x181825, alpha: 0.95 })
+          // Top Fangs
+          monsterGfx.poly([-5, 3, -3, 3, -4, 7]).fill({ color: 0xffffff, alpha: 1.0 })
+          monsterGfx.poly([3, 3, 5, 3, 4, 7]).fill({ color: 0xffffff, alpha: 1.0 })
+          // Bottom Fang
+          monsterGfx.poly([-1, 8, 1, 8, 0, 5]).fill({ color: 0xffffff, alpha: 1.0 })
+
+          // ─── 3. CLASH SPARKS IN CENTER (Midpoint between combatants) ───
+          clashGfx.clear()
+          const midX = (warriorX + monsterX) * 0.5
+          const clashSpark = Math.pow(Math.sin(t * 3.5), 6)
+          if (clashSpark > 0.3) {
+            clashGfx.poly([
+              midX, centerY - 6,
+              midX + 5 * clashSpark, centerY - 1,
+              midX, centerY + 4,
+              midX - 5 * clashSpark, centerY - 1,
+            ]).fill({ color: 0xffffff, alpha: clashSpark * 0.95 })
+            clashGfx.circle(midX, centerY - 1, 8 * clashSpark).stroke({ width: 1.5, color: 0xef9f76, alpha: clashSpark * 0.8 })
+          }
+
+          // ─── 4. SWORD SLASH ATTACK ON MONSTER (Correct Answer Strike) ───
+          slashWaveGfx.clear()
+          slashSparksGfx.clear()
+          const mHitTime = monsterHitTimeRef.current
+          if (mHitTime > 0) {
+            const elapsedSlash = t - mHitTime
+            const slashDuration = 0.75 // 750ms dynamic slash animation
+            if (elapsedSlash <= slashDuration) {
+              const slashProgress = elapsedSlash / slashDuration
+              const slashIntensity = Math.sin(slashProgress * Math.PI)
+
+              // Flash monster white/cyan during direct hit
+              monsterGfx.tint = elapsedSlash < 0.25 ? 0x8caaee : 0xffffff
+
+              // Calculate slash sweep coordinates across monster center
+              const slashStartX = warriorX + 20 + slashProgress * (monsterX - warriorX - 10)
+              const slashCenterY = centerY - 5
+              const arcLength = 48 * slashIntensity
+
+              // Glowing Sword Slash Crescent Wave (Silver-Cyan Broadsword Trail)
+              slashWaveGfx
+                .moveTo(slashStartX - 18, slashCenterY - arcLength * 0.8)
+                .quadraticCurveTo(slashStartX + 12, slashCenterY, slashStartX - 12, slashCenterY + arcLength)
+                .stroke({ width: 4.5 * slashIntensity, color: 0x8caaee, alpha: slashIntensity * 0.9, cap: 'round' })
+                .moveTo(slashStartX - 18, slashCenterY - arcLength * 0.8)
+                .quadraticCurveTo(slashStartX + 12, slashCenterY, slashStartX - 12, slashCenterY + arcLength)
+                .stroke({ width: 2.0 * slashIntensity, color: 0xffffff, alpha: slashIntensity * 1.0, cap: 'round' })
+
+              // Secondary Cross-Slash Arc
+              slashWaveGfx
+                .moveTo(slashStartX - 12, slashCenterY + arcLength * 0.7)
+                .quadraticCurveTo(slashStartX + 10, slashCenterY - 4, slashStartX - 16, slashCenterY - arcLength * 0.6)
+                .stroke({ width: 2.2 * slashIntensity, color: 0xe5c890, alpha: slashIntensity * 0.85, cap: 'round' })
+
+              // Impact Burst Star Sparks on Monster
+              if (slashProgress > 0.15) {
+                const impactX = monsterX - 6
+                const impactY = centerY - 4
+                for (let i = 0; i < 8; i++) {
+                  const sparkAngle = (i * Math.PI) / 4 + elapsedSlash * 6
+                  const sparkDist = (slashProgress - 0.15) * 40
+                  const sparkX = impactX + Math.cos(sparkAngle) * sparkDist
+                  const sparkY = impactY + Math.sin(sparkAngle) * sparkDist
+                  slashSparksGfx.circle(sparkX, sparkY, Math.max(0.5, 2.5 * (1 - slashProgress)))
+                    .fill({ color: i % 2 === 0 ? 0xffffff : 0x8caaee, alpha: (1 - slashProgress) * slashIntensity })
+                }
+              }
+            } else {
+              monsterGfx.tint = 0xffffff
+            }
+          }
+        })
+      } catch (err) {
+        console.error('PixiJS CombatStageHeader init failed:', err)
+      }
+    }
+
+    initPixi()
+
+    return () => {
+      isDestroyed = true
+      if (appRef.current) {
+        appRef.current.destroy(true, { children: true })
+        appRef.current = null
+      }
+    }
+  }, [monster])
+
   return (
-    <div className="flex flex-col gap-3">
-      <div className="grid grid-cols-1 md:grid-cols-3 items-center gap-4">
-        {/* Left: Player Combatant Card */}
-        <div className="flex items-center gap-3 bg-[#232634] p-3 rounded-2xl border border-[#8caaee]/30">
-          <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-[#8caaee] to-[#ca9ee6] flex items-center justify-center text-2xl shrink-0 shadow-md">
-            🧙‍♂️
-          </div>
-          <div className="flex-1 min-w-0">
-            <div className="flex justify-between items-center text-xs mb-1">
+    <div className="flex flex-col gap-2.5">
+      {/* PixiJS Tactical Duel Arena Canvas Viewport */}
+      <div className="relative w-full h-36 bg-[#181825] rounded-2xl border border-[#414559] overflow-hidden shadow-inner">
+        {/* Canvas DOM container */}
+        <div ref={canvasContainerRef} className="absolute inset-0 w-full h-full" />
+
+        {/* HUD Combatant Badges Overlay */}
+        <div className="absolute inset-0 pointer-events-none p-2.5 flex justify-between items-start">
+          {/* Warrior Status Header Overlay */}
+          <div className="bg-[#232634]/90 backdrop-blur-sm px-3 py-1.5 rounded-xl border border-[#8caaee]/40 max-w-[200px] shadow-md pointer-events-auto">
+            <div className="flex items-center justify-between text-xs gap-3">
               <span className="font-bold text-[#8caaee] truncate">Architect Champion</span>
-              <span className="font-mono text-[#a6d189]">{playerHp}/{maxPlayerHp} HP</span>
+              <span className="font-mono text-[#a6d189] text-[11px] font-bold">{playerHp}/{maxPlayerHp} HP</span>
             </div>
-            <div className="w-full bg-[#181825] h-2.5 rounded-full overflow-hidden border border-[#414559]">
+            <div className="w-full bg-[#181825] h-1.5 rounded-full overflow-hidden mt-1 border border-[#414559]">
               <div
                 className="h-full bg-gradient-to-r from-[#a6d189] to-[#8caaee] transition-all duration-300"
                 style={{ width: `${playerHpPercent}%` }}
               />
             </div>
-            <div className="flex items-center gap-2 mt-1.5 text-[10px] text-[#a5adce]">
-              <span className="flex items-center gap-0.5"><Shield size={10} /> {playerAttributes.armor}% Arm</span>
-              <span className="flex items-center gap-0.5"><Zap size={10} /> {playerAttributes.evasion}% Eva</span>
+            <div className="flex items-center gap-2 mt-1 text-[9px] text-[#a5adce]">
+              <span className="flex items-center gap-0.5"><Shield size={9} /> {playerAttributes.armor}% Arm</span>
+              <span className="flex items-center gap-0.5"><Zap size={9} /> {playerAttributes.evasion}% Eva</span>
             </div>
           </div>
-        </div>
 
-        {/* Center: Duel VS Banner & Usable Item Actions */}
-        <div className="flex flex-col items-center justify-center text-center">
-          <div className="flex items-center gap-2 font-bold text-xs text-[#ea999c] tracking-widest uppercase">
-            <Swords size={16} />
-            <span>Tactical Encounter</span>
+          {/* Tactical Center Badge */}
+          <div className="flex flex-col items-center">
+            <div className="bg-[#232634]/90 backdrop-blur-sm px-2.5 py-1 rounded-lg border border-[#ea999c]/40 text-[10px] font-bold text-[#ea999c] uppercase tracking-wider flex items-center gap-1 shadow-sm">
+              <Sparkles size={11} className="text-[#e5c890]" />
+              <span>Tactical Encounter</span>
+            </div>
+            {/* Usable Tactical Items */}
+            {inventory.length > 0 && (
+              <div className="flex items-center gap-1.5 mt-1.5 pointer-events-auto">
+                {inventory.map((item) => (
+                  <Button
+                    key={item.id}
+                    size="sm"
+                    variant="ghost"
+                    className="h-6 px-2 text-[10px] bg-[#232634]/90 border border-[#8caaee]/40 text-[#8caaee] hover:bg-[#8caaee]/20 flex items-center gap-1 font-bold shadow-sm"
+                    onClick={() => handleTriggerItem(item)}
+                    title={`Use ${item.name}`}
+                  >
+                    <span>{item.icon || '⚔️'}</span>
+                    <span className="truncate max-w-[70px]">{item.name}</span>
+                  </Button>
+                ))}
+              </div>
+            )}
           </div>
 
-          {/* Quick-Action Key Items */}
-          <div className="flex items-center gap-2 mt-2">
-            {inventory.map((item) => (
-              <Button
-                key={item.id}
-                size="sm"
-                variant="ghost"
-                className="h-8 px-2.5 text-xs bg-[#232634] border border-[#8caaee]/40 text-[#8caaee] hover:bg-[#8caaee]/20 flex items-center gap-1.5 font-bold"
-                onClick={() => handleTriggerItem(item)}
-                title={`Use ${item.name}`}
-              >
-                <span>{item.icon || '⚔️'}</span>
-                <span>{item.name}</span>
-              </Button>
-            ))}
-          </div>
-
-          {activeItemFeedback && (
-            <span className="text-[11px] text-[#a6d189] animate-pulse mt-1 font-semibold">
-              ✨ {activeItemFeedback}
-            </span>
-          )}
-        </div>
-
-        {/* Right: Monster Combatant Card */}
-        <div className="flex items-center gap-3 bg-[#232634] p-3 rounded-2xl border border-[#e78284]/30">
-          <div className="flex-1 min-w-0">
-            <div className="flex justify-between items-center text-xs mb-1">
+          {/* Monster Status Header Overlay */}
+          <div className="bg-[#232634]/90 backdrop-blur-sm px-3 py-1.5 rounded-xl border border-[#e78284]/40 max-w-[200px] shadow-md text-right pointer-events-auto">
+            <div className="flex items-center justify-between text-xs gap-3">
               <span className="font-bold text-[#e78284] truncate">{monster.name}</span>
-              <span className="font-mono text-[#e78284]">{monsterHp}/{monster.maxHp} HP</span>
+              <span className="font-mono text-[#e78284] text-[11px] font-bold">{monsterHp}/{monster.maxHp} HP</span>
             </div>
-            <div className="w-full bg-[#181825] h-2.5 rounded-full overflow-hidden border border-[#414559]">
+            <div className="w-full bg-[#181825] h-1.5 rounded-full overflow-hidden mt-1 border border-[#414559]">
               <div
                 className="h-full bg-gradient-to-r from-[#e78284] to-[#ea999c] transition-all duration-300"
                 style={{ width: `${monsterHpPercent}%` }}
               />
             </div>
-            <div className="flex justify-end items-center gap-2 mt-1.5 text-[10px] text-[#a5adce]">
+            <div className="text-[9px] text-[#a5adce] mt-1">
               <span>⚔️ Attack: {monster.damage} Dmg</span>
             </div>
           </div>
-          <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-[#e78284]/30 to-[#303446] border border-[#e78284]/40 flex items-center justify-center text-2xl shrink-0 shadow-md">
-            {monster.icon || '👹'}
-          </div>
         </div>
       </div>
+
+      {/* Item feedback alert */}
+      {activeItemFeedback && (
+        <div className="text-center text-[11px] text-[#a6d189] font-semibold animate-pulse">
+          ✨ {activeItemFeedback}
+        </div>
+      )}
 
       {/* Combat Log Message Bar */}
       {combatLogMessage && (

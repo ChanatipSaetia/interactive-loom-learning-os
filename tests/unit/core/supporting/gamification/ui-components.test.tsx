@@ -6,6 +6,7 @@ import { SanctuaryTickMonitor } from '../../../../../src/core/supporting/gamific
 import { RunicCountdownRing } from '../../../../../src/core/supporting/gamification/components/RunicCountdownRing'
 import { TradeoffStatPreviewBar } from '../../../../../src/core/supporting/gamification/components/TradeoffStatPreviewBar'
 import { BossBattleArena } from '../../../../../src/core/supporting/gamification/components/BossBattleArena'
+import { HexGridCanvas } from '../../../../../src/core/supporting/gamification/components/HexGridCanvas'
 import type { HexNodeData, MonsterData, CharacterAttributes } from '../../../../../src/core/supporting/gamification/types'
 
 describe('Gamification Real UI Components', () => {
@@ -141,4 +142,23 @@ describe('Gamification Real UI Components', () => {
     fireEvent.click(bladeBtn)
     expect(screen.getByText(/Unleashed Port Blade! Slashed Goblin Boss for 40 true damage!/i)).toBeDefined()
   })
+
+  it('renders HexGridCanvas with pan/zoom controls and legend', () => {
+    const handleSelect = vi.fn()
+    render(
+      <HexGridCanvas
+        nodes={[mockNode]}
+        selectedNodeId={null}
+        onSelectNode={handleSelect}
+      />
+    )
+
+    expect(screen.getByTitle('Zoom In')).toBeDefined()
+    expect(screen.getByTitle('Zoom Out')).toBeDefined()
+    expect(screen.getByTitle('Reset Pan & Zoom')).toBeDefined()
+    expect(screen.getByText('Capital')).toBeDefined()
+    expect(screen.getByText('Sanctuary')).toBeDefined()
+    expect(screen.getByText('Locked (Fog)')).toBeDefined()
+  })
 })
+

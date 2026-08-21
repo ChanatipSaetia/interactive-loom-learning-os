@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback, useMemo } from 'react'
 import type { GamificationRuntimePort } from './ports'
-import { DIFFICULTY_CONFIGS, type GlobalCharacterState, type TopicCampaignState, type CharacterAttributes, type ActiveBuff } from './types'
+import { DIFFICULTY_CONFIGS, type GlobalCharacterState, type TopicCampaignState, type CharacterAttributes, type ActiveBuff, type MonsterData, type ItemReward } from './types'
 import type { HexCampaignData } from '../../generic/hex-map'
 import { InRepoStorageAdapter } from '../../delivery/adapters/in-repo-storage'
 import { ValidationGatewayCampaignAdapter } from './adapters/validation-gateway-campaign-adapter'
@@ -170,18 +170,22 @@ export function useGamification(
   }, [campaign, characterAdapter, topicId])
 
   // Resolve quiz answer
-  const resolveQuizAnswer = useCallback((isCorrect: boolean, nodeMonsterId?: string) => {
+  const resolveQuizAnswer = useCallback((isCorrect: boolean, nodeMonsterId?: string, totalQuestions?: number) => {
     if (!topicState || !globalProfile || !campaign || !topicId) return
 
     const targetNode = campaign.nodes.find((n) => n.id === nodeMonsterId || n.monster?.id === nodeMonsterId)
-    const monster = targetNode?.monster ?? {
-      id: 'default-monster',
-      name: 'Corrupted Bug',
-      type: 'goblin',
-      maxHp: 30,
-      currentHp: 30,
-      damage: 10,
-      icon: '👾',
+    const currentMonsterHp = targetNode?.id && topicState.monsterHpMap?.[targetNode.id] !== undefined
+      ? topicState.monsterHpMap[targetNode.id]
+      : (targetNode?.monster?.currentHp ?? targetNode?.monster?.maxHp ?? 30)
+
+    const monster: MonsterData = {
+      id: targetNode?.monster?.id || 'default-monster',
+      name: targetNode?.monster?.name || 'Corrupted Bug',
+      type: targetNode?.monster?.type || 'goblin',
+      maxHp: targetNode?.monster?.maxHp || 30,
+      currentHp: currentMonsterHp,
+      damage: targetNode?.monster?.damage || 10,
+      icon: targetNode?.monster?.icon || '👾',
     }
 
     const diffMultiplier = topicState.difficulty === 'easy' ? 0.7 : topicState.difficulty === 'hard' ? 1.5 : topicState.difficulty === 'nightmare' ? 2.0 : 1.0
@@ -192,7 +196,8 @@ export function useGamification(
       isCorrect,
       topicState.activeBuffs,
       topicState.chaosLevel,
-      diffMultiplier
+      diffMultiplier,
+      totalQuestions
     )
 
     setTopicState((prev) => {
@@ -202,10 +207,16 @@ export function useGamification(
         ? [...prev.clearedNodeIds, targetNode.id]
         : prev.clearedNodeIds
 
+      // Update monster HP in monsterHpMap
+      const nextMonsterHpMap = {
+        ...(prev.monsterHpMap || {}),
+        ...(targetNode?.id ? { [targetNode.id]: combatResult.updatedMonsterHp } : {}),
+      }
+
       // Add node rewards to inventory
       let nextInventory = prev.inventory
       if (combatResult.isMonsterDefeated && targetNode?.rewards) {
-        const newRewards = targetNode.rewards.filter((r) => !prev.inventory.some((i) => i.id === r.id))
+        const newRewards = targetNode.rewards.filter((r: ItemReward) => !prev.inventory.some((i) => i.id === r.id))
         nextInventory = [...prev.inventory, ...newRewards]
       }
       const nextDamageTaken = (prev.damageTakenInCampaign || 0) + combatResult.playerDamageTaken
@@ -214,6 +225,7 @@ export function useGamification(
         characterHp: nextHp,
         damageTakenInCampaign: nextDamageTaken,
         clearedNodeIds: nextCleared,
+        monsterHpMap: nextMonsterHpMap,
         inventory: nextInventory,
       }
       characterAdapter.saveTopicCampaign(topicId, nextState)

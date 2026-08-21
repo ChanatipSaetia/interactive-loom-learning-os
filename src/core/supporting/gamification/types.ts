@@ -195,5 +195,6 @@ export interface TopicCampaignState {
   clearedNodeIds: string[]
   activeBuffs: ActiveBuff[]
   readingVisitCounts?: Record<string, number>
+  monsterHpMap?: Record<string, number>
   unlockedBadges?: UnlockedBadge[]
 }
