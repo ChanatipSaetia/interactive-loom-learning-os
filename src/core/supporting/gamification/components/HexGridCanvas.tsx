@@ -44,23 +44,14 @@ function getHexVertices(cx: number, cy: number, radius: number): number[] {
   return points
 }
 
-// Color palette mapping (Catppuccin Frappé)
-const COLOR_MAP: Record<string, { fill: number; stroke: number; highlight: number; icon: string; name: string }> = {
-  capital: { fill: 0x3b82f6, stroke: 0x60a5fa, highlight: 0x93c5fd, icon: 'citadel', name: 'Capital' },
-  reading_sanctuary: { fill: 0xa6d189, stroke: 0xa6d189, highlight: 0xc6e8ab, icon: 'temple', name: 'Sanctuary' },
-  quiz_encounter: { fill: 0xe78284, stroke: 0xe78284, highlight: 0xea999c, icon: 'monster', name: 'Monster Encounter' },
-  reflection_decryption: { fill: 0xca9ee6, stroke: 0xca9ee6, highlight: 0xf4b8e4, icon: 'cipher', name: 'Decryption' },
-  tradeoff_workshop: { fill: 0xe5c890, stroke: 0xe5c890, highlight: 0xef9f76, icon: 'forge', name: 'Workshop' },
-  boss_lair: { fill: 0xea999c, stroke: 0xe78284, highlight: 0xf2d5cf, icon: 'titan', name: 'Boss Lair' },
-  locked: { fill: 0x303446, stroke: 0x51576d, highlight: 0x626880, icon: 'fog', name: 'Locked' },
-}
+import { useGamificationTheme, GamificationThemePalette, getGamificationThemePalette } from '../theme-palette'
 
 // ─── PROCEDURAL VECTOR EMBLEMS / INSIGNIAS ───
-function drawVectorInsignia(g: Graphics, type: string, color: number, isDefeated: boolean = false) {
+function drawVectorInsignia(g: Graphics, type: string, color: number, isDefeated: boolean = false, palette: GamificationThemePalette = getGamificationThemePalette()) {
   if (!g || g.destroyed) return
   g.clear()
-  const c = isDefeated ? 0x949cbb : color
-  const darkC = 0x181825
+  const c = isDefeated ? palette.overlay2Num : color
+  const darkC = palette.crustNum
 
   switch (type) {
     case 'capital': {
@@ -91,7 +82,7 @@ function drawVectorInsignia(g: Graphics, type: string, color: number, isDefeated
       break
     }
     case 'quiz_encounter': {
-      // 👾 Encounter Monster Fiend (Horns, fangs, menacing glowing red/white eyes)
+      // 👾 Encounter Monster Fiend (Horns, fangs, menacing glowing eyes)
       // Pointy Monster Horns / Ears
       g.poly([-8, -6, -13, -15, -4, -10]).fill({ color: c, alpha: 0.95 })
       g.poly([8, -6, 13, -15, 4, -10]).fill({ color: c, alpha: 0.95 })
@@ -106,8 +97,8 @@ function drawVectorInsignia(g: Graphics, type: string, color: number, isDefeated
       g.poly([-7, -4, -3, -1, -8, -1]).fill({ color: 0xffffff, alpha: 1.0 })
       g.poly([7, -4, 3, -1, 8, -1]).fill({ color: 0xffffff, alpha: 1.0 })
       // Glowing Pupils
-      g.circle(-5, -2, 1.2).fill({ color: 0xef9f76, alpha: 1.0 })
-      g.circle(5, -2, 1.2).fill({ color: 0xef9f76, alpha: 1.0 })
+      g.circle(-5, -2, 1.2).fill({ color: palette.peachNum, alpha: 1.0 })
+      g.circle(5, -2, 1.2).fill({ color: palette.peachNum, alpha: 1.0 })
 
       // Snarl Mouth / Fangs
       g.roundRect(-6, 3, 12, 4, 1.5).fill({ color: darkC, alpha: 0.95 })
@@ -148,8 +139,8 @@ function drawVectorInsignia(g: Graphics, type: string, color: number, isDefeated
     case 'boss_lair': {
       // 🔥 Horned Demonic Skull Titan
       // Horns
-      g.moveTo(-9, -5).quadraticCurveTo(-14, -13, -8, -16).stroke({ width: 2.2, color: 0xea999c })
-      g.moveTo(9, -5).quadraticCurveTo(14, -13, 8, -16).stroke({ width: 2.2, color: 0xea999c })
+      g.moveTo(-9, -5).quadraticCurveTo(-14, -13, -8, -16).stroke({ width: 2.2, color: palette.maroonNum })
+      g.moveTo(9, -5).quadraticCurveTo(14, -13, 8, -16).stroke({ width: 2.2, color: palette.maroonNum })
       // Skull head plate
       g.roundRect(-9, -8, 18, 11, 3).fill({ color: c, alpha: 0.95 })
       // Fanged jaw
@@ -169,61 +160,61 @@ function drawVectorInsignia(g: Graphics, type: string, color: number, isDefeated
 }
 
 // Create thematic top-to-bottom gradients for each node type
-function createHexGradient(type: string, isLocked: boolean, isCleared: boolean = false) {
+function createHexGradient(type: string, isLocked: boolean, isCleared: boolean = false, palette: GamificationThemePalette = getGamificationThemePalette()) {
   const gradient = new FillGradient({
     start: { x: 0, y: -HEX_RADIUS },
     end: { x: 0, y: HEX_RADIUS },
   })
 
   if (isLocked && type !== 'boss_lair') {
-    gradient.addColorStop(0, '#414559')
-    gradient.addColorStop(0.5, '#303446')
-    gradient.addColorStop(1, '#232634')
+    gradient.addColorStop(0, palette.surface0)
+    gradient.addColorStop(0.5, palette.base)
+    gradient.addColorStop(1, palette.crust)
     return gradient
   }
 
-  // Defeated / Beaten Hostile Encounter Gradient (Subdued Slate Gray)
+  // Defeated / Beaten Hostile Encounter Gradient
   if (isCleared && (type === 'quiz_encounter' || type === 'reflection_decryption')) {
-    gradient.addColorStop(0, '#626880')
-    gradient.addColorStop(0.45, '#414559')
-    gradient.addColorStop(1, '#232634')
+    gradient.addColorStop(0, palette.surface2)
+    gradient.addColorStop(0.45, palette.surface0)
+    gradient.addColorStop(1, palette.crust)
     return gradient
   }
 
   switch (type) {
     case 'capital':
-      gradient.addColorStop(0, '#60a5fa')
-      gradient.addColorStop(0.45, '#1e40af')
-      gradient.addColorStop(1, '#172554')
+      gradient.addColorStop(0, palette.sapphire)
+      gradient.addColorStop(0.45, palette.blue)
+      gradient.addColorStop(1, palette.crust)
       break
     case 'reading_sanctuary':
-      gradient.addColorStop(0, '#a6d189')
-      gradient.addColorStop(0.45, '#3b5143')
-      gradient.addColorStop(1, '#232634')
+      gradient.addColorStop(0, palette.green)
+      gradient.addColorStop(0.45, palette.surface0)
+      gradient.addColorStop(1, palette.crust)
       break
     case 'quiz_encounter':
-      gradient.addColorStop(0, '#e78284')
-      gradient.addColorStop(0.45, '#543b48')
-      gradient.addColorStop(1, '#232634')
+      gradient.addColorStop(0, palette.red)
+      gradient.addColorStop(0.45, palette.maroon)
+      gradient.addColorStop(1, palette.crust)
       break
     case 'reflection_decryption':
-      gradient.addColorStop(0, '#ca9ee6')
-      gradient.addColorStop(0.45, '#4b3f5c')
-      gradient.addColorStop(1, '#232634')
+      gradient.addColorStop(0, palette.mauve)
+      gradient.addColorStop(0.45, palette.surface0)
+      gradient.addColorStop(1, palette.crust)
       break
     case 'tradeoff_workshop':
-      gradient.addColorStop(0, '#e5c890')
-      gradient.addColorStop(0.45, '#574a38')
-      gradient.addColorStop(1, '#232634')
+      gradient.addColorStop(0, palette.yellow)
+      gradient.addColorStop(0.45, palette.peach)
+      gradient.addColorStop(1, palette.crust)
       break
     case 'boss_lair':
-      gradient.addColorStop(0, '#ea999c')
-      gradient.addColorStop(0.45, '#e78284')
-      gradient.addColorStop(1, '#303446')
+      gradient.addColorStop(0, palette.maroon)
+      gradient.addColorStop(0.45, palette.red)
+      gradient.addColorStop(1, palette.base)
       break
     default:
-      gradient.addColorStop(0, '#60a5fa')
-      gradient.addColorStop(1, '#172554')
+      gradient.addColorStop(0, palette.sapphire)
+      gradient.addColorStop(1, palette.crust)
       break
   }
   return gradient
@@ -240,6 +231,7 @@ export const HexGridCanvas = React.forwardRef<HexGridCanvasRef, HexGridCanvasPro
   selectedNodeId,
   onSelectNode,
 }, ref) => {
+  const palette = useGamificationTheme()
   const containerRef = useRef<HTMLDivElement>(null)
   const appRef = useRef<Application | null>(null)
   const mapContainerRef = useRef<Container | null>(null)
@@ -330,7 +322,7 @@ export const HexGridCanvas = React.forwardRef<HexGridCanvasRef, HexGridCanvasPro
 
     // Walking indicator aura glow ring
     const arrivalAura = new Graphics()
-    arrivalAura.circle(0, 0, HEX_RADIUS - 4).stroke({ width: 2, color: 0x8caaee, alpha: 0 })
+    arrivalAura.circle(0, 0, HEX_RADIUS - 4).stroke({ width: 2, color: palette.blueNum, alpha: 0 })
     humanContainer.addChild(arrivalAura)
 
     mapContainer.addChild(humanContainer)
@@ -346,6 +338,7 @@ export const HexGridCanvas = React.forwardRef<HexGridCanvasRef, HexGridCanvasPro
         walkCycle,
         bob,
         cloakPhase: walkCycle,
+        palette,
       })
     }
 
@@ -434,6 +427,7 @@ export const HexGridCanvas = React.forwardRef<HexGridCanvasRef, HexGridCanvasPro
 
     animControllersRef.current = []
     mapContainer.removeChildren()
+    mapContainer.sortableChildren = true
 
     const {
       nodes: currentNodes,
@@ -448,6 +442,7 @@ export const HexGridCanvas = React.forwardRef<HexGridCanvasRef, HexGridCanvasPro
     // ─── 1. RENDER CURVED DEPENDENCY ARCS FOR SELECTED NODE (TARGET) ───
     if (currentSelected && currentSelected.type !== 'boss_lair') {
       const depContainer = new Container()
+      depContainer.zIndex = 2
       const activeDepConns = currentConnections.filter(
         (c) => c.toId === currentSelected.id
       )
@@ -481,20 +476,20 @@ export const HexGridCanvas = React.forwardRef<HexGridCanvasRef, HexGridCanvasPro
         curveGfx
           .moveTo(p1.x, p1.y)
           .quadraticCurveTo(cpX, cpY, p2.x, p2.y)
-          .stroke({ width: 3.5, color: 0xca9ee6, alpha: 0.85 })
+          .stroke({ width: 3.5, color: palette.mauveNum, alpha: 0.85 })
 
         const glowGfx = new Graphics()
         glowGfx
           .moveTo(p1.x, p1.y)
           .quadraticCurveTo(cpX, cpY, p2.x, p2.y)
-          .stroke({ width: 7, color: 0xca9ee6, alpha: 0.22 })
+          .stroke({ width: 7, color: palette.mauveNum, alpha: 0.22 })
 
         depContainer.addChild(glowGfx)
         depContainer.addChild(curveGfx)
 
         // Animated traveling energy pulse dots
         const pulseDot = new Graphics()
-        pulseDot.circle(0, 0, 3.5).fill({ color: 0xef9f76, alpha: 0.95 })
+        pulseDot.circle(0, 0, 3.5).fill({ color: palette.peachNum, alpha: 0.95 })
         depContainer.addChild(pulseDot)
 
         animControllersRef.current.push((t) => {
@@ -513,8 +508,14 @@ export const HexGridCanvas = React.forwardRef<HexGridCanvasRef, HexGridCanvasPro
       mapContainer.addChild(depContainer)
     }
 
-    // ─── 2. RENDER HEX NODES ───
-    currentNodes.forEach((node) => {
+    // ─── 2. RENDER HEX NODES (SORTED WITH SELECTED NODE AT FRONT) ───
+    const sortedNodes = [...currentNodes].sort((a, b) => {
+      if (a.id === currentSelectedId) return 1
+      if (b.id === currentSelectedId) return -1
+      return 0
+    })
+
+    sortedNodes.forEach((node) => {
       const coord = currentCoords.get(node.id) || node.coordinates || { q: 0, r: 0 }
       const { x, y } = axialToPixel(coord.q, coord.r, 0, 0)
       const isSelected = currentSelectedId === node.id
@@ -525,6 +526,7 @@ export const HexGridCanvas = React.forwardRef<HexGridCanvasRef, HexGridCanvasPro
       const hasItemReward = isKeyItemLocationRevealed(currentNodes, node)
 
       const nodeContainer = new Container()
+      nodeContainer.zIndex = isSelected ? 100 : (isBoss ? 10 : 5)
       nodeContainer.position.set(x, y)
       nodeContainer.eventMode = 'static'
       nodeContainer.cursor = 'pointer'
@@ -537,59 +539,107 @@ export const HexGridCanvas = React.forwardRef<HexGridCanvasRef, HexGridCanvasPro
       })
 
       const isDefeatedEncounter = isCleared && (node.type === 'quiz_encounter' || node.type === 'reflection_decryption')
-      const styleInfo = COLOR_MAP[node.type] || COLOR_MAP.capital
-      let strokeColor = isDefeatedEncounter ? 0x626880 : styleInfo.stroke
-      const highlightColor = isDefeatedEncounter ? 0x737994 : (styleInfo.highlight || strokeColor)
+      const styleInfo = palette.colorMap[node.type] || palette.colorMap.capital
+      let strokeColor = isDefeatedEncounter ? palette.surface2Num : styleInfo.stroke
+      const highlightColor = isDefeatedEncounter ? palette.overlay0Num : (styleInfo.highlight || strokeColor)
       let strokeWidth = 2
       let fillAlpha = isDefeatedEncounter ? 0.78 : 0.88
 
       if (isLocked && !isBoss) {
-        strokeColor = 0x51576d
+        strokeColor = palette.surface1Num
         strokeWidth = 1.8
         fillAlpha = 0.75
       } else if (isLocked && isBoss) {
-        strokeColor = 0xe78284
+        strokeColor = palette.redNum
         strokeWidth = 2
         fillAlpha = 0.85
-      }
-
-      if (isSelected) {
-        strokeColor = 0xef9f76
-        strokeWidth = 3.5
       }
 
       // 1. Outer Dark Drop Shadow / Rim
       const shadowGfx = new Graphics()
       shadowGfx
         .poly(getHexVertices(0, 1.5, HEX_RADIUS + 1))
-        .fill({ color: 0x181825, alpha: 0.6 })
+        .fill({ color: palette.crustNum, alpha: 0.6 })
       nodeContainer.addChild(shadowGfx)
 
-      // 2. Outer Selection Ring (Only on Selected Node)
-      if (isSelected) {
-        const auraGfx = new Graphics()
-        const outerVerts = getHexVertices(0, 0, HEX_RADIUS + 5)
-        auraGfx
-          .poly(outerVerts)
-          .stroke({ width: 3.5, color: 0xef9f76, alpha: 0.9 })
-        nodeContainer.addChild(auraGfx)
-
-        // Pulsing selection aura
-        animControllersRef.current.push((t) => {
-          auraGfx.alpha = 0.65 + 0.35 * Math.sin(t * 3.5)
-        })
-      }
-
-      // 3. Base Hexagon Tile with Top-to-Bottom FillGradient
+      // 2. Base Hexagon Tile with Top-to-Bottom FillGradient
       const hexGfx = new Graphics()
       const mainVerts = getHexVertices(0, 0, HEX_RADIUS)
-      const gradient = createHexGradient(node.type, isLocked, isCleared)
+      const gradient = createHexGradient(node.type, isLocked, isCleared, palette)
 
       hexGfx
         .poly(mainVerts)
         .fill({ fill: gradient, alpha: fillAlpha })
         .stroke({ width: strokeWidth, color: strokeColor })
       nodeContainer.addChild(hexGfx)
+
+      // 3. Tactical Target Lock / Aim Reticle (Drawn on Selected Node)
+      if (isSelected) {
+        const aimContainer = new Container()
+        const aimBracketGfx = new Graphics()
+        const aimRingGfx = new Graphics()
+        aimContainer.addChild(aimBracketGfx)
+        aimContainer.addChild(aimRingGfx)
+        nodeContainer.addChild(aimContainer)
+
+        animControllersRef.current.push((t) => {
+          const bracketDist = HEX_RADIUS + 8 + Math.sin(t * 3) * 1.5
+          const cornerLen = 10
+          const lockColor = palette.redNum
+
+          aimBracketGfx.clear()
+          // 4 Corner Brackets Framing the Hexagon
+          aimBracketGfx
+            .moveTo(-bracketDist, -bracketDist + cornerLen)
+            .lineTo(-bracketDist, -bracketDist)
+            .lineTo(-bracketDist + cornerLen, -bracketDist)
+            .stroke({ width: 2, color: lockColor, alpha: 0.95 })
+
+          aimBracketGfx
+            .moveTo(bracketDist, -bracketDist + cornerLen)
+            .lineTo(bracketDist, -bracketDist)
+            .lineTo(bracketDist - cornerLen, -bracketDist)
+            .stroke({ width: 2, color: lockColor, alpha: 0.95 })
+
+          aimBracketGfx
+            .moveTo(-bracketDist, bracketDist - cornerLen)
+            .lineTo(-bracketDist, bracketDist)
+            .lineTo(-bracketDist + cornerLen, bracketDist)
+            .stroke({ width: 2, color: lockColor, alpha: 0.95 })
+
+          aimBracketGfx
+            .moveTo(bracketDist, bracketDist - cornerLen)
+            .lineTo(bracketDist, bracketDist)
+            .lineTo(bracketDist - cornerLen, bracketDist)
+            .stroke({ width: 2, color: lockColor, alpha: 0.95 })
+
+          // Cardinal Crosshair Aim Ticks
+          const tickOffset = bracketDist + 4
+          aimBracketGfx
+            .moveTo(0, -tickOffset - 6).lineTo(0, -tickOffset)
+            .stroke({ width: 1.8, color: lockColor, alpha: 0.9 })
+            .moveTo(0, tickOffset + 6).lineTo(0, tickOffset)
+            .stroke({ width: 1.8, color: lockColor, alpha: 0.9 })
+            .moveTo(-tickOffset - 6, 0).lineTo(-tickOffset, 0)
+            .stroke({ width: 1.8, color: lockColor, alpha: 0.9 })
+            .moveTo(tickOffset + 6, 0).lineTo(tickOffset, 0)
+            .stroke({ width: 1.8, color: lockColor, alpha: 0.9 })
+
+          // Rotating Segmented Aim Reticle Ring
+          aimRingGfx.clear()
+          const r = HEX_RADIUS + 3
+          const segAngle = Math.PI / 4
+          const gapAngle = Math.PI / 4
+          const rot = t * 0.75
+          for (let i = 0; i < 4; i++) {
+            const startA = rot + i * (segAngle + gapAngle)
+            const endA = startA + segAngle
+            aimRingGfx
+              .arc(0, 0, r, startA, endA)
+              .stroke({ width: 1.5, color: palette.peachNum, alpha: 0.85 })
+          }
+        })
+      }
 
       // 4. Inner Bevel / Highlight Ring (Only for Unlocked or Boss Nodes)
       const innerGfx = new Graphics()
@@ -674,10 +724,10 @@ export const HexGridCanvas = React.forwardRef<HexGridCanvasRef, HexGridCanvasPro
         })
       }
 
-      // ─── UNIQUE EFFECT LAYERS BY NODE TYPE ───
+      // ─── UNIQUE EFFECT LAYERS BY NODE TYPE (TRIGGERED ON SELECTION) ───
 
       // 1. CAPITAL: Orbital Constellation Satellites
-      if (node.type === 'capital' && !isLocked) {
+      if (node.type === 'capital' && !isLocked && isSelected) {
         const orbitContainer = new Container()
         const numSatellites = 3
         const satellites: Graphics[] = []
@@ -702,7 +752,7 @@ export const HexGridCanvas = React.forwardRef<HexGridCanvasRef, HexGridCanvasPro
       }
 
       // 2. READING SANCTUARY: Floating Healing Spores / Gentle Mist
-      if (node.type === 'reading_sanctuary' && !isLocked) {
+      if (node.type === 'reading_sanctuary' && !isLocked && isSelected) {
         const sporesContainer = new Container()
         const sporesCount = 6
         const spores = Array.from({ length: sporesCount }, (_, i) => {
@@ -769,16 +819,14 @@ export const HexGridCanvas = React.forwardRef<HexGridCanvasRef, HexGridCanvasPro
       const atkUx = atkDx / atkLen
       const atkUy = atkDy / atkLen
 
-      // 3. QUIZ ENCOUNTER: Monster Strike Lunge with Smooth Fireball Blast Shot at Peak Distance
-      if (node.type === 'quiz_encounter' && !isLocked) {
+      // 3. ENCOUNTER NODES (QUIZ & REFLECTION): Strike Lunge with Smooth Fireball Blast Shot at Peak Distance
+      if ((node.type === 'quiz_encounter' || node.type === 'reflection_decryption') && !isLocked && isSelected) {
         if (isCleared) {
           animControllersRef.current.push((t) => {
             innerGfx.alpha = 0.35 + 0.25 * Math.sin(t * 2)
           })
         } else {
-          const pulseGfx = new Graphics()
           const fireGfx = new Graphics()
-          nodeContainer.addChild(pulseGfx)
           nodeContainer.addChild(fireGfx)
           const maxLunge = Math.min(26, Math.max(16, atkLen * 0.35))
 
@@ -842,153 +890,12 @@ export const HexGridCanvas = React.forwardRef<HexGridCanvasRef, HexGridCanvasPro
                 fireGfx.circle(tipX, tipY, Math.max(1, 3.5 * flameScale)).fill({ color: 0xffffff, alpha: flameAlpha * 1.0 })
               }
             }
-
-            const pulse = Math.pow(Math.sin(t * 4), 6)
-            const radius = HEX_RADIUS + pulse * 4
-            pulseGfx.clear()
-            if (pulse > 0.05) {
-              pulseGfx
-                .poly(getHexVertices(0, 0, radius))
-                .stroke({ width: 1.5, color: 0xe78284, alpha: pulse * 0.8 })
-            }
-            hexGfx.tint = isSelected ? 0xffffff : (pulse > 0.6 ? 0xffd5d5 : 0xffffff)
           })
         }
       }
 
-      // 4. REFLECTION DECRYPTION: High-Tension Bomb Decryption with Plasma Arc Shot at Peak Distance
-      if (node.type === 'reflection_decryption' && !isLocked) {
-        if (isCleared) {
-          animControllersRef.current.push((t) => {
-            innerGfx.alpha = 0.35 + 0.25 * Math.sin(t * 2)
-          })
-        } else {
-          const bombContainer = new Container()
-          const fireGfx = new Graphics()
-          const maxLunge = Math.min(22, Math.max(14, atkLen * 0.28))
-
-          // 4a. Ticking Danger LED Perimeter Ring (Clock-sweep countdown LEDs)
-          const numLeds = 12
-          const ledGraphics: Graphics[] = []
-          for (let i = 0; i < numLeds; i++) {
-            const angle = (i * Math.PI) / 6
-            const r = HEX_RADIUS + 5
-            const led = new Graphics()
-            led.circle(0, 0, 1.8).fill({ color: 0xe78284, alpha: 0.3 })
-            led.position.set(r * Math.cos(angle), r * Math.sin(angle))
-            bombContainer.addChild(led)
-            ledGraphics.push(led)
-          }
-
-          // 4b. Laser Defusal Scanner Beam
-          const laserGfx = new Graphics()
-          bombContainer.addChild(laserGfx)
-
-          // 4c. Erratic Electric Glitch Defusal Sparks
-          const glitchGfx = new Graphics()
-          bombContainer.addChild(glitchGfx)
-          bombContainer.addChild(fireGfx)
-
-          nodeContainer.addChild(bombContainer)
-
-          let activePlasmaStartTime = -1
-          let hasFiredPlasma = false
-
-          animControllersRef.current.push((t) => {
-            // Deep attacking breach lunge towards dependency
-            const lungeCycle = Math.sin(t * 2.2)
-            const lungeProgress = Math.pow(Math.max(0, lungeCycle), 2.2)
-            const lunge = maxLunge * lungeProgress
-            nodeContainer.position.set(x + atkUx * lunge, y + atkUy * lunge)
-
-            // Trigger plasma burst at peak lunge
-            if (lungeProgress > 0.88 && !hasFiredPlasma) {
-              hasFiredPlasma = true
-              activePlasmaStartTime = t
-            } else if (lungeProgress < 0.2) {
-              hasFiredPlasma = false
-            }
-
-            // Smooth plasma fire animation
-            fireGfx.clear()
-            if (activePlasmaStartTime > 0) {
-              const plasmaElapsed = t - activePlasmaStartTime
-              const plasmaDuration = 0.42
-              const p = plasmaElapsed / plasmaDuration
-
-              if (p <= 1) {
-                const travelDist = p * 24
-                const tipX = atkUx * (HEX_RADIUS + 3 + travelDist)
-                const tipY = atkUy * (HEX_RADIUS + 3 + travelDist)
-                const plasmaScale = Math.sin(p * Math.PI)
-                const perpX = -atkUy * (7 * plasmaScale)
-                const perpY = atkUx * (7 * plasmaScale)
-                const plasmaAlpha = Math.sin(p * Math.PI)
-
-                // Purple/Pink Cyber Plasma Fire
-                fireGfx.poly([
-                  tipX - atkUx * 8 + perpX, tipY - atkUy * 8 + perpY,
-                  tipX + atkUx * (15 * plasmaScale), tipY + atkUy * (15 * plasmaScale),
-                  tipX - atkUx * 8 - perpX, tipY - atkUy * 8 - perpY,
-                ]).fill({ color: 0xca9ee6, alpha: plasmaAlpha * 0.95 })
-
-                fireGfx.poly([
-                  tipX - atkUx * 5 + perpX * 0.5, tipY - atkUy * 5 + perpY * 0.5,
-                  tipX + atkUx * (9 * plasmaScale), tipY + atkUy * (9 * plasmaScale),
-                  tipX - atkUx * 5 - perpX * 0.5, tipY - atkUy * 5 - perpY * 0.5,
-                ]).fill({ color: 0xf4b8e4, alpha: plasmaAlpha * 1.0 })
-
-                fireGfx.circle(tipX, tipY, Math.max(1, 3 * plasmaScale)).fill({ color: 0xffffff, alpha: plasmaAlpha * 1.0 })
-              }
-            }
-
-            // Clock-sweep ticking LED ring
-            const activeIndex = Math.floor(t * 8) % numLeds
-            ledGraphics.forEach((led, i) => {
-              const isTicking = (i === activeIndex) || ((i + 1) % numLeds === activeIndex)
-              led.clear()
-              if (isTicking) {
-                led.circle(0, 0, 2.4).fill({ color: 0xef9f76, alpha: 1.0 })
-              } else {
-                led.circle(0, 0, 1.6).fill({ color: 0xe78284, alpha: 0.25 })
-              }
-            })
-
-            // Moving horizontal defusal laser scanner
-            const scanY = Math.sin(t * 4.2) * (HEX_RADIUS - 12)
-            const beamWidth = Math.sqrt(Math.max(0, (HEX_RADIUS - 6) ** 2 - scanY ** 2)) * 0.95
-            laserGfx.clear()
-              .moveTo(-beamWidth, scanY)
-              .lineTo(beamWidth, scanY)
-              .stroke({ width: 1.8, color: 0xe78284, alpha: 0.85 })
-              .circle(0, scanY, 3.5)
-              .fill({ color: 0xffffff, alpha: 0.9 })
-
-            // Electric short-circuit glitch sparks
-            glitchGfx.clear()
-            if (Math.sin(t * 12) > 0.4) {
-              const sparkAngle = Math.random() * Math.PI * 2
-              const r1 = HEX_RADIUS - 8
-              const r2 = HEX_RADIUS + 3
-              glitchGfx
-                .moveTo(r1 * Math.cos(sparkAngle), r1 * Math.sin(sparkAngle))
-                .lineTo(
-                  (r1 + (r2 - r1) * 0.5) * Math.cos(sparkAngle) + (Math.random() - 0.5) * 6,
-                  (r1 + (r2 - r1) * 0.5) * Math.sin(sparkAngle) + (Math.random() - 0.5) * 6
-                )
-                .lineTo(r2 * Math.cos(sparkAngle), r2 * Math.sin(sparkAngle))
-                .stroke({ width: 1.4, color: 0xef9f76, alpha: 0.9 })
-            }
-
-            // Urgent emergency warning heartbeat
-            const alertPulse = Math.pow(Math.sin(t * 6), 4)
-            innerGfx.alpha = 0.35 + alertPulse * 0.6
-          })
-        }
-      }
-
-      // 5. TRADEOFF WORKSHOP: Transmutation Forge / Golden Star Constellation
-      if (node.type === 'tradeoff_workshop' && !isLocked) {
+      // 4. TRADEOFF WORKSHOP: Transmutation Forge / Golden Star Constellation
+      if (node.type === 'tradeoff_workshop' && !isLocked && isSelected) {
         const forgeContainer = new Container()
 
         // 8 Twinkling Golden Stars distributed inside the hex
@@ -1031,8 +938,8 @@ export const HexGridCanvas = React.forwardRef<HexGridCanvasRef, HexGridCanvasPro
         })
       }
 
-      // 6. BOSS LAIR: Expanding Crimson Shockwaves & Fiery Flare
-      if (node.type === 'boss_lair') {
+      // 5. BOSS LAIR: Expanding Crimson Shockwaves & Fiery Flare
+      if (node.type === 'boss_lair' && isSelected) {
         const shockwaveContainer = new Container()
         const wave1 = new Graphics()
         const wave2 = new Graphics()
@@ -1059,7 +966,7 @@ export const HexGridCanvas = React.forwardRef<HexGridCanvasRef, HexGridCanvasPro
         })
       }
 
-      // 7. LOCKED (Fog of War) OR NEWLY UNLOCKED REVEAL ANIMATION (Clouds parting left & right with glow)
+      // 6. LOCKED (Fog of War) OR NEWLY UNLOCKED REVEAL ANIMATION (Clouds parting left & right with glow)
       const isNewlyUnlocked = newlyUnlockedNodeIdsRef.current.has(node.id)
       if (isNewlyUnlocked) {
         // NOTE: do NOT delete the flag here (see matching note on the bomb-detonation
@@ -1258,7 +1165,7 @@ export const HexGridCanvas = React.forwardRef<HexGridCanvasRef, HexGridCanvasPro
       // Center Procedural Vector Insignia (Only for Unlocked Nodes or Boss)
       if (!isLocked || isBoss) {
         const insigniaGfx = new Graphics()
-        drawVectorInsignia(insigniaGfx, node.type, styleInfo.highlight || styleInfo.stroke, isDefeatedEncounter)
+        drawVectorInsignia(insigniaGfx, node.type, styleInfo.highlight || styleInfo.stroke, isDefeatedEncounter, palette)
         insigniaGfx.position.set(0, (hasItemReward || isThreatened) ? -5 : 0)
         nodeContainer.addChild(insigniaGfx)
       }
@@ -1268,15 +1175,15 @@ export const HexGridCanvas = React.forwardRef<HexGridCanvasRef, HexGridCanvasPro
         const badgeGfx = new Graphics()
         badgeGfx
           .roundRect(-14, 12, 28, 18, 9)
-          .fill({ color: 0x1e1e2e, alpha: 0.95 })
-          .stroke({ width: 1.5, color: 0xe5c890 })
+          .fill({ color: palette.mantleNum, alpha: 0.95 })
+          .stroke({ width: 1.5, color: palette.yellowNum })
         nodeContainer.addChild(badgeGfx)
 
         const rewardIconStyle = new TextStyle({
           fontSize: 11,
           fontFamily: 'Apple Color Emoji, Segoe UI Emoji, sans-serif',
           fontWeight: 'bold',
-          fill: 0xe5c890,
+          fill: palette.yellowNum,
         })
         const rewardText = new Text({ text: node.rewards[0].icon || '🎁', style: rewardIconStyle })
         rewardText.anchor.set(0.5, 0.5)
@@ -1289,7 +1196,7 @@ export const HexGridCanvas = React.forwardRef<HexGridCanvasRef, HexGridCanvasPro
         const checkStyle = new TextStyle({
           fontSize: 13,
           fontWeight: 'bold',
-          fill: isDefeatedEncounter ? 0xa5adce : 0xa6d189,
+          fill: isDefeatedEncounter ? palette.subtext0Num : palette.greenNum,
         })
         const checkText = new Text({ text: '✓', style: checkStyle })
         checkText.anchor.set(0.5, 0.5)
@@ -1385,6 +1292,16 @@ export const HexGridCanvas = React.forwardRef<HexGridCanvasRef, HexGridCanvasPro
       return () => clearTimeout(timer)
     }
   }, [nodes, selectedNodeId, isCapitalCleared])
+
+  // Re-render Pixi scene when theme palette changes
+  useEffect(() => {
+    if (appRef.current?.renderer) {
+      appRef.current.renderer.background.color = palette.baseNum
+    }
+    if (mapContainerRef.current) {
+      renderRef.current()
+    }
+  }, [palette])
 
   // PixiJS canvas initialization & render hook
   const handleInitPixi = useCallback((app: Application, rootContainer: Container) => {
@@ -1508,7 +1425,7 @@ export const HexGridCanvas = React.forwardRef<HexGridCanvasRef, HexGridCanvasPro
       data-lenis-prevent
       data-lenis-prevent-wheel
       data-lenis-prevent-touch
-      className={`relative w-full aspect-[16/10] min-h-[320px] max-h-[70vh] bg-[#232634] rounded-2xl border border-[#414559] overflow-hidden shadow-2xl flex items-center justify-center select-none ${
+      className={`relative w-full aspect-[16/10] min-h-[320px] max-h-[70vh] bg-[var(--ctp-base)] rounded-2xl border border-[var(--ctp-surface1)] overflow-hidden shadow-2xl flex items-center justify-center select-none ${
         isDragging ? 'cursor-grabbing' : 'cursor-grab'
       }`}
       style={{ touchAction: 'none', overscrollBehavior: 'contain' }}
@@ -1523,7 +1440,7 @@ export const HexGridCanvas = React.forwardRef<HexGridCanvasRef, HexGridCanvasPro
       {/* Reusable React Pixi Canvas Viewport */}
       <PixiCanvasViewport
         className="absolute inset-0 w-full h-full"
-        backgroundColor={0x232634}
+        backgroundColor={palette.baseNum}
         backgroundAlpha={1}
         defaultWidth={880}
         defaultHeight={580}
@@ -1532,28 +1449,28 @@ export const HexGridCanvas = React.forwardRef<HexGridCanvasRef, HexGridCanvasPro
       />
 
       {/* Background Grid Pattern */}
-      <div className="absolute inset-0 opacity-15 bg-[radial-gradient(#8caaee_1px,transparent_1px)] [background-size:24px_24px] pointer-events-none" />
+      <div className="absolute inset-0 opacity-15 bg-[radial-gradient(var(--ctp-blue)_1px,transparent_1px)] [background-size:24px_24px] pointer-events-none" />
 
       {/* Mobile-Friendly Zoom & Pan Controls Overlay */}
-      <div className="absolute top-3 right-3 z-20 flex items-center gap-1.5 bg-[#303446]/90 backdrop-blur-md p-1.5 rounded-xl border border-[#414559] shadow-lg">
+      <div className="absolute top-3 right-3 z-20 flex items-center gap-1.5 bg-[var(--ctp-surface0)]/90 backdrop-blur-md p-1.5 rounded-xl border border-[var(--ctp-surface1)] shadow-lg">
         <button
           onClick={handleZoomIn}
           title="Zoom In"
-          className="w-8 h-8 rounded-lg bg-[#232634] hover:bg-[#414559] active:scale-95 text-[#c6d0f5] flex items-center justify-center transition-all border border-[#51576d]"
+          className="w-8 h-8 rounded-lg bg-[var(--ctp-crust)] hover:bg-[var(--ctp-surface1)] active:scale-95 text-[var(--ctp-text)] flex items-center justify-center transition-all border border-[var(--ctp-surface1)]"
         >
           <Plus size={16} />
         </button>
         <button
           onClick={handleZoomOut}
           title="Zoom Out"
-          className="w-8 h-8 rounded-lg bg-[#232634] hover:bg-[#414559] active:scale-95 text-[#c6d0f5] flex items-center justify-center transition-all border border-[#51576d]"
+          className="w-8 h-8 rounded-lg bg-[var(--ctp-crust)] hover:bg-[var(--ctp-surface1)] active:scale-95 text-[var(--ctp-text)] flex items-center justify-center transition-all border border-[var(--ctp-surface1)]"
         >
           <Minus size={16} />
         </button>
         <button
           onClick={handleResetPanZoom}
           title="Reset Pan & Zoom"
-          className="px-2.5 h-8 rounded-lg bg-[#232634] hover:bg-[#414559] active:scale-95 text-[#8caaee] font-mono text-xs font-semibold flex items-center gap-1 transition-all border border-[#51576d]"
+          className="px-2.5 h-8 rounded-lg bg-[var(--ctp-crust)] hover:bg-[var(--ctp-surface1)] active:scale-95 text-[var(--ctp-blue)] font-mono text-xs font-semibold flex items-center gap-1 transition-all border border-[var(--ctp-surface1)]"
         >
           <RotateCcw size={13} />
           <span>{Math.round(zoom * 100)}%</span>
@@ -1561,20 +1478,20 @@ export const HexGridCanvas = React.forwardRef<HexGridCanvasRef, HexGridCanvasPro
       </div>
 
       {/* Map Pan Drag Hint */}
-      <div className="absolute top-3 left-3 z-20 hidden sm:flex items-center gap-1.5 bg-[#303446]/80 backdrop-blur-sm px-2.5 py-1 rounded-lg border border-[#414559] text-[11px] text-[#a5adce] pointer-events-none">
-        <Move size={12} className="text-[#8caaee]" />
+      <div className="absolute top-3 left-3 z-20 hidden sm:flex items-center gap-1.5 bg-[var(--ctp-surface0)]/80 backdrop-blur-sm px-2.5 py-1 rounded-lg border border-[var(--ctp-surface1)] text-[11px] text-[var(--ctp-subtext0)] pointer-events-none">
+        <Move size={12} className="text-[var(--ctp-blue)]" />
         <span>Drag canvas to pan • Pinch / Wheel to zoom</span>
       </div>
 
       {/* Map Control Overlay Legend */}
-      <div className="absolute bottom-3 left-3 z-20 bg-[#303446]/90 backdrop-blur-md px-3 py-2 rounded-xl border border-[#414559] flex items-center gap-3 text-xs text-[#c6d0f5] max-w-[92vw] overflow-x-auto">
-        <div className="flex items-center gap-1 shrink-0"><span className="w-2.5 h-2.5 rounded-full bg-[#3b82f6]" /> Capital</div>
-        <div className="flex items-center gap-1 shrink-0"><span className="w-2.5 h-2.5 rounded-full bg-[#a6d189]" /> Sanctuary</div>
-        <div className="flex items-center gap-1 shrink-0"><span className="w-2.5 h-2.5 rounded-full bg-[#e78284]" /> Monster</div>
-        <div className="flex items-center gap-1 shrink-0"><span className="w-2.5 h-2.5 rounded-full bg-[#ca9ee6]" /> Reflection</div>
-        <div className="flex items-center gap-1 shrink-0"><span className="w-2.5 h-2.5 rounded-full bg-[#e5c890]" /> Workshop</div>
-        <div className="flex items-center gap-1 shrink-0"><span className="w-2.5 h-2.5 rounded-full bg-[#ea999c]" /> Boss</div>
-        <div className="flex items-center gap-1 shrink-0 border-l border-[#51576d] pl-3"><span className="w-2.5 h-2.5 rounded-full bg-[#51576d]" /> Locked (Fog)</div>
+      <div className="absolute bottom-3 left-3 z-20 bg-[var(--ctp-surface0)]/90 backdrop-blur-md px-3 py-2 rounded-xl border border-[var(--ctp-surface1)] flex items-center gap-3 text-xs text-[var(--ctp-text)] max-w-[92vw] overflow-x-auto">
+        <div className="flex items-center gap-1 shrink-0"><span className="w-2.5 h-2.5 rounded-full bg-[var(--ctp-blue)]" /> Capital</div>
+        <div className="flex items-center gap-1 shrink-0"><span className="w-2.5 h-2.5 rounded-full bg-[var(--ctp-green)]" /> Sanctuary</div>
+        <div className="flex items-center gap-1 shrink-0"><span className="w-2.5 h-2.5 rounded-full bg-[var(--ctp-red)]" /> Monster</div>
+        <div className="flex items-center gap-1 shrink-0"><span className="w-2.5 h-2.5 rounded-full bg-[var(--ctp-mauve)]" /> Reflection</div>
+        <div className="flex items-center gap-1 shrink-0"><span className="w-2.5 h-2.5 rounded-full bg-[var(--ctp-yellow)]" /> Workshop</div>
+        <div className="flex items-center gap-1 shrink-0"><span className="w-2.5 h-2.5 rounded-full bg-[var(--ctp-maroon)]" /> Boss</div>
+        <div className="flex items-center gap-1 shrink-0 border-l border-[var(--ctp-surface1)] pl-3"><span className="w-2.5 h-2.5 rounded-full bg-[var(--ctp-surface1)]" /> Locked (Fog)</div>
       </div>
     </div>
   )

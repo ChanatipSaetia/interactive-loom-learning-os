@@ -7,7 +7,9 @@ import { RunicCountdownRing } from '../../../../../src/core/supporting/gamificat
 import { TradeoffStatPreviewBar } from '../../../../../src/core/supporting/gamification/components/TradeoffStatPreviewBar'
 import { BossBattleArena } from '../../../../../src/core/supporting/gamification/components/BossBattleArena'
 import { HexGridCanvas } from '../../../../../src/core/supporting/gamification/components/HexGridCanvas'
-import type { HexNodeData, MonsterData, CharacterAttributes } from '../../../../../src/core/supporting/gamification/types'
+import { TopicCampaignCard } from '../../../../../src/core/supporting/gamification/components/gamification/TopicCampaignCard'
+import type { HexNodeData, MonsterData, CharacterAttributes, GlobalCharacterState } from '../../../../../src/core/supporting/gamification/types'
+import type { TopicRoute } from '../../../../../src/core/learning-engine/composition/routes'
 
 describe('Gamification Real UI Components', () => {
   const mockNode: HexNodeData = {
@@ -323,6 +325,120 @@ describe('Gamification Real UI Components', () => {
     expect(screen.getByText('Capital')).toBeDefined()
     expect(screen.getByText('Sanctuary')).toBeDefined()
     expect(screen.getByText('Locked (Fog)')).toBeDefined()
+  })
+
+  describe('TopicCampaignCard', () => {
+    const mockTopic: TopicRoute = {
+      id: 'demo-topic',
+      path: '/demo-topic',
+      label: 'Demo Topic Realm',
+      category: 'Architecture',
+      description: 'Explore the architectural patterns in this realm.',
+    }
+
+    const mockGlobalChar: GlobalCharacterState = {
+      level: 1,
+      exp: 0,
+      nextLevelExp: 100,
+      unallocatedPoints: 0,
+      unlockedBadges: [],
+      topicPlayCounts: {},
+      attributes: {
+        armor: 10,
+        evasion: 10,
+        intelligence: 10,
+      },
+    }
+
+    it('renders difficulty dropdown next to Start Campaign button for unstarted topic', () => {
+      const handleSelectTopic = vi.fn()
+      const handleSelectDifficulty = vi.fn()
+      const handleResetCampaign = vi.fn()
+
+      render(
+        <TopicCampaignCard
+          topic={mockTopic}
+          globalChar={mockGlobalChar}
+          isCurrent={false}
+          campaign={null}
+          topicDifficulty="normal"
+          onSelectTopic={handleSelectTopic}
+          onSelectDifficulty={handleSelectDifficulty}
+          onResetCampaign={handleResetCampaign}
+        />
+      )
+
+      expect(screen.getByText('Demo Topic Realm')).toBeDefined()
+      expect(screen.getByText('Start Campaign')).toBeDefined()
+
+      // Dropdown should be rendered with Normal selected
+      const dropdownBtn = screen.getByRole('button', { name: /Architect \(Normal\)/i })
+      expect(dropdownBtn).toBeDefined()
+
+      // Info tooltip button should be present
+      const infoBtn = screen.getByRole('button', { name: /Difficulty Details/i })
+      expect(infoBtn).toBeDefined()
+      expect(screen.getByText(/Balanced challenge with 5 Sanctuary pulses/i)).toBeDefined()
+
+      // Click dropdown to open options
+      fireEvent.click(dropdownBtn)
+
+      // Choose nightmare difficulty
+      const nightmareOption = screen.getByText(/Grandmaster/i)
+      fireEvent.click(nightmareOption)
+      expect(handleSelectDifficulty).toHaveBeenCalledWith('demo-topic', 'nightmare')
+
+      // Click Start Campaign button
+      const startBtn = screen.getByRole('button', { name: /Start Campaign/i })
+      fireEvent.click(startBtn)
+      expect(handleSelectTopic).toHaveBeenCalledWith('demo-topic')
+    })
+
+    it('renders Resume Campaign button and active difficulty badge for started campaign', () => {
+      const handleSelectTopic = vi.fn()
+      const handleSelectDifficulty = vi.fn()
+      const handleResetCampaign = vi.fn()
+
+      render(
+        <TopicCampaignCard
+          topic={mockTopic}
+          globalChar={mockGlobalChar}
+          isCurrent={true}
+          campaign={{
+            topicId: 'demo-topic',
+            topicTitle: 'Demo Topic Realm',
+            isStarted: true,
+            clearedNodeIds: ['node-1'],
+            difficulty: 'hard',
+            characterHp: 100,
+            maxCharacterHp: 100,
+            damageTakenInCampaign: 0,
+            turnCount: 1,
+            chaosLevel: 0,
+            sanctuaryPulsesUsed: 0,
+            maxSanctuaryPulses: 5,
+            inventory: [],
+            activeBuffs: [],
+          }}
+          topicDifficulty="hard"
+          onSelectTopic={handleSelectTopic}
+          onSelectDifficulty={handleSelectDifficulty}
+          onResetCampaign={handleResetCampaign}
+        />
+      )
+
+      expect(screen.getByText('Resume Campaign')).toBeDefined()
+      expect(screen.getAllByText(/Hard/i).length).toBeGreaterThan(0)
+      expect(screen.queryByRole('button', { name: /⚔️ Normal/i })).toBeNull()
+
+      const resumeBtn = screen.getByRole('button', { name: /Resume Campaign/i })
+      fireEvent.click(resumeBtn)
+      expect(handleSelectTopic).toHaveBeenCalledWith('demo-topic')
+
+      const resetBtn = screen.getByTitle(/Reset Campaign/i)
+      fireEvent.click(resetBtn)
+      expect(handleResetCampaign).toHaveBeenCalledWith('demo-topic')
+    })
   })
 })
 

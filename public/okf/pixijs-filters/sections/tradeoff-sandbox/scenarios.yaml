@@ -1,0 +1,194 @@
+- id: "filter-optimization-strategy"
+  title: "Post-Processing Performance & Architecture Strategy"
+  description: "Architect post-processing shaders and container hierarchies for a 60 FPS mobile/web game, balancing GPU fillrate, VRAM, and visual fidelity."
+  metrics:
+    - id: "fps_throughput"
+      label: "FPS Throughput"
+      baseValue: 55
+      min: 0
+      max: 100
+      direction: "higher"
+    - id: "draw_call_overhead"
+      label: "Draw Call & Target Breaks"
+      baseValue: 60
+      min: 0
+      max: 100
+      direction: "lower"
+    - id: "gpu_memory"
+      label: "GPU Memory & VRAM Bandwidth"
+      baseValue: 50
+      min: 0
+      max: 100
+      direction: "lower"
+    - id: "visual_spectacle"
+      label: "Visual Fidelity & Effects"
+      baseValue: 70
+      min: 0
+      max: 100
+      direction: "higher"
+  steps:
+    - id: "step_attachment"
+      title: "1. Filter Attachment Hierarchy"
+      description: "Determine where filters are attached in the scene graph hierarchy."
+      recommended: "grouped_container"
+      choices:
+        - id: "individual_sprites"
+          label: "Individual Leaf Sprites"
+          description: "Attach separate filters to 50 individual enemy sprites on screen."
+          metrics:
+            fps_throughput: -35
+            draw_call_overhead: 45
+            gpu_memory: 30
+            visual_spectacle: 5
+          pros:
+            - title: "Independent control"
+              description: "Each enemy can have unique filter parameters."
+          cons:
+            - title: "Catastrophic batch breaking"
+              description: "Forces 50 separate offscreen RenderTarget switch cycles per frame."
+            - title: "Severe mobile lag"
+              description: "Framerate drops below 20 FPS on mobile devices."
+          whyThisFits: "Only when rendering 1 or 2 highlighted hero characters."
+          whenToUse: "Solo boss highlight or single cursor glow."
+
+        - id: "grouped_container"
+          label: "Grouped Parent Container"
+          description: "Group all 50 enemies into one parent Container and attach 1 filter to the container."
+          metrics:
+            fps_throughput: 30
+            draw_call_overhead: -35
+            gpu_memory: -20
+            visual_spectacle: 15
+          pros:
+            - title: "Single offscreen pass"
+              description: "All 50 enemies render into 1 shared RenderTarget before filtering."
+            - title: "Preserves 60 FPS"
+              description: "Reduces framebuffer switching overhead by 98%."
+          cons:
+            - title: "Uniform parameters"
+              description: "All grouped enemies share the same filter intensity."
+          whyThisFits: "Standard best practice for multi-object post-processing."
+          whenToUse: "Particle swarms, enemy mobs, and UI card groups."
+
+    - id: "step_algorithm"
+      title: "2. Blur & Glow Algorithm Selection"
+      description: "Choose the mathematical convolution approach for blurs and glows."
+      recommended: "kawase_blur"
+      choices:
+        - id: "standard_gaussian"
+          label: "Multi-Pass Gaussian Blur"
+          description: "Standard PIXI.BlurFilter with quality 4 and large kernel radii."
+          metrics:
+            fps_throughput: -20
+            draw_call_overhead: 15
+            gpu_memory: 20
+            visual_spectacle: 20
+          pros:
+            - title: "Pure Gaussian distribution"
+              description: "Mathematically flawless smooth gradients."
+          cons:
+            - title: "High sample taps"
+              description: "High texture fetch count increases GPU thermal load on phones."
+          whyThisFits: "High-end desktop gaming and marketing landing pages."
+          whenToUse: "When GPU power is abundant and visual precision is paramount."
+
+        - id: "kawase_blur"
+          label: "Kawase Box-Offset Blur"
+          description: "Multi-pass KawaseBlurFilter with expanding box sample offsets."
+          metrics:
+            fps_throughput: 25
+            draw_call_overhead: -10
+            gpu_memory: -15
+            visual_spectacle: 15
+          pros:
+            - title: "Ultra-fast texture sampling"
+              description: "Requires far fewer texture reads per pixel pass."
+            - title: "Visually identical to Gaussian"
+              description: "Provides smooth soft-focus aesthetics."
+          cons:
+            - title: "External package"
+              description: "Requires pixi-filters package import."
+          whyThisFits: "Production mobile web games and interactive apps."
+          whenToUse: "All mobile-first projects requiring real-time blur or bloom."
+
+    - id: "step_caching"
+      title: "3. Static Filter Caching Strategy"
+      description: "Determine whether static filtered UI and card assets are cached."
+      recommended: "cache_bitmap"
+      choices:
+        - id: "dynamic_per_frame"
+          label: "Continuous Dynamic Re-execution"
+          description: "Execute all filter shader passes every frame even for static UI elements."
+          metrics:
+            fps_throughput: -25
+            draw_call_overhead: 25
+            gpu_memory: 15
+            visual_spectacle: 0
+          pros:
+            - title: "Always reactive"
+              description: "Instantly reflects any child transform or text change."
+          cons:
+            - title: "Wasted GPU cycles"
+              description: "Calculates identical pixels 60 times per second for unchanging UI."
+          whyThisFits: "Rapidly animating visual effects that change every frame."
+          whenToUse: "Waving water, flickering flames, or animated shockwaves."
+
+        - id: "cache_bitmap"
+          label: "Bake with cacheAsBitmap = true"
+          description: "Bake the filtered container into a static cached texture after initial render."
+          metrics:
+            fps_throughput: 35
+            draw_call_overhead: -30
+            gpu_memory: -10
+            visual_spectacle: 10
+          pros:
+            - title: "Zero ongoing filter cost"
+              description: "Subsequent frames draw the baked texture as 1 standard batched sprite."
+            - title: "Restores batch rendering"
+              description: "Can be batched alongside regular sprites."
+          cons:
+            - title: "Re-bake on mutation"
+              description: "Changing child text or layout requires invalidating the bitmap cache."
+          whyThisFits: "Static UI cards, inventory dialogs, HUD backgrounds, and map tiles."
+          whenToUse: "Any filtered object whose contents change infrequently."
+
+    - id: "step_resolution"
+      title: "4. Filter Resolution & Sampling Scale"
+      description: "Configure filter.resolution to balance shader sharpness with GPU fillrate."
+      recommended: "half_resolution"
+      choices:
+        - id: "native_resolution"
+          label: "Native Resolution (1.0x / Retina 2.0x)"
+          description: "Render offscreen targets at full native display pixel density."
+          metrics:
+            fps_throughput: -15
+            draw_call_overhead: 0
+            gpu_memory: 25
+            visual_spectacle: 15
+          pros:
+            - title: "Pixel-perfect sharpness"
+              description: "Sharp outlines and fine displacement details."
+          cons:
+            - title: "4x fillrate cost on Retina"
+              description: "Huge bandwidth tax on high-DPI smartphone screens."
+          whyThisFits: "Crisp outline filters and fine pixel-art CRT shaders."
+          whenToUse: "Fine geometric effects where blur softness is undesirable."
+
+        - id: "half_resolution"
+          label: "Half Resolution (0.5x Scale)"
+          description: "Render offscreen target at half resolution with hardware bilinear upsampling."
+          metrics:
+            fps_throughput: 25
+            draw_call_overhead: 0
+            gpu_memory: -25
+            visual_spectacle: 5
+          pros:
+            - title: "75% reduction in pixel fillrate"
+              description: "Processes 1/4 the pixel count in the fragment shader."
+            - title: "Natural blur smoothing"
+              description: "Bilinear upsampling naturally complements blur and bloom."
+          cons:
+            - title: "Slight edge softening"
+              description: "Not suitable for razor-sharp 1px outlines."
+          whyThisFits: "Large blurs, glows, bloom, and background depth-of-field."
+          whenToUse: "Mobile devices and performance-sensitive blur/glow effects."

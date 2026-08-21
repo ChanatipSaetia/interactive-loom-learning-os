@@ -1,0 +1,20 @@
+challenges:
+  - id: "cache-as-bitmap-sequence"
+    prompt: "Arrange the chronological stages of baking a filtered container with cacheAsBitmap:"
+    items:
+      - id: "step-enable-cache"
+        text: "Set container.cacheAsBitmap = true on static filtered display object"
+      - id: "step-measure-bounds"
+        text: "Calculate combined padded bounds of container and active filters"
+      - id: "step-bake-texture"
+        text: "Execute filter shader passes once and bake output into private RenderTexture"
+      - id: "step-switch-batched"
+        text: "Direct renderer to draw cached texture as a single batched sprite quad"
+      - id: "step-invalidate-mutation"
+        text: "Invalidate and re-bake cache when child nodes change or mutate"
+    solution:
+      - "step-enable-cache"
+      - "step-measure-bounds"
+      - "step-bake-texture"
+      - "step-switch-batched"
+      - "step-invalidate-mutation"

@@ -1,0 +1,110 @@
+id: "filter-selection-advisor"
+title: "PixiJS Filter Selection & Performance Advisor"
+root: "primary_goal"
+nodes:
+  primary_goal:
+    prompt: "What visual effect or post-processing transformation are you building?"
+    choices:
+      - id: "choice_color"
+        text: "Color adjustment, grading, tint, or desaturation"
+        next: "node_color_type"
+        rationale: "Color modifications can be performed efficiently in a single shader pass."
+        recommended: true
+      - id: "choice_blur"
+        text: "Blur, glow, drop shadow, or depth-of-field"
+        next: "node_blur_target"
+        rationale: "Blur and spatial convolutions require multi-pass texture sampling."
+      - id: "choice_distortion"
+        text: "Water ripples, shockwaves, or optical refraction"
+        next: "rec_displacement"
+        rationale: "Coordinate distortions are best handled by DisplacementFilter with a map texture."
+      - id: "choice_custom"
+        text: "Custom procedural visuals or unique shader math"
+        next: "rec_custom_glsl"
+        rationale: "Bespoke visuals require writing custom GLSL/WGSL fragment shaders via PIXI.Filter."
+
+  node_color_type:
+    prompt: "Is the color transformation static or dynamically animated?"
+    choices:
+      - id: "choice_matrix_preset"
+        text: "Standard presets (grayscale, sepia, brightness, contrast, hue)"
+        next: "rec_color_matrix"
+        rationale: "ColorMatrixFilter provides built-in GPU matrix math presets with zero setup."
+        recommended: true
+      - id: "choice_simple_tint"
+        text: "Simple uniform color tint across a single sprite"
+        next: "rec_sprite_tint"
+        rationale: "Sprite tint property operates directly in the batch renderer without filter overhead."
+
+  node_blur_target:
+    prompt: "What is your target deployment platform and update frequency?"
+    choices:
+      - id: "choice_mobile_dynamic"
+        text: "Mobile devices / 60 FPS continuous real-time animation"
+        next: "rec_kawase_mobile"
+        rationale: "Mobile GPUs have limited fill rate; Kawase blur with reduced resolution maximizes FPS."
+        recommended: true
+      - id: "choice_desktop_high"
+        text: "Desktop high-performance browser / AAA visual fidelity"
+        next: "rec_gaussian_desktop"
+        rationale: "Desktop GPUs can handle full 2-pass Gaussian BlurFilter with high sample quality."
+      - id: "choice_static_ui"
+        text: "Static UI cards, dialog backgrounds, or rarely updated panels"
+        next: "rec_cache_bitmap"
+        rationale: "Baking static filtered containers with cacheAsBitmap eliminates ongoing GPU costs."
+
+  rec_color_matrix:
+    leaf:
+      recommendation: "Use PIXI.ColorMatrixFilter"
+      explanation: "ColorMatrixFilter executes a 5x4 matrix multiplication in a single GPU pass. It provides built-in methods like desaturate(), sepia(), hue(), and brightness() without breaking performance."
+      tradeoffs:
+        - "Single-pass execution incurs minimal performance penalty"
+        - "Cannot perform spatial neighboring-pixel blur operations"
+
+  rec_sprite_tint:
+    leaf:
+      recommendation: "Use sprite.tint instead of a Filter"
+      explanation: "For simple color tints on individual sprites, setting sprite.tint = 0xFF0000 is processed directly inside the BatchRenderer with zero offscreen RenderTarget overhead."
+      tradeoffs:
+        - "Zero batch break overhead and zero offscreen buffer allocation"
+        - "Multiplicative tinting only; cannot do advanced curves or inverted grading"
+
+  rec_kawase_mobile:
+    leaf:
+      recommendation: "Use KawaseBlurFilter with resolution: 0.5"
+      explanation: "KawaseBlurFilter from pixi-filters delivers smooth blur aesthetics using fewer texture sample taps. Setting filter.resolution = 0.5 cuts GPU fillrate consumption by 75% on mobile devices."
+      tradeoffs:
+        - "Blazing 60 FPS performance on low-end mobile devices"
+        - "Slight softening from bilinear upsampling (usually imperceptible for blurs)"
+
+  rec_gaussian_desktop:
+    leaf:
+      recommendation: "Use PIXI.BlurFilter with quality: 3"
+      explanation: "Standard BlurFilter implements separable horizontal and vertical Gaussian passes. Setting quality = 3 produces smooth, publication-grade blur gradients on desktop GPUs."
+      tradeoffs:
+        - "Perfect mathematical Gaussian blur curves"
+        - "Requires multiple passes that can slow down mobile web browsers"
+
+  rec_cache_bitmap:
+    leaf:
+      recommendation: "Apply Filter + set container.cacheAsBitmap = true"
+      explanation: "Apply any complex blur or glow filter to the UI container, then set cacheAsBitmap = true. PixiJS renders the filter once into a private texture and draws it as a single quad in subsequent frames."
+      tradeoffs:
+        - "Eliminates per-frame filter recalculation entirely (100% batched)"
+        - "Updating container contents requires invalidating the cache"
+
+  rec_displacement:
+    leaf:
+      recommendation: "Use PIXI.DisplacementFilter with a Noise Sprite"
+      explanation: "Create a DisplacementFilter referencing a seamless tileable noise texture. Animate displacementSprite.x and y in your Ticker loop to produce dynamic water ripples and heat haze."
+      tradeoffs:
+        - "Realistic refractive optical distortion effects"
+        - "Requires an extra texture unit and displacement map asset"
+
+  rec_custom_glsl:
+    leaf:
+      recommendation: "Create a custom PIXI.Filter subclass"
+      explanation: "Subclass PIXI.Filter and pass custom GLSL vertex/fragment shader strings and uniform mappings. Update uniform values inside your game loop for dynamic, procedural effects."
+      tradeoffs:
+        - "Unlimited creative shader freedom"
+        - "Requires GLSL shader authoring and uniform memory management"

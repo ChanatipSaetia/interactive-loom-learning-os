@@ -1,0 +1,4 @@
+render_ticker:
+  title: "Render Loop Ticker"
+  desc: "Application animation ticker invoking renderer.render(stage)"
+  type: "actor"

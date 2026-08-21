@@ -1,0 +1,20 @@
+challenges:
+  - id: "multipass-convolution-sequence"
+    prompt: "Arrange the sequential stages of a 2-pass separable Gaussian/Kawase blur convolution pipeline:"
+    items:
+      - id: "step-lease-pair"
+        text: "Lease Ping and Pong RenderTarget pair from pool"
+      - id: "step-pass-horizontal"
+        text: "Execute Pass 1 (Horizontal 1D Convolution) from Source Target to Ping Target"
+      - id: "step-swap-buffers"
+        text: "Swap Ping and Pong Buffer pointers"
+      - id: "step-pass-vertical"
+        text: "Execute Pass 2 (Vertical 1D Convolution) from Ping Target to Destination Target"
+      - id: "step-return-buffers"
+        text: "Return both Ping and Pong RenderTargets back to pool"
+    solution:
+      - "step-lease-pair"
+      - "step-pass-horizontal"
+      - "step-swap-buffers"
+      - "step-pass-vertical"
+      - "step-return-buffers"

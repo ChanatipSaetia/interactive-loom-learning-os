@@ -1,10 +1,12 @@
 import { Graphics } from 'pixi.js'
+import { GamificationThemePalette, getGamificationThemePalette } from '../theme-palette'
 
 export interface WarriorRenderOptions {
   walkCycle?: number
   bob?: number
   cloakPhase?: number
   swordSlashProgress?: number // 0..1 for attack slash thrust
+  palette?: GamificationThemePalette
 }
 
 /**
@@ -27,15 +29,16 @@ export function drawWarrior(g: Graphics, options: WarriorRenderOptions = {}) {
     bob = 0,
     cloakPhase = walkCycle,
     swordSlashProgress = 0,
+    palette = getGamificationThemePalette(),
   } = options
 
   const legSwing = Math.sin(walkCycle) * 7
   const armSwing = Math.cos(walkCycle) * 6
 
   // 1. Ground shadow
-  g.ellipse(0, 16, 11, 3.5).fill({ color: 0x181825, alpha: 0.55 })
+  g.ellipse(0, 16, 11, 3.5).fill({ color: palette.crustNum, alpha: 0.55 })
 
-  // 2. Cape / Crimson Battle Cloak waving behind (to the left since facing right)
+  // 2. Cape / Battle Cloak waving behind (to the left since facing right)
   const cloakWave = Math.sin(cloakPhase) * 4
   const cloakWaveY = Math.cos(cloakPhase * 0.8) * 2.5
   g.poly([
@@ -43,33 +46,33 @@ export function drawWarrior(g: Graphics, options: WarriorRenderOptions = {}) {
     -16 - cloakWave, 7 + cloakWaveY - bob,
     -11, 13 - bob,
     -2, 2 - bob,
-  ]).fill({ color: 0xe78284, alpha: 0.92 }).stroke({ width: 1, color: 0xea999c, alpha: 0.6 })
+  ]).fill({ color: palette.redNum, alpha: 0.92 }).stroke({ width: 1, color: palette.maroonNum, alpha: 0.6 })
 
-  // 3. Left Leg (Back - Steel Greaves)
+  // 3. Left Leg (Back - Greaves)
   g.moveTo(-2, 5 - bob)
     .lineTo(-2 - legSwing, 15)
-    .stroke({ width: 3.5, color: 0x51576d, cap: 'round' })
+    .stroke({ width: 3.5, color: palette.surface1Num, cap: 'round' })
   // Left Sabaton / Boot
-  g.circle(-2 - legSwing + 1, 15, 2.2).fill({ color: 0x414559 })
+  g.circle(-2 - legSwing + 1, 15, 2.2).fill({ color: palette.surface0Num })
 
-  // 4. Right Leg (Front - Steel Greaves)
+  // 4. Right Leg (Front - Greaves)
   g.moveTo(2, 5 - bob)
     .lineTo(2 + legSwing, 15)
-    .stroke({ width: 3.8, color: 0x949cbb, cap: 'round' })
+    .stroke({ width: 3.8, color: palette.overlay2Num, cap: 'round' })
   // Right Sabaton / Boot
-  g.circle(2 + legSwing + 1.5, 15, 2.4).fill({ color: 0x737994 })
+  g.circle(2 + legSwing + 1.5, 15, 2.4).fill({ color: palette.overlay0Num })
 
-  // 5. Torso / Steel Cuirass (Breastplate with golden trims)
-  g.roundRect(-5.5, -7 - bob, 11, 13, 2.5).fill({ color: 0x737994, alpha: 1.0 })
-    .stroke({ width: 1.6, color: 0xc6d0f5 })
+  // 5. Torso / Cuirass (Breastplate with golden trims)
+  g.roundRect(-5.5, -7 - bob, 11, 13, 2.5).fill({ color: palette.overlay0Num, alpha: 1.0 })
+    .stroke({ width: 1.6, color: palette.textNum })
   // Center chestplate ridge
-  g.moveTo(0, -6 - bob).lineTo(0, 4 - bob).stroke({ width: 1.5, color: 0x414559 })
+  g.moveTo(0, -6 - bob).lineTo(0, 4 - bob).stroke({ width: 1.5, color: palette.surface0Num })
   // Golden Breastplate Inlay Crest
-  g.poly([0, -4 - bob, 2.5, -2 - bob, 0, 0 - bob, -2.5, -2 - bob]).fill({ color: 0xe5c890 })
+  g.poly([0, -4 - bob, 2.5, -2 - bob, 0, 0 - bob, -2.5, -2 - bob]).fill({ color: palette.yellowNum })
 
   // 6. Armored Belt & Buckle
-  g.rect(-5.5, 2 - bob, 11, 2.5).fill({ color: 0x292c3c })
-  g.rect(-2, 1.5 - bob, 4, 3.5).fill({ color: 0xe5c890 })
+  g.rect(-5.5, 2 - bob, 11, 2.5).fill({ color: palette.mantleNum })
+  g.rect(-2, 1.5 - bob, 4, 3.5).fill({ color: palette.yellowNum })
 
   // 7. Left Arm & Kite Shield (Back Arm holding Knight's Heater Shield)
   const shieldX = -6 - armSwing * 0.5
@@ -81,9 +84,9 @@ export function drawWarrior(g: Graphics, options: WarriorRenderOptions = {}) {
     shieldX + 4, shieldY + 3,
     shieldX, shieldY + 8,
     shieldX - 3, shieldY + 3,
-  ]).fill({ color: 0x303446, alpha: 0.95 }).stroke({ width: 1.4, color: 0x8caaee })
+  ]).fill({ color: palette.baseNum, alpha: 0.95 }).stroke({ width: 1.4, color: palette.blueNum })
   // Shield Gold Cross / Star
-  g.poly([shieldX + 0.5, shieldY - 4, shieldX + 0.5, shieldY + 4]).stroke({ width: 1.5, color: 0xe5c890 })
+  g.poly([shieldX + 0.5, shieldY - 4, shieldX + 0.5, shieldY + 4]).stroke({ width: 1.5, color: palette.yellowNum })
 
   // 8. Right Arm & Gleaming Broadsword
   let handX = 4 + armSwing * 0.8
@@ -114,7 +117,7 @@ export function drawWarrior(g: Graphics, options: WarriorRenderOptions = {}) {
 
   g.moveTo(3, -4 - bob)
     .lineTo(handX, handY)
-    .stroke({ width: 3.2, color: 0x949cbb, cap: 'round' })
+    .stroke({ width: 3.2, color: palette.overlay2Num, cap: 'round' })
 
   // Broadsword / Greatsword
   // Steel Blade
@@ -124,27 +127,27 @@ export function drawWarrior(g: Graphics, options: WarriorRenderOptions = {}) {
   // Blade Full Core Highlight
   g.moveTo(handX + 2, handY - 2)
     .lineTo(bladeHighlightX, bladeHighlightY)
-    .stroke({ width: 1.2, color: 0x8caaee })
+    .stroke({ width: 1.2, color: palette.blueNum })
   // Crossguard
   g.moveTo(crossguardP1.x, crossguardP1.y)
     .lineTo(crossguardP2.x, crossguardP2.y)
-    .stroke({ width: 2.4, color: 0xe5c890 })
+    .stroke({ width: 2.4, color: palette.yellowNum })
   // Pommel Gem
-  g.circle(pommelX, pommelY, 1.5).fill({ color: 0xe78284 })
+  g.circle(pommelX, pommelY, 1.5).fill({ color: palette.redNum })
 
   // 9. Heavy Pauldrons (Shoulder Armor Plates)
-  g.poly([-7, -8 - bob, -3, -11 - bob, -2, -6 - bob]).fill({ color: 0x949cbb }).stroke({ width: 1, color: 0xc6d0f5 })
-  g.poly([3, -11 - bob, 7, -8 - bob, 3, -6 - bob]).fill({ color: 0x949cbb }).stroke({ width: 1, color: 0xc6d0f5 })
+  g.poly([-7, -8 - bob, -3, -11 - bob, -2, -6 - bob]).fill({ color: palette.overlay2Num }).stroke({ width: 1, color: palette.textNum })
+  g.poly([3, -11 - bob, 7, -8 - bob, 3, -6 - bob]).fill({ color: palette.overlay2Num }).stroke({ width: 1, color: palette.textNum })
 
   // 10. Armored Warrior Helmet (Greathelm with Visor Slit & Golden Horns/Plume)
-  g.roundRect(-4.5, -16 - bob, 9, 10, 2.5).fill({ color: 0x737994 })
-    .stroke({ width: 1.5, color: 0xc6d0f5 })
+  g.roundRect(-4.5, -16 - bob, 9, 10, 2.5).fill({ color: palette.overlay0Num })
+    .stroke({ width: 1.5, color: palette.textNum })
 
   // Helmet Visor T-Slit (Glowing cyan heroic eyes inside)
-  g.moveTo(-2.5, -12 - bob).lineTo(3.5, -12 - bob).stroke({ width: 1.4, color: 0x181825 })
-  g.moveTo(1, -14 - bob).lineTo(1, -9 - bob).stroke({ width: 1.4, color: 0x181825 })
+  g.moveTo(-2.5, -12 - bob).lineTo(3.5, -12 - bob).stroke({ width: 1.4, color: palette.crustNum })
+  g.moveTo(1, -14 - bob).lineTo(1, -9 - bob).stroke({ width: 1.4, color: palette.crustNum })
   // Glowing Eye Glimmer
-  g.circle(2, -12 - bob, 0.9).fill({ color: 0x8caaee, alpha: 1.0 })
+  g.circle(2, -12 - bob, 0.9).fill({ color: palette.blueNum, alpha: 1.0 })
 
   // Golden Plume / Crest on Helmet
   g.poly([
@@ -152,5 +155,5 @@ export function drawWarrior(g: Graphics, options: WarriorRenderOptions = {}) {
     -4, -22 - bob,
     2, -21 - bob,
     4, -16 - bob,
-  ]).fill({ color: 0xe5c890 }).stroke({ width: 1, color: 0xef9f76 })
+  ]).fill({ color: palette.yellowNum }).stroke({ width: 1, color: palette.peachNum })
 }

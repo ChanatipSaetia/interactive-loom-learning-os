@@ -9,11 +9,11 @@ export const GamificationCampaignView: React.FC = () => {
 
   if (isLoading || !globalChar || (selectedTopicId && !campaign)) {
     return (
-      <div className="min-h-screen bg-[#1e1e2e] text-[#c6d0f5] flex items-center justify-center font-mono">
+      <div className="min-h-screen bg-[var(--ctp-base)] text-[var(--ctp-text)] flex items-center justify-center font-mono">
         <div className="text-center space-y-3">
           <span className="text-4xl animate-spin block">🌀</span>
-          <p className="text-sm text-[#8caaee]">Loading Realm Map from Validation Gateway...</p>
-          {error && <p className="text-xs text-[#e78284]">{error}</p>}
+          <p className="text-sm text-[var(--ctp-blue)]">Loading Realm Map from Validation Gateway...</p>
+          {error && <p className="text-xs text-[var(--ctp-red)]">{error}</p>}
         </div>
       </div>
     )

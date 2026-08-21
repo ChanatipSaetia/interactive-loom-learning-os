@@ -59,7 +59,7 @@ export const ActiveCampaignView: React.FC<ActiveCampaignViewProps> = ({ game }) 
   }
 
   return (
-    <div className="min-h-screen bg-[#1e1e2e] text-[#c6d0f5] p-6 flex flex-col gap-6 font-sans">
+    <div className="min-h-screen bg-[var(--ctp-base)] text-[var(--ctp-text)] p-6 flex flex-col gap-6 font-sans">
       {/* ─── Top Global Character Profile Header ─── */}
       <CampaignTopHeader
         globalChar={globalChar}

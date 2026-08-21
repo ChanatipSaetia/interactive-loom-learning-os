@@ -195,7 +195,7 @@ export const EncounterViewport: React.FC<EncounterViewportProps> = ({ game }) =>
           }
 
           return (
-            <div className="text-[#c6d0f5] space-y-6 w-full max-w-7xl mx-auto">
+            <div className="text-[var(--ctp-text)] space-y-6 w-full max-w-7xl mx-auto">
               <BossBattleArena
                 monster={bossMonster}
                 playerAttributes={globalChar.attributes}
@@ -213,11 +213,11 @@ export const EncounterViewport: React.FC<EncounterViewportProps> = ({ game }) =>
         const DynamicComponent = sectionConfig ? SectionRegistry.get(sectionConfig.type) : null
 
         return (
-          <div className="text-[#c6d0f5] space-y-6 w-full max-w-7xl mx-auto">
+          <div className="text-[var(--ctp-text)] space-y-6 w-full max-w-7xl mx-auto">
             {/* Dynamic Section Renderer if OKF bundle has matching sectionRef */}
             {DynamicComponent && sectionConfig ? (
               <div className="space-y-4">
-                <Suspense fallback={<div className="p-8 text-center text-sm text-[#8caaee]">Loading section data...</div>}>
+                <Suspense fallback={<div className="p-8 text-center text-sm text-[var(--ctp-blue)]">Loading section data...</div>}>
                   <DynamicComponent
                     key={`${node.id}-${quizAttemptKey}`}
                     {...sectionConfig.props}
@@ -320,9 +320,9 @@ export const EncounterViewport: React.FC<EncounterViewportProps> = ({ game }) =>
                   />
                 </Suspense>
                 {node.type === 'reading_sanctuary' && node.status !== 'cleared' && (
-                  <div className="pt-4 border-t border-[#414559] flex justify-end">
+                  <div className="pt-4 border-t border-[var(--ctp-surface1)] flex justify-end">
                     <Button
-                      className="bg-gradient-to-r from-[#a6d189] to-[#8caaee] hover:opacity-90 text-[#232634] font-bold text-sm px-6 py-2.5 shadow-lg flex items-center gap-2"
+                      className="bg-gradient-to-r from-[var(--primary)] to-[color-mix(in_srgb,var(--primary)_85%,black)] hover:brightness-110 text-[var(--primary-foreground)] border border-[color-mix(in_srgb,var(--primary)_40%,transparent)] shadow-[0_4px_16px_color-mix(in_srgb,var(--primary)_35%,transparent)] font-bold text-sm px-6 py-2.5 flex items-center gap-2 transition-all"
                       onClick={() => handlePassSection(node)}
                     >
                       <span>🏛️</span>
@@ -331,9 +331,9 @@ export const EncounterViewport: React.FC<EncounterViewportProps> = ({ game }) =>
                   </div>
                 )}
                 {node.type === 'capital' && node.status !== 'cleared' && (
-                  <div className="pt-4 border-t border-[#414559] flex justify-end">
+                  <div className="pt-4 border-t border-[var(--ctp-surface1)] flex justify-end">
                     <Button
-                      className="bg-gradient-to-r from-[#8caaee] to-[#a6d189] hover:opacity-90 text-[#232634] font-bold text-sm px-6 py-2.5 shadow-lg flex items-center gap-2"
+                      className="bg-gradient-to-r from-[var(--primary)] to-[color-mix(in_srgb,var(--primary)_85%,black)] hover:brightness-110 text-[var(--primary-foreground)] border border-[color-mix(in_srgb,var(--primary)_40%,transparent)] shadow-[0_4px_16px_color-mix(in_srgb,var(--primary)_35%,transparent)] font-bold text-sm px-6 py-2.5 flex items-center gap-2 transition-all"
                       onClick={() => handlePassSection(node)}
                     >
                       <span>📖</span>
@@ -342,16 +342,16 @@ export const EncounterViewport: React.FC<EncounterViewportProps> = ({ game }) =>
                   </div>
                 )}
                 {quizFailed && node.type === 'quiz_encounter' && (
-                  <div className="p-4 bg-[#232634] rounded-2xl border border-[#e78284]/50 flex flex-col sm:flex-row items-center justify-between gap-3 animate-fade-in shadow-xl">
+                  <div className="p-4 bg-[var(--ctp-surface0)] rounded-2xl border border-[var(--ctp-red)]/50 flex flex-col sm:flex-row items-center justify-between gap-3 animate-fade-in shadow-xl">
                     <div className="flex items-center gap-2.5">
                       <span className="text-2xl">👾</span>
                       <div>
-                        <span className="text-sm font-bold text-[#e78284] block">Monster Still Standing!</span>
-                        <span className="text-xs text-[#a5adce]">The monster was not fully defeated. Restart the battle encounter to try again.</span>
+                        <span className="text-sm font-bold text-[var(--ctp-red)] block">Monster Still Standing!</span>
+                        <span className="text-xs text-[var(--ctp-subtext0)]">The monster was not fully defeated. Restart the battle encounter to try again.</span>
                       </div>
                     </div>
                     <Button
-                      className="bg-gradient-to-r from-[#e78284] to-[#ef9f76] hover:opacity-90 text-[#232634] font-bold text-xs px-5 py-2.5 shadow-lg shrink-0 flex items-center gap-1.5"
+                      className="bg-gradient-to-r from-[var(--destructive)] to-[color-mix(in_srgb,var(--destructive)_85%,black)] hover:brightness-110 text-[var(--destructive-foreground)] border border-[color-mix(in_srgb,var(--destructive)_40%,transparent)] shadow-[0_4px_16px_color-mix(in_srgb,var(--destructive)_35%,transparent)] font-bold text-xs px-5 py-2.5 shrink-0 flex items-center gap-1.5 transition-all"
                       onClick={() => {
                         setQuizFailed(false)
                         setQuizAttemptKey((prev) => prev + 1)
@@ -365,12 +365,12 @@ export const EncounterViewport: React.FC<EncounterViewportProps> = ({ game }) =>
                 )}
               </div>
             ) : (
-              <div className="p-8 text-center bg-[#232634] rounded-2xl border border-[#414559]">
-                <h3 className="text-lg font-bold text-[#8caaee] mb-2">{node.title}</h3>
-                <p className="text-sm text-[#a5adce] mb-6">{node.description}</p>
+              <div className="p-8 text-center bg-[var(--ctp-surface0)] rounded-2xl border border-[var(--ctp-surface1)]">
+                <h3 className="text-lg font-bold text-[var(--ctp-blue)] mb-2">{node.title}</h3>
+                <p className="text-sm text-[var(--ctp-subtext0)] mb-6">{node.description}</p>
                 {node.status !== 'cleared' && (
                   <Button
-                    className="bg-gradient-to-r from-[#8caaee] to-[#a6d189] hover:opacity-90 text-[#232634] font-bold text-sm px-6 py-2.5 shadow-lg"
+                    className="bg-gradient-to-r from-[var(--primary)] to-[color-mix(in_srgb,var(--primary)_85%,black)] hover:brightness-110 text-[var(--primary-foreground)] border border-[color-mix(in_srgb,var(--primary)_40%,transparent)] shadow-[0_4px_16px_color-mix(in_srgb,var(--primary)_35%,transparent)] font-bold text-sm px-6 py-2.5 transition-all"
                     onClick={() => handlePassSection(node)}
                   >
                     Complete Section (+50 XP)

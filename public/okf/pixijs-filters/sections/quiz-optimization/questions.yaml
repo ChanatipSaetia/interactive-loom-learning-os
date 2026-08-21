@@ -1,0 +1,50 @@
+- id: "q-batch-breaking"
+  question: "What is the primary performance reason that applying individual filters to 100 separate sprites causes severe lag?"
+  hint: "Consider what happens to WebGL state and draw calls when switching render targets."
+  choices:
+    - id: "a"
+      text: "Each filter requires switching render targets to offscreen framebuffers, breaking sprite batching and causing 100+ separate draw passes"
+      correct: true
+      explanation: "Correct! Each filtered object forces a framebuffer target switch, vertex flush, and shader draw call, completely destroying the automatic batch renderer."
+    - id: "b"
+      text: "JavaScript garbage collection deletes the texture buffers every frame"
+      correct: false
+      explanation: "RenderTarget pooling prevents garbage collection, but GPU state switching overhead remains high."
+    - id: "c"
+      text: "GLSL fragment shaders cannot run on more than 16 sprites simultaneously"
+      correct: false
+      explanation: "GPUs can run millions of fragment shader instances; the bottleneck is CPU-to-GPU state changes and framebuffer bindings."
+
+- id: "q-kawase-benefit"
+  question: "Why is KawaseBlurFilter preferred over standard multi-pass Gaussian Blur on mobile web devices?"
+  hint: "Compare the number of texture sample taps required per pixel."
+  choices:
+    - id: "a"
+      text: "Kawase blur runs on the CPU while Gaussian runs on the GPU"
+      correct: false
+      explanation: "Both algorithms run entirely on the GPU in fragment shaders."
+    - id: "b"
+      text: "Kawase blur uses expanding box sampling offsets, achieving smooth blur quality with significantly fewer texture fetch operations"
+      correct: true
+      explanation: "Correct! Kawase blur achieves smooth distribution with minimal texture sampling taps, drastically lowering memory bandwidth on mobile GPUs."
+    - id: "c"
+      text: "Kawase blur does not require an offscreen RenderTarget"
+      correct: false
+      explanation: "Kawase blur still uses offscreen RenderTargets for its ping-pong passes."
+
+- id: "q-half-res"
+  question: "How does setting filter.resolution = 0.5 improve mobile shader performance?"
+  hint: "Think about pixel fillrate in the fragment shader."
+  choices:
+    - id: "a"
+      text: "It renders the offscreen target at half size, reducing fragment shader pixel calculations by 75%"
+      correct: true
+      explanation: "Correct! Half width and half height means 1/4 the pixel count (75% reduction), with hardware bilinear upsampling smoothing the blur."
+    - id: "b"
+      text: "It drops the framerate to 30 FPS"
+      correct: false
+      explanation: "It reduces GPU load per frame while keeping the display running at full 60 FPS."
+    - id: "c"
+      text: "It disables the vertex shader entirely"
+      correct: false
+      explanation: "Vertex shaders are still executed for quad geometry."

@@ -18,21 +18,21 @@ export const TradeoffStatPreviewBar: React.FC<TradeoffStatPreviewBarProps> = ({
   const artifact = hasSelection ? synthesizeTradeoffArtifact('Architectural Forge', metrics, tradeoffMapping) : null
 
   return (
-    <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-[#232634] p-3.5 rounded-2xl border border-[#e5c890]/40 shadow-lg">
+    <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-[var(--ctp-surface0)] p-3.5 rounded-2xl border border-[var(--ctp-yellow)]/40 shadow-lg">
       <div className="flex items-center gap-3">
-        <div className="w-10 h-10 rounded-xl bg-[#e5c890]/20 border border-[#e5c890]/40 flex items-center justify-center text-xl text-[#e5c890] shrink-0">
+        <div className="w-10 h-10 rounded-xl bg-[var(--ctp-yellow)]/20 border border-[var(--ctp-yellow)]/40 flex items-center justify-center text-xl text-[var(--ctp-yellow)] shrink-0">
           ⚒️
         </div>
         <div>
           <div className="flex items-center gap-2">
-            <span className="text-sm font-bold text-[#e5c890]">Synthesized Weapon Artifact</span>
+            <span className="text-sm font-bold text-[var(--ctp-yellow)]">Synthesized Weapon Artifact</span>
             {artifact && (
-              <Badge variant="secondary" className="bg-[#e5c890]/20 text-[#e5c890] text-[10px]">
+              <Badge variant="secondary" className="bg-[var(--ctp-yellow)]/20 text-[var(--ctp-yellow)] text-[10px]">
                 {artifact.name}
               </Badge>
             )}
           </div>
-          <span className="text-xs text-[#a5adce]">
+          <span className="text-xs text-[var(--ctp-subtext0)]">
             {hasSelection
               ? 'Tuning trade-off sliders actively shapes your combat armor and evasion modifiers'
               : 'Select trade-off choices in the workshop below to synthesize equipment buffs'}
@@ -43,19 +43,19 @@ export const TradeoffStatPreviewBar: React.FC<TradeoffStatPreviewBarProps> = ({
       <div className="flex items-center gap-3 flex-wrap">
         {/* Positive Buff Preview Badge or No-Buff Notice */}
         {artifact ? (
-          <div className="flex items-center gap-1.5 bg-[#181825] px-3 py-1.5 rounded-lg border border-[#a6d189]/40 text-xs text-[#a6d189] font-bold">
+          <div className="flex items-center gap-1.5 bg-[var(--ctp-crust)] px-3 py-1.5 rounded-lg border border-[var(--ctp-green)]/40 text-xs text-[var(--ctp-green)] font-bold">
             <Sparkles size={14} />
             <span>{artifact.buff.label}</span>
           </div>
         ) : (
-          <div className="flex items-center gap-1.5 bg-[#181825] px-3 py-1.5 rounded-lg border border-[#737994]/40 text-xs text-[#737994] italic">
+          <div className="flex items-center gap-1.5 bg-[var(--ctp-crust)] px-3 py-1.5 rounded-lg border border-[var(--ctp-surface1)]/40 text-xs text-[var(--ctp-subtext0)] italic">
             <span>No Choices Selected (0 Buffs)</span>
           </div>
         )}
 
         {/* Vulnerability Penalty Badge if any */}
         {artifact?.vulnerability && (
-          <div className="flex items-center gap-1.5 bg-[#181825] px-3 py-1.5 rounded-lg border border-[#e78284]/40 text-xs text-[#e78284] font-semibold">
+          <div className="flex items-center gap-1.5 bg-[var(--ctp-crust)] px-3 py-1.5 rounded-lg border border-[var(--ctp-red)]/40 text-xs text-[var(--ctp-red)] font-semibold">
             <AlertTriangle size={14} />
             <span>{artifact.vulnerability.label}</span>
           </div>
@@ -64,10 +64,10 @@ export const TradeoffStatPreviewBar: React.FC<TradeoffStatPreviewBarProps> = ({
         {/* 1-Click Forge Action Button */}
         <Button
           disabled={!hasSelection || !artifact}
-          className={`font-bold text-xs px-4 py-2 flex items-center gap-2 shadow-md ${
+          className={`font-bold text-xs px-4 py-2 flex items-center gap-2 transition-all ${
             !hasSelection || !artifact
-              ? 'bg-[#414559] text-[#737994] cursor-not-allowed border border-[#51576d]'
-              : 'bg-gradient-to-r from-[#e5c890] to-[#ef9f76] hover:opacity-90 text-[#232634]'
+              ? 'bg-[var(--ctp-surface1)] text-[var(--ctp-subtext0)] cursor-not-allowed border border-[var(--ctp-surface2)]'
+              : 'bg-gradient-to-r from-[var(--primary)] to-[color-mix(in_srgb,var(--primary)_85%,black)] hover:brightness-110 text-[var(--primary-foreground)] border border-[color-mix(in_srgb,var(--primary)_40%,transparent)] shadow-[0_4px_16px_color-mix(in_srgb,var(--primary)_35%,transparent)]'
           }`}
           onClick={() => {
             if (artifact) {

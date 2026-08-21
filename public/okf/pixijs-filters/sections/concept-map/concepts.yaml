@@ -1,0 +1,68 @@
+nodes:
+  app:
+    title: "PIXI.Application"
+    category: "Core Entrypoint"
+  renderer:
+    title: "Renderer (WebGL / WebGPU)"
+    category: "GPU Pipeline"
+  filter_system:
+    title: "FilterSystem"
+    category: "GPU Pipeline"
+  container:
+    title: "Container / DisplayObject"
+    category: "Scene Graph"
+  filter:
+    title: "Filter Instance"
+    category: "Shaders & Effects"
+  target_pool:
+    title: "RenderTarget Pool"
+    category: "Memory & Assets"
+  vertex_shader:
+    title: "Vertex Shader (Quad Matrix)"
+    category: "Shaders & Effects"
+  fragment_shader:
+    title: "Fragment Shader (Pixel Math)"
+    category: "Shaders & Effects"
+  uniform_map:
+    title: "Uniforms & uFilterMatrix"
+    category: "Shaders & Effects"
+  displacement_map:
+    title: "Displacement Map Texture"
+    category: "Memory & Assets"
+  framebuffer:
+    title: "GPU Framebuffer / Screen"
+    category: "GPU Pipeline"
+edges:
+  - from: "app"
+    to: "renderer"
+    label: "manages"
+  - from: "renderer"
+    to: "filter_system"
+    label: "delegates filter passes"
+  - from: "container"
+    to: "filter"
+    label: "declares in filters[]"
+  - from: "filter_system"
+    to: "target_pool"
+    label: "leases & recycles RenderTargets"
+  - from: "filter_system"
+    to: "container"
+    label: "calculates padded bounds"
+  - from: "filter_system"
+    to: "filter"
+    label: "executes shader passes"
+  - from: "filter"
+    to: "vertex_shader"
+    label: "binds full-screen quad"
+  - from: "filter"
+    to: "fragment_shader"
+    label: "executes per-pixel logic"
+  - from: "filter"
+    to: "uniform_map"
+    label: "uploads CPU uniform values"
+  - from: "fragment_shader"
+    to: "displacement_map"
+    label: "samples UV offset coordinates"
+  - from: "filter_system"
+    to: "framebuffer"
+    label: "composites final filtered output"

@@ -1,0 +1,50 @@
+- id: "q-boss-cache"
+  question: "When is container.cacheAsBitmap = true the most effective optimization for filtered objects?"
+  hint: "Consider how frequently the container visual contents mutate."
+  choices:
+    - id: "a"
+      text: "When the container contains static or infrequently updating visuals, allowing PixiJS to bake the filtered result into a single reusable texture"
+      correct: true
+      explanation: "Correct! cacheAsBitmap bakes the filtered container into a texture once, drawing it as a single standard batched sprite in subsequent frames."
+    - id: "b"
+      text: "When animating position, rotation, and text at 60 FPS every frame"
+      correct: false
+      explanation: "Updating children every frame forces expensive re-baking of the cached bitmap, degrading performance."
+    - id: "c"
+      text: "Only when applying shaders to raw WebGL mesh geometries"
+      correct: false
+      explanation: "cacheAsBitmap works across standard Container trees with sprites, text, graphics, and filters."
+
+- id: "q-boss-displacement"
+  question: "How does DisplacementFilter calculate coordinate distortion on the target sprite?"
+  hint: "Consider what color channels are read from the displacement map texture."
+  choices:
+    - id: "a"
+      text: "It uses the Red and Green channels of the map texture to offset the UV sampling coordinates"
+      correct: true
+      explanation: "Correct! DisplacementFilter maps Red and Green channel values to (dx, dy) coordinate offsets during texture sampling."
+    - id: "b"
+      text: "It physically recalculates the vertex buffer positions on the CPU"
+      correct: false
+      explanation: "The distortion happens in the GPU fragment shader by offsetting UV sampling coordinates."
+    - id: "c"
+      text: "It inverts the alpha channel of the background canvas"
+      correct: false
+      explanation: "Alpha inversion is not used for displacement mapping."
+
+- id: "q-boss-pooling"
+  question: "Why does FilterSystem lease RenderTargets from a pre-allocated pool instead of instantiating fresh framebuffers?"
+  hint: "Think about GPU memory fragmentation and garbage collection pauses."
+  choices:
+    - id: "a"
+      text: "To prevent continuous VRAM allocation churn, memory fragmentation, and JavaScript GC stutter at 60 FPS"
+      correct: true
+      explanation: "Correct! Dynamic WebGL framebuffer creation triggers severe GC pauses and GPU driver stalls; pooling keeps memory steady."
+    - id: "b"
+      text: "Because WebGL only permits a total of 1 framebuffer in the entire browser context"
+      correct: false
+      explanation: "WebGL allows multiple framebuffers, but creating and destroying them continuously causes memory churn."
+    - id: "c"
+      text: "Because shaders cannot execute without pre-allocated CSS textures"
+      correct: false
+      explanation: "RenderTargets are WebGL textures, independent of CSS."

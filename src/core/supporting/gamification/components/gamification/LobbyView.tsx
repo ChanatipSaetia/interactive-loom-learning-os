@@ -67,7 +67,7 @@ export const LobbyView: React.FC<LobbyViewProps> = ({ game }) => {
   }
 
   return (
-    <div className="min-h-screen bg-[#1e1e2e] text-[#c6d0f5] p-6 lg:p-10 flex flex-col gap-8 font-sans max-w-7xl mx-auto">
+    <div className="min-h-screen bg-[var(--ctp-base)] text-[var(--ctp-text)] p-6 lg:p-10 flex flex-col gap-8 font-sans max-w-7xl mx-auto">
       {/* ─── Global Character Profile Hero Banner ─── */}
       <CharacterHeroBanner
         globalChar={globalChar}
@@ -81,11 +81,11 @@ export const LobbyView: React.FC<LobbyViewProps> = ({ game }) => {
       <section className="space-y-4">
         <div className="flex items-center justify-between">
           <div>
-            <h2 className="text-xl font-bold text-[#b5bfe2] flex items-center gap-2">
-              <MapIcon className="text-[#8caaee]" size={22} />
+            <h2 className="text-xl font-bold text-[var(--ctp-text)] flex items-center gap-2">
+              <MapIcon className="text-[var(--ctp-blue)]" size={22} />
               Available Campaign Realms (Hex Maps)
             </h2>
-            <p className="text-xs text-[#a5adce] mt-0.5">
+            <p className="text-xs text-[var(--ctp-subtext0)] mt-0.5">
               Select a topic realm to launch into its strategic hex campaign or resume where you left off.
             </p>
           </div>

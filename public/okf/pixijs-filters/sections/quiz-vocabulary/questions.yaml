@@ -1,0 +1,50 @@
+- id: "q-filter-padding"
+  question: "Why does a BlurFilter or DropShadowFilter appear clipped inside a hard rectangle if filter.padding is not set?"
+  hint: "Think about the dimensions of the temporary offscreen RenderTarget."
+  choices:
+    - id: "a"
+      text: "Because WebGL shaders cannot draw outside the [0, 1] UV texture range"
+      correct: false
+      explanation: "Shaders can sample texture coordinates freely, but the canvas texture itself is bounded by the target dimensions."
+    - id: "b"
+      text: "Because the default offscreen RenderTarget matches the unpadded bounding box of the sprite"
+      correct: true
+      explanation: "Correct! Without filter.padding, the offscreen RenderTarget is sized strictly to the sprite bounds, clipping any outward-bleeding blur or shadow pixels."
+    - id: "c"
+      text: "Because the GPU depth buffer discards blurred fragments"
+      correct: false
+      explanation: "PixiJS 2D rendering does not use standard 3D depth buffer clipping for 2D sprites."
+
+- id: "q-usampler"
+  question: "What is the role of the uniform uSampler in a PixiJS fragment shader?"
+  hint: "Think about what image input the shader is processing."
+  choices:
+    - id: "a"
+      text: "It passes the CPU system clock time"
+      correct: false
+      explanation: "Time values are passed via custom uniform floats."
+    - id: "b"
+      text: "It provides the texture sampler containing the offscreen rendered display object"
+      correct: true
+      explanation: "Correct! uSampler references the offscreen RenderTarget texture containing the captured display tree pixels."
+    - id: "c"
+      text: "It configures the WebGL blend mode"
+      correct: false
+      explanation: "Blend modes are managed by the WebGL state machine rather than uSampler."
+
+- id: "q-colormatrix"
+  question: "Which of the following is a primary characteristic of ColorMatrixFilter?"
+  hint: "Consider how many passes and matrix dimensions it uses."
+  choices:
+    - id: "a"
+      text: "It requires multi-pass ping-pong framebuffers"
+      correct: false
+      explanation: "ColorMatrixFilter is a single-pass filter with zero ping-pong buffering."
+    - id: "b"
+      text: "It transforms RGBA color vectors using a 5x4 matrix in a single GPU pass"
+      correct: true
+      explanation: "Correct! ColorMatrixFilter multiplies RGBA vectors by a 5x4 matrix in one fast fragment pass."
+    - id: "c"
+      text: "It samples adjacent pixel neighbors like a convolution blur"
+      correct: false
+      explanation: "ColorMatrixFilter operates only on the current pixel's color channels."

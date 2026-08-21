@@ -110,15 +110,15 @@ export const SanctuaryTickMonitor: React.FC<SanctuaryTickMonitorProps> = ({
   const currentTotalPulses = pulsesUsed
 
   return (
-    <div className="flex items-center justify-between gap-4 bg-[#232634] p-3 rounded-2xl border border-[#a6d189]/30 relative overflow-hidden">
+    <div className="flex items-center justify-between gap-4 bg-[var(--ctp-surface0)] p-3 rounded-2xl border border-[var(--ctp-green)]/30 relative overflow-hidden">
       {/* Left: Sanctuary Presence Status */}
       <div className="flex items-center gap-3">
-        <div className="w-10 h-10 rounded-xl bg-[#a6d189]/20 border border-[#a6d189]/40 flex items-center justify-center text-xl text-[#a6d189] shrink-0">
+        <div className="w-10 h-10 rounded-xl bg-[var(--ctp-green)]/20 border border-[var(--ctp-green)]/40 flex items-center justify-center text-xl text-[var(--ctp-green)] shrink-0">
           🏛️
         </div>
         <div>
           <div className="flex items-center gap-2">
-            <span className="text-sm font-bold text-[#a6d189]">Active Reading Sanctuary</span>
+            <span className="text-sm font-bold text-[var(--ctp-green)]">Active Reading Sanctuary</span>
             <Badge variant="success" className="text-[10px]">
               {decayMultiplier * 100}% Potency (Visit #{visitCount || 1})
             </Badge>
@@ -126,7 +126,7 @@ export const SanctuaryTickMonitor: React.FC<SanctuaryTickMonitorProps> = ({
               {isMaxTicksReached ? `Depleted (${currentTotalPulses}/${maxTicks})` : `${currentTotalPulses}/${maxTicks} Global Pulses`}
             </Badge>
             {isHpFull && !isMaxTicksReached && (
-              <Badge variant="secondary" className="text-[10px] bg-[#a6d189]/10 text-[#a6d189] border border-[#a6d189]/30">
+              <Badge variant="secondary" className="text-[10px] bg-[var(--ctp-green)]/10 text-[var(--ctp-green)] border border-[var(--ctp-green)]/30">
                 Full HP (Paused)
               </Badge>
             )}
@@ -136,7 +136,7 @@ export const SanctuaryTickMonitor: React.FC<SanctuaryTickMonitorProps> = ({
               </Badge>
             )}
           </div>
-          <span className="text-xs text-[#a5adce]">
+          <span className="text-xs text-[var(--ctp-subtext0)]">
             {isMaxTicksReached
               ? 'Sanctuary pulses exhausted for this campaign. Revisit or restart campaign.'
               : isHpFull
@@ -153,7 +153,7 @@ export const SanctuaryTickMonitor: React.FC<SanctuaryTickMonitorProps> = ({
         {floatingParticles.map((particle) => (
           <span
             key={particle.id}
-            className="absolute font-bold text-xs text-[#a6d189] animate-bounce tracking-wide"
+            className="absolute font-bold text-xs text-[var(--ctp-green)] animate-bounce tracking-wide"
           >
             ✨ {particle.text}
           </span>
@@ -163,19 +163,19 @@ export const SanctuaryTickMonitor: React.FC<SanctuaryTickMonitorProps> = ({
       {/* Right: 10s Progress Ring & Chaos Status */}
       <div className="flex items-center gap-3">
         <div className="text-right">
-          <span className="text-[10px] text-[#a5adce] block">
+          <span className="text-[10px] text-[var(--ctp-subtext0)] block">
             {isMaxTicksReached ? 'Exhausted' : isHpFull ? 'HP Full' : !isTabActive ? 'Paused' : 'Next Pulse'}
           </span>
-          <span className="text-xs font-mono font-bold text-[#a6d189]">
+          <span className="text-xs font-mono font-bold text-[var(--ctp-green)]">
             {isMaxTicksReached ? `${currentTotalPulses}/${maxTicks}` : isHpFull ? 'Full ❤️' : !isTabActive ? '⏸️' : `${10 - (secondsInSanctuary % 10)}s`}
           </span>
         </div>
-        <div className="w-8 h-8 rounded-full border-2 border-[#303446] relative flex items-center justify-center">
+        <div className="w-8 h-8 rounded-full border-2 border-[var(--ctp-surface1)] relative flex items-center justify-center">
           <div
-            className="w-full h-full rounded-full border-2 border-[#a6d189] transition-all duration-300"
+            className="w-full h-full rounded-full border-2 border-[var(--ctp-green)] transition-all duration-300"
             style={{ clipPath: `polygon(0 0, 100% 0, 100% ${tickProgress}%, 0 ${tickProgress}%)` }}
           />
-          <Heart size={12} className="text-[#a6d189] absolute" />
+          <Heart size={12} className="text-[var(--ctp-green)] absolute" />
         </div>
       </div>
     </div>

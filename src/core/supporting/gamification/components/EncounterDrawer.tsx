@@ -34,21 +34,21 @@ export const EncounterDrawer: React.FC<EncounterDrawerProps> = ({
       {/* Dimmed Background Backdrop */}
       {!isMinimized && (
         <div
-          className="absolute inset-0 bg-[#11111b]/80 backdrop-blur-md pointer-events-auto transition-opacity duration-300"
+          className="absolute inset-0 bg-[var(--ctp-crust)]/80 backdrop-blur-md pointer-events-auto transition-opacity duration-300"
           onClick={onClose}
         />
       )}
 
       {/* Full-Screen Encounter Viewport Container */}
       <div
-        className={`relative w-full mx-auto bg-[#1e1e2e] border-t border-[#414559] shadow-2xl pointer-events-auto flex flex-col transition-all duration-300 overflow-hidden ${
+        className={`relative w-full mx-auto bg-[var(--ctp-base)] border-t border-[var(--ctp-surface1)] shadow-2xl pointer-events-auto flex flex-col transition-all duration-300 overflow-hidden ${
           isMinimized
             ? 'h-16 shadow-lg max-w-7xl rounded-t-3xl border-x'
             : 'h-full inset-0 rounded-none'
         }`}
       >
         {/* Top Navigation & Title Bar */}
-        <div className="bg-[#232634] px-6 py-3.5 border-b border-[#414559] flex items-center justify-between gap-4 shrink-0 select-none shadow-md">
+        <div className="bg-[var(--ctp-surface0)] px-6 py-3.5 border-b border-[var(--ctp-surface1)] flex items-center justify-between gap-4 shrink-0 select-none shadow-md">
           <div className="flex items-center gap-3 min-w-0">
             <span className="text-2xl shrink-0">
               {isCapital && '🏰'}
@@ -60,8 +60,8 @@ export const EncounterDrawer: React.FC<EncounterDrawerProps> = ({
             </span>
             <div className="min-w-0">
               <div className="flex items-center gap-2">
-                <h2 className="text-base font-bold text-[#b5bfe2] truncate">{node.title}</h2>
-                <Badge variant="secondary" className="text-[10px] uppercase bg-[#8caaee]/20 text-[#8caaee]">
+                <h2 className="text-base font-bold text-[var(--ctp-text)] truncate">{node.title}</h2>
+                <Badge variant="secondary" className="text-[10px] uppercase bg-[var(--ctp-blue)]/20 text-[var(--ctp-blue)]">
                   {node.type.replace(/_/g, ' ')}
                 </Badge>
               </div>
@@ -73,7 +73,7 @@ export const EncounterDrawer: React.FC<EncounterDrawerProps> = ({
             <Button
               variant="ghost"
               size="sm"
-              className="h-8 w-8 p-0 text-[#a5adce] hover:text-[#c6d0f5] hover:bg-[#303446]"
+              className="h-8 w-8 p-0 text-[var(--ctp-subtext0)] hover:text-[var(--ctp-text)] hover:bg-[var(--ctp-surface1)]"
               onClick={() => setIsMinimized((prev) => !prev)}
               title={isMinimized ? 'Expand to Full Screen' : 'Minimize to Dock'}
             >
@@ -83,7 +83,7 @@ export const EncounterDrawer: React.FC<EncounterDrawerProps> = ({
             <Button
               variant="ghost"
               size="sm"
-              className="h-8 w-8 p-0 text-[#e78284] hover:bg-[#e78284]/20"
+              className="h-8 w-8 p-0 text-[var(--ctp-red)] hover:bg-[var(--ctp-red)]/20"
               onClick={onClose}
               title="Close Encounter"
             >
@@ -94,14 +94,14 @@ export const EncounterDrawer: React.FC<EncounterDrawerProps> = ({
 
         {/* Optional Docked Header Widget (Combat Duel Header, Sanctuary Monitor, Tradeoff Preview) */}
         {!isMinimized && headerWidget && (
-          <div className="bg-[#181825] px-6 py-3 border-b border-[#414559] shrink-0">
+          <div className="bg-[var(--ctp-surface0)] px-6 py-3 border-b border-[var(--ctp-surface1)] shrink-0">
             {headerWidget}
           </div>
         )}
 
         {/* Scrollable Encounter Section Viewport */}
         {!isMinimized && (
-          <div className="flex-1 overflow-y-auto p-6 text-[#c6d0f5] space-y-6">
+          <div className="flex-1 overflow-y-auto p-6 text-[var(--ctp-text)] space-y-6">
             {children}
           </div>
         )}

@@ -108,17 +108,17 @@ export const BossBattleArena: React.FC<BossBattleArenaProps> = ({
 
   if (battlePhase === 'victory') {
     return (
-      <div className="bg-[#232634] p-8 rounded-3xl border border-[#a6d189]/50 text-center space-y-5 max-w-2xl mx-auto shadow-2xl animate-fade-in">
+      <div className="bg-[var(--ctp-base)] p-8 rounded-3xl border border-[var(--ctp-green)]/50 text-center space-y-5 max-w-2xl mx-auto shadow-2xl animate-fade-in">
         <span className="text-7xl animate-bounce block">👑</span>
-        <h2 className="text-2xl font-bold text-[#a6d189]">Campaign Victory Achieved!</h2>
-        <p className="text-sm text-[#a5adce] leading-relaxed">
+        <h2 className="text-2xl font-bold text-[var(--ctp-green)]">Campaign Victory Achieved!</h2>
+        <p className="text-sm text-[var(--ctp-subtext0)] leading-relaxed">
           You have conquered the {monster.name} using your masterfully collected Key Items!
           The realm has been unified under Decoupled Architecture principles!
         </p>
 
-        <div className="p-4 bg-[#181825] rounded-2xl border border-[#8caaee]/40 flex items-center justify-center gap-3">
-          <Trophy size={24} className="text-[#e5c890]" />
-          <span className="font-bold text-[#e5c890]">Reward Earned: Hexagonal Mastery Crown 👑</span>
+        <div className="p-4 bg-[var(--ctp-surface0)] rounded-2xl border border-[var(--ctp-blue)]/40 flex items-center justify-center gap-3">
+          <Trophy size={24} className="text-[var(--ctp-yellow)]" />
+          <span className="font-bold text-[var(--ctp-yellow)]">Reward Earned: Hexagonal Mastery Crown 👑</span>
         </div>
       </div>
     )
@@ -127,14 +127,14 @@ export const BossBattleArena: React.FC<BossBattleArenaProps> = ({
   return (
     <div className="space-y-6 max-w-4xl mx-auto">
       {/* Boss Encounter Header */}
-      <div className="bg-[#232634] p-5 rounded-3xl border border-[#ea999c]/40 flex flex-col md:flex-row items-center justify-between gap-4 shadow-xl">
+      <div className="bg-[var(--ctp-base)] p-5 rounded-3xl border border-[var(--ctp-maroon)]/40 flex flex-col md:flex-row items-center justify-between gap-4 shadow-xl">
         <div className="flex items-center gap-4">
-          <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-[#ea999c]/30 to-[#e78284]/20 border border-[#ea999c]/50 flex items-center justify-center text-3xl shadow-lg shrink-0">
+          <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-[var(--ctp-maroon)]/30 to-[var(--ctp-red)]/20 border border-[var(--ctp-maroon)]/50 flex items-center justify-center text-3xl shadow-lg shrink-0">
             {monster.icon || '🐲'}
           </div>
           <div>
             <div className="flex items-center gap-2 flex-wrap">
-              <h2 className="text-lg font-bold text-[#ea999c]">{monster.name}</h2>
+              <h2 className="text-lg font-bold text-[var(--ctp-maroon)]">{monster.name}</h2>
               <Badge variant={isEnraged ? 'destructive' : 'warning'}>
                 {isEnraged ? '🔥 PHASE 2: ENRAGED' : '🛡️ PHASE 1: BOSS SHIELD'}
               </Badge>
@@ -144,7 +144,7 @@ export const BossBattleArena: React.FC<BossBattleArenaProps> = ({
                 </Badge>
               )}
             </div>
-            <span className="text-xs text-[#a5adce]">
+            <span className="text-xs text-[var(--ctp-subtext0)]">
               Final Boss Encounter · Tactical Key Item Combat Arena
             </span>
           </div>
@@ -152,21 +152,21 @@ export const BossBattleArena: React.FC<BossBattleArenaProps> = ({
 
         <div className="w-full md:w-64 text-right">
           <div className="flex justify-between text-xs mb-1 font-mono font-bold">
-            <span className="text-[#a5adce]">Boss Health</span>
-            <span className="text-[#ea999c]">{currentMonsterHp} / {monster.maxHp} HP</span>
+            <span className="text-[var(--ctp-subtext0)]">Boss Health</span>
+            <span className="text-[var(--ctp-maroon)]">{currentMonsterHp} / {monster.maxHp} HP</span>
           </div>
-          <div className="w-full bg-[#181825] h-3 rounded-full overflow-hidden border border-[#414559]">
+          <div className="w-full bg-[var(--ctp-crust)] h-3 rounded-full overflow-hidden border border-[var(--ctp-surface1)]">
             <div
               className={`h-full transition-all duration-300 ${
-                isEnraged ? 'bg-gradient-to-r from-[#e78284] to-[#ea999c]' : 'bg-[#e78284]'
+                isEnraged ? 'bg-gradient-to-r from-[var(--ctp-red)] to-[var(--ctp-maroon)]' : 'bg-[var(--ctp-red)]'
               }`}
               style={{ width: `${(currentMonsterHp / monster.maxHp) * 100}%` }}
             />
           </div>
           {playerHp !== undefined && maxPlayerHp !== undefined && (
-            <div className="flex justify-between text-[11px] mt-2 font-mono text-[#a5adce]">
+            <div className="flex justify-between text-[11px] mt-2 font-mono text-[var(--ctp-subtext0)]">
               <span>Player Health:</span>
-              <span className="font-bold text-[#a6d189]">{playerHp} / {maxPlayerHp} HP</span>
+              <span className="font-bold text-[var(--ctp-green)]">{playerHp} / {maxPlayerHp} HP</span>
             </div>
           )}
         </div>
@@ -174,7 +174,7 @@ export const BossBattleArena: React.FC<BossBattleArenaProps> = ({
 
       {/* Tactical Key Items Command Bar */}
       <div>
-        <h3 className="text-xs font-bold text-[#8caaee] uppercase tracking-wider mb-2">
+        <h3 className="text-xs font-bold text-[var(--ctp-blue)] uppercase tracking-wider mb-2">
           ⚔️ Tactical Key Item Skills ({availableItems.length} Available)
         </h3>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -183,15 +183,15 @@ export const BossBattleArena: React.FC<BossBattleArenaProps> = ({
             const isBlade = /blade|sword|crystal|product|weapon|strike/i.test(item.id + item.name)
             const actionVerb = isShield ? 'Deploy' : isBlade ? 'Strike with' : 'Use'
             const gradient = isShield
-              ? 'from-[#8caaee] to-[#a6d189]'
+              ? 'from-[var(--ctp-blue)] to-[var(--ctp-green)]'
               : isBlade
-              ? 'from-[#ca9ee6] to-[#ea999c]'
-              : 'from-[#e5c890] to-[#ef9f76]'
+              ? 'from-[var(--ctp-mauve)] to-[var(--ctp-maroon)]'
+              : 'from-[var(--ctp-yellow)] to-[var(--ctp-peach)]'
 
             return (
               <Button
                 key={item.id || idx}
-                className={`bg-gradient-to-r ${gradient} hover:opacity-90 text-[#232634] font-bold p-4 h-auto flex flex-col items-start gap-1 rounded-2xl shadow-lg text-left`}
+                className={`bg-gradient-to-r ${gradient} hover:opacity-90 text-[var(--ctp-crust)] font-bold p-4 h-auto flex flex-col items-start gap-1 rounded-2xl shadow-lg text-left`}
                 onClick={() => handleUseItemSkill(item)}
               >
                 <div className="flex items-center gap-2">
@@ -208,10 +208,10 @@ export const BossBattleArena: React.FC<BossBattleArenaProps> = ({
       </div>
 
       {/* Combat Log */}
-      <div className="bg-[#181825] p-4 rounded-2xl border border-[#414559] space-y-1.5 font-mono text-xs max-h-48 overflow-y-auto shadow-inner">
-        <span className="text-[#a5adce] font-bold block mb-1">📜 Boss Combat Log:</span>
+      <div className="bg-[var(--ctp-surface0)] p-4 rounded-2xl border border-[var(--ctp-surface1)] space-y-1.5 font-mono text-xs max-h-48 overflow-y-auto shadow-inner">
+        <span className="text-[var(--ctp-subtext0)] font-bold block mb-1">📜 Boss Combat Log:</span>
         {combatLog.map((log, index) => (
-          <div key={index} className="text-[#c6d0f5]">{log}</div>
+          <div key={index} className="text-[var(--ctp-text)]">{log}</div>
         ))}
       </div>
     </div>

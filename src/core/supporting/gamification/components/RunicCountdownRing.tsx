@@ -2,6 +2,7 @@ import React, { useCallback, useEffect, useRef, useState } from 'react'
 import { Application, Container, Graphics } from 'pixi.js'
 import { Timer } from 'lucide-react'
 import { PixiCanvasViewport } from './PixiCanvasViewport'
+import { useGamificationTheme } from '../theme-palette'
 
 interface SequenceChallengeInfo {
   index: number
@@ -32,6 +33,7 @@ export const RunicCountdownRing: React.FC<RunicCountdownRingProps> = ({
   onTimeout,
   onStatTriggered,
 }) => {
+  const palette = useGamificationTheme()
   const totalDuration = durationSeconds + Math.round(evasionBonusSeconds * 0.3)
   const [timeLeft, setTimeLeft] = useState(totalDuration)
 
@@ -171,7 +173,7 @@ export const RunicCountdownRing: React.FC<RunicCountdownRingProps> = ({
 
         // Card Panel Background (Border-free / Seamless canvas atmosphere)
         bgGfx.roundRect(cx, cy, cardWidth, cardHeight, 14)
-          .fill({ color: isCleared ? 0x232634 : isCurrent ? 0x24273a : 0x181825, alpha: 0.6 })
+          .fill({ color: isCleared ? palette.surface0Num : isCurrent ? palette.mantleNum : palette.crustNum, alpha: 0.6 })
 
         // ─── 1. DRAW SACRED GEOMETRY SPINNING MAGIC RING (Left side of card) ───
         const ringCenterX = cx + 42
@@ -180,7 +182,7 @@ export const RunicCountdownRing: React.FC<RunicCountdownRingProps> = ({
 
         // Outer Magic Glow Aura
         if (isCleared || isCurrent) {
-          const auraColor = isCleared ? 0xa6d189 : 0xca9ee6
+          const auraColor = isCleared ? palette.greenNum : palette.mauveNum
           const auraAlpha = Math.sin(t * 3 + idx) * 0.08 + 0.15
           magicRingsGfx.circle(ringCenterX, ringCenterY, ringRadius + 8)
             .fill({ color: auraColor, alpha: auraAlpha })
@@ -189,11 +191,11 @@ export const RunicCountdownRing: React.FC<RunicCountdownRingProps> = ({
         // Outer Concentric Glyph Circle
         const outerSpin = isCleared ? t * 0.9 : isCurrent ? t * 0.45 : 0
         magicRingsGfx.circle(ringCenterX, ringCenterY, ringRadius)
-          .stroke({ width: 1.5, color: isCleared ? 0xa6d189 : isCurrent ? 0xca9ee6 : 0x626880, alpha: 0.9 })
+          .stroke({ width: 1.5, color: isCleared ? palette.greenNum : isCurrent ? palette.mauveNum : palette.surface2Num, alpha: 0.9 })
 
         // Middle Dashed Concentric Circle
         magicRingsGfx.circle(ringCenterX, ringCenterY, ringRadius - 4)
-          .stroke({ width: 1.0, color: isCleared ? 0xe5c890 : isCurrent ? 0x8caaee : 0x414559, alpha: 0.6 })
+          .stroke({ width: 1.0, color: isCleared ? palette.yellowNum : isCurrent ? palette.blueNum : palette.surface0Num, alpha: 0.6 })
 
         // 12 Outer Ring Rune Tick Marks & Rune Nodes
         for (let i = 0; i < 12; i++) {
@@ -202,12 +204,12 @@ export const RunicCountdownRing: React.FC<RunicCountdownRingProps> = ({
           const r2 = ringRadius + (i % 3 === 0 ? 3.5 : 1.0)
           magicRingsGfx.moveTo(ringCenterX + Math.cos(angle) * r1, ringCenterY + Math.sin(angle) * r1)
             .lineTo(ringCenterX + Math.cos(angle) * r2, ringCenterY + Math.sin(angle) * r2)
-            .stroke({ width: 1.4, color: isCleared ? 0xe5c890 : isCurrent ? 0xca9ee6 : 0x51576d })
+            .stroke({ width: 1.4, color: isCleared ? palette.yellowNum : isCurrent ? palette.mauveNum : palette.surface1Num })
 
           // Mini Orb on 4 cardinal points
           if (i % 3 === 0) {
             magicRingsGfx.circle(ringCenterX + Math.cos(angle) * (ringRadius + 3.5), ringCenterY + Math.sin(angle) * (ringRadius + 3.5), 1.5)
-              .fill({ color: isCleared ? 0xa6d189 : 0xe5c890, alpha: 0.9 })
+              .fill({ color: isCleared ? palette.greenNum : palette.yellowNum, alpha: 0.9 })
           }
         }
 
@@ -222,11 +224,11 @@ export const RunicCountdownRing: React.FC<RunicCountdownRingProps> = ({
           tri1.push(ringCenterX + Math.cos(a1) * innerR, ringCenterY + Math.sin(a1) * innerR)
           tri2.push(ringCenterX + Math.cos(a2) * innerR, ringCenterY + Math.sin(a2) * innerR)
         }
-        magicRingsGfx.poly(tri1).stroke({ width: 1.2, color: isCleared ? 0xe5c890 : isCurrent ? 0x8caaee : 0x414559, alpha: 0.8 })
-        magicRingsGfx.poly(tri2).stroke({ width: 1.2, color: isCleared ? 0xa6d189 : isCurrent ? 0xca9ee6 : 0x414559, alpha: 0.8 })
+        magicRingsGfx.poly(tri1).stroke({ width: 1.2, color: isCleared ? palette.yellowNum : isCurrent ? palette.blueNum : palette.surface0Num, alpha: 0.8 })
+        magicRingsGfx.poly(tri2).stroke({ width: 1.2, color: isCleared ? palette.greenNum : isCurrent ? palette.mauveNum : palette.surface0Num, alpha: 0.8 })
 
         // Center Magic Core with pulsating radiance
-        const coreColor = isCleared ? 0xe5c890 : isCurrent ? 0xca9ee6 : 0x414559
+        const coreColor = isCleared ? palette.yellowNum : isCurrent ? palette.mauveNum : palette.surface0Num
         const corePulse = Math.sin(t * 5 + idx) * 1.5 + 4.5
         magicRingsGfx.circle(ringCenterX, ringCenterY, corePulse)
           .fill({ color: coreColor, alpha: isCleared ? 0.95 : 0.75 })
@@ -249,7 +251,7 @@ export const RunicCountdownRing: React.FC<RunicCountdownRingProps> = ({
           .lineTo(slotsStartX + (itemCount - 1) * (slotWidth + slotGap) + slotWidth / 2, cy + cardHeight / 2)
           .stroke({
             width: 1.2,
-            color: 0x414559,
+            color: palette.surface0Num,
             alpha: 0.25,
           })
 
@@ -259,7 +261,7 @@ export const RunicCountdownRing: React.FC<RunicCountdownRingProps> = ({
             .lineTo(targetX, cy + cardHeight / 2)
             .stroke({
               width: 2.0,
-              color: isCleared ? 0xa6d189 : 0xe5c890,
+              color: isCleared ? palette.greenNum : palette.yellowNum,
               alpha: 0.85,
             })
         }
@@ -275,45 +277,45 @@ export const RunicCountdownRing: React.FC<RunicCountdownRingProps> = ({
             // Soft glowing aura behind decrypted rune (seamless, no border edge)
             const auraRadius = isSlotJustFilled ? 18 + Math.sin(t * 8) * 3 : 14
             runeSlotsGfx.circle(runeCenterX, runeCenterY, auraRadius)
-              .fill({ color: isSlotJustFilled ? 0xe5c890 : 0x8caaee, alpha: isSlotJustFilled ? 0.35 : 0.08 })
+              .fill({ color: isSlotJustFilled ? palette.yellowNum : palette.blueNum, alpha: isSlotJustFilled ? 0.35 : 0.08 })
 
             // Expanding golden shockwave ring on newly unlocked rune
             if (isSlotJustFilled) {
               runeSlotsGfx.circle(runeCenterX, runeCenterY, 20)
-                .stroke({ width: 1.5, color: 0xe5c890, alpha: 0.9 })
+                .stroke({ width: 1.5, color: palette.yellowNum, alpha: 0.9 })
             }
 
             // Draw Sacred Rune Emblem Glyphs using vectors
             runeSlotsGfx.moveTo(runeCenterX, runeCenterY - 12)
               .lineTo(runeCenterX, runeCenterY + 12)
-              .stroke({ width: 2.2, color: 0xe5c890, alpha: 0.95 })
+              .stroke({ width: 2.2, color: palette.yellowNum, alpha: 0.95 })
 
             // Rune Branches
             if (s % 3 === 0) {
               runeSlotsGfx.moveTo(runeCenterX, runeCenterY - 4)
                 .lineTo(runeCenterX + 7, runeCenterY - 11)
-                .stroke({ width: 1.8, color: 0xe5c890, alpha: 0.95 })
+                .stroke({ width: 1.8, color: palette.yellowNum, alpha: 0.95 })
               runeSlotsGfx.moveTo(runeCenterX, runeCenterY + 3)
                 .lineTo(runeCenterX + 7, runeCenterY - 4)
-                .stroke({ width: 1.8, color: 0xe5c890, alpha: 0.95 })
+                .stroke({ width: 1.8, color: palette.yellowNum, alpha: 0.95 })
             } else if (s % 3 === 1) {
               runeSlotsGfx.moveTo(runeCenterX, runeCenterY - 9)
                 .lineTo(runeCenterX + 7, runeCenterY - 2)
                 .lineTo(runeCenterX, runeCenterY + 5)
-                .stroke({ width: 1.8, color: 0xe5c890, alpha: 0.95 })
+                .stroke({ width: 1.8, color: palette.yellowNum, alpha: 0.95 })
             } else {
               runeSlotsGfx.moveTo(runeCenterX, runeCenterY - 8)
                 .lineTo(runeCenterX + 6, runeCenterY)
                 .lineTo(runeCenterX, runeCenterY + 8)
                 .lineTo(runeCenterX - 6, runeCenterY)
                 .closePath()
-                .stroke({ width: 1.8, color: 0xe5c890, alpha: 0.95 })
+                .stroke({ width: 1.8, color: palette.yellowNum, alpha: 0.95 })
             }
           } else {
             // Subtle glowing node circle for encrypted position (no hard box)
             runeSlotsGfx.circle(runeCenterX, runeCenterY, 4)
-              .fill({ color: 0x414559, alpha: 0.6 })
-              .stroke({ width: 1.0, color: 0x626880, alpha: 0.5 })
+              .fill({ color: palette.surface0Num, alpha: 0.6 })
+              .stroke({ width: 1.0, color: palette.surface2Num, alpha: 0.5 })
           }
 
           // Sparkles on newly filled slot during cascade
@@ -322,7 +324,7 @@ export const RunicCountdownRing: React.FC<RunicCountdownRingProps> = ({
               const sparkAngle = t * 14 + (k * Math.PI) / 4
               const spX = runeCenterX + Math.cos(sparkAngle) * 18
               const spY = runeCenterY + Math.sin(sparkAngle) * 18
-              sparksGfx.circle(spX, spY, 2.2).fill({ color: 0xe5c890, alpha: 0.95 })
+              sparksGfx.circle(spX, spY, 2.2).fill({ color: palette.yellowNum, alpha: 0.95 })
             }
           }
         }
@@ -334,33 +336,33 @@ export const RunicCountdownRing: React.FC<RunicCountdownRingProps> = ({
     return () => {
       app.ticker.remove(tickerCallback)
     }
-  }, [])
+  }, [palette])
 
   const isUrgent = timeLeft <= 10
   const clearedCount = sequences.filter((s) => s.isCleared).length
 
   return (
-    <div className="flex flex-col gap-2.5 bg-[#1e1e2e]/95 p-3 rounded-2xl border border-[#ca9ee6]/40 shadow-2xl backdrop-blur-md">
+    <div className="flex flex-col gap-2.5 bg-[var(--ctp-surface0)]/95 p-3 rounded-2xl border border-[var(--ctp-mauve)]/40 shadow-2xl backdrop-blur-md">
       {/* Top Header Bar: Status Badge, Title & Countdown Timer */}
       <div className="flex items-center justify-between gap-4">
         <div className="flex items-center gap-3">
           <div className={`w-10 h-10 rounded-2xl flex items-center justify-center text-xl shrink-0 border transition-all duration-500 shadow-md ${
-            isSolved ? 'bg-[#a6d189]/25 border-[#a6d189] text-[#a6d189] shadow-[0_0_20px_rgba(166,209,137,0.4)]' :
-            isUrgent ? 'bg-[#e78284]/25 border-[#e78284] text-[#e78284] animate-pulse shadow-[0_0_20px_rgba(231,130,132,0.4)]' :
-            'bg-[#ca9ee6]/20 border-[#ca9ee6]/50 text-[#ca9ee6] shadow-[0_0_15px_rgba(202,158,230,0.25)]'
+            isSolved ? 'bg-[var(--ctp-green)]/25 border-[var(--ctp-green)] text-[var(--ctp-green)] shadow-[0_0_20px_rgba(166,209,137,0.4)]' :
+            isUrgent ? 'bg-[var(--ctp-red)]/25 border-[var(--ctp-red)] text-[var(--ctp-red)] animate-pulse shadow-[0_0_20px_rgba(231,130,132,0.4)]' :
+            'bg-[var(--ctp-mauve)]/20 border-[var(--ctp-mauve)]/50 text-[var(--ctp-mauve)] shadow-[0_0_15px_rgba(202,158,230,0.25)]'
           }`}>
             {isSolved ? '✨' : '🔮'}
           </div>
           <div>
             <div className="flex items-center gap-2">
-              <span className={`text-sm font-extrabold tracking-wide block ${isSolved ? 'text-[#a6d189]' : 'text-[#ca9ee6]'}`}>
+              <span className={`text-sm font-extrabold tracking-wide block ${isSolved ? 'text-[var(--ctp-green)]' : 'text-[var(--ctp-mauve)]'}`}>
                 {isSolved ? 'Runic Cipher Decrypted!' : 'Timed Magic Decryption Challenge'}
               </span>
-              <span className="text-[10px] px-2.5 py-0.5 rounded-full bg-[#181825] border border-[#ca9ee6]/40 text-[#ca9ee6] font-mono font-bold">
+              <span className="text-[10px] px-2.5 py-0.5 rounded-full bg-[var(--ctp-crust)] border border-[var(--ctp-mauve)]/40 text-[var(--ctp-mauve)] font-mono font-bold">
                 {clearedCount}/{sequences.length} Circles Active
               </span>
             </div>
-            <span className="text-xs text-[#a5adce]">
+            <span className="text-xs text-[var(--ctp-subtext0)]">
               {isSolved
                 ? 'All arcane circles energized! Ancient lifecycle contract deciphered.'
                 : 'Solve each sequence: Magic characters will decrypt left-to-right and activate its spinning magic ring!'}
@@ -371,25 +373,25 @@ export const RunicCountdownRing: React.FC<RunicCountdownRingProps> = ({
         {!isSolved && (
           <div className="flex items-center gap-3 shrink-0">
             <div className="text-right">
-              <span className="text-[10px] text-[#a5adce] block uppercase tracking-wider font-semibold">Decryption Window</span>
-              <span className={`text-sm font-mono font-bold ${isUrgent ? 'text-[#e78284] animate-pulse' : 'text-[#ca9ee6]'}`}>
+              <span className="text-[10px] text-[var(--ctp-subtext0)] block uppercase tracking-wider font-semibold">Decryption Window</span>
+              <span className={`text-sm font-mono font-bold ${isUrgent ? 'text-[var(--ctp-red)] animate-pulse' : 'text-[var(--ctp-mauve)]'}`}>
                 {timeLeft}s
               </span>
             </div>
             <div className={`w-8 h-8 rounded-full border-2 flex items-center justify-center shadow-inner ${
-              isUrgent ? 'border-[#e78284] bg-[#e78284]/15' : 'border-[#ca9ee6] bg-[#ca9ee6]/15'
+              isUrgent ? 'border-[var(--ctp-red)] bg-[var(--ctp-red)]/15' : 'border-[var(--ctp-mauve)] bg-[var(--ctp-mauve)]/15'
             }`}>
-              <Timer size={14} className={isUrgent ? 'text-[#e78284] animate-spin' : 'text-[#ca9ee6]'} />
+              <Timer size={14} className={isUrgent ? 'text-[var(--ctp-red)] animate-spin' : 'text-[var(--ctp-mauve)]'} />
             </div>
           </div>
         )}
       </div>
 
       {/* PixiJS Canvas Viewport for Spinning Magic Rings & Left-to-Right Arcane Decryption */}
-      <div className="relative w-full aspect-[11/2] min-h-[120px] max-h-[140px] bg-[#181825] rounded-xl border border-[#414559] overflow-hidden shadow-inner">
+      <div className="relative w-full aspect-[11/2] min-h-[120px] max-h-[140px] bg-[var(--ctp-crust)] rounded-xl border border-[var(--ctp-surface1)] overflow-hidden shadow-inner">
         <PixiCanvasViewport
           className="absolute inset-0 w-full h-full"
-          backgroundColor={0x181825}
+          backgroundColor={palette.crustNum}
           backgroundAlpha={0.95}
           defaultWidth={800}
           defaultHeight={144}

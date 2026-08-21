@@ -20,26 +20,26 @@ export const SnackbarToasts: React.FC<SnackbarToastsProps> = ({ snackbars, onDis
           <div
             className={`pointer-events-auto w-full backdrop-blur-xl border text-xs sm:text-sm font-semibold px-3.5 py-2.5 sm:px-4 sm:py-3 rounded-2xl shadow-2xl flex items-center gap-3 border-l-4 transition-all duration-300 relative overflow-hidden ${
               item.type === 'success'
-                ? 'bg-[#1e2e28]/95 border-[#a6d189]/60 border-l-[#a6d189] text-[#a6d189] shadow-[#a6d189]/20'
+                ? 'bg-[var(--ctp-surface0)]/95 border-[var(--ctp-green)]/60 border-l-[var(--ctp-green)] text-[var(--ctp-green)] shadow-[var(--ctp-green)]/20'
                 : item.type === 'danger'
-                ? 'bg-[#312028]/95 border-[#e78284]/60 border-l-[#e78284] text-[#ea999c] shadow-[#e78284]/20'
+                ? 'bg-[var(--ctp-surface0)]/95 border-[var(--ctp-red)]/60 border-l-[var(--ctp-red)] text-[var(--ctp-red)] shadow-[var(--ctp-red)]/20'
                 : item.type === 'warning'
-                ? 'bg-[#312a20]/95 border-[#ef9f76]/60 border-l-[#ef9f76] text-[#ef9f76] shadow-[#ef9f76]/20'
+                ? 'bg-[var(--ctp-surface0)]/95 border-[var(--ctp-peach)]/60 border-l-[var(--ctp-peach)] text-[var(--ctp-peach)] shadow-[var(--ctp-peach)]/20'
                 : item.type === 'craft'
-                ? 'bg-[#292233]/95 border-[#ca9ee6]/60 border-l-[#ca9ee6] text-[#ca9ee6] shadow-[#ca9ee6]/20'
+                ? 'bg-[var(--ctp-surface0)]/95 border-[var(--ctp-mauve)]/60 border-l-[var(--ctp-mauve)] text-[var(--ctp-mauve)] shadow-[var(--ctp-mauve)]/20'
                 : item.type === 'exp'
-                ? 'bg-[#1f2838]/95 border-[#8caaee]/60 border-l-[#8caaee] text-[#8caaee] shadow-[#8caaee]/20'
-                : 'bg-[#1e1e2e]/95 border-[#414559] border-l-[#8caaee] text-[#c6d0f5] shadow-black/40'
+                ? 'bg-[var(--ctp-surface0)]/95 border-[var(--ctp-blue)]/60 border-l-[var(--ctp-blue)] text-[var(--ctp-blue)] shadow-[var(--ctp-blue)]/20'
+                : 'bg-[var(--ctp-surface0)]/95 border-[var(--ctp-surface1)] border-l-[var(--ctp-blue)] text-[var(--ctp-text)] shadow-black/40'
             }`}
           >
-            <div className="w-7 h-7 rounded-xl bg-[#181825]/80 flex items-center justify-center shrink-0 text-base shadow-inner animate-pulse">
+            <div className="w-7 h-7 rounded-xl bg-[var(--ctp-crust)]/80 flex items-center justify-center shrink-0 text-base shadow-inner animate-pulse">
               {item.icon}
             </div>
-            <span className="truncate pr-1 text-[#c6d0f5] flex-1">{item.text}</span>
+            <span className="truncate pr-1 text-[var(--ctp-text)] flex-1">{item.text}</span>
             <button
               type="button"
               onClick={() => onDismiss(item.id)}
-              className="w-6 h-6 rounded-lg bg-black/20 hover:bg-black/40 text-[#a5adce] hover:text-white flex items-center justify-center shrink-0 transition-colors"
+              className="w-6 h-6 rounded-lg bg-black/20 hover:bg-black/40 text-[var(--ctp-subtext0)] hover:text-[var(--ctp-text)] flex items-center justify-center shrink-0 transition-colors"
               title="Dismiss notification"
             >
               <X size={13} />

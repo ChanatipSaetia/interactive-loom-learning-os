@@ -52,7 +52,7 @@ describe('NodeInspectorTray Component', () => {
     expect(handleLaunch).toHaveBeenCalledWith(unlockedNode)
   })
 
-  it('masks title with magic runes and disables action for locked nodes', () => {
+  it('masks title with magic runes, shows foggy icon, hides rewards/specs, and disables action for locked nodes', () => {
     const handleLaunch = vi.fn()
     render(
       <NodeInspectorTray
@@ -67,5 +67,14 @@ describe('NodeInspectorTray Component', () => {
     const lockedBtn = screen.getByRole('button', { name: /Prerequisites Locked/i })
     expect(lockedBtn).toBeDefined()
     expect(lockedBtn.hasAttribute('disabled')).toBe(true)
+
+    // Foggy icon should be displayed instead of monster icon
+    expect(screen.getByText('🌫️')).toBeDefined()
+    expect(screen.queryByText('👾')).toBeNull()
+
+    // Monster preview and item reward should NOT be shown
+    expect(screen.queryByText('Tight Goblin')).toBeNull()
+    expect(screen.queryByText(/Reward:/i)).toBeNull()
+    expect(screen.queryByText(/Adapter Shield/i)).toBeNull()
   })
 })

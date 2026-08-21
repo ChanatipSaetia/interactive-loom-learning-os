@@ -1,0 +1,20 @@
+challenges:
+  - id: "filter-creation-sequence"
+    prompt: "Arrange the chronological steps for authoring and applying a custom GLSL Filter in PixiJS:"
+    items:
+      - id: "step-write-shader"
+        text: "Write custom GLSL Vertex and Fragment Shader source strings"
+      - id: "step-define-uniforms"
+        text: "Define Uniform Object with initial values (e.g. uTime, uSpeed, uColor)"
+      - id: "step-instantiate-filter"
+        text: "Instantiate custom PIXI.Filter(vertexSrc, fragmentSrc, uniforms)"
+      - id: "step-attach-container"
+        text: "Attach instance to container.filters = [customFilter]"
+      - id: "step-update-ticker"
+        text: "Update uniform values (customFilter.uniforms.uTime += delta) in Ticker loop"
+    solution:
+      - "step-write-shader"
+      - "step-define-uniforms"
+      - "step-instantiate-filter"
+      - "step-attach-container"
+      - "step-update-ticker"

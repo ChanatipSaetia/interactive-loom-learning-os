@@ -1,0 +1,24 @@
+filter_system:
+  title: "FilterSystem"
+  desc: "Coordinates filter stack, calculates bounding box with padding, and manages passes"
+  type: "aggregate"
+
+target_pool:
+  title: "RenderTarget Pool"
+  desc: "Allocates and recycles temporary offscreen WebGL framebuffers"
+  type: "aggregate"
+
+display_container:
+  title: "Display Container"
+  desc: "Node holding child display objects and the attached filters array"
+  type: "aggregate"
+
+shader_program:
+  title: "GLSL Shader Program"
+  desc: "Compiles and executes vertex/fragment shaders with uniform matrices"
+  type: "aggregate"
+
+gpu_driver:
+  title: "WebGL / WebGPU Driver"
+  desc: "Hardware graphics pipeline drawing screen-space quads into framebuffers"
+  type: "external"

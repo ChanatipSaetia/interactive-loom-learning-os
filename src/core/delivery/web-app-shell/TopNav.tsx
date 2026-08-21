@@ -8,7 +8,7 @@ export function TopNav() {
     <header className="topnav">
       <div className="topnav-brand flex items-center gap-4">
         <Link to="/" className="topnav-title">Learning&nbsp;OS</Link>
-        <Link to="/campaign" className="text-xs px-2.5 py-1 rounded-lg bg-[#8caaee]/20 text-[#8caaee] hover:bg-[#8caaee]/30 font-semibold border border-[#8caaee]/30 transition-colors">
+        <Link to="/campaign" className="text-xs px-2.5 py-1 rounded-lg bg-[var(--ctp-blue)]/20 text-[var(--ctp-blue)] hover:bg-[var(--ctp-blue)]/30 font-semibold border border-[var(--ctp-blue)]/30 transition-colors">
           🎮 Gamification Campaign
         </Link>
       </div>

@@ -1,0 +1,23 @@
+challenges:
+  - id: "filter-lifecycle-sequence"
+    prompt: "Arrange the chronological stages of the PixiJS Filter execution lifecycle from initial interception to framebuffer swap:"
+    items:
+      - id: "seq-bounds-padding"
+        text: "Calculate Padded Bounding Box (expand bounds by filter.padding)"
+      - id: "seq-lease-target"
+        text: "Lease Temporary RenderTarget from internal RenderTarget pool"
+      - id: "seq-render-children"
+        text: "Render Container Child Hierarchy into the offscreen RenderTarget"
+      - id: "seq-bind-uniforms"
+        text: "Compute uFilterMatrix and bind Shader Uniforms & Samplers"
+      - id: "seq-execute-quad"
+        text: "Execute Fragment Shader over full-screen Quad onto destination buffer"
+      - id: "seq-recycle-target"
+        text: "Recycle temporary RenderTargets back to pool for future frames"
+    solution:
+      - "seq-bounds-padding"
+      - "seq-lease-target"
+      - "seq-render-children"
+      - "seq-bind-uniforms"
+      - "seq-execute-quad"
+      - "seq-recycle-target"

@@ -55,6 +55,14 @@
   description: >-
     Master hardware-accelerated 2D graphics, hierarchical scene graphs,
     automatic draw-call batching, and high-performance WebGL/WebGPU pipelines.
+- id: pixijs-filters
+  label: pixijs-filters
+  path: /topics/pixijs-filters
+  category: Architecture
+  description: >-
+    Master GPU-accelerated post-processing, custom GLSL fragment shaders,
+    multi-pass convolution blurs, displacement maps, and high-performance
+    FilterSystem architecture in PixiJS.
 - id: pm-and-meetings
   label: pm-and-meetings
   path: /topics/pm-and-meetings
