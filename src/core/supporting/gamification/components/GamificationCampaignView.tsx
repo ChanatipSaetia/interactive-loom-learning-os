@@ -16,6 +16,7 @@ import {
 } from '../game-rules'
 import { DIFFICULTY_CONFIGS, type DifficultyLevel } from '../types'
 import { useGamification } from '../useGamification'
+import { LocalStorageCharacterAdapter } from '../adapters/local-storage-character-adapter'
 import { Button, Badge, Modal } from '../../../ui-system'
 import { useOKFBundled, bundleToSections } from '../../../learning-engine/composition/okf/sections'
 import { SectionRegistry } from '../../../learning-engine/registry'
@@ -35,6 +36,7 @@ export const GamificationCampaignView: React.FC = () => {
   const initialTopicId = routeTopicId || queryTopicId || null
   const [selectedTopicId, setSelectedTopicId] = useState<string | null>(initialTopicId)
   const { topics } = useTopics()
+  const characterAdapter = useMemo(() => new LocalStorageCharacterAdapter(), [])
 
   // Keep state in sync if URL changes
   useEffect(() => {
@@ -107,6 +109,21 @@ export const GamificationCampaignView: React.FC = () => {
           readingVisitCounts: {},
         })
       )
+
+      // Increment play count in global profile
+      const profile = await characterAdapter.loadGlobalProfile()
+      if (profile) {
+        const currentPlays = profile.topicPlayCounts?.[topicId] ?? 0
+        const updatedProfile = {
+          ...profile,
+          totalCampaignsStarted: (profile.totalCampaignsStarted ?? 0) + 1,
+          topicPlayCounts: {
+            ...profile.topicPlayCounts,
+            [topicId]: currentPlays + 1,
+          },
+        }
+        portSetGlobalProfile(updatedProfile)
+      }
     }
     setSelectedTopicId(topicId)
     setSearchParams({ topic: topicId })
@@ -134,6 +151,7 @@ export const GamificationCampaignView: React.FC = () => {
     applyCraftedBuff: portApplyCraftedBuff,
     allocateStatPoint: portAllocateStatPoint,
     resetCampaign: portResetCampaign,
+    setGlobalProfile: portSetGlobalProfile,
   } = useGamification(currentTopicId)
 
   // Load real OKF bundle for current topic

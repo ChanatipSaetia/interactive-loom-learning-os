@@ -50,4 +50,5 @@ export interface GamificationRuntimePort {
   applyCraftedBuff: (buff: ActiveBuff, vulnerability?: ActiveBuff) => void
   allocateStatPoint: (stat: keyof CharacterAttributes) => void
   resetCampaign: (targetTopicId?: string, isNewPlay?: boolean) => Promise<void>
+  setGlobalProfile: (profile: GlobalCharacterState) => void
 }

@@ -18,7 +18,7 @@ export function useGamification(
 ): GamificationRuntimePort {
   const [campaign, setCampaign] = useState<HexCampaignData | null>(null)
   const [topicState, setTopicState] = useState<TopicCampaignState | null>(null)
-  const [globalProfile, setGlobalProfile] = useState<GlobalCharacterState | null>(null)
+  const [globalProfile, setGlobalProfileState] = useState<GlobalCharacterState | null>(null)
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
@@ -39,7 +39,7 @@ export function useGamification(
       try {
         const profile = await characterAdapter.loadGlobalProfile()
         if (!mounted) return
-        setGlobalProfile(profile)
+        setGlobalProfileState(profile)
 
         // If no topic selected (Lobby mode), do not initialize or write any topic campaign
         if (!topicId) {
@@ -55,7 +55,7 @@ export function useGamification(
 
         if (!mounted) return
 
-        setGlobalProfile(profile)
+        setGlobalProfileState(profile)
         setCampaign(loadedCampaign)
 
         if (savedTopicState) {
@@ -107,7 +107,7 @@ export function useGamification(
               [topicId]: currentPlays + 1,
             },
           }
-          setGlobalProfile(updatedProfile)
+          setGlobalProfileState(updatedProfile)
           await characterAdapter.saveGlobalProfile(updatedProfile)
         }
       } catch (err: unknown) {
@@ -274,7 +274,7 @@ export function useGamification(
 
   // Allocate character attribute points
   const allocateStatPoint = useCallback((stat: keyof CharacterAttributes) => {
-    setGlobalProfile((prev) => {
+    setGlobalProfileState((prev) => {
       if (!prev || prev.unallocatedPoints <= 0) return prev
       const nextProfile: GlobalCharacterState = {
         ...prev,
@@ -334,7 +334,7 @@ export function useGamification(
           globalProfile?.unlockedBadges || []
         )
 
-        setGlobalProfile((g) => {
+        setGlobalProfileState((g) => {
           if (!g) return g
           const nextG: GlobalCharacterState = {
             ...g,
@@ -363,7 +363,7 @@ export function useGamification(
 
   // Award EXP upon completing all section requirements
   const awardExp = useCallback((expAmount: number) => {
-    setGlobalProfile((prev) => {
+    setGlobalProfileState((prev) => {
       if (!prev) return null
       const progress = calculateLevelProgress(
         prev.level,
@@ -387,7 +387,7 @@ export function useGamification(
 
   // Manually unlock a badge (persisted to Global Character profile)
   const unlockBadge = useCallback((badge: import('./types').UnlockedBadge) => {
-    setGlobalProfile((prev) => {
+    setGlobalProfileState((prev) => {
       if (!prev) return null
       const exists = prev.unlockedBadges.some((b) => b.id === badge.id)
       if (exists) return prev
@@ -402,7 +402,7 @@ export function useGamification(
 
   // Clear all unlocked badges from Global Character profile
   const clearBadges = useCallback(() => {
-    setGlobalProfile((prev) => {
+    setGlobalProfileState((prev) => {
       if (!prev) return null
       const nextProfile: GlobalCharacterState = {
         ...prev,
@@ -446,7 +446,7 @@ export function useGamification(
       await characterAdapter.saveTopicCampaign(topicId, freshTopicState)
 
       if (isNewPlay) {
-        setGlobalProfile((g) => {
+        setGlobalProfileState((g) => {
           if (!g) return g
           const currentTopicPlays = g.topicPlayCounts?.[idToReset] ?? 1
           const updatedG: GlobalCharacterState = {
@@ -463,6 +463,12 @@ export function useGamification(
       }
     }
   }, [characterAdapter, topicId, campaign, topicState?.difficulty])
+
+  // Set global profile directly (used when play count is incremented externally)
+  const setGlobalProfile = useCallback((profile: import('./types').GlobalCharacterState) => {
+    setGlobalProfileState(profile)
+    characterAdapter.saveGlobalProfile(profile)
+  }, [characterAdapter])
 
   return {
     campaign,
@@ -482,5 +488,6 @@ export function useGamification(
     applyCraftedBuff,
     allocateStatPoint,
     resetCampaign,
+    setGlobalProfile,
   }
 }
