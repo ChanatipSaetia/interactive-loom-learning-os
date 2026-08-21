@@ -499,23 +499,40 @@ export const GamificationCampaignView: React.FC = () => {
                       {topic.description}
                     </p>
 
-                    {/* Earned Topic Badges Section */}
+                    {/* Earned Topic Badges Section (Compact Icons with Tooltips) */}
                     {topicBadges.length > 0 && (
-                      <div className="bg-[#1e1e2e]/70 p-2.5 rounded-xl border border-[#8caaee]/30 space-y-1.5">
-                        <span className="text-[10px] uppercase font-bold text-[#8caaee] tracking-wider block">
-                          Earned Topic Badges ({topicBadges.length}):
+                      <div className="bg-[#1e1e2e]/70 p-2 rounded-xl border border-[#8caaee]/30 flex items-center justify-between gap-2">
+                        <span className="text-[10px] uppercase font-bold text-[#8caaee] tracking-wider shrink-0">
+                          Badges ({topicBadges.length}):
                         </span>
-                        <div className="flex items-center gap-1.5 flex-wrap">
+                        <div className="flex items-center gap-1.5 flex-wrap justify-end">
                           {topicBadges.map((badge) => (
-                            <Badge
+                            <div
                               key={badge.id}
-                              variant="secondary"
-                              className="bg-[#8caaee]/20 text-[#8caaee] border-[#8caaee]/40 text-[10px] px-2 py-0.5 flex items-center gap-1"
-                              title={badge.description}
+                              className="group/badge relative cursor-help"
                             >
-                              <span>{badge.icon}</span>
-                              <span className="truncate max-w-[120px]">{badge.title}</span>
-                            </Badge>
+                              <div className="w-8 h-8 rounded-lg bg-[#292c3c] hover:bg-[#303446] border border-[#8caaee]/40 flex items-center justify-center text-lg shadow-sm transition-transform hover:scale-110">
+                                {badge.icon}
+                              </div>
+                              {/* Custom Tooltip */}
+                              <div className="absolute bottom-full right-0 mb-2 hidden group-hover/badge:flex flex-col w-48 p-2 bg-[#181825] border border-[#8caaee]/50 rounded-xl shadow-2xl z-50 text-left pointer-events-none">
+                                <div className="flex items-center gap-1.5 font-bold text-[#8caaee] text-xs">
+                                  <span>{badge.icon}</span>
+                                  <span className="truncate">{badge.title}</span>
+                                </div>
+                                <p className="text-[10px] text-[#c6d0f5] mt-1 leading-tight">
+                                  {badge.description}
+                                </p>
+                                {badge.difficulty && (
+                                  <span className="text-[9px] uppercase font-semibold text-[#ef9f76] mt-1">
+                                    Tier: {badge.difficulty}
+                                  </span>
+                                )}
+                                <span className="text-[9px] text-[#737994] mt-0.5">
+                                  Earned: {badge.unlockedAt}
+                                </span>
+                              </div>
+                            </div>
                           ))}
                         </div>
                       </div>
@@ -530,52 +547,87 @@ export const GamificationCampaignView: React.FC = () => {
                         </span>
                       </div>
 
-                      {/* Difficulty Selector Chips */}
+                      {/* Difficulty Selector Chips (Selectable only before starting / locked if active campaign in progress) */}
                       <div className="flex items-center justify-between gap-1.5 bg-[#1e1e2e]/70 p-1.5 rounded-xl border border-[#414559]/40">
-                        <span className="text-[10px] text-[#a5adce] font-semibold pl-1">Tier:</span>
+                        <span className="text-[10px] text-[#a5adce] font-semibold pl-1">
+                          {clearedCount > 0 ? 'Active Tier:' : 'Select Tier:'}
+                        </span>
                         <div className="flex items-center gap-1">
                           {(['easy', 'normal', 'hard', 'nightmare'] as DifficultyLevel[]).map((diff) => {
                             const conf = DIFFICULTY_CONFIGS[diff]
                             const isActive = selectedDiff === diff
+                            const isLocked = clearedCount > 0 && !isActive
+
+                            if (isLocked) {
+                              return null // Only display active tier when campaign is in progress
+                            }
+
                             return (
-                              <button
-                                key={diff}
-                                type="button"
-                                onClick={(e) => {
-                                  e.stopPropagation()
-                                  setTopicDifficulties((prev) => ({
-                                    ...prev,
-                                    [topic.id]: diff,
-                                  }))
-                                  if (isCurrent) {
-                                    portSetDifficulty(diff)
-                                  } else {
-                                    try {
-                                      const key = `loom_gamification_campaign_${topic.id}`
-                                      const raw = localStorage.getItem(key)
-                                      const data = raw ? JSON.parse(raw) : {}
-                                      localStorage.setItem(key, JSON.stringify({ ...data, difficulty: diff }))
-                                    } catch {
-                                      // ignore
+                              <div key={diff} className="relative group/tier">
+                                <button
+                                  type="button"
+                                  disabled={clearedCount > 0}
+                                  onClick={(e) => {
+                                    e.stopPropagation()
+                                    if (clearedCount > 0) return
+                                    setTopicDifficulties((prev) => ({
+                                      ...prev,
+                                      [topic.id]: diff,
+                                    }))
+                                    if (isCurrent) {
+                                      portSetDifficulty(diff)
+                                    } else {
+                                      try {
+                                        const key = `loom_gamification_campaign_${topic.id}`
+                                        const raw = localStorage.getItem(key)
+                                        const data = raw ? JSON.parse(raw) : {}
+                                        localStorage.setItem(key, JSON.stringify({ ...data, difficulty: diff }))
+                                      } catch {
+                                        // ignore
+                                      }
                                     }
-                                  }
-                                }}
-                                title={`${conf.label}: ${conf.description}`}
-                                className={`text-[10px] font-bold px-2 py-1 rounded-lg transition-all flex items-center gap-1 ${
-                                  isActive
-                                    ? diff === 'nightmare'
-                                      ? 'bg-[#ea999c] text-[#232634] shadow-md scale-105'
-                                      : diff === 'hard'
-                                      ? 'bg-[#ef9f76] text-[#232634] shadow-md scale-105'
-                                      : diff === 'normal'
-                                      ? 'bg-[#8caaee] text-[#232634] shadow-md scale-105'
-                                      : 'bg-[#a6d189] text-[#232634] shadow-md scale-105'
-                                    : 'bg-[#303446] hover:bg-[#414559] text-[#a5adce]'
-                                }`}
-                              >
-                                <span>{conf.icon}</span>
-                                <span className="capitalize">{diff}</span>
-                              </button>
+                                  }}
+                                  className={`text-[10px] font-bold px-2 py-1 rounded-lg transition-all flex items-center gap-1 ${
+                                    isActive
+                                      ? diff === 'nightmare'
+                                        ? 'bg-[#ea999c] text-[#232634] shadow-md scale-105'
+                                        : diff === 'hard'
+                                        ? 'bg-[#ef9f76] text-[#232634] shadow-md scale-105'
+                                        : diff === 'normal'
+                                        ? 'bg-[#8caaee] text-[#232634] shadow-md scale-105'
+                                        : 'bg-[#a6d189] text-[#232634] shadow-md scale-105'
+                                      : 'bg-[#303446] hover:bg-[#414559] text-[#a5adce]'
+                                  }`}
+                                >
+                                  <span>{conf.icon}</span>
+                                  <span className="capitalize">{diff}</span>
+                                </button>
+
+                                {/* Rich Tooltip with Rules Breakdown */}
+                                <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 hidden group-hover/tier:flex flex-col w-52 p-2.5 bg-[#181825] border border-[#414559] rounded-xl shadow-2xl z-50 text-left pointer-events-none">
+                                  <div className="flex items-center gap-1.5 font-bold text-xs text-[#b5bfe2]">
+                                    <span>{conf.icon}</span>
+                                    <span>{conf.label}</span>
+                                  </div>
+                                  <p className="text-[10px] text-[#a5adce] mt-1">
+                                    {conf.description}
+                                  </p>
+                                  <div className="mt-2 pt-1.5 border-t border-[#414559]/50 space-y-0.5 text-[9px] font-mono">
+                                    <div className="flex justify-between text-[#e78284]">
+                                      <span>Damage Received:</span>
+                                      <span>{conf.damageMultiplier}x</span>
+                                    </div>
+                                    <div className="flex justify-between text-[#a6d189]">
+                                      <span>EXP Reward:</span>
+                                      <span>{conf.expBonusMultiplier}x</span>
+                                    </div>
+                                    <div className="flex justify-between text-[#ef9f76]">
+                                      <span>Chaos Buildup:</span>
+                                      <span>{conf.chaosMultiplier}x</span>
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
                             )
                           })}
                         </div>
