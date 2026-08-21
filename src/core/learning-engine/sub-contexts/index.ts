@@ -1,10 +1,19 @@
 /**
  * Centralized Domain Barrel Export
  *
- * Canonical entry point for all 5 Core Learning Subdomains.
+ * Canonical entry point for all 5 Core Learning Sub-Contexts.
  * Re-exports bounded context contracts and renderers so callers
- * can import from `src/core/subdomains` instead of nested paths.
+ * can import from `src/core/learning-engine/sub-contexts` instead
+ * of nested paths. Supporting subdomains live in `src/core/supporting`
+ * and must NOT be re-exported from this core learning barrel.
  */
+
+// ─── Unified Section Result Contract ──────────────────────────────────
+export type {
+  SectionResultContract,
+  SectionCompletionStatus,
+  SectionResultProps,
+} from './types'
 
 // ─── Process & Event Workflow Simulation ───────────────────────────────
 export {
@@ -232,7 +241,4 @@ export type {
   ConceptMapMatched,
 } from './practice-assessment'
 export { validatePracticeAssessmentTier3 } from './practice-assessment'
-
-// ─── Supporting Subdomains ─────────────────────────────────────────────
-export * from '../../supporting'
 

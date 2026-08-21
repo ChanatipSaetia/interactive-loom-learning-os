@@ -116,6 +116,13 @@ class EmbedInMemoryStorage implements OKFStoragePort {
   }
 
   /**
+   * Read a topic hex map campaign definition (in-memory lookup or throw if not loaded).
+   */
+  async readHexMap(topicId: string): Promise<string> {
+    throw new Error(`Hex map for topic "${topicId}" is not loaded in embed in-memory storage.`)
+  }
+
+  /**
    * List topics from loaded in-memory bundles.
    * For full topic discovery, use the webapp-spa adapter instead.
    */

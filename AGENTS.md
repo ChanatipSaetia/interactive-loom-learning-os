@@ -26,39 +26,44 @@ Read the relevant doc before starting work — **all documentation in `docs/` an
 
 When refactoring or extending core sections, follow the Strategic & Tactical DDD specification in [docs/agents/domain.md](docs/agents/domain.md) and the decision logs in [grill-log-refactoring.md](grill-log-refactoring.md) and [grill-log-backward-compat.md](grill-log-backward-compat.md):
 
-1. **5 Core Learning Subdomains (`src/core/subdomains/`):**
+1. **5 Core Learning Sub-Contexts (`src/core/learning-engine/sub-contexts/`):**
    * **`process-simulation`**: `flowchart`, `scenario`
    * **`tradeoff-sandbox`**: `tradeoff-sandbox`, `formula-sandbox`, `decision-tree`
    * **`reflection-synthesis`**: `reflection-sequence`, `reflection-template`
    * **`progressive-content`**: `text`, `intro`, `bullets`, `taxonomy-browser`, `image-gallery`
    * **`practice-assessment`**: `quiz`, `flashcards`, `concept-map`
-   * *Rule:* Each subdomain directory (`src/core/subdomains/[subdomain]/`) MUST contain:
+   * *Rule:* Each sub-context directory (`src/core/learning-engine/sub-contexts/[subcontext]/`) MUST contain:
      - `components/`: React section view renderers, help modals, & visual form editors.
      - `schema.ts`: Co-located Zod structural schemas (`SectionSchema`).
+     - `validation.ts`: Tier 3 semantic reference-integrity validators (`validateTier3`).
      - `events.ts`: Domain event type definitions (`SectionEvents`).
      - `index.ts`: Bounded Context entry point exporting contract interfaces.
-     * *Rule:* `src/core/subdomains/` and its barrel export `src/core/subdomains/index.ts` are the canonical sources for core section implementations, schemas, form editors, and supporting subdomains (`src/core/subdomains/supporting/`: `authoring-editor`, `catalog-discovery`, `learner-progress`). New code MUST import from the barrel (`src/core/subdomains`) or a subdomain path (`src/core/subdomains/[subdomain]`).
+     * *Rule:* `src/core/learning-engine/sub-contexts/` and its barrel export `src/core/learning-engine/sub-contexts/index.ts` are the canonical sources for core section implementations, schemas, and form editors. Supporting subdomains live in `src/core/supporting/` (`authoring-editor`, `catalog-discovery`, `learner-progress`, `gamification`) and must NOT be re-exported through the core learning barrel. New code MUST import from the barrel (`src/core/learning-engine/sub-contexts`) or a sub-context path (`src/core/learning-engine/sub-contexts/[subcontext]`).
 
-
-2. **3-Tier Validation Gateway (`src/core/validation/gateway.ts`):**
+2. **Validation Gateway Context (`src/core/learning-engine/validation/`):**
+   * Pure ingestion & 3-tier validation, decoupled from React — can run in browser, CDN bundle, CLI/CI, or background AI fix loops. Independent entry point: `src/core/learning-engine/validation`.
    * Tier 1 (Syntax): YAML syntax & frontmatter parsing.
-   * Tier 2 (Structural Schema): Zod schema verification delegated to subdomain `SectionSchema`.
+   * Tier 2 (Structural Schema): Zod schema verification delegated to sub-context `SectionSchema`.
    * Tier 3 (Semantic Reference Integrity): Cross-reference validation (step links, quiz option bounds, node IDs, and actor/system node connectivity to event nodes).
-   * *Rule:* Return standardized `ValidationResult` payloads containing `status`, `payload` (`lastValidData` for non-blocking preview fallbacks), and `diagnostics` with `fixHint` annotations.
+   * *Rule:* Return standardized `ValidationResult` payloads containing `status`, `payload` (`lastValidData` for non-blocking preview fallbacks), and `diagnostics` with `fixHint` annotations. **Zero React/DOM imports** inside `validation/`.
 
-3. **Hexagonal Delivery Ports & Adapters (`src/core/delivery/`):**
+3. **Composition Engine Context (`src/core/learning-engine/composition/`):**
+   * Page & section assembly: topic route discovery (`routes.tsx`), OKF bundle loading (`okf/reader.ts`), bundle→`SectionConfig` mapping (`okf/sections.ts`), HUD/editor contexts (`context/`), and lazy `SectionRegistry` resolution (`src/core/learning-engine/registry/`). Independent entry point: `src/core/learning-engine/composition`.
+   * *Rule:* Must not re-parse raw YAML or re-implement section schemas — delegate to the Validation Gateway and consume its `ValidationResult` payloads (keep `lastValidData` for non-blocking preview fallbacks).
+
+4. **Hexagonal Delivery Ports & Adapters (`src/core/delivery/`):**
    * Interfaces: `OKFStoragePort` and `OKFRuntimePort` live in `src/core/delivery/ports.ts`.
    * Adapters: `InRepoStorageAdapter`, `WebAppRuntimeAdapter`, `SingleHTMLEmbedAdapter` live in `src/core/delivery/adapters/`.
    * *Rule:* Decouple host environments (Vite dev server, Web App SPA router, single HTML embed library `libs/loom-sections.tsx`) from section component implementations.
 
-4. **UI System Contract (`src/core/ui-system/`):**
+5. **UI System Contract (`src/core/ui-system/`):**
    * Exposes `UISystemContract` via `useUISystem()` hook unifying `ThemeContract` (Catppuccin Frappé), `UIComponentRegistryContract` (`<Card>`, `<Button>`, `<RangeSlider>`, `<Modal>`, `<Badge>`), and `SensoryFeedbackContract` (audio triggers, motion animation variants).
    * *Rule:* Zero ad-hoc hardcoded styling or direct un-abstracted audio triggers inside subdomain components.
 
 ## Working on OKF Sections & Editor Architecture
 
-- OKF schemas and types live co-located in `src/core/subdomains/[subdomain]/schema.ts` (with legacy type aliases in `src/core/okf/types.ts`).
-- Dynamic OKF parsing and loading pipeline lives in `src/core/okf/reader.ts` and `src/core/okf/sections.ts` (using delivery adapters).
+- OKF schemas and types live co-located in `src/core/learning-engine/sub-contexts/[subcontext]/schema.ts` (with legacy `OKF*` type aliases in `src/core/learning-engine/composition/okf/types.ts`).
+- Dynamic OKF parsing and loading pipeline lives in `src/core/learning-engine/composition/okf/reader.ts` and `src/core/learning-engine/composition/okf/sections.ts` (using delivery adapters).
 - The OKF Section Editor uses a split view (Editor Panel on left, Live Section Component Preview on right) with bi-directionally synchronized 'Visual Form' and 'Raw YAML/Markdown' tabs.
 - Disk saving in development mode is handled via Vite dev server plugin middleware (`POST /api/okf/save-section`), updating `public/okf/[topic-id]/sections/[section-name]/` directly on disk.
 - Errors in YAML syntax or schema validation must present non-blocking inline warning bars while keeping the `lastValidData` state in the Live Preview pane.
@@ -72,7 +77,7 @@ When creating a new topic, adding a lesson, or editing a `UnifiedFlowchartSchema
 - Every `Actor` (User) and `System` (`Aggregate`/`External`) node declared in `actors.yaml` or `systems.yaml` **must be connected to at least one step in steps.yaml** (via `initiatedBy`, `handledBy`, `delegatesTo`, or relation chains).
 - Actor and system node duplication across steps is handled automatically by `deriveSchema`. If an actor or system is referenced in N steps, `deriveSchema` generates per-step node instances in EVENT_STORMING view (sharing exact titles), and automatically collapses them into a single node in derived views (SYS_ARCH, SWIMLANES, SEQUENCE, DATA_FLOW) based on matching title and entity type. Point `initiatedBy`, `handledBy`, and `delegatesTo` directly to the declared actor/system ID in `steps.yaml`.
 
-Reference schemas: `src/topics/demo/data/agent-schema.ts`, `src/topics/motorcycle/data/schema.ts`.
+Reference content: `public/okf/demo/sections/flowchart/` and `public/okf/motorcycle/sections/flowchart-engine/` (event-storming `steps.yaml` + `actors.yaml` + `systems.yaml`).
 
 ## Commands
 
@@ -98,5 +103,5 @@ Use the **Playwright MCP** tools (`playwright_browser_*`) for E2E testing instea
 ## Conventions
 
 - Trust documentation in `docs/` and root spec docs (`docs/agents/domain.md`, `grill-log-refactoring.md`) as authoritative truth.
-- Keep content (data) strictly separate from structure (UI) — content lives in `public/okf/` or `src/topics/<topic>/data/`.
+- Keep content (data) strictly separate from structure (UI) — content lives in `public/okf/[topic-id]/sections/[section-name]/`.
 - Only commit, push, or open PRs when explicitly requested.

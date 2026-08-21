@@ -1,6 +1,7 @@
 export {
   validateOKFSection,
   validateOKFSectionFile,
+  validateHexCampaign,
   formatValidationReport,
   formatValidationAsPrompt,
   KNOWN_SECTION_TYPES,

@@ -1,0 +1,168 @@
+topicId: "demo"
+topicTitle: "Realm of Arithmetica: Math Operations"
+capitalId: "capital"
+nodes:
+  # Ring 0: Capital Center
+  - id: "capital"
+    title: "Capital of Arithmetica: Number Sanctuary"
+    type: "capital"
+    status: "unlocked"
+    sectionRef: "intro"
+    description: "The grand citadel of numbers and fundamental operations. Master addition (+), subtraction (-), multiplication (×), and division (÷)!"
+
+  # Ring 1: Primary Law Sanctuaries
+  - id: "reading-sanctuary"
+    title: "Sanctuary of Arithmetic Laws"
+    type: "reading_sanctuary"
+    status: "unlocked"
+    sectionRef: "taxonomy"
+    healingAmount: 40
+    description: "A peaceful library detailing the commutative, associative, and distributive properties of arithmetic."
+
+  - id: "sanctuary-addition"
+    title: "Addition & Sums Temple"
+    type: "reading_sanctuary"
+    status: "locked"
+    sectionRef: "taxonomy-patterns"
+    healingAmount: 30
+    description: "Sacred grounds of positive sums, carrying columns, and addition identity elements (a + 0 = a)."
+
+  - id: "sanctuary-subtraction"
+    title: "Subtraction Citadel"
+    type: "reading_sanctuary"
+    status: "locked"
+    sectionRef: "capabilities"
+    healingAmount: 35
+    description: "Ancient citadel preserving difference operations, borrowing across zeros, and negative value rules."
+
+  # Ring 1 & 2: Encounters & Workshops
+  - id: "goblin-encounter"
+    title: "Arithmetic Gremlin Outpost"
+    type: "quiz_encounter"
+    status: "locked"
+    sectionRef: "quiz"
+    description: "A mischievous Arithmetic Gremlin scrambling equations! Solve arithmetic questions to deal damage and defeat it."
+    monster:
+      id: "gremlin-1"
+      name: "Arithmetic Gremlin"
+      type: "goblin"
+      maxHp: 100
+      damage: 15
+      icon: "👾"
+    rewards:
+      - id: "plus-shield"
+        name: "Aegis of Addition (+)"
+        icon: "🛡️"
+        description: "A radiant shield forged from positive sums that shields you against negative numbers."
+
+  - id: "reflection-decryption"
+    title: "Order of Operations Vault"
+    type: "reflection_decryption"
+    status: "locked"
+    sectionRef: "reflection-sequence"
+    description: "An ancient cryptographic vault sealed by PEMDAS / BODMAS order of operations. Arrange the sequence correctly before time runs out!"
+    rewards:
+      - id: "product-blade"
+        name: "Blade of Products (×)"
+        icon: "⚔️"
+        description: "A razor-sharp multiplication blade that multiplies attack power against mathematical titans."
+
+  - id: "tradeoff-workshop"
+    title: "Calculation Strategy Workshop"
+    type: "tradeoff_workshop"
+    status: "locked"
+    sectionRef: "tradeoffs"
+    description: "Explore arithmetic calculation trade-offs between Mental Math Speed and Written Precision to forge tactical equipment buffs."
+    tradeoffMapping:
+      precision: "armor"
+      speed: "evasion"
+      estimation: "intelligence"
+      accuracy: "chaos_shield"
+
+  - id: "sanctuary-multiplication"
+    title: "Multiplication Keep"
+    type: "reading_sanctuary"
+    status: "locked"
+    sectionRef: "flashcards"
+    healingAmount: 30
+    description: "Sanctuary of repeated addition, factor scaling, prime factorizations, and product computation."
+
+  - id: "orc-encounter"
+    title: "Sign-Flipping Marauder Den"
+    type: "quiz_encounter"
+    status: "locked"
+    sectionRef: "quiz"
+    description: "An aggressive Marauder flipping signs on the western front! Solve integer arithmetic questions to defeat him."
+    monster:
+      id: "orc-1"
+      name: "Negative Number Marauder"
+      type: "orc"
+      maxHp: 120
+      damage: 25
+      icon: "🧌"
+
+  - id: "sanctuary-division"
+    title: "Division & Quotient Sanctuary"
+    type: "reading_sanctuary"
+    status: "locked"
+    sectionRef: "decision-tree"
+    healingAmount: 35
+    description: "Protects the sacred fraction, divisor, and quotient balance. Rest to cleanse System Chaos."
+
+  - id: "wyrm-encounter"
+    title: "Improper Fraction Wyrm Lair"
+    type: "quiz_encounter"
+    status: "locked"
+    sectionRef: "quiz"
+    description: "A terrifying beast nesting in denominator complexity and mixed fractions!"
+    monster:
+      id: "wyrm-1"
+      name: "Improper Fraction Wyrm"
+      type: "dragon"
+      maxHp: 160
+      damage: 30
+      icon: "🐉"
+
+  - id: "workshop-mental"
+    title: "Vedic Math Crucible"
+    type: "tradeoff_workshop"
+    status: "locked"
+    sectionRef: "tradeoffs-deploy"
+    description: "Experiment with rapid Vedic mental math decomposition algorithms to craft +15 Evasion speed buffs."
+    tradeoffMapping:
+      speed: "evasion"
+      precision: "armor"
+
+  - id: "hydra-encounter"
+    title: "Polynomial Hydra Nest"
+    type: "quiz_encounter"
+    status: "locked"
+    sectionRef: "quiz"
+    description: "A multi-headed polynomial beast growing new heads with each exponent! Combine like terms to slay it."
+    monster:
+      id: "hydra-1"
+      name: "Degree-N Polynomial Hydra"
+      type: "boss"
+      maxHp: 180
+      damage: 35
+      icon: "🐙"
+
+  # Final Boss Climax
+  - id: "boss-lair"
+    title: "Lair of the Zero-Division Colossus"
+    type: "boss_lair"
+    status: "locked"
+    sectionRef: "quiz"
+    description: "The supreme Zero-Division Colossus! Requires the Aegis of Addition and Blade of Products to unlock its gates."
+    requiredItems:
+      - "plus-shield"
+      - "product-blade"
+    monster:
+      id: "division-boss"
+      name: "Zero-Division Colossus"
+      type: "boss"
+      maxHp: 250
+      damage: 40
+      icon: "🐲"
+
+

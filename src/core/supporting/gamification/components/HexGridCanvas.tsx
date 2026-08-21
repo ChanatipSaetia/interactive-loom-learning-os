@@ -57,7 +57,23 @@ export const HexGridCanvas: React.FC<HexGridCanvasProps> = ({
   }, [nodes])
 
   const getNodeCoord = (node: HexNodeData) => {
-    return node.coordinates || computedCoordsMap.get(node.id) || { q: 0, r: 0 }
+    return computedCoordsMap.get(node.id) || node.coordinates || { q: 0, r: 0 }
+  }
+
+  // Smooth center camera on selected node
+  const centerOnNode = (node: HexNodeData) => {
+    const coord = getNodeCoord(node)
+    const { x, y } = axialToPixel(coord.q, coord.r)
+    // Target offset to center (x, y) at canvas center (440, 290)
+    const targetPanX = (440 - x) * zoom
+    const targetPanY = (290 - y) * zoom
+    setPan({ x: targetPanX, y: targetPanY })
+  }
+
+  const handleNodeClick = (node: HexNodeData, e: React.MouseEvent) => {
+    e.stopPropagation()
+    centerOnNode(node)
+    onSelectNode(node)
   }
 
   const isCapitalCleared = useMemo(
@@ -286,10 +302,7 @@ export const HexGridCanvas: React.FC<HexGridCanvasProps> = ({
             return (
               <g
                 key={node.id}
-                onClick={(e) => {
-                  e.stopPropagation()
-                  onSelectNode(node)
-                }}
+                onClick={(e) => handleNodeClick(node, e)}
                 className="cursor-pointer transition-all duration-300 group"
               >
                 {/* Outer Border Glow Ring for Selected / Connected Prerequisite Parent Nodes */}

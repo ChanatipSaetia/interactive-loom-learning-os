@@ -12,7 +12,7 @@ Each section type has its own dedicated reference document. Each doc covers:
 
 ## Section Types
 
-| Type | Doc | Mental Model | Core Subdomain Path (`src/core/subdomains/`) |
+| Type | Doc | Mental Model | Core Sub-Context Path (`src/core/learning-engine/sub-contexts/`) |
 |---|---|---|---|
 | `intro` | [intro.md](intro.md) | Topic hero overview, rationale & learning roadmap | `progressive-content` |
 | `text` | [text.md](text.md) | Anchored conceptual narrative | `progressive-content` |

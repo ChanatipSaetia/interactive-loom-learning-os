@@ -48,7 +48,7 @@ For optimal cognitive progression, structure your topic's sections in the follow
 
 ## Every Section Type at a Glance
 
-| Section Type | Mental Model Focus | Data Input Format | Local UI State | Animations & Micro-interactions | Core Subdomain Path (`src/core/subdomains/`) |
+| Section Type | Mental Model Focus | Data Input Format | Local UI State | Animations & Micro-interactions | Core Sub-Context Path (`src/core/learning-engine/sub-contexts/`) |
 |---|---|---|---|---|---|
 | `intro` | Topic hero overview, rationale & learning roadmap | `content.yaml` | None | Entrance keyframes, touch-swipe horizontal roadmap track | `progressive-content` |
 | `text` | Anchored conceptual narrative | Markdown strings | None | Scroll-triggered fade-in | `progressive-content` |

@@ -442,7 +442,7 @@ Embed the array directly inside your script tag:
 
 ## Library Architecture & Delivery Ports
 
-The standalone CDN library (`libs/loom-sections.tsx`) is powered by the **Hexagonal SingleHTMLEmbedAdapter** (`src/core/delivery/adapters/single-html-embed.tsx`), implementing `OKFRuntimePort` ([src/core/delivery/ports.ts](file:///home/chanatip/interactive_loom_learning_os/src/core/delivery/ports.ts)) and backed by the **3-Tier Validation Gateway** ([src/core/validation/gateway.ts](file:///home/chanatip/interactive_loom_learning_os/src/core/validation/gateway.ts)).
+The standalone CDN library (`libs/loom-sections.tsx`) is powered by the **Hexagonal SingleHTMLEmbedAdapter** (`src/core/delivery/adapters/single-html-embed.tsx`), implementing `OKFRuntimePort` ([src/core/delivery/ports.ts](file:///home/chanatip/interactive_loom_learning_os/src/core/delivery/ports.ts)) and backed by the **Validation Gateway Context** ([src/core/learning-engine/validation/gateway.ts](file:///home/chanatip/interactive_loom_learning_os/src/core/learning-engine/validation/gateway.ts)).
 
 * **Standalone Runtime Port:** Operates independently of SPA routing overhead.
 * **Validation Gateway Integration:** Exposed API functions (`LoomSections.validateSection`, `LoomSections.validateYAML`) invoke the centralized 3-tier validation gateway and return structured `ValidationResult` diagnostics with `fixHint` annotations.

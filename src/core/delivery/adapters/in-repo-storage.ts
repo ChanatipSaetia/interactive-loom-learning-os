@@ -90,6 +90,34 @@ export class InRepoStorageAdapter implements OKFStoragePort {
   }
 
   /**
+   * Read a topic hex map campaign definition (e.g. from public/hexmaps/<topicId>.yaml).
+   */
+  async readHexMap(topicId: string): Promise<string> {
+    const baseUrl = import.meta.env.BASE_URL || '/'
+    const hexMapUrl = `${baseUrl.replace(/\/$/, '')}/hexmaps/${topicId}.yaml`
+    const res = await fetch(hexMapUrl)
+    if (!res.ok) {
+      throw new Error(`Failed to load hex map for topic "${topicId}": ${res.statusText}`)
+    }
+    return res.text()
+  }
+
+  /**
+   * Save a topic hex map campaign definition back to disk via dev server.
+   */
+  async saveHexMap(topicId: string, rawYaml: string): Promise<void> {
+    const res = await fetch('/api/okf/save-hexmap', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ topicId, rawYaml }),
+    })
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({ error: res.statusText }))
+      throw new Error(err.error || `Failed to save hex map: ${res.statusText}`)
+    }
+  }
+
+  /**
    * List all available topic identifiers by parsing the OKF index.md.
    */
   async listTopics(): Promise<string[]> {

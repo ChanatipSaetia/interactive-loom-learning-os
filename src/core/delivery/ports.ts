@@ -58,6 +58,22 @@ export interface OKFStoragePort {
   ): Promise<void>
 
   /**
+   * Read a topic hex map campaign definition (e.g. from public/hexmaps/<topicId>.yaml).
+   *
+   * @param topicId - Topic identifier
+   * @returns Raw YAML string of the hex map
+   */
+  readHexMap(topicId: string): Promise<string>
+
+  /**
+   * Save a topic hex map campaign definition back to storage.
+   *
+   * @param topicId - Topic identifier
+   * @param rawYaml - Updated hex map YAML source
+   */
+  saveHexMap?(topicId: string, rawYaml: string): Promise<void>
+
+  /**
    * List all available topic identifiers.
    *
    * @returns Array of topic folder names (e.g. ["demo", "motorcycle"])

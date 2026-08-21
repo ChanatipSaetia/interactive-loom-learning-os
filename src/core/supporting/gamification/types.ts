@@ -25,9 +25,32 @@ export interface MonsterData {
   name: string
   type: string
   maxHp: number
-  currentHp: number
+  currentHp?: number
   damage: number
   icon: string
+}
+
+export interface ActiveBuff {
+  stat: 'armor' | 'evasion' | 'intelligence' | 'chaos_shield' | 'extra_damage' | 'healing_penalty'
+  value: number
+  source: string
+  durationTurns?: number
+  isPenalty?: boolean
+}
+
+export interface CraftedArtifact {
+  name: string
+  buff: {
+    stat: 'armor' | 'evasion' | 'intelligence' | 'chaos_shield'
+    value: number
+    label: string
+  }
+  vulnerability?: {
+    stat: 'extra_damage' | 'healing_penalty'
+    value: number
+    label: string
+  }
+  durationTurns: number
 }
 
 export interface HexNodeData {
@@ -47,6 +70,7 @@ export interface HexNodeData {
     value: number
     label: string
   }
+  tradeoffMapping?: Record<string, string>
   sectionData?: Record<string, unknown>
 }
 
@@ -86,9 +110,6 @@ export interface TopicCampaignState {
 
   inventory: ItemReward[]
   clearedNodeIds: string[]
-  activeBuffs: Array<{
-    stat: 'armor' | 'evasion' | 'intelligence'
-    value: number
-    source: string
-  }>
+  activeBuffs: ActiveBuff[]
+  readingVisitCounts?: Record<string, number>
 }

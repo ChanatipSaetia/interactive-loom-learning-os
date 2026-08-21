@@ -13,10 +13,10 @@ Subdomains represent the business capabilities and problem space of the Interact
 │                                     SUBDOMAINS                                          │
 ├─────────────────────────────────────────────────────────────────────────────────────────┤
 │                                                                                         │
-│  [ Core Subdomains — 5 Learning Modalities ]                                           │
+│  [ Core Subdomains — 5 Learning Modalities ]                                            │
 │  ├─ ⚡ Process & Event Workflow Simulation                                              │
 │  ├─ ⚖️ Dynamic Trade-off & Parameter Exploration                                        │
-│  ├─ 💭 Metacognitive Reflection & Synthesis                                            │
+│  ├─ 💭 Metacognitive Reflection & Synthesis                                             │
 │  ├─ 📖 Progressive Loom Content Presentation                                            │
 │  └─ 🎯 Knowledge Verification & Practice                                                │
 │                                                                                         │
@@ -24,12 +24,14 @@ Subdomains represent the business capabilities and problem space of the Interact
 │  ├─ 📁 In-Repo OKF File Storage & Repository                                            │
 │  ├─ 🔌 Single HTML Embedded Widget Delivery                                             │
 │  ├─ 🌐 OKF Folder Web App Rendering Runtime                                             │
-│  ├─ ✏️ Content Authoring & Live Editor                                                   │
+│  ├─ ✏️ Content Authoring & Live Editor                                                  │
 │  ├─ 📚 Catalog & Topic Discovery                                                        │
-│  └─ 📊 Learning Progress Tracking                                                       │
+│  ├─ 📊 Learning Progress Tracking                                                       │
+│  └─ 🎮 Gamification Campaign Runtime (Character State · Combat · Progression)           │
 │                                                                                         │
 │  [ Generic Subdomains — Infrastructure & UX ]                                           │
-│  └─ 🎨 Design System & Sensory Experience (Theme, Sound, Motion)                         │
+│  ├─ 🎨 Design System & Sensory Experience (Theme, Sound, Motion)                        │
+│  └─ 🗺️ Hex Map Topology & Campaign Definition                                           │
 │                                                                                         │
 └─────────────────────────────────────────────────────────────────────────────────────────┘
 ```
@@ -65,13 +67,17 @@ Subdomains represent the business capabilities and problem space of the Interact
     *Focus:* Topic index discovery, category grouping, difficulty/tag filtering, and search path resolution.
 11. **📊 Learning Progress Tracking**  
     *Focus:* Section completion tracking, quiz score history, sandbox interaction state retention, and local persistence.
+12. **🎮 Gamification Campaign Runtime**  
+    *Focus:* Character attributes (Armor, Evasion, Intelligence), HP & threat decay, quiz combat resolution, node unlocks, XP/leveling, temporary buffs, item inventory, and badge awards across gamified topics. Consumes `HexCampaign` from the Hex Map context via `HexCampaignSourcePort`.
 
 ---
 
 ### 🌐 Generic Subdomains (Infrastructure & Utilities)
 
-12. **🎨 Design System & Sensory Experience**  
+13. **🎨 Design System & Sensory Experience**  
     *Focus:* Theme token management (Catppuccin Frappé), interactive sound cue engine, and motion/animation primitives.
+14. **🗺️ Hex Map Topology & Campaign Definition**  
+    *Focus:* Authorable campaign map data independent of OKF: hex nodes, axial `(q, r)` coordinates, hex type classification, monsters, item rewards, boss unlock criteria, and Hex Map Validation (coordinate uniqueness, capital connectivity, boss solvability, section-reference resolution). Data lives in `public/hexmaps/<topicId>.yaml`.
 
 ---
 
@@ -79,62 +85,122 @@ Subdomains represent the business capabilities and problem space of the Interact
 
 Bounded Contexts define the solution space boundaries. Each Bounded Context maintains an unambiguous **Ubiquitous Language** and isolated domain model.
 
+### 🗺️ Full Context Map — Ports & Adapters
+
+Canonical context map. **Ports** are published by a context (its contract); **adapters** are
+host-specific implementations that live on the delivery boundary and *implement* those ports.
+Arrow labels state the relationship; `implements` marks adapter → port edges.
+
 ```
-┌───────────────────────────────────────────────────────────────────────────────────────────────────────────┐
-│                                          UI & DESIGN SYSTEM CONTEXT                                       │
-│                                  (Controls Theme, UI Primitives, Sound & Motion)                          │
-└───────────────────────────────────────────────────┬───────────────────────────────────────────────────────┘
-                                                    │
-                                                    │ Provides UI System Contract
-                                                    │ (ThemeTokens, UIPrimitives, SensoryFeedback)
-                                                    ▼
- ┌─────────────────────────────────────────────────────────────────────────────────────────────────────────┐
- │                                   MASTER CORE AGGREGATOR & RUNTIME CONTEXT                              │
- │                                         (CoreLearningEngineContext)                                     │
- ├─────────────────────────────────────────────────────────────────────────────────────────────────────────┤
- │                                                                                                         │
- │  [ Validation Gateway ] ──► Executes 3-Tier Validation & Tells Back Results to Supporting Contexts       │
- │                                                                                                         │
- │  [ Core Section Sub-Context Registry & Aggregator ]                                                     │
- │  ├─ ⚡ ProcessSimulationSubContext      (Flowcharts & Guided Scenarios)                                │
- │  ├─ ⚖️ TradeoffSandboxSubContext         (Tradeoff Sandboxes, Formulas & Decision Trees)                 │
- │  ├─ 💭 ReflectionSynthesisSubContext     (Reflection Sequences & Synthesis Templates)                    │
- │  ├─ 📖 ProgressiveContentSubContext     (Narrative Text, Bullets, Taxonomy & Image Galleries)           │
- │  └─ 🎯 PracticeAssessmentSubContext      (Quizzes, Flashcards & Concept Maps)                            │
- │                                                                                                         │
- │  [ Page & Section Composition Engine ] ──► Applies UISystemContext Contracts & Renders Sections/Pages  │
- │                                                                                                         │
- └──────────────────────────────────────────────────▲──────────────────────────────────────────────────────┘
-                                                    │
-                                                    │ Implements Unified Section Contract & Validation Facade
-                                                    │
- ┌──────────────────────────────────────────────────┴──────────────────────────────────────────────────────┐
- │                                 SUPPORTING & DELIVERY CONTEXTS                                          │
- ├──────────────────────────────┬──────────────────────────────┬─────────────────────────────┬─────────────┤
- │ 📁 OKF In-Repo               │ 🔌 Single HTML               │ 🌐 OKF Folder               │ ✏️ Authoring │
- │    Storage Context           │    Embed Context             │    Web App Context          │    Editor   │
- └──────────────────────────────┴──────────────────────────────┴─────────────────────────────┴─────────────┘
+  ┌────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┐
+  │                                      OKF DELIVERY & STORAGE CONTEXTS — Supporting                                      │
+  │                                                                                                                        │
+  │  ┌─ PORTS ──────────────────────────────────────────────────────────────────────────────────────────────────────────┐  │
+  │  │ OKFStoragePort:  readSection · saveSection · readHexMap · listTopics                                             │  │
+  │  │ OKFRuntimePort:  loadTopicBundle · renderSection · validatePayload                                               │  │
+  │  └──────────────────────────────────────────────────────────────────────────────────────────────────────────────────┘  │
+  │  ┌─ ADAPTERS (implement ports above) ───────────────────────────────────────────────────────────────────────────────┐  │
+  │  │ InRepoStorageAdapter (Vite dev API · public/okf/** · public/hexmaps/**)                                          │  │
+  │  │ WebAppRuntimeAdapter (SPA router · dynamic loader)                                                               │  │
+  │  │ SingleHTMLEmbedAdapter (libs/loom-sections.tsx standalone loader)                                                │  │
+  │  └──────────────────────────────────────────────────────────────────────────────────────────────────────────────────┘  │
+  └───────────────────────────────────────────────────────────┬────────────────────────────────────────────────────────────┘
+                                                              │ raw YAML manifests, section files & campaign hex maps
+                                                              ▼
+  ┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+  ┃                               VALIDATION GATEWAY CONTEXT — pure domain · headless (browser / CLI / AI)                 ┃
+  ┃                                                                                                                        ┃
+  ┃   3-Tier Validation Pipeline: Tier 1 (YAML Syntax) ► Tier 2 (Structural Zod) ► Tier 3 (Semantic Reference Integrity)   ┃
+  ┃                                                                                                                        ┃
+  ┃   ┌─ CORE SECTION SCHEMAS & SEMANTIC CHECKS ──────────────────────────────────┐  ┌─ HEX MAP TOPOLOGY CHECKS ────────┐  ┃
+  ┃   │ ⚡ ProcessSimulation  ⚖️ TradeoffSandbox  💭 ReflectionSynthesis           │  │ Coordinate uniqueness            │  ┃
+  ┃   │ 📖 ProgressiveContent 🎯 PracticeAssessment                               │  │ Capital connectivity & solvability│  ┃
+  ┃   └───────────────────────────────────────────────────────────────────────────┘  └───────────────────────────────────┘  ┃
+  ┃                                                                                                                        ┃
+  ┃   ◄────────────────── raw YAML payloads (delivery adapters · AuthoringEditorContext)                                    ┃
+  ┃   tell-back ValidationResult ──────────────────────────────► (AuthoringEditorContext diagnostics & inline warning bars) ┃
+  ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+                                           │                                                    │
+               validated section payloads  │                                                    │ validated campaign payloads
+               ValidationResult<Section>   │                                                    │ ValidationResult<HexCampaign>
+                                           ▼                                                    ▼
+  ┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓   ┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+  ┃ COMPOSITION ENGINE CONTEXT                                     ┃   ┃ GAMIFICATION CAMPAIGN CONTEXT                     ┃
+  ┃ (CoreLearningEngineContext)                                    ┃   ┃ (Supporting Domain)                               ┃
+  ┃                                                                ┃   ┃                                                   ┃
+  ┃ • SectionRegistry resolution (lazy SectionRenderer components) ┃   ┃ • Character Attributes & Leveling Engine (XP/HP)  ┃
+  ┃ • Topic Route Discovery (/topics/:topicId/*)                   ┃   ┃ • Turn-based Combat Resolution & Threat Decay     ┃
+  ┃ • Stream HUD & Lesson Assembly                                 ┃   ┃ • Hex Node Unlocks & Inventory Items State        ┃
+  ┃ • lastValidData Section Live Preview Fallback                  ┃   ┃ • lastValidData Campaign Map Fallback             ┃
+  ┗━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛   ┗━━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━━┛
+                         │                                                                       │
+                         │                                                                       │
+      ┌──────────────────┴───────────────────┐               ┌───────────────────────────────────┼─────────────────────────┐
+      │                                      │               │                                   │                         │
+      │ consumes tokens & primitives         │ subscribes    │ consumes tokens & sounds          │ publishes/subscribes    │ persists
+      ▼                                      ▼ SectionEvents ▼                                   ▼ DomainEvents            ▼ state
+┌───────────────────────────┐   ┌───────────────────────────┐   ┌───────────────────────────┐   ┌──────────────────────────┐
+│ UISYSTEM CONTEXT          │   │ LEARNER PROGRESS CONTEXT  │   │ AUTHORING EDITOR CONTEXT  │   │ CATALOG DISCOVERY CONTEXT│
+│ (Generic)                 │   │ (Supporting)              │   │ (Supporting)              │   │ (Supporting)             │
+│ • ThemeTokens (Catppuccin)│   │ • SectionCompleted        │   │ • Visual Split Editor     │   │ • Topic Manifest Index   │
+│ • UI Primitives (Card/Btn)│   │ • QuizAnswered History    │   │ • Live Form ↔ YAML Sync   │   │ • Search & Category Filter│
+│ • Sensory Sound & Motion  │   │ • LocalStorage persistence│   │ • Validation Diagnostics  │   │ • Topic Route Discovery  │
+└───────────────────────────┘   └───────────────────────────┘   └───────────────────────────┘   └──────────────────────────┘
+                         │                                                                       │
+                         │ stream assembly & components                                          │ campaign state & gameplay actions
+                         ▼                                                                       ▼
+  ┌────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┐
+  │                                       HOST ROUTES & VIEWS — conformist consumers                                       │
+  │                                                                                                                        │
+  │     /topics/:topicId (SPA Lesson Stream)               /gamification/:topicId (Campaign Map View & Turn Combat)        │
+  └────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┘
 ```
+
+**Relationship vocabulary used in this map:**
+
+| Relationship | Where | Meaning |
+|---|---|---|
+| **Open Host Service** | Hex Map / OKF → Host (`OKFStoragePort`/`OKFRuntimePort`/`GamificationRuntimePort`) | The upstream context publishes a port contract; any adapter may implement it. |
+| **Customer / Supplier + ACL** | Hex Map → OKF (section-ref check) | OKF is the core supplier; the Hex Map context is a read-only customer. The port acts as anti-corruption layer — OKF types never leak into Hex Map models. |
+| **Conformist** | Host routes/views → Gamification & OKF | Views adopt published language (`GlobalCharacterState`, `TopicCampaignState`, section bundles) unchanged. |
+| **Shared kernel (published language)** | `HexCampaign` VO family | Owned by the Hex Map context, consumed type-only by Gamification, Validation Gateway, and Host. |
+| **Internal Customer / Supplier** | CompositionEngine & GamificationCampaign → ValidationGateway (`ValidationResult` tell-back) | ValidationGateway is the pure supplier of verified payloads; CompositionEngine and GamificationCampaign are customers that never re-parse YAML or re-implement schema validation. |
 
 ---
 
 ### 📐 Detailed Bounded Context Specifications
 
 #### A. Master Core Aggregator Context (`CoreLearningEngineContext`)
-* **Role:** The master Core Domain orchestrator that aggregates all 5 Core Section Sub-Contexts.
+* **Role:** The master Core Domain orchestrator that aggregates all 5 Core Section Sub-Contexts. It is decomposed into **two independently-usable bounded sub-contexts** with a strict internal boundary:
+  * **A1. `ValidationGatewayContext`** — pure ingestion & validation; no React, no DOM.
+  * **A2. `CompositionEngineContext`** — page & section composition; React-bound.
+* **Internal relationship:** `CompositionEngineContext` is the *customer* of `ValidationGatewayContext` — it consumes the tell-back `ValidationResult` contract (including the `lastValidData` non-blocking fallback) and never re-implements YAML parsing or schema checks itself.
+
+##### A1. Validation Gateway Context (`ValidationGatewayContext`)
+* **Role:** Pure ingestion, syntax checking, Zod structural schema validation, and semantic reference integrity. Decoupled from React DOM / UI so it can run in the browser, a CDN bundle, CLI/CI (`npm run okf:validate`), or background AI fix loops.
+* **Ubiquitous Language:** `ValidationResult`, `ValidationDiagnostic` (with `fixHint`), `ValidationContext`, `lastValidData`, `3-Tier Validation` (Tier 1 Syntax · Tier 2 Structural Schema · Tier 3 Semantic Reference Integrity).
+* **Code:** [src/core/learning-engine/validation/](file:///home/chanatip/interactive_loom_learning_os/src/core/learning-engine/validation) — `gateway.ts` (pipeline + schema registry), `types.ts` (tell-back contract). Independent entry point: `src/core/learning-engine/validation`.
+* **Responsibilities:** Accepts raw OKF section and Hex Map campaign payloads from delivery contexts and the `AuthoringEditorContext`, delegates Tier 2 to sub-context schemas (`SectionSchema`, `HexCampaignSchema`), delegates Tier 3 to reference-integrity functions, and returns standardized tell-back `ValidationResult` payloads.
+* **Rule:** **Zero React/DOM imports.** Any `react` import inside `validation/` is a boundary violation.
+
+##### A2. Composition Engine Context (`CompositionEngineContext`)
+* **Role:** Page assembly, section registry resolution (lazy `SectionRenderer` lookup), HUD/stream orchestration, and UI system integration for all supporting contexts.
+* **Ubiquitous Language:** `TopicRoute`, `OKFBundled`, `SectionConfig`, `SectionRegistry`, `HUDContext`, `EditorContext`, `lastValidData` preview state.
+* **Code:** [src/core/learning-engine/composition/](file:///home/chanatip/interactive_loom_learning_os/src/core/learning-engine/composition) (`routes.tsx`, `okf/reader.ts`, `okf/sections.ts`, `okf/types.ts`, `context/`, `hooks/`) plus [src/core/learning-engine/registry/](file:///home/chanatip/interactive_loom_learning_os/src/core/learning-engine/registry) (lazy `SectionRegistry`). Independent entry point: `src/core/learning-engine/composition`.
 * **Responsibilities:**
-  1. **Validation Gateway:** Accepts raw OKF section payloads from supporting contexts, executes 3-tier validation against the appropriate Core Sub-Context schema, and returns tell-back validation results.
-  2. **Sub-Context Aggregator:** Holds the registry of the 5 Core Section Sub-Contexts (`ProcessSimulation`, `TradeoffSandbox`, `ReflectionSynthesis`, `ProgressiveContent`, `PracticeAssessment`).
-  3. **Section & Page Composition Engine:** Consumes theme tokens, UI primitives, sound cues, and motion presets from `UISystemContext` to compose and render complete, interactive section pages for all supporting contexts.
+  1. **Topic Route Discovery:** Maps topic manifests to `/topics/:topicId/*` routes (`discoverTopics`, `TopicsProvider`, `useTopics`).
+  2. **Bundle Ingestion & Fallback:** Loads section bundles via `OKFRuntimePort`, runs them through `ValidationGatewayContext`, and keeps `lastValidData` live-preview state on non-blocking warnings.
+  3. **Section & Page Composition:** Consumes theme tokens, UI primitives, sound cues, and motion presets from `UISystemContext` to compose and render complete, interactive section pages.
+* **Rule:** Must **not** parse raw YAML or re-implement section schemas — delegate to `ValidationGatewayContext` and consume its `ValidationResult` payloads.
 
 #### B. Core Section Sub-Contexts (The 5 Learning Modalities)
-* **`ProcessSimulationSubContext`** ([src/core/subdomains/process-simulation/](file:///home/chanatip/interactive_loom_learning_os/src/core/subdomains/process-simulation)): Flowcharts & Guided Scenarios.
-* **`TradeoffSandboxSubContext`** ([src/core/subdomains/tradeoff-sandbox/](file:///home/chanatip/interactive_loom_learning_os/src/core/subdomains/tradeoff-sandbox)): Trade-off Sandboxes, Formula Sandboxes, Decision Trees.
-* **`ReflectionSynthesisSubContext`** ([src/core/subdomains/reflection-synthesis/](file:///home/chanatip/interactive_loom_learning_os/src/core/subdomains/reflection-synthesis)): Reflection Sequences & Reflection Templates.
-* **`ProgressiveContentSubContext`** ([src/core/subdomains/progressive-content/](file:///home/chanatip/interactive_loom_learning_os/src/core/subdomains/progressive-content)): Rich Text, Bullets, Taxonomy Browsers, Image Galleries.
-* **`PracticeAssessmentSubContext`** ([src/core/subdomains/practice-assessment/](file:///home/chanatip/interactive_loom_learning_os/src/core/subdomains/practice-assessment)): Quizzes, Flashcards, Concept Maps.
+* **`ProcessSimulationSubContext`** ([src/core/learning-engine/sub-contexts/process-simulation/](file:///home/chanatip/interactive_loom_learning_os/src/core/learning-engine/sub-contexts/process-simulation)): Flowcharts & Guided Scenarios.
+* **`TradeoffSandboxSubContext`** ([src/core/learning-engine/sub-contexts/tradeoff-sandbox/](file:///home/chanatip/interactive_loom_learning_os/src/core/learning-engine/sub-contexts/tradeoff-sandbox)): Trade-off Sandboxes, Formula Sandboxes, Decision Trees.
+* **`ReflectionSynthesisSubContext`** ([src/core/learning-engine/sub-contexts/reflection-synthesis/](file:///home/chanatip/interactive_loom_learning_os/src/core/learning-engine/sub-contexts/reflection-synthesis)): Reflection Sequences & Reflection Templates.
+* **`ProgressiveContentSubContext`** ([src/core/learning-engine/sub-contexts/progressive-content/](file:///home/chanatip/interactive_loom_learning_os/src/core/learning-engine/sub-contexts/progressive-content)): Rich Text, Bullets, Taxonomy Browsers, Image Galleries.
+* **`PracticeAssessmentSubContext`** ([src/core/learning-engine/sub-contexts/practice-assessment/](file:///home/chanatip/interactive_loom_learning_os/src/core/learning-engine/sub-contexts/practice-assessment)): Quizzes, Flashcards, Concept Maps.
 
-*Rule:* Core Section Sub-Contexts contain **zero hardcoded styling or ad-hoc UI buttons**. They focus purely on interactive domain logic and leave visual page composition to `CoreLearningEngineContext` using `UISystemContract`.
+*Rule:* Core Section Sub-Contexts contain **zero hardcoded styling or ad-hoc UI buttons**. They focus purely on interactive domain logic and leave visual page composition to `CompositionEngineContext` using `UISystemContract`. Each sub-context exposes its `SectionSchema` + Tier 3 validators to `ValidationGatewayContext` and its `SectionRenderer` to `CompositionEngineContext` via the co-located `schema.ts` / `validation.ts` / `components/` files.
 
 ---
 
@@ -142,7 +208,7 @@ Bounded Contexts define the solution space boundaries. Each Bounded Context main
 
 ##### 1. `InRepoOKFStorageContext` ([src/core/delivery/adapters/in-repo-storage.ts](file:///home/chanatip/interactive_loom_learning_os/src/core/delivery/adapters/in-repo-storage.ts))
 * **Ubiquitous Language:** `OKFDiskFile`, `TopicDirectory`, `SectionPath`, `ManifestFile`, `DevServerFileBridge`.
-* **Responsibility:** Manages static physical file layout on disk/public directory (`public/okf/[topic-id]/sections/[section-name]`), handles reading raw YAML/Markdown files, and handles disk writes via Vite dev-server API middleware (`POST /api/okf/save-section`).
+* **Responsibility:** Manages static physical file layout on disk/public directory (`public/okf/[topic-id]/sections/[section-name]`, `public/hexmaps/[topic-id].yaml`), handles reading raw YAML/Markdown files, and handles disk writes via Vite dev-server API middleware (`POST /api/okf/save-section`).
 
 ##### 2. `SingleHTMLEmbedContext` ([src/core/delivery/adapters/single-html-embed.tsx](file:///home/chanatip/interactive_loom_learning_os/src/core/delivery/adapters/single-html-embed.tsx))
 * **Ubiquitous Language:** `EmbeddedSectionWidget`, `StandaloneBundle`, `CDNExportHost`, `InlineConfig`.
@@ -156,10 +222,32 @@ Bounded Contexts define the solution space boundaries. Each Bounded Context main
 
 #### D. Other Supporting & Generic Contexts
 
-* **`AuthoringEditorContext`** ([src/core/subdomains/supporting/authoring-editor/](file:///home/chanatip/interactive_loom_learning_os/src/core/subdomains/supporting/authoring-editor)): Manages visual split-screen forms, bi-directional sync (Visual Form ↔ Raw YAML source), inline error validation warnings, and draft previews.
-* **`CatalogDiscoveryContext`** ([src/core/subdomains/supporting/catalog-discovery/](file:///home/chanatip/interactive_loom_learning_os/src/core/subdomains/supporting/catalog-discovery)): Discovers topic manifests (`index.md`/`index.yaml`), resolves topic routes, and drives search/filtering.
-* **`LearnerProgressContext`** ([src/core/subdomains/supporting/learner-progress/](file:///home/chanatip/interactive_loom_learning_os/src/core/subdomains/supporting/learner-progress)): Subscribes to section events (`SectionCompleted`, `QuizAnswered`) and persists progress history in local storage.
-* **`UISystemContext`** ([src/core/ui-system/](file:///home/chanatip/interactive_loom_learning_os/src/core/ui-system)): Controls Catppuccin theme tokens, UI component primitives (`<Button>`, `<Card>`, `<Slider>`), audio sound cues, and motion primitives. Provides `UISystemContract` to Core Sections and the Master Aggregator.
+* **`AuthoringEditorContext`** ([src/core/supporting/authoring-editor/](file:///home/chanatip/interactive_loom_learning_os/src/core/supporting/authoring-editor)): Manages visual split-screen forms, bi-directional sync (Visual Form ↔ Raw YAML source), inline error validation warnings, and draft previews. Sends raw YAML payloads to `ValidationGatewayContext` and renders its tell-back diagnostics.
+* **`CatalogDiscoveryContext`** ([src/core/supporting/catalog-discovery/](file:///home/chanatip/interactive_loom_learning_os/src/core/supporting/catalog-discovery)): Discovers topic manifests (`index.md`/`index.yaml`), resolves topic routes, and drives search/filtering.
+* **`LearnerProgressContext`** ([src/core/supporting/learner-progress/](file:///home/chanatip/interactive_loom_learning_os/src/core/supporting/learner-progress)): Subscribes to section events (`SectionCompleted`, `QuizAnswered`) and persists progress history in local storage.
+* **`UISystemContext`** ([src/core/ui-system/](file:///home/chanatip/interactive_loom_learning_os/src/core/ui-system)): Controls Catppuccin theme tokens, UI component primitives (`<Button>`, `<Card>`, `<Slider>`), audio sound cues, and motion primitives. Provides `UISystemContract` to Core Sections and the `CompositionEngineContext`.
+
+---
+
+#### E. Hex Map Context (Generic — independent of OKF)
+* **Role:** Independent bounded context owning campaign map topology as authorable data and coordinate layout geometry. It is **NOT** an OKF section type and has no structural dependency on the OKF Content context — a topic without a map remains a valid OKF topic.
+* **Ubiquitous Language:** `HexCampaign`, `HexNode`, `HexNodeType` (`capital`, `reading_sanctuary`, `quiz_encounter`, `reflection_decryption`, `tradeoff_workshop`, `boss_lair`), `HexGridCoordinate` (axial `(q, r)`), `Section Reference`.
+* **Validation Delegation:** Registers its `HexCampaignSchema` (Tier 2 structural) and semantic validators (coordinate uniqueness, capital connectivity, boss solvability, section-ref resolution) with the `ValidationGatewayContext`.
+* **Data location:** `public/hexmaps/<topicId>.yaml` — map topology, monsters, item rewards, boss `requiredItems`, and section references only.
+
+---
+
+#### F. Gamification Campaign Context (Supporting)
+* **Role:** Supporting subdomain runtime orchestrating a learner's gameplay of a `HexCampaign`: character attributes, HP, combat resolution, node unlocks, threat/HP decay, XP/leveling, temporary buffs, item inventory, and badge awards. Consumes validated payloads from the `ValidationGatewayContext` (similar to `CompositionEngineContext`).
+* **Ubiquitous Language:** `GlobalCharacterState`, `TopicCampaignState`, `CharacterAttributes` (Armor, Evasion, Intelligence), `MonsterData`, `ItemReward`, `CombatTurnResult`, `LevelProgressResult`.
+* **Ports & Adapters Architecture:**
+  * **Driving (Inbound) Ports:** `GamificationRuntimePort` (or `useGamification()` hook) allowing host views (`/gamification/:topicId`, `/gamification-demo`) to trigger gameplay actions (`takeTurn`, `unlockNode`, `restAtSanctuary`).
+  * **Driven (Outbound) Ports:**
+    * `HexCampaignSourcePort` (input): Loads validated campaign data (`loadCampaign(topicId): HexCampaign | null`). Implemented by `ValidationGatewayCampaignAdapter` which queries the Validation Gateway.
+    * `CharacterStatePort` (persistence): Saves and loads player state (`loadState()`, `saveState()`). Implemented by `LocalStorageCharacterAdapter` and `MemoryCharacterAdapter`.
+    * `AssessmentEventSubscriberPort` (learning sync): Subscribes to learning events (`SectionCompleted`, `QuizAnswered`) to award XP/items.
+* **Degradation & Fallback:** Maintains `lastValidData` for the active campaign so map edits or transient validation errors in authoring mode never crash active gameplay.
+* **Current code:** [src/core/supporting/gamification/](file:///home/chanatip/interactive_loom_learning_os/src/core/supporting/gamification) — `game-rules.ts` (pure domain functions), `types.ts`, `layout.ts`, `components/`.
 
 ---
 
@@ -175,7 +263,7 @@ All Core Section Sub-Contexts implement a unified contract interface:
 ---
 
 ### 🔍 2. Section Contract Validation & Tell-Back Protocol
-When any of the 3 OKF Delivery Contexts (`InRepoOKFStorageContext`, `SingleHTMLEmbedContext`, or `OKFFolderWebAppRuntimeContext`) or the `AuthoringEditorContext` reads or receives OKF section data, it executes a strict **Validation and Tell-Back Protocol** via the Master Aggregator Context (`CoreLearningEngineContext`):
+When any of the 3 OKF Delivery Contexts (`InRepoOKFStorageContext`, `SingleHTMLEmbedContext`, or `OKFFolderWebAppRuntimeContext`) or the `AuthoringEditorContext` reads or receives OKF section data, it executes a strict **Validation and Tell-Back Protocol** via the Validation Gateway Context (`ValidationGatewayContext`):
 
 ```
 ┌─────────────────────────────────────────────────────────────────────────────────────────┐
@@ -186,7 +274,7 @@ When any of the 3 OKF Delivery Contexts (`InRepoOKFStorageContext`, `SingleHTMLE
                                            │ 1. Pass raw OKF data (YAML/Markdown)
                                            ▼
 ┌─────────────────────────────────────────────────────────────────────────────────────────┐
-│                       MASTER CORE AGGREGATOR CONTEXT (Validation Gateway)               │
+│                    VALIDATION GATEWAY CONTEXT (pure domain · no React)                  │
 │                                                                                         │
 │  ┌──────────────────────┐    ┌──────────────────────────┐    ┌───────────────────────┐  │
 │  │ Tier 1: YAML Syntax  │ ──►│ Tier 2: Structural Schema│ ──►│ Tier 3: Semantic      │  │
@@ -222,7 +310,7 @@ When any of the 3 OKF Delivery Contexts (`InRepoOKFStorageContext`, `SingleHTMLE
 ---
 
 ### 🎨 3. The UI System Contract Specification
-Provided by `UISystemContext` to `CoreLearningEngineContext` and all Core Section Sub-Contexts:
+Provided by `UISystemContext` to `CompositionEngineContext` and all Core Section Sub-Contexts (never to `ValidationGatewayContext`, which stays UI-free):
 1. **`ThemeContract`**: Catppuccin Frappé color tokens, typography scales, spacing variables.
 2. **`UIComponentRegistryContract`**: Standardized UI primitives (`<Card>`, `<Button>`, `<RangeSlider>`, `<Modal>`, `<Badge>`).
 3. **`SensoryFeedbackContract`**: Audio triggers (`sound.playClick()`, `sound.playSuccess()`) and motion animation variants.

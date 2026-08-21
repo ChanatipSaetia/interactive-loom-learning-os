@@ -1,0 +1,156 @@
+topicId: "gamification"
+topicTitle: "Realm of Motivation: The Gamification Domain"
+capitalId: "capital"
+nodes:
+  # Ring 0: Capital Center
+  - id: "capital"
+    title: "Capital of Motivation: Gamification Citadel"
+    type: "capital"
+    status: "unlocked"
+    sectionRef: "intro"
+    description: "The grand hub of behavioral design and motivation psychology. Explore the 8 Core Drives and habit-building loops!"
+
+  # Ring 1: Primary Motivation Sanctuaries
+  - id: "sanctuary-psychology"
+    title: "Sanctuary of Motivation Psychology"
+    type: "reading_sanctuary"
+    status: "unlocked"
+    sectionRef: "psychology"
+    healingAmount: 40
+    description: "A tranquil haven studying Self-Determination Theory (Autonomy, Competence, Relatedness) and intrinsic drives."
+
+  - id: "sanctuary-mechanics"
+    title: "Core Mechanics Toolkit Sanctuary"
+    type: "reading_sanctuary"
+    status: "locked"
+    sectionRef: "core-mechanics"
+    healingAmount: 30
+    description: "Sacred library of PBL (Points, Badges, Leaderboards), streaks, milestone quests, and narrative progress."
+
+  - id: "sanctuary-octalysis"
+    title: "Octalysis 8 Core Drives Keep"
+    type: "reading_sanctuary"
+    status: "locked"
+    sectionRef: "octalysis"
+    healingAmount: 35
+    description: "Explore the 8 Core Drives of human motivation: White Hat vs Black Hat, and Left Brain vs Right Brain drives."
+
+  # Ring 1 & 2: Encounters & Habit Loops
+  - id: "goblin-churn"
+    title: "Engagement Goblin Outpost"
+    type: "quiz_encounter"
+    status: "locked"
+    sectionRef: "quiz"
+    description: "A wild Churn Goblin attempting to crash user retention! Answer gamification design questions to defeat it."
+    monster:
+      id: "churn-goblin"
+      name: "Retention Churn Goblin"
+      type: "goblin"
+      maxHp: 100
+      damage: 15
+      icon: "👾"
+    rewards:
+      - id: "intrinsic-shield"
+        name: "Aegis of Intrinsic Drive"
+        icon: "🛡️"
+        description: "A luminous shield forged from autonomy and purpose that protects against hollow dopamine burnout."
+
+  - id: "reflection-hook"
+    title: "Hook Model Decryption Vault"
+    type: "reflection_decryption"
+    status: "locked"
+    sectionRef: "reflection-sequence"
+    description: "An ancient habit-loop vault. Arrange the 4 phases of Nir Eyal's Hook Model (Trigger -> Action -> Variable Reward -> Investment) before time runs out!"
+    rewards:
+      - id: "variable-blade"
+        name: "Blade of Variable Reward"
+        icon: "⚔️"
+        description: "A legendary weapon that pierces user fatigue with unpredictable delight."
+
+  - id: "tradeoff-rewards"
+    title: "Reward Design Trade-offs Workshop"
+    type: "tradeoff_workshop"
+    status: "locked"
+    sectionRef: "tradeoffs"
+    description: "Tune leaderboard competitiveness vs collaboration and intrinsic vs extrinsic rewards to forge campaign buffs."
+    tradeoffMapping:
+      intrinsic_alignment: "armor"
+      engagement_velocity: "evasion"
+      retention_depth: "intelligence"
+      burnout_prevention: "chaos_shield"
+
+  - id: "sanctuary-flashcards"
+    title: "Vocabulary Temple"
+    type: "reading_sanctuary"
+    status: "locked"
+    sectionRef: "flashcards"
+    healingAmount: 30
+    description: "Review essential gamification terminology, behavioral economics terms, and game design definitions."
+
+  - id: "orc-dark-patterns"
+    title: "Dark Pattern Marauder Den"
+    type: "quiz_encounter"
+    status: "locked"
+    sectionRef: "quiz"
+    description: "A predatory Marauder using aggressive FOMO and manipulative Black Hat tricks! Vanquish him with ethical design."
+    monster:
+      id: "fomo-orc"
+      name: "FOMO Marauder"
+      type: "orc"
+      maxHp: 120
+      damage: 25
+      icon: "🧌"
+
+  - id: "sanctuary-decision"
+    title: "Mechanic Fit Advisor Sanctuary"
+    type: "reading_sanctuary"
+    status: "locked"
+    sectionRef: "decision-tree"
+    healingAmount: 35
+    description: "Navigate optimal mechanic selection trees based on audience type (Achievers, Explorers, Socializers, Killers)."
+
+  - id: "wyrm-fatigue"
+    title: "Reward Fatigue Wyrm Lair"
+    type: "quiz_encounter"
+    status: "locked"
+    sectionRef: "quiz"
+    description: "A terrifying wyrm born from overjustification effect and extrinsic reward inflation!"
+    monster:
+      id: "fatigue-wyrm"
+      name: "Overjustification Wyrm"
+      type: "dragon"
+      maxHp: 160
+      damage: 30
+      icon: "🐉"
+
+  - id: "hydra-churn"
+    title: "Point-Farming Hydra Nest"
+    type: "quiz_encounter"
+    status: "locked"
+    sectionRef: "quiz"
+    description: "A multi-headed beast exploiting un-capped badge loops to spam leaderboard scores!"
+    monster:
+      id: "farming-hydra"
+      name: "Exploit Farming Hydra"
+      type: "boss"
+      maxHp: 180
+      damage: 35
+      icon: "🐙"
+
+  # Final Boss Climax
+  - id: "boss-lair"
+    title: "Lair of the Burnout Dragon"
+    type: "boss_lair"
+    status: "locked"
+    sectionRef: "quiz"
+    description: "The supreme Overjustification & Burnout Dragon! Requires the Aegis of Intrinsic Drive and Blade of Variable Reward to enter."
+    requiredItems:
+      - "intrinsic-shield"
+      - "variable-blade"
+    monster:
+      id: "burnout-boss"
+      name: "Extrinsic Burnout Dragon"
+      type: "boss"
+      maxHp: 250
+      damage: 40
+      icon: "🐲"

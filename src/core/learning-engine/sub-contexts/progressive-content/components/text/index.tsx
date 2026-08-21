@@ -5,17 +5,28 @@ import { SectionTitleBar } from '../../../../../delivery/web-app-shell/SectionTi
 import { TextHelpModal } from './TextHelpModal'
 import './text.css'
 
-export interface TextSectionProps {
+import type { SectionResultProps } from '../../../types'
+
+export interface TextSectionProps extends SectionResultProps<{ read: boolean; paragraphCount: number }> {
   title?: string
   heading?: string
   paragraphs: string[]
   animate?: boolean
   sectionIndex?: number
+  sectionId?: string
 }
 
 marked.use({ async: false, breaks: true })
 
-function TextSection({ title, heading, paragraphs, animate = false, sectionIndex = 0 }: TextSectionProps) {
+function TextSection({
+  title,
+  heading,
+  paragraphs,
+  animate = false,
+  sectionIndex = 0,
+  sectionId = 'text',
+  onResultChange,
+}: TextSectionProps) {
   const renderedParagraphs = useMemo(
     () =>
       paragraphs.map((p) => {
@@ -32,6 +43,18 @@ function TextSection({ title, heading, paragraphs, animate = false, sectionIndex
       }),
     [paragraphs],
   )
+
+  useMemo(() => {
+    onResultChange?.({
+      sectionId,
+      sectionType: 'text',
+      status: 'completed',
+      score: 100,
+      accuracy: 1.0,
+      completedAt: Date.now(),
+      payload: { read: true, paragraphCount: paragraphs.length },
+    })
+  }, [paragraphs.length, onResultChange, sectionId])
 
   const content = (
     <>

@@ -219,24 +219,29 @@ describe('resolveCombatTurn', () => {
 
 describe('calculateLevelProgress', () => {
   it('does not level up when EXP is below threshold', () => {
-    const result = calculateLevelProgress(5, 180, 40, 300, 2)
+    const result = calculateLevelProgress(5, 180, 40, 510, 2)
     expect(result.isLeveledUp).toBe(false)
     expect(result.nextLevel).toBe(5)
     expect(result.nextExp).toBe(220)
     expect(result.nextUnallocatedPoints).toBe(2)
   })
 
-  it('levels up when EXP meets or exceeds threshold', () => {
-    const result = calculateLevelProgress(5, 280, 50, 300, 2)
+  it('levels up when EXP meets or exceeds threshold with exponential next threshold', () => {
+    const result = calculateLevelProgress(5, 480, 50, 510, 2)
     expect(result.isLeveledUp).toBe(true)
     expect(result.nextLevel).toBe(6)
-    expect(result.nextExp).toBe(30) // 330 - 300 overflow
-    expect(result.nextNextLevelExp).toBe(400) // 300 + 100
+    expect(result.nextExp).toBe(20) // 530 - 510 overflow
+    // Level 6 -> 7 requires 100 * (1.5 ^ 5) = 760 EXP
+    expect(result.nextNextLevelExp).toBe(760)
     expect(result.nextUnallocatedPoints).toBe(3) // +1 point on level up
   })
 
-  it('carries over overflow XP correctly', () => {
-    const result = calculateLevelProgress(1, 0, 500, 100, 0)
-    expect(result.nextExp).toBe(400) // 500 - 100 overflow
+  it('carries over overflow XP correctly through exponential leveling', () => {
+    const result = calculateLevelProgress(1, 0, 120, 100, 0)
+    expect(result.isLeveledUp).toBe(true)
+    expect(result.nextLevel).toBe(2)
+    expect(result.nextExp).toBe(20) // 120 - 100
+    expect(result.nextNextLevelExp).toBe(150) // Level 2 -> 3 requires 150 EXP
+    expect(result.nextUnallocatedPoints).toBe(1)
   })
 })
