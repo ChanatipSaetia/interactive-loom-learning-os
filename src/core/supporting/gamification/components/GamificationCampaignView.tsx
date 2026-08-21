@@ -1130,7 +1130,6 @@ export const GamificationCampaignView: React.FC = () => {
                       portResolveQuizAnswer(true, activeSectionModal.id)
                     }
                   }}
-                  combatLogMessage={combatLog[0]}
                 />
               )}
 
@@ -1181,19 +1180,6 @@ export const GamificationCampaignView: React.FC = () => {
                       onEvent={(event: any) => {
                         if (event.type === 'QuizOptionSelected') {
                           handleQuizAnswerCombat(event.isCorrect)
-                          if (event.isCorrect) {
-                            pushActionMessage(
-                              `Attack Hit! Struck ${activeSectionModal.monster?.name || 'Monster'} with accurate answer!`,
-                              'exp',
-                              '⚔️'
-                            )
-                          } else {
-                            pushActionMessage(
-                              `Attack Missed! Monster retaliated against incorrect answer!`,
-                              'danger',
-                              '💔'
-                            )
-                          }
                         }
                         if (event.type === 'ReflectionAnswered') {
                           if (event.isCorrect) {
