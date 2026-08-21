@@ -159,25 +159,39 @@ export const GamificationCampaignView: React.FC = () => {
   const [topicVictoryModalOpen, setTopicVictoryModalOpen] = useState<boolean>(false)
   const [earnedVictoryBadges, setEarnedVictoryBadges] = useState<import('../types').UnlockedBadge[]>([])
   const [combatLog, setCombatLog] = useState<string[]>([])
-  const [snackbarMessage, setSnackbarMessage] = useState<string | null>(null)
+  const [snackbar, setSnackbar] = useState<{
+    id: number
+    text: string
+    type: 'success' | 'danger' | 'warning' | 'info' | 'craft' | 'exp'
+    icon: string
+  } | null>(null)
   const [quizAttemptKey, setQuizAttemptKey] = useState<number>(0)
   const [quizFailed, setQuizFailed] = useState<boolean>(false)
   const [activeTradeoffMetrics, setActiveTradeoffMetrics] = useState<Array<{ id: string; label: string; value: number }>>([])
 
-  // Helper to push action messages to both combatLog and bottom-center Snackbar Toast
-  const pushActionMessage = useCallback((msg: string) => {
-    setCombatLog((prev) => [msg, ...prev])
-    setSnackbarMessage(msg)
+  // Helper to push action messages with semantic colors & icons to both combatLog and bottom-center Snackbar Toast
+  const pushActionMessage = useCallback((
+    text: string,
+    type: 'success' | 'danger' | 'warning' | 'info' | 'craft' | 'exp' = 'info',
+    icon: string = '⚡'
+  ) => {
+    setCombatLog((prev) => [text, ...prev])
+    setSnackbar({
+      id: Date.now(),
+      text,
+      type,
+      icon,
+    })
   }, [])
 
   // Auto-dismiss snackbar after 4 seconds
   useEffect(() => {
-    if (!snackbarMessage) return
+    if (!snackbar) return
     const timer = setTimeout(() => {
-      setSnackbarMessage(null)
+      setSnackbar(null)
     }, 4000)
     return () => clearTimeout(timer)
-  }, [snackbarMessage])
+  }, [snackbar])
 
   // Check for Zero HP Defeat condition
   useEffect(() => {
@@ -191,7 +205,11 @@ export const GamificationCampaignView: React.FC = () => {
   const handleDefeatRestart = async () => {
     await portResetCampaign(currentTopicId)
     setGameOverModalOpen(false)
-    pushActionMessage(`☠️ CAMPAIGN DEFEAT: Health dropped to 0! Campaign reset to Capital for a fresh attempt.`)
+    pushActionMessage(
+      `☠️ CAMPAIGN DEFEAT: Health dropped to 0! Campaign reset to Capital for a fresh attempt.`,
+      'danger',
+      '☠️'
+    )
   }
 
   // Launch Section Handler (Increases System Chaos on section entry)
@@ -200,13 +218,17 @@ export const GamificationCampaignView: React.FC = () => {
     setQuizFailed(false)
     setQuizAttemptKey((prev) => prev + 1)
     setActiveSectionModal(node)
-    pushActionMessage(`🎮 Entered ${node.title} [${node.type.toUpperCase()}]. Active Section Evaluation started!`)
+    pushActionMessage(
+      `🎮 Entered ${node.title} [${node.type.toUpperCase()}]. Active Section Evaluation started!`,
+      'info',
+      '🎮'
+    )
   }
 
   // Allocate Attribute Point
   const handleAllocateStat = (stat: 'armor' | 'evasion' | 'intelligence') => {
     portAllocateStatPoint(stat)
-    pushActionMessage(`✨ Upgraded ${stat.toUpperCase()}! Stat increased!`)
+    pushActionMessage(`✨ Upgraded ${stat.toUpperCase()}! Stat increased!`, 'success', '✨')
   }
 
   // Quiz Combat Result Execution
@@ -219,7 +241,7 @@ export const GamificationCampaignView: React.FC = () => {
   const handleRestSanctuary = () => {
     if (!selectedNode) return
     portApplySanctuaryTickHeal(30, selectedNode.id)
-    pushActionMessage(`🏛️ Sanctuary Rested! Restored character HP and cleansed System Chaos!`)
+    pushActionMessage(`🏛️ Sanctuary Rested! Restored character HP and cleansed System Chaos!`, 'success', '🏛️')
   }
 
   // Trade-off Crafting Buff Action
@@ -231,7 +253,11 @@ export const GamificationCampaignView: React.FC = () => {
       source: synthesizedArtifact?.name || selectedNode.title || 'Trade-off Workshop',
     }
     portApplyCraftedBuff(buffData)
-    pushActionMessage(`⚒️ Synthesized Artifact "${buffData.source}": +${buffData.value}% ${buffData.stat.toUpperCase()} equipped!`)
+    pushActionMessage(
+      `⚒️ Synthesized Artifact "${buffData.source}": +${buffData.value}% ${buffData.stat.toUpperCase()} equipped!`,
+      'craft',
+      '⚒️'
+    )
     handlePassSection(selectedNode)
   }
 
@@ -251,7 +277,7 @@ export const GamificationCampaignView: React.FC = () => {
 
     const reward = targetNode.rewards && targetNode.rewards.length > 0 ? targetNode.rewards[0] : null
     if (reward) {
-      pushActionMessage(`🎁 COLLECTED ITEM REWARD: ${reward.name} ${reward.icon}!`)
+      pushActionMessage(`🎁 COLLECTED ITEM REWARD: ${reward.name} ${reward.icon}!`, 'warning', '🎁')
     }
 
     // EXP rewards: 5 for reading & capital, 20 for quiz & decrypt & tradeoff, 50 for boss
@@ -270,7 +296,11 @@ export const GamificationCampaignView: React.FC = () => {
 
     portCompleteNode(targetNode.id)
     portAwardExp(expToAward)
-    pushActionMessage(`🎉 ENCOUNTER CLEARED: "${targetNode.title}" Completed! +${expToAward} EXP Gained (${DIFFICULTY_CONFIGS[currentDiff]?.label})!`)
+    pushActionMessage(
+      `🎉 ENCOUNTER CLEARED: "${targetNode.title}" Completed! +${expToAward} EXP Gained (${DIFFICULTY_CONFIGS[currentDiff]?.label})!`,
+      'exp',
+      '🎉'
+    )
     setActiveSectionModal(null)
 
     // Trigger Topic Victory Modal upon defeating the Boss Lair
@@ -305,7 +335,11 @@ export const GamificationCampaignView: React.FC = () => {
 
     portTakeDamage(damage)
     const chaosNote = currentChaos > 0 ? ` (amplified by ${currentChaos}% System Chaos)` : ''
-    pushActionMessage(`❌ SECTION FAILED: "${targetNode.title}"! Suffered ${damage} damage${chaosNote} [${DIFFICULTY_CONFIGS[currentDiff]?.label}]!`)
+    pushActionMessage(
+      `❌ SECTION FAILED: "${targetNode.title}"! Suffered ${damage} damage${chaosNote} [${DIFFICULTY_CONFIGS[currentDiff]?.label}]!`,
+      'danger',
+      '❌'
+    )
   }
 
   if (isLoading || !campaign || !globalChar) {
@@ -788,12 +822,31 @@ export const GamificationCampaignView: React.FC = () => {
           </div>
         </Modal>
 
-        {/* ─── Bottom Center Action Snackbar Toast (Lobby) ─── */}
-        {snackbarMessage && (
-          <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-[9999] pointer-events-none flex items-center justify-center max-w-[90vw] sm:max-w-md animate-in fade-in slide-in-from-bottom-4 duration-300">
-            <div className="bg-[#181825]/95 backdrop-blur-xl border border-[#8caaee]/40 text-[#c6d0f5] text-xs sm:text-sm font-semibold px-4 py-2.5 rounded-2xl shadow-2xl flex items-center gap-2.5 border-l-4 border-l-[#8caaee]">
-              <span className="shrink-0 text-base">⚡</span>
-              <span className="truncate">{snackbarMessage}</span>
+        {/* ─── Animated Semantic Snackbar Toast (Lobby) ─── */}
+        {snackbar && (
+          <div
+            key={snackbar.id}
+            className="fixed bottom-6 left-1/2 -translate-x-1/2 z-[9999] pointer-events-none flex items-center justify-center max-w-[92vw] sm:max-w-md animate-in fade-in slide-in-from-bottom-5 duration-300 ease-out"
+          >
+            <div
+              className={`backdrop-blur-xl border text-xs sm:text-sm font-semibold px-4 py-3 rounded-2xl shadow-2xl flex items-center gap-3 border-l-4 transition-all duration-300 relative overflow-hidden ${
+                snackbar.type === 'success'
+                  ? 'bg-[#1e2e28]/95 border-[#a6d189]/60 border-l-[#a6d189] text-[#a6d189] shadow-[#a6d189]/20'
+                  : snackbar.type === 'danger'
+                  ? 'bg-[#312028]/95 border-[#e78284]/60 border-l-[#e78284] text-[#ea999c] shadow-[#e78284]/20'
+                  : snackbar.type === 'warning'
+                  ? 'bg-[#312a20]/95 border-[#ef9f76]/60 border-l-[#ef9f76] text-[#ef9f76] shadow-[#ef9f76]/20'
+                  : snackbar.type === 'craft'
+                  ? 'bg-[#292233]/95 border-[#ca9ee6]/60 border-l-[#ca9ee6] text-[#ca9ee6] shadow-[#ca9ee6]/20'
+                  : snackbar.type === 'exp'
+                  ? 'bg-[#1f2838]/95 border-[#8caaee]/60 border-l-[#8caaee] text-[#8caaee] shadow-[#8caaee]/20'
+                  : 'bg-[#1e1e2e]/95 border-[#414559] border-l-[#8caaee] text-[#c6d0f5] shadow-black/40'
+              }`}
+            >
+              <div className="w-7 h-7 rounded-xl bg-[#181825]/80 flex items-center justify-center shrink-0 text-base shadow-inner animate-pulse">
+                {snackbar.icon}
+              </div>
+              <span className="truncate pr-1 text-[#c6d0f5]">{snackbar.text}</span>
             </div>
           </div>
         )}
@@ -1429,12 +1482,31 @@ export const GamificationCampaignView: React.FC = () => {
         </div>
       </Modal>
 
-      {/* ─── Bottom Center Action Snackbar Toast ─── */}
-      {snackbarMessage && (
-        <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-[9999] pointer-events-none flex items-center justify-center max-w-[90vw] sm:max-w-md animate-in fade-in slide-in-from-bottom-4 duration-300">
-          <div className="bg-[#181825]/95 backdrop-blur-xl border border-[#8caaee]/40 text-[#c6d0f5] text-xs sm:text-sm font-semibold px-4 py-2.5 rounded-2xl shadow-2xl flex items-center gap-2.5 border-l-4 border-l-[#8caaee]">
-            <span className="shrink-0 text-base">⚡</span>
-            <span className="truncate">{snackbarMessage}</span>
+      {/* ─── Animated Semantic Snackbar Toast (Active Campaign) ─── */}
+      {snackbar && (
+        <div
+          key={snackbar.id}
+          className="fixed bottom-6 left-1/2 -translate-x-1/2 z-[9999] pointer-events-none flex items-center justify-center max-w-[92vw] sm:max-w-md animate-in fade-in slide-in-from-bottom-5 duration-300 ease-out"
+        >
+          <div
+            className={`backdrop-blur-xl border text-xs sm:text-sm font-semibold px-4 py-3 rounded-2xl shadow-2xl flex items-center gap-3 border-l-4 transition-all duration-300 relative overflow-hidden ${
+              snackbar.type === 'success'
+                ? 'bg-[#1e2e28]/95 border-[#a6d189]/60 border-l-[#a6d189] text-[#a6d189] shadow-[#a6d189]/20'
+                : snackbar.type === 'danger'
+                ? 'bg-[#312028]/95 border-[#e78284]/60 border-l-[#e78284] text-[#ea999c] shadow-[#e78284]/20'
+                : snackbar.type === 'warning'
+                ? 'bg-[#312a20]/95 border-[#ef9f76]/60 border-l-[#ef9f76] text-[#ef9f76] shadow-[#ef9f76]/20'
+                : snackbar.type === 'craft'
+                ? 'bg-[#292233]/95 border-[#ca9ee6]/60 border-l-[#ca9ee6] text-[#ca9ee6] shadow-[#ca9ee6]/20'
+                : snackbar.type === 'exp'
+                ? 'bg-[#1f2838]/95 border-[#8caaee]/60 border-l-[#8caaee] text-[#8caaee] shadow-[#8caaee]/20'
+                : 'bg-[#1e1e2e]/95 border-[#414559] border-l-[#8caaee] text-[#c6d0f5] shadow-black/40'
+            }`}
+          >
+            <div className="w-7 h-7 rounded-xl bg-[#181825]/80 flex items-center justify-center shrink-0 text-base shadow-inner animate-pulse">
+              {snackbar.icon}
+            </div>
+            <span className="truncate pr-1 text-[#c6d0f5]">{snackbar.text}</span>
           </div>
         </div>
       )}
