@@ -22,7 +22,7 @@ import { SectionRegistry } from '../../../learning-engine/registry'
 import { useTopics } from '../../../learning-engine/composition/routes'
 import { useParams, useSearchParams } from 'react-router-dom'
 import { Suspense, useMemo as useReactMemo } from 'react'
-import { Map as MapIcon, ArrowLeft, RotateCcw, Award, Play } from 'lucide-react'
+import { Map as MapIcon, ArrowLeft, RotateCcw, Award, Play, X } from 'lucide-react'
 
 // Known hexmap topics available in public/hexmaps/
 const KNOWN_HEXMAP_TOPIC_IDS = ['gamification', 'demo']
@@ -829,7 +829,7 @@ export const GamificationCampaignView: React.FC = () => {
             className="fixed bottom-6 left-1/2 -translate-x-1/2 z-[9999] pointer-events-none flex items-center justify-center max-w-[92vw] sm:max-w-md animate-in fade-in slide-in-from-bottom-5 duration-300 ease-out"
           >
             <div
-              className={`backdrop-blur-xl border text-xs sm:text-sm font-semibold px-4 py-3 rounded-2xl shadow-2xl flex items-center gap-3 border-l-4 transition-all duration-300 relative overflow-hidden ${
+              className={`pointer-events-auto backdrop-blur-xl border text-xs sm:text-sm font-semibold px-3.5 py-2.5 sm:px-4 sm:py-3 rounded-2xl shadow-2xl flex items-center gap-3 border-l-4 transition-all duration-300 relative overflow-hidden ${
                 snackbar.type === 'success'
                   ? 'bg-[#1e2e28]/95 border-[#a6d189]/60 border-l-[#a6d189] text-[#a6d189] shadow-[#a6d189]/20'
                   : snackbar.type === 'danger'
@@ -846,7 +846,15 @@ export const GamificationCampaignView: React.FC = () => {
               <div className="w-7 h-7 rounded-xl bg-[#181825]/80 flex items-center justify-center shrink-0 text-base shadow-inner animate-pulse">
                 {snackbar.icon}
               </div>
-              <span className="truncate pr-1 text-[#c6d0f5]">{snackbar.text}</span>
+              <span className="truncate pr-1 text-[#c6d0f5] flex-1">{snackbar.text}</span>
+              <button
+                type="button"
+                onClick={() => setSnackbar(null)}
+                className="w-6 h-6 rounded-lg bg-black/20 hover:bg-black/40 text-[#a5adce] hover:text-white flex items-center justify-center shrink-0 transition-colors"
+                title="Dismiss notification"
+              >
+                <X size={13} />
+              </button>
             </div>
           </div>
         )}
@@ -1489,7 +1497,7 @@ export const GamificationCampaignView: React.FC = () => {
           className="fixed bottom-6 left-1/2 -translate-x-1/2 z-[9999] pointer-events-none flex items-center justify-center max-w-[92vw] sm:max-w-md animate-in fade-in slide-in-from-bottom-5 duration-300 ease-out"
         >
           <div
-            className={`backdrop-blur-xl border text-xs sm:text-sm font-semibold px-4 py-3 rounded-2xl shadow-2xl flex items-center gap-3 border-l-4 transition-all duration-300 relative overflow-hidden ${
+            className={`pointer-events-auto backdrop-blur-xl border text-xs sm:text-sm font-semibold px-3.5 py-2.5 sm:px-4 sm:py-3 rounded-2xl shadow-2xl flex items-center gap-3 border-l-4 transition-all duration-300 relative overflow-hidden ${
               snackbar.type === 'success'
                 ? 'bg-[#1e2e28]/95 border-[#a6d189]/60 border-l-[#a6d189] text-[#a6d189] shadow-[#a6d189]/20'
                 : snackbar.type === 'danger'
@@ -1506,7 +1514,15 @@ export const GamificationCampaignView: React.FC = () => {
             <div className="w-7 h-7 rounded-xl bg-[#181825]/80 flex items-center justify-center shrink-0 text-base shadow-inner animate-pulse">
               {snackbar.icon}
             </div>
-            <span className="truncate pr-1 text-[#c6d0f5]">{snackbar.text}</span>
+            <span className="truncate pr-1 text-[#c6d0f5] flex-1">{snackbar.text}</span>
+            <button
+              type="button"
+              onClick={() => setSnackbar(null)}
+              className="w-6 h-6 rounded-lg bg-black/20 hover:bg-black/40 text-[#a5adce] hover:text-white flex items-center justify-center shrink-0 transition-colors"
+              title="Dismiss notification"
+            >
+              <X size={13} />
+            </button>
           </div>
         </div>
       )}
