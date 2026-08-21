@@ -35,11 +35,11 @@ export const NodeInspectorTray: React.FC<NodeInspectorTrayProps> = ({
     : selectedNode.title
 
   return (
-    <div className="bg-[#232634]/95 backdrop-blur-xl border border-[#414559] rounded-2xl p-4 shadow-2xl transition-all duration-300">
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+    <div className="bg-[#232634]/95 backdrop-blur-xl border border-[#414559] rounded-2xl p-3.5 sm:p-4 shadow-2xl transition-all duration-300">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-3.5 sm:gap-4">
         {/* Node Identity & Type */}
         <div className="flex items-center gap-3 min-w-0">
-          <div className={`w-12 h-12 rounded-xl flex items-center justify-center text-2xl shrink-0 border ${
+          <div className={`w-10 h-10 sm:w-12 sm:h-12 rounded-xl flex items-center justify-center text-xl sm:text-2xl shrink-0 border ${
             isCleared ? 'bg-[#a6d189]/20 border-[#a6d189]/40 text-[#a6d189]' :
             isBoss ? 'bg-[#ea999c]/20 border-[#ea999c]/40 text-[#ea999c]' :
             isLocked ? 'bg-[#303446] border-[#414559] text-[#737994]' :
@@ -53,16 +53,16 @@ export const NodeInspectorTray: React.FC<NodeInspectorTrayProps> = ({
             {isBoss && '🐲'}
           </div>
 
-          <div className="min-w-0">
+          <div className="min-w-0 flex-1">
             <div className="flex items-center gap-2 flex-wrap">
-              <h3 className={`text-base font-bold truncate ${isLocked && !isCapital ? 'font-mono text-[#ca9ee6]' : 'text-[#b5bfe2]'}`}>
+              <h3 className={`text-sm sm:text-base font-bold truncate ${isLocked && !isCapital ? 'font-mono text-[#ca9ee6]' : 'text-[#b5bfe2]'}`}>
                 {displayTitle}
               </h3>
-              <Badge variant={isCleared ? 'success' : isLocked ? 'secondary' : 'default'} className="text-[10px] uppercase">
+              <Badge variant={isCleared ? 'success' : isLocked ? 'secondary' : 'default'} className="text-[9px] sm:text-[10px] uppercase px-1.5 py-0">
                 {isCleared ? '✓ Cleared' : isLocked ? '🔒 Locked' : '🔓 Unlocked'}
               </Badge>
             </div>
-            <p className="text-xs text-[#a5adce] mt-0.5 line-clamp-1">
+            <p className="text-[11px] sm:text-xs text-[#a5adce] mt-0.5 line-clamp-1">
               {isLocked && !isCapital
                 ? 'Shrouded under the Fog of War. Clear prerequisite cities to decrypt.'
                 : selectedNode.description || 'Explore this territory to advance your architectural campaign.'}
@@ -70,40 +70,42 @@ export const NodeInspectorTray: React.FC<NodeInspectorTrayProps> = ({
           </div>
         </div>
 
-        {/* Dynamic Context Specs (Monster / Healing / Buff / Items) */}
-        <div className="flex items-center gap-3 flex-wrap">
-          {/* Monster Preview */}
-          {selectedNode.monster && (
-            <div className="bg-[#1e1e2e] px-3 py-1.5 rounded-lg border border-[#e78284]/30 flex items-center gap-2 text-xs">
-              <Swords size={14} className="text-[#e78284]" />
-              <span className="text-[#e78284] font-semibold">{selectedNode.monster.name}</span>
-              <span className="text-[#a5adce] font-mono">({selectedNode.monster.currentHp ?? selectedNode.monster.maxHp} HP)</span>
-            </div>
-          )}
+        {/* Dynamic Context Specs (Monster / Healing / Buff / Items) & Action Button */}
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2.5 sm:gap-3 flex-wrap">
+          <div className="flex items-center gap-2 flex-wrap">
+            {/* Monster Preview */}
+            {selectedNode.monster && (
+              <div className="bg-[#1e1e2e] px-2.5 py-1 rounded-lg border border-[#e78284]/30 flex items-center gap-1.5 text-xs">
+                <Swords size={13} className="text-[#e78284]" />
+                <span className="text-[#e78284] font-semibold">{selectedNode.monster.name}</span>
+                <span className="text-[#a5adce] font-mono text-[11px]">({selectedNode.monster.currentHp ?? selectedNode.monster.maxHp} HP)</span>
+              </div>
+            )}
 
-          {/* Sanctuary Healing */}
-          {isSanctuary && (
-            <div className="bg-[#1e1e2e] px-3 py-1.5 rounded-lg border border-[#a6d189]/30 flex items-center gap-2 text-xs text-[#a6d189]">
-              <Sparkles size={14} />
-              <span>+{selectedNode.healingAmount ?? 40} HP Sanctuary Reading</span>
-            </div>
-          )}
+            {/* Sanctuary Healing */}
+            {isSanctuary && (
+              <div className="bg-[#1e1e2e] px-2.5 py-1 rounded-lg border border-[#a6d189]/30 flex items-center gap-1.5 text-xs text-[#a6d189]">
+                <Sparkles size={13} />
+                <span>+{selectedNode.healingAmount ?? 40} HP Sanctuary Reading</span>
+              </div>
+            )}
 
-          {/* Buff Preview */}
-          {selectedNode.buff && (
-            <div className="bg-[#1e1e2e] px-3 py-1.5 rounded-lg border border-[#e5c890]/30 flex items-center gap-2 text-xs text-[#e5c890]">
-              <Sparkles size={14} />
-              <span>{selectedNode.buff.label}</span>
-            </div>
-          )}
+            {/* Buff Preview */}
+            {selectedNode.buff && (
+              <div className="bg-[#1e1e2e] px-2.5 py-1 rounded-lg border border-[#e5c890]/30 flex items-center gap-1.5 text-xs text-[#e5c890]">
+                <Sparkles size={13} />
+                <span>{selectedNode.buff.label}</span>
+              </div>
+            )}
 
-          {/* Item Reward */}
-          {selectedNode.rewards && selectedNode.rewards.length > 0 && (
-            <div className="bg-[#1e1e2e] px-3 py-1.5 rounded-lg border border-[#8caaee]/30 flex items-center gap-2 text-xs text-[#8caaee]">
-              <Key size={14} />
-              <span>Reward: {selectedNode.rewards[0].name}</span>
-            </div>
-          )}
+            {/* Item Reward */}
+            {selectedNode.rewards && selectedNode.rewards.length > 0 && (
+              <div className="bg-[#1e1e2e] px-2.5 py-1 rounded-lg border border-[#8caaee]/30 flex items-center gap-1.5 text-xs text-[#8caaee]">
+                <Key size={13} />
+                <span>Reward: {selectedNode.rewards[0].name}</span>
+              </div>
+            )}
+          </div>
 
           {/* Action Launch Button */}
           <Button
@@ -112,7 +114,7 @@ export const NodeInspectorTray: React.FC<NodeInspectorTrayProps> = ({
               (isBoss && !isBossUnlockable) ||
               (isCleared && (isQuiz || isReflection || isBoss))
             }
-            className={`font-bold text-xs px-5 py-2 flex items-center gap-2 ${
+            className={`font-bold text-xs px-5 py-2.5 sm:py-2 w-full sm:w-auto flex items-center justify-center gap-2 ${
               isLocked || (isBoss && !isBossUnlockable) || (isCleared && (isQuiz || isReflection || isBoss))
                 ? 'bg-[#414559] text-[#737994] cursor-not-allowed border border-[#51576d]'
                 : isCleared

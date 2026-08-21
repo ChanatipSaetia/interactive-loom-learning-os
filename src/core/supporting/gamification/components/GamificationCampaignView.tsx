@@ -110,6 +110,11 @@ export const GamificationCampaignView: React.FC = () => {
       setNodes(evaluated)
       if (!selectedNode || !evaluated.some((n) => n.id === selectedNode.id)) {
         setSelectedNode(evaluated[0])
+      } else {
+        const freshSelected = evaluated.find((n) => n.id === selectedNode.id)
+        if (freshSelected) {
+          setSelectedNode(freshSelected)
+        }
       }
     }
   }, [liveCampaign, campaign?.clearedNodeIds])
@@ -177,7 +182,12 @@ export const GamificationCampaignView: React.FC = () => {
       const withCleared = prevNodes.map((n) =>
         n.id === targetNode.id ? { ...n, status: 'cleared' as const } : n
       )
-      return evaluateNodeUnlocks(withCleared)
+      const evaluated = evaluateNodeUnlocks(withCleared)
+      const updatedTarget = evaluated.find((n) => n.id === targetNode.id)
+      if (updatedTarget && selectedNode?.id === targetNode.id) {
+        setSelectedNode(updatedTarget)
+      }
+      return evaluated
     })
 
     const reward = targetNode.rewards && targetNode.rewards.length > 0 ? targetNode.rewards[0] : null
@@ -246,89 +256,95 @@ export const GamificationCampaignView: React.FC = () => {
     return (
       <div className="min-h-screen bg-[#1e1e2e] text-[#c6d0f5] p-6 lg:p-10 flex flex-col gap-8 font-sans max-w-7xl mx-auto">
         {/* ─── Global Character Profile Hero Banner ─── */}
-        <header className="bg-gradient-to-r from-[#292c3c] via-[#303446] to-[#292c3c] border border-[#414559] rounded-3xl p-6 lg:p-8 shadow-2xl flex flex-col md:flex-row items-center justify-between gap-6">
-          <div className="flex items-center gap-5">
-            <div className="w-20 h-20 rounded-3xl bg-gradient-to-br from-[#8caaee] via-[#ca9ee6] to-[#f4b8e4] flex items-center justify-center text-4xl shadow-xl border border-[#8caaee]/50 shrink-0">
+        <header className="bg-gradient-to-r from-[#292c3c] via-[#303446] to-[#292c3c] border border-[#414559] rounded-3xl p-5 sm:p-6 lg:p-8 shadow-2xl flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-6">
+          <div className="flex items-center gap-4 sm:gap-5">
+            <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-3xl bg-gradient-to-br from-[#8caaee] via-[#ca9ee6] to-[#f4b8e4] flex items-center justify-center text-3xl sm:text-4xl shadow-xl border border-[#8caaee]/50 shrink-0">
               🧙‍♂️
             </div>
-            <div>
-              <div className="flex items-center gap-3">
-                <h1 className="text-2xl lg:text-3xl font-extrabold text-[#b5bfe2] tracking-tight">Architecture Champion</h1>
-                <Badge variant="secondary" className="bg-[#8caaee]/20 text-[#8caaee] border-[#8caaee]/40 text-sm px-3 py-1 font-bold">
-                  Level {globalChar.level}
+            <div className="min-w-0 flex-1">
+              <div className="flex items-center gap-2 sm:gap-3 flex-wrap">
+                <h1 className="text-xl sm:text-2xl lg:text-3xl font-extrabold text-[#b5bfe2] tracking-tight truncate">
+                  Architecture Champion
+                </h1>
+                <Badge variant="secondary" className="bg-[#8caaee]/20 text-[#8caaee] border-[#8caaee]/40 text-xs sm:text-sm px-2.5 py-0.5 sm:px-3 sm:py-1 font-bold">
+                  Lvl {globalChar.level}
                 </Badge>
               </div>
-              <p className="text-xs lg:text-sm text-[#a5adce] mt-1">
-                Persistent Cross-Campaign Learning Avatar · Level up and forge stats across all topics!
+              <p className="text-xs sm:text-sm text-[#a5adce] mt-1 line-clamp-1 sm:line-clamp-none">
+                Persistent Cross-Campaign Learning Avatar · Level up and forge stats!
               </p>
               {/* EXP Bar */}
-              <div className="w-64 lg:w-80 bg-[#232634] h-3 rounded-full overflow-hidden mt-3 border border-[#414559]">
+              <div className="w-full max-w-xs sm:w-64 lg:w-80 bg-[#232634] h-2.5 sm:h-3 rounded-full overflow-hidden mt-2.5 sm:mt-3 border border-[#414559]">
                 <div
                   className="bg-gradient-to-r from-[#8caaee] to-[#a6d189] h-full transition-all duration-500"
                   style={{ width: `${(globalChar.exp / globalChar.nextLevelExp) * 100}%` }}
                 />
               </div>
-              <span className="text-xs font-mono text-[#a5adce] mt-1.5 block">
+              <span className="text-[11px] sm:text-xs font-mono text-[#a5adce] mt-1 sm:mt-1.5 block">
                 {globalChar.exp} / {globalChar.nextLevelExp} EXP to Level {globalChar.level + 1}
               </span>
             </div>
           </div>
 
-          {/* Stats Bar */}
-          <div className="flex items-center gap-6 bg-[#232634]/90 px-6 py-4 rounded-2xl border border-[#414559] shadow-inner">
-            <div className="flex items-center gap-2.5">
-              <span className="text-2xl">🛡️</span>
-              <div>
-                <span className="text-xs text-[#a5adce] font-semibold block">Armor</span>
-                <span className="text-base font-bold text-[#e5c890]">{globalChar.attributes.armor}%</span>
+          {/* Stats & Badges Bar (Responsive Grid on Mobile) */}
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:gap-6 bg-[#232634]/90 p-4 sm:px-6 sm:py-4 rounded-2xl border border-[#414559] shadow-inner">
+            <div className="grid grid-cols-3 gap-2 sm:flex sm:items-center sm:gap-6">
+              <div className="flex flex-col sm:flex-row items-center sm:items-center gap-1.5 sm:gap-2.5 text-center sm:text-left bg-[#1e1e2e]/50 sm:bg-transparent p-2 sm:p-0 rounded-xl">
+                <span className="text-xl sm:text-2xl">🛡️</span>
+                <div>
+                  <span className="text-[10px] sm:text-xs text-[#a5adce] font-semibold block">Armor</span>
+                  <span className="text-sm sm:text-base font-bold text-[#e5c890]">{globalChar.attributes.armor}%</span>
+                </div>
+                {globalChar.unallocatedPoints > 0 && (
+                  <Button size="sm" variant="ghost" className="h-6 w-6 sm:h-7 sm:w-7 p-0 text-[#a6d189] hover:bg-[#a6d189]/20" onClick={() => handleAllocateStat('armor')}>
+                    +
+                  </Button>
+                )}
               </div>
-              {globalChar.unallocatedPoints > 0 && (
-                <Button size="sm" variant="ghost" className="h-7 w-7 p-0 text-[#a6d189] hover:bg-[#a6d189]/20" onClick={() => handleAllocateStat('armor')}>
-                  +
-                </Button>
-              )}
+
+              <div className="hidden sm:block w-px h-10 bg-[#414559]" />
+
+              <div className="flex flex-col sm:flex-row items-center sm:items-center gap-1.5 sm:gap-2.5 text-center sm:text-left bg-[#1e1e2e]/50 sm:bg-transparent p-2 sm:p-0 rounded-xl">
+                <span className="text-xl sm:text-2xl">⚡</span>
+                <div>
+                  <span className="text-[10px] sm:text-xs text-[#a5adce] font-semibold block">Evasion</span>
+                  <span className="text-sm sm:text-base font-bold text-[#8caaee]">{globalChar.attributes.evasion}%</span>
+                </div>
+                {globalChar.unallocatedPoints > 0 && (
+                  <Button size="sm" variant="ghost" className="h-6 w-6 sm:h-7 sm:w-7 p-0 text-[#a6d189] hover:bg-[#a6d189]/20" onClick={() => handleAllocateStat('evasion')}>
+                    +
+                  </Button>
+                )}
+              </div>
+
+              <div className="hidden sm:block w-px h-10 bg-[#414559]" />
+
+              <div className="flex flex-col sm:flex-row items-center sm:items-center gap-1.5 sm:gap-2.5 text-center sm:text-left bg-[#1e1e2e]/50 sm:bg-transparent p-2 sm:p-0 rounded-xl">
+                <span className="text-xl sm:text-2xl">💡</span>
+                <div>
+                  <span className="text-[10px] sm:text-xs text-[#a5adce] font-semibold block">Intel</span>
+                  <span className="text-sm sm:text-base font-bold text-[#ca9ee6]">{globalChar.attributes.intelligence}%</span>
+                </div>
+                {globalChar.unallocatedPoints > 0 && (
+                  <Button size="sm" variant="ghost" className="h-6 w-6 sm:h-7 sm:w-7 p-0 text-[#a6d189] hover:bg-[#a6d189]/20" onClick={() => handleAllocateStat('intelligence')}>
+                    +
+                  </Button>
+                )}
+              </div>
             </div>
 
-            <div className="w-px h-10 bg-[#414559]" />
-
-            <div className="flex items-center gap-2.5">
-              <span className="text-2xl">⚡</span>
-              <div>
-                <span className="text-xs text-[#a5adce] font-semibold block">Evasion</span>
-                <span className="text-base font-bold text-[#8caaee]">{globalChar.attributes.evasion}%</span>
-              </div>
+            <div className="flex items-center justify-between sm:justify-start gap-2 pt-2 sm:pt-0 border-t border-[#414559]/50 sm:border-0">
               {globalChar.unallocatedPoints > 0 && (
-                <Button size="sm" variant="ghost" className="h-7 w-7 p-0 text-[#a6d189] hover:bg-[#a6d189]/20" onClick={() => handleAllocateStat('evasion')}>
-                  +
-                </Button>
+                <Badge variant="success" className="animate-pulse px-2.5 py-1 text-[11px] sm:text-xs">
+                  {globalChar.unallocatedPoints} Stat Pts!
+                </Badge>
               )}
+
+              <Button variant="ghost" onClick={() => setActiveBadgesModal(true)} className="border border-[#414559] hover:bg-[#414559]/50 text-xs w-full sm:w-auto py-2">
+                <Award size={14} className="mr-1.5 text-[#e5c890]" />
+                <span>Badges ({globalChar.unlockedBadges.length})</span>
+              </Button>
             </div>
-
-            <div className="w-px h-10 bg-[#414559]" />
-
-            <div className="flex items-center gap-2.5">
-              <span className="text-2xl">💡</span>
-              <div>
-                <span className="text-xs text-[#a5adce] font-semibold block">Intelligence</span>
-                <span className="text-base font-bold text-[#ca9ee6]">{globalChar.attributes.intelligence}%</span>
-              </div>
-              {globalChar.unallocatedPoints > 0 && (
-                <Button size="sm" variant="ghost" className="h-7 w-7 p-0 text-[#a6d189] hover:bg-[#a6d189]/20" onClick={() => handleAllocateStat('intelligence')}>
-                  +
-                </Button>
-              )}
-            </div>
-
-            {globalChar.unallocatedPoints > 0 && (
-              <Badge variant="success" className="animate-pulse ml-2 px-2.5 py-1 text-xs">
-                {globalChar.unallocatedPoints} Stat Pts!
-              </Badge>
-            )}
-
-            <Button variant="ghost" onClick={() => setActiveBadgesModal(true)} className="border border-[#414559] hover:bg-[#414559]/50 text-xs ml-2">
-              <Award size={14} className="mr-1 text-[#e5c890]" />
-              Badges ({globalChar.unlockedBadges.length})
-            </Button>
           </div>
         </header>
 
@@ -471,132 +487,133 @@ export const GamificationCampaignView: React.FC = () => {
   return (
     <div className="min-h-screen bg-[#1e1e2e] text-[#c6d0f5] p-6 flex flex-col gap-6 font-sans">
       {/* ─── Top Global Character Profile Header ─── */}
-      <header className="bg-[#303446]/80 backdrop-blur-xl border border-[#414559] rounded-2xl p-5 shadow-xl flex flex-wrap items-center justify-between gap-4">
+      <header className="bg-[#303446]/80 backdrop-blur-xl border border-[#414559] rounded-2xl p-4 sm:p-5 shadow-xl flex flex-col md:flex-row items-stretch md:items-center justify-between gap-4">
         {/* Character Title & Level */}
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-3 sm:gap-4">
           <Button
             variant="ghost"
             onClick={handleReturnToLobby}
-            className="border border-[#414559] hover:bg-[#414559]/50 text-xs px-3 py-2 flex items-center gap-1.5"
+            className="border border-[#414559] hover:bg-[#414559]/50 text-xs px-2.5 py-1.5 sm:px-3 sm:py-2 flex items-center gap-1.5 shrink-0"
             title="Stop campaign and return to Realm Lobby"
           >
             <ArrowLeft size={14} />
             <span>Lobby</span>
           </Button>
 
-          <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-[#8caaee] to-[#ca9ee6] flex items-center justify-center text-2xl shadow-lg border border-[#8caaee]/40">
+          <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-gradient-to-br from-[#8caaee] to-[#ca9ee6] flex items-center justify-center text-xl sm:text-2xl shadow-lg border border-[#8caaee]/40 shrink-0">
             🧙‍♂️
           </div>
-          <div>
-            <div className="flex items-center gap-2">
-              <h1 className="text-xl font-bold text-[#b5bfe2]">Architecture Champion</h1>
-              <Badge variant="secondary" className="bg-[#8caaee]/20 text-[#8caaee] border-[#8caaee]/40">
-                Level {globalChar.level}
+          <div className="min-w-0 flex-1">
+            <div className="flex items-center gap-2 flex-wrap">
+              <h1 className="text-base sm:text-xl font-bold text-[#b5bfe2] truncate">Architecture Champion</h1>
+              <Badge variant="secondary" className="bg-[#8caaee]/20 text-[#8caaee] border-[#8caaee]/40 text-[10px] sm:text-xs">
+                Lvl {globalChar.level}
               </Badge>
             </div>
             {/* EXP Bar */}
-            <div className="w-48 bg-[#232634] h-2.5 rounded-full overflow-hidden mt-2 border border-[#414559]">
+            <div className="w-full max-w-[180px] sm:w-48 bg-[#232634] h-2 rounded-full overflow-hidden mt-1.5 sm:mt-2 border border-[#414559]">
               <div
                 className="bg-gradient-to-r from-[#8caaee] to-[#a6d189] h-full transition-all duration-500"
                 style={{ width: `${(globalChar.exp / globalChar.nextLevelExp) * 100}%` }}
               />
             </div>
-            <span className="text-xs text-[#a5adce] mt-1 block">
+            <span className="text-[10px] sm:text-xs text-[#a5adce] mt-0.5 sm:mt-1 block font-mono">
               {globalChar.exp} / {globalChar.nextLevelExp} EXP
             </span>
           </div>
         </div>
 
-        {/* Global Character Stats & Allocation */}
-        <div className="flex items-center gap-6 bg-[#232634] px-5 py-3 rounded-xl border border-[#414559]">
-          <div className="flex items-center gap-2">
-            <span className="text-lg">🛡️</span>
+        {/* Global Character Stats & Allocation (Responsive Grid on Mobile) */}
+        <div className="flex items-center justify-between md:justify-start gap-3 sm:gap-6 bg-[#232634] px-3 sm:px-5 py-2.5 sm:py-3 rounded-xl border border-[#414559]">
+          <div className="flex items-center gap-1.5 sm:gap-2">
+            <span className="text-base sm:text-lg">🛡️</span>
             <div>
-              <span className="text-xs text-[#a5adce] block">Armor</span>
-              <span className="text-sm font-bold text-[#e5c890]">{globalChar.attributes.armor}%</span>
+              <span className="text-[10px] sm:text-xs text-[#a5adce] block">Armor</span>
+              <span className="text-xs sm:text-sm font-bold text-[#e5c890]">{globalChar.attributes.armor}%</span>
             </div>
             {globalChar.unallocatedPoints > 0 && (
-              <Button size="sm" variant="ghost" className="h-6 w-6 p-0 text-[#a6d189]" onClick={() => handleAllocateStat('armor')}>
+              <Button size="sm" variant="ghost" className="h-5 w-5 sm:h-6 sm:w-6 p-0 text-[#a6d189]" onClick={() => handleAllocateStat('armor')}>
                 +
               </Button>
             )}
           </div>
 
-          <div className="w-px h-8 bg-[#414559]" />
+          <div className="w-px h-6 sm:h-8 bg-[#414559]" />
 
-          <div className="flex items-center gap-2">
-            <span className="text-lg">⚡</span>
+          <div className="flex items-center gap-1.5 sm:gap-2">
+            <span className="text-base sm:text-lg">⚡</span>
             <div>
-              <span className="text-xs text-[#a5adce] block">Evasion</span>
-              <span className="text-sm font-bold text-[#8caaee]">{globalChar.attributes.evasion}%</span>
+              <span className="text-[10px] sm:text-xs text-[#a5adce] block">Evasion</span>
+              <span className="text-xs sm:text-sm font-bold text-[#8caaee]">{globalChar.attributes.evasion}%</span>
             </div>
             {globalChar.unallocatedPoints > 0 && (
-              <Button size="sm" variant="ghost" className="h-6 w-6 p-0 text-[#a6d189]" onClick={() => handleAllocateStat('evasion')}>
+              <Button size="sm" variant="ghost" className="h-5 w-5 sm:h-6 sm:w-6 p-0 text-[#a6d189]" onClick={() => handleAllocateStat('evasion')}>
                 +
               </Button>
             )}
           </div>
 
-          <div className="w-px h-8 bg-[#414559]" />
+          <div className="w-px h-6 sm:h-8 bg-[#414559]" />
 
-          <div className="flex items-center gap-2">
-            <span className="text-lg">💡</span>
+          <div className="flex items-center gap-1.5 sm:gap-2">
+            <span className="text-base sm:text-lg">💡</span>
             <div>
-              <span className="text-xs text-[#a5adce] block">Intelligence</span>
-              <span className="text-sm font-bold text-[#ca9ee6]">{globalChar.attributes.intelligence}%</span>
+              <span className="text-[10px] sm:text-xs text-[#a5adce] block">Intel</span>
+              <span className="text-xs sm:text-sm font-bold text-[#ca9ee6]">{globalChar.attributes.intelligence}%</span>
             </div>
             {globalChar.unallocatedPoints > 0 && (
-              <Button size="sm" variant="ghost" className="h-6 w-6 p-0 text-[#a6d189]" onClick={() => handleAllocateStat('intelligence')}>
+              <Button size="sm" variant="ghost" className="h-5 w-5 sm:h-6 sm:w-6 p-0 text-[#a6d189]" onClick={() => handleAllocateStat('intelligence')}>
                 +
               </Button>
             )}
           </div>
 
           {globalChar.unallocatedPoints > 0 && (
-            <Badge variant="success" className="animate-pulse ml-2">
-              {globalChar.unallocatedPoints} Stat Pts!
+            <Badge variant="success" className="animate-pulse text-[10px] ml-1">
+              {globalChar.unallocatedPoints} Pts!
             </Badge>
           )}
         </div>
 
         {/* Action Buttons */}
-        <div className="flex items-center gap-3">
+        <div className="flex items-center justify-end gap-2 sm:gap-3">
           {combatLog.length > 0 && (
-            <span className="text-xs font-mono text-[#ca9ee6] hidden md:inline truncate max-w-xs">
+            <span className="text-xs font-mono text-[#ca9ee6] hidden lg:inline truncate max-w-xs">
               {combatLog[0]}
             </span>
           )}
-          <Button variant="ghost" onClick={() => portResetCampaign()} className="border border-[#e78284]/40 hover:bg-[#e78284]/20 text-[#e78284] text-xs">
-            <RotateCcw size={14} className="mr-1" />
-            Reset Campaign
+          <Button variant="ghost" onClick={() => portResetCampaign()} className="border border-[#e78284]/40 hover:bg-[#e78284]/20 text-[#e78284] text-xs px-2.5 py-1.5">
+            <RotateCcw size={13} className="mr-1" />
+            Reset
           </Button>
-          <Button variant="ghost" onClick={() => setActiveBadgesModal(true)} className="border border-[#414559] hover:bg-[#414559]/50 text-xs">
+          <Button variant="ghost" onClick={() => setActiveBadgesModal(true)} className="border border-[#414559] hover:bg-[#414559]/50 text-xs px-2.5 py-1.5">
             🏆 Badges ({globalChar.unlockedBadges.length})
           </Button>
         </div>
       </header>
 
-      {/* ─── Topic Campaign HUD Bar ─── */}
-      <div className="bg-[#292c3c] border border-[#414559] rounded-2xl p-4 flex flex-wrap items-center justify-between gap-4 shadow-md">
-        <div className="flex items-center gap-3">
-          <span className="text-2xl">🗺️</span>
-          <div>
-            <h2 className="text-sm font-bold text-[#b5bfe2]">{campaign.topicTitle}</h2>
-            <span className="text-xs text-[#a5adce]">Topic Campaign Active</span>
+      {/* ─── Topic Campaign HUD Bar (Responsive layout) ─── */}
+      <div className="bg-[#292c3c] border border-[#414559] rounded-2xl p-3.5 sm:p-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 shadow-md">
+        {/* Campaign Title */}
+        <div className="flex items-center gap-3 col-span-1 sm:col-span-2 lg:col-span-1">
+          <span className="text-xl sm:text-2xl">🗺️</span>
+          <div className="min-w-0">
+            <h2 className="text-xs sm:text-sm font-bold text-[#b5bfe2] truncate">{campaign.topicTitle}</h2>
+            <span className="text-[10px] sm:text-xs text-[#a5adce]">Topic Campaign Active</span>
           </div>
         </div>
 
         {/* Character HP Gauge */}
-        <div className="flex items-center gap-3 min-w-[200px]">
-          <span className="text-lg">❤️</span>
-          <div className="flex-1">
-            <div className="flex justify-between text-xs mb-1 font-semibold">
+        <div className="flex items-center gap-2.5 bg-[#1e1e2e]/60 p-2 sm:p-2.5 rounded-xl border border-[#414559]/40">
+          <span className="text-base sm:text-lg">❤️</span>
+          <div className="flex-1 min-w-0">
+            <div className="flex justify-between text-[11px] sm:text-xs mb-1 font-semibold">
               <span>HP</span>
               <span className={campaign.characterHp < 30 ? 'text-[#e78284]' : 'text-[#a6d189]'}>
                 {campaign.characterHp} / {campaign.maxCharacterHp}
               </span>
             </div>
-            <div className="w-full bg-[#1e1e2e] h-3 rounded-full overflow-hidden border border-[#414559]">
+            <div className="w-full bg-[#1e1e2e] h-2 sm:h-2.5 rounded-full overflow-hidden border border-[#414559]">
               <div
                 className={`h-full transition-all duration-300 ${
                   campaign.characterHp < 30 ? 'bg-[#e78284]' : 'bg-gradient-to-r from-[#a6d189] to-[#8caaee]'
@@ -608,16 +625,16 @@ export const GamificationCampaignView: React.FC = () => {
         </div>
 
         {/* System Chaos / Monster Enrage Gauge */}
-        <div className="flex items-center gap-3 min-w-[240px]">
-          <span className="text-lg">🌀</span>
-          <div className="flex-1">
-            <div className="flex justify-between text-xs mb-1 font-semibold">
-              <span>System Chaos</span>
+        <div className="flex items-center gap-2.5 bg-[#1e1e2e]/60 p-2 sm:p-2.5 rounded-xl border border-[#414559]/40">
+          <span className="text-base sm:text-lg">🌀</span>
+          <div className="flex-1 min-w-0">
+            <div className="flex justify-between text-[11px] sm:text-xs mb-1 font-semibold">
+              <span>Chaos</span>
               <span className={campaign.chaosLevel > 60 ? 'text-[#e78284]' : 'text-[#ca9ee6]'}>
-                {campaign.chaosLevel}% (+{Math.round((campaign.chaosLevel / 200) * 100)}% Monster Dmg)
+                {campaign.chaosLevel}% (+{Math.round((campaign.chaosLevel / 200) * 100)}% Dmg)
               </span>
             </div>
-            <div className="w-full bg-[#1e1e2e] h-3 rounded-full overflow-hidden border border-[#414559]">
+            <div className="w-full bg-[#1e1e2e] h-2 sm:h-2.5 rounded-full overflow-hidden border border-[#414559]">
               <div
                 className={`h-full transition-all duration-300 ${
                   campaign.chaosLevel > 70
@@ -632,66 +649,49 @@ export const GamificationCampaignView: React.FC = () => {
           </div>
         </div>
 
-        {/* Topic-Scoped Forged Gear Tray */}
-        <div className="flex items-center gap-2 bg-[#1e1e2e] px-4 py-2 rounded-xl border border-[#e5c890]/30 min-w-[200px]">
-          <span className="text-base">⚒️</span>
-          <div>
-            <span className="text-[10px] text-[#a5adce] uppercase font-bold tracking-wider block">
-              Topic Forged Gear:
+        {/* Inventory & Forged Gear Tray */}
+        <div className="flex flex-col justify-center gap-1.5 bg-[#1e1e2e]/60 p-2 sm:p-2.5 rounded-xl border border-[#414559]/40 col-span-1 sm:col-span-2 lg:col-span-1">
+          <div className="flex items-center justify-between gap-1">
+            <span className="text-[10px] text-[#a5adce] font-semibold flex items-center gap-1">
+              <span>🗝️ Keys:</span>
+              <span className={hasBossItems ? 'text-[#a6d189]' : 'text-[#e5c890]'}>
+                {campaign.inventory.length}/{bossNode?.requiredItems?.length || 2}
+              </span>
             </span>
-            <div className="flex items-center gap-1.5 flex-wrap mt-0.5">
-              {campaign.activeBuffs.length === 0 ? (
-                <span className="text-xs text-[#737994] italic">(None Crafted)</span>
-              ) : (
-                campaign.activeBuffs.map((buff, idx) => (
-                  <Badge
-                    key={`${buff.source}-${idx}`}
-                    variant="secondary"
-                    className={`text-[10px] flex items-center gap-1 border ${
-                      buff.isPenalty || buff.stat === 'extra_damage'
-                        ? 'bg-[#e78284]/20 text-[#e78284] border-[#e78284]/40'
-                        : 'bg-[#a6d189]/20 text-[#a6d189] border-[#a6d189]/40'
-                    }`}
-                  >
-                    <span>{buff.stat === 'armor' ? '🛡️' : buff.stat === 'evasion' ? '⚡' : buff.stat === 'intelligence' ? '💡' : '⚠️'}</span>
-                    <span>
-                      {buff.source}: {buff.value > 0 ? `+${buff.value}%` : `${buff.value}%`} {buff.stat.toUpperCase()}
-                    </span>
-                  </Badge>
-                ))
-              )}
-            </div>
-          </div>
-        </div>
-
-        {/* Key Items & Boss Unlock Inventory Tray */}
-        <div className="flex items-center gap-3 bg-[#1e1e2e] px-4 py-2 rounded-xl border border-[#414559]">
-          <div className="flex items-center gap-2">
-            <span className="text-xs font-semibold text-[#a5adce]">Key Items:</span>
             <Badge
               variant={hasBossItems ? 'success' : 'warning'}
-              className="text-[10px] uppercase font-mono px-2 py-0.5"
+              className="text-[9px] uppercase font-mono px-1.5 py-0"
             >
-              {hasBossItems
-                ? '🔓 Boss Unlocked'
-                : `🔒 ${campaign.inventory.length}/${bossNode?.requiredItems?.length || 2} Items`}
+              {hasBossItems ? 'Boss Ready' : 'Need Keys'}
             </Badge>
           </div>
 
-          <div className="flex items-center gap-1.5 flex-wrap">
-            {campaign.inventory.length === 0 ? (
-              <span className="text-xs text-[#737994] italic">(None Collected)</span>
+          <div className="flex items-center gap-1 flex-wrap">
+            {campaign.inventory.length === 0 && campaign.activeBuffs.length === 0 ? (
+              <span className="text-[10px] text-[#737994] italic">(No gear collected)</span>
             ) : (
-              campaign.inventory.map((item) => (
-                <Badge
-                  key={item.id}
-                  variant="secondary"
-                  className="bg-[#8caaee]/20 text-[#8caaee] border-[#8caaee]/40 flex items-center gap-1 text-xs"
-                >
-                  <span>{item.icon}</span>
-                  <span>{item.name}</span>
-                </Badge>
-              ))
+              <>
+                {campaign.inventory.map((item) => (
+                  <Badge
+                    key={item.id}
+                    variant="secondary"
+                    className="bg-[#8caaee]/20 text-[#8caaee] border-[#8caaee]/40 text-[10px] px-1.5 py-0 flex items-center gap-0.5"
+                  >
+                    <span>{item.icon}</span>
+                    <span className="truncate max-w-[80px]">{item.name}</span>
+                  </Badge>
+                ))}
+                {campaign.activeBuffs.map((buff, idx) => (
+                  <Badge
+                    key={`${buff.source}-${idx}`}
+                    variant="secondary"
+                    className="bg-[#a6d189]/20 text-[#a6d189] border-[#a6d189]/40 text-[10px] px-1.5 py-0 flex items-center gap-0.5"
+                  >
+                    <span>⚒️</span>
+                    <span className="truncate max-w-[80px]">+{buff.value}% {buff.stat}</span>
+                  </Badge>
+                ))}
+              </>
             )}
           </div>
         </div>
