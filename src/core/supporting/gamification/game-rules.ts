@@ -198,22 +198,25 @@ export function synthesizeTradeoffArtifact(
 /**
  * Resolves timed reflection decryption outcome.
  * System Chaos amplifies magical backlash if decryption fails or times out.
+ * Difficulty multiplier scales the damage penalty and time bonus.
  */
 export function resolveTimedReflectionDecryption(
   completed: boolean,
   timeRemainingSec: number,
   totalTimeSec: number = 60,
-  chaosLevel: number = 0
+  chaosLevel: number = 0,
+  damageMultiplier: number = 1.0,
+  expMultiplier: number = 1.0
 ): { success: boolean; timeBonusExp: number; damagePenalty: number } {
   if (completed && timeRemainingSec > 0) {
     const timeRatio = timeRemainingSec / totalTimeSec
-    const timeBonusExp = Math.round(20 * timeRatio)
+    const timeBonusExp = Math.round(20 * timeRatio * expMultiplier)
     return { success: true, timeBonusExp, damagePenalty: 0 }
   }
 
   // System Chaos amplifies magical backlash: base 15 + up to +25 additional damage at 100 Chaos
   const chaosDamageMultiplier = 1 + (chaosLevel / 100)
-  const damagePenalty = Math.round(15 * chaosDamageMultiplier)
+  const damagePenalty = Math.round(15 * chaosDamageMultiplier * damageMultiplier)
   return { success: false, timeBonusExp: 0, damagePenalty }
 }
 
@@ -229,13 +232,15 @@ export interface CombatTurnResult {
  * Resolves a quiz battle combat turn against a monster.
  * When System Chaos increases (from repeated sanctuary/citadel visits), monsters grow enraged:
  * Base monster damage is boosted by +1% per 2 Chaos Levels (+50% monster damage at 100 Chaos).
+ * Scaled by topic difficulty multiplier.
  */
 export function resolveCombatTurn(
   monster: MonsterData,
   attributes: CharacterAttributes,
   isCorrect: boolean,
   activeBuffs: ActiveBuff[] = [],
-  chaosLevel: number = 0
+  chaosLevel: number = 0,
+  damageMultiplier: number = 1.0
 ): CombatTurnResult {
   // Aggregate buffs
   const totalArmor = attributes.armor + activeBuffs
@@ -266,10 +271,10 @@ export function resolveCombatTurn(
     }
   }
 
-  // Wrong answer -> Monster attacks (Chaos enrages monster damage)
+  // Wrong answer -> Monster attacks (Chaos & Difficulty enrage monster damage)
   const isDodged = Math.random() * 100 < totalEvasion
   const chaosMultiplier = 1 + (chaosLevel / 200) // Up to +50% extra monster damage at 100 Chaos
-  const scaledMonsterDamage = Math.round(monster.damage * chaosMultiplier)
+  const scaledMonsterDamage = Math.round(monster.damage * chaosMultiplier * damageMultiplier)
   const rawDamage = Math.max(5, scaledMonsterDamage - totalArmor + extraDamageVuln)
   const playerDamageTaken = isDodged ? 0 : rawDamage
 

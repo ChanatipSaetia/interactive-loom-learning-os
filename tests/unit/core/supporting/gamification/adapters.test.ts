@@ -31,6 +31,7 @@ describe('Gamification LocalStorageCharacterAdapter', () => {
     const topicState: TopicCampaignState = {
       topicId: 'demo',
       topicTitle: 'Demo Realm',
+      difficulty: 'normal',
       characterHp: 85,
       maxCharacterHp: 100,
       turnCount: 4,

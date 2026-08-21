@@ -13,6 +13,7 @@ import {
   evaluateNodeUnlocks,
   resolveTimedReflectionDecryption,
 } from '../game-rules'
+import { DIFFICULTY_CONFIGS, type DifficultyLevel } from '../types'
 import { useGamification } from '../useGamification'
 import { Button, Badge, Modal } from '../../../ui-system'
 import { useOKFBundled, bundleToSections } from '../../../learning-engine/composition/okf/sections'
@@ -69,6 +70,7 @@ export const GamificationCampaignView: React.FC = () => {
     isLoading,
     error,
     selectNode: portSelectNode,
+    setDifficulty: portSetDifficulty,
     resolveQuizAnswer: portResolveQuizAnswer,
     completeNode: portCompleteNode,
     takeDamage: portTakeDamage,
@@ -122,12 +124,31 @@ export const GamificationCampaignView: React.FC = () => {
   // Active Section Modal & Instance Key for Retry / Re-encounter
   const [activeSectionModal, setActiveSectionModal] = useState<HexNodeData | null>(null)
   const [activeBadgesModal, setActiveBadgesModal] = useState<boolean>(false)
+  const [gameOverModalOpen, setGameOverModalOpen] = useState<boolean>(false)
   const [combatLog, setCombatLog] = useState<string[]>([])
   const [quizAttemptKey, setQuizAttemptKey] = useState<number>(0)
   const [quizFailed, setQuizFailed] = useState<boolean>(false)
   const [activeTradeoffMetrics, setActiveTradeoffMetrics] = useState<Array<{ id: string; label: string; value: number }>>([])
 
-  // Launch Section Handler (Increases System Chaos by +15 on section entry)
+  // Check for Zero HP Defeat condition
+  useEffect(() => {
+    if (campaign && campaign.characterHp <= 0 && !gameOverModalOpen) {
+      setActiveSectionModal(null)
+      setGameOverModalOpen(true)
+    }
+  }, [campaign?.characterHp, gameOverModalOpen])
+
+  // Restart campaign on Zero HP defeat
+  const handleDefeatRestart = async () => {
+    await portResetCampaign(currentTopicId)
+    setGameOverModalOpen(false)
+    setCombatLog((prev) => [
+      `☠️ CAMPAIGN DEFEAT: Health dropped to 0! Campaign reset to Capital for a fresh attempt.`,
+      ...prev,
+    ])
+  }
+
+  // Launch Section Handler (Increases System Chaos on section entry)
   const handleLaunchSection = (node: HexNodeData) => {
     portSelectNode(node.id)
     setQuizFailed(false)
@@ -176,7 +197,7 @@ export const GamificationCampaignView: React.FC = () => {
     handlePassSection(selectedNode)
   }
 
-  // Simulate Section Pass / Complete
+  // Simulate Section Pass / Complete (Scaled with Difficulty EXP multiplier)
   const handlePassSection = (targetNode: HexNodeData) => {
     setNodes((prevNodes) => {
       const withCleared = prevNodes.map((n) =>
@@ -196,41 +217,47 @@ export const GamificationCampaignView: React.FC = () => {
     }
 
     // EXP rewards: 5 for reading & capital, 20 for quiz & decrypt & tradeoff, 50 for boss
-    let expToAward = 10
+    let baseExp = 10
     if (targetNode.type === 'reading_sanctuary' || targetNode.type === 'capital') {
-      expToAward = 5
+      baseExp = 5
     } else if (targetNode.type === 'quiz_encounter' || targetNode.type === 'reflection_decryption' || targetNode.type === 'tradeoff_workshop') {
-      expToAward = 20
+      baseExp = 20
     } else if (targetNode.type === 'boss_lair') {
-      expToAward = 50
+      baseExp = 50
     }
+
+    const currentDiff = campaign?.difficulty || 'normal'
+    const expMultiplier = DIFFICULTY_CONFIGS[currentDiff]?.expBonusMultiplier ?? 1.0
+    const expToAward = Math.round(baseExp * expMultiplier)
 
     portCompleteNode(targetNode.id)
     portAwardExp(expToAward)
     setCombatLog((prev) => [
-      `🎉 ENCOUNTER CLEARED: "${targetNode.title}" Completed! +${expToAward} EXP Gained!`,
+      `🎉 ENCOUNTER CLEARED: "${targetNode.title}" Completed! +${expToAward} EXP Gained (${DIFFICULTY_CONFIGS[currentDiff]?.label})!`,
       ...prev,
     ])
     setActiveSectionModal(null)
   }
 
-  // Section Fail / Defeat / Timeout (System Chaos scales damage)
+  // Section Fail / Defeat / Timeout (System Chaos and Difficulty scale damage)
   const handleFailSection = (targetNode: HexNodeData) => {
     const currentChaos = campaign?.chaosLevel ?? 0
+    const currentDiff = campaign?.difficulty || 'normal'
+    const diffDamageMultiplier = DIFFICULTY_CONFIGS[currentDiff]?.damageMultiplier ?? 1.0
     let damage = 25
 
     if (targetNode.type === 'reflection_decryption') {
-      const outcome = resolveTimedReflectionDecryption(false, 0, 60, currentChaos)
+      const outcome = resolveTimedReflectionDecryption(false, 0, 60, currentChaos, diffDamageMultiplier)
       damage = outcome.damagePenalty
     } else {
       const chaosMultiplier = 1 + (currentChaos / 200)
-      damage = Math.round(25 * chaosMultiplier)
+      damage = Math.round(25 * chaosMultiplier * diffDamageMultiplier)
     }
 
     portTakeDamage(damage)
     const chaosNote = currentChaos > 0 ? ` (amplified by ${currentChaos}% System Chaos)` : ''
     setCombatLog((prev) => [
-      `❌ SECTION FAILED: "${targetNode.title}"! Character suffered ${damage} damage${chaosNote}!`,
+      `❌ SECTION FAILED: "${targetNode.title}"! Character suffered ${damage} damage${chaosNote} [${DIFFICULTY_CONFIGS[currentDiff]?.label}]!`,
       ...prev,
     ])
   }
@@ -411,12 +438,61 @@ export const GamificationCampaignView: React.FC = () => {
                       {topic.description}
                     </p>
 
-                    {/* Progress Info */}
-                    <div className="pt-2 border-t border-[#414559]/50 flex items-center justify-between text-xs text-[#a5adce]">
-                      <span>Campaign Progress:</span>
-                      <span className="font-mono font-bold text-[#a6d189]">
-                        {clearedCount > 0 ? `${clearedCount} Nodes Cleared` : 'Ready to Start'}
-                      </span>
+                    {/* Progress & Difficulty Selector */}
+                    <div className="pt-3 border-t border-[#414559]/50 space-y-2.5">
+                      <div className="flex items-center justify-between text-xs text-[#a5adce]">
+                        <span>Campaign Progress:</span>
+                        <span className="font-mono font-bold text-[#a6d189]">
+                          {clearedCount > 0 ? `${clearedCount} Nodes Cleared` : 'Ready to Start'}
+                        </span>
+                      </div>
+
+                      {/* Difficulty Selector Chips */}
+                      <div className="flex items-center justify-between gap-1.5 bg-[#1e1e2e]/70 p-1.5 rounded-xl border border-[#414559]/40">
+                        <span className="text-[10px] text-[#a5adce] font-semibold pl-1">Tier:</span>
+                        <div className="flex items-center gap-1">
+                          {(['easy', 'normal', 'hard', 'nightmare'] as DifficultyLevel[]).map((diff) => {
+                            const conf = DIFFICULTY_CONFIGS[diff]
+                            const isActive = (isCurrent ? campaign.difficulty : 'normal') === diff
+                            return (
+                              <button
+                                key={diff}
+                                type="button"
+                                onClick={(e) => {
+                                  e.stopPropagation()
+                                  if (isCurrent) {
+                                    portSetDifficulty(diff)
+                                  } else {
+                                    try {
+                                      const key = `loom_gamification_campaign_${topic.id}`
+                                      const raw = localStorage.getItem(key)
+                                      const data = raw ? JSON.parse(raw) : {}
+                                      localStorage.setItem(key, JSON.stringify({ ...data, difficulty: diff }))
+                                    } catch {
+                                      // ignore
+                                    }
+                                  }
+                                }}
+                                title={`${conf.label}: ${conf.description}`}
+                                className={`text-[10px] font-bold px-2 py-1 rounded-lg transition-all flex items-center gap-1 ${
+                                  isActive
+                                    ? diff === 'nightmare'
+                                      ? 'bg-[#ea999c] text-[#232634] shadow-md scale-105'
+                                      : diff === 'hard'
+                                      ? 'bg-[#ef9f76] text-[#232634] shadow-md scale-105'
+                                      : diff === 'normal'
+                                      ? 'bg-[#8caaee] text-[#232634] shadow-md scale-105'
+                                      : 'bg-[#a6d189] text-[#232634] shadow-md scale-105'
+                                    : 'bg-[#303446] hover:bg-[#414559] text-[#a5adce]'
+                                }`}
+                              >
+                                <span>{conf.icon}</span>
+                                <span className="capitalize">{diff}</span>
+                              </button>
+                            )
+                          })}
+                        </div>
+                      </div>
                     </div>
                   </div>
 
@@ -594,12 +670,28 @@ export const GamificationCampaignView: React.FC = () => {
 
       {/* ─── Topic Campaign HUD Bar (Responsive layout) ─── */}
       <div className="bg-[#292c3c] border border-[#414559] rounded-2xl p-3.5 sm:p-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 shadow-md">
-        {/* Campaign Title */}
+        {/* Campaign Title & Difficulty Badge */}
         <div className="flex items-center gap-3 col-span-1 sm:col-span-2 lg:col-span-1">
           <span className="text-xl sm:text-2xl">🗺️</span>
           <div className="min-w-0">
-            <h2 className="text-xs sm:text-sm font-bold text-[#b5bfe2] truncate">{campaign.topicTitle}</h2>
-            <span className="text-[10px] sm:text-xs text-[#a5adce]">Topic Campaign Active</span>
+            <div className="flex items-center gap-1.5 flex-wrap">
+              <h2 className="text-xs sm:text-sm font-bold text-[#b5bfe2] truncate">{campaign.topicTitle}</h2>
+              <Badge
+                variant="secondary"
+                className={`text-[9px] font-bold uppercase px-1.5 py-0 border ${
+                  campaign.difficulty === 'nightmare'
+                    ? 'bg-[#ea999c]/20 text-[#ea999c] border-[#ea999c]/40'
+                    : campaign.difficulty === 'hard'
+                    ? 'bg-[#ef9f76]/20 text-[#ef9f76] border-[#ef9f76]/40'
+                    : campaign.difficulty === 'normal'
+                    ? 'bg-[#8caaee]/20 text-[#8caaee] border-[#8caaee]/40'
+                    : 'bg-[#a6d189]/20 text-[#a6d189] border-[#a6d189]/40'
+                }`}
+              >
+                {DIFFICULTY_CONFIGS[campaign.difficulty || 'normal']?.icon} {campaign.difficulty || 'normal'}
+              </Badge>
+            </div>
+            <span className="text-[10px] sm:text-xs text-[#a5adce] block">Topic Campaign Active</span>
           </div>
         </div>
 
@@ -923,6 +1015,46 @@ export const GamificationCampaignView: React.FC = () => {
           <div className="flex justify-end">
             <Button variant="ghost" onClick={() => setActiveBadgesModal(false)}>
               Close
+            </Button>
+          </div>
+        </div>
+      </Modal>
+
+      {/* ─── Zero HP Campaign Defeat Modal ─── */}
+      <Modal open={gameOverModalOpen} onClose={() => {}} maxWidth="sm" title="Campaign Defeat">
+        <div className="p-4 text-center text-[#c6d0f5] space-y-4">
+          <div className="w-16 h-16 rounded-3xl bg-[#e78284]/20 border border-[#e78284]/50 flex items-center justify-center text-4xl mx-auto shadow-xl">
+            ☠️
+          </div>
+          <div className="space-y-1.5">
+            <h3 className="text-xl font-extrabold text-[#e78284]">Campaign Fallen!</h3>
+            <p className="text-xs text-[#a5adce] leading-relaxed">
+              Your character HP reached 0. The monsters have overrun your expedition. Your campaign has retreated to the Realm Capital.
+            </p>
+          </div>
+
+          <div className="bg-[#232634] p-3 rounded-xl border border-[#414559] text-xs text-[#a5adce] space-y-1">
+            <div className="flex justify-between">
+              <span>Topic Realm:</span>
+              <span className="font-bold text-[#b5bfe2]">{campaign.topicTitle}</span>
+            </div>
+            <div className="flex justify-between">
+              <span>Difficulty Setting:</span>
+              <span className="font-bold text-[#ef9f76]">{DIFFICULTY_CONFIGS[campaign.difficulty || 'normal']?.label}</span>
+            </div>
+            <div className="flex justify-between">
+              <span>Global Champion Level:</span>
+              <span className="font-bold text-[#8caaee]">Level {globalChar.level} (Preserved)</span>
+            </div>
+          </div>
+
+          <div className="pt-2">
+            <Button
+              className="w-full bg-gradient-to-r from-[#e78284] to-[#ef9f76] hover:opacity-90 text-[#232634] font-bold text-sm py-2.5 shadow-xl flex items-center justify-center gap-2"
+              onClick={handleDefeatRestart}
+            >
+              <RotateCcw size={16} />
+              <span>Restart Topic Campaign</span>
             </Button>
           </div>
         </div>

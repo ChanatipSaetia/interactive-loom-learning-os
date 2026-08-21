@@ -48,12 +48,18 @@ export function useGamification(
         setCampaign(loadedCampaign)
 
         if (savedTopicState) {
-          setTopicState(savedTopicState)
+          // Ensure difficulty is set on older saved states
+          const normalized = {
+            ...savedTopicState,
+            difficulty: savedTopicState.difficulty || 'normal',
+          }
+          setTopicState(normalized)
         } else {
           // Initialize fresh campaign state
           const initialTopicState: TopicCampaignState = {
             topicId,
             topicTitle: loadedCampaign.topicTitle,
+            difficulty: 'normal',
             characterHp: 100,
             maxCharacterHp: 100,
             turnCount: 0,
@@ -83,6 +89,16 @@ export function useGamification(
     }
   }, [topicId, campaignAdapter, characterAdapter])
 
+  // Change topic campaign difficulty
+  const setDifficulty = useCallback((difficulty: import('./types').DifficultyLevel) => {
+    setTopicState((prev) => {
+      if (!prev) return null
+      const next = { ...prev, difficulty }
+      characterAdapter.saveTopicCampaign(topicId, next)
+      return next
+    })
+  }, [characterAdapter, topicId])
+
   // Select node action — Repeat visits to safe havens (sanctuary or capital) generate System Chaos (+15 per repeat visit)
   const selectNode = useCallback((nodeId: string) => {
     if (!campaign) return
@@ -94,8 +110,9 @@ export function useGamification(
       const currentVisits = prev.readingVisitCounts?.[nodeId] ?? 0
       const nextVisits = currentVisits + 1
 
-      // First time visit generates 0 Chaos. Repeat visits add +15 Chaos (enrages monsters across the realm).
-      const chaosIncrement = (isSafeHaven && currentVisits >= 1) ? 15 : 0
+      // First time visit generates 0 Chaos. Repeat visits add +15 Chaos scaled by difficulty
+      const diffMultiplier = prev.difficulty === 'easy' ? 0.5 : prev.difficulty === 'hard' ? 1.5 : prev.difficulty === 'nightmare' ? 2.0 : 1.0
+      const chaosIncrement = (isSafeHaven && currentVisits >= 1) ? Math.round(15 * diffMultiplier) : 0
       const nextChaos = Math.min(prev.maxChaosLevel, prev.chaosLevel + chaosIncrement)
 
       const next = {
@@ -128,12 +145,15 @@ export function useGamification(
       icon: '👾',
     }
 
+    const diffMultiplier = topicState.difficulty === 'easy' ? 0.7 : topicState.difficulty === 'hard' ? 1.5 : topicState.difficulty === 'nightmare' ? 2.0 : 1.0
+
     const combatResult = resolveCombatTurn(
       monster,
       globalProfile.attributes,
       isCorrect,
       topicState.activeBuffs,
-      topicState.chaosLevel
+      topicState.chaosLevel,
+      diffMultiplier
     )
 
     setTopicState((prev) => {
@@ -294,6 +314,7 @@ export function useGamification(
       const freshTopicState: TopicCampaignState = {
         topicId,
         topicTitle: campaign.topicTitle,
+        difficulty: topicState?.difficulty || 'normal',
         characterHp: 100,
         maxCharacterHp: 100,
         turnCount: 0,
@@ -308,7 +329,7 @@ export function useGamification(
       setTopicState(freshTopicState)
       await characterAdapter.saveTopicCampaign(topicId, freshTopicState)
     }
-  }, [characterAdapter, topicId, campaign])
+  }, [characterAdapter, topicId, campaign, topicState?.difficulty])
 
   return {
     campaign,
@@ -317,6 +338,7 @@ export function useGamification(
     isLoading,
     error,
     selectNode,
+    setDifficulty,
     resolveQuizAnswer,
     completeNode,
     takeDamage,
