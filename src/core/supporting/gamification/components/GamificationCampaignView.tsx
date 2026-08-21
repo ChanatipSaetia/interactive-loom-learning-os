@@ -419,15 +419,25 @@ export const GamificationCampaignView: React.FC = () => {
               </div>
             </div>
 
-            <div className="flex items-center justify-between sm:justify-start gap-2 pt-2 sm:pt-0 border-t border-[#414559]/50 sm:border-0">
+            <div className="flex flex-row items-center justify-between sm:justify-end gap-2 pt-2.5 sm:pt-0 border-t border-[#414559]/50 sm:border-0 w-full sm:w-auto">
               {globalChar.unallocatedPoints > 0 && (
-                <Badge variant="success" className="animate-pulse px-2.5 py-1 text-[11px] sm:text-xs">
-                  {globalChar.unallocatedPoints} Stat Pts!
+                <Badge
+                  variant="success"
+                  className="animate-pulse px-2.5 py-1.5 text-[11px] sm:text-xs font-bold whitespace-nowrap shrink-0 flex items-center gap-1 shadow-sm"
+                >
+                  <span>✨</span>
+                  <span>{globalChar.unallocatedPoints} Stat Pts!</span>
                 </Badge>
               )}
 
-              <Button variant="ghost" onClick={() => setActiveBadgesModal(true)} className="border border-[#414559] hover:bg-[#414559]/50 text-xs w-full sm:w-auto py-2">
-                <Award size={14} className="mr-1.5 text-[#e5c890]" />
+              <Button
+                variant="ghost"
+                onClick={() => setActiveBadgesModal(true)}
+                className={`border border-[#414559] hover:bg-[#414559]/50 text-xs py-1.5 px-3 h-auto shrink-0 flex items-center justify-center ${
+                  globalChar.unallocatedPoints > 0 ? 'flex-1 sm:flex-initial' : 'w-full sm:w-auto'
+                }`}
+              >
+                <Award size={14} className="mr-1.5 text-[#e5c890] shrink-0" />
                 <span>Badges ({globalChar.unlockedBadges.length})</span>
               </Button>
             </div>
