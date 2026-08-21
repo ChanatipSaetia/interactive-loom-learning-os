@@ -46,7 +46,8 @@ export const RunicCountdownRing: React.FC<RunicCountdownRingProps> = ({
     stateRef.current.sequences = sequences
     stateRef.current.currentSequenceIndex = currentSequenceIndex
     stateRef.current.isSolved = isSolved
-  }, [sequences, currentSequenceIndex, isSolved])
+    stateRef.current.lastDecryptedSequence = lastDecryptedSequence
+  }, [sequences, currentSequenceIndex, isSolved, lastDecryptedSequence])
 
   // Trigger stat notification on mount
   useEffect(() => {
@@ -77,13 +78,14 @@ export const RunicCountdownRing: React.FC<RunicCountdownRingProps> = ({
         intervals.push(
           setTimeout(() => {
             stateRef.current.filledSlotStep = s
-          }, s * 340)
+          }, s * 320)
         )
       }
 
       const finishTimer = setTimeout(() => {
         stateRef.current.activeFillingSeq = null
-      }, (count + 2) * 340)
+        stateRef.current.filledSlotStep = count
+      }, (count + 2) * 320)
 
       return () => {
         intervals.forEach(clearTimeout)
@@ -186,14 +188,9 @@ export const RunicCountdownRing: React.FC<RunicCountdownRingProps> = ({
             const isCurrent = idx === curIdx && !solved
             const isAnimating = activeFillingSeq === idx
 
-            // Card Panel Background
+            // Card Panel Background (Border-free / Seamless canvas atmosphere)
             bgGfx.roundRect(cx, cy, cardWidth, cardHeight, 14)
-              .fill({ color: isCleared ? 0x232634 : isCurrent ? 0x292c3c : 0x181825, alpha: 0.95 })
-              .stroke({
-                width: isCleared ? 1.8 : isCurrent ? 1.5 : 1.0,
-                color: isCleared ? 0xa6d189 : isCurrent ? 0xca9ee6 : 0x414559,
-                alpha: isCleared ? 0.9 : isCurrent ? 0.8 : 0.4,
-              })
+              .fill({ color: isCleared ? 0x232634 : isCurrent ? 0x24273a : 0x181825, alpha: 0.6 })
 
             // ─── 1. DRAW SACRED GEOMETRY SPINNING MAGIC RING (Left side of card) ───
             const ringCenterX = cx + 42
