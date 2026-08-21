@@ -93,7 +93,7 @@ export function calculateSanctuaryTickHealing(
 
   const tickHeal = Math.max(2, Math.round(baseTick * visitMultiplier) - chaosPenalty)
   const effectiveHealing = tickHeal * tickCount
-  const nextChaosLevel = Math.max(0, chaosLevel - tickCount * 2)
+  const nextChaosLevel = chaosLevel
 
   return { effectiveHealing, nextChaosLevel }
 }
