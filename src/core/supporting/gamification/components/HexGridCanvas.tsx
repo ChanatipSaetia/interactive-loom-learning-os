@@ -1292,28 +1292,28 @@ export const HexGridCanvas = React.forwardRef<HexGridCanvasRef, HexGridCanvasPro
       if (!isLocked || isBoss) {
         const insigniaGfx = new Graphics()
         drawVectorInsignia(insigniaGfx, node.type, styleInfo.highlight || styleInfo.stroke, isDefeatedEncounter, palette)
-        insigniaGfx.position.set(0, (hasItemReward || isThreatened) ? -5 : 0)
+        insigniaGfx.position.set(0, 0)
         nodeContainer.addChild(insigniaGfx)
       }
 
-      // Item Reward Beacon Badge
-      if (capitalCleared && node.rewards && node.rewards.length > 0) {
+      // Item Reward Beacon Badge (Docked cleanly at bottom edge without shifting main icon)
+      if (capitalCleared && node.rewards && node.rewards.length > 0 && (!isLocked || isBoss)) {
         const badgeGfx = new Graphics()
         badgeGfx
-          .roundRect(-14, 12, 28, 18, 9)
+          .roundRect(-13, 20, 26, 16, 8)
           .fill({ color: palette.mantleNum, alpha: 0.95 })
           .stroke({ width: 1.5, color: palette.yellowNum })
         nodeContainer.addChild(badgeGfx)
 
         const rewardIconStyle = new TextStyle({
-          fontSize: 11,
+          fontSize: 10,
           fontFamily: 'Apple Color Emoji, Segoe UI Emoji, sans-serif',
           fontWeight: 'bold',
           fill: palette.yellowNum,
         })
         const rewardText = new Text({ text: node.rewards[0].icon || '🎁', style: rewardIconStyle })
         rewardText.anchor.set(0.5, 0.5)
-        rewardText.position.set(0, 21)
+        rewardText.position.set(0, 28)
         nodeContainer.addChild(rewardText)
       }
 
