@@ -69,7 +69,7 @@ export const RunicCountdownRing: React.FC<RunicCountdownRingProps> = ({
     }
   }, [])
 
-  // Left-to-Right cascading rune fill animation when a sequence is completed
+  // Sequential iterative rune fill animation when a sequence is completed
   useEffect(() => {
     if (lastDecryptedSequence !== undefined && lastDecryptedSequence >= 0) {
       const seq = sequences[lastDecryptedSequence]
@@ -82,13 +82,13 @@ export const RunicCountdownRing: React.FC<RunicCountdownRingProps> = ({
         intervals.push(
           setTimeout(() => {
             stateRef.current.filledSlotStep = s
-          }, s * 220)
+          }, s * 340)
         )
       }
 
       const finishTimer = setTimeout(() => {
         stateRef.current.activeFillingSeq = null
-      }, (count + 2) * 220)
+      }, (count + 2) * 340)
 
       return () => {
         intervals.forEach(clearTimeout)
@@ -268,14 +268,29 @@ export const RunicCountdownRing: React.FC<RunicCountdownRingProps> = ({
             const slotHeight = 36
             const slotY = cy + cardHeight / 2 - slotHeight / 2
 
-            // Flow energy beam connecting ring to rune line
+            // Flow energy beam connecting ring to rune line with advancing progress
+            const activeStep = isAnimating ? filledSlotStep : (isCleared ? itemCount : 0)
+            const targetX = slotsStartX + Math.max(0, activeStep - 1) * (slotWidth + slotGap) + slotWidth / 2
+
+            // Inactive base beam
             runeSlotsGfx.moveTo(ringCenterX + ringRadius, cy + cardHeight / 2)
               .lineTo(slotsStartX + (itemCount - 1) * (slotWidth + slotGap) + slotWidth / 2, cy + cardHeight / 2)
               .stroke({
                 width: 1.2,
-                color: isCleared ? 0xa6d189 : isCurrent ? 0xca9ee6 : 0x414559,
-                alpha: isCleared ? 0.4 : isCurrent ? 0.3 : 0.15,
+                color: 0x414559,
+                alpha: 0.25,
               })
+
+            // Energized active beam traversing left-to-right
+            if (activeStep > 0) {
+              runeSlotsGfx.moveTo(ringCenterX + ringRadius, cy + cardHeight / 2)
+                .lineTo(targetX, cy + cardHeight / 2)
+                .stroke({
+                  width: 2.0,
+                  color: isCleared ? 0xa6d189 : 0xe5c890,
+                  alpha: 0.85,
+                })
+            }
 
             for (let s = 0; s < itemCount; s++) {
               const sx = slotsStartX + s * (slotWidth + slotGap)
@@ -286,8 +301,15 @@ export const RunicCountdownRing: React.FC<RunicCountdownRingProps> = ({
 
               if (isSlotDecrypted) {
                 // Soft glowing aura behind decrypted rune (seamless, no border edge)
-                runeSlotsGfx.circle(runeCenterX, runeCenterY, 14)
-                  .fill({ color: 0xe5c890, alpha: isSlotJustFilled ? 0.25 : 0.08 })
+                const auraRadius = isSlotJustFilled ? 18 + Math.sin(t * 8) * 3 : 14
+                runeSlotsGfx.circle(runeCenterX, runeCenterY, auraRadius)
+                  .fill({ color: isSlotJustFilled ? 0xe5c890 : 0x8caaee, alpha: isSlotJustFilled ? 0.35 : 0.08 })
+
+                // Expanding golden shockwave ring on newly unlocked rune
+                if (isSlotJustFilled) {
+                  runeSlotsGfx.circle(runeCenterX, runeCenterY, 20)
+                    .stroke({ width: 1.5, color: 0xe5c890, alpha: 0.9 })
+                }
 
                 // Draw Sacred Rune Emblem Glyphs using vectors
                 // Center Rune Staff
@@ -328,10 +350,10 @@ export const RunicCountdownRing: React.FC<RunicCountdownRingProps> = ({
 
               // Sparkles on newly filled slot during cascade
               if (isSlotJustFilled) {
-                for (let k = 0; k < 6; k++) {
-                  const sparkAngle = t * 12 + (k * Math.PI) / 3
-                  const spX = runeCenterX + Math.cos(sparkAngle) * 16
-                  const spY = runeCenterY + Math.sin(sparkAngle) * 16
+                for (let k = 0; k < 8; k++) {
+                  const sparkAngle = t * 14 + (k * Math.PI) / 4
+                  const spX = runeCenterX + Math.cos(sparkAngle) * 18
+                  const spY = runeCenterY + Math.sin(sparkAngle) * 18
                   sparksGfx.circle(spX, spY, 2.2).fill({ color: 0xe5c890, alpha: 0.95 })
                 }
               }
