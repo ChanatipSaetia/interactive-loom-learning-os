@@ -1458,6 +1458,18 @@ export const HexGridCanvas = React.forwardRef<HexGridCanvasRef, HexGridCanvasPro
           animControllersRef.current.forEach((fn) => fn(now))
         })
 
+        // Handle container element resizing (e.g. flex layout changes, drawer opens)
+        const resizeObserver = new ResizeObserver((entries) => {
+          for (const entry of entries) {
+            const { width, height } = entry.contentRect
+            if (width > 0 && height > 0 && appRef.current) {
+              appRef.current.renderer.resize(width, height)
+              updateMapTransform()
+            }
+          }
+        })
+        resizeObserver.observe(domElement)
+
         renderPixiScene()
       } catch (err) {
         console.warn('PixiJS canvas initialization skipped or failed:', err)
