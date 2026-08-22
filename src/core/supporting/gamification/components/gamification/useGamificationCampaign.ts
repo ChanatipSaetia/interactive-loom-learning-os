@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback, useMemo } from 'react'
 import { useParams, useSearchParams } from 'react-router-dom'
-import type { HexNodeData, UnlockedBadge, DifficultyLevel, DerivedCharacterStats } from '../../types'
-import { DIFFICULTY_CONFIGS } from '../../types'
+import type { HexNodeData, UnlockedBadge, DerivedCharacterStats } from '../../types'
+import { DIFFICULTY_CONFIGS, GAME_RULES, type DifficultyLevel } from '../../game-config'
 import {
   canUnlockBoss,
   evaluateNodeUnlocks,
@@ -86,15 +86,15 @@ export function useGamificationCampaign() {
     // Only reset when starting a new campaign (no existing saved state)
     if (!hasStarted) {
       const chosenDiff = topicDifficulties[topicId] || 'normal'
-      const maxPulses = DIFFICULTY_CONFIGS[chosenDiff]?.maxSanctuaryPulses ?? 5
+      const maxPulses = DIFFICULTY_CONFIGS[chosenDiff].maxSanctuaryPulses
       localStorage.setItem(
         `loom_gamification_campaign_${topicId}`,
         JSON.stringify({
           topicId,
           difficulty: chosenDiff,
           maxSanctuaryPulses: maxPulses,
-          characterHp: 100,
-          maxCharacterHp: 100,
+          characterHp: GAME_RULES.character.initialHp,
+          maxCharacterHp: GAME_RULES.character.initialHp,
           damageTakenInCampaign: 0,
           turnCount: 0,
           chaosLevel: 0,
@@ -326,18 +326,19 @@ export function useGamificationCampaign() {
       pushActionMessage(`COLLECTED ITEM REWARD: ${reward.name}!`, 'warning', reward.icon || '🎁')
     }
 
-    // EXP rewards: 5 for reading & capital, 20 for quiz & decrypt & tradeoff, 50 for boss
-    let baseExp = 10
+    // EXP rewards by node type (scaled by difficulty EXP bonus)
+    const { default: defaultExp, reading, encounter, boss } = GAME_RULES.xp.nodeRewards
+    let baseExp: number = defaultExp
     if (targetNode.type === 'reading_sanctuary' || targetNode.type === 'capital') {
-      baseExp = 5
+      baseExp = reading
     } else if (targetNode.type === 'quiz_encounter' || targetNode.type === 'reflection_decryption' || targetNode.type === 'tradeoff_workshop') {
-      baseExp = 20
+      baseExp = encounter
     } else if (targetNode.type === 'boss_lair') {
-      baseExp = 50
+      baseExp = boss
     }
 
     const currentDiff = campaign?.difficulty || 'normal'
-    const expMultiplier = DIFFICULTY_CONFIGS[currentDiff]?.expBonusMultiplier ?? 1.0
+    const expMultiplier = DIFFICULTY_CONFIGS[currentDiff].expBonusMultiplier
     const expToAward = Math.round(baseExp * expMultiplier)
 
     portCompleteNode(targetNode.id)
@@ -368,17 +369,17 @@ export function useGamificationCampaign() {
   const handleFailSection = (targetNode: HexNodeData, customDamage?: number) => {
     const currentChaos = campaign?.chaosLevel ?? 0
     const currentDiff = campaign?.difficulty || 'normal'
-    const diffDamageMultiplier = DIFFICULTY_CONFIGS[currentDiff]?.damageMultiplier ?? 1.0
-    let damage = 25
+    const diffDamageMultiplier = DIFFICULTY_CONFIGS[currentDiff].damageMultiplier
+    let damage: number = GAME_RULES.failure.baseDamage
 
     if (typeof customDamage === 'number') {
       damage = customDamage
     } else if (targetNode.type === 'reflection_decryption') {
-      const outcome = resolveTimedReflectionDecryption(false, 0, 60, currentChaos, diffDamageMultiplier)
+      const outcome = resolveTimedReflectionDecryption(false, 0, GAME_RULES.reflection.totalTimeSec, currentChaos, diffDamageMultiplier)
       damage = outcome.damagePenalty
     } else {
-      const chaosMultiplier = 1 + (currentChaos / 200)
-      damage = Math.round(25 * chaosMultiplier * diffDamageMultiplier)
+      const chaosMultiplier = 1 + currentChaos * GAME_RULES.combat.chaosDamageScalingPerLevel
+      damage = Math.round(GAME_RULES.failure.baseDamage * chaosMultiplier * diffDamageMultiplier)
     }
 
     portTakeDamage(damage)

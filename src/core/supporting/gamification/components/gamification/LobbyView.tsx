@@ -1,6 +1,6 @@
 import React from 'react'
 import { Map as MapIcon } from 'lucide-react'
-import type { DifficultyLevel } from '../../types'
+import type { DifficultyLevel } from '../../game-config'
 import { Badge } from '../../../../ui-system'
 import { CharacterHeroBanner } from './CharacterHeroBanner'
 import { TopicCampaignCard } from './TopicCampaignCard'

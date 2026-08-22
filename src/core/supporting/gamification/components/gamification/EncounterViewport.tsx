@@ -1,5 +1,6 @@
 import React, { Suspense, useState, useEffect } from 'react'
-import { DIFFICULTY_CONFIGS, MonsterData } from '../../types'
+import { DIFFICULTY_CONFIGS } from '../../game-config'
+import { MonsterData } from '../../types'
 import { Button } from '../../../../ui-system'
 import { SectionRegistry } from '../../../../learning-engine/registry'
 import { EncounterDrawer } from '../EncounterDrawer'

@@ -1,7 +1,7 @@
 import React from 'react'
 import { RotateCcw } from 'lucide-react'
 import type { GlobalCharacterState, TopicCampaignState } from '../../types'
-import { DIFFICULTY_CONFIGS } from '../../types'
+import { DIFFICULTY_CONFIGS } from '../../game-config'
 import { Button, Modal } from '../../../../ui-system'
 
 interface DefeatModalProps {

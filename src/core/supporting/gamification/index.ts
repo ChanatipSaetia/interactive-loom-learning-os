@@ -23,6 +23,9 @@ export {
 
 export { useGamification } from './useGamification'
 
+export { GAME_RULES, DIFFICULTY_CONFIGS } from './game-config'
+export type { DifficultyLevel, DifficultyConfig, GameRules } from './game-config'
+
 export type {
   HexCampaignSourcePort,
   CharacterStatePort,

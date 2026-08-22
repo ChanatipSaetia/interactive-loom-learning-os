@@ -4,9 +4,9 @@ import type {
   CharacterAttributes,
   DerivedCharacterStats,
   ActiveBuff,
-  DifficultyLevel,
   UnlockedBadge,
 } from './types'
+import type { DifficultyLevel } from './game-config'
 import type { HexCampaignData } from '../../generic/hex-map'
 
 /**

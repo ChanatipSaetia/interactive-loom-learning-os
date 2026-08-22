@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react'
 import { Heart } from 'lucide-react'
 import { Badge } from '../../../ui-system'
+import { GAME_RULES } from '../game-config'
 
 interface SanctuaryTickMonitorProps {
   healingAmount?: number
@@ -45,9 +46,10 @@ export const SanctuaryTickMonitor: React.FC<SanctuaryTickMonitorProps> = ({
   const maxTicksRef = useRef(maxTicks)
   maxTicksRef.current = maxTicks
 
-  // Diminishing returns multiplier: visit 1 -> 1.0x, visit 2 -> 0.5x, visit 3+ -> 0.2x
-  const decayMultiplier = visitCount <= 1 ? 1.0 : visitCount === 2 ? 0.5 : 0.2
-  const effectiveTickHeal = Math.max(2, Math.round(10 * decayMultiplier) - Math.floor(chaosLevel * 0.05))
+  const { tickIntervalSec, baseTickHealing, visitMultipliers, minTickHealing, tickChaosPenaltyPerLevel } = GAME_RULES.sanctuary
+  const visitIndex = visitCount <= 1 ? 0 : visitCount === 2 ? 1 : visitMultipliers.length - 1
+  const decayMultiplier = visitMultipliers[visitIndex]
+  const effectiveTickHeal = Math.max(minTickHealing, Math.round(baseTickHealing * decayMultiplier) - Math.floor(chaosLevel * tickChaosPenaltyPerLevel))
 
   const effectiveTickHealRef = useRef(effectiveTickHeal)
   effectiveTickHealRef.current = effectiveTickHeal
@@ -81,10 +83,10 @@ export const SanctuaryTickMonitor: React.FC<SanctuaryTickMonitorProps> = ({
 
       // Update visual display state (pure state updaters)
       setSecondsInSanctuary(nextSec)
-      setTickProgress(((nextSec % 10) / 10) * 100)
+      setTickProgress(((nextSec % tickIntervalSec) / tickIntervalSec) * 100)
 
-      // Trigger 10-second tick heal exactly once outside of setState updaters
-      if (nextSec > 0 && nextSec % 10 === 0) {
+      // Trigger tick heal exactly once outside of setState updaters
+      if (nextSec > 0 && nextSec % tickIntervalSec === 0) {
         if (pulsesUsedRef.current < maxTicksRef.current && !isHpFullRef.current) {
           const healVal = effectiveTickHealRef.current
           const currentTotal = pulsesUsedRef.current + 1
@@ -105,7 +107,7 @@ export const SanctuaryTickMonitor: React.FC<SanctuaryTickMonitorProps> = ({
     }, 1000)
 
     return () => clearInterval(interval)
-  }, [])
+  }, [tickIntervalSec])
 
   const currentTotalPulses = pulsesUsed
 
@@ -143,7 +145,7 @@ export const SanctuaryTickMonitor: React.FC<SanctuaryTickMonitorProps> = ({
               ? 'Character health is full (100%). Pulse will resume when HP is lost.'
               : !isTabActive
               ? 'Healing is paused while viewing other tabs.'
-              : `Active reading: ${secondsInSanctuary}s · Ticks every 10s (${maxTicks - currentTotalPulses} remaining)`}
+              : `Active reading: ${secondsInSanctuary}s · Ticks every ${tickIntervalSec}s (${maxTicks - currentTotalPulses} remaining)`}
           </span>
         </div>
       </div>
@@ -167,7 +169,7 @@ export const SanctuaryTickMonitor: React.FC<SanctuaryTickMonitorProps> = ({
             {isMaxTicksReached ? 'Exhausted' : isHpFull ? 'HP Full' : !isTabActive ? 'Paused' : 'Next Pulse'}
           </span>
           <span className="text-xs font-mono font-bold text-[var(--ctp-green)]">
-            {isMaxTicksReached ? `${currentTotalPulses}/${maxTicks}` : isHpFull ? 'Full ❤️' : !isTabActive ? '⏸️' : `${10 - (secondsInSanctuary % 10)}s`}
+            {isMaxTicksReached ? `${currentTotalPulses}/${maxTicks}` : isHpFull ? 'Full ❤️' : !isTabActive ? '⏸️' : `${tickIntervalSec - (secondsInSanctuary % tickIntervalSec)}s`}
           </span>
         </div>
         <div className="w-8 h-8 rounded-full border-2 border-[var(--ctp-surface1)] relative flex items-center justify-center">

@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback, useMemo } from 'react'
 import type { GamificationRuntimePort } from './ports'
-import { DIFFICULTY_CONFIGS, type GlobalCharacterState, type TopicCampaignState, type CharacterAttributes, type ActiveBuff, type MonsterData, type ItemReward } from './types'
+import { DIFFICULTY_CONFIGS, GAME_RULES, type DifficultyLevel } from './game-config'
+import type { GlobalCharacterState, TopicCampaignState, CharacterAttributes, ActiveBuff, MonsterData, ItemReward } from './types'
 import type { HexCampaignData } from '../../generic/hex-map'
 import { InRepoStorageAdapter } from '../../delivery/adapters/in-repo-storage'
 import { ValidationGatewayCampaignAdapter } from './adapters/validation-gateway-campaign-adapter'
@@ -62,7 +63,7 @@ export function useGamification(
         if (savedTopicState) {
           // Ensure difficulty, damage tracking, pulses and play count are initialized
           const diff = savedTopicState.difficulty || 'normal'
-          const maxPulses = DIFFICULTY_CONFIGS[diff]?.maxSanctuaryPulses ?? 5
+          const maxPulses = DIFFICULTY_CONFIGS[diff].maxSanctuaryPulses
           const normalized: TopicCampaignState = {
             ...savedTopicState,
             difficulty: diff,
@@ -107,14 +108,14 @@ export function useGamification(
   }, [topicId, campaignAdapter, characterAdapter])
 
   // Helper to create a fresh campaign state
-  const createFreshCampaignState = useCallback((topicId: string, topicTitle: string, difficulty: import('./types').DifficultyLevel = 'normal'): TopicCampaignState => {
-    const maxPulses = DIFFICULTY_CONFIGS[difficulty]?.maxSanctuaryPulses ?? 5
+  const createFreshCampaignState = useCallback((topicId: string, topicTitle: string, difficulty: DifficultyLevel = 'normal'): TopicCampaignState => {
+    const maxPulses = DIFFICULTY_CONFIGS[difficulty].maxSanctuaryPulses
     return {
       topicId,
       topicTitle,
       difficulty,
-      characterHp: 100,
-      maxCharacterHp: 100,
+      characterHp: GAME_RULES.character.initialHp,
+      maxCharacterHp: GAME_RULES.character.initialHp,
       damageTakenInCampaign: 0,
       turnCount: 0,
       chaosLevel: 0,
@@ -129,11 +130,11 @@ export function useGamification(
   }, [])
 
   // Change topic campaign difficulty
-  const setDifficulty = useCallback((difficulty: import('./types').DifficultyLevel) => {
+  const setDifficulty = useCallback((difficulty: DifficultyLevel) => {
     if (!topicId) return
     setTopicState((prev) => {
       if (!prev) return null
-      const maxPulses = DIFFICULTY_CONFIGS[difficulty]?.maxSanctuaryPulses ?? 5
+      const maxPulses = DIFFICULTY_CONFIGS[difficulty].maxSanctuaryPulses
       const next = { ...prev, difficulty, maxSanctuaryPulses: maxPulses }
       characterAdapter.saveTopicCampaign(topicId, next)
       return next
@@ -151,10 +152,10 @@ export function useGamification(
       const currentVisits = prev.readingVisitCounts?.[nodeId] ?? 0
       const nextVisits = currentVisits + 1
 
-      // First time visit generates 0 Chaos. Repeat visits add +15 Chaos scaled by difficulty
-      const diffMultiplier = prev.difficulty === 'easy' ? 0.5 : prev.difficulty === 'hard' ? 1.5 : prev.difficulty === 'nightmare' ? 2.0 : 1.0
-      const chaosIncrement = (isSafeHaven && currentVisits >= 1) ? Math.round(15 * diffMultiplier) : 0
-      const nextChaos = Math.min(100, prev.chaosLevel + chaosIncrement)
+      // First time visit generates 0 Chaos. Repeat visits add Chaos scaled by difficulty
+      const chaosMultiplier = DIFFICULTY_CONFIGS[prev.difficulty].chaosMultiplier
+      const chaosIncrement = (isSafeHaven && currentVisits >= 1) ? Math.round(GAME_RULES.chaos.repeatVisitIncrement * chaosMultiplier) : 0
+      const nextChaos = Math.min(GAME_RULES.chaos.maxLevel, prev.chaosLevel + chaosIncrement)
 
       const next = {
         ...prev,
@@ -177,19 +178,19 @@ export function useGamification(
     const targetNode = campaign.nodes.find((n) => n.id === nodeMonsterId || n.monster?.id === nodeMonsterId)
     const currentMonsterHp = targetNode?.id && topicState.monsterHpMap?.[targetNode.id] !== undefined
       ? topicState.monsterHpMap[targetNode.id]
-      : (targetNode?.monster?.currentHp ?? targetNode?.monster?.maxHp ?? 30)
+      : (targetNode?.monster?.currentHp ?? targetNode?.monster?.maxHp ?? GAME_RULES.combat.defaultMonsterHp)
 
     const monster: MonsterData = {
       id: targetNode?.monster?.id || 'default-monster',
       name: targetNode?.monster?.name || 'Corrupted Bug',
       type: targetNode?.monster?.type || 'goblin',
-      maxHp: targetNode?.monster?.maxHp || 30,
+      maxHp: targetNode?.monster?.maxHp || GAME_RULES.combat.defaultMonsterHp,
       currentHp: currentMonsterHp,
-      damage: targetNode?.monster?.damage || 10,
+      damage: targetNode?.monster?.damage || GAME_RULES.combat.defaultMonsterDamage,
       icon: targetNode?.monster?.icon || '👾',
     }
 
-    const diffMultiplier = topicState.difficulty === 'easy' ? 0.7 : topicState.difficulty === 'hard' ? 1.5 : topicState.difficulty === 'nightmare' ? 2.0 : 1.0
+    const diffMultiplier = DIFFICULTY_CONFIGS[topicState.difficulty].damageMultiplier
 
     const combatResult = resolveCombatTurn(
       monster,
@@ -242,7 +243,7 @@ export function useGamification(
     setTopicState((prev) => {
       if (!prev || !topicId) return null
       if (prev.characterHp >= prev.maxCharacterHp) return prev
-      const maxPulses = prev.maxSanctuaryPulses ?? DIFFICULTY_CONFIGS[prev.difficulty]?.maxSanctuaryPulses ?? 5
+      const maxPulses = prev.maxSanctuaryPulses ?? DIFFICULTY_CONFIGS[prev.difficulty].maxSanctuaryPulses
       const currentPulsesUsed = prev.sanctuaryPulsesUsed ?? 0
       if (currentPulsesUsed >= maxPulses) return prev
 

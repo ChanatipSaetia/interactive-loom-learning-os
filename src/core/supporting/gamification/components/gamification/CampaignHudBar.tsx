@@ -1,6 +1,6 @@
 import React from 'react'
 import type { TopicCampaignState, GlobalCharacterState, HexNodeData } from '../../types'
-import { DIFFICULTY_CONFIGS } from '../../types'
+import { DIFFICULTY_CONFIGS } from '../../game-config'
 import { Badge } from '../../../../ui-system'
 
 interface CampaignHudBarProps {

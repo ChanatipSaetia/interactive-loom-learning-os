@@ -7,6 +7,7 @@ import type {
   CraftedArtifact,
 } from './types'
 import { getAutoFlowConnections } from './layout'
+import { GAME_RULES, type DifficultyLevel } from './game-config'
 
 // ─── Magic Rune Encryption ───
 const RUNE_CHAR_MAP: Record<string, string> = {
@@ -32,7 +33,7 @@ export function encryptToMagicRunes(text: string): string {
  */
 export function canUnlockBoss(inventory: ItemReward[], bossNode?: HexNodeData): boolean {
   if (!bossNode || bossNode.type !== 'boss_lair') return false
-  const required = bossNode.requiredItems || ['adapter-shield', 'port-blade']
+  const required = bossNode.requiredItems || GAME_RULES.boss.defaultKeyItems
   return required.every((reqId) => inventory.some((item) => item.id === reqId))
 }
 
@@ -82,16 +83,17 @@ export function calculateSanctuaryTickHealing(
   visitCount: number,
   chaosLevel: number = 0
 ): { effectiveHealing: number; nextChaosLevel: number } {
-  const tickCount = Math.floor(activeSeconds / 10)
+  const { tickIntervalSec, baseTickHealing, visitMultipliers, minTickHealing, tickChaosPenaltyPerLevel } = GAME_RULES.sanctuary
+  const tickCount = Math.floor(activeSeconds / tickIntervalSec)
   if (tickCount <= 0) {
     return { effectiveHealing: 0, nextChaosLevel: chaosLevel }
   }
 
-  const baseTick = 10
-  const visitMultiplier = visitCount <= 1 ? 1.0 : visitCount === 2 ? 0.5 : 0.2
-  const chaosPenalty = Math.floor(chaosLevel * 0.05)
+  const visitIndex = visitCount <= 1 ? 0 : visitCount === 2 ? 1 : visitMultipliers.length - 1
+  const visitMultiplier = visitMultipliers[visitIndex]
+  const chaosPenalty = Math.floor(chaosLevel * tickChaosPenaltyPerLevel)
 
-  const tickHeal = Math.max(2, Math.round(baseTick * visitMultiplier) - chaosPenalty)
+  const tickHeal = Math.max(minTickHealing, Math.round(baseTickHealing * visitMultiplier) - chaosPenalty)
   const effectiveHealing = tickHeal * tickCount
   const nextChaosLevel = chaosLevel
 
@@ -105,9 +107,10 @@ export function calculateSanctuaryHealing(
   baseHealing: number,
   chaosLevel: number
 ): { effectiveHealing: number; nextChaosLevel: number } {
-  const penalty = chaosLevel * 0.25
-  const effectiveHealing = Math.max(5, Math.round(baseHealing - penalty))
-  const nextChaosLevel = Math.max(0, chaosLevel - 10)
+  const { restChaosPenaltyPerLevel, minRestHealing, chaosRelief } = GAME_RULES.sanctuary
+  const penalty = chaosLevel * restChaosPenaltyPerLevel
+  const effectiveHealing = Math.max(minRestHealing, Math.round(baseHealing - penalty))
+  const nextChaosLevel = Math.max(0, chaosLevel - chaosRelief)
   return { effectiveHealing, nextChaosLevel }
 }
 
@@ -121,11 +124,13 @@ export function synthesizeTradeoffArtifact(
   metrics: Array<{ id: string; label: string; value: number }>,
   tradeoffMapping?: Record<string, string>
 ): CraftedArtifact {
+  const { neutralMetricValue, buffRate, minBuffValue, sacrificeThreshold, vulnerabilityRate, minVulnerabilityValue, durationTurns } = GAME_RULES.artifact
+
   if (metrics.length === 0) {
     return {
       name: `Artifact of ${scenarioTitle}`,
-      buff: { stat: 'armor', value: 3, label: '+3 Armor' },
-      durationTurns: 4,
+      buff: { stat: 'armor', value: minBuffValue, label: `+${minBuffValue} Armor` },
+      durationTurns,
     }
   }
 
@@ -170,7 +175,7 @@ export function synthesizeTradeoffArtifact(
     else buffStat = 'chaos_shield'
   }
 
-  const buffValue = Math.max(3, Math.round((best.value - 50) * 0.5))
+  const buffValue = Math.max(minBuffValue, Math.round((best.value - neutralMetricValue) * buffRate))
 
   const artifact: CraftedArtifact = {
     name: `Artifact of ${best.label}`,
@@ -179,12 +184,12 @@ export function synthesizeTradeoffArtifact(
       value: buffValue,
       label: `+${buffValue} ${buffStat.toUpperCase()} from ${best.label}`,
     },
-    durationTurns: 4,
+    durationTurns,
   }
 
-  // Check for severe sacrifice (worst <= 40)
-  if (worst.value <= 40) {
-    const vulnValue = Math.max(2, Math.round((50 - worst.value) * 0.4))
+  // Check for severe sacrifice (worst metric below sacrifice threshold)
+  if (worst.value <= sacrificeThreshold) {
+    const vulnValue = Math.max(minVulnerabilityValue, Math.round((neutralMetricValue - worst.value) * vulnerabilityRate))
     artifact.vulnerability = {
       stat: 'extra_damage',
       value: vulnValue,
@@ -203,20 +208,21 @@ export function synthesizeTradeoffArtifact(
 export function resolveTimedReflectionDecryption(
   completed: boolean,
   timeRemainingSec: number,
-  totalTimeSec: number = 60,
+  totalTimeSec: number = GAME_RULES.reflection.totalTimeSec,
   chaosLevel: number = 0,
   damageMultiplier: number = 1.0,
   expMultiplier: number = 1.0
 ): { success: boolean; timeBonusExp: number; damagePenalty: number } {
+  const { baseTimeBonusExp, baseBacklashDamage, chaosBacklashScalingPerLevel } = GAME_RULES.reflection
   if (completed && timeRemainingSec > 0) {
     const timeRatio = timeRemainingSec / totalTimeSec
-    const timeBonusExp = Math.round(20 * timeRatio * expMultiplier)
+    const timeBonusExp = Math.round(baseTimeBonusExp * timeRatio * expMultiplier)
     return { success: true, timeBonusExp, damagePenalty: 0 }
   }
 
-  // System Chaos amplifies magical backlash: base 15 + up to +25 additional damage at 100 Chaos
-  const chaosDamageMultiplier = 1 + (chaosLevel / 100)
-  const damagePenalty = Math.round(15 * chaosDamageMultiplier * damageMultiplier)
+  // System Chaos amplifies magical backlash: base damage + scaling per Chaos level (up to +100% at 100 Chaos)
+  const chaosDamageMultiplier = 1 + chaosLevel * chaosBacklashScalingPerLevel
+  const damagePenalty = Math.round(baseBacklashDamage * chaosDamageMultiplier * damageMultiplier)
   return { success: false, timeBonusExp: 0, damagePenalty }
 }
 
@@ -226,9 +232,10 @@ export function resolveTimedReflectionDecryption(
  * Formula: min(40, round(10 + 30 * ln(1 + 0.05 * points) / ln(6)))
  */
 export function deriveStatPercentage(points: number): number {
-  if (points <= 0) return 10
-  const scaling = (30 * Math.log(1 + 0.05 * points)) / Math.log(6)
-  return Math.min(40, Math.round(10 + scaling))
+  const { basePercentage, growthPoints, growthRate, capPercentage, logBase } = GAME_RULES.stats
+  if (points <= 0) return basePercentage
+  const scaling = (growthPoints * Math.log(1 + growthRate * points)) / Math.log(logBase)
+  return Math.min(capPercentage, Math.round(basePercentage + scaling))
 }
 
 export interface CombatTurnResult {
@@ -255,8 +262,9 @@ export function resolveCombatTurn(
   totalQuestions: number = 2
 ): CombatTurnResult {
   // Derive base stat percentages from raw points
-  const baseArmor = typeof attributes.armor === 'number' ? deriveStatPercentage(attributes.armor) : 10
-  const baseEvasion = typeof attributes.evasion === 'number' ? deriveStatPercentage(attributes.evasion) : 10
+  const { minDamageTaken, chaosDamageScalingPerLevel, chaosTagThreshold } = GAME_RULES.combat
+  const baseArmor = typeof attributes.armor === 'number' ? deriveStatPercentage(attributes.armor) : GAME_RULES.stats.basePercentage
+  const baseEvasion = typeof attributes.evasion === 'number' ? deriveStatPercentage(attributes.evasion) : GAME_RULES.stats.basePercentage
 
   // Aggregate buffs
   const totalArmor = baseArmor + activeBuffs
@@ -291,12 +299,12 @@ export function resolveCombatTurn(
 
   // Wrong answer -> Monster attacks (Chaos & Difficulty enrage monster damage)
   const isDodged = Math.random() * 100 < totalEvasion
-  const chaosMultiplier = 1 + (chaosLevel / 200) // Up to +50% extra monster damage at 100 Chaos
+  const chaosMultiplier = 1 + chaosLevel * chaosDamageScalingPerLevel // Up to +50% extra monster damage at 100 Chaos
   const scaledMonsterDamage = Math.round(monster.damage * chaosMultiplier * damageMultiplier)
-  const rawDamage = Math.max(5, scaledMonsterDamage - totalArmor + extraDamageVuln)
+  const rawDamage = Math.max(minDamageTaken, scaledMonsterDamage - totalArmor + extraDamageVuln)
   const playerDamageTaken = isDodged ? 0 : rawDamage
 
-  const chaosTag = chaosLevel >= 20 ? ` [🔥 Chaos Buff +${Math.round((chaosLevel / 200) * 100)}%]` : ''
+  const chaosTag = chaosLevel >= chaosTagThreshold ? ` [🔥 Chaos Buff +${Math.round(chaosLevel * chaosDamageScalingPerLevel * 100)}%]` : ''
 
   return {
     updatedMonsterHp: monsterHp,
@@ -344,15 +352,16 @@ export function resolveBossItemAction(
   }
 
   // Offensive Items (Blades, Swords, Crystals, Product Weapon, etc.)
+  const offensiveDamage = GAME_RULES.boss.offensiveItemDamage
   if (normalizedId === 'port-blade' || normalizedId === 'port_blade') {
     return {
-      bossDamage: 40,
+      bossDamage: offensiveDamage,
       shieldActive: false,
-      message: `⚡ Unleashed Port Blade! Slashed ${boss.name} for 40 true damage!`,
+      message: `⚡ Unleashed Port Blade! Slashed ${boss.name} for ${offensiveDamage} true damage!`,
     }
   }
 
-  const damage = 40
+  const damage = offensiveDamage
   return {
     bossDamage: damage,
     shieldActive: false,
@@ -379,7 +388,8 @@ export interface LevelProgressResult {
  *   Level 5 -> 6: 510 XP
  */
 export function getRequiredExpForLevel(level: number): number {
-  return Math.round(100 * Math.pow(1.5, Math.max(0, level - 1)) / 10) * 10
+  const { baseExpPerLevel, expGrowthRate, expRoundStep } = GAME_RULES.xp
+  return Math.round(baseExpPerLevel * Math.pow(expGrowthRate, Math.max(0, level - 1)) / expRoundStep) * expRoundStep
 }
 
 /**
@@ -402,7 +412,7 @@ export function calculateLevelProgress(
   while (exp >= requiredExp) {
     exp -= requiredExp
     level += 1
-    points += 1
+    points += GAME_RULES.xp.statPointsPerLevel
     leveledUp = true
     requiredExp = getRequiredExpForLevel(level)
   }
@@ -422,7 +432,7 @@ export function calculateLevelProgress(
 export function evaluateTopicBadges(
   topicId: string,
   topicTitle: string,
-  difficulty: import('./types').DifficultyLevel = 'normal',
+  difficulty: DifficultyLevel = 'normal',
   damageTaken: number = 0,
   hasCraftedBuff: boolean = false,
   existingBadges: import('./types').UnlockedBadge[] = []
