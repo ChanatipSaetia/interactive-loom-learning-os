@@ -10,27 +10,7 @@ nodes:
     sectionRef: "intro"
     description: "The grand citadel of 2D hardware-accelerated graphics. Master PixiJS scene graphs, batch rendering, and WebGL pipelines!"
 
-  # Ring 1: Foundations & Vocabulary Sanctuaries & Challenges
-  - id: "sanctuary-map"
-    title: "Sanctuary of the Scene Graph"
-    type: "reading_sanctuary"
-    status: "unlocked"
-    sectionRef: "concept-map"
-    healingAmount: 30
-    description: "Study the architectural hierarchy linking Application, Stage, Container, Sprite, Texture, and Renderer."
-
-  - id: "reflection-foundations"
-    title: "Application Startup Crypt"
-    type: "reflection_decryption"
-    status: "locked"
-    sectionRef: "reflection-foundations"
-    description: "Sequence the startup and initialization steps of a PixiJS application to unlock the Display Tree."
-    rewards:
-      - id: "amulet-display-tree"
-        name: "Amulet of the Display Tree"
-        icon: "📿"
-        description: "Radiates order throughout hierarchical container trees."
-
+  # Track 1: Foundations, Vocabulary & Architecture Selection
   - id: "sanctuary-vocabulary"
     title: "Observatory of Essential Terms"
     type: "reading_sanctuary"
@@ -58,22 +38,14 @@ nodes:
         icon: "🔑"
         description: "Unlocks GPU texture buffer knowledge."
 
-  # Ring 2: Taxonomies & Display Primitives
+  # Track 2: Display Primitives, Sprite Batching & Render Pipeline
   - id: "sanctuary-taxonomies"
     title: "Gallery of Display Taxonomies"
     type: "reading_sanctuary"
-    status: "locked"
+    status: "unlocked"
     sectionRef: "taxonomy-browser"
     healingAmount: 35
     description: "Explore the capabilities of Containers, ParticleContainers, Vector Graphics, and GLSL Shaders."
-
-  - id: "sanctuary-decision"
-    title: "Grove of the Architecture Guide"
-    type: "reading_sanctuary"
-    status: "locked"
-    sectionRef: "decision-tree"
-    healingAmount: 30
-    description: "Consult the diagnostic tree to choose the optimal display primitive for any 2D visual task."
 
   - id: "encounter-taxonomies"
     title: "Unbatched Sprite Marauder Camp"
@@ -94,14 +66,14 @@ nodes:
         icon: "🛡️"
         description: "Combines thousands of sprite quads into single draw calls."
 
-  # Ring 3: Render Pipeline & Matrix Transforms
-  - id: "sanctuary-pipeline"
-    title: "Sanctuary of the Render Pipeline"
+  # Track 3: Scene Graph & Transform Pipeline
+  - id: "sanctuary-map"
+    title: "Sanctuary of the Scene Graph"
     type: "reading_sanctuary"
-    status: "locked"
-    sectionRef: "text-core"
-    healingAmount: 35
-    description: "Master the secrets of affine transform matrices, batch buffering, and VRAM memory disposal."
+    status: "unlocked"
+    sectionRef: "concept-map"
+    healingAmount: 30
+    description: "Study the architectural hierarchy linking Application, Stage, Container, Sprite, Texture, and Renderer."
 
   - id: "reflection-transforms"
     title: "Matrix Transform Vault"
@@ -115,14 +87,15 @@ nodes:
         icon: "🧭"
         description: "Calculates local-to-world transformations flawlessly."
 
-  # Ring 4: Frame Execution Loop & Flowchart
-  - id: "sanctuary-flowchart"
-    title: "Spire of the 60 FPS Flowchart"
+  # Deep Sanctuaries & Followup Challenges
+  # Downstream of Vocabulary: Architecture Decision Guide & Render Loop Crypt
+  - id: "sanctuary-decision"
+    title: "Grove of the Architecture Guide"
     type: "reading_sanctuary"
     status: "locked"
-    sectionRef: "flowchart"
-    healingAmount: 40
-    description: "Trace the Event Storming process diagram of the frame execution pipeline."
+    sectionRef: "decision-tree"
+    healingAmount: 30
+    description: "Consult the diagnostic tree to choose the optimal display primitive for any 2D visual task."
 
   - id: "reflection-render-loop"
     title: "Render Loop Decryption Crypt"
@@ -136,18 +109,14 @@ nodes:
         icon: "📖"
         description: "Chronicles the complete lifecycle from requestAnimationFrame to framebuffer swap."
 
-  # Ring 5: Optimization & Workshop
-  - id: "tradeoff-workshop"
-    title: "Rendering Architecture Workshop"
-    type: "tradeoff_workshop"
+  # Downstream of Taxonomies: Render Pipeline Deep Dive & VRAM Optimization
+  - id: "sanctuary-pipeline"
+    title: "Sanctuary of the Render Pipeline"
+    type: "reading_sanctuary"
     status: "locked"
-    sectionRef: "tradeoff-sandbox"
-    description: "Tune render architecture trade-offs between draw calls, VRAM, and FPS throughput to forge stat buffs."
-    tradeoffMapping:
-      fps_performance: "evasion"
-      draw_calls: "armor"
-      memory_footprint: "chaos_shield"
-      visual_fidelity: "intelligence"
+    sectionRef: "text-core"
+    healingAmount: 35
+    description: "Master the secrets of affine transform matrices, batch buffering, and VRAM memory disposal."
 
   - id: "encounter-optimization"
     title: "VRAM Memory Leak Catacombs"
@@ -168,14 +137,35 @@ nodes:
         icon: "⚔️"
         description: "A radiant multiplication blade that packs all sprite assets into unified GPU memory."
 
-  # Final Climax: Boss Lair
+  # Downstream of Scene Graph: 60 FPS Flowchart Spire
+  - id: "sanctuary-flowchart"
+    title: "Spire of the 60 FPS Flowchart"
+    type: "reading_sanctuary"
+    status: "locked"
+    sectionRef: "flowchart"
+    healingAmount: 40
+    description: "Trace the Event Storming process diagram of the frame execution pipeline."
+
+  # Workshop & Climax Boss
+  - id: "tradeoff-workshop"
+    title: "Rendering Architecture Workshop"
+    type: "tradeoff_workshop"
+    status: "locked"
+    sectionRef: "tradeoff-sandbox"
+    description: "Tune render architecture trade-offs between draw calls, VRAM, and FPS throughput to forge stat buffs."
+    tradeoffMapping:
+      fps_performance: "evasion"
+      draw_calls: "armor"
+      memory_footprint: "chaos_shield"
+      visual_fidelity: "intelligence"
+
   - id: "boss-lair"
     title: "Lair of the Framerate Stutter Dragon"
     type: "boss_lair"
     status: "locked"
-    sectionRef: "quiz-optimization"
-    description: "The supreme Framerate Stutter Dragon! Requires the Shield of Batching, Blade of Texture Atlases, Compass of Affine Matrices, and Tome of the 60 FPS Loop to breach its gates."
+    description: "The supreme Framerate Stutter Dragon! Requires the Key of BaseTextures, Shield of Batching, Blade of Texture Atlases, Compass of Affine Matrices, and Tome of the 60 FPS Loop to breach its gates."
     requiredItems:
+      - "key-texture-core"
       - "batch-shield"
       - "atlas-blade"
       - "compass-affine-matrix"

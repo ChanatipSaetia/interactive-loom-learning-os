@@ -1,168 +1,201 @@
 topicId: "demo"
-topicTitle: "Realm of Arithmetica: Math Operations"
+topicTitle: "Realm of Autonomous Agents: AI Orchestration Citadel"
 capitalId: "capital"
 nodes:
   # Ring 0: Capital Center
   - id: "capital"
-    title: "Capital of Arithmetica: Number Sanctuary"
+    title: "Citadel of AI Agents: Orchestration Hub"
     type: "capital"
     status: "unlocked"
     sectionRef: "intro"
-    description: "The grand citadel of numbers and fundamental operations. Master addition (+), subtraction (-), multiplication (×), and division (÷)!"
+    description: "The grand citadel of autonomous intelligence. Master LLM orchestration, tool calling, memory systems, and multi-agent coordination!"
 
-  # Ring 1: Primary Law Sanctuaries
-  - id: "reading-sanctuary"
-    title: "Sanctuary of Arithmetic Laws"
+  # Track 1: Knowledge Graph & Evaluation Checkpoint
+  - id: "sanctuary-concept"
+    title: "Sanctuary of the Knowledge Graph"
     type: "reading_sanctuary"
     status: "unlocked"
-    sectionRef: "taxonomy"
-    healingAmount: 40
-    description: "A peaceful library detailing the commutative, associative, and distributive properties of arithmetic."
-
-  - id: "sanctuary-addition"
-    title: "Addition & Sums Temple"
-    type: "reading_sanctuary"
-    status: "locked"
-    sectionRef: "taxonomy-patterns"
-    healingAmount: 30
-    description: "Sacred grounds of positive sums, carrying columns, and addition identity elements (a + 0 = a)."
-
-  - id: "sanctuary-subtraction"
-    title: "Subtraction Citadel"
-    type: "reading_sanctuary"
-    status: "locked"
-    sectionRef: "capabilities"
+    sectionRef: "concept-map"
     healingAmount: 35
-    description: "Ancient citadel preserving difference operations, borrowing across zeros, and negative value rules."
+    description: "Explore the structural relationships between Planners, Memory, Tool Registries, and LLM Orchestrators."
 
-  # Ring 1 & 2: Encounters & Workshops
-  - id: "goblin-encounter"
-    title: "Arithmetic Gremlin Outpost"
+  - id: "encounter-quiz"
+    title: "Hallucination Gremlin Outpost"
     type: "quiz_encounter"
     status: "locked"
     sectionRef: "quiz"
-    description: "A mischievous Arithmetic Gremlin scrambling equations! Solve arithmetic questions to deal damage and defeat it."
+    description: "A mischievous Gremlin injecting hallucinations into context windows! Answer architecture questions to defeat it."
     monster:
-      id: "gremlin-1"
-      name: "Arithmetic Gremlin"
+      id: "gremlin-hallucination"
+      name: "Hallucination Gremlin"
       type: "goblin"
-      maxHp: 100
+      maxHp: 95
       damage: 15
       icon: "👾"
     rewards:
-      - id: "plus-shield"
-        name: "Aegis of Addition (+)"
+      - id: "eval-shield"
+        name: "Aegis of Evaluation"
         icon: "🛡️"
-        description: "A radiant shield forged from positive sums that shields you against negative numbers."
+        description: "A defensive barrier that filters out hallucinated context and drifts."
 
-  - id: "reflection-decryption"
-    title: "Order of Operations Vault"
+  # Track 2: Capabilities & Sequence Builder
+  - id: "sanctuary-taxonomy"
+    title: "Gallery of Agent Capabilities"
+    type: "reading_sanctuary"
+    status: "unlocked"
+    sectionRef: "taxonomy"
+    healingAmount: 35
+    description: "Examine taxonomy classes spanning Hierarchical Orchestration, Tool Use, Memory Systems, and Reflection."
+
+  - id: "reflection-sequence"
+    title: "ReAct Execution Sequence Vault"
     type: "reflection_decryption"
     status: "locked"
     sectionRef: "reflection-sequence"
-    description: "An ancient cryptographic vault sealed by PEMDAS / BODMAS order of operations. Arrange the sequence correctly before time runs out!"
+    description: "Reassemble the chronological execution flow of Thought -> Action -> Observation before the cipher expires!"
     rewards:
-      - id: "product-blade"
-        name: "Blade of Products (×)"
+      - id: "orchestrator-blade"
+        name: "Blade of ReAct Orchestration"
         icon: "⚔️"
-        description: "A razor-sharp multiplication blade that multiplies attack power against mathematical titans."
+        description: "A razor-sharp execution blade that cuts through multi-step agent reasoning latency."
 
-  - id: "tradeoff-workshop"
-    title: "Calculation Strategy Workshop"
-    type: "tradeoff_workshop"
-    status: "locked"
-    sectionRef: "tradeoffs"
-    description: "Explore arithmetic calculation trade-offs between Mental Math Speed and Written Precision to forge tactical equipment buffs."
-    tradeoffMapping:
-      precision: "armor"
-      speed: "evasion"
-      estimation: "intelligence"
-      accuracy: "chaos_shield"
-
-  - id: "sanctuary-multiplication"
-    title: "Multiplication Keep"
+  # Track 3: Vocabulary & RAG Template Decryption
+  - id: "sanctuary-flashcards"
+    title: "Observatory of Core Terminology"
     type: "reading_sanctuary"
-    status: "locked"
+    status: "unlocked"
     sectionRef: "flashcards"
     healingAmount: 30
-    description: "Sanctuary of repeated addition, factor scaling, prime factorizations, and product computation."
+    description: "Master foundational concepts: Prompt Injection, Tool Calling, Vector Indexing, and Context Windows."
 
-  - id: "orc-encounter"
-    title: "Sign-Flipping Marauder Den"
-    type: "quiz_encounter"
+  - id: "reflection-template"
+    title: "RAG Synthesis Crypt"
+    type: "reflection_decryption"
     status: "locked"
-    sectionRef: "quiz"
-    description: "An aggressive Marauder flipping signs on the western front! Solve integer arithmetic questions to defeat him."
-    monster:
-      id: "orc-1"
-      name: "Negative Number Marauder"
-      type: "orc"
-      maxHp: 120
-      damage: 25
-      icon: "🧌"
+    sectionRef: "reflection-template"
+    description: "Reconstruct the RAG synthesis template with retrieved chunk citations to unlock context knowledge."
+    rewards:
+      - id: "tome-rag"
+        name: "Tome of Context Synthesis"
+        icon: "📖"
+        description: "Chronicles verified grounded retrieval augmentation protocols."
 
-  - id: "sanctuary-division"
-    title: "Division & Quotient Sanctuary"
+  # Deep Sanctuaries (Downstream from Tier-1 Challenges)
+  - id: "sanctuary-patterns"
+    title: "Sanctuary of Agent Design Patterns"
+    type: "reading_sanctuary"
+    status: "locked"
+    sectionRef: "taxonomy-patterns"
+    healingAmount: 35
+    description: "Study proven multi-agent design patterns: Plan-and-Execute, Map-Reduce, and Reflexion."
+
+  - id: "sanctuary-lifecycle"
+    title: "Sanctuary of the Agent Lifecycle"
+    type: "reading_sanctuary"
+    status: "locked"
+    sectionRef: "lifecycle"
+    healingAmount: 35
+    description: "Deep dive into state machines, token budget management, and tool call retry policies."
+
+  - id: "sanctuary-decision"
+    title: "Grove of the Architecture Guide"
     type: "reading_sanctuary"
     status: "locked"
     sectionRef: "decision-tree"
-    healingAmount: 35
-    description: "Protects the sacred fraction, divisor, and quotient balance. Rest to cleanse System Chaos."
+    healingAmount: 30
+    description: "Consult the diagnostic tree to select single-agent vs multi-agent supervisor architectures."
 
-  - id: "wyrm-encounter"
-    title: "Improper Fraction Wyrm Lair"
-    type: "quiz_encounter"
+  - id: "sanctuary-capabilities"
+    title: "Checklist of Agent Capabilities"
+    type: "reading_sanctuary"
     status: "locked"
-    sectionRef: "quiz"
-    description: "A terrifying beast nesting in denominator complexity and mixed fractions!"
-    monster:
-      id: "wyrm-1"
-      name: "Improper Fraction Wyrm"
-      type: "dragon"
-      maxHp: 160
-      damage: 30
-      icon: "🐉"
+    sectionRef: "capabilities"
+    healingAmount: 30
+    description: "Core checklist of production-grade agent capabilities and tool calling interfaces."
 
-  - id: "workshop-mental"
-    title: "Vedic Math Crucible"
+  - id: "sanctuary-pillar"
+    title: "Pillar Layer Architecture Stack"
+    type: "reading_sanctuary"
+    status: "locked"
+    sectionRef: "pillar-layer"
+    healingAmount: 35
+    description: "Inspect multi-tier decoupling between presentation, gateway routing, and microservice infrastructure."
+
+  - id: "sanctuary-flowchart-core"
+    title: "Spire of the Agent Architecture Flow"
+    type: "reading_sanctuary"
+    status: "locked"
+    sectionRef: "flowchart"
+    healingAmount: 40
+    description: "Trace the end-to-end Event Storming flowchart of multi-agent routing and execution."
+
+  - id: "sanctuary-scenario"
+    title: "Deployment Scenario Grove"
+    type: "reading_sanctuary"
+    status: "locked"
+    sectionRef: "scenario"
+    healingAmount: 35
+    description: "Navigate branching scenario paths to choose the optimal deployment strategy."
+
+  - id: "sanctuary-flowchart-feedback"
+    title: "Spire of the Agent Feedback Loop"
+    type: "reading_sanctuary"
+    status: "locked"
+    sectionRef: "flowchart-feedback"
+    healingAmount: 40
+    description: "Trace the Event Storming flowchart of agent self-reflection, tool retry, and user feedback."
+
+  # Workshops
+  - id: "workshop-tradeoffs"
+    title: "Agent Architecture Trade-off Workshop"
+    type: "tradeoff_workshop"
+    status: "locked"
+    sectionRef: "tradeoffs"
+    description: "Tune latency, token cost, and grounding accuracy trade-offs to forge tactical equipment buffs."
+    tradeoffMapping:
+      latency: "evasion"
+      accuracy: "armor"
+      cost: "chaos_shield"
+      reasoning_depth: "intelligence"
+
+  - id: "workshop-rag"
+    title: "RAG Parameter Dynamics Crucible"
+    type: "tradeoff_workshop"
+    status: "locked"
+    sectionRef: "formula-sandbox"
+    description: "Experiment with chunk sizes, Top-K retrieval counts, and similarity thresholds to forge stat bonuses."
+    tradeoffMapping:
+      top_k: "intelligence"
+      chunk_size: "armor"
+      temperature: "evasion"
+
+  - id: "workshop-deploy"
+    title: "Cloud vs On-Prem Deployment Forge"
     type: "tradeoff_workshop"
     status: "locked"
     sectionRef: "tradeoffs-deploy"
-    description: "Experiment with rapid Vedic mental math decomposition algorithms to craft +15 Evasion speed buffs."
+    description: "Balance security, cloud cost, and local inference throughput."
     tradeoffMapping:
-      speed: "evasion"
-      precision: "armor"
+      security: "armor"
+      cost: "chaos_shield"
+      throughput: "evasion"
 
-  - id: "hydra-encounter"
-    title: "Polynomial Hydra Nest"
-    type: "quiz_encounter"
-    status: "locked"
-    sectionRef: "quiz"
-    description: "A multi-headed polynomial beast growing new heads with each exponent! Combine like terms to slay it."
-    monster:
-      id: "hydra-1"
-      name: "Degree-N Polynomial Hydra"
-      type: "boss"
-      maxHp: 180
-      damage: 35
-      icon: "🐙"
-
-  # Final Boss Climax
+  # Climax Boss Encounter
   - id: "boss-lair"
-    title: "Lair of the Zero-Division Colossus"
+    title: "Lair of the Autonomous Overfitting Dragon"
     type: "boss_lair"
     status: "locked"
-    sectionRef: "quiz"
-    description: "The supreme Zero-Division Colossus! Requires the Aegis of Addition and Blade of Products to unlock its gates."
+    description: "The supreme Overfitting Dragon! Requires the Aegis of Evaluation, Blade of ReAct, and Tome of Context Synthesis to unlock its gates."
     requiredItems:
-      - "plus-shield"
-      - "product-blade"
+      - "eval-shield"
+      - "orchestrator-blade"
+      - "tome-rag"
     monster:
-      id: "division-boss"
-      name: "Zero-Division Colossus"
+      id: "agent-dragon"
+      name: "Autonomous Overfitting Dragon"
       type: "boss"
-      maxHp: 250
-      damage: 40
+      maxHp: 270
+      damage: 42
       icon: "🐲"
 
 

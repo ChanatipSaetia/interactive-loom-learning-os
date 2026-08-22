@@ -5,7 +5,6 @@ Master hardware-accelerated 2D graphics, hierarchical scene graphs, automatic dr
 ## Module 1: Foundations & Vocabulary
 * [Introduction](sections/intro/section.md) — Overview, rationale, and learning roadmap
 * [Architecture & Scene Graph Map](sections/concept-map/section.md) — Structural map of Application, Stage, Container, Sprite, and Renderer
-* [Application Startup Sequencing](sections/reflection-foundations/section.md) — Chronological sequencing of the PixiJS startup lifecycle
 * [Essential Terminology](sections/flashcards/section.md) — Key terms (Batching, Ticker, World Transforms, ParticleContainer)
 * [Essential Vocabulary Quiz](sections/quiz-vocabulary/section.md) — Recall check on Textures, BaseTextures, and Ticker deltaTime
 

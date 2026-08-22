@@ -70,7 +70,6 @@ nodes:
     title: "Lair of Architectural Complexity"
     type: "boss_lair"
     status: "locked"
-    sectionRef: "quiz"
     description: "Face the ultimate system design challenge! Requires both the Amulet of Clarity and Crystal of Insight."
     requiredItems:
       - "clarity-amulet"

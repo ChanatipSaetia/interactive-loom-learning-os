@@ -10,7 +10,7 @@ nodes:
     sectionRef: "intro"
     description: "The grand hub of behavioral design and motivation psychology. Explore the 8 Core Drives and habit-building loops!"
 
-  # Ring 1: Primary Motivation Sanctuaries
+  # Track 1: Psychology & Retention Quiz
   - id: "sanctuary-psychology"
     title: "Sanctuary of Motivation Psychology"
     type: "reading_sanctuary"
@@ -19,23 +19,6 @@ nodes:
     healingAmount: 40
     description: "A tranquil haven studying Self-Determination Theory (Autonomy, Competence, Relatedness) and intrinsic drives."
 
-  - id: "sanctuary-mechanics"
-    title: "Core Mechanics Toolkit Sanctuary"
-    type: "reading_sanctuary"
-    status: "locked"
-    sectionRef: "core-mechanics"
-    healingAmount: 30
-    description: "Sacred library of PBL (Points, Badges, Leaderboards), streaks, milestone quests, and narrative progress."
-
-  - id: "sanctuary-octalysis"
-    title: "Octalysis 8 Core Drives Keep"
-    type: "reading_sanctuary"
-    status: "locked"
-    sectionRef: "octalysis"
-    healingAmount: 35
-    description: "Explore the 8 Core Drives of human motivation: White Hat vs Black Hat, and Left Brain vs Right Brain drives."
-
-  # Ring 1 & 2: Encounters & Habit Loops
   - id: "goblin-churn"
     title: "Engagement Goblin Outpost"
     type: "quiz_encounter"
@@ -55,6 +38,15 @@ nodes:
         icon: "🛡️"
         description: "A luminous shield forged from autonomy and purpose that protects against hollow dopamine burnout."
 
+  # Track 2: Mechanics & Hook Model Decryption
+  - id: "sanctuary-mechanics"
+    title: "Core Mechanics Toolkit Sanctuary"
+    type: "reading_sanctuary"
+    status: "unlocked"
+    sectionRef: "core-mechanics"
+    healingAmount: 30
+    description: "Sacred library of PBL (Points, Badges, Leaderboards), streaks, milestone quests, and narrative progress."
+
   - id: "reflection-hook"
     title: "Hook Model Decryption Vault"
     type: "reflection_decryption"
@@ -67,6 +59,61 @@ nodes:
         icon: "⚔️"
         description: "A legendary weapon that pierces user fatigue with unpredictable delight."
 
+  # Track 3: Octalysis & Template Synthesis
+  - id: "sanctuary-octalysis"
+    title: "Octalysis 8 Core Drives Keep"
+    type: "reading_sanctuary"
+    status: "unlocked"
+    sectionRef: "octalysis"
+    healingAmount: 35
+    description: "Explore the 8 Core Drives of human motivation: White Hat vs Black Hat, and Left Brain vs Right Brain drives."
+
+  - id: "reflection-template"
+    title: "Octalysis Framework Crypt"
+    type: "reflection_decryption"
+    status: "locked"
+    sectionRef: "reflection-template"
+    description: "Reconstruct the 8 Core Drives synthesis matrix to balance White Hat empowerment and Black Hat urgency."
+    rewards:
+      - id: "octalysis-compass"
+        name: "Compass of Octalysis"
+        icon: "🧭"
+        description: "Navigates the 8 Core Drives of behavioral motivation."
+
+  # Deep Sanctuaries (Downstream)
+  - id: "sanctuary-flashcards"
+    title: "Vocabulary Temple"
+    type: "reading_sanctuary"
+    status: "locked"
+    sectionRef: "flashcards"
+    healingAmount: 30
+    description: "Review essential gamification terminology, behavioral economics terms, and game design definitions."
+
+  - id: "sanctuary-decision"
+    title: "Mechanic Fit Advisor Sanctuary"
+    type: "reading_sanctuary"
+    status: "locked"
+    sectionRef: "decision-tree"
+    healingAmount: 35
+    description: "Navigate optimal mechanic selection trees based on audience type (Achievers, Explorers, Socializers, Killers)."
+
+  - id: "sanctuary-concept"
+    title: "Knowledge Graph Sanctuary"
+    type: "reading_sanctuary"
+    status: "locked"
+    sectionRef: "concept-map"
+    healingAmount: 35
+    description: "Structural knowledge map connecting behavioral psychology, game mechanics, and retention loops."
+
+  - id: "sanctuary-scenario"
+    title: "Grove of the Streak Dilemma"
+    type: "reading_sanctuary"
+    status: "locked"
+    sectionRef: "scenario"
+    healingAmount: 35
+    description: "Make product manager decisions for user streaks, balancing retention against burnout."
+
+  # Downstream Workshops & Flowchart Spire
   - id: "tradeoff-rewards"
     title: "Reward Design Trade-offs Workshop"
     type: "tradeoff_workshop"
@@ -79,74 +126,24 @@ nodes:
       retention_depth: "intelligence"
       burnout_prevention: "chaos_shield"
 
-  - id: "sanctuary-flashcards"
-    title: "Vocabulary Temple"
+  - id: "sanctuary-flowchart"
+    title: "Spire of the Habit Reward Loop"
     type: "reading_sanctuary"
     status: "locked"
-    sectionRef: "flashcards"
-    healingAmount: 30
-    description: "Review essential gamification terminology, behavioral economics terms, and game design definitions."
-
-  - id: "orc-dark-patterns"
-    title: "Dark Pattern Marauder Den"
-    type: "quiz_encounter"
-    status: "locked"
-    sectionRef: "quiz"
-    description: "A predatory Marauder using aggressive FOMO and manipulative Black Hat tricks! Vanquish him with ethical design."
-    monster:
-      id: "fomo-orc"
-      name: "FOMO Marauder"
-      type: "orc"
-      maxHp: 120
-      damage: 25
-      icon: "🧌"
-
-  - id: "sanctuary-decision"
-    title: "Mechanic Fit Advisor Sanctuary"
-    type: "reading_sanctuary"
-    status: "locked"
-    sectionRef: "decision-tree"
-    healingAmount: 35
-    description: "Navigate optimal mechanic selection trees based on audience type (Achievers, Explorers, Socializers, Killers)."
-
-  - id: "wyrm-fatigue"
-    title: "Reward Fatigue Wyrm Lair"
-    type: "quiz_encounter"
-    status: "locked"
-    sectionRef: "quiz"
-    description: "A terrifying wyrm born from overjustification effect and extrinsic reward inflation!"
-    monster:
-      id: "fatigue-wyrm"
-      name: "Overjustification Wyrm"
-      type: "dragon"
-      maxHp: 160
-      damage: 30
-      icon: "🐉"
-
-  - id: "hydra-churn"
-    title: "Point-Farming Hydra Nest"
-    type: "quiz_encounter"
-    status: "locked"
-    sectionRef: "quiz"
-    description: "A multi-headed beast exploiting un-capped badge loops to spam leaderboard scores!"
-    monster:
-      id: "farming-hydra"
-      name: "Exploit Farming Hydra"
-      type: "boss"
-      maxHp: 180
-      damage: 35
-      icon: "🐙"
+    sectionRef: "reward-loop"
+    healingAmount: 40
+    description: "Trace the Event Storming process flowchart of trigger engagement, dopamine response, and investment."
 
   # Final Boss Climax
   - id: "boss-lair"
     title: "Lair of the Burnout Dragon"
     type: "boss_lair"
     status: "locked"
-    sectionRef: "quiz"
-    description: "The supreme Overjustification & Burnout Dragon! Requires the Aegis of Intrinsic Drive and Blade of Variable Reward to enter."
+    description: "The supreme Overjustification & Burnout Dragon! Requires the Aegis of Intrinsic Drive, Blade of Variable Reward, and Compass of Octalysis to enter."
     requiredItems:
       - "intrinsic-shield"
       - "variable-blade"
+      - "octalysis-compass"
     monster:
       id: "burnout-boss"
       name: "Extrinsic Burnout Dragon"

@@ -62,6 +62,8 @@ export function validateHexMapTier3(
 
   for (const node of campaign.nodes) {
     if (node.type === 'boss_lair' && node.requiredItems) {
+      const requiredItemIds = new Set(node.requiredItems)
+
       for (const reqItem of node.requiredItems) {
         if (!droppedItemIds.has(reqItem)) {
           diagnostics.push({
@@ -69,6 +71,17 @@ export function validateHexMapTier3(
             field: `nodes[${node.id}].requiredItems`,
             message: `Boss lair requires item '${reqItem}', but no node in the campaign drops this item.`,
             fixHint: `Add a reward with id '${reqItem}' to a quiz_encounter or reflection_decryption node.`,
+          })
+        }
+      }
+
+      for (const droppedId of droppedItemIds) {
+        if (!requiredItemIds.has(droppedId)) {
+          diagnostics.push({
+            tier: 3,
+            field: `nodes[${node.id}].requiredItems`,
+            message: `Dropped key item '${droppedId}' is not required by boss lair '${node.id}'. All dropped key items must be required by the climax boss encounter.`,
+            fixHint: `Add '${droppedId}' to requiredItems on boss lair node '${node.id}'.`,
           })
         }
       }
@@ -86,6 +99,38 @@ export function validateHexMapTier3(
           fixHint: `Ensure the section directory exists in public/okf/${campaign.topicId}/sections/${node.sectionRef}/.`,
         })
       }
+    }
+  }
+
+  // 6. Section Reference Uniqueness Check (prevent duplicate encounters/sections across nodes)
+  const seenSectionRefs = new Map<string, string>()
+  for (const node of campaign.nodes) {
+    if (node.sectionRef) {
+      if (seenSectionRefs.has(node.sectionRef)) {
+        const prevNodeId = seenSectionRefs.get(node.sectionRef)!
+        diagnostics.push({
+          tier: 3,
+          field: `nodes[${node.id}].sectionRef`,
+          message: `Duplicate sectionRef '${node.sectionRef}' on node '${node.id}' (already bound to node '${prevNodeId}'). Each campaign encounter/sanctuary must bind to a unique section.`,
+          fixHint: `Ensure each hex node references a unique OKF section or omit sectionRef from climax encounters.`,
+        })
+      } else {
+        seenSectionRefs.set(node.sectionRef, node.id)
+      }
+    }
+  }
+
+  // 7. Full Section Coverage Check (ensure all OKF sections in the topic are mapped to nodes)
+  if (availableSectionIds && availableSectionIds.length > 0) {
+    const mappedSectionRefs = new Set(campaign.nodes.map((n) => n.sectionRef).filter(Boolean))
+    const missingSections = availableSectionIds.filter((sec) => !mappedSectionRefs.has(sec))
+    if (missingSections.length > 0) {
+      diagnostics.push({
+        tier: 3,
+        field: 'nodes',
+        message: `Hex campaign is missing mappings for ${missingSections.length} OKF section(s): [${missingSections.join(', ')}]. All topic sections must be accessible on the campaign map.`,
+        fixHint: `Add sanctuary, challenge, or workshop nodes mapping to ${missingSections.map((s) => `'${s}'`).join(', ')}.`,
+      })
     }
   }
 

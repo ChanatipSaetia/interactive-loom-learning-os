@@ -904,84 +904,90 @@ export const HexGridCanvas = React.forwardRef<HexGridCanvasRef, HexGridCanvasPro
 
       // 4. REFLECTION DECRYPTION: Volatile Cryptographic Cipher Bomb / Clockwise Pulsing Magic Runes & Lightning
       if (node.type === 'reflection_decryption' && !isLocked && isSelected) {
-        const cipherContainer = new Container()
-        const clockGlowGfx = new Graphics()
-        const lightningGfx = new Graphics()
-        cipherContainer.addChild(clockGlowGfx)
-        cipherContainer.addChild(lightningGfx)
-        nodeContainer.addChild(cipherContainer)
-
-        const RUNES = ['ᚠ', 'ᚢ', 'ᚦ', 'ᚨ', 'ᚱ', 'ᚲ', 'ᚷ', 'ᚹ', 'ᚺ', 'ᛉ', 'ᛞ', 'ᛟ']
-        const numPips = RUNES.length
-        const clockRadius = 25
-
-        const runeItems = RUNES.map((char, i) => {
-          const pipAngle = (i * 2 * Math.PI) / numPips - Math.PI / 2
-          const px = Math.cos(pipAngle) * clockRadius + 1.2
-          const py = Math.sin(pipAngle) * clockRadius
-
-          const style = new TextStyle({
-            fontSize: 9,
-            fontFamily: 'serif, monospace',
-            fontWeight: 'bold',
-            fill: palette.mauveNum,
+        if (isCleared) {
+          animControllersRef.current.push((t) => {
+            innerGfx.alpha = 0.35 + 0.25 * Math.sin(t * 2)
           })
-          const txt = new Text({ text: char, style })
-          txt.anchor.set(0.5, 0.5)
-          txt.position.set(px, py)
-          cipherContainer.addChild(txt)
-          return { txt, style, angle: pipAngle, px, py }
-        })
+        } else {
+          const cipherContainer = new Container()
+          const clockGlowGfx = new Graphics()
+          const lightningGfx = new Graphics()
+          cipherContainer.addChild(clockGlowGfx)
+          cipherContainer.addChild(lightningGfx)
+          nodeContainer.addChild(cipherContainer)
 
-        animControllersRef.current.push((t) => {
-          // 1. Clockwise Pulsing Magic Rune Dial (Fast Clock / Bomb Ticker Dial)
-          clockGlowGfx.clear()
-          const sweepAngle = (t * 3.6) % (Math.PI * 2)
+          const RUNES = ['ᚠ', 'ᚢ', 'ᚦ', 'ᚨ', 'ᚱ', 'ᚲ', 'ᚷ', 'ᚹ', 'ᚺ', 'ᛉ', 'ᛞ', 'ᛟ']
+          const numPips = RUNES.length
+          const clockRadius = 25
 
-          runeItems.forEach(({ txt, style, angle, px, py }) => {
-            // Angular difference behind the clockwise sweep
-            let angleDiff = (sweepAngle - angle) % (Math.PI * 2)
-            if (angleDiff < 0) angleDiff += Math.PI * 2
+          const runeItems = RUNES.map((char, i) => {
+            const pipAngle = (i * 2 * Math.PI) / numPips - Math.PI / 2
+            const px = Math.cos(pipAngle) * clockRadius
+            const py = Math.sin(pipAngle) * clockRadius
 
-            // Intensity falls off along the trailing tail
-            const intensity = Math.max(0, 1 - angleDiff / (Math.PI * 1.0))
-            const runeAlpha = 0.3 + 0.7 * Math.pow(intensity, 2)
-            txt.alpha = runeAlpha
-            txt.scale.set(0.85 + 0.35 * intensity)
-            style.fill = intensity > 0.6 ? 0xffffff : (intensity > 0.3 ? palette.peachNum : palette.mauveNum)
+            const style = new TextStyle({
+              fontSize: 9,
+              fontFamily: 'serif, monospace',
+              fontWeight: 'bold',
+              fill: palette.mauveNum,
+            })
+            const txt = new Text({ text: char, style })
+            txt.anchor.set(0.5, 0.5)
+            txt.position.set(px, py)
+            cipherContainer.addChild(txt)
+            return { txt, style, angle: pipAngle, px, py }
+          })
 
-            // Dynamic glow behind active rune
-            if (intensity > 0.35) {
-              clockGlowGfx.circle(px, py, 6).fill({
-                color: intensity > 0.6 ? palette.redNum : palette.mauveNum,
-                alpha: (intensity - 0.35) * 0.55,
-              })
+          animControllersRef.current.push((t) => {
+            // 1. Clockwise Pulsing Magic Rune Dial (Fast Clock / Bomb Ticker Dial)
+            clockGlowGfx.clear()
+            const sweepAngle = (t * 3.6) % (Math.PI * 2)
+
+            runeItems.forEach(({ txt, style, angle, px, py }) => {
+              // Angular difference behind the clockwise sweep
+              let angleDiff = (sweepAngle - angle) % (Math.PI * 2)
+              if (angleDiff < 0) angleDiff += Math.PI * 2
+
+              // Intensity falls off along the trailing tail
+              const intensity = Math.max(0, 1 - angleDiff / (Math.PI * 1.0))
+              const runeAlpha = 0.3 + 0.7 * Math.pow(intensity, 2)
+              txt.alpha = runeAlpha
+              txt.scale.set(0.85 + 0.35 * intensity)
+              style.fill = intensity > 0.6 ? 0xffffff : (intensity > 0.3 ? palette.peachNum : palette.mauveNum)
+
+              // Dynamic glow behind active rune
+              if (intensity > 0.35) {
+                clockGlowGfx.circle(px, py, 6).fill({
+                  color: intensity > 0.6 ? palette.redNum : palette.mauveNum,
+                  alpha: (intensity - 0.35) * 0.55,
+                })
+              }
+            })
+
+            // 2. Crackling Volatile Magic Overload Lightning Arcs (Inside hex bounds)
+            lightningGfx.clear()
+            if (Math.sin(t * 16) > 0.3) {
+              const boltAngle = t * 7 + Math.sin(t * 12)
+              const boltLen = (HEX_RADIUS - 10) * (0.5 + Math.random() * 0.45)
+              const midX = Math.cos(boltAngle) * (boltLen * 0.5) + (Math.random() - 0.5) * 6
+              const midY = Math.sin(boltAngle) * (boltLen * 0.5) + (Math.random() - 0.5) * 6
+              const endX = Math.cos(boltAngle) * boltLen
+              const endY = Math.sin(boltAngle) * boltLen
+
+              lightningGfx
+                .moveTo(0, 0)
+                .lineTo(midX, midY)
+                .lineTo(endX, endY)
+                .stroke({ width: 1.6, color: 0xffffff, alpha: 0.95 })
+                .moveTo(0, 0)
+                .lineTo(midX, midY)
+                .lineTo(endX, endY)
+                .stroke({ width: 3.0, color: palette.redNum, alpha: 0.4 })
             }
+
+            innerGfx.alpha = 0.1 + 0.3 * (0.5 + 0.5 * Math.sin(t * 2.0))
           })
-
-          // 3. Crackling Volatile Magic Overload Lightning Arcs (Inside hex bounds)
-          lightningGfx.clear()
-          if (Math.sin(t * 16) > 0.3) {
-            const boltAngle = t * 7 + Math.sin(t * 12)
-            const boltLen = (HEX_RADIUS - 10) * (0.5 + Math.random() * 0.45)
-            const midX = Math.cos(boltAngle) * (boltLen * 0.5) + (Math.random() - 0.5) * 6
-            const midY = Math.sin(boltAngle) * (boltLen * 0.5) + (Math.random() - 0.5) * 6
-            const endX = Math.cos(boltAngle) * boltLen
-            const endY = Math.sin(boltAngle) * boltLen
-
-            lightningGfx
-              .moveTo(0, 0)
-              .lineTo(midX, midY)
-              .lineTo(endX, endY)
-              .stroke({ width: 1.6, color: 0xffffff, alpha: 0.95 })
-              .moveTo(0, 0)
-              .lineTo(midX, midY)
-              .lineTo(endX, endY)
-              .stroke({ width: 3.0, color: palette.redNum, alpha: 0.4 })
-          }
-
-          innerGfx.alpha = 0.1 + 0.3 * (0.5 + 0.5 * Math.sin(t * 2.0))
-        })
+        }
       }
 
       // 4. TRADEOFF WORKSHOP: Transmutation Forge / Golden Star Constellation

@@ -33,7 +33,6 @@ nodes:
     type: "boss_lair"
     coordinates: { q: 0, r: -2 }
     status: "locked"
-    sectionRef: "quiz"
     requiredItems:
       - "adapter-shield"
 `
@@ -99,6 +98,35 @@ nodes:
     expect(result.diagnostics.some((d) => d.message.includes("requires item 'non-existent-blade'"))).toBe(true)
   })
 
+  it('catches dropped items not required by the boss encounter (Tier 3)', () => {
+    const orphanItemYaml = `
+topicId: "demo"
+topicTitle: "Demo Realm"
+nodes:
+  - id: "capital"
+    title: "Capital"
+    type: "capital"
+    sectionRef: "intro"
+  - id: "goblin-camp"
+    title: "Goblin Camp"
+    type: "quiz_encounter"
+    sectionRef: "quiz"
+    rewards:
+      - id: "shield"
+        name: "Shield"
+      - id: "orphan-blade"
+        name: "Orphan Blade"
+  - id: "boss"
+    title: "Boss"
+    type: "boss_lair"
+    requiredItems:
+      - "shield"
+`
+    const result = validateHexCampaign(orphanItemYaml, ['intro', 'quiz'])
+    expect(result.status).toBe('warning')
+    expect(result.diagnostics.some((d) => d.tier === 3 && d.message.includes("Dropped key item 'orphan-blade' is not required by boss lair 'boss'"))).toBe(true)
+  })
+
   it('catches invalid sectionRef (Tier 3)', () => {
     const invalidRefYaml = `
 topicId: "demo"
@@ -113,6 +141,48 @@ nodes:
     const result = validateHexCampaign(invalidRefYaml, ['intro', 'quiz'])
     expect(result.status).toBe('warning')
     expect(result.diagnostics.some((d) => d.message.includes("Referenced section 'missing-section' not found"))).toBe(true)
+  })
+
+  it('catches duplicate sectionRef across nodes (Tier 3)', () => {
+    const duplicateRefYaml = `
+topicId: "demo"
+topicTitle: "Demo Realm"
+nodes:
+  - id: "capital"
+    title: "Capital"
+    type: "capital"
+    sectionRef: "intro"
+  - id: "goblin-camp"
+    title: "Goblin Camp"
+    type: "quiz_encounter"
+    sectionRef: "quiz"
+  - id: "orc-camp"
+    title: "Orc Camp"
+    type: "quiz_encounter"
+    sectionRef: "quiz"
+`
+    const result = validateHexCampaign(duplicateRefYaml, ['intro', 'quiz'])
+    expect(result.status).toBe('warning')
+    expect(result.diagnostics.some((d) => d.tier === 3 && d.message.includes("Duplicate sectionRef 'quiz'"))).toBe(true)
+  })
+
+  it('catches missing OKF section coverage (Tier 3)', () => {
+    const incompleteCampaignYaml = `
+topicId: "demo"
+topicTitle: "Demo Realm"
+nodes:
+  - id: "capital"
+    title: "Capital"
+    type: "capital"
+    sectionRef: "intro"
+  - id: "goblin-camp"
+    title: "Goblin Camp"
+    type: "quiz_encounter"
+    sectionRef: "quiz"
+`
+    const result = validateHexCampaign(incompleteCampaignYaml, ['intro', 'quiz', 'flowchart', 'tradeoffs'])
+    expect(result.status).toBe('warning')
+    expect(result.diagnostics.some((d) => d.tier === 3 && d.message.includes('missing mappings for 2 OKF section(s)'))).toBe(true)
   })
 
   it('prohibits key item rewards declared in boss_lair encounter', () => {

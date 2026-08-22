@@ -141,9 +141,14 @@ The **Validation Gateway** (`src/core/generic/hex-map/validation.ts`) automatica
 2. **Node ID Uniqueness:** Every node ID must be globally unique within the campaign.
 3. **Boss Solvability & Key Item Reachability:**
    - Every item ID declared in `boss_lair.requiredItems` **must be dropped by a prerequisite node** in the campaign.
+   - Every key item reward dropped by a challenge node **must be required by the climax `boss_lair` encounter** (no orphan items).
    - A `boss_lair` node **must not declare item rewards** (`rewards: []`), as it represents the campaign terminus.
 4. **Section Reference Integrity:**
    - Every `sectionRef` declared on a node must resolve to a valid existing section directory in `public/okf/<topicId>/sections/<sectionRef>/`.
+5. **Section Reference Uniqueness:**
+   - Every node in a campaign manifest must reference a **unique** `sectionRef` (no duplicate encounters or duplicated sanctuaries across distinct map nodes). Climax `boss_lair` encounters can omit `sectionRef` to avoid duplicating preceding quiz encounters.
+6. **Full Topic Section Coverage:**
+   - Every existing OKF section directory in `public/okf/<topicId>/sections/` must be mapped to at least one campaign node on the hex map, ensuring complete curriculum coverage.
 
 ---
 

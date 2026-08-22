@@ -39,49 +39,51 @@ export function getAutoFlowConnections(nodes: HexNodeData[]): Array<{ fromId: st
     connections.push({ fromId: capital.id, toId: sanctuary.id })
   })
 
-  // 2. Entry Sanctuaries connect to Invading Challenges & Workshops
+  // 2. Entry Sanctuaries connect 1-to-1 to Initial Challenges
   entrySanctuaries.forEach((sanctuary, index) => {
-    if (workshops.length > 0) {
-      const workshop = workshops[index % workshops.length]
-      if (!connections.some((c) => c.fromId === sanctuary.id && c.toId === workshop.id)) {
-        connections.push({ fromId: sanctuary.id, toId: workshop.id })
-      }
-    }
-    if (challenges.length > 0) {
-      const challenge = challenges[index % challenges.length]
-      if (!connections.some((c) => c.fromId === sanctuary.id && c.toId === challenge.id)) {
-        connections.push({ fromId: sanctuary.id, toId: challenge.id })
-      }
+    if (index < challenges.length) {
+      connections.push({ fromId: sanctuary.id, toId: challenges[index].id })
     }
   })
 
-  // 3. Deep Sanctuaries connect from Challenges (Challenges -> Deep Sanctuaries)
+  // 3. Initial Challenges connect 1-to-1 to Deep Sanctuaries
   deepSanctuaries.forEach((sanctuary, index) => {
-    if (challenges.length > 0) {
-      const parentChallenge = challenges[index % challenges.length]
-      connections.push({ fromId: parentChallenge.id, toId: sanctuary.id })
+    if (index < challenges.length) {
+      connections.push({ fromId: challenges[index].id, toId: sanctuary.id })
     } else {
       connections.push({ fromId: capital.id, toId: sanctuary.id })
     }
   })
 
-  // 4. Distribute any remaining unmapped challenges
-  challenges.forEach((challenge, index) => {
-    if (!connections.some((c) => c.toId === challenge.id)) {
-      const parentSanctuary = sanctuaries[index % Math.max(1, sanctuaries.length)]
-      if (parentSanctuary) {
-        connections.push({ fromId: parentSanctuary.id, toId: challenge.id })
-      } else {
-        connections.push({ fromId: capital.id, toId: challenge.id })
-      }
+  // 4. Distribute remaining followup challenges and workshops from downstream deep sanctuaries
+  const tier1ChallengeCount = Math.min(entrySanctuaries.length, challenges.length)
+  const remainingChallenges = challenges.slice(tier1ChallengeCount)
+
+  remainingChallenges.forEach((challenge, index) => {
+    const parentSanctuary = deepSanctuaries[index % Math.max(1, deepSanctuaries.length)] || sanctuaries[0]
+    if (parentSanctuary && !connections.some((c) => c.toId === challenge.id)) {
+      connections.push({ fromId: parentSanctuary.id, toId: challenge.id })
     }
   })
 
-  // 5. Outer Challenges & Deep Sanctuaries connect to Boss Lair
+  // Workshops connect from downstream deep sanctuaries (or fallback to end sanctuary)
+  workshops.forEach((workshop, index) => {
+    const parentSanctuary = deepSanctuaries[index % Math.max(1, deepSanctuaries.length)] || sanctuaries[sanctuaries.length - 1]
+    if (parentSanctuary && !connections.some((c) => c.toId === workshop.id)) {
+      connections.push({ fromId: parentSanctuary.id, toId: workshop.id })
+    }
+  })
+
+  // 5. Terminal nodes (Challenges, Workshops & Deep Sanctuaries) connect to Boss Lair
   if (boss) {
     challenges.forEach((challenge) => {
       if (!connections.some((c) => c.fromId === challenge.id && c.toId === boss.id)) {
         connections.push({ fromId: challenge.id, toId: boss.id })
+      }
+    })
+    workshops.forEach((workshop) => {
+      if (!connections.some((c) => c.fromId === workshop.id && c.toId === boss.id)) {
+        connections.push({ fromId: workshop.id, toId: boss.id })
       }
     })
     deepSanctuaries.forEach((sanctuary) => {
