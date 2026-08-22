@@ -9,6 +9,7 @@ interface CampaignHudBarProps {
   currentTopicId: string | null
   hasBossItems: boolean
   bossNode: HexNodeData | undefined
+  nodes?: HexNodeData[]
 }
 
 export const CampaignHudBar: React.FC<CampaignHudBarProps> = ({
@@ -17,7 +18,24 @@ export const CampaignHudBar: React.FC<CampaignHudBarProps> = ({
   currentTopicId,
   hasBossItems,
   bossNode,
+  nodes,
 }) => {
+  const isCapitalCleared =
+    nodes?.some((n) => n.type === 'capital' && n.status === 'cleared') ??
+    campaign.clearedNodeIds?.some((id) => nodes?.find((n) => n.id === id)?.type === 'capital') ??
+    false
+
+  const allRewards = nodes?.flatMap((n) => n.rewards || []) || []
+  const requiredKeys = (bossNode?.requiredItems || []).map((reqId) => {
+    const item = allRewards.find((r) => r.id === reqId) || campaign.inventory.find((r) => r.id === reqId)
+    const isCollected = campaign.inventory.some((inv) => inv.id === reqId)
+    return {
+      id: reqId,
+      name: item?.name || reqId,
+      icon: item?.icon || '🗝️',
+      isCollected,
+    }
+  })
   return (
     <div className="bg-[var(--ctp-surface0)] border border-[var(--ctp-surface1)] rounded-2xl p-3.5 sm:p-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 shadow-md">
       {/* Campaign Title & Difficulty Badge */}
@@ -118,8 +136,39 @@ export const CampaignHudBar: React.FC<CampaignHudBarProps> = ({
         </div>
 
         <div className="flex items-center gap-1 flex-wrap">
-          {campaign.inventory.length === 0 && campaign.activeBuffs.length === 0 ? (
-            <span className="text-[10px] text-[var(--ctp-subtext0)] italic">(No gear collected)</span>
+          {/* Key items revealed once Citadel is cleared */}
+          {isCapitalCleared && requiredKeys.length > 0 ? (
+            <>
+              {requiredKeys.map((item) => (
+                <Badge
+                  key={item.id}
+                  variant="secondary"
+                  className={`text-[10px] px-1.5 py-0 flex items-center gap-0.5 transition-all ${
+                    item.isCollected
+                      ? 'bg-[var(--ctp-blue)]/20 text-[var(--ctp-blue)] border-[var(--ctp-blue)]/40 font-semibold'
+                      : 'bg-[var(--ctp-surface0)] text-[var(--ctp-subtext0)] border-dashed border-[var(--ctp-surface2)] opacity-65'
+                  }`}
+                  title={item.isCollected ? `Obtained: ${item.name}` : `Key Quest: ${item.name} (Not Yet Collected)`}
+                >
+                  <span>{item.isCollected ? item.icon : '🔒'}</span>
+                  <span className="truncate max-w-[80px]">{item.name}</span>
+                </Badge>
+              ))}
+              {campaign.activeBuffs.map((buff, idx) => (
+                <Badge
+                  key={`${buff.source}-${idx}`}
+                  variant="secondary"
+                  className="bg-[var(--ctp-green)]/20 text-[var(--ctp-green)] border-[var(--ctp-green)]/40 text-[10px] px-1.5 py-0 flex items-center gap-0.5"
+                >
+                  <span>⚒️</span>
+                  <span className="truncate max-w-[80px]">+{buff.value}% {buff.stat}</span>
+                </Badge>
+              ))}
+            </>
+          ) : campaign.inventory.length === 0 && campaign.activeBuffs.length === 0 ? (
+            <span className="text-[10px] text-[var(--ctp-subtext0)] italic">
+              {isCapitalCleared ? '(No gear collected)' : 'Clear Citadel to reveal Key Quests'}
+            </span>
           ) : (
             <>
               {campaign.inventory.map((item) => (

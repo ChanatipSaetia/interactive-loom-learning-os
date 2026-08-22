@@ -13,6 +13,7 @@ interface NodeInspectorTrayProps {
 
 export const NodeInspectorTray: React.FC<NodeInspectorTrayProps> = ({
   selectedNode,
+  nodes,
   inventory,
   onLaunchEncounter,
 }) => {
@@ -164,6 +165,109 @@ export const NodeInspectorTray: React.FC<NodeInspectorTrayProps> = ({
           </Button>
         </div>
       </div>
+
+      {/* Citadel Archives: Key Item Intelligence (Shown after Citadel is Cleared) */}
+      {isCapital && isCleared && (() => {
+        const boss = nodes?.find((n) => n.type === 'boss_lair')
+        const allRewards = nodes?.flatMap((n) => (n.rewards || []).map((r) => ({ ...r, nodeTitle: n.title, nodeType: n.type }))) || []
+        const requiredList = (boss?.requiredItems || []).map((reqId) => {
+          const reward = allRewards.find((r) => r.id === reqId)
+          const isCollected = inventory.some((item) => item.id === reqId)
+          return {
+            id: reqId,
+            name: reward?.name || reqId,
+            icon: reward?.icon || '🗝️',
+            guardian: reward?.nodeTitle || 'Encounter',
+            isCollected,
+          }
+        })
+
+        if (requiredList.length === 0) return null
+
+        const collectedCount = requiredList.filter((r) => r.isCollected).length
+
+        return (
+          <div className="mt-3.5 pt-3 border-t border-[var(--ctp-surface1)]/60 flex flex-col gap-2">
+            <div className="flex items-center justify-between text-xs">
+              <span className="font-bold text-[var(--ctp-mauve)] flex items-center gap-1.5">
+                <span>📜</span> Citadel Intelligence: Boss Key Item Quests
+              </span>
+              <Badge variant={collectedCount === requiredList.length ? 'success' : 'secondary'} className="text-[10px] font-mono">
+                {collectedCount}/{requiredList.length} Collected
+              </Badge>
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
+              {requiredList.map((req) => (
+                <div
+                  key={req.id}
+                  className={`p-2 rounded-xl border text-xs flex items-center gap-2 transition-all ${
+                    req.isCollected
+                      ? 'bg-[var(--ctp-blue)]/10 border-[var(--ctp-blue)]/40 text-[var(--ctp-text)]'
+                      : 'bg-[var(--ctp-crust)]/60 border-[var(--ctp-surface1)] text-[var(--ctp-subtext0)]'
+                  }`}
+                >
+                  <span className="text-base shrink-0">{req.isCollected ? req.icon : '🔒'}</span>
+                  <div className="min-w-0 flex-1">
+                    <div className="font-semibold truncate text-[11px] flex items-center gap-1">
+                      <span>{req.name}</span>
+                      {req.isCollected && <span className="text-[var(--ctp-green)] text-[10px]">✓</span>}
+                    </div>
+                    <div className="text-[10px] text-[var(--ctp-subtext0)] truncate">
+                      {req.isCollected ? 'Secured in inventory' : `Guarded at ${req.guardian}`}
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )
+      })()}
+
+      {/* Boss Lair Key Items Seal Checklist */}
+      {isBoss && (() => {
+        const allRewards = nodes?.flatMap((n) => n.rewards || []) || []
+        const requiredList = (selectedNode.requiredItems || []).map((reqId) => {
+          const reward = allRewards.find((r) => r.id === reqId) || inventory.find((r) => r.id === reqId)
+          const isCollected = inventory.some((item) => item.id === reqId)
+          return {
+            id: reqId,
+            name: reward?.name || reqId,
+            icon: reward?.icon || '🗝️',
+            isCollected,
+          }
+        })
+
+        if (requiredList.length === 0) return null
+
+        return (
+          <div className="mt-3.5 pt-3 border-t border-[var(--ctp-surface1)]/60 flex flex-col gap-2">
+            <div className="flex items-center justify-between text-xs">
+              <span className="font-bold text-[var(--ctp-maroon)] flex items-center gap-1.5">
+                <span>🗝️</span> Dragon Lair Prerequisite Seals
+              </span>
+              <span className="font-mono text-[11px] text-[var(--ctp-subtext0)]">
+                {inventory.filter((inv) => selectedNode.requiredItems?.includes(inv.id)).length}/{requiredList.length} Keys Held
+              </span>
+            </div>
+            <div className="flex flex-wrap gap-1.5">
+              {requiredList.map((req) => (
+                <Badge
+                  key={req.id}
+                  variant="secondary"
+                  className={`text-[10px] px-2 py-0.5 flex items-center gap-1 border ${
+                    req.isCollected
+                      ? 'bg-[var(--ctp-green)]/20 text-[var(--ctp-green)] border-[var(--ctp-green)]/40'
+                      : 'bg-[var(--ctp-crust)] text-[var(--ctp-red)] border-[var(--ctp-red)]/30 opacity-75'
+                  }`}
+                >
+                  <span>{req.isCollected ? '✓' : '🔒'}</span>
+                  <span>{req.name}</span>
+                </Badge>
+              ))}
+            </div>
+          </div>
+        )
+      })()}
     </div>
   )
 }

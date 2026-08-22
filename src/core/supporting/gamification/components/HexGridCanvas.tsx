@@ -1267,24 +1267,50 @@ export const HexGridCanvas = React.forwardRef<HexGridCanvasRef, HexGridCanvasPro
       }
 
       // Item Reward Beacon Badge (Docked cleanly at bottom edge without shifting main icon)
-      if (capitalCleared && node.rewards && node.rewards.length > 0 && (!isLocked || isBoss)) {
+      // When Capital is cleared, Citadel Intelligence reveals all key item reward beacons across the map (even on locked nodes)
+      if (capitalCleared && node.rewards && node.rewards.length > 0) {
+        const isCollected = isCleared
         const badgeGfx = new Graphics()
         badgeGfx
           .roundRect(-13, 20, 26, 16, 8)
           .fill({ color: palette.mantleNum, alpha: 0.95 })
-          .stroke({ width: 1.5, color: palette.yellowNum })
+          .stroke({
+            width: 1.5,
+            color: isCollected ? palette.subtext0Num : isLocked ? palette.mauveNum : palette.yellowNum,
+          })
         nodeContainer.addChild(badgeGfx)
 
         const rewardIconStyle = new TextStyle({
           fontSize: 10,
           fontFamily: 'Apple Color Emoji, Segoe UI Emoji, sans-serif',
           fontWeight: 'bold',
-          fill: palette.yellowNum,
+          fill: isCollected ? palette.subtext0Num : palette.yellowNum,
         })
         const rewardText = new Text({ text: node.rewards[0].icon || '🎁', style: rewardIconStyle })
         rewardText.anchor.set(0.5, 0.5)
         rewardText.position.set(0, 28)
         nodeContainer.addChild(rewardText)
+      }
+
+      // Boss Seals Requirement Indicator on Hex Map
+      if (isBoss && node.requiredItems && node.requiredItems.length > 0) {
+        const bossBadgeGfx = new Graphics()
+        bossBadgeGfx
+          .roundRect(-15, 20, 30, 16, 8)
+          .fill({ color: palette.crustNum, alpha: 0.95 })
+          .stroke({ width: 1.5, color: isCleared ? palette.greenNum : palette.maroonNum })
+        nodeContainer.addChild(bossBadgeGfx)
+
+        const bossBadgeStyle = new TextStyle({
+          fontSize: 10,
+          fontFamily: 'Apple Color Emoji, Segoe UI Emoji, sans-serif',
+          fontWeight: 'bold',
+          fill: isCleared ? palette.greenNum : palette.maroonNum,
+        })
+        const bossBadgeText = new Text({ text: isCleared ? '👑' : '🗝️', style: bossBadgeStyle })
+        bossBadgeText.anchor.set(0.5, 0.5)
+        bossBadgeText.position.set(0, 28)
+        nodeContainer.addChild(bossBadgeText)
       }
 
       // Cleared Checkmark Badge

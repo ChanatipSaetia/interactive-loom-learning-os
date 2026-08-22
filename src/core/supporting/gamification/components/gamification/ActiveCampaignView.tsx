@@ -81,6 +81,7 @@ export const ActiveCampaignView: React.FC<ActiveCampaignViewProps> = ({ game }) 
         currentTopicId={currentTopicId}
         hasBossItems={hasBossItems}
         bossNode={bossNode}
+        nodes={nodes}
       />
 
       {/* ─── Main Map Canvas with Bottom NodeInspectorTray ─── */}
