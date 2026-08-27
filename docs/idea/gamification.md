@@ -86,7 +86,7 @@ Each hex on the map corresponds to a specific **OKF (Open Knowledge Format) Sect
 - **Role**: Knowledge verification and city defense.
 - **Quiz Battles (`quiz`)**: Monsters (e.g., Goblins) attack a city.
   - **Correct Answer**: Deals damage to the monster.
-  - **Wrong Answer**: Character loses HP (mitigated by Armor / Evasion).
+  - **Wrong Answer**: Character loses HP (mitigated by Armor; an Evasion dodge prevents the damage and lets the player retry the question).
   - **Victory**: Defeating the monster secures the city and awards a key item.
   - **Defeat**: If the monster is not defeated, the event closes and the monster's HP resets for the next attempt.
 - **Magic Decryption (`reflection-sequence`)**: Time-limited puzzle encounters.
@@ -102,17 +102,25 @@ Each hex on the map corresponds to a specific **OKF (Open Knowledge Format) Sect
 
 ## 6. Map Dynamics, Health & Progression
 
-### 6.1 Threat Decay & Health Risk
-- **Neglect Decay**: Failing to visit or defend a hex after $N$ turns increases its threat level, causing health decay over time.
+### 6.1 System Chaos
+Each topic campaign tracks a **System Chaos** level (0–100, starts at 0) representing the growing instability of the realm when the learner idles in safe zones instead of advancing:
+
+- **Accumulation**: Re-visiting a safe-haven hex (intro/capital or reading city) for the 2nd time or later raises Chaos by `+15 × difficulty chaosMultiplier` (Easy ×0.5, Normal ×1.0, Hard ×1.5, Nightmare ×2.0), capped at 100.
+- **Relief**: Resting at a Reading Sanctuary reduces Chaos by 10, but rest healing is reduced by 0.25 per Chaos level (minimum 5 HP restored).
+- **Sanctuary Healing dampening**: Time-based tick healing (10 HP / 10s × visit multiplier, min 2) is further reduced by `floor(Chaos × 0.05)`.
+- **Enraged Monsters**: Monster damage scales by `1 + Chaos × 0.005` (up to **+50%** at 100 Chaos). Encounters at Chaos ≥ 20 display a 🔥 Chaos Buff tag in the combat log.
+- **Magic Backlash**: Failed or timed-out `reflection-sequence` decryption suffers backlash damage scaled by `1 + Chaos × 0.01` (up to **+100%** at 100 Chaos). Section-failure damage is amplified the same way.
+
+### 6.2 Health Risk
 - **Zero HP (Defeat)**: Losing all health resets the current topic campaign, failing the city defense mission and requiring a restart.
 
-### 6.2 Leveling & Attributes
+### 6.3 Leveling & Attributes
 - Clearing hexes and completing topics awards **Experience Points (EXP)**.
 - Leveling up grants **Attribute Points** that learners can allocate to Armor, Evasion, or Intelligence.
 
 ### 6.3 Dynamic Difficulty Settings
 Learners can choose a difficulty setting per topic:
-- **Higher Difficulty**: Monsters deal higher damage, attribute passive triggers occur less frequently, and neglect decay accelerates ($N$ turns value is reduced).
+- **Higher Difficulty**: Monsters deal higher damage, attribute passive triggers occur less frequently, and System Chaos accumulates faster from safe-haven revisits (higher `chaosMultiplier`).
 - **Higher Rewards**: Yields bonus EXP, unique badges, and faster leveling.
 
 ### 6.4 Badges & Achievements

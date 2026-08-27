@@ -68,7 +68,7 @@ Subdomains represent the business capabilities and problem space of the Interact
 11. **📊 Learning Progress Tracking**  
     *Focus:* Section completion tracking, quiz score history, sandbox interaction state retention, and local persistence.
 12. **🎮 Gamification Campaign Runtime**  
-    *Focus:* Character attributes (Armor, Evasion, Intelligence), HP & threat decay, quiz combat resolution, node unlocks, XP/leveling, temporary buffs, item inventory, and badge awards across gamified topics. Consumes `HexCampaign` from the Hex Map context via `HexCampaignSourcePort`.
+    *Focus:* Character attributes (Armor, Evasion, Intelligence), HP & System Chaos, quiz combat resolution, node unlocks, XP/leveling, temporary buffs, item inventory, and badge awards across gamified topics. Consumes `HexCampaign` from the Hex Map context via `HexCampaignSourcePort`.
 
 ---
 
@@ -129,7 +129,7 @@ Arrow labels state the relationship; `implements` marks adapter → port edges.
   ┃ (CoreLearningEngineContext)                                    ┃   ┃ (Supporting Domain)                               ┃
   ┃                                                                ┃   ┃                                                   ┃
   ┃ • SectionRegistry resolution (lazy SectionRenderer components) ┃   ┃ • Character Attributes & Leveling Engine (XP/HP)  ┃
-  ┃ • Topic Route Discovery (/topics/:topicId/*)                   ┃   ┃ • Turn-based Combat Resolution & Threat Decay     ┃
+  ┃ • Topic Route Discovery (/topics/:topicId/*)                   ┃   ┃ • Turn-based Combat Resolution & System Chaos     ┃
   ┃ • Stream HUD & Lesson Assembly                                 ┃   ┃ • Hex Node Unlocks & Inventory Items State        ┃
   ┃ • lastValidData Section Live Preview Fallback                  ┃   ┃ • lastValidData Campaign Map Fallback             ┃
   ┗━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛   ┗━━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━━┛
@@ -238,7 +238,7 @@ Arrow labels state the relationship; `implements` marks adapter → port edges.
 ---
 
 #### F. Gamification Campaign Context (Supporting)
-* **Role:** Supporting subdomain runtime orchestrating a learner's gameplay of a `HexCampaign`: character attributes, HP, combat resolution, node unlocks, threat/HP decay, XP/leveling, temporary buffs, item inventory, and badge awards. Consumes validated payloads from the `ValidationGatewayContext` (similar to `CompositionEngineContext`).
+* **Role:** Supporting subdomain runtime orchestrating a learner's gameplay of a `HexCampaign`: character attributes, HP, combat resolution, node unlocks, System Chaos, XP/leveling, temporary buffs, item inventory, and badge awards. Consumes validated payloads from the `ValidationGatewayContext` (similar to `CompositionEngineContext`).
 * **Ubiquitous Language:** `GlobalCharacterState`, `TopicCampaignState`, `CharacterAttributes` (Armor, Evasion, Intelligence), `MonsterData`, `ItemReward`, `CombatTurnResult`, `LevelProgressResult`.
 * **Ports & Adapters Architecture:**
   * **Driving (Inbound) Ports:** `GamificationRuntimePort` (or `useGamification()` hook) allowing host views (`/gamification/:topicId`, `/gamification-demo`) to trigger gameplay actions (`takeTurn`, `unlockNode`, `restAtSanctuary`).

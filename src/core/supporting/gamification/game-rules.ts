@@ -259,7 +259,8 @@ export function resolveCombatTurn(
   activeBuffs: ActiveBuff[] = [],
   chaosLevel: number = 0,
   damageMultiplier: number = 1.0,
-  totalQuestions: number = 2
+  totalQuestions: number = 2,
+  dodgedOverride?: boolean
 ): CombatTurnResult {
   // Derive base stat percentages from raw points
   const { minDamageTaken, chaosDamageScalingPerLevel, chaosTagThreshold } = GAME_RULES.combat
@@ -298,7 +299,8 @@ export function resolveCombatTurn(
   }
 
   // Wrong answer -> Monster attacks (Chaos & Difficulty enrage monster damage)
-  const isDodged = Math.random() * 100 < totalEvasion
+  // When the caller pre-rolled the evasion outcome (e.g. quiz grants an immediate retry), honor it.
+  const isDodged = dodgedOverride ?? Math.random() * 100 < totalEvasion
   const chaosMultiplier = 1 + chaosLevel * chaosDamageScalingPerLevel // Up to +50% extra monster damage at 100 Chaos
   const scaledMonsterDamage = Math.round(monster.damage * chaosMultiplier * damageMultiplier)
   const rawDamage = Math.max(minDamageTaken, scaledMonsterDamage - totalArmor + extraDamageVuln)

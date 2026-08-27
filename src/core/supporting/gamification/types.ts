@@ -60,7 +60,7 @@ export interface HexNodeData {
   title: string
   type: HexNodeType
   coordinates?: HexGridCoordinate
-  status: 'locked' | 'unlocked' | 'cleared' | 'threatened'
+  status: 'locked' | 'unlocked' | 'cleared'
   sectionRef?: string
   description: string
   monster?: MonsterData

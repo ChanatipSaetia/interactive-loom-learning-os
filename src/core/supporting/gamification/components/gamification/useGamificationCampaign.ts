@@ -98,7 +98,6 @@ export function useGamificationCampaign() {
           damageTakenInCampaign: 0,
           turnCount: 0,
           chaosLevel: 0,
-          decayThreatLevel: 0,
           isStarted: true,
           sanctuaryPulsesUsed: 0,
           inventory: [],
@@ -278,9 +277,9 @@ export function useGamificationCampaign() {
   }
 
   // Quiz Combat Result Execution
-  const handleQuizAnswerCombat = (isCorrect: boolean, totalQuestions?: number) => {
+  const handleQuizAnswerCombat = (isCorrect: boolean, totalQuestions?: number, dodgedOverride?: boolean) => {
     if (!selectedNode || !selectedNode.monster) return undefined
-    return portResolveQuizAnswer(isCorrect, selectedNode.id, totalQuestions)
+    return portResolveQuizAnswer(isCorrect, selectedNode.id, totalQuestions, dodgedOverride)
   }
 
   // Healing Sanctuary Action with Chaos Healing Decay

@@ -12,12 +12,12 @@ To improve learner engagement, motivation, and spaced review retention across te
 We decide to implement Gamification using the following architectural boundaries:
 
 1. **Hybrid Subdomain Model**:
-   - **Supporting Subdomain (`gamification-campaign`)**: Manages campaign orchestration, global character stats, per-topic campaign state, turn decay, and inventory.
+   - **Supporting Subdomain (`gamification-campaign`)**: Manages campaign orchestration, global character stats, per-topic campaign state, System Chaos, and inventory.
    - **Core Section Sub-Context (`hex-map`)**: Defines the `hex-map` OKF section Zod schema, editor form specs, and tabletop React renderer.
 
 2. **Decoupled Dual-Tier State Management**:
    - **`GlobalCharacterState`**: Persistent cross-topic profile tracking learner Level, cumulative EXP, earned Badges, base Attribute Points (Armor, Evasion, Intelligence), and unlocked perks.
-   - **`TopicCampaignState`**: Ephemeral per-topic state tracking current HP, temporary stat buffs, collected key items, hex clearance statuses, turn counts, and local threat decay.
+   - **`TopicCampaignState`**: Ephemeral per-topic state tracking current HP, temporary stat buffs, collected key items, hex clearance statuses, turn counts, and the System Chaos level.
 
 3. **Explicit Hex Grid Coordinate Schema (`hex-map`)**:
    - Uses axial coordinates `(q, r)` on a 2D tabletop grid.

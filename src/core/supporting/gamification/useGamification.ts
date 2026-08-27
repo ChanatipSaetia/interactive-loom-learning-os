@@ -172,7 +172,7 @@ export function useGamification(
   }, [campaign, characterAdapter, topicId])
 
   // Resolve quiz answer
-  const resolveQuizAnswer = useCallback((isCorrect: boolean, nodeMonsterId?: string, totalQuestions?: number) => {
+  const resolveQuizAnswer = useCallback((isCorrect: boolean, nodeMonsterId?: string, totalQuestions?: number, dodgedOverride?: boolean) => {
     if (!topicState || !globalProfile || !campaign || !topicId) return
 
     const targetNode = campaign.nodes.find((n) => n.id === nodeMonsterId || n.monster?.id === nodeMonsterId)
@@ -199,7 +199,8 @@ export function useGamification(
       topicState.activeBuffs,
       topicState.chaosLevel,
       diffMultiplier,
-      totalQuestions
+      totalQuestions,
+      dodgedOverride
     )
 
     setTopicState((prev) => {

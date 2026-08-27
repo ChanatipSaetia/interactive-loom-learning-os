@@ -1,7 +1,7 @@
 import { Container, Graphics } from 'pixi.js'
 import { HexNodeData } from '../types'
 import { GamificationThemePalette } from '../theme-palette'
-import { computeHexGridCoordinates, getAutoFlowConnections, isKeyItemLocationRevealed } from '../layout'
+import { computeHexGridCoordinates, getAutoFlowConnections } from '../layout'
 import { HEX_RADIUS, axialToPixel, getHexVertices } from './hex-geometry'
 import { createHexGradient } from './hex-gradient'
 import {
@@ -145,8 +145,6 @@ export function renderHexScene(ctx: HexSceneContext) {
     const isCleared = node.status === 'cleared'
     const isLocked = node.status === 'locked'
     const isBoss = node.type === 'boss_lair'
-    const isThreatened = node.status === 'threatened'
-    const hasItemReward = isKeyItemLocationRevealed(currentNodes, node)
 
     const nodeContainer = new Container()
     nodeContainer.zIndex = isSelected ? 100 : (isBoss ? 10 : 5)
@@ -249,9 +247,7 @@ export function renderHexScene(ctx: HexSceneContext) {
       isCleared,
       isLocked,
       isBoss,
-      isThreatened,
       isDefeatedEncounter,
-      hasItemReward,
       capitalCleared,
       atkUx,
       atkUy,
@@ -323,7 +319,7 @@ export function renderHexScene(ctx: HexSceneContext) {
       renderFogOfWar(nodeCtx)
     }
 
-    // Center insignia + reward / boss / cleared / threatened badges
+    // Center insignia + reward / boss / cleared badges
     renderNodeBadges(nodeCtx)
 
     // Hover animation

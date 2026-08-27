@@ -36,7 +36,7 @@ export const HexNodeDataSchema = z
     id: z.string().min(1),
     title: z.string().min(1),
     type: HexNodeTypeSchema,
-    status: z.enum(['locked', 'unlocked', 'cleared', 'threatened']).default('locked'),
+    status: z.enum(['locked', 'unlocked', 'cleared']).default('locked'),
     sectionRef: z.string().optional(),
     description: z.string().optional().default(''),
     monster: MonsterDataSchema.optional(),

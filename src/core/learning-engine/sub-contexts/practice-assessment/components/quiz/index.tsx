@@ -17,6 +17,7 @@ export interface QuizSectionProps extends SectionResultProps<QuizCompleted | Qui
   sectionIndex?: number
   sectionId?: string
   intelligenceChance?: number
+  evadeChance?: number
 }
 
 const CHOICE_LABELS = ['A', 'B', 'C', 'D', 'E', 'F']
@@ -31,6 +32,7 @@ function QuestionCard({
   selectedChoice,
   hintOpen,
   showIntelligenceHint,
+  dodgedRetry,
   onAnswer,
   onToggleHint,
 }: {
@@ -40,6 +42,7 @@ function QuestionCard({
   selectedChoice: string | null
   hintOpen: boolean
   showIntelligenceHint?: boolean
+  dodgedRetry?: boolean
   onAnswer: (questionIndex: number, choiceId: string) => void
   onToggleHint: (questionIndex: number) => void
 }) {
@@ -70,6 +73,12 @@ function QuestionCard({
       <h4 className="quiz-question-text" data-testid={`quiz-question-text-${index}`}>
         {question.question}
       </h4>
+
+      {dodgedRetry && (
+        <div className="quiz-dodged-notice" data-testid={`quiz-dodged-notice-${index}`}>
+          💨 Dodged! Your quick footwork slipped the monster's counterattack — try the question again!
+        </div>
+      )}
 
       {question.hint && !revealed && (
         <div className="quiz-hint" data-testid={`quiz-hint-${index}`}>
@@ -184,21 +193,41 @@ export default function QuizSection({
   sectionIndex = 0,
   sectionId = 'quiz',
   intelligenceChance,
+  evadeChance,
   onResultChange,
   onEvent,
 }: QuizSectionProps) {
   const [currentIndex, setCurrentIndex] = useState(0)
   const [answers, setAnswers] = useState<AnswersMap>({})
   const [hintsOpen, setHintsOpen] = useState<HintsOpenMap>({})
+  const [dodgedQuestionIndex, setDodgedQuestionIndex] = useState<number | null>(null)
   const { playSound } = useSound()
 
   const handleAnswer = useCallback(
     (questionIndex: number, choiceId: string) => {
-      const newAnswers = { ...answers, [questionIndex]: choiceId }
-      setAnswers(newAnswers)
       const q = questions[questionIndex]
       const choice = q?.choices.find((c) => c.id === choiceId)
       const isCorrect = choice?.correct ?? false
+
+      // Swift Retreat: Evasion grants a passive chance to dodge damage on a wrong
+      // answer and immediately retry the missed question (answer is not committed).
+      if (!isCorrect && evadeChance && evadeChance > 0 && Math.random() * 100 < evadeChance) {
+        playSound('success')
+        onEvent?.({
+          type: 'QuizOptionSelected',
+          questionId: q?.id ?? `q_${questionIndex}`,
+          choiceId,
+          isCorrect: false,
+          dodged: true,
+          timestamp: Date.now(),
+        })
+        setDodgedQuestionIndex(questionIndex)
+        return
+      }
+
+      setDodgedQuestionIndex(null)
+      const newAnswers = { ...answers, [questionIndex]: choiceId }
+      setAnswers(newAnswers)
 
       if (isCorrect) {
         playSound('success')
@@ -257,7 +286,7 @@ export default function QuizSection({
 
       onResultChange?.(resultContract)
     },
-    [questions, answers, playSound, onEvent, onResultChange, sectionId],
+    [questions, answers, playSound, evadeChance, onEvent, onResultChange, sectionId],
   )
 
   const handleToggleHint = useCallback((questionIndex: number) => {
@@ -325,6 +354,7 @@ export default function QuizSection({
           selectedChoice={answers[currentIndex] ?? null}
           hintOpen={!!hintsOpen[currentIndex]}
           showIntelligenceHint={showIntelligenceHint}
+          dodgedRetry={dodgedQuestionIndex === currentIndex}
           onAnswer={handleAnswer}
           onToggleHint={handleToggleHint}
         />

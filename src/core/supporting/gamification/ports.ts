@@ -42,7 +42,7 @@ export interface GamificationRuntimePort {
   // Actions
   selectNode: (nodeId: string) => void
   setDifficulty: (difficulty: DifficultyLevel) => void
-  resolveQuizAnswer: (isCorrect: boolean, nodeMonsterId?: string, totalQuestions?: number) => import('./game-rules').CombatTurnResult | void
+  resolveQuizAnswer: (isCorrect: boolean, nodeMonsterId?: string, totalQuestions?: number, dodgedOverride?: boolean) => import('./game-rules').CombatTurnResult | void
   completeNode: (nodeId: string) => void
   takeDamage: (damage: number) => void
   awardExp: (expAmount: number) => void

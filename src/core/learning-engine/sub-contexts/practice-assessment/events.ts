@@ -8,6 +8,8 @@ export interface QuizOptionSelected {
   isCorrect: boolean
   /** Whether Arcane Insight (Intelligence) triggered to reveal the correct answer. */
   intelligenceTriggered?: boolean
+  /** Whether Evasion granted a dodge on a wrong answer, allowing an immediate retry. */
+  dodged?: boolean
   /** Timestamp of the selection. */
   timestamp: number
 }

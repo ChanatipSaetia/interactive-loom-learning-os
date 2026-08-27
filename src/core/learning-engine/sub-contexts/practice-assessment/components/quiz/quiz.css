@@ -146,6 +146,16 @@
   line-height: 1.45;
 }
 
+.quiz-dodged-notice {
+  font-size: 13px;
+  color: var(--ctp-green);
+  background: color-mix(in srgb, var(--ctp-green) 8%, var(--ctp-crust));
+  border: 1px dashed color-mix(in srgb, var(--ctp-green) 35%, transparent);
+  padding: 10px 14px;
+  border-radius: 8px;
+  line-height: 1.45;
+}
+
 /* Choices Grid */
 .quiz-choices {
   display: flex;

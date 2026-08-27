@@ -16,9 +16,7 @@ export interface NodeEffectContext {
   isCleared: boolean
   isLocked: boolean
   isBoss: boolean
-  isThreatened: boolean
   isDefeatedEncounter: boolean
-  hasItemReward: boolean
   capitalCleared: boolean
   atkUx: number
   atkUy: number
@@ -680,7 +678,7 @@ export function renderFogOfWar(ctx: NodeEffectContext) {
   })
 }
 
-// Center insignia + reward / boss / cleared / threatened badges
+// Center insignia + reward / boss / cleared badges
 export function renderNodeBadges(ctx: NodeEffectContext) {
   const {
     node,
@@ -691,8 +689,6 @@ export function renderNodeBadges(ctx: NodeEffectContext) {
     isLocked,
     isBoss,
     isDefeatedEncounter,
-    isThreatened,
-    hasItemReward,
     capitalCleared,
   } = ctx
 
@@ -762,17 +758,5 @@ export function renderNodeBadges(ctx: NodeEffectContext) {
     checkText.anchor.set(0.5, 0.5)
     checkText.position.set(20, -18)
     nodeContainer.addChild(checkText)
-  }
-
-  // Threatened Warning Badge
-  if (isThreatened && !hasItemReward) {
-    const warnStyle = new TextStyle({
-      fontSize: 13,
-      fontFamily: 'Apple Color Emoji, Segoe UI Emoji, sans-serif',
-    })
-    const warnText = new Text({ text: '⚠️', style: warnStyle })
-    warnText.anchor.set(0.5, 0.5)
-    warnText.position.set(18, -18)
-    nodeContainer.addChild(warnText)
   }
 }

@@ -223,12 +223,17 @@ export const EncounterViewport: React.FC<EncounterViewportProps> = ({ game }) =>
                     key={`${node.id}-${quizAttemptKey}`}
                     {...sectionConfig.props}
                     intelligenceChance={derivedStats.intelligence}
+                    evadeChance={derivedStats.evasion}
                     onEvent={(event: any) => {
                       if (event.type === 'QuizOptionSelected') {
                         const totalQuestions = Array.isArray(sectionConfig?.props?.questions)
                           ? sectionConfig.props.questions.length
                           : 2
-                        const combatResult = handleQuizAnswerCombat(event.isCorrect, totalQuestions)
+                        const combatResult = handleQuizAnswerCombat(
+                          event.isCorrect,
+                          totalQuestions,
+                          event.isCorrect ? undefined : event.dodged === true
+                        )
                         if (event.isCorrect) {
                           setMonsterAttackedTimestamp(Date.now())
                           pushActionMessage(
@@ -236,9 +241,9 @@ export const EncounterViewport: React.FC<EncounterViewportProps> = ({ game }) =>
                             'exp',
                             '⚔️'
                           )
-                        } else if (combatResult?.isDodged) {
+                        } else if (event.dodged || combatResult?.isDodged) {
                           pushActionMessage(
-                            `Dodged! Fast Evasion speed allowed you to dodge ${node.monster?.name || 'Monster'}'s attack!`,
+                            `Dodged! Fast Evasion speed slipped ${node.monster?.name || 'Monster'}'s counterattack — retry the question!`,
                             'success',
                             '💨'
                           )
