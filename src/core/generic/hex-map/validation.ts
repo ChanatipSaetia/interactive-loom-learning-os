@@ -41,6 +41,32 @@ export function validateHexMapTier3(
     })
   }
 
+  // 3. Check Dependency References (parentId, unlockedBy, dependsOn)
+  for (const node of campaign.nodes) {
+    const rawDeps = [
+      ...(node.parentId ? [node.parentId] : []),
+      ...(node.unlockedBy || []),
+      ...(node.dependsOn || []),
+    ]
+    for (const depId of rawDeps) {
+      if (depId === node.id) {
+        diagnostics.push({
+          tier: 3,
+          field: `nodes[${node.id}].dependencies`,
+          message: `Hex node '${node.id}' cannot declare itself as a dependency.`,
+          fixHint: `Set dependency/parentId to a valid prerequisite node ID (e.g. sanctuary or capital).`,
+        })
+      } else if (!seenIds.has(depId)) {
+        diagnostics.push({
+          tier: 3,
+          field: `nodes[${node.id}].dependencies`,
+          message: `Hex node '${node.id}' references non-existent dependency '${depId}'.`,
+          fixHint: `Ensure prerequisite ID '${depId}' matches an existing node ID in the campaign.`,
+        })
+      }
+    }
+  }
+
   // 4. Boss Solvability & Key Item Validation Check
   const droppedItemIds = new Set<string>()
   for (const node of campaign.nodes) {

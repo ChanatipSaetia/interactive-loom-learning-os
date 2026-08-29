@@ -1,0 +1,12 @@
+steam_engine:
+  title: "ระบบเครื่องจักรไอน้ำ (Steam Engine System)"
+  desc: "แหล่งพลังงานกลไกทดแทนพลังงานน้ำและแรงงานสัตว์"
+  type: aggregate
+factory_system:
+  title: "ระบบโรงงานและการผลิต (Factory Production)"
+  desc: "สายการผลิตรวมศูนย์และการแบ่งงานกันทำ (Division of Labor)"
+  type: aggregate
+global_market:
+  title: "ตลาดการค้าและคมนาคมโลก (Global Market & Logistics)"
+  desc: "เครือข่ายรถไฟ เรือกลไฟ และระบบโลจิสติกส์ระหว่างประเทศ"
+  type: external

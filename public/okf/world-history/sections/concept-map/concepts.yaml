@@ -1,0 +1,80 @@
+nodes:
+  civilization:
+    title: "อารยธรรม (Civilization)"
+    definition: "สังคมมนุษย์ที่มีระดับการพัฒนาทางวัฒนธรรม การเมือง เมือง และการแบ่งงานกันทำขั้นสูง"
+    category: concept
+  agriculture:
+    title: "การปฏิวัติเกษตรกรรม"
+    definition: "การเปลี่ยนจากล่าสัตว์เร่ร่อนสู่การเพาะปลูกและตั้งถิ่นฐานริมแม่น้ำ"
+    category: process
+  writing_system:
+    title: "ระบบการเขียน (Writing System)"
+    definition: "เครื่องมือบันทึกกฎหมาย บัญชี ประวัติศาสตร์ เช่น อักษรรูปลิ่มและไฮโรกลิฟิก"
+    category: mechanism
+  governance_law:
+    title: "ระบบการปกครองและกฎหมาย"
+    definition: "โครงสร้างอำนาจ เช่น กฎหมายฮัมมูราบี ประชาธิปไตยกรีก และกฎหมายโรมัน"
+    category: system
+  feudalism:
+    title: "ระบบศักดินา (Feudalism)"
+    definition: "ระบบความสัมพันธ์ระหว่างเจ้าของที่ดิน อัศวิน และชาวนาในยุคกลาง"
+    category: pattern
+  renaissance:
+    title: "ยุคเรเนซองส์ (Renaissance)"
+    definition: "การฟื้นฟูวิทยาการคลาสสิก ปรัชญามนุษยนิยม และการคิดเชิงวิพากษ์"
+    category: concept
+  scientific_rev:
+    title: "การปฏิวัติวิทยาศาสตร์"
+    definition: "การใช้วิธีการทางวิทยาศาสตร์ การสังเกต และการทดลองค้นหาความจริง"
+    category: process
+  industrial_rev:
+    title: "การปฏิวัติอุตสาหกรรม"
+    definition: "การใช้เครื่องจักรไอน้ำและระบบโรงงานผลิตสินค้าจำนวนมาก"
+    category: system
+  trade_networks:
+    title: "เครือข่ายการค้าโลก (Global Trade)"
+    definition: "เส้นทางสายไหม ทางทะเล และการแลกเปลี่ยนข้ามทวีป"
+    category: mechanism
+  nation_state:
+    title: "รัฐชาติสมัยใหม่ (Nation State)"
+    definition: "การรวมศูนย์อำนาจทางการเมืองและดินแดนที่มีอธิปไตยชัดเจน"
+    category: pattern
+  globalization:
+    title: "โลกาภิวัตน์ (Globalization)"
+    definition: "การเชื่อมโยงทางเศรษฐกิจ วัฒนธรรม และข้อมูลข่าวสารทั่วโลกในยุคร่วมสมัย"
+    category: concept
+
+edges:
+  - from: agriculture
+    to: civilization
+    label: "ก่อให้เกิด"
+  - from: civilization
+    to: writing_system
+    label: "ประดิษฐ์ขึ้นเพื่อใช้ใน"
+  - from: civilization
+    to: governance_law
+    label: "พัฒนาเป็น"
+  - from: governance_law
+    to: feudalism
+    label: "วิวัฒนาการสู่"
+  - from: feudalism
+    to: renaissance
+    label: "เปลี่ยนผ่านสู่"
+  - from: renaissance
+    to: scientific_rev
+    label: "เป็นรากฐานของ"
+  - from: scientific_rev
+    to: industrial_rev
+    label: "ต่อยอดเทคโนโลยีสู่"
+  - from: industrial_rev
+    to: trade_networks
+    label: "ขยายขนาดของ"
+  - from: trade_networks
+    to: globalization
+    label: "ขับเคลื่อนสู่"
+  - from: industrial_rev
+    to: nation_state
+    label: "สร้างพลังขับเคลื่อน"
+  - from: nation_state
+    to: globalization
+    label: "มีปฏิสัมพันธ์ในระบบ"

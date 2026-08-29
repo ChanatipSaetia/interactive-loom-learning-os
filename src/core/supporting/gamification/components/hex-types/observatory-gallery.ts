@@ -129,11 +129,76 @@ export function renderObservatoryGalleryEffects(ctx: HexTypeEffectContext) {
   })
 }
 
+export function drawObservatoryGalleryTerritory(
+  g: Graphics,
+  ctx: import('./types').HexTerritoryContext,
+) {
+  if (!g || g.destroyed) return
+  const { x, y, radius, palette } = ctx
+
+  const primaryColor = palette.rosewaterNum
+  const accentColor = palette.flamingoNum
+  const brassColor = palette.surface1Num
+  const darkC = palette.crustNum
+
+  // 1. 2.5D Astrolabe Platform Plinth & Drop Shadow
+  g.ellipse(x, y + 5, radius, radius * 0.85)
+    .fill({ color: darkC, alpha: 0.25 })
+  g.ellipse(x, y, radius, radius * 0.88)
+    .fill({ color: primaryColor, alpha: 0.055 })
+
+  // 2. Concentric Astrolabe Coordinate Rings
+  g.ellipse(x, y, radius * 0.85, radius * 0.74)
+    .stroke({ width: 0.9, color: accentColor, alpha: 0.22 })
+  g.ellipse(x, y, radius, radius * 0.88)
+    .stroke({ width: 1.5, color: primaryColor, alpha: 0.35 })
+
+  // 3. 12 Zodiac / Celestial Degree Ticks along the Perimeter
+  for (let i = 0; i < 12; i++) {
+    const angle = (i * Math.PI * 2) / 12
+    const cosA = Math.cos(angle)
+    const sinA = Math.sin(angle)
+    const isMajor = i % 3 === 0
+    const tickLen = isMajor ? 5 : 2.5
+
+    g.moveTo(x + cosA * (radius - tickLen), y + sinA * ((radius - tickLen) * 0.88))
+      .lineTo(x + cosA * (radius + tickLen), y + sinA * ((radius + tickLen) * 0.88))
+      .stroke({ width: isMajor ? 1.4 : 0.8, color: primaryColor, alpha: isMajor ? 0.6 : 0.3 })
+  }
+
+  // 4. 4 Upright 2.5D Brass Celestial Gnomon Pillars & Armillary Orbs
+  for (let i = 0; i < 4; i++) {
+    const angle = (i * Math.PI) / 2
+    const gx = x + Math.cos(angle) * radius
+    const gy = y + Math.sin(angle) * (radius * 0.88)
+
+    // Base contact shadow
+    g.ellipse(gx, gy + 2, 5, 2.2).fill({ color: darkC, alpha: 0.55 })
+
+    // Upright 2.5D Brass Pillar (elevated in negative Y) with bold border
+    g.poly([
+      gx - 2.5, gy,
+      gx - 1.8, gy - 11,
+      gx + 1.8, gy - 11,
+      gx + 2.5, gy,
+    ]).fill({ color: brassColor }).stroke({ width: 1.1, color: palette.textNum })
+
+    // 2.5D Armillary Celestial Globe Sphere at apex (gy - 14) with bold border
+    const tipY = gy - 14
+    g.circle(gx, tipY, 2.8).fill({ color: accentColor, alpha: 0.9 }).stroke({ width: 0.9, color: palette.textNum })
+    g.circle(gx - 0.8, tipY - 0.8, 1.0).fill({ color: 0xffffff, alpha: 0.95 })
+
+    // Tilted 3D celestial orbital ring around globe
+    g.ellipse(gx, tipY, 4.5, 1.8).stroke({ width: 0.9, color: primaryColor, alpha: 0.85 })
+  }
+}
+
 export const observatoryGalleryHex: HexTypeDefinition = {
   type: 'observatory_gallery',
   title: 'Observatory Gallery',
   drawTerrainGround: drawObservatoryGalleryTerrainGround,
   drawInsignia: drawObservatoryGalleryInsignia,
+  drawTerritory: drawObservatoryGalleryTerritory,
   createGradient: createObservatoryGalleryGradient,
   renderEffects: renderObservatoryGalleryEffects,
   getGlowColor: (palette) => palette.rosewaterNum,

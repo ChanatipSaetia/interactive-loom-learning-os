@@ -38,8 +38,12 @@ export const MonsterDataSchema = z.object({
 export const HexNodeDataSchema = z
   .object({
     id: z.string().min(1),
+    parentId: z.string().optional(),
+    unlockedBy: z.array(z.string()).optional(),
+    dependsOn: z.array(z.string()).optional(),
     title: z.string().min(1),
     type: HexNodeTypeSchema,
+    coordinates: HexGridCoordinateSchema.optional(),
     status: z.enum(['locked', 'unlocked', 'cleared']).default('locked'),
     sectionRef: z.string().optional(),
     description: z.string().optional().default(''),

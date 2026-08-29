@@ -199,11 +199,77 @@ export function renderConceptMonolithEffects(ctx: HexTypeEffectContext) {
   })
 }
 
+export function drawConceptMonolithTerritory(
+  g: Graphics,
+  ctx: import('./types').HexTerritoryContext,
+) {
+  if (!g || g.destroyed) return
+  const { x, y, radius, palette } = ctx
+
+  const primaryColor = palette.lavenderNum
+  const accentColor = palette.tealNum
+  const barkColor = palette.surface1Num
+  const darkC = palette.crustNum
+
+  // 1. 2.5D Organic Root Mound & Drop Shadow
+  g.ellipse(x, y + 5, radius, radius * 0.85)
+    .fill({ color: darkC, alpha: 0.25 })
+  g.ellipse(x, y, radius, radius * 0.88)
+    .fill({ color: primaryColor, alpha: 0.06 })
+
+  // 2. Constellation Network Perimeter Ring
+  g.ellipse(x, y, radius * 0.88, radius * 0.76)
+    .stroke({ width: 0.9, color: accentColor, alpha: 0.22 })
+  g.ellipse(x, y, radius, radius * 0.88)
+    .stroke({ width: 1.4, color: primaryColor, alpha: 0.32 })
+
+  // 3. 6 Upright 2.5D Miniature Bioluminescent Concept Sprout Trees
+  const treeCanopyPositions: Array<{ x: number; y: number }> = []
+  const count = 6
+  for (let i = 0; i < count; i++) {
+    const angle = (i * Math.PI * 2) / count
+    const nx = x + Math.cos(angle) * radius
+    const ny = y + Math.sin(angle) * (radius * 0.88)
+
+    // Tree ground root shadow
+    g.ellipse(nx, ny + 1.5, 5, 2.2).fill({ color: darkC, alpha: 0.55 })
+
+    // Upright 2.5D Trunk (growing upwards in negative Y) with bold outline
+    g.poly([
+      nx - 2.5, ny,
+      nx - 1.2, ny - 9,
+      nx + 1.2, ny - 9,
+      nx + 2.5, ny,
+    ]).fill({ color: barkColor }).stroke({ width: 1.0, color: palette.textNum })
+
+    // 2.5D Glowing Canopy Node Sphere (at ny - 12)
+    const cy = ny - 12
+    treeCanopyPositions.push({ x: nx, y: cy })
+
+    // Canopy glow aura
+    g.circle(nx, cy, 5.0).fill({ color: primaryColor, alpha: 0.25 })
+    // Main 2.5D foliage orb with bold border
+    g.circle(nx, cy, 3.5).fill({ color: i % 2 === 0 ? primaryColor : accentColor, alpha: 0.9 }).stroke({ width: 0.9, color: palette.textNum })
+    // Specular highlight on top-left of orb
+    g.circle(nx - 1, cy - 1, 1.2).fill({ color: 0xffffff, alpha: 0.95 })
+  }
+
+  // 4. 2.5D Holographic Concept Constellation Lattice connecting canopies in 3D air
+  for (let i = 0; i < count; i++) {
+    const p1 = treeCanopyPositions[i]
+    const p2 = treeCanopyPositions[(i + 2) % count]
+    g.moveTo(p1.x, p1.y)
+      .lineTo(p2.x, p2.y)
+      .stroke({ width: 0.8, color: accentColor, alpha: 0.35 })
+  }
+}
+
 export const conceptMonolithHex: HexTypeDefinition = {
   type: 'concept_monolith',
   title: 'Concept Tree',
   drawTerrainGround: drawConceptMonolithTerrainGround,
   drawInsignia: drawConceptMonolithInsignia,
+  drawTerritory: drawConceptMonolithTerritory,
   createGradient: createConceptMonolithGradient,
   renderEffects: renderConceptMonolithEffects,
   getGlowColor: (palette) => palette.lavenderNum,

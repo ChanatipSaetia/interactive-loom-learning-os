@@ -60,6 +60,9 @@ export interface CraftedArtifact {
 
 export interface HexNodeData {
   id: string
+  parentId?: string
+  unlockedBy?: string[]
+  dependsOn?: string[]
   title: string
   type: HexNodeType
   coordinates?: HexGridCoordinate
@@ -151,4 +154,5 @@ export interface TopicCampaignState {
   readingVisitCounts?: Record<string, number>
   monsterHpMap?: Record<string, number>
   unlockedBadges?: UnlockedBadge[]
+  nodeCoordinates?: Record<string, HexGridCoordinate>
 }

@@ -15,6 +15,8 @@ nodes:
     title: "Sanctuary of Motivation Psychology"
     type: "reading_sanctuary"
     status: "unlocked"
+    unlockedBy:
+      - "capital"
     sectionRef: "psychology"
     healingAmount: 40
     description: "A tranquil haven studying Self-Determination Theory (Autonomy, Competence, Relatedness) and intrinsic drives."
@@ -23,6 +25,8 @@ nodes:
     title: "Engagement Goblin Outpost"
     type: "quiz_encounter"
     status: "locked"
+    unlockedBy:
+      - "sanctuary-psychology"
     sectionRef: "quiz"
     description: "A wild Churn Goblin attempting to crash user retention! Answer gamification design questions to defeat it."
     monster:
@@ -43,6 +47,8 @@ nodes:
     title: "Archive Spire of Core Mechanics"
     type: "archive_spire"
     status: "unlocked"
+    unlockedBy:
+      - "capital"
     sectionRef: "core-mechanics"
     healingAmount: 30
     description: "Sacred library of PBL (Points, Badges, Leaderboards), streaks, milestone quests, and narrative progress."
@@ -51,6 +57,8 @@ nodes:
     title: "Hook Model Decryption Vault"
     type: "reflection_decryption"
     status: "locked"
+    unlockedBy:
+      - "sanctuary-mechanics"
     sectionRef: "reflection-sequence"
     description: "An ancient habit-loop vault. Arrange the 4 phases of Nir Eyal's Hook Model (Trigger -> Action -> Variable Reward -> Investment) before time runs out!"
     rewards:
@@ -64,6 +72,8 @@ nodes:
     title: "Archive Spire of Octalysis Drives"
     type: "archive_spire"
     status: "unlocked"
+    unlockedBy:
+      - "capital"
     sectionRef: "octalysis"
     healingAmount: 35
     description: "Explore the 8 Core Drives of human motivation: White Hat vs Black Hat, and Left Brain vs Right Brain drives."
@@ -72,6 +82,8 @@ nodes:
     title: "Octalysis Framework Crypt"
     type: "reflection_decryption"
     status: "locked"
+    unlockedBy:
+      - "sanctuary-octalysis"
     sectionRef: "reflection-template"
     description: "Reconstruct the 8 Core Drives synthesis matrix to balance White Hat empowerment and Black Hat urgency."
     rewards:
@@ -85,6 +97,8 @@ nodes:
     title: "Monolith of Gamification Vocabulary"
     type: "concept_monolith"
     status: "locked"
+    unlockedBy:
+      - "goblin-churn"
     sectionRef: "flashcards"
     healingAmount: 30
     description: "Review essential gamification terminology, behavioral economics terms, and game design definitions."
@@ -93,6 +107,8 @@ nodes:
     title: "Mechanic Fit Advisor Sanctuary"
     type: "reading_sanctuary"
     status: "locked"
+    unlockedBy:
+      - "reflection-hook"
     sectionRef: "decision-tree"
     healingAmount: 35
     description: "Navigate optimal mechanic selection trees based on audience type (Achievers, Explorers, Socializers, Killers)."
@@ -101,6 +117,8 @@ nodes:
     title: "Monolith of the Knowledge Graph"
     type: "concept_monolith"
     status: "locked"
+    unlockedBy:
+      - "reflection-template"
     sectionRef: "concept-map"
     healingAmount: 35
     description: "Structural knowledge map connecting behavioral psychology, game mechanics, and retention loops."
@@ -109,6 +127,8 @@ nodes:
     title: "Simulation Nexus of the Streak Dilemma"
     type: "simulation_nexus"
     status: "locked"
+    unlockedBy:
+      - "sanctuary-decision"
     sectionRef: "scenario"
     healingAmount: 35
     description: "Make product manager decisions for user streaks, balancing retention against burnout."
@@ -118,6 +138,8 @@ nodes:
     title: "Reward Design Trade-offs Workshop"
     type: "tradeoff_workshop"
     status: "locked"
+    unlockedBy:
+      - "capital"
     sectionRef: "tradeoffs"
     description: "Tune leaderboard competitiveness vs collaboration and intrinsic vs extrinsic rewards to forge campaign buffs."
     tradeoffMapping:
@@ -130,6 +152,8 @@ nodes:
     title: "Simulation Nexus of the Habit Reward Loop"
     type: "simulation_nexus"
     status: "locked"
+    unlockedBy:
+      - "tradeoff-rewards"
     sectionRef: "reward-loop"
     healingAmount: 40
     description: "Trace the Event Storming process flowchart of trigger engagement, dopamine response, and investment."
@@ -139,6 +163,10 @@ nodes:
     title: "Lair of the Burnout Dragon"
     type: "boss_lair"
     status: "locked"
+    unlockedBy:
+      - "goblin-churn"
+      - "reflection-hook"
+      - "reflection-template"
     description: "The supreme Overjustification & Burnout Dragon! Requires the Aegis of Intrinsic Drive, Blade of Variable Reward, and Compass of Octalysis to enter."
     requiredItems:
       - "intrinsic-shield"

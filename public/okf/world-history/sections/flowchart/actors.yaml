@@ -1,0 +1,9 @@
+inventor_scientist:
+  title: "นักประดิษฐ์ (Inventor / Engineer)"
+  desc: "ผู้คิดค้นและพัฒนาเครื่องจักรไอน้ำและเทคโนโลยีกลไก"
+merchant_capitalist:
+  title: "นายทุนอุตสาหกรรม (Capitalist / Industrialist)"
+  desc: "ผู้ระดมทุน สร้างโรงงาน และขยายโครงข่ายการค้า"
+factory_worker:
+  title: "แรงงานโรงงาน (Factory Laborer)"
+  desc: "ผู้ปฏิบัติการเครื่องจักรในกระบวนการผลิตจำนวนมาก"

@@ -1,0 +1,172 @@
+topicId: "world-history"
+topicTitle: "อาณาจักรประวัติศาสตร์โลก: มหาศาลากาลเวลา (Chronos Realm)"
+capitalId: "capital"
+
+nodes:
+  # 1. Capital (Center Hub)
+  - id: "capital"
+    title: "มหานครปฐมกาล (Chronos Capital)"
+    type: "capital"
+    status: "unlocked"
+    sectionRef: "intro"
+    description: "จุดเริ่มต้นแห่งการเดินทางข้ามมิติกาลเวลา เรียนรู้ภาพรวมและแผนที่การเดินทางประวัติศาสตร์โลก!"
+
+  # 2. Reading Sanctuary (Epochs Text)
+  - id: "sanctuary-eras"
+    title: "หอจดหมายเหตุยุคสมัย (Archive of Epochs)"
+    type: "reading_sanctuary"
+    status: "unlocked"
+    unlockedBy:
+      - "capital"
+    sectionRef: "text"
+    healingAmount: 40
+    description: "ศึกษาการแบ่งยุคสมัยสากล จากยุคก่อนประวัติศาสตร์ สู่ยุคโบราณ กลาง ใหม่ และร่วมสมัย"
+
+  # 3. Concept Monolith (Concept Map)
+  - id: "concept-monolith"
+    title: "ศิลาจารึกมโนทัศน์ประวัติศาสตร์ (Concept Monolith)"
+    type: "concept_monolith"
+    status: "unlocked"
+    unlockedBy:
+      - "capital"
+    sectionRef: "concept-map"
+    healingAmount: 35
+    description: "สำรวจโครงข่ายความสัมพันธ์ระหว่างการเมือง กฎหมาย เศรษฐกิจ และนวัตกรรม"
+
+  # 4. Archive Spire (Flashcards / Lexicon)
+  - id: "vocab-spire"
+    title: "หอคอยศัพทานุกรมโบราณ (Lexicon Spire)"
+    type: "archive_spire"
+    status: "unlocked"
+    unlockedBy:
+      - "capital"
+    sectionRef: "flashcards"
+    healingAmount: 35
+    description: "ทบทวนคำศัพท์และมโนทัศน์สำคัญ เช่น Cuneiform, Renaissance, Feudalism"
+
+  # 5. Archive Spire (Civilization Taxonomy)
+  - id: "civilization-archive"
+    title: "สถาบันอารยธรรมคลาสสิก (Civilization Archive)"
+    type: "archive_spire"
+    status: "locked"
+    unlockedBy:
+      - "sanctuary-eras"
+    sectionRef: "taxonomy"
+    healingAmount: 35
+    description: "เจาะลึก 4 แหล่งอารยธรรมหลัก เมโสโปเตเมีย อียิปต์ กรีก-โรมัน และเอเชีย"
+
+  # 6. Simulation Nexus (Industrial Revolution Flowchart)
+  - id: "simulation-industrial"
+    title: "ศูนย์จำลองการปฏิวัติอุตสาหกรรม (Industrial Nexus)"
+    type: "simulation_nexus"
+    status: "locked"
+    unlockedBy:
+      - "concept-monolith"
+    sectionRef: "flowchart"
+    healingAmount: 40
+    description: "ติดตามวิวัฒนาการเครื่องจักรไอน้ำและระบบโรงงานที่พลิกโฉมหน้าเศรษฐกิจโลก"
+
+  # 7. Trade-off Workshop (Strategy Trade-offs)
+  - id: "tradeoff-forge"
+    title: "โรงหลอมยุทธศาสตร์และดุลยภาพ (Strategy Tradeoff Forge)"
+    type: "tradeoff_workshop"
+    status: "locked"
+    unlockedBy:
+      - "capital"
+    sectionRef: "tradeoffs"
+    description: "ทดลองชั่งน้ำหนักเส้นทางการค้าโบราณและนโยบายอุตสาหกรรมเพื่อสังเคราะห์บัฟเสริมพลัง!"
+    tradeoffMapping:
+      trade_volume: "armor"
+      security: "chaos_shield"
+      diplomatic_reach: "intelligence"
+      maintenance_cost: "evasion"
+
+  # 8. Simulation Nexus (Crisis Scenario)
+  - id: "scenario-nexus"
+    title: "วิหารจำลองการตัดสินใจทางประวัติศาสตร์ (Crisis Scenario Nexus)"
+    type: "simulation_nexus"
+    status: "locked"
+    unlockedBy:
+      - "simulation-industrial"
+    sectionRef: "scenario"
+    healingAmount: 40
+    description: "สวมบทบาทผู้นำตัดสินใจแก้วิกฤตการณ์ทางสังคมและการเมือง"
+
+  # 9. Archive Spire (Decision Tree)
+  - id: "advisor-spire"
+    title: "หอพยากรณ์และสายธารการตัดสินใจ (Historical Decision Tree)"
+    type: "archive_spire"
+    status: "locked"
+    unlockedBy:
+      - "vocab-spire"
+    sectionRef: "decision-tree"
+    healingAmount: 35
+    description: "ค้นหาแนวทางการศึกษาประวัติศาสตร์และระเบียบวิธีวิจัยที่ตรงกับความสนใจ"
+
+  # 10. Quiz Encounter (Trial of Sphinx) -> Drops key-item-1
+  - id: "quiz-chamber"
+    title: "สมรภูมิทดสอบปัญญาประวัติศาสตร์ (Trial of Chrono Sphinx)"
+    type: "quiz_encounter"
+    status: "locked"
+    unlockedBy:
+      - "sanctuary-eras"
+    sectionRef: "quiz"
+    description: "ต่อสู้กับสฟิงซ์แห่งกาลเวลาด้วยการตอบคำถามประวัติศาสตร์ให้ถูกต้องเพื่อรับไอเทมกุญแจ!"
+    monster:
+      id: "chrono-sphinx"
+      name: "Chrono Sphinx (สฟิงซ์ผู้พิทักษ์กาลเวลา)"
+      type: "goblin"
+      maxHp: 120
+      damage: 18
+      icon: "🦁"
+    rewards:
+      - id: "chronos-hourglass"
+        name: "นาฬิกาทรายแห่งกาลเวลา (Hourglass of Chronos)"
+        icon: "⏳"
+        description: "วัตถุโบราณที่กักเก็บกระแสกาลเวลา จำเป็นต้องใช้เพื่อเปิดผนึกห้องบอส"
+
+  # 11. Reflection Decryption (Timeline Sequence) -> Drops key-item-2
+  - id: "reflection-vault"
+    title: "ห้องนิรภัยรหัสลับไทม์ไลน์ (Timeline Decryption Vault)"
+    type: "reflection_decryption"
+    status: "locked"
+    unlockedBy:
+      - "concept-monolith"
+    sectionRef: "reflection-sequence"
+    description: "ถอดรหัสและเรียงลำดับเหตุการณ์ประวัติศาสตร์ให้ถูกต้องเพื่อปลดล็อกตราประทับแห่งนักประวัติศาสตร์!"
+    rewards:
+      - id: "historian-seal"
+        name: "ตราประทับนักประวัติศาสตร์ (Seal of the Historian)"
+        icon: "📜"
+        description: "ตราประทับศักดิ์สิทธิ์ที่ยืนยันความเข้าใจในสายธารประวัติศาสตร์ ใช้เปิดผนึกห้องบอส"
+
+  # 12. Reading Sanctuary (Reflection Template)
+  - id: "synthesis-vault"
+    title: "แท่นสังเคราะห์สัจธรรมประวัติศาสตร์ (Truth Synthesis Shrine)"
+    type: "reading_sanctuary"
+    status: "locked"
+    unlockedBy:
+      - "vocab-spire"
+    sectionRef: "reflection-template"
+    healingAmount: 35
+    description: "สังเคราะห์บทเรียนและข้อสรุปแห่งการเปลี่ยนแปลงทางประวัติศาสตร์"
+
+  # 13. Boss Lair (Climax Boss) -> Requires key-item-1 & key-item-2
+  - id: "boss-lair"
+    title: "ถ้ำมังกรผู้บิดเบือนกาลเวลา (Lair of the Time-Weaver Dragon)"
+    type: "boss_lair"
+    status: "locked"
+    unlockedBy:
+      - "quiz-chamber"
+      - "reflection-vault"
+    description: "เผชิญหน้ากับบอสใหญ่แห่งอาณาจักรประวัติศาสตร์โลก! ต้องใช้นาฬิกาทรายแห่งกาลเวลาและตราประทับนักประวัติศาสตร์เพื่อคลายผนึก"
+    requiredItems:
+      - "chronos-hourglass"
+      - "historian-seal"
+    monster:
+      id: "time-weaver-dragon"
+      name: "Time-Weaver Dragon (มังกรผู้ถักทอกาลเวลา)"
+      type: "boss"
+      maxHp: 280
+      damage: 45
+      icon: "🐲"

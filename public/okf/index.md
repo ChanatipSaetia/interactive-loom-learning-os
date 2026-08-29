@@ -33,3 +33,7 @@ okf_version: "0.1"
 ## Project Management
 * [IT Project Management & Meetings](pm-and-meetings/index.md) — Learn why project management is necessary and how to run effective, lean meetings without wasting developers' focus time.
 
+## History
+* [ประวัติศาสตร์โลกเบื้องต้น (Basic World History)](world-history/index.md) — สำรวจวิวัฒนาการมนุษยชาติ กำเนิดอารยธรรมโบราณ ยุคกลาง เรเนซองส์ และการปฏิวัติอุตสาหกรรม
+
+

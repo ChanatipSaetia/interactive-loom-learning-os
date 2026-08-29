@@ -1,0 +1,66 @@
+id: industrial-policy-balance
+title: "นโยบายการปฏิรูปในยุคการปฏิวัติอุตสาหกรรม"
+description: "ชั่งน้ำหนักการจัดสมดุลระหว่างการเร่งขยายตัวทางเศรษฐกิจกับการคุ้มครองคุณภาพชีวิตแรงงานและสิ่งแวดล้อม"
+metrics:
+  - id: gdp_growth
+    label: การเติบโตของผลผลิตอุตสาหกรรม (Production Growth)
+    baseValue: 50
+    min: 0
+    max: 100
+    direction: higher
+  - id: worker_wellbeing
+    label: คุณภาพชีวิตและสวัสดิภาพแรงงาน (Worker Welfare)
+    baseValue: 40
+    min: 0
+    max: 100
+    direction: higher
+  - id: social_stability
+    label: เสถียรภาพทางสังคมและการเมือง (Social Stability)
+    baseValue: 45
+    min: 0
+    max: 100
+    direction: higher
+  - id: innovation_pace
+    label: ความเร็วในการสร้างนวัตกรรม (Innovation Speed)
+    baseValue: 50
+    min: 0
+    max: 100
+    direction: higher
+steps:
+  - id: labor_regulations
+    title: "กฎหมายคุ้มครองแรงงาน"
+    description: "กำหนดชั่วโมงทำงานและเกณฑ์อายุแรงงานขั้นต่ำ"
+    recommended: balanced-factory-act
+    choices:
+      - id: laissez-faire
+        label: "ปล่อยเสรีเต็มที่ (Laissez-Faire)"
+        description: "ไม่จำกัดชั่วโมงทำงาน เพื่อให้โรงงานเดินเครื่องตลอด 24 ชม."
+        metrics:
+          gdp_growth: 20
+          worker_wellbeing: -25
+          social_stability: -20
+          innovation_pace: 10
+        pros:
+          - title: "กำไรของนายทุนสูงสุด"
+            description: "ผลิตสินค้าได้ปริมาณมหาศาลในราคาถูก"
+        cons:
+          - title: "แรงงานเด็กและสภาพแวดล้อมอันตราย"
+            description: "ก่อให้เกิดความคับแค้นใจและการประท้วงหยุดงาน"
+        whenToUse: "เป็นแนวคิดยุคแรกเริ่มของการปฏิวัติอุตสาหกรรมที่ยังไม่มีการจัดตั้งสหภาพแรงงาน"
+      - id: balanced-factory-act
+        label: "กฎหมายโรงงานและจำกัดชั่วโมงทำงาน (Factory Acts)"
+        description: "ห้ามใช้แรงงานเด็ก กำหนดเวลาทำงาน 10 ชั่วโมง/วัน และจัดระบบความปลอดภัย"
+        metrics:
+          gdp_growth: 5
+          worker_wellbeing: 25
+          social_stability: 20
+          innovation_pace: 5
+        pros:
+          - title: "สังคมมีเสถียรภาพยั่งยืน"
+            description: "ลดการก่อจลาจล และสร้างแรงงานที่มีสุขภาพดีในระยะยาว"
+          - title: "กระตุ้นการประดิษฐ์เครื่องจักรทุ่นแรง"
+            description: "เมื่อใช้แรงงานคนไม่จำกัดไม่ได้ นายทุนจึงหันไปพัฒนาเทคโนโลยีทดแทน"
+        cons:
+          - title: "ต้นทุนการผลิตเพิ่มขึ้นเล็กน้อย"
+            description: "นายทุนต้องปรับตัวในระยะสั้น"
+        whyThisFits: "การคุ้มครองแรงงานสร้างเสถียรภาพทางสังคมในระยะยาวและกระตุ้นการพัฒนานวัตกรรมเครื่องจักรทุ่นแรง"

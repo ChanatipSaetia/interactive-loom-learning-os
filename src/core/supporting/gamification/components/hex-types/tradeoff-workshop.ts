@@ -161,11 +161,80 @@ export function renderTradeoffWorkshopEffects(ctx: HexTypeEffectContext) {
   })
 }
 
+export function drawTradeoffWorkshopTerritory(
+  g: Graphics,
+  ctx: import('./types').HexTerritoryContext,
+) {
+  if (!g || g.destroyed) return
+  const { x, y, radius, palette } = ctx
+
+  const primaryColor = palette.yellowNum
+  const accentColor = palette.peachNum
+  const ironColor = palette.surface1Num
+  const ironDark = palette.surface2Num
+  const darkC = palette.crustNum
+
+  // 1. 2.5D Foundry Platform Plinth & Drop Shadow
+  g.ellipse(x, y + 5, radius, radius * 0.85)
+    .fill({ color: darkC, alpha: 0.28 })
+  g.ellipse(x, y, radius, radius * 0.88)
+    .fill({ color: primaryColor, alpha: 0.06 })
+
+  // 2. Concentric Vulcan Industrial Rings
+  g.ellipse(x, y, radius * 0.84, radius * 0.74)
+    .stroke({ width: 1.0, color: accentColor, alpha: 0.2 })
+  g.ellipse(x, y, radius, radius * 0.88)
+    .stroke({ width: 1.6, color: primaryColor, alpha: 0.35 })
+
+  // 3. 8 Heavy Cogwheel Gear Teeth with 2.5D Side Bevels
+  const teeth = 8
+  for (let i = 0; i < teeth; i++) {
+    const angle = (i * Math.PI * 2) / teeth
+    const toothW = Math.PI / 24
+    const rIn = radius - 1
+    const rOut = radius + 5
+
+    const pts = [
+      x + Math.cos(angle - toothW) * rIn, y + Math.sin(angle - toothW) * (rIn * 0.88),
+      x + Math.cos(angle - toothW * 0.6) * rOut, y + Math.sin(angle - toothW * 0.6) * (rOut * 0.88),
+      x + Math.cos(angle + toothW * 0.6) * rOut, y + Math.sin(angle + toothW * 0.6) * (rOut * 0.88),
+      x + Math.cos(angle + toothW) * rIn, y + Math.sin(angle + toothW) * (rIn * 0.88),
+    ]
+    g.poly(pts).fill({ color: palette.surface0Num }).stroke({ width: 1.1, color: palette.textNum })
+  }
+
+  // 4. 4 Upright 2.5D Smelting Chimneys & Anvil Bollards stationed at cardinal perimeter points
+  for (let i = 0; i < 4; i++) {
+    const angle = (i * Math.PI) / 2
+    const fx = x + Math.cos(angle) * radius
+    const fy = y + Math.sin(angle) * (radius * 0.88)
+
+    // Ground cinder contact shadow
+    g.ellipse(fx, fy + 2, 6, 2.5).fill({ color: darkC, alpha: 0.55 })
+
+    // Upright 2.5D Smelting Furnace Chimney (elevated in negative Y) with bold border
+    g.roundRect(fx - 3.5, fy - 12, 7, 12, 1)
+      .fill({ color: ironColor })
+      .stroke({ width: 1.2, color: palette.textNum })
+
+    // Vertical iron corner depth bevel
+    g.moveTo(fx, fy - 12).lineTo(fx, fy).stroke({ width: 0.7, color: ironDark })
+
+    // Glowing Molten Ember Vent inside chimney
+    g.rect(fx - 1.5, fy - 7, 3, 4).fill({ color: primaryColor, alpha: 0.95 })
+
+    // 2.5D Ember Smoke Puff Cloud floating above chimney rim (fy - 16) with subtle outline
+    g.circle(fx, fy - 16, 2.5).fill({ color: accentColor, alpha: 0.75 }).stroke({ width: 0.7, color: palette.textNum })
+    g.circle(fx - 1, fy - 17, 1.8).fill({ color: palette.rosewaterNum, alpha: 0.85 })
+  }
+}
+
 export const tradeoffWorkshopHex: HexTypeDefinition = {
   type: 'tradeoff_workshop',
   title: 'Tradeoff Workshop',
   drawTerrainGround: drawTradeoffWorkshopTerrainGround,
   drawInsignia: drawTradeoffWorkshopInsignia,
+  drawTerritory: drawTradeoffWorkshopTerritory,
   createGradient: createTradeoffWorkshopGradient,
   renderEffects: renderTradeoffWorkshopEffects,
   getGlowColor: (palette) => palette.yellowNum,

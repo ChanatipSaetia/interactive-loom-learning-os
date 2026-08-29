@@ -169,11 +169,226 @@ export function renderCapitalEffects(ctx: HexTypeEffectContext) {
   })
 }
 
+export function drawCapitalTerritory(
+  g: Graphics,
+  ctx: import('./types').HexTerritoryContext,
+) {
+  if (!g || g.destroyed) return
+  const { x, y, radius, palette, isCleared = false } = ctx
+
+  const primaryColor = isCleared ? palette.sapphireNum : palette.mauveNum
+  const trimColor = palette.yellowNum
+  const stoneColor = palette.surface1Num
+  const stoneDark = palette.surface2Num
+  const darkC = palette.crustNum
+  const outlineColor = palette.textNum
+
+  // 1. Circular Ground Plinth & Drop Shadow
+  g.circle(x, y + 4, radius)
+    .fill({ color: darkC, alpha: 0.25 })
+  g.circle(x, y, radius)
+    .fill({ color: primaryColor, alpha: 0.065 })
+
+  // 2. Concentric Fortification Rampart Rings
+  g.circle(x, y, radius * 0.86)
+    .stroke({ width: 1.0, color: primaryColor, alpha: 0.18 })
+  g.circle(x, y, radius)
+    .stroke({ width: 1.6, color: primaryColor, alpha: 0.38 })
+
+  // 3. 2.5D Fortress Watchtowers stationed at 4 cardinal perimeter points
+  for (let i = 0; i < 4; i++) {
+    const angle = (i * Math.PI) / 2
+    const tx = x + Math.cos(angle) * radius
+    const ty = y + Math.sin(angle) * (radius * 0.88)
+
+    // Tower ground contact shadow
+    g.ellipse(tx, ty + 2, 6, 2.5).fill({ color: darkC, alpha: 0.55 })
+
+    // Upright 2.5D Masonry Tower Body (elevated in negative Y) with bold outline
+    g.roundRect(tx - 4.5, ty - 12, 9, 12, 1.5)
+      .fill({ color: stoneColor })
+      .stroke({ width: 1.2, color: outlineColor })
+
+    // Vertical stone corner shading line
+    g.moveTo(tx, ty - 12).lineTo(tx, ty).stroke({ width: 0.8, color: stoneDark })
+
+    // Glowing Portcullis / Arrow Slit
+    g.rect(tx - 1, ty - 7, 2, 3.5).fill({ color: trimColor, alpha: 0.9 })
+
+    // Conical Roof Spire with bold outline
+    g.poly([
+      tx - 5.5, ty - 12,
+      tx, ty - 19,
+      tx + 5.5, ty - 12,
+    ]).fill({ color: primaryColor }).stroke({ width: 1.1, color: outlineColor })
+
+    // Golden Pinnacle Finial
+    g.circle(tx, ty - 19.5, 1.3).fill({ color: trimColor })
+  }
+
+  // 4. 2.5D Wall Battlement Crenellations stationed at diagonal points
+  for (let i = 0; i < 4; i++) {
+    const angle = (i * Math.PI) / 2 + Math.PI / 4
+    const bx = x + Math.cos(angle) * radius
+    const by = y + Math.sin(angle) * (radius * 0.88)
+
+    // Wall contact shadow
+    g.ellipse(bx, by + 1.5, 5, 2).fill({ color: darkC, alpha: 0.4 })
+
+    // Crenellated stone parapet wall block with bold outline
+    g.roundRect(bx - 3.5, by - 6, 7, 6, 1)
+      .fill({ color: stoneDark })
+      .stroke({ width: 1.0, color: outlineColor })
+
+    // Wall top crenels
+    g.rect(bx - 3, by - 7.5, 2, 2).fill({ color: stoneColor }).stroke({ width: 0.8, color: outlineColor })
+    g.rect(bx + 1, by - 7.5, 2, 2).fill({ color: stoneColor }).stroke({ width: 0.8, color: outlineColor })
+
+    // Gem stud
+    g.circle(bx, by - 2.5, 1.0).fill({ color: trimColor, alpha: 0.8 })
+  }
+
+  // 5. Scattered 2.5D Citadel Buildings & Courtyard Structures throughout the Hub Territory
+  const scatteredBuildings = [
+    // 1. Scriptorium Guildhouse (North-East Courtyard)
+    {
+      angle: -Math.PI * 0.32,
+      dist: radius * 0.65,
+      type: 'guildhouse',
+      roofColor: primaryColor,
+    },
+    // 2. Arcanist Towerette (East-South-East Courtyard)
+    {
+      angle: Math.PI * 0.22,
+      dist: radius * 0.62,
+      type: 'towerette',
+      roofColor: palette.lavenderNum,
+    },
+    // 3. Marketplace Merchant Canvas Pavilion (South-West Courtyard)
+    {
+      angle: Math.PI * 0.68,
+      dist: radius * 0.64,
+      type: 'market',
+      roofColor: palette.peachNum,
+    },
+    // 4. Armory & Smithing Workshop (North-West Courtyard)
+    {
+      angle: -Math.PI * 0.78,
+      dist: radius * 0.60,
+      type: 'workshop',
+      roofColor: palette.surface2Num,
+    },
+    // 5. Town Treasury Hall (North-North-West Courtyard)
+    {
+      angle: -Math.PI * 0.58,
+      dist: radius * 0.72,
+      type: 'hall',
+      roofColor: palette.sapphireNum,
+    },
+    // 6. Royal Water Fountain (South-East Courtyard)
+    {
+      angle: Math.PI * 0.42,
+      dist: radius * 0.58,
+      type: 'fountain',
+      roofColor: palette.tealNum,
+    },
+  ]
+
+  for (const b of scatteredBuildings) {
+    const bx = x + Math.cos(b.angle) * b.dist
+    const by = y + Math.sin(b.angle) * (b.dist * 0.88)
+
+    // Base ground contact shadow
+    g.ellipse(bx, by + 1.5, 5.5, 2.2).fill({ color: darkC, alpha: 0.45 })
+
+    // Pathway stepping stones leading toward plaza
+    const pathAngle = Math.atan2(y - by, x - bx)
+    for (let p = 1; p <= 2; p++) {
+      const stepX = bx + Math.cos(pathAngle) * (p * 5)
+      const stepY = by + Math.sin(pathAngle) * (p * 5 * 0.88)
+      g.ellipse(stepX, stepY, 1.5, 0.8)
+        .fill({ color: stoneDark, alpha: 0.35 })
+    }
+
+    if (b.type === 'guildhouse' || b.type === 'workshop') {
+      // 2.5D Pitched-Roof Timber & Stone House with bold border
+      g.roundRect(bx - 4.5, by - 6, 9, 6, 1)
+        .fill({ color: stoneColor })
+        .stroke({ width: 1.1, color: outlineColor })
+
+      // Chimney
+      g.rect(bx + 2, by - 9, 1.5, 3.5).fill({ color: stoneDark }).stroke({ width: 0.7, color: outlineColor })
+
+      // Pitched Roof with bold border
+      g.poly([
+        bx - 5.5, by - 6,
+        bx, by - 11,
+        bx + 5.5, by - 6,
+      ]).fill({ color: b.roofColor }).stroke({ width: 1.1, color: outlineColor })
+
+      // Glowing Amber Window
+      g.rect(bx - 1.5, by - 4, 3, 2.5).fill({ color: trimColor, alpha: 0.9 })
+    } else if (b.type === 'towerette') {
+      // 2.5D Round Stone Towerette with bold border
+      g.roundRect(bx - 3.5, by - 8, 7, 8, 1)
+        .fill({ color: stoneColor })
+        .stroke({ width: 1.1, color: outlineColor })
+
+      // Conical Spire with bold border
+      g.poly([
+        bx - 4.5, by - 8,
+        bx, by - 14,
+        bx + 4.5, by - 8,
+      ]).fill({ color: b.roofColor }).stroke({ width: 1.1, color: outlineColor })
+
+      // Golden Orb Finial
+      g.circle(bx, by - 14.5, 1.0).fill({ color: trimColor })
+
+      // Narrow window slit
+      g.rect(bx - 0.7, by - 5, 1.4, 2.5).fill({ color: trimColor, alpha: 0.85 })
+    } else if (b.type === 'market') {
+      // 2.5D Merchant Stall & Striped Canvas Pavilion with bold border
+      g.rect(bx - 4, by - 3, 8, 3).fill({ color: palette.surface0Num }).stroke({ width: 1.0, color: outlineColor })
+
+      // Wooden corner posts
+      g.moveTo(bx - 3.5, by).lineTo(bx - 3.5, by - 6).stroke({ width: 0.9, color: outlineColor })
+      g.moveTo(bx + 3.5, by).lineTo(bx + 3.5, by - 6).stroke({ width: 0.9, color: outlineColor })
+
+      // Striped Canvas Canopy Awning with bold border
+      g.poly([
+        bx - 4.5, by - 5,
+        bx, by - 8,
+        bx + 4.5, by - 5,
+      ]).fill({ color: b.roofColor }).stroke({ width: 1.0, color: outlineColor })
+    } else if (b.type === 'hall') {
+      // 2.5D Town Hall / Vault with bold border
+      g.roundRect(bx - 5, by - 7, 10, 7, 1)
+        .fill({ color: stoneColor })
+        .stroke({ width: 1.1, color: outlineColor })
+
+      // Parapet roof rim with bold border
+      g.rect(bx - 5.5, by - 8, 11, 1.5).fill({ color: b.roofColor }).stroke({ width: 0.9, color: outlineColor })
+
+      // Arched entryway & gold seal
+      g.roundRect(bx - 1.5, by - 4, 3, 4, 1).fill({ color: darkC })
+      g.circle(bx, by - 5.5, 0.9).fill({ color: trimColor })
+    } else if (b.type === 'fountain') {
+      // 2.5D Royal Courtyard Fountain with bold border
+      g.ellipse(bx, by, 4.5, 2.2).fill({ color: stoneDark }).stroke({ width: 1.0, color: outlineColor })
+      g.ellipse(bx, by - 1, 3.5, 1.5).fill({ color: palette.tealNum, alpha: 0.85 })
+      // Center pedestal & water spout
+      g.rect(bx - 0.8, by - 3, 1.6, 2.5).fill({ color: stoneColor }).stroke({ width: 0.7, color: outlineColor })
+      g.circle(bx, by - 3.5, 0.8).fill({ color: 0xffffff, alpha: 0.9 })
+    }
+  }
+}
+
 export const capitalHex: HexTypeDefinition = {
   type: 'capital',
   title: 'Citadel of Knowledge',
   drawTerrainGround: drawCapitalTerrainGround,
   drawInsignia: drawCapitalInsignia,
+  drawTerritory: drawCapitalTerritory,
   createGradient: createCapitalGradient,
   renderEffects: renderCapitalEffects,
   getGlowColor: (palette) => palette.mauveNum,

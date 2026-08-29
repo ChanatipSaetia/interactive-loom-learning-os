@@ -9,21 +9,18 @@ This document is the authoritative authoring and technical specification guide f
 A **Hex Campaign Map** converts any Open Knowledge Format (OKF) learning topic into an interactive RPG tabletop campaign. Learners navigate a hex grid, complete educational challenges, harvest key items and tactical buffs, rest at sanctuaries, and defeat the topic Boss Lair.
 
 ```
-                  [ 🏰 Capital ] (Starting Hub)
-                        │
-       ┌────────────────┴────────────────┐
-       ▼                                 ▼
-[ 🏛️ Reading Sanctuary ]        [ 👹 Quiz Encounter ]
-(Active pulse healing)          (Monster combat -> Key Item 1)
-       │                                 │
-       ▼                                 ▼
-[ ⚒️ Trade-off Workshop ]      [ 🔮 Reflection Decryption ]
-(Tactical buff synthesis)       (Runic countdown -> Key Item 2)
-       │                                 │
-       └────────────────┬────────────────┘
-                        ▼
-               [ 🐲 Boss Lair ]
-       (Requires Key Item 1 + Key Item 2)
+       [ 🐲 Boss Lair ] ─── (Adjacent) ─── [ 🏰 Capital ] (Starting Hub at 0,0)
+                                                    │
+                 ┌──────────────────────────────────┴──────────────────────────────────┐
+                 ▼ (Scattered with optional gaps)                                       ▼
+     [ 🏛️ Reading Sanctuary ]                                              [ 🌳 Concept Monolith ]
+                 │ (Adjacent d=1)                                                      │ (Adjacent d=1)
+                 ▼                                                                     ▼
+     [ 👹 Quiz Encounter ] (Key Item 1)                                    [ 🔮 Reflection Vault ] (Key Item 2)
+                 │                                                                     │
+                 └──────────────────────────────────┬──────────────────────────────────┘
+                                                    ▼
+                                       (Unlocks Boss Gate with Key Items)
 ```
 
 ---
@@ -126,6 +123,7 @@ Each node in `nodes[]` is classified into one of the specialized structural type
 | `id` | `string` | **Yes** | Globally unique identifier for the node within the campaign. |
 | `title` | `string` | **Yes** | Display name shown on the map tray, drawer, and HUD. |
 | `type` | `HexNodeType` | **Yes** | One of `capital`, `reading_sanctuary`, `archive_spire`, `simulation_nexus`, `concept_monolith`, `observatory_gallery`, `quiz_encounter`, `reflection_decryption`, `tradeoff_workshop`, `boss_lair`. |
+| `unlockedBy` / `dependsOn` / `parentId` | `string[]` / `string` | No | Prerequisite node IDs required to unlock this node. Flow connections and adjacency are derived directly from these dependencies. |
 | `status` | `enum` | No | Initial state: `'unlocked'` (capital/initial nodes) or `'locked'` (default). |
 | `sectionRef` | `string` | No | Matching folder name in `public/okf/<topicId>/sections/<sectionRef>/`. |
 | `description` | `string` | No | Lore and tactical guidance displayed in `<NodeInspectorTray>`. |

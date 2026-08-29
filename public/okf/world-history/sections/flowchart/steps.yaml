@@ -1,0 +1,43 @@
+- type: linear
+  id: step_invent_engine
+  initiatedBy: inventor_scientist
+  command: "ประดิษฐ์และปรับปรุงเครื่องจักรไอน้ำ (Invent Steam Engine)"
+  policy: "ต้องการแหล่งพลังงานต่อเนื่องไม่พึ่งพากระแสน้ำ"
+  handledBy: steam_engine
+  resultEvents:
+    - id: evt_engine_ready
+      title: "เครื่องจักรไอน้ำพร้อมทำงาน"
+      desc: "เกิดต้นกำลังกลไกประสิทธิภาพสูง"
+  continuesAs: step_build_factory
+- type: linear
+  id: step_build_factory
+  initiatedBy: merchant_capitalist
+  policy: "นำพลังงานไอน้ำมาขับเคลื่อนเครื่องทอผ้าและอุปกรณ์"
+  command: "ลงทุนจัดตั้งโรงงานอุตสาหกรรม (Establish Factory)"
+  handledBy: factory_system
+  resultEvents:
+    - id: evt_factory_operational
+      title: "โรงงานเปิดดำเนินการ"
+      desc: "รวมศูนย์แรงงานและเครื่องจักรไว้ที่เดียว"
+  continuesAs: step_mass_produce
+- type: linear
+  id: step_mass_produce
+  initiatedBy: factory_worker
+  policy: "ปฏิบัติงานตามระบบกะและการแบ่งงานตามความชำนาญ"
+  command: "เดินเครื่องจักรผลิตสินค้าจำนวนมาก (Mass Production)"
+  handledBy: factory_system
+  resultEvents:
+    - id: evt_goods_surplus
+      title: "สินค้าอุตสาหกรรมล้นหลาม"
+      desc: "ต้นทุนต่อหน่วยลดลง ผลผลิตเพิ่มขึ้นมหาศาล"
+  continuesAs: step_expand_trade
+- type: linear
+  id: step_expand_trade
+  initiatedBy: merchant_capitalist
+  policy: "ต้องการระบายสินค้าและแสวงหาวัตถุดิบใหม่ข้ามทวีป"
+  command: "ขยายเส้นทางรถไฟและการเดินเรือกลไฟ (Expand Global Logistics)"
+  handledBy: global_market
+  resultEvents:
+    - id: evt_global_interconnected
+      title: "ตลาดโลกเชื่อมโยงถึงกัน (Globalized Market)"
+      desc: "เกิดระบบเศรษฐกิจทุนนิยมและการค้าข้ามชาติยุคใหม่"

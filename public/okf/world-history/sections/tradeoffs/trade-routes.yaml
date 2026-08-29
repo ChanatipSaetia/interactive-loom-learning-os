@@ -1,0 +1,107 @@
+id: ancient-trade-routes
+title: "ยุทธศาสตร์เส้นทางการค้าระหว่างประเทศ (Silk Road vs Maritime Route)"
+description: "จำลองการตัดสินใจของอาณาจักรโบราณในการเลือกลงทุนระหว่างเส้นทางสายไหมทางบก (Caravan) และเส้นทางเดินเรือทางทะเล (Maritime)"
+metrics:
+  - id: trade_volume
+    label: ปริมาณสินค้าที่ขนส่งได้ (Trade Volume)
+    baseValue: 50
+    min: 0
+    max: 100
+    direction: higher
+  - id: security
+    label: ความปลอดภัยจากโจร/ภัยธรรมชาติ (Route Security)
+    baseValue: 50
+    min: 0
+    max: 100
+    direction: higher
+  - id: diplomatic_reach
+    label: การแผ่ขยายอิทธิพลทางการทูต (Diplomatic Reach)
+    baseValue: 50
+    min: 0
+    max: 100
+    direction: higher
+  - id: maintenance_cost
+    label: ประสิทธิภาพด้านต้นทุน (Cost Efficiency)
+    baseValue: 50
+    min: 0
+    max: 100
+    direction: higher
+steps:
+  - id: primary_route
+    title: "เลือกเส้นทางหลักในการค้า"
+    description: "กำหนดรูปแบบการขนส่งสินค้าหลักของอาณาจักร"
+    recommended: maritime-fleet
+    choices:
+      - id: overland-silk
+        label: "เส้นทางสายไหมทางบก (Overland Silk Road)"
+        description: "ใช้คาราวานอูฐและม้า เดินทางผ่านโอเอซิสและเมืองหน้าด่านในเอเชียกลาง"
+        metrics:
+          trade_volume: -10
+          security: -15
+          diplomatic_reach: 20
+          maintenance_cost: -5
+        pros:
+          - title: "เข้าถึงเมืองรายทาง"
+            description: "สร้างความสัมพันธ์กับชนเผ่าและอาณาจักรย่อยตามเส้นทางได้โดยตรง"
+          - title: "เหมาะกับสินค้าล้ำค่าขนาดเล็ก"
+            description: "เช่น ผ้าไหม หยก เครื่องประดับ อัญมณี"
+        cons:
+          - title: "เสี่ยงภัยโจรทะเลทราย"
+            description: "ต้องจ่ายค่าผ่านทางและเสี่ยงต่อการถูกปล้นชิง"
+          - title: "ขนสินค้าหนักได้จำกัด"
+            description: "ความจุของสัตว์บรรทุกมีขีดจำกัด"
+        whenToUse: "เหมาะสมเมื่อต้องการแผ่ขยายอิทธิพลทางวัฒนธรรมในแผ่นดินใหญ่และค้าขายสินค้าหรูหราน้ำหนักเบา"
+      - id: maritime-fleet
+        label: "เส้นทางสายไหมทางทะเล (Maritime Silk Route)"
+        description: "สร้างกองเรือสำเภาขนาดใหญ่ ขนส่งสินค้าข้ามมหาสมุทรอินเดียและทะเลจีนใต้"
+        metrics:
+          trade_volume: 25
+          security: 10
+          diplomatic_reach: 10
+          maintenance_cost: 15
+        pros:
+          - title: "ขนส่งปริมาณมหาศาล"
+            description: "เรือหนึ่งลำจุสินค้าได้เท่ากับคาราวานอูฐหลายร้อยตัว"
+          - title: "ขนสินค้าขนาดใหญ่ได้"
+            description: "เช่น เครื่องเทศ เครื่องเคลือบดินเผา ชา ข้าวสาร"
+        cons:
+          - title: "เสี่ยงภัยพายุและลมมรสุม"
+            description: "ต้องพึ่งพาทิศทางลมตามฤดูกาล"
+          - title: "ต้องลงทุนต่อเรือสูง"
+            description: "ต้องใช้ทักษะการต่อเรือและการเดินเรือขั้นสูง"
+        whyThisFits: "เส้นทางทางทะเลช่วยขยายปริมาณการค้าอย่างก้าวกระโดดและลดต้นทุนต่อหน่วยได้อย่างมีนัยสำคัญ"
+  - id: protection_strategy
+    title: "ยุทธศาสตร์การคุ้มกันการค้า"
+    description: "เลือกแนวทางการรักษาความปลอดภัยของเส้นทาง"
+    recommended: naval-patrol
+    choices:
+      - id: fortress-chain
+        label: "สร้างป้อมปราการและกองทหารประจำด่าน"
+        description: "ตั้งป้อมทหารตลอดเส้นทางบกเพื่อคุ้มกันพ่อค้า"
+        metrics:
+          trade_volume: 5
+          security: 20
+          diplomatic_reach: 10
+          maintenance_cost: -20
+        pros:
+          - title: "ความปลอดภัยสูงสุด"
+            description: "ปราบปรามโจรผู้ร้ายได้อย่างเฉียบขาด"
+        cons:
+          - title: "งบประมาณมหาศาล"
+            description: "ต้องจ่ายเบี้ยเลี้ยงทหารและค่าบำรุงรักษาป้อมปราการตลอดเวลา"
+        whenToUse: "เหมาะกับยุคที่อาณาจักรมีงบประมาณทหารเหลือเฟือและเผชิญภัยคุกคามจากชนเผ่าเร่ร่อนสูง"
+      - id: naval-patrol
+        label: "จัดตั้งกองเรือตรวจการและสนธิสัญญาเมืองท่า"
+        description: "ส่งกองเรือคุ้มกันจุดยุทธศาสตร์และทำข้อตกลงกับเมืองท่าพันธมิตร"
+        metrics:
+          trade_volume: 15
+          security: 10
+          diplomatic_reach: 15
+          maintenance_cost: 5
+        pros:
+          - title: "ยืดหยุ่นและครอบคลุม"
+            description: "คุ้มกันช่องแคบสำคัญและเปิดตลาดใหม่ไปพร้อมกัน"
+        cons:
+          - title: "ควบคุมเมืองท่าห่างไกลได้ยาก"
+            description: "ต้องอาศัยความไว้เนื้อเชื่อใจทางการทูต"
+        whyThisFits: "กองเรือตรวจการคุ้มกันจุดยุทธศาสตร์ช่วยสร้างดุลยภาพระหว่างความปลอดภัยและต้นทุนที่มีประสิทธิภาพ"

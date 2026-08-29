@@ -184,11 +184,85 @@ export function renderArchiveSpireEffects(ctx: HexTypeEffectContext) {
   })
 }
 
+export function drawArchiveSpireTerritory(
+  g: Graphics,
+  ctx: import('./types').HexTerritoryContext,
+) {
+  if (!g || g.destroyed) return
+  const { x, y, radius, palette } = ctx
+
+  const primaryColor = palette.skyNum
+  const secondaryColor = palette.sapphireNum
+  const stoneColor = palette.surface1Num
+  const stoneDark = palette.surface2Num
+  const darkC = palette.crustNum
+
+  // 1. 2.5D Isometric Mosaic Plinth & Drop Shadow
+  g.ellipse(x, y + 5, radius, radius * 0.85)
+    .fill({ color: darkC, alpha: 0.25 })
+  g.ellipse(x, y, radius, radius * 0.88)
+    .fill({ color: primaryColor, alpha: 0.055 })
+
+  // 2. Concentric Geometric Runic Ring
+  g.ellipse(x, y, radius * 0.85, radius * 0.74)
+    .stroke({ width: 0.9, color: secondaryColor, alpha: 0.2 })
+  g.ellipse(x, y, radius, radius * 0.88)
+    .stroke({ width: 1.5, color: primaryColor, alpha: 0.35 })
+
+  // 3. Inscribed Geometric Hexagon & Radial Ray Axis Lines
+  const hexRadius = radius * 0.85
+  const hexPts: number[] = []
+  for (let i = 0; i < 6; i++) {
+    const angle = (i * Math.PI) / 3
+    hexPts.push(x + Math.cos(angle) * hexRadius, y + Math.sin(angle) * (hexRadius * 0.88))
+  }
+  g.poly(hexPts).stroke({ width: 1.0, color: secondaryColor, alpha: 0.22 })
+
+  // 4. 6 Upright 2.5D Hovering Crystalline Obelisks stationed at vertices
+  for (let i = 0; i < 6; i++) {
+    const angle = (i * Math.PI) / 3
+    const px = x + Math.cos(angle) * radius
+    const py = y + Math.sin(angle) * (radius * 0.88)
+
+    // Shadow cast on ground below the floating obelisk
+    g.ellipse(px, py + 2, 5, 2.2).fill({ color: darkC, alpha: 0.55 })
+
+    // Hovering 2.5D Crystal Obelisk Body (floating in negative Y) with bold border
+    const floatY = py - 3
+    g.poly([
+      px - 3.5, floatY,
+      px - 2.5, floatY - 11,
+      px, floatY - 15,
+      px + 2.5, floatY - 11,
+      px + 3.5, floatY,
+    ]).fill({ color: stoneColor }).stroke({ width: 1.2, color: palette.textNum })
+
+    // Illuminated crystal facet
+    g.poly([
+      px, floatY,
+      px, floatY - 15,
+      px + 2.5, floatY - 11,
+      px + 3.5, floatY,
+    ]).fill({ color: stoneDark })
+
+    // Glowing Crystal Apex Pyramidal Cap with bold border
+    g.poly([
+      px - 2.5, floatY - 11,
+      px, floatY - 16,
+      px + 2.5, floatY - 11,
+    ]).fill({ color: primaryColor }).stroke({ width: 1.0, color: palette.textNum })
+
+    // Floating Lexicon Rune Glyph beside obelisk
+    g.circle(px, floatY - 8, 1.0).fill({ color: palette.rosewaterNum, alpha: 0.95 })
+  }
+}
+
 export const archiveSpireHex: HexTypeDefinition = {
   type: 'archive_spire',
   title: 'Archive Spire',
   drawTerrainGround: drawArchiveSpireTerrainGround,
   drawInsignia: drawArchiveSpireInsignia,
+  drawTerritory: drawArchiveSpireTerritory,
   createGradient: createArchiveSpireGradient,
   renderEffects: renderArchiveSpireEffects,
   getGlowColor: (palette) => palette.skyNum,

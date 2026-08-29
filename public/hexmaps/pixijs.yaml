@@ -2,7 +2,7 @@ topicId: "pixijs"
 topicTitle: "Realm of PixiJS: 2D WebGL Citadel"
 capitalId: "capital"
 nodes:
-  # Ring 0: Capital Center
+  # ─── Capital Center ───
   - id: "capital"
     title: "Citadel of PixiJS: WebGL Hub"
     type: "capital"
@@ -10,47 +10,48 @@ nodes:
     sectionRef: "intro"
     description: "The grand citadel of 2D hardware-accelerated graphics. Master PixiJS scene graphs, batch rendering, and WebGL pipelines!"
 
-  # Track 1: Foundations, Vocabulary & Architecture Selection
-  - id: "sanctuary-vocabulary"
-    title: "Monolith of Essential Terms"
-    type: "concept_monolith"
-    status: "unlocked"
-    sectionRef: "flashcards"
-    healingAmount: 30
-    description: "Master fundamental vocabulary including Batching, Ticker, World Transforms, and ParticleContainer."
-
-  - id: "encounter-vocabulary"
-    title: "VRAM Texture Imp Den"
-    type: "quiz_encounter"
-    status: "locked"
-    sectionRef: "quiz-vocabulary"
-    description: "A mischievous Imp scrambling Texture and BaseTexture allocations! Test your vocabulary recall to defeat it."
-    monster:
-      id: "imp-vram"
-      name: "VRAM Texture Imp"
-      type: "goblin"
-      maxHp: 90
-      damage: 14
-      icon: "🧌"
-    rewards:
-      - id: "key-texture-core"
-        name: "Key of BaseTextures"
-        icon: "🔑"
-        description: "Unlocks GPU texture buffer knowledge."
-
-  # Track 2: Display Primitives, Sprite Batching & Render Pipeline
+  # ─── Entry Sanctuaries (Heads of 3 Parallel Wings) ───
+  # Wing A (Left): Display Primitives & Scene Composition
   - id: "sanctuary-taxonomies"
     title: "Archive Spire of Display Taxonomies"
     type: "archive_spire"
     status: "unlocked"
+    unlockedBy:
+      - "capital"
     sectionRef: "taxonomy-browser"
     healingAmount: 35
-    description: "Explore the capabilities of Containers, ParticleContainers, Vector Graphics, and GLSL Shaders."
+    description: "Explore the capabilities and trade-offs of Containers, ParticleContainers, Vector Graphics, and GLSL Shaders."
 
+  # Wing B (Center): Frame Execution & 60 FPS Pipeline
+  - id: "sanctuary-map"
+    title: "Monolith of the Scene Graph Hierarchy"
+    type: "concept_monolith"
+    status: "unlocked"
+    unlockedBy:
+      - "capital"
+    sectionRef: "concept-map"
+    healingAmount: 30
+    description: "Study the architectural hierarchy linking Application, Stage, Container, Sprite, Texture, and Renderer."
+
+  # Wing C (Right): Coordinates, Matrices & Terminology
+  - id: "sanctuary-vocabulary"
+    title: "Archive of Engine Vocabulary"
+    type: "concept_monolith"
+    status: "unlocked"
+    unlockedBy:
+      - "capital"
+    sectionRef: "flashcards"
+    healingAmount: 30
+    description: "Master essential terms: Batching, Ticker, World Transforms, RenderTargets, and BaseTextures."
+
+  # ─── Initial Wing Challenges (1-to-1 Prerequisite for Deep Sanctuaries) ───
+  # Wing A Challenge
   - id: "encounter-taxonomies"
     title: "Unbatched Sprite Marauder Camp"
     type: "quiz_encounter"
     status: "locked"
+    unlockedBy:
+      - "sanctuary-taxonomies"
     sectionRef: "quiz-taxonomies"
     description: "An aggressive Marauder spawning un-batched loose sprites! Solve display selection questions to claim the Batch Shield."
     monster:
@@ -66,19 +67,35 @@ nodes:
         icon: "🛡️"
         description: "Combines thousands of sprite quads into single draw calls."
 
-  # Track 3: Scene Graph & Transform Pipeline
-  - id: "sanctuary-map"
-    title: "Monolith of the Scene Graph"
-    type: "concept_monolith"
-    status: "unlocked"
-    sectionRef: "concept-map"
-    healingAmount: 30
-    description: "Study the architectural hierarchy linking Application, Stage, Container, Sprite, Texture, and Renderer."
+  # Wing B Challenge
+  - id: "encounter-vocabulary"
+    title: "VRAM Texture Imp Den"
+    type: "quiz_encounter"
+    status: "locked"
+    unlockedBy:
+      - "sanctuary-vocabulary"
+    sectionRef: "quiz-vocabulary"
+    description: "A mischievous Imp scrambling Texture and BaseTexture allocations! Test your vocabulary recall to defeat it."
+    monster:
+      id: "imp-vram"
+      name: "VRAM Texture Imp"
+      type: "goblin"
+      maxHp: 90
+      damage: 14
+      icon: "🧌"
+    rewards:
+      - id: "key-texture-core"
+        name: "Key of BaseTextures"
+        icon: "🔑"
+        description: "Unlocks GPU texture buffer knowledge."
 
+  # Wing C Challenge
   - id: "reflection-transforms"
     title: "Matrix Transform Vault"
     type: "reflection_decryption"
     status: "locked"
+    unlockedBy:
+      - "sanctuary-map"
     sectionRef: "reflection-transforms"
     description: "Arrange the chronological stages of coordinate transformation from local entity to WebGL viewport."
     rewards:
@@ -87,41 +104,48 @@ nodes:
         icon: "🧭"
         description: "Calculates local-to-world transformations flawlessly."
 
-  # Deep Sanctuaries & Followup Challenges
-  # Downstream of Vocabulary: Architecture Decision Guide & Render Loop Crypt
+  # ─── Deep Sanctuaries (Unlocked by Initial Wing Challenges) ───
+  # Wing A Deep Sanctuary
   - id: "sanctuary-decision"
-    title: "Grove of the Architecture Guide"
+    title: "Grove of the Primitive Advisor"
     type: "reading_sanctuary"
     status: "locked"
+    unlockedBy:
+      - "encounter-taxonomies"
     sectionRef: "decision-tree"
     healingAmount: 30
     description: "Consult the diagnostic tree to choose the optimal display primitive for any 2D visual task."
 
-  - id: "reflection-render-loop"
-    title: "Render Loop Decryption Crypt"
-    type: "reflection_decryption"
+  # Wing B Deep Sanctuary
+  - id: "sanctuary-flowchart"
+    title: "Simulation Nexus of the 60 FPS Flowchart"
+    type: "simulation_nexus"
     status: "locked"
-    sectionRef: "reflection-sequence"
-    description: "Order the complete execution lifecycle from requestAnimationFrame pulse to GPU framebuffer swap."
-    rewards:
-      - id: "tome-60fps-pipeline"
-        name: "Tome of the 60 FPS Loop"
-        icon: "📖"
-        description: "Chronicles the complete lifecycle from requestAnimationFrame to framebuffer swap."
+    unlockedBy:
+      - "reflection-transforms"
+    sectionRef: "flowchart"
+    healingAmount: 40
+    description: "Trace the Event Storming process diagram of the frame execution pipeline."
 
-  # Downstream of Taxonomies: Render Pipeline Deep Dive & VRAM Optimization
+  # Wing C Deep Sanctuary
   - id: "sanctuary-pipeline"
     title: "Sanctuary of the Render Pipeline"
     type: "reading_sanctuary"
     status: "locked"
+    unlockedBy:
+      - "encounter-vocabulary"
     sectionRef: "text-core"
     healingAmount: 35
-    description: "Master the secrets of affine transform matrices, batch buffering, and VRAM memory disposal."
+    description: "Master affine transform matrices, batch buffering, and VRAM memory disposal in deep text."
 
+  # ─── Follow-up Wing Challenges & Workshop ───
+  # Wing A Follow-up Challenge
   - id: "encounter-optimization"
     title: "VRAM Memory Leak Catacombs"
     type: "quiz_encounter"
     status: "locked"
+    unlockedBy:
+      - "sanctuary-decision"
     sectionRef: "quiz-optimization"
     description: "A haunting Spectre spawned from undeallocated WebGL texture buffers! Solve optimization questions to banish it."
     monster:
@@ -137,20 +161,28 @@ nodes:
         icon: "⚔️"
         description: "A radiant multiplication blade that packs all sprite assets into unified GPU memory."
 
-  # Downstream of Scene Graph: 60 FPS Flowchart Spire
-  - id: "sanctuary-flowchart"
-    title: "Simulation Nexus of the 60 FPS Flowchart"
-    type: "simulation_nexus"
+  # Wing B Follow-up Challenge
+  - id: "reflection-render-loop"
+    title: "Render Loop Decryption Crypt"
+    type: "reflection_decryption"
     status: "locked"
-    sectionRef: "flowchart"
-    healingAmount: 40
-    description: "Trace the Event Storming process diagram of the frame execution pipeline."
+    unlockedBy:
+      - "sanctuary-flowchart"
+    sectionRef: "reflection-sequence"
+    description: "Order the complete execution lifecycle from requestAnimationFrame pulse to GPU framebuffer swap."
+    rewards:
+      - id: "tome-60fps-pipeline"
+        name: "Tome of the 60 FPS Loop"
+        icon: "📖"
+        description: "Chronicles the complete lifecycle from requestAnimationFrame to framebuffer swap."
 
-  # Workshop & Climax Boss
+  # Wing C Workshop
   - id: "tradeoff-workshop"
     title: "Rendering Architecture Workshop"
     type: "tradeoff_workshop"
     status: "locked"
+    unlockedBy:
+      - "capital"
     sectionRef: "tradeoff-sandbox"
     description: "Tune render architecture trade-offs between draw calls, VRAM, and FPS throughput to forge stat buffs."
     tradeoffMapping:
@@ -159,16 +191,23 @@ nodes:
       memory_footprint: "chaos_shield"
       visual_fidelity: "intelligence"
 
+  # ─── Campaign Climax: Boss Lair ───
   - id: "boss-lair"
     title: "Lair of the Framerate Stutter Dragon"
     type: "boss_lair"
     status: "locked"
-    description: "The supreme Framerate Stutter Dragon! Requires the Key of BaseTextures, Shield of Batching, Blade of Texture Atlases, Compass of Affine Matrices, and Tome of the 60 FPS Loop to breach its gates."
+    unlockedBy:
+      - "encounter-taxonomies"
+      - "encounter-vocabulary"
+      - "reflection-transforms"
+      - "encounter-optimization"
+      - "reflection-render-loop"
+    description: "The supreme Framerate Stutter Dragon! Requires the Shield of Batching, Key of BaseTextures, Compass of Affine Matrices, Blade of Texture Atlases, and Tome of the 60 FPS Loop to breach its gates."
     requiredItems:
-      - "key-texture-core"
       - "batch-shield"
-      - "atlas-blade"
+      - "key-texture-core"
       - "compass-affine-matrix"
+      - "atlas-blade"
       - "tome-60fps-pipeline"
     monster:
       id: "gpu-lag-dragon"

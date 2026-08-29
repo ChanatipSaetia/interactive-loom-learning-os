@@ -159,11 +159,89 @@ export function renderSimulationNexusEffects(ctx: HexTypeEffectContext) {
   })
 }
 
+export function drawSimulationNexusTerritory(
+  g: Graphics,
+  ctx: import('./types').HexTerritoryContext,
+) {
+  if (!g || g.destroyed) return
+  const { x, y, radius, palette } = ctx
+
+  const primaryColor = palette.blueNum
+  const accentColor = palette.lavenderNum
+  const metalColor = palette.surface1Num
+  const metalDark = palette.surface2Num
+  const darkC = palette.crustNum
+
+  // 1. 2.5D Hexagonal Cyber Platform Plinth & Drop Shadow
+  g.ellipse(x, y + 5, radius, radius * 0.85)
+    .fill({ color: darkC, alpha: 0.25 })
+  g.ellipse(x, y, radius, radius * 0.88)
+    .fill({ color: primaryColor, alpha: 0.055 })
+
+  // 2. Concentric Inner Telemetry Bus Ring
+  g.ellipse(x, y, radius * 0.85, radius * 0.74)
+    .stroke({ width: 0.9, color: accentColor, alpha: 0.2 })
+
+  // 3. Segmented High-Tech Data Arcs along the Perimeter
+  const arcSegments = 4
+  const gapAngle = Math.PI / 12
+  const segmentSpan = (Math.PI * 2) / arcSegments - gapAngle
+
+  for (let i = 0; i < arcSegments; i++) {
+    const startA = (i * Math.PI * 2) / arcSegments + gapAngle / 2
+    const endA = startA + segmentSpan
+    const steps = 12
+    const arcPts: number[] = []
+    for (let s = 0; s <= steps; s++) {
+      const a = startA + (s / steps) * (endA - startA)
+      arcPts.push(x + Math.cos(a) * radius, y + Math.sin(a) * (radius * 0.88))
+    }
+    g.poly(arcPts).stroke({ width: 1.8, color: primaryColor, alpha: 0.45 })
+  }
+
+  // 4. 4 Upright 2.5D Holographic Emitter Pylons & Laser Barrier Nodes
+  const pylonTips: Array<{ x: number; y: number }> = []
+  for (let i = 0; i < 4; i++) {
+    const angle = (i * Math.PI) / 2
+    const cx = x + Math.cos(angle) * radius
+    const cy = y + Math.sin(angle) * (radius * 0.88)
+
+    // Base contact shadow
+    g.ellipse(cx, cy + 2, 6, 2.5).fill({ color: darkC, alpha: 0.55 })
+
+    // Upright 2.5D Metallic Pylon Column (elevated in negative Y) with bold border
+    g.roundRect(cx - 3.5, cy - 13, 7, 13, 1)
+      .fill({ color: metalColor })
+      .stroke({ width: 1.1, color: palette.textNum })
+
+    // Vertical corner depth bevel
+    g.moveTo(cx, cy - 13).lineTo(cx, cy).stroke({ width: 0.7, color: metalDark })
+
+    // Glowing Holographic Emitter Core at apex
+    const tipY = cy - 16
+    pylonTips.push({ x: cx, y: tipY })
+
+    g.circle(cx, tipY, 4.0).fill({ color: primaryColor, alpha: 0.3 })
+    g.circle(cx, tipY, 2.2).fill({ color: accentColor, alpha: 0.9 }).stroke({ width: 0.8, color: palette.textNum })
+    g.circle(cx, tipY, 1.0).fill({ color: 0xffffff, alpha: 0.95 })
+  }
+
+  // 5. 2.5D Holographic Forcefield Perimeter Fence connecting pylon tips
+  for (let i = 0; i < 4; i++) {
+    const p1 = pylonTips[i]
+    const p2 = pylonTips[(i + 1) % 4]
+    g.moveTo(p1.x, p1.y)
+      .lineTo(p2.x, p2.y)
+      .stroke({ width: 0.9, color: primaryColor, alpha: 0.35 })
+  }
+}
+
 export const simulationNexusHex: HexTypeDefinition = {
   type: 'simulation_nexus',
   title: 'Simulation Nexus',
   drawTerrainGround: drawSimulationNexusTerrainGround,
   drawInsignia: drawSimulationNexusInsignia,
+  drawTerritory: drawSimulationNexusTerritory,
   createGradient: createSimulationNexusGradient,
   renderEffects: renderSimulationNexusEffects,
   getGlowColor: (palette) => palette.blueNum,

@@ -16,7 +16,7 @@ import { useOKFBundled, bundleToSections } from '../../../../learning-engine/com
 import { useTopics } from '../../../../learning-engine/composition/routes'
 
 // Known hexmap topics available in public/hexmaps/
-export const KNOWN_HEXMAP_TOPIC_IDS = ['gamification', 'demo', 'system-design', 'pixijs', 'pixijs-filters']
+export const KNOWN_HEXMAP_TOPIC_IDS = ['gamification', 'demo', 'system-design', 'pixijs', 'pixijs-filters', 'world-history']
 
 export type SnackbarType = 'success' | 'danger' | 'warning' | 'info' | 'craft' | 'exp'
 
@@ -174,10 +174,15 @@ export function useGamificationCampaign() {
   // Automatically derives visual hex type from corresponding OKF section type if not explicitly distinct
   useEffect(() => {
     if (liveCampaign?.nodes && liveCampaign.nodes.length > 0) {
+      const savedCoords = campaign?.nodeCoordinates
       const mergedNodes = liveCampaign.nodes.map((n) => {
         const secConfig = n.sectionRef ? bundleSectionsMap.get(n.sectionRef) : undefined
         const effectiveType = deriveHexTypeFromSectionType(secConfig?.type, n.type)
-        const baseNode: HexNodeData = { ...n, type: effectiveType }
+        const baseNode: HexNodeData = {
+          ...n,
+          type: effectiveType,
+          coordinates: savedCoords ? savedCoords[n.id] : n.coordinates,
+        }
 
         if (campaign?.clearedNodeIds.includes(n.id)) {
           return { ...baseNode, status: 'cleared' as const }
@@ -195,7 +200,7 @@ export function useGamificationCampaign() {
         }
       }
     }
-  }, [liveCampaign, campaign?.clearedNodeIds, bundleSectionsMap])
+  }, [liveCampaign, campaign?.clearedNodeIds, campaign?.nodeCoordinates, bundleSectionsMap])
 
   // Active Section Modal & Instance Key for Retry / Re-encounter
   const [activeSectionModal, setActiveSectionModal] = useState<HexNodeData | null>(null)

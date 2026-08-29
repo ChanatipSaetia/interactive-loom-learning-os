@@ -5,6 +5,7 @@ import {
   getHexTypeDefinition,
   drawHexInsignia,
   drawHexTerrainGround,
+  drawHexTerritory,
   createHexTypeGradient,
   capitalHex,
   readingSanctuaryHex,
@@ -128,5 +129,33 @@ describe('Hex Types Modular Architecture', () => {
     expect(reflectionDecryptionHex.getGlowColor(palette)).toBe(palette.mauveNum)
     expect(tradeoffWorkshopHex.getGlowColor(palette)).toBe(palette.yellowNum)
     expect(bossLairHex.getGlowColor(palette)).toBe(palette.redNum)
+  })
+
+  it('draws custom thematic territory auras without crashing for each primary site type', () => {
+    const siteTypes = [
+      'capital',
+      'reading_sanctuary',
+      'archive_spire',
+      'simulation_nexus',
+      'concept_monolith',
+      'observatory_gallery',
+      'tradeoff_workshop',
+    ]
+
+    for (const type of siteTypes) {
+      const g = new Graphics()
+      expect(() => {
+        drawHexTerritory(g, type, {
+          x: 0,
+          y: 0,
+          radius: 105,
+          palette,
+          isCleared: false,
+          isUnlocked: true,
+          node: { id: 'test-node', title: 'Test', type: type as any, status: 'unlocked', description: 'Test' },
+        })
+      }).not.toThrow()
+      g.destroy()
+    }
   })
 })

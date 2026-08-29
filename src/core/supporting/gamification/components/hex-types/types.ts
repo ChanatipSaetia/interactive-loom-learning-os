@@ -29,6 +29,17 @@ export interface HexTypeEffectContext {
   atkLen: number
 }
 
+export interface HexTerritoryContext {
+  x: number
+  y: number
+  radius: number
+  palette: GamificationThemePalette
+  time?: number
+  isCleared?: boolean
+  isUnlocked?: boolean
+  node: HexNodeData
+}
+
 export interface HexTypeDefinition {
   type: HexNodeType
   title: string
@@ -38,6 +49,9 @@ export interface HexTypeDefinition {
 
   /** Optional full terrain ground biome drawn across the full hex tile */
   drawTerrainGround?: (g: Graphics, options?: HexInsigniaOptions) => void
+
+  /** Optional thematic territory aura and perimeter drawing on the background layer */
+  drawTerritory?: (g: Graphics, ctx: HexTerritoryContext) => void
 
   /** Thematic top-to-bottom fill gradient */
   createGradient: (isLocked: boolean, isCleared: boolean, palette: GamificationThemePalette) => FillGradient

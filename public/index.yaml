@@ -88,3 +88,11 @@
     Learn the fundamentals of designing scalable distributed systems. Explore
     trade-offs in consistency, availability, and partition tolerance, practice
     with quiz challenges, and reflect on real-world architecture decisions.
+- id: world-history
+  label: world-history
+  path: /topics/world-history
+  category: History
+  description: >-
+    สำรวจวิวัฒนาการของมนุษยชาติ ตั้งแต่กำเนิดอารยธรรมโบราณ
+    การค้าและปฏิสัมพันธ์ข้ามวัฒนธรรม ยุคฟื้นฟูศิลปวิทยาการ การปฏิวัติอุตสาหกรรม
+    จนถึงระบบระเบียบโลกยุคร่วมสมัย

@@ -196,11 +196,77 @@ export function renderReadingSanctuaryEffects(ctx: HexTypeEffectContext) {
   })
 }
 
+export function drawReadingSanctuaryTerritory(
+  g: Graphics,
+  ctx: import('./types').HexTerritoryContext,
+) {
+  if (!g || g.destroyed) return
+  const { x, y, radius, palette } = ctx
+
+  const primaryColor = palette.greenNum
+  const accentColor = palette.tealNum
+  const stoneColor = palette.surface1Num
+  const darkC = palette.crustNum
+
+  // 1. 2.5D Elevated Grassy Mound & Drop Shadow
+  g.ellipse(x, y + 5, radius, radius * 0.85)
+    .fill({ color: darkC, alpha: 0.25 })
+  g.ellipse(x, y, radius, radius * 0.88)
+    .fill({ color: primaryColor, alpha: 0.06 })
+
+  // 2. Concentric Healing Ripple Rings
+  g.ellipse(x, y, radius * 0.78, radius * 0.68)
+    .stroke({ width: 0.9, color: accentColor, alpha: 0.16 })
+  g.ellipse(x, y, radius * 0.92, radius * 0.8)
+    .stroke({ width: 1.1, color: primaryColor, alpha: 0.24 })
+
+  // 3. Wavy Floral Petal Perimeter Curve
+  const points: number[] = []
+  const steps = 36
+  for (let i = 0; i <= steps; i++) {
+    const angle = (i * Math.PI * 2) / steps
+    const rLobe = radius + 3.5 * Math.sin(angle * 6)
+    points.push(x + Math.cos(angle) * rLobe, y + Math.sin(angle) * (rLobe * 0.88))
+  }
+  g.poly(points).stroke({ width: 1.5, color: primaryColor, alpha: 0.38 })
+
+  // 4. 6 Upright 2.5D Sacred Menhir Standing Stones & Shrubbery
+  for (let i = 0; i < 6; i++) {
+    const angle = (i * Math.PI) / 3
+    const px = x + Math.cos(angle) * radius
+    const py = y + Math.sin(angle) * (radius * 0.88)
+
+    // Megalith ground contact shadow
+    g.ellipse(px, py + 1.5, 5, 2.2).fill({ color: darkC, alpha: 0.55 })
+
+    // Upright 2.5D Stone Slab (elevated in negative Y) with bold insignia border
+    g.poly([
+      px - 3.5, py,
+      px - 2.5, py - 13,
+      px + 2.5, py - 13,
+      px + 3.5, py,
+    ]).fill({ color: stoneColor }).stroke({ width: 1.2, color: palette.textNum })
+
+    // Stone facet highlight edge
+    g.moveTo(px - 2.5, py - 13).lineTo(px - 1.5, py).stroke({ width: 0.7, color: palette.surface0Num })
+
+    // Glowing Ancient Rune carved into stone face
+    g.moveTo(px, py - 10).lineTo(px, py - 3).stroke({ width: 1.0, color: accentColor, alpha: 0.9 })
+    g.circle(px, py - 10, 1.0).fill({ color: palette.textNum })
+
+    // Sprouting 2.5D Herbal Shrub at base with crisp outlines
+    g.circle(px - 3.5, py - 1.5, 1.8).fill({ color: primaryColor, alpha: 0.85 }).stroke({ width: 0.7, color: palette.textNum })
+    g.circle(px + 3.5, py - 1.5, 1.5).fill({ color: palette.tealNum, alpha: 0.85 }).stroke({ width: 0.7, color: palette.textNum })
+    g.circle(px - 3.5, py - 2.5, 0.8).fill({ color: palette.lavenderNum, alpha: 0.95 })
+  }
+}
+
 export const readingSanctuaryHex: HexTypeDefinition = {
   type: 'reading_sanctuary',
   title: 'Reading Sanctuary',
   drawTerrainGround: drawReadingSanctuaryTerrainGround,
   drawInsignia: drawReadingSanctuaryInsignia,
+  drawTerritory: drawReadingSanctuaryTerritory,
   createGradient: createReadingSanctuaryGradient,
   renderEffects: renderReadingSanctuaryEffects,
   getGlowColor: (palette) => palette.greenNum,

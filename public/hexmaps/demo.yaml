@@ -15,6 +15,8 @@ nodes:
     title: "Monolith of the Knowledge Graph"
     type: "concept_monolith"
     status: "unlocked"
+    unlockedBy:
+      - "capital"
     sectionRef: "concept-map"
     healingAmount: 35
     description: "Explore the structural relationships between Planners, Memory, Tool Registries, and LLM Orchestrators."
@@ -23,6 +25,8 @@ nodes:
     title: "Hallucination Gremlin Outpost"
     type: "quiz_encounter"
     status: "locked"
+    unlockedBy:
+      - "sanctuary-concept"
     sectionRef: "quiz"
     description: "A mischievous Gremlin injecting hallucinations into context windows! Answer architecture questions to defeat it."
     monster:
@@ -43,6 +47,8 @@ nodes:
     title: "Archive Spire of Agent Capabilities"
     type: "archive_spire"
     status: "unlocked"
+    unlockedBy:
+      - "capital"
     sectionRef: "taxonomy"
     healingAmount: 35
     description: "Examine taxonomy classes spanning Hierarchical Orchestration, Tool Use, Memory Systems, and Reflection."
@@ -51,6 +57,8 @@ nodes:
     title: "ReAct Execution Sequence Vault"
     type: "reflection_decryption"
     status: "locked"
+    unlockedBy:
+      - "sanctuary-taxonomy"
     sectionRef: "reflection-sequence"
     description: "Reassemble the chronological execution flow of Thought -> Action -> Observation before the cipher expires!"
     rewards:
@@ -64,6 +72,8 @@ nodes:
     title: "Monolith of Core Terminology"
     type: "concept_monolith"
     status: "unlocked"
+    unlockedBy:
+      - "capital"
     sectionRef: "flashcards"
     healingAmount: 30
     description: "Master foundational concepts: Prompt Injection, Tool Calling, Vector Indexing, and Context Windows."
@@ -72,6 +82,8 @@ nodes:
     title: "RAG Synthesis Crypt"
     type: "reflection_decryption"
     status: "locked"
+    unlockedBy:
+      - "sanctuary-flashcards"
     sectionRef: "reflection-template"
     description: "Reconstruct the RAG synthesis template with retrieved chunk citations to unlock context knowledge."
     rewards:
@@ -85,6 +97,8 @@ nodes:
     title: "Archive Spire of Agent Design Patterns"
     type: "archive_spire"
     status: "locked"
+    unlockedBy:
+      - "encounter-quiz"
     sectionRef: "taxonomy-patterns"
     healingAmount: 35
     description: "Study proven multi-agent design patterns: Plan-and-Execute, Map-Reduce, and Reflexion."
@@ -93,6 +107,8 @@ nodes:
     title: "Sanctuary of the Agent Lifecycle"
     type: "reading_sanctuary"
     status: "locked"
+    unlockedBy:
+      - "reflection-sequence"
     sectionRef: "lifecycle"
     healingAmount: 35
     description: "Deep dive into state machines, token budget management, and tool call retry policies."
@@ -101,6 +117,8 @@ nodes:
     title: "Grove of the Architecture Guide"
     type: "reading_sanctuary"
     status: "locked"
+    unlockedBy:
+      - "reflection-template"
     sectionRef: "decision-tree"
     healingAmount: 30
     description: "Consult the diagnostic tree to select single-agent vs multi-agent supervisor architectures."
@@ -109,6 +127,8 @@ nodes:
     title: "Archive Spire of Agent Capabilities"
     type: "archive_spire"
     status: "locked"
+    unlockedBy:
+      - "sanctuary-patterns"
     sectionRef: "capabilities"
     healingAmount: 30
     description: "Core checklist of production-grade agent capabilities and tool calling interfaces."
@@ -117,6 +137,8 @@ nodes:
     title: "Pillar Layer Architecture Stack"
     type: "reading_sanctuary"
     status: "locked"
+    unlockedBy:
+      - "sanctuary-lifecycle"
     sectionRef: "pillar-layer"
     healingAmount: 35
     description: "Inspect multi-tier decoupling between presentation, gateway routing, and microservice infrastructure."
@@ -125,6 +147,8 @@ nodes:
     title: "Simulation Nexus of Agent Architecture Flow"
     type: "simulation_nexus"
     status: "locked"
+    unlockedBy:
+      - "sanctuary-decision"
     sectionRef: "flowchart"
     healingAmount: 40
     description: "Trace the end-to-end Event Storming flowchart of multi-agent routing and execution."
@@ -133,6 +157,8 @@ nodes:
     title: "Simulation Nexus of Deployment Scenarios"
     type: "simulation_nexus"
     status: "locked"
+    unlockedBy:
+      - "sanctuary-capabilities"
     sectionRef: "scenario"
     healingAmount: 35
     description: "Navigate branching scenario paths to choose the optimal deployment strategy."
@@ -141,6 +167,8 @@ nodes:
     title: "Simulation Nexus of Feedback Loops"
     type: "simulation_nexus"
     status: "locked"
+    unlockedBy:
+      - "sanctuary-pillar"
     sectionRef: "flowchart-feedback"
     healingAmount: 40
     description: "Trace the Event Storming flowchart of agent self-reflection, tool retry, and user feedback."
@@ -150,6 +178,8 @@ nodes:
     title: "Agent Architecture Trade-off Workshop"
     type: "tradeoff_workshop"
     status: "locked"
+    unlockedBy:
+      - "capital"
     sectionRef: "tradeoffs"
     description: "Tune latency, token cost, and grounding accuracy trade-offs to forge tactical equipment buffs."
     tradeoffMapping:
@@ -162,6 +192,8 @@ nodes:
     title: "RAG Parameter Dynamics Crucible"
     type: "tradeoff_workshop"
     status: "locked"
+    unlockedBy:
+      - "capital"
     sectionRef: "formula-sandbox"
     description: "Experiment with chunk sizes, Top-K retrieval counts, and similarity thresholds to forge stat bonuses."
     tradeoffMapping:
@@ -173,6 +205,8 @@ nodes:
     title: "Cloud vs On-Prem Deployment Forge"
     type: "tradeoff_workshop"
     status: "locked"
+    unlockedBy:
+      - "capital"
     sectionRef: "tradeoffs-deploy"
     description: "Balance security, cloud cost, and local inference throughput."
     tradeoffMapping:
@@ -185,6 +219,10 @@ nodes:
     title: "Lair of the Autonomous Overfitting Dragon"
     type: "boss_lair"
     status: "locked"
+    unlockedBy:
+      - "encounter-quiz"
+      - "reflection-sequence"
+      - "reflection-template"
     description: "The supreme Overfitting Dragon! Requires the Aegis of Evaluation, Blade of ReAct, and Tome of Context Synthesis to unlock its gates."
     requiredItems:
       - "eval-shield"

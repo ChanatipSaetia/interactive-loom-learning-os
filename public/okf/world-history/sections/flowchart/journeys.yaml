@@ -1,0 +1,16 @@
+- id: journey_industrial_transition
+  label: "เส้นทางการเปลี่ยนผ่านสู่ยุคอุตสาหกรรม (Industrial Transition Journey)"
+  description: "ลำดับวิวัฒนาการตั้งแต่การประดิษฐ์พลังงานกลไกจนถึงการกำเนิดตลาดโลกยุคใหม่"
+  steps:
+    - stepId: step_invent_engine
+      name: "จุดกำเนิดพลังงานไอน้ำ"
+      description: "นักประดิษฐ์สร้างเครื่องจักรไอน้ำปลดล็อกข้อจำกัดทางพลังงานเดิม"
+    - stepId: step_build_factory
+      name: "การก่อตั้งระบบโรงงาน"
+      description: "นายทุนรวมศูนย์เครื่องจักรและแรงงาน เกิดระบบการแบ่งงานกันทำ"
+    - stepId: step_mass_produce
+      name: "การผลิตจำนวนมาก"
+      description: "แรงงานเดินเครื่องจักรอย่างต่อเนื่อง สินค้าเพิ่มปริมาณและราคาถูกลง"
+    - stepId: step_expand_trade
+      name: "การขยายตัวสู่ตลาดโลก"
+      description: "รถไฟและเรือกลไฟเชื่อมโยงตลาด ขับเคลื่อนสู่ยุคโลกาภิวัตน์"

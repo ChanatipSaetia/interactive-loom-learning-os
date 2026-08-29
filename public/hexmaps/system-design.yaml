@@ -10,20 +10,24 @@ nodes:
     sectionRef: "intro"
     description: "The central hub of system design knowledge. Learn the foundations of scalable architecture!"
 
-  # Ring 1: Learning Sanctuaries
+  # Learning Sanctuaries
   - id: "sanctuary-principles"
     title: "Sanctuary of Core Principles"
     type: "reading_sanctuary"
-    status: "locked"
+    status: "unlocked"
+    unlockedBy:
+      - "capital"
     sectionRef: "text"
     healingAmount: 30
     description: "Study the core principles: scalability, reliability, and maintainability."
 
-  # Ring 2: Knowledge Encounters
+  # Knowledge Encounters
   - id: "quiz-chamber"
     title: "Chamber of Knowledge"
     type: "quiz_encounter"
     status: "locked"
+    unlockedBy:
+      - "sanctuary-principles"
     sectionRef: "quiz"
     description: "Test your understanding with challenging system design questions!"
     monster:
@@ -39,11 +43,13 @@ nodes:
         icon: "📿"
         description: "A mystical amulet that brings clarity to complex system designs."
 
-  # Ring 3: Reflection Vault
+  # Reflection Vault
   - id: "reflection-vault"
     title: "Reflection Vault"
     type: "reflection_decryption"
     status: "locked"
+    unlockedBy:
+      - "sanctuary-principles"
     sectionRef: "reflection"
     description: "Enter the vault of reflection. Analyze real-world trade-offs in system design!"
     rewards:
@@ -52,11 +58,13 @@ nodes:
         icon: "💎"
         description: "A crystal that reveals the hidden trade-offs in architectural decisions."
 
-  # Ring 4: Trade-off Workshop
+  # Trade-off Workshop
   - id: "tradeoff-workshop"
     title: "Trade-off Workshop"
     type: "tradeoff_workshop"
     status: "locked"
+    unlockedBy:
+      - "capital"
     sectionRef: "tradeoff"
     description: "Experiment with consistency, availability, latency, and cost trade-offs!"
     tradeoffMapping:
@@ -70,6 +78,9 @@ nodes:
     title: "Lair of Architectural Complexity"
     type: "boss_lair"
     status: "locked"
+    unlockedBy:
+      - "quiz-chamber"
+      - "reflection-vault"
     description: "Face the ultimate system design challenge! Requires both the Amulet of Clarity and Crystal of Insight."
     requiredItems:
       - "clarity-amulet"

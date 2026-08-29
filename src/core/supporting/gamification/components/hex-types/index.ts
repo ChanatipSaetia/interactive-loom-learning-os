@@ -53,6 +53,17 @@ export function drawHexTerrainGround(
   }
 }
 
+export function drawHexTerritory(
+  g: Graphics,
+  type: string,
+  ctx: import('./types').HexTerritoryContext,
+) {
+  const def = getHexTypeDefinition(type)
+  if (def.drawTerritory) {
+    def.drawTerritory(g, ctx)
+  }
+}
+
 export function drawHexInsignia(
   g: Graphics,
   type: string,

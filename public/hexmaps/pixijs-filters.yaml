@@ -2,7 +2,7 @@ topicId: "pixijs-filters"
 topicTitle: "Realm of PixiJS Filters: The Post-Processing Citadel"
 capitalId: "capital"
 nodes:
-  # Ring 0: Capital Center
+  # ─── Capital Center ───
   - id: "capital"
     title: "Citadel of Post-Processing"
     type: "capital"
@@ -10,27 +10,48 @@ nodes:
     sectionRef: "intro"
     description: "The grand citadel of GPU-accelerated post-processing and custom fragment shaders. Master PixiJS FilterSystem, blur algorithms, and displacement shaders!"
 
-  # Ring 1: Foundations & Vocabulary Sanctuaries & Challenges
-  - id: "sanctuary-map"
-    title: "Monolith of the Filter Pipeline"
-    type: "concept_monolith"
-    status: "unlocked"
-    sectionRef: "concept-map"
-    healingAmount: 30
-    description: "Study the architectural graph of FilterSystem, Containers, RenderTargets, Uniforms, and GPU Drivers."
-
+  # ─── Entry Sanctuaries (Heads of 3 Parallel Wings) ───
+  # Wing A (Left): Shader Foundations & GLSL Authoring
   - id: "sanctuary-vocabulary"
     title: "Monolith of Shader Terms"
     type: "concept_monolith"
     status: "unlocked"
+    unlockedBy:
+      - "capital"
     sectionRef: "flashcards"
     healingAmount: 30
     description: "Master fundamental shader terminology including FilterSystem, RenderTarget Pool, Fragment Shader, and Kawase Blur."
 
+  # Wing B (Center): FilterSystem Pipeline & Execution Loop
+  - id: "sanctuary-map"
+    title: "Monolith of the Filter Pipeline"
+    type: "concept_monolith"
+    status: "unlocked"
+    unlockedBy:
+      - "capital"
+    sectionRef: "concept-map"
+    healingAmount: 30
+    description: "Study the architectural graph of FilterSystem, Containers, RenderTargets, Uniforms, and GPU Drivers."
+
+  # Wing C (Right): Filter Catalog & Caching Techniques
+  - id: "sanctuary-taxonomies"
+    title: "Archive Spire of Shader Taxonomies"
+    type: "archive_spire"
+    status: "unlocked"
+    unlockedBy:
+      - "capital"
+    sectionRef: "taxonomy-browser"
+    healingAmount: 35
+    description: "Explore the classification of Spatial Blurs, Color Grading, Coordinate Warping, and Custom Shaders."
+
+  # ─── Initial Wing Challenges (1-to-1 Prerequisite for Deep Sanctuaries) ───
+  # Wing A Challenge
   - id: "encounter-vocabulary"
     title: "Uniform Matrix Goblin Outpost"
     type: "quiz_encounter"
     status: "locked"
+    unlockedBy:
+      - "sanctuary-vocabulary"
     sectionRef: "quiz-vocabulary"
     description: "A mischievous Goblin scrambling uFilterMatrix uniform transforms! Test your filter recall to defeat it."
     monster:
@@ -46,31 +67,13 @@ nodes:
         icon: "🔑"
         description: "Unlocks uniform matrix projection knowledge."
 
-  - id: "reflection-foundations"
-    title: "Shader Authoring Crypt"
-    type: "reflection_decryption"
-    status: "locked"
-    sectionRef: "reflection-foundations"
-    description: "Sequence the chronological steps of authoring and attaching a custom GLSL filter."
-    rewards:
-      - id: "scroll-shader-author"
-        name: "Scroll of Shader Creation"
-        icon: "📜"
-        description: "Contains ancient secrets of custom vertex and fragment shader authoring."
-
-  # Ring 2: Taxonomies & Pipeline Decryption
-  - id: "sanctuary-taxonomies"
-    title: "Archive Spire of Shader Taxonomies"
-    type: "archive_spire"
-    status: "locked"
-    sectionRef: "taxonomy-browser"
-    healingAmount: 35
-    description: "Explore the classification of Spatial Blurs, Color Grading, Coordinate Warping, and Custom Shaders."
-
+  # Wing B Challenge
   - id: "reflection-pipeline"
     title: "Filter Lifecycle Crypt"
     type: "reflection_decryption"
     status: "locked"
+    unlockedBy:
+      - "sanctuary-map"
     sectionRef: "reflection-pipeline"
     description: "Sequence the chronological stages of the filter render cycle from padded bounds calculation to target recycling."
     rewards:
@@ -79,39 +82,13 @@ nodes:
         icon: "📖"
         description: "Chronicles the full lifecycle of offscreen RenderTarget interception."
 
-  # Ring 3: Deep Mechanics & Flowchart
-  - id: "sanctuary-pipeline"
-    title: "Sanctuary of FilterSystem Mechanics"
-    type: "reading_sanctuary"
-    status: "locked"
-    sectionRef: "text-core"
-    healingAmount: 35
-    description: "Deep dive into offscreen render target pooling, uFilterMatrix math, and batch break prevention."
-
-  - id: "sanctuary-flowchart"
-    title: "Simulation Nexus of the Filter Render Cycle"
-    type: "simulation_nexus"
-    status: "locked"
-    sectionRef: "flowchart"
-    healingAmount: 40
-    description: "Trace the Event Storming process diagram of single-pass and multi-pass filter execution on the GPU."
-
-  - id: "reflection-multipass"
-    title: "Multi-Pass Convolution Vault"
-    type: "reflection_decryption"
-    status: "locked"
-    sectionRef: "reflection-multipass"
-    description: "Sequence the sequential stages of a 2-pass separable blur convolution pipeline."
-    rewards:
-      - id: "compass-pingpong-buffer"
-        name: "Compass of Ping-Pong Buffers"
-        icon: "🧭"
-        description: "Guides intermediate horizontal and vertical convolution passes."
-
+  # Wing C Challenge
   - id: "reflection-synthesis"
     title: "Bitmap Caching Crypt"
     type: "reflection_decryption"
     status: "locked"
+    unlockedBy:
+      - "sanctuary-taxonomies"
     sectionRef: "reflection-caching"
     description: "Sequence the stages of baking static filtered containers with cacheAsBitmap."
     rewards:
@@ -120,32 +97,78 @@ nodes:
         icon: "🔮"
         description: "Eliminates GPU memory fragmentation and allocation churn."
 
-  # Ring 4: Decision Tree & Tradeoff Workshop
+  # ─── Deep Sanctuaries (Unlocked by Initial Wing Challenges) ───
+  # Wing A Deep Sanctuary
   - id: "sanctuary-decision"
     title: "Grove of the Filter Advisor"
     type: "reading_sanctuary"
     status: "locked"
+    unlockedBy:
+      - "encounter-vocabulary"
     sectionRef: "decision-tree"
     healingAmount: 30
     description: "Consult the diagnostic decision tree to select the optimal filter technique for mobile vs desktop."
 
-  - id: "tradeoff-workshop"
-    title: "Post-Processing Forge"
-    type: "tradeoff_workshop"
+  # Wing B Deep Sanctuary
+  - id: "sanctuary-flowchart"
+    title: "Simulation Nexus of the Filter Render Cycle"
+    type: "simulation_nexus"
     status: "locked"
-    sectionRef: "tradeoff-sandbox"
-    description: "Balance post-processing FPS throughput, draw call breaks, and VRAM memory to forge attribute buffs."
-    tradeoffMapping:
-      fps_throughput: "evasion"
-      draw_call_overhead: "armor"
-      gpu_memory: "chaos_shield"
-      visual_spectacle: "intelligence"
+    unlockedBy:
+      - "reflection-pipeline"
+    sectionRef: "flowchart"
+    healingAmount: 40
+    description: "Trace the Event Storming process diagram of single-pass and multi-pass filter execution on the GPU."
 
-  # Ring 5: Optimization Encounter & Boss Lair
+  # Wing C Deep Sanctuary
+  - id: "sanctuary-pipeline"
+    title: "Sanctuary of FilterSystem Mechanics"
+    type: "reading_sanctuary"
+    status: "locked"
+    unlockedBy:
+      - "reflection-synthesis"
+    sectionRef: "text-core"
+    healingAmount: 35
+    description: "Deep dive into offscreen render target pooling, uFilterMatrix math, and batch break prevention."
+
+  # ─── Follow-up Wing Challenges & Workshop ───
+  # Wing A Follow-up Challenge
+  - id: "reflection-foundations"
+    title: "Shader Authoring Crypt"
+    type: "reflection_decryption"
+    status: "locked"
+    unlockedBy:
+      - "sanctuary-decision"
+    sectionRef: "reflection-foundations"
+    description: "Sequence the chronological steps of authoring and attaching a custom GLSL filter."
+    rewards:
+      - id: "scroll-shader-author"
+        name: "Scroll of Shader Creation"
+        icon: "📜"
+        description: "Contains ancient secrets of custom vertex and fragment shader authoring."
+
+  # Wing B Follow-up Challenge
+  - id: "reflection-multipass"
+    title: "Multi-Pass Convolution Vault"
+    type: "reflection_decryption"
+    status: "locked"
+    unlockedBy:
+      - "sanctuary-flowchart"
+    sectionRef: "reflection-multipass"
+    description: "Sequence the sequential stages of a 2-pass separable blur convolution pipeline."
+    rewards:
+      - id: "compass-pingpong-buffer"
+        name: "Compass of Ping-Pong Buffers"
+        icon: "🧭"
+        description: "Guides intermediate horizontal and vertical convolution passes."
+
+  # Wing C Follow-up Challenge
   - id: "encounter-optimization"
     title: "VRAM Texture Churn Specter Catacombs"
     type: "quiz_encounter"
     status: "locked"
+    unlockedBy:
+      - "sanctuary-pipeline"
     sectionRef: "quiz-optimization"
     description: "A haunting Specter spawned from unpooled offscreen framebuffers and unbatched sprite filters! Solve optimization questions to banish it."
     monster:
@@ -161,18 +184,41 @@ nodes:
         icon: "⚔️"
         description: "Executes lightning-fast multi-pass box-offset convolutions on mobile GPUs."
 
+  # Wing A/B/C Workshop
+  - id: "tradeoff-workshop"
+    title: "Post-Processing Forge"
+    type: "tradeoff_workshop"
+    status: "locked"
+    unlockedBy:
+      - "capital"
+    sectionRef: "tradeoff-sandbox"
+    description: "Balance post-processing FPS throughput, draw call breaks, and VRAM memory to forge attribute buffs."
+    tradeoffMapping:
+      fps_throughput: "evasion"
+      draw_call_overhead: "armor"
+      gpu_memory: "chaos_shield"
+      visual_spectacle: "intelligence"
+
+  # ─── Campaign Climax: Boss Lair ───
   - id: "boss-lair"
     title: "Lair of the Offscreen Framebuffer Overlord"
     type: "boss_lair"
     status: "locked"
+    unlockedBy:
+      - "encounter-vocabulary"
+      - "reflection-pipeline"
+      - "reflection-synthesis"
+      - "reflection-foundations"
+      - "reflection-multipass"
+      - "encounter-optimization"
     sectionRef: "quiz-boss"
-    description: "The ultimate boss of the post-processing realm! Requires the Key of Filter Matrices, Scroll of Shader Creation, Tome of FilterSystem Lifecycle, Compass of Ping-Pong Buffers, Orb of RenderTarget Pooling, and Blade of Kawase Blurs to breach its lair."
+    description: "The ultimate boss of the post-processing realm! Requires the Key of Filter Matrices, Tome of FilterSystem Lifecycle, Orb of RenderTarget Pooling, Scroll of Shader Creation, Compass of Ping-Pong Buffers, and Blade of Kawase Blurs to breach its lair."
     requiredItems:
       - "key-filter-matrix"
-      - "scroll-shader-author"
       - "tome-filter-system"
-      - "compass-pingpong-buffer"
       - "orb-rendertarget-pool"
+      - "scroll-shader-author"
+      - "compass-pingpong-buffer"
       - "blade-kawase-blur"
     monster:
       id: "boss-framebuffer-overlord"

@@ -13,6 +13,7 @@ import {
   evaluateTopicBadges,
   deriveStatPercentage,
 } from './game-rules'
+import { computeHexGridCoordinates } from './layout'
 
 export function useGamification(
   topicId?: string | null,
@@ -64,6 +65,13 @@ export function useGamification(
           // Ensure difficulty, damage tracking, pulses and play count are initialized
           const diff = savedTopicState.difficulty || 'normal'
           const maxPulses = DIFFICULTY_CONFIGS[diff].maxSanctuaryPulses
+          let nodeCoords = savedTopicState.nodeCoordinates
+          let needsSave = false
+          if (!nodeCoords && loadedCampaign?.nodes && loadedCampaign.nodes.length > 0) {
+            const coordsMap = computeHexGridCoordinates(loadedCampaign.nodes)
+            nodeCoords = Object.fromEntries(coordsMap)
+            needsSave = true
+          }
           const normalized: TopicCampaignState = {
             ...savedTopicState,
             difficulty: diff,
@@ -71,11 +79,15 @@ export function useGamification(
             sanctuaryPulsesUsed: savedTopicState.sanctuaryPulsesUsed ?? 0,
             maxSanctuaryPulses: maxPulses,
             isStarted: savedTopicState.isStarted ?? true,
+            nodeCoordinates: nodeCoords,
           }
           setTopicState(normalized)
+          if (needsSave) {
+            await characterAdapter.saveTopicCampaign(topicId, normalized)
+          }
         } else {
           // Initialize fresh campaign state (1st play)
-          const initialTopicState = createFreshCampaignState(topicId, loadedCampaign.topicTitle, 'normal')
+          const initialTopicState = createFreshCampaignState(topicId, loadedCampaign.topicTitle, 'normal', loadedCampaign.nodes)
           setTopicState(initialTopicState)
           await characterAdapter.saveTopicCampaign(topicId, initialTopicState)
 
@@ -108,8 +120,18 @@ export function useGamification(
   }, [topicId, campaignAdapter, characterAdapter])
 
   // Helper to create a fresh campaign state
-  const createFreshCampaignState = useCallback((topicId: string, topicTitle: string, difficulty: DifficultyLevel = 'normal'): TopicCampaignState => {
+  const createFreshCampaignState = useCallback((
+    topicId: string,
+    topicTitle: string,
+    difficulty: DifficultyLevel = 'normal',
+    nodes?: import('./types').HexNodeData[]
+  ): TopicCampaignState => {
     const maxPulses = DIFFICULTY_CONFIGS[difficulty].maxSanctuaryPulses
+    let nodeCoordinates: Record<string, import('./types').HexGridCoordinate> | undefined
+    if (nodes && nodes.length > 0) {
+      const coordsMap = computeHexGridCoordinates(nodes)
+      nodeCoordinates = Object.fromEntries(coordsMap)
+    }
     return {
       topicId,
       topicTitle,
@@ -126,6 +148,7 @@ export function useGamification(
       clearedNodeIds: [],
       activeBuffs: [],
       readingVisitCounts: {},
+      nodeCoordinates,
     }
   }, [])
 
@@ -452,7 +475,7 @@ export function useGamification(
 
     if (idToReset === topicId && topicId && campaign) {
       const chosenDiff = topicState?.difficulty || 'normal'
-      const freshTopicState = createFreshCampaignState(topicId, campaign.topicTitle, chosenDiff)
+      const freshTopicState = createFreshCampaignState(topicId, campaign.topicTitle, chosenDiff, campaign.nodes)
       setTopicState(freshTopicState)
       await characterAdapter.saveTopicCampaign(topicId, freshTopicState)
 

@@ -2,7 +2,7 @@ import { Container, Graphics } from 'pixi.js'
 import { GlowFilter, type GlowFilterOptions } from 'pixi-filters'
 import { HexNodeData } from '../types'
 import { GamificationThemePalette } from '../theme-palette'
-import { computeHexGridCoordinates, getAutoFlowConnections } from '../layout'
+import { computeHexGridCoordinates, getAutoFlowConnections, isSanctuaryOrForge } from '../layout'
 import { HEX_RADIUS, axialToPixel, getHexVertices } from './hex-geometry'
 import { createHexGradient } from './hex-gradient'
 import {
@@ -13,7 +13,7 @@ import {
   renderNodeBadges,
   renderUnlockRevealFx,
 } from './node-effects'
-import { renderHexTypeEffects, drawHexTerrainGround } from './hex-types'
+import { renderHexTypeEffects, drawHexTerrainGround, drawHexTerritory, type HexTerritoryContext } from './hex-types'
 
 export interface HexSceneContext {
   mapContainer: Container
@@ -119,6 +119,45 @@ export function renderHexScene(ctx: HexSceneContext) {
   const currentCoords = computeHexGridCoordinates(currentNodes)
   const currentConnections = getAutoFlowConnections(currentNodes)
   const capitalCleared = currentNodes.find((n) => n.type === 'capital')?.status === 'cleared'
+
+  // ─── 1. RENDER THEMATIC TERRITORY AURAS (BACKGROUND LAYER, zIndex: 1) ───
+  const territoryContainer = new Container()
+  territoryContainer.zIndex = 1
+  territoryContainer.eventMode = 'none'
+
+  currentNodes.forEach((node) => {
+    const isHub = node.type === 'capital'
+    const isSite = isSanctuaryOrForge(node.type)
+    if (!isHub && !isSite) return
+    if (node.status === 'locked') return // Only show territory aura when that node is unlocked or cleared
+
+    const coord = currentCoords.get(node.id) || node.coordinates || { q: 0, r: 0 }
+    const { x, y } = axialToPixel(coord.q, coord.r, 0, 0)
+    const territoryRadius = 105
+
+    const territoryGfx = new Graphics()
+    const territoryCtx: HexTerritoryContext = {
+      x,
+      y,
+      radius: territoryRadius,
+      palette,
+      isCleared: node.status === 'cleared',
+      isUnlocked: node.status === 'unlocked',
+      node,
+    }
+
+    drawHexTerritory(territoryGfx, node.type, territoryCtx)
+
+    // Subtle ambient breathing controller for the territory aura
+    animControllers.push((time: number) => {
+      if (territoryGfx.destroyed) return
+      territoryGfx.alpha = 0.85 + 0.15 * Math.sin(time * 1.5 + (coord.q * 0.7 + coord.r * 0.3))
+    })
+
+    territoryContainer.addChild(territoryGfx)
+  })
+
+  mapContainer.addChild(territoryContainer)
 
   // ─── 2. RENDER HEX NODES (SORTED WITH SELECTED NODE AT FRONT) ───
   const sortedNodes = [...currentNodes].sort((a, b) => {

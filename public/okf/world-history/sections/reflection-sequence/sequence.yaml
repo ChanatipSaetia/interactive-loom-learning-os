@@ -1,0 +1,31 @@
+challenges:
+  - prompt: "เรียงลำดับพัฒนาการของอารยธรรมโบราณตามลำดับเวลา (Part 1):"
+    items:
+      - id: seq-cuneiform
+        text: "ชาวสุเมเรียนประดิษฐ์อักษรรูปลิ่ม (Cuneiform) ในเมโสโปเตเมีย"
+      - id: seq-pyramid
+        text: "การสร้างมหาพีระมิดแห่งกิซาในอียิปต์โบราณ"
+      - id: seq-athens
+        text: "ยุคทองของประชาธิปไตยในนครรัฐเอเธนส์ ประเทศกรีซ"
+      - id: seq-rome-fall
+        text: "จักรวรรดิโรมันตะวันตกถูกรุกรานและล่มสลาย เข้าสู่ยุคกลาง"
+    solution:
+      - seq-cuneiform
+      - seq-pyramid
+      - seq-athens
+      - seq-rome-fall
+  - prompt: "เรียงลำดับจุดเปลี่ยนสู่โลกสมัยใหม่และยุคร่วมสมัย (Part 2):"
+    items:
+      - id: seq-constantinople
+        text: "กรุงคอนสแตนติโนเปิลเสียแก่จักรวรรดิออตโตมัน สิ้นสุดยุคกลาง"
+      - id: seq-steam-engine
+        text: "เจมส์ วัตต์ พัฒนาเครื่องจักรไอน้ำ เริ่มต้นการปฏิวัติอุตสาหกรรม"
+      - id: seq-ww2-end
+        text: "สิ้นสุดสงครามโลกครั้งที่ 2 และเริ่มต้นยุคสงครามเย็น"
+      - id: seq-berlin-wall
+        text: "การล่มสลายของกำแพงเบอร์ลินและการสิ้นสุดของสงครามเย็น"
+    solution:
+      - seq-constantinople
+      - seq-steam-engine
+      - seq-ww2-end
+      - seq-berlin-wall
