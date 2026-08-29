@@ -164,20 +164,12 @@ export function renderHexScene(ctx: HexSceneContext) {
 
     const isDefeatedEncounter = isCleared && (node.type === 'quiz_encounter' || node.type === 'reflection_decryption')
     const styleInfo = palette.colorMap[node.type] || palette.colorMap.capital
-    let strokeColor = isDefeatedEncounter ? palette.surface2Num : styleInfo.stroke
-    const highlightColor = isDefeatedEncounter ? palette.overlay0Num : (styleInfo.highlight || strokeColor)
-    let strokeWidth = 2
-    let fillAlpha = isDefeatedEncounter ? 0.78 : 0.88
 
-    if (isLocked && !isBoss) {
-      strokeColor = palette.surface1Num
-      strokeWidth = 1.8
-      fillAlpha = 0.75
-    } else if (isLocked && isBoss) {
-      strokeColor = palette.redNum
-      strokeWidth = 2
-      fillAlpha = 0.85
-    }
+    // Unified hex border color across all node types (surface2Num for revealed, surface1Num for locked)
+    const strokeColor = isLocked ? palette.surface1Num : palette.surface2Num
+    const highlightColor = isDefeatedEncounter ? palette.overlay0Num : (styleInfo.highlight || strokeColor)
+    const strokeWidth = isLocked ? 1.8 : 2
+    const fillAlpha = isLocked ? (isBoss ? 0.85 : 0.75) : (isDefeatedEncounter ? 0.78 : 0.88)
 
     // 1. Outer Dark Drop Shadow / Rim (Grounding base onto grass)
     const shadowGfx = new Graphics()
