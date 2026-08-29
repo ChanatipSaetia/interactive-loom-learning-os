@@ -171,11 +171,23 @@ export function renderHexScene(ctx: HexSceneContext) {
     const strokeWidth = isLocked ? 2 : 2.2
     const fillAlpha = 1.0
 
-    // 1. Outer Dark Drop Shadow / Rim (Grounding base with 3D elevation onto board)
+    // 1. Theme-Responsive 3D Base Elevation & Drop Shadow
     const shadowGfx = new Graphics()
-    shadowGfx
-      .poly(getHexVertices(0, 3.5, HEX_RADIUS + 1.5))
-      .fill({ color: 0x11131c, alpha: 0.85 })
+    if (palette.isDark) {
+      // Dark Mode: Ground contact drop shadow + visible 3D pedestal extrusion against dark crust canvas
+      shadowGfx
+        .poly(getHexVertices(0, 4.5, HEX_RADIUS + 1.2))
+        .fill({ color: 0x10121a, alpha: 0.95 })
+        .poly(getHexVertices(0, 2.6, HEX_RADIUS + 0.6))
+        .fill({ color: palette.surface0Num, alpha: 0.9 })
+    } else {
+      // Light Mode: Soft ambient contact occlusion + cast drop shadow
+      shadowGfx
+        .poly(getHexVertices(0, 4, HEX_RADIUS + 1.5))
+        .fill({ color: palette.overlay0Num, alpha: 0.35 })
+        .poly(getHexVertices(0, 2, HEX_RADIUS + 0.5))
+        .fill({ color: palette.surface2Num, alpha: 0.5 })
+    }
     nodeContainer.addChild(shadowGfx)
 
     // 2. Base Hexagon Tile with Top-to-Bottom FillGradient
