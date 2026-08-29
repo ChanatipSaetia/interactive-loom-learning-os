@@ -263,8 +263,17 @@ export function triggerBossBeamAttackAnimation(opts: BossBeamAttackOptions): Con
   const focusX = bossX
   const focusY = bossY - 120
 
-  const key1Color = opts.palette.yellowNum
-  const key2Color = opts.palette.peachNum
+  const items = opts.inventory && opts.inventory.length > 0 ? opts.inventory : [{ id: 'key-1' }, { id: 'key-2' }]
+  const keyCount = items.length
+  const keyColorList = [
+    opts.palette.yellowNum,
+    opts.palette.peachNum,
+    opts.palette.mauveNum,
+    opts.palette.sapphireNum,
+    opts.palette.tealNum,
+    opts.palette.pinkNum,
+    opts.palette.skyNum,
+  ]
 
   let isFinished = false
 
@@ -283,8 +292,6 @@ export function triggerBossBeamAttackAnimation(opts: BossBeamAttackOptions): Con
       const radius = 85 - 20 * p1
       // Accelerating angular spin
       const angle = p1 * 9.0 + (p1 * p1) * 6.0
-      const pos1 = computeOrbitPosition(focusX, focusY, angle, radius)
-      const pos2 = computeOrbitPosition(focusX, focusY, angle + Math.PI, radius)
 
       // Orbit guide ring
       gfx.ellipse(focusX, focusY, radius, radius * 0.88).stroke({
@@ -293,9 +300,14 @@ export function triggerBossBeamAttackAnimation(opts: BossBeamAttackOptions): Con
         alpha: 0.35 * p1,
       })
 
-      // Draw Key Artifact 1 & 2
-      drawKeyArtifact(gfx, pos1.x, pos1.y, angle, key1Color, 0xffffff, Math.min(1.2, p1 * 1.3))
-      drawKeyArtifact(gfx, pos2.x, pos2.y, angle + Math.PI, key2Color, 0xffffff, Math.min(1.2, p1 * 1.3))
+      // Draw all N Key Artifacts distributed evenly around the orbit
+      for (let k = 0; k < keyCount; k++) {
+        const phi = (k * 2 * Math.PI) / keyCount
+        const itemAngle = angle + phi
+        const pos = computeOrbitPosition(focusX, focusY, itemAngle, radius)
+        const color = keyColorList[k % keyColorList.length]
+        drawKeyArtifact(gfx, pos.x, pos.y, itemAngle, color, 0xffffff, Math.min(1.2, p1 * 1.3))
+      }
     }
 
     // ─── PHASE 2: CONVERGENCE & SINGULARITY FUSION (1.5s – 2.3s) ───
@@ -303,13 +315,16 @@ export function triggerBossBeamAttackAnimation(opts: BossBeamAttackOptions): Con
       const p2 = (elapsed - 1.5) / 0.8
       const radius = 65 * Math.pow(1 - p2, 1.5)
       const spin = 15.0 + elapsed * 18.0
-      const pos1 = computeOrbitPosition(focusX, focusY, spin, radius)
-      const pos2 = computeOrbitPosition(focusX, focusY, spin + Math.PI, radius)
 
       // Draw contracting keys
       if (radius > 4) {
-        drawKeyArtifact(gfx, pos1.x, pos1.y, spin, key1Color, 0xffffff, 1.2 * (1 - p2 * 0.5))
-        drawKeyArtifact(gfx, pos2.x, pos2.y, spin + Math.PI, key2Color, 0xffffff, 1.2 * (1 - p2 * 0.5))
+        for (let k = 0; k < keyCount; k++) {
+          const phi = (k * 2 * Math.PI) / keyCount
+          const itemAngle = spin + phi
+          const pos = computeOrbitPosition(focusX, focusY, itemAngle, radius)
+          const color = keyColorList[k % keyColorList.length]
+          drawKeyArtifact(gfx, pos.x, pos.y, itemAngle, color, 0xffffff, 1.2 * (1 - p2 * 0.5))
+        }
       }
 
       // Singularity core blooms

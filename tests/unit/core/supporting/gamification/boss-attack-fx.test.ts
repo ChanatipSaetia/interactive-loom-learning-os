@@ -70,4 +70,25 @@ describe('Boss Key Attack & Beam FX', () => {
     expect(stage.children).toContain(container)
     expect(container.children.length).toBeGreaterThan(0)
   })
+
+  it('handles 3 or more key items in the animation flawlessly', () => {
+    const stage = new Container()
+    const onComplete = vi.fn()
+
+    const container = triggerBossBeamAttackAnimation({
+      stage,
+      bossPixel: { x: 150, y: 250 },
+      inventory: [
+        { id: 'key-1', name: 'Key 1', icon: '🔑', description: 'Artifact 1' },
+        { id: 'key-2', name: 'Key 2', icon: '🗝️', description: 'Artifact 2' },
+        { id: 'key-3', name: 'Key 3', icon: '🔮', description: 'Artifact 3' },
+        { id: 'key-4', name: 'Key 4', icon: '💎', description: 'Artifact 4' },
+      ],
+      palette,
+      onComplete,
+    })
+
+    expect(stage.children).toContain(container)
+    expect(container.children.length).toBeGreaterThan(0)
+  })
 })

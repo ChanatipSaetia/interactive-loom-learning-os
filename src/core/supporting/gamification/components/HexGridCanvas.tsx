@@ -247,6 +247,26 @@ export const HexGridCanvas = React.forwardRef<HexGridCanvasRef, HexGridCanvasPro
   paletteRef.current = palette
 
 
+  // Update map container transform
+  const updateMapTransform = useCallback(() => {
+    const mapContainer = mapContainerRef.current
+    const app = appRef.current
+    if (!mapContainer || !app) return
+
+    const cx = (app.screen?.width || containerRef.current?.clientWidth || 880) / 2
+    const cy = (app.screen?.height || containerRef.current?.clientHeight || 580) / 2
+
+    mapContainer.position.set(cx + panRef.current.x, cy + panRef.current.y)
+    mapContainer.scale.set(zoomRef.current)
+
+    // Ambient parallax field drifts at a reduced rate relative to map pan
+    const parallax = parallaxLayerRef.current
+    if (parallax && !parallax.destroyed) {
+      const offset = computeParallaxOffset(panRef.current)
+      parallax.position.set(cx + offset.x, cy + offset.y)
+    }
+  }, [])
+
   // Walk the persistent hero along the dependency arc to the target hex
   const triggerWalk = useCallback((node: HexNodeData, onComplete?: () => void) => {
     const { nodes: currentNodes } = latestPropsRef.current
@@ -268,8 +288,42 @@ export const HexGridCanvas = React.forwardRef<HexGridCanvasRef, HexGridCanvasPro
       onComplete?.()
       return
     }
+
+    // 1. Immediately close the tooltip / selection
+    onSelectNode(null)
+
+    // 2. Smoothly pan the camera viewport to focus on the Boss Lair encounter
     const coord = getNodeCoord(node)
     const pixel = axialToPixel(coord.q, coord.r, 0, 0)
+    // Frame between the overhead singularity (-120px) and the boss hex
+    const focusCenterY = pixel.y - 60
+    const targetPanX = -pixel.x * zoomRef.current
+    const targetPanY = -focusCenterY * zoomRef.current
+
+    const startPanX = panRef.current.x
+    const startPanY = panRef.current.y
+    const panStartTime = performance.now()
+    const panDurationMs = 450
+
+    const panCameraToBoss = () => {
+      const elapsed = performance.now() - panStartTime
+      const progress = Math.min(1, elapsed / panDurationMs)
+      const ease = 1 - Math.pow(1 - progress, 3)
+
+      const curX = startPanX + (targetPanX - startPanX) * ease
+      const curY = startPanY + (targetPanY - startPanY) * ease
+
+      panRef.current = { x: curX, y: curY }
+      setPan({ x: curX, y: curY })
+      updateMapTransform()
+
+      if (progress < 1) {
+        requestAnimationFrame(panCameraToBoss)
+      }
+    }
+    requestAnimationFrame(panCameraToBoss)
+
+    // 3. Trigger celestial key fusion and beam attack animation
     triggerBossBeamAttackAnimation({
       app: appRef.current,
       stage: mapContainer,
@@ -278,33 +332,13 @@ export const HexGridCanvas = React.forwardRef<HexGridCanvasRef, HexGridCanvasPro
       palette: paletteRef.current,
       onComplete,
     })
-  }, [getNodeCoord])
+  }, [getNodeCoord, onSelectNode, updateMapTransform])
 
   useImperativeHandle(ref, () => ({
     triggerWalkTransition: triggerWalk,
     triggerBossKeyAttack,
     triggerTwistTransition: triggerWalk,
   }), [triggerWalk, triggerBossKeyAttack])
-
-  // Update map container transform
-  const updateMapTransform = useCallback(() => {
-    const mapContainer = mapContainerRef.current
-    const app = appRef.current
-    if (!mapContainer || !app) return
-
-    const cx = (app.screen?.width || containerRef.current?.clientWidth || 880) / 2
-    const cy = (app.screen?.height || containerRef.current?.clientHeight || 580) / 2
-
-    mapContainer.position.set(cx + panRef.current.x, cy + panRef.current.y)
-    mapContainer.scale.set(zoomRef.current)
-
-    // Ambient parallax field drifts at a reduced rate relative to map pan
-    const parallax = parallaxLayerRef.current
-    if (parallax && !parallax.destroyed) {
-      const offset = computeParallaxOffset(panRef.current)
-      parallax.position.set(cx + offset.x, cy + offset.y)
-    }
-  }, [])
 
   // Apply pan & zoom to PixiJS mapContainer
   useEffect(() => {

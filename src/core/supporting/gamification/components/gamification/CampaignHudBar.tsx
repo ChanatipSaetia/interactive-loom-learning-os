@@ -124,7 +124,7 @@ export const CampaignHudBar: React.FC<CampaignHudBarProps> = ({
           <span className="text-[10px] text-[var(--ctp-subtext0)] font-semibold flex items-center gap-1">
             <span>🗝️ Keys:</span>
             <span className={hasBossItems ? 'text-[var(--ctp-green)]' : 'text-[var(--ctp-yellow)]'}>
-              {campaign.inventory.length}/{bossNode?.requiredItems?.length || 2}
+              {campaign.inventory.filter((inv) => bossNode?.requiredItems?.includes(inv.id)).length}/{bossNode?.requiredItems?.length || requiredKeys.length || 0}
             </span>
           </span>
           <Badge
