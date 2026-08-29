@@ -410,16 +410,11 @@ export const HexGridCanvas = React.forwardRef<HexGridCanvasRef, HexGridCanvasPro
     lastChaosLevelRef.current = -1
     applyChaosTint(chaosLevelRef.current)
 
-    // Deselect hex when background (stage or parallax canvas) is clicked/tapped
+    // Deselect hex when background stage/parallax backdrop is tapped
     rootContainer.eventMode = 'static'
-    rootContainer.on('pointertap', (e) => {
-      if (
-        e.target === rootContainer ||
-        e.target === parallaxLayerRef.current ||
-        e.target === mapContainer
-      ) {
-        latestPropsRef.current.onSelectNode(null)
-      }
+    rootContainer.hitArea = app.screen
+    rootContainer.on('pointertap', () => {
+      latestPropsRef.current.onSelectNode(null)
     })
 
     // Add 60fps ticker callback
@@ -477,6 +472,7 @@ export const HexGridCanvas = React.forwardRef<HexGridCanvasRef, HexGridCanvasPro
     const app = appRef.current
     const rootContainer = rootContainerRef.current
     if (app && rootContainer) {
+      rootContainer.hitArea = app.screen
       buildParallaxLayer(app, rootContainer)
     }
     updateMapTransform()
@@ -509,45 +505,25 @@ export const HexGridCanvas = React.forwardRef<HexGridCanvasRef, HexGridCanvasPro
     }
   }, [])
 
-  const pointerDownPosRef = useRef<{ x: number; y: number } | null>(null)
-  const dragDistanceRef = useRef<number>(0)
-  const touchStartPosRef = useRef<{ x: number; y: number } | null>(null)
-  const touchDistanceRef = useRef<number>(0)
-
   // Pointer drag panning
   const handlePointerDown = (e: React.PointerEvent) => {
     const targetTag = (e.target as HTMLElement).tagName.toLowerCase()
     if (targetTag === 'canvas' || targetTag === 'div') {
       setIsDragging(true)
       dragStartRef.current = { x: e.clientX - pan.x, y: e.clientY - pan.y }
-      pointerDownPosRef.current = { x: e.clientX, y: e.clientY }
-      dragDistanceRef.current = 0
     }
   }
 
   const handlePointerMove = (e: React.PointerEvent) => {
     if (!isDragging) return
-    if (pointerDownPosRef.current) {
-      const dx = e.clientX - pointerDownPosRef.current.x
-      const dy = e.clientY - pointerDownPosRef.current.y
-      dragDistanceRef.current = Math.hypot(dx, dy)
-    }
     setPan({
       x: e.clientX - dragStartRef.current.x,
       y: e.clientY - dragStartRef.current.y,
     })
   }
 
-  const handlePointerUp = (e: React.PointerEvent) => {
+  const handlePointerUp = () => {
     setIsDragging(false)
-    if (dragDistanceRef.current < 6 && pointerDownPosRef.current) {
-      const target = e.target as HTMLElement
-      if (target.tagName.toLowerCase() === 'canvas' || target === containerRef.current) {
-        latestPropsRef.current.onSelectNode(null)
-      }
-    }
-    pointerDownPosRef.current = null
-    dragDistanceRef.current = 0
   }
 
   // Touch Pinch-to-Zoom
@@ -559,8 +535,6 @@ export const HexGridCanvas = React.forwardRef<HexGridCanvasRef, HexGridCanvasPro
     } else if (e.touches.length === 1) {
       setIsDragging(true)
       dragStartRef.current = { x: e.touches[0].clientX - pan.x, y: e.touches[0].clientY - pan.y }
-      touchStartPosRef.current = { x: e.touches[0].clientX, y: e.touches[0].clientY }
-      touchDistanceRef.current = 0
     }
   }
 
@@ -573,11 +547,6 @@ export const HexGridCanvas = React.forwardRef<HexGridCanvasRef, HexGridCanvasPro
       setZoom((prev) => Math.min(2.0, Math.max(0.05, +(prev * factor).toFixed(3))))
       touchDistRef.current = dist
     } else if (e.touches.length === 1 && isDragging) {
-      if (touchStartPosRef.current) {
-        const dx = e.touches[0].clientX - touchStartPosRef.current.x
-        const dy = e.touches[0].clientY - touchStartPosRef.current.y
-        touchDistanceRef.current = Math.hypot(dx, dy)
-      }
       setPan({
         x: e.touches[0].clientX - dragStartRef.current.x,
         y: e.touches[0].clientY - dragStartRef.current.y,
@@ -588,11 +557,6 @@ export const HexGridCanvas = React.forwardRef<HexGridCanvasRef, HexGridCanvasPro
   const handleTouchEnd = () => {
     setIsDragging(false)
     touchDistRef.current = null
-    if (touchDistanceRef.current < 6 && touchStartPosRef.current) {
-      latestPropsRef.current.onSelectNode(null)
-    }
-    touchStartPosRef.current = null
-    touchDistanceRef.current = 0
   }
 
   return (

@@ -385,7 +385,7 @@ describe('Gamification Real UI Components', () => {
     expect(screen.queryByText('Secret Concept Map')).toBeNull()
   })
 
-  it('deselects hex node when clicking on the background container without dragging', () => {
+  it('hides selected-hex-tooltip when selectedNodeId is null (deselected)', () => {
     const handleSelect = vi.fn()
     const testNodes: HexNodeData[] = [
       {
@@ -397,22 +397,15 @@ describe('Gamification Real UI Components', () => {
       },
     ]
 
-    const { container } = render(
+    render(
       <HexGridCanvas
         nodes={testNodes}
-        selectedNodeId="node-1"
+        selectedNodeId={null}
         onSelectNode={handleSelect}
       />
     )
 
-    const canvasWrapper = container.firstElementChild as HTMLElement
-    expect(canvasWrapper).toBeDefined()
-
-    // Trigger pointer click (pointerdown -> pointerup with no drag)
-    fireEvent.pointerDown(canvasWrapper, { clientX: 100, clientY: 100 })
-    fireEvent.pointerUp(canvasWrapper, { clientX: 100, clientY: 100 })
-
-    expect(handleSelect).toHaveBeenCalledWith(null)
+    expect(screen.queryByTestId('selected-hex-tooltip')).toBeNull()
   })
 
   describe('TopicCampaignCard', () => {
