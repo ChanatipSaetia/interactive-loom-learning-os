@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { Container } from 'pixi.js'
+import { Container, Graphics } from 'pixi.js'
 import {
   PARALLAX_PARTICLE_COUNT,
   PARALLAX_FACTOR,
@@ -13,6 +13,7 @@ import {
   computeArcControlPoint,
   calculateTerritoryRoads,
   renderTerritoryRoads,
+  drawMiniHorseCart,
 } from '../../../../../src/core/supporting/gamification/components/scene-renderer'
 import { getGamificationThemePalette } from '../../../../../src/core/supporting/gamification/theme-palette'
 import { HexNodeData } from '../../../../../src/core/supporting/gamification/types'
@@ -193,6 +194,15 @@ describe('Territory Roads to Hub (calculateTerritoryRoads & renderTerritoryRoads
     expect(() => {
       animControllers[0](1.5)
     }).not.toThrow()
+  })
+
+  it('draws mini horse cart without throwing', () => {
+    const g = new Graphics()
+    expect(() => {
+      drawMiniHorseCart(g, 50, 50, Math.PI / 4, palette, 2.5, true)
+      drawMiniHorseCart(g, 100, 100, -Math.PI / 2, palette, 4.0, false)
+    }).not.toThrow()
+    g.destroy()
   })
 })
 

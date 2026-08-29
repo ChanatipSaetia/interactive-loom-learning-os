@@ -109,8 +109,122 @@ export function calculateTerritoryRoads(
 }
 
 /**
+ * Draws a very small, detailed 2.5D horse cart / trade wagon with a trotting steed,
+ * reins, spoked wheels, cargo crates/canvas cover, and lantern.
+ */
+export function drawMiniHorseCart(
+  g: Graphics,
+  x: number,
+  y: number,
+  angle: number,
+  palette: GamificationThemePalette,
+  time: number,
+  isCleared: boolean,
+) {
+  const fx = Math.cos(angle)
+  const fy = Math.sin(angle)
+  const sx = -fy
+  const sy = fx
+
+  const bob = Math.sin(time * 14) * 0.5
+  const legBob = Math.sin(time * 16) * 0.8
+
+  // 1. Wagon Ground Shadow
+  g.ellipse(x - fx * 2.5, y - fy * 2.5 + 1.2, 5.5, 2.8).fill({
+    color: palette.crustNum,
+    alpha: 0.4,
+  })
+
+  // 2. Horse Shadow
+  g.ellipse(x + fx * 4.5, y + fy * 4.5 + 1.2, 3.5, 1.8).fill({
+    color: palette.crustNum,
+    alpha: 0.35,
+  })
+
+  // ─── HORSE (Front: offset +4.5px) ───
+  const horseX = x + fx * 4.5
+  const horseY = y + fy * 4.5 + bob * 0.5
+  const coatColor = isCleared ? palette.peachNum : palette.surface2Num
+  const maneColor = palette.surface0Num
+
+  // Horse hooves / legs (4 tiny points oscillating with gallop)
+  const fHoof1X = horseX + fx * 1.5 + sx * 0.9
+  const fHoof1Y = horseY + fy * 1.5 + sy * 0.9 + legBob
+  const fHoof2X = horseX + fx * 1.5 - sx * 0.9
+  const fHoof2Y = horseY + fy * 1.5 - sy * 0.9 - legBob
+  const bHoof1X = horseX - fx * 1.2 + sx * 0.9
+  const bHoof1Y = horseY - fy * 1.2 + sy * 0.9 - legBob
+  const bHoof2X = horseX - fx * 1.2 - sx * 0.9
+  const bHoof2Y = horseY - fy * 1.2 - sy * 0.9 + legBob
+
+  g.circle(fHoof1X, fHoof1Y, 0.6).fill({ color: maneColor })
+  g.circle(fHoof2X, fHoof2Y, 0.6).fill({ color: maneColor })
+  g.circle(bHoof1X, bHoof1Y, 0.6).fill({ color: maneColor })
+  g.circle(bHoof2X, bHoof2Y, 0.6).fill({ color: maneColor })
+
+  // Horse Body (oval)
+  g.ellipse(horseX, horseY - 1.2, 2.4, 1.3)
+    .fill({ color: coatColor })
+    .stroke({ width: 0.4, color: palette.crustNum })
+
+  // Horse Neck & Head
+  const headX = horseX + fx * 2.2
+  const headY = horseY - 2.2 + bob * 0.6
+  g.ellipse(headX, headY, 1.3, 0.9)
+    .fill({ color: coatColor })
+    .stroke({ width: 0.4, color: palette.crustNum })
+  // Mane & ears
+  g.circle(headX - fx * 0.6, headY - 0.7, 0.6).fill({ color: maneColor })
+
+  // ─── HARNESS & WOODEN HITCH SHAFTS ───
+  g.moveTo(horseX - fx * 1.0 + sx * 1.2, horseY - 0.8)
+    .lineTo(x - fx * 0.5 + sx * 1.4, y - 0.8)
+    .stroke({ width: 0.5, color: palette.surface0Num })
+  g.moveTo(horseX - fx * 1.0 - sx * 1.2, horseY - 0.8)
+    .lineTo(x - fx * 0.5 - sx * 1.4, y - 0.8)
+    .stroke({ width: 0.5, color: palette.surface0Num })
+
+  // ─── WOODEN CART / WAGON (Rear: offset -3px) ───
+  const cartX = x - fx * 3
+  const cartY = y - fy * 3
+
+  // 4 Spoked Wooden Wheels (2 left, 2 right)
+  const wheelColor = palette.surface0Num
+  const w1X = cartX + fx * 1.8 + sx * 2.2
+  const w1Y = cartY + fy * 1.8 + sy * 2.2
+  const w2X = cartX + fx * 1.8 - sx * 2.2
+  const w2Y = cartY + fy * 1.8 - sy * 2.2
+  const w3X = cartX - fx * 1.8 + sx * 2.2
+  const w3Y = cartY - fy * 1.8 + sy * 2.2
+  const w4X = cartX - fx * 1.8 - sx * 2.2
+  const w4Y = cartY - fy * 1.8 - sy * 2.2
+
+  g.circle(w1X, w1Y, 1.1).fill({ color: wheelColor }).stroke({ width: 0.4, color: palette.textNum })
+  g.circle(w2X, w2Y, 1.1).fill({ color: wheelColor }).stroke({ width: 0.4, color: palette.textNum })
+  g.circle(w3X, w3Y, 1.1).fill({ color: wheelColor }).stroke({ width: 0.4, color: palette.textNum })
+  g.circle(w4X, w4Y, 1.1).fill({ color: wheelColor }).stroke({ width: 0.4, color: palette.textNum })
+
+  // Wagon Wooden Chassis Box
+  g.ellipse(cartX, cartY - 1.2, 3.4, 2.0)
+    .fill({ color: palette.surface1Num })
+    .stroke({ width: 0.5, color: palette.crustNum })
+
+  // Canvas Wagon Bonnet / Cargo Crates
+  const cargoColor = isCleared ? palette.yellowNum : palette.peachNum
+  g.ellipse(cartX - fx * 0.4, cartY - 2.6, 2.6, 1.6)
+    .fill({ color: cargoColor, alpha: 0.95 })
+    .stroke({ width: 0.5, color: palette.crustNum })
+
+  // Wagon Rear Lantern Glint
+  const lanternX = cartX - fx * 2.8
+  const lanternY = cartY - 2.8
+  g.circle(lanternX, lanternY, 0.9).fill({ color: palette.yellowNum })
+  g.circle(lanternX, lanternY, 0.4).fill({ color: palette.textNum })
+}
+
+/**
  * Renders paved 2.5D cobblestone trade highways with outer drainage trenches,
- * stepping flagstones, milestone cairns, and animated supply pulse caravans.
+ * parallel cart wheel ruts, milestone cairns, and animated miniature horse carts.
  */
 export function renderTerritoryRoads(
   container: Container,
@@ -130,27 +244,37 @@ export function renderTerritoryRoads(
     const { fromPixel, toPixel, controlPoint, isUnlocked, isCleared } = road
     const isLocked = !isUnlocked && !isCleared
 
-    // 1. Road Outer Shadow Trench
+    // 1. Road Outer Ground Shadow & Shoulder Trench
     staticGfx
       .moveTo(toPixel.x, toPixel.y)
       .quadraticCurveTo(controlPoint.cpX, controlPoint.cpY, fromPixel.x, fromPixel.y)
       .stroke({
-        width: 11,
+        width: 13,
         color: palette.crustNum,
+        alpha: isLocked ? 0.15 : 0.42,
+      })
+
+    // 2. Packed Earth / Cobblestone Roadbed
+    staticGfx
+      .moveTo(toPixel.x, toPixel.y)
+      .quadraticCurveTo(controlPoint.cpX, controlPoint.cpY, fromPixel.x, fromPixel.y)
+      .stroke({
+        width: 8.5,
+        color: isCleared ? palette.surface2Num : palette.surface1Num,
+        alpha: isLocked ? 0.25 : 0.75,
+      })
+
+    // 3. Worn Cart Wheel Ruts (Two Parallel Tracks)
+    staticGfx
+      .moveTo(toPixel.x, toPixel.y)
+      .quadraticCurveTo(controlPoint.cpX, controlPoint.cpY, fromPixel.x, fromPixel.y)
+      .stroke({
+        width: 4.8,
+        color: palette.surface0Num,
         alpha: isLocked ? 0.15 : 0.45,
       })
 
-    // 2. Road Foundation / Cobblestone Bed
-    staticGfx
-      .moveTo(toPixel.x, toPixel.y)
-      .quadraticCurveTo(controlPoint.cpX, controlPoint.cpY, fromPixel.x, fromPixel.y)
-      .stroke({
-        width: 6.5,
-        color: isCleared ? palette.surface2Num : palette.surface1Num,
-        alpha: isLocked ? 0.25 : 0.7,
-      })
-
-    // 3. Paved Highway Center Track / Gold Trade Vein
+    // 4. Center Flagstone Trade Line (Golden / Peach)
     const centerColor = isCleared
       ? palette.yellowNum
       : isUnlocked
@@ -160,13 +284,13 @@ export function renderTerritoryRoads(
       .moveTo(toPixel.x, toPixel.y)
       .quadraticCurveTo(controlPoint.cpX, controlPoint.cpY, fromPixel.x, fromPixel.y)
       .stroke({
-        width: 2.4,
+        width: 1.4,
         color: centerColor,
-        alpha: isLocked ? 0.2 : 0.8,
+        alpha: isLocked ? 0.2 : 0.7,
       })
 
-    // 4. Milestone Stone Cairns along the road (at t = 0.25, 0.5, 0.75)
-    for (const t of [0.25, 0.5, 0.75]) {
+    // 5. Milestone Stone Cairns & Roadside Markers (at t = 0.2, 0.4, 0.6, 0.8)
+    for (const t of [0.2, 0.4, 0.6, 0.8]) {
       const oneMinusT = 1 - t
       const mx =
         oneMinusT * oneMinusT * toPixel.x +
@@ -191,7 +315,7 @@ export function renderTerritoryRoads(
     }
   })
 
-  // 5. Dynamic Highway Energy Pulses / Trade Caravans
+  // 6. Animated Miniature Horse Carts Going Back and Forth
   if (animControllers) {
     animControllers.push((time: number) => {
       if (animGfx.destroyed) return
@@ -200,22 +324,35 @@ export function renderTerritoryRoads(
       roads.forEach((road, idx) => {
         if (!road.isUnlocked && !road.isCleared) return
         const { fromPixel, toPixel, controlPoint, isCleared } = road
-        const speed = 0.22
-        const pulseT = (time * speed + idx * 0.33) % 1.0
 
-        const oneMinusT = 1 - pulseT
+        // Roundtrip cycle: 18s period. u in [0, 2)
+        const cycleSpeed = 0.055
+        const u = (time * cycleSpeed + idx * 0.38) % 2.0
+
+        // Ping-pong: u in [0, 1] => forward outward (0 -> 1); u in [1, 2] => backward inward (1 -> 0)
+        const isOutward = u <= 1.0
+        const t = isOutward ? u : 2.0 - u
+
+        const oneMinusT = 1 - t
+        // Position B(t)
         const px =
           oneMinusT * oneMinusT * toPixel.x +
-          2 * oneMinusT * pulseT * controlPoint.cpX +
-          pulseT * pulseT * fromPixel.x
+          2 * oneMinusT * t * controlPoint.cpX +
+          t * t * fromPixel.x
         const py =
           oneMinusT * oneMinusT * toPixel.y +
-          2 * oneMinusT * pulseT * controlPoint.cpY +
-          pulseT * pulseT * fromPixel.y
+          2 * oneMinusT * t * controlPoint.cpY +
+          t * t * fromPixel.y
 
-        const pulseColor = isCleared ? palette.yellowNum : palette.peachNum
-        animGfx.circle(px, py, 3.2).fill({ color: pulseColor, alpha: 0.75 })
-        animGfx.circle(px, py, 1.6).fill({ color: palette.textNum, alpha: 0.9 })
+        // Tangent B'(t) = 2(1-t)(cp - P0) + 2t(P1 - cp)
+        const dx = 2 * oneMinusT * (controlPoint.cpX - toPixel.x) + 2 * t * (fromPixel.x - controlPoint.cpX)
+        const dy = 2 * oneMinusT * (controlPoint.cpY - toPixel.y) + 2 * t * (fromPixel.y - controlPoint.cpY)
+
+        const travelDx = isOutward ? dx : -dx
+        const travelDy = isOutward ? dy : -dy
+        const angle = Math.atan2(travelDy, travelDx)
+
+        drawMiniHorseCart(animGfx, px, py, angle, palette, time + idx * 2.5, isCleared)
       })
     })
   }
