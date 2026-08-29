@@ -9,7 +9,7 @@ import { computeChaosTintMatrix, computeChaosTintStrength } from './chaos-tint'
 import { PixiCanvasViewport } from './PixiCanvasViewport'
 import { HeroAgent, triggerHeroWalk } from './hero-agent'
 import { renderHexScene } from './scene-renderer'
-import { computeParallaxOffset, createParallaxBackground } from './parallax-background'
+import { computeParallaxOffset } from './parallax-background'
 import { isVictorySetPieceNode, triggerBossVictorySetPiece } from './victory-fx'
 import { useGamificationTheme } from '../theme-palette'
 
@@ -366,19 +366,14 @@ export const HexGridCanvas = React.forwardRef<HexGridCanvasRef, HexGridCanvasPro
     }
   }, [nodes, selectedNodeId, isCapitalCleared, palette, getNodeCoord])
 
-  const buildParallaxLayer = useCallback((app: Application, rootContainer: Container) => {
+  const buildParallaxLayer = useCallback((_app: Application, _rootContainer: Container) => {
     const prev = parallaxLayerRef.current
     if (prev && !prev.destroyed) {
       prev.destroy({ children: true })
     }
-    const w = app.screen?.width || containerRef.current?.clientWidth || 880
-    const h = app.screen?.height || containerRef.current?.clientHeight || 580
-    const layer = createParallaxBackground(palette, w, h)
-    // Insert behind the map container so it renders as the ambient backdrop
-    rootContainer.addChildAt(layer, 0)
-    parallaxLayerRef.current = layer
+    parallaxLayerRef.current = null
     updateMapTransform()
-  }, [palette, updateMapTransform])
+  }, [updateMapTransform])
 
   // Re-render Pixi scene when theme palette changes
   useEffect(() => {
