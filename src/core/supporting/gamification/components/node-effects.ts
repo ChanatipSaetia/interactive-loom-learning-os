@@ -206,20 +206,20 @@ export function renderBossShockwave(ctx: NodeEffectContext) {
 
 // UNLOCK REVEAL ANIMATION (Clouds parting left & right with glow)
 export function renderUnlockRevealFx(ctx: NodeEffectContext) {
-  const { node, nodeContainer, animControllers, newlyUnlockedNodeIds, unlockAnimStart, palette } = ctx
+  const { node, nodeContainer, animControllers, newlyUnlockedNodeIds, unlockAnimStart } = ctx
 
   const unlockAnimContainer = new Container()
   nodeContainer.addChild(unlockAnimContainer)
 
   const leftPuffs = [
-    { x: -14, y: -12, rx: 20, ry: 16, color: palette.subtext1Num, baseAlpha: 0.85 },
-    { x: -18, y: 10, rx: 19, ry: 15, color: palette.subtext0Num, baseAlpha: 0.8 },
-    { x: -8, y: 0, rx: 18, ry: 16, color: palette.textNum, baseAlpha: 0.75 },
+    { x: -14, y: -12, rx: 20, ry: 16, color: 0xffffff, baseAlpha: 0.85 },
+    { x: -18, y: 10, rx: 19, ry: 15, color: 0xcccccc, baseAlpha: 0.8 },
+    { x: -8, y: 0, rx: 18, ry: 16, color: 0x999999, baseAlpha: 0.75 },
   ]
   const rightPuffs = [
-    { x: 14, y: -12, rx: 20, ry: 16, color: palette.subtext1Num, baseAlpha: 0.85 },
-    { x: 18, y: 10, rx: 19, ry: 15, color: palette.subtext0Num, baseAlpha: 0.8 },
-    { x: 8, y: 0, rx: 18, ry: 16, color: palette.textNum, baseAlpha: 0.75 },
+    { x: 14, y: -12, rx: 20, ry: 16, color: 0xffffff, baseAlpha: 0.85 },
+    { x: 18, y: 10, rx: 19, ry: 15, color: 0xcccccc, baseAlpha: 0.8 },
+    { x: 8, y: 0, rx: 18, ry: 16, color: 0x999999, baseAlpha: 0.75 },
   ]
 
   const leftGfx = leftPuffs.map((p) => {
@@ -291,27 +291,27 @@ export function getFogNoiseFilter(): SimplexNoiseFilter {
 }
 
 export function renderFogOfWar(ctx: NodeEffectContext) {
-  const { nodeContainer, animControllers, palette } = ctx
+  const { nodeContainer, animControllers } = ctx
 
   const fogContainer = new Container()
   fogContainer.label = 'FogOfWar'
 
-  // Soft luminous misty underlay
+  // Neutral dark grayscale underlay base
   const baseGfx = new Graphics()
-  baseGfx.poly(getHexVertices(0, 0, HEX_RADIUS - 1)).fill({ color: palette.surface1Num, alpha: 0.65 })
+  baseGfx.poly(getHexVertices(0, 0, HEX_RADIUS - 1)).fill({ color: 0x1f1f23, alpha: 0.7 })
   fogContainer.addChild(baseGfx)
 
-  // 9 overlapping light, ethereal cloud puffs concealing hex edges and corners with soft mystic mist
+  // 9 overlapping monochrome black & white clouds concealing hex edges with drifting mist
   const cloudPuffs = [
-    { x: 0, y: 0, rx: 26, ry: 20, color: palette.textNum, baseAlpha: 0.82, speed: 0.7, phase: 0 },
-    { x: -18, y: -16, rx: 22, ry: 17, color: palette.subtext1Num, baseAlpha: 0.8, speed: 0.9, phase: 1.2 },
-    { x: 18, y: -16, rx: 24, ry: 18, color: palette.subtext0Num, baseAlpha: 0.78, speed: 1.1, phase: 2.3 },
-    { x: -22, y: 12, rx: 23, ry: 17, color: palette.lavenderNum, baseAlpha: 0.75, speed: 0.8, phase: 3.5 },
-    { x: 20, y: 14, rx: 25, ry: 19, color: palette.textNum, baseAlpha: 0.82, speed: 1.0, phase: 4.6 },
-    { x: 0, y: -22, rx: 24, ry: 16, color: palette.subtext1Num, baseAlpha: 0.78, speed: 1.2, phase: 1.8 },
-    { x: 0, y: 22, rx: 25, ry: 17, color: palette.lavenderNum, baseAlpha: 0.75, speed: 0.9, phase: 5.1 },
-    { x: -24, y: 0, rx: 20, ry: 18, color: palette.textNum, baseAlpha: 0.82, speed: 1.1, phase: 2.9 },
-    { x: 24, y: 0, rx: 21, ry: 18, color: palette.subtext0Num, baseAlpha: 0.78, speed: 0.8, phase: 4.0 },
+    { x: 0, y: 0, rx: 26, ry: 20, color: 0xffffff, baseAlpha: 0.86, speed: 0.7, phase: 0 },
+    { x: -18, y: -16, rx: 22, ry: 17, color: 0xe0e0e0, baseAlpha: 0.82, speed: 0.9, phase: 1.2 },
+    { x: 18, y: -16, rx: 24, ry: 18, color: 0xcccccc, baseAlpha: 0.78, speed: 1.1, phase: 2.3 },
+    { x: -22, y: 12, rx: 23, ry: 17, color: 0x888888, baseAlpha: 0.74, speed: 0.8, phase: 3.5 },
+    { x: 20, y: 14, rx: 25, ry: 19, color: 0xf5f5f5, baseAlpha: 0.85, speed: 1.0, phase: 4.6 },
+    { x: 0, y: -22, rx: 24, ry: 16, color: 0xd6d6d6, baseAlpha: 0.8, speed: 1.2, phase: 1.8 },
+    { x: 0, y: 22, rx: 25, ry: 17, color: 0x999999, baseAlpha: 0.76, speed: 0.9, phase: 5.1 },
+    { x: -24, y: 0, rx: 20, ry: 18, color: 0xffffff, baseAlpha: 0.84, speed: 1.1, phase: 2.9 },
+    { x: 24, y: 0, rx: 21, ry: 18, color: 0xbbbbbb, baseAlpha: 0.78, speed: 0.8, phase: 4.0 },
   ]
 
   const puffGraphics = cloudPuffs.map((puff) => {
@@ -324,17 +324,16 @@ export function renderFogOfWar(ctx: NodeEffectContext) {
 
   nodeContainer.addChild(fogContainer)
 
-  // Continuous fog drift animation ONLY when selected
-  if (ctx.isSelected) {
-    animControllers.push((t) => {
-      puffGraphics.forEach(({ gfx, puff }) => {
-        const driftX = Math.sin(t * puff.speed + puff.phase) * 6
-        const driftY = Math.cos(t * puff.speed * 0.7 + puff.phase) * 4
-        gfx.position.set(puff.x + driftX, puff.y + driftY)
-        gfx.alpha = puff.baseAlpha + Math.sin(t * 1.5 + puff.phase) * 0.12
-      })
+  // Continuous ambient mist drift animation (animated for all locked tiles whether selected or not)
+  animControllers.push((t) => {
+    const driftScale = ctx.isSelected ? 1.35 : 1.0
+    puffGraphics.forEach(({ gfx, puff }) => {
+      const driftX = Math.sin(t * puff.speed + puff.phase) * (4.5 * driftScale)
+      const driftY = Math.cos(t * puff.speed * 0.7 + puff.phase) * (3.0 * driftScale)
+      gfx.position.set(puff.x + driftX, puff.y + driftY)
+      gfx.alpha = puff.baseAlpha + Math.sin(t * 1.4 + puff.phase) * (0.08 * driftScale)
     })
-  }
+  })
 }
 
 // Center insignia + reward / boss / cleared badges
