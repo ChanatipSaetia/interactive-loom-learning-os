@@ -152,15 +152,15 @@ export function createReadingSanctuaryGradient(
   })
 
   if (isLocked) {
-    gradient.addColorStop(0, palette.surface0)
-    gradient.addColorStop(0.5, palette.base)
-    gradient.addColorStop(1, palette.crust)
+    gradient.addColorStop(0, palette.surface1)
+    gradient.addColorStop(0.5, palette.surface0)
+    gradient.addColorStop(1, palette.base)
     return gradient
   }
 
   gradient.addColorStop(0, palette.teal)
   gradient.addColorStop(0.45, palette.green)
-  gradient.addColorStop(1, palette.crust)
+  gradient.addColorStop(1, palette.surface0)
   return gradient
 }
 

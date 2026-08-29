@@ -168,14 +168,14 @@ export function renderHexScene(ctx: HexSceneContext) {
     // Unified hex border color across all node types (surface2Num for revealed, surface1Num for locked)
     const strokeColor = isLocked ? palette.surface1Num : palette.surface2Num
     const highlightColor = isDefeatedEncounter ? palette.overlay0Num : (styleInfo.highlight || strokeColor)
-    const strokeWidth = isLocked ? 1.8 : 2
-    const fillAlpha = isLocked ? (isBoss ? 0.85 : 0.75) : (isDefeatedEncounter ? 0.78 : 0.88)
+    const strokeWidth = isLocked ? 2 : 2.2
+    const fillAlpha = 1.0
 
-    // 1. Outer Dark Drop Shadow / Rim (Grounding base onto grass)
+    // 1. Outer Dark Drop Shadow / Rim (Grounding base with 3D elevation onto board)
     const shadowGfx = new Graphics()
     shadowGfx
-      .poly(getHexVertices(0, 1.5, HEX_RADIUS + 1))
-      .fill({ color: palette.crustNum, alpha: 0.6 })
+      .poly(getHexVertices(0, 3.5, HEX_RADIUS + 1.5))
+      .fill({ color: 0x11131c, alpha: 0.85 })
     nodeContainer.addChild(shadowGfx)
 
     // 2. Base Hexagon Tile with Top-to-Bottom FillGradient
