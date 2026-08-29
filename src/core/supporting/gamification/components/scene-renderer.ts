@@ -1,4 +1,5 @@
 import { Container, Graphics } from 'pixi.js'
+import { GlowFilter, type GlowFilterOptions } from 'pixi-filters'
 import { HexNodeData } from '../types'
 import { GamificationThemePalette } from '../theme-palette'
 import { computeHexGridCoordinates, getAutoFlowConnections } from '../layout'
@@ -32,6 +33,34 @@ export interface HexSceneContext {
   newlyClearedNodeIds: Set<string>
   unlockAnimStart: Map<string, number>
   clearAnimStart: Map<string, number>
+}
+
+export type NodeGlowVariant = 'selected' | 'boss_lair' | 'capital'
+
+export function getGlowFilterOptions(palette: GamificationThemePalette, variant: NodeGlowVariant): GlowFilterOptions {
+  switch (variant) {
+    case 'selected':
+      return { distance: 14, outerStrength: 2.5, color: palette.lavenderNum, alpha: 0.9, quality: 0.25 }
+    case 'boss_lair':
+      return { distance: 10, outerStrength: 2.0, color: palette.redNum, alpha: 0.8, quality: 0.25 }
+    case 'capital':
+      return { distance: 10, outerStrength: 1.8, color: palette.mauveNum, alpha: 0.8, quality: 0.25 }
+  }
+}
+
+// Shared glow filter instances (per palette variant): the scene graph is torn
+// down with removeChildren() on every render pass, so filters are cached and
+// reused instead of being re-instantiated per node per rebuild.
+const glowFilterCache = new Map<string, GlowFilter>()
+
+export function getCachedGlowFilter(palette: GamificationThemePalette, variant: NodeGlowVariant): GlowFilter {
+  const key = `${palette.id}|${palette.redNum}|${variant}`
+  let filter = glowFilterCache.get(key)
+  if (!filter) {
+    filter = new GlowFilter(getGlowFilterOptions(palette, variant))
+    glowFilterCache.set(key, filter)
+  }
+  return filter
 }
 
 // Main render routine for the PixiJS campaign map scene
@@ -151,6 +180,15 @@ export function renderHexScene(ctx: HexSceneContext) {
     nodeContainer.position.set(x, y)
     nodeContainer.eventMode = 'static'
     nodeContainer.cursor = 'pointer'
+
+    // Post-processing glow halos (Catppuccin Frappé accents)
+    if (isSelected) {
+      nodeContainer.filters = [getCachedGlowFilter(palette, 'selected')]
+    } else if (isBoss) {
+      nodeContainer.filters = [getCachedGlowFilter(palette, 'boss_lair')]
+    } else if (node.type === 'capital') {
+      nodeContainer.filters = [getCachedGlowFilter(palette, 'capital')]
+    }
 
     // Tap / Click handling
     nodeContainer.on('pointertap', (e) => {

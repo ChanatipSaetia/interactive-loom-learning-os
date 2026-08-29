@@ -1,9 +1,10 @@
 import React, { useMemo, useState, useRef, useEffect, useCallback, useImperativeHandle } from 'react'
 import { Plus, Minus, RotateCcw, Move } from 'lucide-react'
-import { Application, Container } from 'pixi.js'
+import { Application, Container, ColorMatrixFilter } from 'pixi.js'
 import { HexNodeData } from '../types'
 import { computeHexGridCoordinates } from '../layout'
 import { axialToPixel } from './hex-geometry'
+import { computeChaosTintMatrix, computeChaosTintStrength } from './chaos-tint'
 import { PixiCanvasViewport } from './PixiCanvasViewport'
 import { triggerWalkTransition } from './walk-transition'
 import { renderHexScene } from './scene-renderer'
@@ -13,6 +14,8 @@ interface HexGridCanvasProps {
   nodes: HexNodeData[]
   selectedNodeId: string | null
   onSelectNode: (node: HexNodeData) => void
+  /** Campaign chaos level 0–100; drives the red desaturation map tint. */
+  chaosLevel?: number
 }
 
 export interface HexGridCanvasRef {
@@ -25,6 +28,7 @@ export const HexGridCanvas = React.forwardRef<HexGridCanvasRef, HexGridCanvasPro
   nodes,
   selectedNodeId,
   onSelectNode,
+  chaosLevel = 0,
 }, ref) => {
   const palette = useGamificationTheme()
   const containerRef = useRef<HTMLDivElement>(null)
@@ -63,6 +67,29 @@ export const HexGridCanvas = React.forwardRef<HexGridCanvasRef, HexGridCanvasPro
     onSelectNode,
   })
   latestPropsRef.current = { nodes, selectedNodeId, onSelectNode }
+
+  const chaosFilterRef = useRef<ColorMatrixFilter | null>(null)
+  const lastChaosLevelRef = useRef<number>(-1)
+  const chaosLevelRef = useRef<number>(chaosLevel)
+  chaosLevelRef.current = chaosLevel
+
+  const applyChaosTint = useCallback((level: number) => {
+    const mapContainer = mapContainerRef.current
+    if (!mapContainer) return
+    if (lastChaosLevelRef.current === level) return
+    lastChaosLevelRef.current = level
+
+    const t = computeChaosTintStrength(level)
+    if (t <= 0) {
+      mapContainer.filters = null
+      return
+    }
+    if (!chaosFilterRef.current) {
+      chaosFilterRef.current = new ColorMatrixFilter()
+    }
+    chaosFilterRef.current.matrix = computeChaosTintMatrix(level)
+    mapContainer.filters = [chaosFilterRef.current]
+  }, [])
 
   // Layout coordinate derivations
   const computedCoordsMap = useMemo(() => computeHexGridCoordinates(nodes), [nodes])
@@ -229,6 +256,9 @@ export const HexGridCanvas = React.forwardRef<HexGridCanvasRef, HexGridCanvasPro
     rootContainer.addChild(mapContainer)
     mapContainerRef.current = mapContainer
 
+    lastChaosLevelRef.current = -1
+    applyChaosTint(chaosLevelRef.current)
+
     // Add 60fps ticker callback
     const tickerCallback = () => {
       if (!app || !app.renderer || !mapContainer || mapContainer.destroyed) return
@@ -250,7 +280,11 @@ export const HexGridCanvas = React.forwardRef<HexGridCanvasRef, HexGridCanvasPro
       appRef.current = null
       mapContainerRef.current = null
     }
-  }, [])
+  }, [applyChaosTint])
+
+  useEffect(() => {
+    applyChaosTint(chaosLevel)
+  }, [chaosLevel, applyChaosTint])
 
   const handleResizePixi = useCallback(() => {
     updateMapTransform()

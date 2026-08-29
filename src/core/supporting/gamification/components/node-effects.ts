@@ -1,4 +1,5 @@
 import { Container, Graphics, Text, TextStyle } from 'pixi.js'
+import { SimplexNoiseFilter } from 'pixi-filters'
 import { HexNodeData } from '../types'
 import { GamificationThemePalette } from '../theme-palette'
 import { HEX_RADIUS, getHexVertices, getStarVertices } from './hex-geometry'
@@ -640,10 +641,25 @@ export function renderUnlockRevealFx(ctx: NodeEffectContext) {
 }
 
 // LOCKED (Fog of War) cloud puffs
+
+// Shared grain filter: one GPU filter instance is reused by every fog
+// container across all locked hexes and scene rebuilds (the scene graph is
+// torn down with removeChildren() on every render pass). pixi-filters v6
+// replaced the legacy NoiseFilter with SimplexNoiseFilter.
+let sharedFogNoiseFilter: SimplexNoiseFilter | null = null
+
+export function getFogNoiseFilter(): SimplexNoiseFilter {
+  if (!sharedFogNoiseFilter) {
+    sharedFogNoiseFilter = new SimplexNoiseFilter({ strength: 0.35, noiseScale: 6 })
+  }
+  return sharedFogNoiseFilter
+}
+
 export function renderFogOfWar(ctx: NodeEffectContext) {
   const { nodeContainer, animControllers } = ctx
 
   const fogContainer = new Container()
+  fogContainer.filters = [getFogNoiseFilter()]
 
   // 9 overlapping edge-spanning cloud puffs concealing all hex edges and corners
   const cloudPuffs = [

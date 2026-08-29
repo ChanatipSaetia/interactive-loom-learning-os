@@ -91,6 +91,7 @@ export const ActiveCampaignView: React.FC<ActiveCampaignViewProps> = ({ game }) 
           nodes={nodes}
           selectedNodeId={selectedNode?.id || null}
           onSelectNode={setSelectedNode}
+          chaosLevel={campaign.chaosLevel}
         />
 
         {/* Sleek Bottom Node Inspector Tray */}
