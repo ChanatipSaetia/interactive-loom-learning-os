@@ -417,6 +417,30 @@ export function renderNodeBadges(ctx: NodeEffectContext) {
     nodeContainer.addChild(rewardText)
   }
 
+  // Boss Lair Menacing Hexagonal Shockwave Pulse (always animated when alive)
+  if (isBoss && !isCleared) {
+    const bossBeaconGfx = new Graphics()
+    nodeContainer.addChild(bossBeaconGfx)
+    animControllers.push((t) => {
+      bossBeaconGfx.clear()
+      // Primary crimson shockwave
+      const pulse1 = (t * 1.1) % 1
+      const r1 = HEX_RADIUS + 2 + pulse1 * 12
+      const alpha1 = (1 - pulse1) * 0.8
+      bossBeaconGfx
+        .poly(getHexVertices(0, 0, r1))
+        .stroke({ width: 2.5 * (1 - pulse1 * 0.5), color: palette.maroonNum, alpha: alpha1 })
+
+      // Secondary out-of-phase menacing red wave
+      const pulse2 = (t * 1.1 + 0.5) % 1
+      const r2 = HEX_RADIUS + 2 + pulse2 * 12
+      const alpha2 = (1 - pulse2) * 0.55
+      bossBeaconGfx
+        .poly(getHexVertices(0, 0, r2))
+        .stroke({ width: 1.8 * (1 - pulse2 * 0.5), color: palette.redNum, alpha: alpha2 })
+    })
+  }
+
   // Boss Seals Requirement Indicator on Hex Map
   if (isBoss && node.requiredItems && node.requiredItems.length > 0) {
     const bossBadgeGfx = new Graphics()
