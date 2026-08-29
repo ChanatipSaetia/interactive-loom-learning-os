@@ -45,7 +45,7 @@ export function getSectionTypeInfo(node: HexNodeData): SectionTypeInfo {
     return { label: 'Taxonomy Browser', icon: '📂', color: 'bg-[var(--ctp-sky)]/20 text-[var(--ctp-sky)] border-[var(--ctp-sky)]/40' }
   }
   if (ref.includes('concept') || ref.includes('flashcard') || clean === 'concept-map' || clean === 'flashcards') {
-    return { label: 'Concept Map', icon: '💎', color: 'bg-[var(--ctp-lavender)]/20 text-[var(--ctp-lavender)] border-[var(--ctp-lavender)]/40' }
+    return { label: 'Concept Map', icon: '🌳', color: 'bg-[var(--ctp-lavender)]/20 text-[var(--ctp-lavender)] border-[var(--ctp-lavender)]/40' }
   }
   if (ref.includes('gallery') || clean === 'image-gallery' || clean === 'gallery') {
     return { label: 'Gallery', icon: '🔭', color: 'bg-[var(--ctp-rosewater)]/20 text-[var(--ctp-rosewater)] border-[var(--ctp-rosewater)]/40' }

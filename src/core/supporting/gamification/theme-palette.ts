@@ -393,8 +393,8 @@ export function getGamificationThemePalette(themeId: string = ''): GamificationT
       fill: raw.lavenderNum,
       stroke: raw.surface2Num,
       highlight: raw.mauveNum,
-      icon: 'monolith',
-      name: 'Concept Monolith',
+      icon: 'tree',
+      name: 'Concept Tree',
     },
     observatory_gallery: {
       fill: raw.rosewaterNum,
