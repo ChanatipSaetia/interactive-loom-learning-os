@@ -2,11 +2,11 @@ import React, { useMemo, useState, useRef, useEffect, useCallback, useImperative
 import { Plus, Minus, RotateCcw, Move } from 'lucide-react'
 import { Application, Container, ColorMatrixFilter } from 'pixi.js'
 import { HexNodeData } from '../types'
-import { computeHexGridCoordinates } from '../layout'
+import { computeHexGridCoordinates, getAutoFlowConnections } from '../layout'
 import { axialToPixel } from './hex-geometry'
 import { computeChaosTintMatrix, computeChaosTintStrength } from './chaos-tint'
 import { PixiCanvasViewport } from './PixiCanvasViewport'
-import { triggerWalkTransition } from './walk-transition'
+import { HeroAgent, triggerHeroWalk } from './hero-agent'
 import { renderHexScene } from './scene-renderer'
 import { computeParallaxOffset, createParallaxBackground } from './parallax-background'
 import { isVictorySetPieceNode, triggerBossVictorySetPiece } from './victory-fx'
@@ -38,6 +38,7 @@ export const HexGridCanvas = React.forwardRef<HexGridCanvasRef, HexGridCanvasPro
   const rootContainerRef = useRef<Container | null>(null)
   const mapContainerRef = useRef<Container | null>(null)
   const parallaxLayerRef = useRef<Container | null>(null)
+  const heroAgentRef = useRef<HeroAgent | null>(null)
   const isTransitioningRef = useRef<boolean>(false)
 
   const [zoom, setZoom] = useState<number>(1.0)
@@ -103,6 +104,14 @@ export const HexGridCanvas = React.forwardRef<HexGridCanvasRef, HexGridCanvasPro
     (node: HexNodeData) => computedCoordsMap.get(node.id) || node.coordinates || { q: 0, r: 0 },
     [computedCoordsMap]
   )
+  // Stable indirection so handleInitPixi (which PixiCanvasViewport keys its whole
+  // app lifecycle on) never re-runs due to coordinate-map identity changes.
+  const getNodeCoordRef = useRef(getNodeCoord)
+  getNodeCoordRef.current = getNodeCoord
+  // Same trick for the theme palette (handleInitPixi rebuilds are keyed on
+  // buildParallaxLayer anyway, but the exhaustive-deps contract stays clean).
+  const paletteRef = useRef(palette)
+  paletteRef.current = palette
 
   // Center camera smoothly on node
   const centerOnNode = useCallback(
@@ -115,16 +124,19 @@ export const HexGridCanvas = React.forwardRef<HexGridCanvasRef, HexGridCanvasPro
     [getNodeCoord]
   )
 
-  // Trigger human walking animation into hex from the left before opening encounter modal
+  // Walk the persistent hero along the dependency arc to the target hex
   const triggerWalk = useCallback((node: HexNodeData, onComplete?: () => void) => {
-    triggerWalkTransition({
+    const { nodes: currentNodes } = latestPropsRef.current
+    triggerHeroWalk({
+      hero: heroAgentRef.current,
       mapContainer: mapContainerRef.current,
+      nodeId: node.id,
       coord: getNodeCoord(node),
-      palette,
+      connections: getAutoFlowConnections(currentNodes),
       isTransitioningRef,
       onComplete,
     })
-  }, [getNodeCoord, palette])
+  }, [getNodeCoord])
 
   useImperativeHandle(ref, () => ({
     triggerWalkTransition: triggerWalk,
@@ -184,6 +196,10 @@ export const HexGridCanvas = React.forwardRef<HexGridCanvasRef, HexGridCanvasPro
       unlockAnimStart: unlockAnimStartRef.current,
       clearAnimStart: clearAnimStartRef.current,
     })
+
+    // renderHexScene() tore down all map children (removeChildren) — re-parent the
+    // persistent hero so it survives every scene rebuild.
+    heroAgentRef.current?.attachTo(mapContainer)
   }, [palette, centerOnNode, updateMapTransform])
 
   const renderRef = useRef(renderPixiScene)
@@ -285,6 +301,7 @@ export const HexGridCanvas = React.forwardRef<HexGridCanvasRef, HexGridCanvasPro
     if (appRef.current?.renderer) {
       appRef.current.renderer.background.color = palette.baseNum
     }
+    heroAgentRef.current?.setPalette(palette)
     const app = appRef.current
     const rootContainer = rootContainerRef.current
     if (app && rootContainer) {
@@ -325,8 +342,26 @@ export const HexGridCanvas = React.forwardRef<HexGridCanvasRef, HexGridCanvasPro
 
     renderRef.current()
 
+    // ─── PERSISTENT HERO ───
+    // Spawns on the capital (campaign start) and stays on the map: idle bob via the
+    // app ticker, walks along dependency arcs, re-attached after every scene rebuild.
+    const initialNode =
+      latestPropsRef.current.nodes.find((n) => n.type === 'capital') ??
+      latestPropsRef.current.nodes[0]
+    const hero = new HeroAgent({
+      palette: paletteRef.current,
+      currentNodeId: initialNode?.id ?? null,
+      coord: initialNode ? getNodeCoordRef.current(initialNode) : { q: 0, r: 0 },
+    })
+    hero.attachTo(mapContainer)
+    hero.attachTicker(app.ticker)
+    heroAgentRef.current = hero
+
     return () => {
       app.ticker.remove(tickerCallback)
+      hero.detachTicker(app.ticker)
+      hero.destroy()
+      heroAgentRef.current = null
       appRef.current = null
       rootContainerRef.current = null
       mapContainerRef.current = null
