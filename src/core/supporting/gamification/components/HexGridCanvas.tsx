@@ -57,7 +57,7 @@ export function getSectionTypeInfo(node: HexNodeData): SectionTypeInfo {
     return { label: 'Quiz', icon: '⚔️', color: 'bg-[var(--ctp-red)]/20 text-[var(--ctp-red)] border-[var(--ctp-red)]/40' }
   }
   if (ref.includes('reflection') || type === 'reflection_decryption') {
-    return { label: 'Reflection', icon: '🔮', color: 'bg-[var(--ctp-mauve)]/20 text-[var(--ctp-mauve)] border-[var(--ctp-mauve)]/40' }
+    return { label: 'Arcane Reactor', icon: '⚛️', color: 'bg-[var(--ctp-mauve)]/20 text-[var(--ctp-mauve)] border-[var(--ctp-mauve)]/40' }
   }
   if (ref.includes('tradeoff') || ref.includes('formula') || type === 'tradeoff_workshop' || clean === 'tradeoffs') {
     return { label: 'Trade-off Sandbox', icon: '⚒️', color: 'bg-[var(--ctp-yellow)]/20 text-[var(--ctp-yellow)] border-[var(--ctp-yellow)]/40' }

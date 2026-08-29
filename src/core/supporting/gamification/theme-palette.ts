@@ -413,9 +413,9 @@ export function getGamificationThemePalette(themeId: string = ''): GamificationT
     reflection_decryption: {
       fill: raw.mauveNum,
       stroke: raw.surface2Num,
-      highlight: raw.pinkNum,
-      icon: 'cipher',
-      name: 'Decryption',
+      highlight: raw.peachNum,
+      icon: 'reactor',
+      name: 'Arcane Reactor',
     },
     tradeoff_workshop: {
       fill: raw.yellowNum,

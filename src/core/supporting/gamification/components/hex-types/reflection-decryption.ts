@@ -10,31 +10,52 @@ export function drawReflectionDecryptionTerrainGround(
   if (!g || g.destroyed) return
   g.clear()
 
-  const { palette = getGamificationThemePalette(), isLocked = false } = options
+  const { palette = getGamificationThemePalette(), isLocked = false, isDefeated = false } = options
   const alphaMod = isLocked ? 0.35 : 0.85
 
-  // 1. Concentric astronomical circle engravings across the full hex
-  g.circle(0, 0, HEX_RADIUS * 0.86)
-    .stroke({ width: 0.9, color: palette.mauveNum, alpha: 0.35 * alphaMod })
-  g.circle(0, 0, HEX_RADIUS * 0.6)
-    .stroke({ width: 0.8, color: palette.lavenderNum, alpha: 0.4 * alphaMod })
+  // 1. Scorched Blast Ground Crater
+  g.circle(0, 0, HEX_RADIUS * 0.78)
+    .fill({ color: palette.crustNum, alpha: 0.55 * alphaMod })
+    .stroke({ width: 1.0, color: isDefeated ? palette.surface2Num : palette.maroonNum, alpha: 0.4 * alphaMod })
 
-  // 2. Star chart 6-point radial axis rays connecting hex vertices
-  for (let i = 0; i < 6; i++) {
-    const angle = (i * Math.PI) / 3
-    const x1 = Math.cos(angle) * (HEX_RADIUS * 0.3)
-    const y1 = Math.sin(angle) * (HEX_RADIUS * 0.3)
-    const x2 = Math.cos(angle) * (HEX_RADIUS * 0.86)
-    const y2 = Math.sin(angle) * (HEX_RADIUS * 0.86)
-    g.moveTo(x1, y1).lineTo(x2, y2).stroke({ width: 0.8, color: palette.mauveNum, alpha: 0.45 * alphaMod })
+  // 2. Volatile Lightning & Heat Fissures branching outwards
+  const fissureAngles = [
+    -Math.PI / 3,
+    -Math.PI * 0.7,
+    0,
+    Math.PI * 0.35,
+    Math.PI * 0.75,
+    -Math.PI * 0.15,
+  ]
+  const fissureColor = isDefeated ? palette.overlay0Num : palette.redNum
+  const arcColor = isDefeated ? palette.surface2Num : palette.peachNum
+
+  for (const angle of fissureAngles) {
+    const cos = Math.cos(angle)
+    const sin = Math.sin(angle)
+    const r1 = HEX_RADIUS * 0.22
+    const r2 = HEX_RADIUS * 0.5
+    const r3 = HEX_RADIUS * 0.82
+
+    const midX = cos * r2 + (sin * 4)
+    const midY = sin * r2 - (cos * 4)
+
+    g.moveTo(cos * r1, sin * r1)
+      .lineTo(midX, midY)
+      .lineTo(cos * r3, sin * r3)
+      .stroke({ width: 1.2, color: fissureColor, alpha: 0.7 * alphaMod })
+
+    g.moveTo(cos * r1, sin * r1)
+      .lineTo(midX, midY)
+      .stroke({ width: 0.6, color: arcColor, alpha: 0.9 * alphaMod })
   }
 
-  // 3. Runic star glyphs on the periphery
+  // 3. Perimeter Warning Node Emitters
   for (let i = 0; i < 6; i++) {
-    const angle = (i * Math.PI) / 3 + Math.PI / 6
-    const gx = Math.cos(angle) * (HEX_RADIUS * 0.72)
-    const gy = Math.sin(angle) * (HEX_RADIUS * 0.72)
-    g.circle(gx, gy, 1.2).fill({ color: palette.lavenderNum, alpha: 0.6 * alphaMod })
+    const angle = (i * Math.PI) / 3
+    const px = Math.cos(angle) * (HEX_RADIUS * 0.72)
+    const py = Math.sin(angle) * (HEX_RADIUS * 0.72)
+    g.circle(px, py, 1.8).fill({ color: isDefeated ? palette.surface1Num : palette.redNum, alpha: 0.8 * alphaMod })
   }
 }
 
@@ -46,64 +67,115 @@ export function drawReflectionDecryptionInsignia(
   g.clear()
 
   const {
-    color,
     isDefeated = false,
     palette = getGamificationThemePalette(),
     time = 0,
   } = options
 
-  const c = isDefeated ? palette.overlay2Num : (color ?? palette.mauveNum)
-  const darkC = palette.crustNum
-  const stoneColor = palette.surface2Num
-  const brassColor = palette.yellowNum
+  const pylonBody = isDefeated ? palette.surface0Num : palette.surface1Num
+  const pylonTrim = isDefeated ? palette.overlay0Num : palette.surface2Num
+  const coreHue1 = isDefeated ? palette.surface2Num : palette.mauveNum
+  const coreHue2 = isDefeated ? palette.overlay1Num : palette.redNum
+  const heatColor = isDefeated ? palette.surface1Num : palette.peachNum
+  const sparkColor = isDefeated ? palette.overlay0Num : 0xffffff
+  const glowAlpha = isDefeated ? 0.25 : 0.9
 
-  // 1. Ancient Star Dais Platform
-  g.ellipse(0, 9, 14, 4.5).fill({ color: darkC, alpha: 0.55 })
+  // Tremble / Jitter effect when critical (active)
+  const jitterX = isDefeated ? 0 : (Math.sin(time * 28) * 0.4)
+  const jitterY = isDefeated ? 0 : (Math.cos(time * 32) * 0.4)
+
+  // 1. Heavy Containment Base Chassis
+  g.ellipse(0, 12, 15, 5).fill({ color: palette.crustNum, alpha: 0.7 })
   g.poly([
-    -12, 8,
-    -8, 11,
-    8, 11,
-    12, 8,
-    8, 5,
-    -8, 5,
-  ]).fill({ color: stoneColor }).stroke({ width: 1.1, color: palette.textNum })
+    -13, 11,
+    -9, 14,
+    9, 14,
+    13, 11,
+    8, 8,
+    -8, 8,
+  ]).fill({ color: pylonBody }).stroke({ width: 1.2, color: pylonTrim })
 
-  // 2. Weathered Tapered Runic Obelisk
+  // 2. Reinforced Magnetic Containment Pylons (Bracing the Core)
+  // Left Pylon
   g.poly([
-    -4.5, 7,
-    -2.5, -16,
-    0, -22,
-    2.5, -16,
-    4.5, 7,
-  ]).fill({ color: stoneColor }).stroke({ width: 1.2, color: palette.textNum })
+    -12, 11,
+    -15, 0,
+    -11, -12,
+    -7, -10,
+    -10, 0,
+    -8, 10,
+  ]).fill({ color: pylonBody }).stroke({ width: 1.1, color: isDefeated ? pylonTrim : palette.redNum })
 
-  // Central Vertical Glowing Mana Rune Channel
-  g.moveTo(0, 5).lineTo(0, -16).stroke({ width: 1.2, color: c })
-  g.circle(0, -6, 1.5).fill({ color: palette.lavenderNum })
-  g.circle(0, -12, 1.2).fill({ color: palette.lavenderNum })
+  // Left Pylon Emitter Tip
+  g.circle(-9, -11, 2.2).fill({ color: isDefeated ? pylonTrim : palette.peachNum })
 
-  // 3. Astrolabe Armillary Rings (Concentric Rotating Brass Vector Ellipses)
-  const rot1 = time * 1.5
-  const rot2 = -time * 1.2
-  const rX = 11
-  const rY = 5
-
-  // Outer Ring
-  g.ellipse(0, -4, rX * Math.abs(Math.cos(rot1)) + 2, rY)
-    .stroke({ width: 1.2, color: brassColor, alpha: 0.9 })
-  // Inner Ring
-  g.ellipse(0, -4, (rX - 3) * Math.abs(Math.cos(rot2)) + 1.5, rY - 1.5)
-    .stroke({ width: 1, color: palette.lavenderNum, alpha: 0.85 })
-
-  // 4. Central Cryptographic Diamond Core (Pulsing Mana Eye)
-  const diamondPulse = Math.sin(time * 3.5) * 0.8
+  // Right Pylon
   g.poly([
-    0, -8 - diamondPulse,
-    3.5 + diamondPulse * 0.5, -4,
-    0, 0 + diamondPulse,
-    -3.5 - diamondPulse * 0.5, -4,
-  ]).fill({ color: palette.textNum, alpha: 0.95 }).stroke({ width: 1, color: palette.redNum })
-  g.circle(0, -4, 1.2).fill({ color: c })
+    12, 11,
+    15, 0,
+    11, -12,
+    7, -10,
+    10, 0,
+    8, 10,
+  ]).fill({ color: pylonBody }).stroke({ width: 1.1, color: isDefeated ? pylonTrim : palette.redNum })
+
+  // Right Pylon Emitter Tip
+  g.circle(9, -11, 2.2).fill({ color: isDefeated ? pylonTrim : palette.peachNum })
+
+  // Rear Base Pylon Spike
+  g.poly([
+    -3, 9,
+    0, -16,
+    3, 9,
+  ]).fill({ color: palette.surface0Num }).stroke({ width: 0.9, color: pylonTrim })
+
+  // 3. Supercritical Plasma Sphere / Meltdown Reactor Core
+  const coreY = -2 + jitterY
+  const coreX = 0 + jitterX
+  const criticalPulse = isDefeated ? 0 : (Math.sin(time * 8.0) * 1.2 + Math.sin(time * 16.0) * 0.6)
+
+  // Outermost Overcharged Plasma Heat Shield
+  g.circle(coreX, coreY, 9.5 + criticalPulse)
+    .fill({ color: coreHue2, alpha: 0.22 * glowAlpha })
+  g.circle(coreX, coreY, 7.5 + criticalPulse * 0.7)
+    .fill({ color: coreHue1, alpha: 0.45 * glowAlpha })
+
+  // High-Density Core Sphere
+  g.circle(coreX, coreY, 5.5 + criticalPulse * 0.4)
+    .fill({ color: heatColor, alpha: glowAlpha })
+    .stroke({ width: 1.1, color: coreHue2 })
+
+  // White-Hot Singular Meltdown Center
+  g.circle(coreX, coreY, 2.8 + criticalPulse * 0.2)
+    .fill({ color: sparkColor, alpha: glowAlpha })
+
+  // 4. Volatile Electric Lightning Arcs discharging to Containment Pylons
+  if (!isDefeated) {
+    const arcPhase = Math.floor(time * 14) % 4
+    if (arcPhase === 0 || arcPhase === 1) {
+      // Left arc
+      g.moveTo(coreX, coreY)
+        .lineTo(coreX - 4, coreY - 4)
+        .lineTo(coreX - 6, coreY - 1)
+        .lineTo(-9, -11)
+        .stroke({ width: 1.1, color: sparkColor, alpha: 0.95 })
+    }
+    if (arcPhase === 1 || arcPhase === 2) {
+      // Right arc
+      g.moveTo(coreX, coreY)
+        .lineTo(coreX + 4, coreY - 3)
+        .lineTo(coreX + 7, coreY - 6)
+        .lineTo(9, -11)
+        .stroke({ width: 1.1, color: sparkColor, alpha: 0.95 })
+    }
+    if (arcPhase === 3) {
+      // Downward ground blast arc
+      g.moveTo(coreX, coreY)
+        .lineTo(coreX + 2, coreY + 5)
+        .lineTo(0, 10)
+        .stroke({ width: 1.0, color: palette.peachNum, alpha: 0.9 })
+    }
+  }
 }
 
 export function createReflectionDecryptionGradient(
@@ -130,8 +202,8 @@ export function createReflectionDecryptionGradient(
     return gradient
   }
 
-  gradient.addColorStop(0, palette.mauve)
-  gradient.addColorStop(0.45, palette.lavender)
+  gradient.addColorStop(0, palette.red)
+  gradient.addColorStop(0.35, palette.mauve)
   gradient.addColorStop(1, palette.crust)
   return gradient
 }
@@ -140,26 +212,44 @@ export function renderReflectionDecryptionEffects(ctx: HexTypeEffectContext) {
   const { nodeContainer, palette, animControllers, isLocked, isCleared } = ctx
   if (isLocked || isCleared) return
 
-  const glowContainer = new Container()
-  glowContainer.label = 'AstrolabePulsingHalo'
-  const glowGfx = new Graphics()
-  glowContainer.addChild(glowGfx)
-  nodeContainer.addChild(glowContainer)
+  const reactorFx = new Container()
+  reactorFx.label = 'MeltdownReactorFx'
+  const shockGfx = new Graphics()
+  reactorFx.addChild(shockGfx)
+  nodeContainer.addChild(reactorFx)
 
   animControllers.push((t) => {
-    glowGfx.clear()
-    const pulse = 0.6 + 0.4 * Math.sin(t * 3)
-    glowGfx.circle(0, -4, 13 + pulse * 4).stroke({ width: 1.5, color: palette.mauveNum, alpha: 0.25 * pulse })
-    glowGfx.circle(0, -4, 8 + pulse * 2).stroke({ width: 2, color: palette.lavenderNum, alpha: 0.4 * pulse })
+    shockGfx.clear()
+
+    // Rapid harmonic shockwaves emitting from core
+    const wave1 = (t * 1.8) % 1
+    const r1 = 6 + wave1 * 18
+    const a1 = (1 - wave1) * 0.8
+    shockGfx.circle(0, -2, r1).stroke({ width: 1.4, color: palette.redNum, alpha: a1 })
+
+    const wave2 = (t * 1.8 + 0.5) % 1
+    const r2 = 6 + wave2 * 18
+    const a2 = (1 - wave2) * 0.7
+    shockGfx.circle(0, -2, r2).stroke({ width: 1.2, color: palette.peachNum, alpha: a2 })
+
+    // Orbiting volatile spark particles
+    for (let i = 0; i < 4; i++) {
+      const angle = t * 6 + (i * Math.PI) / 2
+      const dist = 12 + Math.sin(t * 10 + i) * 3
+      const sx = Math.cos(angle) * dist
+      const sy = -2 + Math.sin(angle) * (dist * 0.6)
+      shockGfx.circle(sx, sy, 1.4).fill({ color: palette.peachNum, alpha: 0.9 })
+    }
   })
 }
 
 export const reflectionDecryptionHex: HexTypeDefinition = {
   type: 'reflection_decryption',
-  title: 'Reflection Decryption',
+  title: 'Arcane Reactor',
   drawTerrainGround: drawReflectionDecryptionTerrainGround,
   drawInsignia: drawReflectionDecryptionInsignia,
   createGradient: createReflectionDecryptionGradient,
   renderEffects: renderReflectionDecryptionEffects,
   getGlowColor: (palette) => palette.mauveNum,
 }
+
