@@ -137,6 +137,7 @@ export const HexGridCanvas = React.forwardRef<HexGridCanvasRef, HexGridCanvasPro
   const appRef = useRef<Application | null>(null)
   const rootContainerRef = useRef<Container | null>(null)
   const mapContainerRef = useRef<Container | null>(null)
+  const effectsLayerRef = useRef<Container | null>(null)
   const parallaxLayerRef = useRef<Container | null>(null)
   const heroAgentRef = useRef<HeroAgent | null>(null)
   const isTransitioningRef = useRef<boolean>(false)
@@ -259,6 +260,12 @@ export const HexGridCanvas = React.forwardRef<HexGridCanvasRef, HexGridCanvasPro
     mapContainer.position.set(cx + panRef.current.x, cy + panRef.current.y)
     mapContainer.scale.set(zoomRef.current)
 
+    const effectsLayer = effectsLayerRef.current
+    if (effectsLayer && !effectsLayer.destroyed) {
+      effectsLayer.position.set(cx + panRef.current.x, cy + panRef.current.y)
+      effectsLayer.scale.set(zoomRef.current)
+    }
+
     // Ambient parallax field drifts at a reduced rate relative to map pan
     const parallax = parallaxLayerRef.current
     if (parallax && !parallax.destroyed) {
@@ -283,8 +290,8 @@ export const HexGridCanvas = React.forwardRef<HexGridCanvasRef, HexGridCanvasPro
 
   // Trigger cinematic Key Artifact Fusion and Celestial Beam Attack against the Boss Dragon
   const triggerBossKeyAttack = useCallback((node: HexNodeData, currentInventory: ItemReward[], onComplete?: () => void) => {
-    const mapContainer = mapContainerRef.current
-    if (!mapContainer) {
+    const targetStage = effectsLayerRef.current || mapContainerRef.current
+    if (!targetStage) {
       onComplete?.()
       return
     }
@@ -323,10 +330,10 @@ export const HexGridCanvas = React.forwardRef<HexGridCanvasRef, HexGridCanvasPro
     }
     requestAnimationFrame(panCameraToBoss)
 
-    // 3. Trigger celestial key fusion and beam attack animation
+    // 3. Trigger celestial key fusion and beam attack animation on the persistent effects layer
     triggerBossBeamAttackAnimation({
       app: appRef.current,
-      stage: mapContainer,
+      stage: targetStage,
       bossPixel: pixel,
       inventory: currentInventory,
       palette: paletteRef.current,
@@ -491,6 +498,11 @@ export const HexGridCanvas = React.forwardRef<HexGridCanvasRef, HexGridCanvasPro
     const mapContainer = new Container()
     rootContainer.addChild(mapContainer)
     mapContainerRef.current = mapContainer
+
+    const effectsLayer = new Container()
+    effectsLayer.eventMode = 'none'
+    rootContainer.addChild(effectsLayer)
+    effectsLayerRef.current = effectsLayer
 
     buildParallaxLayer(app, rootContainer)
 
