@@ -37,6 +37,36 @@ export interface HexSceneContext {
 
 export type NodeGlowVariant = 'selected' | 'boss_lair' | 'capital'
 
+/** Low alpha for the always-on full dependency topology layer. */
+export const FULL_ARC_ALPHA = 0.2
+
+export interface ArcControlPoint {
+  cpX: number
+  cpY: number
+  curveOffset: number
+}
+
+/**
+ * Perpendicular quadratic-Bézier control point for a dependency arc between p1
+ * and p2. The curvature sign alternates by connection index so parallel arcs in
+ * dense chains stay visually separable.
+ */
+export function computeArcControlPoint(
+  p1: { x: number; y: number },
+  p2: { x: number; y: number },
+  index: number,
+): ArcControlPoint {
+  const midX = (p1.x + p2.x) / 2
+  const midY = (p1.y + p2.y) / 2
+  const dx = p2.x - p1.x
+  const dy = p2.y - p1.y
+  const dist = Math.hypot(dx, dy) || 1
+  const curveOffset = Math.min(32, Math.max(18, dist * 0.22)) * (index % 2 === 0 ? 1 : -1)
+  const nx = -dy / dist
+  const ny = dx / dist
+  return { cpX: midX + nx * curveOffset, cpY: midY + ny * curveOffset, curveOffset }
+}
+
 export function getGlowFilterOptions(palette: GamificationThemePalette, variant: NodeGlowVariant): GlowFilterOptions {
   switch (variant) {
     case 'selected':
@@ -91,15 +121,43 @@ export function renderHexScene(ctx: HexSceneContext) {
   const currentConnections = getAutoFlowConnections(currentNodes)
   const capitalCleared = currentNodes.find((n) => n.type === 'capital')?.status === 'cleared'
 
-  // ─── 1. RENDER CURVED DEPENDENCY ARCS FOR SELECTED NODE (TARGET) ───
+  // ─── 1A. FULL DEPENDENCY TOPOLOGY: ALL ARCS AT LOW ALPHA (SINGLE GRAPHICS BATCH) ───
+  // The learner sees the entire campaign graph at a glance; the selected node's
+  // arcs are re-rendered at full opacity on top for contrast.
+  const allArcsGfx = new Graphics()
+  let hasAnyArc = false
+  currentConnections.forEach((conn, index) => {
+    const fromNode = currentNodes.find((n) => n.id === conn.fromId)
+    const toNode = currentNodes.find((n) => n.id === conn.toId)
+    if (!fromNode || !toNode) return
+
+    const fromCoord = currentCoords.get(fromNode.id) || fromNode.coordinates || { q: 0, r: 0 }
+    const toCoord = currentCoords.get(toNode.id) || toNode.coordinates || { q: 0, r: 0 }
+    const p1 = axialToPixel(fromCoord.q, fromCoord.r, 0, 0)
+    const p2 = axialToPixel(toCoord.q, toCoord.r, 0, 0)
+    const { cpX, cpY } = computeArcControlPoint(p1, p2, index)
+
+    allArcsGfx.moveTo(p1.x, p1.y).quadraticCurveTo(cpX, cpY, p2.x, p2.y)
+    hasAnyArc = true
+  })
+
+  if (hasAnyArc) {
+    allArcsGfx.stroke({ width: 2, color: palette.mauveNum, alpha: FULL_ARC_ALPHA })
+    const allArcsContainer = new Container()
+    allArcsContainer.zIndex = 1
+    allArcsContainer.addChild(allArcsGfx)
+    mapContainer.addChild(allArcsContainer)
+  }
+
+  // ─── 1B. RENDER CURVED DEPENDENCY ARCS FOR SELECTED NODE (TARGET) ───
   if (currentSelected && currentSelected.type !== 'boss_lair') {
     const depContainer = new Container()
     depContainer.zIndex = 2
-    const activeDepConns = currentConnections.filter(
-      (c) => c.toId === currentSelected.id
-    )
+    const activeDepConns = currentConnections
+      .map((conn, index) => ({ conn, index }))
+      .filter(({ conn }) => conn.toId === currentSelected.id)
 
-    activeDepConns.forEach((conn, index) => {
+    activeDepConns.forEach(({ conn, index }) => {
       const fromNode = currentNodes.find((n) => n.id === conn.fromId)
       const toNode = currentNodes.find((n) => n.id === conn.toId)
       if (!fromNode || !toNode) return
@@ -109,19 +167,8 @@ export function renderHexScene(ctx: HexSceneContext) {
       const p1 = axialToPixel(fromCoord.q, fromCoord.r, 0, 0)
       const p2 = axialToPixel(toCoord.q, toCoord.r, 0, 0)
 
-      // Calculate perpendicular curvature control point
-      const midX = (p1.x + p2.x) / 2
-      const midY = (p1.y + p2.y) / 2
-      const dx = p2.x - p1.x
-      const dy = p2.y - p1.y
-      const dist = Math.hypot(dx, dy) || 1
-      const curveOffset = Math.min(32, Math.max(18, dist * 0.22)) * (index % 2 === 0 ? 1 : -1)
-
-      // Normal perpendicular vector (-dy, dx)
-      const nx = -dy / dist
-      const ny = dx / dist
-      const cpX = midX + nx * curveOffset
-      const cpY = midY + ny * curveOffset
+      // Same curvature as the low-alpha topology layer so the highlight overlays exactly
+      const { cpX, cpY } = computeArcControlPoint(p1, p2, index)
 
       // Base glowing curved line
       const curveGfx = new Graphics()

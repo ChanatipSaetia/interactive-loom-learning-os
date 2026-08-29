@@ -8,6 +8,7 @@ import { computeChaosTintMatrix, computeChaosTintStrength } from './chaos-tint'
 import { PixiCanvasViewport } from './PixiCanvasViewport'
 import { triggerWalkTransition } from './walk-transition'
 import { renderHexScene } from './scene-renderer'
+import { computeParallaxOffset, createParallaxBackground } from './parallax-background'
 import { isVictorySetPieceNode, triggerBossVictorySetPiece } from './victory-fx'
 import { useGamificationTheme } from '../theme-palette'
 
@@ -36,6 +37,7 @@ export const HexGridCanvas = React.forwardRef<HexGridCanvasRef, HexGridCanvasPro
   const appRef = useRef<Application | null>(null)
   const rootContainerRef = useRef<Container | null>(null)
   const mapContainerRef = useRef<Container | null>(null)
+  const parallaxLayerRef = useRef<Container | null>(null)
   const isTransitioningRef = useRef<boolean>(false)
 
   const [zoom, setZoom] = useState<number>(1.0)
@@ -140,6 +142,13 @@ export const HexGridCanvas = React.forwardRef<HexGridCanvasRef, HexGridCanvasPro
 
     mapContainer.position.set(cx + panRef.current.x, cy + panRef.current.y)
     mapContainer.scale.set(zoomRef.current)
+
+    // Ambient parallax field drifts at a reduced rate relative to map pan
+    const parallax = parallaxLayerRef.current
+    if (parallax && !parallax.destroyed) {
+      const offset = computeParallaxOffset(panRef.current)
+      parallax.position.set(cx + offset.x, cy + offset.y)
+    }
   }, [])
 
   // Apply pan & zoom to PixiJS mapContainer
@@ -257,15 +266,34 @@ export const HexGridCanvas = React.forwardRef<HexGridCanvasRef, HexGridCanvasPro
     }
   }, [nodes, selectedNodeId, isCapitalCleared, palette, getNodeCoord])
 
+  const buildParallaxLayer = useCallback((app: Application, rootContainer: Container) => {
+    const prev = parallaxLayerRef.current
+    if (prev && !prev.destroyed) {
+      prev.destroy({ children: true })
+    }
+    const w = app.screen?.width || containerRef.current?.clientWidth || 880
+    const h = app.screen?.height || containerRef.current?.clientHeight || 580
+    const layer = createParallaxBackground(palette, w, h)
+    // Insert behind the map container so it renders as the ambient backdrop
+    rootContainer.addChildAt(layer, 0)
+    parallaxLayerRef.current = layer
+    updateMapTransform()
+  }, [palette, updateMapTransform])
+
   // Re-render Pixi scene when theme palette changes
   useEffect(() => {
     if (appRef.current?.renderer) {
       appRef.current.renderer.background.color = palette.baseNum
     }
+    const app = appRef.current
+    const rootContainer = rootContainerRef.current
+    if (app && rootContainer) {
+      buildParallaxLayer(app, rootContainer)
+    }
     if (mapContainerRef.current) {
       renderRef.current()
     }
-  }, [palette])
+  }, [palette, buildParallaxLayer])
 
   // PixiJS canvas initialization & render hook
   const handleInitPixi = useCallback((app: Application, rootContainer: Container) => {
@@ -275,6 +303,8 @@ export const HexGridCanvas = React.forwardRef<HexGridCanvasRef, HexGridCanvasPro
     const mapContainer = new Container()
     rootContainer.addChild(mapContainer)
     mapContainerRef.current = mapContainer
+
+    buildParallaxLayer(app, rootContainer)
 
     lastChaosLevelRef.current = -1
     applyChaosTint(chaosLevelRef.current)
@@ -300,17 +330,23 @@ export const HexGridCanvas = React.forwardRef<HexGridCanvasRef, HexGridCanvasPro
       appRef.current = null
       rootContainerRef.current = null
       mapContainerRef.current = null
+      parallaxLayerRef.current = null
     }
-  }, [applyChaosTint])
+  }, [applyChaosTint, buildParallaxLayer])
 
   useEffect(() => {
     applyChaosTint(chaosLevel)
   }, [chaosLevel, applyChaosTint])
 
   const handleResizePixi = useCallback(() => {
+    const app = appRef.current
+    const rootContainer = rootContainerRef.current
+    if (app && rootContainer) {
+      buildParallaxLayer(app, rootContainer)
+    }
     updateMapTransform()
     renderRef.current()
-  }, [updateMapTransform])
+  }, [updateMapTransform, buildParallaxLayer])
 
   // Zoom controls
   const handleZoomIn = () => setZoom((prev) => Math.min(2.0, +(prev + 0.15).toFixed(2)))
