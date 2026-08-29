@@ -385,6 +385,36 @@ describe('Gamification Real UI Components', () => {
     expect(screen.queryByText('Secret Concept Map')).toBeNull()
   })
 
+  it('deselects hex node when clicking on the background container without dragging', () => {
+    const handleSelect = vi.fn()
+    const testNodes: HexNodeData[] = [
+      {
+        id: 'node-1',
+        title: 'Capital City',
+        type: 'capital',
+        status: 'cleared',
+        description: 'Starting point',
+      },
+    ]
+
+    const { container } = render(
+      <HexGridCanvas
+        nodes={testNodes}
+        selectedNodeId="node-1"
+        onSelectNode={handleSelect}
+      />
+    )
+
+    const canvasWrapper = container.firstElementChild as HTMLElement
+    expect(canvasWrapper).toBeDefined()
+
+    // Trigger pointer click (pointerdown -> pointerup with no drag)
+    fireEvent.pointerDown(canvasWrapper, { clientX: 100, clientY: 100 })
+    fireEvent.pointerUp(canvasWrapper, { clientX: 100, clientY: 100 })
+
+    expect(handleSelect).toHaveBeenCalledWith(null)
+  })
+
   describe('TopicCampaignCard', () => {
     const mockTopic: TopicRoute = {
       id: 'demo-topic',

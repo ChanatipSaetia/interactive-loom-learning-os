@@ -20,7 +20,7 @@ export interface HexSceneContext {
   palette: GamificationThemePalette
   nodes: HexNodeData[]
   selectedNodeId: string | null
-  onSelectNode: (node: HexNodeData) => void
+  onSelectNode: (node: HexNodeData | null) => void
   centerOnNode: (node: HexNodeData) => void
   updateMapTransform: () => void
   animControllers: Array<(time: number) => void>
