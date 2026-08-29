@@ -36,6 +36,11 @@ nodes:
       maxHp: 95
       damage: 15
       icon: "👾"
+    rewards:
+      - id: "eval-shield"
+        name: "Aegis of Evaluation"
+        icon: "🛡️"
+        description: "A robust verification shield that filters out hallucinations."
 
   # Track 2: Capabilities & Sequence Builder
   - id: "sanctuary-taxonomy"
@@ -218,8 +223,9 @@ nodes:
       - "encounter-quiz"
       - "reflection-sequence"
       - "reflection-template"
-    description: "The supreme Overfitting Dragon! Requires the Blade of ReAct and Tome of Context Synthesis to unlock its gates."
+    description: "The supreme Overfitting Dragon! Requires the Aegis of Evaluation, Blade of ReAct, and Tome of Context Synthesis to unlock its gates."
     requiredItems:
+      - "eval-shield"
       - "orchestrator-blade"
       - "tome-rag"
     monster:

@@ -61,6 +61,11 @@ nodes:
       - "sanctuary-mechanics"
     sectionRef: "reflection-sequence"
     description: "An ancient habit-loop vault. Arrange the 4 phases of Nir Eyal's Hook Model (Trigger -> Action -> Variable Reward -> Investment) before time runs out!"
+    rewards:
+      - id: "scroll-hook-model"
+        name: "Scroll of Habit Loops"
+        icon: "📜"
+        description: "Mastery over Trigger, Action, Variable Reward, and Investment loops."
 
   # Track 3: Octalysis & Template Synthesis
   - id: "sanctuary-octalysis"
@@ -162,10 +167,11 @@ nodes:
       - "goblin-churn"
       - "reflection-hook"
       - "reflection-template"
-    description: "The supreme Overjustification & Burnout Dragon! Requires the Aegis of Intrinsic Drive and Compass of Octalysis to enter."
+    description: "The supreme Overjustification & Burnout Dragon! Requires the Aegis of Intrinsic Drive, Compass of Octalysis, and Scroll of Habit Loops to enter."
     requiredItems:
       - "intrinsic-shield"
       - "octalysis-compass"
+      - "scroll-hook-model"
     monster:
       id: "burnout-boss"
       name: "Extrinsic Burnout Dragon"

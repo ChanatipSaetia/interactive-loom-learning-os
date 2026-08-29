@@ -83,6 +83,11 @@ nodes:
       maxHp: 90
       damage: 14
       icon: "🧌"
+    rewards:
+      - id: "key-texture-core"
+        name: "Key of BaseTextures"
+        icon: "🗝️"
+        description: "Unlocks VRAM memory management and GPU texture upload routines."
 
   # Wing C Challenge
   - id: "reflection-transforms"
@@ -93,6 +98,11 @@ nodes:
       - "sanctuary-map"
     sectionRef: "reflection-transforms"
     description: "Arrange the chronological stages of coordinate transformation from local entity to WebGL viewport."
+    rewards:
+      - id: "compass-affine-matrix"
+        name: "Compass of Affine Matrices"
+        icon: "🧭"
+        description: "Navigates hierarchical world coordinate transformations in 2.5D space."
 
   # ─── Deep Sanctuaries (Unlocked by Initial Wing Challenges) ───
   # Wing A Deep Sanctuary
@@ -187,10 +197,12 @@ nodes:
       - "reflection-transforms"
       - "encounter-optimization"
       - "reflection-render-loop"
-    description: "The supreme Framerate Stutter Dragon! Requires the Shield of Batching and Blade of Texture Atlases to breach its gates."
+    description: "The supreme Framerate Stutter Dragon! Requires the Shield of Batching, Blade of Texture Atlases, Compass of Affine Matrices, and Key of BaseTextures to breach its gates."
     requiredItems:
       - "batch-shield"
       - "atlas-blade"
+      - "compass-affine-matrix"
+      - "key-texture-core"
     monster:
       id: "gpu-lag-dragon"
       name: "Framerate Stutter Dragon"

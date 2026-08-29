@@ -20,6 +20,11 @@ nodes:
     sectionRef: "text"
     healingAmount: 30
     description: "Study the core principles: scalability, reliability, and maintainability."
+    rewards:
+      - id: "architecture-shield"
+        name: "Aegis of Scalability"
+        icon: "🛡️"
+        description: "A solid architectural shield that withstands high throughput traffic."
 
   # Knowledge Encounters
   - id: "quiz-chamber"
@@ -81,10 +86,11 @@ nodes:
     unlockedBy:
       - "quiz-chamber"
       - "reflection-vault"
-    description: "Face the ultimate system design challenge! Requires both the Amulet of Clarity and Crystal of Insight."
+    description: "Face the ultimate system design challenge! Requires the Aegis of Scalability, Amulet of Clarity, and Crystal of Insight."
     requiredItems:
       - "clarity-amulet"
       - "insight-crystal"
+      - "architecture-shield"
     monster:
       id: "complexity-dragon"
       name: "Architectural Complexity Dragon"
