@@ -8,6 +8,7 @@ import { computeChaosTintMatrix, computeChaosTintStrength } from './chaos-tint'
 import { PixiCanvasViewport } from './PixiCanvasViewport'
 import { triggerWalkTransition } from './walk-transition'
 import { renderHexScene } from './scene-renderer'
+import { isVictorySetPieceNode, triggerBossVictorySetPiece } from './victory-fx'
 import { useGamificationTheme } from '../theme-palette'
 
 interface HexGridCanvasProps {
@@ -33,6 +34,7 @@ export const HexGridCanvas = React.forwardRef<HexGridCanvasRef, HexGridCanvasPro
   const palette = useGamificationTheme()
   const containerRef = useRef<HTMLDivElement>(null)
   const appRef = useRef<Application | null>(null)
+  const rootContainerRef = useRef<Container | null>(null)
   const mapContainerRef = useRef<Container | null>(null)
   const isTransitioningRef = useRef<boolean>(false)
 
@@ -212,6 +214,23 @@ export const HexGridCanvas = React.forwardRef<HexGridCanvasRef, HexGridCanvasPro
     }
     previousNodesRef.current = nodes
 
+    // ─── V6 BOSS VICTORY SET PIECE (root stage FX above the map layer) ───
+    // Boss lair / capital newly cleared: full-screen confetti burst + expanding
+    // golden rings anchored at the cleared hex's current screen position, drawn
+    // on the root stage container so map pan/zoom cannot affect them.
+    const app = appRef.current
+    const rootContainer = rootContainerRef.current
+    const mapContainer = mapContainerRef.current
+    if (app && rootContainer && mapContainer && !mapContainer.destroyed) {
+      nodes.forEach((n) => {
+        if (!newClearedIds.has(n.id) || !isVictorySetPieceNode(n)) return
+        const coord = getNodeCoord(n)
+        const { x, y } = axialToPixel(coord.q, coord.r, 0, 0)
+        const origin = mapContainer.toGlobal({ x, y })
+        triggerBossVictorySetPiece({ app, stage: rootContainer, origin, palette })
+      })
+    }
+
     // Single render pass per change — this (re)builds containers for any pending
     // newly-unlocked/newly-cleared ids, resuming in-flight ones via the persisted
     // unlockAnimStartRef / clearAnimStartRef start timestamps rather than restarting them.
@@ -236,7 +255,7 @@ export const HexGridCanvas = React.forwardRef<HexGridCanvasRef, HexGridCanvasPro
       }, 2500)
       return () => clearTimeout(timer)
     }
-  }, [nodes, selectedNodeId, isCapitalCleared])
+  }, [nodes, selectedNodeId, isCapitalCleared, palette, getNodeCoord])
 
   // Re-render Pixi scene when theme palette changes
   useEffect(() => {
@@ -251,6 +270,7 @@ export const HexGridCanvas = React.forwardRef<HexGridCanvasRef, HexGridCanvasPro
   // PixiJS canvas initialization & render hook
   const handleInitPixi = useCallback((app: Application, rootContainer: Container) => {
     appRef.current = app
+    rootContainerRef.current = rootContainer
 
     const mapContainer = new Container()
     rootContainer.addChild(mapContainer)
@@ -278,6 +298,7 @@ export const HexGridCanvas = React.forwardRef<HexGridCanvasRef, HexGridCanvasPro
     return () => {
       app.ticker.remove(tickerCallback)
       appRef.current = null
+      rootContainerRef.current = null
       mapContainerRef.current = null
     }
   }, [applyChaosTint])
