@@ -206,20 +206,20 @@ export function renderBossShockwave(ctx: NodeEffectContext) {
 
 // UNLOCK REVEAL ANIMATION (Clouds parting left & right with glow)
 export function renderUnlockRevealFx(ctx: NodeEffectContext) {
-  const { node, nodeContainer, animControllers, newlyUnlockedNodeIds, unlockAnimStart } = ctx
+  const { node, nodeContainer, animControllers, newlyUnlockedNodeIds, unlockAnimStart, palette } = ctx
 
   const unlockAnimContainer = new Container()
   nodeContainer.addChild(unlockAnimContainer)
 
   const leftPuffs = [
-    { x: -14, y: -12, rx: 20, ry: 16, color: 0x51576d, baseAlpha: 0.8 },
-    { x: -18, y: 10, rx: 19, ry: 15, color: 0x414559, baseAlpha: 0.85 },
-    { x: -8, y: 0, rx: 18, ry: 16, color: 0x626880, baseAlpha: 0.75 },
+    { x: -14, y: -12, rx: 20, ry: 16, color: palette.subtext1Num, baseAlpha: 0.85 },
+    { x: -18, y: 10, rx: 19, ry: 15, color: palette.subtext0Num, baseAlpha: 0.8 },
+    { x: -8, y: 0, rx: 18, ry: 16, color: palette.textNum, baseAlpha: 0.75 },
   ]
   const rightPuffs = [
-    { x: 14, y: -12, rx: 20, ry: 16, color: 0x51576d, baseAlpha: 0.8 },
-    { x: 18, y: 10, rx: 19, ry: 15, color: 0x414559, baseAlpha: 0.85 },
-    { x: 8, y: 0, rx: 18, ry: 16, color: 0x626880, baseAlpha: 0.75 },
+    { x: 14, y: -12, rx: 20, ry: 16, color: palette.subtext1Num, baseAlpha: 0.85 },
+    { x: 18, y: 10, rx: 19, ry: 15, color: palette.subtext0Num, baseAlpha: 0.8 },
+    { x: 8, y: 0, rx: 18, ry: 16, color: palette.textNum, baseAlpha: 0.75 },
   ]
 
   const leftGfx = leftPuffs.map((p) => {
@@ -296,17 +296,22 @@ export function renderFogOfWar(ctx: NodeEffectContext) {
   const fogContainer = new Container()
   fogContainer.label = 'FogOfWar'
 
-  // 9 overlapping smooth cloud puffs concealing hex edges and corners with soft vector blending
+  // Soft luminous misty underlay
+  const baseGfx = new Graphics()
+  baseGfx.poly(getHexVertices(0, 0, HEX_RADIUS - 1)).fill({ color: palette.surface1Num, alpha: 0.65 })
+  fogContainer.addChild(baseGfx)
+
+  // 9 overlapping light, ethereal cloud puffs concealing hex edges and corners with soft mystic mist
   const cloudPuffs = [
-    { x: 0, y: 0, rx: 26, ry: 20, color: palette.surface0Num, baseAlpha: 0.7, speed: 0.7, phase: 0 },
-    { x: -18, y: -16, rx: 22, ry: 17, color: palette.surface1Num, baseAlpha: 0.65, speed: 0.9, phase: 1.2 },
-    { x: 18, y: -16, rx: 24, ry: 18, color: palette.surface2Num, baseAlpha: 0.6, speed: 1.1, phase: 2.3 },
-    { x: -22, y: 12, rx: 23, ry: 17, color: palette.surface1Num, baseAlpha: 0.65, speed: 0.8, phase: 3.5 },
-    { x: 20, y: 14, rx: 25, ry: 19, color: palette.surface0Num, baseAlpha: 0.7, speed: 1.0, phase: 4.6 },
-    { x: 0, y: -22, rx: 24, ry: 16, color: palette.surface2Num, baseAlpha: 0.6, speed: 1.2, phase: 1.8 },
-    { x: 0, y: 22, rx: 25, ry: 17, color: palette.surface1Num, baseAlpha: 0.65, speed: 0.9, phase: 5.1 },
-    { x: -24, y: 0, rx: 20, ry: 18, color: palette.surface0Num, baseAlpha: 0.7, speed: 1.1, phase: 2.9 },
-    { x: 24, y: 0, rx: 21, ry: 18, color: palette.surface2Num, baseAlpha: 0.6, speed: 0.8, phase: 4.0 },
+    { x: 0, y: 0, rx: 26, ry: 20, color: palette.textNum, baseAlpha: 0.82, speed: 0.7, phase: 0 },
+    { x: -18, y: -16, rx: 22, ry: 17, color: palette.subtext1Num, baseAlpha: 0.8, speed: 0.9, phase: 1.2 },
+    { x: 18, y: -16, rx: 24, ry: 18, color: palette.subtext0Num, baseAlpha: 0.78, speed: 1.1, phase: 2.3 },
+    { x: -22, y: 12, rx: 23, ry: 17, color: palette.lavenderNum, baseAlpha: 0.75, speed: 0.8, phase: 3.5 },
+    { x: 20, y: 14, rx: 25, ry: 19, color: palette.textNum, baseAlpha: 0.82, speed: 1.0, phase: 4.6 },
+    { x: 0, y: -22, rx: 24, ry: 16, color: palette.subtext1Num, baseAlpha: 0.78, speed: 1.2, phase: 1.8 },
+    { x: 0, y: 22, rx: 25, ry: 17, color: palette.lavenderNum, baseAlpha: 0.75, speed: 0.9, phase: 5.1 },
+    { x: -24, y: 0, rx: 20, ry: 18, color: palette.textNum, baseAlpha: 0.82, speed: 1.1, phase: 2.9 },
+    { x: 24, y: 0, rx: 21, ry: 18, color: palette.subtext0Num, baseAlpha: 0.78, speed: 0.8, phase: 4.0 },
   ]
 
   const puffGraphics = cloudPuffs.map((puff) => {
