@@ -20,6 +20,11 @@ nodes:
     sectionRef: "psychology"
     healingAmount: 40
     description: "A tranquil haven studying Self-Determination Theory (Autonomy, Competence, Relatedness) and intrinsic drives."
+    rewards:
+      - id: "intrinsic-shield"
+        name: "Aegis of Intrinsic Drive"
+        icon: "🛡️"
+        description: "A luminous shield forged from autonomy and purpose that protects against hollow dopamine burnout."
 
   - id: "goblin-churn"
     title: "Engagement Goblin Outpost"
@@ -36,11 +41,6 @@ nodes:
       maxHp: 100
       damage: 15
       icon: "👾"
-    rewards:
-      - id: "intrinsic-shield"
-        name: "Aegis of Intrinsic Drive"
-        icon: "🛡️"
-        description: "A luminous shield forged from autonomy and purpose that protects against hollow dopamine burnout."
 
   # Track 2: Mechanics & Hook Model Decryption
   - id: "sanctuary-mechanics"
@@ -61,11 +61,6 @@ nodes:
       - "sanctuary-mechanics"
     sectionRef: "reflection-sequence"
     description: "An ancient habit-loop vault. Arrange the 4 phases of Nir Eyal's Hook Model (Trigger -> Action -> Variable Reward -> Investment) before time runs out!"
-    rewards:
-      - id: "variable-blade"
-        name: "Blade of Variable Reward"
-        icon: "⚔️"
-        description: "A legendary weapon that pierces user fatigue with unpredictable delight."
 
   # Track 3: Octalysis & Template Synthesis
   - id: "sanctuary-octalysis"
@@ -167,10 +162,9 @@ nodes:
       - "goblin-churn"
       - "reflection-hook"
       - "reflection-template"
-    description: "The supreme Overjustification & Burnout Dragon! Requires the Aegis of Intrinsic Drive, Blade of Variable Reward, and Compass of Octalysis to enter."
+    description: "The supreme Overjustification & Burnout Dragon! Requires the Aegis of Intrinsic Drive and Compass of Octalysis to enter."
     requiredItems:
       - "intrinsic-shield"
-      - "variable-blade"
       - "octalysis-compass"
     monster:
       id: "burnout-boss"

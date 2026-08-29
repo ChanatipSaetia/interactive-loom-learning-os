@@ -13,7 +13,10 @@ import {
   evaluateTopicBadges,
   deriveStatPercentage,
 } from './game-rules'
-import { computeHexGridCoordinates } from './layout'
+import {
+  ensureFixedCampaignCoordinates,
+} from './layout'
+
 
 export function useGamification(
   topicId?: string | null,
@@ -67,10 +70,12 @@ export function useGamification(
           const maxPulses = DIFFICULTY_CONFIGS[diff].maxSanctuaryPulses
           let nodeCoords = savedTopicState.nodeCoordinates
           let needsSave = false
-          if (!nodeCoords && loadedCampaign?.nodes && loadedCampaign.nodes.length > 0) {
-            const coordsMap = computeHexGridCoordinates(loadedCampaign.nodes)
-            nodeCoords = Object.fromEntries(coordsMap)
-            needsSave = true
+          if (loadedCampaign?.nodes && loadedCampaign.nodes.length > 0) {
+            const fixedCoords = ensureFixedCampaignCoordinates(topicId, loadedCampaign.nodes, nodeCoords)
+            if (!nodeCoords || Object.keys(fixedCoords).some((k) => !nodeCoords![k])) {
+              nodeCoords = fixedCoords
+              needsSave = true
+            }
           }
           const normalized: TopicCampaignState = {
             ...savedTopicState,
@@ -129,9 +134,9 @@ export function useGamification(
     const maxPulses = DIFFICULTY_CONFIGS[difficulty].maxSanctuaryPulses
     let nodeCoordinates: Record<string, import('./types').HexGridCoordinate> | undefined
     if (nodes && nodes.length > 0) {
-      const coordsMap = computeHexGridCoordinates(nodes)
-      nodeCoordinates = Object.fromEntries(coordsMap)
+      nodeCoordinates = ensureFixedCampaignCoordinates(topicId, nodes)
     }
+
     return {
       topicId,
       topicTitle,

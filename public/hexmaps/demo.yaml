@@ -36,11 +36,6 @@ nodes:
       maxHp: 95
       damage: 15
       icon: "👾"
-    rewards:
-      - id: "eval-shield"
-        name: "Aegis of Evaluation"
-        icon: "🛡️"
-        description: "A defensive barrier that filters out hallucinated context and drifts."
 
   # Track 2: Capabilities & Sequence Builder
   - id: "sanctuary-taxonomy"
@@ -77,6 +72,11 @@ nodes:
     sectionRef: "flashcards"
     healingAmount: 30
     description: "Master foundational concepts: Prompt Injection, Tool Calling, Vector Indexing, and Context Windows."
+    rewards:
+      - id: "tome-rag"
+        name: "Tome of Context Synthesis"
+        icon: "📖"
+        description: "Chronicles verified grounded retrieval augmentation protocols."
 
   - id: "reflection-template"
     title: "RAG Synthesis Crypt"
@@ -86,11 +86,6 @@ nodes:
       - "sanctuary-flashcards"
     sectionRef: "reflection-template"
     description: "Reconstruct the RAG synthesis template with retrieved chunk citations to unlock context knowledge."
-    rewards:
-      - id: "tome-rag"
-        name: "Tome of Context Synthesis"
-        icon: "📖"
-        description: "Chronicles verified grounded retrieval augmentation protocols."
 
   # Deep Sanctuaries (Downstream from Tier-1 Challenges)
   - id: "sanctuary-patterns"
@@ -223,9 +218,8 @@ nodes:
       - "encounter-quiz"
       - "reflection-sequence"
       - "reflection-template"
-    description: "The supreme Overfitting Dragon! Requires the Aegis of Evaluation, Blade of ReAct, and Tome of Context Synthesis to unlock its gates."
+    description: "The supreme Overfitting Dragon! Requires the Blade of ReAct and Tome of Context Synthesis to unlock its gates."
     requiredItems:
-      - "eval-shield"
       - "orchestrator-blade"
       - "tome-rag"
     monster:

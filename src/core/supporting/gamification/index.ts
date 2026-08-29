@@ -6,6 +6,9 @@ export {
   isCapitalVisited,
   isKeyItemLocationRevealed,
   getRevealedKeyItemNodes,
+  getStoredCampaignCoordinates,
+  saveCampaignCoordinates,
+  ensureFixedCampaignCoordinates,
 } from './layout'
 export {
   encryptToMagicRunes,

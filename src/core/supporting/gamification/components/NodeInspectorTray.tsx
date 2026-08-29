@@ -1,7 +1,9 @@
 import React from 'react'
 import { HexNodeData, ItemReward } from '../types'
 import { encryptToMagicRunes, canUnlockBoss, isSanctuaryType } from '../game-rules'
+import { getSectionTypeInfo } from './HexGridCanvas'
 import { Button, Badge } from '../../../ui-system'
+
 import { Swords, Sparkles, Key, CheckCircle, Lock, Play, Flame } from 'lucide-react'
 
 interface NodeInspectorTrayProps {
@@ -76,7 +78,17 @@ export const NodeInspectorTray: React.FC<NodeInspectorTrayProps> = ({
               <Badge variant={isCleared ? 'success' : isLocked ? 'secondary' : 'default'} className="text-[9px] sm:text-[10px] uppercase px-1.5 py-0">
                 {isCleared ? '✓ Cleared' : isLocked ? '🔒 Locked' : '🔓 Unlocked'}
               </Badge>
+              {(!isLocked || isCapital) && (() => {
+                const secInfo = getSectionTypeInfo(selectedNode)
+                return (
+                  <span className={`px-2 py-0.5 rounded text-[10px] font-semibold border flex items-center gap-1 ${secInfo.color}`}>
+                    <span>{secInfo.icon}</span>
+                    <span>{secInfo.label}</span>
+                  </span>
+                )
+              })()}
             </div>
+
             <p className="text-[11px] sm:text-xs text-[var(--ctp-subtext0)] mt-0.5 line-clamp-1">
               {isLocked && !isCapital
                 ? 'Shrouded under the Fog of War. Clear prerequisite cities to decrypt.'

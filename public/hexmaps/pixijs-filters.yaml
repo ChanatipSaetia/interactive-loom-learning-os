@@ -21,6 +21,11 @@ nodes:
     sectionRef: "flashcards"
     healingAmount: 30
     description: "Master fundamental shader terminology including FilterSystem, RenderTarget Pool, Fragment Shader, and Kawase Blur."
+    rewards:
+      - id: "key-filter-matrix"
+        name: "Key of Filter Matrices"
+        icon: "🔑"
+        description: "Unlocks uniform matrix projection knowledge."
 
   # Wing B (Center): FilterSystem Pipeline & Execution Loop
   - id: "sanctuary-map"
@@ -61,11 +66,6 @@ nodes:
       maxHp: 95
       damage: 15
       icon: "👾"
-    rewards:
-      - id: "key-filter-matrix"
-        name: "Key of Filter Matrices"
-        icon: "🔑"
-        description: "Unlocks uniform matrix projection knowledge."
 
   # Wing B Challenge
   - id: "reflection-pipeline"
@@ -76,11 +76,6 @@ nodes:
       - "sanctuary-map"
     sectionRef: "reflection-pipeline"
     description: "Sequence the chronological stages of the filter render cycle from padded bounds calculation to target recycling."
-    rewards:
-      - id: "tome-filter-system"
-        name: "Tome of FilterSystem Lifecycle"
-        icon: "📖"
-        description: "Chronicles the full lifecycle of offscreen RenderTarget interception."
 
   # Wing C Challenge
   - id: "reflection-synthesis"
@@ -91,11 +86,6 @@ nodes:
       - "sanctuary-taxonomies"
     sectionRef: "reflection-caching"
     description: "Sequence the stages of baking static filtered containers with cacheAsBitmap."
-    rewards:
-      - id: "orb-rendertarget-pool"
-        name: "Orb of RenderTarget Pooling"
-        icon: "🔮"
-        description: "Eliminates GPU memory fragmentation and allocation churn."
 
   # ─── Deep Sanctuaries (Unlocked by Initial Wing Challenges) ───
   # Wing A Deep Sanctuary
@@ -141,11 +131,6 @@ nodes:
       - "sanctuary-decision"
     sectionRef: "reflection-foundations"
     description: "Sequence the chronological steps of authoring and attaching a custom GLSL filter."
-    rewards:
-      - id: "scroll-shader-author"
-        name: "Scroll of Shader Creation"
-        icon: "📜"
-        description: "Contains ancient secrets of custom vertex and fragment shader authoring."
 
   # Wing B Follow-up Challenge
   - id: "reflection-multipass"
@@ -156,11 +141,6 @@ nodes:
       - "sanctuary-flowchart"
     sectionRef: "reflection-multipass"
     description: "Sequence the sequential stages of a 2-pass separable blur convolution pipeline."
-    rewards:
-      - id: "compass-pingpong-buffer"
-        name: "Compass of Ping-Pong Buffers"
-        icon: "🧭"
-        description: "Guides intermediate horizontal and vertical convolution passes."
 
   # Wing C Follow-up Challenge
   - id: "encounter-optimization"
@@ -212,13 +192,9 @@ nodes:
       - "reflection-multipass"
       - "encounter-optimization"
     sectionRef: "quiz-boss"
-    description: "The ultimate boss of the post-processing realm! Requires the Key of Filter Matrices, Tome of FilterSystem Lifecycle, Orb of RenderTarget Pooling, Scroll of Shader Creation, Compass of Ping-Pong Buffers, and Blade of Kawase Blurs to breach its lair."
+    description: "The ultimate boss of the post-processing realm! Requires the Key of Filter Matrices and Blade of Kawase Blurs to breach its lair."
     requiredItems:
       - "key-filter-matrix"
-      - "tome-filter-system"
-      - "orb-rendertarget-pool"
-      - "scroll-shader-author"
-      - "compass-pingpong-buffer"
       - "blade-kawase-blur"
     monster:
       id: "boss-framebuffer-overlord"

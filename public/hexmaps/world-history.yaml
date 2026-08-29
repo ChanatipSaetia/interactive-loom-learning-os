@@ -105,13 +105,13 @@ nodes:
 
   # 10. Quiz Encounter (Trial of Sphinx) -> Drops key-item-1
   - id: "quiz-chamber"
-    title: "สมรภูมิทดสอบปัญญาประวัติศาสตร์ (Trial of Chrono Sphinx)"
+    title: "สมรภูมิทดสอบปัญญาโบราณ (Trial of Chrono Sphinx)"
     type: "quiz_encounter"
     status: "locked"
     unlockedBy:
       - "sanctuary-eras"
     sectionRef: "quiz"
-    description: "ต่อสู้กับสฟิงซ์แห่งกาลเวลาด้วยการตอบคำถามประวัติศาสตร์ให้ถูกต้องเพื่อรับไอเทมกุญแจ!"
+    description: "ต่อสู้กับสฟิงซ์แห่งกาลเวลาด้วยการตอบคำถามอารยธรรมโบราณเพื่อรับนาฬิกาทรายแห่งกาลเวลา!"
     monster:
       id: "chrono-sphinx"
       name: "Chrono Sphinx (สฟิงซ์ผู้พิทักษ์กาลเวลา)"
@@ -125,22 +125,59 @@ nodes:
         icon: "⏳"
         description: "วัตถุโบราณที่กักเก็บกระแสกาลเวลา จำเป็นต้องใช้เพื่อเปิดผนึกห้องบอส"
 
-  # 11. Reflection Decryption (Timeline Sequence) -> Drops key-item-2
+  # 11. Quiz Encounter Modern (Trial of Colossus) -> Drops key-item-2
+  - id: "quiz-modern-chamber"
+    title: "สมรภูมิประลองปัญหายุคใหม่ (Trial of Chrono Colossus)"
+    type: "quiz_encounter"
+    status: "locked"
+    unlockedBy:
+      - "simulation-industrial"
+    sectionRef: "quiz-modern"
+    description: "ท้าประลองกับไททันผู้ควบคุมกาลเวลาด้วยความรู้ยุคปฏิวัติและสงครามโลกเพื่อรับแอสโตรแลบแห่งสัจธรรม!"
+    monster:
+      id: "chrono-colossus"
+      name: "Chrono Colossus (โคลอสซัสแห่งยุคสมัย)"
+      type: "goblin"
+      maxHp: 130
+      damage: 20
+      icon: "🗿"
+    rewards:
+      - id: "astrolabe-of-truth"
+        name: "แอสโตรแลบแห่งสัจธรรม (Astrolabe of Truth)"
+        icon: "🧭"
+        description: "เครื่องมือดาราศาสตร์โบราณที่ใช้นำทางผ่านมิติยุคสมัย ใช้เปิดผนึกห้องบอส"
+
+  # 12. Reflection Decryption (Ancient Timeline Sequence) -> Drops key-item-3
   - id: "reflection-vault"
-    title: "ห้องนิรภัยรหัสลับไทม์ไลน์ (Timeline Decryption Vault)"
+    title: "ห้องนิรภัยรหัสลับไทม์ไลน์โบราณ (Ancient Timeline Decryption Vault)"
     type: "reflection_decryption"
     status: "locked"
     unlockedBy:
       - "concept-monolith"
     sectionRef: "reflection-sequence"
-    description: "ถอดรหัสและเรียงลำดับเหตุการณ์ประวัติศาสตร์ให้ถูกต้องเพื่อปลดล็อกตราประทับแห่งนักประวัติศาสตร์!"
+    description: "ถอดรหัสและเรียงลำดับเหตุการณ์ยุคโบราณและอารยธรรมคลาสสิกเพื่อปลดล็อกตราประทับนักประวัติศาสตร์!"
     rewards:
       - id: "historian-seal"
         name: "ตราประทับนักประวัติศาสตร์ (Seal of the Historian)"
         icon: "📜"
         description: "ตราประทับศักดิ์สิทธิ์ที่ยืนยันความเข้าใจในสายธารประวัติศาสตร์ ใช้เปิดผนึกห้องบอส"
 
-  # 12. Reading Sanctuary (Reflection Template)
+  # 13. Reflection Decryption Modern (Modern Timeline Sequence) -> Drops key-item-4
+  - id: "reflection-modern-vault"
+    title: "ห้องนิรภัยรหัสลับไทม์ไลน์ยุคใหม่ (Modern Timeline Decryption Vault)"
+    type: "reflection_decryption"
+    status: "locked"
+    unlockedBy:
+      - "scenario-nexus"
+    sectionRef: "reflection-sequence-modern"
+    description: "ถอดรหัสและเรียงลำดับจุดเปลี่ยนแห่งการปฏิวัติและสงครามเพื่อรับเข็มทิศแห่งกาลเวลา!"
+    rewards:
+      - id: "chronos-compass"
+        name: "เข็มทิศแห่งกาลเวลา (Chronos Compass)"
+        icon: "✨"
+        description: "เข็มทิศเวทมนตร์ที่ชี้ทิศทางสู่ศูนย์กลางแห่งกาลเวลา ใช้เปิดผนึกห้องบอส"
+
+  # 14. Reading Sanctuary (Reflection Template)
   - id: "synthesis-vault"
     title: "แท่นสังเคราะห์สัจธรรมประวัติศาสตร์ (Truth Synthesis Shrine)"
     type: "reading_sanctuary"
@@ -151,22 +188,27 @@ nodes:
     healingAmount: 35
     description: "สังเคราะห์บทเรียนและข้อสรุปแห่งการเปลี่ยนแปลงทางประวัติศาสตร์"
 
-  # 13. Boss Lair (Climax Boss) -> Requires key-item-1 & key-item-2
+  # 15. Boss Lair (Climax Boss) -> Requires all 4 key items
   - id: "boss-lair"
     title: "ถ้ำมังกรผู้บิดเบือนกาลเวลา (Lair of the Time-Weaver Dragon)"
     type: "boss_lair"
     status: "locked"
     unlockedBy:
       - "quiz-chamber"
+      - "quiz-modern-chamber"
       - "reflection-vault"
-    description: "เผชิญหน้ากับบอสใหญ่แห่งอาณาจักรประวัติศาสตร์โลก! ต้องใช้นาฬิกาทรายแห่งกาลเวลาและตราประทับนักประวัติศาสตร์เพื่อคลายผนึก"
+      - "reflection-modern-vault"
+    description: "เผชิญหน้ากับบอสใหญ่แห่งอาณาจักรประวัติศาสตร์โลก! ต้องใช้นาฬิกาทรายแห่งกาลเวลา ตราประทับนักประวัติศาสตร์ แอสโตรแลบแห่งสัจธรรม และเข็มทิศแห่งกาลเวลาเพื่อคลายผนึก"
     requiredItems:
       - "chronos-hourglass"
+      - "astrolabe-of-truth"
       - "historian-seal"
+      - "chronos-compass"
     monster:
       id: "time-weaver-dragon"
       name: "Time-Weaver Dragon (มังกรผู้ถักทอกาลเวลา)"
       type: "boss"
-      maxHp: 280
-      damage: 45
+      maxHp: 320
+      damage: 50
       icon: "🐲"
+

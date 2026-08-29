@@ -158,10 +158,10 @@ describe('Territory Roads to Hub (calculateTerritoryRoads & renderTerritoryRoads
     // 5 sanctuaries total
     expect(roads).toHaveLength(5)
 
-    // Each road connects from a sanctuary to the capital hub
+    // Each road connects from the edge of a sanctuary territory to the edge of the capital hub
     for (const road of roads) {
       expect(road.toHubNode.id).toBe('capital')
-      expect(road.toPixel).toEqual({ x: 0, y: 0 })
+      expect(Math.hypot(road.toPixel.x, road.toPixel.y / 0.88)).toBeCloseTo(135)
       expect(road.controlPoint).toBeDefined()
       expect(road.fromNode.type).not.toBe('capital')
       expect(road.fromNode.type).not.toBe('quiz_encounter')

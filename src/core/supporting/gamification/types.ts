@@ -80,7 +80,9 @@ export interface HexNodeData {
   }
   tradeoffMapping?: Record<string, string>
   sectionData?: Record<string, unknown>
+  sectionType?: string
 }
+
 
 
 

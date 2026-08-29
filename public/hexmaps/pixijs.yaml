@@ -21,6 +21,11 @@ nodes:
     sectionRef: "taxonomy-browser"
     healingAmount: 35
     description: "Explore the capabilities and trade-offs of Containers, ParticleContainers, Vector Graphics, and GLSL Shaders."
+    rewards:
+      - id: "batch-shield"
+        name: "Shield of Batching"
+        icon: "🛡️"
+        description: "Combines thousands of sprite quads into single draw calls."
 
   # Wing B (Center): Frame Execution & 60 FPS Pipeline
   - id: "sanctuary-map"
@@ -53,7 +58,7 @@ nodes:
     unlockedBy:
       - "sanctuary-taxonomies"
     sectionRef: "quiz-taxonomies"
-    description: "An aggressive Marauder spawning un-batched loose sprites! Solve display selection questions to claim the Batch Shield."
+    description: "An aggressive Marauder spawning un-batched loose sprites! Solve display selection questions to banish it."
     monster:
       id: "sprite-marauder"
       name: "Unbatched Sprite Marauder"
@@ -61,11 +66,6 @@ nodes:
       maxHp: 110
       damage: 20
       icon: "👺"
-    rewards:
-      - id: "batch-shield"
-        name: "Shield of Batching"
-        icon: "🛡️"
-        description: "Combines thousands of sprite quads into single draw calls."
 
   # Wing B Challenge
   - id: "encounter-vocabulary"
@@ -83,11 +83,6 @@ nodes:
       maxHp: 90
       damage: 14
       icon: "🧌"
-    rewards:
-      - id: "key-texture-core"
-        name: "Key of BaseTextures"
-        icon: "🔑"
-        description: "Unlocks GPU texture buffer knowledge."
 
   # Wing C Challenge
   - id: "reflection-transforms"
@@ -98,11 +93,6 @@ nodes:
       - "sanctuary-map"
     sectionRef: "reflection-transforms"
     description: "Arrange the chronological stages of coordinate transformation from local entity to WebGL viewport."
-    rewards:
-      - id: "compass-affine-matrix"
-        name: "Compass of Affine Matrices"
-        icon: "🧭"
-        description: "Calculates local-to-world transformations flawlessly."
 
   # ─── Deep Sanctuaries (Unlocked by Initial Wing Challenges) ───
   # Wing A Deep Sanctuary
@@ -170,11 +160,6 @@ nodes:
       - "sanctuary-flowchart"
     sectionRef: "reflection-sequence"
     description: "Order the complete execution lifecycle from requestAnimationFrame pulse to GPU framebuffer swap."
-    rewards:
-      - id: "tome-60fps-pipeline"
-        name: "Tome of the 60 FPS Loop"
-        icon: "📖"
-        description: "Chronicles the complete lifecycle from requestAnimationFrame to framebuffer swap."
 
   # Wing C Workshop (Challenge Node)
   - id: "tradeoff-workshop"
@@ -202,13 +187,10 @@ nodes:
       - "reflection-transforms"
       - "encounter-optimization"
       - "reflection-render-loop"
-    description: "The supreme Framerate Stutter Dragon! Requires the Shield of Batching, Key of BaseTextures, Compass of Affine Matrices, Blade of Texture Atlases, and Tome of the 60 FPS Loop to breach its gates."
+    description: "The supreme Framerate Stutter Dragon! Requires the Shield of Batching and Blade of Texture Atlases to breach its gates."
     requiredItems:
       - "batch-shield"
-      - "key-texture-core"
-      - "compass-affine-matrix"
       - "atlas-blade"
-      - "tome-60fps-pipeline"
     monster:
       id: "gpu-lag-dragon"
       name: "Framerate Stutter Dragon"

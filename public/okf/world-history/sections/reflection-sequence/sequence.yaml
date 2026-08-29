@@ -1,31 +1,48 @@
 challenges:
-  - prompt: "เรียงลำดับพัฒนาการของอารยธรรมโบราณตามลำดับเวลา (Part 1):"
+  - prompt: "ถอดรหัสลำดับการกำเนิดอารยธรรมลุ่มแม่น้ำโบราณ (Ancient River Valleys):"
     items:
       - id: seq-cuneiform
-        text: "ชาวสุเมเรียนประดิษฐ์อักษรรูปลิ่ม (Cuneiform) ในเมโสโปเตเมีย"
+        text: "ชาวสุเมเรียนประดิษฐ์อักษรรูปลิ่ม (Cuneiform) ในเมโสโปเตเมีย (~3500 BC)"
       - id: seq-pyramid
-        text: "การสร้างมหาพีระมิดแห่งกิซาในอียิปต์โบราณ"
-      - id: seq-athens
-        text: "ยุคทองของประชาธิปไตยในนครรัฐเอเธนส์ ประเทศกรีซ"
-      - id: seq-rome-fall
-        text: "จักรวรรดิโรมันตะวันตกถูกรุกรานและล่มสลาย เข้าสู่ยุคกลาง"
+        text: "การสร้างมหาพีระมิดแห่งกิซาในอียิปต์โบราณ (~2560 BC)"
+      - id: seq-hammurabi
+        text: "พระเจ้าฮัมมูราบีจารึกประมวลกฎหมายฮัมมูราบีแห่งบาบิโลน (~1754 BC)"
+      - id: seq-oracle-bones
+        text: "การจารึกอักษรบนกระดูกเสี่ยงทาย (Oracle Bones) ยุคราชวงศ์ซางของจีน (~1200 BC)"
     solution:
       - seq-cuneiform
       - seq-pyramid
-      - seq-athens
-      - seq-rome-fall
-  - prompt: "เรียงลำดับจุดเปลี่ยนสู่โลกสมัยใหม่และยุคร่วมสมัย (Part 2):"
+      - seq-hammurabi
+      - seq-oracle-bones
+
+  - prompt: "ถอดรหัสยุคคลาสสิกและการเปลี่ยนผ่านสู่ยุคกลาง (Classical Antiquity to Middle Ages):"
     items:
-      - id: seq-constantinople
-        text: "กรุงคอนสแตนติโนเปิลเสียแก่จักรวรรดิออตโตมัน สิ้นสุดยุคกลาง"
-      - id: seq-steam-engine
-        text: "เจมส์ วัตต์ พัฒนาเครื่องจักรไอน้ำ เริ่มต้นการปฏิวัติอุตสาหกรรม"
-      - id: seq-ww2-end
-        text: "สิ้นสุดสงครามโลกครั้งที่ 2 และเริ่มต้นยุคสงครามเย็น"
-      - id: seq-berlin-wall
-        text: "การล่มสลายของกำแพงเบอร์ลินและการสิ้นสุดของสงครามเย็น"
+      - id: seq-athens
+        text: "ยุคทองของประชาธิปไตยและปรัชญาในนครรัฐเอเธนส์ ยุคเพริคลีส (~450 BC)"
+      - id: seq-alexander
+        text: "พระเจ้าอเล็กซานเดอร์มหาราชแผ่ขยายจักรวรรดิและผสานวัฒนธรรมเฮลเลนิสติก (~330 BC)"
+      - id: seq-pax-romana
+        text: "การสถาปนาจักรวรรดิโรมันและยุคสันติภาพโรมัน (Pax Romana) (~27 BC)"
+      - id: seq-rome-fall
+        text: "จักรวรรดิโรมันตะวันตกล่มสลาย ยุโรปเข้าสู่ระบบฟิวดัลในยุคกลาง (AD 476)"
     solution:
-      - seq-constantinople
-      - seq-steam-engine
-      - seq-ww2-end
-      - seq-berlin-wall
+      - seq-athens
+      - seq-alexander
+      - seq-pax-romana
+      - seq-rome-fall
+
+  - prompt: "ถอดรหัสวิวัฒนาการของระบบกฎหมาย สิทธิ และพันธสัญญามนุษยชาติ (Evolution of Charters & Rights):"
+    items:
+      - id: seq-twelve-tables
+        text: "กฎหมายสิบสองโต๊ะ (Twelve Tables) ของสาธารณรัฐโรมัน (~450 BC)"
+      - id: seq-magna-carta
+        text: "มหากฎบัตรแมกนาคาร์ตา (Magna Carta) จำกัดพระราชอำนาจกษัตริย์อังกฤษ (AD 1215)"
+      - id: seq-human-rights-french
+        text: "คำประกาศว่าด้วยสิทธิมนุษยชนและพลเมือง (Declaration of the Rights of Man) (AD 1789)"
+      - id: seq-udhr
+        text: "ปฏิญญาสากลว่าด้วยสิทธิมนุษยชนแห่งสหประชาชาติ (UDHR) (AD 1948)"
+    solution:
+      - seq-twelve-tables
+      - seq-magna-carta
+      - seq-human-rights-french
+      - seq-udhr

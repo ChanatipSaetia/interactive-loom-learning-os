@@ -1,10 +1,10 @@
 import React, { useRef } from 'react'
 import { HexGridCanvas, HexGridCanvasRef } from '../HexGridCanvas'
-import { NodeInspectorTray } from '../NodeInspectorTray'
 import { CampaignTopHeader } from './CampaignTopHeader'
 import { CampaignHudBar } from './CampaignHudBar'
 import { EncounterViewport } from './EncounterViewport'
 import { BadgesModal } from './BadgesModal'
+
 import { VictoryModal } from './VictoryModal'
 import { DefeatModal } from './DefeatModal'
 import { SnackbarToasts } from './SnackbarToasts'
@@ -84,7 +84,7 @@ export const ActiveCampaignView: React.FC<ActiveCampaignViewProps> = ({ game }) 
         nodes={nodes}
       />
 
-      {/* ─── Main Map Canvas with Bottom NodeInspectorTray ─── */}
+      {/* ─── Main Map Canvas with Floating Tooltip Actions ─── */}
       <div className="flex flex-col gap-4">
         <HexGridCanvas
           ref={hexCanvasRef}
@@ -92,16 +92,11 @@ export const ActiveCampaignView: React.FC<ActiveCampaignViewProps> = ({ game }) 
           selectedNodeId={selectedNode?.id || null}
           onSelectNode={setSelectedNode}
           chaosLevel={campaign.chaosLevel}
-        />
-
-        {/* Sleek Bottom Node Inspector Tray */}
-        <NodeInspectorTray
-          selectedNode={selectedNode}
-          nodes={nodes}
           inventory={campaign.inventory}
           onLaunchEncounter={handleLaunchWithWalk}
         />
       </div>
+
 
       {/* ─── REAL ENCOUNTER DRAWER VIEWPORT (BOTTOM DOCKED) ─── */}
       <EncounterViewport game={game} />

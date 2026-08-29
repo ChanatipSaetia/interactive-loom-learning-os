@@ -10,6 +10,10 @@ import {
   deriveStatPercentage,
   deriveHexTypeFromSectionType,
 } from '../../game-rules'
+import {
+  ensureFixedCampaignCoordinates,
+  getStoredCampaignCoordinates,
+} from '../../layout'
 import { useGamification } from '../../useGamification'
 import { LocalStorageCharacterAdapter } from '../../adapters/local-storage-character-adapter'
 import { useOKFBundled, bundleToSections } from '../../../../learning-engine/composition/okf/sections'
@@ -88,6 +92,7 @@ export function useGamificationCampaign() {
     if (!hasStarted) {
       const chosenDiff = topicDifficulties[topicId] || 'normal'
       const maxPulses = DIFFICULTY_CONFIGS[chosenDiff].maxSanctuaryPulses
+      const storedCoords = getStoredCampaignCoordinates(topicId)
       localStorage.setItem(
         `loom_gamification_campaign_${topicId}`,
         JSON.stringify({
@@ -105,6 +110,7 @@ export function useGamificationCampaign() {
           clearedNodeIds: [],
           activeBuffs: [],
           readingVisitCounts: {},
+          nodeCoordinates: storedCoords || undefined,
         })
       )
 
@@ -174,15 +180,23 @@ export function useGamificationCampaign() {
   // Automatically derives visual hex type from corresponding OKF section type if not explicitly distinct
   useEffect(() => {
     if (liveCampaign?.nodes && liveCampaign.nodes.length > 0) {
-      const savedCoords = campaign?.nodeCoordinates
+      const topicKey = currentTopicId || liveCampaign.topicId || 'default'
+      const fixedCoords = ensureFixedCampaignCoordinates(
+        topicKey,
+        liveCampaign.nodes,
+        campaign?.nodeCoordinates
+      )
       const mergedNodes = liveCampaign.nodes.map((n) => {
         const secConfig = n.sectionRef ? bundleSectionsMap.get(n.sectionRef) : undefined
         const effectiveType = deriveHexTypeFromSectionType(secConfig?.type, n.type)
         const baseNode: HexNodeData = {
           ...n,
           type: effectiveType,
-          coordinates: savedCoords ? savedCoords[n.id] : n.coordinates,
+          sectionType: secConfig?.type || undefined,
+          coordinates: fixedCoords[n.id] || n.coordinates,
         }
+
+
 
         if (campaign?.clearedNodeIds.includes(n.id)) {
           return { ...baseNode, status: 'cleared' as const }
@@ -200,7 +214,8 @@ export function useGamificationCampaign() {
         }
       }
     }
-  }, [liveCampaign, campaign?.clearedNodeIds, campaign?.nodeCoordinates, bundleSectionsMap])
+  }, [liveCampaign, campaign?.clearedNodeIds, campaign?.nodeCoordinates, bundleSectionsMap, currentTopicId])
+
 
   // Active Section Modal & Instance Key for Retry / Re-encounter
   const [activeSectionModal, setActiveSectionModal] = useState<HexNodeData | null>(null)

@@ -179,6 +179,87 @@ function hexAngle(coord: HexGridCoordinate): number {
 export interface HexLayoutOptions {
   seed?: number
   random?: () => number
+  topicId?: string
+  savedCoordinates?: Record<string, HexGridCoordinate>
+}
+
+export const HEX_LAYOUT_STORAGE_PREFIX = 'loom_hex_layout_'
+
+export function stringToSeed(str: string): number {
+  let hash = 0
+  for (let i = 0; i < str.length; i++) {
+    hash = (hash << 5) - hash + str.charCodeAt(i)
+    hash |= 0
+  }
+  return Math.abs(hash) || 123456789
+}
+
+export function getStoredCampaignCoordinates(topicId: string): Record<string, HexGridCoordinate> | null {
+  if (typeof window === 'undefined' || !window.localStorage) return null
+  try {
+    // 1. Try dedicated layout storage key
+    const dedicated = localStorage.getItem(`${HEX_LAYOUT_STORAGE_PREFIX}${topicId}`)
+    if (dedicated) {
+      const parsed = JSON.parse(dedicated)
+      if (parsed && typeof parsed === 'object') return parsed
+    }
+    // 2. Try campaign state storage key
+    const campaignRaw = localStorage.getItem(`loom_gamification_campaign_${topicId}`)
+    if (campaignRaw) {
+      const parsedCampaign = JSON.parse(campaignRaw)
+      if (parsedCampaign?.nodeCoordinates && typeof parsedCampaign.nodeCoordinates === 'object') {
+        return parsedCampaign.nodeCoordinates
+      }
+    }
+  } catch {
+    // Ignore parse errors
+  }
+  return null
+}
+
+export function saveCampaignCoordinates(topicId: string, coordinates: Record<string, HexGridCoordinate>): void {
+  if (typeof window === 'undefined' || !window.localStorage) return
+  try {
+    localStorage.setItem(`${HEX_LAYOUT_STORAGE_PREFIX}${topicId}`, JSON.stringify(coordinates))
+    // Also sync into campaign state if present
+    const campaignRaw = localStorage.getItem(`loom_gamification_campaign_${topicId}`)
+    if (campaignRaw) {
+      const parsed = JSON.parse(campaignRaw)
+      parsed.nodeCoordinates = coordinates
+      localStorage.setItem(`loom_gamification_campaign_${topicId}`, JSON.stringify(parsed))
+    }
+  } catch (e) {
+    console.warn(`Failed to save hex coordinates for ${topicId} to localStorage:`, e)
+  }
+}
+
+export function ensureFixedCampaignCoordinates(
+  topicId: string,
+  nodes: HexNodeData[],
+  savedCoordinates?: Record<string, HexGridCoordinate>
+): Record<string, HexGridCoordinate> {
+  const stored = savedCoordinates || getStoredCampaignCoordinates(topicId)
+
+  // Check if all nodes are present in stored
+  if (stored && nodes.length > 0 && nodes.every((n) => stored[n.id])) {
+    return stored
+  }
+
+  // Compute with deterministic seed based on topicId and node IDs
+  const seed = stringToSeed(`${topicId}:${nodes.map((n) => n.id).join(',')}`)
+  const computedMap = computeHexGridCoordinates(nodes, {
+    seed,
+    topicId,
+    savedCoordinates: stored || undefined,
+  })
+
+  const result: Record<string, HexGridCoordinate> = {}
+  computedMap.forEach((coord, id) => {
+    result[id] = coord
+  })
+
+  saveCampaignCoordinates(topicId, result)
+  return result
 }
 
 function createRng(seed?: number, customRandom?: () => number): () => number {
@@ -196,7 +277,7 @@ function createRng(seed?: number, customRandom?: () => number): () => number {
  * Computes axial hex coordinates (q, r) based on updated rules:
  * 1. Capital (Hub) is anchored at (0, 0).
  * 2. Boss Lair is ALWAYS immediately adjacent to Hub (distance = 1).
- * 3. Sanctuaries are scattered randomly around the map with possible gaps from hub (radius 1 to 3).
+ * 3. Sanctuaries are scattered around the map with possible gaps from hub (radius >= 3).
  * 4. Challenge nodes (quiz, reflection) are placed immediately adjacent to their parent sanctuary (distance = 1).
  * 5. Workshops & remaining nodes are placed near their parent or closest free slot.
  */
@@ -210,15 +291,35 @@ export function computeHexGridCoordinates(
   if (nodes.length === 0) return coordMap
 
   // If every node already has assigned coordinates, use them directly
-  const allHaveCoords = nodes.every((n) => n.coordinates && typeof n.coordinates.q === 'number' && typeof n.coordinates.r === 'number')
+  const allHaveCoords = nodes.every(
+    (n) =>
+      (n.coordinates && typeof n.coordinates.q === 'number' && typeof n.coordinates.r === 'number') ||
+      (options?.savedCoordinates?.[n.id] && typeof options.savedCoordinates[n.id].q === 'number' && typeof options.savedCoordinates[n.id].r === 'number')
+  )
   if (allHaveCoords) {
     nodes.forEach((n) => {
-      coordMap.set(n.id, n.coordinates!)
+      const c = n.coordinates || options?.savedCoordinates?.[n.id]
+      coordMap.set(n.id, c!)
     })
     return coordMap
   }
 
-  const rng = createRng(options?.seed, options?.random)
+  // Pre-seed already known coordinates
+  nodes.forEach((n) => {
+    const existing = n.coordinates || options?.savedCoordinates?.[n.id]
+    if (existing && typeof existing.q === 'number' && typeof existing.r === 'number') {
+      coordMap.set(n.id, existing)
+      occupiedCoords.add(coordKey(existing.q, existing.r))
+    }
+  })
+
+  // Use deterministic seed if none provided to ensure fixed layout across re-renders
+  const effectiveSeed =
+    options?.seed !== undefined
+      ? options.seed
+      : stringToSeed(options?.topicId ? `${options.topicId}:${nodes.map((n) => n.id).join(',')}` : nodes.map((n) => n.id).join(','))
+  const rng = createRng(effectiveSeed, options?.random)
+
   const capitalNode = nodes.find((n) => n.type === 'capital') || nodes[0]
   const bossNode = nodes.find((n) => n.type === 'boss_lair')
   const primarySites = nodes.filter((n) => isSanctuary(n.type))
@@ -231,8 +332,11 @@ export function computeHexGridCoordinates(
   const autoConns = getAutoFlowConnections(nodes)
 
   // 1. Hub / Capital at center (0, 0)
-  coordMap.set(capitalNode.id, { q: 0, r: 0 })
-  occupiedCoords.add(coordKey(0, 0))
+  if (!coordMap.has(capitalNode.id)) {
+    coordMap.set(capitalNode.id, { q: 0, r: 0 })
+    occupiedCoords.add(coordKey(0, 0))
+  }
+
 
   // Helper: Find closest free hex slot adjacent to baseCoord (distance 1 preferred)
   function findFreeAdjacentSlot(baseCoord: HexGridCoordinate, preferredAngle?: number): HexGridCoordinate {

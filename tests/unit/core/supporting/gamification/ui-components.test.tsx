@@ -6,7 +6,9 @@ import { SanctuaryTickMonitor } from '../../../../../src/core/supporting/gamific
 import { RunicCountdownRing } from '../../../../../src/core/supporting/gamification/components/RunicCountdownRing'
 import { TradeoffStatPreviewBar } from '../../../../../src/core/supporting/gamification/components/TradeoffStatPreviewBar'
 import { BossBattleArena } from '../../../../../src/core/supporting/gamification/components/BossBattleArena'
-import { HexGridCanvas } from '../../../../../src/core/supporting/gamification/components/HexGridCanvas'
+import { HexGridCanvas, getSectionTypeInfo } from '../../../../../src/core/supporting/gamification/components/HexGridCanvas'
+
+
 import { TopicCampaignCard } from '../../../../../src/core/supporting/gamification/components/gamification/TopicCampaignCard'
 import type { HexNodeData, MonsterData, CharacterAttributes, GlobalCharacterState } from '../../../../../src/core/supporting/gamification/types'
 import type { TopicRoute } from '../../../../../src/core/learning-engine/composition/routes'
@@ -521,5 +523,142 @@ describe('Gamification Real UI Components', () => {
       expect(handleResetCampaign).toHaveBeenCalledWith('demo-topic')
     })
   })
+
+  describe('getSectionTypeInfo', () => {
+    it('returns real OKF section type when sectionType is present on node', () => {
+      const quizNode: HexNodeData = {
+        id: 'node-quiz',
+        title: 'Quiz Node',
+        type: 'quiz_encounter',
+        sectionType: 'quiz',
+        status: 'unlocked',
+        description: '',
+      }
+      const seqNode: HexNodeData = {
+        id: 'node-seq',
+        title: 'Timeline Vault',
+        type: 'reflection_decryption',
+        sectionType: 'reflection-sequence',
+        status: 'unlocked',
+        description: '',
+      }
+      const tmplNode: HexNodeData = {
+        id: 'node-tmpl',
+        title: 'Synthesis Shrine',
+        type: 'reading_sanctuary',
+        sectionType: 'reflection-template',
+        status: 'unlocked',
+        description: '',
+      }
+
+      expect(getSectionTypeInfo(quizNode).label).toBe('Quiz')
+      expect(getSectionTypeInfo(seqNode).label).toBe('Reflection Sequence')
+      expect(getSectionTypeInfo(tmplNode).label).toBe('Reflection Template')
+    })
+
+    it('infers real OKF section type from sectionRef when sectionType is missing', () => {
+      const flashNode: HexNodeData = {
+        id: 'node-fc',
+        title: 'Vocab',
+        type: 'archive_spire',
+        sectionRef: 'flashcards',
+        status: 'unlocked',
+        description: '',
+      }
+      const flowNode: HexNodeData = {
+        id: 'node-flow',
+        title: 'Simulation',
+        type: 'simulation_nexus',
+        sectionRef: 'flowchart',
+        status: 'unlocked',
+        description: '',
+      }
+
+      expect(getSectionTypeInfo(flashNode).label).toBe('Flashcards')
+      expect(getSectionTypeInfo(flowNode).label).toBe('Flowchart')
+    })
+
+    it('renders tooltip with full details and triggers onLaunchEncounter when clicked in HexGridCanvas', () => {
+      const handleLaunch = vi.fn()
+      const handleSelect = vi.fn()
+      const sampleNode: HexNodeData = {
+        id: 'quiz-node-1',
+        title: 'Battle of Actium Quiz',
+        type: 'quiz_encounter',
+        sectionType: 'quiz',
+        status: 'unlocked',
+        description: 'Test your knowledge on ancient naval warfare.',
+        monster: {
+          id: 'mon-1',
+          name: 'Pharaoh Guard',
+          type: 'goblin',
+          maxHp: 50,
+          currentHp: 40,
+          damage: 10,
+          icon: '🗿',
+        },
+        rewards: [{ id: 'anc-scroll', name: 'Ancient Scroll', icon: '📜', description: '' }],
+        coordinates: { q: 0, r: 0 },
+      }
+
+      render(
+        <HexGridCanvas
+          nodes={[sampleNode]}
+          selectedNodeId="quiz-node-1"
+          onSelectNode={handleSelect}
+          inventory={[]}
+          onLaunchEncounter={handleLaunch}
+        />
+      )
+
+      expect(screen.getByTestId('selected-hex-tooltip')).toBeDefined()
+      expect(screen.getByText('Battle of Actium Quiz')).toBeDefined()
+      expect(screen.getByText('Pharaoh Guard')).toBeDefined()
+      expect(screen.getByText('Reward: Ancient Scroll')).toBeDefined()
+
+      const enterBtn = screen.getByRole('button', { name: /Enter Encounter/i })
+      expect(enterBtn).toBeDefined()
+      fireEvent.click(enterBtn)
+      expect(handleLaunch).toHaveBeenCalledWith(sampleNode)
+    })
+
+    it('does not deselect on background clicks, but deselects via close (x) button in tooltip', () => {
+      const handleSelect = vi.fn()
+      const sampleNode: HexNodeData = {
+        id: 'node-1',
+        title: 'Node 1',
+        type: 'capital',
+        status: 'unlocked',
+        description: 'Test node',
+        coordinates: { q: 0, r: 0 },
+      }
+
+      const { container } = render(
+        <HexGridCanvas
+          nodes={[sampleNode]}
+          selectedNodeId="node-1"
+          onSelectNode={handleSelect}
+        />
+      )
+
+      const root = (container.querySelector('canvas') || container.firstChild) as HTMLElement
+
+      // 1. Background click -> Does NOT deselect
+      fireEvent(root, new MouseEvent('pointerdown', { clientX: 100, clientY: 100, bubbles: true }))
+      fireEvent(root, new MouseEvent('pointerup', { clientX: 100, clientY: 100, bubbles: true }))
+      expect(handleSelect).not.toHaveBeenCalledWith(null)
+
+      // 2. Close (x) button in tooltip -> Deselects
+      const closeBtn = screen.getByTitle(/Close Tooltip/i)
+      expect(closeBtn).toBeDefined()
+      fireEvent.click(closeBtn)
+      expect(handleSelect).toHaveBeenCalledWith(null)
+    })
+  })
 })
+
+
+
+
+
 

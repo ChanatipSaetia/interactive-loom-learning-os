@@ -7,7 +7,9 @@ import {
   getRevealedKeyItemNodes,
   axialDistance,
   getNodeDependencies,
+  ensureFixedCampaignCoordinates,
 } from '../../../../../src/core/supporting/gamification/layout'
+
 import { HexNodeData } from '../../../../../src/core/supporting/gamification/types'
 
 describe('Hex Grid Auto-Layout Engine (layout.ts)', () => {
@@ -176,4 +178,36 @@ describe('Hex Grid Auto-Layout Engine (layout.ts)', () => {
     expect(getNodeDependencies(nodeB)).toEqual(['a'])
     expect(getNodeDependencies(nodeC)).toEqual(['b'])
   })
+
+  it('produces deterministic coordinates across multiple calls without seed', () => {
+    const nodes: HexNodeData[] = [
+      { id: 'capital-0', title: 'Capital', type: 'capital', status: 'unlocked', description: 'Cap' },
+      { id: 'sanctuary-1', title: 'Sanctuary 1', type: 'reading_sanctuary', status: 'unlocked', description: 'S1' },
+      { id: 'quiz-1', title: 'Quiz 1', type: 'quiz_encounter', status: 'locked', unlockedBy: ['sanctuary-1'], description: 'Q1' },
+      { id: 'boss-1', title: 'Dragon', type: 'boss_lair', status: 'locked', description: 'Boss' },
+    ]
+
+    const run1 = computeHexGridCoordinates(nodes)
+    const run2 = computeHexGridCoordinates(nodes)
+
+    nodes.forEach((n) => {
+      expect(run1.get(n.id)).toEqual(run2.get(n.id))
+    })
+  })
+
+  it('preserves and persists fixed coordinates in ensureFixedCampaignCoordinates', () => {
+    const nodes: HexNodeData[] = [
+      { id: 'capital-0', title: 'Capital', type: 'capital', status: 'unlocked', description: 'Cap' },
+      { id: 'sanctuary-1', title: 'Sanctuary 1', type: 'reading_sanctuary', status: 'unlocked', description: 'S1' },
+    ]
+
+    const fixed = ensureFixedCampaignCoordinates('test-topic', nodes)
+    expect(fixed['capital-0']).toEqual({ q: 0, r: 0 })
+    expect(fixed['sanctuary-1']).toBeDefined()
+
+    // Second call should return the exact stored coordinates
+    const stored = ensureFixedCampaignCoordinates('test-topic', nodes)
+    expect(stored).toEqual(fixed)
+  })
 })
+

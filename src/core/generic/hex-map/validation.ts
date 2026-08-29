@@ -96,7 +96,7 @@ export function validateHexMapTier3(
             tier: 3,
             field: `nodes[${node.id}].requiredItems`,
             message: `Boss lair requires item '${reqItem}', but no node in the campaign drops this item.`,
-            fixHint: `Add a reward with id '${reqItem}' to a quiz_encounter or reflection_decryption node.`,
+            fixHint: `Add a reward with id '${reqItem}' to any prerequisite hex node in the campaign.`,
           })
         }
       }

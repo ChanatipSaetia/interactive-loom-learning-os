@@ -21,7 +21,6 @@ export interface HexSceneContext {
   nodes: HexNodeData[]
   selectedNodeId: string | null
   onSelectNode: (node: HexNodeData | null) => void
-  centerOnNode: (node: HexNodeData) => void
   updateMapTransform: () => void
   animControllers: Array<(time: number) => void>
   newlyUnlockedNodeIds: Set<string>
@@ -92,13 +91,34 @@ export function calculateTerritoryRoads(
   sanctuaryNodes.forEach((node, index) => {
     const nodeCoord = coords.get(node.id) || node.coordinates || { q: 0, r: 0 }
     const nodePixel = axialToPixel(nodeCoord.q, nodeCoord.r, 0, 0)
-    const controlPoint = computeArcControlPoint(hubPixel, nodePixel, index)
+
+    const hubRadius = 135
+    const sanctuaryRadius = 75
+
+    // Angle in 2.5D isometric space (y scaled by 1 / 0.88)
+    const dx = nodePixel.x - hubPixel.x
+    const dy = (nodePixel.y - hubPixel.y) / 0.88
+    const angleHubToSanctuary = Math.atan2(dy, dx)
+
+    // Start of road: edge of Hub territory
+    const hubEdgePixel = {
+      x: hubPixel.x + Math.cos(angleHubToSanctuary) * hubRadius,
+      y: hubPixel.y + Math.sin(angleHubToSanctuary) * (hubRadius * 0.88),
+    }
+
+    // End of road: edge of Sanctuary territory
+    const sanctuaryEdgePixel = {
+      x: nodePixel.x - Math.cos(angleHubToSanctuary) * sanctuaryRadius,
+      y: nodePixel.y - Math.sin(angleHubToSanctuary) * (sanctuaryRadius * 0.88),
+    }
+
+    const controlPoint = computeArcControlPoint(hubEdgePixel, sanctuaryEdgePixel, index)
 
     roads.push({
       fromNode: node,
       toHubNode: hubNode,
-      fromPixel: nodePixel,
-      toPixel: hubPixel,
+      fromPixel: sanctuaryEdgePixel,
+      toPixel: hubEdgePixel,
       controlPoint,
       isUnlocked: node.status === 'unlocked',
       isCleared: node.status === 'cleared',
@@ -130,96 +150,96 @@ export function drawMiniHorseCart(
   const legBob = Math.sin(time * 16) * 0.8
 
   // 1. Wagon Ground Shadow
-  g.ellipse(x - fx * 2.5, y - fy * 2.5 + 1.2, 5.5, 2.8).fill({
+  g.ellipse(x - fx * 3.5, y - fy * 3.5 + 1.4, 7.0, 3.5).fill({
     color: palette.crustNum,
     alpha: 0.4,
   })
 
   // 2. Horse Shadow
-  g.ellipse(x + fx * 4.5, y + fy * 4.5 + 1.2, 3.5, 1.8).fill({
+  g.ellipse(x + fx * 5.8, y + fy * 5.8 + 1.4, 4.5, 2.2).fill({
     color: palette.crustNum,
     alpha: 0.35,
   })
 
-  // ─── HORSE (Front: offset +4.5px) ───
-  const horseX = x + fx * 4.5
-  const horseY = y + fy * 4.5 + bob * 0.5
+  // ─── HORSE (Front: offset +5.8px) ───
+  const horseX = x + fx * 5.8
+  const horseY = y + fy * 5.8 + bob * 0.6
   const coatColor = isCleared ? palette.peachNum : palette.surface2Num
   const maneColor = palette.surface0Num
 
   // Horse hooves / legs (4 tiny points oscillating with gallop)
-  const fHoof1X = horseX + fx * 1.5 + sx * 0.9
-  const fHoof1Y = horseY + fy * 1.5 + sy * 0.9 + legBob
-  const fHoof2X = horseX + fx * 1.5 - sx * 0.9
-  const fHoof2Y = horseY + fy * 1.5 - sy * 0.9 - legBob
-  const bHoof1X = horseX - fx * 1.2 + sx * 0.9
-  const bHoof1Y = horseY - fy * 1.2 + sy * 0.9 - legBob
-  const bHoof2X = horseX - fx * 1.2 - sx * 0.9
-  const bHoof2Y = horseY - fy * 1.2 - sy * 0.9 + legBob
+  const fHoof1X = horseX + fx * 1.8 + sx * 1.1
+  const fHoof1Y = horseY + fy * 1.8 + sy * 1.1 + legBob
+  const fHoof2X = horseX + fx * 1.8 - sx * 1.1
+  const fHoof2Y = horseY + fy * 1.8 - sy * 1.1 - legBob
+  const bHoof1X = horseX - fx * 1.5 + sx * 1.1
+  const bHoof1Y = horseY - fy * 1.5 + sy * 1.1 - legBob
+  const bHoof2X = horseX - fx * 1.5 - sx * 1.1
+  const bHoof2Y = horseY - fy * 1.5 - sy * 1.1 + legBob
 
-  g.circle(fHoof1X, fHoof1Y, 0.6).fill({ color: maneColor })
-  g.circle(fHoof2X, fHoof2Y, 0.6).fill({ color: maneColor })
-  g.circle(bHoof1X, bHoof1Y, 0.6).fill({ color: maneColor })
-  g.circle(bHoof2X, bHoof2Y, 0.6).fill({ color: maneColor })
+  g.circle(fHoof1X, fHoof1Y, 0.7).fill({ color: maneColor })
+  g.circle(fHoof2X, fHoof2Y, 0.7).fill({ color: maneColor })
+  g.circle(bHoof1X, bHoof1Y, 0.7).fill({ color: maneColor })
+  g.circle(bHoof2X, bHoof2Y, 0.7).fill({ color: maneColor })
 
   // Horse Body (oval)
-  g.ellipse(horseX, horseY - 1.2, 2.4, 1.3)
+  g.ellipse(horseX, horseY - 1.4, 3.2, 1.7)
     .fill({ color: coatColor })
-    .stroke({ width: 0.4, color: palette.crustNum })
+    .stroke({ width: 0.5, color: palette.crustNum })
 
   // Horse Neck & Head
-  const headX = horseX + fx * 2.2
-  const headY = horseY - 2.2 + bob * 0.6
-  g.ellipse(headX, headY, 1.3, 0.9)
+  const headX = horseX + fx * 2.8
+  const headY = horseY - 2.8 + bob * 0.7
+  g.ellipse(headX, headY, 1.7, 1.1)
     .fill({ color: coatColor })
-    .stroke({ width: 0.4, color: palette.crustNum })
+    .stroke({ width: 0.5, color: palette.crustNum })
   // Mane & ears
-  g.circle(headX - fx * 0.6, headY - 0.7, 0.6).fill({ color: maneColor })
+  g.circle(headX - fx * 0.8, headY - 0.9, 0.8).fill({ color: maneColor })
 
   // ─── HARNESS & WOODEN HITCH SHAFTS ───
-  g.moveTo(horseX - fx * 1.0 + sx * 1.2, horseY - 0.8)
-    .lineTo(x - fx * 0.5 + sx * 1.4, y - 0.8)
-    .stroke({ width: 0.5, color: palette.surface0Num })
-  g.moveTo(horseX - fx * 1.0 - sx * 1.2, horseY - 0.8)
-    .lineTo(x - fx * 0.5 - sx * 1.4, y - 0.8)
-    .stroke({ width: 0.5, color: palette.surface0Num })
+  g.moveTo(horseX - fx * 1.4 + sx * 1.5, horseY - 1.0)
+    .lineTo(x - fx * 0.6 + sx * 1.8, y - 1.0)
+    .stroke({ width: 0.6, color: palette.surface0Num })
+  g.moveTo(horseX - fx * 1.4 - sx * 1.5, horseY - 1.0)
+    .lineTo(x - fx * 0.6 - sx * 1.8, y - 1.0)
+    .stroke({ width: 0.6, color: palette.surface0Num })
 
-  // ─── WOODEN CART / WAGON (Rear: offset -3px) ───
-  const cartX = x - fx * 3
-  const cartY = y - fy * 3
+  // ─── WOODEN CART / WAGON (Rear: offset -3.8px) ───
+  const cartX = x - fx * 3.8
+  const cartY = y - fy * 3.8
 
   // 4 Spoked Wooden Wheels (2 left, 2 right)
   const wheelColor = palette.surface0Num
-  const w1X = cartX + fx * 1.8 + sx * 2.2
-  const w1Y = cartY + fy * 1.8 + sy * 2.2
-  const w2X = cartX + fx * 1.8 - sx * 2.2
-  const w2Y = cartY + fy * 1.8 - sy * 2.2
-  const w3X = cartX - fx * 1.8 + sx * 2.2
-  const w3Y = cartY - fy * 1.8 + sy * 2.2
-  const w4X = cartX - fx * 1.8 - sx * 2.2
-  const w4Y = cartY - fy * 1.8 - sy * 2.2
+  const w1X = cartX + fx * 2.2 + sx * 2.8
+  const w1Y = cartY + fy * 2.2 + sy * 2.8
+  const w2X = cartX + fx * 2.2 - sx * 2.8
+  const w2Y = cartY + fy * 2.2 - sy * 2.8
+  const w3X = cartX - fx * 2.2 + sx * 2.8
+  const w3Y = cartY - fy * 2.2 + sy * 2.8
+  const w4X = cartX - fx * 2.2 - sx * 2.8
+  const w4Y = cartY - fy * 2.2 - sy * 2.8
 
-  g.circle(w1X, w1Y, 1.1).fill({ color: wheelColor }).stroke({ width: 0.4, color: palette.textNum })
-  g.circle(w2X, w2Y, 1.1).fill({ color: wheelColor }).stroke({ width: 0.4, color: palette.textNum })
-  g.circle(w3X, w3Y, 1.1).fill({ color: wheelColor }).stroke({ width: 0.4, color: palette.textNum })
-  g.circle(w4X, w4Y, 1.1).fill({ color: wheelColor }).stroke({ width: 0.4, color: palette.textNum })
+  g.circle(w1X, w1Y, 1.4).fill({ color: wheelColor }).stroke({ width: 0.5, color: palette.textNum })
+  g.circle(w2X, w2Y, 1.4).fill({ color: wheelColor }).stroke({ width: 0.5, color: palette.textNum })
+  g.circle(w3X, w3Y, 1.4).fill({ color: wheelColor }).stroke({ width: 0.5, color: palette.textNum })
+  g.circle(w4X, w4Y, 1.4).fill({ color: wheelColor }).stroke({ width: 0.5, color: palette.textNum })
 
   // Wagon Wooden Chassis Box
-  g.ellipse(cartX, cartY - 1.2, 3.4, 2.0)
+  g.ellipse(cartX, cartY - 1.4, 4.4, 2.6)
     .fill({ color: palette.surface1Num })
-    .stroke({ width: 0.5, color: palette.crustNum })
+    .stroke({ width: 0.6, color: palette.crustNum })
 
   // Canvas Wagon Bonnet / Cargo Crates
   const cargoColor = isCleared ? palette.yellowNum : palette.peachNum
-  g.ellipse(cartX - fx * 0.4, cartY - 2.6, 2.6, 1.6)
+  g.ellipse(cartX - fx * 0.5, cartY - 3.2, 3.4, 2.1)
     .fill({ color: cargoColor, alpha: 0.95 })
-    .stroke({ width: 0.5, color: palette.crustNum })
+    .stroke({ width: 0.6, color: palette.crustNum })
 
   // Wagon Rear Lantern Glint
-  const lanternX = cartX - fx * 2.8
-  const lanternY = cartY - 2.8
-  g.circle(lanternX, lanternY, 0.9).fill({ color: palette.yellowNum })
-  g.circle(lanternX, lanternY, 0.4).fill({ color: palette.textNum })
+  const lanternX = cartX - fx * 3.6
+  const lanternY = cartY - 3.4
+  g.circle(lanternX, lanternY, 1.1).fill({ color: palette.yellowNum })
+  g.circle(lanternX, lanternY, 0.5).fill({ color: palette.textNum })
 }
 
 /**
@@ -241,17 +261,19 @@ export function renderTerritoryRoads(
   container.addChild(animGfx)
 
   roads.forEach((road) => {
-    const { fromPixel, toPixel, controlPoint, isUnlocked, isCleared } = road
-    const isLocked = !isUnlocked && !isCleared
+    // Before unlocking the hex, the connecting road will not render at all
+    if (!road.isUnlocked && !road.isCleared) return
+
+    const { fromPixel, toPixel, controlPoint, isCleared } = road
 
     // 1. Road Outer Ground Shadow & Shoulder Trench
     staticGfx
       .moveTo(toPixel.x, toPixel.y)
       .quadraticCurveTo(controlPoint.cpX, controlPoint.cpY, fromPixel.x, fromPixel.y)
       .stroke({
-        width: 13,
+        width: 22,
         color: palette.crustNum,
-        alpha: isLocked ? 0.15 : 0.42,
+        alpha: 0.42,
       })
 
     // 2. Packed Earth / Cobblestone Roadbed
@@ -259,9 +281,9 @@ export function renderTerritoryRoads(
       .moveTo(toPixel.x, toPixel.y)
       .quadraticCurveTo(controlPoint.cpX, controlPoint.cpY, fromPixel.x, fromPixel.y)
       .stroke({
-        width: 8.5,
+        width: 15,
         color: isCleared ? palette.surface2Num : palette.surface1Num,
-        alpha: isLocked ? 0.25 : 0.75,
+        alpha: 0.75,
       })
 
     // 3. Worn Cart Wheel Ruts (Two Parallel Tracks)
@@ -269,24 +291,20 @@ export function renderTerritoryRoads(
       .moveTo(toPixel.x, toPixel.y)
       .quadraticCurveTo(controlPoint.cpX, controlPoint.cpY, fromPixel.x, fromPixel.y)
       .stroke({
-        width: 4.8,
+        width: 9,
         color: palette.surface0Num,
-        alpha: isLocked ? 0.15 : 0.45,
+        alpha: 0.45,
       })
 
     // 4. Center Flagstone Trade Line (Golden / Peach)
-    const centerColor = isCleared
-      ? palette.yellowNum
-      : isUnlocked
-        ? palette.peachNum
-        : palette.surface0Num
+    const centerColor = isCleared ? palette.yellowNum : palette.peachNum
     staticGfx
       .moveTo(toPixel.x, toPixel.y)
       .quadraticCurveTo(controlPoint.cpX, controlPoint.cpY, fromPixel.x, fromPixel.y)
       .stroke({
-        width: 1.4,
+        width: 2.2,
         color: centerColor,
-        alpha: isLocked ? 0.2 : 0.7,
+        alpha: 0.75,
       })
 
     // 5. Milestone Stone Cairns & Roadside Markers (at t = 0.2, 0.4, 0.6, 0.8)
@@ -303,15 +321,15 @@ export function renderTerritoryRoads(
 
       // Small 2.5D flagstone stepping marker
       staticGfx
-        .ellipse(mx, my + 0.8, 3.4, 1.8)
-        .fill({ color: palette.crustNum, alpha: isLocked ? 0.15 : 0.35 })
+        .ellipse(mx, my + 1.0, 4.8, 2.4)
+        .fill({ color: palette.crustNum, alpha: 0.35 })
       staticGfx
-        .ellipse(mx, my, 2.8, 1.4)
+        .ellipse(mx, my, 3.8, 1.9)
         .fill({
           color: isCleared ? palette.surface2Num : palette.surface1Num,
-          alpha: isLocked ? 0.3 : 0.85,
+          alpha: 0.85,
         })
-        .stroke({ width: 0.5, color: centerColor, alpha: isLocked ? 0.2 : 0.6 })
+        .stroke({ width: 0.6, color: centerColor, alpha: 0.6 })
     }
   })
 
@@ -397,7 +415,6 @@ export function renderHexScene(ctx: HexSceneContext) {
     nodes: currentNodes,
     selectedNodeId: currentSelectedId,
     onSelectNode: handleSelect,
-    centerOnNode,
     updateMapTransform,
     animControllers,
     newlyUnlockedNodeIds,
@@ -493,9 +510,9 @@ export function renderHexScene(ctx: HexSceneContext) {
     // Tap / Click handling
     nodeContainer.on('pointertap', (e) => {
       e.stopPropagation()
-      centerOnNode(node)
       handleSelect(node)
     })
+
 
     const isDefeatedEncounter = isCleared && (node.type === 'quiz_encounter' || node.type === 'reflection_decryption')
     const styleInfo = palette.colorMap[node.type] || palette.colorMap.capital

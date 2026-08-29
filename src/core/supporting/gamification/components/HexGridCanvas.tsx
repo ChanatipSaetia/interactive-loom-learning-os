@@ -1,10 +1,10 @@
 import React, { useMemo, useState, useRef, useEffect, useCallback, useImperativeHandle } from 'react'
-import { Plus, Minus, RotateCcw, Move } from 'lucide-react'
+import { Plus, Minus, RotateCcw, Move, Swords, Sparkles, Key, CheckCircle, Lock, Play, Flame, X } from 'lucide-react'
 import { Application, Container, ColorMatrixFilter } from 'pixi.js'
-import { HexNodeData } from '../types'
+import { HexNodeData, ItemReward } from '../types'
 import { computeHexGridCoordinates, getAutoFlowConnections } from '../layout'
 import { HEX_RADIUS, axialToPixel } from './hex-geometry'
-import { encryptToMagicRunes } from '../game-rules'
+import { encryptToMagicRunes, canUnlockBoss, isSanctuaryType } from '../game-rules'
 import { computeChaosTintMatrix, computeChaosTintStrength } from './chaos-tint'
 import { PixiCanvasViewport } from './PixiCanvasViewport'
 import { HeroAgent, triggerHeroWalk } from './hero-agent'
@@ -12,6 +12,7 @@ import { renderHexScene } from './scene-renderer'
 import { computeParallaxOffset } from './parallax-background'
 import { isVictorySetPieceNode, triggerBossVictorySetPiece } from './victory-fx'
 import { useGamificationTheme } from '../theme-palette'
+import { Button, Badge } from '../../../ui-system'
 
 interface HexGridCanvasProps {
   nodes: HexNodeData[]
@@ -19,7 +20,10 @@ interface HexGridCanvasProps {
   onSelectNode: (node: HexNodeData | null) => void
   /** Campaign chaos level 0–100; drives the red desaturation map tint. */
   chaosLevel?: number
+  inventory?: ItemReward[]
+  onLaunchEncounter?: (node: HexNodeData) => void
 }
+
 
 export interface HexGridCanvasRef {
   triggerWalkTransition: (node: HexNodeData, onComplete?: () => void) => void
@@ -34,58 +38,98 @@ export interface SectionTypeInfo {
 }
 
 export function getSectionTypeInfo(node: HexNodeData): SectionTypeInfo {
+  const rawSecType = (node.sectionType || (node.sectionData?.type as string) || '').toLowerCase()
   const ref = (node.sectionRef || '').toLowerCase()
-  const clean = ref.replace(/-(core|feedback|foundations|pipeline|sequence|template|optimization|taxonomies|vocabulary|engine)$/, '')
-  const type = node.type
 
-  if (ref.includes('flowchart') || type === 'simulation_nexus' || clean === 'flowchart') {
-    return { label: 'Flowchart', icon: '⚡', color: 'bg-[var(--ctp-sapphire)]/20 text-[var(--ctp-sapphire)] border-[var(--ctp-sapphire)]/40' }
+  // Match against real OKF section types (checking explicit sectionType, sectionData, or sectionRef)
+  const resolvedType =
+    rawSecType ||
+    (() => {
+      if (ref === 'intro' || ref.startsWith('intro')) return 'intro'
+      if (ref.includes('quiz')) return 'quiz'
+      if (ref.includes('reflection-sequence') || ref === 'reflection-sequence') return 'reflection-sequence'
+      if (ref.includes('reflection-template') || ref === 'reflection-template') return 'reflection-template'
+      if (ref.includes('flashcard')) return 'flashcards'
+      if (ref.includes('concept-map') || ref.includes('concept')) return 'concept-map'
+      if (ref.includes('flowchart')) return 'flowchart'
+      if (ref.includes('scenario')) return 'scenario'
+      if (ref.includes('decision-tree')) return 'decision-tree'
+      if (ref.includes('tradeoff')) return 'tradeoff-sandbox'
+      if (ref.includes('formula')) return 'formula-sandbox'
+      if (ref.includes('taxonomy')) return 'taxonomy-browser'
+      if (ref.includes('bullets')) return 'bullets'
+      if (ref.includes('gallery')) return 'image-gallery'
+      if (ref.includes('pillar')) return 'pillar-layer'
+      if (ref === 'text' || ref.startsWith('text')) return 'text'
+      return ''
+    })()
+
+  switch (resolvedType) {
+    case 'quiz':
+      return { label: 'Quiz', icon: '📝', color: 'bg-[var(--ctp-red)]/20 text-[var(--ctp-red)] border-[var(--ctp-red)]/40' }
+    case 'reflection-sequence':
+      return { label: 'Reflection Sequence', icon: '⏱️', color: 'bg-[var(--ctp-mauve)]/20 text-[var(--ctp-mauve)] border-[var(--ctp-mauve)]/40' }
+    case 'reflection-template':
+      return { label: 'Reflection Template', icon: '🧩', color: 'bg-[var(--ctp-mauve)]/20 text-[var(--ctp-mauve)] border-[var(--ctp-mauve)]/40' }
+    case 'flashcards':
+      return { label: 'Flashcards', icon: '🃏', color: 'bg-[var(--ctp-lavender)]/20 text-[var(--ctp-lavender)] border-[var(--ctp-lavender)]/40' }
+    case 'concept-map':
+      return { label: 'Concept Map', icon: '🌳', color: 'bg-[var(--ctp-lavender)]/20 text-[var(--ctp-lavender)] border-[var(--ctp-lavender)]/40' }
+    case 'flowchart':
+      return { label: 'Flowchart', icon: '⚡', color: 'bg-[var(--ctp-sapphire)]/20 text-[var(--ctp-sapphire)] border-[var(--ctp-sapphire)]/40' }
+    case 'scenario':
+      return { label: 'Scenario', icon: '🗺️', color: 'bg-[var(--ctp-teal)]/20 text-[var(--ctp-teal)] border-[var(--ctp-teal)]/40' }
+    case 'tradeoff-sandbox':
+    case 'tradeoffs':
+      return { label: 'Trade-off Sandbox', icon: '⚒️', color: 'bg-[var(--ctp-yellow)]/20 text-[var(--ctp-yellow)] border-[var(--ctp-yellow)]/40' }
+    case 'formula-sandbox':
+      return { label: 'Formula Sandbox', icon: '🧮', color: 'bg-[var(--ctp-yellow)]/20 text-[var(--ctp-yellow)] border-[var(--ctp-yellow)]/40' }
+    case 'decision-tree':
+      return { label: 'Decision Tree', icon: '🌲', color: 'bg-[var(--ctp-green)]/20 text-[var(--ctp-green)] border-[var(--ctp-green)]/40' }
+    case 'taxonomy-browser':
+    case 'taxonomy':
+      return { label: 'Taxonomy Browser', icon: '📂', color: 'bg-[var(--ctp-sky)]/20 text-[var(--ctp-sky)] border-[var(--ctp-sky)]/40' }
+    case 'bullets':
+      return { label: 'Bullet Points', icon: '📋', color: 'bg-[var(--ctp-sky)]/20 text-[var(--ctp-sky)] border-[var(--ctp-sky)]/40' }
+    case 'text':
+      return { label: 'Text Reading', icon: '📖', color: 'bg-[var(--ctp-green)]/20 text-[var(--ctp-green)] border-[var(--ctp-green)]/40' }
+    case 'intro':
+      return { label: 'Introduction', icon: '🏰', color: 'bg-[var(--ctp-blue)]/20 text-[var(--ctp-blue)] border-[var(--ctp-blue)]/40' }
+    case 'image-gallery':
+    case 'gallery':
+      return { label: 'Image Gallery', icon: '🖼️', color: 'bg-[var(--ctp-rosewater)]/20 text-[var(--ctp-rosewater)] border-[var(--ctp-rosewater)]/40' }
+    case 'pillar-layer':
+      return { label: 'Architecture Layers', icon: '🏛️', color: 'bg-[var(--ctp-blue)]/20 text-[var(--ctp-blue)] border-[var(--ctp-blue)]/40' }
   }
-  if (ref.includes('taxonomy') || ref.includes('bullets') || clean === 'octalysis' || clean === 'taxonomy' || clean === 'bullets') {
-    return { label: 'Taxonomy Browser', icon: '📂', color: 'bg-[var(--ctp-sky)]/20 text-[var(--ctp-sky)] border-[var(--ctp-sky)]/40' }
-  }
-  if (ref.includes('concept') || ref.includes('flashcard') || clean === 'concept-map' || clean === 'flashcards') {
-    return { label: 'Concept Map', icon: '🌳', color: 'bg-[var(--ctp-lavender)]/20 text-[var(--ctp-lavender)] border-[var(--ctp-lavender)]/40' }
-  }
-  if (ref.includes('gallery') || clean === 'image-gallery' || clean === 'gallery') {
-    return { label: 'Gallery', icon: '🔭', color: 'bg-[var(--ctp-rosewater)]/20 text-[var(--ctp-rosewater)] border-[var(--ctp-rosewater)]/40' }
-  }
-  if (ref.includes('scenario') || clean === 'scenario') {
-    return { label: 'Scenario', icon: '🗺️', color: 'bg-[var(--ctp-teal)]/20 text-[var(--ctp-teal)] border-[var(--ctp-teal)]/40' }
-  }
-  if (ref.includes('quiz') || type === 'quiz_encounter' || clean === 'quiz') {
-    return { label: 'Quiz', icon: '⚔️', color: 'bg-[var(--ctp-red)]/20 text-[var(--ctp-red)] border-[var(--ctp-red)]/40' }
-  }
-  if (ref.includes('reflection') || type === 'reflection_decryption') {
-    return { label: 'Arcane Reactor', icon: '⚛️', color: 'bg-[var(--ctp-mauve)]/20 text-[var(--ctp-mauve)] border-[var(--ctp-mauve)]/40' }
-  }
-  if (ref.includes('tradeoff') || ref.includes('formula') || type === 'tradeoff_workshop' || clean === 'tradeoffs') {
-    return { label: 'Trade-off Sandbox', icon: '⚒️', color: 'bg-[var(--ctp-yellow)]/20 text-[var(--ctp-yellow)] border-[var(--ctp-yellow)]/40' }
-  }
-  if (ref.includes('decision-tree')) {
-    return { label: 'Decision Tree', icon: '🌲', color: 'bg-[var(--ctp-green)]/20 text-[var(--ctp-green)] border-[var(--ctp-green)]/40' }
-  }
-  if (ref.includes('pillar') || clean === 'pillar-layer') {
-    return { label: 'Architecture Layers', icon: '🏛️', color: 'bg-[var(--ctp-blue)]/20 text-[var(--ctp-blue)] border-[var(--ctp-blue)]/40' }
-  }
-  if (ref.includes('intro') || ref === 'intro' || type === 'capital') {
-    return { label: 'Introduction', icon: '🏰', color: 'bg-[var(--ctp-blue)]/20 text-[var(--ctp-blue)] border-[var(--ctp-blue)]/40' }
-  }
-  if (type === 'boss_lair') {
+
+  if (node.type === 'boss_lair') {
     return { label: 'Boss Encounter', icon: '🐲', color: 'bg-[var(--ctp-maroon)]/20 text-[var(--ctp-maroon)] border-[var(--ctp-maroon)]/40' }
   }
-  if (ref) {
-    return { label: ref.replace(/-/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase()), icon: '📖', color: 'bg-[var(--ctp-surface2)]/50 text-[var(--ctp-text)] border-[var(--ctp-surface2)]' }
+  if (node.type === 'capital') {
+    return { label: 'Introduction', icon: '🏰', color: 'bg-[var(--ctp-blue)]/20 text-[var(--ctp-blue)] border-[var(--ctp-blue)]/40' }
   }
+
+  if (ref) {
+    return {
+      label: ref.replace(/-/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase()),
+      icon: '📖',
+      color: 'bg-[var(--ctp-surface2)]/50 text-[var(--ctp-text)] border-[var(--ctp-surface2)]',
+    }
+  }
+
   return { label: 'Reading Section', icon: '📖', color: 'bg-[var(--ctp-green)]/20 text-[var(--ctp-green)] border-[var(--ctp-green)]/40' }
 }
+
 
 export const HexGridCanvas = React.forwardRef<HexGridCanvasRef, HexGridCanvasProps>(({
   nodes,
   selectedNodeId,
   onSelectNode,
   chaosLevel = 0,
+  inventory = [],
+  onLaunchEncounter,
 }, ref) => {
+
   const palette = useGamificationTheme()
   const containerRef = useRef<HTMLDivElement>(null)
   const appRef = useRef<Application | null>(null)
@@ -121,7 +165,10 @@ export const HexGridCanvas = React.forwardRef<HexGridCanvasRef, HexGridCanvasPro
   zoomRef.current = zoom
 
   const dragStartRef = useRef<{ x: number; y: number }>({ x: 0, y: 0 })
+  const pointerDownPosRef = useRef<{ x: number; y: number } | null>(null)
+  const hasMovedPaneRef = useRef<boolean>(false)
   const touchDistRef = useRef<number | null>(null)
+
   const previousNodesRef = useRef<HexNodeData[]>(nodes)
   const newlyUnlockedNodeIdsRef = useRef<Set<string>>(new Set())
   const newlyClearedNodeIdsRef = useRef<Set<string>>(new Set())
@@ -197,16 +244,6 @@ export const HexGridCanvas = React.forwardRef<HexGridCanvasRef, HexGridCanvasPro
   const paletteRef = useRef(palette)
   paletteRef.current = palette
 
-  // Center camera smoothly on node
-  const centerOnNode = useCallback(
-    (node: HexNodeData) => {
-      const coord = getNodeCoord(node)
-      const { x, y } = axialToPixel(coord.q, coord.r, 0, 0)
-      const currentZoom = zoomRef.current
-      setPan({ x: -x * currentZoom, y: -y * currentZoom })
-    },
-    [getNodeCoord]
-  )
 
   // Walk the persistent hero along the dependency arc to the target hex
   const triggerWalk = useCallback((node: HexNodeData, onComplete?: () => void) => {
@@ -272,7 +309,6 @@ export const HexGridCanvas = React.forwardRef<HexGridCanvasRef, HexGridCanvasPro
       nodes: currentNodes,
       selectedNodeId: currentSelectedId,
       onSelectNode: handleSelect,
-      centerOnNode,
       updateMapTransform,
       animControllers: animControllersRef.current,
       newlyUnlockedNodeIds: newlyUnlockedNodeIdsRef.current,
@@ -284,7 +320,7 @@ export const HexGridCanvas = React.forwardRef<HexGridCanvasRef, HexGridCanvasPro
     // renderHexScene() tore down all map children (removeChildren) — re-parent the
     // persistent hero so it survives every scene rebuild.
     heroAgentRef.current?.attachTo(mapContainer)
-  }, [palette, centerOnNode, updateMapTransform])
+  }, [palette, updateMapTransform])
 
   const renderRef = useRef(renderPixiScene)
   renderRef.current = renderPixiScene
@@ -405,13 +441,6 @@ export const HexGridCanvas = React.forwardRef<HexGridCanvasRef, HexGridCanvasPro
     lastChaosLevelRef.current = -1
     applyChaosTint(chaosLevelRef.current)
 
-    // Deselect hex when background stage/parallax backdrop is tapped
-    rootContainer.eventMode = 'static'
-    rootContainer.hitArea = app.screen
-    rootContainer.on('pointertap', () => {
-      latestPropsRef.current.onSelectNode(null)
-    })
-
     // Add 60fps ticker callback
     const tickerCallback = () => {
       if (!app || !app.renderer || !mapContainer || mapContainer.destroyed) return
@@ -500,48 +529,77 @@ export const HexGridCanvas = React.forwardRef<HexGridCanvasRef, HexGridCanvasPro
     }
   }, [])
 
+  const getPointerPos = (e: React.PointerEvent) => ({
+    x: typeof e.clientX === 'number' ? e.clientX : (e.pageX ?? 0),
+    y: typeof e.clientY === 'number' ? e.clientY : (e.pageY ?? 0),
+  })
+
   // Pointer drag panning
   const handlePointerDown = (e: React.PointerEvent) => {
-    const targetTag = (e.target as HTMLElement).tagName.toLowerCase()
+    const targetTag = (e.target as HTMLElement)?.tagName?.toLowerCase()
     if (targetTag === 'canvas' || targetTag === 'div') {
+      const pos = getPointerPos(e)
       setIsDragging(true)
-      dragStartRef.current = { x: e.clientX - pan.x, y: e.clientY - pan.y }
+      hasMovedPaneRef.current = false
+      pointerDownPosRef.current = pos
+      dragStartRef.current = { x: pos.x - pan.x, y: pos.y - pan.y }
     }
   }
 
   const handlePointerMove = (e: React.PointerEvent) => {
-    if (!isDragging) return
+    if (!pointerDownPosRef.current) return
+    const pos = getPointerPos(e)
+    const dist = Math.hypot(
+      pos.x - pointerDownPosRef.current.x,
+      pos.y - pointerDownPosRef.current.y
+    )
+    if (dist > 4) {
+      hasMovedPaneRef.current = true
+    }
     setPan({
-      x: e.clientX - dragStartRef.current.x,
-      y: e.clientY - dragStartRef.current.y,
+      x: pos.x - dragStartRef.current.x,
+      y: pos.y - dragStartRef.current.y,
     })
   }
 
+
   const handlePointerUp = () => {
     setIsDragging(false)
+    pointerDownPosRef.current = null
   }
 
-  // Touch Pinch-to-Zoom
+  // Touch Pinch-to-Zoom & Drag
   const handleTouchStart = (e: React.TouchEvent) => {
     if (e.touches.length === 2) {
+      hasMovedPaneRef.current = true
       const dx = e.touches[0].clientX - e.touches[1].clientX
       const dy = e.touches[0].clientY - e.touches[1].clientY
       touchDistRef.current = Math.hypot(dx, dy)
     } else if (e.touches.length === 1) {
       setIsDragging(true)
+      hasMovedPaneRef.current = false
+      pointerDownPosRef.current = { x: e.touches[0].clientX, y: e.touches[0].clientY }
       dragStartRef.current = { x: e.touches[0].clientX - pan.x, y: e.touches[0].clientY - pan.y }
     }
   }
 
   const handleTouchMove = (e: React.TouchEvent) => {
     if (e.touches.length === 2 && touchDistRef.current !== null) {
+      hasMovedPaneRef.current = true
       const dx = e.touches[0].clientX - e.touches[1].clientX
       const dy = e.touches[0].clientY - e.touches[1].clientY
       const dist = Math.hypot(dx, dy)
       const factor = dist / touchDistRef.current
       setZoom((prev) => Math.min(2.0, Math.max(0.05, +(prev * factor).toFixed(3))))
       touchDistRef.current = dist
-    } else if (e.touches.length === 1 && isDragging) {
+    } else if (e.touches.length === 1 && pointerDownPosRef.current) {
+      const dist = Math.hypot(
+        e.touches[0].clientX - pointerDownPosRef.current.x,
+        e.touches[0].clientY - pointerDownPosRef.current.y
+      )
+      if (dist > 4) {
+        hasMovedPaneRef.current = true
+      }
       setPan({
         x: e.touches[0].clientX - dragStartRef.current.x,
         y: e.touches[0].clientY - dragStartRef.current.y,
@@ -551,8 +609,12 @@ export const HexGridCanvas = React.forwardRef<HexGridCanvasRef, HexGridCanvasPro
 
   const handleTouchEnd = () => {
     setIsDragging(false)
+    pointerDownPosRef.current = null
     touchDistRef.current = null
   }
+
+
+
 
   return (
     <div
@@ -626,10 +688,24 @@ export const HexGridCanvas = React.forwardRef<HexGridCanvasRef, HexGridCanvasPro
         <div className="flex items-center gap-1 shrink-0 border-l border-[var(--ctp-surface1)] pl-3"><span className="w-2.5 h-2.5 rounded-full bg-[var(--ctp-surface1)]" /> Locked (Fog)</div>
       </div>
 
-      {/* Floating Selected Hex Tooltip Menu */}
+      {/* Floating Selected Hex Tooltip / Action Card */}
       {selectedNode && selectedScreenPos && (() => {
-        const isFogged = selectedNode.status === 'locked' && selectedNode.type !== 'capital'
+        const isCapital = selectedNode.type === 'capital'
+        const isSanctuary = isSanctuaryType(selectedNode.type)
+        const isQuiz = selectedNode.type === 'quiz_encounter'
+        const isReflection = selectedNode.type === 'reflection_decryption'
+        const isBoss = selectedNode.type === 'boss_lair'
+
+        const isLocked = selectedNode.status === 'locked'
+        const isCleared = selectedNode.status === 'cleared'
+        const isBossUnlockable = isBoss ? canUnlockBoss(inventory, selectedNode) : true
+
+        const displayTitle = isLocked && !isCapital
+          ? encryptToMagicRunes(selectedNode.title)
+          : selectedNode.title
+
         const secInfo = getSectionTypeInfo(selectedNode)
+
         return (
           <div
             data-testid="selected-hex-tooltip"
@@ -643,55 +719,293 @@ export const HexGridCanvas = React.forwardRef<HexGridCanvasRef, HexGridCanvasPro
             {/* Upward Pointer Arrow */}
             <div className="w-0 h-0 border-x-[6px] border-x-transparent border-b-[8px] border-b-[var(--ctp-blue)] drop-shadow" />
 
-            <div className="bg-[var(--ctp-surface0)]/95 backdrop-blur-xl border border-[var(--ctp-surface1)] px-4 py-2.5 rounded-xl shadow-2xl flex flex-col gap-2 max-w-[300px] sm:max-w-[380px] text-center pointer-events-auto border-t-2 border-t-[var(--ctp-blue)] animate-in fade-in zoom-in-95 duration-150">
-              {/* Hex Title / Name */}
-              <div className="flex items-center justify-center gap-2 min-w-0">
-                <span className="text-base shrink-0">{isFogged ? '🌫️' : secInfo.icon}</span>
-                <span className={`text-sm sm:text-base font-bold truncate ${
-                  isFogged
-                    ? 'font-mono text-[var(--ctp-mauve)]'
-                    : 'text-[var(--ctp-text)]'
-                }`}>
-                  {isFogged
-                    ? encryptToMagicRunes(selectedNode.title)
-                    : selectedNode.title}
-                </span>
+            <div className="bg-[var(--ctp-surface0)]/95 backdrop-blur-xl border border-[var(--ctp-surface1)] p-3.5 sm:p-4 rounded-2xl shadow-2xl flex flex-col gap-3 w-[360px] sm:w-[440px] max-w-[94vw] text-left pointer-events-auto border-t-2 border-t-[var(--ctp-blue)] animate-in fade-in zoom-in-95 duration-150">
+              {/* Top Header: Avatar Icon + Identity + Badges + Close */}
+              <div className="flex items-start justify-between gap-3">
+                <div className="flex items-center gap-3 min-w-0 flex-1">
+                  <div className={`w-9 h-9 sm:w-10 sm:h-10 rounded-xl flex items-center justify-center text-lg sm:text-xl shrink-0 border ${
+                    isCleared ? 'bg-[var(--ctp-green)]/20 border-[var(--ctp-green)]/40 text-[var(--ctp-green)]' :
+                    isBoss && !isLocked ? 'bg-[var(--ctp-maroon)]/20 border-[var(--ctp-maroon)]/40 text-[var(--ctp-maroon)]' :
+                    isLocked && !isCapital ? 'bg-[var(--ctp-crust)] border-[var(--ctp-surface1)] text-[var(--ctp-subtext0)]' :
+                    'bg-[var(--ctp-blue)]/20 border-[var(--ctp-blue)]/40 text-[var(--ctp-blue)]'
+                  }`}>
+                    {isLocked && !isCapital ? (
+                      <span title="Fog of War" aria-label="Fog of War">🌫️</span>
+                    ) : (
+                      <span>{secInfo.icon}</span>
+                    )}
+                  </div>
+
+                  <div className="min-w-0 flex-1">
+                    <h3 className={`text-sm sm:text-base font-bold truncate leading-tight ${
+                      isLocked && !isCapital ? 'font-mono text-[var(--ctp-mauve)]' : 'text-[var(--ctp-text)]'
+                    }`}>
+                      {displayTitle}
+                    </h3>
+                    <div className="flex items-center gap-1.5 flex-wrap mt-1">
+                      <Badge variant={isCleared ? 'success' : isLocked ? 'secondary' : 'default'} className="text-[9px] uppercase px-1.5 py-0 leading-none h-4">
+                        {isCleared ? '✓ Cleared' : isLocked ? '🔒 Locked' : '🔓 Unlocked'}
+                      </Badge>
+                      {isLocked && !isCapital ? (
+                        <span className="px-1.5 py-0.5 rounded text-[9.5px] font-medium border flex items-center gap-1 bg-[var(--ctp-surface1)]/50 text-[var(--ctp-subtext1)] border-[var(--ctp-surface2)] shadow-sm leading-none">
+                          <span>🌫️</span>
+                          <span>Fog of War</span>
+                        </span>
+                      ) : (
+                        <span className={`px-1.5 py-0.5 rounded text-[9.5px] font-medium border flex items-center gap-1 leading-none ${secInfo.color}`}>
+                          <span>{secInfo.icon}</span>
+                          <span>{secInfo.label}</span>
+                        </span>
+                      )}
+                      {selectedNode.rewards && selectedNode.rewards.length > 0 && !isCleared && !isLocked && (
+                        <span className="px-1.5 py-0.5 rounded text-[9.5px] font-medium border flex items-center gap-1 bg-[var(--ctp-yellow)]/20 text-[var(--ctp-yellow)] border-[var(--ctp-yellow)]/40 leading-none">
+                          <span>🔑</span>
+                          <span>Quest</span>
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                </div>
+
+                <button
+                  type="button"
+                  onClick={() => onSelectNode(null)}
+                  className="text-[var(--ctp-subtext0)] hover:text-[var(--ctp-text)] p-1 rounded-lg hover:bg-[var(--ctp-surface1)] transition-colors shrink-0"
+                  title="Close Tooltip"
+                  aria-label="Close Tooltip"
+                >
+                  <X size={14} />
+                </button>
               </div>
 
-              {/* Section Type Chip & Status */}
-              <div className="flex items-center justify-center gap-2 flex-wrap text-xs">
-                {isFogged ? (
-                  <span className="px-3 py-1 rounded-lg border bg-[var(--ctp-surface1)]/50 text-[var(--ctp-subtext1)] border-[var(--ctp-surface2)] font-semibold flex items-center gap-1.5 shadow-sm">
-                    <span>🌫️</span>
-                    <span>Fog of War</span>
-                  </span>
-                ) : (
-                  <>
-                    {/* Section Type Chip (Revealed only when not fogged) */}
-                    <span className={`px-3 py-1 rounded-lg border font-semibold flex items-center gap-1.5 shadow-sm ${secInfo.color}`}>
-                      <span className="text-sm">{secInfo.icon}</span>
-                      <span>{secInfo.label}</span>
-                    </span>
-
-                    {/* Status Chip */}
-                    {selectedNode.status === 'cleared' ? (
-                      <span className="px-2 py-1 rounded-lg border bg-[var(--ctp-green)]/20 text-[var(--ctp-green)] border-[var(--ctp-green)]/40 font-semibold flex items-center gap-1 shadow-sm">
-                        <span>✓</span>
-                        <span>Cleared</span>
-                      </span>
-                    ) : selectedNode.rewards && selectedNode.rewards.length > 0 ? (
-                      <span className="px-2 py-1 rounded-lg border bg-[var(--ctp-yellow)]/20 text-[var(--ctp-yellow)] border-[var(--ctp-yellow)]/40 font-semibold flex items-center gap-1 animate-pulse shadow-sm">
-                        <span>🔑</span>
-                        <span>Quest</span>
-                      </span>
-                    ) : null}
-                  </>
-                )}
+              {/* Description Box */}
+              <div className="bg-[var(--ctp-crust)]/60 rounded-xl p-2.5 border border-[var(--ctp-surface1)]/60">
+                <p className="text-[11px] sm:text-xs text-[var(--ctp-subtext0)] leading-relaxed">
+                  {isLocked && !isCapital
+                    ? 'Shrouded under the Fog of War. Clear prerequisite cities to decrypt.'
+                    : selectedNode.description || 'Explore this territory to advance your architectural campaign.'}
+                </p>
               </div>
+
+              {/* Context Specs: 2-Column Grid Rearrangement */}
+              {(!isLocked || isCapital) && (
+                <div className="flex flex-col gap-2">
+                  {/* Grid Cards for Monster, Hazard, Healing, Buff, Rewards */}
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                    {/* Reflection Hazard Preview */}
+                    {isReflection && !isCleared && (
+                      <div className="bg-[var(--ctp-crust)] p-2 rounded-xl border border-[var(--ctp-red)]/50 flex items-center gap-2 text-xs text-[var(--ctp-red)] shadow-[0_0_12px_rgba(231,130,132,0.15)] col-span-1 sm:col-span-2">
+                        <Flame size={14} className="text-[var(--ctp-red)] animate-pulse shrink-0" />
+                        <div className="min-w-0 flex-1">
+                          <div className="font-bold text-[11.5px]">Volatile Arcane Bomb</div>
+                          <div className="text-[10px] text-[var(--ctp-subtext0)] font-mono">-15~40 HP on Fail / Timeout</div>
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Monster Preview */}
+                    {selectedNode.monster && (
+                      <div className="bg-[var(--ctp-crust)] p-2 rounded-xl border border-[var(--ctp-red)]/30 flex items-center gap-2 text-xs">
+                        <Swords size={14} className="text-[var(--ctp-red)] shrink-0" />
+                        <div className="min-w-0 flex-1 truncate">
+                          <div className="text-[var(--ctp-red)] font-semibold text-[11.5px] truncate">{selectedNode.monster.name}</div>
+                          <div className="text-[10px] text-[var(--ctp-subtext0)] font-mono">{selectedNode.monster.currentHp ?? selectedNode.monster.maxHp} HP</div>
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Sanctuary Healing */}
+                    {isSanctuary && (
+                      <div className="bg-[var(--ctp-crust)] p-2 rounded-xl border border-[var(--ctp-green)]/30 flex items-center gap-2 text-xs text-[var(--ctp-green)]">
+                        <Sparkles size={14} className="shrink-0 text-[var(--ctp-green)]" />
+                        <div className="min-w-0 flex-1 truncate">
+                          <div className="font-semibold text-[11.5px]">+{selectedNode.healingAmount ?? 40} HP Recovery</div>
+                          <div className="text-[10px] text-[var(--ctp-subtext0)] truncate">{
+                            selectedNode.type === 'reading_sanctuary' ? 'Sanctuary Reading' :
+                            selectedNode.type === 'archive_spire' ? 'Archive Study' :
+                            selectedNode.type === 'simulation_nexus' ? 'Simulation Calibration' :
+                            selectedNode.type === 'concept_monolith' ? 'Monolith Attunement' :
+                            selectedNode.type === 'observatory_gallery' ? 'Observatory Focus' : 'Reading'
+                          }</div>
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Buff Preview */}
+                    {selectedNode.buff && (
+                      <div className="bg-[var(--ctp-crust)] p-2 rounded-xl border border-[var(--ctp-yellow)]/30 flex items-center gap-2 text-xs text-[var(--ctp-yellow)]">
+                        <Sparkles size={14} className="shrink-0 text-[var(--ctp-yellow)]" />
+                        <div className="min-w-0 flex-1 truncate">
+                          <div className="font-semibold text-[11.5px] truncate">{selectedNode.buff.label}</div>
+                          <div className="text-[10px] text-[var(--ctp-subtext0)] font-mono">+{selectedNode.buff.value} {selectedNode.buff.stat}</div>
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Item Reward */}
+                    {selectedNode.rewards && selectedNode.rewards.length > 0 && (
+                      <div className="bg-[var(--ctp-crust)] p-2 rounded-xl border border-[var(--ctp-blue)]/30 flex items-center gap-2 text-xs text-[var(--ctp-blue)]">
+                        <Key size={14} className="shrink-0 text-[var(--ctp-blue)]" />
+                        <div className="min-w-0 flex-1 truncate">
+                          <div className="font-semibold text-[11.5px] truncate">Reward: {selectedNode.rewards[0].name}</div>
+                          <div className="text-[10px] text-[var(--ctp-subtext0)] truncate">{selectedNode.rewards[0].icon} Key item quest</div>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Boss Lair Key Items Checklist */}
+                  {isBoss && (() => {
+                    const allRewards = nodes?.flatMap((n) => n.rewards || []) || []
+                    const requiredList = (selectedNode.requiredItems || []).map((reqId) => {
+                      const reward = allRewards.find((r) => r.id === reqId) || inventory.find((r) => r.id === reqId)
+                      const isCollected = inventory.some((item) => item.id === reqId)
+                      return {
+                        id: reqId,
+                        name: reward?.name || reqId,
+                        icon: reward?.icon || '🗝️',
+                        isCollected,
+                      }
+                    })
+
+                    if (requiredList.length === 0) return null
+
+                    return (
+                      <div className="pt-2 border-t border-[var(--ctp-surface1)]/60 flex flex-col gap-1.5">
+                        <div className="flex items-center justify-between text-xs">
+                          <span className="font-bold text-[var(--ctp-maroon)] flex items-center gap-1.5">
+                            <span>🗝️</span> Dragon Lair Prerequisite Seals
+                          </span>
+                          <span className="font-mono text-[11px] text-[var(--ctp-subtext0)]">
+                            {inventory.filter((inv) => selectedNode.requiredItems?.includes(inv.id)).length}/{requiredList.length} Keys Held
+                          </span>
+                        </div>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-1.5">
+                          {requiredList.map((req) => (
+                            <div
+                              key={req.id}
+                              className={`p-1.5 rounded-lg border text-xs flex items-center gap-2 ${
+                                req.isCollected
+                                  ? 'bg-[var(--ctp-green)]/15 border-[var(--ctp-green)]/40 text-[var(--ctp-green)]'
+                                  : 'bg-[var(--ctp-crust)] text-[var(--ctp-red)] border-[var(--ctp-red)]/30 opacity-75'
+                              }`}
+                            >
+                              <span className="text-sm shrink-0">{req.isCollected ? req.icon : '🔒'}</span>
+                              <span className="truncate text-[11px] font-medium">{req.name}</span>
+                              {req.isCollected && <span className="ml-auto text-[10px] font-bold">✓</span>}
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )
+                  })()}
+
+                  {/* Citadel Archives: Key Item Intelligence */}
+                  {isCapital && isCleared && (() => {
+                    const boss = nodes?.find((n) => n.type === 'boss_lair')
+                    const allRewards = nodes?.flatMap((n) => (n.rewards || []).map((r) => ({ ...r, nodeTitle: n.title, nodeType: n.type }))) || []
+                    const requiredList = (boss?.requiredItems || []).map((reqId) => {
+                      const reward = allRewards.find((r) => r.id === reqId)
+                      const isCollected = inventory.some((item) => item.id === reqId)
+                      return {
+                        id: reqId,
+                        name: reward?.name || reqId,
+                        icon: reward?.icon || '🗝️',
+                        guardian: reward?.nodeTitle || 'Encounter',
+                        isCollected,
+                      }
+                    })
+
+                    if (requiredList.length === 0) return null
+
+                    const collectedCount = requiredList.filter((r) => r.isCollected).length
+
+                    return (
+                      <div className="pt-2 border-t border-[var(--ctp-surface1)]/60 flex flex-col gap-1.5">
+                        <div className="flex items-center justify-between text-xs">
+                          <span className="font-bold text-[var(--ctp-mauve)] flex items-center gap-1.5">
+                            <span>📜</span> Citadel Intelligence: Boss Key Quests
+                          </span>
+                          <span className="text-[11px] font-mono text-[var(--ctp-subtext0)]">
+                            {collectedCount}/{requiredList.length} Collected
+                          </span>
+                        </div>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-1.5 max-h-[130px] overflow-y-auto pr-1">
+                          {requiredList.map((req) => (
+                            <div
+                              key={req.id}
+                              className={`p-1.5 rounded-lg border text-xs flex items-center gap-2 ${
+                                req.isCollected
+                                  ? 'bg-[var(--ctp-blue)]/10 border-[var(--ctp-blue)]/40 text-[var(--ctp-text)]'
+                                  : 'bg-[var(--ctp-crust)]/60 border-[var(--ctp-surface1)] text-[var(--ctp-subtext0)]'
+                              }`}
+                            >
+                              <span className="text-sm shrink-0">{req.isCollected ? req.icon : '🔒'}</span>
+                              <div className="min-w-0 flex-1 truncate">
+                                <div className="font-semibold truncate text-[11px] flex items-center gap-1">
+                                  <span>{req.name}</span>
+                                  {req.isCollected && <span className="text-[var(--ctp-green)] text-[10px]">✓</span>}
+                                </div>
+                                <div className="text-[10px] text-[var(--ctp-subtext0)] truncate">
+                                  {req.isCollected ? 'Secured' : req.guardian}
+                                </div>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )
+                  })()}
+                </div>
+              )}
+
+              {/* Action Launch Button */}
+              {onLaunchEncounter && (
+                <Button
+                  disabled={
+                    isLocked ||
+                    (isBoss && !isBossUnlockable) ||
+                    (isCleared && (isQuiz || isReflection || isBoss))
+                  }
+                  className={`font-bold text-xs sm:text-[13px] px-4 py-2.5 h-9 rounded-xl w-full flex items-center justify-center gap-2 transition-all mt-1 ${
+                    isLocked || (isBoss && !isBossUnlockable) || (isCleared && (isQuiz || isReflection || isBoss))
+                      ? 'bg-[var(--ctp-surface1)] text-[var(--ctp-subtext0)] cursor-not-allowed border border-[var(--ctp-surface2)]'
+                      : isCleared
+                      ? 'bg-[var(--ctp-surface1)] hover:bg-[var(--ctp-surface2)] text-[var(--ctp-text)]'
+                      : 'bg-gradient-to-r from-[var(--primary)] to-[color-mix(in_srgb,var(--primary)_85%,black)] hover:brightness-110 text-[var(--primary-foreground)] border border-[color-mix(in_srgb,var(--primary)_40%,transparent)] shadow-[0_4px_16px_color-mix(in_srgb,var(--primary)_35%,transparent)]'
+                  }`}
+                  onClick={() => onLaunchEncounter(selectedNode)}
+                >
+                  {isLocked ? (
+                    <>
+                      <Lock size={14} />
+                      <span>Prerequisites Locked</span>
+                    </>
+                  ) : isBoss && !isBossUnlockable ? (
+                    <>
+                      <Key size={14} />
+                      <span>Requires Boss Keys</span>
+                    </>
+                  ) : isCleared ? (
+                    <>
+                      <CheckCircle size={14} />
+                      <span>Review Encounter</span>
+                    </>
+                  ) : (
+                    <>
+                      <Play size={14} />
+                      <span>Enter Encounter</span>
+                    </>
+                  )}
+                </Button>
+              )}
             </div>
           </div>
         )
       })()}
+
+
+
     </div>
   )
 })
