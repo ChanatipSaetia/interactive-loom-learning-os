@@ -1,5 +1,6 @@
 import type {
   HexNodeData,
+  HexNodeType,
   ItemReward,
   MonsterData,
   CharacterAttributes,
@@ -8,6 +9,75 @@ import type {
 } from './types'
 import { getAutoFlowConnections } from './layout'
 import { GAME_RULES, type DifficultyLevel } from './game-config'
+
+/**
+ * Identifies whether a hex node type represents a sanctuary / progressive content reading node.
+ */
+export function isSanctuaryType(type?: string): boolean {
+  return (
+    type === 'reading_sanctuary' ||
+    type === 'archive_spire' ||
+    type === 'simulation_nexus' ||
+    type === 'concept_monolith' ||
+    type === 'observatory_gallery'
+  )
+}
+
+/**
+ * Automatically derives the appropriate HexNodeType from an OKF section type.
+ * When a hex node references an OKF section, this ensures the visual hex variant
+ * matches the section content automatically, even if the YAML declared a generic reading_sanctuary.
+ */
+export function deriveHexTypeFromSectionType(
+  sectionType?: string,
+  declaredType?: string
+): HexNodeType {
+  // If the declared type is already an explicit challenge or special type, keep it unless it's generic reading_sanctuary
+  if (
+    declaredType &&
+    declaredType !== 'reading_sanctuary' &&
+    declaredType !== 'capital'
+  ) {
+    return declaredType as HexNodeType
+  }
+
+  if (!sectionType) {
+    return (declaredType as HexNodeType) || 'reading_sanctuary'
+  }
+
+  switch (sectionType) {
+    case 'flowchart':
+    case 'scenario':
+      return 'simulation_nexus'
+    case 'taxonomy-browser':
+    case 'taxonomy':
+    case 'bullets':
+      return 'archive_spire'
+    case 'concept-map':
+    case 'flashcards':
+      return 'concept_monolith'
+    case 'image-gallery':
+    case 'gallery':
+      return 'observatory_gallery'
+    case 'quiz':
+      return declaredType === 'capital' ? 'capital' : (declaredType as HexNodeType) || 'quiz_encounter'
+    case 'reflection-sequence':
+    case 'reflection-template':
+    case 'reflection':
+      return declaredType === 'capital' ? 'capital' : (declaredType as HexNodeType) || 'reflection_decryption'
+    case 'tradeoff-sandbox':
+    case 'formula-sandbox':
+    case 'tradeoffs':
+      return declaredType === 'capital' ? 'capital' : (declaredType as HexNodeType) || 'tradeoff_workshop'
+    case 'intro':
+      return declaredType === 'capital' ? 'capital' : 'reading_sanctuary'
+    case 'text':
+    case 'pillar-layer':
+    case 'decision-tree':
+    default:
+      return declaredType === 'capital' ? 'capital' : 'reading_sanctuary'
+  }
+}
 
 // ─── Magic Rune Encryption ───
 const RUNE_CHAR_MAP: Record<string, string> = {

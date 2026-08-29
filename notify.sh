@@ -13,16 +13,22 @@ fi
 
 if [ -z "$TELEGRAM_TOKEN" ] || [ -z "$TELEGRAM_CHAT_ID" ]; then
     echo "[notify] No Telegram credentials set — skipping notification"
-    echo "[notify] Set globally: ~/.config/ralph/notify.env"
     exit 0
 fi
 
 MESSAGE="$1"
-PROJECT="$(basename $(pwd))"
+PROJECT="$(basename "$(pwd)")"
+FULL_MSG="[Ralph Loop] ${PROJECT}: ${MESSAGE}"
 
-# Send as plain text — no parse_mode to avoid Markdown 400 errors on special chars
-curl -s -X POST "https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendMessage" \
-    -d chat_id="${TELEGRAM_CHAT_ID}" \
-    -d text="[Ralph Loop] ${PROJECT}: ${MESSAGE}" > /dev/null
+# Truncate to 4000 chars to respect Telegram's 4096 char limit
+if [ ${#FULL_MSG} -gt 4000 ]; then
+    FULL_MSG="${FULL_MSG:0:3950}... [truncated]"
+fi
+
+# Send using --data-urlencode to safely encode newlines, quotes, &, +, and special chars
+curl -s --max-time 10 -X POST "https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendMessage" \
+    --data-urlencode "chat_id=${TELEGRAM_CHAT_ID}" \
+    --data-urlencode "text=${FULL_MSG}" > /dev/null
 
 echo "[notify] Telegram sent"
+

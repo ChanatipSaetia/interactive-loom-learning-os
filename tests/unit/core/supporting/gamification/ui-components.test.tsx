@@ -327,6 +327,64 @@ describe('Gamification Real UI Components', () => {
     expect(screen.getByText('Locked (Fog)')).toBeDefined()
   })
 
+  it('renders floating tooltip chip menu with hex name and section type when hex is selected', () => {
+    const handleSelect = vi.fn()
+    const testNodes: HexNodeData[] = [
+      {
+        id: 'node-sim',
+        title: 'Simulation Flow Node',
+        type: 'simulation_nexus',
+        status: 'unlocked',
+        sectionRef: 'flowchart',
+        description: 'Sim node',
+      },
+    ]
+
+    render(
+      <HexGridCanvas
+        nodes={testNodes}
+        selectedNodeId="node-sim"
+        onSelectNode={handleSelect}
+      />
+    )
+
+    const tooltip = screen.getByTestId('selected-hex-tooltip')
+    expect(tooltip).toBeDefined()
+    expect(screen.getByText('Simulation Flow Node')).toBeDefined()
+    expect(screen.getByText('Flowchart')).toBeDefined()
+  })
+
+  it('hides section type and shows Fog of War with encrypted runes when selected hex is fogged', () => {
+    const handleSelect = vi.fn()
+    const testNodes: HexNodeData[] = [
+      {
+        id: 'node-fogged',
+        title: 'Secret Concept Map',
+        type: 'concept_monolith',
+        status: 'locked',
+        sectionRef: 'concept-map',
+        description: 'Hidden node',
+      },
+    ]
+
+    render(
+      <HexGridCanvas
+        nodes={testNodes}
+        selectedNodeId="node-fogged"
+        onSelectNode={handleSelect}
+      />
+    )
+
+    const tooltip = screen.getByTestId('selected-hex-tooltip')
+    expect(tooltip).toBeDefined()
+    // Section type chip should NOT be shown
+    expect(screen.queryByText('Concept Map')).toBeNull()
+    // Fog of War badge should be shown
+    expect(screen.getByText('Fog of War')).toBeDefined()
+    // Title is masked in magic runes, not plain text
+    expect(screen.queryByText('Secret Concept Map')).toBeNull()
+  })
+
   describe('TopicCampaignCard', () => {
     const mockTopic: TopicRoute = {
       id: 'demo-topic',

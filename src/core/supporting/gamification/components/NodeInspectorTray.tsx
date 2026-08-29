@@ -1,6 +1,6 @@
 import React from 'react'
 import { HexNodeData, ItemReward } from '../types'
-import { encryptToMagicRunes, canUnlockBoss } from '../game-rules'
+import { encryptToMagicRunes, canUnlockBoss, isSanctuaryType } from '../game-rules'
 import { Button, Badge } from '../../../ui-system'
 import { Swords, Sparkles, Key, CheckCircle, Lock, Play, Flame } from 'lucide-react'
 
@@ -20,10 +20,9 @@ export const NodeInspectorTray: React.FC<NodeInspectorTrayProps> = ({
   if (!selectedNode) return null
 
   const isCapital = selectedNode.type === 'capital'
-  const isSanctuary = selectedNode.type === 'reading_sanctuary'
+  const isSanctuary = isSanctuaryType(selectedNode.type)
   const isQuiz = selectedNode.type === 'quiz_encounter'
   const isReflection = selectedNode.type === 'reflection_decryption'
-  const isWorkshop = selectedNode.type === 'tradeoff_workshop'
   const isBoss = selectedNode.type === 'boss_lair'
 
   const isLocked = selectedNode.status === 'locked'
@@ -34,6 +33,22 @@ export const NodeInspectorTray: React.FC<NodeInspectorTrayProps> = ({
   const displayTitle = isLocked && !isCapital
     ? encryptToMagicRunes(selectedNode.title)
     : selectedNode.title
+
+  const getNodeIcon = () => {
+    switch (selectedNode.type) {
+      case 'capital': return '🏰'
+      case 'reading_sanctuary': return '🏛️'
+      case 'archive_spire': return '📜'
+      case 'simulation_nexus': return '⚙️'
+      case 'concept_monolith': return '💎'
+      case 'observatory_gallery': return '🔭'
+      case 'quiz_encounter': return selectedNode.monster?.icon || '👹'
+      case 'reflection_decryption': return '🔮'
+      case 'tradeoff_workshop': return '⚒️'
+      case 'boss_lair': return '🐲'
+      default: return '✨'
+    }
+  }
 
   return (
     <div className="bg-[var(--ctp-surface0)]/95 backdrop-blur-xl border border-[var(--ctp-surface1)] rounded-2xl p-3.5 sm:p-4 shadow-2xl transition-all duration-300">
@@ -49,14 +64,7 @@ export const NodeInspectorTray: React.FC<NodeInspectorTrayProps> = ({
             {isLocked && !isCapital ? (
               <span title="Fog of War" aria-label="Fog of War">🌫️</span>
             ) : (
-              <>
-                {isCapital && '🏰'}
-                {isSanctuary && '🏛️'}
-                {isQuiz && (selectedNode.monster?.icon || '👹')}
-                {isReflection && '🔮'}
-                {isWorkshop && '⚒️'}
-                {isBoss && '🐲'}
-              </>
+              <span>{getNodeIcon()}</span>
             )}
           </div>
 
@@ -103,7 +111,13 @@ export const NodeInspectorTray: React.FC<NodeInspectorTrayProps> = ({
               {isSanctuary && (
                 <div className="bg-[var(--ctp-crust)] px-2.5 py-1 rounded-lg border border-[var(--ctp-green)]/30 flex items-center gap-1.5 text-xs text-[var(--ctp-green)]">
                   <Sparkles size={13} />
-                  <span>+{selectedNode.healingAmount ?? 40} HP Sanctuary Reading</span>
+                  <span>+{selectedNode.healingAmount ?? 40} HP {
+                    selectedNode.type === 'reading_sanctuary' ? 'Sanctuary Reading' :
+                    selectedNode.type === 'archive_spire' ? 'Archive Study' :
+                    selectedNode.type === 'simulation_nexus' ? 'Simulation Calibration' :
+                    selectedNode.type === 'concept_monolith' ? 'Monolith Attunement' :
+                    selectedNode.type === 'observatory_gallery' ? 'Observatory Focus' : 'Reading'
+                  }</span>
                 </div>
               )}
 

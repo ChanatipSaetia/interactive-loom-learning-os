@@ -3,6 +3,10 @@ import { z } from 'zod'
 export const HexNodeTypeSchema = z.enum([
   'capital',
   'reading_sanctuary',
+  'archive_spire',
+  'simulation_nexus',
+  'concept_monolith',
+  'observatory_gallery',
   'quiz_encounter',
   'reflection_decryption',
   'tradeoff_workshop',

@@ -26,9 +26,15 @@ describe('getGlowFilterOptions', () => {
     expect(opts.color).toBe(palette.mauveNum)
   })
 
-  it('keeps glow quality low for GPU performance', () => {
-    for (const variant of ['selected', 'boss_lair', 'capital'] as const) {
-      expect(getGlowFilterOptions(palette, variant).quality).toBeLessThanOrEqual(0.25)
+  it('uses Frappé yellow radiant tint for quest_item glow', () => {
+    const opts = getGlowFilterOptions(palette, 'quest_item')
+    expect(opts.color).toBe(palette.yellowNum)
+    expect(opts.outerStrength).toBeGreaterThan(0)
+  })
+
+  it('uses 100% full-resolution glow quality to eliminate pixelation and banding', () => {
+    for (const variant of ['selected', 'boss_lair', 'capital', 'quest_item'] as const) {
+      expect(getGlowFilterOptions(palette, variant).quality).toBe(1)
     }
   })
 })

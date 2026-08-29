@@ -2,9 +2,12 @@ import type { DifficultyLevel } from './game-config'
 
 // ─── Hex Node Types ────────────────────────────────────────────────────────
 export type HexNodeType =
-
   | 'capital'
   | 'reading_sanctuary'
+  | 'archive_spire'
+  | 'simulation_nexus'
+  | 'concept_monolith'
+  | 'observatory_gallery'
   | 'quiz_encounter'
   | 'reflection_decryption'
   | 'tradeoff_workshop'

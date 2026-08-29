@@ -40,8 +40,8 @@ nodes:
 
   # Track 2: Mechanics & Hook Model Decryption
   - id: "sanctuary-mechanics"
-    title: "Core Mechanics Toolkit Sanctuary"
-    type: "reading_sanctuary"
+    title: "Archive Spire of Core Mechanics"
+    type: "archive_spire"
     status: "unlocked"
     sectionRef: "core-mechanics"
     healingAmount: 30
@@ -61,8 +61,8 @@ nodes:
 
   # Track 3: Octalysis & Template Synthesis
   - id: "sanctuary-octalysis"
-    title: "Octalysis 8 Core Drives Keep"
-    type: "reading_sanctuary"
+    title: "Archive Spire of Octalysis Drives"
+    type: "archive_spire"
     status: "unlocked"
     sectionRef: "octalysis"
     healingAmount: 35
@@ -82,8 +82,8 @@ nodes:
 
   # Deep Sanctuaries (Downstream)
   - id: "sanctuary-flashcards"
-    title: "Vocabulary Temple"
-    type: "reading_sanctuary"
+    title: "Monolith of Gamification Vocabulary"
+    type: "concept_monolith"
     status: "locked"
     sectionRef: "flashcards"
     healingAmount: 30
@@ -98,16 +98,16 @@ nodes:
     description: "Navigate optimal mechanic selection trees based on audience type (Achievers, Explorers, Socializers, Killers)."
 
   - id: "sanctuary-concept"
-    title: "Knowledge Graph Sanctuary"
-    type: "reading_sanctuary"
+    title: "Monolith of the Knowledge Graph"
+    type: "concept_monolith"
     status: "locked"
     sectionRef: "concept-map"
     healingAmount: 35
     description: "Structural knowledge map connecting behavioral psychology, game mechanics, and retention loops."
 
   - id: "sanctuary-scenario"
-    title: "Grove of the Streak Dilemma"
-    type: "reading_sanctuary"
+    title: "Simulation Nexus of the Streak Dilemma"
+    type: "simulation_nexus"
     status: "locked"
     sectionRef: "scenario"
     healingAmount: 35
@@ -127,8 +127,8 @@ nodes:
       burnout_prevention: "chaos_shield"
 
   - id: "sanctuary-flowchart"
-    title: "Spire of the Habit Reward Loop"
-    type: "reading_sanctuary"
+    title: "Simulation Nexus of the Habit Reward Loop"
+    type: "simulation_nexus"
     status: "locked"
     sectionRef: "reward-loop"
     healingAmount: 40

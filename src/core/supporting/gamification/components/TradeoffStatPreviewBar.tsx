@@ -71,7 +71,7 @@ export const TradeoffStatPreviewBar: React.FC<TradeoffStatPreviewBarProps> = ({
           }`}
           onClick={() => {
             if (artifact) {
-              onForgeArtifact(artifact as any)
+              onForgeArtifact(artifact)
             }
           }}
         >

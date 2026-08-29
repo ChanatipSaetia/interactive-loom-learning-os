@@ -102,12 +102,16 @@ nodes:
 
 ## 4. Hex Node Types & Gameplay Mechanics
 
-Each node in `nodes[]` is classified into one of 6 structural types:
+Each node in `nodes[]` is classified into one of the specialized structural types:
 
 | Type (`type`) | Map Role | Gameplay & Section Binding | Rewards / Config |
 |---|---|---|---|
-| `capital` | Starting Safe Haven | Starting tile (`status: "unlocked"`). Renders the introductory OKF section (e.g. `intro`). | Generates 0 System Chaos on first visit. |
-| `reading_sanctuary` | Healing & Theory Haven | Renders dense reading sections (`taxonomy`, `text`, `flashcards`). Features the **Sanctuary 10s Pulse Monitor**: restores HP every 10s of active reading. Pauses automatically at 100% HP. Diminishing returns apply per repeat visit ($1.0\times \rightarrow 0.5\times \rightarrow 0.2\times$). | `healingAmount: 40` (default) |
+| `capital` | Starting Safe Haven | Starting tile (`status: "unlocked"`). Renders introductory OKF section (e.g. `intro`). | Generates 0 System Chaos on first visit. |
+| `reading_sanctuary` | Healing & Sacred Shrine | Renders dense reading sections (`text`, `intro`). Features the **Sanctuary 10s Pulse Monitor**: restores HP every 10s of active reading. | `healingAmount: 40` (default) |
+| `archive_spire` | Library & Taxonomy Spire | Renders taxonomy browsers and bulleted codexes (`taxonomy-browser`, `bullets`). Features active reading healing pulses. | `healingAmount: 35` (default) |
+| `simulation_nexus` | Process Simulation Nexus | Renders interactive simulations (`flowchart`, `scenario`). Features procedural gear/circuit visuals and active calibration healing. | `healingAmount: 40` (default) |
+| `concept_monolith` | Arcane Memory Monolith | Renders knowledge graphs and flashcards (`concept-map`, `flashcards`). Features levitating crystal clusters and active attunement healing. | `healingAmount: 35` (default) |
+| `observatory_gallery` | Starlight Observatory | Renders visual media and image galleries (`image-gallery`). Features celestial telescope and focused observation healing. | `healingAmount: 35` (default) |
 | `quiz_encounter` | Combat Battle | Renders `quiz` section inside `<CombatStageHeader>`. Correct answers deal player damage to the monster; incorrect answers trigger counterattacks (mitigated by character Armor/Evasion). | `monster: {...}`, `rewards: [{ id, name, icon }]` |
 | `reflection_decryption` | Timed Cipher Vault | Renders `reflection-sequence` or `reflection-template` under `<RunicCountdownRing>`. Reassembling the sequence decrypts runic glyphs into plaintext. Expiring the timer inflicts Chaos-amplified damage. | `rewards: [{ id, name, icon }]` |
 | `tradeoff_workshop` | Buff Synthesis Forge | Renders `tradeoff-sandbox`. Sliders dynamically synthesize RPG attribute buffs (`+15% Armor`, `+10% Evasion`) via `<TradeoffStatPreviewBar>` with a one-click *"Forge & Equip Artifact"* action. | `tradeoffMapping: { <metricKey>: "<armor|evasion|intelligence|chaos_shield>" }` |
@@ -121,7 +125,7 @@ Each node in `nodes[]` is classified into one of 6 structural types:
 |---|---|---|---|
 | `id` | `string` | **Yes** | Globally unique identifier for the node within the campaign. |
 | `title` | `string` | **Yes** | Display name shown on the map tray, drawer, and HUD. |
-| `type` | `HexNodeType` | **Yes** | One of `capital`, `reading_sanctuary`, `quiz_encounter`, `reflection_decryption`, `tradeoff_workshop`, `boss_lair`. |
+| `type` | `HexNodeType` | **Yes** | One of `capital`, `reading_sanctuary`, `archive_spire`, `simulation_nexus`, `concept_monolith`, `observatory_gallery`, `quiz_encounter`, `reflection_decryption`, `tradeoff_workshop`, `boss_lair`. |
 | `status` | `enum` | No | Initial state: `'unlocked'` (capital/initial nodes) or `'locked'` (default). |
 | `sectionRef` | `string` | No | Matching folder name in `public/okf/<topicId>/sections/<sectionRef>/`. |
 | `description` | `string` | No | Lore and tactical guidance displayed in `<NodeInspectorTray>`. |

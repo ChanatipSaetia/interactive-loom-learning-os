@@ -3,7 +3,8 @@ import { Plus, Minus, RotateCcw, Move } from 'lucide-react'
 import { Application, Container, ColorMatrixFilter } from 'pixi.js'
 import { HexNodeData } from '../types'
 import { computeHexGridCoordinates, getAutoFlowConnections } from '../layout'
-import { axialToPixel } from './hex-geometry'
+import { HEX_RADIUS, axialToPixel } from './hex-geometry'
+import { encryptToMagicRunes } from '../game-rules'
 import { computeChaosTintMatrix, computeChaosTintStrength } from './chaos-tint'
 import { PixiCanvasViewport } from './PixiCanvasViewport'
 import { HeroAgent, triggerHeroWalk } from './hero-agent'
@@ -26,6 +27,59 @@ export interface HexGridCanvasRef {
   triggerTwistTransition: (node: HexNodeData, onComplete?: () => void) => void
 }
 
+export interface SectionTypeInfo {
+  label: string
+  icon: string
+  color: string
+}
+
+export function getSectionTypeInfo(node: HexNodeData): SectionTypeInfo {
+  const ref = (node.sectionRef || '').toLowerCase()
+  const clean = ref.replace(/-(core|feedback|foundations|pipeline|sequence|template|optimization|taxonomies|vocabulary|engine)$/, '')
+  const type = node.type
+
+  if (ref.includes('flowchart') || type === 'simulation_nexus' || clean === 'flowchart') {
+    return { label: 'Flowchart', icon: '⚡', color: 'bg-[var(--ctp-sapphire)]/20 text-[var(--ctp-sapphire)] border-[var(--ctp-sapphire)]/40' }
+  }
+  if (ref.includes('taxonomy') || ref.includes('bullets') || clean === 'octalysis' || clean === 'taxonomy' || clean === 'bullets') {
+    return { label: 'Taxonomy Browser', icon: '📂', color: 'bg-[var(--ctp-sky)]/20 text-[var(--ctp-sky)] border-[var(--ctp-sky)]/40' }
+  }
+  if (ref.includes('concept') || ref.includes('flashcard') || clean === 'concept-map' || clean === 'flashcards') {
+    return { label: 'Concept Map', icon: '💎', color: 'bg-[var(--ctp-lavender)]/20 text-[var(--ctp-lavender)] border-[var(--ctp-lavender)]/40' }
+  }
+  if (ref.includes('gallery') || clean === 'image-gallery' || clean === 'gallery') {
+    return { label: 'Gallery', icon: '🔭', color: 'bg-[var(--ctp-rosewater)]/20 text-[var(--ctp-rosewater)] border-[var(--ctp-rosewater)]/40' }
+  }
+  if (ref.includes('scenario') || clean === 'scenario') {
+    return { label: 'Scenario', icon: '🗺️', color: 'bg-[var(--ctp-teal)]/20 text-[var(--ctp-teal)] border-[var(--ctp-teal)]/40' }
+  }
+  if (ref.includes('quiz') || type === 'quiz_encounter' || clean === 'quiz') {
+    return { label: 'Quiz', icon: '⚔️', color: 'bg-[var(--ctp-red)]/20 text-[var(--ctp-red)] border-[var(--ctp-red)]/40' }
+  }
+  if (ref.includes('reflection') || type === 'reflection_decryption') {
+    return { label: 'Reflection', icon: '🔮', color: 'bg-[var(--ctp-mauve)]/20 text-[var(--ctp-mauve)] border-[var(--ctp-mauve)]/40' }
+  }
+  if (ref.includes('tradeoff') || ref.includes('formula') || type === 'tradeoff_workshop' || clean === 'tradeoffs') {
+    return { label: 'Trade-off Sandbox', icon: '⚒️', color: 'bg-[var(--ctp-yellow)]/20 text-[var(--ctp-yellow)] border-[var(--ctp-yellow)]/40' }
+  }
+  if (ref.includes('decision-tree')) {
+    return { label: 'Decision Tree', icon: '🌲', color: 'bg-[var(--ctp-green)]/20 text-[var(--ctp-green)] border-[var(--ctp-green)]/40' }
+  }
+  if (ref.includes('pillar') || clean === 'pillar-layer') {
+    return { label: 'Architecture Layers', icon: '🏛️', color: 'bg-[var(--ctp-blue)]/20 text-[var(--ctp-blue)] border-[var(--ctp-blue)]/40' }
+  }
+  if (ref.includes('intro') || ref === 'intro' || type === 'capital') {
+    return { label: 'Introduction', icon: '🏰', color: 'bg-[var(--ctp-blue)]/20 text-[var(--ctp-blue)] border-[var(--ctp-blue)]/40' }
+  }
+  if (type === 'boss_lair') {
+    return { label: 'Boss Encounter', icon: '🐲', color: 'bg-[var(--ctp-maroon)]/20 text-[var(--ctp-maroon)] border-[var(--ctp-maroon)]/40' }
+  }
+  if (ref) {
+    return { label: ref.replace(/-/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase()), icon: '📖', color: 'bg-[var(--ctp-surface2)]/50 text-[var(--ctp-text)] border-[var(--ctp-surface2)]' }
+  }
+  return { label: 'Reading Section', icon: '📖', color: 'bg-[var(--ctp-green)]/20 text-[var(--ctp-green)] border-[var(--ctp-green)]/40' }
+}
+
 export const HexGridCanvas = React.forwardRef<HexGridCanvasRef, HexGridCanvasProps>(({
   nodes,
   selectedNodeId,
@@ -44,6 +98,22 @@ export const HexGridCanvas = React.forwardRef<HexGridCanvasRef, HexGridCanvasPro
   const [zoom, setZoom] = useState<number>(1.0)
   const [pan, setPan] = useState<{ x: number; y: number }>({ x: 0, y: 0 })
   const [isDragging, setIsDragging] = useState<boolean>(false)
+  const [canvasSize, setCanvasSize] = useState<{ width: number; height: number }>({ width: 880, height: 580 })
+
+  useEffect(() => {
+    if (!containerRef.current) return
+    const el = containerRef.current
+    const updateSize = () => {
+      setCanvasSize({
+        width: el.clientWidth || 880,
+        height: el.clientHeight || 580,
+      })
+    }
+    updateSize()
+    const ro = new ResizeObserver(updateSize)
+    ro.observe(el)
+    return () => ro.disconnect()
+  }, [])
 
   const panRef = useRef<{ x: number; y: number }>({ x: 0, y: 0 })
   const zoomRef = useRef<number>(1.0)
@@ -92,6 +162,8 @@ export const HexGridCanvas = React.forwardRef<HexGridCanvasRef, HexGridCanvasPro
     if (!chaosFilterRef.current) {
       chaosFilterRef.current = new ColorMatrixFilter()
     }
+    const dpr = (typeof window !== 'undefined' && window.devicePixelRatio) || 1
+    chaosFilterRef.current.resolution = dpr
     chaosFilterRef.current.matrix = computeChaosTintMatrix(level)
     mapContainer.filters = [chaosFilterRef.current]
   }, [])
@@ -99,6 +171,18 @@ export const HexGridCanvas = React.forwardRef<HexGridCanvasRef, HexGridCanvasPro
   // Layout coordinate derivations
   const computedCoordsMap = useMemo(() => computeHexGridCoordinates(nodes), [nodes])
   const isCapitalCleared = useMemo(() => nodes.find((n) => n.type === 'capital')?.status === 'cleared', [nodes])
+
+  const selectedNode = useMemo(() => nodes.find((n) => n.id === selectedNodeId), [nodes, selectedNodeId])
+
+  const selectedScreenPos = useMemo(() => {
+    if (!selectedNode) return null
+    const coord = computedCoordsMap.get(selectedNode.id) || selectedNode.coordinates || { q: 0, r: 0 }
+    const pixel = axialToPixel(coord.q, coord.r, 0, 0)
+    return {
+      x: canvasSize.width / 2 + pan.x + pixel.x * zoom,
+      y: canvasSize.height / 2 + pan.y + pixel.y * zoom,
+    }
+  }, [selectedNode, computedCoordsMap, pan, zoom, canvasSize])
 
   const getNodeCoord = useCallback(
     (node: HexNodeData) => computedCoordsMap.get(node.id) || node.coordinates || { q: 0, r: 0 },
@@ -330,6 +414,10 @@ export const HexGridCanvas = React.forwardRef<HexGridCanvasRef, HexGridCanvasPro
     const tickerCallback = () => {
       if (!app || !app.renderer || !mapContainer || mapContainer.destroyed) return
       const now = performance.now() * 0.001
+      const parallax = parallaxLayerRef.current as unknown as { tick?: () => void } | null
+      if (parallax && typeof parallax.tick === 'function') {
+        parallax.tick()
+      }
       animControllersRef.current.forEach((fn) => {
         try {
           fn(now)
@@ -492,9 +580,6 @@ export const HexGridCanvas = React.forwardRef<HexGridCanvasRef, HexGridCanvasPro
         onResize={handleResizePixi}
       />
 
-      {/* Background Grid Pattern */}
-      <div className="absolute inset-0 opacity-15 bg-[radial-gradient(var(--ctp-blue)_1px,transparent_1px)] [background-size:24px_24px] pointer-events-none" />
-
       {/* Mobile-Friendly Zoom & Pan Controls Overlay */}
       <div className="absolute top-3 right-3 z-20 flex items-center gap-1.5 bg-[var(--ctp-surface0)]/90 backdrop-blur-md p-1.5 rounded-xl border border-[var(--ctp-surface1)] shadow-lg">
         <button
@@ -537,6 +622,73 @@ export const HexGridCanvas = React.forwardRef<HexGridCanvasRef, HexGridCanvasPro
         <div className="flex items-center gap-1 shrink-0"><span className="w-2.5 h-2.5 rounded-full bg-[var(--ctp-maroon)]" /> Boss</div>
         <div className="flex items-center gap-1 shrink-0 border-l border-[var(--ctp-surface1)] pl-3"><span className="w-2.5 h-2.5 rounded-full bg-[var(--ctp-surface1)]" /> Locked (Fog)</div>
       </div>
+
+      {/* Floating Selected Hex Tooltip Menu */}
+      {selectedNode && selectedScreenPos && (() => {
+        const isFogged = selectedNode.status === 'locked' && selectedNode.type !== 'capital'
+        const secInfo = getSectionTypeInfo(selectedNode)
+        return (
+          <div
+            data-testid="selected-hex-tooltip"
+            style={{
+              left: `${selectedScreenPos.x}px`,
+              top: `${selectedScreenPos.y + (HEX_RADIUS + 14) * zoom}px`,
+              transform: 'translate(-50%, 0)',
+            }}
+            className="absolute z-30 pointer-events-none transition-all duration-75 flex flex-col items-center"
+          >
+            {/* Upward Pointer Arrow */}
+            <div className="w-0 h-0 border-x-[6px] border-x-transparent border-b-[8px] border-b-[var(--ctp-blue)] drop-shadow" />
+
+            <div className="bg-[var(--ctp-surface0)]/95 backdrop-blur-xl border border-[var(--ctp-surface1)] px-4 py-2.5 rounded-xl shadow-2xl flex flex-col gap-2 max-w-[300px] sm:max-w-[380px] text-center pointer-events-auto border-t-2 border-t-[var(--ctp-blue)] animate-in fade-in zoom-in-95 duration-150">
+              {/* Hex Title / Name */}
+              <div className="flex items-center justify-center gap-2 min-w-0">
+                <span className="text-base shrink-0">{isFogged ? '🌫️' : secInfo.icon}</span>
+                <span className={`text-sm sm:text-base font-bold truncate ${
+                  isFogged
+                    ? 'font-mono text-[var(--ctp-mauve)]'
+                    : 'text-[var(--ctp-text)]'
+                }`}>
+                  {isFogged
+                    ? encryptToMagicRunes(selectedNode.title)
+                    : selectedNode.title}
+                </span>
+              </div>
+
+              {/* Section Type Chip & Status */}
+              <div className="flex items-center justify-center gap-2 flex-wrap text-xs">
+                {isFogged ? (
+                  <span className="px-3 py-1 rounded-lg border bg-[var(--ctp-surface1)]/50 text-[var(--ctp-subtext1)] border-[var(--ctp-surface2)] font-semibold flex items-center gap-1.5 shadow-sm">
+                    <span>🌫️</span>
+                    <span>Fog of War</span>
+                  </span>
+                ) : (
+                  <>
+                    {/* Section Type Chip (Revealed only when not fogged) */}
+                    <span className={`px-3 py-1 rounded-lg border font-semibold flex items-center gap-1.5 shadow-sm ${secInfo.color}`}>
+                      <span className="text-sm">{secInfo.icon}</span>
+                      <span>{secInfo.label}</span>
+                    </span>
+
+                    {/* Status Chip */}
+                    {selectedNode.status === 'cleared' ? (
+                      <span className="px-2 py-1 rounded-lg border bg-[var(--ctp-green)]/20 text-[var(--ctp-green)] border-[var(--ctp-green)]/40 font-semibold flex items-center gap-1 shadow-sm">
+                        <span>✓</span>
+                        <span>Cleared</span>
+                      </span>
+                    ) : selectedNode.rewards && selectedNode.rewards.length > 0 ? (
+                      <span className="px-2 py-1 rounded-lg border bg-[var(--ctp-yellow)]/20 text-[var(--ctp-yellow)] border-[var(--ctp-yellow)]/40 font-semibold flex items-center gap-1 animate-pulse shadow-sm">
+                        <span>🔑</span>
+                        <span>Quest</span>
+                      </span>
+                    ) : null}
+                  </>
+                )}
+              </div>
+            </div>
+          </div>
+        )
+      })()}
     </div>
   )
 })

@@ -143,7 +143,9 @@ export class HeroAgent {
 
   setPalette(palette: GamificationThemePalette) {
     this.palette = palette
-    if (!this.container.destroyed) this.drawArrivalAura()
+    if (!this.container.destroyed) {
+      this.drawArrivalAura()
+    }
   }
 
   /** Idle bob + walk-frame driver, registered on the Pixi ticker by the host. */

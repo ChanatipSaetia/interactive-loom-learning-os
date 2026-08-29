@@ -19,6 +19,8 @@ done
 MAX=21
 MODEL=""
 ENGINE="${ENGINE:-opencode}"
+THINKING="${THINKING:-true}"
+VARIANT="${VARIANT:-}"
 
 POSITIONAL=()
 while [[ $# -gt 0 ]]; do
@@ -38,6 +40,22 @@ while [[ $# -gt 0 ]]; do
         --opencode)
             ENGINE="opencode"
             shift
+            ;;
+        --thinking)
+            THINKING="true"
+            shift
+            ;;
+        --no-thinking)
+            THINKING="false"
+            shift
+            ;;
+        --variant=*)
+            VARIANT="${1#*=}"
+            shift
+            ;;
+        --variant)
+            VARIANT="$2"
+            shift 2
             ;;
         *)
             POSITIONAL+=("$1")
@@ -61,6 +79,14 @@ done
 MODEL_FLAG=""
 if [ -n "$MODEL" ]; then
     MODEL_FLAG="--model $MODEL"
+fi
+
+OPENCODE_EXTRA_FLAGS=()
+if [ "$THINKING" = "true" ]; then
+    OPENCODE_EXTRA_FLAGS+=("--thinking")
+fi
+if [ -n "$VARIANT" ]; then
+    OPENCODE_EXTRA_FLAGS+=("--variant" "$VARIANT")
 fi
 
 iteration=0
@@ -94,6 +120,10 @@ log "=== Ralph Loop: $PROJECT started ==="
 log "Engine: $ENGINE"
 log "Max iterations: $MAX"
 [ -n "$MODEL_FLAG" ] && log "Model override: $MODEL" || log "Model: ($ENGINE default)"
+if [ "$ENGINE" = "opencode" ]; then
+    log "Thinking stream: $THINKING"
+    [ -n "$VARIANT" ] && log "Reasoning variant: $VARIANT"
+fi
 
 if ! command -v "$ENGINE" &>/dev/null; then
     log "ERROR: Command '$ENGINE' not found in PATH."
@@ -113,28 +143,55 @@ if ! gh auth status &>/dev/null; then
 fi
 
 BOT_LISTENER_PID=""
-if [ -f bot-listener.sh ]; then
-    rm -f /tmp/ralph-bot-listener.pid
-    ./bot-listener.sh $$ &
-    BOT_LISTENER_PID=$!
-    log "[bot] Telegram listener started (PID: $BOT_LISTENER_PID)"
-    ./notify.sh "Ralph Loop started! Project: $PROJECT | Engine: $ENGINE | Max: $MAX | Use /status /log /llama /stop"
-fi
+start_bot_listener() {
+    if [ -f bot-listener.sh ]; then
+        rm -f "/tmp/ralph-bot-listener-${PROJECT}.pid" 2>/dev/null
+        ./bot-listener.sh $$ &
+        BOT_LISTENER_PID=$!
+        sleep 0.3
+        if kill -0 "$BOT_LISTENER_PID" 2>/dev/null; then
+            log "[bot] Telegram listener active (PID: $BOT_LISTENER_PID)"
+        else
+            log "[bot] Telegram listener failed to start — check credentials or /tmp pidfile"
+        fi
+    fi
+}
+
+start_bot_listener
+./notify.sh "Ralph Loop started! Project: $PROJECT | Engine: $ENGINE | Max: $MAX | Use /status /log /llama /stop"
+
+echo $$ > "/tmp/ralph-${PROJECT}.pid"
 
 cleanup() {
+    rm -f "/tmp/ralph-${PROJECT}.pid" 2>/dev/null
     if [ -n "$AGENT_PID" ] && kill -0 "$AGENT_PID" 2>/dev/null; then
-        kill "$AGENT_PID" 2>/dev/null
+        pkill -TERM -P "$AGENT_PID" 2>/dev/null || true
+        kill -TERM "$AGENT_PID" 2>/dev/null || true
+        sleep 0.1
+        pkill -9 -P "$AGENT_PID" 2>/dev/null || true
+        kill -9 "$AGENT_PID" 2>/dev/null || true
         log "[ralph] $ENGINE child stopped"
     fi
     if [ -n "$BOT_LISTENER_PID" ] && kill -0 "$BOT_LISTENER_PID" 2>/dev/null; then
-        kill "$BOT_LISTENER_PID" 2>/dev/null
+        pkill -TERM -P "$BOT_LISTENER_PID" 2>/dev/null || true
+        kill -TERM "$BOT_LISTENER_PID" 2>/dev/null || true
+        sleep 0.1
+        kill -9 "$BOT_LISTENER_PID" 2>/dev/null || true
         log "[bot] Telegram listener stopped"
     fi
 }
-trap cleanup EXIT
+trap cleanup EXIT INT TERM
 
 while [ $iteration -lt $MAX ]; do
     iteration=$((iteration + 1))
+
+    # Health check: ensure bot listener is running, restart if it died
+    if [ -f bot-listener.sh ]; then
+        if [ -z "$BOT_LISTENER_PID" ] || ! kill -0 "$BOT_LISTENER_PID" 2>/dev/null; then
+            log "[bot] Telegram listener was not running — restarting..."
+            start_bot_listener
+        fi
+    fi
 
     STEERING_FLAG=""
     if [ -f STEERING.md ]; then
@@ -176,16 +233,25 @@ while [ $iteration -lt $MAX ]; do
     # Fetch the issue body for context
     ISSUE_BODY=$(gh issue view "$CURRENT_ISSUE_NUM" --json body --jq '.body' 2>/dev/null || echo "")
 
-    # Run selected engine — output to terminal and log
+    # Collect existing context files to attach
+    CONTEXT_FILES=()
+    [ -f progress.txt ] && CONTEXT_FILES+=("@progress.txt")
+    [ -f AGENTS.md ] && CONTEXT_FILES+=("@AGENTS.md")
+    [ -f prompt.md ] && CONTEXT_FILES+=("@prompt.md")
+    [ -f prd.json ] && CONTEXT_FILES+=("@prd.json")
+    [ -f STEERING.md ] && CONTEXT_FILES+=("@STEERING.md")
+
+    # Run selected engine with live streaming output to console and log file
+    # Use process substitution so $! captures the actual engine PID, not tee
     if [ "$ENGINE" = "agy" ]; then
-        agy -p "Implement issue $CURRENT_ISSUE. Issue body: $ISSUE_BODY. Read progress.txt, AGENTS.md, prompt.md, and STEERING.md (if present) and follow the instructions in prompt.md exactly." \
+        PYTHONUNBUFFERED=1 agy -p "Implement issue $CURRENT_ISSUE. Issue body: $ISSUE_BODY. Read progress.txt, AGENTS.md, prompt.md, and STEERING.md (if present) and follow the instructions in prompt.md exactly." \
             $MODEL_FLAG --dangerously-skip-permissions \
-            2>&1 | tee -a "$LOOP_LOG" &
+            > >(tee -a "$LOOP_LOG") 2>&1 &
     else
-        opencode run $MODEL_FLAG \
-            @progress.txt @AGENTS.md @prompt.md $STEERING_FLAG . \
+        PYTHONUNBUFFERED=1 opencode run $MODEL_FLAG --auto "${OPENCODE_EXTRA_FLAGS[@]}" \
+            "${CONTEXT_FILES[@]}" . \
             "Implement issue $CURRENT_ISSUE. Issue body: $ISSUE_BODY. Follow the instructions in prompt.md exactly." \
-            2>&1 | tee -a "$LOOP_LOG" &
+            > >(tee -a "$LOOP_LOG") 2>&1 &
     fi
     AGENT_PID=$!
     wait $AGENT_PID || true

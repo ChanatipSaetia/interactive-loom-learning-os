@@ -8,6 +8,7 @@ import {
   resolveTimedReflectionDecryption,
   evaluateTopicBadges,
   deriveStatPercentage,
+  deriveHexTypeFromSectionType,
 } from '../../game-rules'
 import { useGamification } from '../../useGamification'
 import { LocalStorageCharacterAdapter } from '../../adapters/local-storage-character-adapter'
@@ -170,13 +171,18 @@ export function useGamificationCampaign() {
   const [selectedNode, setSelectedNode] = useState<HexNodeData | null>(null)
 
   // Sync loaded campaign nodes from Validation Gateway & merged saved cleared state
+  // Automatically derives visual hex type from corresponding OKF section type if not explicitly distinct
   useEffect(() => {
     if (liveCampaign?.nodes && liveCampaign.nodes.length > 0) {
       const mergedNodes = liveCampaign.nodes.map((n) => {
+        const secConfig = n.sectionRef ? bundleSectionsMap.get(n.sectionRef) : undefined
+        const effectiveType = deriveHexTypeFromSectionType(secConfig?.type, n.type)
+        const baseNode: HexNodeData = { ...n, type: effectiveType }
+
         if (campaign?.clearedNodeIds.includes(n.id)) {
-          return { ...n, status: 'cleared' as const }
+          return { ...baseNode, status: 'cleared' as const }
         }
-        return n
+        return baseNode
       })
       const evaluated = evaluateNodeUnlocks(mergedNodes)
       setNodes(evaluated)
@@ -189,7 +195,7 @@ export function useGamificationCampaign() {
         }
       }
     }
-  }, [liveCampaign, campaign?.clearedNodeIds])
+  }, [liveCampaign, campaign?.clearedNodeIds, bundleSectionsMap])
 
   // Active Section Modal & Instance Key for Retry / Re-encounter
   const [activeSectionModal, setActiveSectionModal] = useState<HexNodeData | null>(null)

@@ -12,16 +12,16 @@ nodes:
 
   # Ring 1: Foundations & Vocabulary Sanctuaries & Challenges
   - id: "sanctuary-map"
-    title: "Sanctuary of the Filter Pipeline"
-    type: "reading_sanctuary"
+    title: "Monolith of the Filter Pipeline"
+    type: "concept_monolith"
     status: "unlocked"
     sectionRef: "concept-map"
     healingAmount: 30
     description: "Study the architectural graph of FilterSystem, Containers, RenderTargets, Uniforms, and GPU Drivers."
 
   - id: "sanctuary-vocabulary"
-    title: "Observatory of Shader Terms"
-    type: "reading_sanctuary"
+    title: "Monolith of Shader Terms"
+    type: "concept_monolith"
     status: "unlocked"
     sectionRef: "flashcards"
     healingAmount: 30
@@ -60,8 +60,8 @@ nodes:
 
   # Ring 2: Taxonomies & Pipeline Decryption
   - id: "sanctuary-taxonomies"
-    title: "Gallery of Shader Taxonomies"
-    type: "reading_sanctuary"
+    title: "Archive Spire of Shader Taxonomies"
+    type: "archive_spire"
     status: "locked"
     sectionRef: "taxonomy-browser"
     healingAmount: 35
@@ -89,8 +89,8 @@ nodes:
     description: "Deep dive into offscreen render target pooling, uFilterMatrix math, and batch break prevention."
 
   - id: "sanctuary-flowchart"
-    title: "Spire of the Filter Render Cycle"
-    type: "reading_sanctuary"
+    title: "Simulation Nexus of the Filter Render Cycle"
+    type: "simulation_nexus"
     status: "locked"
     sectionRef: "flowchart"
     healingAmount: 40

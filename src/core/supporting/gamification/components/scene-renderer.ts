@@ -8,17 +8,12 @@ import { createHexGradient } from './hex-gradient'
 import {
   NodeEffectContext,
   renderAimReticle,
-  renderBossShockwave,
-  renderCapitalOrbit,
   renderClearedExplosionFx,
   renderFogOfWar,
   renderNodeBadges,
-  renderQuizEncounterAttack,
-  renderReflectionDecryptionRuneClock,
-  renderSanctuarySpores,
-  renderTradeoffForge,
   renderUnlockRevealFx,
 } from './node-effects'
+import { renderHexTypeEffects, drawHexTerrainGround } from './hex-types'
 
 export interface HexSceneContext {
   mapContainer: Container
@@ -35,9 +30,9 @@ export interface HexSceneContext {
   clearAnimStart: Map<string, number>
 }
 
-export type NodeGlowVariant = 'selected' | 'boss_lair' | 'capital'
+export type NodeGlowVariant = 'selected' | 'boss_lair' | 'capital' | 'quest_item'
 
-/** Low alpha for the always-on full dependency topology layer. */
+/** Low alpha for the full dependency topology layer. */
 export const FULL_ARC_ALPHA = 0.2
 
 export interface ArcControlPoint {
@@ -70,11 +65,13 @@ export function computeArcControlPoint(
 export function getGlowFilterOptions(palette: GamificationThemePalette, variant: NodeGlowVariant): GlowFilterOptions {
   switch (variant) {
     case 'selected':
-      return { distance: 14, outerStrength: 2.5, color: palette.lavenderNum, alpha: 0.9, quality: 0.25 }
+      return { distance: 16, outerStrength: 2.6, color: palette.lavenderNum, alpha: 0.9, quality: 1 }
     case 'boss_lair':
-      return { distance: 10, outerStrength: 2.0, color: palette.redNum, alpha: 0.8, quality: 0.25 }
+      return { distance: 12, outerStrength: 2.2, color: palette.redNum, alpha: 0.85, quality: 1 }
     case 'capital':
-      return { distance: 10, outerStrength: 1.8, color: palette.mauveNum, alpha: 0.8, quality: 0.25 }
+      return { distance: 12, outerStrength: 2.0, color: palette.mauveNum, alpha: 0.85, quality: 1 }
+    case 'quest_item':
+      return { distance: 14, outerStrength: 2.5, color: palette.yellowNum, alpha: 0.95, quality: 1 }
   }
 }
 
@@ -84,10 +81,13 @@ export function getGlowFilterOptions(palette: GamificationThemePalette, variant:
 const glowFilterCache = new Map<string, GlowFilter>()
 
 export function getCachedGlowFilter(palette: GamificationThemePalette, variant: NodeGlowVariant): GlowFilter {
-  const key = `${palette.id}|${palette.redNum}|${variant}`
+  const dpr = (typeof window !== 'undefined' && window.devicePixelRatio) || 1
+  const key = `${palette.id}|${palette.redNum}|${variant}|${dpr}`
   let filter = glowFilterCache.get(key)
   if (!filter) {
     filter = new GlowFilter(getGlowFilterOptions(palette, variant))
+    filter.resolution = dpr
+    filter.padding = 24
     glowFilterCache.set(key, filter)
   }
   return filter
@@ -116,96 +116,9 @@ export function renderHexScene(ctx: HexSceneContext) {
   mapContainer.removeChildren()
   mapContainer.sortableChildren = true
 
-  const currentSelected = currentNodes.find((n) => n.id === currentSelectedId)
   const currentCoords = computeHexGridCoordinates(currentNodes)
   const currentConnections = getAutoFlowConnections(currentNodes)
   const capitalCleared = currentNodes.find((n) => n.type === 'capital')?.status === 'cleared'
-
-  // ─── 1A. FULL DEPENDENCY TOPOLOGY: ALL ARCS AT LOW ALPHA (SINGLE GRAPHICS BATCH) ───
-  // The learner sees the entire campaign graph at a glance; the selected node's
-  // arcs are re-rendered at full opacity on top for contrast.
-  const allArcsGfx = new Graphics()
-  let hasAnyArc = false
-  currentConnections.forEach((conn, index) => {
-    const fromNode = currentNodes.find((n) => n.id === conn.fromId)
-    const toNode = currentNodes.find((n) => n.id === conn.toId)
-    if (!fromNode || !toNode) return
-
-    const fromCoord = currentCoords.get(fromNode.id) || fromNode.coordinates || { q: 0, r: 0 }
-    const toCoord = currentCoords.get(toNode.id) || toNode.coordinates || { q: 0, r: 0 }
-    const p1 = axialToPixel(fromCoord.q, fromCoord.r, 0, 0)
-    const p2 = axialToPixel(toCoord.q, toCoord.r, 0, 0)
-    const { cpX, cpY } = computeArcControlPoint(p1, p2, index)
-
-    allArcsGfx.moveTo(p1.x, p1.y).quadraticCurveTo(cpX, cpY, p2.x, p2.y)
-    hasAnyArc = true
-  })
-
-  if (hasAnyArc) {
-    allArcsGfx.stroke({ width: 2, color: palette.mauveNum, alpha: FULL_ARC_ALPHA })
-    const allArcsContainer = new Container()
-    allArcsContainer.zIndex = 1
-    allArcsContainer.addChild(allArcsGfx)
-    mapContainer.addChild(allArcsContainer)
-  }
-
-  // ─── 1B. RENDER CURVED DEPENDENCY ARCS FOR SELECTED NODE (TARGET) ───
-  if (currentSelected && currentSelected.type !== 'boss_lair') {
-    const depContainer = new Container()
-    depContainer.zIndex = 2
-    const activeDepConns = currentConnections
-      .map((conn, index) => ({ conn, index }))
-      .filter(({ conn }) => conn.toId === currentSelected.id)
-
-    activeDepConns.forEach(({ conn, index }) => {
-      const fromNode = currentNodes.find((n) => n.id === conn.fromId)
-      const toNode = currentNodes.find((n) => n.id === conn.toId)
-      if (!fromNode || !toNode) return
-
-      const fromCoord = currentCoords.get(fromNode.id) || fromNode.coordinates || { q: 0, r: 0 }
-      const toCoord = currentCoords.get(toNode.id) || toNode.coordinates || { q: 0, r: 0 }
-      const p1 = axialToPixel(fromCoord.q, fromCoord.r, 0, 0)
-      const p2 = axialToPixel(toCoord.q, toCoord.r, 0, 0)
-
-      // Same curvature as the low-alpha topology layer so the highlight overlays exactly
-      const { cpX, cpY } = computeArcControlPoint(p1, p2, index)
-
-      // Base glowing curved line
-      const curveGfx = new Graphics()
-      curveGfx
-        .moveTo(p1.x, p1.y)
-        .quadraticCurveTo(cpX, cpY, p2.x, p2.y)
-        .stroke({ width: 3.5, color: palette.mauveNum, alpha: 0.85 })
-
-      const glowGfx = new Graphics()
-      glowGfx
-        .moveTo(p1.x, p1.y)
-        .quadraticCurveTo(cpX, cpY, p2.x, p2.y)
-        .stroke({ width: 7, color: palette.mauveNum, alpha: 0.22 })
-
-      depContainer.addChild(glowGfx)
-      depContainer.addChild(curveGfx)
-
-      // Animated traveling energy pulse dots
-      const pulseDot = new Graphics()
-      pulseDot.circle(0, 0, 3.5).fill({ color: palette.peachNum, alpha: 0.95 })
-      depContainer.addChild(pulseDot)
-
-      animControllers.push((t) => {
-        const progress = ((t * 0.9 + index * 0.3) % 1)
-        // Quadratic Bézier: B(t) = (1-t)^2 P1 + 2(1-t)t CP + t^2 P2
-        const it = 1 - progress
-        const bX = it * it * p1.x + 2 * it * progress * cpX + progress * progress * p2.x
-        const bY = it * it * p1.y + 2 * it * progress * cpY + progress * progress * p2.y
-
-        pulseDot.position.set(bX, bY)
-        pulseDot.alpha = Math.sin(progress * Math.PI) * 0.95
-        curveGfx.alpha = 0.65 + 0.35 * Math.sin(t * 3.5)
-      })
-    })
-
-    mapContainer.addChild(depContainer)
-  }
 
   // ─── 2. RENDER HEX NODES (SORTED WITH SELECTED NODE AT FRONT) ───
   const sortedNodes = [...currentNodes].sort((a, b) => {
@@ -227,14 +140,19 @@ export function renderHexScene(ctx: HexSceneContext) {
     nodeContainer.position.set(x, y)
     nodeContainer.eventMode = 'static'
     nodeContainer.cursor = 'pointer'
+    nodeContainer.cullable = true
 
-    // Post-processing glow halos (Catppuccin Frappé accents)
+    const hasUncompletedQuestItem = !isLocked && !isCleared && !!node.rewards && node.rewards.length > 0
+
+    // Post-processing glow filter with native device resolution & padding
     if (isSelected) {
       nodeContainer.filters = [getCachedGlowFilter(palette, 'selected')]
     } else if (isBoss) {
       nodeContainer.filters = [getCachedGlowFilter(palette, 'boss_lair')]
     } else if (node.type === 'capital') {
       nodeContainer.filters = [getCachedGlowFilter(palette, 'capital')]
+    } else if (hasUncompletedQuestItem) {
+      nodeContainer.filters = [getCachedGlowFilter(palette, 'quest_item')]
     }
 
     // Tap / Click handling
@@ -261,7 +179,7 @@ export function renderHexScene(ctx: HexSceneContext) {
       fillAlpha = 0.85
     }
 
-    // 1. Outer Dark Drop Shadow / Rim
+    // 1. Outer Dark Drop Shadow / Rim (Grounding base onto grass)
     const shadowGfx = new Graphics()
     shadowGfx
       .poly(getHexVertices(0, 1.5, HEX_RADIUS + 1))
@@ -279,7 +197,16 @@ export function renderHexScene(ctx: HexSceneContext) {
       .stroke({ width: strokeWidth, color: strokeColor })
     nodeContainer.addChild(hexGfx)
 
-    // Inner Bevel / Highlight ring graphics (stroked & added only for unlocked or boss nodes)
+    // 2B. Full Hex Terrain Ground Biome
+    const terrainGfx = new Graphics()
+    drawHexTerrainGround(terrainGfx, node.type, {
+      palette,
+      isDefeated: isDefeatedEncounter,
+      isLocked,
+    })
+    nodeContainer.addChild(terrainGfx)
+
+    // Inner Bevel / Highlight ring graphics
     const innerGfx = new Graphics()
 
     // Calculate direction to nearest dependency for attack animations
@@ -364,39 +291,12 @@ export function renderHexScene(ctx: HexSceneContext) {
       renderClearedExplosionFx(nodeCtx)
     }
 
-    // ─── UNIQUE EFFECT LAYERS BY NODE TYPE (TRIGGERED ON SELECTION) ───
-
-    // 1. CAPITAL: Orbital Constellation Satellites
-    if (node.type === 'capital' && !isLocked && isSelected) {
-      renderCapitalOrbit(nodeCtx)
+    // ─── DELEGATED HEX TYPE EFFECTS (Triggered on Selection) ───
+    if (isSelected) {
+      renderHexTypeEffects(node.type, nodeCtx)
     }
 
-    // 2. READING SANCTUARY: Floating Healing Spores / Gentle Mist
-    if (node.type === 'reading_sanctuary' && !isLocked && isSelected) {
-      renderSanctuarySpores(nodeCtx)
-    }
-
-    // 3. QUIZ ENCOUNTER: Strike Lunge with Smooth Fireball Blast Shot at Peak Distance
-    if (node.type === 'quiz_encounter' && !isLocked && isSelected) {
-      renderQuizEncounterAttack(nodeCtx)
-    }
-
-    // 4. REFLECTION DECRYPTION: Volatile Cryptographic Cipher Bomb / Clockwise Pulsing Magic Runes & Lightning
-    if (node.type === 'reflection_decryption' && !isLocked && isSelected) {
-      renderReflectionDecryptionRuneClock(nodeCtx)
-    }
-
-    // 4. TRADEOFF WORKSHOP: Transmutation Forge / Golden Star Constellation
-    if (node.type === 'tradeoff_workshop' && !isLocked && isSelected) {
-      renderTradeoffForge(nodeCtx)
-    }
-
-    // 5. BOSS LAIR: Expanding Crimson Shockwaves & Fiery Flare
-    if (node.type === 'boss_lair' && isSelected) {
-      renderBossShockwave(nodeCtx)
-    }
-
-    // 6. LOCKED (Fog of War) OR NEWLY UNLOCKED REVEAL ANIMATION (Clouds parting left & right with glow)
+    // ─── LOCKED (Fog of War) OR NEWLY UNLOCKED REVEAL ANIMATION ───
     const isNewlyUnlocked = newlyUnlockedNodeIds.has(node.id)
     if (isNewlyUnlocked) {
       renderUnlockRevealFx(nodeCtx)

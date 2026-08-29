@@ -7,6 +7,7 @@ import {
   resolveCombatTurn,
   calculateLevelProgress,
   deriveStatPercentage,
+  deriveHexTypeFromSectionType,
 } from '../../../../../src/core/supporting/gamification/game-rules'
 import type {
   HexNodeData,
@@ -268,5 +269,43 @@ describe('deriveStatPercentage', () => {
     expect(deriveStatPercentage(100)).toBe(40)
     expect(deriveStatPercentage(150)).toBe(40)
     expect(deriveStatPercentage(200)).toBe(40)
+  })
+})
+
+// ─── deriveHexTypeFromSectionType ─────────────────────────────────────────────
+
+describe('deriveHexTypeFromSectionType', () => {
+  it('maps flowchart and scenario to simulation_nexus', () => {
+    expect(deriveHexTypeFromSectionType('flowchart')).toBe('simulation_nexus')
+    expect(deriveHexTypeFromSectionType('scenario')).toBe('simulation_nexus')
+  })
+
+  it('maps taxonomy-browser and bullets to archive_spire', () => {
+    expect(deriveHexTypeFromSectionType('taxonomy-browser')).toBe('archive_spire')
+    expect(deriveHexTypeFromSectionType('taxonomy')).toBe('archive_spire')
+    expect(deriveHexTypeFromSectionType('bullets')).toBe('archive_spire')
+  })
+
+  it('maps concept-map and flashcards to concept_monolith', () => {
+    expect(deriveHexTypeFromSectionType('concept-map')).toBe('concept_monolith')
+    expect(deriveHexTypeFromSectionType('flashcards')).toBe('concept_monolith')
+  })
+
+  it('maps image-gallery to observatory_gallery', () => {
+    expect(deriveHexTypeFromSectionType('image-gallery')).toBe('observatory_gallery')
+    expect(deriveHexTypeFromSectionType('gallery')).toBe('observatory_gallery')
+  })
+
+  it('preserves capital and challenge types if explicitly defined', () => {
+    expect(deriveHexTypeFromSectionType('intro', 'capital')).toBe('capital')
+    expect(deriveHexTypeFromSectionType('quiz', 'quiz_encounter')).toBe('quiz_encounter')
+    expect(deriveHexTypeFromSectionType('tradeoff-sandbox', 'tradeoff_workshop')).toBe('tradeoff_workshop')
+    expect(deriveHexTypeFromSectionType('flowchart', 'boss_lair')).toBe('boss_lair')
+  })
+
+  it('overrides generic reading_sanctuary with specialized variant based on section type', () => {
+    expect(deriveHexTypeFromSectionType('flowchart', 'reading_sanctuary')).toBe('simulation_nexus')
+    expect(deriveHexTypeFromSectionType('concept-map', 'reading_sanctuary')).toBe('concept_monolith')
+    expect(deriveHexTypeFromSectionType('taxonomy-browser', 'reading_sanctuary')).toBe('archive_spire')
   })
 })

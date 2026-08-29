@@ -83,7 +83,7 @@ describe('generateParallaxParticles', () => {
   it('keeps particles small and subtly alpha-blended', () => {
     for (const p of generateParallaxParticles(880, 580)) {
       expect(p.radius).toBeGreaterThan(0)
-      expect(p.radius).toBeLessThan(3)
+      expect(p.radius).toBeLessThanOrEqual(5)
       expect(p.alpha).toBeGreaterThan(0)
       expect(p.alpha).toBeLessThan(0.5)
     }

@@ -204,4 +204,36 @@ nodes:
     expect(result.status).toBe('warning')
     expect(result.diagnostics.some((d) => d.message.includes('must not declare any key item rewards') || d.message.includes('must not declare dropped key item rewards'))).toBe(true)
   })
+
+  it('validates campaigns with new reading variants (archive_spire, simulation_nexus, concept_monolith, observatory_gallery)', () => {
+    const multiVariantYaml = `
+topicId: "demo"
+topicTitle: "Demo Multi-Variant Realm"
+nodes:
+  - id: "capital"
+    title: "Capital"
+    type: "capital"
+    sectionRef: "intro"
+  - id: "spire"
+    title: "Taxonomy Archive"
+    type: "archive_spire"
+    sectionRef: "taxonomy"
+  - id: "nexus"
+    title: "Simulation Nexus"
+    type: "simulation_nexus"
+    sectionRef: "flowchart"
+  - id: "monolith"
+    title: "Concept Monolith"
+    type: "concept_monolith"
+    sectionRef: "concept-map"
+  - id: "gallery"
+    title: "Observatory Gallery"
+    type: "observatory_gallery"
+    sectionRef: "gallery"
+`
+    const result = validateHexCampaign(multiVariantYaml, ['intro', 'taxonomy', 'flowchart', 'concept-map', 'gallery'])
+    expect(result.status).toBe('valid')
+    expect(result.payload.nodes).toHaveLength(5)
+  })
 })
+

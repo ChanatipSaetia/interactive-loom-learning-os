@@ -14,6 +14,16 @@ function coordKey(q: number, r: number): string {
   return `${q},${r}`
 }
 
+function isSanctuary(type?: string): boolean {
+  return (
+    type === 'reading_sanctuary' ||
+    type === 'archive_spire' ||
+    type === 'simulation_nexus' ||
+    type === 'concept_monolith' ||
+    type === 'observatory_gallery'
+  )
+}
+
 /**
  * Automatically computes flow connections based on the 4.2 Node Type & Dependency Hierarchy:
  *   - Capital -> Entry Sanctuaries & Entry Challenges
@@ -23,7 +33,7 @@ function coordKey(q: number, r: number): string {
 export function getAutoFlowConnections(nodes: HexNodeData[]): Array<{ fromId: string; toId: string }> {
   const connections: Array<{ fromId: string; toId: string }> = []
   const capital = nodes.find((n) => n.type === 'capital')
-  const sanctuaries = nodes.filter((n) => n.type === 'reading_sanctuary')
+  const sanctuaries = nodes.filter((n) => isSanctuary(n.type))
   const workshops = nodes.filter((n) => n.type === 'tradeoff_workshop')
   const challenges = nodes.filter((n) => n.type === 'quiz_encounter' || n.type === 'reflection_decryption')
   const boss = nodes.find((n) => n.type === 'boss_lair')

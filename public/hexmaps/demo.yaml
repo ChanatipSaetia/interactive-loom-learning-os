@@ -12,8 +12,8 @@ nodes:
 
   # Track 1: Knowledge Graph & Evaluation Checkpoint
   - id: "sanctuary-concept"
-    title: "Sanctuary of the Knowledge Graph"
-    type: "reading_sanctuary"
+    title: "Monolith of the Knowledge Graph"
+    type: "concept_monolith"
     status: "unlocked"
     sectionRef: "concept-map"
     healingAmount: 35
@@ -40,8 +40,8 @@ nodes:
 
   # Track 2: Capabilities & Sequence Builder
   - id: "sanctuary-taxonomy"
-    title: "Gallery of Agent Capabilities"
-    type: "reading_sanctuary"
+    title: "Archive Spire of Agent Capabilities"
+    type: "archive_spire"
     status: "unlocked"
     sectionRef: "taxonomy"
     healingAmount: 35
@@ -61,8 +61,8 @@ nodes:
 
   # Track 3: Vocabulary & RAG Template Decryption
   - id: "sanctuary-flashcards"
-    title: "Observatory of Core Terminology"
-    type: "reading_sanctuary"
+    title: "Monolith of Core Terminology"
+    type: "concept_monolith"
     status: "unlocked"
     sectionRef: "flashcards"
     healingAmount: 30
@@ -82,8 +82,8 @@ nodes:
 
   # Deep Sanctuaries (Downstream from Tier-1 Challenges)
   - id: "sanctuary-patterns"
-    title: "Sanctuary of Agent Design Patterns"
-    type: "reading_sanctuary"
+    title: "Archive Spire of Agent Design Patterns"
+    type: "archive_spire"
     status: "locked"
     sectionRef: "taxonomy-patterns"
     healingAmount: 35
@@ -106,8 +106,8 @@ nodes:
     description: "Consult the diagnostic tree to select single-agent vs multi-agent supervisor architectures."
 
   - id: "sanctuary-capabilities"
-    title: "Checklist of Agent Capabilities"
-    type: "reading_sanctuary"
+    title: "Archive Spire of Agent Capabilities"
+    type: "archive_spire"
     status: "locked"
     sectionRef: "capabilities"
     healingAmount: 30
@@ -122,24 +122,24 @@ nodes:
     description: "Inspect multi-tier decoupling between presentation, gateway routing, and microservice infrastructure."
 
   - id: "sanctuary-flowchart-core"
-    title: "Spire of the Agent Architecture Flow"
-    type: "reading_sanctuary"
+    title: "Simulation Nexus of Agent Architecture Flow"
+    type: "simulation_nexus"
     status: "locked"
     sectionRef: "flowchart"
     healingAmount: 40
     description: "Trace the end-to-end Event Storming flowchart of multi-agent routing and execution."
 
   - id: "sanctuary-scenario"
-    title: "Deployment Scenario Grove"
-    type: "reading_sanctuary"
+    title: "Simulation Nexus of Deployment Scenarios"
+    type: "simulation_nexus"
     status: "locked"
     sectionRef: "scenario"
     healingAmount: 35
     description: "Navigate branching scenario paths to choose the optimal deployment strategy."
 
   - id: "sanctuary-flowchart-feedback"
-    title: "Spire of the Agent Feedback Loop"
-    type: "reading_sanctuary"
+    title: "Simulation Nexus of Feedback Loops"
+    type: "simulation_nexus"
     status: "locked"
     sectionRef: "flowchart-feedback"
     healingAmount: 40

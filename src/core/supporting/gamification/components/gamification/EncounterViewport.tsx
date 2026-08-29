@@ -1,6 +1,7 @@
 import React, { Suspense, useState, useEffect } from 'react'
 import { DIFFICULTY_CONFIGS } from '../../game-config'
 import { MonsterData } from '../../types'
+import { isSanctuaryType } from '../../game-rules'
 import { Button } from '../../../../ui-system'
 import { SectionRegistry } from '../../../../learning-engine/registry'
 import { EncounterDrawer } from '../EncounterDrawer'
@@ -106,7 +107,7 @@ export const EncounterViewport: React.FC<EncounterViewportProps> = ({ game }) =>
             })()}
 
             {/* Sanctuary Reading Tick Monitor */}
-            {node.type === 'reading_sanctuary' && (
+            {isSanctuaryType(node.type) && (
               <SanctuaryTickMonitor
                 healingAmount={node.healingAmount ?? 40}
                 visitCount={campaign.readingVisitCounts?.[node.id] ?? 1}
@@ -133,7 +134,7 @@ export const EncounterViewport: React.FC<EncounterViewportProps> = ({ game }) =>
 
               // Build list of sequence challenges with their respective item/step counts
               const sequenceList = Array.isArray(secConfig?.props?.challenges) && secConfig.props.challenges.length > 0
-                ? secConfig.props.challenges.map((ch: any, idx: number) => ({
+                ? (secConfig.props.challenges as Array<{ items?: unknown[] }>).map((ch, idx: number) => ({
                     index: idx,
                     itemCount: Array.isArray(ch.items) ? ch.items.length : 4,
                     isCleared: idx < clearedReflectionSlots || node.status === 'cleared',
@@ -224,13 +225,13 @@ export const EncounterViewport: React.FC<EncounterViewportProps> = ({ game }) =>
                     {...sectionConfig.props}
                     intelligenceChance={derivedStats.intelligence}
                     evadeChance={derivedStats.evasion}
-                    onEvent={(event: any) => {
+                    onEvent={(event: { type?: string; isCorrect?: boolean; dodged?: boolean; intelligenceTriggered?: boolean; challengeIndex?: number; totalChallenges?: number }) => {
                       if (event.type === 'QuizOptionSelected') {
                         const totalQuestions = Array.isArray(sectionConfig?.props?.questions)
                           ? sectionConfig.props.questions.length
                           : 2
                         const combatResult = handleQuizAnswerCombat(
-                          event.isCorrect,
+                          !!event.isCorrect,
                           totalQuestions,
                           event.isCorrect ? undefined : event.dodged === true
                         )
@@ -292,7 +293,7 @@ export const EncounterViewport: React.FC<EncounterViewportProps> = ({ game }) =>
                         )
                       }
                     }}
-                    onResultChange={(result: any) => {
+                    onResultChange={(result: { status?: string; accuracy?: number; payload?: Record<string, unknown> }) => {
                       if (node.type === 'tradeoff_workshop' && result?.payload && typeof result.payload === 'object') {
                         const mapped = Object.entries(result.payload).map(([key, val]) => ({
                           id: key,
@@ -325,14 +326,28 @@ export const EncounterViewport: React.FC<EncounterViewportProps> = ({ game }) =>
                     }}
                   />
                 </Suspense>
-                {node.type === 'reading_sanctuary' && node.status !== 'cleared' && (
+                {isSanctuaryType(node.type) && node.status !== 'cleared' && (
                   <div className="pt-4 border-t border-[var(--ctp-surface1)] flex justify-end">
                     <Button
                       className="bg-gradient-to-r from-[var(--primary)] to-[color-mix(in_srgb,var(--primary)_85%,black)] hover:brightness-110 text-[var(--primary-foreground)] border border-[color-mix(in_srgb,var(--primary)_40%,transparent)] shadow-[0_4px_16px_color-mix(in_srgb,var(--primary)_35%,transparent)] font-bold text-sm px-6 py-2.5 flex items-center gap-2 transition-all"
                       onClick={() => handlePassSection(node)}
                     >
-                      <span>🏛️</span>
-                      <span>Complete Reading & Attune Sanctuary (+5 XP)</span>
+                      <span>
+                        {node.type === 'reading_sanctuary' ? '🏛️' :
+                         node.type === 'archive_spire' ? '📜' :
+                         node.type === 'simulation_nexus' ? '⚙️' :
+                         node.type === 'concept_monolith' ? '💎' :
+                         node.type === 'observatory_gallery' ? '🔭' : '🏛️'}
+                      </span>
+                      <span>
+                        Complete Reading & {
+                          node.type === 'reading_sanctuary' ? 'Attune Sanctuary' :
+                          node.type === 'archive_spire' ? 'Study Archives' :
+                          node.type === 'simulation_nexus' ? 'Calibrate Simulation' :
+                          node.type === 'concept_monolith' ? 'Attune Monolith' :
+                          node.type === 'observatory_gallery' ? 'Focus Observatory' : 'Attune Sanctuary'
+                        } (+5 XP)
+                      </span>
                     </Button>
                   </div>
                 )}

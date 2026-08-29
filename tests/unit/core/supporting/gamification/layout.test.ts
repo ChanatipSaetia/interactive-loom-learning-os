@@ -123,4 +123,22 @@ describe('Hex Grid Auto-Layout Engine (layout.ts)', () => {
     expect(isKeyItemLocationRevealed(visitedNodes, visitedNodes[1])).toBe(true)
     expect(getRevealedKeyItemNodes(visitedNodes)).toEqual([visitedNodes[1]])
   })
+
+  it('connects and fogs all sanctuary variants (archive_spire, simulation_nexus, concept_monolith, observatory_gallery) correctly', () => {
+    const nodes: HexNodeData[] = [
+      { id: 'capital-0', title: 'Capital', type: 'capital', status: 'cleared', description: 'Cap' },
+      { id: 'spire-1', title: 'Spire', type: 'archive_spire', status: 'unlocked', description: 'Archive' },
+      { id: 'nexus-1', title: 'Nexus', type: 'simulation_nexus', status: 'unlocked', description: 'Sim' },
+      { id: 'monolith-1', title: 'Monolith', type: 'concept_monolith', status: 'unlocked', description: 'Concept' },
+      { id: 'quiz-1', title: 'Quiz', type: 'quiz_encounter', status: 'locked', description: 'Quiz' },
+      { id: 'boss-1', title: 'Boss', type: 'boss_lair', status: 'locked', description: 'Boss' },
+    ]
+
+    const conns = getAutoFlowConnections(nodes)
+    expect(conns).toContainEqual({ fromId: 'capital-0', toId: 'spire-1' })
+    expect(conns).toContainEqual({ fromId: 'capital-0', toId: 'nexus-1' })
+    expect(conns).toContainEqual({ fromId: 'capital-0', toId: 'monolith-1' })
+    expect(conns).toContainEqual({ fromId: 'spire-1', toId: 'quiz-1' })
+    expect(conns).toContainEqual({ fromId: 'quiz-1', toId: 'boss-1' })
+  })
 })

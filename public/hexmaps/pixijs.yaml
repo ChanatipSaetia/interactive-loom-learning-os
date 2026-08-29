@@ -12,8 +12,8 @@ nodes:
 
   # Track 1: Foundations, Vocabulary & Architecture Selection
   - id: "sanctuary-vocabulary"
-    title: "Observatory of Essential Terms"
-    type: "reading_sanctuary"
+    title: "Monolith of Essential Terms"
+    type: "concept_monolith"
     status: "unlocked"
     sectionRef: "flashcards"
     healingAmount: 30
@@ -40,8 +40,8 @@ nodes:
 
   # Track 2: Display Primitives, Sprite Batching & Render Pipeline
   - id: "sanctuary-taxonomies"
-    title: "Gallery of Display Taxonomies"
-    type: "reading_sanctuary"
+    title: "Archive Spire of Display Taxonomies"
+    type: "archive_spire"
     status: "unlocked"
     sectionRef: "taxonomy-browser"
     healingAmount: 35
@@ -68,8 +68,8 @@ nodes:
 
   # Track 3: Scene Graph & Transform Pipeline
   - id: "sanctuary-map"
-    title: "Sanctuary of the Scene Graph"
-    type: "reading_sanctuary"
+    title: "Monolith of the Scene Graph"
+    type: "concept_monolith"
     status: "unlocked"
     sectionRef: "concept-map"
     healingAmount: 30
@@ -139,8 +139,8 @@ nodes:
 
   # Downstream of Scene Graph: 60 FPS Flowchart Spire
   - id: "sanctuary-flowchart"
-    title: "Spire of the 60 FPS Flowchart"
-    type: "reading_sanctuary"
+    title: "Simulation Nexus of the 60 FPS Flowchart"
+    type: "simulation_nexus"
     status: "locked"
     sectionRef: "flowchart"
     healingAmount: 40
