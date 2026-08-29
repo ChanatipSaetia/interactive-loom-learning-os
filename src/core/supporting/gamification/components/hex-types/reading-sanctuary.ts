@@ -2,6 +2,7 @@ import { Graphics, FillGradient, Container } from 'pixi.js'
 import { HEX_RADIUS } from '../hex-geometry'
 import { GamificationThemePalette, getGamificationThemePalette } from '../../theme-palette'
 import { HexInsigniaOptions, HexTypeDefinition, HexTypeEffectContext } from './types'
+import { createTerritoryRng } from './territory-rng'
 
 export function drawReadingSanctuaryTerrainGround(
   g: Graphics,
@@ -202,63 +203,214 @@ export function drawReadingSanctuaryTerritory(
 ) {
   if (!g || g.destroyed) return
   const { x, y, radius, palette } = ctx
+  const rng = createTerritoryRng(ctx.node.id)
 
   const primaryColor = palette.greenNum
   const accentColor = palette.tealNum
-  const stoneColor = palette.surface1Num
   const darkC = palette.crustNum
 
-  // 1. 2.5D Elevated Grassy Mound & Drop Shadow
+  // 1. 2.5D Elevated Grassy Mound & Single Perimeter Border
   g.ellipse(x, y + 5, radius, radius * 0.85)
     .fill({ color: darkC, alpha: 0.25 })
   g.ellipse(x, y, radius, radius * 0.88)
     .fill({ color: primaryColor, alpha: 0.06 })
+    .stroke({ width: 1.4, color: primaryColor, alpha: 0.35 })
 
-  // 2. Concentric Healing Ripple Rings
-  g.ellipse(x, y, radius * 0.78, radius * 0.68)
-    .stroke({ width: 0.9, color: accentColor, alpha: 0.16 })
-  g.ellipse(x, y, radius * 0.92, radius * 0.8)
-    .stroke({ width: 1.1, color: primaryColor, alpha: 0.24 })
+  // 5. Interior Sanctuary Garden: flower beds, reading lecterns & stepping-stone paths
+  const slots: { y: number; draw: () => void }[] = []
+  const at = (a: number, d: number) => ({ bx: x + Math.cos(a) * d, by: y + Math.sin(a) * (d * 0.88) })
 
-  // 3. Wavy Floral Petal Perimeter Curve
-  const points: number[] = []
-  const steps = 36
-  for (let i = 0; i <= steps; i++) {
-    const angle = (i * Math.PI * 2) / steps
-    const rLobe = radius + 3.5 * Math.sin(angle * 6)
-    points.push(x + Math.cos(angle) * rLobe, y + Math.sin(angle) * (rLobe * 0.88))
+  // Winding stepping-stone path ring
+  const pathA0 = rng.range(0, Math.PI * 2)
+  const stoneCount = rng.int(5, 8)
+  for (let i = 0; i < stoneCount; i++) {
+    const a = pathA0 + (i * Math.PI * 2) / stoneCount
+    const { bx, by } = at(a, radius * (0.7 + 0.03 * Math.sin(a * rng.int(2, 4))))
+    g.ellipse(bx, by, 2.2, 1.1).fill({ color: palette.surface2Num, alpha: 0.35 })
   }
-  g.poly(points).stroke({ width: 1.5, color: primaryColor, alpha: 0.38 })
 
-  // 4. 6 Upright 2.5D Sacred Menhir Standing Stones & Shrubbery
-  for (let i = 0; i < 6; i++) {
-    const angle = (i * Math.PI) / 3
-    const px = x + Math.cos(angle) * radius
-    const py = y + Math.sin(angle) * (radius * 0.88)
+  const sanctuaryTree = (bx: number, by: number, sc = 1) => {
+    slots.push({
+      y: by,
+      draw: () => {
+        // 1. Drop shadow
+        g.ellipse(bx, by + 1.5, 6 * sc, 2.5 * sc).fill({ color: darkC, alpha: 0.45 })
 
-    // Megalith ground contact shadow
-    g.ellipse(px, py + 1.5, 5, 2.2).fill({ color: darkC, alpha: 0.55 })
+        // 2. Trunk with root flares and branch bifurcation
+        g.poly([
+          bx - 3.2 * sc, by + 1 * sc,
+          bx - 1.6 * sc, by - 4 * sc,
+          bx - 2.8 * sc, by - 9 * sc,
+          bx - 1.2 * sc, by - 8.5 * sc,
+          bx, by - 6 * sc,
+          bx + 1.2 * sc, by - 8.5 * sc,
+          bx + 2.8 * sc, by - 9 * sc,
+          bx + 1.6 * sc, by - 4 * sc,
+          bx + 3.2 * sc, by + 1 * sc,
+        ]).fill({ color: palette.surface1Num }).stroke({ width: 0.9, color: palette.textNum })
 
-    // Upright 2.5D Stone Slab (elevated in negative Y) with bold insignia border
-    g.poly([
-      px - 3.5, py,
-      px - 2.5, py - 13,
-      px + 2.5, py - 13,
-      px + 3.5, py,
-    ]).fill({ color: stoneColor }).stroke({ width: 1.2, color: palette.textNum })
+        // Trunk bark groove
+        g.moveTo(bx - 0.4 * sc, by).lineTo(bx - 0.4 * sc, by - 5 * sc)
+          .stroke({ width: 0.6, color: palette.surface2Num })
 
-    // Stone facet highlight edge
-    g.moveTo(px - 2.5, py - 13).lineTo(px - 1.5, py).stroke({ width: 0.7, color: palette.surface0Num })
+        // 3. Multi-tiered lush foliage clouds
+        // Bottom shadow canopy lobes
+        g.circle(bx - 3.8 * sc, by - 9.5 * sc, 3.8 * sc).fill({ color: palette.surface0Num, alpha: 0.9 }).stroke({ width: 0.7, color: palette.textNum })
+        g.circle(bx + 3.8 * sc, by - 9.5 * sc, 3.8 * sc).fill({ color: palette.surface0Num, alpha: 0.9 }).stroke({ width: 0.7, color: palette.textNum })
 
-    // Glowing Ancient Rune carved into stone face
-    g.moveTo(px, py - 10).lineTo(px, py - 3).stroke({ width: 1.0, color: accentColor, alpha: 0.9 })
-    g.circle(px, py - 10, 1.0).fill({ color: palette.textNum })
+        // Mid vibrant green canopy
+        g.circle(bx - 3.2 * sc, by - 11.5 * sc, 4.2 * sc).fill({ color: primaryColor, alpha: 0.95 }).stroke({ width: 0.8, color: palette.textNum })
+        g.circle(bx + 3.2 * sc, by - 11.5 * sc, 4.2 * sc).fill({ color: primaryColor, alpha: 0.95 }).stroke({ width: 0.8, color: palette.textNum })
+        g.circle(bx, by - 14 * sc, 4.8 * sc).fill({ color: accentColor, alpha: 0.95 }).stroke({ width: 0.8, color: palette.textNum })
 
-    // Sprouting 2.5D Herbal Shrub at base with crisp outlines
-    g.circle(px - 3.5, py - 1.5, 1.8).fill({ color: primaryColor, alpha: 0.85 }).stroke({ width: 0.7, color: palette.textNum })
-    g.circle(px + 3.5, py - 1.5, 1.5).fill({ color: palette.tealNum, alpha: 0.85 }).stroke({ width: 0.7, color: palette.textNum })
-    g.circle(px - 3.5, py - 2.5, 0.8).fill({ color: palette.lavenderNum, alpha: 0.95 })
+        // Top canopy highlight dome
+        g.circle(bx - 1.2 * sc, by - 14.5 * sc, 2.6 * sc).fill({ color: primaryColor, alpha: 0.9 })
+        g.circle(bx + 1.4 * sc, by - 13.5 * sc, 2.4 * sc).fill({ color: accentColor, alpha: 0.9 })
+
+        // Blossom flower flecks in canopy
+        g.circle(bx - 2.5 * sc, by - 12 * sc, 0.8 * sc).fill({ color: palette.lavenderNum })
+        g.circle(bx + 2 * sc, by - 13 * sc, 0.8 * sc).fill({ color: palette.rosewaterNum })
+        g.circle(bx - 0.2 * sc, by - 16 * sc, 0.9 * sc).fill({ color: palette.yellowNum })
+      },
+    })
   }
+
+  const flowerBed = (bx: number, by: number, bloom: number, sc = 1) => {
+    slots.push({
+      y: by,
+      draw: () => {
+        g.ellipse(bx, by + 1, 5.5 * sc, 2.6 * sc).fill({ color: darkC, alpha: 0.4 })
+        g.ellipse(bx, by, 5 * sc, 2.4 * sc).fill({ color: palette.surface0Num, alpha: 0.85 }).stroke({ width: 0.8, color: palette.textNum })
+        // Stone edging dots
+        for (let i = 0; i < 6; i++) {
+          const a = (i * Math.PI) / 3
+          g.ellipse(bx + Math.cos(a) * 4.4 * sc, by + Math.sin(a) * 2 * sc, 1 * sc, 0.7 * sc)
+            .fill({ color: palette.surface2Num })
+        }
+        // Flower blooms with stems and centers
+        g.circle(bx - 2.2 * sc, by - 1.2 * sc, 1.6 * sc).fill({ color: primaryColor, alpha: 0.95 }).stroke({ width: 0.5, color: palette.textNum })
+        g.circle(bx + 2.2 * sc, by - 1.4 * sc, 1.4 * sc).fill({ color: bloom, alpha: 0.95 }).stroke({ width: 0.5, color: palette.textNum })
+        g.circle(bx, by - 2.2 * sc, 1.5 * sc).fill({ color: palette.rosewaterNum, alpha: 0.95 }).stroke({ width: 0.5, color: palette.textNum })
+        g.circle(bx - 2.2 * sc, by - 1.2 * sc, 0.6 * sc).fill({ color: palette.yellowNum })
+        g.circle(bx + 2.2 * sc, by - 1.4 * sc, 0.5 * sc).fill({ color: palette.yellowNum })
+        g.circle(bx, by - 2.2 * sc, 0.5 * sc).fill({ color: palette.yellowNum })
+      },
+    })
+  }
+
+  const stoneBench = (bx: number, by: number, sc = 1) => {
+    slots.push({
+      y: by,
+      draw: () => {
+        g.ellipse(bx, by + 1, 4.6 * sc, 1.8 * sc).fill({ color: darkC, alpha: 0.4 })
+        // Bench legs
+        g.rect(bx - 3.2 * sc, by - 3 * sc, 1.4 * sc, 3 * sc).fill({ color: palette.surface1Num }).stroke({ width: 0.6, color: palette.textNum })
+        g.rect(bx + 1.8 * sc, by - 3 * sc, 1.4 * sc, 3 * sc).fill({ color: palette.surface1Num }).stroke({ width: 0.6, color: palette.textNum })
+        // Slab seat
+        g.roundRect(bx - 4.4 * sc, by - 4.2 * sc, 8.8 * sc, 1.8 * sc, 0.5)
+          .fill({ color: palette.surface2Num }).stroke({ width: 0.8, color: palette.textNum })
+        // Backrest
+        g.roundRect(bx - 4.4 * sc, by - 7.5 * sc, 8.8 * sc, 1.4 * sc, 0.5)
+          .fill({ color: palette.surface1Num }).stroke({ width: 0.7, color: palette.textNum })
+        g.rect(bx - 3.6 * sc, by - 6.2 * sc, 1 * sc, 2.2 * sc).fill({ color: palette.surface1Num })
+        g.rect(bx + 2.6 * sc, by - 6.2 * sc, 1 * sc, 2.2 * sc).fill({ color: palette.surface1Num })
+      },
+    })
+  }
+
+  const lectern = (bx: number, by: number, sc = 1) => {
+    slots.push({
+      y: by,
+      draw: () => {
+        g.ellipse(bx, by + 1, 3.6 * sc, 1.6 * sc).fill({ color: darkC, alpha: 0.4 })
+        // Fluted stone pedestal
+        g.roundRect(bx - 2.2 * sc, by - 1.2 * sc, 4.4 * sc, 1.4 * sc, 0.4).fill({ color: palette.surface1Num }).stroke({ width: 0.7, color: palette.textNum })
+        g.rect(bx - 1 * sc, by - 6 * sc, 2 * sc, 5 * sc).fill({ color: palette.surface2Num }).stroke({ width: 0.7, color: palette.textNum })
+        // Angled book stand
+        g.poly([
+          bx - 3.6 * sc, by - 5.8 * sc,
+          bx + 3.6 * sc, by - 7.6 * sc,
+          bx + 3.6 * sc, by - 9.8 * sc,
+          bx - 3.6 * sc, by - 8 * sc,
+        ]).fill({ color: palette.tealNum }).stroke({ width: 0.8, color: palette.textNum })
+        // Open parchment pages
+        g.poly([
+          bx - 3.2 * sc, by - 7.6 * sc,
+          bx, by - 6.8 * sc,
+          bx, by - 8.8 * sc,
+          bx - 3.2 * sc, by - 9.4 * sc,
+        ]).fill({ color: 0xffffff, alpha: 0.9 })
+        g.poly([
+          bx, by - 6.8 * sc,
+          bx + 3.2 * sc, by - 8.2 * sc,
+          bx + 3.2 * sc, by - 10.2 * sc,
+          bx, by - 8.8 * sc,
+        ]).fill({ color: 0xffffff, alpha: 0.9 })
+        // Ribbon
+        g.moveTo(bx, by - 6.8 * sc).lineTo(bx + 0.5 * sc, by - 5.2 * sc).stroke({ width: 0.6, color: palette.yellowNum })
+      },
+    })
+  }
+
+  const waterBasin = (bx: number, by: number, sc = 1) => {
+    slots.push({
+      y: by,
+      draw: () => {
+        g.ellipse(bx, by + 1, 4.2 * sc, 2 * sc).fill({ color: darkC, alpha: 0.4 })
+        g.ellipse(bx, by - 1 * sc, 3.8 * sc, 1.8 * sc).fill({ color: palette.surface2Num }).stroke({ width: 0.8, color: palette.textNum })
+        g.ellipse(bx, by - 1.2 * sc, 3 * sc, 1.4 * sc).fill({ color: palette.tealNum, alpha: 0.9 })
+        // Water glimmer & floating leaf
+        g.ellipse(bx - 0.8 * sc, by - 1.4 * sc, 1.2 * sc, 0.6 * sc).fill({ color: 0xffffff, alpha: 0.7 })
+        g.circle(bx + 0.8 * sc, by - 1 * sc, 0.8 * sc).fill({ color: primaryColor })
+      },
+    })
+  }
+
+  // ─── STATIC NATURAL GARDEN VIGNETTES ───
+  // Vignette 1: North-West Shaded Reading Alcove
+  {
+    const pTree = at(-2.25, radius * 0.84)
+    sanctuaryTree(pTree.bx, pTree.by, 1.05)
+
+    const pBench = at(-2.0, radius * 0.74)
+    stoneBench(pBench.bx, pBench.by, 1.0)
+
+    const pLectern = at(-2.45, radius * 0.75)
+    lectern(pLectern.bx, pLectern.by, 0.95)
+
+    const pBed = at(-1.75, radius * 0.82)
+    flowerBed(pBed.bx, pBed.by, palette.lavenderNum, 1.0)
+  }
+
+  // Vignette 2: East Sacred Spring & Reflection Basin
+  {
+    const pTree = at(0.22, radius * 0.85)
+    sanctuaryTree(pTree.bx, pTree.by, 1.1)
+
+    const pBasin = at(-0.02, radius * 0.73)
+    waterBasin(pBasin.bx, pBasin.by, 1.05)
+
+    const pBench = at(-0.25, radius * 0.82)
+    stoneBench(pBench.bx, pBench.by, 0.95)
+
+    const pBed = at(0.42, radius * 0.8)
+    flowerBed(pBed.bx, pBed.by, palette.rosewaterNum, 1.0)
+  }
+
+  // Vignette 3: South-West Blossom Garden Path
+  {
+    const pTree = at(2.15, radius * 0.84)
+    sanctuaryTree(pTree.bx, pTree.by, 1.0)
+
+    const pLectern = at(1.85, radius * 0.76)
+    lectern(pLectern.bx, pLectern.by, 1.0)
+
+    const pBed = at(2.45, radius * 0.82)
+    flowerBed(pBed.bx, pBed.by, palette.yellowNum, 1.05)
+  }
+
+  slots.sort((s1, s2) => s1.y - s2.y)
+  for (const s of slots) s.draw()
 }
 
 export const readingSanctuaryHex: HexTypeDefinition = {

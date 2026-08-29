@@ -349,7 +349,6 @@ export function renderNodeBadges(ctx: NodeEffectContext) {
     isDefeatedEncounter,
     capitalCleared,
     animControllers,
-    isSelected,
   } = ctx
 
   // Center Procedural Vector Insignia (Only for Unlocked Nodes or Boss)
@@ -366,17 +365,15 @@ export function renderNodeBadges(ctx: NodeEffectContext) {
       time: 0,
     })
 
-    // Continuous ticker animation for living miniature features ONLY when selected
-    if (isSelected) {
-      animControllers.push((t) => {
-        drawHexInsignia(insigniaGfx, node.type, {
-          color: styleInfo.highlight || styleInfo.stroke,
-          isDefeated: isDefeatedEncounter,
-          palette,
-          time: t,
-        })
+    // Continuous ticker animation for living miniature features
+    animControllers.push((t) => {
+      drawHexInsignia(insigniaGfx, node.type, {
+        color: styleInfo.highlight || styleInfo.stroke,
+        isDefeated: isDefeatedEncounter,
+        palette,
+        time: t,
       })
-    }
+    })
   }
 
   // Item Reward Beacon Badge & Quest Aura

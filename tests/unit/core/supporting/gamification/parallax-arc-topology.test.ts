@@ -1,4 +1,5 @@
 import { describe, it, expect } from 'vitest'
+import { Container } from 'pixi.js'
 import {
   PARALLAX_PARTICLE_COUNT,
   PARALLAX_FACTOR,
@@ -10,8 +11,11 @@ import {
 import {
   FULL_ARC_ALPHA,
   computeArcControlPoint,
+  calculateTerritoryRoads,
+  renderTerritoryRoads,
 } from '../../../../../src/core/supporting/gamification/components/scene-renderer'
 import { getGamificationThemePalette } from '../../../../../src/core/supporting/gamification/theme-palette'
+import { HexNodeData } from '../../../../../src/core/supporting/gamification/types'
 
 describe('parallax background constants', () => {
   it('caps ambient particle count at ~60', () => {
@@ -122,3 +126,73 @@ describe('computeArcControlPoint', () => {
     expect(Math.abs(far.curveOffset)).toBeLessThanOrEqual(32)
   })
 })
+
+describe('Territory Roads to Hub (calculateTerritoryRoads & renderTerritoryRoads)', () => {
+  const palette = getGamificationThemePalette('catppuccin')
+
+  const nodes: HexNodeData[] = [
+    { id: 'capital', title: 'Capital', type: 'capital', status: 'unlocked', description: 'Cap' },
+    { id: 's-reading', title: 'Sanctuary 1', type: 'reading_sanctuary', status: 'unlocked', description: 'S1' },
+    { id: 's-spire', title: 'Spire 1', type: 'archive_spire', status: 'cleared', description: 'S2' },
+    { id: 's-nexus', title: 'Nexus 1', type: 'simulation_nexus', status: 'locked', description: 'S3' },
+    { id: 's-monolith', title: 'Monolith 1', type: 'concept_monolith', status: 'locked', description: 'S4' },
+    { id: 's-gallery', title: 'Gallery 1', type: 'observatory_gallery', status: 'locked', description: 'S5' },
+    { id: 'quiz-1', title: 'Quiz 1', type: 'quiz_encounter', status: 'locked', description: 'Q1' },
+    { id: 'boss-1', title: 'Boss', type: 'boss_lair', status: 'locked', description: 'B' },
+  ]
+
+  const coords = new Map<string, { q: number; r: number }>([
+    ['capital', { q: 0, r: 0 }],
+    ['s-reading', { q: 3, r: 0 }],
+    ['s-spire', { q: 0, r: 3 }],
+    ['s-nexus', { q: -3, r: 3 }],
+    ['s-monolith', { q: -3, r: 0 }],
+    ['s-gallery', { q: 0, r: -3 }],
+    ['quiz-1', { q: 4, r: 0 }],
+    ['boss-1', { q: 0, r: -1 }],
+  ])
+
+  it('calculates connecting roads for every sanctuary territory back to the hub', () => {
+    const roads = calculateTerritoryRoads(nodes, coords)
+    // 5 sanctuaries total
+    expect(roads).toHaveLength(5)
+
+    // Each road connects from a sanctuary to the capital hub
+    for (const road of roads) {
+      expect(road.toHubNode.id).toBe('capital')
+      expect(road.toPixel).toEqual({ x: 0, y: 0 })
+      expect(road.controlPoint).toBeDefined()
+      expect(road.fromNode.type).not.toBe('capital')
+      expect(road.fromNode.type).not.toBe('quiz_encounter')
+      expect(road.fromNode.type).not.toBe('boss_lair')
+    }
+
+    // Status reflection
+    const readingRoad = roads.find((r) => r.fromNode.id === 's-reading')!
+    expect(readingRoad.isUnlocked).toBe(true)
+    expect(readingRoad.isCleared).toBe(false)
+
+    const spireRoad = roads.find((r) => r.fromNode.id === 's-spire')!
+    expect(spireRoad.isUnlocked).toBe(false)
+    expect(spireRoad.isCleared).toBe(true)
+  })
+
+  it('renders territory roads container and animation controllers without crashing', () => {
+    const container = new Container()
+    const animControllers: Array<(time: number) => void> = []
+    const roads = calculateTerritoryRoads(nodes, coords)
+
+    expect(() => {
+      renderTerritoryRoads(container, roads, palette, animControllers)
+    }).not.toThrow()
+
+    expect(container.children.length).toBeGreaterThan(0)
+    expect(animControllers.length).toBe(1)
+
+    // Execute anim controller
+    expect(() => {
+      animControllers[0](1.5)
+    }).not.toThrow()
+  })
+})
+

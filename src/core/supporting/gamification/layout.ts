@@ -32,7 +32,7 @@ export function isSanctuary(type?: string): boolean {
 }
 
 export function isSanctuaryOrForge(type?: string): boolean {
-  return isSanctuary(type) || type === 'tradeoff_workshop'
+  return isSanctuary(type)
 }
 
 /**
@@ -221,8 +221,13 @@ export function computeHexGridCoordinates(
   const rng = createRng(options?.seed, options?.random)
   const capitalNode = nodes.find((n) => n.type === 'capital') || nodes[0]
   const bossNode = nodes.find((n) => n.type === 'boss_lair')
-  const primarySites = nodes.filter((n) => isSanctuaryOrForge(n.type))
-  const challenges = nodes.filter((n) => n.type === 'quiz_encounter' || n.type === 'reflection_decryption')
+  const primarySites = nodes.filter((n) => isSanctuary(n.type))
+  const challenges = nodes.filter(
+    (n) =>
+      n.type === 'quiz_encounter' ||
+      n.type === 'reflection_decryption' ||
+      n.type === 'tradeoff_workshop',
+  )
   const autoConns = getAutoFlowConnections(nodes)
 
   // 1. Hub / Capital at center (0, 0)

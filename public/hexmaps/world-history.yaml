@@ -66,13 +66,13 @@ nodes:
     healingAmount: 40
     description: "ติดตามวิวัฒนาการเครื่องจักรไอน้ำและระบบโรงงานที่พลิกโฉมหน้าเศรษฐกิจโลก"
 
-  # 7. Trade-off Workshop (Strategy Trade-offs)
+  # 7. Trade-off Workshop (Strategy Trade-offs Challenge)
   - id: "tradeoff-forge"
     title: "โรงหลอมยุทธศาสตร์และดุลยภาพ (Strategy Tradeoff Forge)"
     type: "tradeoff_workshop"
     status: "locked"
     unlockedBy:
-      - "capital"
+      - "simulation-industrial"
     sectionRef: "tradeoffs"
     description: "ทดลองชั่งน้ำหนักเส้นทางการค้าโบราณและนโยบายอุตสาหกรรมเพื่อสังเคราะห์บัฟเสริมพลัง!"
     tradeoffMapping:

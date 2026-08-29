@@ -2,6 +2,7 @@ import { Graphics, Container, FillGradient } from 'pixi.js'
 import { HEX_RADIUS } from '../hex-geometry'
 import { GamificationThemePalette, getGamificationThemePalette } from '../../theme-palette'
 import { HexInsigniaOptions, HexTypeDefinition, HexTypeEffectContext } from './types'
+import { createTerritoryRng, ringAngle } from './territory-rng'
 
 export function drawConceptMonolithTerrainGround(
   g: Graphics,
@@ -205,63 +206,195 @@ export function drawConceptMonolithTerritory(
 ) {
   if (!g || g.destroyed) return
   const { x, y, radius, palette } = ctx
+  const rng = createTerritoryRng(ctx.node.id)
 
   const primaryColor = palette.lavenderNum
   const accentColor = palette.tealNum
   const barkColor = palette.surface1Num
   const darkC = palette.crustNum
 
-  // 1. 2.5D Organic Root Mound & Drop Shadow
+  // 1. 2.5D Organic Root Mound & Single Perimeter Border
   g.ellipse(x, y + 5, radius, radius * 0.85)
     .fill({ color: darkC, alpha: 0.25 })
   g.ellipse(x, y, radius, radius * 0.88)
     .fill({ color: primaryColor, alpha: 0.06 })
-
-  // 2. Constellation Network Perimeter Ring
-  g.ellipse(x, y, radius * 0.88, radius * 0.76)
-    .stroke({ width: 0.9, color: accentColor, alpha: 0.22 })
-  g.ellipse(x, y, radius, radius * 0.88)
     .stroke({ width: 1.4, color: primaryColor, alpha: 0.32 })
 
-  // 3. 6 Upright 2.5D Miniature Bioluminescent Concept Sprout Trees
-  const treeCanopyPositions: Array<{ x: number; y: number }> = []
-  const count = 6
-  for (let i = 0; i < count; i++) {
-    const angle = (i * Math.PI * 2) / count
-    const nx = x + Math.cos(angle) * radius
-    const ny = y + Math.sin(angle) * (radius * 0.88)
+  // 3. Interior Grove: saplings, glowing seed nodes & spreading root lattice
+  const slots: { y: number; draw: () => void }[] = []
+  const at = (a: number, d: number) => ({ bx: x + Math.cos(a) * d, by: y + Math.sin(a) * (d * 0.88) })
 
-    // Tree ground root shadow
-    g.ellipse(nx, ny + 1.5, 5, 2.2).fill({ color: darkC, alpha: 0.55 })
-
-    // Upright 2.5D Trunk (growing upwards in negative Y) with bold outline
-    g.poly([
-      nx - 2.5, ny,
-      nx - 1.2, ny - 9,
-      nx + 1.2, ny - 9,
-      nx + 2.5, ny,
-    ]).fill({ color: barkColor }).stroke({ width: 1.0, color: palette.textNum })
-
-    // 2.5D Glowing Canopy Node Sphere (at ny - 12)
-    const cy = ny - 12
-    treeCanopyPositions.push({ x: nx, y: cy })
-
-    // Canopy glow aura
-    g.circle(nx, cy, 5.0).fill({ color: primaryColor, alpha: 0.25 })
-    // Main 2.5D foliage orb with bold border
-    g.circle(nx, cy, 3.5).fill({ color: i % 2 === 0 ? primaryColor : accentColor, alpha: 0.9 }).stroke({ width: 0.9, color: palette.textNum })
-    // Specular highlight on top-left of orb
-    g.circle(nx - 1, cy - 1, 1.2).fill({ color: 0xffffff, alpha: 0.95 })
+  // Underground root lattice floor decal
+  const rootPtCount = rng.int(4, 6)
+  const rootA0 = rng.range(0, Math.PI * 2)
+  const rootPts: Array<{ x: number; y: number }> = []
+  for (let i = 0; i < rootPtCount; i++) {
+    const a = ringAngle(rng, i, rootPtCount, rootA0, 0.2)
+    const d = radius * rng.range(0.68, 0.84)
+    rootPts.push({ x: x + Math.cos(a) * d, y: y + Math.sin(a) * (d * 0.88) })
+  }
+  for (let i = 0; i < rootPts.length; i++) {
+    const p1 = rootPts[i]
+    const p2 = rootPts[(i + 3) % rootPts.length]
+    g.moveTo(p1.x, p1.y).lineTo(p2.x, p2.y).stroke({ width: 0.6, color: barkColor, alpha: 0.3 })
+  }
+  for (const p of rootPts) {
+    g.circle(p.x, p.y, 1.6).fill({ color: accentColor, alpha: 0.3 })
   }
 
-  // 4. 2.5D Holographic Concept Constellation Lattice connecting canopies in 3D air
-  for (let i = 0; i < count; i++) {
-    const p1 = treeCanopyPositions[i]
-    const p2 = treeCanopyPositions[(i + 2) % count]
-    g.moveTo(p1.x, p1.y)
-      .lineTo(p2.x, p2.y)
-      .stroke({ width: 0.8, color: accentColor, alpha: 0.35 })
+  const elderSapling = (bx: number, by: number, glowColor: number, sc = 1) => {
+    slots.push({
+      y: by,
+      draw: () => {
+        g.ellipse(bx, by + 1.5, 6 * sc, 2.4 * sc).fill({ color: darkC, alpha: 0.45 })
+        // Twisted ancient root trunk
+        g.poly([
+          bx - 2.8 * sc, by + 1 * sc,
+          bx - 1.4 * sc, by - 4 * sc,
+          bx - 2.4 * sc, by - 9 * sc,
+          bx - 0.8 * sc, by - 8.5 * sc,
+          bx, by - 5.5 * sc,
+          bx + 1 * sc, by - 8.5 * sc,
+          bx + 2.4 * sc, by - 9 * sc,
+          bx + 1.4 * sc, by - 4 * sc,
+          bx + 2.8 * sc, by + 1 * sc,
+        ]).fill({ color: barkColor }).stroke({ width: 0.8, color: palette.textNum })
+
+        // Canopy aura glow
+        g.circle(bx, by - 12 * sc, 7 * sc).fill({ color: glowColor, alpha: 0.18 })
+
+        // Multi-layered bioluminescent foliage
+        g.circle(bx - 3.4 * sc, by - 10 * sc, 3.8 * sc).fill({ color: palette.surface0Num, alpha: 0.9 }).stroke({ width: 0.7, color: palette.textNum })
+        g.circle(bx + 3.4 * sc, by - 10 * sc, 3.8 * sc).fill({ color: palette.surface0Num, alpha: 0.9 }).stroke({ width: 0.7, color: palette.textNum })
+        g.circle(bx - 2.8 * sc, by - 12 * sc, 4 * sc).fill({ color: glowColor, alpha: 0.95 }).stroke({ width: 0.8, color: palette.textNum })
+        g.circle(bx + 2.8 * sc, by - 12 * sc, 4 * sc).fill({ color: accentColor, alpha: 0.95 }).stroke({ width: 0.8, color: palette.textNum })
+        g.circle(bx, by - 14.5 * sc, 4.4 * sc).fill({ color: glowColor, alpha: 0.95 }).stroke({ width: 0.8, color: palette.textNum })
+
+        // Glowing spore crystals in canopy
+        g.circle(bx - 1.8 * sc, by - 12.5 * sc, 1.2 * sc).fill({ color: 0xffffff, alpha: 0.95 })
+        g.circle(bx + 1.8 * sc, by - 13.5 * sc, 1.2 * sc).fill({ color: 0xffffff, alpha: 0.95 })
+        g.circle(bx, by - 16 * sc, 1.4 * sc).fill({ color: 0xffffff, alpha: 0.95 })
+      },
+    })
   }
+
+  const mushroomCluster = (bx: number, by: number, sc = 1) => {
+    slots.push({
+      y: by,
+      draw: () => {
+        g.ellipse(bx, by + 1, 4.8 * sc, 2 * sc).fill({ color: darkC, alpha: 0.4 })
+        // Stems
+        g.rect(bx - 2.4 * sc, by - 3.5 * sc, 1 * sc, 3.5 * sc).fill({ color: palette.surface2Num })
+        g.rect(bx + 1.4 * sc, by - 4.5 * sc, 1.2 * sc, 4.5 * sc).fill({ color: palette.surface2Num })
+        g.rect(bx - 0.4 * sc, by - 6 * sc, 1.4 * sc, 6 * sc).fill({ color: palette.surface1Num })
+
+        // Mushroom caps
+        g.ellipse(bx - 2 * sc, by - 4 * sc, 2.2 * sc, 1.5 * sc).fill({ color: accentColor, alpha: 0.95 }).stroke({ width: 0.6, color: palette.textNum })
+        g.ellipse(bx + 2 * sc, by - 5 * sc, 2.6 * sc, 1.8 * sc).fill({ color: palette.flamingoNum, alpha: 0.95 }).stroke({ width: 0.6, color: palette.textNum })
+        g.ellipse(bx + 0.3 * sc, by - 7 * sc, 3.4 * sc, 2.3 * sc).fill({ color: primaryColor, alpha: 0.95 }).stroke({ width: 0.7, color: palette.textNum })
+
+        // Glow dots on main cap
+        g.circle(bx - 0.8 * sc, by - 7.6 * sc, 0.7 * sc).fill({ color: 0xffffff, alpha: 0.9 })
+        g.circle(bx + 1.2 * sc, by - 7.2 * sc, 0.6 * sc).fill({ color: 0xffffff, alpha: 0.9 })
+      },
+    })
+  }
+
+  const druidicStandingStone = (bx: number, by: number, sc = 1) => {
+    slots.push({
+      y: by,
+      draw: () => {
+        g.ellipse(bx, by + 1, 4.2 * sc, 1.8 * sc).fill({ color: darkC, alpha: 0.45 })
+        // Mossy monolith menhir
+        g.poly([
+          bx - 2.2 * sc, by,
+          bx - 2.6 * sc, by - 9 * sc,
+          bx, by - 12.5 * sc,
+          bx + 2.6 * sc, by - 9 * sc,
+          bx + 2.2 * sc, by,
+        ]).fill({ color: palette.surface2Num }).stroke({ width: 0.8, color: palette.textNum })
+        // Glowing runic inscription vein
+        g.moveTo(bx, by - 2 * sc).lineTo(bx, by - 10 * sc).stroke({ width: 0.8, color: accentColor })
+        g.moveTo(bx - 1.2 * sc, by - 6 * sc).lineTo(bx + 1.2 * sc, by - 6 * sc).stroke({ width: 0.7, color: accentColor })
+        g.circle(bx, by - 8 * sc, 0.8 * sc).fill({ color: 0xffffff })
+      },
+    })
+  }
+
+  const crystalSeedPod = (bx: number, by: number, sc = 1) => {
+    slots.push({
+      y: by,
+      draw: () => {
+        g.ellipse(bx, by + 1, 3.8 * sc, 1.6 * sc).fill({ color: darkC, alpha: 0.35 })
+        // Root cradle
+        g.poly([
+          bx - 2.8 * sc, by,
+          bx - 1.8 * sc, by - 3 * sc,
+          bx - 2.4 * sc, by - 5 * sc,
+          bx - 1.2 * sc, by - 2 * sc,
+          bx, by - 1 * sc,
+          bx + 1.2 * sc, by - 2 * sc,
+          bx + 2.4 * sc, by - 5 * sc,
+          bx + 1.8 * sc, by - 3 * sc,
+          bx + 2.8 * sc, by,
+        ]).fill({ color: barkColor }).stroke({ width: 0.7, color: palette.textNum })
+        // Glowing seed gem
+        g.poly([
+          bx, by - 8.5 * sc,
+          bx + 2.4 * sc, by - 5 * sc,
+          bx, by - 1.5 * sc,
+          bx - 2.4 * sc, by - 5 * sc,
+        ]).fill({ color: primaryColor, alpha: 0.95 }).stroke({ width: 0.7, color: palette.textNum })
+        g.circle(bx, by - 5 * sc, 1 * sc).fill({ color: 0xffffff, alpha: 0.95 })
+      },
+    })
+  }
+
+  // ─── STATIC NATURAL GROVE VIGNETTES ───
+  // Vignette 1: North-West Ancient Spore Sanctuary
+  {
+    const pTree = at(-2.25, radius * 0.84)
+    elderSapling(pTree.bx, pTree.by, primaryColor, 1.05)
+
+    const pShroom = at(-2.0, radius * 0.74)
+    mushroomCluster(pShroom.bx, pShroom.by, 1.0)
+
+    const pStone = at(-2.5, radius * 0.82)
+    druidicStandingStone(pStone.bx, pStone.by, 0.95)
+
+    const pSeed = at(-1.75, radius * 0.78)
+    crystalSeedPod(pSeed.bx, pSeed.by, 0.9)
+  }
+
+  // Vignette 2: East Megalith Ritual Circle
+  {
+    const pTree = at(0.2, radius * 0.85)
+    elderSapling(pTree.bx, pTree.by, accentColor, 1.1)
+
+    const pSeed = at(-0.05, radius * 0.73)
+    crystalSeedPod(pSeed.bx, pSeed.by, 1.05)
+
+    const pStone = at(-0.25, radius * 0.85)
+    druidicStandingStone(pStone.bx, pStone.by, 1.0)
+
+    const pShroom = at(0.42, radius * 0.76)
+    mushroomCluster(pShroom.bx, pShroom.by, 0.95)
+  }
+
+  // Vignette 3: South-West Bioluminescent Glade
+  {
+    const pTree = at(2.15, radius * 0.83)
+    elderSapling(pTree.bx, pTree.by, primaryColor, 1.0)
+
+    const pSeed = at(1.85, radius * 0.75)
+    crystalSeedPod(pSeed.bx, pSeed.by, 0.95)
+
+    const pShroom = at(2.45, radius * 0.74)
+    mushroomCluster(pShroom.bx, pShroom.by, 1.05)
+  }
+
+  slots.sort((s1, s2) => s1.y - s2.y)
+  for (const s of slots) s.draw()
 }
 
 export const conceptMonolithHex: HexTypeDefinition = {

@@ -137,60 +137,177 @@ export function drawObservatoryGalleryTerritory(
   const { x, y, radius, palette } = ctx
 
   const primaryColor = palette.rosewaterNum
-  const accentColor = palette.flamingoNum
   const brassColor = palette.surface1Num
   const darkC = palette.crustNum
 
-  // 1. 2.5D Astrolabe Platform Plinth & Drop Shadow
+  // 1. 2.5D Polished Astrolabe Platform & Single Perimeter Border
   g.ellipse(x, y + 5, radius, radius * 0.85)
     .fill({ color: darkC, alpha: 0.25 })
   g.ellipse(x, y, radius, radius * 0.88)
     .fill({ color: primaryColor, alpha: 0.055 })
-
-  // 2. Concentric Astrolabe Coordinate Rings
-  g.ellipse(x, y, radius * 0.85, radius * 0.74)
-    .stroke({ width: 0.9, color: accentColor, alpha: 0.22 })
-  g.ellipse(x, y, radius, radius * 0.88)
     .stroke({ width: 1.5, color: primaryColor, alpha: 0.35 })
 
-  // 3. 12 Zodiac / Celestial Degree Ticks along the Perimeter
-  for (let i = 0; i < 12; i++) {
-    const angle = (i * Math.PI * 2) / 12
-    const cosA = Math.cos(angle)
-    const sinA = Math.sin(angle)
-    const isMajor = i % 3 === 0
-    const tickLen = isMajor ? 5 : 2.5
+  // 2. Interior Observation Yard: telescopes, star pedestals & celestial instruments
+  const slots: { y: number; draw: () => void }[] = []
+  const at = (a: number, d: number) => ({ bx: x + Math.cos(a) * d, by: y + Math.sin(a) * (d * 0.88) })
 
-    g.moveTo(x + cosA * (radius - tickLen), y + sinA * ((radius - tickLen) * 0.88))
-      .lineTo(x + cosA * (radius + tickLen), y + sinA * ((radius + tickLen) * 0.88))
-      .stroke({ width: isMajor ? 1.4 : 0.8, color: primaryColor, alpha: isMajor ? 0.6 : 0.3 })
+  // 1. Refractor Brass Telescope on Tripod with Altitude Adjuster
+  const telescope = (bx: number, by: number, tilt: number, sc = 1) => {
+    slots.push({
+      y: by,
+      draw: () => {
+        g.ellipse(bx, by + 1, 4.5 * sc, 2 * sc).fill({ color: darkC, alpha: 0.45 })
+        // Brass mount collar
+        g.circle(bx, by - 6 * sc, 1.4 * sc).fill({ color: brassColor }).stroke({ width: 0.6, color: palette.textNum })
+        // Sturdy wooden tripod legs with brass tips
+        g.moveTo(bx, by - 6 * sc).lineTo(bx - 3.6 * sc, by).stroke({ width: 1.1, color: palette.surface1Num })
+        g.moveTo(bx, by - 6 * sc).lineTo(bx + 3.6 * sc, by).stroke({ width: 1.1, color: palette.surface1Num })
+        g.moveTo(bx, by - 6 * sc).lineTo(bx, by + 0.5 * sc).stroke({ width: 1.1, color: palette.surface2Num })
+        // Altitude wheel
+        g.circle(bx + 1 * sc, by - 6 * sc, 0.8 * sc).fill({ color: palette.yellowNum })
+
+        // Multi-segmented brass refractor barrel
+        const L = 6 * sc
+        const W = 1.4 * sc
+        const cosT = Math.cos(tilt)
+        const sinT = Math.sin(tilt)
+
+        // Rear eyepiece tube
+        g.poly([
+          bx - L * 0.4 * cosT - W * 0.6 * sinT, by - 6 * sc + L * 0.4 * sinT - W * 0.6 * cosT,
+          bx - L * 0.4 * cosT + W * 0.6 * sinT, by - 6 * sc + L * 0.4 * sinT + W * 0.6 * cosT,
+          bx - W * 0.6 * sinT, by - 6 * sc + W * 0.6 * cosT,
+          bx + W * 0.6 * sinT, by - 6 * sc - W * 0.6 * cosT,
+        ]).fill({ color: darkC }).stroke({ width: 0.6, color: palette.textNum })
+
+        // Main polished brass barrel
+        g.poly([
+          bx - W * sinT, by - 6 * sc + W * cosT,
+          bx + L * cosT - W * 1.2 * sinT, by - 6 * sc - L * sinT + W * 1.2 * cosT,
+          bx + L * cosT + W * 1.2 * sinT, by - 6 * sc - L * sinT - W * 1.2 * cosT,
+          bx + W * sinT, by - 6 * sc - W * cosT,
+        ]).fill({ color: brassColor }).stroke({ width: 0.8, color: palette.textNum })
+
+        // Objective lens hood and reflex
+        g.ellipse(bx + L * cosT, by - 6 * sc - L * sinT, W * 1.3, W * 0.8)
+          .fill({ color: primaryColor }).stroke({ width: 0.7, color: palette.yellowNum })
+        g.circle(bx + (L - 0.5) * cosT, by - 6 * sc - (L - 0.5) * sinT, 0.7 * sc).fill({ color: 0xffffff, alpha: 0.95 })
+      },
+    })
   }
 
-  // 4. 4 Upright 2.5D Brass Celestial Gnomon Pillars & Armillary Orbs
-  for (let i = 0; i < 4; i++) {
-    const angle = (i * Math.PI) / 2
-    const gx = x + Math.cos(angle) * radius
-    const gy = y + Math.sin(angle) * (radius * 0.88)
-
-    // Base contact shadow
-    g.ellipse(gx, gy + 2, 5, 2.2).fill({ color: darkC, alpha: 0.55 })
-
-    // Upright 2.5D Brass Pillar (elevated in negative Y) with bold border
-    g.poly([
-      gx - 2.5, gy,
-      gx - 1.8, gy - 11,
-      gx + 1.8, gy - 11,
-      gx + 2.5, gy,
-    ]).fill({ color: brassColor }).stroke({ width: 1.1, color: palette.textNum })
-
-    // 2.5D Armillary Celestial Globe Sphere at apex (gy - 14) with bold border
-    const tipY = gy - 14
-    g.circle(gx, tipY, 2.8).fill({ color: accentColor, alpha: 0.9 }).stroke({ width: 0.9, color: palette.textNum })
-    g.circle(gx - 0.8, tipY - 0.8, 1.0).fill({ color: 0xffffff, alpha: 0.95 })
-
-    // Tilted 3D celestial orbital ring around globe
-    g.ellipse(gx, tipY, 4.5, 1.8).stroke({ width: 0.9, color: primaryColor, alpha: 0.85 })
+  // 2. Celestial Orrery with Nested Orbital Rings and Gemstone Planets
+  const celestialOrrery = (bx: number, by: number, sc = 1) => {
+    slots.push({
+      y: by,
+      draw: () => {
+        g.ellipse(bx, by + 1, 4.4 * sc, 1.8 * sc).fill({ color: darkC, alpha: 0.4 })
+        // Tiered brass pedestal
+        g.roundRect(bx - 2.5 * sc, by - 1.2 * sc, 5 * sc, 1.4 * sc, 0.4).fill({ color: brassColor }).stroke({ width: 0.6, color: palette.textNum })
+        g.rect(bx - 0.7 * sc, by - 7 * sc, 1.4 * sc, 6 * sc).fill({ color: brassColor }).stroke({ width: 0.6, color: palette.textNum })
+        // Central Golden Sun
+        g.circle(bx, by - 9 * sc, 1.8 * sc).fill({ color: palette.yellowNum }).stroke({ width: 0.7, color: palette.textNum })
+        // Outer orbital ring tilted 2.5D
+        g.ellipse(bx, by - 9 * sc, 5.2 * sc, 2.2 * sc).stroke({ width: 0.7, color: brassColor, alpha: 0.9 })
+        // Inner orbital ring
+        g.ellipse(bx, by - 9 * sc, 3.4 * sc, 1.4 * sc).stroke({ width: 0.6, color: brassColor, alpha: 0.8 })
+        // Orbiting planet beads
+        g.circle(bx - 4.4 * sc, by - 9.6 * sc, 0.9 * sc).fill({ color: palette.sapphireNum })
+        g.circle(bx + 2.8 * sc, by - 8 * sc, 0.7 * sc).fill({ color: palette.tealNum })
+      },
+    })
   }
+
+  // 3. Armillary Celestial Star Globe on Marble Pillar
+  const starGlobe = (bx: number, by: number, sc = 1) => {
+    slots.push({
+      y: by,
+      draw: () => {
+        g.ellipse(bx, by + 1, 3.8 * sc, 1.6 * sc).fill({ color: darkC, alpha: 0.4 })
+        // Fluted marble pillar
+        g.rect(bx - 1.4 * sc, by - 6 * sc, 2.8 * sc, 6 * sc).fill({ color: palette.surface1Num }).stroke({ width: 0.7, color: palette.textNum })
+        g.roundRect(bx - 2.2 * sc, by - 7 * sc, 4.4 * sc, 1.2 * sc, 0.3).fill({ color: brassColor })
+        // Deep Indigo Globe
+        g.circle(bx, by - 10.5 * sc, 3.2 * sc).fill({ color: palette.surface0Num }).stroke({ width: 0.8, color: palette.textNum })
+        // Gilded meridian gimbal arc
+        g.ellipse(bx, by - 10.5 * sc, 3.8 * sc, 1.6 * sc).stroke({ width: 0.7, color: palette.yellowNum })
+        // Constellation star specks
+        g.circle(bx - 1 * sc, by - 11.5 * sc, 0.6 * sc).fill({ color: 0xffffff, alpha: 0.95 })
+        g.circle(bx + 1.2 * sc, by - 10 * sc, 0.5 * sc).fill({ color: 0xffffff, alpha: 0.95 })
+        g.circle(bx - 0.2 * sc, by - 9.2 * sc, 0.5 * sc).fill({ color: palette.yellowNum, alpha: 0.9 })
+      },
+    })
+  }
+
+  // 4. Cartography Drafting Table with Rolled Constellation Chart
+  const draftingTable = (bx: number, by: number, sc = 1) => {
+    slots.push({
+      y: by,
+      draw: () => {
+        g.ellipse(bx, by + 1, 4.6 * sc, 2 * sc).fill({ color: darkC, alpha: 0.4 })
+        // Table legs
+        g.rect(bx - 3.4 * sc, by - 4 * sc, 1 * sc, 4 * sc).fill({ color: palette.surface1Num }).stroke({ width: 0.5, color: palette.textNum })
+        g.rect(bx + 2.4 * sc, by - 4 * sc, 1 * sc, 4 * sc).fill({ color: palette.surface1Num }).stroke({ width: 0.5, color: palette.textNum })
+        // Tilted drafting top
+        g.poly([
+          bx - 4.4 * sc, by - 4.2 * sc,
+          bx + 4.4 * sc, by - 6 * sc,
+          bx + 4.4 * sc, by - 8.2 * sc,
+          bx - 4.4 * sc, by - 6.4 * sc,
+        ]).fill({ color: palette.surface2Num }).stroke({ width: 0.8, color: palette.textNum })
+        // Rolled star chart blueprint
+        g.poly([
+          bx - 3.4 * sc, by - 5.5 * sc,
+          bx + 3.4 * sc, by - 6.8 * sc,
+          bx + 3.4 * sc, by - 8 * sc,
+          bx - 3.4 * sc, by - 6.7 * sc,
+        ]).fill({ color: primaryColor, alpha: 0.9 })
+        // Brass weights on chart
+        g.circle(bx - 2.8 * sc, by - 5.8 * sc, 0.6 * sc).fill({ color: palette.yellowNum })
+        g.circle(bx + 2.8 * sc, by - 7.5 * sc, 0.6 * sc).fill({ color: palette.yellowNum })
+      },
+    })
+  }
+
+  // ─── STATIC NATURAL CELESTIAL OBSERVATION VIGNETTES ───
+  // Vignette 1: North-West Celestial Observation Post
+  {
+    const pScope = at(-2.15, radius * 0.78)
+    telescope(pScope.bx, pScope.by, Math.PI / 3.5, 1.05)
+
+    const pDesk = at(-2.45, radius * 0.74)
+    draftingTable(pDesk.bx, pDesk.by, 1.0)
+
+    const pGlobe = at(-1.8, radius * 0.85)
+    starGlobe(pGlobe.bx, pGlobe.by, 1.0)
+  }
+
+  // Vignette 2: East Grand Orrery Chamber
+  {
+    const pOrrery = at(0.1, radius * 0.82)
+    celestialOrrery(pOrrery.bx, pOrrery.by, 1.1)
+
+    const pGlobe = at(-0.15, radius * 0.75)
+    starGlobe(pGlobe.bx, pGlobe.by, 0.95)
+
+    const pScope = at(0.38, radius * 0.84)
+    telescope(pScope.bx, pScope.by, Math.PI / 4, 0.95)
+  }
+
+  // Vignette 3: South-West Stargazer's Drafting Station
+  {
+    const pScope = at(2.15, radius * 0.78)
+    telescope(pScope.bx, pScope.by, Math.PI / 3.2, 1.0)
+
+    const pDesk = at(1.85, radius * 0.74)
+    draftingTable(pDesk.bx, pDesk.by, 0.95)
+
+    const pOrrery = at(2.45, radius * 0.84)
+    celestialOrrery(pOrrery.bx, pOrrery.by, 1.0)
+  }
+
+  slots.sort((s1, s2) => s1.y - s2.y)
+  for (const s of slots) s.draw()
 }
 
 export const observatoryGalleryHex: HexTypeDefinition = {

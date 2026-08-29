@@ -133,13 +133,13 @@ nodes:
     healingAmount: 35
     description: "Make product manager decisions for user streaks, balancing retention against burnout."
 
-  # Downstream Workshops & Flowchart Spire
+  # Downstream Workshop & Flowchart Spire
   - id: "tradeoff-rewards"
     title: "Reward Design Trade-offs Workshop"
     type: "tradeoff_workshop"
     status: "locked"
     unlockedBy:
-      - "capital"
+      - "sanctuary-scenario"
     sectionRef: "tradeoffs"
     description: "Tune leaderboard competitiveness vs collaboration and intrinsic vs extrinsic rewards to forge campaign buffs."
     tradeoffMapping:
@@ -153,7 +153,7 @@ nodes:
     type: "simulation_nexus"
     status: "locked"
     unlockedBy:
-      - "tradeoff-rewards"
+      - "sanctuary-scenario"
     sectionRef: "reward-loop"
     healingAmount: 40
     description: "Trace the Event Storming process flowchart of trigger engagement, dopamine response, and investment."

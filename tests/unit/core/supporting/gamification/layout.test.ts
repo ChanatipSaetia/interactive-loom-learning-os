@@ -63,7 +63,14 @@ describe('Hex Grid Auto-Layout Engine (layout.ts)', () => {
         dependsOn: ['sanctuary-2'],
         description: 'R1',
       },
-      { id: 'forge-1', title: 'Forge 1', type: 'tradeoff_workshop', status: 'unlocked', description: 'F1' },
+      {
+        id: 'forge-1',
+        title: 'Forge 1',
+        type: 'tradeoff_workshop',
+        status: 'unlocked',
+        unlockedBy: ['sanctuary-1'],
+        description: 'F1',
+      },
       { id: 'boss-1', title: 'Dragon', type: 'boss_lair', status: 'locked', description: 'Boss' },
     ]
 
@@ -83,19 +90,17 @@ describe('Hex Grid Auto-Layout Engine (layout.ts)', () => {
     // Boss adjacent to hub (distance = 1)
     expect(axialDistance(capCoord, bossCoord)).toBe(1)
 
-    // Sanctuaries and forges placed on map with distance gap from hub (distance >= 3, not adjacent to hub)
+    // Sanctuaries placed on map with distance gap from hub (distance >= 3, not adjacent to hub)
     expect(axialDistance(capCoord, s1Coord)).toBeGreaterThanOrEqual(3)
     expect(axialDistance(capCoord, s2Coord)).toBeGreaterThanOrEqual(3)
-    expect(axialDistance(capCoord, f1Coord)).toBeGreaterThanOrEqual(3)
 
-    // Sanctuaries & Forges have distance gaps between each other (distance >= 2)
+    // Sanctuaries have distance gaps between each other (distance >= 2)
     expect(axialDistance(s1Coord, s2Coord)).toBeGreaterThanOrEqual(2)
-    expect(axialDistance(s1Coord, f1Coord)).toBeGreaterThanOrEqual(2)
-    expect(axialDistance(s2Coord, f1Coord)).toBeGreaterThanOrEqual(2)
 
-    // Challenges placed immediately adjacent (distance = 1) to their parent sanctuary
+    // Challenges (quizzes, reflections, tradeoff workshops) placed immediately adjacent (distance = 1) to their parent sanctuary
     expect(axialDistance(s1Coord, q1Coord)).toBe(1)
     expect(axialDistance(s2Coord, r1Coord)).toBe(1)
+    expect(axialDistance(s1Coord, f1Coord)).toBe(1)
 
     // All coordinates must be unique
     const coordKeys = Array.from(coords.values()).map((c) => `${c.q},${c.r}`)

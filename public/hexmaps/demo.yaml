@@ -173,13 +173,13 @@ nodes:
     healingAmount: 40
     description: "Trace the Event Storming flowchart of agent self-reflection, tool retry, and user feedback."
 
-  # Workshops
+  # Workshops (Challenge Nodes)
   - id: "workshop-tradeoffs"
     title: "Agent Architecture Trade-off Workshop"
     type: "tradeoff_workshop"
     status: "locked"
     unlockedBy:
-      - "capital"
+      - "sanctuary-flowchart-core"
     sectionRef: "tradeoffs"
     description: "Tune latency, token cost, and grounding accuracy trade-offs to forge tactical equipment buffs."
     tradeoffMapping:
@@ -193,7 +193,7 @@ nodes:
     type: "tradeoff_workshop"
     status: "locked"
     unlockedBy:
-      - "capital"
+      - "sanctuary-flashcards"
     sectionRef: "formula-sandbox"
     description: "Experiment with chunk sizes, Top-K retrieval counts, and similarity thresholds to forge stat bonuses."
     tradeoffMapping:
@@ -206,7 +206,7 @@ nodes:
     type: "tradeoff_workshop"
     status: "locked"
     unlockedBy:
-      - "capital"
+      - "sanctuary-scenario"
     sectionRef: "tradeoffs-deploy"
     description: "Balance security, cloud cost, and local inference throughput."
     tradeoffMapping:

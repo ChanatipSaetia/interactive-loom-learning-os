@@ -2,6 +2,7 @@ import { Graphics, FillGradient, Container } from 'pixi.js'
 import { HEX_RADIUS } from '../hex-geometry'
 import { GamificationThemePalette, getGamificationThemePalette } from '../../theme-palette'
 import { HexInsigniaOptions, HexTypeDefinition, HexTypeEffectContext } from './types'
+import { createTerritoryRng, ringAngle, sizeScale } from './territory-rng'
 
 export function drawCapitalTerrainGround(
   g: Graphics,
@@ -175,212 +176,269 @@ export function drawCapitalTerritory(
 ) {
   if (!g || g.destroyed) return
   const { x, y, radius, palette, isCleared = false } = ctx
+  const rng = createTerritoryRng(ctx.node.id)
 
-  const primaryColor = isCleared ? palette.sapphireNum : palette.mauveNum
-  const trimColor = palette.yellowNum
-  const stoneColor = palette.surface1Num
+  const primary = isCleared ? palette.sapphireNum : palette.mauveNum
+  const trim = palette.yellowNum
+  const stone = palette.surface1Num
+  const stonePale = palette.overlay0Num
   const stoneDark = palette.surface2Num
-  const darkC = palette.crustNum
-  const outlineColor = palette.textNum
+  const dark = palette.crustNum
+  const line = palette.textNum
+  const r = radius
 
-  // 1. Circular Ground Plinth & Drop Shadow
-  g.circle(x, y + 4, radius)
-    .fill({ color: darkC, alpha: 0.25 })
-  g.circle(x, y, radius)
-    .fill({ color: primaryColor, alpha: 0.065 })
-
-  // 2. Concentric Fortification Rampart Rings
-  g.circle(x, y, radius * 0.86)
-    .stroke({ width: 1.0, color: primaryColor, alpha: 0.18 })
-  g.circle(x, y, radius)
-    .stroke({ width: 1.6, color: primaryColor, alpha: 0.38 })
-
-  // 3. 2.5D Fortress Watchtowers stationed at 4 cardinal perimeter points
-  for (let i = 0; i < 4; i++) {
-    const angle = (i * Math.PI) / 2
-    const tx = x + Math.cos(angle) * radius
-    const ty = y + Math.sin(angle) * (radius * 0.88)
-
-    // Tower ground contact shadow
-    g.ellipse(tx, ty + 2, 6, 2.5).fill({ color: darkC, alpha: 0.55 })
-
-    // Upright 2.5D Masonry Tower Body (elevated in negative Y) with bold outline
-    g.roundRect(tx - 4.5, ty - 12, 9, 12, 1.5)
-      .fill({ color: stoneColor })
-      .stroke({ width: 1.2, color: outlineColor })
-
-    // Vertical stone corner shading line
-    g.moveTo(tx, ty - 12).lineTo(tx, ty).stroke({ width: 0.8, color: stoneDark })
-
-    // Glowing Portcullis / Arrow Slit
-    g.rect(tx - 1, ty - 7, 2, 3.5).fill({ color: trimColor, alpha: 0.9 })
-
-    // Conical Roof Spire with bold outline
-    g.poly([
-      tx - 5.5, ty - 12,
-      tx, ty - 19,
-      tx + 5.5, ty - 12,
-    ]).fill({ color: primaryColor }).stroke({ width: 1.1, color: outlineColor })
-
-    // Golden Pinnacle Finial
-    g.circle(tx, ty - 19.5, 1.3).fill({ color: trimColor })
-  }
-
-  // 4. 2.5D Wall Battlement Crenellations stationed at diagonal points
-  for (let i = 0; i < 4; i++) {
-    const angle = (i * Math.PI) / 2 + Math.PI / 4
-    const bx = x + Math.cos(angle) * radius
-    const by = y + Math.sin(angle) * (radius * 0.88)
-
-    // Wall contact shadow
-    g.ellipse(bx, by + 1.5, 5, 2).fill({ color: darkC, alpha: 0.4 })
-
-    // Crenellated stone parapet wall block with bold outline
-    g.roundRect(bx - 3.5, by - 6, 7, 6, 1)
-      .fill({ color: stoneDark })
-      .stroke({ width: 1.0, color: outlineColor })
-
-    // Wall top crenels
-    g.rect(bx - 3, by - 7.5, 2, 2).fill({ color: stoneColor }).stroke({ width: 0.8, color: outlineColor })
-    g.rect(bx + 1, by - 7.5, 2, 2).fill({ color: stoneColor }).stroke({ width: 0.8, color: outlineColor })
-
-    // Gem stud
-    g.circle(bx, by - 2.5, 1.0).fill({ color: trimColor, alpha: 0.8 })
-  }
-
-  // 5. Scattered 2.5D Citadel Buildings & Courtyard Structures throughout the Hub Territory
-  const scatteredBuildings = [
-    // 1. Scriptorium Guildhouse (North-East Courtyard)
-    {
-      angle: -Math.PI * 0.32,
-      dist: radius * 0.65,
-      type: 'guildhouse',
-      roofColor: primaryColor,
-    },
-    // 2. Arcanist Towerette (East-South-East Courtyard)
-    {
-      angle: Math.PI * 0.22,
-      dist: radius * 0.62,
-      type: 'towerette',
-      roofColor: palette.lavenderNum,
-    },
-    // 3. Marketplace Merchant Canvas Pavilion (South-West Courtyard)
-    {
-      angle: Math.PI * 0.68,
-      dist: radius * 0.64,
-      type: 'market',
-      roofColor: palette.peachNum,
-    },
-    // 4. Armory & Smithing Workshop (North-West Courtyard)
-    {
-      angle: -Math.PI * 0.78,
-      dist: radius * 0.60,
-      type: 'workshop',
-      roofColor: palette.surface2Num,
-    },
-    // 5. Town Treasury Hall (North-North-West Courtyard)
-    {
-      angle: -Math.PI * 0.58,
-      dist: radius * 0.72,
-      type: 'hall',
-      roofColor: palette.sapphireNum,
-    },
-    // 6. Royal Water Fountain (South-East Courtyard)
-    {
-      angle: Math.PI * 0.42,
-      dist: radius * 0.58,
-      type: 'fountain',
-      roofColor: palette.tealNum,
-    },
+  const roofMix = [
+    primary,
+    palette.lavenderNum,
+    palette.peachNum,
+    palette.sapphireNum,
+    palette.tealNum,
+    palette.rosewaterNum,
   ]
+  const roofOff = rng.int(0, roofMix.length - 1)
+  const roofAt = (i: number) => roofMix[(i + roofOff) % roofMix.length]
 
-  for (const b of scatteredBuildings) {
-    const bx = x + Math.cos(b.angle) * b.dist
-    const by = y + Math.sin(b.angle) * (b.dist * 0.88)
+  // Helper for 2.5D isometric positioning
+  const at = (a: number, d: number) => ({
+    bx: x + Math.cos(a) * d,
+    by: y + Math.sin(a) * (d * 0.88),
+  })
 
-    // Base ground contact shadow
-    g.ellipse(bx, by + 1.5, 5.5, 2.2).fill({ color: darkC, alpha: 0.45 })
+  // ─── 1. Ground plinth, drop shadow & rampart rings ────────────────────────
+  g.ellipse(x, y + 5, r, r * 0.85).fill({ color: dark, alpha: 0.25 })
+  g.ellipse(x, y, r, r * 0.88).fill({ color: primary, alpha: 0.07 })
+  g.ellipse(x, y, r, r * 0.88).stroke({ width: 1.6, color: primary, alpha: 0.38 })
+  g.ellipse(x, y, r * 0.96, r * 0.96 * 0.88).stroke({ width: 1.0, color: primary, alpha: 0.14 })
 
-    // Pathway stepping stones leading toward plaza
-    const pathAngle = Math.atan2(y - by, x - bx)
-    for (let p = 1; p <= 2; p++) {
-      const stepX = bx + Math.cos(pathAngle) * (p * 5)
-      const stepY = by + Math.sin(pathAngle) * (p * 5 * 0.88)
-      g.ellipse(stepX, stepY, 1.5, 0.8)
-        .fill({ color: stoneDark, alpha: 0.35 })
-    }
+  // Faint radial paving spokes suggesting dense urban sprawl
+  const spokeA0 = rng.range(0, Math.PI / 6)
+  for (let i = 0; i < 12; i++) {
+    const a = spokeA0 + (i * Math.PI) / 6
+    const p1 = at(a, r * 0.42)
+    const p2 = at(a, r * 0.9)
+    g.moveTo(p1.bx, p1.by)
+      .lineTo(p2.bx, p2.by)
+      .stroke({ width: 0.6, color: stoneDark, alpha: 0.16 })
+  }
 
-    if (b.type === 'guildhouse' || b.type === 'workshop') {
-      // 2.5D Pitched-Roof Timber & Stone House with bold border
-      g.roundRect(bx - 4.5, by - 6, 9, 6, 1)
-        .fill({ color: stoneColor })
-        .stroke({ width: 1.1, color: outlineColor })
+  // Grand ring road boulevard
+  g.ellipse(x, y, r * 0.74, r * 0.74 * 0.88).stroke({ width: 5.5, color: stoneDark, alpha: 0.3 })
+  g.ellipse(x, y, r * 0.74, r * 0.74 * 0.88).stroke({ width: 0.8, color: stone, alpha: 0.32 })
 
-      // Chimney
-      g.rect(bx + 2, by - 9, 1.5, 3.5).fill({ color: stoneDark }).stroke({ width: 0.7, color: outlineColor })
+  // ─── 2. Continuous fortification wall with crenellated merlons ────────────
+  g.ellipse(x, y, r * 0.92, r * 0.92 * 0.88).stroke({ width: 3.4, color: stoneDark, alpha: 0.95 })
+  g.ellipse(x, y, r * 0.92, r * 0.92 * 0.88).stroke({ width: 1.0, color: line, alpha: 0.4 })
+  const merlonCount = rng.int(28, 42)
+  const merlonA0 = rng.range(0, Math.PI * 2)
+  for (let i = 0; i < merlonCount; i++) {
+    const a = merlonA0 + (i * Math.PI * 2) / merlonCount
+    const { bx: mx, by: my } = at(a, r * 0.92)
+    const mw = rng.range(1.9, 2.5)
+    g.rect(mx - mw / 2, my - 2.4, mw, 2.4).fill({ color: stone })
+  }
 
-      // Pitched Roof with bold border
-      g.poly([
-        bx - 5.5, by - 6,
-        bx, by - 11,
-        bx + 5.5, by - 6,
-      ]).fill({ color: b.roofColor }).stroke({ width: 1.1, color: outlineColor })
+  // ─── 3. Fortress watchtowers on the wall (cardinal bastions) ──────────────
+  const drawWatchtower = (a: number, sc: number) => {
+    const { bx: tx, by: ty } = at(a, r * 0.92)
+    g.ellipse(tx, ty + 2, 6.5 * sc, 2.6 * sc).fill({ color: dark, alpha: 0.55 })
+    g.roundRect(tx - 5 * sc, ty - 13 * sc, 10 * sc, 13 * sc, 1.5).fill({ color: stone }).stroke({ width: 1.2, color: line })
+    g.moveTo(tx, ty - 13 * sc).lineTo(tx, ty).stroke({ width: 0.8, color: stoneDark })
+    g.rect(tx - 1, ty - 8 * sc, 2, 3.5 * sc).fill({ color: trim, alpha: 0.9 })
+    g.poly([tx - 6 * sc, ty - 13 * sc, tx, ty - 21 * sc, tx + 6 * sc, ty - 13 * sc])
+      .fill({ color: primary }).stroke({ width: 1.1, color: line })
+    g.circle(tx, ty - 21.5 * sc, 1.3 * sc).fill({ color: trim })
+  }
+  const towerCount = rng.int(5, 7)
+  const towerA0 = rng.range(0, Math.PI * 2)
+  for (let i = 0; i < towerCount; i++) {
+    drawWatchtower(ringAngle(rng, i, towerCount, towerA0, 0.07), sizeScale(rng))
+  }
 
-      // Glowing Amber Window
-      g.rect(bx - 1.5, by - 4, 3, 2.5).fill({ color: trimColor, alpha: 0.9 })
-    } else if (b.type === 'towerette') {
-      // 2.5D Round Stone Towerette with bold border
-      g.roundRect(bx - 3.5, by - 8, 7, 8, 1)
-        .fill({ color: stoneColor })
-        .stroke({ width: 1.1, color: outlineColor })
+  // ─── 4. Gatehouses with boulevards leading inward ─────────────────────────
+  const drawGate = (a: number, sc: number) => {
+    const { bx: gx, by: gy } = at(a, r * 0.92)
+    const { bx: ix, by: iy } = at(a, r * 0.5)
+    g.moveTo(gx, gy).lineTo(ix, iy).stroke({ width: 4, color: stoneDark, alpha: 0.32 })
+    g.roundRect(gx - 3.2 * sc, gy - 11 * sc, 6.4 * sc, 11 * sc, 1).fill({ color: stonePale }).stroke({ width: 1, color: line })
+    g.roundRect(gx - 1.7 * sc, gy - 6.5 * sc, 3.4 * sc, 6.5 * sc, 1.7).fill({ color: dark }).stroke({ width: 0.7, color: trim })
+    g.poly([gx - 4 * sc, gy - 11 * sc, gx, gy - 16 * sc, gx + 4 * sc, gy - 11 * sc])
+      .fill({ color: primary }).stroke({ width: 0.9, color: line })
+    g.circle(gx, gy - 16.5 * sc, 0.9 * sc).fill({ color: trim })
+  }
+  const gateCount = rng.int(2, 4)
+  const gateA0 = rng.range(0, Math.PI * 2)
+  for (let i = 0; i < gateCount; i++) {
+    drawGate(ringAngle(rng, i, gateCount, gateA0, 0.05), sizeScale(rng))
+  }
 
-      // Conical Spire with bold border
-      g.poly([
-        bx - 4.5, by - 8,
-        bx, by - 14,
-        bx + 4.5, by - 8,
-      ]).fill({ color: b.roofColor }).stroke({ width: 1.1, color: outlineColor })
+  // ─── 5. Dense city buildings, depth-sorted back-to-front ──────────────────
+  const slots: { y: number; draw: () => void }[] = []
 
-      // Golden Orb Finial
-      g.circle(bx, by - 14.5, 1.0).fill({ color: trimColor })
+  const drawHouse = (bx: number, by: number, w0: number, h0: number, roof: number, tall = false, sc = 1) => {
+    const w = w0 * sc
+    const h = h0 * sc
+    slots.push({
+      y: by,
+      draw: () => {
+        g.ellipse(bx, by + 1.5, w * 0.72, 2.1 * sc).fill({ color: dark, alpha: 0.45 })
+        g.roundRect(bx - w / 2, by - h, w, h, 1).fill({ color: stone }).stroke({ width: 1, color: line })
+        g.moveTo(bx - w * 0.18, by - h).lineTo(bx - w * 0.18, by).stroke({ width: 0.5, color: stoneDark, alpha: 0.7 })
+        g.rect(bx + w * 0.2, by - h - 3 * sc, 1.4 * sc, 3.2 * sc).fill({ color: stoneDark }).stroke({ width: 0.6, color: line })
+        const rh = tall ? h * 0.6 : h * 0.8
+        g.poly([bx - w / 2 - 1, by - h, bx, by - h - rh, bx + w / 2 + 1, by - h])
+          .fill({ color: roof }).stroke({ width: 1, color: line })
+        g.rect(bx - w * 0.26, by - h * 0.62, 1.9 * sc, 1.7 * sc).fill({ color: trim, alpha: 0.9 })
+        g.rect(bx + w * 0.08, by - h * 0.62, 1.9 * sc, 1.7 * sc).fill({ color: trim, alpha: 0.72 })
+        if (tall) {
+          g.rect(bx - w * 0.26, by - h * 0.3, 1.9 * sc, 1.7 * sc).fill({ color: trim, alpha: 0.6 })
+          g.rect(bx + w * 0.08, by - h * 0.3, 1.9 * sc, 1.7 * sc).fill({ color: trim, alpha: 0.85 })
+        }
+        g.rect(bx - 1.1 * sc, by - 3.2 * sc, 2.2 * sc, 3.2 * sc).fill({ color: dark })
+      },
+    })
+  }
 
-      // Narrow window slit
-      g.rect(bx - 0.7, by - 5, 1.4, 2.5).fill({ color: trimColor, alpha: 0.85 })
-    } else if (b.type === 'market') {
-      // 2.5D Merchant Stall & Striped Canvas Pavilion with bold border
-      g.rect(bx - 4, by - 3, 8, 3).fill({ color: palette.surface0Num }).stroke({ width: 1.0, color: outlineColor })
+  const drawTowerette = (bx: number, by: number, roof: number, sc = 1) => {
+    slots.push({
+      y: by,
+      draw: () => {
+        g.ellipse(bx, by + 1.5, 4.6 * sc, 2 * sc).fill({ color: dark, alpha: 0.5 })
+        g.roundRect(bx - 3.5 * sc, by - 10 * sc, 7 * sc, 10 * sc, 1).fill({ color: stonePale }).stroke({ width: 1.1, color: line })
+        g.moveTo(bx - 3.5 * sc, by - 6 * sc).lineTo(bx + 3.5 * sc, by - 6 * sc).stroke({ width: 0.5, color: stoneDark, alpha: 0.7 })
+        g.poly([bx - 4.5 * sc, by - 10 * sc, bx, by - 17 * sc, bx + 4.5 * sc, by - 10 * sc])
+          .fill({ color: roof }).stroke({ width: 1.1, color: line })
+        g.circle(bx, by - 17.5 * sc, 1 * sc).fill({ color: trim })
+        g.rect(bx - 0.7 * sc, by - 8.5 * sc, 1.4 * sc, 2.2 * sc).fill({ color: trim, alpha: 0.85 })
+        g.rect(bx - 0.7 * sc, by - 4.5 * sc, 1.4 * sc, 2.2 * sc).fill({ color: trim, alpha: 0.7 })
+      },
+    })
+  }
 
-      // Wooden corner posts
-      g.moveTo(bx - 3.5, by).lineTo(bx - 3.5, by - 6).stroke({ width: 0.9, color: outlineColor })
-      g.moveTo(bx + 3.5, by).lineTo(bx + 3.5, by - 6).stroke({ width: 0.9, color: outlineColor })
+  const drawHall = (bx: number, by: number, roof: number, sc = 1) => {
+    slots.push({
+      y: by,
+      draw: () => {
+        g.ellipse(bx, by + 1.5, 6.5 * sc, 2.3 * sc).fill({ color: dark, alpha: 0.5 })
+        g.roundRect(bx - 6 * sc, by - 7.5 * sc, 12 * sc, 7.5 * sc, 1).fill({ color: stonePale }).stroke({ width: 1.1, color: line })
+        g.rect(bx - 6.5 * sc, by - 8.8 * sc, 13 * sc, 1.6 * sc).fill({ color: roof }).stroke({ width: 0.9, color: line })
+        g.poly([bx - 2.5 * sc, by - 8.8 * sc, bx, by - 12.5 * sc, bx + 2.5 * sc, by - 8.8 * sc])
+          .fill({ color: roof }).stroke({ width: 0.9, color: line })
+        for (const ox of [-4, -1.2, 1.6, 4]) {
+          g.rect(bx + ox * sc - 0.5, by - 5.5 * sc, 1, 1.6 * sc).fill({ color: trim, alpha: 0.75 })
+        }
+        g.roundRect(bx - 1.3 * sc, by - 3.8 * sc, 2.6 * sc, 3.8 * sc, 1.2).fill({ color: dark })
+        g.circle(bx, by - 10.4 * sc, 0.8 * sc).fill({ color: trim })
+      },
+    })
+  }
 
-      // Striped Canvas Canopy Awning with bold border
-      g.poly([
-        bx - 4.5, by - 5,
-        bx, by - 8,
-        bx + 4.5, by - 5,
-      ]).fill({ color: b.roofColor }).stroke({ width: 1.0, color: outlineColor })
-    } else if (b.type === 'hall') {
-      // 2.5D Town Hall / Vault with bold border
-      g.roundRect(bx - 5, by - 7, 10, 7, 1)
-        .fill({ color: stoneColor })
-        .stroke({ width: 1.1, color: outlineColor })
+  const drawMarket = (bx: number, by: number, roof: number, sc = 1) => {
+    slots.push({
+      y: by,
+      draw: () => {
+        g.ellipse(bx, by + 1.5, 5.6 * sc, 2.1 * sc).fill({ color: dark, alpha: 0.45 })
+        g.rect(bx - 4.5 * sc, by - 3 * sc, 9 * sc, 3 * sc).fill({ color: palette.surface0Num }).stroke({ width: 1, color: line })
+        g.moveTo(bx - 4 * sc, by).lineTo(bx - 4 * sc, by - 6 * sc).stroke({ width: 0.9, color: line })
+        g.moveTo(bx + 4 * sc, by).lineTo(bx + 4 * sc, by - 6 * sc).stroke({ width: 0.9, color: line })
+        g.poly([bx - 5.2 * sc, by - 5 * sc, bx, by - 8.6 * sc, bx + 5.2 * sc, by - 5 * sc])
+          .fill({ color: roof }).stroke({ width: 1, color: line })
+        g.rect(bx - 3.4 * sc, by - 3.2 * sc, 1.6 * sc, 1.6 * sc).fill({ color: trim, alpha: 0.8 })
+        g.rect(bx + 1.8 * sc, by - 3.2 * sc, 1.6 * sc, 1.6 * sc).fill({ color: palette.redNum, alpha: 0.8 })
+      },
+    })
+  }
 
-      // Parapet roof rim with bold border
-      g.rect(bx - 5.5, by - 8, 11, 1.5).fill({ color: b.roofColor }).stroke({ width: 0.9, color: outlineColor })
+  const drawFountain = (bx: number, by: number, sc = 1) => {
+    slots.push({
+      y: by,
+      draw: () => {
+        g.ellipse(bx, by + 1, 5.2 * sc, 2.5 * sc).fill({ color: stoneDark }).stroke({ width: 1, color: line })
+        g.ellipse(bx, by - 0.6 * sc, 4 * sc, 1.7 * sc).fill({ color: palette.tealNum, alpha: 0.85 })
+        g.rect(bx - 0.8 * sc, by - 3.6 * sc, 1.6 * sc, 3 * sc).fill({ color: stonePale }).stroke({ width: 0.7, color: line })
+        g.circle(bx, by - 4.2 * sc, 0.9 * sc).fill({ color: 0xffffff, alpha: 0.9 })
+      },
+    })
+  }
 
-      // Arched entryway & gold seal
-      g.roundRect(bx - 1.5, by - 4, 3, 4, 1).fill({ color: darkC })
-      g.circle(bx, by - 5.5, 0.9).fill({ color: trimColor })
-    } else if (b.type === 'fountain') {
-      // 2.5D Royal Courtyard Fountain with bold border
-      g.ellipse(bx, by, 4.5, 2.2).fill({ color: stoneDark }).stroke({ width: 1.0, color: outlineColor })
-      g.ellipse(bx, by - 1, 3.5, 1.5).fill({ color: palette.tealNum, alpha: 0.85 })
-      // Center pedestal & water spout
-      g.rect(bx - 0.8, by - 3, 1.6, 2.5).fill({ color: stoneColor }).stroke({ width: 0.7, color: outlineColor })
-      g.circle(bx, by - 3.5, 0.8).fill({ color: 0xffffff, alpha: 0.9 })
+  const drawTree = (bx: number, by: number, sc = 1) => {
+    slots.push({
+      y: by,
+      draw: () => {
+        g.ellipse(bx, by + 1, 3 * sc, 1.3 * sc).fill({ color: dark, alpha: 0.35 })
+        g.rect(bx - 0.6 * sc, by - 3.5 * sc, 1.2 * sc, 3.5 * sc).fill({ color: stoneDark })
+        g.circle(bx, by - 5.5 * sc, 2.8 * sc).fill({ color: palette.greenNum, alpha: 0.9 }).stroke({ width: 0.7, color: line })
+        g.circle(bx - 1.6 * sc, by - 4.2 * sc, 2 * sc).fill({ color: palette.tealNum, alpha: 0.85 }).stroke({ width: 0.6, color: line })
+        g.circle(bx + 1 * sc, by - 7 * sc, 0.8 * sc).fill({ color: palette.greenNum, alpha: 0.9 })
+      },
+    })
+  }
+
+  const drawLamp = (bx: number, by: number, sc = 1) => {
+    slots.push({
+      y: by,
+      draw: () => {
+        g.circle(bx, by - 6 * sc, 2.6 * sc).fill({ color: trim, alpha: 0.16 })
+        g.moveTo(bx, by).lineTo(bx, by - 5 * sc).stroke({ width: 0.9, color: line })
+        g.circle(bx, by - 6 * sc, 1.2 * sc).fill({ color: trim, alpha: 0.95 })
+      },
+    })
+  }
+
+  // Inner ring: grand civic landmarks hugging the citadel
+  const innerCount = rng.int(2, 4)
+  const innerA0 = rng.range(0, Math.PI * 2)
+  const innerKinds = ['hall', 'guildhouse', 'towerette', 'market', 'hall', 'fountain', 'towerette'] as const
+  for (let i = 0; i < innerCount; i++) {
+    const a = ringAngle(rng, i, innerCount, innerA0)
+    const { bx, by } = at(a, r * rng.range(0.52, 0.6))
+    const kind = innerKinds[i % innerKinds.length]
+    const sc = sizeScale(rng)
+    if (kind === 'hall') drawHall(bx, by, roofAt(i), sc)
+    else if (kind === 'guildhouse') drawHouse(bx, by, 10, 8, roofAt(i), true, sc)
+    else if (kind === 'towerette') drawTowerette(bx, by, roofAt(i), sc)
+    else if (kind === 'market') drawMarket(bx, by, roofAt(i), sc)
+    else drawFountain(bx, by, sc)
+  }
+
+  // Mid ring: townhouses built along the boulevard
+  const midCount = rng.int(4, 6)
+  const midA0 = rng.range(0, Math.PI * 2)
+  for (let i = 0; i < midCount; i++) {
+    const a = ringAngle(rng, i, midCount, midA0, 0.1)
+    const { bx, by } = at(a, r * rng.range(0.79, 0.85))
+    if (rng.bool(0.22)) {
+      drawTowerette(bx, by, roofAt(i + 2), sizeScale(rng))
+    } else {
+      drawHouse(bx, by, 7.5, 6, roofAt(i), rng.bool(0.35), sizeScale(rng))
     }
   }
+
+  // Outer ring: tight rows of cottages hugging the city wall
+  const outerCount = rng.int(5, 8)
+  const outerA0 = rng.range(0, Math.PI * 2)
+  for (let i = 0; i < outerCount; i++) {
+    const a = ringAngle(rng, i, outerCount, outerA0, 0.08)
+    const { bx, by } = at(a, r * rng.range(0.84, 0.89))
+    drawHouse(bx, by, 6, 4.8, roofAt(i + 3), false, sizeScale(rng))
+  }
+
+  // Courtyard greenery & street lamps tucked between the rings
+  const treeCount = rng.int(2, 4)
+  const treeA0 = rng.range(0, Math.PI * 2)
+  for (let i = 0; i < treeCount; i++) {
+    const { bx, by } = at(ringAngle(rng, i, treeCount, treeA0, 0.3), r * rng.range(0.6, 0.72))
+    drawTree(bx, by, sizeScale(rng))
+  }
+  const lampCount = rng.int(3, 4)
+  const lampA0 = rng.range(0, Math.PI * 2)
+  for (let i = 0; i < lampCount; i++) {
+    const { bx, by } = at(ringAngle(rng, i, lampCount, lampA0, 0.25), r * rng.range(0.71, 0.77))
+    drawLamp(bx, by, sizeScale(rng, 0.9, 1.1))
+  }
+
+  // Painter's-algorithm pass: back-to-front for correct 2.5D overlap
+  slots.sort((s1, s2) => s1.y - s2.y)
+  for (const s of slots) s.draw()
 }
 
 export const capitalHex: HexTypeDefinition = {

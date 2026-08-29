@@ -176,13 +176,13 @@ nodes:
         icon: "📖"
         description: "Chronicles the complete lifecycle from requestAnimationFrame to framebuffer swap."
 
-  # Wing C Workshop
+  # Wing C Workshop (Challenge Node)
   - id: "tradeoff-workshop"
     title: "Rendering Architecture Workshop"
     type: "tradeoff_workshop"
     status: "locked"
     unlockedBy:
-      - "capital"
+      - "sanctuary-pipeline"
     sectionRef: "tradeoff-sandbox"
     description: "Tune render architecture trade-offs between draw calls, VRAM, and FPS throughput to forge stat buffs."
     tradeoffMapping:

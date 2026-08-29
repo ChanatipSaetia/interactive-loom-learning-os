@@ -184,13 +184,13 @@ nodes:
         icon: "⚔️"
         description: "Executes lightning-fast multi-pass box-offset convolutions on mobile GPUs."
 
-  # Wing A/B/C Workshop
+  # Wing A/B/C Workshop (Challenge Node)
   - id: "tradeoff-workshop"
     title: "Post-Processing Forge"
     type: "tradeoff_workshop"
     status: "locked"
     unlockedBy:
-      - "capital"
+      - "sanctuary-pipeline"
     sectionRef: "tradeoff-sandbox"
     description: "Balance post-processing FPS throughput, draw call breaks, and VRAM memory to forge attribute buffs."
     tradeoffMapping:

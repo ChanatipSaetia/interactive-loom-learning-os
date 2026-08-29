@@ -19,6 +19,8 @@ import {
   bossLairHex,
 } from '../../../../../src/core/supporting/gamification/components/hex-types'
 import { getGamificationThemePalette } from '../../../../../src/core/supporting/gamification/theme-palette'
+import type { HexNodeType } from '../../../../../src/core/supporting/gamification/types'
+import { createTerritoryRng, ringAngle, sizeScale } from '../../../../../src/core/supporting/gamification/components/hex-types/territory-rng'
 
 describe('Hex Types Modular Architecture', () => {
   const palette = getGamificationThemePalette('catppuccin')
@@ -152,10 +154,63 @@ describe('Hex Types Modular Architecture', () => {
           palette,
           isCleared: false,
           isUnlocked: true,
-          node: { id: 'test-node', title: 'Test', type: type as any, status: 'unlocked', description: 'Test' },
+          node: { id: 'test-node', title: 'Test', type: type as HexNodeType, status: 'unlocked', description: 'Test' },
         })
       }).not.toThrow()
       g.destroy()
+    }
+  })
+})
+
+describe('Territory seeded RNG', () => {
+  it('produces identical sequences for the same seed', () => {
+    const a = createTerritoryRng('node-42')
+    const b = createTerritoryRng('node-42')
+    for (let i = 0; i < 20; i++) {
+      expect(a.next()).toBe(b.next())
+    }
+  })
+
+  it('produces different sequences for different seeds', () => {
+    const a = createTerritoryRng('node-a').next()
+    const b = createTerritoryRng('node-b').next()
+    expect(a).not.toBe(b)
+  })
+
+  it('keeps range/int/pick outputs within declared bounds', () => {
+    const rng = createTerritoryRng('bounds-seed')
+    for (let i = 0; i < 200; i++) {
+      const r = rng.range(1.5, 3.5)
+      expect(r).toBeGreaterThanOrEqual(1.5)
+      expect(r).toBeLessThan(3.5)
+      const n = rng.int(4, 7)
+      expect(n).toBeGreaterThanOrEqual(4)
+      expect(n).toBeLessThanOrEqual(7)
+      expect(Number.isInteger(n)).toBe(true)
+      expect(['x', 'y', 'z']).toContain(rng.pick(['x', 'y', 'z']))
+      expect(rng.jitter(10, 2)).toBeGreaterThanOrEqual(8)
+      expect(rng.jitter(10, 2)).toBeLessThanOrEqual(12)
+      expect([-1, 1]).toContain(rng.sign())
+    }
+  })
+
+  it('ringAngle follows ring rhythm with bounded wobble', () => {
+    const rng = createTerritoryRng('ring-seed')
+    const count = 6
+    const step = (Math.PI * 2) / count
+    for (let i = 0; i < count; i++) {
+      const expected = (i * Math.PI * 2) / count
+      const a = ringAngle(rng, i, count, 0, 0.18)
+      expect(Math.abs(a - expected)).toBeLessThanOrEqual(step * 0.18)
+    }
+  })
+
+  it('sizeScale stays within subtle 0.85-1.15 band', () => {
+    const rng = createTerritoryRng('scale-seed')
+    for (let i = 0; i < 100; i++) {
+      const s = sizeScale(rng)
+      expect(s).toBeGreaterThanOrEqual(0.85)
+      expect(s).toBeLessThan(1.15)
     }
   })
 })

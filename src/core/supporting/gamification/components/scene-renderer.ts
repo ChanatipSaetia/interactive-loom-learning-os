@@ -2,7 +2,7 @@ import { Container, Graphics } from 'pixi.js'
 import { GlowFilter, type GlowFilterOptions } from 'pixi-filters'
 import { HexNodeData } from '../types'
 import { GamificationThemePalette } from '../theme-palette'
-import { computeHexGridCoordinates, getAutoFlowConnections, isSanctuaryOrForge } from '../layout'
+import { computeHexGridCoordinates, getAutoFlowConnections, isSanctuary } from '../layout'
 import { HEX_RADIUS, axialToPixel, getHexVertices } from './hex-geometry'
 import { createHexGradient } from './hex-gradient'
 import {
@@ -60,6 +60,165 @@ export function computeArcControlPoint(
   const nx = -dy / dist
   const ny = dx / dist
   return { cpX: midX + nx * curveOffset, cpY: midY + ny * curveOffset, curveOffset }
+}
+
+export interface CalculatedRoad {
+  fromNode: HexNodeData
+  toHubNode: HexNodeData
+  fromPixel: { x: number; y: number }
+  toPixel: { x: number; y: number }
+  controlPoint: ArcControlPoint
+  isUnlocked: boolean
+  isCleared: boolean
+}
+
+/**
+ * Calculates connecting trade highway trajectories from every sanctuary territory back to the central hub.
+ * This is computed at the last rendering stage after all node coordinates and territory envelopes are resolved.
+ */
+export function calculateTerritoryRoads(
+  nodes: HexNodeData[],
+  coords: Map<string, { q: number; r: number }>,
+): CalculatedRoad[] {
+  const hubNode = nodes.find((n) => n.type === 'capital') || nodes[0]
+  if (!hubNode) return []
+
+  const hubCoord = coords.get(hubNode.id) || { q: 0, r: 0 }
+  const hubPixel = axialToPixel(hubCoord.q, hubCoord.r, 0, 0)
+
+  const sanctuaryNodes = nodes.filter((n) => isSanctuary(n.type))
+  const roads: CalculatedRoad[] = []
+
+  sanctuaryNodes.forEach((node, index) => {
+    const nodeCoord = coords.get(node.id) || node.coordinates || { q: 0, r: 0 }
+    const nodePixel = axialToPixel(nodeCoord.q, nodeCoord.r, 0, 0)
+    const controlPoint = computeArcControlPoint(hubPixel, nodePixel, index)
+
+    roads.push({
+      fromNode: node,
+      toHubNode: hubNode,
+      fromPixel: nodePixel,
+      toPixel: hubPixel,
+      controlPoint,
+      isUnlocked: node.status === 'unlocked',
+      isCleared: node.status === 'cleared',
+    })
+  })
+
+  return roads
+}
+
+/**
+ * Renders paved 2.5D cobblestone trade highways with outer drainage trenches,
+ * stepping flagstones, milestone cairns, and animated supply pulse caravans.
+ */
+export function renderTerritoryRoads(
+  container: Container,
+  roads: CalculatedRoad[],
+  palette: GamificationThemePalette,
+  animControllers?: Array<(time: number) => void>,
+) {
+  if (!container || container.destroyed) return
+
+  const staticGfx = new Graphics()
+  container.addChild(staticGfx)
+
+  const animGfx = new Graphics()
+  container.addChild(animGfx)
+
+  roads.forEach((road) => {
+    const { fromPixel, toPixel, controlPoint, isUnlocked, isCleared } = road
+    const isLocked = !isUnlocked && !isCleared
+
+    // 1. Road Outer Shadow Trench
+    staticGfx
+      .moveTo(toPixel.x, toPixel.y)
+      .quadraticCurveTo(controlPoint.cpX, controlPoint.cpY, fromPixel.x, fromPixel.y)
+      .stroke({
+        width: 11,
+        color: palette.crustNum,
+        alpha: isLocked ? 0.15 : 0.45,
+      })
+
+    // 2. Road Foundation / Cobblestone Bed
+    staticGfx
+      .moveTo(toPixel.x, toPixel.y)
+      .quadraticCurveTo(controlPoint.cpX, controlPoint.cpY, fromPixel.x, fromPixel.y)
+      .stroke({
+        width: 6.5,
+        color: isCleared ? palette.surface2Num : palette.surface1Num,
+        alpha: isLocked ? 0.25 : 0.7,
+      })
+
+    // 3. Paved Highway Center Track / Gold Trade Vein
+    const centerColor = isCleared
+      ? palette.yellowNum
+      : isUnlocked
+        ? palette.peachNum
+        : palette.surface0Num
+    staticGfx
+      .moveTo(toPixel.x, toPixel.y)
+      .quadraticCurveTo(controlPoint.cpX, controlPoint.cpY, fromPixel.x, fromPixel.y)
+      .stroke({
+        width: 2.4,
+        color: centerColor,
+        alpha: isLocked ? 0.2 : 0.8,
+      })
+
+    // 4. Milestone Stone Cairns along the road (at t = 0.25, 0.5, 0.75)
+    for (const t of [0.25, 0.5, 0.75]) {
+      const oneMinusT = 1 - t
+      const mx =
+        oneMinusT * oneMinusT * toPixel.x +
+        2 * oneMinusT * t * controlPoint.cpX +
+        t * t * fromPixel.x
+      const my =
+        oneMinusT * oneMinusT * toPixel.y +
+        2 * oneMinusT * t * controlPoint.cpY +
+        t * t * fromPixel.y
+
+      // Small 2.5D flagstone stepping marker
+      staticGfx
+        .ellipse(mx, my + 0.8, 3.4, 1.8)
+        .fill({ color: palette.crustNum, alpha: isLocked ? 0.15 : 0.35 })
+      staticGfx
+        .ellipse(mx, my, 2.8, 1.4)
+        .fill({
+          color: isCleared ? palette.surface2Num : palette.surface1Num,
+          alpha: isLocked ? 0.3 : 0.85,
+        })
+        .stroke({ width: 0.5, color: centerColor, alpha: isLocked ? 0.2 : 0.6 })
+    }
+  })
+
+  // 5. Dynamic Highway Energy Pulses / Trade Caravans
+  if (animControllers) {
+    animControllers.push((time: number) => {
+      if (animGfx.destroyed) return
+      animGfx.clear()
+
+      roads.forEach((road, idx) => {
+        if (!road.isUnlocked && !road.isCleared) return
+        const { fromPixel, toPixel, controlPoint, isCleared } = road
+        const speed = 0.22
+        const pulseT = (time * speed + idx * 0.33) % 1.0
+
+        const oneMinusT = 1 - pulseT
+        const px =
+          oneMinusT * oneMinusT * toPixel.x +
+          2 * oneMinusT * pulseT * controlPoint.cpX +
+          pulseT * pulseT * fromPixel.x
+        const py =
+          oneMinusT * oneMinusT * toPixel.y +
+          2 * oneMinusT * pulseT * controlPoint.cpY +
+          pulseT * pulseT * fromPixel.y
+
+        const pulseColor = isCleared ? palette.yellowNum : palette.peachNum
+        animGfx.circle(px, py, 3.2).fill({ color: pulseColor, alpha: 0.75 })
+        animGfx.circle(px, py, 1.6).fill({ color: palette.textNum, alpha: 0.9 })
+      })
+    })
+  }
 }
 
 export function getGlowFilterOptions(palette: GamificationThemePalette, variant: NodeGlowVariant): GlowFilterOptions {
@@ -127,13 +286,13 @@ export function renderHexScene(ctx: HexSceneContext) {
 
   currentNodes.forEach((node) => {
     const isHub = node.type === 'capital'
-    const isSite = isSanctuaryOrForge(node.type)
+    const isSite = isSanctuary(node.type)
     if (!isHub && !isSite) return
     if (node.status === 'locked') return // Only show territory aura when that node is unlocked or cleared
 
     const coord = currentCoords.get(node.id) || node.coordinates || { q: 0, r: 0 }
     const { x, y } = axialToPixel(coord.q, coord.r, 0, 0)
-    const territoryRadius = 105
+    const territoryRadius = isHub ? 135 : 75
 
     const territoryGfx = new Graphics()
     const territoryCtx: HexTerritoryContext = {
@@ -334,10 +493,8 @@ export function renderHexScene(ctx: HexSceneContext) {
       renderClearedExplosionFx(nodeCtx)
     }
 
-    // ─── DELEGATED HEX TYPE EFFECTS (Triggered on Selection) ───
-    if (isSelected) {
-      renderHexTypeEffects(node.type, nodeCtx)
-    }
+    // ─── DELEGATED HEX TYPE EFFECTS (Always Animated) ───
+    renderHexTypeEffects(node.type, nodeCtx)
 
     // ─── LOCKED (Fog of War) OR NEWLY UNLOCKED REVEAL ANIMATION ───
     const isNewlyUnlocked = newlyUnlockedNodeIds.has(node.id)
@@ -360,6 +517,15 @@ export function renderHexScene(ctx: HexSceneContext) {
 
     mapContainer.addChild(nodeContainer)
   })
+
+  // ─── 3. CALCULATE AND RENDER ROADS TO THE HUB (CALCULATED AT THE LAST) ───
+  const roadsContainer = new Container()
+  roadsContainer.zIndex = 2
+  roadsContainer.eventMode = 'none'
+
+  const calculatedRoads = calculateTerritoryRoads(currentNodes, currentCoords)
+  renderTerritoryRoads(roadsContainer, calculatedRoads, palette, animControllers)
+  mapContainer.addChild(roadsContainer)
 
   updateMapTransform()
 }

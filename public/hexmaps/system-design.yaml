@@ -58,13 +58,13 @@ nodes:
         icon: "💎"
         description: "A crystal that reveals the hidden trade-offs in architectural decisions."
 
-  # Trade-off Workshop
+  # Trade-off Workshop (Challenge Node)
   - id: "tradeoff-workshop"
     title: "Trade-off Workshop"
     type: "tradeoff_workshop"
     status: "locked"
     unlockedBy:
-      - "capital"
+      - "sanctuary-principles"
     sectionRef: "tradeoff"
     description: "Experiment with consistency, availability, latency, and cost trade-offs!"
     tradeoffMapping:
