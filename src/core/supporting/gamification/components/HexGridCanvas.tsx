@@ -378,7 +378,7 @@ export const HexGridCanvas = React.forwardRef<HexGridCanvasRef, HexGridCanvasPro
   // Re-render Pixi scene when theme palette changes
   useEffect(() => {
     if (appRef.current?.renderer) {
-      appRef.current.renderer.background.color = palette.baseNum
+      appRef.current.renderer.background.color = palette.crustNum
     }
     heroAgentRef.current?.setPalette(palette)
     const app = appRef.current
@@ -560,7 +560,7 @@ export const HexGridCanvas = React.forwardRef<HexGridCanvasRef, HexGridCanvasPro
       data-lenis-prevent
       data-lenis-prevent-wheel
       data-lenis-prevent-touch
-      className={`relative w-full aspect-[16/10] min-h-[320px] max-h-[70vh] bg-[var(--ctp-base)] rounded-2xl border border-[var(--ctp-surface1)] overflow-hidden shadow-2xl flex items-center justify-center select-none ${
+      className={`relative w-full aspect-[16/10] min-h-[320px] max-h-[70vh] bg-[var(--ctp-crust)] rounded-2xl border border-[var(--ctp-surface1)] overflow-hidden shadow-2xl flex items-center justify-center select-none ${
         isDragging ? 'cursor-grabbing' : 'cursor-grab'
       }`}
       style={{ touchAction: 'none', overscrollBehavior: 'contain' }}
@@ -575,7 +575,7 @@ export const HexGridCanvas = React.forwardRef<HexGridCanvasRef, HexGridCanvasPro
       {/* Reusable React Pixi Canvas Viewport */}
       <PixiCanvasViewport
         className="absolute inset-0 w-full h-full"
-        backgroundColor={palette.baseNum}
+        backgroundColor={palette.crustNum}
         backgroundAlpha={1}
         defaultWidth={880}
         defaultHeight={580}
