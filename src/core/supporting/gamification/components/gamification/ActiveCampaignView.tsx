@@ -28,6 +28,7 @@ export const ActiveCampaignView: React.FC<ActiveCampaignViewProps> = ({ game }) 
     handleReturnToLobby,
     handleAllocateStat,
     handleLaunchSection,
+    handlePassSection,
     activeBadgesModal,
     setActiveBadgesModal,
     snackbars,
@@ -49,6 +50,18 @@ export const ActiveCampaignView: React.FC<ActiveCampaignViewProps> = ({ game }) 
 
   const handleLaunchWithWalk = (targetNode: typeof selectedNode) => {
     if (!targetNode) return
+    if (targetNode.type === 'boss_lair') {
+      pushActionMessage('Unleashing Key Artifacts! The Celestial Beam strikes the Boss Dragon!', 'success', '✨')
+      if (hexCanvasRef.current) {
+        hexCanvasRef.current.triggerBossKeyAttack(targetNode, campaign.inventory, () => {
+          handlePassSection(targetNode)
+        })
+      } else {
+        handlePassSection(targetNode)
+      }
+      return
+    }
+
     if (hexCanvasRef.current) {
       hexCanvasRef.current.triggerWalkTransition(targetNode, () => {
         handleLaunchSection(targetNode)

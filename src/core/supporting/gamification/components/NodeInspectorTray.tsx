@@ -175,7 +175,12 @@ export const NodeInspectorTray: React.FC<NodeInspectorTrayProps> = ({
             ) : isBoss && !isBossUnlockable ? (
               <>
                 <Key size={14} />
-                <span>Requires Boss Keys</span>
+                <span>Requires 2 Boss Keys</span>
+              </>
+            ) : isBoss && !isCleared ? (
+              <>
+                <Sparkles size={14} />
+                <span>Unleash Key Artifacts</span>
               </>
             ) : isCleared ? (
               <>

@@ -11,6 +11,7 @@ import { HeroAgent, triggerHeroWalk } from './hero-agent'
 import { renderHexScene } from './scene-renderer'
 import { computeParallaxOffset } from './parallax-background'
 import { isVictorySetPieceNode, triggerBossVictorySetPiece } from './victory-fx'
+import { triggerBossBeamAttackAnimation } from './boss-attack-fx'
 import { useGamificationTheme } from '../theme-palette'
 import { Button, Badge } from '../../../ui-system'
 
@@ -27,6 +28,7 @@ interface HexGridCanvasProps {
 
 export interface HexGridCanvasRef {
   triggerWalkTransition: (node: HexNodeData, onComplete?: () => void) => void
+  triggerBossKeyAttack: (node: HexNodeData, inventory: ItemReward[], onComplete?: () => void) => void
   /** @deprecated use triggerWalkTransition */
   triggerTwistTransition: (node: HexNodeData, onComplete?: () => void) => void
 }
@@ -259,10 +261,30 @@ export const HexGridCanvas = React.forwardRef<HexGridCanvasRef, HexGridCanvasPro
     })
   }, [getNodeCoord])
 
+  // Trigger cinematic Key Artifact Fusion and Celestial Beam Attack against the Boss Dragon
+  const triggerBossKeyAttack = useCallback((node: HexNodeData, currentInventory: ItemReward[], onComplete?: () => void) => {
+    const mapContainer = mapContainerRef.current
+    if (!mapContainer) {
+      onComplete?.()
+      return
+    }
+    const coord = getNodeCoord(node)
+    const pixel = axialToPixel(coord.q, coord.r, 0, 0)
+    triggerBossBeamAttackAnimation({
+      app: appRef.current,
+      stage: mapContainer,
+      bossPixel: pixel,
+      inventory: currentInventory,
+      palette: paletteRef.current,
+      onComplete,
+    })
+  }, [getNodeCoord])
+
   useImperativeHandle(ref, () => ({
     triggerWalkTransition: triggerWalk,
+    triggerBossKeyAttack,
     triggerTwistTransition: triggerWalk,
-  }), [triggerWalk])
+  }), [triggerWalk, triggerBossKeyAttack])
 
   // Update map container transform
   const updateMapTransform = useCallback(() => {
@@ -984,7 +1006,12 @@ export const HexGridCanvas = React.forwardRef<HexGridCanvasRef, HexGridCanvasPro
                   ) : isBoss && !isBossUnlockable ? (
                     <>
                       <Key size={14} />
-                      <span>Requires Boss Keys</span>
+                      <span>Requires 2 Boss Keys</span>
+                    </>
+                  ) : isBoss && !isCleared ? (
+                    <>
+                      <Sparkles size={14} />
+                      <span>Unleash Key Artifacts</span>
                     </>
                   ) : isCleared ? (
                     <>
