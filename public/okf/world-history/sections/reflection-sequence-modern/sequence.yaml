@@ -1,48 +1,29 @@
 challenges:
-  - prompt: "ถอดรหัสยุคฟื้นฟูศิลปวิทยาการและการสำรวจโลก (Renaissance & Age of Exploration):"
+  - prompt: "ถอดรหัสยุคฟื้นฟูศิลปวิทยาการและการสำรวจโลก (Renaissance & Scientific Revolution):"
     items:
       - id: seq-gutenberg
         text: "โยฮันเนส กูเทนแบร์ก ประดิษฐ์แท่นพิมพ์ระบบเรียงพิมพ์โลหะในยุโรป (AD 1440)"
-      - id: seq-constantinople
-        text: "กรุงคอนสแตนติโนเปิลเสียแก่จักรวรรดิออตโตมัน สิ้นสุดจักรวรรดิไบแซนไทน์ (AD 1453)"
       - id: seq-columbus
-        text: "คริสโตเฟอร์ โคลัมบัส เดินเรือข้ามมหาสมุทรแอตแลนติกค้นพบทวีปอเมริกา (AD 1492)"
+        text: "คริสโตเฟอร์ โคลัมบัส เดินเรือข้ามมหาสมุทรแอตแลนติก นำสู่การแลกเปลี่ยนโคลัมเบียน (AD 1492)"
       - id: seq-scientific-rev
         text: "เซอร์ไอแซก นิวตัน ตีพิมพ์หนังสือ Principia วางรากฐานฟิสิกส์สมัยใหม่ (AD 1687)"
     solution:
       - seq-gutenberg
-      - seq-constantinople
       - seq-columbus
       - seq-scientific-rev
 
-  - prompt: "ถอดรหัสยุคแห่งการปฏิวัติและการเปลี่ยนผ่านสู่สังคมอุตสาหกรรม (Revolutions & Industrialization):"
+  - prompt: "ถอดรหัสยุคแห่งการปฏิวัติอุตสาหกรรมและการเมือง (Industrial & Political Revolutions):"
     items:
       - id: seq-steam-engine
-        text: "เจมส์ วัตต์ จดสิทธิบัตรเครื่องจักรไอน้ำประสิทธิภาพสูง จุดชนวนการปฏิวัติอุตสาหกรรม (AD 1769)"
+        text: "เจมส์ วัตต์ จดสิทธิบัตรเครื่องจักรไอน้ำประสิทธิภาพสูงในอังกฤษ (AD 1769)"
       - id: seq-french-rev
-        text: "การปฏิวัติฝรั่งเศสและการทลายคุกบาสตีย์ สถาปนาหลักเสรีภาพ เสมอภาค ภราดรภาพ (AD 1789)"
+        text: "การปฏิวัติฝรั่งเศสและคำประกาศว่าด้วยสิทธิมนุษยชนและพลเมือง (AD 1789)"
       - id: seq-railway-era
-        text: "การเปิดให้บริการทางรถไฟโดยสารสายแรกของโลก (Liverpool and Manchester Railway) (AD 1830)"
+        text: "การเปิดทางรถไฟโดยสารสายแรกของโลก Liverpool & Manchester Railway (AD 1830)"
       - id: seq-berlin-conf
-        text: "การประชุมเบอร์ลิน (Berlin Conference) ว่าด้วยการล่าอาณานิคมในทวีปแอฟริกา (AD 1884)"
+        text: "การประชุมเบอร์ลิน (Berlin Conference) จัดสรรแบ่งดินแดนทวีปแอฟริกา (AD 1884)"
     solution:
       - seq-steam-engine
       - seq-french-rev
       - seq-railway-era
       - seq-berlin-conf
-
-  - prompt: "ถอดรหัสวิกฤตการณ์ศตวรรษที่ 20 สู่ระเบียบโลกยุคร่วมสมัย (20th Century Conflicts & Modern Order):"
-    items:
-      - id: seq-ww1
-        text: "สนธิสัญญาแวร์ซายส์และการสิ้นสุดสงครามโลกครั้งที่ 1 (AD 1919)"
-      - id: seq-ww2-end
-        text: "สิ้นสุดสงครามโลกครั้งที่ 2 และการก่อตั้งองค์การสหประชาชาติ (UN) (AD 1945)"
-      - id: seq-moon-landing
-        text: "ยานอะพอลโล 11 พามนุษย์ลงจอดบนดวงจันทร์สำเร็จในยุคสงครามเย็น (AD 1969)"
-      - id: seq-berlin-wall
-        text: "การล่มสลายของกำแพงเบอร์ลินและการสิ้นสุดของสงครามเย็น (AD 1989)"
-    solution:
-      - seq-ww1
-      - seq-ww2-end
-      - seq-moon-landing
-      - seq-berlin-wall

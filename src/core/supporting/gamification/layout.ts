@@ -236,21 +236,36 @@ export function saveCampaignCoordinates(topicId: string, coordinates: Record<str
 export function ensureFixedCampaignCoordinates(
   topicId: string,
   nodes: HexNodeData[],
-  savedCoordinates?: Record<string, HexGridCoordinate>
+  savedCoordinates?: Record<string, HexGridCoordinate>,
+  forceRegenerate: boolean = false
 ): Record<string, HexGridCoordinate> {
-  const stored = savedCoordinates || getStoredCampaignCoordinates(topicId)
+  if (!forceRegenerate) {
+    const stored = savedCoordinates || getStoredCampaignCoordinates(topicId)
 
-  // Check if all nodes are present in stored
-  if (stored && nodes.length > 0 && nodes.every((n) => stored[n.id])) {
-    return stored
+    // Check if all nodes are present in stored
+    if (stored && nodes.length > 0 && nodes.every((n) => stored[n.id])) {
+      return stored
+    }
   }
 
-  // Compute with deterministic seed based on topicId and node IDs
-  const seed = stringToSeed(`${topicId}:${nodes.map((n) => n.id).join(',')}`)
+  return regenerateCampaignCoordinates(topicId, nodes)
+}
+
+/**
+ * Procedurally generates a fresh, randomized campaign layout on demand (e.g. on new campaign start or restart).
+ */
+export function regenerateCampaignCoordinates(
+  topicId: string,
+  nodes: HexNodeData[],
+  customSeed?: number
+): Record<string, HexGridCoordinate> {
+  const seed = customSeed !== undefined
+    ? customSeed
+    : Math.floor(Math.random() * 2147483647)
+
   const computedMap = computeHexGridCoordinates(nodes, {
     seed,
     topicId,
-    savedCoordinates: stored || undefined,
   })
 
   const result: Record<string, HexGridCoordinate> = {}

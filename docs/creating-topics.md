@@ -156,7 +156,19 @@ Each section is a folder with a `section.md` manifest (YAML frontmatter) and dat
 
 > [!NOTE]
 > **Multiple Sections of Any Type Allowed**
-> A topic is not restricted to a single instance of each section type. A topic can contain **multiple sections of the exact same type** (e.g. multiple `text` sections, multiple `flowchart` sections like `sections/flowchart-engine/` and `sections/flowchart-brake/`, multiple `scenario` sections, or multiple `decision-tree` sections like `sections/decision-tree-channel/` and `sections/decision-tree-estimation/`). Each section instance lives in its own directory under `sections/` with its own `section.md` manifest and data files.
+> A topic is not restricted to a single instance of each section type. A topic can contain **multiple sections of the exact same type** (e.g. multiple `flowchart` sections, multiple `tradeoff-sandbox` sections, multiple `scenario` sections, or multiple `decision-tree` sections). Each section instance lives in its own directory under `sections/` with its own `section.md` manifest and data files.
+
+> [!IMPORTANT]
+> **Multi-Modal Section Design & Assessment Grounding**
+> A topic should NEVER be composed entirely of plain `text` sections. Distribute curriculum knowledge across the rich palette of interactive domain components:
+> - **Category Comparisons**: Use `taxonomy-browser` instead of text lists to present structured cards with analogies, focus, and scope bounds.
+> - **Hierarchical & Evolutionary Stacks**: Use `pillar-layer` (Lego block layer stack) to display evolutionary tiers (e.g. Hammurabi to UDHR, or UI to Database adapters).
+> - **Structured Codexes**: Use `bullets` for categorized catalogs, exploration timelines, or checklists.
+> - **Process Simulation**: Use `flowchart` (Event Storming) to walk through multi-step systems with live playback.
+> - **Trade-offs & Dynamics**: Use `tradeoff-sandbox` (discrete choices) and `formula-sandbox` (continuous sliders) to let learners experiment with opposing forces.
+> - **Consequence Scenarios & Advisors**: Use `scenario` (branching story) and `decision-tree` (diagnostic advisor).
+> - **Lexicon & Semantic Network**: Use `flashcards` and `concept-map`.
+> - **Strict Assessment Grounding (Zero Ungrounded Content)**: Every `quiz` and `reflection-sequence` must be strictly aware of its prerequisite content. **Never add questions, answer options, or timeline items that test concepts, dates, names, or mechanisms not explicitly covered in the prerequisite reading/interactive section.** If an assessment requires testing a fact, that fact MUST be taught in the prerequisite content first.
 
 ### Section frontmatter fields
 

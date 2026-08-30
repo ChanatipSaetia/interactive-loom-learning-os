@@ -15,6 +15,7 @@ import {
 } from './game-rules'
 import {
   ensureFixedCampaignCoordinates,
+  regenerateCampaignCoordinates,
 } from './layout'
 
 
@@ -129,12 +130,15 @@ export function useGamification(
     topicId: string,
     topicTitle: string,
     difficulty: DifficultyLevel = 'normal',
-    nodes?: import('./types').HexNodeData[]
+    nodes?: import('./types').HexNodeData[],
+    forceNewLayout: boolean = false
   ): TopicCampaignState => {
     const maxPulses = DIFFICULTY_CONFIGS[difficulty].maxSanctuaryPulses
     let nodeCoordinates: Record<string, import('./types').HexGridCoordinate> | undefined
     if (nodes && nodes.length > 0) {
-      nodeCoordinates = ensureFixedCampaignCoordinates(topicId, nodes)
+      nodeCoordinates = forceNewLayout
+        ? regenerateCampaignCoordinates(topicId, nodes)
+        : ensureFixedCampaignCoordinates(topicId, nodes)
     }
 
     return {
@@ -480,7 +484,7 @@ export function useGamification(
 
     if (idToReset === topicId && topicId && campaign) {
       const chosenDiff = topicState?.difficulty || 'normal'
-      const freshTopicState = createFreshCampaignState(topicId, campaign.topicTitle, chosenDiff, campaign.nodes)
+      const freshTopicState = createFreshCampaignState(topicId, campaign.topicTitle, chosenDiff, campaign.nodes, true)
       setTopicState(freshTopicState)
       await characterAdapter.saveTopicCampaign(topicId, freshTopicState)
 

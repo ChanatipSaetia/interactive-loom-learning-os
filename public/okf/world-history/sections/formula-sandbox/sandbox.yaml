@@ -1,0 +1,59 @@
+variables:
+  - id: nuclear_arsenal
+    label: "แสนยานุภาพนิวเคลียร์และขีปนาวุธ (Nuclear Arsenal Index)"
+    min: 10
+    max: 100
+    step: 5
+    defaultValue: 80
+  - id: diplomatic_hotline
+    label: "ช่องทางการทูตและสายด่วน (Diplomatic Hotline Channels)"
+    min: 0
+    max: 100
+    step: 5
+    defaultValue: 65
+  - id: proxy_war_intensity
+    label: "ระดับการแทรกแซงสงครามตัวแทน (Proxy War Intensity)"
+    min: 0
+    max: 100
+    step: 5
+    defaultValue: 45
+  - id: economic_interdependence
+    label: "ความเชื่อมโยงทางการค้าและเศรษฐกิจ (Economic Interdependence)"
+    min: 0
+    max: 100
+    step: 5
+    defaultValue: 25
+
+metrics:
+  - id: deterrence_stability
+    label: "เสถียรภาพการป้องปราม (Deterrence Stability)"
+    formula: "Math.round(Math.min(100, (nuclear_arsenal * 0.45) + (diplomatic_hotline * 0.4) + (economic_interdependence * 0.25) - (proxy_war_intensity * 0.2)))"
+    description: "ระดับความสมดุลของการป้องปรามการทำลายล้างร่วมกัน (Mutually Assured Destruction - MAD) ที่ป้องกันสงครามโลกครั้งที่ 3"
+    analogy: "เหมือนนักสู้สองคนที่มีปืนจ่อหัวกัน หากมีสายด่วนคุยกันได้และมีผลประโยชน์ร่วมกัน โอกาสลั่นไกจะลดลง"
+    inScope:
+      - "การป้องปรามนิวเคลียร์สองขั้วอำนาจ"
+      - "การรักษาสายด่วนฮอตไลน์หลังวิกฤตการณ์คิวบา"
+    outOfScope:
+      - "ยุทธวิธีการรบระดับกองพันในสมรภูมิย่อย"
+
+  - id: crisis_escalation_risk
+    label: "ความเสี่ยงการลุกลามสู่วิกฤตนิวเคลียร์ (Nuclear Escalation Risk)"
+    formula: "Math.round(Math.max(0, Math.min(100, (proxy_war_intensity * 0.6) + (nuclear_arsenal * 0.3) - (diplomatic_hotline * 0.5) - (economic_interdependence * 0.2))))"
+    description: "ดัชนีโอกาสที่ความขัดแย้งในสงครามตัวแทนจะลุกลามสู่สงครามนิวเคลียร์ล้างโลก"
+    analogy: "เหมือนประกายไฟในห้องเก็บวัตถุไวไฟ หากไม่มีระบบดับเพลิงทางการทูต ประกายไฟเล็กๆ อาจระเบิดทั้งอาคาร"
+    inScope:
+      - "วิกฤตการณ์ขีปนาวุธคิวบา 1962"
+      - "สงครามตัวแทนในเอเชียและแอฟริกา"
+    outOfScope:
+      - "ภัยคุกคามทางไซเบอร์ในศตวรรษที่ 21"
+
+  - id: geopolitical_influence
+    label: "อิทธิพลทางภูมิรัฐศาสตร์ (Geopolitical Influence Score)"
+    formula: "Math.round((nuclear_arsenal * 0.35) + (proxy_war_intensity * 0.3) + (diplomatic_hotline * 0.2) + (economic_interdependence * 0.35))"
+    description: "ขีดความสามารถในการแผ่ขยายอุดมการณ์ พันธมิตร และอำนาจนำในเวทีระหว่างประเทศ"
+    analogy: "อำนาจดึงดูดของแรงโน้มถ่วง ยิ่งมีมวลแสนยานุภาพและเครือข่ายเศรษฐกิจมาก ดาวบริวารก็ยิ่งโคจรรอบมาก"
+    inScope:
+      - "การแข่งขันขยายค่ายเสรีนิยม vs ค่ายคอมมิวนิสต์"
+      - "การแข่งขันทางอวกาศและเทคโนโลยี"
+    outOfScope:
+      - "การคว่ำบาตรทางเศรษฐกิจในตลาดคริปโตเคอร์เรนซี"

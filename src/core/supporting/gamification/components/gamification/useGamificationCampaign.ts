@@ -12,7 +12,6 @@ import {
 } from '../../game-rules'
 import {
   ensureFixedCampaignCoordinates,
-  getStoredCampaignCoordinates,
 } from '../../layout'
 import { useGamification } from '../../useGamification'
 import { LocalStorageCharacterAdapter } from '../../adapters/local-storage-character-adapter'
@@ -92,7 +91,6 @@ export function useGamificationCampaign() {
     if (!hasStarted) {
       const chosenDiff = topicDifficulties[topicId] || 'normal'
       const maxPulses = DIFFICULTY_CONFIGS[chosenDiff].maxSanctuaryPulses
-      const storedCoords = getStoredCampaignCoordinates(topicId)
       localStorage.setItem(
         `loom_gamification_campaign_${topicId}`,
         JSON.stringify({
@@ -110,7 +108,7 @@ export function useGamificationCampaign() {
           clearedNodeIds: [],
           activeBuffs: [],
           readingVisitCounts: {},
-          nodeCoordinates: storedCoords || undefined,
+          nodeCoordinates: undefined, // Fresh layout will be procedurally generated
         })
       )
 

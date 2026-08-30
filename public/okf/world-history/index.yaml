@@ -6,22 +6,30 @@ tags:
   - thai
 related:
   - sections/intro/content.yaml
-  - sections/flashcards/glossary.yaml
-  - sections/concept-map/concepts.yaml
+  - sections/text/content.md
   - sections/taxonomy/mesopotamia.yaml
   - sections/taxonomy/egypt.yaml
   - sections/taxonomy/greece-rome.yaml
   - sections/taxonomy/asian-river-valley.yaml
+  - sections/quiz/questions.yaml
+  - sections/reflection-sequence/sequence.yaml
+  - sections/pillar-layer/matrix.yaml
+  - sections/quiz-classical/questions.yaml
+  - sections/reflection-sequence-classical/sequence.yaml
+  - sections/bullets/items.yaml
   - sections/flowchart/actors.yaml
   - sections/flowchart/systems.yaml
   - sections/flowchart/steps.yaml
   - sections/flowchart/journeys.yaml
   - sections/tradeoffs/trade-routes.yaml
   - sections/tradeoffs/industrial-strategy.yaml
+  - sections/quiz-modern/questions.yaml
+  - sections/reflection-sequence-modern/sequence.yaml
+  - sections/formula-sandbox/sandbox.yaml
   - sections/scenario/scenarios.yaml
   - sections/decision-tree/tree.yaml
-  - sections/reflection-sequence/sequence.yaml
-  - sections/reflection-sequence-modern/sequence.yaml
+  - sections/quiz-contemporary/questions.yaml
+  - sections/reflection-sequence-contemporary/sequence.yaml
+  - sections/concept-map/concepts.yaml
+  - sections/flashcards/glossary.yaml
   - sections/reflection-template/template.yaml
-  - sections/quiz/questions.yaml
-  - sections/quiz-modern/questions.yaml

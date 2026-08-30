@@ -15,34 +15,18 @@ challenges:
       - seq-hammurabi
       - seq-oracle-bones
 
-  - prompt: "ถอดรหัสยุคคลาสสิกและการเปลี่ยนผ่านสู่ยุคกลาง (Classical Antiquity to Middle Ages):"
+  - prompt: "ถอดรหัสพัฒนาการนวัตกรรมและการจัดระเบียบสังคมยุคโบราณ:"
     items:
-      - id: seq-athens
-        text: "ยุคทองของประชาธิปไตยและปรัชญาในนครรัฐเอเธนส์ ยุคเพริคลีส (~450 BC)"
-      - id: seq-alexander
-        text: "พระเจ้าอเล็กซานเดอร์มหาราชแผ่ขยายจักรวรรดิและผสานวัฒนธรรมเฮลเลนิสติก (~330 BC)"
-      - id: seq-pax-romana
-        text: "การสถาปนาจักรวรรดิโรมันและยุคสันติภาพโรมัน (Pax Romana) (~27 BC)"
-      - id: seq-rome-fall
-        text: "จักรวรรดิโรมันตะวันตกล่มสลาย ยุโรปเข้าสู่ระบบฟิวดัลในยุคกลาง (AD 476)"
+      - id: seq-proto-cuneiform
+        text: "การประดิษฐ์ตัวอักษรเพื่อทำบัญชีผลผลิตในเมโสโปเตเมีย (~3500 BC)"
+      - id: seq-indus-grid
+        text: "การวางผังเมืองตารางหมากรุกและท่อระบายน้ำเมืองโมเฮนโจ-ดาโร (~2500 BC)"
+      - id: seq-papyrus-hieroglyph
+        text: "การบันทึกคัมภีร์มรณะด้วยอักษรไฮโรกลิฟิกบนกระดาษปาปิรุส (~1500 BC)"
+      - id: seq-shang-bronze
+        text: "การหล่อเครื่องสำริดและจารึกอักษรเสี่ยงทายในราชวงศ์ซาง (~1200 BC)"
     solution:
-      - seq-athens
-      - seq-alexander
-      - seq-pax-romana
-      - seq-rome-fall
-
-  - prompt: "ถอดรหัสวิวัฒนาการของระบบกฎหมาย สิทธิ และพันธสัญญามนุษยชาติ (Evolution of Charters & Rights):"
-    items:
-      - id: seq-twelve-tables
-        text: "กฎหมายสิบสองโต๊ะ (Twelve Tables) ของสาธารณรัฐโรมัน (~450 BC)"
-      - id: seq-magna-carta
-        text: "มหากฎบัตรแมกนาคาร์ตา (Magna Carta) จำกัดพระราชอำนาจกษัตริย์อังกฤษ (AD 1215)"
-      - id: seq-human-rights-french
-        text: "คำประกาศว่าด้วยสิทธิมนุษยชนและพลเมือง (Declaration of the Rights of Man) (AD 1789)"
-      - id: seq-udhr
-        text: "ปฏิญญาสากลว่าด้วยสิทธิมนุษยชนแห่งสหประชาชาติ (UDHR) (AD 1948)"
-    solution:
-      - seq-twelve-tables
-      - seq-magna-carta
-      - seq-human-rights-french
-      - seq-udhr
+      - seq-proto-cuneiform
+      - seq-indus-grid
+      - seq-papyrus-hieroglyph
+      - seq-shang-bronze

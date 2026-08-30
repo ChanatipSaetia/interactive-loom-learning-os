@@ -6,21 +6,41 @@ This document is the authoritative authoring and technical specification guide f
 
 ## 1. Overview & Mental Model
 
-A **Hex Campaign Map** converts any Open Knowledge Format (OKF) learning topic into an interactive RPG tabletop campaign. Learners navigate a hex grid, complete educational challenges, harvest key items and tactical buffs, rest at sanctuaries, and defeat the topic Boss Lair.
+A **Hex Campaign Map** converts any Open Knowledge Format (OKF) learning topic into an interactive RPG tabletop campaign. 
+
+### The Core Gameplay & Narrative Loop:
+1. **Free Exploration Across Thematic Paths:** Learners start at the central **Capital Hub (0,0)** and are free to venture down parallel thematic or chronological tracks (e.g., Law & Governance, Technology & Industry, Geopolitics & Strategy).
+2. **Key Items as Mandatory Knowledge Milestones:** Key items are relics of essential understanding. They **can be stored in any type of hex node except the Capital Hub** (in reading sanctuaries, taxonomy archives, simulation nexuses, combat quiz chambers, or timed reflection vaults). Dropping a key item signals to the learner that this milestone is **mandatory to master** for the topic.
+3. **Defeating the Climax Boss:** Once all mandatory key items are gathered from the various exploration paths, the magical seal on the **Boss Lair** dissolves, allowing the player to confront the realm's Boss (the embodiment of that domain's core failure mode) and liberate the realm.
+4. **Dynamic Procedural Map Layout:** On every new campaign start or defeat restart, the layout engine procedurally re-rolls the hex coordinates with organic radial scattering, providing rich roguelike replayability while maintaining topological integrity.
 
 ```
-       [ 🐲 Boss Lair ] ─── (Adjacent) ─── [ 🏰 Capital ] (Starting Hub at 0,0)
-                                                    │
-                 ┌──────────────────────────────────┴──────────────────────────────────┐
-                 ▼ (Scattered with optional gaps)                                       ▼
-     [ 🏛️ Reading Sanctuary ]                                              [ 🌳 Concept Monolith ]
-                 │ (Adjacent d=1)                                                      │ (Adjacent d=1)
-                 ▼                                                                     ▼
-     [ 👹 Quiz Encounter ] (Key Item 1)                                    [ 🔮 Reflection Vault ] (Key Item 2)
-                 │                                                                     │
-                 └──────────────────────────────────┬──────────────────────────────────┘
-                                                    ▼
-                                       (Unlocks Boss Gate with Key Items)
+                                  [ 🐲 Boss Lair: Domain Titan / Dragon ]
+                                       (Requires all Mandatory Relics)
+                                                     │
+                                         [ 🏰 Capital (Intro Hub) ]
+                        ┌────────────────────────────┼────────────────────────────┐
+                        ▼ (Free Exploration)         ▼ (Free Exploration)         ▼ (Free Exploration)
+                 【 Track A 】                 【 Track B 】                 【 Track C 】
+             Thematic Domain 1             Thematic Domain 2             Thematic Domain 3
+                        │                            │                            │
+             [ 🏛️ Reading Sanctuary ]      [ 🌳 Concept Monolith ]       [ 📚 Flashcard Lexicon ]
+                        │                            │                            │
+                        ▼                            ▼                            ▼
+             [ 🦁 Quiz Encounter ]         [ 📜 Taxonomy Spire ]         [ ⚖️ Formula Sandbox ]
+             (Drops ⏳ Key Relic 1)        (Drops 🧭 Key Relic 2)        (Drops ✨ Key Relic 3)
+                        │                            │                            │
+                        ▼                            ▼                            ▼
+             [ 🏛️ Governance Stack ]       [ ⚙️ Simulation Nexus ]       [ 🎭 Crisis Scenario ]
+             (pillar-layer)               (flowchart)                   (scenario)
+                        │                            │                            │
+                        └────────────────────────────┼────────────────────────────┘
+                                                     ▼
+                                      [ 🔮 Climax Synthesis Vault ]
+                                          (reflection-template)
+                                                     │
+                                                     ▼
+                                      [ ⚔️ Breaches Boss Lair Gate ]
 ```
 
 ---
@@ -34,7 +54,9 @@ public/
 ├── hexmaps/
 │   ├── demo.yaml
 │   ├── gamification.yaml
+│   ├── system-design.yaml
 │   ├── pixijs.yaml
+│   ├── world-history.yaml
 │   └── <topic-id>.yaml       # Must match the topic directory in public/okf/<topic-id>/
 └── okf/
     └── <topic-id>/
@@ -57,12 +79,29 @@ nodes:
     type: "capital"
     status: "unlocked"
     sectionRef: "intro"
-    description: "The starting citadel and safe haven of the realm."
+    description: "The starting citadel and safe haven of the realm. Explore freely along branching paths!"
+
+  - id: "sanctuary-foundations"
+    title: "Sanctuary of First Principles"
+    type: "reading_sanctuary"
+    status: "unlocked"
+    unlockedBy:
+      - "capital"
+    sectionRef: "text"
+    healingAmount: 40
+    description: "Study core fundamentals. Earn the first key relic of understanding!"
+    rewards:
+      - id: "foundation-relic"
+        name: "Relic of First Principles"
+        icon: "📜"
+        description: "A mandatory foundational milestone required to unlock the Boss Lair."
 
   - id: "quiz-outpost"
     title: "Gremlin Outpost"
     type: "quiz_encounter"
     status: "locked"
+    unlockedBy:
+      - "sanctuary-foundations"
     sectionRef: "quiz"
     description: "Defeat the monster by answering knowledge questions accurately."
     monster:
@@ -73,7 +112,7 @@ nodes:
       damage: 15
       icon: "👾"
     rewards:
-      - id: "key-item-1"
+      - id: "tactical-relic"
         name: "Aegis of Insight"
         icon: "🛡️"
         description: "A defensive relic required to breach the boss chamber."
@@ -82,10 +121,12 @@ nodes:
     title: "Colossus Lair"
     type: "boss_lair"
     status: "locked"
-    sectionRef: "flowchart"
-    description: "The final trial of the realm."
+    unlockedBy:
+      - "quiz-outpost"
+    description: "The final trial of the realm. Requires all mandatory knowledge relics."
     requiredItems:
-      - "key-item-1"
+      - "foundation-relic"
+      - "tactical-relic"
     monster:
       id: "boss-colossus"
       name: "Grand Architect Titan"
@@ -97,22 +138,22 @@ nodes:
 
 ---
 
-## 4. Hex Node Types & Gameplay Mechanics
+## 4. Hex Node Types & Gameplay Roles
 
 Each node in `nodes[]` is classified into one of the specialized structural types:
 
-| Type (`type`) | Map Role | Gameplay & Section Binding | Rewards / Config |
+| Type (`type`) | Map Role | Section Type Binding | Key Items & Mechanics |
 |---|---|---|---|
-| `capital` | Starting Safe Haven | Starting tile (`status: "unlocked"`). Renders introductory OKF section (e.g. `intro`). | Generates 0 System Chaos on first visit. |
-| `reading_sanctuary` | Healing & Sacred Shrine | Renders dense reading sections (`text`, `intro`). Features the **Sanctuary 10s Pulse Monitor**: restores HP every 10s of active reading. | `healingAmount: 40` (default) |
-| `archive_spire` | Library & Taxonomy Spire | Renders taxonomy browsers and bulleted codexes (`taxonomy-browser`, `bullets`). Features active reading healing pulses. | `healingAmount: 35` (default) |
-| `simulation_nexus` | Process Simulation Nexus | Renders interactive simulations (`flowchart`, `scenario`). Features procedural gear/circuit visuals and active calibration healing. | `healingAmount: 40` (default) |
-| `concept_monolith` | Arcane Memory Monolith | Renders knowledge graphs and flashcards (`concept-map`, `flashcards`). Features levitating crystal clusters and active attunement healing. | `healingAmount: 35` (default) |
-| `observatory_gallery` | Starlight Observatory | Renders visual media and image galleries (`image-gallery`). Features celestial telescope and focused observation healing. | `healingAmount: 35` (default) |
-| `quiz_encounter` | Combat Battle | Renders `quiz` section inside `<CombatStageHeader>`. Correct answers deal player damage to the monster; incorrect answers trigger counterattacks (mitigated by character Armor/Evasion). | `monster: {...}`, `rewards: [{ id, name, icon }]` |
-| `reflection_decryption` | Timed Cipher Vault | Renders `reflection-sequence` or `reflection-template` under `<RunicCountdownRing>`. Reassembling the sequence decrypts runic glyphs into plaintext. Expiring the timer inflicts Chaos-amplified damage. | `rewards: [{ id, name, icon }]` |
-| `tradeoff_workshop` | Challenge Forge & Buff Synthesis | Challenge hex placed adjacent to its parent sanctuary (no outer territory ring). Renders `tradeoff-sandbox`. Sliders dynamically synthesize RPG attribute buffs (`+15% Armor`, `+10% Evasion`) via `<TradeoffStatPreviewBar>` with a one-click *"Forge & Equip Artifact"* action. | `tradeoffMapping: { <metricKey>: "<armor|evasion|intelligence|chaos_shield>" }` |
-| `boss_lair` | Campaign Climax | The ultimate encounter. Renders dedicated `<BossBattleArena>` requiring key items. Players execute tactical strikes (*Port Blade*, *Adapter Shield*) to defeat the boss and earn Topic Badges. | `requiredItems: ["item-1", "item-2"]`, `monster: {...}`. **Must not drop item rewards.** |
+| `capital` | Starting Safe Haven | `intro` | Starting tile (`status: "unlocked"`). Renders hero introduction. **Cannot store key items.** |
+| `reading_sanctuary` | Sacred Haven & Reading | `text`, `intro`, `reflection-template` | Features active reading healing pulses (HP tick every 10s). **Can store key items.** |
+| `archive_spire` | Library & Structured Codex | `taxonomy-browser`, `bullets`, `pillar-layer`, `decision-tree` | Categorized cards, layered Lego stacks, or branching diagnostic trees. **Can store key items.** |
+| `simulation_nexus` | Dynamic Process Simulation | `flowchart`, `scenario` | Event Storming process flows or branching consequence scenarios. **Can store key items.** |
+| `concept_monolith` | Memory Monolith & Vocabulary | `concept-map`, `flashcards` | Interactive semantic knowledge graphs and lexicon cards. **Can store key items.** |
+| `observatory_gallery` | Visual Observatory | `image-gallery` | Image showcases and architectural diagrams. **Can store key items.** |
+| `quiz_encounter` | Monster Combat Trial | `quiz` | Correct answers deal strike damage to the monster; wrong answers trigger counterattacks. **Can store key items.** |
+| `reflection_decryption` | Timed Cipher Vault | `reflection-sequence` | Timed reordering puzzle under `<RunicCountdownRing>`. **Can store key items.** |
+| `tradeoff_workshop` | Workshop & Artifact Forge | `tradeoff-sandbox`, `formula-sandbox` | Sliders dynamically forge RPG attribute buffs (`+15% Armor`, `+10% Evasion`). **Can store key items.** |
+| `boss_lair` | Campaign Climax Arena | Dedicated Boss Arena | The final trial. Unlocked only when holding all `requiredItems`. Players deploy collected items for true damage and shielding. **Must not drop items.** |
 
 ---
 
@@ -128,7 +169,7 @@ Each node in `nodes[]` is classified into one of the specialized structural type
 | `sectionRef` | `string` | No | Matching folder name in `public/okf/<topicId>/sections/<sectionRef>/`. |
 | `description` | `string` | No | Lore and tactical guidance displayed in `<NodeInspectorTray>`. |
 | `monster` | `MonsterData` | Required for `quiz_encounter` & `boss_lair` | `{ id, name, type, maxHp, damage, icon }`. |
-| `rewards` | `ItemReward[]` | Optional | Key items dropped upon node completion (`[{ id, name, icon, description }]`). **Forbidden on `boss_lair`.** |
+| `rewards` | `ItemReward[]` | Optional | Key items dropped upon completion (`[{ id, name, icon, description }]`). Permitted on **any node type except `capital` and `boss_lair`**. |
 | `requiredItems` | `string[]` | Required for `boss_lair` | Array of item IDs required to unlock and confront the boss. |
 | `healingAmount` | `number` | Optional (default: 40) | Base HP restoration for safe havens. |
 | `tradeoffMapping` | `Record<string, string>` | Optional | Custom metric-to-stat mapping for `tradeoff_workshop`. |
@@ -137,21 +178,24 @@ Each node in `nodes[]` is classified into one of the specialized structural type
 
 ## 6. Tier 3 Validation & Solvability Rules
 
-The **Validation Gateway** (`src/core/generic/hex-map/validation.ts`) automatically validates campaign manifests during `npx tsx scripts/validate-okf.ts`:
+The **Validation Gateway** (`src/core/learning-engine/validation/gateway.ts` and `scripts/validate-okf.ts`) automatically enforces strict validation:
 
 1. **Capital Presence:** Every campaign manifest must declare at least one starting node with `type: "capital"`.
 2. **Node ID Uniqueness:** Every node ID must be globally unique within the campaign.
-3. **Boss Solvability & Key Item Reachability:**
+3. **Boss Solvability & Key Item Invariants:**
    - Every item ID declared in `boss_lair.requiredItems` **must be dropped by a prerequisite node** in the campaign.
-   - Every key item reward dropped by any hex node **must be required by the climax `boss_lair` encounter** (no orphan items).
-   - Boss Lairs require **exactly 2 key items** (`requiredItems: ["item-1", "item-2"]`) dropped across any prerequisite map nodes.
-   - A `boss_lair` node **must not declare item rewards** (`rewards: []`), as it represents the campaign terminus.
+   - Every key item reward dropped by any hex node **must be required by the climax `boss_lair` encounter** (no orphan/useless items).
+   - Key items reflect mandatory core knowledge milestones for that topic.
+   - A `boss_lair` node **must not declare item rewards** (`rewards: []`), as it represents the campaign victory terminus.
+   - `capital` nodes **must not declare item rewards**.
 4. **Section Reference Integrity:**
    - Every `sectionRef` declared on a node must resolve to a valid existing section directory in `public/okf/<topicId>/sections/<sectionRef>/`.
 5. **Section Reference Uniqueness:**
    - Every node in a campaign manifest must reference a **unique** `sectionRef` (no duplicate encounters or duplicated sanctuaries across distinct map nodes). Climax `boss_lair` encounters can omit `sectionRef` to avoid duplicating preceding quiz encounters.
 6. **Full Topic Section Coverage:**
    - Every existing OKF section directory in `public/okf/<topicId>/sections/` must be mapped to at least one campaign node on the hex map, ensuring complete curriculum coverage.
+7. **Prerequisite Assessment Grounding (Zero Ungrounded Content):**
+   - Every `quiz_encounter` and `reflection_decryption` node must test strictly the content taught in its prerequisite sanctuary/interactive node. Never add questions or timeline items testing facts not explicitly covered in the prerequisite content.
 
 ---
 
@@ -160,17 +204,7 @@ The **Validation Gateway** (`src/core/generic/hex-map/validation.ts`) automatica
 To validate all OKF topics and Hex Map campaigns in the repository, run:
 
 ```bash
-npx tsx scripts/validate-okf.ts
-```
-
-For JSON diagnostics:
-
-```bash
-npx tsx scripts/validate-okf.ts --json
-```
-
-For AI prompt fix hints:
-
-```bash
-npx tsx scripts/validate-okf.ts --format=prompt
+npm run okf:validate
+npm run typecheck
+npm run test
 ```

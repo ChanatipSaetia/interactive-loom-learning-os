@@ -1,0 +1,29 @@
+challenges:
+  - prompt: "ถอดรหัสยุคคลาสสิกและการขยายอารยธรรมกรีก-โรมัน (Classical Antiquity):"
+    items:
+      - id: seq-twelve-tables
+        text: "สาธารณรัฐโรมันจารึกกฎหมายสิบสองโต๊ะ (Twelve Tables) (~450 BC)"
+      - id: seq-athens-pericles
+        text: "ยุคทองของประชาธิปไตยและปรัชญาในเอเธนส์ ยุคเพริคลีส (~450 BC)"
+      - id: seq-alexander
+        text: "พระเจ้าอเล็กซานเดอร์มหาราชแผ่ขยายจักรวรรดิและผสานวัฒนธรรมเฮลเลนิสติก (~330 BC)"
+      - id: seq-pax-romana
+        text: "การสถาปนาจักรวรรดิโรมันและยุคสันติภาพโรมัน (Pax Romana) (~27 BC)"
+    solution:
+      - seq-twelve-tables
+      - seq-athens-pericles
+      - seq-alexander
+      - seq-pax-romana
+
+  - prompt: "ถอดรหัสการเปลี่ยนผ่านสู่ยุคกลางและวิวัฒนาการแห่งสิทธิ (Middle Ages to Charters):"
+    items:
+      - id: seq-rome-fall
+        text: "จักรวรรดิโรมันตะวันตกล่มสลาย ยุโรปเข้าสู่ระบบฟิวดัลในยุคกลาง (AD 476)"
+      - id: seq-magna-carta
+        text: "มหากฎบัตรแมกนาคาร์ตา (Magna Carta) จำกัดพระราชอำนาจกษัตริย์อังกฤษ (AD 1215)"
+      - id: seq-constantinople
+        text: "กรุงคอนสแตนติโนเปิลเสียแก่ออตโตมัน สิ้นสุดยุคกลางและจักรวรรดิไบแซนไทน์ (AD 1453)"
+    solution:
+      - seq-rome-fall
+      - seq-magna-carta
+      - seq-constantinople

@@ -69,11 +69,21 @@ When refactoring or extending core sections, follow the Strategic & Tactical DDD
 - Disk saving in development mode is handled via Vite dev server plugin middleware (`POST /api/okf/save-section`), updating `public/okf/[topic-id]/sections/[section-name]/` directly on disk.
 - Errors in YAML syntax or schema validation must present non-blocking inline warning bars while keeping the `lastValidData` state in the Live Preview pane.
 
-## Working on Topics & Flowcharts
+## Working on Topics, Multi-Modal Sections & Hex Campaign Maps
 
-When creating a new topic, adding a lesson, or editing a `UnifiedFlowchartSchema`, follow
-[docs/creating-topics.md](docs/creating-topics.md). In particular, the **Event Storming Node and Relation Conventions** section is authoritative for schema structure:
+When creating a new topic, adding a lesson, or editing a campaign map, follow [docs/creating-topics.md](docs/creating-topics.md) and [docs/creating-hexmaps.md](docs/creating-hexmaps.md):
 
+- **Multi-Modal Section Design:** Never construct a topic out of plain `text` walls. Distribute curriculum knowledge across appropriate interactive section types (`taxonomy-browser`, `pillar-layer`, `bullets`, `flowchart`, `tradeoff-sandbox`, `formula-sandbox`, `scenario`, `decision-tree`, `concept-map`, `flashcards`, `quiz`, `reflection-sequence`, `reflection-template`).
+- **Strict Assessment Grounding (Zero Ungrounded Content):** Every `quiz` question and `reflection-sequence` challenge must be strictly aware of and grounded in its immediate prerequisite section. **Never add questions, answer choices, or reflection items that reference facts, dates, names, or mechanisms not explicitly taught in the prerequisite content.** If a concept needs to be assessed, it must first be taught in the prerequisite reading/interactive section.
+- **Hex Campaign Maps (`public/hexmaps/<topic-id>.yaml`):**
+  - **Free Exploration Tracks:** Radiate 2 to 4 parallel thematic/chronological tracks from the starting `capital` hub.
+  - **Key Items as Mandatory Knowledge:** Key items can be placed in **any node type except Capital** to signal that this milestone is mandatory to learn for the topic.
+  - **Boss Lair:** The Boss represents the central failure mode of the domain. It unlocks only when all required key items are gathered. Boss nodes must NOT drop items.
+  - **Full Curriculum Coverage:** Every OKF section in `public/okf/<topic-id>/sections/` must be mapped to a unique node on the hex map.
+
+## Working on Flowchart Event Storming Conventions
+
+When editing a `UnifiedFlowchartSchema`, follow [docs/event-storming-conventions.md](docs/event-storming-conventions.md):
 - Each step follows the full cycle `EVENT → POLICY → COMMAND → AGGREGATE/EXTERNAL (handledBy) → EVENT` — never jump `EVENT → AGGREGATE` directly.
 - Every `Actor` (User) and `System` (`Aggregate`/`External`) node declared in `actors.yaml` or `systems.yaml` **must be connected to at least one step in steps.yaml** (via `initiatedBy`, `handledBy`, `delegatesTo`, or relation chains).
 - Actor and system node duplication across steps is handled automatically by `deriveSchema`. If an actor or system is referenced in N steps, `deriveSchema` generates per-step node instances in EVENT_STORMING view (sharing exact titles), and automatically collapses them into a single node in derived views (SYS_ARCH, SWIMLANES, SEQUENCE, DATA_FLOW) based on matching title and entity type. Point `initiatedBy`, `handledBy`, and `delegatesTo` directly to the declared actor/system ID in `steps.yaml`.

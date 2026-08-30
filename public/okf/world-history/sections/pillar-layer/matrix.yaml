@@ -1,0 +1,74 @@
+type: pillar-layer
+title: "สถาปัตยกรรมวิวัฒนาการกฎหมายและสิทธิมนุษยชน (Legal & Governance Stack)"
+description: "โครงสร้างลำดับชั้นแสดงการต่อยอดของระบอบการปกครอง นิติรัฐ และการคุ้มครองสิทธิเสรีภาพข้ามยุคสมัย"
+layers:
+  - id: "l-modern-rights"
+    title: "1. ระเบียบกฎหมายระหว่างประเทศและสิทธิมนุษยชน (Modern Rights Tier)"
+    description: "ปฏิญญาสากลและสิทธิเสรีภาพของมนุษยชาติในระดับโลก"
+  - id: "l-charters"
+    title: "2. ยุคพันธสัญญาและระบอบรัฐสภา (Constitutional Charters Tier)"
+    description: "การจำกัดอำนาจกษัตริย์และวางรากฐานนิติรัฐในยุคกลางถึงยุคใหม่"
+  - id: "l-classical-law"
+    title: "3. ระบบประมวลกฎหมายและประชาธิปไตยคลาสสิก (Classical Law Tier)"
+    description: "ประชาธิปไตยทางตรงกรีกและระบบกฎหมายสิบสองโต๊ะของโรมัน"
+  - id: "l-ancient-codes"
+    title: "4. จารึกกฎหมายและคำสั่งเทวสิทธิ์แรกเริ่ม (Ancient Divine Codes Tier)"
+    description: "กฎหมายลายลักษณ์อักษรยุคแรกเริ่มและการจัดระเบียบนครรัฐ"
+
+matrix_blocks:
+  # Layer 1: Modern Rights
+  - id: "b-udhr"
+    title: "ปฏิญญาสากลว่าด้วยสิทธิมนุษยชน (UDHR, AD 1948)"
+    description: "สหประชาชาติประกาศรับรองศักดิ์ศรีและสิทธิเสมอภาคของมนุษย์ทุกคนหลังสงครามโลกครั้งที่ 2"
+    layer_id: "l-modern-rights"
+    col_offset: 0
+    col_span: 2
+    color: "blue"
+    depends_on: ["b-rights-of-man"]
+
+  - id: "b-rights-of-man"
+    title: "คำประกาศสิทธิมนุษยชนและพลเมือง (AD 1789)"
+    description: "การปฏิวัติฝรั่งเศสสถาปนาหลักเสรีภาพ เสมอภาค ภราดรภาพ และลบล้างอภิสิทธิ์ชนชั้น"
+    layer_id: "l-modern-rights"
+    col_offset: 2
+    col_span: 2
+    color: "mauve"
+    depends_on: ["b-magna-carta"]
+
+  # Layer 2: Charters & Parliaments
+  - id: "b-magna-carta"
+    title: "มหากฎบัตรแมกนาคาร์ตา (Magna Carta, AD 1215)"
+    description: "กษัตริย์จอห์นแห่งอังกฤษลงนามจำกัดอำนาจกษัตริย์ให้อยู่ใต้กฎหมายและห้ามคุมขังโดยมิชอบ"
+    layer_id: "l-charters"
+    col_offset: 0
+    col_span: 4
+    color: "peach"
+    depends_on: ["b-twelve-tables", "b-athens-democracy"]
+
+  # Layer 3: Classical Law & Democracy
+  - id: "b-athens-democracy"
+    title: "ประชาธิปไตยทางตรงเอเธนส์ (~450 BC)"
+    description: "พลเมืองชายมีส่วนร่วมลงคะแนนบริหารรัฐในยุคเพริคลีส ขณะที่สปาร์ตาสร้างรัฐทหารเพื่อความมั่นคง"
+    layer_id: "l-classical-law"
+    col_offset: 0
+    col_span: 2
+    color: "teal"
+    depends_on: ["b-hammurabi"]
+
+  - id: "b-twelve-tables"
+    title: "กฎหมายสิบสองโต๊ะแห่งโรมัน (~450 BC)"
+    description: "จารึกกฎหมายลายลักษณ์อักษรเพื่อคุ้มครองชนชั้นสามัญ พัฒนาสู่ระบบประมวลกฎหมายโรมัน (Corpus Juris)"
+    layer_id: "l-classical-law"
+    col_offset: 2
+    col_span: 2
+    color: "green"
+    depends_on: ["b-hammurabi"]
+
+  # Layer 4: Ancient Divine Codes
+  - id: "b-hammurabi"
+    title: "ประมวลกฎหมายฮัมมูราบีแห่งบาบิโลน (~1754 BC)"
+    description: "จารึกบนเสาหินบาซอลต์ ใช้หลักการลงโทษ ตาต่อตา ฟันต่อฟัน เพื่อสร้างระเบียบในเมโสโปเตเมีย"
+    layer_id: "l-ancient-codes"
+    col_offset: 0
+    col_span: 4
+    color: "sapphire"

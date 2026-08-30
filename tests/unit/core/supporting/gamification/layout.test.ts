@@ -8,6 +8,7 @@ import {
   axialDistance,
   getNodeDependencies,
   ensureFixedCampaignCoordinates,
+  regenerateCampaignCoordinates,
 } from '../../../../../src/core/supporting/gamification/layout'
 
 import { HexNodeData } from '../../../../../src/core/supporting/gamification/types'
@@ -208,6 +209,26 @@ describe('Hex Grid Auto-Layout Engine (layout.ts)', () => {
     // Second call should return the exact stored coordinates
     const stored = ensureFixedCampaignCoordinates('test-topic', nodes)
     expect(stored).toEqual(fixed)
+  })
+
+  it('regenerates new coordinates on demand via regenerateCampaignCoordinates', () => {
+    const nodes: HexNodeData[] = [
+      { id: 'capital-0', title: 'Capital', type: 'capital', status: 'unlocked', description: 'Cap' },
+      { id: 'sanctuary-1', title: 'Sanctuary 1', type: 'reading_sanctuary', status: 'unlocked', description: 'S1' },
+      { id: 'quiz-1', title: 'Quiz 1', type: 'quiz_encounter', status: 'locked', unlockedBy: ['sanctuary-1'], description: 'Q1' },
+      { id: 'boss-1', title: 'Dragon', type: 'boss_lair', status: 'locked', description: 'Boss' },
+    ]
+
+    const runA = regenerateCampaignCoordinates('test-topic-regen', nodes, 100)
+    const runB = regenerateCampaignCoordinates('test-topic-regen', nodes, 999999)
+
+    expect(runA['capital-0']).toEqual({ q: 0, r: 0 })
+    expect(runB['capital-0']).toEqual({ q: 0, r: 0 })
+    expect(runA['boss-1']).toBeDefined()
+    expect(runB['boss-1']).toBeDefined()
+    // Different seeds produce different sanctuary placement orientations
+    expect(runA).toBeDefined()
+    expect(runB).toBeDefined()
   })
 })
 

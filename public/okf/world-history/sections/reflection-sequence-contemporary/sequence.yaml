@@ -1,0 +1,26 @@
+challenges:
+  - prompt: "ถอดรหัสสงครามโลกและการสถาปนาระเบียบสิทธิมนุษยชนสากล (World Wars & Human Rights):"
+    items:
+      - id: seq-versailles
+        text: "สนธิสัญญาแวร์ซายส์ (Treaty of Versailles) ยุติสงครามโลกครั้งที่ 1 (AD 1919)"
+      - id: seq-un-founding
+        text: "สิ้นสุดสงครามโลกครั้งที่ 2 และการก่อตั้งองค์การสหประชาชาติ (UN) (AD 1945)"
+      - id: seq-udhr
+        text: "การประกาศปฏิญญาสากลว่าด้วยสิทธิมนุษยชนแห่งสหประชาชาติ (UDHR) (AD 1948)"
+    solution:
+      - seq-versailles
+      - seq-un-founding
+      - seq-udhr
+
+  - prompt: "ถอดรหัสวิกฤตการณ์ยุคสงครามเย็นสู่การล่มสลายของกำแพงเบอร์ลิน (Cold War Dynamics):"
+    items:
+      - id: seq-cuban-crisis
+        text: "วิกฤตการณ์ขีปนาวุธคิวบา (Cuban Missile Crisis) เฉียดสงครามนิวเคลียร์ (AD 1962)"
+      - id: seq-apollo11
+        text: "ยานอะพอลโล 11 พามนุษย์ลงจอดบนดวงจันทร์สำเร็จในการแข่งขันทางอวกาศ (AD 1969)"
+      - id: seq-berlin-wall
+        text: "การล่มสลายของกำแพงเบอร์ลิน (Fall of Berlin Wall) ปิดฉากสงครามเย็น (AD 1989)"
+    solution:
+      - seq-cuban-crisis
+      - seq-apollo11
+      - seq-berlin-wall
