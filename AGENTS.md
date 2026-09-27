@@ -15,17 +15,14 @@ Read the relevant doc before starting work — **all documentation in `docs/` an
 | Topic | Doc |
 |---|---|
 | Domain Architecture, DDD Subdomains & Contracts | [docs/agents/domain.md](docs/agents/domain.md) |
-| Architecture Refactoring Roadmap & Grill Log | [grill-log-refactoring.md](grill-log-refactoring.md) |
-| Backward Compatibility Removal & DDD Consolidation | [grill-log-backward-compat.md](grill-log-backward-compat.md) |
-| Visual OKF Section Editor & Live Preview | [grill-log-okf-section-editor.md](grill-log-okf-section-editor.md) |
-| OKF Section Validation & Diagnostics | [grill-log-okf-section-validation.md](grill-log-okf-section-validation.md) |
+| Unified OKF Loading Pipeline (Gateway-owned parsing, raw-file ports) | [grill-log-okf-loading-pipeline.md](grill-log-okf-loading-pipeline.md) |
 | Creating / editing topics & flowchart schemas | [docs/creating-topics.md](docs/creating-topics.md) |
 | Creating Hex Campaign Maps & Boss Encounters | [docs/creating-hexmaps.md](docs/creating-hexmaps.md) |
 | Design system & sensory experience | [DESIGN.md](DESIGN.md) |
 
 ## Working on DDD Subdomains, Validation Gateway & Delivery Ports
 
-When refactoring or extending core sections, follow the Strategic & Tactical DDD specification in [docs/agents/domain.md](docs/agents/domain.md) and the decision logs in [grill-log-refactoring.md](grill-log-refactoring.md) and [grill-log-backward-compat.md](grill-log-backward-compat.md):
+When refactoring or extending core sections, follow the Strategic & Tactical DDD specification in [docs/agents/domain.md](docs/agents/domain.md):
 
 1. **5 Core Learning Sub-Contexts (`src/core/learning-engine/sub-contexts/`):**
    * **`process-simulation`**: `flowchart`, `scenario`
@@ -113,6 +110,6 @@ Use the **Playwright MCP** tools (`playwright_browser_*`) for E2E testing instea
 
 ## Conventions
 
-- Trust documentation in `docs/` and root spec docs (`docs/agents/domain.md`, `grill-log-refactoring.md`) as authoritative truth.
+- Trust documentation in `docs/` and root spec docs (`docs/agents/domain.md`, `grill-log-okf-loading-pipeline.md`) as authoritative truth.
 - Keep content (data) strictly separate from structure (UI) — content lives in `public/okf/[topic-id]/sections/[section-name]/`.
 - Only commit, push, or open PRs when explicitly requested.

@@ -2,7 +2,6 @@
 
 **Type:** `AFK`
 **Status:** Ready for Implementation
-**Source:** grill-log-gamification.md (Q1, Q3, Implied Story 4)
 
 ## What to build
 

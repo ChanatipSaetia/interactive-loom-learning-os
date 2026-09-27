@@ -8,16 +8,16 @@ You are an autonomous developer running in a Ralph Loop with OpenCode in the **I
 2. Run `gh issue list --label ready-for-agent --state open --json number,title,body` to find open ready-for-agent issues.
 3. Pick the oldest open issue with `ready-for-agent` label. Ensure any listed dependencies in `Blocked by` are already resolved/closed before starting.
 4. Read `progress.txt` — apply learnings from prior iterations.
-5. Read `AGENTS.md`, `docs/agents/domain.md`, `grill-log-refactoring.md`, and `grill-log-backward-compat.md` — treat documentation as authoritative single-source-of-truth. Adhere strictly to the guidelines, schemas, ports, and architectural decisions.
+5. Read `AGENTS.md`, `docs/agents/domain.md`, and `grill-log-okf-loading-pipeline.md` — treat documentation as authoritative single-source-of-truth. Adhere strictly to the guidelines, schemas, ports, and architectural decisions.
 6. Read the detailed issue description and the issue comments posted on GitHub (`gh issue view <N> --comments`) to get full implementation details, code type shapes, and file path requirements.
-7. Explore relevant source files (`src/core/subdomains/`, `src/core/validation/`, `src/core/delivery/`, etc.) to understand current state.
-8. Implement ONLY that one issue.
-   - For subdomain barrel setup (Phase 0): Create `src/core/subdomains/index.ts` re-exporting all subdomains; update `AGENTS.md`.
-   - For subdomain migration (Phases 1-5): Move section components, sub-modules (e.g. `abstract-flow`), and help modals directly into `src/core/subdomains/[subdomain]/`, update all callers (editor forms, OKF pipeline, `libs/loom-sections.tsx`), and delete corresponding legacy `src/sections/` folders.
-   - For validation gateway (Phase 2): Implement Tier 1-3 validation in `src/core/validation/gateway.ts` emitting `ValidationResult` with `fixHint` diagnostics and non-blocking `lastValidData` preview fallbacks.
-   - For delivery ports/adapters (Phase 3): Implement `OKFStoragePort` and `OKFRuntimePort` in `src/core/delivery/ports.ts` and adapters in `src/core/delivery/adapters/`.
-   - For UI system (Phase 4): Consolidate theme, primitives, audio, and motion into `src/core/ui-system/` exposing `UISystemContract`.
-9. Write unit tests for business logic / schemas / validation in `tests/unit/` or co-located test files.
+7. Explore relevant source files (`src/core/learning-engine/sub-contexts/`, `src/core/learning-engine/validation/`, `src/core/learning-engine/composition/`, `src/core/delivery/`, `src/core/supporting/`, etc.) to understand current state.
+8. Implement ONLY that one issue, following the layout and rules in `AGENTS.md`:
+   - Core section code lives in `src/core/learning-engine/sub-contexts/[subcontext]/` (`components/`, `schema.ts`, `validation.ts`, `events.ts`, `index.ts`); import via the barrel `src/core/learning-engine/sub-contexts` or a sub-context path.
+   - Validation lives in `src/core/learning-engine/validation/` (`gateway.ts`) — zero React/DOM imports; emit `ValidationResult` with `fixHint` diagnostics and `lastValidData` fallbacks.
+   - Page/section assembly lives in `src/core/learning-engine/composition/`; it must not parse raw YAML (see `grill-log-okf-loading-pipeline.md`).
+   - Delivery ports are in `src/core/delivery/ports.ts`, adapters in `src/core/delivery/adapters/`.
+   - Supporting subdomains live in `src/core/supporting/`; theme, primitives, audio, and motion go through `src/core/ui-system/` (`UISystemContract`).
+9. Write unit tests for business logic / schemas / validation in `tests/unit/` (Vitest only runs `tests/unit/**/*.test.{ts,tsx}`).
 10. Run quality checks in this order:
     a. `npm run typecheck` — fix any type check errors first
     b. `npm run lint` — fix any lint errors
@@ -42,8 +42,8 @@ You are an autonomous developer running in a Ralph Loop with OpenCode in the **I
 ## Critical Rules
 
 - ONE issue per run — never start a second issue
-- Trust documentation in `docs/`, `grill-log-refactoring.md`, and `grill-log-backward-compat.md` as authoritative source of truth
-- Use `src/core/subdomains/index.ts` as the canonical entry point for section components; delete legacy `src/sections/` directories as specified in each issue
+- Trust documentation in `docs/` and `grill-log-okf-loading-pipeline.md` as authoritative source of truth
+- Use `src/core/learning-engine/sub-contexts/index.ts` as the canonical entry point for core section components; do not re-export supporting subdomains through it
 - Run typecheck → lint → unit tests, then verify with Playwright MCP
 - Always update `progress.txt` before exiting
 - Close the GitHub issue only after all checks pass
