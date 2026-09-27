@@ -1,0 +1,520 @@
+[
+  {
+    "folder": "intro",
+    "type": "intro",
+    "props": {
+      "title": "Welcome to System Design",
+      "heading": "Building Systems That Scale",
+      "what": {
+        "definition": "System design is the process of defining the architecture, components, modules, interfaces, and data for a system to satisfy specified requirements.",
+        "summary": "Learn how to design scalable, reliable, and maintainable distributed systems.",
+        "bullets": [
+          "Scalability through horizontal and vertical scaling",
+          "Reliability via redundancy and failover",
+          "Maintainability through modularity and testing"
+        ],
+        "tags": [
+          "architecture",
+          "scalability",
+          "distributed-systems"
+        ]
+      },
+      "why": {
+        "summary": "Good system design ensures your applications can handle millions of users while remaining reliable and easy to maintain.",
+        "impact": "Poor design leads to system failures, downtime, and expensive rewrites."
+      },
+      "roadmap": [
+        {
+          "title": "Core Principles",
+          "type": "text",
+          "description": "Learn scalability, reliability, and maintainability"
+        },
+        {
+          "title": "Knowledge Check",
+          "type": "quiz",
+          "description": "Test your understanding with quiz questions"
+        },
+        {
+          "title": "Design Reflection",
+          "type": "reflection",
+          "description": "Reflect on real-world trade-offs"
+        },
+        {
+          "title": "Trade-off Sandbox",
+          "type": "tradeoff",
+          "description": "Experiment with design decisions"
+        }
+      ]
+    }
+  },
+  {
+    "folder": "text",
+    "type": "text",
+    "props": {
+      "title": "Core Principles of System Design",
+      "heading": "Scalability, Reliability, and Maintainability",
+      "paragraphs": [
+        "Scalability is the ability of a system to handle growing amounts of work by adding resources. There are two main types: vertical scaling (adding more power to existing machines) and horizontal scaling (adding more machines to the system). Horizontal scaling is generally preferred for modern distributed systems as it provides better fault tolerance and flexibility.",
+        "Reliability refers to a system's ability to continue operating despite failures. Key concepts include redundancy (having backup components ready to take over), failover (automatic switching to a backup system), and replication (keeping multiple copies of data across different locations).",
+        "Maintainability is about how easy it is to modify, fix, or improve a system over time. Good maintainability comes from modularity (breaking systems into independent, well-defined components), documentation (clear documentation of architecture and decisions), and testing (comprehensive test coverage for automated validation).",
+        "The CAP theorem states that a distributed system can only guarantee two of three properties: consistency (all nodes see the same data at the same time), availability (every request receives a response), and partition tolerance (the system continues to operate despite network partitions). Most modern systems choose AP or CP based on their requirements."
+      ]
+    }
+  },
+  {
+    "folder": "quiz",
+    "type": "quiz",
+    "props": {
+      "title": "System Design Knowledge Check",
+      "heading": "Test Your Understanding",
+      "questions": [
+        {
+          "id": "q1",
+          "question": "What does CAP theorem state?",
+          "choices": [
+            {
+              "id": "a",
+              "text": "A distributed system can guarantee all three: consistency, availability, and partition tolerance",
+              "correct": false,
+              "explanation": "CAP theorem states you can only guarantee two of three properties."
+            },
+            {
+              "id": "b",
+              "text": "A distributed system can only guarantee two of three: consistency, availability, and partition tolerance",
+              "correct": true,
+              "explanation": "The CAP theorem states that a distributed system can only guarantee two of three properties."
+            },
+            {
+              "id": "c",
+              "text": "A distributed system must sacrifice partition tolerance",
+              "correct": false,
+              "explanation": "Partition tolerance is typically non-negotiable in distributed systems."
+            },
+            {
+              "id": "d",
+              "text": "A distributed system prioritizes availability over all else",
+              "correct": false,
+              "explanation": "Different systems prioritize different properties based on their requirements."
+            }
+          ]
+        },
+        {
+          "id": "q2",
+          "question": "Which scaling approach adds more machines to handle increased load?",
+          "choices": [
+            {
+              "id": "a",
+              "text": "Vertical scaling",
+              "correct": false,
+              "explanation": "Vertical scaling adds more power to existing machines."
+            },
+            {
+              "id": "b",
+              "text": "Horizontal scaling",
+              "correct": true,
+              "explanation": "Horizontal scaling involves adding more machines/servers to distribute the load."
+            },
+            {
+              "id": "c",
+              "text": "Functional scaling",
+              "correct": false,
+              "explanation": "Functional scaling is not a standard term in system design."
+            },
+            {
+              "id": "d",
+              "text": "Linear scaling",
+              "correct": false,
+              "explanation": "Linear scaling refers to proportional growth, not the approach of adding machines."
+            }
+          ]
+        },
+        {
+          "id": "q3",
+          "question": "What is the primary benefit of redundancy in system design?",
+          "choices": [
+            {
+              "id": "a",
+              "text": "Reduced costs",
+              "correct": false,
+              "explanation": "Redundancy typically increases costs due to additional hardware."
+            },
+            {
+              "id": "b",
+              "text": "Improved reliability and fault tolerance",
+              "correct": true,
+              "explanation": "Redundancy provides backup components that can take over in case of failures."
+            },
+            {
+              "id": "c",
+              "text": "Faster response times",
+              "correct": false,
+              "explanation": "Redundancy may actually add latency due to synchronization overhead."
+            },
+            {
+              "id": "d",
+              "text": "Simpler architecture",
+              "correct": false,
+              "explanation": "Redundancy makes architecture more complex, not simpler."
+            }
+          ]
+        },
+        {
+          "id": "q4",
+          "question": "Which is NOT a characteristic of good maintainability?",
+          "choices": [
+            {
+              "id": "a",
+              "text": "Modularity",
+              "correct": false,
+              "explanation": "Modularity is a key characteristic of maintainable systems."
+            },
+            {
+              "id": "b",
+              "text": "Lack of documentation",
+              "correct": true,
+              "explanation": "Good maintainability requires documentation, not lack of it."
+            },
+            {
+              "id": "c",
+              "text": "Comprehensive testing",
+              "correct": false,
+              "explanation": "Testing helps ensure changes don't break existing functionality."
+            },
+            {
+              "id": "d",
+              "text": "Clear interfaces",
+              "correct": false,
+              "explanation": "Clear interfaces make it easier to understand and modify components."
+            }
+          ]
+        },
+        {
+          "id": "q5",
+          "question": "In a distributed database, which choice prioritizes data accuracy over response speed?",
+          "choices": [
+            {
+              "id": "a",
+              "text": "AP (Availability + Partition Tolerance)",
+              "correct": false,
+              "explanation": "AP systems prioritize availability over consistency."
+            },
+            {
+              "id": "b",
+              "text": "CP (Consistency + Partition Tolerance)",
+              "correct": true,
+              "explanation": "CP systems prioritize consistency and partition tolerance, ensuring data accuracy."
+            },
+            {
+              "id": "c",
+              "text": "AC (Availability + Consistency)",
+              "correct": false,
+              "explanation": "AC is not a common choice as it sacrifices partition tolerance."
+            },
+            {
+              "id": "d",
+              "text": "PC (Partition tolerance + Consistency without availability)",
+              "correct": false,
+              "explanation": "This would mean the system is often unavailable, which is rarely desirable."
+            }
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "folder": "reflection",
+    "type": "reflection-sequence",
+    "props": {
+      "title": "Design Reflection",
+      "heading": "Reflect on Real-World Trade-offs",
+      "challenges": [
+        {
+          "prompt": "Arrange the 4 phases of Nir Eyal's Hook Model in the correct order",
+          "items": [
+            {
+              "id": "action",
+              "text": "Action (User performs behavior)",
+              "icon": "👆"
+            },
+            {
+              "id": "trigger",
+              "text": "Trigger (External or internal cue)",
+              "icon": "🔔"
+            },
+            {
+              "id": "reward",
+              "text": "Variable Reward (Unpredictable delight)",
+              "icon": "🎁"
+            },
+            {
+              "id": "investment",
+              "text": "Investment (User puts effort into system)",
+              "icon": "💎"
+            }
+          ],
+          "solution": [
+            "trigger",
+            "action",
+            "reward",
+            "investment"
+          ]
+        },
+        {
+          "prompt": "Order the steps of designing a scalable system",
+          "items": [
+            {
+              "id": "capacity",
+              "text": "Estimate system capacity requirements",
+              "icon": "📊"
+            },
+            {
+              "id": "bottleneck",
+              "text": "Identify potential bottlenecks",
+              "icon": "🔍"
+            },
+            {
+              "id": "decompose",
+              "text": "Decompose into independent services",
+              "icon": "🧩"
+            },
+            {
+              "id": "replicate",
+              "text": "Add replication and caching",
+              "icon": "📋"
+            }
+          ],
+          "solution": [
+            "capacity",
+            "bottleneck",
+            "decompose",
+            "replicate"
+          ]
+        },
+        {
+          "prompt": "Arrange the trade-off decision flow for distributed databases",
+          "items": [
+            {
+              "id": "requirement",
+              "text": "Define data consistency requirements",
+              "icon": "📝"
+            },
+            {
+              "id": "failure",
+              "text": "Define acceptable failure modes",
+              "icon": "⚠️"
+            },
+            {
+              "id": "choose",
+              "text": "Choose CP or AP architecture",
+              "icon": "🏗️"
+            },
+            {
+              "id": "implement",
+              "text": "Implement chosen strategy",
+              "icon": "⚙️"
+            }
+          ],
+          "solution": [
+            "requirement",
+            "failure",
+            "choose",
+            "implement"
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "folder": "tradeoff",
+    "type": "tradeoff-sandbox",
+    "props": {
+      "title": "Design Trade-off Sandbox",
+      "heading": "Explore Consistency vs Availability Decisions",
+      "scenarios": [
+        {
+          "id": "ecommerce",
+          "title": "E-Commerce Platform",
+          "description": "You are designing an e-commerce platform. Adjust the trade-offs to find the right balance.",
+          "metrics": [
+            {
+              "id": "consistency",
+              "label": "Consistency",
+              "baseValue": 50,
+              "min": 0,
+              "max": 100,
+              "direction": "higher"
+            },
+            {
+              "id": "availability",
+              "label": "Availability",
+              "baseValue": 50,
+              "min": 0,
+              "max": 100,
+              "direction": "higher"
+            },
+            {
+              "id": "latency",
+              "label": "Latency",
+              "baseValue": 50,
+              "min": 0,
+              "max": 100,
+              "direction": "lower"
+            },
+            {
+              "id": "cost",
+              "label": "Cost",
+              "baseValue": 50,
+              "min": 0,
+              "max": 100,
+              "direction": "lower"
+            }
+          ],
+          "steps": [
+            {
+              "id": "step1",
+              "title": "Choose Consistency Model",
+              "description": "How should data consistency be handled across replicas?",
+              "choices": [
+                {
+                  "id": "strong",
+                  "label": "Strong Consistency",
+                  "description": "All nodes see the same data at the same time",
+                  "metrics": {
+                    "consistency": 90,
+                    "availability": 40,
+                    "latency": 30,
+                    "cost": 70
+                  },
+                  "pros": [
+                    {
+                      "title": "Data Accuracy",
+                      "description": "Users always see the latest data"
+                    },
+                    {
+                      "title": "Simplicity",
+                      "description": "Easier to reason about system behavior"
+                    }
+                  ],
+                  "cons": [
+                    {
+                      "title": "Lower Availability",
+                      "description": "System may be unavailable during failures"
+                    },
+                    {
+                      "title": "Higher Latency",
+                      "description": "Waiting for all replicas to confirm"
+                    }
+                  ],
+                  "whyThisFits": "Best for inventory and payment systems",
+                  "whenToUse": "When data accuracy is more important than speed"
+                },
+                {
+                  "id": "eventual",
+                  "label": "Eventual Consistency",
+                  "description": "System is faster, but users might see stale data briefly",
+                  "metrics": {
+                    "consistency": 40,
+                    "availability": 90,
+                    "latency": 80,
+                    "cost": 50
+                  },
+                  "pros": [
+                    {
+                      "title": "High Availability",
+                      "description": "System remains responsive during failures"
+                    },
+                    {
+                      "title": "Low Latency",
+                      "description": "Fast responses for users"
+                    }
+                  ],
+                  "cons": [
+                    {
+                      "title": "Stale Data",
+                      "description": "Users might see outdated information"
+                    },
+                    {
+                      "title": "Complexity",
+                      "description": "Harder to handle conflicts"
+                    }
+                  ],
+                  "whyThisFits": "Best for product catalogs and reviews",
+                  "whenToUse": "When availability and speed matter more than immediate accuracy"
+                }
+              ]
+            },
+            {
+              "id": "step2",
+              "title": "Choose Deployment Strategy",
+              "description": "How should the system be deployed across regions?",
+              "choices": [
+                {
+                  "id": "single",
+                  "label": "Single Region",
+                  "description": "All resources in one data center",
+                  "metrics": {
+                    "consistency": 70,
+                    "availability": 50,
+                    "latency": 60,
+                    "cost": 30
+                  },
+                  "pros": [
+                    {
+                      "title": "Lower Cost",
+                      "description": "Single data center reduces infrastructure costs"
+                    },
+                    {
+                      "title": "Simpler Operations",
+                      "description": "Easier to manage and monitor"
+                    }
+                  ],
+                  "cons": [
+                    {
+                      "title": "Single Point of Failure",
+                      "description": "Region outage affects all users"
+                    },
+                    {
+                      "title": "Limited Scale",
+                      "description": "Geographic limitations for users"
+                    }
+                  ]
+                },
+                {
+                  "id": "multi",
+                  "label": "Multi-Region",
+                  "description": "Deployed across multiple geographic regions",
+                  "metrics": {
+                    "consistency": 50,
+                    "availability": 90,
+                    "latency": 80,
+                    "cost": 80
+                  },
+                  "pros": [
+                    {
+                      "title": "Better Availability",
+                      "description": "Region failures don't take down the system"
+                    },
+                    {
+                      "title": "Global Performance",
+                      "description": "Users connect to nearest region"
+                    }
+                  ],
+                  "cons": [
+                    {
+                      "title": "Higher Cost",
+                      "description": "Multiple data centers increase expenses"
+                    },
+                    {
+                      "title": "Complex Consistency",
+                      "description": "Harder to maintain data consistency"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  }
+]

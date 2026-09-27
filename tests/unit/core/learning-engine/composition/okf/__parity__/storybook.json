@@ -1,0 +1,2224 @@
+[
+  {
+    "folder": "intro",
+    "type": "intro",
+    "props": {
+      "title": "Storybook — The Component Workshop",
+      "subtitle": "Develop, document, and test UI components in isolation, one story at a time",
+      "estimatedTime": "30 min",
+      "moduleCount": 13,
+      "what": {
+        "definition": "Storybook is an open-source tool for building UI components and pages in isolation. It runs as a separate workshop environment alongside your app, rendering each component state — called a story — from a plain code file so you can develop, document, and test without wiring up screens, mock servers, or app state.",
+        "summary": "A component workshop that turns each component state into a runnable, isolated example (a story) written in Component Story Format (CSF), then layers on interactive Controls, auto-generated Docs, accessibility checks, and automated visual and interaction testing.",
+        "bullets": [
+          "Stories, not screenshots: every state is live, executable code in Component Story Format (CSF)",
+          "Isolated development: render a single button without booting routes, auth, or backend data",
+          "Interactive controls: tweak args and argTypes to explore component states instantly",
+          "Built-in safety net: play functions, test runner, and visual regression catch regressions in CI"
+        ],
+        "tags": [
+          "Storybook",
+          "UI Components",
+          "Design System",
+          "Component Testing",
+          "Frontend Tooling"
+        ]
+      },
+      "why": {
+        "summary": "Developing components inside a running app means booting the whole system — login flows, API mocks, feature flags — just to see one button in its error state. Untested, undocumented components then drift silently between PRs and break production pages.",
+        "impact": "Storybook shrinks the feedback loop to a single component state, makes every state reviewable as documentation, and converts stories into automated tests — so design-system regressions are caught on the pull request instead of by users in production."
+      },
+      "roadmap": [
+        {
+          "sectionId": "concept-map",
+          "title": "Storybook Architecture Map",
+          "type": "concept-map",
+          "description": "Explore how stories, meta, the preview iframe, the manager UI, and addons fit together."
+        },
+        {
+          "sectionId": "flashcards",
+          "title": "Essential Storybook Vocabulary",
+          "type": "flashcards",
+          "description": "Master Story, Meta, CSF, args, argTypes, Controls, decorators, play functions, and composition."
+        },
+        {
+          "sectionId": "quiz-foundations",
+          "title": "Foundations Trial",
+          "type": "quiz",
+          "description": "Prove your grasp of stories, CSF exports, and the manager/preview split to earn the first key relic."
+        },
+        {
+          "sectionId": "text-workflow",
+          "title": "The Story Authoring Workflow",
+          "type": "text",
+          "description": "Step-by-step: from a bare component to a published, documented, tested story."
+        },
+        {
+          "sectionId": "flowchart",
+          "title": "Render & Hot-Reload Pipeline",
+          "type": "flowchart",
+          "description": "Event-storming walkthrough of how a saved story file reaches the preview iframe and reacts to Controls."
+        },
+        {
+          "sectionId": "reflection-sequence",
+          "title": "Pipeline Sequencing Challenge",
+          "type": "reflection-sequence",
+          "description": "Rebuild the hot-reload and Controls-tuning flows in the correct order."
+        },
+        {
+          "sectionId": "tradeoffs",
+          "title": "UI Safety-Net Trade-offs",
+          "type": "tradeoff-sandbox",
+          "description": "Balance confidence, review speed, and CI cost when choosing your testing and docs strategy."
+        },
+        {
+          "sectionId": "taxonomy",
+          "title": "What Storybook Does Catalog",
+          "type": "taxonomy-browser",
+          "description": "Compare Storybook's five jobs — workshop, docs, testing, review, catalog — and what stays out of scope."
+        },
+        {
+          "sectionId": "scenario",
+          "title": "Release-Day Crisis Scenario",
+          "type": "scenario",
+          "description": "A design-system regression ships toward production. Your tooling choices decide the outcome."
+        },
+        {
+          "sectionId": "decision-tree",
+          "title": "Test Layer Advisor",
+          "type": "decision-tree",
+          "description": "Diagnostic Q&A recommending visual, interaction, or accessibility testing for your risk profile."
+        },
+        {
+          "sectionId": "quiz-testing",
+          "title": "Testing & Delivery Trial",
+          "type": "quiz",
+          "description": "Defeat the Regression Wraith by answering correctly on visual diffs, play functions, and the test runner."
+        },
+        {
+          "sectionId": "reflection-template",
+          "title": "Synthesis Vault",
+          "type": "reflection-template",
+          "description": "Fill the blanks to forge a complete Storybook safety-net statement before facing the Boss."
+        }
+      ]
+    }
+  },
+  {
+    "folder": "concept-map",
+    "type": "concept-map",
+    "props": {
+      "title": "Storybook Architecture Map",
+      "nodes": {
+        "component": {
+          "id": "component",
+          "title": "Your Component",
+          "category": "system"
+        },
+        "meta": {
+          "id": "meta",
+          "title": "Meta Export (default)",
+          "category": "mechanism"
+        },
+        "story": {
+          "id": "story",
+          "title": "Story Export (named)",
+          "category": "concept"
+        },
+        "args": {
+          "id": "args",
+          "title": "Args & argTypes",
+          "category": "data"
+        },
+        "csf": {
+          "id": "csf",
+          "title": "Component Story Format (CSF)",
+          "category": "pattern"
+        },
+        "indexer": {
+          "id": "indexer",
+          "title": "Story Indexer",
+          "category": "process"
+        },
+        "preview": {
+          "id": "preview",
+          "title": "Preview (iframe runtime)",
+          "category": "system"
+        },
+        "manager": {
+          "id": "manager",
+          "title": "Manager (sidebar & toolbar UI)",
+          "category": "system"
+        },
+        "controls": {
+          "id": "controls",
+          "title": "Controls Addon",
+          "category": "mechanism"
+        },
+        "docs": {
+          "id": "docs",
+          "title": "Docs & MDX",
+          "category": "concept"
+        },
+        "play": {
+          "id": "play",
+          "title": "Play Function",
+          "category": "mechanism"
+        },
+        "testrunner": {
+          "id": "testrunner",
+          "title": "Test Runner (CI)",
+          "category": "process"
+        },
+        "visual": {
+          "id": "visual",
+          "title": "Visual Regression (Chromatic)",
+          "category": "process"
+        },
+        "hmr": {
+          "id": "hmr",
+          "title": "Dev Server HMR",
+          "category": "process"
+        }
+      },
+      "edges": [
+        {
+          "from": "csf",
+          "to": "meta",
+          "label": "file exports"
+        },
+        {
+          "from": "csf",
+          "to": "story",
+          "label": "file exports"
+        },
+        {
+          "from": "meta",
+          "to": "component",
+          "label": "binds & documents"
+        },
+        {
+          "from": "story",
+          "to": "meta",
+          "label": "inherits from"
+        },
+        {
+          "from": "story",
+          "to": "args",
+          "label": "parameterized by"
+        },
+        {
+          "from": "story",
+          "to": "play",
+          "label": "may script with"
+        },
+        {
+          "from": "indexer",
+          "to": "csf",
+          "label": "scans & indexes"
+        },
+        {
+          "from": "preview",
+          "to": "story",
+          "label": "renders in isolation"
+        },
+        {
+          "from": "preview",
+          "to": "manager",
+          "label": "embeds as iframe"
+        },
+        {
+          "from": "manager",
+          "to": "indexer",
+          "label": "builds sidebar from"
+        },
+        {
+          "from": "controls",
+          "to": "args",
+          "label": "mutates live"
+        },
+        {
+          "from": "docs",
+          "to": "story",
+          "label": "embeds live examples"
+        },
+        {
+          "from": "hmr",
+          "to": "preview",
+          "label": "re-renders on save"
+        },
+        {
+          "from": "play",
+          "to": "testrunner",
+          "label": "executed by"
+        },
+        {
+          "from": "testrunner",
+          "to": "visual",
+          "label": "feeds snapshots"
+        }
+      ]
+    }
+  },
+  {
+    "folder": "flashcards",
+    "type": "flashcards",
+    "props": {
+      "title": "Essential Storybook Vocabulary",
+      "terms": [
+        {
+          "id": "story",
+          "word": "Story",
+          "pronunciation": "/ˈstɔː.ri/",
+          "category": "Core Format",
+          "shortDefinition": "A named export describing one specific state of one component (e.g. Primary, Disabled, Error).",
+          "detailedDefinition": "In Component Story Format, each story is a named export of a `.stories.ts` file. A story object typically declares `args` (the props to render), optional `parameters`, an optional `render` function, and tags. Because a story is plain ESM code, it is importable, testable, and diffable like any other module.",
+          "whyItMatters": "Stories are the atomic unit of Storybook: they double as development fixtures, documentation examples, and the inputs to automated visual and interaction tests.",
+          "dialogue": {
+            "user": "How do I show the loading state of my Button?",
+            "aiThoughts": "They need one more named export for that state.",
+            "aiQuestion": "Add `export const Loading: Story = { args: { loading: true } };` — a new story per state."
+          }
+        },
+        {
+          "id": "meta",
+          "word": "Meta",
+          "pronunciation": "/ˈmeɪ.tə/",
+          "category": "Core Format",
+          "shortDefinition": "The default export of a story file that describes the component as a whole.",
+          "detailedDefinition": "Meta declares shared configuration for every story in the file: a `title` (which positions the component in the sidebar hierarchy, e.g. `Button`), the `component` itself (enabling autodocs and automatic Controls), and shared `argTypes` or `parameters`.",
+          "whyItMatters": "Meta is the single source of component-level truth; without it Storybook cannot group stories, generate props tables, or infer control types.",
+          "dialogue": {
+            "user": "Where do I declare which component these stories belong to?",
+            "aiThoughts": "That is file-level configuration — the default export.",
+            "aiQuestion": "Set `export default { title: 'Button', component: Button };` at the top of `Button.stories.ts`."
+          }
+        },
+        {
+          "id": "csf",
+          "word": "Component Story Format (CSF)",
+          "pronunciation": "/kəmˈpoʊ.nənt stɔː.ri ˈfɔːr.mæt/",
+          "category": "Core Format",
+          "shortDefinition": "The standard ES-module file format for writing stories using exports instead of a registry API.",
+          "detailedDefinition": "CSF files (conventionally `Component.stories.ts`) use a default export for meta and named exports for stories. CSF 3 makes the `render` function optional and infers story names from export names. Newer CSF Factories wraps meta and stories in `preview.meta()` / `meta.story()` factory calls for stronger TypeScript type safety.",
+          "whyItMatters": "Because stories are just module exports, they can be statically indexed by the bundler, type-checked, linted, and reused as test fixtures without any Storybook-specific DSL.",
+          "dialogue": {
+            "user": "Do I need a special registry call to register stories?",
+            "aiThoughts": "No — registration is implicit via exports.",
+            "aiQuestion": "No registry needed: export default meta, export named stories, and Storybook indexes them automatically."
+          }
+        },
+        {
+          "id": "args",
+          "word": "Args & argTypes",
+          "pronunciation": "/ɑːɡz ænd ˈɑːɡ.taɪps/",
+          "category": "Interactivity",
+          "shortDefinition": "`args` are the props a story passes to the component; `argTypes` declare metadata (type, options, range) for each arg.",
+          "detailedDefinition": "Each story's `args` object becomes the component's props. `argTypes` (usually declared once in meta) tell Controls how to render an editor for each prop — a boolean toggle, a color picker, a dropdown of options, or a numeric range — and power autodocs props tables.",
+          "whyItMatters": "Args turn a static example into a playground: reviewers can flip booleans and edit strings live without touching code.",
+          "dialogue": {
+            "user": "How do I get a dropdown for the button size in the panel?",
+            "aiThoughts": "They need argTypes metadata for Controls to know the options.",
+            "aiQuestion": "Declare `argTypes: { size: { options: ['sm','md','lg'], control: 'select' } }` in meta."
+          }
+        },
+        {
+          "id": "controls",
+          "word": "Controls",
+          "pronunciation": "/kənˈtroʊlz/",
+          "category": "Interactivity",
+          "shortDefinition": "The addon panel UI that edits a story's args live and re-renders the component instantly.",
+          "detailedDefinition": "Controls reads the story's args and argTypes and renders an editor widget per arg. Mutating an arg re-renders the story in the preview with the new props, and the URL can encode args so an exact state is shareable.",
+          "whyItMatters": "Controls replaces 'change a prop, recompile, screenshot' loops with instant manual exploration of the whole props surface.",
+          "dialogue": {
+            "user": "Can a designer try the disabled + loading combination without code?",
+            "aiThoughts": "Controls is exactly for ad-hoc state combinations.",
+            "aiQuestion": "Yes — open the Controls tab and toggle `disabled` and `loading` in the panel."
+          }
+        },
+        {
+          "id": "decorator",
+          "word": "Decorator",
+          "pronunciation": "/ˈdek.ə.reɪ.tər/",
+          "category": "Interactivity",
+          "shortDefinition": "A wrapper function that adds providers or context around a story's render.",
+          "detailedDefinition": "Decorators wrap a story to supply anything the component expects from outside itself: theme providers, routers, stores, or layout padding. They can be applied globally, per-file in meta, or per-story.",
+          "whyItMatters": "Components in isolation still need their application context; decorators re-create that harness without importing the real app.",
+          "dialogue": {
+            "user": "My component crashes because it needs a ThemeProvider.",
+            "aiThoughts": "A decorator is the idiomatic provider wrapper.",
+            "aiQuestion": "Add `decorators: [Story => <ThemeProvider><Story /></ThemeProvider>]` in meta."
+          }
+        },
+        {
+          "id": "play",
+          "word": "Play Function",
+          "pronunciation": "/pleɪ ˈfʌŋk.ʃən/",
+          "category": "Testing",
+          "shortDefinition": "An async function attached to a story that automates interactions when the story runs.",
+          "detailedDefinition": "A play function receives a user-interaction API (like `userEvent` and `screen`) and scripts clicks, typing, and assertions against the rendered story. Play functions execute both interactively in the browser and headlessly in CI via the Storybook test runner.",
+          "whyItMatters": "The same code that demonstrates a workflow to humans becomes an executable interaction test — one artifact for docs and CI.",
+          "dialogue": {
+            "user": "How do I prove the modal opens when clicking the trigger?",
+            "aiThoughts": "Script the click as a play function.",
+            "aiQuestion": "Add `play: async ({ userEvent, canvas }) => { await userEvent.click(...); }` to the story."
+          }
+        },
+        {
+          "id": "manager-preview",
+          "word": "Manager & Preview",
+          "pronunciation": "/ˈmæn.ɪ.dʒər ænd priːˈvjuː/",
+          "category": "Architecture",
+          "shortDefinition": "The Manager is Storybook's chrome (sidebar, toolbar, addons panel); the Preview is the iframe that actually renders your components.",
+          "detailedDefinition": "Storybook is an app of two frames: the Manager runs the navigation and addon UI, while the Preview boots a separate runtime (built by Vite or Webpack) that imports your story files and renders the selected story into an iframe. The two frames communicate over the channel API, which is how addons like Controls send new args into the rendered story.",
+          "whyItMatters": "Understanding the split explains why args changes re-render instantly and why addon builders must register code on both sides.",
+          "dialogue": {
+            "user": "Why does my component run in a separate iframe?",
+            "aiThoughts": "That is the preview/manager architecture.",
+            "aiQuestion": "Isolation: the preview runtime loads only your component's module graph, keeping the manager UI stable."
+          }
+        },
+        {
+          "id": "addon",
+          "word": "Addon",
+          "pronunciation": "/əˈdɒn/",
+          "category": "Architecture",
+          "shortDefinition": "A plugin that extends Storybook's manager and preview — e.g. Controls, Actions, a11y, docs.",
+          "detailedDefinition": "Addons register tooling into the manager UI and behaviors into the preview. First-party addons include Controls, Actions, Viewport, and Accessibility; the ecosystem adds design integration, theming, and test integrations.",
+          "whyItMatters": "The addon model keeps Storybook core small while letting teams bolt on exactly the workflow tools they need.",
+          "dialogue": {
+            "user": "I want a click-logger panel while developing.",
+            "aiThoughts": "That is what the Actions addon provides.",
+            "aiQuestion": "Enable the Actions addon and wire event props via `parameters.actions` or `fn()` args."
+          }
+        },
+        {
+          "id": "docs-mdx",
+          "word": "Docs & MDX",
+          "pronunciation": "/dɒks ənd ˌem-diːˈeks/",
+          "category": "Documentation",
+          "shortDefinition": "Story pages rendered as documentation — autodocs generate props tables from meta; MDX mixes prose with live story embeds.",
+          "detailedDefinition": "Each component can get a docs page: autodocs render stories, descriptions, and a props table automatically from meta and JSDoc. MDX files let authors interleave long-form prose, custom sections, and `<Story>` embeds that are still live, interactive components.",
+          "whyItMatters": "Documentation stays in sync with code because it is generated from the same stories the tests run.",
+          "dialogue": {
+            "user": "How do I publish usage guidelines next to live examples?",
+            "aiThoughts": "Docs pages with MDX prose plus story embeds.",
+            "aiQuestion": "Tag stories with `docs` and write an MDX page that embeds `<Canvas>` blocks between prose sections."
+          }
+        },
+        {
+          "id": "test-runner",
+          "word": "Test Runner & Visual Regression",
+          "pronunciation": "/test ˈrʌn.ər ænd ˈvɪʒ.u.əl rɪˈɡreʃ.ən/",
+          "category": "Testing",
+          "shortDefinition": "The CLI test runner executes every story (with its play function) in headless browsers; visual regression diffs screenshots between branches.",
+          "detailedDefinition": "Storybook's test runner (test-storybook) boots the built Storybook and runs each story as a test in Playwright or Puppeteer, failing when a play function assertion throws. Visual regression tools like Chromatic snapshot every story per commit and block merges when pixels change unexpectedly.",
+          "whyItMatters": "Together they convert the story catalog into a full regression suite covering rendering, behavior, and pixels across viewports.",
+          "dialogue": {
+            "user": "How do we stop silent UI regressions from merging?",
+            "aiThoughts": "Stories + snapshots + CI gating.",
+            "aiQuestion": "Run the test runner and a visual regression service on every PR so changed pixels fail the build."
+          }
+        }
+      ]
+    }
+  },
+  {
+    "folder": "quiz-foundations",
+    "type": "quiz",
+    "props": {
+      "title": "Foundations Trial",
+      "questions": [
+        {
+          "id": "q-csf",
+          "question": "In Component Story Format (CSF), how are individual stories declared in a .stories.ts file?",
+          "choices": [
+            {
+              "id": "a",
+              "text": "By calling a global registerStory() registry API",
+              "correct": false,
+              "explanation": "CSF replaced the old registry API — registration happens implicitly through module exports."
+            },
+            {
+              "id": "b",
+              "text": "As named exports of the story file",
+              "correct": true,
+              "explanation": "Correct. Each named export is one story; the default export is the shared meta."
+            },
+            {
+              "id": "c",
+              "text": "As JSON entries in a stories.json manifest",
+              "correct": false,
+              "explanation": "Stories are plain ESM code, not JSON entries — that is what makes them importable and type-checkable."
+            }
+          ],
+          "hint": "Think about what kind of JavaScript module a story file is."
+        },
+        {
+          "id": "q-meta",
+          "question": "What does the default export (meta) of a story file declare?",
+          "choices": [
+            {
+              "id": "a",
+              "text": "Component-level config such as title, component, and shared argTypes",
+              "correct": true,
+              "explanation": "Correct. Meta is the file-level source of truth that enables sidebar grouping, autodocs props tables, and Controls inference."
+            },
+            {
+              "id": "b",
+              "text": "The props for exactly one rendered state",
+              "correct": false,
+              "explanation": "Per-state props live in each story's args; meta holds file-level configuration."
+            },
+            {
+              "id": "c",
+              "text": "The list of CI jobs to run for this component",
+              "correct": false,
+              "explanation": "Meta is about component documentation and organization, not CI configuration."
+            }
+          ],
+          "hint": "It describes the component as a whole, not one state."
+        },
+        {
+          "id": "q-args",
+          "question": "In the architecture map, Controls mutates what, which then flows into the story?",
+          "choices": [
+            {
+              "id": "a",
+              "text": "The decorator chain",
+              "correct": false,
+              "explanation": "Decorators wrap stories with providers; Controls edits a different piece of data."
+            },
+            {
+              "id": "b",
+              "text": "Args",
+              "correct": true,
+              "explanation": "Correct. Controls edits the story's args live, and the preview re-renders with the new props."
+            },
+            {
+              "id": "c",
+              "text": "The story's import statements",
+              "correct": false,
+              "explanation": "Imports never change at runtime; only the args data mutates."
+            }
+          ],
+          "hint": "It is the data each story uses as props."
+        },
+        {
+          "id": "q-frames",
+          "question": "Which two frames make up the Storybook application?",
+          "choices": [
+            {
+              "id": "a",
+              "text": "The Manager (sidebar, toolbar, addons panel) and the Preview (iframe that renders stories)",
+              "correct": true,
+              "explanation": "Correct. The Manager is Storybook's chrome; the Preview is a separate runtime that mounts the selected story in an iframe."
+            },
+            {
+              "id": "b",
+              "text": "The Docs tab and the Search modal",
+              "correct": false,
+              "explanation": "Those are features inside the Manager, not the two-frame architecture."
+            },
+            {
+              "id": "c",
+              "text": "The bundler config and the tsconfig",
+              "correct": false,
+              "explanation": "Those are build configuration files, not runtime frames."
+            }
+          ],
+          "hint": "One shows navigation, the other renders your component."
+        },
+        {
+          "id": "q-decorator",
+          "question": "Your component throws because it expects a ThemeProvider ancestor. What is the idiomatic Storybook fix?",
+          "choices": [
+            {
+              "id": "a",
+              "text": "Wrap the component's source in a ThemeProvider permanently",
+              "correct": false,
+              "explanation": "That would couple the component to a provider it should receive from its environment."
+            },
+            {
+              "id": "b",
+              "text": "Add a decorator that wraps the story with ThemeProvider",
+              "correct": true,
+              "explanation": "Correct. Decorators re-create the application harness — providers, routers, layout — around the story without changing component code."
+            },
+            {
+              "id": "c",
+              "text": "Disable the story until theming ships",
+              "correct": false,
+              "explanation": "Losing coverage is the opposite of the workshop mindset; decorators exist exactly for this."
+            }
+          ],
+          "hint": "Something wraps the story to supply outside context."
+        }
+      ]
+    }
+  },
+  {
+    "folder": "text-workflow",
+    "type": "text",
+    "props": {
+      "title": "The Story Authoring Workflow",
+      "heading": "From bare component to published safety net",
+      "paragraphs": [
+        "Storybook's day-one workflow has five moves. First, add Storybook to an existing project with `npx storybook@latest init` — the automigration detects your framework (React, Vue, Angular, Svelte, Web Components), generates a `.storybook/` config directory, and scaffolds example stories. Then `storybook dev -p 6006` opens the workshop in your browser while your app keeps running on its own port.",
+        "Second, co-locate a story file next to the component: `Button.tsx` gets a sibling `Button.stories.ts`. The file's default export is the meta object — a `title` like `Button` (which builds the sidebar hierarchy, e.g. `Form/Button` nests it) and the `component` reference that unlocks autodocs and automatic Controls. Every named export after that is a story, and each story captures exactly one state: `Primary`, `Secondary`, `Disabled`, `Loading`, `Error`.",
+        "Third, parameterize states with args instead of copy-pasted renders. A story's `args` object becomes the component's props, and `argTypes` declared once in meta tell Controls how to edit each prop — a toggle for booleans, a select for enums, a slider for numeric ranges. Because meta owns the arg contract, adding one new story for a new state costs just a few lines.",
+        "Fourth, add depth when isolation is not enough. Decorators wrap stories with the providers a component expects (theme, router, data store). Parameters attach per-story or global configuration such as viewports and chromatic ignore rules. For states that only exist after interaction — a modal opening, a form validating — write a `play` function that scripts `userEvent` clicks and assertions, and the story becomes both a demo and a test.",
+        "Fifth, ship the loop into CI. `storybook build` produces a static site you can publish (e.g. to Chromatic or any CDN) so every branch gets a reviewable URL. The test runner executes every story and its play function headlessly in Playwright or Puppeteer, and visual regression snapshots diff pixels between commits. The payoff: the same story file drives development, documentation, and the release gate — one artifact, three jobs."
+      ]
+    }
+  },
+  {
+    "folder": "flowchart",
+    "type": "flowchart",
+    "props": {
+      "title": "Render & Hot-Reload Pipeline",
+      "schema": {
+        "entities": {
+          "frontend_dev": {
+            "title": "Frontend Developer",
+            "desc": "Writes and edits story files, then tunes component states in the UI",
+            "type": "Actor"
+          },
+          "dev_server": {
+            "title": "Dev Server (Vite/Webpack)",
+            "desc": "Bundler serving the preview runtime with hot module replacement",
+            "type": "External API"
+          },
+          "story_indexer": {
+            "title": "Story Indexer",
+            "desc": "Scans story files and extracts meta and story exports into the sidebar index",
+            "type": "Aggregate"
+          },
+          "preview_runtime": {
+            "title": "Preview Runtime (iframe)",
+            "desc": "Boots the component module graph and renders the selected story",
+            "type": "Aggregate"
+          },
+          "controls_addon": {
+            "title": "Controls Addon",
+            "desc": "Edits a story's args live from the addons panel",
+            "type": "Aggregate"
+          },
+          "pol_step_author": {
+            "title": "When Story Source Is Saved",
+            "desc": "Developer saves Button.stories.ts with a new args tweak",
+            "type": "Policy",
+            "root": false
+          },
+          "cmd_step_author": {
+            "title": "Persist Story File Change",
+            "desc": "Developer saves Button.stories.ts with a new args tweak",
+            "type": "Command"
+          },
+          "evt_evt_file_saved": {
+            "title": "Story File Saved",
+            "desc": "Bundler detects the changed .stories module in the graph",
+            "type": "Event"
+          },
+          "pol_step_hmr": {
+            "title": "When Module Graph Is Invalidated",
+            "desc": "Vite/Webpack HMR swaps only the changed story module",
+            "type": "Policy",
+            "root": false
+          },
+          "cmd_step_hmr": {
+            "title": "Hot-Replace Story Module",
+            "desc": "Vite/Webpack HMR swaps only the changed story module",
+            "type": "Command"
+          },
+          "dev_server2": {
+            "title": "Dev Server (Vite/Webpack)",
+            "desc": "Bundler serving the preview runtime with hot module replacement",
+            "type": "External API"
+          },
+          "evt_evt_module_replaced": {
+            "title": "Story Module Hot-Replaced",
+            "desc": "Updated story module pushed to the preview runtime without a full reload",
+            "type": "Event"
+          },
+          "pol_step_index": {
+            "title": "When Story Module Is Replaced",
+            "desc": "Indexer re-reads default/named exports to refresh the sidebar",
+            "type": "Policy",
+            "root": false
+          },
+          "cmd_step_index": {
+            "title": "Re-extract Meta & Story Exports",
+            "desc": "Indexer re-reads default/named exports to refresh the sidebar",
+            "type": "Command"
+          },
+          "evt_evt_index_updated": {
+            "title": "Story Index Updated",
+            "desc": "Sidebar entries and story parameters refreshed from exports",
+            "type": "Event"
+          },
+          "pol_step_render": {
+            "title": "When Selected Story Must Be Displayed",
+            "desc": "Preview mounts the component with args; success or error decides the branch",
+            "type": "Policy",
+            "root": false
+          },
+          "cmd_step_render": {
+            "title": "Render Story Component in Preview Iframe",
+            "desc": "Preview mounts the component with args; success or error decides the branch",
+            "type": "Command"
+          },
+          "evt_evt_story_rendered": {
+            "title": "Story Rendered",
+            "desc": "Component mounted in isolation with the story's args as props",
+            "type": "Event"
+          },
+          "pol_branch_ok": {
+            "title": "When Mount Succeeds",
+            "desc": "When Mount Succeeds",
+            "type": "Policy"
+          },
+          "cmd_branch_ok": {
+            "title": "Expose Story to Addons Panel",
+            "desc": "Expose Story to Addons Panel",
+            "type": "Command"
+          },
+          "evt_evt_interactive": {
+            "title": "Story Interactive",
+            "desc": "Controls, Docs, and viewport tools bind to the live story",
+            "type": "Event"
+          },
+          "pol_branch_error": {
+            "title": "When Error Boundary Catches",
+            "desc": "When Error Boundary Catches",
+            "type": "Policy"
+          },
+          "cmd_branch_error": {
+            "title": "Display Error Overlay",
+            "desc": "Display Error Overlay",
+            "type": "Command"
+          },
+          "preview_runtime2": {
+            "title": "Preview Runtime (iframe)",
+            "desc": "Boots the component module graph and renders the selected story",
+            "type": "Aggregate"
+          },
+          "evt_evt_error_shown": {
+            "title": "Error Overlay Shown",
+            "desc": "Stack trace surfaces in the preview for immediate debugging",
+            "type": "Event"
+          },
+          "pol_step_tune": {
+            "title": "When Reviewer Edits a Control Widget",
+            "desc": "Reviewer flips disabled or edits the label in the Controls panel",
+            "type": "Policy",
+            "root": false
+          },
+          "cmd_step_tune": {
+            "title": "Dispatch Arg Update Over Channel",
+            "desc": "Reviewer flips disabled or edits the label in the Controls panel",
+            "type": "Command"
+          },
+          "frontend_dev2": {
+            "title": "Frontend Developer",
+            "desc": "Writes and edits story files, then tunes component states in the UI",
+            "type": "Actor"
+          },
+          "controls_addon2": {
+            "title": "Controls Addon",
+            "desc": "Edits a story's args live from the addons panel",
+            "type": "Aggregate"
+          },
+          "evt_evt_args_updated": {
+            "title": "Args Updated",
+            "desc": "New arg values sent from the manager to the preview runtime",
+            "type": "Event"
+          },
+          "pol_step_rerender": {
+            "title": "When Args Updated",
+            "desc": "Preview merges the updated args and repaints the story",
+            "type": "Policy",
+            "root": false
+          },
+          "cmd_step_rerender": {
+            "title": "Re-render Story With New Args",
+            "desc": "Preview merges the updated args and repaints the story",
+            "type": "Command"
+          },
+          "preview_runtime3": {
+            "title": "Preview Runtime (iframe)",
+            "desc": "Boots the component module graph and renders the selected story",
+            "type": "Aggregate"
+          },
+          "evt_evt_story_updated": {
+            "title": "Story Live-Updated",
+            "desc": "Component re-renders with merged args in milliseconds",
+            "type": "Event"
+          }
+        },
+        "relations": [
+          {
+            "id": "r1",
+            "from": "frontend_dev",
+            "to": "pol_step_author",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r2",
+            "from": "pol_step_author",
+            "to": "cmd_step_author",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r3",
+            "from": "cmd_step_author",
+            "to": "dev_server",
+            "handledBy": true,
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r4",
+            "from": "dev_server",
+            "to": "evt_evt_file_saved",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r5",
+            "from": "evt_evt_file_saved",
+            "to": "pol_step_hmr",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r6",
+            "from": "pol_step_hmr",
+            "to": "cmd_step_hmr",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r7",
+            "from": "cmd_step_hmr",
+            "to": "dev_server2",
+            "handledBy": true,
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r8",
+            "from": "dev_server2",
+            "to": "evt_evt_module_replaced",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r9",
+            "from": "evt_evt_module_replaced",
+            "to": "pol_step_index",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r10",
+            "from": "pol_step_index",
+            "to": "cmd_step_index",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r11",
+            "from": "cmd_step_index",
+            "to": "story_indexer",
+            "handledBy": true,
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r12",
+            "from": "story_indexer",
+            "to": "evt_evt_index_updated",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r13",
+            "from": "evt_evt_index_updated",
+            "to": "pol_step_render",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r14",
+            "from": "pol_step_render",
+            "to": "cmd_step_render",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r15",
+            "from": "cmd_step_render",
+            "to": "preview_runtime",
+            "handledBy": true,
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r16",
+            "from": "preview_runtime",
+            "to": "evt_evt_story_rendered",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r17",
+            "from": "evt_evt_story_rendered",
+            "to": "pol_branch_ok",
+            "label": "Story mounts cleanly",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r18",
+            "from": "pol_branch_ok",
+            "to": "cmd_branch_ok",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r19",
+            "from": "cmd_branch_ok",
+            "to": "controls_addon",
+            "handledBy": true,
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r20",
+            "from": "controls_addon",
+            "to": "evt_evt_interactive",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r21",
+            "from": "evt_evt_story_rendered",
+            "to": "pol_branch_error",
+            "label": "Render throws",
+            "dashed": true,
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r22",
+            "from": "pol_branch_error",
+            "to": "cmd_branch_error",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r23",
+            "from": "cmd_branch_error",
+            "to": "preview_runtime2",
+            "handledBy": true,
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r24",
+            "from": "preview_runtime2",
+            "to": "evt_evt_error_shown",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r25",
+            "from": "frontend_dev2",
+            "to": "pol_step_tune",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r26",
+            "from": "pol_step_tune",
+            "to": "cmd_step_tune",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r27",
+            "from": "cmd_step_tune",
+            "to": "controls_addon2",
+            "handledBy": true,
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r28",
+            "from": "controls_addon2",
+            "to": "evt_evt_args_updated",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r29",
+            "from": "evt_evt_args_updated",
+            "to": "pol_step_rerender",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r30",
+            "from": "pol_step_rerender",
+            "to": "cmd_step_rerender",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r31",
+            "from": "cmd_step_rerender",
+            "to": "preview_runtime3",
+            "handledBy": true,
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r32",
+            "from": "preview_runtime3",
+            "to": "evt_evt_story_updated",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          }
+        ],
+        "journeys": [
+          {
+            "id": "journey_hot_reload",
+            "label": "Hot-Reload Loop",
+            "description": "From saving a story file to a freshly rendered story in the preview iframe.",
+            "steps": [
+              {
+                "nodeIds": [
+                  "frontend_dev",
+                  "pol_step_author",
+                  "cmd_step_author",
+                  "dev_server",
+                  "evt_evt_file_saved"
+                ],
+                "title": "1. Save Story File",
+                "reason": "The developer edits a story and the dev server detects the change.",
+                "processGroup": "planning"
+              },
+              {
+                "nodeIds": [
+                  "pol_step_hmr",
+                  "cmd_step_hmr",
+                  "dev_server2",
+                  "evt_evt_module_replaced"
+                ],
+                "title": "2. Hot-Replace Module",
+                "reason": "HMR swaps the changed story module without reloading the whole app.",
+                "processGroup": "execution"
+              },
+              {
+                "nodeIds": [
+                  "pol_step_index",
+                  "cmd_step_index",
+                  "story_indexer",
+                  "evt_evt_index_updated"
+                ],
+                "title": "3. Re-index Stories",
+                "reason": "The indexer refreshes sidebar entries from the new exports.",
+                "processGroup": "execution"
+              },
+              {
+                "nodeIds": [
+                  "pol_step_render",
+                  "cmd_step_render",
+                  "preview_runtime",
+                  "evt_evt_story_rendered"
+                ],
+                "title": "4. Render in Preview",
+                "reason": "The preview runtime mounts the story with its args.",
+                "processGroup": "execution"
+              }
+            ]
+          },
+          {
+            "id": "journey_controls",
+            "label": "Controls Tuning Loop",
+            "description": "A reviewer mutates args live and the story re-renders instantly.",
+            "steps": [
+              {
+                "nodeIds": [
+                  "frontend_dev2",
+                  "pol_step_tune",
+                  "cmd_step_tune",
+                  "controls_addon2",
+                  "evt_evt_args_updated"
+                ],
+                "title": "1. Edit a Control",
+                "reason": "The reviewer toggles a boolean in the Controls panel.",
+                "processGroup": "planning"
+              },
+              {
+                "nodeIds": [
+                  "pol_step_rerender",
+                  "cmd_step_rerender",
+                  "preview_runtime3",
+                  "evt_evt_story_updated"
+                ],
+                "title": "2. Live Re-render",
+                "reason": "Args flow over the channel and the component repaints.",
+                "processGroup": "evaluation"
+              }
+            ]
+          }
+        ],
+        "rawSteps": [
+          {
+            "type": "linear",
+            "id": "step_author",
+            "initiatedBy": {
+              "_tag": "ref",
+              "id": "frontend_dev"
+            },
+            "policy": "When Story Source Is Saved",
+            "command": "Persist Story File Change",
+            "handledBy": {
+              "_tag": "ref",
+              "id": "dev_server"
+            },
+            "resultEvents": [
+              {
+                "id": "evt_file_saved",
+                "title": "Story File Saved",
+                "desc": "Bundler detects the changed .stories module in the graph"
+              }
+            ],
+            "continuesAs": "step_hmr",
+            "description": "Developer saves Button.stories.ts with a new args tweak"
+          },
+          {
+            "type": "linear",
+            "id": "step_hmr",
+            "policy": "When Module Graph Is Invalidated",
+            "command": "Hot-Replace Story Module",
+            "handledBy": {
+              "_tag": "ref",
+              "id": "dev_server"
+            },
+            "resultEvents": [
+              {
+                "id": "evt_module_replaced",
+                "title": "Story Module Hot-Replaced",
+                "desc": "Updated story module pushed to the preview runtime without a full reload"
+              }
+            ],
+            "continuesAs": "step_index",
+            "description": "Vite/Webpack HMR swaps only the changed story module"
+          },
+          {
+            "type": "linear",
+            "id": "step_index",
+            "policy": "When Story Module Is Replaced",
+            "command": "Re-extract Meta & Story Exports",
+            "handledBy": {
+              "_tag": "ref",
+              "id": "story_indexer"
+            },
+            "resultEvents": [
+              {
+                "id": "evt_index_updated",
+                "title": "Story Index Updated",
+                "desc": "Sidebar entries and story parameters refreshed from exports"
+              }
+            ],
+            "continuesAs": "step_render",
+            "description": "Indexer re-reads default/named exports to refresh the sidebar"
+          },
+          {
+            "type": "linear",
+            "id": "step_render",
+            "policy": "When Selected Story Must Be Displayed",
+            "command": "Render Story Component in Preview Iframe",
+            "handledBy": {
+              "_tag": "ref",
+              "id": "preview_runtime"
+            },
+            "resultEvents": [
+              {
+                "id": "evt_story_rendered",
+                "title": "Story Rendered",
+                "desc": "Component mounted in isolation with the story's args as props"
+              }
+            ],
+            "continuesAs": "step_outcome",
+            "description": "Preview mounts the component with args; success or error decides the branch"
+          },
+          {
+            "type": "branch",
+            "id": "step_outcome",
+            "event": "evt_story_rendered",
+            "branches": [
+              {
+                "id": "branch_ok",
+                "label": "Story mounts cleanly",
+                "policy": "When Mount Succeeds",
+                "command": "Expose Story to Addons Panel",
+                "handledBy": {
+                  "_tag": "ref",
+                  "id": "controls_addon"
+                },
+                "resultEvents": [
+                  {
+                    "id": "evt_interactive",
+                    "title": "Story Interactive",
+                    "desc": "Controls, Docs, and viewport tools bind to the live story"
+                  }
+                ]
+              },
+              {
+                "id": "branch_error",
+                "label": "Render throws",
+                "dashed": true,
+                "policy": "When Error Boundary Catches",
+                "command": "Display Error Overlay",
+                "handledBy": {
+                  "_tag": "ref",
+                  "id": "preview_runtime"
+                },
+                "resultEvents": [
+                  {
+                    "id": "evt_error_shown",
+                    "title": "Error Overlay Shown",
+                    "desc": "Stack trace surfaces in the preview for immediate debugging"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "type": "linear",
+            "id": "step_tune",
+            "initiatedBy": {
+              "_tag": "ref",
+              "id": "frontend_dev"
+            },
+            "policy": "When Reviewer Edits a Control Widget",
+            "command": "Dispatch Arg Update Over Channel",
+            "handledBy": {
+              "_tag": "ref",
+              "id": "controls_addon"
+            },
+            "resultEvents": [
+              {
+                "id": "evt_args_updated",
+                "title": "Args Updated",
+                "desc": "New arg values sent from the manager to the preview runtime"
+              }
+            ],
+            "continuesAs": "step_rerender",
+            "description": "Reviewer flips disabled or edits the label in the Controls panel"
+          },
+          {
+            "type": "linear",
+            "id": "step_rerender",
+            "policy": "When Args Updated",
+            "command": "Re-render Story With New Args",
+            "handledBy": {
+              "_tag": "ref",
+              "id": "preview_runtime"
+            },
+            "resultEvents": [
+              {
+                "id": "evt_story_updated",
+                "title": "Story Live-Updated",
+                "desc": "Component re-renders with merged args in milliseconds"
+              }
+            ],
+            "description": "Preview merges the updated args and repaints the story"
+          }
+        ]
+      }
+    }
+  },
+  {
+    "folder": "reflection-sequence",
+    "type": "reflection-sequence",
+    "props": {
+      "title": "Pipeline Sequencing Challenge",
+      "challenges": [
+        {
+          "prompt": "Order the hot-reload pipeline from saving a story file to a rendered story (Part 1):",
+          "items": [
+            {
+              "id": "seq-3",
+              "text": "Story Indexer re-extracts meta and story exports to refresh the sidebar",
+              "icon": "ListTree"
+            },
+            {
+              "id": "seq-1",
+              "text": "Developer saves the story file and the dev server detects the change",
+              "icon": "Save"
+            },
+            {
+              "id": "seq-4",
+              "text": "Preview runtime renders the story component in its iframe",
+              "icon": "MonitorPlay"
+            },
+            {
+              "id": "seq-2",
+              "text": "Dev server hot-replaces only the changed story module (HMR)",
+              "icon": "Zap"
+            }
+          ],
+          "solution": [
+            "seq-1",
+            "seq-2",
+            "seq-3",
+            "seq-4"
+          ]
+        },
+        {
+          "prompt": "Order the Controls tuning loop from panel click to live update (Part 2):",
+          "items": [
+            {
+              "id": "tune-2",
+              "text": "Args Updated event is sent to the preview runtime over the channel",
+              "icon": "Send"
+            },
+            {
+              "id": "tune-1",
+              "text": "Reviewer edits a control widget (e.g. toggles disabled) in the addons panel",
+              "icon": "SlidersHorizontal"
+            },
+            {
+              "id": "tune-3",
+              "text": "Preview re-renders the component with the merged new args",
+              "icon": "RefreshCw"
+            }
+          ],
+          "solution": [
+            "tune-1",
+            "tune-2",
+            "tune-3"
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "folder": "tradeoffs",
+    "type": "tradeoff-sandbox",
+    "props": {
+      "title": "UI Safety-Net Trade-offs",
+      "scenarios": [
+        {
+          "id": "storybook-safety-net",
+          "title": "Design System Regression Safety Net",
+          "description": "Your design system's Button change silently broke tooltips on two product pages. Leadership wants a Storybook-based safety net. Choose how much confidence to buy and what it costs in CI time, money, and review effort.",
+          "metrics": [
+            {
+              "id": "confidence",
+              "label": "Regression Confidence",
+              "baseValue": 40,
+              "min": 0,
+              "max": 100,
+              "direction": "higher"
+            },
+            {
+              "id": "ci_speed",
+              "label": "CI Pipeline Speed",
+              "baseValue": 70,
+              "min": 0,
+              "max": 100,
+              "direction": "higher"
+            },
+            {
+              "id": "cost_efficiency",
+              "label": "Cost Efficiency",
+              "baseValue": 65,
+              "min": 0,
+              "max": 100,
+              "direction": "higher"
+            },
+            {
+              "id": "review_load",
+              "label": "Reviewer Acceptance Burden",
+              "baseValue": 70,
+              "min": 0,
+              "max": 100,
+              "direction": "higher"
+            }
+          ],
+          "steps": [
+            {
+              "id": "story_coverage",
+              "title": "1. Story Coverage Policy",
+              "description": "How many stories must each component carry before it counts as covered?",
+              "recommended": "state_matrix",
+              "choices": [
+                {
+                  "id": "happy_only",
+                  "label": "Happy-path only (1-2 stories per component)",
+                  "description": "Only the default and primary variants get stories; edge states stay app-only.",
+                  "metrics": {
+                    "confidence": -15,
+                    "ci_speed": 20,
+                    "cost_efficiency": 15,
+                    "review_load": 10
+                  },
+                  "pros": [
+                    {
+                      "title": "Fast to author",
+                      "description": "New components enter the catalog with minimal ceremony."
+                    }
+                  ],
+                  "cons": [
+                    {
+                      "title": "Blind to edge states",
+                      "description": "Error, disabled, and overflow states — where the tooltip bug hid — are never rendered in isolation."
+                    }
+                  ],
+                  "whenToUse": "Prototype Storybooks or throwaway spike components."
+                },
+                {
+                  "id": "state_matrix",
+                  "label": "Full state matrix (one story per meaningful arg combination)",
+                  "description": "Every boolean, enum size/variant, loading, disabled, and error state gets a named story.",
+                  "metrics": {
+                    "confidence": 30,
+                    "ci_speed": -10,
+                    "cost_efficiency": -5,
+                    "review_load": -10
+                  },
+                  "pros": [
+                    {
+                      "title": "Every state is reviewable",
+                      "description": "Snapshot diffs cover exactly the combinations that break in production."
+                    },
+                    {
+                      "title": "Docs come free",
+                      "description": "The same stories render the autodocs examples for each state."
+                    }
+                  ],
+                  "cons": [
+                    {
+                      "title": "Snapshot volume",
+                      "description": "Hundreds of components times dozens of states multiplies review work."
+                    }
+                  ],
+                  "whyThisFits": "The incident was an unrendered edge state — the state matrix is the smallest coverage that would have caught it.",
+                  "whenToUse": "Production design systems where UI regressions are expensive."
+                },
+                {
+                  "id": "story_plus_play",
+                  "label": "State matrix + play functions on interactive components",
+                  "description": "On top of full coverage, modals, menus, and forms carry scripted interaction stories.",
+                  "metrics": {
+                    "confidence": 40,
+                    "ci_speed": -20,
+                    "cost_efficiency": -15,
+                    "review_load": -5
+                  },
+                  "pros": [
+                    {
+                      "title": "Behavior regressions caught too",
+                      "description": "A dropdown that stops opening on click fails CI, not just a pixel diff."
+                    }
+                  ],
+                  "cons": [
+                    {
+                      "title": "Authoring investment",
+                      "description": "Play functions are tests in disguise and need maintenance."
+                    }
+                  ],
+                  "whenToUse": "Components whose bugs are behavioral (focus, open/close, validation) rather than visual."
+                }
+              ]
+            },
+            {
+              "id": "visual_regression",
+              "title": "2. Visual Regression Engine",
+              "description": "How do pixel diffs run against the story catalog?",
+              "recommended": "cloud_service",
+              "choices": [
+                {
+                  "id": "none",
+                  "label": "No visual regression (manual QA eyeballs)",
+                  "description": "Rely on reviewers noticing visual changes in PR previews.",
+                  "metrics": {
+                    "confidence": -25,
+                    "ci_speed": 15,
+                    "cost_efficiency": 20,
+                    "review_load": 5
+                  },
+                  "pros": [
+                    {
+                      "title": "Zero setup or subscription",
+                      "description": "No baselines, no approvals, no vendor."
+                    }
+                  ],
+                  "cons": [
+                    {
+                      "title": "Subtle diffs slip through",
+                      "description": "A 2px tooltip shift is invisible to human reviewers at PR scale."
+                    }
+                  ],
+                  "whenToUse": "Internal tools where visual polish is not critical."
+                },
+                {
+                  "id": "self_hosted",
+                  "label": "Self-hosted snapshot pipeline (Docker + Playwright screenshots)",
+                  "description": "Run screenshot capture and diffing on your own CI runners, storing baselines in your infra.",
+                  "metrics": {
+                    "confidence": 25,
+                    "ci_speed": -15,
+                    "cost_efficiency": -5,
+                    "review_load": -15
+                  },
+                  "pros": [
+                    {
+                      "title": "Full control of baselines",
+                      "description": "No third party sees component data; you own storage and retention."
+                    }
+                  ],
+                  "cons": [
+                    {
+                      "title": "You maintain the fleet",
+                      "description": "Font rendering, flaky runners, and baseline garbage collection become your team's job."
+                    }
+                  ],
+                  "whenToUse": "Strict data-sovereignty requirements with platform-engineering capacity."
+                },
+                {
+                  "id": "cloud_service",
+                  "label": "Cloud visual testing (e.g. Chromatic)",
+                  "description": "Publish every build; the service snapshots all stories across browsers/viewports and gates merges on visual changes.",
+                  "metrics": {
+                    "confidence": 35,
+                    "ci_speed": -5,
+                    "cost_efficiency": -20,
+                    "review_load": -20
+                  },
+                  "pros": [
+                    {
+                      "title": "Baseline review UI built in",
+                      "description": "Designers approve pixel diffs in the same link where they review the story."
+                    },
+                    {
+                      "title": "Parallel cross-browser matrix",
+                      "description": "Snapshots run in a managed grid of browsers and viewports."
+                    }
+                  ],
+                  "cons": [
+                    {
+                      "title": "Per-build pricing",
+                      "description": "Cost scales with build count across a busy monorepo."
+                    }
+                  ],
+                  "whyThisFits": "The team already shares Storybook links for design review — acceptance happens where review already occurs.",
+                  "whenToUse": "Product teams with design review in the PR flow and budget for SaaS."
+                }
+              ]
+            },
+            {
+              "id": "docs_publish",
+              "title": "3. Docs & Review Surface",
+              "description": "What do stakeholders see per change?",
+              "recommended": "per_branch",
+              "choices": [
+                {
+                  "id": "local_only",
+                  "label": "Local Storybook only (npx storybook dev)",
+                  "description": "Developers run the workshop on their laptops; nobody else clicks anything.",
+                  "metrics": {
+                    "confidence": -10,
+                    "ci_speed": 10,
+                    "cost_efficiency": 10,
+                    "review_load": 0
+                  },
+                  "pros": [
+                    {
+                      "title": "Zero publishing cost",
+                      "description": "Nothing leaves the developer machine."
+                    }
+                  ],
+                  "cons": [
+                    {
+                      "title": "No shared review",
+                      "description": "Designers cannot click through a change before merge."
+                    }
+                  ],
+                  "whenToUse": "Solo or co-located prototype teams."
+                },
+                {
+                  "id": "per_branch",
+                  "label": "Published Storybook per branch/PR",
+                  "description": "Every pull request publishes a static Storybook URL for click-through review.",
+                  "metrics": {
+                    "confidence": 20,
+                    "ci_speed": -10,
+                    "cost_efficiency": -10,
+                    "review_load": -5
+                  },
+                  "pros": [
+                    {
+                      "title": "Review real components, not screenshots",
+                      "description": "Stakeholders exercise Controls on the exact PR build."
+                    }
+                  ],
+                  "cons": [
+                    {
+                      "title": "Publish time in CI",
+                      "description": "Static builds add minutes to each pipeline run."
+                    }
+                  ],
+                  "whyThisFits": "Pairs with visual regression: the published build is both the review artifact and the snapshot source.",
+                  "whenToUse": "Any team where design or product sign-off happens before merge."
+                },
+                {
+                  "id": "main_only",
+                  "label": "Publish only main branch docs site",
+                  "description": "One canonical published Storybook, updated after merge.",
+                  "metrics": {
+                    "confidence": 5,
+                    "ci_speed": 5,
+                    "cost_efficiency": 5,
+                    "review_load": 5
+                  },
+                  "pros": [
+                    {
+                      "title": "One stable URL",
+                      "description": "The catalog consumers bookmark always matches merged code."
+                    }
+                  ],
+                  "cons": [
+                    {
+                      "title": "Reviews happen post-merge",
+                      "description": "Feedback arrives after the change already landed."
+                    }
+                  ],
+                  "whenToUse": "Public component-library documentation for external consumers."
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "folder": "taxonomy",
+    "type": "taxonomy-browser",
+    "props": {
+      "title": "What Storybook Does Catalog",
+      "categories": [
+        {
+          "icon": "Wrench",
+          "title": "Component Workshop",
+          "subtitle": "Isolated UI development environment",
+          "description": "The core job: develop every component state in a dedicated sandbox that runs beside your app.",
+          "details": "Each state is a story rendered from real component code in an isolated preview iframe. Hot module replacement keeps the loop to sub-second, and no routes, auth flows, or API mocks are required to reach deep states like error or empty views.",
+          "analogy": "A machinist's workbench: you tune a single part under a lamp instead of restarting the whole engine to inspect one bolt.",
+          "primaryFocus": "Building and reviewing individual component states fast, independent of app screens.",
+          "inScope": [
+            "Per-state stories with args and argTypes",
+            "Interactive Controls, viewport, and zoom tools",
+            "Decorators supplying providers around a component"
+          ],
+          "outOfScope": [
+            "Hosting or routing your production application",
+            "End-to-end user journeys across real backend systems"
+          ],
+          "color": "#89b4fa"
+        },
+        {
+          "icon": "BookOpen",
+          "title": "Living Documentation",
+          "subtitle": "Docs & MDX generated from stories",
+          "description": "Storybook turns the story catalog into a searchable documentation site that never goes stale.",
+          "details": "Autodocs generate props tables and examples straight from meta, JSDoc comments, and argTypes. MDX pages interleave prose with live, interactive story embeds, so guidelines are executed by the same code the tests run.",
+          "analogy": "A cookbook where every recipe demo cooks itself at the touch of a button — and updates itself when the kitchen changes.",
+          "primaryFocus": "Keeping usage guidance, props references, and visual examples in sync with code.",
+          "inScope": [
+            "Autodocs pages with props tables per component",
+            "MDX pages mixing prose, sections, and live Canvas embeds",
+            "Publishing a static docs build for the whole team"
+          ],
+          "outOfScope": [
+            "General-purpose wiki or blog hosting",
+            "Backend or infrastructure API references"
+          ],
+          "color": "#a6e3a1"
+        },
+        {
+          "icon": "ShieldCheck",
+          "title": "Automated Testing Platform",
+          "subtitle": "Stories become executable tests",
+          "description": "Every story doubles as a test case: the test runner executes them headlessly and play functions assert behavior.",
+          "details": "test-storybook boots the built Storybook and runs each story (plus its play function) in Playwright or Puppeteer in CI. Visual regression services snapshot every story per commit and diff pixels across browsers and viewports, blocking silent UI changes.",
+          "analogy": "A full-scale firing range where every weapon you built is test-fired automatically before the shipment leaves.",
+          "primaryFocus": "Catching rendering, behavior, and pixel regressions on the pull request.",
+          "inScope": [
+            "Play functions scripted with userEvent-style APIs",
+            "Headless test runner across browsers in CI",
+            "Visual snapshot diffing and review workflows"
+          ],
+          "outOfScope": [
+            "Unit-testing pure non-UI business logic",
+            "Load and performance benchmarking"
+          ],
+          "color": "#fab387"
+        },
+        {
+          "icon": "Users",
+          "title": "Review & Collaboration Hub",
+          "subtitle": "Shareable links per branch",
+          "description": "Static Storybook builds give designers, PMs, and QA a clickable UI catalog to review per branch or PR.",
+          "details": "Each commit gets a live URL (e.g. via Chromatic) where stakeholders click through states, leave inline comments, and approve visual changes. Reviewers exercise Controls themselves instead of requesting prop screenshots.",
+          "analogy": "A printed proof in publishing: everyone signs the exact sheet that will be printed, not a description of it.",
+          "primaryFocus": "Making UI changes reviewable and sign-off auditable before merge.",
+          "inScope": [
+            "Publishing static builds per commit/branch",
+            "Visual change review and baseline acceptance",
+            "Shareable links to an exact story + arg state"
+          ],
+          "outOfScope": [
+            "Replacing code review of application logic",
+            "Formal project sign-off or ticket workflows"
+          ],
+          "color": "#cba6f7"
+        },
+        {
+          "icon": "Library",
+          "title": "Design System Catalog",
+          "subtitle": "Composition & single source of truth",
+          "description": "Design systems use Storybook as the canonical, browsable catalog of every component and pattern they ship.",
+          "details": "Composition stitches several Storybooks (core primitives, product-specific kits, legacy libs) into one navigable portal with a shared sidebar. Teams version the catalog alongside npm releases so consumers browse documentation matching installed code.",
+          "analogy": "A national library with one reading room card catalog, even though the books live in many branches.",
+          "primaryFocus": "A single browsable truth for which components exist and how they behave.",
+          "inScope": [
+            "Composing multiple Storybook instances into one site",
+            "Tagging and filtering stories (e.g. experimental, stable)",
+            "Versioned catalogs released with component packages"
+          ],
+          "outOfScope": [
+            "Distributing the component library binaries themselves",
+            "Design token storage independent of code"
+          ],
+          "color": "#f38ba8"
+        }
+      ]
+    }
+  },
+  {
+    "folder": "scenario",
+    "type": "scenario",
+    "props": {
+      "title": "The Tooltip That Betrayed Production",
+      "id": "storybook-release-crisis",
+      "intro": "You maintain the design system at PixelForge. A teammate's Button refactor — touching a shared z-index mixin — passed code review and is queued for tonight's release. Your job: decide how the team catches (or misses) what the refactor broke.",
+      "nodes": {
+        "start": {
+          "id": "start",
+          "prompt": "It's 4 PM before the release train. The Button PR is approved. What is your team's current safety net for this change?",
+          "choices": [
+            {
+              "id": "manual-qa",
+              "text": "Nothing automated — QA will click through the app tonight",
+              "next": "manual-result"
+            },
+            {
+              "id": "storybook-ci",
+              "text": "Stories for every Button state run in CI with visual regression gating",
+              "next": "storybook-branch"
+            },
+            {
+              "id": "e2e-only",
+              "text": "Only end-to-end tests on the marketing homepage cover it",
+              "next": "e2e-result"
+            }
+          ]
+        },
+        "manual-result": {
+          "id": "manual-result",
+          "prompt": "QA has 90 minutes and 40 product surfaces to sweep. They test the checkout button on Chrome desktop — it looks fine.",
+          "choices": [
+            {
+              "id": "ship",
+              "text": "Release on time",
+              "next": "disaster-result"
+            },
+            {
+              "id": "delay",
+              "text": "Delay the train for a full manual sweep",
+              "next": "delay-result"
+            }
+          ]
+        },
+        "storybook-branch": {
+          "id": "storybook-branch",
+          "prompt": "CI boots the Storybook build. Visual regression flags changed pixels on the Tooltip-within-Button story at the tablet viewport — the exact z-index collision. Meanwhile a reviewer opens the PR's published Storybook link.",
+          "choices": [
+            {
+              "id": "approve-diff",
+              "text": "Review the diff, see it is unintended, and block the merge",
+              "next": "hero-result"
+            },
+            {
+              "id": "rubber-stamp",
+              "text": "Accept all visual diffs to make CI green and ship",
+              "next": "rubber-result"
+            }
+          ]
+        },
+        "e2e-result": {
+          "id": "e2e-result",
+          "outcome": {
+            "verdict": "The homepage button renders perfectly. Three product pages embedding the Tooltip inside Buttons go dark on Safari with an invisible, unclickable layer.",
+            "lesson": "E2E tests sample app journeys; they cannot enumerate component states. Stories enumerate states by construction — the combination nobody thought to click is exactly where bugs live.",
+            "rating": "c"
+          }
+        },
+        "disaster-result": {
+          "id": "disaster-result",
+          "outcome": {
+            "verdict": "At 2 AM, support reports a transparent layer swallowing clicks across the pricing page. The release is rolled back at a cost of thousands in lost conversions.",
+            "lesson": "Manual sweeps at PR scale are sampling with a sieve made of fingers. Without per-state automated rendering, an edge-state regression is a coin flip you will eventually lose.",
+            "rating": "c"
+          }
+        },
+        "delay-result": {
+          "id": "delay-result",
+          "outcome": {
+            "verdict": "The 40-surface sweep finds the tooltip bug at 10 PM — after hours of overtime — but only on the second page checked. Confidence in tonight's release stays low either way.",
+            "lesson": "Manual review found the bug by luck, not by design. Storybook's catalog makes 'test every state' mechanical instead of heroic.",
+            "rating": "c"
+          }
+        },
+        "hero-result": {
+          "id": "hero-result",
+          "outcome": {
+            "verdict": "The merge is blocked 20 minutes after the diff was flagged. The teammate pushes a z-index fix, the new baseline is accepted with a comment, and the train leaves on time.",
+            "lesson": "Stories + CI visual regression + a reviewable published build turns a 2 AM rollback into a 20-minute PR comment. The same story file documented the state, tested the state, and saved the release.",
+            "rating": "a"
+          }
+        },
+        "rubber-result": {
+          "id": "rubber-result",
+          "outcome": {
+            "verdict": "CI goes green and the tooltip bug ships anyway. The tooling worked perfectly; the human bypassed it.",
+            "lesson": "Visual regression is only as strong as its acceptance policy. Baseline approvals need owners and review discipline, or the safety net becomes a rubber stamp.",
+            "rating": "b-minus"
+          }
+        }
+      },
+      "startNode": "start"
+    }
+  },
+  {
+    "folder": "decision-tree",
+    "type": "decision-tree",
+    "props": {
+      "title": "Which Storybook Test Layer Do You Need?",
+      "id": "storybook-test-advisor",
+      "root": "risk",
+      "nodes": {
+        "risk": {
+          "id": "risk",
+          "prompt": "What kind of regression scares you most for this component?",
+          "choices": [
+            {
+              "id": "pixels",
+              "text": "Silent visual changes — spacing, colors, overflow on some viewport",
+              "next": "budget-visual",
+              "rationale": "Pixel-level drift is invisible to code review and most assertions; it needs snapshot diffing."
+            },
+            {
+              "id": "behavior",
+              "text": "Broken behavior — clicks, typing, open/close, validation",
+              "next": "depth-behavior",
+              "rationale": "Behavior regressions need scripted interactions, not screenshots."
+            },
+            {
+              "id": "a11y",
+              "text": "Accessibility or responsiveness failures",
+              "next": "leaf-a11y",
+              "rationale": "Automated audits cover structure and contrast; humans cover intent."
+            },
+            {
+              "id": "docs",
+              "text": "Nobody knows the component exists or how to use it",
+              "next": "leaf-docs",
+              "rationale": "Adoption failures are documentation failures in disguise."
+            }
+          ]
+        },
+        "budget-visual": {
+          "id": "budget-visual",
+          "prompt": "Where should visual snapshots run?",
+          "choices": [
+            {
+              "id": "cloud",
+              "text": "We already share published Storybook links for design review",
+              "next": "leaf-cloud-vrt",
+              "rationale": "The review workflow and the snapshot baseline become the same artifact.",
+              "recommended": true
+            },
+            {
+              "id": "self",
+              "text": "Our data policy forbids sending component builds to a vendor",
+              "next": "leaf-selfhosted-vrt",
+              "rationale": "Self-hosted Playwright screenshot pipelines keep everything on your runners."
+            }
+          ]
+        },
+        "depth-behavior": {
+          "id": "depth-behavior",
+          "prompt": "How complex is the interaction you need to protect?",
+          "choices": [
+            {
+              "id": "simple",
+              "text": "A single trigger — click opens, input filters, toggle flips",
+              "next": "leaf-play",
+              "rationale": "A short play function with userEvent is the cheapest executable specification.",
+              "recommended": true
+            },
+            {
+              "id": "multi",
+              "text": "Multi-step flows with assertions across several interactions",
+              "next": "leaf-play-runner",
+              "rationale": "Play functions plus the CI test runner execute the script headlessly on every PR."
+            }
+          ]
+        },
+        "leaf-cloud-vrt": {
+          "id": "leaf-cloud-vrt",
+          "leaf": {
+            "recommendation": "Full state-matrix stories + cloud visual regression (e.g. Chromatic) gating merges",
+            "explanation": "Publish every Storybook build; the service snapshots all stories across browsers and viewports and blocks merges on unreviewed pixel changes. Designers approve diffs on the same link they already use for review.",
+            "tradeoffs": [
+              "Per-build subscription cost scales with monorepo activity",
+              "Baseline acceptance becomes a review duty — rubber-stamping re-introduces the bug"
+            ]
+          }
+        },
+        "leaf-selfhosted-vrt": {
+          "id": "leaf-selfhosted-vrt",
+          "leaf": {
+            "recommendation": "State-matrix stories + self-hosted Playwright screenshot diffs in your own CI",
+            "explanation": "Capture screenshots of every story on your runners and diff against committed baselines. Full data sovereignty and no per-build fees.",
+            "tradeoffs": [
+              "You maintain browser fleets, font rendering parity, and baseline storage",
+              "Flaky captures need retry and quarantine policies you own"
+            ]
+          }
+        },
+        "leaf-play": {
+          "id": "leaf-play",
+          "leaf": {
+            "recommendation": "A play function on the story demonstrating the interaction",
+            "explanation": "Attach an async play function using the story's userEvent API. It runs interactively during development and automatically in CI — one artifact serves demo and test.",
+            "tradeoffs": [
+              "Play functions need maintenance as the component API evolves",
+              "Only covers scenarios someone thought to script"
+            ]
+          }
+        },
+        "leaf-play-runner": {
+          "id": "leaf-play-runner",
+          "leaf": {
+            "recommendation": "Play functions executed headlessly by the Storybook test runner on every PR",
+            "explanation": "test-storybook boots the static build and runs every story with its play function in Playwright/Puppeteer, failing the pipeline when an assertion throws. Add jest/Playwright expect queries inside play for real assertions.",
+            "tradeoffs": [
+              "Adds a browser boot phase to CI minutes",
+              "Shared-state stories can introduce ordering flakiness"
+            ]
+          }
+        },
+        "leaf-a11y": {
+          "id": "leaf-a11y",
+          "leaf": {
+            "recommendation": "Accessibility addon (axe-core) on all stories + viewport stories per breakpoint",
+            "explanation": "Run automated a11y audits against every story in CI so contrast, labels, and roles fail the build, and keep dedicated narrow-viewport stories so responsive breakage shows in the catalog.",
+            "tradeoffs": [
+              "Automated audits catch only a fraction of real a11y issues",
+              "Keyboard and screen-reader intent still needs human testing"
+            ]
+          }
+        },
+        "leaf-docs": {
+          "id": "leaf-docs",
+          "leaf": {
+            "recommendation": "Autodocs pages published as a static Storybook site with MDX usage guides",
+            "explanation": "Tag the component's stories for docs, let autodocs render the props table from meta and JSDoc, and add an MDX page for long-form guidance with live embeds. Publish per-branch and on main.",
+            "tradeoffs": [
+              "Docs go stale if stories stop covering real usage",
+              "MDX freedom means style drift without lint rules"
+            ]
+          }
+        }
+      }
+    }
+  },
+  {
+    "folder": "quiz-testing",
+    "type": "quiz",
+    "props": {
+      "title": "Testing & Delivery Trial",
+      "questions": [
+        {
+          "id": "q-vrt",
+          "question": "In the Release-Day scenario, what tooling flagged the tooltip z-index regression before merge?",
+          "choices": [
+            {
+              "id": "a",
+              "text": "End-to-end tests on the marketing homepage",
+              "correct": false,
+              "explanation": "The E2E path rated worst — the homepage button was fine; only component-state coverage found the collision."
+            },
+            {
+              "id": "b",
+              "text": "Visual regression diffing every story snapshot at multiple viewports",
+              "correct": true,
+              "explanation": "Correct. The Tooltip-within-Button story at the tablet viewport produced a pixel diff that blocked the merge."
+            },
+            {
+              "id": "c",
+              "text": "A slower release train schedule",
+              "correct": false,
+              "explanation": "Delaying for manual sweeps scored poorly — it found bugs by luck, not by design."
+            }
+          ],
+          "hint": "It compared rendered pixels between builds."
+        },
+        {
+          "id": "q-acceptance",
+          "question": "CI visual regression flagged the diff, but the reviewer accepted all pending snapshots to go green. What is the lesson?",
+          "choices": [
+            {
+              "id": "a",
+              "text": "Visual regression is useless and should be removed",
+              "correct": false,
+              "explanation": "The tool did its job by flagging the change — abandoning it discards the detection."
+            },
+            {
+              "id": "b",
+              "text": "Baseline acceptance needs owners and review discipline, or the safety net becomes a rubber stamp",
+              "correct": true,
+              "explanation": "Correct. Acceptance policy is part of the testing strategy; unreviewed approvals ship the bug anyway."
+            },
+            {
+              "id": "c",
+              "text": "Play functions should replace all visual testing",
+              "correct": false,
+              "explanation": "Interaction tests catch behavior, not pixel drift — they complement rather than replace snapshot diffing."
+            }
+          ],
+          "hint": "The tool worked; something else failed."
+        },
+        {
+          "id": "q-play",
+          "question": "A Dropdown stops opening on click after a refactor. Which Storybook mechanism catches this behavioral (non-visual) regression in CI?",
+          "choices": [
+            {
+              "id": "a",
+              "text": "A play function asserting the panel appears after userEvent.click, run by the test runner",
+              "correct": true,
+              "explanation": "Correct. Play functions execute headlessly via the Storybook test runner and fail CI when their assertions throw."
+            },
+            {
+              "id": "b",
+              "text": "Autodocs props tables generated from argTypes",
+              "correct": false,
+              "explanation": "Docs describe the API surface; they do not execute interactions."
+            },
+            {
+              "id": "c",
+              "text": "Adding more args to the story",
+              "correct": false,
+              "explanation": "Args change rendered props; only scripted interaction asserts behavior."
+            }
+          ],
+          "hint": "It scripts userEvent interactions on a story."
+        },
+        {
+          "id": "q-runner",
+          "question": "What does the Storybook test runner (test-storybook) actually execute in CI?",
+          "choices": [
+            {
+              "id": "a",
+              "text": "Only unit tests extracted from story files",
+              "correct": false,
+              "explanation": "It does not run unit tests — it boots the built Storybook and drives stories in real browsers."
+            },
+            {
+              "id": "b",
+              "text": "Every story (plus its play function) in headless browsers, failing when assertions throw",
+              "correct": true,
+              "explanation": "Correct. The runner boots the static Storybook build and executes each story as a test case in Playwright or Puppeteer."
+            },
+            {
+              "id": "c",
+              "text": "A linter over the .storybook config directory",
+              "correct": false,
+              "explanation": "Linting is separate; the runner is a browser-driven test executor."
+            }
+          ],
+          "hint": "It reuses the story catalog rather than duplicating tests."
+        },
+        {
+          "id": "q-advisor",
+          "question": "According to the Test Layer Advisor, your data policy forbids sending component builds to a vendor. What visual-regression path do you pick?",
+          "choices": [
+            {
+              "id": "a",
+              "text": "Self-hosted Playwright screenshot diffs on your own CI runners",
+              "correct": true,
+              "explanation": "Correct. Self-hosted capture keeps data sovereignty, at the cost of owning browser fleets and baseline storage."
+            },
+            {
+              "id": "b",
+              "text": "Cloud visual regression with an enterprise NDA",
+              "correct": false,
+              "explanation": "An NDA does not change the constraint — builds still leave your infrastructure."
+            },
+            {
+              "id": "c",
+              "text": "Skip visual regression and rely on Controls exploration",
+              "correct": false,
+              "explanation": "Manual Controls exploration is pre-merge review, not automated regression detection."
+            }
+          ],
+          "hint": "Snapshots must stay on infrastructure you control."
+        }
+      ]
+    }
+  },
+  {
+    "folder": "reflection-template",
+    "type": "reflection-template",
+    "props": {
+      "title": "Synthesis Vault",
+      "challenges": [
+        {
+          "prompt": "Complete the architecture statement describing how a story reaches the screen (Part 1):",
+          "template": "In Component Story Format, the file's default export is the {zone-1}, which declares the title and component; each named export is one {zone-2}. The indexer scans these exports to build the sidebar, while the {zone-3} iframe mounts the component with the story's args as props.",
+          "chips": [
+            {
+              "id": "chip-meta",
+              "text": "meta"
+            },
+            {
+              "id": "chip-decorator",
+              "text": "decorator"
+            },
+            {
+              "id": "chip-story",
+              "text": "story"
+            },
+            {
+              "id": "chip-manager",
+              "text": "manager"
+            },
+            {
+              "id": "chip-preview",
+              "text": "preview"
+            },
+            {
+              "id": "chip-addon",
+              "text": "addon"
+            }
+          ],
+          "solution": {
+            "zone-1": "chip-meta",
+            "zone-2": "chip-story",
+            "zone-3": "chip-preview"
+          },
+          "explanation": "<strong>Correct!</strong> Meta is the file-level default export, each named export is one story, and the <em>preview</em> iframe is the runtime that actually renders your component — while the <em>manager</em> is just the chrome around it."
+        },
+        {
+          "prompt": "Complete the safety-net statement forged from the testing track (Part 2):",
+          "template": "A {zone-1} scripts userEvent interactions so behavior is tested; the {zone-2} executes every story headlessly in CI; and {zone-3} diffing catches silent pixel changes — but its baseline approvals need {zone-4}, or the net becomes a rubber stamp.",
+          "chips": [
+            {
+              "id": "chip-play",
+              "text": "play function"
+            },
+            {
+              "id": "chip-argtypes",
+              "text": "argTypes table"
+            },
+            {
+              "id": "chip-testrunner",
+              "text": "test runner"
+            },
+            {
+              "id": "chip-composition",
+              "text": "composition"
+            },
+            {
+              "id": "chip-visual",
+              "text": "visual regression"
+            },
+            {
+              "id": "chip-snapshot",
+              "text": "MDX snapshot"
+            },
+            {
+              "id": "chip-discipline",
+              "text": "owners and review discipline"
+            },
+            {
+              "id": "chip-luck",
+              "text": "random luck"
+            }
+          ],
+          "solution": {
+            "zone-1": "chip-play",
+            "zone-2": "chip-testrunner",
+            "zone-3": "chip-visual",
+            "zone-4": "chip-discipline"
+          },
+          "explanation": "<strong>Correct! The safety net is forged.</strong> Play functions test behavior, the test runner executes stories as tests, visual regression guards pixels — and the Release-Day crisis proved that unreviewed baseline acceptance ships the bug anyway."
+        }
+      ]
+    }
+  }
+]

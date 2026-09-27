@@ -1,0 +1,2477 @@
+[
+  {
+    "folder": "intro",
+    "type": "intro",
+    "props": {
+      "title": "BG3 Four Element Monk Build",
+      "estimatedTime": "8 min read",
+      "moduleCount": 12,
+      "what": {
+        "definition": "Four Element Monk is a Baldur's Gate 3 build that combines Monk martial abilities with elemental spellcasting from all four schools: Fire, Cold, Lightning, and Acid.",
+        "summary": "Comprehensive build guide for the Monk of the Four Elements, covering subclass features, spell selection, Ki point optimization, and multiclass synergy with Sorcerer metamagic.",
+        "bullets": [
+          "Elemental Attunement grants free cantrips at all four elements",
+          "Twin Elemental Wrath infuses unarmed strikes with dual-element damage",
+          "Four Point Attack unleashes four elemental strikes per turn",
+          "Strix Cove Monk Cloak enables out-of-combat casting and saves a Quiver slot",
+          "Sorcerer multiclass unlocks Twinned Spell for double-target magic"
+        ],
+        "tags": [
+          "Baldur's Gate 3",
+          "Monk",
+          "Four Elements",
+          "Spellcaster",
+          "Ki Points"
+        ]
+      },
+      "why": {
+        "summary": "Pure monks struggle with AoE and range. Pure spellcasters lack survivability. Four Element Monk bridges both, delivering burst elemental damage with monk mobility and defense.",
+        "impact": "Twin Elemental Wrath and Four Point Attack create unmatched single-target and AoE flexibility, while Empty Body provides invulnerability and mist form for clutch moments."
+      },
+      "roadmap": [
+        {
+          "sectionId": "concept-map",
+          "title": "Build Mechanics Map",
+          "type": "concept-map",
+          "description": "Visualize how Ki, elements, and monk abilities connect."
+        },
+        {
+          "sectionId": "flashcards",
+          "title": "Key Vocabulary",
+          "type": "flashcards",
+          "description": "Learn essential BG3 monk and spellcasting terms."
+        },
+        {
+          "sectionId": "subclass-features",
+          "title": "Subclass Features",
+          "type": "taxonomy-browser",
+          "description": "Explore Four Element Monk class features by level."
+        },
+        {
+          "sectionId": "elemental-spells",
+          "title": "Spell Selection",
+          "type": "taxonomy-browser",
+          "description": "Best spells at each level for all four elements."
+        },
+        {
+          "sectionId": "flowcast-flow",
+          "title": "Flowcast Combat Flow",
+          "type": "flowchart",
+          "description": "Trace Ki spending, spell casting, and attack combos."
+        },
+        {
+          "sectionId": "level-progression",
+          "title": "Level Progression",
+          "type": "reflection-sequence",
+          "description": "Order key level milestones chronologically."
+        },
+        {
+          "sectionId": "build-checklist",
+          "title": "Build Checklist",
+          "type": "bullets",
+          "description": "Essential equipment, feats, and ability scores."
+        },
+        {
+          "sectionId": "quiz",
+          "title": "Knowledge Check",
+          "type": "quiz",
+          "description": "Test your understanding of Four Element Monk mechanics."
+        },
+        {
+          "sectionId": "tradeoffs",
+          "title": "Build Trade-offs",
+          "type": "tradeoff-sandbox",
+          "description": "Compare pure monk vs multiclass paths."
+        },
+        {
+          "sectionId": "scenario",
+          "title": "Combat Scenario",
+          "type": "scenario",
+          "description": "Make tactical decisions in combat encounters."
+        },
+        {
+          "sectionId": "decision-tree",
+          "title": "Build Advisor",
+          "type": "decision-tree",
+          "description": "Get personalized build recommendations."
+        }
+      ]
+    }
+  },
+  {
+    "folder": "concept-map",
+    "type": "concept-map",
+    "props": {
+      "title": "Build Mechanics Map",
+      "nodes": {
+        "ki-points": {
+          "id": "ki-points",
+          "title": "Ki Points",
+          "category": "mechanic"
+        },
+        "elemental-attunement": {
+          "id": "elemental-attunement",
+          "title": "Elemental Attunement",
+          "category": "feature"
+        },
+        "twin-elemental-wrath": {
+          "id": "twin-elemental-wrath",
+          "title": "Twin Elemental Wrath",
+          "category": "feature"
+        },
+        "four-point-attack": {
+          "id": "four-point-attack",
+          "title": "Four Point Attack",
+          "category": "feature"
+        },
+        "elemental-mastery": {
+          "id": "elemental-mastery",
+          "title": "Elemental Mastery",
+          "category": "feature"
+        },
+        "empty-body": {
+          "id": "empty-body",
+          "title": "Empty Body",
+          "category": "feature"
+        },
+        "fire-spells": {
+          "id": "fire-spells",
+          "title": "Fire Spells",
+          "category": "element"
+        },
+        "cold-spells": {
+          "id": "cold-spells",
+          "title": "Cold Spells",
+          "category": "element"
+        },
+        "lightning-spells": {
+          "id": "lightning-spells",
+          "title": "Lightning Spells",
+          "category": "element"
+        },
+        "acid-spells": {
+          "id": "acid-spells",
+          "title": "Acid Spells",
+          "category": "element"
+        },
+        "strix-cove-cloak": {
+          "id": "strix-cove-cloak",
+          "title": "Strix Cove Monk Cloak",
+          "category": "gear"
+        },
+        "sorcerer-multiclass": {
+          "id": "sorcerer-multiclass",
+          "title": "Sorcerer Multiclass",
+          "category": "class"
+        },
+        "twinned-spell": {
+          "id": "twinned-spell",
+          "title": "Twinned Spell",
+          "category": "metamagic"
+        },
+        "flowing-barrier": {
+          "id": "flowing-barrier",
+          "title": "Flowing Barrier",
+          "category": "feature"
+        },
+        "patient-defense": {
+          "id": "patient-defense",
+          "title": "Patient Defense",
+          "category": "technique"
+        },
+        "patient-0": {
+          "id": "patient-0",
+          "title": "Patient-0",
+          "category": "gear"
+        },
+        "dragon-claw-gloves": {
+          "id": "dragon-claw-gloves",
+          "title": "Dragon's Claw Gloves",
+          "category": "gear"
+        },
+        "staff-of-the-woodland-romance": {
+          "id": "staff-of-the-woodland-romance",
+          "title": "Staff of the Woodland Romance",
+          "category": "gear"
+        }
+      },
+      "edges": [
+        {
+          "from": "ki-points",
+          "to": "elemental-attunement",
+          "label": "fuels cantrip access"
+        },
+        {
+          "from": "ki-points",
+          "to": "twin-elemental-wrath",
+          "label": "spends 1 Ki"
+        },
+        {
+          "from": "ki-points",
+          "to": "four-point-attack",
+          "label": "spends 4 Ki"
+        },
+        {
+          "from": "ki-points",
+          "to": "flowing-barrier",
+          "label": "spends Ki for AC"
+        },
+        {
+          "from": "elemental-attunement",
+          "to": "fire-spells",
+          "label": "grants cantrips"
+        },
+        {
+          "from": "elemental-attunement",
+          "to": "cold-spells",
+          "label": "grants cantrips"
+        },
+        {
+          "from": "elemental-attunement",
+          "to": "lightning-spells",
+          "label": "grants cantrips"
+        },
+        {
+          "from": "elemental-attunement",
+          "to": "acid-spells",
+          "label": "grants cantrips"
+        },
+        {
+          "from": "twin-elemental-wrath",
+          "to": "fire-spells",
+          "label": "infuses attacks"
+        },
+        {
+          "from": "twin-elemental-wrath",
+          "to": "cold-spells",
+          "label": "infuses attacks"
+        },
+        {
+          "from": "four-point-attack",
+          "to": "fire-spells",
+          "label": "one strike each element"
+        },
+        {
+          "from": "four-point-attack",
+          "to": "cold-spells",
+          "label": "one strike each element"
+        },
+        {
+          "from": "four-point-attack",
+          "to": "lightning-spells",
+          "label": "one strike each element"
+        },
+        {
+          "from": "four-point-attack",
+          "to": "acid-spells",
+          "label": "one strike each element"
+        },
+        {
+          "from": "elemental-mastery",
+          "to": "ki-points",
+          "label": "restores Ki on cast"
+        },
+        {
+          "from": "sorcerer-multiclass",
+          "to": "twinned-spell",
+          "label": "unlocks metamagic"
+        },
+        {
+          "from": "twinned-spell",
+          "to": "cold-spells",
+          "label": "doubles target count"
+        },
+        {
+          "from": "strix-cove-cloak",
+          "to": "elemental-attunement",
+          "label": "enables casting out of combat"
+        },
+        {
+          "from": "flowing-barrier",
+          "to": "ki-points",
+          "label": "converts Ki to AC"
+        },
+        {
+          "from": "patient-0",
+          "to": "ki-points",
+          "label": "boosts damage with Ki"
+        },
+        {
+          "from": "dragon-claw-gloves",
+          "to": "twin-elemental-wrath",
+          "label": "amplifies infused damage"
+        }
+      ]
+    }
+  },
+  {
+    "folder": "flashcards",
+    "type": "flashcards",
+    "props": {
+      "title": "Key Vocabulary",
+      "terms": [
+        {
+          "id": "ki-points",
+          "word": "Ki Points",
+          "pronunciation": "key POINTS",
+          "category": "mechanic",
+          "shortDefinition": "Resource pool spent on monk abilities and elemental spellcasting.",
+          "detailedDefinition": "Ki Points are the core resource for Four Element Monk. They scale with Monk level (starting at 2 at level 2, reaching 5 at level 13). Elemental spells cost Ki to cast, Twin Elemental Wrath costs 1 Ki, and Four Point Attack costs 4 Ki. Ki refreshes on a Short Rest.",
+          "whyItMatters": "Every aspect of the build revolves around Ki economy. Managing Ki spending between combat rounds determines your damage output and survivability.",
+          "dialogue": {
+            "user": "How many Ki do I get?",
+            "aiThoughts": "Player needs Ki scaling info.",
+            "aiQuestion": "Ki scales with Monk level: 2 at lvl 2, 3 at lvl 5, 4 at lvl 11, 5 at lvl 13. All refresh on Short Rest."
+          }
+        },
+        {
+          "id": "elemental-attunement",
+          "word": "Elemental Attunement",
+          "pronunciation": "el-uh-MEN-tul uhn-TOO-neh-ment",
+          "category": "feature",
+          "shortDefinition": "Gain cantrips from all four elemental schools.",
+          "detailedDefinition": "At Monk 3, you gain access to one cantrip from each elemental school: Fire (Produce Flame), Cold (Ray of Frost), Lightning (Shocking Grasp), and Acid (Acid Splash). At Monk 11, you can change these cantrips on a Long Rest.",
+          "whyItMatters": "Your baseline damage options. Acid Splash is especially valuable since it hits multiple targets.",
+          "dialogue": {
+            "user": "What cantrips do I get?",
+            "aiThoughts": "Player needs cantrip list.",
+            "aiQuestion": "Produce Flame, Ray of Frost, Shocking Grasp, and Acid Splash. Swap on Long Rest at Monk 11+."
+          }
+        },
+        {
+          "id": "twin-elemental-wrath",
+          "word": "Twin Elemental Wrath",
+          "pronunciation": "TWIN el-uh-MEN-tul RATH",
+          "category": "feature",
+          "shortDefinition": "Infuse unarmed strikes with two elemental damages for 1 Ki.",
+          "detailedDefinition": "At Monk 3, spend 1 Ki to attune two unarmed strikes with elemental damage. Choose two elements from Fire, Cold, Lightning, or Acid. Each attuned strike deals 1d6 of the chosen elemental damage on top of your normal unarmed strike damage. Attunements last until end of next turn.",
+          "whyItMatters": "Your most-used combat ability. Consistent elemental damage on every attack, triggering elemental resistances and vulnerabilities.",
+          "dialogue": {
+            "user": "Should I use Twin Elemental Wrath every fight?",
+            "aiThoughts": "Player needs usage guidance.",
+            "aiQuestion": "Yes — 1 Ki for two 1d6-infused strikes is excellent value. Pair with high-Dexterity builds for maximum hit rate."
+          }
+        },
+        {
+          "id": "four-point-attack",
+          "word": "Four Point Attack",
+          "pronunciation": "four point uh-TACK",
+          "category": "feature",
+          "shortDefinition": "Make four unarmed strikes, each infused with a different element for 4 Ki.",
+          "detailedDefinition": "At Monk 11, spend 4 Ki to make four unarmed strikes. Each strike is automatically attuned to a different element (one Fire, one Cold, one Lightning, one Acid), dealing 1d6 extra elemental damage per strike. Cannot miss — each strike automatically hits a target within reach.",
+          "whyItMatters": "Your ultimate nuke. Bypasses resistance splitting and guarantees four elemental hits. Devastating against single targets or groups.",
+          "dialogue": {
+            "user": "Is Four Point Attack worth 4 Ki?",
+            "aiThoughts": "Player weighs Ki cost.",
+            "aiQuestion": "Four guaranteed hits with different elements — it shredssingle targets and ignores resistance. Best saved for bosses."
+          }
+        },
+        {
+          "id": "elemental-mastery",
+          "word": "Elemental Mastery",
+          "pronunciation": "el-uh-MEN-tul MAS-ter-ee",
+          "category": "feature",
+          "shortDefinition": "Cast elemental spells without spending Ki points.",
+          "detailedDefinition": "At Monk 15, your elemental spells no longer consume Ki points. You can still spend Ki to cast them at a higher level, but the base cast is free. This transforms your Ki economy dramatically.",
+          "whyItMatters": "Game-changing at level 15. You can spam Conjure Flame, Ice Knife, and Call Lightning without touching your Ki pool.",
+          "dialogue": {
+            "user": "What changes at Monk 15?",
+            "aiThoughts": "Player needs late-game info.",
+            "aiQuestion": "Elemental Mastery makes your spells free to cast. Save Ki for Twin Elemental Wrath and Four Point Attack."
+          }
+        },
+        {
+          "id": "flowing-barrier",
+          "word": "Flowing Barrier",
+          "pronunciation": "FLOW-ing BAR-ee-er",
+          "category": "feature",
+          "shortDefinition": "Spend Ki to temporarily boost AC.",
+          "detailedDefinition": "At Monk 7, spend Ki points to increase your AC. Each Ki point spent adds +1 to your AC until the start of your next turn. This stacks with your existing Dexterity-based AC calculation.",
+          "whyItMatters": "Critical survivability tool. Spending 2-3 Ki can raise your AC to 20+, making you nearly unhittable for a round.",
+          "dialogue": {
+            "user": "How do I survive boss fights?",
+            "aiThoughts": "Player needs defense options.",
+            "aiQuestion": "Flowing Barrier + Patient Defense + high Dexterity. Stack to AC 20+ and use Step of the Wind to reposition."
+          }
+        },
+        {
+          "id": "empty-body",
+          "word": "Empty Body",
+          "pronunciation": "EMP-tee BOD-ee",
+          "category": "feature",
+          "shortDefinition": "Cast Mirror Image and Teleport without spell slots.",
+          "detailedDefinition": "At Monk 14, you can spend 4 Ki to cast Mirror Image or Teleport at will. These spells don't consume spell slots since they're monk abilities, not spellcasting.",
+          "whyItMatters": "Teleport is invaluable for repositioning, escaping grapple ranges, and flanking. Mirror Image provides massive AC soft cap.",
+          "dialogue": {
+            "user": "Can I teleport in combat?",
+            "aiThoughts": "Player needs mobility info.",
+            "aiQuestion": "Yes — Empty Body lets you Teleport for 4 Ki. Use it to flank, escape, or reposition for Four Point Attack."
+          }
+        },
+        {
+          "id": "strix-cove-cloak",
+          "word": "Strix Cove Monk Cloak",
+          "pronunciation": "striks KOV monk CLOAK",
+          "category": "gear",
+          "shortDefinition": "Legendary cloak granting monk features and out-of-combat spellcasting.",
+          "detailedDefinition": "A legendary item found in Act 3 that grants access to monk features and lets Four Element Monk cast spells outside of combat. Normally, monks can only cast elemental spells during combat. This cloak removes that restriction and saves an equipment Quiver slot.",
+          "whyItMatters": "Best-in-slot item for this build. Enables exploration utility from spells like Conjure Flame for light and Ice Knife for crowd control outside combat.",
+          "dialogue": {
+            "user": "Can I cast spells outside combat?",
+            "aiThoughts": "Player needs cloak info.",
+            "aiQuestion": "Only with the Strix Cove Monk Cloak from Act 3. It's mandatory for full build flexibility."
+          }
+        },
+        {
+          "id": "patient-0",
+          "word": "Patient-0",
+          "pronunciation": "PAY-shunt ZERO",
+          "category": "gear",
+          "shortDefinition": "Legendary gauntlets that boost damage when Ki is spent.",
+          "detailedDefinition": "Legendary gauntlets found in Act 2 that increase unarmed strike damage and gain additional effects when Ki abilities are used. Synergizes perfectly with Four Element Monk's Ki-heavy playstyle.",
+          "whyItMatters": "Massive damage multiplier for unarmed strikes. Combined with Twin Elemental Wrath, each hit deals significantly more damage.",
+          "dialogue": {
+            "user": "What gauntlets should I use?",
+            "aiThoughts": "Player needs gear recommendations.",
+            "aiQuestion": "Patient-0 gauntlets are best-in-slot. They amplify unarmed strike damage and trigger on Ki abilities."
+          }
+        },
+        {
+          "id": "sorcerer-multiclass",
+          "word": "Sorcerer Multiclass",
+          "pronunciation": "sore-SAIR-er mul-tee-KLAS",
+          "category": "class",
+          "shortDefinition": "Take Sorcerer levels for Metamagic and spell slot flexibility.",
+          "detailedDefinition": "Dipping into Sorcerer (typically 2-4 levels) grants Metamagic Adept feat-equivalent abilities. Twinned Spell lets you target two enemies with single-target spells. Quickened Spell allows casting a spell and attacking in the same turn.",
+          "whyItMatters": "Twinned Spell with Conjure Flame or Ice Knife doubles your AoE potential. Sorcerer spell slots supplement monk casting.",
+          "dialogue": {
+            "user": "Should I multiclass into Sorcerer?",
+            "aiThoughts": "Player weighs multiclass value.",
+            "aiQuestion": "Sorcerer 2-4 is the optimal dip. Twinned Spell alone transforms single-target spells into dual-target nukes."
+          }
+        },
+        {
+          "id": "dragon-claw-gloves",
+          "word": "Dragon's Claw Gloves",
+          "pronunciation": "DRAG-ons CLOE GLOVZ",
+          "category": "gear",
+          "shortDefinition": "Rare gloves that add elemental damage to unarmed strikes.",
+          "detailedDefinition": "Rare gauntlets that add elemental damage to unarmed strikes. Synergizes with Twin Elemental Wrath by adding an additional layer of elemental damage on top of the monk's infused strikes.",
+          "whyItMatters": "Stacks with Twin Elemental Wrath for triple-layered elemental damage on unarmed strikes.",
+          "dialogue": {
+            "user": "What gloves stack with Twin Elemental Wrath?",
+            "aiThoughts": "Player wants damage synergy.",
+            "aiQuestion": "Dragon's Claw Gloves add elemental damage that stacks with your monk infusion."
+          }
+        },
+        {
+          "id": "staff-woodland-romance",
+          "word": "Staff of the Woodland Romance",
+          "pronunciation": "STAF of the WOOD-land rom-UHNS",
+          "category": "gear",
+          "shortDefinition": "Spellcasting staff boosting spell damage and granting spell attacks.",
+          "detailedDefinition": "A powerful spellcasting staff that enhances spell attack rolls and damage. Provides spellcasting stat bonuses and additional spell effects that complement the Four Element Monk's spell-heavy gameplay.",
+          "whyItMatters": "Boosts spell attack rolls and damage for your elemental spells, increasing both hit rate and damage output.",
+          "dialogue": {
+            "user": "Do I need a staff?",
+            "aiThoughts": "Player needs weapon guidance.",
+            "aiQuestion": "A spellcasting staff boosts your spell attacks. The Staff of the Woodland Romance is a strong option in Act 2."
+          }
+        }
+      ]
+    }
+  },
+  {
+    "folder": "subclass-features",
+    "type": "taxonomy-browser",
+    "props": {
+      "title": "Subclass Features",
+      "categories": [
+        {
+          "icon": "Flame",
+          "title": "Elemental Attunement",
+          "subtitle": "Monk Level 3",
+          "description": "Gain one cantrip from each elemental school: Fire, Cold, Lightning, and Acid.",
+          "details": "Starting cantrips: Produce Flame (Fire), Ray of Frost (Cold), Shocking Grasp (Lightning), Acid Splash (Acid). At Monk 11, you can change each cantrip to another option from the same school on a Long Rest. Cantrips scale with character level, not Monk level.",
+          "analogy": "Like having four elemental toolkits you can swap between.",
+          "primaryFocus": "Baseline spellcasting access without spell slots",
+          "inScope": [
+            "Produce Flame / Burning Hands (Fire)",
+            "Ray of Frost / Cone of Cold (Cold at 11)",
+            "Shocking Grasp / Lightning Bolt (Lightning at 11)",
+            "Acid Splash / Chromatic Orb (Acid at 11)"
+          ],
+          "outOfScope": [
+            "Non-elemental cantrips like Mage Hand"
+          ],
+          "color": "red"
+        },
+        {
+          "icon": "Swords",
+          "title": "Twin Elemental Wrath",
+          "subtitle": "Monk Level 3",
+          "description": "Spend 1 Ki to infuse two unarmed strikes with elemental damage.",
+          "details": "Choose two elements from Fire (1d6), Cold (1d6), Lightning (1d6), or Acid (1d6). Each attuned strike deals its elemental damage on top of normal unarmed strike damage. Lasts until the end of your next turn. Can pick the same element twice for doubled damage on one type.",
+          "analogy": "Temporarily charging your fists with elemental energy before a combo.",
+          "primaryFocus": "Consistent per-hit elemental damage amplification",
+          "inScope": [
+            "Any two elements from the four schools",
+            "Stacks with unarmed strike damage dice",
+            "Works with Patient-0 gauntlet procs",
+            "Triggers on opportunity attacks"
+          ],
+          "outOfScope": [
+            "Does not work with weapon attacks",
+            "Does not stack with itself (re-cast replaces)"
+          ],
+          "color": "yellow"
+        },
+        {
+          "icon": "Zap",
+          "title": "Four Point Attack",
+          "subtitle": "Monk Level 11",
+          "description": "Spend 4 Ki for four guaranteed elemental strikes, one per element.",
+          "details": "Each of four unarmed strikes automatically hits and deals 1d6 of a different elemental damage (Fire, Cold, Lightning, Acid). Cannot miss. Each strike can target a different enemy within reach. This is the build's ultimate ability, consuming your entire Ki pool at most levels.",
+          "analogy": "A four-elemental combo that guarantees hits regardless of AC.",
+          "primaryFocus": "Maximum guaranteed burst damage",
+          "inScope": [
+            "Four separate strike instances",
+            "Each can target a different enemy",
+            "Bypasses AC — always hits",
+            "Triggers elemental vulnerability on targets"
+          ],
+          "outOfScope": [
+            "Cannot be used if you have fewer than 4 Ki",
+            "Only works at close range"
+          ],
+          "color": "sky"
+        },
+        {
+          "icon": "Shield",
+          "title": "Flowing Barrier",
+          "subtitle": "Monk Level 7",
+          "description": "Spend Ki to boost your Armor Class defensively.",
+          "details": "As a bonus action, spend 1 or more Ki points to gain +1 AC per Ki spent until the start of your next turn. At Monk 7, this provides crucial survivability against high-damage enemies. Combine with high Dexterity for AC 20+ temporarily.",
+          "analogy": "Hardening your body like a force field for one turn.",
+          "primaryFocus": "Defensive Ki investment for survivability",
+          "inScope": [
+            "Scales with Ki invested (1 Ki = +1 AC)",
+            "Bonus action to activate",
+            "Lasts until start of next turn",
+            "Stacks with Dexterity and monk AC"
+          ],
+          "outOfScope": [
+            "Does not stack with itself (re-cast replaces)",
+            "Not useful in turns where you need Ki for offense"
+          ],
+          "color": "teal"
+        },
+        {
+          "icon": "Sparkles",
+          "title": "Elemental Mastery",
+          "subtitle": "Monk Level 15",
+          "description": "Elemental spells no longer consume Ki points to cast.",
+          "details": "At Monk 15, casting elemental spells from your attuned schools costs 0 Ki. You can still voluntarily spend Ki to cast them at a higher level. This transforms the build's resource economy, allowing free spell spam while reserving Ki for Twin Elemental Wrath and Four Point Attack.",
+          "analogy": "Your elemental magic becomes an infinite resource.",
+          "primaryFocus": "Ki economy transformation at endgame",
+          "inScope": [
+            "All elemental spells cast for 0 Ki base cost",
+            "Optional Ki spend for higher-level casting",
+            "Enables Conjure Flame spam in every fight",
+            "Ice Knife and Call Lightning become free utilities"
+          ],
+          "outOfScope": [
+            "Non-elemental spells still cost Ki",
+            "Still limited by spell slot availability for multiclass"
+          ],
+          "color": "green"
+        },
+        {
+          "icon": "Ghost",
+          "title": "Empty Body",
+          "subtitle": "Monk Level 14",
+          "description": "Spend 4 Ki to cast Mirror Image or Teleport at will.",
+          "details": "At Monk 14, spend 4 Ki to cast either Mirror Image (three illusory copies that absorb hits) or Teleport (instant movement to any visible location). These are monk abilities, not spell slots. Teleport is invaluable for repositioning, flanking, and escaping dangerous situations.",
+          "analogy": "Phasing in and out of reality to control the battlefield.",
+          "primaryFocus": "Mobility and defensive utility",
+          "inScope": [
+            "Mirror Image for hit avoidance",
+            "Teleport for repositioning and flanking",
+            "No spell slot consumption",
+            "Refreshes on Short Rest with Ki"
+          ],
+          "outOfScope": [
+            "Costs 4 Ki each cast",
+            "Cannot cast both in the same activation"
+          ],
+          "color": "mauve"
+        }
+      ]
+    }
+  },
+  {
+    "folder": "elemental-spells",
+    "type": "taxonomy-browser",
+    "props": {
+      "title": "Spell Selection",
+      "categories": [
+        {
+          "icon": "Flame",
+          "title": "Fire Spells",
+          "subtitle": "Pyromancy",
+          "description": "Fire spells excel at sustained AoE damage and area denial.",
+          "details": "Conjure Flame is your primary fire spell — it creates a persistent damage zone that enemies walk through. Burning Hands is a close-range cone blast. At higher levels, Fireball and Wall of Fire become available through spell upgrades.",
+          "analogy": "Setting the battlefield on fire and watching enemies cook.",
+          "primaryFocus": "Area denial and sustained damage over time",
+          "inScope": [
+            "Conjure Flame (cantrip — persistent zone damage)",
+            "Burning Hands (1st level — cone burst)",
+            "Fireball (3rd level — massive AoE)",
+            "Wall of Fire (4th level — line barrier)"
+          ],
+          "outOfScope": [
+            "Non-damaging fire spells like Produce Flame light"
+          ],
+          "color": "red"
+        },
+        {
+          "icon": "Snowflake",
+          "title": "Cold Spells",
+          "subtitle": "Cryomancy",
+          "description": "Cold spells provide control, slow effects, and burst damage.",
+          "details": "Ray of Frost is your cold cantrip with a built-in slow effect. Ice Knife is the signature cold spell — a two-part attack that pierces a target then explodes around them. Cone of Cold delivers massive frontal AoE at higher levels.",
+          "analogy": "Freezing enemies in place before shattering them.",
+          "primaryFocus": "Crowd control and burst AoE damage",
+          "inScope": [
+            "Ray of Frost (cantrip — line + slow)",
+            "Ice Knife (2nd level — pierce + AoE burst)",
+            "Cone of Cold (5th level — frontal devastation)",
+            "Cone of Cold with Twinned Spell for dual targets"
+          ],
+          "outOfScope": [
+            "Utility-only cold effects"
+          ],
+          "color": "sky"
+        },
+        {
+          "icon": "Zap",
+          "title": "Lightning Spells",
+          "subtitle": "Electromancy",
+          "description": "Lightning spells chain between targets and push enemies back.",
+          "details": "Shocking Grasp is your lightning cantrip — it deals damage and prevents opportunity attacks. Call Lightning summons a cloud that strikes repeatedly. Chain Lightning jumps between multiple targets for efficient multi-kill potential.",
+          "analogy": "A storm calling down bolts that arc between enemies.",
+          "primaryFocus": "Multi-target chain damage and knockback control",
+          "inScope": [
+            "Shocking Grasp (cantrip — melee + OA prevention)",
+            "Call Lightning (3rd level — repeated strikes)",
+            "Chain Lightning (6th level — multi-target jump)",
+            "Lightning Bolt (3rd line blast)"
+          ],
+          "outOfScope": [
+            "Non-combat lightning effects"
+          ],
+          "color": "yellow"
+        },
+        {
+          "icon": "Droplet",
+          "title": "Acid Spells",
+          "subtitle": "Corrosion",
+          "description": "Acid spells bypass resistance and apply damage-over-time effects.",
+          "details": "Acid Splash is your acid cantrip and hits multiple targets simultaneously. Acid Arrow delivers a delayed burst with a damage-over-time component. Chromatic Orb can be rolled to deal acid damage and benefits from upcasting.",
+          "analogy": "Corrosive pools that dissolve armor and flesh alike.",
+          "primaryFocus": "Resistance penetration and multi-target damage",
+          "inScope": [
+            "Acid Splash (cantrip — multi-target)",
+            "Acid Arrow (3rd level — DoT component)",
+            "Chromatic Orb (2nd level — flexible element)"
+          ],
+          "outOfScope": [
+            "Pure single-target acid without DoT"
+          ],
+          "color": "green"
+        }
+      ]
+    }
+  },
+  {
+    "folder": "flowcast-flow",
+    "type": "flowchart",
+    "props": {
+      "title": "Flowcast Combat Flow",
+      "schema": {
+        "entities": {
+          "player": {
+            "title": "Player (Monk)",
+            "desc": "Controls the Four Element Monk",
+            "type": "Actor"
+          },
+          "enemy": {
+            "title": "Enemy",
+            "desc": "Target of attacks and spells",
+            "type": "Actor"
+          },
+          "ki_pool": {
+            "title": "Ki Pool",
+            "desc": "Monk resource that fuels all abilities",
+            "type": "Aggregate"
+          },
+          "elemental_engine": {
+            "title": "Elemental Attunement",
+            "desc": "Spell casting system from four schools",
+            "type": "Aggregate"
+          },
+          "unarmed_combat": {
+            "title": "Unarmed Combat",
+            "desc": "Martial strike damage system",
+            "type": "Aggregate"
+          },
+          "defense_system": {
+            "title": "Monk Defense",
+            "desc": "Flowing Barrier and Patient Defense",
+            "type": "Aggregate"
+          },
+          "twisted_wrath_handler": {
+            "title": "Twin Elemental Wrath",
+            "desc": "Elemental infusion for unarmed strikes",
+            "type": "Aggregate"
+          },
+          "four_point_handler": {
+            "title": "Four Point Attack",
+            "desc": "Ultimate four-elemental strike combo",
+            "type": "Aggregate"
+          },
+          "pol_step_1": {
+            "title": "Combat Begins",
+            "desc": "Combat Begins",
+            "type": "Policy",
+            "root": false
+          },
+          "cmd_step_1": {
+            "title": "Enter Combat Encounter",
+            "desc": "Enter Combat Encounter",
+            "type": "Command"
+          },
+          "evt_evt_combat_start": {
+            "title": "Combat Started",
+            "desc": "Combat Started",
+            "type": "Event"
+          },
+          "pol_branch_offense": {
+            "title": "If Enemy Within Range",
+            "desc": "If Enemy Within Range",
+            "type": "Policy"
+          },
+          "cmd_branch_offense": {
+            "title": "Cast Twin Elemental Wrath",
+            "desc": "Cast Twin Elemental Wrath",
+            "type": "Command"
+          },
+          "evt_evt_wrath_active": {
+            "title": "Elemental Strikes Active",
+            "desc": "Elemental Strikes Active",
+            "type": "Event"
+          },
+          "pol_branch_spell": {
+            "title": "If Enemy At Range",
+            "desc": "If Enemy At Range",
+            "type": "Policy"
+          },
+          "cmd_branch_spell": {
+            "title": "Cast Elemental Spell",
+            "desc": "Cast Elemental Spell",
+            "type": "Command"
+          },
+          "evt_evt_spell_cast": {
+            "title": "Spell Damage Dealt",
+            "desc": "Spell Damage Dealt",
+            "type": "Event"
+          },
+          "pol_branch_defense": {
+            "title": "If Low HP or High Threat",
+            "desc": "If Low HP or High Threat",
+            "type": "Policy"
+          },
+          "cmd_branch_defense": {
+            "title": "Activate Flowing Barrier",
+            "desc": "Activate Flowing Barrier",
+            "type": "Command"
+          },
+          "ki_pool2": {
+            "title": "Ki Pool",
+            "desc": "Monk resource that fuels all abilities",
+            "type": "Aggregate"
+          },
+          "evt_evt_barrier_up": {
+            "title": "AC Boosted",
+            "desc": "AC Boosted",
+            "type": "Event"
+          },
+          "pol_step_attack_loop": {
+            "title": "While Wrath Active",
+            "desc": "While Wrath Active",
+            "type": "Policy",
+            "root": false
+          },
+          "cmd_step_attack_loop": {
+            "title": "Make Unarmed Strikes",
+            "desc": "Make Unarmed Strikes",
+            "type": "Command"
+          },
+          "evt_evt_damage_dealt": {
+            "title": "Elemental Damage Applied",
+            "desc": "Elemental Damage Applied",
+            "type": "Event"
+          },
+          "pol_branch_four_point": {
+            "title": "If 4 Ki Available and Boss Present",
+            "desc": "If 4 Ki Available and Boss Present",
+            "type": "Policy"
+          },
+          "cmd_branch_four_point": {
+            "title": "Execute Four Point Attack",
+            "desc": "Execute Four Point Attack",
+            "type": "Command"
+          },
+          "evt_evt_four_point": {
+            "title": "Four Elemental Strikes Land",
+            "desc": "Four Elemental Strikes Land",
+            "type": "Event"
+          },
+          "pol_branch_sustain": {
+            "title": "If Ki Above Threshold",
+            "desc": "If Ki Above Threshold",
+            "type": "Policy"
+          },
+          "cmd_branch_sustain": {
+            "title": "Continue Twin Elemental Wrath Loop",
+            "desc": "Continue Twin Elemental Wrath Loop",
+            "type": "Command"
+          },
+          "twisted_wrath_handler2": {
+            "title": "Twin Elemental Wrath",
+            "desc": "Elemental infusion for unarmed strikes",
+            "type": "Aggregate"
+          },
+          "evt_evt_loop": {
+            "title": "Combat Continues",
+            "desc": "Combat Continues",
+            "type": "Event"
+          },
+          "pol_branch_defensive": {
+            "title": "If Ki Low or HP Critical",
+            "desc": "If Ki Low or HP Critical",
+            "type": "Policy"
+          },
+          "cmd_branch_defensive": {
+            "title": "Use Patient Defense or Empty Body",
+            "desc": "Use Patient Defense or Empty Body",
+            "type": "Command"
+          },
+          "evt_evt_defensive": {
+            "title": "Defensive Position Secured",
+            "desc": "Defensive Position Secured",
+            "type": "Event"
+          },
+          "pol_branch_short_rest": {
+            "title": "If Combat Ends",
+            "desc": "If Combat Ends",
+            "type": "Policy"
+          },
+          "cmd_branch_short_rest": {
+            "title": "Short Rest to Recover Ki",
+            "desc": "Short Rest to Recover Ki",
+            "type": "Command"
+          },
+          "ki_pool3": {
+            "title": "Ki Pool",
+            "desc": "Monk resource that fuels all abilities",
+            "type": "Aggregate"
+          },
+          "evt_evt_ki_restored": {
+            "title": "Ki Pool Refreshed",
+            "desc": "Ki Pool Refreshed",
+            "type": "Event"
+          }
+        },
+        "relations": [
+          {
+            "id": "r1",
+            "from": "player",
+            "to": "pol_step_1",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r2",
+            "from": "pol_step_1",
+            "to": "cmd_step_1",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r3",
+            "from": "cmd_step_1",
+            "to": "ki_pool",
+            "handledBy": true,
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r4",
+            "from": "ki_pool",
+            "to": "evt_evt_combat_start",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r5",
+            "from": "evt_evt_combat_start",
+            "to": "pol_branch_offense",
+            "label": "Offensive Opening",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r6",
+            "from": "pol_branch_offense",
+            "to": "cmd_branch_offense",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r7",
+            "from": "cmd_branch_offense",
+            "to": "twisted_wrath_handler",
+            "handledBy": true,
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r8",
+            "from": "twisted_wrath_handler",
+            "to": "enemy",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r9",
+            "from": "twisted_wrath_handler",
+            "to": "evt_evt_wrath_active",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r10",
+            "from": "evt_evt_wrath_active",
+            "to": "pol_step_attack_loop",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r11",
+            "from": "evt_evt_combat_start",
+            "to": "pol_branch_spell",
+            "label": "Spell Opening",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r12",
+            "from": "pol_branch_spell",
+            "to": "cmd_branch_spell",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r13",
+            "from": "cmd_branch_spell",
+            "to": "elemental_engine",
+            "handledBy": true,
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r14",
+            "from": "elemental_engine",
+            "to": "evt_evt_spell_cast",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r15",
+            "from": "evt_evt_combat_start",
+            "to": "pol_branch_defense",
+            "label": "Defensive Opening",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r16",
+            "from": "pol_branch_defense",
+            "to": "cmd_branch_defense",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r17",
+            "from": "cmd_branch_defense",
+            "to": "ki_pool2",
+            "handledBy": true,
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r18",
+            "from": "ki_pool2",
+            "to": "evt_evt_barrier_up",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r20",
+            "from": "pol_step_attack_loop",
+            "to": "cmd_step_attack_loop",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r21",
+            "from": "cmd_step_attack_loop",
+            "to": "unarmed_combat",
+            "handledBy": true,
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r22",
+            "from": "unarmed_combat",
+            "to": "evt_evt_damage_dealt",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r23",
+            "from": "evt_evt_damage_dealt",
+            "to": "pol_branch_four_point",
+            "label": "Boss Fight — Full Nuke",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r24",
+            "from": "pol_branch_four_point",
+            "to": "cmd_branch_four_point",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r25",
+            "from": "cmd_branch_four_point",
+            "to": "four_point_handler",
+            "handledBy": true,
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r26",
+            "from": "four_point_handler",
+            "to": "evt_evt_four_point",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r27",
+            "from": "evt_evt_damage_dealt",
+            "to": "pol_branch_sustain",
+            "label": "Sustain Combat",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r28",
+            "from": "pol_branch_sustain",
+            "to": "cmd_branch_sustain",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r29",
+            "from": "cmd_branch_sustain",
+            "to": "twisted_wrath_handler2",
+            "handledBy": true,
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r30",
+            "from": "twisted_wrath_handler2",
+            "to": "evt_evt_loop",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r31",
+            "from": "evt_evt_damage_dealt",
+            "to": "pol_branch_defensive",
+            "label": "Defensive Pivot",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r32",
+            "from": "pol_branch_defensive",
+            "to": "cmd_branch_defensive",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r33",
+            "from": "cmd_branch_defensive",
+            "to": "defense_system",
+            "handledBy": true,
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r34",
+            "from": "defense_system",
+            "to": "evt_evt_defensive",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r35",
+            "from": "evt_evt_damage_dealt",
+            "to": "pol_branch_short_rest",
+            "label": "End Combat — Short Rest",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r36",
+            "from": "pol_branch_short_rest",
+            "to": "cmd_branch_short_rest",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r37",
+            "from": "cmd_branch_short_rest",
+            "to": "ki_pool3",
+            "handledBy": true,
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r38",
+            "from": "ki_pool3",
+            "to": "evt_evt_ki_restored",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          }
+        ],
+        "journeys": [
+          {
+            "id": "journey_offense",
+            "label": "Offensive Combat Loop",
+            "description": "Standard combat flow using Twin Elemental Wrath for sustained damage",
+            "steps": [
+              {
+                "nodeIds": [
+                  "player",
+                  "pol_step_1",
+                  "cmd_step_1",
+                  "ki_pool",
+                  "evt_evt_combat_start"
+                ],
+                "title": "Combat Start",
+                "reason": "Player enters combat and assesses the situation",
+                "processGroup": "opening"
+              },
+              {
+                "nodeIds": [
+                  "pol_branch_offense",
+                  "cmd_branch_offense",
+                  "twisted_wrath_handler",
+                  "enemy",
+                  "evt_evt_wrath_active"
+                ],
+                "title": "Wrath Activation",
+                "reason": "Twin Elemental Wrath infuses strikes with elemental damage",
+                "processGroup": "execution"
+              },
+              {
+                "nodeIds": [
+                  "evt_evt_wrath_active",
+                  "pol_step_attack_loop",
+                  "cmd_step_attack_loop",
+                  "unarmed_combat",
+                  "evt_evt_damage_dealt"
+                ],
+                "title": "Elemental Damage",
+                "reason": "Unarmed strikes deal physical plus elemental damage",
+                "processGroup": "execution"
+              },
+              {
+                "nodeIds": [
+                  "pol_branch_sustain",
+                  "cmd_branch_sustain",
+                  "twisted_wrath_handler2",
+                  "evt_evt_loop"
+                ],
+                "title": "Sustain Loop",
+                "reason": "Combat continues with sustained elemental strikes",
+                "processGroup": "evaluation"
+              }
+            ]
+          },
+          {
+            "id": "journey_boss",
+            "label": "Boss Nuke Flow",
+            "description": "Full Ki investment into Four Point Attack for maximum burst",
+            "steps": [
+              {
+                "nodeIds": [
+                  "player",
+                  "pol_step_1",
+                  "cmd_step_1",
+                  "ki_pool",
+                  "evt_evt_combat_start"
+                ],
+                "title": "Combat Start",
+                "reason": "Boss engagement begins",
+                "processGroup": "opening"
+              },
+              {
+                "nodeIds": [
+                  "pol_branch_offense",
+                  "cmd_branch_offense",
+                  "twisted_wrath_handler",
+                  "enemy",
+                  "evt_evt_wrath_active"
+                ],
+                "title": "Wrath Activation",
+                "reason": "Twin Elemental Wrath activates for opening damage",
+                "processGroup": "execution"
+              },
+              {
+                "nodeIds": [
+                  "evt_evt_wrath_active",
+                  "pol_step_attack_loop",
+                  "cmd_step_attack_loop",
+                  "unarmed_combat",
+                  "evt_evt_damage_dealt"
+                ],
+                "title": "Initial Damage",
+                "reason": "Initial strikes weaken the boss",
+                "processGroup": "execution"
+              },
+              {
+                "nodeIds": [
+                  "pol_branch_four_point",
+                  "cmd_branch_four_point",
+                  "four_point_handler",
+                  "evt_evt_four_point"
+                ],
+                "title": "Four Point Nuke",
+                "reason": "Four Point Attack unleashes four guaranteed elemental hits",
+                "processGroup": "escalation"
+              }
+            ]
+          },
+          {
+            "id": "journey_defensive",
+            "label": "Defensive Survival",
+            "description": "Ki spent on defense when overwhelmed",
+            "steps": [
+              {
+                "nodeIds": [
+                  "player",
+                  "pol_step_1",
+                  "cmd_step_1",
+                  "ki_pool",
+                  "evt_evt_combat_start"
+                ],
+                "title": "Combat Start",
+                "reason": "Combat starts with high threat level",
+                "processGroup": "opening"
+              },
+              {
+                "nodeIds": [
+                  "pol_branch_defense",
+                  "cmd_branch_defense",
+                  "ki_pool2",
+                  "evt_evt_barrier_up"
+                ],
+                "title": "Flowing Barrier",
+                "reason": "Flowing Barrier boosts AC to avoid damage",
+                "processGroup": "execution"
+              },
+              {
+                "nodeIds": [
+                  "pol_branch_defensive",
+                  "cmd_branch_defensive",
+                  "defense_system",
+                  "evt_evt_defensive"
+                ],
+                "title": "Clutch Survival",
+                "reason": "Patient Defense or Empty Body for clutch survival",
+                "processGroup": "escalation"
+              }
+            ]
+          }
+        ],
+        "rawSteps": [
+          {
+            "type": "linear",
+            "id": "step_1",
+            "initiatedBy": {
+              "_tag": "ref",
+              "id": "player"
+            },
+            "policy": "Combat Begins",
+            "command": "Enter Combat Encounter",
+            "handledBy": {
+              "_tag": "ref",
+              "id": "ki_pool"
+            },
+            "resultEvents": [
+              {
+                "id": "evt_combat_start",
+                "title": "Combat Started"
+              }
+            ],
+            "continuesAs": "step_opening"
+          },
+          {
+            "type": "branch",
+            "id": "step_opening",
+            "event": "evt_combat_start",
+            "branches": [
+              {
+                "id": "branch_offense",
+                "label": "Offensive Opening",
+                "policy": "If Enemy Within Range",
+                "command": "Cast Twin Elemental Wrath",
+                "handledBy": {
+                  "_tag": "ref",
+                  "id": "twisted_wrath_handler"
+                },
+                "delegatesTo": {
+                  "_tag": "ref",
+                  "id": "enemy"
+                },
+                "resultEvents": [
+                  {
+                    "id": "evt_wrath_active",
+                    "title": "Elemental Strikes Active"
+                  }
+                ],
+                "continuesAs": "step_attack_loop"
+              },
+              {
+                "id": "branch_spell",
+                "label": "Spell Opening",
+                "policy": "If Enemy At Range",
+                "command": "Cast Elemental Spell",
+                "handledBy": {
+                  "_tag": "ref",
+                  "id": "elemental_engine"
+                },
+                "resultEvents": [
+                  {
+                    "id": "evt_spell_cast",
+                    "title": "Spell Damage Dealt"
+                  }
+                ]
+              },
+              {
+                "id": "branch_defense",
+                "label": "Defensive Opening",
+                "policy": "If Low HP or High Threat",
+                "command": "Activate Flowing Barrier",
+                "handledBy": {
+                  "_tag": "ref",
+                  "id": "ki_pool"
+                },
+                "resultEvents": [
+                  {
+                    "id": "evt_barrier_up",
+                    "title": "AC Boosted"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "type": "linear",
+            "id": "step_attack_loop",
+            "initiatedBy": {
+              "_tag": "ref",
+              "id": "evt_wrath_active"
+            },
+            "policy": "While Wrath Active",
+            "command": "Make Unarmed Strikes",
+            "handledBy": {
+              "_tag": "ref",
+              "id": "unarmed_combat"
+            },
+            "resultEvents": [
+              {
+                "id": "evt_damage_dealt",
+                "title": "Elemental Damage Applied"
+              }
+            ],
+            "continuesAs": "step_ki_check"
+          },
+          {
+            "type": "branch",
+            "id": "step_ki_check",
+            "event": "evt_damage_dealt",
+            "branches": [
+              {
+                "id": "branch_four_point",
+                "label": "Boss Fight — Full Nuke",
+                "policy": "If 4 Ki Available and Boss Present",
+                "command": "Execute Four Point Attack",
+                "handledBy": {
+                  "_tag": "ref",
+                  "id": "four_point_handler"
+                },
+                "resultEvents": [
+                  {
+                    "id": "evt_four_point",
+                    "title": "Four Elemental Strikes Land"
+                  }
+                ]
+              },
+              {
+                "id": "branch_sustain",
+                "label": "Sustain Combat",
+                "policy": "If Ki Above Threshold",
+                "command": "Continue Twin Elemental Wrath Loop",
+                "handledBy": {
+                  "_tag": "ref",
+                  "id": "twisted_wrath_handler"
+                },
+                "resultEvents": [
+                  {
+                    "id": "evt_loop",
+                    "title": "Combat Continues"
+                  }
+                ]
+              },
+              {
+                "id": "branch_defensive",
+                "label": "Defensive Pivot",
+                "policy": "If Ki Low or HP Critical",
+                "command": "Use Patient Defense or Empty Body",
+                "handledBy": {
+                  "_tag": "ref",
+                  "id": "defense_system"
+                },
+                "resultEvents": [
+                  {
+                    "id": "evt_defensive",
+                    "title": "Defensive Position Secured"
+                  }
+                ]
+              },
+              {
+                "id": "branch_short_rest",
+                "label": "End Combat — Short Rest",
+                "policy": "If Combat Ends",
+                "command": "Short Rest to Recover Ki",
+                "handledBy": {
+                  "_tag": "ref",
+                  "id": "ki_pool"
+                },
+                "resultEvents": [
+                  {
+                    "id": "evt_ki_restored",
+                    "title": "Ki Pool Refreshed"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    }
+  },
+  {
+    "folder": "level-progression",
+    "type": "reflection-sequence",
+    "props": {
+      "title": "Level Progression",
+      "challenges": [
+        {
+          "prompt": "Arrange the Four Element Monk milestones in the correct level order:",
+          "items": [
+            {
+              "id": "drag_martial_arts",
+              "text": "Martial Arts — Unarmed strike damage dice"
+            },
+            {
+              "id": "drag_unarmored_movement",
+              "text": "Unarmored Movement — Speed boost"
+            },
+            {
+              "id": "drag_four_element_monk",
+              "text": "Four Element Monk — Elemental Attunement & Twin Elemental Wrath"
+            },
+            {
+              "id": "drag_slow_fall",
+              "text": "Slow Fall — Fall damage immunity"
+            },
+            {
+              "id": "drag_stunning_strike",
+              "text": "Stunning Strike — Ki stun on hit"
+            },
+            {
+              "id": "drag_flow_barrier",
+              "text": "Flowing Barrier — Ki to AC conversion"
+            },
+            {
+              "id": "drag_empty_body",
+              "text": "Empty Body — Teleport & Mirror Image"
+            },
+            {
+              "id": "drag_four_point",
+              "text": "Four Point Attack — Four guaranteed elemental strikes"
+            },
+            {
+              "id": "drag_elem_mastery",
+              "text": "Elemental Mastery — Free elemental spells"
+            }
+          ],
+          "solution": [
+            "drag_martial_arts",
+            "drag_unarmored_movement",
+            "drag_slow_fall",
+            "drag_four_element_monk",
+            "drag_stunning_strike",
+            "drag_flow_barrier",
+            "drag_four_point",
+            "drag_empty_body",
+            "drag_elem_mastery"
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "folder": "build-checklist",
+    "type": "bullets",
+    "props": {
+      "title": "Build Checklist",
+      "ordered": true,
+      "items": [
+        {
+          "text": "Ability Scores — Prioritize Dexterity (17+), Constitution (14+), Wisdom (13+)",
+          "children": [
+            {
+              "text": "Dexterity drives AC, hit rate, and unarmed strike damage"
+            },
+            {
+              "text": "Constitution boosts HP and concentration saves"
+            },
+            {
+              "text": "Wisdom scales Ki pool and monk features"
+            }
+          ]
+        },
+        {
+          "text": "Core Subclass — Monk of the Four Elements (available at Monk 3)",
+          "children": [
+            {
+              "text": "Select Elemental Attunement for cantrip access"
+            },
+            {
+              "text": "Use Twin Elemental Wrath every combat"
+            },
+            {
+              "text": "Save Four Point Attack for bosses at Monk 11+"
+            }
+          ]
+        },
+        {
+          "text": "Essential Gear — Patient-0 Gauntlets (Act 2)",
+          "children": [
+            {
+              "text": "Amplifies unarmed strike damage significantly"
+            },
+            {
+              "text": "Synergizes with Ki spending for bonus effects"
+            }
+          ]
+        },
+        {
+          "text": "Essential Gear — Strix Cove Monk Cloak (Act 3)",
+          "children": [
+            {
+              "text": "Enables spellcasting outside of combat"
+            },
+            {
+              "text": "Grants monk features if multiclassing"
+            }
+          ]
+        },
+        {
+          "text": "Recommended Feats — Metamagic Adept",
+          "children": [
+            {
+              "text": "Twinned Spell doubles single-target spell targets"
+            },
+            {
+              "text": "Quickened Spell enables spell + attack same turn"
+            },
+            {
+              "text": "Available through feat or Sorcerer 2 multiclass"
+            }
+          ]
+        },
+        {
+          "text": "Recommended Feats — Elemental Attunement",
+          "children": [
+            {
+              "text": "Adds resistance to one element"
+            },
+            {
+              "text": "Increases damage for that same element"
+            }
+          ]
+        },
+        {
+          "text": "Recommended Feat — Resilient (Constitution)",
+          "children": [
+            {
+              "text": "Ensures concentration spell survival"
+            },
+            {
+              "text": "Critical for maintaining Conjure Flame and Call Lightning"
+            }
+          ]
+        },
+        {
+          "text": "Spell Priority — Conjure Flame (cantrip)",
+          "children": [
+            {
+              "text": "Persistent zone damage for area control"
+            },
+            {
+              "text": "Free at Monk 15 with Elemental Mastery"
+            }
+          ]
+        },
+        {
+          "text": "Spell Priority — Ice Knife (2nd level)",
+          "children": [
+            {
+              "text": "Two-part pierce + AoE burst damage"
+            },
+            {
+              "text": "Twinned Spell targets two enemies simultaneously"
+            }
+          ]
+        },
+        {
+          "text": "Spell Priority — Call Lightning (3rd level)",
+          "children": [
+            {
+              "text": "Sustained multi-round damage zone"
+            },
+            {
+              "text": "Bonus action lightning strikes each turn"
+            }
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "folder": "quiz",
+    "type": "quiz",
+    "props": {
+      "title": "Knowledge Check",
+      "questions": [
+        {
+          "id": "q1",
+          "question": "How much Ki does Twin Elemental Wrath cost?",
+          "choices": [
+            {
+              "id": "a",
+              "text": "2 Ki points",
+              "correct": false,
+              "explanation": "Twin Elemental Wrath is designed to be spammy. 2 Ki would be too expensive for regular use."
+            },
+            {
+              "id": "b",
+              "text": "1 Ki point",
+              "correct": true,
+              "explanation": "Correct! Twin Elemental Wrath costs 1 Ki, making it efficient for sustained combat use."
+            },
+            {
+              "id": "c",
+              "text": "4 Ki points",
+              "correct": false,
+              "explanation": "4 Ki is the cost for Four Point Attack, not Twin Elemental Wrath."
+            }
+          ],
+          "hint": "It's your most frequently used ability."
+        },
+        {
+          "id": "q2",
+          "question": "What does Four Point Attack guarantee?",
+          "choices": [
+            {
+              "id": "a",
+              "text": "Four spell casts in one turn",
+              "correct": false,
+              "explanation": "Four Point Attack makes unarmed strikes, not spell casts."
+            },
+            {
+              "id": "b",
+              "text": "Four attacks that cannot miss, each with a different element",
+              "correct": true,
+              "explanation": "Correct! Each of the four strikes auto-hits and deals a different elemental damage type."
+            },
+            {
+              "id": "c",
+              "text": "Four extra Ki points",
+              "correct": false,
+              "explanation": "Four Point Attack spends Ki, it doesn't generate it."
+            }
+          ],
+          "hint": "Think about what makes it the ultimate ability."
+        },
+        {
+          "id": "q3",
+          "question": "At what Monk level do elemental spells become free to cast?",
+          "choices": [
+            {
+              "id": "a",
+              "text": "Monk 11",
+              "correct": false,
+              "explanation": "Monk 11 grants Four Point Attack and cantrip upgrades, not free spells."
+            },
+            {
+              "id": "b",
+              "text": "Monk 15",
+              "correct": true,
+              "explanation": "Correct! Elemental Mastery at Monk 15 makes elemental spells cost 0 Ki."
+            },
+            {
+              "id": "c",
+              "text": "Monk 14",
+              "correct": false,
+              "explanation": "Monk 14 grants Empty Body (Teleport/Mirror Image), not free spells."
+            }
+          ],
+          "hint": "It's the highest subclass feature."
+        },
+        {
+          "id": "q4",
+          "question": "Which item lets Four Element Monk cast spells outside of combat?",
+          "choices": [
+            {
+              "id": "a",
+              "text": "Patient-0 Gauntlets",
+              "correct": false,
+              "explanation": "Patient-0 boosts unarmed strike damage but doesn't enable out-of-combat casting."
+            },
+            {
+              "id": "b",
+              "text": "Strix Cove Monk Cloak",
+              "correct": true,
+              "explanation": "Correct! The Strix Cove Monk Cloak removes the combat-only restriction on monk spellcasting."
+            },
+            {
+              "id": "c",
+              "text": "Dragon's Claw Gloves",
+              "correct": false,
+              "explanation": "Dragon's Claw Gloves add elemental damage but don't affect casting restrictions."
+            }
+          ],
+          "hint": "It's a legendary cloak from Act 3."
+        },
+        {
+          "id": "q5",
+          "question": "What does Metamagic Adept's Twinned Spell do?",
+          "choices": [
+            {
+              "id": "a",
+              "text": "Doubles the damage of a spell",
+              "correct": false,
+              "explanation": "Twinned Spell doesn't increase damage — it increases target count."
+            },
+            {
+              "id": "b",
+              "text": "Allows a single-target spell to affect a second target",
+              "correct": true,
+              "explanation": "Correct! Twinned Spell lets spells like Ice Knife or Conjure Flame target two enemies."
+            },
+            {
+              "id": "c",
+              "text": "Casts the spell twice in one action",
+              "correct": false,
+              "explanation": "That's not how Twinned Spell works. It targets two creatures simultaneously, not sequential casts."
+            }
+          ],
+          "hint": "Think about single-target spells."
+        },
+        {
+          "id": "q6",
+          "question": "What are the four elemental schools for Four Element Monk?",
+          "choices": [
+            {
+              "id": "a",
+              "text": "Fire, Cold, Lightning, Nature",
+              "correct": false,
+              "explanation": "Nature is not one of the four elemental schools. The fourth is Acid."
+            },
+            {
+              "id": "b",
+              "text": "Fire, Cold, Lightning, Acid",
+              "correct": true,
+              "explanation": "Correct! The Four Elements are Fire, Cold, Lightning, and Acid."
+            },
+            {
+              "id": "c",
+              "text": "Fire, Ice, Electricity, Poison",
+              "correct": false,
+              "explanation": "Close, but the official names are Cold (not Ice), Lightning (not Electricity), and Acid (not Poison)."
+            }
+          ],
+          "hint": "Think of the classic elements, but one is unusual."
+        },
+        {
+          "id": "q7",
+          "question": "How do Ki points refresh?",
+          "choices": [
+            {
+              "id": "a",
+              "text": "Long Rest only",
+              "correct": false,
+              "explanation": "Ki refreshes more frequently than Long Rest — it's a short-rest resource."
+            },
+            {
+              "id": "b",
+              "text": "Short Rest",
+              "correct": true,
+              "explanation": "Correct! All spent Ki points are recovered after a Short Rest."
+            },
+            {
+              "id": "c",
+              "text": "At the start of each combat",
+              "correct": false,
+              "explanation": "Ki doesn't refresh per combat. You need to take a Short Rest to recover it."
+            }
+          ],
+          "hint": "Monks recover resources through resting."
+        },
+        {
+          "id": "q8",
+          "question": "Which multiclass dip is most recommended for Four Element Monk?",
+          "choices": [
+            {
+              "id": "a",
+              "text": "Wizard 2 — for additional spell slots",
+              "correct": false,
+              "explanation": "Wizard doesn't grant Metamagic, which is the key synergy for this build."
+            },
+            {
+              "id": "b",
+              "text": "Sorcerer 2-4 — for Metamagic Adept abilities",
+              "correct": true,
+              "explanation": "Correct! Sorcerer provides Twinned Spell and Quickened Spell, massively amplifying your elemental spells."
+            },
+            {
+              "id": "c",
+              "text": "Cleric 2 — for healing spells",
+              "correct": false,
+              "explanation": "While Cleric adds healing, it doesn't synergize with the build's core spellcasting as well as Sorcerer."
+            }
+          ],
+          "hint": "Think about metamagic synergy."
+        }
+      ]
+    }
+  },
+  {
+    "folder": "tradeoffs",
+    "type": "tradeoff-sandbox",
+    "props": {
+      "title": "Build Trade-offs",
+      "scenarios": [
+        {
+          "id": "pure-monk",
+          "title": "Pure Monk 12-13",
+          "description": "Maximum Ki pool and monk features. Best Four Point Attack access and Flowing Barrier.",
+          "metrics": [
+            {
+              "id": "ki-economy",
+              "label": "Ki Economy",
+              "baseValue": 75,
+              "min": 0,
+              "max": 100,
+              "direction": "higher"
+            },
+            {
+              "id": "spell-power",
+              "label": "Spell Power",
+              "baseValue": 50,
+              "min": 0,
+              "max": 100,
+              "direction": "higher"
+            },
+            {
+              "id": "survivability",
+              "label": "Survivability",
+              "baseValue": 70,
+              "min": 0,
+              "max": 100,
+              "direction": "higher"
+            },
+            {
+              "id": "flexibility",
+              "label": "Build Flexibility",
+              "baseValue": 40,
+              "min": 0,
+              "max": 100,
+              "direction": "higher"
+            }
+          ],
+          "steps": [
+            {
+              "id": "ki-management",
+              "title": "Ki Point Strategy",
+              "description": "With 5 Ki at Monk 13, how do you allocate resources?",
+              "recommended": "balanced-spend",
+              "choices": [
+                {
+                  "id": "balanced-spend",
+                  "label": "Balanced — 1 Ki Wrath + 1 Ki Barrier",
+                  "description": "Spend 1 Ki for Twin Elemental Wrath, 1 Ki for Flowing Barrier, reserve rest.",
+                  "metrics": {
+                    "ki-economy": 10,
+                    "spell-power": 0,
+                    "survivability": 10,
+                    "flexibility": 5
+                  },
+                  "pros": [
+                    {
+                      "title": "Sustainable",
+                      "description": "Maintains both offense and defense every fight"
+                    }
+                  ],
+                  "cons": [
+                    {
+                      "title": "No Four Point Attack",
+                      "description": "Leaves only 3 Ki — not enough for Four Point Attack"
+                    }
+                  ],
+                  "whyThisFits": "Best general approach. Keeps you alive and damaging without going all-in."
+                },
+                {
+                  "id": "all-in-nuke",
+                  "label": "All-In — Four Point Attack Nuke",
+                  "description": "Save 4 Ki for Four Point Attack burst.",
+                  "metrics": {
+                    "ki-economy": -10,
+                    "spell-power": 15,
+                    "survivability": -15,
+                    "flexibility": -5
+                  },
+                  "pros": [
+                    {
+                      "title": "Maximum burst",
+                      "description": "Four guaranteed hits melt bosses"
+                    }
+                  ],
+                  "cons": [
+                    {
+                      "title": "Leaves you vulnerable",
+                      "description": "Only 1 Ki left for defense after nuking"
+                    }
+                  ],
+                  "whenToUse": "Boss fights where you need maximum damage output."
+                },
+                {
+                  "id": "spell-heavy",
+                  "label": "Spell Heavy — Cast multiple spells",
+                  "description": "Spend Ki on multiple elemental spells per turn.",
+                  "metrics": {
+                    "ki-economy": -5,
+                    "spell-power": 15,
+                    "survivability": -5,
+                    "flexibility": 10
+                  },
+                  "pros": [
+                    {
+                      "title": "Range and AoE",
+                      "description": "Covers areas melee can't reach"
+                    }
+                  ],
+                  "cons": [
+                    {
+                      "title": "Burns Ki fast",
+                      "description": "Running out of Ki leaves you as a basic monk"
+                    }
+                  ],
+                  "whenToUse": "Fights with ranged enemies or large groups."
+                }
+              ]
+            },
+            {
+              "id": "gear-focus",
+              "title": "Gear Priority",
+              "description": "Which legendary items matter most?",
+              "recommended": "patient-zero-first",
+              "choices": [
+                {
+                  "id": "patient-zero-first",
+                  "label": "Patient-0 Gauntlets First",
+                  "description": "Prioritize Act 2 gauntlets for damage amplification.",
+                  "metrics": {
+                    "ki-economy": 5,
+                    "spell-power": 5,
+                    "survivability": 0,
+                    "flexibility": 5
+                  },
+                  "pros": [
+                    {
+                      "title": "Massive damage boost",
+                      "description": "Amplifies every unarmed strike"
+                    }
+                  ],
+                  "cons": [
+                    {
+                      "title": "Act 2 locked",
+                      "description": "Can't access until Act 2"
+                    }
+                  ],
+                  "whyThisFits": "Best damage investment. Every attack benefits from Patient-0."
+                },
+                {
+                  "id": "cloak-first",
+                  "label": "Strix Cove Cloak First",
+                  "description": "Prioritize Act 3 cloak for out-of-combat utility.",
+                  "metrics": {
+                    "ki-economy": 0,
+                    "spell-power": 5,
+                    "survivability": 5,
+                    "flexibility": 15
+                  },
+                  "pros": [
+                    {
+                      "title": "Full utility",
+                      "description": "Casting spells outside combat changes everything"
+                    }
+                  ],
+                  "cons": [
+                    {
+                      "title": "Act 3 locked",
+                      "description": "Can't access until Act 3"
+                    }
+                  ],
+                  "whenToUse": "Late-game builds that value exploration utility."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "multiclass-sorcerer",
+          "title": "Monk/Sorcerer Multiclass",
+          "description": "Dip into Sorcerer for Metamagic. Trades some Ki for Twinned Spell and spell slots.",
+          "metrics": [
+            {
+              "id": "ki-economy",
+              "label": "Ki Economy",
+              "baseValue": 55,
+              "min": 0,
+              "max": 100,
+              "direction": "higher"
+            },
+            {
+              "id": "spell-power",
+              "label": "Spell Power",
+              "baseValue": 70,
+              "min": 0,
+              "max": 100,
+              "direction": "higher"
+            },
+            {
+              "id": "survivability",
+              "label": "Survivability",
+              "baseValue": 55,
+              "min": 0,
+              "max": 100,
+              "direction": "higher"
+            },
+            {
+              "id": "flexibility",
+              "label": "Build Flexibility",
+              "baseValue": 70,
+              "min": 0,
+              "max": 100,
+              "direction": "higher"
+            }
+          ],
+          "steps": [
+            {
+              "id": "dip-depth",
+              "title": "Sorcerer Dip Depth",
+              "description": "How many Sorcerer levels to take?",
+              "recommended": "dip-2",
+              "choices": [
+                {
+                  "id": "dip-2",
+                  "label": "Sorcerer 2 — Metamagic Adept",
+                  "description": "Minimum dip for Twinned Spell and one other metamagic.",
+                  "metrics": {
+                    "ki-economy": 5,
+                    "spell-power": 10,
+                    "survivability": -5,
+                    "flexibility": 15
+                  },
+                  "pros": [
+                    {
+                      "title": "Best value",
+                      "description": "Gets Twinned Spell with minimal level loss"
+                    }
+                  ],
+                  "cons": [
+                    {
+                      "title": "Delayed monk features",
+                      "description": "Missing one level of monk progression"
+                    }
+                  ],
+                  "whyThisFits": "Optimal dip. Twinned Spell alone justifies the investment."
+                },
+                {
+                  "id": "dip-4",
+                  "label": "Sorcerer 4 — Extra Spell Slots",
+                  "description": "Deeper dip for 3rd level spell slots and more metamagic points.",
+                  "metrics": {
+                    "ki-economy": -10,
+                    "spell-power": 15,
+                    "survivability": -10,
+                    "flexibility": 5
+                  },
+                  "pros": [
+                    {
+                      "title": "3rd level spells",
+                      "description": "Access to Fireball, Call Lightning, and more"
+                    }
+                  ],
+                  "cons": [
+                    {
+                      "title": "Significant monk delay",
+                      "description": "Missing Four Point Attack and Empty Body progression"
+                    }
+                  ],
+                  "whenToUse": "When spell diversity matters more than monk abilities."
+                },
+                {
+                  "id": "dip-1",
+                  "label": "Sorcerer 1 — Spellcasting Only",
+                  "description": "Just get spell slots without Metamagic.",
+                  "metrics": {
+                    "ki-economy": 5,
+                    "spell-power": 0,
+                    "survivability": -5,
+                    "flexibility": -5
+                  },
+                  "pros": [
+                    {
+                      "title": "Minimal delay",
+                      "description": "Only one level behind monk progression"
+                    }
+                  ],
+                  "cons": [
+                    {
+                      "title": "No Metamagic",
+                      "description": "Missing the key synergy that makes multiclassing worthwhile"
+                    }
+                  ],
+                  "whenToUse": "Not recommended. The value is too low without Metamagic."
+                }
+              ]
+            },
+            {
+              "id": "metamagic-choice",
+              "title": "Metamagic Selection",
+              "description": "Which two metamagics to prioritize?",
+              "recommended": "twin-quick",
+              "choices": [
+                {
+                  "id": "twin-quick",
+                  "label": "Twinned + Quickened",
+                  "description": "Dual-target spells and spell + attack same turn.",
+                  "metrics": {
+                    "ki-economy": 0,
+                    "spell-power": 15,
+                    "survivability": 0,
+                    "flexibility": 15
+                  },
+                  "pros": [
+                    {
+                      "title": "Maximum versatility",
+                      "description": "Twinned doubles target count, Quickened enables hybrid turns"
+                    }
+                  ],
+                  "cons": [
+                    {
+                      "title": "Sorcery point management",
+                      "description": "Limited metamagic uses per Short Rest"
+                    }
+                  ],
+                  "whyThisFits": "The gold standard combo for Four Element Monk."
+                },
+                {
+                  "id": "twin-empower",
+                  "label": "Twinned + Empowered",
+                  "description": "Dual-target spells with reroll damage.",
+                  "metrics": {
+                    "ki-economy": 0,
+                    "spell-power": 10,
+                    "survivability": 0,
+                    "flexibility": 10
+                  },
+                  "pros": [
+                    {
+                      "title": "Consistent damage",
+                      "description": "Empowered smooths out dice variance"
+                    }
+                  ],
+                  "cons": [
+                    {
+                      "title": "Less tactical",
+                      "description": "Missing Quickened's action economy benefits"
+                    }
+                  ],
+                  "whenToUse": "When you prefer consistent damage over tactical flexibility."
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "folder": "scenario",
+    "type": "scenario",
+    "props": {
+      "title": "Boss Encounter",
+      "id": "boss-encounter",
+      "intro": "You face a massive elemental-resistant boss in a narrow chamber. Your party is low on healing. What's your strategy?",
+      "nodes": {
+        "start": {
+          "id": "start",
+          "prompt": "The boss has resistance to Fire and Cold. Your Ki pool is full (5 Ki). What's your opening move?",
+          "choices": [
+            {
+              "id": "four_point_open",
+              "text": "All-in with Four Point Attack — four guaranteed elemental hits bypass resistance splitting",
+              "next": "four_point-result"
+            },
+            {
+              "id": "spell_open",
+              "text": "Cast Call Lightning — lightning damage ignores the boss's fire/cold resistance",
+              "next": "spell-result"
+            },
+            {
+              "id": "defense_open",
+              "text": "Flowing Barrier first — survive the boss's opening barrage",
+              "next": "defense-result"
+            }
+          ]
+        },
+        "four_point-result": {
+          "id": "four_point-result",
+          "outcome": {
+            "verdict": "Four Point Attack devastates the boss with four different elements. Even with two resistances, Lightning and Acid hit full damage.",
+            "lesson": "Four Point Attack's strength is resistance coverage. Four elements mean at most two are resisted.",
+            "rating": "a"
+          }
+        },
+        "spell-result": {
+          "id": "spell-result",
+          "outcome": {
+            "verdict": "Call Lightning deals solid lightning damage, but you spent Ki and your action. The boss closes distance and hits your party hard.",
+            "lesson": "Single-element spells are predictable. Bosses often resist one or two elements, making single-element focus risky.",
+            "rating": "b-plus"
+          }
+        },
+        "defense-result": {
+          "id": "defense-result",
+          "outcome": {
+            "verdict": "Flowing Barrier absorbs the boss's attacks, but you lost a turn dealing damage. The fight drags on longer.",
+            "lesson": "Defense-first is safe but passive. Four Element Monk excels at overwhelming damage — use it.",
+            "rating": "c"
+          }
+        }
+      },
+      "startNode": "start"
+    }
+  },
+  {
+    "folder": "decision-tree",
+    "type": "decision-tree",
+    "props": {
+      "title": "Four Element Monk Build Advisor",
+      "id": "build-advisor",
+      "root": "playstyle",
+      "nodes": {
+        "playstyle": {
+          "id": "playstyle",
+          "prompt": "What's your preferred combat style?",
+          "choices": [
+            {
+              "id": "melee-focused",
+              "text": "Close-range martial combat with elemental strikes",
+              "next": "level-choice",
+              "rationale": "Pure Monk path maximizes Ki and martial features.",
+              "recommended": true
+            },
+            {
+              "id": "spell-focused",
+              "text": "Ranged spellcasting with mobility",
+              "next": "multiclass-path",
+              "rationale": "Multiclass path enhances spellcasting versatility."
+            },
+            {
+              "id": "hybrid",
+              "text": "Mix of melee and spells",
+              "next": "level-choice"
+            }
+          ]
+        },
+        "level-choice": {
+          "id": "level-choice",
+          "prompt": "What act are you planning for?",
+          "choices": [
+            {
+              "id": "early-game",
+              "text": "Acts 1-2 (levels 1-8)",
+              "next": "rec-early",
+              "rationale": "Early game needs survivability and consistent damage."
+            },
+            {
+              "id": "late-game",
+              "text": "Act 3 (levels 9-12+)",
+              "next": "rec-late",
+              "rationale": "Late game unlocks Four Point Attack and legendary gear."
+            }
+          ]
+        },
+        "multiclass-path": {
+          "id": "multiclass-path",
+          "prompt": "How deep should the Sorcerer dip go?",
+          "choices": [
+            {
+              "id": "shallow-dip",
+              "text": "Just Metamagic (Sorcerer 2)",
+              "next": "rec-twinned",
+              "rationale": "Minimum investment for maximum value.",
+              "recommended": true
+            },
+            {
+              "id": "deep-dip",
+              "text": "Full spellcaster (Sorcerer 4+)",
+              "next": "rec-spell-heavy"
+            }
+          ]
+        },
+        "rec-early": {
+          "id": "rec-early",
+          "leaf": {
+            "recommendation": "Pure Monk 6-8, focus on Twin Elemental Wrath + Conjure Flame.",
+            "explanation": "Early game, Ki is limited. Twin Elemental Wrath (1 Ki) + Conjure Flame zone damage creates excellent sustained pressure. Prioritize Dexterity for AC and hit rate. Grab Patient-0 gauntlets in Act 2.",
+            "tradeoffs": [
+              "Limited Ki means careful spending every fight",
+              "No Four Point Attack until Monk 11",
+              "Conjure Flame is your primary AoE tool"
+            ]
+          }
+        },
+        "rec-late": {
+          "id": "rec-late",
+          "leaf": {
+            "recommendation": "Monk 12-13 pure, leverage Four Point Attack and legendary gear.",
+            "explanation": "At Monk 12-13, you have 5 Ki, Four Point Attack, and access to both Patient-0 and Strix Cove Monk Cloak. Save 4 Ki for Four Point Attack on bosses, use Twin Elemental Wrath for clears. At Monk 15, Elemental Mastery makes spells free.",
+            "tradeoffs": [
+              "Four Point Attack consumes most of your Ki",
+              "Balance between offense (nuke) and defense (Barrier)",
+              "Strix Cove Cloak enables exploration utility"
+            ]
+          }
+        },
+        "rec-twinned": {
+          "id": "rec-twinned",
+          "leaf": {
+            "recommendation": "Monk 10/Sorcerer 2 with Twinned Spell + Quickened Spell.",
+            "explanation": "Twinned Spell doubles Ice Knife and Conjure Flame targets. Quickened Spell lets you cast a cantrip and make unarmed strikes in the same turn. The 2-level dip is the optimal investment — you get metamagic without sacrificing too much monk progression.",
+            "tradeoffs": [
+              "Delayed Four Point Attack by 2 levels",
+              "Fewer Ki points than pure monk at same total level",
+              "Metamagic uses are limited per Short Rest"
+            ]
+          }
+        },
+        "rec-spell-heavy": {
+          "id": "rec-spell-heavy",
+          "leaf": {
+            "recommendation": "Monk 8/Sorcerer 4+ for expanded spell repertoire.",
+            "explanation": "Deeper Sorcerer dip grants 3rd level spells like Fireball and Call Lightning, plus more metamagic points. You sacrifice monk features like Four Point Attack for broader spellcasting. Best for players who prefer spell diversity over martial abilities.",
+            "tradeoffs": [
+              "Never reaches Four Point Attack or Empty Body",
+              "Reduced Ki pool limits monk abilities",
+              "Broader spell access compensates for lost martial features"
+            ]
+          }
+        }
+      }
+    }
+  }
+]

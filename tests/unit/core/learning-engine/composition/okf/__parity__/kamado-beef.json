@@ -1,0 +1,1768 @@
+[
+  {
+    "folder": "intro",
+    "type": "intro",
+    "props": {
+      "title": "บทนำสู่เตา Kamado และศิลปะการย่างเนื้อ",
+      "estimatedTime": "15 min read",
+      "moduleCount": 13,
+      "what": {
+        "definition": "เตา Kamado คือเตาเซรามิกทรงไข่ที่พัฒนามาจากเตาดินเผาโบราณของญี่ปุ่น (Mushikamado) โดดเด่นด้วยคุณสมบัติการกักเก็บความร้อนสูง (High Thermal Mass) การควบคุมกระแสลมผ่านวาล์วบน-ล่างอย่างแม่นยำ และการรักษาความชุ่มชื้นของเนื้อวัวได้อย่างยอดเยี่ยม",
+        "summary": "คู่มือฉบับสมบูรณ์สำหรับผู้รักการย่างเนื้อ ตั้งแต่โครงสร้างเตา การคุมกระแสลม การเลือกถ่าน วิทยาศาสตร์การเกิดเปลือกกรอบ (Maillard Reaction) จนถึงเทคนิค Reverse Sear ระดับมืออาชีพ",
+        "bullets": [
+          "เข้าใจหลักอุณหพลศาสตร์และฉนวนความร้อนเซรามิกที่ทำให้เนื้อไม่แห้งกระด้าง",
+          "การควบคุมอุณหภูมิตั้งแต่ 105°C (Low & Slow) ถึง 400°C+ (Searing)",
+          "เทคนิค Reverse Sear เพื่อสเต๊กเนื้อสีชมพูสม่ำเสมอไร้ขอบเทา (Edge-to-edge pink)",
+          "การจับคู่ไม้รมควันกับเนื้อวัว และวิทยาศาสตร์การเกิดเปลือก Bark รสเข้มข้น"
+        ],
+        "tags": [
+          "Kamado Grill",
+          "Beef Grilling",
+          "Reverse Sear",
+          "Maillard Reaction",
+          "BBQ Science"
+        ]
+      },
+      "why": {
+        "summary": "การย่างเนื้อหนาบนเตาทั่วไปมักเจอปัญหากลางเนื้อไม่สุกแต่ผิวนอกไหม้ หรือสูญเสียน้ำในเนื้อจนแห้งฝาดจากกระแสลมที่ดูดความชื้นออกไป",
+        "impact": "เตา Kamado ใช้การแผ่รังสีความร้อนจากเซรามิกและใช้อากาศไหลผ่านน้อยกว่าเตาเหล็กถึง 3 เท่า ส่งผลให้เนื้อคงความชุ่มฉ่ำ นุ่มละมุน และมีกลิ่นหอมรมควันไม้ธรรมชาติอย่างสมบูรณ์แบบ"
+      },
+      "roadmap": [
+        {
+          "sectionId": "anatomy",
+          "title": "โครงสร้างและกายวิภาคของเตา Kamado",
+          "type": "pillar-layer",
+          "description": "สำรวจชิ้นส่วนสำคัญ ตั้งแต่วาล์วลมล่าง แผ่น Deflector จนถึงฝาครอบเซรามิก"
+        },
+        {
+          "sectionId": "quiz-airflow",
+          "title": "ทดสอบความรู้การคุมไฟและกายวิภาค",
+          "type": "quiz",
+          "description": "วัดความเข้าใจเรื่องการปรับวาล์วลมและการจัดโซนความร้อน"
+        },
+        {
+          "sectionId": "taxonomy",
+          "title": "หมวดหมู่เทคนิคการย่างบนเตา Kamado",
+          "type": "taxonomy-browser",
+          "description": "เปรียบเทียบ 4 สไตล์การปรุง: Reverse Sear, Low & Slow, Direct Grill, Caveman"
+        },
+        {
+          "sectionId": "reflection-reverse-sear",
+          "title": "ลำดับขั้นตอน Reverse Sear",
+          "type": "reflection-sequence",
+          "description": "จัดเรียงขั้นตอนการทำ Reverse Sear สเต๊กเนื้อให้ถูกต้องสมบูรณ์แบบ"
+        },
+        {
+          "sectionId": "concept-map",
+          "title": "แผนผังวิทยาศาสตร์อาหารและอุณหพลศาสตร์",
+          "type": "concept-map",
+          "description": "เชื่อมโยงความร้อน รังสีอินฟราเรด ปฏิกิริยาเมลลาร์ด และการกระจายน้ำในเนื้อ"
+        },
+        {
+          "sectionId": "reflection-template",
+          "title": "สังเคราะห์หลักการความร้อนและความฉ่ำ",
+          "type": "reflection-template",
+          "description": "เติมคำในช่องว่างเพื่อสรุปแก่นแท้ของความร้อนเซรามิกและการอุ้มน้ำ"
+        },
+        {
+          "sectionId": "flowchart",
+          "title": "ผังกระบวนการย่างสเต๊กแบบ Reverse Sear",
+          "type": "flowchart",
+          "description": "จำลองขั้นตอน Event Storming การเตรียมเตา คุมอุณหภูมิ และ Sear สเต๊ก"
+        },
+        {
+          "sectionId": "tradeoffs",
+          "title": "การเลือกถ่านและไม้รมควัน",
+          "type": "tradeoff-sandbox",
+          "description": "ชั่งน้ำหนักระหว่างถ่านไม้ก้อนธรรมชาติ ถ่านอัด และไม้รมควันกลิ่นต่างๆ"
+        },
+        {
+          "sectionId": "formula-sandbox",
+          "title": "เครื่องคำนวณเวลาและอุณหภูมิสเต๊ก",
+          "type": "formula-sandbox",
+          "description": "คำนวณเวลาอบ เวลา Sear และอุณหภูมิแกนกลางตามความหนาของเนื้อ"
+        },
+        {
+          "sectionId": "scenario",
+          "title": "สถานการณ์แก้ปัญหาความร้อนพุ่งเกิน (Overheat)",
+          "type": "scenario",
+          "description": "แก้ปัญหาเมื่อเผลอเปิดวาล์วกว้างจนอุณหภูมิเตาพุ่งสูงทะลุเป้าหมาย"
+        },
+        {
+          "sectionId": "decision-tree",
+          "title": "ระบบแนะนำเทคนิคตามชิ้นส่วนเนื้อ",
+          "type": "decision-tree",
+          "description": "เลือกเทคนิคที่เหมาะสมที่สุดสำหรับ Ribeye, Tomahawk, Picanha, และ Brisket"
+        },
+        {
+          "sectionId": "flashcards",
+          "title": "คลังคำศัพท์สำคัญ",
+          "type": "flashcards",
+          "description": "ทบทวนคำศัพท์สำคัญ เช่น Maillard, Blue Smoke, Heat Deflector, และ Carryover"
+        }
+      ]
+    }
+  },
+  {
+    "folder": "anatomy",
+    "type": "pillar-layer",
+    "props": {
+      "title": "โครงสร้างและกายวิภาคของเตา Kamado",
+      "section": {
+        "type": "pillar-layer",
+        "title": "กายวิภาคและสถาปัตยกรรมเตาเซรามิก Kamado (Kamado Anatomy Stack)",
+        "description": "โครงสร้างแบบเป็นชั้นของเตา Kamado แสดงการถ่ายเทความร้อน การกักเก็บพลังงาน และการควบคุมการไหลเวียนอากาศ",
+        "layers": [
+          {
+            "id": "l-dome-exhaust",
+            "title": "1. ชั้นควบคุมไอเสียและกักเก็บความร้อนด้านบน (Top Exhaust & Dome Tier)",
+            "description": "วาล์วด้านบนและฝาครอบเซรามิกหนา ทำหน้าที่กักเก็บรังสีความร้อนและคุมการระบายไอเสีย"
+          },
+          {
+            "id": "l-cooking-zone",
+            "title": "2. ชั้นตะแกรงย่างและจัดโซนความร้อน (Cooking Grates & Deflector Tier)",
+            "description": "พื้นที่วางเนื้อสเต๊ก ตะแกรงเหล็กหล่อ/สเตนเลส และแผ่นหิน Deflector สำหรับกระจายความร้อนทางอ้อม"
+          },
+          {
+            "id": "l-firebox-core",
+            "title": "3. ชั้นกล่องเผาไหม้และศูนย์รวมถ่าน (Firebox & Fire Ring Tier)",
+            "description": "ห้องเซรามิกทนความร้อนสูงสำหรับบรรจุถ่านไม้ธรรมชาติ มีรูระบายอากาศเพื่อกระจายออกซิเจน"
+          },
+          {
+            "id": "l-base-draft",
+            "title": "4. ชั้นฐานรองและประตูรับอากาศเข้าล่าง (Base & Draft Door Tier)",
+            "description": "ช่องดึงอากาศบริสุทธิ์เข้าด้านล่างเพื่อป้อนออกซิเจนให้ไฟ และลิ้นชักสำหรับดักขี้เถ้า"
+          }
+        ],
+        "matrix_blocks": [
+          {
+            "id": "b-top-vent",
+            "title": "วาล์วปรับลมบน (Top Vent / Dual-Disc)",
+            "description": "ควบคุมความเร็วลมขาออกและดักความร้อน ละเอียดระดับมิลลิเมตรเพื่อปรับอุณหภูมิละเอียด (Fine-tuning)",
+            "layer_id": "l-dome-exhaust",
+            "col_offset": 0,
+            "col_span": 2,
+            "color": "mauve",
+            "depends_on": [
+              "b-grill-grate"
+            ]
+          },
+          {
+            "id": "b-ceramic-dome",
+            "title": "ฝาครอบเซรามิกหนาพิเศษ (Ceramic Heavy Dome)",
+            "description": "ผนังเซรามิกสะท้อนรังสีความร้อนอินฟราเรดกลับลงมาที่ผิวเนื้อ ทำให้เนื้อสุกรอบทิศทางโดยไม่ต้องเปิดฝาบ่อย",
+            "layer_id": "l-dome-exhaust",
+            "col_offset": 2,
+            "col_span": 2,
+            "color": "blue",
+            "depends_on": [
+              "b-deflector"
+            ]
+          },
+          {
+            "id": "b-grill-grate",
+            "title": "ตะแกรงย่างเหล็กหล่อ/สเตนเลส (Cooking Grate)",
+            "description": "รองรับเนื้อวัว สามารถเลือกใช้เหล็กหล่อเพื่อสะสมความร้อนสำหรับ Sear ลายสวยงาม",
+            "layer_id": "l-cooking-zone",
+            "col_offset": 0,
+            "col_span": 2,
+            "color": "peach",
+            "depends_on": [
+              "b-firebox"
+            ]
+          },
+          {
+            "id": "b-deflector",
+            "title": "แผ่นหินกันความร้อน (Ceramic Heat Deflector)",
+            "description": "แปลงเตาย่างเปลวไฟตรงให้กลายเป็นเตาอบ Convection กั้นเปลวไฟตรงเพื่อย่างทางอ้อม (Indirect Smoking / Reverse Sear)",
+            "layer_id": "l-cooking-zone",
+            "col_offset": 2,
+            "col_span": 2,
+            "color": "teal",
+            "depends_on": [
+              "b-fire-ring"
+            ]
+          },
+          {
+            "id": "b-firebox",
+            "title": "กล่องเผาไหม้เซรามิก (Ceramic Firebox)",
+            "description": "บรรจุถ่านไม้ก้อนธรรมชาติ ผนังมีรูเจาะระบายอากาศเพื่อกระจายออกซิเจนเข้าสู่กองถ่านอย่างสม่ำเสมอ",
+            "layer_id": "l-firebox-core",
+            "col_offset": 0,
+            "col_span": 2,
+            "color": "sapphire",
+            "depends_on": [
+              "b-draft-door"
+            ]
+          },
+          {
+            "id": "b-fire-ring",
+            "title": "วงแหวนยกความสูง (Fire Ring)",
+            "description": "วางซ้อนบน Firebox เพื่อเพิ่มระยะห่างระหว่างกองถ่านกับตะแกรงย่าง และเป็นฐานรองรับแผ่น Heat Deflector",
+            "layer_id": "l-firebox-core",
+            "col_offset": 2,
+            "col_span": 2,
+            "color": "green",
+            "depends_on": [
+              "b-ash-drawer"
+            ]
+          },
+          {
+            "id": "b-draft-door",
+            "title": "ประตูวาล์วลมล่าง (Bottom Draft Door)",
+            "description": "จุดรับออกซิเจนหลักเข้าสู่เตา ทำหน้าที่ควบคุมอุณหภูมิหยาบ (Coarse tuning) เปิดกว้างเพื่อเร่งไฟ หรี่เพื่อลดไฟ",
+            "layer_id": "l-base-draft",
+            "col_offset": 0,
+            "col_span": 2,
+            "color": "maroon"
+          },
+          {
+            "id": "b-ash-drawer",
+            "title": "ลิ้นชักรองขี้เถ้า (Ash Drawer / Base Cavity)",
+            "description": "กักเก็บขี้เถ้าที่ร่วงผ่านตะแกรงก้นเตา ป้องกันไม่ให้ขี้เถ้าอุดตันช่องลมเข้า ทำให้กระแสลมไหลเวียนต่อเนื่อง",
+            "layer_id": "l-base-draft",
+            "col_offset": 2,
+            "col_span": 2,
+            "color": "lavender"
+          }
+        ]
+      }
+    }
+  },
+  {
+    "folder": "quiz-airflow",
+    "type": "quiz",
+    "props": {
+      "title": "ทดสอบความรู้การคุมไฟและกายวิภาคเตา Kamado",
+      "questions": [
+        {
+          "id": "q1",
+          "question": "หน้าที่หลักของแผ่นหินกันความร้อน (Ceramic Heat Deflector) ในเตา Kamado คืออะไร?",
+          "choices": [
+            {
+              "id": "a",
+              "text": "กั้นเปลวไฟตรง แปลงเตาเป็นเตาอบ Convection สำหรับการย่างทางอ้อม (Indirect Cooking)",
+              "correct": true,
+              "explanation": "ถูกต้อง! Heat Deflector ทำหน้าที่บังเปลวไฟและรังสีความร้อนตรง ทำให้ความร้อนไหลเวียนรอบๆ เหมาะสำหรับ Low & Slow และการอบช่วงแรกของ Reverse Sear"
+            },
+            {
+              "id": "b",
+              "text": "ใช้ดับไฟในกล่อง Firebox ทันทีเมื่อย่างเสร็จ",
+              "correct": false,
+              "explanation": "ไม่ถูกต้อง แผ่น Deflector ไม่ได้ใช้ดับไฟ แต่ใช้กั้นความร้อนระหว่างกองถ่านกับตะแกรง"
+            },
+            {
+              "id": "c",
+              "text": "เพิ่มอุณหภูมิเปลวไฟให้สูงขึ้นถึง 500°C",
+              "correct": false,
+              "explanation": "ไม่ถูกต้อง แผ่น Deflector มีไว้กั้นความร้อนตรง ไม่ได้มีหน้าที่เร่งไฟ"
+            }
+          ],
+          "hint": "นึกถึงการจัดโซนความร้อนสำหรับการทำสเต๊กหรือการรมควัน"
+        },
+        {
+          "id": "q2",
+          "question": "ในการควบคุมอุณหภูมิเตา Kamado ประตูวาล์วลมล่าง (Bottom Draft Door) มีบทบาทอย่างไร?",
+          "choices": [
+            {
+              "id": "a",
+              "text": "ใช้ปรับลมขาออกอย่างละเอียดระดับมิลลิเมตร",
+              "correct": false,
+              "explanation": "การปรับลมขาออกละเอียดระดับมิลลิเมตรเป็นหน้าที่ของ Top Vent ด้านบน"
+            },
+            {
+              "id": "b",
+              "text": "เป็นช่องรับออกซิเจนหลักเข้าสู่กองถ่าน ใช้ควบคุมอุณหภูมิช่วงกว้างแบบหยาบ (Coarse Tuning)",
+              "correct": true,
+              "explanation": "ถูกต้อง! วาล์วล่างทำหน้าที่ป้อนออกซิเจนเข้าเตา ยิ่งเปิดกว้างออกซิเจนยิ่งเข้ามาก ไฟยิ่งลุกแรง"
+            },
+            {
+              "id": "c",
+              "text": "ใช้ระบายควันขี้เถ้าและไอน้ำออกจากเตา",
+              "correct": false,
+              "explanation": "ควันและไอน้ำจะระบายออกทางวาล์วด้านบน (Top Vent) ไม่ใช่วาล์วล่าง"
+            }
+          ],
+          "hint": "เปรียบเทียบระหว่างการปรับแบบหยาบกับการปรับแบบละเอียด"
+        },
+        {
+          "id": "q3",
+          "question": "ฝาครอบเซรามิกหนาพิเศษ (Ceramic Dome) ช่วยให้สเต๊กสุกสม่ำเสมอได้อย่างไร?",
+          "choices": [
+            {
+              "id": "a",
+              "text": "ดูดซับความร้อนทั้งหมดแล้วปล่อยให้เตาเย็นลงอย่างรวดเร็ว",
+              "correct": false,
+              "explanation": "เซรามิกกักเก็บความร้อนสูงและปล่อยออกมาอย่างช้าๆ ต่อเนื่อง ไม่ได้ทำให้เตาเย็นลง"
+            },
+            {
+              "id": "b",
+              "text": "สะท้อนรังสีความร้อนอินฟราเรดกลับลงมาที่ผิวเนื้อ ทำให้เนื้อสุกรอบทิศทางโดยไม่ต้องเปิดฝาบ่อย",
+              "correct": true,
+              "explanation": "ถูกต้อง! ผนังเซรามิกสะท้อนรังสีความร้อนอินฟราเรดกระจายทั่วห้องเตา ทำให้เนื้อได้รับความร้อนรอบด้านอย่างสม่ำเสมอ"
+            },
+            {
+              "id": "c",
+              "text": "ปล่อยให้น้ำมันหยดลงบนถ่านเพื่อสร้างควันดำ",
+              "correct": false,
+              "explanation": "ควันดำเกิดจากการเผาไหม้ไม่สมบูรณ์ ไม่ใช่ข้อดีของฝาครอบเซรามิก"
+            }
+          ],
+          "hint": "พิจารณาคุณสมบัติของวัสดุเซรามิกและการสะท้อนความร้อน"
+        },
+        {
+          "id": "q4",
+          "question": "หากไม่ทำความสะอาดลิ้นชักรองขี้เถ้า (Ash Drawer) จนขี้เถ้าสะสมเต็มก้นเตา จะเกิดผลเสียใด?",
+          "choices": [
+            {
+              "id": "a",
+              "text": "ขี้เถ้าจะอุดตันช่องลมเข้า ทำให้ออกซิเจนไหลเวียนไม่สะดวก และคุมอุณหภูมิได้ยาก",
+              "correct": true,
+              "explanation": "ถูกต้อง! เมื่อขี้เถ้าทับถมปิดช่องอากาศ อากาศบริสุทธิ์จะไม่สามารถไหลผ่านตะแกรงก้นเตาขึ้นมาเลี้ยงกองถ่านได้ ทำให้ไฟหรี่ลงหรือไม่สม่ำเสมอ"
+            },
+            {
+              "id": "b",
+              "text": "ทำให้เนื้อสเต๊กเค็มขึ้นโดยไม่ตั้งใจ",
+              "correct": false,
+              "explanation": "ขี้เถ้าด้านล่างไม่ได้สัมผัสกับเนื้อโดยตรง"
+            },
+            {
+              "id": "c",
+              "text": "ทำให้ตัวเตาเซรามิกแตกหักในทันที",
+              "correct": false,
+              "explanation": "ขี้เถ้าไม่ได้ทำให้เซรามิกแตก แต่ทำให้กระแสลมถูกบล็อก"
+            }
+          ],
+          "hint": "คิดถึงสิ่งที่กองถ่านต้องการสำหรับการเผาไหม้"
+        }
+      ]
+    }
+  },
+  {
+    "folder": "taxonomy",
+    "type": "taxonomy-browser",
+    "props": {
+      "title": "หมวดหมู่เทคนิคการย่างเนื้อบนเตา Kamado",
+      "categories": [
+        {
+          "icon": "Flame",
+          "title": "Reverse Sear (ย่างย้อนศร)",
+          "subtitle": "เทคนิคที่ดีที่สุดสำหรับสเต๊กชิ้นหนา (1.5 - 3 นิ้ว)",
+          "description": "อบเนื้อด้วยความร้อนทางอ้อม (Indirect Low Heat 105-120°C) จนอุณหภูมิแกนกลางใกล้ถึงเป้าหมาย แล้วพักเนื้อก่อนนำมา Sear ผิวไฟแรงสุด (300-350°C) 45-60 วินาทีต่อด้าน",
+          "details": "ช่วยขจัดปัญหาขอบเนื้อสุกเกินจนกลายเป็นสีเทา (Grey Band) ทำให้ได้เนื้อในสีชมพูสม่ำเสมอตั้งแต่ขอบจรดขอบ (Edge-to-edge pink) พร้อมผิวกรอบสีน้ำตาลเข้มจาก Maillard Reaction",
+          "analogy": "เหมือนการอุ่นเค้กให้ร้อนทั่วถึงจากข้างในก่อนแล้วค่อยพ่นไฟเคลือบน้ำตาลด้านบน",
+          "primaryFocus": "การควบคุมอุณหภูมิแกนกลาง (Internal Temp) และการสร้าง Crust กรอบโดยไม่ทำลายความฉ่ำ",
+          "inScope": [
+            "สเต๊กเนื้อหนา เช่น Tomahawk, Cowboy Ribeye, Thick T-Bone, Picanha Block",
+            "การใช้แผ่น Ceramic Heat Deflector ในช่วงแรก",
+            "การใช้โพรบวัดอุณหภูมิเนื้อ (Meat Probe) ตรวจสอบความสุก"
+          ],
+          "outOfScope": [
+            "สเต๊กบางต่ำกว่า 1 นิ้ว (เสี่ยงสุกเกินไปในช่วง Sear)",
+            "เนื้อส่วนที่มีพังผืดเหนียวมากที่ต้องใช้เวลาละลายคอลลาเจนหลายชั่วโมง"
+          ],
+          "color": "red"
+        },
+        {
+          "icon": "Wind",
+          "title": "Low & Slow Smoking (รมควันไฟอ่อนระยะยาว)",
+          "subtitle": "ศิลปะการปรุงเนื้อส่วนเหนียวและคอลลาเจนสูง",
+          "description": "รมควันเนื้อที่อุณหภูมิคงที่ 105-120°C ต่อเนื่องเป็นเวลา 6-12 ชั่วโมง โดยใส่แผ่น Heat Deflector เต็มแผ่นพร้อมท่อนไม้รมควัน (Wood Chunks)",
+          "details": "ความร้อนต่ำและเวลาที่ยาวนานจะค่อยๆ สลายเส้นใยคอลลาเจน (Collagen) ให้กลายเป็นเจลาติน (Gelatin) ที่นุ่มชุ่มฉ่ำ พร้อมสร้างเปลือก Bark สีดำเข้มที่มีกลิ่นหอมรมควันอันเป็นเอกลักษณ์",
+          "analogy": "เหมือนการตุ๋นหม้อเซรามิกโบราณแต่ใช้อากาศร้อนและควันหอมเป็นตัวปรุงแทนน้ำซุป",
+          "primaryFocus": "การสลายคอลลาเจน, การคุมความชื้น (Moisture Retention), และการก้าวข้ามช่วงอุณหภูมิชะงัก (The BBQ Stall)",
+          "inScope": [
+            "เนื้อเสือร้องไห้/เนื้ออก (Beef Brisket)",
+            "ซี่โครงเนื้อชิ้นโต (Beef Short Ribs / Dinosaur Ribs)",
+            "เนื้อสันคอ/น่องลาย (Beef Chuck Roast)"
+          ],
+          "outOfScope": [
+            "สเต๊กเนื้อนุ่มพรีเมียมอย่าง Tenderloin หรือ Flat Iron",
+            "การปรุงด่วนที่ต้องการรับประทานภายใน 30 นาที"
+          ],
+          "color": "peach"
+        },
+        {
+          "icon": "Zap",
+          "title": "Direct High-Heat Grilling (ย่างไฟแรงตรง)",
+          "subtitle": "ย่างด่วนบนเปลวไฟและตะแกรงเหล็กหล่อ 250-350°C",
+          "description": "ย่างชิ้นเนื้อบนเปลวถ่านโดยตรงโดยไม่ใส่แผ่น Heat Deflector โดยอาศัยความร้อนจากการแผ่รังสีและตะแกรงเหล็กหล่อสะสมความร้อน",
+          "details": "เหมาะสำหรับชิ้นเนื้อที่นุ่มโดยธรรมชาติแต่มีความหนาปานกลางถึงบาง ใช้เวลาสั้น พลิกกลับด้านรวดเร็วเพื่อสร้างลวดลายกริลล์ (Grill Marks) และกลิ่นเกรียมหอมหวานของไขมันที่หยดลงถ่าน",
+          "analogy": "เหมือนการย่างยากินิกุหรือเนื้อเสียบไม้แบบญี่ปุ่นด้วยเตาชิจิรินแต่พลังความร้อนสูงกว่า",
+          "primaryFocus": "การสร้างเปลือกเกรียมรวดเร็ว, การป้องกันเนื้อสุกเกินไปข้างใน, และการควบคุมไฟลุก (Flare-ups)",
+          "inScope": [
+            "สเต๊กเนื้อบางต่ำกว่า 1.2 นิ้ว (Thin Ribeye / Striploin)",
+            "เนื้อใบบัว/เนื้อชายโครง (Skirt Steak / Flank Steak)",
+            "เนื้อลูกเต๋าเสียบไม้ คุชิยากิ (Beef Skewers / Kebabs)"
+          ],
+          "outOfScope": [
+            "สเต๊กหนาพิเศษ เช่น Tomahawk (ข้างในจะยังดิบเย็นขณะที่ผิวนอกไหม้)",
+            "เนื้อ Brisket ทั้งก้อน (จะเหนียวเคี้ยวไม่ได้)"
+          ],
+          "color": "mauve"
+        },
+        {
+          "icon": "Sparkles",
+          "title": "Caveman Style (ย่างบนถ่านไม้ธรรมชาติโดยตรง)",
+          "subtitle": "Dirty Steak - สัมผัสถ่านไม้ก้อนแดงฉานแบบคนยุคหิน",
+          "description": "วางชิ้นเนื้อหนาลงบนก้อนถ่านไม้ธรรมชาติ (Natural Hardwood Lump Charcoal) ที่คุแดงไร้เปลวไฟโดยตรง โดยไม่ใช้ตะแกรงย่าง",
+          "details": "อาศัยการนำความร้อนแบบสัมผัสโดยตรง (Direct Conduction) ก่อให้เกิดเปลือก Crust ที่กรอบเกรียมลึก มีกลิ่นหอมเฉพาะตัว เถ้าถ่านธรรมชาติแท้จะไม่ติดเนื้อเมื่อปัดออกเล็กน้อย",
+          "analogy": "เหมือนการประทับตราเหล็กร้อนลงบนแผ่นหนังอย่างรวดเร็วและทรงพลัง",
+          "primaryFocus": "การเลือกถ่านไม้เนื้อแข็งแท้คุณภาพพรีเมียมไร้สารเคมี, การพัดขี้เถ้าส่วนเกินออกก่อนวางเนื้อ, และการกลับด้านรวดเร็ว",
+          "inScope": [
+            "เนื้อสเต๊กชิ้นหนา เช่น T-Bone, Porterhouse, Ribeye Cap",
+            "ถ่านไม้ธรรมชาติก้อนใหญ่ (Hardwood Lump Charcoal) คุณภาพสูงเท่านั้น"
+          ],
+          "outOfScope": [
+            "การใช้ถ่านอัดก้อน (Briquettes) ที่มีสารประสานทางเคมีและขี้เถ้าหนา (อันตรายต่อสุขภาพ)",
+            "เนื้อบางหรือเนื้อหมักซอสหวาน (จะไหม้ดำทันที)"
+          ],
+          "color": "teal"
+        }
+      ]
+    }
+  },
+  {
+    "folder": "reflection-reverse-sear",
+    "type": "reflection-sequence",
+    "props": {
+      "title": "ลำดับขั้นตอนการย่างแบบ Reverse Sear",
+      "challenges": [
+        {
+          "prompt": "เรียงลำดับขั้นตอนการทำสเต๊กแบบ Reverse Sear บนเตา Kamado ให้ถูกต้องตามกระบวนการทำลายขอบเทา (Edge-to-edge pink):",
+          "items": [
+            {
+              "id": "step-prep-setup",
+              "text": "1. ปรุงรสเนื้อสเต๊กหนา และเตรียมเตา Kamado ใส่แผ่น Heat Deflector คุมไฟที่ 105-120°C"
+            },
+            {
+              "id": "step-probe-indirect",
+              "text": "2. วางเนื้อลงบนตะแกรง เสียบโพรบวัดอุณหภูมิแกนกลาง และปิดฝาครอบเซรามิก"
+            },
+            {
+              "id": "step-bake-target",
+              "text": "3. อบเนื้อด้วยความร้อนทางอ้อมอย่างช้าๆ จนอุณหภูมิแกนกลางถึงประมาณ 45-48°C"
+            },
+            {
+              "id": "step-rest-stoke",
+              "text": "4. ยกเนื้อออกมาพักชั่วคราว ถอดแผ่น Deflector และเปิดวาล์วลมเร่งอุณหภูมิเตาขึ้นสู่ 300-350°C"
+            },
+            {
+              "id": "step-high-sear",
+              "text": "5. นำเนื้อลง Sear บนเปลวไฟแรงจัดด้านละ 45-60 วินาที เพื่อสร้าง Crust สีน้ำตาลทอง (Maillard Reaction)"
+            },
+            {
+              "id": "step-final-rest",
+              "text": "6. นำเนื้อขึ้นมาพัก (Resting) 5-10 นาที เพื่อให้น้ำในเนื้อกระจายตัวสม่ำเสมอก่อนหั่นเสิร์ฟ"
+            }
+          ],
+          "solution": [
+            "step-prep-setup",
+            "step-probe-indirect",
+            "step-bake-target",
+            "step-rest-stoke",
+            "step-high-sear",
+            "step-final-rest"
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "folder": "flowchart",
+    "type": "flowchart",
+    "props": {
+      "title": "ผังกระบวนการย่างสเต๊กแบบ Reverse Sear",
+      "schema": {
+        "entities": {
+          "pitmaster": {
+            "title": "ผู้ย่างสเต๊ก (Pitmaster)",
+            "desc": "ผู้ควบคุมกระบวนการย่าง การเตรียมเนื้อ และการปรุงรส",
+            "type": "Actor"
+          },
+          "firebox": {
+            "title": "กล่องเผาไหม้และกองถ่าน (Firebox)",
+            "desc": "ระบบสร้างพลังงานความร้อนจากถ่านไม้ธรรมชาติ",
+            "type": "Aggregate"
+          },
+          "deflector_unit": {
+            "title": "ระบบควบคุมลมและแผ่นหิน (Deflector & Vents)",
+            "desc": "ควบคุมอุณหภูมิ Convection และการไหลเวียนของออกซิเจน",
+            "type": "Aggregate"
+          },
+          "meat_probe": {
+            "title": "โพรบวัดอุณหภูมิเนื้อ (Meat Probe System)",
+            "desc": "ระบบดิจิทัลอ่านค่าอุณหภูมิแกนกลางเนื้อแบบเรียลไทม์",
+            "type": "External API"
+          },
+          "searing_grate": {
+            "title": "ตะแกรงเหล็กหล่อสะสมความร้อน (Cast Iron Grate)",
+            "desc": "ตัวนำความร้อนสัมผัสสูงสำหรับสร้าง Maillard Crust",
+            "type": "Aggregate"
+          },
+          "resting_board": {
+            "title": "เขียงและอุปกรณ์พักเนื้อ (Resting & Carving Station)",
+            "desc": "สถานีปรับสมดุลความดันของเหลวในเนื้อและสไลซ์พร้อมเสิร์ฟ",
+            "type": "Aggregate"
+          },
+          "pol_step_ignite": {
+            "title": "เริ่มขั้นตอนวอร์มเตา (Warm Up)",
+            "desc": "เริ่มขั้นตอนวอร์มเตา (Warm Up)",
+            "type": "Policy",
+            "root": false
+          },
+          "cmd_step_ignite": {
+            "title": "จุดถ่านไม้ก้อนธรรมชาติ",
+            "desc": "จุดถ่านไม้ก้อนธรรมชาติ",
+            "type": "Command"
+          },
+          "evt_evt_coals_lit": {
+            "title": "ถ่านติดไฟพร้อมใช้งาน",
+            "desc": "ถ่านคุแดงเริ่มปล่อยความร้อน",
+            "type": "Event"
+          },
+          "pol_step_indirect_setup": {
+            "title": "จัดระบบความร้อนทางอ้อม (Setup Indirect)",
+            "desc": "จัดระบบความร้อนทางอ้อม (Setup Indirect)",
+            "type": "Policy",
+            "root": false
+          },
+          "cmd_step_indirect_setup": {
+            "title": "ใส่แผ่น Deflector และหรี่วาล์วลม 110°C",
+            "desc": "ใส่แผ่น Deflector และหรี่วาล์วลม 110°C",
+            "type": "Command"
+          },
+          "evt_evt_temp_stabilized": {
+            "title": "อุณหภูมิเตาคงที่ 110°C",
+            "desc": "ความร้อน Convection ไหลเวียนทั่วถึง",
+            "type": "Event"
+          },
+          "pol_step_insert_probe": {
+            "title": "ติดตามความสุกของแกนกลางเนื้อ (Monitor Core Temp)",
+            "desc": "ติดตามความสุกของแกนกลางเนื้อ (Monitor Core Temp)",
+            "type": "Policy",
+            "root": false
+          },
+          "cmd_step_insert_probe": {
+            "title": "เสียบโพรบและวางเนื้อลงอบ",
+            "desc": "เสียบโพรบและวางเนื้อลงอบ",
+            "type": "Command"
+          },
+          "evt_evt_probe_reading": {
+            "title": "อ่านค่าอุณหภูมิแกนกลางต่อเนื่อง",
+            "desc": "ความร้อนซึมเข้าสู่ใจกลางเนื้ออย่างนุ่มนวล",
+            "type": "Event"
+          },
+          "pol_step_reach_internal": {
+            "title": "เมื่อแกนกลางถึง 48°C สั่งเร่งไฟ (Trigger High Sear)",
+            "desc": "เมื่อแกนกลางถึง 48°C สั่งเร่งไฟ (Trigger High Sear)",
+            "type": "Policy",
+            "root": false
+          },
+          "cmd_step_reach_internal": {
+            "title": "นำเนื้อออกพักชั่วคราวและเปิดวาล์วเร่งไฟ 350°C",
+            "desc": "นำเนื้อออกพักชั่วคราวและเปิดวาล์วเร่งไฟ 350°C",
+            "type": "Command"
+          },
+          "deflector_unit2": {
+            "title": "ระบบควบคุมลมและแผ่นหิน (Deflector & Vents)",
+            "desc": "ควบคุมอุณหภูมิ Convection และการไหลเวียนของออกซิเจน",
+            "type": "Aggregate"
+          },
+          "evt_evt_sear_ready": {
+            "title": "เตาร้อนจัด 350°C พร้อม Sear",
+            "desc": "ตะแกรงเหล็กหล่อสะสมความร้อนเต็มที่",
+            "type": "Event"
+          },
+          "pol_step_cast_iron_sear": {
+            "title": "สร้างปฏิกิริยาเมลลาร์ด (Maillard Reaction)",
+            "desc": "สร้างปฏิกิริยาเมลลาร์ด (Maillard Reaction)",
+            "type": "Policy",
+            "root": false
+          },
+          "cmd_step_cast_iron_sear": {
+            "title": "วางเนื้อ Sear บนตะแกรงเหล็กหล่อด้านละ 60 วินาที",
+            "desc": "วางเนื้อ Sear บนตะแกรงเหล็กหล่อด้านละ 60 วินาที",
+            "type": "Command"
+          },
+          "evt_evt_crust_formed": {
+            "title": "ได้ Crust สีน้ำตาลทองกรอบหอม",
+            "desc": "ผิวนอกเกรียมหอมโดยเนื้อในยังคงนุ่มสีชมพู",
+            "type": "Event"
+          },
+          "pol_step_rest_and_serve": {
+            "title": "ปรับสมดุลของเหลวในเนื้อ (Equilibrate Juices)",
+            "desc": "ปรับสมดุลของเหลวในเนื้อ (Equilibrate Juices)",
+            "type": "Policy",
+            "root": false
+          },
+          "cmd_step_rest_and_serve": {
+            "title": "พักเนื้อ 8 นาทีและสไลซ์พร้อมเสิร์ฟ",
+            "desc": "พักเนื้อ 8 นาทีและสไลซ์พร้อมเสิร์ฟ",
+            "type": "Command"
+          },
+          "evt_evt_steak_served": {
+            "title": "สเต๊กสมบูรณ์แบบพร้อมรับประทาน",
+            "desc": "เนื้อชุ่มฉ่ำไร้ขอบเทาสุกระดับ Medium Rare",
+            "type": "Event"
+          }
+        },
+        "relations": [
+          {
+            "id": "r1",
+            "from": "pitmaster",
+            "to": "pol_step_ignite",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r2",
+            "from": "pol_step_ignite",
+            "to": "cmd_step_ignite",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r3",
+            "from": "cmd_step_ignite",
+            "to": "firebox",
+            "handledBy": true,
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r4",
+            "from": "firebox",
+            "to": "evt_evt_coals_lit",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r5",
+            "from": "evt_evt_coals_lit",
+            "to": "pol_step_indirect_setup",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r6",
+            "from": "pol_step_indirect_setup",
+            "to": "cmd_step_indirect_setup",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r7",
+            "from": "cmd_step_indirect_setup",
+            "to": "deflector_unit",
+            "handledBy": true,
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r8",
+            "from": "deflector_unit",
+            "to": "evt_evt_temp_stabilized",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r9",
+            "from": "evt_evt_temp_stabilized",
+            "to": "pol_step_insert_probe",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r10",
+            "from": "pol_step_insert_probe",
+            "to": "cmd_step_insert_probe",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r11",
+            "from": "cmd_step_insert_probe",
+            "to": "meat_probe",
+            "handledBy": true,
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r12",
+            "from": "meat_probe",
+            "to": "evt_evt_probe_reading",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r13",
+            "from": "evt_evt_probe_reading",
+            "to": "pol_step_reach_internal",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r14",
+            "from": "pol_step_reach_internal",
+            "to": "cmd_step_reach_internal",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r15",
+            "from": "cmd_step_reach_internal",
+            "to": "deflector_unit2",
+            "handledBy": true,
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r16",
+            "from": "deflector_unit2",
+            "to": "evt_evt_sear_ready",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r17",
+            "from": "evt_evt_sear_ready",
+            "to": "pol_step_cast_iron_sear",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r18",
+            "from": "pol_step_cast_iron_sear",
+            "to": "cmd_step_cast_iron_sear",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r19",
+            "from": "cmd_step_cast_iron_sear",
+            "to": "searing_grate",
+            "handledBy": true,
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r20",
+            "from": "searing_grate",
+            "to": "evt_evt_crust_formed",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r21",
+            "from": "evt_evt_crust_formed",
+            "to": "pol_step_rest_and_serve",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r22",
+            "from": "pol_step_rest_and_serve",
+            "to": "cmd_step_rest_and_serve",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r23",
+            "from": "cmd_step_rest_and_serve",
+            "to": "resting_board",
+            "handledBy": true,
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r24",
+            "from": "resting_board",
+            "to": "evt_evt_steak_served",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          }
+        ],
+        "journeys": [
+          {
+            "id": "journey_reverse_sear",
+            "label": "เส้นทางการทำ Reverse Sear สเต๊กเนื้อพรีเมียม (Happy Path)",
+            "description": "ขั้นตอนตั้งแต่การจุดเตา อบไฟอ่อนทางอ้อม ไปจนถึงการ Sear เปลวไฟแรงสูงและการพักเนื้อ",
+            "steps": [
+              {
+                "nodeIds": [
+                  "pitmaster",
+                  "pol_step_ignite",
+                  "cmd_step_ignite",
+                  "firebox",
+                  "evt_evt_coals_lit"
+                ],
+                "title": "จุดถ่านไม้ธรรมชาติ",
+                "reason": "จุดถ่านไม้ธรรมชาติให้คุแดงสม่ำเสมอใน Firebox",
+                "processGroup": "ignition"
+              },
+              {
+                "nodeIds": [
+                  "pol_step_indirect_setup",
+                  "cmd_step_indirect_setup",
+                  "deflector_unit",
+                  "evt_evt_temp_stabilized"
+                ],
+                "title": "ติดตั้ง Heat Deflector",
+                "reason": "ติดตั้งแผ่น Heat Deflector และปรับวาล์วเพื่อคุมอุณหภูมิคงที่ 110°C",
+                "processGroup": "indirect_bake"
+              },
+              {
+                "nodeIds": [
+                  "pol_step_insert_probe",
+                  "cmd_step_insert_probe",
+                  "meat_probe",
+                  "evt_evt_probe_reading"
+                ],
+                "title": "เสียบโพรบและเริ่มอบ",
+                "reason": "เสียบโพรบดิจิทัลเพื่อเฝ้าดูอุณหภูมิแกนกลางเนื้อวัว",
+                "processGroup": "indirect_bake"
+              },
+              {
+                "nodeIds": [
+                  "pol_step_reach_internal",
+                  "cmd_step_reach_internal",
+                  "deflector_unit2",
+                  "evt_evt_sear_ready"
+                ],
+                "title": "เร่งไฟ 350°C",
+                "reason": "ยกเนื้อออกมาพัก ถอดแผ่น Deflector และเปิดวาล์วเร่งไฟ 350°C",
+                "processGroup": "sear_prep"
+              },
+              {
+                "nodeIds": [
+                  "pol_step_cast_iron_sear",
+                  "cmd_step_cast_iron_sear",
+                  "searing_grate",
+                  "evt_evt_crust_formed"
+                ],
+                "title": "Sear บนตะแกรงเหล็กหล่อ",
+                "reason": "Sear เนื้อบนตะแกรงเหล็กหล่อด้านละ 60 วินาทีเพื่อเกิดปฏิกิริยา Maillard",
+                "processGroup": "searing"
+              },
+              {
+                "nodeIds": [
+                  "pol_step_rest_and_serve",
+                  "cmd_step_rest_and_serve",
+                  "resting_board",
+                  "evt_evt_steak_served"
+                ],
+                "title": "พักเนื้อและจัดเสิร์ฟ",
+                "reason": "พักเนื้อ 8 นาทีเพื่อให้น้ำในเนื้อกระจายตัวทั่วถึงก่อนหั่นเสิร์ฟ",
+                "processGroup": "serving"
+              }
+            ]
+          }
+        ],
+        "rawSteps": [
+          {
+            "type": "linear",
+            "id": "step_ignite",
+            "initiatedBy": {
+              "_tag": "ref",
+              "id": "pitmaster"
+            },
+            "policy": "เริ่มขั้นตอนวอร์มเตา (Warm Up)",
+            "command": "จุดถ่านไม้ก้อนธรรมชาติ",
+            "handledBy": {
+              "_tag": "ref",
+              "id": "firebox"
+            },
+            "resultEvents": [
+              {
+                "id": "evt_coals_lit",
+                "title": "ถ่านติดไฟพร้อมใช้งาน",
+                "desc": "ถ่านคุแดงเริ่มปล่อยความร้อน"
+              }
+            ],
+            "continuesAs": "step_indirect_setup"
+          },
+          {
+            "type": "linear",
+            "id": "step_indirect_setup",
+            "policy": "จัดระบบความร้อนทางอ้อม (Setup Indirect)",
+            "command": "ใส่แผ่น Deflector และหรี่วาล์วลม 110°C",
+            "handledBy": {
+              "_tag": "ref",
+              "id": "deflector_unit"
+            },
+            "resultEvents": [
+              {
+                "id": "evt_temp_stabilized",
+                "title": "อุณหภูมิเตาคงที่ 110°C",
+                "desc": "ความร้อน Convection ไหลเวียนทั่วถึง"
+              }
+            ],
+            "continuesAs": "step_insert_probe"
+          },
+          {
+            "type": "linear",
+            "id": "step_insert_probe",
+            "policy": "ติดตามความสุกของแกนกลางเนื้อ (Monitor Core Temp)",
+            "command": "เสียบโพรบและวางเนื้อลงอบ",
+            "handledBy": {
+              "_tag": "ref",
+              "id": "meat_probe"
+            },
+            "resultEvents": [
+              {
+                "id": "evt_probe_reading",
+                "title": "อ่านค่าอุณหภูมิแกนกลางต่อเนื่อง",
+                "desc": "ความร้อนซึมเข้าสู่ใจกลางเนื้ออย่างนุ่มนวล"
+              }
+            ],
+            "continuesAs": "step_reach_internal"
+          },
+          {
+            "type": "linear",
+            "id": "step_reach_internal",
+            "policy": "เมื่อแกนกลางถึง 48°C สั่งเร่งไฟ (Trigger High Sear)",
+            "command": "นำเนื้อออกพักชั่วคราวและเปิดวาล์วเร่งไฟ 350°C",
+            "handledBy": {
+              "_tag": "ref",
+              "id": "deflector_unit"
+            },
+            "resultEvents": [
+              {
+                "id": "evt_sear_ready",
+                "title": "เตาร้อนจัด 350°C พร้อม Sear",
+                "desc": "ตะแกรงเหล็กหล่อสะสมความร้อนเต็มที่"
+              }
+            ],
+            "continuesAs": "step_cast_iron_sear"
+          },
+          {
+            "type": "linear",
+            "id": "step_cast_iron_sear",
+            "policy": "สร้างปฏิกิริยาเมลลาร์ด (Maillard Reaction)",
+            "command": "วางเนื้อ Sear บนตะแกรงเหล็กหล่อด้านละ 60 วินาที",
+            "handledBy": {
+              "_tag": "ref",
+              "id": "searing_grate"
+            },
+            "resultEvents": [
+              {
+                "id": "evt_crust_formed",
+                "title": "ได้ Crust สีน้ำตาลทองกรอบหอม",
+                "desc": "ผิวนอกเกรียมหอมโดยเนื้อในยังคงนุ่มสีชมพู"
+              }
+            ],
+            "continuesAs": "step_rest_and_serve"
+          },
+          {
+            "type": "linear",
+            "id": "step_rest_and_serve",
+            "policy": "ปรับสมดุลของเหลวในเนื้อ (Equilibrate Juices)",
+            "command": "พักเนื้อ 8 นาทีและสไลซ์พร้อมเสิร์ฟ",
+            "handledBy": {
+              "_tag": "ref",
+              "id": "resting_board"
+            },
+            "resultEvents": [
+              {
+                "id": "evt_steak_served",
+                "title": "สเต๊กสมบูรณ์แบบพร้อมรับประทาน",
+                "desc": "เนื้อชุ่มฉ่ำไร้ขอบเทาสุกระดับ Medium Rare"
+              }
+            ]
+          }
+        ]
+      }
+    }
+  },
+  {
+    "folder": "concept-map",
+    "type": "concept-map",
+    "props": {
+      "title": "แผนผังวิทยาศาสตร์อาหารและอุณหพลศาสตร์เตา Kamado",
+      "nodes": {
+        "ceramic_mass": {
+          "id": "ceramic_mass",
+          "title": "Ceramic Thermal Mass (มวลความร้อนเซรามิก)",
+          "category": "mechanism"
+        },
+        "airflow_control": {
+          "id": "airflow_control",
+          "title": "Airflow Vent Control (การควบคุมวาล์วลม)",
+          "category": "mechanism"
+        },
+        "heat_deflector": {
+          "id": "heat_deflector",
+          "title": "Heat Deflector (แผ่นหินกระจายความร้อน)",
+          "category": "system"
+        },
+        "moisture_retention": {
+          "id": "moisture_retention",
+          "title": "Moisture Retention (การรักษาความฉ่ำในเนื้อ)",
+          "category": "concept"
+        },
+        "maillard_reaction": {
+          "id": "maillard_reaction",
+          "title": "Maillard Reaction (ปฏิกิริยาเกิดเปลือกกรอบสีน้ำตาล)",
+          "category": "process"
+        },
+        "wood_smoke": {
+          "id": "wood_smoke",
+          "title": "Wood Smoke Flavors (สารหอมระเหยจากควันไม้)",
+          "category": "data"
+        },
+        "internal_temp": {
+          "id": "internal_temp",
+          "title": "Internal Core Temp (อุณหภูมิแกนกลางเนื้อ)",
+          "category": "data"
+        },
+        "carryover_cooking": {
+          "id": "carryover_cooking",
+          "title": "Carryover Cooking (ความร้อนแฝงขณะพักเนื้อ)",
+          "category": "process"
+        },
+        "reverse_sear": {
+          "id": "reverse_sear",
+          "title": "Reverse Sear Process (กระบวนการย่างย้อนศร)",
+          "category": "pattern"
+        },
+        "perfect_steak": {
+          "id": "perfect_steak",
+          "title": "Edge-to-Edge Pink Steak (สเต๊กสมบูรณ์แบบไร้ขอบเทา)",
+          "category": "concept"
+        }
+      },
+      "edges": [
+        {
+          "from": "ceramic_mass",
+          "to": "airflow_control",
+          "label": "ลดปริมาณลมดูดผ่านเตา"
+        },
+        {
+          "from": "ceramic_mass",
+          "to": "moisture_retention",
+          "label": "ป้องกันเนื้อแห้งกระด้าง"
+        },
+        {
+          "from": "airflow_control",
+          "to": "heat_deflector",
+          "label": "สร้างกระแสลม Convection"
+        },
+        {
+          "from": "heat_deflector",
+          "to": "reverse_sear",
+          "label": "เปิดใช้งานการอบไฟอ่อนทางอ้อม"
+        },
+        {
+          "from": "reverse_sear",
+          "to": "internal_temp",
+          "label": "ควบคุมความสุกระดับ Rare/Med-Rare"
+        },
+        {
+          "from": "reverse_sear",
+          "to": "maillard_reaction",
+          "label": "สร้างเปลือก Crust ในขั้นตอน Sear"
+        },
+        {
+          "from": "maillard_reaction",
+          "to": "perfect_steak",
+          "label": "ให้กลิ่นหอมและรสชาติอูมามิ"
+        },
+        {
+          "from": "wood_smoke",
+          "to": "perfect_steak",
+          "label": "เคลือบผิวนอกด้วยกลิ่นหอม Guaiacol"
+        },
+        {
+          "from": "internal_temp",
+          "to": "carryover_cooking",
+          "label": "อุณหภูมิเพิ่มขึ้นอีก 2-3°C ช่วงพักเนื้อ"
+        },
+        {
+          "from": "carryover_cooking",
+          "to": "perfect_steak",
+          "label": "กระจายน้ำในเนื้อให้ชุ่มฉ่ำสม่ำเสมอ"
+        },
+        {
+          "from": "moisture_retention",
+          "to": "perfect_steak",
+          "label": "คงเนื้อสัมผัสนุ่มละมุน"
+        }
+      ]
+    }
+  },
+  {
+    "folder": "reflection-template",
+    "type": "reflection-template",
+    "props": {
+      "title": "สังเคราะห์หลักการความร้อนและความฉ่ำของเนื้อ",
+      "challenges": [
+        {
+          "prompt": "ลากคำศัพท์วิทยาศาสตร์อาหารลงในช่องว่างเพื่อสังเคราะห์ความสัมพันธ์ของเตาเซรามิกกับความชุ่มฉ่ำของเนื้อสเต๊ก:",
+          "template": "เตา Kamado มีคุณสมบัติ {zone-1} สูง ทำให้ใช้กระแสลมผ่านเตาน้อย จึงเกิด {zone-2} สูงกว่าเตาเหล็กทั่วไป เมื่อนำเนื้อที่ผ่านการอบทางอ้อมมา Sear ไฟแรง จะเกิด {zone-3} ที่ผิวสร้างความกรอบหอม และเมื่อนำเนื้อขึ้นมาพักจะเกิด {zone-4} ที่ทำให้อุณหภูมิแกนกลางเพิ่มขึ้นอีกเล็กน้อยจนได้ความสุกสมบูรณ์แบบ",
+          "chips": [
+            {
+              "id": "chip-thermal-mass",
+              "text": "Ceramic Thermal Mass"
+            },
+            {
+              "id": "chip-moisture",
+              "text": "Moisture Retention"
+            },
+            {
+              "id": "chip-maillard",
+              "text": "Maillard Reaction"
+            },
+            {
+              "id": "chip-carryover",
+              "text": "Carryover Cooking"
+            },
+            {
+              "id": "chip-flareup",
+              "text": "Direct Flare-up"
+            },
+            {
+              "id": "chip-greyband",
+              "text": "Grey Band"
+            }
+          ],
+          "solution": {
+            "zone-1": "chip-thermal-mass",
+            "zone-2": "chip-moisture",
+            "zone-3": "chip-maillard",
+            "zone-4": "chip-carryover"
+          },
+          "explanation": "<strong>ยอดเยี่ยมมาก!</strong> เตาเซรามิกกักเก็บความร้อนสูงและแผ่รังสีสม่ำเสมอ จึงไม่จำเป็นต้องดึงลมเข้าเตาปริมาณมหาศาลเหมือนเตาเหล็ก ช่วยรักษาความชื้น (Moisture Retention) ในเนื้อได้สูงสุด เมื่อผสานกับ Maillard Reaction และ Carryover Cooking จึงได้สเต๊กที่ฉ่ำและกรอบนอกนุ่มในอย่างไร้ที่ติ"
+        }
+      ]
+    }
+  },
+  {
+    "folder": "tradeoffs",
+    "type": "tradeoff-sandbox",
+    "props": {
+      "title": "การเลือกถ่านและไม้รมควัน (Fuel & Smoke Trade-offs)",
+      "scenarios": [
+        {
+          "id": "fuel-choice",
+          "title": "การเลือกชนิดเชื้อเพลิงสำหรับเตา Kamado (Fuel Selection)",
+          "description": "ประเมินและเลือกประเภทถ่านที่เหมาะสมกับการย่างเนื้อวัวและการรักษาสภาพเตาเซรามิก",
+          "metrics": [
+            {
+              "id": "heat_output",
+              "label": "พลังความร้อนสูงสุด (Max Heat Output)",
+              "baseValue": 50,
+              "min": 0,
+              "max": 100,
+              "direction": "higher"
+            },
+            {
+              "id": "burn_duration",
+              "label": "ระยะเวลาติดไฟต่อเนื่อง (Burn Duration)",
+              "baseValue": 50,
+              "min": 0,
+              "max": 100,
+              "direction": "higher"
+            },
+            {
+              "id": "ash_cleanliness",
+              "label": "ความสะอาดและขี้เผ่าน้อย (Low Ash / Clean Airflow)",
+              "baseValue": 50,
+              "min": 0,
+              "max": 100,
+              "direction": "higher"
+            },
+            {
+              "id": "flavor_purity",
+              "label": "ความบริสุทธิ์ของกลิ่นรส (Flavor Purity)",
+              "baseValue": 50,
+              "min": 0,
+              "max": 100,
+              "direction": "higher"
+            }
+          ],
+          "steps": [
+            {
+              "id": "charcoal_type",
+              "title": "ประเภทถ่าน (Charcoal Medium)",
+              "description": "เลือกชนิดถ่านที่จะนำมาเป็นเชื้อเพลิงหลักในเตา Kamado",
+              "recommended": "lump_hardwood",
+              "choices": [
+                {
+                  "id": "lump_hardwood",
+                  "label": "ถ่านไม้เนื้อแข็งธรรมชาติ (Natural Hardwood Lump Charcoal)",
+                  "description": "ไม้ธรรมชาติ 100% เผาไร้ออกซิเจน ชิ้นใหญ่ ไร้สารเคมีประสาน",
+                  "metrics": {
+                    "heat_output": 25,
+                    "burn_duration": 15,
+                    "ash_cleanliness": 20,
+                    "flavor_purity": 25
+                  },
+                  "pros": [
+                    {
+                      "title": "เร่งอุณหภูมิได้สูงมาก",
+                      "description": "ทำความร้อนแตะ 350-400°C สำหรับ Sear สเต๊กได้อย่างรวดเร็ว"
+                    },
+                    {
+                      "title": "ขี้เผ่าน้อยมาก",
+                      "description": "ไม่ทำให้ช่องลมล่างอุดตัน รักษากระแสลมได้อย่างยอดเยี่ยม"
+                    }
+                  ],
+                  "cons": [
+                    {
+                      "title": "ขนาดชิ้นไม่สม่ำเสมอ",
+                      "description": "ต้องเรียงก้อนใหญ่ไว้ด้านล่าง ก้อนเล็กไว้ด้านบน"
+                    }
+                  ],
+                  "whyThisFits": "เตาเซรามิกต้องการถ่านที่ขี้เผ่าน้อยและไร้สารเคมี ถ่านไม้ก้อนธรรมชาติคือตัวเลือกมาตรฐานสากลอันดับ 1 ของเตา Kamado"
+                },
+                {
+                  "id": "charcoal_briquettes",
+                  "label": "ถ่านอัดก้อนมาตรฐาน (Standard Briquettes)",
+                  "description": "ผงถ่านผสมแป้งข้าวโพดหรือสารเคมีประสานอัดขึ้นรูปเป็นก้อนกลมสี่เหลี่ยม",
+                  "metrics": {
+                    "heat_output": -10,
+                    "burn_duration": 10,
+                    "ash_cleanliness": -25,
+                    "flavor_purity": -20
+                  },
+                  "pros": [
+                    {
+                      "title": "ขนาดก้อนเท่ากันสม่ำเสมอ",
+                      "description": "เผาไหม้ในอัตราคงที่ คาดเดาเวลาง่าย"
+                    }
+                  ],
+                  "cons": [
+                    {
+                      "title": "ขี้เถ้ามหาศาล",
+                      "description": "ขี้เถ้าจะร่วงลงมาอุดตันช่องลมก้นเตาอย่างรวดเร็ว ทำให้อุณหภูมิตก"
+                    },
+                    {
+                      "title": "กลิ่นสารเคมีประสาน",
+                      "description": "กลิ่นแป้งประสานจะซึมเข้าผนังเซรามิกและรบกวนรสชาติเนื้อวัว"
+                    }
+                  ],
+                  "whenToUse": "เหมาะกับเตาเหล็กเปิดฝาทั่วไป ไม่แนะนำอย่างยิ่งสำหรับเตาเซรามิก Kamado"
+                },
+                {
+                  "id": "binchotan_charcoal",
+                  "label": "ถ่านขาวบินโชตัน (White Charcoal / Binchotan)",
+                  "description": "ถ่านไม้โอ๊คญี่ปุ่นเผาอุณหภูมิสูงพิเศษ 1000°C แข็งแกร่งดั่งโลหะ",
+                  "metrics": {
+                    "heat_output": 30,
+                    "burn_duration": 30,
+                    "ash_cleanliness": 25,
+                    "flavor_purity": 30
+                  },
+                  "pros": [
+                    {
+                      "title": "ความร้อนอินฟราเรดบริสุทธิ์สูงมาก",
+                      "description": "ไร้ควัน ไร้กลิ่น ให้ความร้อนสม่ำเสมอยาวนานหลายชั่วโมง"
+                    }
+                  ],
+                  "cons": [
+                    {
+                      "title": "จุดติดไฟยากมาก",
+                      "description": "ต้องใช้หัวพ่นแก๊สหรือปล่องจุดถ่านพิเศษนานกว่า 20-30 นาที"
+                    },
+                    {
+                      "title": "ราคาสูงมาก",
+                      "description": "เหมาะสำหรับโอกาสพิเศษหรืองานยากินิกุระดับพรีเมียม"
+                    }
+                  ],
+                  "whenToUse": "ใช้เมื่อต้องการย่างแบบยากินิกุหรือ Caveman สเต๊กที่ต้องการความบริสุทธิ์ของความร้อนสูงสุด"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "wood-flavor",
+          "title": "การจับคู่ไม้รมควันกับเนื้อวัว (Wood Chunks Selection)",
+          "description": "เลือกท่อนไม้รมควัน (Wood Chunks) เพื่อสร้างโปรไฟล์กลิ่นและรสชาติที่ส่งเสริมเนื้อวัวอย่างลงตัว",
+          "metrics": [
+            {
+              "id": "smoke_intensity",
+              "label": "ความเข้มข้นของกลิ่นควัน (Smoke Boldness)",
+              "baseValue": 50,
+              "min": 0,
+              "max": 100,
+              "direction": "higher"
+            },
+            {
+              "id": "sweetness_balance",
+              "label": "ความกลมกล่อมอมหวาน (Sweetness Balance)",
+              "baseValue": 50,
+              "min": 0,
+              "max": 100,
+              "direction": "higher"
+            },
+            {
+              "id": "versatility",
+              "label": "ความเข้ากันได้กับเนื้อทุกส่วน (Versatility)",
+              "baseValue": 50,
+              "min": 0,
+              "max": 100,
+              "direction": "higher"
+            }
+          ],
+          "steps": [
+            {
+              "id": "wood_selection",
+              "title": "ชนิดไม้รมควัน (Wood Variety)",
+              "description": "เลือกไม้รมควันใส่ลงบนกองถ่าน 1-2 ท่อน (Wood Chunks ห้ามใช้ Wood Chips เพราะจะไหม้เร็วเกินไป)",
+              "recommended": "oak_post",
+              "choices": [
+                {
+                  "id": "oak_post",
+                  "label": "ไม้โอ๊ค (Post Oak / White Oak)",
+                  "description": "ราชาแห่งไม้รมควันสไตล์เท็กซัส กลิ่นควันสะอาด ละมุน หนักแน่นกำลังดี",
+                  "metrics": {
+                    "smoke_intensity": 15,
+                    "sweetness_balance": 15,
+                    "versatility": 30
+                  },
+                  "pros": [
+                    {
+                      "title": "กลิ่นควันกลมกล่อมคลาสสิก",
+                      "description": "ชูรสเนื้อวัวธรรมชาติโดยไม่บดบังรสชาติของไขมันและเกลือพริกไทย"
+                    },
+                    {
+                      "title": "ควันสะอาดติดไฟง่าย",
+                      "description": "ให้ควันสีฟ้าใส (Thin Blue Smoke) ได้ง่าย"
+                    }
+                  ],
+                  "cons": [
+                    {
+                      "title": "กลิ่นอาจไม่หวือหวา",
+                      "description": "เน้นความเรียบหรูและสมดุลมากกว่ากลิ่นหวานจัด"
+                    }
+                  ],
+                  "whyThisFits": "ไม้โอ๊คคือมาตรฐานทองคำของการย่างและรมควันเนื้อวัว เข้าได้กับทั้ง Reverse Sear สเต๊ก และ Brisket"
+                },
+                {
+                  "id": "hickory_wood",
+                  "label": "ไม้ฮิคคอรี่ (Hickory)",
+                  "description": "กลิ่นควันสไตล์เบคอน เข้มข้น ฉุนหนักแน่นแบบดั้งเดิมของอเมริกาใต้",
+                  "metrics": {
+                    "smoke_intensity": 30,
+                    "sweetness_balance": 5,
+                    "versatility": 10
+                  },
+                  "pros": [
+                    {
+                      "title": "กลิ่นหอมรมควันทรงพลัง",
+                      "description": "สร้างกลิ่นแบบบาร์บีคิวขนานแท้ ชัดเจนแม้ใช้เพียงท่อนเดียว"
+                    }
+                  ],
+                  "cons": [
+                    {
+                      "title": "เสี่ยงกลิ่นฉุนเกินไป",
+                      "description": "หากใส่มากเกินไป กลิ่นอาจกลบรสชาติเนื้อพรีเมียมและทำให้มีรสขมฝาด"
+                    }
+                  ],
+                  "whenToUse": "เหมาะกับเนื้อส่วนที่มีไขมันแทรกและรสเข้ม เช่น Short Ribs และ Brisket"
+                },
+                {
+                  "id": "fruitwood_cherry",
+                  "label": "ไม้ผลเชอร์รี่ / แอปเปิ้ล (Cherry & Apple Wood)",
+                  "description": "กลิ่นควันหอมหวาน ผลไม้ นุ่มนวล ละเมียดละไม",
+                  "metrics": {
+                    "smoke_intensity": -10,
+                    "sweetness_balance": 25,
+                    "versatility": 15
+                  },
+                  "pros": [
+                    {
+                      "title": "สร้างสีผิวแดงสวยงาม (Mahogany Color)",
+                      "description": "ไม้เชอร์รี่ทำให้ผิวเปลือก Bark ของเนื้อมีสีแดงมะฮอกกานีสวยงามน่ารับประทาน"
+                    },
+                    {
+                      "title": "กลิ่นหวานละมุน",
+                      "description": "ไม่ฉุน เหมาะสำหรับผู้ที่ไม่ชอบควันหนัก"
+                    }
+                  ],
+                  "cons": [
+                    {
+                      "title": "กลิ่นอาจเบาไปสำหรับเนื้อรสเข้ม",
+                      "description": "หากใช้กับเนื้อชิ้นหนามาก กลิ่นควันอาจไม่ซึมลึกเท่าโอ๊ค"
+                    }
+                  ],
+                  "whenToUse": "เหมาะสำหรับสเต๊ก Ribeye แบบ Reverse Sear สั้นๆ หรือผสมคู่กับไม้โอ๊ค"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "folder": "formula-sandbox",
+    "type": "formula-sandbox",
+    "props": {
+      "title": "เครื่องคำนวณเวลาและอุณหภูมิสเต๊ก Reverse Sear",
+      "variables": [
+        {
+          "id": "thickness_cm",
+          "label": "ความหนาของเนื้อสเต๊ก (cm)",
+          "min": 2,
+          "max": 8,
+          "step": 0.5,
+          "defaultValue": 4
+        },
+        {
+          "id": "oven_temp_c",
+          "label": "อุณหภูมิเตาอบทางอ้อม (°C)",
+          "min": 95,
+          "max": 135,
+          "step": 5,
+          "defaultValue": 110
+        },
+        {
+          "id": "target_doneness_level",
+          "label": "ระดับความสุก (1=Rare, 2=Med-Rare, 3=Med, 4=Med-Well)",
+          "min": 1,
+          "max": 4,
+          "step": 1,
+          "defaultValue": 2
+        }
+      ],
+      "metrics": [
+        {
+          "id": "pull_temp_c",
+          "label": "อุณหภูมิแกนกลางที่ต้องยกเนื้อออกเพื่อเตรียม Sear (°C)",
+          "formula": "Math.round((46 + (target_doneness_level * 4)) - 4)",
+          "description": "อุณหภูมิที่อ่านได้จาก Meat Probe ในช่วงจบการอบทางอ้อม โดยต้องยกออกก่อนถึงความสุกจริง 3-4°C เพื่อเผื่อความร้อนที่จะเพิ่มขึ้นตอน Sear และ Rest",
+          "analogy": "เหมือนการเหยียบเบรกรถก่อนถึงไฟแดงเพื่อไม่ให้ล้ำเส้น",
+          "inScope": [
+            "การยกเนื้อออกมาพักชั่วคราวเพื่อรอเตาเร่งอุณหภูมิ Sear",
+            "การป้องกันไม่ให้เนื้อสุกเกินระดับเป้าหมาย"
+          ],
+          "outOfScope": [
+            "การย่างสเต๊กบางที่สุกเร็วเกินกว่าจะวัดอุณหภูมิช่วงอบได้"
+          ]
+        },
+        {
+          "id": "target_internal_temp_c",
+          "label": "อุณหภูมิแกนกลางสุดท้ายหลังพักเนื้อ (°C)",
+          "formula": "Math.round(46 + (target_doneness_level * 4))",
+          "description": "อุณหภูมิสุดท้ายของใจกลางเนื้อหลังผ่านการ Sear และกระบวนการ Carryover Cooking ในช่วงพักเนื้อ (Medium Rare อยู่ที่ประมาณ 54°C)",
+          "analogy": "เหมือนเป้าหมายปลายทางที่รถจะหยุดนิ่งพอดี",
+          "inScope": [
+            "การวัดความสุกด้วยโพรบดิจิทัลมาตรฐานสากล"
+          ],
+          "outOfScope": [
+            "การใช้นิ้วกดกะความสุกแบบดั้งเดิมซึ่งไม่แม่นยำสำหรับเนื้อชิ้นหนา"
+          ]
+        },
+        {
+          "id": "indirect_time_min",
+          "label": "เวลาอบทางอ้อมโดยประมาณ (นาที)",
+          "formula": "Math.round((thickness_cm * 12) * (110 / oven_temp_c) * (0.8 + (target_doneness_level * 0.15)))",
+          "description": "ระยะเวลาที่เนื้อต้องอยู่ในเตาช่วงอุณหภูมิ 105-120°C เพื่อให้ความร้อนค่อยๆ ซึมเข้าสู่ใจกลางเนื้ออย่างนุ่มนวล",
+          "analogy": "เหมือนเวลาในการแช่ออนเซ็นให้น้ำอุ่นซึมลึกถึงกล้ามเนื้อ",
+          "inScope": [
+            "การคำนวณเวลาเบื้องต้นเพื่อเตรียมตารางการทำอาหาร"
+          ],
+          "outOfScope": [
+            "การยึดเวลาเป็นตัวตัดสินความสุกแทนการดูอุณหภูมิโพรบจริง"
+          ]
+        },
+        {
+          "id": "resting_time_min",
+          "label": "เวลาพักเนื้อที่แนะนำ (นาที)",
+          "formula": "Math.max(5, Math.round(thickness_cm * 2))",
+          "description": "ระยะเวลาวางพักเนื้อหลัง Sear เพื่อให้เส้นใยกล้ามเนื้อคลายตัวและดูดซับของเหลวกลับเข้าสู่เซลล์",
+          "analogy": "เหมือนการให้ฟองน้ำดูดน้ำกลับคืนหลังจากถูกบีบด้วยความร้อน",
+          "inScope": [
+            "การวางพักบนตะแกรงโปร่งในที่อุณหภูมิห้อง"
+          ],
+          "outOfScope": [
+            "การหั่นเนื้อทันทีที่ยกออกจากเตา (จะทำให้น้ำเนื้อไหลทะลักสูญเสียความฉ่ำ)"
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "folder": "scenario",
+    "type": "scenario",
+    "props": {
+      "title": "วิกฤตความร้อนเตาพุ่งเกิน (The Runaway Temperature Crisis)",
+      "id": "overheat-crisis",
+      "intro": "คุณกำลังเตรียมย่าง Tomahawk หนา 2.5 นิ้วด้วยวิธี Reverse Sear ที่ต้องการอุณหภูมิ 110°C แต่เผลอเปิดวาล์วทิ้งไว้จนกลับมาดูอีกที เข็มวัดความร้อนพุ่งทะลุ 230°C และมวลเซรามิกกำลังดูดซับความร้อนมหาศาล!",
+      "nodes": {
+        "start": {
+          "id": "start",
+          "prompt": "อุณหภูมิเตาพุ่งไปที่ 230°C ในขณะที่คุณยังไม่ได้ใส่เนื้อ คุณจะตัดสินใจทำสิ่งใดเป็นอันดับแรก?",
+          "choices": [
+            {
+              "id": "choke_vents_wait",
+              "text": "หรี่วาล์วล่างเหลือ 2 มม. และวาล์วบนเกือบปิดสนิทเพื่อตัดออกซิเจน รอให้ความร้อนเซรามิกค่อยๆ ถ่ายเทลงมา",
+              "next": "outcome_choke_success"
+            },
+            {
+              "id": "open_dome_wide",
+              "text": "เปิดฝาครอบเซรามิกอ้าทิ้งไว้กว้างๆ เพื่อหวังให้ความร้อนระบายออกสู่อากาศภายนอกอย่างรวดเร็ว",
+              "next": "branch_open_dome"
+            },
+            {
+              "id": "spray_water_fire",
+              "text": "เปิดฝาแล้วนำฟ็อกกี้ฉีดน้ำใส่กองถ่านและแผ่นเซรามิกเพื่อดับความร้อนทันที",
+              "next": "outcome_water_disaster"
+            }
+          ]
+        },
+        "branch_open_dome": {
+          "id": "branch_open_dome",
+          "prompt": "เมื่อคุณเปิดฝาค้างไว้ ออกซิเจนปริมาณมหาศาลไหลกรูเข้าสู่กองถ่าน ทำให้ถ่านไม้ธรรมชาติลุกไหม้เป็นเปลวไฟสีส้มรุนแรง คุณจะแก้ไขอย่างไรต่อ?",
+          "choices": [
+            {
+              "id": "close_and_seal",
+              "text": "รีบปิดฝาลงทันที และปิดวาล์วล่างให้สนิทเพื่อตัดออกซิเจนก่อนที่เปลวไฟจะลาม",
+              "next": "outcome_late_seal"
+            },
+            {
+              "id": "put_meat_in",
+              "text": "ตัดสินใจใส่เนื้อลงไปย่างทันทีเพราะคิดว่าไหนๆ ไฟก็แรงแล้ว",
+              "next": "outcome_ruined_steak"
+            }
+          ]
+        },
+        "outcome_choke_success": {
+          "id": "outcome_choke_success",
+          "outcome": {
+            "verdict": "คุณควบคุมสถานการณ์ได้อย่างยอดเยี่ยมและเข้าใจธรรมชาติของมวลเซรามิก!",
+            "lesson": "เตา Kamado ควบคุมด้วยออกซิเจน การหรี่วาล์วเกือบสนิทจะทำให้กองถ่านสงบลง แม้เซรามิกจะคายความร้อนช้า (ใช้เวลา ~20-30 นาที) แต่จะทำให้อุณหภูมิกลับมาคงที่ 110°C ได้อย่างปลอดภัยโดยเนื้อไม่เสียหาย",
+            "rating": "a"
+          }
+        },
+        "outcome_late_seal": {
+          "id": "outcome_late_seal",
+          "outcome": {
+            "verdict": "กอบกู้ได้บางส่วน แต่เสียเวลาและเปลืองถ่านโดยไม่จำเป็น",
+            "lesson": "การเปิดฝาเตา Kamado ทิ้งไว้ไม่ได้ช่วยระบายความร้อน แต่เป็นการเติมเชื้อไฟให้ถ่านลุกแรงขึ้น เมื่อปิดฝาจึงต้องใช้เวลานานขึ้นเป็นสองเท่ากว่าเตาจะเย็นลง",
+            "rating": "b-plus"
+          }
+        },
+        "outcome_ruined_steak": {
+          "id": "outcome_ruined_steak",
+          "outcome": {
+            "verdict": "สเต๊ก Tomahawk ชิ้นหนาของคุณไหม้เกรียมด้านนอกแต่ด้านในยังดิบเย็นจัด",
+            "lesson": "การใส่เนื้อหนาลงในเตาที่ร้อนจัดโดยไม่มีการอบไฟอ่อนทางอ้อม จะทำลายโครงสร้างเนื้อ เกิด Grey Band หนาเตอะ และสูญเสียเนื้อพรีเมียมราคาแพง",
+            "rating": "c"
+          }
+        },
+        "outcome_water_disaster": {
+          "id": "outcome_water_disaster",
+          "outcome": {
+            "verdict": "หายนะ! เตาเซรามิกเกิดภาวะช็อกความร้อน (Thermal Shock) และขี้เถ้าฟุ้งกระจาย",
+            "lesson": "ห้ามฉีดน้ำหรือสาดน้ำลงในเตาเซรามิก Kamado ที่ร้อนจัดโดยเด็ดขาด เพราะความแตกต่างของอุณหภูมิจะทำให้เซรามิกแตกร้าวเสียหายถาวร และทำให้เถ้าถ่านฟุ้งติดเตา",
+            "rating": "c"
+          }
+        }
+      },
+      "startNode": "start"
+    }
+  },
+  {
+    "folder": "decision-tree",
+    "type": "decision-tree",
+    "props": {
+      "title": "Beef Cut Technique Advisor (ที่ปรึกษาการเลือกวิธีปรุงเนื้อวัว)",
+      "id": "beef-cut-advisor",
+      "root": "cut_nature",
+      "nodes": {
+        "cut_nature": {
+          "id": "cut_nature",
+          "prompt": "ชิ้นส่วนเนื้อที่คุณต้องการปรุงมีลักษณะโครงสร้างกล้ามเนื้อและคอลลาเจนแบบใด?",
+          "choices": [
+            {
+              "id": "tough_collagen",
+              "text": "เนื้อส่วนเหนียว มีพังผืดและคอลลาเจนสูง (เช่น Brisket, Short Ribs, Chuck Roast)",
+              "next": "rec_low_and_slow",
+              "rationale": "คอลลาเจนต้องการความร้อนต่ำและเวลาที่ยาวนานเพื่อละลายตัวเป็นเจลาติน"
+            },
+            {
+              "id": "tender_steak",
+              "text": "เนื้อสเต๊กพรีเมียม นุ่มตามธรรมชาติ (เช่น Ribeye, Striploin, Tenderloin, Picanha)",
+              "next": "steak_thickness",
+              "rationale": "เนื้อนุ่มธรรมชาติควรปรุงแบบสเต๊กโดยรักษาความฉ่ำและความสุกที่แม่นยำ",
+              "recommended": true
+            }
+          ]
+        },
+        "steak_thickness": {
+          "id": "steak_thickness",
+          "prompt": "สเต๊กชิ้นนี้มีความหนาเท่าใด?",
+          "choices": [
+            {
+              "id": "thick_cut",
+              "text": "ชิ้นหนาพิเศษ 1.5 นิ้วขึ้นไป (หรือติดกระดูก Tomahawk / Cowboy Steak)",
+              "next": "rec_reverse_sear",
+              "rationale": "เนื้อหนาเกิน 1.5 นิ้วหากย่างไฟตรงข้างในจะดิบและขอบจะเป็นสีเทา",
+              "recommended": true
+            },
+            {
+              "id": "thin_cut",
+              "text": "ชิ้นบางปานกลางถึงบาง ต่ำกว่า 1.2 นิ้ว (หรือเนื้อใบบัว Skirt / Flank Steak)",
+              "next": "rec_direct_sear",
+              "rationale": "เนื้อบางสุกเร็วมาก การใช้ไฟแรงโดยตรงระยะสั้นจะช่วยให้เกิด Crust ก่อนที่ข้างในจะสุกเกิน"
+            }
+          ]
+        },
+        "rec_low_and_slow": {
+          "id": "rec_low_and_slow",
+          "leaf": {
+            "recommendation": "ใช้เทคนิค Low & Slow Smoking (105-120°C เป็นเวลา 6-12 ชั่วโมง)",
+            "explanation": "ใส่แผ่น Heat Deflector เต็มแผ่น พร้อมท่อนไม้ Post Oak คุมอุณหภูมิให้นิ่งจนเส้นใยคอลลาเจนสลายตัวเป็นเจลาติน และเนื้อนุ่มจนฉีกได้ด้วยส้อม",
+            "tradeoffs": [
+              "ต้องใช้เวลาเตรียมนานและวางแผนล่วงหน้าหลายชั่วโมง",
+              "เปลืองถ่านและต้องเฝ้าดูความเสถียรของอุณหภูมิเป็นระยะ"
+            ]
+          }
+        },
+        "rec_reverse_sear": {
+          "id": "rec_reverse_sear",
+          "leaf": {
+            "recommendation": "ใช้เทคนิค Reverse Sear (อบ Indirect 110°C แล้ว Sear เตา 350°C)",
+            "explanation": "อบเนื้อด้วย Heat Deflector จน Internal Temp ถึง 48°C (สำหรับ Medium Rare) จากนั้นพักเนื้อ เร่งเตาเป็น 350°C แล้ว Sear บนตะแกรงเหล็กหล่อด้านละ 60 วินาที ได้เนื้อสีชมพูสม่ำเสมอไร้ขอบเทา",
+            "tradeoffs": [
+              "ต้องใช้เวลาปรับเตา 2 สเต็ป (ช่วงเปลี่ยนจากไฟเบาเป็นไฟแรง)",
+              "จำเป็นต้องมีโพรบวัดอุณหภูมิแกนกลางดิจิทัลเพื่อความแม่นยำ"
+            ]
+          }
+        },
+        "rec_direct_sear": {
+          "id": "rec_direct_sear",
+          "leaf": {
+            "recommendation": "ใช้เทคนิค Direct High-Heat Searing (ย่างไฟแรงตรง 280-320°C)",
+            "explanation": "ถอดแผ่น Heat Deflector วางตะแกรงเหล็กหล่อใกล้กองถ่าน พลิกเนื้อทุกๆ 1-2 นาทีเพื่อสร้าง Crust กรอบโดยไม่ทำให้ใจกลางเนื้อสุกเกิน Medium Rare",
+            "tradeoffs": [
+              "ต้องระวังเปลวไฟแลบ (Flare-ups) จากไขมันหยดลงถ่าน",
+              "ไม่เหมาะกับสเต๊กหนาเพราะแกนกลางจะยังเย็นขณะที่ผิวเกรียม"
+            ]
+          }
+        }
+      }
+    }
+  },
+  {
+    "folder": "flashcards",
+    "type": "flashcards",
+    "props": {
+      "title": "คลังคำศัพท์สำคัญในการย่างเนื้อเตา Kamado",
+      "terms": [
+        {
+          "id": "maillard-reaction",
+          "word": "Maillard Reaction",
+          "pronunciation": "มาย-ยาร์ด รี-แอก-ชัน",
+          "category": "วิทยาศาสตร์อาหาร",
+          "shortDefinition": "ปฏิกิริยาเคมีระหว่างกรดอะมิโนและน้ำตาลโมเลกุลเดี่ยวเมื่อโดนความร้อนสูงกว่า 140°C",
+          "detailedDefinition": "กระบวนการสร้างสารประกอบกลิ่นหอมและรสชาติใหม่อีกนับร้อยชนิด ทำให้ผิวนอกของเนื้อเปลี่ยนเป็นสีน้ำตาลทองและเกิดความกรอบหอมอูมามิ",
+          "whyItMatters": "หากไม่มีปฏิกิริยานี้ สเต๊กจะมีรสชาติเหมือนเนื้อต้มและขาดกลิ่นหอมของการย่างไฟ",
+          "dialogue": {
+            "user": "ทำไมสเต๊กที่ย่างเตา Kamado ถึงมี Crust สีน้ำตาลทองกรอบหอมกว่าเตาแก๊ส?",
+            "aiThoughts": "ผู้ใช้ต้องการเข้าใจกลไกความร้อนสูงของตะแกรงเหล็กหล่อและรังสีอินฟราเรดจากเซรามิกที่เร่งปฏิกิริยาเมลลาร์ด",
+            "aiQuestion": "คุณได้ซับผิวเนื้อให้แห้งสนิทก่อนนำลง Sear หรือไม่ เพราะความชื้นส่วนเกินจะขัดขวางไม่ให้อุณหภูมิผิวแตะ 140°C?"
+          }
+        },
+        {
+          "id": "heat-deflector",
+          "word": "Heat Deflector",
+          "pronunciation": "ฮีต ดิ-เฟล็ก-เทอร์",
+          "category": "อุปกรณ์เตา",
+          "shortDefinition": "แผ่นหินเซรามิกครึ่งวงกลมหรือเต็มวงสำหรับกั้นเปลวไฟตรงจากกองถ่าน",
+          "detailedDefinition": "ทำหน้าที่แปลงเตาย่างเปลวไฟให้กลายเป็นเตาอบ Convection ช่วยให้ความร้อนแผ่กระจายรอบตัวเนื้อ เหมาะสำหรับ Low & Slow และช่วงอบของ Reverse Sear",
+          "whyItMatters": "หัวใจสำคัญที่ทำให้เตา Kamado ทำงานได้อเนกประสงค์ทั้งการย่าง อบ รมควัน และทำพิซซ่า",
+          "dialogue": {
+            "user": "ลืมใส่ Heat Deflector แล้วนำเนื้อ Tomahawk ลงย่าง จะเกิดอะไรขึ้น?",
+            "aiThoughts": "การย่างเนื้อหนาโดยไม่มี Deflector จะทำให้ผิวนอกไหม้เป็นถ่านก่อนที่ข้างในจะสุก",
+            "aiQuestion": "สเต๊กของคุณมีความหนาเกิน 1.5 นิ้วหรือไม่ หากหนาควรยกเนื้อออกแล้วใส่ Deflector ก่อนอบไฟอ่อน"
+          }
+        },
+        {
+          "id": "blue-smoke",
+          "word": "Thin Blue Smoke",
+          "pronunciation": "ธิน บลู สโมก",
+          "category": "การควบคุมไฟ",
+          "shortDefinition": "ควันสีฟ้าใสจางๆ ที่เกิดจากการเผาไหม้ไม้และถ่านไม้อย่างสมบูรณ์และสะอาด",
+          "detailedDefinition": "ควันที่ให้กลิ่นหอมหวานละมุน ไร้รสขมฝาด ต่างจากควันสีขาวหนาทึบ (White Acrid Smoke) ซึ่งเต็มไปด้วยเขม่าและน้ำมันดิบที่ทำให้เนื้อมีรสขมเปรี้ยว",
+          "whyItMatters": "สัญญาณบอกว่าเตาและท่อนไม้รมควันพร้อมสำหรับการนำเนื้อลงย่างแล้ว",
+          "dialogue": {
+            "user": "เพิ่งจุดเตาแล้วควันขาวฟุ้งเต็มไปหมด ใส่เนื้อลงไปได้เลยไหม?",
+            "aiThoughts": "ควันขาวในช่วงแรกมีสารระเหยที่เป็นกรดและเขม่าดำ ซึ่งจะทำให้เนื้อเสียรสชาติ",
+            "aiQuestion": "คุณสามารถรออีกประมาณ 15-20 นาทีให้ควันขาวเปลี่ยนเป็นควันสีฟ้าใสก่อนวางเนื้อได้หรือไม่?"
+          }
+        },
+        {
+          "id": "carryover-cooking",
+          "word": "Carryover Cooking",
+          "pronunciation": "แคร์-รี-โอ-เวอร์ คุก-กิง",
+          "category": "เทคนิคการปรุง",
+          "shortDefinition": "ปรากฏการณ์ที่อุณหภูมิแกนกลางเนื้อยังคงเพิ่มขึ้นต่อเนื่องแม้จะยกออกจากเตาแล้ว",
+          "detailedDefinition": "ความร้อนที่สะสมอยู่ที่ผิวนอกจะยังคงนำพาความร้อนซึมลึกเข้าสู่แกนกลางอย่างช้าๆ ทำให้อุณหภูมิแกนกลางเพิ่มขึ้นอีกประมาณ 2-4°C ในช่วงพักเนื้อ",
+          "whyItMatters": "ต้องยกเนื้อออกจากเตาก่อนถึงอุณหภูมิเป้าหมายเสมอ มิฉะนั้นเนื้อจะสุกเกิน (Overcooked)",
+          "dialogue": {
+            "user": "ต้องการสเต๊ก Medium Rare ที่ 54°C ควรยกเนื้อออกจากเตาที่อุณหภูมิเท่าใด?",
+            "aiThoughts": "ต้องคำนวณเผื่อความร้อนแฝง Carryover Cooking ประมาณ 3-4°C",
+            "aiQuestion": "คุณควรยกเนื้อออกจากเตาที่ 50-51°C แล้วปล่อยให้ความร้อนแฝงดันอุณหภูมิไปแตะ 54°C ระหว่างพักเนื้อ"
+          }
+        },
+        {
+          "id": "the-stall",
+          "word": "The BBQ Stall",
+          "pronunciation": "เดอะ สตอลล์",
+          "category": "วิทยาศาสตร์อาหาร",
+          "shortDefinition": "ภาวะที่อุณหภูมิแกนกลางของเนื้อหยุดนิ่งอยู่ที่ช่วง 65-75°C เป็นเวลานานหลายชั่วโมง",
+          "detailedDefinition": "เกิดจากการระเหยของน้ำออกจากผิวเนื้อ (Evaporative Cooling) ซึ่งดึงความร้อนออกไปในอัตราเดียวกับที่เตาป้อนความร้อนเข้ามา",
+          "whyItMatters": "เป็นปรากฏการณ์ธรรมชาติในการทำ Brisket ไม่ควรตกใจเร่งไฟ แต่สามารถแก้ด้วยการห่อฟอยล์หรือ Butcher Paper (Texas Crutch)",
+          "dialogue": {
+            "user": "รมควันเนื้อ Brisket มา 4 ชั่วโมงแล้ว อุณหภูมิค้างอยู่ที่ 70°C ไม่ขยับเลย เตาดับหรือเปล่า?",
+            "aiThoughts": "เนื้อกำลังเข้าสู่ช่วง Stall จากการระเหยของความชื้น",
+            "aiQuestion": "คุณต้องการห่อเนื้อด้วย Butcher Paper เพื่อกักเก็บความชื้นและเร่งให้ข้ามช่วง Stall หรือไม่?"
+          }
+        },
+        {
+          "id": "edge-to-edge-pink",
+          "word": "Edge-to-Edge Pink",
+          "pronunciation": "เอจ-ทู-เอจ พิงก์",
+          "category": "ความสมบูรณ์แบบ",
+          "shortDefinition": "ลักษณะเนื้อสเต๊กที่มีระดับความสุกสีชมพูสม่ำเสมอตั้งแต่ขอบนอกจรดแกนกลาง ไร้แถบสีเทา",
+          "detailedDefinition": "ผลลัพธ์ระดับสูงสุดของการย่างแบบ Reverse Sear โดยการทำให้เนื้อสุกทั่วถึงด้วยความร้อนต่ำ ก่อนใช้เวลาสั้นมากในการ Sear ผิวนอก",
+          "whyItMatters": "เป็นตัวชี้วัดความเชี่ยวชาญของ Pitmaster ในการควบคุมอุณหภูมิอย่างแม่นยำ",
+          "dialogue": {
+            "user": "ทำไมสเต๊กที่ย่างบนกระทะทั่วไปมักมีขอบสีเทาหนาเตอะรอบเนื้อ?",
+            "aiThoughts": "เกิดจากการใช้ความร้อนสูงเป็นเวลานานเกินไปทำให้ความร้อนซึมสุกเกินเข้ามาในชั้นเนื้อ",
+            "aiQuestion": "คุณพร้อมที่จะลองวิธี Reverse Sear บนเตา Kamado เพื่อสัมผัสเนื้อแบบ Edge-to-Edge Pink แล้วหรือยัง?"
+          }
+        }
+      ]
+    }
+  }
+]

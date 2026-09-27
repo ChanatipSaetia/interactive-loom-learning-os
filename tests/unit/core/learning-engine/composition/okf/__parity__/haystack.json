@@ -1,0 +1,3068 @@
+[
+  {
+    "folder": "intro",
+    "type": "intro",
+    "props": {
+      "title": "",
+      "estimatedTime": "7 min read",
+      "moduleCount": 10,
+      "what": {
+        "definition": "Haystack 2.x is an open-source Python framework designed to build composable, production-grade LLM applications, semantic search, and RAG pipelines.",
+        "summary": "Comprehensive guide to Haystack 2.x — the open-source LLM orchestration and RAG pipeline framework.",
+        "bullets": [
+          "Pipeline DAG architecture for DocumentStores, Retrievers, and Generators",
+          "Hybrid search combining BM25 keyword matching and dense vector embeddings",
+          "Production component validation, error handling, and latency optimization"
+        ],
+        "tags": [
+          "Haystack 2.x",
+          "RAG Pipelines",
+          "Vector Search",
+          "LLM Orchestration"
+        ]
+      },
+      "why": {
+        "summary": "Basic RAG tutorials break down in production due to static chunking, retriever mismatch, and unhandled component state errors.",
+        "impact": "Haystack 2.x provides modular component validation, typed pipeline connections, and seamless model switching."
+      },
+      "roadmap": [
+        {
+          "sectionId": "concept-map",
+          "title": "Knowledge Graph",
+          "type": "concept-map",
+          "description": "Map spatial relationships between DocumentStores, Retrievers, and Generators."
+        },
+        {
+          "sectionId": "flashcards",
+          "title": "Key Vocabulary",
+          "type": "flashcards",
+          "description": "Master Haystack terminology and component definitions."
+        },
+        {
+          "sectionId": "taxonomy",
+          "title": "Component Taxonomy",
+          "type": "taxonomy-browser",
+          "description": "Explore retrievers, rankers, prompt builders, and LLM integrators."
+        },
+        {
+          "sectionId": "flowchart-query",
+          "title": "Query Pipeline Flow",
+          "type": "flowchart",
+          "description": "Trace event storming step execution in query and indexing pipelines."
+        },
+        {
+          "sectionId": "tradeoffs",
+          "title": "RAG Trade-off Sandbox",
+          "type": "tradeoff-sandbox",
+          "description": "Balance chunk sizes, top-k retrieval, embedding dimensions, and cost."
+        }
+      ]
+    }
+  },
+  {
+    "folder": "concept-map",
+    "type": "concept-map",
+    "props": {
+      "title": "Concept Map",
+      "nodes": {
+        "component": {
+          "id": "component",
+          "title": "Component",
+          "category": "mechanism"
+        },
+        "pipeline": {
+          "id": "pipeline",
+          "title": "Pipeline",
+          "category": "mechanism"
+        },
+        "document-store": {
+          "id": "document-store",
+          "title": "Document Store",
+          "category": "system"
+        },
+        "document": {
+          "id": "document",
+          "title": "Document",
+          "category": "data"
+        },
+        "retriever": {
+          "id": "retriever",
+          "title": "Retriever",
+          "category": "mechanism"
+        },
+        "embedder": {
+          "id": "embedder",
+          "title": "Embedder",
+          "category": "mechanism"
+        },
+        "ranker": {
+          "id": "ranker",
+          "title": "Ranker",
+          "category": "mechanism"
+        },
+        "indexing-pipeline": {
+          "id": "indexing-pipeline",
+          "title": "Indexing Pipeline",
+          "category": "process"
+        },
+        "query-pipeline": {
+          "id": "query-pipeline",
+          "title": "Query Pipeline",
+          "category": "process"
+        },
+        "rag": {
+          "id": "rag",
+          "title": "RAG",
+          "category": "pattern"
+        },
+        "metadata-filtering": {
+          "id": "metadata-filtering",
+          "title": "Metadata Filtering",
+          "category": "mechanism"
+        },
+        "custom-component": {
+          "id": "custom-component",
+          "title": "Custom Component",
+          "category": "concept"
+        },
+        "supercomponent": {
+          "id": "supercomponent",
+          "title": "SuperComponent",
+          "category": "concept"
+        },
+        "bm25": {
+          "id": "bm25",
+          "title": "BM25",
+          "category": "pattern"
+        },
+        "vector-search": {
+          "id": "vector-search",
+          "title": "Vector Search",
+          "category": "pattern"
+        },
+        "hybrid-retrieval": {
+          "id": "hybrid-retrieval",
+          "title": "Hybrid Retrieval",
+          "category": "pattern"
+        },
+        "async-pipeline": {
+          "id": "async-pipeline",
+          "title": "AsyncPipeline",
+          "category": "mechanism"
+        }
+      },
+      "edges": [
+        {
+          "from": "component",
+          "to": "pipeline",
+          "label": "wired into"
+        },
+        {
+          "from": "pipeline",
+          "to": "document-store",
+          "label": "accesses"
+        },
+        {
+          "from": "document-store",
+          "to": "document",
+          "label": "stores"
+        },
+        {
+          "from": "retriever",
+          "to": "document-store",
+          "label": "queries"
+        },
+        {
+          "from": "retriever",
+          "to": "document",
+          "label": "returns"
+        },
+        {
+          "from": "embedder",
+          "to": "document",
+          "label": "embeds"
+        },
+        {
+          "from": "ranker",
+          "to": "document",
+          "label": "re-scores"
+        },
+        {
+          "from": "indexing-pipeline",
+          "to": "embedder",
+          "label": "uses"
+        },
+        {
+          "from": "indexing-pipeline",
+          "to": "document-store",
+          "label": "writes to"
+        },
+        {
+          "from": "query-pipeline",
+          "to": "retriever",
+          "label": "uses"
+        },
+        {
+          "from": "query-pipeline",
+          "to": "ranker",
+          "label": "uses"
+        },
+        {
+          "from": "query-pipeline",
+          "to": "embedder",
+          "label": "uses"
+        },
+        {
+          "from": "rag",
+          "to": "query-pipeline",
+          "label": "extends"
+        },
+        {
+          "from": "metadata-filtering",
+          "to": "document-store",
+          "label": "filters"
+        },
+        {
+          "from": "custom-component",
+          "to": "component",
+          "label": "is a"
+        },
+        {
+          "from": "supercomponent",
+          "to": "pipeline",
+          "label": "wraps"
+        },
+        {
+          "from": "bm25",
+          "to": "retriever",
+          "label": "strategy"
+        },
+        {
+          "from": "vector-search",
+          "to": "retriever",
+          "label": "strategy"
+        },
+        {
+          "from": "hybrid-retrieval",
+          "to": "bm25",
+          "label": "combines"
+        },
+        {
+          "from": "hybrid-retrieval",
+          "to": "vector-search",
+          "label": "combines"
+        },
+        {
+          "from": "async-pipeline",
+          "to": "pipeline",
+          "label": "extends"
+        }
+      ]
+    }
+  },
+  {
+    "folder": "flashcards",
+    "type": "flashcards",
+    "props": {
+      "title": "Key Vocabulary",
+      "terms": [
+        {
+          "id": "pipeline",
+          "word": "Pipeline",
+          "pronunciation": "pipe-line",
+          "category": "architecture",
+          "shortDefinition": "A directed multigraph of Haystack components wired together to form a processing flow.",
+          "detailedDefinition": "In Haystack, a Pipeline is the central orchestration primitive. It connects Components via typed input/output sockets. The Pipeline validates type compatibility at connection time, supports branching (concurrent execution), loops (iterative self-correction), and serialization to YAML. Pipelines are either Indexing Pipelines (offline ETL) or Query Pipelines (real-time retrieval).",
+          "whyItMatters": "Understanding Pipelines is essential because they are how you compose Haystack applications. Every search system is at least one Pipeline, and complex RAG systems chain multiple Pipelines together."
+        },
+        {
+          "id": "component",
+          "word": "Component",
+          "pronunciation": "com-puh-nent",
+          "category": "architecture",
+          "shortDefinition": "A reusable, self-contained unit of processing with typed inputs and outputs.",
+          "detailedDefinition": "Components are the building blocks of Haystack. Each component has a run() method that accepts inputs and returns a dict of outputs. Built-in components include embedders, retrievers, converters, rankers, and LLMs. Custom components are created with the @component decorator. Components can be used standalone or wired into Pipelines.",
+          "whyItMatters": "Components are the atomic unit of Haystack development. When communicating with AI about Haystack, you reference components (e.g., \"use a SentenceTransformersTextEmbedder\" or \"build a custom ranker component\")."
+        },
+        {
+          "id": "document-store",
+          "word": "Document Store",
+          "pronunciation": "duh-kuh-ment store",
+          "category": "storage",
+          "shortDefinition": "The persistent database layer that stores and serves Document objects.",
+          "detailedDefinition": "A Document Store is not a Pipeline component — it is an external database that components access. Haystack supports multiple backends: InMemoryDocumentStore (prototyping), OpenSearchDocumentStore, ElasticsearchDocumentStore, ChromaDocumentStore, WeaviateDocumentStore, and more. The store provides four core operations: count_documents, filter_documents, write_documents, and delete_documents.",
+          "whyItMatters": "The Document Store is the convergence point between Indexing and Query pipelines. Your choice of Document Store determines what retrieval strategies (BM25, vector, hybrid) are available."
+        },
+        {
+          "id": "document",
+          "word": "Document",
+          "pronunciation": "duh-kuh-ment",
+          "category": "data",
+          "shortDefinition": "The canonical data class in Haystack, carrying content, embedding, metadata, and ID.",
+          "detailedDefinition": "A Haystack Document is a Python dataclass with these fields: id (unique string), content (text string), embedding (list of floats), metadata (dict of key-value pairs), and score (float for ranking). All text-processing components convert to and from Documents. The metadata field is critical — it enables filtering, parent-child relationships, and custom schemas.",
+          "whyItMatters": "Every Haystack pipeline ultimately produces or consumes Documents. Understanding the Document structure is key to debugging pipelines and designing custom schemas."
+        },
+        {
+          "id": "retriever",
+          "word": "Retriever",
+          "pronunciation": "ree-truh-ver",
+          "category": "search",
+          "shortDefinition": "A component that queries a Document Store to find relevant documents.",
+          "detailedDefinition": "Retrievers are specialized components that accept a query (and optionally an embedding) and return a ranked list of Documents. Haystack provides BM25Retriever (keyword search), EmbeddingRetriever (dense vector similarity), and hybrid retrievers that combine both. Each Document Store backend typically ships with a matching Retriever for optimal performance.",
+          "whyItMatters": "The Retriever is the heart of any search application. Its quality determines whether the LLM receives relevant context. Hybrid retrieval (BM25 + vectors) is the production standard."
+        },
+        {
+          "id": "embedder",
+          "word": "Embedder",
+          "pronunciation": "em-bed-er",
+          "category": "search",
+          "shortDefinition": "A component that converts text into dense vector representations.",
+          "detailedDefinition": "Embedders transform text (documents or queries) into fixed-length vectors that capture semantic meaning. Haystack provides TextEmbedders (for queries) and DocumentEmbedders (for document chunks). Models include SentenceTransformers (local), OpenAI embeddings, Azure AI, and Cohere. The same model family should be used for both text and document embedding to ensure compatible vector spaces.",
+          "whyItMatters": "Embedders enable semantic search. Without embeddings, you are limited to keyword matching. The quality of your embeddings directly impacts retrieval accuracy."
+        },
+        {
+          "id": "rag",
+          "word": "RAG (Retrieval-Augmented Generation)",
+          "pronunciation": "rag",
+          "category": "pattern",
+          "shortDefinition": "A pattern where retrieved documents are injected into the LLM prompt to ground its response.",
+          "detailedDefinition": "RAG combines a retrieval pipeline (finding relevant documents) with a generation pipeline (LLM answering from context). The typical flow is: embed query → retrieve documents → rank documents → build prompt with retrieved context → invoke LLM → return answer. Haystack makes RAG trivial by wiring these components into a single Pipeline.",
+          "whyItMatters": "RAG is the most common production pattern with Haystack. When you design a search system, you are almost always designing a RAG pipeline."
+        },
+        {
+          "id": "ranking",
+          "word": "Ranker",
+          "pronunciation": "rank-er",
+          "category": "search",
+          "shortDefinition": "A component that re-scores and re-orders retrieved documents by relevance.",
+          "detailedDefinition": "Rankers take a list of Documents and a query, then re-order the documents by a more sophisticated relevance score. Haystack provides TransformerSimilarityRanker (cross-encoder models), CohereRanker (API-based), and ReciprocalRankFusion (combining multiple retrieval results). Rankers are more expensive than Retrievers but significantly improve result quality.",
+          "whyItMatters": "Adding a Ranker after retrieval is the single most effective way to improve search quality. It catches false positives from the initial retrieval step."
+        }
+      ]
+    }
+  },
+  {
+    "folder": "core-concepts",
+    "type": "text",
+    "props": {
+      "title": "Core Concepts",
+      "paragraphs": [
+        "Core Concepts",
+        "**Components** — Every building block in Haystack is a component: embedders, retrievers, converters, rankers, LLMs, routers. Each component declares typed inputs and outputs. Components can be used standalone or wired into pipelines. Custom components require only a `@component` decorator and a `run()` method.",
+        "**Pipelines** — A Pipeline is a directed multigraph of components. You add components with `add_component()`, wire them with `connect()`, and execute with `run()`. Pipelines validate type compatibility at connect time. Haystack supports branching (concurrent paths), loops (iterative self-correction), and AsyncPipeline (parallel execution of independent branches).",
+        "**Document Store** — The central persistence layer. Think of it as a database that stores `Document` objects and serves them to Retrievers. Haystack supports multiple backends: InMemoryDocumentStore for prototyping, and integrations for OpenSearch, Elasticsearch, Weaviate, Chroma, PostgreSQL, and more. The Document Store is not a pipeline component — it is accessed by components that reference it.",
+        "**Documents** — The canonical data class. A `Document` carries content (text), embedding (vector), metadata (arbitrary key-value pairs), and a unique ID. All components that process text convert to/from Documents.",
+        "**Retrievers** — Specialized components that query a Document Store. BM25Retriever for keyword search, EmbeddingRetriever for semantic (vector) search, and hybrid retrievers that combine both. Each Document Store backend typically ships with a matching Retriever.",
+        "**Metadata Filtering** — Haystack provides a structured query language to filter documents by metadata fields before or during retrieval. This enables exact matching on attributes like category, date, author, or stock status.",
+        "**Custom Components** — Build any logic with the `@component` decorator. Define inputs via method arguments and outputs with `@component.output_types`. The framework handles serialization, type validation, and pipeline wiring automatically.",
+        "**SuperComponents** — Wrap an entire sub-pipeline into a single reusable component. This simplifies complex graphs by hiding internal wiring behind a clean interface."
+      ]
+    }
+  },
+  {
+    "folder": "capabilities",
+    "type": "bullets",
+    "props": {
+      "title": "Key Capabilities",
+      "ordered": false,
+      "items": [
+        {
+          "text": "Pipeline Architecture",
+          "children": [
+            {
+              "text": "Directed multigraphs with branching and loops"
+            },
+            {
+              "text": "AsyncPipeline for parallel component execution"
+            },
+            {
+              "text": "Smart connections with implicit type adaptation"
+            },
+            {
+              "text": "SuperComponents for composable sub-pipelines"
+            }
+          ]
+        },
+        {
+          "text": "Component Ecosystem",
+          "children": [
+            {
+              "text": "Embedders (SentenceTransformers, OpenAI, Azure)"
+            },
+            {
+              "text": "Retrievers (BM25, Embedding, Hybrid, SPLADE)"
+            },
+            {
+              "text": "Rankers (Transformer, Cohere, Reciprocal Rank Fusion)"
+            },
+            {
+              "text": "Converters (PDF, HTML, Markdown, Tesseract OCR)"
+            }
+          ]
+        },
+        {
+          "text": "Document Store Backends",
+          "children": [
+            {
+              "text": "InMemoryDocumentStore (prototyping)"
+            },
+            {
+              "text": "OpenSearchDocumentStore (production hybrid)"
+            },
+            {
+              "text": "ElasticsearchDocumentStore (enterprise)"
+            },
+            {
+              "text": "Chroma, Weaviate, PostgreSQL, Pinecone, MongoDB"
+            },
+            {
+              "text": "Azure AI Search (managed semantic, haystack-azure-search-connector)"
+            },
+            {
+              "text": "Google Vertex AI Search (generative grounding, custom component)"
+            }
+          ]
+        },
+        {
+          "text": "Agentic Features",
+          "children": [
+            {
+              "text": "Agent component with ReAct loop"
+            },
+            {
+              "text": "Multi-agent systems with delegation"
+            },
+            {
+              "text": "Tool integration via MCP and custom tools"
+            },
+            {
+              "text": "Memory stores for conversation history"
+            }
+          ]
+        },
+        {
+          "text": "Full serialization and deserialization (YAML)",
+          "children": []
+        },
+        {
+          "text": "Pipeline visualization as Mermaid graphs",
+          "children": []
+        }
+      ]
+    }
+  },
+  {
+    "folder": "taxonomy",
+    "type": "taxonomy-browser",
+    "props": {
+      "title": "Haystack Component Taxonomy",
+      "categories": [
+        {
+          "icon": "Folder",
+          "title": "Indexing Pipeline",
+          "subtitle": "Offline ETL Processing",
+          "description": "An Indexing Pipeline processes raw data (PDFs, HTML, Markdown) into structured, searchable Documents. It runs offline or as a batch job, converting files, splitting text, computing embeddings, and writing to the Document Store.",
+          "details": "The indexing pipeline is strictly decoupled from the query pipeline. It runs independently and its output is the Document Store. Common components: FileConverter → TextSplitter → DocumentEmbedder → DocumentWriter.",
+          "analogy": "Like a library cataloging system — books are received, classified, tagged, and shelved before anyone can search for them.",
+          "primaryFocus": "File conversion, text chunking, embedding computation, and document persistence.",
+          "inScope": [
+            "PDF/HTML/Markdown conversion",
+            "Text splitting and chunking",
+            "Embedding computation",
+            "Metadata extraction",
+            "Duplicate detection"
+          ],
+          "outOfScope": [
+            "Real-time query processing",
+            "LLM answer generation",
+            "User-facing search"
+          ],
+          "color": "blue"
+        },
+        {
+          "icon": "Folder",
+          "title": "Query Pipeline",
+          "subtitle": "Real-Time Retrieval",
+          "description": "A Query Pipeline executes in real-time to answer user queries. It embeds the query, retrieves relevant documents, optionally ranks them, and may invoke an LLM for RAG-based answering.",
+          "details": "Query pipelines are latency-sensitive. They typically chain: TextEmbedder → Retriever → Ranker → PromptBuilder → LLM. The pipeline can be simplified to just Retriever for pure search without LLM generation.",
+          "analogy": "Like a librarian who receives your question, finds relevant books from the catalog, and presents the most relevant pages.",
+          "primaryFocus": "Query embedding, document retrieval, ranking, and LLM-powered answer generation.",
+          "inScope": [
+            "Query embedding",
+            "Semantic search",
+            "Hybrid retrieval (BM25 + vectors)",
+            "Document ranking",
+            "RAG prompt assembly"
+          ],
+          "outOfScope": [
+            "File conversion",
+            "Batch indexing",
+            "Document persistence"
+          ],
+          "color": "green"
+        },
+        {
+          "icon": "Folder",
+          "title": "Document Store",
+          "subtitle": "Persistent Storage",
+          "description": "The Document Store is the central persistence layer where indexed Documents live. It is not a pipeline component but a database accessed by pipeline components. Haystack supports multiple backends with different capabilities.",
+          "details": "Choose InMemoryDocumentStore for prototyping. For production, OpenSearchDocumentStore and ElasticsearchDocumentStore offer hybrid search (BM25 + vectors + metadata filtering). Vector-only stores like Chroma and Weaviate are suitable for pure embedding search.",
+          "analogy": "Like the physical shelves of a library — where all the cataloged books are stored and retrieved from.",
+          "primaryFocus": "Document persistence, vector indexing, keyword indexing, and metadata filtering.",
+          "inScope": [
+            "Vector similarity search",
+            "BM25 keyword search",
+            "Metadata filtering",
+            "Duplicate policies (OVERWRITE, SKIP, FAIL)",
+            "Custom document schemas"
+          ],
+          "outOfScope": [
+            "Text conversion",
+            "Embedding computation",
+            "Prompt templating"
+          ],
+          "color": "mauve"
+        },
+        {
+          "icon": "Folder",
+          "title": "Custom Components",
+          "subtitle": "Extensibility Layer",
+          "description": "Custom Components let you inject any Python logic into a Haystack pipeline. You define inputs, outputs, and the processing logic, then the framework handles serialization, type validation, and pipeline wiring.",
+          "details": "A custom component requires the @component decorator, a run() method with typed inputs, and output type declarations. Use dataclasses.replace() for document mutations and copy.deepcopy() for nested structures. Components can be packaged and shared as integrations.",
+          "analogy": "Like building a custom shelf unit for your library — you design it to fit your specific storage needs, then plug it into the existing cataloging system.",
+          "primaryFocus": "Custom preprocessing, proprietary algorithms, external API integrations, and specialized ranking logic.",
+          "inScope": [
+            "@component decorator pattern",
+            "Typed input/output sockets",
+            "Pipeline serialization compatibility",
+            "Component testing",
+            "Integration packaging"
+          ],
+          "outOfScope": [
+            "Built-in component replacement",
+            "Document Store implementation",
+            "Pipeline orchestration"
+          ],
+          "color": "peach"
+        },
+        {
+          "icon": "Layers",
+          "title": "Indexing Pipeline",
+          "subtitle": "Offline ETL Processing",
+          "description": "An Indexing Pipeline processes raw data (PDFs, HTML, Markdown) into structured, searchable Documents. It runs offline or as a batch job, converting files, splitting text, computing embeddings, and writing to the Document Store.",
+          "details": "The indexing pipeline is strictly decoupled from the query pipeline. It runs independently and its output is the Document Store. Common components: FileConverter → TextSplitter → DocumentEmbedder → DocumentWriter.",
+          "analogy": "Like a library cataloging system — books are received, classified, tagged, and shelved before anyone can search for them.",
+          "primaryFocus": "File conversion, text chunking, embedding computation, and document persistence.",
+          "inScope": [
+            "PDF/HTML/Markdown conversion",
+            "Text splitting and chunking",
+            "Embedding computation",
+            "Metadata extraction",
+            "Duplicate detection"
+          ],
+          "outOfScope": [
+            "Real-time query processing",
+            "LLM answer generation",
+            "User-facing search"
+          ],
+          "color": "blue"
+        },
+        {
+          "icon": "Zap",
+          "title": "Query Pipeline",
+          "subtitle": "Real-Time Retrieval",
+          "description": "A Query Pipeline executes in real-time to answer user queries. It embeds the query, retrieves relevant documents, optionally ranks them, and may invoke an LLM for RAG-based answering.",
+          "details": "Query pipelines are latency-sensitive. They typically chain: TextEmbedder → Retriever → Ranker → PromptBuilder → LLM. The pipeline can be simplified to just Retriever for pure search without LLM generation.",
+          "analogy": "Like a librarian who receives your question, finds relevant books from the catalog, and presents the most relevant pages.",
+          "primaryFocus": "Query embedding, document retrieval, ranking, and LLM-powered answer generation.",
+          "inScope": [
+            "Query embedding",
+            "Semantic search",
+            "Hybrid retrieval (BM25 + vectors)",
+            "Document ranking",
+            "RAG prompt assembly"
+          ],
+          "outOfScope": [
+            "File conversion",
+            "Batch indexing",
+            "Document persistence"
+          ],
+          "color": "green"
+        },
+        {
+          "icon": "Database",
+          "title": "Document Store",
+          "subtitle": "Persistent Storage",
+          "description": "The Document Store is the central persistence layer where indexed Documents live. It is not a pipeline component but a database accessed by pipeline components. Haystack supports multiple backends with different capabilities.",
+          "details": "Choose InMemoryDocumentStore for prototyping. For production, OpenSearchDocumentStore and ElasticsearchDocumentStore offer hybrid search (BM25 + vectors + metadata filtering). Vector-only stores like Chroma and Weaviate are suitable for pure embedding search.",
+          "analogy": "Like the physical shelves of a library — where all the cataloged books are stored and retrieved from.",
+          "primaryFocus": "Document persistence, vector indexing, keyword indexing, and metadata filtering.",
+          "inScope": [
+            "Vector similarity search",
+            "BM25 keyword search",
+            "Metadata filtering",
+            "Duplicate policies (OVERWRITE, SKIP, FAIL)",
+            "Custom document schemas"
+          ],
+          "outOfScope": [
+            "Text conversion",
+            "Embedding computation",
+            "Prompt templating"
+          ],
+          "color": "mauve"
+        },
+        {
+          "icon": "GitBranch",
+          "title": "Custom Components",
+          "subtitle": "Extensibility Layer",
+          "description": "Custom Components let you inject any Python logic into a Haystack pipeline. You define inputs, outputs, and the processing logic, then the framework handles serialization, type validation, and pipeline wiring.",
+          "details": "A custom component requires the @component decorator, a run() method with typed inputs, and output type declarations. Use dataclasses.replace() for document mutations and copy.deepcopy() for nested structures. Components can be packaged and shared as integrations.",
+          "analogy": "Like building a custom shelf unit for your library — you design it to fit your specific storage needs, then plug it into the existing cataloging system.",
+          "primaryFocus": "Custom preprocessing, proprietary algorithms, external API integrations, and specialized ranking logic.",
+          "inScope": [
+            "@component decorator pattern",
+            "Typed input/output sockets",
+            "Pipeline serialization compatibility",
+            "Component testing",
+            "Integration packaging"
+          ],
+          "outOfScope": [
+            "Built-in component replacement",
+            "Document Store implementation",
+            "Pipeline orchestration"
+          ],
+          "color": "peach"
+        }
+      ]
+    }
+  },
+  {
+    "folder": "pillar-layer",
+    "type": "pillar-layer",
+    "props": {
+      "title": "Haystack RAG Pipeline Layer Stack",
+      "intro": {
+        "what": "Interactive 2D layer stack map of Haystack RAG components from orchestration pipelines down to vector databases.",
+        "why": "Shows how query pipelines, prompt nodes, embedding retrievers, and document stores connect.",
+        "next": "Next: Test your understanding with the knowledge check quiz."
+      },
+      "section": {
+        "type": "pillar-layer",
+        "title": "Haystack RAG Pipeline Layer Stack",
+        "description": "Component stack map of orchestration pipelines, LLM models, vector indexing, and data stores.",
+        "layers": [
+          {
+            "id": "l-orchestration",
+            "title": "1. Pipeline & Orchestration Tier",
+            "description": "Flow control, prompt node routing, and query pipelines."
+          },
+          {
+            "id": "l-models",
+            "title": "2. LLMs & Embeddings Tier",
+            "description": "Language models, dense/sparse encoders, and rerankers."
+          },
+          {
+            "id": "l-retrieval",
+            "title": "3. Vector Indexing & Retrieval Tier",
+            "description": "Dense vector indexes, BM25 keyword search engines."
+          },
+          {
+            "id": "l-storage",
+            "title": "4. Persistence & Document Storage",
+            "description": "Vector databases, SQL stores, and document repositories."
+          }
+        ],
+        "matrix_blocks": [
+          {
+            "id": "b-query-pipeline",
+            "title": "QueryPipeline Node",
+            "description": "Executes end-to-end RAG query flow.",
+            "layer_id": "l-orchestration",
+            "col_offset": 0,
+            "col_span": 2,
+            "color": "blue",
+            "depends_on": [
+              "b-prompt-node",
+              "b-retriever-node"
+            ]
+          },
+          {
+            "id": "b-indexing-pipeline",
+            "title": "IndexingPipeline Node",
+            "description": "Parses, chunks, and embeds incoming documents.",
+            "layer_id": "l-orchestration",
+            "col_offset": 2,
+            "col_span": 2,
+            "color": "mauve",
+            "depends_on": [
+              "b-embedder-node",
+              "b-doc-store-port"
+            ]
+          },
+          {
+            "id": "b-prompt-node",
+            "title": "PromptNode / Generator",
+            "description": "Formats prompt templates for LLM invocation.",
+            "layer_id": "l-models",
+            "col_offset": 0,
+            "col_span": 1,
+            "color": "peach",
+            "depends_on": [
+              "b-openai-llm"
+            ]
+          },
+          {
+            "id": "b-retriever-node",
+            "title": "EmbeddingRetriever",
+            "description": "Calculates dense query embeddings and fetches top-K.",
+            "layer_id": "l-models",
+            "col_offset": 1,
+            "col_span": 1,
+            "color": "teal",
+            "depends_on": [
+              "b-embedder-node",
+              "b-vector-index"
+            ]
+          },
+          {
+            "id": "b-embedder-node",
+            "title": "TextEmbedder (bge-large)",
+            "description": "Transforms text into 1024-d vector embeddings.",
+            "layer_id": "l-models",
+            "col_offset": 2,
+            "col_span": 2,
+            "color": "green",
+            "depends_on": [
+              "b-qdrant-db"
+            ]
+          },
+          {
+            "id": "b-openai-llm",
+            "title": "OpenAI GPT-4o Model API",
+            "description": "Generates synthesized answers from retrieved context.",
+            "layer_id": "l-retrieval",
+            "col_offset": 0,
+            "col_span": 1,
+            "color": "sapphire"
+          },
+          {
+            "id": "b-vector-index",
+            "title": "HNSW Vector Index",
+            "description": "Hierarchical Navigable Small World similarity search.",
+            "layer_id": "l-retrieval",
+            "col_offset": 1,
+            "col_span": 1,
+            "color": "lavender",
+            "depends_on": [
+              "b-qdrant-db"
+            ]
+          },
+          {
+            "id": "b-doc-store-port",
+            "title": "DocumentStore Interface",
+            "description": "Abstract storage API for chunk metadata and vectors.",
+            "layer_id": "l-retrieval",
+            "col_offset": 2,
+            "col_span": 2,
+            "color": "yellow",
+            "depends_on": [
+              "b-qdrant-db",
+              "b-pg-store"
+            ]
+          },
+          {
+            "id": "b-qdrant-db",
+            "title": "Qdrant Vector DB",
+            "description": "Stores dense embeddings with payload filtering.",
+            "layer_id": "l-storage",
+            "col_offset": 0,
+            "col_span": 1,
+            "color": "red"
+          },
+          {
+            "id": "b-pg-store",
+            "title": "PostgreSQL Document Store",
+            "description": "Relational store for raw documents and metadata.",
+            "layer_id": "l-storage",
+            "col_offset": 1,
+            "col_span": 1,
+            "color": "sky"
+          },
+          {
+            "id": "b-faiss-index",
+            "title": "In-Memory FAISS Store",
+            "description": "Lightweight local vector store for fast prototyping.",
+            "layer_id": "l-storage",
+            "col_offset": 2,
+            "col_span": 1,
+            "color": "pink"
+          },
+          {
+            "id": "b-s3-documents",
+            "title": "AWS S3 Object Storage",
+            "description": "Blob storage for raw source PDFs and Markdown.",
+            "layer_id": "l-storage",
+            "col_offset": 3,
+            "col_span": 1,
+            "color": "maroon"
+          }
+        ]
+      }
+    }
+  },
+  {
+    "folder": "flowchart-indexing",
+    "type": "flowchart",
+    "props": {
+      "title": "Indexing Pipeline",
+      "schema": {
+        "entities": {
+          "dev_user": {
+            "title": "Developer",
+            "desc": "Initiates the indexing process with raw data files.",
+            "type": "Actor"
+          },
+          "file_converter": {
+            "title": "File Converter",
+            "desc": "Converts PDF, HTML, Markdown, or other formats into Document objects.",
+            "type": "Aggregate"
+          },
+          "text_splitter": {
+            "title": "Text Splitter",
+            "desc": "Breaks large documents into smaller, semantically coherent chunks.",
+            "type": "Aggregate"
+          },
+          "doc_embedder": {
+            "title": "Document Embedder",
+            "desc": "Computes dense vector embeddings for each text chunk.",
+            "type": "Aggregate"
+          },
+          "embedding_model": {
+            "title": "Embedding Model",
+            "desc": "External model (SentenceTransformers, OpenAI, etc.) that generates vector embeddings.",
+            "type": "External API"
+          },
+          "doc_writer": {
+            "title": "Document Writer",
+            "desc": "Writes or overwrites documents into the Document Store.",
+            "type": "Aggregate"
+          },
+          "doc_store": {
+            "title": "Document Store",
+            "desc": "Persistent database (OpenSearch, Elasticsearch, Chroma, etc.) storing indexed documents.",
+            "type": "External API"
+          },
+          "pol_start_indexing": {
+            "title": "Trigger Conversion",
+            "desc": "Trigger Conversion",
+            "type": "Policy",
+            "root": false
+          },
+          "cmd_start_indexing": {
+            "title": "Start Indexing",
+            "desc": "Start Indexing",
+            "type": "Command"
+          },
+          "evt_files_loaded": {
+            "title": "Files Loaded",
+            "desc": "Raw data files are available for processing.",
+            "type": "Event"
+          },
+          "pol_convert_files": {
+            "title": "Trigger Conversion",
+            "desc": "Trigger Conversion",
+            "type": "Policy",
+            "root": false
+          },
+          "cmd_convert_files": {
+            "title": "Convert Files",
+            "desc": "Convert Files",
+            "type": "Command"
+          },
+          "file_converter2": {
+            "title": "File Converter",
+            "desc": "Converts PDF, HTML, Markdown, or other formats into Document objects.",
+            "type": "Aggregate"
+          },
+          "evt_docs_converted": {
+            "title": "Documents Converted",
+            "desc": "Raw files transformed into structured Document objects.",
+            "type": "Event"
+          },
+          "pol_split_texts": {
+            "title": "Trigger Splitting",
+            "desc": "Trigger Splitting",
+            "type": "Policy",
+            "root": false
+          },
+          "cmd_split_texts": {
+            "title": "Split Texts",
+            "desc": "Split Texts",
+            "type": "Command"
+          },
+          "evt_texts_chunked": {
+            "title": "Texts Chunked",
+            "desc": "Documents split into smaller, searchable chunks.",
+            "type": "Event"
+          },
+          "pol_compute_embeddings": {
+            "title": "Trigger Embedding",
+            "desc": "Trigger Embedding",
+            "type": "Policy",
+            "root": false
+          },
+          "cmd_compute_embeddings": {
+            "title": "Compute Embeddings",
+            "desc": "Compute Embeddings",
+            "type": "Command"
+          },
+          "evt_embeddings_ready": {
+            "title": "Embeddings Computed",
+            "desc": "Dense vectors attached to each document chunk.",
+            "type": "Event"
+          },
+          "pol_write_docs": {
+            "title": "Trigger Write",
+            "desc": "Trigger Write",
+            "type": "Policy",
+            "root": false
+          },
+          "cmd_write_docs": {
+            "title": "Write Documents",
+            "desc": "Write Documents",
+            "type": "Command"
+          },
+          "evt_docs_indexed": {
+            "title": "Documents Indexed",
+            "desc": "All documents stored and searchable in the Document Store.",
+            "type": "Event"
+          }
+        },
+        "relations": [
+          {
+            "id": "r1",
+            "from": "dev_user",
+            "to": "pol_start_indexing",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r2",
+            "from": "pol_start_indexing",
+            "to": "cmd_start_indexing",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r3",
+            "from": "cmd_start_indexing",
+            "to": "file_converter",
+            "handledBy": true,
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r4",
+            "from": "file_converter",
+            "to": "evt_files_loaded",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r5",
+            "from": "evt_files_loaded",
+            "to": "pol_convert_files",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r6",
+            "from": "pol_convert_files",
+            "to": "cmd_convert_files",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r7",
+            "from": "cmd_convert_files",
+            "to": "file_converter2",
+            "handledBy": true,
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r8",
+            "from": "file_converter2",
+            "to": "evt_docs_converted",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r9",
+            "from": "evt_docs_converted",
+            "to": "pol_split_texts",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r10",
+            "from": "pol_split_texts",
+            "to": "cmd_split_texts",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r11",
+            "from": "cmd_split_texts",
+            "to": "text_splitter",
+            "handledBy": true,
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r12",
+            "from": "text_splitter",
+            "to": "evt_texts_chunked",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r13",
+            "from": "evt_texts_chunked",
+            "to": "pol_compute_embeddings",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r14",
+            "from": "pol_compute_embeddings",
+            "to": "cmd_compute_embeddings",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r15",
+            "from": "cmd_compute_embeddings",
+            "to": "doc_embedder",
+            "handledBy": true,
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r16",
+            "from": "doc_embedder",
+            "to": "embedding_model",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r17",
+            "from": "doc_embedder",
+            "to": "evt_embeddings_ready",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r18",
+            "from": "evt_embeddings_ready",
+            "to": "pol_write_docs",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r19",
+            "from": "pol_write_docs",
+            "to": "cmd_write_docs",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r20",
+            "from": "cmd_write_docs",
+            "to": "doc_writer",
+            "handledBy": true,
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r21",
+            "from": "doc_writer",
+            "to": "doc_store",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r22",
+            "from": "doc_writer",
+            "to": "evt_docs_indexed",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          }
+        ],
+        "journeys": [
+          {
+            "id": "indexing-flow",
+            "label": "Indexing Pipeline",
+            "description": "Raw files are converted, chunked, embedded, and stored.",
+            "steps": [
+              {
+                "nodeIds": [
+                  "dev_user",
+                  "pol_start_indexing",
+                  "cmd_start_indexing",
+                  "file_converter",
+                  "evt_files_loaded"
+                ],
+                "title": "Start Indexing",
+                "reason": "Files are loaded from a document directory. Indexing begins by reading all supported file formats."
+              },
+              {
+                "nodeIds": [
+                  "pol_convert_files",
+                  "cmd_convert_files",
+                  "file_converter2",
+                  "evt_docs_converted"
+                ],
+                "title": "Convert to Text",
+                "reason": "Documents in various formats (PDF, DOCX, TXT) are converted to plain text for uniform processing.",
+                "processGroup": "execution"
+              },
+              {
+                "nodeIds": [
+                  "pol_split_texts",
+                  "cmd_split_texts",
+                  "text_splitter",
+                  "evt_texts_chunked"
+                ],
+                "title": "Split into Chunks",
+                "reason": "Large text documents are split into smaller, overlapping chunks to fit model context windows.",
+                "processGroup": "execution"
+              },
+              {
+                "nodeIds": [
+                  "pol_compute_embeddings",
+                  "cmd_compute_embeddings",
+                  "doc_embedder",
+                  "embedding_model",
+                  "evt_embeddings_ready"
+                ],
+                "title": "Compute Embeddings",
+                "reason": "Each text chunk is passed through an embedding model to produce a vector representation for semantic search.",
+                "processGroup": "execution"
+              },
+              {
+                "nodeIds": [
+                  "pol_write_docs",
+                  "cmd_write_docs",
+                  "doc_writer",
+                  "doc_store",
+                  "evt_docs_indexed"
+                ],
+                "title": "Store in Document Store",
+                "reason": "Chunks and their embeddings are saved to the document store (e.g., SQLite, FAISS) for later retrieval.",
+                "processGroup": "execution"
+              }
+            ]
+          }
+        ],
+        "rawSteps": [
+          {
+            "type": "linear",
+            "id": "start_indexing",
+            "initiatedBy": {
+              "_tag": "ref",
+              "id": "dev_user"
+            },
+            "policy": "Trigger Conversion",
+            "command": "Start Indexing",
+            "handledBy": {
+              "_tag": "ref",
+              "id": "file_converter"
+            },
+            "resultEvents": [
+              {
+                "id": "files_loaded",
+                "title": "Files Loaded",
+                "desc": "Raw data files are available for processing."
+              }
+            ],
+            "continuesAs": "convert_files"
+          },
+          {
+            "type": "linear",
+            "id": "convert_files",
+            "policy": "Trigger Conversion",
+            "command": "Convert Files",
+            "handledBy": {
+              "_tag": "ref",
+              "id": "file_converter"
+            },
+            "resultEvents": [
+              {
+                "id": "docs_converted",
+                "title": "Documents Converted",
+                "desc": "Raw files transformed into structured Document objects."
+              }
+            ],
+            "continuesAs": "split_texts"
+          },
+          {
+            "type": "linear",
+            "id": "split_texts",
+            "policy": "Trigger Splitting",
+            "command": "Split Texts",
+            "handledBy": {
+              "_tag": "ref",
+              "id": "text_splitter"
+            },
+            "resultEvents": [
+              {
+                "id": "texts_chunked",
+                "title": "Texts Chunked",
+                "desc": "Documents split into smaller, searchable chunks."
+              }
+            ],
+            "continuesAs": "compute_embeddings"
+          },
+          {
+            "type": "linear",
+            "id": "compute_embeddings",
+            "policy": "Trigger Embedding",
+            "command": "Compute Embeddings",
+            "handledBy": {
+              "_tag": "ref",
+              "id": "doc_embedder"
+            },
+            "delegatesTo": {
+              "_tag": "ref",
+              "id": "embedding_model"
+            },
+            "resultEvents": [
+              {
+                "id": "embeddings_ready",
+                "title": "Embeddings Computed",
+                "desc": "Dense vectors attached to each document chunk."
+              }
+            ],
+            "continuesAs": "write_docs"
+          },
+          {
+            "type": "linear",
+            "id": "write_docs",
+            "policy": "Trigger Write",
+            "command": "Write Documents",
+            "handledBy": {
+              "_tag": "ref",
+              "id": "doc_writer"
+            },
+            "delegatesTo": {
+              "_tag": "ref",
+              "id": "doc_store"
+            },
+            "resultEvents": [
+              {
+                "id": "docs_indexed",
+                "title": "Documents Indexed",
+                "desc": "All documents stored and searchable in the Document Store."
+              }
+            ]
+          }
+        ]
+      }
+    }
+  },
+  {
+    "folder": "flowchart-query",
+    "type": "flowchart",
+    "props": {
+      "title": "Query Pipeline (RAG)",
+      "schema": {
+        "entities": {
+          "end_user": {
+            "title": "End User",
+            "desc": "Submits a natural-language query to the search system.",
+            "type": "Actor"
+          },
+          "text_embedder": {
+            "title": "Text Embedder",
+            "desc": "Converts the user query into a dense vector for semantic search.",
+            "type": "Aggregate"
+          },
+          "query_embedding_model": {
+            "title": "Embedding Model",
+            "desc": "External model that generates query embeddings.",
+            "type": "External API"
+          },
+          "retriever": {
+            "title": "Retriever",
+            "desc": "Searches the Document Store for relevant documents.",
+            "type": "Aggregate"
+          },
+          "doc_store": {
+            "title": "Document Store",
+            "desc": "Stores indexed documents for retrieval.",
+            "type": "External API"
+          },
+          "ranker": {
+            "title": "Ranker",
+            "desc": "Re-ranks retrieved documents by relevance to the query.",
+            "type": "Aggregate"
+          },
+          "prompt_builder": {
+            "title": "Prompt Builder",
+            "desc": "Assembles retrieved documents into an LLM prompt template.",
+            "type": "Aggregate"
+          },
+          "llm_generator": {
+            "title": "LLM Generator",
+            "desc": "Generates the final answer from the prompt using an LLM.",
+            "type": "Aggregate"
+          },
+          "llm_api": {
+            "title": "LLM API",
+            "desc": "External LLM service (OpenAI, Anthropic, etc.).",
+            "type": "External API"
+          },
+          "pol_submit_query": {
+            "title": "Embed Query",
+            "desc": "Embed Query",
+            "type": "Policy",
+            "root": false
+          },
+          "cmd_submit_query": {
+            "title": "Submit Query",
+            "desc": "Submit Query",
+            "type": "Command"
+          },
+          "evt_query_received": {
+            "title": "Query Received",
+            "desc": "Natural-language question enters the system.",
+            "type": "Event"
+          },
+          "pol_embed_query": {
+            "title": "Embed Query",
+            "desc": "Embed Query",
+            "type": "Policy",
+            "root": false
+          },
+          "cmd_embed_query": {
+            "title": "Embed Query",
+            "desc": "Embed Query",
+            "type": "Command"
+          },
+          "text_embedder2": {
+            "title": "Text Embedder",
+            "desc": "Converts the user query into a dense vector for semantic search.",
+            "type": "Aggregate"
+          },
+          "evt_query_embedded": {
+            "title": "Query Embedded",
+            "desc": "Query converted to dense vector representation.",
+            "type": "Event"
+          },
+          "pol_retrieve": {
+            "title": "Retrieve",
+            "desc": "Retrieve",
+            "type": "Policy",
+            "root": false
+          },
+          "cmd_retrieve": {
+            "title": "Retrieve Documents",
+            "desc": "Retrieve Documents",
+            "type": "Command"
+          },
+          "evt_docs_retrieved": {
+            "title": "Documents Retrieved",
+            "desc": "Candidate documents fetched from Document Store.",
+            "type": "Event"
+          },
+          "pol_rank": {
+            "title": "Rank",
+            "desc": "Rank",
+            "type": "Policy",
+            "root": false
+          },
+          "cmd_rank": {
+            "title": "Rank Documents",
+            "desc": "Rank Documents",
+            "type": "Command"
+          },
+          "evt_docs_ranked": {
+            "title": "Documents Ranked",
+            "desc": "Documents sorted by relevance score.",
+            "type": "Event"
+          },
+          "pol_build_prompt": {
+            "title": "RAG Assembly",
+            "desc": "RAG Assembly",
+            "type": "Policy",
+            "root": false
+          },
+          "cmd_build_prompt": {
+            "title": "Build Prompt",
+            "desc": "Build Prompt",
+            "type": "Command"
+          },
+          "evt_prompt_ready": {
+            "title": "Prompt Assembled",
+            "desc": "Context and query combined into LLM prompt.",
+            "type": "Event"
+          },
+          "pol_generate_answer": {
+            "title": "Generate",
+            "desc": "Generate",
+            "type": "Policy",
+            "root": false
+          },
+          "cmd_generate_answer": {
+            "title": "Generate Answer",
+            "desc": "Generate Answer",
+            "type": "Command"
+          },
+          "evt_answer_generated": {
+            "title": "Answer Generated",
+            "desc": "LLM produces final response.",
+            "type": "Event"
+          }
+        },
+        "relations": [
+          {
+            "id": "r1",
+            "from": "end_user",
+            "to": "pol_submit_query",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r2",
+            "from": "pol_submit_query",
+            "to": "cmd_submit_query",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r3",
+            "from": "cmd_submit_query",
+            "to": "text_embedder",
+            "handledBy": true,
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r4",
+            "from": "text_embedder",
+            "to": "evt_query_received",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r5",
+            "from": "evt_query_received",
+            "to": "pol_embed_query",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r6",
+            "from": "pol_embed_query",
+            "to": "cmd_embed_query",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r7",
+            "from": "cmd_embed_query",
+            "to": "text_embedder2",
+            "handledBy": true,
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r8",
+            "from": "text_embedder2",
+            "to": "query_embedding_model",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r9",
+            "from": "text_embedder2",
+            "to": "evt_query_embedded",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r10",
+            "from": "evt_query_embedded",
+            "to": "pol_retrieve",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r11",
+            "from": "pol_retrieve",
+            "to": "cmd_retrieve",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r12",
+            "from": "cmd_retrieve",
+            "to": "retriever",
+            "handledBy": true,
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r13",
+            "from": "retriever",
+            "to": "doc_store",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r14",
+            "from": "retriever",
+            "to": "evt_docs_retrieved",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r15",
+            "from": "evt_docs_retrieved",
+            "to": "pol_rank",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r16",
+            "from": "pol_rank",
+            "to": "cmd_rank",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r17",
+            "from": "cmd_rank",
+            "to": "ranker",
+            "handledBy": true,
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r18",
+            "from": "ranker",
+            "to": "evt_docs_ranked",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r19",
+            "from": "evt_docs_ranked",
+            "to": "pol_build_prompt",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r20",
+            "from": "pol_build_prompt",
+            "to": "cmd_build_prompt",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r21",
+            "from": "cmd_build_prompt",
+            "to": "prompt_builder",
+            "handledBy": true,
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r22",
+            "from": "prompt_builder",
+            "to": "evt_prompt_ready",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r23",
+            "from": "evt_prompt_ready",
+            "to": "pol_generate_answer",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r24",
+            "from": "pol_generate_answer",
+            "to": "cmd_generate_answer",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r25",
+            "from": "cmd_generate_answer",
+            "to": "llm_generator",
+            "handledBy": true,
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r26",
+            "from": "llm_generator",
+            "to": "llm_api",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r27",
+            "from": "llm_generator",
+            "to": "evt_answer_generated",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          }
+        ],
+        "journeys": [
+          {
+            "id": "rag-query",
+            "label": "RAG Query Pipeline",
+            "description": "Query is embedded, documents retrieved, ranked, and LLM generates answer.",
+            "steps": [
+              {
+                "nodeIds": [
+                  "end_user",
+                  "pol_submit_query",
+                  "cmd_submit_query",
+                  "text_embedder",
+                  "evt_query_received"
+                ],
+                "title": "Submit Query",
+                "reason": "User types a question into the chat interface. The query enters the RAG pipeline."
+              },
+              {
+                "nodeIds": [
+                  "pol_embed_query",
+                  "cmd_embed_query",
+                  "text_embedder2",
+                  "query_embedding_model",
+                  "evt_query_embedded"
+                ],
+                "title": "Embed Query",
+                "reason": "The query text is passed through the same embedding model used during indexing, producing a vector for comparison.",
+                "processGroup": "planning"
+              },
+              {
+                "nodeIds": [
+                  "pol_retrieve",
+                  "cmd_retrieve",
+                  "retriever",
+                  "doc_store",
+                  "evt_docs_retrieved"
+                ],
+                "title": "Retrieve Documents",
+                "reason": "The query vector is compared against stored document embeddings using similarity search. Top-k matching chunks are returned.",
+                "processGroup": "execution"
+              },
+              {
+                "nodeIds": [
+                  "pol_rank",
+                  "cmd_rank",
+                  "ranker",
+                  "evt_docs_ranked"
+                ],
+                "title": "Rank Results",
+                "reason": "Retrieved chunks are re-scored and ranked by a cross-encoder model for higher precision.",
+                "processGroup": "evaluation"
+              },
+              {
+                "nodeIds": [
+                  "pol_build_prompt",
+                  "cmd_build_prompt",
+                  "prompt_builder",
+                  "evt_prompt_ready"
+                ],
+                "title": "Build Prompt",
+                "reason": "Ranked chunks are combined with the original query into a prompt template for the LLM.",
+                "processGroup": "planning"
+              },
+              {
+                "nodeIds": [
+                  "pol_generate_answer",
+                  "cmd_generate_answer",
+                  "llm_generator",
+                  "llm_api",
+                  "evt_answer_generated"
+                ],
+                "title": "Generate Answer",
+                "reason": "LLM reads the enriched prompt and generates a grounded answer based on the retrieved context.",
+                "processGroup": "execution"
+              }
+            ]
+          },
+          {
+            "id": "simple-retrieval",
+            "label": "Simple Retrieval (No LLM)",
+            "description": "Query is embedded and documents retrieved directly without RAG.",
+            "steps": [
+              {
+                "nodeIds": [
+                  "pol_embed_query",
+                  "cmd_embed_query",
+                  "text_embedder2",
+                  "query_embedding_model",
+                  "evt_query_embedded"
+                ],
+                "title": "Embed Query",
+                "reason": "The query is converted to a vector using the embedding model.",
+                "processGroup": "planning"
+              },
+              {
+                "nodeIds": [
+                  "pol_retrieve",
+                  "cmd_retrieve",
+                  "retriever",
+                  "doc_store",
+                  "evt_docs_retrieved"
+                ],
+                "title": "Retrieve Documents",
+                "reason": "Vector similarity search finds matching document chunks, which are returned directly without LLM generation.",
+                "processGroup": "execution"
+              }
+            ]
+          }
+        ],
+        "rawSteps": [
+          {
+            "type": "linear",
+            "id": "submit_query",
+            "initiatedBy": {
+              "_tag": "ref",
+              "id": "end_user"
+            },
+            "policy": "Embed Query",
+            "command": "Submit Query",
+            "handledBy": {
+              "_tag": "ref",
+              "id": "text_embedder"
+            },
+            "resultEvents": [
+              {
+                "id": "query_received",
+                "title": "Query Received",
+                "desc": "Natural-language question enters the system."
+              }
+            ],
+            "continuesAs": "embed_query"
+          },
+          {
+            "type": "linear",
+            "id": "embed_query",
+            "policy": "Embed Query",
+            "command": "Embed Query",
+            "handledBy": {
+              "_tag": "ref",
+              "id": "text_embedder"
+            },
+            "delegatesTo": {
+              "_tag": "ref",
+              "id": "query_embedding_model"
+            },
+            "resultEvents": [
+              {
+                "id": "query_embedded",
+                "title": "Query Embedded",
+                "desc": "Query converted to dense vector representation."
+              }
+            ],
+            "continuesAs": "retrieve"
+          },
+          {
+            "type": "linear",
+            "id": "retrieve",
+            "policy": "Retrieve",
+            "command": "Retrieve Documents",
+            "handledBy": {
+              "_tag": "ref",
+              "id": "retriever"
+            },
+            "delegatesTo": {
+              "_tag": "ref",
+              "id": "doc_store"
+            },
+            "resultEvents": [
+              {
+                "id": "docs_retrieved",
+                "title": "Documents Retrieved",
+                "desc": "Candidate documents fetched from Document Store."
+              }
+            ],
+            "continuesAs": "rank"
+          },
+          {
+            "type": "linear",
+            "id": "rank",
+            "policy": "Rank",
+            "command": "Rank Documents",
+            "handledBy": {
+              "_tag": "ref",
+              "id": "ranker"
+            },
+            "resultEvents": [
+              {
+                "id": "docs_ranked",
+                "title": "Documents Ranked",
+                "desc": "Documents sorted by relevance score."
+              }
+            ],
+            "continuesAs": "build_prompt"
+          },
+          {
+            "type": "linear",
+            "id": "build_prompt",
+            "policy": "RAG Assembly",
+            "command": "Build Prompt",
+            "handledBy": {
+              "_tag": "ref",
+              "id": "prompt_builder"
+            },
+            "resultEvents": [
+              {
+                "id": "prompt_ready",
+                "title": "Prompt Assembled",
+                "desc": "Context and query combined into LLM prompt."
+              }
+            ],
+            "continuesAs": "generate_answer"
+          },
+          {
+            "type": "linear",
+            "id": "generate_answer",
+            "policy": "Generate",
+            "command": "Generate Answer",
+            "handledBy": {
+              "_tag": "ref",
+              "id": "llm_generator"
+            },
+            "delegatesTo": {
+              "_tag": "ref",
+              "id": "llm_api"
+            },
+            "resultEvents": [
+              {
+                "id": "answer_generated",
+                "title": "Answer Generated",
+                "desc": "LLM produces final response."
+              }
+            ]
+          }
+        ]
+      }
+    }
+  },
+  {
+    "folder": "reflection-sequence",
+    "type": "reflection-sequence",
+    "props": {
+      "title": "Search Query Pipeline Sequence",
+      "challenges": [
+        {
+          "prompt": "Arrange the components of a RAG query pipeline in the correct chronological execution order (Part 1):",
+          "items": [
+            {
+              "id": "user_query",
+              "text": "User Query Ingest"
+            },
+            {
+              "id": "text_embedder",
+              "text": "Sentence Embedder (Vectorize)"
+            },
+            {
+              "id": "vector_retriever",
+              "text": "Vector Retriever Lookup"
+            },
+            {
+              "id": "prompt_builder",
+              "text": "Prompt Builder (Format Context)"
+            },
+            {
+              "id": "llm_generator",
+              "text": "LLM Answer Generation"
+            }
+          ],
+          "solution": [
+            "user_query",
+            "text_embedder",
+            "vector_retriever",
+            "prompt_builder",
+            "llm_generator"
+          ]
+        },
+        {
+          "prompt": "Arrange the components of a RAG indexing pipeline in the correct chronological execution order (Part 2):",
+          "items": [
+            {
+              "id": "source_docs",
+              "text": "Source Document Load"
+            },
+            {
+              "id": "text_converter",
+              "text": "Text Converter Extraction"
+            },
+            {
+              "id": "doc_splitter",
+              "text": "Document Splitter (Chunking)"
+            },
+            {
+              "id": "doc_embedder",
+              "text": "Document Embedder (Vectorize)"
+            },
+            {
+              "id": "doc_writer",
+              "text": "Document Writer (Save Store)"
+            }
+          ],
+          "solution": [
+            "source_docs",
+            "text_converter",
+            "doc_splitter",
+            "doc_embedder",
+            "doc_writer"
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "folder": "quiz",
+    "type": "quiz",
+    "props": {
+      "title": "Knowledge Check",
+      "questions": [
+        {
+          "id": "q1",
+          "question": "What is a Haystack Pipeline?",
+          "choices": [
+            {
+              "id": "a",
+              "text": "A linear sequence of function calls",
+              "correct": false,
+              "explanation": "Pipelines are more flexible than linear sequences — they support branching and loops."
+            },
+            {
+              "id": "b",
+              "text": "A directed multigraph of components with typed connections",
+              "correct": true,
+              "explanation": "Correct. A Pipeline connects Components via typed input/output sockets and validates type compatibility at connection time."
+            },
+            {
+              "id": "c",
+              "text": "A database schema for storing documents",
+              "correct": false,
+              "explanation": "That describes a Document Store, not a Pipeline."
+            },
+            {
+              "id": "d",
+              "text": "A YAML configuration file format",
+              "correct": false,
+              "explanation": "Pipelines can be serialized to YAML, but they are runtime objects, not file formats."
+            }
+          ],
+          "hint": "Think about how components are connected."
+        },
+        {
+          "id": "q2",
+          "question": "Which component is NOT part of a Pipeline?",
+          "choices": [
+            {
+              "id": "a",
+              "text": "Retriever",
+              "correct": false,
+              "explanation": "Retrievers are pipeline components that query a Document Store."
+            },
+            {
+              "id": "b",
+              "text": "Embedder",
+              "correct": false,
+              "explanation": "Embedders are pipeline components that convert text to vectors."
+            },
+            {
+              "id": "c",
+              "text": "Document Store",
+              "correct": true,
+              "explanation": "Correct. The Document Store is an external database accessed by components, not a pipeline component itself."
+            },
+            {
+              "id": "d",
+              "text": "Ranker",
+              "correct": false,
+              "explanation": "Rankers are pipeline components that re-score documents."
+            }
+          ],
+          "hint": "One of these lives outside the pipeline graph."
+        },
+        {
+          "id": "q3",
+          "question": "What is the primary advantage of hybrid retrieval?",
+          "choices": [
+            {
+              "id": "a",
+              "text": "It is faster than any single retrieval method",
+              "correct": false,
+              "explanation": "Hybrid retrieval actually runs two passes, so it has slightly higher latency."
+            },
+            {
+              "id": "b",
+              "text": "It eliminates the need for embeddings",
+              "correct": false,
+              "explanation": "Hybrid retrieval still requires embeddings for the dense vector side."
+            },
+            {
+              "id": "c",
+              "text": "It catches both exact keyword matches and semantic similarities",
+              "correct": true,
+              "explanation": "Correct. Hybrid retrieval combines BM25 (exact keyword) with dense vectors (semantic) using Reciprocal Rank Fusion."
+            },
+            {
+              "id": "d",
+              "text": "It requires less infrastructure than single-method retrieval",
+              "correct": false,
+              "explanation": "Hybrid retrieval needs both keyword and vector indexes, requiring more infrastructure."
+            }
+          ],
+          "hint": "Hybrid combines two approaches."
+        },
+        {
+          "id": "q4",
+          "question": "What does a SuperComponent do?",
+          "choices": [
+            {
+              "id": "a",
+              "text": "Speeds up pipeline execution",
+              "correct": false,
+              "explanation": "SuperComponents are for organization, not performance."
+            },
+            {
+              "id": "b",
+              "text": "Wraps a sub-pipeline into a single reusable component",
+              "correct": true,
+              "explanation": "Correct. A SuperComponent hides internal wiring behind a clean interface, making complex graphs easier to manage."
+            },
+            {
+              "id": "c",
+              "text": "Converts between document formats",
+              "correct": false,
+              "explanation": "That is the job of converter components."
+            },
+            {
+              "id": "d",
+              "text": "Provides backup for failed components",
+              "correct": false,
+              "explanation": "SuperComponents don't handle failover; they organize pipeline structure."
+            }
+          ],
+          "hint": "Think about code organization."
+        },
+        {
+          "id": "q5",
+          "question": "Which Document Store backend supports native hybrid search?",
+          "choices": [
+            {
+              "id": "a",
+              "text": "Chroma",
+              "correct": false,
+              "explanation": "Chroma is vector-only and does not support BM25."
+            },
+            {
+              "id": "b",
+              "text": "InMemoryDocumentStore",
+              "correct": false,
+              "explanation": "While it supports both BM25 and vectors, it is meant for prototyping, not production hybrid search."
+            },
+            {
+              "id": "c",
+              "text": "OpenSearch",
+              "correct": true,
+              "explanation": "Correct. OpenSearch provides native hybrid search with BM25 + vectors + RRF fusion in a single query."
+            },
+            {
+              "id": "d",
+              "text": "Weaviate",
+              "correct": false,
+              "explanation": "Weaviate is primarily a vector database with limited keyword search support."
+            }
+          ],
+          "hint": "Look for backends that combine BM25 and vectors."
+        },
+        {
+          "id": "q6",
+          "question": "What is the purpose of a Ranker in Haystack?",
+          "choices": [
+            {
+              "id": "a",
+              "text": "To convert documents to embeddings",
+              "correct": false,
+              "explanation": "That is the job of an Embedder."
+            },
+            {
+              "id": "b",
+              "text": "To re-score and re-order retrieved documents by relevance",
+              "correct": true,
+              "explanation": "Correct. Rankers take documents from a Retriever and apply more sophisticated scoring models."
+            },
+            {
+              "id": "c",
+              "text": "To store documents in the Document Store",
+              "correct": false,
+              "explanation": "That is the job of a DocumentWriter."
+            },
+            {
+              "id": "d",
+              "text": "To split text into chunks",
+              "correct": false,
+              "explanation": "That is the job of a TextSplitter."
+            }
+          ],
+          "hint": "Rankers come after Retrievers."
+        },
+        {
+          "id": "q7",
+          "question": "When should you use AsyncPipeline over a standard Pipeline?",
+          "choices": [
+            {
+              "id": "a",
+              "text": "Always, since it is faster",
+              "correct": false,
+              "explanation": "AsyncPipeline adds complexity. Use it only when parallel execution provides benefit."
+            },
+            {
+              "id": "b",
+              "text": "When your pipeline has independent branches that benefit from parallel execution",
+              "correct": true,
+              "explanation": "Correct. AsyncPipeline runs independent branches concurrently, reducing latency for pipelines with fan-out patterns."
+            },
+            {
+              "id": "c",
+              "text": "When you need loop support",
+              "correct": false,
+              "explanation": "Loops are supported in the standard Pipeline, not only AsyncPipeline."
+            },
+            {
+              "id": "d",
+              "text": "When working with InMemoryDocumentStore",
+              "correct": false,
+              "explanation": "The choice of Document Store doesn't determine whether to use AsyncPipeline."
+            }
+          ],
+          "hint": "Consider execution patterns."
+        },
+        {
+          "id": "q8",
+          "question": "What field in a Haystack Document enables metadata filtering?",
+          "choices": [
+            {
+              "id": "a",
+              "text": "content",
+              "correct": false,
+              "explanation": "The content field holds the text, not metadata."
+            },
+            {
+              "id": "b",
+              "text": "embedding",
+              "correct": false,
+              "explanation": "The embedding field holds the vector representation."
+            },
+            {
+              "id": "c",
+              "text": "metadata",
+              "correct": true,
+              "explanation": "Correct. The metadata field is a dict of key-value pairs that enables structured filtering."
+            },
+            {
+              "id": "d",
+              "text": "score",
+              "correct": false,
+              "explanation": "The score field holds the relevance score from retrieval."
+            }
+          ],
+          "hint": "Documents carry more than just text and embeddings."
+        }
+      ]
+    }
+  },
+  {
+    "folder": "tradeoffs",
+    "type": "tradeoff-sandbox",
+    "props": {
+      "title": "Architecture Trade-offs",
+      "scenarios": [
+        {
+          "id": "haystack-architecture",
+          "title": "Haystack Architecture Decisions",
+          "description": "Design a production search system with Haystack. Evaluate trade-offs across retrieval strategy, document store choice, and pipeline pattern.",
+          "metrics": [
+            {
+              "id": "accuracy",
+              "label": "Search Accuracy",
+              "baseValue": 50,
+              "min": 0,
+              "max": 100,
+              "direction": "higher"
+            },
+            {
+              "id": "latency",
+              "label": "Low Latency",
+              "baseValue": 50,
+              "min": 0,
+              "max": 100,
+              "direction": "higher"
+            },
+            {
+              "id": "complexity",
+              "label": "Complexity",
+              "baseValue": 30,
+              "min": 0,
+              "max": 100,
+              "direction": "lower"
+            },
+            {
+              "id": "cost",
+              "label": "Cost Efficiency",
+              "baseValue": 50,
+              "min": 0,
+              "max": 100,
+              "direction": "higher"
+            }
+          ],
+          "steps": [
+            {
+              "id": "retrieval",
+              "title": "Retrieval Strategy",
+              "description": "Choose how your system finds relevant documents.",
+              "recommended": "hybrid",
+              "choices": [
+                {
+                  "id": "bm25-only",
+                  "label": "BM25 (Keyword)",
+                  "description": "Pure keyword matching based on term frequency and inverse document frequency.",
+                  "metrics": {
+                    "accuracy": -15,
+                    "latency": 20,
+                    "complexity": -15,
+                    "cost": 20
+                  },
+                  "pros": [
+                    {
+                      "title": "Fast execution",
+                      "description": "No embedding computation needed, direct keyword lookup"
+                    },
+                    {
+                      "title": "Exact matching",
+                      "description": "Perfect for proper nouns, IDs, and specific terms"
+                    },
+                    {
+                      "title": "No model cost",
+                      "description": "No embedding API calls or model hosting required"
+                    }
+                  ],
+                  "cons": [
+                    {
+                      "title": "No semantic understanding",
+                      "description": "Cannot match synonyms or paraphrased queries"
+                    },
+                    {
+                      "title": "Language dependent",
+                      "description": "Requires stemming and stopword handling per language"
+                    }
+                  ],
+                  "whenToUse": "Best when users search for exact terms, product codes, or known identifiers."
+                },
+                {
+                  "id": "dense-only",
+                  "label": "Dense Vector",
+                  "description": "Semantic similarity search using embedding vectors.",
+                  "metrics": {
+                    "accuracy": 5,
+                    "latency": -10,
+                    "complexity": 5,
+                    "cost": -10
+                  },
+                  "pros": [
+                    {
+                      "title": "Semantic matching",
+                      "description": "Finds conceptually similar documents even with different wording"
+                    },
+                    {
+                      "title": "Language agnostic",
+                      "description": "Multilingual embeddings work across languages"
+                    },
+                    {
+                      "title": "Robust to typos",
+                      "description": "Vector similarity tolerates minor spelling errors"
+                    }
+                  ],
+                  "cons": [
+                    {
+                      "title": "Embedding cost",
+                      "description": "Every query and document needs vector computation"
+                    },
+                    {
+                      "title": "Misses exact terms",
+                      "description": "May overlook documents with specific keywords"
+                    }
+                  ],
+                  "whenToUse": "Best for conceptual search, research, and natural-language questions."
+                },
+                {
+                  "id": "hybrid",
+                  "label": "Hybrid (BM25 + Dense)",
+                  "description": "Combines keyword and semantic search with Reciprocal Rank Fusion.",
+                  "metrics": {
+                    "accuracy": 25,
+                    "latency": -5,
+                    "complexity": 10,
+                    "cost": -5
+                  },
+                  "pros": [
+                    {
+                      "title": "Best of both worlds",
+                      "description": "Catches exact terms AND semantic matches"
+                    },
+                    {
+                      "title": "RRF fusion",
+                      "description": "Reciprocal Rank Fusion combines scores without tuning"
+                    },
+                    {
+                      "title": "Production standard",
+                      "description": "Industry best practice for enterprise search"
+                    }
+                  ],
+                  "cons": [
+                    {
+                      "title": "Moderate overhead",
+                      "description": "Runs two retrieval passes per query"
+                    },
+                    {
+                      "title": "Dual indexing",
+                      "description": "Documents need both keyword and vector indexes"
+                    }
+                  ],
+                  "whyThisFits": "Hybrid retrieval is the recommended production default. It provides the accuracy of semantic search while preserving the exact-match capability of BM25, with minimal latency overhead from RRF fusion."
+                }
+              ]
+            },
+            {
+              "id": "document-store",
+              "title": "Document Store Backend",
+              "description": "Choose where to store and index your documents.",
+              "recommended": "opensearch",
+              "choices": [
+                {
+                  "id": "in-memory",
+                  "label": "InMemoryDocumentStore",
+                  "description": "In-process memory store with no external dependencies.",
+                  "metrics": {
+                    "accuracy": -10,
+                    "latency": 25,
+                    "complexity": -25,
+                    "cost": 20
+                  },
+                  "pros": [
+                    {
+                      "title": "Zero setup",
+                      "description": "No external database to install or configure"
+                    },
+                    {
+                      "title": "Fastest for small data",
+                      "description": "No network latency for document access"
+                    },
+                    {
+                      "title": "Ideal for prototyping",
+                      "description": "Perfect for tutorials and quick experiments"
+                    }
+                  ],
+                  "cons": [
+                    {
+                      "title": "No persistence",
+                      "description": "Data lost when process restarts"
+                    },
+                    {
+                      "title": "No scaling",
+                      "description": "Cannot handle large document collections"
+                    },
+                    {
+                      "title": "No distribution",
+                      "description": "Single-process, single-machine only"
+                    }
+                  ],
+                  "whenToUse": "Use during development, testing, and when dataset fits in memory."
+                },
+                {
+                  "id": "chroma",
+                  "label": "Chroma",
+                  "description": "Lightweight vector database focused on embedding search.",
+                  "metrics": {
+                    "accuracy": 0,
+                    "latency": 5,
+                    "complexity": -5,
+                    "cost": 10
+                  },
+                  "pros": [
+                    {
+                      "title": "Simple API",
+                      "description": "Minimal configuration, easy to self-host"
+                    },
+                    {
+                      "title": "Embedding-first",
+                      "description": "Optimized for dense vector operations"
+                    },
+                    {
+                      "title": "Good developer UX",
+                      "description": "Clean Python client and local mode"
+                    }
+                  ],
+                  "cons": [
+                    {
+                      "title": "No BM25",
+                      "description": "Vector-only, no keyword search built-in"
+                    },
+                    {
+                      "title": "Limited filtering",
+                      "description": "Metadata filtering is basic compared to OpenSearch"
+                    }
+                  ],
+                  "whenToUse": "Good for embedding-only pipelines with moderate scale."
+                },
+                {
+                  "id": "opensearch",
+                  "label": "OpenSearch",
+                  "description": "Full-featured search engine with hybrid search and rich filtering.",
+                  "metrics": {
+                    "accuracy": 20,
+                    "latency": -5,
+                    "complexity": 15,
+                    "cost": 0
+                  },
+                  "pros": [
+                    {
+                      "title": "Hybrid search native",
+                      "description": "BM25 + vectors + RRF fusion in one query"
+                    },
+                    {
+                      "title": "Full OpenSearch DSL",
+                      "description": "Inject custom queries for maximum control"
+                    },
+                    {
+                      "title": "Rich metadata filtering",
+                      "description": "Complex boolean filters on document metadata"
+                    },
+                    {
+                      "title": "Enterprise scale",
+                      "description": "Horizontal scaling, replication, and high availability"
+                    }
+                  ],
+                  "cons": [
+                    {
+                      "title": "Infrastructure cost",
+                      "description": "Requires running OpenSearch cluster"
+                    },
+                    {
+                      "title": "Configuration complexity",
+                      "description": "Mapping, shard settings, and cluster management"
+                    }
+                  ],
+                  "whyThisFits": "OpenSearch is the recommended production backend. Its native hybrid search, full DSL access, and robust metadata filtering make it the most flexible choice for enterprise Haystack deployments."
+                },
+                {
+                  "id": "azure-search",
+                  "label": "Azure AI Search",
+                  "description": "Managed cloud search service with semantic ranker and Azure AI integration.",
+                  "metrics": {
+                    "accuracy": 22,
+                    "latency": 0,
+                    "complexity": 5,
+                    "cost": -10
+                  },
+                  "pros": [
+                    {
+                      "title": "Fully managed",
+                      "description": "No infrastructure to maintain, auto-scaling included"
+                    },
+                    {
+                      "title": "Semantic ranker",
+                      "description": "Azure-built semantic reranking out of the box"
+                    },
+                    {
+                      "title": "Azure AI integration",
+                      "description": "Native integration with Azure OpenAI for embeddings and generation"
+                    },
+                    {
+                      "title": "Hybrid + vector search",
+                      "description": "BM25, vector, and hybrid search with semantic ranking"
+                    },
+                    {
+                      "title": "Enterprise features",
+                      "description": "Role-based access, private endpoints, managed identity"
+                    }
+                  ],
+                  "cons": [
+                    {
+                      "title": "Azure lock-in",
+                      "description": "Tied to Azure ecosystem and billing"
+                    },
+                    {
+                      "title": "Per-query cost",
+                      "description": "Semantic ranker adds per-request charges"
+                    },
+                    {
+                      "title": "Haystack integration via connector",
+                      "description": "Requires haystack-azure-search-connector package"
+                    }
+                  ],
+                  "whenToUse": "Best when already in Azure ecosystem or needing managed semantic search without infrastructure overhead."
+                },
+                {
+                  "id": "google-search",
+                  "label": "Google Vertex AI Search",
+                  "description": "Google Cloud search with generative AI grounding and enterprise knowledge base.",
+                  "metrics": {
+                    "accuracy": 20,
+                    "latency": -5,
+                    "complexity": 5,
+                    "cost": -15
+                  },
+                  "pros": [
+                    {
+                      "title": "Generative AI grounding",
+                      "description": "Built-in RAG with Gemini models for grounded answers"
+                    },
+                    {
+                      "title": "Enterprise knowledge base",
+                      "description": "Pre-built connectors for G Suite, Sharepoint, and data warehouses"
+                    },
+                    {
+                      "title": "Multi-modal search",
+                      "description": "Search across text, images, and video with unified index"
+                    },
+                    {
+                      "title": "Google scale",
+                      "description": "Leverages Google search quality at cloud scale"
+                    }
+                  ],
+                  "cons": [
+                    {
+                      "title": "GCP lock-in",
+                      "description": "Tied to Google Cloud Platform"
+                    },
+                    {
+                      "title": "Higher cost",
+                      "description": "Premium pricing for generative AI features"
+                    },
+                    {
+                      "title": "Less pipeline control",
+                      "description": "Managed service abstracts away retrieval internals"
+                    },
+                    {
+                      "title": "Haystack integration via custom component",
+                      "description": "Requires building a custom Haystack connector"
+                    }
+                  ],
+                  "whenToUse": "Best for GCP enterprises needing generative AI search with minimal pipeline customization."
+                }
+              ]
+            },
+            {
+              "id": "pipeline-pattern",
+              "title": "Pipeline Pattern",
+              "description": "Choose the execution model for your Haystack pipeline.",
+              "recommended": "standard-pipeline",
+              "choices": [
+                {
+                  "id": "standard-pipeline",
+                  "label": "Standard Pipeline",
+                  "description": "Sequential execution with optional branching for parallel paths.",
+                  "metrics": {
+                    "accuracy": 0,
+                    "latency": 5,
+                    "complexity": -20,
+                    "cost": 10
+                  },
+                  "pros": [
+                    {
+                      "title": "Simplest model",
+                      "description": "Linear data flow, easy to debug and reason about"
+                    },
+                    {
+                      "title": "Type validation",
+                      "description": "Pipeline validates all connections before execution"
+                    },
+                    {
+                      "title": "Serialization",
+                      "description": "Save and load pipelines as YAML for deployment"
+                    }
+                  ],
+                  "cons": [
+                    {
+                      "title": "Sequential bottleneck",
+                      "description": "Independent components still run one-by-one"
+                    },
+                    {
+                      "title": "No built-in loops",
+                      "description": "Requires Pipeline with loops for iterative patterns"
+                    }
+                  ],
+                  "whyThisFits": "Start with a Standard Pipeline for most use cases. It covers RAG, document search, and basic branching with minimal complexity. Upgrade to AsyncPipeline or loops only when you have a measured performance or control-flow need."
+                },
+                {
+                  "id": "async-pipeline",
+                  "label": "Async Pipeline",
+                  "description": "Parallel execution of independent components and branches.",
+                  "metrics": {
+                    "accuracy": 0,
+                    "latency": 20,
+                    "complexity": 10,
+                    "cost": -5
+                  },
+                  "pros": [
+                    {
+                      "title": "Parallel execution",
+                      "description": "Independent branches run concurrently"
+                    },
+                    {
+                      "title": "Reduced latency",
+                      "description": "Multiple retrievers or LLM calls run simultaneously"
+                    },
+                    {
+                      "title": "I/O optimization",
+                      "description": "Network-bound operations overlap efficiently"
+                    }
+                  ],
+                  "cons": [
+                    {
+                      "title": "Async complexity",
+                      "description": "Requires understanding of async/await patterns"
+                    },
+                    {
+                      "title": "Debugging harder",
+                      "description": "Non-deterministic execution order complicates tracing"
+                    }
+                  ],
+                  "whenToUse": "Use when your pipeline has independent branches (e.g., multi-retriever fan-out) and latency is critical."
+                },
+                {
+                  "id": "agent-loop",
+                  "label": "Agent with Loops",
+                  "description": "Self-correcting pipeline with iterative feedback and tool use.",
+                  "metrics": {
+                    "accuracy": 20,
+                    "latency": -25,
+                    "complexity": 25,
+                    "cost": -15
+                  },
+                  "pros": [
+                    {
+                      "title": "Self-correction",
+                      "description": "Agent retries with refined approach on failure"
+                    },
+                    {
+                      "title": "Tool use",
+                      "description": "Agent dynamically calls tools during execution"
+                    },
+                    {
+                      "title": "Multi-step reasoning",
+                      "description": "Complex goals decomposed into tool-assisted steps"
+                    }
+                  ],
+                  "cons": [
+                    {
+                      "title": "High latency",
+                      "description": "Multiple LLM calls per query, often 3-10 iterations"
+                    },
+                    {
+                      "title": "Unpredictable cost",
+                      "description": "Token usage scales with number of iterations"
+                    },
+                    {
+                      "title": "Loop safety",
+                      "description": "Must set max iterations to prevent infinite loops"
+                    }
+                  ],
+                  "whenToUse": "Use for complex tasks requiring reasoning, tool use, or multi-step problem solving where accuracy justifies the latency."
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "folder": "formula-sandbox",
+    "type": "formula-sandbox",
+    "props": {
+      "title": "Haystack Retrieval Parameter Sandbox",
+      "variables": [
+        {
+          "id": "top_k",
+          "label": "Top K Documents Retrieved",
+          "min": 1,
+          "max": 20,
+          "step": 1,
+          "defaultValue": 5
+        },
+        {
+          "id": "document_overlap",
+          "label": "Document Chunk Overlap (chars)",
+          "min": 0,
+          "max": 500,
+          "step": 50,
+          "defaultValue": 100
+        }
+      ],
+      "metrics": [
+        {
+          "id": "recall",
+          "label": "Retrieval Recall Rate",
+          "formula": "Math.round(50 + (top_k * 2.2) + (document_overlap / 15))",
+          "description": "The percentage of relevant documents successfully fetched from the Document Store.",
+          "analogy": "Like casting a wider net—the larger K is, the more fish (information) you bring in.",
+          "inScope": [
+            "Retrieved chunk coverage"
+          ],
+          "outOfScope": [
+            "LLM reasoning capacity"
+          ]
+        },
+        {
+          "id": "latency",
+          "label": "Generation Latency (ms)",
+          "formula": "Math.round(150 + (top_k * 65) + (document_overlap * 0.3))",
+          "description": "The time elapsed before the generator API finishes writing the final response tokens.",
+          "analogy": "Reading speed. If you give a student 20 pages of text, they will take longer to summarize it than 2 pages.",
+          "inScope": [
+            "Token processing latency"
+          ],
+          "outOfScope": [
+            "Database indexing time"
+          ]
+        },
+        {
+          "id": "cost",
+          "label": "Estimated Ingest API Cost ($)",
+          "formula": "Math.round(top_k * 3.5 + (document_overlap / 25))",
+          "description": "Financial projection of prompt tokens processed by external generator APIs.",
+          "analogy": "Toll fee. You pay per word of context sent to the API.",
+          "inScope": [
+            "Prompt context tokens cost"
+          ],
+          "outOfScope": [
+            "Vector database storage costs"
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "folder": "reflection-template",
+    "type": "reflection-template",
+    "props": {
+      "title": "Retrieval Evaluation Template",
+      "challenges": [
+        {
+          "prompt": "Complete the statement explaining Top K retrieval characteristics (Part 1):",
+          "template": "Increasing Top K in a Haystack query pipeline leads to {zone-1} retrieval recall, because the retriever fetches more candidate text blocks. However, this also causes {zone-2} generation latency and {zone-3} API token cost.",
+          "chips": [
+            {
+              "id": "chip-higher",
+              "text": "higher"
+            },
+            {
+              "id": "chip-lower",
+              "text": "lower"
+            },
+            {
+              "id": "chip-increased",
+              "text": "increased"
+            },
+            {
+              "id": "chip-decreased",
+              "text": "decreased"
+            }
+          ],
+          "solution": {
+            "zone-1": "chip-higher",
+            "zone-2": "chip-increased",
+            "zone-3": "chip-increased"
+          },
+          "explanation": "<strong>Correct!</strong> Fetching more candidate files raises search recall rate but also forces the LLM generator to read more context, multiplying API cost and duration latency."
+        },
+        {
+          "prompt": "Complete the statement explaining chunk overlaps (Part 2):",
+          "template": "Adding larger chunk overlaps helps prevent semantic {zone-1} at text boundaries. However, it also duplicate text segments, which {zone-2} total context length and {zone-3} cost.",
+          "chips": [
+            {
+              "id": "chip-loss",
+              "text": "information loss"
+            },
+            {
+              "id": "chip-gain",
+              "text": "gains"
+            },
+            {
+              "id": "chip-raises",
+              "text": "raises"
+            },
+            {
+              "id": "chip-drops",
+              "text": "drops"
+            }
+          ],
+          "solution": {
+            "zone-1": "chip-loss",
+            "zone-2": "chip-raises",
+            "zone-3": "chip-raises"
+          },
+          "explanation": "<strong>Correct!</strong> Overlaps block boundary sentence splits, but they add duplicate strings that cost more to send to generator APIs."
+        }
+      ]
+    }
+  },
+  {
+    "folder": "scenario",
+    "type": "scenario",
+    "props": {
+      "title": "Designing a Search System",
+      "id": "haystack-design",
+      "intro": "Your company needs a search system for its knowledge base. You've chosen Haystack. How do you design it?",
+      "nodes": {
+        "start": {
+          "id": "start",
+          "prompt": "Your knowledge base has 50,000 documents in multiple languages. Users search with natural language questions. What retrieval strategy do you choose?",
+          "choices": [
+            {
+              "id": "bm25",
+              "text": "BM25 keyword search only — it's fast and simple",
+              "next": "bm25-outcome"
+            },
+            {
+              "id": "vector",
+              "text": "Dense vector search — captures semantic meaning across languages",
+              "next": "vector-outcome"
+            },
+            {
+              "id": "hybrid",
+              "text": "Hybrid BM25 + vectors with Reciprocal Rank Fusion",
+              "next": "hybrid-outcome"
+            }
+          ]
+        },
+        "bm25-outcome": {
+          "id": "bm25-outcome",
+          "outcome": {
+            "verdict": "Users find exact product codes but struggle with conceptual questions. Cross-language queries fail entirely.",
+            "lesson": "BM25 alone cannot handle semantic understanding or cross-language matching. For natural language questions, you need vector search.",
+            "rating": "c"
+          }
+        },
+        "vector-outcome": {
+          "id": "vector-outcome",
+          "outcome": {
+            "verdict": "Conceptual queries work well, but users miss documents with specific IDs, codes, or exact terms.",
+            "lesson": "Vector search misses exact keyword matches. A hybrid approach covering both strengths is the production standard.",
+            "rating": "b-minus"
+          }
+        },
+        "hybrid-outcome": {
+          "id": "hybrid-outcome",
+          "outcome": {
+            "verdict": "Users find both conceptual answers and exact terms. The RRF fusion combines scores seamlessly without tuning.",
+            "lesson": "Hybrid retrieval is the recommended production default — it covers the full spectrum of search needs.",
+            "rating": "a"
+          }
+        }
+      },
+      "startNode": "start"
+    }
+  },
+  {
+    "folder": "decision-tree",
+    "type": "decision-tree",
+    "props": {
+      "title": "Haystack Setup Advisor",
+      "id": "haystack-advisor",
+      "root": "goal",
+      "nodes": {
+        "goal": {
+          "id": "goal",
+          "prompt": "What are you building?",
+          "choices": [
+            {
+              "id": "simple-search",
+              "text": "Simple document search (no LLM answers)",
+              "next": "data-size",
+              "rationale": "Pure search is the most straightforward Haystack use case."
+            },
+            {
+              "id": "rag-system",
+              "text": "RAG system (LLM answers from documents)",
+              "next": "rag-complexity",
+              "rationale": "RAG adds LLM components but Haystack pipelines make it straightforward.",
+              "recommended": true
+            },
+            {
+              "id": "agentic",
+              "text": "Agentic system (tools, loops, multi-agent)",
+              "next": "agent-rec",
+              "rationale": "Agentic systems require loop pipelines and the Agent component."
+            }
+          ]
+        },
+        "data-size": {
+          "id": "data-size",
+          "prompt": "How many documents?",
+          "choices": [
+            {
+              "id": "small",
+              "text": "Under 10,000 documents",
+              "next": "rec-simple",
+              "rationale": "Smaller datasets work well with simpler setups."
+            },
+            {
+              "id": "large",
+              "text": "10,000+ documents",
+              "next": "rec-production",
+              "rationale": "Large datasets need production-grade infrastructure."
+            }
+          ]
+        },
+        "rag-complexity": {
+          "id": "rag-complexity",
+          "prompt": "How complex are the queries?",
+          "choices": [
+            {
+              "id": "straightforward",
+              "text": "Straightforward questions with clear answers in documents",
+              "next": "rec-rag-basic",
+              "rationale": "Most RAG systems start with a basic pipeline.",
+              "recommended": true
+            },
+            {
+              "id": "complex",
+              "text": "Complex reasoning requiring multi-step retrieval",
+              "next": "rec-rag-advanced",
+              "rationale": "Complex queries may need ranking, multi-retriever, or agent patterns."
+            }
+          ]
+        },
+        "agent-rec": {
+          "id": "agent-rec",
+          "leaf": {
+            "recommendation": "Use the Agent component with a loop-enabled Pipeline.",
+            "explanation": "Haystack's Agent component provides a ReAct loop. Combine it with custom tools and a Document Store for agentic search.",
+            "tradeoffs": [
+              "Higher latency from multiple LLM calls",
+              "Requires max iteration limits to prevent infinite loops",
+              "More expensive due to token usage"
+            ]
+          }
+        },
+        "rec-simple": {
+          "id": "rec-simple",
+          "leaf": {
+            "recommendation": "Start with InMemoryDocumentStore + BM25Retriever in a Standard Pipeline.",
+            "explanation": "For small datasets, the in-memory store gives zero setup and fast prototyping. BM25 handles keyword search without embedding overhead.",
+            "tradeoffs": [
+              "No persistence across restarts",
+              "No semantic search capability",
+              "Upgrade to a production Document Store when scaling"
+            ]
+          }
+        },
+        "rec-production": {
+          "id": "rec-production",
+          "leaf": {
+            "recommendation": "Use OpenSearchDocumentStore with HybridRetriever and AsyncPipeline.",
+            "explanation": "OpenSearch provides native hybrid search at scale. AsyncPipeline parallelizes independent branches for lower latency on large datasets.",
+            "tradeoffs": [
+              "Requires running OpenSearch infrastructure",
+              "Higher initial setup complexity",
+              "AsyncPipeline adds debugging complexity"
+            ]
+          }
+        },
+        "rec-rag-basic": {
+          "id": "rec-rag-basic",
+          "leaf": {
+            "recommendation": "Standard Pipeline: TextEmbedder → EmbeddingRetriever → Ranker → PromptBuilder → LLM.",
+            "explanation": "This is the canonical RAG pipeline in Haystack. Wire the components in sequence and the framework handles type validation and execution.",
+            "tradeoffs": [
+              "Single retrieval pass may miss edge cases",
+              "No self-correction on bad answers",
+              "Consider multi-retriever or agent patterns for higher accuracy"
+            ]
+          }
+        },
+        "rec-rag-advanced": {
+          "id": "rec-rag-advanced",
+          "leaf": {
+            "recommendation": "Multi-retriever pipeline with Ranker + Agent with self-correction loop.",
+            "explanation": "Use multiple Retrievers (BM25 + Embedding), fuse with ReciprocalRankFusion, add a Ranker, then route to an Agent for multi-step reasoning.",
+            "tradeoffs": [
+              "Highest latency from multiple retrieval + agent iterations",
+              "Most expensive setup with multiple LLM calls",
+              "Best accuracy for complex, multi-hop questions"
+            ]
+          }
+        }
+      }
+    }
+  }
+]

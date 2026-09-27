@@ -1,0 +1,4206 @@
+[
+  {
+    "folder": "intro",
+    "type": "intro",
+    "props": {
+      "title": "",
+      "estimatedTime": "8 min read",
+      "moduleCount": 6,
+      "what": {
+        "definition": "An AI Agent is an autonomous goal-directed software system that uses LLMs to perceive environment state, reason over goals, select tools, and execute multi-step workflows.",
+        "summary": "Comprehensive conceptual and interactive guide to building stateful, resilient AI agent systems.",
+        "bullets": [
+          "Event-driven policy, command, and result event loops",
+          "Spatial knowledge graph of components, memory, and tools",
+          "Quantitative trade-off analysis balancing latency, cost, and reliability"
+        ],
+        "tags": [
+          "Event Storming",
+          "Knowledge Graph",
+          "Trade-off Sandbox",
+          "Decision Advisor"
+        ]
+      },
+      "why": {
+        "summary": "Single-prompt LLM wrappers break when tasked with complex multi-step enterprise workflows requiring memory and tool selection.",
+        "impact": "Agentic architectures introduce dynamic policy execution, self-evaluation, and deterministic failure recovery."
+      },
+      "roadmap": [
+        {
+          "sectionId": "concept-map",
+          "title": "Knowledge Graph",
+          "type": "concept-map",
+          "description": "Map spatial relationships between agent components, memory modules, and tools."
+        },
+        {
+          "sectionId": "flashcards",
+          "title": "Vocabulary Drill",
+          "type": "flashcards",
+          "description": "Master essential terminology and system definitions."
+        },
+        {
+          "sectionId": "taxonomy",
+          "title": "Capability Taxonomy",
+          "type": "taxonomy-browser",
+          "description": "Browse architectural patterns, scopes, and analogies."
+        },
+        {
+          "sectionId": "flowchart",
+          "title": "Event Storming Flow",
+          "type": "flowchart",
+          "description": "Trace dynamic execution loops, policies, and async commands."
+        },
+        {
+          "sectionId": "tradeoffs",
+          "title": "Trade-off Sandbox",
+          "type": "tradeoff-sandbox",
+          "description": "Evaluate latency, throughput, and cost parameters."
+        },
+        {
+          "sectionId": "quiz",
+          "title": "Assessment Quiz",
+          "type": "quiz",
+          "description": "Validate understanding and key architectural concepts."
+        }
+      ]
+    }
+  },
+  {
+    "folder": "concept-map",
+    "type": "concept-map",
+    "props": {
+      "title": "AI Agent Architecture — Knowledge Graph",
+      "nodes": {
+        "orchestrator": {
+          "id": "orchestrator",
+          "title": "Orchestrator",
+          "category": "pattern"
+        },
+        "workers": {
+          "id": "workers",
+          "title": "Workers",
+          "category": "pattern"
+        },
+        "react_loop": {
+          "id": "react_loop",
+          "title": "ReAct Loop",
+          "category": "mechanism"
+        },
+        "memory": {
+          "id": "memory",
+          "title": "Memory",
+          "category": "system"
+        },
+        "tools": {
+          "id": "tools",
+          "title": "Tools",
+          "category": "concept"
+        },
+        "planner": {
+          "id": "planner",
+          "title": "Planner",
+          "category": "role"
+        },
+        "critic": {
+          "id": "critic",
+          "title": "Critic",
+          "category": "role"
+        },
+        "prompt_template": {
+          "id": "prompt_template",
+          "title": "Prompt Template",
+          "category": "data"
+        },
+        "context_window": {
+          "id": "context_window",
+          "title": "Context Window",
+          "category": "concept"
+        },
+        "feedback_loop": {
+          "id": "feedback_loop",
+          "title": "Feedback Loop",
+          "category": "mechanism"
+        },
+        "benchmark": {
+          "id": "benchmark",
+          "title": "Benchmark",
+          "category": "concept"
+        },
+        "metric": {
+          "id": "metric",
+          "title": "Metric",
+          "category": "data"
+        },
+        "human_eval": {
+          "id": "human_eval",
+          "title": "Human Evaluation",
+          "category": "process"
+        },
+        "automated_eval": {
+          "id": "automated_eval",
+          "title": "Automated Evaluation",
+          "category": "process"
+        },
+        "reward_model": {
+          "id": "reward_model",
+          "title": "Reward Model",
+          "category": "system"
+        }
+      },
+      "edges": [
+        {
+          "from": "orchestrator",
+          "to": "workers",
+          "label": "delegates to"
+        },
+        {
+          "from": "orchestrator",
+          "to": "planner",
+          "label": "uses"
+        },
+        {
+          "from": "workers",
+          "to": "react_loop",
+          "label": "executes"
+        },
+        {
+          "from": "workers",
+          "to": "tools",
+          "label": "invokes"
+        },
+        {
+          "from": "react_loop",
+          "to": "memory",
+          "label": "reads from"
+        },
+        {
+          "from": "react_loop",
+          "to": "feedback_loop",
+          "label": "forms"
+        },
+        {
+          "from": "planner",
+          "to": "context_window",
+          "label": "constrained by"
+        },
+        {
+          "from": "critic",
+          "to": "workers",
+          "label": "reviews"
+        },
+        {
+          "from": "critic",
+          "to": "feedback_loop",
+          "label": "feeds into"
+        },
+        {
+          "from": "prompt_template",
+          "to": "orchestrator",
+          "label": "configures"
+        },
+        {
+          "from": "prompt_template",
+          "to": "workers",
+          "label": "guides"
+        },
+        {
+          "from": "memory",
+          "to": "context_window",
+          "label": "fits within"
+        },
+        {
+          "from": "feedback_loop",
+          "to": "orchestrator",
+          "label": "informs"
+        },
+        {
+          "from": "benchmark",
+          "to": "metric",
+          "label": "defines"
+        },
+        {
+          "from": "human_eval",
+          "to": "metric",
+          "label": "produces"
+        },
+        {
+          "from": "automated_eval",
+          "to": "metric",
+          "label": "produces"
+        },
+        {
+          "from": "reward_model",
+          "to": "automated_eval",
+          "label": "powers"
+        },
+        {
+          "from": "reward_model",
+          "to": "benchmark",
+          "label": "trained on"
+        }
+      ]
+    }
+  },
+  {
+    "folder": "flashcards",
+    "type": "flashcards",
+    "props": {
+      "title": "Key Vocabulary",
+      "terms": [
+        {
+          "id": "hierarchy",
+          "word": "Visual Hierarchy",
+          "pronunciation": "vizh-oo-uhl hahy-er-ahr-kee",
+          "category": "hierarchy",
+          "shortDefinition": "Arranging UI elements in order of visual importance using scale, contrast, and weight.",
+          "detailedDefinition": "Visual hierarchy guides the user's eyes through an interface. Instead of specifying hardcoded fonts, instruct the AI to analyze element importance first and ask clarification questions to align on size scaling, weight contrast, and visual density.",
+          "whyItMatters": "If you instruct an AI vaguely, it defaults to a uniform, boring structure. Prompting the AI to think about hierarchy and ask for clarification forces it to design with distinct focal points rather than generic, monotonous text blocks."
+        },
+        {
+          "id": "whitespace",
+          "word": "Negative Space (Whitespace)",
+          "pronunciation": "neg-uh-tiv speys",
+          "category": "layout",
+          "shortDefinition": "The empty breathing room surrounding and between UI components that groups elements and enhances legibility.",
+          "detailedDefinition": "Negative space is an active design tool that organizes content without physical borders. Ask the AI to plan a spacing hierarchy (margins, padding, gaps) first, and ask back about the desired layout density.",
+          "whyItMatters": "AIs tend to default to conservative, tight spacing to save room. Asking the AI to analyze spacing and ask for your layout preferences prevents cluttered, claustrophobic designs and achieves clean, breathing breathing room."
+        },
+        {
+          "id": "contrast",
+          "word": "Color Contrast Ratio",
+          "pronunciation": "kuhl-er kon-trast rey-shee-oh",
+          "category": "accessibility",
+          "shortDefinition": "The difference in light intensity between text/foreground elements and their background, ensuring maximum accessibility.",
+          "detailedDefinition": "Accessible web design requires a contrast ratio of at least 4.5:1. Ask the AI to evaluate color contrast mathematically and query you on strict accessibility compliance versus specific brand tint options.",
+          "whyItMatters": "AIs often pair light gray text on light backgrounds to attempt a 'minimalist' look, violating readability standards. Instructing the AI to check contrast metrics first and ask for alignment ensures beautiful, readable, WCAG-friendly palettes."
+        },
+        {
+          "id": "affordance",
+          "word": "Interactive Affordance",
+          "pronunciation": "in-ter-ak-tiv uh-fawr-duhns",
+          "category": "interaction",
+          "shortDefinition": "Visual signifiers that communicate how an element behaves and how users should interact with it.",
+          "detailedDefinition": "Interactive affordance makes buttons and inputs look clickable. Direct the AI to outline its planned interactive states (hover, focus, click transitions) first, and ask you to choose the tactile intensity of the feedback.",
+          "whyItMatters": "Without prompting, AIs often render static, flat buttons that don't react to a cursor. Asking the AI to explain states and ask for alignment ensures buttons have clear interactive weight and satisfying feedback."
+        },
+        {
+          "id": "consistency",
+          "word": "Aesthetic Consistency",
+          "pronunciation": "es-thet-ik kuhn-sis-tuhn-see",
+          "category": "layout",
+          "shortDefinition": "Using standardized, repeating design variables (typography, spacing, borders) to create a unified design system.",
+          "detailedDefinition": "Aesthetic consistency prevents visual chaos. Instruct the AI to design a mini design system (consistent corner radiuses, border weights, gap increments) and align with you on a styling motif.",
+          "whyItMatters": "Without a consistency constraint, an AI might mix random styles (like highly rounded cards with sharp buttons). Declaring a unified motif and asking for confirmation makes the output feel extremely cohesive."
+        },
+        {
+          "id": "fluidity",
+          "word": "Responsive Fluidity",
+          "pronunciation": "ri-spon-siv floo-id-i-tee",
+          "category": "layout",
+          "shortDefinition": "Designing layouts that fluidly adapt, scale, and reorganize across all screens and window dimensions.",
+          "detailedDefinition": "Responsive fluidity adapts layouts to any viewport. Ask the AI to plan grid or flex structures first and query you on the breakpoint behavior and max-width layout thresholds.",
+          "whyItMatters": "If you specify static pixel dimensions, the AI compiles hardcoded CSS that breaks on mobile. Ordering the AI to analyze responsive reflow and ask for parameters guarantees a mobile-optimized, fluid layout."
+        },
+        {
+          "id": "typography",
+          "word": "Intentional Typography Pairings",
+          "pronunciation": "in-ten-shuh-nuhl tahy-pog-ruh-fee",
+          "category": "typography",
+          "shortDefinition": "Using contrasting but complementary font families for titles and body text to convey a specific aesthetic mood.",
+          "detailedDefinition": "Type pairing combines an expressive, stylistic display face for headers with a neutral, highly readable font for body elements. Direct the AI to suggest pairing combinations and ask which one fits your brand.",
+          "whyItMatters": "Without explicit directives, AIs fall back to generic system font stacks. Asking the AI to propose pairings and align on a visual mood adds immediate character and professional, editorial weight."
+        },
+        {
+          "id": "animations",
+          "word": "Purposeful Micro-interactions",
+          "pronunciation": "pur-puhs-fuhl mahy-kroh-in-ter-ak-shuhnz",
+          "category": "interaction",
+          "shortDefinition": "Subtle, organic UI transitions and animations that guide attention and confirm state changes.",
+          "detailedDefinition": "Micro-interactions use quick, physical transitions to smooth out state changes. Direct the AI to outline its animation durations and transition curves first, and ask for your preference on animation playfulness.",
+          "whyItMatters": "When visual states change instantly, the transition feels robotic and jarring. Specifying physics curves and asking for alignment ensures high-end, responsive micro-animations."
+        }
+      ]
+    }
+  },
+  {
+    "folder": "lifecycle",
+    "type": "text",
+    "props": {
+      "title": "Agent Lifecycle",
+      "paragraphs": [
+        "**Goal Intake** — The user submits a natural-language goal. The orchestrator parses intent, identifies required capabilities, and selects relevant tools from the registry.",
+        "**Context Retrieval** — The memory module performs a semantic search over stored embeddings to surface prior facts, tool outputs, or conversation history relevant to the current goal.",
+        "**Planning** — The planner prompts the LLM with the goal plus retrieved context. The LLM returns an ordered action plan — either as structured JSON or a chain-of-thought trace.",
+        "**Tool Execution** — The tool router dispatches each planned action to the executor. Tools include web search, code sandboxes, browser control, file I/O, and external APIs.",
+        "**Evaluation & Loop** — The evaluator checks whether the execution result satisfies the success criteria. If not, it feeds failure context back to the orchestrator and triggers a new planning iteration.",
+        "**Response Delivery** — Once the evaluator confirms success, the final artefact (answer, code diff, report) is formatted and returned to the user. Results are optionally persisted to memory."
+      ]
+    }
+  },
+  {
+    "folder": "capabilities",
+    "type": "bullets",
+    "props": {
+      "title": "Key Agent Capabilities",
+      "ordered": false,
+      "items": [
+        {
+          "text": "Tool use — call external APIs, run code, browse the web",
+          "children": [
+            {
+              "text": "Web search (Tavily, Brave, Google)"
+            },
+            {
+              "text": "Code execution (sandboxed interpreter)"
+            },
+            {
+              "text": "Browser automation (Playwright)"
+            }
+          ]
+        },
+        {
+          "text": "Long-horizon planning via chain-of-thought or ReAct",
+          "children": []
+        },
+        {
+          "text": "Persistent memory across sessions (vector store)",
+          "children": []
+        },
+        {
+          "text": "Self-evaluation and automatic re-planning on failure",
+          "children": []
+        },
+        {
+          "text": "Multi-agent coordination (delegating sub-tasks)",
+          "children": []
+        }
+      ]
+    }
+  },
+  {
+    "folder": "taxonomy",
+    "type": "taxonomy-browser",
+    "props": {
+      "title": "AI Agent Capability Taxonomy",
+      "categories": [
+        {
+          "icon": "GitFork",
+          "title": "Hierarchical Orchestration",
+          "subtitle": "Orchestrator-Workers",
+          "description": "A central manager agent (orchestrator) decomposes goals, delegates tasks to specialized worker agents, collects results, and synthesizes the final output.",
+          "details": "Ideal for complex, multi-step workflows requiring strict quality control, consensus, or routing.",
+          "analogy": "Like a software engineering manager delegating backend, frontend, and QA tasks to developers.",
+          "primaryFocus": "Task decomposition, delegation, and output synthesis",
+          "inScope": [
+            "Central director",
+            "Specialized sub-agents",
+            "Dynamic task routing"
+          ],
+          "outOfScope": [
+            "Peer-to-peer unstructured negotiation"
+          ],
+          "color": "mauve"
+        },
+        {
+          "icon": "Database",
+          "title": "Memory & Context",
+          "subtitle": "State Management",
+          "description": "The agent stores and retrieves information across interactions, maintaining context through vector embeddings, conversation history, and external knowledge bases.",
+          "details": "Memory systems include short-term (working memory within a session), long-term (persisted across sessions via embeddings), and external memory (RAG over documents).",
+          "analogy": "Like a researcher who takes notes, bookmarks references, and builds a personal knowledge base over years.",
+          "primaryFocus": "Context retention, retrieval, and working memory management",
+          "inScope": [
+            "Vector embeddings",
+            "Conversation history",
+            "RAG retrieval",
+            "Working memory"
+          ],
+          "outOfScope": [
+            "One-shot generation without memory"
+          ],
+          "color": "blue"
+        },
+        {
+          "icon": "Users",
+          "title": "Peer Collaboration",
+          "subtitle": "Decentralized Network",
+          "description": "Independent agents interact directly, negotiate, and collaborate to solve a problem without a centralized manager.",
+          "details": "Useful for negotiation, multi-perspective debates, or open-ended creative tasks.",
+          "analogy": "A brainstorming session among design peers sharing ideas, voting, and converging on a solution.",
+          "primaryFocus": "Peer negotiation, debate, and consensus mechanisms",
+          "inScope": [
+            "Debate loops",
+            "Voting consensus",
+            "Agent-to-agent negotiation"
+          ],
+          "outOfScope": [
+            "Rigid hierarchical command lines"
+          ],
+          "color": "green"
+        },
+        {
+          "icon": "Brain",
+          "title": "Reasoning & Planning",
+          "subtitle": "Core Intelligence",
+          "description": "The agent decomposes goals into actionable plans, reasons through chain-of-thought, and adapts strategies when encountering obstacles.",
+          "details": "Planning encompasses ReAct loops, tree-of-thought search, and self-refinement patterns.",
+          "analogy": "Like a project manager breaking down an epic into sprint tasks and adjusting when blockers appear.",
+          "primaryFocus": "Goal decomposition and step-by-step execution",
+          "inScope": [
+            "Chain-of-thought",
+            "ReAct loops",
+            "Self-correction"
+          ],
+          "outOfScope": [
+            "Raw text generation without planning"
+          ],
+          "color": "mauve"
+        },
+        {
+          "icon": "Scale",
+          "title": "Self-Evaluation",
+          "subtitle": "Quality Assurance",
+          "description": "The agent evaluates its own output against success criteria, identifies failures, and triggers re-planning or correction loops.",
+          "details": "Self-evaluation can be rule-based (checklist), LLM-based (self-critique), or hybrid (automated tests + LLM judgment).",
+          "analogy": "A developer reviewing their own code before submitting a PR.",
+          "primaryFocus": "Output validation and autonomous correction",
+          "inScope": [
+            "Self-critique",
+            "Automated testing",
+            "Success criteria checking",
+            "Re-planning on failure"
+          ],
+          "outOfScope": [
+            "Blind execution without verification"
+          ],
+          "color": "peach"
+        },
+        {
+          "icon": "Shuffle",
+          "title": "Sequential Choreography",
+          "subtitle": "Chain of Agents",
+          "description": "Agents work in a pipeline, passing data sequentially. Each agent receives input from the previous step, performs its specialized task, and hands off to the next.",
+          "details": "Best for structured pipelines where steps are predictable (e.g. Code Gen -> Lint -> Test -> Fix).",
+          "analogy": "An assembly line in a factory where each worker installs a specific part of a car.",
+          "primaryFocus": "Linear hand-offs and deterministic stage-gate processing",
+          "inScope": [
+            "Sequential pipeline",
+            "Stage-gate validation",
+            "Incremental improvement"
+          ],
+          "outOfScope": [
+            "Dynamic backtracking or ad-hoc loops"
+          ],
+          "color": "blue"
+        },
+        {
+          "icon": "ShieldCheck",
+          "title": "Supervisor Router",
+          "subtitle": "Dynamic Routing",
+          "description": "A supervisor agent monitors shared state, routes tasks dynamically to appropriate workers based on the current state, and decides when the overall goal is achieved.",
+          "details": "Best for open-ended problem solving where the path to the solution is non-linear and depends on intermediate findings.",
+          "analogy": "A triage doctor in an emergency room routing patients to specialists based on their symptoms.",
+          "primaryFocus": "State-based routing and completion evaluation",
+          "inScope": [
+            "State-driven routing",
+            "Dynamic task assignment",
+            "Supervisor evaluations"
+          ],
+          "outOfScope": [
+            "Deterministic linear pipelines"
+          ],
+          "color": "peach"
+        },
+        {
+          "icon": "Wrench",
+          "title": "Tool Use",
+          "subtitle": "Action Execution",
+          "description": "The agent invokes external tools — APIs, code interpreters, web browsers, file systems — to extend its capabilities beyond pure text generation.",
+          "details": "Tool use transforms the agent from a passive text generator into an active agent that can modify its environment.",
+          "analogy": "Like a developer using CLI tools, IDE features, and version control to complete a task.",
+          "primaryFocus": "External tool invocation and result integration",
+          "inScope": [
+            "API calls",
+            "Code execution",
+            "Web browsing",
+            "File I/O"
+          ],
+          "outOfScope": [
+            "Pure text completion"
+          ],
+          "color": "green"
+        }
+      ]
+    }
+  },
+  {
+    "folder": "taxonomy-patterns",
+    "type": "taxonomy-browser",
+    "props": {
+      "title": "Agent Design Patterns",
+      "categories": [
+        {
+          "icon": "Cpu",
+          "title": "ReAct (Reason + Act)",
+          "subtitle": "Thought-Action-Observation Loop",
+          "description": "The agent alternates between reasoning (Thought) and taking action (Act), then observes the result (Observation) to inform the next reasoning step.",
+          "details": "Each cycle: the agent thinks about what to do, executes a tool call or generates text, reads the result, and decides the next step. This loop continues until the goal is achieved or a max iteration limit is reached.",
+          "analogy": "Like a scientist who hypothesizes, runs an experiment, observes results, and revises the hypothesis.",
+          "primaryFocus": "Step-by-step reasoning with tool grounding",
+          "inScope": [
+            "Thought chain before each action",
+            "Tool execution and observation",
+            "Self-correction based on observations"
+          ],
+          "outOfScope": [
+            "Parallel task execution",
+            "Long-term memory across sessions"
+          ],
+          "color": "sky"
+        },
+        {
+          "icon": "ListTodo",
+          "title": "Plan-and-Execute",
+          "subtitle": "Separate Planning from Execution",
+          "description": "The agent first creates a detailed step-by-step plan, then executes each step sequentially, checking off completion and adjusting as needed.",
+          "details": "Planning phase generates a structured list of subtasks with dependencies. Execution phase processes each subtask, marking completion. If a step fails, the agent can replan just that step without redoing the entire plan.",
+          "analogy": "Like a project manager who writes a Gantt chart before the team starts working.",
+          "primaryFocus": "Structured multi-step task decomposition",
+          "inScope": [
+            "Explicit plan generation before execution",
+            "Sequential step processing",
+            "Plan adjustment on failure"
+          ],
+          "outOfScope": [
+            "Reactive, unplanned behavior",
+            "Real-time streaming responses"
+          ],
+          "color": "green"
+        },
+        {
+          "icon": "GitMerge",
+          "title": "Map-Reduce Agent",
+          "subtitle": "Parallel Processing with Aggregation",
+          "description": "The problem is decomposed into independent sub-problems, each solved by a separate agent instance in parallel, then results are combined by a reduce step.",
+          "details": "Map phase: the orchestrator splits the task and spawns parallel workers. Each worker solves its subtask independently. Reduce phase: a final aggregation step merges all results into a coherent answer.",
+          "analogy": "Like dividing a book among multiple proofreaders, then compiling their notes into one edit list.",
+          "primaryFocus": "Parallel independent task processing",
+          "inScope": [
+            "Task decomposition into independent units",
+            "Parallel worker execution",
+            "Result aggregation and synthesis"
+          ],
+          "outOfScope": [
+            "Tasks with inter-step dependencies",
+            "Sequential reasoning chains"
+          ],
+          "color": "violet"
+        },
+        {
+          "icon": "ArrowLeftRight",
+          "title": "Reflexion Agent",
+          "subtitle": "Self-Reflection with Memory",
+          "description": "The agent attempts a task, then reflects on what went wrong, stores lessons learned in a memory buffer, and uses those lessons to improve the next attempt.",
+          "details": "Unlike ReAct which observes immediate tool outputs, Reflexion maintains a persistent memory of past failures. Each retry incorporates the accumulated reflection log, allowing the agent to avoid repeating the same mistakes.",
+          "analogy": "Like a chess player who reviews game replays to identify recurring tactical errors.",
+          "primaryFocus": "Learning from past failures across attempts",
+          "inScope": [
+            "Failure analysis and reflection",
+            "Persistent memory of lessons learned",
+            "Iterative improvement across retries"
+          ],
+          "outOfScope": [
+            "Single-pass task completion",
+            "Tasks where failure is not informative"
+          ],
+          "color": "rose"
+        }
+      ]
+    }
+  },
+  {
+    "folder": "pillar-layer",
+    "type": "pillar-layer",
+    "props": {
+      "title": "Microservice Platform Layer Stack",
+      "intro": {
+        "what": "Reference architecture stack map of client applications, API gateways, microservices, and database adapters.",
+        "why": "Demonstrates clean multi-tier decoupling between presentation, gateway routing, domain logic, and infrastructure.",
+        "next": "Next: Test your understanding with the knowledge check quiz."
+      },
+      "section": {
+        "type": "pillar-layer",
+        "title": "Microservice Platform Layer Stack",
+        "description": "Reference architecture stack map of client applications, API gateways, microservices, and database adapters.",
+        "layers": [
+          {
+            "id": "l-clients",
+            "title": "1. Presentation & Client Layer",
+            "description": "Web SPAs, mobile apps, and third-party API clients."
+          },
+          {
+            "id": "l-gateway",
+            "title": "2. API Gateway & Ingress Layer",
+            "description": "Routing, rate limiting, and authentication gateways."
+          },
+          {
+            "id": "l-services",
+            "title": "3. Domain Microservices Tier",
+            "description": "Core business domain logic and service orchestrators."
+          },
+          {
+            "id": "l-infra",
+            "title": "4. Infrastructure & Database Adapters",
+            "description": "Relational DBs, cache nodes, event buses, and external APIs."
+          }
+        ],
+        "matrix_blocks": [
+          {
+            "id": "b-web-client",
+            "title": "React SPA Web Client",
+            "description": "Next.js frontend application consuming REST APIs.",
+            "layer_id": "l-clients",
+            "col_offset": 0,
+            "col_span": 2,
+            "color": "blue",
+            "depends_on": [
+              "b-envoy-gateway"
+            ]
+          },
+          {
+            "id": "b-mobile-app",
+            "title": "iOS / Android Native App",
+            "description": "Mobile application using gRPC-Web streams.",
+            "layer_id": "l-clients",
+            "col_offset": 2,
+            "col_span": 2,
+            "color": "mauve",
+            "depends_on": [
+              "b-envoy-gateway"
+            ]
+          },
+          {
+            "id": "b-envoy-gateway",
+            "title": "Envoy API Gateway",
+            "description": "Handles TLS termination, JWT validation, and CORS.",
+            "layer_id": "l-gateway",
+            "col_offset": 0,
+            "col_span": 4,
+            "color": "peach",
+            "depends_on": [
+              "b-auth-service",
+              "b-order-service"
+            ]
+          },
+          {
+            "id": "b-auth-service",
+            "title": "Auth & Identity Service",
+            "description": "Issues JWT access tokens and manages user sessions.",
+            "layer_id": "l-services",
+            "col_offset": 0,
+            "col_span": 2,
+            "color": "teal",
+            "depends_on": [
+              "b-postgres-db",
+              "b-redis-cache"
+            ]
+          },
+          {
+            "id": "b-order-service",
+            "title": "Order Fulfillment Service",
+            "description": "Processes checkout transactions and inventory checks.",
+            "layer_id": "l-services",
+            "col_offset": 2,
+            "col_span": 2,
+            "color": "green",
+            "depends_on": [
+              "b-postgres-db",
+              "b-kafka-bus"
+            ]
+          },
+          {
+            "id": "b-postgres-db",
+            "title": "PostgreSQL Database",
+            "description": "Primary ACID relational store for user profiles and orders.",
+            "layer_id": "l-infra",
+            "col_offset": 0,
+            "col_span": 1,
+            "color": "sapphire"
+          },
+          {
+            "id": "b-redis-cache",
+            "title": "Redis Cluster Cache",
+            "description": "In-memory cache for user sessions and rate limits.",
+            "layer_id": "l-infra",
+            "col_offset": 1,
+            "col_span": 1,
+            "color": "red"
+          },
+          {
+            "id": "b-kafka-bus",
+            "title": "Apache Kafka Event Bus",
+            "description": "Distributed event streaming for order status topics.",
+            "layer_id": "l-infra",
+            "col_offset": 2,
+            "col_span": 1,
+            "color": "yellow"
+          },
+          {
+            "id": "b-sendgrid-api",
+            "title": "SendGrid Email API",
+            "description": "Outbound HTTP API for order confirmation emails.",
+            "layer_id": "l-infra",
+            "col_offset": 3,
+            "col_span": 1,
+            "color": "pink"
+          }
+        ]
+      }
+    }
+  },
+  {
+    "folder": "flowchart",
+    "type": "flowchart",
+    "props": {
+      "title": "AI Agent Architecture",
+      "schema": {
+        "entities": {
+          "dev_user": {
+            "title": "Developer (Initiator)",
+            "desc": "The developer initiating instructions and goals.",
+            "type": "Actor"
+          },
+          "qa_user": {
+            "title": "QA Engineer",
+            "desc": "The QA engineer reviewing results.",
+            "type": "Actor"
+          },
+          "orch_agent": {
+            "title": "Agent Orchestrator",
+            "desc": "Manages step coordination, memory updates, and loop state.",
+            "type": "Aggregate",
+            "stateMachine": {
+              "states": [
+                {
+                  "id": "IDLE",
+                  "label": "Idle",
+                  "color": "var(--ctp-overlay1)"
+                },
+                {
+                  "id": "THINKING",
+                  "label": "Thinking",
+                  "color": "var(--ctp-blue)"
+                },
+                {
+                  "id": "EXECUTING_TOOL",
+                  "label": "Executing Tool",
+                  "color": "var(--ctp-green)"
+                },
+                {
+                  "id": "WAITING_FEEDBACK",
+                  "label": "Waiting Feedback",
+                  "color": "var(--ctp-peach)"
+                },
+                {
+                  "id": "COMPLETED",
+                  "label": "Completed",
+                  "color": "var(--ctp-teal)"
+                }
+              ],
+              "initialState": "IDLE"
+            }
+          },
+          "tools_router": {
+            "title": "Tools Router",
+            "desc": "Handles command routing and executes operations.",
+            "type": "Aggregate"
+          },
+          "llm": {
+            "title": "LLM",
+            "desc": "Generates execution plans, makes tool decisions, and synthesizes answers.",
+            "type": "External API"
+          },
+          "mcp_servers": {
+            "title": "MCP Servers",
+            "desc": "Model Context Protocol servers providing structured tools.",
+            "type": "External API"
+          },
+          "subagents": {
+            "title": "Subagent Pool",
+            "desc": "Dynamic spawned subagents delegated to run isolated journeys concurrently.",
+            "type": "External API"
+          },
+          "pol_run_agent": {
+            "title": "Trigger Planning",
+            "desc": "Trigger Planning",
+            "type": "Policy",
+            "root": false
+          },
+          "cmd_run_agent": {
+            "title": "Run Agent",
+            "desc": "Run Agent",
+            "type": "Command"
+          },
+          "evt_started": {
+            "title": "Agent Started",
+            "desc": "Task received, environment setup complete.",
+            "type": "Event"
+          },
+          "evt_session_created": {
+            "title": "Session Created",
+            "desc": "A new agent session ID was allocated.",
+            "type": "Event"
+          },
+          "pol_call_llm": {
+            "title": "Trigger Planning",
+            "desc": "Trigger Planning",
+            "type": "Policy",
+            "root": false
+          },
+          "cmd_call_llm": {
+            "title": "Call LLM",
+            "desc": "Call LLM",
+            "type": "Command"
+          },
+          "evt_reasoned": {
+            "title": "LLM Response Generated",
+            "desc": "Thinking thoughts and requested tool calls retrieved.",
+            "type": "Event"
+          },
+          "pol_execute_tool": {
+            "title": "Trigger Tool Call",
+            "desc": "Trigger Tool Call",
+            "type": "Policy"
+          },
+          "cmd_execute_tool": {
+            "title": "Execute Tool",
+            "desc": "Execute Tool",
+            "type": "Command"
+          },
+          "evt_tool_executed": {
+            "title": "Tool Executed",
+            "desc": "Result status and stdout output returned from execution.",
+            "type": "Event"
+          },
+          "evt_subagent_spawned": {
+            "title": "Subagent Spawned",
+            "desc": "Background task delegated.",
+            "type": "Event"
+          },
+          "pol_call_mcp": {
+            "title": "Trigger MCP Call",
+            "desc": "Trigger MCP Call",
+            "type": "Policy"
+          },
+          "cmd_call_mcp": {
+            "title": "Call MCP",
+            "desc": "Call MCP",
+            "type": "Command"
+          },
+          "evt_mcp_called": {
+            "title": "MCP Server Called",
+            "desc": "External API hit through MCP.",
+            "type": "Event"
+          },
+          "pol_direct_complete": {
+            "title": "Trigger Completion",
+            "desc": "Trigger Completion",
+            "type": "Policy"
+          },
+          "cmd_direct_complete": {
+            "title": "Complete Task",
+            "desc": "Complete Task",
+            "type": "Command"
+          },
+          "llm2": {
+            "title": "LLM",
+            "desc": "Generates execution plans, makes tool decisions, and synthesizes answers.",
+            "type": "External API"
+          },
+          "evt_done": {
+            "title": "Task Completed",
+            "desc": "Agent finishes loops and returns the verified solution.",
+            "type": "Event"
+          },
+          "pol_eval": {
+            "title": "Trigger Evaluation",
+            "desc": "Trigger Evaluation",
+            "type": "Policy",
+            "root": false
+          },
+          "cmd_eval": {
+            "title": "Compile Answer",
+            "desc": "Compile Answer",
+            "type": "Command"
+          },
+          "llm3": {
+            "title": "LLM",
+            "desc": "Generates execution plans, makes tool decisions, and synthesizes answers.",
+            "type": "External API"
+          },
+          "pol_send_message": {
+            "title": "Trigger User Notification",
+            "desc": "Trigger User Notification",
+            "type": "Policy"
+          },
+          "cmd_send_message": {
+            "title": "Send Message",
+            "desc": "Send Message",
+            "type": "Command"
+          },
+          "orch_agent2": {
+            "title": "Agent Orchestrator",
+            "desc": "Manages step coordination, memory updates, and loop state.",
+            "type": "Aggregate",
+            "stateMachine": {
+              "states": [
+                {
+                  "id": "IDLE",
+                  "label": "Idle",
+                  "color": "var(--ctp-overlay1)"
+                },
+                {
+                  "id": "THINKING",
+                  "label": "Thinking",
+                  "color": "var(--ctp-blue)"
+                },
+                {
+                  "id": "EXECUTING_TOOL",
+                  "label": "Executing Tool",
+                  "color": "var(--ctp-green)"
+                },
+                {
+                  "id": "WAITING_FEEDBACK",
+                  "label": "Waiting Feedback",
+                  "color": "var(--ctp-peach)"
+                },
+                {
+                  "id": "COMPLETED",
+                  "label": "Completed",
+                  "color": "var(--ctp-teal)"
+                }
+              ],
+              "initialState": "IDLE"
+            }
+          },
+          "evt_message_sent": {
+            "title": "Message Sent",
+            "desc": "User is notified and presented with input prompt.",
+            "type": "Event"
+          },
+          "pol_provide_feedback": {
+            "title": "Trigger Planning",
+            "desc": "Trigger Planning",
+            "type": "Policy",
+            "root": false
+          },
+          "cmd_provide_feedback": {
+            "title": "Provide Feedback",
+            "desc": "Provide Feedback",
+            "type": "Command"
+          },
+          "dev_user2": {
+            "title": "Developer (Initiator)",
+            "desc": "The developer initiating instructions and goals.",
+            "type": "Actor"
+          },
+          "orch_agent3": {
+            "title": "Agent Orchestrator",
+            "desc": "Manages step coordination, memory updates, and loop state.",
+            "type": "Aggregate",
+            "stateMachine": {
+              "states": [
+                {
+                  "id": "IDLE",
+                  "label": "Idle",
+                  "color": "var(--ctp-overlay1)"
+                },
+                {
+                  "id": "THINKING",
+                  "label": "Thinking",
+                  "color": "var(--ctp-blue)"
+                },
+                {
+                  "id": "EXECUTING_TOOL",
+                  "label": "Executing Tool",
+                  "color": "var(--ctp-green)"
+                },
+                {
+                  "id": "WAITING_FEEDBACK",
+                  "label": "Waiting Feedback",
+                  "color": "var(--ctp-peach)"
+                },
+                {
+                  "id": "COMPLETED",
+                  "label": "Completed",
+                  "color": "var(--ctp-teal)"
+                }
+              ],
+              "initialState": "IDLE"
+            }
+          },
+          "evt_feedback_received": {
+            "title": "Feedback Received",
+            "desc": "User provided new input to correct course.",
+            "type": "Event"
+          },
+          "pol_qa_review": {
+            "title": "Trigger QA Review",
+            "desc": "Trigger QA Review",
+            "type": "Policy"
+          },
+          "cmd_qa_review": {
+            "title": "Review Result",
+            "desc": "Review Result",
+            "type": "Command"
+          },
+          "orch_agent4": {
+            "title": "Agent Orchestrator",
+            "desc": "Manages step coordination, memory updates, and loop state.",
+            "type": "Aggregate",
+            "stateMachine": {
+              "states": [
+                {
+                  "id": "IDLE",
+                  "label": "Idle",
+                  "color": "var(--ctp-overlay1)"
+                },
+                {
+                  "id": "THINKING",
+                  "label": "Thinking",
+                  "color": "var(--ctp-blue)"
+                },
+                {
+                  "id": "EXECUTING_TOOL",
+                  "label": "Executing Tool",
+                  "color": "var(--ctp-green)"
+                },
+                {
+                  "id": "WAITING_FEEDBACK",
+                  "label": "Waiting Feedback",
+                  "color": "var(--ctp-peach)"
+                },
+                {
+                  "id": "COMPLETED",
+                  "label": "Completed",
+                  "color": "var(--ctp-teal)"
+                }
+              ],
+              "initialState": "IDLE"
+            }
+          },
+          "evt_qa_approved": {
+            "title": "QA Approved",
+            "desc": "The output passed QA standards.",
+            "type": "Event"
+          },
+          "evt_qa_rejected": {
+            "title": "QA Rejected",
+            "desc": "The output failed QA standards.",
+            "type": "Event"
+          }
+        },
+        "relations": [
+          {
+            "id": "r1",
+            "from": "dev_user",
+            "to": "pol_run_agent",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r2",
+            "from": "pol_run_agent",
+            "to": "cmd_run_agent",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r3",
+            "from": "cmd_run_agent",
+            "to": "orch_agent",
+            "handledBy": true,
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r4",
+            "from": "orch_agent",
+            "to": "evt_started",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r5",
+            "from": "orch_agent",
+            "to": "evt_session_created",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r6",
+            "from": "evt_started",
+            "to": "pol_call_llm",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r7",
+            "from": "evt_session_created",
+            "to": "pol_call_llm",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r8",
+            "from": "pol_call_llm",
+            "to": "cmd_call_llm",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r9",
+            "from": "cmd_call_llm",
+            "to": "llm",
+            "handledBy": true,
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r10",
+            "from": "llm",
+            "to": "evt_reasoned",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r11",
+            "from": "evt_reasoned",
+            "to": "pol_execute_tool",
+            "label": "Needs Tool",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r12",
+            "from": "pol_execute_tool",
+            "to": "cmd_execute_tool",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r13",
+            "from": "cmd_execute_tool",
+            "to": "tools_router",
+            "handledBy": true,
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r14",
+            "from": "tools_router",
+            "to": "subagents",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r15",
+            "from": "tools_router",
+            "to": "evt_tool_executed",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r16",
+            "from": "tools_router",
+            "to": "evt_subagent_spawned",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r17",
+            "from": "evt_tool_executed",
+            "to": "pol_eval",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r18",
+            "from": "evt_subagent_spawned",
+            "to": "pol_eval",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r19",
+            "from": "evt_reasoned",
+            "to": "pol_call_mcp",
+            "label": "Needs MCP",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r20",
+            "from": "pol_call_mcp",
+            "to": "cmd_call_mcp",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r21",
+            "from": "cmd_call_mcp",
+            "to": "mcp_servers",
+            "handledBy": true,
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r22",
+            "from": "mcp_servers",
+            "to": "evt_mcp_called",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r23",
+            "from": "evt_mcp_called",
+            "to": "pol_eval",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r24",
+            "from": "evt_reasoned",
+            "to": "pol_direct_complete",
+            "label": "Final Answer",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r25",
+            "from": "pol_direct_complete",
+            "to": "cmd_direct_complete",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r26",
+            "from": "cmd_direct_complete",
+            "to": "llm2",
+            "handledBy": true,
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r27",
+            "from": "llm2",
+            "to": "evt_done",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r43",
+            "from": "evt_done",
+            "to": "pol_qa_review",
+            "label": "Ready for QA",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r29",
+            "from": "pol_eval",
+            "to": "cmd_eval",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r30",
+            "from": "cmd_eval",
+            "to": "llm3",
+            "handledBy": true,
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r31",
+            "from": "llm3",
+            "to": "evt_done",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r32",
+            "from": "evt_done",
+            "to": "evt_tool_executed",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r33",
+            "from": "evt_tool_executed",
+            "to": "pol_send_message",
+            "label": "Needs Input",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r34",
+            "from": "pol_send_message",
+            "to": "cmd_send_message",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r35",
+            "from": "cmd_send_message",
+            "to": "orch_agent2",
+            "handledBy": true,
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r36",
+            "from": "orch_agent2",
+            "to": "evt_message_sent",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r37",
+            "from": "evt_message_sent",
+            "to": "pol_provide_feedback",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r38",
+            "from": "dev_user2",
+            "to": "pol_provide_feedback",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r39",
+            "from": "pol_provide_feedback",
+            "to": "cmd_provide_feedback",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r40",
+            "from": "cmd_provide_feedback",
+            "to": "orch_agent3",
+            "handledBy": true,
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r41",
+            "from": "orch_agent3",
+            "to": "evt_feedback_received",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r42",
+            "from": "evt_feedback_received",
+            "to": "pol_call_llm",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r44",
+            "from": "pol_qa_review",
+            "to": "cmd_qa_review",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r45",
+            "from": "cmd_qa_review",
+            "to": "orch_agent4",
+            "handledBy": true,
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r46",
+            "from": "orch_agent4",
+            "to": "qa_user",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r47",
+            "from": "orch_agent4",
+            "to": "evt_qa_approved",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r48",
+            "from": "orch_agent4",
+            "to": "evt_qa_rejected",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          }
+        ],
+        "journeys": [
+          {
+            "id": "happy-path",
+            "label": "Happy Path",
+            "description": "Agent uses tools successfully and passes QA.",
+            "steps": [
+              {
+                "nodeIds": [
+                  "dev_user",
+                  "pol_run_agent",
+                  "cmd_run_agent",
+                  "orch_agent",
+                  "evt_started",
+                  "evt_session_created"
+                ],
+                "title": "Launch Agent",
+                "reason": "Developer submits a task. Orchestrator agent starts a new session and begins planning.",
+                "processGroup": "planning"
+              },
+              {
+                "nodeIds": [
+                  "pol_call_llm",
+                  "cmd_call_llm",
+                  "llm",
+                  "evt_reasoned"
+                ],
+                "title": "LLM Planning",
+                "reason": "Agent sends the task context to the LLM for reasoning. LLM decides whether to use tools, call MCP, or finish.",
+                "processGroup": "planning"
+              },
+              {
+                "nodeIds": [
+                  "pol_execute_tool",
+                  "cmd_execute_tool",
+                  "tools_router",
+                  "subagents",
+                  "evt_tool_executed",
+                  "evt_subagent_spawned"
+                ],
+                "title": "Execute Tool",
+                "reason": "LLM requests a tool. Tools router dispatches and runs it, returning the output back to the agent.",
+                "processGroup": "execution"
+              },
+              {
+                "nodeIds": [
+                  "pol_call_mcp",
+                  "cmd_call_mcp",
+                  "mcp_servers",
+                  "evt_mcp_called"
+                ],
+                "title": "Call MCP Server",
+                "reason": "LLM requests an external API via MCP protocol. MCP server processes the call and returns the result.",
+                "processGroup": "execution"
+              },
+              {
+                "nodeIds": [
+                  "pol_eval",
+                  "cmd_eval",
+                  "llm3",
+                  "evt_done"
+                ],
+                "title": "Compile Answer",
+                "reason": "LLM integrates all tool results and MCP responses into a coherent final answer.",
+                "processGroup": "evaluation"
+              },
+              {
+                "nodeIds": [
+                  "pol_qa_review",
+                  "cmd_qa_review",
+                  "orch_agent4",
+                  "qa_user",
+                  "evt_qa_approved",
+                  "evt_qa_rejected"
+                ],
+                "title": "QA Review",
+                "reason": "Orchestrator agent reviews the final output against QA standards before delivery."
+              }
+            ]
+          },
+          {
+            "id": "feedback-loop",
+            "label": "Feedback Loop",
+            "description": "Agent needs more info from same actor.",
+            "steps": [
+              {
+                "nodeIds": [
+                  "pol_execute_tool",
+                  "cmd_execute_tool",
+                  "tools_router",
+                  "subagents",
+                  "evt_tool_executed",
+                  "evt_subagent_spawned"
+                ],
+                "title": "Execute Tool",
+                "reason": "LLM requests a tool. Tools router dispatches and runs it, but the result indicates missing input.",
+                "processGroup": "execution"
+              },
+              {
+                "nodeIds": [
+                  "pol_send_message",
+                  "cmd_send_message",
+                  "orch_agent2",
+                  "evt_message_sent"
+                ],
+                "title": "Request Input",
+                "reason": "Orchestrator agent detects missing information and sends a notification to the user."
+              },
+              {
+                "nodeIds": [
+                  "dev_user2",
+                  "pol_provide_feedback",
+                  "cmd_provide_feedback",
+                  "orch_agent3",
+                  "evt_feedback_received"
+                ],
+                "title": "Provide Feedback",
+                "reason": "Developer responds with the requested information. Orchestrator captures the feedback and resumes."
+              },
+              {
+                "nodeIds": [
+                  "pol_call_llm",
+                  "cmd_call_llm",
+                  "llm",
+                  "evt_reasoned"
+                ],
+                "title": "LLM Re-Planning",
+                "reason": "Agent re-sends the task context with the new feedback to the LLM for updated reasoning.",
+                "processGroup": "planning"
+              }
+            ]
+          },
+          {
+            "id": "direct-llm",
+            "label": "Direct LLM Answer",
+            "description": "No tools needed.",
+            "steps": [
+              {
+                "nodeIds": [
+                  "pol_call_llm",
+                  "cmd_call_llm",
+                  "llm",
+                  "evt_reasoned"
+                ],
+                "title": "LLM Planning",
+                "reason": "Agent sends the task to the LLM. The LLM determines no tools are needed and generates a direct answer.",
+                "processGroup": "planning"
+              },
+              {
+                "nodeIds": [
+                  "pol_direct_complete",
+                  "cmd_direct_complete",
+                  "llm2",
+                  "evt_done"
+                ],
+                "title": "Complete Task",
+                "reason": "LLM produces the final answer directly, skipping tool execution and MCP calls.",
+                "processGroup": "evaluation"
+              }
+            ]
+          }
+        ],
+        "rawSteps": [
+          {
+            "type": "linear",
+            "id": "run_agent",
+            "initiatedBy": {
+              "_tag": "ref",
+              "id": "dev_user"
+            },
+            "policy": "Trigger Planning",
+            "command": "Run Agent",
+            "handledBy": {
+              "_tag": "ref",
+              "id": "orch_agent"
+            },
+            "resultEvents": [
+              {
+                "id": "started",
+                "title": "Agent Started",
+                "desc": "Task received, environment setup complete."
+              },
+              {
+                "id": "session_created",
+                "title": "Session Created",
+                "desc": "A new agent session ID was allocated."
+              }
+            ],
+            "continuesAs": "call_llm"
+          },
+          {
+            "type": "linear",
+            "id": "call_llm",
+            "policy": "Trigger Planning",
+            "command": "Call LLM",
+            "handledBy": {
+              "_tag": "ref",
+              "id": "llm"
+            },
+            "resultEvents": [
+              {
+                "id": "reasoned",
+                "title": "LLM Response Generated",
+                "desc": "Thinking thoughts and requested tool calls retrieved."
+              }
+            ],
+            "continuesAs": "reason-branch"
+          },
+          {
+            "type": "branch",
+            "id": "reason-branch",
+            "event": "reasoned",
+            "branches": [
+              {
+                "id": "execute_tool",
+                "label": "Needs Tool",
+                "policy": "Trigger Tool Call",
+                "command": "Execute Tool",
+                "handledBy": {
+                  "_tag": "ref",
+                  "id": "tools_router"
+                },
+                "delegatesTo": {
+                  "_tag": "ref",
+                  "id": "subagents"
+                },
+                "resultEvents": [
+                  {
+                    "id": "tool_executed",
+                    "title": "Tool Executed",
+                    "desc": "Result status and stdout output returned from execution."
+                  },
+                  {
+                    "id": "subagent_spawned",
+                    "title": "Subagent Spawned",
+                    "desc": "Background task delegated."
+                  }
+                ],
+                "continuesAs": "eval"
+              },
+              {
+                "id": "call_mcp",
+                "label": "Needs MCP",
+                "policy": "Trigger MCP Call",
+                "command": "Call MCP",
+                "handledBy": {
+                  "_tag": "ref",
+                  "id": "mcp_servers"
+                },
+                "resultEvents": [
+                  {
+                    "id": "mcp_called",
+                    "title": "MCP Server Called",
+                    "desc": "External API hit through MCP."
+                  }
+                ],
+                "continuesAs": "eval"
+              },
+              {
+                "id": "direct_complete",
+                "label": "Final Answer",
+                "policy": "Trigger Completion",
+                "command": "Complete Task",
+                "handledBy": {
+                  "_tag": "ref",
+                  "id": "llm"
+                },
+                "resultEvents": [
+                  {
+                    "id": "done",
+                    "title": "Task Completed",
+                    "desc": "Agent finishes loops and returns the verified solution."
+                  }
+                ],
+                "continuesAs": "qa_review"
+              }
+            ]
+          },
+          {
+            "type": "linear",
+            "id": "eval",
+            "policy": "Trigger Evaluation",
+            "command": "Compile Answer",
+            "handledBy": {
+              "_tag": "ref",
+              "id": "llm"
+            },
+            "resultEvents": [
+              {
+                "id": "done",
+                "title": "Task Completed",
+                "desc": "Agent finishes loops and returns the verified solution."
+              }
+            ],
+            "continuesAs": "notify-branch"
+          },
+          {
+            "type": "branch",
+            "id": "notify-branch",
+            "event": "tool_executed",
+            "branches": [
+              {
+                "id": "send_message",
+                "label": "Needs Input",
+                "policy": "Trigger User Notification",
+                "command": "Send Message",
+                "handledBy": {
+                  "_tag": "ref",
+                  "id": "orch_agent"
+                },
+                "resultEvents": [
+                  {
+                    "id": "message_sent",
+                    "title": "Message Sent",
+                    "desc": "User is notified and presented with input prompt."
+                  }
+                ],
+                "continuesAs": "provide_feedback"
+              }
+            ]
+          },
+          {
+            "type": "linear",
+            "id": "provide_feedback",
+            "initiatedBy": {
+              "_tag": "ref",
+              "id": "dev_user"
+            },
+            "policy": "Trigger Planning",
+            "command": "Provide Feedback",
+            "handledBy": {
+              "_tag": "ref",
+              "id": "orch_agent"
+            },
+            "resultEvents": [
+              {
+                "id": "feedback_received",
+                "title": "Feedback Received",
+                "desc": "User provided new input to correct course."
+              }
+            ],
+            "continuesAs": "call_llm"
+          },
+          {
+            "type": "branch",
+            "id": "qa-branch",
+            "event": "done",
+            "branches": [
+              {
+                "id": "qa_review",
+                "label": "Ready for QA",
+                "policy": "Trigger QA Review",
+                "command": "Review Result",
+                "handledBy": {
+                  "_tag": "ref",
+                  "id": "orch_agent"
+                },
+                "delegatesTo": {
+                  "_tag": "ref",
+                  "id": "qa_user"
+                },
+                "resultEvents": [
+                  {
+                    "id": "qa_approved",
+                    "title": "QA Approved",
+                    "desc": "The output passed QA standards."
+                  },
+                  {
+                    "id": "qa_rejected",
+                    "title": "QA Rejected",
+                    "desc": "The output failed QA standards."
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    }
+  },
+  {
+    "folder": "flowchart-feedback",
+    "type": "flowchart",
+    "props": {
+      "title": "Agent Feedback Loop",
+      "schema": {
+        "entities": {
+          "dev_user": {
+            "title": "Developer (Feedback Source)",
+            "desc": "Provides feedback on agent output",
+            "type": "Actor"
+          },
+          "qa_user": {
+            "title": "QA Reviewer",
+            "desc": "Evaluates agent output quality",
+            "type": "Actor"
+          },
+          "orch_feedback": {
+            "title": "Agent Orchestrator",
+            "desc": "Receives feedback and triggers re-planning",
+            "type": "Aggregate"
+          },
+          "evaluator": {
+            "title": "Self-Evaluator",
+            "desc": "Checks output against success criteria",
+            "type": "Aggregate"
+          },
+          "llm_feedback": {
+            "title": "LLM",
+            "desc": "Re-generates output based on feedback",
+            "type": "External API"
+          },
+          "memory_store": {
+            "title": "Memory Store",
+            "desc": "Stores failed attempts for context",
+            "type": "External API"
+          },
+          "pol_fb_check": {
+            "title": "",
+            "desc": "",
+            "type": "Policy",
+            "root": false
+          },
+          "cmd_fb_check": {
+            "title": "cmd_evaluate",
+            "desc": "cmd_evaluate",
+            "type": "Command"
+          },
+          "evt_fb_evaluated": {
+            "title": "Output Evaluated",
+            "desc": "Output Evaluated",
+            "type": "Event"
+          },
+          "pol_fb_pass": {
+            "title": "fb_accept",
+            "desc": "fb_accept",
+            "type": "Policy"
+          },
+          "cmd_fb_pass": {
+            "title": "cmd_accept",
+            "desc": "cmd_accept",
+            "type": "Command"
+          },
+          "evt_fb_accepted": {
+            "title": "Output Accepted",
+            "desc": "Output Accepted",
+            "type": "Event"
+          },
+          "pol_fb_fail": {
+            "title": "fb_revise",
+            "desc": "fb_revise",
+            "type": "Policy"
+          },
+          "cmd_fb_fail": {
+            "title": "cmd_revise",
+            "desc": "cmd_revise",
+            "type": "Command"
+          },
+          "orch_feedback2": {
+            "title": "Agent Orchestrator",
+            "desc": "Receives feedback and triggers re-planning",
+            "type": "Aggregate"
+          },
+          "evt_fb_revision": {
+            "title": "Revision Triggered",
+            "desc": "Revision Triggered",
+            "type": "Event"
+          },
+          "pol_fb_store": {
+            "title": "fb_revision",
+            "desc": "fb_revision",
+            "type": "Policy",
+            "root": false
+          },
+          "cmd_fb_store": {
+            "title": "cmd_store_failure",
+            "desc": "cmd_store_failure",
+            "type": "Command"
+          },
+          "evt_fb_stored": {
+            "title": "Failure Context Stored",
+            "desc": "Failure Context Stored",
+            "type": "Event"
+          },
+          "pol_fb_rerun": {
+            "title": "fb_stored",
+            "desc": "fb_stored",
+            "type": "Policy",
+            "root": false
+          },
+          "cmd_fb_rerun": {
+            "title": "cmd_rerun",
+            "desc": "cmd_rerun",
+            "type": "Command"
+          },
+          "evt_fb_regenerated": {
+            "title": "Output Regenerated",
+            "desc": "Output Regenerated",
+            "type": "Event"
+          }
+        },
+        "relations": [
+          {
+            "id": "r1",
+            "from": "qa_user",
+            "to": "pol_fb_check",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r2",
+            "from": "pol_fb_check",
+            "to": "cmd_fb_check",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r3",
+            "from": "cmd_fb_check",
+            "to": "evaluator",
+            "handledBy": true,
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r4",
+            "from": "evaluator",
+            "to": "evt_fb_evaluated",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r5",
+            "from": "evt_fb_evaluated",
+            "to": "pol_fb_pass",
+            "label": "Pass",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r6",
+            "from": "pol_fb_pass",
+            "to": "cmd_fb_pass",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r7",
+            "from": "cmd_fb_pass",
+            "to": "orch_feedback",
+            "handledBy": true,
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r8",
+            "from": "orch_feedback",
+            "to": "evt_fb_accepted",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r9",
+            "from": "evt_fb_evaluated",
+            "to": "pol_fb_fail",
+            "label": "Needs Revision",
+            "dashed": true,
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r10",
+            "from": "pol_fb_fail",
+            "to": "cmd_fb_fail",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r11",
+            "from": "cmd_fb_fail",
+            "to": "orch_feedback2",
+            "handledBy": true,
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r12",
+            "from": "orch_feedback2",
+            "to": "dev_user",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r13",
+            "from": "orch_feedback2",
+            "to": "evt_fb_revision",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r14",
+            "from": "evt_fb_revision",
+            "to": "pol_fb_store",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r15",
+            "from": "pol_fb_store",
+            "to": "cmd_fb_store",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r16",
+            "from": "cmd_fb_store",
+            "to": "memory_store",
+            "handledBy": true,
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r17",
+            "from": "memory_store",
+            "to": "evt_fb_stored",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r18",
+            "from": "evt_fb_stored",
+            "to": "pol_fb_rerun",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r19",
+            "from": "pol_fb_rerun",
+            "to": "cmd_fb_rerun",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r20",
+            "from": "cmd_fb_rerun",
+            "to": "llm_feedback",
+            "handledBy": true,
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r21",
+            "from": "llm_feedback",
+            "to": "evt_fb_regenerated",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r22",
+            "from": "evt_fb_regenerated",
+            "to": "pol_fb_check",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          }
+        ],
+        "journeys": [
+          {
+            "id": "fb_journey_pass",
+            "label": "QA Pass",
+            "description": "Output passes evaluation on first attempt",
+            "steps": [
+              {
+                "nodeIds": [
+                  "qa_user",
+                  "pol_fb_check",
+                  "cmd_fb_check",
+                  "evaluator",
+                  "evt_fb_evaluated"
+                ],
+                "title": "Evaluate Output",
+                "reason": "QA evaluator reviews the output against quality criteria.",
+                "processGroup": "evaluation"
+              },
+              {
+                "nodeIds": [
+                  "pol_fb_pass",
+                  "cmd_fb_pass",
+                  "orch_feedback",
+                  "evt_fb_accepted"
+                ],
+                "title": "Accept Output",
+                "reason": "Output meets all criteria and is approved without revision.",
+                "processGroup": "evaluation"
+              }
+            ]
+          },
+          {
+            "id": "fb_journey_revise",
+            "label": "Revision Loop",
+            "description": "Output fails evaluation, triggering a revision cycle",
+            "steps": [
+              {
+                "nodeIds": [
+                  "qa_user",
+                  "pol_fb_check",
+                  "cmd_fb_check",
+                  "evaluator",
+                  "evt_fb_evaluated"
+                ],
+                "title": "Evaluate Output",
+                "reason": "QA evaluator reviews the output and finds it does not meet criteria.",
+                "processGroup": "evaluation"
+              },
+              {
+                "nodeIds": [
+                  "pol_fb_fail",
+                  "cmd_fb_fail",
+                  "orch_feedback2",
+                  "dev_user",
+                  "evt_fb_revision"
+                ],
+                "title": "Trigger Revision",
+                "reason": "Output fails evaluation. Revision flag is raised to start the correction cycle.",
+                "processGroup": "escalation"
+              },
+              {
+                "nodeIds": [
+                  "pol_fb_store",
+                  "cmd_fb_store",
+                  "memory_store",
+                  "evt_fb_stored"
+                ],
+                "title": "Store Failure Context",
+                "reason": "Failure details and feedback are stored in memory so the LLM can reference them during revision.",
+                "processGroup": "execution"
+              },
+              {
+                "nodeIds": [
+                  "pol_fb_rerun",
+                  "cmd_fb_rerun",
+                  "llm_feedback",
+                  "evt_fb_regenerated"
+                ],
+                "title": "Regenerate with Context",
+                "reason": "LLM receives the stored failure context and regenerates the output with corrections.",
+                "processGroup": "planning"
+              },
+              {
+                "nodeIds": [
+                  "qa_user",
+                  "pol_fb_check",
+                  "cmd_fb_check",
+                  "evaluator",
+                  "evt_fb_evaluated"
+                ],
+                "title": "Re-Evaluate",
+                "reason": "Revised output is evaluated again to check if it now meets quality criteria.",
+                "processGroup": "evaluation"
+              }
+            ]
+          }
+        ],
+        "rawSteps": [
+          {
+            "type": "linear",
+            "id": "fb_check",
+            "initiatedBy": {
+              "_tag": "ref",
+              "id": "qa_user"
+            },
+            "policy": "",
+            "command": "cmd_evaluate",
+            "handledBy": {
+              "_tag": "ref",
+              "id": "evaluator"
+            },
+            "resultEvents": [
+              {
+                "id": "fb_evaluated",
+                "title": "Output Evaluated"
+              }
+            ],
+            "continuesAs": "fb_decision"
+          },
+          {
+            "type": "branch",
+            "id": "fb_decision",
+            "event": "fb_evaluated",
+            "branches": [
+              {
+                "id": "fb_pass",
+                "label": "Pass",
+                "policy": "fb_accept",
+                "command": "cmd_accept",
+                "handledBy": {
+                  "_tag": "ref",
+                  "id": "orch_feedback"
+                },
+                "resultEvents": [
+                  {
+                    "id": "fb_accepted",
+                    "title": "Output Accepted"
+                  }
+                ]
+              },
+              {
+                "id": "fb_fail",
+                "label": "Needs Revision",
+                "dashed": true,
+                "policy": "fb_revise",
+                "command": "cmd_revise",
+                "handledBy": {
+                  "_tag": "ref",
+                  "id": "orch_feedback"
+                },
+                "delegatesTo": {
+                  "_tag": "ref",
+                  "id": "dev_user"
+                },
+                "resultEvents": [
+                  {
+                    "id": "fb_revision",
+                    "title": "Revision Triggered"
+                  }
+                ],
+                "continuesAs": "fb_store"
+              }
+            ]
+          },
+          {
+            "type": "linear",
+            "id": "fb_store",
+            "policy": "fb_revision",
+            "command": "cmd_store_failure",
+            "handledBy": {
+              "_tag": "ref",
+              "id": "memory_store"
+            },
+            "resultEvents": [
+              {
+                "id": "fb_stored",
+                "title": "Failure Context Stored"
+              }
+            ],
+            "continuesAs": "fb_rerun"
+          },
+          {
+            "type": "linear",
+            "id": "fb_rerun",
+            "policy": "fb_stored",
+            "command": "cmd_rerun",
+            "handledBy": {
+              "_tag": "ref",
+              "id": "llm_feedback"
+            },
+            "resultEvents": [
+              {
+                "id": "fb_regenerated",
+                "title": "Output Regenerated"
+              }
+            ],
+            "continuesAs": "fb_check"
+          }
+        ]
+      }
+    }
+  },
+  {
+    "folder": "reflection-sequence",
+    "type": "reflection-sequence",
+    "props": {
+      "title": "Process Flow Sequence Builder",
+      "challenges": [
+        {
+          "prompt": "Arrange the steps in the correct chronological order to model the product feature loop (Part 1):",
+          "items": [
+            {
+              "id": "drag-feature-req",
+              "text": "Define Feature Request"
+            },
+            {
+              "id": "drag-sprint-backlog",
+              "text": "Sprint Backlog Ready"
+            },
+            {
+              "id": "drag-deliver-code",
+              "text": "Deliver Code Changes"
+            },
+            {
+              "id": "drag-review",
+              "text": "Sprint Review"
+            }
+          ],
+          "solution": [
+            "drag-feature-req",
+            "drag-sprint-backlog",
+            "drag-deliver-code",
+            "drag-review"
+          ]
+        },
+        {
+          "prompt": "Arrange the steps in the correct chronological order to model the deployment pipeline (Part 2):",
+          "items": [
+            {
+              "id": "drag-build",
+              "text": "Build Artifacts"
+            },
+            {
+              "id": "drag-test",
+              "text": "Run Unit & E2E Tests"
+            },
+            {
+              "id": "drag-deploy",
+              "text": "Deploy to Production"
+            }
+          ],
+          "solution": [
+            "drag-build",
+            "drag-test",
+            "drag-deploy"
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "folder": "quiz",
+    "type": "quiz",
+    "props": {
+      "title": "Knowledge Check",
+      "questions": [
+        {
+          "id": "q_orchestration",
+          "question": "Which orchestration strategy suits a multi-step workflow needing strict quality control?",
+          "choices": [
+            {
+              "id": "a",
+              "text": "Hierarchical Orchestrator-Workers",
+              "correct": true,
+              "explanation": "A central manager decomposes goals, delegates, and synthesizes."
+            },
+            {
+              "id": "b",
+              "text": "Peer-to-peer negotiation",
+              "correct": false,
+              "explanation": "Peer negotiation works for decentralized systems but lacks centralized quality gates."
+            },
+            {
+              "id": "c",
+              "text": "Single-agent ReAct loop",
+              "correct": false,
+              "explanation": "A single ReAct agent handles simple tasks but struggles with complex multi-step decomposition."
+            }
+          ],
+          "hint": "Think about who enforces quality in each model."
+        },
+        {
+          "id": "q_memory",
+          "question": "What type of memory allows an agent to retain information across separate sessions?",
+          "choices": [
+            {
+              "id": "a",
+              "text": "Short-term context window",
+              "correct": false,
+              "explanation": "The context window is limited to the current conversation and resets each session."
+            },
+            {
+              "id": "b",
+              "text": "Long-term persistent storage",
+              "correct": true,
+              "explanation": "Persistent storage (vectors, graphs, documents) survives across sessions and enables recall."
+            },
+            {
+              "id": "c",
+              "text": "System prompt injection",
+              "correct": false,
+              "explanation": "System prompts provide static instructions but don't store learned information between sessions."
+            }
+          ],
+          "hint": "Consider where data lives beyond the current chat."
+        },
+        {
+          "id": "q_reflexion",
+          "question": "In the Reflexion pattern, what does the agent do after a failed attempt?",
+          "choices": [
+            {
+              "id": "a",
+              "text": "Restarts from scratch with no memory",
+              "correct": false,
+              "explanation": "Restarting without memory defeats the purpose of learning from failure."
+            },
+            {
+              "id": "b",
+              "text": "Appends verbal reasoning about what went wrong to its memory",
+              "correct": true,
+              "explanation": "Reflexion adds self-reflection to memory, guiding the agent's next attempt with lessons learned."
+            },
+            {
+              "id": "c",
+              "text": "Asks the user for manual correction",
+              "correct": false,
+              "explanation": "Reflexion is designed to be self-improving without human intervention."
+            }
+          ],
+          "hint": "Think about how humans learn from mistakes."
+        },
+        {
+          "id": "q_map_reduce",
+          "question": "The Map-Reduce pattern is most useful when:",
+          "choices": [
+            {
+              "id": "a",
+              "text": "A single complex task needs step-by-step planning",
+              "correct": false,
+              "explanation": "Map-Reduce focuses on parallel processing, not sequential planning."
+            },
+            {
+              "id": "b",
+              "text": "Independent subtasks can be processed in parallel and combined",
+              "correct": true,
+              "explanation": "Map distributes work across workers, Reduce synthesizes partial results into a final answer."
+            },
+            {
+              "id": "c",
+              "text": "Real-time conversation is needed with a user",
+              "correct": false,
+              "explanation": "Map-Reduce is batch-oriented and optimized for throughput, not latency."
+            }
+          ],
+          "hint": "Consider parallel vs sequential processing."
+        },
+        {
+          "id": "q_tool_use",
+          "question": "Why do agents use tools instead of relying solely on their internal knowledge?",
+          "choices": [
+            {
+              "id": "a",
+              "text": "Tools provide access to current, external data the model was never trained on",
+              "correct": true,
+              "explanation": "Tools let agents search the web, run code, access APIs — bridging the knowledge cutoff gap."
+            },
+            {
+              "id": "b",
+              "text": "Tools make the agent run faster",
+              "correct": false,
+              "explanation": "Tool calls typically add latency. Their value is accuracy and recency, not speed."
+            },
+            {
+              "id": "c",
+              "text": "Tools replace the need for a language model",
+              "correct": false,
+              "explanation": "Tools augment the LLM; they don't replace the reasoning capability of the model."
+            }
+          ],
+          "hint": "Think about the limitations of a model's training data."
+        }
+      ]
+    }
+  },
+  {
+    "folder": "tradeoffs",
+    "type": "tradeoff-sandbox",
+    "props": {
+      "title": "Architecture Trade-off Sandbox",
+      "scenarios": [
+        {
+          "id": "enterprise-web",
+          "title": "Enterprise Web Application",
+          "description": "Build a scalable enterprise web app: React SPA, Node.js microservices, PostgreSQL, deployed on Cloud PaaS. Evaluate trade-offs across frontend, backend, and infrastructure decisions.",
+          "metrics": [
+            {
+              "id": "performance",
+              "label": "Performance",
+              "baseValue": 50,
+              "min": 0,
+              "max": 100,
+              "direction": "higher"
+            },
+            {
+              "id": "scalability",
+              "label": "Scalability",
+              "baseValue": 50,
+              "min": 0,
+              "max": 100,
+              "direction": "higher"
+            },
+            {
+              "id": "complexity",
+              "label": "Complexity",
+              "baseValue": 30,
+              "min": 0,
+              "max": 100,
+              "direction": "lower"
+            },
+            {
+              "id": "cost",
+              "label": "Cost Efficiency",
+              "baseValue": 50,
+              "min": 0,
+              "max": 100,
+              "direction": "higher"
+            }
+          ],
+          "steps": [
+            {
+              "id": "frontend",
+              "title": "Frontend Framework",
+              "description": "Choose the client-side rendering approach.",
+              "recommended": "next-ssr",
+              "choices": [
+                {
+                  "id": "react-spa",
+                  "label": "React SPA",
+                  "description": "Single-page application with client-side routing and state management.",
+                  "metrics": {
+                    "performance": 10,
+                    "scalability": 5,
+                    "complexity": 5,
+                    "cost": 5
+                  },
+                  "pros": [
+                    {
+                      "title": "Rich ecosystem",
+                      "description": "Vast library support and community"
+                    },
+                    {
+                      "title": "Smooth UX",
+                      "description": "Client-side transitions feel native"
+                    }
+                  ],
+                  "cons": [
+                    {
+                      "title": "SEO challenges",
+                      "description": "Requires SSR or SSG for search indexing"
+                    },
+                    {
+                      "title": "Larger initial bundle",
+                      "description": "Full framework must load first"
+                    }
+                  ],
+                  "whenToUse": "Useful for admin dashboards and internal tools where SEO is not a concern and developer familiarity with React is high."
+                },
+                {
+                  "id": "next-ssr",
+                  "label": "Next.js SSR",
+                  "description": "Server-side rendered React with hybrid static/dynamic rendering.",
+                  "metrics": {
+                    "performance": 15,
+                    "scalability": 10,
+                    "complexity": 10,
+                    "cost": -5
+                  },
+                  "pros": [
+                    {
+                      "title": "Better SEO",
+                      "description": "Server-rendered HTML for crawlers"
+                    },
+                    {
+                      "title": "Faster first paint",
+                      "description": "HTML delivered from server"
+                    },
+                    {
+                      "title": "Hybrid rendering",
+                      "description": "Mix static and dynamic pages"
+                    }
+                  ],
+                  "cons": [
+                    {
+                      "title": "Server dependency",
+                      "description": "Requires Node.js server runtime"
+                    },
+                    {
+                      "title": "More complex deploy",
+                      "description": "SSR adds deployment surface"
+                    }
+                  ],
+                  "whyThisFits": "Enterprise web applications benefit from server-side rendering for SEO, faster perceived performance, and the ability to mix static public pages with dynamic user-specific content."
+                }
+              ]
+            },
+            {
+              "id": "backend",
+              "title": "Backend Architecture",
+              "description": "Decide how to structure the server-side logic.",
+              "recommended": "modular-monolith",
+              "choices": [
+                {
+                  "id": "microservices",
+                  "label": "Microservices",
+                  "description": "Independent services communicating via REST/gRPC.",
+                  "metrics": {
+                    "performance": -5,
+                    "scalability": 20,
+                    "complexity": 20,
+                    "cost": -10
+                  },
+                  "pros": [
+                    {
+                      "title": "Independent scaling",
+                      "description": "Scale hot services without scaling all"
+                    },
+                    {
+                      "title": "Tech diversity",
+                      "description": "Each service can use best-fit language"
+                    },
+                    {
+                      "title": "Fault isolation",
+                      "description": "One service failure does not crash all"
+                    }
+                  ],
+                  "cons": [
+                    {
+                      "title": "Network overhead",
+                      "description": "Inter-service calls add latency"
+                    },
+                    {
+                      "title": "Operational cost",
+                      "description": "More services to monitor and deploy"
+                    },
+                    {
+                      "title": "Distributed tracing",
+                      "description": "Debugging spans multiple services"
+                    }
+                  ],
+                  "whenToUse": "Consider when your team has significant DevOps experience and specific services have vastly different scaling requirements."
+                },
+                {
+                  "id": "modular-monolith",
+                  "label": "Modular Monolith",
+                  "description": "Single deployable with strict module boundaries.",
+                  "metrics": {
+                    "performance": 10,
+                    "scalability": -5,
+                    "complexity": -10,
+                    "cost": 15
+                  },
+                  "pros": [
+                    {
+                      "title": "Simpler deployment",
+                      "description": "One artifact to deploy"
+                    },
+                    {
+                      "title": "Fast local calls",
+                      "description": "In-process communication, no network"
+                    },
+                    {
+                      "title": "Easier debugging",
+                      "description": "Single stack trace, one log file"
+                    }
+                  ],
+                  "cons": [
+                    {
+                      "title": "Monolithic scaling",
+                      "description": "Must scale entire app, not parts"
+                    },
+                    {
+                      "title": "Tight coupling risk",
+                      "description": "Module boundaries can degrade over time"
+                    }
+                  ],
+                  "whyThisFits": "Starting with a modular monolith reduces operational overhead while maintaining clean boundaries. It can be split into microservices later if specific modules need independent scaling."
+                }
+              ]
+            },
+            {
+              "id": "database",
+              "title": "Data Storage",
+              "description": "Choose the primary persistence layer.",
+              "recommended": "postgresql",
+              "choices": [
+                {
+                  "id": "postgresql",
+                  "label": "PostgreSQL",
+                  "description": "Relational database with ACID compliance and JSON support.",
+                  "metrics": {
+                    "performance": 5,
+                    "scalability": 5,
+                    "complexity": -5,
+                    "cost": 5
+                  },
+                  "pros": [
+                    {
+                      "title": "ACID compliance",
+                      "description": "Guaranteed data integrity"
+                    },
+                    {
+                      "title": "JSON support",
+                      "description": "Semi-structured data without NoSQL"
+                    },
+                    {
+                      "title": "Mature ecosystem",
+                      "description": "Well-understood tooling and patterns"
+                    }
+                  ],
+                  "cons": [
+                    {
+                      "title": "Schema migrations",
+                      "description": "Schema changes require planning"
+                    },
+                    {
+                      "title": "Vertical scaling limits",
+                      "description": "Read replicas needed for scale"
+                    }
+                  ],
+                  "whyThisFits": "Enterprise applications require strong data integrity, complex querying, and reliable transactions. PostgreSQL provides all of this with the flexibility of JSON columns for semi-structured data."
+                },
+                {
+                  "id": "mongo",
+                  "label": "MongoDB",
+                  "description": "Document database with flexible schema and horizontal scaling.",
+                  "metrics": {
+                    "performance": 10,
+                    "scalability": 15,
+                    "complexity": 5,
+                    "cost": -5
+                  },
+                  "pros": [
+                    {
+                      "title": "Flexible schema",
+                      "description": "No migrations for evolving models"
+                    },
+                    {
+                      "title": "Horizontal scaling",
+                      "description": "Sharding built into the platform"
+                    },
+                    {
+                      "title": "Fast writes",
+                      "description": "Document model suits high-throughput inserts"
+                    }
+                  ],
+                  "cons": [
+                    {
+                      "title": "No ACID joins",
+                      "description": "Multi-document transactions are limited"
+                    },
+                    {
+                      "title": "Schema drift risk",
+                      "description": "Without enforcement, data quality varies"
+                    }
+                  ],
+                  "whenToUse": "Best for content management systems, catalog data, or high-throughput event logging where strict consistency is less critical."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "realtime-chat",
+          "title": "Real-Time Chat & Collab System",
+          "description": "Design a real-time collaborative system: WebAssembly compute, Node.js services, Redis pub/sub, Kubernetes orchestration. Balance latency, consistency, and cost.",
+          "metrics": [
+            {
+              "id": "latency",
+              "label": "Low Latency",
+              "baseValue": 40,
+              "min": 0,
+              "max": 100,
+              "direction": "higher"
+            },
+            {
+              "id": "consistency",
+              "label": "Consistency",
+              "baseValue": 50,
+              "min": 0,
+              "max": 100,
+              "direction": "higher"
+            },
+            {
+              "id": "devex",
+              "label": "Developer Experience",
+              "baseValue": 50,
+              "min": 0,
+              "max": 100,
+              "direction": "higher"
+            },
+            {
+              "id": "ops-cost",
+              "label": "Ops Cost",
+              "baseValue": 50,
+              "min": 0,
+              "max": 100,
+              "direction": "higher"
+            }
+          ],
+          "steps": [
+            {
+              "id": "compute",
+              "title": "Compute Layer",
+              "description": "Choose the client-side and server-side compute strategy.",
+              "recommended": "wasm-workers",
+              "choices": [
+                {
+                  "id": "client-js",
+                  "label": "Client-side JS",
+                  "description": "All computation runs in the browser using JavaScript.",
+                  "metrics": {
+                    "latency": 15,
+                    "consistency": -5,
+                    "devex": 10,
+                    "ops-cost": 15
+                  },
+                  "pros": [
+                    {
+                      "title": "Zero server cost",
+                      "description": "All compute happens client-side"
+                    },
+                    {
+                      "title": "Instant feedback",
+                      "description": "No network round-trip for computation"
+                    }
+                  ],
+                  "cons": [
+                    {
+                      "title": "Device dependency",
+                      "description": "Performance varies by device"
+                    },
+                    {
+                      "title": "Limited parallelism",
+                      "description": "Browser threads are constrained"
+                    }
+                  ],
+                  "whenToUse": "Good for simple tools where server infrastructure is not justified."
+                },
+                {
+                  "id": "wasm-workers",
+                  "label": "Wasm + Web Workers",
+                  "description": "WebAssembly modules run in Web Workers for parallel compute.",
+                  "metrics": {
+                    "latency": 20,
+                    "consistency": 5,
+                    "devex": -5,
+                    "ops-cost": 10
+                  },
+                  "pros": [
+                    {
+                      "title": "Near-native performance",
+                      "description": "Wasm executes close to hardware speed"
+                    },
+                    {
+                      "title": "True parallelism",
+                      "description": "Multiple workers run concurrently"
+                    },
+                    {
+                      "title": "Language agnostic",
+                      "description": "Compile from Rust, C++, Go"
+                    }
+                  ],
+                  "cons": [
+                    {
+                      "title": "Complex build pipeline",
+                      "description": "Wasm toolchain adds complexity"
+                    },
+                    {
+                      "title": "Larger binary size",
+                      "description": "Wasm modules increase bundle"
+                    }
+                  ],
+                  "whyThisFits": "Real-time collaboration requires low-latency, parallel compute that Wasm + Workers deliver efficiently."
+                }
+              ]
+            },
+            {
+              "id": "state",
+              "title": "State Management",
+              "description": "How to manage shared mutable state across participants.",
+              "recommended": "redis-ops",
+              "choices": [
+                {
+                  "id": "websocket-local",
+                  "label": "WebSocket + Local State",
+                  "description": "Each client maintains local state, synced via WebSocket.",
+                  "metrics": {
+                    "latency": 10,
+                    "consistency": -10,
+                    "devex": 15,
+                    "ops-cost": 10
+                  },
+                  "pros": [
+                    {
+                      "title": "Simple architecture",
+                      "description": "No shared state store needed"
+                    },
+                    {
+                      "title": "Optimistic updates",
+                      "description": "UI updates immediately before sync"
+                    }
+                  ],
+                  "cons": [
+                    {
+                      "title": "Conflict resolution",
+                      "description": "Concurrent edits cause conflicts"
+                    },
+                    {
+                      "title": "Eventual consistency",
+                      "description": "State may diverge temporarily"
+                    }
+                  ],
+                  "whenToUse": "Suitable for low-conflict scenarios like chat messaging."
+                },
+                {
+                  "id": "redis-ops",
+                  "label": "Redis CRDT Ops",
+                  "description": "Redis stores CRDT operations for conflict-free sync.",
+                  "metrics": {
+                    "latency": 5,
+                    "consistency": 20,
+                    "devex": -10,
+                    "ops-cost": -5
+                  },
+                  "pros": [
+                    {
+                      "title": "Conflict-free",
+                      "description": "CRDTs guarantee convergence"
+                    },
+                    {
+                      "title": "Strong consistency",
+                      "description": "All participants see same state"
+                    },
+                    {
+                      "title": "Fast operations",
+                      "description": "Redis in-memory ops are sub-millisecond"
+                    }
+                  ],
+                  "cons": [
+                    {
+                      "title": "CRDT learning curve",
+                      "description": "Understanding CRDT types is non-trivial"
+                    },
+                    {
+                      "title": "Redis dependency",
+                      "description": "Requires managed Redis instance"
+                    }
+                  ],
+                  "whyThisFits": "Real-time collab demands strong consistency and conflict resolution that CRDTs provide natively."
+                }
+              ]
+            },
+            {
+              "id": "orchestration",
+              "title": "Deployment & Scaling",
+              "description": "How to deploy and scale the real-time infrastructure.",
+              "recommended": "kubernetes",
+              "choices": [
+                {
+                  "id": "serverless",
+                  "label": "Serverless",
+                  "description": "AWS Lambda / Cloud Functions with managed WebSocket API.",
+                  "metrics": {
+                    "latency": -10,
+                    "consistency": 5,
+                    "devex": 10,
+                    "ops-cost": 15
+                  },
+                  "pros": [
+                    {
+                      "title": "Zero ops",
+                      "description": "Fully managed scaling and deployment"
+                    },
+                    {
+                      "title": "Pay per use",
+                      "description": "No idle resource costs"
+                    }
+                  ],
+                  "cons": [
+                    {
+                      "title": "Cold start latency",
+                      "description": "First request incurs startup delay"
+                    },
+                    {
+                      "title": "WebSocket limits",
+                      "description": "Long-lived connections cost more"
+                    }
+                  ],
+                  "whenToUse": "Good for variable workloads with predictable spike patterns."
+                },
+                {
+                  "id": "kubernetes",
+                  "label": "Kubernetes",
+                  "description": "Containerized services on K8s with horizontal pod autoscaling.",
+                  "metrics": {
+                    "latency": 10,
+                    "consistency": 10,
+                    "devex": -10,
+                    "ops-cost": -10
+                  },
+                  "pros": [
+                    {
+                      "title": "Predictable latency",
+                      "description": "Always-warm containers"
+                    },
+                    {
+                      "title": "Fine-grained scaling",
+                      "description": "Per-service autoscaling"
+                    },
+                    {
+                      "title": "Stateful support",
+                      "description": "StatefulSets for Redis, databases"
+                    }
+                  ],
+                  "cons": [
+                    {
+                      "title": "Complex setup",
+                      "description": "K8s manifests and Helm charts"
+                    },
+                    {
+                      "title": "Minimum resource cost",
+                      "description": "Always-on pods have baseline cost"
+                    }
+                  ],
+                  "whyThisFits": "Real-time systems need predictable latency and always-warm connections that Kubernetes guarantees."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "financial-audit",
+          "title": "High-Security Financial Auditing Platform",
+          "description": "Build a compliance-critical auditing system: Angular frontend, Java monolith, PostgreSQL, deployed on-premise. Prioritize security, auditability, and regulatory compliance.",
+          "metrics": [
+            {
+              "id": "security",
+              "label": "Security",
+              "baseValue": 50,
+              "min": 0,
+              "max": 100,
+              "direction": "higher"
+            },
+            {
+              "id": "compliance",
+              "label": "Compliance",
+              "baseValue": 40,
+              "min": 0,
+              "max": 100,
+              "direction": "higher"
+            },
+            {
+              "id": "maintainability",
+              "label": "Maintainability",
+              "baseValue": 40,
+              "min": 0,
+              "max": 100,
+              "direction": "higher"
+            },
+            {
+              "id": "time-market",
+              "label": "Time to Market",
+              "baseValue": 40,
+              "min": 0,
+              "max": 100,
+              "direction": "higher"
+            }
+          ],
+          "steps": [
+            {
+              "id": "ui",
+              "title": "UI Framework",
+              "description": "Choose the frontend framework for the audit dashboard.",
+              "recommended": "angular",
+              "choices": [
+                {
+                  "id": "angular",
+                  "label": "Angular",
+                  "description": "Enterprise-grade framework with built-in structure.",
+                  "metrics": {
+                    "security": 10,
+                    "compliance": 10,
+                    "maintainability": 15,
+                    "time-market": -5
+                  },
+                  "pros": [
+                    {
+                      "title": "Built-in structure",
+                      "description": "Enforced architecture reduces tech debt"
+                    },
+                    {
+                      "title": "Type safety",
+                      "description": "Full TypeScript stack"
+                    },
+                    {
+                      "title": "Enterprise support",
+                      "description": "Long-term stability and support"
+                    }
+                  ],
+                  "cons": [
+                    {
+                      "title": "Steeper learning curve",
+                      "description": "Angular concepts take time to master"
+                    },
+                    {
+                      "title": "Larger bundle",
+                      "description": "Framework overhead increases size"
+                    }
+                  ],
+                  "whyThisFits": "Financial platforms benefit from Angular's enforced structure, reducing the risk of architectural drift over long project lifecycles."
+                },
+                {
+                  "id": "react",
+                  "label": "React",
+                  "description": "Flexible library with vast ecosystem.",
+                  "metrics": {
+                    "security": 0,
+                    "compliance": -5,
+                    "maintainability": 5,
+                    "time-market": 10
+                  },
+                  "pros": [
+                    {
+                      "title": "Large ecosystem",
+                      "description": "Vast component libraries"
+                    },
+                    {
+                      "title": "Faster prototyping",
+                      "description": "Less boilerplate than Angular"
+                    }
+                  ],
+                  "cons": [
+                    {
+                      "title": "Architecture choices",
+                      "description": "Team must decide on patterns"
+                    },
+                    {
+                      "title": "Fragmented state management",
+                      "description": "Multiple solutions (Redux, Zustand, Jotai)"
+                    }
+                  ],
+                  "whenToUse": "When team has React expertise and rapid prototyping is prioritized over long-term maintainability."
+                }
+              ]
+            },
+            {
+              "id": "backend",
+              "title": "Backend Architecture",
+              "description": "Choose the server-side technology for processing audit data.",
+              "recommended": "spring-boot",
+              "choices": [
+                {
+                  "id": "spring-boot",
+                  "label": "Spring Boot",
+                  "description": "Java framework with enterprise security and transaction management.",
+                  "metrics": {
+                    "security": 20,
+                    "compliance": 15,
+                    "maintainability": 10,
+                    "time-market": -10
+                  },
+                  "pros": [
+                    {
+                      "title": "Mature security",
+                      "description": "Spring Security covers OAuth2, SAML, JWT"
+                    },
+                    {
+                      "title": "Transaction management",
+                      "description": "Declarative @Transactional"
+                    },
+                    {
+                      "title": "Audit framework",
+                      "description": "Spring Data Audit support built-in"
+                    }
+                  ],
+                  "cons": [
+                    {
+                      "title": "Verbose configuration",
+                      "description": "Annotation-heavy codebase"
+                    },
+                    {
+                      "title": "Slower iteration",
+                      "description": "Java compilation adds dev cycle time"
+                    }
+                  ],
+                  "whyThisFits": "Financial auditing requires battle-tested security frameworks and ACID transaction management that Spring Boot provides."
+                },
+                {
+                  "id": "node-express",
+                  "label": "Node.js + Express",
+                  "description": "Lightweight JavaScript runtime for rapid development.",
+                  "metrics": {
+                    "security": -5,
+                    "compliance": -10,
+                    "maintainability": 5,
+                    "time-market": 15
+                  },
+                  "pros": [
+                    {
+                      "title": "Rapid development",
+                      "description": "Less boilerplate, faster iteration"
+                    },
+                    {
+                      "title": "Unified language",
+                      "description": "JavaScript across full stack"
+                    }
+                  ],
+                  "cons": [
+                    {
+                      "title": "Security requires discipline",
+                      "description": "No built-in enterprise security"
+                    },
+                    {
+                      "title": "Transaction complexity",
+                      "description": "Multi-db transactions are challenging"
+                    }
+                  ],
+                  "whenToUse": "When time-to-market is critical and the team has strong security discipline."
+                }
+              ]
+            },
+            {
+              "id": "deployment",
+              "title": "Deployment Strategy",
+              "description": "Choose where and how to deploy the audit platform.",
+              "recommended": "on-premise",
+              "choices": [
+                {
+                  "id": "on-premise",
+                  "label": "On-Premise",
+                  "description": "Deploy within the organization's own data center.",
+                  "metrics": {
+                    "security": 20,
+                    "compliance": 20,
+                    "maintainability": -5,
+                    "time-market": -10
+                  },
+                  "pros": [
+                    {
+                      "title": "Full control",
+                      "description": "Complete ownership of infrastructure"
+                    },
+                    {
+                      "title": "Data sovereignty",
+                      "description": "Financial data never leaves premises"
+                    },
+                    {
+                      "title": "Audit trail",
+                      "description": "Physical access logging"
+                    }
+                  ],
+                  "cons": [
+                    {
+                      "title": "High CapEx",
+                      "description": "Hardware procurement and maintenance"
+                    },
+                    {
+                      "title": "Slower updates",
+                      "description": "Patch management is manual"
+                    }
+                  ],
+                  "whyThisFits": "Financial institutions often require on-premise deployment for regulatory compliance and data sovereignty."
+                },
+                {
+                  "id": "cloud",
+                  "label": "Cloud (AWS/Azure)",
+                  "description": "Managed cloud infrastructure with compliance certifications.",
+                  "metrics": {
+                    "security": 5,
+                    "compliance": 5,
+                    "maintainability": 15,
+                    "time-market": 15
+                  },
+                  "pros": [
+                    {
+                      "title": "Managed security",
+                      "description": "Provider handles infrastructure security"
+                    },
+                    {
+                      "title": "Compliance ready",
+                      "description": "SOC2, PCI-DSS certifications"
+                    },
+                    {
+                      "title": "Fast deployment",
+                      "description": "Infrastructure as Code"
+                    }
+                  ],
+                  "cons": [
+                    {
+                      "title": "Vendor lock-in",
+                      "description": "Cloud-specific services"
+                    },
+                    {
+                      "title": "Data residency",
+                      "description": "May not meet local regulations"
+                    }
+                  ],
+                  "whenToUse": "When the organization trusts cloud providers and values speed over full infrastructure control."
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "folder": "tradeoffs-deploy",
+    "type": "tradeoff-sandbox",
+    "props": {
+      "title": "Deployment Trade-offs",
+      "scenarios": [
+        {
+          "id": "deploy-cloud",
+          "title": "Cloud PaaS Deployment",
+          "description": "Deploy the agent platform on a managed cloud platform (AWS, GCP, Azure). Evaluate trade-offs between managed services vs self-hosted components.",
+          "metrics": [
+            {
+              "id": "cost",
+              "label": "Cost Efficiency",
+              "baseValue": 50,
+              "min": 0,
+              "max": 100,
+              "direction": "higher"
+            },
+            {
+              "id": "latency",
+              "label": "Response Latency",
+              "baseValue": 50,
+              "min": 0,
+              "max": 100,
+              "direction": "higher"
+            },
+            {
+              "id": "control",
+              "label": "Customization Control",
+              "baseValue": 30,
+              "min": 0,
+              "max": 100,
+              "direction": "higher"
+            },
+            {
+              "id": "ops-overhead",
+              "label": "Operational Overhead",
+              "baseValue": 60,
+              "min": 0,
+              "max": 100,
+              "direction": "lower"
+            }
+          ],
+          "steps": [
+            {
+              "id": "compute",
+              "title": "Compute Strategy",
+              "description": "How to run agent orchestration logic.",
+              "recommended": "serverless",
+              "choices": [
+                {
+                  "id": "containers",
+                  "label": "Managed Containers",
+                  "description": "Kubernetes or ECS for always-on agent processes.",
+                  "metrics": {
+                    "cost": -10,
+                    "latency": 15,
+                    "control": 20,
+                    "ops-overhead": 10
+                  },
+                  "pros": [
+                    {
+                      "title": "Persistent state",
+                      "description": "Agents stay warm, no cold start penalty"
+                    },
+                    {
+                      "title": "Full control",
+                      "description": "Configure memory, CPU, networking"
+                    }
+                  ],
+                  "cons": [
+                    {
+                      "title": "Higher base cost",
+                      "description": "Always-running instances cost money even idle"
+                    },
+                    {
+                      "title": "Scaling complexity",
+                      "description": "Must configure autoscaling policies"
+                    }
+                  ],
+                  "whenToUse": "When agents need persistent connections or low-latency responses."
+                },
+                {
+                  "id": "serverless",
+                  "label": "Serverless Functions",
+                  "description": "Event-driven execution with auto-scaling.",
+                  "metrics": {
+                    "cost": 20,
+                    "latency": -10,
+                    "control": -10,
+                    "ops-overhead": -20
+                  },
+                  "pros": [
+                    {
+                      "title": "Pay per use",
+                      "description": "No cost when idle, scales to zero"
+                    },
+                    {
+                      "title": "Zero ops",
+                      "description": "Platform handles scaling and availability"
+                    }
+                  ],
+                  "cons": [
+                    {
+                      "title": "Cold starts",
+                      "description": "First invocation after idle has latency penalty"
+                    },
+                    {
+                      "title": "Execution limits",
+                      "description": "Time and memory caps constrain complex agents"
+                    }
+                  ],
+                  "whyThisFits": "Most agent workloads are bursty — serverless matches the cost profile and eliminates ops overhead for intermittent tasks."
+                }
+              ]
+            },
+            {
+              "id": "llm-access",
+              "title": "LLM Access Pattern",
+              "description": "How agents reach the language model.",
+              "recommended": "api-gateway",
+              "choices": [
+                {
+                  "id": "direct-api",
+                  "label": "Direct API Calls",
+                  "description": "Agent functions call LLM provider directly.",
+                  "metrics": {
+                    "cost": -5,
+                    "latency": 10,
+                    "control": 5,
+                    "ops-overhead": -5
+                  },
+                  "pros": [
+                    {
+                      "title": "Simplest setup",
+                      "description": "No middleware to configure"
+                    },
+                    {
+                      "title": "Lower latency",
+                      "description": "Fewer network hops"
+                    }
+                  ],
+                  "cons": [
+                    {
+                      "title": "No rate limiting",
+                      "description": "Must implement in each agent function"
+                    },
+                    {
+                      "title": "Key management",
+                      "description": "API keys embedded in each function"
+                    }
+                  ],
+                  "whenToUse": "For prototypes and single-agent deployments."
+                },
+                {
+                  "id": "api-gateway",
+                  "label": "API Gateway Proxy",
+                  "description": "Centralized proxy with rate limiting and caching.",
+                  "metrics": {
+                    "cost": 5,
+                    "latency": -5,
+                    "control": 15,
+                    "ops-overhead": 5
+                  },
+                  "pros": [
+                    {
+                      "title": "Centralized control",
+                      "description": "Rate limits, caching, retries in one place"
+                    },
+                    {
+                      "title": "Key isolation",
+                      "description": "Single proxy holds API credentials"
+                    }
+                  ],
+                  "cons": [
+                    {
+                      "title": "Added latency",
+                      "description": "One extra network hop per call"
+                    },
+                    {
+                      "title": "Single point of failure",
+                      "description": "Gateway outage blocks all agents"
+                    }
+                  ],
+                  "whyThisFits": "Multi-agent systems benefit from centralized rate limiting, cost tracking, and credential management."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "deploy-onprem",
+          "title": "On-Premises Deployment",
+          "description": "Self-host the agent platform in a private data center. Evaluate trade-offs around data sovereignty, hardware requirements, and maintenance burden.",
+          "metrics": [
+            {
+              "id": "cost",
+              "label": "Cost Efficiency",
+              "baseValue": 40,
+              "min": 0,
+              "max": 100,
+              "direction": "higher"
+            },
+            {
+              "id": "security",
+              "label": "Data Sovereignty",
+              "baseValue": 70,
+              "min": 0,
+              "max": 100,
+              "direction": "higher"
+            },
+            {
+              "id": "scalability",
+              "label": "Scalability",
+              "baseValue": 30,
+              "min": 0,
+              "max": 100,
+              "direction": "higher"
+            },
+            {
+              "id": "time-to-market",
+              "label": "Time to Production",
+              "baseValue": 20,
+              "min": 0,
+              "max": 100,
+              "direction": "higher"
+            }
+          ],
+          "steps": [
+            {
+              "id": "llm-hosting",
+              "title": "LLM Hosting",
+              "description": "Where the language model runs.",
+              "recommended": "open-source-local",
+              "choices": [
+                {
+                  "id": "open-source-local",
+                  "label": "Open-Source Model (Local)",
+                  "description": "Run open-weight models on local GPUs (Llama, Mistral, Mixtral).",
+                  "metrics": {
+                    "cost": 5,
+                    "security": 30,
+                    "scalability": -10,
+                    "time-to-market": 10
+                  },
+                  "pros": [
+                    {
+                      "title": "Full data privacy",
+                      "description": "No data leaves your infrastructure"
+                    },
+                    {
+                      "title": "No API costs",
+                      "description": "One-time GPU investment, unlimited inference"
+                    },
+                    {
+                      "title": "Model customization",
+                      "description": "Fine-tune on domain-specific data"
+                    }
+                  ],
+                  "cons": [
+                    {
+                      "title": "GPU costs",
+                      "description": "High-end GPUs are expensive to buy and maintain"
+                    },
+                    {
+                      "title": "Smaller model capacity",
+                      "description": "Local models are smaller than cloud flagship models"
+                    }
+                  ],
+                  "whyThisFits": "When data sovereignty is non-negotiable (healthcare, finance, government), local models are the only viable option."
+                },
+                {
+                  "id": "remote-api",
+                  "label": "Remote LLM API",
+                  "description": "Call cloud LLMs from on-prem agents (OpenAI, Anthropic).",
+                  "metrics": {
+                    "cost": 10,
+                    "security": -30,
+                    "scalability": 20,
+                    "time-to-market": 25
+                  },
+                  "pros": [
+                    {
+                      "title": "Best model quality",
+                      "description": "Access to state-of-the-art models"
+                    },
+                    {
+                      "title": "Simplest to start",
+                      "description": "No GPU infrastructure needed"
+                    }
+                  ],
+                  "cons": [
+                    {
+                      "title": "Data leaves premises",
+                      "description": "All prompts and responses go to cloud provider"
+                    },
+                    {
+                      "title": "API dependency",
+                      "description": "Outages or rate limits affect availability"
+                    }
+                  ],
+                  "whenToUse": "When model quality matters more than data privacy."
+                }
+              ]
+            },
+            {
+              "id": "infra-management",
+              "title": "Infrastructure Management",
+              "description": "How to manage the on-prem agent platform.",
+              "recommended": "kubernetes",
+              "choices": [
+                {
+                  "id": "bare-metal",
+                  "label": "Bare Metal + Scripts",
+                  "description": "Manual deployment with shell scripts and systemd.",
+                  "metrics": {
+                    "cost": 15,
+                    "security": 10,
+                    "scalability": -15,
+                    "time-to-market": -10
+                  },
+                  "pros": [
+                    {
+                      "title": "Maximum control",
+                      "description": "Every component is visible and configurable"
+                    },
+                    {
+                      "title": "No abstraction overhead",
+                      "description": "No container runtime or orchestration layer"
+                    }
+                  ],
+                  "cons": [
+                    {
+                      "title": "No auto-healing",
+                      "description": "Crashed services stay down until noticed"
+                    },
+                    {
+                      "title": "Scaling is manual",
+                      "description": "Adding capacity means provisioning new servers"
+                    }
+                  ],
+                  "whenToUse": "For small teams with stable, low-traffic agent workloads."
+                },
+                {
+                  "id": "kubernetes",
+                  "label": "Kubernetes",
+                  "description": "Container orchestration with auto-scaling and self-healing.",
+                  "metrics": {
+                    "cost": -10,
+                    "security": 5,
+                    "scalability": 25,
+                    "time-to-market": -5
+                  },
+                  "pros": [
+                    {
+                      "title": "Auto-healing",
+                      "description": "Crashed pods restart automatically"
+                    },
+                    {
+                      "title": "Horizontal scaling",
+                      "description": "Scale agent replicas by CPU/memory metrics"
+                    },
+                    {
+                      "title": "Rolling updates",
+                      "description": "Zero-downtime deployments"
+                    }
+                  ],
+                  "cons": [
+                    {
+                      "title": "Complexity",
+                      "description": "Steep learning curve for operators"
+                    },
+                    {
+                      "title": "Resource overhead",
+                      "description": "Control plane and sidecars consume GPU/memory"
+                    }
+                  ],
+                  "whyThisFits": "Production agent platforms need reliability and scaling that Kubernetes provides out of the box."
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "folder": "formula-sandbox",
+    "type": "formula-sandbox",
+    "props": {
+      "title": "RAG Parameter Dynamics Sandbox",
+      "variables": [
+        {
+          "id": "chunk_size",
+          "label": "Chunk Size (characters)",
+          "min": 100,
+          "max": 2000,
+          "step": 50,
+          "defaultValue": 500
+        },
+        {
+          "id": "overlap",
+          "label": "Chunk Overlap (%)",
+          "min": 0,
+          "max": 50,
+          "step": 5,
+          "defaultValue": 10
+        },
+        {
+          "id": "overhead",
+          "label": "LLM Query Overhead (ms)",
+          "min": 100,
+          "max": 1500,
+          "step": 50,
+          "defaultValue": 400
+        }
+      ],
+      "metrics": [
+        {
+          "id": "recall",
+          "label": "Search Recall Accuracy",
+          "formula": "Math.round((Math.log2(chunk_size) * (1 + (overlap / 70))) * 6.5)",
+          "description": "The percentage of relevant reference documents successfully retrieved from the vector database for a given query context.",
+          "analogy": "Like casting a wider net when fishing. You catch the targeted fish (better recall), but you also bring up a lot of seaweed and debris (noise).",
+          "inScope": [
+            "Top-K retrieval threshold tuning",
+            "Overlap redundancy checks"
+          ],
+          "outOfScope": [
+            "Text generation formatting logic"
+          ]
+        },
+        {
+          "id": "latency",
+          "label": "Inference Query Latency",
+          "formula": "Math.round(overhead + (chunk_size * 0.4) + (overlap * 4))",
+          "description": "Total execution time from query launch to receiving the synthesized answer from the LLM endpoint.",
+          "analogy": "A long email takes longer to read and reply to than a short text message, regardless of how fast you write.",
+          "inScope": [
+            "Inference processing speed",
+            "Network communication payload sizes"
+          ],
+          "outOfScope": [
+            "Vector database index creation time"
+          ]
+        },
+        {
+          "id": "cost",
+          "label": "Estimated API Token Cost (Per 1k Queries)",
+          "formula": "(chunk_size * 1.5 * 5) * 0.000015",
+          "description": "Financial cost spent per 1,000 requests query traffic on API tokens.",
+          "analogy": "Mailing heavy boxes. Shipping five 10lb boxes costs double compared to five 5lb boxes.",
+          "inScope": [
+            "Input prompt token pricing schemas",
+            "Completion context generation sizes"
+          ],
+          "outOfScope": [
+            "Hosting compute system pricing"
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "folder": "reflection-template",
+    "type": "reflection-template",
+    "props": {
+      "title": "RAG Synthesis Self-Explanation",
+      "challenges": [
+        {
+          "prompt": "Complete the statement explaining chunk size and overlap properties (Part 1):",
+          "template": "Reducing chunk size results in {zone-1} individual content segments. This allows semantic matching algorithms to find {zone-2} refined context points, which improves precision. However, it also demands {zone-3} overlap percentages to prevent split-sentence data loss, which subsequently {zone-4} total RAG ingestion cost.",
+          "chips": [
+            {
+              "id": "chip-smaller",
+              "text": "smaller"
+            },
+            {
+              "id": "chip-larger",
+              "text": "larger"
+            },
+            {
+              "id": "chip-more",
+              "text": "more precise"
+            },
+            {
+              "id": "chip-less",
+              "text": "coarser"
+            },
+            {
+              "id": "chip-higher",
+              "text": "higher"
+            },
+            {
+              "id": "chip-lower",
+              "text": "lower"
+            },
+            {
+              "id": "chip-increases",
+              "text": "increases"
+            },
+            {
+              "id": "chip-decreases",
+              "text": "decreases"
+            }
+          ],
+          "solution": {
+            "zone-1": "chip-smaller",
+            "zone-2": "chip-more",
+            "zone-3": "chip-higher",
+            "zone-4": "chip-increases"
+          },
+          "explanation": "<strong>Correct! Excellent RAG tradeoff analysis.</strong><br/>By dropping the chunk size, you query <em>smaller</em> segments. This gives <em>more precise</em> matching vectors. However, you must increase overlap percentage (<em>higher</em>) to keep from cutting sentences in half. In turn, you send more text to context window, which <em>increases</em> final token costs."
+        },
+        {
+          "prompt": "Complete the statement explaining larger chunk sizes (Part 2):",
+          "template": "Increasing chunk size yields {zone-1} individual database entries. This leads to {zone-2} context windows filled with broader themes, but potentially {zone-3} overall vector search matching accuracy.",
+          "chips": [
+            {
+              "id": "chip-fewer",
+              "text": "fewer"
+            },
+            {
+              "id": "chip-more-entries",
+              "text": "more"
+            },
+            {
+              "id": "chip-wider",
+              "text": "wider"
+            },
+            {
+              "id": "chip-narrower",
+              "text": "narrower"
+            },
+            {
+              "id": "chip-higher-acc",
+              "text": "higher"
+            },
+            {
+              "id": "chip-lower-acc",
+              "text": "lower"
+            }
+          ],
+          "solution": {
+            "zone-1": "chip-fewer",
+            "zone-2": "chip-wider",
+            "zone-3": "chip-lower-acc"
+          },
+          "explanation": "<strong>Correct!</strong> Larger chunks result in <em>fewer</em> segments. They cover <em>wider</em> themes, but reduce specific matching precision, leading to <em>lower</em> search accuracy."
+        }
+      ]
+    }
+  },
+  {
+    "folder": "scenario",
+    "type": "scenario",
+    "props": {
+      "title": "Choosing a Deployment Strategy",
+      "id": "deploy_decision",
+      "intro": "Your team needs to deploy an AI agent system. Requirements: low latency, cost control, observability.",
+      "nodes": {
+        "start": {
+          "id": "start",
+          "prompt": "What is the primary constraint?",
+          "choices": [
+            {
+              "id": "latency",
+              "text": "Low latency is critical",
+              "next": "infra_choice"
+            },
+            {
+              "id": "cost",
+              "text": "Budget is tight",
+              "next": "cloud_choice"
+            },
+            {
+              "id": "obs",
+              "text": "We need full observability first",
+              "next": "tool_choice"
+            }
+          ]
+        },
+        "infra_choice": {
+          "id": "infra_choice",
+          "prompt": "Where should the agent run?",
+          "choices": [
+            {
+              "id": "edge",
+              "text": "Edge deployment closest to users",
+              "next": "outcome_edge"
+            },
+            {
+              "id": "regional",
+              "text": "Regional cloud with CDN",
+              "next": "outcome_regional"
+            }
+          ]
+        },
+        "cloud_choice": {
+          "id": "cloud_choice",
+          "prompt": "Which cloud model fits best?",
+          "choices": [
+            {
+              "id": "serverless",
+              "text": "Serverless functions for on-demand scaling",
+              "next": "outcome_serverless"
+            },
+            {
+              "id": "containers",
+              "text": "Managed containers with auto-scaling",
+              "next": "outcome_containers"
+            }
+          ]
+        },
+        "tool_choice": {
+          "id": "tool_choice",
+          "prompt": "What observability layer do you need first?",
+          "choices": [
+            {
+              "id": "tracing",
+              "text": "Distributed tracing for agent decision chains",
+              "next": "outcome_tracing"
+            },
+            {
+              "id": "metrics",
+              "text": "Metrics dashboard for throughput and cost",
+              "next": "outcome_metrics"
+            }
+          ]
+        },
+        "outcome_edge": {
+          "id": "outcome_edge",
+          "outcome": {
+            "verdict": "Good for ultra-low latency, but higher infrastructure cost.",
+            "lesson": "Edge deployment minimizes network hops but multiplies deployment complexity.",
+            "rating": "b-plus"
+          }
+        },
+        "outcome_regional": {
+          "id": "outcome_regional",
+          "outcome": {
+            "verdict": "Balanced approach with acceptable latency for most regions.",
+            "lesson": "Regional cloud with CDN gives a good latency/cost trade-off for global audiences.",
+            "rating": "a"
+          }
+        },
+        "outcome_serverless": {
+          "id": "outcome_serverless",
+          "outcome": {
+            "verdict": "Minimal upfront cost, but cold starts hurt latency.",
+            "lesson": "Serverless is cost-efficient for sporadic workloads but struggles with real-time agent interactions.",
+            "rating": "b-minus"
+          }
+        },
+        "outcome_containers": {
+          "id": "outcome_containers",
+          "outcome": {
+            "verdict": "Predictable performance with manageable cost.",
+            "lesson": "Managed containers give you warm instances, horizontal scaling, and reasonable pricing.",
+            "rating": "a"
+          }
+        },
+        "outcome_tracing": {
+          "id": "outcome_tracing",
+          "outcome": {
+            "verdict": "Strong foundation for debugging agent behavior.",
+            "lesson": "Distributed tracing reveals where agents stall, but adds overhead to every decision step.",
+            "rating": "b-plus"
+          }
+        },
+        "outcome_metrics": {
+          "id": "outcome_metrics",
+          "outcome": {
+            "verdict": "Good cost visibility but limited behavioral insight.",
+            "lesson": "Metrics tell you what happened, not why. Combine with tracing for full picture.",
+            "rating": "c"
+          }
+        }
+      },
+      "startNode": "start"
+    }
+  },
+  {
+    "folder": "decision-tree",
+    "type": "decision-tree",
+    "props": {
+      "title": "Agent Architecture Decision Guide",
+      "id": "agent_architecture",
+      "root": "scale_question",
+      "nodes": {
+        "scale_question": {
+          "id": "scale_question",
+          "prompt": "How many concurrent tasks will the agent handle?",
+          "choices": [
+            {
+              "id": "single",
+              "text": "One at a time",
+              "next": "memory_question",
+              "rationale": "Single-task agents are simpler to build and debug."
+            },
+            {
+              "id": "parallel",
+              "text": "Many at once",
+              "next": "orchestrator_question",
+              "rationale": "Most production agents need parallel task handling for throughput.",
+              "recommended": true
+            }
+          ]
+        },
+        "memory_question": {
+          "id": "memory_question",
+          "prompt": "Does the agent need to remember past interactions?",
+          "choices": [
+            {
+              "id": "yes",
+              "text": "Yes, across sessions",
+              "next": "leaf_vector_db",
+              "rationale": "Persistent memory enables learning from past interactions."
+            },
+            {
+              "id": "no",
+              "text": "No, stateless is fine",
+              "next": "leaf_simple",
+              "rationale": "Stateless agents are easier to scale horizontally.",
+              "recommended": true
+            }
+          ]
+        },
+        "orchestrator_question": {
+          "id": "orchestrator_question",
+          "prompt": "Do tasks require coordination between sub-agents?",
+          "choices": [
+            {
+              "id": "yes_coord",
+              "text": "Yes, tasks depend on each other",
+              "next": "leaf_orchestrator",
+              "rationale": "Orchestrator pattern handles complex multi-step workflows.",
+              "recommended": true
+            },
+            {
+              "id": "no_coord",
+              "text": "No, tasks are independent",
+              "next": "leaf_fan_out",
+              "rationale": "Independent tasks can be distributed without coordination."
+            }
+          ]
+        },
+        "leaf_simple": {
+          "id": "leaf_simple",
+          "leaf": {
+            "recommendation": "Use a simple single-agent ReAct loop.",
+            "explanation": "For single-task agents without memory needs, a basic ReAct (Reason-Act) loop is sufficient. The agent observes, reasons, takes an action, and repeats.",
+            "tradeoffs": [
+              "Minimal setup — no external dependencies",
+              "No long-term memory between sessions",
+              "Easy to debug and reason about"
+            ]
+          }
+        },
+        "leaf_vector_db": {
+          "id": "leaf_vector_db",
+          "leaf": {
+            "recommendation": "Use a single-agent ReAct loop with vector store memory.",
+            "explanation": "For single-task agents that need persistent memory, add a vector store for Retrieval-Augmented Generation (RAG). This lets the agent recall relevant past interactions.",
+            "tradeoffs": [
+              "Adds database dependency",
+              "Enables long-term learning from interactions",
+              "Increases latency for memory lookups"
+            ]
+          }
+        },
+        "leaf_orchestrator": {
+          "id": "leaf_orchestrator",
+          "leaf": {
+            "recommendation": "Use an Orchestrator-Workers pattern.",
+            "explanation": "A central orchestrator decomposes complex goals, delegates to specialized worker agents, and aggregates results. Best for workflows where tasks depend on each other.",
+            "tradeoffs": [
+              "Orchestrator becomes a single point of failure",
+              "Handles complex multi-step workflows elegantly",
+              "More agents to monitor and debug"
+            ]
+          }
+        },
+        "leaf_fan_out": {
+          "id": "leaf_fan_out",
+          "leaf": {
+            "recommendation": "Use a Fan-Out/Fan-In pattern.",
+            "explanation": "Dispatch independent tasks to parallel workers and aggregate results. Simple and highly scalable when tasks don't depend on each other.",
+            "tradeoffs": [
+              "No coordination overhead between tasks",
+              "Limited to independent work items",
+              "Result aggregation can be complex"
+            ]
+          }
+        }
+      }
+    }
+  }
+]

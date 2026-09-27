@@ -1,0 +1,1371 @@
+[
+  {
+    "folder": "intro",
+    "type": "intro",
+    "props": {
+      "title": "",
+      "subtitle": "Isolate core domain logic from external technologies, frameworks, databases, and UI drivers",
+      "estimatedTime": "25 mins",
+      "moduleCount": 6,
+      "what": {
+        "definition": "An architectural pattern originated by Alistair Cockburn that isolates application core logic using inbound and outbound Ports and Adapters.",
+        "summary": "Hexagonal Architecture (also known as Ports & Adapters) decouples core business domain logic from external dependencies like HTTP controllers, databases, message brokers, and third-party APIs through explicit contracts called Ports, implemented by Adapters.",
+        "bullets": [
+          "Driving (Primary) Ports & Adapters handle incoming user requests.",
+          "Driven (Secondary) Ports & Adapters handle outgoing persistence and external service calls.",
+          "Domain logic stays pure with zero framework dependencies."
+        ]
+      },
+      "why": {
+        "summary": "Traditional layered architectures tend to leak database entities and framework concerns into application code, making software hard to test, refactor, or migrate. Ports & Adapters allow developers to test business logic completely in memory without databases or HTTP servers.",
+        "impact": "Enables fast in-memory unit testing and painless framework migrations."
+      },
+      "roadmap": [
+        {
+          "id": "vocab",
+          "title": "1. Core Vocabulary",
+          "type": "flashcards",
+          "description": "Understand Ports, Adapters, Driving vs Driven boundaries, and Dependency Inversion."
+        },
+        {
+          "id": "map",
+          "title": "2. Domain Topology",
+          "type": "concept-map",
+          "description": "Visualize entity relationships in a semantic graph."
+        },
+        {
+          "id": "taxonomy",
+          "title": "3. Adapter Taxonomies",
+          "type": "taxonomy-browser",
+          "description": "Categorize Primary (Driving) UI/API drivers vs Secondary (Driven) Persistence drivers."
+        },
+        {
+          "id": "flow",
+          "title": "4. Execution Flow",
+          "type": "flowchart",
+          "description": "Trace request cycles from HTTP Adapters through Ports into Domain Aggregates."
+        },
+        {
+          "id": "tradeoffs",
+          "title": "5. Architectural Trade-offs",
+          "type": "tradeoff-sandbox",
+          "description": "Compare Hexagonal Architecture vs Layered Monolith vs Microservices."
+        },
+        {
+          "id": "assessment",
+          "title": "6. Active Recall & Quiz",
+          "type": "quiz",
+          "description": "Test your synthesis with sequencing challenges and checkpoint quizzes."
+        }
+      ]
+    }
+  },
+  {
+    "folder": "flashcards",
+    "type": "flashcards",
+    "props": {
+      "title": "Essential Terminology",
+      "intro": {
+        "what": "Key terms and definitions defining Hexagonal Architecture boundaries.",
+        "why": "Pre-teaches essential vocabulary before exploring structural flowcharts and trade-off sandboxes.",
+        "next": "Next: Explore the Semantic Domain Map."
+      },
+      "terms": [
+        {
+          "id": "driving-port",
+          "word": "Driving Port (Primary)",
+          "pronunciation": "ˈdraɪvɪŋ pɔːrt",
+          "category": "Domain Architecture",
+          "shortDefinition": "An entry point contract (interface) exposed by the Application Core that defines what tasks the domain can perform for external actors.",
+          "detailedDefinition": "Driving Ports define the explicit use-case boundary of the core application. External actors like REST controllers or CLI handlers invoke these contracts to trigger business logic.",
+          "whyItMatters": "Decouples entry points from concrete web framework handlers.",
+          "dialogue": {
+            "user": "How do REST controllers interact with core logic?",
+            "aiThoughts": "Evaluating dependency direction; HTTP controllers should invoke inbound Port interfaces, not domain entities directly.",
+            "aiQuestion": "Does the Express controller call the PlaceOrderPort interface or directly instantiate ORM models?"
+          }
+        },
+        {
+          "id": "driven-port",
+          "word": "Driven Port (Secondary)",
+          "pronunciation": "ˈdrɪv.ən pɔːrt",
+          "category": "Domain Architecture",
+          "shortDefinition": "An exit point contract (interface) declared by the Application Core defining requirements for external infrastructure.",
+          "detailedDefinition": "Driven Ports allow the Domain Core to express persistence and external service needs without depending on concrete ORM classes or HTTP clients.",
+          "whyItMatters": "Enables replacing databases or third-party APIs without modifying business logic.",
+          "dialogue": {
+            "user": "How does the domain save data without knowing about SQL?",
+            "aiThoughts": "Checking Dependency Inversion; domain defines OrderRepositoryPort interface, infrastructure implements it.",
+            "aiQuestion": "Which layer owns the OrderRepositoryPort interface definition?"
+          }
+        },
+        {
+          "id": "driving-adapter",
+          "word": "Driving (Primary) Adapter",
+          "pronunciation": "ˈdraɪvɪŋ əˈdæp.tər",
+          "category": "Domain Architecture",
+          "shortDefinition": "An external component (HTTP REST controller, CLI command, gRPC handler) that converts requests into Driving Port calls.",
+          "detailedDefinition": "Driving Adapters sit outside the Hexagon. They parse external protocol payloads (JSON, CLI flags, protobufs) and translate them into domain command invocations.",
+          "whyItMatters": "Allows supporting multiple UI drivers (Web, Mobile, CLI, gRPC) against the exact same core logic.",
+          "dialogue": {
+            "user": "Can we add a gRPC endpoint without rewriting the business logic?",
+            "aiThoughts": "Verifying multi-driver capability; adding a gRPC Driving Adapter simply calls existing Driving Ports.",
+            "aiQuestion": "Would adding a gRPC adapter require editing any code inside the domain hexagon?"
+          }
+        },
+        {
+          "id": "driven-adapter",
+          "word": "Driven (Secondary) Adapter",
+          "pronunciation": "ˈdrɪv.ən əˈdæp.tər",
+          "category": "Domain Architecture",
+          "shortDefinition": "A concrete implementation of a Driven Port interface that communicates with external technology.",
+          "detailedDefinition": "Driven Adapters implement Secondary Port contracts using specific libraries like Prisma, TypeORM, Redis, or Stripe SDKs.",
+          "whyItMatters": "Isolates vendor-specific dependencies and database query details outside the core domain.",
+          "dialogue": {
+            "user": "How do we test domain logic without connecting to PostgreSQL?",
+            "aiThoughts": "Evaluating test doubles; swap PostgresDrivenAdapter with InMemoryOrderAdapter.",
+            "aiQuestion": "Can we run unit tests using an InMemoryDrivenAdapter in under 10 milliseconds?"
+          }
+        },
+        {
+          "id": "dependency-inversion",
+          "word": "Dependency Inversion Principle",
+          "pronunciation": "dɪˈpen.dən.si ɪnˈvɜːr.ʒən",
+          "category": "Domain Architecture",
+          "shortDefinition": "High-level domain modules do not depend on low-level infrastructure details; both depend on abstractions (Ports).",
+          "detailedDefinition": "Dependency Inversion flips traditional dependency direction: infrastructure depends on domain contracts, ensuring the core remains pure and isolated.",
+          "whyItMatters": "Prevents framework creep and database entities from leaking into application logic.",
+          "dialogue": {
+            "user": "Why is Dependency Inversion critical for long-term maintainability?",
+            "aiThoughts": "Analyzing software longevity; domain logic outlives framework versions and database drivers.",
+            "aiQuestion": "What happens to your domain code when you upgrade or switch web frameworks?"
+          }
+        }
+      ]
+    }
+  },
+  {
+    "folder": "concept-map",
+    "type": "concept-map",
+    "props": {
+      "title": "Hexagonal Architecture Domain Map",
+      "intro": {
+        "what": "Interactive semantic network mapping entities and boundaries in Ports & Adapters.",
+        "why": "Builds a spatial mental model of how Driving Adapters, Ports, Domain Aggregates, and Driven Adapters connect.",
+        "next": "Next: Categorize Primary vs Secondary Adapters."
+      },
+      "nodes": {
+        "actor": {
+          "id": "actor",
+          "title": "External Actor / Client",
+          "category": "External"
+        },
+        "driving-adapter": {
+          "id": "driving-adapter",
+          "title": "Driving Adapter (REST / CLI / gRPC)",
+          "category": "Primary"
+        },
+        "driving-port": {
+          "id": "driving-port",
+          "title": "Driving Port (Inbound Interface)",
+          "category": "Contract"
+        },
+        "domain-service": {
+          "id": "domain-service",
+          "title": "Domain Service / Application Core",
+          "category": "Core"
+        },
+        "aggregate": {
+          "id": "aggregate",
+          "title": "Domain Aggregate / Entity",
+          "category": "Core"
+        },
+        "driven-port": {
+          "id": "driven-port",
+          "title": "Driven Port (Outbound Interface)",
+          "category": "Contract"
+        },
+        "driven-adapter": {
+          "id": "driven-adapter",
+          "title": "Driven Adapter (DB / HTTP / Queue)",
+          "category": "Secondary"
+        },
+        "infrastructure": {
+          "id": "infrastructure",
+          "title": "External System / Database / Service",
+          "category": "External"
+        }
+      },
+      "edges": [
+        {
+          "from": "actor",
+          "to": "driving-adapter",
+          "label": "Triggers HTTP / Command"
+        },
+        {
+          "from": "driving-adapter",
+          "to": "driving-port",
+          "label": "Invokes DTO Method"
+        },
+        {
+          "from": "driving-port",
+          "to": "domain-service",
+          "label": "Implemented By"
+        },
+        {
+          "from": "domain-service",
+          "to": "aggregate",
+          "label": "Mutates & Enforces Business Rules"
+        },
+        {
+          "from": "domain-service",
+          "to": "driven-port",
+          "label": "Calls Dependency Interface"
+        },
+        {
+          "from": "driven-adapter",
+          "to": "driven-port",
+          "label": "Implements Interface"
+        },
+        {
+          "from": "driven-adapter",
+          "to": "infrastructure",
+          "label": "Executes SQL / API Call"
+        }
+      ]
+    }
+  },
+  {
+    "folder": "taxonomy-browser",
+    "type": "taxonomy-browser",
+    "props": {
+      "title": "Adapter Taxonomies & Patterns",
+      "intro": {
+        "what": "Categorized breakdown of Primary (Driving) vs Secondary (Driven) adapters.",
+        "why": "Helps developers classify adapters by their role in driving execution or providing infrastructure services.",
+        "next": "Next: Read the Core Explanation of Dependency Inversion."
+      },
+      "categories": [
+        {
+          "icon": "LayoutGrid",
+          "title": "Primary (Driving) Adapters",
+          "subtitle": "Inbound Request Adapters",
+          "description": "Adapters that drive application execution by taking external user or system inputs and calling Driving Ports.",
+          "details": "Driving Adapters sit at the entry edge of the Hexagon. They convert transport-level payloads (JSON over HTTP, CLI arguments, gRPC messages) into domain commands or queries, then invoke the application's Driving Ports.",
+          "analogy": "Like a TV Remote Control or Game Controller sending user inputs to the internal console.",
+          "primaryFocus": "Translating external triggers into internal domain use case calls.",
+          "inScope": [
+            "REST API Controllers (Express / NestJS / Spring MVC)",
+            "CLI Handlers (Commander / Cobra)",
+            "gRPC Service Handlers",
+            "GraphQL Query / Mutation Resolvers"
+          ],
+          "outOfScope": [
+            "Database Repositories",
+            "Outbound HTTP API Clients",
+            "ORM Schema Mappers"
+          ],
+          "color": "mauve"
+        },
+        {
+          "icon": "Database",
+          "title": "Secondary (Driven) Adapters",
+          "subtitle": "Outbound Infrastructure Adapters",
+          "description": "Adapters that are driven by the Application Core to interact with external storage, APIs, and infrastructure.",
+          "details": "Driven Adapters implement Secondary Ports defined by the domain. They handle SQL/NoSQL persistence, third-party REST API integrations, and event publishing.",
+          "analogy": "Like a Power Adapter or Cable converting wall outlet electricity into what your device needs.",
+          "primaryFocus": "Fulfilling data persistence and external infrastructure contracts defined by the domain.",
+          "inScope": [
+            "SQL Repositories (Prisma / TypeORM / Hibernate)",
+            "NoSQL Stores (Redis / Mongo / DynamoDB)",
+            "Third-party payment gateway clients (Stripe / PayPal)",
+            "Event Bus Publishers (Kafka / RabbitMQ / SQS)"
+          ],
+          "outOfScope": [
+            "HTTP Route Controllers",
+            "UI Views and Form State"
+          ],
+          "color": "sky"
+        },
+        {
+          "icon": "CheckCircle",
+          "title": "Testing Mocks & In-Memory Adapters",
+          "subtitle": "In-Memory Test Doubles",
+          "description": "Lightweight in-memory adapter implementations designed for fast unit/integration testing.",
+          "details": "Test Adapters implement Driven Ports using in-memory HashMaps or mocks. They allow running 100% of domain use cases without booting databases, Docker containers, or network connections.",
+          "analogy": "Like a flight simulator providing realistic controls without burning jet fuel.",
+          "primaryFocus": "Enabling fast, deterministic, zero-dependency unit tests for business logic.",
+          "inScope": [
+            "InMemoryOrderRepository implementing OrderRepositoryPort",
+            "MockNotificationService implementing NotificationPort",
+            "StubPaymentGateway returning static success responses"
+          ],
+          "outOfScope": [
+            "Production SQL Connection Pools"
+          ],
+          "color": "green"
+        }
+      ]
+    }
+  },
+  {
+    "folder": "text-core",
+    "type": "text",
+    "props": {
+      "title": "The Mechanics of Dependency Inversion",
+      "paragraphs": [
+        "In traditional layered software architectures, high-level business logic directly imports low-level database drivers, web frameworks, or external SDKs. This creates tight coupling, where a database schema update or framework upgrade forces breaking changes throughout the entire codebase.",
+        "Hexagonal Architecture flips this dependency direction upside down using **Dependency Inversion**:",
+        "**The Hexagon Core**: The center of the application contains domain entities, aggregates, and use case logic. It has **zero dependencies** on external libraries, web frameworks, or databases.",
+        "**Ports (Interfaces)**: The Core defines TypeScript/Java interfaces at its boundary. Inbound interfaces (*Driving Ports*) define what use cases exist. Outbound interfaces (*Driven Ports*) define what infrastructure data services the core needs.",
+        "**Adapters (Implementations)**: Adapters sit outside the hexagon boundary. Driving Adapters invoke Driving Ports, while Driven Adapters implement Driven Ports.",
+        "By keeping the Core independent of technology choices, you gain extreme testability: unit tests can instantiate domain services with fast in-memory adapters without needing a running database or HTTP server."
+      ]
+    }
+  },
+  {
+    "folder": "flowchart",
+    "type": "flowchart",
+    "props": {
+      "title": "Order Placement Request Lifecycle",
+      "intro": {
+        "what": "Interactive Event Storming process diagram tracing an HTTP Order request through Ports and Adapters.",
+        "why": "Visualizes step-by-step how Driving Adapters, Ports, Use Case Policies, and Driven Adapters interact.",
+        "next": "Next: Challenge your process recall in the Reflection Sequence."
+      },
+      "schema": {
+        "entities": {
+          "customer": {
+            "title": "Online Customer (Initiator)",
+            "desc": "Customer submitting purchase orders via Web UI.",
+            "type": "Actor"
+          },
+          "order_aggregate": {
+            "title": "Order Aggregate (Domain Core)",
+            "desc": "Core domain business entity maintaining state and business invariants.",
+            "type": "Aggregate",
+            "stateMachine": {
+              "states": [
+                {
+                  "id": "DRAFT",
+                  "label": "Draft",
+                  "color": "var(--ctp-overlay1)"
+                },
+                {
+                  "id": "CREATING",
+                  "label": "Creating",
+                  "color": "var(--ctp-blue)"
+                },
+                {
+                  "id": "VALIDATED",
+                  "label": "Validated",
+                  "color": "var(--ctp-mauve)"
+                },
+                {
+                  "id": "PERSISTING",
+                  "label": "Persisting",
+                  "color": "var(--ctp-peach)"
+                },
+                {
+                  "id": "PERSISTED",
+                  "label": "Persisted",
+                  "color": "var(--ctp-green)"
+                }
+              ],
+              "initialState": "DRAFT"
+            }
+          },
+          "http_controller": {
+            "title": "Express HTTP Controller (Driving Adapter)",
+            "desc": "Receives HTTP REST requests and translates DTOs into domain commands.",
+            "type": "External API"
+          },
+          "create_order_port": {
+            "title": "CreateOrderUseCase (Driving Port)",
+            "desc": "Inbound application port interface exposing order creation operations.",
+            "type": "External API"
+          },
+          "order_repo_port": {
+            "title": "OrderRepositoryPort (Driven Port)",
+            "desc": "Outbound infrastructure port interface for order persistence.",
+            "type": "External API"
+          },
+          "postgres_adapter": {
+            "title": "PostgresOrderAdapter (Driven Adapter)",
+            "desc": "Outbound database adapter executing SQL queries against Postgres.",
+            "type": "External API"
+          },
+          "pol_step_checkout": {
+            "title": "Parse HTTP Payload Policy",
+            "desc": "Parse HTTP Payload Policy",
+            "type": "Policy",
+            "root": false
+          },
+          "cmd_step_checkout": {
+            "title": "Invoke CreateOrderPort",
+            "desc": "Invoke CreateOrderPort",
+            "type": "Command"
+          },
+          "evt_evt_checkout_requested": {
+            "title": "Checkout Requested",
+            "desc": "Customer submits cart payload via Web UI.",
+            "type": "Event"
+          },
+          "pol_step_invoke_port": {
+            "title": "Route To Domain Service Policy",
+            "desc": "Route To Domain Service Policy",
+            "type": "Policy",
+            "root": false
+          },
+          "cmd_step_invoke_port": {
+            "title": "Instantiate Order Aggregate",
+            "desc": "Instantiate Order Aggregate",
+            "type": "Command"
+          },
+          "evt_evt_port_invoked": {
+            "title": "CreateOrderPort Invoked",
+            "desc": "Driving Adapter calls CreateOrderUseCase interface method.",
+            "type": "Event"
+          },
+          "pol_step_domain_logic": {
+            "title": "Persist New Order Policy",
+            "desc": "Persist New Order Policy",
+            "type": "Policy",
+            "root": false
+          },
+          "cmd_step_domain_logic": {
+            "title": "Call OrderRepositoryPort.save()",
+            "desc": "Call OrderRepositoryPort.save()",
+            "type": "Command"
+          },
+          "evt_evt_order_created": {
+            "title": "Order Aggregate Created",
+            "desc": "Domain Aggregate validates items, price calculations, and stock invariants.",
+            "type": "Event"
+          },
+          "pol_step_call_driven_port": {
+            "title": "Delegate To Database Adapter Policy",
+            "desc": "Delegate To Database Adapter Policy",
+            "type": "Policy",
+            "root": false
+          },
+          "cmd_step_call_driven_port": {
+            "title": "Execute SQL Insert",
+            "desc": "Execute SQL Insert",
+            "type": "Command"
+          },
+          "evt_evt_repo_called": {
+            "title": "OrderRepositoryPort Called",
+            "desc": "Outbound interface receives Order entity for persistence.",
+            "type": "Event"
+          },
+          "pol_step_db_persist": {
+            "title": "Return Success DTO Policy",
+            "desc": "Return Success DTO Policy",
+            "type": "Policy",
+            "root": false
+          },
+          "cmd_step_db_persist": {
+            "title": "Respond 201 Created",
+            "desc": "Respond 201 Created",
+            "type": "Command"
+          },
+          "evt_evt_order_saved": {
+            "title": "Order Record Saved to Postgres",
+            "desc": "Postgres database commits transaction successfully.",
+            "type": "Event"
+          }
+        },
+        "relations": [
+          {
+            "id": "r1",
+            "from": "customer",
+            "to": "pol_step_checkout",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r2",
+            "from": "pol_step_checkout",
+            "to": "cmd_step_checkout",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r3",
+            "from": "cmd_step_checkout",
+            "to": "http_controller",
+            "handledBy": true,
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r4",
+            "from": "http_controller",
+            "to": "evt_evt_checkout_requested",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r5",
+            "from": "evt_evt_checkout_requested",
+            "to": "pol_step_invoke_port",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r6",
+            "from": "pol_step_invoke_port",
+            "to": "cmd_step_invoke_port",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r7",
+            "from": "cmd_step_invoke_port",
+            "to": "create_order_port",
+            "handledBy": true,
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r8",
+            "from": "create_order_port",
+            "to": "evt_evt_port_invoked",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r9",
+            "from": "evt_evt_port_invoked",
+            "to": "pol_step_domain_logic",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r10",
+            "from": "pol_step_domain_logic",
+            "to": "cmd_step_domain_logic",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r11",
+            "from": "cmd_step_domain_logic",
+            "to": "order_aggregate",
+            "handledBy": true,
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r12",
+            "from": "order_aggregate",
+            "to": "evt_evt_order_created",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r13",
+            "from": "evt_evt_order_created",
+            "to": "pol_step_call_driven_port",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r14",
+            "from": "pol_step_call_driven_port",
+            "to": "cmd_step_call_driven_port",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r15",
+            "from": "cmd_step_call_driven_port",
+            "to": "order_repo_port",
+            "handledBy": true,
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r16",
+            "from": "order_repo_port",
+            "to": "evt_evt_repo_called",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r17",
+            "from": "evt_evt_repo_called",
+            "to": "pol_step_db_persist",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r18",
+            "from": "pol_step_db_persist",
+            "to": "cmd_step_db_persist",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r19",
+            "from": "cmd_step_db_persist",
+            "to": "postgres_adapter",
+            "handledBy": true,
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r20",
+            "from": "postgres_adapter",
+            "to": "evt_evt_order_saved",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          }
+        ],
+        "journeys": [
+          {
+            "id": "happy-path",
+            "label": "Complete Request Cycle (Inbound → Domain → Outbound)",
+            "description": "Traces an HTTP order placement from the Express Driving Controller through Ports into the Domain Core and Postgres Driven Adapter.",
+            "steps": [
+              {
+                "nodeIds": [
+                  "customer",
+                  "pol_step_checkout",
+                  "cmd_step_checkout",
+                  "http_controller",
+                  "evt_evt_checkout_requested"
+                ],
+                "title": "1. HTTP Request Received",
+                "reason": "Express Controller validates request payload and maps HTTP DTO into CreateOrderCommand.",
+                "processGroup": "planning"
+              },
+              {
+                "nodeIds": [
+                  "pol_step_invoke_port",
+                  "cmd_step_invoke_port",
+                  "create_order_port",
+                  "evt_evt_port_invoked"
+                ],
+                "title": "2. Driving Port Invoked",
+                "reason": "Driving Adapter calls CreateOrderUseCase interface; application layer initiates domain transaction.",
+                "processGroup": "planning"
+              },
+              {
+                "nodeIds": [
+                  "pol_step_domain_logic",
+                  "cmd_step_domain_logic",
+                  "order_aggregate",
+                  "evt_evt_order_created"
+                ],
+                "title": "3. Domain Core Execution",
+                "reason": "Order Aggregate validates business invariants, item calculations, and instantiates order state.",
+                "processGroup": "execution"
+              },
+              {
+                "nodeIds": [
+                  "pol_step_call_driven_port",
+                  "cmd_step_call_driven_port",
+                  "order_repo_port",
+                  "evt_evt_repo_called"
+                ],
+                "title": "4. Driven Port Call",
+                "reason": "Domain Core invokes OrderRepositoryPort interface for persistence.",
+                "processGroup": "execution"
+              },
+              {
+                "nodeIds": [
+                  "pol_step_db_persist",
+                  "cmd_step_db_persist",
+                  "postgres_adapter",
+                  "evt_evt_order_saved"
+                ],
+                "title": "5. Postgres Persistence & Response",
+                "reason": "Driven Postgres Adapter executes SQL insert, commits transaction, and returns result to HTTP Controller.",
+                "processGroup": "evaluation"
+              }
+            ]
+          }
+        ],
+        "rawSteps": [
+          {
+            "type": "linear",
+            "id": "step_checkout",
+            "initiatedBy": {
+              "_tag": "ref",
+              "id": "customer"
+            },
+            "policy": "Parse HTTP Payload Policy",
+            "command": "Invoke CreateOrderPort",
+            "handledBy": {
+              "_tag": "ref",
+              "id": "http_controller"
+            },
+            "resultEvents": [
+              {
+                "id": "evt_checkout_requested",
+                "title": "Checkout Requested",
+                "desc": "Customer submits cart payload via Web UI."
+              }
+            ],
+            "continuesAs": "step_invoke_port"
+          },
+          {
+            "type": "linear",
+            "id": "step_invoke_port",
+            "policy": "Route To Domain Service Policy",
+            "command": "Instantiate Order Aggregate",
+            "handledBy": {
+              "_tag": "ref",
+              "id": "create_order_port"
+            },
+            "resultEvents": [
+              {
+                "id": "evt_port_invoked",
+                "title": "CreateOrderPort Invoked",
+                "desc": "Driving Adapter calls CreateOrderUseCase interface method."
+              }
+            ],
+            "continuesAs": "step_domain_logic"
+          },
+          {
+            "type": "linear",
+            "id": "step_domain_logic",
+            "policy": "Persist New Order Policy",
+            "command": "Call OrderRepositoryPort.save()",
+            "handledBy": {
+              "_tag": "ref",
+              "id": "order_aggregate"
+            },
+            "resultEvents": [
+              {
+                "id": "evt_order_created",
+                "title": "Order Aggregate Created",
+                "desc": "Domain Aggregate validates items, price calculations, and stock invariants."
+              }
+            ],
+            "continuesAs": "step_call_driven_port"
+          },
+          {
+            "type": "linear",
+            "id": "step_call_driven_port",
+            "policy": "Delegate To Database Adapter Policy",
+            "command": "Execute SQL Insert",
+            "handledBy": {
+              "_tag": "ref",
+              "id": "order_repo_port"
+            },
+            "resultEvents": [
+              {
+                "id": "evt_repo_called",
+                "title": "OrderRepositoryPort Called",
+                "desc": "Outbound interface receives Order entity for persistence."
+              }
+            ],
+            "continuesAs": "step_db_persist"
+          },
+          {
+            "type": "linear",
+            "id": "step_db_persist",
+            "policy": "Return Success DTO Policy",
+            "command": "Respond 201 Created",
+            "handledBy": {
+              "_tag": "ref",
+              "id": "postgres_adapter"
+            },
+            "resultEvents": [
+              {
+                "id": "evt_order_saved",
+                "title": "Order Record Saved to Postgres",
+                "desc": "Postgres database commits transaction successfully."
+              }
+            ]
+          }
+        ]
+      }
+    }
+  },
+  {
+    "folder": "pillar-layer",
+    "type": "pillar-layer",
+    "props": {
+      "title": "Port & Adapter Layer Stack",
+      "intro": {
+        "what": "Interactive 2D spatial layout mapping primary driving entrypoints, pure domain hexagon kernel, and outbound driven infrastructure adapters.",
+        "why": "Provides a structural blueprint showing how Dependency Inversion decouples business rules from databases, frameworks, and protocol drivers.",
+        "next": "Next: Test your understanding with the knowledge check quiz."
+      },
+      "section": {
+        "type": "pillar-layer",
+        "title": "Hexagonal Architecture (Ports & Adapters) 5-Tier Stack",
+        "description": "5-Tier layer stack showing how Driving Inbound Adapters, Port Contracts, Domain Kernel, and individual Driven Storage/Infrastructure Adapters stack together.",
+        "layers": [
+          {
+            "id": "l-driving-adapters",
+            "title": "1. Driving (Inbound) Adapters",
+            "description": "External entrypoints that translate HTTP, CLI, or Webhook requests into domain calls."
+          },
+          {
+            "id": "l-driving-ports",
+            "title": "2. Driving Input Port Contracts",
+            "description": "Inbound interface contracts defined by the domain and invoked by driving adapters."
+          },
+          {
+            "id": "l-domain-kernel",
+            "title": "3. Hexagon Core Domain Kernel",
+            "description": "Pure business rules, aggregates, entities, and calculation policies."
+          },
+          {
+            "id": "l-driven-ports",
+            "title": "4. Driven Output Port Contracts",
+            "description": "Outbound interface contracts defined by the domain for persistence, messaging, and notifications."
+          },
+          {
+            "id": "l-driven-adapters",
+            "title": "5. Driven (Outbound) Adapters & Infrastructure",
+            "description": "Pluggable infrastructure adapters (PostgreSQL, Redis, Kafka, SendGrid) implementing output ports."
+          }
+        ],
+        "matrix_blocks": [
+          {
+            "id": "b-http-adapter",
+            "title": "HTTP REST API Controller",
+            "description": "Parses REST/JSON requests and invokes the OrderUseCasePort.",
+            "layer_id": "l-driving-adapters",
+            "col_offset": 0,
+            "col_span": 1,
+            "row_span": 1,
+            "color": "blue",
+            "depends_on": [
+              "b-order-usecase-port"
+            ]
+          },
+          {
+            "id": "b-cli-adapter",
+            "title": "CLI Command Runner",
+            "description": "Executes terminal commands against input ports.",
+            "layer_id": "l-driving-adapters",
+            "col_offset": 1,
+            "col_span": 1,
+            "row_span": 1,
+            "color": "sky",
+            "depends_on": [
+              "b-order-usecase-port"
+            ]
+          },
+          {
+            "id": "b-webhook-adapter",
+            "title": "Webhook Ingress Listener",
+            "description": "Handles asynchronous inbound webhooks from third-party partners.",
+            "layer_id": "l-driving-adapters",
+            "col_offset": 2,
+            "col_span": 2,
+            "row_span": 1,
+            "color": "sapphire",
+            "depends_on": [
+              "b-payment-port"
+            ]
+          },
+          {
+            "id": "b-order-usecase-port",
+            "title": "OrderUseCasePort (Inbound Contract)",
+            "description": "Primary interface defining order placement and management capabilities.",
+            "layer_id": "l-driving-ports",
+            "col_offset": 0,
+            "col_span": 2,
+            "row_span": 1,
+            "color": "mauve",
+            "depends_on": [
+              "b-order-aggregate"
+            ]
+          },
+          {
+            "id": "b-payment-port",
+            "title": "PaymentServicePort (Inbound Contract)",
+            "description": "Interface contract for initiating payment authorization flows.",
+            "layer_id": "l-driving-ports",
+            "col_offset": 2,
+            "col_span": 2,
+            "row_span": 1,
+            "color": "lavender",
+            "depends_on": [
+              "b-pricing-policy"
+            ]
+          },
+          {
+            "id": "b-order-aggregate",
+            "title": "Order Aggregate & Entities",
+            "description": "Encapsulates order invariants, item line validation, and state changes.",
+            "layer_id": "l-domain-kernel",
+            "col_offset": 0,
+            "col_span": 3,
+            "row_span": 1,
+            "color": "green",
+            "depends_on": [
+              "b-repo-port",
+              "b-event-port"
+            ]
+          },
+          {
+            "id": "b-pricing-policy",
+            "title": "Pricing & Discount Policy",
+            "description": "Stateless domain rules for volume discounts and tax calculations.",
+            "layer_id": "l-domain-kernel",
+            "col_offset": 3,
+            "col_span": 1,
+            "row_span": 1,
+            "color": "teal",
+            "depends_on": [
+              "b-cache-port",
+              "b-email-port"
+            ]
+          },
+          {
+            "id": "b-repo-port",
+            "title": "OrderRepositoryPort",
+            "description": "Driven port interface for persistent storage operations.",
+            "layer_id": "l-driven-ports",
+            "col_offset": 0,
+            "col_span": 1,
+            "row_span": 1,
+            "color": "peach",
+            "depends_on": [
+              "b-postgres-adapter"
+            ]
+          },
+          {
+            "id": "b-cache-port",
+            "title": "CachePort",
+            "description": "Driven port interface for fast key-value session caching.",
+            "layer_id": "l-driven-ports",
+            "col_offset": 1,
+            "col_span": 1,
+            "row_span": 1,
+            "color": "yellow",
+            "depends_on": [
+              "b-redis-adapter"
+            ]
+          },
+          {
+            "id": "b-event-port",
+            "title": "EventPublisherPort",
+            "description": "Driven port interface for publishing domain events.",
+            "layer_id": "l-driven-ports",
+            "col_offset": 2,
+            "col_span": 1,
+            "row_span": 1,
+            "color": "maroon",
+            "depends_on": [
+              "b-kafka-adapter"
+            ]
+          },
+          {
+            "id": "b-email-port",
+            "title": "NotificationPort",
+            "description": "Driven port interface for sending customer notifications.",
+            "layer_id": "l-driven-ports",
+            "col_offset": 3,
+            "col_span": 1,
+            "row_span": 1,
+            "color": "pink",
+            "depends_on": [
+              "b-sendgrid-adapter"
+            ]
+          },
+          {
+            "id": "b-postgres-adapter",
+            "title": "PostgreSQL Order Repository (DB 1)",
+            "description": "Relational database persistence adapter implementing OrderRepositoryPort.",
+            "layer_id": "l-driven-adapters",
+            "col_offset": 0,
+            "col_span": 1,
+            "row_span": 1,
+            "color": "blue"
+          },
+          {
+            "id": "b-redis-adapter",
+            "title": "Redis Cache & Session Adapter (DB 2)",
+            "description": "In-memory caching adapter implementing CachePort.",
+            "layer_id": "l-driven-adapters",
+            "col_offset": 1,
+            "col_span": 1,
+            "row_span": 1,
+            "color": "red"
+          },
+          {
+            "id": "b-kafka-adapter",
+            "title": "Kafka Event Stream Publisher (Broker)",
+            "description": "Message streaming adapter implementing EventPublisherPort.",
+            "layer_id": "l-driven-adapters",
+            "col_offset": 2,
+            "col_span": 1,
+            "row_span": 1,
+            "color": "mauve"
+          },
+          {
+            "id": "b-sendgrid-adapter",
+            "title": "SendGrid Email Dispatcher (SaaS)",
+            "description": "Outbound notification adapter implementing NotificationPort.",
+            "layer_id": "l-driven-adapters",
+            "col_offset": 3,
+            "col_span": 1,
+            "row_span": 1,
+            "color": "green"
+          }
+        ]
+      }
+    }
+  },
+  {
+    "folder": "reflection-sequence",
+    "type": "reflection-sequence",
+    "props": {
+      "title": "Order Flow Sequencing Challenge",
+      "intro": {
+        "what": "Active recall ordering challenge testing your understanding of Hexagonal Architecture flow.",
+        "why": "Verifies that you understand the exact order of execution across Ports and Adapters.",
+        "next": "Next: Compare Hexagonal Architecture in the Tradeoff Sandbox."
+      },
+      "challenges": [
+        {
+          "id": "hexagonal-flow",
+          "prompt": "Arrange the execution steps of a Hexagonal Architecture request in correct chronological order from HTTP entry to Database persistence:",
+          "items": [
+            {
+              "id": "step-1",
+              "text": "HTTP REST Controller (Driving Adapter) receives JSON request"
+            },
+            {
+              "id": "step-2",
+              "text": "Driving Adapter invokes CreateOrderPort interface method"
+            },
+            {
+              "id": "step-3",
+              "text": "Application Core instantiates and executes Order Aggregate logic"
+            },
+            {
+              "id": "step-4",
+              "text": "Application Core calls OrderRepositoryPort (Driven Port) save interface"
+            },
+            {
+              "id": "step-5",
+              "text": "PostgresOrderAdapter (Driven Adapter) converts entity to SQL and executes DB Insert"
+            }
+          ],
+          "solution": [
+            "step-1",
+            "step-2",
+            "step-3",
+            "step-4",
+            "step-5"
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "folder": "tradeoff-sandbox",
+    "type": "tradeoff-sandbox",
+    "props": {
+      "title": "Architecture Strategy & Tradeoff Sandbox",
+      "intro": {
+        "what": "Interactive comparison table comparing Hexagonal Architecture vs Layered Monolith vs Microservices.",
+        "why": "Evaluates the trade-offs of initial development velocity vs long-term testability and maintainability.",
+        "next": "Next: Synthesize your understanding in the Reflection Template."
+      },
+      "scenarios": [
+        {
+          "id": "architecture-choice",
+          "title": "System Architecture Pattern Selection",
+          "description": "Compare structural trade-offs when building a core financial transaction engine.",
+          "metrics": [
+            {
+              "id": "unit_testability",
+              "label": "In-Memory Unit Testability",
+              "baseValue": 50,
+              "min": 0,
+              "max": 100
+            },
+            {
+              "id": "framework_decoupling",
+              "label": "Framework Decoupling",
+              "baseValue": 50,
+              "min": 0,
+              "max": 100
+            },
+            {
+              "id": "initial_setup_speed",
+              "label": "Initial Prototype Speed",
+              "baseValue": 50,
+              "min": 0,
+              "max": 100
+            },
+            {
+              "id": "codebase_indirection",
+              "label": "Low Indirection Complexity",
+              "baseValue": 50,
+              "min": 0,
+              "max": 100
+            }
+          ],
+          "steps": [
+            {
+              "id": "pattern-step",
+              "title": "Choose Architectural Pattern",
+              "description": "Select how domain logic and external infrastructure dependencies are organized.",
+              "choices": [
+                {
+                  "id": "hexagonal",
+                  "label": "Hexagonal Architecture (Ports & Adapters)",
+                  "description": "Strict isolation of Domain Core via Port interfaces and Adapter implementations.",
+                  "metrics": {
+                    "unit_testability": 95,
+                    "framework_decoupling": 98,
+                    "initial_setup_speed": 60,
+                    "codebase_indirection": 55
+                  },
+                  "pros": [
+                    {
+                      "title": "In-Memory Testability",
+                      "description": "100% in-memory domain unit testability without DB or HTTP mocks"
+                    },
+                    {
+                      "title": "Painless Migrations",
+                      "description": "Effortless database or framework migrations"
+                    },
+                    {
+                      "title": "Pure Domain Logic",
+                      "description": "Domain rules stay pure and readable with zero framework imports"
+                    }
+                  ],
+                  "cons": [
+                    {
+                      "title": "Interface Indirection",
+                      "description": "Requires interface indirection and DTO mapping layers"
+                    },
+                    {
+                      "title": "Setup Boilerplate",
+                      "description": "Slightly higher initial project setup cost"
+                    }
+                  ]
+                },
+                {
+                  "id": "layered-monolith",
+                  "label": "Traditional Layered Monolith (Controller → Service → Repository)",
+                  "description": "Direct top-down dependencies where Controller calls Service, which calls DB ORM directly.",
+                  "metrics": {
+                    "unit_testability": 50,
+                    "framework_decoupling": 30,
+                    "initial_setup_speed": 90,
+                    "codebase_indirection": 90
+                  },
+                  "pros": [
+                    {
+                      "title": "Fast CRUD Bootstrapping",
+                      "description": "Fastest initial CRUD bootstrapping"
+                    },
+                    {
+                      "title": "Low Indirection",
+                      "description": "Fewer files and zero interface indirection"
+                    }
+                  ],
+                  "cons": [
+                    {
+                      "title": "ORM Leakage",
+                      "description": "Database ORM entity leaks directly into business logic"
+                    },
+                    {
+                      "title": "Heavy Test Setups",
+                      "description": "Requires mock databases or heavy container setups for testing"
+                    },
+                    {
+                      "title": "Tightly Coupled Dependencies",
+                      "description": "Hard to migrate frameworks or database providers later"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "folder": "reflection-template",
+    "type": "reflection-template",
+    "props": {
+      "title": "Synthesize Hexagonal Architecture Core Concepts",
+      "intro": {
+        "what": "Fill-in-the-blank synthesis template testing your understanding of Ports & Adapters.",
+        "why": "Solidifies how Dependency Inversion protects domain logic.",
+        "next": "Next: Complete the final Knowledge Check Quiz."
+      },
+      "challenges": [
+        {
+          "id": "hexagonal-synthesis",
+          "prompt": "Fill in the blank fields to complete the explanation of Hexagonal Architecture mechanics:",
+          "template": "In Hexagonal Architecture, the core business logic resides inside the domain hexagon and depends only on {zone-1}. External HTTP requests enter the system through {zone-2}, which invoke {zone-3}. Outbound infrastructure services like databases implement {zone-4}, allowing unit tests to swap real databases with {zone-5}.",
+          "chips": [
+            {
+              "id": "chip-ports",
+              "text": "Port interfaces"
+            },
+            {
+              "id": "chip-driving-adapters",
+              "text": "Driving Adapters"
+            },
+            {
+              "id": "chip-driving-ports",
+              "text": "Driving Ports"
+            },
+            {
+              "id": "chip-driven-ports",
+              "text": "Driven Ports"
+            },
+            {
+              "id": "chip-in-memory-adapters",
+              "text": "In-Memory Adapters"
+            }
+          ],
+          "solution": {
+            "zone-1": "chip-ports",
+            "zone-2": "chip-driving-adapters",
+            "zone-3": "chip-driving-ports",
+            "zone-4": "chip-driven-ports",
+            "zone-5": "chip-in-memory-adapters"
+          },
+          "explanation": "<strong>Correct! Excellent Hexagonal Architecture synthesis.</strong><br/>The core domain depends only on <em>Port interfaces</em>. External HTTP requests enter via <em>Driving Adapters</em> which invoke <em>Driving Ports</em>. Outbound infrastructure implements <em>Driven Ports</em>, allowing tests to easily swap real infrastructure for <em>In-Memory Adapters</em>."
+        }
+      ]
+    }
+  },
+  {
+    "folder": "quiz",
+    "type": "quiz",
+    "props": {
+      "title": "Knowledge Check Checkpoint",
+      "intro": {
+        "what": "Multiple-choice checkpoint testing your understanding of Hexagonal Architecture principles.",
+        "why": "Validates your readiness to design software using Ports and Adapters.",
+        "next": "Congratulations on completing the Hexagonal Architecture module!"
+      },
+      "questions": [
+        {
+          "id": "q1",
+          "question": "What is the primary role of a Driving (Primary) Port in Hexagonal Architecture?",
+          "choices": [
+            {
+              "id": "c1",
+              "text": "It exposes SQL queries to external clients.",
+              "correct": false,
+              "explanation": "SQL queries belong in database adapters, not in driving ports."
+            },
+            {
+              "id": "c2",
+              "text": "It acts as an inbound contract interface declaring use cases the domain offers to external actors.",
+              "correct": true,
+              "explanation": "Driving Ports are inbound interfaces owned by the Application Core that define how external drivers (HTTP Controllers, CLI) can invoke use cases."
+            },
+            {
+              "id": "c3",
+              "text": "It connects the database directly to the HTTP controller.",
+              "correct": false,
+              "explanation": "Hexagonal Architecture strictly prohibits connecting HTTP controllers directly to databases."
+            },
+            {
+              "id": "c4",
+              "text": "It parses HTML templates for web pages.",
+              "correct": false,
+              "explanation": "HTML parsing is a UI presentation concern, completely outside driving port contracts."
+            }
+          ],
+          "hint": "Think about who initiates execution (inbound vs outbound)."
+        },
+        {
+          "id": "q2",
+          "question": "Why does Hexagonal Architecture invert dependencies for database access using Driven Ports?",
+          "choices": [
+            {
+              "id": "c1",
+              "text": "So the database schema determines the domain model.",
+              "correct": false,
+              "explanation": "Database schema driving domain models is a anti-pattern that Hexagonal Architecture prevents."
+            },
+            {
+              "id": "c2",
+              "text": "To allow the Domain Core to define its data requirements without depending on concrete ORMs or database drivers.",
+              "correct": true,
+              "explanation": "Driven Ports allow the domain logic to specify repository contracts while concrete database adapters implement those contracts outside the hexagon."
+            },
+            {
+              "id": "c3",
+              "text": "To avoid writing unit tests.",
+              "correct": false,
+              "explanation": "Dependency inversion makes unit testing significantly easier and faster."
+            },
+            {
+              "id": "c4",
+              "text": "To force all database queries to be written in GraphQL.",
+              "correct": false,
+              "explanation": "GraphQL is a web API query layer, unrelated to persistence ports."
+            }
+          ],
+          "hint": "Consider how domain tests run without booting real SQL databases."
+        },
+        {
+          "id": "q3",
+          "question": "Which component in Hexagonal Architecture is responsible for converting HTTP REST payloads into domain commands?",
+          "choices": [
+            {
+              "id": "c1",
+              "text": "Driven Adapter",
+              "correct": false,
+              "explanation": "Driven Adapters handle outbound infrastructure like databases or external web APIs."
+            },
+            {
+              "id": "c2",
+              "text": "Driven Port",
+              "correct": false,
+              "explanation": "Driven Ports are outbound interface definitions, not request handlers."
+            },
+            {
+              "id": "c3",
+              "text": "Driving Adapter",
+              "correct": true,
+              "explanation": "Driving Adapters (such as Express or Spring HTTP controllers) receive external HTTP requests and adapt them to call Driving Port use cases."
+            },
+            {
+              "id": "c4",
+              "text": "Domain Aggregate",
+              "correct": false,
+              "explanation": "Domain Aggregates enforce business rules and consistency, unaware of HTTP protocols."
+            }
+          ],
+          "hint": "Who converts inbound HTTP requests before calling the port?"
+        }
+      ]
+    }
+  }
+]

@@ -1,0 +1,2663 @@
+[
+  {
+    "folder": "intro",
+    "type": "intro",
+    "props": {
+      "title": "",
+      "estimatedTime": "6 min read",
+      "moduleCount": 13,
+      "what": {
+        "definition": "Flicker Strike Monk is a high-mobility PoE 2 melee build that spends Power Charges to instantly teleport and strike enemies continuously without cooldown.",
+        "summary": "Comprehensive build guide and mechanics breakdown for the PoE 2 Flicker Strike Invoker Monk.",
+        "bullets": [
+          "Power Charge generation loops & Flicker Strike reset mechanics",
+          "Invoker Monk ascendancy skill synergy & elemental scaling",
+          "Budget-friendly gear milestones and DPS calculations"
+        ],
+        "tags": [
+          "PoE 2",
+          "Flicker Strike",
+          "Invoker Monk",
+          "Build Mechanics"
+        ]
+      },
+      "why": {
+        "summary": "Flicker Strike offers extreme mobility and burst DPS, but misconfiguring charge generation leads to skill downtime in endgame bosses.",
+        "impact": "Mastering charge generation loops ensures permanent skill uptime, high clear speed, and boss deletion."
+      },
+      "roadmap": [
+        {
+          "sectionId": "concept-map",
+          "title": "Mechanics Map",
+          "type": "concept-map",
+          "description": "Map connections between charges, ascendancies, and strike skills."
+        },
+        {
+          "sectionId": "flashcards",
+          "title": "Key Vocabulary",
+          "type": "flashcards",
+          "description": "Master PoE 2 terminology and damage scaling definitions."
+        },
+        {
+          "sectionId": "taxonomy",
+          "title": "Skill Arsenal",
+          "type": "taxonomy-browser",
+          "description": "Explore core skills, gems, and passive node categories."
+        },
+        {
+          "sectionId": "flowchart",
+          "title": "Combat Flow",
+          "type": "flowchart",
+          "description": "Trace event-driven skill execution and charge reset policies."
+        },
+        {
+          "sectionId": "tradeoffs",
+          "title": "Gear Sandboxes",
+          "type": "tradeoff-sandbox",
+          "description": "Compare budget vs endgame gear setups and stat trade-offs."
+        },
+        {
+          "sectionId": "formula-sandbox",
+          "title": "DPS Calculator",
+          "type": "formula-sandbox",
+          "description": "Calculate attack speed, crit multiplier, and effective DPS."
+        }
+      ]
+    }
+  },
+  {
+    "folder": "concept-map",
+    "type": "concept-map",
+    "props": {
+      "title": "Build Mechanics Map",
+      "nodes": {
+        "flicker-strike": {
+          "id": "flicker-strike",
+          "title": "Flicker Strike",
+          "category": "skill"
+        },
+        "falling-thunder": {
+          "id": "falling-thunder",
+          "title": "Falling Thunder",
+          "category": "skill"
+        },
+        "charged-staff": {
+          "id": "charged-staff",
+          "title": "Charged Staff",
+          "category": "skill"
+        },
+        "martial-artist": {
+          "id": "martial-artist",
+          "title": "Martial Artist",
+          "category": "ascendancy"
+        },
+        "combo": {
+          "id": "combo",
+          "title": "Combo System",
+          "category": "mechanic"
+        },
+        "power-charges": {
+          "id": "power-charges",
+          "title": "Power Charges",
+          "category": "mechanic"
+        },
+        "ailiths-chimes": {
+          "id": "ailiths-chimes",
+          "title": "Ailith's Chimes",
+          "category": "item"
+        },
+        "stonefist": {
+          "id": "stonefist",
+          "title": "Way of the Stonefist",
+          "category": "ascendancy"
+        },
+        "hollow-focus": {
+          "id": "hollow-focus",
+          "title": "Hollow Focus Technique",
+          "category": "ascendancy"
+        },
+        "herald-thunder": {
+          "id": "herald-thunder",
+          "title": "Herald of Thunder",
+          "category": "herald"
+        },
+        "herald-ice": {
+          "id": "herald-ice",
+          "title": "Herald of Ice",
+          "category": "herald"
+        },
+        "trinity": {
+          "id": "trinity",
+          "title": "Trinity Aura",
+          "category": "aura"
+        },
+        "chaos-inoculation": {
+          "id": "chaos-inoculation",
+          "title": "Chaos Inoculation",
+          "category": "defense"
+        },
+        "subterfuge-mask": {
+          "id": "subterfuge-mask",
+          "title": "Subterfuge Mask",
+          "category": "defense"
+        },
+        "quarterstaff": {
+          "id": "quarterstaff",
+          "title": "Quarterstaff",
+          "category": "gear"
+        },
+        "mana-leech": {
+          "id": "mana-leech",
+          "title": "Mana Leech",
+          "category": "mechanic"
+        },
+        "nova-projectiles": {
+          "id": "nova-projectiles",
+          "title": "Nova Projectiles",
+          "category": "support"
+        },
+        "cast-on-crit": {
+          "id": "cast-on-crit",
+          "title": "Cast on Critical",
+          "category": "mechanic"
+        }
+      },
+      "edges": [
+        {
+          "from": "flicker-strike",
+          "to": "power-charges",
+          "label": "consumes for damage"
+        },
+        {
+          "from": "falling-thunder",
+          "to": "power-charges",
+          "label": "fires per charge"
+        },
+        {
+          "from": "falling-thunder",
+          "to": "nova-projectiles",
+          "label": "360-degree spread"
+        },
+        {
+          "from": "charged-staff",
+          "to": "power-charges",
+          "label": "consumes for buff"
+        },
+        {
+          "from": "charged-staff",
+          "to": "herald-thunder",
+          "label": "triggers explosions"
+        },
+        {
+          "from": "martial-artist",
+          "to": "combo",
+          "label": "doubles gain"
+        },
+        {
+          "from": "martial-artist",
+          "to": "stonefist",
+          "label": "glove multiplier"
+        },
+        {
+          "from": "combo",
+          "to": "ailiths-chimes",
+          "label": "converts to charges"
+        },
+        {
+          "from": "hollow-focus",
+          "to": "power-charges",
+          "label": "bell cull charges"
+        },
+        {
+          "from": "quarterstaff",
+          "to": "mana-leech",
+          "label": "sustains mana"
+        },
+        {
+          "from": "cast-on-crit",
+          "to": "power-charges",
+          "label": "mapping charges"
+        },
+        {
+          "from": "trinity",
+          "to": "falling-thunder",
+          "label": "multiplies elements"
+        },
+        {
+          "from": "herald-thunder",
+          "to": "falling-thunder",
+          "label": "amplifies explosions"
+        },
+        {
+          "from": "herald-ice",
+          "to": "falling-thunder",
+          "label": "freeze + explosion"
+        },
+        {
+          "from": "chaos-inoculation",
+          "to": "subterfuge-mask",
+          "label": "stacked defenses"
+        },
+        {
+          "from": "ailiths-chimes",
+          "to": "combo",
+          "label": "consumes combo"
+        }
+      ]
+    }
+  },
+  {
+    "folder": "flashcards",
+    "type": "flashcards",
+    "props": {
+      "title": "Key Vocabulary",
+      "terms": [
+        {
+          "id": "flicker-strike",
+          "word": "Flicker Strike",
+          "pronunciation": "FLIK-er strike",
+          "category": "skill",
+          "image": "https://cdn.mobalytics.gg/cdn-cgi/image/format=auto,width=96/assets/poe-2/images/game/Art/2DArt/SkillIcons/MonkFlickerStrikeTeleport.webp",
+          "shortDefinition": "Dash through enemies, dealing melee damage.",
+          "detailedDefinition": "Your character flickers through enemies in the direction of movement, dealing melee physical damage. Links with Perpetual Charge to extend duration and reduce charge consumption chance.",
+          "whyItMatters": "Primary mobility and clearing skill. Teleporting through packs while dealing damage is the build's signature feel.",
+          "dialogue": {
+            "user": "How do I clear maps fast?",
+            "aiThoughts": "The player wants mapping efficiency.",
+            "aiQuestion": "Use Flicker Strike to dash through packs, then follow up with Falling Thunder on dense groups."
+          }
+        },
+        {
+          "id": "falling-thunder",
+          "word": "Falling Thunder",
+          "pronunciation": "FAL-ing THUN-der",
+          "category": "skill",
+          "image": "https://www.poe2wiki.net/images/a/a9/Falling_Thunder_inventory_icon.png",
+          "shortDefinition": "Fire lightning projectiles per Power Charge consumed.",
+          "detailedDefinition": "A lightning attack that fires one projectile per Power Charge consumed, dealing increased damage per projectile. Combined with Nova Projectiles, it creates a 360-degree AoE burst.",
+          "whyItMatters": "Your main AoE clear skill. With 6-8 charges and Nova Projectiles, you fill the screen with lightning.",
+          "dialogue": {
+            "user": "What's my nuke button?",
+            "aiThoughts": "Player needs to know the main AoE skill.",
+            "aiQuestion": "Falling Thunder fires a projectile per charge consumed — stack charges first for maximum devastation."
+          }
+        },
+        {
+          "id": "combo",
+          "word": "Combo",
+          "pronunciation": "KOM-boh",
+          "category": "mechanic",
+          "shortDefinition": "Stack counter that buffs damage and enables charge generation.",
+          "detailedDefinition": "A stacking mechanic gained through melee hits. Martial Adept doubles your Combo gain. At 20 stacks on Mantra of Destruction, you can expend Combo for Power Charges via Ailith's Chimes.",
+          "whyItMatters": "The bridge between hitting things and generating Power Charges for your main skills.",
+          "dialogue": {
+            "user": "How do I get more charges for bossing?",
+            "aiThoughts": "Player needs charge generation explained.",
+            "aiQuestion": "Build Combo through Whirling Assault, then expend it into charges with Ailith's Chimes."
+          }
+        },
+        {
+          "id": "power-charges",
+          "word": "Power Charges",
+          "pronunciation": "POW-er CHARJZ",
+          "category": "mechanic",
+          "image": "https://www.poe2wiki.net/images/a/a9/Falling_Thunder_inventory_icon.png",
+          "shortDefinition": "Temporary buffs that enhance linked skills.",
+          "detailedDefinition": "A currency of temporary buffs (max 5 normally, up to 8 with +1 mods). Consumed by Falling Thunder for projectiles, by Charged Staff for lightning damage, and by Flicker Strike for increased damage.",
+          "whyItMatters": "Everything in this build scales with Power Charges. More charges = more projectiles = more damage.",
+          "dialogue": {
+            "user": "Why does everyone talk about charges?",
+            "aiThoughts": "Player doesn't grasp charge centrality.",
+            "aiQuestion": "Each charge becomes a Falling Thunder projectile and boosts your Flicker Strike damage. They're the build's fuel."
+          }
+        },
+        {
+          "id": "martial-artist",
+          "word": "Martial Artist",
+          "pronunciation": "MAR-shul AR-tist",
+          "category": "ascendancy",
+          "image": "https://www.poe2wiki.net/images/e/e9/Monk_portrait.png",
+          "shortDefinition": "Monk ascendancy focused on close combat mastery.",
+          "detailedDefinition": "The Martial Artist ascendancy provides: Way of the Stonefist (glove damage multiplier), Martial Adept (doubled Combo gain + ES recharge), Martial Master (all attacks build Combo), Hollow Focus Technique (bell stun/crit), and Runic Meridians (extra rune sockets).",
+          "whyItMatters": "Core ascendancy that makes the build viable. Stonefist alone is a massive damage multiplier.",
+          "dialogue": {
+            "user": "Which ascendancy do I take?",
+            "aiThoughts": "Player needs ascendancy guidance.",
+            "aiQuestion": "Martial Artist is mandatory. Prioritize Way of the Stonefist for damage and Martial Master for Combo retention."
+          }
+        },
+        {
+          "id": "stonefist",
+          "word": "Way of the Stonefist",
+          "pronunciation": "way of the STONE-fist",
+          "category": "ascendancy",
+          "image": "https://www.poe2wiki.net/images/6/6b/MartialArtistHandWraps_%28MartialArtist%29_passive_skill_icon.png",
+          "shortDefinition": "Converts flat glove damage into extra damage percentages.",
+          "detailedDefinition": "Flat Physical Damage and flat Elemental Damage on your Gloves become % Extra Damage of that type. Gloves with Physical + 2 elemental prefixes create a massive multiplicative damage multiplier.",
+          "whyItMatters": "Single biggest damage node in the ascendancy. A well-rolled pair of gloves multiplies all damage.",
+          "dialogue": {
+            "user": "What glove stats do I need?",
+            "aiThoughts": "Player needs to understand Stonefist gearing.",
+            "aiQuestion": "You need flat Physical Damage + 2 flat Elemental Damage types on your gloves for the Stonefist multiplier."
+          }
+        },
+        {
+          "id": "chaos-inoculation",
+          "word": "Chaos Inoculation",
+          "pronunciation": "KAY-os in-ok-yoo-LAY-shun",
+          "category": "defense",
+          "image": "https://www.poewiki.net/images/7/78/KeystoneChaosInoculation_passive_skill_icon.png",
+          "shortDefinition": "Sets max Life to 1 but grants chaos immunity.",
+          "detailedDefinition": "A notable passive that sets maximum Life to 1 in exchange for 100% Chaos Resistance. Requires sufficient base Energy Shield to survive. Taken at approximately 4000+ ES.",
+          "whyItMatters": "Essential endgame defense. Chaos damage has a 2x multiplier against ES, so CI eliminates that vulnerability.",
+          "dialogue": {
+            "user": "When should I take CI?",
+            "aiThoughts": "Player needs CI timing.",
+            "aiQuestion": "Take Chaos Inoculation once you reach 4000+ ES and have Shavronne's Satchel for instant recovery."
+          }
+        },
+        {
+          "id": "subterfuge-mask",
+          "word": "Subterfuge Mask",
+          "pronunciation": "sub-TUR-fyoo MASK",
+          "category": "defense",
+          "image": "https://www.poe2wiki.net/images/9/91/EvasionandEnergyShieldNode_passive_skill_icon.png",
+          "shortDefinition": "+2 Evasion per 1 ES on helmet.",
+          "detailedDefinition": "A passive node that converts Energy Shield on your helmet into Evasion Rating. A 400 ES helmet generates an additional 800 Evasion, stacking with your body armor evasion.",
+          "whyItMatters": "Free evasion from your helmet. Combined with high-ES helmet and body armor, creates physical hit mitigation.",
+          "dialogue": {
+            "user": "What helmet should I get?",
+            "aiThoughts": "Player needs helmet guidance for Subterfuge.",
+            "aiQuestion": "Get a high-ES helmet (350-450 ES). Subterfuge Mask converts it into bonus Evasion."
+          }
+        },
+        {
+          "id": "ailiths-chimes",
+          "word": "Ailith's Chimes",
+          "pronunciation": "EYE-liths CHIMZ",
+          "category": "item",
+          "image": "https://www.poe2wiki.net/images/7/78/Ailith%27s_Chimes_inventory_icon.png",
+          "shortDefinition": "Unique support gem that converts Combo to Power Charges.",
+          "detailedDefinition": "When linked with Mantra of Destruction and Delayed Gratification, expending Combo through the skill grants Power Charges instead of its normal effect. The primary endgame charge generation method.",
+          "whyItMatters": "The endgame charge engine. Without it, you rely on the slower Killing Palm + Hollow Focus method.",
+          "dialogue": {
+            "user": "Is Ailith's Chimes worth buying?",
+            "aiThoughts": "Player weighs the investment.",
+            "aiQuestion": "Ailith's Chimes transforms boss charge generation from manual to instant. Budget alternative exists early league."
+          }
+        },
+        {
+          "id": "trinity",
+          "word": "Trinity",
+          "pronunciation": "trih-NIH-tee",
+          "category": "aura",
+          "image": "https://www.poewiki.net/images/2/29/Trinity_Support_inventory_icon.png",
+          "shortDefinition": "Multiplies lowest 2 elements to match highest.",
+          "detailedDefinition": "An aura that multiplies your two lowest elemental damage types to match your highest. Requires balanced Fire/Cold/Lightning across weapon, rings, and gems. Free Trinity amulets exist to save Spirit.",
+          "whyItMatters": "Massive elemental damage multiplier. Ensures Falling Thunder's mixed damage output is optimized.",
+          "dialogue": {
+            "user": "Why can't my Trinity activate?",
+            "aiThoughts": "Player has unbalanced elements.",
+            "aiQuestion": "Check your damage breakdown — Trinity needs overlap between all three elements. Balance your staff and ring rolls."
+          }
+        },
+        {
+          "id": "nova-projectiles",
+          "word": "Nova Projectiles",
+          "pronunciation": "NOH-vuh pro-JEK-tyulz",
+          "category": "support",
+          "image": "https://www.poe2wiki.net/images/d/de/Nova_Projectiles_I_inventory_icon.png",
+          "shortDefinition": "Spreads projectiles in a 360-degree circle.",
+          "detailedDefinition": "Support gem that causes projectiles to spread outward in all directions from you. In patch 0.5, its 40% Less Damage penalty was removed, making it a pure AoE enabler.",
+          "whyItMatters": "What makes Falling Thunder a screen-clearer instead of a directional skill. No longer has a damage penalty.",
+          "dialogue": {
+            "user": "Why did Nova Projectiles get buffed?",
+            "aiThoughts": "Player curious about 0.5 change.",
+            "aiQuestion": "The 40% Less Damage was removed in 0.5 — now it's pure 360-degree AoE with no tradeoff."
+          }
+        },
+        {
+          "id": "quarterstaff",
+          "word": "Quarterstaff",
+          "pronunciation": "KWAR-tur-STAF",
+          "category": "gear",
+          "image": "https://www.poe2wiki.net/images/5/55/Crescent_Quarterstaff_inventory_icon.png",
+          "shortDefinition": "Two-handed melee weapon socketing main skills.",
+          "detailedDefinition": "Your primary weapon. Holds Falling Thunder, Flicker Strike, and other skills. Prioritize flat Lightning Damage, % Increased Critical Damage, Attack Speed, and Leech Physical Damage as Mana.",
+          "whyItMatters": "Skill socket hub and primary damage source. Avoid Dreaming Quarterstaff — it has 0% base Crit Chance.",
+          "dialogue": {
+            "user": "Can I use a Dreaming Quarterstaff?",
+            "aiThoughts": "Player doesn't know the crit issue.",
+            "aiQuestion": "No — Dreaming Quarterstaff has 0% base Crit, crippling this crit-focused build. Use any other Quarterstaff."
+          }
+        }
+      ]
+    }
+  },
+  {
+    "folder": "taxonomy",
+    "type": "taxonomy-browser",
+    "props": {
+      "title": "Skill Arsenal",
+      "categories": [
+        {
+          "icon": "Zap",
+          "title": "Main Damage Skills",
+          "subtitle": "Falling Thunder & Flicker Strike",
+          "description": "Your two primary skills that clear maps and melt bosses.",
+          "details": "Falling Thunder fires lightning projectiles per Power Charge consumed in a 360-degree burst. Flicker Strike dashes through enemies, teleporting you while dealing damage. Both scale with Power Charges and critical strikes.",
+          "analogy": "Falling Thunder is your area denial, Flicker Strike is your mobility tool — but both kill.",
+          "primaryFocus": "Power Charge consumption and critical strike damage",
+          "inScope": [
+            "Falling Thunder (Lv20) + Elemental Armament, Nova Projectiles, Ricochet, Pinpoint Critical, Ice Bite",
+            "Flicker Strike (Lv20) + Blindside, Concentrated Area, Close Combat, Perpetual Charge, Hit and Run",
+            "Both socketed in Quarterstaff"
+          ],
+          "outOfScope": [
+            "Single-target focused attacks without AoE potential"
+          ],
+          "color": "yellow"
+        },
+        {
+          "icon": "Sparkles",
+          "title": "Support & Buff Skills",
+          "subtitle": "Charged Staff, Whirling Assault, Cast on Critical",
+          "description": "Skills that buff your main attacks and sustain Power Charges during mapping.",
+          "details": "Charged Staff consumes Power Charges for a massive Lightning damage buff to attacks. Whirling Assault builds Combo for charge generation. Cast on Critical triggers Profane Ritual on crits to sustain Power Charges during mapping.",
+          "analogy": "These are your backstage crew — they make the main skills shine.",
+          "primaryFocus": "Charge sustainability and damage multiplication",
+          "inScope": [
+            "Charged Staff (Lv20) + Prolonged Duration, Innervate, Culling Strike",
+            "Whirling Assault (Lv20) + Practiced Combo, Rage III, Pinpoint Critical, Magnified Area, Oisin's Oath",
+            "Cast on Critical (Lv20) + Profane Ritual Lv7, Charge Profusion, Overabundance, Boundless Energy, Energy Retention",
+            "Oisin's Oath converts Elemental Damage to Mana Leech (requires Leech Phys Damage as Mana on gear)"
+          ],
+          "outOfScope": [
+            "Direct damage dealing in isolation"
+          ],
+          "color": "sky"
+        },
+        {
+          "icon": "Shield",
+          "title": "Heralds & Utility",
+          "subtitle": "Herald of Thunder, Herald of Ice, Mantra of Destruction",
+          "description": "Heralds mark enemies for elemental explosions. Utility skills enable boss strategies.",
+          "details": "Herald of Thunder and Herald of Ice mark enemies for lightning and cold explosions. Mantra of Destruction holds Combo stacks for charge generation. Hand of Chayula marks bosses for additional charge generation with Culmination II.",
+          "analogy": "Heralds are sticky notes on enemies saying 'explode next time you get hit.'",
+          "primaryFocus": "Explosion triggers and boss-fight charge generation",
+          "inScope": [
+            "Herald of Thunder — lightning explosion on marked enemies",
+            "Herald of Ice — freeze + cold explosion, enables Herald of Ice explosions via Chaos Damage + Armor Break",
+            "Mantra of Destruction + Prolonged Duration, Charge Profusion, Ailith's Chimes, Delayed Gratification",
+            "Hand of Chayula + Culmination II as alternative charge generation"
+          ],
+          "outOfScope": [
+            "Herald of Ash (used by Whirling Assault variant, not this build)"
+          ],
+          "color": "rose"
+        },
+        {
+          "icon": "HeartPulse",
+          "title": "Defense Layers",
+          "subtitle": "ES/Evasion Hybrid, CI, Deflection",
+          "description": "Multi-layered defense combining Energy Shield, Evasion, Deflection, and Chaos Inoculation.",
+          "details": "The build uses ES/Evasion hybrid bases across all armor, Subterfuge Mask for bonus Evasion from helmet ES, Deflection on body armor and boots, and Chaos Inoculation for chaos immunity at endgame. Ghost Dance provides ES recovery.",
+          "analogy": "Defense in layers — if one fails, the next catches you.",
+          "primaryFocus": "Survivability through stacking complementary defenses",
+          "inScope": [
+            "ES/Evasion hybrid gear (Sleek Jacket body base)",
+            "Chaos Inoculation at ~4000+ ES",
+            "Subterfuge Mask — +2 Evasion per 1 ES on helmet",
+            "Deflection suffix on body armor and boots",
+            "Stun Threshold passive nodes",
+            "Ghost Dance for ES recovery (essential with CI)"
+          ],
+          "outOfScope": [
+            "Armour-based defenses",
+            "Block-based defenses"
+          ],
+          "color": "green"
+        }
+      ]
+    }
+  },
+  {
+    "folder": "gameplay",
+    "type": "bullets",
+    "props": {
+      "title": "Gameplay Loop",
+      "ordered": true,
+      "items": [
+        {
+          "text": "Enter map and spam Whirling Assault to clear initial packs and generate Power Charges",
+          "children": [
+            {
+              "text": "Cast on Critical triggers Profane Ritual on crits, converting corpses into Power Charges"
+            },
+            {
+              "text": "Maintain minimum 60% Crit Chance on Whirling Assault for reliable charge generation"
+            },
+            {
+              "text": "Oisin's Oath on Whirling Assault converts Elemental Damage to Mana Leech"
+            }
+          ]
+        },
+        {
+          "text": "Spend Power Charges on Falling Thunder + Nova Projectiles for 360-degree pack clearing",
+          "children": [
+            {
+              "text": "Each consumed charge fires one projectile — 6-8 charges = 6-8 lightning projectiles"
+            },
+            {
+              "text": "Nova Projectiles spreads them in a full circle with no damage penalty (patch 0.5)"
+            },
+            {
+              "text": "Herald of Thunder and Herald of Ice trigger explosions on hit"
+            }
+          ]
+        },
+        {
+          "text": "Alternate with Flicker Strike to dash through packs and reposition",
+          "children": [
+            {
+              "text": "Flicker Strike consumes charges for increased damage"
+            },
+            {
+              "text": "Perpetual Charge extends duration and reduces charge consumption chance"
+            },
+            {
+              "text": "Use for mobility between packs or tight areas where Falling Thunder is less effective"
+            }
+          ]
+        },
+        {
+          "text": "For bosses, build 20 Combo stacks on Mantra of Destruction with Whirling Assault",
+          "children": [
+            {
+              "text": "Hit boss repeatedly with Whirling Assault to accumulate Combo"
+            },
+            {
+              "text": "Martial Adept doubles Combo gain speed"
+            }
+          ]
+        },
+        {
+          "text": "Expend Combo through Delayed Gratification + Ailith's Chimes for Power Charges",
+          "children": [
+            {
+              "text": "Ailith's Chimes converts expended Combo into a full set of Power Charges"
+            },
+            {
+              "text": "Alternative: Hand of Chayula + Culmination II + Ailith's Chimes"
+            },
+            {
+              "text": "Pre-Ailith's: use Shattering Palm + Living Lightning II minions to cull Hollow Focus bells"
+            }
+          ]
+        },
+        {
+          "text": "Mark boss with Hand of Chayula, activate Charged Staff, then commit to Flicker Strike or Falling Thunder",
+          "children": [
+            {
+              "text": "Charged Staff provides massive Lightning damage buff per charge consumed"
+            },
+            {
+              "text": "For Uber bosses, swap to Powertread boots for guaranteed one-shot"
+            },
+            {
+              "text": "If boss survives, regenerate charges and repeat the cycle"
+            }
+          ]
+        },
+        {
+          "text": "Gear progression: starter Quarterstaff → Shavronne's Satchel → Chaos Inoculation → Ailith's Chimes → endgame",
+          "children": [
+            {
+              "text": "Take CI at approximately 4000 ES with Shavronne's Satchel and Instant Life Flask"
+            },
+            {
+              "text": "Heart of the Well Timeless Jewel adds Chaos Damage for Herald of Ice explosions"
+            },
+            {
+              "text": "High budget: Uul-Netol's Embrace + Rite of Passage for maximum damage"
+            }
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "folder": "flowchart",
+    "type": "flowchart",
+    "props": {
+      "title": "Combat Flow",
+      "schema": {
+        "entities": {
+          "player": {
+            "title": "Player",
+            "desc": "Martial Artist Monk controlling skills and gear",
+            "type": "Actor"
+          },
+          "boss": {
+            "title": "Boss Enemy",
+            "desc": "Map boss or Pinnacle boss",
+            "type": "Actor"
+          },
+          "pack": {
+            "title": "Mob Pack",
+            "desc": "Group of regular enemies",
+            "type": "Actor"
+          },
+          "whirling_assault": {
+            "title": "Whirling Assault",
+            "desc": "AoE melee attack, builds Combo, generates charges via Cast on Critical",
+            "type": "Aggregate"
+          },
+          "falling_thunder": {
+            "title": "Falling Thunder",
+            "desc": "Lightning projectile per Power Charge, 360-degree via Nova Projectiles",
+            "type": "Aggregate"
+          },
+          "flicker_strike": {
+            "title": "Flicker Strike",
+            "desc": "Dash through enemies, teleporting while dealing damage",
+            "type": "Aggregate"
+          },
+          "charged_staff": {
+            "title": "Charged Staff",
+            "desc": "Buff skill consuming Power Charges for Lightning damage",
+            "type": "Aggregate"
+          },
+          "mantra_destruction": {
+            "title": "Mantra of Destruction",
+            "desc": "Holds Combo stacks, expended for Power Charges via Ailith's Chimes",
+            "type": "Aggregate"
+          },
+          "ailiths_chimes": {
+            "title": "Ailith's Chimes",
+            "desc": "Converts Combo expenditure into Power Charges",
+            "type": "External API"
+          },
+          "cast_on_crit": {
+            "title": "Cast on Critical",
+            "desc": "Triggers Profane Ritual on crits, consuming corpses for charges",
+            "type": "External API"
+          },
+          "hollow_focus": {
+            "title": "Hollow Focus Technique",
+            "desc": "Spawns primed bells for Killing Palm charge generation (budget alternative)",
+            "type": "External API"
+          },
+          "heralds": {
+            "title": "Herald of Thunder + Ice",
+            "desc": "Mark enemies for elemental explosions",
+            "type": "Aggregate"
+          },
+          "trinity": {
+            "title": "Trinity Aura",
+            "desc": "Multiplies lowest 2 elements to match highest",
+            "type": "External API"
+          },
+          "ci": {
+            "title": "Chaos Inoculation",
+            "desc": "100% Chaos Resistance, sets Life to 1",
+            "type": "External API"
+          },
+          "pol_step_enter": {
+            "title": "Trigger Run",
+            "desc": "Trigger Run",
+            "type": "Policy",
+            "root": false
+          },
+          "cmd_step_enter": {
+            "title": "Enter Map & Initiate Attack",
+            "desc": "Enter Map & Initiate Attack",
+            "type": "Command"
+          },
+          "evt_evt_clear_packs": {
+            "title": "Clear Packs with Whirling Assault",
+            "desc": "Clear Packs with Whirling Assault",
+            "type": "Event"
+          },
+          "pol_step_charges": {
+            "title": "On Critical Strike Hit",
+            "desc": "On Critical Strike Hit",
+            "type": "Policy",
+            "root": false
+          },
+          "cmd_step_charges": {
+            "title": "Generate Power Charges",
+            "desc": "Generate Power Charges",
+            "type": "Command"
+          },
+          "evt_evt_power_charges": {
+            "title": "Power Charges Generated",
+            "desc": "Power Charges Generated",
+            "type": "Event"
+          },
+          "pol_branch_ft": {
+            "title": "If Pack is Dense",
+            "desc": "If Pack is Dense",
+            "type": "Policy"
+          },
+          "cmd_branch_ft": {
+            "title": "Cast Falling Thunder",
+            "desc": "Cast Falling Thunder",
+            "type": "Command"
+          },
+          "evt_evt_pack_cleared": {
+            "title": "Pack Wiped (360 Lightning)",
+            "desc": "Pack Wiped (360 Lightning)",
+            "type": "Event"
+          },
+          "pol_branch_fs": {
+            "title": "If Pack is Scattered",
+            "desc": "If Pack is Scattered",
+            "type": "Policy"
+          },
+          "cmd_branch_fs": {
+            "title": "Cast Flicker Strike",
+            "desc": "Cast Flicker Strike",
+            "type": "Command"
+          },
+          "evt_evt_repositioned": {
+            "title": "Dashed Through Pack",
+            "desc": "Dashed Through Pack",
+            "type": "Event"
+          },
+          "pol_step_heralds": {
+            "title": "On Enemy Death",
+            "desc": "On Enemy Death",
+            "type": "Policy",
+            "root": false
+          },
+          "cmd_step_heralds": {
+            "title": "Trigger Herald Explosions",
+            "desc": "Trigger Herald Explosions",
+            "type": "Command"
+          },
+          "evt_evt_explosions": {
+            "title": "Herald Explosions Clean Up",
+            "desc": "Herald Explosions Clean Up",
+            "type": "Event"
+          },
+          "pol_branch_mapping": {
+            "title": "If More Packs Remain",
+            "desc": "If More Packs Remain",
+            "type": "Policy"
+          },
+          "cmd_branch_mapping": {
+            "title": "Loop Back to Clear",
+            "desc": "Loop Back to Clear",
+            "type": "Command"
+          },
+          "whirling_assault2": {
+            "title": "Whirling Assault",
+            "desc": "AoE melee attack, builds Combo, generates charges via Cast on Critical",
+            "type": "Aggregate"
+          },
+          "evt_evt_mapping_loop": {
+            "title": "Loop Back to Clear More",
+            "desc": "Loop Back to Clear More",
+            "type": "Event"
+          },
+          "pol_branch_boss": {
+            "title": "If Boss Encountered",
+            "desc": "If Boss Encountered",
+            "type": "Policy"
+          },
+          "cmd_branch_boss": {
+            "title": "Build Combo Stacks",
+            "desc": "Build Combo Stacks",
+            "type": "Command"
+          },
+          "evt_evt_combo_ready": {
+            "title": "20 Combo Stacks Built",
+            "desc": "20 Combo Stacks Built",
+            "type": "Event"
+          },
+          "pol_step_boss_charges": {
+            "title": "On 20 Combo Stacks",
+            "desc": "On 20 Combo Stacks",
+            "type": "Policy",
+            "root": false
+          },
+          "cmd_step_boss_charges": {
+            "title": "Expend Combo Stacks",
+            "desc": "Expend Combo Stacks",
+            "type": "Command"
+          },
+          "evt_evt_boss_charges": {
+            "title": "Boss Power Charges Ready",
+            "desc": "Boss Power Charges Ready",
+            "type": "Event"
+          },
+          "pol_step_boss_nuke": {
+            "title": "On Boss Power Charges Ready",
+            "desc": "On Boss Power Charges Ready",
+            "type": "Policy",
+            "root": false
+          },
+          "cmd_step_boss_nuke": {
+            "title": "Activate Charged Staff Buff",
+            "desc": "Activate Charged Staff Buff",
+            "type": "Command"
+          },
+          "evt_evt_buffed": {
+            "title": "Charged Staff Lightning Buff Active",
+            "desc": "Charged Staff Lightning Buff Active",
+            "type": "Event"
+          },
+          "pol_branch_fs_boss": {
+            "title": "Prefer Flicker Strike",
+            "desc": "Prefer Flicker Strike",
+            "type": "Policy"
+          },
+          "cmd_branch_fs_boss": {
+            "title": "Cast Flicker Strike on Boss",
+            "desc": "Cast Flicker Strike on Boss",
+            "type": "Command"
+          },
+          "flicker_strike2": {
+            "title": "Flicker Strike",
+            "desc": "Dash through enemies, teleporting while dealing damage",
+            "type": "Aggregate"
+          },
+          "evt_evt_boss_dead": {
+            "title": "Boss One-Shotted",
+            "desc": "Boss One-Shotted",
+            "type": "Event"
+          },
+          "pol_branch_ft_boss": {
+            "title": "Prefer Falling Thunder",
+            "desc": "Prefer Falling Thunder",
+            "type": "Policy"
+          },
+          "cmd_branch_ft_boss": {
+            "title": "Cast Falling Thunder on Boss",
+            "desc": "Cast Falling Thunder on Boss",
+            "type": "Command"
+          },
+          "falling_thunder2": {
+            "title": "Falling Thunder",
+            "desc": "Lightning projectile per Power Charge, 360-degree via Nova Projectiles",
+            "type": "Aggregate"
+          },
+          "evt_evt_boss_dead2": {
+            "title": "Boss One-Shotted",
+            "desc": "Boss One-Shotted",
+            "type": "Event"
+          }
+        },
+        "relations": [
+          {
+            "id": "r1",
+            "from": "player",
+            "to": "pol_step_enter",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r2",
+            "from": "pol_step_enter",
+            "to": "cmd_step_enter",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r3",
+            "from": "cmd_step_enter",
+            "to": "whirling_assault",
+            "handledBy": true,
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r4",
+            "from": "whirling_assault",
+            "to": "pack",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r5",
+            "from": "whirling_assault",
+            "to": "evt_evt_clear_packs",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r6",
+            "from": "evt_evt_clear_packs",
+            "to": "pol_step_charges",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r7",
+            "from": "pol_step_charges",
+            "to": "cmd_step_charges",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r8",
+            "from": "cmd_step_charges",
+            "to": "cast_on_crit",
+            "handledBy": true,
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r9",
+            "from": "cast_on_crit",
+            "to": "evt_evt_power_charges",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r10",
+            "from": "evt_evt_power_charges",
+            "to": "pol_branch_ft",
+            "label": "Falling Thunder (dense packs)",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r11",
+            "from": "pol_branch_ft",
+            "to": "cmd_branch_ft",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r12",
+            "from": "cmd_branch_ft",
+            "to": "falling_thunder",
+            "handledBy": true,
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r13",
+            "from": "falling_thunder",
+            "to": "trinity",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r14",
+            "from": "falling_thunder",
+            "to": "evt_evt_pack_cleared",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r15",
+            "from": "evt_evt_pack_cleared",
+            "to": "pol_step_heralds",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r16",
+            "from": "evt_evt_power_charges",
+            "to": "pol_branch_fs",
+            "label": "Flicker Strike (mobility)",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r17",
+            "from": "pol_branch_fs",
+            "to": "cmd_branch_fs",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r18",
+            "from": "cmd_branch_fs",
+            "to": "flicker_strike",
+            "handledBy": true,
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r19",
+            "from": "flicker_strike",
+            "to": "hollow_focus",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r20",
+            "from": "flicker_strike",
+            "to": "evt_evt_repositioned",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r21",
+            "from": "evt_evt_repositioned",
+            "to": "pol_step_heralds",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r22",
+            "from": "pol_step_heralds",
+            "to": "cmd_step_heralds",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r23",
+            "from": "cmd_step_heralds",
+            "to": "heralds",
+            "handledBy": true,
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r24",
+            "from": "heralds",
+            "to": "evt_evt_explosions",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r25",
+            "from": "evt_evt_explosions",
+            "to": "pol_branch_mapping",
+            "label": "Continue Mapping",
+            "dashed": true,
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r26",
+            "from": "pol_branch_mapping",
+            "to": "cmd_branch_mapping",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r27",
+            "from": "cmd_branch_mapping",
+            "to": "whirling_assault2",
+            "handledBy": true,
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r28",
+            "from": "whirling_assault2",
+            "to": "evt_evt_mapping_loop",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r29",
+            "from": "evt_evt_explosions",
+            "to": "pol_branch_boss",
+            "label": "Boss Fight",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r30",
+            "from": "pol_branch_boss",
+            "to": "cmd_branch_boss",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r31",
+            "from": "cmd_branch_boss",
+            "to": "mantra_destruction",
+            "handledBy": true,
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r32",
+            "from": "mantra_destruction",
+            "to": "boss",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r33",
+            "from": "mantra_destruction",
+            "to": "evt_evt_combo_ready",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r34",
+            "from": "evt_evt_combo_ready",
+            "to": "pol_step_boss_charges",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r35",
+            "from": "pol_step_boss_charges",
+            "to": "cmd_step_boss_charges",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r36",
+            "from": "cmd_step_boss_charges",
+            "to": "ailiths_chimes",
+            "handledBy": true,
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r37",
+            "from": "ailiths_chimes",
+            "to": "evt_evt_boss_charges",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r38",
+            "from": "evt_evt_boss_charges",
+            "to": "pol_step_boss_nuke",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r39",
+            "from": "pol_step_boss_nuke",
+            "to": "cmd_step_boss_nuke",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r40",
+            "from": "cmd_step_boss_nuke",
+            "to": "charged_staff",
+            "handledBy": true,
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r41",
+            "from": "charged_staff",
+            "to": "ci",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r42",
+            "from": "charged_staff",
+            "to": "evt_evt_buffed",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r43",
+            "from": "evt_evt_buffed",
+            "to": "pol_branch_fs_boss",
+            "label": "Flicker Strike Boss",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r44",
+            "from": "pol_branch_fs_boss",
+            "to": "cmd_branch_fs_boss",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r45",
+            "from": "cmd_branch_fs_boss",
+            "to": "flicker_strike2",
+            "handledBy": true,
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r46",
+            "from": "flicker_strike2",
+            "to": "evt_evt_boss_dead",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r47",
+            "from": "evt_evt_buffed",
+            "to": "pol_branch_ft_boss",
+            "label": "Falling Thunder Boss",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r48",
+            "from": "pol_branch_ft_boss",
+            "to": "cmd_branch_ft_boss",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r49",
+            "from": "cmd_branch_ft_boss",
+            "to": "falling_thunder2",
+            "handledBy": true,
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r50",
+            "from": "falling_thunder2",
+            "to": "evt_evt_boss_dead2",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          }
+        ],
+        "journeys": [
+          {
+            "id": "journey_mapping",
+            "label": "Mapping Flow",
+            "description": "Standard map clearing: generate charges, clear with Falling Thunder or Flicker Strike, loop",
+            "steps": [
+              {
+                "nodeIds": [
+                  "player",
+                  "pol_step_enter",
+                  "cmd_step_enter",
+                  "whirling_assault",
+                  "pack",
+                  "evt_evt_clear_packs"
+                ],
+                "title": "Enter Map",
+                "reason": "Enter map, open with Whirling Assault for initial clear and charge generation",
+                "processGroup": "planning"
+              },
+              {
+                "nodeIds": [
+                  "pol_step_charges",
+                  "cmd_step_charges",
+                  "cast_on_crit",
+                  "evt_evt_power_charges"
+                ],
+                "title": "Generate Power Charges",
+                "reason": "Cast on Critical triggers Profane Ritual on crits, generating Power Charges",
+                "processGroup": "execution"
+              },
+              {
+                "nodeIds": [
+                  "pol_branch_ft",
+                  "cmd_branch_ft",
+                  "falling_thunder",
+                  "trinity",
+                  "evt_evt_pack_cleared"
+                ],
+                "title": "Clear with Falling Thunder",
+                "reason": "Spend charges on Falling Thunder for 360-degree lightning burst",
+                "processGroup": "execution"
+              },
+              {
+                "nodeIds": [
+                  "pol_step_heralds",
+                  "cmd_step_heralds",
+                  "heralds",
+                  "evt_evt_explosions"
+                ],
+                "title": "Trigger Herald Explosions",
+                "reason": "Herald of Thunder and Herald of Ice explode marked enemies",
+                "processGroup": "execution"
+              },
+              {
+                "nodeIds": [
+                  "pol_branch_mapping",
+                  "cmd_branch_mapping",
+                  "whirling_assault2",
+                  "evt_evt_mapping_loop"
+                ],
+                "title": "Loop Back to Clear",
+                "reason": "Loop back to clear next pack",
+                "processGroup": "evaluation"
+              }
+            ]
+          },
+          {
+            "id": "journey_boss",
+            "label": "Boss Fight Flow",
+            "description": "Boss engagement: build Combo, convert to charges, buff with Charged Staff, one-shot",
+            "steps": [
+              {
+                "nodeIds": [
+                  "pol_branch_boss",
+                  "cmd_branch_boss",
+                  "mantra_destruction",
+                  "boss",
+                  "evt_evt_combo_ready"
+                ],
+                "title": "Build Combo Stacks",
+                "reason": "Build 20 Combo stacks on boss via Whirling Assault",
+                "processGroup": "planning"
+              },
+              {
+                "nodeIds": [
+                  "pol_step_boss_charges",
+                  "cmd_step_boss_charges",
+                  "ailiths_chimes",
+                  "evt_evt_boss_charges"
+                ],
+                "title": "Expend Combo for Charges",
+                "reason": "Expend Combo through Ailith's Chimes for Power Charges",
+                "processGroup": "execution"
+              },
+              {
+                "nodeIds": [
+                  "pol_step_boss_nuke",
+                  "cmd_step_boss_nuke",
+                  "charged_staff",
+                  "ci",
+                  "evt_evt_buffed"
+                ],
+                "title": "Activate Charged Staff",
+                "reason": "Activate Charged Staff for massive Lightning damage buff",
+                "processGroup": "execution"
+              },
+              {
+                "nodeIds": [
+                  "pol_branch_ft_boss",
+                  "cmd_branch_ft_boss",
+                  "falling_thunder2",
+                  "evt_evt_boss_dead2"
+                ],
+                "title": "Cast Falling Thunder on Boss",
+                "reason": "Commit to Falling Thunder or Flicker Strike for the kill",
+                "processGroup": "execution"
+              }
+            ]
+          }
+        ],
+        "rawSteps": [
+          {
+            "type": "linear",
+            "id": "step_enter",
+            "initiatedBy": {
+              "_tag": "ref",
+              "id": "player"
+            },
+            "policy": "Trigger Run",
+            "command": "Enter Map & Initiate Attack",
+            "handledBy": {
+              "_tag": "ref",
+              "id": "whirling_assault"
+            },
+            "delegatesTo": {
+              "_tag": "ref",
+              "id": "pack"
+            },
+            "resultEvents": [
+              {
+                "id": "evt_clear_packs",
+                "title": "Clear Packs with Whirling Assault"
+              }
+            ],
+            "continuesAs": "step_charges"
+          },
+          {
+            "type": "linear",
+            "id": "step_charges",
+            "policy": "On Critical Strike Hit",
+            "command": "Generate Power Charges",
+            "handledBy": {
+              "_tag": "ref",
+              "id": "cast_on_crit"
+            },
+            "resultEvents": [
+              {
+                "id": "evt_power_charges",
+                "title": "Power Charges Generated"
+              }
+            ],
+            "continuesAs": "step_clear_branch"
+          },
+          {
+            "type": "branch",
+            "id": "step_clear_branch",
+            "event": "evt_power_charges",
+            "branches": [
+              {
+                "id": "branch_ft",
+                "label": "Falling Thunder (dense packs)",
+                "policy": "If Pack is Dense",
+                "command": "Cast Falling Thunder",
+                "handledBy": {
+                  "_tag": "ref",
+                  "id": "falling_thunder"
+                },
+                "delegatesTo": {
+                  "_tag": "ref",
+                  "id": "trinity"
+                },
+                "resultEvents": [
+                  {
+                    "id": "evt_pack_cleared",
+                    "title": "Pack Wiped (360 Lightning)"
+                  }
+                ],
+                "continuesAs": "step_heralds"
+              },
+              {
+                "id": "branch_fs",
+                "label": "Flicker Strike (mobility)",
+                "policy": "If Pack is Scattered",
+                "command": "Cast Flicker Strike",
+                "handledBy": {
+                  "_tag": "ref",
+                  "id": "flicker_strike"
+                },
+                "delegatesTo": {
+                  "_tag": "ref",
+                  "id": "hollow_focus"
+                },
+                "resultEvents": [
+                  {
+                    "id": "evt_repositioned",
+                    "title": "Dashed Through Pack"
+                  }
+                ],
+                "continuesAs": "step_heralds"
+              }
+            ]
+          },
+          {
+            "type": "linear",
+            "id": "step_heralds",
+            "policy": "On Enemy Death",
+            "command": "Trigger Herald Explosions",
+            "handledBy": {
+              "_tag": "ref",
+              "id": "heralds"
+            },
+            "resultEvents": [
+              {
+                "id": "evt_explosions",
+                "title": "Herald Explosions Clean Up"
+              }
+            ],
+            "continuesAs": "step_boss_check"
+          },
+          {
+            "type": "branch",
+            "id": "step_boss_check",
+            "event": "evt_explosions",
+            "branches": [
+              {
+                "id": "branch_mapping",
+                "label": "Continue Mapping",
+                "dashed": true,
+                "policy": "If More Packs Remain",
+                "command": "Loop Back to Clear",
+                "handledBy": {
+                  "_tag": "ref",
+                  "id": "whirling_assault"
+                },
+                "resultEvents": [
+                  {
+                    "id": "evt_mapping_loop",
+                    "title": "Loop Back to Clear More"
+                  }
+                ]
+              },
+              {
+                "id": "branch_boss",
+                "label": "Boss Fight",
+                "policy": "If Boss Encountered",
+                "command": "Build Combo Stacks",
+                "handledBy": {
+                  "_tag": "ref",
+                  "id": "mantra_destruction"
+                },
+                "delegatesTo": {
+                  "_tag": "ref",
+                  "id": "boss"
+                },
+                "resultEvents": [
+                  {
+                    "id": "evt_combo_ready",
+                    "title": "20 Combo Stacks Built"
+                  }
+                ],
+                "continuesAs": "step_boss_charges"
+              }
+            ]
+          },
+          {
+            "type": "linear",
+            "id": "step_boss_charges",
+            "policy": "On 20 Combo Stacks",
+            "command": "Expend Combo Stacks",
+            "handledBy": {
+              "_tag": "ref",
+              "id": "ailiths_chimes"
+            },
+            "resultEvents": [
+              {
+                "id": "evt_boss_charges",
+                "title": "Boss Power Charges Ready"
+              }
+            ],
+            "continuesAs": "step_boss_nuke"
+          },
+          {
+            "type": "linear",
+            "id": "step_boss_nuke",
+            "policy": "On Boss Power Charges Ready",
+            "command": "Activate Charged Staff Buff",
+            "handledBy": {
+              "_tag": "ref",
+              "id": "charged_staff"
+            },
+            "delegatesTo": {
+              "_tag": "ref",
+              "id": "ci"
+            },
+            "resultEvents": [
+              {
+                "id": "evt_buffed",
+                "title": "Charged Staff Lightning Buff Active"
+              }
+            ],
+            "continuesAs": "step_boss_commit"
+          },
+          {
+            "type": "branch",
+            "id": "step_boss_commit",
+            "event": "evt_buffed",
+            "branches": [
+              {
+                "id": "branch_fs_boss",
+                "label": "Flicker Strike Boss",
+                "policy": "Prefer Flicker Strike",
+                "command": "Cast Flicker Strike on Boss",
+                "handledBy": {
+                  "_tag": "ref",
+                  "id": "flicker_strike"
+                },
+                "resultEvents": [
+                  {
+                    "id": "evt_boss_dead",
+                    "title": "Boss One-Shotted"
+                  }
+                ]
+              },
+              {
+                "id": "branch_ft_boss",
+                "label": "Falling Thunder Boss",
+                "policy": "Prefer Falling Thunder",
+                "command": "Cast Falling Thunder on Boss",
+                "handledBy": {
+                  "_tag": "ref",
+                  "id": "falling_thunder"
+                },
+                "resultEvents": [
+                  {
+                    "id": "evt_boss_dead2",
+                    "title": "Boss One-Shotted"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    }
+  },
+  {
+    "folder": "image-gallery",
+    "type": "image-gallery",
+    "props": {
+      "title": "Skill & Mechanic Showcase",
+      "items": [
+        {
+          "id": "flicker-strike-art",
+          "url": "https://cdn.mobalytics.gg/cdn-cgi/image/format=auto,width=96/assets/poe-2/images/game/Art/2DArt/SkillIcons/MonkFlickerStrikeTeleport.webp",
+          "caption": "Flicker Strike — teleport through packs dealing melee physical damage",
+          "credit": "Source: Mobalytics / Grinding Gear Games"
+        },
+        {
+          "id": "monk-portrait",
+          "url": "https://www.poe2wiki.net/images/e/e9/Monk_portrait.png",
+          "caption": "Monk — agile INT/DEX class wielding Quarterstaves and elemental disciplines",
+          "credit": "Source: poe2wiki.net"
+        },
+        {
+          "id": "falling-thunder-icon",
+          "url": "https://www.poe2wiki.net/images/a/a9/Falling_Thunder_inventory_icon.png",
+          "caption": "Falling Thunder — fires one lightning projectile per Power Charge consumed",
+          "credit": "Source: poe2wiki.net"
+        },
+        {
+          "id": "tempest-bell-icon",
+          "url": "https://www.poe2wiki.net/images/c/c9/Tempest_Bell_inventory_icon.png",
+          "caption": "Tempest Bell — summon a bell; strike it to trigger a shockwave dealing lightning damage",
+          "credit": "Source: poe2wiki.net"
+        },
+        {
+          "id": "whirling-assault-icon",
+          "url": "https://www.poe2wiki.net/images/c/c4/Whirling_Assault_inventory_icon.png",
+          "caption": "Whirling Assault — gap-closer that builds Combo for Power Charge generation",
+          "credit": "Source: poe2wiki.net"
+        },
+        {
+          "id": "killing-palm-icon",
+          "url": "https://www.poe2wiki.net/images/c/c2/Killing_Palm_inventory_icon.png",
+          "caption": "Killing Palm — culling strike that also generates Power Charges near Hollow Focus Bell",
+          "credit": "Source: poe2wiki.net"
+        },
+        {
+          "id": "flicker-strike-icon",
+          "url": "https://www.poe2wiki.net/images/3/3c/Flicker_Strike_inventory_icon.png",
+          "caption": "Flicker Strike inventory icon — links with Perpetual Charge for extended duration",
+          "credit": "Source: poe2wiki.net"
+        }
+      ]
+    }
+  },
+  {
+    "folder": "reflection-sequence",
+    "type": "reflection-sequence",
+    "props": {
+      "title": "Skill Combination Sequence Challenge",
+      "challenges": [
+        {
+          "prompt": "Order the combat skills in the correct sequence to maximize lightning conversion and trigger Falling Thunder Nova (Part 1):",
+          "items": [
+            {
+              "id": "cast_tempest",
+              "text": "Cast Tempest (Create Lightning Zone)"
+            },
+            {
+              "id": "stack_charges",
+              "text": "Generate Power Charges"
+            },
+            {
+              "id": "execute_flicker",
+              "text": "Execute Flicker Strike"
+            },
+            {
+              "id": "trigger_thunder",
+              "text": "Trigger Falling Thunder Nova"
+            }
+          ],
+          "solution": [
+            "cast_tempest",
+            "stack_charges",
+            "execute_flicker",
+            "trigger_thunder"
+          ]
+        },
+        {
+          "prompt": "Order the preparation stages to activate your defensive auras before entering combat (Part 2):",
+          "items": [
+            {
+              "id": "reserve_spirit",
+              "text": "Reserve Mana & Spirit"
+            },
+            {
+              "id": "grace_aura",
+              "text": "Enable Grace (Evasion Boost)"
+            },
+            {
+              "id": "tempest_shield",
+              "text": "Cast Tempest Shield (Block/Shock)"
+            },
+            {
+              "id": "wrath_aura",
+              "text": "Activate Wrath (Lightning Damage)"
+            }
+          ],
+          "solution": [
+            "reserve_spirit",
+            "grace_aura",
+            "tempest_shield",
+            "wrath_aura"
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "folder": "quiz",
+    "type": "quiz",
+    "props": {
+      "title": "Knowledge Check",
+      "questions": [
+        {
+          "id": "q1",
+          "question": "What does Way of the Stonefist convert on your gloves?",
+          "choices": [
+            {
+              "id": "a",
+              "text": "Socket count into mana regeneration",
+              "correct": false,
+              "explanation": "Stonefist does not affect sockets or mana. It's a damage multiplier node."
+            },
+            {
+              "id": "b",
+              "text": "Flat Physical and Elemental Damage into % Extra Damage",
+              "correct": true,
+              "explanation": "Correct. Flat Physical Damage + flat Elemental Damage on gloves become % Extra Damage of each type, creating a massive multiplicative multiplier."
+            },
+            {
+              "id": "c",
+              "text": "Attack Speed into movement speed",
+              "correct": false,
+              "explanation": "Stonefist only converts flat damage stats. Attack Speed is unaffected."
+            }
+          ],
+          "hint": "Think about flat stats becoming percentages."
+        },
+        {
+          "id": "q2",
+          "question": "Why should you avoid Dreaming Quarterstaff?",
+          "choices": [
+            {
+              "id": "a",
+              "text": "It has too low physical damage",
+              "correct": false,
+              "explanation": "Physical damage isn't the issue. The problem is more fundamental to this crit-based build."
+            },
+            {
+              "id": "b",
+              "text": "It has 0% base Crit Chance",
+              "correct": true,
+              "explanation": "Correct. Dreaming Quarterstaff has 0% base Crit, which cripples this crit-focused build. Use any other Quarterstaff."
+            },
+            {
+              "id": "c",
+              "text": "It cannot socket Falling Thunder",
+              "correct": false,
+              "explanation": "Dreaming Quarterstaff can socket any melee skill. The issue is its 0% base Crit."
+            }
+          ],
+          "hint": "Think about critical strikes."
+        },
+        {
+          "id": "q3",
+          "question": "When should you take Chaos Inoculation?",
+          "choices": [
+            {
+              "id": "a",
+              "text": "Immediately at league start",
+              "correct": false,
+              "explanation": "Taking CI too early leaves you with insufficient ES to survive. Wait for proper gearing."
+            },
+            {
+              "id": "b",
+              "text": "At approximately 4000 ES with Shavronne's Satchel",
+              "correct": true,
+              "explanation": "Correct. CI sets Life to 1, so you need Shavronne's Satchel for instant recovery and 4000+ ES to survive hits."
+            },
+            {
+              "id": "c",
+              "text": "Never — it's too risky for this build",
+              "correct": false,
+              "explanation": "CI is recommended for endgame. Chaos damage has a 2x multiplier against ES, making CI essential."
+            }
+          ],
+          "hint": "Consider the ES threshold and recovery items."
+        },
+        {
+          "id": "q4",
+          "question": "How does Nova Projectiles change Falling Thunder in patch 0.5?",
+          "choices": [
+            {
+              "id": "a",
+              "text": "It doubles projectile count",
+              "correct": false,
+              "explanation": "Nova Projectiles doesn't add projectiles. It changes their direction."
+            },
+            {
+              "id": "b",
+              "text": "It spreads projectiles in 360 degrees with no damage penalty",
+              "correct": true,
+              "explanation": "Correct. The 40% Less Damage penalty was removed in 0.5, making Nova Projectiles a pure AoE enabler."
+            },
+            {
+              "id": "c",
+              "text": "It adds cold damage to the projectiles",
+              "correct": false,
+              "explanation": "Nova Projectiles only affects direction. Cold damage comes from Herald of Ice and staff rolls."
+            }
+          ],
+          "hint": "Think about directional vs circular attacks."
+        },
+        {
+          "id": "q5",
+          "question": "What is the primary endgame Power Charge generation method?",
+          "choices": [
+            {
+              "id": "a",
+              "text": "Killing Palm + Hollow Focus bell culling",
+              "correct": false,
+              "explanation": "This is the budget/early league method. Endgame uses a faster Combo-based approach."
+            },
+            {
+              "id": "b",
+              "text": "Building 20 Combo then expending via Delayed Gratification + Ailith's Chimes",
+              "correct": true,
+              "explanation": "Correct. Build Combo on Mantra of Destruction, then expend it — Ailith's Chimes converts the Combo into Power Charges."
+            },
+            {
+              "id": "c",
+              "text": "Passive Power Charge gain from mapping",
+              "correct": false,
+              "explanation": "Passive charge gain isn't sufficient for boss fights. You need the Combo + Ailith's Chimes system."
+            }
+          ],
+          "hint": "Think about what happens after building Combo."
+        },
+        {
+          "id": "q6",
+          "question": "What does Subterfuge Mask convert?",
+          "choices": [
+            {
+              "id": "a",
+              "text": "Helmet Energy Shield into Evasion Rating",
+              "correct": true,
+              "explanation": "Correct. +2 Evasion per 1 ES on helmet. A 400 ES helmet = 800 bonus Evasion."
+            },
+            {
+              "id": "b",
+              "text": "Helmet Armour into Energy Shield",
+              "correct": false,
+              "explanation": "Subterfuge Mask works with ES on helmets, not Armour."
+            },
+            {
+              "id": "c",
+              "text": "Evasion into block chance",
+              "correct": false,
+              "explanation": "Subterfuge Mask converts ES to Evasion, not the other way around, and doesn't involve block."
+            }
+          ],
+          "hint": "Think about helmet stats."
+        },
+        {
+          "id": "q7",
+          "question": "Why is Trinity aura important for this build?",
+          "choices": [
+            {
+              "id": "a",
+              "text": "It provides a damage shield",
+              "correct": false,
+              "explanation": "Trinity doesn't provide defense. It's a damage multiplier aura."
+            },
+            {
+              "id": "b",
+              "text": "It multiplies your two lowest elements to match the highest",
+              "correct": true,
+              "explanation": "Correct. Trinity ensures all three elements (Fire, Cold, Lightning) deal equal damage, maximizing Falling Thunder's mixed elemental output."
+            },
+            {
+              "id": "c",
+              "text": "It reduces Spirit cost of all auras",
+              "correct": false,
+              "explanation": "That's Inspiration's job. Trinity is purely a damage multiplier."
+            }
+          ],
+          "hint": "Think about elemental damage types."
+        },
+        {
+          "id": "q8",
+          "question": "What belt is essential for Chaos Inoculation viability?",
+          "choices": [
+            {
+              "id": "a",
+              "text": "Snake Pit",
+              "correct": false,
+              "explanation": "Snake Pit is a good belt but doesn't provide the instant recovery needed for CI."
+            },
+            {
+              "id": "b",
+              "text": "Shavronne's Satchel",
+              "correct": true,
+              "explanation": "Correct. Shavronne's Satchel requires an Instant Life Flask, which heals Energy Shield on use — providing instant recovery after being hit."
+            },
+            {
+              "id": "c",
+              "text": "The Squire",
+              "correct": false,
+              "explanation": "The Squire reduces flask charges but doesn't provide the instant recovery that Shavronne's does."
+            }
+          ],
+          "hint": "It provides instant recovery."
+        }
+      ]
+    }
+  },
+  {
+    "folder": "tradeoffs",
+    "type": "tradeoff-sandbox",
+    "props": {
+      "title": "Gear Investment Levels",
+      "scenarios": [
+        {
+          "id": "budget-league-starter",
+          "title": "Budget League Starter",
+          "description": "Minimum investment to clear all content. Everything obtainable through drops and cheap trade.",
+          "metrics": [
+            {
+              "id": "damage",
+              "label": "Damage Output",
+              "baseValue": 35,
+              "min": 0,
+              "max": 100,
+              "direction": "higher"
+            },
+            {
+              "id": "clear-speed",
+              "label": "Clear Speed",
+              "baseValue": 45,
+              "min": 0,
+              "max": 100,
+              "direction": "higher"
+            },
+            {
+              "id": "survivability",
+              "label": "Survivability",
+              "baseValue": 50,
+              "min": 0,
+              "max": 100,
+              "direction": "higher"
+            },
+            {
+              "id": "cost",
+              "label": "Cost Efficiency",
+              "baseValue": 90,
+              "min": 0,
+              "max": 100,
+              "direction": "higher"
+            }
+          ],
+          "steps": [
+            {
+              "id": "weapon",
+              "title": "Weapon Choice",
+              "description": "Quarterstaff is mandatory. Avoid Dreaming Quarterstaff (0% Crit base).",
+              "recommended": "any-staff",
+              "choices": [
+                {
+                  "id": "any-staff",
+                  "label": "Any Quarterstaff (non-Dreaming)",
+                  "description": "Any Quarterstaff with Lightning Damage and Crit stats.",
+                  "metrics": {
+                    "damage": 10,
+                    "clear-speed": 5,
+                    "survivability": 0,
+                    "cost": 10
+                  },
+                  "pros": [
+                    {
+                      "title": "Cheap and available",
+                      "description": "Found in early acts and cheap on trade"
+                    }
+                  ],
+                  "cons": [
+                    {
+                      "title": "No leech line",
+                      "description": "May lack Leech Phys Damage as Mana for Oisin's Oath"
+                    }
+                  ],
+                  "whyThisFits": "League starter doesn't need perfect rolls. Any non-Dreaming staff works."
+                },
+                {
+                  "id": "dreaming-staff",
+                  "label": "Dreaming Quarterstaff",
+                  "description": "Unique with high damage but 0% Crit base.",
+                  "metrics": {
+                    "damage": -5,
+                    "clear-speed": -10,
+                    "survivability": 0,
+                    "cost": 5
+                  },
+                  "pros": [
+                    {
+                      "title": "Good raw numbers",
+                      "description": "High Lightning Damage on the unique"
+                    }
+                  ],
+                  "cons": [
+                    {
+                      "title": "0% Crit base",
+                      "description": "Cripples Cast on Critical and all crit-dependent mechanics"
+                    }
+                  ],
+                  "whenToUse": "Avoid entirely. The 0% Crit base makes this build unviable."
+                }
+              ]
+            },
+            {
+              "id": "armor",
+              "title": "Body Armor",
+              "description": "ES/Evasion hybrid base for layered defense.",
+              "recommended": "sleek-jacket",
+              "choices": [
+                {
+                  "id": "sleek-jacket",
+                  "label": "Sleek Jacket (ES/EV hybrid)",
+                  "description": "Hybrid Evasion + Energy Shield base.",
+                  "metrics": {
+                    "damage": 0,
+                    "clear-speed": 0,
+                    "survivability": 10,
+                    "cost": 8
+                  },
+                  "pros": [
+                    {
+                      "title": "Layered defense",
+                      "description": "Stacks Evasion with ES for physical hit mitigation"
+                    }
+                  ],
+                  "cons": [
+                    {
+                      "title": "Early rolls may be poor",
+                      "description": "Budget pieces may have low values"
+                    }
+                  ],
+                  "whyThisFits": "Hybrid base aligns with the build's ES/Evasion defense strategy."
+                },
+                {
+                  "id": "pure-es",
+                  "label": "Pure Energy Shield Armor",
+                  "description": "Only ES, no Evasion.",
+                  "metrics": {
+                    "damage": 0,
+                    "clear-speed": 0,
+                    "survivability": 5,
+                    "cost": 5
+                  },
+                  "pros": [
+                    {
+                      "title": "Simple to find",
+                      "description": "More available on trade"
+                    }
+                  ],
+                  "cons": [
+                    {
+                      "title": "No Evasion layer",
+                      "description": "Missing physical hit mitigation entirely"
+                    }
+                  ],
+                  "whenToUse": "Acceptable early game before finding hybrid bases."
+                }
+              ]
+            },
+            {
+              "id": "charges",
+              "title": "Power Charge Generation",
+              "description": "Budget alternative to Ailith's Chimes.",
+              "recommended": "hollow-focus",
+              "choices": [
+                {
+                  "id": "hollow-focus",
+                  "label": "Hollow Focus + Killing Palm",
+                  "description": "Kill primed Hollow Focus bells with Killing Palm for charges.",
+                  "metrics": {
+                    "damage": 5,
+                    "clear-speed": -5,
+                    "survivability": 0,
+                    "cost": 15
+                  },
+                  "pros": [
+                    {
+                      "title": "Free",
+                      "description": "Uses built-in ascendancy nodes, no expensive items needed"
+                    }
+                  ],
+                  "cons": [
+                    {
+                      "title": "Manual process",
+                      "description": "Requires casting Hollow Focus, then Killing Palm into the bells"
+                    }
+                  ],
+                  "whyThisFits": "Best budget method. Reliable charge generation with zero investment."
+                },
+                {
+                  "id": "ailiths-budget",
+                  "label": "Early Ailith's Chimes",
+                  "description": "Buy Ailith's Chimes early for Combo-based generation.",
+                  "metrics": {
+                    "damage": 10,
+                    "clear-speed": 10,
+                    "survivability": 0,
+                    "cost": -15
+                  },
+                  "pros": [
+                    {
+                      "title": "Instant charges",
+                      "description": "One click to convert Combo to charges"
+                    }
+                  ],
+                  "cons": [
+                    {
+                      "title": "Expensive early league",
+                      "description": "Ailith's Chimes is costly in early league currency"
+                    }
+                  ],
+                  "whenToUse": "Worth buying mid-league when prices drop."
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "folder": "formula-sandbox",
+    "type": "formula-sandbox",
+    "props": {
+      "title": "Flicker Monk DPS & Stats Calculator",
+      "variables": [
+        {
+          "id": "attack_speed",
+          "label": "Attack Speed (Attacks / sec)",
+          "min": 2,
+          "max": 10,
+          "step": 0.5,
+          "defaultValue": 4.5
+        },
+        {
+          "id": "crit_chance",
+          "label": "Critical Strike Chance (%)",
+          "min": 5,
+          "max": 100,
+          "step": 5,
+          "defaultValue": 40
+        },
+        {
+          "id": "lightning_damage",
+          "label": "Base Lightning Damage",
+          "min": 100,
+          "max": 2000,
+          "step": 50,
+          "defaultValue": 400
+        }
+      ],
+      "metrics": [
+        {
+          "id": "recall",
+          "label": "Estimated Build DPS",
+          "formula": "Math.round(attack_speed * lightning_damage * (1 + (crit_chance / 100) * 1.5))",
+          "description": "Calculates the total damage output per second of Flicker Strike incorporating attack speed, flat damage, and critical multiplier.",
+          "analogy": "Like striking multiple times with high accuracy—if you swing fast and hit critical pressure points, the total force multiplies exponentially.",
+          "inScope": [
+            "Critical strike multiplier factor",
+            "Flat lightning base hits"
+          ],
+          "outOfScope": [
+            "Monster elemental resistances"
+          ]
+        },
+        {
+          "id": "latency",
+          "label": "Spirit Mana Reservation",
+          "formula": "Math.round(150 + (attack_speed * 15))",
+          "description": "The total Spirit resource reserved to maintain persistent aura builds (like Wrath and Grace) at this rate of attack speed.",
+          "analogy": "The background energy required to sustain a continuous sprint—the faster you move, the more oxygen you reserve constantly.",
+          "inScope": [
+            "Aura reservation costs"
+          ],
+          "outOfScope": [
+            "Direct action mana costs"
+          ]
+        },
+        {
+          "id": "cost",
+          "label": "Shock Infliction Chance (%)",
+          "formula": "Math.round(crit_chance * 0.9)",
+          "description": "The likelihood of applying the Shock elemental ailment on target hits, increasing their damage taken by up to 50%.",
+          "analogy": "Static build-up. The more consistently you strike metal, the more sparks ignite the target.",
+          "inScope": [
+            "Shock application chance"
+          ],
+          "outOfScope": [
+            "Shock damage amplification calculations"
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "folder": "reflection-template",
+    "type": "reflection-template",
+    "props": {
+      "title": "Combat Stats & Defenses Evaluation",
+      "challenges": [
+        {
+          "prompt": "Complete the statement explaining Attack Speed vs Base Damage stats (Part 1):",
+          "template": "Increasing Attack Speed multiplies the total hits landed per second, which directly {zone-1} total build DPS. However, swinging faster also {zone-2} the Spirit mana reservation needed to sustain aggressive stance buffs.",
+          "chips": [
+            {
+              "id": "chip-increases",
+              "text": "increases"
+            },
+            {
+              "id": "chip-decreases",
+              "text": "decreases"
+            },
+            {
+              "id": "chip-raises",
+              "text": "raises"
+            },
+            {
+              "id": "chip-lowers",
+              "text": "lowers"
+            }
+          ],
+          "solution": {
+            "zone-1": "chip-increases",
+            "zone-2": "chip-raises"
+          },
+          "explanation": "<strong>Correct!</strong> Attack speed directly multiplies dps but also drains dynamic Spirit costs, requiring higher aura reservation metrics."
+        },
+        {
+          "prompt": "Complete the statement explaining Critical Strike properties (Part 2):",
+          "template": "Tuning Critical Strike Chance to 100% guarantees critical hits, which leads to a {zone-1} estimated build DPS. It also {zone-2} the chance to inflict Shock ailment on enemies.",
+          "chips": [
+            {
+              "id": "chip-higher",
+              "text": "higher"
+            },
+            {
+              "id": "chip-lower",
+              "text": "lower"
+            },
+            {
+              "id": "chip-increases",
+              "text": "increases"
+            },
+            {
+              "id": "chip-decreases",
+              "text": "decreases"
+            }
+          ],
+          "solution": {
+            "zone-1": "chip-higher",
+            "zone-2": "chip-increases"
+          },
+          "explanation": "<strong>Correct!</strong> Perfect crits lead to higher peak hits and guarantee shock infliction, multiplying base damage output."
+        }
+      ]
+    }
+  },
+  {
+    "folder": "scenario",
+    "type": "scenario",
+    "props": {
+      "title": "Your League Journey",
+      "id": "build-journey",
+      "intro": "You've decided to play the Flicker Strike Monk. How you gear up determines your endgame ceiling. Make choices through the league and see where they lead.",
+      "nodes": {
+        "start": {
+          "id": "start",
+          "prompt": "League day 1. You've picked Martial Artist Monk. What's your first priority?",
+          "choices": [
+            {
+              "id": "get-staff",
+              "text": "Find a Quarterstaff (not Dreaming) with Lightning Damage",
+              "next": "staff-found"
+            },
+            {
+              "id": "grab-dreaming",
+              "text": "Grab the shiny Dreaming Quarterstaff you found",
+              "next": "dreaming-disaster"
+            },
+            {
+              "id": "skip-weapon",
+              "text": "Focus on defenses first, weapon later",
+              "next": "weak-clear"
+            }
+          ]
+        },
+        "staff-found": {
+          "id": "staff-found",
+          "prompt": "You have a decent Quarterstaff. Act 2 is progressing. What's next?",
+          "choices": [
+            {
+              "id": "build-es",
+              "text": "Gear toward 4000 ES for Chaos Inoculation",
+              "next": "ci-ready"
+            },
+            {
+              "id": "chase-damage",
+              "text": "Chase damage gear — Stonefist gloves with flat damage",
+              "next": "glass-cannon"
+            },
+            {
+              "id": "balanced",
+              "text": "Balance ES/Evasion armor with Stonefist gloves",
+              "next": "balanced-path"
+            }
+          ]
+        },
+        "dreaming-disaster": {
+          "id": "dreaming-disaster",
+          "outcome": {
+            "verdict": "Your Cast on Critical never triggers. Charge generation is dead. The build doesn't function.",
+            "lesson": "Dreaming Quarterstaff has 0% base Crit Chance, which breaks every crit-dependent mechanic. Always use a non-Dreaming Quarterstaff.",
+            "rating": "c"
+          }
+        },
+        "weak-clear": {
+          "id": "weak-clear",
+          "outcome": {
+            "verdict": "You survive but clear maps painfully slow. Without a proper staff, Falling Thunder lacks damage.",
+            "lesson": "Weapon is the foundation. Get a Quarterstaff with Lightning Damage first, then layer defenses.",
+            "rating": "c"
+          }
+        },
+        "ci-ready": {
+          "id": "ci-ready",
+          "prompt": "You hit 4000 ES. Time to take Chaos Inoculation. What's your recovery plan?",
+          "choices": [
+            {
+              "id": "shavronnes",
+              "text": "Get Shavronne's Satchel with Instant Life Flask",
+              "next": "ci-viable"
+            },
+            {
+              "id": "skip-shavronnes",
+              "text": "CI without Shavronne's — I'll manage",
+              "next": "ci-death"
+            }
+          ]
+        },
+        "glass-cannon": {
+          "id": "glass-cannon",
+          "outcome": {
+            "verdict": "High damage but one-shot by chaos hits. Without CI or proper defenses, you die in juiced maps.",
+            "lesson": "Damage without survivability is meaningless. Balance offense and defense — get ES/Evasion hybrid armor and plan for CI.",
+            "rating": "c"
+          }
+        },
+        "balanced-path": {
+          "id": "balanced-path",
+          "prompt": "Good balance. Mid-league, you face a choice: invest in Ailith's Chimes or keep the budget setup?",
+          "choices": [
+            {
+              "id": "buy-ailiths",
+              "text": "Buy Ailith's Chimes for instant Combo-to-charge conversion",
+              "next": "smooth-endgame"
+            },
+            {
+              "id": "keep-budget",
+              "text": "Stick with Hollow Focus + Killing Palm — it works fine",
+              "next": "budget-endgame"
+            }
+          ]
+        },
+        "ci-viable": {
+          "id": "ci-viable",
+          "outcome": {
+            "verdict": "With Shavronne's Satchel and Instant Life Flask, you recover ES instantly after hits. CI is now safe.",
+            "lesson": "Shavronne's Satchel is mandatory for CI builds. The Instant Life Flask heals ES on use, preventing death from big hits.",
+            "rating": "a"
+          }
+        },
+        "ci-death": {
+          "id": "ci-death",
+          "outcome": {
+            "verdict": "A big chaos hit (now blocked by CI) was survivable before, but a physical hit melts your raw ES without Life buffer. You die repeatedly.",
+            "lesson": "Never take CI without Shavronne's Satchel. Instant recovery is the difference between life and death.",
+            "rating": "c"
+          }
+        },
+        "smooth-endgame": {
+          "id": "smooth-endgame",
+          "outcome": {
+            "verdict": "Ailith's Chimes transforms boss fights. Build 20 Combo, click, get charges, one-shot bosses. Clean endgame.",
+            "lesson": "Ailith's Chimes is the best mid-to-late league investment. The quality of life upgrade for charge generation is enormous.",
+            "rating": "a"
+          }
+        },
+        "budget-endgame": {
+          "id": "budget-endgame",
+          "outcome": {
+            "verdict": "Hollow Focus + Killing Palm works but feels manual. You clear endgame content but boss fights take longer.",
+            "lesson": "Budget charge generation is viable but clunky. Ailith's Chimes is worth buying when prices drop mid-league.",
+            "rating": "b-plus"
+          }
+        }
+      },
+      "startNode": "start"
+    }
+  },
+  {
+    "folder": "decision-tree",
+    "type": "decision-tree",
+    "props": {
+      "title": "Flicker Monk Setup Advisor",
+      "id": "flicker-advisor",
+      "root": "stage",
+      "nodes": {
+        "stage": {
+          "id": "stage",
+          "prompt": "What stage of the league are you at?",
+          "choices": [
+            {
+              "id": "league-start",
+              "text": "League start (Acts 1-4)",
+              "next": "weapon-check",
+              "rationale": "Early league priorities differ from endgame.",
+              "recommended": true
+            },
+            {
+              "id": "mid-league",
+              "text": "Mid-league (mapping, some endgame gear)",
+              "next": "charge-choice"
+            },
+            {
+              "id": "endgame",
+              "text": "Late league (Uber endgame target)",
+              "next": "uber-check"
+            }
+          ]
+        },
+        "weapon-check": {
+          "id": "weapon-check",
+          "prompt": "What weapon do you currently have?",
+          "choices": [
+            {
+              "id": "has-staff",
+              "text": "A Quarterstaff with Lightning Damage",
+              "next": "rec-league-start-good",
+              "rationale": "You have the correct weapon type.",
+              "recommended": true
+            },
+            {
+              "id": "has-dreaming",
+              "text": "Dreaming Quarterstaff",
+              "next": "rec-switch-staff"
+            },
+            {
+              "id": "no-staff",
+              "text": "No Quarterstaff yet",
+              "next": "rec-get-staff"
+            }
+          ]
+        },
+        "rec-league-start-good": {
+          "id": "rec-league-start-good",
+          "leaf": {
+            "recommendation": "Focus on reaching 4000 ES for Chaos Inoculation.",
+            "explanation": "You have the right weapon. Priority now is gearing toward CI: ES/Evasion hybrid armor, Spirit nodes for auras, and Shavronne's Satchel. Take CI at ~4000 ES.",
+            "tradeoffs": [
+              "Don't rush CI without Shavronne's Satchel — instant recovery is mandatory",
+              "Early league charge generation: use Hollow Focus + Killing Palm bells",
+              "Aim for 60% Crit Chance on Whirling Assault for Cast on Critical uptime"
+            ]
+          }
+        },
+        "rec-switch-staff": {
+          "id": "rec-switch-staff",
+          "leaf": {
+            "recommendation": "Switch to any non-Dreaming Quarterstaff immediately.",
+            "explanation": "Dreaming Quarterstaff has 0% base Crit Chance, which breaks Cast on Critical, Nova Projectiles crit scaling, and every crit mechanic in this build. Any other Quarterstaff is better.",
+            "tradeoffs": [
+              "Even a basic staff with Lightning Damage outperforms the Dreaming variant for this build",
+              "Look for: flat Lightning Damage, % Increased Critical Damage, Attack Speed",
+              "Oisin's Oath requires Leech Phys Damage as Mana somewhere on gear"
+            ]
+          }
+        },
+        "rec-get-staff": {
+          "id": "rec-get-staff",
+          "leaf": {
+            "recommendation": "Acquire a Quarterstaff (avoid Dreaming) as your top priority.",
+            "explanation": "The Quarterstaff is the build's foundation — it sockets Falling Thunder, Flicker Strike, and other skills. Look for flat Lightning Damage, Crit stats, and Attack Speed.",
+            "tradeoffs": [
+              "League starter staffs are cheap on trade (1-3 Divine equivalent)",
+              "Focus on getting ES/Evasion body armor simultaneously",
+              "Don't invest in jewelry until you have a staff and body armor"
+            ]
+          }
+        },
+        "charge-choice": {
+          "id": "charge-choice",
+          "prompt": "How are you generating Power Charges for boss fights?",
+          "choices": [
+            {
+              "id": "hollow-focus-charges",
+              "text": "Hollow Focus + Killing Palm bell culling",
+              "next": "rec-buy-ailiths"
+            },
+            {
+              "id": "ailiths-charges",
+              "text": "Ailith's Chimes + Combo",
+              "next": "rec-mid-optimized",
+              "recommended": true
+            }
+          ]
+        },
+        "rec-buy-ailiths": {
+          "id": "rec-buy-ailiths",
+          "leaf": {
+            "recommendation": "Buy Ailith's Chimes now — prices have dropped mid-league.",
+            "explanation": "Ailith's Chimes converts Combo expenditure into Power Charges instantly. The Hollow Focus method works but is manual and slow for boss fights.",
+            "tradeoffs": [
+              "Mid-league Ailith's Chimes is affordable (check trade for current price)",
+              "Requires Mantra of Destruction + Delayed Gratification link",
+              "Once acquired, boss charge generation becomes one-click"
+            ]
+          }
+        },
+        "rec-mid-optimized": {
+          "id": "rec-mid-optimized",
+          "leaf": {
+            "recommendation": "You're on the right path. Focus on defense upgrades and Stonefist glove optimization.",
+            "explanation": "With Ailith's Chimes, your charge generation is optimal. Now prioritize: Subterfuge Mask helmet (400+ ES), Heart of the Well for Chaos Damage, and Stonefist gloves with Physical + 2 elemental prefixes.",
+            "tradeoffs": [
+              "Target 6000+ ES and 75% Evasion for endgame survivability",
+              "Heart of the Well enables Herald of Ice explosions via Chaos Damage",
+              "Glove Stonefist multiplier is the single biggest damage upgrade"
+            ]
+          }
+        },
+        "uber-check": {
+          "id": "uber-check",
+          "prompt": "What's your endgame target?",
+          "choices": [
+            {
+              "id": "map-bosses",
+              "text": "Clear map bosses and regular endgame",
+              "next": "rec-standard-endgame",
+              "recommended": true
+            },
+            {
+              "id": "uber-pinnacles",
+              "text": "One-shot Uber Pinnacle bosses",
+              "next": "rec-uber-setup"
+            }
+          ]
+        },
+        "rec-standard-endgame": {
+          "id": "rec-standard-endgame",
+          "leaf": {
+            "recommendation": "Standard endgame setup: 6500 ES, 75% Evasion, CI, Shavronne's, Ailith's Chimes.",
+            "explanation": "For regular endgame, focus on solid defenses and reliable damage. No Uber-specific gear needed.",
+            "tradeoffs": [
+              "35% MS boots for mapping, no need for Powertread",
+              "Standard Quarterstaff with Lightning Damage + Crit + Attack Speed suffices",
+              "Heart of the Well is valuable but not mandatory for standard endgame"
+            ]
+          }
+        },
+        "rec-uber-setup": {
+          "id": "rec-uber-setup",
+          "leaf": {
+            "recommendation": "Uber endgame: add Powertread, Farrul's Rune + Fenumus' Rune, Uul-Netol's Embrace.",
+            "explanation": "Uber Pinnacle bosses require maximum damage. Swap Powertread boots for bossing, equip Farrul's Rune + Fenumus' Rune for Herald explosion synergy, and target Uul-Netol's Embrace + Rite of Passage.",
+            "tradeoffs": [
+              "Powertread replaces MS boots only for Uber bossing — swap back for mapping",
+              "Uul-Netol's Embrace + Rite of Passage is extremely expensive (giga-invest)",
+              "Consider Jiquani's Thesis Perfect Core helmet for mana (optional uber luxury)"
+            ]
+          }
+        }
+      }
+    }
+  }
+]

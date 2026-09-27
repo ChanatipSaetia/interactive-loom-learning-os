@@ -1,0 +1,2224 @@
+[
+  {
+    "folder": "intro",
+    "type": "intro",
+    "props": {
+      "title": "",
+      "estimatedTime": "7 min read",
+      "moduleCount": 14,
+      "what": {
+        "definition": "IT Project Management คือกระบวนการวางแผน ควบคุมการดำเนินงาน และบริหารจัดการทรัพยากรเพื่อให้โครงการซอฟต์แวร์ส่งมอบได้ทันเวลา ตรงตามข้อกำหนด และอยู่ในงบประมาณที่กำหนด",
+        "summary": "คู่มือการบริหารโครงการซอฟต์แวร์และการตัดวงจรประชุมไร้ประสิทธิภาพ (Meeting Bloat) ในทีมไอที",
+        "bullets": [
+          "วงจรการบริหารโครงการไอทีและกรอบการทำงาน Agile / Scrum",
+          "การบริหารช่องทางสื่อสารและการตัดสินใจเลือกการสื่อสารแบบ Async vs Sync",
+          "การคำนวณต้นทุนเวลาประชุมและผลกระทบต่อสมาธิของนักพัฒนา (Maker's Schedule)"
+        ],
+        "tags": [
+          "Project Management",
+          "Agile / Scrum",
+          "Async Communication",
+          "Meeting Bloat"
+        ]
+      },
+      "why": {
+        "summary": "การนัดประชุมโดยไม่มีเป้าหมายที่ชัดเจนทำลายสมาธิในการเขียนโค้ดของนักพัฒนา และทำให้โครงการล่าช้าโดยไม่จำเป็น",
+        "impact": "การใช้การสื่อสารแบบ Async และกำหนดกรอบการประชุมที่ชัดเจน ช่วยเพิ่มเวลาโฟกัส (Maker Time) ได้มากกว่า 40%"
+      },
+      "roadmap": [
+        {
+          "sectionId": "concept-map",
+          "title": "แผนผังความสัมพันธ์",
+          "type": "concept-map",
+          "description": "เชื่อมโยงกระบวนการบริหารโครงการ สื่อสาร และเครื่องมือติดตามงาน"
+        },
+        {
+          "sectionId": "flashcards",
+          "title": "คำศัพท์การบริหารโครงการ",
+          "type": "flashcards",
+          "description": "ทบทวนคำศัพท์ Agile, Sprint, Backlog, และ Async Communication"
+        },
+        {
+          "sectionId": "flowchart",
+          "title": "ขั้นตอนการดำเนินงาน",
+          "type": "flowchart",
+          "description": "แกะรอยการทำงานในรอบ Sprint และการตัดสินใจส่งมอบงาน"
+        },
+        {
+          "sectionId": "tradeoffs",
+          "title": "วิเคราะห์การสื่อสาร",
+          "type": "tradeoff-sandbox",
+          "description": "เปรียบเทียบข้อดีข้อเสียของ Sync Meetings vs Async Docs"
+        },
+        {
+          "sectionId": "formula-sandbox",
+          "title": "คำนวณต้นทุนการประชุม",
+          "type": "formula-sandbox",
+          "description": "คำนวณมูลค่าเงินและเวลาที่เสียไปจากการประชุมที่ไม่จำเป็น"
+        }
+      ]
+    }
+  },
+  {
+    "folder": "flashcards",
+    "type": "flashcards",
+    "props": {
+      "title": "Key Terminology",
+      "terms": [
+        {
+          "id": "timeboxing",
+          "word": "Timeboxing",
+          "pronunciation": "tahym-boks-ing",
+          "category": "discipline",
+          "shortDefinition": "Allocating a fixed, maximum time limit to a meeting or task.",
+          "detailedDefinition": "Timeboxing prevents meetings from dragging on by setting a hard stop (e.g. 15 minutes). If the time is up, the meeting ends, and unresolved points are handled in follow-ups.",
+          "whyItMatters": "Forces efficiency, keeps discussions focused, and ensures calendars don't bleed into development time.",
+          "dialogue": {
+            "user": "Let's schedule a meeting to talk about the backend restructuring.",
+            "aiThoughts": "Restructuring is complex, but without timeboxing it could drag on for hours.",
+            "aiQuestion": "We can schedule a meeting, but let's timebox it to 25 minutes and have an agenda ready beforehand. Sound good?"
+          }
+        },
+        {
+          "id": "async_first",
+          "word": "Async-First",
+          "pronunciation": "ey-singk-furst",
+          "category": "communication",
+          "shortDefinition": "Prioritizing written documentation over live, synchronous meetings.",
+          "detailedDefinition": "An organizational culture where status updates, design reviews, and simple decisions are written down (Slack, Notion, RFCs) rather than discussed in live calls.",
+          "whyItMatters": "Protects engineers' focus state, allowing them to read and respond to items during natural breaks rather than interrupting active coding.",
+          "dialogue": {
+            "user": "We need to sync on what everyone did today and what they are doing tomorrow.",
+            "aiThoughts": "A daily status meeting interrupts everyone. Async updates would work better here.",
+            "aiQuestion": "Can we post our updates in the daily Slack thread instead, so we don't have to interrupt everyone's coding flow?"
+          }
+        },
+        {
+          "id": "scope_creep",
+          "word": "Scope Creep",
+          "pronunciation": "skohp kreep",
+          "category": "planning",
+          "shortDefinition": "The uncontrolled expansion of a project's requirements without adjusting time or budget.",
+          "detailedDefinition": "Adding features or polishing details after the project's milestones have already been locked, leading to delays and team fatigue.",
+          "whyItMatters": "Failing to control scope creep is the #1 reason why software projects miss deadlines and experience burnout.",
+          "dialogue": {
+            "user": "While we are building this page, let's also add a notification system and dashboard.",
+            "aiThoughts": "Those features are out of scope and will delay the release.",
+            "aiQuestion": "Those sound like great features, but let's log them in the backlog for Phase 2 so we can ship the current milestone on time."
+          }
+        },
+        {
+          "id": "velocity",
+          "word": "Velocity",
+          "pronunciation": "vuh-los-i-tee",
+          "category": "metrics",
+          "shortDefinition": "A metric measuring how much work a team can complete in a cycle.",
+          "detailedDefinition": "Calculated by summing effort points of completed tasks during an iteration. It helps project planners forecast future releases based on historical delivery speed.",
+          "whyItMatters": "Provides empirical data for planning, preventing teams from over-committing based on optimistic wishes.",
+          "dialogue": {
+            "user": "Let's commit to completing 80 story points this sprint!",
+            "aiThoughts": "The team's average velocity is 45 points. Committing to 80 will cause stress and poor code quality.",
+            "aiQuestion": "Our average velocity is 45 points. Committing to 80 might lead to rushed code. Should we pull in 45 points and add stretch goals?"
+          }
+        },
+        {
+          "id": "retrospective",
+          "word": "Retrospective",
+          "pronunciation": "re-truh-spek-tiv",
+          "category": "improvement",
+          "shortDefinition": "A regular team meeting to reflect on what went well and what to improve.",
+          "detailedDefinition": "Held at the end of a sprint or milestone. The team discusses process bottlenecks, communication gaps, and tooling issues, committing to 1-2 actionable changes.",
+          "whyItMatters": "Provides a safe, dedicated space for continuous process improvement so the team stops repeating the same mistakes.",
+          "dialogue": {
+            "user": "We don't have time for a retrospective; we need to start writing code for the next sprint.",
+            "aiThoughts": "Skipping retros leads to process rot. Continuous learning is essential.",
+            "aiQuestion": "If we skip reflecting, we might repeat this sprint's bottlenecks. Can we do a quick, focused 30-minute retro to improve our pipeline?"
+          }
+        },
+        {
+          "id": "man_days",
+          "word": "Man-Days (MDs)",
+          "pronunciation": "man deyz",
+          "category": "estimation",
+          "shortDefinition": "An estimation unit representing the amount of work one person can do in a single day.",
+          "detailedDefinition": "Commonly used to estimate effort. However, because software development involves hidden complexities and coordination overhead, estimating in exact man-days is often inaccurate. Lean teams treat them as ranges rather than absolute commitments.",
+          "whyItMatters": "Using absolute man-days leads to planning fallacies. Range-based or relative estimates protect the team from arbitrary deadlines.",
+          "dialogue": {
+            "user": "Exactly how many man-days will this refactoring task take?",
+            "aiThoughts": "Refactoring has unknowns. Giving an exact day count is risky.",
+            "aiQuestion": "Since there are some architectural unknowns, I estimate it will take between 3 to 5 man-days, rather than a single fixed number."
+          }
+        }
+      ]
+    }
+  },
+  {
+    "folder": "concept-map",
+    "type": "concept-map",
+    "props": {
+      "title": "PM & Meeting Ecosystem",
+      "nodes": {
+        "project_goal": {
+          "id": "project_goal",
+          "title": "Project Goal",
+          "category": "pattern"
+        },
+        "backlog": {
+          "id": "backlog",
+          "title": "Task Backlog",
+          "category": "data"
+        },
+        "standup": {
+          "id": "standup",
+          "title": "Daily Sync",
+          "category": "process"
+        },
+        "retro": {
+          "id": "retro",
+          "title": "Retrospective",
+          "category": "process"
+        },
+        "async_update": {
+          "id": "async_update",
+          "title": "Async Update",
+          "category": "process"
+        },
+        "blocker": {
+          "id": "blocker",
+          "title": "Blocker",
+          "category": "data"
+        },
+        "team": {
+          "id": "team",
+          "title": "Engineering Team",
+          "category": "role"
+        },
+        "pm": {
+          "id": "pm",
+          "title": "Project Manager",
+          "category": "role"
+        }
+      },
+      "edges": [
+        {
+          "from": "pm",
+          "to": "backlog",
+          "label": "prioritizes"
+        },
+        {
+          "from": "team",
+          "to": "backlog",
+          "label": "executes from"
+        },
+        {
+          "from": "standup",
+          "to": "blocker",
+          "label": "surfaces"
+        },
+        {
+          "from": "retro",
+          "to": "team",
+          "label": "improves"
+        },
+        {
+          "from": "async_update",
+          "to": "project_goal",
+          "label": "tracks"
+        },
+        {
+          "from": "blocker",
+          "to": "pm",
+          "label": "escalated to"
+        }
+      ]
+    }
+  },
+  {
+    "folder": "taxonomy",
+    "type": "taxonomy-browser",
+    "props": {
+      "title": "Meetings & Sync Formats",
+      "categories": [
+        {
+          "icon": "Clock",
+          "title": "Daily Sync (Standup)",
+          "subtitle": "15-Minute Alignment",
+          "description": "A quick daily sync to align the team on the day's goals and identify blockers immediately.",
+          "details": "Held daily at the same time. Each member briefly shares what they completed, what they plan to do, and any blockers they face. Keep discussion high-level and timeboxed to 15 minutes.",
+          "analogy": "Like a sports team huddle before a play — fast, focused, and preparing for the immediate next move.",
+          "primaryFocus": "Blocker identification and team alignment",
+          "inScope": [
+            "Stating what you're working on today",
+            "Raising blockers that prevent progress",
+            "Flagging dependencies with other team members"
+          ],
+          "outOfScope": [
+            "Debugging code or solving technical problems",
+            "Giving detailed feature design reviews",
+            "Project managers asking for detailed status justifications"
+          ],
+          "color": "peach"
+        },
+        {
+          "icon": "Calendar",
+          "title": "Sprint Planning",
+          "subtitle": "Cycle Scope Definition",
+          "description": "A collaborative session at the start of a cycle to commit to a scope of work aligned with product goals.",
+          "details": "The team reviews prioritized backlog items, estimates effort (points or days), discusses dependencies, and commits to a realistic sprint goal. This sets the focus for the next 1-2 weeks.",
+          "analogy": "Like packing a backpack for a hike — you only bring what you need and what actually fits, ensuring you don't over-commit.",
+          "primaryFocus": "Scope commitment and sprint goal definition",
+          "inScope": [
+            "Clarifying requirements of backlog tasks",
+            "Estimating effort level and capacity",
+            "Selecting tasks that fit within velocity"
+          ],
+          "outOfScope": [
+            "Writing code or starting implementation",
+            "Adding random, un-prioritized ideas to the sprint",
+            "Creating tasks without clear acceptance criteria"
+          ],
+          "color": "sky"
+        },
+        {
+          "icon": "RefreshCw",
+          "title": "Retrospective",
+          "subtitle": "Continuous Improvement",
+          "description": "A safe-space reflection meeting to evaluate processes and make concrete improvements for the next cycle.",
+          "details": "Held at the end of a sprint. The team discusses what went well, what went poorly, and brainstorms solutions to process bottlenecks. The output is 1 or 2 high-priority action items.",
+          "analogy": "Like a Formula 1 pit stop review — looking at telemetry and teamwork to see how to shave seconds off the next lap.",
+          "primaryFocus": "Continuous improvement and team dynamics",
+          "inScope": [
+            "Highlighting process or communication bottlenecks",
+            "Appreciating team members who helped out",
+            "Creating 1-2 actionable improvement items"
+          ],
+          "outOfScope": [
+            "Blaming individuals for project delays",
+            "Complaining without suggesting constructive changes",
+            "Listing 10 items that the team won't realistically implement"
+          ],
+          "color": "green"
+        },
+        {
+          "icon": "FileText",
+          "title": "Asynchronous Updates",
+          "subtitle": "Meeting Replacement",
+          "description": "Sharing status updates in writing, completely replacing status-check meetings.",
+          "details": "Updates are written down in Slack, Discord, Notion, or Jira. Teammates read and reply at their convenience. This allows the team to stay informed without interrupting active work.",
+          "analogy": "Like a newspaper or status feed — you read it when you have a coffee break, not while you are performing surgery.",
+          "primaryFocus": "Protecting focus time and reducing meeting count",
+          "inScope": [
+            "Writing bulleted, clear daily or weekly updates",
+            "Reading others' updates and commenting if relevant",
+            "Flagging blockers in text with tags for visibility"
+          ],
+          "outOfScope": [
+            "Writing long novels that take 20 minutes to read",
+            "Holding a live call to read written updates aloud",
+            "Ignoring updates completely and causing communication gaps"
+          ],
+          "color": "mauve"
+        },
+        {
+          "icon": "Compass",
+          "title": "Project Planning",
+          "subtitle": "Milestones & Sizing",
+          "description": "Breaking down epics into clean milestones and sizing tasks collectively using lean guidelines.",
+          "details": "Lean project planning involves continuous decomposition: breaking big requirements into smaller, independent user stories. Estimations (e.g. man-days or story points) are estimated collectively by the builders themselves to prevent unrealistic pressure.",
+          "analogy": "Like planning a road trip — you decide the major stops (milestones) and estimate how long each leg takes as a range, rather than plotting every turn to the exact second.",
+          "primaryFocus": "Continuous decomposition and collaborative sizing",
+          "inScope": [
+            "Decomposing large requirements into single-focus stories",
+            "Collaboratively estimating tasks using ranges or points",
+            "Prototyping/spiking unknowns before final estimation"
+          ],
+          "outOfScope": [
+            "Estimating long-term tasks to the exact hour",
+            "Allowing managers to assign task estimates unilaterally",
+            "Assuming perfect delivery without factoring buffer/dependencies"
+          ],
+          "color": "yellow"
+        }
+      ]
+    }
+  },
+  {
+    "folder": "flowchart",
+    "type": "flowchart",
+    "props": {
+      "title": "The Lean Project Lifecycle",
+      "schema": {
+        "entities": {
+          "pm": {
+            "title": "Project Manager",
+            "desc": "Responsible for goal setting, prioritization, and removing blockers.",
+            "type": "Actor"
+          },
+          "dev": {
+            "title": "Software Engineer",
+            "desc": "Responsible for technical execution, writing code, and surfacing blockers.",
+            "type": "Actor"
+          },
+          "backlog": {
+            "title": "Task Backlog",
+            "desc": "The single source of truth for prioritized feature requests and bug fixes.",
+            "type": "Aggregate"
+          },
+          "slack_channel": {
+            "title": "Slack Workspace",
+            "desc": "Team communication tool for sharing async updates and huddles.",
+            "type": "External API"
+          },
+          "dev_workspace": {
+            "title": "Developer Workspace",
+            "desc": "IDE and local build environment for executing code changes.",
+            "type": "Aggregate"
+          },
+          "standup_tool": {
+            "title": "Standup Board",
+            "desc": "Team standup and blocker tracking system.",
+            "type": "Aggregate"
+          },
+          "issue_tracker": {
+            "title": "Issue Tracker",
+            "desc": "Project management system for tracking and resolving blockers.",
+            "type": "Aggregate"
+          },
+          "retro_board": {
+            "title": "Retrospective Board",
+            "desc": "Feedback and action item board for cycle retrospectives.",
+            "type": "Aggregate"
+          },
+          "pol_request_feature": {
+            "title": "Align with Product Vision",
+            "desc": "Align with Product Vision",
+            "type": "Policy",
+            "root": false
+          },
+          "cmd_request_feature": {
+            "title": "Define Feature Request",
+            "desc": "Define Feature Request",
+            "type": "Command"
+          },
+          "evt_evt_request_defined": {
+            "title": "Feature Request Logged",
+            "desc": "Requirements and user stories defined.",
+            "type": "Event"
+          },
+          "pol_plan_sprint": {
+            "title": "Trigger Cycle Planning",
+            "desc": "Trigger Cycle Planning",
+            "type": "Policy",
+            "root": false
+          },
+          "cmd_plan_sprint": {
+            "title": "Plan Sprint Tasks",
+            "desc": "Plan Sprint Tasks",
+            "type": "Command"
+          },
+          "pm2": {
+            "title": "Project Manager",
+            "desc": "Responsible for goal setting, prioritization, and removing blockers.",
+            "type": "Actor"
+          },
+          "backlog2": {
+            "title": "Task Backlog",
+            "desc": "The single source of truth for prioritized feature requests and bug fixes.",
+            "type": "Aggregate"
+          },
+          "evt_evt_sprint_planned": {
+            "title": "Sprint Backlog Ready",
+            "desc": "Tasks committed and assigned for the cycle.",
+            "type": "Event"
+          },
+          "pol_daily_execution": {
+            "title": "Trigger Daily Execution",
+            "desc": "Trigger Daily Execution",
+            "type": "Policy",
+            "root": false
+          },
+          "cmd_daily_execution": {
+            "title": "Deliver Code Changes",
+            "desc": "Deliver Code Changes",
+            "type": "Command"
+          },
+          "evt_evt_work_in_progress": {
+            "title": "Work In Progress",
+            "desc": "Code being written, tests running.",
+            "type": "Event"
+          },
+          "pol_branch_no_blocker": {
+            "title": "On Daily Sync",
+            "desc": "On Daily Sync",
+            "type": "Policy"
+          },
+          "cmd_branch_no_blocker": {
+            "title": "Provide Async Update",
+            "desc": "Provide Async Update",
+            "type": "Command"
+          },
+          "evt_evt_async_updated": {
+            "title": "Async Update Logged",
+            "desc": "Focus maintained, status updated.",
+            "type": "Event"
+          },
+          "pol_branch_blocked": {
+            "title": "On Blocker Encountered",
+            "desc": "On Blocker Encountered",
+            "type": "Policy"
+          },
+          "cmd_branch_blocked": {
+            "title": "Raise Blocker in Standup",
+            "desc": "Raise Blocker in Standup",
+            "type": "Command"
+          },
+          "evt_evt_blocker_raised": {
+            "title": "Blocker Raised",
+            "desc": "Dependency, bug, or clarity issue flagged.",
+            "type": "Event"
+          },
+          "pol_resolve_blocker": {
+            "title": "Trigger Blocker Resolution",
+            "desc": "Trigger Blocker Resolution",
+            "type": "Policy",
+            "root": false
+          },
+          "cmd_resolve_blocker": {
+            "title": "Unblock Team Member",
+            "desc": "Unblock Team Member",
+            "type": "Command"
+          },
+          "pm3": {
+            "title": "Project Manager",
+            "desc": "Responsible for goal setting, prioritization, and removing blockers.",
+            "type": "Actor"
+          },
+          "evt_evt_blocker_resolved": {
+            "title": "Blocker Resolved",
+            "desc": "Solution provided, work can resume.",
+            "type": "Event"
+          },
+          "pol_review_cycle": {
+            "title": "On Cycle End",
+            "desc": "On Cycle End",
+            "type": "Policy",
+            "root": false
+          },
+          "cmd_review_cycle": {
+            "title": "Conduct Retrospective",
+            "desc": "Conduct Retrospective",
+            "type": "Command"
+          },
+          "dev2": {
+            "title": "Software Engineer",
+            "desc": "Responsible for technical execution, writing code, and surfacing blockers.",
+            "type": "Actor"
+          },
+          "evt_evt_retro_completed": {
+            "title": "Retrospective Logged",
+            "desc": "Action items captured for continuous improvement.",
+            "type": "Event"
+          }
+        },
+        "relations": [
+          {
+            "id": "r1",
+            "from": "pm",
+            "to": "pol_request_feature",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r2",
+            "from": "pol_request_feature",
+            "to": "cmd_request_feature",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r3",
+            "from": "cmd_request_feature",
+            "to": "backlog",
+            "handledBy": true,
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r4",
+            "from": "backlog",
+            "to": "evt_evt_request_defined",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r5",
+            "from": "evt_evt_request_defined",
+            "to": "pol_plan_sprint",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r6",
+            "from": "pm2",
+            "to": "pol_plan_sprint",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r7",
+            "from": "pol_plan_sprint",
+            "to": "cmd_plan_sprint",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r8",
+            "from": "cmd_plan_sprint",
+            "to": "backlog2",
+            "handledBy": true,
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r9",
+            "from": "backlog2",
+            "to": "evt_evt_sprint_planned",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r10",
+            "from": "evt_evt_sprint_planned",
+            "to": "pol_daily_execution",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r11",
+            "from": "dev",
+            "to": "pol_daily_execution",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r12",
+            "from": "pol_daily_execution",
+            "to": "cmd_daily_execution",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r13",
+            "from": "cmd_daily_execution",
+            "to": "dev_workspace",
+            "handledBy": true,
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r14",
+            "from": "dev_workspace",
+            "to": "evt_evt_work_in_progress",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r15",
+            "from": "evt_evt_work_in_progress",
+            "to": "pol_branch_no_blocker",
+            "label": "No Blockers",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r16",
+            "from": "pol_branch_no_blocker",
+            "to": "cmd_branch_no_blocker",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r17",
+            "from": "cmd_branch_no_blocker",
+            "to": "slack_channel",
+            "handledBy": true,
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r18",
+            "from": "slack_channel",
+            "to": "evt_evt_async_updated",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r19",
+            "from": "evt_evt_async_updated",
+            "to": "pol_review_cycle",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r20",
+            "from": "evt_evt_work_in_progress",
+            "to": "pol_branch_blocked",
+            "label": "Blocked Work",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r21",
+            "from": "pol_branch_blocked",
+            "to": "cmd_branch_blocked",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r22",
+            "from": "cmd_branch_blocked",
+            "to": "standup_tool",
+            "handledBy": true,
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r23",
+            "from": "standup_tool",
+            "to": "evt_evt_blocker_raised",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r24",
+            "from": "evt_evt_blocker_raised",
+            "to": "pol_resolve_blocker",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r25",
+            "from": "pm3",
+            "to": "pol_resolve_blocker",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r26",
+            "from": "pol_resolve_blocker",
+            "to": "cmd_resolve_blocker",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r27",
+            "from": "cmd_resolve_blocker",
+            "to": "issue_tracker",
+            "handledBy": true,
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r28",
+            "from": "issue_tracker",
+            "to": "evt_evt_blocker_resolved",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r29",
+            "from": "evt_evt_blocker_resolved",
+            "to": "pol_daily_execution",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r30",
+            "from": "dev2",
+            "to": "pol_review_cycle",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r31",
+            "from": "pol_review_cycle",
+            "to": "cmd_review_cycle",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r32",
+            "from": "cmd_review_cycle",
+            "to": "retro_board",
+            "handledBy": true,
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r33",
+            "from": "retro_board",
+            "to": "evt_evt_retro_completed",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          }
+        ],
+        "journeys": [
+          {
+            "id": "happy-path",
+            "label": "Happy Path (Lean & Async)",
+            "description": "Features delivered smoothly using written updates and zero focus disruption.",
+            "steps": [
+              {
+                "nodeIds": [
+                  "pm",
+                  "pol_request_feature",
+                  "cmd_request_feature",
+                  "backlog",
+                  "evt_evt_request_defined"
+                ],
+                "title": "Log Feature",
+                "reason": "Project Manager defines and documents the feature request in the backlog.",
+                "processGroup": "planning"
+              },
+              {
+                "nodeIds": [
+                  "pm2",
+                  "pol_plan_sprint",
+                  "cmd_plan_sprint",
+                  "backlog2",
+                  "evt_evt_sprint_planned"
+                ],
+                "title": "Commit to Sprint",
+                "reason": "The team defines goals and commits tasks from backlog to the sprint.",
+                "processGroup": "planning"
+              },
+              {
+                "nodeIds": [
+                  "dev",
+                  "pol_daily_execution",
+                  "cmd_daily_execution",
+                  "dev_workspace",
+                  "evt_evt_work_in_progress"
+                ],
+                "title": "Coding and Testing",
+                "reason": "Engineers write code and run test suites locally and in CI.",
+                "processGroup": "execution"
+              },
+              {
+                "nodeIds": [
+                  "pol_branch_no_blocker",
+                  "cmd_branch_no_blocker",
+                  "slack_channel",
+                  "evt_evt_async_updated"
+                ],
+                "title": "Provide Async Update",
+                "reason": "Because there are no blockers, engineers submit status updates via Slack, protecting maker time.",
+                "processGroup": "execution"
+              },
+              {
+                "nodeIds": [
+                  "dev2",
+                  "pol_review_cycle",
+                  "cmd_review_cycle",
+                  "retro_board",
+                  "evt_evt_retro_completed"
+                ],
+                "title": "Conduct Retrospective",
+                "reason": "At the end of the sprint, the team reflects and logs improvements.",
+                "processGroup": "evaluation"
+              }
+            ]
+          },
+          {
+            "id": "blocked-path",
+            "label": "Blocked Path (Fast Resolution)",
+            "description": "Blocker encountered, raised in sync, and unblocked immediately by the PM.",
+            "steps": [
+              {
+                "nodeIds": [
+                  "dev",
+                  "pol_daily_execution",
+                  "cmd_daily_execution",
+                  "dev_workspace",
+                  "evt_evt_work_in_progress"
+                ],
+                "title": "Coding and Testing",
+                "reason": "Engineers write code but hit an unexpected dependency blocker.",
+                "processGroup": "execution"
+              },
+              {
+                "nodeIds": [
+                  "pol_branch_blocked",
+                  "cmd_branch_blocked",
+                  "standup_tool",
+                  "evt_evt_blocker_raised"
+                ],
+                "title": "Raise Blocker",
+                "reason": "The engineer flags the blocker immediately in the standup channel.",
+                "processGroup": "execution"
+              },
+              {
+                "nodeIds": [
+                  "pm3",
+                  "pol_resolve_blocker",
+                  "cmd_resolve_blocker",
+                  "issue_tracker",
+                  "evt_evt_blocker_resolved"
+                ],
+                "title": "Unblock Developer",
+                "reason": "The Project Manager coordinates with the external team to resolve the dependency.",
+                "processGroup": "execution"
+              },
+              {
+                "nodeIds": [
+                  "dev",
+                  "pol_daily_execution",
+                  "cmd_daily_execution",
+                  "dev_workspace",
+                  "evt_evt_work_in_progress"
+                ],
+                "title": "Resume Execution",
+                "reason": "Once unblocked, the engineer resumes code development.",
+                "processGroup": "execution"
+              }
+            ]
+          }
+        ],
+        "rawSteps": [
+          {
+            "type": "linear",
+            "id": "request_feature",
+            "initiatedBy": {
+              "_tag": "ref",
+              "id": "pm"
+            },
+            "policy": "Align with Product Vision",
+            "command": "Define Feature Request",
+            "handledBy": {
+              "_tag": "ref",
+              "id": "backlog"
+            },
+            "resultEvents": [
+              {
+                "id": "evt_request_defined",
+                "title": "Feature Request Logged",
+                "desc": "Requirements and user stories defined."
+              }
+            ],
+            "continuesAs": "plan_sprint"
+          },
+          {
+            "type": "linear",
+            "id": "plan_sprint",
+            "initiatedBy": {
+              "_tag": "ref",
+              "id": "pm"
+            },
+            "policy": "Trigger Cycle Planning",
+            "command": "Plan Sprint Tasks",
+            "handledBy": {
+              "_tag": "ref",
+              "id": "backlog"
+            },
+            "resultEvents": [
+              {
+                "id": "evt_sprint_planned",
+                "title": "Sprint Backlog Ready",
+                "desc": "Tasks committed and assigned for the cycle."
+              }
+            ],
+            "continuesAs": "daily_execution"
+          },
+          {
+            "type": "linear",
+            "id": "daily_execution",
+            "initiatedBy": {
+              "_tag": "ref",
+              "id": "dev"
+            },
+            "policy": "Trigger Daily Execution",
+            "command": "Deliver Code Changes",
+            "handledBy": {
+              "_tag": "ref",
+              "id": "dev_workspace"
+            },
+            "resultEvents": [
+              {
+                "id": "evt_work_in_progress",
+                "title": "Work In Progress",
+                "desc": "Code being written, tests running."
+              }
+            ],
+            "continuesAs": "sync_branch"
+          },
+          {
+            "type": "branch",
+            "id": "sync_branch",
+            "event": "evt_work_in_progress",
+            "branches": [
+              {
+                "id": "branch_no_blocker",
+                "label": "No Blockers",
+                "policy": "On Daily Sync",
+                "command": "Provide Async Update",
+                "handledBy": {
+                  "_tag": "ref",
+                  "id": "slack_channel"
+                },
+                "resultEvents": [
+                  {
+                    "id": "evt_async_updated",
+                    "title": "Async Update Logged",
+                    "desc": "Focus maintained, status updated."
+                  }
+                ],
+                "continuesAs": "review_cycle"
+              },
+              {
+                "id": "branch_blocked",
+                "label": "Blocked Work",
+                "policy": "On Blocker Encountered",
+                "command": "Raise Blocker in Standup",
+                "handledBy": {
+                  "_tag": "ref",
+                  "id": "standup_tool"
+                },
+                "resultEvents": [
+                  {
+                    "id": "evt_blocker_raised",
+                    "title": "Blocker Raised",
+                    "desc": "Dependency, bug, or clarity issue flagged."
+                  }
+                ],
+                "continuesAs": "resolve_blocker"
+              }
+            ]
+          },
+          {
+            "type": "linear",
+            "id": "resolve_blocker",
+            "initiatedBy": {
+              "_tag": "ref",
+              "id": "pm"
+            },
+            "policy": "Trigger Blocker Resolution",
+            "command": "Unblock Team Member",
+            "handledBy": {
+              "_tag": "ref",
+              "id": "issue_tracker"
+            },
+            "resultEvents": [
+              {
+                "id": "evt_blocker_resolved",
+                "title": "Blocker Resolved",
+                "desc": "Solution provided, work can resume."
+              }
+            ],
+            "continuesAs": "daily_execution"
+          },
+          {
+            "type": "linear",
+            "id": "review_cycle",
+            "initiatedBy": {
+              "_tag": "ref",
+              "id": "dev"
+            },
+            "policy": "On Cycle End",
+            "command": "Conduct Retrospective",
+            "handledBy": {
+              "_tag": "ref",
+              "id": "retro_board"
+            },
+            "resultEvents": [
+              {
+                "id": "evt_retro_completed",
+                "title": "Retrospective Logged",
+                "desc": "Action items captured for continuous improvement."
+              }
+            ]
+          }
+        ]
+      }
+    }
+  },
+  {
+    "folder": "quiz",
+    "type": "quiz",
+    "props": {
+      "title": "Knowledge Check",
+      "questions": [
+        {
+          "id": "q_parkinsons_law",
+          "question": "What is Parkinson's Law, and why does it matter for meetings?",
+          "choices": [
+            {
+              "id": "a",
+              "text": "Work expands to fill the time available for its completion.",
+              "correct": true,
+              "explanation": "Exactly! If you schedule a 60-minute meeting, the discussion will fill all 60 minutes, even if the actual problem could have been solved in 15 minutes."
+            },
+            {
+              "id": "b",
+              "text": "Every project requirement will double in size once code starts being written.",
+              "correct": false,
+              "explanation": "This describes Scope Creep or planning optimism, not Parkinson's Law."
+            },
+            {
+              "id": "c",
+              "text": "Meetings double in attendance size when project deadlines are missed.",
+              "correct": false,
+              "explanation": "While common in high-overhead projects, this is not the definition of Parkinson's Law."
+            }
+          ],
+          "hint": "Think about how meetings stretch out to fit calendar blocks."
+        },
+        {
+          "id": "q_async_first",
+          "question": "When is an asynchronous design document (RFC) better than a synchronous meeting?",
+          "choices": [
+            {
+              "id": "a",
+              "text": "When the problem is well-defined and we need technical feedback from multiple engineers.",
+              "correct": true,
+              "explanation": "Yes! Writing down solutions and soliciting comments asynchronously protects engineering focus and creates a permanent record of decisions."
+            },
+            {
+              "id": "b",
+              "text": "When there is a critical database incident and the site is down.",
+              "correct": false,
+              "explanation": "An active incident requires immediate high-bandwidth real-time syncs, not waiting for async comments."
+            },
+            {
+              "id": "c",
+              "text": "When team members have low alignment and conflict needs to be resolved.",
+              "correct": false,
+              "explanation": "Conflicting viewpoints are best aligned in a brief, focused live discussion to avoid long, exhausting text arguments."
+            }
+          ],
+          "hint": "Think about protecting maker focus time vs resolving urgent issues."
+        },
+        {
+          "id": "q_standup_rule",
+          "question": "What is the primary rule of an effective Daily Standup (Sync) meeting?",
+          "choices": [
+            {
+              "id": "a",
+              "text": "Focus strictly on identifying blockers and alignment, keeping the duration under 15 minutes.",
+              "correct": true,
+              "explanation": "Correct! The standup is a quick checkpoint, not a technical deep-dive. Detail troubleshooting should be pushed to separate sub-group discussions."
+            },
+            {
+              "id": "b",
+              "text": "Every developer must walk through their code changes line-by-line.",
+              "correct": false,
+              "explanation": "Doing code review in a daily sync wastes everyone else's time and disrupts the meeting's speed."
+            },
+            {
+              "id": "c",
+              "text": "Use the meeting to update task tracking software boards live.",
+              "correct": false,
+              "explanation": "Updating Jira or boards live during the call slows down momentum and is boring for the team."
+            }
+          ],
+          "hint": "The meeting should feel like a quick sports team huddle."
+        }
+      ]
+    }
+  },
+  {
+    "folder": "tradeoffs",
+    "type": "tradeoff-sandbox",
+    "props": {
+      "title": "Management & Sync Trade-offs",
+      "scenarios": [
+        {
+          "id": "communication-strategy",
+          "title": "Communication Strategy",
+          "description": "Select the primary channel for design feedback and general updates. Evaluate how choices affect velocity, alignment, overhead, and focus time.",
+          "metrics": [
+            {
+              "id": "velocity",
+              "label": "Team Velocity",
+              "baseValue": 50,
+              "min": 0,
+              "max": 100,
+              "direction": "higher"
+            },
+            {
+              "id": "overhead",
+              "label": "Process Overhead",
+              "baseValue": 40,
+              "min": 0,
+              "max": 100,
+              "direction": "lower"
+            },
+            {
+              "id": "alignment",
+              "label": "Team Alignment",
+              "baseValue": 50,
+              "min": 0,
+              "max": 100,
+              "direction": "higher"
+            },
+            {
+              "id": "maker_time",
+              "label": "Maker Focus Time",
+              "baseValue": 60,
+              "min": 0,
+              "max": 100,
+              "direction": "higher"
+            }
+          ],
+          "steps": [
+            {
+              "id": "comms_channel",
+              "title": "Primary Design Loop Channel",
+              "description": "Choose how the engineering team reviews technical proposals and updates.",
+              "recommended": "async_doc",
+              "choices": [
+                {
+                  "id": "meeting_sync",
+                  "label": "Synchronous Meetings",
+                  "description": "Schedule recurring meetings for all status updates and design discussions.",
+                  "metrics": {
+                    "velocity": -10,
+                    "overhead": 25,
+                    "alignment": 15,
+                    "maker_time": -25
+                  },
+                  "pros": [
+                    {
+                      "title": "Immediate Feedback",
+                      "description": "Questions are resolved instantly on the call."
+                    },
+                    {
+                      "title": "High Alignment",
+                      "description": "Easier to resolve heated arguments in real-time."
+                    }
+                  ],
+                  "cons": [
+                    {
+                      "title": "Context Switching",
+                      "description": "Breaks developers' coding flow repeatedly."
+                    },
+                    {
+                      "title": "Poor Record Keeping",
+                      "description": "Decisions are lost if not explicitly documented afterward."
+                    }
+                  ],
+                  "whenToUse": "Best for highly ambiguous, urgent incidents or critical cross-team alignments."
+                },
+                {
+                  "id": "async_doc",
+                  "label": "Async Design Docs (RFCs)",
+                  "description": "Write structural proposals and request comments asynchronously.",
+                  "metrics": {
+                    "velocity": 15,
+                    "overhead": -15,
+                    "alignment": 10,
+                    "maker_time": 25
+                  },
+                  "pros": [
+                    {
+                      "title": "No Interruption",
+                      "description": "Team reviews proposals on their own schedule."
+                    },
+                    {
+                      "title": "High Focus",
+                      "description": "Written feedback is usually more detailed and thoughtful."
+                    },
+                    {
+                      "title": "Permanent Archive",
+                      "description": "Comments and reasoning remain saved as future reference."
+                    }
+                  ],
+                  "cons": [
+                    {
+                      "title": "Slower Alignment Loop",
+                      "description": "It takes 24-48 hours to collect feedback."
+                    },
+                    {
+                      "title": "Passive Reading Overhead",
+                      "description": "Requires writing discipline from authors."
+                    }
+                  ],
+                  "whyThisFits": "Async design docs protect valuable focus time, improve discussion quality, and establish a permanent knowledge base."
+                },
+                {
+                  "id": "chat_threads",
+                  "label": "Slack Chat Threads",
+                  "description": "Discuss design plans inside ad-hoc Slack threads.",
+                  "metrics": {
+                    "velocity": 5,
+                    "overhead": 5,
+                    "alignment": -10,
+                    "maker_time": -10
+                  },
+                  "pros": [
+                    {
+                      "title": "Fast Discussion",
+                      "description": "Quick comments can be posted within minutes."
+                    },
+                    {
+                      "title": "Low Friction",
+                      "description": "No need to write structured documentation."
+                    }
+                  ],
+                  "cons": [
+                    {
+                      "title": "Chat Fatigue",
+                      "description": "Engineers feel pressured to monitor Slack constantly."
+                    },
+                    {
+                      "title": "Lost Context",
+                      "description": "Important decisions get buried in chat history."
+                    }
+                  ],
+                  "whenToUse": "Best for small, simple details or casual peer-to-peer alignment."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "process-overhead",
+          "title": "PM Framework Overhead",
+          "description": "Select the process framework for task management and iteration planning.",
+          "metrics": [
+            {
+              "id": "velocity",
+              "label": "Team Velocity",
+              "baseValue": 50,
+              "min": 0,
+              "max": 100,
+              "direction": "higher"
+            },
+            {
+              "id": "overhead",
+              "label": "Process Overhead",
+              "baseValue": 40,
+              "min": 0,
+              "max": 100,
+              "direction": "lower"
+            },
+            {
+              "id": "alignment",
+              "label": "Team Alignment",
+              "baseValue": 50,
+              "min": 0,
+              "max": 100,
+              "direction": "higher"
+            },
+            {
+              "id": "maker_time",
+              "label": "Maker Focus Time",
+              "baseValue": 60,
+              "min": 0,
+              "max": 100,
+              "direction": "higher"
+            }
+          ],
+          "steps": [
+            {
+              "id": "pm_framework",
+              "title": "Process Ceremony Level",
+              "description": "Determine how tasks are assigned and tracked.",
+              "recommended": "kanban_async",
+              "choices": [
+                {
+                  "id": "heavy_scrum",
+                  "label": "High-Ceremony Scrum",
+                  "description": "Strict two-week sprints with daily syncs, planning, refinement, and retrospectives.",
+                  "metrics": {
+                    "velocity": 5,
+                    "overhead": 30,
+                    "alignment": 20,
+                    "maker_time": -25
+                  },
+                  "pros": [
+                    {
+                      "title": "High Predictability",
+                      "description": "Clear sprint commitments help forecast releases."
+                    },
+                    {
+                      "title": "Structured feedback",
+                      "description": "Retrospectives and reviews occur on a set cadence."
+                    }
+                  ],
+                  "cons": [
+                    {
+                      "title": "Ceremony Bloat",
+                      "description": "Up to 10-15% of sprint capacity is consumed in meetings."
+                    },
+                    {
+                      "title": "Rigid Timelines",
+                      "description": "Changing direction mid-sprint is discouraged."
+                    }
+                  ],
+                  "whenToUse": "Necessary for large enterprises with multiple team dependencies and strict delivery schedules."
+                },
+                {
+                  "id": "kanban_async",
+                  "label": "Lean/Async Kanban",
+                  "description": "Continuous workflow tracked on a visual board, with async updates and huddles.",
+                  "metrics": {
+                    "velocity": 15,
+                    "overhead": -20,
+                    "alignment": -5,
+                    "maker_time": 25
+                  },
+                  "pros": [
+                    {
+                      "title": "Low Overhead",
+                      "description": "Minimizes meetings, maximizing developers' focus blocks."
+                    },
+                    {
+                      "title": "Dynamic Scope",
+                      "description": "Priorities can be adjusted instantly as business needs change."
+                    }
+                  ],
+                  "cons": [
+                    {
+                      "title": "Lower Predictability",
+                      "description": "Harder to forecast exact release dates far in advance."
+                    },
+                    {
+                      "title": "High Discipline Needed",
+                      "description": "Engineers must proactively update their task cards."
+                    }
+                  ],
+                  "whyThisFits": "For small to mid-sized engineering teams, a lean Kanban approach keeps meetings low, maximizing developer throughput and focus."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "estimations-and-planning",
+          "title": "Planning & Estimations",
+          "description": "Select the estimation methodology and planning horizon for your team. Analyze the impact on velocity, alignment, focus time, and overhead.",
+          "metrics": [
+            {
+              "id": "velocity",
+              "label": "Team Velocity",
+              "baseValue": 50,
+              "min": 0,
+              "max": 100,
+              "direction": "higher"
+            },
+            {
+              "id": "overhead",
+              "label": "Process Overhead",
+              "baseValue": 40,
+              "min": 0,
+              "max": 100,
+              "direction": "lower"
+            },
+            {
+              "id": "alignment",
+              "label": "Team Alignment",
+              "baseValue": 50,
+              "min": 0,
+              "max": 100,
+              "direction": "higher"
+            },
+            {
+              "id": "maker_time",
+              "label": "Maker Focus Time",
+              "baseValue": 60,
+              "min": 0,
+              "max": 100,
+              "direction": "higher"
+            }
+          ],
+          "steps": [
+            {
+              "id": "estimation_method",
+              "title": "Estimation Sizing",
+              "description": "How does the team size upcoming tasks?",
+              "recommended": "range_days",
+              "choices": [
+                {
+                  "id": "exact_mandays",
+                  "label": "Exact Man-Days",
+                  "description": "Estimate tasks to the exact day/hour count (e.g. 'This task takes exactly 4 days').",
+                  "metrics": {
+                    "velocity": -5,
+                    "overhead": 20,
+                    "alignment": 10,
+                    "maker_time": -15
+                  },
+                  "pros": [
+                    {
+                      "title": "Apparent Clarity",
+                      "description": "Stakeholders get a precise date/timeline quickly."
+                    },
+                    {
+                      "title": "Easy Budgeting",
+                      "description": "Direct mapping of time to project cost."
+                    }
+                  ],
+                  "cons": [
+                    {
+                      "title": "The Planning Fallacy",
+                      "description": "Software engineering has high unknowns; exact day counts are rarely accurate."
+                    },
+                    {
+                      "title": "Pressure & Cutting Corners",
+                      "description": "Engineers rush code or skip testing to hit arbitrary date estimates."
+                    }
+                  ],
+                  "whenToUse": "Useful when building standard, highly repetitive tasks with zero technical risk."
+                },
+                {
+                  "id": "range_days",
+                  "label": "Range-based Estimations",
+                  "description": "Estimate tasks in ranges (e.g., 2-4 days) based on technical confidence.",
+                  "metrics": {
+                    "velocity": 10,
+                    "overhead": 5,
+                    "alignment": 15,
+                    "maker_time": 15
+                  },
+                  "pros": [
+                    {
+                      "title": "Accurate Uncertainty",
+                      "description": "Ranges honestly communicate technical risk to stakeholders."
+                    },
+                    {
+                      "title": "Reduces Planning Pressure",
+                      "description": "Engineers have a buffer for testing and bug fixing."
+                    }
+                  ],
+                  "cons": [
+                    {
+                      "title": "Vague Timelines",
+                      "description": "Project roadmaps become probabilistic ranges rather than fixed lines."
+                    }
+                  ],
+                  "whyThisFits": "Range-based estimates balance stakeholder expectations with technical realities, reducing rushed delivery and protecting code quality."
+                },
+                {
+                  "id": "story_points",
+                  "label": "Relative Story Points",
+                  "description": "Size tasks relatively using Fibonacci numbers (1, 2, 3, 5, 8) representing complexity, not time.",
+                  "metrics": {
+                    "velocity": 15,
+                    "overhead": 10,
+                    "alignment": 20,
+                    "maker_time": 10
+                  },
+                  "pros": [
+                    {
+                      "title": "Focus on Complexity",
+                      "description": "Decouples planning from time constraints, focusing on effort."
+                    },
+                    {
+                      "title": "Predictable Velocity",
+                      "description": "Planning improves as team averages points completed over cycles."
+                    }
+                  ],
+                  "cons": [
+                    {
+                      "title": "Stakeholder Confusion",
+                      "description": "Requires training stakeholders to understand points instead of dates."
+                    }
+                  ],
+                  "whenToUse": "Best for mature Agile teams working in stable environments."
+                }
+              ]
+            },
+            {
+              "id": "planning_horizon",
+              "title": "Planning Horizon",
+              "description": "How far in advance are feature roadmaps locked?",
+              "recommended": "rolling_wave",
+              "choices": [
+                {
+                  "id": "gantt_upfront",
+                  "label": "Upfront Gantt Planning",
+                  "description": "Map out the entire 6-month project backlog with detailed dependencies upfront.",
+                  "metrics": {
+                    "velocity": -15,
+                    "overhead": 30,
+                    "alignment": 5,
+                    "maker_time": -20
+                  },
+                  "pros": [
+                    {
+                      "title": "Clear Roadmap",
+                      "description": "Full visibility of all planned milestones for the business."
+                    }
+                  ],
+                  "cons": [
+                    {
+                      "title": "High Planning Waste",
+                      "description": "Upfront plans degrade as requirements change, requiring heavy re-planning sessions."
+                    },
+                    {
+                      "title": "Ignores Reality",
+                      "description": "Assumes technical requirements won't change mid-project."
+                    }
+                  ],
+                  "whenToUse": "Only appropriate for physical infrastructure integrations or fixed-price contracts."
+                },
+                {
+                  "id": "rolling_wave",
+                  "label": "Rolling Wave Planning",
+                  "description": "Plan the next milestone in detail, while keeping long-term goals high-level.",
+                  "metrics": {
+                    "velocity": 10,
+                    "overhead": -10,
+                    "alignment": 15,
+                    "maker_time": 20
+                  },
+                  "pros": [
+                    {
+                      "title": "Low Overhead",
+                      "description": "Zero time spent planning details that will change anyway."
+                    },
+                    {
+                      "title": "High Adaptability",
+                      "description": "Easily pivot features based on feedback from the current cycle."
+                    }
+                  ],
+                  "cons": [
+                    {
+                      "title": "Reduced Long-Term View",
+                      "description": "Stakeholders must tolerate flexible scopes for future quarters."
+                    }
+                  ],
+                  "whyThisFits": "Rolling wave planning minimizes upfront waste, keeping plans aligned with live learnings while preserving developer focus."
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "folder": "reflection-sequence",
+    "type": "reflection-sequence",
+    "props": {
+      "title": "Sprint Development Cycle Sequence",
+      "challenges": [
+        {
+          "prompt": "Order the stages of a standard IT feature development sprint loop (Part 1):",
+          "items": [
+            {
+              "id": "define_requirements",
+              "text": "Define Requirements & PRD"
+            },
+            {
+              "id": "sprint_planning",
+              "text": "Sprint Planning"
+            },
+            {
+              "id": "development",
+              "text": "Development & Code Review"
+            },
+            {
+              "id": "qa_verification",
+              "text": "QA Verification"
+            },
+            {
+              "id": "production_release",
+              "text": "Production Release"
+            }
+          ],
+          "solution": [
+            "define_requirements",
+            "sprint_planning",
+            "development",
+            "qa_verification",
+            "production_release"
+          ]
+        },
+        {
+          "prompt": "Order the steps of a typical Sprint Retrospective meeting agenda (Part 2):",
+          "items": [
+            {
+              "id": "retro_warmup",
+              "text": "Warm Up & Set Stage"
+            },
+            {
+              "id": "retro_gather",
+              "text": "Gather Data (What went well / didn't)"
+            },
+            {
+              "id": "retro_insights",
+              "text": "Generate Insights (Analyze why)"
+            },
+            {
+              "id": "retro_actions",
+              "text": "Decide Actions (Define tickets)"
+            },
+            {
+              "id": "retro_close",
+              "text": "Close Retrospective"
+            }
+          ],
+          "solution": [
+            "retro_warmup",
+            "retro_gather",
+            "retro_insights",
+            "retro_actions",
+            "retro_close"
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "folder": "formula-sandbox",
+    "type": "formula-sandbox",
+    "props": {
+      "title": "Synchronous Meeting Cost & Focus Loss Simulator",
+      "variables": [
+        {
+          "id": "attendees_count",
+          "label": "Meeting Attendees (Engineers)",
+          "min": 2,
+          "max": 15,
+          "step": 1,
+          "defaultValue": 6
+        },
+        {
+          "id": "duration_minutes",
+          "label": "Meeting Duration (minutes)",
+          "min": 15,
+          "max": 120,
+          "step": 15,
+          "defaultValue": 45
+        },
+        {
+          "id": "average_hourly_rate",
+          "label": "Average Engineer Hourly Rate ($)",
+          "min": 50,
+          "max": 150,
+          "step": 10,
+          "defaultValue": 80
+        }
+      ],
+      "metrics": [
+        {
+          "id": "recall",
+          "label": "Direct Meeting Cost ($)",
+          "formula": "Math.round((attendees_count * duration_minutes * average_hourly_rate) / 60)",
+          "description": "The direct financial expense spent on wages for engineers during the duration of the sync.",
+          "analogy": "Burning bills. The more cooks in the kitchen for a simple dinner, the more hourly wages you pay.",
+          "inScope": [
+            "Attendee base wages"
+          ],
+          "outOfScope": [
+            "Meeting software subscriptions"
+          ]
+        },
+        {
+          "id": "latency",
+          "label": "Maker Focus Time Lost (hrs)",
+          "formula": "Math.round((attendees_count * (duration_minutes + 30)) / 60)",
+          "description": "The total productivity hours lost, factoring in a 30-minute recovery/context-switching cost per attendee.",
+          "analogy": "Stopping the assembly line. Every time a worker pauses to look at a calendar invite, it takes time to get back in the zone.",
+          "inScope": [
+            "Context switching recovery penalty",
+            "Meeting runtime duration"
+          ],
+          "outOfScope": [
+            "Normal break time intervals"
+          ]
+        },
+        {
+          "id": "cost",
+          "label": "Company Overhead Index",
+          "formula": "Math.round(((attendees_count * duration_minutes * average_hourly_rate) / 60) * 1.6)",
+          "description": "Adjusted cost index calculating long-term development friction and delay penalties.",
+          "analogy": "Interest rates. Delaying code features to discuss them adds interest onto target shipping timelines.",
+          "inScope": [
+            "Workflow block cost factors"
+          ],
+          "outOfScope": [
+            "Product pricing dynamics"
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "folder": "reflection-template",
+    "type": "reflection-template",
+    "props": {
+      "title": "Meeting Efficiency Evaluation",
+      "challenges": [
+        {
+          "prompt": "Complete the statement explaining sync meeting overhead constraints (Part 1):",
+          "template": "Inviting more engineers to a synchronous meeting directly {zone-1} the direct meeting cost. Furthermore, every engineer attending suffers a context-switching penalty that {zone-2} maker focus time.",
+          "chips": [
+            {
+              "id": "chip-increases",
+              "text": "increases"
+            },
+            {
+              "id": "chip-decreases",
+              "text": "decreases"
+            },
+            {
+              "id": "chip-reduces",
+              "text": "reduces"
+            },
+            {
+              "id": "chip-extends",
+              "text": "extends"
+            }
+          ],
+          "solution": {
+            "zone-1": "chip-increases",
+            "zone-2": "chip-reduces"
+          },
+          "explanation": "<strong>Correct!</strong> More attendees raise salary expenses and drain maker focus hours due to task-switching overhead."
+        },
+        {
+          "prompt": "Complete the statement explaining asynchronous documentation tradeoffs (Part 2):",
+          "template": "Replacing standups with written status documents leads to {zone-1} maker focus time lost. However, asynchronous models require {zone-2} written communication clarity to prevent alignment gaps.",
+          "chips": [
+            {
+              "id": "chip-lower",
+              "text": "lower"
+            },
+            {
+              "id": "chip-higher",
+              "text": "higher"
+            },
+            {
+              "id": "chip-less",
+              "text": "less"
+            },
+            {
+              "id": "chip-greater",
+              "text": "greater"
+            }
+          ],
+          "solution": {
+            "zone-1": "chip-lower",
+            "zone-2": "chip-greater"
+          },
+          "explanation": "<strong>Correct!</strong> Async status writeups keep engineers focused, but demand higher clarity to stay aligned."
+        }
+      ]
+    }
+  },
+  {
+    "folder": "scenario-schedule",
+    "type": "scenario",
+    "props": {
+      "title": "Saving a Slipping Schedule",
+      "id": "slipping_schedule",
+      "intro": "A critical release is scheduled in 2 weeks, but progress has slowed down. Features are piling up, and developers seem blocked. As the team lead, how do you handle this?",
+      "nodes": {
+        "start": {
+          "id": "start",
+          "prompt": "What is your first move to identify the issue?",
+          "choices": [
+            {
+              "id": "status_meeting",
+              "text": "Schedule a 1-hour status meeting with all 10 developers.",
+              "next": "outcome_status_meeting"
+            },
+            {
+              "id": "async_audit",
+              "text": "Audit the board asynchronously, review PR blockers, and post a Slack thread.",
+              "next": "next_audit_step"
+            },
+            {
+              "id": "micromanage",
+              "text": "Ask for daily status emails from every engineer detailing what they did each hour.",
+              "next": "outcome_micromanage"
+            }
+          ]
+        },
+        "next_audit_step": {
+          "id": "next_audit_step",
+          "prompt": "You found that 2 backend engineers are blocked waiting for database schema approval. How do you resolve this?",
+          "choices": [
+            {
+              "id": "schema_huddle",
+              "text": "Call a focused, 15-minute huddle with the DB admin and the blocked backend engineers.",
+              "next": "outcome_focused_huddle"
+            },
+            {
+              "id": "company_meeting",
+              "text": "Add database schema review to the agenda of the next weekly team sync.",
+              "next": "outcome_weekly_sync"
+            }
+          ]
+        },
+        "outcome_status_meeting": {
+          "id": "outcome_status_meeting",
+          "outcome": {
+            "verdict": "The 1-hour meeting cost 10 engineering hours. Developers spent most of the time listening to updates irrelevant to them.",
+            "lesson": "Status meetings with large groups waste valuable coding time. Keep status updates async and meetings small.",
+            "rating": "c"
+          }
+        },
+        "outcome_micromanage": {
+          "id": "outcome_micromanage",
+          "outcome": {
+            "verdict": "Writing hourly reports added administrative burden and destroyed developer morale. Several developers started looking for new jobs.",
+            "lesson": "Micromanagement breeds distrust and wastes time. Trust your developers and monitor work deliverables, not hours.",
+            "rating": "c"
+          }
+        },
+        "outcome_focused_huddle": {
+          "id": "outcome_focused_huddle",
+          "outcome": {
+            "verdict": "The 15-minute focused huddle successfully unblocked the backend team. The database schema was approved immediately, and the feature was delivered on time.",
+            "lesson": "Targeted huddles with only the necessary people resolve blocks quickly without disrupting the wider team.",
+            "rating": "a"
+          }
+        },
+        "outcome_weekly_sync": {
+          "id": "outcome_weekly_sync",
+          "outcome": {
+            "verdict": "Waiting for the weekly sync delayed the backend engineers by 4 days, causing the release to slip.",
+            "lesson": "Blockers should be resolved immediately. Delaying resolution to fit standard meeting schedules hurts momentum.",
+            "rating": "b-minus"
+          }
+        }
+      },
+      "startNode": "start"
+    }
+  },
+  {
+    "folder": "scenario-meeting-bloat",
+    "type": "scenario",
+    "props": {
+      "title": "Taming Meeting Bloat",
+      "id": "meeting_bloat",
+      "intro": "A developer on your team, Alex, is highly talented but schedules a 30-minute meeting for every minor technical question, interrupting multiple senior developers. How do you handle this?",
+      "nodes": {
+        "start": {
+          "id": "start",
+          "prompt": "What is your initial response?",
+          "choices": [
+            {
+              "id": "join_meetings",
+              "text": "Attend all of Alex's meetings to monitor and guide the discussion.",
+              "next": "outcome_join_meetings"
+            },
+            {
+              "id": "set_guidelines",
+              "text": "Set a clear policy on Slack: questions must be written in public channels first before scheduling a meeting.",
+              "next": "next_guideline_step"
+            },
+            {
+              "id": "block_meetings",
+              "text": "Tell Alex that developers are banned from scheduling meetings without your approval.",
+              "next": "outcome_block_meetings"
+            }
+          ]
+        },
+        "next_guideline_step": {
+          "id": "next_guideline_step",
+          "prompt": "Alex posts a complex question on Slack but doesn't get a reply for 2 hours. He is getting restless. What do you do?",
+          "choices": [
+            {
+              "id": "async_reminder",
+              "text": "Gently ping the team in public to reply, or answer it yourself in text.",
+              "next": "outcome_async_unblocked"
+            },
+            {
+              "id": "quick_huddle",
+              "text": "Launch a 5-minute huddle on Slack with just Alex to resolve it directly.",
+              "next": "outcome_huddle_success"
+            }
+          ]
+        },
+        "outcome_join_meetings": {
+          "id": "outcome_join_meetings",
+          "outcome": {
+            "verdict": "You spent half your day in micro-meetings. Senior developers are still being disrupted, and you have no time left for project management.",
+            "lesson": "Attending meetings doesn't solve the root cause. You must establish communication guidelines to protect team time.",
+            "rating": "c"
+          }
+        },
+        "outcome_block_meetings": {
+          "id": "outcome_block_meetings",
+          "outcome": {
+            "verdict": "Alex felt micromanaged and stopped asking questions. He built the wrong database design, which required 3 days of refactoring later.",
+            "lesson": "Banning meetings entirely creates communication silos and high rework costs. Transition them to async or micro-sync huddles instead.",
+            "rating": "c"
+          }
+        },
+        "outcome_async_unblocked": {
+          "id": "outcome_async_unblocked",
+          "outcome": {
+            "verdict": "Alex was unblocked asynchronously. The entire solution was documented in public Slack for others to read, and no meetings were held.",
+            "lesson": "Public async channels build a searchable knowledge base and prevent redundant meetings.",
+            "rating": "a"
+          }
+        },
+        "outcome_huddle_success": {
+          "id": "outcome_huddle_success",
+          "outcome": {
+            "verdict": "The 5-minute huddle quickly unblocked Alex. The discussion was timeboxed, only involved the necessary person, and saved hours of focus time.",
+            "lesson": "Focused huddles are an excellent tool to resolve complex technical blockers quickly without scheduling a calendar invite.",
+            "rating": "a"
+          }
+        }
+      },
+      "startNode": "start"
+    }
+  },
+  {
+    "folder": "decision-tree-channel",
+    "type": "decision-tree",
+    "props": {
+      "title": "Communication Channel Advisor",
+      "id": "comm_channel_advisor",
+      "root": "issue_nature",
+      "nodes": {
+        "issue_nature": {
+          "id": "issue_nature",
+          "prompt": "What is the primary goal of this communication?",
+          "choices": [
+            {
+              "id": "status_sharing",
+              "text": "Share progress updates or report status",
+              "next": "leaf_slack_update",
+              "rationale": "Status updates rarely benefit from real-time discussion."
+            },
+            {
+              "id": "problem_solving",
+              "text": "Solve a complex technical problem or brainstorm",
+              "next": "brain_complexity",
+              "rationale": "Solving complex issues often requires interactive collaboration.",
+              "recommended": true
+            },
+            {
+              "id": "decision_making",
+              "text": "Make a key decision (e.g. architecture design)",
+              "next": "decision_scope",
+              "rationale": "Decisions need documentation but might benefit from discussion first."
+            }
+          ]
+        },
+        "brain_complexity": {
+          "id": "brain_complexity",
+          "prompt": "How well-defined is the problem?",
+          "choices": [
+            {
+              "id": "clear_problem",
+              "text": "We know the problem, we need feedback on solutions",
+              "next": "leaf_async_rfc",
+              "rationale": "Proposals can be reviewed asynchronously to protect focus."
+            },
+            {
+              "id": "ambiguous_problem",
+              "text": "We don't know the problem or have zero alignment",
+              "next": "leaf_focused_huddle",
+              "rationale": "Ambiguous situations benefit from high-bandwidth syncs.",
+              "recommended": true
+            }
+          ]
+        },
+        "decision_scope": {
+          "id": "decision_scope",
+          "prompt": "Who does the decision affect?",
+          "choices": [
+            {
+              "id": "small_scope",
+              "text": "Only 2 or 3 team members",
+              "next": "leaf_small_chat",
+              "rationale": "Small groups can align quickly in chat or a 5-min call."
+            },
+            {
+              "id": "large_scope",
+              "text": "The entire team or multiple teams",
+              "next": "leaf_async_proposal",
+              "rationale": "Large decisions must be documented and reviewed asynchronously.",
+              "recommended": true
+            }
+          ]
+        },
+        "leaf_slack_update": {
+          "id": "leaf_slack_update",
+          "leaf": {
+            "recommendation": "Write an Async Slack or Jira update.",
+            "explanation": "Do NOT schedule a meeting. Write a clear, bulleted summary of progress, next steps, and blockers. Post it where the team can read it on their own time.",
+            "tradeoffs": [
+              "Saves hours of developer focus time",
+              "Requires team discipline to read and update",
+              "No meeting overhead"
+            ]
+          }
+        },
+        "leaf_async_rfc": {
+          "id": "leaf_async_rfc",
+          "leaf": {
+            "recommendation": "Write a Design Doc or RFC (Request for Comments).",
+            "explanation": "Document the proposed solutions, pros, and cons. Share the document with the team and give them 24-48 hours to comment asynchronously.",
+            "tradeoffs": [
+              "Permanent record of technical decisions",
+              "Allows developers to review when not coding",
+              "May take slightly longer to finalize"
+            ]
+          }
+        },
+        "leaf_focused_huddle": {
+          "id": "leaf_focused_huddle",
+          "leaf": {
+            "recommendation": "Schedule a focused, timeboxed 15-minute huddle.",
+            "explanation": "Invite ONLY the essential people. Write a clear agenda beforehand. Start the meeting by defining the problem, brainstorm solutions, and end with assigned action items.",
+            "tradeoffs": [
+              "High bandwidth and alignment",
+              "Saves time by keeping the meeting small and brief",
+              "Interrupts engineer focus time (keep it rare)"
+            ]
+          }
+        },
+        "leaf_small_chat": {
+          "id": "leaf_small_chat",
+          "leaf": {
+            "recommendation": "Resolve in a Slack thread or a quick huddle.",
+            "explanation": "Don't send a calendar invite. Discuss in a group chat thread. If it gets complicated, launch a quick 5-minute huddle immediately to resolve it.",
+            "tradeoffs": [
+              "Fast and low friction",
+              "Decisions should still be documented briefly",
+              "Does not clutter calendars"
+            ]
+          }
+        },
+        "leaf_async_proposal": {
+          "id": "leaf_async_proposal",
+          "leaf": {
+            "recommendation": "Create an RFC document first, followed by a short sync if needed.",
+            "explanation": "Write the proposal first so everyone can read the context. After everyone has commented on the doc, hold a brief meeting only to resolve final disagreements, not to present the proposal.",
+            "tradeoffs": [
+              "Ensures everyone comes prepared",
+              "Meetings are much shorter and highly focused",
+              "Requires upfront effort to write the document"
+            ]
+          }
+        }
+      }
+    }
+  },
+  {
+    "folder": "decision-tree-estimation",
+    "type": "decision-tree",
+    "props": {
+      "title": "Task Sizing & Estimation Advisor",
+      "id": "estimation_advisor",
+      "root": "task_nature",
+      "nodes": {
+        "task_nature": {
+          "id": "task_nature",
+          "prompt": "What kind of task are you estimating?",
+          "choices": [
+            {
+              "id": "repetitive",
+              "text": "Repetitive, standard work (e.g. adding a standard CRUD endpoint)",
+              "next": "leaf_range_days",
+              "rationale": "Familiar tasks have low risk and are easy to estimate in days."
+            },
+            {
+              "id": "novel",
+              "text": "Novel, complex work (e.g. integrating a new third-party system)",
+              "next": "novel_uncertainty",
+              "rationale": "Complex tasks have unknowns that make day-based estimates highly inaccurate.",
+              "recommended": true
+            }
+          ]
+        },
+        "novel_uncertainty": {
+          "id": "novel_uncertainty",
+          "prompt": "How well-understood are the requirements and integration details?",
+          "choices": [
+            {
+              "id": "well_understood",
+              "text": "We know what to do, but it requires substantial architectural effort",
+              "next": "leaf_story_points",
+              "rationale": "Relative sizing (story points) helps compare effort without locking dates.",
+              "recommended": true
+            },
+            {
+              "id": "high_unknowns",
+              "text": "We have high uncertainty and don't know the API capabilities",
+              "next": "leaf_spike_task",
+              "rationale": "Do not estimate tasks with high unknowns. Run a spike first."
+            }
+          ]
+        },
+        "leaf_range_days": {
+          "id": "leaf_range_days",
+          "leaf": {
+            "recommendation": "Use Range-based Man-Days (e.g., 1-2 days).",
+            "explanation": "Since the task is standard, a range of man-days is simple to communicate and carries low risk.",
+            "tradeoffs": [
+              "Easy for stakeholders to understand",
+              "Protects team if minor bugs occur"
+            ]
+          }
+        },
+        "leaf_story_points": {
+          "id": "leaf_story_points",
+          "leaf": {
+            "recommendation": "Use Relative Story Points (e.g. 5 or 8 points).",
+            "explanation": "Use relative sizing to compare the task's complexity against a reference task. This decouples effort from exact calendar days.",
+            "tradeoffs": [
+              "Avoids micro-managing deadlines",
+              "Leverages historical velocity for forecasting",
+              "May confuse stakeholders unfamiliar with Agile points"
+            ]
+          }
+        },
+        "leaf_spike_task": {
+          "id": "leaf_spike_task",
+          "leaf": {
+            "recommendation": "Schedule a timeboxed research Spike (1 man-day maximum).",
+            "explanation": "Stop trying to estimate the feature. Schedule a 1-day spike task to write a prototype, test the API, and document findings. After the spike is done, estimate the feature.",
+            "tradeoffs": [
+              "Saves hours of wrong estimations",
+              "Creates a clear path forward before committing",
+              "Adds minor planning delay"
+            ]
+          }
+        }
+      }
+    }
+  }
+]

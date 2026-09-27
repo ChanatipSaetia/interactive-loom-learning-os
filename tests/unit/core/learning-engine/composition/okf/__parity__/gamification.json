@@ -1,0 +1,3125 @@
+[
+  {
+    "folder": "intro",
+    "type": "intro",
+    "props": {
+      "title": "",
+      "estimatedTime": "8 min read",
+      "moduleCount": 11,
+      "what": {
+        "definition": "Gamification is the use of game design elements and principles — points, levels, challenges, feedback, and narrative — in non-game contexts to motivate, engage, and sustain behavior.",
+        "summary": "A guided tour of why games are engaging, the psychology of motivation behind them, and how to design reward systems that build real habits instead of hollow point-farming.",
+        "bullets": [
+          "Intrinsic vs extrinsic motivation and the overjustification trap",
+          "The Octalysis framework — 8 core drives of human motivation",
+          "Reward loop design: trigger, action, variable reward, investment"
+        ],
+        "tags": [
+          "Behavioral Design",
+          "Motivation Psychology",
+          "Reward Systems",
+          "Octalysis"
+        ]
+      },
+      "why": {
+        "summary": "Most gamification fails because teams bolt on points, badges, and leaderboards without understanding what actually motivates people. Superficial PBL decay within weeks.",
+        "impact": "Understanding core motivation drives lets designers choose mechanics that sustain engagement, build habits, and respect users instead of manipulating them."
+      },
+      "roadmap": [
+        {
+          "sectionId": "psychology",
+          "title": "The Psychology of Motivation",
+          "type": "text",
+          "description": "Intrinsic vs extrinsic motivation, Self-Determination Theory, and the overjustification effect."
+        },
+        {
+          "sectionId": "core-mechanics",
+          "title": "Core Mechanics",
+          "type": "bullets",
+          "description": "Points, badges, leaderboards, streaks, and the extended mechanic toolkit."
+        },
+        {
+          "sectionId": "octalysis",
+          "title": "Octalysis: 8 Core Drives",
+          "type": "taxonomy-browser",
+          "description": "Browse the 8 core drives of human motivation — white hat and black hat."
+        },
+        {
+          "sectionId": "reward-loop",
+          "title": "The Reward Loop",
+          "type": "flowchart",
+          "description": "Event Storming view of how a gamified system detects, rewards, and reinforces behavior."
+        },
+        {
+          "sectionId": "tradeoffs",
+          "title": "Reward Design Trade-offs",
+          "type": "tradeoff-sandbox",
+          "description": "Experiment with reward types, schedules, and social comparison in a sandbox."
+        },
+        {
+          "sectionId": "decision-tree",
+          "title": "Mechanic Fit Advisor",
+          "type": "decision-tree",
+          "description": "Answer questions to find the right mechanic for your goal."
+        },
+        {
+          "sectionId": "scenario",
+          "title": "The Gamification Dilemma",
+          "type": "scenario",
+          "description": "A branching scenario — design a reward system and see the consequences."
+        },
+        {
+          "sectionId": "reflection-sequence",
+          "title": "Hook Loop Builder",
+          "type": "reflection-sequence",
+          "description": "Reassemble the Hook Model loop in the correct order."
+        },
+        {
+          "sectionId": "flashcards",
+          "title": "Key Vocabulary",
+          "type": "flashcards",
+          "description": "Flip-card drill of essential gamification terminology."
+        },
+        {
+          "sectionId": "quiz",
+          "title": "Knowledge Check",
+          "type": "quiz",
+          "description": "Test your understanding of motivation and reward design."
+        },
+        {
+          "sectionId": "concept-map",
+          "title": "Concept Map",
+          "type": "concept-map",
+          "description": "See how gamification concepts interconnect."
+        }
+      ]
+    }
+  },
+  {
+    "folder": "psychology",
+    "type": "text",
+    "props": {
+      "title": "The Psychology of Motivation",
+      "heading": "Why people actually do things",
+      "paragraphs": [
+        "**Intrinsic motivation** is doing an activity because it is inherently interesting, satisfying, or enjoyable — the fuel behind long-term engagement. People keep learning, playing, or building not because something is promised to them, but because the activity itself is rewarding.",
+        "**Extrinsic motivation** is doing an activity for separable outcomes — rewards, grades, money, or to avoid punishment. It is powerful in the short term, which is why deadlines and bonuses work, but it is fragile long-term: the moment the outcome stops being delivered, the behavior often stops too.",
+        "**Self-Determination Theory** (Deci & Ryan) proposes that three basic psychological needs sustain intrinsic motivation: **autonomy** (choice and ownership over what you do), **competence** (feeling effective and growing at something), and **relatedness** (connection to other people). Systems that satisfy these needs keep people engaged; systems that violate them quietly switch people off.",
+        "The **overjustification effect** is the classic warning: when an external reward is attached to something people already enjoy, they start attributing their behavior to the reward instead of the activity — and intrinsic motivation drops. In the famous studies, paying children to draw made them draw less, not more, once the payments stopped.",
+        "This is why naive \"sprinkles and donuts\" gamification — slapping points, badges, and leaderboards onto anything — often decays within weeks. The external trinkets crowd out the motivation the activity already had, and when the novelty of the trinkets wears off, so does engagement.",
+        "**Variable rewards** (unpredictable outcomes) are the strongest engagement hook — the same variable-ratio reinforcement that makes slot machines compelling. Loot boxes, surprise XP bonuses, and randomized streak celebrations all exploit this: you never know what the next action will yield, so you keep acting.",
+        "**Loss aversion** is the finding that people feel the pain of losing roughly twice as strongly as the pleasure of gaining an equivalent amount. Streaks convert your progress into something you can lose, which is exactly why they work — and exactly why they can burn users out the moment a streak snaps.",
+        "**Flow** (Csikszentmihalyi) is the state of deep engagement that happens when challenge matches skill: hard enough to demand attention, easy enough to stay in control. Games keep players in flow by dynamically tuning difficulty; gamified systems should do the same rather than piling on static points that neither stretch nor support the learner.",
+        "The design implication is to start from **motivation** — which need or drive the user has — and then pick **mechanics** that express it. Points and badges are merely tools; they are meaningless unless they are connected to genuine progress, meaning, or social connection.",
+        "A practical rule of thumb: ask \"is the user here because the activity itself is rewarding, or because we told them it would be?\" If the honest answer is the second one, your system will break the day the novelty wears off.",
+        "An ethical note: motivation mechanics can also be **dark patterns** — manufactured scarcity, guilt-tripping notifications, and streak anxiety manipulate rather than motivate. Sustainable gamification respects autonomy, explains why a mechanic exists, and offers real opt-outs."
+      ]
+    }
+  },
+  {
+    "folder": "core-mechanics",
+    "type": "bullets",
+    "props": {
+      "title": "The Core Mechanics Toolkit",
+      "heading": "The building blocks — from PBL to the extended toolkit",
+      "ordered": false,
+      "items": [
+        {
+          "text": "Points & XP — a mathematical counter that makes invisible progress visible",
+          "children": [
+            {
+              "text": "Experience points (XP) level up as users complete actions"
+            },
+            {
+              "text": "Points need a clear purpose: status, exchangeable currency, or progress — never all three"
+            },
+            {
+              "text": "Warning: unmoored points decay fast and invite point-farming over real skill"
+            }
+          ]
+        },
+        {
+          "text": "Badges & Achievements — symbolic markers of accomplishment",
+          "children": [
+            {
+              "text": "Milestone badges: first lesson, 100 lessons, streak records"
+            },
+            {
+              "text": "Badges must represent genuine accomplishments the user cares about"
+            },
+            {
+              "text": "A badge for 'opened the app once' signals nothing and erodes trust"
+            }
+          ]
+        },
+        {
+          "text": "Leaderboards — social comparison and competition",
+          "children": [
+            {
+              "text": "Global top-10 boards create prestige but demotivate the bottom 99%"
+            },
+            {
+              "text": "Nearest-competitor boards (showing peers just above and below you) sustain effort"
+            },
+            {
+              "text": "Team leaderboards convert zero-sum competition into cooperation"
+            }
+          ]
+        },
+        {
+          "text": "Progression structures — levels, ranks, and tiers",
+          "children": [
+            {
+              "text": "Levels chunk a long journey into reachable milestones"
+            },
+            {
+              "text": "Rank tiers (Bronze → Silver → Gold) make status legible"
+            },
+            {
+              "text": "Progress bars toward the next level are the most underestimated motivator"
+            }
+          ]
+        },
+        {
+          "text": "Extended toolkit — streaks, quests, and beyond",
+          "children": [
+            {
+              "text": "Streaks: consecutive-day counters that weaponize loss aversion to build habits"
+            },
+            {
+              "text": "Quests & challenges: time-boxed goals with narrative framing"
+            },
+            {
+              "text": "Variable rewards: surprise bonuses and loot-style randomness for peak engagement"
+            },
+            {
+              "text": "Narrative & identity: avatars, titles, and story arcs that give the activity meaning"
+            },
+            {
+              "text": "Social layers: cooperation, recognition, and shared celebrations"
+            }
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "folder": "flashcards",
+    "type": "flashcards",
+    "props": {
+      "title": "Key Vocabulary",
+      "terms": [
+        {
+          "id": "gamification",
+          "word": "Gamification",
+          "pronunciation": "gam-ih-fih-KAY-shun",
+          "category": "concept",
+          "shortDefinition": "Using game design elements in non-game contexts to motivate behavior.",
+          "detailedDefinition": "Coined in 2002 and defined academically by Deterding et al. (2011) as 'the use of game design elements in non-game contexts'. It covers everything from points and badges to narrative, feedback loops, and social dynamics.",
+          "whyItMatters": "It is the umbrella term for the whole discipline - every mechanic and framework in this topic serves it.",
+          "dialogue": {
+            "user": "Can we just add points to our onboarding?",
+            "aiThoughts": "They're thinking about one mechanic, not a system. Points alone decay fast.",
+            "aiQuestion": "What behavior do you want to sustain, and which motivation drive would actually sustain it - before we pick any mechanic?"
+          }
+        },
+        {
+          "id": "intrinsic-motivation",
+          "word": "Intrinsic Motivation",
+          "pronunciation": "in-TRINS-ik mo-tuh-VAY-shun",
+          "category": "motivation",
+          "shortDefinition": "Doing something because it is inherently interesting or satisfying.",
+          "detailedDefinition": "The internal fuel of long-term engagement: curiosity, enjoyment, mastery. It is what makes people keep doing an activity long after external rewards stop arriving.",
+          "whyItMatters": "Intrinsic motivation is the most durable kind - but it is fragile and can be undermined by poorly designed rewards.",
+          "dialogue": {
+            "user": "Users love the sandbox mode way more than the main campaign.",
+            "aiThoughts": "Sandbox mode is open-ended - they choose, they experiment. That's intrinsic fuel.",
+            "aiQuestion": "What makes the sandbox feel free - and can the main campaign give that same sense of choice?"
+          }
+        },
+        {
+          "id": "extrinsic-motivation",
+          "word": "Extrinsic Motivation",
+          "pronunciation": "ek-STRINS-ik mo-tuh-VAY-shun",
+          "category": "motivation",
+          "shortDefinition": "Doing something for separable outcomes - rewards, grades, or avoiding punishment.",
+          "detailedDefinition": "Behavior driven by external consequences: points, money, recognition, deadlines. Powerful for short-term behavior change, but fragile - it fades when the reward stops.",
+          "whyItMatters": "Most naive gamification is pure extrinsic motivation, which is why it decays within weeks.",
+          "dialogue": {
+            "user": "Let's pay users 5 dollars per completed tutorial.",
+            "aiThoughts": "Cash rewards are the strongest extrinsic motivator - and the fastest to corrupt intrinsic interest.",
+            "aiQuestion": "Will users still complete tutorials for the joy of it once the payments stop?"
+          }
+        },
+        {
+          "id": "pbl",
+          "word": "PBL (Points, Badges, Leaderboards)",
+          "pronunciation": "P-B-L",
+          "category": "mechanism",
+          "shortDefinition": "The classic trio of gamification mechanics.",
+          "detailedDefinition": "Points track progress, badges symbolize accomplishment, leaderboards enable social comparison. Cheap to implement, but they address only one core drive - Development & Accomplishment.",
+          "whyItMatters": "PBL is the default first move of most teams and the most common cause of 'sprinkles and donuts' failure.",
+          "dialogue": {
+            "user": "Ship the PBL layer this sprint, we'll think about the rest later.",
+            "aiThoughts": "PBL is the easy 10% - but engagement will decay the moment novelty fades.",
+            "aiQuestion": "Which core drives beyond accomplishment do we actually need for this product?"
+          }
+        },
+        {
+          "id": "octalysis",
+          "word": "Octalysis",
+          "pronunciation": "ok-TAL-sis",
+          "category": "framework",
+          "shortDefinition": "Yu-kai Chou's framework of 8 core drives of human motivation.",
+          "detailedDefinition": "Maps all motivation into 8 drives: Epic Meaning, Development, Creativity, Ownership, Social Influence (white hat), and Scarcity, Unpredictability, Loss (black hat). Used by Google, LEGO, and Tesla.",
+          "whyItMatters": "It forces designers to ask 'which drive am I targeting?' before choosing a mechanic.",
+          "dialogue": {
+            "user": "Our app has badges, XP, and streaks.",
+            "aiThoughts": "That's three mechanics all hitting the same drive - Development & Accomplishment, plus a dose of Loss.",
+            "aiQuestion": "Which of the other six drives is missing, and which one would move engagement next?"
+          }
+        },
+        {
+          "id": "overjustification",
+          "word": "Overjustification Effect",
+          "pronunciation": "oh-ver-JUS-tih-fih-KAY-shun",
+          "category": "psychology",
+          "shortDefinition": "Extrinsic rewards can undermine intrinsic motivation for an activity.",
+          "detailedDefinition": "Demonstrated in the 1970s (Lepper, Greene & Nisbett): children paid to draw a picture drew less for free afterwards. The reward re-attributed their behavior from enjoyment to payment.",
+          "whyItMatters": "The single biggest trap in gamifying anything people already find enjoyable.",
+          "dialogue": {
+            "user": "Our forum members post constantly - let's reward the best posts with gift cards.",
+            "aiThoughts": "They post because the community is interesting. Gift cards shift the reason to the gift card.",
+            "aiQuestion": "What will the posting rate look like the month the gift cards run out?"
+          }
+        },
+        {
+          "id": "variable-reward",
+          "word": "Variable Reward",
+          "pronunciation": "VARY-uh-bul RIRD",
+          "category": "mechanism",
+          "shortDefinition": "An unpredictable outcome that keeps users wanting to try again.",
+          "detailedDefinition": "The variable-ratio reinforcement schedule behind slot machines, loot boxes, and surprise XP bonuses. Because the reward is uncertain, the brain stays engaged between attempts.",
+          "whyItMatters": "The strongest short-term engagement hook - and the most ethically delicate one.",
+          "dialogue": {
+            "user": "Randomize the bonus XP on every lesson.",
+            "aiThoughts": "Randomity boosts completion in the short term, but it can create a slot-machine dynamic.",
+            "aiQuestion": "Are we randomizing the reward on top of skill, or replacing skill assessment with luck?"
+          }
+        },
+        {
+          "id": "streak",
+          "word": "Streak",
+          "pronunciation": "STREEK",
+          "category": "mechanism",
+          "shortDefinition": "A consecutive-day (or consecutive-action) counter that builds habits.",
+          "detailedDefinition": "Converts progress into something you can lose, weaponizing loss aversion. Duolingo's streak is the canonical example - and its streak freezes are the escape valve that prevents all-or-nothing collapse.",
+          "whyItMatters": "The most effective habit mechanic ever shipped at scale - and the most common source of user burnout.",
+          "dialogue": {
+            "user": "Users are quitting the day their streak breaks.",
+            "aiThoughts": "Classic streak anxiety - the loss pain outweighs the gain joy, and one bad day ends weeks of progress.",
+            "aiQuestion": "What escape valve - freeze, repair card, or weekly goal - fits our users' lives?"
+          }
+        },
+        {
+          "id": "flow",
+          "word": "Flow",
+          "pronunciation": "FLOH",
+          "category": "psychology",
+          "shortDefinition": "Deep engagement when challenge matches skill (Csikszentmihalyi).",
+          "detailedDefinition": "The state of absorbed focus that happens when a task is neither too easy nor too hard. Games sustain flow by dynamically tuning difficulty; gamified systems should do the same.",
+          "whyItMatters": "No amount of points compensates for a system that pushes users out of flow.",
+          "dialogue": {
+            "user": "New users churn on day 3 - the early lessons are too hard.",
+            "aiThoughts": "Challenge exceeds skill, so they never enter flow and never get the first reward hit.",
+            "aiQuestion": "How do we tune early difficulty so the first win is near-certain, then ramp gradually?"
+          }
+        },
+        {
+          "id": "dark-pattern",
+          "word": "Dark Pattern (in gamification)",
+          "pronunciation": "DAARK PATE-rn",
+          "category": "ethics",
+          "shortDefinition": "A manipulation tactic disguised as a game mechanic.",
+          "detailedDefinition": "Manufactured scarcity, guilt-tripping notifications, fake countdowns, and punitive resets. They exploit black hat drives to extract behavior the user wouldn't choose freely.",
+          "whyItMatters": "Dark patterns win short-term metrics and destroy long-term trust - and some are now regulated.",
+          "dialogue": {
+            "user": "Let's send a sad-owl notification when users break their streak.",
+            "aiThoughts": "Guilt as a retention tactic is a textbook dark pattern - it converts anxiety into DAU.",
+            "aiQuestion": "Would the user say this nudge respects their autonomy, or pressures them?"
+          }
+        }
+      ]
+    }
+  },
+  {
+    "folder": "octalysis",
+    "type": "taxonomy-browser",
+    "props": {
+      "title": "Octalysis: The 8 Core Drives",
+      "categories": [
+        {
+          "icon": "Compass",
+          "title": "Epic Meaning & Purpose",
+          "subtitle": "Core Drive 1 — White Hat",
+          "description": "Believing you are doing something greater than yourself — a moral or higher purpose. The most powerful drive for long-term commitment.",
+          "details": "Use narrative framing that connects routine tasks to a mission: 'you are saving the environment', not 'click this button'. Works best with community and visible impact.",
+          "analogy": "Like a volunteer feeling their small task feeds a bigger cause.",
+          "primaryFocus": "Mission, cause, and moral framing",
+          "inScope": [
+            "Story arcs tied to real impact",
+            "Community missions and shared goals",
+            "Volunteering and civic engagement apps"
+          ],
+          "outOfScope": [
+            "Purely transactional point farming",
+            "Mechanics that contradict the stated mission"
+          ],
+          "color": "sky"
+        },
+        {
+          "icon": "TrendingUp",
+          "title": "Development & Accomplishment",
+          "subtitle": "Core Drive 2 — White Hat",
+          "description": "The drive to make progress, develop skills, and overcome challenges. The most common drive in gamification — it powers points, badges, levels, and progress bars.",
+          "details": "Every point and badge must map to genuine progress or mastery. Pair with clear goals and visible progress bars; static counters without meaning decay within weeks.",
+          "analogy": "Like watching a progress bar fill toward the next level.",
+          "primaryFocus": "Progress, mastery, and visible achievement",
+          "inScope": [
+            "XP and level systems",
+            "Milestone badges and achievements",
+            "Progress bars and skill trees"
+          ],
+          "outOfScope": [
+            "Badges for trivial actions",
+            "Points that can be farmed without skill"
+          ],
+          "color": "green"
+        },
+        {
+          "icon": "Lightbulb",
+          "title": "Empowerment of Creativity & Feedback",
+          "subtitle": "Core Drive 3 — White Hat",
+          "description": "The drive to experiment, make decisions, and get feedback that validates improvement. People engage when they can try new approaches and see the results.",
+          "details": "Offer choice (multiple solutions, customization) and immediate, informative feedback. The feedback loop — act, see result, adjust — is what keeps experimentation alive.",
+          "analogy": "Like a designer iterating on a mockup and watching it get better.",
+          "primaryFocus": "Choice, experimentation, and feedback loops",
+          "inScope": [
+            "Multiple solution paths",
+            "User customization and expression",
+            "Immediate results and analytics feedback"
+          ],
+          "outOfScope": [
+            "Single-rail experiences with no choice",
+            "Delayed or opaque feedback"
+          ],
+          "color": "yellow"
+        },
+        {
+          "icon": "Package",
+          "title": "Ownership & Possession",
+          "subtitle": "Core Drive 4 — White Hat",
+          "description": "The drive to own, improve, and complete something. People care more about what is 'theirs' — their inventory, their profile, their virtual home.",
+          "details": "Give users assets they accumulate and personalize, and make improvements visible. Completion drives (checklists, collection goals) tap the same ownership psychology.",
+          "analogy": "Like decorating your own room — you polish it because it is yours.",
+          "primaryFocus": "Assets, customization, and completion",
+          "inScope": [
+            "Inventory and collection systems",
+            "Profile and avatar customization",
+            "Personal dashboards and achievements"
+          ],
+          "outOfScope": [
+            "Ephemeral assets that disappear",
+            "Locked content with no path to ownership"
+          ],
+          "color": "peach"
+        },
+        {
+          "icon": "Users",
+          "title": "Social Influence & Relatedness",
+          "subtitle": "Core Drive 5 — White Hat",
+          "description": "The drive to connect with others — role models, mentorship, friendship, competition, cooperation, and shared recognition.",
+          "details": "Add a social layer: teams, peer recognition, mentors, or cooperative quests. Social mechanics multiply engagement but must be opt-in, or they become pressure.",
+          "analogy": "Like training with a friend who expects you to show up.",
+          "primaryFocus": "Connection, cooperation, and healthy competition",
+          "inScope": [
+            "Teams and cooperative quests",
+            "Peer recognition and shout-outs",
+            "Mentorship and role models"
+          ],
+          "outOfScope": [
+            "Shaming mechanics",
+            "Forced social exposure for introverts"
+          ],
+          "color": "mauve"
+        },
+        {
+          "icon": "Hourglass",
+          "title": "Scarcity & Impatience",
+          "subtitle": "Core Drive 6 — Black Hat",
+          "description": "The drive toward limited-quantity or limited-time opportunities. 'Only 3 left' and 'ends tonight' create urgency and fear of missing out.",
+          "details": "Use sparingly for genuinely limited opportunities. Fabricated scarcity is a dark pattern — it works once and destroys trust when users see through it.",
+          "analogy": "Like a flash sale that ends at midnight.",
+          "primaryFocus": "Urgency and limited opportunities",
+          "inScope": [
+            "Genuine limited-time events",
+            "Seasonal challenges",
+            "Exclusive early access"
+          ],
+          "outOfScope": [
+            "Fake countdown timers",
+            "Manufactured scarcity that resets daily"
+          ],
+          "color": "red"
+        },
+        {
+          "icon": "Dice5",
+          "title": "Unpredictability & Curiosity",
+          "subtitle": "Core Drive 7 — Black Hat",
+          "description": "The drive to satisfy curiosity and enjoy the unknown — variable rewards, surprise bonuses, and open loops that make people want to know what happens next.",
+          "details": "Randomize reward magnitude (variable-ratio reinforcement) and use narrative open loops. This is the strongest short-term hook — but overuse creates a slot-machine dynamic that users eventually resent.",
+          "analogy": "Like opening a loot crate and not knowing what is inside.",
+          "primaryFocus": "Surprise, curiosity, and variable rewards",
+          "inScope": [
+            "Randomized bonus XP",
+            "Mystery rewards and loot",
+            "Narrative open loops and teasers"
+          ],
+          "outOfScope": [
+            "Randomizing core skill progression",
+            "Loot-box mechanics in regulated contexts"
+          ],
+          "color": "rose"
+        },
+        {
+          "icon": "ShieldOff",
+          "title": "Loss & Avoidance",
+          "subtitle": "Core Drive 8 — Black Hat",
+          "description": "The drive to avoid losing what you have — loss aversion. Streaks, expiring items, and demotion threats all exploit the pain of loss, which outweighs the joy of gain.",
+          "details": "Streaks are the canonical example: powerful habit builders, but a snapped streak feels like a loss and can trigger quit. Always pair pressure with an escape valve (freezes, grace periods) or users will burn out.",
+          "analogy": "Like guarding a 30-day streak — the fear of losing it keeps you coming back.",
+          "primaryFocus": "Loss aversion, streaks, and threat of demotion",
+          "inScope": [
+            "Streaks with freeze/give-away safety valves",
+            "Progress at risk framing",
+            "Demotion warnings in leagues"
+          ],
+          "outOfScope": [
+            "Guilt-tripping notifications",
+            "Punitive resets with no recovery path"
+          ],
+          "color": "teal"
+        }
+      ]
+    }
+  },
+  {
+    "folder": "concept-map",
+    "type": "concept-map",
+    "props": {
+      "title": "Concept Map",
+      "nodes": {
+        "gamification": {
+          "id": "gamification",
+          "title": "Gamification",
+          "category": "concept"
+        },
+        "gamefulness": {
+          "id": "gamefulness",
+          "title": "Gamefulness",
+          "category": "concept"
+        },
+        "core-drives": {
+          "id": "core-drives",
+          "title": "Core Drives (Octalysis)",
+          "category": "concept"
+        },
+        "sdt": {
+          "id": "sdt",
+          "title": "Self-Determination Theory",
+          "category": "concept"
+        },
+        "autonomy": {
+          "id": "autonomy",
+          "title": "Autonomy",
+          "category": "mechanism"
+        },
+        "competence": {
+          "id": "competence",
+          "title": "Competence",
+          "category": "mechanism"
+        },
+        "relatedness": {
+          "id": "relatedness",
+          "title": "Relatedness",
+          "category": "mechanism"
+        },
+        "pbl": {
+          "id": "pbl",
+          "title": "PBL (Points, Badges, Leaderboards)",
+          "category": "mechanism"
+        },
+        "xp": {
+          "id": "xp",
+          "title": "XP / Points",
+          "category": "mechanism"
+        },
+        "badges": {
+          "id": "badges",
+          "title": "Badges",
+          "category": "mechanism"
+        },
+        "leaderboards": {
+          "id": "leaderboards",
+          "title": "Leaderboards",
+          "category": "mechanism"
+        },
+        "streaks": {
+          "id": "streaks",
+          "title": "Streaks",
+          "category": "mechanism"
+        },
+        "hook-loop": {
+          "id": "hook-loop",
+          "title": "Hook Loop",
+          "category": "pattern"
+        },
+        "variable-reward": {
+          "id": "variable-reward",
+          "title": "Variable Reward",
+          "category": "mechanism"
+        },
+        "overjustification": {
+          "id": "overjustification",
+          "title": "Overjustification Effect",
+          "category": "concept"
+        },
+        "dark-patterns": {
+          "id": "dark-patterns",
+          "title": "Dark Patterns",
+          "category": "concept"
+        }
+      },
+      "edges": [
+        {
+          "from": "gamification",
+          "to": "gamefulness",
+          "label": "produces"
+        },
+        {
+          "from": "gamification",
+          "to": "pbl",
+          "label": "uses as surface layer"
+        },
+        {
+          "from": "gamification",
+          "to": "core-drives",
+          "label": "should target"
+        },
+        {
+          "from": "core-drives",
+          "to": "sdt",
+          "label": "synthesizes"
+        },
+        {
+          "from": "sdt",
+          "to": "autonomy",
+          "label": "requires"
+        },
+        {
+          "from": "sdt",
+          "to": "competence",
+          "label": "requires"
+        },
+        {
+          "from": "sdt",
+          "to": "relatedness",
+          "label": "requires"
+        },
+        {
+          "from": "pbl",
+          "to": "xp",
+          "label": "includes"
+        },
+        {
+          "from": "pbl",
+          "to": "badges",
+          "label": "includes"
+        },
+        {
+          "from": "pbl",
+          "to": "leaderboards",
+          "label": "includes"
+        },
+        {
+          "from": "xp",
+          "to": "overjustification",
+          "label": "can trigger"
+        },
+        {
+          "from": "badges",
+          "to": "competence",
+          "label": "signals"
+        },
+        {
+          "from": "leaderboards",
+          "to": "relatedness",
+          "label": "leverages"
+        },
+        {
+          "from": "streaks",
+          "to": "dark-patterns",
+          "label": "can become"
+        },
+        {
+          "from": "hook-loop",
+          "to": "variable-reward",
+          "label": "contains"
+        },
+        {
+          "from": "variable-reward",
+          "to": "core-drives",
+          "label": "taps unpredictability"
+        },
+        {
+          "from": "dark-patterns",
+          "to": "core-drives",
+          "label": "abuses"
+        },
+        {
+          "from": "xp",
+          "to": "core-drives",
+          "label": "expresses development"
+        }
+      ]
+    }
+  },
+  {
+    "folder": "reward-loop",
+    "type": "flowchart",
+    "props": {
+      "title": "The Reward Loop",
+      "schema": {
+        "entities": {
+          "learner": {
+            "title": "Learner (Player)",
+            "desc": "Completes lessons and exercises inside the gamified app.",
+            "type": "Actor"
+          },
+          "lesson_engine": {
+            "title": "Lesson Engine",
+            "desc": "Delivers lesson content, exercises, and hints.",
+            "type": "Aggregate"
+          },
+          "grading_service": {
+            "title": "Grading Service",
+            "desc": "Evaluates answers and computes correctness and XP value.",
+            "type": "Aggregate"
+          },
+          "reward_engine": {
+            "title": "Reward Engine",
+            "desc": "Awards XP, badges, and other reward tokens.",
+            "type": "Aggregate"
+          },
+          "progress_store": {
+            "title": "Progress Store",
+            "desc": "Persists skill progress, levels, and badge thresholds.",
+            "type": "Aggregate"
+          },
+          "streak_tracker": {
+            "title": "Streak Tracker",
+            "desc": "Tracks daily goals, streak counters, and freeze tokens.",
+            "type": "Aggregate"
+          },
+          "league_service": {
+            "title": "League Service",
+            "desc": "Computes league ranks, tiers, and promotions.",
+            "type": "Aggregate"
+          },
+          "push_service": {
+            "title": "Push Notification API",
+            "desc": "External notification delivery service.",
+            "type": "External API"
+          },
+          "pol_start_lesson": {
+            "title": "On Lesson Request",
+            "desc": "On Lesson Request",
+            "type": "Policy",
+            "root": false
+          },
+          "cmd_start_lesson": {
+            "title": "Start Lesson",
+            "desc": "Start Lesson",
+            "type": "Command"
+          },
+          "evt_lesson_started": {
+            "title": "Lesson Started",
+            "desc": "Learner opens a lesson; the engine loads content.",
+            "type": "Event"
+          },
+          "pol_submit_answers": {
+            "title": "On Submission",
+            "desc": "On Submission",
+            "type": "Policy",
+            "root": false
+          },
+          "cmd_submit_answers": {
+            "title": "Submit Answers",
+            "desc": "Submit Answers",
+            "type": "Command"
+          },
+          "learner2": {
+            "title": "Learner (Player)",
+            "desc": "Completes lessons and exercises inside the gamified app.",
+            "type": "Actor"
+          },
+          "evt_exercise_graded": {
+            "title": "Exercise Graded",
+            "desc": "Answers evaluated; correctness and XP value determined.",
+            "type": "Event"
+          },
+          "pol_award_xp": {
+            "title": "If Answer Correct",
+            "desc": "If Answer Correct",
+            "type": "Policy"
+          },
+          "cmd_award_xp": {
+            "title": "Award XP",
+            "desc": "Award XP",
+            "type": "Command"
+          },
+          "evt_xp_awarded": {
+            "title": "XP Awarded",
+            "desc": "Experience points credited to the learner's account.",
+            "type": "Event"
+          },
+          "pol_show_hint": {
+            "title": "If Answer Wrong",
+            "desc": "If Answer Wrong",
+            "type": "Policy"
+          },
+          "cmd_show_hint": {
+            "title": "Show Hint",
+            "desc": "Show Hint",
+            "type": "Command"
+          },
+          "lesson_engine2": {
+            "title": "Lesson Engine",
+            "desc": "Delivers lesson content, exercises, and hints.",
+            "type": "Aggregate"
+          },
+          "evt_hint_shown": {
+            "title": "Hint Shown",
+            "desc": "Partial-credit hint displayed; learner retries the exercise.",
+            "type": "Event"
+          },
+          "pol_update_progress": {
+            "title": "On XP Awarded",
+            "desc": "On XP Awarded",
+            "type": "Policy",
+            "root": false
+          },
+          "cmd_update_progress": {
+            "title": "Update Progress",
+            "desc": "Update Progress",
+            "type": "Command"
+          },
+          "evt_progress_updated": {
+            "title": "Progress Updated",
+            "desc": "Skill progress, level thresholds, and badge thresholds recomputed.",
+            "type": "Event"
+          },
+          "pol_unlock_badge": {
+            "title": "If Badge Threshold Reached",
+            "desc": "If Badge Threshold Reached",
+            "type": "Policy"
+          },
+          "cmd_unlock_badge": {
+            "title": "Unlock Badge",
+            "desc": "Unlock Badge",
+            "type": "Command"
+          },
+          "reward_engine2": {
+            "title": "Reward Engine",
+            "desc": "Awards XP, badges, and other reward tokens.",
+            "type": "Aggregate"
+          },
+          "evt_badge_unlocked": {
+            "title": "Badge Unlocked",
+            "desc": "Achievement badge added to the learner's collection.",
+            "type": "Event"
+          },
+          "pol_continue_lesson": {
+            "title": "If No Badge Earned",
+            "desc": "If No Badge Earned",
+            "type": "Policy"
+          },
+          "cmd_continue_lesson": {
+            "title": "Continue Lesson",
+            "desc": "Continue Lesson",
+            "type": "Command"
+          },
+          "lesson_engine3": {
+            "title": "Lesson Engine",
+            "desc": "Delivers lesson content, exercises, and hints.",
+            "type": "Aggregate"
+          },
+          "evt_lesson_continued": {
+            "title": "Lesson Continued",
+            "desc": "Learner proceeds to the next exercise without a new badge.",
+            "type": "Event"
+          },
+          "pol_streak_update": {
+            "title": "On Lesson Completed",
+            "desc": "On Lesson Completed",
+            "type": "Policy",
+            "root": false
+          },
+          "cmd_streak_update": {
+            "title": "Evaluate Daily Goal",
+            "desc": "Evaluate Daily Goal",
+            "type": "Command"
+          },
+          "evt_goal_evaluated": {
+            "title": "Daily Goal Evaluated",
+            "desc": "Streak tracker checks whether today's goal was met.",
+            "type": "Event"
+          },
+          "pol_extend_streak": {
+            "title": "If Daily Goal Met",
+            "desc": "If Daily Goal Met",
+            "type": "Policy"
+          },
+          "cmd_extend_streak": {
+            "title": "Extend Streak",
+            "desc": "Extend Streak",
+            "type": "Command"
+          },
+          "streak_tracker2": {
+            "title": "Streak Tracker",
+            "desc": "Tracks daily goals, streak counters, and freeze tokens.",
+            "type": "Aggregate"
+          },
+          "evt_streak_extended": {
+            "title": "Streak Extended",
+            "desc": "Consecutive-day counter incremented; habit reinforced.",
+            "type": "Event"
+          },
+          "pol_freeze_streak": {
+            "title": "If Goal Missed",
+            "desc": "If Goal Missed",
+            "type": "Policy"
+          },
+          "cmd_freeze_streak": {
+            "title": "Apply Streak Freeze",
+            "desc": "Apply Streak Freeze",
+            "type": "Command"
+          },
+          "streak_tracker3": {
+            "title": "Streak Tracker",
+            "desc": "Tracks daily goals, streak counters, and freeze tokens.",
+            "type": "Aggregate"
+          },
+          "evt_streak_frozen": {
+            "title": "Streak Frozen",
+            "desc": "Streak protected by a freeze token; no penalty today.",
+            "type": "Event"
+          },
+          "pol_update_league": {
+            "title": "On XP Change",
+            "desc": "On XP Change",
+            "type": "Policy",
+            "root": false
+          },
+          "cmd_update_league": {
+            "title": "Recalculate Standings",
+            "desc": "Recalculate Standings",
+            "type": "Command"
+          },
+          "evt_standings_updated": {
+            "title": "League Standings Updated",
+            "desc": "Learner's rank and league tier recomputed.",
+            "type": "Event"
+          },
+          "pol_send_notification": {
+            "title": "If Badge Unlocked or League Promotion",
+            "desc": "If Badge Unlocked or League Promotion",
+            "type": "Policy"
+          },
+          "cmd_send_notification": {
+            "title": "Send Push Notification",
+            "desc": "Send Push Notification",
+            "type": "Command"
+          },
+          "evt_notification_sent": {
+            "title": "Notification Sent",
+            "desc": "Learner notified of the badge or league promotion.",
+            "type": "Event"
+          },
+          "pol_silent_update": {
+            "title": "If No Notable Change",
+            "desc": "If No Notable Change",
+            "type": "Policy"
+          },
+          "cmd_silent_update": {
+            "title": "Log Silently",
+            "desc": "Log Silently",
+            "type": "Command"
+          },
+          "league_service2": {
+            "title": "League Service",
+            "desc": "Computes league ranks, tiers, and promotions.",
+            "type": "Aggregate"
+          },
+          "evt_update_logged": {
+            "title": "Update Logged",
+            "desc": "Standings persisted without user-facing notification.",
+            "type": "Event"
+          }
+        },
+        "relations": [
+          {
+            "id": "r1",
+            "from": "learner",
+            "to": "pol_start_lesson",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r2",
+            "from": "pol_start_lesson",
+            "to": "cmd_start_lesson",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r3",
+            "from": "cmd_start_lesson",
+            "to": "lesson_engine",
+            "handledBy": true,
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r4",
+            "from": "lesson_engine",
+            "to": "evt_lesson_started",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r5",
+            "from": "evt_lesson_started",
+            "to": "pol_submit_answers",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r6",
+            "from": "learner2",
+            "to": "pol_submit_answers",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r7",
+            "from": "pol_submit_answers",
+            "to": "cmd_submit_answers",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r8",
+            "from": "cmd_submit_answers",
+            "to": "grading_service",
+            "handledBy": true,
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r9",
+            "from": "grading_service",
+            "to": "evt_exercise_graded",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r10",
+            "from": "evt_exercise_graded",
+            "to": "pol_award_xp",
+            "label": "Answer Correct",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r11",
+            "from": "pol_award_xp",
+            "to": "cmd_award_xp",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r12",
+            "from": "cmd_award_xp",
+            "to": "reward_engine",
+            "handledBy": true,
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r13",
+            "from": "reward_engine",
+            "to": "evt_xp_awarded",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r14",
+            "from": "evt_xp_awarded",
+            "to": "pol_update_progress",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r15",
+            "from": "evt_exercise_graded",
+            "to": "pol_show_hint",
+            "label": "Answer Wrong",
+            "dashed": true,
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r16",
+            "from": "pol_show_hint",
+            "to": "cmd_show_hint",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r17",
+            "from": "cmd_show_hint",
+            "to": "lesson_engine2",
+            "handledBy": true,
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r18",
+            "from": "lesson_engine2",
+            "to": "evt_hint_shown",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r19",
+            "from": "evt_hint_shown",
+            "to": "pol_submit_answers",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r20",
+            "from": "pol_update_progress",
+            "to": "cmd_update_progress",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r21",
+            "from": "cmd_update_progress",
+            "to": "progress_store",
+            "handledBy": true,
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r22",
+            "from": "progress_store",
+            "to": "evt_progress_updated",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r23",
+            "from": "evt_progress_updated",
+            "to": "pol_unlock_badge",
+            "label": "Threshold Reached",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r24",
+            "from": "pol_unlock_badge",
+            "to": "cmd_unlock_badge",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r25",
+            "from": "cmd_unlock_badge",
+            "to": "reward_engine2",
+            "handledBy": true,
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r26",
+            "from": "reward_engine2",
+            "to": "evt_badge_unlocked",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r27",
+            "from": "evt_badge_unlocked",
+            "to": "pol_streak_update",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r28",
+            "from": "evt_progress_updated",
+            "to": "pol_continue_lesson",
+            "label": "No Badge Yet",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r29",
+            "from": "pol_continue_lesson",
+            "to": "cmd_continue_lesson",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r30",
+            "from": "cmd_continue_lesson",
+            "to": "lesson_engine3",
+            "handledBy": true,
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r31",
+            "from": "lesson_engine3",
+            "to": "evt_lesson_continued",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r32",
+            "from": "evt_lesson_continued",
+            "to": "pol_streak_update",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r33",
+            "from": "pol_streak_update",
+            "to": "cmd_streak_update",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r34",
+            "from": "cmd_streak_update",
+            "to": "streak_tracker",
+            "handledBy": true,
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r35",
+            "from": "streak_tracker",
+            "to": "evt_goal_evaluated",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r36",
+            "from": "evt_goal_evaluated",
+            "to": "pol_extend_streak",
+            "label": "Goal Met",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r37",
+            "from": "pol_extend_streak",
+            "to": "cmd_extend_streak",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r38",
+            "from": "cmd_extend_streak",
+            "to": "streak_tracker2",
+            "handledBy": true,
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r39",
+            "from": "streak_tracker2",
+            "to": "evt_streak_extended",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r40",
+            "from": "evt_streak_extended",
+            "to": "pol_update_league",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r41",
+            "from": "evt_goal_evaluated",
+            "to": "pol_freeze_streak",
+            "label": "Goal Missed",
+            "dashed": true,
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r42",
+            "from": "pol_freeze_streak",
+            "to": "cmd_freeze_streak",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r43",
+            "from": "cmd_freeze_streak",
+            "to": "streak_tracker3",
+            "handledBy": true,
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r44",
+            "from": "streak_tracker3",
+            "to": "evt_streak_frozen",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r45",
+            "from": "evt_streak_frozen",
+            "to": "pol_update_league",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r46",
+            "from": "pol_update_league",
+            "to": "cmd_update_league",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r47",
+            "from": "cmd_update_league",
+            "to": "league_service",
+            "handledBy": true,
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r48",
+            "from": "league_service",
+            "to": "evt_standings_updated",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r49",
+            "from": "evt_standings_updated",
+            "to": "pol_send_notification",
+            "label": "Badge or Promotion",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r50",
+            "from": "pol_send_notification",
+            "to": "cmd_send_notification",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r51",
+            "from": "cmd_send_notification",
+            "to": "push_service",
+            "handledBy": true,
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r52",
+            "from": "push_service",
+            "to": "evt_notification_sent",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r53",
+            "from": "evt_standings_updated",
+            "to": "pol_silent_update",
+            "label": "No Notable Change",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r54",
+            "from": "pol_silent_update",
+            "to": "cmd_silent_update",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r55",
+            "from": "cmd_silent_update",
+            "to": "league_service2",
+            "handledBy": true,
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r56",
+            "from": "league_service2",
+            "to": "evt_update_logged",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          }
+        ],
+        "journeys": [
+          {
+            "id": "happy-path",
+            "label": "Happy Path: Badge Day",
+            "description": "Learner answers correctly, earns a badge, extends the streak, and gets a promotion notification.",
+            "steps": [
+              {
+                "nodeIds": [
+                  "learner",
+                  "pol_start_lesson",
+                  "cmd_start_lesson",
+                  "lesson_engine",
+                  "evt_lesson_started"
+                ],
+                "title": "Start Lesson",
+                "reason": "Learner opens a lesson; the engine loads the exercises.",
+                "processGroup": "learning"
+              },
+              {
+                "nodeIds": [
+                  "learner2",
+                  "pol_submit_answers",
+                  "cmd_submit_answers",
+                  "grading_service",
+                  "evt_exercise_graded"
+                ],
+                "title": "Submit Answers",
+                "reason": "Learner submits answers; the grading service evaluates correctness and XP value.",
+                "processGroup": "learning"
+              },
+              {
+                "nodeIds": [
+                  "pol_award_xp",
+                  "cmd_award_xp",
+                  "reward_engine",
+                  "evt_xp_awarded"
+                ],
+                "title": "Award XP",
+                "reason": "Answers are correct — the reward engine credits experience points.",
+                "processGroup": "reward"
+              },
+              {
+                "nodeIds": [
+                  "pol_unlock_badge",
+                  "cmd_unlock_badge",
+                  "reward_engine2",
+                  "evt_badge_unlocked"
+                ],
+                "title": "Unlock Badge",
+                "reason": "Progress crosses a badge threshold — a new achievement is unlocked.",
+                "processGroup": "reward"
+              },
+              {
+                "nodeIds": [
+                  "pol_extend_streak",
+                  "cmd_extend_streak",
+                  "streak_tracker2",
+                  "evt_streak_extended"
+                ],
+                "title": "Extend Streak",
+                "reason": "Daily goal met — the streak counter increments and the habit is reinforced.",
+                "processGroup": "habit"
+              },
+              {
+                "nodeIds": [
+                  "pol_update_league",
+                  "cmd_update_league",
+                  "league_service",
+                  "evt_standings_updated"
+                ],
+                "title": "Recalculate Standings",
+                "reason": "XP change triggers a league standings recalculation.",
+                "processGroup": "competition"
+              },
+              {
+                "nodeIds": [
+                  "pol_send_notification",
+                  "cmd_send_notification",
+                  "push_service",
+                  "evt_notification_sent"
+                ],
+                "title": "Send Push Notification",
+                "reason": "The promotion is celebrated with a push notification.",
+                "processGroup": "feedback"
+              }
+            ]
+          },
+          {
+            "id": "retry-loop",
+            "label": "Retry Loop & Streak Freeze",
+            "description": "Learner answers wrong, retries with a hint, then misses the daily goal and uses a streak freeze.",
+            "steps": [
+              {
+                "nodeIds": [
+                  "learner2",
+                  "pol_submit_answers",
+                  "cmd_submit_answers",
+                  "grading_service",
+                  "evt_exercise_graded"
+                ],
+                "title": "Submit Answers",
+                "reason": "Learner submits answers; the grading service finds an incorrect answer.",
+                "processGroup": "learning"
+              },
+              {
+                "nodeIds": [
+                  "pol_show_hint",
+                  "cmd_show_hint",
+                  "lesson_engine2",
+                  "evt_hint_shown"
+                ],
+                "title": "Show Hint",
+                "reason": "A partial-credit hint is displayed and the learner retries the exercise.",
+                "processGroup": "learning"
+              },
+              {
+                "nodeIds": [
+                  "pol_award_xp",
+                  "cmd_award_xp",
+                  "reward_engine",
+                  "evt_xp_awarded"
+                ],
+                "title": "Award XP",
+                "reason": "The retry succeeds — XP is credited at the reduced partial-credit rate.",
+                "processGroup": "reward"
+              },
+              {
+                "nodeIds": [
+                  "pol_continue_lesson",
+                  "cmd_continue_lesson",
+                  "lesson_engine3",
+                  "evt_lesson_continued"
+                ],
+                "title": "Continue Lesson",
+                "reason": "No badge threshold crossed; the learner moves to the next exercise.",
+                "processGroup": "reward"
+              },
+              {
+                "nodeIds": [
+                  "pol_freeze_streak",
+                  "cmd_freeze_streak",
+                  "streak_tracker3",
+                  "evt_streak_frozen"
+                ],
+                "title": "Apply Streak Freeze",
+                "reason": "Daily goal missed — a freeze token protects the streak from resetting.",
+                "processGroup": "habit"
+              },
+              {
+                "nodeIds": [
+                  "pol_update_league",
+                  "cmd_update_league",
+                  "league_service",
+                  "evt_standings_updated"
+                ],
+                "title": "Recalculate Standings",
+                "reason": "Standings are recalculated; no promotion this time.",
+                "processGroup": "competition"
+              },
+              {
+                "nodeIds": [
+                  "pol_silent_update",
+                  "cmd_silent_update",
+                  "league_service2",
+                  "evt_update_logged"
+                ],
+                "title": "Log Silently",
+                "reason": "The update is persisted quietly without a notification.",
+                "processGroup": "feedback"
+              }
+            ]
+          }
+        ],
+        "rawSteps": [
+          {
+            "type": "linear",
+            "id": "start_lesson",
+            "initiatedBy": {
+              "_tag": "ref",
+              "id": "learner"
+            },
+            "policy": "On Lesson Request",
+            "command": "Start Lesson",
+            "handledBy": {
+              "_tag": "ref",
+              "id": "lesson_engine"
+            },
+            "resultEvents": [
+              {
+                "id": "lesson_started",
+                "title": "Lesson Started",
+                "desc": "Learner opens a lesson; the engine loads content."
+              }
+            ],
+            "continuesAs": "submit_answers"
+          },
+          {
+            "type": "linear",
+            "id": "submit_answers",
+            "initiatedBy": {
+              "_tag": "ref",
+              "id": "learner"
+            },
+            "policy": "On Submission",
+            "command": "Submit Answers",
+            "handledBy": {
+              "_tag": "ref",
+              "id": "grading_service"
+            },
+            "resultEvents": [
+              {
+                "id": "exercise_graded",
+                "title": "Exercise Graded",
+                "desc": "Answers evaluated; correctness and XP value determined."
+              }
+            ],
+            "continuesAs": "grade_branch"
+          },
+          {
+            "type": "branch",
+            "id": "grade_branch",
+            "event": "exercise_graded",
+            "branches": [
+              {
+                "id": "award_xp",
+                "label": "Answer Correct",
+                "policy": "If Answer Correct",
+                "command": "Award XP",
+                "handledBy": {
+                  "_tag": "ref",
+                  "id": "reward_engine"
+                },
+                "resultEvents": [
+                  {
+                    "id": "xp_awarded",
+                    "title": "XP Awarded",
+                    "desc": "Experience points credited to the learner's account."
+                  }
+                ],
+                "continuesAs": "update_progress"
+              },
+              {
+                "id": "show_hint",
+                "label": "Answer Wrong",
+                "dashed": true,
+                "policy": "If Answer Wrong",
+                "command": "Show Hint",
+                "handledBy": {
+                  "_tag": "ref",
+                  "id": "lesson_engine"
+                },
+                "resultEvents": [
+                  {
+                    "id": "hint_shown",
+                    "title": "Hint Shown",
+                    "desc": "Partial-credit hint displayed; learner retries the exercise."
+                  }
+                ],
+                "continuesAs": "submit_answers"
+              }
+            ]
+          },
+          {
+            "type": "linear",
+            "id": "update_progress",
+            "policy": "On XP Awarded",
+            "command": "Update Progress",
+            "handledBy": {
+              "_tag": "ref",
+              "id": "progress_store"
+            },
+            "resultEvents": [
+              {
+                "id": "progress_updated",
+                "title": "Progress Updated",
+                "desc": "Skill progress, level thresholds, and badge thresholds recomputed."
+              }
+            ],
+            "continuesAs": "badge_branch"
+          },
+          {
+            "type": "branch",
+            "id": "badge_branch",
+            "event": "progress_updated",
+            "branches": [
+              {
+                "id": "unlock_badge",
+                "label": "Threshold Reached",
+                "policy": "If Badge Threshold Reached",
+                "command": "Unlock Badge",
+                "handledBy": {
+                  "_tag": "ref",
+                  "id": "reward_engine"
+                },
+                "resultEvents": [
+                  {
+                    "id": "badge_unlocked",
+                    "title": "Badge Unlocked",
+                    "desc": "Achievement badge added to the learner's collection."
+                  }
+                ],
+                "continuesAs": "streak_update"
+              },
+              {
+                "id": "continue_lesson",
+                "label": "No Badge Yet",
+                "policy": "If No Badge Earned",
+                "command": "Continue Lesson",
+                "handledBy": {
+                  "_tag": "ref",
+                  "id": "lesson_engine"
+                },
+                "resultEvents": [
+                  {
+                    "id": "lesson_continued",
+                    "title": "Lesson Continued",
+                    "desc": "Learner proceeds to the next exercise without a new badge."
+                  }
+                ],
+                "continuesAs": "streak_update"
+              }
+            ]
+          },
+          {
+            "type": "linear",
+            "id": "streak_update",
+            "policy": "On Lesson Completed",
+            "command": "Evaluate Daily Goal",
+            "handledBy": {
+              "_tag": "ref",
+              "id": "streak_tracker"
+            },
+            "resultEvents": [
+              {
+                "id": "goal_evaluated",
+                "title": "Daily Goal Evaluated",
+                "desc": "Streak tracker checks whether today's goal was met."
+              }
+            ],
+            "continuesAs": "streak_branch"
+          },
+          {
+            "type": "branch",
+            "id": "streak_branch",
+            "event": "goal_evaluated",
+            "branches": [
+              {
+                "id": "extend_streak",
+                "label": "Goal Met",
+                "policy": "If Daily Goal Met",
+                "command": "Extend Streak",
+                "handledBy": {
+                  "_tag": "ref",
+                  "id": "streak_tracker"
+                },
+                "resultEvents": [
+                  {
+                    "id": "streak_extended",
+                    "title": "Streak Extended",
+                    "desc": "Consecutive-day counter incremented; habit reinforced."
+                  }
+                ],
+                "continuesAs": "update_league"
+              },
+              {
+                "id": "freeze_streak",
+                "label": "Goal Missed",
+                "dashed": true,
+                "policy": "If Goal Missed",
+                "command": "Apply Streak Freeze",
+                "handledBy": {
+                  "_tag": "ref",
+                  "id": "streak_tracker"
+                },
+                "resultEvents": [
+                  {
+                    "id": "streak_frozen",
+                    "title": "Streak Frozen",
+                    "desc": "Streak protected by a freeze token; no penalty today."
+                  }
+                ],
+                "continuesAs": "update_league"
+              }
+            ]
+          },
+          {
+            "type": "linear",
+            "id": "update_league",
+            "policy": "On XP Change",
+            "command": "Recalculate Standings",
+            "handledBy": {
+              "_tag": "ref",
+              "id": "league_service"
+            },
+            "resultEvents": [
+              {
+                "id": "standings_updated",
+                "title": "League Standings Updated",
+                "desc": "Learner's rank and league tier recomputed."
+              }
+            ],
+            "continuesAs": "notify_branch"
+          },
+          {
+            "type": "branch",
+            "id": "notify_branch",
+            "event": "standings_updated",
+            "branches": [
+              {
+                "id": "send_notification",
+                "label": "Badge or Promotion",
+                "policy": "If Badge Unlocked or League Promotion",
+                "command": "Send Push Notification",
+                "handledBy": {
+                  "_tag": "ref",
+                  "id": "push_service"
+                },
+                "resultEvents": [
+                  {
+                    "id": "notification_sent",
+                    "title": "Notification Sent",
+                    "desc": "Learner notified of the badge or league promotion."
+                  }
+                ]
+              },
+              {
+                "id": "silent_update",
+                "label": "No Notable Change",
+                "policy": "If No Notable Change",
+                "command": "Log Silently",
+                "handledBy": {
+                  "_tag": "ref",
+                  "id": "league_service"
+                },
+                "resultEvents": [
+                  {
+                    "id": "update_logged",
+                    "title": "Update Logged",
+                    "desc": "Standings persisted without user-facing notification."
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    }
+  },
+  {
+    "folder": "tradeoffs",
+    "type": "tradeoff-sandbox",
+    "props": {
+      "title": "Reward Design Trade-offs",
+      "scenarios": [
+        {
+          "id": "learning-app",
+          "title": "Learning App Rewards",
+          "description": "Design the reward system for a language-learning app with 1M monthly learners.",
+          "metrics": [
+            {
+              "id": "intrinsic",
+              "label": "Intrinsic Motivation",
+              "baseValue": 50,
+              "min": 0,
+              "max": 100,
+              "direction": "higher"
+            },
+            {
+              "id": "retention",
+              "label": "30-Day Retention",
+              "baseValue": 50,
+              "min": 0,
+              "max": 100,
+              "direction": "higher"
+            },
+            {
+              "id": "fairness",
+              "label": "Perceived Fairness",
+              "baseValue": 50,
+              "min": 0,
+              "max": 100,
+              "direction": "higher"
+            },
+            {
+              "id": "cost",
+              "label": "Implementation Cost Efficiency",
+              "baseValue": 50,
+              "min": 0,
+              "max": 100,
+              "direction": "higher"
+            }
+          ],
+          "steps": [
+            {
+              "id": "leaderboard",
+              "title": "Leaderboard Style",
+              "description": "Choose how social comparison is presented.",
+              "recommended": "nearest",
+              "choices": [
+                {
+                  "id": "global-top",
+                  "label": "Global Top 10",
+                  "description": "Show only the very top performers worldwide.",
+                  "metrics": {
+                    "intrinsic": -15,
+                    "retention": 5,
+                    "fairness": -10,
+                    "cost": 5
+                  },
+                  "pros": [
+                    {
+                      "title": "Prestige for elites",
+                      "description": "Top spots carry real status and drive power users."
+                    }
+                  ],
+                  "cons": [
+                    {
+                      "title": "Unreachable gap",
+                      "description": "The bottom 99% cannot reach the top and stop caring."
+                    }
+                  ],
+                  "whenToUse": "Short competitive tournaments or seasonal challenges, not a long-term default."
+                },
+                {
+                  "id": "nearest",
+                  "label": "Nearest Competitor (±5)",
+                  "description": "Show the few peers just above and below the user.",
+                  "metrics": {
+                    "intrinsic": 10,
+                    "retention": 10,
+                    "fairness": 5,
+                    "cost": 0
+                  },
+                  "pros": [
+                    {
+                      "title": "Reachable targets",
+                      "description": "A small, winnable gap sustains effort far better than a distant top."
+                    }
+                  ],
+                  "cons": [
+                    {
+                      "title": "Privacy concerns",
+                      "description": "Close peer data needs careful anonymization."
+                    }
+                  ],
+                  "whyThisFits": "Default for long-running apps — motivation scales with the size of a reachable gap."
+                },
+                {
+                  "id": "team",
+                  "label": "Team / Squad Based",
+                  "description": "Competition between small cooperative teams.",
+                  "metrics": {
+                    "intrinsic": 5,
+                    "retention": 10,
+                    "fairness": 0,
+                    "cost": -10
+                  },
+                  "pros": [
+                    {
+                      "title": "Relatedness drive",
+                      "description": "Shared goals reduce individual pressure and build community."
+                    }
+                  ],
+                  "cons": [
+                    {
+                      "title": "Free-rider problem",
+                      "description": "Some members coast on the team's total."
+                    }
+                  ],
+                  "whenToUse": "When you have a social graph and want cooperative retention."
+                },
+                {
+                  "id": "none",
+                  "label": "No Leaderboard",
+                  "description": "Skip social comparison entirely.",
+                  "metrics": {
+                    "intrinsic": 10,
+                    "retention": -5,
+                    "fairness": 10,
+                    "cost": 10
+                  },
+                  "pros": [
+                    {
+                      "title": "Zero social anxiety",
+                      "description": "Introverts and laggards stay comfortable."
+                    }
+                  ],
+                  "cons": [
+                    {
+                      "title": "No competitive pull",
+                      "description": "A segment of users loses their main motivator."
+                    }
+                  ],
+                  "whenToUse": "Sensitive contexts or products where ranking feels wrong."
+                }
+              ]
+            },
+            {
+              "id": "reward-type",
+              "title": "Primary Reward Type",
+              "description": "What does the user actually earn?",
+              "recommended": "mastery-feedback",
+              "choices": [
+                {
+                  "id": "xp-points",
+                  "label": "Exchangeable XP",
+                  "description": "Points that accumulate and can be traded for cosmetic items.",
+                  "metrics": {
+                    "intrinsic": -10,
+                    "retention": 5,
+                    "fairness": 5,
+                    "cost": 5
+                  },
+                  "pros": [
+                    {
+                      "title": "Instant feedback",
+                      "description": "Every action produces a visible number going up."
+                    }
+                  ],
+                  "cons": [
+                    {
+                      "title": "Overjustification risk",
+                      "description": "Users optimize for points, not skill; inflation makes points meaningless."
+                    }
+                  ],
+                  "whenToUse": "Short campaigns where a visible counter matters more than skill growth."
+                },
+                {
+                  "id": "mastery-feedback",
+                  "label": "Mastery Feedback",
+                  "description": "Progress visualization tied to demonstrated skill.",
+                  "metrics": {
+                    "intrinsic": 15,
+                    "retention": 10,
+                    "fairness": 5,
+                    "cost": -10
+                  },
+                  "pros": [
+                    {
+                      "title": "Real progress",
+                      "description": "Every increment maps to an actual skill gain — no inflation."
+                    }
+                  ],
+                  "cons": [
+                    {
+                      "title": "Design effort",
+                      "description": "Requires per-skill assessment, which is expensive to build."
+                    }
+                  ],
+                  "whyThisFits": "For a learning product, Development & Accomplishment (CD2) tied to real mastery is the strongest long-term fuel."
+                },
+                {
+                  "id": "social-recognition",
+                  "label": "Social Recognition",
+                  "description": "Public kudos, mentions, and peer awards.",
+                  "metrics": {
+                    "intrinsic": 5,
+                    "retention": 10,
+                    "fairness": -5,
+                    "cost": 0
+                  },
+                  "pros": [
+                    {
+                      "title": "Status and relatedness",
+                      "description": "Peer recognition is cheap to produce and hard to fake."
+                    }
+                  ],
+                  "cons": [
+                    {
+                      "title": "Recognition fatigue",
+                      "description": "Constant kudos loses meaning; introverts may opt out."
+                    }
+                  ],
+                  "whenToUse": "Community-heavy products with an active peer culture."
+                }
+              ]
+            },
+            {
+              "id": "streak-policy",
+              "title": "Streak Policy",
+              "description": "How does the daily commitment mechanic handle a missed day?",
+              "recommended": "freeze",
+              "choices": [
+                {
+                  "id": "strict",
+                  "label": "Strict Streak",
+                  "description": "Miss one day and the streak resets to zero.",
+                  "metrics": {
+                    "intrinsic": -15,
+                    "retention": 10,
+                    "fairness": -5,
+                    "cost": 10
+                  },
+                  "pros": [
+                    {
+                      "title": "Powerful habit force",
+                      "description": "Loss aversion drives daily return behavior hard and fast."
+                    }
+                  ],
+                  "cons": [
+                    {
+                      "title": "Streak anxiety",
+                      "description": "One missed day wipes weeks of progress and triggers quitting."
+                    }
+                  ],
+                  "whenToUse": "Short onboarding ramps, never as a permanent default."
+                },
+                {
+                  "id": "freeze",
+                  "label": "Streak with Freezes",
+                  "description": "Earned freeze tokens protect the streak on missed days.",
+                  "metrics": {
+                    "intrinsic": -5,
+                    "retention": 10,
+                    "fairness": 5,
+                    "cost": 0
+                  },
+                  "pros": [
+                    {
+                      "title": "Escape valve",
+                      "description": "Keeps loss aversion but prevents all-or-nothing collapse (the Duolingo model)."
+                    }
+                  ],
+                  "cons": [
+                    {
+                      "title": "Gaming risk",
+                      "description": "Freeze tokens can be hoarded or perceived as entitlement."
+                    }
+                  ],
+                  "whyThisFits": "Best balance of habit formation and user trust for a daily product."
+                },
+                {
+                  "id": "flexible",
+                  "label": "Flexible Weekly Goal",
+                  "description": "Commit to a weekly quota, not a daily streak.",
+                  "metrics": {
+                    "intrinsic": 10,
+                    "retention": 5,
+                    "fairness": 10,
+                    "cost": -5
+                  },
+                  "pros": [
+                    {
+                      "title": "Autonomy preserving",
+                      "description": "Matches real schedules; no daily guilt."
+                    }
+                  ],
+                  "cons": [
+                    {
+                      "title": "Weaker daily signal",
+                      "description": "Habit formation is slower without a daily anchor."
+                    }
+                  ],
+                  "whenToUse": "Sporadic-learner segments who reject daily commitments."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "employee-training",
+          "title": "Employee Training Program",
+          "description": "Roll out gamification for a corporate upskilling program with 2,000 employees and a fixed quarterly budget.",
+          "metrics": [
+            {
+              "id": "adoption",
+              "label": "Program Adoption",
+              "baseValue": 50,
+              "min": 0,
+              "max": 100,
+              "direction": "higher"
+            },
+            {
+              "id": "completion",
+              "label": "Course Completion",
+              "baseValue": 50,
+              "min": 0,
+              "max": 100,
+              "direction": "higher"
+            },
+            {
+              "id": "intrinsic",
+              "label": "Intrinsic Engagement",
+              "baseValue": 50,
+              "min": 0,
+              "max": 100,
+              "direction": "higher"
+            },
+            {
+              "id": "cost",
+              "label": "Budget Efficiency",
+              "baseValue": 50,
+              "min": 0,
+              "max": 100,
+              "direction": "higher"
+            }
+          ],
+          "steps": [
+            {
+              "id": "framing",
+              "title": "Program Framing",
+              "description": "How is the training program presented?",
+              "recommended": "narrative-quests",
+              "choices": [
+                {
+                  "id": "points-badges",
+                  "label": "PBL Points & Badges",
+                  "description": "Classic points per module completed, badges per course.",
+                  "metrics": {
+                    "adoption": 10,
+                    "completion": 5,
+                    "intrinsic": -5,
+                    "cost": 10
+                  },
+                  "pros": [
+                    {
+                      "title": "Fast to ship",
+                      "description": "Off-the-shelf PBL is cheap to implement."
+                    }
+                  ],
+                  "cons": [
+                    {
+                      "title": "Novelty decay",
+                      "description": "The 'sprinkles and donuts' failure mode — engagement drops within 4 weeks."
+                    }
+                  ],
+                  "whenToUse": "One-off compliance campaigns where speed matters most."
+                },
+                {
+                  "id": "narrative-quests",
+                  "label": "Narrative Quests",
+                  "description": "Story arcs that frame modules as quests with a mission.",
+                  "metrics": {
+                    "adoption": 5,
+                    "completion": 15,
+                    "intrinsic": 10,
+                    "cost": -10
+                  },
+                  "pros": [
+                    {
+                      "title": "Epic meaning",
+                      "description": "Core Drive 1 — story arcs tie lessons to real work and a bigger purpose."
+                    }
+                  ],
+                  "cons": [
+                    {
+                      "title": "Authoring cost",
+                      "description": "Writing quests and story arcs is expensive upfront."
+                    }
+                  ],
+                  "whyThisFits": "Quarterly programs with a real business mission benefit from meaning over points."
+                },
+                {
+                  "id": "compliance-gates",
+                  "label": "Compliance Gating",
+                  "description": "Completion enforced by deadlines and demotion warnings.",
+                  "metrics": {
+                    "adoption": -5,
+                    "completion": 10,
+                    "intrinsic": -15,
+                    "cost": 5
+                  },
+                  "pros": [
+                    {
+                      "title": "Deterministic completion",
+                      "description": "Guaranteed audit trail and completion rates."
+                    }
+                  ],
+                  "cons": [
+                    {
+                      "title": "Black-hat pressure",
+                      "description": "Threat mechanics breed resentment and checkbox behavior."
+                    }
+                  ],
+                  "whenToUse": "Regulatory training only — never for upskilling."
+                }
+              ]
+            },
+            {
+              "id": "social-layer",
+              "title": "Social Layer",
+              "description": "What social structure wraps the program?",
+              "recommended": "cohort-teams",
+              "choices": [
+                {
+                  "id": "leaderboards",
+                  "label": "Department Leaderboards",
+                  "description": "Rank departments against each other.",
+                  "metrics": {
+                    "adoption": 5,
+                    "completion": 5,
+                    "intrinsic": -5,
+                    "cost": 5
+                  },
+                  "pros": [
+                    {
+                      "title": "Manager visibility",
+                      "description": "Leaders can see departmental progress at a glance."
+                    }
+                  ],
+                  "cons": [
+                    {
+                      "title": "Inter-department rivalry",
+                      "description": "Demotivates laggards and breeds resentment."
+                    }
+                  ],
+                  "whenToUse": "When leadership explicitly wants competitive pressure."
+                },
+                {
+                  "id": "cohort-teams",
+                  "label": "Cohort Teams",
+                  "description": "Small peer teams with shared goals and check-ins.",
+                  "metrics": {
+                    "adoption": 10,
+                    "completion": 10,
+                    "intrinsic": 10,
+                    "cost": -5
+                  },
+                  "pros": [
+                    {
+                      "title": "Relatedness",
+                      "description": "Peer accountability and Core Drive 5 without public shaming."
+                    }
+                  ],
+                  "cons": [
+                    {
+                      "title": "Coordination overhead",
+                      "description": "Teams need scheduling and a light facilitation layer."
+                    }
+                  ],
+                  "whyThisFits": "Corporate peers respond to team accountability, not public ranking."
+                },
+                {
+                  "id": "none",
+                  "label": "No Social Layer",
+                  "description": "Individual tracking only, no social features.",
+                  "metrics": {
+                    "adoption": 0,
+                    "completion": 5,
+                    "intrinsic": 5,
+                    "cost": 10
+                  },
+                  "pros": [
+                    {
+                      "title": "Privacy",
+                      "description": "No pressure, no exposure."
+                    }
+                  ],
+                  "cons": [
+                    {
+                      "title": "Completion drift",
+                      "description": "Without accountability, completion decays over the quarter."
+                    }
+                  ],
+                  "whenToUse": "Sensitive skill areas where peers should not be visible."
+                }
+              ]
+            },
+            {
+              "id": "recognition",
+              "title": "Recognition Cadence",
+              "description": "How often are people recognized?",
+              "recommended": "micro",
+              "choices": [
+                {
+                  "id": "monthly",
+                  "label": "Monthly Awards",
+                  "description": "One ceremony per month for top performers.",
+                  "metrics": {
+                    "adoption": 5,
+                    "completion": 5,
+                    "intrinsic": 5,
+                    "cost": 0
+                  },
+                  "pros": [
+                    {
+                      "title": "Ceremony moment",
+                      "description": "Leadership visibility at a meaningful cadence."
+                    }
+                  ],
+                  "cons": [
+                    {
+                      "title": "Narrow reach",
+                      "description": "Most employees are rarely recognized."
+                    }
+                  ],
+                  "whenToUse": "Small teams where monthly coverage is realistic."
+                },
+                {
+                  "id": "micro",
+                  "label": "Micro-Recognition (Weekly)",
+                  "description": "Frequent, small public acknowledgments of progress.",
+                  "metrics": {
+                    "adoption": 10,
+                    "completion": 10,
+                    "intrinsic": 10,
+                    "cost": -10
+                  },
+                  "pros": [
+                    {
+                      "title": "Frequent feedback",
+                      "description": "Core Drive 2 — rapid feedback loops keep momentum visible."
+                    }
+                  ],
+                  "cons": [
+                    {
+                      "title": "Recognition inflation",
+                      "description": "Kudos must stay meaningful or it becomes noise."
+                    }
+                  ],
+                  "whyThisFits": "Broad reach with frequent feedback keeps a 2,000-person program alive."
+                },
+                {
+                  "id": "none",
+                  "label": "No Formal Recognition",
+                  "description": "Quiet tracking, no public or formal recognition.",
+                  "metrics": {
+                    "adoption": -5,
+                    "completion": 0,
+                    "intrinsic": 5,
+                    "cost": 10
+                  },
+                  "pros": [
+                    {
+                      "title": "Zero cost",
+                      "description": "Nothing to operate."
+                    }
+                  ],
+                  "cons": [
+                    {
+                      "title": "Invisible progress",
+                      "description": "Without recognition, completion decays silently."
+                    }
+                  ],
+                  "whenToUse": "Never recommended as the primary design."
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "folder": "decision-tree",
+    "type": "decision-tree",
+    "props": {
+      "title": "Mechanic Fit Advisor",
+      "id": "mechanic-fit",
+      "root": "inherent-fun",
+      "nodes": {
+        "inherent-fun": {
+          "id": "inherent-fun",
+          "prompt": "Is the core activity already intrinsically enjoyable for your target users?",
+          "choices": [
+            {
+              "id": "yes-fun",
+              "text": "Yes — users do it for its own sake",
+              "next": "fun-what",
+              "rationale": "If it's already fun, your risk is over-gamifying and crowding out intrinsic motivation."
+            },
+            {
+              "id": "no-fun",
+              "text": "No — it's a chore, a duty, or a pain",
+              "next": "chore-what",
+              "rationale": "Chores need motivation design; the question is which kind."
+            }
+          ]
+        },
+        "fun-what": {
+          "id": "fun-what",
+          "prompt": "What is your main goal?",
+          "choices": [
+            {
+              "id": "goal-habit",
+              "text": "Build a daily habit / consistency",
+              "next": "rec-light-habit",
+              "rationale": "Habit formation needs a commitment device, not reward inflation."
+            },
+            {
+              "id": "goal-skill",
+              "text": "Accelerate skill mastery",
+              "next": "rec-mastery",
+              "rationale": "Mastery is best served by progress visibility tied to real ability."
+            },
+            {
+              "id": "goal-social",
+              "text": "Grow a community",
+              "next": "rec-social",
+              "rationale": "Communities thrive on relatedness and shared goals."
+            }
+          ]
+        },
+        "chore-what": {
+          "id": "chore-what",
+          "prompt": "What kind of activity is it?",
+          "choices": [
+            {
+              "id": "short-task",
+              "text": "Short, repeatable tasks (under 15 minutes)",
+              "next": "rec-pbl",
+              "rationale": "Short repeatable tasks map well to points, streaks, and quests."
+            },
+            {
+              "id": "long-project",
+              "text": "Long, open-ended projects",
+              "next": "rec-narrative",
+              "rationale": "Long projects need meaning and milestones, not point churn."
+            },
+            {
+              "id": "sensitive",
+              "text": "Sensitive context (health, finance, children)",
+              "next": "rec-careful",
+              "rationale": "Sensitive contexts demand ethical guardrails before mechanics."
+            }
+          ]
+        },
+        "rec-light-habit": {
+          "id": "rec-light-habit",
+          "leaf": {
+            "recommendation": "Light-touch commitment devices: flexible streaks with freezes, gentle reminders, no leaderboards.",
+            "explanation": "The activity is already fun, so add the minimum structure that builds consistency. Strict streaks and extrinsic rewards risk overjustification — replacing the joy you already have with anxiety.",
+            "tradeoffs": [
+              "Weaker pull for sporadic users than hard streaks",
+              "Requires A/B testing to find the right nudge intensity"
+            ]
+          }
+        },
+        "rec-mastery": {
+          "id": "rec-mastery",
+          "leaf": {
+            "recommendation": "Mastery-first: skill progress visualization, levels tied to demonstrated ability, badges for genuine milestones.",
+            "explanation": "Development & Accomplishment (Octalysis CD2) is the strongest drive for learning. Tie every point and badge to a real skill gain, or users will optimize the metric instead of the skill.",
+            "tradeoffs": [
+              "Needs per-skill assessment design — higher upfront effort",
+              "Slower early dopamine than raw XP"
+            ]
+          }
+        },
+        "rec-social": {
+          "id": "rec-social",
+          "leaf": {
+            "recommendation": "Social layer first: team quests, cohort teams, opt-in recognition, shared celebrations.",
+            "explanation": "Social Influence & Relatedness (CD5) drives community growth. Recognition should be opt-in and broad, not a narrow leaderboard that shames the bottom.",
+            "tradeoffs": [
+              "Requires a minimum viable community size to work",
+              "Free-riders and social pressure need moderation tools"
+            ]
+          }
+        },
+        "rec-pbl": {
+          "id": "rec-pbl",
+          "leaf": {
+            "recommendation": "Classic PBL with a twist: XP, badges, and flexible streaks, plus one social element.",
+            "explanation": "Short repeatable tasks reward well with Development & Accomplishment mechanics. Pair with a light social layer so engagement doesn't decay after the novelty wears off — the 'sprinkles and donuts' failure mode.",
+            "tradeoffs": [
+              "Extrinsic rewards may crowd out intrinsic motivation over time",
+              "Points need a clear purpose — status or exchangeable, not both"
+            ]
+          }
+        },
+        "rec-narrative": {
+          "id": "rec-narrative",
+          "leaf": {
+            "recommendation": "Narrative framing: quests with story arcs, epic meaning & purpose, milestone celebrations.",
+            "explanation": "Long projects fatigue under point churn. Epic Meaning & Purpose (CD1) — 'this work matters' — sustains effort across weeks, and milestone badges mark real progress.",
+            "tradeoffs": [
+              "Story and quest design is expensive to author",
+              "Narrative can feel forced if it doesn't match the work"
+            ]
+          }
+        },
+        "rec-careful": {
+          "id": "rec-careful",
+          "leaf": {
+            "recommendation": "Ethics-first design: intrinsic feedback, private progress, no pressure mechanics, opt-in everything.",
+            "explanation": "In health, finance, and children's contexts, black-hat drives (scarcity, loss aversion, guilt) can cause real harm. Use white-hat drives — meaning, mastery, autonomy — and let users control the intensity.",
+            "tradeoffs": [
+              "Lower short-term engagement than pressure-based designs",
+              "Requires ongoing ethics review as mechanics evolve"
+            ]
+          }
+        }
+      }
+    }
+  },
+  {
+    "folder": "scenario",
+    "type": "scenario",
+    "props": {
+      "title": "The Streak Dilemma",
+      "id": "streak-dilemma",
+      "intro": "You are the product manager of LingoLeap, a language app with 2M monthly users. Engagement dipped last quarter, and the team is debating the streak feature.",
+      "nodes": {
+        "start": {
+          "id": "start",
+          "prompt": "Engagement is down. What is your first move?",
+          "choices": [
+            {
+              "id": "strict-streak",
+              "text": "Launch a strict daily streak — miss a day, lose it all",
+              "next": "strict-launch"
+            },
+            {
+              "id": "freeze-streak",
+              "text": "Launch streaks with freeze tokens and a 7-day goal",
+              "next": "freeze-launch"
+            },
+            {
+              "id": "diagnose-first",
+              "text": "Run a motivation survey and cohort analysis before shipping",
+              "next": "diagnose"
+            }
+          ]
+        },
+        "strict-launch": {
+          "id": "strict-launch",
+          "prompt": "Week 3: daily actives spike, but support tickets mention 'streak anxiety'. A viral thread complains that one missed day wipes 200 days. What now?",
+          "choices": [
+            {
+              "id": "double-down",
+              "text": "Double down — anxiety means it's working; push harder with alerts",
+              "next": "churn"
+            },
+            {
+              "id": "add-freeze",
+              "text": "Add freeze tokens and a 'streak repair' grace card",
+              "next": "recovered"
+            },
+            {
+              "id": "sunset",
+              "text": "Sunset the feature and apologize",
+              "next": "sunset"
+            }
+          ]
+        },
+        "freeze-launch": {
+          "id": "freeze-launch",
+          "prompt": "Week 6: streaks hold and retention is up 4%. A power user asks for 'streak sharing' with friends. What do you ship next?",
+          "choices": [
+            {
+              "id": "share-streak",
+              "text": "Ship streak sharing — friends see each other's streaks",
+              "next": "social-boom"
+            },
+            {
+              "id": "league",
+              "text": "Ship monthly leagues with promotion and demotion",
+              "next": "league-mixed"
+            },
+            {
+              "id": "hold",
+              "text": "Hold off — study which users actually use freezes",
+              "next": "data-driven"
+            }
+          ]
+        },
+        "diagnose": {
+          "id": "diagnose",
+          "prompt": "The survey shows two segments: committed daily learners (40%) and sporadic weekend learners (60%). The weekenders say daily streaks 'don't fit my life'. What's your design?",
+          "choices": [
+            {
+              "id": "tiered",
+              "text": "Offer a flexible weekly streak for weekenders, daily streak for committed learners",
+              "next": "tiered-win"
+            },
+            {
+              "id": "force-daily",
+              "text": "One design for all: daily streak",
+              "next": "churn"
+            },
+            {
+              "id": "no-streak",
+              "text": "Drop streaks; invest in XP and mastery feedback instead",
+              "next": "xp-only"
+            }
+          ]
+        },
+        "churn": {
+          "id": "churn",
+          "outcome": {
+            "verdict": "Streak anxiety turned a habit feature into a source of guilt. Churn among lapsed users tripled, and the viral backlash hurt brand sentiment.",
+            "lesson": "Pure loss-avoidance (black hat) drives work short-term but burns users out. Always pair pressure with an escape valve.",
+            "rating": "c"
+          }
+        },
+        "recovered": {
+          "id": "recovered",
+          "outcome": {
+            "verdict": "Freeze tokens cut abandonment by 30%, and the grace design became a talking point. Retention recovered to baseline plus 2%.",
+            "lesson": "Recovering from a hard launch is possible, but you paid for it in trust. Design the escape valve before launch.",
+            "rating": "b-minus"
+          }
+        },
+        "sunset": {
+          "id": "sunset",
+          "outcome": {
+            "verdict": "Sunsetting restored trust, but the engagement dip continued. The team spent a quarter on a feature that taught users 'streaks = stress'.",
+            "lesson": "When you can't iterate, a fast sunset is the right call — but diagnose before committing.",
+            "rating": "b-minus"
+          }
+        },
+        "social-boom": {
+          "id": "social-boom",
+          "outcome": {
+            "verdict": "Streak sharing created friendly daily pings; D7 retention rose 6% among sharers. Some users opted out citing pressure.",
+            "lesson": "Social relatedness amplifies streaks but must be opt-in with an easy opt-out, or it becomes social pressure.",
+            "rating": "a"
+          }
+        },
+        "league-mixed": {
+          "id": "league-mixed",
+          "outcome": {
+            "verdict": "Leagues lifted the top quartile, but the bottom half quit the monthly cycle. Promotion and demotion felt punitive to newcomers.",
+            "lesson": "Competitive layers should be optional. Demotion mechanics demotivate exactly the users you need to keep.",
+            "rating": "b-plus"
+          }
+        },
+        "data-driven": {
+          "id": "data-driven",
+          "outcome": {
+            "verdict": "The freeze-usage study revealed 12% of users rely on freezes monthly. You tuned freeze frequency to the data, and retention improved a further 3%.",
+            "lesson": "Small, well-instrumented features beat big guesses. Let the data shape the next iteration.",
+            "rating": "a"
+          }
+        },
+        "tiered-win": {
+          "id": "tiered-win",
+          "outcome": {
+            "verdict": "Tiered streaks fit both segments: weekenders kept weekly streaks, committed learners kept daily. Overall habit retention rose 8%.",
+            "lesson": "Diagnose your segments first. One-size-fits-all motivation design fails mixed cohorts.",
+            "rating": "a"
+          }
+        },
+        "xp-only": {
+          "id": "xp-only",
+          "outcome": {
+            "verdict": "XP and mastery feedback were steady, but habit formation stalled — weekenders still didn't return daily. Engagement plateaued.",
+            "lesson": "Intrinsic feedback is necessary but not sufficient for habit loops. Pair it with a commitment device that fits the segment.",
+            "rating": "b-plus"
+          }
+        }
+      },
+      "startNode": "start"
+    }
+  },
+  {
+    "folder": "reflection-sequence",
+    "type": "reflection-sequence",
+    "props": {
+      "title": "Hook Loop Builder",
+      "challenges": [
+        {
+          "prompt": "Arrange the four stages of Nir Eyal's Hook Model in the correct order:",
+          "items": [
+            {
+              "id": "hook-action",
+              "text": "The user performs the simplest possible action (Action)"
+            },
+            {
+              "id": "hook-invest",
+              "text": "The user invests data, effort, or reputation (Investment)"
+            },
+            {
+              "id": "hook-trigger",
+              "text": "A cue appears — notification, habit, or context (Trigger)"
+            },
+            {
+              "id": "hook-variable",
+              "text": "A variable reward is delivered (Variable Reward)"
+            }
+          ],
+          "solution": [
+            "hook-trigger",
+            "hook-action",
+            "hook-variable",
+            "hook-invest"
+          ]
+        },
+        {
+          "prompt": "Arrange the reward feedback loop of a gamified learning app in the correct order:",
+          "items": [
+            {
+              "id": "rw-submit",
+              "text": "Learner submits an answer"
+            },
+            {
+              "id": "rw-notify",
+              "text": "A notification celebrates the milestone"
+            },
+            {
+              "id": "rw-award",
+              "text": "XP is awarded and the progress bar advances"
+            },
+            {
+              "id": "rw-grade",
+              "text": "The answer is graded and XP value is computed"
+            },
+            {
+              "id": "rw-badge",
+              "text": "The badge threshold check unlocks a badge"
+            }
+          ],
+          "solution": [
+            "rw-submit",
+            "rw-grade",
+            "rw-award",
+            "rw-badge",
+            "rw-notify"
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "folder": "reflection-template",
+    "type": "reflection-template",
+    "props": {
+      "title": "Motivation Self-Explanation",
+      "challenges": [
+        {
+          "prompt": "Complete the statement about the overjustification effect:",
+          "template": "The overjustification effect warns that adding {zone-1} rewards to an activity people already enjoy can {zone-2} their intrinsic motivation.",
+          "chips": [
+            {
+              "id": "chip-extrinsic",
+              "text": "extrinsic"
+            },
+            {
+              "id": "chip-intrinsic",
+              "text": "intrinsic"
+            },
+            {
+              "id": "chip-increase",
+              "text": "increase"
+            },
+            {
+              "id": "chip-undermine",
+              "text": "undermine"
+            }
+          ],
+          "solution": {
+            "zone-1": "chip-extrinsic",
+            "zone-2": "chip-undermine"
+          },
+          "explanation": "<strong>Correct!</strong> When a reward explains the behavior, people shift their attribution from 'I do this because it's fun' to 'I do this for the reward' — and intrinsic motivation drops once the reward disappears."
+        },
+        {
+          "prompt": "Complete the statement about the Octalysis white hat / black hat split:",
+          "template": "Octalysis's white hat drives are {zone-1} and empowering, while black hat drives rely on pressure such as {zone-2}.",
+          "chips": [
+            {
+              "id": "chip-intrinsic",
+              "text": "intrinsic"
+            },
+            {
+              "id": "chip-extrinsic",
+              "text": "extrinsic"
+            },
+            {
+              "id": "chip-loss-aversion",
+              "text": "loss aversion"
+            },
+            {
+              "id": "chip-mastery",
+              "text": "mastery"
+            }
+          ],
+          "solution": {
+            "zone-1": "chip-intrinsic",
+            "zone-2": "chip-loss-aversion"
+          },
+          "explanation": "<strong>Correct!</strong> White hat drives (meaning, mastery, creativity, ownership, relatedness) empower users; black hat drives (scarcity, unpredictability, loss) create urgency through pressure. Sustainable design leans on white hat and uses black hat sparingly."
+        }
+      ]
+    }
+  },
+  {
+    "folder": "quiz",
+    "type": "quiz",
+    "props": {
+      "title": "Knowledge Check",
+      "questions": [
+        {
+          "id": "q1",
+          "question": "According to Deterding et al. (2011), gamification is...",
+          "choices": [
+            {
+              "id": "a",
+              "text": "The creation of full games for educational purposes",
+              "correct": false,
+              "explanation": "That describes game-based learning. Gamification applies game design elements to non-game contexts — it does not require building a game."
+            },
+            {
+              "id": "b",
+              "text": "The use of game design elements in non-game contexts",
+              "correct": true,
+              "explanation": "Correct. This is the standard academic definition — note 'elements', not whole games."
+            },
+            {
+              "id": "c",
+              "text": "Adding points to any software product",
+              "correct": false,
+              "explanation": "Points are just one element among many. The definition covers any game design element used in a non-game context."
+            },
+            {
+              "id": "d",
+              "text": "Making work feel like a video game",
+              "correct": false,
+              "explanation": "Close, but imprecise. The context does not need to feel like a game — it borrows game design elements."
+            }
+          ],
+          "hint": "Focus on the word 'elements', not 'games'."
+        },
+        {
+          "id": "q2",
+          "question": "Self-Determination Theory holds that intrinsic motivation depends on satisfying three basic needs. Which is NOT one of them?",
+          "choices": [
+            {
+              "id": "a",
+              "text": "Autonomy",
+              "correct": false,
+              "explanation": "Autonomy is one of the three needs — feeling in control of your own behavior."
+            },
+            {
+              "id": "b",
+              "text": "Competence",
+              "correct": false,
+              "explanation": "Competence is one of the three needs — feeling effective and growing."
+            },
+            {
+              "id": "c",
+              "text": "Obedience",
+              "correct": true,
+              "explanation": "Correct. Obedience is not a basic psychological need in SDT. The third need is relatedness."
+            },
+            {
+              "id": "d",
+              "text": "Relatedness",
+              "correct": false,
+              "explanation": "Relatedness is one of the three needs — feeling connected to others."
+            }
+          ],
+          "hint": "Think: control, effectiveness, connection."
+        },
+        {
+          "id": "q3",
+          "question": "What is the overjustification effect?",
+          "choices": [
+            {
+              "id": "a",
+              "text": "The tendency to overrate a reward when it is unexpected",
+              "correct": false,
+              "explanation": "That describes surprise reward salience, not overjustification."
+            },
+            {
+              "id": "b",
+              "text": "Extrinsic rewards undermining intrinsic motivation for an activity",
+              "correct": true,
+              "explanation": "Correct. When the reward explains the behavior, people shift attribution from enjoyment to payment — and intrinsic motivation drops when the reward stops."
+            },
+            {
+              "id": "c",
+              "text": "Users farming more points than they actually earned",
+              "correct": false,
+              "explanation": "That is point-farming — a metric-gaming behavior, not a motivation effect."
+            },
+            {
+              "id": "d",
+              "text": "Justifying poor design choices with metrics",
+              "correct": false,
+              "explanation": "That is post-hoc rationalization in product teams, not a documented motivation effect."
+            }
+          ],
+          "hint": "Think about what happens when you pay someone for something they already enjoy."
+        },
+        {
+          "id": "q4",
+          "question": "In Octalysis, a user's fear of breaking a 100-day streak is an example of which Core Drive?",
+          "choices": [
+            {
+              "id": "a",
+              "text": "Development & Accomplishment",
+              "correct": false,
+              "explanation": "Accomplishment is about gaining progress — the fear of losing it belongs to a different drive."
+            },
+            {
+              "id": "b",
+              "text": "Scarcity & Impatience",
+              "correct": false,
+              "explanation": "Scarcity is about limited quantity or time, not about losing accumulated progress."
+            },
+            {
+              "id": "c",
+              "text": "Loss & Avoidance",
+              "correct": true,
+              "explanation": "Correct. Core Drive 8 — loss aversion. The streak converts your progress into something you can lose, and the pain of loss outweighs the joy of gain."
+            },
+            {
+              "id": "d",
+              "text": "Epic Meaning & Purpose",
+              "correct": false,
+              "explanation": "Meaning is about a higher purpose — unrelated to the fear of losing a streak."
+            }
+          ],
+          "hint": "It is about losing what you have, not gaining what you don't."
+        },
+        {
+          "id": "q5",
+          "question": "Why do global top-10 leaderboards tend to demotivate most users?",
+          "choices": [
+            {
+              "id": "a",
+              "text": "Rendering ten rows is expensive for the app",
+              "correct": false,
+              "explanation": "Ten rows are trivial to render. The problem is psychological, not technical."
+            },
+            {
+              "id": "b",
+              "text": "The gap between most users and the top feels unreachable",
+              "correct": true,
+              "explanation": "Correct. When the target is out of reach, effort collapses. Nearest-competitor boards fix this by showing a small, winnable gap."
+            },
+            {
+              "id": "c",
+              "text": "Users dislike seeing other people's names",
+              "correct": false,
+              "explanation": "Names are not the issue — the unreachable distance is."
+            },
+            {
+              "id": "d",
+              "text": "Leaderboards are inherently dark patterns",
+              "correct": false,
+              "explanation": "Leaderboards are not inherently dark patterns — poorly designed ones (global top-10 as a default) can be demotivating."
+            }
+          ],
+          "hint": "Ask what a user in the bottom 99% sees."
+        },
+        {
+          "id": "q6",
+          "question": "Why did Duolingo add streak freezes?",
+          "choices": [
+            {
+              "id": "a",
+              "text": "To reduce the server cost of streak calculations",
+              "correct": false,
+              "explanation": "Freezes are a behavioral design feature, not a cost optimization."
+            },
+            {
+              "id": "b",
+              "text": "To provide an escape valve so one missed day doesn't collapse weeks of progress",
+              "correct": true,
+              "explanation": "Correct. Freezes keep the motivating power of loss aversion while preventing streak anxiety from turning into quitting — pairing pressure with relief."
+            },
+            {
+              "id": "c",
+              "text": "Because app stores require them",
+              "correct": false,
+              "explanation": "No such requirement exists — it was a deliberate retention design decision."
+            },
+            {
+              "id": "d",
+              "text": "To make streaks longer and more impressive",
+              "correct": false,
+              "explanation": "Freezes don't make streaks longer — they reduce the penalty of a missed day so users keep coming back."
+            }
+          ],
+          "hint": "Think about what happens the day after a user misses one day."
+        }
+      ]
+    }
+  }
+]

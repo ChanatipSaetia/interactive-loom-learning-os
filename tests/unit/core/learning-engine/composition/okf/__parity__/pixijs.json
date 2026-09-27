@@ -1,0 +1,1604 @@
+[
+  {
+    "folder": "intro",
+    "type": "intro",
+    "props": {
+      "title": "PixiJS — 2D WebGL & WebGPU Creation Engine",
+      "subtitle": "High-performance hardware-accelerated 2D graphics, scene graphs, and batch rendering",
+      "estimatedTime": "25 min",
+      "moduleCount": 10,
+      "what": {
+        "definition": "PixiJS is a rendering engine that allows you to create rich, interactive 2D graphics, cross-platform applications, and games using WebGL and WebGPU without dealing with complex lower-level shader code.",
+        "summary": "A battle-tested 2D rendering library that provides a hierarchical scene graph, automatic draw-call batching, multi-texture optimization, custom filters, and asset management for 60+ FPS web graphics.",
+        "bullets": [
+          "Hierarchical Scene Graph: Tree structure with Containers, Sprites, Graphics, and Text",
+          "Automatic Batch Rendering: Bundles thousands of draw calls into single GPU passes",
+          "WebGL & WebGPU Dual Backends: Modern hardware acceleration with automatic fallbacks",
+          "Asset Management & Texture Atlases: Asynchronous loading, caching, and sprite sheet slicing"
+        ],
+        "tags": [
+          "PixiJS",
+          "WebGL",
+          "WebGPU",
+          "2D Graphics",
+          "Game Engine"
+        ]
+      },
+      "why": {
+        "summary": "Raw HTML5 2D Canvas struggles when animating thousands of objects due to CPU rasterization bottlenecks, while raw WebGL requires hundreds of lines of shader setup and matrix math boilerplate.",
+        "impact": "PixiJS bridges this gap by offering a clean, intuitive display tree API while unlocking the full speed of the GPU, powering interactive maps, data visualizations, and production web games at locked 60 FPS."
+      },
+      "roadmap": [
+        {
+          "sectionId": "concept-map",
+          "title": "Architecture & Scene Graph Map",
+          "type": "concept-map",
+          "description": "Explore the structural relationships between Application, Stage, Container, Sprite, Texture, and Renderer."
+        },
+        {
+          "sectionId": "flashcards",
+          "title": "Essential PixiJS Terminology",
+          "type": "flashcards",
+          "description": "Master vocabulary including Batching, Ticker, World Transforms, Blend Modes, and Texture Atlases."
+        },
+        {
+          "sectionId": "taxonomy-browser",
+          "title": "Display Object Categories",
+          "type": "taxonomy-browser",
+          "description": "Compare Containers, ParticleContainers, Vector Graphics, Text renderers, and GLSL Filters."
+        },
+        {
+          "sectionId": "text-core",
+          "title": "The PixiJS Render Pipeline",
+          "type": "text",
+          "description": "Deep dive into matrix transform propagation, batching breaks, and memory lifecycle."
+        },
+        {
+          "sectionId": "flowchart",
+          "title": "60 FPS Frame Render Loop",
+          "type": "flowchart",
+          "description": "Trace the step-by-step event storming lifecycle from Ticker tick to WebGL framebuffer swap."
+        },
+        {
+          "sectionId": "reflection-sequence",
+          "title": "Render Loop Sequencing",
+          "type": "reflection-sequence",
+          "description": "Reorder the stages of the frame execution pipeline from delta tick to GPU flush."
+        },
+        {
+          "sectionId": "quiz",
+          "title": "Knowledge Check Checkpoint",
+          "type": "quiz",
+          "description": "Test your understanding of sprite batching, transform updates, and texture memory management."
+        },
+        {
+          "sectionId": "tradeoff-sandbox",
+          "title": "Rendering Architecture Trade-offs",
+          "type": "tradeoff-sandbox",
+          "description": "Balance FPS performance, draw calls, and memory footprint when choosing asset & container strategies."
+        },
+        {
+          "sectionId": "decision-tree",
+          "title": "Display Object Architecture Guide",
+          "type": "decision-tree",
+          "description": "Diagnostic decision tree to select the optimal PixiJS primitive for your specific 2D visual feature."
+        }
+      ]
+    }
+  },
+  {
+    "folder": "concept-map",
+    "type": "concept-map",
+    "props": {
+      "title": "Architecture & Scene Graph Map",
+      "nodes": {
+        "app": {
+          "id": "app",
+          "title": "PIXI.Application",
+          "category": "Core Entrypoint"
+        },
+        "renderer": {
+          "id": "renderer",
+          "title": "Renderer (WebGL / WebGPU)",
+          "category": "GPU Pipeline"
+        },
+        "stage": {
+          "id": "stage",
+          "title": "Root Stage (Container)",
+          "category": "Scene Graph"
+        },
+        "container": {
+          "id": "container",
+          "title": "Container",
+          "category": "Scene Graph"
+        },
+        "sprite": {
+          "id": "sprite",
+          "title": "Sprite",
+          "category": "Display Objects"
+        },
+        "texture": {
+          "id": "texture",
+          "title": "Texture / BaseTexture",
+          "category": "Assets & Memory"
+        },
+        "graphics": {
+          "id": "graphics",
+          "title": "Graphics (Vector)",
+          "category": "Display Objects"
+        },
+        "text": {
+          "id": "text",
+          "title": "Text / BitmapText",
+          "category": "Display Objects"
+        },
+        "ticker": {
+          "id": "ticker",
+          "title": "Ticker (RAF Loop)",
+          "category": "Timing & Animation"
+        },
+        "assets": {
+          "id": "assets",
+          "title": "Assets Loader",
+          "category": "Assets & Memory"
+        },
+        "batch_renderer": {
+          "id": "batch_renderer",
+          "title": "BatchRenderer",
+          "category": "GPU Pipeline"
+        },
+        "filters": {
+          "id": "filters",
+          "title": "Filters (GLSL Shaders)",
+          "category": "GPU Pipeline"
+        }
+      },
+      "edges": [
+        {
+          "from": "app",
+          "to": "renderer",
+          "label": "manages"
+        },
+        {
+          "from": "app",
+          "to": "stage",
+          "label": "creates root"
+        },
+        {
+          "from": "app",
+          "to": "ticker",
+          "label": "runs frame loop"
+        },
+        {
+          "from": "stage",
+          "to": "container",
+          "label": "contains"
+        },
+        {
+          "from": "container",
+          "to": "sprite",
+          "label": "nests children"
+        },
+        {
+          "from": "container",
+          "to": "graphics",
+          "label": "nests children"
+        },
+        {
+          "from": "container",
+          "to": "text",
+          "label": "nests children"
+        },
+        {
+          "from": "sprite",
+          "to": "texture",
+          "label": "samples visual UVs"
+        },
+        {
+          "from": "assets",
+          "to": "texture",
+          "label": "loads & caches"
+        },
+        {
+          "from": "renderer",
+          "to": "batch_renderer",
+          "label": "delegates quad drawing"
+        },
+        {
+          "from": "sprite",
+          "to": "filters",
+          "label": "applies post-processing"
+        },
+        {
+          "from": "batch_renderer",
+          "to": "texture",
+          "label": "binds sampler units"
+        }
+      ]
+    }
+  },
+  {
+    "folder": "flashcards",
+    "type": "flashcards",
+    "props": {
+      "title": "Essential PixiJS Terminology",
+      "terms": [
+        {
+          "id": "application",
+          "word": "Application",
+          "pronunciation": "/ˌæplɪˈkeɪʃən/",
+          "category": "Core Architecture",
+          "shortDefinition": "The main convenience wrapper that initializes the Renderer, Ticker, and root Stage Container.",
+          "detailedDefinition": "PIXI.Application encapsulates canvas DOM creation, requestAnimationFrame loop management via Ticker, and sets up the root stage container. It provides a simple start point for interactive 2D projects.",
+          "whyItMatters": "Eliminates hundreds of lines of boilerplate setup for WebGL canvas context creation, screen resizing, and animation frame hooks.",
+          "dialogue": {
+            "user": "How do I spin up a new PixiJS canvas?",
+            "aiThoughts": "User needs the standard entry point object.",
+            "aiQuestion": "Instantiate `const app = new PIXI.Application(); await app.init({ width: 800, height: 600 }); document.body.appendChild(app.canvas);`"
+          }
+        },
+        {
+          "id": "container",
+          "word": "Container",
+          "pronunciation": "/kənˈteɪnər/",
+          "category": "Scene Graph",
+          "shortDefinition": "A general display node that holds a collection of children and propagates position, rotation, and scale down the hierarchy.",
+          "detailedDefinition": "Containers do not render pixels directly; instead, they manage hierarchical spatial transformations. When a container moves, rotates, or scales, all its children inherit those transforms via world matrix multiplication.",
+          "whyItMatters": "Allows complex composite game objects (like a character with separate body, weapon, and shadow sprites) to be moved and transformed as a single unit.",
+          "dialogue": {
+            "user": "How do I move a group of 20 sprites together?",
+            "aiThoughts": "Group them under a single parent display node.",
+            "aiQuestion": "Add them to a `PIXI.Container` and update only the container's `x` and `y` properties!"
+          }
+        },
+        {
+          "id": "sprite",
+          "word": "Sprite",
+          "pronunciation": "/spraɪt/",
+          "category": "Display Objects",
+          "shortDefinition": "The fundamental 2D display object that renders a textured quad onto the screen.",
+          "detailedDefinition": "A Sprite binds a source Texture (or a sub-region of a texture atlas) to rectangular geometry. It supports anchors, pivot points, alpha transparency, tint colors, and blend modes.",
+          "whyItMatters": "Sprites are the core building block for 90% of visual elements in 2D games and dashboards, and are heavily optimized by Pixi's batch renderer.",
+          "dialogue": {
+            "user": "What is the difference between a Texture and a Sprite?",
+            "aiThoughts": "Differentiate the GPU asset from the scene graph display object.",
+            "aiQuestion": "A Texture is the raw image data on the GPU; a Sprite is the visible instance in the scene tree with position, scale, and tint."
+          }
+        },
+        {
+          "id": "texture",
+          "word": "Texture",
+          "pronunciation": "/ˈtɛkstʃər/",
+          "category": "Assets & GPU",
+          "shortDefinition": "An object representing an image resource or frame stored in WebGL GPU video memory.",
+          "detailedDefinition": "Textures wrap a BaseTexture (the actual GPU texture buffer) with UV coordinate frames. Multiple Textures can share a single BaseTexture (such as sprites in a texture atlas / spritesheet).",
+          "whyItMatters": "Sharing a single BaseTexture across multiple sprites allows the BatchRenderer to draw them in a single draw call without expensive GPU texture bind swaps.",
+          "dialogue": {
+            "user": "Why should I use a spritesheet instead of separate PNG files?",
+            "aiThoughts": "Highlight texture atlas batching benefits.",
+            "aiQuestion": "Because all sprites referencing the same spritesheet share one BaseTexture, allowing PixiJS to render thousands of sprites in 1 GPU draw call."
+          }
+        },
+        {
+          "id": "batch-renderer",
+          "word": "BatchRenderer",
+          "pronunciation": "/bætʃ ˈrɛndərər/",
+          "category": "Performance",
+          "shortDefinition": "An internal rendering system that combines multiple textured quads into a single WebGL drawArrays/drawElements call.",
+          "detailedDefinition": "Instead of executing one draw call per sprite, BatchRenderer buffers sprite vertices, UVs, tints, and multi-texture indices into dynamic vertex buffers, flushing to the GPU only when texture limits or blend mode changes require a batch break.",
+          "whyItMatters": "Draw calls are the primary performance bottleneck in WebGL; batching allows PixiJS to render 10,000+ moving sprites at 60 FPS on modest mobile hardware.",
+          "dialogue": {
+            "user": "What causes a 'batch break' that degrades performance?",
+            "aiThoughts": "Identify state changes that force a flush.",
+            "aiQuestion": "Switching to an unbound texture, changing blend modes, or interleaving custom shaders breaks the current batch and forces a new draw call."
+          }
+        },
+        {
+          "id": "ticker",
+          "word": "Ticker",
+          "pronunciation": "/ˈtɪkər/",
+          "category": "Animation",
+          "shortDefinition": "A high-precision animation loop manager driven by window.requestAnimationFrame.",
+          "detailedDefinition": "The Ticker dispatches update events every frame with delta time multipliers. It automatically manages frame-rate throttling, pause when tabs are inactive, and priority queues for update listeners.",
+          "whyItMatters": "Ensures smooth, delta-compensated physics and animations that run consistently regardless of device refresh rate (60Hz, 120Hz, 144Hz).",
+          "dialogue": {
+            "user": "How do I animate a rotating sprite smoothly?",
+            "aiThoughts": "Connect to ticker callback with deltaTime.",
+            "aiQuestion": "Attach a callback to `app.ticker.add((time) => { sprite.rotation += 0.05 * time.deltaTime; })`"
+          }
+        },
+        {
+          "id": "particle-container",
+          "word": "ParticleContainer",
+          "pronunciation": "/ˈpɑːrtɪkəl kənˈteɪnər/",
+          "category": "High-Performance",
+          "shortDefinition": "A fast, streamlined container designed to render massive numbers of simple sprites with minimal CPU overhead.",
+          "detailedDefinition": "ParticleContainer trades advanced features (such as deep nesting, masks, filters, and per-child rotation/tint when disabled) for ultra-fast GPU streaming, uploading flat vertex buffers directly to the shader.",
+          "whyItMatters": "Can render 50,000+ particles (snow, rain, bullets, starfields) at 60 FPS where standard Containers would suffer CPU transform overhead.",
+          "dialogue": {
+            "user": "When should I use ParticleContainer instead of Container?",
+            "aiThoughts": "Determine when raw particle volume trumps hierarchy features.",
+            "aiQuestion": "Use ParticleContainer for massive flat particle systems (bullets, explosions, rain) where children don't need complex sub-nesting or filters."
+          }
+        },
+        {
+          "id": "filter",
+          "word": "Filter",
+          "pronunciation": "/ˈfɪltər/",
+          "category": "Shaders & Effects",
+          "shortDefinition": "A post-processing effect applied via custom GLSL fragment and vertex shaders.",
+          "detailedDefinition": "Filters render a display object into a temporary offscreen framebuffer (render texture), then apply shader passes (e.g. Blur, ColorMatrix, Glow, Displacement) before compositing the result back to the screen.",
+          "whyItMatters": "Unlocks AAA visual effects like water distortion, bloom, drop shadows, and color grading directly inside the browser.",
+          "dialogue": {
+            "user": "Why does applying many filters slow down my frame rate?",
+            "aiThoughts": "Explain offscreen framebuffer overhead.",
+            "aiQuestion": "Each filter requires switching render targets to offscreen framebuffers, which increases GPU memory bandwidth and interrupts sprite batching."
+          }
+        }
+      ]
+    }
+  },
+  {
+    "folder": "quiz-vocabulary",
+    "type": "quiz",
+    "props": {
+      "title": "Essential PixiJS Vocabulary Quiz",
+      "questions": [
+        {
+          "id": "q_voc_1",
+          "question": "What is the structural difference between a 'Texture' and a 'BaseTexture' in PixiJS?",
+          "choices": [
+            {
+              "id": "c1",
+              "text": "Texture is for 3D meshes; BaseTexture is for 2D sprites",
+              "correct": false,
+              "explanation": "PixiJS is a 2D rendering engine; both handle 2D image data."
+            },
+            {
+              "id": "c2",
+              "text": "BaseTexture holds the actual raw WebGL GPU image resource, while Texture defines a specific UV rectangular crop of that BaseTexture",
+              "correct": true,
+              "explanation": "BaseTexture owns the GPU memory allocation. Multiple Texture instances can reference sub-regions (UV frames) of the same BaseTexture, enabling sprite sheets."
+            },
+            {
+              "id": "c3",
+              "text": "BaseTexture is rendered by CPU, whereas Texture is rendered by GPU",
+              "correct": false,
+              "explanation": "Both are part of the GPU texture management system."
+            },
+            {
+              "id": "c4",
+              "text": "They are identical aliases with no technical distinction",
+              "correct": false,
+              "explanation": "They have distinct responsibilities: GPU resource vs UV sub-region definition."
+            }
+          ],
+          "hint": "Think about how a sprite sheet texture atlas shares one large image across dozens of sprite frames."
+        },
+        {
+          "id": "q_voc_2",
+          "question": "How does the 'Ticker' deltaTime property help maintain consistent movement speed across different monitor refresh rates (60Hz vs 144Hz)?",
+          "choices": [
+            {
+              "id": "c1",
+              "text": "It forces all monitors to run at exactly 60 FPS by sleeping the thread",
+              "correct": false,
+              "explanation": "Ticker does not sleep the main JS thread; it measures actual elapsed time."
+            },
+            {
+              "id": "c2",
+              "text": "It provides a frame duration multiplier proportional to 60 FPS, scaling velocity so distance per second remains identical",
+              "correct": true,
+              "explanation": "At 60 FPS, deltaTime is ~1.0. At 120 FPS, deltaTime is ~0.5. Multiplying velocity by deltaTime ensures identical movement speed in physical time."
+            },
+            {
+              "id": "c3",
+              "text": "It skips rendering every second frame on high-refresh monitors",
+              "correct": false,
+              "explanation": "PixiJS renders on every RAF frame to deliver maximum visual smoothness."
+            },
+            {
+              "id": "c4",
+              "text": "It converts pixel measurements to meters automatically",
+              "correct": false,
+              "explanation": "Pixel measurements are preserved; deltaTime scales numerical step changes."
+            }
+          ],
+          "hint": "Consider what multiplier is needed when a frame executes in 8.3ms (120Hz) instead of 16.6ms (60Hz)."
+        }
+      ]
+    }
+  },
+  {
+    "folder": "taxonomy-browser",
+    "type": "taxonomy-browser",
+    "props": {
+      "title": "Display Object Taxonomies",
+      "categories": [
+        {
+          "icon": "Layers",
+          "title": "Display Objects & Scene Graph",
+          "subtitle": "Hierarchical visual tree structure",
+          "description": "The core nodes used to organize, position, and render visual content in PixiJS.",
+          "details": "Containers provide hierarchical spatial transforms (x, y, scale, rotation, skew) and alpha blending. Sprites bind 2D textures to quads. AnimatedSprite cycles frame sequences, and NineSliceSprite preserves borders during UI resizing.",
+          "analogy": "Like a Photoshop layer hierarchy where moving a group folder automatically moves all sub-layers inside it.",
+          "primaryFocus": "Organizing game worlds, UI panels, and multi-part character puppets.",
+          "inScope": [
+            "Container hierarchy & transform propagation",
+            "Sprite & AnimatedSprite rendering",
+            "NineSliceSprite & TilingSprite",
+            "Local vs World coordinate space conversion"
+          ],
+          "outOfScope": [
+            "Complex 3D skeletal bones (use Spine/DragonBones extensions)",
+            "Physics simulation (delegate to Matter.js or Rapier)"
+          ],
+          "color": "#89b4fa"
+        },
+        {
+          "icon": "Shapes",
+          "title": "Vector Graphics & Geometry",
+          "subtitle": "Procedural shapes, paths, and meshes",
+          "description": "Dynamic shape drawing and custom vertex mesh manipulation on the GPU.",
+          "details": "Graphics generates 2D vector shapes (rectangles, circles, bezier paths, polygons) converted on-the-fly into triangulated vertex buffers. MeshSimple and MeshRope allow deformable ribbons, flags, and custom geometry.",
+          "analogy": "Like an SVG vector canvas with stroke and fill commands, but compiled into GPU triangle primitives.",
+          "primaryFocus": "Drawing debug bounds, dynamic UI wireframes, health bars, and deformable rope ribbons.",
+          "inScope": [
+            "PIXI.Graphics path drawing & bezier curves",
+            "Holes, fills, and parametric strokes",
+            "MeshSimple & MeshRope triangulated ribbons",
+            "Dynamic redraw vs pre-baked RenderTexture"
+          ],
+          "outOfScope": [
+            "3D polygon modeling (PixiJS is strictly 2D)",
+            "Font vector tracing at runtime"
+          ],
+          "color": "#a6e3a1"
+        },
+        {
+          "icon": "Type",
+          "title": "Typography & Text Rendering",
+          "subtitle": "Canvas text vs GPU bitmap fonts",
+          "description": "Text display strategies balancing styling flexibility against 60 FPS render performance.",
+          "details": "PIXI.Text rasterizes fonts using HTML5 2D Canvas context and generates an internal texture. PIXI.BitmapText renders characters from pre-baked XML/JSON font atlases using batched quads for zero CPU overhead.",
+          "analogy": "PIXI.Text is like printing a new photo each time words change; BitmapText is like stamping pre-carved wooden letter blocks.",
+          "primaryFocus": "Rendering dialog boxes, score counters, HUD indicators, and localized strings.",
+          "inScope": [
+            "PIXI.Text with styling (drop shadow, gradient fill, stroke)",
+            "PIXI.BitmapText with high-speed batched character quads",
+            "HTMLText for rich HTML/CSS formatted labels",
+            "Font atlas generation and loading"
+          ],
+          "outOfScope": [
+            "Complex RTL bidirectional text shaping without plugins",
+            "Live vector font glyph deformation"
+          ],
+          "color": "#f9e2af"
+        },
+        {
+          "icon": "Sparkles",
+          "title": "Shaders, Filters & Post-Processing",
+          "subtitle": "Custom GLSL effects and full-screen passes",
+          "description": "GPU fragment and vertex shader pipelines for lighting, blur, distortion, and stylization.",
+          "details": "Filters render target objects into offscreen framebuffers and pass them through custom GLSL shaders. ColorMatrixFilter provides tinting/grayscale, BlurFilter softens edges, and DisplacementFilter creates liquid ripples.",
+          "analogy": "Like applying real-time Instagram filters and optical lenses over rendered canvas layers.",
+          "primaryFocus": "Visual juice: shockwaves, water reflections, CRT monitors, glow highlights, and color grading.",
+          "inScope": [
+            "Built-in filters (ColorMatrix, Blur, Alpha, Noise)",
+            "Custom GLSL fragment and vertex shader filters",
+            "Displacement maps & uv animation",
+            "Filter padding and resolution scaling"
+          ],
+          "outOfScope": [
+            "Raytracing and global illumination",
+            "Multi-pass deferred 3D lighting"
+          ],
+          "color": "#cba6f7"
+        },
+        {
+          "icon": "Zap",
+          "title": "High-Performance Batching & Particles",
+          "subtitle": "Ultra-high-throughput rendering pipelines",
+          "description": "Techniques for rendering tens of thousands of simultaneous entities at locked 60 FPS.",
+          "details": "ParticleContainer strips complex scene-graph overhead to pump raw vertex buffers directly to the GPU. Texture atlases group assets into single BaseTextures to avoid draw-call batch breaks.",
+          "analogy": "Like a freight train loading thousands of identical shipping crates at once rather than sending individual courier trucks.",
+          "primaryFocus": "Bullet hell shoot-em-ups, weather effects (snow/rain), particle explosions, and massive starfields.",
+          "inScope": [
+            "ParticleContainer with selective dynamic properties (position, scale, uv)",
+            "Spritesheet atlas packaging to eliminate batch breaks",
+            "RenderTexture baking for static sub-trees",
+            "Object pooling to avoid GC pauses"
+          ],
+          "outOfScope": [
+            "Complex nested hierarchy inside particle containers",
+            "Custom per-particle shader uniforms"
+          ],
+          "color": "#fab387"
+        }
+      ]
+    }
+  },
+  {
+    "folder": "decision-tree",
+    "type": "decision-tree",
+    "props": {
+      "title": "PixiJS Display Object Selection Guide",
+      "id": "pixi-display-decision-tree",
+      "root": "q_purpose",
+      "nodes": {
+        "q_purpose": {
+          "id": "q_purpose",
+          "choices": [
+            {
+              "text": "Text, Numbers, or Typography",
+              "next": "q_text_frequency"
+            },
+            {
+              "text": "Visual Images, Characters, or Particles",
+              "next": "q_entity_count"
+            },
+            {
+              "text": "Dynamic Vector Shapes or Line Paths",
+              "next": "q_vector_dynamic"
+            }
+          ]
+        },
+        "q_text_frequency": {
+          "id": "q_text_frequency",
+          "choices": [
+            {
+              "text": "Updates frequently (e.g. 60 FPS score counter, damage numbers, timer)",
+              "next": "leaf_bitmap_text"
+            },
+            {
+              "text": "Static or rarely changes (e.g. dialog text, quest log, title heading)",
+              "next": "leaf_pixi_text"
+            }
+          ]
+        },
+        "q_entity_count": {
+          "id": "q_entity_count",
+          "choices": [
+            {
+              "text": "Thousands of simple entities (e.g. bullets, rain, snow, starfield)",
+              "next": "leaf_particle_container"
+            },
+            {
+              "text": "Moderate count (under 1,000) needing hierarchy, rotation, and tinting",
+              "next": "leaf_sprite_container"
+            }
+          ]
+        },
+        "q_vector_dynamic": {
+          "id": "q_vector_dynamic",
+          "choices": [
+            {
+              "text": "Static geometry drawn once (e.g. UI card background, static game board)",
+              "next": "leaf_render_texture_graphics"
+            },
+            {
+              "text": "Dynamic geometry changing every frame (e.g. health bar, debug raycasts)",
+              "next": "leaf_pixi_graphics"
+            }
+          ]
+        },
+        "leaf_bitmap_text": {
+          "id": "leaf_bitmap_text"
+        },
+        "leaf_pixi_text": {
+          "id": "leaf_pixi_text"
+        },
+        "leaf_particle_container": {
+          "id": "leaf_particle_container"
+        },
+        "leaf_sprite_container": {
+          "id": "leaf_sprite_container"
+        },
+        "leaf_render_texture_graphics": {
+          "id": "leaf_render_texture_graphics"
+        },
+        "leaf_pixi_graphics": {
+          "id": "leaf_pixi_graphics"
+        }
+      }
+    }
+  },
+  {
+    "folder": "quiz-taxonomies",
+    "type": "quiz",
+    "props": {
+      "title": "Display Object Taxonomies Quiz",
+      "questions": [
+        {
+          "id": "q_tax_1",
+          "question": "When should you prefer PIXI.ParticleContainer over a standard PIXI.Container?",
+          "choices": [
+            {
+              "id": "c1",
+              "text": "When you need deeply nested hierarchy trees and individual child blur filters",
+              "correct": false,
+              "explanation": "ParticleContainer does not support deep nesting or individual child filters."
+            },
+            {
+              "id": "c2",
+              "text": "When you need to render thousands of flat, high-speed sprites (e.g. bullets, rain, snow) with minimal CPU overhead",
+              "correct": true,
+              "explanation": "ParticleContainer streams flat vertex buffers directly to the GPU shader, bypassing full scene-graph matrix recalculations."
+            },
+            {
+              "id": "c3",
+              "text": "When you are rendering static vector SVG shapes",
+              "correct": false,
+              "explanation": "ParticleContainer is designed exclusively for textured sprite quads."
+            },
+            {
+              "id": "c4",
+              "text": "When you want to display HTML form inputs",
+              "correct": false,
+              "explanation": "HTML inputs are managed in the DOM outside the WebGL canvas."
+            }
+          ],
+          "hint": "ParticleContainer sacrifices complex hierarchy features for raw vertex streaming throughput."
+        },
+        {
+          "id": "q_tax_2",
+          "question": "Why should dynamic 60 FPS numerical counters use PIXI.BitmapText rather than standard PIXI.Text?",
+          "choices": [
+            {
+              "id": "c1",
+              "text": "BitmapText creates no CPU canvas rasterization or GPU texture re-upload churn when strings change",
+              "correct": true,
+              "explanation": "PIXI.Text generates a new offscreen HTML5 2D Canvas texture on every text change, creating VRAM churn and GC pauses. BitmapText merely batches pre-uploaded character glyphs."
+            },
+            {
+              "id": "c2",
+              "text": "Standard PIXI.Text cannot render numbers",
+              "correct": false,
+              "explanation": "PIXI.Text can render any Unicode text string."
+            },
+            {
+              "id": "c3",
+              "text": "BitmapText runs on WebAudio instead of WebGL",
+              "correct": false,
+              "explanation": "BitmapText is a WebGL display object."
+            },
+            {
+              "id": "c4",
+              "text": "BitmapText automatically translates text into 12 languages",
+              "correct": false,
+              "explanation": "Localization is an application-level concern."
+            }
+          ],
+          "hint": "Think about the memory and CPU cost of offscreen canvas rasterization."
+        },
+        {
+          "id": "q_tax_3",
+          "question": "What is the optimal display strategy for a complex static vector UI background drawn with PIXI.Graphics?",
+          "choices": [
+            {
+              "id": "c1",
+              "text": "Redraw the entire vector path inside the 60 FPS Ticker loop",
+              "correct": false,
+              "explanation": "Redrawing vector paths every frame causes unnecessary CPU triangulation overhead."
+            },
+            {
+              "id": "c2",
+              "text": "Draw the paths once and bake them into a reusable Texture via app.renderer.generateTexture(graphics)",
+              "correct": true,
+              "explanation": "Baking static vector geometry into a RenderTexture allows it to render as an ultra-fast batched sprite quad without recurring CPU triangulation."
+            },
+            {
+              "id": "c3",
+              "text": "Convert the vector path into a raw HTML <video> tag",
+              "correct": false,
+              "explanation": "Video tags are for video streams, not static vector shapes."
+            },
+            {
+              "id": "c4",
+              "text": "Disable the GPU and use software rendering",
+              "correct": false,
+              "explanation": "Software rendering is much slower than GPU acceleration."
+            }
+          ],
+          "hint": "Consider baking one-off vector drawings into a GPU texture."
+        }
+      ]
+    }
+  },
+  {
+    "folder": "text-core",
+    "type": "text",
+    "props": {
+      "title": "The PixiJS Render Pipeline",
+      "paragraphs": [
+        "PixiJS is built from the ground up to achieve desktop-class 60+ frames per second (FPS) rendering on the web. While traditional HTML5 Canvas API relies on synchronous CPU drawing commands that become bottlenecked when animating thousands of objects, PixiJS converts your scene graph into optimized GPU vertex buffers.",
+        "Understanding how PixiJS orchestrates coordinate spaces, batch rendering passes, and memory management is the key to creating fluid, stutter-free interactive applications.",
+        "At the heart of PixiJS is the **Display Tree**, rooted at `app.stage`. Every visible element in your application is a node in this tree. When an object moves, scales, or rotates, its transform is computed in two distinct phases:",
+        "**Local Transform**: The entity's position, rotation, scale, pivot, and skew relative to its immediate parent node.",
+        "**World Transform**: A $3 \\times 3$ affine transformation matrix (`PIXI.Matrix`) representing the entity's absolute position, rotation, and scale relative to the root canvas coordinate space.",
+        "During the render loop, PixiJS performs a hierarchical depth-first traversal of the display tree. It multiplies each child's local transformation matrix by its parent's world matrix:",
+        "$$\\text{WorldTransform}_{\\text{child}} = \\text{WorldTransform}_{\\text{parent}} \\times \\text{LocalTransform}_{\\text{child}}$$",
+        "This cascading matrix multiplication allows complex composite game objects — such as a character holding a weapon with its own attached particle emitter — to move, rotate, and scale effortlessly as a single unit without manual trigonometric calculations.",
+        "In WebGL and modern graphics APIs, the CPU communicating with the GPU via individual draw calls (e.g. `gl.drawElements()`) is the single most expensive operation. If an application draws 2,000 sprites with 2,000 individual draw calls, the CPU will spend most of its time in driver overhead, causing framerate drops and stutter.",
+        "PixiJS solves this with its internal **BatchRenderer**:",
+        "**Quad Geometry Buffering**: Instead of issuing a draw call for each sprite, PixiJS extracts the four transformed corner vertices of each sprite quad, its UV texture coordinates, vertex colors, and a texture unit index.",
+        "**Interleaved Buffer Packing**: Thousands of sprite quads are packed into a single continuous float buffer in system RAM and streamed directly to a single WebGL Vertex Buffer Object (VBO).",
+        "**Multi-Texture Binding**: PixiJS detects the maximum number of simultaneous texture samplers supported by the client GPU (typically 8 to 16 texture units). It binds multiple textures at once and passes the texture index as a vertex attribute, allowing sprites using different textures to render in the exact same draw call.",
+        "A batch break occurs when PixiJS is forced to flush its current geometry buffer and issue an immediate draw call before continuing. Batch breaks are triggered by:",
+        "**Exceeding Texture Unit Limits**: Referencing more unique BaseTextures in consecutive sprites than the GPU supports in a single draw pass.",
+        "**Blend Mode Switches**: Changing blend modes (e.g., from `NORMAL` to `ADD` or `MULTIPLY`).",
+        "**Custom Shaders and Filters**: Display objects with custom GLSL shaders or post-processing filters.",
+        "**Interleaved Vector Graphics**: Mixing un-batched `PIXI.Graphics` paths between standard sprites.",
+        "To maintain locked 60 FPS, high-performance applications group sprites by texture atlas and blend mode to minimize batch breaks.",
+        "WebGL applications run inside a sandboxed browser environment with finite Video RAM (VRAM). Unlike standard JavaScript objects, GPU textures and shader programs cannot be garbage-collected automatically by JavaScript engines like V8.",
+        "When you remove a display object from the scene tree (`parent.removeChild(sprite)`), the sprite's JavaScript wrapper may be cleaned up, but the underlying GPU texture buffer remains resident in VRAM.",
+        "To completely prevent memory leaks, you must explicitly destroy display objects and their associated texture assets:",
+        "```typescript",
+        "// Destroy sprite and its private GPU textures",
+        "sprite.destroy({",
+        "children: true,      // Recursively destroy all nested children",
+        "texture: true,       // Destroy the referenced Texture object",
+        "baseTexture: true,   // Free the raw WebGL GPU texture memory",
+        "});",
+        "```",
+        "When using shared texture atlases, set `baseTexture: false` so that destroying one sprite does not invalidate the shared texture atlas used by other active sprites."
+      ]
+    }
+  },
+  {
+    "folder": "reflection-transforms",
+    "type": "reflection-sequence",
+    "props": {
+      "title": "Transform Pipeline Sequencing",
+      "challenges": [
+        {
+          "prompt": "Order the stages of coordinate matrix transformation from local entity properties to canvas screen viewport:",
+          "items": [
+            {
+              "id": "t-3",
+              "text": "Child local matrix is multiplied by parent worldTransform matrix during depth-first traversal",
+              "icon": "Layers"
+            },
+            {
+              "id": "t-1",
+              "text": "Developer modifies entity local properties (x, y, scale, rotation, pivot)",
+              "icon": "Edit"
+            },
+            {
+              "id": "t-5",
+              "text": "Vertex Buffer Object coordinates are transformed by projection matrix onto WebGL viewport",
+              "icon": "Monitor"
+            },
+            {
+              "id": "t-2",
+              "text": "Local affine transformation matrix (a, b, c, d, tx, ty) is constructed",
+              "icon": "Grid"
+            },
+            {
+              "id": "t-4",
+              "text": "Four corner quad vertices are multiplied by resulting worldTransform to produce absolute coordinates",
+              "icon": "Box"
+            }
+          ],
+          "solution": [
+            "t-1",
+            "t-2",
+            "t-3",
+            "t-4",
+            "t-5"
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "folder": "flowchart",
+    "type": "flowchart",
+    "props": {
+      "title": "60 FPS Frame Render Loop",
+      "schema": {
+        "entities": {
+          "app_ticker": {
+            "title": "App Ticker",
+            "desc": "Internal animation clock driven by window.requestAnimationFrame",
+            "type": "Actor"
+          },
+          "ticker_manager": {
+            "title": "Ticker Manager",
+            "desc": "Calculates delta time multipliers and triggers frame tick listeners",
+            "type": "Aggregate"
+          },
+          "scene_graph": {
+            "title": "Scene Graph Tree",
+            "desc": "Hierarchical display tree managing local and world transform matrices",
+            "type": "Aggregate"
+          },
+          "batch_renderer": {
+            "title": "Batch Renderer",
+            "desc": "Buffers quad vertices, UV coordinates, and multi-texture indices",
+            "type": "Aggregate"
+          },
+          "webgl_driver": {
+            "title": "WebGL / WebGPU Driver",
+            "desc": "Hardware graphics pipeline executing shader draw calls",
+            "type": "External API"
+          },
+          "pol_step_tick": {
+            "title": "When Screen Refresh Triggered",
+            "desc": "Ticker calculates elapsed time and fires frame update",
+            "type": "Policy",
+            "root": false
+          },
+          "cmd_step_tick": {
+            "title": "Dispatch Delta Time Tick",
+            "desc": "Ticker calculates elapsed time and fires frame update",
+            "type": "Command"
+          },
+          "evt_evt_tick_dispatched": {
+            "title": "Delta Tick Dispatched",
+            "desc": "Frame interval and delta multiplier sent to scene graph",
+            "type": "Event"
+          },
+          "pol_step_transforms": {
+            "title": "When Delta Tick Received",
+            "desc": "Traverses container hierarchy to compute absolute world coordinates",
+            "type": "Policy",
+            "root": false
+          },
+          "cmd_step_transforms": {
+            "title": "Update Local & World Transform Matrices",
+            "desc": "Traverses container hierarchy to compute absolute world coordinates",
+            "type": "Command"
+          },
+          "evt_evt_transforms_updated": {
+            "title": "World Transforms Updated",
+            "desc": "Hierarchical matrix multiplications complete for all display nodes",
+            "type": "Event"
+          },
+          "pol_step_traverse": {
+            "title": "When Transforms Validated",
+            "desc": "Collects visible sprites and skips hidden or out-of-bound nodes",
+            "type": "Policy",
+            "root": false
+          },
+          "cmd_step_traverse": {
+            "title": "Traverse Display Tree & Cull Offscreen Nodes",
+            "desc": "Collects visible sprites and skips hidden or out-of-bound nodes",
+            "type": "Command"
+          },
+          "scene_graph2": {
+            "title": "Scene Graph Tree",
+            "desc": "Hierarchical display tree managing local and world transform matrices",
+            "type": "Aggregate"
+          },
+          "evt_evt_visible_nodes_collected": {
+            "title": "Visible Sprites Collected",
+            "desc": "Render list assembled with visible textured quads",
+            "type": "Event"
+          },
+          "pol_step_batch": {
+            "title": "When Sprites Queued For Rendering",
+            "desc": "Assembles maximum quad buffers before hitting batch boundary",
+            "type": "Policy",
+            "root": false
+          },
+          "cmd_step_batch": {
+            "title": "Pack Quad Vertices Into Multi-Texture Batch",
+            "desc": "Assembles maximum quad buffers before hitting batch boundary",
+            "type": "Command"
+          },
+          "evt_evt_batches_assembled": {
+            "title": "Batch Geometry Buffers Packed",
+            "desc": "Vertex and UV buffers filled for compatible sprites sharing textures",
+            "type": "Event"
+          },
+          "pol_step_draw": {
+            "title": "When Batch Capacity Reached Or State Changes",
+            "desc": "WebGL issues gl.drawElements to render batched geometry",
+            "type": "Policy",
+            "root": false
+          },
+          "cmd_step_draw": {
+            "title": "Execute GPU Draw Call",
+            "desc": "WebGL issues gl.drawElements to render batched geometry",
+            "type": "Command"
+          },
+          "evt_evt_frame_rendered": {
+            "title": "Frame Rendered & Displayed",
+            "desc": "Framebuffer swapped to canvas context at locked 60 FPS",
+            "type": "Event"
+          }
+        },
+        "relations": [
+          {
+            "id": "r1",
+            "from": "app_ticker",
+            "to": "pol_step_tick",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r2",
+            "from": "pol_step_tick",
+            "to": "cmd_step_tick",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r3",
+            "from": "cmd_step_tick",
+            "to": "ticker_manager",
+            "handledBy": true,
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r4",
+            "from": "ticker_manager",
+            "to": "evt_evt_tick_dispatched",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r5",
+            "from": "evt_evt_tick_dispatched",
+            "to": "pol_step_transforms",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r6",
+            "from": "pol_step_transforms",
+            "to": "cmd_step_transforms",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r7",
+            "from": "cmd_step_transforms",
+            "to": "scene_graph",
+            "handledBy": true,
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r8",
+            "from": "scene_graph",
+            "to": "evt_evt_transforms_updated",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r9",
+            "from": "evt_evt_transforms_updated",
+            "to": "pol_step_traverse",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r10",
+            "from": "pol_step_traverse",
+            "to": "cmd_step_traverse",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r11",
+            "from": "cmd_step_traverse",
+            "to": "scene_graph2",
+            "handledBy": true,
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r12",
+            "from": "scene_graph2",
+            "to": "evt_evt_visible_nodes_collected",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r13",
+            "from": "evt_evt_visible_nodes_collected",
+            "to": "pol_step_batch",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r14",
+            "from": "pol_step_batch",
+            "to": "cmd_step_batch",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r15",
+            "from": "cmd_step_batch",
+            "to": "batch_renderer",
+            "handledBy": true,
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r16",
+            "from": "batch_renderer",
+            "to": "evt_evt_batches_assembled",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r17",
+            "from": "evt_evt_batches_assembled",
+            "to": "pol_step_draw",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r18",
+            "from": "pol_step_draw",
+            "to": "cmd_step_draw",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r19",
+            "from": "cmd_step_draw",
+            "to": "webgl_driver",
+            "handledBy": true,
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r20",
+            "from": "webgl_driver",
+            "to": "evt_evt_frame_rendered",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          }
+        ],
+        "journeys": [
+          {
+            "id": "render_loop",
+            "label": "60 FPS Render Pipeline Loop",
+            "description": "Complete execution lifecycle of a single PixiJS frame from requestAnimationFrame tick to GPU draw call.",
+            "steps": [
+              {
+                "nodeIds": [
+                  "app_ticker",
+                  "pol_step_tick",
+                  "cmd_step_tick",
+                  "ticker_manager",
+                  "evt_evt_tick_dispatched"
+                ],
+                "title": "1. Animation Tick",
+                "reason": "App ticker receives requestAnimationFrame pulse and computes elapsed delta time.",
+                "processGroup": "planning"
+              },
+              {
+                "nodeIds": [
+                  "pol_step_transforms",
+                  "cmd_step_transforms",
+                  "scene_graph",
+                  "evt_evt_transforms_updated"
+                ],
+                "title": "2. Transform Propagation",
+                "reason": "Scene graph multiplies local transforms by parent world matrices.",
+                "processGroup": "execution"
+              },
+              {
+                "nodeIds": [
+                  "pol_step_traverse",
+                  "cmd_step_traverse",
+                  "scene_graph2",
+                  "evt_evt_visible_nodes_collected"
+                ],
+                "title": "3. Scene Traversal",
+                "reason": "Culling and sorting visible display objects into a render list.",
+                "processGroup": "execution"
+              },
+              {
+                "nodeIds": [
+                  "pol_step_batch",
+                  "cmd_step_batch",
+                  "batch_renderer",
+                  "evt_evt_batches_assembled"
+                ],
+                "title": "4. Geometry Batching",
+                "reason": "BatchRenderer packs vertex coordinates, UVs, and texture indices.",
+                "processGroup": "execution"
+              },
+              {
+                "nodeIds": [
+                  "pol_step_draw",
+                  "cmd_step_draw",
+                  "webgl_driver",
+                  "evt_evt_frame_rendered"
+                ],
+                "title": "5. GPU Draw Execution",
+                "reason": "WebGL driver executes shader program and swaps canvas buffer.",
+                "processGroup": "evaluation"
+              }
+            ]
+          }
+        ],
+        "rawSteps": [
+          {
+            "type": "linear",
+            "id": "step_tick",
+            "initiatedBy": {
+              "_tag": "ref",
+              "id": "app_ticker"
+            },
+            "policy": "When Screen Refresh Triggered",
+            "command": "Dispatch Delta Time Tick",
+            "handledBy": {
+              "_tag": "ref",
+              "id": "ticker_manager"
+            },
+            "resultEvents": [
+              {
+                "id": "evt_tick_dispatched",
+                "title": "Delta Tick Dispatched",
+                "desc": "Frame interval and delta multiplier sent to scene graph"
+              }
+            ],
+            "continuesAs": "step_transforms",
+            "description": "Ticker calculates elapsed time and fires frame update"
+          },
+          {
+            "type": "linear",
+            "id": "step_transforms",
+            "policy": "When Delta Tick Received",
+            "command": "Update Local & World Transform Matrices",
+            "handledBy": {
+              "_tag": "ref",
+              "id": "scene_graph"
+            },
+            "resultEvents": [
+              {
+                "id": "evt_transforms_updated",
+                "title": "World Transforms Updated",
+                "desc": "Hierarchical matrix multiplications complete for all display nodes"
+              }
+            ],
+            "continuesAs": "step_traverse",
+            "description": "Traverses container hierarchy to compute absolute world coordinates"
+          },
+          {
+            "type": "linear",
+            "id": "step_traverse",
+            "policy": "When Transforms Validated",
+            "command": "Traverse Display Tree & Cull Offscreen Nodes",
+            "handledBy": {
+              "_tag": "ref",
+              "id": "scene_graph"
+            },
+            "resultEvents": [
+              {
+                "id": "evt_visible_nodes_collected",
+                "title": "Visible Sprites Collected",
+                "desc": "Render list assembled with visible textured quads"
+              }
+            ],
+            "continuesAs": "step_batch",
+            "description": "Collects visible sprites and skips hidden or out-of-bound nodes"
+          },
+          {
+            "type": "linear",
+            "id": "step_batch",
+            "policy": "When Sprites Queued For Rendering",
+            "command": "Pack Quad Vertices Into Multi-Texture Batch",
+            "handledBy": {
+              "_tag": "ref",
+              "id": "batch_renderer"
+            },
+            "resultEvents": [
+              {
+                "id": "evt_batches_assembled",
+                "title": "Batch Geometry Buffers Packed",
+                "desc": "Vertex and UV buffers filled for compatible sprites sharing textures"
+              }
+            ],
+            "continuesAs": "step_draw",
+            "description": "Assembles maximum quad buffers before hitting batch boundary"
+          },
+          {
+            "type": "linear",
+            "id": "step_draw",
+            "policy": "When Batch Capacity Reached Or State Changes",
+            "command": "Execute GPU Draw Call",
+            "handledBy": {
+              "_tag": "ref",
+              "id": "webgl_driver"
+            },
+            "resultEvents": [
+              {
+                "id": "evt_frame_rendered",
+                "title": "Frame Rendered & Displayed",
+                "desc": "Framebuffer swapped to canvas context at locked 60 FPS"
+              }
+            ],
+            "description": "WebGL issues gl.drawElements to render batched geometry"
+          }
+        ]
+      }
+    }
+  },
+  {
+    "folder": "reflection-sequence",
+    "type": "reflection-sequence",
+    "props": {
+      "title": "Render Loop Sequencing",
+      "challenges": [
+        {
+          "prompt": "Arrange the stages of the PixiJS Render Loop in correct chronological order from frame tick to screen output:",
+          "items": [
+            {
+              "id": "item-3",
+              "text": "Renderer traverses display tree, evaluating visibility, alpha, and culling",
+              "icon": "Eye"
+            },
+            {
+              "id": "item-1",
+              "text": "Ticker receives requestAnimationFrame and computes frame delta time",
+              "icon": "Clock"
+            },
+            {
+              "id": "item-5",
+              "text": "WebGL driver binds shader program and issues batched drawElements call to swap framebuffer",
+              "icon": "Monitor"
+            },
+            {
+              "id": "item-2",
+              "text": "Scene graph multiplies local matrices into absolute worldTransform properties",
+              "icon": "Layers"
+            },
+            {
+              "id": "item-4",
+              "text": "BatchRenderer packs sprite quad vertices, UVs, and texture indices into vertex buffers",
+              "icon": "Package"
+            }
+          ],
+          "solution": [
+            "item-1",
+            "item-2",
+            "item-3",
+            "item-4",
+            "item-5"
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "folder": "tradeoff-sandbox",
+    "type": "tradeoff-sandbox",
+    "props": {
+      "title": "Rendering Architecture Trade-offs",
+      "scenarios": [
+        {
+          "id": "pixi-rendering-architecture",
+          "title": "2D Rendering & Asset Architecture Strategy",
+          "description": "Optimize rendering performance, memory footprint, and visual fidelity for a 2D web game running across mobile and desktop devices.",
+          "metrics": [
+            {
+              "id": "fps_performance",
+              "label": "FPS Performance",
+              "baseValue": 50,
+              "min": 0,
+              "max": 100,
+              "direction": "higher"
+            },
+            {
+              "id": "draw_calls",
+              "label": "Draw Call Overhead",
+              "baseValue": 60,
+              "min": 0,
+              "max": 100,
+              "direction": "lower"
+            },
+            {
+              "id": "memory_footprint",
+              "label": "GPU Memory Footprint",
+              "baseValue": 45,
+              "min": 0,
+              "max": 100,
+              "direction": "lower"
+            },
+            {
+              "id": "visual_fidelity",
+              "label": "Visual Fidelity & Effects",
+              "baseValue": 70,
+              "min": 0,
+              "max": 100,
+              "direction": "higher"
+            }
+          ],
+          "steps": [
+            {
+              "id": "step_assets",
+              "title": "1. Asset Packaging & Texture Strategy",
+              "description": "Select how image assets, sprites, and animations are bundled and delivered to the GPU.",
+              "recommended": "atlas_spritesheet",
+              "choices": [
+                {
+                  "id": "individual_pngs",
+                  "label": "Individual Loose PNG Images",
+                  "description": "Load each character, prop, and particle as separate PNG image files on demand.",
+                  "metrics": {
+                    "fps_performance": -25,
+                    "draw_calls": 35,
+                    "memory_footprint": 10,
+                    "visual_fidelity": 0
+                  },
+                  "pros": [
+                    {
+                      "title": "Simple asset pipeline",
+                      "description": "No sprite sheet build step required during development."
+                    }
+                  ],
+                  "cons": [
+                    {
+                      "title": "Severe batch breaks",
+                      "description": "Each distinct texture forces a separate GPU draw call."
+                    },
+                    {
+                      "title": "High HTTP overhead",
+                      "description": "Dozens of network requests during initial scene load."
+                    }
+                  ],
+                  "whyThisFits": "Quick prototypes with fewer than 50 sprites on screen.",
+                  "whenToUse": "Early proof-of-concepts before asset pipeline automation."
+                },
+                {
+                  "id": "atlas_spritesheet",
+                  "label": "Packed Texture Atlas (Spritesheet)",
+                  "description": "Pack all sprites, UI icons, and animations into unified 2048x2048 PNG/WebP atlases with JSON frames.",
+                  "metrics": {
+                    "fps_performance": 35,
+                    "draw_calls": -35,
+                    "memory_footprint": -15,
+                    "visual_fidelity": 10
+                  },
+                  "pros": [
+                    {
+                      "title": "Flawless batching",
+                      "description": "Thousands of sprites render in a single GPU draw call."
+                    },
+                    {
+                      "title": "Optimized VRAM allocation",
+                      "description": "Power-of-two GPU textures reduce memory fragmentation."
+                    }
+                  ],
+                  "cons": [
+                    {
+                      "title": "Build pipeline step",
+                      "description": "Requires TexturePacker or Spritesheet tool in build process."
+                    }
+                  ],
+                  "whyThisFits": "Production games and high-performance interactive apps.",
+                  "whenToUse": "Standard architecture for all production PixiJS applications."
+                }
+              ]
+            },
+            {
+              "id": "step_container",
+              "title": "2. Display Architecture for 10,000 Moving Entities",
+              "description": "Choose container primitives for managing bullets, particles, and background elements.",
+              "recommended": "particle_container",
+              "choices": [
+                {
+                  "id": "standard_containers",
+                  "label": "Nested PIXI.Container Tree",
+                  "description": "Organize all 10,000 entities inside standard nested Container nodes with full transform inheritance.",
+                  "metrics": {
+                    "fps_performance": -30,
+                    "draw_calls": 10,
+                    "memory_footprint": 20,
+                    "visual_fidelity": 15
+                  },
+                  "pros": [
+                    {
+                      "title": "Full feature set",
+                      "description": "Supports individual masking, filters, and deep sub-nesting."
+                    }
+                  ],
+                  "cons": [
+                    {
+                      "title": "Heavy CPU transform overhead",
+                      "description": "Matrix multiplication for 10,000 nodes drops framerate on mobile CPUs."
+                    }
+                  ],
+                  "whyThisFits": "Complex UI screens with deeply nested widgets.",
+                  "whenToUse": "When objects need individual interactive children and masks."
+                },
+                {
+                  "id": "particle_container",
+                  "label": "Flat PIXI.ParticleContainer",
+                  "description": "Stream flat vertex buffers directly to the GPU using ParticleContainer with locked properties.",
+                  "metrics": {
+                    "fps_performance": 40,
+                    "draw_calls": -25,
+                    "memory_footprint": -20,
+                    "visual_fidelity": -5
+                  },
+                  "pros": [
+                    {
+                      "title": "Blazing 60+ FPS throughput",
+                      "description": "Direct GPU buffer streaming handles 50,000+ sprites effortlessly."
+                    },
+                    {
+                      "title": "Minimal CPU overhead",
+                      "description": "Bypasses scene-graph matrix traversal."
+                    }
+                  ],
+                  "cons": [
+                    {
+                      "title": "Restricted feature set",
+                      "description": "No deep nesting, child masks, or individual child filters."
+                    }
+                  ],
+                  "whyThisFits": "Particle systems, bullet hells, weather effects, and data visualizers.",
+                  "whenToUse": "Whenever rendering thousands of flat, identical sprite instances."
+                }
+              ]
+            },
+            {
+              "id": "step_text",
+              "title": "3. UI Text & Scoreboard Rendering",
+              "description": "Determine the typography strategy for rapidly updating HUD numbers and dialog strings.",
+              "recommended": "bitmap_text",
+              "choices": [
+                {
+                  "id": "canvas_text",
+                  "label": "PIXI.Text (Canvas Rasterization)",
+                  "description": "Use standard PIXI.Text with CSS font family, gradient fills, and drop shadows.",
+                  "metrics": {
+                    "fps_performance": -20,
+                    "draw_calls": 15,
+                    "memory_footprint": 25,
+                    "visual_fidelity": 15
+                  },
+                  "pros": [
+                    {
+                      "title": "Native system font support",
+                      "description": "Renders any installed font with full CSS styling."
+                    }
+                  ],
+                  "cons": [
+                    {
+                      "title": "Garbage collection & texture churn",
+                      "description": "Every number change re-rasterizes offscreen canvas and re-uploads GPU texture."
+                    }
+                  ],
+                  "whyThisFits": "Static text labels that never change after scene initialization.",
+                  "whenToUse": "Headings, titles, and localized dialog strings loaded once."
+                },
+                {
+                  "id": "bitmap_text",
+                  "label": "PIXI.BitmapText (Pre-baked Font Atlas)",
+                  "description": "Render text using pre-baked XML/JSON font atlas glyphs as batched quads.",
+                  "metrics": {
+                    "fps_performance": 25,
+                    "draw_calls": -20,
+                    "memory_footprint": -10,
+                    "visual_fidelity": 5
+                  },
+                  "pros": [
+                    {
+                      "title": "Zero texture re-upload overhead",
+                      "description": "Modifying text at 60 FPS creates zero garbage collection pauses."
+                    },
+                    {
+                      "title": "Fully batched",
+                      "description": "Draws alongside sprites in the same draw call."
+                    }
+                  ],
+                  "cons": [
+                    {
+                      "title": "Fixed font sizes",
+                      "description": "Scaling bitmap fonts beyond native resolution causes pixelation or requires MSDF."
+                    }
+                  ],
+                  "whyThisFits": "Rapidly updating HUD counters, combat damage numbers, and health bars.",
+                  "whenToUse": "Any text that changes every frame or requires locked 60 FPS performance."
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "folder": "quiz-optimization",
+    "type": "quiz",
+    "props": {
+      "title": "Performance & Memory Optimization Quiz",
+      "questions": [
+        {
+          "id": "q_opt_1",
+          "question": "Why should you pass `{ children: true, texture: true, baseTexture: true }` when destroying disposable temporary sprites?",
+          "choices": [
+            {
+              "id": "c1",
+              "text": "To ensure both the JavaScript DOM objects and the underlying WebGL VRAM texture allocations are freed immediately",
+              "correct": true,
+              "explanation": "Without texture/baseTexture flags, GPU texture memory remains allocated on the graphics card even after JavaScript garbage collection sweeps the sprite."
+            },
+            {
+              "id": "c2",
+              "text": "To restart the browser's GPU acceleration driver",
+              "correct": false,
+              "explanation": "It manages application-level resource disposal without restarting drivers."
+            },
+            {
+              "id": "c3",
+              "text": "To automatically reload higher-resolution textures",
+              "correct": false,
+              "explanation": "Destroy completely disposes of the resource."
+            },
+            {
+              "id": "c4",
+              "text": "To clear the browser's HTTP cache",
+              "correct": false,
+              "explanation": "HTTP cache is distinct from WebGL GPU video memory."
+            }
+          ],
+          "hint": "Think about GPU memory leaks vs JavaScript CPU memory leaks."
+        },
+        {
+          "id": "q_opt_2",
+          "question": "What is the primary performance drawback of applying post-processing Filters (like BlurFilter) to many individual sprites?",
+          "choices": [
+            {
+              "id": "c1",
+              "text": "Each filter pass renders the target into an offscreen framebuffer, forcing render target swaps and interrupting batch rendering",
+              "correct": true,
+              "explanation": "Filters require offscreen render texture passes that break the batch renderer and incur GPU memory bandwidth costs."
+            },
+            {
+              "id": "c2",
+              "text": "Filters delete sprite textures from disk",
+              "correct": false,
+              "explanation": "Disk assets are unaffected."
+            },
+            {
+              "id": "c3",
+              "text": "Filters disable all keyboard input listeners",
+              "correct": false,
+              "explanation": "Input handling is unrelated to shader post-processing."
+            },
+            {
+              "id": "c4",
+              "text": "Filters convert all 2D textures to 3D voxel models",
+              "correct": false,
+              "explanation": "PixiJS remains a 2D rendering pipeline."
+            }
+          ],
+          "hint": "Consider the cost of switching WebGL framebuffers for offscreen render targets."
+        }
+      ]
+    }
+  }
+]

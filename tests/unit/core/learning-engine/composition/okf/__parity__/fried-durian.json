@@ -1,0 +1,1748 @@
+[
+  {
+    "folder": "intro",
+    "type": "text",
+    "props": {
+      "title": "ทุเรียนทอด — Fried Durian Snack",
+      "heading": "เรียนรู้วิธีทำขนมทุเรียนทอดกรอบอร่อยแบบไทย",
+      "intro": {
+        "what": "เรียนรู้วิธีทำทุเรียนทอด — ขนมไทยยอดนิยมจากทุเรียนดิบ ทอดจนกรอบ เคลือบน้ำตาลหวานหอม",
+        "why": "เข้าใจขั้นตอนและเทคนิคในการทำทุเรียนทอดให้อร่อย กรอบ กำลังดี",
+        "next": "ถัดไป: สำรวจความสัมพันธ์ของวัตถุดิบและกระบวนการใน Concept Map"
+      },
+      "paragraphs": [
+        "ทุเรียนทอดเป็นขนมไทยยอดนิยมที่ทำจากเนื้อทุเรียนดิบหรือทุเรียนอ่อน นำมาหั่นเป็นชิ้นบางๆ แล้วทอดในน้ำมันจนกรอบทองเหลืองอร่าม สามารถทานเปล่าๆ หรือเคลือบน้ำตาลทรายหรือน้ำตาลปี๊บเพื่อเพิ่มรสชาติหวานมัน",
+        "ความพิเศษของทุเรียนทอดอยู่ที่การเลือกทุเรียน — ต้องเป็นทุเรียนดิบหรือทุเรียนอ่อนที่เนื้อแน่น ไม่สุกเกินไป เมื่อทอดแล้วจะกรอบนอกนุ่มใน มีกลิ่นหอมของทุเรียนชัดเจน",
+        "ทุเรียนทอดได้รับความนิยมทั้งในฐานะขนมกินเล่น อาหารว่าง และของฝาก khas ไทย สามารถพบเห็นได้ตามตลาดนัด ร้านขนมไทย และร้าน roadside ตลอดช่วงหน้าทุเรียน",
+        "เคล็ดลับสำคัญคือการใช้เกลือละลายในน้ำก่อนทอด เพื่อช่วยให้ทุเรียนทอดกรอบนานขึ้น และไม่ดูดซับน้ำมันมากเกินไป"
+      ]
+    }
+  },
+  {
+    "folder": "concept-map",
+    "type": "concept-map",
+    "props": {
+      "title": "แผนที่แนวคิดทุเรียนทอด",
+      "intro": {
+        "what": "แผนภาพแสดงความสัมพันธ์ระหว่างวัตถุดิบ กระบวนการทอด และผลลัพธ์ของทุเรียนทอด",
+        "why": "การสร้างแผนที่ความคิดช่วยให้เห็นภาพรวมก่อนลงรายละเอียด",
+        "next": "ถัดไป: เรียนรู้คำศัพท์สำคัญกับ Flashcards"
+      },
+      "nodes": {
+        "durian_raw": {
+          "id": "durian_raw",
+          "title": "ทุเรียนดิบ/อ่อน",
+          "category": "ingredient"
+        },
+        "durian_flesh": {
+          "id": "durian_flesh",
+          "title": "เนื้อทุเรียน",
+          "category": "ingredient"
+        },
+        "oil": {
+          "id": "oil",
+          "title": "น้ำมันพืช",
+          "category": "ingredient"
+        },
+        "salt_water": {
+          "id": "salt_water",
+          "title": "น้ำเกลือ",
+          "category": "ingredient"
+        },
+        "sugar": {
+          "id": "sugar",
+          "title": "น้ำตาลทราย/ปี๊บ",
+          "category": "ingredient"
+        },
+        "pan": {
+          "id": "pan",
+          "title": "กระทะ",
+          "category": "tool"
+        },
+        "slicing": {
+          "id": "slicing",
+          "title": "หั่นชิ้นบาง",
+          "category": "process"
+        },
+        "frying": {
+          "id": "frying",
+          "title": "ทอด",
+          "category": "process"
+        },
+        "draining": {
+          "id": "draining",
+          "title": "สะเด็ดน้ำมัน",
+          "category": "process"
+        },
+        "coating": {
+          "id": "coating",
+          "title": "เคลือบน้ำตาล",
+          "category": "process"
+        },
+        "crispy": {
+          "id": "crispy",
+          "title": "กรอบ",
+          "category": "quality"
+        },
+        "golden": {
+          "id": "golden",
+          "title": "สีทอง",
+          "category": "quality"
+        },
+        "aroma": {
+          "id": "aroma",
+          "title": "กลิ่นหอมทุเรียน",
+          "category": "quality"
+        },
+        "plain_fried": {
+          "id": "plain_fried",
+          "title": "ทุเรียนทอดเปล่า",
+          "category": "result"
+        },
+        "sugar_coated": {
+          "id": "sugar_coated",
+          "title": "ทุเรียนทอดเคลือบน้ำตาล",
+          "category": "result"
+        },
+        "jemut_jemut": {
+          "id": "jemut_jemut",
+          "title": "เจมุดเจมุดทุเรียน",
+          "category": "result"
+        }
+      },
+      "edges": [
+        {
+          "from": "durian_raw",
+          "to": "durian_flesh",
+          "label": "แยกเนื้อ"
+        },
+        {
+          "from": "durian_flesh",
+          "to": "slicing",
+          "label": "ผ่านขั้นตอน"
+        },
+        {
+          "from": "slicing",
+          "to": "frying",
+          "label": "นำไป"
+        },
+        {
+          "from": "oil",
+          "to": "frying",
+          "label": "ใช้"
+        },
+        {
+          "from": "salt_water",
+          "to": "frying",
+          "label": "เติมตอนทอด"
+        },
+        {
+          "from": "pan",
+          "to": "frying",
+          "label": "ใช้"
+        },
+        {
+          "from": "frying",
+          "to": "draining",
+          "label": "แล้ว"
+        },
+        {
+          "from": "draining",
+          "to": "crispy",
+          "label": "ได้"
+        },
+        {
+          "from": "draining",
+          "to": "golden",
+          "label": "ได้"
+        },
+        {
+          "from": "frying",
+          "to": "aroma",
+          "label": "เกิด"
+        },
+        {
+          "from": "draining",
+          "to": "plain_fried",
+          "label": "สำเร็จเป็น"
+        },
+        {
+          "from": "sugar",
+          "to": "coating",
+          "label": "ใช้"
+        },
+        {
+          "from": "draining",
+          "to": "coating",
+          "label": "นำไป"
+        },
+        {
+          "from": "coating",
+          "to": "sugar_coated",
+          "label": "สำเร็จเป็น"
+        },
+        {
+          "from": "durian_flesh",
+          "to": "jemut_jemut",
+          "label": "นวด+ทอดเป็น"
+        }
+      ]
+    }
+  },
+  {
+    "folder": "flashcards",
+    "type": "flashcards",
+    "props": {
+      "title": "คำศัพท์สำคัญ",
+      "intro": {
+        "what": "คำศัพท์ที่เกี่ยวข้องกับการทำทุเรียนทอด",
+        "why": "จำคำศัพท์ให้แม่นยำก่อนลงมือทำ",
+        "next": "ถัดไป: ประเภทของทุเรียนทอดใน Taxonomy Browser"
+      },
+      "terms": [
+        {
+          "id": "durian_oen",
+          "word": "ทุเรียนอ่อน",
+          "pronunciation": "du-rian on",
+          "category": "วัตถุดิบ",
+          "shortDefinition": "ทุเรียนที่ยังไม่สุก เนื้อแน่น適合สำหรับทอด",
+          "detailedDefinition": "ทุเรียนอ่อนคือทุเรียนที่เก็บเกี่ยวก่อนสุกเต็มที่ เนื้อจะแข็งและแน่นกว่าทุเรียนสุก เหมาะสำหรับการนำไปทอดเพราะจะกรอบเมื่อสัมผัสความร้อน",
+          "whyItMatters": "ทุเรียนสุกเกินไปจะนิ่มและเละเมื่อทอด ต้องเลือกทุเรียนดิบหรืออ่อนเท่านั้น"
+        },
+        {
+          "id": "nam_gluea",
+          "word": "น้ำเกลือ",
+          "pronunciation": "nam glua",
+          "category": "วัตถุดิบ",
+          "shortDefinition": "น้ำที่ผสมเกลือ ใช้ตอนทอดช่วยให้กรอบ",
+          "detailedDefinition": "น้ำเกลือทำจากเกลือ 1 ช้อนโต๊ะ ผสมน้ำเปล่า 400 มิลลิลิตร เติมลงไปในน้ำมันตอนทอดช่วยให้ทุเรียนกรอบนานและไม่ดูดซับน้ำมัน",
+          "whyItMatters": "เคล็ดลับสำคัญที่ทำให้ทุเรียนทอดกรอบนาน ไม่อมน้ำมัน"
+        },
+        {
+          "id": "tan",
+          "word": "ทอด",
+          "pronunciation": "thon",
+          "category": "กระบวนการ",
+          "shortDefinition": "การปรุงอาหารด้วยน้ำมันร้อน",
+          "detailedDefinition": "ทอดคือกระบวนการนำอาหารใส่ลงในน้ำมันร้อน (ประมาณ 170-180°C) จนสุกและกรอบ สำหรับทุเรียนทอด ใช้ไฟกลาง ไม่ต้องทอดนาน",
+          "whyItMatters": "การทอดเป็นหัวใจของสูตรนี้ ต้องควบคุมอุณหภูมิและเวลาให้เหมาะสม"
+        },
+        {
+          "id": "krapong",
+          "word": "กรอบ",
+          "pronunciation": "krapong",
+          "category": "คุณลักษณะ",
+          "shortDefinition": "เนื้อสัมผัสที่แข็งและ碎裂เมื่อเคี้ยว",
+          "detailedDefinition": "กรอบคือเป้าหมายหลักของทุเรียนทอด — เนื้อทุเรียนดิบเมื่อผ่านการทอดจะเปลี่ยนจากเนื้อแน่นเป็นเนื้อกรอบ เคี้ยวกรุบกรอบ",
+          "whyItMatters": "ทุเรียนทอดที่ไม่กรอบคือการทอดที่ล้มเหลว"
+        },
+        {
+          "id": "nueng_tan_iip",
+          "word": "น้ำตาลปี๊บ",
+          "pronunciation": "nam-than peep",
+          "category": "วัตถุดิบ",
+          "shortDefinition": "น้ำตาล棕อ้อยแบบไทย ใช้เคลือบทุเรียนทอด",
+          "detailedDefinition": "น้ำตาลปี๊บเป็นน้ำตาล棕อ้อยที่熬จนเป็นก้อน มีรสหวานลึกและกลิ่นหอมเฉพาะตัว นิยมใช้เคลือบทุเรียนทอดเพื่อเพิ่มรสชาติ",
+          "whyItMatters": "น้ำตาลปี๊บให้รสชาติและกลิ่นที่แตกต่างจากน้ำตาลทราย"
+        },
+        {
+          "id": "krating",
+          "word": "กระทะ",
+          "pronunciation": "kha-ta",
+          "category": "อุปกรณ์",
+          "shortDefinition": "ภาชนะสำหรับทอด",
+          "detailedDefinition": "กระทะสำหรับทอดทุเรียนควรเป็นกระทะที่ลึกพอที่จะใส่น้ำมันได้เพียงพอ ครอบคลุมชิ้นทุเรียน ใช้กระทะเหล็กหรือกระทะเทฟลอนได้",
+          "whyItMatters": "กระทะที่เหมาะสมช่วยควบคุมอุณหภูมิและทำให้ทอดได้สม่ำเสมอ"
+        }
+      ]
+    }
+  },
+  {
+    "folder": "taxonomy",
+    "type": "taxonomy-browser",
+    "props": {
+      "title": "ประเภททุเรียนทอด",
+      "intro": {
+        "what": "สำรวจประเภทของทุเรียนทอดยอดนิยม 3 แบบ",
+        "why": "แต่ละประเภทมีเทคนิคและรสชาติที่แตกต่างกัน",
+        "next": "ถัดไป: ดูส่วนผสมที่ต้องเตรียม"
+      },
+      "categories": [
+        {
+          "icon": "Apple",
+          "title": "ทุเรียนทอดเปล่า",
+          "subtitle": "แบบดั้งเดิม",
+          "description": "ทุเรียนดิบหั่นบางทอดจนกรอบทอง ทานเปล่าหรือจิ้มเกลือ",
+          "details": "แบบเรียบง่ายที่สุด เน้นเนื้อสัมผัสกรอบและกลิ่นทุเรียนแท้ ไม่ต้องเคลือบอะไร เหมาะกับคนที่ชอบรสธรรมชาติ",
+          "analogy": "เหมือนขนมปังปิ้งที่กินเปล่า — เรียบง่ายแต่อร่อย",
+          "primaryFocus": "ความกรอบและกลิ่นทุเรียน",
+          "inScope": [
+            "ทุเรียนดิบหั่นบาง",
+            "ทอดในน้ำมันร้อน",
+            "น้ำเกลือในกระทะ",
+            "สะเด็ดน้ำมัน"
+          ],
+          "outOfScope": [
+            "ไม่เคลือบน้ำตาล",
+            "ไม่裹แป้ง"
+          ],
+          "color": "yellow"
+        },
+        {
+          "icon": "Candy",
+          "title": "ทุเรียนทอดเคลือบน้ำตาล",
+          "subtitle": "หวานกรอบ",
+          "description": "ทุเรียนทอดกรอบเคลือบน้ำตาลทรายหรือน้ำตาลปี๊บ หวานกรอบหอมทุเรียน",
+          "details": "ยอดนิยมที่สุด ทอดเสร็จสะเด็ดน้ำมันแล้วนำมาคลุกหรือน้ำตาลที่熬ละลาย ให้น้ำตาลเคลือบบางๆ รอจนน้ำตาลแข็งตัวจะได้ทุเรียนทอดหวานกรอบ",
+          "analogy": "เหมือนแอปเปิ้ลเคลือบคาราเมล — หวานกรอบหอม",
+          "primaryFocus": "ความหวานสมดุลกับความกรอบ",
+          "inScope": [
+            "ทุเรียนดิบหั่นบางทอดกรอบ",
+            "น้ำตาลทรายหรือน้ำตาลปี๊บ",
+            "熬น้ำตาลให้ละลาย",
+            "คลุกเคลือบ"
+          ],
+          "outOfScope": [
+            "ไม่裹แป้ง",
+            "ไม่ใช่ทุเรียนสุก"
+          ],
+          "color": "peach"
+        },
+        {
+          "icon": "Cookie",
+          "title": "เจมุดเจมุดทุเรียน",
+          "subtitle": "裹แป้งทอด",
+          "description": "เนื้อทุเรียนสุกนวดกับแป้งและน้ำตาล คลึงเป็นก้อนทอดจนกรอบ",
+          "details": "ต่างจากทุเรียนทอดแบบอื่นที่ใช้ทุเรียนดิบ เจมุดเจมุดใช้ทุเรียนสุกมาบดผสมกับแป้งสาลี แป้งข้าวเจ้า แป้งข้าวโพด เบกกิ้งโซดา และน้ำตาล แล้วคลึงเป็นก้อนทอด",
+          "analogy": "เหมือนโดนัทที่มีกลิ่นทุเรียน — แป้นุ่มกรอบนอก",
+          "primaryFocus": "การผสมเนื้อทุเรียนสุกกับแป้ง",
+          "inScope": [
+            "เนื้อทุเรียนสุกบด",
+            "แป้งสาลี+แป้งข้าวเจ้า+แป้งข้าวโพด",
+            "เบกกิ้งโซดา",
+            "คลึงก้อนทอด"
+          ],
+          "outOfScope": [
+            "ไม่ใช่ทุเรียนดิบ",
+            "ไม่ใช่การหั่นชิ้นทอด"
+          ],
+          "color": "mauve"
+        }
+      ]
+    }
+  },
+  {
+    "folder": "ingredients",
+    "type": "bullets",
+    "props": {
+      "title": "ส่วนผสม",
+      "ordered": true,
+      "intro": {
+        "what": "ส่วนผสมที่ต้องเตรียมสำหรับทำทุเรียนทอด",
+        "why": "เตรียมวัตถุดิบให้พร้อมก่อนเริ่มทำ",
+        "next": "ถัดไป: ดูขั้นตอนการทำใน Flowchart"
+      },
+      "items": [
+        {
+          "text": "เนื้อทุเรียนดิบหรือทุเรียนอ่อน 900 กรัม",
+          "children": [
+            {
+              "text": "เลือกทุเรียนที่ยังไม่สุก เนื้อแน่นแข็ง"
+            },
+            {
+              "text": "พันธุ์ Monthong (หมอนทอง) เหมาะที่สุดเพราะเนื้อเยอะเมล็ดเล็ก"
+            },
+            {
+              "text": "แยกเนื้อออกจากเมล็ดและก้าง"
+            }
+          ]
+        },
+        {
+          "text": "น้ำเกลือ — เกลือ 1 ช้อนโต๊ะ + น้ำเปล่า 400 มิลลิลิตร",
+          "children": [
+            {
+              "text": "ผสมให้เกลือละลายก่อน"
+            },
+            {
+              "text": "เตรียมไว้เติมในกระทะตอนทอด"
+            },
+            {
+              "text": "ช่วยให้ทุเรียนกรอบและไม่อมน้ำมัน"
+            }
+          ]
+        },
+        {
+          "text": "น้ำมันพืชสำหรับทอด",
+          "children": [
+            {
+              "text": "ใช้น้ำมันพืชทั่วไป (ถั่วเหลือง ปาล์ม)"
+            },
+            {
+              "text": "น้ำมันต้องลึกพอท่วมชิ้นทุเรียน"
+            },
+            {
+              "text": "อุณหภูมิที่เหมาะสมประมาณ 170-180°C"
+            }
+          ]
+        },
+        {
+          "text": "น้ำตาลทรายหรือน้ำตาลปี๊บ (สำหรับเคลือบ)",
+          "children": [
+            {
+              "text": "น้ำตาลทราย: รสหวานสะอาด"
+            },
+            {
+              "text": "น้ำตาลปี๊บ: รสหวานลึกหอมอ้อย"
+            },
+            {
+              "text": "ตามชอบ — หรือทานเปล่าไม่ต้องเคลือบ"
+            }
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "folder": "flowchart",
+    "type": "flowchart",
+    "props": {
+      "title": "ขั้นตอนการทำทุเรียนทอด",
+      "intro": {
+        "what": "กระบวนการทำทุเรียนทอดตั้งแต่เตรียมวัตถุดิบจนเสิร์ฟ",
+        "why": "เห็นภาพกระบวนการทั้งหมดช่วยให้ทำตามได้ง่าย",
+        "next": "ถัดไป: ทดสอบความรู้กับ Quiz"
+      },
+      "schema": {
+        "entities": {
+          "cook": {
+            "title": "คนทำอาหาร",
+            "desc": "เตรียมวัตถุดิบและทอดทุเรียน",
+            "type": "Actor"
+          },
+          "eater": {
+            "title": "คนทาน",
+            "desc": "ชิมทุเรียนทอด",
+            "type": "Actor"
+          },
+          "durian_raw": {
+            "title": "ทุเรียนดิบ",
+            "desc": "ทุเรียนอ่อน เนื้อแน่น",
+            "type": "Aggregate"
+          },
+          "knife": {
+            "title": "มีด+เขียง",
+            "desc": "อุปกรณ์หั่น",
+            "type": "External API"
+          },
+          "pan_oil": {
+            "title": "กระทะน้ำมัน",
+            "desc": "น้ำมันร้อน 170-180°C",
+            "type": "External API"
+          },
+          "sugar_bowl": {
+            "title": "น้ำตาล",
+            "desc": "น้ำตาลทรายหรือน้ำตาลปี๊บ",
+            "type": "External API"
+          },
+          "pol_step_1": {
+            "title": "เลือกทุเรียนดิบ เนื้อแน่น",
+            "desc": "เลือกทุเรียนดิบ เนื้อแน่น",
+            "type": "Policy",
+            "root": false
+          },
+          "cmd_step_1": {
+            "title": "แยกเนื้อทุเรียน",
+            "desc": "แยกเนื้อทุเรียน",
+            "type": "Command"
+          },
+          "evt_evt_flesh_ready": {
+            "title": "เนื้อทุเรียนพร้อม",
+            "desc": "เนื้อทุเรียนพร้อม",
+            "type": "Event"
+          },
+          "pol_step_2": {
+            "title": "หั่นชิ้นบางสม่ำเสมอ",
+            "desc": "หั่นชิ้นบางสม่ำเสมอ",
+            "type": "Policy",
+            "root": false
+          },
+          "cmd_step_2": {
+            "title": "หั่นชิ้นบาง",
+            "desc": "หั่นชิ้นบาง",
+            "type": "Command"
+          },
+          "cook2": {
+            "title": "คนทำอาหาร",
+            "desc": "เตรียมวัตถุดิบและทอดทุเรียน",
+            "type": "Actor"
+          },
+          "evt_evt_sliced": {
+            "title": "หั่นเสร็จ",
+            "desc": "หั่นเสร็จ",
+            "type": "Event"
+          },
+          "pol_step_3": {
+            "title": "อุ่นน้ำมัน 170-180°C เติมน้ำเกลือ",
+            "desc": "อุ่นน้ำมัน 170-180°C เติมน้ำเกลือ",
+            "type": "Policy",
+            "root": false
+          },
+          "cmd_step_3": {
+            "title": "ตั้งน้ำมันร้อน",
+            "desc": "ตั้งน้ำมันร้อน",
+            "type": "Command"
+          },
+          "cook3": {
+            "title": "คนทำอาหาร",
+            "desc": "เตรียมวัตถุดิบและทอดทุเรียน",
+            "type": "Actor"
+          },
+          "evt_evt_oil_hot": {
+            "title": "น้ำมันร้อนพร้อมทอด",
+            "desc": "น้ำมันร้อนพร้อมทอด",
+            "type": "Event"
+          },
+          "pol_step_4": {
+            "title": "ทอดไฟกลางจนสีทองกรอบ",
+            "desc": "ทอดไฟกลางจนสีทองกรอบ",
+            "type": "Policy",
+            "root": false
+          },
+          "cmd_step_4": {
+            "title": "ทอดทุเรียน",
+            "desc": "ทอดทุเรียน",
+            "type": "Command"
+          },
+          "cook4": {
+            "title": "คนทำอาหาร",
+            "desc": "เตรียมวัตถุดิบและทอดทุเรียน",
+            "type": "Actor"
+          },
+          "pan_oil2": {
+            "title": "กระทะน้ำมัน",
+            "desc": "น้ำมันร้อน 170-180°C",
+            "type": "External API"
+          },
+          "evt_evt_fried": {
+            "title": "ทอดเสร็จ",
+            "desc": "ทอดเสร็จ",
+            "type": "Event"
+          },
+          "pol_step_5": {
+            "title": "ยกขึ้นพักบนกระดาษซับมัน",
+            "desc": "ยกขึ้นพักบนกระดาษซับมัน",
+            "type": "Policy",
+            "root": false
+          },
+          "cmd_step_5": {
+            "title": "สะเด็ดน้ำมัน",
+            "desc": "สะเด็ดน้ำมัน",
+            "type": "Command"
+          },
+          "cook5": {
+            "title": "คนทำอาหาร",
+            "desc": "เตรียมวัตถุดิบและทอดทุเรียน",
+            "type": "Actor"
+          },
+          "knife2": {
+            "title": "มีด+เขียง",
+            "desc": "อุปกรณ์หั่น",
+            "type": "External API"
+          },
+          "evt_evt_drained": {
+            "title": "สะเด็ดน้ำมันเสร็จ",
+            "desc": "สะเด็ดน้ำมันเสร็จ",
+            "type": "Event"
+          },
+          "pol_branch_plain": {
+            "title": "ไม่เคลือบน้ำตาล",
+            "desc": "ไม่เคลือบน้ำตาล",
+            "type": "Policy"
+          },
+          "cmd_branch_plain": {
+            "title": "เสิร์ฟทันที",
+            "desc": "เสิร์ฟทันที",
+            "type": "Command"
+          },
+          "durian_raw2": {
+            "title": "ทุเรียนดิบ",
+            "desc": "ทุเรียนอ่อน เนื้อแน่น",
+            "type": "Aggregate"
+          },
+          "evt_evt_plain_done": {
+            "title": "ทุเรียนทอดเปล่าพร้อมทาน",
+            "desc": "ทุเรียนทอดเปล่าพร้อมทาน",
+            "type": "Event"
+          },
+          "pol_branch_sugar": {
+            "title": "เคลือบน้ำตาล",
+            "desc": "เคลือบน้ำตาล",
+            "type": "Policy"
+          },
+          "cmd_branch_sugar": {
+            "title": "熬น้ำตาลแล้วคลุก",
+            "desc": "熬น้ำตาลแล้วคลุก",
+            "type": "Command"
+          },
+          "eater2": {
+            "title": "คนทาน",
+            "desc": "ชิมทุเรียนทอด",
+            "type": "Actor"
+          },
+          "evt_evt_sugar_done": {
+            "title": "ทุเรียนทอดเคลือบน้ำตาลพร้อมทาน",
+            "desc": "ทุเรียนทอดเคลือบน้ำตาลพร้อมทาน",
+            "type": "Event"
+          }
+        },
+        "relations": [
+          {
+            "id": "r1",
+            "from": "cook",
+            "to": "pol_step_1",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r2",
+            "from": "pol_step_1",
+            "to": "cmd_step_1",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r3",
+            "from": "cmd_step_1",
+            "to": "durian_raw",
+            "handledBy": true,
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r4",
+            "from": "durian_raw",
+            "to": "evt_evt_flesh_ready",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r5",
+            "from": "evt_evt_flesh_ready",
+            "to": "pol_step_2",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r6",
+            "from": "cook2",
+            "to": "pol_step_2",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r7",
+            "from": "pol_step_2",
+            "to": "cmd_step_2",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r8",
+            "from": "cmd_step_2",
+            "to": "knife",
+            "handledBy": true,
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r9",
+            "from": "knife",
+            "to": "evt_evt_sliced",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r10",
+            "from": "evt_evt_sliced",
+            "to": "pol_step_3",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r11",
+            "from": "cook3",
+            "to": "pol_step_3",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r12",
+            "from": "pol_step_3",
+            "to": "cmd_step_3",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r13",
+            "from": "cmd_step_3",
+            "to": "pan_oil",
+            "handledBy": true,
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r14",
+            "from": "pan_oil",
+            "to": "evt_evt_oil_hot",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r15",
+            "from": "evt_evt_oil_hot",
+            "to": "pol_step_4",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r16",
+            "from": "cook4",
+            "to": "pol_step_4",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r17",
+            "from": "pol_step_4",
+            "to": "cmd_step_4",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r18",
+            "from": "cmd_step_4",
+            "to": "pan_oil2",
+            "handledBy": true,
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r19",
+            "from": "pan_oil2",
+            "to": "evt_evt_fried",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r20",
+            "from": "evt_evt_fried",
+            "to": "pol_step_5",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r21",
+            "from": "cook5",
+            "to": "pol_step_5",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r22",
+            "from": "pol_step_5",
+            "to": "cmd_step_5",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r23",
+            "from": "cmd_step_5",
+            "to": "knife2",
+            "handledBy": true,
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r24",
+            "from": "knife2",
+            "to": "evt_evt_drained",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r25",
+            "from": "evt_evt_drained",
+            "to": "pol_branch_plain",
+            "label": "แบบเปล่า",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r26",
+            "from": "pol_branch_plain",
+            "to": "cmd_branch_plain",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r27",
+            "from": "cmd_branch_plain",
+            "to": "durian_raw2",
+            "handledBy": true,
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r28",
+            "from": "durian_raw2",
+            "to": "eater",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r29",
+            "from": "durian_raw2",
+            "to": "evt_evt_plain_done",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r30",
+            "from": "evt_evt_drained",
+            "to": "pol_branch_sugar",
+            "label": "เคลือบน้ำตาล",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r31",
+            "from": "pol_branch_sugar",
+            "to": "cmd_branch_sugar",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r32",
+            "from": "cmd_branch_sugar",
+            "to": "sugar_bowl",
+            "handledBy": true,
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r33",
+            "from": "sugar_bowl",
+            "to": "eater2",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r34",
+            "from": "sugar_bowl",
+            "to": "evt_evt_sugar_done",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          }
+        ],
+        "journeys": [
+          {
+            "id": "journey_plain",
+            "label": "ทุเรียนทอดเปล่า",
+            "description": "กระบวนการทำทุเรียนทอดแบบไม่เคลือบน้ำตาล",
+            "steps": [
+              {
+                "nodeIds": [
+                  "cook",
+                  "pol_step_1",
+                  "cmd_step_1",
+                  "durian_raw",
+                  "evt_evt_flesh_ready"
+                ],
+                "title": "เตรียมเนื้อทุเรียน",
+                "reason": "แยกเนื้อทุเรียนดิบออกจากเมล็ด",
+                "processGroup": "planning"
+              },
+              {
+                "nodeIds": [
+                  "cook2",
+                  "pol_step_2",
+                  "cmd_step_2",
+                  "knife",
+                  "evt_evt_sliced"
+                ],
+                "title": "หั่นทุเรียน",
+                "reason": "หั่นเป็นชิ้นบางสม่ำเสมอเตรียมพร้อมทอด",
+                "processGroup": "planning"
+              },
+              {
+                "nodeIds": [
+                  "cook3",
+                  "pol_step_3",
+                  "cmd_step_3",
+                  "pan_oil",
+                  "evt_evt_oil_hot"
+                ],
+                "title": "เตรียมน้ำมันทอด",
+                "reason": "ตั้งน้ำมันให้ร้อน 170-180°C เติมน้ำเกลือ",
+                "processGroup": "execution"
+              },
+              {
+                "nodeIds": [
+                  "cook4",
+                  "pol_step_4",
+                  "cmd_step_4",
+                  "pan_oil2",
+                  "evt_evt_fried"
+                ],
+                "title": "ทอดทุเรียน",
+                "reason": "ทอดไฟกลางจนเหลืองทองกรอบ",
+                "processGroup": "execution"
+              },
+              {
+                "nodeIds": [
+                  "cook5",
+                  "pol_step_5",
+                  "cmd_step_5",
+                  "knife2",
+                  "evt_evt_drained"
+                ],
+                "title": "สะเด็ดน้ำมัน",
+                "reason": "ยกขึ้นพักบนกระดาษซับมัน",
+                "processGroup": "evaluation"
+              },
+              {
+                "nodeIds": [
+                  "pol_branch_plain",
+                  "cmd_branch_plain",
+                  "durian_raw2",
+                  "eater",
+                  "evt_evt_plain_done"
+                ],
+                "title": "เสิร์ฟทุเรียนทอดเปล่า",
+                "reason": "จัดเสิร์ฟทุเรียนทอดเปล่ากรอบอร่อย",
+                "processGroup": "evaluation"
+              }
+            ]
+          },
+          {
+            "id": "journey_sugar",
+            "label": "ทุเรียนทอดเคลือบน้ำตาล",
+            "description": "กระบวนการทำทุเรียนทอดแบบเคลือบน้ำตาล",
+            "steps": [
+              {
+                "nodeIds": [
+                  "cook",
+                  "pol_step_1",
+                  "cmd_step_1",
+                  "durian_raw",
+                  "evt_evt_flesh_ready"
+                ],
+                "title": "เตรียมเนื้อทุเรียน",
+                "reason": "แยกเนื้อทุเรียนดิบออกจากเมล็ด",
+                "processGroup": "planning"
+              },
+              {
+                "nodeIds": [
+                  "cook2",
+                  "pol_step_2",
+                  "cmd_step_2",
+                  "knife",
+                  "evt_evt_sliced"
+                ],
+                "title": "หั่นทุเรียน",
+                "reason": "หั่นเป็นชิ้นบางสม่ำเสมอเตรียมพร้อมทอด",
+                "processGroup": "planning"
+              },
+              {
+                "nodeIds": [
+                  "cook3",
+                  "pol_step_3",
+                  "cmd_step_3",
+                  "pan_oil",
+                  "evt_evt_oil_hot"
+                ],
+                "title": "เตรียมน้ำมันทอด",
+                "reason": "ตั้งน้ำมันให้ร้อน 170-180°C เติมน้ำเกลือ",
+                "processGroup": "execution"
+              },
+              {
+                "nodeIds": [
+                  "cook4",
+                  "pol_step_4",
+                  "cmd_step_4",
+                  "pan_oil2",
+                  "evt_evt_fried"
+                ],
+                "title": "ทอดทุเรียน",
+                "reason": "ทอดไฟกลางจนเหลืองทองกรอบ",
+                "processGroup": "execution"
+              },
+              {
+                "nodeIds": [
+                  "cook5",
+                  "pol_step_5",
+                  "cmd_step_5",
+                  "knife2",
+                  "evt_evt_drained"
+                ],
+                "title": "สะเด็ดน้ำมัน",
+                "reason": "ยกขึ้นพักบนกระดาษซับมัน",
+                "processGroup": "evaluation"
+              },
+              {
+                "nodeIds": [
+                  "pol_branch_sugar",
+                  "cmd_branch_sugar",
+                  "sugar_bowl",
+                  "eater2",
+                  "evt_evt_sugar_done"
+                ],
+                "title": "เคลือบน้ำตาลเสิร์ฟ",
+                "reason": "เคี่ยวน้ำตาลคลุกเคลือบแล้วเสิร์ฟ",
+                "processGroup": "evaluation"
+              }
+            ]
+          }
+        ],
+        "rawSteps": [
+          {
+            "type": "linear",
+            "id": "step_1",
+            "initiatedBy": {
+              "_tag": "ref",
+              "id": "cook"
+            },
+            "policy": "เลือกทุเรียนดิบ เนื้อแน่น",
+            "command": "แยกเนื้อทุเรียน",
+            "handledBy": {
+              "_tag": "ref",
+              "id": "durian_raw"
+            },
+            "resultEvents": [
+              {
+                "id": "evt_flesh_ready",
+                "title": "เนื้อทุเรียนพร้อม"
+              }
+            ],
+            "continuesAs": "step_2"
+          },
+          {
+            "type": "linear",
+            "id": "step_2",
+            "initiatedBy": {
+              "_tag": "ref",
+              "id": "cook"
+            },
+            "policy": "หั่นชิ้นบางสม่ำเสมอ",
+            "command": "หั่นชิ้นบาง",
+            "handledBy": {
+              "_tag": "ref",
+              "id": "knife"
+            },
+            "resultEvents": [
+              {
+                "id": "evt_sliced",
+                "title": "หั่นเสร็จ"
+              }
+            ],
+            "continuesAs": "step_3"
+          },
+          {
+            "type": "linear",
+            "id": "step_3",
+            "initiatedBy": {
+              "_tag": "ref",
+              "id": "cook"
+            },
+            "policy": "อุ่นน้ำมัน 170-180°C เติมน้ำเกลือ",
+            "command": "ตั้งน้ำมันร้อน",
+            "handledBy": {
+              "_tag": "ref",
+              "id": "pan_oil"
+            },
+            "resultEvents": [
+              {
+                "id": "evt_oil_hot",
+                "title": "น้ำมันร้อนพร้อมทอด"
+              }
+            ],
+            "continuesAs": "step_4"
+          },
+          {
+            "type": "linear",
+            "id": "step_4",
+            "initiatedBy": {
+              "_tag": "ref",
+              "id": "cook"
+            },
+            "policy": "ทอดไฟกลางจนสีทองกรอบ",
+            "command": "ทอดทุเรียน",
+            "handledBy": {
+              "_tag": "ref",
+              "id": "pan_oil"
+            },
+            "resultEvents": [
+              {
+                "id": "evt_fried",
+                "title": "ทอดเสร็จ"
+              }
+            ],
+            "continuesAs": "step_5"
+          },
+          {
+            "type": "linear",
+            "id": "step_5",
+            "initiatedBy": {
+              "_tag": "ref",
+              "id": "cook"
+            },
+            "policy": "ยกขึ้นพักบนกระดาษซับมัน",
+            "command": "สะเด็ดน้ำมัน",
+            "handledBy": {
+              "_tag": "ref",
+              "id": "knife"
+            },
+            "resultEvents": [
+              {
+                "id": "evt_drained",
+                "title": "สะเด็ดน้ำมันเสร็จ"
+              }
+            ],
+            "continuesAs": "step_branch"
+          },
+          {
+            "type": "branch",
+            "id": "step_branch",
+            "event": "evt_drained",
+            "branches": [
+              {
+                "id": "branch_plain",
+                "label": "แบบเปล่า",
+                "policy": "ไม่เคลือบน้ำตาล",
+                "command": "เสิร์ฟทันที",
+                "handledBy": {
+                  "_tag": "ref",
+                  "id": "durian_raw"
+                },
+                "delegatesTo": {
+                  "_tag": "ref",
+                  "id": "eater"
+                },
+                "resultEvents": [
+                  {
+                    "id": "evt_plain_done",
+                    "title": "ทุเรียนทอดเปล่าพร้อมทาน"
+                  }
+                ]
+              },
+              {
+                "id": "branch_sugar",
+                "label": "เคลือบน้ำตาล",
+                "policy": "เคลือบน้ำตาล",
+                "command": "熬น้ำตาลแล้วคลุก",
+                "handledBy": {
+                  "_tag": "ref",
+                  "id": "sugar_bowl"
+                },
+                "delegatesTo": {
+                  "_tag": "ref",
+                  "id": "eater"
+                },
+                "resultEvents": [
+                  {
+                    "id": "evt_sugar_done",
+                    "title": "ทุเรียนทอดเคลือบน้ำตาลพร้อมทาน"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    }
+  },
+  {
+    "folder": "quiz",
+    "type": "quiz",
+    "props": {
+      "title": "ทดสอบความรู้",
+      "intro": {
+        "what": "ทดสอบความเข้าใจเกี่ยวกับการทำทุเรียนทอด",
+        "why": "ตรวจสอบว่าเข้าใจขั้นตอนและเทคนิคเพียงพอหรือยัง",
+        "next": "ถัดไป: สำรวจทางเลือกในการตัดสินใจ"
+      },
+      "questions": [
+        {
+          "id": "q1",
+          "question": "ทุเรียนทอดควรใช้ทุเรียนแบบไหน?",
+          "choices": [
+            {
+              "id": "a",
+              "text": "ทุเรียนสุกเต็มผล",
+              "correct": false,
+              "explanation": "ทุเรียนสุกจะนิ่มและเละเมื่อทอด ไม่กรอบ"
+            },
+            {
+              "id": "b",
+              "text": "ทุเรียนดิบหรือทุเรียนอ่อน",
+              "correct": true,
+              "explanation": "ถูกต้อง! ทุเรียนดิบเนื้อแน่น เมื่อทอดจะกรอบนอกนุ่มใน"
+            },
+            {
+              "id": "c",
+              "text": "ทุเรียนแช่เย็น",
+              "correct": false,
+              "explanation": "ทุเรียนแช่เย็นอาจมีน้ำแข็งเกาะ ทำให้ทอดแล้วน้ำมันกระเด็น"
+            }
+          ],
+          "hint": "คิดว่าทุเรียนแบบไหนจะกรอบเมื่อทอด"
+        },
+        {
+          "id": "q2",
+          "question": "น้ำเกลือช่วยอะไรในการทอดทุเรียน?",
+          "choices": [
+            {
+              "id": "a",
+              "text": "ทำให้รสชาติเค็มอร่อย",
+              "correct": false,
+              "explanation": "ไม่ใช่เป้าหมายหลัก — น้ำเกลือใช้ในปริมาณน้อยในกระทะ ไม่ได้เคลือบ"
+            },
+            {
+              "id": "b",
+              "text": "ช่วยให้กรอบนานและไม่ดูดซับน้ำมัน",
+              "correct": true,
+              "explanation": "ถูกต้อง! น้ำเกลือช่วยสร้างเกราะป้องกันทำให้ทุเรียนกรอบและไม่อมน้ำมัน"
+            },
+            {
+              "id": "c",
+              "text": "ทำให้สีสวยขึ้น",
+              "correct": false,
+              "explanation": "สีทองมาจากการทอดที่อุณหภูมิเหมาะสม ไม่ใช่จากเกลือ"
+            }
+          ],
+          "hint": "คิดถึงเนื้อสัมผัสและน้ำมัน"
+        },
+        {
+          "id": "q3",
+          "question": "อุณหภูมิที่เหมาะสมในการทอดทุเรียน是多少?",
+          "choices": [
+            {
+              "id": "a",
+              "text": "100-120°C (ไฟเบา)",
+              "correct": false,
+              "explanation": "อุณหภูมิต่ำเกินไป ทุเรียนจะดูดซับน้ำมันและไม่กรอบ"
+            },
+            {
+              "id": "b",
+              "text": "170-180°C (ไฟกลาง)",
+              "correct": true,
+              "explanation": "ถูกต้อง! อุณหภูมินี้ทำให้ทุเรียนกรอบทองเหลืองอร่าม"
+            },
+            {
+              "id": "c",
+              "text": "220-250°C (ไฟแรง)",
+              "correct": false,
+              "explanation": "อุณหภูมิสูงเกินไป ทุเรียนจะไหม้ด้านนอกแต่ข้างในยังไม่กรอบ"
+            }
+          ],
+          "hint": "ไฟกลาง ไม่แรงเกินไปไม่เบาเกินไป"
+        },
+        {
+          "id": "q4",
+          "question": "เจมุดเจมุดทุเรียนต่างจากทุเรียนทอดธรรมดาอย่างไร?",
+          "choices": [
+            {
+              "id": "a",
+              "text": "ใช้ทุเรียนสุกบดผสมกับแป้ง",
+              "correct": true,
+              "explanation": "ถูกต้อง! เจมุดเจมุดใช้ทุเรียนสุกบดผสมแป้งแล้วคลึงทอด"
+            },
+            {
+              "id": "b",
+              "text": "ทอดในน้ำมันมากกว่า",
+              "correct": false,
+              "explanation": "ปริมาณน้ำมันไม่ต่างกัน ความต่างอยู่ที่วัตถุดิบและวิธีการเตรียม"
+            },
+            {
+              "id": "c",
+              "text": "ไม่ใช้น้ำตาล",
+              "correct": false,
+              "explanation": "เจมุดเจมุดมีส่วนผสมของน้ำตาลในแป้ง"
+            }
+          ],
+          "hint": "คิดว่าวัตถุดิบหลักต่างกัน"
+        },
+        {
+          "id": "q5",
+          "question": "พันธุ์ทุเรียนอะไรเหมาะสำหรับทำทุเรียนทอดมากที่สุด?",
+          "choices": [
+            {
+              "id": "a",
+              "text": "หมอนทอง (Monthong)",
+              "correct": true,
+              "explanation": "ถูกต้อง! หมอนทองมีเนื้อเยอะ เมล็ดเล็ก และหาได้ง่าย"
+            },
+            {
+              "id": "b",
+              "text": "หมากขี้หอย",
+              "correct": false,
+              "explanation": "หมากขี้หอยเนื้อน้อย เมล็ดใหญ่ ไม่คุ้มค่าสำหรับทอด"
+            },
+            {
+              "id": "c",
+              "text": "กระดุม",
+              "correct": false,
+              "explanation": "กระดุมมีขนาดเล็ก เนื้อน้อย ไม่เหมาะสำหรับหั่นชิ้นทอด"
+            }
+          ],
+          "hint": "พันธุ์ที่เนื้อเยอะ เมล็ดเล็ก"
+        }
+      ]
+    }
+  },
+  {
+    "folder": "tradeoffs",
+    "type": "tradeoff-sandbox",
+    "props": {
+      "title": "ทางเลือกในการทอดทุเรียน",
+      "intro": {
+        "what": "ทดลองตัดสินใจเลือกวิธีการทำทุเรียนทอด",
+        "why": "เข้าใจว่าการเลือกแต่ละอย่างส่งผลต่อผลลัพธ์อย่างไร",
+        "next": "ถัดไป: ใช้ Decision Tree เลือกสไตล์ที่เหมาะกับคุณ"
+      },
+      "scenarios": [
+        {
+          "id": "durian-choice",
+          "title": "เลือกส่วนผสมและวิธีการ",
+          "description": "ทำทุเรียนทอด โดยเลือกประเภททุเรียน วิธีการทอด และเคลือบ",
+          "metrics": [
+            {
+              "id": "crispiness",
+              "label": "ความกรอบ",
+              "baseValue": 50,
+              "min": 0,
+              "max": 100,
+              "direction": "higher"
+            },
+            {
+              "id": "flavor",
+              "label": "กลิ่นทุเรียน",
+              "baseValue": 50,
+              "min": 0,
+              "max": 100,
+              "direction": "higher"
+            },
+            {
+              "id": "sweetness",
+              "label": "ความหวาน",
+              "baseValue": 30,
+              "min": 0,
+              "max": 100,
+              "direction": "higher"
+            },
+            {
+              "id": "difficulty",
+              "label": "ความง่าย",
+              "baseValue": 50,
+              "min": 0,
+              "max": 100,
+              "direction": "higher"
+            }
+          ],
+          "steps": [
+            {
+              "id": "durian_type",
+              "title": "เลือกพันธุ์ทุเรียน",
+              "description": "พันธุ์ทุเรียนส่งผลต่อเนื้อสัมผัสและรสชาติ",
+              "recommended": "monthong",
+              "choices": [
+                {
+                  "id": "monthong",
+                  "label": "หมอนทอง",
+                  "description": "เนื้อเยอะ เมล็ดเล็ก หาได้ง่าย",
+                  "metrics": {
+                    "crispiness": 10,
+                    "flavor": 5,
+                    "difficulty": 10
+                  },
+                  "pros": [
+                    {
+                      "title": "เนื้อเยอะ",
+                      "description": "ได้ชิ้นทุเรียนเยอะจากผลเดียว"
+                    },
+                    {
+                      "title": "หาได้ง่าย",
+                      "description": "พันธุ์หลักที่ปลูกทั่วไทย"
+                    }
+                  ],
+                  "cons": [
+                    {
+                      "title": "กลิ่นไม่จัด",
+                      "description": "กลิ่นทุเรียนไม่เข้มข้นเท่าพันธุ์อื่น"
+                    }
+                  ],
+                  "whyThisFits": "หมอนทองเหมาะสำหรับมือใหม่ เนื้อเยอะหั่นง่าย"
+                },
+                {
+                  "id": "chanee",
+                  "label": "ชะนี",
+                  "description": "เนื้อน้อยลง แต่กลิ่นและรสจัดกว่า",
+                  "metrics": {
+                    "crispiness": 5,
+                    "flavor": 15,
+                    "difficulty": -5
+                  },
+                  "pros": [
+                    {
+                      "title": "กลิ่นหอมจัด",
+                      "description": "กลิ่นทุเรียนเข้มข้น"
+                    },
+                    {
+                      "title": "รสหวานมัน",
+                      "description": "เนื้อทุเรียนชะนีหวานมันกว่า"
+                    }
+                  ],
+                  "cons": [
+                    {
+                      "title": "เนื้อน้อย",
+                      "description": "ได้ชิ้นทุเรียนน้อยกว่าหมอนทอง"
+                    }
+                  ],
+                  "whenToUse": "ใช้เมื่อต้องการทุเรียนทอดกลิ่นหอมจัด"
+                },
+                {
+                  "id": "kan_yao",
+                  "label": "ก้านยาว",
+                  "description": "เนื้อบาง เมล็ดแบน กลิ่นหอม",
+                  "metrics": {
+                    "crispiness": 5,
+                    "flavor": 10,
+                    "difficulty": -5
+                  },
+                  "pros": [
+                    {
+                      "title": "เมล็ดแบน",
+                      "description": "แยกเนื้อออกง่าย"
+                    }
+                  ],
+                  "cons": [
+                    {
+                      "title": "หั่นยาก",
+                      "description": "เนื้อบาง อาจขาดง่ายตอนหั่น"
+                    }
+                  ],
+                  "whenToUse": "ใช้เมื่อต้องการความสมดุลระหว่างกลิ่นและความง่าย"
+                }
+              ]
+            },
+            {
+              "id": "frying_method",
+              "title": "เลือกวิธีการทอด",
+              "description": "วิธีการทอดส่งผลต่อความกรอบและปริมาณน้ำมัน",
+              "recommended": "shallow_fry",
+              "choices": [
+                {
+                  "id": "deep_fry",
+                  "label": "ทอดน้ำมันท่วม",
+                  "description": "ใส่ทุเรียนในน้ำมันที่ท่วมชิ้น",
+                  "metrics": {
+                    "crispiness": 15,
+                    "sweetness": 0,
+                    "difficulty": -5
+                  },
+                  "pros": [
+                    {
+                      "title": "กรอบเท่ากันทุกด้าน",
+                      "description": "ชิ้นทุเรียนสัมผัสความร้อนสม่ำเสมอ"
+                    }
+                  ],
+                  "cons": [
+                    {
+                      "title": "ใช้น้ำมันเยอะ",
+                      "description": "ต้องใช้น้ำมันปริมาณมาก"
+                    }
+                  ],
+                  "whenToUse": "ใช้เมื่อต้องการความกรอบสูงสุด"
+                },
+                {
+                  "id": "shallow_fry",
+                  "label": "ทอดน้ำมันน้อย",
+                  "description": "ใช้น้ำมันแค่ครึ่งชิ้น กลับด้านเอง",
+                  "metrics": {
+                    "crispiness": 0,
+                    "difficulty": 10
+                  },
+                  "pros": [
+                    {
+                      "title": "ประหยัดน้ำมัน",
+                      "description": "ใช้น้ำมันน้อยลง"
+                    },
+                    {
+                      "title": "ควบคุมง่าย",
+                      "description": "เห็นชิ้นทุเรียนชัด ควบคุมการทอดง่าย"
+                    }
+                  ],
+                  "cons": [
+                    {
+                      "title": "ต้องกลับด้าน",
+                      "description": "ต้องคอยกลับด้านเพื่อให้สุกเท่ากัน"
+                    }
+                  ],
+                  "whyThisFits": "ทอดน้ำมันน้อยประหยัดและควบคุมง่าย เหมาะกับมือใหม่"
+                }
+              ]
+            },
+            {
+              "id": "coating",
+              "title": "เลือกการเคลือบ",
+              "description": "เคลือบหรือไม่เคลือบ ส่งผลต่อรสชาติ",
+              "recommended": "sugar_coat",
+              "choices": [
+                {
+                  "id": "no_coat",
+                  "label": "ไม่เคลือบ (แบบเปล่า)",
+                  "description": "ทอดเสร็จทานได้เลย เน้นรสธรรมชาติ",
+                  "metrics": {
+                    "crispiness": 5,
+                    "flavor": 10,
+                    "sweetness": -10,
+                    "difficulty": 10
+                  },
+                  "pros": [
+                    {
+                      "title": "ง่ายที่สุด",
+                      "description": "ทอดเสร็จทานได้เลย"
+                    },
+                    {
+                      "title": "เน้นกลิ่นทุเรียนแท้",
+                      "description": "ไม่มีการปรุงแต่ง"
+                    }
+                  ],
+                  "cons": [
+                    {
+                      "title": "รสชาติเรียบง่าย",
+                      "description": "อาจจืดสำหรับบางคน"
+                    }
+                  ],
+                  "whenToUse": "ใช้เมื่อชอบรสธรรมชาติของทุเรียน"
+                },
+                {
+                  "id": "sugar_coat",
+                  "label": "เคลือบน้ำตาลทราย",
+                  "description": "คลุกน้ำตาลทรายให้เคลือบบางๆ",
+                  "metrics": {
+                    "crispiness": -5,
+                    "sweetness": 20,
+                    "difficulty": 0
+                  },
+                  "pros": [
+                    {
+                      "title": "หวานกรอบอร่อย",
+                      "description": "รสชาติหวานสมดุลกับความกรอบ"
+                    },
+                    {
+                      "title": "เป็นที่ยอมรับ",
+                      "description": "รูปแบบยอดนิยม"
+                    }
+                  ],
+                  "cons": [
+                    {
+                      "title": "ความกรอบลดลงบ้าง",
+                      "description": "น้ำตาลดูดความชื้น ทำให้กรอบน้อยลง"
+                    }
+                  ],
+                  "whyThisFits": "เคลือบน้ำตาลเป็นแบบยอดนิยม หวานกรอบอร่อย"
+                },
+                {
+                  "id": "palm_sugar",
+                  "label": "เคลือบน้ำตาลปี๊บ",
+                  "description": "ใช้น้ำตาลปี๊บ熬ละลายเคลือบ",
+                  "metrics": {
+                    "crispiness": -10,
+                    "sweetness": 15,
+                    "flavor": 10,
+                    "difficulty": -10
+                  },
+                  "pros": [
+                    {
+                      "title": "รสหวานลึก",
+                      "description": "น้ำตาลปี๊บมีกลิ่นหอมอ้อย"
+                    },
+                    {
+                      "title": "สีสันสวยงาม",
+                      "description": "สีน้ำตาลทองสวย"
+                    }
+                  ],
+                  "cons": [
+                    {
+                      "title": "ทำยากกว่า",
+                      "description": "ต้อง熬น้ำตาลปี๊บให้ละลายพอดี"
+                    },
+                    {
+                      "title": "ความกรอบลดลง",
+                      "description": "น้ำตาลปี๊บมีความชื้นมากกว่า"
+                    }
+                  ],
+                  "whenToUse": "ใช้เมื่อต้องการรสชาติลึกและสีสันสวย"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "folder": "decision-tree",
+    "type": "decision-tree",
+    "props": {
+      "title": "ที่ปรึกษาทุเรียนทอด",
+      "intro": {
+        "what": "ตอบคำถามเพื่อรับคำแนะนำว่าทุเรียนทอดแบบไหนเหมาะกับคุณที่สุด",
+        "why": "เลือกสูตรที่เหมาะกับรสนิยมและความสามารถ",
+        "next": "จบแล้ว — กลับไปเริ่มใหม่หรือลองทำเลย!"
+      },
+      "id": "durian-advisor",
+      "root": "experience",
+      "nodes": {
+        "experience": {
+          "id": "experience",
+          "prompt": "คุณมีประสบการณ์ในการทำอาหารมากน้อยแค่ไหน?",
+          "choices": [
+            {
+              "id": "beginner",
+              "text": "มือใหม่ — ไม่เคยทำ",
+              "next": "taste_pref_beginner",
+              "rationale": "เริ่มจากสูตรง่ายๆ ก่อน",
+              "recommended": true
+            },
+            {
+              "id": "experienced",
+              "text": "เคยทำ —有经验",
+              "next": "taste_pref_pro",
+              "rationale": "ลองสูตรที่ซับซ้อนขึ้น"
+            }
+          ]
+        },
+        "taste_pref_beginner": {
+          "id": "taste_pref_beginner",
+          "prompt": "คุณชอบรสชาติแบบไหน?",
+          "choices": [
+            {
+              "id": "sweet",
+              "text": "ชอบหวาน",
+              "next": "rec_plain_sugar",
+              "rationale": "หวานกรอบคือทางที่ง่ายและอร่อย"
+            },
+            {
+              "id": "natural",
+              "text": "ชอบรสธรรมชาติ",
+              "next": "rec_plain",
+              "rationale": "แบบเปล่ายิ่งง่ายที่สุด"
+            }
+          ]
+        },
+        "taste_pref_pro": {
+          "id": "taste_pref_pro",
+          "prompt": "คุณอยากได้ทุเรียนทอดแบบไหน?",
+          "choices": [
+            {
+              "id": "premium",
+              "text": "รสจัด สีสวย ระดับพรีเมียม",
+              "next": "rec_palm_sugar_chanee",
+              "rationale": "ชะนี+น้ำตาลปี๊บ = รสเข้มข้นระดับท็อป"
+            },
+            {
+              "id": "crunchy",
+              "text": "กรอบที่สุด",
+              "next": "rec_deep_fry",
+              "rationale": "ทอดน้ำมันท่วมกรอบทุกด้าน"
+            }
+          ]
+        },
+        "rec_plain": {
+          "id": "rec_plain",
+          "leaf": {
+            "recommendation": "ทุเรียนทอดเปล่า",
+            "explanation": "เลือกหมอนทองหั่นบาง ทอดในน้ำมันที่เติมน้ำเกลือ ทอดไฟกลางจนสีทอง สะเด็ดน้ำมัน ทานได้เลย ง่ายที่สุด เน้นกลิ่นทุเรียนแท้",
+            "tradeoffs": [
+              "รสชาติเรียบง่าย ไม่หวาน",
+              "กรอบนานเพราะไม่เคลือบ",
+              "เหมาะสำหรับมือใหม่ที่สุด"
+            ]
+          }
+        },
+        "rec_plain_sugar": {
+          "id": "rec_plain_sugar",
+          "leaf": {
+            "recommendation": "ทุเรียนทอดเคลือบน้ำตาลทราย",
+            "explanation": "หมอนทองหั่นบางทอดกรอบ แล้วคลุกน้ำตาลทรายที่熬ละลายบางๆ หวานกรอบอร่อย เป็นสูตรยอดนิยม ทำไม่ยาก",
+            "tradeoffs": [
+              "ความหวานเพิ่มเข้ามา",
+              "ความกรอบลดลงเล็กน้อยจากน้ำตาล",
+              "เป็นรูปแบบที่คนส่วนใหญ่ชอบ"
+            ]
+          }
+        },
+        "rec_palm_sugar_chanee": {
+          "id": "rec_palm_sugar_chanee",
+          "leaf": {
+            "recommendation": "ทุเรียนชะนีทอดเคลือบน้ำตาลปี๊บ",
+            "explanation": "ใช้ทุเรียนชะนีที่กลิ่นหอมจัด ทอดกรอบแล้วเคลือบน้ำตาลปี๊บ熬ละลาย ได้ทุเรียนทอดรสเข้มข้น สีน้ำตาลทองสวย เป็นระดับพรีเมียม",
+            "tradeoffs": [
+              "ทำยากกว่า ต้องควบคุม熬น้ำตาลปี๊บ",
+              "ชะนีหาซื้อยากกว่าหมอนทอง",
+              "ความกรอบน้อยกว่าเพราะน้ำตาลปี๊บมีความชื้น"
+            ]
+          }
+        },
+        "rec_deep_fry": {
+          "id": "rec_deep_fry",
+          "leaf": {
+            "recommendation": "ทุเรียนทอดน้ำมันท่วม",
+            "explanation": "หมอนทองหั่นบาง ทอดในน้ำมันที่ท่วมชิ้น 170-180°C กรอบเท่ากันทุกด้าน สะเด็ดน้ำมัน แล้วเคลือบน้ำตาลตามชอบ",
+            "tradeoffs": [
+              "ใช้น้ำมันเยอะ",
+              "กรอบที่สุด",
+              "ต้องระวังอุณหภูมิน้ำมัน"
+            ]
+          }
+        }
+      }
+    }
+  }
+]

@@ -1,0 +1,2038 @@
+[
+  {
+    "folder": "intro",
+    "type": "intro",
+    "props": {
+      "title": "PixiJS Filters & Post-Processing Shaders",
+      "subtitle": "GPU-accelerated visual effects, custom fragment shaders, and the FilterSystem architecture",
+      "estimatedTime": "30 min",
+      "moduleCount": 14,
+      "what": {
+        "definition": "PixiJS Filters are post-processing shader programs that intercept the rendering of a DisplayObject or Container, capture its output into an offscreen RenderTarget, and execute GPU fragment shaders to transform pixels.",
+        "summary": "A powerful effects subsystem in PixiJS that enables blurs, color grading, displacement maps, glows, outlines, and custom GLSL/WGSL shaders with automatic bounding box padding and render target pooling.",
+        "bullets": [
+          "Post-Processing Pipeline: Intercepts display tree rendering into offscreen framebuffers",
+          "Built-in & Community Filters: Blur, ColorMatrix, Displacement, Noise, Glow, Outline, Shockwave",
+          "Custom GLSL Shaders: Write custom vertex and fragment shaders with animated uniforms",
+          "FilterSystem & Resource Pooling: Reusable RenderTarget pools to prevent VRAM memory churn"
+        ],
+        "tags": [
+          "PixiJS",
+          "GLSL",
+          "WebGL",
+          "Shaders",
+          "Post-Processing"
+        ]
+      },
+      "why": {
+        "summary": "Standard 2D sprite rendering is limited to linear tinting and alpha blending. Creating atmospheric effects like heat distortion, bloom, chromatic aberration, or dynamic drop shadows requires per-pixel fragment manipulation.",
+        "impact": "PixiJS Filters provide hardware-accelerated post-processing without writing complex framebuffer ping-pong pipelines from scratch, giving 2D games and web applications studio-grade visual polish."
+      },
+      "roadmap": [
+        {
+          "sectionId": "concept-map",
+          "title": "Filter Pipeline & System Map",
+          "type": "concept-map",
+          "description": "Map the structural interactions between FilterSystem, Display Objects, RenderTargets, Uniforms, and GPU Drivers."
+        },
+        {
+          "sectionId": "flashcards",
+          "title": "Essential Filter Terminology",
+          "type": "flashcards",
+          "description": "Master key terms like RenderTarget Pool, Fragment Shader, Uniforms, Padding, Multi-Pass, and Kawase Blur."
+        },
+        {
+          "sectionId": "quiz-vocabulary",
+          "title": "Shader & Uniform Vocabulary Quiz",
+          "type": "quiz",
+          "description": "Recall check on filter uniforms, samplers, padding, and matrix transformations."
+        },
+        {
+          "sectionId": "reflection-foundations",
+          "title": "Filter Setup & Creation Sequencing",
+          "type": "reflection-sequence",
+          "description": "Chronological challenge ordering the steps to author and attach custom GLSL filters."
+        },
+        {
+          "sectionId": "taxonomy-browser",
+          "title": "Filter Categories & Shader Effects",
+          "type": "taxonomy-browser",
+          "description": "Explore the taxonomy of Spatial Blurs, Color Grading, Coordinate Warping, Stylized Effects, and Custom Shaders."
+        },
+        {
+          "sectionId": "text-core",
+          "title": "The FilterSystem Architecture & Lifecycle",
+          "type": "text",
+          "description": "In-depth breakdown of offscreen render targets, padding bounds, uniform matrices, and batch breaks."
+        },
+        {
+          "sectionId": "flowchart",
+          "title": "Filter Execution & Render Pipeline",
+          "type": "flowchart",
+          "description": "Trace the Event Storming lifecycle of single-pass and multi-pass filter execution on the GPU."
+        },
+        {
+          "sectionId": "reflection-pipeline",
+          "title": "Filter Pipeline Lifecycle Sequencing",
+          "type": "reflection-sequence",
+          "description": "Reorder the runtime frame execution stages from bounds calculation to target recycling."
+        },
+        {
+          "sectionId": "reflection-multipass",
+          "title": "Multi-Pass Convolution Sequencing",
+          "type": "reflection-sequence",
+          "description": "Sequence the ping-pong convolution stages of separable 2-pass blurs."
+        },
+        {
+          "sectionId": "reflection-caching",
+          "title": "Bitmap Caching & Texture Baking Sequencing",
+          "type": "reflection-sequence",
+          "description": "Sequence the stages of caching static filtered containers with cacheAsBitmap."
+        },
+        {
+          "sectionId": "decision-tree",
+          "title": "Filter Selection & Performance Advisor",
+          "type": "decision-tree",
+          "description": "Diagnostic advisor to choose the right filter technique and caching strategy for your target device."
+        },
+        {
+          "sectionId": "tradeoff-sandbox",
+          "title": "Post-Processing Performance Trade-offs",
+          "type": "tradeoff-sandbox",
+          "description": "Tune render architecture trade-offs between draw calls, VRAM, and FPS throughput."
+        },
+        {
+          "sectionId": "quiz-optimization",
+          "title": "Performance & Optimization Quiz",
+          "type": "quiz",
+          "description": "Assessment on batch breaking, Kawase vs Gaussian blur, and half-resolution scaling."
+        },
+        {
+          "sectionId": "quiz-boss",
+          "title": "Master Filter Architecture Assessment",
+          "type": "quiz",
+          "description": "Comprehensive checkpoint testing cacheAsBitmap, displacement mapping, and RenderTarget pooling."
+        }
+      ]
+    }
+  },
+  {
+    "folder": "concept-map",
+    "type": "concept-map",
+    "props": {
+      "title": "Filter Pipeline & System Map",
+      "nodes": {
+        "app": {
+          "id": "app",
+          "title": "PIXI.Application",
+          "category": "Core Entrypoint"
+        },
+        "renderer": {
+          "id": "renderer",
+          "title": "Renderer (WebGL / WebGPU)",
+          "category": "GPU Pipeline"
+        },
+        "filter_system": {
+          "id": "filter_system",
+          "title": "FilterSystem",
+          "category": "GPU Pipeline"
+        },
+        "container": {
+          "id": "container",
+          "title": "Container / DisplayObject",
+          "category": "Scene Graph"
+        },
+        "filter": {
+          "id": "filter",
+          "title": "Filter Instance",
+          "category": "Shaders & Effects"
+        },
+        "target_pool": {
+          "id": "target_pool",
+          "title": "RenderTarget Pool",
+          "category": "Memory & Assets"
+        },
+        "vertex_shader": {
+          "id": "vertex_shader",
+          "title": "Vertex Shader (Quad Matrix)",
+          "category": "Shaders & Effects"
+        },
+        "fragment_shader": {
+          "id": "fragment_shader",
+          "title": "Fragment Shader (Pixel Math)",
+          "category": "Shaders & Effects"
+        },
+        "uniform_map": {
+          "id": "uniform_map",
+          "title": "Uniforms & uFilterMatrix",
+          "category": "Shaders & Effects"
+        },
+        "displacement_map": {
+          "id": "displacement_map",
+          "title": "Displacement Map Texture",
+          "category": "Memory & Assets"
+        },
+        "framebuffer": {
+          "id": "framebuffer",
+          "title": "GPU Framebuffer / Screen",
+          "category": "GPU Pipeline"
+        }
+      },
+      "edges": [
+        {
+          "from": "app",
+          "to": "renderer",
+          "label": "manages"
+        },
+        {
+          "from": "renderer",
+          "to": "filter_system",
+          "label": "delegates filter passes"
+        },
+        {
+          "from": "container",
+          "to": "filter",
+          "label": "declares in filters[]"
+        },
+        {
+          "from": "filter_system",
+          "to": "target_pool",
+          "label": "leases & recycles RenderTargets"
+        },
+        {
+          "from": "filter_system",
+          "to": "container",
+          "label": "calculates padded bounds"
+        },
+        {
+          "from": "filter_system",
+          "to": "filter",
+          "label": "executes shader passes"
+        },
+        {
+          "from": "filter",
+          "to": "vertex_shader",
+          "label": "binds full-screen quad"
+        },
+        {
+          "from": "filter",
+          "to": "fragment_shader",
+          "label": "executes per-pixel logic"
+        },
+        {
+          "from": "filter",
+          "to": "uniform_map",
+          "label": "uploads CPU uniform values"
+        },
+        {
+          "from": "fragment_shader",
+          "to": "displacement_map",
+          "label": "samples UV offset coordinates"
+        },
+        {
+          "from": "filter_system",
+          "to": "framebuffer",
+          "label": "composites final filtered output"
+        }
+      ]
+    }
+  },
+  {
+    "folder": "flashcards",
+    "type": "flashcards",
+    "props": {
+      "title": "Essential Filter Terminology",
+      "terms": [
+        {
+          "id": "filtersystem",
+          "word": "FilterSystem",
+          "pronunciation": "/ˈfɪltər ˈsɪstəm/",
+          "category": "Core Architecture",
+          "shortDefinition": "The core PixiJS rendering subsystem that coordinates filter stacks, offscreen targets, and shader passes.",
+          "detailedDefinition": "FilterSystem manages the lifecycle of filter execution. When a filtered container is drawn, FilterSystem computes padded bounding rectangles, pushes temporary RenderTargets, executes shader passes, and composites pixels to the target destination.",
+          "whyItMatters": "Abstracts low-level WebGL framebuffer binding, viewport scaling, and multi-pass ping-pong buffer management into a clean declarative API.",
+          "dialogue": {
+            "user": "How does PixiJS know when to draw to an offscreen buffer?",
+            "aiThoughts": "Explain the FilterSystem push/pop interception mechanism.",
+            "aiQuestion": "When the renderer encounters an object with `filters.length > 0`, it calls `filterSystem.push()` to redirect child drawing into a temporary RenderTarget."
+          }
+        },
+        {
+          "id": "rendertarget",
+          "word": "RenderTarget Pool",
+          "pronunciation": "/ˈrɛndər ˈtɑːrɡɪt puːl/",
+          "category": "Memory & Assets",
+          "shortDefinition": "A reusable pool of GPU framebuffers and textures used for intermediate offscreen filter rendering.",
+          "detailedDefinition": "Creating WebGL textures and framebuffers dynamically causes severe garbage collection pauses and GPU memory fragmentation. PixiJS maintains a pool of RenderTargets, leasing them during filter passes and recycling them immediately after.",
+          "whyItMatters": "Prevents VRAM allocation churn and ensures consistent 60 FPS performance during heavy post-processing effects.",
+          "dialogue": {
+            "user": "Does applying filters create new GPU textures every single frame?",
+            "aiThoughts": "Clarify RenderTarget pooling vs fresh allocation.",
+            "aiQuestion": "No! PixiJS borrows existing RenderTargets from its internal pool and returns them immediately after shader compositing."
+          }
+        },
+        {
+          "id": "fragment-shader",
+          "word": "Fragment Shader",
+          "pronunciation": "/ˈfræɡmənt ˈʃeɪdər/",
+          "category": "Shaders & GLSL",
+          "shortDefinition": "A GPU program executed for every pixel to compute color, alpha, and visual transformations.",
+          "detailedDefinition": "In PixiJS filters, the fragment shader receives the offscreen texture via the uniform `uSampler` and texture coordinates via `vTextureCoord`. It calculates per-pixel colors using math algorithms (e.g. convolutions, color matrices, noise functions).",
+          "whyItMatters": "Provides total per-pixel artistic control, enabling real-time lighting, distortion, bloom, and stylized rendering.",
+          "dialogue": {
+            "user": "What is the primary input to a filter fragment shader?",
+            "aiThoughts": "Identify the sampler and coordinate uniforms.",
+            "aiQuestion": "The offscreen texture `uSampler` containing the rendered display object, sampled at `vTextureCoord`!"
+          }
+        },
+        {
+          "id": "filter-padding",
+          "word": "Filter Padding",
+          "pronunciation": "/ˈfɪltər ˈpædɪŋ/",
+          "category": "Rendering Bounds",
+          "shortDefinition": "Extra margin added around a display object bounding box to prevent clipping outward visual effects.",
+          "detailedDefinition": "Effects like `BlurFilter`, `GlowFilter`, and `DropShadowFilter` generate pixels that extend outside the original geometry boundaries. Setting `filter.padding` expands the offscreen RenderTarget dimensions so these blurred edges are not harshly clipped.",
+          "whyItMatters": "Without padding, blurred sprites appear inside hard square cutoffs matching their original rectangular sprite bounding boxes.",
+          "dialogue": {
+            "user": "Why is my drop shadow cut off at the edge of the sprite?",
+            "aiThoughts": "Identify missing filter padding.",
+            "aiQuestion": "Increase `filter.padding` (e.g. `filter.padding = 20`) to give the offscreen render target enough margin for the shadow!"
+          }
+        },
+        {
+          "id": "multi-pass",
+          "word": "Multi-Pass Filter",
+          "pronunciation": "/ˈmʌlti pæs ˈfɪltər/",
+          "category": "Pipeline Architecture",
+          "shortDefinition": "A filter technique executing multiple sequential shader stages using ping-pong intermediate textures.",
+          "detailedDefinition": "Complex effects (such as separable 2D Gaussian blurs or bloom) cannot be calculated in a single shader pass. A multi-pass filter renders pass 1 into texture A, uses texture A as input for pass 2 into texture B, and repeats until the final composite.",
+          "whyItMatters": "Reduces computational complexity of 2D convolutions from O(N²) to O(2N), turning unplayable lag into smooth 60 FPS rendering.",
+          "dialogue": {
+            "user": "Why is a 2-pass blur faster than a single-pass 2D convolution blur?",
+            "aiThoughts": "Highlight 1D separable math efficiency.",
+            "aiQuestion": "A separable blur performs a horizontal 1D pass then a vertical 1D pass (N + N samples), rather than an N x N 2D grid of samples per pixel!"
+          }
+        },
+        {
+          "id": "kawase-blur",
+          "word": "Kawase Blur",
+          "pronunciation": "/kɑːˈwɑːseɪ blɜːr/",
+          "category": "Algorithms",
+          "shortDefinition": "A fast multi-pass box-offset blur algorithm optimized for high performance on mobile GPUs.",
+          "detailedDefinition": "Kawase Blur applies multiple successive passes with increasing sampling offsets around the center pixel. It yields a smooth, soft blur nearly indistinguishable from Gaussian blur but requires far fewer texture fetches per pass.",
+          "whyItMatters": "The standard choice for real-time mobile games, UI glassmorphism, and bloom effects where Gaussian blur is too expensive.",
+          "dialogue": {
+            "user": "Which blur filter should I use for smooth performance on mobile web?",
+            "aiThoughts": "Recommend Kawase blur over Gaussian.",
+            "aiQuestion": "Use `KawaseBlurFilter` from pixi-filters! It provides smooth blur quality with minimal GPU fillrate overhead."
+          }
+        },
+        {
+          "id": "displacement-filter",
+          "word": "DisplacementFilter",
+          "pronunciation": "/dɪsˈpleɪsmənt ˈfɪltər/",
+          "category": "Effects",
+          "shortDefinition": "A filter using pixel color channels from a map texture to offset the sampling coordinates of the source.",
+          "detailedDefinition": "DisplacementFilter reads the Red and Green channels of a displacement sprite (e.g. perlin noise or water ripples) and uses those values as (dX, dY) coordinate offsets when sampling the target texture, creating refraction and distortion.",
+          "whyItMatters": "Enables realistic water ripples, shockwaves, glass refraction, heat haze, and magical warp portals.",
+          "dialogue": {
+            "user": "How do I create an animated water ripple effect across a game map?",
+            "aiThoughts": "Describe DisplacementFilter with a scrolling noise sprite.",
+            "aiQuestion": "Create a `DisplacementFilter` pointing to a seamless noise sprite, and increment the displacement sprite position in your Ticker loop!"
+          }
+        },
+        {
+          "id": "color-matrix-filter",
+          "word": "ColorMatrixFilter",
+          "pronunciation": "/ˈkʌlər ˈmeɪtrɪks ˈfɪltər/",
+          "category": "Color & Tones",
+          "shortDefinition": "A single-pass 5x4 matrix transformation filter for brightness, contrast, hue, saturation, and color grading.",
+          "detailedDefinition": "ColorMatrixFilter multiplies each pixel RGBA vector by a 5x4 transformation matrix. PixiJS provides built-in presets including `desaturate()`, `sepia()`, `hue()`, `brightness()`, `contrast()`, `night()`, and `predator()`.",
+          "whyItMatters": "Extremely fast single-pass filter that enables instant screen transitions, damage flashes, night mode tinting, and retro color grading.",
+          "dialogue": {
+            "user": "How do I make the whole screen black-and-white when the player dies?",
+            "aiThoughts": "Recommend ColorMatrixFilter desaturation.",
+            "aiQuestion": "Apply a `ColorMatrixFilter` to your root container and call `filter.desaturate()`!"
+          }
+        },
+        {
+          "id": "cache-as-bitmap",
+          "word": "cacheAsBitmap",
+          "pronunciation": "/kæʃ æz ˈbɪtmæp/",
+          "category": "Performance Optimization",
+          "shortDefinition": "A container property that bakes complex child display trees and filters into a single static GPU texture.",
+          "detailedDefinition": "When `container.cacheAsBitmap = true`, PixiJS renders the container and its active filters once into a private RenderTexture. In subsequent frames, it draws that single cached texture as a normal sprite, bypassing all filter shader calculations.",
+          "whyItMatters": "Transforms heavy multi-pass filter costs from an ongoing 60 FPS tax into a one-time setup cost for static UI backgrounds and cards.",
+          "dialogue": {
+            "user": "My static UI panel has heavy drop shadows and blurs that lag the game. How do I fix it?",
+            "aiThoughts": "Suggest cacheAsBitmap.",
+            "aiQuestion": "Enable `uiContainer.cacheAsBitmap = true`! PixiJS will bake the panel and filters into a single texture and draw it in 1 batched quad."
+          }
+        }
+      ]
+    }
+  },
+  {
+    "folder": "quiz-vocabulary",
+    "type": "quiz",
+    "props": {
+      "title": "Shader & Uniform Vocabulary Quiz",
+      "questions": [
+        {
+          "id": "q-filter-padding",
+          "question": "Why does a BlurFilter or DropShadowFilter appear clipped inside a hard rectangle if filter.padding is not set?",
+          "choices": [
+            {
+              "id": "a",
+              "text": "Because WebGL shaders cannot draw outside the [0, 1] UV texture range",
+              "correct": false,
+              "explanation": "Shaders can sample texture coordinates freely, but the canvas texture itself is bounded by the target dimensions."
+            },
+            {
+              "id": "b",
+              "text": "Because the default offscreen RenderTarget matches the unpadded bounding box of the sprite",
+              "correct": true,
+              "explanation": "Correct! Without filter.padding, the offscreen RenderTarget is sized strictly to the sprite bounds, clipping any outward-bleeding blur or shadow pixels."
+            },
+            {
+              "id": "c",
+              "text": "Because the GPU depth buffer discards blurred fragments",
+              "correct": false,
+              "explanation": "PixiJS 2D rendering does not use standard 3D depth buffer clipping for 2D sprites."
+            }
+          ],
+          "hint": "Think about the dimensions of the temporary offscreen RenderTarget."
+        },
+        {
+          "id": "q-usampler",
+          "question": "What is the role of the uniform uSampler in a PixiJS fragment shader?",
+          "choices": [
+            {
+              "id": "a",
+              "text": "It passes the CPU system clock time",
+              "correct": false,
+              "explanation": "Time values are passed via custom uniform floats."
+            },
+            {
+              "id": "b",
+              "text": "It provides the texture sampler containing the offscreen rendered display object",
+              "correct": true,
+              "explanation": "Correct! uSampler references the offscreen RenderTarget texture containing the captured display tree pixels."
+            },
+            {
+              "id": "c",
+              "text": "It configures the WebGL blend mode",
+              "correct": false,
+              "explanation": "Blend modes are managed by the WebGL state machine rather than uSampler."
+            }
+          ],
+          "hint": "Think about what image input the shader is processing."
+        },
+        {
+          "id": "q-colormatrix",
+          "question": "Which of the following is a primary characteristic of ColorMatrixFilter?",
+          "choices": [
+            {
+              "id": "a",
+              "text": "It requires multi-pass ping-pong framebuffers",
+              "correct": false,
+              "explanation": "ColorMatrixFilter is a single-pass filter with zero ping-pong buffering."
+            },
+            {
+              "id": "b",
+              "text": "It transforms RGBA color vectors using a 5x4 matrix in a single GPU pass",
+              "correct": true,
+              "explanation": "Correct! ColorMatrixFilter multiplies RGBA vectors by a 5x4 matrix in one fast fragment pass."
+            },
+            {
+              "id": "c",
+              "text": "It samples adjacent pixel neighbors like a convolution blur",
+              "correct": false,
+              "explanation": "ColorMatrixFilter operates only on the current pixel's color channels."
+            }
+          ],
+          "hint": "Consider how many passes and matrix dimensions it uses."
+        }
+      ]
+    }
+  },
+  {
+    "folder": "reflection-foundations",
+    "type": "reflection-sequence",
+    "props": {
+      "title": "Filter Setup & Creation Sequencing",
+      "challenges": [
+        {
+          "id": "filter-creation-sequence",
+          "prompt": "Arrange the chronological steps for authoring and applying a custom GLSL Filter in PixiJS:",
+          "items": [
+            {
+              "id": "step-write-shader",
+              "text": "Write custom GLSL Vertex and Fragment Shader source strings"
+            },
+            {
+              "id": "step-define-uniforms",
+              "text": "Define Uniform Object with initial values (e.g. uTime, uSpeed, uColor)"
+            },
+            {
+              "id": "step-instantiate-filter",
+              "text": "Instantiate custom PIXI.Filter(vertexSrc, fragmentSrc, uniforms)"
+            },
+            {
+              "id": "step-attach-container",
+              "text": "Attach instance to container.filters = [customFilter]"
+            },
+            {
+              "id": "step-update-ticker",
+              "text": "Update uniform values (customFilter.uniforms.uTime += delta) in Ticker loop"
+            }
+          ],
+          "solution": [
+            "step-write-shader",
+            "step-define-uniforms",
+            "step-instantiate-filter",
+            "step-attach-container",
+            "step-update-ticker"
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "folder": "taxonomy-browser",
+    "type": "taxonomy-browser",
+    "props": {
+      "title": "Filter Categories & Shader Effects",
+      "categories": [
+        {
+          "icon": "Sparkles",
+          "title": "Spatial & Convolution Blurs",
+          "subtitle": "Gaussian, Kawase, and Directional Blurs",
+          "description": "Algorithms that blend adjacent pixel neighborhoods to create defocus, motion blur, and soft glowing aesthetics.",
+          "details": "Includes BlurFilter (separable 2-pass Gaussian), KawaseBlurFilter (fast multi-pass box offset), MotionBlurFilter, and ZoomBlurFilter.",
+          "analogy": "Like viewing the world through frosted glass or a camera lens shifted out of focus.",
+          "primaryFocus": "Softening edges, depth of field, UI glassmorphism, and atmospheric glow",
+          "inScope": [
+            "Multi-pass ping-pong texture sampling",
+            "Configurable kernel size and sampling quality",
+            "Separable horizontal and vertical convolution passes"
+          ],
+          "outOfScope": [
+            "Directional pixel displacement or geometric warping"
+          ],
+          "color": "sapphire"
+        },
+        {
+          "icon": "Palette",
+          "title": "Color & Tonal Grading",
+          "subtitle": "Matrix Transformations & Tonal Grading",
+          "description": "Single-pass shader operations that transform RGBA color vectors for artistic color correction, grading, and visual state indicators.",
+          "details": "Includes ColorMatrixFilter (5x4 linear color matrix), AdjustmentFilter (gamma, saturation, contrast), AlphaFilter, and ColorOverlayFilter.",
+          "analogy": "Like placing colored optical filters or vintage film lenses over a camera.",
+          "primaryFocus": "Fast single-pass color manipulation, damage effects, day/night cycles, and retro color palettes",
+          "inScope": [
+            "Instantaneous matrix multiplication on RGBA vectors",
+            "Single-pass zero ping-pong overhead",
+            "Built-in presets (sepia, grayscale, invert, polaroid, night)"
+          ],
+          "outOfScope": [
+            "Sampling neighboring pixel coordinates"
+          ],
+          "color": "mauve"
+        },
+        {
+          "icon": "Waves",
+          "title": "Geometric & Coordinate Warping",
+          "subtitle": "UV Coordinate Distortion & Refraction",
+          "description": "Filters that read secondary texture maps or mathematical equations to perturb UV texture sampling coordinates.",
+          "details": "Includes DisplacementFilter (normal map / noise map sampling), ShockwaveFilter (expanding spherical waves), BulgePinchFilter, and TwistFilter.",
+          "analogy": "Like looking at an image reflected on undulating water or through a magnifying lens.",
+          "primaryFocus": "Simulating physical optical distortion, shockwaves, whirlpools, and fluid surfaces",
+          "inScope": [
+            "Secondary texture map binding and sampling",
+            "Dynamic UV coordinate offset calculation",
+            "Time-based wave propagation and radial distortions"
+          ],
+          "outOfScope": [
+            "Modifying mesh vertex buffer positions directly"
+          ],
+          "color": "teal"
+        },
+        {
+          "icon": "Layers",
+          "title": "Stylized & Edge Effects",
+          "subtitle": "Outlines, Glows, Shadows & CRT Retro",
+          "description": "Specialized post-processing shaders that generate outlines, halos, drop shadows, and retro display characteristics.",
+          "details": "Includes GlowFilter, OutlineFilter, DropShadowFilter, CRTFilter, GlitchFilter, and PixelateFilter.",
+          "analogy": "Like graphic design stroke layers and vintage cathode-ray tube television scanlines.",
+          "primaryFocus": "Unit selection indicators, combat emphasis, user interface shadows, and retro aesthetics",
+          "inScope": [
+            "Alpha threshold edge detection and expansion",
+            "Color tinting of peripheral blur halos",
+            "Scanline, curvature, and chromatic aberration simulation"
+          ],
+          "outOfScope": [
+            "Volumetric 3D raymarched lighting"
+          ],
+          "color": "peach"
+        },
+        {
+          "icon": "Code",
+          "title": "Custom GLSL & WGSL Shaders",
+          "subtitle": "Bespoke Vertex & Fragment Programs",
+          "description": "User-defined GPU shader programs implemented via the PIXI.Filter base class with custom uniforms and shaders.",
+          "details": "Allows developers to write arbitrary GLSL (WebGL) or WGSL (WebGPU) code, declare animated uniforms, bind multi-texture samplers, and build proprietary visual effects.",
+          "analogy": "Like having direct access to the GPU painting canvas with custom mathematical brushes.",
+          "primaryFocus": "Unique gameplay mechanics, procedural terrain generation, custom dissolve shaders, and custom transitions",
+          "inScope": [
+            "Custom vertex and fragment shader source code",
+            "Binding custom CPU uniform values (time, resolution, mouse coords)",
+            "Multi-texture custom sampling"
+          ],
+          "outOfScope": [
+            "Fixed-function legacy pipeline rendering"
+          ],
+          "color": "green"
+        }
+      ]
+    }
+  },
+  {
+    "folder": "text-core",
+    "type": "text",
+    "props": {
+      "title": "The FilterSystem Architecture & Lifecycle",
+      "paragraphs": [
+        "PixiJS renders 2D scenes at 60 FPS by batching thousands of textured quads into combined GPU vertex buffers. However, post-processing effects such as blurs, displacement maps, glows, and custom shaders cannot be rendered within the standard batch stream because they require sampling previously rendered pixel regions. To solve this, PixiJS provides the FilterSystem architecture.",
+        "When the PixiJS render traversal encounters a DisplayObject or Container with an active filters array, the FilterSystem intercepts normal screen drawing by calling its push() lifecycle method. It computes the axis-aligned bounding box of the display object and expands it by the filter.padding margin. This expansion ensures that outward-bleeding effects, such as a 20-pixel Gaussian blur or a drop shadow, have sufficient offscreen texture canvas and do not get clipped at the original sprite boundary.",
+        "Once bounds are computed, the FilterSystem requests a temporary offscreen RenderTarget (a WebGL framebuffer backed by a texture) from its internal RenderTarget pool. Reusing RenderTargets from a pre-allocated pool is critical: allocating fresh WebGL textures every frame causes severe GPU memory fragmentation, driver stalls, and CPU garbage collection pauses. The renderer then redirects its drawing target to this offscreen RenderTarget and renders the container's child hierarchy into it.",
+        "After all children are drawn into the offscreen texture, the FilterSystem prepares the filter execution stage. It calculates the uFilterMatrix uniform, a coordinate transformation matrix that accurately maps screen-space quad coordinates into the offscreen texture UV coordinate space [0, 1]. This ensures filters remain visually sharp and distortion-free regardless of display resolution, canvas scaling, or nested container rotations.",
+        "The FilterSystem then renders a full-screen quad using the filter's fragment shader. If the filter is a single-pass effect (such as a ColorMatrixFilter or AlphaFilter), the shader samples the offscreen texture uSampler and writes directly to the destination framebuffer. If the filter is a multi-pass effect (such as a 2-pass separable Gaussian blur or Kawase blur), the FilterSystem allocates a second ping-pong RenderTarget from the pool, executes pass 1 (horizontal convolution), swaps the input/output buffers, and executes pass 2 (vertical convolution) before drawing to the destination.",
+        "While filters provide immense visual power, they introduce significant GPU performance costs. Every filter pass breaks the continuous sprite batch, switches WebGL framebuffers, and increases GPU memory bandwidth consumption. Applying filters to hundreds of individual sprites can drop framerates from 60 FPS to under 20 FPS. To maintain optimal performance, developers should group related sprites under a single parent Container with one shared filter, utilize fast algorithms like KawaseBlurFilter at half resolution (filter.resolution = 0.5), or enable container.cacheAsBitmap = true for static elements."
+      ]
+    }
+  },
+  {
+    "folder": "flowchart",
+    "type": "flowchart",
+    "props": {
+      "title": "Filter Execution & Render Pipeline",
+      "schema": {
+        "entities": {
+          "render_ticker": {
+            "title": "Render Loop Ticker",
+            "desc": "Application animation ticker invoking renderer.render(stage)",
+            "type": "Actor"
+          },
+          "filter_system": {
+            "title": "FilterSystem",
+            "desc": "Coordinates filter stack, calculates bounding box with padding, and manages passes",
+            "type": "Aggregate"
+          },
+          "target_pool": {
+            "title": "RenderTarget Pool",
+            "desc": "Allocates and recycles temporary offscreen WebGL framebuffers",
+            "type": "Aggregate"
+          },
+          "display_container": {
+            "title": "Display Container",
+            "desc": "Node holding child display objects and the attached filters array",
+            "type": "Aggregate"
+          },
+          "shader_program": {
+            "title": "GLSL Shader Program",
+            "desc": "Compiles and executes vertex/fragment shaders with uniform matrices",
+            "type": "Aggregate"
+          },
+          "gpu_driver": {
+            "title": "WebGL / WebGPU Driver",
+            "desc": "Hardware graphics pipeline drawing screen-space quads into framebuffers",
+            "type": "External API"
+          },
+          "pol_step_init_filter": {
+            "title": "When Filtered Container Encountered In Scene Graph",
+            "desc": "FilterSystem intercepts rendering and computes offscreen canvas dimensions",
+            "type": "Policy",
+            "root": false
+          },
+          "cmd_step_init_filter": {
+            "title": "Calculate Padded Bounding Box & Push Filter State",
+            "desc": "FilterSystem intercepts rendering and computes offscreen canvas dimensions",
+            "type": "Command"
+          },
+          "evt_evt_bounds_calculated": {
+            "title": "Padded Bounding Box Computed",
+            "desc": "Bounding rect expanded with filter.padding margin",
+            "type": "Event"
+          },
+          "pol_step_acquire_target": {
+            "title": "When Padded Dimensions Known",
+            "desc": "Leases pre-allocated RenderTarget matching padded dimensions",
+            "type": "Policy",
+            "root": false
+          },
+          "cmd_step_acquire_target": {
+            "title": "Lease Temporary Offscreen Framebuffer",
+            "desc": "Leases pre-allocated RenderTarget matching padded dimensions",
+            "type": "Command"
+          },
+          "evt_evt_target_acquired": {
+            "title": "RenderTarget Leased From Pool",
+            "desc": "Clean offscreen texture allocated without VRAM churn",
+            "type": "Event"
+          },
+          "pol_step_render_children": {
+            "title": "When Offscreen Target Bound",
+            "desc": "Container renders all children into the leased RenderTarget",
+            "type": "Policy",
+            "root": false
+          },
+          "cmd_step_render_children": {
+            "title": "Render Child Display Tree Into Offscreen Target",
+            "desc": "Container renders all children into the leased RenderTarget",
+            "type": "Command"
+          },
+          "evt_evt_children_rendered": {
+            "title": "Child Hierarchy Rendered Offscreen",
+            "desc": "Sprites and geometry drawn into offscreen texture buffer",
+            "type": "Event"
+          },
+          "pol_step_bind_shader": {
+            "title": "When Offscreen Texture Complete",
+            "desc": "Prepares shader program with matrix mapping and uniform values",
+            "type": "Policy",
+            "root": false
+          },
+          "cmd_step_bind_shader": {
+            "title": "Upload Uniforms, Textures, & uFilterMatrix",
+            "desc": "Prepares shader program with matrix mapping and uniform values",
+            "type": "Command"
+          },
+          "evt_evt_shader_ready": {
+            "title": "Shader Program & Uniforms Configured",
+            "desc": "Vertex/fragment uniforms, samplers, and matrices bound to GPU",
+            "type": "Event"
+          },
+          "pol_branch_single_pass": {
+            "title": "If Filter Has Single Shader Pass",
+            "desc": "If Filter Has Single Shader Pass",
+            "type": "Policy"
+          },
+          "cmd_branch_single_pass": {
+            "title": "Execute Fragment Quad Directly To Destination Framebuffer",
+            "desc": "Execute Fragment Quad Directly To Destination Framebuffer",
+            "type": "Command"
+          },
+          "evt_evt_single_pass_completed": {
+            "title": "Single-Pass Filter Rendered",
+            "desc": "Output composited to target buffer in one GPU draw call",
+            "type": "Event"
+          },
+          "pol_branch_multi_pass": {
+            "title": "If Filter Has Multiple Sequential Passes",
+            "desc": "If Filter Has Multiple Sequential Passes",
+            "type": "Policy"
+          },
+          "cmd_branch_multi_pass": {
+            "title": "Execute Ping-Pong Convolution Intermediate Passes",
+            "desc": "Execute Ping-Pong Convolution Intermediate Passes",
+            "type": "Command"
+          },
+          "gpu_driver2": {
+            "title": "WebGL / WebGPU Driver",
+            "desc": "Hardware graphics pipeline drawing screen-space quads into framebuffers",
+            "type": "External API"
+          },
+          "evt_evt_multi_pass_completed": {
+            "title": "Multi-Pass Ping-Pong Completed",
+            "desc": "Sequential convolution passes combined into final output",
+            "type": "Event"
+          },
+          "pol_step_recycle_targets": {
+            "title": "When Filter Execution Finishes",
+            "desc": "FilterSystem cleans up and returns all leased buffers",
+            "type": "Policy",
+            "root": false
+          },
+          "cmd_step_recycle_targets": {
+            "title": "Return Temporary Framebuffers Back To Pool",
+            "desc": "FilterSystem cleans up and returns all leased buffers",
+            "type": "Command"
+          },
+          "target_pool2": {
+            "title": "RenderTarget Pool",
+            "desc": "Allocates and recycles temporary offscreen WebGL framebuffers",
+            "type": "Aggregate"
+          },
+          "evt_evt_targets_recycled": {
+            "title": "RenderTargets Recycled To Pool",
+            "desc": "Offscreen textures released for next frame without memory leaks",
+            "type": "Event"
+          }
+        },
+        "relations": [
+          {
+            "id": "r1",
+            "from": "render_ticker",
+            "to": "pol_step_init_filter",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r2",
+            "from": "pol_step_init_filter",
+            "to": "cmd_step_init_filter",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r3",
+            "from": "cmd_step_init_filter",
+            "to": "filter_system",
+            "handledBy": true,
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r4",
+            "from": "filter_system",
+            "to": "evt_evt_bounds_calculated",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r5",
+            "from": "evt_evt_bounds_calculated",
+            "to": "pol_step_acquire_target",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r6",
+            "from": "pol_step_acquire_target",
+            "to": "cmd_step_acquire_target",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r7",
+            "from": "cmd_step_acquire_target",
+            "to": "target_pool",
+            "handledBy": true,
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r8",
+            "from": "target_pool",
+            "to": "evt_evt_target_acquired",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r9",
+            "from": "evt_evt_target_acquired",
+            "to": "pol_step_render_children",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r10",
+            "from": "pol_step_render_children",
+            "to": "cmd_step_render_children",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r11",
+            "from": "cmd_step_render_children",
+            "to": "display_container",
+            "handledBy": true,
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r12",
+            "from": "display_container",
+            "to": "evt_evt_children_rendered",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r13",
+            "from": "evt_evt_children_rendered",
+            "to": "pol_step_bind_shader",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r14",
+            "from": "pol_step_bind_shader",
+            "to": "cmd_step_bind_shader",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r15",
+            "from": "cmd_step_bind_shader",
+            "to": "shader_program",
+            "handledBy": true,
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r16",
+            "from": "shader_program",
+            "to": "evt_evt_shader_ready",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r17",
+            "from": "evt_evt_shader_ready",
+            "to": "pol_branch_single_pass",
+            "label": "Single-Pass Effect",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r18",
+            "from": "pol_branch_single_pass",
+            "to": "cmd_branch_single_pass",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r19",
+            "from": "cmd_branch_single_pass",
+            "to": "gpu_driver",
+            "handledBy": true,
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r20",
+            "from": "gpu_driver",
+            "to": "evt_evt_single_pass_completed",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r21",
+            "from": "evt_evt_shader_ready",
+            "to": "pol_branch_multi_pass",
+            "label": "Multi-Pass Convolution",
+            "dashed": true,
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r22",
+            "from": "pol_branch_multi_pass",
+            "to": "cmd_branch_multi_pass",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r23",
+            "from": "cmd_branch_multi_pass",
+            "to": "gpu_driver2",
+            "handledBy": true,
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r24",
+            "from": "gpu_driver2",
+            "to": "evt_evt_multi_pass_completed",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r25",
+            "from": "pol_step_recycle_targets",
+            "to": "cmd_step_recycle_targets",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r26",
+            "from": "cmd_step_recycle_targets",
+            "to": "target_pool2",
+            "handledBy": true,
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "id": "r27",
+            "from": "target_pool2",
+            "to": "evt_evt_targets_recycled",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          }
+        ],
+        "journeys": [
+          {
+            "id": "journey_single_pass",
+            "label": "Single-Pass Shader Execution",
+            "description": "Standard execution path for single-pass filters like ColorMatrixFilter or AlphaFilter.",
+            "steps": [
+              {
+                "nodeIds": [
+                  "render_ticker",
+                  "pol_step_init_filter",
+                  "cmd_step_init_filter",
+                  "filter_system",
+                  "evt_evt_bounds_calculated"
+                ],
+                "title": "1. Filter Interception & Padding",
+                "reason": "FilterSystem computes padded bounds around the container.",
+                "processGroup": "planning"
+              },
+              {
+                "nodeIds": [
+                  "pol_step_acquire_target",
+                  "cmd_step_acquire_target",
+                  "target_pool",
+                  "evt_evt_target_acquired"
+                ],
+                "title": "2. Pool Allocation",
+                "reason": "Leases temporary RenderTarget from internal pool.",
+                "processGroup": "execution"
+              },
+              {
+                "nodeIds": [
+                  "pol_step_render_children",
+                  "cmd_step_render_children",
+                  "display_container",
+                  "evt_evt_children_rendered"
+                ],
+                "title": "3. Offscreen Draw",
+                "reason": "Container renders child sprites into offscreen target.",
+                "processGroup": "execution"
+              },
+              {
+                "nodeIds": [
+                  "pol_step_bind_shader",
+                  "cmd_step_bind_shader",
+                  "shader_program",
+                  "evt_evt_shader_ready"
+                ],
+                "title": "4. Uniform Binding",
+                "reason": "Shader program uploads uFilterMatrix and uniforms.",
+                "processGroup": "execution"
+              },
+              {
+                "nodeIds": [
+                  "pol_step_recycle_targets",
+                  "cmd_step_recycle_targets",
+                  "target_pool2",
+                  "evt_evt_targets_recycled"
+                ],
+                "title": "5. Texture Recycling",
+                "reason": "Returns leased framebuffers back to pool.",
+                "processGroup": "evaluation"
+              }
+            ]
+          },
+          {
+            "id": "journey_multi_pass",
+            "label": "Multi-Pass Ping-Pong Convolution",
+            "description": "Execution lifecycle for multi-pass filters like separable Gaussian blur or Kawase blur.",
+            "steps": [
+              {
+                "nodeIds": [
+                  "render_ticker",
+                  "pol_step_init_filter",
+                  "cmd_step_init_filter",
+                  "filter_system",
+                  "evt_evt_bounds_calculated"
+                ],
+                "title": "1. Padded Bounds",
+                "reason": "Calculates expanded bounding box for blur halo.",
+                "processGroup": "planning"
+              },
+              {
+                "nodeIds": [
+                  "pol_step_acquire_target",
+                  "cmd_step_acquire_target",
+                  "target_pool",
+                  "evt_evt_target_acquired"
+                ],
+                "title": "2. Ping-Pong Targets",
+                "reason": "Leases pair of RenderTargets for intermediate passes.",
+                "processGroup": "execution"
+              },
+              {
+                "nodeIds": [
+                  "pol_step_render_children",
+                  "cmd_step_render_children",
+                  "display_container",
+                  "evt_evt_children_rendered"
+                ],
+                "title": "3. Offscreen Capture",
+                "reason": "Renders unblurred source into first target.",
+                "processGroup": "execution"
+              },
+              {
+                "nodeIds": [
+                  "pol_step_bind_shader",
+                  "cmd_step_bind_shader",
+                  "shader_program",
+                  "evt_evt_shader_ready"
+                ],
+                "title": "4. Multi-Pass Shader",
+                "reason": "Executes horizontal and vertical passes across ping-pong buffers.",
+                "processGroup": "execution"
+              },
+              {
+                "nodeIds": [
+                  "pol_step_recycle_targets",
+                  "cmd_step_recycle_targets",
+                  "target_pool2",
+                  "evt_evt_targets_recycled"
+                ],
+                "title": "5. Pool Cleanup",
+                "reason": "Recycles intermediate buffers back to pool.",
+                "processGroup": "evaluation"
+              }
+            ]
+          }
+        ],
+        "rawSteps": [
+          {
+            "type": "linear",
+            "id": "step_init_filter",
+            "initiatedBy": {
+              "_tag": "ref",
+              "id": "render_ticker"
+            },
+            "policy": "When Filtered Container Encountered In Scene Graph",
+            "command": "Calculate Padded Bounding Box & Push Filter State",
+            "handledBy": {
+              "_tag": "ref",
+              "id": "filter_system"
+            },
+            "resultEvents": [
+              {
+                "id": "evt_bounds_calculated",
+                "title": "Padded Bounding Box Computed",
+                "desc": "Bounding rect expanded with filter.padding margin"
+              }
+            ],
+            "continuesAs": "step_acquire_target",
+            "description": "FilterSystem intercepts rendering and computes offscreen canvas dimensions"
+          },
+          {
+            "type": "linear",
+            "id": "step_acquire_target",
+            "policy": "When Padded Dimensions Known",
+            "command": "Lease Temporary Offscreen Framebuffer",
+            "handledBy": {
+              "_tag": "ref",
+              "id": "target_pool"
+            },
+            "resultEvents": [
+              {
+                "id": "evt_target_acquired",
+                "title": "RenderTarget Leased From Pool",
+                "desc": "Clean offscreen texture allocated without VRAM churn"
+              }
+            ],
+            "continuesAs": "step_render_children",
+            "description": "Leases pre-allocated RenderTarget matching padded dimensions"
+          },
+          {
+            "type": "linear",
+            "id": "step_render_children",
+            "policy": "When Offscreen Target Bound",
+            "command": "Render Child Display Tree Into Offscreen Target",
+            "handledBy": {
+              "_tag": "ref",
+              "id": "display_container"
+            },
+            "resultEvents": [
+              {
+                "id": "evt_children_rendered",
+                "title": "Child Hierarchy Rendered Offscreen",
+                "desc": "Sprites and geometry drawn into offscreen texture buffer"
+              }
+            ],
+            "continuesAs": "step_bind_shader",
+            "description": "Container renders all children into the leased RenderTarget"
+          },
+          {
+            "type": "linear",
+            "id": "step_bind_shader",
+            "policy": "When Offscreen Texture Complete",
+            "command": "Upload Uniforms, Textures, & uFilterMatrix",
+            "handledBy": {
+              "_tag": "ref",
+              "id": "shader_program"
+            },
+            "resultEvents": [
+              {
+                "id": "evt_shader_ready",
+                "title": "Shader Program & Uniforms Configured",
+                "desc": "Vertex/fragment uniforms, samplers, and matrices bound to GPU"
+              }
+            ],
+            "continuesAs": "step_branch_pass",
+            "description": "Prepares shader program with matrix mapping and uniform values"
+          },
+          {
+            "type": "branch",
+            "id": "step_branch_pass",
+            "event": "evt_shader_ready",
+            "branches": [
+              {
+                "id": "branch_single_pass",
+                "label": "Single-Pass Effect",
+                "policy": "If Filter Has Single Shader Pass",
+                "command": "Execute Fragment Quad Directly To Destination Framebuffer",
+                "handledBy": {
+                  "_tag": "ref",
+                  "id": "gpu_driver"
+                },
+                "resultEvents": [
+                  {
+                    "id": "evt_single_pass_completed",
+                    "title": "Single-Pass Filter Rendered",
+                    "desc": "Output composited to target buffer in one GPU draw call"
+                  }
+                ]
+              },
+              {
+                "id": "branch_multi_pass",
+                "label": "Multi-Pass Convolution",
+                "dashed": true,
+                "policy": "If Filter Has Multiple Sequential Passes",
+                "command": "Execute Ping-Pong Convolution Intermediate Passes",
+                "handledBy": {
+                  "_tag": "ref",
+                  "id": "gpu_driver"
+                },
+                "resultEvents": [
+                  {
+                    "id": "evt_multi_pass_completed",
+                    "title": "Multi-Pass Ping-Pong Completed",
+                    "desc": "Sequential convolution passes combined into final output"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "type": "linear",
+            "id": "step_recycle_targets",
+            "policy": "When Filter Execution Finishes",
+            "command": "Return Temporary Framebuffers Back To Pool",
+            "handledBy": {
+              "_tag": "ref",
+              "id": "target_pool"
+            },
+            "resultEvents": [
+              {
+                "id": "evt_targets_recycled",
+                "title": "RenderTargets Recycled To Pool",
+                "desc": "Offscreen textures released for next frame without memory leaks"
+              }
+            ],
+            "description": "FilterSystem cleans up and returns all leased buffers"
+          }
+        ]
+      }
+    }
+  },
+  {
+    "folder": "reflection-pipeline",
+    "type": "reflection-sequence",
+    "props": {
+      "title": "Filter Pipeline Lifecycle Sequencing",
+      "challenges": [
+        {
+          "id": "filter-lifecycle-sequence",
+          "prompt": "Arrange the chronological stages of the PixiJS Filter execution lifecycle from initial interception to framebuffer swap:",
+          "items": [
+            {
+              "id": "seq-bounds-padding",
+              "text": "Calculate Padded Bounding Box (expand bounds by filter.padding)"
+            },
+            {
+              "id": "seq-lease-target",
+              "text": "Lease Temporary RenderTarget from internal RenderTarget pool"
+            },
+            {
+              "id": "seq-render-children",
+              "text": "Render Container Child Hierarchy into the offscreen RenderTarget"
+            },
+            {
+              "id": "seq-bind-uniforms",
+              "text": "Compute uFilterMatrix and bind Shader Uniforms & Samplers"
+            },
+            {
+              "id": "seq-execute-quad",
+              "text": "Execute Fragment Shader over full-screen Quad onto destination buffer"
+            },
+            {
+              "id": "seq-recycle-target",
+              "text": "Recycle temporary RenderTargets back to pool for future frames"
+            }
+          ],
+          "solution": [
+            "seq-bounds-padding",
+            "seq-lease-target",
+            "seq-render-children",
+            "seq-bind-uniforms",
+            "seq-execute-quad",
+            "seq-recycle-target"
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "folder": "reflection-multipass",
+    "type": "reflection-sequence",
+    "props": {
+      "title": "Multi-Pass Convolution Sequencing",
+      "challenges": [
+        {
+          "id": "multipass-convolution-sequence",
+          "prompt": "Arrange the sequential stages of a 2-pass separable Gaussian/Kawase blur convolution pipeline:",
+          "items": [
+            {
+              "id": "step-lease-pair",
+              "text": "Lease Ping and Pong RenderTarget pair from pool"
+            },
+            {
+              "id": "step-pass-horizontal",
+              "text": "Execute Pass 1 (Horizontal 1D Convolution) from Source Target to Ping Target"
+            },
+            {
+              "id": "step-swap-buffers",
+              "text": "Swap Ping and Pong Buffer pointers"
+            },
+            {
+              "id": "step-pass-vertical",
+              "text": "Execute Pass 2 (Vertical 1D Convolution) from Ping Target to Destination Target"
+            },
+            {
+              "id": "step-return-buffers",
+              "text": "Return both Ping and Pong RenderTargets back to pool"
+            }
+          ],
+          "solution": [
+            "step-lease-pair",
+            "step-pass-horizontal",
+            "step-swap-buffers",
+            "step-pass-vertical",
+            "step-return-buffers"
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "folder": "reflection-caching",
+    "type": "reflection-sequence",
+    "props": {
+      "title": "Bitmap Caching & Texture Baking Sequencing",
+      "challenges": [
+        {
+          "id": "cache-as-bitmap-sequence",
+          "prompt": "Arrange the chronological stages of baking a filtered container with cacheAsBitmap:",
+          "items": [
+            {
+              "id": "step-enable-cache",
+              "text": "Set container.cacheAsBitmap = true on static filtered display object"
+            },
+            {
+              "id": "step-measure-bounds",
+              "text": "Calculate combined padded bounds of container and active filters"
+            },
+            {
+              "id": "step-bake-texture",
+              "text": "Execute filter shader passes once and bake output into private RenderTexture"
+            },
+            {
+              "id": "step-switch-batched",
+              "text": "Direct renderer to draw cached texture as a single batched sprite quad"
+            },
+            {
+              "id": "step-invalidate-mutation",
+              "text": "Invalidate and re-bake cache when child nodes change or mutate"
+            }
+          ],
+          "solution": [
+            "step-enable-cache",
+            "step-measure-bounds",
+            "step-bake-texture",
+            "step-switch-batched",
+            "step-invalidate-mutation"
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "folder": "decision-tree",
+    "type": "decision-tree",
+    "props": {
+      "title": "PixiJS Filter Selection & Performance Advisor",
+      "id": "filter-selection-advisor",
+      "root": "primary_goal",
+      "nodes": {
+        "primary_goal": {
+          "id": "primary_goal",
+          "prompt": "What visual effect or post-processing transformation are you building?",
+          "choices": [
+            {
+              "id": "choice_color",
+              "text": "Color adjustment, grading, tint, or desaturation",
+              "next": "node_color_type",
+              "rationale": "Color modifications can be performed efficiently in a single shader pass.",
+              "recommended": true
+            },
+            {
+              "id": "choice_blur",
+              "text": "Blur, glow, drop shadow, or depth-of-field",
+              "next": "node_blur_target",
+              "rationale": "Blur and spatial convolutions require multi-pass texture sampling."
+            },
+            {
+              "id": "choice_distortion",
+              "text": "Water ripples, shockwaves, or optical refraction",
+              "next": "rec_displacement",
+              "rationale": "Coordinate distortions are best handled by DisplacementFilter with a map texture."
+            },
+            {
+              "id": "choice_custom",
+              "text": "Custom procedural visuals or unique shader math",
+              "next": "rec_custom_glsl",
+              "rationale": "Bespoke visuals require writing custom GLSL/WGSL fragment shaders via PIXI.Filter."
+            }
+          ]
+        },
+        "node_color_type": {
+          "id": "node_color_type",
+          "prompt": "Is the color transformation static or dynamically animated?",
+          "choices": [
+            {
+              "id": "choice_matrix_preset",
+              "text": "Standard presets (grayscale, sepia, brightness, contrast, hue)",
+              "next": "rec_color_matrix",
+              "rationale": "ColorMatrixFilter provides built-in GPU matrix math presets with zero setup.",
+              "recommended": true
+            },
+            {
+              "id": "choice_simple_tint",
+              "text": "Simple uniform color tint across a single sprite",
+              "next": "rec_sprite_tint",
+              "rationale": "Sprite tint property operates directly in the batch renderer without filter overhead."
+            }
+          ]
+        },
+        "node_blur_target": {
+          "id": "node_blur_target",
+          "prompt": "What is your target deployment platform and update frequency?",
+          "choices": [
+            {
+              "id": "choice_mobile_dynamic",
+              "text": "Mobile devices / 60 FPS continuous real-time animation",
+              "next": "rec_kawase_mobile",
+              "rationale": "Mobile GPUs have limited fill rate; Kawase blur with reduced resolution maximizes FPS.",
+              "recommended": true
+            },
+            {
+              "id": "choice_desktop_high",
+              "text": "Desktop high-performance browser / AAA visual fidelity",
+              "next": "rec_gaussian_desktop",
+              "rationale": "Desktop GPUs can handle full 2-pass Gaussian BlurFilter with high sample quality."
+            },
+            {
+              "id": "choice_static_ui",
+              "text": "Static UI cards, dialog backgrounds, or rarely updated panels",
+              "next": "rec_cache_bitmap",
+              "rationale": "Baking static filtered containers with cacheAsBitmap eliminates ongoing GPU costs."
+            }
+          ]
+        },
+        "rec_color_matrix": {
+          "id": "rec_color_matrix",
+          "leaf": {
+            "recommendation": "Use PIXI.ColorMatrixFilter",
+            "explanation": "ColorMatrixFilter executes a 5x4 matrix multiplication in a single GPU pass. It provides built-in methods like desaturate(), sepia(), hue(), and brightness() without breaking performance.",
+            "tradeoffs": [
+              "Single-pass execution incurs minimal performance penalty",
+              "Cannot perform spatial neighboring-pixel blur operations"
+            ]
+          }
+        },
+        "rec_sprite_tint": {
+          "id": "rec_sprite_tint",
+          "leaf": {
+            "recommendation": "Use sprite.tint instead of a Filter",
+            "explanation": "For simple color tints on individual sprites, setting sprite.tint = 0xFF0000 is processed directly inside the BatchRenderer with zero offscreen RenderTarget overhead.",
+            "tradeoffs": [
+              "Zero batch break overhead and zero offscreen buffer allocation",
+              "Multiplicative tinting only; cannot do advanced curves or inverted grading"
+            ]
+          }
+        },
+        "rec_kawase_mobile": {
+          "id": "rec_kawase_mobile",
+          "leaf": {
+            "recommendation": "Use KawaseBlurFilter with resolution: 0.5",
+            "explanation": "KawaseBlurFilter from pixi-filters delivers smooth blur aesthetics using fewer texture sample taps. Setting filter.resolution = 0.5 cuts GPU fillrate consumption by 75% on mobile devices.",
+            "tradeoffs": [
+              "Blazing 60 FPS performance on low-end mobile devices",
+              "Slight softening from bilinear upsampling (usually imperceptible for blurs)"
+            ]
+          }
+        },
+        "rec_gaussian_desktop": {
+          "id": "rec_gaussian_desktop",
+          "leaf": {
+            "recommendation": "Use PIXI.BlurFilter with quality: 3",
+            "explanation": "Standard BlurFilter implements separable horizontal and vertical Gaussian passes. Setting quality = 3 produces smooth, publication-grade blur gradients on desktop GPUs.",
+            "tradeoffs": [
+              "Perfect mathematical Gaussian blur curves",
+              "Requires multiple passes that can slow down mobile web browsers"
+            ]
+          }
+        },
+        "rec_cache_bitmap": {
+          "id": "rec_cache_bitmap",
+          "leaf": {
+            "recommendation": "Apply Filter + set container.cacheAsBitmap = true",
+            "explanation": "Apply any complex blur or glow filter to the UI container, then set cacheAsBitmap = true. PixiJS renders the filter once into a private texture and draws it as a single quad in subsequent frames.",
+            "tradeoffs": [
+              "Eliminates per-frame filter recalculation entirely (100% batched)",
+              "Updating container contents requires invalidating the cache"
+            ]
+          }
+        },
+        "rec_displacement": {
+          "id": "rec_displacement",
+          "leaf": {
+            "recommendation": "Use PIXI.DisplacementFilter with a Noise Sprite",
+            "explanation": "Create a DisplacementFilter referencing a seamless tileable noise texture. Animate displacementSprite.x and y in your Ticker loop to produce dynamic water ripples and heat haze.",
+            "tradeoffs": [
+              "Realistic refractive optical distortion effects",
+              "Requires an extra texture unit and displacement map asset"
+            ]
+          }
+        },
+        "rec_custom_glsl": {
+          "id": "rec_custom_glsl",
+          "leaf": {
+            "recommendation": "Create a custom PIXI.Filter subclass",
+            "explanation": "Subclass PIXI.Filter and pass custom GLSL vertex/fragment shader strings and uniform mappings. Update uniform values inside your game loop for dynamic, procedural effects.",
+            "tradeoffs": [
+              "Unlimited creative shader freedom",
+              "Requires GLSL shader authoring and uniform memory management"
+            ]
+          }
+        }
+      }
+    }
+  },
+  {
+    "folder": "tradeoff-sandbox",
+    "type": "tradeoff-sandbox",
+    "props": {
+      "title": "Post-Processing Performance Trade-offs",
+      "scenarios": [
+        {
+          "id": "filter-optimization-strategy",
+          "title": "Post-Processing Performance & Architecture Strategy",
+          "description": "Architect post-processing shaders and container hierarchies for a 60 FPS mobile/web game, balancing GPU fillrate, VRAM, and visual fidelity.",
+          "metrics": [
+            {
+              "id": "fps_throughput",
+              "label": "FPS Throughput",
+              "baseValue": 55,
+              "min": 0,
+              "max": 100,
+              "direction": "higher"
+            },
+            {
+              "id": "draw_call_overhead",
+              "label": "Draw Call & Target Breaks",
+              "baseValue": 60,
+              "min": 0,
+              "max": 100,
+              "direction": "lower"
+            },
+            {
+              "id": "gpu_memory",
+              "label": "GPU Memory & VRAM Bandwidth",
+              "baseValue": 50,
+              "min": 0,
+              "max": 100,
+              "direction": "lower"
+            },
+            {
+              "id": "visual_spectacle",
+              "label": "Visual Fidelity & Effects",
+              "baseValue": 70,
+              "min": 0,
+              "max": 100,
+              "direction": "higher"
+            }
+          ],
+          "steps": [
+            {
+              "id": "step_attachment",
+              "title": "1. Filter Attachment Hierarchy",
+              "description": "Determine where filters are attached in the scene graph hierarchy.",
+              "recommended": "grouped_container",
+              "choices": [
+                {
+                  "id": "individual_sprites",
+                  "label": "Individual Leaf Sprites",
+                  "description": "Attach separate filters to 50 individual enemy sprites on screen.",
+                  "metrics": {
+                    "fps_throughput": -35,
+                    "draw_call_overhead": 45,
+                    "gpu_memory": 30,
+                    "visual_spectacle": 5
+                  },
+                  "pros": [
+                    {
+                      "title": "Independent control",
+                      "description": "Each enemy can have unique filter parameters."
+                    }
+                  ],
+                  "cons": [
+                    {
+                      "title": "Catastrophic batch breaking",
+                      "description": "Forces 50 separate offscreen RenderTarget switch cycles per frame."
+                    },
+                    {
+                      "title": "Severe mobile lag",
+                      "description": "Framerate drops below 20 FPS on mobile devices."
+                    }
+                  ],
+                  "whyThisFits": "Only when rendering 1 or 2 highlighted hero characters.",
+                  "whenToUse": "Solo boss highlight or single cursor glow."
+                },
+                {
+                  "id": "grouped_container",
+                  "label": "Grouped Parent Container",
+                  "description": "Group all 50 enemies into one parent Container and attach 1 filter to the container.",
+                  "metrics": {
+                    "fps_throughput": 30,
+                    "draw_call_overhead": -35,
+                    "gpu_memory": -20,
+                    "visual_spectacle": 15
+                  },
+                  "pros": [
+                    {
+                      "title": "Single offscreen pass",
+                      "description": "All 50 enemies render into 1 shared RenderTarget before filtering."
+                    },
+                    {
+                      "title": "Preserves 60 FPS",
+                      "description": "Reduces framebuffer switching overhead by 98%."
+                    }
+                  ],
+                  "cons": [
+                    {
+                      "title": "Uniform parameters",
+                      "description": "All grouped enemies share the same filter intensity."
+                    }
+                  ],
+                  "whyThisFits": "Standard best practice for multi-object post-processing.",
+                  "whenToUse": "Particle swarms, enemy mobs, and UI card groups."
+                }
+              ]
+            },
+            {
+              "id": "step_algorithm",
+              "title": "2. Blur & Glow Algorithm Selection",
+              "description": "Choose the mathematical convolution approach for blurs and glows.",
+              "recommended": "kawase_blur",
+              "choices": [
+                {
+                  "id": "standard_gaussian",
+                  "label": "Multi-Pass Gaussian Blur",
+                  "description": "Standard PIXI.BlurFilter with quality 4 and large kernel radii.",
+                  "metrics": {
+                    "fps_throughput": -20,
+                    "draw_call_overhead": 15,
+                    "gpu_memory": 20,
+                    "visual_spectacle": 20
+                  },
+                  "pros": [
+                    {
+                      "title": "Pure Gaussian distribution",
+                      "description": "Mathematically flawless smooth gradients."
+                    }
+                  ],
+                  "cons": [
+                    {
+                      "title": "High sample taps",
+                      "description": "High texture fetch count increases GPU thermal load on phones."
+                    }
+                  ],
+                  "whyThisFits": "High-end desktop gaming and marketing landing pages.",
+                  "whenToUse": "When GPU power is abundant and visual precision is paramount."
+                },
+                {
+                  "id": "kawase_blur",
+                  "label": "Kawase Box-Offset Blur",
+                  "description": "Multi-pass KawaseBlurFilter with expanding box sample offsets.",
+                  "metrics": {
+                    "fps_throughput": 25,
+                    "draw_call_overhead": -10,
+                    "gpu_memory": -15,
+                    "visual_spectacle": 15
+                  },
+                  "pros": [
+                    {
+                      "title": "Ultra-fast texture sampling",
+                      "description": "Requires far fewer texture reads per pixel pass."
+                    },
+                    {
+                      "title": "Visually identical to Gaussian",
+                      "description": "Provides smooth soft-focus aesthetics."
+                    }
+                  ],
+                  "cons": [
+                    {
+                      "title": "External package",
+                      "description": "Requires pixi-filters package import."
+                    }
+                  ],
+                  "whyThisFits": "Production mobile web games and interactive apps.",
+                  "whenToUse": "All mobile-first projects requiring real-time blur or bloom."
+                }
+              ]
+            },
+            {
+              "id": "step_caching",
+              "title": "3. Static Filter Caching Strategy",
+              "description": "Determine whether static filtered UI and card assets are cached.",
+              "recommended": "cache_bitmap",
+              "choices": [
+                {
+                  "id": "dynamic_per_frame",
+                  "label": "Continuous Dynamic Re-execution",
+                  "description": "Execute all filter shader passes every frame even for static UI elements.",
+                  "metrics": {
+                    "fps_throughput": -25,
+                    "draw_call_overhead": 25,
+                    "gpu_memory": 15,
+                    "visual_spectacle": 0
+                  },
+                  "pros": [
+                    {
+                      "title": "Always reactive",
+                      "description": "Instantly reflects any child transform or text change."
+                    }
+                  ],
+                  "cons": [
+                    {
+                      "title": "Wasted GPU cycles",
+                      "description": "Calculates identical pixels 60 times per second for unchanging UI."
+                    }
+                  ],
+                  "whyThisFits": "Rapidly animating visual effects that change every frame.",
+                  "whenToUse": "Waving water, flickering flames, or animated shockwaves."
+                },
+                {
+                  "id": "cache_bitmap",
+                  "label": "Bake with cacheAsBitmap = true",
+                  "description": "Bake the filtered container into a static cached texture after initial render.",
+                  "metrics": {
+                    "fps_throughput": 35,
+                    "draw_call_overhead": -30,
+                    "gpu_memory": -10,
+                    "visual_spectacle": 10
+                  },
+                  "pros": [
+                    {
+                      "title": "Zero ongoing filter cost",
+                      "description": "Subsequent frames draw the baked texture as 1 standard batched sprite."
+                    },
+                    {
+                      "title": "Restores batch rendering",
+                      "description": "Can be batched alongside regular sprites."
+                    }
+                  ],
+                  "cons": [
+                    {
+                      "title": "Re-bake on mutation",
+                      "description": "Changing child text or layout requires invalidating the bitmap cache."
+                    }
+                  ],
+                  "whyThisFits": "Static UI cards, inventory dialogs, HUD backgrounds, and map tiles.",
+                  "whenToUse": "Any filtered object whose contents change infrequently."
+                }
+              ]
+            },
+            {
+              "id": "step_resolution",
+              "title": "4. Filter Resolution & Sampling Scale",
+              "description": "Configure filter.resolution to balance shader sharpness with GPU fillrate.",
+              "recommended": "half_resolution",
+              "choices": [
+                {
+                  "id": "native_resolution",
+                  "label": "Native Resolution (1.0x / Retina 2.0x)",
+                  "description": "Render offscreen targets at full native display pixel density.",
+                  "metrics": {
+                    "fps_throughput": -15,
+                    "draw_call_overhead": 0,
+                    "gpu_memory": 25,
+                    "visual_spectacle": 15
+                  },
+                  "pros": [
+                    {
+                      "title": "Pixel-perfect sharpness",
+                      "description": "Sharp outlines and fine displacement details."
+                    }
+                  ],
+                  "cons": [
+                    {
+                      "title": "4x fillrate cost on Retina",
+                      "description": "Huge bandwidth tax on high-DPI smartphone screens."
+                    }
+                  ],
+                  "whyThisFits": "Crisp outline filters and fine pixel-art CRT shaders.",
+                  "whenToUse": "Fine geometric effects where blur softness is undesirable."
+                },
+                {
+                  "id": "half_resolution",
+                  "label": "Half Resolution (0.5x Scale)",
+                  "description": "Render offscreen target at half resolution with hardware bilinear upsampling.",
+                  "metrics": {
+                    "fps_throughput": 25,
+                    "draw_call_overhead": 0,
+                    "gpu_memory": -25,
+                    "visual_spectacle": 5
+                  },
+                  "pros": [
+                    {
+                      "title": "75% reduction in pixel fillrate",
+                      "description": "Processes 1/4 the pixel count in the fragment shader."
+                    },
+                    {
+                      "title": "Natural blur smoothing",
+                      "description": "Bilinear upsampling naturally complements blur and bloom."
+                    }
+                  ],
+                  "cons": [
+                    {
+                      "title": "Slight edge softening",
+                      "description": "Not suitable for razor-sharp 1px outlines."
+                    }
+                  ],
+                  "whyThisFits": "Large blurs, glows, bloom, and background depth-of-field.",
+                  "whenToUse": "Mobile devices and performance-sensitive blur/glow effects."
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "folder": "quiz-optimization",
+    "type": "quiz",
+    "props": {
+      "title": "Performance & Optimization Quiz",
+      "questions": [
+        {
+          "id": "q-batch-breaking",
+          "question": "What is the primary performance reason that applying individual filters to 100 separate sprites causes severe lag?",
+          "choices": [
+            {
+              "id": "a",
+              "text": "Each filter requires switching render targets to offscreen framebuffers, breaking sprite batching and causing 100+ separate draw passes",
+              "correct": true,
+              "explanation": "Correct! Each filtered object forces a framebuffer target switch, vertex flush, and shader draw call, completely destroying the automatic batch renderer."
+            },
+            {
+              "id": "b",
+              "text": "JavaScript garbage collection deletes the texture buffers every frame",
+              "correct": false,
+              "explanation": "RenderTarget pooling prevents garbage collection, but GPU state switching overhead remains high."
+            },
+            {
+              "id": "c",
+              "text": "GLSL fragment shaders cannot run on more than 16 sprites simultaneously",
+              "correct": false,
+              "explanation": "GPUs can run millions of fragment shader instances; the bottleneck is CPU-to-GPU state changes and framebuffer bindings."
+            }
+          ],
+          "hint": "Consider what happens to WebGL state and draw calls when switching render targets."
+        },
+        {
+          "id": "q-kawase-benefit",
+          "question": "Why is KawaseBlurFilter preferred over standard multi-pass Gaussian Blur on mobile web devices?",
+          "choices": [
+            {
+              "id": "a",
+              "text": "Kawase blur runs on the CPU while Gaussian runs on the GPU",
+              "correct": false,
+              "explanation": "Both algorithms run entirely on the GPU in fragment shaders."
+            },
+            {
+              "id": "b",
+              "text": "Kawase blur uses expanding box sampling offsets, achieving smooth blur quality with significantly fewer texture fetch operations",
+              "correct": true,
+              "explanation": "Correct! Kawase blur achieves smooth distribution with minimal texture sampling taps, drastically lowering memory bandwidth on mobile GPUs."
+            },
+            {
+              "id": "c",
+              "text": "Kawase blur does not require an offscreen RenderTarget",
+              "correct": false,
+              "explanation": "Kawase blur still uses offscreen RenderTargets for its ping-pong passes."
+            }
+          ],
+          "hint": "Compare the number of texture sample taps required per pixel."
+        },
+        {
+          "id": "q-half-res",
+          "question": "How does setting filter.resolution = 0.5 improve mobile shader performance?",
+          "choices": [
+            {
+              "id": "a",
+              "text": "It renders the offscreen target at half size, reducing fragment shader pixel calculations by 75%",
+              "correct": true,
+              "explanation": "Correct! Half width and half height means 1/4 the pixel count (75% reduction), with hardware bilinear upsampling smoothing the blur."
+            },
+            {
+              "id": "b",
+              "text": "It drops the framerate to 30 FPS",
+              "correct": false,
+              "explanation": "It reduces GPU load per frame while keeping the display running at full 60 FPS."
+            },
+            {
+              "id": "c",
+              "text": "It disables the vertex shader entirely",
+              "correct": false,
+              "explanation": "Vertex shaders are still executed for quad geometry."
+            }
+          ],
+          "hint": "Think about pixel fillrate in the fragment shader."
+        }
+      ]
+    }
+  },
+  {
+    "folder": "quiz-boss",
+    "type": "quiz",
+    "props": {
+      "title": "Master Filter Architecture Assessment",
+      "questions": [
+        {
+          "id": "q-boss-cache",
+          "question": "When is container.cacheAsBitmap = true the most effective optimization for filtered objects?",
+          "choices": [
+            {
+              "id": "a",
+              "text": "When the container contains static or infrequently updating visuals, allowing PixiJS to bake the filtered result into a single reusable texture",
+              "correct": true,
+              "explanation": "Correct! cacheAsBitmap bakes the filtered container into a texture once, drawing it as a single standard batched sprite in subsequent frames."
+            },
+            {
+              "id": "b",
+              "text": "When animating position, rotation, and text at 60 FPS every frame",
+              "correct": false,
+              "explanation": "Updating children every frame forces expensive re-baking of the cached bitmap, degrading performance."
+            },
+            {
+              "id": "c",
+              "text": "Only when applying shaders to raw WebGL mesh geometries",
+              "correct": false,
+              "explanation": "cacheAsBitmap works across standard Container trees with sprites, text, graphics, and filters."
+            }
+          ],
+          "hint": "Consider how frequently the container visual contents mutate."
+        },
+        {
+          "id": "q-boss-displacement",
+          "question": "How does DisplacementFilter calculate coordinate distortion on the target sprite?",
+          "choices": [
+            {
+              "id": "a",
+              "text": "It uses the Red and Green channels of the map texture to offset the UV sampling coordinates",
+              "correct": true,
+              "explanation": "Correct! DisplacementFilter maps Red and Green channel values to (dx, dy) coordinate offsets during texture sampling."
+            },
+            {
+              "id": "b",
+              "text": "It physically recalculates the vertex buffer positions on the CPU",
+              "correct": false,
+              "explanation": "The distortion happens in the GPU fragment shader by offsetting UV sampling coordinates."
+            },
+            {
+              "id": "c",
+              "text": "It inverts the alpha channel of the background canvas",
+              "correct": false,
+              "explanation": "Alpha inversion is not used for displacement mapping."
+            }
+          ],
+          "hint": "Consider what color channels are read from the displacement map texture."
+        },
+        {
+          "id": "q-boss-pooling",
+          "question": "Why does FilterSystem lease RenderTargets from a pre-allocated pool instead of instantiating fresh framebuffers?",
+          "choices": [
+            {
+              "id": "a",
+              "text": "To prevent continuous VRAM allocation churn, memory fragmentation, and JavaScript GC stutter at 60 FPS",
+              "correct": true,
+              "explanation": "Correct! Dynamic WebGL framebuffer creation triggers severe GC pauses and GPU driver stalls; pooling keeps memory steady."
+            },
+            {
+              "id": "b",
+              "text": "Because WebGL only permits a total of 1 framebuffer in the entire browser context",
+              "correct": false,
+              "explanation": "WebGL allows multiple framebuffers, but creating and destroying them continuously causes memory churn."
+            },
+            {
+              "id": "c",
+              "text": "Because shaders cannot execute without pre-allocated CSS textures",
+              "correct": false,
+              "explanation": "RenderTargets are WebGL textures, independent of CSS."
+            }
+          ],
+          "hint": "Think about GPU memory fragmentation and garbage collection pauses."
+        }
+      ]
+    }
+  }
+]
