@@ -1,6 +1,253 @@
 # Guideline: How to Create a New Topic
 
-This document is a technical reference guide for directory structures, content schemas, and registration requirements for creating interactive topics inside the Loom Learning OS.
+This document is a technical reference guide for directory structures, content schemas, and registration requirements for creating interactive topics inside the Loom Learning OS. To build something right now, follow the Quick start below; read the reference sections afterwards only where you need the details.
+
+## Quick start: your first topic in 10 minutes
+
+A topic is an OKF bundle under `public/okf/` plus a registration link and a hex campaign map. Follow these five steps verbatim and you end up with a topic that passes `npm run okf:validate` and appears in `npm run dev`. The example below is a trimmed version of the real `http-caching` walkthrough topic (`intro` → `taxonomy-browser` → `quiz` + hex map) that lives in `public/okf/http-caching/`.
+
+### The 5-step path
+
+| # | Step | Where |
+|---|---|---|
+| 1 | **Bundle** — topic landing page + app metadata | `public/okf/<topic-id>/index.md` + `index.yaml` |
+| 2 | **Sections** — one folder per section (`section.md` + data files) | `public/okf/<topic-id>/sections/<name>/` — schemas in [docs/sections/](sections/README.md) |
+| 3 | **Validate** — the same Validation Gateway the app runs | `npm run okf:validate -- --topic=<topic-id>` |
+| 4 | **Register** — one markdown link so the app can discover the topic | `public/okf/index.md` |
+| 5 | **Hex map** — campaign map binding every section to a node | `public/hexmaps/<topic-id>.yaml` — see [creating-hexmaps.md](creating-hexmaps.md) |
+
+### Fastest route: scaffold all five steps in one command
+
+The `okf:new` scaffold writes a complete, validation-clean starter topic — bundle, section stubs, root registration, and a starter hex map — and runs the Validation Gateway before anything touches disk:
+
+```bash
+npm run okf:new -- <topic-slug> --category <Category> --sections <type1,type2,...> [--title "..."] [--description "..."] [--tags a,b]
+```
+
+Example:
+
+```bash
+npm run okf:new -- http-caching --category Architecture --sections taxonomy-browser,flowchart,quiz --tags http,performance
+```
+
+The scaffold writes the bundle (`index.md` + `index.yaml`), one stub folder per requested type (named after the type), the root registration link under `## <Category>`, and a starter hex map (capital hub + one node per section + boss lair, mapped per [creating-hexmaps.md §4](creating-hexmaps.md)).
+
+Guarantees: `intro` is always added automatically (the capital hub must bind to it); the command **refuses to overwrite** an existing topic and writes **nothing** unless everything validates clean; pass each section type once — to get two sections of the same type, copy the generated folder and rename it. Every generated file is a placeholder: replace the stub content, rewrite the hex map story, then re-verify with `npm run okf:validate -- --topic=<topic-slug>`.
+
+### Hand-writing the minimal topic
+
+To understand what the scaffold produces (or to skip it), here is every file of a complete topic, `first-topic`, written by hand.
+
+**1. Bundle** — `public/okf/first-topic/index.md` (no frontmatter; section links in display order):
+
+```markdown
+# Caching Basics
+
+Make web apps fast and cheap by letting browsers and CDNs reuse responses safely.
+
+## Foundations
+* [Why Cache?](sections/intro/section.md) — what HTTP caching is and why it matters
+* [The max-age Directive](sections/directives/section.md) — the freshness directive you use every day
+
+## Check
+* [Knowledge Check](sections/quiz/section.md) — test your directive intuition
+```
+
+and `public/okf/first-topic/index.yaml`:
+
+```yaml
+# App metadata for first-topic topic bundle
+category: Architecture
+tags:
+  - http
+  - caching
+```
+
+**2. Sections** — three folders under `public/okf/first-topic/sections/`:
+
+`intro/section.md` ([full schema](sections/intro.md)):
+
+```yaml
+---
+type: intro
+title: "Caching Basics"
+resource: content.yaml
+---
+```
+
+`intro/content.yaml`:
+
+```yaml
+title: "Caching Basics"
+subtitle: "Reuse responses safely so pages load fast and servers stay calm."
+estimatedTime: "5 min read"
+moduleCount: 2
+what:
+  summary: "HTTP caching lets a browser or CDN keep a copy of a response and reuse it instead of asking the origin server again."
+  bullets:
+    - "The Cache-Control header tells caches what they may store and for how long"
+  tags:
+    - "Cache-Control"
+why:
+  summary: "Every request that hits the origin costs latency and compute."
+  impact: "A correct caching policy can remove most repeat traffic from your servers."
+roadmap:
+  - sectionId: "directives"
+    title: "The max-age Directive"
+    type: "taxonomy-browser"
+    description: "How freshness lifetimes work."
+  - sectionId: "quiz"
+    title: "Knowledge Check"
+    type: "quiz"
+    description: "Apply the freshness rule."
+```
+
+`directives/section.md` ([full schema](sections/taxonomy-browser.md)) — `resource: "."` means every `.yaml` file in the folder is one category card:
+
+```yaml
+---
+type: taxonomy-browser
+title: "Cache Directives"
+resource: "."
+---
+```
+
+`directives/01-max-age.yaml`:
+
+```yaml
+type: taxonomy-category
+icon: Timer
+title: "max-age"
+subtitle: "Fresh for N seconds"
+color: green
+description: "The response may be reused without contacting the server until it is N seconds old."
+details: "Use long max-age values for fingerprinted static assets such as app.3f9a.js."
+analogy: "Like milk with a best-before date."
+primaryFocus: "Freshness lifetime"
+inScope:
+  - "Static assets with hashed filenames"
+outOfScope:
+  - "Per-user responses"
+```
+
+`quiz/section.md` ([full schema](sections/quiz.md)):
+
+```yaml
+---
+type: quiz
+title: "Knowledge Check"
+resource: questions.yaml
+---
+```
+
+`quiz/questions.yaml` — every fact tested is already taught above (grounding rule):
+
+```yaml
+- id: q1
+  question: "Your stylesheet is named app.3f9a.css and its contents never change unless the filename changes. What does the max-age guidance suggest?"
+  hint: "Think about best-before dates and hashed filenames."
+  choices:
+    - id: a
+      text: "A long max-age freshness lifetime"
+      correct: true
+      explanation: "Correct. Fingerprinted static assets can stay fresh in caches for a long time."
+    - id: b
+      text: "Nothing — caching does not apply to stylesheets"
+      correct: false
+      explanation: "max-age applies to any cacheable response, including stylesheets."
+```
+
+**4. Register** — add one link to `public/okf/index.md` under a `## <Category>` heading (create the heading if missing):
+
+```markdown
+## Architecture
+* [Caching Basics](first-topic/index.md) — Make web apps fast and cheap by letting browsers and CDNs reuse responses safely
+```
+
+**5. Hex map** — `public/hexmaps/first-topic.yaml` (one node per section, boss gated by every key item; full rules in [creating-hexmaps.md](creating-hexmaps.md)):
+
+```yaml
+topicId: "first-topic"
+topicTitle: "Realm of the Swift Response"
+capitalId: "capital"
+
+nodes:
+  - id: "capital"
+    title: "Origin Citadel"
+    type: "capital"
+    status: "unlocked"
+    sectionRef: "intro"
+    description: "Every request once came here. Learn why the realm needs caches."
+
+  - id: "directive-spire"
+    title: "Spire of Directives"
+    type: "archive_spire"
+    status: "unlocked"
+    unlockedBy:
+      - "capital"
+    sectionRef: "directives"
+    description: "Study the max-age freshness rule."
+    rewards:
+      - id: "header-sigil"
+        name: "Sigil of Cache-Control"
+        icon: "📜"
+        description: "Proof you know what each directive allows."
+
+  - id: "stale-outpost"
+    title: "Stale Goblin Outpost"
+    type: "quiz_encounter"
+    status: "locked"
+    unlockedBy:
+      - "directive-spire"
+    sectionRef: "quiz"
+    description: "Pick the right directive to defeat the goblin serving stale pages."
+    monster:
+      id: "stale-goblin"
+      name: "Stale Goblin"
+      type: "goblin"
+      maxHp: 100
+      damage: 15
+      icon: "👾"
+
+  - id: "boss-lair"
+    title: "Lair of the Thundering Herd"
+    type: "boss_lair"
+    status: "locked"
+    unlockedBy:
+      - "stale-outpost"
+    description: "A cache miss storm floods the origin. Only correct caching policy can stop it."
+    requiredItems:
+      - "header-sigil"
+    monster:
+      id: "thundering-herd"
+      name: "The Thundering Herd"
+      type: "boss"
+      maxHp: 200
+      damage: 35
+      icon: "🐲"
+```
+
+(Real topics radiate 2–4 thematic tracks from the capital — this single chain is just the minimum.)
+
+**3. Verify** — path step 3, run last so the validator sees everything:
+
+```bash
+npm run okf:validate -- --topic=first-topic   # must print "All OKF section bundles passed validation clean!"
+npm run dev                                    # topic card appears under Architecture; open it and click through the sections
+```
+
+### Common mistakes
+
+| Mistake | Symptom | Caught by validator? |
+|---|---|---|
+| **Forgetting root registration** — topic exists but has no link in `public/okf/index.md` | Validates clean, but the app never shows the topic (the SPA discovers topics from that file, the CLI scans the filesystem) | ❌ — check the link yourself |
+| **Missing hex map** — no `public/hexmaps/<topic-id>.yaml` | Topic renders but the campaign map has no nodes | ❌ |
+| **Ungrounded quiz questions** — a question, answer option, or reflection item references a fact not taught in any prerequisite section | Learners are tested on the unseen | ❌ — human review |
+| **Unmapped sections** — a section folder has no hex map node (each node binds a unique `sectionRef`) | Sections are unreachable from the campaign map | ✅ tier 3, but only once a hex map exists |
+
+Also remember: the boss lair unlocks only when **all** key items are gathered, and it must **not** drop items itself ([creating-hexmaps.md](creating-hexmaps.md)).
+
+Everything the scaffold produces and the example above hand-writes is explained file by file in the reference sections below.
 
 ## Reference Guides & Documentation
 
@@ -42,36 +289,6 @@ public/
 - `public/okf/[topic]/index.yaml` — App metadata: `category` and `tags`. Section files are discovered from the section folders themselves.
 - `public/okf/[topic]/sections/[name]/section.md` — Section manifest with YAML frontmatter.
 - `public/index.yaml` — Fallback topic registry (regenerated by `scripts/update-okf-manifest.js`).
-
-## 0. Quickest Path: Scaffold with `okf:new`
-
-Instead of creating files by hand, generate a complete, validation-clean starter topic (plus a starter hex campaign map) in one command:
-
-```bash
-npm run okf:new -- <topic-slug> --category <Category> --sections <type1,type2,...> [--title "..."] [--description "..."] [--tags a,b]
-```
-
-Example:
-
-```bash
-npm run okf:new -- http-caching --category Architecture --sections taxonomy-browser,flowchart,quiz --tags http,performance
-```
-
-The scaffold writes:
-
-- `public/okf/<topic-slug>/index.md` + `index.yaml` (category, tags)
-- `public/okf/<topic-slug>/sections/<type>/` — one folder per requested type (named after the type), each with `section.md` and a minimal valid data stub
-- `public/okf/index.md` — registers the topic under the `## <Category>` heading (the heading is created if missing)
-- `public/hexmaps/<topic-slug>.yaml` — capital hub bound to `intro`, one node per section (mapped per [creating-hexmaps.md §4](creating-hexmaps.md)), each dropping a key item, plus a boss lair gated by all relics (see [creating-hexmaps.md](creating-hexmaps.md))
-
-Rules and guarantees:
-
-- `intro` is always added automatically — the capital hub must bind to it.
-- The command **refuses to overwrite** an existing topic and writes **nothing** unless the whole result passes the Validation Gateway (`validateSectionFiles` + `validateHexCampaign`) with zero diagnostics.
-- Pass each section type once; to get two sections of the same type, copy the generated folder and rename it.
-- Everything generated is a placeholder — replace the stub content, then re-verify with `npm run okf:validate -- --topic=<topic-slug>`.
-
-The rest of this guide explains every file the scaffold produces, so you can edit (or hand-write) them with full control.
 
 ## 0.5. Editor Setup: VS Code YAML Schema Autocomplete
 
@@ -200,7 +417,28 @@ tags:
 
 ## 3. Section Types
 
-Each section is a folder with a `section.md` manifest (YAML frontmatter) and data files. For detailed schema specifications, parameter tables, and examples for each section type, see the [Section Types Reference](sections/README.md).
+Each section is a folder with a `section.md` manifest (YAML frontmatter) and data files. **Every section type has its own dedicated schema reference** — file structure, frontmatter, field tables, and real examples. You never need to read schemas from this guide; open the doc for the type you are authoring:
+
+| Type | Purpose | Schema reference |
+|---|---|---|
+| `intro` | Animated hero overview: What / Why / roadmap | [sections/intro.md](sections/intro.md) |
+| `text` | Paragraph-based conceptual narrative | [sections/text.md](sections/text.md) |
+| `bullets` | Hierarchical lists, codexes, checklists | [sections/bullets.md](sections/bullets.md) |
+| `taxonomy-browser` | Category card grid with expandable detail views | [sections/taxonomy-browser.md](sections/taxonomy-browser.md) |
+| `pillar-layer` | Layered hierarchical / evolutionary stacks | [sections/pillar-layer.md](sections/pillar-layer.md) |
+| `image-gallery` | Image grid with full-screen lightbox | [sections/image-gallery.md](sections/image-gallery.md) |
+| `flowchart` | Event Storming process flows & swimlanes | [sections/flowchart.md](sections/flowchart.md) |
+| `scenario` | Branching consequence narrative with graded outcomes | [sections/scenario.md](sections/scenario.md) |
+| `tradeoff-sandbox` | Discrete-choice decisions with metric dashboard | [sections/tradeoff-sandbox.md](sections/tradeoff-sandbox.md) |
+| `formula-sandbox` | Continuous sliders over quantitative formulas | [sections/formula-sandbox.md](sections/formula-sandbox.md) |
+| `decision-tree` | Diagnostic Q&A ending in a recommendation | [sections/decision-tree.md](sections/decision-tree.md) |
+| `reflection-sequence` | Chronological step-ordering recall challenge | [sections/reflection-sequence.md](sections/reflection-sequence.md) |
+| `reflection-template` | Fill-in-the-blank synthesis with word chips | [sections/reflection-template.md](sections/reflection-template.md) |
+| `quiz` | Multiple-choice knowledge check with explanations | [sections/quiz.md](sections/quiz.md) |
+| `flashcards` | Vocabulary flip cards with definitions & dialogue | [sections/flashcards.md](sections/flashcards.md) |
+| `concept-map` | Force-directed semantic concept graph | [sections/concept-map.md](sections/concept-map.md) |
+
+See the [Section Types Reference](sections/README.md) for the index and recommended section ordering.
 
 > [!NOTE]
 > **Multiple Sections of Any Type Allowed**
@@ -222,567 +460,11 @@ Each section is a folder with a `section.md` manifest (YAML frontmatter) and dat
 
 | Field | Required | Description |
 |---|---|---|
-| `type` | yes | Section renderer: `text`, `bullets`, `flowchart`, `tradeoff-sandbox`, `taxonomy-browser`, `flashcards`, `quiz`, `concept-map`, `scenario`, `decision-tree` |
+| `type` | yes | Section renderer — any type from the table above (e.g. `intro`, `text`, `flowchart`, `quiz`) |
 | `title` | yes | Display title shown above the section content |
 | `resource` | yes | `"."` for directory (multiple data files), or `"filename.yaml"` for a single file |
 | `heading` | no | Sub-heading displayed below the title |
 | `ordered` | no | `true` for numbered lists, `false` for bullets (only for `bullets` type) |
-
-### `text` section
-Paragraph-based content. Each non-empty, non-heading line in `content.md` becomes a paragraph. Numbered items (1., 2., 3.) and bullet points (-) are stripped of their prefix.
-
-```yaml
----
-type: text
-title: "Introduction Title"
-heading: "Sub-heading (optional)"
-resource: content.md
----
-```
-
-**Data file (`content.md`):**
-```markdown
-An **AI agent** is a software system that perceives its environment, reasons about a goal, and takes autonomous actions.
-
-Modern agents combine a large language model with a memory store, a tool registry, and a feedback loop.
-
-The key design decision is the **orchestration strategy**: single-agent vs multi-agent, synchronous ReAct loop vs async event-driven pipeline.
-```
-
-### `bullets` section
-Bulleted or numbered list items with optional children.
-
-```yaml
----
-type: bullets
-title: "Key Capabilities"
-ordered: false
-resource: items.yaml
----
-```
-
-**Data file (`items.yaml`):**
-```yaml
-- text: "Tool use — call external APIs, run code, browse the web"
-  children:
-    - text: "Web search (Tavily, Brave, Google)"
-    - text: "Code execution (sandboxed interpreter)"
-- text: "Long-horizon planning via chain-of-thought or ReAct"
-- text: "Persistent memory across sessions (vector store)"
-```
-
-### `flowchart` section
-Event Storming flowchart with multiple views (Event Storming, Sequence, Swimlanes, Data Flow, System Architecture). Always uses `resource: "."` — the reader loads 4 fixed YAML files: `actors.yaml`, `systems.yaml`, `steps.yaml`, `journeys.yaml`.
-
-```yaml
----
-type: flowchart
-title: "System Architecture"
-resource: "."
----
-```
-
-**Data files:**
-
-`actors.yaml` — human actors:
-```yaml
-dev_user:
-  title: "Developer (Initiator)"
-  desc: "Starts the agent run"
-qa_user:
-  title: "QA Engineer"
-  desc: "Reviews and approves the final result"
-```
-
-`systems.yaml` — system components:
-```yaml
-orch_agent:
-  title: "Agent Orchestrator"
-  desc: "Central orchestrator that plans and delegates"
-  type: "aggregate"
-llm_api:
-  title: "LLM"
-  desc: "Language model inference API"
-  type: "external"
-```
-
-`steps.yaml` — process steps (linear or branching):
-```yaml
-- type: linear
-  id: step_1
-  initiatedBy: dev_user
-  command: "Start Agent Run"
-  policy: "Trigger Execution Plan"
-  handledBy: orch_agent
-  resultEvents:
-    - id: evt_started
-      title: "Agent Started"
-  continuesAs: step_branch
-- type: branch
-  id: step_branch
-  event: evt_started
-  branches:
-    - id: branch_a
-      label: "Happy path"
-      policy: "If Plan Approved"
-      command: "Approve and Release"
-      handledBy: qa_user
-      resultEvents:
-        - id: evt_approved
-          title: "Approved"
-    - id: branch_b
-      label: "Needs revision"
-      dashed: true
-      policy: "If Plan Rejected"
-      command: "Request Revision"
-      handledBy: orch_agent
-      resultEvents:
-        - id: evt_revision
-          title: "Revision Started"
-```
-
-`journeys.yaml` — walkthrough paths through the flow:
-```yaml
-- id: journey_happy
-  label: "Happy Path"
-  description: "Agent completes the task in one pass"
-  steps:
-    - nodeId: evt_started
-      description: "Developer triggers the agent run"
-      processGroup: planning
-    - nodeId: evt_approved
-      description: "QA approves the result"
-      processGroup: evaluation
-```
-
-> [!TIP]
-> **Splitting Large Systems into Multiple Connected Flowchart Sections**
-> If a topic has a complex domain or multi-stage system, **split it into multiple connected flowchart sections** (e.g. `sections/flowchart-engine/`, `sections/flowchart-fuel-injection/`, `sections/flowchart-brake/`).
-> - Each flowchart section folder contains its own `section.md`, `actors.yaml`, `systems.yaml`, `steps.yaml`, and `journeys.yaml`.
-> - **Multiple Journeys per Section**: Each section's `journeys.yaml` can define multiple journeys (e.g., mapping vs boss fight flow, intake/compression vs combustion/exhaust).
-> - **Connecting Flowcharts**: Result events or continuation steps of one section connect conceptually to initiating commands in the next section. Shared systems connect across sections via matching title and type.
-
-**Event Storming Node and Relation Conventions:**
-See the [Event Storming Conventions Guide](event-storming-conventions.md) for full rules on flow structure, branching, per-step actor/system duplication, node types, and journeys.
-
-### `tradeoff-sandbox` section
-Interactive decision sandbox with metrics dashboard. Uses `resource: "."` — each `.yaml` file in the section directory represents one scenario, shown in filename order. Prefix filenames with a two-digit number to set the order (`01-enterprise-web.yaml`, `02-realtime-chat.yaml`); prefix with `_` to disable a scenario without deleting it.
-
-> [!TIP]
-> **Multiple Scenarios, Multiple Steps & Multiple Options per Scenario Step**
-> - **Multiple Scenarios**: A single `tradeoff-sandbox` section can contain **multiple scenarios** (e.g., `sections/tradeoffs/01-fuel-system.yaml` and `sections/tradeoffs/02-engine-oil.yaml`). The UI renders a dropdown allowing users to switch between scenarios.
-> - **Multiple Steps per Scenario**: Each scenario contains **multiple sequential decision steps** (`steps[]`, e.g. step 1: Weapon Choice, step 2: Body Armor, step 3: Power Charge Generation).
-> - **Multiple Options/Choices**: Each decision step inside a scenario can define **multiple choices/options** (2, 3, 4 or more options for each decision point). Each choice modifies scenario metrics with deltas and specifies pros, cons, and contextual recommendations (`whyThisFits` / `whenToUse`).
-
-```yaml
----
-type: tradeoff-sandbox
-title: "Architecture Trade-offs"
-resource: "."
----
-```
-
-**Data file (one per scenario, e.g. `01-enterprise-web.yaml`):**
-```yaml
-id: enterprise-web
-title: "Enterprise Web Application"
-description: "Build a scalable enterprise web app."
-metrics:
-  - id: performance
-    label: Performance
-    baseValue: 50
-    min: 0
-    max: 100
-    direction: higher
-  - id: cost
-    label: Cost Efficiency
-    baseValue: 50
-    min: 0
-    max: 100
-    direction: higher
-steps:
-  - id: frontend
-    title: "Frontend Framework"
-    description: "Choose the client-side rendering approach."
-    recommended: next-ssr
-    choices:
-      - id: react-spa
-        label: "React SPA"
-        description: "Single-page application with client-side routing."
-        metrics:
-          performance: 10
-          cost: 5
-        pros:
-          - title: "Rich ecosystem"
-            description: "Vast library support and community"
-        cons:
-          - title: "SEO challenges"
-            description: "Requires SSR or SSG for search indexing"
-        whenToUse: "Useful for admin dashboards and internal tools."
-      - id: next-ssr
-        label: "Next.js SSR"
-        description: "Server-side rendered React with hybrid rendering."
-        metrics:
-          performance: 15
-          cost: -5
-        pros:
-          - title: "Better SEO"
-            description: "Server-rendered HTML for crawlers"
-        cons:
-          - title: "Server dependency"
-            description: "Requires Node.js server runtime"
-        whyThisFits: "Enterprise apps benefit from SSR for SEO and faster first paint."
-```
-
-### `taxonomy-browser` section
-Card grid of concept categories with expandable detail views. Each category is a separate YAML file, shown in filename order — prefix filenames with a two-digit number (`01-orchestrator-workers.yaml`, `02-memory-context.yaml`); prefix with `_` to disable one. Uses `resource: "."`.
-
-```yaml
----
-type: taxonomy-browser
-title: "Capability Taxonomy"
-resource: "."
----
-```
-
-**Data file (one per category, e.g. `01-orchestrator-workers.yaml`):**
-```yaml
-type: taxonomy-category
-icon: GitFork
-title: "Hierarchical Orchestration"
-subtitle: "Orchestrator-Workers"
-color: mauve
-description: "A central manager agent decomposes goals, delegates tasks, and synthesizes output."
-details: "Ideal for complex, multi-step workflows requiring strict quality control."
-analogy: "Like a manager delegating tasks to developers."
-primaryFocus: "Task decomposition, delegation, and output synthesis"
-inScope:
-  - "Central director"
-  - "Specialized sub-agents"
-outOfScope:
-  - "Peer-to-peer unstructured negotiation"
-```
-
-The `icon` field uses a [Lucide icon name](https://lucide.dev/icons/) (e.g., `GitFork`, `Brain`, `Workflow`). The `color` field uses a Catppuccin color name (e.g., `mauve`, `rose`, `sky`, `green`, `peach`, `red`, `yellow`, `teal`).
-
-### `quiz` section
-Multiple-choice questions with instant feedback, hints, score tracking, and prev/next navigation. Each choice includes an explanation revealed on selection. Uses `resource: questions.yaml`.
-
-```yaml
----
-type: quiz
-title: "Knowledge Check"
-resource: questions.yaml
----
-```
-
-**Data file (`questions.yaml`):**
-```yaml
-- id: q1
-  question: "What is the primary role of an orchestrator agent?"
-  hint: "Think about how work gets divided."
-  choices:
-    - id: a
-      text: "Directly execute all tasks"
-      correct: false
-      explanation: "The orchestrator delegates work rather than executing it directly."
-    - id: b
-      text: "Decompose goals, delegate tasks, and synthesize output"
-      correct: true
-      explanation: "Correct. The orchestrator breaks down complex goals and coordinates specialized workers."
-    - id: c
-      text: "Store conversation history"
-      correct: false
-      explanation: "Memory handling is a separate concern, usually delegated to a memory component."
-```
-
-### `concept-map` section
-Force-directed graph visualization of interconnected concepts. Nodes are grouped by category with distinct colors. Supports zoom, pan, and hover-to-highlight connections. Gives learners a bird's-eye view of how concepts relate. Uses `resource: concepts.yaml`.
-
-```yaml
----
-type: concept-map
-title: "Concept Map"
-resource: concepts.yaml
----
-```
-
-**Data file (`concepts.yaml`):**
-```yaml
-nodes:
-  orchestrator:
-    title: "Orchestrator"
-    category: pattern
-  worker:
-    title: "Worker Agent"
-    category: role
-  memory:
-    title: "Memory Store"
-    category: mechanism
-edges:
-  - from: orchestrator
-    to: worker
-    label: "delegates to"
-  - from: orchestrator
-    to: memory
-    label: "reads from"
-```
-
-**Node `category`** determines the visual color. Supported categories: `pattern`, `mechanism`, `concept`, `role`, `system`, `data`, `process`, plus any custom category (falls back to lavender).
-
-### `scenario` section
-Branching narrative where the learner makes choices that lead to an outcome rated on a letter grade (A = Excellent, B+ = Good, B- = Fair, C = Needs Improvement). Includes step counter, back navigation, and restart. Purpose: learn through consequences — the learner experiences the impact of decisions. Uses `resource: scenarios.yaml`.
-
-```yaml
----
-type: scenario
-title: "Architecture Decision Scenario"
-resource: scenarios.yaml
----
-```
-
-**Data file (`scenarios.yaml`):**
-```yaml
-id: arch-decision
-title: "Scaling Challenge"
-intro: "Your service is growing fast. How do you handle the load?"
-nodes:
-  start:
-    prompt: "Traffic spikes 10x. What's your first move?"
-    choices:
-      - id: scale-horizontally
-        text: "Add more instances behind a load balancer"
-        next: monitor-result
-      - id: optimize-first
-        text: "Profile and optimize the bottleneck"
-        next: optimize-result
-  monitor-result:
-    outcome:
-      verdict: "You handled the spike but incurred higher infrastructure costs."
-      lesson: "Horizontal scaling works but always pair it with auto-scaling policies."
-      rating: b-plus
-  optimize-result:
-    outcome:
-      verdict: "You found the bottleneck and resolved it with minimal cost."
-      lesson: "Optimization before scaling often reveals you don't need more resources."
-      rating: a
-```
-
-### `decision-tree` section
-Guided Q&A that leads to a tailored recommendation. Each step presents a question with choices that include rationale and optional "recommended" badges. A breadcrumb trail tracks the path. The leaf node delivers a recommendation with explanation and trade-offs. Purpose: diagnostic tool — "answer these questions, get a recommendation for your situation." Uses `resource: tree.yaml`.
-
-```yaml
----
-type: decision-tree
-title: "Choose Your Agent Architecture"
-resource: tree.yaml
----
-```
-
-**Data file (`tree.yaml`):**
-```yaml
-id: agent-arch
-title: "Agent Architecture Advisor"
-root: complexity
-nodes:
-  complexity:
-    prompt: "How complex is your task?"
-    choices:
-      - id: simple
-        text: "Single-step, well-defined"
-        next: rec-simple
-        rationale: "Simple tasks don't need complex orchestration."
-        recommended: true
-      - id: complex
-        text: "Multi-step with dependencies"
-        next: rec-complex
-        rationale: "Complex tasks benefit from structured decomposition."
-  rec-simple:
-    leaf:
-      recommendation: "Use a single-agent ReAct loop."
-      explanation: "For well-defined tasks, a single agent with tool use is sufficient and avoids orchestration overhead."
-      tradeoffs:
-        - "Limited to tasks the agent can solve in one session"
-        - "No parallel execution of subtasks"
-  rec-complex:
-    leaf:
-      recommendation: "Use hierarchical orchestrator-workers."
-      explanation: "A central orchestrator decomposes the task, delegates to specialized workers, and synthesizes results."
-      tradeoffs:
-        - "Higher latency from orchestration overhead"
-        - "More complex to configure and debug"
-```
-
-### `flashcards` section
-Vocabulary flashcards with flip animation showing definition, pronunciation, and AI dialogue. Uses `resource: glossary.yaml`.
-
-```yaml
----
-type: flashcards
-title: "Key Vocabulary"
-resource: glossary.yaml
----
-```
-
-**Data file (`glossary.yaml`):**
-```yaml
-- id: hierarchy
-  word: "Visual Hierarchy"
-  pronunciation: "vizh-oo-uhl hahy-er-ahr-kee"
-  category: hierarchy
-  image: "https://example.com/visual-hierarchy.webp"   # optional — public URL; renders as hero image on card front
-  shortDefinition: "Arranging UI elements in order of visual importance."
-  detailedDefinition: "Visual hierarchy guides the user's eyes through an interface."
-  whyItMatters: "Without hierarchy, all elements compete for attention equally."
-  dialogue:
-    user: "Make this look good"
-    aiThoughts: "The user wants aesthetics but hasn't specified hierarchy priorities."
-    aiQuestion: "Which element should be most prominent: the headline, the CTA button, or the hero image?"
-```
-
-**`image` field (optional):** A fully-qualified public URL (`https://…`). When present, a 16:7 hero image appears below the category toolbar on the card front. When absent, the card displays text-only — no layout shift. Broken URLs are silently hidden via `onError`.
-
-### `image-gallery` section
-Responsive image grid with hover-zoom thumbnails and a full-screen lightbox. Keyboard navigable (← → Escape). Images load lazily; broken URLs display an "Image unavailable" placeholder skeleton. Uses `resource: gallery.yaml`.
-
-```yaml
----
-type: image-gallery
-title: "Skill Showcase"
-resource: gallery.yaml
----
-```
-
-**Data file (`gallery.yaml`):**
-```yaml
-- id: flicker-strike-in-action
-  url: "https://example.com/poe2/flicker-action.webp"   # required — public URL
-  caption: "Flicker Strike teleporting through a pack"   # required — shown in lightbox and on hover
-  credit: "Source: Path of Exile 2 wiki"                 # optional — attribution line
-
-- id: falling-thunder-nova
-  url: "https://example.com/poe2/falling-thunder.webp"
-  caption: "Falling Thunder with Nova Projectiles support — full-screen AoE"
-```
-
-**Fields:**
-| Field | Required | Description |
-|---|---|---|
-| `id` | yes | Unique slug for the image |
-| `url` | yes | Fully-qualified public HTTPS URL |
-| `caption` | yes | Displayed in lightbox and as hover overlay on the grid card |
-| `credit` | no | Optional source attribution shown below caption |
-
-**Grid layout:** 1 column on mobile, 2 on tablet (`sm:`), 3 on desktop (`md:`). Click any card to open the lightbox. Press ← / → to navigate, Escape to close.
-
-### `formula-sandbox` section
-Interactive slider-based sandbox for exploring dynamic quantitative formulas and system constraints. Clicking computed metrics opens the sliding HUD Drawer with detailed definition, analogy, in-scope, and out-of-scope specifications.
-
-```yaml
----
-type: formula-sandbox
-title: "System Dynamics Sandbox"
-resource: sandbox.yaml
----
-```
-
-**Data file (`sandbox.yaml`):**
-```yaml
-variables:
-  - id: chunk_size
-    label: "Chunk Size (characters)"
-    min: 100
-    max: 2000
-    step: 50
-    defaultValue: 500
-  - id: overlap
-    label: "Chunk Overlap (%)"
-    min: 0
-    max: 50
-    step: 5
-    defaultValue: 10
-metrics:
-  - id: recall
-    label: "Search Recall Accuracy"
-    formula: "Math.round((Math.log2(chunk_size) * (1 + (overlap / 70))) * 6.5)"
-    description: "Definition explanation of the metric."
-    analogy: "Cognitive analogy details."
-    inScope:
-      - "Item in scope A"
-    outOfScope:
-      - "Item out of scope B"
-```
-
-### `reflection-sequence` section
-Active recall challenge where learners reassemble steps chronologically using drag-and-drop or mobile-friendly tap-to-move selections. Multiple scenarios or tests can be configured within a single section using a `challenges` array.
-
-```yaml
----
-type: reflection-sequence
-title: "Flowchart Sequence Builder"
-resource: sequence.yaml
----
-```
-
-**Data file (`sequence.yaml`)** — always a `challenges` list, even for a single challenge:
-```yaml
-challenges:
-  - prompt: "Arrange the steps in the correct chronological order to model the product feature loop (Part 1):"
-    items:
-      - id: "drag-feature-req"
-        text: "Define Feature Request"
-      - id: "drag-sprint-backlog"
-        text: "Sprint Backlog Ready"
-    solution:
-      - "drag-feature-req"
-      - "drag-sprint-backlog"
-  - prompt: "Arrange the steps in the correct chronological order to model the deployment pipeline (Part 2):"
-    items:
-      - id: "drag-build"
-        text: "Build Artifacts"
-      - id: "drag-deploy"
-        text: "Deploy to Production"
-    solution:
-      - "drag-build"
-      - "drag-deploy"
-```
-
-### `reflection-template` section
-Synthesis template challenge where learners drag word chips (or tap chips and blanks) to fill in inline zones `{zone-X}` inside a markdown paragraph. Multiple scenarios or tests can be configured within a single section using a `challenges` array.
-
-```yaml
----
-type: reflection-template
-title: "Self-Explanation Template"
-resource: template.yaml
----
-```
-
-**Data file (`template.yaml`)** — always a `challenges` list, even for a single challenge:
-```yaml
-challenges:
-  - prompt: "Complete the statement explaining chunk size and overlap properties (Part 1):"
-    template: "Reducing chunk size results in {zone-1} individual content segments."
-    chips:
-      - id: "chip-smaller"
-        text: "smaller"
-      - id: "chip-larger"
-        text: "larger"
-    solution:
-      zone-1: "chip-smaller"
-    explanation: "<strong>Correct!</strong> Description."
-  - prompt: "Complete the statement explaining larger chunk sizes (Part 2):"
-    template: "Increasing chunk size yields {zone-1} individual database entries."
-    chips:
-      - id: "chip-fewer"
-        text: "fewer"
-      - id: "chip-more"
-        text: "more"
-    solution:
-      zone-1: "chip-fewer"
-    explanation: "<strong>Correct!</strong> Description."
-```
-```
 
 ## 4. Register the Topic
 
@@ -848,7 +530,7 @@ Each `section.md` declares its own `type` and `title`.
 
 ## 6. Creating a New Topic from Scratch
 
-Step-by-step guide to create a new topic:
+Step-by-step guide to create a new topic by hand (prefer the [Quick start](#quick-start-your-first-topic-in-10-minutes) for the fast path). Remember to also create the hex map in `public/hexmaps/[topic-id].yaml` — see [creating-hexmaps.md](creating-hexmaps.md).
 
 ### Step 1: Create the directory
 
@@ -932,6 +614,6 @@ npm run dev
 
 ## Related Reference Documents
 
-- **[Section Types Reference](sections/README.md)** — Individual schemas, frontmatter fields, and example configurations for all 14 section types.
+- **[Section Types Reference](sections/README.md)** — Individual schemas, frontmatter fields, and example configurations for every section type.
 - **[Event Storming Conventions Guide](event-storming-conventions.md)** — Authoritative rules for structuring flowchart steps, branching paths, per-step actor/system duplication, and journey walkthroughs.
 - **[Section Reference & Mental Models Guide](sections-reference.md)** — Pedagogical ordering rules, mental models, and educational objectives for topic design.
