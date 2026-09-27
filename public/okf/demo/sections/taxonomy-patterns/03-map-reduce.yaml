@@ -2,7 +2,7 @@ type: taxonomy-category
 icon: GitMerge
 title: "Map-Reduce Agent"
 subtitle: "Parallel Processing with Aggregation"
-color: violet
+color: mauve
 description: "The problem is decomposed into independent sub-problems, each solved by a separate agent instance in parallel, then results are combined by a reduce step."
 details: "Map phase: the orchestrator splits the task and spawns parallel workers. Each worker solves its subtask independently. Reduce phase: a final aggregation step merges all results into a coherent answer."
 analogy: "Like dividing a book among multiple proofreaders, then compiling their notes into one edit list."

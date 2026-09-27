@@ -13,7 +13,7 @@
   outOfScope:
     - "Complex 3D skeletal bones (use Spine/DragonBones extensions)"
     - "Physics simulation (delegate to Matter.js or Rapier)"
-  color: "#89b4fa"
+  color: "blue"
 
 - icon: "Shapes"
   title: "Vector Graphics & Geometry"
@@ -30,7 +30,7 @@
   outOfScope:
     - "3D polygon modeling (PixiJS is strictly 2D)"
     - "Font vector tracing at runtime"
-  color: "#a6e3a1"
+  color: "green"
 
 - icon: "Type"
   title: "Typography & Text Rendering"
@@ -47,7 +47,7 @@
   outOfScope:
     - "Complex RTL bidirectional text shaping without plugins"
     - "Live vector font glyph deformation"
-  color: "#f9e2af"
+  color: "yellow"
 
 - icon: "Sparkles"
   title: "Shaders, Filters & Post-Processing"
@@ -64,7 +64,7 @@
   outOfScope:
     - "Raytracing and global illumination"
     - "Multi-pass deferred 3D lighting"
-  color: "#cba6f7"
+  color: "mauve"
 
 - icon: "Zap"
   title: "High-Performance Batching & Particles"
@@ -81,4 +81,4 @@
   outOfScope:
     - "Complex nested hierarchy inside particle containers"
     - "Custom per-particle shader uniforms"
-  color: "#fab387"
+  color: "peach"

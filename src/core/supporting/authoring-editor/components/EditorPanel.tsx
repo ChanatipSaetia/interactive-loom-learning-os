@@ -102,7 +102,7 @@ export function createDefaultSectionData(type: string): OKFSectionData {
             primaryFocus: 'Primary focus area',
             inScope: ['In Scope Item 1'],
             outOfScope: ['Out of Scope Item 1'],
-            color: 'var(--primary)',
+            color: 'blue',
           },
         ],
       }

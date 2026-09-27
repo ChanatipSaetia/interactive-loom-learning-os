@@ -92,7 +92,7 @@ matrix_blocks:
 | | `row_span` | `number?` | Row span height |
 | | `shape` | `"rect"` \| `"l-bottom-left"` \| `"l-bottom-right"` \| `"l-top-left"` \| `"l-top-right"` | Preset Lego shape geometry |
 | | `offsets` | `Array<[row_offset, col_offset]>?` | Relative offset tuples relative to anchor layer `[dr, dc]` |
-| | `color` | `string?` | Catppuccin color accent |
+| | `color` | `string?` | Catppuccin accent: `rosewater`, `flamingo`, `pink`, `mauve`, `red`, `maroon`, `peach`, `yellow`, `green`, `teal`, `sky`, `sapphire`, `blue`, or `lavender` |
 
 ---
 

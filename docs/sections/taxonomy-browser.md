@@ -44,7 +44,7 @@ type: taxonomy-category
 icon: Zap                     # Lucide icon name (PascalCase)
 title: "Main Damage Skills"
 subtitle: "Falling Thunder & Flicker Strike"
-color: yellow                 # hex color or CSS named color
+color: yellow                 # theme accent name (see table below)
 description: "Your two primary skills that clear maps and melt bosses."
 details: "Falling Thunder fires lightning projectiles per Power Charge consumed in a 360-degree burst..."
 analogy: "Falling Thunder is your area denial, Flicker Strike is your mobility tool — but both kill."
@@ -64,7 +64,7 @@ outOfScope:
 | `icon` | `string` | Yes | Lucide React icon name in PascalCase (e.g. `BookOpen`, `Zap`, `Shield`) |
 | `title` | `string` | Yes | Category card title |
 | `subtitle` | `string` | No | Short subtitle shown below the title |
-| `color` | `string` | No | Accent color — hex (`#89b4fa`) or CSS name (`yellow`) |
+| `color` | `string` | Yes | Theme accent name: `blue`, `peach`, `pink`, `mauve`, `green`, `teal`, `sky`, `lavender`, `yellow`, or `red` (hex values are not allowed) |
 | `description` | `string` | Yes | Brief description shown collapsed on the card |
 | `details` | `string` | No | Expanded detail text shown when the card is opened |
 | `analogy` | `string` | No | Real-world analogy to aid understanding |
@@ -73,7 +73,9 @@ outOfScope:
 | `outOfScope` | `string[]` | No | List of things explicitly outside this category |
 
 > [!NOTE]
-> **Icon names**: Use any [Lucide React](https://lucide.dev/icons/) icon name in PascalCase — e.g., `BookOpen`, `Zap`, `Shield`, `Code`, `Globe`, `Settings`, `Layers`, `Target`. Do **not** use kebab-case (`book-open`) or lowercase (`bookopen`).
+> **Icon names**: Use a [Lucide React](https://lucide.dev/icons/) icon name in PascalCase — e.g., `BookOpen`, `Zap`, `Shield`, `Code`, `Globe`, `Settings`, `Layers`, `Target`. Do **not** use kebab-case (`book-open`), lowercase (`bookopen`), or emoji — the validator rejects unknown names (with a "did you mean" suggestion) and the renderer silently falls back to a generic `Circle` icon.
+
+> **Colors**: `color` must be one of the Catppuccin Frappé accent names the renderer supports: `blue`, `peach`, `pink`, `mauve`, `green`, `teal`, `sky`, `lavender`, `yellow`, `red`. Hex values (`#89b4fa`) and unsupported names (`rose`, `violet`) fail schema validation.
 
 ---
 
@@ -113,7 +115,7 @@ outOfScope:
         "icon": "Zap",
         "title": "Main Damage Skills",
         "subtitle": "Falling Thunder & Flicker Strike",
-        "color": "#e5c890",
+        "color": "yellow",
         "description": "Your two primary skills that clear maps and melt bosses.",
         "details": "Falling Thunder fires lightning projectiles per Power Charge consumed...",
         "analogy": "Falling Thunder is your area denial, Flicker Strike is your mobility tool.",

@@ -2,14 +2,12 @@ import { useState, useCallback } from 'react'
 import { Plus, Trash2, HelpCircle, Rows, Grid } from 'lucide-react'
 import { PillarLayerHelpModal } from './PillarLayerHelpModal'
 import type { OKFPillarLayerSectionData } from '../../../../composition/okf/types'
-import type { PillarLayerLayer, PillarLayerBlock } from '../../schema'
+import { PILLAR_LAYER_BLOCK_COLORS, type PillarLayerLayer, type PillarLayerBlock, type PillarLayerBlockColor } from '../../schema'
 
 interface PillarLayerFormEditorProps {
   data: OKFPillarLayerSectionData
   onChange: (data: OKFPillarLayerSectionData) => void
 }
-
-const COLOR_OPTIONS = ['blue', 'mauve', 'green', 'peach', 'sapphire', 'teal', 'sky', 'lavender', 'maroon', 'yellow']
 
 export function PillarLayerFormEditor({ data, onChange }: PillarLayerFormEditorProps) {
   const [isHelpOpen, setIsHelpOpen] = useState(false)
@@ -308,10 +306,10 @@ export function PillarLayerFormEditor({ data, onChange }: PillarLayerFormEditorP
                   <label className="text-[10px] text-muted-foreground block">Color Accent</label>
                   <select
                     value={block.color || 'mauve'}
-                    onChange={(e) => handleUpdateBlock(idx, { ...block, color: e.target.value })}
+                    onChange={(e) => handleUpdateBlock(idx, { ...block, color: e.target.value as PillarLayerBlockColor })}
                     className="w-full text-xs p-1.5 rounded bg-base border text-text"
                   >
-                    {COLOR_OPTIONS.map((c) => (
+                    {PILLAR_LAYER_BLOCK_COLORS.map((c) => (
                       <option key={c} value={c}>
                         {c}
                       </option>

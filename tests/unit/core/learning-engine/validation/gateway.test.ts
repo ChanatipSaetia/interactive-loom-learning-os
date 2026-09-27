@@ -140,6 +140,46 @@ questions:
     expect(result.diagnostics.length).toBe(0)
   })
 
+  it('flags quiz question with no correct choice', () => {
+    const result = validateOKFSection(`
+type: quiz
+questions:
+  - id: q1
+    question: "What is 2+2?"
+    choices:
+      - id: a
+        text: "4"
+        correct: false
+      - id: b
+        text: "5"
+        correct: false
+`.trim())
+    const diag = result.diagnostics.find((d) => d.tier === 3 && d.field?.includes('choices'))
+    expect(diag).toBeDefined()
+    expect(diag!.message).toMatch(/no choice marked/i)
+    expect(diag!.fixHint).toBeDefined()
+  })
+
+  it('flags quiz question with multiple correct choices', () => {
+    const result = validateOKFSection(`
+type: quiz
+questions:
+  - id: q1
+    question: "What is 2+2?"
+    choices:
+      - id: a
+        text: "4"
+        correct: true
+      - id: b
+        text: "also 4"
+        correct: true
+`.trim())
+    const diag = result.diagnostics.find((d) => d.tier === 3 && d.field?.includes('choices'))
+    expect(diag).toBeDefined()
+    expect(diag!.message).toMatch(/2 choices marked/i)
+    expect(diag!.fixHint).toBeDefined()
+  })
+
   it('validates concept-map section with record nodes', () => {
     const result = validateOKFSection(`
 type: concept-map
@@ -229,7 +269,25 @@ terms:
     const result = validateOKFSection(`
 type: taxonomy-browser
 categories:
-  - icon: "📦"
+  - icon: "Package"
+    title: "Category 1"
+    subtitle: "Sub 1"
+    description: "Desc"
+    details: "Details"
+    analogy: "Analogy"
+    primaryFocus: "Focus"
+    inScope: ["in"]
+    outOfScope: ["out"]
+    color: "mauve"
+`.trim())
+    expect(result.status).toBe('valid')
+  })
+
+  it('flags unknown taxonomy icon and out-of-palette color', () => {
+    const result = validateOKFSection(`
+type: taxonomy-browser
+categories:
+  - icon: "Pyramids"
     title: "Category 1"
     subtitle: "Sub 1"
     description: "Desc"
@@ -240,7 +298,12 @@ categories:
     outOfScope: ["out"]
     color: "#ff0000"
 `.trim())
-    expect(result.status).toBe('valid')
+    const tier2 = result.diagnostics.find((d) => d.tier === 2 && d.field?.includes('color'))
+    expect(tier2).toBeDefined()
+    expect(tier2!.fixHint).toMatch(/rosewater|blue|Expected|one of/i)
+    const tier3 = result.diagnostics.find((d) => d.tier === 3 && d.field?.includes('icon'))
+    expect(tier3).toBeDefined()
+    expect(tier3!.fixHint).toMatch(/Pyramid/)
   })
 
   it('validates image-gallery section', () => {

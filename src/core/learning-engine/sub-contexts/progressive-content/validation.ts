@@ -1,5 +1,31 @@
 import type { ValidationDiagnostic, ValidationContext } from '../../validation/types'
 import { getBlockOccupiedCells } from './schema'
+import { isLucideIconName, LUCIDE_ICON_NAMES } from './lucide-icon-names'
+
+function levenshtein(a: string, b: string): number {
+  if (a === b) return 0
+  let prev = Array.from({ length: b.length + 1 }, (_, i) => i)
+  for (let i = 1; i <= a.length; i++) {
+    const curr = [i]
+    for (let j = 1; j <= b.length; j++) {
+      curr[j] = Math.min(
+        prev[j] + 1,
+        curr[j - 1] + 1,
+        prev[j - 1] + (a[i - 1] === b[j - 1] ? 0 : 1)
+      )
+    }
+    prev = curr
+  }
+  return prev[b.length]
+}
+
+/** Closest lucide icon names to `name` (case-insensitive), best match first. */
+export function suggestLucideIconNames(name: string, max = 3): string[] {
+  const lower = name.toLowerCase()
+  return [...LUCIDE_ICON_NAMES]
+    .sort((x, y) => levenshtein(lower, x.toLowerCase()) - levenshtein(lower, y.toLowerCase()))
+    .slice(0, max)
+}
 
 export function validateProgressiveContentTier3(
   payload: Record<string, unknown>,
@@ -7,6 +33,25 @@ export function validateProgressiveContentTier3(
   ctx?: ValidationContext
 ): ValidationDiagnostic[] {
   const diagnostics: ValidationDiagnostic[] = []
+
+  if (sectionType === 'taxonomy-browser') {
+    const categories = Array.isArray(payload.categories)
+      ? (payload.categories as Array<Record<string, unknown>>)
+      : []
+    categories.forEach((cat, idx) => {
+      const icon = typeof cat.icon === 'string' ? cat.icon.trim() : ''
+      if (!icon || isLucideIconName(icon)) return
+      const suggestion = suggestLucideIconNames(icon)
+      diagnostics.push({
+        tier: 3,
+        field: `categories[${idx}].icon`,
+        message: `Unknown lucide icon "${icon}" — the renderer will fall back to a generic icon.`,
+        fixHint: `Use a lucide icon name in PascalCase (e.g. BookOpen, Zap, Shield). Did you mean: ${suggestion.map((s) => `"${s}"`).join(', ')}?`,
+        ...ctx,
+      })
+    })
+    return diagnostics
+  }
 
   if (sectionType !== 'pillar-layer') {
     return diagnostics

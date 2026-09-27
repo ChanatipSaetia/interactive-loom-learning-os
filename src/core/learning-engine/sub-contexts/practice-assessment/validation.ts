@@ -22,6 +22,23 @@ export function validatePracticeAssessmentTier3(
         const choices = Array.isArray(q.choices) ? q.choices : []
         const choiceIds = new Set(choices.map((c: any) => c?.id).filter(Boolean))
 
+        const correctCount = choices.filter((c: any) => c?.correct === true).length
+        if (choices.length > 0 && correctCount !== 1) {
+          diagnostics.push({
+            tier: 3,
+            field: `questions[${qIdx}].choices`,
+            message:
+              correctCount === 0
+                ? `Quiz question #${qIdx + 1} has no choice marked "correct: true" — exactly one choice must be correct.`
+                : `Quiz question #${qIdx + 1} has ${correctCount} choices marked "correct: true" — exactly one choice must be correct.`,
+            fixHint:
+              correctCount === 0
+                ? 'Mark exactly one choice with "correct: true".'
+                : 'Keep exactly one choice with "correct: true" and set the others to "correct: false".',
+            ...ctx,
+          })
+        }
+
         if (q.correctAnswer !== undefined && typeof q.correctAnswer === 'string') {
           if (!choiceIds.has(q.correctAnswer)) {
             diagnostics.push({

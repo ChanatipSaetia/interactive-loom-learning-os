@@ -503,7 +503,7 @@
       "categories": [
         {
           "analogy": "Like viewing the world through frosted glass or a camera lens shifted out of focus.",
-          "color": "sapphire",
+          "color": "sky",
           "description": "Algorithms that blend adjacent pixel neighborhoods to create defocus, motion blur, and soft glowing aesthetics.",
           "details": "Includes BlurFilter (separable 2-pass Gaussian), KawaseBlurFilter (fast multi-pass box offset), MotionBlurFilter, and ZoomBlurFilter.",
           "icon": "Sparkles",

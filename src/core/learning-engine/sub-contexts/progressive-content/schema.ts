@@ -59,6 +59,42 @@ export const BulletsSectionSchema = z.object({
 export type BulletItem = z.infer<typeof BulletItemSchema>
 export type BulletsSectionData = z.infer<typeof BulletsSectionSchema>
 
+// --- Theme Accent Colors ---
+
+/** Accent names supported by the taxonomy-browser renderer's accent map. */
+export const TAXONOMY_ACCENT_COLORS = [
+  'blue',
+  'peach',
+  'pink',
+  'mauve',
+  'green',
+  'teal',
+  'sky',
+  'lavender',
+  'yellow',
+  'red',
+] as const
+export type TaxonomyAccentColor = (typeof TAXONOMY_ACCENT_COLORS)[number]
+
+/** Accent names supported by the pillar-layer renderer's `color-*` CSS classes. */
+export const PILLAR_LAYER_BLOCK_COLORS = [
+  'rosewater',
+  'flamingo',
+  'pink',
+  'mauve',
+  'red',
+  'maroon',
+  'peach',
+  'yellow',
+  'green',
+  'teal',
+  'sky',
+  'sapphire',
+  'blue',
+  'lavender',
+] as const
+export type PillarLayerBlockColor = (typeof PILLAR_LAYER_BLOCK_COLORS)[number]
+
 // --- Taxonomy Browser Section Schema ---
 
 export const TaxonomyCategorySchema = z.object({
@@ -71,7 +107,7 @@ export const TaxonomyCategorySchema = z.object({
   primaryFocus: z.string(),
   inScope: z.array(z.string()),
   outOfScope: z.array(z.string()),
-  color: z.string(),
+  color: z.enum(TAXONOMY_ACCENT_COLORS),
 })
 
 export const TaxonomyBrowserSectionSchema = z.object({
@@ -138,7 +174,7 @@ export const PillarLayerBlockSchema = z.object({
   shape: PillarLayerBlockShapeSchema.optional(),
   cells: z.array(PillarLayerBlockCellSchema).optional(),
   offsets: z.array(z.tuple([z.number().int(), z.number().int()])).optional(), // [row_offset, col_offset]
-  color: z.string().optional(),
+  color: z.enum(PILLAR_LAYER_BLOCK_COLORS).optional(),
   depends_on: z.array(z.string()).optional(),
 })
 

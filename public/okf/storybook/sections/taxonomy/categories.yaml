@@ -12,7 +12,7 @@
   outOfScope:
     - "Hosting or routing your production application"
     - "End-to-end user journeys across real backend systems"
-  color: "#89b4fa"
+  color: "blue"
 
 - icon: "BookOpen"
   title: "Living Documentation"
@@ -28,7 +28,7 @@
   outOfScope:
     - "General-purpose wiki or blog hosting"
     - "Backend or infrastructure API references"
-  color: "#a6e3a1"
+  color: "green"
 
 - icon: "ShieldCheck"
   title: "Automated Testing Platform"
@@ -44,7 +44,7 @@
   outOfScope:
     - "Unit-testing pure non-UI business logic"
     - "Load and performance benchmarking"
-  color: "#fab387"
+  color: "peach"
 
 - icon: "Users"
   title: "Review & Collaboration Hub"
@@ -60,7 +60,7 @@
   outOfScope:
     - "Replacing code review of application logic"
     - "Formal project sign-off or ticket workflows"
-  color: "#cba6f7"
+  color: "mauve"
 
 - icon: "Library"
   title: "Design System Catalog"
@@ -76,4 +76,4 @@
   outOfScope:
     - "Distributing the component library binaries themselves"
     - "Design token storage independent of code"
-  color: "#f38ba8"
+  color: "red"

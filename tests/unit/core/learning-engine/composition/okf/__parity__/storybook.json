@@ -1649,7 +1649,7 @@
       "categories": [
         {
           "analogy": "A machinist's workbench: you tune a single part under a lamp instead of restarting the whole engine to inspect one bolt.",
-          "color": "#89b4fa",
+          "color": "blue",
           "description": "The core job: develop every component state in a dedicated sandbox that runs beside your app.",
           "details": "Each state is a story rendered from real component code in an isolated preview iframe. Hot module replacement keeps the loop to sub-second, and no routes, auth flows, or API mocks are required to reach deep states like error or empty views.",
           "icon": "Wrench",
@@ -1668,7 +1668,7 @@
         },
         {
           "analogy": "A cookbook where every recipe demo cooks itself at the touch of a button — and updates itself when the kitchen changes.",
-          "color": "#a6e3a1",
+          "color": "green",
           "description": "Storybook turns the story catalog into a searchable documentation site that never goes stale.",
           "details": "Autodocs generate props tables and examples straight from meta, JSDoc comments, and argTypes. MDX pages interleave prose with live, interactive story embeds, so guidelines are executed by the same code the tests run.",
           "icon": "BookOpen",
@@ -1687,7 +1687,7 @@
         },
         {
           "analogy": "A full-scale firing range where every weapon you built is test-fired automatically before the shipment leaves.",
-          "color": "#fab387",
+          "color": "peach",
           "description": "Every story doubles as a test case: the test runner executes them headlessly and play functions assert behavior.",
           "details": "test-storybook boots the built Storybook and runs each story (plus its play function) in Playwright or Puppeteer in CI. Visual regression services snapshot every story per commit and diff pixels across browsers and viewports, blocking silent UI changes.",
           "icon": "ShieldCheck",
@@ -1706,7 +1706,7 @@
         },
         {
           "analogy": "A printed proof in publishing: everyone signs the exact sheet that will be printed, not a description of it.",
-          "color": "#cba6f7",
+          "color": "mauve",
           "description": "Static Storybook builds give designers, PMs, and QA a clickable UI catalog to review per branch or PR.",
           "details": "Each commit gets a live URL (e.g. via Chromatic) where stakeholders click through states, leave inline comments, and approve visual changes. Reviewers exercise Controls themselves instead of requesting prop screenshots.",
           "icon": "Users",
@@ -1725,7 +1725,7 @@
         },
         {
           "analogy": "A national library with one reading room card catalog, even though the books live in many branches.",
-          "color": "#f38ba8",
+          "color": "red",
           "description": "Design systems use Storybook as the canonical, browsable catalog of every component and pattern they ship.",
           "details": "Composition stitches several Storybooks (core primitives, product-specific kits, legacy libs) into one navigable portal with a shared sidebar. Teams version the catalog alongside npm releases so consumers browse documentation matching installed code.",
           "icon": "Library",

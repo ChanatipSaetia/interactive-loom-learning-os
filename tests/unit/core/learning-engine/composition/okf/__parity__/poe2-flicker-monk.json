@@ -476,7 +476,7 @@
         },
         {
           "analogy": "Heralds are sticky notes on enemies saying 'explode next time you get hit.'",
-          "color": "rose",
+          "color": "red",
           "description": "Heralds mark enemies for elemental explosions. Utility skills enable boss strategies.",
           "details": "Herald of Thunder and Herald of Ice mark enemies for lightning and cold explosions. Mantra of Destruction holds Combo stacks for charge generation. Hand of Chayula marks bosses for additional charge generation with Culmination II.",
           "icon": "Shield",

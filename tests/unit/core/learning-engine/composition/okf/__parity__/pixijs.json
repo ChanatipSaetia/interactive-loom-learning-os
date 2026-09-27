@@ -415,7 +415,7 @@
       "categories": [
         {
           "analogy": "Like a Photoshop layer hierarchy where moving a group folder automatically moves all sub-layers inside it.",
-          "color": "#89b4fa",
+          "color": "blue",
           "description": "The core nodes used to organize, position, and render visual content in PixiJS.",
           "details": "Containers provide hierarchical spatial transforms (x, y, scale, rotation, skew) and alpha blending. Sprites bind 2D textures to quads. AnimatedSprite cycles frame sequences, and NineSliceSprite preserves borders during UI resizing.",
           "icon": "Layers",
@@ -435,7 +435,7 @@
         },
         {
           "analogy": "Like an SVG vector canvas with stroke and fill commands, but compiled into GPU triangle primitives.",
-          "color": "#a6e3a1",
+          "color": "green",
           "description": "Dynamic shape drawing and custom vertex mesh manipulation on the GPU.",
           "details": "Graphics generates 2D vector shapes (rectangles, circles, bezier paths, polygons) converted on-the-fly into triangulated vertex buffers. MeshSimple and MeshRope allow deformable ribbons, flags, and custom geometry.",
           "icon": "Shapes",
@@ -455,7 +455,7 @@
         },
         {
           "analogy": "PIXI.Text is like printing a new photo each time words change; BitmapText is like stamping pre-carved wooden letter blocks.",
-          "color": "#f9e2af",
+          "color": "yellow",
           "description": "Text display strategies balancing styling flexibility against 60 FPS render performance.",
           "details": "PIXI.Text rasterizes fonts using HTML5 2D Canvas context and generates an internal texture. PIXI.BitmapText renders characters from pre-baked XML/JSON font atlases using batched quads for zero CPU overhead.",
           "icon": "Type",
@@ -475,7 +475,7 @@
         },
         {
           "analogy": "Like applying real-time Instagram filters and optical lenses over rendered canvas layers.",
-          "color": "#cba6f7",
+          "color": "mauve",
           "description": "GPU fragment and vertex shader pipelines for lighting, blur, distortion, and stylization.",
           "details": "Filters render target objects into offscreen framebuffers and pass them through custom GLSL shaders. ColorMatrixFilter provides tinting/grayscale, BlurFilter softens edges, and DisplacementFilter creates liquid ripples.",
           "icon": "Sparkles",
@@ -495,7 +495,7 @@
         },
         {
           "analogy": "Like a freight train loading thousands of identical shipping crates at once rather than sending individual courier trucks.",
-          "color": "#fab387",
+          "color": "peach",
           "description": "Techniques for rendering tens of thousands of simultaneous entities at locked 60 FPS.",
           "details": "ParticleContainer strips complex scene-graph overhead to pump raw vertex buffers directly to the GPU. Texture atlases group assets into single BaseTextures to avoid draw-call batch breaks.",
           "icon": "Zap",

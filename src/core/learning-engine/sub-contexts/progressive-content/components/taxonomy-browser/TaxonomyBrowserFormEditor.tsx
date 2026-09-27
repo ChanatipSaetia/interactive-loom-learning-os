@@ -3,6 +3,7 @@ import { Plus, Trash2, HelpCircle, ArrowUp, ArrowDown, Layers, FileText, ShieldC
 import { TaxonomyHelpModal } from './TaxonomyHelpModal'
 import type { OKFTaxonomySectionData } from '../../../../composition/okf/types'
 import type { TaxonomyCategory } from '.'
+import { TAXONOMY_ACCENT_COLORS, type TaxonomyAccentColor } from '../../schema'
 
 interface TaxonomyBrowserFormEditorProps {
   data: OKFTaxonomySectionData
@@ -11,18 +12,6 @@ interface TaxonomyBrowserFormEditorProps {
 
 type CardTab = 'identity' | 'content' | 'scope'
 
-const COLOR_OPTIONS = [
-  'blue',
-  'peach',
-  'pink',
-  'mauve',
-  'green',
-  'teal',
-  'sky',
-  'lavender',
-  'yellow',
-  'red',
-]
 
 function CategoryItemEditor({
   category,
@@ -207,10 +196,10 @@ function CategoryItemEditor({
                   <select
                     className="visual-form-select"
                     value={category.color}
-                    onChange={(e) => handleFieldChange('color', e.target.value)}
+                    onChange={(e) => handleFieldChange('color', e.target.value as TaxonomyAccentColor)}
                     data-testid={`taxonomy-${index}-color`}
                   >
-                    {COLOR_OPTIONS.map((c) => (
+                    {TAXONOMY_ACCENT_COLORS.map((c) => (
                       <option key={c} value={c}>
                         {c}
                       </option>
