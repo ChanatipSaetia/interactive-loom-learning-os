@@ -91,6 +91,9 @@ title: Demo Topic
 * [section-01](./sections/sec1/section.md)
 `)
       }
+      if (urlStr.endsWith('demo/manifest.json')) {
+        return new Response(JSON.stringify({ sections: { sec1: ['content.md', 'section.md'] } }))
+      }
       if (urlStr.endsWith('sec1/section.md')) {
         return new Response(`---
 type: text

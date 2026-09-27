@@ -1,744 +1,383 @@
 [
   {
     "folder": "pillar-layer",
-    "type": "pillar-layer",
     "props": {
-      "title": "mTLS Security Architecture Stack",
       "intro": {
+        "next": "Next: Explore the mTLS handshake sequence flowchart.",
         "what": "Layer stack mapping application transport, TLS 1.3 cryptographic handshakes, and PKI identity verification.",
-        "why": "Shows how gRPC clients, Envoy proxies, TLS 1.3 socket streams, and Vault PKI certificate authorities connect.",
-        "next": "Next: Explore the mTLS handshake sequence flowchart."
+        "why": "Shows how gRPC clients, Envoy proxies, TLS 1.3 socket streams, and Vault PKI certificate authorities connect."
       },
       "section": {
-        "type": "pillar-layer",
-        "title": "mTLS Protocol & Security Architecture Stack",
         "description": "Layer stack map of application transport protocols, TLS 1.3 cryptographic handshakes, and PKI identity verification.",
         "layers": [
           {
+            "description": "High-level RPC and REST protocols requesting secure transport.",
             "id": "l-app",
-            "title": "1. Application Transport Layer",
-            "description": "High-level RPC and REST protocols requesting secure transport."
+            "title": "1. Application Transport Layer"
           },
           {
+            "description": "Cryptographic negotiation, key exchange, and record protocol.",
             "id": "l-tls",
-            "title": "2. TLS 1.3 Handshake & Cipher Layer",
-            "description": "Cryptographic negotiation, key exchange, and record protocol."
+            "title": "2. TLS 1.3 Handshake & Cipher Layer"
           },
           {
+            "description": "Reliable stream transport sockets and connection state.",
             "id": "l-tcp",
-            "title": "3. Transport & Socket Layer",
-            "description": "Reliable stream transport sockets and connection state."
+            "title": "3. Transport & Socket Layer"
           },
           {
+            "description": "X.509 certificate authority chain and SPIFFE identity validation.",
             "id": "l-pki",
-            "title": "4. PKI Certificate & Identity Layer",
-            "description": "X.509 certificate authority chain and SPIFFE identity validation."
+            "title": "4. PKI Certificate & Identity Layer"
           }
         ],
         "matrix_blocks": [
           {
-            "id": "b-grpc-client",
-            "title": "gRPC Microservice Client",
-            "description": "Initiates mutual TLS RPC calls.",
-            "layer_id": "l-app",
             "col_offset": 0,
             "col_span": 2,
             "color": "blue",
             "depends_on": [
               "b-tls-handshake"
-            ]
+            ],
+            "description": "Initiates mutual TLS RPC calls.",
+            "id": "b-grpc-client",
+            "layer_id": "l-app",
+            "title": "gRPC Microservice Client"
           },
           {
-            "id": "b-http2-ingress",
-            "title": "Envoy Ingress Gateway",
-            "description": "Terminates inbound mTLS and validates SAN identity.",
-            "layer_id": "l-app",
             "col_offset": 2,
             "col_span": 2,
             "color": "mauve",
             "depends_on": [
               "b-cipher-engine",
               "b-spiffe-validator"
-            ]
+            ],
+            "description": "Terminates inbound mTLS and validates SAN identity.",
+            "id": "b-http2-ingress",
+            "layer_id": "l-app",
+            "title": "Envoy Ingress Gateway"
           },
           {
-            "id": "b-tls-handshake",
-            "title": "TLS 1.3 Handshake Controller",
-            "description": "Exchanges ClientHello and ServerHello Certificate messages.",
-            "layer_id": "l-tls",
             "col_offset": 0,
             "col_span": 2,
             "color": "peach",
             "depends_on": [
               "b-tcp-socket",
               "b-spiffe-validator"
-            ]
+            ],
+            "description": "Exchanges ClientHello and ServerHello Certificate messages.",
+            "id": "b-tls-handshake",
+            "layer_id": "l-tls",
+            "title": "TLS 1.3 Handshake Controller"
           },
           {
-            "id": "b-cipher-engine",
-            "title": "AES-256-GCM Cipher Engine",
-            "description": "Provides authenticated symmetric encryption for records.",
-            "layer_id": "l-tls",
             "col_offset": 2,
             "col_span": 2,
             "color": "teal",
             "depends_on": [
               "b-tcp-socket"
-            ]
+            ],
+            "description": "Provides authenticated symmetric encryption for records.",
+            "id": "b-cipher-engine",
+            "layer_id": "l-tls",
+            "title": "AES-256-GCM Cipher Engine"
           },
           {
-            "id": "b-tcp-socket",
-            "title": "TCP Connection Socket",
-            "description": "Provides reliable byte stream transport over port 443/8443.",
-            "layer_id": "l-tcp",
             "col_offset": 0,
             "col_span": 4,
             "color": "green",
             "depends_on": [
               "b-ca-trust-store",
               "b-vault-pki"
-            ]
+            ],
+            "description": "Provides reliable byte stream transport over port 443/8443.",
+            "id": "b-tcp-socket",
+            "layer_id": "l-tcp",
+            "title": "TCP Connection Socket"
           },
           {
-            "id": "b-ca-trust-store",
-            "title": "Root CA Trust Store",
-            "description": "Stores trusted Root & Intermediate Certificate Authority PEMs.",
-            "layer_id": "l-pki",
             "col_offset": 0,
             "col_span": 1,
-            "color": "sapphire"
+            "color": "sapphire",
+            "description": "Stores trusted Root & Intermediate Certificate Authority PEMs.",
+            "id": "b-ca-trust-store",
+            "layer_id": "l-pki",
+            "title": "Root CA Trust Store"
           },
           {
-            "id": "b-spiffe-validator",
-            "title": "SPIFFE / SPIRE Workload ID",
-            "description": "Validates URI SAN identity (spiffe://cluster.local/ns/prod/sa/order).",
-            "layer_id": "l-pki",
             "col_offset": 1,
             "col_span": 1,
-            "color": "lavender"
+            "color": "lavender",
+            "description": "Validates URI SAN identity (spiffe://cluster.local/ns/prod/sa/order).",
+            "id": "b-spiffe-validator",
+            "layer_id": "l-pki",
+            "title": "SPIFFE / SPIRE Workload ID"
           },
           {
-            "id": "b-vault-pki",
-            "title": "HashiCorp Vault PKI Engine",
-            "description": "Issues short-lived X.509 client certificates dynamically.",
-            "layer_id": "l-pki",
             "col_offset": 2,
             "col_span": 1,
-            "color": "red"
+            "color": "red",
+            "description": "Issues short-lived X.509 client certificates dynamically.",
+            "id": "b-vault-pki",
+            "layer_id": "l-pki",
+            "title": "HashiCorp Vault PKI Engine"
           },
           {
-            "id": "b-hsm-module",
-            "title": "Hardware Security Module (HSM)",
-            "description": "Hardware key storage protecting Root CA private keys.",
-            "layer_id": "l-pki",
             "col_offset": 3,
             "col_span": 1,
-            "color": "yellow"
+            "color": "yellow",
+            "description": "Hardware key storage protecting Root CA private keys.",
+            "id": "b-hsm-module",
+            "layer_id": "l-pki",
+            "title": "Hardware Security Module (HSM)"
           }
-        ]
-      }
-    }
+        ],
+        "title": "mTLS Protocol & Security Architecture Stack",
+        "type": "pillar-layer"
+      },
+      "title": "mTLS Security Architecture Stack"
+    },
+    "type": "pillar-layer"
   },
   {
     "folder": "flowchart-handshake",
-    "type": "flowchart",
     "props": {
-      "title": "mTLS Handshake Process",
       "schema": {
         "entities": {
-          "client_dev": {
-            "title": "Client Developer",
-            "desc": "Integrates mTLS into client application",
-            "type": "Actor"
-          },
-          "server_admin": {
-            "title": "Server Administrator",
-            "desc": "Configures server CA trust and certificate requirements",
-            "type": "Actor"
-          },
-          "client": {
-            "title": "Client",
-            "desc": "mTLS-enabled client application initiating the handshake",
-            "type": "Aggregate"
-          },
-          "server": {
-            "title": "Server",
-            "desc": "mTLS-enabled server requiring mutual authentication",
-            "type": "Aggregate"
-          },
-          "tls_stack": {
-            "title": "TLS Protocol Stack",
-            "desc": "TLS handshake state machine handling cryptographic operations",
-            "type": "Aggregate"
-          },
-          "key_store": {
-            "title": "Key Store",
-            "desc": "Secure storage for private keys and trusted CA certificates",
-            "type": "Aggregate"
-          },
           "ca_service": {
-            "title": "Certificate Authority",
             "desc": "Trusted third-party CA that issued and can validate certificates",
+            "title": "Certificate Authority",
             "type": "External API"
           },
-          "pol_init_connection": {
-            "title": "Start mTLS Handshake",
-            "desc": "Start mTLS Handshake",
-            "type": "Policy",
-            "root": false
-          },
-          "cmd_init_connection": {
-            "title": "Initiate TLS Connection",
-            "desc": "Initiate TLS Connection",
-            "type": "Command"
-          },
-          "evt_connection_initiated": {
-            "title": "Connection Initiated",
-            "desc": "TLS connection request sent by client",
-            "type": "Event"
-          },
-          "pol_server_hello_step": {
-            "title": "On ClientHello Received",
-            "desc": "On ClientHello Received",
-            "type": "Policy",
-            "root": false
-          },
-          "cmd_server_hello_step": {
-            "title": "Send ServerHello",
-            "desc": "Send ServerHello",
-            "type": "Command"
-          },
-          "evt_server_hello_sent": {
-            "title": "ServerHello Sent",
-            "desc": "Server responds with supported TLS parameters",
-            "type": "Event"
-          },
-          "pol_server_cert_step": {
-            "title": "Present Server Identity",
-            "desc": "Present Server Identity",
-            "type": "Policy",
-            "root": false
-          },
-          "cmd_server_cert_step": {
-            "title": "Send Server Certificate",
-            "desc": "Send Server Certificate",
-            "type": "Command"
-          },
-          "server2": {
-            "title": "Server",
-            "desc": "mTLS-enabled server requiring mutual authentication",
+          "client": {
+            "desc": "mTLS-enabled client application initiating the handshake",
+            "title": "Client",
             "type": "Aggregate"
-          },
-          "evt_server_cert_sent": {
-            "title": "Server Certificate Sent",
-            "desc": "Server presents its certificate chain",
-            "type": "Event"
-          },
-          "pol_server_req_cert_step": {
-            "title": "Require Mutual Auth",
-            "desc": "Require Mutual Auth",
-            "type": "Policy",
-            "root": false
-          },
-          "cmd_server_req_cert_step": {
-            "title": "Request Client Certificate",
-            "desc": "Request Client Certificate",
-            "type": "Command"
-          },
-          "server3": {
-            "title": "Server",
-            "desc": "mTLS-enabled server requiring mutual authentication",
-            "type": "Aggregate"
-          },
-          "evt_client_cert_requested": {
-            "title": "Client Certificate Requested",
-            "desc": "Server requests client authentication",
-            "type": "Event"
-          },
-          "pol_client_cert_step": {
-            "title": "On CertificateRequest",
-            "desc": "On CertificateRequest",
-            "type": "Policy",
-            "root": false
-          },
-          "cmd_client_cert_step": {
-            "title": "Send Client Certificate",
-            "desc": "Send Client Certificate",
-            "type": "Command"
           },
           "client2": {
-            "title": "Client",
             "desc": "mTLS-enabled client application initiating the handshake",
+            "title": "Client",
             "type": "Aggregate"
-          },
-          "evt_client_cert_sent": {
-            "title": "Client Certificate Sent",
-            "desc": "Client presents its certificate",
-            "type": "Event"
-          },
-          "pol_verify_happy": {
-            "title": "Validate Client Identity",
-            "desc": "Validate Client Identity",
-            "type": "Policy"
-          },
-          "cmd_verify_happy": {
-            "title": "Verify Client Certificate Against Trusted CA",
-            "desc": "Verify Client Certificate Against Trusted CA",
-            "type": "Command"
-          },
-          "server4": {
-            "title": "Server",
-            "desc": "mTLS-enabled server requiring mutual authentication",
-            "type": "Aggregate"
-          },
-          "evt_client_cert_verified": {
-            "title": "Client Certificate Verified",
-            "desc": "Server validates client certificate successfully",
-            "type": "Event"
-          },
-          "pol_verify_rejected": {
-            "title": "Client Certificate Invalid",
-            "desc": "Client Certificate Invalid",
-            "type": "Policy"
-          },
-          "cmd_verify_rejected": {
-            "title": "Terminate Connection",
-            "desc": "Terminate Connection",
-            "type": "Command"
-          },
-          "server5": {
-            "title": "Server",
-            "desc": "mTLS-enabled server requiring mutual authentication",
-            "type": "Aggregate"
-          },
-          "evt_connection_terminated": {
-            "title": "Connection Terminated",
-            "desc": "Server rejects invalid client certificate and closes connection",
-            "type": "Event"
-          },
-          "pol_client_verify_step": {
-            "title": "Validate Server Identity",
-            "desc": "Validate Server Identity",
-            "type": "Policy",
-            "root": false
-          },
-          "cmd_client_verify_step": {
-            "title": "Verify Server Certificate Against Trusted CA",
-            "desc": "Verify Server Certificate Against Trusted CA",
-            "type": "Command"
           },
           "client3": {
-            "title": "Client",
             "desc": "mTLS-enabled client application initiating the handshake",
+            "title": "Client",
             "type": "Aggregate"
           },
-          "evt_server_cert_verified": {
-            "title": "Server Certificate Verified",
-            "desc": "Client validates server certificate successfully",
-            "type": "Event"
+          "client_dev": {
+            "desc": "Integrates mTLS into client application",
+            "title": "Client Developer",
+            "type": "Actor"
           },
-          "pol_key_exchange_step": {
-            "title": "All Certificates Valid",
-            "desc": "All Certificates Valid",
-            "type": "Policy",
-            "root": false
-          },
-          "cmd_key_exchange_step": {
-            "title": "Exchange Session Keys",
-            "desc": "Exchange Session Keys",
+          "cmd_client_cert_step": {
+            "desc": "Send Client Certificate",
+            "title": "Send Client Certificate",
             "type": "Command"
           },
-          "evt_keys_established": {
-            "title": "Session Keys Established",
-            "desc": "Both parties derive shared encryption keys",
-            "type": "Event"
-          },
-          "pol_handshake_complete": {
-            "title": "Keys Exchanged",
-            "desc": "Keys Exchanged",
-            "type": "Policy",
-            "root": false
+          "cmd_client_verify_step": {
+            "desc": "Verify Server Certificate Against Trusted CA",
+            "title": "Verify Server Certificate Against Trusted CA",
+            "type": "Command"
           },
           "cmd_handshake_complete": {
-            "title": "Begin Encrypted Communication",
             "desc": "Begin Encrypted Communication",
+            "title": "Begin Encrypted Communication",
             "type": "Command"
           },
-          "tls_stack2": {
-            "title": "TLS Protocol Stack",
-            "desc": "TLS handshake state machine handling cryptographic operations",
-            "type": "Aggregate"
+          "cmd_init_connection": {
+            "desc": "Initiate TLS Connection",
+            "title": "Initiate TLS Connection",
+            "type": "Command"
+          },
+          "cmd_key_exchange_step": {
+            "desc": "Exchange Session Keys",
+            "title": "Exchange Session Keys",
+            "type": "Command"
+          },
+          "cmd_server_cert_step": {
+            "desc": "Send Server Certificate",
+            "title": "Send Server Certificate",
+            "type": "Command"
+          },
+          "cmd_server_hello_step": {
+            "desc": "Send ServerHello",
+            "title": "Send ServerHello",
+            "type": "Command"
+          },
+          "cmd_server_req_cert_step": {
+            "desc": "Request Client Certificate",
+            "title": "Request Client Certificate",
+            "type": "Command"
+          },
+          "cmd_verify_happy": {
+            "desc": "Verify Client Certificate Against Trusted CA",
+            "title": "Verify Client Certificate Against Trusted CA",
+            "type": "Command"
+          },
+          "cmd_verify_rejected": {
+            "desc": "Terminate Connection",
+            "title": "Terminate Connection",
+            "type": "Command"
           },
           "evt_channel_established": {
-            "title": "Encrypted Channel Established",
             "desc": "Secure mTLS connection is active",
+            "title": "Encrypted Channel Established",
             "type": "Event"
+          },
+          "evt_client_cert_requested": {
+            "desc": "Server requests client authentication",
+            "title": "Client Certificate Requested",
+            "type": "Event"
+          },
+          "evt_client_cert_sent": {
+            "desc": "Client presents its certificate",
+            "title": "Client Certificate Sent",
+            "type": "Event"
+          },
+          "evt_client_cert_verified": {
+            "desc": "Server validates client certificate successfully",
+            "title": "Client Certificate Verified",
+            "type": "Event"
+          },
+          "evt_connection_initiated": {
+            "desc": "TLS connection request sent by client",
+            "title": "Connection Initiated",
+            "type": "Event"
+          },
+          "evt_connection_terminated": {
+            "desc": "Server rejects invalid client certificate and closes connection",
+            "title": "Connection Terminated",
+            "type": "Event"
+          },
+          "evt_keys_established": {
+            "desc": "Both parties derive shared encryption keys",
+            "title": "Session Keys Established",
+            "type": "Event"
+          },
+          "evt_server_cert_sent": {
+            "desc": "Server presents its certificate chain",
+            "title": "Server Certificate Sent",
+            "type": "Event"
+          },
+          "evt_server_cert_verified": {
+            "desc": "Client validates server certificate successfully",
+            "title": "Server Certificate Verified",
+            "type": "Event"
+          },
+          "evt_server_hello_sent": {
+            "desc": "Server responds with supported TLS parameters",
+            "title": "ServerHello Sent",
+            "type": "Event"
+          },
+          "key_store": {
+            "desc": "Secure storage for private keys and trusted CA certificates",
+            "title": "Key Store",
+            "type": "Aggregate"
+          },
+          "pol_client_cert_step": {
+            "desc": "On CertificateRequest",
+            "root": false,
+            "title": "On CertificateRequest",
+            "type": "Policy"
+          },
+          "pol_client_verify_step": {
+            "desc": "Validate Server Identity",
+            "root": false,
+            "title": "Validate Server Identity",
+            "type": "Policy"
+          },
+          "pol_handshake_complete": {
+            "desc": "Keys Exchanged",
+            "root": false,
+            "title": "Keys Exchanged",
+            "type": "Policy"
+          },
+          "pol_init_connection": {
+            "desc": "Start mTLS Handshake",
+            "root": false,
+            "title": "Start mTLS Handshake",
+            "type": "Policy"
+          },
+          "pol_key_exchange_step": {
+            "desc": "All Certificates Valid",
+            "root": false,
+            "title": "All Certificates Valid",
+            "type": "Policy"
+          },
+          "pol_server_cert_step": {
+            "desc": "Present Server Identity",
+            "root": false,
+            "title": "Present Server Identity",
+            "type": "Policy"
+          },
+          "pol_server_hello_step": {
+            "desc": "On ClientHello Received",
+            "root": false,
+            "title": "On ClientHello Received",
+            "type": "Policy"
+          },
+          "pol_server_req_cert_step": {
+            "desc": "Require Mutual Auth",
+            "root": false,
+            "title": "Require Mutual Auth",
+            "type": "Policy"
+          },
+          "pol_verify_happy": {
+            "desc": "Validate Client Identity",
+            "title": "Validate Client Identity",
+            "type": "Policy"
+          },
+          "pol_verify_rejected": {
+            "desc": "Client Certificate Invalid",
+            "title": "Client Certificate Invalid",
+            "type": "Policy"
+          },
+          "server": {
+            "desc": "mTLS-enabled server requiring mutual authentication",
+            "title": "Server",
+            "type": "Aggregate"
+          },
+          "server2": {
+            "desc": "mTLS-enabled server requiring mutual authentication",
+            "title": "Server",
+            "type": "Aggregate"
+          },
+          "server3": {
+            "desc": "mTLS-enabled server requiring mutual authentication",
+            "title": "Server",
+            "type": "Aggregate"
+          },
+          "server4": {
+            "desc": "mTLS-enabled server requiring mutual authentication",
+            "title": "Server",
+            "type": "Aggregate"
+          },
+          "server5": {
+            "desc": "mTLS-enabled server requiring mutual authentication",
+            "title": "Server",
+            "type": "Aggregate"
+          },
+          "server_admin": {
+            "desc": "Configures server CA trust and certificate requirements",
+            "title": "Server Administrator",
+            "type": "Actor"
+          },
+          "tls_stack": {
+            "desc": "TLS handshake state machine handling cryptographic operations",
+            "title": "TLS Protocol Stack",
+            "type": "Aggregate"
+          },
+          "tls_stack2": {
+            "desc": "TLS handshake state machine handling cryptographic operations",
+            "title": "TLS Protocol Stack",
+            "type": "Aggregate"
           }
         },
-        "relations": [
-          {
-            "id": "r1",
-            "from": "client_dev",
-            "to": "pol_init_connection",
-            "views": [
-              "EVENT_STORMING"
-            ]
-          },
-          {
-            "id": "r2",
-            "from": "pol_init_connection",
-            "to": "cmd_init_connection",
-            "views": [
-              "EVENT_STORMING"
-            ]
-          },
-          {
-            "id": "r3",
-            "from": "cmd_init_connection",
-            "to": "client",
-            "handledBy": true,
-            "views": [
-              "EVENT_STORMING"
-            ]
-          },
-          {
-            "id": "r4",
-            "from": "client",
-            "to": "evt_connection_initiated",
-            "views": [
-              "EVENT_STORMING"
-            ]
-          },
-          {
-            "id": "r5",
-            "from": "evt_connection_initiated",
-            "to": "pol_server_hello_step",
-            "views": [
-              "EVENT_STORMING"
-            ]
-          },
-          {
-            "id": "r6",
-            "from": "pol_server_hello_step",
-            "to": "cmd_server_hello_step",
-            "views": [
-              "EVENT_STORMING"
-            ]
-          },
-          {
-            "id": "r7",
-            "from": "cmd_server_hello_step",
-            "to": "server",
-            "handledBy": true,
-            "views": [
-              "EVENT_STORMING"
-            ]
-          },
-          {
-            "id": "r8",
-            "from": "server",
-            "to": "evt_server_hello_sent",
-            "views": [
-              "EVENT_STORMING"
-            ]
-          },
-          {
-            "id": "r9",
-            "from": "evt_server_hello_sent",
-            "to": "pol_server_cert_step",
-            "views": [
-              "EVENT_STORMING"
-            ]
-          },
-          {
-            "id": "r10",
-            "from": "pol_server_cert_step",
-            "to": "cmd_server_cert_step",
-            "views": [
-              "EVENT_STORMING"
-            ]
-          },
-          {
-            "id": "r11",
-            "from": "cmd_server_cert_step",
-            "to": "server2",
-            "handledBy": true,
-            "views": [
-              "EVENT_STORMING"
-            ]
-          },
-          {
-            "id": "r12",
-            "from": "server2",
-            "to": "evt_server_cert_sent",
-            "views": [
-              "EVENT_STORMING"
-            ]
-          },
-          {
-            "id": "r13",
-            "from": "evt_server_cert_sent",
-            "to": "pol_server_req_cert_step",
-            "views": [
-              "EVENT_STORMING"
-            ]
-          },
-          {
-            "id": "r14",
-            "from": "pol_server_req_cert_step",
-            "to": "cmd_server_req_cert_step",
-            "views": [
-              "EVENT_STORMING"
-            ]
-          },
-          {
-            "id": "r15",
-            "from": "cmd_server_req_cert_step",
-            "to": "server3",
-            "handledBy": true,
-            "views": [
-              "EVENT_STORMING"
-            ]
-          },
-          {
-            "id": "r16",
-            "from": "server3",
-            "to": "server_admin",
-            "views": [
-              "EVENT_STORMING"
-            ]
-          },
-          {
-            "id": "r17",
-            "from": "server3",
-            "to": "evt_client_cert_requested",
-            "views": [
-              "EVENT_STORMING"
-            ]
-          },
-          {
-            "id": "r18",
-            "from": "evt_client_cert_requested",
-            "to": "pol_client_cert_step",
-            "views": [
-              "EVENT_STORMING"
-            ]
-          },
-          {
-            "id": "r19",
-            "from": "pol_client_cert_step",
-            "to": "cmd_client_cert_step",
-            "views": [
-              "EVENT_STORMING"
-            ]
-          },
-          {
-            "id": "r20",
-            "from": "cmd_client_cert_step",
-            "to": "client2",
-            "handledBy": true,
-            "views": [
-              "EVENT_STORMING"
-            ]
-          },
-          {
-            "id": "r21",
-            "from": "client2",
-            "to": "key_store",
-            "views": [
-              "EVENT_STORMING"
-            ]
-          },
-          {
-            "id": "r22",
-            "from": "client2",
-            "to": "evt_client_cert_sent",
-            "views": [
-              "EVENT_STORMING"
-            ]
-          },
-          {
-            "id": "r23",
-            "from": "evt_client_cert_sent",
-            "to": "pol_verify_happy",
-            "label": "Valid Certificate",
-            "views": [
-              "EVENT_STORMING"
-            ]
-          },
-          {
-            "id": "r24",
-            "from": "pol_verify_happy",
-            "to": "cmd_verify_happy",
-            "views": [
-              "EVENT_STORMING"
-            ]
-          },
-          {
-            "id": "r25",
-            "from": "cmd_verify_happy",
-            "to": "server4",
-            "handledBy": true,
-            "views": [
-              "EVENT_STORMING"
-            ]
-          },
-          {
-            "id": "r26",
-            "from": "server4",
-            "to": "ca_service",
-            "views": [
-              "EVENT_STORMING"
-            ]
-          },
-          {
-            "id": "r27",
-            "from": "server4",
-            "to": "evt_client_cert_verified",
-            "views": [
-              "EVENT_STORMING"
-            ]
-          },
-          {
-            "id": "r28",
-            "from": "evt_client_cert_verified",
-            "to": "pol_client_verify_step",
-            "views": [
-              "EVENT_STORMING"
-            ]
-          },
-          {
-            "id": "r29",
-            "from": "evt_client_cert_sent",
-            "to": "pol_verify_rejected",
-            "label": "Invalid Certificate",
-            "dashed": true,
-            "views": [
-              "EVENT_STORMING"
-            ]
-          },
-          {
-            "id": "r30",
-            "from": "pol_verify_rejected",
-            "to": "cmd_verify_rejected",
-            "views": [
-              "EVENT_STORMING"
-            ]
-          },
-          {
-            "id": "r31",
-            "from": "cmd_verify_rejected",
-            "to": "server5",
-            "handledBy": true,
-            "views": [
-              "EVENT_STORMING"
-            ]
-          },
-          {
-            "id": "r32",
-            "from": "server5",
-            "to": "evt_connection_terminated",
-            "views": [
-              "EVENT_STORMING"
-            ]
-          },
-          {
-            "id": "r33",
-            "from": "pol_client_verify_step",
-            "to": "cmd_client_verify_step",
-            "views": [
-              "EVENT_STORMING"
-            ]
-          },
-          {
-            "id": "r34",
-            "from": "cmd_client_verify_step",
-            "to": "client3",
-            "handledBy": true,
-            "views": [
-              "EVENT_STORMING"
-            ]
-          },
-          {
-            "id": "r35",
-            "from": "client3",
-            "to": "evt_server_cert_verified",
-            "views": [
-              "EVENT_STORMING"
-            ]
-          },
-          {
-            "id": "r36",
-            "from": "evt_server_cert_verified",
-            "to": "pol_key_exchange_step",
-            "views": [
-              "EVENT_STORMING"
-            ]
-          },
-          {
-            "id": "r37",
-            "from": "pol_key_exchange_step",
-            "to": "cmd_key_exchange_step",
-            "views": [
-              "EVENT_STORMING"
-            ]
-          },
-          {
-            "id": "r38",
-            "from": "cmd_key_exchange_step",
-            "to": "tls_stack",
-            "handledBy": true,
-            "views": [
-              "EVENT_STORMING"
-            ]
-          },
-          {
-            "id": "r39",
-            "from": "tls_stack",
-            "to": "evt_keys_established",
-            "views": [
-              "EVENT_STORMING"
-            ]
-          },
-          {
-            "id": "r40",
-            "from": "evt_keys_established",
-            "to": "pol_handshake_complete",
-            "views": [
-              "EVENT_STORMING"
-            ]
-          },
-          {
-            "id": "r41",
-            "from": "pol_handshake_complete",
-            "to": "cmd_handshake_complete",
-            "views": [
-              "EVENT_STORMING"
-            ]
-          },
-          {
-            "id": "r42",
-            "from": "cmd_handshake_complete",
-            "to": "tls_stack2",
-            "handledBy": true,
-            "views": [
-              "EVENT_STORMING"
-            ]
-          },
-          {
-            "id": "r43",
-            "from": "tls_stack2",
-            "to": "evt_channel_established",
-            "views": [
-              "EVENT_STORMING"
-            ]
-          }
-        ],
         "journeys": [
           {
+            "description": "All certificates are valid, encrypted channel established",
             "id": "mtls_happy_path",
             "label": "Successful mTLS Handshake",
-            "description": "All certificates are valid, encrypted channel established",
             "steps": [
               {
                 "nodeIds": [
@@ -748,9 +387,9 @@
                   "client",
                   "evt_connection_initiated"
                 ],
-                "title": "Initiate Connection",
+                "processGroup": "initiation",
                 "reason": "Client developer initiates the TLS connection.",
-                "processGroup": "initiation"
+                "title": "Initiate Connection"
               },
               {
                 "nodeIds": [
@@ -759,9 +398,9 @@
                   "server",
                   "evt_server_hello_sent"
                 ],
-                "title": "Server Hello",
+                "processGroup": "handshake",
                 "reason": "Server responds with ServerHello containing TLS parameters.",
-                "processGroup": "handshake"
+                "title": "Server Hello"
               },
               {
                 "nodeIds": [
@@ -770,9 +409,9 @@
                   "server2",
                   "evt_server_cert_sent"
                 ],
-                "title": "Server Certificate",
+                "processGroup": "identity",
                 "reason": "Server presents its certificate chain for identity verification.",
-                "processGroup": "identity"
+                "title": "Server Certificate"
               },
               {
                 "nodeIds": [
@@ -782,9 +421,9 @@
                   "server_admin",
                   "evt_client_cert_requested"
                 ],
-                "title": "Certificate Request",
+                "processGroup": "identity",
                 "reason": "Server requests the client certificate for mutual authentication.",
-                "processGroup": "identity"
+                "title": "Certificate Request"
               },
               {
                 "nodeIds": [
@@ -794,9 +433,9 @@
                   "key_store",
                   "evt_client_cert_sent"
                 ],
-                "title": "Client Certificate",
+                "processGroup": "identity",
                 "reason": "Client sends its certificate in response to the request.",
-                "processGroup": "identity"
+                "title": "Client Certificate"
               },
               {
                 "nodeIds": [
@@ -806,9 +445,9 @@
                   "ca_service",
                   "evt_client_cert_verified"
                 ],
-                "title": "Verify Client Certificate",
+                "processGroup": "verification",
                 "reason": "Server validates the client certificate against trusted CA.",
-                "processGroup": "verification"
+                "title": "Verify Client Certificate"
               },
               {
                 "nodeIds": [
@@ -817,9 +456,9 @@
                   "client3",
                   "evt_server_cert_verified"
                 ],
-                "title": "Verify Server Certificate",
+                "processGroup": "verification",
                 "reason": "Client validates the server certificate against trusted CA.",
-                "processGroup": "verification"
+                "title": "Verify Server Certificate"
               },
               {
                 "nodeIds": [
@@ -828,9 +467,9 @@
                   "tls_stack",
                   "evt_keys_established"
                 ],
-                "title": "Key Exchange",
+                "processGroup": "encryption",
                 "reason": "Both parties exchange and derive session keys.",
-                "processGroup": "encryption"
+                "title": "Key Exchange"
               },
               {
                 "nodeIds": [
@@ -839,16 +478,16 @@
                   "tls_stack2",
                   "evt_channel_established"
                 ],
-                "title": "Handshake Complete",
+                "processGroup": "encryption",
                 "reason": "Encrypted mTLS channel is established and ready for communication.",
-                "processGroup": "encryption"
+                "title": "Handshake Complete"
               }
             ]
           },
           {
+            "description": "Client certificate fails validation, connection terminated",
             "id": "mtls_rejected_path",
             "label": "Certificate Rejected",
-            "description": "Client certificate fails validation, connection terminated",
             "steps": [
               {
                 "nodeIds": [
@@ -858,9 +497,9 @@
                   "client",
                   "evt_connection_initiated"
                 ],
-                "title": "Initiate Connection",
+                "processGroup": "initiation",
                 "reason": "Client developer initiates the TLS connection.",
-                "processGroup": "initiation"
+                "title": "Initiate Connection"
               },
               {
                 "nodeIds": [
@@ -869,9 +508,9 @@
                   "server",
                   "evt_server_hello_sent"
                 ],
-                "title": "Server Hello",
+                "processGroup": "handshake",
                 "reason": "Server responds with ServerHello containing TLS parameters.",
-                "processGroup": "handshake"
+                "title": "Server Hello"
               },
               {
                 "nodeIds": [
@@ -880,9 +519,9 @@
                   "server2",
                   "evt_server_cert_sent"
                 ],
-                "title": "Server Certificate",
+                "processGroup": "identity",
                 "reason": "Server presents its certificate chain for identity verification.",
-                "processGroup": "identity"
+                "title": "Server Certificate"
               },
               {
                 "nodeIds": [
@@ -892,9 +531,9 @@
                   "server_admin",
                   "evt_client_cert_requested"
                 ],
-                "title": "Certificate Request",
+                "processGroup": "identity",
                 "reason": "Server requests the client certificate for mutual authentication.",
-                "processGroup": "identity"
+                "title": "Certificate Request"
               },
               {
                 "nodeIds": [
@@ -904,9 +543,9 @@
                   "key_store",
                   "evt_client_cert_sent"
                 ],
-                "title": "Client Certificate",
+                "processGroup": "identity",
                 "reason": "Client sends its certificate in response to the request.",
-                "processGroup": "identity"
+                "title": "Client Certificate"
               },
               {
                 "nodeIds": [
@@ -915,452 +554,934 @@
                   "server5",
                   "evt_connection_terminated"
                 ],
-                "title": "Certificate Rejected",
+                "processGroup": "verification",
                 "reason": "Server finds the client certificate invalid and terminates the connection.",
-                "processGroup": "verification"
+                "title": "Certificate Rejected"
               }
             ]
           }
         ],
         "rawSteps": [
           {
-            "type": "linear",
+            "command": "Initiate TLS Connection",
+            "continuesAs": "server_hello_step",
+            "handledBy": {
+              "_tag": "ref",
+              "id": "client"
+            },
             "id": "init_connection",
             "initiatedBy": {
               "_tag": "ref",
               "id": "client_dev"
             },
             "policy": "Start mTLS Handshake",
-            "command": "Initiate TLS Connection",
-            "handledBy": {
-              "_tag": "ref",
-              "id": "client"
-            },
             "resultEvents": [
               {
+                "desc": "TLS connection request sent by client",
                 "id": "connection_initiated",
-                "title": "Connection Initiated",
-                "desc": "TLS connection request sent by client"
+                "title": "Connection Initiated"
               }
             ],
-            "continuesAs": "server_hello_step"
+            "type": "linear"
           },
           {
-            "type": "linear",
+            "command": "Send ServerHello",
+            "continuesAs": "server_cert_step",
+            "handledBy": {
+              "_tag": "ref",
+              "id": "server"
+            },
             "id": "server_hello_step",
             "policy": "On ClientHello Received",
-            "command": "Send ServerHello",
+            "resultEvents": [
+              {
+                "desc": "Server responds with supported TLS parameters",
+                "id": "server_hello_sent",
+                "title": "ServerHello Sent"
+              }
+            ],
+            "type": "linear"
+          },
+          {
+            "command": "Send Server Certificate",
+            "continuesAs": "server_req_cert_step",
             "handledBy": {
               "_tag": "ref",
               "id": "server"
             },
-            "resultEvents": [
-              {
-                "id": "server_hello_sent",
-                "title": "ServerHello Sent",
-                "desc": "Server responds with supported TLS parameters"
-              }
-            ],
-            "continuesAs": "server_cert_step"
-          },
-          {
-            "type": "linear",
             "id": "server_cert_step",
             "policy": "Present Server Identity",
-            "command": "Send Server Certificate",
-            "handledBy": {
-              "_tag": "ref",
-              "id": "server"
-            },
             "resultEvents": [
               {
+                "desc": "Server presents its certificate chain",
                 "id": "server_cert_sent",
-                "title": "Server Certificate Sent",
-                "desc": "Server presents its certificate chain"
+                "title": "Server Certificate Sent"
               }
             ],
-            "continuesAs": "server_req_cert_step"
+            "type": "linear"
           },
           {
-            "type": "linear",
-            "id": "server_req_cert_step",
-            "policy": "Require Mutual Auth",
             "command": "Request Client Certificate",
-            "handledBy": {
-              "_tag": "ref",
-              "id": "server"
-            },
+            "continuesAs": "client_cert_step",
             "delegatesTo": {
               "_tag": "ref",
               "id": "server_admin"
             },
-            "resultEvents": [
-              {
-                "id": "client_cert_requested",
-                "title": "Client Certificate Requested",
-                "desc": "Server requests client authentication"
-              }
-            ],
-            "continuesAs": "client_cert_step"
-          },
-          {
-            "type": "linear",
-            "id": "client_cert_step",
-            "policy": "On CertificateRequest",
-            "command": "Send Client Certificate",
             "handledBy": {
               "_tag": "ref",
-              "id": "client"
+              "id": "server"
             },
+            "id": "server_req_cert_step",
+            "policy": "Require Mutual Auth",
+            "resultEvents": [
+              {
+                "desc": "Server requests client authentication",
+                "id": "client_cert_requested",
+                "title": "Client Certificate Requested"
+              }
+            ],
+            "type": "linear"
+          },
+          {
+            "command": "Send Client Certificate",
+            "continuesAs": "verify_branch",
             "delegatesTo": {
               "_tag": "ref",
               "id": "key_store"
             },
-            "resultEvents": [
-              {
-                "id": "client_cert_sent",
-                "title": "Client Certificate Sent",
-                "desc": "Client presents its certificate"
-              }
-            ],
-            "continuesAs": "verify_branch"
-          },
-          {
-            "type": "branch",
-            "id": "verify_branch",
-            "event": "client_cert_sent",
-            "branches": [
-              {
-                "id": "verify_happy",
-                "label": "Valid Certificate",
-                "policy": "Validate Client Identity",
-                "command": "Verify Client Certificate Against Trusted CA",
-                "handledBy": {
-                  "_tag": "ref",
-                  "id": "server"
-                },
-                "delegatesTo": {
-                  "_tag": "ref",
-                  "id": "ca_service"
-                },
-                "resultEvents": [
-                  {
-                    "id": "client_cert_verified",
-                    "title": "Client Certificate Verified",
-                    "desc": "Server validates client certificate successfully"
-                  }
-                ],
-                "continuesAs": "client_verify_step"
-              },
-              {
-                "id": "verify_rejected",
-                "label": "Invalid Certificate",
-                "dashed": true,
-                "policy": "Client Certificate Invalid",
-                "command": "Terminate Connection",
-                "handledBy": {
-                  "_tag": "ref",
-                  "id": "server"
-                },
-                "resultEvents": [
-                  {
-                    "id": "connection_terminated",
-                    "title": "Connection Terminated",
-                    "desc": "Server rejects invalid client certificate and closes connection"
-                  }
-                ]
-              }
-            ]
-          },
-          {
-            "type": "linear",
-            "id": "client_verify_step",
-            "policy": "Validate Server Identity",
-            "command": "Verify Server Certificate Against Trusted CA",
             "handledBy": {
               "_tag": "ref",
               "id": "client"
             },
+            "id": "client_cert_step",
+            "policy": "On CertificateRequest",
             "resultEvents": [
               {
-                "id": "server_cert_verified",
-                "title": "Server Certificate Verified",
-                "desc": "Client validates server certificate successfully"
+                "desc": "Client presents its certificate",
+                "id": "client_cert_sent",
+                "title": "Client Certificate Sent"
               }
             ],
-            "continuesAs": "key_exchange_step"
+            "type": "linear"
           },
           {
-            "type": "linear",
-            "id": "key_exchange_step",
-            "policy": "All Certificates Valid",
+            "branches": [
+              {
+                "command": "Verify Client Certificate Against Trusted CA",
+                "continuesAs": "client_verify_step",
+                "delegatesTo": {
+                  "_tag": "ref",
+                  "id": "ca_service"
+                },
+                "handledBy": {
+                  "_tag": "ref",
+                  "id": "server"
+                },
+                "id": "verify_happy",
+                "label": "Valid Certificate",
+                "policy": "Validate Client Identity",
+                "resultEvents": [
+                  {
+                    "desc": "Server validates client certificate successfully",
+                    "id": "client_cert_verified",
+                    "title": "Client Certificate Verified"
+                  }
+                ]
+              },
+              {
+                "command": "Terminate Connection",
+                "dashed": true,
+                "handledBy": {
+                  "_tag": "ref",
+                  "id": "server"
+                },
+                "id": "verify_rejected",
+                "label": "Invalid Certificate",
+                "policy": "Client Certificate Invalid",
+                "resultEvents": [
+                  {
+                    "desc": "Server rejects invalid client certificate and closes connection",
+                    "id": "connection_terminated",
+                    "title": "Connection Terminated"
+                  }
+                ]
+              }
+            ],
+            "event": "client_cert_sent",
+            "id": "verify_branch",
+            "type": "branch"
+          },
+          {
+            "command": "Verify Server Certificate Against Trusted CA",
+            "continuesAs": "key_exchange_step",
+            "handledBy": {
+              "_tag": "ref",
+              "id": "client"
+            },
+            "id": "client_verify_step",
+            "policy": "Validate Server Identity",
+            "resultEvents": [
+              {
+                "desc": "Client validates server certificate successfully",
+                "id": "server_cert_verified",
+                "title": "Server Certificate Verified"
+              }
+            ],
+            "type": "linear"
+          },
+          {
             "command": "Exchange Session Keys",
+            "continuesAs": "handshake_complete",
             "handledBy": {
               "_tag": "ref",
               "id": "tls_stack"
             },
+            "id": "key_exchange_step",
+            "policy": "All Certificates Valid",
             "resultEvents": [
               {
+                "desc": "Both parties derive shared encryption keys",
                 "id": "keys_established",
-                "title": "Session Keys Established",
-                "desc": "Both parties derive shared encryption keys"
+                "title": "Session Keys Established"
               }
             ],
-            "continuesAs": "handshake_complete"
+            "type": "linear"
           },
           {
-            "type": "linear",
-            "id": "handshake_complete",
-            "policy": "Keys Exchanged",
             "command": "Begin Encrypted Communication",
             "handledBy": {
               "_tag": "ref",
               "id": "tls_stack"
             },
+            "id": "handshake_complete",
+            "policy": "Keys Exchanged",
             "resultEvents": [
               {
+                "desc": "Secure mTLS connection is active",
                 "id": "channel_established",
-                "title": "Encrypted Channel Established",
-                "desc": "Secure mTLS connection is active"
+                "title": "Encrypted Channel Established"
               }
+            ],
+            "type": "linear"
+          }
+        ],
+        "relations": [
+          {
+            "from": "client_dev",
+            "id": "r1",
+            "to": "pol_init_connection",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "from": "pol_init_connection",
+            "id": "r2",
+            "to": "cmd_init_connection",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "from": "cmd_init_connection",
+            "handledBy": true,
+            "id": "r3",
+            "to": "client",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "from": "client",
+            "id": "r4",
+            "to": "evt_connection_initiated",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "from": "evt_connection_initiated",
+            "id": "r5",
+            "to": "pol_server_hello_step",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "from": "pol_server_hello_step",
+            "id": "r6",
+            "to": "cmd_server_hello_step",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "from": "cmd_server_hello_step",
+            "handledBy": true,
+            "id": "r7",
+            "to": "server",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "from": "server",
+            "id": "r8",
+            "to": "evt_server_hello_sent",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "from": "evt_server_hello_sent",
+            "id": "r9",
+            "to": "pol_server_cert_step",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "from": "pol_server_cert_step",
+            "id": "r10",
+            "to": "cmd_server_cert_step",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "from": "cmd_server_cert_step",
+            "handledBy": true,
+            "id": "r11",
+            "to": "server2",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "from": "server2",
+            "id": "r12",
+            "to": "evt_server_cert_sent",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "from": "evt_server_cert_sent",
+            "id": "r13",
+            "to": "pol_server_req_cert_step",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "from": "pol_server_req_cert_step",
+            "id": "r14",
+            "to": "cmd_server_req_cert_step",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "from": "cmd_server_req_cert_step",
+            "handledBy": true,
+            "id": "r15",
+            "to": "server3",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "from": "server3",
+            "id": "r16",
+            "to": "server_admin",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "from": "server3",
+            "id": "r17",
+            "to": "evt_client_cert_requested",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "from": "evt_client_cert_requested",
+            "id": "r18",
+            "to": "pol_client_cert_step",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "from": "pol_client_cert_step",
+            "id": "r19",
+            "to": "cmd_client_cert_step",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "from": "cmd_client_cert_step",
+            "handledBy": true,
+            "id": "r20",
+            "to": "client2",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "from": "client2",
+            "id": "r21",
+            "to": "key_store",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "from": "client2",
+            "id": "r22",
+            "to": "evt_client_cert_sent",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "from": "evt_client_cert_sent",
+            "id": "r23",
+            "label": "Valid Certificate",
+            "to": "pol_verify_happy",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "from": "pol_verify_happy",
+            "id": "r24",
+            "to": "cmd_verify_happy",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "from": "cmd_verify_happy",
+            "handledBy": true,
+            "id": "r25",
+            "to": "server4",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "from": "server4",
+            "id": "r26",
+            "to": "ca_service",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "from": "server4",
+            "id": "r27",
+            "to": "evt_client_cert_verified",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "from": "evt_client_cert_verified",
+            "id": "r28",
+            "to": "pol_client_verify_step",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "dashed": true,
+            "from": "evt_client_cert_sent",
+            "id": "r29",
+            "label": "Invalid Certificate",
+            "to": "pol_verify_rejected",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "from": "pol_verify_rejected",
+            "id": "r30",
+            "to": "cmd_verify_rejected",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "from": "cmd_verify_rejected",
+            "handledBy": true,
+            "id": "r31",
+            "to": "server5",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "from": "server5",
+            "id": "r32",
+            "to": "evt_connection_terminated",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "from": "pol_client_verify_step",
+            "id": "r33",
+            "to": "cmd_client_verify_step",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "from": "cmd_client_verify_step",
+            "handledBy": true,
+            "id": "r34",
+            "to": "client3",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "from": "client3",
+            "id": "r35",
+            "to": "evt_server_cert_verified",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "from": "evt_server_cert_verified",
+            "id": "r36",
+            "to": "pol_key_exchange_step",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "from": "pol_key_exchange_step",
+            "id": "r37",
+            "to": "cmd_key_exchange_step",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "from": "cmd_key_exchange_step",
+            "handledBy": true,
+            "id": "r38",
+            "to": "tls_stack",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "from": "tls_stack",
+            "id": "r39",
+            "to": "evt_keys_established",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "from": "evt_keys_established",
+            "id": "r40",
+            "to": "pol_handshake_complete",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "from": "pol_handshake_complete",
+            "id": "r41",
+            "to": "cmd_handshake_complete",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "from": "cmd_handshake_complete",
+            "handledBy": true,
+            "id": "r42",
+            "to": "tls_stack2",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "from": "tls_stack2",
+            "id": "r43",
+            "to": "evt_channel_established",
+            "views": [
+              "EVENT_STORMING"
             ]
           }
         ]
-      }
-    }
+      },
+      "title": "mTLS Handshake Process"
+    },
+    "type": "flowchart"
   },
   {
     "folder": "concept-map",
-    "type": "concept-map",
     "props": {
-      "title": "mTLS Concept Map",
-      "nodes": {
-        "mtls": {
-          "id": "mtls",
-          "title": "mTLS",
-          "category": "pattern"
-        },
-        "tls": {
-          "id": "tls",
-          "title": "TLS",
-          "category": "pattern"
-        },
-        "certificate": {
-          "id": "certificate",
-          "title": "Certificate",
-          "category": "data"
-        },
-        "ca": {
-          "id": "ca",
-          "title": "CA (Certificate Authority)",
-          "category": "system"
-        },
-        "pki": {
-          "id": "pki",
-          "title": "PKI",
-          "category": "system"
-        },
-        "client_certificate": {
-          "id": "client_certificate",
-          "title": "Client Certificate",
-          "category": "data"
-        },
-        "server_certificate": {
-          "id": "server_certificate",
-          "title": "Server Certificate",
-          "category": "data"
-        },
-        "spiffe": {
-          "id": "spiffe",
-          "title": "SPIFFE",
-          "category": "pattern"
-        },
-        "spire": {
-          "id": "spire",
-          "title": "SPIRE",
-          "category": "system"
-        },
-        "jwt": {
-          "id": "jwt",
-          "title": "JWT",
-          "category": "data"
-        },
-        "oauth2": {
-          "id": "oauth2",
-          "title": "OAuth2",
-          "category": "pattern"
-        },
-        "zero_trust": {
-          "id": "zero_trust",
-          "title": "Zero Trust",
-          "category": "concept"
-        },
-        "service_mesh": {
-          "id": "service_mesh",
-          "title": "Service Mesh",
-          "category": "system"
-        },
-        "certificate_chain": {
-          "id": "certificate_chain",
-          "title": "Certificate Chain",
-          "category": "data"
-        },
-        "key_pair": {
-          "id": "key_pair",
-          "title": "Key Pair",
-          "category": "data"
-        },
-        "trust_store": {
-          "id": "trust_store",
-          "title": "Trust Store",
-          "category": "system"
-        },
-        "workload_identity": {
-          "id": "workload_identity",
-          "title": "Workload Identity",
-          "category": "concept"
-        },
-        "mutual_authentication": {
-          "id": "mutual_authentication",
-          "title": "Mutual Authentication",
-          "category": "process"
-        }
-      },
       "edges": [
         {
           "from": "mtls",
-          "to": "tls",
-          "label": "extends"
+          "label": "extends",
+          "to": "tls"
         },
         {
           "from": "mtls",
-          "to": "mutual_authentication",
-          "label": "realizes"
+          "label": "realizes",
+          "to": "mutual_authentication"
         },
         {
           "from": "mtls",
-          "to": "client_certificate",
-          "label": "requires"
+          "label": "requires",
+          "to": "client_certificate"
         },
         {
           "from": "mtls",
-          "to": "server_certificate",
-          "label": "requires"
+          "label": "requires",
+          "to": "server_certificate"
         },
         {
           "from": "mtls",
-          "to": "zero_trust",
-          "label": "enables"
+          "label": "enables",
+          "to": "zero_trust"
         },
         {
           "from": "certificate",
-          "to": "pki",
-          "label": "part of"
+          "label": "part of",
+          "to": "pki"
         },
         {
           "from": "ca",
-          "to": "certificate",
-          "label": "issues"
+          "label": "issues",
+          "to": "certificate"
         },
         {
           "from": "ca",
-          "to": "pki",
-          "label": "core of"
+          "label": "core of",
+          "to": "pki"
         },
         {
           "from": "client_certificate",
-          "to": "certificate",
-          "label": "type of"
+          "label": "type of",
+          "to": "certificate"
         },
         {
           "from": "server_certificate",
-          "to": "certificate",
-          "label": "type of"
+          "label": "type of",
+          "to": "certificate"
         },
         {
           "from": "certificate",
-          "to": "key_pair",
-          "label": "binds"
+          "label": "binds",
+          "to": "key_pair"
         },
         {
           "from": "certificate",
-          "to": "certificate_chain",
-          "label": "linked in"
+          "label": "linked in",
+          "to": "certificate_chain"
         },
         {
           "from": "certificate_chain",
-          "to": "trust_store",
-          "label": "validated by"
+          "label": "validated by",
+          "to": "trust_store"
         },
         {
           "from": "spiffe",
-          "to": "workload_identity",
-          "label": "standardizes"
+          "label": "standardizes",
+          "to": "workload_identity"
         },
         {
           "from": "spire",
-          "to": "spiffe",
-          "label": "implements"
+          "label": "implements",
+          "to": "spiffe"
         },
         {
           "from": "spiffe",
-          "to": "mtls",
-          "label": "uses"
+          "label": "uses",
+          "to": "mtls"
         },
         {
           "from": "spiffe",
-          "to": "jwt",
-          "label": "issues"
+          "label": "issues",
+          "to": "jwt"
         },
         {
           "from": "jwt",
-          "to": "mtls",
-          "label": "alternative to"
+          "label": "alternative to",
+          "to": "mtls"
         },
         {
           "from": "oauth2",
-          "to": "jwt",
-          "label": "issues"
+          "label": "issues",
+          "to": "jwt"
         },
         {
           "from": "oauth2",
-          "to": "mtls",
-          "label": "alternative to"
+          "label": "alternative to",
+          "to": "mtls"
         },
         {
           "from": "service_mesh",
-          "to": "mtls",
-          "label": "deploys"
+          "label": "deploys",
+          "to": "mtls"
         },
         {
           "from": "service_mesh",
-          "to": "zero_trust",
-          "label": "enforces"
+          "label": "enforces",
+          "to": "zero_trust"
         },
         {
           "from": "trust_store",
-          "to": "ca",
-          "label": "anchors at"
+          "label": "anchors at",
+          "to": "ca"
         },
         {
           "from": "mutual_authentication",
-          "to": "zero_trust",
-          "label": "supports"
+          "label": "supports",
+          "to": "zero_trust"
         }
-      ]
-    }
+      ],
+      "nodes": {
+        "ca": {
+          "category": "system",
+          "id": "ca",
+          "title": "CA (Certificate Authority)"
+        },
+        "certificate": {
+          "category": "data",
+          "id": "certificate",
+          "title": "Certificate"
+        },
+        "certificate_chain": {
+          "category": "data",
+          "id": "certificate_chain",
+          "title": "Certificate Chain"
+        },
+        "client_certificate": {
+          "category": "data",
+          "id": "client_certificate",
+          "title": "Client Certificate"
+        },
+        "jwt": {
+          "category": "data",
+          "id": "jwt",
+          "title": "JWT"
+        },
+        "key_pair": {
+          "category": "data",
+          "id": "key_pair",
+          "title": "Key Pair"
+        },
+        "mtls": {
+          "category": "pattern",
+          "id": "mtls",
+          "title": "mTLS"
+        },
+        "mutual_authentication": {
+          "category": "process",
+          "id": "mutual_authentication",
+          "title": "Mutual Authentication"
+        },
+        "oauth2": {
+          "category": "pattern",
+          "id": "oauth2",
+          "title": "OAuth2"
+        },
+        "pki": {
+          "category": "system",
+          "id": "pki",
+          "title": "PKI"
+        },
+        "server_certificate": {
+          "category": "data",
+          "id": "server_certificate",
+          "title": "Server Certificate"
+        },
+        "service_mesh": {
+          "category": "system",
+          "id": "service_mesh",
+          "title": "Service Mesh"
+        },
+        "spiffe": {
+          "category": "pattern",
+          "id": "spiffe",
+          "title": "SPIFFE"
+        },
+        "spire": {
+          "category": "system",
+          "id": "spire",
+          "title": "SPIRE"
+        },
+        "tls": {
+          "category": "pattern",
+          "id": "tls",
+          "title": "TLS"
+        },
+        "trust_store": {
+          "category": "system",
+          "id": "trust_store",
+          "title": "Trust Store"
+        },
+        "workload_identity": {
+          "category": "concept",
+          "id": "workload_identity",
+          "title": "Workload Identity"
+        },
+        "zero_trust": {
+          "category": "concept",
+          "id": "zero_trust",
+          "title": "Zero Trust"
+        }
+      },
+      "title": "mTLS Concept Map"
+    },
+    "type": "concept-map"
   },
   {
     "folder": "alternatives",
-    "type": "taxonomy-browser",
     "props": {
-      "title": "mTLS Alternatives",
+      "categories": [
+        {
+          "analogy": "Like a keycard for a building: it works as long as you have it and someone didn't copy it, but there's no handshake verifying the building is the real one.",
+          "color": "yellow",
+          "description": "The client includes a static or rotating secret key in each request header. The server looks up the key to authorize access. No certificates, no handshakes, no PKI.",
+          "details": "API keys are a shared secret between client and server, typically passed as X-API-Key or Authorization: ApiKey header. They're trivial to integrate: generate a key, distribute it out-of-band, and check it on the server side. Rotation is manual or assisted through a dashboard. The simplicity comes with trade-offs: keys are usually sent over TLS but not cryptographically bound to the connection, they're harder to revoke instantly at scale, and they provide no mutual authentication — only the client proves identity, never the server. Still, for many internal tooling and partner integrations, the operational savings are worth the security gap.",
+          "icon": "CreditCard",
+          "inScope": [
+            "Third-party integrations where partners can't manage certificates",
+            "Internal tooling and CI/CD pipelines with low-security requirements",
+            "Public APIs where simplicity drives adoption and TLS provides transport security"
+          ],
+          "outOfScope": [
+            "Zero-trust environments requiring mutual authentication",
+            "High-value service meshes where key exfiltration risks are unacceptable",
+            "Regulated industries mandating cryptographic identity proofs"
+          ],
+          "primaryFocus": "Minimal-friction integration for third-party and partner access",
+          "subtitle": "Shared secret in a header — the simplest way to identify a caller",
+          "title": "Simple API Key Authentication"
+        },
+        {
+          "analogy": "Like a signed conference badge: once issued and validated at the door, each session attendee checks the badge's hologram stamp instead of calling registration.",
+          "color": "sky",
+          "description": "A JSON Web Token carries signed claims about the caller's identity and permissions. The server validates the signature on every request without needing a session store or callback.",
+          "details": "JWTs are typically obtained via an initial auth flow (OAuth2, login endpoint) and then presented in the Authorization header. The issuer signs tokens with a private key; verifiers check with the corresponding public key. This eliminates per-request round-trips to an auth server and scales horizontally with ease. However, tokens have a finite lifetime — short-lived tokens mean frequent re-authentication, while long-lived tokens increase exposure if compromised. Revocation is also difficult since tokens are stateless by design.",
+          "icon": "Key",
+          "inScope": [
+            "Microservices that need fast per-request auth without database lookups",
+            "Single-page applications and mobile clients with intermittent connectivity",
+            "Federated identity where a central IdP issues tokens for downstream consumers"
+          ],
+          "outOfScope": [
+            "Service-to-service auth where you can't centralize token issuance",
+            "Environments requiring real-time revocation (tokens remain valid until expiry)",
+            "Replacing network-layer encryption — JWTs should always ride on TLS, not plaintext"
+          ],
+          "primaryFocus": "Lightweight, stateless authentication that scales to high-throughput APIs",
+          "subtitle": "Stateless bearer tokens with embedded claims and signatures",
+          "title": "JWT-Based Authentication"
+        },
+        {
+          "analogy": "Like both parties at a business meeting flashing government-issued IDs verified by the same authority before sharing any confidential information.",
+          "color": "mauve",
+          "description": "Both client and server present X.509 certificates during the TLS handshake, providing strong mutual authentication rooted in a trusted Certificate Authority.",
+          "details": "Every service holds a private key and certificate signed by a CA the peer trusts. The TLS 1.3 handshake validates both sides before any application data flows. This gives you cryptographic assurance of identity — not just IP allowlists or shared secrets. The cost is operational: you must provision, rotate, revoke, and store certificates across every service in the mesh.",
+          "icon": "Shield",
+          "inScope": [
+            "Zero-trust internal service-to-service authentication",
+            "Regulated environments requiring mutual verification (finance, healthcare, defense)",
+            "Scenarios where you control both client and server certificate lifecycle"
+          ],
+          "outOfScope": [
+            "Third-party integrations that can't manage X.509 certificates",
+            "Rapid prototyping where certificate overhead slows iteration",
+            "Public-facing consumer APIs where clients are browsers or mobile apps"
+          ],
+          "primaryFocus": "Strong cryptographic identity for every endpoint",
+          "subtitle": "Mutual TLS — the gold standard for zero-trust service authentication",
+          "title": "Traditional mTLS with PKI"
+        },
+        {
+          "analogy": "Like a library card (OAuth2 token) that only works when presented alongside a government ID (client cert) — the card alone is insufficient.",
+          "color": "peach",
+          "description": "Extends standard OAuth2 flows by binding the client's TLS certificate to the token request, so access tokens are only valid when presented with the cert that requested them.",
+          "details": "RFC 8705 defines how to include a SANS_DNS or SANS_URI from the client certificate as a cnf (confirmation) claim in the issued token. The resource server then checks that the presenting client's certificate matches the bound claim. This gives you OAuth2's rich authorization framework — scopes, consent, token types — while anchoring the token to a specific mTLS identity. Integration is moderate: clients need certificate management, and resource servers must validate the cnf claim. The approach is ideal when third-party apps need OAuth2 scopes but you require stronger binding than a shared secret.",
+          "icon": "ShieldCheck",
+          "inScope": [
+            "APIs offering OAuth2 scopes but requiring client cert binding for sensitive resources",
+            "Third-party partner integrations where you control authorization policies but not PKI",
+            "Replacing OAuth2 client_secret with cert-bound tokens for higher security"
+          ],
+          "outOfScope": [
+            "Simple internal services that don't need OAuth2's authorization granularity",
+            "Environments where clients cannot handle certificate-based TLS",
+            "Consumer-facing apps where certificate provisioning is a UX barrier"
+          ],
+          "primaryFocus": "Strong authorization with cryptographic client binding for third-party integrations",
+          "subtitle": "Combining OAuth2 authorization with mTLS client binding",
+          "title": "OAuth2 with Client Certificates"
+        },
+        {
+          "analogy": "Like a secure relay station between every building in a campus — packages go through a guarded checkpoint that verifies sender and receiver, and the couriers inside each building never see the process.",
+          "color": "teal",
+          "description": "A service mesh like Istio, Linkerd, or Consul Connect injects sidecar proxies that automatically establish mTLS between services, with a built-in CA and transparent certificate rotation.",
+          "details": "Each service gets a co-located proxy (Envoy, Linkerd, etc.) that terminates TLS for inbound and initiates TLS for outbound traffic. The mesh control plane acts as the CA, issuing short-lived certificates and distributing root trust bundles. Application code makes plain HTTP calls to localhost; the sidecar handles the cryptographic details. This delivers mTLS security with near-zero application changes. The costs are operational: sidecar memory/CPU overhead, mesh control plane complexity, and an additional network hop per request. For large Kubernetes deployments, the trade-off usually favors the mesh.",
+          "icon": "Network",
+          "inScope": [
+            "Large Kubernetes clusters with dozens to hundreds of services",
+            "Organizations standardizing on a service mesh for traffic management anyway",
+            "Teams that want mTLS security without cert management in application code"
+          ],
+          "outOfScope": [
+            "Small deployments where sidecar overhead dominates resource budgets",
+            "Bare-metal or VM environments lacking mesh deployment tooling",
+            "Third-party external clients that cannot route through your mesh"
+          ],
+          "primaryFocus": "Transparent mTLS at scale without modifying application code",
+          "subtitle": "Sidecar proxies handle all TLS — your application stays oblivious",
+          "title": "Service Mesh Automated mTLS"
+        },
+        {
+          "analogy": "Like a passport office inside your data center: workloads show proof of who they are, the office prints an expiring visa on the spot, and everyone trusts that office.",
+          "color": "green",
+          "description": "SPIFFE defines a standard identity format (SPIFFE ID) and SPIRE implements a trust domain that automatically mints, rotates, and distributes short-lived X.509 certificates to workloads.",
+          "details": "Instead of manually managing a PKI, you deploy a SPIRE Server that acts as a local CA. Agents on each node attest the workload (by socket, TLS, Kubernetes tokens, or AWS IAM roles), then issue a short-lived certificate. Services fetch their identity and trust bundle through the SPIFFE Workload API on a Unix socket. This removes the certificate lifecycle burden from application code while retaining mTLS-grade cryptographic guarantees. The trade-off is infrastructure complexity: you operate SPIRE servers, agents, and node-level attestation pipelines.",
+          "icon": "Fingerprint",
+          "inScope": [
+            "Kubernetes clusters with frequent pod churn and ephemeral workloads",
+            "Organizations wanting mTLS security without baking PKI into each app",
+            "Multi-service environments needing a unified trust domain"
+          ],
+          "outOfScope": [
+            "Simple two-service integrations where deploying SPIRE is overkill",
+            "Edge devices or IoT where agent footprint and attestation complexity is prohibitive",
+            "Third-party SaaS clients that cannot run a SPIRE agent"
+          ],
+          "primaryFocus": "Zero-touch certificate lifecycle in dynamic cloud-native environments",
+          "subtitle": "Automated certificate provisioning for cloud-native workloads",
+          "title": "SPIFFE/SPIRE Workload Identity"
+        }
+      ],
       "intro": {
+        "next": "Walk through the mTLS handshake process in the flowchart.",
         "what": "Explore authentication alternatives to mTLS, each with different trade-offs.",
-        "why": "mTLS isn't always the right choice. Understanding alternatives helps you pick the right tool.",
-        "next": "Walk through the mTLS handshake process in the flowchart."
+        "why": "mTLS isn't always the right choice. Understanding alternatives helps you pick the right tool."
       },
-      "categories": []
-    }
+      "title": "mTLS Alternatives"
+    },
+    "type": "taxonomy-browser"
   }
 ]

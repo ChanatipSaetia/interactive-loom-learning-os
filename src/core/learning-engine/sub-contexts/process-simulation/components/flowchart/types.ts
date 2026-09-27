@@ -1,3 +1,4 @@
+import type { AbstractFlow } from '../../model/types';
 import * as Icons from 'lucide-react';
 
 const Component = Icons.Component;
@@ -332,6 +333,9 @@ export interface UnifiedFlowchartSchema {
 
 export interface FlowchartProps {
   title?: string;
+  /** Event-storming definition from the Validation Gateway; views are derived from it. Takes precedence over `schema`. */
+  flow?: AbstractFlow;
+  /** Pre-derived view graph (defaults to the built-in example). */
   schema?: UnifiedFlowchartSchema;
   sectionIndex?: number;
 }

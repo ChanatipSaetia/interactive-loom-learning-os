@@ -41,7 +41,7 @@ export function createDefaultSectionData(type: string): OKFSectionData {
     case 'bullets':
       return {
         type: 'bullets',
-        items: [{ text: 'Key Concept Bullet Point' }],
+        items: [{ text: 'Key Concept Bullet Point', children: [] }],
       }
     case 'flowchart':
       return {

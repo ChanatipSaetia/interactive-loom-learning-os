@@ -1,19 +1,49 @@
 [
   {
     "folder": "intro",
-    "type": "intro",
     "props": {
-      "title": "",
       "estimatedTime": "5 min read",
       "moduleCount": 6,
+      "roadmap": [
+        {
+          "description": "เชื่อมโยงพยัญชนะ สระ และเสียงวรรณยุกต์ทั้ง 4 เสียง",
+          "sectionId": "concept-map",
+          "title": "แผนผังระบบเสียงพินอิน",
+          "type": "concept-map"
+        },
+        {
+          "description": "ฝึกจดจำคำศัพท์พินอิน คำอ่าน และความหมาย",
+          "sectionId": "flashcards",
+          "title": "บัตรคำศัพท์พื้นฐาน",
+          "type": "flashcards"
+        },
+        {
+          "description": "ทดสอบการเรียงลำดับประโยคทักทายโต้ตอบ",
+          "sectionId": "reflection-sequence",
+          "title": "เรียงลำดับบทสนทนา",
+          "type": "reflection-sequence"
+        },
+        {
+          "description": "ฝึกเลือกประโยคสนทนาในสถานการณ์จริง",
+          "sectionId": "scenario",
+          "title": "สถานการณ์จำลอง",
+          "type": "scenario"
+        },
+        {
+          "description": "วัดผลความเข้าใจพินอิน วรรณยุกต์ และคำศัพท์",
+          "sectionId": "quiz",
+          "title": "แบบทดสอบวัดความเข้าใจ",
+          "type": "quiz"
+        }
+      ],
       "what": {
-        "definition": "ภาษาจีนกลาง (Mandarin Chinese) เป็นภาษาที่มีผู้พูดเป็นภาษาแม่มากที่สุดในโลก ใช้ระบบพินอิน (Pinyin) ในการออกเสียงและวรรณยุกต์ 4 เสียงในการเปลี่ยนความหมาย",
-        "summary": "ปูพื้นฐานการเรียนภาษาจีนวันแรก เข้าใจระบบพินอิน วรรณยุกต์ และการทักทายพื้นฐาน",
         "bullets": [
           "ระบบออกเสียง พินอิน (Pinyin) และพยัญชนะ สระ",
           "วรรณยุกต์ 4 เสียงและการเปลี่ยนความหมาย",
           "บทสนทนาทักทายและประโยคพื้นฐานในชีวิตประจำวัน"
         ],
+        "definition": "ภาษาจีนกลาง (Mandarin Chinese) เป็นภาษาที่มีผู้พูดเป็นภาษาแม่มากที่สุดในโลก ใช้ระบบพินอิน (Pinyin) ในการออกเสียงและวรรณยุกต์ 4 เสียงในการเปลี่ยนความหมาย",
+        "summary": "ปูพื้นฐานการเรียนภาษาจีนวันแรก เข้าใจระบบพินอิน วรรณยุกต์ และการทักทายพื้นฐาน",
         "tags": [
           "Chinese 101",
           "Pinyin",
@@ -22,744 +52,710 @@
         ]
       },
       "why": {
-        "summary": "การเรียนภาษาจีนโดยไม่ออกเสียงวรรณยุกต์ให้ถูกต้อง อาจทำให้สื่อสารผิดความหมายอย่างสิ้นเชิง",
-        "impact": "การฝึกระบบเสียงพินอินตั้งแต่แรก จะทำให้ฟังออก พูดชัด และสื่อสารได้อย่างมั่นใจ"
-      },
-      "roadmap": [
-        {
-          "sectionId": "concept-map",
-          "title": "แผนผังระบบเสียงพินอิน",
-          "type": "concept-map",
-          "description": "เชื่อมโยงพยัญชนะ สระ และเสียงวรรณยุกต์ทั้ง 4 เสียง"
-        },
-        {
-          "sectionId": "flashcards",
-          "title": "บัตรคำศัพท์พื้นฐาน",
-          "type": "flashcards",
-          "description": "ฝึกจดจำคำศัพท์พินอิน คำอ่าน และความหมาย"
-        },
-        {
-          "sectionId": "reflection-sequence",
-          "title": "เรียงลำดับบทสนทนา",
-          "type": "reflection-sequence",
-          "description": "ทดสอบการเรียงลำดับประโยคทักทายโต้ตอบ"
-        },
-        {
-          "sectionId": "scenario",
-          "title": "สถานการณ์จำลอง",
-          "type": "scenario",
-          "description": "ฝึกเลือกประโยคสนทนาในสถานการณ์จริง"
-        },
-        {
-          "sectionId": "quiz",
-          "title": "แบบทดสอบวัดความเข้าใจ",
-          "type": "quiz",
-          "description": "วัดผลความเข้าใจพินอิน วรรณยุกต์ และคำศัพท์"
-        }
-      ]
-    }
+        "impact": "การฝึกระบบเสียงพินอินตั้งแต่แรก จะทำให้ฟังออก พูดชัด และสื่อสารได้อย่างมั่นใจ",
+        "summary": "การเรียนภาษาจีนโดยไม่ออกเสียงวรรณยุกต์ให้ถูกต้อง อาจทำให้สื่อสารผิดความหมายอย่างสิ้นเชิง"
+      }
+    },
+    "type": "intro"
   },
   {
     "folder": "flashcards",
-    "type": "flashcards",
     "props": {
-      "title": "คำศัพท์พื้นฐาน",
       "heading": "คลิกการ์ดเพื่อดูรายละเอียด",
       "terms": [
         {
-          "id": "greeting-hello",
-          "word": "你好",
-          "pronunciation": "nǐ hǎo (นี-ฮ่าว)",
           "category": "greeting",
-          "shortDefinition": "สวัสดี",
           "detailedDefinition": "คำทักทายพื้นฐานที่สุดของภาษาจีน ใช้ได้ทั้งทางการและไม่ทางการ แปลตรงตัวว่า 'คุณดี' เหมือนกับ 'คุณสบายดีไหม'",
-          "whyItMatters": "เป็นคำแรกที่ต้องจำ ใช้ได้ตลอดเวลาตลอดทั้งวัน",
           "dialogue": {
-            "user": "ฉันอยากทักทายเพื่อนจีน",
+            "aiQuestion": "ลองพูด '你好' (nǐ hǎo) ดู! พยายามเน้นเสียงที่ '好' (hǎo) ให้เป็นเสียงที่ 3",
             "aiThoughts": "ผู้ใช้ต้องการคำทักทายพื้นฐานสำหรับภาษาจีน",
-            "aiQuestion": "ลองพูด '你好' (nǐ hǎo) ดู! พยายามเน้นเสียงที่ '好' (hǎo) ให้เป็นเสียงที่ 3"
-          }
+            "user": "ฉันอยากทักทายเพื่อนจีน"
+          },
+          "id": "greeting-hello",
+          "pronunciation": "nǐ hǎo (นี-ฮ่าว)",
+          "shortDefinition": "สวัสดี",
+          "whyItMatters": "เป็นคำแรกที่ต้องจำ ใช้ได้ตลอดเวลาตลอดทั้งวัน",
+          "word": "你好"
         },
         {
-          "id": "greeting-hi",
-          "word": "嗨",
-          "pronunciation": "hāi (ไฮ)",
           "category": "greeting",
-          "shortDefinition": "สวัสดี (ไม่ทางการ)",
           "detailedDefinition": "คำยืมจากภาษาอังกฤษ 'hi' ใช้ในการสนทนาที่ไม่ทางการกับเพื่อนสนิท",
-          "whyItMatters": "ทำให้บทสนทนากับเพื่อนดูเป็นกันเองมากขึ้น",
           "dialogue": {
-            "user": "มีวิธีทักทายที่เป็นกันเองไหม?",
+            "aiQuestion": "'嗨' (hāi) เป็นตัวเลือกที่ดีสำหรับเพื่อนสนิท แต่จำไว้ว่าใช้เฉพาะกับคนที่สนิทเท่านั้นนะ",
             "aiThoughts": "ผู้ใช้ต้องการคำทักทายที่ไม่ทางการ",
-            "aiQuestion": "'嗨' (hāi) เป็นตัวเลือกที่ดีสำหรับเพื่อนสนิท แต่จำไว้ว่าใช้เฉพาะกับคนที่สนิทเท่านั้นนะ"
-          }
+            "user": "มีวิธีทักทายที่เป็นกันเองไหม?"
+          },
+          "id": "greeting-hi",
+          "pronunciation": "hāi (ไฮ)",
+          "shortDefinition": "สวัสดี (ไม่ทางการ)",
+          "whyItMatters": "ทำให้บทสนทนากับเพื่อนดูเป็นกันเองมากขึ้น",
+          "word": "嗨"
         },
         {
-          "id": "greeting-goodbye",
-          "word": "再见",
-          "pronunciation": "zài jiàn (จ้าย-เจียน)",
           "category": "greeting",
-          "shortDefinition": "ลาก่อน",
           "detailedDefinition": "คำว่า 'ลาก่อน' หรือ 'พบกันใหม่' แปลตรงตัวว่า 'พบอีกครั้ง' ใช้ได้ทั้งทางการและไม่ทางการ",
-          "whyItMatters": "สำคัญสำหรับตอนจบบทสนทนา",
           "dialogue": {
-            "user": "จะบอกลาเพื่อนจีนยังไง?",
+            "aiQuestion": "พูด '再见' (zài jiàn) แปลว่า 'พบกันใหม่' ลองออกเสียงดู",
             "aiThoughts": "ผู้ใช้ต้องการคำว่าลาก่อน",
-            "aiQuestion": "พูด '再见' (zài jiàn) แปลว่า 'พบกันใหม่' ลองออกเสียงดู"
-          }
+            "user": "จะบอกลาเพื่อนจีนยังไง?"
+          },
+          "id": "greeting-goodbye",
+          "pronunciation": "zài jiàn (จ้าย-เจียน)",
+          "shortDefinition": "ลาก่อน",
+          "whyItMatters": "สำคัญสำหรับตอนจบบทสนทนา",
+          "word": "再见"
         },
         {
-          "id": "thanks",
-          "word": "谢谢",
-          "pronunciation": "xiè xie (เซี่ย-เซี่ย)",
           "category": "greeting",
-          "shortDefinition": "ขอบคุณ",
           "detailedDefinition": "คำว่า 'ขอบคุณ' ภาษาจีน ใช้ได้ทั้งสถานการณ์ทางการและไม่ทางการ",
-          "whyItMatters": "มารยาทพื้นฐานที่ใช้ได้ทุกวัน",
           "dialogue": {
-            "user": "มีคนช่วยฉัน จะขอบคุณยังไง?",
+            "aiQuestion": "พูด '谢谢' (xiè xie) ลองออกเสียงให้ถูกต้อง — เสียงที่ 4 ทั้งสองคำ",
             "aiThoughts": "ผู้ใช้ต้องการคำว่าขอบคุณ",
-            "aiQuestion": "พูด '谢谢' (xiè xie) ลองออกเสียงให้ถูกต้อง — เสียงที่ 4 ทั้งสองคำ"
-          }
+            "user": "มีคนช่วยฉัน จะขอบคุณยังไง?"
+          },
+          "id": "thanks",
+          "pronunciation": "xiè xie (เซี่ย-เซี่ย)",
+          "shortDefinition": "ขอบคุณ",
+          "whyItMatters": "มารยาทพื้นฐานที่ใช้ได้ทุกวัน",
+          "word": "谢谢"
         },
         {
-          "id": "sorry",
-          "word": "对不起",
-          "pronunciation": "duì bu qǐ (ทไว-บู้-ฉี่)",
           "category": "greeting",
-          "shortDefinition": "ขอโทษ",
           "detailedDefinition": "คำว่า 'ขอโทษ' แปลตรงตัวว่า '对不起คุณ' ใช้เมื่อทำผิดหรือรบกวนใคร",
-          "whyItMatters": "สำคัญสำหรับมารยาทในการสื่อสาร",
           "dialogue": {
-            "user": "ฉันเดินชนคน จะขอโทษยังไง?",
+            "aiQuestion": "พูด '对不起' (duì bu qǐ) เร็วๆ ก่อนที่อีกฝ่ายจะหันมา",
             "aiThoughts": "ผู้ใช้ต้องการคำว่าขอโทษ",
-            "aiQuestion": "พูด '对不起' (duì bu qǐ) เร็วๆ ก่อนที่อีกฝ่ายจะหันมา"
-          }
+            "user": "ฉันเดินชนคน จะขอโทษยังไง?"
+          },
+          "id": "sorry",
+          "pronunciation": "duì bu qǐ (ทไว-บู้-ฉี่)",
+          "shortDefinition": "ขอโทษ",
+          "whyItMatters": "สำคัญสำหรับมารยาทในการสื่อสาร",
+          "word": "对不起"
         },
         {
-          "id": "number-1",
-          "word": "一",
-          "pronunciation": "yī (อี)",
           "category": "number",
-          "shortDefinition": "หนึ่ง (1)",
           "detailedDefinition": "ตัวเลข 1 เสียงที่ 1 ออกเสียงสั้นและสูง",
-          "whyItMatters": "พื้นฐานของการนับ",
           "dialogue": {
-            "user": "หนึ่งเป็นจีนยังไง?",
+            "aiQuestion": "'一' (yī) — พยายามออกเสียงสูงและยาวเหมือนร้องเพลง",
             "aiThoughts": "ผู้ใช้ต้องการคำศัพท์ตัวเลข",
-            "aiQuestion": "'一' (yī) — พยายามออกเสียงสูงและยาวเหมือนร้องเพลง"
-          }
+            "user": "หนึ่งเป็นจีนยังไง?"
+          },
+          "id": "number-1",
+          "pronunciation": "yī (อี)",
+          "shortDefinition": "หนึ่ง (1)",
+          "whyItMatters": "พื้นฐานของการนับ",
+          "word": "一"
         },
         {
-          "id": "number-2",
-          "word": "二",
-          "pronunciation": "èr (อื่อ-เออ)",
           "category": "number",
-          "shortDefinition": "สอง (2)",
           "detailedDefinition": "ตัวเลข 2 เสียงที่ 4 ออกเสียงตกต่ำ",
-          "whyItMatters": "พื้นฐานของการนับ",
           "dialogue": {
-            "user": "สองเป็นจีนยังไง?",
+            "aiQuestion": "'二' (èr) — ระวังออกเสียง 'เออ' ไม่ใช่ 'เออ'",
             "aiThoughts": "ผู้ใช้ต้องการคำศัพท์ตัวเลข",
-            "aiQuestion": "'二' (èr) — ระวังออกเสียง 'เออ' ไม่ใช่ 'เออ'"
-          }
+            "user": "สองเป็นจีนยังไง?"
+          },
+          "id": "number-2",
+          "pronunciation": "èr (อื่อ-เออ)",
+          "shortDefinition": "สอง (2)",
+          "whyItMatters": "พื้นฐานของการนับ",
+          "word": "二"
         },
         {
-          "id": "number-3",
-          "word": "三",
-          "pronunciation": "sān (ซาน)",
           "category": "number",
-          "shortDefinition": "สาม (3)",
           "detailedDefinition": "ตัวเลข 3 เสียงที่ 1 สูงและยาว",
-          "whyItMatters": "พื้นฐานของการนับ",
           "dialogue": {
-            "user": "สามเป็นจีนยังไง?",
+            "aiQuestion": "'三' (sān) — ออกเสียงสูง",
             "aiThoughts": "ผู้ใช้ต้องการคำศัพท์ตัวเลข",
-            "aiQuestion": "'三' (sān) — ออกเสียงสูง"
-          }
+            "user": "สามเป็นจีนยังไง?"
+          },
+          "id": "number-3",
+          "pronunciation": "sān (ซาน)",
+          "shortDefinition": "สาม (3)",
+          "whyItMatters": "พื้นฐานของการนับ",
+          "word": "三"
         },
         {
-          "id": "number-4",
-          "word": "四",
-          "pronunciation": "sì (ซื่อ)",
           "category": "number",
-          "shortDefinition": "สี่ (4)",
           "detailedDefinition": "ตัวเลข 4 เสียงที่ 4 ตกต่ำ",
-          "whyItMatters": "พื้นฐานของการนับ",
           "dialogue": {
-            "user": "สี่เป็นจีนยังไง?",
+            "aiQuestion": "'四' (sì) — ระวังเสียงตกต่ำตอนท้าย",
             "aiThoughts": "ผู้ใช้ต้องการคำศัพท์ตัวเลข",
-            "aiQuestion": "'四' (sì) — ระวังเสียงตกต่ำตอนท้าย"
-          }
+            "user": "สี่เป็นจีนยังไง?"
+          },
+          "id": "number-4",
+          "pronunciation": "sì (ซื่อ)",
+          "shortDefinition": "สี่ (4)",
+          "whyItMatters": "พื้นฐานของการนับ",
+          "word": "四"
         },
         {
-          "id": "number-5",
-          "word": "五",
-          "pronunciation": "wǔ (อู่)",
           "category": "number",
-          "shortDefinition": "ห้า (5)",
           "detailedDefinition": "ตัวเลข 5 เสียงที่ 3 ต่ำแล้วสูงขึ้น",
-          "whyItMatters": "พื้นฐานของการนับ",
           "dialogue": {
-            "user": "ห้าเป็นจีนยังไง?",
+            "aiQuestion": "'五' (wǔ) — ลองออกเสียงต่ำแล้วสูงขึ้น",
             "aiThoughts": "ผู้ใช้ต้องการคำศัพท์ตัวเลข",
-            "aiQuestion": "'五' (wǔ) — ลองออกเสียงต่ำแล้วสูงขึ้น"
-          }
+            "user": "ห้าเป็นจีนยังไง?"
+          },
+          "id": "number-5",
+          "pronunciation": "wǔ (อู่)",
+          "shortDefinition": "ห้า (5)",
+          "whyItMatters": "พื้นฐานของการนับ",
+          "word": "五"
         },
         {
-          "id": "number-6",
-          "word": "六",
-          "pronunciation": "liù (ลิ่ว)",
           "category": "number",
-          "shortDefinition": "หก (6)",
           "detailedDefinition": "ตัวเลข 6 เสียงที่ 4 ตกต่ำ",
-          "whyItMatters": "พื้นฐานของการนับ",
           "dialogue": {
-            "user": "หกเป็นจีนยังไง?",
+            "aiQuestion": "'六' (liù) — ระวังออกเสียง 'ลิ่ว' ไม่ใช่ 'ลิว'",
             "aiThoughts": "ผู้ใช้ต้องการคำศัพท์ตัวเลข",
-            "aiQuestion": "'六' (liù) — ระวังออกเสียง 'ลิ่ว' ไม่ใช่ 'ลิว'"
-          }
+            "user": "หกเป็นจีนยังไง?"
+          },
+          "id": "number-6",
+          "pronunciation": "liù (ลิ่ว)",
+          "shortDefinition": "หก (6)",
+          "whyItMatters": "พื้นฐานของการนับ",
+          "word": "六"
         },
         {
-          "id": "number-7",
-          "word": "七",
-          "pronunciation": "qī (ฉี)",
           "category": "number",
-          "shortDefinition": "เจ็ด (7)",
           "detailedDefinition": "ตัวเลข 7 เสียงที่ 1 สูงและยาว",
-          "whyItMatters": "พื้นฐานของการนับ",
           "dialogue": {
-            "user": "เจ็ดเป็นจีนยังไง?",
+            "aiQuestion": "'七' (qī) — เสียงสูงและยาว",
             "aiThoughts": "ผู้ใช้ต้องการคำศัพท์ตัวเลข",
-            "aiQuestion": "'七' (qī) — เสียงสูงและยาว"
-          }
+            "user": "เจ็ดเป็นจีนยังไง?"
+          },
+          "id": "number-7",
+          "pronunciation": "qī (ฉี)",
+          "shortDefinition": "เจ็ด (7)",
+          "whyItMatters": "พื้นฐานของการนับ",
+          "word": "七"
         },
         {
-          "id": "number-8",
-          "word": "八",
-          "pronunciation": "bā (ป้า)",
           "category": "number",
-          "shortDefinition": "แปด (8)",
           "detailedDefinition": "ตัวเลข 8 เสียงที่ 1 สูงและยาว ออกเสียง 'บ' เหมือน 'ป' ในบางบริบท",
+          "dialogue": {
+            "aiQuestion": "'八' (bā) — เลขมงคลของจีน",
+            "aiThoughts": "ผู้ใช้ต้องการคำศัพท์ตัวเลข",
+            "user": "แปดเป็นจีนยังไง?"
+          },
+          "id": "number-8",
+          "pronunciation": "bā (ป้า)",
+          "shortDefinition": "แปด (8)",
           "whyItMatters": "พื้นฐานของการนับ เลข 8 ถือเป็นเลขมงคลในวัฒนธรรมจีน",
-          "dialogue": {
-            "user": "แปดเป็นจีนยังไง?",
-            "aiThoughts": "ผู้ใช้ต้องการคำศัพท์ตัวเลข",
-            "aiQuestion": "'八' (bā) — เลขมงคลของจีน"
-          }
+          "word": "八"
         },
         {
-          "id": "number-9",
-          "word": "九",
-          "pronunciation": "jiǔ (จิ่ว)",
           "category": "number",
-          "shortDefinition": "เก้า (9)",
           "detailedDefinition": "ตัวเลข 9 เสียงที่ 3 ต่ำแล้วสูงขึ้น",
+          "dialogue": {
+            "aiQuestion": "'九' (jiǔ) — ลองออกเสียงต่ำแล้วสูงขึ้น",
+            "aiThoughts": "ผู้ใช้ต้องการคำศัพท์ตัวเลข",
+            "user": "เก้าเป็นจีนยังไง?"
+          },
+          "id": "number-9",
+          "pronunciation": "jiǔ (จิ่ว)",
+          "shortDefinition": "เก้า (9)",
           "whyItMatters": "พื้นฐานของการนับ",
-          "dialogue": {
-            "user": "เก้าเป็นจีนยังไง?",
-            "aiThoughts": "ผู้ใช้ต้องการคำศัพท์ตัวเลข",
-            "aiQuestion": "'九' (jiǔ) — ลองออกเสียงต่ำแล้วสูงขึ้น"
-          }
+          "word": "九"
         },
         {
-          "id": "number-10",
-          "word": "十",
-          "pronunciation": "shí (สือ-ชี)",
           "category": "number",
-          "shortDefinition": "สิบ (10)",
           "detailedDefinition": "ตัวเลข 10 เสียงที่ 2 ต่ำแล้วสูงขึ้น",
-          "whyItMatters": "พื้นฐานของการนับ ใช้เป็นฐานสำหรับเลขที่มากกว่า 10",
           "dialogue": {
-            "user": "สิบเป็นจีนยังไง?",
+            "aiQuestion": "'十' (shí) — ออกเสียง 'สือ' ไม่ใช่ 'สิ'",
             "aiThoughts": "ผู้ใช้ต้องการคำศัพท์ตัวเลข",
-            "aiQuestion": "'十' (shí) — ออกเสียง 'สือ' ไม่ใช่ 'สิ'"
-          }
+            "user": "สิบเป็นจีนยังไง?"
+          },
+          "id": "number-10",
+          "pronunciation": "shí (สือ-ชี)",
+          "shortDefinition": "สิบ (10)",
+          "whyItMatters": "พื้นฐานของการนับ ใช้เป็นฐานสำหรับเลขที่มากกว่า 10",
+          "word": "十"
         },
         {
-          "id": "phrase-name",
-          "word": "我叫…",
-          "pronunciation": "wǒ jiào… (อ่อ-เจี้ยว)",
           "category": "phrase",
-          "shortDefinition": "ฉันชื่อ…",
           "detailedDefinition": "ประโยคแนะนำตัวเอง '我叫' แปลว่า 'ฉันถูกเรียกว่า' ตามด้วยชื่อตัวเอง",
-          "whyItMatters": "ประโยคสำคัญที่สุดในการแนะนำตัวเอง",
           "dialogue": {
-            "user": "จะแนะนำตัวเองเป็นจีนยังไง?",
+            "aiQuestion": "พูด '我叫...' (wǒ jiào) แล้วตามด้วยชื่อ เช่น '我叫小明' (ฉันชื่อเสี่ยวหมิง)",
             "aiThoughts": "ผู้ใช้ต้องการประโยคแนะนำตัวเอง",
-            "aiQuestion": "พูด '我叫...' (wǒ jiào) แล้วตามด้วยชื่อ เช่น '我叫小明' (ฉันชื่อเสี่ยวหมิง)"
-          }
+            "user": "จะแนะนำตัวเองเป็นจีนยังไง?"
+          },
+          "id": "phrase-name",
+          "pronunciation": "wǒ jiào… (อ่อ-เจี้ยว)",
+          "shortDefinition": "ฉันชื่อ…",
+          "whyItMatters": "ประโยคสำคัญที่สุดในการแนะนำตัวเอง",
+          "word": "我叫…"
         },
         {
-          "id": "phrase-what-name",
-          "word": "你叫什么名字？",
-          "pronunciation": "nǐ jiào shénme míngzi? (นี-เจี้ยว-ชเน่อ-หมิงจื่อ)",
           "category": "phrase",
-          "shortDefinition": "คุณชื่ออะไร?",
           "detailedDefinition": "ประโยคถามชื่อ '什么' (shénme) = อะไร '名字' (míngzi) = ชื่อ",
-          "whyItMatters": "ใช้เริ่มบทสนทนาและทำความรู้จัก",
           "dialogue": {
-            "user": "จะถามชื่อคนอื่นเป็นจีนยังไง?",
+            "aiQuestion": "พูด '你叫什么名字？' (nǐ jiào shénme míngzi?) ลองออกเสียงดู",
             "aiThoughts": "ผู้ใช้ต้องการประโยคถามชื่อ",
-            "aiQuestion": "พูด '你叫什么名字？' (nǐ jiào shénme míngzi?) ลองออกเสียงดู"
-          }
+            "user": "จะถามชื่อคนอื่นเป็นจีนยังไง?"
+          },
+          "id": "phrase-what-name",
+          "pronunciation": "nǐ jiào shénme míngzi? (นี-เจี้ยว-ชเน่อ-หมิงจื่อ)",
+          "shortDefinition": "คุณชื่ออะไร?",
+          "whyItMatters": "ใช้เริ่มบทสนทนาและทำความรู้จัก",
+          "word": "你叫什么名字？"
         },
         {
-          "id": "phrase-how-are-you",
-          "word": "你好吗？",
-          "pronunciation": "nǐ hǎo ma? (นี-ฮ่าว-หมา?)",
           "category": "phrase",
-          "shortDefinition": "คุณสบายดีไหม?",
           "detailedDefinition": "ประโยคถามความเป็นอยู่ '吗' (ma) เป็นคำกริยาช่วยเปลี่ยนประโยคให้เป็นคำถาม",
-          "whyItMatters": "ใช้แสดงความสนใจในอีกฝ่าย",
           "dialogue": {
-            "user": "จะถามว่าเพื่อนสบายดีไหมเป็นจีน?",
+            "aiQuestion": "พูด '你好吗？' (nǐ hǎo ma?) — '吗' ทำให้ประโยคเป็นคำถาม",
             "aiThoughts": "ผู้ใช้ต้องการประโยคถามความเป็นอยู่",
-            "aiQuestion": "พูด '你好吗？' (nǐ hǎo ma?) — '吗' ทำให้ประโยคเป็นคำถาม"
-          }
+            "user": "จะถามว่าเพื่อนสบายดีไหมเป็นจีน?"
+          },
+          "id": "phrase-how-are-you",
+          "pronunciation": "nǐ hǎo ma? (นี-ฮ่าว-หมา?)",
+          "shortDefinition": "คุณสบายดีไหม?",
+          "whyItMatters": "ใช้แสดงความสนใจในอีกฝ่าย",
+          "word": "你好吗？"
         },
         {
-          "id": "phrase-very-good",
-          "word": "很好",
-          "pronunciation": "hěn hǎo (เหิน-ฮ่าว)",
           "category": "phrase",
-          "shortDefinition": "ดีมาก",
           "detailedDefinition": "คำตอบของ '你好吗？' '很' (hěn) = มาก '好' (hǎo) = ดี",
-          "whyItMatters": "คำตอบมาตรฐานเมื่อมีคนถามความเป็นอยู่",
           "dialogue": {
-            "user": "มีคนถามว่าสบายดีไหม จะตอบยังไง?",
+            "aiQuestion": "ตอบ '很好' (hěn hǎo) = ดีมาก",
             "aiThoughts": "ผู้ใช้ต้องการคำตอบ",
-            "aiQuestion": "ตอบ '很好' (hěn hǎo) = ดีมาก"
-          }
+            "user": "มีคนถามว่าสบายดีไหม จะตอบยังไง?"
+          },
+          "id": "phrase-very-good",
+          "pronunciation": "hěn hǎo (เหิน-ฮ่าว)",
+          "shortDefinition": "ดีมาก",
+          "whyItMatters": "คำตอบมาตรฐานเมื่อมีคนถามความเป็นอยู่",
+          "word": "很好"
         },
         {
-          "id": "word-i",
-          "word": "我",
-          "pronunciation": "wǒ (อ่อ)",
           "category": "word",
-          "shortDefinition": "ฉัน",
           "detailedDefinition": "สรรพนามบุรุษที่ 1 ภาษาจีนไม่มีรูปเพศ (เขา/เธอ) ใช้ '他/她/它' ออกเสียงเหมือนกันคือ tā",
-          "whyItMatters": "คำพื้นฐานที่ใช้ในประโยคส่วนใหญ่",
           "dialogue": {
-            "user": "ฉันเป็นจีนยังไง?",
+            "aiQuestion": "'我' (wǒ) — ลองออกเสียงดู",
             "aiThoughts": "ผู้ใช้ต้องการคำศัพท์พื้นฐาน",
-            "aiQuestion": "'我' (wǒ) — ลองออกเสียงดู"
-          }
+            "user": "ฉันเป็นจีนยังไง?"
+          },
+          "id": "word-i",
+          "pronunciation": "wǒ (อ่อ)",
+          "shortDefinition": "ฉัน",
+          "whyItMatters": "คำพื้นฐานที่ใช้ในประโยคส่วนใหญ่",
+          "word": "我"
         },
         {
-          "id": "word-you",
-          "word": "你",
-          "pronunciation": "nǐ (นี)",
           "category": "word",
-          "shortDefinition": "คุณ",
           "detailedDefinition": "สรรพนามบุรุษที่ 2 ใช้ได้ทั้งทางการและไม่ทางการ",
-          "whyItMatters": "คำพื้นฐานที่ใช้ในประโยคส่วนใหญ่",
           "dialogue": {
-            "user": "คุณเป็นจีนยังไง?",
+            "aiQuestion": "'你' (nǐ) — ออกเสียงสั้นๆ",
             "aiThoughts": "ผู้ใช้ต้องการคำศัพท์พื้นฐาน",
-            "aiQuestion": "'你' (nǐ) — ออกเสียงสั้นๆ"
-          }
+            "user": "คุณเป็นจีนยังไง?"
+          },
+          "id": "word-you",
+          "pronunciation": "nǐ (นี)",
+          "shortDefinition": "คุณ",
+          "whyItMatters": "คำพื้นฐานที่ใช้ในประโยคส่วนใหญ่",
+          "word": "你"
         },
         {
-          "id": "word-china",
-          "word": "中国",
-          "pronunciation": "zhōng guó (จง-กว๋อ)",
           "category": "word",
-          "shortDefinition": "ประเทศจีน",
           "detailedDefinition": "'中' (zhōng) = กลาง '国' (guó) = ประเทศ แปลว่า 'ประเทศแห่งกลางโลก'",
-          "whyItMatters": "คำสำคัญทางวัฒนธรรม",
           "dialogue": {
-            "user": "ประเทศจีนเป็นจีนยังไง?",
+            "aiQuestion": "'中国' (zhōng guó) — ลองออกเสียง 'จง-กว๋อ'",
             "aiThoughts": "ผู้ใช้ต้องการคำศัพท์",
-            "aiQuestion": "'中国' (zhōng guó) — ลองออกเสียง 'จง-กว๋อ'"
-          }
+            "user": "ประเทศจีนเป็นจีนยังไง?"
+          },
+          "id": "word-china",
+          "pronunciation": "zhōng guó (จง-กว๋อ)",
+          "shortDefinition": "ประเทศจีน",
+          "whyItMatters": "คำสำคัญทางวัฒนธรรม",
+          "word": "中国"
         }
-      ]
-    }
+      ],
+      "title": "คำศัพท์พื้นฐาน"
+    },
+    "type": "flashcards"
   },
   {
     "folder": "concept-map",
-    "type": "concept-map",
     "props": {
-      "title": "ภาพรวมภาษาจีน",
-      "heading": "แนวคิดพื้นฐานของภาษาจีนกลาง",
-      "nodes": {
-        "pinyin": {
-          "id": "pinyin",
-          "title": "พินอิน (拼音)",
-          "category": "concept"
-        },
-        "tones": {
-          "id": "tones",
-          "title": "4 เสียง (声调)",
-          "category": "concept"
-        },
-        "characters": {
-          "id": "characters",
-          "title": "อักษรจีน (汉字)",
-          "category": "concept"
-        },
-        "greeting": {
-          "id": "greeting",
-          "title": "คำทักทาย",
-          "category": "phrase"
-        },
-        "numbers": {
-          "id": "numbers",
-          "title": "ตัวเลข 1-10",
-          "category": "phrase"
-        },
-        "self-intro": {
-          "id": "self-intro",
-          "title": "แนะนำตัวเอง",
-          "category": "phrase"
-        },
-        "topic": {
-          "id": "topic",
-          "title": "ประธาน",
-          "category": "grammar"
-        },
-        "comment": {
-          "id": "comment",
-          "title": "ขยายความ",
-          "category": "grammar"
-        },
-        "sentence": {
-          "id": "sentence",
-          "title": "ประโยคพื้นฐาน",
-          "category": "grammar"
-        }
-      },
       "edges": [
         {
           "from": "pinyin",
-          "to": "tones",
-          "label": "ใช้ระบุ"
+          "label": "ใช้ระบุ",
+          "to": "tones"
         },
         {
           "from": "pinyin",
-          "to": "characters",
-          "label": "อ่าน"
+          "label": "อ่าน",
+          "to": "characters"
         },
         {
           "from": "characters",
-          "to": "tones",
-          "label": "มี"
+          "label": "มี",
+          "to": "tones"
         },
         {
           "from": "greeting",
-          "to": "characters",
-          "label": "ประกอบด้วย"
+          "label": "ประกอบด้วย",
+          "to": "characters"
         },
         {
           "from": "numbers",
-          "to": "characters",
-          "label": "ประกอบด้วย"
+          "label": "ประกอบด้วย",
+          "to": "characters"
         },
         {
           "from": "self-intro",
-          "to": "characters",
-          "label": "ประกอบด้วย"
+          "label": "ประกอบด้วย",
+          "to": "characters"
         },
         {
           "from": "topic",
-          "to": "sentence",
-          "label": "สร้าง"
+          "label": "สร้าง",
+          "to": "sentence"
         },
         {
           "from": "comment",
-          "to": "sentence",
-          "label": "สร้าง"
+          "label": "สร้าง",
+          "to": "sentence"
         },
         {
           "from": "sentence",
-          "to": "greeting",
-          "label": "ใช้"
+          "label": "ใช้",
+          "to": "greeting"
         },
         {
           "from": "sentence",
-          "to": "self-intro",
-          "label": "ใช้"
+          "label": "ใช้",
+          "to": "self-intro"
         }
-      ]
-    }
+      ],
+      "heading": "แนวคิดพื้นฐานของภาษาจีนกลาง",
+      "nodes": {
+        "characters": {
+          "category": "concept",
+          "id": "characters",
+          "title": "อักษรจีน (汉字)"
+        },
+        "comment": {
+          "category": "grammar",
+          "id": "comment",
+          "title": "ขยายความ"
+        },
+        "greeting": {
+          "category": "phrase",
+          "id": "greeting",
+          "title": "คำทักทาย"
+        },
+        "numbers": {
+          "category": "phrase",
+          "id": "numbers",
+          "title": "ตัวเลข 1-10"
+        },
+        "pinyin": {
+          "category": "concept",
+          "id": "pinyin",
+          "title": "พินอิน (拼音)"
+        },
+        "self-intro": {
+          "category": "phrase",
+          "id": "self-intro",
+          "title": "แนะนำตัวเอง"
+        },
+        "sentence": {
+          "category": "grammar",
+          "id": "sentence",
+          "title": "ประโยคพื้นฐาน"
+        },
+        "tones": {
+          "category": "concept",
+          "id": "tones",
+          "title": "4 เสียง (声调)"
+        },
+        "topic": {
+          "category": "grammar",
+          "id": "topic",
+          "title": "ประธาน"
+        }
+      },
+      "title": "ภาพรวมภาษาจีน"
+    },
+    "type": "concept-map"
   },
   {
     "folder": "quiz",
-    "type": "quiz",
     "props": {
-      "title": "ทดสอบความรู้",
       "heading": "ตอบคำถามเพื่อตรวจสอบความเข้าใจ",
       "questions": [
         {
+          "choices": [
+            {
+              "correct": false,
+              "explanation": "ไม่ถูก '谢谢' (xiè xie) คือขอบคุณ",
+              "id": "a",
+              "text": "ขอบคุณ"
+            },
+            {
+              "correct": true,
+              "explanation": "ถูกต้อง! '你好' (nǐ hǎo) แปลว่า สวัสดี",
+              "id": "b",
+              "text": "สวัสดี"
+            },
+            {
+              "correct": false,
+              "explanation": "ไม่ถูก '再见' (zài jiàn) คือนั่น",
+              "id": "c",
+              "text": "ลาก่อน"
+            }
+          ],
+          "hint": "เป็นคำทักทายพื้นฐานที่สุด",
           "id": "q1",
-          "question": "'你好' (nǐ hǎo) แปลว่าอะไร?",
-          "choices": [
-            {
-              "id": "a",
-              "text": "ขอบคุณ",
-              "correct": false,
-              "explanation": "ไม่ถูก '谢谢' (xiè xie) คือขอบคุณ"
-            },
-            {
-              "id": "b",
-              "text": "สวัสดี",
-              "correct": true,
-              "explanation": "ถูกต้อง! '你好' (nǐ hǎo) แปลว่า สวัสดี"
-            },
-            {
-              "id": "c",
-              "text": "ลาก่อน",
-              "correct": false,
-              "explanation": "ไม่ถูก '再见' (zài jiàn) คือนั่น"
-            }
-          ],
-          "hint": "เป็นคำทักทายพื้นฐานที่สุด"
+          "question": "'你好' (nǐ hǎo) แปลว่าอะไร?"
         },
         {
+          "choices": [
+            {
+              "correct": true,
+              "explanation": "ถูกต้อง! '五' (wǔ) = ห้า",
+              "id": "a",
+              "text": "wǔ (อู่)"
+            },
+            {
+              "correct": false,
+              "explanation": "ไม่ถูก '四' (sì) = สี่",
+              "id": "b",
+              "text": "sì (ซื่อ)"
+            },
+            {
+              "correct": false,
+              "explanation": "ไม่ถูก '十' (shí) = สิบ",
+              "id": "c",
+              "text": "shí (สือ)"
+            }
+          ],
+          "hint": "ออกเสียงคล้าย 'อู่'",
           "id": "q2",
-          "question": "ตัวเลข '五' อ่านว่าอะไร?",
-          "choices": [
-            {
-              "id": "a",
-              "text": "wǔ (อู่)",
-              "correct": true,
-              "explanation": "ถูกต้อง! '五' (wǔ) = ห้า"
-            },
-            {
-              "id": "b",
-              "text": "sì (ซื่อ)",
-              "correct": false,
-              "explanation": "ไม่ถูก '四' (sì) = สี่"
-            },
-            {
-              "id": "c",
-              "text": "shí (สือ)",
-              "correct": false,
-              "explanation": "ไม่ถูก '十' (shí) = สิบ"
-            }
-          ],
-          "hint": "ออกเสียงคล้าย 'อู่'"
+          "question": "ตัวเลข '五' อ่านว่าอะไร?"
         },
         {
+          "choices": [
+            {
+              "correct": false,
+              "explanation": "ไม่ถูก ภาษาจีนมีมากกว่า 2 เสียง",
+              "id": "a",
+              "text": "2 เสียง"
+            },
+            {
+              "correct": true,
+              "explanation": "ถูกต้อง! ภาษาจีนกลางมี 4 เสียง (ไม่รวมเสียงเบา)",
+              "id": "b",
+              "text": "4 เสียง"
+            },
+            {
+              "correct": false,
+              "explanation": "ไม่ถูก ภาษาจีนกลางมี 4 เสียงหลัก (ภาษาจีนท้องถิ่นอื่นๆ อาจมีมากกว่า)",
+              "id": "c",
+              "text": "6 เสียง"
+            }
+          ],
+          "hint": "เสียงคือระดับเสียงที่ใช้แยกความหมาย",
           "id": "q3",
-          "question": "ภาษาจีนกลางมีกี่เสียง?",
-          "choices": [
-            {
-              "id": "a",
-              "text": "2 เสียง",
-              "correct": false,
-              "explanation": "ไม่ถูก ภาษาจีนมีมากกว่า 2 เสียง"
-            },
-            {
-              "id": "b",
-              "text": "4 เสียง",
-              "correct": true,
-              "explanation": "ถูกต้อง! ภาษาจีนกลางมี 4 เสียง (ไม่รวมเสียงเบา)"
-            },
-            {
-              "id": "c",
-              "text": "6 เสียง",
-              "correct": false,
-              "explanation": "ไม่ถูก ภาษาจีนกลางมี 4 เสียงหลัก (ภาษาจีนท้องถิ่นอื่นๆ อาจมีมากกว่า)"
-            }
-          ],
-          "hint": "เสียงคือระดับเสียงที่ใช้แยกความหมาย"
+          "question": "ภาษาจีนกลางมีกี่เสียง?"
         },
         {
+          "choices": [
+            {
+              "correct": false,
+              "explanation": "ไม่ถูก '你好' (nǐ hǎo) คือนั่น",
+              "id": "a",
+              "text": "สวัสดี"
+            },
+            {
+              "correct": true,
+              "explanation": "ถูกต้อง! '再见' (zài jiàn) = ลาก่อน/พบกันใหม่",
+              "id": "b",
+              "text": "ลาก่อน"
+            },
+            {
+              "correct": false,
+              "explanation": "ไม่ถูก '谢谢' (xiè xie) คือนั่น",
+              "id": "c",
+              "text": "ขอบคุณ"
+            }
+          ],
+          "hint": "ใช้ตอนจบการสนทนา",
           "id": "q4",
-          "question": "'再见' (zài jiàn) แปลว่าอะไร?",
-          "choices": [
-            {
-              "id": "a",
-              "text": "สวัสดี",
-              "correct": false,
-              "explanation": "ไม่ถูก '你好' (nǐ hǎo) คือนั่น"
-            },
-            {
-              "id": "b",
-              "text": "ลาก่อน",
-              "correct": true,
-              "explanation": "ถูกต้อง! '再见' (zài jiàn) = ลาก่อน/พบกันใหม่"
-            },
-            {
-              "id": "c",
-              "text": "ขอบคุณ",
-              "correct": false,
-              "explanation": "ไม่ถูก '谢谢' (xiè xie) คือนั่น"
-            }
-          ],
-          "hint": "ใช้ตอนจบการสนทนา"
+          "question": "'再见' (zài jiàn) แปลว่าอะไร?"
         },
         {
+          "choices": [
+            {
+              "correct": true,
+              "explanation": "ถูกต้อง! '我叫' + ชื่อ = ฉันชื่อ...",
+              "id": "a",
+              "text": "我叫สมชาย"
+            },
+            {
+              "correct": false,
+              "explanation": "ไม่ถูก '你叫' = คุณชื่อ",
+              "id": "b",
+              "text": "你叫สมชาย"
+            },
+            {
+              "correct": false,
+              "explanation": "ไม่ถูก '你好' = สวัสดี",
+              "id": "c",
+              "text": "你好สมชาย"
+            }
+          ],
+          "hint": "ใช้ '我叫' (wǒ jiào) = ฉันชื่อ",
           "id": "q5",
-          "question": "จะแนะนำตัวเองว่า 'ฉันชื่อสมชาย' เป็นจีนยังไง?",
-          "choices": [
-            {
-              "id": "a",
-              "text": "我叫สมชาย",
-              "correct": true,
-              "explanation": "ถูกต้อง! '我叫' + ชื่อ = ฉันชื่อ..."
-            },
-            {
-              "id": "b",
-              "text": "你叫สมชาย",
-              "correct": false,
-              "explanation": "ไม่ถูก '你叫' = คุณชื่อ"
-            },
-            {
-              "id": "c",
-              "text": "你好สมชาย",
-              "correct": false,
-              "explanation": "ไม่ถูก '你好' = สวัสดี"
-            }
-          ],
-          "hint": "ใช้ '我叫' (wǒ jiào) = ฉันชื่อ"
+          "question": "จะแนะนำตัวเองว่า 'ฉันชื่อสมชาย' เป็นจีนยังไง?"
         },
         {
+          "choices": [
+            {
+              "correct": false,
+              "explanation": "ไม่ถูก '九' (jiǔ) = เก้า",
+              "id": "a",
+              "text": "เก้า"
+            },
+            {
+              "correct": false,
+              "explanation": "ไม่ถูก '八' (bā) = แปด",
+              "id": "b",
+              "text": "แปด"
+            },
+            {
+              "correct": true,
+              "explanation": "ถูกต้อง! '十' (shí) = สิบ",
+              "id": "c",
+              "text": "สิบ"
+            }
+          ],
+          "hint": "เป็นเลขสุดท้ายของบทนี้",
           "id": "q6",
-          "question": "'十' (shí) คือเลขอะไร?",
-          "choices": [
-            {
-              "id": "a",
-              "text": "เก้า",
-              "correct": false,
-              "explanation": "ไม่ถูก '九' (jiǔ) = เก้า"
-            },
-            {
-              "id": "b",
-              "text": "แปด",
-              "correct": false,
-              "explanation": "ไม่ถูก '八' (bā) = แปด"
-            },
-            {
-              "id": "c",
-              "text": "สิบ",
-              "correct": true,
-              "explanation": "ถูกต้อง! '十' (shí) = สิบ"
-            }
-          ],
-          "hint": "เป็นเลขสุดท้ายของบทนี้"
+          "question": "'十' (shí) คือเลขอะไร?"
         },
         {
+          "choices": [
+            {
+              "correct": true,
+              "explanation": "ถูกต้อง! '吗' (ma) เป็นคำช่วยเปลี่ยนประโยคเป็นคำถาม",
+              "id": "a",
+              "text": "ทำให้ประโยคเป็นคำถาม"
+            },
+            {
+              "correct": false,
+              "explanation": "ไม่ถูก '不' (bù) คือนั่น",
+              "id": "b",
+              "text": "ทำให้ประโยคเป็นประโยคปฏิเสธ"
+            },
+            {
+              "correct": false,
+              "explanation": "ไม่ถูก '谢谢' (xiè xie) คือนั่น",
+              "id": "c",
+              "text": "ทำให้ประโยคเป็นคำขอบคุณ"
+            }
+          ],
+          "hint": "เปลี่ยนประโยคบอกเล่าเป็นคำถาม",
           "id": "q7",
-          "question": "คำว่า '吗' (ma) ในประโยค '你好吗？' ทำหน้าที่อะไร?",
-          "choices": [
-            {
-              "id": "a",
-              "text": "ทำให้ประโยคเป็นคำถาม",
-              "correct": true,
-              "explanation": "ถูกต้อง! '吗' (ma) เป็นคำช่วยเปลี่ยนประโยคเป็นคำถาม"
-            },
-            {
-              "id": "b",
-              "text": "ทำให้ประโยคเป็นประโยคปฏิเสธ",
-              "correct": false,
-              "explanation": "ไม่ถูก '不' (bù) คือนั่น"
-            },
-            {
-              "id": "c",
-              "text": "ทำให้ประโยคเป็นคำขอบคุณ",
-              "correct": false,
-              "explanation": "ไม่ถูก '谢谢' (xiè xie) คือนั่น"
-            }
-          ],
-          "hint": "เปลี่ยนประโยคบอกเล่าเป็นคำถาม"
+          "question": "คำว่า '吗' (ma) ในประโยค '你好吗？' ทำหน้าที่อะไร?"
         },
         {
-          "id": "q8",
-          "question": "'谢谢' (xiè xie) แปลว่าอะไร?",
           "choices": [
             {
+              "correct": false,
+              "explanation": "ไม่ถูก '对不起' (duì bu qǐ) คือนั่น",
               "id": "a",
-              "text": "ขอโทษ",
-              "correct": false,
-              "explanation": "ไม่ถูก '对不起' (duì bu qǐ) คือนั่น"
+              "text": "ขอโทษ"
             },
             {
+              "correct": false,
+              "explanation": "ไม่ถูก '你好' (nǐ hǎo) คือนั่น",
               "id": "b",
-              "text": "สวัสดี",
-              "correct": false,
-              "explanation": "ไม่ถูก '你好' (nǐ hǎo) คือนั่น"
+              "text": "สวัสดี"
             },
             {
-              "id": "c",
-              "text": "ขอบคุณ",
               "correct": true,
-              "explanation": "ถูกต้อง! '谢谢' (xiè xie) = ขอบคุณ"
+              "explanation": "ถูกต้อง! '谢谢' (xiè xie) = ขอบคุณ",
+              "id": "c",
+              "text": "ขอบคุณ"
             }
           ],
-          "hint": "พูดเมื่อมีคนช่วยเหลือ"
+          "hint": "พูดเมื่อมีคนช่วยเหลือ",
+          "id": "q8",
+          "question": "'谢谢' (xiè xie) แปลว่าอะไร?"
         }
-      ]
-    }
+      ],
+      "title": "ทดสอบความรู้"
+    },
+    "type": "quiz"
   },
   {
     "folder": "scenario",
-    "type": "scenario",
     "props": {
-      "title": "การพบปะที่สนามบิน",
       "heading": "ลองใช้ภาษาจีนในชีวิตจริง",
       "id": "airport-meeting",
       "intro": "คุณเดินทางมาที่สนามบินปักกิ่งเป็นครั้งแรก เพื่อนจีนชื่อ '李明' (Lǐ Míng) กำลังรอคุณอยู่ คุณจะเริ่มบทสนทนาอย่างไร?",
       "nodes": {
-        "start": {
-          "id": "start",
-          "prompt": "คุณเห็น李明 ยืนถือป้ายชื่อของคุณ จะทักทายอย่างไร?",
-          "choices": [
-            {
-              "id": "say-hello",
-              "text": "你好！我是朋友。(Nǐ hǎo! Wǒ shì péngyou.) — สวัสดี! ฉันเป็นเพื่อน",
-              "next": "hello-result"
-            },
-            {
-              "id": "say-name",
-              "text": "我叫… (Wǒ jiào…) — ฉันชื่อ…",
-              "next": "name-result"
-            },
-            {
-              "id": "wave",
-              "text": "แค่ยิ้มและโบกมือ",
-              "next": "wave-result"
-            }
-          ]
-        },
         "hello-result": {
           "id": "hello-result",
           "outcome": {
-            "verdict": "李明 ยิ้มและตอบ '你好！很高兴认识你！' (สวัสดี! ยินดีที่ได้รู้จัก!)",
             "lesson": "การทักทายด้วย '你好' เป็นวิธีที่ดีที่สุดในการเริ่มต้นบทสนทนา กับคนจีน การทักทายแบบสุภาพจะสร้างความประทับใจแรกที่ดี",
-            "rating": "a"
+            "rating": "a",
+            "verdict": "李明 ยิ้มและตอบ '你好！很高兴认识你！' (สวัสดี! ยินดีที่ได้รู้จัก!)"
           }
         },
         "name-result": {
           "id": "name-result",
           "outcome": {
-            "verdict": "李明 ตอบ '你好！我叫李明！' (สวัสดี! ฉันชื่อ李明)",
             "lesson": "การแนะนำตัวเองด้วยชื่อเป็นวิธีที่ดีมาก คนจีนชอบเมื่อชาวต่างชาติพยายามพูดภาษาจีน แม้จะแค่ประโยคเดียว",
-            "rating": "a"
+            "rating": "a",
+            "verdict": "李明 ตอบ '你好！我叫李明！' (สวัสดี! ฉันชื่อ李明)"
           }
+        },
+        "start": {
+          "choices": [
+            {
+              "id": "say-hello",
+              "next": "hello-result",
+              "text": "你好！我是朋友。(Nǐ hǎo! Wǒ shì péngyou.) — สวัสดี! ฉันเป็นเพื่อน"
+            },
+            {
+              "id": "say-name",
+              "next": "name-result",
+              "text": "我叫… (Wǒ jiào…) — ฉันชื่อ…"
+            },
+            {
+              "id": "wave",
+              "next": "wave-result",
+              "text": "แค่ยิ้มและโบกมือ"
+            }
+          ],
+          "id": "start",
+          "prompt": "คุณเห็น李明 ยืนถือป้ายชื่อของคุณ จะทักทายอย่างไร?"
         },
         "wave-result": {
           "id": "wave-result",
           "outcome": {
-            "verdict": "李明 ยิ้มและทักทายก่อน '你好！欢迎来到中国！' (สวัสดี! ยินดีต้อนรับสู่ประเทศจีน!)",
             "lesson": "การยิ้มเป็นสากล แต่ลองพยายามพูด '你好' ดู下次 (ครั้งหน้า) เพื่อสร้างความประทับใจมากขึ้น",
-            "rating": "b-plus"
+            "rating": "b-plus",
+            "verdict": "李明 ยิ้มและทักทายก่อน '你好！欢迎来到中国！' (สวัสดี! ยินดีต้อนรับสู่ประเทศจีน!)"
           }
         }
       },
-      "startNode": "start"
-    }
+      "startNode": "start",
+      "title": "การพบปะที่สนามบิน"
+    },
+    "type": "scenario"
   },
   {
     "folder": "reflection-sequence",
-    "type": "reflection-sequence",
     "props": {
-      "title": "Chinese Grammar Sequence Challenge",
       "challenges": [
         {
-          "prompt": "Arrange the words in the correct Chinese grammatical sequence to say: 'Are you busy today?' (Part 1):",
           "items": [
             {
               "id": "subject",
@@ -778,6 +774,7 @@
               "text": "嗎 (Question particle ?)"
             }
           ],
+          "prompt": "Arrange the words in the correct Chinese grammatical sequence to say: 'Are you busy today?' (Part 1):",
           "solution": [
             "subject",
             "time",
@@ -786,7 +783,6 @@
           ]
         },
         {
-          "prompt": "Arrange the words in the correct Chinese grammatical sequence to say: 'What is your name?' (Part 2):",
           "items": [
             {
               "id": "name_subject",
@@ -805,6 +801,7 @@
               "text": "名字 (Name)"
             }
           ],
+          "prompt": "Arrange the words in the correct Chinese grammatical sequence to say: 'What is your name?' (Part 2):",
           "solution": [
             "name_subject",
             "name_verb",
@@ -812,7 +809,9 @@
             "name_noun"
           ]
         }
-      ]
-    }
+      ],
+      "title": "Chinese Grammar Sequence Challenge"
+    },
+    "type": "reflection-sequence"
   }
 ]

@@ -1,8 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import type { AbstractFlow, LinearStep, BranchStep, BranchOption, FlowStep } from './types';
 import { isLinearStep, isBranchStep } from './types';
-import { TYPES } from '../types';
-import type { UnifiedFlowchartSchema, FlowchartEntity, FlowchartRelation } from '../types';
+import { TYPES } from '../components/flowchart/types';
+import type { UnifiedFlowchartSchema, FlowchartEntity, FlowchartRelation, ProcessGroup } from '../components/flowchart/types';
 
 /**
  * Maps entity IDs to their canonical representative based on (title, type) grouping.
@@ -129,7 +129,8 @@ export function deriveSchema(flow: AbstractFlow): UnifiedFlowchartSchema {
         nodeIds,
         title: s.name,
         reason: s.description,
-        processGroup: s.processGroup,
+        // Topic-specific phase labels have no state mapping; PROCESS_GROUP_STATE_MAP lookups fall back to null.
+        processGroup: s.processGroup as ProcessGroup | undefined,
       };
     }),
   }));

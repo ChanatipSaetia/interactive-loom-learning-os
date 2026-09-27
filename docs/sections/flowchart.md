@@ -336,7 +336,7 @@ Each flowchart section's `journeys.yaml` can define **multiple journeys** target
 When flowchart sections represent connected stages of an end-to-end system:
 - **Conceptual Handoffs**: The final result events or continuation steps of section $A$ connect to the initiating actor commands of section $B$.
 - **Canonical System Collapsing (`collapsedTo`)**: Systems shared across multiple flowchart sections (e.g., `Engine Control Unit`, `Event Bus`, or `Database`) map back to canonical node IDs using `collapsedTo` so handledBy chains remain consistent across sections.
-- **Index Registration**: Register each flowchart section manifest (`sections/flowchart-*/section.md`) in `index.md` and add all its YAML data files to `index.yaml` under `related`.
+- **Index Registration**: Register each flowchart section manifest (`sections/flowchart-*/section.md`) in `index.md`. Its four YAML files (`actors.yaml`, `systems.yaml`, `steps.yaml`, `journeys.yaml`) are discovered from the folder.
 
 ---
 

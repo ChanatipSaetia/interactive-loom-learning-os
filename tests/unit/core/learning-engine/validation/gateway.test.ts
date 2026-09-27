@@ -476,7 +476,7 @@ views: {}
     expect(brokenRef!.message).toContain('entityB')
   })
 
-  it('detects unconnected actor and system nodes in flowchart', () => {
+  it('rejects the removed pre-derived entities/relations flowchart format', () => {
     const result = validateOKFSection(`
 type: flowchart
 entities:
@@ -484,62 +484,47 @@ entities:
     title: "User"
     desc: "Human actor"
     type: "Actor"
-  sys1:
-    title: "Payment Gateway"
-    desc: "External payment system"
-    type: "Aggregate"
-  evt1:
-    title: "Order Placed"
-    desc: "Order event"
-    type: "Event"
 relations:
   - id: r1
     from: user1
     to: evt1
 views: {}
-journeys: []
 `.trim())
-    expect(result.status).toBe('warning')
-    const sysError = result.diagnostics.find(
-      (d) => d.tier === 3 && d.field === 'entities.sys1'
-    )
-    expect(sysError).toBeDefined()
-    expect(sysError!.message).toContain('System node "sys1"')
-    expect(sysError!.message).toContain('is not connected to any Event node')
-    expect(sysError!.fixHint).toContain('Connect system node "sys1"')
-
-    // user1 is connected to evt1, so no diagnostic for user1
-    const userError = result.diagnostics.find(
-      (d) => d.tier === 3 && d.field === 'entities.user1'
-    )
-    expect(userError).toBeUndefined()
+    expect(result.status).toBe('error')
+    expect(result.diagnostics.some((d) => d.tier === 2 && d.field === 'flow')).toBe(true)
   })
 
   it('passes flowchart when all actor and system nodes connect to an event', () => {
     const result = validateOKFSection(`
 type: flowchart
-entities:
-  user1:
-    title: "User"
-    desc: "Human actor"
-    type: "Actor"
-  sys1:
-    title: "Payment System"
-    desc: "Payment"
-    type: "Aggregate"
-  evt1:
-    title: "Payment Completed"
-    desc: "Event"
-    type: "Event"
-relations:
-  - id: r1
-    from: user1
-    to: sys1
-  - id: r2
-    from: sys1
-    to: evt1
-views: {}
-journeys: []
+flow:
+  actors:
+    user:
+      title: "User"
+      desc: "User actor"
+  systems:
+    payment:
+      title: "Payment Engine"
+      desc: "Handles payments"
+      type: "aggregate"
+  steps:
+    - id: step1
+      type: linear
+      initiatedBy: user
+      policy: "Process Payment"
+      command: "Pay"
+      handledBy: payment
+      resultEvents:
+        - id: paid
+          title: "Payment Received"
+  journeys:
+    - id: main
+      label: "Main"
+      description: "Main path"
+      steps:
+        - stepId: step1
+          name: "Pay"
+          description: "User pays"
 `.trim())
     expect(result.status).toBe('valid')
     const connErrors = result.diagnostics.filter(
@@ -575,6 +560,14 @@ flow:
       resultEvents:
         - id: paid
           title: "Payment Received"
+  journeys:
+    - id: main
+      label: "Main"
+      description: "Main path"
+      steps:
+        - stepId: step1
+          name: "Pay"
+          description: "User pays"
 `.trim())
     expect(result.status).toBe('warning')
     const isoError = result.diagnostics.find(
@@ -583,6 +576,7 @@ flow:
     expect(isoError).toBeDefined()
     expect(isoError!.message).toContain('Isolated System')
     expect(isoError!.message).toContain('not connected to any Event node')
+    expect(result.diagnostics.some((d) => d.tier === 3 && d.field === 'systems.isolated_sys')).toBe(true)
   })
 
   it('detects broken edge references in concept-map', () => {

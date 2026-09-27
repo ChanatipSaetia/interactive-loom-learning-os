@@ -8,7 +8,7 @@ import { deriveSequence } from './sequence';
 import { deriveDataFlow } from './data-flow';
 import { deriveStateMachine } from './state-machine';
 
-import { buildCanonicalIdMapper } from '../abstract-flow/derive';
+import { buildCanonicalIdMapper } from '../../../model/derive';
 
 export function autoDeriveViews(schema: UnifiedFlowchartSchema): UnifiedFlowchartSchema {
   const mutableEntities = { ...schema.entities };

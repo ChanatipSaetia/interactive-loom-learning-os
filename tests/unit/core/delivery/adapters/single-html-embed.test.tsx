@@ -6,28 +6,24 @@ import {
   clearEmbedRegistry,
 } from '../../../../../src/core/delivery/adapters/single-html-embed'
 
-vi.mock('../../../../../src/core/learning-engine/composition/okf/reader', () => ({
+vi.mock('../../../../../src/core/learning-engine/composition/okf/loader', () => ({
   loadOKFBundle: vi.fn(),
 }))
 
-vi.mock('../../../../../src/core/learning-engine/composition/okf/sections', () => ({
-  bundleToSections: vi.fn(),
+vi.mock('../../../../../src/core/learning-engine/composition/okf/section-config', () => ({
+  toSectionConfigs: vi.fn(),
 }))
 
 vi.mock('../../../../../src/core/learning-engine/validation/gateway', () => ({
   validateOKFSection: vi.fn(),
 }))
 
-vi.mock('../../../../../src/core/learning-engine/sub-contexts/process-simulation/components/flowchart/abstract-flow/derive', () => ({
-  deriveSchema: vi.fn((input) => ({ ...input, entities: {}, relations: [] })),
-}))
-
 vi.mock('../../../../../src/core/ui-system/primitives/SectionErrorBoundary', () => ({
   SectionErrorBoundary: ({ children }: { children: React.ReactNode }) => children,
 }))
 
-import { loadOKFBundle } from '../../../../../src/core/learning-engine/composition/okf/reader'
-import { bundleToSections } from '../../../../../src/core/learning-engine/composition/okf/sections'
+import { loadOKFBundle } from '../../../../../src/core/learning-engine/composition/okf/loader'
+import { toSectionConfigs } from '../../../../../src/core/learning-engine/composition/okf/section-config'
 import { validateOKFSection } from '../../../../../src/core/learning-engine/validation/gateway'
 
 describe('SingleHTMLEmbedAdapter', () => {
@@ -54,79 +50,38 @@ describe('SingleHTMLEmbedAdapter', () => {
     })
   })
 
-  describe('storage (EmbedInMemoryStorage)', () => {
+  describe('storage (read-only HTTP)', () => {
     it('throws saveSection error for standalone embed', async () => {
       await expect(
-        adapter.storage.saveSection('demo', 'intro', {} as any, '---\ntype: intro\n---'),
+        adapter.storage.saveSection!('demo', 'intro', {} as any, '---\ntype: intro\n---'),
       ).rejects.toThrow('saveSection is not available in standalone embed mode')
     })
 
-    it('returns loaded topics from listTopics', async () => {
-      const mockBundle = [
-        {
-          meta: { type: 'intro', title: 'Test', resource: '.' },
-          data: { type: 'intro', what: { summary: 'test' }, why: { summary: 'test' }, roadmap: [] },
-          sectionFolder: 'intro',
-        },
-      ]
-      vi.mocked(loadOKFBundle).mockResolvedValue(mockBundle as any)
-
-      await adapter.runtime.loadTopicBundle('demo')
-      const topics = await adapter.storage.listTopics()
-
-      expect(topics).toContain('demo')
+    it('throws for hex maps, which the embed does not serve', async () => {
+      await expect(adapter.storage.readHexMap('demo')).rejects.toThrow('not available in standalone embed mode')
     })
 
-    it('returns empty topics when no bundles loaded', async () => {
-      const topics = await adapter.storage.listTopics()
-      expect(topics).toEqual([])
-    })
+    it('reads raw section files over HTTP through the generated manifest', async () => {
+      ;(globalThis.fetch as any) = vi.fn((url: string) => {
+        const files: Record<string, string> = {
+          '/okf/demo/manifest.json': JSON.stringify({ sections: { intro: ['content.yaml', 'section.md'] } }),
+          '/okf/demo/sections/intro/content.yaml': 'what:\n  summary: s',
+          '/okf/demo/sections/intro/section.md': '---\ntype: intro\n---',
+        }
+        return Promise.resolve(
+          url in files ? { ok: true, text: () => Promise.resolve(files[url]) } : { ok: false, status: 404 },
+        )
+      })
 
-    it('throws when reading section from unloaded topic', async () => {
-      await expect(adapter.storage.readSection('unloaded', 'intro')).rejects.toThrow(
-        'Topic "unloaded" not loaded in embed storage',
-      )
-    })
+      const files = await adapter.storage.readSectionFiles('demo', 'intro')
 
-    it('throws when section folder not found in bundle', async () => {
-      const mockBundle = [
-        {
-          meta: { type: 'text', title: 'Test', resource: '.' },
-          data: { type: 'text', paragraphs: ['test'] },
-          sectionFolder: 'other',
-        },
-      ]
-      vi.mocked(loadOKFBundle).mockResolvedValue(mockBundle as any)
-
-      await adapter.runtime.loadTopicBundle('demo')
-      await expect(adapter.storage.readSection('demo', 'missing')).rejects.toThrow(
-        'Section "missing" not found in topic "demo"',
-      )
-    })
-
-    it('returns section data from in-memory bundle', async () => {
-      const mockBundle = [
-        {
-          meta: { type: 'intro', title: 'Test Intro', resource: '.' },
-          data: { type: 'intro', what: { summary: 'test' }, why: { summary: 'test' }, roadmap: [] },
-          sectionBody: 'Some markdown body',
-          sectionFolder: 'intro',
-        },
-      ]
-      vi.mocked(loadOKFBundle).mockResolvedValue(mockBundle as any)
-
-      await adapter.runtime.loadTopicBundle('demo')
-      const result = await adapter.storage.readSection('demo', 'intro')
-
-      expect(result.meta).toEqual(mockBundle[0].meta)
-      expect(result.data).toEqual(mockBundle[0].data)
-      expect(result.body).toBe('Some markdown body')
+      expect(Object.keys(files)).toEqual(['content.yaml', 'section.md'])
     })
   })
 
   describe('runtime (EmbedRuntime)', () => {
     describe('loadTopicBundle', () => {
-      it('delegates to loadOKFBundle and caches in storage', async () => {
+      it('delegates to loadOKFBundle with the embed storage', async () => {
         const mockBundle = [
           {
             meta: { type: 'text', title: 'Test', resource: '.' },
@@ -138,11 +93,8 @@ describe('SingleHTMLEmbedAdapter', () => {
 
         const result = await adapter.runtime.loadTopicBundle('demo')
 
-        expect(loadOKFBundle).toHaveBeenCalledWith('demo')
+        expect(loadOKFBundle).toHaveBeenCalledWith('demo', adapter.storage)
         expect(result).toEqual(mockBundle)
-        // Verify it's cached in storage
-        const topics = await adapter.storage.listTopics()
-        expect(topics).toContain('demo')
       })
     })
 
@@ -228,8 +180,8 @@ describe('SingleHTMLEmbedAdapter', () => {
     })
 
     describe('bundleToSectionConfigs', () => {
-      it('delegates to bundleToSections', () => {
-        vi.mocked(bundleToSections).mockReturnValue([
+      it('delegates to toSectionConfigs', () => {
+        vi.mocked(toSectionConfigs).mockReturnValue([
           { type: 'intro', props: { title: 'Test' } },
         ])
 
@@ -242,7 +194,7 @@ describe('SingleHTMLEmbedAdapter', () => {
         ]
 
         const result = (adapter.runtime as any).bundleToSectionConfigs(bundle as any)
-        expect(bundleToSections).toHaveBeenCalledWith(bundle)
+        expect(toSectionConfigs).toHaveBeenCalledWith(bundle)
         expect(result).toHaveLength(1)
       })
     })

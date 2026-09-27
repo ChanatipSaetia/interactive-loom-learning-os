@@ -216,13 +216,11 @@ function convertTradeoffs(topicId, sectionName, title, scenarios) {
 }
 
 function generateManifest(topicId, config) {
-  const { title, description, tags, sections, related } = config;
+  const { title, description, tags, sections } = config;
   const indexYaml = `# App metadata for ${topicId} topic bundle
 category: "${config.category || 'Uncategorized'}"
 tags:
-${tags.map(t => `  - ${t}`).join('\n')}
-related:
-${related.map(r => `  - ${r}`).join('\n')}`;
+${tags.map(t => `  - ${t}`).join('\n')}`;
   writeFile(`public/okf/${topicId}/index.yaml`, indexYaml);
 
   const indexMd = `# ${title}\n\n${description}\n\n## Sections\n\n${sections.map(s => {

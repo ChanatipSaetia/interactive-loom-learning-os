@@ -4,7 +4,8 @@ import type { OKFBundledSection, OKFSectionMeta, OKFSectionData } from '../../..
 import { validateOKFSection } from '../../../learning-engine/validation/gateway'
 import type { ValidationDiagnostic, ValidationResult } from '../../../learning-engine/validation/gateway'
 import { buildSectionSaveFiles, buildDownloadFiles, triggerDownload } from '../services/okfSave'
-import { inRepoStorage, clearOKFCache } from '../../../learning-engine/composition/okf/reader'
+import { clearOKFCache } from '../../../learning-engine/composition/okf/loader'
+import { useStorage } from '../../../learning-engine/composition/context/StorageContext'
 
 const DEBOUNCE_MS = 300
 
@@ -88,6 +89,7 @@ export function useSectionEditorBuffer(
   sourceSection: OKFBundledSection | null,
   onChange?: () => void
 ): EditorBufferReturn {
+  const storage = useStorage()
   const sourceRef = useRef(sourceSection)
   const syncing = useRef(false)
   const debounceTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
@@ -274,8 +276,10 @@ export function useSectionEditorBuffer(
     setState((prev) => ({ ...prev, isSaving: true }))
 
     try {
-      // Use storage adapter for disk persistence (Phase 3.2 delivery port)
-      await inRepoStorage.saveSection(topicId, sectionName, state.data, files.sectionMd)
+      if (!storage.saveSection) {
+        throw new Error('This host is read-only: its storage adapter cannot save sections.')
+      }
+      await storage.saveSection(topicId, sectionName, state.data, files.sectionMd)
       if (sourceRef.current) {
         sourceRef.current.data = state.data
         sourceRef.current.meta = state.meta
@@ -287,7 +291,7 @@ export function useSectionEditorBuffer(
       setState((prev) => ({ ...prev, isSaving: false }))
       throw e
     }
-  }, [state.meta, state.data])
+  }, [storage, state.meta, state.data])
 
   const downloadFiles = useCallback(() => {
     const sectionBody = sourceRef.current?.sectionBody ?? ''

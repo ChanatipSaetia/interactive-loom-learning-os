@@ -1,25 +1,32 @@
 /* eslint-disable @typescript-eslint/no-explicit-any, @typescript-eslint/ban-ts-comment */
 /**
- * Parity snapshot harness for the OKF loading pipeline refactor
+ * Parity snapshot harness for the OKF loading pipeline
  * (grill-log-okf-loading-pipeline.md, Q11 / Implied Story 1).
  *
- * Records what the lesson stream currently receives — `loadOKFBundle` +
- * `bundleToSections` over every real topic in public/okf — as one JSON file per
- * topic. The content migration and the new gateway-owned pipeline must keep
- * these snapshots unchanged.
+ * The snapshots record the component props every real topic in public/okf
+ * produced under the original hand-written reader. The gateway-owned pipeline
+ * (storage → validateSectionFiles → toSectionConfigs) must reproduce them.
+ *
+ * Two props were renamed on purpose (Q10), and are mapped back before comparing:
+ *   - flowchart: `flow` (AbstractFlow) replaces the pre-derived `schema`
+ *   - pillar-layer: payload fields are spread instead of nested under `section`
  *
  * Regenerate intentionally with: npx vitest run -u parity-snapshot
  */
-import { describe, it, expect, beforeAll, afterAll, vi } from 'vitest'
+import { describe, it, expect, beforeEach } from 'vitest'
 // @ts-ignore
 import * as fs from 'fs'
 // @ts-ignore
 import * as path from 'path'
-import { loadOKFBundle, clearOKFCache } from '../../../../../../src/core/learning-engine/composition/okf/reader'
-import { bundleToSections } from '../../../../../../src/core/learning-engine/composition/okf/sections'
+import { NodeFsStorageAdapter } from '../../../../../../src/core/delivery/adapters/node-fs-storage'
+import { loadOKFBundle, clearOKFCache } from '../../../../../../src/core/learning-engine/composition/okf/loader'
+import { toSectionConfig } from '../../../../../../src/core/learning-engine/composition/okf/section-config'
+import { deriveSchema } from '../../../../../../src/core/learning-engine/sub-contexts/process-simulation/model/derive'
+import type { OKFBundledSection } from '../../../../../../src/core/learning-engine/composition/okf/types'
 
 // @ts-ignore
 const OKF_ROOT = path.resolve(process.cwd(), 'public/okf')
+const storage = new NodeFsStorageAdapter(OKF_ROOT)
 
 function discoverTopics(): string[] {
   return fs
@@ -29,41 +36,53 @@ function discoverTopics(): string[] {
     .sort()
 }
 
-/** Serves `<base>/okf/<path>` from public/okf on disk, mirroring the Vite static server. */
-function fsFetch(input: string | URL): Promise<Response> {
-  const url = String(input)
-  const marker = '/okf/'
-  const rel = decodeURIComponent(url.slice(url.indexOf(marker) + marker.length))
-  const filePath = path.join(OKF_ROOT, rel)
-  if (!filePath.startsWith(OKF_ROOT) || !fs.existsSync(filePath) || !fs.statSync(filePath).isFile()) {
-    return Promise.resolve(new Response('Not Found', { status: 404 }))
-  }
-  return Promise.resolve(new Response(fs.readFileSync(filePath, 'utf8'), { status: 200 }))
+/**
+ * Object key order is not compared (schemas and hand-written mappers emit fields in
+ * different orders), so keys are sorted recursively. Array order is compared.
+ */
+function stableStringify(value: unknown): string {
+  return JSON.stringify(
+    value,
+    (_key, v) =>
+      v && typeof v === 'object' && !Array.isArray(v)
+        ? Object.fromEntries(Object.keys(v).sort().map((k) => [k, v[k]]))
+        : v,
+    2,
+  )
 }
 
-async function captureTopic(topicId: string): Promise<unknown> {
-  try {
-    const bundle = await loadOKFBundle(topicId)
-    const configs = bundleToSections(bundle)
-    return configs.map((config, i) => ({ folder: bundle[i].sectionFolder, ...config }))
-  } catch (e) {
-    return { error: (e as Error).message }
+/** Map the two intentionally renamed props back to their original shape. */
+function toRecordedProps(section: OKFBundledSection): { type: string; props: Record<string, unknown> } {
+  const { type, props } = toSectionConfig(section)
+  const data = section.data as Record<string, any>
+  const recorded = { ...props }
+  if (type === 'flowchart') {
+    delete recorded.flow
+    recorded.schema = deriveSchema(data.flow)
+  }
+  if (type === 'pillar-layer') {
+    for (const key of Object.keys(data)) if (key !== 'title') delete recorded[key]
+    recorded.section = data
+  }
+  return { type, props: recorded }
+}
+
+async function captureTopic(topicId: string) {
+  const bundle = await loadOKFBundle(topicId, storage)
+  return {
+    snapshot: bundle.map((section) => ({ folder: section.sectionFolder, ...toRecordedProps(section) })),
+    failed: bundle
+      .filter((section) => section.validation?.status === 'error')
+      .map((section) => ({ folder: section.sectionFolder, diagnostics: section.validation?.diagnostics })),
   }
 }
 
 describe('OKF loading pipeline parity snapshots', () => {
-  beforeAll(() => {
-    vi.stubGlobal('fetch', vi.fn(fsFetch))
-    clearOKFCache()
-  })
-
-  afterAll(() => {
-    vi.unstubAllGlobals()
-    clearOKFCache()
-  })
+  beforeEach(() => clearOKFCache())
 
   it.each(discoverTopics())('%s', async (topicId) => {
-    const snapshot = await captureTopic(topicId)
-    await expect(JSON.stringify(snapshot, null, 2) + '\n').toMatchFileSnapshot(`./__parity__/${topicId}.json`)
+    const { snapshot, failed } = await captureTopic(topicId)
+    expect(failed).toEqual([])
+    await expect(stableStringify(snapshot) + '\n').toMatchFileSnapshot(`./__parity__/${topicId}.json`)
   })
 })

@@ -144,6 +144,19 @@ A `loadSection(storage, topicId, folder)` use case in `composition/okf/` orchest
 - **Gamification composition root:** `useGamification.ts:6` instantiates `InRepoStorageAdapter` directly; should consume the same injected provider.
 - **Raw-folder hosting (Q6):** If OKF folders are ever served to `loom-sections` without a Vite build, the manifest will be missing; the CLI could emit it on demand.
 
+## Implementation Notes
+
+Decisions made while implementing, where the code needed more detail than the log above:
+
+- **Idempotent schemas.** Every section schema's output is valid input (e.g. flowchart refs accept `"id"` or `{ id }` and emit `{ _tag: 'ref', id }`), so the editor's re-validation of render-shaped data keeps working without a separate input path.
+- **`processGroup` stays a free string.** Content uses ~20 topic-specific phase labels (`handshake`, `searing`, …), not just the 4 mapped groups; unmapped values fall back to no state mapping.
+- **Unknown keys are stripped, not rejected.** Zod's default object parsing drops unrecognised fields (e.g. `type: taxonomy-category` in category files), matching the old mappers. Alias *shapes* (wrapped files, `text:` for `prompt:`, top-level leaf fields, `event:` for `policy:`) were migrated out of the content instead.
+- **`toSectionConfig` replaces `bundleToSections`.** The per-type switch is gone; a generic merge layers payload fields over section.md props. One documented exception: pillar-layer keeps the section.md title as its display title (its data carries a separate matrix title).
+- **Failed sections cannot fail the topic.** `loadSection` catches storage errors and returns an error slot, so `loadOKFBundle` uses `Promise.all` over sections that never reject.
+- **Runtime adapters may import composition.** `WebAppRuntimeAdapter` / `SingleHTMLEmbedAdapter` load bundles through `loadOKFBundle` (host → core, one-way). Storage adapters import nothing from composition, which is what removes the cycle.
+- **Parity oracle.** Snapshots compare props with object keys sorted. Accepted differences after cut-over: `title: ""` → absent (8 intros; render-identical), unused `id` keys on hexagonal-architecture roadmap/challenge items dropped, `mtls/alternatives` gaining its 6 categories. Content fixes folded into the baseline: pixijs decision-tree prompts/leaves (previously rendered empty).
+- **CLI coverage.** `okf:validate` validates every section folder on disk (linked or not) and fails on `index.md` links without a `section.md`.
+
 ## Implied Stories
 
 1. **Parity snapshot harness:** Vitest test capturing current `loadOKFBundle` + `bundleToSections` output for every topic in `public/okf/` as JSON fixtures.

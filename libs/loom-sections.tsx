@@ -2,7 +2,8 @@
 import { createRoot, type Root } from 'react-dom/client'
 import { useMemo, useEffect, type ComponentType } from 'react'
 import type { SectionConfig } from '../src/core/learning-engine/registry'
-import { bundleToSections } from '../src/core/learning-engine/composition/okf/sections'
+import { toSectionConfig, toSectionConfigs } from '../src/core/learning-engine/composition/okf/section-config'
+import { StorageProvider } from '../src/core/learning-engine/composition/context/StorageContext'
 import { HUDProvider, useHUD } from '../src/core/learning-engine/composition/context/HUDContext'
 import { ProgressProvider } from '../src/core/supporting/learner-progress'
 import { EditorProvider, useEditor, useEditorSafe } from '../src/core/learning-engine/composition/context/EditorContext'
@@ -216,7 +217,7 @@ function EditorModeView({ topicLabel, topicId }: { topicLabel: string; topicId: 
 
   const previewConfig = useMemo(() => {
     if (!activeSection) return null
-    const original = bundleToSections([activeSection])[0]
+    const original = toSectionConfig(activeSection)
     return {
       type: original.type,
       props: { ...original.props, ...editedData },
@@ -296,7 +297,7 @@ function LoomAppContent({
 
   const displaySections = useMemo(() => {
     if (bundle && bundle.length > 0) {
-      return bundleToSections(bundle)
+      return toSectionConfigs(bundle)
     }
     return sections
   }, [bundle, sections])
@@ -427,23 +428,25 @@ const LoomSections: LoomSectionsAPI = {
       }, [sections])
 
       return (
-        <SoundProvider>
-          <ProgressProvider>
-            <HUDProvider>
-              <ToastProvider>
-                <EditorProvider bundle={syntheticBundle}>
-                  <LoomAppContent
-                    sections={sections}
-                    title={title}
-                    topicId={topicId}
-                    editable={editable}
-                    header={headerOption}
-                  />
-                </EditorProvider>
-              </ToastProvider>
-            </HUDProvider>
-          </ProgressProvider>
-        </SoundProvider>
+        <StorageProvider storage={singleEmbedAdapter.storage}>
+          <SoundProvider>
+            <ProgressProvider>
+              <HUDProvider>
+                <ToastProvider>
+                  <EditorProvider bundle={syntheticBundle}>
+                    <LoomAppContent
+                      sections={sections}
+                      title={title}
+                      topicId={topicId}
+                      editable={editable}
+                      header={headerOption}
+                    />
+                  </EditorProvider>
+                </ToastProvider>
+              </HUDProvider>
+            </ProgressProvider>
+          </SoundProvider>
+        </StorageProvider>
       )
     }
 
@@ -456,7 +459,7 @@ const LoomSections: LoomSectionsAPI = {
   },
 
   renderOKF(container: HTMLElement, bundle: OKFBundled, options?: RenderOptions) {
-    const sections = bundleToSections(bundle)
+    const sections = toSectionConfigs(bundle)
     return LoomSections.render(container, sections, {
       ...options,
       bundle,

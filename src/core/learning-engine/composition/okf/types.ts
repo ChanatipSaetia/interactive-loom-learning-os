@@ -1,3 +1,4 @@
+import type { SectionIntro, SectionMeta, ValidationDiagnostic, ValidationResult } from '../../validation/types'
 import type {
   FlowchartSectionData,
   ScenarioSectionData,
@@ -50,22 +51,17 @@ export interface OKFBundledSection {
   data: OKFSectionData
   sectionBody?: string
   sectionFolder?: string
+  /** Validation Gateway outcome for this section (absent for in-memory bundles built by hand). */
+  validation?: OKFSectionValidation
 }
 
-export interface OKFSectionIntro {
-  what?: string
-  why?: string
-  next?: string
+export interface OKFSectionValidation {
+  status: ValidationResult['status']
+  diagnostics: ValidationDiagnostic[]
 }
 
-export interface OKFSectionMeta {
-  type: string
-  title?: string
-  heading?: string
-  ordered?: boolean
-  resource: string
-  intro?: OKFSectionIntro
-}
+export type OKFSectionIntro = SectionIntro
+export type OKFSectionMeta = SectionMeta
 
 /**
  * Composite OKF Section Data Union compiled directly from subdomain schemas

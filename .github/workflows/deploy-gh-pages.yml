@@ -39,6 +39,9 @@ jobs:
       - name: Update OKF build manifest
         run: node scripts/update-okf-manifest.js
 
+      - name: Validate OKF content
+        run: npm run okf:validate
+
       - name: Build
         run: npm run build
 

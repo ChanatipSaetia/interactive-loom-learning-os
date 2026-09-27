@@ -3,24 +3,26 @@
  * SingleHTMLEmbedAdapter — concrete OKFStoragePort + OKFRuntimePort for
  * standalone single-HTML embeds (CDN-distributed widget bundles).
  *
- * Storage: in-memory only (no disk I/O — standalone scripts have no fs access).
- * Runtime: fetches bundles via browser fetch, renders through an eagerly-filled
- * component registry, and validates payloads through the 3-Tier ValidationGateway.
+ * Storage: read-only HTTP (no disk I/O — standalone scripts have no fs access).
+ * Runtime: loads bundles through the Composition Engine's loader, renders through
+ * an eagerly-filled component registry, and validates payloads through the
+ * 3-Tier ValidationGateway.
  *
  * Decouples the embed widget from the full SPA app shell (router, lazy-loading,
  * dev-server middleware) while preserving backward-compatible public API.
  */
 import { Suspense, type ComponentType, type ReactNode } from 'react'
 import type { OKFStoragePort, OKFRuntimePort } from '../ports'
-import type { OKFSectionMeta, OKFSectionData, OKFBundled } from '../../learning-engine/composition/okf/types'
+import type { OKFSectionData, OKFBundled } from '../../learning-engine/composition/okf/types'
 import type { SectionConfig } from '../../learning-engine/registry'
-import type { ValidationResult } from '../../learning-engine/validation/gateway'
+import type { SectionFiles, ValidationResult } from '../../learning-engine/validation/gateway'
 import { Registry } from '../../learning-engine/registry/generic-registry'
-import { loadOKFBundle } from '../../learning-engine/composition/okf/reader'
-import { bundleToSections } from '../../learning-engine/composition/okf/sections'
+import { loadOKFBundle } from '../../learning-engine/composition/okf/loader'
+import { toSectionConfigs } from '../../learning-engine/composition/okf/section-config'
 import { validateOKFSection } from '../../learning-engine/validation/gateway'
-import { deriveSchema } from '../../learning-engine/sub-contexts/process-simulation/components/flowchart/abstract-flow/derive'
 import { SectionErrorBoundary } from '../../ui-system/primitives/SectionErrorBoundary'
+import { InRepoStorageAdapter } from './in-repo-storage'
+import { ValidatedSection } from '../web-app-shell/ValidatedSection'
 
 // ============================================================================
 // Eager Component Registry — populated at module load for standalone embeds
@@ -49,50 +51,24 @@ export function clearEmbedRegistry(): void {
 }
 
 // ============================================================================
-// Storage Port — in-memory only, no disk I/O
+// Storage Port — read-only HTTP, no disk I/O
 // ============================================================================
 
 /**
- * In-memory storage backing for the standalone embed.
- *
- * Sections are stored in-memory when set programmatically via the adapter.
- * `readSection` looks up from the in-memory bundle cache. `saveSection`
- * and `listTopics` are no-ops that throw since standalone scripts lack
- * file-system access and dev-server middleware.
+ * Read-only storage for the standalone embed. Reads OKF files over HTTP from
+ * the page's OKF base URL (`window.__OKF_BASE_OVERRIDE__`, set by
+ * `LoomSections.loadAndRenderOKF`). Saving is not available: standalone
+ * scripts have no file-system access or dev-server middleware.
  */
-class EmbedInMemoryStorage implements OKFStoragePort {
-  private bundles = new Map<string, OKFBundled>()
+class EmbedReadOnlyStorage implements OKFStoragePort {
+  private http = new InRepoStorageAdapter()
 
-  /**
-   * Set the in-memory bundle for a topic (called after loadTopicBundle).
-   * Enables `readSection` lookups from the cache.
-   */
-  setBundle(topicId: string, bundle: OKFBundled): void {
-    this.bundles.set(topicId, bundle)
+  listSections(topicId: string): Promise<string[]> {
+    return this.http.listSections(topicId)
   }
 
-  /**
-   * Read a single section from the in-memory bundle cache.
-   *
-   * @throws Error if section not found or topic bundle not loaded.
-   */
-  async readSection(
-    topicId: string,
-    sectionFolder: string,
-  ): Promise<{ meta: OKFSectionMeta; data: OKFSectionData; body: string }> {
-    const bundle = this.bundles.get(topicId)
-    if (!bundle) {
-      throw new Error(`Topic "${topicId}" not loaded in embed storage. Call loadTopicBundle first.`)
-    }
-    const section = bundle.find((s) => s.sectionFolder === sectionFolder)
-    if (!section) {
-      throw new Error(`Section "${sectionFolder}" not found in topic "${topicId}"`)
-    }
-    return {
-      meta: section.meta,
-      data: section.data,
-      body: section.sectionBody ?? '',
-    }
+  readSectionFiles(topicId: string, sectionFolder: string): Promise<SectionFiles> {
+    return this.http.readSectionFiles(topicId, sectionFolder)
   }
 
   /**
@@ -115,54 +91,31 @@ class EmbedInMemoryStorage implements OKFStoragePort {
     )
   }
 
-  /**
-   * Read a topic hex map campaign definition (in-memory lookup or throw if not loaded).
-   */
   async readHexMap(topicId: string): Promise<string> {
-    throw new Error(`Hex map for topic "${topicId}" is not loaded in embed in-memory storage.`)
+    throw new Error(`Hex maps are not available in standalone embed mode (topic "${topicId}").`)
   }
 
-  /**
-   * List topics from loaded in-memory bundles.
-   * For full topic discovery, use the webapp-spa adapter instead.
-   */
-  async listTopics(): Promise<string[]> {
-    return [...this.bundles.keys()]
+  listTopics(): Promise<string[]> {
+    return this.http.listTopics()
   }
 }
 
 // ============================================================================
-// Section Rendering — flowchart schema adaptation + error boundary
+// Section Rendering — validation outcome + error boundary
 // ============================================================================
-
-/**
- * Adapt raw SectionConfig props for component rendering.
- *
- * Applies flowchart schema derivation (abstract flow → full schema) when
- * the config contains legacy abstract flow data without entities/relations.
- */
-function adaptSectionProps(config: SectionConfig): Record<string, unknown> {
-  if (config.type === 'flowchart') {
-    const rawSchema = config.props?.schema || (config.props as any)?.flow
-    if (rawSchema && !rawSchema.entities && (rawSchema.actors || rawSchema.steps || rawSchema.systems)) {
-      try {
-        return {
-          ...config.props,
-          schema: deriveSchema(rawSchema),
-        }
-      } catch (e) {
-        console.error('Failed to auto-derive flowchart schema:', e)
-      }
-    }
-  }
-  return config.props
-}
 
 /**
  * Render a single section as a wrapped ReactNode with error boundary
  * and suspense fallback — identical to SPA rendering behavior.
  */
 function renderEmbedSection(config: SectionConfig, sectionIndex?: number): ReactNode {
+  if (config.validation?.status === 'error') {
+    return (
+      <div className="section-wrapper" data-section-type={config.type} data-section-index={sectionIndex ?? 0}>
+        <ValidatedSection config={config}>{null}</ValidatedSection>
+      </div>
+    )
+  }
   const Component = embedRegistry.get(config.type)
   if (!Component) {
     return (
@@ -172,15 +125,15 @@ function renderEmbedSection(config: SectionConfig, sectionIndex?: number): React
     )
   }
 
-  const adaptedProps = adaptSectionProps(config)
-
   return (
     <div className="section-wrapper" data-section-type={config.type} data-section-index={sectionIndex ?? 0}>
-      <SectionErrorBoundary sectionName={config.type}>
-        <Suspense fallback={<div className="section-loading">Loading section...</div>}>
-          <Component sectionIndex={sectionIndex ?? 0} {...adaptedProps} />
-        </Suspense>
-      </SectionErrorBoundary>
+      <ValidatedSection config={config}>
+        <SectionErrorBoundary sectionName={config.type}>
+          <Suspense fallback={<div className="section-loading">Loading section...</div>}>
+            <Component sectionIndex={sectionIndex ?? 0} {...config.props} />
+          </Suspense>
+        </SectionErrorBoundary>
+      </ValidatedSection>
     </div>
   )
 }
@@ -190,25 +143,18 @@ function renderEmbedSection(config: SectionConfig, sectionIndex?: number): React
 // ============================================================================
 
 class EmbedRuntime implements OKFRuntimePort {
-  private storage: EmbedInMemoryStorage
-
-  constructor(storage: EmbedInMemoryStorage) {
-    this.storage = storage
-  }
+  constructor(private storage: OKFStoragePort) {}
 
   /**
-   * Load the complete topic bundle via fetch (delegating to cached reader).
-   * Stores the bundle in in-memory storage for subsequent readSection calls.
+   * Load the complete topic bundle through the Composition Engine's loader.
    */
   async loadTopicBundle(topicId: string): Promise<OKFBundled> {
-    const bundle = await loadOKFBundle(topicId)
-    this.storage.setBundle(topicId, bundle)
-    return bundle
+    return loadOKFBundle(topicId, this.storage)
   }
 
   /**
    * Render a single section config as a ReactNode through the eagerly-filled
-   * embed component registry, with flowchart schema adaptation.
+   * embed component registry.
    */
   renderSection(config: SectionConfig, sectionIndex?: number): ReactNode {
     return renderEmbedSection(config, sectionIndex)
@@ -232,10 +178,10 @@ class EmbedRuntime implements OKFRuntimePort {
 
   /**
    * Convert a loaded bundle to SectionConfig[] for rendering.
-   * Delegates to the shared bundleToSections utility.
+   * Delegates to the shared toSectionConfigs mapping.
    */
   bundleToSectionConfigs(bundle: OKFBundled): SectionConfig[] {
-    return bundleToSections(bundle)
+    return toSectionConfigs(bundle)
   }
 }
 
@@ -262,8 +208,8 @@ export class SingleHTMLEmbedAdapter {
   readonly runtime: OKFRuntimePort
 
   constructor() {
-    this.storage = new EmbedInMemoryStorage()
-    this.runtime = new EmbedRuntime(this.storage as EmbedInMemoryStorage)
+    this.storage = new EmbedReadOnlyStorage()
+    this.runtime = new EmbedRuntime(this.storage)
   }
 
   /**

@@ -25,7 +25,7 @@ describe('VisualFormEditor', () => {
   it('renders bullets form editor for bullets type', () => {
     const mockData: OKFSectionData = {
       type: 'bullets',
-      items: [{ text: 'Bullet Item 1' }],
+      items: [{ text: 'Bullet Item 1', children: [] }],
     }
     const onChange = vi.fn()
     render(<VisualFormEditor data={mockData} onChange={onChange} />)
@@ -415,7 +415,7 @@ describe('VisualFormEditor', () => {
             type: 'linear',
             policy: 'Start policy',
             command: 'Run command',
-            handledBy: { id: 'engine' },
+            handledBy: { _tag: 'ref', id: 'engine' },
             resultEvents: [{ id: 'evt_1', title: 'Started' }],
           },
         ],
@@ -468,7 +468,7 @@ describe('VisualFormEditor', () => {
                 label: 'Execute Tool',
                 policy: 'Tool Policy',
                 command: 'Tool Command',
-                handledBy: { id: 'engine' },
+                handledBy: { _tag: 'ref', id: 'engine' },
                 resultEvents: [{ id: 'evt_exec', title: 'Executed' }],
               },
             ],

@@ -9,11 +9,11 @@
 ```
 sections/tradeoffs/
 ├── section.md               # section descriptor (resource: ".")
-├── gear-budget.yaml         # one TradeoffScenario per file
-└── gear-invested.yaml
+├── 01-gear-budget.yaml      # one TradeoffScenario per file
+└── _gear-invested.yaml      # disabled: `_` files are not loaded
 ```
 
-The `resource: "."` value tells the loader to read **all `.yaml` files** in the directory as separate scenarios. Each YAML file is one scenario object.
+The `resource: "."` value tells the loader to read **all `.yaml` files** in the directory as separate scenarios, in **filename order** — the two-digit prefix sets the scenario order. Each YAML file is one scenario object. Prefix a filename with `_` to disable that scenario without deleting it.
 
 > [!NOTE]
 > **Multiple Scenarios, Multiple Steps & Multiple Choices/Options**

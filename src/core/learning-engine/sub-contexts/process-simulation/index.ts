@@ -14,9 +14,9 @@ export { FlowchartFormEditor } from './components/flowchart/FlowchartFormEditor'
 export { ScenarioFormEditor } from './components/scenario/ScenarioFormEditor'
 
 
-export { deriveSchema } from './components/flowchart/abstract-flow/derive'
-export * from './components/flowchart/abstract-flow/types'
-export type { AbstractFlow, ActorDecl, SystemDecl, FlowStep, LinearStep, BranchStep, BranchOption, FlowJourney, JourneyStepRef, ResultEvent, Ref } from './components/flowchart/abstract-flow/types'
+export { deriveSchema } from './model/derive'
+export * from './model/types'
+export type { AbstractFlow, ActorDecl, SystemDecl, FlowStep, LinearStep, BranchStep, BranchOption, FlowJourney, JourneyStepRef, ResultEvent, Ref } from './model/types'
 
 export type { ProcessSimulationEvents, StepChanged, SimulationReset } from './events'
 export { validateProcessSimulationTier3 } from './validation'

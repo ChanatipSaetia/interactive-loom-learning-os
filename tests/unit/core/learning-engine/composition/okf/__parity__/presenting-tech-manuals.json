@@ -1,15 +1,98 @@
 [
   {
     "folder": "intro",
-    "type": "intro",
     "props": {
-      "title": "Presenting IT System, Web App & Developer Experience Manuals",
-      "subtitle": "Turn documentation into presentations people actually finish — with markdown, code-based, and web-app presentation tools",
       "estimatedTime": "35 min",
       "moduleCount": 15,
+      "roadmap": [
+        {
+          "description": "Compare the three audience archetypes — end users, operators, and developers — and what slice of the manual each one actually needs.",
+          "sectionId": "audience-map",
+          "title": "Audience Map",
+          "type": "taxonomy-browser"
+        },
+        {
+          "description": "The reusable presentation skeleton: hook, roadmap, one-scenario walkthrough, live demo, gotchas, recap + permalink.",
+          "sectionId": "narrative-arc",
+          "title": "The Six-Stage Manual Presentation Arc",
+          "type": "bullets"
+        },
+        {
+          "description": "Combat trial testing the audience archetypes and the six-stage presentation arc.",
+          "sectionId": "quiz-narrative",
+          "title": "Trial of the Narrative Arc",
+          "type": "quiz"
+        },
+        {
+          "description": "Timed reordering challenge: assemble the six stages of the manual presentation in order.",
+          "sectionId": "reflection-prep",
+          "title": "Sequencing the Presentation Arc",
+          "type": "reflection-sequence"
+        },
+        {
+          "description": "Five tool categories: markdown decks, docs-as-code sites, interactive API references, in-app & in-code tours, and screen recording.",
+          "sectionId": "tool-landscape",
+          "title": "Presentation & Docs Tooling Landscape",
+          "type": "taxonomy-browser"
+        },
+        {
+          "description": "Combat trial testing which tool fits which presenting job: Marp, Slidev, reveal.js, Docusaurus, Swagger UI, Code Tour, Intro.js, OBS.",
+          "sectionId": "quiz-tools",
+          "title": "Trial of the Instrument Choice",
+          "type": "quiz"
+        },
+        {
+          "description": "Forge a launch webinar loadout: pick the demo medium, deck format, and take-home reference while balancing clarity, reliability, prep, and reuse.",
+          "sectionId": "deck-tradeoffs",
+          "title": "Launch Webinar Trade-off Workshop",
+          "type": "tradeoff-sandbox"
+        },
+        {
+          "description": "Diagnostic advisor: answer three questions about your audience and format, get a tailored presentation tooling recommendation.",
+          "sectionId": "tool-decision-tree",
+          "title": "Instrument Selection Advisor",
+          "type": "decision-tree"
+        },
+        {
+          "description": "Lego-stack view of the manual platform: authoring sources, generators, delivery web app, and the live/in-app layer.",
+          "sectionId": "docs-stack",
+          "title": "The Docs-as-Code Layer Stack",
+          "type": "pillar-layer"
+        },
+        {
+          "description": "Event Storming walkthrough: commit → CI preview → review → publish (or revise) for manual changes.",
+          "sectionId": "publish-flow",
+          "title": "Docs-as-Code Publish Flow",
+          "type": "flowchart"
+        },
+        {
+          "description": "Branching narrative: present a Web App manual to a mixed audience while the live demo falls apart. Your choices are graded.",
+          "sectionId": "scenario-launch",
+          "title": "Scenario: The Release Webinar",
+          "type": "scenario"
+        },
+        {
+          "description": "Key vocabulary: docs-as-code, permalink, runbook, quickstart, guided tour, demo fallback, DX, annotated screenshot.",
+          "sectionId": "glossary",
+          "title": "Lexicon of the Realm",
+          "type": "flashcards"
+        },
+        {
+          "description": "Force-directed map of how audience, narrative, tools, and the docs-as-code pipeline connect.",
+          "sectionId": "concept-map",
+          "title": "Concept Constellation",
+          "type": "concept-map"
+        },
+        {
+          "description": "Fill-in-the-blank synthesis across all three tracks — the final ritual before the Boss Lair.",
+          "sectionId": "synthesis",
+          "title": "Synthesis Vault",
+          "type": "reflection-template"
+        }
+      ],
+      "subtitle": "Turn documentation into presentations people actually finish — with markdown, code-based, and web-app presentation tools",
+      "title": "Presenting IT System, Web App & Developer Experience Manuals",
       "what": {
-        "definition": "Presenting a user manual is the craft of turning written documentation for an IT system, Web App, or Developer Experience (DX) into a live, audience-shaped story — a guided walkthrough of one real task, proven in the running product, and backed by durable, findable reference material.",
-        "summary": "Most manual presentations fail the same way: someone reads release notes aloud over an architecture diagram while the real audience — the people who must click buttons at 2am — silently disengages. This realm teaches the opposite: analyze the audience first, walk one realistic scenario end-to-end in the real UI, keep a fallback for the live demo, and hand everyone a permanent permalink to a docs site.",
         "bullets": [
           "Audience First: end users, operators/admins, and developers each need a completely different cut of the same manual",
           "One-Scenario Arc: hook with the user's pain, walk one persona task end-to-end, show gotchas, end with a permalink",
@@ -17,6 +100,8 @@
           "Docs-as-Code Delivery: Docusaurus, MkDocs, and VitePress turn the manual into a searchable, versioned web app",
           "Live Demo with a Safety Net: every live demo of the product ships with a pre-recorded OBS fallback clip"
         ],
+        "definition": "Presenting a user manual is the craft of turning written documentation for an IT system, Web App, or Developer Experience (DX) into a live, audience-shaped story — a guided walkthrough of one real task, proven in the running product, and backed by durable, findable reference material.",
+        "summary": "Most manual presentations fail the same way: someone reads release notes aloud over an architecture diagram while the real audience — the people who must click buttons at 2am — silently disengages. This realm teaches the opposite: analyze the audience first, walk one realistic scenario end-to-end in the real UI, keep a fallback for the live demo, and hand everyone a permanent permalink to a docs site.",
         "tags": [
           "Technical Communication",
           "Documentation",
@@ -26,111 +111,22 @@
         ]
       },
       "why": {
-        "summary": "A manual nobody watches or finds is a manual that doesn't exist. Teams spend weeks writing documentation, then present it in the format least likely to stick — walls of text read aloud — and then wonder why the support queue never shrinks.",
-        "impact": "Presentations grounded in one realistic task and delivered with the right instrument (a Marp deck for a release webinar, a Swagger UI playground for API consumers, an in-app tour for self-serve onboarding) measurably cut support tickets, speed up onboarding, and make the manual self-service instead of person-service."
-      },
-      "roadmap": [
-        {
-          "sectionId": "audience-map",
-          "title": "Audience Map",
-          "type": "taxonomy-browser",
-          "description": "Compare the three audience archetypes — end users, operators, and developers — and what slice of the manual each one actually needs."
-        },
-        {
-          "sectionId": "narrative-arc",
-          "title": "The Six-Stage Manual Presentation Arc",
-          "type": "bullets",
-          "description": "The reusable presentation skeleton: hook, roadmap, one-scenario walkthrough, live demo, gotchas, recap + permalink."
-        },
-        {
-          "sectionId": "quiz-narrative",
-          "title": "Trial of the Narrative Arc",
-          "type": "quiz",
-          "description": "Combat trial testing the audience archetypes and the six-stage presentation arc."
-        },
-        {
-          "sectionId": "reflection-prep",
-          "title": "Sequencing the Presentation Arc",
-          "type": "reflection-sequence",
-          "description": "Timed reordering challenge: assemble the six stages of the manual presentation in order."
-        },
-        {
-          "sectionId": "tool-landscape",
-          "title": "Presentation & Docs Tooling Landscape",
-          "type": "taxonomy-browser",
-          "description": "Five tool categories: markdown decks, docs-as-code sites, interactive API references, in-app & in-code tours, and screen recording."
-        },
-        {
-          "sectionId": "quiz-tools",
-          "title": "Trial of the Instrument Choice",
-          "type": "quiz",
-          "description": "Combat trial testing which tool fits which presenting job: Marp, Slidev, reveal.js, Docusaurus, Swagger UI, Code Tour, Intro.js, OBS."
-        },
-        {
-          "sectionId": "deck-tradeoffs",
-          "title": "Launch Webinar Trade-off Workshop",
-          "type": "tradeoff-sandbox",
-          "description": "Forge a launch webinar loadout: pick the demo medium, deck format, and take-home reference while balancing clarity, reliability, prep, and reuse."
-        },
-        {
-          "sectionId": "tool-decision-tree",
-          "title": "Instrument Selection Advisor",
-          "type": "decision-tree",
-          "description": "Diagnostic advisor: answer three questions about your audience and format, get a tailored presentation tooling recommendation."
-        },
-        {
-          "sectionId": "docs-stack",
-          "title": "The Docs-as-Code Layer Stack",
-          "type": "pillar-layer",
-          "description": "Lego-stack view of the manual platform: authoring sources, generators, delivery web app, and the live/in-app layer."
-        },
-        {
-          "sectionId": "publish-flow",
-          "title": "Docs-as-Code Publish Flow",
-          "type": "flowchart",
-          "description": "Event Storming walkthrough: commit → CI preview → review → publish (or revise) for manual changes."
-        },
-        {
-          "sectionId": "scenario-launch",
-          "title": "Scenario: The Release Webinar",
-          "type": "scenario",
-          "description": "Branching narrative: present a Web App manual to a mixed audience while the live demo falls apart. Your choices are graded."
-        },
-        {
-          "sectionId": "glossary",
-          "title": "Lexicon of the Realm",
-          "type": "flashcards",
-          "description": "Key vocabulary: docs-as-code, permalink, runbook, quickstart, guided tour, demo fallback, DX, annotated screenshot."
-        },
-        {
-          "sectionId": "concept-map",
-          "title": "Concept Constellation",
-          "type": "concept-map",
-          "description": "Force-directed map of how audience, narrative, tools, and the docs-as-code pipeline connect."
-        },
-        {
-          "sectionId": "synthesis",
-          "title": "Synthesis Vault",
-          "type": "reflection-template",
-          "description": "Fill-in-the-blank synthesis across all three tracks — the final ritual before the Boss Lair."
-        }
-      ]
-    }
+        "impact": "Presentations grounded in one realistic task and delivered with the right instrument (a Marp deck for a release webinar, a Swagger UI playground for API consumers, an in-app tour for self-serve onboarding) measurably cut support tickets, speed up onboarding, and make the manual self-service instead of person-service.",
+        "summary": "A manual nobody watches or finds is a manual that doesn't exist. Teams spend weeks writing documentation, then present it in the format least likely to stick — walls of text read aloud — and then wonder why the support queue never shrinks."
+      }
+    },
+    "type": "intro"
   },
   {
     "folder": "audience-map",
-    "type": "taxonomy-browser",
     "props": {
-      "title": "Audience Map — Who Is the Manual For?",
       "categories": [
         {
-          "icon": "Users",
-          "title": "End Users",
-          "subtitle": "Business users & customers",
+          "analogy": "A GPS navigation app — it never explains how the engine works; it says 'turn left in 200 meters' at exactly the right moment.",
+          "color": "green",
           "description": "People who complete business tasks in the Web App day to day and need the manual to get unstuck in under two minutes.",
           "details": "End users do not care which database backs the app. They need task-oriented walkthroughs: 'How do I export the monthly invoice report?' Show annotated screenshots of the real UI, name the exact buttons to click, and state where the permanent permalink to that page lives. Every click you skip in the slides is a support ticket you create later.",
-          "analogy": "A GPS navigation app — it never explains how the engine works; it says 'turn left in 200 meters' at exactly the right moment.",
-          "primaryFocus": "Task-oriented walkthroughs of real UI screens",
+          "icon": "Users",
           "inScope": [
             "Step-by-step happy paths for the top everyday tasks",
             "Annotated screenshots with numbered callouts on exact buttons",
@@ -140,16 +136,16 @@
             "Internal microservice architecture diagrams",
             "API request/response payload formats"
           ],
-          "color": "green"
+          "primaryFocus": "Task-oriented walkthroughs of real UI screens",
+          "subtitle": "Business users & customers",
+          "title": "End Users"
         },
         {
-          "icon": "ServerCog",
-          "title": "Operators & Admins",
-          "subtitle": "SRE, IT support, platform teams",
+          "analogy": "An aircraft emergency checklist — terse, ordered, unambiguous, and identical every time the cabin altitude warning sounds.",
+          "color": "peach",
           "description": "People who keep the IT system alive at 2am. They need configuration references, runbooks, and troubleshooting flows more than feature tours.",
           "details": "Operators read manuals defensively: 'what breaks, how do I see it breaking, and what do I type to fix it?' Present runbooks as decision flows (symptom → diagnosis → remediation), show the actual config keys and environment variables, and demo the monitoring dashboards live. Keep every command copy-pasteable from the docs site permalink.",
-          "analogy": "An aircraft emergency checklist — terse, ordered, unambiguous, and identical every time the cabin altitude warning sounds.",
-          "primaryFocus": "Configuration, monitoring, and incident runbooks",
+          "icon": "ServerCog",
           "inScope": [
             "Install/upgrade/rollback procedures with exact commands",
             "Config file and environment variable reference tables",
@@ -159,16 +155,16 @@
             "Marketing feature overviews",
             "UI walkthroughs of end-user business tasks"
           ],
-          "color": "peach"
+          "primaryFocus": "Configuration, monitoring, and incident runbooks",
+          "subtitle": "SRE, IT support, platform teams",
+          "title": "Operators & Admins"
         },
         {
-          "icon": "Code",
-          "title": "Developers (DX)",
-          "subtitle": "Integrators & internal engineers",
+          "analogy": "A well-stocked workshop with labeled tools and a workbench — developers don't want a slideshow about the tools, they want to start building in ten minutes.",
+          "color": "sky",
           "description": "People building on top of the system. For them the manual is the product: quickstarts, API references, and runnable code samples define the Developer Experience.",
           "details": "Developers judge a manual the way chefs judge a kitchen — by how fast they can get something working. Lead with a five-minute quickstart that compiles, keep API references generated from the OpenAPI spec so they never drift, and make every code sample copy-pasteable and tested. In a DX presentation, live-code the integration instead of photographing it.",
-          "analogy": "A well-stocked workshop with labeled tools and a workbench — developers don't want a slideshow about the tools, they want to start building in ten minutes.",
-          "primaryFocus": "Quickstarts, API references, and copy-pasteable code samples",
+          "icon": "Code",
           "inScope": [
             "Getting-started quickstart that works on first try",
             "API/SDK reference generated from OpenAPI or source annotations",
@@ -178,20 +174,20 @@
             "Business-process background the integrator will never touch",
             "Screenshots of UI screens the developer never renders"
           ],
-          "color": "sky"
+          "primaryFocus": "Quickstarts, API references, and copy-pasteable code samples",
+          "subtitle": "Integrators & internal engineers",
+          "title": "Developers (DX)"
         }
-      ]
-    }
+      ],
+      "title": "Audience Map — Who Is the Manual For?"
+    },
+    "type": "taxonomy-browser"
   },
   {
     "folder": "narrative-arc",
-    "type": "bullets",
     "props": {
-      "title": "The Six-Stage Manual Presentation Arc",
-      "ordered": true,
       "items": [
         {
-          "text": "Stage 1 — Hook with the user's pain, not the architecture",
           "children": [
             {
               "text": "Open with the task that currently makes people groan, e.g. 'expensing a trip takes 9 clicks today'"
@@ -199,18 +195,18 @@
             {
               "text": "Never open with a microservices diagram — the audience hasn't asked for it yet"
             }
-          ]
+          ],
+          "text": "Stage 1 — Hook with the user's pain, not the architecture"
         },
         {
-          "text": "Stage 2 — Roadmap: state what they will be able to do by the end",
           "children": [
             {
               "text": "'By the end you can complete onboarding, refund, and export without asking support'"
             }
-          ]
+          ],
+          "text": "Stage 2 — Roadmap: state what they will be able to do by the end"
         },
         {
-          "text": "Stage 3 — One-scenario walkthrough",
           "children": [
             {
               "text": "Follow ONE realistic persona completing ONE task end-to-end"
@@ -218,10 +214,10 @@
             {
               "text": "Two shallow scenarios beat one deep one? No — one deep scenario beats two shallow ones"
             }
-          ]
+          ],
+          "text": "Stage 3 — One-scenario walkthrough"
         },
         {
-          "text": "Stage 4 — Live demo in the running product",
           "children": [
             {
               "text": "Drive the real UI, not screenshots pretending to be a UI"
@@ -229,18 +225,18 @@
             {
               "text": "Always have a pre-recorded OBS Studio fallback clip in the presenter's pocket"
             }
-          ]
+          ],
+          "text": "Stage 4 — Live demo in the running product"
         },
         {
-          "text": "Stage 5 — Gotchas: show the two or three known failure modes",
           "children": [
             {
               "text": "Present the error message, the cause, and the documented fix side by side"
             }
-          ]
+          ],
+          "text": "Stage 5 — Gotchas: show the two or three known failure modes"
         },
         {
-          "text": "Stage 6 — Recap + permalink",
           "children": [
             {
               "text": "End every manual presentation by pinning the permanent docs-site permalink to this slide"
@@ -248,153 +244,154 @@
             {
               "text": "Tell people where the search box is — findability beats memorability"
             }
-          ]
+          ],
+          "text": "Stage 6 — Recap + permalink"
         }
-      ]
-    }
+      ],
+      "ordered": true,
+      "title": "The Six-Stage Manual Presentation Arc"
+    },
+    "type": "bullets"
   },
   {
     "folder": "quiz-narrative",
-    "type": "quiz",
     "props": {
-      "title": "Trial of the Narrative Arc",
       "questions": [
         {
+          "choices": [
+            {
+              "correct": false,
+              "explanation": "The arc explicitly warns: never open with a microservices diagram — the audience hasn't asked for it yet.",
+              "id": "a",
+              "text": "A microservices architecture diagram so everyone shares context"
+            },
+            {
+              "correct": true,
+              "explanation": "Correct. Stage 1 hooks with the user's pain, not the architecture.",
+              "id": "b",
+              "text": "The user task that currently makes people groan, e.g. 'expensing a trip takes 9 clicks today'"
+            },
+            {
+              "correct": false,
+              "explanation": "Feature lists are a release notes read-aloud — the exact failure mode this realm fights. Hook with the user's pain instead.",
+              "id": "c",
+              "text": "A full list of every feature shipped in the release"
+            }
+          ],
+          "hint": "Stage 1 says what NOT to open with.",
           "id": "q1",
-          "question": "According to the presentation arc, what is the best way to open a manual presentation?",
-          "choices": [
-            {
-              "id": "a",
-              "text": "A microservices architecture diagram so everyone shares context",
-              "correct": false,
-              "explanation": "The arc explicitly warns: never open with a microservices diagram — the audience hasn't asked for it yet."
-            },
-            {
-              "id": "b",
-              "text": "The user task that currently makes people groan, e.g. 'expensing a trip takes 9 clicks today'",
-              "correct": true,
-              "explanation": "Correct. Stage 1 hooks with the user's pain, not the architecture."
-            },
-            {
-              "id": "c",
-              "text": "A full list of every feature shipped in the release",
-              "correct": false,
-              "explanation": "Feature lists are a release notes read-aloud — the exact failure mode this realm fights. Hook with the user's pain instead."
-            }
-          ],
-          "hint": "Stage 1 says what NOT to open with."
+          "question": "According to the presentation arc, what is the best way to open a manual presentation?"
         },
         {
+          "choices": [
+            {
+              "correct": true,
+              "explanation": "Correct. One deep scenario beats two shallow ones — depth is what makes the manual stick.",
+              "id": "a",
+              "text": "One realistic persona completing one task end-to-end"
+            },
+            {
+              "correct": false,
+              "explanation": "The arc says the opposite: one deep scenario beats two shallow ones.",
+              "id": "b",
+              "text": "Two shallow scenarios for broader coverage"
+            },
+            {
+              "correct": false,
+              "explanation": "Slide count is not the constraint — depth of one end-to-end persona task is what makes Stage 3 work.",
+              "id": "c",
+              "text": "As many as fit in the slide deck"
+            }
+          ],
+          "hint": "One bullet in Stage 3 answers with a rhetorical question.",
           "id": "q2",
-          "question": "During the one-scenario walkthrough stage, how many scenarios should you cover?",
-          "choices": [
-            {
-              "id": "a",
-              "text": "One realistic persona completing one task end-to-end",
-              "correct": true,
-              "explanation": "Correct. One deep scenario beats two shallow ones — depth is what makes the manual stick."
-            },
-            {
-              "id": "b",
-              "text": "Two shallow scenarios for broader coverage",
-              "correct": false,
-              "explanation": "The arc says the opposite: one deep scenario beats two shallow ones."
-            },
-            {
-              "id": "c",
-              "text": "As many as fit in the slide deck",
-              "correct": false,
-              "explanation": "Slide count is not the constraint — depth of one end-to-end persona task is what makes Stage 3 work."
-            }
-          ],
-          "hint": "One bullet in Stage 3 answers with a rhetorical question."
+          "question": "During the one-scenario walkthrough stage, how many scenarios should you cover?"
         },
         {
+          "choices": [
+            {
+              "correct": false,
+              "explanation": "End users need task walkthroughs of real UI screens; internal config and alert triage are explicitly out of their scope.",
+              "id": "a",
+              "text": "End users"
+            },
+            {
+              "correct": true,
+              "explanation": "Correct. Operators read manuals defensively: what breaks, how do I see it breaking, what do I type to fix it.",
+              "id": "b",
+              "text": "Operators & admins"
+            },
+            {
+              "correct": false,
+              "explanation": "Developers want quickstarts, API references, and runnable code samples — runbooks and alert triage belong to the operators archetype.",
+              "id": "c",
+              "text": "Developers (DX)"
+            }
+          ],
+          "hint": "Think about who is awake at 2am keeping the system alive.",
           "id": "q3",
-          "question": "Which audience archetype needs config references, monitoring dashboards, and incident runbooks the most?",
-          "choices": [
-            {
-              "id": "a",
-              "text": "End users",
-              "correct": false,
-              "explanation": "End users need task walkthroughs of real UI screens; internal config and alert triage are explicitly out of their scope."
-            },
-            {
-              "id": "b",
-              "text": "Operators & admins",
-              "correct": true,
-              "explanation": "Correct. Operators read manuals defensively: what breaks, how do I see it breaking, what do I type to fix it."
-            },
-            {
-              "id": "c",
-              "text": "Developers (DX)",
-              "correct": false,
-              "explanation": "Developers want quickstarts, API references, and runnable code samples — runbooks and alert triage belong to the operators archetype."
-            }
-          ],
-          "hint": "Think about who is awake at 2am keeping the system alive."
+          "question": "Which audience archetype needs config references, monitoring dashboards, and incident runbooks the most?"
         },
         {
+          "choices": [
+            {
+              "correct": false,
+              "explanation": "Roadmap teasers belong to product pitches. Stage 6 is about making the manual findable after the talk ends.",
+              "id": "a",
+              "text": "A teaser for the next release's roadmap"
+            },
+            {
+              "correct": true,
+              "explanation": "Correct. Pin the permalink to the slide and teach people where the search box lives — findability beats memorability.",
+              "id": "b",
+              "text": "A recap plus the permanent docs-site permalink, and where the search box is"
+            },
+            {
+              "correct": false,
+              "explanation": "Memorability is not the goal — findability is. End with the permalink and the search box, not a pop quiz.",
+              "id": "c",
+              "text": "A quiz to make sure people remember everything"
+            }
+          ],
+          "hint": "Stage 6 has two children, and both are about what happens after the talk.",
           "id": "q4",
-          "question": "What should the final moment of a manual presentation always include?",
-          "choices": [
-            {
-              "id": "a",
-              "text": "A teaser for the next release's roadmap",
-              "correct": false,
-              "explanation": "Roadmap teasers belong to product pitches. Stage 6 is about making the manual findable after the talk ends."
-            },
-            {
-              "id": "b",
-              "text": "A recap plus the permanent docs-site permalink, and where the search box is",
-              "correct": true,
-              "explanation": "Correct. Pin the permalink to the slide and teach people where the search box lives — findability beats memorability."
-            },
-            {
-              "id": "c",
-              "text": "A quiz to make sure people remember everything",
-              "correct": false,
-              "explanation": "Memorability is not the goal — findability is. End with the permalink and the search box, not a pop quiz."
-            }
-          ],
-          "hint": "Stage 6 has two children, and both are about what happens after the talk."
+          "question": "What should the final moment of a manual presentation always include?"
         },
         {
-          "id": "q5",
-          "question": "What safety net must a live product demo in Stage 4 always have?",
           "choices": [
             {
+              "correct": false,
+              "explanation": "The taught safety net is simpler and cheaper: a pre-recorded fallback clip kept ready in the presenter's pocket.",
               "id": "a",
-              "text": "A second presenter driving a backup laptop",
-              "correct": false,
-              "explanation": "The taught safety net is simpler and cheaper: a pre-recorded fallback clip kept ready in the presenter's pocket."
+              "text": "A second presenter driving a backup laptop"
             },
             {
-              "id": "b",
-              "text": "A pre-recorded fallback clip (e.g. made with OBS Studio)",
               "correct": true,
-              "explanation": "Correct. Stage 4 demands a pre-recorded OBS Studio fallback clip so a frozen staging site never kills the talk."
+              "explanation": "Correct. Stage 4 demands a pre-recorded OBS Studio fallback clip so a frozen staging site never kills the talk.",
+              "id": "b",
+              "text": "A pre-recorded fallback clip (e.g. made with OBS Studio)"
             },
             {
-              "id": "c",
-              "text": "High-resolution screenshots to click through instead",
               "correct": false,
-              "explanation": "Screenshots pretending to be a UI are what Stage 4 explicitly rejects; the fallback is a pre-recorded video clip."
+              "explanation": "Screenshots pretending to be a UI are what Stage 4 explicitly rejects; the fallback is a pre-recorded video clip.",
+              "id": "c",
+              "text": "High-resolution screenshots to click through instead"
             }
           ],
-          "hint": "It is recorded before the presentation ever starts."
+          "hint": "It is recorded before the presentation ever starts.",
+          "id": "q5",
+          "question": "What safety net must a live product demo in Stage 4 always have?"
         }
-      ]
-    }
+      ],
+      "title": "Trial of the Narrative Arc"
+    },
+    "type": "quiz"
   },
   {
     "folder": "reflection-prep",
-    "type": "reflection-sequence",
     "props": {
-      "title": "Rehearsal Chamber",
       "challenges": [
         {
-          "prompt": "Reassemble the Six-Stage Manual Presentation Arc in the correct chronological order:",
           "items": [
             {
               "id": "drag-recap",
@@ -421,6 +418,7 @@
               "text": "One-scenario walkthrough of a single persona task end-to-end"
             }
           ],
+          "prompt": "Reassemble the Six-Stage Manual Presentation Arc in the correct chronological order:",
           "solution": [
             "drag-hook",
             "drag-roadmap",
@@ -430,23 +428,21 @@
             "drag-recap"
           ]
         }
-      ]
-    }
+      ],
+      "title": "Rehearsal Chamber"
+    },
+    "type": "reflection-sequence"
   },
   {
     "folder": "tool-landscape",
-    "type": "taxonomy-browser",
     "props": {
-      "title": "Presentation & Docs Tooling Landscape",
       "categories": [
         {
-          "icon": "FileText",
-          "title": "Markdown-Native Slide Decks",
-          "subtitle": "Marp · Slidev · reveal.js",
+          "analogy": "A README.md that stands up and gives a talk — version-controlled, diff-able, and reproducible like code.",
+          "color": "mauve",
           "description": "Write slides as plain markdown files that compile to HTML, PDF, or PowerPoint — your deck lives in the same Git repo and pull requests as the code it presents.",
           "details": "Marp turns CommonMark into slides with theme directives and exports to PDF and PPTX for the people who insist on PowerPoint. Slidev adds Vue components, live coding blocks, and presenter notes for developer audiences. reveal.js builds presentations as HTML/JS web apps with nested vertical slides, speaker notes, and Markdown fragments — a deck you can literally deploy to the same web server as the Web App.",
-          "analogy": "A README.md that stands up and gives a talk — version-controlled, diff-able, and reproducible like code.",
-          "primaryFocus": "Slides authored as code: versioned, themed, and exportable",
+          "icon": "FileText",
           "inScope": [
             "Marp: markdown → HTML/PDF/PPTX slides with themes",
             "Slidev: Vue-powered slides with live code editing and presenter mode",
@@ -456,16 +452,16 @@
             "Drag-and-drop design tools with no text source of truth",
             "Long-form hosted documentation sites (see Docs-as-Code Sites)"
           ],
-          "color": "mauve"
+          "primaryFocus": "Slides authored as code: versioned, themed, and exportable",
+          "subtitle": "Marp · Slidev · reveal.js",
+          "title": "Markdown-Native Slide Decks"
         },
         {
-          "icon": "Library",
-          "title": "Docs-as-Code Sites",
-          "subtitle": "Docusaurus · MkDocs Material · VitePress · mdBook",
+          "analogy": "The library the presentation was held in front of — the talk is live, but the books stay shelved, catalogued, and findable forever.",
+          "color": "green",
           "description": "Static site generators that turn a folder of markdown/MDX into a searchable, versioned documentation web app — the durable home the manual presentation points at.",
           "details": "Docusaurus (MDX + React) gives versioned docs, a built-in search, and interactive components. MkDocs Material with mkdocs.yml is the fast, themeable workhorse for internal IT system manuals. VitePress pairs Vue-native speed with markdown for DX portals. mdBook is minimal and perfect for pure-text handbooks. All of them accept the same markdown you already wrote in the Marp deck's speaker notes, so the deck and the manual never diverge.",
-          "analogy": "The library the presentation was held in front of — the talk is live, but the books stay shelved, catalogued, and findable forever.",
-          "primaryFocus": "Durable, searchable, versioned manual delivery on the web",
+          "icon": "Library",
           "inScope": [
             "Docusaurus MDX docs with versioning and sidebar navigation",
             "MkDocs Material themed sites for internal runbooks and IT manuals",
@@ -475,16 +471,16 @@
             "Linear one-shot presentation delivery (use a deck tool)",
             "Interactive API consoles rendered from OpenAPI (see API Reference category)"
           ],
-          "color": "green"
+          "primaryFocus": "Durable, searchable, versioned manual delivery on the web",
+          "subtitle": "Docusaurus · MkDocs Material · VitePress · mdBook",
+          "title": "Docs-as-Code Sites"
         },
         {
-          "icon": "Plug",
-          "title": "Interactive API References & Playgrounds",
-          "subtitle": "Swagger UI · Redoc · Storybook",
+          "analogy": "A test drive instead of a brochure about the car — the reference is the road.",
+          "color": "sky",
           "description": "For developer-facing manuals: render the API itself as the documentation so consumers read, try, and trust the real contract instead of a stale screenshot.",
           "details": "Swagger UI renders an OpenAPI spec as an explorable, 'try it now' reference page. Redoc produces a clean three-column readable reference from the same spec. Storybook turns each UI component or SDK usage example into an interactive, isolated playground. In a DX presentation, opening the live playground IS the demo — the manual cannot be out of date because it is generated from the code.",
-          "analogy": "A test drive instead of a brochure about the car — the reference is the road.",
-          "primaryFocus": "Executable, always-current reference documentation from specs",
+          "icon": "Plug",
           "inScope": [
             "Swagger UI interactive API consoles from OpenAPI specs",
             "Redoc rendered API references",
@@ -494,16 +490,16 @@
             "Narrative onboarding prose (put it in the docs site and link over)",
             "End-user UI task walkthroughs"
           ],
-          "color": "sky"
+          "primaryFocus": "Executable, always-current reference documentation from specs",
+          "subtitle": "Swagger UI · Redoc · Storybook",
+          "title": "Interactive API References & Playgrounds"
         },
         {
-          "icon": "Footprints",
-          "title": "In-App & In-Code Guided Tours",
-          "subtitle": "Intro.js · Shepherd · VS Code Code Tour",
+          "analogy": "A museum audio guide that starts talking when you walk into the actual room, instead of a slideshow about the museum.",
+          "color": "yellow",
           "description": "Teach inside the artifact itself: overlay step-by-step tours on the running Web App, or pin narrated steps to real files in the repository.",
           "details": "Intro.js and Shepherd.js render highlight-and-explain overlay tours directly on your Web App screens — perfect for self-serve onboarding that never goes stale between releases. VS Code Code Tour ships .tour files in the repo that walk a developer through the manual's example project file by file, line by line. The presentation hands off into the tour instead of ending in a blank slide.",
-          "analogy": "A museum audio guide that starts talking when you walk into the actual room, instead of a slideshow about the museum.",
-          "primaryFocus": "Self-serve guided learning embedded in the product or repo",
+          "icon": "Footprints",
           "inScope": [
             "Intro.js / Shepherd overlay walkthroughs on live Web App screens",
             "VS Code Code Tour (.tour) step files anchored to repository files",
@@ -513,16 +509,16 @@
             "Front-facing keynote presentation delivery",
             "Video editing suites (see Recording & Async Demos)"
           ],
-          "color": "yellow"
+          "primaryFocus": "Self-serve guided learning embedded in the product or repo",
+          "subtitle": "Intro.js · Shepherd · VS Code Code Tour",
+          "title": "In-App & In-Code Guided Tours"
         },
         {
-          "icon": "Video",
-          "title": "Screen Recording & Async Demos",
-          "subtitle": "OBS Studio · embedded clips",
+          "analogy": "A stunt double standing by for the dangerous scene — same shot, zero risk of the live staging site freezing on camera.",
+          "color": "red",
           "description": "Record the walkthrough once at high fidelity; reuse it as the live-demo fallback clip, the async manual for absent colleagues, and the GIF embedded in the docs page.",
           "details": "OBS Studio records the real product UI with microphone narration for free and produces the pre-recorded fallback clip every Stage 4 live demo must carry. A three-minute cut of the same recording becomes the async manual for people in other time zones, and a trimmed GIF answers the question inside the docs page itself — no 'meeting recording' 47-minute graveyard.",
-          "analogy": "A stunt double standing by for the dangerous scene — same shot, zero risk of the live staging site freezing on camera.",
-          "primaryFocus": "One recording, three lives: fallback clip, async manual, docs GIF",
+          "icon": "Video",
           "inScope": [
             "OBS Studio screen + microphone capture of the real UI",
             "Short clips embedded in the docs site next to the written steps",
@@ -532,1139 +528,952 @@
             "Interactive clickable simulation tools",
             "Static annotated screenshots (cheaper, but a different instrument)"
           ],
-          "color": "red"
+          "primaryFocus": "One recording, three lives: fallback clip, async manual, docs GIF",
+          "subtitle": "OBS Studio · embedded clips",
+          "title": "Screen Recording & Async Demos"
         }
-      ]
-    }
+      ],
+      "title": "Presentation & Docs Tooling Landscape"
+    },
+    "type": "taxonomy-browser"
   },
   {
     "folder": "quiz-tools",
-    "type": "quiz",
     "props": {
-      "title": "Trial of the Instrument Choice",
       "questions": [
         {
+          "choices": [
+            {
+              "correct": true,
+              "explanation": "Correct. Marp compiles CommonMark into themed slides and exports to HTML, PDF, and PPTX.",
+              "id": "a",
+              "text": "Marp"
+            },
+            {
+              "correct": false,
+              "explanation": "Redoc renders readable API references from OpenAPI specs — it does not make slide decks.",
+              "id": "b",
+              "text": "Redoc"
+            },
+            {
+              "correct": false,
+              "explanation": "mdBook is a minimal docs site generator for pure-text handbooks, not a slide deck exporter.",
+              "id": "c",
+              "text": "mdBook"
+            }
+          ],
+          "hint": "It is described as 'a README.md that stands up and gives a talk'.",
           "id": "q1",
-          "question": "You want to author slides as plain markdown in the same Git repo as the code, and still export a PPTX for stakeholders who demand PowerPoint. Which tool fits?",
-          "choices": [
-            {
-              "id": "a",
-              "text": "Marp",
-              "correct": true,
-              "explanation": "Correct. Marp compiles CommonMark into themed slides and exports to HTML, PDF, and PPTX."
-            },
-            {
-              "id": "b",
-              "text": "Redoc",
-              "correct": false,
-              "explanation": "Redoc renders readable API references from OpenAPI specs — it does not make slide decks."
-            },
-            {
-              "id": "c",
-              "text": "mdBook",
-              "correct": false,
-              "explanation": "mdBook is a minimal docs site generator for pure-text handbooks, not a slide deck exporter."
-            }
-          ],
-          "hint": "It is described as 'a README.md that stands up and gives a talk'."
+          "question": "You want to author slides as plain markdown in the same Git repo as the code, and still export a PPTX for stakeholders who demand PowerPoint. Which tool fits?"
         },
         {
+          "choices": [
+            {
+              "correct": false,
+              "explanation": "Prose release notes drift exactly like screenshots do. Generate the reference from the OpenAPI spec instead.",
+              "id": "a",
+              "text": "Longer release-notes emails"
+            },
+            {
+              "correct": true,
+              "explanation": "Correct. Swagger UI (and Redoc) render the live contract — the reference cannot be out of date because it is generated from the code.",
+              "id": "b",
+              "text": "A Swagger UI console rendered from the OpenAPI spec"
+            },
+            {
+              "correct": false,
+              "explanation": "A screenshot of a request is still a screenshot — it goes stale the moment the API changes. Render the spec itself.",
+              "id": "c",
+              "text": "High-resolution screenshots of Postman requests"
+            }
+          ],
+          "hint": "The manual becomes the running contract itself.",
           "id": "q2",
-          "question": "Your developer audience keeps getting burned by API docs that drifted from the real API. What instrument makes the reference impossible to stale?",
-          "choices": [
-            {
-              "id": "a",
-              "text": "Longer release-notes emails",
-              "correct": false,
-              "explanation": "Prose release notes drift exactly like screenshots do. Generate the reference from the OpenAPI spec instead."
-            },
-            {
-              "id": "b",
-              "text": "A Swagger UI console rendered from the OpenAPI spec",
-              "correct": true,
-              "explanation": "Correct. Swagger UI (and Redoc) render the live contract — the reference cannot be out of date because it is generated from the code."
-            },
-            {
-              "id": "c",
-              "text": "High-resolution screenshots of Postman requests",
-              "correct": false,
-              "explanation": "A screenshot of a request is still a screenshot — it goes stale the moment the API changes. Render the spec itself."
-            }
-          ],
-          "hint": "The manual becomes the running contract itself."
+          "question": "Your developer audience keeps getting burned by API docs that drifted from the real API. What instrument makes the reference impossible to stale?"
         },
         {
+          "choices": [
+            {
+              "correct": true,
+              "explanation": "Correct. Intro.js and Shepherd render step-by-step overlay tours on the live product screens.",
+              "id": "a",
+              "text": "Intro.js or Shepherd in-app tours"
+            },
+            {
+              "correct": false,
+              "explanation": "Marp makes slides; an overlay tour on live screens is the job of the In-App & In-Code Guided Tours category (Intro.js, Shepherd).",
+              "id": "b",
+              "text": "Marp theme directives"
+            },
+            {
+              "correct": false,
+              "explanation": "OBS records video — clickable, self-serve overlay tours on running screens are Intro.js/Shepherd territory.",
+              "id": "c",
+              "text": "OBS Studio"
+            }
+          ],
+          "hint": "A museum audio guide inside the actual room.",
           "id": "q3",
-          "question": "Instead of a keynote, you want users to learn the Web App's new onboarding flow by clicking through it with highlight-and-explain overlays. Which category do you reach for?",
-          "choices": [
-            {
-              "id": "a",
-              "text": "Intro.js or Shepherd in-app tours",
-              "correct": true,
-              "explanation": "Correct. Intro.js and Shepherd render step-by-step overlay tours on the live product screens."
-            },
-            {
-              "id": "b",
-              "text": "Marp theme directives",
-              "correct": false,
-              "explanation": "Marp makes slides; an overlay tour on live screens is the job of the In-App & In-Code Guided Tours category (Intro.js, Shepherd)."
-            },
-            {
-              "id": "c",
-              "text": "OBS Studio",
-              "correct": false,
-              "explanation": "OBS records video — clickable, self-serve overlay tours on running screens are Intro.js/Shepherd territory."
-            }
-          ],
-          "hint": "A museum audio guide inside the actual room."
+          "question": "Instead of a keynote, you want users to learn the Web App's new onboarding flow by clicking through it with highlight-and-explain overlays. Which category do you reach for?"
         },
         {
+          "choices": [
+            {
+              "correct": true,
+              "explanation": "Correct. OBS Studio captures the real UI with narration; the same recording serves as fallback, async manual, and embedded clip.",
+              "id": "a",
+              "text": "A screen recording made with OBS Studio, reused as fallback clip, async manual, and docs GIF"
+            },
+            {
+              "correct": false,
+              "explanation": "reveal.js is a presentation framework, not a recording tool. The taught safety net is a pre-recorded OBS Studio clip.",
+              "id": "b",
+              "text": "A second presenter with a backup laptop running reveal.js"
+            },
+            {
+              "correct": false,
+              "explanation": "Docusaurus hosts docs sites; the fallback clip is a screen recording captured with OBS Studio.",
+              "id": "c",
+              "text": "An animated walkthrough generated by Docusaurus"
+            }
+          ],
+          "hint": "Recorded once, it lives three lives.",
           "id": "q4",
-          "question": "Where does the safety-net clip for a live product demo come from, and which tool makes it?",
-          "choices": [
-            {
-              "id": "a",
-              "text": "A screen recording made with OBS Studio, reused as fallback clip, async manual, and docs GIF",
-              "correct": true,
-              "explanation": "Correct. OBS Studio captures the real UI with narration; the same recording serves as fallback, async manual, and embedded clip."
-            },
-            {
-              "id": "b",
-              "text": "A second presenter with a backup laptop running reveal.js",
-              "correct": false,
-              "explanation": "reveal.js is a presentation framework, not a recording tool. The taught safety net is a pre-recorded OBS Studio clip."
-            },
-            {
-              "id": "c",
-              "text": "An animated walkthrough generated by Docusaurus",
-              "correct": false,
-              "explanation": "Docusaurus hosts docs sites; the fallback clip is a screen recording captured with OBS Studio."
-            }
-          ],
-          "hint": "Recorded once, it lives three lives."
+          "question": "Where does the safety-net clip for a live product demo come from, and which tool makes it?"
         },
         {
-          "id": "q5",
-          "question": "Which markdown-deck tool is specifically described as a presentation that runs as an HTML/JS web app, deployable to the same web server as the product itself?",
           "choices": [
             {
+              "correct": false,
+              "explanation": "Marp exports static decks to HTML/PDF/PPTX; the browser-native HTML/JS presentation framework in this landscape is reveal.js.",
               "id": "a",
-              "text": "Marp",
-              "correct": false,
-              "explanation": "Marp exports static decks to HTML/PDF/PPTX; the browser-native HTML/JS presentation framework in this landscape is reveal.js."
+              "text": "Marp"
             },
             {
-              "id": "b",
-              "text": "reveal.js",
               "correct": true,
-              "explanation": "Correct. reveal.js builds presentations as HTML/JS web apps with nested slides and speaker notes."
+              "explanation": "Correct. reveal.js builds presentations as HTML/JS web apps with nested slides and speaker notes.",
+              "id": "b",
+              "text": "reveal.js"
             },
             {
-              "id": "c",
-              "text": "VitePress",
               "correct": false,
-              "explanation": "VitePress builds documentation sites from markdown; the HTML/JS presentation framework is reveal.js."
+              "explanation": "VitePress builds documentation sites from markdown; the HTML/JS presentation framework is reveal.js.",
+              "id": "c",
+              "text": "VitePress"
             }
           ],
-          "hint": "Its decks open in a browser tab like any other web app."
+          "hint": "Its decks open in a browser tab like any other web app.",
+          "id": "q5",
+          "question": "Which markdown-deck tool is specifically described as a presentation that runs as an HTML/JS web app, deployable to the same web server as the product itself?"
         }
-      ]
-    }
+      ],
+      "title": "Trial of the Instrument Choice"
+    },
+    "type": "quiz"
   },
   {
     "folder": "deck-tradeoffs",
-    "type": "tradeoff-sandbox",
     "props": {
-      "title": "Launch Webinar Trade-off Workshop",
       "scenarios": [
         {
-          "id": "launch-webinar",
-          "title": "Web App Manual Launch Webinar",
           "description": "You have 30 minutes to present the user manual of a new Web App to a mixed audience of end users and operators. Forge a loadout that lands the manual without melting down on stage.",
+          "id": "launch-webinar",
           "metrics": [
             {
+              "baseValue": 50,
+              "direction": "higher",
               "id": "clarity",
               "label": "Audience Clarity",
-              "baseValue": 50,
-              "min": 0,
               "max": 100,
-              "direction": "higher"
+              "min": 0
             },
             {
+              "baseValue": 50,
+              "direction": "higher",
               "id": "reliability",
               "label": "Demo Reliability",
-              "baseValue": 50,
-              "min": 0,
               "max": 100,
-              "direction": "higher"
+              "min": 0
             },
             {
+              "baseValue": 50,
+              "direction": "higher",
               "id": "prep",
               "label": "Prep Efficiency",
-              "baseValue": 50,
-              "min": 0,
               "max": 100,
-              "direction": "higher"
+              "min": 0
             },
             {
+              "baseValue": 50,
+              "direction": "higher",
               "id": "reuse",
               "label": "Reuse Value",
-              "baseValue": 50,
-              "min": 0,
               "max": 100,
-              "direction": "higher"
+              "min": 0
             }
           ],
           "steps": [
             {
-              "id": "demo-medium",
-              "title": "Main Walkthrough Medium",
-              "description": "Stage 3-4 of the arc: how do you show the one persona task being completed?",
-              "recommended": "live-plus-clip",
               "choices": [
                 {
+                  "cons": [
+                    {
+                      "description": "A frozen environment mid-demo derails the whole narrative.",
+                      "title": "One staging freeze from disaster"
+                    }
+                  ],
+                  "description": "Drive the real UI with no safety net.",
                   "id": "live-only",
                   "label": "Pure live demo in staging",
-                  "description": "Drive the real UI with no safety net.",
                   "metrics": {
                     "clarity": 10,
-                    "reliability": -25,
                     "prep": 10,
+                    "reliability": -25,
                     "reuse": -10
                   },
                   "pros": [
                     {
-                      "title": "Maximum authenticity",
-                      "description": "The audience watches the actual product, not a facsimile."
-                    }
-                  ],
-                  "cons": [
-                    {
-                      "title": "One staging freeze from disaster",
-                      "description": "A frozen environment mid-demo derails the whole narrative."
+                      "description": "The audience watches the actual product, not a facsimile.",
+                      "title": "Maximum authenticity"
                     }
                   ],
                   "whenToUse": "Only when the staging environment has a proven track record and the network is pristine."
                 },
                 {
+                  "cons": [
+                    {
+                      "description": "Recording and trimming the clip costs an hour up front.",
+                      "title": "Extra prep time"
+                    }
+                  ],
+                  "description": "Drive the real UI, with a recorded clip cued up in the presenter's pocket.",
                   "id": "live-plus-clip",
                   "label": "Live demo + OBS pre-recorded fallback clip",
-                  "description": "Drive the real UI, with a recorded clip cued up in the presenter's pocket.",
                   "metrics": {
                     "clarity": 15,
-                    "reliability": 20,
                     "prep": -10,
+                    "reliability": 20,
                     "reuse": 15
                   },
                   "pros": [
                     {
-                      "title": "The show never stops",
-                      "description": "If staging hiccups, switch to the clip mid-sentence and nobody blinks."
+                      "description": "If staging hiccups, switch to the clip mid-sentence and nobody blinks.",
+                      "title": "The show never stops"
                     },
                     {
-                      "title": "Recording lives three lives",
-                      "description": "The same clip becomes the async manual and the docs page embed."
-                    }
-                  ],
-                  "cons": [
-                    {
-                      "title": "Extra prep time",
-                      "description": "Recording and trimming the clip costs an hour up front."
+                      "description": "The same clip becomes the async manual and the docs page embed.",
+                      "title": "Recording lives three lives"
                     }
                   ],
                   "whyThisFits": "Stage 4 of the arc demands a pre-recorded fallback clip; the recording amortizes into the docs site afterward."
                 },
                 {
+                  "cons": [
+                    {
+                      "description": "The arc explicitly rejects faking the live demo.",
+                      "title": "Screenshots pretending to be a UI"
+                    }
+                  ],
+                  "description": "Click through numbered callouts of the UI in the deck.",
                   "id": "screenshots",
                   "label": "Static annotated screenshots",
-                  "description": "Click through numbered callouts of the UI in the deck.",
                   "metrics": {
                     "clarity": -5,
-                    "reliability": 25,
                     "prep": 15,
+                    "reliability": 25,
                     "reuse": 5
                   },
                   "pros": [
                     {
-                      "title": "Cannot break live",
-                      "description": "Zero runtime risk and fastest to prepare."
-                    }
-                  ],
-                  "cons": [
-                    {
-                      "title": "Screenshots pretending to be a UI",
-                      "description": "The arc explicitly rejects faking the live demo."
+                      "description": "Zero runtime risk and fastest to prepare.",
+                      "title": "Cannot break live"
                     }
                   ],
                   "whenToUse": "Acceptable for operators' runbook sections where exact config text matters more than flow."
                 }
-              ]
+              ],
+              "description": "Stage 3-4 of the arc: how do you show the one persona task being completed?",
+              "id": "demo-medium",
+              "recommended": "live-plus-clip",
+              "title": "Main Walkthrough Medium"
             },
             {
-              "id": "deck-format",
-              "title": "Slide Deck Format",
-              "description": "What instrument carries the hook, roadmap, and gotcha slides?",
-              "recommended": "marp",
               "choices": [
                 {
+                  "cons": [
+                    {
+                      "description": "Fewer interactive toys than Slidev or reveal.js.",
+                      "title": "Less flashy than coded decks"
+                    }
+                  ],
+                  "description": "Plain markdown slides in the product repo, exported to HTML/PDF/PPTX.",
                   "id": "marp",
                   "label": "Marp markdown deck",
-                  "description": "Plain markdown slides in the product repo, exported to HTML/PDF/PPTX.",
                   "metrics": {
                     "clarity": 5,
-                    "reliability": 5,
                     "prep": 10,
+                    "reliability": 5,
                     "reuse": 20
                   },
                   "pros": [
                     {
-                      "title": "Lives with the code",
-                      "description": "The deck gets reviewed in pull requests and never contradicts the manual."
+                      "description": "The deck gets reviewed in pull requests and never contradicts the manual.",
+                      "title": "Lives with the code"
                     },
                     {
-                      "title": "PPTX export for stakeholders",
-                      "description": "Satisfies the exec who only opens PowerPoint."
-                    }
-                  ],
-                  "cons": [
-                    {
-                      "title": "Less flashy than coded decks",
-                      "description": "Fewer interactive toys than Slidev or reveal.js."
+                      "description": "Satisfies the exec who only opens PowerPoint.",
+                      "title": "PPTX export for stakeholders"
                     }
                   ],
                   "whyThisFits": "A manual presentation should demonstrate the docs pipeline: the deck and the manual share one markdown source of truth."
                 },
                 {
+                  "cons": [
+                    {
+                      "description": "Custom components and browser decks add ways to fail mid-talk.",
+                      "title": "More moving parts on stage"
+                    }
+                  ],
+                  "description": "Vue components, live code blocks, or a full HTML/JS web-app deck.",
                   "id": "slidev-reveal",
                   "label": "Slidev / reveal.js interactive deck",
-                  "description": "Vue components, live code blocks, or a full HTML/JS web-app deck.",
                   "metrics": {
                     "clarity": 10,
-                    "reliability": -5,
                     "prep": -10,
+                    "reliability": -5,
                     "reuse": 10
                   },
                   "pros": [
                     {
-                      "title": "Live coding dazzles developers",
-                      "description": "Slidev's editable code blocks turn a DX talk into a workshop."
-                    }
-                  ],
-                  "cons": [
-                    {
-                      "title": "More moving parts on stage",
-                      "description": "Custom components and browser decks add ways to fail mid-talk."
+                      "description": "Slidev's editable code blocks turn a DX talk into a workshop.",
+                      "title": "Live coding dazzles developers"
                     }
                   ],
                   "whenToUse": "Developer Experience audiences where live code IS the message, and you have rehearsed twice."
                 },
                 {
+                  "cons": [
+                    {
+                      "description": "With no markdown source, slide text rots away from the docs site.",
+                      "title": "Diverges from the manual"
+                    }
+                  ],
+                  "description": "Drag-and-drop slides edited directly in a presentation app.",
                   "id": "handcrafted",
                   "label": "One-off clicker deck (no text source)",
-                  "description": "Drag-and-drop slides edited directly in a presentation app.",
                   "metrics": {
                     "clarity": 0,
-                    "reliability": 5,
                     "prep": 5,
+                    "reliability": 5,
                     "reuse": -15
                   },
                   "pros": [
                     {
-                      "title": "Familiar tooling",
-                      "description": "Everyone's org already knows the clicker."
-                    }
-                  ],
-                  "cons": [
-                    {
-                      "title": "Diverges from the manual",
-                      "description": "With no markdown source, slide text rots away from the docs site."
+                      "description": "Everyone's org already knows the clicker.",
+                      "title": "Familiar tooling"
                     }
                   ],
                   "whenToUse": "Last resort when policy forbids running anything but the corporate clicker."
                 }
-              ]
+              ],
+              "description": "What instrument carries the hook, roadmap, and gotcha slides?",
+              "id": "deck-format",
+              "recommended": "marp",
+              "title": "Slide Deck Format"
             },
             {
-              "id": "take-home",
-              "title": "Take-Home Reference",
-              "description": "Stage 6 recap: where does the manual live after the webinar ends?",
-              "recommended": "docs-site",
               "choices": [
                 {
+                  "cons": [
+                    {
+                      "description": "The docs site needs CI to stay true.",
+                      "title": "One more pipeline to maintain"
+                    }
+                  ],
+                  "description": "MkDocs/Docusaurus page with a permanent URL pinned on the final slide.",
                   "id": "docs-site",
                   "label": "Generated docs site permalink",
-                  "description": "MkDocs/Docusaurus page with a permanent URL pinned on the final slide.",
                   "metrics": {
                     "clarity": 10,
-                    "reliability": 5,
                     "prep": -5,
+                    "reliability": 5,
                     "reuse": 20
                   },
                   "pros": [
                     {
-                      "title": "Findability beats memorability",
-                      "description": "Searchable, versioned, and linkable forever."
-                    }
-                  ],
-                  "cons": [
-                    {
-                      "title": "One more pipeline to maintain",
-                      "description": "The docs site needs CI to stay true."
+                      "description": "Searchable, versioned, and linkable forever.",
+                      "title": "Findability beats memorability"
                     }
                   ],
                   "whyThisFits": "The arc's final stage is recap + permalink; a generated docs site is what makes the permalink real."
                 },
                 {
+                  "cons": [
+                    {
+                      "description": "No search, no updates, no follow-up links.",
+                      "title": "Dies in camera rolls"
+                    }
+                  ],
+                  "description": "Audience snaps a picture of slide 32 with their phone.",
                   "id": "slide-photo",
                   "label": "Photo of the final slide",
-                  "description": "Audience snaps a picture of slide 32 with their phone.",
                   "metrics": {
                     "clarity": -10,
-                    "reliability": 0,
                     "prep": 5,
+                    "reliability": 0,
                     "reuse": -10
                   },
                   "pros": [
                     {
-                      "title": "Zero effort",
-                      "description": "Literally nothing to build."
-                    }
-                  ],
-                  "cons": [
-                    {
-                      "title": "Dies in camera rolls",
-                      "description": "No search, no updates, no follow-up links."
+                      "description": "Literally nothing to build.",
+                      "title": "Zero effort"
                     }
                   ],
                   "whenToUse": "Never as the only artifact — at best a complement to a permalink."
                 },
                 {
+                  "cons": [
+                    {
+                      "description": "Non-developers in the room cannot use a repo README.",
+                      "title": "Hostile to end users and operators"
+                    }
+                  ],
+                  "description": "Point developers at the raw markdown in the Git repository.",
                   "id": "repo-readme",
                   "label": "'It's in the repo README'",
-                  "description": "Point developers at the raw markdown in the Git repository.",
                   "metrics": {
                     "clarity": -5,
-                    "reliability": 0,
                     "prep": 10,
+                    "reliability": 0,
                     "reuse": 0
                   },
                   "pros": [
                     {
-                      "title": "Always current",
-                      "description": "The source of truth is the source of truth."
-                    }
-                  ],
-                  "cons": [
-                    {
-                      "title": "Hostile to end users and operators",
-                      "description": "Non-developers in the room cannot use a repo README."
+                      "description": "The source of truth is the source of truth.",
+                      "title": "Always current"
                     }
                   ],
                   "whenToUse": "Fine as an extra pointer for the DX crowd alongside the docs site."
                 }
-              ]
+              ],
+              "description": "Stage 6 recap: where does the manual live after the webinar ends?",
+              "id": "take-home",
+              "recommended": "docs-site",
+              "title": "Take-Home Reference"
             }
-          ]
+          ],
+          "title": "Web App Manual Launch Webinar"
         }
-      ]
-    }
+      ],
+      "title": "Launch Webinar Trade-off Workshop"
+    },
+    "type": "tradeoff-sandbox"
   },
   {
     "folder": "tool-decision-tree",
-    "type": "decision-tree",
     "props": {
-      "title": "Which Presentation Instrument Fits Your Manual?",
       "id": "instrument-advisor",
-      "root": "audience",
       "nodes": {
         "audience": {
-          "id": "audience",
-          "prompt": "Who is the primary audience for this manual presentation?",
           "choices": [
             {
               "id": "end-users",
-              "text": "End users doing business tasks in the Web App",
               "next": "enduser-format",
-              "rationale": "Task-oriented walkthroughs need UI-forward instruments."
+              "rationale": "Task-oriented walkthroughs need UI-forward instruments.",
+              "text": "End users doing business tasks in the Web App"
             },
             {
               "id": "operators",
-              "text": "Operators & admins keeping the system alive",
               "next": "rec-operators",
-              "rationale": "Defensive readers need runbooks, commands, and triage flows."
+              "rationale": "Defensive readers need runbooks, commands, and triage flows.",
+              "text": "Operators & admins keeping the system alive"
             },
             {
               "id": "developers",
-              "text": "Developers integrating with the system (DX)",
               "next": "rec-developers",
-              "rationale": "They judge the manual by how fast the first call succeeds."
+              "rationale": "They judge the manual by how fast the first call succeeds.",
+              "text": "Developers integrating with the system (DX)"
             }
-          ]
+          ],
+          "id": "audience",
+          "prompt": "Who is the primary audience for this manual presentation?"
         },
         "enduser-format": {
-          "id": "enduser-format",
-          "prompt": "Will the manual be consumed live (you in the room) or async (people on their own)?",
           "choices": [
             {
               "id": "live",
-              "text": "Live webinar or workshop",
               "next": "rec-live-enduser",
               "rationale": "Live means you control the demo — but it must be rehearsed with a fallback.",
-              "recommended": true
+              "recommended": true,
+              "text": "Live webinar or workshop"
             },
             {
               "id": "async",
-              "text": "Async self-serve",
               "next": "rec-async-enduser",
-              "rationale": "Async readers need findable, click-through guidance, not a recording graveyard."
+              "rationale": "Async readers need findable, click-through guidance, not a recording graveyard.",
+              "text": "Async self-serve"
             }
-          ]
-        },
-        "rec-live-enduser": {
-          "id": "rec-live-enduser",
-          "leaf": {
-            "recommendation": "Marp markdown deck + live product demo with an OBS Studio fallback clip + in-app Intro.js tour for the next release's onboarding.",
-            "explanation": "The arc demands one persona task shown in the running UI; Marp keeps the deck in the repo, the OBS clip is your stunt double, and the Intro.js tour lets users replay the flow themselves after the webinar.",
-            "tradeoffs": [
-              "Prepping the fallback clip costs an hour before the talk",
-              "Marp themes need a one-time setup in the repo"
-            ]
-          }
+          ],
+          "id": "enduser-format",
+          "prompt": "Will the manual be consumed live (you in the room) or async (people on their own)?"
         },
         "rec-async-enduser": {
           "id": "rec-async-enduser",
           "leaf": {
-            "recommendation": "MkDocs Material or Docusaurus docs site with annotated screenshots and embedded OBS clip, plus an Intro.js/Shepherd in-app tour.",
             "explanation": "Async end users find the manual through search, so the docs site is the presentation. The embedded clip and overlay tour replace you at the keyboard.",
+            "recommendation": "MkDocs Material or Docusaurus docs site with annotated screenshots and embedded OBS clip, plus an Intro.js/Shepherd in-app tour.",
             "tradeoffs": [
               "The docs site pipeline needs CI to stay truthful",
               "In-app tours need product code changes and release coordination"
             ]
           }
         },
-        "rec-operators": {
-          "id": "rec-operators",
-          "leaf": {
-            "recommendation": "MkDocs Material runbook site (copy-pasteable commands) + reveal.js triage deck for incident reviews + Code Tour for the deploy scripts.",
-            "explanation": "Operators read defensively: symptom, diagnosis, remediation. A generated runbook site keeps every command current, a browser-native reveal.js deck handles live postmortems, and Code Tour walks the deploy scripts in the repo itself.",
-            "tradeoffs": [
-              "Runbook docs need ownership or they rot",
-              "Command blocks must be tested in CI to stay trustworthy"
-            ]
-          }
-        },
         "rec-developers": {
           "id": "rec-developers",
           "leaf": {
-            "recommendation": "Slidev deck with live code blocks + Swagger UI/Redoc reference rendered from the OpenAPI spec + Storybook playground + a five-minute quickstart page.",
             "explanation": "For DX, the instrument is the message: generate the reference from the contract so it cannot be stale, let the audience run code during the talk, and prove the quickstart works on first try.",
+            "recommendation": "Slidev deck with live code blocks + Swagger UI/Redoc reference rendered from the OpenAPI spec + Storybook playground + a five-minute quickstart page.",
             "tradeoffs": [
               "OpenAPI specs must be maintained as first-class code",
               "Live coding demos need rehearsal and a recorded backup"
             ]
           }
+        },
+        "rec-live-enduser": {
+          "id": "rec-live-enduser",
+          "leaf": {
+            "explanation": "The arc demands one persona task shown in the running UI; Marp keeps the deck in the repo, the OBS clip is your stunt double, and the Intro.js tour lets users replay the flow themselves after the webinar.",
+            "recommendation": "Marp markdown deck + live product demo with an OBS Studio fallback clip + in-app Intro.js tour for the next release's onboarding.",
+            "tradeoffs": [
+              "Prepping the fallback clip costs an hour before the talk",
+              "Marp themes need a one-time setup in the repo"
+            ]
+          }
+        },
+        "rec-operators": {
+          "id": "rec-operators",
+          "leaf": {
+            "explanation": "Operators read defensively: symptom, diagnosis, remediation. A generated runbook site keeps every command current, a browser-native reveal.js deck handles live postmortems, and Code Tour walks the deploy scripts in the repo itself.",
+            "recommendation": "MkDocs Material runbook site (copy-pasteable commands) + reveal.js triage deck for incident reviews + Code Tour for the deploy scripts.",
+            "tradeoffs": [
+              "Runbook docs need ownership or they rot",
+              "Command blocks must be tested in CI to stay trustworthy"
+            ]
+          }
         }
-      }
-    }
+      },
+      "root": "audience",
+      "title": "Which Presentation Instrument Fits Your Manual?"
+    },
+    "type": "decision-tree"
   },
   {
     "folder": "docs-stack",
-    "type": "pillar-layer",
     "props": {
-      "title": "The Docs-as-Code Layer Stack",
       "section": {
-        "type": "pillar-layer",
-        "title": "The Docs-as-Code Layer Stack",
         "description": "The manual as a Lego stack: plain-text sources at the bottom, generators that compile them, a delivery web app on top, and the live layer where a human presents it.",
         "layers": [
           {
+            "description": "Plain-text single sources of truth that live in Git next to the code.",
             "id": "l-source",
-            "title": "Authoring Sources",
-            "description": "Plain-text single sources of truth that live in Git next to the code."
+            "title": "Authoring Sources"
           },
           {
+            "description": "Pipelines that compile markdown and specs into browsable artifacts.",
             "id": "l-generators",
-            "title": "Generators & Renderers",
-            "description": "Pipelines that compile markdown and specs into browsable artifacts."
+            "title": "Generators & Renderers"
           },
           {
+            "description": "The hosted, searchable, versioned surface the audience actually opens.",
             "id": "l-delivery",
-            "title": "Delivery Web App",
-            "description": "The hosted, searchable, versioned surface the audience actually opens."
+            "title": "Delivery Web App"
           },
           {
+            "description": "Where a human or the product itself presents the manual in real time.",
             "id": "l-live",
-            "title": "Live & In-App Layer",
-            "description": "Where a human or the product itself presents the manual in real time."
+            "title": "Live & In-App Layer"
           }
         ],
         "matrix_blocks": [
           {
-            "id": "b-markdown",
-            "title": "Markdown / MDX Pages",
+            "col_offset": 0,
+            "col_span": 2,
+            "color": "green",
             "description": "Task pages, runbooks, and quickstarts — the same markdown feeds decks and sites.",
-            "col_offset": 0,
+            "id": "b-markdown",
             "layer_id": "l-source",
-            "col_span": 2,
             "row_span": 1,
-            "color": "green"
+            "title": "Markdown / MDX Pages"
           },
           {
-            "id": "b-openapi",
-            "title": "OpenAPI Spec",
+            "col_offset": 2,
+            "col_span": 1,
+            "color": "sky",
             "description": "The machine-readable API contract, maintained as first-class code.",
-            "col_offset": 2,
+            "id": "b-openapi",
             "layer_id": "l-source",
-            "col_span": 1,
             "row_span": 1,
-            "color": "sky"
+            "title": "OpenAPI Spec"
           },
           {
-            "id": "b-tourfiles",
-            "title": "Code Tour .tour Files",
+            "col_offset": 3,
+            "col_span": 1,
+            "color": "yellow",
             "description": "Narracted repository walkthroughs anchored to real files.",
-            "col_offset": 3,
+            "id": "b-tourfiles",
             "layer_id": "l-source",
-            "col_span": 1,
             "row_span": 1,
-            "color": "yellow"
+            "title": "Code Tour .tour Files"
           },
           {
-            "id": "b-ssg",
-            "title": "Site Generators",
+            "col_offset": 0,
+            "col_span": 2,
+            "color": "green",
             "description": "Docusaurus, MkDocs Material, VitePress, and mdBook compile sources into doc sites.",
-            "col_offset": 0,
+            "id": "b-ssg",
             "layer_id": "l-generators",
-            "col_span": 2,
             "row_span": 1,
-            "color": "green"
+            "title": "Site Generators"
           },
           {
-            "id": "b-apirender",
-            "title": "API Renderers",
+            "col_offset": 2,
+            "col_span": 1,
+            "color": "sky",
             "description": "Swagger UI and Redoc turn the OpenAPI spec into explorable references.",
-            "col_offset": 2,
+            "id": "b-apirender",
             "layer_id": "l-generators",
-            "col_span": 1,
             "row_span": 1,
-            "color": "sky"
+            "title": "API Renderers"
           },
           {
-            "id": "b-deckbuild",
-            "title": "Deck Builders",
-            "description": "Marp, Slidev, and reveal.js compile slide markdown into presentable decks.",
             "col_offset": 3,
-            "layer_id": "l-generators",
             "col_span": 1,
+            "color": "mauve",
+            "description": "Marp, Slidev, and reveal.js compile slide markdown into presentable decks.",
+            "id": "b-deckbuild",
+            "layer_id": "l-generators",
             "row_span": 1,
-            "color": "mauve"
+            "title": "Deck Builders"
           },
           {
-            "id": "b-docsite",
-            "title": "Docs Web App + Search",
+            "col_offset": 0,
+            "col_span": 2,
+            "color": "peach",
             "description": "Hosted site with full-text search, versioning, and permanent permalinks.",
-            "col_offset": 0,
+            "id": "b-docsite",
             "layer_id": "l-delivery",
-            "col_span": 2,
             "row_span": 1,
-            "color": "peach"
+            "title": "Docs Web App + Search"
           },
           {
-            "id": "b-playground",
-            "title": "Interactive Playground",
+            "col_offset": 2,
+            "col_span": 2,
+            "color": "teal",
             "description": "Try-it-now API consoles and Storybook examples embedded in the docs.",
-            "col_offset": 2,
+            "id": "b-playground",
             "layer_id": "l-delivery",
-            "col_span": 2,
             "row_span": 1,
-            "color": "teal"
+            "title": "Interactive Playground"
           },
           {
-            "id": "b-deck",
-            "title": "Presented Deck",
-            "description": "The live webinar or workshop deck — always ending on the permalink slide.",
             "col_offset": 0,
-            "layer_id": "l-live",
             "col_span": 2,
+            "color": "mauve",
+            "description": "The live webinar or workshop deck — always ending on the permalink slide.",
+            "id": "b-deck",
+            "layer_id": "l-live",
             "row_span": 1,
-            "color": "mauve"
+            "title": "Presented Deck"
           },
           {
-            "id": "b-inapp",
-            "title": "In-App Tours & Clips",
-            "description": "Intro.js/Shepherd tours and OBS clips teaching inside the running product.",
             "col_offset": 2,
-            "layer_id": "l-live",
             "col_span": 2,
+            "color": "red",
+            "description": "Intro.js/Shepherd tours and OBS clips teaching inside the running product.",
+            "id": "b-inapp",
+            "layer_id": "l-live",
             "row_span": 1,
-            "color": "red"
+            "title": "In-App Tours & Clips"
           }
-        ]
-      }
-    }
+        ],
+        "title": "The Docs-as-Code Layer Stack",
+        "type": "pillar-layer"
+      },
+      "title": "The Docs-as-Code Layer Stack"
+    },
+    "type": "pillar-layer"
   },
   {
     "folder": "publish-flow",
-    "type": "flowchart",
     "props": {
-      "title": "Docs-as-Code Publish Flow",
       "schema": {
         "entities": {
-          "doc_writer": {
-            "title": "Technical Writer",
-            "desc": "Authors and revises the manual pages in markdown",
-            "type": "Actor"
-          },
-          "reviewer": {
-            "title": "Engineering Reviewer",
-            "desc": "Verifies commands, config keys, and screenshots against the real system",
-            "type": "Actor"
-          },
-          "git_repo": {
-            "title": "Git Repository",
-            "desc": "Stores manual markdown, OpenAPI specs, and tour files next to the code",
-            "type": "External API"
-          },
           "ci_pipeline": {
-            "title": "CI Preview Pipeline",
             "desc": "Builds the doc site and link-checks every pull request",
+            "title": "CI Preview Pipeline",
             "type": "Aggregate"
           },
-          "preview_host": {
-            "title": "Preview Deploy Host",
-            "desc": "Serves an ephemeral preview URL for the proposed manual",
-            "type": "External API"
-          },
-          "docs_site": {
-            "title": "Published Docs Web App",
-            "desc": "The hosted, searchable, versioned manual site with permalinks",
-            "type": "External API"
-          },
-          "pol_step_commit": {
-            "title": "On manual content change",
-            "desc": "On manual content change",
-            "type": "Policy",
-            "root": false
-          },
-          "cmd_step_commit": {
-            "title": "Commit manual update",
-            "desc": "Commit manual update",
-            "type": "Command"
-          },
-          "evt_evt_committed": {
-            "title": "Changes Committed",
-            "desc": "Changes Committed",
-            "type": "Event"
-          },
-          "pol_step_preview": {
-            "title": "On pull request opened",
-            "desc": "On pull request opened",
-            "type": "Policy",
-            "root": false
-          },
-          "cmd_step_preview": {
-            "title": "Build preview site",
-            "desc": "Build preview site",
-            "type": "Command"
-          },
-          "evt_evt_preview": {
-            "title": "Preview Deployed",
-            "desc": "Preview Deployed",
-            "type": "Event"
-          },
-          "pol_step_review": {
-            "title": "On preview ready",
-            "desc": "On preview ready",
-            "type": "Policy",
-            "root": false
-          },
-          "cmd_step_review": {
-            "title": "Review pull request",
-            "desc": "Review pull request",
-            "type": "Command"
-          },
-          "preview_host2": {
-            "title": "Preview Deploy Host",
-            "desc": "Serves an ephemeral preview URL for the proposed manual",
-            "type": "External API"
-          },
-          "evt_evt_reviewed": {
-            "title": "Review Completed",
-            "desc": "Review Completed",
-            "type": "Event"
-          },
-          "pol_branch_publish": {
-            "title": "If review approved",
-            "desc": "If review approved",
-            "type": "Policy"
-          },
           "cmd_branch_publish": {
-            "title": "Publish release",
             "desc": "Publish release",
+            "title": "Publish release",
             "type": "Command"
-          },
-          "evt_evt_published": {
-            "title": "Docs Published",
-            "desc": "Docs Published",
-            "type": "Event"
-          },
-          "pol_branch_revise": {
-            "title": "If review requests changes",
-            "desc": "If review requests changes",
-            "type": "Policy"
           },
           "cmd_branch_revise": {
-            "title": "Revise content in repo",
             "desc": "Revise content in repo",
+            "title": "Revise content in repo",
             "type": "Command"
           },
-          "git_repo2": {
-            "title": "Git Repository",
-            "desc": "Stores manual markdown, OpenAPI specs, and tour files next to the code",
+          "cmd_step_commit": {
+            "desc": "Commit manual update",
+            "title": "Commit manual update",
+            "type": "Command"
+          },
+          "cmd_step_preview": {
+            "desc": "Build preview site",
+            "title": "Build preview site",
+            "type": "Command"
+          },
+          "cmd_step_review": {
+            "desc": "Review pull request",
+            "title": "Review pull request",
+            "type": "Command"
+          },
+          "doc_writer": {
+            "desc": "Authors and revises the manual pages in markdown",
+            "title": "Technical Writer",
+            "type": "Actor"
+          },
+          "docs_site": {
+            "desc": "The hosted, searchable, versioned manual site with permalinks",
+            "title": "Published Docs Web App",
             "type": "External API"
           },
-          "evt_evt_revised": {
-            "title": "Content Revised",
-            "desc": "Content Revised",
+          "evt_evt_committed": {
+            "desc": "Changes Committed",
+            "title": "Changes Committed",
             "type": "Event"
+          },
+          "evt_evt_preview": {
+            "desc": "Preview Deployed",
+            "title": "Preview Deployed",
+            "type": "Event"
+          },
+          "evt_evt_published": {
+            "desc": "Docs Published",
+            "title": "Docs Published",
+            "type": "Event"
+          },
+          "evt_evt_reviewed": {
+            "desc": "Review Completed",
+            "title": "Review Completed",
+            "type": "Event"
+          },
+          "evt_evt_revised": {
+            "desc": "Content Revised",
+            "title": "Content Revised",
+            "type": "Event"
+          },
+          "git_repo": {
+            "desc": "Stores manual markdown, OpenAPI specs, and tour files next to the code",
+            "title": "Git Repository",
+            "type": "External API"
+          },
+          "git_repo2": {
+            "desc": "Stores manual markdown, OpenAPI specs, and tour files next to the code",
+            "title": "Git Repository",
+            "type": "External API"
+          },
+          "pol_branch_publish": {
+            "desc": "If review approved",
+            "title": "If review approved",
+            "type": "Policy"
+          },
+          "pol_branch_revise": {
+            "desc": "If review requests changes",
+            "title": "If review requests changes",
+            "type": "Policy"
+          },
+          "pol_step_commit": {
+            "desc": "On manual content change",
+            "root": false,
+            "title": "On manual content change",
+            "type": "Policy"
+          },
+          "pol_step_preview": {
+            "desc": "On pull request opened",
+            "root": false,
+            "title": "On pull request opened",
+            "type": "Policy"
+          },
+          "pol_step_review": {
+            "desc": "On preview ready",
+            "root": false,
+            "title": "On preview ready",
+            "type": "Policy"
+          },
+          "preview_host": {
+            "desc": "Serves an ephemeral preview URL for the proposed manual",
+            "title": "Preview Deploy Host",
+            "type": "External API"
+          },
+          "preview_host2": {
+            "desc": "Serves an ephemeral preview URL for the proposed manual",
+            "title": "Preview Deploy Host",
+            "type": "External API"
+          },
+          "reviewer": {
+            "desc": "Verifies commands, config keys, and screenshots against the real system",
+            "title": "Engineering Reviewer",
+            "type": "Actor"
           }
         },
-        "relations": [
-          {
-            "id": "r1",
-            "from": "doc_writer",
-            "to": "pol_step_commit",
-            "views": [
-              "EVENT_STORMING"
-            ]
-          },
-          {
-            "id": "r2",
-            "from": "pol_step_commit",
-            "to": "cmd_step_commit",
-            "views": [
-              "EVENT_STORMING"
-            ]
-          },
-          {
-            "id": "r3",
-            "from": "cmd_step_commit",
-            "to": "git_repo",
-            "handledBy": true,
-            "views": [
-              "EVENT_STORMING"
-            ]
-          },
-          {
-            "id": "r4",
-            "from": "git_repo",
-            "to": "evt_evt_committed",
-            "views": [
-              "EVENT_STORMING"
-            ]
-          },
-          {
-            "id": "r5",
-            "from": "evt_evt_committed",
-            "to": "pol_step_preview",
-            "views": [
-              "EVENT_STORMING"
-            ]
-          },
-          {
-            "id": "r6",
-            "from": "pol_step_preview",
-            "to": "cmd_step_preview",
-            "views": [
-              "EVENT_STORMING"
-            ]
-          },
-          {
-            "id": "r7",
-            "from": "cmd_step_preview",
-            "to": "ci_pipeline",
-            "handledBy": true,
-            "views": [
-              "EVENT_STORMING"
-            ]
-          },
-          {
-            "id": "r8",
-            "from": "ci_pipeline",
-            "to": "preview_host",
-            "views": [
-              "EVENT_STORMING"
-            ]
-          },
-          {
-            "id": "r9",
-            "from": "ci_pipeline",
-            "to": "evt_evt_preview",
-            "views": [
-              "EVENT_STORMING"
-            ]
-          },
-          {
-            "id": "r10",
-            "from": "evt_evt_preview",
-            "to": "pol_step_review",
-            "views": [
-              "EVENT_STORMING"
-            ]
-          },
-          {
-            "id": "r11",
-            "from": "reviewer",
-            "to": "pol_step_review",
-            "views": [
-              "EVENT_STORMING"
-            ]
-          },
-          {
-            "id": "r12",
-            "from": "pol_step_review",
-            "to": "cmd_step_review",
-            "views": [
-              "EVENT_STORMING"
-            ]
-          },
-          {
-            "id": "r13",
-            "from": "cmd_step_review",
-            "to": "preview_host2",
-            "handledBy": true,
-            "views": [
-              "EVENT_STORMING"
-            ]
-          },
-          {
-            "id": "r14",
-            "from": "preview_host2",
-            "to": "evt_evt_reviewed",
-            "views": [
-              "EVENT_STORMING"
-            ]
-          },
-          {
-            "id": "r15",
-            "from": "evt_evt_reviewed",
-            "to": "pol_branch_publish",
-            "label": "Approved",
-            "views": [
-              "EVENT_STORMING"
-            ]
-          },
-          {
-            "id": "r16",
-            "from": "pol_branch_publish",
-            "to": "cmd_branch_publish",
-            "views": [
-              "EVENT_STORMING"
-            ]
-          },
-          {
-            "id": "r17",
-            "from": "cmd_branch_publish",
-            "to": "docs_site",
-            "handledBy": true,
-            "views": [
-              "EVENT_STORMING"
-            ]
-          },
-          {
-            "id": "r18",
-            "from": "docs_site",
-            "to": "evt_evt_published",
-            "views": [
-              "EVENT_STORMING"
-            ]
-          },
-          {
-            "id": "r19",
-            "from": "evt_evt_reviewed",
-            "to": "pol_branch_revise",
-            "label": "Changes requested",
-            "dashed": true,
-            "views": [
-              "EVENT_STORMING"
-            ]
-          },
-          {
-            "id": "r20",
-            "from": "pol_branch_revise",
-            "to": "cmd_branch_revise",
-            "views": [
-              "EVENT_STORMING"
-            ]
-          },
-          {
-            "id": "r21",
-            "from": "cmd_branch_revise",
-            "to": "git_repo2",
-            "handledBy": true,
-            "views": [
-              "EVENT_STORMING"
-            ]
-          },
-          {
-            "id": "r22",
-            "from": "git_repo2",
-            "to": "evt_evt_revised",
-            "views": [
-              "EVENT_STORMING"
-            ]
-          }
-        ],
         "journeys": [
           {
+            "description": "The manual change is reviewed and published to the docs web app",
             "id": "journey_publish",
             "label": "Happy Path: Publish",
-            "description": "The manual change is reviewed and published to the docs web app",
             "steps": [
               {
                 "nodeIds": [
                   "evt_evt_committed"
                 ],
-                "title": "Changes Committed",
-                "reason": "The technical writer commits a manual update to the Git repository"
+                "reason": "The technical writer commits a manual update to the Git repository",
+                "title": "Changes Committed"
               },
               {
                 "nodeIds": [
                   "evt_evt_preview"
                 ],
-                "title": "Preview Deployed",
-                "reason": "CI builds a preview site so the proposed manual can be clicked through"
+                "reason": "CI builds a preview site so the proposed manual can be clicked through",
+                "title": "Preview Deployed"
               },
               {
                 "nodeIds": [
                   "evt_evt_reviewed"
                 ],
-                "title": "Review Completed",
-                "reason": "An engineering reviewer checks commands and screenshots against the real system"
+                "reason": "An engineering reviewer checks commands and screenshots against the real system",
+                "title": "Review Completed"
               },
               {
                 "nodeIds": [
                   "evt_evt_published"
                 ],
-                "title": "Docs Published",
-                "reason": "The docs web app ships the new version under a permanent permalink"
+                "reason": "The docs web app ships the new version under a permanent permalink",
+                "title": "Docs Published"
               }
             ]
           },
           {
+            "description": "The reviewer finds a stale command and the manual cycles back for revision",
             "id": "journey_revision",
             "label": "Revision Loop",
-            "description": "The reviewer finds a stale command and the manual cycles back for revision",
             "steps": [
               {
                 "nodeIds": [
                   "evt_evt_committed"
                 ],
-                "title": "Changes Committed",
-                "reason": "A manual update lands in the repository"
+                "reason": "A manual update lands in the repository",
+                "title": "Changes Committed"
               },
               {
                 "nodeIds": [
                   "evt_evt_preview"
                 ],
-                "title": "Preview Deployed",
-                "reason": "CI deploys the ephemeral preview for inspection"
+                "reason": "CI deploys the ephemeral preview for inspection",
+                "title": "Preview Deployed"
               },
               {
                 "nodeIds": [
                   "evt_evt_reviewed"
                 ],
-                "title": "Review Completed",
-                "reason": "The reviewer spots a command that no longer matches the system"
+                "reason": "The reviewer spots a command that no longer matches the system",
+                "title": "Review Completed"
               },
               {
                 "nodeIds": [
                   "evt_evt_revised"
                 ],
-                "title": "Content Revised",
-                "reason": "Content returns to the writer for revision instead of publishing"
+                "reason": "Content returns to the writer for revision instead of publishing",
+                "title": "Content Revised"
               }
             ]
           }
         ],
         "rawSteps": [
           {
-            "type": "linear",
+            "command": "Commit manual update",
+            "continuesAs": "step_preview",
+            "handledBy": {
+              "_tag": "ref",
+              "id": "git_repo"
+            },
             "id": "step_commit",
             "initiatedBy": {
               "_tag": "ref",
               "id": "doc_writer"
             },
             "policy": "On manual content change",
-            "command": "Commit manual update",
-            "handledBy": {
-              "_tag": "ref",
-              "id": "git_repo"
-            },
             "resultEvents": [
               {
                 "id": "evt_committed",
                 "title": "Changes Committed"
               }
             ],
-            "continuesAs": "step_preview"
+            "type": "linear"
           },
           {
-            "type": "linear",
-            "id": "step_preview",
-            "policy": "On pull request opened",
             "command": "Build preview site",
-            "handledBy": {
-              "_tag": "ref",
-              "id": "ci_pipeline"
-            },
+            "continuesAs": "step_review",
             "delegatesTo": {
               "_tag": "ref",
               "id": "preview_host"
             },
+            "handledBy": {
+              "_tag": "ref",
+              "id": "ci_pipeline"
+            },
+            "id": "step_preview",
+            "policy": "On pull request opened",
             "resultEvents": [
               {
                 "id": "evt_preview",
                 "title": "Preview Deployed"
               }
             ],
-            "continuesAs": "step_review"
+            "type": "linear"
           },
           {
-            "type": "linear",
+            "command": "Review pull request",
+            "continuesAs": "step_outcome",
+            "handledBy": {
+              "_tag": "ref",
+              "id": "preview_host"
+            },
             "id": "step_review",
             "initiatedBy": {
               "_tag": "ref",
               "id": "reviewer"
             },
             "policy": "On preview ready",
-            "command": "Review pull request",
-            "handledBy": {
-              "_tag": "ref",
-              "id": "preview_host"
-            },
             "resultEvents": [
               {
                 "id": "evt_reviewed",
                 "title": "Review Completed"
               }
             ],
-            "continuesAs": "step_outcome"
+            "type": "linear"
           },
           {
-            "type": "branch",
-            "id": "step_outcome",
-            "event": "evt_reviewed",
             "branches": [
               {
-                "id": "branch_publish",
-                "label": "Approved",
-                "policy": "If review approved",
                 "command": "Publish release",
                 "handledBy": {
                   "_tag": "ref",
                   "id": "docs_site"
                 },
+                "id": "branch_publish",
+                "label": "Approved",
+                "policy": "If review approved",
                 "resultEvents": [
                   {
                     "id": "evt_published",
@@ -1673,15 +1482,15 @@
                 ]
               },
               {
-                "id": "branch_revise",
-                "label": "Changes requested",
-                "dashed": true,
-                "policy": "If review requests changes",
                 "command": "Revise content in repo",
+                "dashed": true,
                 "handledBy": {
                   "_tag": "ref",
                   "id": "git_repo"
                 },
+                "id": "branch_revise",
+                "label": "Changes requested",
+                "policy": "If review requests changes",
                 "resultEvents": [
                   {
                     "id": "evt_revised",
@@ -1689,367 +1498,554 @@
                   }
                 ]
               }
+            ],
+            "event": "evt_reviewed",
+            "id": "step_outcome",
+            "type": "branch"
+          }
+        ],
+        "relations": [
+          {
+            "from": "doc_writer",
+            "id": "r1",
+            "to": "pol_step_commit",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "from": "pol_step_commit",
+            "id": "r2",
+            "to": "cmd_step_commit",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "from": "cmd_step_commit",
+            "handledBy": true,
+            "id": "r3",
+            "to": "git_repo",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "from": "git_repo",
+            "id": "r4",
+            "to": "evt_evt_committed",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "from": "evt_evt_committed",
+            "id": "r5",
+            "to": "pol_step_preview",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "from": "pol_step_preview",
+            "id": "r6",
+            "to": "cmd_step_preview",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "from": "cmd_step_preview",
+            "handledBy": true,
+            "id": "r7",
+            "to": "ci_pipeline",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "from": "ci_pipeline",
+            "id": "r8",
+            "to": "preview_host",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "from": "ci_pipeline",
+            "id": "r9",
+            "to": "evt_evt_preview",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "from": "evt_evt_preview",
+            "id": "r10",
+            "to": "pol_step_review",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "from": "reviewer",
+            "id": "r11",
+            "to": "pol_step_review",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "from": "pol_step_review",
+            "id": "r12",
+            "to": "cmd_step_review",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "from": "cmd_step_review",
+            "handledBy": true,
+            "id": "r13",
+            "to": "preview_host2",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "from": "preview_host2",
+            "id": "r14",
+            "to": "evt_evt_reviewed",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "from": "evt_evt_reviewed",
+            "id": "r15",
+            "label": "Approved",
+            "to": "pol_branch_publish",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "from": "pol_branch_publish",
+            "id": "r16",
+            "to": "cmd_branch_publish",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "from": "cmd_branch_publish",
+            "handledBy": true,
+            "id": "r17",
+            "to": "docs_site",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "from": "docs_site",
+            "id": "r18",
+            "to": "evt_evt_published",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "dashed": true,
+            "from": "evt_evt_reviewed",
+            "id": "r19",
+            "label": "Changes requested",
+            "to": "pol_branch_revise",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "from": "pol_branch_revise",
+            "id": "r20",
+            "to": "cmd_branch_revise",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "from": "cmd_branch_revise",
+            "handledBy": true,
+            "id": "r21",
+            "to": "git_repo2",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "from": "git_repo2",
+            "id": "r22",
+            "to": "evt_evt_revised",
+            "views": [
+              "EVENT_STORMING"
             ]
           }
         ]
-      }
-    }
+      },
+      "title": "Docs-as-Code Publish Flow"
+    },
+    "type": "flowchart"
   },
   {
     "folder": "scenario-launch",
-    "type": "scenario",
     "props": {
-      "title": "The Release Webinar",
       "id": "release-webinar",
       "intro": "You are presenting the user manual of a new Web App to a mixed audience of end users and operators. Ten minutes to start; the staging environment looks 'mostly fine'. How do you run this?",
       "nodes": {
-        "start": {
-          "id": "start",
-          "prompt": "How do you open the webinar?",
+        "demo-moment": {
           "choices": [
             {
-              "id": "open-architecture",
-              "text": "Open with the microservices architecture diagram for shared context",
-              "next": "result-architecture"
+              "id": "switch-clip",
+              "next": "result-clip",
+              "text": "Switch seamlessly to the OBS Studio fallback clip and keep narrating"
             },
             {
-              "id": "open-pain",
-              "text": "Open with the task people groan at: 'onboarding a new teammate takes 14 clicks today'",
-              "next": "demo-moment"
+              "id": "debug-live",
+              "next": "result-debug",
+              "text": "Apologize and debug the staging environment live on screen"
             },
             {
-              "id": "open-notes",
-              "text": "Read the release notes aloud so nobody misses a feature",
-              "next": "result-notes"
+              "id": "skip-demo",
+              "next": "result-skip",
+              "text": "Skip the demo and describe the flow verbally until it recovers"
             }
-          ]
+          ],
+          "id": "demo-moment",
+          "prompt": "Midway through your live demo of the onboarding flow, the staging site freezes on the big screen. What now?"
         },
         "result-architecture": {
           "id": "result-architecture",
           "outcome": {
-            "verdict": "The end users glaze over in the first two minutes; the operators were not the ones who needed the diagram either.",
             "lesson": "Stage 1 of the arc: hook with the user's pain, not the architecture. Nobody in the room asked how the system is built — they asked how to do their job.",
-            "rating": "c"
+            "rating": "c",
+            "verdict": "The end users glaze over in the first two minutes; the operators were not the ones who needed the diagram either."
           }
-        },
-        "result-notes": {
-          "id": "result-notes",
-          "outcome": {
-            "verdict": "You covered every feature. Your audience retained approximately one of them.",
-            "lesson": "A release-notes read-aloud is the canonical failure mode of manual presentations. One deep persona scenario beats a shallow catalog.",
-            "rating": "b-minus"
-          }
-        },
-        "demo-moment": {
-          "id": "demo-moment",
-          "prompt": "Midway through your live demo of the onboarding flow, the staging site freezes on the big screen. What now?",
-          "choices": [
-            {
-              "id": "switch-clip",
-              "text": "Switch seamlessly to the OBS Studio fallback clip and keep narrating",
-              "next": "result-clip"
-            },
-            {
-              "id": "debug-live",
-              "text": "Apologize and debug the staging environment live on screen",
-              "next": "result-debug"
-            },
-            {
-              "id": "skip-demo",
-              "text": "Skip the demo and describe the flow verbally until it recovers",
-              "next": "result-skip"
-            }
-          ]
         },
         "result-clip": {
           "id": "result-clip",
           "outcome": {
-            "verdict": "Nobody blinked. You finished the walkthrough, showed the gotchas, and closed on the docs-site permalink slide.",
             "lesson": "The pre-recorded fallback clip is a stunt double: same shot, zero risk. Recorded once, it lives three lives — fallback, async manual, and docs embed.",
-            "rating": "a"
+            "rating": "a",
+            "verdict": "Nobody blinked. You finished the walkthrough, showed the gotchas, and closed on the docs-site permalink slide."
           }
         },
         "result-debug": {
           "id": "result-debug",
           "outcome": {
-            "verdict": "Twelve minutes of silent troubleshooting later, the demo works — and half the audience has opened their laptops to actual work.",
             "lesson": "Live debugging trades your authority for infrastructure's reliability. The fallback clip existed precisely for this moment.",
-            "rating": "b-minus"
+            "rating": "b-minus",
+            "verdict": "Twelve minutes of silent troubleshooting later, the demo works — and half the audience has opened their laptops to actual work."
+          }
+        },
+        "result-notes": {
+          "id": "result-notes",
+          "outcome": {
+            "lesson": "A release-notes read-aloud is the canonical failure mode of manual presentations. One deep persona scenario beats a shallow catalog.",
+            "rating": "b-minus",
+            "verdict": "You covered every feature. Your audience retained approximately one of them."
           }
         },
         "result-skip": {
           "id": "result-skip",
           "outcome": {
-            "verdict": "Describing clicks without showing them confused end users, and the Q&A turned into a re-explanation session.",
             "lesson": "Stage 4 demands the real product on screen — or its recorded double. Pantomiming the UI is screenshots pretending to be a UI, only worse.",
-            "rating": "c"
+            "rating": "c",
+            "verdict": "Describing clicks without showing them confused end users, and the Q&A turned into a re-explanation session."
           }
+        },
+        "start": {
+          "choices": [
+            {
+              "id": "open-architecture",
+              "next": "result-architecture",
+              "text": "Open with the microservices architecture diagram for shared context"
+            },
+            {
+              "id": "open-pain",
+              "next": "demo-moment",
+              "text": "Open with the task people groan at: 'onboarding a new teammate takes 14 clicks today'"
+            },
+            {
+              "id": "open-notes",
+              "next": "result-notes",
+              "text": "Read the release notes aloud so nobody misses a feature"
+            }
+          ],
+          "id": "start",
+          "prompt": "How do you open the webinar?"
         }
       },
-      "startNode": "start"
-    }
+      "startNode": "start",
+      "title": "The Release Webinar"
+    },
+    "type": "scenario"
   },
   {
     "folder": "glossary",
-    "type": "flashcards",
     "props": {
-      "title": "Lexicon of the Realm",
       "terms": [
         {
-          "id": "docs-as-code",
-          "word": "Docs-as-Code",
-          "pronunciation": "dok-uhz uhz kohd",
           "category": "practice",
-          "shortDefinition": "Writing documentation with the same tools and pipeline as code: markdown in Git, reviewed in pull requests, deployed by CI.",
           "detailedDefinition": "Manual pages, OpenAPI specs, and tour files live in repositories, get linted and preview-built like source code, and ship through the same review discipline engineers already trust.",
-          "whyItMatters": "It is the only way a manual stays true after the first hotfix; documentation outside the pipeline rots within a sprint.",
           "dialogue": {
-            "user": "Our manual says 'click Submit' but the button is now called 'Send'.",
+            "aiQuestion": "What if a pull request that renames a button had to update the manual page too, or CI would flag it?",
             "aiThoughts": "The docs live outside the repo, so no PR ever touched them.",
-            "aiQuestion": "What if a pull request that renames a button had to update the manual page too, or CI would flag it?"
-          }
+            "user": "Our manual says 'click Submit' but the button is now called 'Send'."
+          },
+          "id": "docs-as-code",
+          "pronunciation": "dok-uhz uhz kohd",
+          "shortDefinition": "Writing documentation with the same tools and pipeline as code: markdown in Git, reviewed in pull requests, deployed by CI.",
+          "whyItMatters": "It is the only way a manual stays true after the first hotfix; documentation outside the pipeline rots within a sprint.",
+          "word": "Docs-as-Code"
         },
         {
-          "id": "permalink",
-          "word": "Permalink",
-          "pronunciation": "pur-muh-link",
           "category": "delivery",
-          "shortDefinition": "A permanent URL pointing at one exact page or version of the manual.",
           "detailedDefinition": "The final slide of every manual presentation pins a permalink so the audience lands on the living docs page instead of a dead slide screenshot.",
-          "whyItMatters": "Findability beats memorability — the presentation ends, but the permalink keeps teaching for years."
+          "id": "permalink",
+          "pronunciation": "pur-muh-link",
+          "shortDefinition": "A permanent URL pointing at one exact page or version of the manual.",
+          "whyItMatters": "Findability beats memorability — the presentation ends, but the permalink keeps teaching for years.",
+          "word": "Permalink"
         },
         {
-          "id": "runbook",
-          "word": "Runbook",
-          "pronunciation": "ruhn-book",
           "category": "operator-doc",
-          "shortDefinition": "A terse, ordered operator procedure for a specific task or incident: symptom, diagnosis, remediation.",
           "detailedDefinition": "Written like an aircraft checklist so it works under stress: every command copy-pasteable, every expected output stated, no prose between steps.",
-          "whyItMatters": "At 2am nobody reads paragraphs; runbooks convert documentation into action."
+          "id": "runbook",
+          "pronunciation": "ruhn-book",
+          "shortDefinition": "A terse, ordered operator procedure for a specific task or incident: symptom, diagnosis, remediation.",
+          "whyItMatters": "At 2am nobody reads paragraphs; runbooks convert documentation into action.",
+          "word": "Runbook"
         },
         {
-          "id": "quickstart",
-          "word": "Quickstart",
-          "pronunciation": "kwik-start",
           "category": "dx-doc",
-          "shortDefinition": "A five-minute guided path that gets a developer from zero to one successful call in the real system.",
           "detailedDefinition": "The DX manual's most important page: prereqs, install, auth, first request, expected output — tested on a clean machine so it works on first try.",
-          "whyItMatters": "Developers judge the whole product by whether the first ten minutes work; a broken quickstart is a broken product."
+          "id": "quickstart",
+          "pronunciation": "kwik-start",
+          "shortDefinition": "A five-minute guided path that gets a developer from zero to one successful call in the real system.",
+          "whyItMatters": "Developers judge the whole product by whether the first ten minutes work; a broken quickstart is a broken product.",
+          "word": "Quickstart"
         },
         {
-          "id": "guided-tour",
-          "word": "Guided Tour",
-          "pronunciation": "gyed toor",
           "category": "in-app",
-          "shortDefinition": "An interactive overlay (Intro.js, Shepherd) or repository walkthrough (Code Tour) that teaches by highlighting real steps in the artifact itself.",
           "detailedDefinition": "Instead of slides about the product, the tour walks the user through the live UI or the actual code files, step by step, at their own pace.",
-          "whyItMatters": "It converts a one-time presentation into self-serve onboarding that survives every UI release."
+          "id": "guided-tour",
+          "pronunciation": "gyed toor",
+          "shortDefinition": "An interactive overlay (Intro.js, Shepherd) or repository walkthrough (Code Tour) that teaches by highlighting real steps in the artifact itself.",
+          "whyItMatters": "It converts a one-time presentation into self-serve onboarding that survives every UI release.",
+          "word": "Guided Tour"
         },
         {
-          "id": "demo-fallback",
-          "word": "Demo Fallback Clip",
-          "pronunciation": "dee-moh faw-back klip",
           "category": "presentation",
-          "shortDefinition": "A pre-recorded screen capture (OBS Studio) of the exact demo, cued up before the live presentation starts.",
           "detailedDefinition": "When staging freezes on camera, the presenter switches mid-sentence to the clip and the walkthrough continues uninterrupted.",
-          "whyItMatters": "It is the difference between a hiccup and a cancelled launch; recorded once, the clip also becomes the async manual and docs embed."
+          "id": "demo-fallback",
+          "pronunciation": "dee-moh faw-back klip",
+          "shortDefinition": "A pre-recorded screen capture (OBS Studio) of the exact demo, cued up before the live presentation starts.",
+          "whyItMatters": "It is the difference between a hiccup and a cancelled launch; recorded once, the clip also becomes the async manual and docs embed.",
+          "word": "Demo Fallback Clip"
         },
         {
-          "id": "annotated-screenshot",
-          "word": "Annotated Screenshot",
-          "pronunciation": "an-oh-tei-tid skreen-shot",
           "category": "end-user-doc",
-          "shortDefinition": "A UI screenshot with numbered callouts pointing at the exact buttons and fields a task requires.",
           "detailedDefinition": "The end-user manual's core unit: one screen, one task, numbered arrows naming every control in click order.",
-          "whyItMatters": "Every click you skip in the visuals is a support ticket you create later."
+          "id": "annotated-screenshot",
+          "pronunciation": "an-oh-tei-tid skreen-shot",
+          "shortDefinition": "A UI screenshot with numbered callouts pointing at the exact buttons and fields a task requires.",
+          "whyItMatters": "Every click you skip in the visuals is a support ticket you create later.",
+          "word": "Annotated Screenshot"
         },
         {
-          "id": "developer-experience",
-          "word": "Developer Experience (DX)",
-          "pronunciation": "dih-vel-uh-per ik-speer-ee-uhns",
           "category": "concept",
-          "shortDefinition": "The cumulative feeling developers get while using a system — and its manual is often the first contact.",
           "detailedDefinition": "Quickstarts, generated API references, playgrounds, error messages, and changelogs together form the DX; for many products, documentation is the product's front door.",
-          "whyItMatters": "A DX presentation is not 'about' the manual — it is the manual being demonstrated live, which is why the instruments (playgrounds, live code) matter so much."
+          "id": "developer-experience",
+          "pronunciation": "dih-vel-uh-per ik-speer-ee-uhns",
+          "shortDefinition": "The cumulative feeling developers get while using a system — and its manual is often the first contact.",
+          "whyItMatters": "A DX presentation is not 'about' the manual — it is the manual being demonstrated live, which is why the instruments (playgrounds, live code) matter so much.",
+          "word": "Developer Experience (DX)"
         }
-      ]
-    }
+      ],
+      "title": "Lexicon of the Realm"
+    },
+    "type": "flashcards"
   },
   {
     "folder": "concept-map",
-    "type": "concept-map",
     "props": {
-      "title": "Concept Constellation",
-      "nodes": {
-        "audience_analysis": {
-          "id": "audience_analysis",
-          "title": "Audience Analysis",
-          "category": "concept"
-        },
-        "end_users": {
-          "id": "end_users",
-          "title": "End Users",
-          "category": "role"
-        },
-        "operators": {
-          "id": "operators",
-          "title": "Operators & Admins",
-          "category": "role"
-        },
-        "developers": {
-          "id": "developers",
-          "title": "Developers (DX)",
-          "category": "role"
-        },
-        "persona_scenario": {
-          "id": "persona_scenario",
-          "title": "One-Scenario Walkthrough",
-          "category": "process"
-        },
-        "hook_pain": {
-          "id": "hook_pain",
-          "title": "Hook with the Pain",
-          "category": "concept"
-        },
-        "live_demo": {
-          "id": "live_demo",
-          "title": "Live Product Demo",
-          "category": "process"
-        },
-        "fallback_clip": {
-          "id": "fallback_clip",
-          "title": "OBS Fallback Clip",
-          "category": "mechanism"
-        },
-        "gotchas": {
-          "id": "gotchas",
-          "title": "Gotchas & Fixes",
-          "category": "concept"
-        },
-        "permalink": {
-          "id": "permalink",
-          "title": "Docs Permalink",
-          "category": "concept"
-        },
-        "docs_as_code": {
-          "id": "docs_as_code",
-          "title": "Docs-as-Code",
-          "category": "process"
-        },
-        "review_loop": {
-          "id": "review_loop",
-          "title": "PR Review & Preview",
-          "category": "process"
-        },
-        "markdown_deck": {
-          "id": "markdown_deck",
-          "title": "Marp / Slidev / reveal.js",
-          "category": "tool"
-        },
-        "docs_site": {
-          "id": "docs_site",
-          "title": "Docusaurus / MkDocs / VitePress",
-          "category": "tool"
-        },
-        "api_playground": {
-          "id": "api_playground",
-          "title": "Swagger UI / Redoc / Storybook",
-          "category": "tool"
-        },
-        "guided_tour": {
-          "id": "guided_tour",
-          "title": "In-App & Code Tours",
-          "category": "tool"
-        }
-      },
       "edges": [
         {
           "from": "audience_analysis",
-          "to": "end_users",
-          "label": "splits into"
+          "label": "splits into",
+          "to": "end_users"
         },
         {
           "from": "audience_analysis",
-          "to": "operators",
-          "label": "splits into"
+          "label": "splits into",
+          "to": "operators"
         },
         {
           "from": "audience_analysis",
-          "to": "developers",
-          "label": "splits into"
+          "label": "splits into",
+          "to": "developers"
         },
         {
           "from": "hook_pain",
-          "to": "persona_scenario",
-          "label": "leads into"
+          "label": "leads into",
+          "to": "persona_scenario"
         },
         {
           "from": "persona_scenario",
-          "to": "live_demo",
-          "label": "is proven by"
+          "label": "is proven by",
+          "to": "live_demo"
         },
         {
           "from": "live_demo",
-          "to": "fallback_clip",
-          "label": "is protected by"
+          "label": "is protected by",
+          "to": "fallback_clip"
         },
         {
           "from": "live_demo",
-          "to": "gotchas",
-          "label": "flows into"
+          "label": "flows into",
+          "to": "gotchas"
         },
         {
           "from": "gotchas",
-          "to": "permalink",
-          "label": "ends at"
+          "label": "ends at",
+          "to": "permalink"
         },
         {
           "from": "docs_as_code",
-          "to": "review_loop",
-          "label": "ships through"
+          "label": "ships through",
+          "to": "review_loop"
         },
         {
           "from": "docs_as_code",
-          "to": "markdown_deck",
-          "label": "compiles decks"
+          "label": "compiles decks",
+          "to": "markdown_deck"
         },
         {
           "from": "docs_as_code",
-          "to": "docs_site",
-          "label": "compiles sites"
+          "label": "compiles sites",
+          "to": "docs_site"
         },
         {
           "from": "docs_site",
-          "to": "permalink",
-          "label": "hosts"
+          "label": "hosts",
+          "to": "permalink"
         },
         {
           "from": "developers",
-          "to": "api_playground",
-          "label": "learn via"
+          "label": "learn via",
+          "to": "api_playground"
         },
         {
           "from": "end_users",
-          "to": "guided_tour",
-          "label": "learn via"
+          "label": "learn via",
+          "to": "guided_tour"
         },
         {
           "from": "operators",
-          "to": "docs_site",
-          "label": "run from"
+          "label": "run from",
+          "to": "docs_site"
         }
-      ]
-    }
+      ],
+      "nodes": {
+        "api_playground": {
+          "category": "tool",
+          "id": "api_playground",
+          "title": "Swagger UI / Redoc / Storybook"
+        },
+        "audience_analysis": {
+          "category": "concept",
+          "id": "audience_analysis",
+          "title": "Audience Analysis"
+        },
+        "developers": {
+          "category": "role",
+          "id": "developers",
+          "title": "Developers (DX)"
+        },
+        "docs_as_code": {
+          "category": "process",
+          "id": "docs_as_code",
+          "title": "Docs-as-Code"
+        },
+        "docs_site": {
+          "category": "tool",
+          "id": "docs_site",
+          "title": "Docusaurus / MkDocs / VitePress"
+        },
+        "end_users": {
+          "category": "role",
+          "id": "end_users",
+          "title": "End Users"
+        },
+        "fallback_clip": {
+          "category": "mechanism",
+          "id": "fallback_clip",
+          "title": "OBS Fallback Clip"
+        },
+        "gotchas": {
+          "category": "concept",
+          "id": "gotchas",
+          "title": "Gotchas & Fixes"
+        },
+        "guided_tour": {
+          "category": "tool",
+          "id": "guided_tour",
+          "title": "In-App & Code Tours"
+        },
+        "hook_pain": {
+          "category": "concept",
+          "id": "hook_pain",
+          "title": "Hook with the Pain"
+        },
+        "live_demo": {
+          "category": "process",
+          "id": "live_demo",
+          "title": "Live Product Demo"
+        },
+        "markdown_deck": {
+          "category": "tool",
+          "id": "markdown_deck",
+          "title": "Marp / Slidev / reveal.js"
+        },
+        "operators": {
+          "category": "role",
+          "id": "operators",
+          "title": "Operators & Admins"
+        },
+        "permalink": {
+          "category": "concept",
+          "id": "permalink",
+          "title": "Docs Permalink"
+        },
+        "persona_scenario": {
+          "category": "process",
+          "id": "persona_scenario",
+          "title": "One-Scenario Walkthrough"
+        },
+        "review_loop": {
+          "category": "process",
+          "id": "review_loop",
+          "title": "PR Review & Preview"
+        }
+      },
+      "title": "Concept Constellation"
+    },
+    "type": "concept-map"
   },
   {
     "folder": "synthesis",
-    "type": "reflection-template",
     "props": {
-      "title": "Synthesis Vault",
       "challenges": [
         {
-          "prompt": "Complete the audience doctrine (Track 1):",
-          "template": "Before choosing any tool, map your audience: {zone-1} need task walkthroughs of real UI screens, while {zone-2} read the manual defensively for runbooks and incident triage.",
           "chips": [
             {
               "id": "chip-endusers",
@@ -2064,15 +2060,15 @@
               "text": "executives"
             }
           ],
+          "explanation": "<strong>Correct!</strong> End users need task-oriented UI walkthroughs; operators read defensively (what breaks, how to see it, what to type). Executives were never one of the three taught archetypes.",
+          "prompt": "Complete the audience doctrine (Track 1):",
           "solution": {
             "zone-1": "chip-endusers",
             "zone-2": "chip-operators"
           },
-          "explanation": "<strong>Correct!</strong> End users need task-oriented UI walkthroughs; operators read defensively (what breaks, how to see it, what to type). Executives were never one of the three taught archetypes."
+          "template": "Before choosing any tool, map your audience: {zone-1} need task walkthroughs of real UI screens, while {zone-2} read the manual defensively for runbooks and incident triage."
         },
         {
-          "prompt": "Complete the presentation arc (Track 1):",
-          "template": "The six-stage arc opens by hooking the audience with {zone-1}, proves the task in a {zone-2} of the running product, and closes by pinning the docs-site {zone-3}.",
           "chips": [
             {
               "id": "chip-pain",
@@ -2091,16 +2087,16 @@
               "text": "permalink"
             }
           ],
+          "explanation": "<strong>Correct!</strong> Hook with the pain (never the architecture diagram), prove one persona task in a live demo of the real product, and end on the permalink — findability beats memorability.",
+          "prompt": "Complete the presentation arc (Track 1):",
           "solution": {
             "zone-1": "chip-pain",
             "zone-2": "chip-live-demo",
             "zone-3": "chip-permalink"
           },
-          "explanation": "<strong>Correct!</strong> Hook with the pain (never the architecture diagram), prove one persona task in a live demo of the real product, and end on the permalink — findability beats memorability."
+          "template": "The six-stage arc opens by hooking the audience with {zone-1}, proves the task in a {zone-2} of the running product, and closes by pinning the docs-site {zone-3}."
         },
         {
-          "prompt": "Complete the instrument doctrine (Tracks 2 & 3):",
-          "template": "Authoring slides as markdown with {zone-1} keeps the deck in Git, rendering the OpenAPI spec with {zone-2} keeps the API reference un-stale, and recording the walkthrough with {zone-3} yields the live demo's fallback clip.",
           "chips": [
             {
               "id": "chip-marp",
@@ -2119,14 +2115,18 @@
               "text": "Photoshop"
             }
           ],
+          "explanation": "<strong>Correct!</strong> Marp compiles markdown decks that live in the repo, Swagger UI renders the API contract itself so it can never be stale, and OBS Studio records the clip that saves the live demo. Photoshop is a distractor — it appears nowhere in the realm.",
+          "prompt": "Complete the instrument doctrine (Tracks 2 & 3):",
           "solution": {
             "zone-1": "chip-marp",
             "zone-2": "chip-swagger",
             "zone-3": "chip-obs"
           },
-          "explanation": "<strong>Correct!</strong> Marp compiles markdown decks that live in the repo, Swagger UI renders the API contract itself so it can never be stale, and OBS Studio records the clip that saves the live demo. Photoshop is a distractor — it appears nowhere in the realm."
+          "template": "Authoring slides as markdown with {zone-1} keeps the deck in Git, rendering the OpenAPI spec with {zone-2} keeps the API reference un-stale, and recording the walkthrough with {zone-3} yields the live demo's fallback clip."
         }
-      ]
-    }
+      ],
+      "title": "Synthesis Vault"
+    },
+    "type": "reflection-template"
   }
 ]

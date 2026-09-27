@@ -53,13 +53,13 @@ Loom supports 14 interactive section types registered dynamically in the `Sectio
 
 ## Dynamic OKF Topic Creation
 
-All topic content lives in the `public/okf/` folder. Topics are structured as [OKF v0.1](https://github.com/GoogleCloudPlatform/knowledge-catalog/blob/main/okf/SPEC.md) bundles. The reader pipeline loads them dynamically at runtime — **no TypeScript changes or recompilations are needed**.
+All topic content lives in the `public/okf/` folder. Topics are structured as [OKF v0.1](https://github.com/GoogleCloudPlatform/knowledge-catalog/blob/main/okf/SPEC.md) bundles. The loading pipeline (storage adapter → Validation Gateway) loads them dynamically at runtime — **no TypeScript changes or recompilations are needed**.
 
 ### Topic Bundle Folder Layout
 ```
 public/okf/[topic-id]/
   ├── index.md                 # OKF directory listing (progressive disclosure links)
-  ├── index.yaml               # App metadata (category, tags, related files list)
+  ├── index.yaml               # App metadata (category, tags)
   └── sections/                # Subfolders containing YAML/Markdown data
       ├── intro/
       │     ├── section.md     # Section manifest (type, title, resource)
@@ -78,7 +78,7 @@ public/okf/[topic-id]/
    - Root index file: [public/okf/index.md](file:///Users/chanatipsaetia/Work/interactive-loom-learning-os/public/okf/index.md)
    - Fallback registry: Run `npm run dev` or regenerate with `node scripts/update-okf-manifest.js` to compile the `public/index.yaml` list.
 3. **Assemble sections**: Create subfolders under `sections/` and define your data files (YAML or Markdown).
-4. **Link sections**: Add links to each section manifest inside your topic's `index.md` file and register the data files under the `related` property in `index.yaml`.
+4. **Link sections**: Add links to each section manifest inside your topic's `index.md` file. Section files are discovered from the section folders; run `npm run okf:validate` to check them.
 
 For detailed technical instructions and schema definitions, see [docs/creating-topics.md](docs/creating-topics.md). To understand the flowchart Event Storming rules, see [docs/event-storming-conventions.md](docs/event-storming-conventions.md). For the progressive section ordering guide and mental models, see [docs/sections-reference.md](docs/sections-reference.md).
 
@@ -104,7 +104,7 @@ interactive-loom-learning-os/
 │   │   ├── validation/        # 3-Tier ValidationGateway & Tell-Back Protocol (gateway.ts)
 │   │   ├── delivery/          # Hexagonal Ports (ports.ts) & Adapters (in-repo, web-app, embed)
 │   │   ├── ui-system/         # UISystemProvider & Contracts (theme, primitives, sound, motion)
-│   │   ├── okf/               # OKF bundle reader and section parser
+│   │   ├── okf/               # OKF section loader (storage → Validation Gateway) and props mapping
 │   │   └── registry/          # Dynamic SectionRegistry loader
 │   ├── sections/              # Backward-compatible re-exports for the 15 section types
 │   ├── components/            # Layout, sidebar, editor split-pane, and UI primitives

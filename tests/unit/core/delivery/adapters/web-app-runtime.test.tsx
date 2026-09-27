@@ -3,7 +3,7 @@ import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { WebAppRuntimeAdapter } from '../../../../../src/core/delivery/adapters/web-app-runtime'
 import type { OKFBundled } from '../../../../../src/core/learning-engine/composition/okf/types'
 
-vi.mock('../../../../../src/core/learning-engine/composition/okf/reader', () => ({
+vi.mock('../../../../../src/core/learning-engine/composition/okf/loader', () => ({
   loadOKFBundle: vi.fn(),
 }))
 
@@ -17,20 +17,22 @@ vi.mock('../../../../../src/core/learning-engine/validation/gateway', () => ({
   validateOKFSection: vi.fn(),
 }))
 
-import { loadOKFBundle } from '../../../../../src/core/learning-engine/composition/okf/reader'
+import { loadOKFBundle } from '../../../../../src/core/learning-engine/composition/okf/loader'
+import { createMemoryStorage } from '../../../helpers/storage'
 import { SectionRegistry } from '../../../../../src/core/learning-engine/registry'
 import { validateOKFSection } from '../../../../../src/core/learning-engine/validation/gateway'
 
 describe('WebAppRuntimeAdapter', () => {
   let adapter: WebAppRuntimeAdapter
+  const storage = createMemoryStorage()
 
   beforeEach(() => {
     vi.clearAllMocks()
-    adapter = new WebAppRuntimeAdapter()
+    adapter = new WebAppRuntimeAdapter(storage)
   })
 
   describe('loadTopicBundle', () => {
-    it('delegates to loadOKFBundle', async () => {
+    it('delegates to loadOKFBundle with its storage', async () => {
       const mockBundle = [
         {
           meta: { type: 'intro', title: 'Test', resource: '.' },
@@ -42,7 +44,7 @@ describe('WebAppRuntimeAdapter', () => {
 
       const result = await adapter.loadTopicBundle('demo')
 
-      expect(loadOKFBundle).toHaveBeenCalledWith('demo')
+      expect(loadOKFBundle).toHaveBeenCalledWith('demo', storage)
       expect(result).toEqual(mockBundle)
     })
   })

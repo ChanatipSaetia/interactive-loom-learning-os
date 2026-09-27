@@ -4,6 +4,9 @@ import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 import * as yaml from 'js-yaml'
 import { useSectionEditorBuffer, formatSectionRawText } from '../../../../../../src/core/supporting/authoring-editor'
 import type { OKFBundledSection, OKFSectionData } from '../../../../../../src/core/learning-engine/composition/okf/types'
+import { withStorage } from '../../../../helpers/storage'
+
+const wrapper = withStorage()
 
 describe('useSectionEditorBuffer', () => {
   beforeEach(() => {
@@ -40,7 +43,7 @@ describe('useSectionEditorBuffer', () => {
   }
 
   it('initializes buffer from source section', () => {
-    const { result } = renderHook(() => useSectionEditorBuffer(mockTextSection))
+    const { result } = renderHook(() => useSectionEditorBuffer(mockTextSection), { wrapper })
 
     expect(result.current.data).toEqual(mockTextSection.data)
     expect(result.current.meta).toEqual(mockTextSection.meta)
@@ -54,7 +57,7 @@ describe('useSectionEditorBuffer', () => {
   it('resets buffer when source section changes', () => {
     const { result, rerender } = renderHook(
       ({ source }) => useSectionEditorBuffer(source),
-      { initialProps: { source: mockTextSection } }
+      { initialProps: { source: mockTextSection }, wrapper }
     )
 
     expect(result.current.data).toEqual(mockTextSection.data)
@@ -71,7 +74,7 @@ describe('useSectionEditorBuffer', () => {
 
   it('updates data and raw text when visual form changes', () => {
     const onChange = vi.fn()
-    const { result } = renderHook(() => useSectionEditorBuffer(mockTextSection, onChange))
+    const { result } = renderHook(() => useSectionEditorBuffer(mockTextSection, onChange), { wrapper })
 
     const newData: OKFSectionData = { type: 'text', paragraphs: ['Modified paragraph'] }
     act(() => {
@@ -88,7 +91,7 @@ describe('useSectionEditorBuffer', () => {
 
   it('updates data and raw text when valid YAML is entered (after debounce)', () => {
     const onChange = vi.fn()
-    const { result } = renderHook(() => useSectionEditorBuffer(mockTextSection, onChange))
+    const { result } = renderHook(() => useSectionEditorBuffer(mockTextSection, onChange), { wrapper })
 
     const newYaml = 'type: text\nparagraphs:\n  - New paragraph from raw YAML'
     const expectedParsed = yaml.load(newYaml) as OKFSectionData
@@ -113,7 +116,7 @@ describe('useSectionEditorBuffer', () => {
   })
 
   it('shows validation error for invalid YAML without clearing last valid data', () => {
-    const { result } = renderHook(() => useSectionEditorBuffer(mockTextSection))
+    const { result } = renderHook(() => useSectionEditorBuffer(mockTextSection), { wrapper })
 
     const validData = { ...result.current.data }
 
@@ -136,7 +139,7 @@ describe('useSectionEditorBuffer', () => {
   })
 
   it('shows schema validation error for valid YAML but wrong schema', () => {
-    const { result } = renderHook(() => useSectionEditorBuffer(mockTextSection))
+    const { result } = renderHook(() => useSectionEditorBuffer(mockTextSection), { wrapper })
 
     // Valid YAML but missing required field
     act(() => {
@@ -153,7 +156,7 @@ describe('useSectionEditorBuffer', () => {
   })
 
   it('clears validation errors when valid YAML is restored', () => {
-    const { result } = renderHook(() => useSectionEditorBuffer(mockTextSection))
+    const { result } = renderHook(() => useSectionEditorBuffer(mockTextSection), { wrapper })
 
     // Type invalid YAML
     act(() => {
@@ -180,7 +183,7 @@ describe('useSectionEditorBuffer', () => {
   })
 
   it('bi-directional sync: form -> raw -> form', () => {
-    const { result } = renderHook(() => useSectionEditorBuffer(mockTextSection))
+    const { result } = renderHook(() => useSectionEditorBuffer(mockTextSection), { wrapper })
 
     // Step 1: Update via visual form
     const formUpdated: OKFSectionData = { type: 'text', paragraphs: ['From form'] }
@@ -207,7 +210,7 @@ describe('useSectionEditorBuffer', () => {
   })
 
   it('tracks dirty state', () => {
-    const { result } = renderHook(() => useSectionEditorBuffer(mockTextSection))
+    const { result } = renderHook(() => useSectionEditorBuffer(mockTextSection), { wrapper })
 
     expect(result.current.isDirty).toBe(false)
 
@@ -226,7 +229,7 @@ describe('useSectionEditorBuffer', () => {
   })
 
   it('handles null source section', () => {
-    const { result } = renderHook(() => useSectionEditorBuffer(null))
+    const { result } = renderHook(() => useSectionEditorBuffer(null), { wrapper })
 
     expect(result.current.data).toEqual({ type: 'text', paragraphs: [] })
     expect(result.current.meta).toEqual({ type: 'text', title: '', resource: '.' })
@@ -237,7 +240,7 @@ describe('useSectionEditorBuffer', () => {
 
   it('debounces rapid raw text changes', () => {
     const onChange = vi.fn()
-    const { result } = renderHook(() => useSectionEditorBuffer(mockTextSection, onChange))
+    const { result } = renderHook(() => useSectionEditorBuffer(mockTextSection, onChange), { wrapper })
 
     // Multiple rapid edits
     act(() => {
@@ -259,7 +262,7 @@ describe('useSectionEditorBuffer', () => {
   })
 
   it('last-good-state persists through multiple invalid edits', () => {
-    const { result } = renderHook(() => useSectionEditorBuffer(mockTextSection))
+    const { result } = renderHook(() => useSectionEditorBuffer(mockTextSection), { wrapper })
     const originalData = { ...result.current.data }
 
     // First invalid edit
@@ -284,7 +287,7 @@ describe('useSectionEditorBuffer', () => {
   // ---- Gateway integration tests ----
 
   it('exposes validationDiagnostics from ValidationGateway', () => {
-    const { result } = renderHook(() => useSectionEditorBuffer(mockTextSection))
+    const { result } = renderHook(() => useSectionEditorBuffer(mockTextSection), { wrapper })
 
     act(() => {
       result.current.setRawText('type: text')
@@ -298,7 +301,7 @@ describe('useSectionEditorBuffer', () => {
   })
 
   it('validationStatus reflects gateway status (valid)', () => {
-    const { result } = renderHook(() => useSectionEditorBuffer(mockTextSection))
+    const { result } = renderHook(() => useSectionEditorBuffer(mockTextSection), { wrapper })
 
     expect(result.current.validationStatus).toBe('valid')
 
@@ -311,7 +314,7 @@ describe('useSectionEditorBuffer', () => {
   })
 
   it('validationStatus reflects gateway status (error)', () => {
-    const { result } = renderHook(() => useSectionEditorBuffer(mockTextSection))
+    const { result } = renderHook(() => useSectionEditorBuffer(mockTextSection), { wrapper })
 
     act(() => {
       result.current.setRawText('invalid yaml: [')
@@ -322,7 +325,7 @@ describe('useSectionEditorBuffer', () => {
   })
 
   it('live preview retains lastValidData during syntax errors', () => {
-    const { result } = renderHook(() => useSectionEditorBuffer(mockTextSection))
+    const { result } = renderHook(() => useSectionEditorBuffer(mockTextSection), { wrapper })
     const lastGoodData = { ...result.current.data }
 
     // Introduce syntax error
@@ -337,7 +340,7 @@ describe('useSectionEditorBuffer', () => {
   })
 
   it('live preview retains lastValidData through intermediate valid state then error', () => {
-    const { result } = renderHook(() => useSectionEditorBuffer(mockTextSection))
+    const { result } = renderHook(() => useSectionEditorBuffer(mockTextSection), { wrapper })
 
     // Step 1: Make a valid edit
     act(() => {
@@ -357,7 +360,7 @@ describe('useSectionEditorBuffer', () => {
   })
 
   it('legacy validationDiagnostics are derived from gateway diagnostics', () => {
-    const { result } = renderHook(() => useSectionEditorBuffer(mockTextSection))
+    const { result } = renderHook(() => useSectionEditorBuffer(mockTextSection), { wrapper })
 
     act(() => {
       result.current.setRawText('type: text')

@@ -2,7 +2,7 @@
 import type { UnifiedFlowchartSchema, FlowchartRelation, FlowchartViewNode, FlowchartEntity } from '../types';
 import { TYPES, MASTER_MAPPING_MATRIX } from '../types';
 import { getEntityType, deriveRelations, computeLayoutInfo } from './utils';
-import { buildCanonicalIdMapper } from '../abstract-flow/derive';
+import { buildCanonicalIdMapper } from '../../../model/derive';
 
 export function deriveSysArch(
   schema: UnifiedFlowchartSchema,

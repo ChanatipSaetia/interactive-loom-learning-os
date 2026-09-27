@@ -1,57 +1,96 @@
 /**
- * InRepoStorageAdapter — concrete OKFStoragePort for reading/writing local
- * OKF files via Vite dev-server endpoints and browser fetch.
+ * InRepoStorageAdapter — concrete OKFStoragePort for OKF folders served over
+ * HTTP (the Vite dev server or a Vite build), with writes through the Vite
+ * dev-server endpoints.
  *
- * Used by the editor for disk I/O in development mode. Relies on the
- * existing reader cache for `readSection` to avoid duplicating multi-file
- * section loading logic.
+ * Returns raw text only. Section membership comes from the generated
+ * `okf/<topicId>/manifest.json`; lesson order comes from the topic's index.md.
  */
 import type { OKFStoragePort } from '../ports'
-import type { OKFBundledSection, OKFSectionMeta, OKFSectionData } from '../../learning-engine/composition/okf/types'
-import { loadOKFBundle, clearOKFCache } from '../../learning-engine/composition/okf/reader'
+import type { OKFSectionData } from '../../learning-engine/composition/okf/types'
+import type { SectionFiles } from '../../learning-engine/validation/types'
+import { MANIFEST_FILE, parseTopicIndexSections, type TopicManifest } from '../manifest'
 import * as yaml from 'js-yaml'
 
-function getOkfBase(): string {
-  const win = window as unknown as Record<string, unknown> | undefined
-  if (typeof win !== 'undefined' && win.__OKF_BASE_OVERRIDE__) {
+function defaultOkfBase(): string {
+  const win = typeof window !== 'undefined' ? (window as unknown as Record<string, unknown>) : undefined
+  if (win?.__OKF_BASE_OVERRIDE__) {
     return win.__OKF_BASE_OVERRIDE__ as string
   }
   return `${import.meta.env.BASE_URL || '/'}okf`
 }
 
-/**
- * Parse markdown frontmatter from raw text content.
- */
-function parseFrontmatter(content: string): { meta: Record<string, unknown>; body: string } {
-  const match = content.match(/^---\s*\n([\s\S]*?)\n---\s*\n?([\s\S]*)$/)
-  if (!match) return { meta: {}, body: content }
-  return { meta: yaml.load(match[1]) as Record<string, unknown>, body: match[2] }
-}
-
 export class InRepoStorageAdapter implements OKFStoragePort {
+  private textCache = new Map<string, Promise<string>>()
+  private manifestCache = new Map<string, Promise<TopicManifest>>()
+
   /**
-   * Read a single OKF section from the in-repo file structure.
-   *
-   * Delegates to loadOKFBundle which caches the full topic bundle, then
-   * extracts the matching section by folder name. This avoids duplicating
-   * the complex multi-file resource resolution logic.
+   * @param okfBase - Base URL of the OKF folder (default: `<BASE_URL>okf`, or
+   *   `window.__OKF_BASE_OVERRIDE__` when set)
    */
-  async readSection(
-    topicId: string,
-    sectionFolder: string
-  ): Promise<{ meta: OKFSectionMeta; data: OKFSectionData; body: string }> {
-    const bundle = await loadOKFBundle(topicId)
-    const section = bundle.find((s: OKFBundledSection) => s.sectionFolder === sectionFolder)
+  constructor(private okfBase?: string) {}
 
-    if (!section) {
-      throw new Error(`Section "${sectionFolder}" not found in topic "${topicId}"`)
-    }
+  private get base(): string {
+    return (this.okfBase ?? defaultOkfBase()).replace(/\/$/, '')
+  }
 
-    return {
-      meta: section.meta,
-      data: section.data,
-      body: section.sectionBody ?? '',
+  private fetchText(path: string): Promise<string> {
+    let pending = this.textCache.get(path)
+    if (!pending) {
+      pending = fetch(`${this.base}/${path}`).then(async (res) => {
+        if (!res.ok) throw new Error(`OKF fetch failed: ${path} (${res.status})`)
+        return res.text()
+      })
+      pending.catch(() => this.textCache.delete(path))
+      this.textCache.set(path, pending)
     }
+    return pending
+  }
+
+  private readManifest(topicId: string): Promise<TopicManifest> {
+    let pending = this.manifestCache.get(topicId)
+    if (!pending) {
+      const notFound = new Error(
+        `OKF manifest not found for topic "${topicId}". OKF content must be served by the Vite dev server ` +
+        `or a Vite build, which generate ${topicId}/${MANIFEST_FILE} from the section folders.`,
+      )
+      pending = this.fetchText(`${topicId}/${MANIFEST_FILE}`).then(
+        (text) => {
+          try {
+            return JSON.parse(text) as TopicManifest
+          } catch {
+            throw notFound // e.g. an SPA fallback page instead of JSON
+          }
+        },
+        () => {
+          throw notFound
+        },
+      )
+      pending.catch(() => this.manifestCache.delete(topicId))
+      this.manifestCache.set(topicId, pending)
+    }
+    return pending
+  }
+
+  /** Drop cached files and manifests (after writes). */
+  clearCache(): void {
+    this.textCache.clear()
+    this.manifestCache.clear()
+  }
+
+  async listSections(topicId: string): Promise<string[]> {
+    const indexMd = await this.fetchText(`${topicId}/index.md`)
+    return parseTopicIndexSections(indexMd)
+  }
+
+  async readSectionFiles(topicId: string, sectionFolder: string): Promise<SectionFiles> {
+    const manifest = await this.readManifest(topicId)
+    const names = manifest.sections[sectionFolder]
+    if (!names) {
+      throw new Error(`Section "${sectionFolder}" not found in topic "${topicId}" (no section.md in the manifest).`)
+    }
+    const contents = await Promise.all(names.map((name) => this.fetchText(`${topicId}/sections/${sectionFolder}/${name}`)))
+    return Object.fromEntries(names.map((name, i) => [name, contents[i]]))
   }
 
   /**
@@ -86,7 +125,7 @@ export class InRepoStorageAdapter implements OKFStoragePort {
       throw new Error(`Failed to save section: ${errorBody}`)
     }
 
-    clearOKFCache()
+    this.clearCache()
   }
 
   /**
@@ -118,27 +157,21 @@ export class InRepoStorageAdapter implements OKFStoragePort {
   }
 
   /**
-   * List all available topic identifiers by parsing the OKF index.md.
+   * List all available topic identifiers from the links in the OKF index.md.
    */
   async listTopics(): Promise<string[]> {
-    const base = getOkfBase()
-    const res = await fetch(`${base}/index.md`)
+    const res = await fetch(`${this.base}/index.md`)
     if (!res.ok) {
       return []
     }
 
     const text = await res.text()
-    const { body } = parseFrontmatter(text)
-
     const topicIds = new Set<string>()
-    const lines = body.split('\n')
 
-    for (const line of lines) {
-      const trimmed = line.trim()
-      const linkMatch = trimmed.match(/^\*\s+\[([^\]]+)\]\(([^)]+index\.md)\)/)
+    for (const line of text.split('\n')) {
+      const linkMatch = line.trim().match(/^\*\s+\[([^\]]+)\]\(([^)]+index\.md)\)/)
       if (linkMatch) {
-        const href = linkMatch[2].trim()
-        const topicId = href.replace(/^\.\//, '').replace(/\/index\.md$/, '')
+        const topicId = linkMatch[2].trim().replace(/^\.\//, '').replace(/\/index\.md$/, '')
         if (topicId) {
           topicIds.add(topicId)
         }

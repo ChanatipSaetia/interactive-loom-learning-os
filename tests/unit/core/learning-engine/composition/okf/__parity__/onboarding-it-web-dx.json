@@ -1,15 +1,98 @@
 [
   {
     "folder": "intro",
-    "type": "intro",
     "props": {
-      "title": "Onboarding Craft for IT Systems, Web Apps & Developer Experience",
-      "subtitle": "Get newcomers to their first real win fast — with the right onboarding method for the right audience",
       "estimatedTime": "40 min",
       "moduleCount": 15,
+      "roadmap": [
+        {
+          "description": "Compare the three onboarding audiences — Web App end users, internal staff & operators, and developers — and what a good first week looks like for each.",
+          "sectionId": "audience-map",
+          "title": "Audience Map",
+          "type": "taxonomy-browser"
+        },
+        {
+          "description": "The canonical doctrine: access first, first value week one, one golden path, progressive disclosure, human anchor, measure the friction.",
+          "sectionId": "principles",
+          "title": "The Six Onboarding Principles",
+          "type": "bullets"
+        },
+        {
+          "description": "Combat trial testing the three audience archetypes and the six onboarding principles.",
+          "sectionId": "quiz-principles",
+          "title": "Trial of the Doctrine",
+          "type": "quiz"
+        },
+        {
+          "description": "Timed reordering challenge: assemble the six onboarding principles in their correct order of operation.",
+          "sectionId": "reflection-journey",
+          "title": "Sequencing the First Week",
+          "type": "reflection-sequence"
+        },
+        {
+          "description": "Docs-first handbooks, buddy apprenticeship, cohort academies, in-app tours, and sandbox quests — each with its pros and cons.",
+          "sectionId": "methods",
+          "title": "The Five Onboarding Methods",
+          "type": "taxonomy-browser"
+        },
+        {
+          "description": "Combat trial testing which onboarding method fits which situation, given its pros and cons.",
+          "sectionId": "quiz-methods",
+          "title": "Trial of the Method Choice",
+          "type": "quiz"
+        },
+        {
+          "description": "Forge an onboarding loadout for 40 mixed newcomers: pick access policy, training method, and support channel while balancing speed, consistency, cost, and retention.",
+          "sectionId": "method-loadout",
+          "title": "Onboarding Program Trade-off Workshop",
+          "type": "tradeoff-sandbox"
+        },
+        {
+          "description": "Diagnostic advisor: answer questions about audience, headcount, and risk, get a tailored onboarding method recommendation.",
+          "sectionId": "method-advisor",
+          "title": "Onboarding Method Advisor",
+          "type": "decision-tree"
+        },
+        {
+          "description": "Lego-stack view of onboarding measurement: instrumentation, friction diagnostics, leading indicators, and the north-star time-to-first-value.",
+          "sectionId": "ttv-dashboard",
+          "title": "The Time-to-Value Dashboard Stack",
+          "type": "pillar-layer"
+        },
+        {
+          "description": "Event Storming walkthrough: request → SSO provisioning → golden-path access check → day-one smoke test (or 4003 error rework).",
+          "sectionId": "provision-flow",
+          "title": "Day-1 Access Provisioning Flow",
+          "type": "flowchart"
+        },
+        {
+          "description": "Branching narrative: 40 newcomers land on Monday and the wiki is on fire. Your onboarding decisions are graded.",
+          "sectionId": "scenario-firstday",
+          "title": "Scenario: Monday Without a Path",
+          "type": "scenario"
+        },
+        {
+          "description": "Key vocabulary: time-to-first-value, golden path, pre-boarding, activation moment, ticket storm, sandbox quest.",
+          "sectionId": "glossary",
+          "title": "Lexicon of the Threshold",
+          "type": "flashcards"
+        },
+        {
+          "description": "Force-directed map of how audiences, principles, methods, and measurement connect.",
+          "sectionId": "concept-map",
+          "title": "Concept Constellation",
+          "type": "concept-map"
+        },
+        {
+          "description": "Fill-in-the-blank synthesis across all three tracks — the final ritual before the Boss Lair.",
+          "sectionId": "synthesis",
+          "title": "Synthesis Vault",
+          "type": "reflection-template"
+        }
+      ],
+      "subtitle": "Get newcomers to their first real win fast — with the right onboarding method for the right audience",
+      "title": "Onboarding Craft for IT Systems, Web Apps & Developer Experience",
       "what": {
-        "definition": "Onboarding is the engineered path from 'a stranger is granted a account, a seat, or an API key' to 'this person has delivered something real without asking for help'. For an IT system that means staff and operators; for a Web App it means end users; for Developer Experience it means integrators building on your platform.",
-        "summary": "Most onboarding fails the same way: a firehose of documentation, a pile of passwords, and a week of 'ping me if you're stuck'. This realm teaches the opposite discipline — grant access before day one, drive every newcomer to one golden-path task that produces real value in the first week, reveal complexity progressively, and measure the friction instead of guessing. Then pick the method that fits the audience: docs-first handbooks, buddy apprenticeship, cohort academies, self-serve in-app tours, or sandbox quests.",
         "bullets": [
           "Access First: credentials, licenses, and environments are ready on day zero — waiting for access is the number-one onboarding killer",
           "Time-to-First-Value: the only week-one metric that matters is how fast a newcomer completes one real, meaningful task",
@@ -18,6 +101,8 @@
           "Human Anchor: every method, even fully self-serve ones, needs a named human or office hours to land questions on",
           "Measure the Friction: day-1 login success, golden-path completion, and ticket storms tell you where onboarding breaks"
         ],
+        "definition": "Onboarding is the engineered path from 'a stranger is granted a account, a seat, or an API key' to 'this person has delivered something real without asking for help'. For an IT system that means staff and operators; for a Web App it means end users; for Developer Experience it means integrators building on your platform.",
+        "summary": "Most onboarding fails the same way: a firehose of documentation, a pile of passwords, and a week of 'ping me if you're stuck'. This realm teaches the opposite discipline — grant access before day one, drive every newcomer to one golden-path task that produces real value in the first week, reveal complexity progressively, and measure the friction instead of guessing. Then pick the method that fits the audience: docs-first handbooks, buddy apprenticeship, cohort academies, self-serve in-app tours, or sandbox quests.",
         "tags": [
           "Onboarding",
           "Developer Experience",
@@ -27,111 +112,22 @@
         ]
       },
       "why": {
-        "summary": "Bad onboarding is invisible until it shows up as a support queue full of 'how do I…' tickets, developers who quietly abandon your API after an afternoon of setup, and new staff who spend a month afraid to touch production. Onboarding is the highest-leverage moment in the whole lifecycle: attention is high, habits are unformed, and everything you teach sticks.",
-        "impact": "Teams that pre-provision access and script a golden-path first task cut time-to-first-value from weeks to hours, slash newcomer support tickets, and dramatically improve both user activation and developer retention. Every onboarding method trades cost, consistency, and speed differently — choosing deliberately instead of defaulting to 'read the wiki' is the whole game."
-      },
-      "roadmap": [
-        {
-          "sectionId": "audience-map",
-          "title": "Audience Map",
-          "type": "taxonomy-browser",
-          "description": "Compare the three onboarding audiences — Web App end users, internal staff & operators, and developers — and what a good first week looks like for each."
-        },
-        {
-          "sectionId": "principles",
-          "title": "The Six Onboarding Principles",
-          "type": "bullets",
-          "description": "The canonical doctrine: access first, first value week one, one golden path, progressive disclosure, human anchor, measure the friction."
-        },
-        {
-          "sectionId": "quiz-principles",
-          "title": "Trial of the Doctrine",
-          "type": "quiz",
-          "description": "Combat trial testing the three audience archetypes and the six onboarding principles."
-        },
-        {
-          "sectionId": "reflection-journey",
-          "title": "Sequencing the First Week",
-          "type": "reflection-sequence",
-          "description": "Timed reordering challenge: assemble the six onboarding principles in their correct order of operation."
-        },
-        {
-          "sectionId": "methods",
-          "title": "The Five Onboarding Methods",
-          "type": "taxonomy-browser",
-          "description": "Docs-first handbooks, buddy apprenticeship, cohort academies, in-app tours, and sandbox quests — each with its pros and cons."
-        },
-        {
-          "sectionId": "quiz-methods",
-          "title": "Trial of the Method Choice",
-          "type": "quiz",
-          "description": "Combat trial testing which onboarding method fits which situation, given its pros and cons."
-        },
-        {
-          "sectionId": "method-loadout",
-          "title": "Onboarding Program Trade-off Workshop",
-          "type": "tradeoff-sandbox",
-          "description": "Forge an onboarding loadout for 40 mixed newcomers: pick access policy, training method, and support channel while balancing speed, consistency, cost, and retention."
-        },
-        {
-          "sectionId": "method-advisor",
-          "title": "Onboarding Method Advisor",
-          "type": "decision-tree",
-          "description": "Diagnostic advisor: answer questions about audience, headcount, and risk, get a tailored onboarding method recommendation."
-        },
-        {
-          "sectionId": "ttv-dashboard",
-          "title": "The Time-to-Value Dashboard Stack",
-          "type": "pillar-layer",
-          "description": "Lego-stack view of onboarding measurement: instrumentation, friction diagnostics, leading indicators, and the north-star time-to-first-value."
-        },
-        {
-          "sectionId": "provision-flow",
-          "title": "Day-1 Access Provisioning Flow",
-          "type": "flowchart",
-          "description": "Event Storming walkthrough: request → SSO provisioning → golden-path access check → day-one smoke test (or 4003 error rework)."
-        },
-        {
-          "sectionId": "scenario-firstday",
-          "title": "Scenario: Monday Without a Path",
-          "type": "scenario",
-          "description": "Branching narrative: 40 newcomers land on Monday and the wiki is on fire. Your onboarding decisions are graded."
-        },
-        {
-          "sectionId": "glossary",
-          "title": "Lexicon of the Threshold",
-          "type": "flashcards",
-          "description": "Key vocabulary: time-to-first-value, golden path, pre-boarding, activation moment, ticket storm, sandbox quest."
-        },
-        {
-          "sectionId": "concept-map",
-          "title": "Concept Constellation",
-          "type": "concept-map",
-          "description": "Force-directed map of how audiences, principles, methods, and measurement connect."
-        },
-        {
-          "sectionId": "synthesis",
-          "title": "Synthesis Vault",
-          "type": "reflection-template",
-          "description": "Fill-in-the-blank synthesis across all three tracks — the final ritual before the Boss Lair."
-        }
-      ]
-    }
+        "impact": "Teams that pre-provision access and script a golden-path first task cut time-to-first-value from weeks to hours, slash newcomer support tickets, and dramatically improve both user activation and developer retention. Every onboarding method trades cost, consistency, and speed differently — choosing deliberately instead of defaulting to 'read the wiki' is the whole game.",
+        "summary": "Bad onboarding is invisible until it shows up as a support queue full of 'how do I…' tickets, developers who quietly abandon your API after an afternoon of setup, and new staff who spend a month afraid to touch production. Onboarding is the highest-leverage moment in the whole lifecycle: attention is high, habits are unformed, and everything you teach sticks."
+      }
+    },
+    "type": "intro"
   },
   {
     "folder": "audience-map",
-    "type": "taxonomy-browser",
     "props": {
-      "title": "Audience Map — Who Are You Onboarding?",
       "categories": [
         {
-          "icon": "MousePointer2",
-          "title": "Web App End Users",
-          "subtitle": "Customers & business users",
+          "analogy": "A hotel check-in: nobody tours you through the HVAC plant — you get your key, your room is warm, and you're asleep in twenty minutes.",
+          "color": "green",
           "description": "People who must complete business tasks in your Web App. For them, good onboarding means reaching their first successful task without ever leaving the product or opening a ticket.",
           "details": "End users do not care how the system works; they care whether they can finish their job today. Onboarding for them is product work: a guided first-run flow, sensible sample data, one golden-path task (create the first project, invite the first teammate, run the first report), and help that appears exactly when they hover over the confusing button. Every extra login, jargon word, or blank screen is a quit-point where users quietly churn. Pros and cons of each delivery method (tours, docs, cohorts) are weighed later in Track 2 — the doctrine is the same: first value inside the product, fast.",
-          "analogy": "A hotel check-in: nobody tours you through the HVAC plant — you get your key, your room is warm, and you're asleep in twenty minutes.",
-          "primaryFocus": "First successful business task inside the product",
+          "icon": "MousePointer2",
           "inScope": [
             "Guided first-run experience and activation moments",
             "Sample data so the app is never a terrifying blank page",
@@ -141,16 +137,16 @@
             "Server architecture the user will never see",
             "Admin configuration and user-management screens"
           ],
-          "color": "green"
+          "primaryFocus": "First successful business task inside the product",
+          "subtitle": "Customers & business users",
+          "title": "Web App End Users"
         },
         {
-          "icon": "Building2",
-          "title": "Internal Staff & Operators",
-          "subtitle": "Employees of the IT system",
+          "analogy": "Flight school: ground school, then dual controls, then a solo — never 'here's the keys, good luck'.",
+          "color": "peach",
           "description": "People hired to run, support, and operate the IT system from the inside. For them, onboarding is a supervised climb from 'afraid to touch production' to 'on-call and trusted'.",
           "details": "Staff and operators onboard into a socio-technical system: tools, credentials, runbooks, escalation chains, and unwritten traditions. The failure mode is the month-long silent soak — a new hire reads the wiki, watches senior people, and touches nothing real for weeks. Good internal onboarding pre-provisions every account on day zero, pairs the newcomer with a buddy for the first incidents, and graduates them through deliberately graded real tasks: first a low-risk change with a witness, then a supervised deploy, then the pager. Their manual is the runbook; their exam is a real shift.",
-          "analogy": "Flight school: ground school, then dual controls, then a solo — never 'here's the keys, good luck'.",
-          "primaryFocus": "Graded real tasks from supervised change to independent on-call",
+          "icon": "Building2",
           "inScope": [
             "Day-zero accounts, licenses, VPN, and toolchain readiness",
             "Runbooks, escalation paths, and incident rituals",
@@ -160,16 +156,16 @@
             "Marketing messaging about the product",
             "Billing plan comparisons the employee never touches"
           ],
-          "color": "peach"
+          "primaryFocus": "Graded real tasks from supervised change to independent on-call",
+          "subtitle": "Employees of the IT system",
+          "title": "Internal Staff & Operators"
         },
         {
-          "icon": "Code",
-          "title": "Developers (DX)",
-          "subtitle": "External integrators & internal engineers",
+          "analogy": "A test drive with the keys in hand: if the engine doesn't start in the first turn, the buyer walks to the dealership next door.",
+          "color": "sky",
           "description": "People building on top of your platform or API. For them the onboarding IS the product trial: setup, auth, and the first successful call decide whether they stay or quietly leave.",
           "details": "Developers onboard themselves or they don't onboard at all. Every minute of setup friction, every broken quickstart snippet, every 'contact sales to get an API key' is a funnel stage where integrators abandon you — and they will not file a ticket, they will just leave. Good DX onboarding means: keys minted in self-serve minutes, a quickstart that works on a clean machine in under fifteen, a sandbox with realistic test data, generated API references, and a visible path from hello-world to production. Time-to-first-call is the developer's time-to-first-value.",
-          "analogy": "A test drive with the keys in hand: if the engine doesn't start in the first turn, the buyer walks to the dealership next door.",
-          "primaryFocus": "Time-to-first-successful-API-call on a clean machine",
+          "icon": "Code",
           "inScope": [
             "Self-serve signup, keys, and a real sandbox with test data",
             "Quickstart that is CI-tested to work on a clean machine",
@@ -179,19 +175,20 @@
             "Sales-gated trials that add days to the first call",
             "Slide decks about architecture instead of runnable code"
           ],
-          "color": "sky"
+          "primaryFocus": "Time-to-first-successful-API-call on a clean machine",
+          "subtitle": "External integrators & internal engineers",
+          "title": "Developers (DX)"
         }
-      ]
-    }
+      ],
+      "title": "Audience Map — Who Are You Onboarding?"
+    },
+    "type": "taxonomy-browser"
   },
   {
     "folder": "principles",
-    "type": "bullets",
     "props": {
-      "title": "The Six Onboarding Principles",
       "items": [
         {
-          "text": "Principle 1 — Access First: everything works before day one",
           "children": [
             {
               "text": "Accounts, licenses, VPN, repositories, and API keys are provisioned in pre-boarding, not requested on Monday morning"
@@ -199,10 +196,10 @@
             {
               "text": "Waiting-for-access is the number-one onboarding killer: a blocked newcomer is an anxious, unproductive newcomer"
             }
-          ]
+          ],
+          "text": "Principle 1 — Access First: everything works before day one"
         },
         {
-          "text": "Principle 2 — First Value in Week One: drive to one real win fast",
           "children": [
             {
               "text": "Time-to-first-value is the only week-one metric that matters: how fast does this person complete one meaningful task?"
@@ -210,10 +207,10 @@
             {
               "text": "For end users it is the first real record; for staff the first safe change; for developers the first successful API call"
             }
-          ]
+          ],
+          "text": "Principle 2 — First Value in Week One: drive to one real win fast"
         },
         {
-          "text": "Principle 3 — One Golden Path: a single canonical journey beats a feature tour",
           "children": [
             {
               "text": "Design ONE scripted end-to-end route through the system that every newcomer walks"
@@ -221,10 +218,10 @@
             {
               "text": "A tour of every button produces fatigue; one deep task produces competence"
             }
-          ]
+          ],
+          "text": "Principle 3 — One Golden Path: a single canonical journey beats a feature tour"
         },
         {
-          "text": "Principle 4 — Progressive Disclosure: reveal complexity only when it is needed",
           "children": [
             {
               "text": "Teach the next step at the moment the newcomer reaches it, never three screens ahead"
@@ -232,10 +229,10 @@
             {
               "text": "Information firehoses create quit-points; a short path with deeper links respects the newcomer's attention"
             }
-          ]
+          ],
+          "text": "Principle 4 — Progressive Disclosure: reveal complexity only when it is needed"
         },
         {
-          "text": "Principle 5 — Human Anchor: every path ends at a named human",
           "children": [
             {
               "text": "Even fully self-serve onboarding needs office hours, a buddy, or a channel where questions land on a real person"
@@ -243,10 +240,10 @@
             {
               "text": "Unanswered questions at hour three are where motivation dies — not at hour zero"
             }
-          ]
+          ],
+          "text": "Principle 5 — Human Anchor: every path ends at a named human"
         },
         {
-          "text": "Principle 6 — Measure the Friction: instrument the path, watch where they stall",
           "children": [
             {
               "text": "Track day-1 login success, golden-path completion rate, and where help tickets storm"
@@ -254,178 +251,178 @@
             {
               "text": "Fix the biggest measured quit-point before adding any new onboarding content"
             }
-          ]
+          ],
+          "text": "Principle 6 — Measure the Friction: instrument the path, watch where they stall"
         }
-      ]
-    }
+      ],
+      "title": "The Six Onboarding Principles"
+    },
+    "type": "bullets"
   },
   {
     "folder": "quiz-principles",
-    "type": "quiz",
     "props": {
-      "title": "Trial of the Doctrine",
       "questions": [
         {
+          "choices": [
+            {
+              "correct": true,
+              "explanation": "Correct. Principle 1 'Access First' demands credentials exist before the newcomer arrives; waiting-for-access is the number-one onboarding killer.",
+              "id": "a",
+              "text": "In pre-boarding — before day one"
+            },
+            {
+              "correct": false,
+              "explanation": "Requesting access on day one makes the newcomer watch a provisioning queue — the exact anti-pattern Principle 1 forbids.",
+              "id": "b",
+              "text": "On Monday morning, requested by the newcomer's manager"
+            },
+            {
+              "correct": false,
+              "explanation": "Reading without access means touching nothing real; the doctrine drives newcomers to a real task in week one, which requires day-zero access.",
+              "id": "c",
+              "text": "After the first week, once they've read the handbook"
+            }
+          ],
+          "hint": "Principle 1 has a strong opinion about the calendar.",
           "id": "q1",
-          "question": "According to the six principles, when should accounts, licenses, and API keys be ready for a newcomer?",
-          "choices": [
-            {
-              "id": "a",
-              "text": "In pre-boarding — before day one",
-              "correct": true,
-              "explanation": "Correct. Principle 1 'Access First' demands credentials exist before the newcomer arrives; waiting-for-access is the number-one onboarding killer."
-            },
-            {
-              "id": "b",
-              "text": "On Monday morning, requested by the newcomer's manager",
-              "correct": false,
-              "explanation": "Requesting access on day one makes the newcomer watch a provisioning queue — the exact anti-pattern Principle 1 forbids."
-            },
-            {
-              "id": "c",
-              "text": "After the first week, once they've read the handbook",
-              "correct": false,
-              "explanation": "Reading without access means touching nothing real; the doctrine drives newcomers to a real task in week one, which requires day-zero access."
-            }
-          ],
-          "hint": "Principle 1 has a strong opinion about the calendar."
+          "question": "According to the six principles, when should accounts, licenses, and API keys be ready for a newcomer?"
         },
         {
+          "choices": [
+            {
+              "correct": false,
+              "explanation": "Pages read is a vanity metric; the doctrine measures a completed real task, not consumed documentation.",
+              "id": "a",
+              "text": "Number of handbook pages read"
+            },
+            {
+              "correct": true,
+              "explanation": "Correct. Principle 2 declares time-to-first-value the only week-one metric that matters — first record, first safe change, or first successful API call.",
+              "id": "b",
+              "text": "Time-to-first-value: how fast the newcomer completes one meaningful task"
+            },
+            {
+              "correct": false,
+              "explanation": "Feature-tour coverage is what Principle 3 rejects; competence comes from one deep golden-path task, not breadth.",
+              "id": "c",
+              "text": "How many features the tour covered"
+            }
+          ],
+          "hint": "Principle 2 names it explicitly.",
           "id": "q2",
-          "question": "What is the only week-one metric the doctrine says matters most?",
-          "choices": [
-            {
-              "id": "a",
-              "text": "Number of handbook pages read",
-              "correct": false,
-              "explanation": "Pages read is a vanity metric; the doctrine measures a completed real task, not consumed documentation."
-            },
-            {
-              "id": "b",
-              "text": "Time-to-first-value: how fast the newcomer completes one meaningful task",
-              "correct": true,
-              "explanation": "Correct. Principle 2 declares time-to-first-value the only week-one metric that matters — first record, first safe change, or first successful API call."
-            },
-            {
-              "id": "c",
-              "text": "How many features the tour covered",
-              "correct": false,
-              "explanation": "Feature-tour coverage is what Principle 3 rejects; competence comes from one deep golden-path task, not breadth."
-            }
-          ],
-          "hint": "Principle 2 names it explicitly."
+          "question": "What is the only week-one metric the doctrine says matters most?"
         },
         {
+          "choices": [
+            {
+              "correct": false,
+              "explanation": "End users measure first business task inside the product; fighting an API afternoon is the developer archetype, whose metric is time-to-first-successful-API-call.",
+              "id": "a",
+              "text": "Web App end users — their metric is the first successful business task"
+            },
+            {
+              "correct": true,
+              "explanation": "Correct. For developers the onboarding IS the product trial; the taught metric is time-to-first-successful-API-call, and setup friction makes integrators quietly leave.",
+              "id": "b",
+              "text": "Developers (DX) — their first value is time-to-first-successful-API-call on a clean machine"
+            },
+            {
+              "correct": false,
+              "explanation": "Operators graduate through graded real tasks ending in a supervised deploy; a self-serve API signup is the developer archetype's journey.",
+              "id": "c",
+              "text": "Internal staff & operators — their metric is the first supervised deploy"
+            }
+          ],
+          "hint": "Each archetype has its own flavor of first value.",
           "id": "q3",
-          "question": "A developer signs up for your API and spends an afternoon fighting setup before one successful call. Which audience's doctrine did you break, and what is the metric called?",
-          "choices": [
-            {
-              "id": "a",
-              "text": "Web App end users — their metric is the first successful business task",
-              "correct": false,
-              "explanation": "End users measure first business task inside the product; fighting an API afternoon is the developer archetype, whose metric is time-to-first-successful-API-call."
-            },
-            {
-              "id": "b",
-              "text": "Developers (DX) — their first value is time-to-first-successful-API-call on a clean machine",
-              "correct": true,
-              "explanation": "Correct. For developers the onboarding IS the product trial; the taught metric is time-to-first-successful-API-call, and setup friction makes integrators quietly leave."
-            },
-            {
-              "id": "c",
-              "text": "Internal staff & operators — their metric is the first supervised deploy",
-              "correct": false,
-              "explanation": "Operators graduate through graded real tasks ending in a supervised deploy; a self-serve API signup is the developer archetype's journey."
-            }
-          ],
-          "hint": "Each archetype has its own flavor of first value."
+          "question": "A developer signs up for your API and spends an afternoon fighting setup before one successful call. Which audience's doctrine did you break, and what is the metric called?"
         },
         {
+          "choices": [
+            {
+              "correct": false,
+              "explanation": "Front-loading everything is the information firehose Principle 4 warns against — it creates quit-points, not competence.",
+              "id": "a",
+              "text": "In the kickoff presentation, so nobody is surprised later"
+            },
+            {
+              "correct": true,
+              "explanation": "Correct. Progressive disclosure teaches the next step when it is needed, never three screens ahead.",
+              "id": "b",
+              "text": "At the exact moment the newcomer reaches that step"
+            },
+            {
+              "correct": false,
+              "explanation": "An appendix nobody opens is where knowledge goes to hide; the doctrine reveals complexity at the point of need.",
+              "id": "c",
+              "text": "In an appendix of the handbook they can read anytime"
+            }
+          ],
+          "hint": "Principle 4 is about timing, not content volume.",
           "id": "q4",
-          "question": "Where does the doctrine say to reveal advanced features and edge-case warnings to a newcomer?",
-          "choices": [
-            {
-              "id": "a",
-              "text": "In the kickoff presentation, so nobody is surprised later",
-              "correct": false,
-              "explanation": "Front-loading everything is the information firehose Principle 4 warns against — it creates quit-points, not competence."
-            },
-            {
-              "id": "b",
-              "text": "At the exact moment the newcomer reaches that step",
-              "correct": true,
-              "explanation": "Correct. Progressive disclosure teaches the next step when it is needed, never three screens ahead."
-            },
-            {
-              "id": "c",
-              "text": "In an appendix of the handbook they can read anytime",
-              "correct": false,
-              "explanation": "An appendix nobody opens is where knowledge goes to hide; the doctrine reveals complexity at the point of need."
-            }
-          ],
-          "hint": "Principle 4 is about timing, not content volume."
+          "question": "Where does the doctrine say to reveal advanced features and edge-case warnings to a newcomer?"
         },
         {
+          "choices": [
+            {
+              "correct": false,
+              "explanation": "No tour answers everything; the doctrine's answer is not more software but a named human for the questions the tour cannot answer.",
+              "id": "a",
+              "text": "A longer tour that answers every possible question"
+            },
+            {
+              "correct": true,
+              "explanation": "Correct. Even self-serve paths need office hours or a buddy — unanswered questions at hour three are where motivation dies.",
+              "id": "b",
+              "text": "A named human, buddy, or office hours where questions land"
+            },
+            {
+              "correct": false,
+              "explanation": "A FAQ link is a dead end, not an anchor; the principle demands a real person or live office hours the question can reach.",
+              "id": "c",
+              "text": "A FAQ page link in the tour's final step"
+            }
+          ],
+          "hint": "Principle 5 names the failure hour.",
           "id": "q5",
-          "question": "A fully self-serve in-app tour ships for your Web App. According to the Human Anchor principle, what must still exist?",
-          "choices": [
-            {
-              "id": "a",
-              "text": "A longer tour that answers every possible question",
-              "correct": false,
-              "explanation": "No tour answers everything; the doctrine's answer is not more software but a named human for the questions the tour cannot answer."
-            },
-            {
-              "id": "b",
-              "text": "A named human, buddy, or office hours where questions land",
-              "correct": true,
-              "explanation": "Correct. Even self-serve paths need office hours or a buddy — unanswered questions at hour three are where motivation dies."
-            },
-            {
-              "id": "c",
-              "text": "A FAQ page link in the tour's final step",
-              "correct": false,
-              "explanation": "A FAQ link is a dead end, not an anchor; the principle demands a real person or live office hours the question can reach."
-            }
-          ],
-          "hint": "Principle 5 names the failure hour."
+          "question": "A fully self-serve in-app tour ships for your Web App. According to the Human Anchor principle, what must still exist?"
         },
         {
-          "id": "q6",
-          "question": "Your onboarding program has a documented dip: half of newcomers stall at the same screen. What does Principle 6 tell you to do?",
           "choices": [
             {
-              "id": "a",
-              "text": "Instrument the path, then fix the biggest measured quit-point before adding new content",
               "correct": true,
-              "explanation": "Correct. Measure the friction (login success, completion rate, ticket storms) and fix the biggest quit-point before writing another page."
+              "explanation": "Correct. Measure the friction (login success, completion rate, ticket storms) and fix the biggest quit-point before writing another page.",
+              "id": "a",
+              "text": "Instrument the path, then fix the biggest measured quit-point before adding new content"
             },
             {
+              "correct": false,
+              "explanation": "Adding content before measuring is the doctrine's favorite anti-pattern — more pages, same quit-point.",
               "id": "b",
-              "text": "Write an extra handbook chapter explaining that screen",
-              "correct": false,
-              "explanation": "Adding content before measuring is the doctrine's favorite anti-pattern — more pages, same quit-point."
+              "text": "Write an extra handbook chapter explaining that screen"
             },
             {
-              "id": "c",
-              "text": "Send everyone a reminder email to read the wiki",
               "correct": false,
-              "explanation": "Reminder emails treat the symptom; Principle 6 sends you to the instrumentation to find and remove the cause."
+              "explanation": "Reminder emails treat the symptom; Principle 6 sends you to the instrumentation to find and remove the cause.",
+              "id": "c",
+              "text": "Send everyone a reminder email to read the wiki"
             }
           ],
-          "hint": "Measure first, then fix — in a specific order."
+          "hint": "Measure first, then fix — in a specific order.",
+          "id": "q6",
+          "question": "Your onboarding program has a documented dip: half of newcomers stall at the same screen. What does Principle 6 tell you to do?"
         }
-      ]
-    }
+      ],
+      "title": "Trial of the Doctrine"
+    },
+    "type": "quiz"
   },
   {
     "folder": "reflection-journey",
-    "type": "reflection-sequence",
     "props": {
-      "title": "Sequencing the First Week",
       "challenges": [
         {
-          "prompt": "Assemble the six onboarding principles in their correct order of operation:",
           "items": [
             {
               "id": "drag-measure",
@@ -452,6 +449,7 @@
               "text": "One golden path: a single canonical journey beats a feature tour"
             }
           ],
+          "prompt": "Assemble the six onboarding principles in their correct order of operation:",
           "solution": [
             "drag-access",
             "drag-value",
@@ -461,23 +459,21 @@
             "drag-measure"
           ]
         }
-      ]
-    }
+      ],
+      "title": "Sequencing the First Week"
+    },
+    "type": "reflection-sequence"
   },
   {
     "folder": "methods",
-    "type": "taxonomy-browser",
     "props": {
-      "title": "The Five Onboarding Methods — Pros & Cons",
       "categories": [
         {
-          "icon": "BookOpen",
-          "title": "Docs-First Handbook",
-          "subtitle": "Wikis, handbooks & runbooks",
+          "analogy": "A well-written restaurant menu: necessary, referenceable, cheap to reprint — but nobody learns to cook from the menu alone.",
+          "color": "green",
           "description": "The classic: a written, searchable path — quickstart, handbook, runbooks — that newcomers read and follow at their own pace.",
           "details": "PROS: cheapest per learner and infinitely reusable; searchable and versionable; survives every hire and reorg; scales to any headcount without scheduling. CONS: passive — nothing forces engagement, and 'did you read the wiki?' is the epitaph of a thousand failed onboardings; rots within a sprint if not owned in CI; tells you how to fish but not which lake; zero human connection, so confused readers quit silently. Verdict: the backbone every other method links back to, but never the only method.",
-          "analogy": "A well-written restaurant menu: necessary, referenceable, cheap to reprint — but nobody learns to cook from the menu alone.",
-          "primaryFocus": "Self-paced, searchable written path",
+          "icon": "BookOpen",
           "inScope": [
             "PRO — near-zero marginal cost per new learner, scales to thousands",
             "PRO — searchable, versioned, and reviewable like code (docs-as-code)",
@@ -488,16 +484,16 @@
             "CON — rots fast without a CI-owned maintainer",
             "CON — no human anchor for the questions between the lines"
           ],
-          "color": "green"
+          "primaryFocus": "Self-paced, searchable written path",
+          "subtitle": "Wikis, handbooks & runbooks",
+          "title": "Docs-First Handbook"
         },
         {
-          "icon": "Users",
-          "title": "Buddy Apprenticeship",
-          "subtitle": "One-on-one shadowing & pairing",
+          "analogy": "Flight school dual controls: the fastest way to competence, but every hour consumes a certified instructor.",
+          "color": "peach",
           "description": "A named senior person adopts the newcomer: shadowing first, then the buddy watches the newcomer drive real tasks.",
           "details": "PROS: carries the tacit knowledge no handbook holds (which dashboards matter, who to ping, what 'usually fine' means); instant feedback loop; strongest retention and trust of any method; naturally enforces the Human Anchor principle. CONS: does not scale — each buddy carries one or two newcomers at a time and pays real focus tax on their own work; quality varies entirely with the buddy's people skills; informal versions burn out the friendliest senior engineer. Verdict: the gold standard for internal staff and operators; use it deliberately and cap the load per buddy.",
-          "analogy": "Flight school dual controls: the fastest way to competence, but every hour consumes a certified instructor.",
-          "primaryFocus": "Tacit knowledge transfer through pairing",
+          "icon": "Users",
           "inScope": [
             "PRO — transmits tribal knowledge, judgment, and escalation culture",
             "PRO — highest engagement, retention, and psychological safety",
@@ -508,16 +504,16 @@
             "CON — quality is as good as the busiest volunteer",
             "CON — informal buddy systems quietly burn out helpers"
           ],
-          "color": "peach"
+          "primaryFocus": "Tacit knowledge transfer through pairing",
+          "subtitle": "One-on-one shadowing & pairing",
+          "title": "Buddy Apprenticeship"
         },
         {
-          "icon": "GraduationCap",
-          "title": "Cohort Academy",
-          "subtitle": "Batch training & bootcamps",
+          "analogy": "Trade school: brilliant cohort energy and a certified baseline, but the semester starts in September whether you like it or not.",
+          "color": "yellow",
           "description": "Scheduled batches — a week-one bootcamp, a weekly class, an internal academy — where a group learns the system together with an instructor and shared exercises.",
           "details": "PROS: guarantees a consistent, complete baseline for every newcomer; scheduled time is protected time, so engagement is high; creates a peer cohort — the loneliest onboarding failure cured instantly; instructor accumulates and improves the material. CONS: expensive per head (instructor hours, rooms, prep); calendar-locked — a solo hire waits weeks for the next batch or drowls alone; pace is set by the slowest attendee; content goes stale unless someone owns revisions. Verdict: ideal for campus hires and platform rollouts to many teams at once; terrible for the one senior developer joining Tuesday.",
-          "analogy": "Trade school: brilliant cohort energy and a certified baseline, but the semester starts in September whether you like it or not.",
-          "primaryFocus": "Consistent baseline via scheduled group instruction",
+          "icon": "GraduationCap",
           "inScope": [
             "PRO — guaranteed consistent curriculum for every newcomer",
             "PRO — peer cohort cures isolation and seeds future help networks",
@@ -528,16 +524,16 @@
             "CON — calendar-locked: bad fit for lone or urgent hires",
             "CON — one pace fits all; fast learners idle, slow learners drown"
           ],
-          "color": "yellow"
+          "primaryFocus": "Consistent baseline via scheduled group instruction",
+          "subtitle": "Batch training & bootcamps",
+          "title": "Cohort Academy"
         },
         {
-          "icon": "Footprints",
-          "title": "Self-Serve In-App Tours",
-          "subtitle": "First-run checklists & overlay tours",
+          "analogy": "Video-game tutorial levels: learn the controls by playing the first room, not by reading the box.",
+          "color": "sky",
           "description": "Onboarding built into the product itself: first-run checklists, overlay tours, and empty-state coaching that teach while the newcomer does the real task.",
           "details": "PROS: teaches inside the artifact at the moment of need — the purest form of progressive disclosure; zero marginal cost per learner and instant updates for every user at once; measurable to the click (completion, drop-off, time-to-activation); the only method that scales to millions of end users. CONS: engineering and design cost up front; fragile against UI churn (stale tours mispoint at buttons); covering every feature in tours breeds banner blindness and 'skip all'; cannot carry judgment, edge cases, or why. Verdict: the default for Web App end users and self-serve DX; pair it with docs for depth and a human anchor for doubt.",
-          "analogy": "Video-game tutorial levels: learn the controls by playing the first room, not by reading the box.",
-          "primaryFocus": "Learning by doing inside the live product",
+          "icon": "Footprints",
           "inScope": [
             "PRO — scales to any user count with near-zero marginal cost",
             "PRO — teach at the exact moment of need; fully instrumentable",
@@ -548,16 +544,16 @@
             "CON — tour fatigue: users learn to click 'skip all'",
             "CON — cannot teach judgment, policy, or the edge cases"
           ],
-          "color": "sky"
+          "primaryFocus": "Learning by doing inside the live product",
+          "subtitle": "First-run checklists & overlay tours",
+          "title": "Self-Serve In-App Tours"
         },
         {
-          "icon": "Gamepad2",
-          "title": "Sandbox Quests",
-          "subtitle": "Gamified playgrounds & boss tasks",
+          "analogy": "A driving course with traffic cones and an inflatable wall: all the reflexes of the real road, none of the funerals.",
+          "color": "mauve",
           "description": "A safe, seeded practice environment where onboarding is a game: a quest board of graded challenges, hidden Easter eggs, and a final 'boss' task that proves competence.",
           "details": "PROS: learning by doing with zero blast radius — newcomers break the sandbox happily and remember why; intrinsically motivating and genuinely fun, the anti-dread onboarding; exposes the curious, who explore past the minimum path and become future experts. CONS: the most expensive method to build and the most expensive to keep fresh (seeded data rots, environments drift, quests go stale); grading and cheating need design; can trivialize if the quests are shallow or feel like chores with pixel art. Verdict: spectacular as the spine of a cohort academy or a DX platform trial; wasteful as the only door for a user who just needs to do their job today.",
-          "analogy": "A driving course with traffic cones and an inflatable wall: all the reflexes of the real road, none of the funerals.",
-          "primaryFocus": "Motivated competence-building through safe failure",
+          "icon": "Gamepad2",
           "inScope": [
             "PRO — safe-to-break practice with memorable, hands-on learning",
             "PRO — high motivation; surfaces the curious future experts",
@@ -568,534 +564,554 @@
             "CON — shallow quests become pixel-art chores fast",
             "CON — overkill when the learner just needs today's task done"
           ],
-          "color": "mauve"
+          "primaryFocus": "Motivated competence-building through safe failure",
+          "subtitle": "Gamified playgrounds & boss tasks",
+          "title": "Sandbox Quests"
         }
-      ]
-    }
+      ],
+      "title": "The Five Onboarding Methods — Pros & Cons"
+    },
+    "type": "taxonomy-browser"
   },
   {
     "folder": "quiz-methods",
-    "type": "quiz",
     "props": {
-      "title": "Trial of the Method Choice",
       "questions": [
         {
+          "choices": [
+            {
+              "correct": true,
+              "explanation": "Correct. The method card lists 'no human anchor for the questions between the lines' — handbooks tell you how to fish but not which lake, and confused readers quit silently.",
+              "id": "a",
+              "text": "It cannot teach judgment, policy, or the edge cases between the lines"
+            },
+            {
+              "correct": false,
+              "explanation": "Instructor cost belongs to Cohort Academy and Buddy Apprenticeship; the handbook's marginal cost per learner is near zero.",
+              "id": "b",
+              "text": "It requires a certified instructor per learner"
+            },
+            {
+              "correct": false,
+              "explanation": "Calendar-locking is the Cohort Academy con; handbooks are readable any time of day, which is exactly their strength.",
+              "id": "c",
+              "text": "It is calendar-locked to a quarterly bootcamp"
+            }
+          ],
+          "hint": "Think about what nobody can force a reader to do.",
           "id": "q1",
-          "question": "Which is a documented CON of the Docs-First Handbook method?",
-          "choices": [
-            {
-              "id": "a",
-              "text": "It cannot teach judgment, policy, or the edge cases between the lines",
-              "correct": true,
-              "explanation": "Correct. The method card lists 'no human anchor for the questions between the lines' — handbooks tell you how to fish but not which lake, and confused readers quit silently."
-            },
-            {
-              "id": "b",
-              "text": "It requires a certified instructor per learner",
-              "correct": false,
-              "explanation": "Instructor cost belongs to Cohort Academy and Buddy Apprenticeship; the handbook's marginal cost per learner is near zero."
-            },
-            {
-              "id": "c",
-              "text": "It is calendar-locked to a quarterly bootcamp",
-              "correct": false,
-              "explanation": "Calendar-locking is the Cohort Academy con; handbooks are readable any time of day, which is exactly their strength."
-            }
-          ],
-          "hint": "Think about what nobody can force a reader to do."
+          "question": "Which is a documented CON of the Docs-First Handbook method?"
         },
         {
+          "choices": [
+            {
+              "correct": false,
+              "explanation": "Buddy is explicitly the method that does not scale: one or two newcomers per busy senior, ever.",
+              "id": "a",
+              "text": "Buddy Apprenticeship — pairing every developer with a staff engineer"
+            },
+            {
+              "correct": true,
+              "explanation": "Correct. In-product self-serve teaching carries near-zero marginal cost per learner and reaches every user instantly — the only option at hundred-thousand scale.",
+              "id": "b",
+              "text": "Self-Serve In-App Tours / self-serve checklists and playgrounds in the product"
+            },
+            {
+              "correct": false,
+              "explanation": "Cohorts are high-cost per head and calendar-locked; scaling bootcamps to a mass long-tail is the documented con.",
+              "id": "c",
+              "text": "Cohort Academy — run bigger and bigger bootcamps"
+            }
+          ],
+          "hint": "Near-zero marginal cost per learner, and it ships in the product.",
           "id": "q2",
-          "question": "Your platform team must onboard hundreds of thousands of free-tier developers. Which method's pros make it the only one that scales?",
-          "choices": [
-            {
-              "id": "a",
-              "text": "Buddy Apprenticeship — pairing every developer with a staff engineer",
-              "correct": false,
-              "explanation": "Buddy is explicitly the method that does not scale: one or two newcomers per busy senior, ever."
-            },
-            {
-              "id": "b",
-              "text": "Self-Serve In-App Tours / self-serve checklists and playgrounds in the product",
-              "correct": true,
-              "explanation": "Correct. In-product self-serve teaching carries near-zero marginal cost per learner and reaches every user instantly — the only option at hundred-thousand scale."
-            },
-            {
-              "id": "c",
-              "text": "Cohort Academy — run bigger and bigger bootcamps",
-              "correct": false,
-              "explanation": "Cohorts are high-cost per head and calendar-locked; scaling bootcamps to a mass long-tail is the documented con."
-            }
-          ],
-          "hint": "Near-zero marginal cost per learner, and it ships in the product."
+          "question": "Your platform team must onboard hundreds of thousands of free-tier developers. Which method's pros make it the only one that scales?"
         },
         {
+          "choices": [
+            {
+              "correct": true,
+              "explanation": "Correct. Shadow-then-drive is Buddy Apprenticeship; its taught cons are the focus tax on senior staff and informal buddies quietly burning out.",
+              "id": "a",
+              "text": "Buddy Apprenticeship — guard against burning out the busiest senior volunteer"
+            },
+            {
+              "correct": false,
+              "explanation": "Real incidents with a watching senior are not a safe sandbox; the described method is pairing, and its risk is helper burnout, not stale seed data.",
+              "id": "b",
+              "text": "Sandbox Quests — guard against seeded data going stale"
+            },
+            {
+              "correct": false,
+              "explanation": "A named human shadowing and watching is the definition of apprenticeship, not handbooks; wiki rot is the docs-first con.",
+              "id": "c",
+              "text": "Docs-First Handbook — guard against the wiki rotting"
+            }
+          ],
+          "hint": "The method is flight-school dual controls; the con is paid in senior focus.",
           "id": "q3",
-          "question": "A new SRE joins the on-call rotation. The team chooses a named senior engineer to shadow first, then watch her drive real incidents. Which method, and which con should the team guard against?",
-          "choices": [
-            {
-              "id": "a",
-              "text": "Buddy Apprenticeship — guard against burning out the busiest senior volunteer",
-              "correct": true,
-              "explanation": "Correct. Shadow-then-drive is Buddy Apprenticeship; its taught cons are the focus tax on senior staff and informal buddies quietly burning out."
-            },
-            {
-              "id": "b",
-              "text": "Sandbox Quests — guard against seeded data going stale",
-              "correct": false,
-              "explanation": "Real incidents with a watching senior are not a safe sandbox; the described method is pairing, and its risk is helper burnout, not stale seed data."
-            },
-            {
-              "id": "c",
-              "text": "Docs-First Handbook — guard against the wiki rotting",
-              "correct": false,
-              "explanation": "A named human shadowing and watching is the definition of apprenticeship, not handbooks; wiki rot is the docs-first con."
-            }
-          ],
-          "hint": "The method is flight-school dual controls; the con is paid in senior focus."
+          "question": "A new SRE joins the on-call rotation. The team chooses a named senior engineer to shadow first, then watch her drive real incidents. Which method, and which con should the team guard against?"
         },
         {
+          "choices": [
+            {
+              "correct": true,
+              "explanation": "Correct. Tour fragility against UI churn is the taught con: overlay steps and checklists mispoint the moment the interface moves.",
+              "id": "a",
+              "text": "Self-Serve In-App Tours — UI-churn fragility"
+            },
+            {
+              "correct": false,
+              "explanation": "Instructor staleness is a cohort con, but mispointing checklist steps after a redesign is the in-app tour's signature failure.",
+              "id": "b",
+              "text": "Cohort Academy — instructor knowledge going stale"
+            },
+            {
+              "correct": false,
+              "explanation": "Buddies passing on old habits is not what broke here; clickable overlays anchored to removed UI is the documented tour fragility.",
+              "id": "c",
+              "text": "Buddy Apprenticeship — buddies teaching old habits"
+            }
+          ],
+          "hint": "The method that teaches inside the artifact is fragile to the artifact changing.",
           "id": "q4",
-          "question": "After a UI redesign, half your activation checklist steps point at buttons that no longer exist. This is the documented con of which method?",
-          "choices": [
-            {
-              "id": "a",
-              "text": "Self-Serve In-App Tours — UI-churn fragility",
-              "correct": true,
-              "explanation": "Correct. Tour fragility against UI churn is the taught con: overlay steps and checklists mispoint the moment the interface moves."
-            },
-            {
-              "id": "b",
-              "text": "Cohort Academy — instructor knowledge going stale",
-              "correct": false,
-              "explanation": "Instructor staleness is a cohort con, but mispointing checklist steps after a redesign is the in-app tour's signature failure."
-            },
-            {
-              "id": "c",
-              "text": "Buddy Apprenticeship — buddies teaching old habits",
-              "correct": false,
-              "explanation": "Buddies passing on old habits is not what broke here; clickable overlays anchored to removed UI is the documented tour fragility."
-            }
-          ],
-          "hint": "The method that teaches inside the artifact is fragile to the artifact changing."
+          "question": "After a UI redesign, half your activation checklist steps point at buttons that no longer exist. This is the documented con of which method?"
         },
         {
+          "choices": [
+            {
+              "correct": true,
+              "explanation": "Correct. Gamified sandbox quests deliver zero-blast-radius practice and motivating graded challenges — the documented pros — and a budgeted batch of 30 with runway fits its high build cost.",
+              "id": "a",
+              "text": "Sandbox Quests — safe failure, high motivation, objective graded competence"
+            },
+            {
+              "correct": false,
+              "explanation": "Handbooks are the passive low-cost backbone; the described experience — breaking a seeded playground and beating a boss task — is the sandbox quest method.",
+              "id": "b",
+              "text": "Docs-First Handbook — print the quest descriptions"
+            },
+            {
+              "correct": false,
+              "explanation": "Tours teach today's task in the live product; the cohort of 30 with budget and runway is the classic sandbox-quest fit, quests and all.",
+              "id": "c",
+              "text": "Self-Serve In-App Tours — because tours are free"
+            }
+          ],
+          "hint": "Safe-to-break playground, quest board, final boss task.",
           "id": "q5",
-          "question": "A company wants onboarding to be 'the most fun, hands-on week of your life' for 30 platform-engineer campus hires, with a budget and a six-week runway. Which method's pros fit best?",
-          "choices": [
-            {
-              "id": "a",
-              "text": "Sandbox Quests — safe failure, high motivation, objective graded competence",
-              "correct": true,
-              "explanation": "Correct. Gamified sandbox quests deliver zero-blast-radius practice and motivating graded challenges — the documented pros — and a budgeted batch of 30 with runway fits its high build cost."
-            },
-            {
-              "id": "b",
-              "text": "Docs-First Handbook — print the quest descriptions",
-              "correct": false,
-              "explanation": "Handbooks are the passive low-cost backbone; the described experience — breaking a seeded playground and beating a boss task — is the sandbox quest method."
-            },
-            {
-              "id": "c",
-              "text": "Self-Serve In-App Tours — because tours are free",
-              "correct": false,
-              "explanation": "Tours teach today's task in the live product; the cohort of 30 with budget and runway is the classic sandbox-quest fit, quests and all."
-            }
-          ],
-          "hint": "Safe-to-break playground, quest board, final boss task."
+          "question": "A company wants onboarding to be 'the most fun, hands-on week of your life' for 30 platform-engineer campus hires, with a budget and a six-week runway. Which method's pros fit best?"
         },
         {
-          "id": "q6",
-          "question": "According to the method cards, what is the recommended way to use Docs-First handbooks?",
           "choices": [
             {
-              "id": "a",
-              "text": "As the backbone every other method links back to — never the only method",
               "correct": true,
-              "explanation": "Correct. The verdict: durable reference backbone, but passive on its own — combine it with tours, buddies, or cohorts."
+              "explanation": "Correct. The verdict: durable reference backbone, but passive on its own — combine it with tours, buddies, or cohorts.",
+              "id": "a",
+              "text": "As the backbone every other method links back to — never the only method"
             },
             {
+              "correct": false,
+              "explanation": "The card explicitly warns 'never the only method' — handbooks have no human anchor and nothing forces engagement.",
               "id": "b",
-              "text": "As the sole onboarding method for developer audiences",
-              "correct": false,
-              "explanation": "The card explicitly warns 'never the only method' — handbooks have no human anchor and nothing forces engagement."
+              "text": "As the sole onboarding method for developer audiences"
             },
             {
-              "id": "c",
-              "text": "Only for operators, never for end users",
               "correct": false,
-              "explanation": "The card assigns no audience restriction; its rule is about being a backbone, not a solo door."
+              "explanation": "The card assigns no audience restriction; its rule is about being a backbone, not a solo door.",
+              "id": "c",
+              "text": "Only for operators, never for end users"
             }
           ],
-          "hint": "Read the verdict line."
+          "hint": "Read the verdict line.",
+          "id": "q6",
+          "question": "According to the method cards, what is the recommended way to use Docs-First handbooks?"
         }
-      ]
-    }
+      ],
+      "title": "Trial of the Method Choice"
+    },
+    "type": "quiz"
   },
   {
     "folder": "method-loadout",
-    "type": "tradeoff-sandbox",
     "props": {
-      "title": "Onboarding Program Trade-off Workshop",
       "scenarios": [
         {
-          "id": "onboarding-program",
-          "title": "Onboarding Program for 40 Mixed Newcomers",
           "description": "Monday: 40 newcomers land — 25 Web App end users, 10 internal operators, 5 platform developers. You have one quarter to stand up onboarding. Forge a loadout that gets everyone to first value without bankrupting the team.",
+          "id": "onboarding-program",
           "metrics": [
             {
+              "baseValue": 50,
+              "direction": "higher",
               "id": "speed",
               "label": "Speed to First Value",
-              "baseValue": 50,
-              "min": 0,
               "max": 100,
-              "direction": "higher"
+              "min": 0
             },
             {
+              "baseValue": 50,
+              "direction": "higher",
               "id": "consistency",
               "label": "Baseline Consistency",
-              "baseValue": 50,
-              "min": 0,
               "max": 100,
-              "direction": "higher"
+              "min": 0
             },
             {
+              "baseValue": 50,
+              "direction": "lower",
               "id": "cost",
               "label": "Build & Run Cost",
-              "baseValue": 50,
-              "min": 0,
               "max": 100,
-              "direction": "lower"
+              "min": 0
             },
             {
+              "baseValue": 50,
+              "direction": "higher",
               "id": "retention",
               "label": "Newcomer Retention",
-              "baseValue": 50,
-              "min": 0,
               "max": 100,
-              "direction": "higher"
+              "min": 0
             }
           ],
           "steps": [
             {
-              "id": "access-policy",
-              "title": "Access Provisioning Policy",
-              "description": "Principle 1: when do newcomers get their accounts, licenses, and environments?",
-              "recommended": "preboard-automated",
               "choices": [
                 {
+                  "cons": [
+                    {
+                      "description": "Production privileges cannot be self-minted; someone still reviews them.",
+                      "title": "Staff and operators still need curated access"
+                    }
+                  ],
+                  "description": "Every credential appears the moment the product needs it.",
                   "id": "selfserve-justintime",
                   "label": "Self-serve signup, just in time",
-                  "description": "Every credential appears the moment the product needs it.",
                   "metrics": {
-                    "speed": 10,
                     "consistency": -5,
                     "cost": -15,
-                    "retention": 5
+                    "retention": 5,
+                    "speed": 10
                   },
                   "pros": [
                     {
-                      "title": "Zero queue for end users and developers",
-                      "description": "Self-serve signup mints keys in minutes — the taught DX fast path."
-                    }
-                  ],
-                  "cons": [
-                    {
-                      "title": "Staff and operators still need curated access",
-                      "description": "Production privileges cannot be self-minted; someone still reviews them."
+                      "description": "Self-serve signup mints keys in minutes — the taught DX fast path.",
+                      "title": "Zero queue for end users and developers"
                     }
                   ],
                   "whenToUse": "Great for the end users and developers in the mix; never for operator production access."
                 },
                 {
+                  "cons": [
+                    {
+                      "description": "The identity bridge and group rules cost a sprint to build once.",
+                      "title": "Upfront plumbing project"
+                    }
+                  ],
+                  "description": "Joiner tickets drive SSO group rules that mint every account and license before day one.",
                   "id": "preboard-automated",
                   "label": "Automated pre-boarding: day-zero accounts via SSO groups",
-                  "description": "Joiner tickets drive SSO group rules that mint every account and license before day one.",
                   "metrics": {
-                    "speed": 20,
                     "consistency": 15,
                     "cost": -10,
-                    "retention": 10
+                    "retention": 10,
+                    "speed": 20
                   },
                   "pros": [
                     {
-                      "title": "Monday starts at the task, not the queue",
-                      "description": "Access First: the newcomer's first hour is spent doing, not waiting."
+                      "description": "Access First: the newcomer's first hour is spent doing, not waiting.",
+                      "title": "Monday starts at the task, not the queue"
                     },
                     {
-                      "title": "One ruleset for forty people",
-                      "description": "Group-driven provisioning is consistent and re-runnable for the next cohort."
-                    }
-                  ],
-                  "cons": [
-                    {
-                      "title": "Upfront plumbing project",
-                      "description": "The identity bridge and group rules cost a sprint to build once."
+                      "description": "Group-driven provisioning is consistent and re-runnable for the next cohort.",
+                      "title": "One ruleset for forty people"
                     }
                   ],
                   "whyThisFits": "Principle 1 demands day-zero access for all three audiences; automation is the only way to do it for 40 people."
                 },
                 {
+                  "cons": [
+                    {
+                      "description": "A blocked newcomer spends week one anxious and unproductive.",
+                      "title": "The documented number-one onboarding killer"
+                    }
+                  ],
+                  "description": "Managers email requests; IT works the queue in arrival order.",
                   "id": "manual-tickets",
                   "label": "Manual tickets submitted on Monday",
-                  "description": "Managers email requests; IT works the queue in arrival order.",
                   "metrics": {
-                    "speed": -25,
                     "consistency": -10,
                     "cost": 10,
-                    "retention": -15
+                    "retention": -15,
+                    "speed": -25
                   },
                   "pros": [
                     {
-                      "title": "No build cost at all",
-                      "description": "The process already exists, for better or worse."
-                    }
-                  ],
-                  "cons": [
-                    {
-                      "title": "The documented number-one onboarding killer",
-                      "description": "A blocked newcomer spends week one anxious and unproductive."
+                      "description": "The process already exists, for better or worse.",
+                      "title": "No build cost at all"
                     }
                   ],
                   "whenToUse": "Never as the primary policy — only as the fallback for bespoke one-off grants."
                 }
-              ]
+              ],
+              "description": "Principle 1: when do newcomers get their accounts, licenses, and environments?",
+              "id": "access-policy",
+              "recommended": "preboard-automated",
+              "title": "Access Provisioning Policy"
             },
             {
-              "id": "training-method",
-              "title": "Primary Training Method",
-              "description": "Which of the five methods carries the core curriculum for a mixed crowd?",
-              "recommended": "mixed-loadout",
               "choices": [
                 {
+                  "cons": [
+                    {
+                      "description": "Nothing forces engagement; confused readers quit silently.",
+                      "title": "Passive and anchorless"
+                    }
+                  ],
+                  "description": "One polished handbook; newcomers read and go.",
                   "id": "docs-only",
                   "label": "Docs-first handbook for everyone",
-                  "description": "One polished handbook; newcomers read and go.",
                   "metrics": {
-                    "speed": -5,
                     "consistency": 10,
                     "cost": 20,
-                    "retention": -10
+                    "retention": -10,
+                    "speed": -5
                   },
                   "pros": [
                     {
-                      "title": "Cheap backbone, infinitely reusable",
-                      "description": "The taught pros: near-zero marginal cost and versioned durability."
-                    }
-                  ],
-                  "cons": [
-                    {
-                      "title": "Passive and anchorless",
-                      "description": "Nothing forces engagement; confused readers quit silently."
+                      "description": "The taught pros: near-zero marginal cost and versioned durability.",
+                      "title": "Cheap backbone, infinitely reusable"
                     }
                   ],
                   "whenToUse": "As the spine every other method links to — the card's own verdict — never as the only door."
                 },
                 {
+                  "cons": [
+                    {
+                      "description": "More moving parts than one handbook or one bootcamp.",
+                      "title": "Three programs to maintain"
+                    }
+                  ],
+                  "description": "Match the method to each audience using each card's strengths.",
                   "id": "mixed-loadout",
                   "label": "Mixed loadout: tours for end users, buddy for operators, quickstart+sandbox for devs",
-                  "description": "Match the method to each audience using each card's strengths.",
                   "metrics": {
-                    "speed": 15,
                     "consistency": 5,
                     "cost": -15,
-                    "retention": 20
+                    "retention": 20,
+                    "speed": 15
                   },
                   "pros": [
                     {
-                      "title": "Every audience gets its own first value",
-                      "description": "Task in the product, graded real change, first API call — the three archetypes served by their best-fit method."
+                      "description": "Task in the product, graded real change, first API call — the three archetypes served by their best-fit method.",
+                      "title": "Every audience gets its own first value"
                     },
                     {
-                      "title": "Costs are capped per method",
-                      "description": "Buddy load stays at 10 operators; tours carry the 25 users for free."
-                    }
-                  ],
-                  "cons": [
-                    {
-                      "title": "Three programs to maintain",
-                      "description": "More moving parts than one handbook or one bootcamp."
+                      "description": "Buddy load stays at 10 operators; tours carry the 25 users for free.",
+                      "title": "Costs are capped per method"
                     }
                   ],
                   "whyThisFits": "The method cards' verdicts all say combine; a mixed crowd is exactly the case for per-audience loadouts."
                 },
                 {
+                  "cons": [
+                    {
+                      "description": "End users sit through auth deep-dives; developers idle through button tours.",
+                      "title": "Calendar-locked and one pace for three audiences"
+                    }
+                  ],
+                  "description": "A week-long instructor-led academy covering everything for everyone.",
                   "id": "mega-bootcamp",
                   "label": "One cohort academy bootcamp for all 40",
-                  "description": "A week-long instructor-led academy covering everything for everyone.",
                   "metrics": {
-                    "speed": -10,
                     "consistency": 20,
                     "cost": -20,
-                    "retention": 5
+                    "retention": 5,
+                    "speed": -10
                   },
                   "pros": [
                     {
-                      "title": "Perfectly consistent baseline",
-                      "description": "The cohort pro: nobody leaves the room knowing less than the curriculum."
-                    }
-                  ],
-                  "cons": [
-                    {
-                      "title": "Calendar-locked and one pace for three audiences",
-                      "description": "End users sit through auth deep-dives; developers idle through button tours."
+                      "description": "The cohort pro: nobody leaves the room knowing less than the curriculum.",
+                      "title": "Perfectly consistent baseline"
                     }
                   ],
                   "whenToUse": "When the crowd is homogeneous and the hire dates can wait for the next batch."
                 }
-              ]
+              ],
+              "description": "Which of the five methods carries the core curriculum for a mixed crowd?",
+              "id": "training-method",
+              "recommended": "mixed-loadout",
+              "title": "Primary Training Method"
             },
             {
-              "id": "support-anchor",
-              "title": "Human Anchor Channel",
-              "description": "Principle 5: where do questions land when the material cannot answer them?",
-              "recommended": "office-hours",
               "choices": [
                 {
+                  "cons": [
+                    {
+                      "description": "Unowned office hours quietly stop happening.",
+                      "title": "Someone must own the rota"
+                    }
+                  ],
+                  "description": "Scheduled live hours plus a staffed channel for async questions.",
                   "id": "office-hours",
                   "label": "Weekly office hours + a newcomer channel with a rota",
-                  "description": "Scheduled live hours plus a staffed channel for async questions.",
                   "metrics": {
-                    "speed": 10,
                     "consistency": 5,
                     "cost": -5,
-                    "retention": 15
+                    "retention": 15,
+                    "speed": 10
                   },
                   "pros": [
                     {
-                      "title": "Questions die at hour three, not day three",
-                      "description": "The doctrine's failure point — unanswered early questions — gets a scheduled antidote."
+                      "description": "The doctrine's failure point — unanswered early questions — gets a scheduled antidote.",
+                      "title": "Questions die at hour three, not day three"
                     },
                     {
-                      "title": "Rota prevents buddy burnout",
-                      "description": "Sharing the anchor across the team avoids the taught burnout con."
-                    }
-                  ],
-                  "cons": [
-                    {
-                      "title": "Someone must own the rota",
-                      "description": "Unowned office hours quietly stop happening."
+                      "description": "Sharing the anchor across the team avoids the taught burnout con.",
+                      "title": "Rota prevents buddy burnout"
                     }
                   ],
                   "whyThisFits": "Every self-serve method still needs the Human Anchor; office hours scale the anchor without a per-person buddy tax."
                 },
                 {
+                  "cons": [
+                    {
+                      "description": "The method card's scaling con, multiplied by four-zero.",
+                      "title": "Forty buddies is a focus tax on the whole org"
+                    }
+                  ],
+                  "description": "Every newcomer pairs with a dedicated senior for their first month.",
                   "id": "buddy-everyone",
                   "label": "A named buddy for all 40 newcomers",
-                  "description": "Every newcomer pairs with a dedicated senior for their first month.",
                   "metrics": {
-                    "speed": 5,
                     "consistency": 0,
                     "cost": -25,
-                    "retention": 15
+                    "retention": 15,
+                    "speed": 5
                   },
                   "pros": [
                     {
-                      "title": "Maximum psychological safety",
-                      "description": "The apprenticeship pros: trust, tacit knowledge, real-time correction."
-                    }
-                  ],
-                  "cons": [
-                    {
-                      "title": "Forty buddies is a focus tax on the whole org",
-                      "description": "The method card's scaling con, multiplied by four-zero."
+                      "description": "The apprenticeship pros: trust, tacit knowledge, real-time correction.",
+                      "title": "Maximum psychological safety"
                     }
                   ],
                   "whenToUse": "Reserve for operators and high-stakes roles; overkill for self-serve end users."
                 },
                 {
+                  "cons": [
+                    {
+                      "description": "The doctrine: a FAQ link is a dead end; questions need a person.",
+                      "title": "Not an anchor at all"
+                    }
+                  ],
+                  "description": "The anchor is a URL and good intentions.",
                   "id": "faq-link",
                   "label": "A FAQ link and 'ping us anytime'",
-                  "description": "The anchor is a URL and good intentions.",
                   "metrics": {
-                    "speed": -10,
                     "consistency": 0,
                     "cost": 10,
-                    "retention": -20
+                    "retention": -20,
+                    "speed": -10
                   },
                   "pros": [
                     {
-                      "title": "Effortless to stand up",
-                      "description": "The link takes five minutes to write."
-                    }
-                  ],
-                  "cons": [
-                    {
-                      "title": "Not an anchor at all",
-                      "description": "The doctrine: a FAQ link is a dead end; questions need a person."
+                      "description": "The link takes five minutes to write.",
+                      "title": "Effortless to stand up"
                     }
                   ],
                   "whenToUse": "Nowhere. This is the failure mode the workshop exists to avoid."
                 }
-              ]
+              ],
+              "description": "Principle 5: where do questions land when the material cannot answer them?",
+              "id": "support-anchor",
+              "recommended": "office-hours",
+              "title": "Human Anchor Channel"
             }
-          ]
+          ],
+          "title": "Onboarding Program for 40 Mixed Newcomers"
         }
-      ]
-    }
+      ],
+      "title": "Onboarding Program Trade-off Workshop"
+    },
+    "type": "tradeoff-sandbox"
   },
   {
     "folder": "method-advisor",
-    "type": "decision-tree",
     "props": {
-      "title": "Which Onboarding Method Fits Your Crowd?",
       "id": "method-advisor",
-      "root": "audience",
       "nodes": {
         "audience": {
-          "id": "audience",
-          "prompt": "Who is being onboarded right now?",
           "choices": [
             {
               "id": "end-users",
-              "text": "Web App end users doing business tasks",
               "next": "user-scale",
-              "rationale": "Their first value is a successful task inside the product."
+              "rationale": "Their first value is a successful task inside the product.",
+              "text": "Web App end users doing business tasks"
             },
             {
               "id": "staff",
-              "text": "Internal staff & operators running the IT system",
               "next": "staff-risk",
-              "rationale": "Their journey is a supervised climb to trusted production access."
+              "rationale": "Their journey is a supervised climb to trusted production access.",
+              "text": "Internal staff & operators running the IT system"
             },
             {
               "id": "developers",
-              "text": "Developers integrating with the platform",
               "next": "rec-devs",
-              "rationale": "They self-onboard or not at all; the product is the onboarding."
+              "rationale": "They self-onboard or not at all; the product is the onboarding.",
+              "text": "Developers integrating with the platform"
             }
-          ]
+          ],
+          "id": "audience",
+          "prompt": "Who is being onboarded right now?"
         },
-        "user-scale": {
-          "id": "user-scale",
-          "prompt": "Roughly how many end users arrive per month, and how often does the UI change?",
-          "choices": [
-            {
-              "id": "many-stable",
-              "text": "Many users each month; UI evolves slowly",
-              "next": "rec-tours",
-              "rationale": "Self-serve tours scale at near-zero marginal cost and stay fresh between releases.",
-              "recommended": true
-            },
-            {
-              "id": "many-churny",
-              "text": "Many users each month; UI churns every sprint",
-              "next": "rec-tours-docs",
-              "rationale": "Overlay tours mispoint when the interface moves fast; anchor them to searchable docs."
-            },
-            {
-              "id": "few-highvalue",
-              "text": "A few high-value accounts that expect a white-glove start",
-              "next": "rec-buddy-users",
-              "rationale": "At low volume, a human success onboarding beats any software tour."
-            }
-          ]
+        "rec-buddy-ops": {
+          "id": "rec-buddy-ops",
+          "leaf": {
+            "explanation": "Apprenticeship carries the escalation culture no handbook holds, and graded real tasks convert reading into trusted competence. Cap each buddy at two newcomers to dodge the burnout con.",
+            "recommendation": "Buddy apprenticeship with graduated privileges: shadow incidents, then drive with a witness, then the supervised pager — with runbooks as the spine.",
+            "tradeoffs": [
+              "Real focus tax on senior operators",
+              "Buddy quality varies; brief the buddies on what to teach"
+            ]
+          }
+        },
+        "rec-buddy-users": {
+          "id": "rec-buddy-users",
+          "leaf": {
+            "explanation": "Apprenticeship's pros — tacit knowledge, trust, highest retention — justify its focus tax only when each account is worth the hours. The recording amortizes the cost into self-serve assets.",
+            "recommendation": "Buddy-style live onboarding sessions for each account, recorded and clipped into the handbook, with a self-serve tour left behind for their teammates.",
+            "tradeoffs": [
+              "Does not scale past a handful of accounts",
+              "Quality varies with the people skills of whoever runs the session"
+            ]
+          }
+        },
+        "rec-devs": {
+          "id": "rec-devs",
+          "leaf": {
+            "explanation": "Developers self-onboard or leave quietly; time-to-first-successful-API-call is their first value. Docs-first is the backbone here, but every step must be runnable, not readable.",
+            "recommendation": "Self-serve DX path: keys minted in minutes, a CI-tested quickstart to a first successful call in under fifteen, a seeded sandbox with test data, and generated API references.",
+            "tradeoffs": [
+              "Quickstarts need CI tests or they rot within a sprint",
+              "Sandbox data seeding is an ongoing tax"
+            ]
+          }
+        },
+        "rec-quests-staff": {
+          "id": "rec-quests-staff",
+          "leaf": {
+            "explanation": "Sandbox quests deliver zero-blast-radius practice and objective competence — the taught pros — and the boss-task review supplies the human anchor.",
+            "recommendation": "Sandbox quests: a seeded practice environment with a graded quest board ending in a boss task reviewed by a senior.",
+            "tradeoffs": [
+              "Building and re-seeding the playground is the costliest method to keep fresh",
+              "Shallow quests become pixel-art chores; design the boss task with care"
+            ]
+          }
         },
         "rec-tours": {
           "id": "rec-tours",
           "leaf": {
-            "recommendation": "Self-serve in-app checklists and first-run tours driving one golden-path task, with sample data so the app is never a blank page.",
             "explanation": "The in-app tour method's taught pros — near-zero marginal cost, teach-at-the-moment-of-need, instant fixes shipped to everyone — fit a large, stable audience. Instrument completion and drop-off per the Measure-the-Friction principle.",
+            "recommendation": "Self-serve in-app checklists and first-run tours driving one golden-path task, with sample data so the app is never a blank page.",
             "tradeoffs": [
               "Upfront engineering cost for the tour layer",
               "Needs a human anchor (office hours or a channel) for the questions tours cannot answer"
@@ -1105,746 +1121,506 @@
         "rec-tours-docs": {
           "id": "rec-tours-docs",
           "leaf": {
-            "recommendation": "Lightweight in-app checklists for the golden path only, plus a docs-as-code handbook carrying the depth, linked at the point of need.",
             "explanation": "Tour fragility against UI churn is the documented con: keep the overlay surface tiny and let searchable, CI-owned docs absorb the change velocity.",
+            "recommendation": "Lightweight in-app checklists for the golden path only, plus a docs-as-code handbook carrying the depth, linked at the point of need.",
             "tradeoffs": [
               "Docs need a CI-owning maintainer or they rot",
               "Two artifacts to keep pointed at the same golden path"
             ]
           }
         },
-        "rec-buddy-users": {
-          "id": "rec-buddy-users",
-          "leaf": {
-            "recommendation": "Buddy-style live onboarding sessions for each account, recorded and clipped into the handbook, with a self-serve tour left behind for their teammates.",
-            "explanation": "Apprenticeship's pros — tacit knowledge, trust, highest retention — justify its focus tax only when each account is worth the hours. The recording amortizes the cost into self-serve assets.",
-            "tradeoffs": [
-              "Does not scale past a handful of accounts",
-              "Quality varies with the people skills of whoever runs the session"
-            ]
-          }
-        },
         "staff-risk": {
-          "id": "staff-risk",
-          "prompt": "What is the blast radius of a mistake by this role in their first month?",
           "choices": [
             {
               "id": "low-risk",
-              "text": "Low — sandboxed tools, no production reach",
               "next": "rec-quests-staff",
-              "rationale": "Safe-to-break practice is free motivation when mistakes are cheap."
+              "rationale": "Safe-to-break practice is free motivation when mistakes are cheap.",
+              "text": "Low — sandboxed tools, no production reach"
             },
             {
               "id": "high-risk",
-              "text": "High — production access, customer data, or money movement",
               "next": "rec-buddy-ops",
               "rationale": "Flight school, not freestyle: dual controls before the first solo.",
-              "recommended": true
+              "recommended": true,
+              "text": "High — production access, customer data, or money movement"
             }
-          ]
+          ],
+          "id": "staff-risk",
+          "prompt": "What is the blast radius of a mistake by this role in their first month?"
         },
-        "rec-quests-staff": {
-          "id": "rec-quests-staff",
-          "leaf": {
-            "recommendation": "Sandbox quests: a seeded practice environment with a graded quest board ending in a boss task reviewed by a senior.",
-            "explanation": "Sandbox quests deliver zero-blast-radius practice and objective competence — the taught pros — and the boss-task review supplies the human anchor.",
-            "tradeoffs": [
-              "Building and re-seeding the playground is the costliest method to keep fresh",
-              "Shallow quests become pixel-art chores; design the boss task with care"
-            ]
-          }
-        },
-        "rec-buddy-ops": {
-          "id": "rec-buddy-ops",
-          "leaf": {
-            "recommendation": "Buddy apprenticeship with graduated privileges: shadow incidents, then drive with a witness, then the supervised pager — with runbooks as the spine.",
-            "explanation": "Apprenticeship carries the escalation culture no handbook holds, and graded real tasks convert reading into trusted competence. Cap each buddy at two newcomers to dodge the burnout con.",
-            "tradeoffs": [
-              "Real focus tax on senior operators",
-              "Buddy quality varies; brief the buddies on what to teach"
-            ]
-          }
-        },
-        "rec-devs": {
-          "id": "rec-devs",
-          "leaf": {
-            "recommendation": "Self-serve DX path: keys minted in minutes, a CI-tested quickstart to a first successful call in under fifteen, a seeded sandbox with test data, and generated API references.",
-            "explanation": "Developers self-onboard or leave quietly; time-to-first-successful-API-call is their first value. Docs-first is the backbone here, but every step must be runnable, not readable.",
-            "tradeoffs": [
-              "Quickstarts need CI tests or they rot within a sprint",
-              "Sandbox data seeding is an ongoing tax"
-            ]
-          }
+        "user-scale": {
+          "choices": [
+            {
+              "id": "many-stable",
+              "next": "rec-tours",
+              "rationale": "Self-serve tours scale at near-zero marginal cost and stay fresh between releases.",
+              "recommended": true,
+              "text": "Many users each month; UI evolves slowly"
+            },
+            {
+              "id": "many-churny",
+              "next": "rec-tours-docs",
+              "rationale": "Overlay tours mispoint when the interface moves fast; anchor them to searchable docs.",
+              "text": "Many users each month; UI churns every sprint"
+            },
+            {
+              "id": "few-highvalue",
+              "next": "rec-buddy-users",
+              "rationale": "At low volume, a human success onboarding beats any software tour.",
+              "text": "A few high-value accounts that expect a white-glove start"
+            }
+          ],
+          "id": "user-scale",
+          "prompt": "Roughly how many end users arrive per month, and how often does the UI change?"
         }
-      }
-    }
+      },
+      "root": "audience",
+      "title": "Which Onboarding Method Fits Your Crowd?"
+    },
+    "type": "decision-tree"
   },
   {
     "folder": "ttv-dashboard",
-    "type": "pillar-layer",
     "props": {
-      "title": "The Time-to-Value Dashboard Stack",
       "section": {
-        "type": "pillar-layer",
-        "title": "The Time-to-Value Dashboard Stack",
         "description": "Onboarding measurement as a Lego stack: raw instrumentation on the bottom, friction diagnostics above it, leading indicators, and the north-star time-to-first-value on top.",
         "layers": [
           {
+            "description": "Raw events and identity stitching that make the newcomer's journey visible at all.",
             "id": "l-instrument",
-            "title": "Instrumentation",
-            "description": "Raw events and identity stitching that make the newcomer's journey visible at all."
+            "title": "Instrumentation"
           },
           {
+            "description": "Where newcomers stall, rage-quit, and file tickets — the quit-point detector.",
             "id": "l-friction",
-            "title": "Friction Diagnostics",
-            "description": "Where newcomers stall, rage-quit, and file tickets — the quit-point detector."
+            "title": "Friction Diagnostics"
           },
           {
+            "description": "Day-one and week-one signals that predict whether first value will arrive.",
             "id": "l-leading",
-            "title": "Leading Indicators",
-            "description": "Day-one and week-one signals that predict whether first value will arrive."
+            "title": "Leading Indicators"
           },
           {
+            "description": "The one number the doctrine says matters: how fast a newcomer completes something real.",
             "id": "l-northstar",
-            "title": "North Star",
-            "description": "The one number the doctrine says matters: how fast a newcomer completes something real."
+            "title": "North Star"
           }
         ],
         "matrix_blocks": [
           {
-            "id": "b-events",
-            "title": "Product & Setup Event Streams",
+            "col_offset": 0,
+            "col_span": 2,
+            "color": "teal",
             "description": "Logins, key creation, first API call, checklist steps — instrumented like any conversion funnel.",
-            "col_offset": 0,
+            "id": "b-events",
             "layer_id": "l-instrument",
-            "col_span": 2,
             "row_span": 1,
-            "color": "teal"
+            "title": "Product & Setup Event Streams"
           },
           {
-            "id": "b-identity",
-            "title": "Joiner Identity Stitching",
+            "col_offset": 2,
+            "col_span": 2,
+            "color": "sky",
             "description": "Tying HR joiner records to product accounts so every newcomer's clock starts at day zero.",
-            "col_offset": 2,
+            "id": "b-identity",
             "layer_id": "l-instrument",
-            "col_span": 2,
             "row_span": 1,
-            "color": "sky"
+            "title": "Joiner Identity Stitching"
           },
           {
-            "id": "b-tickets",
-            "title": "Ticket Storm Detector",
+            "col_offset": 0,
+            "col_span": 2,
+            "color": "red",
             "description": "Support and help-channel volume tagged by newcomer cohort — questions are unanswered documentation.",
-            "col_offset": 0,
+            "id": "b-tickets",
             "layer_id": "l-friction",
-            "col_span": 2,
             "row_span": 1,
-            "color": "red"
+            "title": "Ticket Storm Detector"
           },
           {
-            "id": "b-dropoff",
-            "title": "Funnel Drop-off Map",
+            "col_offset": 2,
+            "col_span": 2,
+            "color": "peach",
             "description": "Per-step quit-points in signup, setup, and the golden path, ranked by who you are losing.",
-            "col_offset": 2,
+            "id": "b-dropoff",
             "layer_id": "l-friction",
-            "col_span": 2,
             "row_span": 1,
-            "color": "peach"
+            "title": "Funnel Drop-off Map"
           },
           {
-            "id": "b-day1",
-            "title": "Day-1 Login Success",
+            "col_offset": 0,
+            "col_span": 1,
+            "color": "green",
             "description": "Percentage of newcomers who reach a working, license-complete workspace on the first day.",
-            "col_offset": 0,
+            "id": "b-day1",
             "layer_id": "l-leading",
-            "col_span": 1,
             "row_span": 1,
-            "color": "green"
+            "title": "Day-1 Login Success"
           },
           {
-            "id": "b-goldenpath",
-            "title": "Golden Path Completion",
-            "description": "Share of newcomers who finish the one canonical journey in week one.",
             "col_offset": 1,
-            "layer_id": "l-leading",
             "col_span": 1,
-            "row_span": 1,
-            "color": "green"
-          },
-          {
-            "id": "b-firstcall",
-            "title": "First-Call Time (DX)",
-            "description": "Minutes from key issuance to first successful API call on a clean machine.",
-            "col_offset": 2,
+            "color": "green",
+            "description": "Share of newcomers who finish the one canonical journey in week one.",
+            "id": "b-goldenpath",
             "layer_id": "l-leading",
-            "col_span": 2,
             "row_span": 1,
-            "color": "yellow"
+            "title": "Golden Path Completion"
           },
           {
-            "id": "b-ttfv",
-            "title": "Time-to-First-Value",
-            "description": "Hours from day zero to one real, meaningful completed task — the north star every layer feeds.",
-            "col_offset": 0,
-            "layer_id": "l-northstar",
-            "col_span": 2,
-            "row_span": 1,
-            "color": "mauve"
-          },
-          {
-            "id": "b-activation",
-            "title": "Activation Moment Definition",
-            "description": "The explicitly designed 'aha' per audience: first record, first safe change, first successful call.",
             "col_offset": 2,
-            "layer_id": "l-northstar",
             "col_span": 2,
+            "color": "yellow",
+            "description": "Minutes from key issuance to first successful API call on a clean machine.",
+            "id": "b-firstcall",
+            "layer_id": "l-leading",
             "row_span": 1,
-            "color": "mauve"
+            "title": "First-Call Time (DX)"
+          },
+          {
+            "col_offset": 0,
+            "col_span": 2,
+            "color": "mauve",
+            "description": "Hours from day zero to one real, meaningful completed task — the north star every layer feeds.",
+            "id": "b-ttfv",
+            "layer_id": "l-northstar",
+            "row_span": 1,
+            "title": "Time-to-First-Value"
+          },
+          {
+            "col_offset": 2,
+            "col_span": 2,
+            "color": "mauve",
+            "description": "The explicitly designed 'aha' per audience: first record, first safe change, first successful call.",
+            "id": "b-activation",
+            "layer_id": "l-northstar",
+            "row_span": 1,
+            "title": "Activation Moment Definition"
           }
-        ]
-      }
-    }
+        ],
+        "title": "The Time-to-Value Dashboard Stack",
+        "type": "pillar-layer"
+      },
+      "title": "The Time-to-Value Dashboard Stack"
+    },
+    "type": "pillar-layer"
   },
   {
     "folder": "provision-flow",
-    "type": "flowchart",
     "props": {
-      "title": "Day-1 Access Provisioning Flow",
       "schema": {
         "entities": {
+          "cmd_branch_fail": {
+            "desc": "Manually fix credential chain",
+            "title": "Manually fix credential chain",
+            "type": "Command"
+          },
+          "cmd_branch_pass": {
+            "desc": "Sign off day-one access",
+            "title": "Sign off day-one access",
+            "type": "Command"
+          },
+          "cmd_step_privileges": {
+            "desc": "Approve privileged grants",
+            "title": "Approve privileged grants",
+            "type": "Command"
+          },
+          "cmd_step_provision": {
+            "desc": "Provision accounts via SSO groups",
+            "title": "Provision accounts via SSO groups",
+            "type": "Command"
+          },
+          "cmd_step_request": {
+            "desc": "File joiner request",
+            "title": "File joiner request",
+            "type": "Command"
+          },
+          "cmd_step_smoke": {
+            "desc": "Run day-one smoke test",
+            "title": "Run day-one smoke test",
+            "type": "Command"
+          },
+          "evt_evt_denied": {
+            "desc": "Access Denied — Rework Loop",
+            "title": "Access Denied — Rework Loop",
+            "type": "Event"
+          },
+          "evt_evt_privileged": {
+            "desc": "Privileges Granted",
+            "title": "Privileges Granted",
+            "type": "Event"
+          },
+          "evt_evt_provisioned": {
+            "desc": "Day-Zero Accounts Provisioned",
+            "title": "Day-Zero Accounts Provisioned",
+            "type": "Event"
+          },
+          "evt_evt_requested": {
+            "desc": "Joiner Request Filed",
+            "title": "Joiner Request Filed",
+            "type": "Event"
+          },
+          "evt_evt_smoked": {
+            "desc": "Smoke Test Attempted",
+            "title": "Smoke Test Attempted",
+            "type": "Event"
+          },
+          "evt_evt_verified": {
+            "desc": "Day-1 Access Verified",
+            "title": "Day-1 Access Verified",
+            "type": "Event"
+          },
           "hiring_manager": {
-            "title": "Hiring Manager",
             "desc": "Files the joiner request with role, team, and start date before day one",
+            "title": "Hiring Manager",
             "type": "Actor"
           },
           "it_operator": {
-            "title": "IT Access Operator",
             "desc": "Runs the provisioning pipeline and clears access failures by hand",
-            "type": "Actor"
-          },
-          "newcomer": {
-            "title": "Newcomer",
-            "desc": "The new user, operator, or developer attempting their day-one smoke test",
+            "title": "IT Access Operator",
             "type": "Actor"
           },
           "joiner_ticket": {
-            "title": "Joiner Ticket System",
             "desc": "Captures the joiner request with role, team, and start date",
+            "title": "Joiner Ticket System",
             "type": "External API"
           },
-          "sso_directory": {
-            "title": "SSO Identity Directory",
-            "desc": "Group-rule automation that mints accounts, licenses, and app entitlements",
-            "type": "Aggregate"
+          "newcomer": {
+            "desc": "The new user, operator, or developer attempting their day-one smoke test",
+            "title": "Newcomer",
+            "type": "Actor"
           },
           "pam_vault": {
-            "title": "Privileged Access Vault",
             "desc": "Manually approved grants for production, sandboxes, and elevated tooling",
+            "title": "Privileged Access Vault",
             "type": "External API"
-          },
-          "pol_step_request": {
-            "title": "Before the start date",
-            "desc": "Before the start date",
-            "type": "Policy",
-            "root": false
-          },
-          "cmd_step_request": {
-            "title": "File joiner request",
-            "desc": "File joiner request",
-            "type": "Command"
-          },
-          "evt_evt_requested": {
-            "title": "Joiner Request Filed",
-            "desc": "Joiner Request Filed",
-            "type": "Event"
-          },
-          "pol_step_provision": {
-            "title": "On joiner request accepted",
-            "desc": "On joiner request accepted",
-            "type": "Policy",
-            "root": false
-          },
-          "cmd_step_provision": {
-            "title": "Provision accounts via SSO groups",
-            "desc": "Provision accounts via SSO groups",
-            "type": "Command"
-          },
-          "evt_evt_provisioned": {
-            "title": "Day-Zero Accounts Provisioned",
-            "desc": "Day-Zero Accounts Provisioned",
-            "type": "Event"
-          },
-          "pol_step_privileges": {
-            "title": "For production-reach roles only",
-            "desc": "For production-reach roles only",
-            "type": "Policy",
-            "root": false
-          },
-          "cmd_step_privileges": {
-            "title": "Approve privileged grants",
-            "desc": "Approve privileged grants",
-            "type": "Command"
-          },
-          "evt_evt_privileged": {
-            "title": "Privileges Granted",
-            "desc": "Privileges Granted",
-            "type": "Event"
-          },
-          "pol_step_smoke": {
-            "title": "On the first workday morning",
-            "desc": "On the first workday morning",
-            "type": "Policy",
-            "root": false
-          },
-          "cmd_step_smoke": {
-            "title": "Run day-one smoke test",
-            "desc": "Run day-one smoke test",
-            "type": "Command"
-          },
-          "sso_directory2": {
-            "title": "SSO Identity Directory",
-            "desc": "Group-rule automation that mints accounts, licenses, and app entitlements",
-            "type": "Aggregate"
-          },
-          "evt_evt_smoked": {
-            "title": "Smoke Test Attempted",
-            "desc": "Smoke Test Attempted",
-            "type": "Event"
-          },
-          "pol_branch_pass": {
-            "title": "If day-one login and golden-path tools work",
-            "desc": "If day-one login and golden-path tools work",
-            "type": "Policy"
-          },
-          "cmd_branch_pass": {
-            "title": "Sign off day-one access",
-            "desc": "Sign off day-one access",
-            "type": "Command"
-          },
-          "sso_directory3": {
-            "title": "SSO Identity Directory",
-            "desc": "Group-rule automation that mints accounts, licenses, and app entitlements",
-            "type": "Aggregate"
-          },
-          "evt_evt_verified": {
-            "title": "Day-1 Access Verified",
-            "desc": "Day-1 Access Verified",
-            "type": "Event"
-          },
-          "pol_branch_fail": {
-            "title": "If the smoke test hits a missing entitlement",
-            "desc": "If the smoke test hits a missing entitlement",
-            "type": "Policy"
-          },
-          "cmd_branch_fail": {
-            "title": "Manually fix credential chain",
-            "desc": "Manually fix credential chain",
-            "type": "Command"
           },
           "pam_vault2": {
-            "title": "Privileged Access Vault",
             "desc": "Manually approved grants for production, sandboxes, and elevated tooling",
+            "title": "Privileged Access Vault",
             "type": "External API"
           },
-          "evt_evt_denied": {
-            "title": "Access Denied — Rework Loop",
-            "desc": "Access Denied — Rework Loop",
-            "type": "Event"
+          "pol_branch_fail": {
+            "desc": "If the smoke test hits a missing entitlement",
+            "title": "If the smoke test hits a missing entitlement",
+            "type": "Policy"
+          },
+          "pol_branch_pass": {
+            "desc": "If day-one login and golden-path tools work",
+            "title": "If day-one login and golden-path tools work",
+            "type": "Policy"
+          },
+          "pol_step_privileges": {
+            "desc": "For production-reach roles only",
+            "root": false,
+            "title": "For production-reach roles only",
+            "type": "Policy"
+          },
+          "pol_step_provision": {
+            "desc": "On joiner request accepted",
+            "root": false,
+            "title": "On joiner request accepted",
+            "type": "Policy"
+          },
+          "pol_step_request": {
+            "desc": "Before the start date",
+            "root": false,
+            "title": "Before the start date",
+            "type": "Policy"
+          },
+          "pol_step_smoke": {
+            "desc": "On the first workday morning",
+            "root": false,
+            "title": "On the first workday morning",
+            "type": "Policy"
+          },
+          "sso_directory": {
+            "desc": "Group-rule automation that mints accounts, licenses, and app entitlements",
+            "title": "SSO Identity Directory",
+            "type": "Aggregate"
+          },
+          "sso_directory2": {
+            "desc": "Group-rule automation that mints accounts, licenses, and app entitlements",
+            "title": "SSO Identity Directory",
+            "type": "Aggregate"
+          },
+          "sso_directory3": {
+            "desc": "Group-rule automation that mints accounts, licenses, and app entitlements",
+            "title": "SSO Identity Directory",
+            "type": "Aggregate"
           }
         },
-        "relations": [
-          {
-            "id": "r1",
-            "from": "hiring_manager",
-            "to": "pol_step_request",
-            "views": [
-              "EVENT_STORMING"
-            ]
-          },
-          {
-            "id": "r2",
-            "from": "pol_step_request",
-            "to": "cmd_step_request",
-            "views": [
-              "EVENT_STORMING"
-            ]
-          },
-          {
-            "id": "r3",
-            "from": "cmd_step_request",
-            "to": "joiner_ticket",
-            "handledBy": true,
-            "views": [
-              "EVENT_STORMING"
-            ]
-          },
-          {
-            "id": "r4",
-            "from": "joiner_ticket",
-            "to": "evt_evt_requested",
-            "views": [
-              "EVENT_STORMING"
-            ]
-          },
-          {
-            "id": "r5",
-            "from": "evt_evt_requested",
-            "to": "pol_step_provision",
-            "views": [
-              "EVENT_STORMING"
-            ]
-          },
-          {
-            "id": "r6",
-            "from": "pol_step_provision",
-            "to": "cmd_step_provision",
-            "views": [
-              "EVENT_STORMING"
-            ]
-          },
-          {
-            "id": "r7",
-            "from": "cmd_step_provision",
-            "to": "sso_directory",
-            "handledBy": true,
-            "views": [
-              "EVENT_STORMING"
-            ]
-          },
-          {
-            "id": "r8",
-            "from": "sso_directory",
-            "to": "evt_evt_provisioned",
-            "views": [
-              "EVENT_STORMING"
-            ]
-          },
-          {
-            "id": "r9",
-            "from": "evt_evt_provisioned",
-            "to": "pol_step_privileges",
-            "views": [
-              "EVENT_STORMING"
-            ]
-          },
-          {
-            "id": "r10",
-            "from": "it_operator",
-            "to": "pol_step_privileges",
-            "views": [
-              "EVENT_STORMING"
-            ]
-          },
-          {
-            "id": "r11",
-            "from": "pol_step_privileges",
-            "to": "cmd_step_privileges",
-            "views": [
-              "EVENT_STORMING"
-            ]
-          },
-          {
-            "id": "r12",
-            "from": "cmd_step_privileges",
-            "to": "pam_vault",
-            "handledBy": true,
-            "views": [
-              "EVENT_STORMING"
-            ]
-          },
-          {
-            "id": "r13",
-            "from": "pam_vault",
-            "to": "evt_evt_privileged",
-            "views": [
-              "EVENT_STORMING"
-            ]
-          },
-          {
-            "id": "r14",
-            "from": "evt_evt_privileged",
-            "to": "pol_step_smoke",
-            "views": [
-              "EVENT_STORMING"
-            ]
-          },
-          {
-            "id": "r15",
-            "from": "newcomer",
-            "to": "pol_step_smoke",
-            "views": [
-              "EVENT_STORMING"
-            ]
-          },
-          {
-            "id": "r16",
-            "from": "pol_step_smoke",
-            "to": "cmd_step_smoke",
-            "views": [
-              "EVENT_STORMING"
-            ]
-          },
-          {
-            "id": "r17",
-            "from": "cmd_step_smoke",
-            "to": "sso_directory2",
-            "handledBy": true,
-            "views": [
-              "EVENT_STORMING"
-            ]
-          },
-          {
-            "id": "r18",
-            "from": "sso_directory2",
-            "to": "evt_evt_smoked",
-            "views": [
-              "EVENT_STORMING"
-            ]
-          },
-          {
-            "id": "r19",
-            "from": "evt_evt_smoked",
-            "to": "pol_branch_pass",
-            "label": "All entitlements resolve",
-            "views": [
-              "EVENT_STORMING"
-            ]
-          },
-          {
-            "id": "r20",
-            "from": "pol_branch_pass",
-            "to": "cmd_branch_pass",
-            "views": [
-              "EVENT_STORMING"
-            ]
-          },
-          {
-            "id": "r21",
-            "from": "cmd_branch_pass",
-            "to": "sso_directory3",
-            "handledBy": true,
-            "views": [
-              "EVENT_STORMING"
-            ]
-          },
-          {
-            "id": "r22",
-            "from": "sso_directory3",
-            "to": "evt_evt_verified",
-            "views": [
-              "EVENT_STORMING"
-            ]
-          },
-          {
-            "id": "r23",
-            "from": "evt_evt_smoked",
-            "to": "pol_branch_fail",
-            "label": "4003 access denied",
-            "dashed": true,
-            "views": [
-              "EVENT_STORMING"
-            ]
-          },
-          {
-            "id": "r24",
-            "from": "pol_branch_fail",
-            "to": "cmd_branch_fail",
-            "views": [
-              "EVENT_STORMING"
-            ]
-          },
-          {
-            "id": "r25",
-            "from": "cmd_branch_fail",
-            "to": "pam_vault2",
-            "handledBy": true,
-            "views": [
-              "EVENT_STORMING"
-            ]
-          },
-          {
-            "id": "r26",
-            "from": "pam_vault2",
-            "to": "evt_evt_denied",
-            "views": [
-              "EVENT_STORMING"
-            ]
-          }
-        ],
         "journeys": [
           {
+            "description": "The joiner request provisions every account before day one and the smoke test passes",
             "id": "journey_happy",
             "label": "Happy Path: Day-Zero Access",
-            "description": "The joiner request provisions every account before day one and the smoke test passes",
             "steps": [
               {
                 "nodeIds": [
                   "evt_evt_requested"
                 ],
-                "title": "Joiner Request Filed",
-                "reason": "The hiring manager files the joiner request with role, team, and start date before day one"
+                "reason": "The hiring manager files the joiner request with role, team, and start date before day one",
+                "title": "Joiner Request Filed"
               },
               {
                 "nodeIds": [
                   "evt_evt_provisioned"
                 ],
-                "title": "Day-Zero Accounts Provisioned",
-                "reason": "SSO group rules mint accounts, licenses, and app entitlements automatically"
+                "reason": "SSO group rules mint accounts, licenses, and app entitlements automatically",
+                "title": "Day-Zero Accounts Provisioned"
               },
               {
                 "nodeIds": [
                   "evt_evt_privileged"
                 ],
-                "title": "Privileges Granted",
-                "reason": "For production-reach roles, the privileged access vault approves elevated grants"
+                "reason": "For production-reach roles, the privileged access vault approves elevated grants",
+                "title": "Privileges Granted"
               },
               {
                 "nodeIds": [
                   "evt_evt_smoked"
                 ],
-                "title": "Smoke Test Attempted",
-                "reason": "On the first workday morning the newcomer logs in and checks every golden-path tool"
+                "reason": "On the first workday morning the newcomer logs in and checks every golden-path tool",
+                "title": "Smoke Test Attempted"
               },
               {
                 "nodeIds": [
                   "evt_evt_verified"
                 ],
-                "title": "Day-1 Access Verified",
-                "reason": "Every entitlement resolves; the newcomer starts the golden-path task instead of a ticket queue"
+                "reason": "Every entitlement resolves; the newcomer starts the golden-path task instead of a ticket queue",
+                "title": "Day-1 Access Verified"
               }
             ]
           },
           {
+            "description": "A missing entitlement surfaces on day one and the credential chain is fixed by hand",
             "id": "journey_rework",
             "label": "Rework Loop: 4003 Access Denied",
-            "description": "A missing entitlement surfaces on day one and the credential chain is fixed by hand",
             "steps": [
               {
                 "nodeIds": [
                   "evt_evt_requested"
                 ],
-                "title": "Joiner Request Filed",
-                "reason": "The joiner request lands in the ticket system"
+                "reason": "The joiner request lands in the ticket system",
+                "title": "Joiner Request Filed"
               },
               {
                 "nodeIds": [
                   "evt_evt_provisioned"
                 ],
-                "title": "Day-Zero Accounts Provisioned",
-                "reason": "Standard accounts are minted, but an uncommon tool is missed by the group rules"
+                "reason": "Standard accounts are minted, but an uncommon tool is missed by the group rules",
+                "title": "Day-Zero Accounts Provisioned"
               },
               {
                 "nodeIds": [
                   "evt_evt_smoked"
                 ],
-                "title": "Smoke Test Attempted",
-                "reason": "The newcomer's day-one smoke test hits a 4003 access-denied on the missing entitlement"
+                "reason": "The newcomer's day-one smoke test hits a 4003 access-denied on the missing entitlement",
+                "title": "Smoke Test Attempted"
               },
               {
                 "nodeIds": [
                   "evt_evt_denied"
                 ],
-                "title": "Access Denied — Rework Loop",
-                "reason": "The IT access operator manually repairs the credential chain and the test is re-run"
+                "reason": "The IT access operator manually repairs the credential chain and the test is re-run",
+                "title": "Access Denied — Rework Loop"
               }
             ]
           }
         ],
         "rawSteps": [
           {
-            "type": "linear",
+            "command": "File joiner request",
+            "continuesAs": "step_provision",
+            "handledBy": {
+              "_tag": "ref",
+              "id": "joiner_ticket"
+            },
             "id": "step_request",
             "initiatedBy": {
               "_tag": "ref",
               "id": "hiring_manager"
             },
             "policy": "Before the start date",
-            "command": "File joiner request",
-            "handledBy": {
-              "_tag": "ref",
-              "id": "joiner_ticket"
-            },
             "resultEvents": [
               {
                 "id": "evt_requested",
                 "title": "Joiner Request Filed"
               }
             ],
-            "continuesAs": "step_provision"
+            "type": "linear"
           },
           {
-            "type": "linear",
-            "id": "step_provision",
-            "policy": "On joiner request accepted",
             "command": "Provision accounts via SSO groups",
+            "continuesAs": "step_privileges",
             "handledBy": {
               "_tag": "ref",
               "id": "sso_directory"
             },
+            "id": "step_provision",
+            "policy": "On joiner request accepted",
             "resultEvents": [
               {
                 "id": "evt_provisioned",
                 "title": "Day-Zero Accounts Provisioned"
               }
             ],
-            "continuesAs": "step_privileges"
+            "type": "linear"
           },
           {
-            "type": "linear",
+            "command": "Approve privileged grants",
+            "continuesAs": "step_smoke",
+            "handledBy": {
+              "_tag": "ref",
+              "id": "pam_vault"
+            },
             "id": "step_privileges",
             "initiatedBy": {
               "_tag": "ref",
               "id": "it_operator"
             },
             "policy": "For production-reach roles only",
-            "command": "Approve privileged grants",
-            "handledBy": {
-              "_tag": "ref",
-              "id": "pam_vault"
-            },
             "resultEvents": [
               {
                 "id": "evt_privileged",
                 "title": "Privileges Granted"
               }
             ],
-            "continuesAs": "step_smoke"
+            "type": "linear"
           },
           {
-            "type": "linear",
+            "command": "Run day-one smoke test",
+            "continuesAs": "step_outcome",
+            "handledBy": {
+              "_tag": "ref",
+              "id": "sso_directory"
+            },
             "id": "step_smoke",
             "initiatedBy": {
               "_tag": "ref",
               "id": "newcomer"
             },
             "policy": "On the first workday morning",
-            "command": "Run day-one smoke test",
-            "handledBy": {
-              "_tag": "ref",
-              "id": "sso_directory"
-            },
             "resultEvents": [
               {
                 "id": "evt_smoked",
                 "title": "Smoke Test Attempted"
               }
             ],
-            "continuesAs": "step_outcome"
+            "type": "linear"
           },
           {
-            "type": "branch",
-            "id": "step_outcome",
-            "event": "evt_smoked",
             "branches": [
               {
-                "id": "branch_pass",
-                "label": "All entitlements resolve",
-                "policy": "If day-one login and golden-path tools work",
                 "command": "Sign off day-one access",
                 "handledBy": {
                   "_tag": "ref",
                   "id": "sso_directory"
                 },
+                "id": "branch_pass",
+                "label": "All entitlements resolve",
+                "policy": "If day-one login and golden-path tools work",
                 "resultEvents": [
                   {
                     "id": "evt_verified",
@@ -1853,15 +1629,15 @@
                 ]
               },
               {
-                "id": "branch_fail",
-                "label": "4003 access denied",
-                "dashed": true,
-                "policy": "If the smoke test hits a missing entitlement",
                 "command": "Manually fix credential chain",
+                "dashed": true,
                 "handledBy": {
                   "_tag": "ref",
                   "id": "pam_vault"
                 },
+                "id": "branch_fail",
+                "label": "4003 access denied",
+                "policy": "If the smoke test hits a missing entitlement",
                 "resultEvents": [
                   {
                     "id": "evt_denied",
@@ -1869,437 +1645,657 @@
                   }
                 ]
               }
+            ],
+            "event": "evt_smoked",
+            "id": "step_outcome",
+            "type": "branch"
+          }
+        ],
+        "relations": [
+          {
+            "from": "hiring_manager",
+            "id": "r1",
+            "to": "pol_step_request",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "from": "pol_step_request",
+            "id": "r2",
+            "to": "cmd_step_request",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "from": "cmd_step_request",
+            "handledBy": true,
+            "id": "r3",
+            "to": "joiner_ticket",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "from": "joiner_ticket",
+            "id": "r4",
+            "to": "evt_evt_requested",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "from": "evt_evt_requested",
+            "id": "r5",
+            "to": "pol_step_provision",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "from": "pol_step_provision",
+            "id": "r6",
+            "to": "cmd_step_provision",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "from": "cmd_step_provision",
+            "handledBy": true,
+            "id": "r7",
+            "to": "sso_directory",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "from": "sso_directory",
+            "id": "r8",
+            "to": "evt_evt_provisioned",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "from": "evt_evt_provisioned",
+            "id": "r9",
+            "to": "pol_step_privileges",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "from": "it_operator",
+            "id": "r10",
+            "to": "pol_step_privileges",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "from": "pol_step_privileges",
+            "id": "r11",
+            "to": "cmd_step_privileges",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "from": "cmd_step_privileges",
+            "handledBy": true,
+            "id": "r12",
+            "to": "pam_vault",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "from": "pam_vault",
+            "id": "r13",
+            "to": "evt_evt_privileged",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "from": "evt_evt_privileged",
+            "id": "r14",
+            "to": "pol_step_smoke",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "from": "newcomer",
+            "id": "r15",
+            "to": "pol_step_smoke",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "from": "pol_step_smoke",
+            "id": "r16",
+            "to": "cmd_step_smoke",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "from": "cmd_step_smoke",
+            "handledBy": true,
+            "id": "r17",
+            "to": "sso_directory2",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "from": "sso_directory2",
+            "id": "r18",
+            "to": "evt_evt_smoked",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "from": "evt_evt_smoked",
+            "id": "r19",
+            "label": "All entitlements resolve",
+            "to": "pol_branch_pass",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "from": "pol_branch_pass",
+            "id": "r20",
+            "to": "cmd_branch_pass",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "from": "cmd_branch_pass",
+            "handledBy": true,
+            "id": "r21",
+            "to": "sso_directory3",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "from": "sso_directory3",
+            "id": "r22",
+            "to": "evt_evt_verified",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "dashed": true,
+            "from": "evt_evt_smoked",
+            "id": "r23",
+            "label": "4003 access denied",
+            "to": "pol_branch_fail",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "from": "pol_branch_fail",
+            "id": "r24",
+            "to": "cmd_branch_fail",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "from": "cmd_branch_fail",
+            "handledBy": true,
+            "id": "r25",
+            "to": "pam_vault2",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "from": "pam_vault2",
+            "id": "r26",
+            "to": "evt_evt_denied",
+            "views": [
+              "EVENT_STORMING"
             ]
           }
         ]
-      }
-    }
+      },
+      "title": "Day-1 Access Provisioning Flow"
+    },
+    "type": "flowchart"
   },
   {
     "folder": "scenario-firstday",
-    "type": "scenario",
     "props": {
-      "title": "Monday Without a Path",
       "id": "monday-without-a-path",
       "intro": "It is 9:10 on Monday morning. Forty newcomers — end users, operators, and five platform developers — are logged in (most of them) to a Wi-Fi guest network, a wiki nobody has refreshed since last quarter, and a Slack channel called #newest-hires. As the onboarding lead, what do you do first?",
       "nodes": {
-        "start": {
-          "id": "start",
-          "prompt": "Forty pairs of eyes are on you. What is the first move?",
-          "choices": [
-            {
-              "id": "read-wiki",
-              "text": "Send everyone the wiki link and a 40-page handbook to read while you put out fires",
-              "next": "result-firehose"
-            },
-            {
-              "id": "triage-access",
-              "text": "Stop everything and triage access: who can actually log in and touch a real environment today?",
-              "next": "result-triage"
-            },
-            {
-              "id": "big-slides",
-              "text": "Book the afternoon for a full architecture presentation so everyone shares context",
-              "next": "result-slides"
-            }
-          ]
-        },
         "result-firehose": {
           "id": "result-firehose",
           "outcome": {
-            "verdict": "By lunch the handbook has 3 comments, the #newest-hires channel has 27 questions, and you have answered none of them. Two developers have already quietly left to 'explore the API later'.",
             "lesson": "The information firehose with no human anchor is the doctrine's textbook failure: passive content plus unanswered questions at hour three is exactly where motivation dies.",
-            "rating": "c"
+            "rating": "c",
+            "verdict": "By lunch the handbook has 3 comments, the #newest-hires channel has 27 questions, and you have answered none of them. Two developers have already quietly left to 'explore the API later'."
           }
-        },
-        "result-slides": {
-          "id": "result-slides",
-          "outcome": {
-            "verdict": "You covered the microservices diagram beautifully. The operators wanted their runbooks, the end users wanted their first task, and the developers wanted their API keys. All three got slides instead.",
-            "lesson": "An architecture tour is not onboarding. Each audience needed its own first value — a task, a graded change, a first API call — not a shared context nobody asked for.",
-            "rating": "c"
-          }
-        },
-        "result-triage": {
-          "id": "result-triage",
-          "prompt": "Triage reveals the truth: the 5 developers have no API keys, 3 operators are missing production-reach entitlements, and the end users' sample workspace is empty. You have one day and one team. Where do you spend it?",
-          "choices": [
-            {
-              "id": "fix-all-yourself",
-              "text": "Personality-provision all 40 people yourself, one browser tab at a time",
-              "next": "result-hero"
-            },
-            {
-              "id": "scripted-fastest",
-              "text": "Fix the fastest scripted wins first: mint dev keys via the self-serve flow, fill the sample workspace, file the privileged grants properly",
-              "next": "result-wins"
-            },
-            {
-              "id": "wait-ticket-queue",
-              "text": "File everything into the normal IT queue and tell people to expect access 'soon'",
-              "next": "result-queue"
-            }
-          ]
         },
         "result-hero": {
           "id": "result-hero",
           "outcome": {
-            "verdict": "You personally fix 14 people's access by 11pm. The remaining 26 wait for the hero to recover. Next Monday's cohort gets nothing, because you are asleep.",
             "lesson": "Heroic manual provisioning is the anti-pattern the provisioning flow exists to automate: SSO group rules and self-serve key minting scale; your browser tabs do not.",
-            "rating": "b-minus"
+            "rating": "b-minus",
+            "verdict": "You personally fix 14 people's access by 11pm. The remaining 26 wait for the hero to recover. Next Monday's cohort gets nothing, because you are asleep."
           }
         },
         "result-queue": {
           "id": "result-queue",
           "outcome": {
-            "verdict": "The queue is honest, at least. It is also three weeks deep. Week one becomes week three of 'ping me when you're stuck', and three newcomers quit-point to silence.",
             "lesson": "Waiting-for-access is the number-one onboarding killer: Access First means credentials exist before day one, and 'soon' is how first value slips from week one to never.",
-            "rating": "c"
+            "rating": "c",
+            "verdict": "The queue is honest, at least. It is also three weeks deep. Week one becomes week three of 'ping me when you're stuck', and three newcomers quit-point to silence."
           }
+        },
+        "result-slides": {
+          "id": "result-slides",
+          "outcome": {
+            "lesson": "An architecture tour is not onboarding. Each audience needed its own first value — a task, a graded change, a first API call — not a shared context nobody asked for.",
+            "rating": "c",
+            "verdict": "You covered the microservices diagram beautifully. The operators wanted their runbooks, the end users wanted their first task, and the developers wanted their API keys. All three got slides instead."
+          }
+        },
+        "result-triage": {
+          "choices": [
+            {
+              "id": "fix-all-yourself",
+              "next": "result-hero",
+              "text": "Personality-provision all 40 people yourself, one browser tab at a time"
+            },
+            {
+              "id": "scripted-fastest",
+              "next": "result-wins",
+              "text": "Fix the fastest scripted wins first: mint dev keys via the self-serve flow, fill the sample workspace, file the privileged grants properly"
+            },
+            {
+              "id": "wait-ticket-queue",
+              "next": "result-queue",
+              "text": "File everything into the normal IT queue and tell people to expect access 'soon'"
+            }
+          ],
+          "id": "result-triage",
+          "prompt": "Triage reveals the truth: the 5 developers have no API keys, 3 operators are missing production-reach entitlements, and the end users' sample workspace is empty. You have one day and one team. Where do you spend it?"
         },
         "result-wins": {
           "id": "result-wins",
           "outcome": {
-            "verdict": "By 3pm the developers ship their first test call against seeded sandbox data, the end users complete their first real record in a populated workspace, and the operators are shadowing an afternoon incident with runbooks open. You book office hours for Thursday and pin the handbook's single golden-path page in the channel.",
             "lesson": "This is the doctrine in one day: access unblocked through automation, one golden-path task per audience to first value, progressive depth via the handbook, and a scheduled human anchor for the questions. Measure who stalls next and fix that first.",
-            "rating": "a"
+            "rating": "a",
+            "verdict": "By 3pm the developers ship their first test call against seeded sandbox data, the end users complete their first real record in a populated workspace, and the operators are shadowing an afternoon incident with runbooks open. You book office hours for Thursday and pin the handbook's single golden-path page in the channel."
           }
+        },
+        "start": {
+          "choices": [
+            {
+              "id": "read-wiki",
+              "next": "result-firehose",
+              "text": "Send everyone the wiki link and a 40-page handbook to read while you put out fires"
+            },
+            {
+              "id": "triage-access",
+              "next": "result-triage",
+              "text": "Stop everything and triage access: who can actually log in and touch a real environment today?"
+            },
+            {
+              "id": "big-slides",
+              "next": "result-slides",
+              "text": "Book the afternoon for a full architecture presentation so everyone shares context"
+            }
+          ],
+          "id": "start",
+          "prompt": "Forty pairs of eyes are on you. What is the first move?"
         }
       },
-      "startNode": "start"
-    }
+      "startNode": "start",
+      "title": "Monday Without a Path"
+    },
+    "type": "scenario"
   },
   {
     "folder": "glossary",
-    "type": "flashcards",
     "props": {
-      "title": "Lexicon of the Threshold",
       "terms": [
         {
-          "id": "time-to-first-value",
-          "word": "Time-to-First-Value (TTFV)",
-          "pronunciation": "tyme tuh furst val-yoo",
           "category": "metric",
-          "shortDefinition": "How fast a newcomer completes one real, meaningful task — the doctrine's only week-one metric.",
           "detailedDefinition": "Measured from day zero (or key issuance for developers) to the first genuine win: a submitted record, a safe production change, a successful API call. Everything else in onboarding is a leading indicator of this number.",
-          "whyItMatters": "It converts 'onboarding feels fine' into a number you can drive down; teams that instrument it stop writing handbook pages and start removing walls.",
           "dialogue": {
-            "user": "We covered every feature in the kickoff deck!",
+            "aiQuestion": "What was the median hours from day zero to each newcomer's first real task?",
             "aiThoughts": "Coverage is not completion; nobody has shipped a real task yet.",
-            "aiQuestion": "What was the median hours from day zero to each newcomer's first real task?"
-          }
+            "user": "We covered every feature in the kickoff deck!"
+          },
+          "id": "time-to-first-value",
+          "pronunciation": "tyme tuh furst val-yoo",
+          "shortDefinition": "How fast a newcomer completes one real, meaningful task — the doctrine's only week-one metric.",
+          "whyItMatters": "It converts 'onboarding feels fine' into a number you can drive down; teams that instrument it stop writing handbook pages and start removing walls.",
+          "word": "Time-to-First-Value (TTFV)"
         },
         {
-          "id": "golden-path",
-          "word": "Golden Path",
-          "pronunciation": "gohl-den path",
           "category": "doctrine",
-          "shortDefinition": "The single scripted end-to-end journey every newcomer walks first, chosen to produce a real win.",
           "detailedDefinition": "One canonical route through the system — create, configure, run, export — maintained like production code, with deeper optional routes branching only after it succeeds.",
-          "whyItMatters": "A tour of every button produces fatigue; one deep golden path produces competence, and its completion rate is the sharpest leading indicator of friction."
+          "id": "golden-path",
+          "pronunciation": "gohl-den path",
+          "shortDefinition": "The single scripted end-to-end journey every newcomer walks first, chosen to produce a real win.",
+          "whyItMatters": "A tour of every button produces fatigue; one deep golden path produces competence, and its completion rate is the sharpest leading indicator of friction.",
+          "word": "Golden Path"
         },
         {
-          "id": "pre-boarding",
-          "word": "Pre-boarding",
-          "pronunciation": "pree-bor-ding",
           "category": "practice",
-          "shortDefinition": "Everything done before day one: accounts, licenses, environments, and entitlements provisioned and smoke-tested.",
           "detailedDefinition": "Joiner tickets drive SSO group rules and self-serve key minting so the newcomer's first action is work, not a provisioning queue. Production-reach roles get vault-approved grants in the same window.",
-          "whyItMatters": "Waiting-for-access is the number-one onboarding killer; pre-boarding is Principle 1 made real."
+          "id": "pre-boarding",
+          "pronunciation": "pree-bor-ding",
+          "shortDefinition": "Everything done before day one: accounts, licenses, environments, and entitlements provisioned and smoke-tested.",
+          "whyItMatters": "Waiting-for-access is the number-one onboarding killer; pre-boarding is Principle 1 made real.",
+          "word": "Pre-boarding"
         },
         {
-          "id": "activation-moment",
-          "word": "Activation Moment",
-          "pronunciation": "ak-tih-vey-shun moh-ment",
           "category": "concept",
-          "shortDefinition": "The deliberately designed 'aha' where the product's value becomes personal for a newcomer.",
           "detailedDefinition": "Different per audience: the end user's first real record, the operator's first supervised safe change, the developer's first successful call. It is defined before it is measured, never guessed afterward.",
-          "whyItMatters": "You cannot shorten time-to-first-value if you never wrote down what 'value' is; the activation moment is the finish line you instrument."
+          "id": "activation-moment",
+          "pronunciation": "ak-tih-vey-shun moh-ment",
+          "shortDefinition": "The deliberately designed 'aha' where the product's value becomes personal for a newcomer.",
+          "whyItMatters": "You cannot shorten time-to-first-value if you never wrote down what 'value' is; the activation moment is the finish line you instrument.",
+          "word": "Activation Moment"
         },
         {
-          "id": "progressive-disclosure",
-          "word": "Progressive Disclosure",
-          "pronunciation": "pruh-gres-siv dis-kloh-zhur",
           "category": "doctrine",
-          "shortDefinition": "Revealing the next level of complexity only at the moment the newcomer needs it.",
           "detailedDefinition": "The opposite of the information firehose: short paths with deeper links, tour steps at the point of confusion, advanced options hidden until the golden path succeeds.",
-          "whyItMatters": "Every unneeded fact shown early is a quit-point manufactured on purpose; attention is the onboarding budget."
+          "id": "progressive-disclosure",
+          "pronunciation": "pruh-gres-siv dis-kloh-zhur",
+          "shortDefinition": "Revealing the next level of complexity only at the moment the newcomer needs it.",
+          "whyItMatters": "Every unneeded fact shown early is a quit-point manufactured on purpose; attention is the onboarding budget.",
+          "word": "Progressive Disclosure"
         },
         {
-          "id": "ticket-storm",
-          "word": "Ticket Storm",
-          "pronunciation": "tik-et storm",
           "category": "signal",
-          "shortDefinition": "A spike of help-channel and support questions from the current newcomer cohort, tagged and trended as a friction signal.",
           "detailedDefinition": "Questions are unanswered documentation: where the cohort asks in a burst is precisely where the golden path, tour, or entitlement broke.",
-          "whyItMatters": "It is the cheapest quit-point detector you have — the newcomers are telling you out loud where they stalled.",
           "dialogue": {
-            "user": "Why is #newest-hires suddenly asking about SSO seventeen times an hour?",
+            "aiQuestion": "What did the day-one smoke test just start failing for everyone?",
             "aiThoughts": "That is not noise, that is a map.",
-            "aiQuestion": "What did the day-one smoke test just start failing for everyone?"
-          }
+            "user": "Why is #newest-hires suddenly asking about SSO seventeen times an hour?"
+          },
+          "id": "ticket-storm",
+          "pronunciation": "tik-et storm",
+          "shortDefinition": "A spike of help-channel and support questions from the current newcomer cohort, tagged and trended as a friction signal.",
+          "whyItMatters": "It is the cheapest quit-point detector you have — the newcomers are telling you out loud where they stalled.",
+          "word": "Ticket Storm"
         },
         {
-          "id": "sandbox-quest",
-          "word": "Sandbox Quest",
-          "pronunciation": "sand-boks kwest",
           "category": "method",
-          "shortDefinition": "A graded challenge in a safe, seeded practice environment, ending in a senior-reviewed 'boss task'.",
           "detailedDefinition": "The gamified onboarding method: newcomers break the playground happily, climb a quest board of real tasks, and prove competence on the boss task with zero blast radius.",
-          "whyItMatters": "It converts anxious observation into motivated doing for staff and operators — at the cost of keeping a playground forever fresh."
+          "id": "sandbox-quest",
+          "pronunciation": "sand-boks kwest",
+          "shortDefinition": "A graded challenge in a safe, seeded practice environment, ending in a senior-reviewed 'boss task'.",
+          "whyItMatters": "It converts anxious observation into motivated doing for staff and operators — at the cost of keeping a playground forever fresh.",
+          "word": "Sandbox Quest"
         },
         {
-          "id": "human-anchor",
-          "word": "Human Anchor",
-          "pronunciation": "hyoo-mun ang-ker",
           "category": "doctrine",
-          "shortDefinition": "The named human, buddy, or staffed office-hours channel every onboarding path must end at.",
           "detailedDefinition": "Even fully self-serve methods route their last resort to a person: office hours, a buddy rota, or a staffed channel. A FAQ link is explicitly not an anchor.",
-          "whyItMatters": "Unanswered questions at hour three are where motivation dies; the anchor is the doctrine's insurance policy against silent quit-points."
+          "id": "human-anchor",
+          "pronunciation": "hyoo-mun ang-ker",
+          "shortDefinition": "The named human, buddy, or staffed office-hours channel every onboarding path must end at.",
+          "whyItMatters": "Unanswered questions at hour three are where motivation dies; the anchor is the doctrine's insurance policy against silent quit-points.",
+          "word": "Human Anchor"
         }
-      ]
-    }
+      ],
+      "title": "Lexicon of the Threshold"
+    },
+    "type": "flashcards"
   },
   {
     "folder": "concept-map",
-    "type": "concept-map",
     "props": {
-      "title": "Concept Constellation",
-      "nodes": {
-        "onboarding": {
-          "id": "onboarding",
-          "title": "Onboarding Craft",
-          "category": "concept"
-        },
-        "access_first": {
-          "id": "access_first",
-          "title": "Access First (Pre-boarding)",
-          "category": "principle"
-        },
-        "ttfv": {
-          "id": "ttfv",
-          "title": "Time-to-First-Value",
-          "category": "metric"
-        },
-        "golden_path": {
-          "id": "golden_path",
-          "title": "One Golden Path",
-          "category": "principle"
-        },
-        "progressive_disclosure": {
-          "id": "progressive_disclosure",
-          "title": "Progressive Disclosure",
-          "category": "principle"
-        },
-        "human_anchor": {
-          "id": "human_anchor",
-          "title": "Human Anchor",
-          "category": "principle"
-        },
-        "measure_friction": {
-          "id": "measure_friction",
-          "title": "Measure the Friction",
-          "category": "principle"
-        },
-        "end_users": {
-          "id": "end_users",
-          "title": "Web App End Users",
-          "category": "role"
-        },
-        "staff_operators": {
-          "id": "staff_operators",
-          "title": "Staff & Operators",
-          "category": "role"
-        },
-        "developers": {
-          "id": "developers",
-          "title": "Developers (DX)",
-          "category": "role"
-        },
-        "docs_first": {
-          "id": "docs_first",
-          "title": "Docs-First Handbook",
-          "category": "method"
-        },
-        "buddy": {
-          "id": "buddy",
-          "title": "Buddy Apprenticeship",
-          "category": "method"
-        },
-        "cohort": {
-          "id": "cohort",
-          "title": "Cohort Academy",
-          "category": "method"
-        },
-        "in_app_tours": {
-          "id": "in_app_tours",
-          "title": "Self-Serve In-App Tours",
-          "category": "method"
-        },
-        "sandbox_quests": {
-          "id": "sandbox_quests",
-          "title": "Sandbox Quests",
-          "category": "method"
-        },
-        "provisioning_flow": {
-          "id": "provisioning_flow",
-          "title": "Day-1 Provisioning Flow",
-          "category": "process"
-        },
-        "ticket_storm": {
-          "id": "ticket_storm",
-          "title": "Ticket Storm",
-          "category": "signal"
-        },
-        "activation_moment": {
-          "id": "activation_moment",
-          "title": "Activation Moment",
-          "category": "concept"
-        },
-        "first_api_call": {
-          "id": "first_api_call",
-          "title": "First Successful API Call",
-          "category": "concept"
-        },
-        "rework_loop": {
-          "id": "rework_loop",
-          "title": "4003 Rework Loop",
-          "category": "process"
-        }
-      },
       "edges": [
         {
           "from": "onboarding",
-          "to": "access_first",
-          "label": "begins with"
+          "label": "begins with",
+          "to": "access_first"
         },
         {
           "from": "onboarding",
-          "to": "ttfv",
-          "label": "is measured by"
+          "label": "is measured by",
+          "to": "ttfv"
         },
         {
           "from": "onboarding",
-          "to": "golden_path",
-          "label": "routes through"
+          "label": "routes through",
+          "to": "golden_path"
         },
         {
           "from": "onboarding",
-          "to": "progressive_disclosure",
-          "label": "paces with"
+          "label": "paces with",
+          "to": "progressive_disclosure"
         },
         {
           "from": "onboarding",
-          "to": "human_anchor",
-          "label": "backs up with"
+          "label": "backs up with",
+          "to": "human_anchor"
         },
         {
           "from": "onboarding",
-          "to": "measure_friction",
-          "label": "improves by"
+          "label": "improves by",
+          "to": "measure_friction"
         },
         {
           "from": "access_first",
-          "to": "provisioning_flow",
-          "label": "is executed by"
+          "label": "is executed by",
+          "to": "provisioning_flow"
         },
         {
           "from": "provisioning_flow",
-          "to": "rework_loop",
-          "label": "fails into"
+          "label": "fails into",
+          "to": "rework_loop"
         },
         {
           "from": "golden_path",
-          "to": "activation_moment",
-          "label": "targets"
+          "label": "targets",
+          "to": "activation_moment"
         },
         {
           "from": "ttfv",
-          "to": "activation_moment",
-          "label": "times the trip to"
+          "label": "times the trip to",
+          "to": "activation_moment"
         },
         {
           "from": "ttfv",
-          "to": "first_api_call",
-          "label": "for developers means"
+          "label": "for developers means",
+          "to": "first_api_call"
         },
         {
           "from": "measure_friction",
-          "to": "ticket_storm",
-          "label": "listens for"
+          "label": "listens for",
+          "to": "ticket_storm"
         },
         {
           "from": "end_users",
-          "to": "in_app_tours",
-          "label": "scale via"
+          "label": "scale via",
+          "to": "in_app_tours"
         },
         {
           "from": "end_users",
-          "to": "golden_path",
-          "label": "walk"
+          "label": "walk",
+          "to": "golden_path"
         },
         {
           "from": "staff_operators",
-          "to": "buddy",
-          "label": "climb with"
+          "label": "climb with",
+          "to": "buddy"
         },
         {
           "from": "staff_operators",
-          "to": "sandbox_quests",
-          "label": "practice in"
+          "label": "practice in",
+          "to": "sandbox_quests"
         },
         {
           "from": "developers",
-          "to": "docs_first",
-          "label": "self-serve with"
+          "label": "self-serve with",
+          "to": "docs_first"
         },
         {
           "from": "developers",
-          "to": "first_api_call",
-          "label": "activate at"
+          "label": "activate at",
+          "to": "first_api_call"
         },
         {
           "from": "cohort",
-          "to": "sandbox_quests",
-          "label": "spines with"
+          "label": "spines with",
+          "to": "sandbox_quests"
         },
         {
           "from": "docs_first",
-          "to": "golden_path",
-          "label": "documents"
+          "label": "documents",
+          "to": "golden_path"
         },
         {
           "from": "human_anchor",
-          "to": "buddy",
-          "label": "is strongest as"
+          "label": "is strongest as",
+          "to": "buddy"
         },
         {
           "from": "in_app_tours",
-          "to": "progressive_disclosure",
-          "label": "embody"
+          "label": "embody",
+          "to": "progressive_disclosure"
         },
         {
           "from": "cohort",
-          "to": "human_anchor",
-          "label": "guarantees"
+          "label": "guarantees",
+          "to": "human_anchor"
         },
         {
           "from": "ticket_storm",
-          "to": "golden_path",
-          "label": "maps its quit-points"
+          "label": "maps its quit-points",
+          "to": "golden_path"
         }
-      ]
-    }
+      ],
+      "nodes": {
+        "access_first": {
+          "category": "principle",
+          "id": "access_first",
+          "title": "Access First (Pre-boarding)"
+        },
+        "activation_moment": {
+          "category": "concept",
+          "id": "activation_moment",
+          "title": "Activation Moment"
+        },
+        "buddy": {
+          "category": "method",
+          "id": "buddy",
+          "title": "Buddy Apprenticeship"
+        },
+        "cohort": {
+          "category": "method",
+          "id": "cohort",
+          "title": "Cohort Academy"
+        },
+        "developers": {
+          "category": "role",
+          "id": "developers",
+          "title": "Developers (DX)"
+        },
+        "docs_first": {
+          "category": "method",
+          "id": "docs_first",
+          "title": "Docs-First Handbook"
+        },
+        "end_users": {
+          "category": "role",
+          "id": "end_users",
+          "title": "Web App End Users"
+        },
+        "first_api_call": {
+          "category": "concept",
+          "id": "first_api_call",
+          "title": "First Successful API Call"
+        },
+        "golden_path": {
+          "category": "principle",
+          "id": "golden_path",
+          "title": "One Golden Path"
+        },
+        "human_anchor": {
+          "category": "principle",
+          "id": "human_anchor",
+          "title": "Human Anchor"
+        },
+        "in_app_tours": {
+          "category": "method",
+          "id": "in_app_tours",
+          "title": "Self-Serve In-App Tours"
+        },
+        "measure_friction": {
+          "category": "principle",
+          "id": "measure_friction",
+          "title": "Measure the Friction"
+        },
+        "onboarding": {
+          "category": "concept",
+          "id": "onboarding",
+          "title": "Onboarding Craft"
+        },
+        "progressive_disclosure": {
+          "category": "principle",
+          "id": "progressive_disclosure",
+          "title": "Progressive Disclosure"
+        },
+        "provisioning_flow": {
+          "category": "process",
+          "id": "provisioning_flow",
+          "title": "Day-1 Provisioning Flow"
+        },
+        "rework_loop": {
+          "category": "process",
+          "id": "rework_loop",
+          "title": "4003 Rework Loop"
+        },
+        "sandbox_quests": {
+          "category": "method",
+          "id": "sandbox_quests",
+          "title": "Sandbox Quests"
+        },
+        "staff_operators": {
+          "category": "role",
+          "id": "staff_operators",
+          "title": "Staff & Operators"
+        },
+        "ticket_storm": {
+          "category": "signal",
+          "id": "ticket_storm",
+          "title": "Ticket Storm"
+        },
+        "ttfv": {
+          "category": "metric",
+          "id": "ttfv",
+          "title": "Time-to-First-Value"
+        }
+      },
+      "title": "Concept Constellation"
+    },
+    "type": "concept-map"
   },
   {
     "folder": "synthesis",
-    "type": "reflection-template",
     "props": {
-      "title": "Synthesis Vault",
       "challenges": [
         {
-          "prompt": "Complete the doctrine (Track 1):",
-          "template": "The doctrine grants {zone-1} before day one, drives every newcomer to one {zone-2} task in week one, and reveals complexity through {zone-3}.",
           "chips": [
             {
               "id": "chip-access",
@@ -2322,16 +2318,16 @@
               "text": "progressive disclosure"
             }
           ],
+          "explanation": "<strong>Correct!</strong> Principle 1 grants day-zero access, Principle 2 drives one golden-path task in week one, and Principle 4 reveals complexity through progressive disclosure — the handbook firehose is the anti-pattern.",
+          "prompt": "Complete the doctrine (Track 1):",
           "solution": {
             "zone-1": "chip-access",
             "zone-2": "chip-golden",
             "zone-3": "chip-disclosure"
           },
-          "explanation": "<strong>Correct!</strong> Principle 1 grants day-zero access, Principle 2 drives one golden-path task in week one, and Principle 4 reveals complexity through progressive disclosure — the handbook firehose is the anti-pattern."
+          "template": "The doctrine grants {zone-1} before day one, drives every newcomer to one {zone-2} task in week one, and reveals complexity through {zone-3}."
         },
         {
-          "prompt": "Complete the method doctrine (Track 2):",
-          "template": "At hundred-thousand-user scale only {zone-1} scale at near-zero marginal cost; high-risk operator roles climb best via {zone-2}; and the docs-first {zone-3} is the backbone, never the only door.",
           "chips": [
             {
               "id": "chip-bootcamps",
@@ -2350,16 +2346,16 @@
               "text": "handbook"
             }
           ],
+          "explanation": "<strong>Correct!</strong> In-app tours carry the mass audience, apprenticeship carries the high-risk climb (watching for burnout), and the handbook is the spine everything links to — bootcamps are calendar-locked and cost-per-head.",
+          "prompt": "Complete the method doctrine (Track 2):",
           "solution": {
             "zone-1": "chip-tours",
             "zone-2": "chip-buddy",
             "zone-3": "chip-handbook"
           },
-          "explanation": "<strong>Correct!</strong> In-app tours carry the mass audience, apprenticeship carries the high-risk climb (watching for burnout), and the handbook is the spine everything links to — bootcamps are calendar-locked and cost-per-head."
+          "template": "At hundred-thousand-user scale only {zone-1} scale at near-zero marginal cost; high-risk operator roles climb best via {zone-2}; and the docs-first {zone-3} is the backbone, never the only door."
         },
         {
-          "prompt": "Complete the measurement doctrine (Track 3):",
-          "template": "The dashboard's north star is {zone-1}; a {zone-2} is an unanswered-documentation signal; and the provisioning flow's rework loop is nicknamed {zone-3}.",
           "chips": [
             {
               "id": "chip-ttfv",
@@ -2382,14 +2378,18 @@
               "text": "'Monday morning'"
             }
           ],
+          "explanation": "<strong>Correct!</strong> Time-to-first-value is the north star the whole stack feeds; ticket storms are the cohort telling you where the path broke; and the manual credential-fix loop earns its name from the day-one 4003 that exposes it. Pages-read counts are the vanity metric the realm rejects.",
+          "prompt": "Complete the measurement doctrine (Track 3):",
           "solution": {
             "zone-1": "chip-ttfv",
             "zone-2": "chip-storm",
             "zone-3": "chip-4003"
           },
-          "explanation": "<strong>Correct!</strong> Time-to-first-value is the north star the whole stack feeds; ticket storms are the cohort telling you where the path broke; and the manual credential-fix loop earns its name from the day-one 4003 that exposes it. Pages-read counts are the vanity metric the realm rejects."
+          "template": "The dashboard's north star is {zone-1}; a {zone-2} is an unanswered-documentation signal; and the provisioning flow's rework loop is nicknamed {zone-3}."
         }
-      ]
-    }
+      ],
+      "title": "Synthesis Vault"
+    },
+    "type": "reflection-template"
   }
 ]

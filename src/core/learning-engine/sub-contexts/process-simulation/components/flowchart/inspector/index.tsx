@@ -3,7 +3,7 @@ import { StateMachineWidget } from './state-machine-widget';
 import { JsonPayloadViewer } from './json-payload-viewer';
 import { Dropdown } from '../../../../../../ui-system/motion/dropdown';
 import { PROCESS_GROUP_STATE_MAP, STEP_EVENT_TO_STATE_MAP } from '../types';
-import { buildCanonicalIdMapper } from '../abstract-flow/derive';
+import { buildCanonicalIdMapper } from '../../../model/derive';
 import type {
   UnifiedFlowchartSchema,
   FlowchartStep,

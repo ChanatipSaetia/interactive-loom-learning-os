@@ -1,19 +1,49 @@
 [
   {
     "folder": "intro",
-    "type": "intro",
     "props": {
-      "title": "",
       "estimatedTime": "8 min read",
       "moduleCount": 15,
+      "roadmap": [
+        {
+          "description": "เชื่อมโยงโครงสร้างเครื่องยนต์ ระบบเชื้อเพลิง และระบบส่งกำลัง",
+          "sectionId": "concept-map",
+          "title": "แผนผังระบบกลไก",
+          "type": "concept-map"
+        },
+        {
+          "description": "ทบทวนชื่อชิ้นส่วนและหน้าที่ของอะไหล่สำคัญ",
+          "sectionId": "flashcards",
+          "title": "คำศัพท์เทคนิค",
+          "type": "flashcards"
+        },
+        {
+          "description": "แกะรอยการทำงานของเครื่องยนต์ และระบบฉีดน้ำมันเชื้อเพลิง",
+          "sectionId": "flowchart-engine",
+          "title": "แผนภาพกระบวนการทำงาน",
+          "type": "flowchart"
+        },
+        {
+          "description": "เปรียบเทียบระบบเบรค ABS vs Standard และโหมดการขับขี่",
+          "sectionId": "tradeoffs",
+          "title": "วิเคราะห์ข้อดีข้อเสีย",
+          "type": "tradeoff-sandbox"
+        },
+        {
+          "description": "ทดลองปรับความเร็วและแรงบีบเบรคเพื่อดูระยะหยุดรถ",
+          "sectionId": "formula-sandbox",
+          "title": "คำนวณระยะเบรค",
+          "type": "formula-sandbox"
+        }
+      ],
       "what": {
-        "definition": "รถมอเตอร์ไซค์ (Motorcycle) คือยานพาหนะสองล้อขับเคลื่อนด้วยเครื่องยนต์สันดาปภายในหรือไฟฟ้า ทำงานผ่านระบบเชื้อเพลิง ระบบจุดระเบิด และระบบส่งกำลังไปยังล้อหลัง",
-        "summary": "คู่มือเรียนรู้กลไกหลักการทำงานของรถมอเตอร์ไซค์ ระบบเครื่องยนต์ 4 จังหวะ และเทคนิคการขับขี่ปลอดภัย",
         "bullets": [
           "วัฏจักรการทำงานของเครื่องยนต์ 4 จังหวะ (ดูด-อัด-ระเบิด-คาย)",
           "การทำงานของระบบฉีดเชื้อเพลิง (EFI) และระบบโช้คสตาร์ท",
           "ระบบเบรค hydraulic และความสมดุลขณะขับขี่"
         ],
+        "definition": "รถมอเตอร์ไซค์ (Motorcycle) คือยานพาหนะสองล้อขับเคลื่อนด้วยเครื่องยนต์สันดาปภายในหรือไฟฟ้า ทำงานผ่านระบบเชื้อเพลิง ระบบจุดระเบิด และระบบส่งกำลังไปยังล้อหลัง",
+        "summary": "คู่มือเรียนรู้กลไกหลักการทำงานของรถมอเตอร์ไซค์ ระบบเครื่องยนต์ 4 จังหวะ และเทคนิคการขับขี่ปลอดภัย",
         "tags": [
           "Motorcycle Mechanics",
           "4-Stroke Engine",
@@ -22,427 +52,394 @@
         ]
       },
       "why": {
-        "summary": "การขับขี่โดยไม่เข้าใจกลไกและข้อจำกัดของระบบเบรค/ระบบส่งกำลัง เป็นสาเหตุหลักของการเกิดอุบัติเหตุบนท้องถนน",
-        "impact": "เข้าใจการตอบสนองของเครื่องยนต์และเทคนิคการกระจายแรงเบรค ช่วยเพิ่มความปลอดภัยและยืดอายุการใช้งานยานพาหนะ"
-      },
-      "roadmap": [
-        {
-          "sectionId": "concept-map",
-          "title": "แผนผังระบบกลไก",
-          "type": "concept-map",
-          "description": "เชื่อมโยงโครงสร้างเครื่องยนต์ ระบบเชื้อเพลิง และระบบส่งกำลัง"
-        },
-        {
-          "sectionId": "flashcards",
-          "title": "คำศัพท์เทคนิค",
-          "type": "flashcards",
-          "description": "ทบทวนชื่อชิ้นส่วนและหน้าที่ของอะไหล่สำคัญ"
-        },
-        {
-          "sectionId": "flowchart-engine",
-          "title": "แผนภาพกระบวนการทำงาน",
-          "type": "flowchart",
-          "description": "แกะรอยการทำงานของเครื่องยนต์ และระบบฉีดน้ำมันเชื้อเพลิง"
-        },
-        {
-          "sectionId": "tradeoffs",
-          "title": "วิเคราะห์ข้อดีข้อเสีย",
-          "type": "tradeoff-sandbox",
-          "description": "เปรียบเทียบระบบเบรค ABS vs Standard และโหมดการขับขี่"
-        },
-        {
-          "sectionId": "formula-sandbox",
-          "title": "คำนวณระยะเบรค",
-          "type": "formula-sandbox",
-          "description": "ทดลองปรับความเร็วและแรงบีบเบรคเพื่อดูระยะหยุดรถ"
-        }
-      ]
-    }
+        "impact": "เข้าใจการตอบสนองของเครื่องยนต์และเทคนิคการกระจายแรงเบรค ช่วยเพิ่มความปลอดภัยและยืดอายุการใช้งานยานพาหนะ",
+        "summary": "การขับขี่โดยไม่เข้าใจกลไกและข้อจำกัดของระบบเบรค/ระบบส่งกำลัง เป็นสาเหตุหลักของการเกิดอุบัติเหตุบนท้องถนน"
+      }
+    },
+    "type": "intro"
   },
   {
     "folder": "concept-map",
-    "type": "concept-map",
     "props": {
-      "title": "Concept Map",
-      "nodes": {
-        "engine": {
-          "id": "engine",
-          "title": "เครื่องยนต์ (Engine)",
-          "category": "system"
-        },
-        "piston": {
-          "id": "piston",
-          "title": "ลูกสูบ (Piston)",
-          "category": "mechanism"
-        },
-        "crankshaft": {
-          "id": "crankshaft",
-          "title": "เพลาข้อเหวี่ยง (Crankshaft)",
-          "category": "mechanism"
-        },
-        "carburetor": {
-          "id": "carburetor",
-          "title": "คาร์บูเรเตอร์ (Carburetor)",
-          "category": "mechanism"
-        },
-        "injector": {
-          "id": "injector",
-          "title": "หัวฉีด (Fuel Injector)",
-          "category": "mechanism"
-        },
-        "ecu": {
-          "id": "ecu",
-          "title": "กล่อง ECU",
-          "category": "system"
-        },
-        "spark-plug": {
-          "id": "spark-plug",
-          "title": "หัวเทียน (Spark Plug)",
-          "category": "mechanism"
-        },
-        "intake-valve": {
-          "id": "intake-valve",
-          "title": "วาล์วไอดี (Intake Valve)",
-          "category": "mechanism"
-        },
-        "exhaust-valve": {
-          "id": "exhaust-valve",
-          "title": "วาล์วไอเสีย (Exhaust Valve)",
-          "category": "mechanism"
-        },
-        "transmission": {
-          "id": "transmission",
-          "title": "ระบบเกียร์ (Transmission)",
-          "category": "system"
-        },
-        "sprocket": {
-          "id": "sprocket",
-          "title": "สเตอร์ (Sprocket)",
-          "category": "mechanism"
-        },
-        "brake-disc": {
-          "id": "brake-disc",
-          "title": "จานเบรก (Brake Disc)",
-          "category": "mechanism"
-        },
-        "brake-caliper": {
-          "id": "brake-caliper",
-          "title": "แคลิเพอร์เบรก (Brake Caliper)",
-          "category": "mechanism"
-        },
-        "brake-master": {
-          "id": "brake-master",
-          "title": "กระปุกเบรก (Master Cylinder)",
-          "category": "mechanism"
-        },
-        "choke": {
-          "id": "choke",
-          "title": "โช้ค (Choke)",
-          "category": "mechanism"
-        },
-        "gasket": {
-          "id": "gasket",
-          "title": "ปะเก็น (Gasket)",
-          "category": "mechanism"
-        },
-        "four-stroke": {
-          "id": "four-stroke",
-          "title": "4 จังหวะ",
-          "category": "process"
-        },
-        "fuel-system": {
-          "id": "fuel-system",
-          "title": "ระบบน้ำมัน",
-          "category": "concept"
-        },
-        "brake-system": {
-          "id": "brake-system",
-          "title": "ระบบเบรก",
-          "category": "concept"
-        },
-        "drivetrain": {
-          "id": "drivetrain",
-          "title": "ระบบส่งกำลัง",
-          "category": "concept"
-        },
-        "brake-fade": {
-          "id": "brake-fade",
-          "title": "เบรกจม (Brake Fade)",
-          "category": "concept"
-        }
-      },
       "edges": [
         {
           "from": "piston",
-          "to": "crankshaft",
-          "label": "หมุน"
+          "label": "หมุน",
+          "to": "crankshaft"
         },
         {
           "from": "crankshaft",
-          "to": "transmission",
-          "label": "ส่งกำลัง"
+          "label": "ส่งกำลัง",
+          "to": "transmission"
         },
         {
           "from": "transmission",
-          "to": "sprocket",
-          "label": "ส่งถึง"
+          "label": "ส่งถึง",
+          "to": "sprocket"
         },
         {
           "from": "carburetor",
-          "to": "engine",
-          "label": "จ่ายน้ำมัน"
+          "label": "จ่ายน้ำมัน",
+          "to": "engine"
         },
         {
           "from": "injector",
-          "to": "engine",
-          "label": "จ่ายน้ำมัน"
+          "label": "จ่ายน้ำมัน",
+          "to": "engine"
         },
         {
           "from": "ecu",
-          "to": "injector",
-          "label": "ควบคุม"
+          "label": "ควบคุม",
+          "to": "injector"
         },
         {
           "from": "spark-plug",
-          "to": "engine",
-          "label": "จุดระเบิด"
+          "label": "จุดระเบิด",
+          "to": "engine"
         },
         {
           "from": "intake-valve",
-          "to": "engine",
-          "label": "รับอากาศเข้า"
+          "label": "รับอากาศเข้า",
+          "to": "engine"
         },
         {
           "from": "exhaust-valve",
-          "to": "engine",
-          "label": "ปล่อยไอเสียออก"
+          "label": "ปล่อยไอเสียออก",
+          "to": "engine"
         },
         {
           "from": "four-stroke",
-          "to": "piston",
-          "label": "กำหนดจังหวะ"
+          "label": "กำหนดจังหวะ",
+          "to": "piston"
         },
         {
           "from": "fuel-system",
-          "to": "carburetor",
-          "label": "ใช้"
+          "label": "ใช้",
+          "to": "carburetor"
         },
         {
           "from": "fuel-system",
-          "to": "injector",
-          "label": "ใช้"
+          "label": "ใช้",
+          "to": "injector"
         },
         {
           "from": "choke",
-          "to": "carburetor",
-          "label": "ปรับ"
+          "label": "ปรับ",
+          "to": "carburetor"
         },
         {
           "from": "brake-system",
-          "to": "brake-disc",
-          "label": "ใช้"
+          "label": "ใช้",
+          "to": "brake-disc"
         },
         {
           "from": "brake-system",
-          "to": "brake-caliper",
-          "label": "ใช้"
+          "label": "ใช้",
+          "to": "brake-caliper"
         },
         {
           "from": "brake-system",
-          "to": "brake-master",
-          "label": "ใช้"
+          "label": "ใช้",
+          "to": "brake-master"
         },
         {
           "from": "brake-caliper",
-          "to": "brake-disc",
-          "label": "ประกบ"
+          "label": "ประกบ",
+          "to": "brake-disc"
         },
         {
           "from": "brake-master",
-          "to": "brake-caliper",
-          "label": "ส่งแรงดัน"
+          "label": "ส่งแรงดัน",
+          "to": "brake-caliper"
         },
         {
           "from": "brake-fade",
-          "to": "brake-disc",
-          "label": "เกิดจากความร้อน"
+          "label": "เกิดจากความร้อน",
+          "to": "brake-disc"
         },
         {
           "from": "gasket",
-          "to": "engine",
-          "label": "ซีล"
+          "label": "ซีล",
+          "to": "engine"
         },
         {
           "from": "drivetrain",
-          "to": "transmission",
-          "label": "รวม"
+          "label": "รวม",
+          "to": "transmission"
         },
         {
           "from": "drivetrain",
-          "to": "sprocket",
-          "label": "รวม"
+          "label": "รวม",
+          "to": "sprocket"
         }
-      ]
-    }
+      ],
+      "nodes": {
+        "brake-caliper": {
+          "category": "mechanism",
+          "id": "brake-caliper",
+          "title": "แคลิเพอร์เบรก (Brake Caliper)"
+        },
+        "brake-disc": {
+          "category": "mechanism",
+          "id": "brake-disc",
+          "title": "จานเบรก (Brake Disc)"
+        },
+        "brake-fade": {
+          "category": "concept",
+          "id": "brake-fade",
+          "title": "เบรกจม (Brake Fade)"
+        },
+        "brake-master": {
+          "category": "mechanism",
+          "id": "brake-master",
+          "title": "กระปุกเบรก (Master Cylinder)"
+        },
+        "brake-system": {
+          "category": "concept",
+          "id": "brake-system",
+          "title": "ระบบเบรก"
+        },
+        "carburetor": {
+          "category": "mechanism",
+          "id": "carburetor",
+          "title": "คาร์บูเรเตอร์ (Carburetor)"
+        },
+        "choke": {
+          "category": "mechanism",
+          "id": "choke",
+          "title": "โช้ค (Choke)"
+        },
+        "crankshaft": {
+          "category": "mechanism",
+          "id": "crankshaft",
+          "title": "เพลาข้อเหวี่ยง (Crankshaft)"
+        },
+        "drivetrain": {
+          "category": "concept",
+          "id": "drivetrain",
+          "title": "ระบบส่งกำลัง"
+        },
+        "ecu": {
+          "category": "system",
+          "id": "ecu",
+          "title": "กล่อง ECU"
+        },
+        "engine": {
+          "category": "system",
+          "id": "engine",
+          "title": "เครื่องยนต์ (Engine)"
+        },
+        "exhaust-valve": {
+          "category": "mechanism",
+          "id": "exhaust-valve",
+          "title": "วาล์วไอเสีย (Exhaust Valve)"
+        },
+        "four-stroke": {
+          "category": "process",
+          "id": "four-stroke",
+          "title": "4 จังหวะ"
+        },
+        "fuel-system": {
+          "category": "concept",
+          "id": "fuel-system",
+          "title": "ระบบน้ำมัน"
+        },
+        "gasket": {
+          "category": "mechanism",
+          "id": "gasket",
+          "title": "ปะเก็น (Gasket)"
+        },
+        "injector": {
+          "category": "mechanism",
+          "id": "injector",
+          "title": "หัวฉีด (Fuel Injector)"
+        },
+        "intake-valve": {
+          "category": "mechanism",
+          "id": "intake-valve",
+          "title": "วาล์วไอดี (Intake Valve)"
+        },
+        "piston": {
+          "category": "mechanism",
+          "id": "piston",
+          "title": "ลูกสูบ (Piston)"
+        },
+        "spark-plug": {
+          "category": "mechanism",
+          "id": "spark-plug",
+          "title": "หัวเทียน (Spark Plug)"
+        },
+        "sprocket": {
+          "category": "mechanism",
+          "id": "sprocket",
+          "title": "สเตอร์ (Sprocket)"
+        },
+        "transmission": {
+          "category": "system",
+          "id": "transmission",
+          "title": "ระบบเกียร์ (Transmission)"
+        }
+      },
+      "title": "Concept Map"
+    },
+    "type": "concept-map"
   },
   {
     "folder": "flashcards",
-    "type": "flashcards",
     "props": {
-      "title": "คำศัพท์สำคัญ",
       "terms": [
         {
-          "id": "carburetor",
-          "word": "คาร์บูเรเตอร์ (Carburetor)",
-          "pronunciation": "คา-บู-เร-เต้อ",
           "category": "engine",
-          "shortDefinition": "ตัวผสมน้ำมันและอากาศในรถรุ่นเก่า",
           "detailedDefinition": "อุปกรณ์ทำหน้าที่ผสมน้ำมันเชื้อเพลิงกับอากาศให้เป็นละอองก่อนเข้าสู่ห้องเผาไหม้ ใช้หลักการทางแรงดูดและกลไก มักพบในรถรุ่นเก่า สามารถปรับจูนแบบแมนนวลได้",
-          "whyItMatters": "หากคาร์บูเรเตอร์สกปรกหรือจูนไม่ดี รถจะเร่งไม่ขึ้น กินน้ำมัน หรือเบาดับ"
+          "id": "carburetor",
+          "pronunciation": "คา-บู-เร-เต้อ",
+          "shortDefinition": "ตัวผสมน้ำมันและอากาศในรถรุ่นเก่า",
+          "whyItMatters": "หากคาร์บูเรเตอร์สกปรกหรือจูนไม่ดี รถจะเร่งไม่ขึ้น กินน้ำมัน หรือเบาดับ",
+          "word": "คาร์บูเรเตอร์ (Carburetor)"
         },
         {
-          "id": "injector",
-          "word": "หัวฉีด (Fuel Injector)",
-          "pronunciation": "หัว-ฉีด",
           "category": "engine",
-          "shortDefinition": "ระบบจ่ายน้ำมันเชื้อเพลิงไฟฟ้า",
           "detailedDefinition": "ระบบจ่ายน้ำมันเชื้อเพลิงด้วยหัวฉีดอิเล็กทรอนิกส์ ควบคุมปริมาณการจ่ายด้วยกล่อง ECU ให้ความแม่นยำสูง ละอองน้ำมันฝอยละเอียดกว่า และปรับจูนผ่านคอมพิวเตอร์",
-          "whyItMatters": "ทำให้สตาร์ทติดง่ายและประหยัดน้ำมันกว่าคาร์บูเรเตอร์ แต่ซ่อมเองยากกว่า"
+          "id": "injector",
+          "pronunciation": "หัว-ฉีด",
+          "shortDefinition": "ระบบจ่ายน้ำมันเชื้อเพลิงไฟฟ้า",
+          "whyItMatters": "ทำให้สตาร์ทติดง่ายและประหยัดน้ำมันกว่าคาร์บูเรเตอร์ แต่ซ่อมเองยากกว่า",
+          "word": "หัวฉีด (Fuel Injector)"
         },
         {
-          "id": "spark-plug",
-          "word": "หัวเทียน (Spark Plug)",
-          "pronunciation": "หัว-เทียน",
           "category": "electrical",
-          "shortDefinition": "ตัวจุดประกายไฟในเครื่องยนต์",
           "detailedDefinition": "อุปกรณ์ทำหน้าที่จุดประกายไฟแรงสูงในห้องเผาไหม้เพื่อให้เกิดการระเบิดผลักลูกสูบ",
-          "whyItMatters": "หากหัวเทียนบอด (หมดสภาพ) รถจะสตาร์ทไม่ติดเลย เป็นอะไหล่พื้นฐานที่ควรเปลี่ยนตามระยะ"
+          "id": "spark-plug",
+          "pronunciation": "หัว-เทียน",
+          "shortDefinition": "ตัวจุดประกายไฟในเครื่องยนต์",
+          "whyItMatters": "หากหัวเทียนบอด (หมดสภาพ) รถจะสตาร์ทไม่ติดเลย เป็นอะไหล่พื้นฐานที่ควรเปลี่ยนตามระยะ",
+          "word": "หัวเทียน (Spark Plug)"
         },
         {
-          "id": "sprocket",
-          "word": "สเตอร์ (Sprocket)",
-          "pronunciation": "สะ-เต้อ",
           "category": "drivetrain",
-          "shortDefinition": "เฟืองขับเคลื่อนล้อ",
           "detailedDefinition": "เฟืองจักรยานยนต์ มีทั้งสเตอร์หน้า (ติดเครื่อง) และสเตอร์หลัง (ติดล้อ) ทำงานร่วมกับโซ่เพื่อถ่ายทอดกำลังจากเครื่องยนต์ไปยังล้อหลัง",
-          "whyItMatters": "หากสเตอร์ฟันแหลมหรือโซ่หย่อนมากจนตั้งไม่ได้แล้ว ต้องเปลี่ยนใหม่ยกชุด (โซ่-สเตอร์)"
+          "id": "sprocket",
+          "pronunciation": "สะ-เต้อ",
+          "shortDefinition": "เฟืองขับเคลื่อนล้อ",
+          "whyItMatters": "หากสเตอร์ฟันแหลมหรือโซ่หย่อนมากจนตั้งไม่ได้แล้ว ต้องเปลี่ยนใหม่ยกชุด (โซ่-สเตอร์)",
+          "word": "สเตอร์ (Sprocket)"
         },
         {
-          "id": "gasket",
-          "word": "ปะเก็น (Gasket)",
-          "pronunciation": "ปะ-เก็น",
           "category": "engine",
-          "shortDefinition": "แผ่นซีลป้องกันการรั่วซึม",
           "detailedDefinition": "แผ่นซีลที่คั่นกลางระหว่างชิ้นส่วนเครื่องยนต์ที่เป็นเหล็กประกบกัน เพื่อป้องกันการรั่วซึมของน้ำมันเครื่อง น้ำหล่อเย็น หรือกำลังอัด",
-          "whyItMatters": "หากปะเก็นแตกหรือเสื่อมสภาพ น้ำมันเครื่องจะรั่วซึมออกมา ทำให้เครื่องสกปรกและระดับน้ำมันเครื่องลดลง"
+          "id": "gasket",
+          "pronunciation": "ปะ-เก็น",
+          "shortDefinition": "แผ่นซีลป้องกันการรั่วซึม",
+          "whyItMatters": "หากปะเก็นแตกหรือเสื่อมสภาพ น้ำมันเครื่องจะรั่วซึมออกมา ทำให้เครื่องสกปรกและระดับน้ำมันเครื่องลดลง",
+          "word": "ปะเก็น (Gasket)"
         },
         {
-          "id": "choke",
-          "word": "โช้ค (Choke)",
-          "pronunciation": "โช้ค",
           "category": "engine",
-          "shortDefinition": "วาล์วเพิ่มส่วนผสมน้ำมันสำหรับสตาร์ทเครื่องเย็น",
           "detailedDefinition": "กลไกปิดช่องอากาศบางส่วนเพื่อจำกัดปริมาณอากาศที่เข้าสู่คาร์บูเรเตอร์ ทำให้สัดส่วนน้ำมัน:อากาศสูงขึ้น (ส่วนผสมรวยน้ำมัน) เหมาะสำหรับการสตาร์ทเครื่องยนต์ที่ยังเย็นอยู่",
-          "whyItMatters": "หากเปิดโช้คสตาร์ทแล้วลืมปิด รถจะกินน้ำมันมาก หัวเทียนสกปรก และเร่งไม่ขึ้น"
+          "id": "choke",
+          "pronunciation": "โช้ค",
+          "shortDefinition": "วาล์วเพิ่มส่วนผสมน้ำมันสำหรับสตาร์ทเครื่องเย็น",
+          "whyItMatters": "หากเปิดโช้คสตาร์ทแล้วลืมปิด รถจะกินน้ำมันมาก หัวเทียนสกปรก และเร่งไม่ขึ้น",
+          "word": "โช้ค (Choke)"
         },
         {
-          "id": "ecu",
-          "word": "กล่อง ECU (Electronic Control Unit)",
-          "pronunciation": "อี-ซี-ยู",
           "category": "electrical",
-          "shortDefinition": "สมองกลควบคุมเครื่องยนต์",
           "detailedDefinition": "หน่วยประมวลผลอิเล็กทรอนิกส์ที่ควบคุมการทำงานต่างๆ ของเครื่องยนต์ รับข้อมูลจากเซ็นเซอร์หลายตัว (รอบเครื่อง, ตำแหน่งคันเร่ง, อุณหภูมิ, อากาศเข้า) แล้วคำนวณสั่งงานหัวฉีดและระบบอื่นๆ ให้ทำงานเหมาะสมกับสภาวะปัจจุบัน",
-          "whyItMatters": "ในรถหัวฉีด ECU ทำหน้าที่แทนคาร์บูเรเตอร์และโช้ค ให้ความแม่นยำสูงและปรับจูนอัตโนมัติ"
+          "id": "ecu",
+          "pronunciation": "อี-ซี-ยู",
+          "shortDefinition": "สมองกลควบคุมเครื่องยนต์",
+          "whyItMatters": "ในรถหัวฉีด ECU ทำหน้าที่แทนคาร์บูเรเตอร์และโช้ค ให้ความแม่นยำสูงและปรับจูนอัตโนมัติ",
+          "word": "กล่อง ECU (Electronic Control Unit)"
         },
         {
-          "id": "piston",
-          "word": "ลูกสูบ (Piston)",
-          "pronunciation": "ลูก-สูบ",
           "category": "engine",
-          "shortDefinition": "ตัวเคลื่อนที่ในกระบอกสูบ",
           "detailedDefinition": "ชิ้นส่วนกระบอกสูบที่เคลื่อนที่ขึ้น-ลง 4 จังหวะ: ดูด (ไอดีเข้า) อัด (อัดส่วนผสม) ระเบิด (ถูกแรงระเบิดดันลง) คาย (ดันไอเสียออก) การเคลื่อนที่นี้ส่งกำลังผ่านก้านสูบไปยังเพลาข้อเหวี่ยง",
-          "whyItMatters": "หากลูกสูบหรือวงแหวนลูกสูบสึกหรอ กำลังอัดจะลด เครื่องจะไม่มีกำลังและควันออกท่อไอเสีย"
+          "id": "piston",
+          "pronunciation": "ลูก-สูบ",
+          "shortDefinition": "ตัวเคลื่อนที่ในกระบอกสูบ",
+          "whyItMatters": "หากลูกสูบหรือวงแหวนลูกสูบสึกหรอ กำลังอัดจะลด เครื่องจะไม่มีกำลังและควันออกท่อไอเสีย",
+          "word": "ลูกสูบ (Piston)"
         },
         {
-          "id": "crankshaft",
-          "word": "เพลาข้อเหวี่ยง (Crankshaft)",
-          "pronunciation": "ครังก์-ชาฟท์",
           "category": "engine",
-          "shortDefinition": "เปลี่ยนการเคลื่อนที่ตรงเป็นหมุน",
           "detailedDefinition": "เพลาที่รับแรงจากก้านสูบ (การเคลื่อนที่ขึ้น-ลง) แล้วเปลี่ยนเป็นการหมุน เพื่อส่งกำลังผ่านระบบเกียร์ไปยังล้อ",
-          "whyItMatters": "หากเพลาข้อเหวี่ยงเบี้ยวหรือลูกปืนแตก เครื่องจะสั่นรุนแรงจนไม่สามารถใช้งานได้"
+          "id": "crankshaft",
+          "pronunciation": "ครังก์-ชาฟท์",
+          "shortDefinition": "เปลี่ยนการเคลื่อนที่ตรงเป็นหมุน",
+          "whyItMatters": "หากเพลาข้อเหวี่ยงเบี้ยวหรือลูกปืนแตก เครื่องจะสั่นรุนแรงจนไม่สามารถใช้งานได้",
+          "word": "เพลาข้อเหวี่ยง (Crankshaft)"
         },
         {
-          "id": "transmission",
-          "word": "ระบบเกียร์ (Transmission)",
-          "pronunciation": "_TRANสมิช-ชั่น",
           "category": "drivetrain",
-          "shortDefinition": "ทดรอบและส่งกำลังสู่ล้อ",
           "detailedDefinition": "ระบบถ่ายทอดกำลังจากเครื่องยนต์ไปยังล้อหลัง มีทั้งระบบเกียร์เท้าปั่น (manual) ที่ให้ควบคุมรอบเครื่องได้แม่นยำ และระบบเกียร์อัตโนมัติ (CVT) ที่สะดวกและเหมาะสมกับการจราจรในเมือง",
-          "whyItMatters": "หากคลัตช์ลื่น (รถเกียร์) หรือสายพานยืด (รถออโตเมติก) เครื่องจะเร่งไม่ขึ้นแม้รอบเครื่องจะสูง"
+          "id": "transmission",
+          "pronunciation": "_TRANสมิช-ชั่น",
+          "shortDefinition": "ทดรอบและส่งกำลังสู่ล้อ",
+          "whyItMatters": "หากคลัตช์ลื่น (รถเกียร์) หรือสายพานยืด (รถออโตเมติก) เครื่องจะเร่งไม่ขึ้นแม้รอบเครื่องจะสูง",
+          "word": "ระบบเกียร์ (Transmission)"
         },
         {
-          "id": "brake-caliper",
-          "word": "แคลิเพอร์เบรก (Brake Caliper)",
-          "pronunciation": "แค-ลิ-เพ้อ",
           "category": "brake",
-          "shortDefinition": "กดผ้าเบรกประกบจานเบรก",
           "detailedDefinition": "อุปกรณ์ที่ครอบอยู่รอบจานเบรก มีลูกสูบที่เลื่อนออกเมื่อได้รับแรงดันน้ำมันเบรก ดันผ้าเบรกประกบจานเบรกทั้งสองด้าน สร้างแรงเสียดทานเพื่อหน่วงการหมุนของล้อ",
-          "whyItMatters": "หากซีลแคลิเพอร์แตก น้ำมันเบรกจะรั่วซึม เบรกจะจมและไม่อยู่"
+          "id": "brake-caliper",
+          "pronunciation": "แค-ลิ-เพ้อ",
+          "shortDefinition": "กดผ้าเบรกประกบจานเบรก",
+          "whyItMatters": "หากซีลแคลิเพอร์แตก น้ำมันเบรกจะรั่วซึม เบรกจะจมและไม่อยู่",
+          "word": "แคลิเพอร์เบรก (Brake Caliper)"
         },
         {
-          "id": "brake-disc",
-          "word": "จานเบรก (Brake Disc)",
-          "pronunciation": "จาน-เบรก",
           "category": "brake",
-          "shortDefinition": "จานหมุนที่ผ้าเบรกประกบ",
           "detailedDefinition": "จานโลหะที่หมุนไปพร้อมกับล้อ เมื่อผ้าเบรกประกบจาน จะเกิดแรงเสียดทานที่เปลี่ยนพลังงานจลน์ของรถเป็นความร้อน ทำให้รถช้าลงหรือหยุด",
-          "whyItMatters": "หากจานเบรกเป็นร่องลึกหรือบิดงอ เบรกจะสั่นและประสิทธิภาพลดลง ควรลับหรือเปลี่ยนจานเบรกตามระยะ"
+          "id": "brake-disc",
+          "pronunciation": "จาน-เบรก",
+          "shortDefinition": "จานหมุนที่ผ้าเบรกประกบ",
+          "whyItMatters": "หากจานเบรกเป็นร่องลึกหรือบิดงอ เบรกจะสั่นและประสิทธิภาพลดลง ควรลับหรือเปลี่ยนจานเบรกตามระยะ",
+          "word": "จานเบรก (Brake Disc)"
         },
         {
-          "id": "brake-master",
-          "word": "กระปุกเบรก (Master Cylinder)",
-          "pronunciation": "มา-สเต้อ-ซิ-ลิน-เดอร์",
           "category": "brake",
-          "shortDefinition": "เปลี่ยนแรงกดเป็นแรงดันไฮดรอลิก",
           "detailedDefinition": "กระบอกสูบที่เปลี่ยนแรงกดจากคันเบรกหรือแป้นเบรกเป็นแรงดันไฮดรอลิกในน้ำมันเบรก ส่งแรงดันผ่านท่อไปยังแคลิเพอร์ที่ล้อ",
-          "whyItMatters": "หากกระปุกเบรกมีปัญหา ซีลภายในแตก เบรกจะจมหรือไม่มีแรงเบรก"
+          "id": "brake-master",
+          "pronunciation": "มา-สเต้อ-ซิ-ลิน-เดอร์",
+          "shortDefinition": "เปลี่ยนแรงกดเป็นแรงดันไฮดรอลิก",
+          "whyItMatters": "หากกระปุกเบรกมีปัญหา ซีลภายในแตก เบรกจะจมหรือไม่มีแรงเบรก",
+          "word": "กระปุกเบรก (Master Cylinder)"
         },
         {
-          "id": "brake-fade",
-          "word": "เบรกจม (Brake Fade)",
-          "pronunciation": "เบรก-เฟด",
           "category": "brake",
-          "shortDefinition": "ประสิทธิภาพเบรกลดลงเพราะความร้อนสูง",
           "detailedDefinition": "ภาวะที่เบรกทำงานหนักต่อเนื่อง ทำให้จานเบรกและผ้าเบรกมีความร้อนสูงเกินจุดทำงานปกติ แรงเสียดทานลดลง เบรกจึงไม่อยู่หรือจม",
-          "whyItMatters": "อันตรายมากเมื่อลงเขาหรือเบรกหนักต่อเนื่อง ควรใช้เกียร์ช่วยเบรกและพักเบรกเป็นระยะ"
+          "id": "brake-fade",
+          "pronunciation": "เบรก-เฟด",
+          "shortDefinition": "ประสิทธิภาพเบรกลดลงเพราะความร้อนสูง",
+          "whyItMatters": "อันตรายมากเมื่อลงเขาหรือเบรกหนักต่อเนื่อง ควรใช้เกียร์ช่วยเบรกและพักเบรกเป็นระยะ",
+          "word": "เบรกจม (Brake Fade)"
         },
         {
-          "id": "intake-valve",
-          "word": "วาล์วไอดี (Intake Valve)",
-          "pronunciation": "แอิน-เทรก-แวลว์",
           "category": "engine",
-          "shortDefinition": "วาล์วเปิดรับส่วนผสมเข้ากระบอกสูบ",
           "detailedDefinition": "วาล์วที่เปิดเมื่อลูกสูบเคลื่อนที่ลง (จังหวะดูด) อนุญาตให้ส่วนผสมน้ำมันและอากาศไหลเข้าสู่กระบอกสูบ จากนั้นปิดสนิทในจังหวะอัด ระเบิด และคาย",
-          "whyItMatters": "หากวาล์วไอดีปิดไม่สนิท กำลังอัดจะรั่ว เครื่องจะไม่มีกำลังและทำงานไม่เรียบ"
+          "id": "intake-valve",
+          "pronunciation": "แอิน-เทรก-แวลว์",
+          "shortDefinition": "วาล์วเปิดรับส่วนผสมเข้ากระบอกสูบ",
+          "whyItMatters": "หากวาล์วไอดีปิดไม่สนิท กำลังอัดจะรั่ว เครื่องจะไม่มีกำลังและทำงานไม่เรียบ",
+          "word": "วาล์วไอดี (Intake Valve)"
         },
         {
-          "id": "exhaust-valve",
-          "word": "วาล์วไอเสีย (Exhaust Valve)",
-          "pronunciation": "เอ็ก-ซอส-แวลว์",
           "category": "engine",
-          "shortDefinition": "วาล์วเปิดปล่อยไอเสียออก",
           "detailedDefinition": "วาล์วที่เปิดเมื่อลูกสูบเคลื่อนที่ขึ้นในจังหวะคาย อนุญาตให้ก๊าซไอเสียถูกดันออกจากกระบอกสูบ จากนั้นปิดสนิทในจังหวะดูด อัด และระเบิด",
-          "whyItMatters": "หากวาล์วไอเสียไหม้หรือปิดไม่สนิท ไอเสียจะไหลย้อนกลับ เครื่องจะทำงานผิดปกติและควันออกท่อมาก"
+          "id": "exhaust-valve",
+          "pronunciation": "เอ็ก-ซอส-แวลว์",
+          "shortDefinition": "วาล์วเปิดปล่อยไอเสียออก",
+          "whyItMatters": "หากวาล์วไอเสียไหม้หรือปิดไม่สนิท ไอเสียจะไหลย้อนกลับ เครื่องจะทำงานผิดปกติและควันออกท่อมาก",
+          "word": "วาล์วไอเสีย (Exhaust Valve)"
         }
-      ]
-    }
+      ],
+      "title": "คำศัพท์สำคัญ"
+    },
+    "type": "flashcards"
   },
   {
     "folder": "questions",
-    "type": "text",
     "props": {
-      "title": "คำถามที่ต้องถามช่าง",
       "paragraphs": [
         "เมื่อรถมอเตอร์ไซค์มีปัญหาและต้องนำไปให้ช่างซ่อม การสื่อสารกับช่างให้เข้าใจตรงกันเป็นสิ่งสำคัญมาก นี่คือคำถามพื้นฐานที่คุณควรถามช่างเพื่อรักษาผลประโยชน์ของตนเอง:",
         "สาเหตุของปัญหาคืออะไร? (เพื่อให้รู้ว่าเกิดจากอะไร จะได้หลีกเลี่ยงพฤติกรรมเสี่ยงในอนาคต)",
@@ -450,18 +447,16 @@
         "ค่าใช้จ่ายทั้งหมดประมาณเท่าไหร่? (ควรถามให้ชัดเจนว่ารวมค่าแรงช่างแล้วหรือยัง)",
         "ใช้เวลาซ่อมนานแค่ไหน? (รอรับได้เลย หรือต้องทิ้งรถไว้กี่วัน)",
         "หลังจากการซ่อมมีการรับประกันหรือไม่? (เช่น รับประกันงานซ่อม 1 เดือน)"
-      ]
-    }
+      ],
+      "title": "คำถามที่ต้องถามช่าง"
+    },
+    "type": "text"
   },
   {
     "folder": "maintenance",
-    "type": "bullets",
     "props": {
-      "title": "การบำรุงรักษาพื้นฐาน",
-      "ordered": false,
       "items": [
         {
-          "text": "การเปลี่ยนถ่ายน้ำมันเครื่อง (Engine Oil)",
           "children": [
             {
               "text": "ควรเปลี่ยนตามระยะทางที่คู่มือกำหนด (เช่น ทุกๆ 2,000 - 4,000 กม. ขึ้นอยู่กับรุ่น)"
@@ -469,10 +464,10 @@
             {
               "text": "หมั่นตรวจเช็คระดับน้ำมันเครื่องผ่านก้านวัด หรือตาแมวข้างแคร้งเครื่อง"
             }
-          ]
+          ],
+          "text": "การเปลี่ยนถ่ายน้ำมันเครื่อง (Engine Oil)"
         },
         {
-          "text": "การเช็คลมยางและสภาพยาง",
           "children": [
             {
               "text": "เติมลมยางตามค่ามาตรฐานที่สติ๊กเกอร์สวิงอาร์มหรือใต้เบาะระบุไว้"
@@ -480,10 +475,10 @@
             {
               "text": "เช็คดอกยาง หากดอกยางโล้นหรือยางมีรอยแตกลายงาควรเปลี่ยนทันที เพื่อความปลอดภัยในการยึดเกาะถนน"
             }
-          ]
+          ],
+          "text": "การเช็คลมยางและสภาพยาง"
         },
         {
-          "text": "โซ่และสเตอร์ (สำหรับรถเกียร์)",
           "children": [
             {
               "text": "หล่อลื่นโซ่สม่ำเสมอด้วยสเปรย์ฉีดโซ่หรือน้ำมันหยอดโซ่"
@@ -491,10 +486,10 @@
             {
               "text": "ตั้งความตึงโซ่ให้อยู่ในระดับที่พอดี ไม่ตึงหรือหย่อนจนเกินไป (ระยะฟรีประมาณ 2-3 ซม.)"
             }
-          ]
+          ],
+          "text": "โซ่และสเตอร์ (สำหรับรถเกียร์)"
         },
         {
-          "text": "ระบบเบรก",
           "children": [
             {
               "text": "เช็คระดับน้ำมันเบรกที่กระปุกปั๊มเบรกบน ว่าอยู่ในระดับ MAX-MIN หรือไม่"
@@ -502,25 +497,25 @@
             {
               "text": "ตรวจสอบความหนาของผ้าเบรก หากผ้าเบรกบางเกินไปจะทำให้เหล็กเสียดสีกับจานเบรกจนเป็นรอยและเบรกไม่อยู่"
             }
-          ]
+          ],
+          "text": "ระบบเบรก"
         }
-      ]
-    }
+      ],
+      "ordered": false,
+      "title": "การบำรุงรักษาพื้นฐาน"
+    },
+    "type": "bullets"
   },
   {
     "folder": "taxonomy",
-    "type": "taxonomy-browser",
     "props": {
-      "title": "ปัญหาและระบบมอเตอร์ไซค์",
       "categories": [
         {
-          "icon": "Folder",
-          "title": "ระบบเครื่องยนต์ (Engine System)",
-          "subtitle": "แหล่งกำเนิดพลังงานหลักของรถ",
+          "analogy": "เหมือนหัวใจของร่างกายมนุษย์ หากหัวใจเต้นผิดจังหวะหรือหยุดทำงาน ร่างกายทั้งหมดก็ขยับไม่ได้",
+          "color": "red",
           "description": "ปัญหาที่ส่งผลโดยตรงต่อการสตาร์ทเครื่องยนต์หรือกำลังของเครื่องยนต์",
           "details": "ระบบเครื่องยนต์มีปัญหาถือเป็นเรื่องใหญ่ที่สุด มักเกิดจากความร้อนสะสม หรือการขาดการบำรุงรักษาน้ำมันเครื่อง อาการที่พบคือ สตาร์ทไม่ติด, เครื่องร้อนจัด, มีควันขาวพุ่งออกจากท่อไอเสีย, หรือเร่งเครื่องแล้วมีเสียงดังผิดปกติภายในเครื่อง",
-          "analogy": "เหมือนหัวใจของร่างกายมนุษย์ หากหัวใจเต้นผิดจังหวะหรือหยุดทำงาน ร่างกายทั้งหมดก็ขยับไม่ได้",
-          "primaryFocus": "ตรวจสอบระบบจุดระเบิด (หัวเทียน), ระบบจ่ายเชื้อเพลิง, และระบบหล่อลื่น (น้ำมันเครื่อง)",
+          "icon": "Folder",
           "inScope": [
             "สตาร์ทไม่ติด หรือสตาร์ทติดยาก",
             "เครื่องร้อนจัด (Overheat)",
@@ -531,16 +526,16 @@
             "ปัญหาล้อฝืด (มักเป็นที่เบรก)",
             "ระบบไฟส่องสว่างไม่ติด"
           ],
-          "color": "red"
+          "primaryFocus": "ตรวจสอบระบบจุดระเบิด (หัวเทียน), ระบบจ่ายเชื้อเพลิง, และระบบหล่อลื่น (น้ำมันเครื่อง)",
+          "subtitle": "แหล่งกำเนิดพลังงานหลักของรถ",
+          "title": "ระบบเครื่องยนต์ (Engine System)"
         },
         {
-          "icon": "Folder",
-          "title": "ระบบส่งกำลัง (Drivetrain)",
-          "subtitle": "การถ่ายทอดกำลังสู่ล้อ",
+          "analogy": "เหมือนกระดูกและกล้ามเนื้อขาที่คอยส่งแรงจากร่างกายไปที่พื้น หากขาเจ็บก็วิ่งไม่ออก",
+          "color": "blue",
           "description": "ปัญหาที่ทำให้เครื่องยนต์ทำงานปกติ แต่รถไม่เคลื่อนที่หรือวิ่งได้ไม่เต็มประสิทธิภาพ",
           "details": "แม้เครื่องยนต์จะแรงแค่ไหน หากระบบส่งกำลังมีปัญหาก็เปล่าประโยชน์ ปัญหาในรถเกียร์มักเป็นโซ่หย่อน โซ่ตาย หรือคลัตช์ลื่น ในขณะที่รถออโตเมติกมักเป็นปัญหาสายพานยืด ชามสึก หรือเม็ดตุ้มน้ำหนักแตก",
-          "analogy": "เหมือนกระดูกและกล้ามเนื้อขาที่คอยส่งแรงจากร่างกายไปที่พื้น หากขาเจ็บก็วิ่งไม่ออก",
-          "primaryFocus": "โซ่ สเตอร์ แผ่นคลัตช์ (รถเกียร์) หรือ สายพาน ชาม เม็ด (รถออโตเมติก)",
+          "icon": "Folder",
           "inScope": [
             "เข้าเกียร์แล้วรถกระตุก",
             "เร่งเครื่องแล้วรอบขึ้นแต่รถไม่วิ่ง (คลัตช์ลื่น)",
@@ -551,16 +546,16 @@
             "เครื่องยนต์ดับกลางอากาศ",
             "เบรกไม่อยู่"
           ],
-          "color": "blue"
+          "primaryFocus": "โซ่ สเตอร์ แผ่นคลัตช์ (รถเกียร์) หรือ สายพาน ชาม เม็ด (รถออโตเมติก)",
+          "subtitle": "การถ่ายทอดกำลังสู่ล้อ",
+          "title": "ระบบส่งกำลัง (Drivetrain)"
         },
         {
-          "icon": "Folder",
-          "title": "ระบบช่วงล่างและเบรก",
-          "subtitle": "ความปลอดภัยและการทรงตัว",
+          "analogy": "เหมือนรองเท้าและระบบประสาทสั่งการหยุด หากรองเท้าลื่นหรือสั่งหยุดไม่ได้ก็เตรียมตัวล้ม",
+          "color": "green",
           "description": "ระบบที่คอยรับแรงกระแทกและควบคุมการหยุดรถ",
           "details": "ปัญหาช่วงล่างทำให้ควบคุมรถยากและเสี่ยงเกิดอุบัติเหตุสูง หากโช้คอัพแตกจะมีน้ำมันซึมและทำให้รถเด้งไม่หยุด ส่วนปัญหาเบรกอาจเกิดจากผ้าเบรกหมดจนเหล็กสีกับจานเบรก หรือมีฟองอากาศในระบบน้ำมันเบรก",
-          "analogy": "เหมือนรองเท้าและระบบประสาทสั่งการหยุด หากรองเท้าลื่นหรือสั่งหยุดไม่ได้ก็เตรียมตัวล้ม",
-          "primaryFocus": "น้ำมันเบรก, ความหนาผ้าเบรก, ซีลโช้คอัพ, และลมยาง",
+          "icon": "Folder",
           "inScope": [
             "เบรกจม เบรกไม่อยู่",
             "ตกหลุมแล้วมีเสียงกระแทกแรงๆ (โช้คยัน)",
@@ -571,355 +566,157 @@
             "แฮนด์สั่นเพราะเครื่องยนต์สั่น",
             "ล้อหมุนไม่ไปเพราะเข้าเกียร์ค้าง"
           ],
-          "color": "green"
+          "primaryFocus": "น้ำมันเบรก, ความหนาผ้าเบรก, ซีลโช้คอัพ, และลมยาง",
+          "subtitle": "ความปลอดภัยและการทรงตัว",
+          "title": "ระบบช่วงล่างและเบรก"
         }
-      ]
-    }
+      ],
+      "title": "ปัญหาและระบบมอเตอร์ไซค์"
+    },
+    "type": "taxonomy-browser"
   },
   {
     "folder": "flowchart-engine",
-    "type": "flowchart",
     "props": {
-      "title": "วัฏจักรเครื่องยนต์ 4 จังหวะ",
       "schema": {
         "entities": {
-          "rider": {
-            "title": "ผู้ขับขี่ (Rider)",
-            "desc": "ผู้ใช้งานมอเตอร์ไซค์",
-            "type": "Actor"
-          },
           "carburetor": {
-            "title": "คาร์บูเรเตอร์ (Carburetor)",
             "desc": "ระบบผสมน้ำมันและอากาศด้วยกลไก (รถรุ่นเก่า)",
+            "title": "คาร์บูเรเตอร์ (Carburetor)",
             "type": "Aggregate"
-          },
-          "engine": {
-            "title": "กระบอกสูบ (Cylinder / Engine)",
-            "desc": "เครื่องยนต์",
-            "type": "Aggregate"
-          },
-          "transmission": {
-            "title": "เกียร์และโซ่ (Transmission)",
-            "desc": "ระบบส่งกำลังสู่ล้อ",
-            "type": "Aggregate"
-          },
-          "pol_throttle": {
-            "title": "เริ่มวัฏจักรดูด (Start Intake)",
-            "desc": "เริ่มวัฏจักรดูด (Start Intake)",
-            "type": "Policy",
-            "root": false
-          },
-          "cmd_throttle": {
-            "title": "บิดคันเร่ง",
-            "desc": "บิดคันเร่ง",
-            "type": "Command"
-          },
-          "evt_fuel_mix": {
-            "title": "จ่ายน้ำมันและอากาศ",
-            "desc": "ผสมเชื้อเพลิงเข้าเครื่อง",
-            "type": "Event"
-          },
-          "pol_intake": {
-            "title": "เริ่มวัฏจักรดูด (Start Intake)",
-            "desc": "เริ่มวัฏจักรดูด (Start Intake)",
-            "type": "Policy",
-            "root": false
-          },
-          "cmd_intake": {
-            "title": "ดูดไอดี (Intake)",
-            "desc": "ดูดไอดี (Intake)",
-            "type": "Command"
-          },
-          "evt_intake": {
-            "title": "ไอดีเต็มกระบอกสูบ",
-            "desc": "ดูดไอดีเสร็จสิ้น",
-            "type": "Event"
-          },
-          "pol_compression": {
-            "title": "เริ่มวัฏจักรอัด (Start Comp)",
-            "desc": "เริ่มวัฏจักรอัด (Start Comp)",
-            "type": "Policy",
-            "root": false
-          },
-          "cmd_compression": {
-            "title": "อัดไอดี (Compression)",
-            "desc": "อัดไอดี (Compression)",
-            "type": "Command"
-          },
-          "engine2": {
-            "title": "กระบอกสูบ (Cylinder / Engine)",
-            "desc": "เครื่องยนต์",
-            "type": "Aggregate"
-          },
-          "evt_comp": {
-            "title": "แรงดันถึงจุดสูงสุด",
-            "desc": "อัดไอดีเสร็จสิ้น",
-            "type": "Event"
-          },
-          "pol_combustion": {
-            "title": "สั่งจุดระเบิด (Start Comb)",
-            "desc": "สั่งจุดระเบิด (Start Comb)",
-            "type": "Policy",
-            "root": false
           },
           "cmd_combustion": {
-            "title": "จุดระเบิด (Combustion)",
             "desc": "จุดระเบิด (Combustion)",
+            "title": "จุดระเบิด (Combustion)",
             "type": "Command"
           },
-          "engine3": {
-            "title": "กระบอกสูบ (Cylinder / Engine)",
+          "cmd_compression": {
+            "desc": "อัดไอดี (Compression)",
+            "title": "อัดไอดี (Compression)",
+            "type": "Command"
+          },
+          "cmd_exhaust": {
+            "desc": "คายไอเสีย (Exhaust)",
+            "title": "คายไอเสีย (Exhaust)",
+            "type": "Command"
+          },
+          "cmd_intake": {
+            "desc": "ดูดไอดี (Intake)",
+            "title": "ดูดไอดี (Intake)",
+            "type": "Command"
+          },
+          "cmd_throttle": {
+            "desc": "บิดคันเร่ง",
+            "title": "บิดคันเร่ง",
+            "type": "Command"
+          },
+          "cmd_transmission": {
+            "desc": "ส่งกำลังทดรอบ (Shift Gear)",
+            "title": "ส่งกำลังทดรอบ (Shift Gear)",
+            "type": "Command"
+          },
+          "engine": {
             "desc": "เครื่องยนต์",
+            "title": "กระบอกสูบ (Cylinder / Engine)",
+            "type": "Aggregate"
+          },
+          "engine2": {
+            "desc": "เครื่องยนต์",
+            "title": "กระบอกสูบ (Cylinder / Engine)",
+            "type": "Aggregate"
+          },
+          "engine3": {
+            "desc": "เครื่องยนต์",
+            "title": "กระบอกสูบ (Cylinder / Engine)",
+            "type": "Aggregate"
+          },
+          "engine4": {
+            "desc": "เครื่องยนต์",
+            "title": "กระบอกสูบ (Cylinder / Engine)",
             "type": "Aggregate"
           },
           "evt_comb": {
-            "title": "แรงระเบิดดันลูกสูบ",
             "desc": "การระเบิดเสร็จสิ้น",
+            "title": "แรงระเบิดดันลูกสูบ",
             "type": "Event"
           },
-          "pol_exhaust": {
-            "title": "เริ่มวัฏจักรคาย (Start Exh)",
-            "desc": "เริ่มวัฏจักรคาย (Start Exh)",
-            "type": "Policy",
-            "root": false
+          "evt_comp": {
+            "desc": "อัดไอดีเสร็จสิ้น",
+            "title": "แรงดันถึงจุดสูงสุด",
+            "type": "Event"
           },
-          "cmd_exhaust": {
-            "title": "คายไอเสีย (Exhaust)",
-            "desc": "คายไอเสีย (Exhaust)",
-            "type": "Command"
+          "evt_fuel_mix": {
+            "desc": "ผสมเชื้อเพลิงเข้าเครื่อง",
+            "title": "จ่ายน้ำมันและอากาศ",
+            "type": "Event"
           },
-          "engine4": {
-            "title": "กระบอกสูบ (Cylinder / Engine)",
-            "desc": "เครื่องยนต์",
-            "type": "Aggregate"
+          "evt_intake": {
+            "desc": "ดูดไอดีเสร็จสิ้น",
+            "title": "ไอดีเต็มกระบอกสูบ",
+            "type": "Event"
           },
           "evt_power_transfer": {
-            "title": "ส่งกำลังลงข้อเหวี่ยง",
             "desc": "สร้างแรงบิด (Power Transfer)",
+            "title": "ส่งกำลังลงข้อเหวี่ยง",
             "type": "Event"
-          },
-          "pol_transmission": {
-            "title": "เริ่มส่งกำลัง (Start Transmission)",
-            "desc": "เริ่มส่งกำลัง (Start Transmission)",
-            "type": "Policy",
-            "root": false
-          },
-          "cmd_transmission": {
-            "title": "ส่งกำลังทดรอบ (Shift Gear)",
-            "desc": "ส่งกำลังทดรอบ (Shift Gear)",
-            "type": "Command"
           },
           "evt_wheel_spin": {
-            "title": "ล้อหมุนขับเคลื่อน",
             "desc": "รถเคลื่อนที่",
+            "title": "ล้อหมุนขับเคลื่อน",
             "type": "Event"
+          },
+          "pol_combustion": {
+            "desc": "สั่งจุดระเบิด (Start Comb)",
+            "root": false,
+            "title": "สั่งจุดระเบิด (Start Comb)",
+            "type": "Policy"
+          },
+          "pol_compression": {
+            "desc": "เริ่มวัฏจักรอัด (Start Comp)",
+            "root": false,
+            "title": "เริ่มวัฏจักรอัด (Start Comp)",
+            "type": "Policy"
+          },
+          "pol_exhaust": {
+            "desc": "เริ่มวัฏจักรคาย (Start Exh)",
+            "root": false,
+            "title": "เริ่มวัฏจักรคาย (Start Exh)",
+            "type": "Policy"
+          },
+          "pol_intake": {
+            "desc": "เริ่มวัฏจักรดูด (Start Intake)",
+            "root": false,
+            "title": "เริ่มวัฏจักรดูด (Start Intake)",
+            "type": "Policy"
+          },
+          "pol_throttle": {
+            "desc": "เริ่มวัฏจักรดูด (Start Intake)",
+            "root": false,
+            "title": "เริ่มวัฏจักรดูด (Start Intake)",
+            "type": "Policy"
+          },
+          "pol_transmission": {
+            "desc": "เริ่มส่งกำลัง (Start Transmission)",
+            "root": false,
+            "title": "เริ่มส่งกำลัง (Start Transmission)",
+            "type": "Policy"
+          },
+          "rider": {
+            "desc": "ผู้ใช้งานมอเตอร์ไซค์",
+            "title": "ผู้ขับขี่ (Rider)",
+            "type": "Actor"
+          },
+          "transmission": {
+            "desc": "ระบบส่งกำลังสู่ล้อ",
+            "title": "เกียร์และโซ่ (Transmission)",
+            "type": "Aggregate"
           }
         },
-        "relations": [
-          {
-            "id": "r1",
-            "from": "rider",
-            "to": "pol_throttle",
-            "views": [
-              "EVENT_STORMING"
-            ]
-          },
-          {
-            "id": "r2",
-            "from": "pol_throttle",
-            "to": "cmd_throttle",
-            "views": [
-              "EVENT_STORMING"
-            ]
-          },
-          {
-            "id": "r3",
-            "from": "cmd_throttle",
-            "to": "carburetor",
-            "handledBy": true,
-            "views": [
-              "EVENT_STORMING"
-            ]
-          },
-          {
-            "id": "r4",
-            "from": "carburetor",
-            "to": "evt_fuel_mix",
-            "views": [
-              "EVENT_STORMING"
-            ]
-          },
-          {
-            "id": "r5",
-            "from": "evt_fuel_mix",
-            "to": "pol_intake",
-            "views": [
-              "EVENT_STORMING"
-            ]
-          },
-          {
-            "id": "r6",
-            "from": "pol_intake",
-            "to": "cmd_intake",
-            "views": [
-              "EVENT_STORMING"
-            ]
-          },
-          {
-            "id": "r7",
-            "from": "cmd_intake",
-            "to": "engine",
-            "handledBy": true,
-            "views": [
-              "EVENT_STORMING"
-            ]
-          },
-          {
-            "id": "r8",
-            "from": "engine",
-            "to": "evt_intake",
-            "views": [
-              "EVENT_STORMING"
-            ]
-          },
-          {
-            "id": "r9",
-            "from": "evt_intake",
-            "to": "pol_compression",
-            "views": [
-              "EVENT_STORMING"
-            ]
-          },
-          {
-            "id": "r10",
-            "from": "pol_compression",
-            "to": "cmd_compression",
-            "views": [
-              "EVENT_STORMING"
-            ]
-          },
-          {
-            "id": "r11",
-            "from": "cmd_compression",
-            "to": "engine2",
-            "handledBy": true,
-            "views": [
-              "EVENT_STORMING"
-            ]
-          },
-          {
-            "id": "r12",
-            "from": "engine2",
-            "to": "evt_comp",
-            "views": [
-              "EVENT_STORMING"
-            ]
-          },
-          {
-            "id": "r13",
-            "from": "evt_comp",
-            "to": "pol_combustion",
-            "views": [
-              "EVENT_STORMING"
-            ]
-          },
-          {
-            "id": "r14",
-            "from": "pol_combustion",
-            "to": "cmd_combustion",
-            "views": [
-              "EVENT_STORMING"
-            ]
-          },
-          {
-            "id": "r15",
-            "from": "cmd_combustion",
-            "to": "engine3",
-            "handledBy": true,
-            "views": [
-              "EVENT_STORMING"
-            ]
-          },
-          {
-            "id": "r16",
-            "from": "engine3",
-            "to": "evt_comb",
-            "views": [
-              "EVENT_STORMING"
-            ]
-          },
-          {
-            "id": "r17",
-            "from": "evt_comb",
-            "to": "pol_exhaust",
-            "views": [
-              "EVENT_STORMING"
-            ]
-          },
-          {
-            "id": "r18",
-            "from": "pol_exhaust",
-            "to": "cmd_exhaust",
-            "views": [
-              "EVENT_STORMING"
-            ]
-          },
-          {
-            "id": "r19",
-            "from": "cmd_exhaust",
-            "to": "engine4",
-            "handledBy": true,
-            "views": [
-              "EVENT_STORMING"
-            ]
-          },
-          {
-            "id": "r20",
-            "from": "engine4",
-            "to": "evt_power_transfer",
-            "views": [
-              "EVENT_STORMING"
-            ]
-          },
-          {
-            "id": "r21",
-            "from": "evt_power_transfer",
-            "to": "pol_transmission",
-            "views": [
-              "EVENT_STORMING"
-            ]
-          },
-          {
-            "id": "r22",
-            "from": "pol_transmission",
-            "to": "cmd_transmission",
-            "views": [
-              "EVENT_STORMING"
-            ]
-          },
-          {
-            "id": "r23",
-            "from": "cmd_transmission",
-            "to": "transmission",
-            "handledBy": true,
-            "views": [
-              "EVENT_STORMING"
-            ]
-          },
-          {
-            "id": "r24",
-            "from": "transmission",
-            "to": "evt_wheel_spin",
-            "views": [
-              "EVENT_STORMING"
-            ]
-          }
-        ],
         "journeys": [
           {
+            "description": "ขั้นตอนการทำงานตั้งแต่บิดคันเร่งจนถึงการส่งกำลังไปที่ล้อ",
             "id": "4-stroke-cycle",
             "label": "วัฏจักรเครื่องยนต์ 4 จังหวะ และการส่งกำลัง",
-            "description": "ขั้นตอนการทำงานตั้งแต่บิดคันเร่งจนถึงการส่งกำลังไปที่ล้อ",
             "steps": [
               {
                 "nodeIds": [
@@ -929,8 +726,8 @@
                   "carburetor",
                   "evt_fuel_mix"
                 ],
-                "title": "บิดคันเร่ง",
-                "reason": "ผู้ขับขี่บิดคันเร่งเพื่อสั่งให้เครื่องยนต์เพิ่มรอบและสร้างกำลัง"
+                "reason": "ผู้ขับขี่บิดคันเร่งเพื่อสั่งให้เครื่องยนต์เพิ่มรอบและสร้างกำลัง",
+                "title": "บิดคันเร่ง"
               },
               {
                 "nodeIds": [
@@ -939,8 +736,8 @@
                   "engine",
                   "evt_intake"
                 ],
-                "title": "จังหวะดูด",
-                "reason": "ลูกสูบเคลื่อนลง วาล์วน้ำมันเปิด ผสมอากาศ-น้ำมันไหลเข้ากระบอกสูบ"
+                "reason": "ลูกสูบเคลื่อนลง วาล์วน้ำมันเปิด ผสมอากาศ-น้ำมันไหลเข้ากระบอกสูบ",
+                "title": "จังหวะดูด"
               },
               {
                 "nodeIds": [
@@ -949,8 +746,8 @@
                   "engine2",
                   "evt_comp"
                 ],
-                "title": "จังหวะอัด",
-                "reason": "ลูกสูบเคลื่อนขึ้น วาล์วปิดทั้งสองข้าง อัดส่วนผสมให้มีความหนาแน่นสูง"
+                "reason": "ลูกสูบเคลื่อนขึ้น วาล์วปิดทั้งสองข้าง อัดส่วนผสมให้มีความหนาแน่นสูง",
+                "title": "จังหวะอัด"
               },
               {
                 "nodeIds": [
@@ -959,8 +756,8 @@
                   "engine3",
                   "evt_comb"
                 ],
-                "title": "จังหวะระเบิด",
-                "reason": "หัวเทียนจุดระเบิด ส่วนผสมถูกอัดจนระเบิด ผลักลูกสูบลง สร้างกำลังขับเคลื่อน"
+                "reason": "หัวเทียนจุดระเบิด ส่วนผสมถูกอัดจนระเบิด ผลักลูกสูบลง สร้างกำลังขับเคลื่อน",
+                "title": "จังหวะระเบิด"
               },
               {
                 "nodeIds": [
@@ -969,8 +766,8 @@
                   "engine4",
                   "evt_power_transfer"
                 ],
-                "title": "จังหวะไอเสีย",
-                "reason": "วาล์วไอเสียเปิด ลูกสูบเคลื่อนขึ้น ผลักไอเสียที่ถูกเผาไหม้ออก"
+                "reason": "วาล์วไอเสียเปิด ลูกสูบเคลื่อนขึ้น ผลักไอเสียที่ถูกเผาไหม้ออก",
+                "title": "จังหวะไอเสีย"
               },
               {
                 "nodeIds": [
@@ -979,365 +776,428 @@
                   "transmission",
                   "evt_wheel_spin"
                 ],
-                "title": "ส่งกำลัง",
-                "reason": "กำลังจากการระเบิดถูกส่งผ่านคลัตช์ เกียร์ และโซ่ ไปยังล้อหลัง"
+                "reason": "กำลังจากการระเบิดถูกส่งผ่านคลัตช์ เกียร์ และโซ่ ไปยังล้อหลัง",
+                "title": "ส่งกำลัง"
               }
             ]
           }
         ],
         "rawSteps": [
           {
-            "type": "linear",
+            "command": "บิดคันเร่ง",
+            "continuesAs": "intake",
+            "handledBy": {
+              "_tag": "ref",
+              "id": "carburetor"
+            },
             "id": "throttle",
             "initiatedBy": {
               "_tag": "ref",
               "id": "rider"
             },
             "policy": "เริ่มวัฏจักรดูด (Start Intake)",
-            "command": "บิดคันเร่ง",
-            "handledBy": {
-              "_tag": "ref",
-              "id": "carburetor"
-            },
             "resultEvents": [
               {
+                "desc": "ผสมเชื้อเพลิงเข้าเครื่อง",
                 "id": "fuel_mix",
-                "title": "จ่ายน้ำมันและอากาศ",
-                "desc": "ผสมเชื้อเพลิงเข้าเครื่อง"
+                "title": "จ่ายน้ำมันและอากาศ"
               }
             ],
-            "continuesAs": "intake"
+            "type": "linear"
           },
           {
-            "type": "linear",
+            "command": "ดูดไอดี (Intake)",
+            "continuesAs": "compression",
+            "handledBy": {
+              "_tag": "ref",
+              "id": "engine"
+            },
             "id": "intake",
             "policy": "เริ่มวัฏจักรดูด (Start Intake)",
-            "command": "ดูดไอดี (Intake)",
+            "resultEvents": [
+              {
+                "desc": "ดูดไอดีเสร็จสิ้น",
+                "id": "intake",
+                "title": "ไอดีเต็มกระบอกสูบ"
+              }
+            ],
+            "type": "linear"
+          },
+          {
+            "command": "อัดไอดี (Compression)",
+            "continuesAs": "combustion",
             "handledBy": {
               "_tag": "ref",
               "id": "engine"
             },
-            "resultEvents": [
-              {
-                "id": "intake",
-                "title": "ไอดีเต็มกระบอกสูบ",
-                "desc": "ดูดไอดีเสร็จสิ้น"
-              }
-            ],
-            "continuesAs": "compression"
-          },
-          {
-            "type": "linear",
             "id": "compression",
             "policy": "เริ่มวัฏจักรอัด (Start Comp)",
-            "command": "อัดไอดี (Compression)",
+            "resultEvents": [
+              {
+                "desc": "อัดไอดีเสร็จสิ้น",
+                "id": "comp",
+                "title": "แรงดันถึงจุดสูงสุด"
+              }
+            ],
+            "type": "linear"
+          },
+          {
+            "command": "จุดระเบิด (Combustion)",
+            "continuesAs": "exhaust",
             "handledBy": {
               "_tag": "ref",
               "id": "engine"
             },
-            "resultEvents": [
-              {
-                "id": "comp",
-                "title": "แรงดันถึงจุดสูงสุด",
-                "desc": "อัดไอดีเสร็จสิ้น"
-              }
-            ],
-            "continuesAs": "combustion"
-          },
-          {
-            "type": "linear",
             "id": "combustion",
             "policy": "สั่งจุดระเบิด (Start Comb)",
-            "command": "จุดระเบิด (Combustion)",
+            "resultEvents": [
+              {
+                "desc": "การระเบิดเสร็จสิ้น",
+                "id": "comb",
+                "title": "แรงระเบิดดันลูกสูบ"
+              }
+            ],
+            "type": "linear"
+          },
+          {
+            "command": "คายไอเสีย (Exhaust)",
+            "continuesAs": "transmission",
             "handledBy": {
               "_tag": "ref",
               "id": "engine"
             },
-            "resultEvents": [
-              {
-                "id": "comb",
-                "title": "แรงระเบิดดันลูกสูบ",
-                "desc": "การระเบิดเสร็จสิ้น"
-              }
-            ],
-            "continuesAs": "exhaust"
-          },
-          {
-            "type": "linear",
             "id": "exhaust",
             "policy": "เริ่มวัฏจักรคาย (Start Exh)",
-            "command": "คายไอเสีย (Exhaust)",
-            "handledBy": {
-              "_tag": "ref",
-              "id": "engine"
-            },
             "resultEvents": [
               {
+                "desc": "สร้างแรงบิด (Power Transfer)",
                 "id": "power_transfer",
-                "title": "ส่งกำลังลงข้อเหวี่ยง",
-                "desc": "สร้างแรงบิด (Power Transfer)"
+                "title": "ส่งกำลังลงข้อเหวี่ยง"
               }
             ],
-            "continuesAs": "transmission"
+            "type": "linear"
           },
           {
-            "type": "linear",
-            "id": "transmission",
-            "policy": "เริ่มส่งกำลัง (Start Transmission)",
             "command": "ส่งกำลังทดรอบ (Shift Gear)",
             "handledBy": {
               "_tag": "ref",
               "id": "transmission"
             },
+            "id": "transmission",
+            "policy": "เริ่มส่งกำลัง (Start Transmission)",
             "resultEvents": [
               {
+                "desc": "รถเคลื่อนที่",
                 "id": "wheel_spin",
-                "title": "ล้อหมุนขับเคลื่อน",
-                "desc": "รถเคลื่อนที่"
+                "title": "ล้อหมุนขับเคลื่อน"
               }
+            ],
+            "type": "linear"
+          }
+        ],
+        "relations": [
+          {
+            "from": "rider",
+            "id": "r1",
+            "to": "pol_throttle",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "from": "pol_throttle",
+            "id": "r2",
+            "to": "cmd_throttle",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "from": "cmd_throttle",
+            "handledBy": true,
+            "id": "r3",
+            "to": "carburetor",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "from": "carburetor",
+            "id": "r4",
+            "to": "evt_fuel_mix",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "from": "evt_fuel_mix",
+            "id": "r5",
+            "to": "pol_intake",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "from": "pol_intake",
+            "id": "r6",
+            "to": "cmd_intake",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "from": "cmd_intake",
+            "handledBy": true,
+            "id": "r7",
+            "to": "engine",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "from": "engine",
+            "id": "r8",
+            "to": "evt_intake",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "from": "evt_intake",
+            "id": "r9",
+            "to": "pol_compression",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "from": "pol_compression",
+            "id": "r10",
+            "to": "cmd_compression",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "from": "cmd_compression",
+            "handledBy": true,
+            "id": "r11",
+            "to": "engine2",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "from": "engine2",
+            "id": "r12",
+            "to": "evt_comp",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "from": "evt_comp",
+            "id": "r13",
+            "to": "pol_combustion",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "from": "pol_combustion",
+            "id": "r14",
+            "to": "cmd_combustion",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "from": "cmd_combustion",
+            "handledBy": true,
+            "id": "r15",
+            "to": "engine3",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "from": "engine3",
+            "id": "r16",
+            "to": "evt_comb",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "from": "evt_comb",
+            "id": "r17",
+            "to": "pol_exhaust",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "from": "pol_exhaust",
+            "id": "r18",
+            "to": "cmd_exhaust",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "from": "cmd_exhaust",
+            "handledBy": true,
+            "id": "r19",
+            "to": "engine4",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "from": "engine4",
+            "id": "r20",
+            "to": "evt_power_transfer",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "from": "evt_power_transfer",
+            "id": "r21",
+            "to": "pol_transmission",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "from": "pol_transmission",
+            "id": "r22",
+            "to": "cmd_transmission",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "from": "cmd_transmission",
+            "handledBy": true,
+            "id": "r23",
+            "to": "transmission",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "from": "transmission",
+            "id": "r24",
+            "to": "evt_wheel_spin",
+            "views": [
+              "EVENT_STORMING"
             ]
           }
         ]
-      }
-    }
+      },
+      "title": "วัฏจักรเครื่องยนต์ 4 จังหวะ"
+    },
+    "type": "flowchart"
   },
   {
     "folder": "flowchart-fuel-injection",
-    "type": "flowchart",
     "props": {
-      "title": "ระบบหัวฉีด (Fuel Injection / EFI)",
       "schema": {
         "entities": {
-          "rider": {
-            "title": "ผู้ขับขี่ (Rider)",
-            "desc": "ผู้ใช้งานมอเตอร์ไซค์",
-            "type": "Actor"
-          },
-          "ecu": {
-            "title": "กล่อง ECU (Electronic Control Unit)",
-            "desc": "สมองกลคำนวณปริมาณน้ำมันที่แม่นยำ",
-            "type": "Aggregate"
-          },
-          "fuel_injector": {
-            "title": "หัวฉีด (Fuel Injector)",
-            "desc": "พ่นละอองน้ำมันเชื้อเพลิงเข้าสู่ท่อไอดี",
-            "type": "Aggregate"
-          },
-          "pol_inject_throttle": {
-            "title": "คำนวณอัตราส่วนผสม (Calculate Fuel Ratio)",
-            "desc": "คำนวณอัตราส่วนผสม (Calculate Fuel Ratio)",
-            "type": "Policy",
-            "root": false
-          },
-          "cmd_inject_throttle": {
-            "title": "บิดคันเร่ง (Injector Mode)",
-            "desc": "บิดคันเร่ง (Injector Mode)",
+          "cmd_inject_cold": {
+            "desc": "เพิ่มส่วนผสมอัตโนมัติ (Auto Cold Enrichment Action)",
+            "title": "เพิ่มส่วนผสมอัตโนมัติ (Auto Cold Enrichment Action)",
             "type": "Command"
-          },
-          "evt_sensor_read": {
-            "title": "รับค่าจากเซ็นเซอร์ (Sensor Data)",
-            "desc": "ข้อมูลรอบเครื่อง ตำแหน่งคันเร่ง อุณหภูมิเครื่อง อากาศเข้า",
-            "type": "Event"
-          },
-          "pol_inject_fuel": {
-            "title": "คำนวณอัตราส่วนผสม (Calculate Fuel Ratio)",
-            "desc": "คำนวณอัตราส่วนผสม (Calculate Fuel Ratio)",
-            "type": "Policy",
-            "root": false
           },
           "cmd_inject_fuel": {
-            "title": "สั่งงานหัวฉีด (Activate Injector)",
             "desc": "สั่งงานหัวฉีด (Activate Injector)",
+            "title": "สั่งงานหัวฉีด (Activate Injector)",
             "type": "Command"
           },
-          "evt_fuel_atomized": {
-            "title": "ละอองน้ำมันเข้าสู่ท่อไอดี",
-            "desc": "น้ำมันถูกทำให้เป็นละอองละเอียดผสมกับอากาศ",
-            "type": "Event"
-          },
-          "pol_precise_mix": {
-            "title": "ฉีดน้ำมันปกติ (Normal Injection)",
-            "desc": "ฉีดน้ำมันปกติ (Normal Injection)",
-            "type": "Policy"
+          "cmd_inject_throttle": {
+            "desc": "บิดคันเร่ง (Injector Mode)",
+            "title": "บิดคันเร่ง (Injector Mode)",
+            "type": "Command"
           },
           "cmd_precise_mix": {
-            "title": "ใช้ส่วนผสมแม่นยำ (Use Precise Mixture)",
             "desc": "ใช้ส่วนผสมแม่นยำ (Use Precise Mixture)",
+            "title": "ใช้ส่วนผสมแม่นยำ (Use Precise Mixture)",
             "type": "Command"
           },
-          "fuel_injector2": {
-            "title": "หัวฉีด (Fuel Injector)",
-            "desc": "พ่นละอองน้ำมันเชื้อเพลิงเข้าสู่ท่อไอดี",
+          "ecu": {
+            "desc": "สมองกลคำนวณปริมาณน้ำมันที่แม่นยำ",
+            "title": "กล่อง ECU (Electronic Control Unit)",
             "type": "Aggregate"
           },
-          "evt_precise_mix": {
-            "title": "ส่วนผสมแม่นยำ (Precise Mixture)",
-            "desc": "อัตราส่วนที่แม่นยำตามสภาวะการทำงาน",
+          "evt_fuel_atomized": {
+            "desc": "น้ำมันถูกทำให้เป็นละอองละเอียดผสมกับอากาศ",
+            "title": "ละอองน้ำมันเข้าสู่ท่อไอดี",
             "type": "Event"
-          },
-          "pol_inject_cold": {
-            "title": "เพิ่มส่วนผสมอัตโนมัติ (Auto Cold Enrichment)",
-            "desc": "เพิ่มส่วนผสมอัตโนมัติ (Auto Cold Enrichment)",
-            "type": "Policy"
-          },
-          "cmd_inject_cold": {
-            "title": "เพิ่มส่วนผสมอัตโนมัติ (Auto Cold Enrichment Action)",
-            "desc": "เพิ่มส่วนผสมอัตโนมัติ (Auto Cold Enrichment Action)",
-            "type": "Command"
-          },
-          "fuel_injector3": {
-            "title": "หัวฉีด (Fuel Injector)",
-            "desc": "พ่นละอองน้ำมันเชื้อเพลิงเข้าสู่ท่อไอดี",
-            "type": "Aggregate"
           },
           "evt_inject_cold_auto": {
-            "title": "เพิ่มส่วนผสมอัตโนมัติ (Auto Cold Enrichment)",
             "desc": "ECU เพิ่มน้ำมันอัตโนมัติเมื่อเครื่องเย็น",
+            "title": "เพิ่มส่วนผสมอัตโนมัติ (Auto Cold Enrichment)",
             "type": "Event"
+          },
+          "evt_precise_mix": {
+            "desc": "อัตราส่วนที่แม่นยำตามสภาวะการทำงาน",
+            "title": "ส่วนผสมแม่นยำ (Precise Mixture)",
+            "type": "Event"
+          },
+          "evt_sensor_read": {
+            "desc": "ข้อมูลรอบเครื่อง ตำแหน่งคันเร่ง อุณหภูมิเครื่อง อากาศเข้า",
+            "title": "รับค่าจากเซ็นเซอร์ (Sensor Data)",
+            "type": "Event"
+          },
+          "fuel_injector": {
+            "desc": "พ่นละอองน้ำมันเชื้อเพลิงเข้าสู่ท่อไอดี",
+            "title": "หัวฉีด (Fuel Injector)",
+            "type": "Aggregate"
+          },
+          "fuel_injector2": {
+            "desc": "พ่นละอองน้ำมันเชื้อเพลิงเข้าสู่ท่อไอดี",
+            "title": "หัวฉีด (Fuel Injector)",
+            "type": "Aggregate"
+          },
+          "fuel_injector3": {
+            "desc": "พ่นละอองน้ำมันเชื้อเพลิงเข้าสู่ท่อไอดี",
+            "title": "หัวฉีด (Fuel Injector)",
+            "type": "Aggregate"
+          },
+          "pol_inject_cold": {
+            "desc": "เพิ่มส่วนผสมอัตโนมัติ (Auto Cold Enrichment)",
+            "title": "เพิ่มส่วนผสมอัตโนมัติ (Auto Cold Enrichment)",
+            "type": "Policy"
+          },
+          "pol_inject_fuel": {
+            "desc": "คำนวณอัตราส่วนผสม (Calculate Fuel Ratio)",
+            "root": false,
+            "title": "คำนวณอัตราส่วนผสม (Calculate Fuel Ratio)",
+            "type": "Policy"
+          },
+          "pol_inject_throttle": {
+            "desc": "คำนวณอัตราส่วนผสม (Calculate Fuel Ratio)",
+            "root": false,
+            "title": "คำนวณอัตราส่วนผสม (Calculate Fuel Ratio)",
+            "type": "Policy"
+          },
+          "pol_precise_mix": {
+            "desc": "ฉีดน้ำมันปกติ (Normal Injection)",
+            "title": "ฉีดน้ำมันปกติ (Normal Injection)",
+            "type": "Policy"
+          },
+          "rider": {
+            "desc": "ผู้ใช้งานมอเตอร์ไซค์",
+            "title": "ผู้ขับขี่ (Rider)",
+            "type": "Actor"
           }
         },
-        "relations": [
-          {
-            "id": "r1",
-            "from": "rider",
-            "to": "pol_inject_throttle",
-            "views": [
-              "EVENT_STORMING"
-            ]
-          },
-          {
-            "id": "r2",
-            "from": "pol_inject_throttle",
-            "to": "cmd_inject_throttle",
-            "views": [
-              "EVENT_STORMING"
-            ]
-          },
-          {
-            "id": "r3",
-            "from": "cmd_inject_throttle",
-            "to": "ecu",
-            "handledBy": true,
-            "views": [
-              "EVENT_STORMING"
-            ]
-          },
-          {
-            "id": "r4",
-            "from": "ecu",
-            "to": "evt_sensor_read",
-            "views": [
-              "EVENT_STORMING"
-            ]
-          },
-          {
-            "id": "r5",
-            "from": "evt_sensor_read",
-            "to": "pol_inject_fuel",
-            "views": [
-              "EVENT_STORMING"
-            ]
-          },
-          {
-            "id": "r6",
-            "from": "pol_inject_fuel",
-            "to": "cmd_inject_fuel",
-            "views": [
-              "EVENT_STORMING"
-            ]
-          },
-          {
-            "id": "r7",
-            "from": "cmd_inject_fuel",
-            "to": "fuel_injector",
-            "handledBy": true,
-            "views": [
-              "EVENT_STORMING"
-            ]
-          },
-          {
-            "id": "r8",
-            "from": "fuel_injector",
-            "to": "evt_fuel_atomized",
-            "views": [
-              "EVENT_STORMING"
-            ]
-          },
-          {
-            "id": "r9",
-            "from": "evt_fuel_atomized",
-            "to": "pol_precise_mix",
-            "label": "ปกติ",
-            "views": [
-              "EVENT_STORMING"
-            ]
-          },
-          {
-            "id": "r10",
-            "from": "pol_precise_mix",
-            "to": "cmd_precise_mix",
-            "views": [
-              "EVENT_STORMING"
-            ]
-          },
-          {
-            "id": "r11",
-            "from": "cmd_precise_mix",
-            "to": "fuel_injector2",
-            "handledBy": true,
-            "views": [
-              "EVENT_STORMING"
-            ]
-          },
-          {
-            "id": "r12",
-            "from": "fuel_injector2",
-            "to": "evt_precise_mix",
-            "views": [
-              "EVENT_STORMING"
-            ]
-          },
-          {
-            "id": "r13",
-            "from": "evt_fuel_atomized",
-            "to": "pol_inject_cold",
-            "label": "เครื่องเย็น",
-            "dashed": true,
-            "views": [
-              "EVENT_STORMING"
-            ]
-          },
-          {
-            "id": "r14",
-            "from": "pol_inject_cold",
-            "to": "cmd_inject_cold",
-            "views": [
-              "EVENT_STORMING"
-            ]
-          },
-          {
-            "id": "r15",
-            "from": "cmd_inject_cold",
-            "to": "fuel_injector3",
-            "handledBy": true,
-            "views": [
-              "EVENT_STORMING"
-            ]
-          },
-          {
-            "id": "r16",
-            "from": "fuel_injector3",
-            "to": "evt_inject_cold_auto",
-            "views": [
-              "EVENT_STORMING"
-            ]
-          }
-        ],
         "journeys": [
           {
+            "description": "บิดคันเร่ง → ECU คำนวณ → หัวฉีดพ่น → ละอองน้ำมัน → ผสมส่วนแม่นยำ",
             "id": "fuel-injection-normal",
             "label": "หัวฉีดปกติ (Normal Fuel Injection)",
-            "description": "บิดคันเร่ง → ECU คำนวณ → หัวฉีดพ่น → ละอองน้ำมัน → ผสมส่วนแม่นยำ",
             "steps": [
               {
                 "nodeIds": [
@@ -1347,8 +1207,8 @@
                   "ecu",
                   "evt_sensor_read"
                 ],
-                "title": "บิดคันเร่ง",
-                "reason": "ผู้ขับขี่บิดคันเร่ง เซนเซอร์ส่งสัญญาณปริมาณอากาศเข้าเครื่องไปยัง ECU"
+                "reason": "ผู้ขับขี่บิดคันเร่ง เซนเซอร์ส่งสัญญาณปริมาณอากาศเข้าเครื่องไปยัง ECU",
+                "title": "บิดคันเร่ง"
               },
               {
                 "nodeIds": [
@@ -1357,8 +1217,8 @@
                   "fuel_injector",
                   "evt_fuel_atomized"
                 ],
-                "title": "พ่นหัวฉีด",
-                "reason": "ECU คำนวณปริมาณน้ำมันที่เหมาะสม สั่งหัวฉีดพ่นน้ำมันเป็นละอองฝอย"
+                "reason": "ECU คำนวณปริมาณน้ำมันที่เหมาะสม สั่งหัวฉีดพ่นน้ำมันเป็นละอองฝอย",
+                "title": "พ่นหัวฉีด"
               },
               {
                 "nodeIds": [
@@ -1367,15 +1227,15 @@
                   "fuel_injector2",
                   "evt_precise_mix"
                 ],
-                "title": "ผสมส่วนแม่นยำ",
-                "reason": "ละอองน้ำมันผสมกับอากาศในอัตราส่วนที่ ECU คำนวณไว้ ให้การเผาไหม้สมบูรณ์"
+                "reason": "ละอองน้ำมันผสมกับอากาศในอัตราส่วนที่ ECU คำนวณไว้ ให้การเผาไหม้สมบูรณ์",
+                "title": "ผสมส่วนแม่นยำ"
               }
             ]
           },
           {
+            "description": "บิดคันเร่ง → ECU ตรวจเครื่องเย็น → เพิ่มน้ำมันอัตโนมัติ",
             "id": "fuel-injection-cold",
             "label": "เพิ่มส่วนผสมอัตโนมัติ (Auto Cold Enrichment)",
-            "description": "บิดคันเร่ง → ECU ตรวจเครื่องเย็น → เพิ่มน้ำมันอัตโนมัติ",
             "steps": [
               {
                 "nodeIds": [
@@ -1385,8 +1245,8 @@
                   "ecu",
                   "evt_sensor_read"
                 ],
-                "title": "บิดคันเร่ง",
-                "reason": "ผู้ขับขี่บิดคันเร่ง เซนเซอร์ส่งข้อมูลไปยัง ECU"
+                "reason": "ผู้ขับขี่บิดคันเร่ง เซนเซอร์ส่งข้อมูลไปยัง ECU",
+                "title": "บิดคันเร่ง"
               },
               {
                 "nodeIds": [
@@ -1395,8 +1255,8 @@
                   "fuel_injector",
                   "evt_fuel_atomized"
                 ],
-                "title": "พ่นหัวฉีด",
-                "reason": "ECU คำนวณปริมาณน้ำมันพื้นฐานจากข้อมูลเซนเซอร์"
+                "reason": "ECU คำนวณปริมาณน้ำมันพื้นฐานจากข้อมูลเซนเซอร์",
+                "title": "พ่นหัวฉีด"
               },
               {
                 "nodeIds": [
@@ -1405,336 +1265,336 @@
                   "fuel_injector3",
                   "evt_inject_cold_auto"
                 ],
-                "title": "เพิ่มส่วนผสม",
-                "reason": "เซนเซอร์ตรวจพบอุณหภูมิเครื่องเย็น ECU สั่งเพิ่มปริมาณน้ำมันเพื่อสตาร์ทง่าย"
+                "reason": "เซนเซอร์ตรวจพบอุณหภูมิเครื่องเย็น ECU สั่งเพิ่มปริมาณน้ำมันเพื่อสตาร์ทง่าย",
+                "title": "เพิ่มส่วนผสม"
               }
             ]
           }
         ],
         "rawSteps": [
           {
-            "type": "linear",
+            "command": "บิดคันเร่ง (Injector Mode)",
+            "continuesAs": "inject_fuel",
+            "handledBy": {
+              "_tag": "ref",
+              "id": "ecu"
+            },
             "id": "inject_throttle",
             "initiatedBy": {
               "_tag": "ref",
               "id": "rider"
             },
             "policy": "คำนวณอัตราส่วนผสม (Calculate Fuel Ratio)",
-            "command": "บิดคันเร่ง (Injector Mode)",
-            "handledBy": {
-              "_tag": "ref",
-              "id": "ecu"
-            },
             "resultEvents": [
               {
+                "desc": "ข้อมูลรอบเครื่อง ตำแหน่งคันเร่ง อุณหภูมิเครื่อง อากาศเข้า",
                 "id": "sensor_read",
-                "title": "รับค่าจากเซ็นเซอร์ (Sensor Data)",
-                "desc": "ข้อมูลรอบเครื่อง ตำแหน่งคันเร่ง อุณหภูมิเครื่อง อากาศเข้า"
+                "title": "รับค่าจากเซ็นเซอร์ (Sensor Data)"
               }
             ],
-            "continuesAs": "inject_fuel"
+            "type": "linear"
           },
           {
-            "type": "linear",
-            "id": "inject_fuel",
-            "policy": "คำนวณอัตราส่วนผสม (Calculate Fuel Ratio)",
             "command": "สั่งงานหัวฉีด (Activate Injector)",
+            "continuesAs": "fuel-branch",
             "handledBy": {
               "_tag": "ref",
               "id": "fuel_injector"
             },
+            "id": "inject_fuel",
+            "policy": "คำนวณอัตราส่วนผสม (Calculate Fuel Ratio)",
             "resultEvents": [
               {
+                "desc": "น้ำมันถูกทำให้เป็นละอองละเอียดผสมกับอากาศ",
                 "id": "fuel_atomized",
-                "title": "ละอองน้ำมันเข้าสู่ท่อไอดี",
-                "desc": "น้ำมันถูกทำให้เป็นละอองละเอียดผสมกับอากาศ"
+                "title": "ละอองน้ำมันเข้าสู่ท่อไอดี"
               }
             ],
-            "continuesAs": "fuel-branch"
+            "type": "linear"
           },
           {
-            "type": "branch",
-            "id": "fuel-branch",
-            "event": "fuel_atomized",
             "branches": [
               {
-                "id": "precise_mix",
-                "label": "ปกติ",
-                "policy": "ฉีดน้ำมันปกติ (Normal Injection)",
                 "command": "ใช้ส่วนผสมแม่นยำ (Use Precise Mixture)",
                 "handledBy": {
                   "_tag": "ref",
                   "id": "fuel_injector"
                 },
+                "id": "precise_mix",
+                "label": "ปกติ",
+                "policy": "ฉีดน้ำมันปกติ (Normal Injection)",
                 "resultEvents": [
                   {
+                    "desc": "อัตราส่วนที่แม่นยำตามสภาวะการทำงาน",
                     "id": "precise_mix",
-                    "title": "ส่วนผสมแม่นยำ (Precise Mixture)",
-                    "desc": "อัตราส่วนที่แม่นยำตามสภาวะการทำงาน"
+                    "title": "ส่วนผสมแม่นยำ (Precise Mixture)"
                   }
                 ]
               },
               {
-                "id": "inject_cold",
-                "label": "เครื่องเย็น",
-                "dashed": true,
-                "policy": "เพิ่มส่วนผสมอัตโนมัติ (Auto Cold Enrichment)",
                 "command": "เพิ่มส่วนผสมอัตโนมัติ (Auto Cold Enrichment Action)",
+                "dashed": true,
                 "handledBy": {
                   "_tag": "ref",
                   "id": "fuel_injector"
                 },
+                "id": "inject_cold",
+                "label": "เครื่องเย็น",
+                "policy": "เพิ่มส่วนผสมอัตโนมัติ (Auto Cold Enrichment)",
                 "resultEvents": [
                   {
+                    "desc": "ECU เพิ่มน้ำมันอัตโนมัติเมื่อเครื่องเย็น",
                     "id": "inject_cold_auto",
-                    "title": "เพิ่มส่วนผสมอัตโนมัติ (Auto Cold Enrichment)",
-                    "desc": "ECU เพิ่มน้ำมันอัตโนมัติเมื่อเครื่องเย็น"
+                    "title": "เพิ่มส่วนผสมอัตโนมัติ (Auto Cold Enrichment)"
                   }
                 ]
               }
+            ],
+            "event": "fuel_atomized",
+            "id": "fuel-branch",
+            "type": "branch"
+          }
+        ],
+        "relations": [
+          {
+            "from": "rider",
+            "id": "r1",
+            "to": "pol_inject_throttle",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "from": "pol_inject_throttle",
+            "id": "r2",
+            "to": "cmd_inject_throttle",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "from": "cmd_inject_throttle",
+            "handledBy": true,
+            "id": "r3",
+            "to": "ecu",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "from": "ecu",
+            "id": "r4",
+            "to": "evt_sensor_read",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "from": "evt_sensor_read",
+            "id": "r5",
+            "to": "pol_inject_fuel",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "from": "pol_inject_fuel",
+            "id": "r6",
+            "to": "cmd_inject_fuel",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "from": "cmd_inject_fuel",
+            "handledBy": true,
+            "id": "r7",
+            "to": "fuel_injector",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "from": "fuel_injector",
+            "id": "r8",
+            "to": "evt_fuel_atomized",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "from": "evt_fuel_atomized",
+            "id": "r9",
+            "label": "ปกติ",
+            "to": "pol_precise_mix",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "from": "pol_precise_mix",
+            "id": "r10",
+            "to": "cmd_precise_mix",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "from": "cmd_precise_mix",
+            "handledBy": true,
+            "id": "r11",
+            "to": "fuel_injector2",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "from": "fuel_injector2",
+            "id": "r12",
+            "to": "evt_precise_mix",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "dashed": true,
+            "from": "evt_fuel_atomized",
+            "id": "r13",
+            "label": "เครื่องเย็น",
+            "to": "pol_inject_cold",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "from": "pol_inject_cold",
+            "id": "r14",
+            "to": "cmd_inject_cold",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "from": "cmd_inject_cold",
+            "handledBy": true,
+            "id": "r15",
+            "to": "fuel_injector3",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "from": "fuel_injector3",
+            "id": "r16",
+            "to": "evt_inject_cold_auto",
+            "views": [
+              "EVENT_STORMING"
             ]
           }
         ]
-      }
-    }
+      },
+      "title": "ระบบหัวฉีด (Fuel Injection / EFI)"
+    },
+    "type": "flowchart"
   },
   {
     "folder": "flowchart-choke",
-    "type": "flowchart",
     "props": {
-      "title": "ระบบโช้ค (Choke System)",
       "schema": {
         "entities": {
-          "rider": {
-            "title": "ผู้ขับขี่ (Rider)",
-            "desc": "ผู้ใช้งานมอเตอร์ไซค์",
-            "type": "Actor"
-          },
           "choke_valve": {
-            "title": "วาล์วโช้ค (Choke Valve)",
             "desc": "ควบคุมปริมาณอากาศที่เข้าสู่คาร์บูเรเตอร์",
+            "title": "วาล์วโช้ค (Choke Valve)",
             "type": "Aggregate"
-          },
-          "engine_warm": {
-            "title": "เครื่องยนต์อุ่นตัว (Engine Warms Up)",
-            "desc": "อุณหภูมิเครื่องยนต์สูงขึ้นเรื่อยๆ",
-            "type": "Aggregate"
-          },
-          "pol_choke_on": {
-            "title": "ใช้ส่วนผสมรวยน้ำมัน (Rich Mix Decision)",
-            "desc": "ใช้ส่วนผสมรวยน้ำมัน (Rich Mix Decision)",
-            "type": "Policy",
-            "root": false
-          },
-          "cmd_choke_on": {
-            "title": "เปิดโช้ค (Turn Choke On)",
-            "desc": "เปิดโช้ค (Turn Choke On)",
-            "type": "Command"
-          },
-          "evt_rich_mix": {
-            "title": "ส่วนผสมรวยน้ำมัน (Rich Mixture)",
-            "desc": "อัตราส่วนน้ำมัน:อากาศสูงกว่าปกติ",
-            "type": "Event"
-          },
-          "pol_cold_start": {
-            "title": "เลือกสตาร์ทเครื่อง (Choose Cold Start)",
-            "desc": "เลือกสตาร์ทเครื่อง (Choose Cold Start)",
-            "type": "Policy"
-          },
-          "cmd_cold_start": {
-            "title": "สตาร์ทเครื่องเย็น (Cold Start Engine)",
-            "desc": "สตาร์ทเครื่องเย็น (Cold Start Engine)",
-            "type": "Command"
-          },
-          "evt_engine_warm": {
-            "title": "เครื่องอุ่นแล้ว (Engine Warm)",
-            "desc": "อุณหภูมิเครื่องยนต์ถึงระดับทำงานปกติ",
-            "type": "Event"
-          },
-          "pol_ride_choke": {
-            "title": "ลืมปิดโช้ค (Forgot Choke)",
-            "desc": "ลืมปิดโช้ค (Forgot Choke)",
-            "type": "Policy"
-          },
-          "cmd_ride_choke": {
-            "title": "ขี่รถโดยลืมปิดโช้ค (Ride With Choke)",
-            "desc": "ขี่รถโดยลืมปิดโช้ค (Ride With Choke)",
-            "type": "Command"
           },
           "choke_valve2": {
-            "title": "วาล์วโช้ค (Choke Valve)",
             "desc": "ควบคุมปริมาณอากาศที่เข้าสู่คาร์บูเรเตอร์",
+            "title": "วาล์วโช้ค (Choke Valve)",
+            "type": "Aggregate"
+          },
+          "choke_valve3": {
+            "desc": "ควบคุมปริมาณอากาศที่เข้าสู่คาร์บูเรเตอร์",
+            "title": "วาล์วโช้ค (Choke Valve)",
+            "type": "Aggregate"
+          },
+          "cmd_choke_off": {
+            "desc": "ปิดโช้ค (Choke Off)",
+            "title": "ปิดโช้ค (Choke Off)",
+            "type": "Command"
+          },
+          "cmd_choke_on": {
+            "desc": "เปิดโช้ค (Turn Choke On)",
+            "title": "เปิดโช้ค (Turn Choke On)",
+            "type": "Command"
+          },
+          "cmd_cold_start": {
+            "desc": "สตาร์ทเครื่องเย็น (Cold Start Engine)",
+            "title": "สตาร์ทเครื่องเย็น (Cold Start Engine)",
+            "type": "Command"
+          },
+          "cmd_ride_choke": {
+            "desc": "ขี่รถโดยลืมปิดโช้ค (Ride With Choke)",
+            "title": "ขี่รถโดยลืมปิดโช้ค (Ride With Choke)",
+            "type": "Command"
+          },
+          "engine_warm": {
+            "desc": "อุณหภูมิเครื่องยนต์สูงขึ้นเรื่อยๆ",
+            "title": "เครื่องยนต์อุ่นตัว (Engine Warms Up)",
             "type": "Aggregate"
           },
           "evt_choke_forget": {
-            "title": "วิ่ง โช้คค้าง (Riding With Choke On)",
             "desc": "ส่วนผสมรวยน้ำมันเกินไป ทำให้หัวเทียนสกปรกและกินน้ำมัน",
+            "title": "วิ่ง โช้คค้าง (Riding With Choke On)",
+            "type": "Event"
+          },
+          "evt_engine_warm": {
+            "desc": "อุณหภูมิเครื่องยนต์ถึงระดับทำงานปกติ",
+            "title": "เครื่องอุ่นแล้ว (Engine Warm)",
+            "type": "Event"
+          },
+          "evt_normal_mix": {
+            "desc": "อัตราส่วนน้ำมัน:อากาศกลับสู่ค่ามาตรฐาน",
+            "title": "ส่วนผสมปกติ (Normal Mixture)",
+            "type": "Event"
+          },
+          "evt_rich_mix": {
+            "desc": "อัตราส่วนน้ำมัน:อากาศสูงกว่าปกติ",
+            "title": "ส่วนผสมรวยน้ำมัน (Rich Mixture)",
             "type": "Event"
           },
           "pol_choke_off": {
-            "title": "ปิดโช้ค (Turn Choke Off)",
             "desc": "ปิดโช้ค (Turn Choke Off)",
-            "type": "Policy",
-            "root": false
+            "root": false,
+            "title": "ปิดโช้ค (Turn Choke Off)",
+            "type": "Policy"
           },
-          "cmd_choke_off": {
-            "title": "ปิดโช้ค (Choke Off)",
-            "desc": "ปิดโช้ค (Choke Off)",
-            "type": "Command"
+          "pol_choke_on": {
+            "desc": "ใช้ส่วนผสมรวยน้ำมัน (Rich Mix Decision)",
+            "root": false,
+            "title": "ใช้ส่วนผสมรวยน้ำมัน (Rich Mix Decision)",
+            "type": "Policy"
           },
-          "choke_valve3": {
-            "title": "วาล์วโช้ค (Choke Valve)",
-            "desc": "ควบคุมปริมาณอากาศที่เข้าสู่คาร์บูเรเตอร์",
-            "type": "Aggregate"
+          "pol_cold_start": {
+            "desc": "เลือกสตาร์ทเครื่อง (Choose Cold Start)",
+            "title": "เลือกสตาร์ทเครื่อง (Choose Cold Start)",
+            "type": "Policy"
           },
-          "evt_normal_mix": {
-            "title": "ส่วนผสมปกติ (Normal Mixture)",
-            "desc": "อัตราส่วนน้ำมัน:อากาศกลับสู่ค่ามาตรฐาน",
-            "type": "Event"
+          "pol_ride_choke": {
+            "desc": "ลืมปิดโช้ค (Forgot Choke)",
+            "title": "ลืมปิดโช้ค (Forgot Choke)",
+            "type": "Policy"
+          },
+          "rider": {
+            "desc": "ผู้ใช้งานมอเตอร์ไซค์",
+            "title": "ผู้ขับขี่ (Rider)",
+            "type": "Actor"
           }
         },
-        "relations": [
-          {
-            "id": "r1",
-            "from": "rider",
-            "to": "pol_choke_on",
-            "views": [
-              "EVENT_STORMING"
-            ]
-          },
-          {
-            "id": "r2",
-            "from": "pol_choke_on",
-            "to": "cmd_choke_on",
-            "views": [
-              "EVENT_STORMING"
-            ]
-          },
-          {
-            "id": "r3",
-            "from": "cmd_choke_on",
-            "to": "choke_valve",
-            "handledBy": true,
-            "views": [
-              "EVENT_STORMING"
-            ]
-          },
-          {
-            "id": "r4",
-            "from": "choke_valve",
-            "to": "evt_rich_mix",
-            "views": [
-              "EVENT_STORMING"
-            ]
-          },
-          {
-            "id": "r5",
-            "from": "evt_rich_mix",
-            "to": "pol_cold_start",
-            "label": "สตาร์ทเครื่อง",
-            "views": [
-              "EVENT_STORMING"
-            ]
-          },
-          {
-            "id": "r6",
-            "from": "pol_cold_start",
-            "to": "cmd_cold_start",
-            "views": [
-              "EVENT_STORMING"
-            ]
-          },
-          {
-            "id": "r7",
-            "from": "cmd_cold_start",
-            "to": "engine_warm",
-            "handledBy": true,
-            "views": [
-              "EVENT_STORMING"
-            ]
-          },
-          {
-            "id": "r8",
-            "from": "engine_warm",
-            "to": "evt_engine_warm",
-            "views": [
-              "EVENT_STORMING"
-            ]
-          },
-          {
-            "id": "r9",
-            "from": "evt_engine_warm",
-            "to": "pol_choke_off",
-            "views": [
-              "EVENT_STORMING"
-            ]
-          },
-          {
-            "id": "r10",
-            "from": "evt_rich_mix",
-            "to": "pol_ride_choke",
-            "label": "ลืมปิดโช้ค",
-            "dashed": true,
-            "views": [
-              "EVENT_STORMING"
-            ]
-          },
-          {
-            "id": "r11",
-            "from": "pol_ride_choke",
-            "to": "cmd_ride_choke",
-            "views": [
-              "EVENT_STORMING"
-            ]
-          },
-          {
-            "id": "r12",
-            "from": "cmd_ride_choke",
-            "to": "choke_valve2",
-            "handledBy": true,
-            "views": [
-              "EVENT_STORMING"
-            ]
-          },
-          {
-            "id": "r13",
-            "from": "choke_valve2",
-            "to": "evt_choke_forget",
-            "views": [
-              "EVENT_STORMING"
-            ]
-          },
-          {
-            "id": "r14",
-            "from": "pol_choke_off",
-            "to": "cmd_choke_off",
-            "views": [
-              "EVENT_STORMING"
-            ]
-          },
-          {
-            "id": "r15",
-            "from": "cmd_choke_off",
-            "to": "choke_valve3",
-            "handledBy": true,
-            "views": [
-              "EVENT_STORMING"
-            ]
-          },
-          {
-            "id": "r16",
-            "from": "choke_valve3",
-            "to": "evt_normal_mix",
-            "views": [
-              "EVENT_STORMING"
-            ]
-          }
-        ],
         "journeys": [
           {
+            "description": "เปิดโช้ค → สตาร์ท → เครื่องอุ่น → ปิดโช้ค → ผสมส่วนปกติ",
             "id": "choke-cold-start",
             "label": "สตาร์ทเครื่องเย็น (Cold Start)",
-            "description": "เปิดโช้ค → สตาร์ท → เครื่องอุ่น → ปิดโช้ค → ผสมส่วนปกติ",
             "steps": [
               {
                 "nodeIds": [
@@ -1744,8 +1604,8 @@
                   "choke_valve",
                   "evt_rich_mix"
                 ],
-                "title": "เปิดโช้ค",
-                "reason": "ดึงโช้คปิดช่องอากาศ ลดอากาศเข้าเพื่อให้ส่วนผสมเข้มข้นขึ้น เหมาะแก่การสตาร์ทเครื่องเย็น"
+                "reason": "ดึงโช้คปิดช่องอากาศ ลดอากาศเข้าเพื่อให้ส่วนผสมเข้มข้นขึ้น เหมาะแก่การสตาร์ทเครื่องเย็น",
+                "title": "เปิดโช้ค"
               },
               {
                 "nodeIds": [
@@ -1754,8 +1614,8 @@
                   "engine_warm",
                   "evt_engine_warm"
                 ],
-                "title": "สตาร์ทเครื่อง",
-                "reason": "ส่วนผสมเข้มข้นช่วยให้จุดระเบิดง่ายขึ้น เครื่องติดและเริ่มทำงาน"
+                "reason": "ส่วนผสมเข้มข้นช่วยให้จุดระเบิดง่ายขึ้น เครื่องติดและเริ่มทำงาน",
+                "title": "สตาร์ทเครื่อง"
               },
               {
                 "nodeIds": [
@@ -1764,15 +1624,15 @@
                   "choke_valve3",
                   "evt_normal_mix"
                 ],
-                "title": "ปิดโช้ค",
-                "reason": "เมื่อเครื่องอุ่นแล้ว ปล่อยโช้คกลับมาเพื่อเปิดช่องอากาศให้กลับสู่การทำงานปกติ"
+                "reason": "เมื่อเครื่องอุ่นแล้ว ปล่อยโช้คกลับมาเพื่อเปิดช่องอากาศให้กลับสู่การทำงานปกติ",
+                "title": "ปิดโช้ค"
               }
             ]
           },
           {
+            "description": "เปิดโช้ค → ลืมปิด → วิ่งโช้คค้าง → รถเร่งไม่ขึ้น",
             "id": "choke-forgot-off",
             "label": "ลืมปิดโช้ค (Forgot to Turn Off Choke)",
-            "description": "เปิดโช้ค → ลืมปิด → วิ่งโช้คค้าง → รถเร่งไม่ขึ้น",
             "steps": [
               {
                 "nodeIds": [
@@ -1782,8 +1642,8 @@
                   "choke_valve",
                   "evt_rich_mix"
                 ],
-                "title": "เปิดโช้ค",
-                "reason": "ดึงโช้คเพื่อสตาร์ทเครื่องเย็น"
+                "reason": "ดึงโช้คเพื่อสตาร์ทเครื่องเย็น",
+                "title": "เปิดโช้ค"
               },
               {
                 "nodeIds": [
@@ -1792,357 +1652,341 @@
                   "choke_valve2",
                   "evt_choke_forget"
                 ],
-                "title": "วิ่งโช้คค้าง",
-                "reason": "ลืมปล่อยโช้ค เครื่องได้รับส่วนผสมเข้มข้นเกินไป ทำให้เร่งไม่ขึ้น มีควันดำ และสิ้นเปลืองน้ำมัน"
+                "reason": "ลืมปล่อยโช้ค เครื่องได้รับส่วนผสมเข้มข้นเกินไป ทำให้เร่งไม่ขึ้น มีควันดำ และสิ้นเปลืองน้ำมัน",
+                "title": "วิ่งโช้คค้าง"
               }
             ]
           }
         ],
         "rawSteps": [
           {
-            "type": "linear",
+            "command": "เปิดโช้ค (Turn Choke On)",
+            "continuesAs": "rich-mix-branch",
+            "handledBy": {
+              "_tag": "ref",
+              "id": "choke_valve"
+            },
             "id": "choke_on",
             "initiatedBy": {
               "_tag": "ref",
               "id": "rider"
             },
             "policy": "ใช้ส่วนผสมรวยน้ำมัน (Rich Mix Decision)",
-            "command": "เปิดโช้ค (Turn Choke On)",
-            "handledBy": {
-              "_tag": "ref",
-              "id": "choke_valve"
-            },
             "resultEvents": [
               {
+                "desc": "อัตราส่วนน้ำมัน:อากาศสูงกว่าปกติ",
                 "id": "rich_mix",
-                "title": "ส่วนผสมรวยน้ำมัน (Rich Mixture)",
-                "desc": "อัตราส่วนน้ำมัน:อากาศสูงกว่าปกติ"
+                "title": "ส่วนผสมรวยน้ำมัน (Rich Mixture)"
               }
             ],
-            "continuesAs": "rich-mix-branch"
+            "type": "linear"
           },
           {
-            "type": "branch",
-            "id": "rich-mix-branch",
-            "event": "rich_mix",
             "branches": [
               {
-                "id": "cold_start",
-                "label": "สตาร์ทเครื่อง",
-                "policy": "เลือกสตาร์ทเครื่อง (Choose Cold Start)",
                 "command": "สตาร์ทเครื่องเย็น (Cold Start Engine)",
+                "continuesAs": "choke_off",
                 "handledBy": {
                   "_tag": "ref",
                   "id": "engine_warm"
                 },
+                "id": "cold_start",
+                "label": "สตาร์ทเครื่อง",
+                "policy": "เลือกสตาร์ทเครื่อง (Choose Cold Start)",
                 "resultEvents": [
                   {
+                    "desc": "อุณหภูมิเครื่องยนต์ถึงระดับทำงานปกติ",
                     "id": "engine_warm",
-                    "title": "เครื่องอุ่นแล้ว (Engine Warm)",
-                    "desc": "อุณหภูมิเครื่องยนต์ถึงระดับทำงานปกติ"
+                    "title": "เครื่องอุ่นแล้ว (Engine Warm)"
                   }
-                ],
-                "continuesAs": "choke_off"
+                ]
               },
               {
-                "id": "ride_choke",
-                "label": "ลืมปิดโช้ค",
-                "dashed": true,
-                "policy": "ลืมปิดโช้ค (Forgot Choke)",
                 "command": "ขี่รถโดยลืมปิดโช้ค (Ride With Choke)",
+                "dashed": true,
                 "handledBy": {
                   "_tag": "ref",
                   "id": "choke_valve"
                 },
+                "id": "ride_choke",
+                "label": "ลืมปิดโช้ค",
+                "policy": "ลืมปิดโช้ค (Forgot Choke)",
                 "resultEvents": [
                   {
+                    "desc": "ส่วนผสมรวยน้ำมันเกินไป ทำให้หัวเทียนสกปรกและกินน้ำมัน",
                     "id": "choke_forget",
-                    "title": "วิ่ง โช้คค้าง (Riding With Choke On)",
-                    "desc": "ส่วนผสมรวยน้ำมันเกินไป ทำให้หัวเทียนสกปรกและกินน้ำมัน"
+                    "title": "วิ่ง โช้คค้าง (Riding With Choke On)"
                   }
                 ]
               }
-            ]
+            ],
+            "event": "rich_mix",
+            "id": "rich-mix-branch",
+            "type": "branch"
           },
           {
-            "type": "linear",
-            "id": "choke_off",
-            "policy": "ปิดโช้ค (Turn Choke Off)",
             "command": "ปิดโช้ค (Choke Off)",
             "handledBy": {
               "_tag": "ref",
               "id": "choke_valve"
             },
+            "id": "choke_off",
+            "policy": "ปิดโช้ค (Turn Choke Off)",
             "resultEvents": [
               {
+                "desc": "อัตราส่วนน้ำมัน:อากาศกลับสู่ค่ามาตรฐาน",
                 "id": "normal_mix",
-                "title": "ส่วนผสมปกติ (Normal Mixture)",
-                "desc": "อัตราส่วนน้ำมัน:อากาศกลับสู่ค่ามาตรฐาน"
+                "title": "ส่วนผสมปกติ (Normal Mixture)"
               }
+            ],
+            "type": "linear"
+          }
+        ],
+        "relations": [
+          {
+            "from": "rider",
+            "id": "r1",
+            "to": "pol_choke_on",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "from": "pol_choke_on",
+            "id": "r2",
+            "to": "cmd_choke_on",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "from": "cmd_choke_on",
+            "handledBy": true,
+            "id": "r3",
+            "to": "choke_valve",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "from": "choke_valve",
+            "id": "r4",
+            "to": "evt_rich_mix",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "from": "evt_rich_mix",
+            "id": "r5",
+            "label": "สตาร์ทเครื่อง",
+            "to": "pol_cold_start",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "from": "pol_cold_start",
+            "id": "r6",
+            "to": "cmd_cold_start",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "from": "cmd_cold_start",
+            "handledBy": true,
+            "id": "r7",
+            "to": "engine_warm",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "from": "engine_warm",
+            "id": "r8",
+            "to": "evt_engine_warm",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "from": "evt_engine_warm",
+            "id": "r9",
+            "to": "pol_choke_off",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "dashed": true,
+            "from": "evt_rich_mix",
+            "id": "r10",
+            "label": "ลืมปิดโช้ค",
+            "to": "pol_ride_choke",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "from": "pol_ride_choke",
+            "id": "r11",
+            "to": "cmd_ride_choke",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "from": "cmd_ride_choke",
+            "handledBy": true,
+            "id": "r12",
+            "to": "choke_valve2",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "from": "choke_valve2",
+            "id": "r13",
+            "to": "evt_choke_forget",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "from": "pol_choke_off",
+            "id": "r14",
+            "to": "cmd_choke_off",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "from": "cmd_choke_off",
+            "handledBy": true,
+            "id": "r15",
+            "to": "choke_valve3",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "from": "choke_valve3",
+            "id": "r16",
+            "to": "evt_normal_mix",
+            "views": [
+              "EVENT_STORMING"
             ]
           }
         ]
-      }
-    }
+      },
+      "title": "ระบบโช้ค (Choke System)"
+    },
+    "type": "flowchart"
   },
   {
     "folder": "flowchart-brake",
-    "type": "flowchart",
     "props": {
-      "title": "ระบบเบรก (Brake System)",
       "schema": {
         "entities": {
-          "rider": {
-            "title": "ผู้ขับขี่ (Rider)",
-            "desc": "ผู้ใช้งานมอเตอร์ไซค์",
-            "type": "Actor"
+          "brake_caliper": {
+            "desc": "ระบบสร้างแรงเสียดทานเพื่อหน่วงล้อ",
+            "title": "แคลิเพอร์และจานเบรก (Brake Caliper & Disc)",
+            "type": "Aggregate"
+          },
+          "brake_caliper2": {
+            "desc": "ระบบสร้างแรงเสียดทานเพื่อหน่วงล้อ",
+            "title": "แคลิเพอร์และจานเบรก (Brake Caliper & Disc)",
+            "type": "Aggregate"
+          },
+          "brake_caliper3": {
+            "desc": "ระบบสร้างแรงเสียดทานเพื่อหน่วงล้อ",
+            "title": "แคลิเพอร์และจานเบรก (Brake Caliper & Disc)",
+            "type": "Aggregate"
           },
           "brake_master": {
-            "title": "กระปุกเบรก (Brake Master Cylinder)",
             "desc": "เปลี่ยนแรงกดเป็นแรงดันไฮดรอลิก",
+            "title": "กระปุกเบรก (Brake Master Cylinder)",
             "type": "Aggregate"
-          },
-          "brake_caliper": {
-            "title": "แคลิเพอร์และจานเบรก (Brake Caliper & Disc)",
-            "desc": "ระบบสร้างแรงเสียดทานเพื่อหน่วงล้อ",
-            "type": "Aggregate"
-          },
-          "pol_brake": {
-            "title": "แคลิเพอร์รับแรงดัน (Caliper Activates)",
-            "desc": "แคลิเพอร์รับแรงดัน (Caliper Activates)",
-            "type": "Policy",
-            "root": false
           },
           "cmd_brake": {
-            "title": "กดคันเบรก (Apply Brake)",
             "desc": "กดคันเบรก (Apply Brake)",
+            "title": "กดคันเบรก (Apply Brake)",
             "type": "Command"
           },
-          "evt_brake_pressure": {
-            "title": "น้ำมันเบรกดันไปแคลิเพอร์",
-            "desc": "แรงดันไฮดรอลิกส่งผ่านท่อเบรก",
-            "type": "Event"
+          "cmd_brake_fade": {
+            "desc": "เบรกจม (Brake Fade Action)",
+            "title": "เบรกจม (Brake Fade Action)",
+            "type": "Command"
           },
-          "pol_caliper_squeeze": {
-            "title": "แคลิเพอร์รับแรงดัน (Caliper Activates)",
-            "desc": "แคลิเพอร์รับแรงดัน (Caliper Activates)",
-            "type": "Policy",
-            "root": false
+          "cmd_brake_normal": {
+            "desc": "รถหยุดหรือช้าลงตามต้องการ (Normal Brake)",
+            "title": "รถหยุดหรือช้าลงตามต้องการ (Normal Brake)",
+            "type": "Command"
           },
           "cmd_caliper_squeeze": {
-            "title": "กดผ้าเบรกเข้าจานเบรก",
             "desc": "กดผ้าเบรกเข้าจานเบรก",
+            "title": "กดผ้าเบรกเข้าจานเบรก",
             "type": "Command"
           },
-          "evt_wheel_slowed": {
-            "title": "ล้อช้าลง (Wheel Slowed)",
-            "desc": "พลังงานจลน์เปลี่ยนเป็นความร้อน รถชะลอความเร็ว",
+          "evt_brake_fade": {
+            "desc": "ประสิทธิภาพเบรกลดลงเพราะความร้อนสูง",
+            "title": "เบรกจม (Brake Fade)",
             "type": "Event"
           },
           "evt_brake_heat": {
-            "title": "เกิดความร้อน (Brake Heat)",
             "desc": "จานเบรกและผ้าเบรกมีความร้อนสูง",
+            "title": "เกิดความร้อน (Brake Heat)",
             "type": "Event"
-          },
-          "pol_brake_normal": {
-            "title": "เบรกทำงานปกติ (Normal Brake)",
-            "desc": "เบรกทำงานปกติ (Normal Brake)",
-            "type": "Policy"
-          },
-          "cmd_brake_normal": {
-            "title": "รถหยุดหรือช้าลงตามต้องการ (Normal Brake)",
-            "desc": "รถหยุดหรือช้าลงตามต้องการ (Normal Brake)",
-            "type": "Command"
-          },
-          "brake_caliper2": {
-            "title": "แคลิเพอร์และจานเบรก (Brake Caliper & Disc)",
-            "desc": "ระบบสร้างแรงเสียดทานเพื่อหน่วงล้อ",
-            "type": "Aggregate"
           },
           "evt_brake_normal": {
-            "title": "รถหยุดหรือช้าลงตามต้องการ",
             "desc": "เบรกทำงานปกติ",
+            "title": "รถหยุดหรือช้าลงตามต้องการ",
             "type": "Event"
           },
-          "pol_brake_fade": {
-            "title": "เบรกจม (Brake Fade)",
-            "desc": "เบรกจม (Brake Fade)",
+          "evt_brake_pressure": {
+            "desc": "แรงดันไฮดรอลิกส่งผ่านท่อเบรก",
+            "title": "น้ำมันเบรกดันไปแคลิเพอร์",
+            "type": "Event"
+          },
+          "evt_wheel_slowed": {
+            "desc": "พลังงานจลน์เปลี่ยนเป็นความร้อน รถชะลอความเร็ว",
+            "title": "ล้อช้าลง (Wheel Slowed)",
+            "type": "Event"
+          },
+          "pol_brake": {
+            "desc": "แคลิเพอร์รับแรงดัน (Caliper Activates)",
+            "root": false,
+            "title": "แคลิเพอร์รับแรงดัน (Caliper Activates)",
             "type": "Policy"
           },
-          "cmd_brake_fade": {
-            "title": "เบรกจม (Brake Fade Action)",
-            "desc": "เบรกจม (Brake Fade Action)",
-            "type": "Command"
-          },
-          "brake_caliper3": {
-            "title": "แคลิเพอร์และจานเบรก (Brake Caliper & Disc)",
-            "desc": "ระบบสร้างแรงเสียดทานเพื่อหน่วงล้อ",
-            "type": "Aggregate"
-          },
-          "evt_brake_fade": {
+          "pol_brake_fade": {
+            "desc": "เบรกจม (Brake Fade)",
             "title": "เบรกจม (Brake Fade)",
-            "desc": "ประสิทธิภาพเบรกลดลงเพราะความร้อนสูง",
-            "type": "Event"
+            "type": "Policy"
+          },
+          "pol_brake_normal": {
+            "desc": "เบรกทำงานปกติ (Normal Brake)",
+            "title": "เบรกทำงานปกติ (Normal Brake)",
+            "type": "Policy"
+          },
+          "pol_caliper_squeeze": {
+            "desc": "แคลิเพอร์รับแรงดัน (Caliper Activates)",
+            "root": false,
+            "title": "แคลิเพอร์รับแรงดัน (Caliper Activates)",
+            "type": "Policy"
+          },
+          "rider": {
+            "desc": "ผู้ใช้งานมอเตอร์ไซค์",
+            "title": "ผู้ขับขี่ (Rider)",
+            "type": "Actor"
           }
         },
-        "relations": [
-          {
-            "id": "r1",
-            "from": "rider",
-            "to": "pol_brake",
-            "views": [
-              "EVENT_STORMING"
-            ]
-          },
-          {
-            "id": "r2",
-            "from": "pol_brake",
-            "to": "cmd_brake",
-            "views": [
-              "EVENT_STORMING"
-            ]
-          },
-          {
-            "id": "r3",
-            "from": "cmd_brake",
-            "to": "brake_master",
-            "handledBy": true,
-            "views": [
-              "EVENT_STORMING"
-            ]
-          },
-          {
-            "id": "r4",
-            "from": "brake_master",
-            "to": "evt_brake_pressure",
-            "views": [
-              "EVENT_STORMING"
-            ]
-          },
-          {
-            "id": "r5",
-            "from": "evt_brake_pressure",
-            "to": "pol_caliper_squeeze",
-            "views": [
-              "EVENT_STORMING"
-            ]
-          },
-          {
-            "id": "r6",
-            "from": "pol_caliper_squeeze",
-            "to": "cmd_caliper_squeeze",
-            "views": [
-              "EVENT_STORMING"
-            ]
-          },
-          {
-            "id": "r7",
-            "from": "cmd_caliper_squeeze",
-            "to": "brake_caliper",
-            "handledBy": true,
-            "views": [
-              "EVENT_STORMING"
-            ]
-          },
-          {
-            "id": "r8",
-            "from": "brake_caliper",
-            "to": "evt_wheel_slowed",
-            "views": [
-              "EVENT_STORMING"
-            ]
-          },
-          {
-            "id": "r9",
-            "from": "brake_caliper",
-            "to": "evt_brake_heat",
-            "views": [
-              "EVENT_STORMING"
-            ]
-          },
-          {
-            "id": "r10",
-            "from": "evt_wheel_slowed",
-            "to": "evt_brake_heat",
-            "views": [
-              "EVENT_STORMING"
-            ]
-          },
-          {
-            "id": "r11",
-            "from": "evt_brake_heat",
-            "to": "pol_brake_normal",
-            "label": "ปกติ",
-            "views": [
-              "EVENT_STORMING"
-            ]
-          },
-          {
-            "id": "r12",
-            "from": "pol_brake_normal",
-            "to": "cmd_brake_normal",
-            "views": [
-              "EVENT_STORMING"
-            ]
-          },
-          {
-            "id": "r13",
-            "from": "cmd_brake_normal",
-            "to": "brake_caliper2",
-            "handledBy": true,
-            "views": [
-              "EVENT_STORMING"
-            ]
-          },
-          {
-            "id": "r14",
-            "from": "brake_caliper2",
-            "to": "evt_brake_normal",
-            "views": [
-              "EVENT_STORMING"
-            ]
-          },
-          {
-            "id": "r15",
-            "from": "evt_brake_heat",
-            "to": "pol_brake_fade",
-            "label": "ร้อนเกินไป",
-            "dashed": true,
-            "views": [
-              "EVENT_STORMING"
-            ]
-          },
-          {
-            "id": "r16",
-            "from": "pol_brake_fade",
-            "to": "cmd_brake_fade",
-            "views": [
-              "EVENT_STORMING"
-            ]
-          },
-          {
-            "id": "r17",
-            "from": "cmd_brake_fade",
-            "to": "brake_caliper3",
-            "handledBy": true,
-            "views": [
-              "EVENT_STORMING"
-            ]
-          },
-          {
-            "id": "r18",
-            "from": "brake_caliper3",
-            "to": "evt_brake_fade",
-            "views": [
-              "EVENT_STORMING"
-            ]
-          }
-        ],
         "journeys": [
           {
+            "description": "กดเบรก → ไฮดรอลิก → แคลิเพอร์ประกบจาน → รถช้าลง",
             "id": "brake-normal",
             "label": "เบรกปกติ (Normal Braking)",
-            "description": "กดเบรก → ไฮดรอลิก → แคลิเพอร์ประกบจาน → รถช้าลง",
             "steps": [
               {
                 "nodeIds": [
@@ -2152,8 +1996,8 @@
                   "brake_master",
                   "evt_brake_pressure"
                 ],
-                "title": "กดเบรก",
-                "reason": "ผู้ขับขี่กดแฮนด์เบรก หรือแป้นเบรก เพื่อสั่งให้ระบบเบรกทำงาน"
+                "reason": "ผู้ขับขี่กดแฮนด์เบรก หรือแป้นเบรก เพื่อสั่งให้ระบบเบรกทำงาน",
+                "title": "กดเบรก"
               },
               {
                 "nodeIds": [
@@ -2163,8 +2007,8 @@
                   "evt_wheel_slowed",
                   "evt_brake_heat"
                 ],
-                "title": "แคลิเพอร์ประกบจาน",
-                "reason": "แรงไฮดรอลิกส่งต่อเข้าแคลิเพอร์ กดผ้าเบรกประกบจานเบรกทั้งสองด้าน"
+                "reason": "แรงไฮดรอลิกส่งต่อเข้าแคลิเพอร์ กดผ้าเบรกประกบจานเบรกทั้งสองด้าน",
+                "title": "แคลิเพอร์ประกบจาน"
               },
               {
                 "nodeIds": [
@@ -2173,15 +2017,15 @@
                   "brake_caliper2",
                   "evt_brake_normal"
                 ],
-                "title": "รถช้าลง",
-                "reason": "แรงเสียดทานระหว่างผ้าเบรกและจานเบรกทำให้ล้อช้าลง รถหยุดหรือลดความเร็วตามที่ต้องการ"
+                "reason": "แรงเสียดทานระหว่างผ้าเบรกและจานเบรกทำให้ล้อช้าลง รถหยุดหรือลดความเร็วตามที่ต้องการ",
+                "title": "รถช้าลง"
               }
             ]
           },
           {
+            "description": "กดเบรก → เบรกหนักต่อเนื่อง → ร้อนเกิน → ประสิทธิภาพลด",
             "id": "brake-fade",
             "label": "เบรกจม (Brake Fade)",
-            "description": "กดเบรก → เบรกหนักต่อเนื่อง → ร้อนเกิน → ประสิทธิภาพลด",
             "steps": [
               {
                 "nodeIds": [
@@ -2191,8 +2035,8 @@
                   "brake_master",
                   "evt_brake_pressure"
                 ],
-                "title": "กดเบรก",
-                "reason": "ผู้ขับขี่กดเบรกเพื่อลดความเร็ว"
+                "reason": "ผู้ขับขี่กดเบรกเพื่อลดความเร็ว",
+                "title": "กดเบรก"
               },
               {
                 "nodeIds": [
@@ -2202,8 +2046,8 @@
                   "evt_wheel_slowed",
                   "evt_brake_heat"
                 ],
-                "title": "แคลิเพอร์ประกบจาน",
-                "reason": "แคลิเพอร์กดผ้าเบรกประกบจานเบรก ใช้แรงเสียดทานในการหยุดล้อ"
+                "reason": "แคลิเพอร์กดผ้าเบรกประกบจานเบรก ใช้แรงเสียดทานในการหยุดล้อ",
+                "title": "แคลิเพอร์ประกบจาน"
               },
               {
                 "nodeIds": [
@@ -2212,112 +2056,264 @@
                   "brake_caliper3",
                   "evt_brake_fade"
                 ],
-                "title": "เบรกจม",
-                "reason": "เบรกหนักต่อเนื่องทำให้จานและผ้าเบรกร้อนเกินจุดทนทาน แรงเสียดทานลด เบรกไม่ทำงานเต็มประสิทธิภาพ"
+                "reason": "เบรกหนักต่อเนื่องทำให้จานและผ้าเบรกร้อนเกินจุดทนทาน แรงเสียดทานลด เบรกไม่ทำงานเต็มประสิทธิภาพ",
+                "title": "เบรกจม"
               }
             ]
           }
         ],
         "rawSteps": [
           {
-            "type": "linear",
+            "command": "กดคันเบรก (Apply Brake)",
+            "continuesAs": "caliper_squeeze",
+            "handledBy": {
+              "_tag": "ref",
+              "id": "brake_master"
+            },
             "id": "brake",
             "initiatedBy": {
               "_tag": "ref",
               "id": "rider"
             },
             "policy": "แคลิเพอร์รับแรงดัน (Caliper Activates)",
-            "command": "กดคันเบรก (Apply Brake)",
-            "handledBy": {
-              "_tag": "ref",
-              "id": "brake_master"
-            },
             "resultEvents": [
               {
+                "desc": "แรงดันไฮดรอลิกส่งผ่านท่อเบรก",
                 "id": "brake_pressure",
-                "title": "น้ำมันเบรกดันไปแคลิเพอร์",
-                "desc": "แรงดันไฮดรอลิกส่งผ่านท่อเบรก"
+                "title": "น้ำมันเบรกดันไปแคลิเพอร์"
               }
             ],
-            "continuesAs": "caliper_squeeze"
+            "type": "linear"
           },
           {
-            "type": "linear",
-            "id": "caliper_squeeze",
-            "policy": "แคลิเพอร์รับแรงดัน (Caliper Activates)",
             "command": "กดผ้าเบรกเข้าจานเบรก",
+            "continuesAs": "brake-branch",
             "handledBy": {
               "_tag": "ref",
               "id": "brake_caliper"
             },
+            "id": "caliper_squeeze",
+            "policy": "แคลิเพอร์รับแรงดัน (Caliper Activates)",
             "resultEvents": [
               {
+                "desc": "พลังงานจลน์เปลี่ยนเป็นความร้อน รถชะลอความเร็ว",
                 "id": "wheel_slowed",
-                "title": "ล้อช้าลง (Wheel Slowed)",
-                "desc": "พลังงานจลน์เปลี่ยนเป็นความร้อน รถชะลอความเร็ว"
+                "title": "ล้อช้าลง (Wheel Slowed)"
               },
               {
+                "desc": "จานเบรกและผ้าเบรกมีความร้อนสูง",
                 "id": "brake_heat",
-                "title": "เกิดความร้อน (Brake Heat)",
-                "desc": "จานเบรกและผ้าเบรกมีความร้อนสูง"
+                "title": "เกิดความร้อน (Brake Heat)"
               }
             ],
-            "continuesAs": "brake-branch"
+            "type": "linear"
           },
           {
-            "type": "branch",
-            "id": "brake-branch",
-            "event": "brake_heat",
             "branches": [
               {
-                "id": "brake_normal",
-                "label": "ปกติ",
-                "policy": "เบรกทำงานปกติ (Normal Brake)",
                 "command": "รถหยุดหรือช้าลงตามต้องการ (Normal Brake)",
                 "handledBy": {
                   "_tag": "ref",
                   "id": "brake_caliper"
                 },
+                "id": "brake_normal",
+                "label": "ปกติ",
+                "policy": "เบรกทำงานปกติ (Normal Brake)",
                 "resultEvents": [
                   {
+                    "desc": "เบรกทำงานปกติ",
                     "id": "brake_normal",
-                    "title": "รถหยุดหรือช้าลงตามต้องการ",
-                    "desc": "เบรกทำงานปกติ"
+                    "title": "รถหยุดหรือช้าลงตามต้องการ"
                   }
                 ]
               },
               {
-                "id": "brake_fade",
-                "label": "ร้อนเกินไป",
-                "dashed": true,
-                "policy": "เบรกจม (Brake Fade)",
                 "command": "เบรกจม (Brake Fade Action)",
+                "dashed": true,
                 "handledBy": {
                   "_tag": "ref",
                   "id": "brake_caliper"
                 },
+                "id": "brake_fade",
+                "label": "ร้อนเกินไป",
+                "policy": "เบรกจม (Brake Fade)",
                 "resultEvents": [
                   {
+                    "desc": "ประสิทธิภาพเบรกลดลงเพราะความร้อนสูง",
                     "id": "brake_fade",
-                    "title": "เบรกจม (Brake Fade)",
-                    "desc": "ประสิทธิภาพเบรกลดลงเพราะความร้อนสูง"
+                    "title": "เบรกจม (Brake Fade)"
                   }
                 ]
               }
+            ],
+            "event": "brake_heat",
+            "id": "brake-branch",
+            "type": "branch"
+          }
+        ],
+        "relations": [
+          {
+            "from": "rider",
+            "id": "r1",
+            "to": "pol_brake",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "from": "pol_brake",
+            "id": "r2",
+            "to": "cmd_brake",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "from": "cmd_brake",
+            "handledBy": true,
+            "id": "r3",
+            "to": "brake_master",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "from": "brake_master",
+            "id": "r4",
+            "to": "evt_brake_pressure",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "from": "evt_brake_pressure",
+            "id": "r5",
+            "to": "pol_caliper_squeeze",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "from": "pol_caliper_squeeze",
+            "id": "r6",
+            "to": "cmd_caliper_squeeze",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "from": "cmd_caliper_squeeze",
+            "handledBy": true,
+            "id": "r7",
+            "to": "brake_caliper",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "from": "brake_caliper",
+            "id": "r8",
+            "to": "evt_wheel_slowed",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "from": "brake_caliper",
+            "id": "r9",
+            "to": "evt_brake_heat",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "from": "evt_wheel_slowed",
+            "id": "r10",
+            "to": "evt_brake_heat",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "from": "evt_brake_heat",
+            "id": "r11",
+            "label": "ปกติ",
+            "to": "pol_brake_normal",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "from": "pol_brake_normal",
+            "id": "r12",
+            "to": "cmd_brake_normal",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "from": "cmd_brake_normal",
+            "handledBy": true,
+            "id": "r13",
+            "to": "brake_caliper2",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "from": "brake_caliper2",
+            "id": "r14",
+            "to": "evt_brake_normal",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "dashed": true,
+            "from": "evt_brake_heat",
+            "id": "r15",
+            "label": "ร้อนเกินไป",
+            "to": "pol_brake_fade",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "from": "pol_brake_fade",
+            "id": "r16",
+            "to": "cmd_brake_fade",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "from": "cmd_brake_fade",
+            "handledBy": true,
+            "id": "r17",
+            "to": "brake_caliper3",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "from": "brake_caliper3",
+            "id": "r18",
+            "to": "evt_brake_fade",
+            "views": [
+              "EVENT_STORMING"
             ]
           }
         ]
-      }
-    }
+      },
+      "title": "ระบบเบรก (Brake System)"
+    },
+    "type": "flowchart"
   },
   {
     "folder": "reflection-sequence",
-    "type": "reflection-sequence",
     "props": {
-      "title": "4-Stroke Engine Combustion Cycle",
       "challenges": [
         {
-          "prompt": "Order the stages of a 4-Stroke internal combustion engine cycle chronologically (Part 1):",
           "items": [
             {
               "id": "intake_stroke",
@@ -2336,6 +2332,7 @@
               "text": "Exhaust Stroke"
             }
           ],
+          "prompt": "Order the stages of a 4-Stroke internal combustion engine cycle chronologically (Part 1):",
           "solution": [
             "intake_stroke",
             "compression_stroke",
@@ -2344,7 +2341,6 @@
           ]
         },
         {
-          "prompt": "เรียงลำดับขั้นตอนการเปลี่ยนน้ำมันเครื่องมอเตอร์ไซค์ให้ถูกต้อง (Part 2):",
           "items": [
             {
               "id": "warm_engine",
@@ -2363,6 +2359,7 @@
               "text": "เติมน้ำมันเครื่องใหม่ตามปริมาณที่กำหนด (Refill)"
             }
           ],
+          "prompt": "เรียงลำดับขั้นตอนการเปลี่ยนน้ำมันเครื่องมอเตอร์ไซค์ให้ถูกต้อง (Part 2):",
           "solution": [
             "warm_engine",
             "drain_oil",
@@ -2370,627 +2367,625 @@
             "fill_oil"
           ]
         }
-      ]
-    }
+      ],
+      "title": "4-Stroke Engine Combustion Cycle"
+    },
+    "type": "reflection-sequence"
   },
   {
     "folder": "quiz",
-    "type": "quiz",
     "props": {
-      "title": "ทดสอบความรู้",
       "questions": [
         {
+          "choices": [
+            {
+              "correct": false,
+              "explanation": "เครื่องยนต์มอเตอร์ไซค์ส่วนใหญ่เป็น 4 จังหวะ ไม่ใช่ 2 จังหวะ",
+              "id": "a",
+              "text": "2 จังหวะ (ดูด-คาย)"
+            },
+            {
+              "correct": true,
+              "explanation": "ถูกต้อง! เครื่องยนต์สันดาปภายในทำงาน 4 จังหวะ: ดูดส่วนผสมเข้า, อัดส่วนผสม, ระเบิดดันลูกสูบลง, คายไอเสียออก",
+              "id": "b",
+              "text": "4 จังหวะ (ดูด-อัด-ระเบิด-คาย)"
+            },
+            {
+              "correct": false,
+              "explanation": "เครื่องยนต์มอเตอร์ไซค์มาตรฐานใช้ 4 จังหวะ",
+              "id": "c",
+              "text": "6 จังหวะ"
+            }
+          ],
+          "hint": "คิดถึงการเคลื่อนที่ขึ้น-ลงของลูกสูบ",
           "id": "q1",
-          "question": "ลูกสูบทำงานกี่จังหวะ?",
-          "choices": [
-            {
-              "id": "a",
-              "text": "2 จังหวะ (ดูด-คาย)",
-              "correct": false,
-              "explanation": "เครื่องยนต์มอเตอร์ไซค์ส่วนใหญ่เป็น 4 จังหวะ ไม่ใช่ 2 จังหวะ"
-            },
-            {
-              "id": "b",
-              "text": "4 จังหวะ (ดูด-อัด-ระเบิด-คาย)",
-              "correct": true,
-              "explanation": "ถูกต้อง! เครื่องยนต์สันดาปภายในทำงาน 4 จังหวะ: ดูดส่วนผสมเข้า, อัดส่วนผสม, ระเบิดดันลูกสูบลง, คายไอเสียออก"
-            },
-            {
-              "id": "c",
-              "text": "6 จังหวะ",
-              "correct": false,
-              "explanation": "เครื่องยนต์มอเตอร์ไซค์มาตรฐานใช้ 4 จังหวะ"
-            }
-          ],
-          "hint": "คิดถึงการเคลื่อนที่ขึ้น-ลงของลูกสูบ"
+          "question": "ลูกสูบทำงานกี่จังหวะ?"
         },
         {
+          "choices": [
+            {
+              "correct": false,
+              "explanation": "การผสมน้ำมันและอากาศเป็นหน้าที่ของคาร์บูเรเตอร์หรือหัวฉีด",
+              "id": "a",
+              "text": "ผสมน้ำมันกับอากาศ"
+            },
+            {
+              "correct": true,
+              "explanation": "ถูกต้อง! หัวเทียนจุดประกายไฟแรงสูงเพื่อให้เกิดการระเบิดผลักลูกสูบ",
+              "id": "b",
+              "text": "จุดประกายไฟในห้องเผาไหม้"
+            },
+            {
+              "correct": false,
+              "explanation": "การส่งกำลังเป็นหน้าที่ของก้านสูบและเพลาข้อเหวี่ยง",
+              "id": "c",
+              "text": "ส่งกำลังไปยังเพลาข้อเหวี่ยง"
+            }
+          ],
+          "hint": "หัวเทียนอยู่ในห้องเผาไหม้",
           "id": "q2",
-          "question": "หัวเทียนทำหน้าที่อะไร?",
-          "choices": [
-            {
-              "id": "a",
-              "text": "ผสมน้ำมันกับอากาศ",
-              "correct": false,
-              "explanation": "การผสมน้ำมันและอากาศเป็นหน้าที่ของคาร์บูเรเตอร์หรือหัวฉีด"
-            },
-            {
-              "id": "b",
-              "text": "จุดประกายไฟในห้องเผาไหม้",
-              "correct": true,
-              "explanation": "ถูกต้อง! หัวเทียนจุดประกายไฟแรงสูงเพื่อให้เกิดการระเบิดผลักลูกสูบ"
-            },
-            {
-              "id": "c",
-              "text": "ส่งกำลังไปยังเพลาข้อเหวี่ยง",
-              "correct": false,
-              "explanation": "การส่งกำลังเป็นหน้าที่ของก้านสูบและเพลาข้อเหวี่ยง"
-            }
-          ],
-          "hint": "หัวเทียนอยู่ในห้องเผาไหม้"
+          "question": "หัวเทียนทำหน้าที่อะไร?"
         },
         {
+          "choices": [
+            {
+              "correct": false,
+              "explanation": "โซ่หย่อนทำให้รถวิ่งได้ไม่เต็มประสิทธิภาพ แต่ไม่ทำให้สตาร์ทไม่ติด",
+              "id": "a",
+              "text": "โซ่หย่อน"
+            },
+            {
+              "correct": false,
+              "explanation": "เบรกจมเป็นปัญหาระบบเบรก ไม่เกี่ยวกับการสตาร์ทเครื่อง",
+              "id": "b",
+              "text": "เบรกจม"
+            },
+            {
+              "correct": true,
+              "explanation": "ถูกต้อง! หากหัวเทียนบอด ไม่มีประกายไฟจุดระเบิด เครื่องยนต์จึงสตาร์ทไม่ติด",
+              "id": "c",
+              "text": "หัวเทียนบอด (หมดสภาพ)"
+            }
+          ],
+          "hint": "ลองคิดว่าอะไรจำเป็นสำหรับเครื่องยนต์จะทำงาน",
           "id": "q3",
-          "question": "ถ้ารถสตาร์ทไม่ติดเลย สาเหตุที่เป็นไปได้มากที่สุดคืออะไร?",
-          "choices": [
-            {
-              "id": "a",
-              "text": "โซ่หย่อน",
-              "correct": false,
-              "explanation": "โซ่หย่อนทำให้รถวิ่งได้ไม่เต็มประสิทธิภาพ แต่ไม่ทำให้สตาร์ทไม่ติด"
-            },
-            {
-              "id": "b",
-              "text": "เบรกจม",
-              "correct": false,
-              "explanation": "เบรกจมเป็นปัญหาระบบเบรก ไม่เกี่ยวกับการสตาร์ทเครื่อง"
-            },
-            {
-              "id": "c",
-              "text": "หัวเทียนบอด (หมดสภาพ)",
-              "correct": true,
-              "explanation": "ถูกต้อง! หากหัวเทียนบอด ไม่มีประกายไฟจุดระเบิด เครื่องยนต์จึงสตาร์ทไม่ติด"
-            }
-          ],
-          "hint": "ลองคิดว่าอะไรจำเป็นสำหรับเครื่องยนต์จะทำงาน"
+          "question": "ถ้ารถสตาร์ทไม่ติดเลย สาเหตุที่เป็นไปได้มากที่สุดคืออะไร?"
         },
         {
+          "choices": [
+            {
+              "correct": false,
+              "explanation": "恰恰相反 — คาร์บูเรเตอร์ใช้กลไก หัวฉีดใช้ไฟฟ้า",
+              "id": "a",
+              "text": "หัวฉีดใช้กลไก คาร์บูเรเตอร์ใช้ไฟฟ้า"
+            },
+            {
+              "correct": true,
+              "explanation": "ถูกต้อง! หัวฉีดอิเล็กทรอนิกส์ที่ควบคุมด้วย ECU ให้ความแม่นยำสูงกว่าคาร์บูเรเตอร์แบบกลไก",
+              "id": "b",
+              "text": "หัวฉีดควบคุมด้วยกล่อง ECU ให้ละอองน้ำมันฝอยละเอียดและแม่นยำกว่า"
+            },
+            {
+              "correct": false,
+              "explanation": "หัวฉีดและคาร์บูเรเตอร์ทำงานต่างกันโดยสิ้นเชิง — หัวฉีดแม่นยำและประหยัดกว่า",
+              "id": "c",
+              "text": "ไม่มีความแตกต่าง ทั้งสองระบบเหมือนกัน"
+            }
+          ],
+          "hint": "ลองคิดว่าอะไรควบคุมการจ่ายน้ำมัน",
           "id": "q4",
-          "question": "ระบบหัวฉีดแตกต่างจากคาร์บูเรเตอร์อย่างไร?",
-          "choices": [
-            {
-              "id": "a",
-              "text": "หัวฉีดใช้กลไก คาร์บูเรเตอร์ใช้ไฟฟ้า",
-              "correct": false,
-              "explanation": "恰恰相反 — คาร์บูเรเตอร์ใช้กลไก หัวฉีดใช้ไฟฟ้า"
-            },
-            {
-              "id": "b",
-              "text": "หัวฉีดควบคุมด้วยกล่อง ECU ให้ละอองน้ำมันฝอยละเอียดและแม่นยำกว่า",
-              "correct": true,
-              "explanation": "ถูกต้อง! หัวฉีดอิเล็กทรอนิกส์ที่ควบคุมด้วย ECU ให้ความแม่นยำสูงกว่าคาร์บูเรเตอร์แบบกลไก"
-            },
-            {
-              "id": "c",
-              "text": "ไม่มีความแตกต่าง ทั้งสองระบบเหมือนกัน",
-              "correct": false,
-              "explanation": "หัวฉีดและคาร์บูเรเตอร์ทำงานต่างกันโดยสิ้นเชิง — หัวฉีดแม่นยำและประหยัดกว่า"
-            }
-          ],
-          "hint": "ลองคิดว่าอะไรควบคุมการจ่ายน้ำมัน"
+          "question": "ระบบหัวฉีดแตกต่างจากคาร์บูเรเตอร์อย่างไร?"
         },
         {
+          "choices": [
+            {
+              "correct": false,
+              "explanation": "น้ำมันเบรกรั่วทำให้เบรกจมได้ แต่ไม่เรียกว่า เบรก Fade",
+              "id": "a",
+              "text": "น้ำมันเบรกรั่ว"
+            },
+            {
+              "correct": true,
+              "explanation": "ถูกต้อง! เบรก Fade เกิดจากจานเบรกและผ้าเบรกมีความร้อนสูงเกินจุดทำงานปกติ ทำให้แรงเสียดทานลดลง",
+              "id": "b",
+              "text": "ความร้อนสูงจากเบรกใช้งานหนักต่อเนื่อง"
+            },
+            {
+              "correct": false,
+              "explanation": "จานเบรกบิดงอทำให้เบรกสั่น แต่ไม่ใช่สาเหตุของเบรก Fade โดยตรง",
+              "id": "c",
+              "text": "จานเบรกบิดงอ"
+            }
+          ],
+          "hint": "ลองคิดเกี่ยวกับสิ่งที่เกิดขึ้นเมื่อเบรกใช้งานหนัก",
           "id": "q5",
-          "question": "เบรกจม (Brake Fade) เกิดจากอะไร?",
-          "choices": [
-            {
-              "id": "a",
-              "text": "น้ำมันเบรกรั่ว",
-              "correct": false,
-              "explanation": "น้ำมันเบรกรั่วทำให้เบรกจมได้ แต่ไม่เรียกว่า เบรก Fade"
-            },
-            {
-              "id": "b",
-              "text": "ความร้อนสูงจากเบรกใช้งานหนักต่อเนื่อง",
-              "correct": true,
-              "explanation": "ถูกต้อง! เบรก Fade เกิดจากจานเบรกและผ้าเบรกมีความร้อนสูงเกินจุดทำงานปกติ ทำให้แรงเสียดทานลดลง"
-            },
-            {
-              "id": "c",
-              "text": "จานเบรกบิดงอ",
-              "correct": false,
-              "explanation": "จานเบรกบิดงอทำให้เบรกสั่น แต่ไม่ใช่สาเหตุของเบรก Fade โดยตรง"
-            }
-          ],
-          "hint": "ลองคิดเกี่ยวกับสิ่งที่เกิดขึ้นเมื่อเบรกใช้งานหนัก"
+          "question": "เบรกจม (Brake Fade) เกิดจากอะไร?"
         },
         {
+          "choices": [
+            {
+              "correct": true,
+              "explanation": "ถูกต้อง! ปะเก็นเป็นแผ่นซีลที่ป้องกันการรั่วซึมระหว่างชิ้นส่วนเครื่องยนต์ที่ประกบกัน",
+              "id": "a",
+              "text": "ป้องกันการรั่วซึมของน้ำมัน น้ำ หรือกำลังอัด"
+            },
+            {
+              "correct": false,
+              "explanation": "การจุดระเบิดเป็นหน้าที่ของหัวเทียน",
+              "id": "b",
+              "text": "จุดระเบิดส่วนผสม"
+            },
+            {
+              "correct": false,
+              "explanation": "การส่งกำลังเป็นหน้าที่ของระบบเกียร์และสเตอร์",
+              "id": "c",
+              "text": "ส่งกำลังไปยังล้อ"
+            }
+          ],
+          "hint": "ปะเก็นอยู่ระหว่างชิ้นส่วนที่ประกบกัน",
           "id": "q6",
-          "question": "ปะเก็นทำหน้าที่อะไรในเครื่องยนต์?",
-          "choices": [
-            {
-              "id": "a",
-              "text": "ป้องกันการรั่วซึมของน้ำมัน น้ำ หรือกำลังอัด",
-              "correct": true,
-              "explanation": "ถูกต้อง! ปะเก็นเป็นแผ่นซีลที่ป้องกันการรั่วซึมระหว่างชิ้นส่วนเครื่องยนต์ที่ประกบกัน"
-            },
-            {
-              "id": "b",
-              "text": "จุดระเบิดส่วนผสม",
-              "correct": false,
-              "explanation": "การจุดระเบิดเป็นหน้าที่ของหัวเทียน"
-            },
-            {
-              "id": "c",
-              "text": "ส่งกำลังไปยังล้อ",
-              "correct": false,
-              "explanation": "การส่งกำลังเป็นหน้าที่ของระบบเกียร์และสเตอร์"
-            }
-          ],
-          "hint": "ปะเก็นอยู่ระหว่างชิ้นส่วนที่ประกบกัน"
+          "question": "ปะเก็นทำหน้าที่อะไรในเครื่องยนต์?"
         },
         {
+          "choices": [
+            {
+              "correct": false,
+              "explanation": "โช้คเปิดทำให้มีน้ำมันมากเกิน — รถจะกินน้ำมันมากขึ้น",
+              "id": "a",
+              "text": "รถจะประหยัดน้ำมันขึ้น"
+            },
+            {
+              "correct": true,
+              "explanation": "ถูกต้อง! โช้คปิดช่องอากาศเพื่อเพิ่มสัดส่วนน้ำมัน การเปิดโช้คตลอดทำให้ส่วนผสมรวยน้ำมันเกินไป",
+              "id": "b",
+              "text": "รถจะกินน้ำมันมาก หัวเทียนสกปรก และเร่งไม่ขึ้น"
+            },
+            {
+              "correct": false,
+              "explanation": "การเปิดโช้คตลอดมีผลเสียต่อเครื่องยนต์อย่างมาก",
+              "id": "c",
+              "text": "ไม่มีผลอะไร"
+            }
+          ],
+          "hint": "โช้คทำให้ส่วนผสมรวยน้ำมัน",
           "id": "q7",
-          "question": "ถ้าเปิดโช้คแล้วลืมปิด จะเกิดอะไรขึ้น?",
-          "choices": [
-            {
-              "id": "a",
-              "text": "รถจะประหยัดน้ำมันขึ้น",
-              "correct": false,
-              "explanation": "โช้คเปิดทำให้มีน้ำมันมากเกิน — รถจะกินน้ำมันมากขึ้น"
-            },
-            {
-              "id": "b",
-              "text": "รถจะกินน้ำมันมาก หัวเทียนสกปรก และเร่งไม่ขึ้น",
-              "correct": true,
-              "explanation": "ถูกต้อง! โช้คปิดช่องอากาศเพื่อเพิ่มสัดส่วนน้ำมัน การเปิดโช้คตลอดทำให้ส่วนผสมรวยน้ำมันเกินไป"
-            },
-            {
-              "id": "c",
-              "text": "ไม่มีผลอะไร",
-              "correct": false,
-              "explanation": "การเปิดโช้คตลอดมีผลเสียต่อเครื่องยนต์อย่างมาก"
-            }
-          ],
-          "hint": "โช้คทำให้ส่วนผสมรวยน้ำมัน"
+          "question": "ถ้าเปิดโช้คแล้วลืมปิด จะเกิดอะไรขึ้น?"
         },
         {
-          "id": "q8",
-          "question": "ระบบส่งกำลัง (Drivetrain) มีอะไรบ้าง?",
           "choices": [
             {
-              "id": "a",
-              "text": "โซ่ สเตอร์ และระบบเกียร์",
               "correct": true,
-              "explanation": "ถูกต้อง! ระบบส่งกำลังรวมระบบเกียร์ โซ่ และสเตอร์ที่ถ่ายทอดกำลังจากเครื่องยนต์ไปยังล้อหลัง"
+              "explanation": "ถูกต้อง! ระบบส่งกำลังรวมระบบเกียร์ โซ่ และสเตอร์ที่ถ่ายทอดกำลังจากเครื่องยนต์ไปยังล้อหลัง",
+              "id": "a",
+              "text": "โซ่ สเตอร์ และระบบเกียร์"
             },
             {
+              "correct": false,
+              "explanation": "จานเบรกและผ้าเบรกเป็นส่วนหนึ่งของระบบเบรก ไม่ใช่ระบบส่งกำลัง",
               "id": "b",
-              "text": "จานเบรกและผ้าเบรก",
-              "correct": false,
-              "explanation": "จานเบรกและผ้าเบรกเป็นส่วนหนึ่งของระบบเบรก ไม่ใช่ระบบส่งกำลัง"
+              "text": "จานเบรกและผ้าเบรก"
             },
             {
-              "id": "c",
-              "text": "หัวเทียนและกล่อง ECU",
               "correct": false,
-              "explanation": "หัวเทียนและกล่อง ECU เป็นส่วนหนึ่งของระบบเครื่องยนต์และระบบไฟฟ้า"
+              "explanation": "หัวเทียนและกล่อง ECU เป็นส่วนหนึ่งของระบบเครื่องยนต์และระบบไฟฟ้า",
+              "id": "c",
+              "text": "หัวเทียนและกล่อง ECU"
             }
           ],
-          "hint": "คิดถึงการถ่ายทอดกำลังจากเครื่องไปยังล้อ"
+          "hint": "คิดถึงการถ่ายทอดกำลังจากเครื่องไปยังล้อ",
+          "id": "q8",
+          "question": "ระบบส่งกำลัง (Drivetrain) มีอะไรบ้าง?"
         }
-      ]
-    }
+      ],
+      "title": "ทดสอบความรู้"
+    },
+    "type": "quiz"
   },
   {
     "folder": "tradeoffs",
-    "type": "tradeoff-sandbox",
     "props": {
-      "title": "ทางเลือกและการตัดสินใจ",
       "scenarios": [
         {
-          "id": "fuel-system",
-          "title": "ระบบจ่ายเชื้อเพลิง (Fuel Delivery System)",
           "description": "เลือกระบบจ่ายเชื้อเพลิงที่เหมาะกับรถและพฤติกรรมการใช้งานของคุณ",
+          "id": "fuel-system",
           "metrics": [
             {
-              "id": "precision",
-              "label": "ความแม่นยำส่วนผสม",
-              "baseValue": 0
-            },
-            {
-              "id": "coldstart",
-              "label": "สตาร์ทง่าย (เครื่องเย็น)",
-              "baseValue": 0
-            },
-            {
-              "id": "maintenance",
-              "label": "ความสะดวกในการบำรุงรักษา",
-              "baseValue": 0
-            },
-            {
-              "id": "price",
-              "label": "ความประหยัด (ราคา)",
               "baseValue": 0,
-              "direction": "lower"
+              "id": "precision",
+              "label": "ความแม่นยำส่วนผสม"
+            },
+            {
+              "baseValue": 0,
+              "id": "coldstart",
+              "label": "สตาร์ทง่าย (เครื่องเย็น)"
+            },
+            {
+              "baseValue": 0,
+              "id": "maintenance",
+              "label": "ความสะดวกในการบำรุงรักษา"
+            },
+            {
+              "baseValue": 0,
+              "direction": "lower",
+              "id": "price",
+              "label": "ความประหยัด (ราคา)"
             }
           ],
           "steps": [
             {
-              "id": "fuel-system-type",
-              "title": "เลือกระบบจ่ายเชื้อเพลิง",
-              "description": "ระบบจ่ายเชื้อเพลิงที่เหมาะสมกับรถของคุณ",
-              "recommended": "fuel-injection",
               "choices": [
                 {
+                  "cons": [
+                    {
+                      "description": "ค่าอะไหล่และค่าซ่อมสูง ต้องใช้เครื่องมือพิเศษในการวินิจฉัย",
+                      "title": "ราคาสูง"
+                    },
+                    {
+                      "description": "ต้องเข้าใจระบบไฟฟ้าและอ่านค่าจากสแกนเนอร์",
+                      "title": "ซ่อมเองยาก"
+                    }
+                  ],
+                  "description": "ระบบอิเล็กทรอนิกส์ที่ ECU คำนวณและควบคุมการพ่นละอองน้ำมันเชื้อเพลิงอย่างแม่นยำ",
                   "id": "fuel-injection",
                   "label": "หัวฉีด (Fuel Injection / EFI)",
-                  "description": "ระบบอิเล็กทรอนิกส์ที่ ECU คำนวณและควบคุมการพ่นละอองน้ำมันเชื้อเพลิงอย่างแม่นยำ",
                   "metrics": {
-                    "precision": 90,
                     "coldstart": 95,
                     "maintenance": 60,
+                    "precision": 90,
                     "price": -80
                   },
                   "pros": [
                     {
-                      "title": "ส่วนผสมแม่นยำ",
-                      "description": "ECU คำนวณจากเซ็นเซอร์หลายตัว ปรับตามสภาวะจริง ทำให้ประหยัดน้ำมันและได้กำลังเต็มที่"
+                      "description": "ECU คำนวณจากเซ็นเซอร์หลายตัว ปรับตามสภาวะจริง ทำให้ประหยัดน้ำมันและได้กำลังเต็มที่",
+                      "title": "ส่วนผสมแม่นยำ"
                     },
                     {
-                      "title": "สตาร์ทง่าย",
-                      "description": "เพิ่มส่วนผสมอัตโนมัติเมื่อเครื่องเย็น ไม่ต้องเปิดโช้ค"
+                      "description": "เพิ่มส่วนผสมอัตโนมัติเมื่อเครื่องเย็น ไม่ต้องเปิดโช้ค",
+                      "title": "สตาร์ทง่าย"
                     },
                     {
-                      "title": "ไม่ต้องจูน",
-                      "description": "ปรับจูนอัตโนมัติ ไม่ต้องยุ่งกับสกรูจูนคาร์บู"
+                      "description": "ปรับจูนอัตโนมัติ ไม่ต้องยุ่งกับสกรูจูนคาร์บู",
+                      "title": "ไม่ต้องจูน"
                     }
                   ],
-                  "cons": [
-                    {
-                      "title": "ราคาสูง",
-                      "description": "ค่าอะไหล่และค่าซ่อมสูง ต้องใช้เครื่องมือพิเศษในการวินิจฉัย"
-                    },
-                    {
-                      "title": "ซ่อมเองยาก",
-                      "description": "ต้องเข้าใจระบบไฟฟ้าและอ่านค่าจากสแกนเนอร์"
-                    }
-                  ],
-                  "whyThisFits": "เป็นมาตรฐานของรถรุ่นใหม่ ให้ความแม่นยำสูงและใช้งานสะดวกที่สุด",
-                  "whenToUse": "เมื่อต้องการรถที่สตาร์ทง่าย ประหยัดน้ำมัน และไม่ต้องจูนบ่อย"
+                  "whenToUse": "เมื่อต้องการรถที่สตาร์ทง่าย ประหยัดน้ำมัน และไม่ต้องจูนบ่อย",
+                  "whyThisFits": "เป็นมาตรฐานของรถรุ่นใหม่ ให้ความแม่นยำสูงและใช้งานสะดวกที่สุด"
                 },
                 {
+                  "cons": [
+                    {
+                      "description": "ไม่สามารถปรับตามสภาวะได้จริง กินน้ำมันมากกว่าหัวฉีด",
+                      "title": "ส่วนผสมไม่แม่นยำ"
+                    },
+                    {
+                      "description": "ต้องเปิดโช้คช่วย และถ้าลืมปิดโช้ค รถจะเร่งไม่ขึ้นและหัวเทียนสกปรก",
+                      "title": "สตาร์ทติดยาก"
+                    },
+                    {
+                      "description": "สภาพอากาศและระดับความสูงส่งผลต่อส่วนผสม ต้องจูนใหม่",
+                      "title": "ต้องจูนบ่อย"
+                    }
+                  ],
+                  "description": "ระบบกลไกผสมน้ำมันและอากาศด้วยแรงดูด ควบคุมด้วยสกรูและโช้ค",
                   "id": "carburetor",
                   "label": "คาร์บูเรเตอร์ (Carburetor)",
-                  "description": "ระบบกลไกผสมน้ำมันและอากาศด้วยแรงดูด ควบคุมด้วยสกรูและโช้ค",
                   "metrics": {
-                    "precision": 40,
                     "coldstart": 45,
                     "maintenance": 85,
+                    "precision": 40,
                     "price": -20
                   },
                   "pros": [
                     {
-                      "title": "ซ่อมง่าย",
-                      "description": "เห็นการทำงานด้วยตาเปล่า ถอดล้างและจูนเองได้ ไม่ต้องใช้เครื่องมือพิเศษ"
+                      "description": "เห็นการทำงานด้วยตาเปล่า ถอดล้างและจูนเองได้ ไม่ต้องใช้เครื่องมือพิเศษ",
+                      "title": "ซ่อมง่าย"
                     },
                     {
-                      "title": "ราคาถูก",
-                      "description": "อะไหล่ถูกและหาซื้อง่าย ช่างส่วนใหญ่ซ่อมได้"
+                      "description": "อะไหล่ถูกและหาซื้อง่าย ช่างส่วนใหญ่ซ่อมได้",
+                      "title": "ราคาถูก"
                     },
                     {
-                      "title": "ปรับแต่งง่าย",
-                      "description": "เปลี่ยนเจ็ทหรือจูนสกรูอากาศเพื่อเพิ่มกำลังได้โดยตรง"
-                    }
-                  ],
-                  "cons": [
-                    {
-                      "title": "ส่วนผสมไม่แม่นยำ",
-                      "description": "ไม่สามารถปรับตามสภาวะได้จริง กินน้ำมันมากกว่าหัวฉีด"
-                    },
-                    {
-                      "title": "สตาร์ทติดยาก",
-                      "description": "ต้องเปิดโช้คช่วย และถ้าลืมปิดโช้ค รถจะเร่งไม่ขึ้นและหัวเทียนสกปรก"
-                    },
-                    {
-                      "title": "ต้องจูนบ่อย",
-                      "description": "สภาพอากาศและระดับความสูงส่งผลต่อส่วนผสม ต้องจูนใหม่"
+                      "description": "เปลี่ยนเจ็ทหรือจูนสกรูอากาศเพื่อเพิ่มกำลังได้โดยตรง",
+                      "title": "ปรับแต่งง่าย"
                     }
                   ],
                   "whenToUse": "เหมาะสำหรับรถรุ่นเก่า ที่ต้องการซ่อมเองได้ และชอบปรับแต่งด้วยมือ"
                 }
-              ]
+              ],
+              "description": "ระบบจ่ายเชื้อเพลิงที่เหมาะสมกับรถของคุณ",
+              "id": "fuel-system-type",
+              "recommended": "fuel-injection",
+              "title": "เลือกระบบจ่ายเชื้อเพลิง"
             }
-          ]
+          ],
+          "title": "ระบบจ่ายเชื้อเพลิง (Fuel Delivery System)"
         },
         {
-          "id": "engine-oil",
-          "title": "ประเภทของน้ำมันเครื่อง",
           "description": "เลือกน้ำมันเครื่องที่เหมาะสมกับการใช้งานและงบประมาณของคุณ ซึ่งจะส่งผลโดยตรงต่ออายุการใช้งานเครื่องยนต์",
+          "id": "engine-oil",
           "metrics": [
             {
-              "id": "protection",
-              "label": "การปกป้องเครื่องยนต์",
-              "baseValue": 0
-            },
-            {
-              "id": "lifespan",
-              "label": "ระยะเวลาใช้งาน",
-              "baseValue": 0
-            },
-            {
-              "id": "price",
-              "label": "ความประหยัด (ราคา)",
               "baseValue": 0,
-              "direction": "lower"
+              "id": "protection",
+              "label": "การปกป้องเครื่องยนต์"
+            },
+            {
+              "baseValue": 0,
+              "id": "lifespan",
+              "label": "ระยะเวลาใช้งาน"
+            },
+            {
+              "baseValue": 0,
+              "direction": "lower",
+              "id": "price",
+              "label": "ความประหยัด (ราคา)"
             }
           ],
           "steps": [
             {
-              "id": "oil-type",
-              "title": "เลือกชนิดน้ำมันเครื่อง",
-              "description": "ชนิดของน้ำมันเครื่องที่คุณต้องการเปลี่ยน",
-              "recommended": "semi-synthetic",
               "choices": [
                 {
+                  "cons": [
+                    {
+                      "description": "แพงกว่าน้ำมันเครื่องธรรมดาหลายเท่า",
+                      "title": "ราคาสูง"
+                    }
+                  ],
+                  "description": "น้ำมันเครื่องที่ผ่านการสังเคราะห์ทางเคมี ทนความร้อนสูง หล่อลื่นได้ดีเยี่ยมที่สุด",
                   "id": "synthetic",
                   "label": "สังเคราะห์แท้ 100% (Fully Synthetic)",
-                  "description": "น้ำมันเครื่องที่ผ่านการสังเคราะห์ทางเคมี ทนความร้อนสูง หล่อลื่นได้ดีเยี่ยมที่สุด",
                   "metrics": {
-                    "protection": 95,
                     "lifespan": 90,
-                    "price": -80
+                    "price": -80,
+                    "protection": 95
                   },
                   "pros": [
                     {
-                      "title": "ปกป้องดีเยี่ยม",
-                      "description": "ทนความร้อนสูง เครื่องยนต์ไม่สึกหรอง่าย"
+                      "description": "ทนความร้อนสูง เครื่องยนต์ไม่สึกหรอง่าย",
+                      "title": "ปกป้องดีเยี่ยม"
                     },
                     {
-                      "title": "อายุการใช้งานยาวนาน",
-                      "description": "เปลี่ยนถ่ายทุกๆ 5,000 - 10,000 กม."
+                      "description": "เปลี่ยนถ่ายทุกๆ 5,000 - 10,000 กม.",
+                      "title": "อายุการใช้งานยาวนาน"
                     }
                   ],
-                  "cons": [
-                    {
-                      "title": "ราคาสูง",
-                      "description": "แพงกว่าน้ำมันเครื่องธรรมดาหลายเท่า"
-                    }
-                  ],
-                  "whyThisFits": "เหมาะสำหรับรถที่ใช้งานหนัก วิ่งระยะทางไกล หรือรถบิ๊กไบค์ที่ต้องการการปกป้องสูงสุด",
-                  "whenToUse": "เมื่อคุณต้องการให้น้ำมันเครื่องมีอายุการใช้งานนานที่สุด"
+                  "whenToUse": "เมื่อคุณต้องการให้น้ำมันเครื่องมีอายุการใช้งานนานที่สุด",
+                  "whyThisFits": "เหมาะสำหรับรถที่ใช้งานหนัก วิ่งระยะทางไกล หรือรถบิ๊กไบค์ที่ต้องการการปกป้องสูงสุด"
                 },
                 {
+                  "cons": [
+                    {
+                      "description": "เปลี่ยนถ่ายทุกๆ 3,000 - 5,000 กม.",
+                      "title": "อายุการใช้งานปานกลาง"
+                    }
+                  ],
+                  "description": "ส่วนผสมระหว่างน้ำมันแร่ธรรมชาติและน้ำมันสังเคราะห์ คุ้มค่าและให้การปกป้องที่ดี",
                   "id": "semi-synthetic",
                   "label": "กึ่งสังเคราะห์ (Semi-Synthetic)",
-                  "description": "ส่วนผสมระหว่างน้ำมันแร่ธรรมชาติและน้ำมันสังเคราะห์ คุ้มค่าและให้การปกป้องที่ดี",
                   "metrics": {
-                    "protection": 75,
                     "lifespan": 70,
-                    "price": -40
+                    "price": -40,
+                    "protection": 75
                   },
                   "pros": [
                     {
-                      "title": "ราคาคุ้มค่า",
-                      "description": "ราคาไม่แพงจนเกินไป ได้คุณสมบัติที่ดีจากน้ำมันสังเคราะห์"
-                    }
-                  ],
-                  "cons": [
-                    {
-                      "title": "อายุการใช้งานปานกลาง",
-                      "description": "เปลี่ยนถ่ายทุกๆ 3,000 - 5,000 กม."
+                      "description": "ราคาไม่แพงจนเกินไป ได้คุณสมบัติที่ดีจากน้ำมันสังเคราะห์",
+                      "title": "ราคาคุ้มค่า"
                     }
                   ],
                   "whyThisFits": "เป็นตัวเลือกที่สมดุลที่สุดสำหรับรถใช้งานทั่วไปในชีวิตประจำวัน"
                 },
                 {
+                  "cons": [
+                    {
+                      "description": "ต้องเปลี่ยนถ่ายบ่อย (ทุกๆ 1,500 - 2,000 กม.)",
+                      "title": "เสื่อมสภาพเร็ว"
+                    },
+                    {
+                      "description": "ไม่เหมาะกับการขับขี่ทางไกลแบบแช่ยาวๆ",
+                      "title": "ทนความร้อนต่ำ"
+                    }
+                  ],
+                  "description": "น้ำมันเครื่องพื้นฐานที่กลั่นจากน้ำมันดิบ ราคาถูกที่สุด แต่ต้องเปลี่ยนถ่ายบ่อย",
                   "id": "mineral",
                   "label": "ธรรมดา (Mineral)",
-                  "description": "น้ำมันเครื่องพื้นฐานที่กลั่นจากน้ำมันดิบ ราคาถูกที่สุด แต่ต้องเปลี่ยนถ่ายบ่อย",
                   "metrics": {
-                    "protection": 50,
                     "lifespan": 40,
-                    "price": -10
+                    "price": -10,
+                    "protection": 50
                   },
                   "pros": [
                     {
-                      "title": "ราคาถูกที่สุด",
-                      "description": "ประหยัดค่าใช้จ่ายในการเปลี่ยนถ่ายแต่ละครั้ง"
-                    }
-                  ],
-                  "cons": [
-                    {
-                      "title": "เสื่อมสภาพเร็ว",
-                      "description": "ต้องเปลี่ยนถ่ายบ่อย (ทุกๆ 1,500 - 2,000 กม.)"
-                    },
-                    {
-                      "title": "ทนความร้อนต่ำ",
-                      "description": "ไม่เหมาะกับการขับขี่ทางไกลแบบแช่ยาวๆ"
+                      "description": "ประหยัดค่าใช้จ่ายในการเปลี่ยนถ่ายแต่ละครั้ง",
+                      "title": "ราคาถูกที่สุด"
                     }
                   ],
                   "whenToUse": "เหมาะสำหรับรถใช้งานระยะใกล้ หรือรถรุ่นเก่าที่ไม่ต้องการการดูแลเป็นพิเศษ"
                 }
-              ]
+              ],
+              "description": "ชนิดของน้ำมันเครื่องที่คุณต้องการเปลี่ยน",
+              "id": "oil-type",
+              "recommended": "semi-synthetic",
+              "title": "เลือกชนิดน้ำมันเครื่อง"
             }
-          ]
+          ],
+          "title": "ประเภทของน้ำมันเครื่อง"
         },
         {
-          "id": "tires",
-          "title": "ประเภทยางรถมอเตอร์ไซค์",
           "description": "ประเภทยางมีผลต่อความปลอดภัยเมื่อเกิดการรั่วซึม และความสะดวกในการปะยาง",
+          "id": "tires",
           "metrics": [
             {
-              "id": "safety",
-              "label": "ความปลอดภัยเมื่อยางรั่ว",
-              "baseValue": 0
-            },
-            {
-              "id": "convenience",
-              "label": "ความสะดวกในการปะยาง",
-              "baseValue": 0
-            },
-            {
-              "id": "price",
-              "label": "ความประหยัด (ราคายางและล้อ)",
               "baseValue": 0,
-              "direction": "lower"
+              "id": "safety",
+              "label": "ความปลอดภัยเมื่อยางรั่ว"
+            },
+            {
+              "baseValue": 0,
+              "id": "convenience",
+              "label": "ความสะดวกในการปะยาง"
+            },
+            {
+              "baseValue": 0,
+              "direction": "lower",
+              "id": "price",
+              "label": "ความประหยัด (ราคายางและล้อ)"
             }
           ],
           "steps": [
             {
-              "id": "tire-type",
-              "title": "เลือกประเภทยาง",
-              "description": "เลือกลักษณะยางที่ใช้กับล้อรถของคุณ",
-              "recommended": "tubeless",
               "choices": [
                 {
+                  "cons": [
+                    {
+                      "description": "ต้องใช้ร่วมกับล้อแม็กซึ่งมีราคาแพง",
+                      "title": "ต้นทุนสูง"
+                    }
+                  ],
+                  "description": "ใช้ร่วมกับล้อแม็ก หากโดนตะปูตำลมจะค่อยๆ ซึมออก ไม่แบนทันที",
                   "id": "tubeless",
                   "label": "แบบไม่มียางใน (Tubeless)",
-                  "description": "ใช้ร่วมกับล้อแม็ก หากโดนตะปูตำลมจะค่อยๆ ซึมออก ไม่แบนทันที",
                   "metrics": {
-                    "safety": 90,
                     "convenience": 95,
-                    "price": -70
+                    "price": -70,
+                    "safety": 90
                   },
                   "pros": [
                     {
-                      "title": "ปลอดภัยสูง",
-                      "description": "ลมไม่รั่วออกทันทีเมื่อโดนตะปู รถไม่ส่ายเสียอาการ"
+                      "description": "ลมไม่รั่วออกทันทีเมื่อโดนตะปู รถไม่ส่ายเสียอาการ",
+                      "title": "ปลอดภัยสูง"
                     },
                     {
-                      "title": "ปะยางง่าย",
-                      "description": "สามารถแทงไหมอุดรูรั่วได้เลย ไม่ต้องถอดล้อ"
-                    }
-                  ],
-                  "cons": [
-                    {
-                      "title": "ต้นทุนสูง",
-                      "description": "ต้องใช้ร่วมกับล้อแม็กซึ่งมีราคาแพง"
+                      "description": "สามารถแทงไหมอุดรูรั่วได้เลย ไม่ต้องถอดล้อ",
+                      "title": "ปะยางง่าย"
                     }
                   ],
                   "whyThisFits": "เพิ่มความปลอดภัยสูงสุด ลดปัญหาจอดตายกลางทางจากยางรั่ว"
                 },
                 {
+                  "cons": [
+                    {
+                      "description": "ยางจะแบนทันที รถอาจจะเสียการควบคุม",
+                      "title": "อันตรายถ้ายางรั่วตอนวิ่งเร็ว"
+                    },
+                    {
+                      "description": "ต้องถอดล้อเพื่องัดยางในออกมาปะ",
+                      "title": "ปะยาก"
+                    }
+                  ],
+                  "description": "มักใช้กับล้อซี่ลวด หากโดนตะปูตำยางจะแบนทันที",
                   "id": "tube-type",
                   "label": "แบบมียางใน (Tube Type)",
-                  "description": "มักใช้กับล้อซี่ลวด หากโดนตะปูตำยางจะแบนทันที",
                   "metrics": {
-                    "safety": 30,
                     "convenience": 40,
-                    "price": -30
+                    "price": -30,
+                    "safety": 30
                   },
                   "pros": [
                     {
-                      "title": "ราคาถูก",
-                      "description": "ยางและล้อซี่ลวดมีราคาถูกกว่า"
+                      "description": "ยางและล้อซี่ลวดมีราคาถูกกว่า",
+                      "title": "ราคาถูก"
                     },
                     {
-                      "title": "รับแรงกระแทกได้ดี",
-                      "description": "ล้อซี่ลวดมีความยืดหยุ่นสูง เหมาะกับทางวิบาก"
-                    }
-                  ],
-                  "cons": [
-                    {
-                      "title": "อันตรายถ้ายางรั่วตอนวิ่งเร็ว",
-                      "description": "ยางจะแบนทันที รถอาจจะเสียการควบคุม"
-                    },
-                    {
-                      "title": "ปะยาก",
-                      "description": "ต้องถอดล้อเพื่องัดยางในออกมาปะ"
+                      "description": "ล้อซี่ลวดมีความยืดหยุ่นสูง เหมาะกับทางวิบาก",
+                      "title": "รับแรงกระแทกได้ดี"
                     }
                   ],
                   "whenToUse": "เหมาะสำหรับรถคลาสสิก ล้อซี่ลวด หรือรถวิบากลุยป่า"
                 }
-              ]
+              ],
+              "description": "เลือกลักษณะยางที่ใช้กับล้อรถของคุณ",
+              "id": "tire-type",
+              "recommended": "tubeless",
+              "title": "เลือกประเภทยาง"
             }
-          ]
+          ],
+          "title": "ประเภทยางรถมอเตอร์ไซค์"
         }
-      ]
-    }
+      ],
+      "title": "ทางเลือกและการตัดสินใจ"
+    },
+    "type": "tradeoff-sandbox"
   },
   {
     "folder": "formula-sandbox",
-    "type": "formula-sandbox",
     "props": {
-      "title": "Engine Displacement & Performance Sandbox",
-      "variables": [
-        {
-          "id": "bore_size",
-          "label": "Cylinder Bore Size (mm)",
-          "min": 50,
-          "max": 100,
-          "step": 2,
-          "defaultValue": 54
-        },
-        {
-          "id": "stroke_length",
-          "label": "Piston Stroke Length (mm)",
-          "min": 40,
-          "max": 90,
-          "step": 2,
-          "defaultValue": 54
-        },
-        {
-          "id": "rpm",
-          "label": "Engine Speed (RPM)",
-          "min": 1000,
-          "max": 12000,
-          "step": 500,
-          "defaultValue": 6000
-        }
-      ],
       "metrics": [
         {
-          "id": "recall",
-          "label": "Engine Displacement (cc)",
-          "formula": "Math.round(Math.PI * Math.pow(bore_size / 20, 2) * (stroke_length / 10))",
-          "description": "The total volume swept by the piston within the cylinder block.",
           "analogy": "Cup volume. A larger diameter cup holds more liquid with every scoop.",
+          "description": "The total volume swept by the piston within the cylinder block.",
+          "formula": "Math.round(Math.PI * Math.pow(bore_size / 20, 2) * (stroke_length / 10))",
+          "id": "recall",
           "inScope": [
             "Cylinder swept volume"
           ],
+          "label": "Engine Displacement (cc)",
           "outOfScope": [
             "Combustion chamber clearance volume"
           ]
         },
         {
-          "id": "latency",
-          "label": "Calculated Horsepower (hp)",
-          "formula": "Math.round((Math.PI * Math.pow(bore_size / 20, 2) * (stroke_length / 10)) * (rpm / 16000))",
-          "description": "Estimated mechanical power produced by the engine at this speed.",
           "analogy": "Speed times load. The faster and harder you pull a cart, the more work you do.",
+          "description": "Estimated mechanical power produced by the engine at this speed.",
+          "formula": "Math.round((Math.PI * Math.pow(bore_size / 20, 2) * (stroke_length / 10)) * (rpm / 16000))",
+          "id": "latency",
           "inScope": [
             "Volumetric efficiency proxy"
           ],
+          "label": "Calculated Horsepower (hp)",
           "outOfScope": [
             "Drivetrain transmission losses"
           ]
         },
         {
-          "id": "cost",
-          "label": "Fuel Efficiency (km/L)",
-          "formula": "Math.round(Math.max(10, 80 - (bore_size * 0.4) - (rpm / 250)))",
-          "description": "Estimated travel distance covered per liter of fuel burned.",
           "analogy": "Caloric burn. A larger runner sprinting faster consumes calories much quicker.",
+          "description": "Estimated travel distance covered per liter of fuel burned.",
+          "formula": "Math.round(Math.max(10, 80 - (bore_size * 0.4) - (rpm / 250)))",
+          "id": "cost",
           "inScope": [
             "Thermal fuel combustion rates"
           ],
+          "label": "Fuel Efficiency (km/L)",
           "outOfScope": [
             "Wind resistance and rider weight factors"
           ]
         }
+      ],
+      "title": "Engine Displacement & Performance Sandbox",
+      "variables": [
+        {
+          "defaultValue": 54,
+          "id": "bore_size",
+          "label": "Cylinder Bore Size (mm)",
+          "max": 100,
+          "min": 50,
+          "step": 2
+        },
+        {
+          "defaultValue": 54,
+          "id": "stroke_length",
+          "label": "Piston Stroke Length (mm)",
+          "max": 90,
+          "min": 40,
+          "step": 2
+        },
+        {
+          "defaultValue": 6000,
+          "id": "rpm",
+          "label": "Engine Speed (RPM)",
+          "max": 12000,
+          "min": 1000,
+          "step": 500
+        }
       ]
-    }
+    },
+    "type": "formula-sandbox"
   },
   {
     "folder": "reflection-template",
-    "type": "reflection-template",
     "props": {
-      "title": "Engine Dynamics Evaluation",
       "challenges": [
         {
-          "prompt": "Complete the statement explaining cylinder dimensions and engine volume (Part 1):",
-          "template": "Increasing the cylinder bore size or piston stroke length results in a {zone-1} swept volume (displacement). This swept volume allows the engine to ingest more air and fuel, which directly {zone-2} the peak torque and power outputs.",
           "chips": [
             {
               "id": "chip-larger",
@@ -3009,15 +3004,15 @@
               "text": "decreases"
             }
           ],
+          "explanation": "<strong>Correct!</strong> Swept volume (displacement) increases with larger bore and stroke. Larger cylinder size holds more fuel charge, which increases combustion pressure force.",
+          "prompt": "Complete the statement explaining cylinder dimensions and engine volume (Part 1):",
           "solution": {
             "zone-1": "chip-larger",
             "zone-2": "chip-increases"
           },
-          "explanation": "<strong>Correct!</strong> Swept volume (displacement) increases with larger bore and stroke. Larger cylinder size holds more fuel charge, which increases combustion pressure force."
+          "template": "Increasing the cylinder bore size or piston stroke length results in a {zone-1} swept volume (displacement). This swept volume allows the engine to ingest more air and fuel, which directly {zone-2} the peak torque and power outputs."
         },
         {
-          "prompt": "Complete the statement explaining high-revving performance dynamics (Part 2):",
-          "template": "Operating the engine at high RPMs increases the horsepower but {zone-1} the fuel efficiency. This is because high revs require {zone-2} fuel injection cycles per second.",
           "chips": [
             {
               "id": "chip-reduces",
@@ -3036,208 +3031,122 @@
               "text": "fewer"
             }
           ],
+          "explanation": "<strong>Correct!</strong> Higher speed requires more cycles per second, consuming more fuel and dropping economy metrics.",
+          "prompt": "Complete the statement explaining high-revving performance dynamics (Part 2):",
           "solution": {
             "zone-1": "chip-reduces",
             "zone-2": "chip-more"
           },
-          "explanation": "<strong>Correct!</strong> Higher speed requires more cycles per second, consuming more fuel and dropping economy metrics."
+          "template": "Operating the engine at high RPMs increases the horsepower but {zone-1} the fuel efficiency. This is because high revs require {zone-2} fuel injection cycles per second."
         }
-      ]
-    }
+      ],
+      "title": "Engine Dynamics Evaluation"
+    },
+    "type": "reflection-template"
   },
   {
     "folder": "scenario",
-    "type": "scenario",
     "props": {
-      "title": "รถมีปัญหา ต้องทำอย่างไร?",
       "id": "motorcycle-troubleshoot",
       "intro": "คุณกำลังขับรถมอเตอร์ไซค์แล้วเจอปัญหา คุณจะใช้วิธีไหนในการแก้ไข?",
       "nodes": {
-        "start": {
-          "id": "start",
-          "prompt": "คุณกำลังลงเขาสูงและเบรกเริ่มร้อนมาก ควรทำอย่างไร?",
-          "choices": [
-            {
-              "id": "brake-hard",
-              "text": "เบรกต่อไปเรื่อยๆ จนกว่าจะถึงด้านล่าง",
-              "next": "brake-fade-outcome"
-            },
-            {
-              "id": "engine-brake",
-              "text": "ใช้เกียร์ช่วยเบรก (Engine Brake) และพักเบรกเป็นระยะ",
-              "next": "engine-brake-outcome"
-            },
-            {
-              "id": "coast",
-              "text": "เลิกเบรกแล้วปล่อยให้รถไหลลงเขา",
-              "next": "coast-outcome"
-            }
-          ]
-        },
         "brake-fade-outcome": {
           "id": "brake-fade-outcome",
           "outcome": {
-            "verdict": "เบรกจมจากความร้อนสูง ทำให้เบรกไม่อยู่และเสี่ยงอุบัติเหตุรุนแรง",
             "lesson": "เมื่อเบรกใช้งานหนักต่อเนื่อง ควรใช้เกียร์ช่วยเบรกและพักเบรกเป็นระยะเพื่อไม่ให้จานเบรกและผ้าเบรกร้อนเกินจุดทำงานปกติ",
-            "rating": "c"
-          }
-        },
-        "engine-brake-outcome": {
-          "id": "engine-brake-outcome",
-          "outcome": {
-            "verdict": "คุณควบคุมความเร็วได้ดีด้วยเกียร์และเบรกเป็นระยะ เบรกไม่ร้อนเกินไป",
-            "lesson": "การใช้เกียร์ช่วยเบรก (Engine Brake) เป็นวิธีที่ปลอดภัยที่สุดเมื่อลงเขาสูง ช่วยลดภาระของระบบเบรก",
-            "rating": "a"
+            "rating": "c",
+            "verdict": "เบรกจมจากความร้อนสูง ทำให้เบรกไม่อยู่และเสี่ยงอุบัติเหตุรุนแรง"
           }
         },
         "coast-outcome": {
           "id": "coast-outcome",
           "outcome": {
-            "verdict": "รถไหลเร็วขึ้นเรื่อยๆ คุณไม่สามารถควบคุมความเร็วได้",
             "lesson": "การปล่อยรถไหลโดยไม่ควบคุมความเร็วเป็นอันตรายมาก ควรใช้เกียร์และเบรกควบคู่กัน",
-            "rating": "c"
+            "rating": "c",
+            "verdict": "รถไหลเร็วขึ้นเรื่อยๆ คุณไม่สามารถควบคุมความเร็วได้"
           }
+        },
+        "engine-brake-outcome": {
+          "id": "engine-brake-outcome",
+          "outcome": {
+            "lesson": "การใช้เกียร์ช่วยเบรก (Engine Brake) เป็นวิธีที่ปลอดภัยที่สุดเมื่อลงเขาสูง ช่วยลดภาระของระบบเบรก",
+            "rating": "a",
+            "verdict": "คุณควบคุมความเร็วได้ดีด้วยเกียร์และเบรกเป็นระยะ เบรกไม่ร้อนเกินไป"
+          }
+        },
+        "start": {
+          "choices": [
+            {
+              "id": "brake-hard",
+              "next": "brake-fade-outcome",
+              "text": "เบรกต่อไปเรื่อยๆ จนกว่าจะถึงด้านล่าง"
+            },
+            {
+              "id": "engine-brake",
+              "next": "engine-brake-outcome",
+              "text": "ใช้เกียร์ช่วยเบรก (Engine Brake) และพักเบรกเป็นระยะ"
+            },
+            {
+              "id": "coast",
+              "next": "coast-outcome",
+              "text": "เลิกเบรกแล้วปล่อยให้รถไหลลงเขา"
+            }
+          ],
+          "id": "start",
+          "prompt": "คุณกำลังลงเขาสูงและเบรกเริ่มร้อนมาก ควรทำอย่างไร?"
         }
       },
-      "startNode": "start"
-    }
+      "startNode": "start",
+      "title": "รถมีปัญหา ต้องทำอย่างไร?"
+    },
+    "type": "scenario"
   },
   {
     "folder": "decision-tree",
-    "type": "decision-tree",
     "props": {
-      "title": "ตัวช่วยวินิจฉัยปัญหา",
       "id": "motorcycle-diag",
-      "root": "symptom",
       "nodes": {
-        "symptom": {
-          "id": "symptom",
-          "prompt": "รถมีอาการแบบไหน?",
-          "choices": [
-            {
-              "id": "no-start",
-              "text": "สตาร์ทไม่ติด",
-              "next": "start-check",
-              "rationale": "สตาร์ทไม่ติดเป็นปัญหาที่พบบ่อย มีหลายสาเหตุ"
-            },
-            {
-              "id": "no-power",
-              "text": "เร่งไม่ขึ้น หรือรอบขึ้นแต่รถไม่วิ่ง",
-              "next": "power-check",
-              "rationale": "อาการนี้มักเกี่ยวกับระบบส่งกำลังหรือระบบจุดระเบิด",
-              "recommended": true
-            },
-            {
-              "id": "brake-issue",
-              "text": "เบรกจม หรือเบรกไม่อยู่",
-              "next": "brake-check",
-              "rationale": "ปัญหาระบบเบรกต้องแก้ไขทันทีเพื่อความปลอดภัย"
-            }
-          ]
-        },
-        "start-check": {
-          "id": "start-check",
-          "prompt": "ลองฟังเสียงตอนสตาร์ท",
-          "choices": [
-            {
-              "id": "no-sound",
-              "text": "ไม่มีเสียงอะไรเลย",
-              "next": "rec-electric",
-              "rationale": "ไม่มีเสียงอาจหมายถึงระบบไฟฟ้ามีปัญหา"
-            },
-            {
-              "id": "crank-no-fire",
-              "text": "เครื่องหมุนแต่ไม่ติด",
-              "next": "rec-fuel",
-              "rationale": "เครื่องหมุนได้แต่ไม่ติด มักเกี่ยวกับน้ำมันหรือหัวเทียน"
-            }
-          ]
-        },
-        "power-check": {
-          "id": "power-check",
-          "prompt": "ลองฟังเสียงเพิ่มเติม",
-          "choices": [
-            {
-              "id": "chain-noise",
-              "text": "มีเสียงแคร่กๆ เวลาขับขี่",
-              "next": "rec-chain",
-              "rationale": "เสียงโซ่เป็นสัญญาณว่าระบบส่งกำลังมีปัญหา"
-            },
-            {
-              "id": "no-noise",
-              "text": "ไม่มีเสียงผิดปกติ แต่รอบขึ้นรถไม่วิ่ง",
-              "next": "rec-clutch",
-              "rationale": "คลัตช์ลื่นเป็นสาเหตุพบบ่อยของอาการนี้"
-            }
-          ]
-        },
         "brake-check": {
-          "id": "brake-check",
-          "prompt": "ลองกดเบรกดู",
           "choices": [
             {
               "id": "brake-soft",
-              "text": "เบรกนุ่ม กดจมง่าย",
               "next": "rec-brake-fluid",
-              "rationale": "เบรกนุ่มมักเกิดจากฟองอากาศหรือซีลแตก"
+              "rationale": "เบรกนุ่มมักเกิดจากฟองอากาศหรือซีลแตก",
+              "text": "เบรกนุ่ม กดจมง่าย"
             },
             {
               "id": "brake-slow",
-              "text": "เบรกแข็งแต่ไม่อยู่",
               "next": "rec-brake-pad",
-              "rationale": "เบรกแข็งแต่ไม่อยู่อาจเพราะผ้าเบรกหมด"
+              "rationale": "เบรกแข็งแต่ไม่อยู่อาจเพราะผ้าเบรกหมด",
+              "text": "เบรกแข็งแต่ไม่อยู่"
             }
-          ]
+          ],
+          "id": "brake-check",
+          "prompt": "ลองกดเบรกดู"
         },
-        "rec-electric": {
-          "id": "rec-electric",
-          "leaf": {
-            "recommendation": "เช็คระบบไฟฟ้า: แบตเตอรี่, สวิตช์, ฟิวส์ และสตาร์ทเตอร์",
-            "explanation": "ถ้าไม่มีเสียงตอนสตาร์ท ให้เริ่มเช็คจากแบตเตอรี่ก่อน แล้วตามด้วยฟิวส์และสวิตช์ ถ้าแบตเตอรี่ดี อาจเป็นสตาร์ทเตอร์เสีย",
-            "tradeoffs": [
-              "การเช็คระบบไฟฟ้าทำได้เองเบื้องต้น",
-              "ถ้าสตาร์ทเตอร์เสียอาจต้องส่งร้าน"
-            ]
-          }
-        },
-        "rec-fuel": {
-          "id": "rec-fuel",
-          "leaf": {
-            "recommendation": "เช็คหัวเทียนและระบบจ่ายน้ำมัน",
-            "explanation": "ถ้าเครื่องหมุนแต่ไม่ติด ให้เริ่มจากหัวเทียนก่อน — ถอดออกมาดูว่ายังมีประกายไฟหรือไม่ ถ้ามี เช็คคาร์บูเรเตอร์หรือหัวฉีด",
-            "tradeoffs": [
-              "การเปลี่ยนหัวเทียนทำได้เอง",
-              "การล้างคาร์บูเรเตอร์หรือซ่อมหัวฉีดอาจต้องส่งร้าน"
-            ]
-          }
-        },
-        "rec-chain": {
-          "id": "rec-chain",
-          "leaf": {
-            "recommendation": "เช็คความตึงโซ่และสภาพสเตอร์",
-            "explanation": "โซ่หย่อนเกินไปทำให้สูญเสียกำลังและเสียงดัง ตั้งความตึงโซ่ให้อยู่ในระดับที่พอดี (ระยะฟรีประมาณ 2-3 ซม.)",
-            "tradeoffs": [
-              "การตั้งโซ่ทำได้เอง",
-              "ถ้าสเตอร์ฟันแหลมหรือโซ่ตาย ต้องเปลี่ยนใหม่ยกชุด"
-            ]
-          }
-        },
-        "rec-clutch": {
-          "id": "rec-clutch",
-          "leaf": {
-            "recommendation": "เช็คแผ่นคลัตช์ (รถเกียร์) หรือสายพาน (รถออโตเมติก)",
-            "explanation": "ถ้ารอบเครื่องขึ้นแต่รถไม่วิ่ง คลัตช์ลื่น (รถเกียร์) หรือสายพานยืด (รถออโตเมติก) เป็นสาเหตุหลัก",
-            "tradeoffs": [
-              "การเช็คคลัตช์/สายพานต้องถอดชิ้นส่วน",
-              "ควรส่งร้านที่มีเครื่องมือ"
-            ]
-          }
+        "power-check": {
+          "choices": [
+            {
+              "id": "chain-noise",
+              "next": "rec-chain",
+              "rationale": "เสียงโซ่เป็นสัญญาณว่าระบบส่งกำลังมีปัญหา",
+              "text": "มีเสียงแคร่กๆ เวลาขับขี่"
+            },
+            {
+              "id": "no-noise",
+              "next": "rec-clutch",
+              "rationale": "คลัตช์ลื่นเป็นสาเหตุพบบ่อยของอาการนี้",
+              "text": "ไม่มีเสียงผิดปกติ แต่รอบขึ้นรถไม่วิ่ง"
+            }
+          ],
+          "id": "power-check",
+          "prompt": "ลองฟังเสียงเพิ่มเติม"
         },
         "rec-brake-fluid": {
           "id": "rec-brake-fluid",
           "leaf": {
-            "recommendation": "ไล่อากาศน้ำมันเบรก หรือเช็คซีลกระปุกเบรก",
             "explanation": "เบรกนุ่มกดจมง่ายมักเกิดจากฟองอากาศในระบบหรือซีลแตก ตรวจสอบระดับน้ำมันเบรกที่กระปุกเบรกบน",
+            "recommendation": "ไล่อากาศน้ำมันเบรก หรือเช็คซีลกระปุกเบรก",
             "tradeoffs": [
               "การไล่อากาศทำได้เองถ้ามีผู้ช่วย",
               "ถ้าซีลแตกต้องเปลี่ยนซีลที่ร้าน"
@@ -3247,15 +3156,105 @@
         "rec-brake-pad": {
           "id": "rec-brake-pad",
           "leaf": {
-            "recommendation": "เช็คความหนาผ้าเบรกและสภาพจานเบรก",
             "explanation": "ผ้าเบรกที่บางเกินไปทำให้เหล็กเสียดสีกับจานเบรก ทำให้เบรกไม่อยู่และจานเบรกเป็นรอย",
+            "recommendation": "เช็คความหนาผ้าเบรกและสภาพจานเบรก",
             "tradeoffs": [
               "การเปลี่ยนผ้าเบรกทำได้เองเบื้องต้น",
               "ถ้าจานเบรกเป็นร่องลึก ต้องลับหรือเปลี่ยนจาน"
             ]
           }
+        },
+        "rec-chain": {
+          "id": "rec-chain",
+          "leaf": {
+            "explanation": "โซ่หย่อนเกินไปทำให้สูญเสียกำลังและเสียงดัง ตั้งความตึงโซ่ให้อยู่ในระดับที่พอดี (ระยะฟรีประมาณ 2-3 ซม.)",
+            "recommendation": "เช็คความตึงโซ่และสภาพสเตอร์",
+            "tradeoffs": [
+              "การตั้งโซ่ทำได้เอง",
+              "ถ้าสเตอร์ฟันแหลมหรือโซ่ตาย ต้องเปลี่ยนใหม่ยกชุด"
+            ]
+          }
+        },
+        "rec-clutch": {
+          "id": "rec-clutch",
+          "leaf": {
+            "explanation": "ถ้ารอบเครื่องขึ้นแต่รถไม่วิ่ง คลัตช์ลื่น (รถเกียร์) หรือสายพานยืด (รถออโตเมติก) เป็นสาเหตุหลัก",
+            "recommendation": "เช็คแผ่นคลัตช์ (รถเกียร์) หรือสายพาน (รถออโตเมติก)",
+            "tradeoffs": [
+              "การเช็คคลัตช์/สายพานต้องถอดชิ้นส่วน",
+              "ควรส่งร้านที่มีเครื่องมือ"
+            ]
+          }
+        },
+        "rec-electric": {
+          "id": "rec-electric",
+          "leaf": {
+            "explanation": "ถ้าไม่มีเสียงตอนสตาร์ท ให้เริ่มเช็คจากแบตเตอรี่ก่อน แล้วตามด้วยฟิวส์และสวิตช์ ถ้าแบตเตอรี่ดี อาจเป็นสตาร์ทเตอร์เสีย",
+            "recommendation": "เช็คระบบไฟฟ้า: แบตเตอรี่, สวิตช์, ฟิวส์ และสตาร์ทเตอร์",
+            "tradeoffs": [
+              "การเช็คระบบไฟฟ้าทำได้เองเบื้องต้น",
+              "ถ้าสตาร์ทเตอร์เสียอาจต้องส่งร้าน"
+            ]
+          }
+        },
+        "rec-fuel": {
+          "id": "rec-fuel",
+          "leaf": {
+            "explanation": "ถ้าเครื่องหมุนแต่ไม่ติด ให้เริ่มจากหัวเทียนก่อน — ถอดออกมาดูว่ายังมีประกายไฟหรือไม่ ถ้ามี เช็คคาร์บูเรเตอร์หรือหัวฉีด",
+            "recommendation": "เช็คหัวเทียนและระบบจ่ายน้ำมัน",
+            "tradeoffs": [
+              "การเปลี่ยนหัวเทียนทำได้เอง",
+              "การล้างคาร์บูเรเตอร์หรือซ่อมหัวฉีดอาจต้องส่งร้าน"
+            ]
+          }
+        },
+        "start-check": {
+          "choices": [
+            {
+              "id": "no-sound",
+              "next": "rec-electric",
+              "rationale": "ไม่มีเสียงอาจหมายถึงระบบไฟฟ้ามีปัญหา",
+              "text": "ไม่มีเสียงอะไรเลย"
+            },
+            {
+              "id": "crank-no-fire",
+              "next": "rec-fuel",
+              "rationale": "เครื่องหมุนได้แต่ไม่ติด มักเกี่ยวกับน้ำมันหรือหัวเทียน",
+              "text": "เครื่องหมุนแต่ไม่ติด"
+            }
+          ],
+          "id": "start-check",
+          "prompt": "ลองฟังเสียงตอนสตาร์ท"
+        },
+        "symptom": {
+          "choices": [
+            {
+              "id": "no-start",
+              "next": "start-check",
+              "rationale": "สตาร์ทไม่ติดเป็นปัญหาที่พบบ่อย มีหลายสาเหตุ",
+              "text": "สตาร์ทไม่ติด"
+            },
+            {
+              "id": "no-power",
+              "next": "power-check",
+              "rationale": "อาการนี้มักเกี่ยวกับระบบส่งกำลังหรือระบบจุดระเบิด",
+              "recommended": true,
+              "text": "เร่งไม่ขึ้น หรือรอบขึ้นแต่รถไม่วิ่ง"
+            },
+            {
+              "id": "brake-issue",
+              "next": "brake-check",
+              "rationale": "ปัญหาระบบเบรกต้องแก้ไขทันทีเพื่อความปลอดภัย",
+              "text": "เบรกจม หรือเบรกไม่อยู่"
+            }
+          ],
+          "id": "symptom",
+          "prompt": "รถมีอาการแบบไหน?"
         }
-      }
-    }
+      },
+      "root": "symptom",
+      "title": "ตัวช่วยวินิจฉัยปัญหา"
+    },
+    "type": "decision-tree"
   }
 ]

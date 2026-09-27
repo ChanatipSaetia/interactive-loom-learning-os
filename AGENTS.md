@@ -32,7 +32,8 @@ When refactoring or extending core sections, follow the Strategic & Tactical DDD
    * **`practice-assessment`**: `quiz`, `flashcards`, `concept-map`
    * *Rule:* Each sub-context directory (`src/core/learning-engine/sub-contexts/[subcontext]/`) MUST contain:
      - `components/`: React section view renderers, help modals, & visual form editors.
-     - `schema.ts`: Co-located Zod structural schemas (`SectionSchema`).
+     - `schema.ts`: Co-located Zod schemas (`SectionSchema`) — strict canonical input, transformed to the render shape. Output must be valid input (idempotent), so editor re-validation works.
+     - `layout.ts`: How each section type's files assemble into schema input (`singleFile`, `collection`, `fixedFiles`, `markdownParagraphs` from `validation/layout.ts`).
      - `validation.ts`: Tier 3 semantic reference-integrity validators (`validateTier3`).
      - `events.ts`: Domain event type definitions (`SectionEvents`).
      - `index.ts`: Bounded Context entry point exporting contract interfaces.
@@ -40,19 +41,21 @@ When refactoring or extending core sections, follow the Strategic & Tactical DDD
 
 2. **Validation Gateway Context (`src/core/learning-engine/validation/`):**
    * Pure ingestion & 3-tier validation, decoupled from React — can run in browser, CDN bundle, CLI/CI, or background AI fix loops. Independent entry point: `src/core/learning-engine/validation`.
-   * Tier 1 (Syntax): YAML syntax & frontmatter parsing.
-   * Tier 2 (Structural Schema): Zod schema verification delegated to sub-context `SectionSchema`.
+   * Entry points: `validateSectionFiles(files)` for a section folder's raw files (used by every loader and the CLI); `validateOKFSection(yaml)` for single-document payloads (editor).
+   * Tier 1 (Syntax): YAML syntax & frontmatter parsing, per file (diagnostics name the file and line).
+   * Tier 2 (Structural Schema): Zod schema verification + transform delegated to sub-context `SectionSchema`, after the sub-context `layout.ts` assembles the files.
    * Tier 3 (Semantic Reference Integrity): Cross-reference validation (step links, quiz option bounds, node IDs, and actor/system node connectivity to event nodes).
    * *Rule:* Return standardized `ValidationResult` payloads containing `status`, `payload` (`lastValidData` for non-blocking preview fallbacks), and `diagnostics` with `fixHint` annotations. **Zero React/DOM imports** inside `validation/`.
 
 3. **Composition Engine Context (`src/core/learning-engine/composition/`):**
-   * Page & section assembly: topic route discovery (`routes.tsx`), OKF bundle loading (`okf/reader.ts`), bundle→`SectionConfig` mapping (`okf/sections.ts`), HUD/editor contexts (`context/`), and lazy `SectionRegistry` resolution (`src/core/learning-engine/registry/`). Independent entry point: `src/core/learning-engine/composition`.
-   * *Rule:* Must not re-parse raw YAML or re-implement section schemas — delegate to the Validation Gateway and consume its `ValidationResult` payloads (keep `lastValidData` for non-blocking preview fallbacks).
+   * Page & section assembly: topic route discovery (`routes.tsx`), the `loadSection` / `loadOKFBundle` use case (`okf/loader.ts`: storage → `validateSectionFiles`), payload→props mapping (`okf/section-config.ts`: payload fields map 1:1 onto component props), `useOKFBundled` (`okf/sections.ts`), HUD/editor/storage contexts (`context/`), and lazy `SectionRegistry` resolution (`src/core/learning-engine/registry/`). Independent entry point: `src/core/learning-engine/composition`.
+   * *Rule:* Must not parse raw YAML or re-implement section schemas — delegate to the Validation Gateway and consume its `ValidationResult` payloads (keep `lastValidData` for non-blocking preview fallbacks). A section that fails validation keeps its slot and renders a placeholder (`ValidatedSection`); it never fails the topic.
 
 4. **Hexagonal Delivery Ports & Adapters (`src/core/delivery/`):**
-   * Interfaces: `OKFStoragePort` and `OKFRuntimePort` live in `src/core/delivery/ports.ts`.
-   * Adapters: `InRepoStorageAdapter`, `WebAppRuntimeAdapter`, `SingleHTMLEmbedAdapter` live in `src/core/delivery/adapters/`.
-   * *Rule:* Decouple host environments (Vite dev server, Web App SPA router, single HTML embed library `libs/loom-sections.tsx`) from section component implementations.
+   * Interfaces: `OKFStoragePort` (raw files only: `listSections`, `readSectionFiles`, `readHexMap`, optional `saveSection`) and `OKFRuntimePort` live in `src/core/delivery/ports.ts`.
+   * Adapters: `InRepoStorageAdapter` (browser fetch), `NodeFsStorageAdapter` (CLI/Vite/tests), `WebAppRuntimeAdapter`, `SingleHTMLEmbedAdapter` live in `src/core/delivery/adapters/`.
+   * *Rule:* Decouple host environments (Vite dev server, Web App SPA router, single HTML embed library `libs/loom-sections.tsx`) from section component implementations. Storage adapters never import composition; hosts construct the adapter at their entry point and inject it with `<StorageProvider>` (`App.tsx`, `libs/loom-sections.tsx`).
+   * *Rule:* The filesystem decides which files belong to a section. Browsers read the generated `okf/<topic>/manifest.json` (served in dev, emitted at build by the Vite plugin, never committed).
 
 5. **UI System Contract (`src/core/ui-system/`):**
    * Exposes `UISystemContract` via `useUISystem()` hook unifying `ThemeContract` (Catppuccin Frappé), `UIComponentRegistryContract` (`<Card>`, `<Button>`, `<RangeSlider>`, `<Modal>`, `<Badge>`), and `SensoryFeedbackContract` (audio triggers, motion animation variants).
@@ -61,7 +64,7 @@ When refactoring or extending core sections, follow the Strategic & Tactical DDD
 ## Working on OKF Sections & Editor Architecture
 
 - OKF schemas and types live co-located in `src/core/learning-engine/sub-contexts/[subcontext]/schema.ts` (with legacy `OKF*` type aliases in `src/core/learning-engine/composition/okf/types.ts`).
-- Dynamic OKF parsing and loading pipeline lives in `src/core/learning-engine/composition/okf/reader.ts` and `src/core/learning-engine/composition/okf/sections.ts` (using delivery adapters).
+- OKF loading: storage adapter (raw files) → `validateSectionFiles` (Validation Gateway) → `loadSection` (`composition/okf/loader.ts`) → `toSectionConfig` (`composition/okf/section-config.ts`). See [grill-log-okf-loading-pipeline.md](grill-log-okf-loading-pipeline.md).
 - The OKF Section Editor uses a split view (Editor Panel on left, Live Section Component Preview on right) with bi-directionally synchronized 'Visual Form' and 'Raw YAML/Markdown' tabs.
 - Disk saving in development mode is handled via Vite dev server plugin middleware (`POST /api/okf/save-section`), updating `public/okf/[topic-id]/sections/[section-name]/` directly on disk.
 - Errors in YAML syntax or schema validation must present non-blocking inline warning bars while keeping the `lastValidData` state in the Live Preview pane.

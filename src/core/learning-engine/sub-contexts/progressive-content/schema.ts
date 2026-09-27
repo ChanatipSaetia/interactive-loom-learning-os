@@ -42,13 +42,14 @@ export type IntroSectionData = z.infer<typeof IntroSectionSchema>
 
 // --- Bullets Section Schema ---
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const BulletItemRef: z.ZodType<any> = z.object({
+export const BulletChildSchema = z.object({
   text: z.string(),
-  children: z.array(z.lazy(() => BulletItemRef)).optional(),
 })
 
-export const BulletItemSchema = BulletItemRef
+export const BulletItemSchema = z.object({
+  text: z.string(),
+  children: z.array(BulletChildSchema).default([]),
+})
 
 export const BulletsSectionSchema = z.object({
   type: z.literal('bullets'),

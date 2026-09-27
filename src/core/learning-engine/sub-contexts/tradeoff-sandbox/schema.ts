@@ -96,10 +96,8 @@ export const DecisionTreeLeafSchema = z.object({
 
 export const DecisionTreeChoiceSchema = z.object({
   id: z.string().optional(),
-  text: z.string().optional(),
-  label: z.string().optional(),
+  text: z.string(),
   next: z.string().optional(),
-  target: z.string().optional(),
   rationale: z.string().optional(),
   recommended: z.boolean().optional(),
 })
@@ -107,23 +105,21 @@ export const DecisionTreeChoiceSchema = z.object({
 export const DecisionTreeNodeSchema = z.object({
   id: z.string().optional(),
   prompt: z.string().optional(),
-  text: z.string().optional(),
-  title: z.string().optional(),
   choices: z.array(DecisionTreeChoiceSchema).optional(),
-  options: z.array(DecisionTreeChoiceSchema).optional(),
   leaf: DecisionTreeLeafSchema.optional(),
-  recommendation: z.string().optional(),
 })
 
 export const DecisionTreeSectionSchema = z.object({
-  type: z.literal('decision-tree').optional(),
+  type: z.literal('decision-tree'),
   id: z.string(),
   title: z.string(),
   root: z.string(),
-  nodes: z.record(z.string(), DecisionTreeNodeSchema),
+  nodes: z.record(z.string(), DecisionTreeNodeSchema).transform((nodes) =>
+    Object.fromEntries(Object.entries(nodes).map(([id, node]) => [id, { ...node, id }])),
+  ),
 })
 
 export type DecisionTreeSectionData = z.infer<typeof DecisionTreeSectionSchema>
-export type DecisionTreeNode = z.infer<typeof DecisionTreeNodeSchema>
+export type DecisionTreeNode = DecisionTreeSectionData['nodes'][string]
 export type DecisionTreeChoice = z.infer<typeof DecisionTreeChoiceSchema>
 export type DecisionTreeLeaf = z.infer<typeof DecisionTreeLeafSchema>

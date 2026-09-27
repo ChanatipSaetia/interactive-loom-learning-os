@@ -1,21 +1,70 @@
 [
   {
     "folder": "intro",
-    "type": "intro",
     "props": {
-      "title": "The Dual Pestilence Witchhunter",
-      "subtitle": "Poison + Bleed DoT Mercenary Build — PoE 2 v0.5",
       "estimatedTime": "8 min read",
       "moduleCount": 8,
+      "roadmap": [
+        {
+          "description": "Memorise DoT mechanics, ailment magnitudes, and Witchhunter-specific terminology.",
+          "sectionId": "flashcards",
+          "title": "Key Vocabulary",
+          "type": "flashcards"
+        },
+        {
+          "description": "Explore main skills, support gems, defenses, and ascendancy nodes by category.",
+          "sectionId": "taxonomy-browser",
+          "title": "Build Components",
+          "type": "taxonomy-browser"
+        },
+        {
+          "description": "Trace how dual DoTs apply and tick through the full combat event chain.",
+          "sectionId": "flowchart",
+          "title": "Combat Engagement Flow",
+          "type": "flowchart"
+        },
+        {
+          "description": "Visual reference for skills, support gems, and key game mechanics.",
+          "sectionId": "image-gallery",
+          "title": "Skill & Mechanic Showcase",
+          "type": "image-gallery"
+        },
+        {
+          "description": "Tune attack speed, magnitude, and duration to see live Bleed and Poison DPS.",
+          "sectionId": "formula-sandbox",
+          "title": "DoT Damage Calculator",
+          "type": "formula-sandbox"
+        },
+        {
+          "description": "Compare budget vs invested gear choices and their stat trade-offs.",
+          "sectionId": "tradeoff-sandbox",
+          "title": "Gear Investment Trade-offs",
+          "type": "tradeoff-sandbox"
+        },
+        {
+          "description": "Walk through a league journey with branching decisions and outcome ratings.",
+          "sectionId": "scenario",
+          "title": "Build Progression Scenario",
+          "type": "scenario"
+        },
+        {
+          "description": "Get a personalised setup recommendation based on your league stage and goals.",
+          "sectionId": "decision-tree",
+          "title": "Build Setup Advisor",
+          "type": "decision-tree"
+        }
+      ],
+      "subtitle": "Poison + Bleed DoT Mercenary Build — PoE 2 v0.5",
+      "title": "The Dual Pestilence Witchhunter",
       "what": {
-        "definition": "Poison + Bleed Witchhunter is a dual-ailment DoT build in Path of Exile 2 patch 0.5 that melts enemies through simultaneous Poison and Bleed damage-over-time. It pairs Gas Grenade for area poison clouds with Barrage for rapid bleed application, synergised by the Poison 3, Bleed 3, and At Mixture keystones.",
-        "summary": "Complete build guide for the Witchhunter ascendancy Mercenary, covering dual-ailment mechanics, ascendancy synergies, gear milestones, and DPS calculations.",
         "bullets": [
           "Dual-ailment loop: Poison 3 + Bleed 3 + At Mixture multiplicative synergy",
           "Witchhunter ascendancy — No Mercy, Obsessive Rituals, Sorcery Ward",
           "Gas Grenade for area poison clouds, Barrage for rapid bleed hits",
           "Budget league-starter scaling into late-game Uber viability"
         ],
+        "definition": "Poison + Bleed Witchhunter is a dual-ailment DoT build in Path of Exile 2 patch 0.5 that melts enemies through simultaneous Poison and Bleed damage-over-time. It pairs Gas Grenade for area poison clouds with Barrage for rapid bleed application, synergised by the Poison 3, Bleed 3, and At Mixture keystones.",
+        "summary": "Complete build guide for the Witchhunter ascendancy Mercenary, covering dual-ailment mechanics, ascendancy synergies, gear milestones, and DPS calculations.",
         "tags": [
           "PoE 2",
           "Witchhunter",
@@ -24,294 +73,241 @@
         ]
       },
       "why": {
-        "summary": "Dual-ailment DoT is one of the most forgiving endgame damage types in PoE 2 — apply ailments once and step back while ticks do the work. But misconfiguring the synergy keystones or skipping Obsessive Rituals' offensive trade-off leaves huge damage on the table.",
-        "impact": "Mastering the Poison + Bleed interaction loop, Concentration management via No Mercy, and defensive positioning around Sorcery Ward turns a budget league-starter into a build capable of deleting Uber bosses."
-      },
-      "roadmap": [
-        {
-          "sectionId": "flashcards",
-          "title": "Key Vocabulary",
-          "type": "flashcards",
-          "description": "Memorise DoT mechanics, ailment magnitudes, and Witchhunter-specific terminology."
-        },
-        {
-          "sectionId": "taxonomy-browser",
-          "title": "Build Components",
-          "type": "taxonomy-browser",
-          "description": "Explore main skills, support gems, defenses, and ascendancy nodes by category."
-        },
-        {
-          "sectionId": "flowchart",
-          "title": "Combat Engagement Flow",
-          "type": "flowchart",
-          "description": "Trace how dual DoTs apply and tick through the full combat event chain."
-        },
-        {
-          "sectionId": "image-gallery",
-          "title": "Skill & Mechanic Showcase",
-          "type": "image-gallery",
-          "description": "Visual reference for skills, support gems, and key game mechanics."
-        },
-        {
-          "sectionId": "formula-sandbox",
-          "title": "DoT Damage Calculator",
-          "type": "formula-sandbox",
-          "description": "Tune attack speed, magnitude, and duration to see live Bleed and Poison DPS."
-        },
-        {
-          "sectionId": "tradeoff-sandbox",
-          "title": "Gear Investment Trade-offs",
-          "type": "tradeoff-sandbox",
-          "description": "Compare budget vs invested gear choices and their stat trade-offs."
-        },
-        {
-          "sectionId": "scenario",
-          "title": "Build Progression Scenario",
-          "type": "scenario",
-          "description": "Walk through a league journey with branching decisions and outcome ratings."
-        },
-        {
-          "sectionId": "decision-tree",
-          "title": "Build Setup Advisor",
-          "type": "decision-tree",
-          "description": "Get a personalised setup recommendation based on your league stage and goals."
-        }
-      ]
-    }
+        "impact": "Mastering the Poison + Bleed interaction loop, Concentration management via No Mercy, and defensive positioning around Sorcery Ward turns a budget league-starter into a build capable of deleting Uber bosses.",
+        "summary": "Dual-ailment DoT is one of the most forgiving endgame damage types in PoE 2 — apply ailments once and step back while ticks do the work. But misconfiguring the synergy keystones or skipping Obsessive Rituals' offensive trade-off leaves huge damage on the table."
+      }
+    },
+    "type": "intro"
   },
   {
     "folder": "flashcards",
-    "type": "flashcards",
     "props": {
-      "title": "Key Vocabulary",
       "terms": [
         {
-          "id": "witchhunter",
-          "word": "Witchhunter",
-          "pronunciation": "WITCH-hun-ter",
           "category": "ascendancy",
-          "image": "https://www.poe2wiki.net/images/thumb/9/93/Mercenary_portrait.png/96px-Mercenary_portrait.png",
-          "shortDefinition": "Third Mercenary ascendancy focused on ballista summons and precision attacks.",
           "detailedDefinition": "The Witchhunter ascendancy specializes in summoning ballistas that fire projectiles, combined with precision-based offense. Key nodes include Ballista summons, attack speed scaling, and ailment-focused damage multipliers.",
-          "whyItMatters": "Core ascendancy for this build. Provides ballista summons for sustained ailment application and precision nodes that amplify poison and bleed damage.",
           "dialogue": {
-            "user": "Why Witchhunter over other Mercenary ascendancies?",
+            "aiQuestion": "Witchhunter's ballista summons apply ailments independently from your character, letting you stack poison and bleed while kiting safely.",
             "aiThoughts": "Player comparing ascendancy options.",
-            "aiQuestion": "Witchhunter's ballista summons apply ailments independently from your character, letting you stack poison and bleed while kiting safely."
-          }
+            "user": "Why Witchhunter over other Mercenary ascendancies?"
+          },
+          "id": "witchhunter",
+          "image": "https://www.poe2wiki.net/images/thumb/9/93/Mercenary_portrait.png/96px-Mercenary_portrait.png",
+          "pronunciation": "WITCH-hun-ter",
+          "shortDefinition": "Third Mercenary ascendancy focused on ballista summons and precision attacks.",
+          "whyItMatters": "Core ascendancy for this build. Provides ballista summons for sustained ailment application and precision nodes that amplify poison and bleed damage.",
+          "word": "Witchhunter"
         },
         {
-          "id": "no-mercy",
-          "word": "No Mercy",
-          "pronunciation": "noh MER-si",
           "category": "ascendancy",
-          "image": "https://www.poe2wiki.net/images/thumb/b/b1/No_Mercy_passive_icon.png/48px-No_Mercy_passive_icon.png",
-          "shortDefinition": "Ascendancy node giving up to 40% more damage based on enemy missing Concentration.",
           "detailedDefinition": "A notable Witchhunter node that grants increasing More Damage as the target's Concentration drops. At maximum effect, enemies with no remaining Concentration take 40% More Damage from all sources.",
-          "whyItMatters": "Massive damage multiplier against boss-tier enemies with Concentration bars. Synergizes with sustained ailment damage that keeps pressure on fleeing targets.",
           "dialogue": {
-            "user": "Does No Mercy work on normal maps?",
+            "aiQuestion": "No Mercy only activates against enemies with a Concentration mechanic — mainly Expedition and Delve bosses. On standard maps, focus on raw ailment magnitude instead.",
             "aiThoughts": "Player unsure about map applicability.",
-            "aiQuestion": "No Mercy only activates against enemies with a Concentration mechanic — mainly Expedition and Delve bosses. On standard maps, focus on raw ailment magnitude instead."
-          }
+            "user": "Does No Mercy work on normal maps?"
+          },
+          "id": "no-mercy",
+          "image": "https://www.poe2wiki.net/images/thumb/b/b1/No_Mercy_passive_icon.png/48px-No_Mercy_passive_icon.png",
+          "pronunciation": "noh MER-si",
+          "shortDefinition": "Ascendancy node giving up to 40% more damage based on enemy missing Concentration.",
+          "whyItMatters": "Massive damage multiplier against boss-tier enemies with Concentration bars. Synergizes with sustained ailment damage that keeps pressure on fleeing targets.",
+          "word": "No Mercy"
         },
         {
-          "id": "obsessive-rituals",
-          "word": "Obsessive Rituals",
-          "pronunciation": "ob-SESS-iv RIT-yuh-lz",
           "category": "ascendancy",
-          "image": "https://www.poe2wiki.net/images/thumb/0/07/Obsessive_Rituals_passive_icon.png/48px-Obsessive_Rituals_passive_icon.png",
-          "shortDefinition": "50% less Armour and Evasion in exchange for offensive power.",
           "detailedDefinition": "A Witchhunter notable that trades 50% less Armour and 50% less Evasion Rating for substantial offensive gains, including ailment magnitude and attack speed. Intentional fragility for maximum damage output.",
-          "whyItMatters": "Defines the build's risk-reward identity. You sacrifice physical defense to become an ailment damage specialist — positioning and ballista distance become your real defense.",
           "dialogue": {
-            "user": "Won't Obsessive Rituals make me too squishy?",
+            "aiQuestion": "It does remove physical defenses, but the ballista summons handle clearing from range. Position carefully and rely on movement skills to survive.",
             "aiThoughts": "Player worried about survivability trade-off.",
-            "aiQuestion": "It does remove physical defenses, but the ballista summons handle clearing from range. Position carefully and rely on movement skills to survive."
-          }
+            "user": "Won't Obsessive Rituals make me too squishy?"
+          },
+          "id": "obsessive-rituals",
+          "image": "https://www.poe2wiki.net/images/thumb/0/07/Obsessive_Rituals_passive_icon.png/48px-Obsessive_Rituals_passive_icon.png",
+          "pronunciation": "ob-SESS-iv RIT-yuh-lz",
+          "shortDefinition": "50% less Armour and Evasion in exchange for offensive power.",
+          "whyItMatters": "Defines the build's risk-reward identity. You sacrifice physical defense to become an ailment damage specialist — positioning and ballista distance become your real defense.",
+          "word": "Obsessive Rituals"
         },
         {
-          "id": "sorcery-ward",
-          "word": "Sorcery Ward",
-          "pronunciation": "SOR-uh-see WAR-d",
           "category": "skill",
-          "image": "https://www.poe2wiki.net/images/8/82/Sorcery_Ward_inventory_icon.png",
-          "shortDefinition": "Barrier mechanic that absorbs damage and recharges over time.",
           "detailedDefinition": "A defensive skill unique to the Mercenary that creates a damage-absorbing barrier. The ward recharges gradually over time, providing a reliable layer of damage mitigation without requiring active management.",
-          "whyItMatters": "Primary defense layer after taking Obsessive Rituals. Compensates for lost Armour/Evasion with a rechargeable damage shield.",
           "dialogue": {
-            "user": "How do I stay alive without Armour?",
+            "aiQuestion": "Sorcery Ward is your main damage buffer. Keep it topped up during boss fights and use movement to avoid sustained hits.",
             "aiThoughts": "Player needs defense guidance post-Obsessive Rituals.",
-            "aiQuestion": "Sorcery Ward is your main damage buffer. Keep it topped up during boss fights and use movement to avoid sustained hits."
-          }
+            "user": "How do I stay alive without Armour?"
+          },
+          "id": "sorcery-ward",
+          "image": "https://www.poe2wiki.net/images/8/82/Sorcery_Ward_inventory_icon.png",
+          "pronunciation": "SOR-uh-see WAR-d",
+          "shortDefinition": "Barrier mechanic that absorbs damage and recharges over time.",
+          "whyItMatters": "Primary defense layer after taking Obsessive Rituals. Compensates for lost Armour/Evasion with a rechargeable damage shield.",
+          "word": "Sorcery Ward"
         },
         {
-          "id": "poison",
-          "word": "Poison",
-          "pronunciation": "POY-zun",
           "category": "ailment",
-          "image": "https://www.poe2wiki.net/images/d/d3/Poisoned_debuff_icon.png",
-          "shortDefinition": "Chaos damage over time with base magnitude equal to 20% of Physical + Chaos damage from the hit.",
           "detailedDefinition": "An ailment that deals chaos damage over time. The base magnitude captures 20% of the combined Physical and Chaos damage from the triggering hit. Duration scales with attack speed and skill modifiers, allowing multiple overlapping stacks.",
-          "whyItMatters": "One half of the dual-ailment engine. Poison's chaos damage type bypasses enemy resistance more reliably than elemental ailments at endgame.",
           "dialogue": {
-            "user": "How is poison damage calculated?",
+            "aiQuestion": "Each poison tick equals 20% of your Physical + Chaos hit damage, modified by more/faster poison nodes. Stack multiple hits for overlapping damage.",
             "aiThoughts": "Player needs the math explained simply.",
-            "aiQuestion": "Each poison tick equals 20% of your Physical + Chaos hit damage, modified by more/faster poison nodes. Stack multiple hits for overlapping damage."
-          }
+            "user": "How is poison damage calculated?"
+          },
+          "id": "poison",
+          "image": "https://www.poe2wiki.net/images/d/d3/Poisoned_debuff_icon.png",
+          "pronunciation": "POY-zun",
+          "shortDefinition": "Chaos damage over time with base magnitude equal to 20% of Physical + Chaos damage from the hit.",
+          "whyItMatters": "One half of the dual-ailment engine. Poison's chaos damage type bypasses enemy resistance more reliably than elemental ailments at endgame.",
+          "word": "Poison"
         },
         {
-          "id": "bleeding",
-          "word": "Bleeding",
-          "pronunciation": "BLEE-ding",
           "category": "ailment",
-          "image": "https://www.poe2wiki.net/images/1/19/Bleeding_debuff_icon.png",
-          "shortDefinition": "Physical damage over time with base magnitude of 15% of Physical damage, doubled while target moves.",
           "detailedDefinition": "A physical damage over time ailment. Base magnitude captures 15% of the Physical damage from the triggering hit. Critically, bleeding damage doubles while the affected target is moving, making it exceptionally strong against mobile enemies.",
-          "whyItMatters": "The other half of the dual-ailment engine. The movement damage multiplier makes bleeding synergize with kiting plays and area denial setups.",
           "dialogue": {
-            "user": "Why does bleeding double when enemies move?",
+            "aiQuestion": "It's a built-in design to reward kiting. Circle-strafe bosses and bleed damage spikes — this is your build's core loop.",
             "aiThoughts": "Player curious about the movement multiplier.",
-            "aiQuestion": "It's a built-in design to reward kiting. Circle-strafe bosses and bleed damage spikes — this is your build's core loop."
-          }
+            "user": "Why does bleeding double when enemies move?"
+          },
+          "id": "bleeding",
+          "image": "https://www.poe2wiki.net/images/1/19/Bleeding_debuff_icon.png",
+          "pronunciation": "BLEE-ding",
+          "shortDefinition": "Physical damage over time with base magnitude of 15% of Physical damage, doubled while target moves.",
+          "whyItMatters": "The other half of the dual-ailment engine. The movement damage multiplier makes bleeding synergize with kiting plays and area denial setups.",
+          "word": "Bleeding"
         },
         {
-          "id": "magnitude",
-          "word": "Magnitude",
-          "pronunciation": "MAG-nih-tood",
           "category": "mechanic",
-          "image": "https://www.poe2wiki.net/images/thumb/d/d0/Magnitude_passive_icon.png/48px-Magnitude_passive_icon.png",
-          "shortDefinition": "The base damage value captured by an ailment before modifiers are applied.",
           "detailedDefinition": "The snapshot value that determines how much damage a single ailment instance deals per tick. For poison, magnitude = 20% of (Physical + Chaos) from the hit. For bleeding, magnitude = 15% of Physical from the hit. All % more magnitude modifiers multiply this base value.",
-          "whyItMatters": "The fundamental stat to optimize. Every damage node in this build funnels into magnitude — higher magnitude means stronger ticks per stack.",
           "dialogue": {
-            "user": "Should I care about magnitude or duration?",
+            "aiQuestion": "Magnitude first, always. Duration only matters to ensure ticks outlast the fight. A high-magnitude short poison outdamages a weak long one.",
             "aiThoughts": "Player confused about ailment priorities.",
-            "aiQuestion": "Magnitude first, always. Duration only matters to ensure ticks outlast the fight. A high-magnitude short poison outdamages a weak long one."
-          }
+            "user": "Should I care about magnitude or duration?"
+          },
+          "id": "magnitude",
+          "image": "https://www.poe2wiki.net/images/thumb/d/d0/Magnitude_passive_icon.png/48px-Magnitude_passive_icon.png",
+          "pronunciation": "MAG-nih-tood",
+          "shortDefinition": "The base damage value captured by an ailment before modifiers are applied.",
+          "whyItMatters": "The fundamental stat to optimize. Every damage node in this build funnels into magnitude — higher magnitude means stronger ticks per stack.",
+          "word": "Magnitude"
         },
         {
-          "id": "poison-3",
-          "word": "Poison 3",
-          "pronunciation": "POY-zun three",
           "category": "keystone",
-          "image": "https://www.poe2wiki.net/images/thumb/f/f9/Poison_passive_icon.png/48px-Poison_passive_icon.png",
-          "shortDefinition": "Gives more poison magnitude against enemies that are also bleeding.",
           "detailedDefinition": "A keystone passive that significantly increases poison magnitude specifically when the target is also affected by bleeding. This creates a conditional damage spike that rewards maintaining both ailments simultaneously.",
-          "whyItMatters": "Core keystone that justifies the dual-ailment approach. Without it, poison and bleed operate independently. With it, they multiply each other's value.",
           "dialogue": {
-            "user": "What does Poison 3 actually do?",
+            "aiQuestion": "Poison 3 says 'your poison hits harder when the enemy is also bleeding.' It's the reason this build runs both ailments.",
             "aiThoughts": "Player needs keystone function clarified.",
-            "aiQuestion": "Poison 3 says 'your poison hits harder when the enemy is also bleeding.' It's the reason this build runs both ailments."
-          }
+            "user": "What does Poison 3 actually do?"
+          },
+          "id": "poison-3",
+          "image": "https://www.poe2wiki.net/images/thumb/f/f9/Poison_passive_icon.png/48px-Poison_passive_icon.png",
+          "pronunciation": "POY-zun three",
+          "shortDefinition": "Gives more poison magnitude against enemies that are also bleeding.",
+          "whyItMatters": "Core keystone that justifies the dual-ailment approach. Without it, poison and bleed operate independently. With it, they multiply each other's value.",
+          "word": "Poison 3"
         },
         {
-          "id": "bleed-3",
-          "word": "Bleed 3",
-          "pronunciation": "BLEED three",
           "category": "keystone",
-          "image": "https://www.poe2wiki.net/images/thumb/5/50/Bleed_passive_icon.png/48px-Bleed_passive_icon.png",
-          "shortDefinition": "Gives more bleeding magnitude against enemies that are also poisoned.",
           "detailedDefinition": "A keystone passive that significantly increases bleeding magnitude specifically when the target is also affected by poison. Paired with Poison 3, it creates a symmetric dual-ailment amplification loop.",
-          "whyItMatters": "The mirror keystone to Poison 3. Together they ensure both ailments are always stronger when stacked, making the dual-ailment strategy mandatory rather than optional.",
           "dialogue": {
-            "user": "Do I need both Poison 3 and Bleed 3?",
+            "aiQuestion": "Yes — they feed each other. Poison 3 strengthens poison when bleed is present, and Bleed 3 does the reverse. Dropping one halves the synergy.",
             "aiThoughts": "Player weighing keystone investment.",
-            "aiQuestion": "Yes — they feed each other. Poison 3 strengthens poison when bleed is present, and Bleed 3 does the reverse. Dropping one halves the synergy."
-          }
+            "user": "Do I need both Poison 3 and Bleed 3?"
+          },
+          "id": "bleed-3",
+          "image": "https://www.poe2wiki.net/images/thumb/5/50/Bleed_passive_icon.png/48px-Bleed_passive_icon.png",
+          "pronunciation": "BLEED three",
+          "shortDefinition": "Gives more bleeding magnitude against enemies that are also poisoned.",
+          "whyItMatters": "The mirror keystone to Poison 3. Together they ensure both ailments are always stronger when stacked, making the dual-ailment strategy mandatory rather than optional.",
+          "word": "Bleed 3"
         },
         {
-          "id": "at-mixture",
-          "word": "At Mixture",
-          "pronunciation": "at MIX-chur",
           "category": "support",
-          "image": "https://www.poe2wiki.net/images/3/34/At_Mixture_inventory_icon.png",
-          "shortDefinition": "20% more bleeding magnitude against poisoned enemies and 20% more poison magnitude against bleeding enemies.",
           "detailedDefinition": "A support gem that provides bidirectional ailment magnitude bonuses. When linked to a physical attack, it increases bleeding magnitude by 20% on poisoned targets and poison magnitude by 20% on bleeding targets, amplifying the dual-ailment synergy.",
-          "whyItMatters": "Stacks multiplicatively with Poison 3 and Bleed 3 keystones, creating a compounding damage loop that makes dual ailments dramatically stronger than either alone.",
           "dialogue": {
-            "user": "Is At Mixture worth linking?",
+            "aiQuestion": "Absolutely — At Mixture stacks with both keystones. It's the cheapest way to spike dual-ailment damage before investing in expensive uniques.",
             "aiThoughts": "Player evaluating support gem slot usage.",
-            "aiQuestion": "Absolutely — At Mixture stacks with both keystones. It's the cheapest way to spike dual-ailment damage before investing in expensive uniques."
-          }
+            "user": "Is At Mixture worth linking?"
+          },
+          "id": "at-mixture",
+          "image": "https://www.poe2wiki.net/images/3/34/At_Mixture_inventory_icon.png",
+          "pronunciation": "at MIX-chur",
+          "shortDefinition": "20% more bleeding magnitude against poisoned enemies and 20% more poison magnitude against bleeding enemies.",
+          "whyItMatters": "Stacks multiplicatively with Poison 3 and Bleed 3 keystones, creating a compounding damage loop that makes dual ailments dramatically stronger than either alone.",
+          "word": "At Mixture"
         },
         {
-          "id": "gas-grenade",
-          "word": "Gas Grenade",
-          "pronunciation": "gas gre-NAYD",
           "category": "skill",
-          "image": "https://www.poe2wiki.net/images/6/60/Gas_Grenade_inventory_icon.png",
-          "shortDefinition": "Fires a bouncing grenade that causes poison gas burst and leaves a growing poison cloud.",
           "detailedDefinition": "An attack skill that launches a bouncing grenade, dealing an initial poison gas burst on impact and leaving a poison cloud that grows in radius over time. Excellent for area denial and applying poison to multiple enemies simultaneously.",
-          "whyItMatters": "Primary clearing and poison-application skill. The growing cloud ensures sustained poison uptime on groups, feeding into the Poison 3 / Bleed 3 synergy.",
           "dialogue": {
-            "user": "Which skill should I use for clearing?",
+            "aiQuestion": "Gas Grenade is your clear skill. Bounce it into dense packs and let the expanding cloud apply poison to everything.",
             "aiThoughts": "Player needs skill guidance.",
-            "aiQuestion": "Gas Grenade is your clear skill. Bounce it into dense packs and let the expanding cloud apply poison to everything."
-          }
+            "user": "Which skill should I use for clearing?"
+          },
+          "id": "gas-grenade",
+          "image": "https://www.poe2wiki.net/images/6/60/Gas_Grenade_inventory_icon.png",
+          "pronunciation": "gas gre-NAYD",
+          "shortDefinition": "Fires a bouncing grenade that causes poison gas burst and leaves a growing poison cloud.",
+          "whyItMatters": "Primary clearing and poison-application skill. The growing cloud ensures sustained poison uptime on groups, feeding into the Poison 3 / Bleed 3 synergy.",
+          "word": "Gas Grenade"
         },
         {
-          "id": "barrage",
-          "word": "Barrage",
-          "pronunciation": "buh-RAJ",
           "category": "skill",
-          "image": "https://www.poe2wiki.net/images/8/86/Barrage_inventory_icon.png",
-          "shortDefinition": "Fires a rapid volley of projectiles, empowered to repeat multiple times.",
           "detailedDefinition": "An attack skill that fires a volley of projectiles in the target direction. When empowered through passive nodes or support gems, Barrage repeats multiple times in a single activation, making it effective for applying bleeding through repeated physical hits.",
-          "whyItMatters": "Strong single-target and AoE option for applying bleeding. Each projectile attempt is a separate hit chance, maximizing bleed application rate.",
           "dialogue": {
-            "user": "Barrage or Gas Grenade for bosses?",
+            "aiQuestion": "Barrage excels at single-target bleed application through repeated hits. Gas Grenade is better for multi-target poison clouds.",
             "aiThoughts": "Player choosing between skills for bossing.",
-            "aiQuestion": "Barrage excels at single-target bleed application through repeated hits. Gas Grenade is better for multi-target poison clouds."
-          }
+            "user": "Barrage or Gas Grenade for bosses?"
+          },
+          "id": "barrage",
+          "image": "https://www.poe2wiki.net/images/8/86/Barrage_inventory_icon.png",
+          "pronunciation": "buh-RAJ",
+          "shortDefinition": "Fires a rapid volley of projectiles, empowered to repeat multiple times.",
+          "whyItMatters": "Strong single-target and AoE option for applying bleeding. Each projectile attempt is a separate hit chance, maximizing bleed application rate.",
+          "word": "Barrage"
         },
         {
-          "id": "concentration",
-          "word": "Concentration",
-          "pronunciation": "kon-sen-tray-SHUN",
           "category": "mechanic",
-          "image": "https://www.poe2wiki.net/images/c/c2/Concentration_debuff_icon.png",
-          "shortDefinition": "Enemy resource that causes them to flee when depleted; No Mercy scales damage based on missing Concentration.",
           "detailedDefinition": "A mechanic present on Expedition and Delve enemies where they possess a Concentration bar. When depleted, the enemy enters a fleeing state, attempting to escape the arena. The No Mercy ascendancy node converts their missing Concentration into More Damage dealt against them.",
-          "whyItMatters": "The damage-scaling engine for No Mercy. Pushing Concentration to zero maximizes your damage output on bosses that use this mechanic.",
           "dialogue": {
-            "user": "How do I maximize No Mercy damage?",
+            "aiQuestion": "Break the enemy's Concentration bar as fast as possible early in the fight. The lower it is, the higher your No Mercy damage bonus.",
             "aiThoughts": "Player wants to optimize the Concentration interaction.",
-            "aiQuestion": "Break the enemy's Concentration bar as fast as possible early in the fight. The lower it is, the higher your No Mercy damage bonus."
-          }
+            "user": "How do I maximize No Mercy damage?"
+          },
+          "id": "concentration",
+          "image": "https://www.poe2wiki.net/images/c/c2/Concentration_debuff_icon.png",
+          "pronunciation": "kon-sen-tray-SHUN",
+          "shortDefinition": "Enemy resource that causes them to flee when depleted; No Mercy scales damage based on missing Concentration.",
+          "whyItMatters": "The damage-scaling engine for No Mercy. Pushing Concentration to zero maximizes your damage output on bosses that use this mechanic.",
+          "word": "Concentration"
         },
         {
-          "id": "escalating-poison",
-          "word": "Escalating Poison",
-          "pronunciation": "es-kal-AY-ting POY-zun",
           "category": "mechanic",
-          "image": "https://www.poe2wiki.net/images/thumb/e/e2/Escalating_Poison_passive_icon.png/48px-Escalating_Poison_passive_icon.png",
-          "shortDefinition": "Increases the maximum number of poison stacks maintainable on a single target.",
           "detailedDefinition": "A mechanic or node that raises the cap on poison stacks per target. By default, a limited number of poison instances can exist on one enemy. Escalating Poison increases this cap, allowing more simultaneous poison ticks and higher total damage output.",
-          "whyItMatters": "Directly multiplies poison damage by allowing more stacks. Combined with high magnitude, escalating poison turns single-target encounters into chaos damage fountains.",
           "dialogue": {
-            "user": "How many poison stacks can I have on a boss?",
+            "aiQuestion": "Stack count depends on your Escalating Poison investment. More stacks mean more simultaneous ticks, each dealing magnitude damage.",
             "aiThoughts": "Player needs stack limit info.",
-            "aiQuestion": "Stack count depends on your Escalating Poison investment. More stacks mean more simultaneous ticks, each dealing magnitude damage."
-          }
+            "user": "How many poison stacks can I have on a boss?"
+          },
+          "id": "escalating-poison",
+          "image": "https://www.poe2wiki.net/images/thumb/e/e2/Escalating_Poison_passive_icon.png/48px-Escalating_Poison_passive_icon.png",
+          "pronunciation": "es-kal-AY-ting POY-zun",
+          "shortDefinition": "Increases the maximum number of poison stacks maintainable on a single target.",
+          "whyItMatters": "Directly multiplies poison damage by allowing more stacks. Combined with high magnitude, escalating poison turns single-target encounters into chaos damage fountains.",
+          "word": "Escalating Poison"
         }
-      ]
-    }
+      ],
+      "title": "Key Vocabulary"
+    },
+    "type": "flashcards"
   },
   {
     "folder": "taxonomy",
-    "type": "taxonomy-browser",
     "props": {
-      "title": "Build Components",
       "categories": [
         {
-          "icon": "Crosshair",
-          "title": "Main Damage Skills",
-          "subtitle": "Gas Grenade & Barrage",
+          "analogy": "Gas Grenade is your area-denial toxin, Barrage is your shredding barrage — both stack debuffs relentlessly.",
+          "color": "green",
           "description": "Your two primary skills that clear maps through poison DoT stacking and bleed physical damage.",
           "details": "Gas Grenade throws a canister that shatters into poison gas clouds, dealing damage over time to enemies caught in the area. Barrage fires a rapid volley of projectiles across the screen, applying bleed through each individual hit. Gas Grenade excels at zone control and sustained DPS, while Barrage provides high attack-speed-driven application rate.",
-          "analogy": "Gas Grenade is your area-denial toxin, Barrage is your shredding barrage — both stack debuffs relentlessly.",
-          "primaryFocus": "DoT application rate and cumulative poison/bleed stacking",
+          "icon": "Crosshair",
           "inScope": [
             "Gas Grenade (Lv20) + Elemental Armament, At Mixture, Nova Projectiles, Faster Projectiles, Multifire",
             "Barrage (Lv20) + Bleed 3 supports, At Mixture, Multifire, Faster Attacks, Close Combat",
@@ -321,16 +317,16 @@
             "Instant-damage spell skills",
             "Trigger-based skills as primary damage"
           ],
-          "color": "green"
+          "primaryFocus": "DoT application rate and cumulative poison/bleed stacking",
+          "subtitle": "Gas Grenade & Barrage",
+          "title": "Main Damage Skills"
         },
         {
-          "icon": "Gem",
-          "title": "Support Gems",
-          "subtitle": "Poison, Bleed, At Mixture & Utility Supports",
+          "analogy": "At Mixture is your damage blender — it makes poison and bleed work together instead of competing.",
+          "color": "mauve",
           "description": "Support gems that amplify your DoT damage, extend duration, and optimize the poison/bleed trade-off.",
           "details": "At Mixture is the keystone support — it converts a portion of your poison or bleed damage into the other DoT type, ensuring both debuffs contribute. Elemental Armament converts elemental damage to your chosen element for Gas Grenade. Poison and Bleed supports increase damage per stack independently. Multifire and Faster Projectiles boost application rate across both skills.",
-          "analogy": "At Mixture is your damage blender — it makes poison and bleed work together instead of competing.",
-          "primaryFocus": "Maximizing combined DoT output through At Mixture synergy",
+          "icon": "Gem",
           "inScope": [
             "At Mixture — converts portion of Poison to Bleed and Bleed to Poison",
             "Elemental Armament (Lightning) for Gas Grenade elemental conversion",
@@ -343,16 +339,16 @@
             "Support gems for non-DoT skills",
             "Instant damage multiplication supports"
           ],
-          "color": "mauve"
+          "primaryFocus": "Maximizing combined DoT output through At Mixture synergy",
+          "subtitle": "Poison, Bleed, At Mixture & Utility Supports",
+          "title": "Support Gems"
         },
         {
-          "icon": "Shield",
-          "title": "Defenses",
-          "subtitle": "Sorcery Ward, Movement Evasion & Flasks",
+          "analogy": "Sorcery Ward is your bubble, movement is your insurance, and Obsessive Rituals means you earn your safety through skill.",
+          "color": "sky",
           "description": "Defense layers combining Sorcery Ward barriers, movement-based evasion, and life leech sustainability.",
           "details": "Sorcery Ward creates a barrier that absorbs damage and triggers effects when broken, giving you a second layer beyond life. The Witchhunter excels at movement-based evasion through high attack speed and mobility skills. Life flasks with leech recovery form the baseline sustain. Obsessive Rituals trades defense nodes for offense, creating a risk-reward balance you must manage through positioning and Ward uptime.",
-          "analogy": "Sorcery Ward is your bubble, movement is your insurance, and Obsessive Rituals means you earn your safety through skill.",
-          "primaryFocus": "Ward barrier management and movement-based survival",
+          "icon": "Shield",
           "inScope": [
             "Sorcery Ward barrier (skill + passive investment) for second health pool",
             "Movement speed and evasion rating from Witchhunter passives",
@@ -365,16 +361,16 @@
             "Armour-based mitigation",
             "Block-based survivability"
           ],
-          "color": "sky"
+          "primaryFocus": "Ward barrier management and movement-based survival",
+          "subtitle": "Sorcery Ward, Movement Evasion & Flasks",
+          "title": "Defenses"
         },
         {
-          "icon": "Target",
-          "title": "Ascendancy",
-          "subtitle": "Witchhunter — No Mercy, Obsessive Rituals, Sorcery Ward",
+          "analogy": "You traded safety for lethality — every node you gave up came back as damage, but now you survive through skill and Ward.",
+          "color": "red",
           "description": "Witchhunter ascendancy nodes that define the build's identity around precision, DoT mastery, and calculated risk.",
           "details": "No Mercy is the core node, granting increased damage to affected enemies and scaling with DoT stacks — it rewards sustained engagements and multiple debuffs. Obsessive Rituals removes defensive passive nodes from the tree and converts them to offensive scaling, forcing reliance on Sorcery Ward and movement. Sorcery Ward integration across the ascendancy provides the barrier mechanic that replaces the sacrificed passive defenses.",
-          "analogy": "You traded safety for lethality — every node you gave up came back as damage, but now you survive through skill and Ward.",
-          "primaryFocus": "DoT damage scaling through No Mercy with Ward-based survivability",
+          "icon": "Target",
           "inScope": [
             "No Mercy — increased damage to enemies affected by DoTs, scales with stack count",
             "Obsessive Rituals — removes defensive nodes, converts to offensive scaling",
@@ -386,462 +382,196 @@
             "Ascendancy nodes from other classes (Inquisitor, Ascendant, etc.)",
             "Spell-focused ascendancy pathways"
           ],
-          "color": "red"
+          "primaryFocus": "DoT damage scaling through No Mercy with Ward-based survivability",
+          "subtitle": "Witchhunter — No Mercy, Obsessive Rituals, Sorcery Ward",
+          "title": "Ascendancy"
         }
-      ]
-    }
+      ],
+      "title": "Build Components"
+    },
+    "type": "taxonomy-browser"
   },
   {
     "folder": "combat-flow",
-    "type": "flowchart",
     "props": {
-      "title": "Combat Engagement Flow",
       "schema": {
         "entities": {
-          "player": {
-            "title": "Witchhunter Player",
-            "desc": "Witchhunter controlling Gas Grenade, Barrage, and ascendancy buffs",
-            "type": "Actor"
+          "barrage": {
+            "desc": "Rapid-hit projectile skill applying bleed through multiple attack hits",
+            "title": "Barrage",
+            "type": "Aggregate"
           },
-          "pack": {
-            "title": "Mob Pack",
-            "desc": "Group of regular map enemies",
-            "type": "Actor"
+          "barrage2": {
+            "desc": "Rapid-hit projectile skill applying bleed through multiple attack hits",
+            "title": "Barrage",
+            "type": "Aggregate"
           },
           "boss": {
-            "title": "Map Boss",
             "desc": "Map boss or league boss encounter",
+            "title": "Map Boss",
             "type": "Actor"
           },
-          "gas_grenade": {
-            "title": "Gas Grenade",
-            "desc": "Projectile skill deploying poison cloud on ground for area DoT",
-            "type": "Aggregate"
+          "cmd_branch_boss": {
+            "desc": "Begin Boss Engagement",
+            "title": "Begin Boss Engagement",
+            "type": "Command"
           },
-          "barrage": {
-            "title": "Barrage",
-            "desc": "Rapid-hit projectile skill applying bleed through multiple attack hits",
-            "type": "Aggregate"
+          "cmd_branch_next_pack": {
+            "desc": "Proceed to Next Pack",
+            "title": "Proceed to Next Pack",
+            "type": "Command"
+          },
+          "cmd_step_bleed_boss": {
+            "desc": "Apply Bleed to Boss with Barrage",
+            "title": "Apply Bleed to Boss with Barrage",
+            "type": "Command"
+          },
+          "cmd_step_bleed_pack": {
+            "desc": "Apply Bleed with Barrage",
+            "title": "Apply Bleed with Barrage",
+            "type": "Command"
+          },
+          "cmd_step_dots_boss": {
+            "desc": "Let DoTs Tick on Boss",
+            "title": "Let DoTs Tick on Boss",
+            "type": "Command"
+          },
+          "cmd_step_dots_pack": {
+            "desc": "Let DoTs Deal Damage",
+            "title": "Let DoTs Deal Damage",
+            "type": "Command"
+          },
+          "cmd_step_poison_pack": {
+            "desc": "Engage Pack with Gas Grenade",
+            "title": "Engage Pack with Gas Grenade",
+            "type": "Command"
           },
           "dot_system": {
-            "title": "DoT System",
             "desc": "Game damage-over-time system ticking poison and bleed simultaneously",
+            "title": "DoT System",
+            "type": "Aggregate"
+          },
+          "dot_system2": {
+            "desc": "Game damage-over-time system ticking poison and bleed simultaneously",
+            "title": "DoT System",
+            "type": "Aggregate"
+          },
+          "evt_evt_ailments_active": {
+            "desc": "Both Ailments Active",
+            "title": "Both Ailments Active",
+            "type": "Event"
+          },
+          "evt_evt_boss_defeated": {
+            "desc": "Boss Defeated",
+            "title": "Boss Defeated",
+            "type": "Event"
+          },
+          "evt_evt_boss_dual_ailmented": {
+            "desc": "Boss Dual Ailmented",
+            "title": "Boss Dual Ailmented",
+            "type": "Event"
+          },
+          "evt_evt_boss_poisoned": {
+            "desc": "Boss Poisoned",
+            "title": "Boss Poisoned",
+            "type": "Event"
+          },
+          "evt_evt_loop_pack": {
+            "desc": "Loop Back to Clear More",
+            "title": "Loop Back to Clear More",
+            "type": "Event"
+          },
+          "evt_evt_pack_melted": {
+            "desc": "Pack Melted",
+            "title": "Pack Melted",
+            "type": "Event"
+          },
+          "evt_evt_poison_deployed": {
+            "desc": "Poison Cloud Deployed",
+            "title": "Poison Cloud Deployed",
+            "type": "Event"
+          },
+          "gas_grenade": {
+            "desc": "Projectile skill deploying poison cloud on ground for area DoT",
+            "title": "Gas Grenade",
+            "type": "Aggregate"
+          },
+          "gas_grenade2": {
+            "desc": "Projectile skill deploying poison cloud on ground for area DoT",
+            "title": "Gas Grenade",
+            "type": "Aggregate"
+          },
+          "gas_grenade3": {
+            "desc": "Projectile skill deploying poison cloud on ground for area DoT",
+            "title": "Gas Grenade",
             "type": "Aggregate"
           },
           "no_mercy": {
-            "title": "No Mercy",
             "desc": "Ascendancy buff granting damage multiplier based on missing Concentration",
+            "title": "No Mercy",
             "type": "External API"
           },
-          "sorcery_ward": {
-            "title": "Sorcery Ward",
-            "desc": "Ward-based barrier absorbing incoming damage as defense layer",
-            "type": "External API"
+          "pack": {
+            "desc": "Group of regular map enemies",
+            "title": "Mob Pack",
+            "type": "Actor"
           },
-          "pol_step_poison_pack": {
-            "title": "On Pack Encounter",
-            "desc": "On Pack Encounter",
-            "type": "Policy",
-            "root": false
-          },
-          "cmd_step_poison_pack": {
-            "title": "Engage Pack with Gas Grenade",
-            "desc": "Engage Pack with Gas Grenade",
-            "type": "Command"
-          },
-          "evt_evt_poison_deployed": {
-            "title": "Poison Cloud Deployed",
-            "desc": "Poison Cloud Deployed",
-            "type": "Event"
-          },
-          "pol_step_bleed_pack": {
-            "title": "After Poison Cloud Deployed",
-            "desc": "After Poison Cloud Deployed",
-            "type": "Policy",
-            "root": false
-          },
-          "cmd_step_bleed_pack": {
-            "title": "Apply Bleed with Barrage",
-            "desc": "Apply Bleed with Barrage",
-            "type": "Command"
-          },
-          "evt_evt_ailments_active": {
-            "title": "Both Ailments Active",
-            "desc": "Both Ailments Active",
-            "type": "Event"
-          },
-          "pol_step_dots_pack": {
-            "title": "With Both Poison and Bleed Applied",
-            "desc": "With Both Poison and Bleed Applied",
-            "type": "Policy",
-            "root": false
-          },
-          "cmd_step_dots_pack": {
-            "title": "Let DoTs Deal Damage",
-            "desc": "Let DoTs Deal Damage",
-            "type": "Command"
-          },
-          "evt_evt_pack_melted": {
-            "title": "Pack Melted",
-            "desc": "Pack Melted",
-            "type": "Event"
-          },
-          "pol_branch_next_pack": {
-            "title": "If More Packs Remain",
-            "desc": "If More Packs Remain",
-            "type": "Policy"
-          },
-          "cmd_branch_next_pack": {
-            "title": "Proceed to Next Pack",
-            "desc": "Proceed to Next Pack",
-            "type": "Command"
-          },
-          "gas_grenade2": {
-            "title": "Gas Grenade",
-            "desc": "Projectile skill deploying poison cloud on ground for area DoT",
-            "type": "Aggregate"
-          },
-          "evt_evt_loop_pack": {
-            "title": "Loop Back to Clear More",
-            "desc": "Loop Back to Clear More",
-            "type": "Event"
+          "player": {
+            "desc": "Witchhunter controlling Gas Grenade, Barrage, and ascendancy buffs",
+            "title": "Witchhunter Player",
+            "type": "Actor"
           },
           "pol_branch_boss": {
-            "title": "If Boss Encountered",
             "desc": "If Boss Encountered",
+            "title": "If Boss Encountered",
             "type": "Policy"
           },
-          "cmd_branch_boss": {
-            "title": "Begin Boss Engagement",
-            "desc": "Begin Boss Engagement",
-            "type": "Command"
-          },
-          "gas_grenade3": {
-            "title": "Gas Grenade",
-            "desc": "Projectile skill deploying poison cloud on ground for area DoT",
-            "type": "Aggregate"
-          },
-          "evt_evt_boss_poisoned": {
-            "title": "Boss Poisoned",
-            "desc": "Boss Poisoned",
-            "type": "Event"
+          "pol_branch_next_pack": {
+            "desc": "If More Packs Remain",
+            "title": "If More Packs Remain",
+            "type": "Policy"
           },
           "pol_step_bleed_boss": {
-            "title": "After Boss Poisoned",
             "desc": "After Boss Poisoned",
-            "type": "Policy",
-            "root": false
+            "root": false,
+            "title": "After Boss Poisoned",
+            "type": "Policy"
           },
-          "cmd_step_bleed_boss": {
-            "title": "Apply Bleed to Boss with Barrage",
-            "desc": "Apply Bleed to Boss with Barrage",
-            "type": "Command"
-          },
-          "barrage2": {
-            "title": "Barrage",
-            "desc": "Rapid-hit projectile skill applying bleed through multiple attack hits",
-            "type": "Aggregate"
-          },
-          "evt_evt_boss_dual_ailmented": {
-            "title": "Boss Dual Ailmented",
-            "desc": "Boss Dual Ailmented",
-            "type": "Event"
+          "pol_step_bleed_pack": {
+            "desc": "After Poison Cloud Deployed",
+            "root": false,
+            "title": "After Poison Cloud Deployed",
+            "type": "Policy"
           },
           "pol_step_dots_boss": {
-            "title": "With Both Poison and Bleed on Boss",
             "desc": "With Both Poison and Bleed on Boss",
-            "type": "Policy",
-            "root": false
+            "root": false,
+            "title": "With Both Poison and Bleed on Boss",
+            "type": "Policy"
           },
-          "cmd_step_dots_boss": {
-            "title": "Let DoTs Tick on Boss",
-            "desc": "Let DoTs Tick on Boss",
-            "type": "Command"
+          "pol_step_dots_pack": {
+            "desc": "With Both Poison and Bleed Applied",
+            "root": false,
+            "title": "With Both Poison and Bleed Applied",
+            "type": "Policy"
           },
-          "dot_system2": {
-            "title": "DoT System",
-            "desc": "Game damage-over-time system ticking poison and bleed simultaneously",
-            "type": "Aggregate"
+          "pol_step_poison_pack": {
+            "desc": "On Pack Encounter",
+            "root": false,
+            "title": "On Pack Encounter",
+            "type": "Policy"
           },
-          "evt_evt_boss_defeated": {
-            "title": "Boss Defeated",
-            "desc": "Boss Defeated",
-            "type": "Event"
+          "sorcery_ward": {
+            "desc": "Ward-based barrier absorbing incoming damage as defense layer",
+            "title": "Sorcery Ward",
+            "type": "External API"
           }
         },
-        "relations": [
-          {
-            "id": "r1",
-            "from": "player",
-            "to": "pol_step_poison_pack",
-            "views": [
-              "EVENT_STORMING"
-            ]
-          },
-          {
-            "id": "r2",
-            "from": "pol_step_poison_pack",
-            "to": "cmd_step_poison_pack",
-            "views": [
-              "EVENT_STORMING"
-            ]
-          },
-          {
-            "id": "r3",
-            "from": "cmd_step_poison_pack",
-            "to": "gas_grenade",
-            "handledBy": true,
-            "views": [
-              "EVENT_STORMING"
-            ]
-          },
-          {
-            "id": "r4",
-            "from": "gas_grenade",
-            "to": "pack",
-            "views": [
-              "EVENT_STORMING"
-            ]
-          },
-          {
-            "id": "r5",
-            "from": "gas_grenade",
-            "to": "evt_evt_poison_deployed",
-            "views": [
-              "EVENT_STORMING"
-            ]
-          },
-          {
-            "id": "r6",
-            "from": "evt_evt_poison_deployed",
-            "to": "pol_step_bleed_pack",
-            "views": [
-              "EVENT_STORMING"
-            ]
-          },
-          {
-            "id": "r7",
-            "from": "pol_step_bleed_pack",
-            "to": "cmd_step_bleed_pack",
-            "views": [
-              "EVENT_STORMING"
-            ]
-          },
-          {
-            "id": "r8",
-            "from": "cmd_step_bleed_pack",
-            "to": "barrage",
-            "handledBy": true,
-            "views": [
-              "EVENT_STORMING"
-            ]
-          },
-          {
-            "id": "r9",
-            "from": "barrage",
-            "to": "evt_evt_ailments_active",
-            "views": [
-              "EVENT_STORMING"
-            ]
-          },
-          {
-            "id": "r10",
-            "from": "evt_evt_ailments_active",
-            "to": "pol_step_dots_pack",
-            "views": [
-              "EVENT_STORMING"
-            ]
-          },
-          {
-            "id": "r11",
-            "from": "pol_step_dots_pack",
-            "to": "cmd_step_dots_pack",
-            "views": [
-              "EVENT_STORMING"
-            ]
-          },
-          {
-            "id": "r12",
-            "from": "cmd_step_dots_pack",
-            "to": "dot_system",
-            "handledBy": true,
-            "views": [
-              "EVENT_STORMING"
-            ]
-          },
-          {
-            "id": "r13",
-            "from": "dot_system",
-            "to": "evt_evt_pack_melted",
-            "views": [
-              "EVENT_STORMING"
-            ]
-          },
-          {
-            "id": "r14",
-            "from": "evt_evt_pack_melted",
-            "to": "pol_branch_next_pack",
-            "label": "Move to Next Pack",
-            "dashed": true,
-            "views": [
-              "EVENT_STORMING"
-            ]
-          },
-          {
-            "id": "r15",
-            "from": "pol_branch_next_pack",
-            "to": "cmd_branch_next_pack",
-            "views": [
-              "EVENT_STORMING"
-            ]
-          },
-          {
-            "id": "r16",
-            "from": "cmd_branch_next_pack",
-            "to": "gas_grenade2",
-            "handledBy": true,
-            "views": [
-              "EVENT_STORMING"
-            ]
-          },
-          {
-            "id": "r17",
-            "from": "gas_grenade2",
-            "to": "evt_evt_loop_pack",
-            "views": [
-              "EVENT_STORMING"
-            ]
-          },
-          {
-            "id": "r18",
-            "from": "evt_evt_pack_melted",
-            "to": "pol_branch_boss",
-            "label": "Boss Fight",
-            "views": [
-              "EVENT_STORMING"
-            ]
-          },
-          {
-            "id": "r19",
-            "from": "pol_branch_boss",
-            "to": "cmd_branch_boss",
-            "views": [
-              "EVENT_STORMING"
-            ]
-          },
-          {
-            "id": "r20",
-            "from": "cmd_branch_boss",
-            "to": "gas_grenade3",
-            "handledBy": true,
-            "views": [
-              "EVENT_STORMING"
-            ]
-          },
-          {
-            "id": "r21",
-            "from": "gas_grenade3",
-            "to": "boss",
-            "views": [
-              "EVENT_STORMING"
-            ]
-          },
-          {
-            "id": "r22",
-            "from": "gas_grenade3",
-            "to": "evt_evt_boss_poisoned",
-            "views": [
-              "EVENT_STORMING"
-            ]
-          },
-          {
-            "id": "r23",
-            "from": "evt_evt_boss_poisoned",
-            "to": "pol_step_bleed_boss",
-            "views": [
-              "EVENT_STORMING"
-            ]
-          },
-          {
-            "id": "r24",
-            "from": "pol_step_bleed_boss",
-            "to": "cmd_step_bleed_boss",
-            "views": [
-              "EVENT_STORMING"
-            ]
-          },
-          {
-            "id": "r25",
-            "from": "cmd_step_bleed_boss",
-            "to": "barrage2",
-            "handledBy": true,
-            "views": [
-              "EVENT_STORMING"
-            ]
-          },
-          {
-            "id": "r26",
-            "from": "barrage2",
-            "to": "no_mercy",
-            "views": [
-              "EVENT_STORMING"
-            ]
-          },
-          {
-            "id": "r27",
-            "from": "barrage2",
-            "to": "evt_evt_boss_dual_ailmented",
-            "views": [
-              "EVENT_STORMING"
-            ]
-          },
-          {
-            "id": "r28",
-            "from": "evt_evt_boss_dual_ailmented",
-            "to": "pol_step_dots_boss",
-            "views": [
-              "EVENT_STORMING"
-            ]
-          },
-          {
-            "id": "r29",
-            "from": "pol_step_dots_boss",
-            "to": "cmd_step_dots_boss",
-            "views": [
-              "EVENT_STORMING"
-            ]
-          },
-          {
-            "id": "r30",
-            "from": "cmd_step_dots_boss",
-            "to": "dot_system2",
-            "handledBy": true,
-            "views": [
-              "EVENT_STORMING"
-            ]
-          },
-          {
-            "id": "r31",
-            "from": "dot_system2",
-            "to": "sorcery_ward",
-            "views": [
-              "EVENT_STORMING"
-            ]
-          },
-          {
-            "id": "r32",
-            "from": "dot_system2",
-            "to": "evt_evt_boss_defeated",
-            "views": [
-              "EVENT_STORMING"
-            ]
-          }
-        ],
         "journeys": [
           {
+            "description": "Engage a mob pack with Gas Grenade for poison, layer Barrage for bleed, then let dual DoTs melt the pack",
             "id": "journey_pack_clear",
             "label": "Pack Clearing Flow",
-            "description": "Engage a mob pack with Gas Grenade for poison, layer Barrage for bleed, then let dual DoTs melt the pack",
             "steps": [
               {
                 "nodeIds": [
@@ -852,9 +582,9 @@
                   "pack",
                   "evt_evt_poison_deployed"
                 ],
-                "title": "Deploy Poison Cloud",
+                "processGroup": "planning",
                 "reason": "Throw Gas Grenade at the mob pack to deploy a poison cloud",
-                "processGroup": "planning"
+                "title": "Deploy Poison Cloud"
               },
               {
                 "nodeIds": [
@@ -863,9 +593,9 @@
                   "barrage",
                   "evt_evt_ailments_active"
                 ],
-                "title": "Apply Bleed",
+                "processGroup": "execution",
                 "reason": "Fire Barrage into the pack to layer bleed on top of poison",
-                "processGroup": "execution"
+                "title": "Apply Bleed"
               },
               {
                 "nodeIds": [
@@ -874,9 +604,9 @@
                   "dot_system",
                   "evt_evt_pack_melted"
                 ],
-                "title": "DoTs Melt Pack",
+                "processGroup": "execution",
                 "reason": "Poison and bleed tick simultaneously for rapid pack clear",
-                "processGroup": "execution"
+                "title": "DoTs Melt Pack"
               },
               {
                 "nodeIds": [
@@ -885,16 +615,16 @@
                   "gas_grenade2",
                   "evt_evt_loop_pack"
                 ],
-                "title": "Move to Next Pack",
+                "processGroup": "evaluation",
                 "reason": "Loop back to engage the next mob pack",
-                "processGroup": "evaluation"
+                "title": "Move to Next Pack"
               }
             ]
           },
           {
+            "description": "Apply dual ailments to a boss with Gas Grenade and Barrage, then let sustained DoTs defeat the boss",
             "id": "journey_boss_fight",
             "label": "Boss Fight Flow",
-            "description": "Apply dual ailments to a boss with Gas Grenade and Barrage, then let sustained DoTs defeat the boss",
             "steps": [
               {
                 "nodeIds": [
@@ -904,9 +634,9 @@
                   "boss",
                   "evt_evt_boss_poisoned"
                 ],
-                "title": "Begin Boss Engagement",
+                "processGroup": "planning",
                 "reason": "Throw Gas Grenade at the boss to apply poison cloud",
-                "processGroup": "planning"
+                "title": "Begin Boss Engagement"
               },
               {
                 "nodeIds": [
@@ -916,9 +646,9 @@
                   "no_mercy",
                   "evt_evt_boss_dual_ailmented"
                 ],
-                "title": "Apply Bleed to Boss",
+                "processGroup": "execution",
                 "reason": "Fire Barrage at the boss to layer bleed on top of poison",
-                "processGroup": "execution"
+                "title": "Apply Bleed to Boss"
               },
               {
                 "nodeIds": [
@@ -928,88 +658,85 @@
                   "sorcery_ward",
                   "evt_evt_boss_defeated"
                 ],
-                "title": "DoTs Tick on Boss",
+                "processGroup": "execution",
                 "reason": "Sustained poison and bleed ticks steadily damage the boss until defeated",
-                "processGroup": "execution"
+                "title": "DoTs Tick on Boss"
               }
             ]
           }
         ],
         "rawSteps": [
           {
-            "type": "linear",
+            "command": "Engage Pack with Gas Grenade",
+            "continuesAs": "step_bleed_pack",
+            "delegatesTo": {
+              "_tag": "ref",
+              "id": "pack"
+            },
+            "handledBy": {
+              "_tag": "ref",
+              "id": "gas_grenade"
+            },
             "id": "step_poison_pack",
             "initiatedBy": {
               "_tag": "ref",
               "id": "player"
             },
             "policy": "On Pack Encounter",
-            "command": "Engage Pack with Gas Grenade",
-            "handledBy": {
-              "_tag": "ref",
-              "id": "gas_grenade"
-            },
-            "delegatesTo": {
-              "_tag": "ref",
-              "id": "pack"
-            },
             "resultEvents": [
               {
                 "id": "evt_poison_deployed",
                 "title": "Poison Cloud Deployed"
               }
             ],
-            "continuesAs": "step_bleed_pack"
+            "type": "linear"
           },
           {
-            "type": "linear",
-            "id": "step_bleed_pack",
-            "policy": "After Poison Cloud Deployed",
             "command": "Apply Bleed with Barrage",
+            "continuesAs": "step_dots_pack",
             "handledBy": {
               "_tag": "ref",
               "id": "barrage"
             },
+            "id": "step_bleed_pack",
+            "policy": "After Poison Cloud Deployed",
             "resultEvents": [
               {
                 "id": "evt_ailments_active",
                 "title": "Both Ailments Active"
               }
             ],
-            "continuesAs": "step_dots_pack"
+            "type": "linear"
           },
           {
-            "type": "linear",
-            "id": "step_dots_pack",
-            "policy": "With Both Poison and Bleed Applied",
             "command": "Let DoTs Deal Damage",
+            "continuesAs": "step_clear_branch",
             "handledBy": {
               "_tag": "ref",
               "id": "dot_system"
             },
+            "id": "step_dots_pack",
+            "policy": "With Both Poison and Bleed Applied",
             "resultEvents": [
               {
                 "id": "evt_pack_melted",
                 "title": "Pack Melted"
               }
             ],
-            "continuesAs": "step_clear_branch"
+            "type": "linear"
           },
           {
-            "type": "branch",
-            "id": "step_clear_branch",
-            "event": "evt_pack_melted",
             "branches": [
               {
-                "id": "branch_next_pack",
-                "label": "Move to Next Pack",
-                "dashed": true,
-                "policy": "If More Packs Remain",
                 "command": "Proceed to Next Pack",
+                "dashed": true,
                 "handledBy": {
                   "_tag": "ref",
                   "id": "gas_grenade"
                 },
+                "id": "branch_next_pack",
+                "label": "Move to Next Pack",
+                "policy": "If More Packs Remain",
                 "resultEvents": [
                   {
                     "id": "evt_loop_pack",
@@ -1018,1062 +745,1229 @@
                 ]
               },
               {
-                "id": "branch_boss",
-                "label": "Boss Fight",
-                "policy": "If Boss Encountered",
                 "command": "Begin Boss Engagement",
-                "handledBy": {
-                  "_tag": "ref",
-                  "id": "gas_grenade"
-                },
+                "continuesAs": "step_bleed_boss",
                 "delegatesTo": {
                   "_tag": "ref",
                   "id": "boss"
                 },
+                "handledBy": {
+                  "_tag": "ref",
+                  "id": "gas_grenade"
+                },
+                "id": "branch_boss",
+                "label": "Boss Fight",
+                "policy": "If Boss Encountered",
                 "resultEvents": [
                   {
                     "id": "evt_boss_poisoned",
                     "title": "Boss Poisoned"
                   }
-                ],
-                "continuesAs": "step_bleed_boss"
+                ]
               }
-            ]
+            ],
+            "event": "evt_pack_melted",
+            "id": "step_clear_branch",
+            "type": "branch"
           },
           {
-            "type": "linear",
-            "id": "step_bleed_boss",
-            "policy": "After Boss Poisoned",
             "command": "Apply Bleed to Boss with Barrage",
-            "handledBy": {
-              "_tag": "ref",
-              "id": "barrage"
-            },
+            "continuesAs": "step_dots_boss",
             "delegatesTo": {
               "_tag": "ref",
               "id": "no_mercy"
             },
+            "handledBy": {
+              "_tag": "ref",
+              "id": "barrage"
+            },
+            "id": "step_bleed_boss",
+            "policy": "After Boss Poisoned",
             "resultEvents": [
               {
                 "id": "evt_boss_dual_ailmented",
                 "title": "Boss Dual Ailmented"
               }
             ],
-            "continuesAs": "step_dots_boss"
+            "type": "linear"
           },
           {
-            "type": "linear",
-            "id": "step_dots_boss",
-            "policy": "With Both Poison and Bleed on Boss",
             "command": "Let DoTs Tick on Boss",
-            "handledBy": {
-              "_tag": "ref",
-              "id": "dot_system"
-            },
             "delegatesTo": {
               "_tag": "ref",
               "id": "sorcery_ward"
             },
+            "handledBy": {
+              "_tag": "ref",
+              "id": "dot_system"
+            },
+            "id": "step_dots_boss",
+            "policy": "With Both Poison and Bleed on Boss",
             "resultEvents": [
               {
                 "id": "evt_boss_defeated",
                 "title": "Boss Defeated"
               }
+            ],
+            "type": "linear"
+          }
+        ],
+        "relations": [
+          {
+            "from": "player",
+            "id": "r1",
+            "to": "pol_step_poison_pack",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "from": "pol_step_poison_pack",
+            "id": "r2",
+            "to": "cmd_step_poison_pack",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "from": "cmd_step_poison_pack",
+            "handledBy": true,
+            "id": "r3",
+            "to": "gas_grenade",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "from": "gas_grenade",
+            "id": "r4",
+            "to": "pack",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "from": "gas_grenade",
+            "id": "r5",
+            "to": "evt_evt_poison_deployed",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "from": "evt_evt_poison_deployed",
+            "id": "r6",
+            "to": "pol_step_bleed_pack",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "from": "pol_step_bleed_pack",
+            "id": "r7",
+            "to": "cmd_step_bleed_pack",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "from": "cmd_step_bleed_pack",
+            "handledBy": true,
+            "id": "r8",
+            "to": "barrage",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "from": "barrage",
+            "id": "r9",
+            "to": "evt_evt_ailments_active",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "from": "evt_evt_ailments_active",
+            "id": "r10",
+            "to": "pol_step_dots_pack",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "from": "pol_step_dots_pack",
+            "id": "r11",
+            "to": "cmd_step_dots_pack",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "from": "cmd_step_dots_pack",
+            "handledBy": true,
+            "id": "r12",
+            "to": "dot_system",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "from": "dot_system",
+            "id": "r13",
+            "to": "evt_evt_pack_melted",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "dashed": true,
+            "from": "evt_evt_pack_melted",
+            "id": "r14",
+            "label": "Move to Next Pack",
+            "to": "pol_branch_next_pack",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "from": "pol_branch_next_pack",
+            "id": "r15",
+            "to": "cmd_branch_next_pack",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "from": "cmd_branch_next_pack",
+            "handledBy": true,
+            "id": "r16",
+            "to": "gas_grenade2",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "from": "gas_grenade2",
+            "id": "r17",
+            "to": "evt_evt_loop_pack",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "from": "evt_evt_pack_melted",
+            "id": "r18",
+            "label": "Boss Fight",
+            "to": "pol_branch_boss",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "from": "pol_branch_boss",
+            "id": "r19",
+            "to": "cmd_branch_boss",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "from": "cmd_branch_boss",
+            "handledBy": true,
+            "id": "r20",
+            "to": "gas_grenade3",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "from": "gas_grenade3",
+            "id": "r21",
+            "to": "boss",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "from": "gas_grenade3",
+            "id": "r22",
+            "to": "evt_evt_boss_poisoned",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "from": "evt_evt_boss_poisoned",
+            "id": "r23",
+            "to": "pol_step_bleed_boss",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "from": "pol_step_bleed_boss",
+            "id": "r24",
+            "to": "cmd_step_bleed_boss",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "from": "cmd_step_bleed_boss",
+            "handledBy": true,
+            "id": "r25",
+            "to": "barrage2",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "from": "barrage2",
+            "id": "r26",
+            "to": "no_mercy",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "from": "barrage2",
+            "id": "r27",
+            "to": "evt_evt_boss_dual_ailmented",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "from": "evt_evt_boss_dual_ailmented",
+            "id": "r28",
+            "to": "pol_step_dots_boss",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "from": "pol_step_dots_boss",
+            "id": "r29",
+            "to": "cmd_step_dots_boss",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "from": "cmd_step_dots_boss",
+            "handledBy": true,
+            "id": "r30",
+            "to": "dot_system2",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "from": "dot_system2",
+            "id": "r31",
+            "to": "sorcery_ward",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "from": "dot_system2",
+            "id": "r32",
+            "to": "evt_evt_boss_defeated",
+            "views": [
+              "EVENT_STORMING"
             ]
           }
         ]
-      }
-    }
+      },
+      "title": "Combat Engagement Flow"
+    },
+    "type": "flowchart"
   },
   {
     "folder": "image-gallery",
-    "type": "image-gallery",
     "props": {
-      "title": "Skill & Mechanic Showcase",
       "items": [
         {
-          "id": "mercenary-portrait",
-          "url": "https://www.poe2wiki.net/images/9/93/Mercenary_portrait.png",
           "caption": "Mercenary — ranged STR/DEX class wielding Crossbows and grenades",
-          "credit": "Source: poe2wiki.net"
+          "credit": "Source: poe2wiki.net",
+          "id": "mercenary-portrait",
+          "url": "https://www.poe2wiki.net/images/9/93/Mercenary_portrait.png"
         },
         {
-          "id": "gas-grenade-icon",
-          "url": "https://www.poe2wiki.net/images/6/60/Gas_Grenade_inventory_icon.png",
           "caption": "Gas Grenade — bouncing canister that leaves an expanding poison cloud on impact",
-          "credit": "Source: poe2wiki.net"
+          "credit": "Source: poe2wiki.net",
+          "id": "gas-grenade-icon",
+          "url": "https://www.poe2wiki.net/images/6/60/Gas_Grenade_inventory_icon.png"
         },
         {
-          "id": "barrage-icon",
-          "url": "https://www.poe2wiki.net/images/8/86/Barrage_inventory_icon.png",
           "caption": "Barrage — rapid volley of projectiles, each hit applying Bleed and Poison",
-          "credit": "Source: poe2wiki.net"
+          "credit": "Source: poe2wiki.net",
+          "id": "barrage-icon",
+          "url": "https://www.poe2wiki.net/images/8/86/Barrage_inventory_icon.png"
         },
         {
-          "id": "poison-ailment",
-          "url": "https://www.poe2wiki.net/images/d/d3/Poisoned_debuff_icon.png",
           "caption": "Poison — chaos damage over time, 20% of Physical+Chaos hit damage per tick",
-          "credit": "Source: poe2wiki.net"
+          "credit": "Source: poe2wiki.net",
+          "id": "poison-ailment",
+          "url": "https://www.poe2wiki.net/images/d/d3/Poisoned_debuff_icon.png"
         },
         {
-          "id": "at-mixture-icon",
-          "url": "https://www.poe2wiki.net/images/3/34/At_Mixture_inventory_icon.png",
           "caption": "At Mixture — +20% Bleed magnitude vs poisoned targets and +20% Poison vs bleeding",
-          "credit": "Source: poe2wiki.net"
+          "credit": "Source: poe2wiki.net",
+          "id": "at-mixture-icon",
+          "url": "https://www.poe2wiki.net/images/3/34/At_Mixture_inventory_icon.png"
         }
-      ]
-    }
+      ],
+      "title": "Skill & Mechanic Showcase"
+    },
+    "type": "image-gallery"
   },
   {
     "folder": "dot-calculator",
-    "type": "formula-sandbox",
     "props": {
-      "title": "DoT Damage Calculator",
-      "variables": [
-        {
-          "id": "attack_speed",
-          "label": "Attacks per Second",
-          "min": 1,
-          "max": 8,
-          "step": 0.25,
-          "defaultValue": 3.5
-        },
-        {
-          "id": "physical_damage",
-          "label": "Physical Damage per Hit",
-          "min": 100,
-          "max": 3000,
-          "step": 50,
-          "defaultValue": 800
-        },
-        {
-          "id": "chaos_damage",
-          "label": "Chaos Damage per Hit",
-          "min": 0,
-          "max": 2000,
-          "step": 50,
-          "defaultValue": 400
-        },
-        {
-          "id": "bleed_magnitude",
-          "label": "% Bleed Magnitude",
-          "min": 15,
-          "max": 200,
-          "step": 5,
-          "defaultValue": 60
-        },
-        {
-          "id": "poison_magnitude",
-          "label": "% Poison Magnitude",
-          "min": 20,
-          "max": 250,
-          "step": 5,
-          "defaultValue": 75
-        },
-        {
-          "id": "dot_duration",
-          "label": "DoT Duration (seconds)",
-          "min": 3,
-          "max": 12,
-          "step": 0.5,
-          "defaultValue": 6
-        }
-      ],
       "metrics": [
         {
-          "id": "bleed_dps",
-          "label": "Bleed DPS",
-          "formula": "Math.round((physical_damage * bleed_magnitude / 100) * (attack_speed / dot_duration) * 5)",
-          "description": "Physical damage per second from bleeding. Base magnitude is 15% of physical hit damage, scaled by your bleed magnitude modifiers. Multiplied by 5x for average map damage over duration.",
           "analogy": "Like a deep wound that won't stop flowing—the deeper the cut and the slower the healing, the more blood pours out over time.",
+          "description": "Physical damage per second from bleeding. Base magnitude is 15% of physical hit damage, scaled by your bleed magnitude modifiers. Multiplied by 5x for average map damage over duration.",
+          "formula": "Math.round((physical_damage * bleed_magnitude / 100) * (attack_speed / dot_duration) * 5)",
+          "id": "bleed_dps",
           "inScope": [
             "Bleed magnitude scaling",
             "Physical damage conversion to bleed"
           ],
+          "label": "Bleed DPS",
           "outOfScope": [
             "Bleed chance on hit",
             "Monster bleed resistance"
           ]
         },
         {
-          "id": "poison_dps",
-          "label": "Poison DPS",
-          "formula": "Math.round(((physical_damage + chaos_damage) * poison_magnitude / 100) * (attack_speed / dot_duration) * 3)",
-          "description": "Chaos damage per second from poison. Base magnitude is 20% of combined Physical + Chaos hit damage, scaled by poison magnitude modifiers.",
           "analogy": "A spreading toxin that eats away at health—the more potent the venom and the longer it lingers, the greater the toll.",
+          "description": "Chaos damage per second from poison. Base magnitude is 20% of combined Physical + Chaos hit damage, scaled by poison magnitude modifiers.",
+          "formula": "Math.round(((physical_damage + chaos_damage) * poison_magnitude / 100) * (attack_speed / dot_duration) * 3)",
+          "id": "poison_dps",
           "inScope": [
             "Poison magnitude scaling",
             "Combined physical and chaos damage"
           ],
+          "label": "Poison DPS",
           "outOfScope": [
             "Poison chance on hit",
             "Monster chaos resistance"
           ]
         },
         {
-          "id": "total_dot_dps",
-          "label": "Total DoT DPS",
-          "formula": "bleed_dps + poison_dps",
-          "description": "Combined damage per second from both poison and bleed ticking simultaneously on the target.",
           "analogy": "Two wounds working in concert—each independently draining, together overwhelming the target's recovery.",
+          "description": "Combined damage per second from both poison and bleed ticking simultaneously on the target.",
+          "formula": "bleed_dps + poison_dps",
+          "id": "total_dot_dps",
           "inScope": [
             "Simultaneous bleed and poison ticks"
           ],
+          "label": "Total DoT DPS",
           "outOfScope": [
             "Direct hit damage",
             "Other ailment sources"
           ]
         },
         {
-          "id": "hits_to_fill",
-          "label": "Hits to Fill Poison Slots",
-          "formula": "Math.ceil(6 / attack_speed)",
-          "description": "Number of hits needed to fill all 6 default poison slots on a target. Higher attack speed means faster slot fill.",
           "analogy": "Loading six darts into a spinning wheel—each hit places one dart, and faster spinning means the wheel fills quicker.",
+          "description": "Number of hits needed to fill all 6 default poison slots on a target. Higher attack speed means faster slot fill.",
+          "formula": "Math.ceil(6 / attack_speed)",
+          "id": "hits_to_fill",
           "inScope": [
             "Default 6 poison slot limit",
             "Attack speed to slot fill rate"
           ],
+          "label": "Hits to Fill Poison Slots",
           "outOfScope": [
             "Increased poison slots from items or skills",
             "Poison tick rate modifications"
           ]
         }
+      ],
+      "title": "DoT Damage Calculator",
+      "variables": [
+        {
+          "defaultValue": 3.5,
+          "id": "attack_speed",
+          "label": "Attacks per Second",
+          "max": 8,
+          "min": 1,
+          "step": 0.25
+        },
+        {
+          "defaultValue": 800,
+          "id": "physical_damage",
+          "label": "Physical Damage per Hit",
+          "max": 3000,
+          "min": 100,
+          "step": 50
+        },
+        {
+          "defaultValue": 400,
+          "id": "chaos_damage",
+          "label": "Chaos Damage per Hit",
+          "max": 2000,
+          "min": 0,
+          "step": 50
+        },
+        {
+          "defaultValue": 60,
+          "id": "bleed_magnitude",
+          "label": "% Bleed Magnitude",
+          "max": 200,
+          "min": 15,
+          "step": 5
+        },
+        {
+          "defaultValue": 75,
+          "id": "poison_magnitude",
+          "label": "% Poison Magnitude",
+          "max": 250,
+          "min": 20,
+          "step": 5
+        },
+        {
+          "defaultValue": 6,
+          "id": "dot_duration",
+          "label": "DoT Duration (seconds)",
+          "max": 12,
+          "min": 3,
+          "step": 0.5
+        }
       ]
-    }
+    },
+    "type": "formula-sandbox"
   },
   {
     "folder": "gear-tradeoffs",
-    "type": "tradeoff-sandbox",
     "props": {
-      "title": "Gear Investment Trade-offs",
       "scenarios": [
         {
-          "id": "budget-league-starter",
-          "title": "Budget League Starter",
           "description": "Minimum investment to clear all content with dual DoTs",
+          "id": "budget-league-starter",
           "metrics": [
             {
+              "baseValue": 30,
+              "direction": "higher",
               "id": "damage",
               "label": "Damage Output",
-              "baseValue": 30,
-              "min": 0,
               "max": 100,
-              "direction": "higher"
+              "min": 0
             },
             {
+              "baseValue": 45,
+              "direction": "higher",
               "id": "survivability",
               "label": "Survivability",
-              "baseValue": 45,
-              "min": 0,
               "max": 100,
-              "direction": "higher"
+              "min": 0
             },
             {
+              "baseValue": 35,
+              "direction": "higher",
               "id": "clear-speed",
               "label": "Clear Speed",
-              "baseValue": 35,
-              "min": 0,
               "max": 100,
-              "direction": "higher"
+              "min": 0
             },
             {
+              "baseValue": 30,
+              "direction": "lower",
               "id": "spirit-cost",
               "label": "Spirit Cost",
-              "baseValue": 30,
-              "min": 0,
               "max": 100,
-              "direction": "lower"
+              "min": 0
             }
           ],
           "steps": [
             {
-              "id": "weapon",
-              "title": "Weapon",
-              "description": "Bow is the core weapon for Poison + Bleed. Crossbow offers a defensive alternative.",
-              "recommended": "bow",
               "choices": [
                 {
+                  "cons": [
+                    {
+                      "description": "Standard bows rarely offer defensive modifiers",
+                      "title": "No built-in defense"
+                    }
+                  ],
+                  "description": "Standard bow with Attack Speed and Damage.",
                   "id": "bow",
                   "label": "Bow",
-                  "description": "Standard bow with Attack Speed and Damage.",
                   "metrics": {
-                    "damage": 10,
-                    "survivability": 0,
                     "clear-speed": 5,
-                    "spirit-cost": 0
+                    "damage": 10,
+                    "spirit-cost": 0,
+                    "survivability": 0
                   },
                   "pros": [
                     {
-                      "title": "Better attack speed",
-                      "description": "Faster attacks stack Poison quicker and refresh Bleed more often"
+                      "description": "Faster attacks stack Poison quicker and refresh Bleed more often",
+                      "title": "Better attack speed"
                     },
                     {
-                      "title": "Wider stat pool",
-                      "description": "More bow uniques and implicit stats support Attack Speed builds"
-                    }
-                  ],
-                  "cons": [
-                    {
-                      "title": "No built-in defense",
-                      "description": "Standard bows rarely offer defensive modifiers"
+                      "description": "More bow uniques and implicit stats support Attack Speed builds",
+                      "title": "Wider stat pool"
                     }
                   ],
                   "whyThisFits": "Attack Speed is the priority for Poison stacking. Bow gives the best clear speed foundation."
                 },
                 {
+                  "cons": [
+                    {
+                      "description": "Lower attack speed means slower Poison stacking and Bleed refresh",
+                      "title": "Slower attack speed"
+                    }
+                  ],
+                  "description": "Crossbow with Life and Damage.",
                   "id": "crossbow",
                   "label": "Crossbow",
-                  "description": "Crossbow with Life and Damage.",
                   "metrics": {
-                    "damage": 5,
-                    "survivability": 5,
                     "clear-speed": 0,
-                    "spirit-cost": 0
+                    "damage": 5,
+                    "spirit-cost": 0,
+                    "survivability": 5
                   },
                   "pros": [
                     {
-                      "title": "Defensive implicit",
-                      "description": "Life on crossbow adds a layer of survivability early"
-                    }
-                  ],
-                  "cons": [
-                    {
-                      "title": "Slower attack speed",
-                      "description": "Lower attack speed means slower Poison stacking and Bleed refresh"
+                      "description": "Life on crossbow adds a layer of survivability early",
+                      "title": "Defensive implicit"
                     }
                   ],
                   "whenToUse": "Viable if struggling with survivability early league, but clear speed will suffer."
                 }
-              ]
+              ],
+              "description": "Bow is the core weapon for Poison + Bleed. Crossbow offers a defensive alternative.",
+              "id": "weapon",
+              "recommended": "bow",
+              "title": "Weapon"
             },
             {
-              "id": "body-armour",
-              "title": "Body Armour",
-              "description": "Evasion chest for physical hit mitigation vs Hybrid ES/Evasion for balanced defense.",
-              "recommended": "evasion-chest",
               "choices": [
                 {
+                  "cons": [
+                    {
+                      "description": "Vulnerable to magic hits that bypass Evasion and elemental damage",
+                      "title": "No ES layer"
+                    }
+                  ],
+                  "description": "High Evasion chest piece for maximum physical hit mitigation.",
                   "id": "evasion-chest",
                   "label": "Evasion Chest",
-                  "description": "High Evasion chest piece for maximum physical hit mitigation.",
                   "metrics": {
-                    "damage": 0,
-                    "survivability": 15,
                     "clear-speed": 0,
-                    "spirit-cost": 0
+                    "damage": 0,
+                    "spirit-cost": 0,
+                    "survivability": 15
                   },
                   "pros": [
                     {
-                      "title": "Strong physical mitigation",
-                      "description": "Evasion completely negates physical hits when above the threshold"
+                      "description": "Evasion completely negates physical hits when above the threshold",
+                      "title": "Strong physical mitigation"
                     },
                     {
-                      "title": "Cheaper to find",
-                      "description": "High-evasion bases are common and affordable early league"
-                    }
-                  ],
-                  "cons": [
-                    {
-                      "title": "No ES layer",
-                      "description": "Vulnerable to magic hits that bypass Evasion and elemental damage"
+                      "description": "High-evasion bases are common and affordable early league",
+                      "title": "Cheaper to find"
                     }
                   ],
                   "whyThisFits": "Physical hit mitigation is the most important defense layer. Evasion chest maximizes it."
                 },
                 {
+                  "cons": [
+                    {
+                      "description": "Hybrid bases have less Evasion than pure evasion bases at the same item level",
+                      "title": "Lower Evasion value"
+                    }
+                  ],
+                  "description": "Hybrid base with both Energy Shield and Evasion.",
                   "id": "hybrid-es-evasion",
                   "label": "Hybrid ES/Evasion Chest",
-                  "description": "Hybrid base with both Energy Shield and Evasion.",
                   "metrics": {
-                    "damage": 5,
-                    "survivability": 10,
                     "clear-speed": 0,
-                    "spirit-cost": 0
+                    "damage": 5,
+                    "spirit-cost": 0,
+                    "survivability": 10
                   },
                   "pros": [
                     {
-                      "title": "Dual defense layers",
-                      "description": "Covers both physical hits and elemental/magic damage"
-                    }
-                  ],
-                  "cons": [
-                    {
-                      "title": "Lower Evasion value",
-                      "description": "Hybrid bases have less Evasion than pure evasion bases at the same item level"
+                      "description": "Covers both physical hits and elemental/magic damage",
+                      "title": "Dual defense layers"
                     }
                   ],
                   "whenToUse": "Better mid-to-late league when you can afford well-rolled hybrid bases."
                 }
-              ]
+              ],
+              "description": "Evasion chest for physical hit mitigation vs Hybrid ES/Evasion for balanced defense.",
+              "id": "body-armour",
+              "recommended": "evasion-chest",
+              "title": "Body Armour"
             },
             {
-              "id": "belt",
-              "title": "Belt",
-              "description": "RFLAS for Spirit reduction and defense vs Stocking Belt for offense.",
-              "recommended": "rflas",
               "choices": [
                 {
+                  "cons": [
+                    {
+                      "description": "Spirit Reservation Reduction means you spend more Spirit overall",
+                      "title": "Increases Spirit cost"
+                    }
+                  ],
+                  "description": "Rare Flat Life And Spirit belt with high Life and Spirit Reservation Reduction.",
                   "id": "rflas",
                   "label": "RFLAS",
-                  "description": "Rare Flat Life And Spirit belt with high Life and Spirit Reservation Reduction.",
                   "metrics": {
-                    "damage": 0,
-                    "survivability": 15,
                     "clear-speed": 0,
-                    "spirit-cost": 5
+                    "damage": 0,
+                    "spirit-cost": 5,
+                    "survivability": 15
                   },
                   "pros": [
                     {
-                      "title": "Spirit reservation reduction",
-                      "description": "Frees Spirit budget for more notables and ascendancy nodes"
+                      "description": "Frees Spirit budget for more notables and ascendancy nodes",
+                      "title": "Spirit reservation reduction"
                     },
                     {
-                      "title": "Massive Life pool",
-                      "description": "300+ Life on belt is the best defensive belt option"
-                    }
-                  ],
-                  "cons": [
-                    {
-                      "title": "Increases Spirit cost",
-                      "description": "Spirit Reservation Reduction means you spend more Spirit overall"
+                      "description": "300+ Life on belt is the best defensive belt option",
+                      "title": "Massive Life pool"
                     }
                   ],
                   "whyThisFits": "Spirit budget management is critical. RFLAS enables more defensive nodes while adding Life."
                 },
                 {
+                  "cons": [
+                    {
+                      "description": "Sacrifices a large chunk of Life for offensive stats",
+                      "title": "No defensive value"
+                    }
+                  ],
+                  "description": "Stocking Belt with Attack Speed and Damage modifiers.",
                   "id": "stocking-belt",
                   "label": "Stocking Belt",
-                  "description": "Stocking Belt with Attack Speed and Damage modifiers.",
                   "metrics": {
-                    "damage": 10,
-                    "survivability": 0,
                     "clear-speed": 5,
-                    "spirit-cost": 0
+                    "damage": 10,
+                    "spirit-cost": 0,
+                    "survivability": 0
                   },
                   "pros": [
                     {
-                      "title": "Attack speed boost",
-                      "description": "Faster Poison stacking and overall damage output"
-                    }
-                  ],
-                  "cons": [
-                    {
-                      "title": "No defensive value",
-                      "description": "Sacrifices a large chunk of Life for offensive stats"
+                      "description": "Faster Poison stacking and overall damage output",
+                      "title": "Attack speed boost"
                     }
                   ],
                   "whenToUse": "When Spirit budget is not a concern and damage is the bottleneck."
                 }
-              ]
+              ],
+              "description": "RFLAS for Spirit reduction and defense vs Stocking Belt for offense.",
+              "id": "belt",
+              "recommended": "rflas",
+              "title": "Belt"
             },
             {
-              "id": "flask",
-              "title": "Flask",
-              "description": "Life Leech Flask for sustain vs Mana Leech Flask for Spirit efficiency.",
-              "recommended": "life-leech-flask",
               "choices": [
                 {
+                  "cons": [
+                    {
+                      "description": "Does not help with Spirit budget management",
+                      "title": "No Spirit benefit"
+                    }
+                  ],
+                  "description": "Life Flask with Life Regeneration per second and Life Leech.",
                   "id": "life-leech-flask",
                   "label": "Life Leech Flask",
-                  "description": "Life Flask with Life Regeneration per second and Life Leech.",
                   "metrics": {
-                    "damage": 0,
-                    "survivability": 10,
                     "clear-speed": 0,
-                    "spirit-cost": 0
+                    "damage": 0,
+                    "spirit-cost": 0,
+                    "survivability": 10
                   },
                   "pros": [
                     {
-                      "title": "Active sustain",
-                      "description": "Life Leech provides constant healing during map clears"
+                      "description": "Life Leech provides constant healing during map clears",
+                      "title": "Active sustain"
                     },
                     {
-                      "title": "Burst recovery",
-                      "description": "Life Flask charges quickly for emergency survivability"
-                    }
-                  ],
-                  "cons": [
-                    {
-                      "title": "No Spirit benefit",
-                      "description": "Does not help with Spirit budget management"
+                      "description": "Life Flask charges quickly for emergency survivability",
+                      "title": "Burst recovery"
                     }
                   ],
                   "whyThisFits": "Survivability is the priority for budget builds. Life Leech Flask keeps you alive in tough maps."
                 },
                 {
+                  "cons": [
+                    {
+                      "description": "Loses Life Leech sustain, making maps more dangerous",
+                      "title": "No defensive value"
+                    }
+                  ],
+                  "description": "Mana Flask with Mana Regeneration and Mana Leech.",
                   "id": "mana-leech-flask",
                   "label": "Mana Leech Flask",
-                  "description": "Mana Flask with Mana Regeneration and Mana Leech.",
                   "metrics": {
-                    "damage": 5,
-                    "survivability": 0,
                     "clear-speed": 0,
-                    "spirit-cost": 10
+                    "damage": 5,
+                    "spirit-cost": 10,
+                    "survivability": 0
                   },
                   "pros": [
                     {
-                      "title": "Spirit efficiency",
-                      "description": "Reduces Spirit budget pressure from Spirit-spending nodes"
-                    }
-                  ],
-                  "cons": [
-                    {
-                      "title": "No defensive value",
-                      "description": "Loses Life Leech sustain, making maps more dangerous"
+                      "description": "Reduces Spirit budget pressure from Spirit-spending nodes",
+                      "title": "Spirit efficiency"
                     }
                   ],
                   "whenToUse": "When Spirit budget is extremely tight and you cannot afford Spirit-reducing gear elsewhere."
                 }
-              ]
+              ],
+              "description": "Life Leech Flask for sustain vs Mana Leech Flask for Spirit efficiency.",
+              "id": "flask",
+              "recommended": "life-leech-flask",
+              "title": "Flask"
             }
-          ]
+          ],
+          "title": "Budget League Starter"
         },
         {
-          "id": "invested-endgame",
-          "title": "Invested Endgame",
           "description": "Optimal gear choices for high-tier map clearing and bossing",
+          "id": "invested-endgame",
           "metrics": [
             {
+              "baseValue": 55,
+              "direction": "higher",
               "id": "damage",
               "label": "Damage Output",
-              "baseValue": 55,
-              "min": 0,
               "max": 100,
-              "direction": "higher"
+              "min": 0
             },
             {
+              "baseValue": 55,
+              "direction": "higher",
               "id": "survivability",
               "label": "Survivability",
-              "baseValue": 55,
-              "min": 0,
               "max": 100,
-              "direction": "higher"
+              "min": 0
             },
             {
+              "baseValue": 55,
+              "direction": "higher",
               "id": "clear-speed",
               "label": "Clear Speed",
-              "baseValue": 55,
-              "min": 0,
               "max": 100,
-              "direction": "higher"
+              "min": 0
             },
             {
+              "baseValue": 50,
+              "direction": "lower",
               "id": "spirit-cost",
               "label": "Spirit Cost",
-              "baseValue": 50,
-              "min": 0,
               "max": 100,
-              "direction": "lower"
+              "min": 0
             }
           ],
           "steps": [
             {
-              "id": "unique-weapon",
-              "title": "Unique Weapon",
-              "description": "Serpent's Kiss for Poison damage vs crafted high DPS bow for raw damage.",
-              "recommended": "serpents-kiss",
               "choices": [
                 {
+                  "cons": [
+                    {
+                      "description": "Spirit Reservation Reduction from unique modifiers increases Spirit spend",
+                      "title": "Higher Spirit cost"
+                    },
+                    {
+                      "description": "Less flexible if switching between Poison and Bleed emphasis",
+                      "title": "Single-element focus"
+                    }
+                  ],
+                  "description": "Unique bow with Poison Damage over Time and increased Attack Speed.",
                   "id": "serpents-kiss",
                   "label": "Serpent's Kiss Bow",
-                  "description": "Unique bow with Poison Damage over Time and increased Attack Speed.",
                   "metrics": {
-                    "damage": 20,
-                    "survivability": 0,
                     "clear-speed": 0,
-                    "spirit-cost": 5
+                    "damage": 20,
+                    "spirit-cost": 5,
+                    "survivability": 0
                   },
                   "pros": [
                     {
-                      "title": "Massive Poison amplification",
-                      "description": "Increased Poison Damage over Time scales all Poison DoTs significantly"
+                      "description": "Increased Poison Damage over Time scales all Poison DoTs significantly",
+                      "title": "Massive Poison amplification"
                     },
                     {
-                      "title": "Attack Speed synergy",
-                      "description": "Built-in Attack Speed stacks Poison faster and refreshes Bleed more often"
-                    }
-                  ],
-                  "cons": [
-                    {
-                      "title": "Higher Spirit cost",
-                      "description": "Spirit Reservation Reduction from unique modifiers increases Spirit spend"
-                    },
-                    {
-                      "title": "Single-element focus",
-                      "description": "Less flexible if switching between Poison and Bleed emphasis"
+                      "description": "Built-in Attack Speed stacks Poison faster and refreshes Bleed more often",
+                      "title": "Attack Speed synergy"
                     }
                   ],
                   "whyThisFits": "Poison Damage is the core multiplier for the build. Serpent's Kiss amplifies it directly."
                 },
                 {
+                  "cons": [
+                    {
+                      "description": "Lacks the Poison Damage over Time bonus from Serpent's Kiss",
+                      "title": "No Poison multiplier"
+                    }
+                  ],
+                  "description": "Crafted bow with maximum Attack Speed, Damage, and Area of Effect.",
                   "id": "crafted-bow",
                   "label": "High DPS Crafted Bow",
-                  "description": "Crafted bow with maximum Attack Speed, Damage, and Area of Effect.",
                   "metrics": {
-                    "damage": 15,
-                    "survivability": 0,
                     "clear-speed": 10,
-                    "spirit-cost": 0
+                    "damage": 15,
+                    "spirit-cost": 0,
+                    "survivability": 0
                   },
                   "pros": [
                     {
-                      "title": "Higher clear speed",
-                      "description": "Area of Effect and raw Attack Speed clear maps faster"
-                    }
-                  ],
-                  "cons": [
-                    {
-                      "title": "No Poison multiplier",
-                      "description": "Lacks the Poison Damage over Time bonus from Serpent's Kiss"
+                      "description": "Area of Effect and raw Attack Speed clear maps faster",
+                      "title": "Higher clear speed"
                     }
                   ],
                   "whenToUse": "When map clear speed is prioritized over bossing damage, or Spirit budget is tight."
                 }
-              ]
+              ],
+              "description": "Serpent's Kiss for Poison damage vs crafted high DPS bow for raw damage.",
+              "id": "unique-weapon",
+              "recommended": "serpents-kiss",
+              "title": "Unique Weapon"
             },
             {
-              "id": "unique-chest",
-              "title": "Unique Chest",
-              "description": "Body and Soul for Spirit efficiency and survivability vs Abyssus for balanced offense/defense.",
-              "recommended": "body-and-soul",
               "choices": [
                 {
+                  "cons": [
+                    {
+                      "description": "Purely defensive item with zero damage contribution",
+                      "title": "No offensive stats"
+                    }
+                  ],
+                  "description": "Unique chest with Spirit Reservation Reduction and Life Regeneration.",
                   "id": "body-and-soul",
                   "label": "Body and Soul",
-                  "description": "Unique chest with Spirit Reservation Reduction and Life Regeneration.",
                   "metrics": {
-                    "damage": 0,
-                    "survivability": 15,
                     "clear-speed": 0,
-                    "spirit-cost": 0
+                    "damage": 0,
+                    "spirit-cost": 0,
+                    "survivability": 15
                   },
                   "pros": [
                     {
-                      "title": "Spirit budget relief",
-                      "description": "Spirit Reservation Reduction enables more Spirit-spending notables"
+                      "description": "Spirit Reservation Reduction enables more Spirit-spending notables",
+                      "title": "Spirit budget relief"
                     },
                     {
-                      "title": "Life regeneration",
-                      "description": "Passive Life Regen provides constant sustain in maps"
-                    }
-                  ],
-                  "cons": [
-                    {
-                      "title": "No offensive stats",
-                      "description": "Purely defensive item with zero damage contribution"
+                      "description": "Passive Life Regen provides constant sustain in maps",
+                      "title": "Life regeneration"
                     }
                   ],
                   "whyThisFits": "Spirit budget is the constraint for Witchhunter. Body and Soul unlocks the full tree."
                 },
                 {
+                  "cons": [
+                    {
+                      "description": "Does not help with Spirit budget, limiting tree options",
+                      "title": "No Spirit benefit"
+                    }
+                  ],
+                  "description": "Unique chest with Life, Resistance, and Damage over Time multipliers.",
                   "id": "abyssus",
                   "label": "Abyssus",
-                  "description": "Unique chest with Life, Resistance, and Damage over Time multipliers.",
                   "metrics": {
-                    "damage": 10,
-                    "survivability": 10,
                     "clear-speed": 0,
-                    "spirit-cost": 0
+                    "damage": 10,
+                    "spirit-cost": 0,
+                    "survivability": 10
                   },
                   "pros": [
                     {
-                      "title": "Balanced offense and defense",
-                      "description": "DoT multiplier directly boosts Poison and Bleed damage"
-                    }
-                  ],
-                  "cons": [
-                    {
-                      "title": "No Spirit benefit",
-                      "description": "Does not help with Spirit budget, limiting tree options"
+                      "description": "DoT multiplier directly boosts Poison and Bleed damage",
+                      "title": "Balanced offense and defense"
                     }
                   ],
                   "whenToUse": "When Spirit budget is already optimized and you need a damage boost."
                 }
-              ]
+              ],
+              "description": "Body and Soul for Spirit efficiency and survivability vs Abyssus for balanced offense/defense.",
+              "id": "unique-chest",
+              "recommended": "body-and-soul",
+              "title": "Unique Chest"
             },
             {
-              "id": "rings",
-              "title": "Rings",
-              "description": "High-life rings for survivability vs damage-focused rings for raw DPS.",
-              "recommended": "high-life-rings",
               "choices": [
                 {
+                  "cons": [
+                    {
+                      "description": "Purely defensive slots with zero damage modifiers",
+                      "title": "No offensive contribution"
+                    }
+                  ],
+                  "description": "Two rings with 90+ Life, Resistances, and Attribute totals.",
                   "id": "high-life-rings",
                   "label": "Two High-Life Rings",
-                  "description": "Two rings with 90+ Life, Resistances, and Attribute totals.",
                   "metrics": {
-                    "damage": 0,
-                    "survivability": 15,
                     "clear-speed": 0,
-                    "spirit-cost": 0
+                    "damage": 0,
+                    "spirit-cost": 0,
+                    "survivability": 15
                   },
                   "pros": [
                     {
-                      "title": "Massive Life pool",
-                      "description": "180+ Life from two rings is significant survivability"
+                      "description": "180+ Life from two rings is significant survivability",
+                      "title": "Massive Life pool"
                     },
                     {
-                      "title": "Resistance caps",
-                      "description": "Resistances on rings help reach 75% all elements"
-                    }
-                  ],
-                  "cons": [
-                    {
-                      "title": "No offensive contribution",
-                      "description": "Purely defensive slots with zero damage modifiers"
+                      "description": "Resistances on rings help reach 75% all elements",
+                      "title": "Resistance caps"
                     }
                   ],
                   "whyThisFits": "Life pool is the most reliable defense layer. Two high-life rings maximize it cheaply."
                 },
                 {
+                  "cons": [
+                    {
+                      "description": "Less Life means less room for error in high-tier maps",
+                      "title": "Reduced survivability"
+                    }
+                  ],
+                  "description": "Rings with Damage over Time, Attack Speed, and Critical Strike modifiers.",
                   "id": "damage-rings",
                   "label": "Damage Rings",
-                  "description": "Rings with Damage over Time, Attack Speed, and Critical Strike modifiers.",
                   "metrics": {
-                    "damage": 15,
-                    "survivability": -5,
                     "clear-speed": 0,
-                    "spirit-cost": 0
+                    "damage": 15,
+                    "spirit-cost": 0,
+                    "survivability": -5
                   },
                   "pros": [
                     {
-                      "title": "Direct damage boost",
-                      "description": "DoT multipliers and Attack Speed increase overall DPS"
-                    }
-                  ],
-                  "cons": [
-                    {
-                      "title": "Reduced survivability",
-                      "description": "Less Life means less room for error in high-tier maps"
+                      "description": "DoT multipliers and Attack Speed increase overall DPS",
+                      "title": "Direct damage boost"
                     }
                   ],
                   "whenToUse": "When survivability is already sufficient and damage is the bottleneck."
                 }
-              ]
+              ],
+              "description": "High-life rings for survivability vs damage-focused rings for raw DPS.",
+              "id": "rings",
+              "recommended": "high-life-rings",
+              "title": "Rings"
             },
             {
-              "id": "helmet",
-              "title": "Helmet",
-              "description": "Evasion helm for physical mitigation vs Hybrid DoT helm for balanced offense/defense.",
-              "recommended": "evasion-helm",
               "choices": [
                 {
+                  "cons": [
+                    {
+                      "description": "Purely defensive item with no damage contribution",
+                      "title": "No offensive stats"
+                    }
+                  ],
+                  "description": "High Evasion helmet with Resistances and Attributes.",
                   "id": "evasion-helm",
                   "label": "Evasion Helmet",
-                  "description": "High Evasion helmet with Resistances and Attributes.",
                   "metrics": {
-                    "damage": 0,
-                    "survivability": 10,
                     "clear-speed": 0,
-                    "spirit-cost": 0
+                    "damage": 0,
+                    "spirit-cost": 0,
+                    "survivability": 10
                   },
                   "pros": [
                     {
-                      "title": "Physical hit mitigation",
-                      "description": "Evasion on helmet stacks with body armor for near-immunity to physical hits"
+                      "description": "Evasion on helmet stacks with body armor for near-immunity to physical hits",
+                      "title": "Physical hit mitigation"
                     },
                     {
-                      "title": "Cheaper to roll",
-                      "description": "Evasion helmets are easier to find with good rolls than hybrid bases"
-                    }
-                  ],
-                  "cons": [
-                    {
-                      "title": "No offensive stats",
-                      "description": "Purely defensive item with no damage contribution"
+                      "description": "Evasion helmets are easier to find with good rolls than hybrid bases",
+                      "title": "Cheaper to roll"
                     }
                   ],
                   "whyThisFits": "Physical mitigation is the most impactful defense layer. Evasion helm completes the setup."
                 },
                 {
+                  "cons": [
+                    {
+                      "description": "Less physical mitigation than a pure evasion helmet",
+                      "title": "Lower Evasion value"
+                    }
+                  ],
+                  "description": "Helmet with DoT multipliers and moderate Evasion.",
                   "id": "hybrid-dot-helm",
                   "label": "Hybrid DoT Helmet",
-                  "description": "Helmet with DoT multipliers and moderate Evasion.",
                   "metrics": {
-                    "damage": 10,
-                    "survivability": 5,
                     "clear-speed": 0,
-                    "spirit-cost": 0
+                    "damage": 10,
+                    "spirit-cost": 0,
+                    "survivability": 5
                   },
                   "pros": [
                     {
-                      "title": "Damage and defense balance",
-                      "description": "DoT multipliers boost Poison and Bleed while maintaining some Evasion"
-                    }
-                  ],
-                  "cons": [
-                    {
-                      "title": "Lower Evasion value",
-                      "description": "Less physical mitigation than a pure evasion helmet"
+                      "description": "DoT multipliers boost Poison and Bleed while maintaining some Evasion",
+                      "title": "Damage and defense balance"
                     }
                   ],
                   "whenToUse": "When you need a damage boost and can afford reduced physical mitigation."
                 }
-              ]
+              ],
+              "description": "Evasion helm for physical mitigation vs Hybrid DoT helm for balanced offense/defense.",
+              "id": "helmet",
+              "recommended": "evasion-helm",
+              "title": "Helmet"
             }
-          ]
+          ],
+          "title": "Invested Endgame"
         }
-      ]
-    }
+      ],
+      "title": "Gear Investment Trade-offs"
+    },
+    "type": "tradeoff-sandbox"
   },
   {
     "folder": "build-journey",
-    "type": "scenario",
     "props": {
-      "title": "Your Witchhunter Journey",
       "id": "league-journey",
       "intro": "You've chosen the Poison + Bleed Witchhunter build for this league. Your decisions will shape your success.",
       "nodes": {
-        "start": {
-          "id": "start",
-          "prompt": "League day 1. You've created your Witchhunter. What's your first priority?",
-          "choices": [
-            {
-              "id": "get-bow",
-              "text": "Find a Bow with Attack Speed and Physical Damage",
-              "next": "bow-found"
-            },
-            {
-              "id": "tree-first",
-              "text": "Rush to the passive tree for Poison and Bleed clusters",
-              "next": "tree-first-bad"
-            }
-          ]
-        },
         "bow-found": {
-          "id": "bow-found",
-          "prompt": "You have a decent bow. What support gems are you linking?",
           "choices": [
             {
               "id": "dot-supports",
-              "text": "Poison 3 + Bleed 3 + At Mixture for dual DoT synergy",
-              "next": "dot-ready"
+              "next": "dot-ready",
+              "text": "Poison 3 + Bleed 3 + At Mixture for dual DoT synergy"
             },
             {
               "id": "raw-damage",
-              "text": "Raw damage supports like Elemental Damage",
-              "next": "raw-damage-path"
+              "next": "raw-damage-path",
+              "text": "Raw damage supports like Elemental Damage"
             }
-          ]
-        },
-        "tree-first-bad": {
-          "id": "tree-first-bad",
-          "prompt": "You skipped gearing and went straight to the tree. Your attacks tickle without proper damage.",
-          "choices": [
-            {
-              "id": "backtrack-gear",
-              "text": "Go back and get proper weapon and DoT supports",
-              "next": "bow-found"
-            },
-            {
-              "id": "push-anyway",
-              "text": "Push through with physical damage",
-              "next": "struggle"
-            }
-          ]
-        },
-        "dot-ready": {
-          "id": "dot-ready",
-          "prompt": "Dual DoTs are ticking beautifully. What's your endgame defense strategy?",
-          "choices": [
-            {
-              "id": "ward-movement",
-              "text": "Sorcery Ward + constant movement for evasion",
-              "next": "smooth-sailing"
-            },
-            {
-              "id": "stack-defenses",
-              "text": "Ignore Obsessive Rituals and stack Armour/Evasion",
-              "next": "defensive-clunky"
-            }
-          ]
-        },
-        "raw-damage-path": {
-          "id": "raw-damage-path",
-          "prompt": "Your hits hard but you're missing the dual DoT synergy multiplier.",
-          "choices": [
-            {
-              "id": "switch-dot",
-              "text": "Reroll gems to include At Mixture and dual ailment supports",
-              "next": "dot-ready"
-            },
-            {
-              "id": "stay-raw",
-              "text": "Keep raw damage approach",
-              "next": "mediocre"
-            }
-          ]
-        },
-        "smooth-sailing": {
-          "id": "smooth-sailing",
-          "outcome": {
-            "verdict": "You're clearing maps with screens of poison clouds while bleed melts bosses. No Mercy shreds enemies as their Concentration drops.",
-            "lesson": "Dual DoT synergy + defensive mobility = optimal Witchhunter playstyle.",
-            "rating": "a"
-          }
+          ],
+          "id": "bow-found",
+          "prompt": "You have a decent bow. What support gems are you linking?"
         },
         "defensive-clunky": {
           "id": "defensive-clunky",
           "outcome": {
-            "verdict": "Stacking defenses works but wastes the Obsessive Rituals node's offensive potential. Your damage output suffers.",
             "lesson": "Witchhunter's Obsessive Rituals is a trade-off — embrace the fragility for massive damage.",
-            "rating": "b-plus"
+            "rating": "b-plus",
+            "verdict": "Stacking defenses works but wastes the Obsessive Rituals node's offensive potential. Your damage output suffers."
           }
+        },
+        "dot-ready": {
+          "choices": [
+            {
+              "id": "ward-movement",
+              "next": "smooth-sailing",
+              "text": "Sorcery Ward + constant movement for evasion"
+            },
+            {
+              "id": "stack-defenses",
+              "next": "defensive-clunky",
+              "text": "Ignore Obsessive Rituals and stack Armour/Evasion"
+            }
+          ],
+          "id": "dot-ready",
+          "prompt": "Dual DoTs are ticking beautifully. What's your endgame defense strategy?"
         },
         "mediocre": {
           "id": "mediocre",
           "outcome": {
-            "verdict": "Raw damage clears content but you're missing the exponential scaling from dual ailment synergy.",
             "lesson": "At Mixture + Poison 3 + Bleed 3 is mandatory for this build. Single DoT is always weaker.",
-            "rating": "b-minus"
+            "rating": "b-minus",
+            "verdict": "Raw damage clears content but you're missing the exponential scaling from dual ailment synergy."
           }
+        },
+        "raw-damage-path": {
+          "choices": [
+            {
+              "id": "switch-dot",
+              "next": "dot-ready",
+              "text": "Reroll gems to include At Mixture and dual ailment supports"
+            },
+            {
+              "id": "stay-raw",
+              "next": "mediocre",
+              "text": "Keep raw damage approach"
+            }
+          ],
+          "id": "raw-damage-path",
+          "prompt": "Your hits hard but you're missing the dual DoT synergy multiplier."
+        },
+        "smooth-sailing": {
+          "id": "smooth-sailing",
+          "outcome": {
+            "lesson": "Dual DoT synergy + defensive mobility = optimal Witchhunter playstyle.",
+            "rating": "a",
+            "verdict": "You're clearing maps with screens of poison clouds while bleed melts bosses. No Mercy shreds enemies as their Concentration drops."
+          }
+        },
+        "start": {
+          "choices": [
+            {
+              "id": "get-bow",
+              "next": "bow-found",
+              "text": "Find a Bow with Attack Speed and Physical Damage"
+            },
+            {
+              "id": "tree-first",
+              "next": "tree-first-bad",
+              "text": "Rush to the passive tree for Poison and Bleed clusters"
+            }
+          ],
+          "id": "start",
+          "prompt": "League day 1. You've created your Witchhunter. What's your first priority?"
         },
         "struggle": {
           "id": "struggle",
           "outcome": {
-            "verdict": "Physical hits without DoT supports make you irrelevant in endgame. Maps take forever to clear.",
             "lesson": "This build is DoT-focused. Skipping ailment supports defeats the entire purpose.",
-            "rating": "c"
+            "rating": "c",
+            "verdict": "Physical hits without DoT supports make you irrelevant in endgame. Maps take forever to clear."
           }
+        },
+        "tree-first-bad": {
+          "choices": [
+            {
+              "id": "backtrack-gear",
+              "next": "bow-found",
+              "text": "Go back and get proper weapon and DoT supports"
+            },
+            {
+              "id": "push-anyway",
+              "next": "struggle",
+              "text": "Push through with physical damage"
+            }
+          ],
+          "id": "tree-first-bad",
+          "prompt": "You skipped gearing and went straight to the tree. Your attacks tickle without proper damage."
         }
       },
-      "startNode": "start"
-    }
+      "startNode": "start",
+      "title": "Your Witchhunter Journey"
+    },
+    "type": "scenario"
   },
   {
     "folder": "setup-advisor",
-    "type": "decision-tree",
     "props": {
-      "title": "Witchhunter Poison + Bleed Setup Advisor",
       "id": "witchhunter-advisor",
-      "root": "stage",
       "nodes": {
-        "stage": {
-          "id": "stage",
-          "prompt": "What stage of the league are you at?",
-          "choices": [
-            {
-              "id": "league-start",
-              "text": "League start (Acts 1-5)",
-              "next": "ls-gear",
-              "rationale": "Early league priorities differ from endgame.",
-              "recommended": true
-            },
-            {
-              "id": "mid-league",
-              "text": "Mid-league (mapping, some endgame gear)",
-              "next": "mid-gear"
-            },
-            {
-              "id": "late-league",
-              "text": "Late league (high-tier maps, Uber target)",
-              "next": "late-gear"
-            }
-          ]
-        },
-        "ls-gear": {
-          "id": "ls-gear",
-          "prompt": "What weapon do you have?",
-          "choices": [
-            {
-              "id": "ls-has-bow",
-              "text": "A Bow with Physical Damage and Attack Speed",
-              "next": "ls-bow-good",
-              "recommended": true
-            },
-            {
-              "id": "ls-no-bow",
-              "text": "No proper bow yet",
-              "next": "ls-no-bow-rec"
-            }
-          ]
-        },
-        "ls-bow-good": {
-          "id": "ls-bow-good",
-          "leaf": {
-            "recommendation": "Link Poison 3, Bleed 3, and At Mixture into your bow immediately.",
-            "explanation": "With a physical bow, you can apply both Bleed and Poison. At Mixture creates the dual-DoT synergy where each ailment boosts the other's magnitude by 20%. Focus on reaching the Poison and Bleed clusters in the passive tree.",
-            "tradeoffs": [
-              "Early game, prioritize ailment chance over magnitude — consistent application matters more",
-              "Take No Mercy ascendancy node first for Concentration-based damage bonus",
-              "Budget flasks: Life Leech flask is your best early survival tool"
-            ]
-          }
-        },
-        "ls-no-bow-rec": {
-          "id": "ls-no-bow-rec",
-          "leaf": {
-            "recommendation": "Find any Bow with Physical Damage. Attack Speed is the priority stat.",
-            "explanation": "You need a bow for this build. Any physical bow works league start. Avoid bows with only elemental damage — you need Physical for Bleed. Attack Speed > Raw Damage early game because more hits = more DoT applications.",
-            "tradeoffs": [
-              "A cheap 1-socket bow with At Mixture is better than a 6L without it",
-              "Gradually upgrade: more sockets → more supports → exponential DoT growth"
-            ]
-          }
-        },
-        "mid-gear": {
-          "id": "mid-gear",
-          "prompt": "How's your passive tree progress?",
-          "choices": [
-            {
-              "id": "mid-tree-good",
-              "text": "Allocated to Poison + Bleed clusters with Notables",
-              "next": "mid-tree-good-rec",
-              "recommended": true
-            },
-            {
-              "id": "mid-tree-bad",
-              "text": "Still near Mercenary start, minimal allocation",
-              "next": "mid-tree-bad-rec"
-            }
-          ]
-        },
-        "mid-tree-good-rec": {
-          "id": "mid-tree-good-rec",
-          "leaf": {
-            "recommendation": "Invest in Serpent's Kiss bow and Body and Soul chest piece.",
-            "explanation": "Mid-league is when unique items transform your build. Serpent's Kiss adds lifesteal and damage. Body and Soul gives massive Spirit for aura sustainability. Start allocating to RFLAS belt for survivability.",
-            "tradeoffs": [
-              "Serpent's Kiss is the best-in-slot bow for this build — prioritize saving for it",
-              "Obsessive Rituals means you need good movement mechanics to survive",
-              "Consider Sorcery Ward skill for an extra damage buffer"
-            ]
-          }
-        },
-        "mid-tree-bad-rec": {
-          "id": "mid-tree-bad-rec",
-          "leaf": {
-            "recommendation": "Rush Poison and Bleed magnitude clusters in the passive tree.",
-            "explanation": "Without tree allocation, your DoTs underperform. Allocate to the nearest Poison and Bleed notables first, then extend toward magnitude and duration clusters. The dual-DoT synergy from At Mixture scales with tree investment.",
-            "tradeoffs": [
-              "Short allocation to key nodes > long allocation to mediocre nodes",
-              "Consider using a Vaal orb to relocate your start if stuck"
-            ]
-          }
-        },
         "late-gear": {
-          "id": "late-gear",
-          "prompt": "What's your endgame target?",
           "choices": [
             {
               "id": "late-mapping",
-              "text": "Fast map clearing and efficient farming",
               "next": "late-mapping-rec",
-              "recommended": true
+              "recommended": true,
+              "text": "Fast map clearing and efficient farming"
             },
             {
               "id": "late-uber",
-              "text": "Uber bosses and Vaal Overmap",
-              "next": "late-uber-rec"
+              "next": "late-uber-rec",
+              "text": "Uber bosses and Vaal Overmap"
             }
-          ]
+          ],
+          "id": "late-gear",
+          "prompt": "What's your endgame target?"
         },
         "late-mapping-rec": {
           "id": "late-mapping-rec",
           "leaf": {
-            "recommendation": "Maximize clear speed with Gas Grenade cloud coverage and high Attack Speed.",
             "explanation": "For mapping, you want screen-filling poison clouds from Gas Grenade while Barrage applies Bleed. Stack Attack Speed, Area of Effect, and DoT duration. RFLAS belt + Body and Soul + two life rings for safe mapping.",
+            "recommendation": "Maximize clear speed with Gas Grenade cloud coverage and high Attack Speed.",
             "tradeoffs": [
               "Clear speed > single-target in mapping builds — more maps cleared = more profit",
               "Gas Grenade clouds persist and overlap, creating AoE poison zones",
@@ -2084,16 +1978,122 @@
         "late-uber-rec": {
           "id": "late-uber-rec",
           "leaf": {
-            "recommendation": "Shift to maximum single-target DoT magnitude with crafted modifiers.",
             "explanation": "Uber bosses require sustained single-target DoT. Craft 'More Magnitude of Poison' and 'More Magnitude of Bleeding' on your gear. Stack Duration over Clear Speed. No Mercy becomes critical as boss Concentration drains. Sorcery Ward is mandatory for survival.",
+            "recommendation": "Shift to maximum single-target DoT magnitude with crafted modifiers.",
             "tradeoffs": [
               "Single-target focus means terrible clear — use a separate clearing skill or accept slow mapping",
               "Crafted 'More%' modifiers are worth the investment for Uber attempts",
               "Practice boss mechanics — Obsessive Rituals leaves you fragile"
             ]
           }
+        },
+        "ls-bow-good": {
+          "id": "ls-bow-good",
+          "leaf": {
+            "explanation": "With a physical bow, you can apply both Bleed and Poison. At Mixture creates the dual-DoT synergy where each ailment boosts the other's magnitude by 20%. Focus on reaching the Poison and Bleed clusters in the passive tree.",
+            "recommendation": "Link Poison 3, Bleed 3, and At Mixture into your bow immediately.",
+            "tradeoffs": [
+              "Early game, prioritize ailment chance over magnitude — consistent application matters more",
+              "Take No Mercy ascendancy node first for Concentration-based damage bonus",
+              "Budget flasks: Life Leech flask is your best early survival tool"
+            ]
+          }
+        },
+        "ls-gear": {
+          "choices": [
+            {
+              "id": "ls-has-bow",
+              "next": "ls-bow-good",
+              "recommended": true,
+              "text": "A Bow with Physical Damage and Attack Speed"
+            },
+            {
+              "id": "ls-no-bow",
+              "next": "ls-no-bow-rec",
+              "text": "No proper bow yet"
+            }
+          ],
+          "id": "ls-gear",
+          "prompt": "What weapon do you have?"
+        },
+        "ls-no-bow-rec": {
+          "id": "ls-no-bow-rec",
+          "leaf": {
+            "explanation": "You need a bow for this build. Any physical bow works league start. Avoid bows with only elemental damage — you need Physical for Bleed. Attack Speed > Raw Damage early game because more hits = more DoT applications.",
+            "recommendation": "Find any Bow with Physical Damage. Attack Speed is the priority stat.",
+            "tradeoffs": [
+              "A cheap 1-socket bow with At Mixture is better than a 6L without it",
+              "Gradually upgrade: more sockets → more supports → exponential DoT growth"
+            ]
+          }
+        },
+        "mid-gear": {
+          "choices": [
+            {
+              "id": "mid-tree-good",
+              "next": "mid-tree-good-rec",
+              "recommended": true,
+              "text": "Allocated to Poison + Bleed clusters with Notables"
+            },
+            {
+              "id": "mid-tree-bad",
+              "next": "mid-tree-bad-rec",
+              "text": "Still near Mercenary start, minimal allocation"
+            }
+          ],
+          "id": "mid-gear",
+          "prompt": "How's your passive tree progress?"
+        },
+        "mid-tree-bad-rec": {
+          "id": "mid-tree-bad-rec",
+          "leaf": {
+            "explanation": "Without tree allocation, your DoTs underperform. Allocate to the nearest Poison and Bleed notables first, then extend toward magnitude and duration clusters. The dual-DoT synergy from At Mixture scales with tree investment.",
+            "recommendation": "Rush Poison and Bleed magnitude clusters in the passive tree.",
+            "tradeoffs": [
+              "Short allocation to key nodes > long allocation to mediocre nodes",
+              "Consider using a Vaal orb to relocate your start if stuck"
+            ]
+          }
+        },
+        "mid-tree-good-rec": {
+          "id": "mid-tree-good-rec",
+          "leaf": {
+            "explanation": "Mid-league is when unique items transform your build. Serpent's Kiss adds lifesteal and damage. Body and Soul gives massive Spirit for aura sustainability. Start allocating to RFLAS belt for survivability.",
+            "recommendation": "Invest in Serpent's Kiss bow and Body and Soul chest piece.",
+            "tradeoffs": [
+              "Serpent's Kiss is the best-in-slot bow for this build — prioritize saving for it",
+              "Obsessive Rituals means you need good movement mechanics to survive",
+              "Consider Sorcery Ward skill for an extra damage buffer"
+            ]
+          }
+        },
+        "stage": {
+          "choices": [
+            {
+              "id": "league-start",
+              "next": "ls-gear",
+              "rationale": "Early league priorities differ from endgame.",
+              "recommended": true,
+              "text": "League start (Acts 1-5)"
+            },
+            {
+              "id": "mid-league",
+              "next": "mid-gear",
+              "text": "Mid-league (mapping, some endgame gear)"
+            },
+            {
+              "id": "late-league",
+              "next": "late-gear",
+              "text": "Late league (high-tier maps, Uber target)"
+            }
+          ],
+          "id": "stage",
+          "prompt": "What stage of the league are you at?"
         }
-      }
-    }
+      },
+      "root": "stage",
+      "title": "Witchhunter Poison + Bleed Setup Advisor"
+    },
+    "type": "decision-tree"
   }
 ]

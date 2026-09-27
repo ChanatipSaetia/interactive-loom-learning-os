@@ -96,7 +96,7 @@ Arrow labels state the relationship; `implements` marks adapter → port edges.
   │                                      OKF DELIVERY & STORAGE CONTEXTS — Supporting                                      │
   │                                                                                                                        │
   │  ┌─ PORTS ──────────────────────────────────────────────────────────────────────────────────────────────────────────┐  │
-  │  │ OKFStoragePort:  readSection · saveSection · readHexMap · listTopics                                             │  │
+  │  │ OKFStoragePort:  listSections · readSectionFiles (raw text) · saveSection? · readHexMap · listTopics             │  │
   │  │ OKFRuntimePort:  loadTopicBundle · renderSection · validatePayload                                               │  │
   │  └──────────────────────────────────────────────────────────────────────────────────────────────────────────────────┘  │
   │  ┌─ ADAPTERS (implement ports above) ───────────────────────────────────────────────────────────────────────────────┐  │
@@ -186,7 +186,7 @@ Arrow labels state the relationship; `implements` marks adapter → port edges.
 ##### A2. Composition Engine Context (`CompositionEngineContext`)
 * **Role:** Page assembly, section registry resolution (lazy `SectionRenderer` lookup), HUD/stream orchestration, and UI system integration for all supporting contexts.
 * **Ubiquitous Language:** `TopicRoute`, `OKFBundled`, `SectionConfig`, `SectionRegistry`, `HUDContext`, `EditorContext`, `lastValidData` preview state.
-* **Code:** [src/core/learning-engine/composition/](file:///home/chanatip/interactive_loom_learning_os/src/core/learning-engine/composition) (`routes.tsx`, `okf/reader.ts`, `okf/sections.ts`, `okf/types.ts`, `context/`, `hooks/`) plus [src/core/learning-engine/registry/](file:///home/chanatip/interactive_loom_learning_os/src/core/learning-engine/registry) (lazy `SectionRegistry`). Independent entry point: `src/core/learning-engine/composition`.
+* **Code:** [src/core/learning-engine/composition/](file:///home/chanatip/interactive_loom_learning_os/src/core/learning-engine/composition) (`routes.tsx`, `okf/loader.ts`, `okf/section-config.ts`, `okf/sections.ts`, `okf/types.ts`, `context/`, `hooks/`) plus [src/core/learning-engine/registry/](file:///home/chanatip/interactive_loom_learning_os/src/core/learning-engine/registry) (lazy `SectionRegistry`). Independent entry point: `src/core/learning-engine/composition`.
 * **Responsibilities:**
   1. **Topic Route Discovery:** Maps topic manifests to `/topics/:topicId/*` routes (`discoverTopics`, `TopicsProvider`, `useTopics`).
   2. **Bundle Ingestion & Fallback:** Loads section bundles via `OKFRuntimePort`, runs them through `ValidationGatewayContext`, and keeps `lastValidData` live-preview state on non-blocking warnings.

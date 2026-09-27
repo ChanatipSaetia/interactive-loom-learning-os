@@ -3,12 +3,17 @@ import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { InRepoStorageAdapter } from '../../../../../src/core/delivery/adapters/in-repo-storage'
 import type { OKFIntroSectionData } from '../../../../../src/core/learning-engine/composition/okf/types'
 
-vi.mock('../../../../../src/core/learning-engine/composition/okf/reader', () => ({
-  loadOKFBundle: vi.fn(),
-  clearOKFCache: vi.fn(),
-}))
-
-import { loadOKFBundle } from '../../../../../src/core/learning-engine/composition/okf/reader'
+/** fetch stub serving a fixed path → body map under the adapter's base URL. */
+function serve(files: Record<string, string>) {
+  return vi.fn((url: string) => {
+    const path = url.replace(/^\/okf\//, '')
+    return Promise.resolve(
+      path in files
+        ? { ok: true, status: 200, text: () => Promise.resolve(files[path]) }
+        : { ok: false, status: 404, text: () => Promise.resolve('Not Found') },
+    )
+  })
+}
 
 describe('InRepoStorageAdapter', () => {
   let adapter: InRepoStorageAdapter
@@ -19,38 +24,59 @@ describe('InRepoStorageAdapter', () => {
     ;(globalThis.fetch as any) = vi.fn()
   })
 
-  describe('readSection', () => {
-    it('returns section data from cached bundle', async () => {
-      const mockBundle = [
-        {
-          meta: { type: 'intro', title: 'Test Intro', resource: '.' },
-          data: { type: 'intro', what: { summary: 'test' }, why: { summary: 'test' }, roadmap: [] } as OKFIntroSectionData,
-          sectionBody: 'Test body content',
-          sectionFolder: 'intro',
-        },
-      ]
-      vi.mocked(loadOKFBundle).mockResolvedValue(mockBundle as any)
+  describe('listSections', () => {
+    it('returns section folders in index.md link order', async () => {
+      ;(globalThis.fetch as any) = serve({
+        'demo/index.md': '# Demo\n\n* [Intro](sections/intro/section.md)\n* [Quiz](sections/quiz/section.md) — 🗝️ Key\n* [Other topic](../other/index.md)',
+      })
 
-      const result = await adapter.readSection('demo', 'intro')
+      expect(await adapter.listSections('demo')).toEqual(['intro', 'quiz'])
+    })
+  })
 
-      expect(loadOKFBundle).toHaveBeenCalledWith('demo')
-      expect(result.meta).toEqual(mockBundle[0].meta)
-      expect(result.data).toEqual(mockBundle[0].data)
-      expect(result.body).toEqual(mockBundle[0].sectionBody)
+  describe('readSectionFiles', () => {
+    it('reads every file listed for the section in the generated manifest', async () => {
+      const mockFetch = serve({
+        'demo/manifest.json': JSON.stringify({ sections: { quiz: ['questions.yaml', 'section.md'] } }),
+        'demo/sections/quiz/questions.yaml': '- id: q1',
+        'demo/sections/quiz/section.md': '---\ntype: quiz\nresource: questions.yaml\n---',
+      })
+      ;(globalThis.fetch as any) = mockFetch
+
+      const files = await adapter.readSectionFiles('demo', 'quiz')
+
+      expect(files).toEqual({
+        'questions.yaml': '- id: q1',
+        'section.md': '---\ntype: quiz\nresource: questions.yaml\n---',
+      })
+      expect(mockFetch).toHaveBeenCalledWith('/okf/demo/manifest.json')
     })
 
-    it('throws when section folder not found in bundle', async () => {
-      vi.mocked(loadOKFBundle).mockResolvedValue([
-        {
-          meta: { type: 'intro', title: 'Test', resource: '.' },
-          data: { type: 'intro', what: { summary: '' }, why: { summary: '' }, roadmap: [] } as OKFIntroSectionData,
-          sectionFolder: 'other',
-        },
-      ] as any)
+    it('throws when the section is not in the manifest', async () => {
+      ;(globalThis.fetch as any) = serve({ 'demo/manifest.json': JSON.stringify({ sections: {} }) })
 
-      await expect(adapter.readSection('demo', 'missing')).rejects.toThrow(
+      await expect(adapter.readSectionFiles('demo', 'missing')).rejects.toThrow(
         'Section "missing" not found in topic "demo"'
       )
+    })
+
+    it('explains a missing manifest, including an SPA fallback page in its place', async () => {
+      ;(globalThis.fetch as any) = serve({ 'demo/manifest.json': '<!doctype html><html></html>' })
+      await expect(adapter.readSectionFiles('demo', 'quiz')).rejects.toThrow('OKF manifest not found for topic "demo"')
+
+      adapter = new InRepoStorageAdapter()
+      ;(globalThis.fetch as any) = serve({})
+      await expect(adapter.readSectionFiles('demo', 'quiz')).rejects.toThrow('OKF manifest not found for topic "demo"')
+    })
+
+    it('reads from an explicit base URL', async () => {
+      const mockFetch = serve({})
+      ;(globalThis.fetch as any) = mockFetch
+      adapter = new InRepoStorageAdapter('https://cdn.example.com/okf/')
+
+      await adapter.readSectionFiles('demo', 'quiz').catch(() => {})
+
+      expect(mockFetch).toHaveBeenCalledWith('https://cdn.example.com/okf/demo/manifest.json')
     })
   })
 

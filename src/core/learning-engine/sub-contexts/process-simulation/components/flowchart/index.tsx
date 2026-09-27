@@ -11,7 +11,7 @@ import { PlaybackControls } from './playback-controls';
 import { StepCarousel } from './step-carousel';
 import { usePlaybackState } from './usePlaybackState';
 import { autoDeriveViews } from './derivations';
-import { buildCanonicalIdMapper } from './abstract-flow/derive';
+import { buildCanonicalIdMapper, deriveSchema } from '../../model/derive';
 import { InspectorSidebar } from './inspector';
 import { FlowchartHelpModal } from './FlowchartHelpModal';
 import {
@@ -66,15 +66,16 @@ const Workflow = Icons.Workflow;
 export { TYPES, COLORS, BORDER_COLORS, ICONS, ICON_ANIMATIONS, DYNAMIC_ICONS, NODE_W, NODE_H, INITIAL_SCHEMA, PROCESS_GROUP_STATE_MAP, STEP_EVENT_TO_STATE_MAP };
 export type { UnifiedFlowchartSchema, FlowchartEntity, FlowchartRelation, FlowchartViewNode, FlowchartViewGroup, FlowchartStep, FlowchartStepData, FlowchartStepLinear, FlowchartStepBranchOption, FlowchartJourney, FlowchartViewConfig, FlowchartProps, ProcessGroup, FlowchartStateMachineState, FlowchartStateMachine };
 
-export function Flowchart({ title, schema = INITIAL_SCHEMA, sectionIndex = 0 }: FlowchartProps) {
+export function Flowchart({ title, flow, schema = INITIAL_SCHEMA, sectionIndex = 0 }: FlowchartProps) {
   const rawId = useId();
   const instanceId = useMemo(() => rawId.replace(/:/g, ''), [rawId]);
 
-  const [localSchema, setLocalSchema] = useState<UnifiedFlowchartSchema>(() => autoDeriveViews(schema));
+  const baseSchema = useMemo(() => (flow ? deriveSchema(flow) : schema), [flow, schema]);
+  const [localSchema, setLocalSchema] = useState<UnifiedFlowchartSchema>(() => autoDeriveViews(baseSchema));
 
   useEffect(() => {
-    setLocalSchema(autoDeriveViews(schema));
-  }, [schema]);
+    setLocalSchema(autoDeriveViews(baseSchema));
+  }, [baseSchema]);
 
   const viewKeys = useMemo(() => Object.keys(localSchema.views!), [localSchema]);
   const [activeViewKey, setActiveViewKey] = useState<string>(viewKeys[0] || 'EVENT_STORMING');

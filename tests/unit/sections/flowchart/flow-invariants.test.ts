@@ -5,7 +5,7 @@ import * as fs from 'fs';
 // @ts-ignore
 import * as path from 'path';
 import * as yaml from 'js-yaml';
-import { deriveSchema } from '../../../../src/core/learning-engine/sub-contexts/process-simulation/components/flowchart/abstract-flow/derive';
+import { deriveSchema } from '../../../../src/core/learning-engine/sub-contexts/process-simulation/model/derive';
 
 // @ts-ignore
 const OKF_ROOT = path.resolve(process.cwd ? process.cwd() : '.', 'public/okf');

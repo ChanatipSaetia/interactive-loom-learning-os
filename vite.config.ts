@@ -4,6 +4,43 @@ import type { Plugin } from 'vite'
 import fs from 'fs'
 import path from 'path'
 import { createRequire } from 'module'
+import { buildTopicManifest } from './src/core/delivery/adapters/node-fs-storage'
+import { MANIFEST_FILE } from './src/core/delivery/manifest'
+
+const OKF_ROOT = path.resolve(process.cwd(), 'public', 'okf')
+
+function okfTopics(): string[] {
+  return fs.readdirSync(OKF_ROOT).filter((name) => fs.existsSync(path.join(OKF_ROOT, name, 'index.md')))
+}
+
+/**
+ * Publishes `okf/<topicId>/manifest.json` — the file list of every section
+ * folder — generated from disk: served live in dev, emitted at build. Never
+ * committed, so it cannot drift from the section folders.
+ */
+function okfManifestPlugin(): Plugin {
+  const manifestUrl = new RegExp(`/okf/([^/]+)/${MANIFEST_FILE.replace('.', '\\.')}$`)
+  return {
+    name: 'okf-manifest-plugin',
+    configureServer(server) {
+      server.middlewares.use((req, res, next) => {
+        const topicId = req.method === 'GET' ? req.url?.split('?')[0].match(manifestUrl)?.[1] : undefined
+        if (!topicId || !fs.existsSync(path.join(OKF_ROOT, topicId, 'index.md'))) return next()
+        res.writeHead(200, { 'Content-Type': 'application/json', 'Cache-Control': 'no-store' })
+        res.end(JSON.stringify(buildTopicManifest(path.join(OKF_ROOT, topicId))))
+      })
+    },
+    generateBundle() {
+      for (const topicId of okfTopics()) {
+        this.emitFile({
+          type: 'asset',
+          fileName: `okf/${topicId}/${MANIFEST_FILE}`,
+          source: JSON.stringify(buildTopicManifest(path.join(OKF_ROOT, topicId))),
+        })
+      }
+    },
+  }
+}
 
 function okfSavePlugin(): Plugin {
   return {
@@ -114,6 +151,7 @@ export default defineConfig(({ mode }) => {
     plugins: [
       react(),
       okfSavePlugin(),
+      okfManifestPlugin(),
     ],
     server: {
       port: Number(env.VITE_PORT) || 5173,

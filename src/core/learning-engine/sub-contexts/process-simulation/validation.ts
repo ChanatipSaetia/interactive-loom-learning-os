@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import type { ValidationDiagnostic, ValidationContext } from '../../validation/types'
 import { contextToDiagnostic } from '../../validation/types'
-import { deriveSchema } from './components/flowchart/abstract-flow/derive'
+import { deriveSchema } from './model/derive'
 import { TYPES } from './components/flowchart/types'
 
 const EVENT_TYPES = new Set(['event', 'Event', 'EVENT', TYPES.EVENT])

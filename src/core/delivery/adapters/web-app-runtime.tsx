@@ -8,15 +8,19 @@
  * without knowing host-specific details.
  */
 import type { ReactNode } from 'react'
-import type { OKFRuntimePort } from '../ports'
+import type { OKFRuntimePort, OKFStoragePort } from '../ports'
 import type { OKFSectionData, OKFBundled } from '../../learning-engine/composition/okf/types'
 import type { SectionConfig } from '../../learning-engine/registry'
 import type { ValidationResult } from '../../learning-engine/validation/gateway'
 import { SectionRegistry } from '../../learning-engine/registry'
-import { loadOKFBundle } from '../../learning-engine/composition/okf/reader'
+import { loadOKFBundle } from '../../learning-engine/composition/okf/loader'
+import { ValidatedSection } from '../web-app-shell/ValidatedSection'
 import { validateOKFSection } from '../../learning-engine/validation/gateway'
 
 function renderSectionElement(config: SectionConfig): ReactNode {
+  if (config.validation?.status === 'error') {
+    return <ValidatedSection config={config}>{null}</ValidatedSection>
+  }
   const Component = SectionRegistry.get(config.type)
   if (!Component) {
     return (
@@ -25,15 +29,21 @@ function renderSectionElement(config: SectionConfig): ReactNode {
       </div>
     )
   }
-  return <Component {...config.props} />
+  return (
+    <ValidatedSection config={config}>
+      <Component {...config.props} />
+    </ValidatedSection>
+  )
 }
 
 export class WebAppRuntimeAdapter implements OKFRuntimePort {
+  constructor(private storage: OKFStoragePort) {}
+
   /**
-   * Load the complete topic bundle by delegating to the cached reader.
+   * Load the complete topic bundle through the Composition Engine's loader.
    */
   async loadTopicBundle(topicId: string): Promise<OKFBundled> {
-    return loadOKFBundle(topicId)
+    return loadOKFBundle(topicId, this.storage)
   }
 
   /**

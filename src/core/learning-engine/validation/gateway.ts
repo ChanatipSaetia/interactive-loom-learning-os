@@ -13,10 +13,19 @@ import { z } from 'zod'
 // ============================================================================
 
 // --- Public Types ---
-export type { ValidationContext, ValidationDiagnostic, ValidationResult } from './types'
+export type { ValidationContext, ValidationDiagnostic, ValidationResult, SectionFiles, SectionMeta, SectionLayout, ParsedSection, LoadedSection } from './types'
 export { contextToDiagnostic } from './types'
 import { contextToDiagnostic } from './types'
-import type { ValidationContext, ValidationDiagnostic, ValidationResult } from './types'
+import type {
+  LoadedSection,
+  ParsedSection,
+  SectionFiles,
+  SectionLayout,
+  SectionMeta,
+  ValidationContext,
+  ValidationDiagnostic,
+  ValidationResult,
+} from './types'
 
 // --- Schema Registry — Dynamically resolved from Bounded Contexts ---
 
@@ -29,12 +38,14 @@ import {
   PillarLayerSectionSchema,
 } from '../sub-contexts/progressive-content/schema'
 import { validateProgressiveContentTier3 } from '../sub-contexts/progressive-content/validation'
+import { ProgressiveContentLayouts } from '../sub-contexts/progressive-content/layout'
 
 import {
   FlowchartSectionSchema,
   ScenarioSectionSchema,
 } from '../sub-contexts/process-simulation/schema'
 import { validateProcessSimulationTier3 } from '../sub-contexts/process-simulation/validation'
+import { ProcessSimulationLayouts } from '../sub-contexts/process-simulation/layout'
 
 import {
   TradeoffSandboxSectionSchema,
@@ -42,12 +53,14 @@ import {
   DecisionTreeSectionSchema,
 } from '../sub-contexts/tradeoff-sandbox/schema'
 import { validateTradeoffSandboxTier3 } from '../sub-contexts/tradeoff-sandbox/validation'
+import { TradeoffSandboxLayouts } from '../sub-contexts/tradeoff-sandbox/layout'
 
 import {
   ReflectionSequenceSectionSchema,
   ReflectionTemplateSectionSchema,
 } from '../sub-contexts/reflection-synthesis/schema'
 import { validateReflectionSynthesisTier3 } from '../sub-contexts/reflection-synthesis/validation'
+import { ReflectionSynthesisLayouts } from '../sub-contexts/reflection-synthesis/layout'
 
 import {
   QuizSectionSchema,
@@ -55,6 +68,7 @@ import {
   ConceptMapSectionSchema,
 } from '../sub-contexts/practice-assessment/schema'
 import { validatePracticeAssessmentTier3 } from '../sub-contexts/practice-assessment/validation'
+import { PracticeAssessmentLayouts } from '../sub-contexts/practice-assessment/layout'
 
 import { HexCampaignSchema } from '../../generic/hex-map/schema'
 import { validateHexMapTier3 } from '../../generic/hex-map/validation'
@@ -63,27 +77,28 @@ import type { HexCampaignData } from '../../generic/hex-map/schema'
 interface SchemaEntry {
   schema: z.ZodTypeAny
   subdomain: string
+  layout: SectionLayout
   validateTier3: (data: Record<string, unknown>, sectionType: string, context?: ValidationContext) => ValidationDiagnostic[]
 }
 
 const SCHEMA_REGISTRY: Record<string, SchemaEntry> = {
-  'intro': { schema: IntroSectionSchema, subdomain: 'progressive-content', validateTier3: validateProgressiveContentTier3 },
-  'text': { schema: TextSectionSchema, subdomain: 'progressive-content', validateTier3: validateProgressiveContentTier3 },
-  'bullets': { schema: BulletsSectionSchema, subdomain: 'progressive-content', validateTier3: validateProgressiveContentTier3 },
-  'taxonomy-browser': { schema: TaxonomyBrowserSectionSchema, subdomain: 'progressive-content', validateTier3: validateProgressiveContentTier3 },
-  'image-gallery': { schema: ImageGallerySectionSchema, subdomain: 'progressive-content', validateTier3: validateProgressiveContentTier3 },
-  'pillar-layer': { schema: PillarLayerSectionSchema, subdomain: 'progressive-content', validateTier3: validateProgressiveContentTier3 },
-  'flowchart': { schema: FlowchartSectionSchema, subdomain: 'process-simulation', validateTier3: validateProcessSimulationTier3 },
+  'intro': { schema: IntroSectionSchema, subdomain: 'progressive-content', layout: ProgressiveContentLayouts['intro'], validateTier3: validateProgressiveContentTier3 },
+  'text': { schema: TextSectionSchema, subdomain: 'progressive-content', layout: ProgressiveContentLayouts['text'], validateTier3: validateProgressiveContentTier3 },
+  'bullets': { schema: BulletsSectionSchema, subdomain: 'progressive-content', layout: ProgressiveContentLayouts['bullets'], validateTier3: validateProgressiveContentTier3 },
+  'taxonomy-browser': { schema: TaxonomyBrowserSectionSchema, subdomain: 'progressive-content', layout: ProgressiveContentLayouts['taxonomy-browser'], validateTier3: validateProgressiveContentTier3 },
+  'image-gallery': { schema: ImageGallerySectionSchema, subdomain: 'progressive-content', layout: ProgressiveContentLayouts['image-gallery'], validateTier3: validateProgressiveContentTier3 },
+  'pillar-layer': { schema: PillarLayerSectionSchema, subdomain: 'progressive-content', layout: ProgressiveContentLayouts['pillar-layer'], validateTier3: validateProgressiveContentTier3 },
+  'flowchart': { schema: FlowchartSectionSchema, subdomain: 'process-simulation', layout: ProcessSimulationLayouts['flowchart'], validateTier3: validateProcessSimulationTier3 },
 
-  'scenario': { schema: ScenarioSectionSchema, subdomain: 'process-simulation', validateTier3: validateProcessSimulationTier3 },
-  'tradeoff-sandbox': { schema: TradeoffSandboxSectionSchema, subdomain: 'tradeoff-sandbox', validateTier3: validateTradeoffSandboxTier3 },
-  'formula-sandbox': { schema: FormulaSandboxSectionSchema, subdomain: 'tradeoff-sandbox', validateTier3: validateTradeoffSandboxTier3 },
-  'decision-tree': { schema: DecisionTreeSectionSchema, subdomain: 'tradeoff-sandbox', validateTier3: validateTradeoffSandboxTier3 },
-  'reflection-sequence': { schema: ReflectionSequenceSectionSchema, subdomain: 'reflection-synthesis', validateTier3: validateReflectionSynthesisTier3 },
-  'reflection-template': { schema: ReflectionTemplateSectionSchema, subdomain: 'reflection-synthesis', validateTier3: validateReflectionSynthesisTier3 },
-  'quiz': { schema: QuizSectionSchema, subdomain: 'practice-assessment', validateTier3: validatePracticeAssessmentTier3 },
-  'flashcards': { schema: FlashcardsSectionSchema, subdomain: 'practice-assessment', validateTier3: validatePracticeAssessmentTier3 },
-  'concept-map': { schema: ConceptMapSectionSchema, subdomain: 'practice-assessment', validateTier3: validatePracticeAssessmentTier3 },
+  'scenario': { schema: ScenarioSectionSchema, subdomain: 'process-simulation', layout: ProcessSimulationLayouts['scenario'], validateTier3: validateProcessSimulationTier3 },
+  'tradeoff-sandbox': { schema: TradeoffSandboxSectionSchema, subdomain: 'tradeoff-sandbox', layout: TradeoffSandboxLayouts['tradeoff-sandbox'], validateTier3: validateTradeoffSandboxTier3 },
+  'formula-sandbox': { schema: FormulaSandboxSectionSchema, subdomain: 'tradeoff-sandbox', layout: TradeoffSandboxLayouts['formula-sandbox'], validateTier3: validateTradeoffSandboxTier3 },
+  'decision-tree': { schema: DecisionTreeSectionSchema, subdomain: 'tradeoff-sandbox', layout: TradeoffSandboxLayouts['decision-tree'], validateTier3: validateTradeoffSandboxTier3 },
+  'reflection-sequence': { schema: ReflectionSequenceSectionSchema, subdomain: 'reflection-synthesis', layout: ReflectionSynthesisLayouts['reflection-sequence'], validateTier3: validateReflectionSynthesisTier3 },
+  'reflection-template': { schema: ReflectionTemplateSectionSchema, subdomain: 'reflection-synthesis', layout: ReflectionSynthesisLayouts['reflection-template'], validateTier3: validateReflectionSynthesisTier3 },
+  'quiz': { schema: QuizSectionSchema, subdomain: 'practice-assessment', layout: PracticeAssessmentLayouts['quiz'], validateTier3: validatePracticeAssessmentTier3 },
+  'flashcards': { schema: FlashcardsSectionSchema, subdomain: 'practice-assessment', layout: PracticeAssessmentLayouts['flashcards'], validateTier3: validatePracticeAssessmentTier3 },
+  'concept-map': { schema: ConceptMapSectionSchema, subdomain: 'practice-assessment', layout: PracticeAssessmentLayouts['concept-map'], validateTier3: validatePracticeAssessmentTier3 },
 }
 
 
@@ -290,7 +305,6 @@ export function validateOKFSection(
   context?: ValidationContext
 ): ValidationResult<Record<string, unknown>> {
   const allDiagnostics: ValidationDiagnostic[] = []
-  let lastValidData: Record<string, unknown> | null = null
 
   // === TIER 1: YAML Syntax & Frontmatter ===
   const tier1Result = tier1Validate(rawYaml, context)
@@ -299,7 +313,7 @@ export function validateOKFSection(
   if (tier1Result.diagnostics.some((d) => d.tier === 1)) {
     return {
       status: 'error',
-      payload: lastValidData ?? {},
+      payload: {},
       diagnostics: allDiagnostics,
     }
   }
@@ -316,7 +330,7 @@ export function validateOKFSection(
     })
     return {
       status: 'error',
-      payload: lastValidData ?? {},
+      payload: {},
       diagnostics: allDiagnostics,
     }
   }
@@ -334,7 +348,7 @@ export function validateOKFSection(
     })
     return {
       status: 'error',
-      payload: lastValidData ?? {},
+      payload: {},
       diagnostics: allDiagnostics,
     }
   }
@@ -344,37 +358,165 @@ export function validateOKFSection(
     ? { ...dataObj, type: sectionTypeHint }
     : dataObj
 
-  // === TIER 2: Structural Schema (Zod) ===
-  const tier2Result = tier2Validate(dataForValidation, sectionType, context)
-  allDiagnostics.push(...tier2Result.diagnostics)
+  const result = validateSectionData(dataForValidation, sectionType, context)
+  return { ...result, diagnostics: [...allDiagnostics, ...result.diagnostics] }
+}
 
-  if (tier2Result.diagnostics.length === 0) {
-    lastValidData = {
-      ...(tier2Result.validated as Record<string, unknown>),
-      type: sectionType,
-    }
+/**
+ * Tier 2 (structural schema + transform) and Tier 3 (reference integrity) on an
+ * already-parsed section object. Tier 3 runs on the transformed output when
+ * Tier 2 passes, otherwise on the input.
+ */
+function validateSectionData(
+  data: Record<string, unknown>,
+  sectionType: string,
+  context?: ValidationContext
+): ValidationResult<Record<string, unknown>> {
+  const diagnostics: ValidationDiagnostic[] = []
+
+  const tier2Result = tier2Validate(data, sectionType, context)
+  diagnostics.push(...tier2Result.diagnostics)
+
+  const validated = tier2Result.diagnostics.length === 0
+    ? { ...(tier2Result.validated as Record<string, unknown>), type: sectionType }
+    : null
+
+  if (KNOWN_SECTION_TYPES.has(sectionType)) {
+    diagnostics.push(...tier3Validate(validated ?? data, sectionType, context))
   }
 
-  // === TIER 3: Semantic Reference Integrity ===
-  const tier3Diagnostics = tier3Validate(dataForValidation, sectionType, context)
-  allDiagnostics.push(...tier3Diagnostics)
-
-  // Determine overall status
-  const hasTier1Errors = allDiagnostics.some((d) => d.tier === 1)
-  const hasTier2Errors = allDiagnostics.some((d) => d.tier === 2)
-  const hasTier3Errors = allDiagnostics.some((d) => d.tier === 3)
-
   let status: ValidationResult['status'] = 'valid'
-  if (hasTier1Errors || hasTier2Errors) {
+  if (diagnostics.some((d) => d.tier === 1 || d.tier === 2)) {
     status = 'error'
-  } else if (hasTier3Errors) {
+  } else if (diagnostics.some((d) => d.tier === 3)) {
     status = 'warning'
   }
 
+  return { status, payload: validated ?? data, diagnostics }
+}
+
+// --- Section Files Entry Point (sections spread over several files) ---
+
+const SECTION_FILE = 'section.md'
+
+/** 1-based position of a js-yaml error (its `mark` is 0-based). */
+function yamlErrorPosition(e: any): { line?: number; column?: number } {
+  if (typeof e?.mark?.line !== 'number') return {}
+  return { line: e.mark.line + 1, column: e.mark.column + 1 }
+}
+
+function toSectionMeta(frontmatter: Record<string, unknown>): SectionMeta {
   return {
-    status,
-    payload: lastValidData ?? dataForValidation,
-    diagnostics: allDiagnostics,
+    type: typeof frontmatter.type === 'string' ? frontmatter.type : '',
+    title: frontmatter.title as string | undefined,
+    heading: frontmatter.heading as string | undefined,
+    ordered: frontmatter.ordered as boolean | undefined,
+    resource: typeof frontmatter.resource === 'string' ? frontmatter.resource : '.',
+    intro: frontmatter.intro as SectionMeta['intro'],
+  }
+}
+
+/** Tier 1: parse section.md frontmatter and every YAML / Markdown file, one diagnostic per broken file. */
+function parseSectionFiles(
+  files: SectionFiles,
+  fileLabel: (name: string) => string
+): { parsed: ParsedSection | null; diagnostics: ValidationDiagnostic[] } {
+  const diagnostics: ValidationDiagnostic[] = []
+
+  const sectionMd = files[SECTION_FILE]
+  if (sectionMd === undefined) {
+    diagnostics.push({
+      tier: 1,
+      file: fileLabel(SECTION_FILE),
+      message: 'Missing section.md.',
+      fixHint: 'Every section folder needs a section.md whose frontmatter declares at least "type".',
+    })
+    return { parsed: null, diagnostics }
+  }
+
+  const fm = extractFrontmatter(sectionMd)
+  if (fm === null) {
+    diagnostics.push({
+      tier: 1,
+      file: fileLabel(SECTION_FILE),
+      line: 1,
+      message: 'Invalid YAML frontmatter: missing closing "---" delimiter or malformed frontmatter.',
+      fixHint: 'Ensure frontmatter is wrapped between opening "---" and closing "---" delimiters.',
+    })
+    return { parsed: null, diagnostics }
+  }
+
+  const parsed: ParsedSection = { meta: toSectionMeta(fm.frontmatter), body: fm.body, yaml: {}, markdown: {} }
+
+  for (const [name, text] of Object.entries(files)) {
+    if (name === SECTION_FILE) continue
+    if (/\.ya?ml$/.test(name)) {
+      try {
+        parsed.yaml[name] = yaml.load(text)
+      } catch (e: any) {
+        const message = e.message || String(e)
+        diagnostics.push({
+          tier: 1,
+          file: fileLabel(name),
+          ...yamlErrorPosition(e),
+          message: `YAML Syntax Error in ${name}: ${message}`,
+          fixHint: 'Fix YAML indentation and formatting around the specified line. Ensure consistent 2-space indentation.',
+        })
+      }
+    } else if (name.endsWith('.md')) {
+      parsed.markdown[name] = extractFrontmatter(text)?.body ?? text
+    }
+  }
+
+  return { parsed, diagnostics }
+}
+
+/**
+ * Execute the full 3-Tier Validation pipeline on one section folder's raw files.
+ *
+ * Tier 1 parses section.md and each data file separately (diagnostics name the
+ * file), the section type's layout assembles the schema input, then Tier 2
+ * validates and transforms it and Tier 3 checks references on the output.
+ *
+ * @param files - Raw file contents keyed by filename within the section folder
+ * @param context - File/topic context; `context.file` should be the section folder path
+ */
+export function validateSectionFiles(
+  files: SectionFiles,
+  context?: ValidationContext
+): ValidationResult<LoadedSection> {
+  const fileLabel = (name: string) => (context?.file ? `${context.file}/${name}` : name)
+  const { parsed, diagnostics } = parseSectionFiles(files, fileLabel)
+
+  const fail = (extra: ValidationDiagnostic[] = []): ValidationResult<LoadedSection> => ({
+    status: 'error',
+    payload: { meta: parsed?.meta ?? toSectionMeta({}), data: {}, body: parsed?.body ?? '' },
+    diagnostics: [...diagnostics, ...extra],
+  })
+
+  if (!parsed || diagnostics.length > 0) return fail()
+
+  const sectionType = parsed.meta.type
+  const entry = SCHEMA_REGISTRY[sectionType]
+  if (!entry) {
+    return fail([{
+      tier: 2,
+      file: fileLabel(SECTION_FILE),
+      field: 'type',
+      message: sectionType ? `Unknown section type "${sectionType}".` : 'Missing required "type" field in section.md frontmatter.',
+      fixHint: `Set "type" to one of: [${[...KNOWN_SECTION_TYPES].join(', ')}]`,
+    }])
+  }
+
+  const assembled = entry.layout.assemble(parsed)
+  const layoutDiagnostics = assembled.diagnostics.map((d) => ({ ...d, file: d.file ? fileLabel(d.file) : context?.file }))
+  if (layoutDiagnostics.length > 0) return fail(layoutDiagnostics)
+
+  const result = validateSectionData({ ...assembled.input, type: sectionType }, sectionType, context)
+  return {
+    status: result.status,
+    payload: { meta: parsed.meta, data: result.status === 'error' ? {} : result.payload, body: parsed.body },
+    diagnostics: result.diagnostics,
   }
 }
 

@@ -3,9 +3,3 @@ tags:
   - system-design
   - scalability
   - distributed-systems
-related:
-  - sections/intro/content.yaml
-  - sections/text/content.md
-  - sections/quiz/questions.yaml
-  - sections/reflection/sequence.yaml
-  - sections/tradeoff/scenario.yaml

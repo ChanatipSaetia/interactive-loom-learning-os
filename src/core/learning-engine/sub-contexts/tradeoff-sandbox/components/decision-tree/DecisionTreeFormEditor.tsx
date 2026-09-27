@@ -212,12 +212,12 @@ export function DecisionTreeFormEditor({ data, onChange }: DecisionTreeFormEdito
       // Switch to decision
       const rest = { ...selectedNode } as Record<string, unknown>
       delete rest.leaf
-      handleNodeChange(selectedNodeId, { ...rest, prompt: selectedNode.prompt ?? '', choices: [] })
+      handleNodeChange(selectedNodeId, { ...rest, id: selectedNodeId, prompt: selectedNode.prompt ?? '', choices: [] })
     } else {
       // Switch to leaf
       const rest = { ...selectedNode } as Record<string, unknown>
       delete rest.choices
-      handleNodeChange(selectedNodeId, { ...rest, leaf: { recommendation: '', explanation: '', tradeoffs: [] } })
+      handleNodeChange(selectedNodeId, { ...rest, id: selectedNodeId, leaf: { recommendation: '', explanation: '', tradeoffs: [] } })
     }
   }, [selectedNode, selectedNodeId, handleNodeChange])
 

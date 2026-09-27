@@ -2,7 +2,7 @@
 import type { UnifiedFlowchartSchema, FlowchartRelation, FlowchartEntity, LayoutInfo } from '../types';
 import { TYPES } from '../types';
 
-import { buildCanonicalIdMapper } from '../abstract-flow/derive';
+import { buildCanonicalIdMapper } from '../../../model/derive';
 
 export const getEntityType = (entity: FlowchartEntity | undefined): string => {
   return entity?.type || entity?.viewTypes?.EVENT_STORMING || 'default';

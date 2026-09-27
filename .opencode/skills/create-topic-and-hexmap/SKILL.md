@@ -52,7 +52,7 @@ Create section folders inside `public/okf/<topic-id>/sections/<section-name>/`:
 ```
 public/okf/<topic-id>/
 ├── index.md                 # Directory listing grouped under markdown headers
-├── index.yaml               # App metadata (category, tags, related YAML files)
+├── index.yaml               # App metadata (category, tags)
 └── sections/
     ├── intro/               # section.md + content.yaml
     ├── taxonomy/            # section.md (resource: ".") + category-1.yaml, category-2.yaml
@@ -83,7 +83,7 @@ Each section directory MUST contain:
 
 ### Step 3: Register Topic Manifests
 1. **`public/okf/<topic-id>/index.md`**: Markdown file listing all sections under thematic headings with relative links `(sections/<section-name>/section.md)`.
-2. **`public/okf/<topic-id>/index.yaml`**: Manifest declaring `category`, `tags`, and all `.yaml` data files in `related:`.
+2. **`public/okf/<topic-id>/index.yaml`**: Manifest declaring `category` and `tags`. Section files are discovered from the section folders — name collection files (taxonomy categories, trade-off scenarios) with two-digit prefixes (`01-…yaml`) to set their order, and run `npm run okf:validate` before finishing.
 3. **`public/okf/index.md`**: Add link to the new topic under the appropriate category heading.
 
 ### Step 4: Create the Hex Campaign Map

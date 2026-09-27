@@ -3,7 +3,7 @@ import { useParams } from 'react-router-dom'
 import { useTopics } from '../../learning-engine/composition/routes'
 import type { SectionConfig } from '../../learning-engine/registry'
 import { SectionRegistry } from '../../learning-engine/registry'
-import { useOKFBundled, bundleToSections } from '../../learning-engine/composition/okf/sections'
+import { useOKFBundled, toSectionConfig, toSectionConfigs } from '../../learning-engine/composition/okf/sections'
 import { ProgressProvider } from '../../supporting/learner-progress'
 import { HUDProvider, useHUD } from '../../learning-engine/composition/context/HUDContext'
 import { EditorProvider, useEditor, useEditorSafe } from '../../learning-engine/composition/context/EditorContext'
@@ -12,6 +12,7 @@ import { SplitPaneLayout } from './SplitPaneLayout'
 import { EditorPanel, useSectionEditorBuffer } from '../../supporting/authoring-editor'
 import { ToastProvider, useToast } from '../../ui-system/primitives/Toast'
 import { X } from 'lucide-react'
+import { ValidatedSection } from './ValidatedSection'
 
 interface SectionRendererProps {
   config: SectionConfig
@@ -19,6 +20,14 @@ interface SectionRendererProps {
 }
 
 function SectionRenderer({ config, sectionIndex }: SectionRendererProps) {
+  if (config.validation?.status === 'error') {
+    return (
+      <div className="section-wrapper" data-section-type={config.type} data-section-index={sectionIndex}>
+        <ValidatedSection config={config}>{null}</ValidatedSection>
+      </div>
+    )
+  }
+
   const Component = SectionRegistry.get(config.type)
   if (!Component) {
     return (
@@ -30,9 +39,11 @@ function SectionRenderer({ config, sectionIndex }: SectionRendererProps) {
 
   return (
     <div className="section-wrapper" data-section-type={config.type} data-section-index={sectionIndex}>
-      <Suspense fallback={<div className="section-loading">Loading section...</div>}>
-        <Component sectionIndex={sectionIndex} {...config.props} />
-      </Suspense>
+      <ValidatedSection config={config}>
+        <Suspense fallback={<div className="section-loading">Loading section...</div>}>
+          <Component sectionIndex={sectionIndex} {...config.props} />
+        </Suspense>
+      </ValidatedSection>
     </div>
   )
 }
@@ -84,7 +95,7 @@ function EditorModeView({ topicLabel, reload }: { topicLabel: string; reload?: (
 
   const previewConfig = useMemo(() => {
     if (!activeSection) return null
-    const original = bundleToSections([activeSection])[0]
+    const original = toSectionConfig(activeSection)
     return {
       type: original.type,
       props: {
@@ -162,7 +173,7 @@ function TopicShellInner() {
   const topic = useMemo(() => topics.find((r) => r.id === topicId), [topicId, topics])
 
   const { bundle, loading, error, reload } = useOKFBundled(topicId ?? '')
-  const sections = useMemo(() => (bundle ? bundleToSections(bundle) : []), [bundle])
+  const sections = useMemo(() => (bundle ? toSectionConfigs(bundle) : []), [bundle])
 
   if (!topic) {
     return (

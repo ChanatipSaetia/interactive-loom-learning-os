@@ -15,7 +15,7 @@ import {
 } from '../../layout'
 import { useGamification } from '../../useGamification'
 import { LocalStorageCharacterAdapter } from '../../adapters/local-storage-character-adapter'
-import { useOKFBundled, bundleToSections } from '../../../../learning-engine/composition/okf/sections'
+import { useOKFBundled, toSectionConfigs } from '../../../../learning-engine/composition/okf/sections'
 import { useTopics } from '../../../../learning-engine/composition/routes'
 
 // Known hexmap topics available in public/hexmaps/
@@ -161,7 +161,7 @@ export function useGamificationCampaign() {
   const bundleSectionsMap = useMemo(() => {
     if (!okfBundle) return new Map<string, { type: string; props: Record<string, unknown> }>()
     const map = new Map<string, { type: string; props: Record<string, unknown> }>()
-    const configs = bundleToSections(okfBundle)
+    const configs = toSectionConfigs(okfBundle)
     okfBundle.forEach((sec, idx) => {
       const folder = sec.sectionFolder
       if (folder) {

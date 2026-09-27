@@ -1,4 +1,4 @@
-import type { FlowchartRelation } from '../types';
+import type { FlowchartRelation } from '../components/flowchart/types';
 
 /** Reference to a declared actor or system by ID. */
 export interface Ref<T extends string = string> {
@@ -93,8 +93,8 @@ export interface JourneyStepRef {
   name: string;
   /** Longer explanation shown below the name during playback. */
   description: string;
-  /** Optional process group for state machine mapping. */
-  processGroup?: 'planning' | 'execution' | 'evaluation' | 'escalation';
+  /** Optional process group (phase label) for state machine mapping; topics define their own. */
+  processGroup?: string;
 }
 
 /** A journey through the flow — one path from start to finish. */

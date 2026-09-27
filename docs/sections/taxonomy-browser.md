@@ -9,13 +9,13 @@
 ```
 sections/taxonomy/
 ├── section.md           # section descriptor (resource: ".")
-├── main-skills.yaml     # one TaxonomyCategory per file
-├── support-gems.yaml
-├── utility-skills.yaml
-└── defenses.yaml
+├── 01-main-skills.yaml     # one TaxonomyCategory per file
+├── 02-support-gems.yaml
+├── 03-utility-skills.yaml
+└── 04-defenses.yaml
 ```
 
-The `resource: "."` value tells the loader to read **all `.yaml` files** in the directory, merging them into a single list of categories. Each YAML file contains exactly **one** category object (not a list).
+The `resource: "."` value tells the loader to read **all `.yaml` files** in the directory, merging them into a single list of categories in **filename order** — the two-digit prefix sets the card order. Each YAML file contains exactly **one** category object (not a list). Prefix a filename with `_` to disable that category without deleting it.
 
 ## `section.md` Frontmatter
 

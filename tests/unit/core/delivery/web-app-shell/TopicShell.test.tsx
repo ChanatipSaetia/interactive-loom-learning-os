@@ -10,6 +10,7 @@ import type { SectionConfig } from '../../../../../src/core/learning-engine/regi
 import type { OKFBundledSection } from '../../../../../src/core/learning-engine/composition/okf/types'
 
 import { SectionTitleBar } from '../../../../../src/core/delivery/web-app-shell/SectionTitleBar'
+import { withStorage } from '../../../helpers/storage'
 
 const MockSectionComponent = vi.fn(({ sectionIndex }: { sectionIndex?: number }) => (
   <div data-testid="mock-registered-section">
@@ -35,6 +36,7 @@ function renderTopicShell(path = '/demo/rest-vs-websocket', topics: TopicRoute[]
         <Route path="/:topicId/*" element={<TopicShell />} />
       </Routes>
     </MemoryRouter>,
+    { wrapper: withStorage() },
   )
 }
 
@@ -140,7 +142,7 @@ describe('TopicShell Editor Mode', () => {
     },
     {
       meta: { type: 'bullets', title: 'Test Bullets', resource: 'test.md' },
-      data: { type: 'bullets', items: [{ text: 'Item 1' }] },
+      data: { type: 'bullets', items: [{ text: 'Item 1', children: [] }] },
     },
   ]
 
@@ -155,10 +157,6 @@ describe('TopicShell Editor Mode', () => {
       error: null,
       reload: vi.fn(),
     })
-    vi.spyOn(okfSections, 'bundleToSections').mockReturnValue([
-      { type: 'text', props: { title: 'Test Section', paragraphs: ['Hello world'] } },
-      { type: 'bullets', props: { title: 'Test Bullets', items: [{ text: 'Item 1' }] } },
-    ])
   })
 
   afterEach(() => {
@@ -257,9 +255,6 @@ describe('EditSectionToggle', () => {
       error: null,
       reload: vi.fn(),
     })
-    vi.spyOn(okfSections, 'bundleToSections').mockReturnValue([
-      { type: 'text', props: { title: 'Test', paragraphs: ['Hello'] } },
-    ])
 
     renderTopicShell('/demo/rest-vs-websocket')
 

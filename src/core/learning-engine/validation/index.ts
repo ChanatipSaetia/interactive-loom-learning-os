@@ -1,6 +1,7 @@
 export {
   validateOKFSection,
   validateOKFSectionFile,
+  validateSectionFiles,
   validateHexCampaign,
   formatValidationReport,
   formatValidationAsPrompt,
@@ -11,4 +12,9 @@ export type {
   ValidationContext,
   ValidationDiagnostic,
   ValidationResult,
+  SectionFiles,
+  SectionMeta,
+  SectionLayout,
+  ParsedSection,
+  LoadedSection,
 } from './gateway'

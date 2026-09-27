@@ -14,43 +14,50 @@
  */
 
 import type { ReactNode } from 'react'
-import type { OKFSectionMeta, OKFSectionData, OKFBundled } from '../learning-engine/composition/okf/types'
+import type { OKFSectionData, OKFBundled } from '../learning-engine/composition/okf/types'
+import type { SectionFiles } from '../learning-engine/validation/types'
 import type { SectionConfig } from '../learning-engine/registry'
 import type { ValidationResult } from '../learning-engine/validation/gateway'
 
 // ============================================================================
-// Storage Port — read/write/list of OKF section files
+// Storage Port — raw OKF files in, raw OKF files out
 // ============================================================================
 /**
- * Formal interface for OKF file storage operations.
+ * Formal interface for OKF file storage. Returns raw text only: parsing and
+ * validation belong to the Validation Gateway (`validateSectionFiles`), and
+ * assembly to the Composition Engine's `loadSection` use case.
  *
  * Concrete adapters:
- *   - InRepoStorageAdapter  (Vite dev-server disk writes + fetch reads)
- *   - SingleHTMLEmbedAdapter (in-memory or inline config, no disk)
- *   - Headless CLI adapter  (Node.js fs)
+ *   - InRepoStorageAdapter   (browser fetch + generated manifest; Vite dev-server writes)
+ *   - NodeFsStorageAdapter   (Node filesystem — CLI, Vite plugin, tests)
+ *   - SingleHTMLEmbedAdapter (fetch from a configurable base URL, read-only)
  */
 export interface OKFStoragePort {
   /**
-   * Read a single OKF section from storage.
+   * Section folders of a topic in lesson order (as linked from index.md).
    *
    * @param topicId - Topic folder identifier (e.g. "demo", "motorcycle")
-   * @param sectionFolder - Section subfolder name (e.g. "intro", "quiz-basics")
-   * @returns Parsed meta, data, and raw body text
    */
-  readSection(
-    topicId: string,
-    sectionFolder: string,
-  ): Promise<{ meta: OKFSectionMeta; data: OKFSectionData; body: string }>
+  listSections(topicId: string): Promise<string[]>
 
   /**
-   * Persist an OKF section back to storage.
+   * Raw contents of every file in a section folder.
+   *
+   * @param topicId - Topic folder identifier
+   * @param sectionFolder - Section subfolder name (e.g. "intro", "quiz-basics")
+   * @returns Filename → raw text (section.md, YAML, and Markdown files)
+   */
+  readSectionFiles(topicId: string, sectionFolder: string): Promise<SectionFiles>
+
+  /**
+   * Persist an OKF section back to storage. Only writable hosts implement this.
    *
    * @param topicId - Topic folder identifier
    * @param sectionFolder - Section subfolder name
    * @param data - Structured section payload
    * @param rawText - Reconstructed YAML/Markdown source with frontmatter
    */
-  saveSection(
+  saveSection?(
     topicId: string,
     sectionFolder: string,
     data: OKFSectionData,

@@ -1,6 +1,11 @@
 import { z } from 'zod'
+import { ref } from './model/types'
+import type { ActorDecl, SystemDecl } from './model/types'
 
 // --- Flowchart Section Schema ---
+// Input: the four event-storming files assembled under `flow` (see layout.ts).
+// Output: `{ type, flow: AbstractFlow }`. The output is valid input, so
+// re-validating render-shaped data (e.g. from the editor) is idempotent.
 
 export const FlowchartStateMachineStateSchema = z.object({
   id: z.string(),
@@ -13,111 +18,22 @@ export const FlowchartStateMachineSchema = z.object({
   initialState: z.string(),
 })
 
-export const FlowchartEntitySchema = z.object({
-  title: z.string(),
-  viewTitles: z.record(z.string(), z.string()).optional(),
-  desc: z.string(),
-  type: z.string().optional(),
-  viewTypes: z.record(z.string(), z.string()).optional(),
-  jsonPayload: z.record(z.string(), z.unknown()).optional(),
-  color: z.string().optional(),
-  strokeColor: z.string().optional(),
-  stateMachine: FlowchartStateMachineSchema.optional(),
-  branchLabel: z.string().optional(),
-  root: z.boolean().optional(),
-})
+/** Actor/system reference: a bare ID in YAML, `{ _tag: 'ref', id }` once parsed. */
+export const FlowchartRefSchema = z
+  .union([z.string(), z.object({ id: z.string() })])
+  .transform((r) => ref(typeof r === 'string' ? r : r.id))
 
-export const FlowchartRelationSchema = z.object({
-  id: z.string(),
-  from: z.string(),
-  to: z.string(),
-  views: z.array(z.string()).optional(),
-  dashed: z.boolean().optional(),
-  handledBy: z.boolean().optional(),
-  label: z.string().optional(),
-  chronologicalIndex: z.number().optional(),
-})
-
-export const FlowchartViewNodeSchema = z.object({
-  id: z.string(),
-  x: z.number().optional(),
-  y: z.number().optional(),
-  grid: z.tuple([z.number(), z.number()]).optional(),
-  root: z.boolean().optional(),
-})
-
-export const FlowchartViewGroupSchema = z.object({
-  id: z.string(),
-  title: z.string(),
+export const FlowchartActorSchema = z.object({
+  title: z.string().optional(),
   desc: z.string().optional(),
-  nodeIds: z.array(z.string()).optional(),
-  color: z.string().optional(),
-  borderColor: z.string().optional(),
-  textColor: z.string().optional(),
-  isLane: z.boolean().optional(),
-  row: z.number().optional(),
-  rowSpan: z.number().optional(),
-  y: z.number().optional(),
-  h: z.number().optional(),
 })
 
-export const FlowchartStepSchema = z.object({
-  nodeIds: z.array(z.string()),
-  title: z.string(),
-  reason: z.string(),
-  processGroup: z.enum(['planning', 'execution', 'evaluation', 'escalation']).optional(),
+export const FlowchartSystemSchema = z.object({
+  title: z.string().optional(),
+  desc: z.string().optional(),
+  type: z.enum(['aggregate', 'external']),
+  stateMachine: FlowchartStateMachineSchema.optional(),
 })
-
-export const FlowchartStepLinearSchema = z.object({
-  id: z.string(),
-  type: z.literal('linear'),
-  nodeIds: z.array(z.string()).optional(),
-  title: z.string(),
-  reason: z.string(),
-})
-
-export const FlowchartStepBranchOptionSchema = z.object({
-  id: z.string(),
-  type: z.string(),
-  nodeIds: z.array(z.string()).optional(),
-  title: z.string(),
-  reason: z.string(),
-})
-
-export const FlowchartStepBranchSchema = z.object({
-  id: z.string(),
-  type: z.literal('branch'),
-  branches: z.array(FlowchartStepBranchOptionSchema),
-})
-
-export const FlowchartStepDataSchema = z.union([
-  FlowchartStepLinearSchema,
-  FlowchartStepBranchSchema,
-])
-
-export const FlowchartJourneySchema = z.object({
-  id: z.string(),
-  label: z.string(),
-  description: z.string().optional(),
-  steps: z.array(FlowchartStepSchema),
-})
-
-export const LayoutInfoSchema = z.object({
-  rowCount: z.number(),
-  colCount: z.number(),
-  nodeCount: z.number(),
-})
-
-export const FlowchartViewConfigSchema = z.object({
-  name: z.string(),
-  icon: z.string(),
-  nodes: z.array(FlowchartViewNodeSchema),
-  groups: z.array(FlowchartViewGroupSchema),
-  steps: z.array(FlowchartStepDataSchema).optional(),
-  layoutInfo: LayoutInfoSchema.optional(),
-})
-
-// --- AbstractFlow Raw Step & Journey Schemas ---
 
 export const FlowchartResultEventSchema = z.object({
   id: z.string().min(1, { message: 'Result event must have a non-empty id.' }),
@@ -125,14 +41,14 @@ export const FlowchartResultEventSchema = z.object({
   desc: z.string().optional(),
 })
 
-export const FlowchartRawLinearStepSchema = z.object({
+export const FlowchartLinearStepSchema = z.object({
   id: z.string().min(1, { message: 'Step id cannot be empty.' }),
-  type: z.literal('linear').optional(),
-  initiatedBy: z.union([z.string(), z.object({ id: z.string() })]).optional(),
-  policy: z.string().optional(),
-  command: z.string().optional(),
-  handledBy: z.union([z.string(), z.object({ id: z.string() })]).optional(),
-  delegatesTo: z.union([z.string(), z.object({ id: z.string() })]).optional(),
+  type: z.literal('linear'),
+  initiatedBy: FlowchartRefSchema.optional(),
+  policy: z.string().default(''),
+  command: z.string().default(''),
+  handledBy: FlowchartRefSchema,
+  delegatesTo: FlowchartRefSchema.optional(),
   resultEvents: z.array(FlowchartResultEventSchema).min(1, {
     message: 'Linear step must define at least one result event in resultEvents array.',
   }),
@@ -140,14 +56,14 @@ export const FlowchartRawLinearStepSchema = z.object({
   description: z.string().optional(),
 })
 
-export const FlowchartRawBranchOptionSchema = z.object({
+export const FlowchartBranchOptionSchema = z.object({
   id: z.string().min(1, { message: 'Branch option id cannot be empty.' }),
-  label: z.string().optional(),
+  label: z.string(),
   dashed: z.boolean().optional(),
-  policy: z.string().optional(),
-  command: z.string().optional(),
-  handledBy: z.union([z.string(), z.object({ id: z.string() })]).optional(),
-  delegatesTo: z.union([z.string(), z.object({ id: z.string() })]).optional(),
+  policy: z.string(),
+  command: z.string(),
+  handledBy: FlowchartRefSchema,
+  delegatesTo: FlowchartRefSchema.optional(),
   resultEvents: z.array(FlowchartResultEventSchema).min(1, {
     message: 'Branch option step must define at least one result event in resultEvents array.',
   }),
@@ -155,58 +71,61 @@ export const FlowchartRawBranchOptionSchema = z.object({
   description: z.string().optional(),
 })
 
-export const FlowchartRawBranchStepSchema = z.object({
+export const FlowchartBranchStepSchema = z.object({
   id: z.string().min(1, { message: 'Branch step id cannot be empty.' }),
   type: z.literal('branch'),
   event: z.string().min(1, { message: 'Branch step event cannot be empty.' }),
-  branches: z.array(FlowchartRawBranchOptionSchema).min(1, {
+  branches: z.array(FlowchartBranchOptionSchema).min(1, {
     message: 'Branch step must define at least one branch option.',
   }),
+  continuesAs: z.string().optional(),
 })
 
-export const FlowchartRawStepSchema = z.union([
-  FlowchartRawBranchStepSchema,
-  FlowchartRawLinearStepSchema,
+export const FlowchartStepSchema = z.discriminatedUnion('type', [
+  FlowchartLinearStepSchema,
+  FlowchartBranchStepSchema,
 ])
 
-export const FlowchartRawJourneyStepRefSchema = z.object({
+export const FlowchartJourneyStepRefSchema = z.object({
   stepId: z.string().min(1, { message: 'Journey step reference must define a non-empty stepId.' }),
   name: z.string().min(1, { message: 'Journey step name cannot be empty.' }),
   description: z.string().min(1, { message: 'Journey step description cannot be empty.' }),
   processGroup: z.string().optional(),
 })
 
-export const FlowchartRawJourneySchema = z.object({
+export const FlowchartJourneySchema = z.object({
   id: z.string().min(1, { message: 'Journey must define a non-empty id.' }),
   label: z.string().min(1, { message: 'Journey must define a non-empty label.' }),
   description: z.string().min(1, { message: 'Journey description cannot be empty.' }),
-  steps: z.array(FlowchartRawJourneyStepRefSchema).min(1, {
+  steps: z.array(FlowchartJourneyStepRefSchema).min(1, {
     message: 'Journey must define at least 1 journey step in steps array.',
   }),
 })
 
-export const FlowchartSectionSchema = z.object({
-  type: z.literal('flowchart').optional(),
-  entities: z.record(z.string(), FlowchartEntitySchema).optional(),
-  relations: z.array(FlowchartRelationSchema).optional(),
-  views: z.record(z.string(), FlowchartViewConfigSchema).optional(),
-  journeys: z.array(FlowchartRawJourneySchema).optional(),
-  steps: z.array(FlowchartRawStepSchema).optional(),
-  flow: z.object({
-    actors: z.unknown().optional(),
-    systems: z.unknown().optional(),
-    steps: z.union([
-      z.array(FlowchartRawStepSchema).min(1, { message: 'Flowchart steps array cannot be empty.' }),
-      z.object({ steps: z.array(FlowchartRawStepSchema).min(1, { message: 'Flowchart steps array cannot be empty.' }) }),
-    ]).optional(),
-    journeys: z.union([
-      z.array(FlowchartRawJourneySchema).min(1, { message: 'Flowchart journeys array cannot be empty.' }),
-      z.object({ journeys: z.array(FlowchartRawJourneySchema).min(1, { message: 'Flowchart journeys array cannot be empty.' }) }),
-    ]).optional(),
-  }).optional(),
+export const FlowchartFlowSchema = z.object({
+  actors: z.record(z.string(), FlowchartActorSchema).transform((actors) =>
+    Object.fromEntries(
+      Object.entries(actors).map(([id, a]): [string, ActorDecl] => [id, { title: a.title ?? id, desc: a.desc ?? '' }]),
+    ),
+  ),
+  systems: z.record(z.string(), FlowchartSystemSchema).transform((systems) =>
+    Object.fromEntries(
+      Object.entries(systems).map(([id, s]): [string, SystemDecl] => [
+        id,
+        { title: s.title ?? id, desc: s.desc ?? '', type: s.type, stateMachine: s.stateMachine },
+      ]),
+    ),
+  ),
+  steps: z.array(FlowchartStepSchema).min(1, { message: 'Flowchart steps array cannot be empty.' }),
+  journeys: z.array(FlowchartJourneySchema).min(1, { message: 'Flowchart journeys array cannot be empty.' }),
 })
 
-export type FlowchartSectionData = z.infer<typeof FlowchartSectionSchema>
+export const FlowchartSectionSchema = z.object({
+  type: z.literal('flowchart'),
+  flow: FlowchartFlowSchema,
+})
+
+export type FlowchartSectionData = z.output<typeof FlowchartSectionSchema>
 
 // --- Scenario Section Schema ---
 
@@ -219,32 +138,30 @@ export const ScenarioOutcomeSchema = z.object({
 })
 
 export const ScenarioChoiceSchema = z.object({
-  id: z.string().optional(),
-  text: z.string().optional(),
-  label: z.string().optional(),
-  next: z.string().optional(),
-  nextNode: z.string().optional(),
+  id: z.string(),
+  text: z.string(),
+  next: z.string(),
 })
 
 export const ScenarioNodeSchema = z.object({
   id: z.string().optional(),
   prompt: z.string().optional(),
-  text: z.string().optional(),
   choices: z.array(ScenarioChoiceSchema).optional(),
   outcome: ScenarioOutcomeSchema.optional(),
 })
 
 export const ScenarioSectionSchema = z.object({
-  type: z.literal('scenario').optional(),
+  type: z.literal('scenario'),
   id: z.string(),
   title: z.string(),
   intro: z.string().optional(),
-  nodes: z.record(z.string(), ScenarioNodeSchema),
-  startNode: z.string().optional(),
-  initialNode: z.string().optional(),
+  nodes: z.record(z.string(), ScenarioNodeSchema).transform((nodes) =>
+    Object.fromEntries(Object.entries(nodes).map(([id, node]) => [id, { ...node, id }])),
+  ),
+  startNode: z.string().default('start'),
 })
 
-export type ScenarioSectionData = z.infer<typeof ScenarioSectionSchema>
-export type ScenarioNode = z.infer<typeof ScenarioNodeSchema>
+export type ScenarioSectionData = z.output<typeof ScenarioSectionSchema>
+export type ScenarioNode = ScenarioSectionData['nodes'][string]
 export type ScenarioChoice = z.infer<typeof ScenarioChoiceSchema>
 export type ScenarioOutcome = z.infer<typeof ScenarioOutcomeSchema>

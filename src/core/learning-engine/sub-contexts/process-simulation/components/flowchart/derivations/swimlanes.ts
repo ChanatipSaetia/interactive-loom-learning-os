@@ -1,7 +1,7 @@
 import type { UnifiedFlowchartSchema, FlowchartRelation, FlowchartViewNode, FlowchartViewGroup, FlowchartEntity } from '../types';
 import { TYPES, MASTER_MAPPING_MATRIX } from '../types';
 import { getEntityType, deriveRelations, buildCycleFreeGraph, computeTopologicalColumns, compactColumns, computeLayoutInfo, countOutgoingRelations, countOutgoingPolicies } from './utils';
-import { buildCanonicalIdMapper } from '../abstract-flow/derive';
+import { buildCanonicalIdMapper } from '../../../model/derive';
 
 export function deriveSwimlanes(
   schema: UnifiedFlowchartSchema,

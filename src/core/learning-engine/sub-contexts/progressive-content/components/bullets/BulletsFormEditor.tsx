@@ -179,14 +179,14 @@ export function BulletsFormEditor({ data, onChange }: BulletsFormEditorProps) {
   const handleItemChange = useCallback(
     (index: number, updatedItem: BulletItem) => {
       const updated = [...items]
-      updated[index] = updatedItem
+      updated[index] = { text: updatedItem.text, children: (updatedItem.children ?? []).map((c) => ({ text: c.text })) }
       onChange({ ...data, items: updated })
     },
     [data, items, onChange]
   )
 
   const handleAddItem = useCallback(() => {
-    const newItem: BulletItem = { text: '' }
+    const newItem = { text: '', children: [] }
     onChange({ ...data, items: [...items, newItem] })
   }, [data, items, onChange])
 

@@ -13,8 +13,8 @@ import type {
   FlowJourney,
   JourneyStepRef,
   ResultEvent,
-} from './abstract-flow/types'
-import { ref } from './abstract-flow/types'
+} from '../../model/types'
+import { ref } from '../../model/types'
 
 interface FlowchartFormEditorProps {
   data: OKFFlowSectionData
