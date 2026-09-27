@@ -1,0 +1,12 @@
+icon: BookOpen
+title: "Microsoft Writing Style Guide"
+subtitle: "Free public guide for software docs"
+description: "The Microsoft Writing Style Guide is a free public guide covering voice, UI text and terms for software docs."
+details: "It covers voice and tone, how to describe UI elements and interactions, grammar, punctuation and a large A–Z word list of software terms. It is a natural base for end-user manuals of web apps, and it's where the 'select' recommendation comes from."
+analogy: "A big, well-thumbed dictionary for the whole office."
+primaryFocus: "End-user software writing"
+inScope:
+  - "Voice, UI text, grammar, word list"
+outOfScope:
+  - "Your own product names and decisions (house style)"
+color: blue

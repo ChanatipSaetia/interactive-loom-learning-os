@@ -1,0 +1,170 @@
+- id: q1
+  groundedIn: screenshot-guides
+  question: "What is the main weakness of an annotated screenshot guide?"
+  choices:
+    - id: q1-a
+      text: "It is passive: learners watch but never practise"
+      correct: true
+      explanation: "Screenshot and video guides are cheapest to make, but learners never practise the task."
+    - id: q1-b
+      text: "It only works for desktop software"
+      correct: false
+      explanation: "Screenshots work for any software, web or desktop."
+    - id: q1-c
+      text: "It is the most expensive approach to build"
+      correct: false
+      explanation: "It is the cheapest approach to build."
+  hint: "Think about what the learner actually does."
+- id: q2
+  groundedIn: hotspot-sims
+  question: "Your hotspot simulation is built from recorded screens. The next release moves the 'Save' button. What happens?"
+  choices:
+    - id: q2-a
+      text: "The affected screens must be recorded again"
+      correct: true
+      explanation: "Each hotspot slide is a recorded picture, so every UI change means re-recording those screens."
+    - id: q2-b
+      text: "The hotspot updates itself automatically"
+      correct: false
+      explanation: "Recorded screens don't know the real UI changed."
+    - id: q2-c
+      text: "Nothing: learners won't notice"
+      correct: false
+      explanation: "Learners would practise a button position that no longer exists."
+  hint: "What is each slide actually made of?"
+- id: q3
+  groundedIn: dom-capture
+  question: "Why can't you use an HTML/DOM capture tool to train people on a Windows desktop accounting program?"
+  choices:
+    - id: q3-a
+      text: "DOM capture only works for web apps"
+      correct: true
+      explanation: "It saves a page's HTML, and desktop software has no HTML page to capture."
+    - id: q3-b
+      text: "It can't edit fake data"
+      correct: false
+      explanation: "Editing text and data without re-recording is actually its strength."
+    - id: q3-c
+      text: "It needs a real back-end server"
+      correct: false
+      explanation: "DOM capture replays saved pages; it doesn't need the real server."
+  hint: "What does DOM stand in for?"
+- id: q4
+  groundedIn: ui-clone
+  question: "What is the main cost of a rebuilt UI clone with a mocked backend?"
+  choices:
+    - id: q4-a
+      text: "It needs developers to maintain it"
+      correct: true
+      explanation: "It reuses the product's front-end components and has automated tests, but only developers can keep it working."
+    - id: q4-b
+      text: "It looks nothing like the real product"
+      correct: false
+      explanation: "Reusing the real components gives it very high fidelity."
+    - id: q4-c
+      text: "It can't be tested automatically"
+      correct: false
+      explanation: "Being code, it's the easiest to test automatically."
+  hint: "Who can edit it?"
+- id: q5
+  groundedIn: training-sandbox
+  question: "Which of these is a job you take on when you choose a training sandbox?"
+  choices:
+    - id: q5-a
+      text: "Resetting it between classes and managing its own access control"
+      correct: true
+      explanation: "A sandbox is a real instance, so it needs infrastructure, resets and its own access control."
+    - id: q5-b
+      text: "Re-recording every screen after each release"
+      correct: false
+      explanation: "That's the cost of hotspot simulations."
+    - id: q5-c
+      text: "Hiding production data from trainees"
+      correct: false
+      explanation: "A sandbox holds synthetic data, not production data."
+  hint: "It's a real system; what does every real system need?"
+- id: q6
+  groundedIn: tools-hotspot
+  question: "Which tool publishes hotspot simulations as SCORM or xAPI packages for an LMS?"
+  choices:
+    - id: q6-a
+      text: "Articulate Storyline 360"
+      correct: true
+      explanation: "Storyline 360, Adobe Captivate and iSpring Suite all publish SCORM/xAPI packages."
+    - id: q6-b
+      text: "Mock Service Worker (MSW)"
+      correct: false
+      explanation: "MSW fakes network requests for a UI clone."
+    - id: q6-c
+      text: "Terraform"
+      correct: false
+      explanation: "Terraform defines sandbox infrastructure."
+  hint: "Look at the hotspot authoring tools card."
+- id: q7
+  groundedIn: tools-clone
+  question: "In a UI clone, which tool answers the app's network requests with fake data?"
+  choices:
+    - id: q7-a
+      text: "Mock Service Worker (MSW)"
+      correct: true
+      explanation: "MSW intercepts requests in the browser and returns fake data, so no real server is needed."
+    - id: q7-b
+      text: "Driver.js"
+      correct: false
+      explanation: "Driver.js adds guided steps; it doesn't fake the API."
+    - id: q7-c
+      text: "Scribe"
+      correct: false
+      explanation: "Scribe generates screenshot guides."
+  hint: "Which building block plays the role of the server?"
+- id: q8
+  groundedIn: tools-drift
+  question: "Which pair of tools helps you detect that the real UI has changed?"
+  choices:
+    - id: q8-a
+      text: "Playwright plus Chromatic or Percy"
+      correct: true
+      explanation: "Playwright checks the steps still work; Chromatic and Percy flag visual differences."
+    - id: q8-b
+      text: "Loom plus Snagit"
+      correct: false
+      explanation: "These make videos and screenshots; they don't detect changes."
+    - id: q8-c
+      text: "Faker plus Mockaroo"
+      correct: false
+      explanation: "These generate synthetic data."
+  hint: "Look at the drift detection card."
+- id: q9
+  groundedIn: tools-sandbox
+  question: "You need 5,000 realistic but fake customer records to fill a training sandbox. Which tools fit?"
+  choices:
+    - id: q9-a
+      text: "Faker, Mockaroo or Tonic.ai"
+      correct: true
+      explanation: "These synthetic-data tools produce realistic fake records."
+    - id: q9-b
+      text: "Walnut or Navattic"
+      correct: false
+      explanation: "These capture web pages into demos."
+    - id: q9-c
+      text: "A copy of the production database"
+      correct: false
+      explanation: "Production data is exactly what trainees must not see."
+  hint: "Look at the sandbox and synthetic data tools card."
+- id: q10
+  groundedIn: upkeep-axis
+  question: "Which of these is NOT one of the trade-off axes used to compare approaches?"
+  choices:
+    - id: q10-a
+      text: "The colour scheme of the software"
+      correct: true
+      explanation: "The axes are build cost, realism, upkeep per release, who can update it, and how much can be automated."
+    - id: q10-b
+      text: "Maintenance effort per UI release"
+      correct: false
+      explanation: "That is one of the axes."
+    - id: q10-c
+      text: "Who can update it (authors vs developers)"
+      correct: false
+      explanation: "That is one of the axes."
+  hint: "Recall the meters in the trade-off sandbox."

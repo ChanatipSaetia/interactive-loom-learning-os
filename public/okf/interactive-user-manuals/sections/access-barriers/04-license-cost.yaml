@@ -1,0 +1,14 @@
+icon: Wallet
+title: "Licence & Environment Cost"
+subtitle: "A real seat for every trainee adds up"
+description: "Per-seat licences and shared environments make it costly to give every trainee a real system to practise on."
+details: "Enterprise software such as ERP, CRM or ITSM platforms is usually licensed per user, and extra non-production environments cost more again. A class of 200 new staff each needing a seat just to practise for a week is hard to justify. Shared test environments are also busy with developers and testers, who do not want trainees changing their data."
+analogy: "A driving school doesn't buy every student a car; it shares a few dual-control cars and uses a simulator for the rest."
+primaryFocus: "Scaling practice without scaling licences"
+inScope:
+  - "Per-user licensing of enterprise platforms"
+  - "Cost and upkeep of extra non-production environments"
+  - "Shared test environments that trainees would disrupt"
+outOfScope:
+  - "The cost of building and maintaining the simulation itself (see Keeping It Alive)"
+color: yellow

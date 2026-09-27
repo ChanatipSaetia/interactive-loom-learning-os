@@ -1,0 +1,14 @@
+icon: Image
+title: "Annotated Screenshot & Video Guides"
+subtitle: "Show, don't touch"
+description: "Annotated screenshot or video guides are the cheapest to create but are passive: learners watch and never practise."
+details: "Someone with access does the task once, captures the screens or records a video, and adds numbered callouts or narration. It can be made in an afternoon and works for any software, web or desktop. But the learner only watches. Nothing checks whether they could do the task themselves, and every screenshot is a copy of pixels that goes out of date when the screen changes."
+analogy: "A cookbook with photos: great for following along, but reading it doesn't make you able to cook."
+primaryFocus: "Lowest build cost, any platform"
+inScope:
+  - "Step-by-step screenshot guides with callouts"
+  - "Narrated screen recordings"
+  - "Quick reference cards and job aids"
+outOfScope:
+  - "Any practice where the learner clicks or types"
+color: mauve

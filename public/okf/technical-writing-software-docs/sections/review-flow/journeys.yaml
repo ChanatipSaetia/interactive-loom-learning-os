@@ -1,0 +1,35 @@
+- id: journey_publish
+  label: "Happy Path: Draft to Published"
+  description: "The page passes technical review, the step test and editorial review"
+  steps:
+    - stepId: evt_draft_opened
+      name: "Draft"
+      description: "The writer opens a pull request"
+    - stepId: evt_facts_checked
+      name: "Technical review"
+      description: "A subject-matter expert checks the facts against how the app really works"
+    - stepId: evt_steps_tested
+      name: "Step test"
+      description: "Someone follows every step in staging exactly as written"
+    - stepId: evt_edit_done
+      name: "Editorial review"
+      description: "Structure, style and terms are checked, with Vale doing the mechanical part"
+    - stepId: evt_published
+      name: "Published"
+      description: "The page goes live"
+- id: journey_rewrite
+  label: "A Step Fails"
+  description: "The step test catches a step that doesn't work as written"
+  steps:
+    - stepId: evt_draft_opened
+      name: "Draft"
+      description: "The writer opens a pull request"
+    - stepId: evt_facts_checked
+      name: "Technical review"
+      description: "The facts look right on paper"
+    - stepId: evt_steps_tested
+      name: "Step test"
+      description: "Step 3 says Export, but the button now lives in the ⋯ menu"
+    - stepId: evt_rewrite_requested
+      name: "Rewrite"
+      description: "The page goes back to the writer before any user sees it"

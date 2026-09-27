@@ -1,0 +1,14 @@
+icon: ShieldCheck
+title: "Vale Prose Linter"
+subtitle: "Style rules checked automatically"
+description: "Vale is a prose linter that checks docs against style rules, including packages for the Microsoft and Google guides, and can run in CI."
+details: "Vale reads your Markdown and flags passive voice, banned words, wrong product names, overly long sentences and more, based on rule packages such as Microsoft and Google plus your own house-style rules. Run it in the editor while writing and in CI on every pull request, so reviewers can focus on meaning instead of commas."
+analogy: "A spell-checker that has read your style guide."
+primaryFocus: "Enforcing style without nagging humans"
+inScope:
+  - "Microsoft and Google rule packages"
+  - "Custom rules for your terms"
+  - "Editor and CI checks"
+outOfScope:
+  - "Checking whether the steps are correct (that needs a person)"
+color: teal

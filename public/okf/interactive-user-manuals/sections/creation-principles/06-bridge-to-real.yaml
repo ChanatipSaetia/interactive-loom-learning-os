@@ -1,0 +1,13 @@
+icon: Link
+title: "Bridge to the Real System"
+subtitle: "Say what's different out there"
+description: "End each task with a bridge to the real system: what differs there, such as extra approvals, permissions or live consequences."
+details: "A simulation always leaves something out. Close each module by telling learners what will be different when they do it for real: 'In the live system your manager must approve refunds over 5,000 baht', 'You will only see this menu after your role is granted', 'This e-mail really goes to the customer'. It stops practice-world habits from causing real-world surprises."
+analogy: "The driving instructor's last lesson: 'on the motorway, nobody will brake for you'."
+primaryFocus: "Transferring practice safely to the live system"
+inScope:
+  - "Extra approvals and permissions in the real system"
+  - "Consequences that are live for real"
+outOfScope:
+  - "Pretending the simulation is identical"
+color: teal

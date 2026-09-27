@@ -1,0 +1,2108 @@
+[
+  {
+    "folder": "intro",
+    "props": {
+      "estimatedTime": "40 min",
+      "roadmap": [
+        {
+          "description": "Procedural knowledge, conceptual knowledge and transfer.",
+          "sectionId": "knowledge-kinds",
+          "title": "Steps vs Understanding",
+          "type": "taxonomy-browser"
+        },
+        {
+          "description": "Designer's model, system image, user's model, and the docs' job between them.",
+          "sectionId": "mental-models",
+          "title": "Three Models of the System",
+          "type": "pillar-layer"
+        },
+        {
+          "description": "Check the kinds of knowledge and the three models.",
+          "sectionId": "quiz-why",
+          "title": "Why Concepts Check",
+          "type": "quiz"
+        },
+        {
+          "description": "Analogy, concrete-first, refutation, non-examples, dual coding.",
+          "sectionId": "concept-techniques",
+          "title": "Explaining Techniques",
+          "type": "taxonomy-browser"
+        },
+        {
+          "description": "Balance understanding, overload and effort for new admins.",
+          "sectionId": "explain-workshop",
+          "title": "Explain 'Permission Inheritance'",
+          "type": "tradeoff-sandbox"
+        },
+        {
+          "description": "Definition first, why it matters, core before details, links to tasks.",
+          "sectionId": "concept-page",
+          "title": "Anatomy of a Concept Page",
+          "type": "bullets"
+        },
+        {
+          "description": "Check the explaining techniques and the concept page.",
+          "sectionId": "quiz-techniques",
+          "title": "Techniques Check",
+          "type": "quiz"
+        },
+        {
+          "description": "Explorable explanations, simulators, clickable flows, what-ifs.",
+          "sectionId": "explorables",
+          "title": "Kinds of Interactive Explanation",
+          "type": "taxonomy-browser"
+        },
+        {
+          "description": "The loop that exposes and corrects a wrong mental model.",
+          "sectionId": "poe-loop",
+          "title": "Predict → Observe → Explain",
+          "type": "flowchart"
+        },
+        {
+          "description": "Put a POE moment, and why it works, in order.",
+          "sectionId": "order-poe",
+          "title": "Build a POE Moment",
+          "type": "reflection-sequence"
+        },
+        {
+          "description": "Retrieval practice, spacing, self-explanation, explanatory feedback.",
+          "sectionId": "learning-science",
+          "title": "Four Findings from Learning Science",
+          "type": "bullets"
+        },
+        {
+          "description": "Check the four findings.",
+          "sectionId": "quiz-retention",
+          "title": "Retention Check",
+          "type": "quiz"
+        },
+        {
+          "description": "Fix a wrong mental model that's causing tickets and data leaks.",
+          "sectionId": "scenario-archive",
+          "title": "Scenario: Archive Is Not Delete",
+          "type": "scenario"
+        },
+        {
+          "description": "Knowledge, models, techniques and retention on one map.",
+          "sectionId": "concept-map",
+          "title": "How It All Connects",
+          "type": "concept-map"
+        },
+        {
+          "description": "Key terms from mental model to retrieval practice.",
+          "sectionId": "glossary",
+          "title": "Glossary",
+          "type": "flashcards"
+        },
+        {
+          "description": "Fill in the blanks across all four tracks before facing the boss.",
+          "sectionId": "synthesis",
+          "title": "Design a Concept Lesson",
+          "type": "reflection-template"
+        }
+      ],
+      "subtitle": "Help users understand the ideas behind a web app, not just the clicks",
+      "title": "Teaching Concepts in Software Docs",
+      "what": {
+        "bullets": [
+          "Procedural vs conceptual knowledge, transfer, and Don Norman's three models",
+          "Analogy with limits, concrete before abstract, refutation, non-examples, dual coding, cognitive load",
+          "Explorable explanations, concept simulators, clickable flows, what-if scenarios, POE",
+          "Retrieval practice, spacing, self-explanation and explanatory feedback"
+        ],
+        "definition": "Teaching concepts in software docs means helping users build a correct mental model of how the product works, so they can act correctly even when the manual's steps don't cover their situation.",
+        "summary": "Steps tell users what to click; concepts tell them why. This topic covers why understanding matters (mental models and transfer), techniques for explaining (analogies, worked examples, refutation, diagrams), interactive explanations (simulators, what-ifs, Predict → Observe → Explain), and findings from learning science that make understanding stick.",
+        "tags": [
+          "documentation",
+          "instructional-design",
+          "mental-models",
+          "learning-science",
+          "explanation"
+        ]
+      },
+      "why": {
+        "impact": "Docs that teach only steps create the Hollow Clicker: users who follow the manual perfectly, then archive confidential data thinking it's deleted, or give a contractor access to every project.",
+        "summary": "No manual can document every situation. Users who understand the idea handle the undocumented cases; users who only know the clicks guess."
+      }
+    },
+    "type": "intro"
+  },
+  {
+    "folder": "knowledge-kinds",
+    "props": {
+      "categories": [
+        {
+          "analogy": "Knowing the bus route by heart: perfect until a road is closed.",
+          "color": "yellow",
+          "description": "Procedural knowledge is knowing the steps; it breaks as soon as the user's situation differs from the documented one.",
+          "details": "A user who has memorised 'Select Share, enter the e-mail, select Send' can share a file exactly as the manual shows. But when the Share button is greyed out, or the person is outside the company, they are stuck: the steps don't say what to do and they have nothing else to reason with. Procedural knowledge is necessary, but it's brittle.",
+          "icon": "ListOrdered",
+          "inScope": [
+            "Memorised steps and click paths",
+            "Tasks exactly as documented"
+          ],
+          "outOfScope": [
+            "Situations the manual didn't foresee"
+          ],
+          "primaryFocus": "Doing the documented task",
+          "subtitle": "Knowing the steps",
+          "title": "Procedural Knowledge"
+        },
+        {
+          "analogy": "Knowing the city map, so you can find a new route when a road is closed.",
+          "color": "green",
+          "description": "Conceptual knowledge is knowing what the parts are, how they relate and why, which lets users work out steps nobody documented.",
+          "details": "A user who understands that 'sharing is controlled by the workspace's permission settings, and external sharing is off by default' can reason about the greyed-out button themselves: check the workspace settings, or ask the admin. Conceptual knowledge is the map; procedural knowledge is one route across it.",
+          "icon": "Network",
+          "inScope": [
+            "What the parts are and how they relate",
+            "Why the system behaves as it does"
+          ],
+          "outOfScope": [
+            "Memorised click paths"
+          ],
+          "primaryFocus": "Reasoning about the system",
+          "subtitle": "Knowing what, how it relates, and why",
+          "title": "Conceptual Knowledge"
+        },
+        {
+          "analogy": "Learning to cook rather than learning one recipe.",
+          "color": "sky",
+          "description": "Transfer is applying what you learned to a new situation; conceptual knowledge is what makes transfer possible.",
+          "details": "No manual can document every situation: every combination of role, data and setting. Transfer is the real goal of teaching: the user meets a case the docs never showed and still acts correctly. Steps alone rarely transfer; an understood idea does.",
+          "icon": "Shuffle",
+          "inScope": [
+            "New combinations of roles, data and settings",
+            "Features added after training"
+          ],
+          "outOfScope": [
+            "Repeating the exact example from the manual"
+          ],
+          "primaryFocus": "Acting correctly in undocumented situations",
+          "subtitle": "Using it in a new situation",
+          "title": "Transfer"
+        }
+      ],
+      "title": "Steps vs Understanding"
+    },
+    "type": "taxonomy-browser"
+  },
+  {
+    "folder": "mental-models",
+    "props": {
+      "section": {
+        "description": "The designers have a model in their heads. Users can't see it: they only see the system image (the UI and the docs) and build their own model from it.",
+        "layers": [
+          {
+            "description": "What users believe about how the system works, built only from what they can see.",
+            "id": "l-user",
+            "title": "User's Model"
+          },
+          {
+            "description": "Everything users can actually see: the UI, messages, and the docs.",
+            "id": "l-image",
+            "title": "System Image"
+          },
+          {
+            "description": "How the designers and developers think the system works.",
+            "id": "l-designer",
+            "title": "Designer's Model"
+          }
+        ],
+        "matrix_blocks": [
+          {
+            "col_offset": 0,
+            "col_span": 2,
+            "color": "red",
+            "description": "The user's model when nothing tells them otherwise.",
+            "layer_id": "l-user",
+            "title": "'Archive deletes things' (wrong)"
+          },
+          {
+            "col_offset": 2,
+            "col_span": 2,
+            "color": "green",
+            "description": "The user's model after the docs explain it.",
+            "layer_id": "l-user",
+            "title": "'Archive hides things; restore any time' (right)"
+          },
+          {
+            "col_offset": 0,
+            "col_span": 2,
+            "color": "yellow",
+            "description": "A trash-can-like icon labelled Archive. It can't explain the idea by itself.",
+            "layer_id": "l-image",
+            "title": "The UI"
+          },
+          {
+            "col_offset": 2,
+            "col_span": 2,
+            "color": "sky",
+            "description": "Carry the designer's model when the UI alone can't: 'Archiving hides a project; it isn't deleted.'",
+            "layer_id": "l-image",
+            "title": "The Docs"
+          },
+          {
+            "col_offset": 0,
+            "col_span": 4,
+            "color": "mauve",
+            "description": "Designers know archived items are kept and can be restored.",
+            "layer_id": "l-designer",
+            "title": "Archive = hidden, restorable"
+          }
+        ],
+        "title": "Three Models of the System (Don Norman)",
+        "type": "pillar-layer"
+      },
+      "title": "Three Models of the System"
+    },
+    "type": "pillar-layer"
+  },
+  {
+    "folder": "quiz-why",
+    "props": {
+      "questions": [
+        {
+          "choices": [
+            {
+              "correct": true,
+              "explanation": "Memorised steps give them nothing to reason with when something changes.",
+              "id": "q1-a",
+              "text": "Procedural knowledge breaks when the situation differs from the documented one"
+            },
+            {
+              "correct": false,
+              "explanation": "They know the steps; the steps just don't cover this case.",
+              "id": "q1-b",
+              "text": "They didn't memorise the steps well enough"
+            },
+            {
+              "correct": false,
+              "explanation": "Screenshots show the same documented path.",
+              "id": "q1-c",
+              "text": "The manual should have more screenshots"
+            }
+          ],
+          "groundedIn": "procedural",
+          "hint": "What kind of knowledge do they have?",
+          "id": "q1",
+          "question": "A user knows the three steps to share a file, but the Share button is greyed out today. Why are they stuck?"
+        },
+        {
+          "choices": [
+            {
+              "correct": true,
+              "explanation": "It's the map; procedural knowledge is one route across it.",
+              "id": "q2-a",
+              "text": "Conceptual knowledge: what the parts are, how they relate and why"
+            },
+            {
+              "correct": false,
+              "explanation": "More routes still don't cover undocumented cases.",
+              "id": "q2-b",
+              "text": "Memorising more click paths"
+            },
+            {
+              "correct": false,
+              "explanation": "Not related to understanding.",
+              "id": "q2-c",
+              "text": "Faster typing"
+            }
+          ],
+          "groundedIn": "conceptual",
+          "hint": "Map or route?",
+          "id": "q2",
+          "question": "What lets a user work out steps nobody documented?"
+        },
+        {
+          "choices": [
+            {
+              "correct": true,
+              "explanation": "Transfer is applying learning to a new situation.",
+              "id": "q3-a",
+              "text": "A user correctly handles a role-and-setting combination the manual never showed"
+            },
+            {
+              "correct": false,
+              "explanation": "That's repetition, not transfer.",
+              "id": "q3-b",
+              "text": "A user repeats the manual's example exactly"
+            },
+            {
+              "correct": false,
+              "explanation": "Reading isn't applying.",
+              "id": "q3-c",
+              "text": "A user reads the manual twice"
+            }
+          ],
+          "groundedIn": "transfer",
+          "hint": "New situation.",
+          "id": "q3",
+          "question": "Which is an example of transfer?"
+        },
+        {
+          "choices": [
+            {
+              "correct": true,
+              "explanation": "The system image sits between the designer's model and the user's model.",
+              "id": "q4-a",
+              "text": "Everything users can see: the UI, messages and docs"
+            },
+            {
+              "correct": false,
+              "explanation": "That's the designer's model.",
+              "id": "q4-b",
+              "text": "What the designers believe"
+            },
+            {
+              "correct": false,
+              "explanation": "That's the user's model.",
+              "id": "q4-c",
+              "text": "What users believe"
+            }
+          ],
+          "groundedIn": "three-models",
+          "hint": "The middle layer.",
+          "id": "q4",
+          "question": "In Don Norman's terms, what is the 'system image'?"
+        },
+        {
+          "choices": [
+            {
+              "correct": true,
+              "explanation": "Users build their model only from the system image, so the docs must say what the UI can't.",
+              "id": "q5-a",
+              "text": "Carry the designer's model: explain that archiving hides a project and it can be restored"
+            },
+            {
+              "correct": false,
+              "explanation": "They'll figure it out wrong, from the trash-can icon.",
+              "id": "q5-b",
+              "text": "Nothing: users will figure it out"
+            },
+            {
+              "correct": false,
+              "explanation": "Users can't see the designer's model; that's the whole problem.",
+              "id": "q5-c",
+              "text": "Tell users to ask the designers"
+            }
+          ],
+          "groundedIn": "system-image",
+          "hint": "Where do users get their model from?",
+          "id": "q5",
+          "question": "The Archive icon looks like a trash can, and users think archiving deletes projects. What should the docs do?"
+        }
+      ],
+      "title": "Why Concepts Check"
+    },
+    "type": "quiz"
+  },
+  {
+    "folder": "concept-techniques",
+    "props": {
+      "categories": [
+        {
+          "analogy": "A borrowed map of a similar city: very useful, as long as you mark the streets that are different.",
+          "color": "mauve",
+          "description": "An analogy links a new idea to one the user already knows (a workspace is like a shared drive folder), and a good one says where it breaks down.",
+          "details": "'A workspace is like a shared drive folder: everyone in it sees what's inside.' The user instantly borrows a whole structure they already understand. But every analogy breaks somewhere, and users will carry the broken part over too. So add the limit: 'Unlike a folder, a workspace also has its own billing and settings.'",
+          "icon": "Link",
+          "inScope": [
+            "One familiar comparison per idea",
+            "Stating where the analogy breaks"
+          ],
+          "outOfScope": [
+            "Analogies from a world users don't know"
+          ],
+          "primaryFocus": "Fast understanding by borrowing a known structure",
+          "subtitle": "New idea ← familiar idea",
+          "title": "Analogy (with Its Limits)"
+        },
+        {
+          "analogy": "Seeing one goal replayed before hearing the offside rule.",
+          "color": "sky",
+          "description": "Concrete before abstract: start with a worked example (Anna submits a 7,000-baht claim) and state the general rule after it.",
+          "details": "'Claims over 5,000 baht go through two approval levels' is abstract. 'Anna submits a 7,000-baht taxi claim. It goes to her manager, Ben, then to Finance, because it's over 5,000 baht' is concrete. Start with the concrete story, then state the rule; the reader now has a hook to hang it on. Worked examples like this are one of the best-researched ways to teach new ideas.",
+          "icon": "FileText",
+          "inScope": [
+            "Named people, real amounts, realistic cases",
+            "The rule stated after the example"
+          ],
+          "outOfScope": [
+            "Rules with no example at all"
+          ],
+          "primaryFocus": "Giving abstract rules a concrete hook",
+          "subtitle": "Worked example, then the rule",
+          "title": "Concrete Before Abstract"
+        },
+        {
+          "analogy": "A sign saying 'This is not the exit', right where everyone thinks it is.",
+          "color": "red",
+          "description": "Refutation text corrects a misconception by stating the wrong belief, saying clearly that it is wrong, then explaining what is true (archiving is not deleting).",
+          "details": "Users arrive with wrong beliefs, and simply stating the truth often doesn't replace them. Refutation text names the belief directly: 'You might think archiving deletes a project. It doesn't. Archiving hides the project from lists; you can restore it at any time, and nothing is lost.' Naming the misconception makes the reader notice the conflict and update their model.",
+          "icon": "CircleX",
+          "inScope": [
+            "Common misconceptions from support tickets",
+            "Explicit 'this is not true' statements"
+          ],
+          "outOfScope": [
+            "Listing every possible wrong idea"
+          ],
+          "primaryFocus": "Replacing wrong beliefs, not just adding facts",
+          "subtitle": "State it · reject it · explain the truth",
+          "title": "Refutation (Fix the Misconception)"
+        },
+        {
+          "analogy": "Learning what a dog is gets easier once someone shows you a wolf and a fox.",
+          "color": "yellow",
+          "description": "Non-examples show what the concept is not, which sharpens its boundaries (a draft is not a submitted claim).",
+          "details": "To learn what a 'submitted claim' is, it helps to see things that look similar but aren't: a saved draft (not sent to anyone), a claim returned for changes (sent back, no longer waiting for approval). Showing the near-misses draws the edge of the concept, which is exactly where users make mistakes.",
+          "icon": "Ban",
+          "inScope": [
+            "Look-alike states and objects",
+            "Near-misses users confuse"
+          ],
+          "outOfScope": [
+            "Unrelated things nobody would confuse"
+          ],
+          "primaryFocus": "Sharp boundaries between similar ideas",
+          "subtitle": "What it is not",
+          "title": "Non-Examples"
+        },
+        {
+          "analogy": "Directions plus a sketch map, instead of directions alone.",
+          "color": "green",
+          "description": "Dual coding: pairing words with a diagram helps people understand and remember better than words alone.",
+          "details": "'An organisation has workspaces; a workspace has projects; permissions set on a workspace flow down to its projects' is hard to hold in your head as a sentence. The same idea as a simple box diagram, with an arrow showing permissions flowing down, plus the sentence, gives the reader two routes into memory. Keep diagrams simple: boxes, arrows, a few labels.",
+          "icon": "Shapes",
+          "inScope": [
+            "Simple box-and-arrow diagrams next to the text"
+          ],
+          "outOfScope": [
+            "Decorative images that don't show the structure"
+          ],
+          "primaryFocus": "Structure you can see",
+          "subtitle": "Say it and show it",
+          "title": "Dual Coding (Words + Diagram)"
+        }
+      ],
+      "title": "Explaining Techniques"
+    },
+    "type": "taxonomy-browser"
+  },
+  {
+    "folder": "explain-workshop",
+    "props": {
+      "scenarios": [
+        {
+          "description": "New workspace admins keep giving people access to the wrong projects, because they don't understand that permissions set on a workspace flow down to every project inside it. Build the concept page and watch the meters.",
+          "id": "permission-inheritance",
+          "metrics": [
+            {
+              "baseValue": 30,
+              "direction": "higher",
+              "id": "understanding",
+              "label": "Understanding",
+              "max": 100,
+              "min": 0
+            },
+            {
+              "baseValue": 70,
+              "direction": "higher",
+              "id": "overload",
+              "label": "Mental Room Left (low = overloaded)",
+              "max": 100,
+              "min": 0
+            },
+            {
+              "baseValue": 60,
+              "direction": "higher",
+              "id": "effort",
+              "label": "Writing Effort Saved",
+              "max": 100,
+              "min": 0
+            }
+          ],
+          "steps": [
+            {
+              "choices": [
+                {
+                  "cons": [
+                    {
+                      "description": "Working memory holds only a few new items at once; most readers retain none of them.",
+                      "title": "Overload"
+                    }
+                  ],
+                  "description": "Complete in one place.",
+                  "id": "all",
+                  "label": "All seven concepts in one page",
+                  "metrics": {
+                    "overload": -40,
+                    "understanding": -10
+                  },
+                  "pros": [
+                    {
+                      "title": "Nothing is left out"
+                    }
+                  ]
+                },
+                {
+                  "cons": [
+                    {
+                      "title": "Advanced cases need another page"
+                    }
+                  ],
+                  "description": "Link out to roles, groups and overrides for later.",
+                  "id": "few",
+                  "label": "Just workspace → project → inherited permission",
+                  "metrics": {
+                    "overload": 10,
+                    "understanding": 20
+                  },
+                  "pros": [
+                    {
+                      "title": "Few new ideas, well understood"
+                    }
+                  ],
+                  "whyThisFits": "Cognitive load: working memory holds only a few new items at once, so introduce a few new concepts at a time and build on them."
+                }
+              ],
+              "description": "The admin guide could cover organisations, workspaces, projects, roles, groups, guests and overrides.",
+              "id": "scope",
+              "recommended": "few",
+              "title": "How Many New Concepts on This Page?"
+            },
+            {
+              "choices": [
+                {
+                  "cons": [
+                    {
+                      "title": "Abstract and easy to misread"
+                    }
+                  ],
+                  "description": "'Permissions assigned at the workspace level are inherited by all child project resources.'",
+                  "id": "definition-only",
+                  "label": "A precise definition paragraph",
+                  "metrics": {
+                    "effort": 20,
+                    "understanding": -5
+                  },
+                  "pros": [
+                    {
+                      "title": "Quick to write, precise"
+                    }
+                  ]
+                },
+                {
+                  "cons": [
+                    {
+                      "description": "Users carry over the parts of the analogy that don't fit.",
+                      "title": "No limits stated"
+                    }
+                  ],
+                  "description": "'It's like a shared drive folder: sharing the folder shares everything inside.'",
+                  "id": "analogy-only",
+                  "label": "Just an analogy",
+                  "metrics": {
+                    "effort": 10,
+                    "understanding": 15
+                  },
+                  "pros": [
+                    {
+                      "title": "Instantly relatable"
+                    }
+                  ]
+                },
+                {
+                  "cons": [
+                    {
+                      "title": "More work to write and draw"
+                    }
+                  ],
+                  "description": "A box diagram with arrows, 'Anna is added to the Sales workspace, so she can see all five Sales projects', and 'You might think adding her to one project is enough to limit her access. It isn't…'",
+                  "id": "combined",
+                  "label": "Diagram + worked example + named misconception",
+                  "metrics": {
+                    "effort": -20,
+                    "understanding": 35
+                  },
+                  "pros": [
+                    {
+                      "title": "Several routes into understanding"
+                    },
+                    {
+                      "title": "Fixes the exact mistake admins make"
+                    }
+                  ],
+                  "whyThisFits": "Combining techniques (a diagram, a worked example and a named misconception) usually beats any single technique alone."
+                }
+              ],
+              "description": "How will you explain inheritance?",
+              "id": "technique",
+              "recommended": "combined",
+              "title": "Main Technique"
+            }
+          ],
+          "title": "Explain 'Permission Inheritance' to New Admins"
+        }
+      ],
+      "title": "Explain 'Permission Inheritance'"
+    },
+    "type": "tradeoff-sandbox"
+  },
+  {
+    "folder": "concept-page",
+    "props": {
+      "items": [
+        {
+          "children": [
+            {
+              "text": "'A workspace is a shared space where a team keeps its projects and controls who can see them.'"
+            }
+          ],
+          "text": "One-sentence definition, in plain words"
+        },
+        {
+          "children": [
+            {
+              "text": "'Who you add to a workspace decides what they can see in every project inside it.'"
+            }
+          ],
+          "text": "Why it matters to the user"
+        },
+        {
+          "children": [
+            {
+              "text": "A diagram, a worked example, an analogy with its limits, a named misconception, non-examples."
+            }
+          ],
+          "text": "The explanation, using the techniques"
+        },
+        {
+          "children": [
+            {
+              "text": "Teach the core idea first and leave advanced details, such as overrides and guest access, for later sections or linked pages."
+            }
+          ],
+          "text": "Core idea first, details later (progressive disclosure)"
+        },
+        {
+          "children": [
+            {
+              "text": "The concept page links to the tasks that use it: 'Add someone to a workspace', 'Create a project'."
+            },
+            {
+              "text": "Each task page links back: 'Why it works this way: Workspaces and permissions'."
+            }
+          ],
+          "text": "Links in both directions between concepts and tasks"
+        }
+      ],
+      "title": "Anatomy of a Concept Page"
+    },
+    "type": "bullets"
+  },
+  {
+    "folder": "quiz-techniques",
+    "props": {
+      "questions": [
+        {
+          "choices": [
+            {
+              "correct": true,
+              "explanation": "Users carry the whole analogy over, so state its limits.",
+              "id": "q1-a",
+              "text": "It also says where it breaks down, e.g. workspaces have their own billing and settings"
+            },
+            {
+              "correct": false,
+              "explanation": "Humour isn't what makes it teach.",
+              "id": "q1-b",
+              "text": "It's funny"
+            },
+            {
+              "correct": false,
+              "explanation": "It must link to the new idea.",
+              "id": "q1-c",
+              "text": "It avoids mentioning workspaces"
+            }
+          ],
+          "groundedIn": "analogy",
+          "hint": "Every analogy breaks somewhere.",
+          "id": "q1",
+          "question": "'A workspace is like a shared drive folder.' What makes this a good analogy?"
+        },
+        {
+          "choices": [
+            {
+              "correct": true,
+              "explanation": "Concrete before abstract gives the rule a hook.",
+              "id": "q2-a",
+              "text": "Anna's 7,000-baht claim example first, then the general rule"
+            },
+            {
+              "correct": false,
+              "explanation": "Abstract rules without examples are hard to grasp.",
+              "id": "q2-b",
+              "text": "The rule only; examples waste space"
+            },
+            {
+              "correct": false,
+              "explanation": "Missing the concrete hook entirely.",
+              "id": "q2-c",
+              "text": "The rule first, and no example"
+            }
+          ],
+          "groundedIn": "concrete-first",
+          "hint": "Concrete before …?",
+          "id": "q2",
+          "question": "What's the right order for teaching the two-level approval rule?"
+        },
+        {
+          "choices": [
+            {
+              "correct": true,
+              "explanation": "It states the misconception, rejects it, and explains the truth.",
+              "id": "q3-a",
+              "text": "'You might think archiving deletes a project. It doesn't. Archived projects are hidden and can be restored.'"
+            },
+            {
+              "correct": false,
+              "explanation": "True, but it doesn't name and reject the wrong belief.",
+              "id": "q3-b",
+              "text": "'Archived projects can be restored.'"
+            },
+            {
+              "correct": false,
+              "explanation": "That's a step, not a correction.",
+              "id": "q3-c",
+              "text": "'Select Archive to archive a project.'"
+            }
+          ],
+          "groundedIn": "refutation",
+          "hint": "State it, reject it, explain.",
+          "id": "q3",
+          "question": "Which text is a refutation?"
+        },
+        {
+          "choices": [
+            {
+              "correct": true,
+              "explanation": "A near-miss that sharpens the concept's boundary.",
+              "id": "q4-a",
+              "text": "A saved draft that hasn't been sent to anyone"
+            },
+            {
+              "correct": false,
+              "explanation": "Nobody would confuse it with a claim.",
+              "id": "q4-b",
+              "text": "A user's profile photo"
+            },
+            {
+              "correct": false,
+              "explanation": "That's an example, not a non-example.",
+              "id": "q4-c",
+              "text": "Another submitted claim"
+            }
+          ],
+          "groundedIn": "non-examples",
+          "hint": "Something that looks similar but isn't.",
+          "id": "q4",
+          "question": "Teaching 'submitted claim', which is a useful non-example?"
+        },
+        {
+          "choices": [
+            {
+              "correct": true,
+              "explanation": "Dual coding gives two routes into memory.",
+              "id": "q5-a",
+              "text": "Words plus a diagram help people understand and remember better than words alone"
+            },
+            {
+              "correct": false,
+              "explanation": "The diagram must show structure, not decorate.",
+              "id": "q5-b",
+              "text": "Pages need decoration"
+            },
+            {
+              "correct": false,
+              "explanation": "Dual coding pairs both.",
+              "id": "q5-c",
+              "text": "So the sentence can be deleted"
+            }
+          ],
+          "groundedIn": "dual-coding",
+          "hint": "Say it and show it.",
+          "id": "q5",
+          "question": "Why add a box diagram next to the sentence 'permissions flow down from workspace to projects'?"
+        },
+        {
+          "choices": [
+            {
+              "correct": true,
+              "explanation": "Introduce a few at a time and build on them.",
+              "id": "q6-a",
+              "text": "Working memory holds only a few new items at once"
+            },
+            {
+              "correct": false,
+              "explanation": "Not the reason taught.",
+              "id": "q6-b",
+              "text": "Pages have a word limit"
+            },
+            {
+              "correct": false,
+              "explanation": "Length doesn't fix overload.",
+              "id": "q6-c",
+              "text": "Seven concepts is fine if the page is long enough"
+            }
+          ],
+          "groundedIn": "cognitive-load",
+          "hint": "Recall the first step of the workshop.",
+          "id": "q6",
+          "question": "Why not introduce seven new concepts on one page?"
+        },
+        {
+          "choices": [
+            {
+              "correct": true,
+              "explanation": "Several routes into understanding, aimed at the real mistake.",
+              "id": "q7-a",
+              "text": "Combining a diagram, a worked example and a named misconception"
+            },
+            {
+              "correct": false,
+              "explanation": "Still one abstract technique.",
+              "id": "q7-b",
+              "text": "A longer definition"
+            },
+            {
+              "correct": false,
+              "explanation": "More of one technique, each with its own broken parts.",
+              "id": "q7-c",
+              "text": "Three analogies"
+            }
+          ],
+          "groundedIn": "mix-techniques",
+          "hint": "Recall the second step of the workshop.",
+          "id": "q7",
+          "question": "What usually works better than a single technique?"
+        },
+        {
+          "choices": [
+            {
+              "correct": true,
+              "explanation": "Readers know immediately what it is and why they should care.",
+              "id": "q8-a",
+              "text": "A one-sentence plain definition, then why it matters to the user"
+            },
+            {
+              "correct": false,
+              "explanation": "The reader doesn't know what it is yet.",
+              "id": "q8-b",
+              "text": "The full history of the feature"
+            },
+            {
+              "correct": false,
+              "explanation": "Edge cases come later, if at all.",
+              "id": "q8-c",
+              "text": "A list of every edge case"
+            }
+          ],
+          "groundedIn": "definition-first",
+          "hint": "Definition first.",
+          "id": "q8",
+          "question": "How should a concept page open?"
+        },
+        {
+          "choices": [
+            {
+              "correct": true,
+              "explanation": "Links in both directions connect understanding and doing.",
+              "id": "q9-a",
+              "text": "Concept pages link to the tasks that use them, and task pages link back"
+            },
+            {
+              "correct": false,
+              "explanation": "Separate pages, yes, but linked.",
+              "id": "q9-b",
+              "text": "They shouldn't link; keep them separate"
+            },
+            {
+              "correct": false,
+              "explanation": "Link instead of duplicating.",
+              "id": "q9-c",
+              "text": "Copy the concept text into every task page"
+            }
+          ],
+          "groundedIn": "concept-task-links",
+          "hint": "Both directions.",
+          "id": "q9",
+          "question": "How should concept pages and task pages connect?"
+        },
+        {
+          "choices": [
+            {
+              "correct": true,
+              "explanation": "Progressive disclosure: core idea first, details later.",
+              "id": "q10-a",
+              "text": "In later sections or linked pages, after the core idea"
+            },
+            {
+              "correct": false,
+              "explanation": "That buries the core idea.",
+              "id": "q10-b",
+              "text": "In the first paragraph, so nothing is missed"
+            },
+            {
+              "correct": false,
+              "explanation": "They're documented, just later.",
+              "id": "q10-c",
+              "text": "Nowhere; never document them"
+            }
+          ],
+          "groundedIn": "progressive-disclosure",
+          "hint": "Core first.",
+          "id": "q10",
+          "question": "Where do advanced details, such as permission overrides, belong?"
+        }
+      ],
+      "title": "Techniques Check"
+    },
+    "type": "quiz"
+  },
+  {
+    "folder": "explorables",
+    "props": {
+      "categories": [
+        {
+          "analogy": "A mixing desk instead of a recording: turn a knob, hear the difference.",
+          "color": "mauve",
+          "description": "Explorable explanations (a term popularised by Bret Victor) let readers change inputs and watch the idea respond, instead of only reading about it.",
+          "details": "Instead of 'storage cost depends on file count and retention period', give readers two sliders and let them see the cost change. Readers discover the relationship by playing with it. Bret Victor's 2011 essay 'Explorable Explanations' popularised the idea of text that you can play with.",
+          "icon": "SlidersHorizontal",
+          "inScope": [
+            "Sliders, toggles, live numbers inside the explanation"
+          ],
+          "outOfScope": [
+            "Full working copies of the product"
+          ],
+          "primaryFocus": "Discovering relationships by playing",
+          "subtitle": "Change the inputs, watch the idea respond",
+          "title": "Explorable Explanations"
+        },
+        {
+          "analogy": "A wind tunnel: one model plane, one force, nothing else.",
+          "color": "sky",
+          "description": "A concept simulator isolates one idea, such as a permission simulator where you move a user between groups and see what they can access.",
+          "details": "Unlike a full training sandbox, a concept simulator strips away everything except the one idea. Drag Anna into the Sales workspace and watch five project icons light up; move her to a single project and only one lights up. The user builds the mental model by manipulating it directly.",
+          "icon": "FlaskConical",
+          "inScope": [
+            "Permission, pricing, routing or scheduling rules",
+            "Instant visual feedback"
+          ],
+          "outOfScope": [
+            "Practising full task steps (see Interactive User Manuals)"
+          ],
+          "primaryFocus": "Building a mental model by direct manipulation",
+          "subtitle": "One idea, isolated",
+          "title": "Concept Simulator"
+        },
+        {
+          "analogy": "A guided museum tour rather than the whole floor plan at once.",
+          "color": "teal",
+          "description": "A clickable flow diagram lets users step through a process (an approval route) one stage at a time.",
+          "details": "An approval route drawn as a static diagram shows every box at once. A clickable version reveals one stage at a time: 'Claim submitted → manager approves → over 5,000 baht? → Finance approves → paid', with each stage explaining who acts and what they see. Users follow the idea at their own pace and can go back.",
+          "icon": "Workflow",
+          "inScope": [
+            "Approval routes, ticket lifecycles, data flows"
+          ],
+          "outOfScope": [
+            "Ideas that aren't sequences"
+          ],
+          "primaryFocus": "Following a process at your own pace",
+          "subtitle": "Step through a process",
+          "title": "Clickable Flow Diagram"
+        },
+        {
+          "analogy": "A choose-your-own-adventure book where the wrong path teaches the lesson.",
+          "color": "peach",
+          "description": "A what-if scenario asks users to make a decision in a realistic situation and shows the consequence, testing understanding rather than recall.",
+          "details": "'A contractor needs to see one project, just for a week. What do you do?' Each choice leads to a consequence: added to the workspace, the contractor sees all five projects. Because the situation is new, users can't answer from memorised steps; they must use the concept. It both teaches and checks understanding.",
+          "icon": "GitBranch",
+          "inScope": [
+            "Realistic decisions with consequences"
+          ],
+          "outOfScope": [
+            "Questions answerable by recall alone"
+          ],
+          "primaryFocus": "Applying the concept to a new case",
+          "subtitle": "Decide, then see the consequence",
+          "title": "What-If Scenario"
+        }
+      ],
+      "title": "Kinds of Interactive Explanation"
+    },
+    "type": "taxonomy-browser"
+  },
+  {
+    "folder": "poe-loop",
+    "props": {
+      "schema": {
+        "entities": {
+          "cmd_branch_match": {
+            "desc": "Confirm and explain why it was right",
+            "title": "Confirm and explain why it was right",
+            "type": "Command"
+          },
+          "cmd_branch_mismatch": {
+            "desc": "Ask the learner to explain the difference, then show the explanation",
+            "title": "Ask the learner to explain the difference, then show the explanation",
+            "type": "Command"
+          },
+          "cmd_step_observe": {
+            "desc": "Run the situation and show the real outcome",
+            "title": "Run the situation and show the real outcome",
+            "type": "Command"
+          },
+          "cmd_step_predict": {
+            "desc": "Record a prediction of what will happen",
+            "title": "Record a prediction of what will happen",
+            "type": "Command"
+          },
+          "evt_evt_model_confirmed": {
+            "desc": "Mental Model Confirmed",
+            "title": "Mental Model Confirmed",
+            "type": "Event"
+          },
+          "evt_evt_model_corrected": {
+            "desc": "The learner noticed their model was wrong, the moment it can be corrected",
+            "title": "Mental Model Corrected",
+            "type": "Event"
+          },
+          "evt_evt_observed": {
+            "desc": "Outcome Observed",
+            "title": "Outcome Observed",
+            "type": "Event"
+          },
+          "evt_evt_predicted": {
+            "desc": "e.g. 'If I add Anna to the Sales workspace, she'll see one project.'",
+            "title": "Prediction Made",
+            "type": "Event"
+          },
+          "explainer": {
+            "desc": "The concept simulator or what-if scenario embedded in the docs",
+            "title": "Interactive Explanation",
+            "type": "Aggregate"
+          },
+          "explainer2": {
+            "desc": "The concept simulator or what-if scenario embedded in the docs",
+            "title": "Interactive Explanation",
+            "type": "Aggregate"
+          },
+          "explainer3": {
+            "desc": "The concept simulator or what-if scenario embedded in the docs",
+            "title": "Interactive Explanation",
+            "type": "Aggregate"
+          },
+          "explainer4": {
+            "desc": "The concept simulator or what-if scenario embedded in the docs",
+            "title": "Interactive Explanation",
+            "type": "Aggregate"
+          },
+          "learner": {
+            "desc": "A user learning a concept in the docs",
+            "title": "Learner",
+            "type": "Actor"
+          },
+          "learner2": {
+            "desc": "A user learning a concept in the docs",
+            "title": "Learner",
+            "type": "Actor"
+          },
+          "pol_branch_match": {
+            "desc": "If the outcome matches the prediction",
+            "title": "If the outcome matches the prediction",
+            "type": "Policy"
+          },
+          "pol_branch_mismatch": {
+            "desc": "If the outcome differs from the prediction",
+            "title": "If the outcome differs from the prediction",
+            "type": "Policy"
+          },
+          "pol_step_observe": {
+            "desc": "After the prediction is recorded",
+            "root": false,
+            "title": "After the prediction is recorded",
+            "type": "Policy"
+          },
+          "pol_step_predict": {
+            "desc": "When a new situation is shown",
+            "root": false,
+            "title": "When a new situation is shown",
+            "type": "Policy"
+          }
+        },
+        "journeys": [
+          {
+            "description": "The most valuable path: the learner's prediction fails and their model gets fixed",
+            "id": "journey_mismatch",
+            "label": "Wrong Prediction → Corrected Model",
+            "steps": [
+              {
+                "nodeIds": [
+                  "evt_evt_predicted"
+                ],
+                "reason": "'Anna will see one project.'",
+                "title": "Predict"
+              },
+              {
+                "nodeIds": [
+                  "evt_evt_observed"
+                ],
+                "reason": "Anna sees all five Sales projects.",
+                "title": "Observe"
+              },
+              {
+                "nodeIds": [
+                  "evt_evt_model_corrected"
+                ],
+                "reason": "The learner explains the difference: permissions flow down from the workspace.",
+                "title": "Explain"
+              }
+            ]
+          },
+          {
+            "description": "The learner's model was already right and gets reinforced",
+            "id": "journey_match",
+            "label": "Right Prediction → Confirmed Model",
+            "steps": [
+              {
+                "nodeIds": [
+                  "evt_evt_predicted"
+                ],
+                "reason": "'Anna will see all five projects.'",
+                "title": "Predict"
+              },
+              {
+                "nodeIds": [
+                  "evt_evt_observed"
+                ],
+                "reason": "She does.",
+                "title": "Observe"
+              },
+              {
+                "nodeIds": [
+                  "evt_evt_model_confirmed"
+                ],
+                "reason": "The explanation confirms why.",
+                "title": "Explain"
+              }
+            ]
+          }
+        ],
+        "rawSteps": [
+          {
+            "command": "Record a prediction of what will happen",
+            "continuesAs": "step_observe",
+            "handledBy": {
+              "_tag": "ref",
+              "id": "explainer"
+            },
+            "id": "step_predict",
+            "initiatedBy": {
+              "_tag": "ref",
+              "id": "learner"
+            },
+            "policy": "When a new situation is shown",
+            "resultEvents": [
+              {
+                "desc": "e.g. 'If I add Anna to the Sales workspace, she'll see one project.'",
+                "id": "evt_predicted",
+                "title": "Prediction Made"
+              }
+            ],
+            "type": "linear"
+          },
+          {
+            "command": "Run the situation and show the real outcome",
+            "continuesAs": "step_compare",
+            "handledBy": {
+              "_tag": "ref",
+              "id": "explainer"
+            },
+            "id": "step_observe",
+            "initiatedBy": {
+              "_tag": "ref",
+              "id": "learner"
+            },
+            "policy": "After the prediction is recorded",
+            "resultEvents": [
+              {
+                "id": "evt_observed",
+                "title": "Outcome Observed"
+              }
+            ],
+            "type": "linear"
+          },
+          {
+            "branches": [
+              {
+                "command": "Confirm and explain why it was right",
+                "handledBy": {
+                  "_tag": "ref",
+                  "id": "explainer"
+                },
+                "id": "branch_match",
+                "label": "Prediction was right",
+                "policy": "If the outcome matches the prediction",
+                "resultEvents": [
+                  {
+                    "id": "evt_model_confirmed",
+                    "title": "Mental Model Confirmed"
+                  }
+                ]
+              },
+              {
+                "command": "Ask the learner to explain the difference, then show the explanation",
+                "handledBy": {
+                  "_tag": "ref",
+                  "id": "explainer"
+                },
+                "id": "branch_mismatch",
+                "label": "Prediction was wrong",
+                "policy": "If the outcome differs from the prediction",
+                "resultEvents": [
+                  {
+                    "desc": "The learner noticed their model was wrong, the moment it can be corrected",
+                    "id": "evt_model_corrected",
+                    "title": "Mental Model Corrected"
+                  }
+                ]
+              }
+            ],
+            "event": "evt_observed",
+            "id": "step_compare",
+            "type": "branch"
+          }
+        ],
+        "relations": [
+          {
+            "from": "learner",
+            "id": "r1",
+            "to": "pol_step_predict",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "from": "pol_step_predict",
+            "id": "r2",
+            "to": "cmd_step_predict",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "from": "cmd_step_predict",
+            "handledBy": true,
+            "id": "r3",
+            "to": "explainer",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "from": "explainer",
+            "id": "r4",
+            "to": "evt_evt_predicted",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "from": "evt_evt_predicted",
+            "id": "r5",
+            "to": "pol_step_observe",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "from": "learner2",
+            "id": "r6",
+            "to": "pol_step_observe",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "from": "pol_step_observe",
+            "id": "r7",
+            "to": "cmd_step_observe",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "from": "cmd_step_observe",
+            "handledBy": true,
+            "id": "r8",
+            "to": "explainer2",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "from": "explainer2",
+            "id": "r9",
+            "to": "evt_evt_observed",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "from": "evt_evt_observed",
+            "id": "r10",
+            "label": "Prediction was right",
+            "to": "pol_branch_match",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "from": "pol_branch_match",
+            "id": "r11",
+            "to": "cmd_branch_match",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "from": "cmd_branch_match",
+            "handledBy": true,
+            "id": "r12",
+            "to": "explainer3",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "from": "explainer3",
+            "id": "r13",
+            "to": "evt_evt_model_confirmed",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "from": "evt_evt_observed",
+            "id": "r14",
+            "label": "Prediction was wrong",
+            "to": "pol_branch_mismatch",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "from": "pol_branch_mismatch",
+            "id": "r15",
+            "to": "cmd_branch_mismatch",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "from": "cmd_branch_mismatch",
+            "handledBy": true,
+            "id": "r16",
+            "to": "explainer4",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "from": "explainer4",
+            "id": "r17",
+            "to": "evt_evt_model_corrected",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          }
+        ]
+      },
+      "title": "Predict → Observe → Explain"
+    },
+    "type": "flowchart"
+  },
+  {
+    "folder": "order-poe",
+    "props": {
+      "challenges": [
+        {
+          "groundedIn": "poe",
+          "items": [
+            {
+              "id": "explain",
+              "text": "Ask: 'Why did she see all five?', then show the explanation"
+            },
+            {
+              "id": "predict",
+              "text": "Ask: 'If Anna joins the Sales workspace, how many projects will she see?'"
+            },
+            {
+              "id": "observe",
+              "text": "Run the simulator: Anna sees all five Sales projects"
+            }
+          ],
+          "prompt": "Build a Predict → Observe → Explain moment for 'permission inheritance'. Put it in order.",
+          "solution": [
+            "predict",
+            "observe",
+            "explain"
+          ]
+        },
+        {
+          "groundedIn": "prediction-effect",
+          "items": [
+            {
+              "id": "correct",
+              "text": "Their mental model gets corrected"
+            },
+            {
+              "id": "commit",
+              "text": "They commit to a prediction from their current mental model"
+            },
+            {
+              "id": "notice",
+              "text": "They notice that the outcome differs from their prediction"
+            }
+          ],
+          "prompt": "Why does the prediction come first? Order the chain of what happens in the learner's head.",
+          "solution": [
+            "commit",
+            "notice",
+            "correct"
+          ]
+        }
+      ],
+      "title": "Build a POE Moment"
+    },
+    "type": "reflection-sequence"
+  },
+  {
+    "folder": "learning-science",
+    "props": {
+      "items": [
+        {
+          "children": [
+            {
+              "text": "Recalling an idea from memory strengthens it more than re-reading it."
+            },
+            {
+              "text": "In docs: end a concept page with two or three quick questions, and don't show the answers until the reader tries."
+            }
+          ],
+          "text": "Retrieval practice (the testing effect)"
+        },
+        {
+          "children": [
+            {
+              "text": "Short reviews spread over days beat one long session."
+            },
+            {
+              "text": "In docs: a follow-up quiz or tip a few days after onboarding, not a three-hour course on day one."
+            }
+          ],
+          "text": "Spacing"
+        },
+        {
+          "children": [
+            {
+              "text": "Asking learners to explain why something works, in their own words, deepens understanding."
+            },
+            {
+              "text": "In docs: 'In one sentence, why did Anna see all five projects?'"
+            }
+          ],
+          "text": "Self-explanation"
+        },
+        {
+          "children": [
+            {
+              "text": "Say why an answer is right or wrong, not just whether it is."
+            },
+            {
+              "text": "'Incorrect' teaches nothing; 'Not quite: permissions set on a workspace flow down to every project inside it' fixes the model."
+            }
+          ],
+          "text": "Explanatory feedback"
+        }
+      ],
+      "title": "Four Findings from Learning Science"
+    },
+    "type": "bullets"
+  },
+  {
+    "folder": "quiz-retention",
+    "props": {
+      "questions": [
+        {
+          "choices": [
+            {
+              "correct": true,
+              "explanation": "Retrieval practice (the testing effect) beats re-reading.",
+              "id": "q1-a",
+              "text": "Recalling it from memory with a quick question"
+            },
+            {
+              "correct": false,
+              "explanation": "It feels productive but strengthens memory less.",
+              "id": "q1-b",
+              "text": "Re-reading the page"
+            },
+            {
+              "correct": false,
+              "explanation": "Not retrieval.",
+              "id": "q1-c",
+              "text": "Highlighting the page"
+            }
+          ],
+          "groundedIn": "retrieval-practice",
+          "hint": "Pull it out of memory.",
+          "id": "q1",
+          "question": "Which strengthens memory of a concept more?"
+        },
+        {
+          "choices": [
+            {
+              "correct": true,
+              "explanation": "Spacing beats one long session.",
+              "id": "q2-a",
+              "text": "Short sessions spread over several days"
+            },
+            {
+              "correct": false,
+              "explanation": "Massed practice fades faster.",
+              "id": "q2-b",
+              "text": "One 60-minute session on day one"
+            },
+            {
+              "correct": false,
+              "explanation": "Spacing makes a difference.",
+              "id": "q2-c",
+              "text": "It makes no difference"
+            }
+          ],
+          "groundedIn": "spacing",
+          "hint": "Spread it out.",
+          "id": "q2",
+          "question": "You have 60 minutes of concept training. What schedule works best?"
+        },
+        {
+          "choices": [
+            {
+              "correct": true,
+              "explanation": "Learners explain why, in their own words.",
+              "id": "q3-a",
+              "text": "'In one sentence, why did Anna see all five projects?'"
+            },
+            {
+              "correct": false,
+              "explanation": "No explaining involved.",
+              "id": "q3-b",
+              "text": "'Select Next to continue.'"
+            },
+            {
+              "correct": false,
+              "explanation": "Not an explanation.",
+              "id": "q3-c",
+              "text": "'Did you read this page? Yes / No'"
+            }
+          ],
+          "groundedIn": "self-explanation",
+          "hint": "In their own words, why?",
+          "id": "q3",
+          "question": "Which prompt uses self-explanation?"
+        },
+        {
+          "choices": [
+            {
+              "correct": true,
+              "explanation": "Explanatory feedback says why, which fixes the model.",
+              "id": "q4-a",
+              "text": "'Not quite: permissions set on a workspace flow down to every project inside it.'"
+            },
+            {
+              "correct": false,
+              "explanation": "Says whether, not why.",
+              "id": "q4-b",
+              "text": "'Incorrect.'"
+            },
+            {
+              "correct": false,
+              "explanation": "No explanation at all.",
+              "id": "q4-c",
+              "text": "'Try again.'"
+            }
+          ],
+          "groundedIn": "explanatory-feedback",
+          "hint": "Why, not just whether.",
+          "id": "q4",
+          "question": "A learner answers wrongly. Which feedback is best?"
+        }
+      ],
+      "title": "Retention Check"
+    },
+    "type": "quiz"
+  },
+  {
+    "folder": "scenario-archive",
+    "props": {
+      "id": "archive-not-delete",
+      "intro": "Your project-management web app has an Archive button with a box-shaped icon. Every month, support gets tickets: some users are afraid to archive ('will I lose it?'), and others archive projects to 'get rid of' confidential data, which is still there. You own the docs.",
+      "nodes": {
+        "check": {
+          "choices": [
+            {
+              "id": "what-if",
+              "next": "result-a",
+              "text": "A what-if with prediction: 'You archive a project with salary data. Can other workspace members still open it?' Then show the answer with explanatory feedback."
+            },
+            {
+              "id": "read-confirm",
+              "next": "result-checkbox",
+              "text": "A checkbox: 'I have read and understood this page'"
+            }
+          ],
+          "id": "check",
+          "prompt": "How do you check users really understand it?"
+        },
+        "result-a": {
+          "id": "result-a",
+          "outcome": {
+            "lesson": "Wrong model named and refuted, shown in a diagram, then tested in a new situation with a prediction and explanatory feedback. That's teaching a concept, not just a click.",
+            "rating": "a",
+            "verdict": "Many users predict 'no', see that the answer is 'yes, archived projects are only hidden', and read why. Tickets about lost and leaked archives drop sharply."
+          }
+        },
+        "result-checkbox": {
+          "id": "result-checkbox",
+          "outcome": {
+            "lesson": "Ticking a box isn't retrieval. Ask a question about a new situation and give feedback that explains why.",
+            "rating": "c",
+            "verdict": "Everyone ticks the box. The misconception is untouched."
+          }
+        },
+        "result-fact": {
+          "id": "result-fact",
+          "outcome": {
+            "lesson": "Stating the truth often doesn't replace a wrong belief. Name the misconception and reject it explicitly.",
+            "rating": "b-minus",
+            "verdict": "True, but skimmed over. The misconception survives."
+          }
+        },
+        "result-steps": {
+          "id": "result-steps",
+          "outcome": {
+            "lesson": "Users can already click the button. The problem is conceptual: their model of what archiving does is wrong.",
+            "rating": "c",
+            "verdict": "You rewrite the three archiving steps beautifully. Users still archive confidential data thinking it's gone."
+          }
+        },
+        "start": {
+          "choices": [
+            {
+              "id": "steps-problem",
+              "next": "result-steps",
+              "text": "The steps for archiving are unclear"
+            },
+            {
+              "id": "model-problem",
+              "next": "technique",
+              "text": "Users have the wrong mental model: they think archive means delete"
+            }
+          ],
+          "id": "start",
+          "prompt": "What's the root problem?"
+        },
+        "technique": {
+          "choices": [
+            {
+              "id": "add-fact",
+              "next": "result-fact",
+              "text": "Add a line: 'Archived projects can be restored.'"
+            },
+            {
+              "id": "refute-plus",
+              "next": "check",
+              "text": "Refutation + diagram + non-example: 'You might think archiving deletes a project. It doesn't…', a diagram of Active → Archived → Restored, and 'Deleting is different: it removes the data permanently.'"
+            }
+          ],
+          "id": "technique",
+          "prompt": "How do you fix the mental model?"
+        }
+      },
+      "startNode": "start",
+      "title": "Archive Is Not Delete"
+    },
+    "type": "scenario"
+  },
+  {
+    "folder": "concept-map",
+    "props": {
+      "edges": [
+        {
+          "from": "system_image",
+          "label": "shapes",
+          "to": "mental_model"
+        },
+        {
+          "from": "mental_model",
+          "label": "is the core of",
+          "to": "conceptual"
+        },
+        {
+          "from": "conceptual",
+          "label": "enables",
+          "to": "transfer"
+        },
+        {
+          "from": "procedural",
+          "label": "alone leads to",
+          "to": "hollow_clicker"
+        },
+        {
+          "from": "analogy",
+          "label": "builds",
+          "to": "mental_model"
+        },
+        {
+          "from": "worked_example",
+          "label": "builds",
+          "to": "mental_model"
+        },
+        {
+          "from": "refutation",
+          "label": "corrects",
+          "to": "mental_model"
+        },
+        {
+          "from": "dual_coding",
+          "label": "builds",
+          "to": "mental_model"
+        },
+        {
+          "from": "cognitive_load",
+          "label": "limits how fast we build",
+          "to": "mental_model"
+        },
+        {
+          "from": "explorable",
+          "label": "hosts",
+          "to": "poe"
+        },
+        {
+          "from": "poe",
+          "label": "exposes and corrects",
+          "to": "mental_model"
+        },
+        {
+          "from": "retrieval",
+          "label": "makes it stick",
+          "to": "conceptual"
+        }
+      ],
+      "nodes": {
+        "analogy": {
+          "category": "technique",
+          "id": "analogy",
+          "title": "Analogy"
+        },
+        "cognitive_load": {
+          "category": "constraint",
+          "id": "cognitive_load",
+          "title": "Cognitive Load"
+        },
+        "conceptual": {
+          "category": "knowledge",
+          "id": "conceptual",
+          "title": "Conceptual Knowledge"
+        },
+        "dual_coding": {
+          "category": "technique",
+          "id": "dual_coding",
+          "title": "Diagram + Words"
+        },
+        "explorable": {
+          "category": "technique",
+          "id": "explorable",
+          "title": "Interactive Explanation"
+        },
+        "hollow_clicker": {
+          "category": "risk",
+          "id": "hollow_clicker",
+          "title": "Hollow Clicker (failure)"
+        },
+        "mental_model": {
+          "category": "foundation",
+          "id": "mental_model",
+          "title": "User's Mental Model"
+        },
+        "poe": {
+          "category": "process",
+          "id": "poe",
+          "title": "Predict → Observe → Explain"
+        },
+        "procedural": {
+          "category": "knowledge",
+          "id": "procedural",
+          "title": "Procedural Knowledge"
+        },
+        "refutation": {
+          "category": "technique",
+          "id": "refutation",
+          "title": "Refutation"
+        },
+        "retrieval": {
+          "category": "retention",
+          "id": "retrieval",
+          "title": "Retrieval & Spacing"
+        },
+        "system_image": {
+          "category": "foundation",
+          "id": "system_image",
+          "title": "System Image (UI + Docs)"
+        },
+        "transfer": {
+          "category": "goal",
+          "id": "transfer",
+          "title": "Transfer"
+        },
+        "worked_example": {
+          "category": "technique",
+          "id": "worked_example",
+          "title": "Worked Example"
+        }
+      },
+      "title": "How It All Connects"
+    },
+    "type": "concept-map"
+  },
+  {
+    "folder": "glossary",
+    "props": {
+      "terms": [
+        {
+          "category": "Knowledge",
+          "detailedDefinition": "Knowing how to carry out a documented task. Brittle when the situation changes.",
+          "id": "procedural",
+          "pronunciation": "pruh-see-jer-uhl nol-ij",
+          "shortDefinition": "Knowing the steps.",
+          "whyItMatters": "Necessary, but not enough on its own.",
+          "word": "Procedural Knowledge"
+        },
+        {
+          "category": "Knowledge",
+          "detailedDefinition": "The understanding that lets users reason about the system and work out undocumented steps.",
+          "id": "conceptual",
+          "pronunciation": "kuhn-sep-choo-uhl nol-ij",
+          "shortDefinition": "Knowing what the parts are, how they relate, and why.",
+          "whyItMatters": "It's what makes transfer possible.",
+          "word": "Conceptual Knowledge"
+        },
+        {
+          "category": "Knowledge",
+          "detailedDefinition": "Acting correctly in a case the training never showed.",
+          "id": "transfer",
+          "pronunciation": "trans-fur",
+          "shortDefinition": "Applying learning to a new situation.",
+          "whyItMatters": "No manual can document every case.",
+          "word": "Transfer"
+        },
+        {
+          "category": "Foundation",
+          "detailedDefinition": "Don Norman separates the designer's model, the system image (UI + docs) and the user's model, which users build only from the system image.",
+          "id": "mental-model",
+          "pronunciation": "men-tl mod-l",
+          "shortDefinition": "A person's inner picture of how a system works.",
+          "whyItMatters": "Wrong models cause confident mistakes.",
+          "word": "Mental Model"
+        },
+        {
+          "category": "Technique",
+          "detailedDefinition": "A way of writing that makes readers notice the conflict between their belief and the truth.",
+          "id": "refutation",
+          "pronunciation": "ref-yoo-tey-shuhn tekst",
+          "shortDefinition": "Name the misconception, reject it, explain the truth.",
+          "whyItMatters": "Stating the truth alone often doesn't replace a wrong belief.",
+          "word": "Refutation Text"
+        },
+        {
+          "category": "Technique",
+          "detailedDefinition": "Pairing text with a simple diagram gives two routes into memory (Allan Paivio's theory).",
+          "id": "dual-coding",
+          "pronunciation": "doo-uhl koh-ding",
+          "shortDefinition": "Words plus visuals.",
+          "whyItMatters": "Structures are easier to see than to read.",
+          "word": "Dual Coding"
+        },
+        {
+          "category": "Constraint",
+          "detailedDefinition": "Working memory holds only a few new items at once (John Sweller's cognitive load theory), so introduce few new concepts at a time.",
+          "id": "cognitive-load",
+          "pronunciation": "kog-ni-tiv lohd",
+          "shortDefinition": "How much working memory a task uses.",
+          "whyItMatters": "Overloaded readers retain nothing.",
+          "word": "Cognitive Load"
+        },
+        {
+          "category": "Interactive",
+          "detailedDefinition": "Readers change inputs and watch the idea respond. Popularised by Bret Victor's 2011 essay.",
+          "id": "explorable",
+          "pronunciation": "ik-splawr-uh-buhl ek-spluh-ney-shuhn",
+          "shortDefinition": "An explanation you can play with.",
+          "whyItMatters": "Discovering a relationship beats being told it.",
+          "word": "Explorable Explanation"
+        },
+        {
+          "category": "Interactive",
+          "detailedDefinition": "A teaching strategy (White & Gunstone) that makes learners notice when their mental model is wrong.",
+          "id": "poe",
+          "pronunciation": "pee oh ee",
+          "shortDefinition": "Predict, see the real outcome, explain the difference.",
+          "whyItMatters": "A failed prediction is the moment a model can be corrected.",
+          "word": "Predict-Observe-Explain (POE)"
+        },
+        {
+          "category": "Retention",
+          "detailedDefinition": "Also called the testing effect: quick recall questions beat re-reading.",
+          "id": "retrieval-practice",
+          "pronunciation": "ri-tree-vuhl prak-tis",
+          "shortDefinition": "Recalling from memory to strengthen it.",
+          "whyItMatters": "Understanding that isn't retrieved fades.",
+          "word": "Retrieval Practice"
+        }
+      ],
+      "title": "Glossary"
+    },
+    "type": "flashcards"
+  },
+  {
+    "folder": "synthesis",
+    "props": {
+      "challenges": [
+        {
+          "chips": [
+            {
+              "id": "chip-procedural",
+              "text": "procedural"
+            },
+            {
+              "id": "chip-conceptual",
+              "text": "conceptual"
+            },
+            {
+              "id": "chip-transfer",
+              "text": "transfer"
+            },
+            {
+              "id": "chip-typing",
+              "text": "faster typing"
+            }
+          ],
+          "explanation": "<strong>Correct!</strong> Steps are brittle; understanding transfers to situations the manual never showed.",
+          "prompt": "Why concepts (Track 1):",
+          "solution": {
+            "zone-1": "chip-procedural",
+            "zone-2": "chip-conceptual",
+            "zone-3": "chip-transfer"
+          },
+          "template": "Knowing only the steps is {zone-1} knowledge; knowing how the parts relate is {zone-2} knowledge, which makes {zone-3} possible."
+        },
+        {
+          "chips": [
+            {
+              "id": "chip-example",
+              "text": "worked example"
+            },
+            {
+              "id": "chip-dual",
+              "text": "dual coding"
+            },
+            {
+              "id": "chip-refutation",
+              "text": "refutation"
+            },
+            {
+              "id": "chip-checkbox",
+              "text": "an 'I understood' checkbox"
+            }
+          ],
+          "explanation": "<strong>Correct!</strong> Concrete first, words + picture, and name-and-reject the misconception.",
+          "prompt": "Explain it (Track 2):",
+          "solution": {
+            "zone-1": "chip-example",
+            "zone-2": "chip-dual",
+            "zone-3": "chip-refutation"
+          },
+          "template": "Start with a {zone-1}, add a diagram for {zone-2}, and fix the wrong belief with {zone-3}."
+        },
+        {
+          "chips": [
+            {
+              "id": "chip-predict",
+              "text": "predict"
+            },
+            {
+              "id": "chip-observe",
+              "text": "observe"
+            },
+            {
+              "id": "chip-explain",
+              "text": "explain"
+            }
+          ],
+          "explanation": "<strong>Correct!</strong> Predict → Observe → Explain makes a wrong model visible, so it can be corrected.",
+          "prompt": "Make it interactive (Track 3):",
+          "solution": {
+            "zone-1": "chip-predict",
+            "zone-2": "chip-observe",
+            "zone-3": "chip-explain"
+          },
+          "template": "Ask learners to {zone-1} first, let them {zone-2} the real outcome, then {zone-3} the difference."
+        },
+        {
+          "chips": [
+            {
+              "id": "chip-retrieval",
+              "text": "retrieval practice"
+            },
+            {
+              "id": "chip-spacing",
+              "text": "spacing"
+            },
+            {
+              "id": "chip-why",
+              "text": "why"
+            },
+            {
+              "id": "chip-whether",
+              "text": "only whether"
+            }
+          ],
+          "explanation": "<strong>Correct!</strong> Recall, spacing and explanatory feedback turn understanding into lasting understanding.",
+          "prompt": "Make it stick (Track 4):",
+          "solution": {
+            "zone-1": "chip-retrieval",
+            "zone-2": "chip-spacing",
+            "zone-3": "chip-why"
+          },
+          "template": "Use {zone-1} instead of re-reading, spread reviews with {zone-2}, and give feedback that says {zone-3}."
+        }
+      ],
+      "title": "Design a Concept Lesson"
+    },
+    "type": "reflection-template"
+  }
+]

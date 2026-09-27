@@ -1,0 +1,4 @@
+explainer:
+  title: "Interactive Explanation"
+  desc: "The concept simulator or what-if scenario embedded in the docs"
+  type: aggregate

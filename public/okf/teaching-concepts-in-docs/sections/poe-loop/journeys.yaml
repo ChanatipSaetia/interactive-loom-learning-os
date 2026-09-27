@@ -1,0 +1,26 @@
+- id: journey_mismatch
+  label: "Wrong Prediction → Corrected Model"
+  description: "The most valuable path: the learner's prediction fails and their model gets fixed"
+  steps:
+    - stepId: evt_predicted
+      name: "Predict"
+      description: "'Anna will see one project.'"
+    - stepId: evt_observed
+      name: "Observe"
+      description: "Anna sees all five Sales projects."
+    - stepId: evt_model_corrected
+      name: "Explain"
+      description: "The learner explains the difference: permissions flow down from the workspace."
+- id: journey_match
+  label: "Right Prediction → Confirmed Model"
+  description: "The learner's model was already right and gets reinforced"
+  steps:
+    - stepId: evt_predicted
+      name: "Predict"
+      description: "'Anna will see all five projects.'"
+    - stepId: evt_observed
+      name: "Observe"
+      description: "She does."
+    - stepId: evt_model_confirmed
+      name: "Explain"
+      description: "The explanation confirms why."

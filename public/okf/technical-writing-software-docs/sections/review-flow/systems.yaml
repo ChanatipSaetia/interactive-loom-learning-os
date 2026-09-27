@@ -1,0 +1,16 @@
+docs_repo:
+  title: "Docs Repository"
+  desc: "Markdown pages under version control, reviewed through pull requests"
+  type: aggregate
+staging_app:
+  title: "Staging Web App"
+  desc: "A non-production copy of the app on the upcoming version"
+  type: external
+vale_ci:
+  title: "Vale in CI"
+  desc: "Prose linter that checks style and terminology on every pull request"
+  type: external
+docs_site:
+  title: "Published Docs Site"
+  desc: "Where users read the manual"
+  type: external

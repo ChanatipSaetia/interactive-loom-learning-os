@@ -1,0 +1,65 @@
+challenges:
+  - prompt: "Complete the case for simulating (Track 1):"
+    template: "Trainees can't use the real system because {zone-1} denies them the role, it holds {zone-2}, and some actions are {zone-3}."
+    chips:
+      - id: chip-least-privilege
+        text: "least privilege"
+      - id: chip-production-data
+        text: "production data"
+      - id: chip-irreversible
+        text: "irreversible"
+      - id: chip-dark-mode
+        text: "dark mode"
+    solution:
+      zone-1: chip-least-privilege
+      zone-2: chip-production-data
+      zone-3: chip-irreversible
+    explanation: "<strong>Correct!</strong> Least privilege, production data and irreversible actions are three of the four barriers (licence cost is the fourth). Dark mode was never one of them."
+  - prompt: "Pick an approach and its tool (Track 2):"
+    template: "For a desktop program, build a {zone-1} in a tool such as {zone-2}. For your own web product with developers, build a {zone-3} with MSW."
+    chips:
+      - id: chip-hotspot
+        text: "hotspot simulation"
+      - id: chip-storyline
+        text: "Articulate Storyline 360"
+      - id: chip-clone
+        text: "UI clone"
+      - id: chip-walnut
+        text: "Walnut"
+    solution:
+      zone-1: chip-hotspot
+      zone-2: chip-storyline
+      zone-3: chip-clone
+    explanation: "<strong>Correct!</strong> Desktop software has no DOM to capture, so Walnut doesn't fit it; hotspot simulations do. With your own front-end code, a UI clone with MSW mocks reuses real components."
+  - prompt: "Keep it alive (Track 3):"
+    template: "Detect drift with {zone-1} on every release, label each module with its {zone-2}, and let AI {zone-3} but never publish unverified."
+    chips:
+      - id: chip-playwright
+        text: "Playwright and visual diffs"
+      - id: chip-version
+        text: "product version"
+      - id: chip-draft
+        text: "draft"
+      - id: chip-learner-reports
+        text: "learner complaints"
+    solution:
+      zone-1: chip-playwright
+      zone-2: chip-version
+      zone-3: chip-draft
+    explanation: "<strong>Correct!</strong> Automatic checks, a version label and AI-as-drafter keep the Drifted Phantom UI away. Learner complaints are the failure, not the detector."
+  - prompt: "Design the module (Track 4):"
+    template: "Start with {zone-1}, keep {zone-2} on the task path, run learners through {zone-3}, and end with a bridge to the real system."
+    chips:
+      - id: chip-task-analysis
+        text: "task analysis"
+      - id: chip-selective
+        text: "exact fidelity"
+      - id: chip-wtt
+        text: "Watch → Try → Test"
+      - id: chip-menu-tour
+        text: "a tour of every menu"
+    solution:
+      zone-1: chip-task-analysis
+      zone-2: chip-selective
+      zone-3: chip-wtt
+    explanation: "<strong>Correct!</strong> Watch the expert first, make the practised path exact, move learners from demo to guided practice to test, and tell them what differs on the live system. A tour of every menu is screen-first, not task-first."

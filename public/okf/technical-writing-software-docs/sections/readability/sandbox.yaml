@@ -1,0 +1,44 @@
+variables:
+  - id: words_per_sentence
+    label: "Average words per sentence"
+    min: 5
+    max: 40
+    step: 1
+    defaultValue: 25
+  - id: syllables_per_word
+    label: "Average syllables per word"
+    min: 1
+    max: 2.5
+    step: 0.05
+    defaultValue: 1.6
+metrics:
+  - id: flesch
+    label: "Flesch Reading Ease (0–100, higher is easier)"
+    formula: "Math.round(206.835 - 1.015 * words_per_sentence - 84.6 * syllables_per_word)"
+    description: "Flesch Reading Ease = 206.835 − 1.015 × (words per sentence) − 84.6 × (syllables per word). Higher scores are easier to read; around 60–70 is plain English."
+    analogy: "A speedometer for reading effort: long sentences and long words push it down."
+    inScope:
+      - "Sentence length"
+      - "Word length in syllables"
+    outOfScope:
+      - "Whether the steps are correct or in the right order"
+      - "Whether the reader knows the terms"
+  - id: sentence_penalty
+    label: "Points lost to sentence length"
+    formula: "Math.round(1.015 * words_per_sentence)"
+    description: "How much of the score long sentences cost. Try dropping the average from 25 to 15 words."
+    inScope:
+      - "Words per sentence"
+  - id: word_penalty
+    label: "Points lost to long words"
+    formula: "Math.round(84.6 * syllables_per_word)"
+    description: "How much of the score long words cost, e.g. 'utilise' instead of 'use'."
+    inScope:
+      - "Syllables per word"
+  - id: warning
+    label: "Warning light (1 = score below 50, rewrite likely needed)"
+    formula: "(206.835 - 1.015 * words_per_sentence - 84.6 * syllables_per_word) < 50 ? 1 : 0"
+    description: "Readability scores only measure sentence and word length. They are a warning light, not proof that a page is clear: a short, simple page can still have the steps in the wrong order."
+    analogy: "A smoke alarm, not a fire inspector."
+    outOfScope:
+      - "Structure, accuracy and page type"

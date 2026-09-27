@@ -1,0 +1,14 @@
+icon: Blocks
+title: "UI Clone Building Blocks"
+subtitle: "Storybook · Mock Service Worker (MSW) · Shepherd.js · Driver.js"
+description: "A UI clone is typically built with the product's component library in Storybook, Mock Service Worker (MSW) for the fake API, and a tour library such as Shepherd.js or Driver.js for guided steps."
+details: "Storybook shows the product's real components in isolation and is a natural place to assemble training screens. Mock Service Worker (MSW) intercepts the app's network requests in the browser and answers them with fake data, so no real server is needed. Shepherd.js or Driver.js add the guided layer: highlight an element, explain it, and wait for the learner to act."
+analogy: "Real Lego bricks from the product's own box, a pretend power supply, and a tour guide pointing at each brick."
+primaryFocus: "Building training screens from the product's own code"
+inScope:
+  - "Storybook for the product's components"
+  - "MSW for the fake API"
+  - "Shepherd.js / Driver.js for guided steps"
+outOfScope:
+  - "Authoring without developers"
+color: green

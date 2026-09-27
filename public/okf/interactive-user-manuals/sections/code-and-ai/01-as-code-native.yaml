@@ -1,0 +1,14 @@
+icon: GitBranch
+title: "Natively As Code"
+subtitle: "UI clones · training sandboxes"
+description: "UI clones and training sandboxes are naturally 'as code': components, MSW handlers, tour steps, Terraform and seed scripts live in git, get reviewed in pull requests and run in CI."
+details: "A UI clone is front-end code: components, MSW handlers that fake the API, and tour steps for Shepherd.js or Driver.js. A sandbox is infrastructure code: Terraform or Docker Compose files plus seed scripts that fill it with synthetic data. Because everything is text in git, a change is a pull request that someone reviews, CI tests it, and a new version can be rebuilt the same way every time."
+analogy: "A recipe in a shared cookbook that anyone can propose edits to, and a test kitchen that cooks it on every change."
+primaryFocus: "Reviewable, testable, reproducible manuals"
+inScope:
+  - "Components, MSW handlers and tour steps in git"
+  - "Terraform / Docker Compose and seed scripts"
+  - "Pull-request review and CI tests"
+outOfScope:
+  - "Authoring by people who don't use git"
+color: green

@@ -1,0 +1,13 @@
+icon: CircleX
+title: "Refutation (Fix the Misconception)"
+subtitle: "State it · reject it · explain the truth"
+description: "Refutation text corrects a misconception by stating the wrong belief, saying clearly that it is wrong, then explaining what is true (archiving is not deleting)."
+details: "Users arrive with wrong beliefs, and simply stating the truth often doesn't replace them. Refutation text names the belief directly: 'You might think archiving deletes a project. It doesn't. Archiving hides the project from lists; you can restore it at any time, and nothing is lost.' Naming the misconception makes the reader notice the conflict and update their model."
+analogy: "A sign saying 'This is not the exit', right where everyone thinks it is."
+primaryFocus: "Replacing wrong beliefs, not just adding facts"
+inScope:
+  - "Common misconceptions from support tickets"
+  - "Explicit 'this is not true' statements"
+outOfScope:
+  - "Listing every possible wrong idea"
+color: red

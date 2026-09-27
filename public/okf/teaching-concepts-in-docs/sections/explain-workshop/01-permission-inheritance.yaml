@@ -1,0 +1,88 @@
+id: permission-inheritance
+title: "Explain 'Permission Inheritance' to New Admins"
+description: "New workspace admins keep giving people access to the wrong projects, because they don't understand that permissions set on a workspace flow down to every project inside it. Build the concept page and watch the meters."
+metrics:
+  - id: understanding
+    label: "Understanding"
+    baseValue: 30
+    min: 0
+    max: 100
+    direction: higher
+  - id: overload
+    label: "Mental Room Left (low = overloaded)"
+    baseValue: 70
+    min: 0
+    max: 100
+    direction: higher
+  - id: effort
+    label: "Writing Effort Saved"
+    baseValue: 60
+    min: 0
+    max: 100
+    direction: higher
+steps:
+  - id: scope
+    title: "How Many New Concepts on This Page?"
+    description: "The admin guide could cover organisations, workspaces, projects, roles, groups, guests and overrides."
+    recommended: few
+    choices:
+      - id: all
+        label: "All seven concepts in one page"
+        description: "Complete in one place."
+        metrics:
+          understanding: -10
+          overload: -40
+        pros:
+          - title: "Nothing is left out"
+        cons:
+          - title: "Overload"
+            description: "Working memory holds only a few new items at once; most readers retain none of them."
+      - id: few
+        label: "Just workspace → project → inherited permission"
+        description: "Link out to roles, groups and overrides for later."
+        metrics:
+          understanding: 20
+          overload: 10
+        pros:
+          - title: "Few new ideas, well understood"
+        cons:
+          - title: "Advanced cases need another page"
+        whyThisFits: "Cognitive load: working memory holds only a few new items at once, so introduce a few new concepts at a time and build on them."
+  - id: technique
+    title: "Main Technique"
+    description: "How will you explain inheritance?"
+    recommended: combined
+    choices:
+      - id: definition-only
+        label: "A precise definition paragraph"
+        description: "'Permissions assigned at the workspace level are inherited by all child project resources.'"
+        metrics:
+          understanding: -5
+          effort: 20
+        pros:
+          - title: "Quick to write, precise"
+        cons:
+          - title: "Abstract and easy to misread"
+      - id: analogy-only
+        label: "Just an analogy"
+        description: "'It's like a shared drive folder: sharing the folder shares everything inside.'"
+        metrics:
+          understanding: 15
+          effort: 10
+        pros:
+          - title: "Instantly relatable"
+        cons:
+          - title: "No limits stated"
+            description: "Users carry over the parts of the analogy that don't fit."
+      - id: combined
+        label: "Diagram + worked example + named misconception"
+        description: "A box diagram with arrows, 'Anna is added to the Sales workspace, so she can see all five Sales projects', and 'You might think adding her to one project is enough to limit her access. It isn't…'"
+        metrics:
+          understanding: 35
+          effort: -20
+        pros:
+          - title: "Several routes into understanding"
+          - title: "Fixes the exact mistake admins make"
+        cons:
+          - title: "More work to write and draw"
+        whyThisFits: "Combining techniques (a diagram, a worked example and a named misconception) usually beats any single technique alone."

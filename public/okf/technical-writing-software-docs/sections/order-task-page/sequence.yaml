@@ -1,0 +1,36 @@
+challenges:
+  - prompt: "Assemble the parts of a task page in the right order."
+    groundedIn: prerequisites
+    items:
+      - id: steps
+        text: "Numbered steps, one action each"
+      - id: title
+        text: "Title: 'Reset a user's password'"
+      - id: result
+        text: "Result: 'The user receives a reset e-mail.'"
+      - id: prereq
+        text: "Prerequisites: 'You need the User Admin role.'"
+      - id: intro
+        text: "Intro: when you'd need to do this"
+    solution:
+      - title
+      - intro
+      - prereq
+      - steps
+      - result
+  - prompt: "Rewrite this one crammed step into one action per step. Put the split steps in order: 'Go to Reports, choose Monthly, set the date range and export.'"
+    groundedIn: one-action
+    items:
+      - id: export
+        text: "Select Export."
+      - id: reports
+        text: "Select Reports."
+      - id: dates
+        text: "In the Date range fields, enter the start and end dates."
+      - id: monthly
+        text: "Select Monthly."
+    solution:
+      - reports
+      - monthly
+      - dates
+      - export

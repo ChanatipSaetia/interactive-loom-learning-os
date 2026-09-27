@@ -1,0 +1,13 @@
+icon: RotateCcw
+title: "Safe to Fail"
+subtitle: "Mistakes are the lesson"
+description: "Make it safe to fail: learners can make mistakes, see what would happen, and reset."
+details: "The whole point of simulating is that errors cost nothing, so use it. Let learners press the wrong button and show them what would happen in the real system ('This would have refunded the customer twice'). Then give them a one-click reset so they can try again from a clean start."
+analogy: "A flight simulator lets you crash, shows you why, and puts you back on the runway."
+primaryFocus: "Learning from consequences without real damage"
+inScope:
+  - "Showing the consequence of a wrong action"
+  - "One-click reset to a clean start"
+outOfScope:
+  - "Silently blocking every wrong click"
+color: red

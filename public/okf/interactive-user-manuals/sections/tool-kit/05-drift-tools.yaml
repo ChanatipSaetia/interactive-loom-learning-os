@@ -1,0 +1,13 @@
+icon: ScanEye
+title: "Drift Detection Tools"
+subtitle: "Playwright · Chromatic · Percy"
+description: "Playwright tests plus visual-regression services such as Chromatic or Percy detect when the real UI has changed."
+details: "Playwright drives a browser through the documented steps and fails if a button or field can no longer be found. Chromatic and Percy take screenshots of each screen on every build and highlight pixel differences against an approved baseline. Together they tell you which manual screens a release has broken, before learners find out."
+analogy: "A smoke alarm for your manual: it goes off the moment the real UI stops matching."
+primaryFocus: "Knowing when the manual is out of date"
+inScope:
+  - "Scripted checks that documented steps still work"
+  - "Visual diffs against approved screenshots"
+outOfScope:
+  - "Fixing the manual (they only tell you what broke)"
+color: teal

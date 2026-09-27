@@ -1,0 +1,65 @@
+id: ticket-storm
+title: "The Ticket Storm"
+intro: "Support gets 40 tickets a week saying 'I can't export my report'. The docs page 'Reporting' is 2,500 words: two paragraphs on why the reporting engine was rebuilt, a table of every report field, then one paragraph that ends '...and then export it as needed.' You're asked to fix it."
+nodes:
+  start:
+    prompt: "What's the first thing you do?"
+    choices:
+      - id: rewrite-style
+        text: "Run it through Vale and fix the style warnings"
+        next: result-style
+      - id: diagnose-type
+        text: "Sort the page's content by type: explanation, reference and the how-to buried at the end"
+        next: split
+  result-style:
+    outcome:
+      verdict: "The page is now grammatically perfect, and the tickets keep coming."
+      lesson: "A linter checks style, not whether the page serves the reader's task. The problem here is page type and missing steps."
+      rating: c
+  split:
+    prompt: "You've found the how-to buried under explanation and reference. What next?"
+    choices:
+      - id: split-pages
+        text: "Split it: a how-to 'Export a report', a reference page of report fields, an explanation page on the new engine"
+        next: write-steps
+      - id: move-top
+        text: "Keep one page but move the export paragraph to the top"
+        next: result-move
+  result-move:
+    outcome:
+      verdict: "Slightly better, but the paragraph still says 'export it as needed' and people still get lost."
+      lesson: "Moving a vague paragraph doesn't make it followable. Split the types, then write real steps."
+      rating: b-minus
+  write-steps:
+    prompt: "Now write 'Export a report'. Which version do you ship?"
+    choices:
+      - id: good-steps
+        text: "Prerequisite (Report Viewer role), numbered one-action steps with bold labels, location first, and the result: 'The file downloads as .xlsx'"
+        next: review
+      - id: friendly-paragraph
+        text: "A friendly paragraph: 'Just head to Reports and export whatever you need!'"
+        next: result-paragraph
+  result-paragraph:
+    outcome:
+      verdict: "Friendlier, but just as vague. Tickets barely drop."
+      lesson: "Readers need a prerequisite, one action per step and the result, not warmth alone."
+      rating: c
+  review:
+    prompt: "The new page is ready. How do you publish it?"
+    choices:
+      - id: full-review
+        text: "Technical review by the report developer, someone follows every step in staging, then editorial review with Vale"
+        next: result-a
+      - id: straight-publish
+        text: "Publish now; it's obviously better"
+        next: result-risky
+  result-a:
+    outcome:
+      verdict: "The step test catches that Export moved into the ⋯ menu in the latest release. Fixed, published, and tickets drop to 3 a week."
+      lesson: "Right page type, a well-built task page and a review loop that includes following the steps: that's the whole craft."
+      rating: a
+  result-risky:
+    outcome:
+      verdict: "Tickets drop, then rise again: step 3 says 'Select Export' but Export moved into the ⋯ menu last release."
+      lesson: "Someone must follow every step in the real app or staging before publishing."
+      rating: b-plus

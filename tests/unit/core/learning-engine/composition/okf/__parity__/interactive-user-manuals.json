@@ -1,0 +1,3308 @@
+[
+  {
+    "folder": "intro",
+    "props": {
+      "estimatedTime": "45 min",
+      "roadmap": [
+        {
+          "description": "The four barriers: least privilege, production data, irreversible actions and licence cost.",
+          "sectionId": "access-barriers",
+          "title": "Why Learners Can't Touch the Real System",
+          "type": "taxonomy-browser"
+        },
+        {
+          "description": "From screenshots to full sandbox: more realism costs more to build and maintain.",
+          "sectionId": "fidelity-ladder",
+          "title": "The Fidelity Ladder",
+          "type": "pillar-layer"
+        },
+        {
+          "description": "Check the barriers and the fidelity ladder.",
+          "sectionId": "quiz-why",
+          "title": "Why Simulate Check",
+          "type": "quiz"
+        },
+        {
+          "description": "Screenshot guides, hotspot simulations, DOM capture, UI clones and training sandboxes.",
+          "sectionId": "approach-catalog",
+          "title": "Implementation Approaches",
+          "type": "taxonomy-browser"
+        },
+        {
+          "description": "Scribe, Storyline, Navattic, Storybook + MSW, Playwright, Terraform, Faker and more.",
+          "sectionId": "tool-kit",
+          "title": "Tools for Each Approach",
+          "type": "taxonomy-browser"
+        },
+        {
+          "description": "Build training for a service desk and balance realism, build speed, upkeep and automation.",
+          "sectionId": "approach-tradeoffs",
+          "title": "Trade-off Sandbox: Fidelity vs Upkeep",
+          "type": "tradeoff-sandbox"
+        },
+        {
+          "description": "Answer four questions and get an approach recommendation.",
+          "sectionId": "approach-decision",
+          "title": "Pick Your Approach",
+          "type": "decision-tree"
+        },
+        {
+          "description": "Check the approaches, their tools and their trade-offs.",
+          "sectionId": "quiz-approaches",
+          "title": "Approach Check",
+          "type": "quiz"
+        },
+        {
+          "description": "Releases × changed screens × minutes per screen, and what reuse saves.",
+          "sectionId": "upkeep-cost",
+          "title": "Upkeep Cost Calculator",
+          "type": "formula-sandbox"
+        },
+        {
+          "description": "Single source of truth, drift detection, version labels and shared synthetic data.",
+          "sectionId": "upkeep-practices",
+          "title": "Maintainability Practices",
+          "type": "bullets"
+        },
+        {
+          "description": "Which approaches live in git, how screenshots become code, and where AI helps or hurts.",
+          "sectionId": "code-and-ai",
+          "title": "As Code & With AI",
+          "type": "taxonomy-browser"
+        },
+        {
+          "description": "A release moves a button three days before launch. What do you do?",
+          "sectionId": "scenario-release",
+          "title": "Scenario: The Menu Moved",
+          "type": "scenario"
+        },
+        {
+          "description": "Put the drift loop, scripted screenshots and AI updates in order.",
+          "sectionId": "reflection-upkeep",
+          "title": "Order the Upkeep Loop",
+          "type": "reflection-sequence"
+        },
+        {
+          "description": "Task-first, selective fidelity, realistic safe data, safe to fail, small chunks, bridge to real, accessible.",
+          "sectionId": "creation-principles",
+          "title": "Principles for Building Simulations",
+          "type": "taxonomy-browser"
+        },
+        {
+          "description": "Task analysis, step script, build, pilot and measure.",
+          "sectionId": "build-process",
+          "title": "From Task to Simulation",
+          "type": "bullets"
+        },
+        {
+          "description": "Demo, guided practice with wrong-click feedback, then unguided test.",
+          "sectionId": "watch-try-test",
+          "title": "Watch → Try → Test",
+          "type": "flowchart"
+        },
+        {
+          "description": "Check the creation principles, the build process and the three modes.",
+          "sectionId": "quiz-principles",
+          "title": "Principles Check",
+          "type": "quiz"
+        },
+        {
+          "description": "Barriers, approaches, upkeep and drift on one map.",
+          "sectionId": "concept-map",
+          "title": "How It All Connects",
+          "type": "concept-map"
+        },
+        {
+          "description": "Key terms: least privilege, fidelity, hotspot, DOM, MSW, SCORM/xAPI, drift and more.",
+          "sectionId": "glossary",
+          "title": "Glossary",
+          "type": "flashcards"
+        },
+        {
+          "description": "Fill in the blanks across all four tracks before facing the boss.",
+          "sectionId": "plan-your-sim",
+          "title": "Plan Your Simulation",
+          "type": "reflection-template"
+        }
+      ],
+      "subtitle": "Teach people to use IT systems and software in a safe copy, when they can't touch the real thing",
+      "title": "Interactive User Manuals",
+      "what": {
+        "bullets": [
+          "Why simulate: least privilege, production data, irreversible actions and licence cost",
+          "Five approaches, from screenshot guides to hotspot simulations, DOM capture, UI clones and training sandboxes, and their tools",
+          "Maintainability: upkeep cost, drift detection, version labels, and what can be done as code or with AI",
+          "Creation principles: task-first, selective fidelity, safe to fail, and Watch → Try → Test"
+        ],
+        "definition": "An interactive user manual is a simulation of a software system that lets people practise real tasks (clicking, typing, making mistakes) without using the live system.",
+        "summary": "Trainees often aren't allowed to touch the real software: they lack the role, it holds real people's data, or one wrong click sends real money. This topic covers why we simulate, the five ways to build a simulation and the tools for each, how to keep it matching the real software release after release (including as code and with AI), and the principles that make a simulation actually teach.",
+        "tags": [
+          "documentation",
+          "training",
+          "simulation",
+          "software-adoption",
+          "maintainability"
+        ]
+      },
+      "why": {
+        "impact": "Teams that pick an approach without thinking about upkeep end up with the Drifted Phantom UI: a simulation of screens that no longer exist, which trains people to do the wrong thing with confidence.",
+        "summary": "A manual people can practise in beats a manual people read, but only while it still matches the real software."
+      }
+    },
+    "type": "intro"
+  },
+  {
+    "folder": "access-barriers",
+    "props": {
+      "categories": [
+        {
+          "analogy": "A flight simulator: trainee pilots practise engine failures long before anyone hands them the keys to a real aircraft.",
+          "color": "mauve",
+          "description": "Least-privilege access control means trainees often have no account or role that allows the actions they must learn.",
+          "details": "Good security gives each person only the permissions their current job needs. A new hire in the finance team may not get the 'approve payment' role until after training, and an IT trainee should never hold domain-admin rights just to practise. So the very actions the manual must teach are the ones the learner is not allowed to perform. A simulation lets them rehearse the approver's screens without ever holding the approver's role.",
+          "icon": "ShieldCheck",
+          "inScope": [
+            "Roles granted only after training or certification",
+            "Admin and approver screens that trainees must not reach",
+            "Separation-of-duties rules (one person cannot both request and approve)"
+          ],
+          "outOfScope": [
+            "Protecting the data inside the system (see Production Data)"
+          ],
+          "primaryFocus": "Teaching actions the learner is not yet authorised to perform",
+          "subtitle": "No role, no practice",
+          "title": "Least-Privilege Access"
+        },
+        {
+          "analogy": "Medical students practise on mannequins, not on the patient in bed 12.",
+          "color": "peach",
+          "description": "Real systems hold production data (customer PII, patient or financial records) that trainees must not see or change.",
+          "details": "A hospital system shows real patients, a CRM shows real customers, and a banking back office shows real balances. Letting trainees browse that data for practice breaks privacy law (such as GDPR or Thailand's PDPA) and the organisation's own policies. Even a read-only training account still exposes personal data to people who have no business need to see it.",
+          "icon": "Database",
+          "inScope": [
+            "Personally identifiable information (PII)",
+            "Patient, financial and HR records",
+            "Privacy and data-protection obligations"
+          ],
+          "outOfScope": [
+            "Actions that change the world outside the system (see Irreversible Actions)"
+          ],
+          "primaryFocus": "Keeping personal and confidential records away from practice",
+          "subtitle": "Real people's records are not a practice ground",
+          "title": "Production Data"
+        },
+        {
+          "analogy": "Fire drills use a pretend fire so people can practise the exit route without anyone getting burned.",
+          "color": "red",
+          "description": "Some actions are irreversible or high-impact in a live system, such as issuing a refund, deleting a record or changing a network rule.",
+          "details": "A refund sends real money, a deleted record may be gone for good, an e-mail blast reaches real customers, and a wrong firewall rule can cut off a whole office. Learning by trial and error is how people learn software best, but in a live system every error is a real incident. A simulation removes the consequence while keeping the practice.",
+          "icon": "TriangleAlert",
+          "inScope": [
+            "Money movement: refunds, payments, payroll",
+            "Destructive actions: delete, purge, overwrite",
+            "Outbound effects: e-mails, orders, network and security changes"
+          ],
+          "outOfScope": [
+            "Whether the learner is allowed to act at all (see Least-Privilege Access)"
+          ],
+          "primaryFocus": "Letting learners make mistakes that cost nothing",
+          "subtitle": "Some buttons cannot be un-pressed",
+          "title": "Irreversible Actions"
+        },
+        {
+          "analogy": "A driving school doesn't buy every student a car; it shares a few dual-control cars and uses a simulator for the rest.",
+          "color": "yellow",
+          "description": "Per-seat licences and shared environments make it costly to give every trainee a real system to practise on.",
+          "details": "Enterprise software such as ERP, CRM or ITSM platforms is usually licensed per user, and extra non-production environments cost more again. A class of 200 new staff each needing a seat just to practise for a week is hard to justify. Shared test environments are also busy with developers and testers, who do not want trainees changing their data.",
+          "icon": "Wallet",
+          "inScope": [
+            "Per-user licensing of enterprise platforms",
+            "Cost and upkeep of extra non-production environments",
+            "Shared test environments that trainees would disrupt"
+          ],
+          "outOfScope": [
+            "The cost of building and maintaining the simulation itself (see Keeping It Alive)"
+          ],
+          "primaryFocus": "Scaling practice without scaling licences",
+          "subtitle": "A real seat for every trainee adds up",
+          "title": "Licence & Environment Cost"
+        }
+      ],
+      "title": "Why Learners Can't Touch the Real System"
+    },
+    "type": "taxonomy-browser"
+  },
+  {
+    "folder": "fidelity-ladder",
+    "props": {
+      "section": {
+        "description": "How close to the real software a manual gets. Each rung up gives more realistic practice, and costs more to build and to maintain.",
+        "layers": [
+          {
+            "description": "Pictures of the screens with numbered callouts. Learners read and look; they never click.",
+            "id": "l-static",
+            "title": "1 · Static Annotated Screenshots"
+          },
+          {
+            "description": "Recorded screens where the learner clicks the highlighted spot to move to the next step.",
+            "id": "l-walkthrough",
+            "title": "2 · Click-Through Walkthroughs"
+          },
+          {
+            "description": "Working screens that respond to typing and clicking, backed by synthetic data instead of a real server.",
+            "id": "l-interactive",
+            "title": "3 · Interactive Simulations with Fake Data"
+          },
+          {
+            "description": "A separate, real instance of the software filled with fake data. Everything works, nothing counts.",
+            "id": "l-sandbox",
+            "title": "4 · Full Sandbox Environment"
+          }
+        ],
+        "matrix_blocks": [
+          {
+            "col_offset": 0,
+            "col_span": 2,
+            "color": "green",
+            "description": "Rises with every rung: from looking at pictures to using the real software.",
+            "layer_id": "l-sandbox",
+            "title": "Realism of Practice"
+          },
+          {
+            "col_offset": 2,
+            "col_span": 2,
+            "color": "red",
+            "description": "Also rises with every rung: more moving parts to build, host and keep up to date with each release.",
+            "layer_id": "l-sandbox",
+            "title": "Build & Maintenance Cost"
+          },
+          {
+            "col_offset": 0,
+            "col_span": 4,
+            "color": "sky",
+            "description": "Screens react to input, but every response comes from prepared synthetic data.",
+            "layer_id": "l-interactive",
+            "title": "Fake Data + Mock Server"
+          },
+          {
+            "col_offset": 0,
+            "col_span": 4,
+            "color": "yellow",
+            "description": "Only the expected click works; everything else on the screen is a picture.",
+            "layer_id": "l-walkthrough",
+            "title": "Hotspots on Recorded Screens"
+          },
+          {
+            "col_offset": 0,
+            "col_span": 4,
+            "color": "mauve",
+            "description": "Cheapest to make, but learners only watch; they never practise.",
+            "layer_id": "l-static",
+            "title": "Screenshots + Callouts"
+          }
+        ],
+        "title": "The Fidelity Ladder",
+        "type": "pillar-layer"
+      },
+      "title": "The Fidelity Ladder"
+    },
+    "type": "pillar-layer"
+  },
+  {
+    "folder": "quiz-why",
+    "props": {
+      "questions": [
+        {
+          "choices": [
+            {
+              "correct": true,
+              "explanation": "Least privilege means trainees often have no account or role that allows the actions they must learn.",
+              "id": "q1-a",
+              "text": "Least-privilege access: they have no role that allows the action yet"
+            },
+            {
+              "correct": false,
+              "explanation": "Cost can be a barrier, but here the problem is that the clerk's role doesn't allow approving yet.",
+              "id": "q1-b",
+              "text": "Licence cost: the payment module is too expensive"
+            },
+            {
+              "correct": false,
+              "explanation": "Nothing is broken; the clerk simply isn't authorised yet.",
+              "id": "q1-c",
+              "text": "Irreversible actions: the approve button is broken"
+            }
+          ],
+          "groundedIn": "least-privilege",
+          "hint": "Think about which permissions the clerk has today.",
+          "id": "q1",
+          "question": "A new accounts clerk must learn to approve supplier payments, but their approver role is only granted after training. Which barrier stops them from practising in the real system?"
+        },
+        {
+          "choices": [
+            {
+              "correct": true,
+              "explanation": "Real systems hold production data such as patient records, which trainees must not see or change.",
+              "id": "q2-a",
+              "text": "They would still see real patient records they have no need to see"
+            },
+            {
+              "correct": false,
+              "explanation": "Read-only accounts can show screens. The issue is the real data on them.",
+              "id": "q2-b",
+              "text": "Read-only accounts can't show any screens"
+            },
+            {
+              "correct": false,
+              "explanation": "This is not the barrier described. The problem is exposure of production data.",
+              "id": "q2-c",
+              "text": "Read-only accounts cost more than full accounts"
+            }
+          ],
+          "groundedIn": "production-data",
+          "hint": "Look at what is on the screens, not what the learner can click.",
+          "id": "q2",
+          "question": "Why is giving trainees a read-only account on the live hospital system still a problem?"
+        },
+        {
+          "choices": [
+            {
+              "correct": true,
+              "explanation": "A refund sends real money and can't simply be undone, so practising it live turns every mistake into an incident.",
+              "id": "q3-a",
+              "text": "Issuing a customer refund"
+            },
+            {
+              "correct": false,
+              "explanation": "Opening a screen changes nothing.",
+              "id": "q3-b",
+              "text": "Opening the search screen"
+            },
+            {
+              "correct": false,
+              "explanation": "Sorting only changes the view.",
+              "id": "q3-c",
+              "text": "Sorting a table by date"
+            }
+          ],
+          "groundedIn": "irreversible-actions",
+          "hint": "Which one changes something outside the screen?",
+          "id": "q3",
+          "question": "Which of these is the best example of an irreversible or high-impact action?"
+        },
+        {
+          "choices": [
+            {
+              "correct": true,
+              "explanation": "That is the ladder: from looking at pictures to using a real instance filled with fake data.",
+              "id": "q4-a",
+              "text": "Screenshots → click-through walkthroughs → interactive simulations with fake data → full sandbox"
+            },
+            {
+              "correct": false,
+              "explanation": "The sandbox is the top rung, not the bottom.",
+              "id": "q4-b",
+              "text": "Sandbox → screenshots → walkthroughs → interactive simulations"
+            },
+            {
+              "correct": false,
+              "explanation": "Screenshots are the lowest rung, and the sandbox is the highest.",
+              "id": "q4-c",
+              "text": "Walkthroughs → screenshots → sandbox → interactive simulations"
+            }
+          ],
+          "groundedIn": "fidelity-levels",
+          "hint": "Start from the version where learners only look.",
+          "id": "q4",
+          "question": "Put simply, what is the order of the fidelity ladder from lowest to highest?"
+        },
+        {
+          "choices": [
+            {
+              "correct": true,
+              "explanation": "Each rung up the ladder gives more realistic practice and costs more to build and maintain.",
+              "id": "q5-a",
+              "text": "More realistic practice, but higher build and maintenance cost"
+            },
+            {
+              "correct": false,
+              "explanation": "Realism and cost rise together on the ladder.",
+              "id": "q5-b",
+              "text": "More realism with no extra cost"
+            },
+            {
+              "correct": false,
+              "explanation": "A sandbox is the most expensive rung to build and keep running.",
+              "id": "q5-c",
+              "text": "Lower cost, because sandboxes need no upkeep"
+            }
+          ],
+          "groundedIn": "fidelity-vs-cost",
+          "hint": "Look at the two blocks on the top rung of the ladder.",
+          "id": "q5",
+          "question": "Your team wants to move from annotated screenshots to a full sandbox. What should they expect?"
+        }
+      ],
+      "title": "Why Simulate Check"
+    },
+    "type": "quiz"
+  },
+  {
+    "folder": "approach-catalog",
+    "props": {
+      "categories": [
+        {
+          "analogy": "A cookbook with photos: great for following along, but reading it doesn't make you able to cook.",
+          "color": "mauve",
+          "description": "Annotated screenshot or video guides are the cheapest to create but are passive: learners watch and never practise.",
+          "details": "Someone with access does the task once, captures the screens or records a video, and adds numbered callouts or narration. It can be made in an afternoon and works for any software, web or desktop. But the learner only watches. Nothing checks whether they could do the task themselves, and every screenshot is a copy of pixels that goes out of date when the screen changes.",
+          "icon": "Image",
+          "inScope": [
+            "Step-by-step screenshot guides with callouts",
+            "Narrated screen recordings",
+            "Quick reference cards and job aids"
+          ],
+          "outOfScope": [
+            "Any practice where the learner clicks or types"
+          ],
+          "primaryFocus": "Lowest build cost, any platform",
+          "subtitle": "Show, don't touch",
+          "title": "Annotated Screenshot & Video Guides"
+        },
+        {
+          "analogy": "A pop-up book: parts move when you pull the right tab, but you can't redraw a page without printing a new book.",
+          "color": "yellow",
+          "description": "Screen-capture hotspot simulations turn recorded screens into clickable steps, but every UI change means re-recording the affected screens.",
+          "details": "An authoring tool records the real software as an expert performs the task, then turns each captured screen into a slide with an invisible 'hotspot' on the right button or field. The learner must click the right spot or type the right value to advance, and can get hints or feedback on wrong clicks. It works for desktop and web software alike. The catch: each slide is still a picture, so when a button moves in the next release, those screens have to be recorded again.",
+          "icon": "MousePointerClick",
+          "inScope": [
+            "Click and type steps on captured screens",
+            "Hints and feedback for wrong clicks",
+            "Desktop and web applications"
+          ],
+          "outOfScope": [
+            "Free exploration off the recorded path"
+          ],
+          "primaryFocus": "Real practice for any software, built by instructional designers",
+          "subtitle": "Recorded screens with clickable spots",
+          "title": "Hotspot Simulations"
+        },
+        {
+          "analogy": "Saving the recipe card instead of a photo of the cake: you can still change the ingredients afterwards.",
+          "color": "sky",
+          "description": "HTML/DOM capture demos snapshot real web pages so text and data can be edited without re-recording, but only work for web apps.",
+          "details": "Instead of a screenshot, a browser extension saves the page's HTML and CSS: the actual structure a browser renders. The result looks pixel-perfect and stays crisp at any screen size. Because it is still HTML, an author can change a customer name, a number or a label in an editor without capturing the screen again. Desktop software has no DOM to capture, so this only works for web apps, and a real layout change still means a new capture.",
+          "icon": "Code",
+          "inScope": [
+            "Browser-based SaaS and internal web apps",
+            "Editing text and fake data after capture",
+            "Guided and self-explore product demos"
+          ],
+          "outOfScope": [
+            "Desktop applications and terminals",
+            "Real server logic behind the captured pages"
+          ],
+          "primaryFocus": "High visual realism for web apps with easy text edits",
+          "subtitle": "A snapshot of the real web page, not a picture of it",
+          "title": "HTML/DOM Capture Demos"
+        },
+        {
+          "analogy": "A film-set street built with real doors and windows: everything you touch works, but nobody lives there.",
+          "color": "green",
+          "description": "A rebuilt UI clone with a mocked backend reuses the product's real front-end components, giving high fidelity and automated tests, but needs developers to maintain it.",
+          "details": "Developers assemble the training screens from the same component library the product uses, and replace the real server with a mock that returns prepared fake data. Buttons, forms and validation behave like the real thing, and learners can explore freely. Because it is code, it can be tested automatically and updated in the same pull request as the product. The price is that someone who can write front-end code has to own it.",
+          "icon": "Component",
+          "inScope": [
+            "Reusing the product's own UI components",
+            "Mock API responses with synthetic data",
+            "Automated tests for the training flow"
+          ],
+          "outOfScope": [
+            "Real back-end rules, integrations and batch jobs"
+          ],
+          "primaryFocus": "Highest fidelity without a real backend",
+          "subtitle": "The real front end, a fake server",
+          "title": "UI Clone with a Mocked Backend"
+        },
+        {
+          "analogy": "A practice kitchen in a cooking school: real stoves and knives, but nobody is eating the food.",
+          "color": "peach",
+          "description": "A training sandbox is a separate real instance loaded with synthetic data; it is the most realistic but needs infrastructure, resets and its own access control.",
+          "details": "The organisation runs another copy of the real system just for training, filled with synthetic customers, orders or tickets. Everything the learner does is real software behaviour, including workflows, integrations with other sandboxes and error messages. But it must be hosted, kept on the same version as production, reset after each class so the next group starts clean, and given its own training accounts and roles.",
+          "icon": "Server",
+          "inScope": [
+            "Separate non-production instance of the real system",
+            "Synthetic data and scheduled resets",
+            "Training-only accounts and roles"
+          ],
+          "outOfScope": [
+            "Anything that touches production data or real customers"
+          ],
+          "primaryFocus": "Maximum realism, including back-end behaviour",
+          "subtitle": "The real software, fake world",
+          "title": "Training Sandbox"
+        }
+      ],
+      "title": "Implementation Approaches"
+    },
+    "type": "taxonomy-browser"
+  },
+  {
+    "folder": "tool-kit",
+    "props": {
+      "categories": [
+        {
+          "analogy": "A photographer who follows you around and captions every photo.",
+          "color": "mauve",
+          "description": "Scribe, Tango and Guidde auto-generate step-by-step screenshot guides from a recorded session; Snagit and Loom cover manual screenshots and video.",
+          "details": "With Scribe, Tango or Guidde you press record, do the task once, and the tool captures a screenshot and a written instruction for every click, then lets you blur sensitive data and share or export the guide. Snagit is the classic tool for hand-made annotated screenshots, and Loom records quick narrated screen videos.",
+          "icon": "Camera",
+          "inScope": [
+            "Auto-captured step guides: Scribe, Tango, Guidde",
+            "Manual annotated screenshots: Snagit",
+            "Narrated screen videos: Loom"
+          ],
+          "outOfScope": [
+            "Clickable practice with feedback"
+          ],
+          "primaryFocus": "Fastest path from doing a task to a shareable guide",
+          "subtitle": "Scribe · Tango · Guidde · Snagit · Loom",
+          "title": "Screenshot & Video Guide Tools"
+        },
+        {
+          "analogy": "A lesson-in-a-box that plugs into the school's register.",
+          "color": "yellow",
+          "description": "Articulate Storyline 360, Adobe Captivate and iSpring Suite build hotspot simulations and publish them as SCORM or xAPI packages for an LMS.",
+          "details": "These e-learning authoring tools record the screen as an expert does the task and build clickable steps from it, with hints, feedback and scoring. They publish the result as a SCORM or xAPI package, a standard format that a learning management system (LMS) can host and use to record who finished the course and how they scored.",
+          "icon": "MousePointerClick",
+          "inScope": [
+            "Screen recording into clickable steps",
+            "Hints, feedback and scoring",
+            "SCORM / xAPI packages for an LMS"
+          ],
+          "outOfScope": [
+            "Editing text without the authoring tool"
+          ],
+          "primaryFocus": "Tracked, scored practice inside an LMS",
+          "subtitle": "Articulate Storyline 360 · Adobe Captivate · iSpring Suite",
+          "title": "Hotspot Simulation Authoring Tools"
+        },
+        {
+          "analogy": "A cardboard cut-out of the shop that still has working doors.",
+          "color": "sky",
+          "description": "Walnut, Navattic, Storylane and Reprise capture a web app's HTML/DOM into editable, clickable demos.",
+          "details": "These platforms use a browser extension to capture the pages of a web app, then let you edit text and data, add guided steps and share the demo as a link or an embed. They are often sold for product-marketing demos, but the same capture works for internal training on web systems.",
+          "icon": "Globe",
+          "inScope": [
+            "Browser-extension capture of web pages",
+            "Editing text and data in a web editor",
+            "Sharing demos as a link or embed"
+          ],
+          "outOfScope": [
+            "Desktop software"
+          ],
+          "primaryFocus": "Realistic web-app demos without the real backend",
+          "subtitle": "Walnut · Navattic · Storylane · Reprise",
+          "title": "HTML/DOM Capture Platforms"
+        },
+        {
+          "analogy": "Real Lego bricks from the product's own box, a pretend power supply, and a tour guide pointing at each brick.",
+          "color": "green",
+          "description": "A UI clone is typically built with the product's component library in Storybook, Mock Service Worker (MSW) for the fake API, and a tour library such as Shepherd.js or Driver.js for guided steps.",
+          "details": "Storybook shows the product's real components in isolation and is a natural place to assemble training screens. Mock Service Worker (MSW) intercepts the app's network requests in the browser and answers them with fake data, so no real server is needed. Shepherd.js or Driver.js add the guided layer: highlight an element, explain it, and wait for the learner to act.",
+          "icon": "Blocks",
+          "inScope": [
+            "Storybook for the product's components",
+            "MSW for the fake API",
+            "Shepherd.js / Driver.js for guided steps"
+          ],
+          "outOfScope": [
+            "Authoring without developers"
+          ],
+          "primaryFocus": "Building training screens from the product's own code",
+          "subtitle": "Storybook · Mock Service Worker (MSW) · Shepherd.js · Driver.js",
+          "title": "UI Clone Building Blocks"
+        },
+        {
+          "analogy": "A smoke alarm for your manual: it goes off the moment the real UI stops matching.",
+          "color": "teal",
+          "description": "Playwright tests plus visual-regression services such as Chromatic or Percy detect when the real UI has changed.",
+          "details": "Playwright drives a browser through the documented steps and fails if a button or field can no longer be found. Chromatic and Percy take screenshots of each screen on every build and highlight pixel differences against an approved baseline. Together they tell you which manual screens a release has broken, before learners find out.",
+          "icon": "ScanEye",
+          "inScope": [
+            "Scripted checks that documented steps still work",
+            "Visual diffs against approved screenshots"
+          ],
+          "outOfScope": [
+            "Fixing the manual (they only tell you what broke)"
+          ],
+          "primaryFocus": "Knowing when the manual is out of date",
+          "subtitle": "Playwright · Chromatic · Percy",
+          "title": "Drift Detection Tools"
+        },
+        {
+          "analogy": "A stage set you can build, strike and rebuild every night, with actors instead of real customers.",
+          "color": "peach",
+          "description": "Training sandboxes use vendor sandboxes (Salesforce sandboxes, ServiceNow sub-production instances) or Docker Compose/Terraform environments seeded by synthetic-data tools such as Faker, Mockaroo or Tonic.ai.",
+          "details": "Many SaaS vendors offer sandboxes out of the box, such as Salesforce sandboxes or ServiceNow sub-production instances. For self-hosted systems, Docker Compose or Terraform describe the environment so it can be created and reset the same way every time. Faker (a code library), Mockaroo (a web tool) and Tonic.ai (a data platform) produce realistic fake records to fill it.",
+          "icon": "Container",
+          "inScope": [
+            "Vendor sandboxes and sub-production instances",
+            "Environment definitions: Docker Compose, Terraform",
+            "Synthetic data: Faker, Mockaroo, Tonic.ai"
+          ],
+          "outOfScope": [
+            "Copies of production data"
+          ],
+          "primaryFocus": "Repeatable environments with privacy-safe data",
+          "subtitle": "Salesforce sandboxes · ServiceNow sub-prod · Docker Compose · Terraform · Faker · Mockaroo · Tonic.ai",
+          "title": "Sandbox & Synthetic Data Tools"
+        }
+      ],
+      "title": "Tools for Each Approach"
+    },
+    "type": "taxonomy-browser"
+  },
+  {
+    "folder": "approach-tradeoffs",
+    "props": {
+      "scenarios": [
+        {
+          "description": "New agents must learn to log, route and close tickets in a web-based IT service management system. They can't use production (real tickets, real users), and the vendor ships an update every month. Build a training setup and watch the meters: realism, build speed, upkeep per release and automation (as code or with AI). Also keep an eye on who will be able to update it: authors or developers.",
+          "id": "helpdesk-training",
+          "metrics": [
+            {
+              "baseValue": 40,
+              "direction": "higher",
+              "id": "realism",
+              "label": "Realism of Practice",
+              "max": 100,
+              "min": 0
+            },
+            {
+              "baseValue": 50,
+              "direction": "higher",
+              "id": "build",
+              "label": "Build Speed",
+              "max": 100,
+              "min": 0
+            },
+            {
+              "baseValue": 50,
+              "direction": "higher",
+              "id": "upkeep",
+              "label": "Ease of Upkeep per Release",
+              "max": 100,
+              "min": 0
+            },
+            {
+              "baseValue": 30,
+              "direction": "higher",
+              "id": "automation",
+              "label": "Automation (as code / AI)",
+              "max": 100,
+              "min": 0
+            }
+          ],
+          "steps": [
+            {
+              "choices": [
+                {
+                  "cons": [
+                    {
+                      "description": "Agents only watch; nobody checks they can do it.",
+                      "title": "No practice"
+                    },
+                    {
+                      "description": "Every UI change means new screenshots.",
+                      "title": "Monthly re-shoots"
+                    }
+                  ],
+                  "description": "Capture each step once and add callouts.",
+                  "id": "screenshots",
+                  "label": "Annotated screenshot guide",
+                  "metrics": {
+                    "automation": 5,
+                    "build": 30,
+                    "realism": -20,
+                    "upkeep": -10
+                  },
+                  "pros": [
+                    {
+                      "description": "Anyone with access can make it in a few hours.",
+                      "title": "Ready this afternoon"
+                    }
+                  ],
+                  "whenToUse": "As a quick reference card next to a more interactive option."
+                },
+                {
+                  "cons": [
+                    {
+                      "description": "With monthly releases, screens go stale fast.",
+                      "title": "Re-record on every change"
+                    }
+                  ],
+                  "description": "Record the task and turn it into clickable, scored steps in the LMS.",
+                  "id": "hotspot",
+                  "label": "Hotspot simulation (Storyline / Captivate / iSpring)",
+                  "metrics": {
+                    "automation": -10,
+                    "build": -10,
+                    "realism": 15,
+                    "upkeep": -25
+                  },
+                  "pros": [
+                    {
+                      "description": "Completion and scores are tracked via SCORM/xAPI.",
+                      "title": "Scored practice in the LMS"
+                    }
+                  ],
+                  "whenToUse": "When the UI rarely changes, or for desktop software that can't be captured as HTML."
+                },
+                {
+                  "cons": [
+                    {
+                      "description": "And the content lives in the vendor's platform, not in git.",
+                      "title": "Layout changes still need a new capture"
+                    }
+                  ],
+                  "description": "Capture the web pages and edit the fake ticket data in a web editor.",
+                  "id": "dom-capture",
+                  "label": "HTML/DOM capture demo (Walnut / Navattic / Storylane)",
+                  "metrics": {
+                    "automation": -5,
+                    "build": 10,
+                    "realism": 25,
+                    "upkeep": 0
+                  },
+                  "pros": [
+                    {
+                      "description": "Captured HTML stays crisp and realistic.",
+                      "title": "Looks exactly like the real app"
+                    },
+                    {
+                      "description": "Change ticket data and labels in the editor.",
+                      "title": "Edit text without re-capturing"
+                    }
+                  ],
+                  "whyThisFits": "It's a web app with frequent small changes, and the training team has no developers. DOM capture gives realistic practice that authors can update themselves."
+                },
+                {
+                  "cons": [
+                    {
+                      "description": "You can't reuse the vendor's components, so you'd be rebuilding a third-party UI by hand.",
+                      "title": "Needs developers"
+                    }
+                  ],
+                  "description": "Rebuild the screens from the product's components with a fake API.",
+                  "id": "ui-clone",
+                  "label": "UI clone with MSW mocks",
+                  "metrics": {
+                    "automation": 35,
+                    "build": -30,
+                    "realism": 30,
+                    "upkeep": 20
+                  },
+                  "pros": [
+                    {
+                      "description": "Lives in git and runs in CI.",
+                      "title": "Tested with every release"
+                    }
+                  ],
+                  "whenToUse": "When you own the product's source code, which you don't for a bought ITSM tool."
+                },
+                {
+                  "cons": [
+                    {
+                      "description": "Someone must reset the data after every class and manage 200 training accounts.",
+                      "title": "Resets, accounts and licences"
+                    }
+                  ],
+                  "description": "Use a sub-production instance with synthetic tickets.",
+                  "id": "sandbox",
+                  "label": "Vendor sandbox instance",
+                  "metrics": {
+                    "automation": 20,
+                    "build": -15,
+                    "realism": 40,
+                    "upkeep": 10
+                  },
+                  "pros": [
+                    {
+                      "description": "Routing rules, notifications and errors all behave for real.",
+                      "title": "The real thing"
+                    }
+                  ],
+                  "whenToUse": "When back-end behaviour matters and ops can own resets and access."
+                }
+              ],
+              "description": "How will agents practise the ticket workflow?",
+              "id": "approach",
+              "recommended": "dom-capture",
+              "title": "Main Approach"
+            },
+            {
+              "choices": [
+                {
+                  "cons": [
+                    {
+                      "description": "They lose trust in the manual.",
+                      "title": "Learners find the drift first"
+                    }
+                  ],
+                  "description": "No named owner; fix it when learners complain.",
+                  "id": "nobody",
+                  "label": "Whoever notices first",
+                  "metrics": {
+                    "realism": -20,
+                    "upkeep": -20
+                  },
+                  "pros": [
+                    {
+                      "title": "No cost today"
+                    }
+                  ]
+                },
+                {
+                  "cons": [
+                    {
+                      "title": "Takes a slice of someone's time every month"
+                    }
+                  ],
+                  "description": "Each module shows the product version it matches and has an owner.",
+                  "id": "named-owner",
+                  "label": "Named owner + version label",
+                  "metrics": {
+                    "realism": 10,
+                    "upkeep": 15
+                  },
+                  "pros": [
+                    {
+                      "description": "Everyone knows who fixes what, and learners can see which version it matches.",
+                      "title": "Clear accountability"
+                    }
+                  ],
+                  "whyThisFits": "With monthly releases, a named owner and a visible version label keep drift under control."
+                }
+              ],
+              "description": "The vendor ships monthly. Who owns updates?",
+              "id": "owner",
+              "recommended": "named-owner",
+              "title": "Who Keeps It Up to Date?"
+            },
+            {
+              "choices": [
+                {
+                  "cons": [
+                    {
+                      "title": "Slow and easy to skip"
+                    }
+                  ],
+                  "description": "The owner re-walks every module after each update.",
+                  "id": "manual-review",
+                  "label": "Click through by hand each release",
+                  "metrics": {
+                    "automation": -10,
+                    "upkeep": -10
+                  },
+                  "pros": [
+                    {
+                      "title": "No tooling needed"
+                    }
+                  ]
+                },
+                {
+                  "cons": [
+                    {
+                      "title": "Needs a non-production instance to run against"
+                    }
+                  ],
+                  "description": "Scripted steps and screenshot diffs run after each vendor update.",
+                  "id": "automated",
+                  "label": "Playwright + visual regression on the sandbox or staging",
+                  "metrics": {
+                    "automation": 25,
+                    "build": -10,
+                    "upkeep": 20
+                  },
+                  "pros": [
+                    {
+                      "title": "Tells you exactly which screens changed"
+                    }
+                  ],
+                  "whyThisFits": "Automatic drift checks turn 'which modules broke?' into a report instead of a guess."
+                }
+              ],
+              "description": "How will you know that a release broke the manual?",
+              "id": "detection",
+              "recommended": "automated",
+              "title": "How Do You Notice Drift?"
+            }
+          ],
+          "title": "Training 200 Service-Desk Agents on a New ITSM Web App"
+        }
+      ],
+      "title": "Trade-off Sandbox: Fidelity vs Upkeep"
+    },
+    "type": "tradeoff-sandbox"
+  },
+  {
+    "folder": "approach-decision",
+    "props": {
+      "id": "pick-approach",
+      "nodes": {
+        "backend": {
+          "choices": [
+            {
+              "id": "backend-yes",
+              "next": "leaf-sandbox",
+              "text": "Yes, the back-end rules are what they must learn"
+            },
+            {
+              "id": "backend-no",
+              "next": "devs",
+              "recommended": true,
+              "text": "No, the screens and steps are what matter"
+            }
+          ],
+          "id": "backend",
+          "prompt": "Do learners need real back-end behaviour (workflows, integrations, real error messages)?"
+        },
+        "devs": {
+          "choices": [
+            {
+              "id": "devs-yes",
+              "next": "leaf-clone",
+              "recommended": true,
+              "text": "Yes, it's our product and our team"
+            },
+            {
+              "id": "devs-no",
+              "next": "leaf-dom",
+              "text": "No, it's a bought product, or only authors will maintain it"
+            }
+          ],
+          "id": "devs",
+          "prompt": "Do you own the product's front-end code and have developers to maintain a clone?"
+        },
+        "leaf-clone": {
+          "id": "leaf-clone",
+          "leaf": {
+            "explanation": "You can reuse your own components, so the clone stays faithful, lives in git and gets tested in CI alongside the product.",
+            "recommendation": "UI clone with a mocked backend (Storybook + MSW + Shepherd.js/Driver.js)",
+            "tradeoffs": [
+              "Developers must own it",
+              "Back-end rules are only as real as your mocks"
+            ]
+          }
+        },
+        "leaf-dom": {
+          "id": "leaf-dom",
+          "leaf": {
+            "explanation": "Realistic web-app practice that non-developers can update: edit text and fake data without re-capturing.",
+            "recommendation": "HTML/DOM capture demo (Walnut, Navattic, Storylane, Reprise)",
+            "tradeoffs": [
+              "Layout changes still need a new capture",
+              "Content lives in a vendor platform, not your git repo"
+            ]
+          }
+        },
+        "leaf-hotspot": {
+          "id": "leaf-hotspot",
+          "leaf": {
+            "explanation": "Desktop software has no DOM to capture and can't easily be cloned, so recorded screens with clickable hotspots give real practice, tracked in your LMS via SCORM/xAPI.",
+            "recommendation": "Hotspot simulation (Articulate Storyline 360, Adobe Captivate, iSpring Suite)",
+            "tradeoffs": [
+              "Re-record affected screens on every UI change",
+              "Project files are hard to diff or review in git"
+            ]
+          }
+        },
+        "leaf-sandbox": {
+          "id": "leaf-sandbox",
+          "leaf": {
+            "explanation": "Only a real instance reproduces back-end rules, integrations and real error messages. Use a vendor sandbox or a Docker Compose/Terraform environment seeded with Faker, Mockaroo or Tonic.ai.",
+            "recommendation": "Training sandbox with synthetic data",
+            "tradeoffs": [
+              "Needs hosting, resets after every class and its own training accounts",
+              "Must be kept on the same version as production"
+            ]
+          }
+        },
+        "leaf-screenshots": {
+          "id": "leaf-screenshots",
+          "leaf": {
+            "explanation": "The cheapest option, and fine when learners only need a reference to follow. Script the screenshots with Playwright if the UI changes often.",
+            "recommendation": "Annotated screenshot or video guide (Scribe, Tango, Guidde, Snagit, Loom)",
+            "tradeoffs": [
+              "Passive: nobody checks the learner can actually do the task",
+              "Every changed screen must be re-captured"
+            ]
+          }
+        },
+        "platform": {
+          "choices": [
+            {
+              "id": "desktop",
+              "next": "leaf-hotspot",
+              "text": "Desktop or terminal software"
+            },
+            {
+              "id": "web",
+              "next": "backend",
+              "recommended": true,
+              "text": "Web app"
+            }
+          ],
+          "id": "platform",
+          "prompt": "Is the software a web app or desktop/terminal software?"
+        },
+        "start": {
+          "choices": [
+            {
+              "id": "follow",
+              "next": "leaf-screenshots",
+              "text": "Follow along: a reference they can look at while doing the task"
+            },
+            {
+              "id": "practise",
+              "next": "platform",
+              "recommended": true,
+              "text": "Practise: they must prove they can do it"
+            }
+          ],
+          "id": "start",
+          "prompt": "Do learners need to practise, or just follow along?"
+        }
+      },
+      "root": "start",
+      "title": "Which interactive manual approach fits your situation?"
+    },
+    "type": "decision-tree"
+  },
+  {
+    "folder": "quiz-approaches",
+    "props": {
+      "questions": [
+        {
+          "choices": [
+            {
+              "correct": true,
+              "explanation": "Screenshot and video guides are cheapest to make, but learners never practise the task.",
+              "id": "q1-a",
+              "text": "It is passive: learners watch but never practise"
+            },
+            {
+              "correct": false,
+              "explanation": "Screenshots work for any software, web or desktop.",
+              "id": "q1-b",
+              "text": "It only works for desktop software"
+            },
+            {
+              "correct": false,
+              "explanation": "It is the cheapest approach to build.",
+              "id": "q1-c",
+              "text": "It is the most expensive approach to build"
+            }
+          ],
+          "groundedIn": "screenshot-guides",
+          "hint": "Think about what the learner actually does.",
+          "id": "q1",
+          "question": "What is the main weakness of an annotated screenshot guide?"
+        },
+        {
+          "choices": [
+            {
+              "correct": true,
+              "explanation": "Each hotspot slide is a recorded picture, so every UI change means re-recording those screens.",
+              "id": "q2-a",
+              "text": "The affected screens must be recorded again"
+            },
+            {
+              "correct": false,
+              "explanation": "Recorded screens don't know the real UI changed.",
+              "id": "q2-b",
+              "text": "The hotspot updates itself automatically"
+            },
+            {
+              "correct": false,
+              "explanation": "Learners would practise a button position that no longer exists.",
+              "id": "q2-c",
+              "text": "Nothing: learners won't notice"
+            }
+          ],
+          "groundedIn": "hotspot-sims",
+          "hint": "What is each slide actually made of?",
+          "id": "q2",
+          "question": "Your hotspot simulation is built from recorded screens. The next release moves the 'Save' button. What happens?"
+        },
+        {
+          "choices": [
+            {
+              "correct": true,
+              "explanation": "It saves a page's HTML, and desktop software has no HTML page to capture.",
+              "id": "q3-a",
+              "text": "DOM capture only works for web apps"
+            },
+            {
+              "correct": false,
+              "explanation": "Editing text and data without re-recording is actually its strength.",
+              "id": "q3-b",
+              "text": "It can't edit fake data"
+            },
+            {
+              "correct": false,
+              "explanation": "DOM capture replays saved pages; it doesn't need the real server.",
+              "id": "q3-c",
+              "text": "It needs a real back-end server"
+            }
+          ],
+          "groundedIn": "dom-capture",
+          "hint": "What does DOM stand in for?",
+          "id": "q3",
+          "question": "Why can't you use an HTML/DOM capture tool to train people on a Windows desktop accounting program?"
+        },
+        {
+          "choices": [
+            {
+              "correct": true,
+              "explanation": "It reuses the product's front-end components and has automated tests, but only developers can keep it working.",
+              "id": "q4-a",
+              "text": "It needs developers to maintain it"
+            },
+            {
+              "correct": false,
+              "explanation": "Reusing the real components gives it very high fidelity.",
+              "id": "q4-b",
+              "text": "It looks nothing like the real product"
+            },
+            {
+              "correct": false,
+              "explanation": "Being code, it's the easiest to test automatically.",
+              "id": "q4-c",
+              "text": "It can't be tested automatically"
+            }
+          ],
+          "groundedIn": "ui-clone",
+          "hint": "Who can edit it?",
+          "id": "q4",
+          "question": "What is the main cost of a rebuilt UI clone with a mocked backend?"
+        },
+        {
+          "choices": [
+            {
+              "correct": true,
+              "explanation": "A sandbox is a real instance, so it needs infrastructure, resets and its own access control.",
+              "id": "q5-a",
+              "text": "Resetting it between classes and managing its own access control"
+            },
+            {
+              "correct": false,
+              "explanation": "That's the cost of hotspot simulations.",
+              "id": "q5-b",
+              "text": "Re-recording every screen after each release"
+            },
+            {
+              "correct": false,
+              "explanation": "A sandbox holds synthetic data, not production data.",
+              "id": "q5-c",
+              "text": "Hiding production data from trainees"
+            }
+          ],
+          "groundedIn": "training-sandbox",
+          "hint": "It's a real system; what does every real system need?",
+          "id": "q5",
+          "question": "Which of these is a job you take on when you choose a training sandbox?"
+        },
+        {
+          "choices": [
+            {
+              "correct": true,
+              "explanation": "Storyline 360, Adobe Captivate and iSpring Suite all publish SCORM/xAPI packages.",
+              "id": "q6-a",
+              "text": "Articulate Storyline 360"
+            },
+            {
+              "correct": false,
+              "explanation": "MSW fakes network requests for a UI clone.",
+              "id": "q6-b",
+              "text": "Mock Service Worker (MSW)"
+            },
+            {
+              "correct": false,
+              "explanation": "Terraform defines sandbox infrastructure.",
+              "id": "q6-c",
+              "text": "Terraform"
+            }
+          ],
+          "groundedIn": "tools-hotspot",
+          "hint": "Look at the hotspot authoring tools card.",
+          "id": "q6",
+          "question": "Which tool publishes hotspot simulations as SCORM or xAPI packages for an LMS?"
+        },
+        {
+          "choices": [
+            {
+              "correct": true,
+              "explanation": "MSW intercepts requests in the browser and returns fake data, so no real server is needed.",
+              "id": "q7-a",
+              "text": "Mock Service Worker (MSW)"
+            },
+            {
+              "correct": false,
+              "explanation": "Driver.js adds guided steps; it doesn't fake the API.",
+              "id": "q7-b",
+              "text": "Driver.js"
+            },
+            {
+              "correct": false,
+              "explanation": "Scribe generates screenshot guides.",
+              "id": "q7-c",
+              "text": "Scribe"
+            }
+          ],
+          "groundedIn": "tools-clone",
+          "hint": "Which building block plays the role of the server?",
+          "id": "q7",
+          "question": "In a UI clone, which tool answers the app's network requests with fake data?"
+        },
+        {
+          "choices": [
+            {
+              "correct": true,
+              "explanation": "Playwright checks the steps still work; Chromatic and Percy flag visual differences.",
+              "id": "q8-a",
+              "text": "Playwright plus Chromatic or Percy"
+            },
+            {
+              "correct": false,
+              "explanation": "These make videos and screenshots; they don't detect changes.",
+              "id": "q8-b",
+              "text": "Loom plus Snagit"
+            },
+            {
+              "correct": false,
+              "explanation": "These generate synthetic data.",
+              "id": "q8-c",
+              "text": "Faker plus Mockaroo"
+            }
+          ],
+          "groundedIn": "tools-drift",
+          "hint": "Look at the drift detection card.",
+          "id": "q8",
+          "question": "Which pair of tools helps you detect that the real UI has changed?"
+        },
+        {
+          "choices": [
+            {
+              "correct": true,
+              "explanation": "These synthetic-data tools produce realistic fake records.",
+              "id": "q9-a",
+              "text": "Faker, Mockaroo or Tonic.ai"
+            },
+            {
+              "correct": false,
+              "explanation": "These capture web pages into demos.",
+              "id": "q9-b",
+              "text": "Walnut or Navattic"
+            },
+            {
+              "correct": false,
+              "explanation": "Production data is exactly what trainees must not see.",
+              "id": "q9-c",
+              "text": "A copy of the production database"
+            }
+          ],
+          "groundedIn": "tools-sandbox",
+          "hint": "Look at the sandbox and synthetic data tools card.",
+          "id": "q9",
+          "question": "You need 5,000 realistic but fake customer records to fill a training sandbox. Which tools fit?"
+        },
+        {
+          "choices": [
+            {
+              "correct": true,
+              "explanation": "The axes are build cost, realism, upkeep per release, who can update it, and how much can be automated.",
+              "id": "q10-a",
+              "text": "The colour scheme of the software"
+            },
+            {
+              "correct": false,
+              "explanation": "That is one of the axes.",
+              "id": "q10-b",
+              "text": "Maintenance effort per UI release"
+            },
+            {
+              "correct": false,
+              "explanation": "That is one of the axes.",
+              "id": "q10-c",
+              "text": "Who can update it (authors vs developers)"
+            }
+          ],
+          "groundedIn": "upkeep-axis",
+          "hint": "Recall the meters in the trade-off sandbox.",
+          "id": "q10",
+          "question": "Which of these is NOT one of the trade-off axes used to compare approaches?"
+        }
+      ],
+      "title": "Approach Check"
+    },
+    "type": "quiz"
+  },
+  {
+    "folder": "upkeep-cost",
+    "props": {
+      "metrics": [
+        {
+          "analogy": "Repainting a mural every time the building gets a new window.",
+          "description": "Yearly upkeep effort ≈ releases per year × screens changed per release × minutes to update one screen. Screenshots and recordings pay this full cost for every changed screen.",
+          "formula": "Math.round(releases * screens_changed * minutes_per_screen / 60)",
+          "id": "pixel_hours",
+          "inScope": [
+            "Re-capturing, re-annotating and re-publishing changed screens"
+          ],
+          "label": "Yearly upkeep if you copy pixels (hours)",
+          "outOfScope": [
+            "Building the manual the first time",
+            "Writing new modules for new features"
+          ]
+        },
+        {
+          "analogy": "A window display that rearranges itself when the stock changes; you only fix what it can't.",
+          "description": "Approaches that reuse live components (a UI clone) or regenerate screenshots from a script only pay by hand for the screens that don't update themselves.",
+          "formula": "Math.round(releases * screens_changed * (1 - reuse_percent / 100) * minutes_per_screen / 60)",
+          "id": "reuse_hours",
+          "inScope": [
+            "Screens that still need a person to update them"
+          ],
+          "label": "Yearly upkeep with reuse (hours)",
+          "outOfScope": [
+            "The one-off cost of building the reuse (developers, scripts, CI)"
+          ]
+        },
+        {
+          "analogy": "The interest earned on an up-front investment.",
+          "description": "The yearly time that reuse buys back. Compare it with what the reuse costs to build: with few releases it may not pay off, with weekly releases it almost always does.",
+          "formula": "Math.round(releases * screens_changed * (reuse_percent / 100) * minutes_per_screen / 60)",
+          "id": "hours_saved",
+          "inScope": [
+            "Recurring upkeep avoided"
+          ],
+          "label": "Hours saved per year by reuse",
+          "outOfScope": [
+            "Developer time to build and maintain the reuse"
+          ]
+        }
+      ],
+      "title": "Upkeep Cost Calculator",
+      "variables": [
+        {
+          "defaultValue": 12,
+          "id": "releases",
+          "label": "Product releases per year",
+          "max": 52,
+          "min": 1,
+          "step": 1
+        },
+        {
+          "defaultValue": 8,
+          "id": "screens_changed",
+          "label": "Manual screens changed per release",
+          "max": 50,
+          "min": 0,
+          "step": 1
+        },
+        {
+          "defaultValue": 30,
+          "id": "minutes_per_screen",
+          "label": "Minutes to update one screen by hand (re-capture, re-annotate, re-publish)",
+          "max": 120,
+          "min": 5,
+          "step": 5
+        },
+        {
+          "defaultValue": 0,
+          "id": "reuse_percent",
+          "label": "% of changed screens that update automatically (reused live components or scripted capture)",
+          "max": 100,
+          "min": 0,
+          "step": 5
+        }
+      ]
+    },
+    "type": "formula-sandbox"
+  },
+  {
+    "folder": "upkeep-practices",
+    "props": {
+      "items": [
+        {
+          "children": [
+            {
+              "text": "Build simulations from the design-system components or a shared script of steps, instead of hand-copying screens."
+            },
+            {
+              "text": "When the source changes, every manual that uses it changes too; there is no second copy to forget."
+            }
+          ],
+          "text": "Generate from a single source of truth"
+        },
+        {
+          "children": [
+            {
+              "text": "Run visual-regression or selector checks on every product release."
+            },
+            {
+              "text": "A failing check names the exact module and step that went stale, before a learner finds it."
+            }
+          ],
+          "text": "Detect drift automatically"
+        },
+        {
+          "children": [
+            {
+              "text": "Label each simulation with the product version it matches, e.g. 'Matches ServiceDesk v24.3'."
+            },
+            {
+              "text": "Name an owner who updates it; 'everyone' means no one."
+            }
+          ],
+          "text": "Pin versions and name an owner"
+        },
+        {
+          "children": [
+            {
+              "text": "Store the fake customers, tickets and orders in one shared set of synthetic fixtures."
+            },
+            {
+              "text": "Every simulation then shows the same realistic, privacy-safe records, and a data change is made once."
+            }
+          ],
+          "text": "Keep fake data in shared synthetic fixtures"
+        }
+      ],
+      "title": "Maintainability Practices"
+    },
+    "type": "bullets"
+  },
+  {
+    "folder": "code-and-ai",
+    "props": {
+      "categories": [
+        {
+          "analogy": "A recipe in a shared cookbook that anyone can propose edits to, and a test kitchen that cooks it on every change.",
+          "color": "green",
+          "description": "UI clones and training sandboxes are naturally 'as code': components, MSW handlers, tour steps, Terraform and seed scripts live in git, get reviewed in pull requests and run in CI.",
+          "details": "A UI clone is front-end code: components, MSW handlers that fake the API, and tour steps for Shepherd.js or Driver.js. A sandbox is infrastructure code: Terraform or Docker Compose files plus seed scripts that fill it with synthetic data. Because everything is text in git, a change is a pull request that someone reviews, CI tests it, and a new version can be rebuilt the same way every time.",
+          "icon": "GitBranch",
+          "inScope": [
+            "Components, MSW handlers and tour steps in git",
+            "Terraform / Docker Compose and seed scripts",
+            "Pull-request review and CI tests"
+          ],
+          "outOfScope": [
+            "Authoring by people who don't use git"
+          ],
+          "primaryFocus": "Reviewable, testable, reproducible manuals",
+          "subtitle": "UI clones · training sandboxes",
+          "title": "Natively As Code"
+        },
+        {
+          "analogy": "A photo booth that re-takes every class photo automatically each term.",
+          "color": "sky",
+          "description": "Screenshot guides can become code by scripting Playwright to drive a non-production instance and capture every screenshot, so the whole manual regenerates on each release.",
+          "details": "Instead of a person clicking and capturing, a Playwright script logs into a staging or sandbox instance, performs each documented step and saves a screenshot. The text lives in Markdown next to it. On each release CI runs the script again, so every screenshot is fresh. If a step fails, the script tells you the manual needs a text change too. You do need a non-production instance for the script to run against.",
+          "icon": "FileCode",
+          "inScope": [
+            "Playwright scripts that capture screenshots",
+            "Markdown text in git (docs-as-code)",
+            "Regenerating the manual in CI on each release"
+          ],
+          "outOfScope": [
+            "Software with no non-production instance to script against"
+          ],
+          "primaryFocus": "Turning the cheapest approach into a self-updating one",
+          "subtitle": "Playwright capture + Markdown",
+          "title": "Screenshot Guides As Code"
+        },
+        {
+          "analogy": "A hand-painted sign: beautiful, easy for a painter to make, but you can't 'diff' two versions of it.",
+          "color": "yellow",
+          "description": "Hotspot simulations and DOM-capture demos are authored in GUI or SaaS editors whose project files are hard to diff, review or regenerate from git.",
+          "details": "Storyline, Captivate and iSpring save projects as their own file formats that you edit in the desktop tool. Walnut, Navattic, Storylane and Reprise keep the demo inside their web platform. You can't easily see what changed between two versions, review it in a pull request, or rebuild it from a script. They are friendly for non-developers, but upkeep stays manual.",
+          "icon": "PenTool",
+          "inScope": [
+            "Desktop authoring tool project files",
+            "Demos stored in a vendor's web platform"
+          ],
+          "outOfScope": [
+            "Pull-request review and CI regeneration"
+          ],
+          "primaryFocus": "Author-friendly, but upkeep stays manual",
+          "subtitle": "Hotspot simulations · DOM-capture demos",
+          "title": "GUI-Authored (Hard to Treat As Code)"
+        },
+        {
+          "analogy": "A fast junior writer: great first drafts, still needs an editor.",
+          "color": "mauve",
+          "description": "AI is best used for drafting: step text and voice-over from recordings, quiz questions, synthetic data, and code changes to mocks and tour steps.",
+          "details": "Screenshot tools such as Scribe, Tango and Guidde already use AI to write step text and voice-over from a recording. A language model can draft quiz questions from the step script, generate realistic synthetic records, and, for as-code approaches, a coding assistant can propose the change to MSW handlers or tour steps after a UI release. In every case AI produces a first draft that is faster to review than to write.",
+          "icon": "Sparkles",
+          "inScope": [
+            "Step text and voice-over from recordings",
+            "Quiz questions and synthetic data",
+            "Code changes to mocks and tour steps"
+          ],
+          "outOfScope": [
+            "Deciding the manual is correct (see Verify AI Output)"
+          ],
+          "primaryFocus": "Cutting the time to a first draft",
+          "subtitle": "Text, voice, quizzes, data, code",
+          "title": "Where AI Helps: Drafting"
+        },
+        {
+          "analogy": "A sat-nav that invents a road: it only helps if someone checks the map before the trip.",
+          "color": "red",
+          "description": "AI output must be verified against the real UI, by a person or by automated tests, because an invented step is exactly the drift a simulation must avoid.",
+          "details": "A language model can describe a button that isn't there or a menu path that the product never had, and say it confidently. To a learner that's the same failure as a stale screenshot: they rehearse something that doesn't exist. So AI drafts pass the same gate as human work: a person who knows the real UI checks it, or a Playwright test proves every step can actually be performed.",
+          "icon": "BadgeCheck",
+          "inScope": [
+            "Human review against the real UI",
+            "Automated tests that perform every step"
+          ],
+          "outOfScope": [
+            "Publishing AI drafts unchecked"
+          ],
+          "primaryFocus": "Keeping AI from creating new drift",
+          "subtitle": "An invented step is drift",
+          "title": "Verify AI Output"
+        }
+      ],
+      "title": "As Code & With AI"
+    },
+    "type": "taxonomy-browser"
+  },
+  {
+    "folder": "scenario-release",
+    "props": {
+      "id": "menu-moved",
+      "intro": "Your company's expense web app ships version 5.0 on Monday. The 'Submit claim' button has moved from the top toolbar into a new 'Actions' menu. You own the interactive manual that 900 staff use, built as a hotspot simulation plus a screenshot quick-reference. Monday is three days away.",
+      "nodes": {
+        "fix": {
+          "choices": [
+            {
+              "id": "rerecord",
+              "next": "result-rerecord",
+              "text": "Re-record the 6 screens, update the quick-reference and label both 'Matches v5.0'"
+            },
+            {
+              "id": "note",
+              "next": "result-note",
+              "text": "Add a note at the start: 'Some screens may look different'"
+            }
+          ],
+          "id": "fix",
+          "prompt": "The hand check finds 6 broken screens across 3 modules. How do you fix them?"
+        },
+        "fix-auto": {
+          "choices": [
+            {
+              "id": "rerecord-auto",
+              "next": "result-auto",
+              "text": "Re-record the 6 screens, re-run the checks until green, label 'Matches v5.0'"
+            },
+            {
+              "id": "ai-publish",
+              "next": "result-ai",
+              "text": "Ask an AI assistant to rewrite the step text for v5.0 and publish it straight away"
+            }
+          ],
+          "id": "fix-auto",
+          "prompt": "The checks name 6 failing steps in 3 modules. The owner is you. What next?"
+        },
+        "result-ai": {
+          "id": "result-ai",
+          "outcome": {
+            "lesson": "AI is great for drafting, but its output must be verified against the real UI, by a person or by tests, before publishing.",
+            "rating": "b-minus",
+            "verdict": "The AI text says 'click Submit in the Actions menu', which is right, but for one module it invents a 'Quick submit' shortcut that doesn't exist."
+          }
+        },
+        "result-auto": {
+          "id": "result-auto",
+          "outcome": {
+            "lesson": "Automatic drift detection plus a named owner and a version label is the maintainability loop working as designed.",
+            "rating": "a",
+            "verdict": "The checks pinpointed the broken steps in minutes; the fixed modules are labelled v5.0 and verified before Monday."
+          }
+        },
+        "result-note": {
+          "id": "result-note",
+          "outcome": {
+            "lesson": "A warning doesn't fix drift. The simulation must match the version learners will use.",
+            "rating": "c",
+            "verdict": "Staff read the warning, then still rehearse the old toolbar button in the simulation."
+          }
+        },
+        "result-rerecord": {
+          "id": "result-rerecord",
+          "outcome": {
+            "lesson": "Pinning the version and updating the changed screens is right. Automating the detection would make it faster and more reliable every release.",
+            "rating": "b-plus",
+            "verdict": "The manual matches v5.0 on Monday, but the hand check took most of a day and could easily miss a screen next time."
+          }
+        },
+        "result-wait": {
+          "id": "result-wait",
+          "outcome": {
+            "lesson": "Learners should never be your drift detector. Detect drift on every release, before anyone rehearses a screen that no longer exists.",
+            "rating": "c",
+            "verdict": "On Tuesday the help desk gets 60 tickets: 'the manual says Submit is on the toolbar'. Staff stop trusting the manual."
+          }
+        },
+        "start": {
+          "choices": [
+            {
+              "id": "wait",
+              "next": "result-wait",
+              "text": "Wait for learners to report problems after Monday"
+            },
+            {
+              "id": "click-through",
+              "next": "fix",
+              "text": "Click through every module by hand against the v5.0 staging site"
+            },
+            {
+              "id": "automated",
+              "next": "fix-auto",
+              "text": "Run your Playwright drift checks and visual diffs against v5.0 staging"
+            }
+          ],
+          "id": "start",
+          "prompt": "How do you find out which parts of the manual the release breaks?"
+        }
+      },
+      "startNode": "start",
+      "title": "The Menu Moved"
+    },
+    "type": "scenario"
+  },
+  {
+    "folder": "reflection-upkeep",
+    "props": {
+      "challenges": [
+        {
+          "groundedIn": "drift-detection",
+          "items": [
+            {
+              "id": "fix",
+              "text": "The owner updates the affected screens"
+            },
+            {
+              "id": "detect",
+              "text": "Automatic drift checks run against the new release"
+            },
+            {
+              "id": "label",
+              "text": "Label the simulation with the new product version"
+            },
+            {
+              "id": "report",
+              "text": "Failing checks name the stale modules and steps"
+            }
+          ],
+          "prompt": "A new product release is coming. Put the maintainability loop in the right order.",
+          "solution": [
+            "detect",
+            "report",
+            "fix",
+            "label"
+          ]
+        },
+        {
+          "groundedIn": "screenshots-as-code",
+          "items": [
+            {
+              "id": "ci",
+              "text": "Run the script in CI on every release"
+            },
+            {
+              "id": "script",
+              "text": "Write a Playwright script that performs each documented step"
+            },
+            {
+              "id": "instance",
+              "text": "Get a non-production instance for the script to run against"
+            },
+            {
+              "id": "capture",
+              "text": "Have the script save a screenshot at each step next to the Markdown text"
+            }
+          ],
+          "prompt": "Turn a hand-made screenshot guide into one that regenerates itself. Order the steps.",
+          "solution": [
+            "instance",
+            "script",
+            "capture",
+            "ci"
+          ]
+        },
+        {
+          "groundedIn": "ai-verify",
+          "items": [
+            {
+              "id": "publish",
+              "text": "Merge and publish the update"
+            },
+            {
+              "id": "draft",
+              "text": "AI drafts the changes to MSW handlers and tour steps"
+            },
+            {
+              "id": "verify",
+              "text": "Tests and a reviewer verify every step against the real UI"
+            }
+          ],
+          "prompt": "Use AI safely to update a UI clone after a release. Order the steps.",
+          "solution": [
+            "draft",
+            "verify",
+            "publish"
+          ]
+        }
+      ],
+      "title": "Order the Upkeep Loop"
+    },
+    "type": "reflection-sequence"
+  },
+  {
+    "folder": "watch-try-test",
+    "props": {
+      "schema": {
+        "entities": {
+          "cmd_branch_correct": {
+            "desc": "Advance to the next step",
+            "title": "Advance to the next step",
+            "type": "Command"
+          },
+          "cmd_branch_wrong": {
+            "desc": "Show specific feedback and a hint",
+            "title": "Show specific feedback and a hint",
+            "type": "Command"
+          },
+          "cmd_step_record": {
+            "desc": "Record score and wrong clicks",
+            "title": "Record score and wrong clicks",
+            "type": "Command"
+          },
+          "cmd_step_test": {
+            "desc": "Perform the task in Test mode without hints",
+            "title": "Perform the task in Test mode without hints",
+            "type": "Command"
+          },
+          "cmd_step_try": {
+            "desc": "Attempt a step in Try mode with hints",
+            "title": "Attempt a step in Try mode with hints",
+            "type": "Command"
+          },
+          "cmd_step_watch": {
+            "desc": "Play the Watch demo",
+            "title": "Play the Watch demo",
+            "type": "Command"
+          },
+          "evt_evt_demo_watched": {
+            "desc": "The learner saw the task done once, step by step",
+            "title": "Demo Watched",
+            "type": "Event"
+          },
+          "evt_evt_feedback_shown": {
+            "desc": "Immediate, specific feedback instead of silently doing nothing; the learner tries again",
+            "title": "Feedback Shown",
+            "type": "Event"
+          },
+          "evt_evt_result_recorded": {
+            "desc": "Result Recorded",
+            "title": "Result Recorded",
+            "type": "Event"
+          },
+          "evt_evt_step_attempted": {
+            "desc": "Step Attempted",
+            "title": "Step Attempted",
+            "type": "Event"
+          },
+          "evt_evt_test_submitted": {
+            "desc": "Test Submitted",
+            "title": "Test Submitted",
+            "type": "Event"
+          },
+          "evt_evt_try_completed": {
+            "desc": "Guided Practice Completed",
+            "title": "Guided Practice Completed",
+            "type": "Event"
+          },
+          "learner": {
+            "desc": "A staff member learning one task in the simulation",
+            "title": "Learner",
+            "type": "Actor"
+          },
+          "learner2": {
+            "desc": "A staff member learning one task in the simulation",
+            "title": "Learner",
+            "type": "Actor"
+          },
+          "learner3": {
+            "desc": "A staff member learning one task in the simulation",
+            "title": "Learner",
+            "type": "Actor"
+          },
+          "lms": {
+            "desc": "Records completions, scores and wrong clicks (e.g. via xAPI)",
+            "title": "Learning Management System",
+            "type": "External API"
+          },
+          "pol_branch_correct": {
+            "desc": "If the action was correct",
+            "title": "If the action was correct",
+            "type": "Policy"
+          },
+          "pol_branch_wrong": {
+            "desc": "If the action was wrong",
+            "title": "If the action was wrong",
+            "type": "Policy"
+          },
+          "pol_step_record": {
+            "desc": "When the test is submitted",
+            "root": false,
+            "title": "When the test is submitted",
+            "type": "Policy"
+          },
+          "pol_step_test": {
+            "desc": "After guided practice is completed",
+            "root": false,
+            "title": "After guided practice is completed",
+            "type": "Policy"
+          },
+          "pol_step_try": {
+            "desc": "After the demo is watched",
+            "root": false,
+            "title": "After the demo is watched",
+            "type": "Policy"
+          },
+          "pol_step_watch": {
+            "desc": "When the learner opens a task module",
+            "root": false,
+            "title": "When the learner opens a task module",
+            "type": "Policy"
+          },
+          "sim_player": {
+            "desc": "Runs the module in Watch, Try and Test modes and gives feedback",
+            "title": "Simulation Player",
+            "type": "Aggregate"
+          },
+          "sim_player2": {
+            "desc": "Runs the module in Watch, Try and Test modes and gives feedback",
+            "title": "Simulation Player",
+            "type": "Aggregate"
+          },
+          "sim_player3": {
+            "desc": "Runs the module in Watch, Try and Test modes and gives feedback",
+            "title": "Simulation Player",
+            "type": "Aggregate"
+          },
+          "sim_player4": {
+            "desc": "Runs the module in Watch, Try and Test modes and gives feedback",
+            "title": "Simulation Player",
+            "type": "Aggregate"
+          },
+          "sim_player5": {
+            "desc": "Runs the module in Watch, Try and Test modes and gives feedback",
+            "title": "Simulation Player",
+            "type": "Aggregate"
+          },
+          "sim_player6": {
+            "desc": "Runs the module in Watch, Try and Test modes and gives feedback",
+            "title": "Simulation Player",
+            "type": "Aggregate"
+          }
+        },
+        "journeys": [
+          {
+            "description": "The learner watches, practises with hints, then passes the unguided test",
+            "id": "journey_happy",
+            "label": "Happy Path: Watch → Try → Test",
+            "steps": [
+              {
+                "nodeIds": [
+                  "evt_evt_demo_watched"
+                ],
+                "reason": "Watch mode demonstrates the task once",
+                "title": "Watch"
+              },
+              {
+                "nodeIds": [
+                  "evt_evt_step_attempted"
+                ],
+                "reason": "Try mode lets the learner do each step, with hints available",
+                "title": "Try"
+              },
+              {
+                "nodeIds": [
+                  "evt_evt_try_completed"
+                ],
+                "reason": "Every step was performed correctly with support",
+                "title": "Guided practice done"
+              },
+              {
+                "nodeIds": [
+                  "evt_evt_test_submitted"
+                ],
+                "reason": "Test mode removes hints: an unguided assessment",
+                "title": "Test"
+              },
+              {
+                "nodeIds": [
+                  "evt_evt_result_recorded"
+                ],
+                "reason": "The score and wrong clicks go to the LMS",
+                "title": "Recorded"
+              }
+            ]
+          },
+          {
+            "description": "A wrong action gets immediate, specific feedback instead of silence",
+            "id": "journey_wrong_click",
+            "label": "Wrong Click in Try Mode",
+            "steps": [
+              {
+                "nodeIds": [
+                  "evt_evt_demo_watched"
+                ],
+                "reason": "The learner watches the demo",
+                "title": "Watch"
+              },
+              {
+                "nodeIds": [
+                  "evt_evt_step_attempted"
+                ],
+                "reason": "The learner clicks the wrong control",
+                "title": "Try"
+              },
+              {
+                "nodeIds": [
+                  "evt_evt_feedback_shown"
+                ],
+                "reason": "The player explains why that was wrong and gives a hint, then the learner tries again",
+                "title": "Feedback"
+              }
+            ]
+          }
+        ],
+        "rawSteps": [
+          {
+            "command": "Play the Watch demo",
+            "continuesAs": "step_try",
+            "handledBy": {
+              "_tag": "ref",
+              "id": "sim_player"
+            },
+            "id": "step_watch",
+            "initiatedBy": {
+              "_tag": "ref",
+              "id": "learner"
+            },
+            "policy": "When the learner opens a task module",
+            "resultEvents": [
+              {
+                "desc": "The learner saw the task done once, step by step",
+                "id": "evt_demo_watched",
+                "title": "Demo Watched"
+              }
+            ],
+            "type": "linear"
+          },
+          {
+            "command": "Attempt a step in Try mode with hints",
+            "continuesAs": "step_try_check",
+            "handledBy": {
+              "_tag": "ref",
+              "id": "sim_player"
+            },
+            "id": "step_try",
+            "initiatedBy": {
+              "_tag": "ref",
+              "id": "learner"
+            },
+            "policy": "After the demo is watched",
+            "resultEvents": [
+              {
+                "id": "evt_step_attempted",
+                "title": "Step Attempted"
+              }
+            ],
+            "type": "linear"
+          },
+          {
+            "branches": [
+              {
+                "command": "Advance to the next step",
+                "continuesAs": "step_test",
+                "handledBy": {
+                  "_tag": "ref",
+                  "id": "sim_player"
+                },
+                "id": "branch_correct",
+                "label": "Correct action",
+                "policy": "If the action was correct",
+                "resultEvents": [
+                  {
+                    "id": "evt_try_completed",
+                    "title": "Guided Practice Completed"
+                  }
+                ]
+              },
+              {
+                "command": "Show specific feedback and a hint",
+                "dashed": true,
+                "handledBy": {
+                  "_tag": "ref",
+                  "id": "sim_player"
+                },
+                "id": "branch_wrong",
+                "label": "Wrong click",
+                "policy": "If the action was wrong",
+                "resultEvents": [
+                  {
+                    "desc": "Immediate, specific feedback instead of silently doing nothing; the learner tries again",
+                    "id": "evt_feedback_shown",
+                    "title": "Feedback Shown"
+                  }
+                ]
+              }
+            ],
+            "event": "evt_step_attempted",
+            "id": "step_try_check",
+            "type": "branch"
+          },
+          {
+            "command": "Perform the task in Test mode without hints",
+            "continuesAs": "step_record",
+            "handledBy": {
+              "_tag": "ref",
+              "id": "sim_player"
+            },
+            "id": "step_test",
+            "initiatedBy": {
+              "_tag": "ref",
+              "id": "learner"
+            },
+            "policy": "After guided practice is completed",
+            "resultEvents": [
+              {
+                "id": "evt_test_submitted",
+                "title": "Test Submitted"
+              }
+            ],
+            "type": "linear"
+          },
+          {
+            "command": "Record score and wrong clicks",
+            "delegatesTo": {
+              "_tag": "ref",
+              "id": "lms"
+            },
+            "handledBy": {
+              "_tag": "ref",
+              "id": "sim_player"
+            },
+            "id": "step_record",
+            "policy": "When the test is submitted",
+            "resultEvents": [
+              {
+                "id": "evt_result_recorded",
+                "title": "Result Recorded"
+              }
+            ],
+            "type": "linear"
+          }
+        ],
+        "relations": [
+          {
+            "from": "learner",
+            "id": "r1",
+            "to": "pol_step_watch",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "from": "pol_step_watch",
+            "id": "r2",
+            "to": "cmd_step_watch",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "from": "cmd_step_watch",
+            "handledBy": true,
+            "id": "r3",
+            "to": "sim_player",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "from": "sim_player",
+            "id": "r4",
+            "to": "evt_evt_demo_watched",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "from": "evt_evt_demo_watched",
+            "id": "r5",
+            "to": "pol_step_try",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "from": "learner2",
+            "id": "r6",
+            "to": "pol_step_try",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "from": "pol_step_try",
+            "id": "r7",
+            "to": "cmd_step_try",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "from": "cmd_step_try",
+            "handledBy": true,
+            "id": "r8",
+            "to": "sim_player2",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "from": "sim_player2",
+            "id": "r9",
+            "to": "evt_evt_step_attempted",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "from": "evt_evt_step_attempted",
+            "id": "r10",
+            "label": "Correct action",
+            "to": "pol_branch_correct",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "from": "pol_branch_correct",
+            "id": "r11",
+            "to": "cmd_branch_correct",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "from": "cmd_branch_correct",
+            "handledBy": true,
+            "id": "r12",
+            "to": "sim_player3",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "from": "sim_player3",
+            "id": "r13",
+            "to": "evt_evt_try_completed",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "from": "evt_evt_try_completed",
+            "id": "r14",
+            "to": "pol_step_test",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "dashed": true,
+            "from": "evt_evt_step_attempted",
+            "id": "r15",
+            "label": "Wrong click",
+            "to": "pol_branch_wrong",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "from": "pol_branch_wrong",
+            "id": "r16",
+            "to": "cmd_branch_wrong",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "from": "cmd_branch_wrong",
+            "handledBy": true,
+            "id": "r17",
+            "to": "sim_player4",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "from": "sim_player4",
+            "id": "r18",
+            "to": "evt_evt_feedback_shown",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "from": "learner3",
+            "id": "r19",
+            "to": "pol_step_test",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "from": "pol_step_test",
+            "id": "r20",
+            "to": "cmd_step_test",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "from": "cmd_step_test",
+            "handledBy": true,
+            "id": "r21",
+            "to": "sim_player5",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "from": "sim_player5",
+            "id": "r22",
+            "to": "evt_evt_test_submitted",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "from": "evt_evt_test_submitted",
+            "id": "r23",
+            "to": "pol_step_record",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "from": "pol_step_record",
+            "id": "r24",
+            "to": "cmd_step_record",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "from": "cmd_step_record",
+            "handledBy": true,
+            "id": "r25",
+            "to": "sim_player6",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "from": "sim_player6",
+            "id": "r26",
+            "to": "lms",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "from": "sim_player6",
+            "id": "r27",
+            "to": "evt_evt_result_recorded",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          }
+        ]
+      },
+      "title": "Watch → Try → Test"
+    },
+    "type": "flowchart"
+  },
+  {
+    "folder": "concept-map",
+    "props": {
+      "edges": [
+        {
+          "from": "access_barriers",
+          "label": "block practice on",
+          "to": "real_system"
+        },
+        {
+          "from": "interactive_manual",
+          "label": "imitates",
+          "to": "real_system"
+        },
+        {
+          "from": "fidelity",
+          "label": "sets realism of",
+          "to": "interactive_manual"
+        },
+        {
+          "from": "screenshots",
+          "label": "lowest rung of",
+          "to": "fidelity"
+        },
+        {
+          "from": "sandbox",
+          "label": "highest rung of",
+          "to": "fidelity"
+        },
+        {
+          "from": "hotspot",
+          "label": "re-record raises",
+          "to": "upkeep"
+        },
+        {
+          "from": "dom_capture",
+          "label": "builds web",
+          "to": "interactive_manual"
+        },
+        {
+          "from": "ui_clone",
+          "label": "is natively",
+          "to": "as_code"
+        },
+        {
+          "from": "sandbox",
+          "label": "is natively",
+          "to": "as_code"
+        },
+        {
+          "from": "sandbox",
+          "label": "is filled with",
+          "to": "synthetic_data"
+        },
+        {
+          "from": "as_code",
+          "label": "enables",
+          "to": "drift_detection"
+        },
+        {
+          "from": "drift_detection",
+          "label": "catches",
+          "to": "drift"
+        },
+        {
+          "from": "ai_drafting",
+          "label": "can cause, if unverified",
+          "to": "drift"
+        },
+        {
+          "from": "upkeep",
+          "label": "unpaid, leads to",
+          "to": "drift"
+        },
+        {
+          "from": "principles",
+          "label": "shape",
+          "to": "interactive_manual"
+        },
+        {
+          "from": "principles",
+          "label": "include",
+          "to": "watch_try_test"
+        }
+      ],
+      "nodes": {
+        "access_barriers": {
+          "category": "concept",
+          "id": "access_barriers",
+          "title": "Access Barriers"
+        },
+        "ai_drafting": {
+          "category": "mechanism",
+          "id": "ai_drafting",
+          "title": "AI Drafting"
+        },
+        "as_code": {
+          "category": "mechanism",
+          "id": "as_code",
+          "title": "As Code (git + CI)"
+        },
+        "dom_capture": {
+          "category": "approach",
+          "id": "dom_capture",
+          "title": "DOM Capture Demo"
+        },
+        "drift": {
+          "category": "risk",
+          "id": "drift",
+          "title": "Drift (the Phantom UI)"
+        },
+        "drift_detection": {
+          "category": "mechanism",
+          "id": "drift_detection",
+          "title": "Drift Detection"
+        },
+        "fidelity": {
+          "category": "concept",
+          "id": "fidelity",
+          "title": "Fidelity Ladder"
+        },
+        "hotspot": {
+          "category": "approach",
+          "id": "hotspot",
+          "title": "Hotspot Simulation"
+        },
+        "interactive_manual": {
+          "category": "foundation",
+          "id": "interactive_manual",
+          "title": "Interactive User Manual"
+        },
+        "principles": {
+          "category": "concept",
+          "id": "principles",
+          "title": "Creation Principles"
+        },
+        "real_system": {
+          "category": "foundation",
+          "id": "real_system",
+          "title": "Real System"
+        },
+        "sandbox": {
+          "category": "approach",
+          "id": "sandbox",
+          "title": "Training Sandbox"
+        },
+        "screenshots": {
+          "category": "approach",
+          "id": "screenshots",
+          "title": "Screenshot Guides"
+        },
+        "synthetic_data": {
+          "category": "mechanism",
+          "id": "synthetic_data",
+          "title": "Synthetic Data"
+        },
+        "ui_clone": {
+          "category": "approach",
+          "id": "ui_clone",
+          "title": "UI Clone + Mocks"
+        },
+        "upkeep": {
+          "category": "concept",
+          "id": "upkeep",
+          "title": "Upkeep Cost"
+        },
+        "watch_try_test": {
+          "category": "process",
+          "id": "watch_try_test",
+          "title": "Watch → Try → Test"
+        }
+      },
+      "title": "How It All Connects"
+    },
+    "type": "concept-map"
+  },
+  {
+    "folder": "glossary",
+    "props": {
+      "terms": [
+        {
+          "category": "Access",
+          "detailedDefinition": "A security principle under which accounts get the smallest set of roles necessary. It is why trainees often can't perform the very actions a manual must teach.",
+          "id": "least-privilege",
+          "pronunciation": "leest priv-uh-lij",
+          "shortDefinition": "Giving each person only the permissions their current job needs.",
+          "whyItMatters": "It's the most common reason learners can't practise in the real system.",
+          "word": "Least Privilege"
+        },
+        {
+          "category": "Design",
+          "detailedDefinition": "The fidelity ladder runs from annotated screenshots to click-through walkthroughs, interactive simulations with fake data and a full sandbox. Higher fidelity gives more realistic practice at higher build and upkeep cost.",
+          "id": "fidelity",
+          "pronunciation": "fi-del-i-tee",
+          "shortDefinition": "How closely a simulation matches the real software.",
+          "whyItMatters": "Choosing the right rung is the first trade-off of any interactive manual.",
+          "word": "Fidelity"
+        },
+        {
+          "category": "Design",
+          "detailedDefinition": "Controls, labels and order on the path the learner practises match the real software exactly; areas off the path can be static or disabled.",
+          "id": "selective-fidelity",
+          "pronunciation": "si-lek-tiv fi-del-i-tee",
+          "shortDefinition": "Exact on the task path, simplified everywhere else.",
+          "whyItMatters": "It keeps practice realistic where it counts while keeping cost down.",
+          "word": "Selective Fidelity"
+        },
+        {
+          "category": "Approach",
+          "detailedDefinition": "In hotspot simulations, an invisible click target sits on the correct button or field of a captured screen. Clicking it advances the step; clicking elsewhere can trigger feedback.",
+          "id": "hotspot",
+          "pronunciation": "hot-spot",
+          "shortDefinition": "A clickable area placed over a recorded screen.",
+          "whyItMatters": "Hotspots make recorded screens practisable, but the screens under them go stale with every UI change.",
+          "word": "Hotspot"
+        },
+        {
+          "category": "Approach",
+          "detailedDefinition": "The DOM (Document Object Model) is the structure a browser renders. Capturing it gives a crisp, realistic copy whose text and data can be edited without re-recording.",
+          "id": "dom",
+          "pronunciation": "dom kap-cher",
+          "shortDefinition": "Saving a web page's HTML structure instead of a picture of it.",
+          "whyItMatters": "It's why DOM-capture demos are easier to update than screenshots, but only for web apps.",
+          "word": "DOM Capture"
+        },
+        {
+          "category": "Tool",
+          "detailedDefinition": "MSW intercepts requests in the browser and returns prepared responses, so a UI clone runs with no real server.",
+          "id": "msw",
+          "pronunciation": "em es dub-uhl-yoo",
+          "shortDefinition": "A library that answers an app's network requests with fake data.",
+          "whyItMatters": "It's the fake backend of a UI clone.",
+          "word": "Mock Service Worker (MSW)"
+        },
+        {
+          "category": "Tool",
+          "detailedDefinition": "Authoring tools such as Storyline, Captivate and iSpring publish SCORM or xAPI packages. The LMS uses them to track completion and scores; xAPI can also record detailed events such as wrong clicks.",
+          "id": "scorm-xapi",
+          "pronunciation": "skorm / eks ay pee eye",
+          "shortDefinition": "Standard formats that let an LMS host a course and record results.",
+          "whyItMatters": "It's how you measure who finished training and where they struggled.",
+          "word": "SCORM / xAPI"
+        },
+        {
+          "category": "Data",
+          "detailedDefinition": "Fake customers, tickets or orders created with tools such as Faker, Mockaroo or Tonic.ai and shared as fixtures across simulations.",
+          "id": "synthetic-data",
+          "pronunciation": "sin-thet-ik day-tuh",
+          "shortDefinition": "Invented records that look real but belong to nobody.",
+          "whyItMatters": "Realistic practice without privacy risk.",
+          "word": "Synthetic Data"
+        },
+        {
+          "category": "Maintenance",
+          "detailedDefinition": "Every release can move buttons, rename labels or change steps. Unless someone updates the simulation, learners rehearse screens that no longer exist.",
+          "id": "drift",
+          "pronunciation": "drift",
+          "shortDefinition": "When the manual no longer matches the real software.",
+          "whyItMatters": "It's the central failure mode of interactive manuals: the Drifted Phantom UI.",
+          "word": "Drift"
+        },
+        {
+          "category": "Maintenance",
+          "detailedDefinition": "Services such as Chromatic and Percy capture screens on every build and highlight pixel differences against a baseline.",
+          "id": "visual-regression",
+          "pronunciation": "vizh-oo-uhl ri-gresh-uhn",
+          "shortDefinition": "Comparing new screenshots with approved ones to spot changes.",
+          "whyItMatters": "It tells you which manual screens a release has changed.",
+          "word": "Visual Regression Testing"
+        },
+        {
+          "category": "Maintenance",
+          "detailedDefinition": "UI clones, sandbox definitions and scripted screenshot guides live in git, so changes are pull requests, tests run automatically and everything can be rebuilt.",
+          "id": "as-code",
+          "pronunciation": "az kohd",
+          "shortDefinition": "Keeping the manual as text files in git, reviewed and built by CI.",
+          "whyItMatters": "It makes upkeep reviewable, testable and repeatable.",
+          "word": "As Code"
+        },
+        {
+          "category": "Design",
+          "detailedDefinition": "The three simulation modes: Watch shows the task, Try lets the learner do it with hints and feedback, and Test checks they can do it alone.",
+          "id": "watch-try-test",
+          "pronunciation": "woch, trahy, test",
+          "shortDefinition": "Demo, guided practice with hints, then unguided assessment.",
+          "whyItMatters": "It moves learners from seeing to doing to proving.",
+          "word": "Watch → Try → Test"
+        }
+      ],
+      "title": "Glossary"
+    },
+    "type": "flashcards"
+  },
+  {
+    "folder": "plan-your-sim",
+    "props": {
+      "challenges": [
+        {
+          "chips": [
+            {
+              "id": "chip-least-privilege",
+              "text": "least privilege"
+            },
+            {
+              "id": "chip-production-data",
+              "text": "production data"
+            },
+            {
+              "id": "chip-irreversible",
+              "text": "irreversible"
+            },
+            {
+              "id": "chip-dark-mode",
+              "text": "dark mode"
+            }
+          ],
+          "explanation": "<strong>Correct!</strong> Least privilege, production data and irreversible actions are three of the four barriers (licence cost is the fourth). Dark mode was never one of them.",
+          "prompt": "Complete the case for simulating (Track 1):",
+          "solution": {
+            "zone-1": "chip-least-privilege",
+            "zone-2": "chip-production-data",
+            "zone-3": "chip-irreversible"
+          },
+          "template": "Trainees can't use the real system because {zone-1} denies them the role, it holds {zone-2}, and some actions are {zone-3}."
+        },
+        {
+          "chips": [
+            {
+              "id": "chip-hotspot",
+              "text": "hotspot simulation"
+            },
+            {
+              "id": "chip-storyline",
+              "text": "Articulate Storyline 360"
+            },
+            {
+              "id": "chip-clone",
+              "text": "UI clone"
+            },
+            {
+              "id": "chip-walnut",
+              "text": "Walnut"
+            }
+          ],
+          "explanation": "<strong>Correct!</strong> Desktop software has no DOM to capture, so Walnut doesn't fit it; hotspot simulations do. With your own front-end code, a UI clone with MSW mocks reuses real components.",
+          "prompt": "Pick an approach and its tool (Track 2):",
+          "solution": {
+            "zone-1": "chip-hotspot",
+            "zone-2": "chip-storyline",
+            "zone-3": "chip-clone"
+          },
+          "template": "For a desktop program, build a {zone-1} in a tool such as {zone-2}. For your own web product with developers, build a {zone-3} with MSW."
+        },
+        {
+          "chips": [
+            {
+              "id": "chip-playwright",
+              "text": "Playwright and visual diffs"
+            },
+            {
+              "id": "chip-version",
+              "text": "product version"
+            },
+            {
+              "id": "chip-draft",
+              "text": "draft"
+            },
+            {
+              "id": "chip-learner-reports",
+              "text": "learner complaints"
+            }
+          ],
+          "explanation": "<strong>Correct!</strong> Automatic checks, a version label and AI-as-drafter keep the Drifted Phantom UI away. Learner complaints are the failure, not the detector.",
+          "prompt": "Keep it alive (Track 3):",
+          "solution": {
+            "zone-1": "chip-playwright",
+            "zone-2": "chip-version",
+            "zone-3": "chip-draft"
+          },
+          "template": "Detect drift with {zone-1} on every release, label each module with its {zone-2}, and let AI {zone-3} but never publish unverified."
+        },
+        {
+          "chips": [
+            {
+              "id": "chip-task-analysis",
+              "text": "task analysis"
+            },
+            {
+              "id": "chip-selective",
+              "text": "exact fidelity"
+            },
+            {
+              "id": "chip-wtt",
+              "text": "Watch → Try → Test"
+            },
+            {
+              "id": "chip-menu-tour",
+              "text": "a tour of every menu"
+            }
+          ],
+          "explanation": "<strong>Correct!</strong> Watch the expert first, make the practised path exact, move learners from demo to guided practice to test, and tell them what differs on the live system. A tour of every menu is screen-first, not task-first.",
+          "prompt": "Design the module (Track 4):",
+          "solution": {
+            "zone-1": "chip-task-analysis",
+            "zone-2": "chip-selective",
+            "zone-3": "chip-wtt"
+          },
+          "template": "Start with {zone-1}, keep {zone-2} on the task path, run learners through {zone-3}, and end with a bridge to the real system."
+        }
+      ],
+      "title": "Plan Your Simulation"
+    },
+    "type": "reflection-template"
+  },
+  {
+    "folder": "creation-principles",
+    "props": {
+      "categories": [
+        {
+          "analogy": "A phrasebook organised by situations ('at the restaurant', 'at the station') beats a dictionary when you're travelling.",
+          "color": "mauve",
+          "description": "Organise the manual around real job tasks (e.g. 'approve a leave request'), not a tour of every screen and menu.",
+          "details": "Learners come to a manual to get a job done. A tour of every menu ('this is the File menu, this is the Settings tab…') is easy to write because it follows the software, but people forget it immediately because it isn't attached to anything they need to do. Start from the list of tasks each role performs and build one module per task.",
+          "icon": "ListChecks",
+          "inScope": [
+            "A task list per role",
+            "One module per job task"
+          ],
+          "outOfScope": [
+            "Feature tours of every menu"
+          ],
+          "primaryFocus": "Modules that map to real work",
+          "subtitle": "Teach jobs, not menus",
+          "title": "Task-First, Not Screen-First"
+        },
+        {
+          "analogy": "A film set only builds the side of the street the camera sees.",
+          "color": "sky",
+          "description": "Selective fidelity: copy the controls, labels and order on the task path exactly; everything off the path can be static or disabled.",
+          "details": "The learner's muscle memory is built on the path they practise, so the buttons, labels, field order and messages on that path must match the real software exactly. Everything else on the screen (other menus, side panels, unrelated tabs) can be a static picture or a disabled control. This keeps build and upkeep cost down without making practice less real where it counts.",
+          "icon": "Crosshair",
+          "inScope": [
+            "Exact labels, controls and order on the task path",
+            "Static or disabled areas off the path"
+          ],
+          "outOfScope": [
+            "Rebuilding every feature of the product"
+          ],
+          "primaryFocus": "Realism where it matters, low cost elsewhere",
+          "subtitle": "Exact on the path, simple off it",
+          "title": "Selective Fidelity"
+        },
+        {
+          "analogy": "A good crash-test dummy is shaped like a person, but it isn't one.",
+          "color": "green",
+          "description": "Use synthetic data that looks like real cases, never copied production data.",
+          "details": "'Test User 1' and 'Lorem ipsum' make practice feel fake and hide the real difficulty, such as long names, duplicate customers or an order with ten line items. Invent synthetic records that look like the cases learners will meet, including the awkward ones. Never copy production data into a training tool, even 'just for now'.",
+          "icon": "Users",
+          "inScope": [
+            "Synthetic records modelled on real cases",
+            "Edge cases learners will meet"
+          ],
+          "outOfScope": [
+            "Copies of production data"
+          ],
+          "primaryFocus": "Practice that feels real without privacy risk",
+          "subtitle": "Believable cases, zero real people",
+          "title": "Realistic, Safe Data"
+        },
+        {
+          "analogy": "A flight simulator lets you crash, shows you why, and puts you back on the runway.",
+          "color": "red",
+          "description": "Make it safe to fail: learners can make mistakes, see what would happen, and reset.",
+          "details": "The whole point of simulating is that errors cost nothing, so use it. Let learners press the wrong button and show them what would happen in the real system ('This would have refunded the customer twice'). Then give them a one-click reset so they can try again from a clean start.",
+          "icon": "RotateCcw",
+          "inScope": [
+            "Showing the consequence of a wrong action",
+            "One-click reset to a clean start"
+          ],
+          "outOfScope": [
+            "Silently blocking every wrong click"
+          ],
+          "primaryFocus": "Learning from consequences without real damage",
+          "subtitle": "Mistakes are the lesson",
+          "title": "Safe to Fail"
+        },
+        {
+          "analogy": "Recipe cards instead of a cookbook read cover to cover.",
+          "color": "yellow",
+          "description": "Keep each module to one short task with one goal, so learners can finish it in a few minutes and look it up again later.",
+          "details": "A 45-minute simulation of 'everything in the CRM' is hard to finish and impossible to find again when you need it. A module called 'Merge two duplicate customers' takes three minutes and can be found by searching for the task on the day you need it. Short modules are also easier to update: a release breaks one small module, not a giant course.",
+          "icon": "Puzzle",
+          "inScope": [
+            "One goal per module",
+            "Task names learners would search for"
+          ],
+          "outOfScope": [
+            "Long all-in-one courses"
+          ],
+          "primaryFocus": "Finishable and findable modules",
+          "subtitle": "One task, one goal, a few minutes",
+          "title": "Small Chunks"
+        },
+        {
+          "analogy": "The driving instructor's last lesson: 'on the motorway, nobody will brake for you'.",
+          "color": "teal",
+          "description": "End each task with a bridge to the real system: what differs there, such as extra approvals, permissions or live consequences.",
+          "details": "A simulation always leaves something out. Close each module by telling learners what will be different when they do it for real: 'In the live system your manager must approve refunds over 5,000 baht', 'You will only see this menu after your role is granted', 'This e-mail really goes to the customer'. It stops practice-world habits from causing real-world surprises.",
+          "icon": "Link",
+          "inScope": [
+            "Extra approvals and permissions in the real system",
+            "Consequences that are live for real"
+          ],
+          "outOfScope": [
+            "Pretending the simulation is identical"
+          ],
+          "primaryFocus": "Transferring practice safely to the live system",
+          "subtitle": "Say what's different out there",
+          "title": "Bridge to the Real System"
+        },
+        {
+          "analogy": "A building's ramp isn't an extra; it's how some people get in the door.",
+          "color": "lavender",
+          "description": "Make the simulation accessible: keyboard navigation, screen-reader labels and captions for any audio or video.",
+          "details": "If some staff use the real system with a keyboard or a screen reader, the manual must work that way too. Hotspots that only respond to a mouse click lock them out. Give every control a keyboard path and a screen-reader label, and caption every narration or video.",
+          "icon": "Accessibility",
+          "inScope": [
+            "Keyboard navigation",
+            "Screen-reader labels",
+            "Captions for audio and video"
+          ],
+          "outOfScope": [
+            "Mouse-only hotspots"
+          ],
+          "primaryFocus": "Nobody is left out of training",
+          "subtitle": "Everyone who uses the system can train on it",
+          "title": "Accessible"
+        }
+      ],
+      "title": "Principles for Building Simulations"
+    },
+    "type": "taxonomy-browser"
+  },
+  {
+    "folder": "build-process",
+    "props": {
+      "items": [
+        {
+          "children": [
+            {
+              "text": "Watch an expert do the real task and write down every step, decision and common mistake."
+            },
+            {
+              "text": "The common mistakes become your wrong-click feedback later."
+            }
+          ],
+          "text": "1 · Task analysis"
+        },
+        {
+          "children": [
+            {
+              "text": "For each step: the expected action, the hint, and the feedback for a wrong action."
+            },
+            {
+              "text": "Example: 'Click Actions → Submit claim' · hint 'Submitting lives in the Actions menu' · wrong click on Save: 'Save keeps a draft; it doesn't send the claim.'"
+            }
+          ],
+          "text": "2 · Write a step script before building"
+        },
+        {
+          "children": [
+            {
+              "text": "The step script is the same whether you build it in Storyline, Navattic, a UI clone or a sandbox."
+            }
+          ],
+          "text": "3 · Build with the approach you chose"
+        },
+        {
+          "children": [
+            {
+              "text": "Pilot the simulation with a few real learners and fix the steps where they get stuck."
+            }
+          ],
+          "text": "4 · Pilot with real learners before release"
+        },
+        {
+          "children": [
+            {
+              "text": "Track completion and wrong-click data (e.g. via xAPI) to find confusing steps."
+            },
+            {
+              "text": "A step where many people click the wrong thing is a design problem, not a learner problem."
+            }
+          ],
+          "text": "5 · Measure after release"
+        }
+      ],
+      "title": "From Task to Simulation"
+    },
+    "type": "bullets"
+  },
+  {
+    "folder": "quiz-principles",
+    "props": {
+      "questions": [
+        {
+          "choices": [
+            {
+              "correct": true,
+              "explanation": "Task-first manuals are organised around real job tasks, not screens.",
+              "id": "q1-a",
+              "text": "Approve a leave request"
+            },
+            {
+              "correct": false,
+              "explanation": "That is screen-first: it follows the software, not the learner's job.",
+              "id": "q1-b",
+              "text": "A tour of the Settings tab"
+            },
+            {
+              "correct": false,
+              "explanation": "A tour of every menu is exactly what task-first avoids.",
+              "id": "q1-c",
+              "text": "All menus explained, A to Z"
+            }
+          ],
+          "groundedIn": "task-first",
+          "hint": "Which one is a job someone has to get done?",
+          "id": "q1",
+          "question": "Which module title best follows the task-first principle?"
+        },
+        {
+          "choices": [
+            {
+              "correct": true,
+              "explanation": "The path the learner practises must be exact; everything off the path can be static or disabled.",
+              "id": "q2-a",
+              "text": "The controls, labels and order on the task path"
+            },
+            {
+              "correct": false,
+              "explanation": "That's full fidelity, which costs far more to build and maintain.",
+              "id": "q2-b",
+              "text": "Every screen and feature of the product"
+            },
+            {
+              "correct": false,
+              "explanation": "The task path must be exact, or learners build the wrong muscle memory.",
+              "id": "q2-c",
+              "text": "Nothing: approximate screens are fine"
+            }
+          ],
+          "groundedIn": "selective-fidelity",
+          "hint": "Think of the film set that only builds what the camera sees.",
+          "id": "q2",
+          "question": "Under selective fidelity, what must match the real software exactly?"
+        },
+        {
+          "choices": [
+            {
+              "correct": true,
+              "explanation": "Realism comes from believable synthetic records, not from real people's data.",
+              "id": "q3-a",
+              "text": "Use synthetic data that looks like real cases, never copied production data"
+            },
+            {
+              "correct": false,
+              "explanation": "The principle is never, not 'just for now'.",
+              "id": "q3-b",
+              "text": "Fine, as long as it's only for a week"
+            },
+            {
+              "correct": false,
+              "explanation": "That's safe, but not realistic: it hides the real difficulties learners will meet.",
+              "id": "q3-c",
+              "text": "Use 'Test User 1' so nothing looks real"
+            }
+          ],
+          "groundedIn": "realistic-safe-data",
+          "hint": "Realistic and safe at the same time.",
+          "id": "q3",
+          "question": "A trainer suggests copying last month's real customer list into the simulation 'to make it realistic'. What does the realistic, safe data principle say?"
+        },
+        {
+          "choices": [
+            {
+              "correct": true,
+              "explanation": "Learners can make mistakes, see the consequence and reset.",
+              "id": "q4-a",
+              "text": "Show what would happen in the real system, then let them reset"
+            },
+            {
+              "correct": false,
+              "explanation": "Silently blocking hides the lesson the mistake could teach.",
+              "id": "q4-b",
+              "text": "Block the second click silently"
+            },
+            {
+              "correct": false,
+              "explanation": "The point of simulating is that mistakes cost nothing.",
+              "id": "q4-c",
+              "text": "End the module and mark them as failed"
+            }
+          ],
+          "groundedIn": "safe-to-fail",
+          "hint": "What's the flight simulator's approach to a crash?",
+          "id": "q4",
+          "question": "A learner clicks 'Refund' twice in the simulation. What does 'safe to fail' recommend?"
+        },
+        {
+          "choices": [
+            {
+              "correct": true,
+              "explanation": "Small chunks are finishable and findable, and one release breaks one small module instead of a giant course.",
+              "id": "q5-a",
+              "text": "Each short, single-goal task can be finished in minutes and found again later"
+            },
+            {
+              "correct": false,
+              "explanation": "They still need upkeep, just less per change.",
+              "id": "q5-b",
+              "text": "Small modules need no maintenance"
+            },
+            {
+              "correct": false,
+              "explanation": "They can. The reason is learning and lookup.",
+              "id": "q5-c",
+              "text": "LMSs can't host long courses"
+            }
+          ],
+          "groundedIn": "small-chunks",
+          "hint": "Think recipe cards versus a whole cookbook.",
+          "id": "q5",
+          "question": "Why split a 45-minute 'everything in the CRM' simulation into small modules?"
+        },
+        {
+          "choices": [
+            {
+              "correct": true,
+              "explanation": "The bridge tells learners what will be different when they do it for real.",
+              "id": "q6-a",
+              "text": "What differs in the real system, such as extra approvals, permissions or live consequences"
+            },
+            {
+              "correct": false,
+              "explanation": "Scores go to the LMS; the bridge is about the real system.",
+              "id": "q6-b",
+              "text": "A score summary"
+            },
+            {
+              "correct": false,
+              "explanation": "The bridge is specific to the task just practised.",
+              "id": "q6-c",
+              "text": "The product's release notes"
+            }
+          ],
+          "groundedIn": "bridge-to-real",
+          "hint": "What will surprise them on the live system?",
+          "id": "q6",
+          "question": "What belongs in the 'bridge to the real system' at the end of a module?"
+        },
+        {
+          "choices": [
+            {
+              "correct": true,
+              "explanation": "These are the three accessibility basics taught.",
+              "id": "q7-a",
+              "text": "Keyboard navigation, screen-reader labels and captions"
+            },
+            {
+              "correct": false,
+              "explanation": "Mouse-only hotspots lock out keyboard and screen-reader users.",
+              "id": "q7-b",
+              "text": "Mouse-only hotspots for precision"
+            },
+            {
+              "correct": false,
+              "explanation": "Audio needs captions.",
+              "id": "q7-c",
+              "text": "Autoplaying narration without captions"
+            }
+          ],
+          "groundedIn": "accessible",
+          "hint": "Who uses the real system without a mouse?",
+          "id": "q7",
+          "question": "Which is an accessibility requirement for an interactive manual?"
+        },
+        {
+          "choices": [
+            {
+              "correct": true,
+              "explanation": "Everything else, including wrong-click feedback, is built from the task analysis.",
+              "id": "q8-a",
+              "text": "Task analysis: watch an expert do the real task and note every step, decision and common mistake"
+            },
+            {
+              "correct": false,
+              "explanation": "The tool comes after you know what the task is.",
+              "id": "q8-b",
+              "text": "Choose an authoring tool"
+            },
+            {
+              "correct": false,
+              "explanation": "Publishing comes last.",
+              "id": "q8-c",
+              "text": "Publish to the LMS"
+            }
+          ],
+          "groundedIn": "task-analysis",
+          "hint": "Start by watching the real work.",
+          "id": "q8",
+          "question": "What is the first step of building a simulation?"
+        },
+        {
+          "choices": [
+            {
+              "correct": true,
+              "explanation": "Those three turn a step into a teachable moment.",
+              "id": "q9-a",
+              "text": "The expected action, the hint, and the feedback for a wrong action"
+            },
+            {
+              "correct": false,
+              "explanation": "The step script is about behaviour, not branding.",
+              "id": "q9-b",
+              "text": "The screen colour, font and logo"
+            },
+            {
+              "correct": false,
+              "explanation": "Ownership matters, but it isn't part of the step script.",
+              "id": "q9-c",
+              "text": "The developer, the tester and the release date"
+            }
+          ],
+          "groundedIn": "step-script",
+          "hint": "What should happen when the learner is right, stuck or wrong?",
+          "id": "q9",
+          "question": "A step script lists three things for each step. Which three?"
+        },
+        {
+          "choices": [
+            {
+              "correct": true,
+              "explanation": "A pilot finds confusing steps while they're still cheap to fix.",
+              "id": "q10-a",
+              "text": "Pilot it with a few real learners and fix where they get stuck"
+            },
+            {
+              "correct": false,
+              "explanation": "Then 900 people meet the confusing steps instead of a few.",
+              "id": "q10-b",
+              "text": "Release it and wait for feedback"
+            },
+            {
+              "correct": false,
+              "explanation": "A disclaimer doesn't fix a confusing step.",
+              "id": "q10-c",
+              "text": "Add a disclaimer"
+            }
+          ],
+          "groundedIn": "pilot-test",
+          "hint": "Small audience first.",
+          "id": "q10",
+          "question": "Before releasing to 900 staff, what should you do with the finished simulation?"
+        },
+        {
+          "choices": [
+            {
+              "correct": true,
+              "explanation": "Steps where many learners click the wrong thing point to design problems.",
+              "id": "q11-a",
+              "text": "Track completion and wrong-click data, e.g. via xAPI"
+            },
+            {
+              "correct": false,
+              "explanation": "Opens don't show where people struggle.",
+              "id": "q11-b",
+              "text": "Count how many people opened the module"
+            },
+            {
+              "correct": false,
+              "explanation": "The learners' behaviour tells you, not the builders' guesses.",
+              "id": "q11-c",
+              "text": "Ask the developers"
+            }
+          ],
+          "groundedIn": "measure-errors",
+          "hint": "Which data shows where people click wrong?",
+          "id": "q11",
+          "question": "After release, how do you find the most confusing steps?"
+        },
+        {
+          "choices": [
+            {
+              "correct": true,
+              "explanation": "Test is the unguided assessment.",
+              "id": "q12-a",
+              "text": "Test"
+            },
+            {
+              "correct": false,
+              "explanation": "Try is guided practice with hints.",
+              "id": "q12-b",
+              "text": "Try"
+            },
+            {
+              "correct": false,
+              "explanation": "Watch is a demo; the learner doesn't act.",
+              "id": "q12-c",
+              "text": "Watch"
+            }
+          ],
+          "groundedIn": "three-modes",
+          "hint": "Watch → Try → ?",
+          "id": "q12",
+          "question": "Which mode removes all hints to check the learner can do the task alone?"
+        },
+        {
+          "choices": [
+            {
+              "correct": true,
+              "explanation": "Wrong clicks should get immediate, specific feedback instead of silence.",
+              "id": "q13-a",
+              "text": "Give immediate, specific feedback about why that was wrong"
+            },
+            {
+              "correct": false,
+              "explanation": "Silently doing nothing leaves the learner guessing.",
+              "id": "q13-b",
+              "text": "Do nothing until they click the right button"
+            },
+            {
+              "correct": false,
+              "explanation": "They haven't finished guided practice yet.",
+              "id": "q13-c",
+              "text": "Jump straight to Test mode"
+            }
+          ],
+          "groundedIn": "wrong-click-feedback",
+          "hint": "Look at the wrong-click branch of the flowchart.",
+          "id": "q13",
+          "question": "In Try mode, a learner clicks 'Save' instead of 'Submit'. What should the simulation do?"
+        }
+      ],
+      "title": "Principles Check"
+    },
+    "type": "quiz"
+  }
+]

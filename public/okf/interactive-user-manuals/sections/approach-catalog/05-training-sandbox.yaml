@@ -1,0 +1,14 @@
+icon: Server
+title: "Training Sandbox"
+subtitle: "The real software, fake world"
+description: "A training sandbox is a separate real instance loaded with synthetic data; it is the most realistic but needs infrastructure, resets and its own access control."
+details: "The organisation runs another copy of the real system just for training, filled with synthetic customers, orders or tickets. Everything the learner does is real software behaviour, including workflows, integrations with other sandboxes and error messages. But it must be hosted, kept on the same version as production, reset after each class so the next group starts clean, and given its own training accounts and roles."
+analogy: "A practice kitchen in a cooking school: real stoves and knives, but nobody is eating the food."
+primaryFocus: "Maximum realism, including back-end behaviour"
+inScope:
+  - "Separate non-production instance of the real system"
+  - "Synthetic data and scheduled resets"
+  - "Training-only accounts and roles"
+outOfScope:
+  - "Anything that touches production data or real customers"
+color: peach

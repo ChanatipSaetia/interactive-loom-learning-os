@@ -1,0 +1,13 @@
+icon: FlaskConical
+title: "Concept Simulator"
+subtitle: "One idea, isolated"
+description: "A concept simulator isolates one idea, such as a permission simulator where you move a user between groups and see what they can access."
+details: "Unlike a full training sandbox, a concept simulator strips away everything except the one idea. Drag Anna into the Sales workspace and watch five project icons light up; move her to a single project and only one lights up. The user builds the mental model by manipulating it directly."
+analogy: "A wind tunnel: one model plane, one force, nothing else."
+primaryFocus: "Building a mental model by direct manipulation"
+inScope:
+  - "Permission, pricing, routing or scheduling rules"
+  - "Instant visual feedback"
+outOfScope:
+  - "Practising full task steps (see Interactive User Manuals)"
+color: sky

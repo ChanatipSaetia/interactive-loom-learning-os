@@ -1,0 +1,59 @@
+id: menu-moved
+title: "The Menu Moved"
+intro: "Your company's expense web app ships version 5.0 on Monday. The 'Submit claim' button has moved from the top toolbar into a new 'Actions' menu. You own the interactive manual that 900 staff use, built as a hotspot simulation plus a screenshot quick-reference. Monday is three days away."
+nodes:
+  start:
+    prompt: "How do you find out which parts of the manual the release breaks?"
+    choices:
+      - id: wait
+        text: "Wait for learners to report problems after Monday"
+        next: result-wait
+      - id: click-through
+        text: "Click through every module by hand against the v5.0 staging site"
+        next: fix
+      - id: automated
+        text: "Run your Playwright drift checks and visual diffs against v5.0 staging"
+        next: fix-auto
+  result-wait:
+    outcome:
+      verdict: "On Tuesday the help desk gets 60 tickets: 'the manual says Submit is on the toolbar'. Staff stop trusting the manual."
+      lesson: "Learners should never be your drift detector. Detect drift on every release, before anyone rehearses a screen that no longer exists."
+      rating: c
+  fix:
+    prompt: "The hand check finds 6 broken screens across 3 modules. How do you fix them?"
+    choices:
+      - id: rerecord
+        text: "Re-record the 6 screens, update the quick-reference and label both 'Matches v5.0'"
+        next: result-rerecord
+      - id: note
+        text: "Add a note at the start: 'Some screens may look different'"
+        next: result-note
+  fix-auto:
+    prompt: "The checks name 6 failing steps in 3 modules. The owner is you. What next?"
+    choices:
+      - id: rerecord-auto
+        text: "Re-record the 6 screens, re-run the checks until green, label 'Matches v5.0'"
+        next: result-auto
+      - id: ai-publish
+        text: "Ask an AI assistant to rewrite the step text for v5.0 and publish it straight away"
+        next: result-ai
+  result-rerecord:
+    outcome:
+      verdict: "The manual matches v5.0 on Monday, but the hand check took most of a day and could easily miss a screen next time."
+      lesson: "Pinning the version and updating the changed screens is right. Automating the detection would make it faster and more reliable every release."
+      rating: b-plus
+  result-note:
+    outcome:
+      verdict: "Staff read the warning, then still rehearse the old toolbar button in the simulation."
+      lesson: "A warning doesn't fix drift. The simulation must match the version learners will use."
+      rating: c
+  result-auto:
+    outcome:
+      verdict: "The checks pinpointed the broken steps in minutes; the fixed modules are labelled v5.0 and verified before Monday."
+      lesson: "Automatic drift detection plus a named owner and a version label is the maintainability loop working as designed."
+      rating: a
+  result-ai:
+    outcome:
+      verdict: "The AI text says 'click Submit in the Actions menu', which is right, but for one module it invents a 'Quick submit' shortcut that doesn't exist."
+      lesson: "AI is great for drafting, but its output must be verified against the real UI, by a person or by tests, before publishing."
+      rating: b-minus

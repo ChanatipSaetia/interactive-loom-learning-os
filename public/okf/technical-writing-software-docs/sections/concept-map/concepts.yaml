@@ -1,0 +1,83 @@
+nodes:
+  reader_need:
+    title: "Reader's Need"
+    category: foundation
+  diataxis:
+    title: "Diátaxis"
+    category: framework
+  tutorial:
+    title: "Tutorial"
+    category: doc-type
+  how_to:
+    title: "How-to Guide"
+    category: doc-type
+  reference:
+    title: "Reference"
+    category: doc-type
+  explanation:
+    title: "Explanation"
+    category: doc-type
+  task_page:
+    title: "Task Page Anatomy"
+    category: structure
+  ui_conventions:
+    title: "UI Text Conventions"
+    category: structure
+  plain_language:
+    title: "Plain Language"
+    category: style
+  style_guide:
+    title: "Style Guides"
+    category: style
+  vale:
+    title: "Vale Linter"
+    category: tool
+  readability:
+    title: "Readability Score"
+    category: tool
+  review:
+    title: "Review & Step Test"
+    category: process
+  wall_of_text:
+    title: "Wall of Text (failure)"
+    category: risk
+edges:
+  - from: diataxis
+    to: reader_need
+    label: "sorts content by"
+  - from: diataxis
+    to: tutorial
+    label: "defines"
+  - from: diataxis
+    to: how_to
+    label: "defines"
+  - from: diataxis
+    to: reference
+    label: "defines"
+  - from: diataxis
+    to: explanation
+    label: "defines"
+  - from: how_to
+    to: task_page
+    label: "is built as a"
+  - from: task_page
+    to: ui_conventions
+    label: "uses"
+  - from: plain_language
+    to: task_page
+    label: "makes readable"
+  - from: style_guide
+    to: plain_language
+    label: "codifies"
+  - from: vale
+    to: style_guide
+    label: "enforces"
+  - from: readability
+    to: plain_language
+    label: "warns about"
+  - from: review
+    to: task_page
+    label: "proves"
+  - from: wall_of_text
+    to: reader_need
+    label: "ignores"

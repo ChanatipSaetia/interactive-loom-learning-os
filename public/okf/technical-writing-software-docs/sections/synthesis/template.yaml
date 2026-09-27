@@ -1,0 +1,62 @@
+challenges:
+  - prompt: "Choose the page type (Track 1):"
+    template: "A beginner's guaranteed-to-work lesson is a {zone-1}; steps to a real goal are a {zone-2}; a table of fields is {zone-3}."
+    chips:
+      - id: chip-tutorial
+        text: "tutorial"
+      - id: chip-howto
+        text: "how-to guide"
+      - id: chip-reference
+        text: "reference"
+      - id: chip-blog
+        text: "blog post"
+    solution:
+      zone-1: chip-tutorial
+      zone-2: chip-howto
+      zone-3: chip-reference
+    explanation: "<strong>Correct!</strong> Tutorials teach, how-to guides get jobs done, reference is looked up. A blog post isn't one of the four Diátaxis types."
+  - prompt: "Build the task page (Track 2):"
+    template: "Title it with the {zone-1}, list {zone-2} before step 1, write one action per step with UI labels in {zone-3}, and show the result."
+    chips:
+      - id: chip-goal
+        text: "user's goal"
+      - id: chip-prereq
+        text: "prerequisites"
+      - id: chip-bold
+        text: "bold"
+      - id: chip-feature
+        text: "feature name"
+    solution:
+      zone-1: chip-goal
+      zone-2: chip-prereq
+      zone-3: chip-bold
+    explanation: "<strong>Correct!</strong> Goal-based title, prerequisites first, one action per step, bold labels exactly as on screen, and the result."
+  - prompt: "Write it plainly (Track 3):"
+    template: "Aim for about {zone-1} words per sentence, use {zone-2} voice, and enforce the house style with {zone-3}."
+    chips:
+      - id: chip-15-20
+        text: "15–20"
+      - id: chip-active
+        text: "active"
+      - id: chip-vale
+        text: "Vale"
+      - id: chip-passive
+        text: "passive"
+    solution:
+      zone-1: chip-15-20
+      zone-2: chip-active
+      zone-3: chip-vale
+    explanation: "<strong>Correct!</strong> Short sentences, active voice, and a linter to catch the mechanical slips."
+  - prompt: "Keep it true (Track 4):"
+    template: "Before publishing, a {zone-1} checks the facts and someone {zone-2} in staging exactly as written."
+    chips:
+      - id: chip-sme
+        text: "subject-matter expert"
+      - id: chip-follows
+        text: "follows every step"
+      - id: chip-readability
+        text: "readability score"
+    solution:
+      zone-1: chip-sme
+      zone-2: chip-follows
+    explanation: "<strong>Correct!</strong> Technical review plus a step test catch what a readability score never can."

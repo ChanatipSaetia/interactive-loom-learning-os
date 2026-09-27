@@ -1,0 +1,16 @@
+- text: "Retrieval practice (the testing effect)"
+  children:
+    - text: "Recalling an idea from memory strengthens it more than re-reading it."
+    - text: "In docs: end a concept page with two or three quick questions, and don't show the answers until the reader tries."
+- text: "Spacing"
+  children:
+    - text: "Short reviews spread over days beat one long session."
+    - text: "In docs: a follow-up quiz or tip a few days after onboarding, not a three-hour course on day one."
+- text: "Self-explanation"
+  children:
+    - text: "Asking learners to explain why something works, in their own words, deepens understanding."
+    - text: "In docs: 'In one sentence, why did Anna see all five projects?'"
+- text: "Explanatory feedback"
+  children:
+    - text: "Say why an answer is right or wrong, not just whether it is."
+    - text: "'Incorrect' teaches nothing; 'Not quite: permissions set on a workspace flow down to every project inside it' fixes the model."

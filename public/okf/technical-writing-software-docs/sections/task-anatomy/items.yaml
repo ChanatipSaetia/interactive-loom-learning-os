@@ -1,0 +1,23 @@
+- text: "Title: the user's goal as a verb phrase"
+  children:
+    - text: "'Export a monthly report', not 'Report Export Module'."
+    - text: "Users search for what they want to do, not for your feature names."
+- text: "Short intro: when and why you'd do this (one or two sentences)"
+- text: "Prerequisites before the first step"
+  children:
+    - text: "Role or permission, data you need ready, earlier setup."
+    - text: "Example: 'You need the Finance Approver role.' Otherwise users fail halfway and don't know why."
+- text: "Numbered steps with one action per step"
+  children:
+    - text: "Good: '1. Select Reports. 2. Select Monthly. 3. Select Export.'"
+    - text: "Bad: '1. Go to reports, choose monthly, set the dates and export it.'"
+- text: "Show the result"
+  children:
+    - text: "After an important step, say what the user should see: 'The report downloads as an .xlsx file.'"
+    - text: "It's how readers know it worked, and notice early when it didn't."
+- text: "Next steps and troubleshooting (optional)"
+  children:
+    - text: "Links to what users usually do next, and fixes for the most common error."
+- text: "Minimalism (John Carroll) behind it all"
+  children:
+    - text: "Get users acting quickly, cut what they don't need, and help them recognise and recover from errors."

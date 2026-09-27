@@ -1,0 +1,14 @@
+icon: Accessibility
+title: "Accessible"
+subtitle: "Everyone who uses the system can train on it"
+description: "Make the simulation accessible: keyboard navigation, screen-reader labels and captions for any audio or video."
+details: "If some staff use the real system with a keyboard or a screen reader, the manual must work that way too. Hotspots that only respond to a mouse click lock them out. Give every control a keyboard path and a screen-reader label, and caption every narration or video."
+analogy: "A building's ramp isn't an extra; it's how some people get in the door."
+primaryFocus: "Nobody is left out of training"
+inScope:
+  - "Keyboard navigation"
+  - "Screen-reader labels"
+  - "Captions for audio and video"
+outOfScope:
+  - "Mouse-only hotspots"
+color: lavender

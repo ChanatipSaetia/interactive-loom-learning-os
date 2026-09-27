@@ -1,0 +1,13 @@
+icon: Users
+title: "Realistic, Safe Data"
+subtitle: "Believable cases, zero real people"
+description: "Use synthetic data that looks like real cases, never copied production data."
+details: "'Test User 1' and 'Lorem ipsum' make practice feel fake and hide the real difficulty, such as long names, duplicate customers or an order with ten line items. Invent synthetic records that look like the cases learners will meet, including the awkward ones. Never copy production data into a training tool, even 'just for now'."
+analogy: "A good crash-test dummy is shaped like a person, but it isn't one."
+primaryFocus: "Practice that feels real without privacy risk"
+inScope:
+  - "Synthetic records modelled on real cases"
+  - "Edge cases learners will meet"
+outOfScope:
+  - "Copies of production data"
+color: green

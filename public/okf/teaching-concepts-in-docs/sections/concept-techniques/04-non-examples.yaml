@@ -1,0 +1,13 @@
+icon: Ban
+title: "Non-Examples"
+subtitle: "What it is not"
+description: "Non-examples show what the concept is not, which sharpens its boundaries (a draft is not a submitted claim)."
+details: "To learn what a 'submitted claim' is, it helps to see things that look similar but aren't: a saved draft (not sent to anyone), a claim returned for changes (sent back, no longer waiting for approval). Showing the near-misses draws the edge of the concept, which is exactly where users make mistakes."
+analogy: "Learning what a dog is gets easier once someone shows you a wolf and a fox."
+primaryFocus: "Sharp boundaries between similar ideas"
+inScope:
+  - "Look-alike states and objects"
+  - "Near-misses users confuse"
+outOfScope:
+  - "Unrelated things nobody would confuse"
+color: yellow

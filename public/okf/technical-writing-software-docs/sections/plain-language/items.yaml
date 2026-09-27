@@ -1,0 +1,20 @@
+- text: "Keep sentences short"
+  children:
+    - text: "Aim for an average of about 15–20 words per sentence."
+    - text: "One idea per sentence; split sentences joined by 'and', 'which' or 'so that'."
+- text: "Use active voice and 'you'"
+  children:
+    - text: "Write 'Select Save', not 'The Save button should be selected'."
+    - text: "Active voice says who does what; 'you' speaks directly to the reader."
+- text: "Front-load the key information"
+  children:
+    - text: "Put the most important word or condition at the start of the sentence or heading."
+    - text: "'Refunds over 5,000 baht need manager approval' beats 'Please note that, in accordance with policy, manager approval is needed for refunds over 5,000 baht'."
+- text: "One term per concept"
+  children:
+    - text: "Pick 'workspace' and use it everywhere."
+    - text: "Switching between 'workspace', 'project' and 'space' makes readers think they are different things."
+- text: "Write for translation"
+  children:
+    - text: "Plain, literal sentences without idioms or jokes translate better and are easier for non-native readers."
+    - text: "'This will hit the ground running' is hard to translate; 'You can start using it immediately' isn't."

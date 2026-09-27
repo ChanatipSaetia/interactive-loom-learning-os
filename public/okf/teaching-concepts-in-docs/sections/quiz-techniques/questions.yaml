@@ -1,0 +1,170 @@
+- id: q1
+  groundedIn: analogy
+  question: "'A workspace is like a shared drive folder.' What makes this a good analogy?"
+  choices:
+    - id: q1-a
+      text: "It also says where it breaks down, e.g. workspaces have their own billing and settings"
+      correct: true
+      explanation: "Users carry the whole analogy over, so state its limits."
+    - id: q1-b
+      text: "It's funny"
+      correct: false
+      explanation: "Humour isn't what makes it teach."
+    - id: q1-c
+      text: "It avoids mentioning workspaces"
+      correct: false
+      explanation: "It must link to the new idea."
+  hint: "Every analogy breaks somewhere."
+- id: q2
+  groundedIn: concrete-first
+  question: "What's the right order for teaching the two-level approval rule?"
+  choices:
+    - id: q2-a
+      text: "Anna's 7,000-baht claim example first, then the general rule"
+      correct: true
+      explanation: "Concrete before abstract gives the rule a hook."
+    - id: q2-b
+      text: "The rule only; examples waste space"
+      correct: false
+      explanation: "Abstract rules without examples are hard to grasp."
+    - id: q2-c
+      text: "The rule first, and no example"
+      correct: false
+      explanation: "Missing the concrete hook entirely."
+  hint: "Concrete before …?"
+- id: q3
+  groundedIn: refutation
+  question: "Which text is a refutation?"
+  choices:
+    - id: q3-a
+      text: "'You might think archiving deletes a project. It doesn't. Archived projects are hidden and can be restored.'"
+      correct: true
+      explanation: "It states the misconception, rejects it, and explains the truth."
+    - id: q3-b
+      text: "'Archived projects can be restored.'"
+      correct: false
+      explanation: "True, but it doesn't name and reject the wrong belief."
+    - id: q3-c
+      text: "'Select Archive to archive a project.'"
+      correct: false
+      explanation: "That's a step, not a correction."
+  hint: "State it, reject it, explain."
+- id: q4
+  groundedIn: non-examples
+  question: "Teaching 'submitted claim', which is a useful non-example?"
+  choices:
+    - id: q4-a
+      text: "A saved draft that hasn't been sent to anyone"
+      correct: true
+      explanation: "A near-miss that sharpens the concept's boundary."
+    - id: q4-b
+      text: "A user's profile photo"
+      correct: false
+      explanation: "Nobody would confuse it with a claim."
+    - id: q4-c
+      text: "Another submitted claim"
+      correct: false
+      explanation: "That's an example, not a non-example."
+  hint: "Something that looks similar but isn't."
+- id: q5
+  groundedIn: dual-coding
+  question: "Why add a box diagram next to the sentence 'permissions flow down from workspace to projects'?"
+  choices:
+    - id: q5-a
+      text: "Words plus a diagram help people understand and remember better than words alone"
+      correct: true
+      explanation: "Dual coding gives two routes into memory."
+    - id: q5-b
+      text: "Pages need decoration"
+      correct: false
+      explanation: "The diagram must show structure, not decorate."
+    - id: q5-c
+      text: "So the sentence can be deleted"
+      correct: false
+      explanation: "Dual coding pairs both."
+  hint: "Say it and show it."
+- id: q6
+  groundedIn: cognitive-load
+  question: "Why not introduce seven new concepts on one page?"
+  choices:
+    - id: q6-a
+      text: "Working memory holds only a few new items at once"
+      correct: true
+      explanation: "Introduce a few at a time and build on them."
+    - id: q6-b
+      text: "Pages have a word limit"
+      correct: false
+      explanation: "Not the reason taught."
+    - id: q6-c
+      text: "Seven concepts is fine if the page is long enough"
+      correct: false
+      explanation: "Length doesn't fix overload."
+  hint: "Recall the first step of the workshop."
+- id: q7
+  groundedIn: mix-techniques
+  question: "What usually works better than a single technique?"
+  choices:
+    - id: q7-a
+      text: "Combining a diagram, a worked example and a named misconception"
+      correct: true
+      explanation: "Several routes into understanding, aimed at the real mistake."
+    - id: q7-b
+      text: "A longer definition"
+      correct: false
+      explanation: "Still one abstract technique."
+    - id: q7-c
+      text: "Three analogies"
+      correct: false
+      explanation: "More of one technique, each with its own broken parts."
+  hint: "Recall the second step of the workshop."
+- id: q8
+  groundedIn: definition-first
+  question: "How should a concept page open?"
+  choices:
+    - id: q8-a
+      text: "A one-sentence plain definition, then why it matters to the user"
+      correct: true
+      explanation: "Readers know immediately what it is and why they should care."
+    - id: q8-b
+      text: "The full history of the feature"
+      correct: false
+      explanation: "The reader doesn't know what it is yet."
+    - id: q8-c
+      text: "A list of every edge case"
+      correct: false
+      explanation: "Edge cases come later, if at all."
+  hint: "Definition first."
+- id: q9
+  groundedIn: concept-task-links
+  question: "How should concept pages and task pages connect?"
+  choices:
+    - id: q9-a
+      text: "Concept pages link to the tasks that use them, and task pages link back"
+      correct: true
+      explanation: "Links in both directions connect understanding and doing."
+    - id: q9-b
+      text: "They shouldn't link; keep them separate"
+      correct: false
+      explanation: "Separate pages, yes, but linked."
+    - id: q9-c
+      text: "Copy the concept text into every task page"
+      correct: false
+      explanation: "Link instead of duplicating."
+  hint: "Both directions."
+- id: q10
+  groundedIn: progressive-disclosure
+  question: "Where do advanced details, such as permission overrides, belong?"
+  choices:
+    - id: q10-a
+      text: "In later sections or linked pages, after the core idea"
+      correct: true
+      explanation: "Progressive disclosure: core idea first, details later."
+    - id: q10-b
+      text: "In the first paragraph, so nothing is missed"
+      correct: false
+      explanation: "That buries the core idea."
+    - id: q10-c
+      text: "Nowhere; never document them"
+      correct: false
+      explanation: "They're documented, just later."
+  hint: "Core first."

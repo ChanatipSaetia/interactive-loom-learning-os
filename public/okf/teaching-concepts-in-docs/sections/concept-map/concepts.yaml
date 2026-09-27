@@ -1,0 +1,80 @@
+nodes:
+  procedural:
+    title: "Procedural Knowledge"
+    category: knowledge
+  conceptual:
+    title: "Conceptual Knowledge"
+    category: knowledge
+  transfer:
+    title: "Transfer"
+    category: goal
+  mental_model:
+    title: "User's Mental Model"
+    category: foundation
+  system_image:
+    title: "System Image (UI + Docs)"
+    category: foundation
+  analogy:
+    title: "Analogy"
+    category: technique
+  worked_example:
+    title: "Worked Example"
+    category: technique
+  refutation:
+    title: "Refutation"
+    category: technique
+  dual_coding:
+    title: "Diagram + Words"
+    category: technique
+  cognitive_load:
+    title: "Cognitive Load"
+    category: constraint
+  explorable:
+    title: "Interactive Explanation"
+    category: technique
+  poe:
+    title: "Predict → Observe → Explain"
+    category: process
+  retrieval:
+    title: "Retrieval & Spacing"
+    category: retention
+  hollow_clicker:
+    title: "Hollow Clicker (failure)"
+    category: risk
+edges:
+  - from: system_image
+    to: mental_model
+    label: "shapes"
+  - from: mental_model
+    to: conceptual
+    label: "is the core of"
+  - from: conceptual
+    to: transfer
+    label: "enables"
+  - from: procedural
+    to: hollow_clicker
+    label: "alone leads to"
+  - from: analogy
+    to: mental_model
+    label: "builds"
+  - from: worked_example
+    to: mental_model
+    label: "builds"
+  - from: refutation
+    to: mental_model
+    label: "corrects"
+  - from: dual_coding
+    to: mental_model
+    label: "builds"
+  - from: cognitive_load
+    to: mental_model
+    label: "limits how fast we build"
+  - from: explorable
+    to: poe
+    label: "hosts"
+  - from: poe
+    to: mental_model
+    label: "exposes and corrects"
+  - from: retrieval
+    to: conceptual
+    label: "makes it stick"

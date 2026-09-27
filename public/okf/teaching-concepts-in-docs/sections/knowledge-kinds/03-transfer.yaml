@@ -1,0 +1,13 @@
+icon: Shuffle
+title: "Transfer"
+subtitle: "Using it in a new situation"
+description: "Transfer is applying what you learned to a new situation; conceptual knowledge is what makes transfer possible."
+details: "No manual can document every situation: every combination of role, data and setting. Transfer is the real goal of teaching: the user meets a case the docs never showed and still acts correctly. Steps alone rarely transfer; an understood idea does."
+analogy: "Learning to cook rather than learning one recipe."
+primaryFocus: "Acting correctly in undocumented situations"
+inScope:
+  - "New combinations of roles, data and settings"
+  - "Features added after training"
+outOfScope:
+  - "Repeating the exact example from the manual"
+color: sky

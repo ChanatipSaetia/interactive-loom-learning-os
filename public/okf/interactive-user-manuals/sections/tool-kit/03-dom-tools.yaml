@@ -1,0 +1,14 @@
+icon: Globe
+title: "HTML/DOM Capture Platforms"
+subtitle: "Walnut · Navattic · Storylane · Reprise"
+description: "Walnut, Navattic, Storylane and Reprise capture a web app's HTML/DOM into editable, clickable demos."
+details: "These platforms use a browser extension to capture the pages of a web app, then let you edit text and data, add guided steps and share the demo as a link or an embed. They are often sold for product-marketing demos, but the same capture works for internal training on web systems."
+analogy: "A cardboard cut-out of the shop that still has working doors."
+primaryFocus: "Realistic web-app demos without the real backend"
+inScope:
+  - "Browser-extension capture of web pages"
+  - "Editing text and data in a web editor"
+  - "Sharing demos as a link or embed"
+outOfScope:
+  - "Desktop software"
+color: sky

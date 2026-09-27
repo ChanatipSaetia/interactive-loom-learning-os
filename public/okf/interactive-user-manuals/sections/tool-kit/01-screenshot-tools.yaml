@@ -1,0 +1,14 @@
+icon: Camera
+title: "Screenshot & Video Guide Tools"
+subtitle: "Scribe · Tango · Guidde · Snagit · Loom"
+description: "Scribe, Tango and Guidde auto-generate step-by-step screenshot guides from a recorded session; Snagit and Loom cover manual screenshots and video."
+details: "With Scribe, Tango or Guidde you press record, do the task once, and the tool captures a screenshot and a written instruction for every click, then lets you blur sensitive data and share or export the guide. Snagit is the classic tool for hand-made annotated screenshots, and Loom records quick narrated screen videos."
+analogy: "A photographer who follows you around and captions every photo."
+primaryFocus: "Fastest path from doing a task to a shareable guide"
+inScope:
+  - "Auto-captured step guides: Scribe, Tango, Guidde"
+  - "Manual annotated screenshots: Snagit"
+  - "Narrated screen videos: Loom"
+outOfScope:
+  - "Clickable practice with feedback"
+color: mauve

@@ -1,0 +1,168 @@
+id: helpdesk-training
+title: "Training 200 Service-Desk Agents on a New ITSM Web App"
+description: "New agents must learn to log, route and close tickets in a web-based IT service management system. They can't use production (real tickets, real users), and the vendor ships an update every month. Build a training setup and watch the meters: realism, build speed, upkeep per release and automation (as code or with AI). Also keep an eye on who will be able to update it: authors or developers."
+metrics:
+  - id: realism
+    label: "Realism of Practice"
+    baseValue: 40
+    min: 0
+    max: 100
+    direction: higher
+  - id: build
+    label: "Build Speed"
+    baseValue: 50
+    min: 0
+    max: 100
+    direction: higher
+  - id: upkeep
+    label: "Ease of Upkeep per Release"
+    baseValue: 50
+    min: 0
+    max: 100
+    direction: higher
+  - id: automation
+    label: "Automation (as code / AI)"
+    baseValue: 30
+    min: 0
+    max: 100
+    direction: higher
+steps:
+  - id: approach
+    title: "Main Approach"
+    description: "How will agents practise the ticket workflow?"
+    recommended: dom-capture
+    choices:
+      - id: screenshots
+        label: "Annotated screenshot guide"
+        description: "Capture each step once and add callouts."
+        metrics:
+          realism: -20
+          build: 30
+          upkeep: -10
+          automation: 5
+        pros:
+          - title: "Ready this afternoon"
+            description: "Anyone with access can make it in a few hours."
+        cons:
+          - title: "No practice"
+            description: "Agents only watch; nobody checks they can do it."
+          - title: "Monthly re-shoots"
+            description: "Every UI change means new screenshots."
+        whenToUse: "As a quick reference card next to a more interactive option."
+      - id: hotspot
+        label: "Hotspot simulation (Storyline / Captivate / iSpring)"
+        description: "Record the task and turn it into clickable, scored steps in the LMS."
+        metrics:
+          realism: 15
+          build: -10
+          upkeep: -25
+          automation: -10
+        pros:
+          - title: "Scored practice in the LMS"
+            description: "Completion and scores are tracked via SCORM/xAPI."
+        cons:
+          - title: "Re-record on every change"
+            description: "With monthly releases, screens go stale fast."
+        whenToUse: "When the UI rarely changes, or for desktop software that can't be captured as HTML."
+      - id: dom-capture
+        label: "HTML/DOM capture demo (Walnut / Navattic / Storylane)"
+        description: "Capture the web pages and edit the fake ticket data in a web editor."
+        metrics:
+          realism: 25
+          build: 10
+          upkeep: 0
+          automation: -5
+        pros:
+          - title: "Looks exactly like the real app"
+            description: "Captured HTML stays crisp and realistic."
+          - title: "Edit text without re-capturing"
+            description: "Change ticket data and labels in the editor."
+        cons:
+          - title: "Layout changes still need a new capture"
+            description: "And the content lives in the vendor's platform, not in git."
+        whyThisFits: "It's a web app with frequent small changes, and the training team has no developers. DOM capture gives realistic practice that authors can update themselves."
+      - id: ui-clone
+        label: "UI clone with MSW mocks"
+        description: "Rebuild the screens from the product's components with a fake API."
+        metrics:
+          realism: 30
+          build: -30
+          upkeep: 20
+          automation: 35
+        pros:
+          - title: "Tested with every release"
+            description: "Lives in git and runs in CI."
+        cons:
+          - title: "Needs developers"
+            description: "You can't reuse the vendor's components, so you'd be rebuilding a third-party UI by hand."
+        whenToUse: "When you own the product's source code, which you don't for a bought ITSM tool."
+      - id: sandbox
+        label: "Vendor sandbox instance"
+        description: "Use a sub-production instance with synthetic tickets."
+        metrics:
+          realism: 40
+          build: -15
+          upkeep: 10
+          automation: 20
+        pros:
+          - title: "The real thing"
+            description: "Routing rules, notifications and errors all behave for real."
+        cons:
+          - title: "Resets, accounts and licences"
+            description: "Someone must reset the data after every class and manage 200 training accounts."
+        whenToUse: "When back-end behaviour matters and ops can own resets and access."
+  - id: owner
+    title: "Who Keeps It Up to Date?"
+    description: "The vendor ships monthly. Who owns updates?"
+    recommended: named-owner
+    choices:
+      - id: nobody
+        label: "Whoever notices first"
+        description: "No named owner; fix it when learners complain."
+        metrics:
+          realism: -20
+          upkeep: -20
+        pros:
+          - title: "No cost today"
+        cons:
+          - title: "Learners find the drift first"
+            description: "They lose trust in the manual."
+      - id: named-owner
+        label: "Named owner + version label"
+        description: "Each module shows the product version it matches and has an owner."
+        metrics:
+          realism: 10
+          upkeep: 15
+        pros:
+          - title: "Clear accountability"
+            description: "Everyone knows who fixes what, and learners can see which version it matches."
+        cons:
+          - title: "Takes a slice of someone's time every month"
+        whyThisFits: "With monthly releases, a named owner and a visible version label keep drift under control."
+  - id: detection
+    title: "How Do You Notice Drift?"
+    description: "How will you know that a release broke the manual?"
+    recommended: automated
+    choices:
+      - id: manual-review
+        label: "Click through by hand each release"
+        description: "The owner re-walks every module after each update."
+        metrics:
+          upkeep: -10
+          automation: -10
+        pros:
+          - title: "No tooling needed"
+        cons:
+          - title: "Slow and easy to skip"
+      - id: automated
+        label: "Playwright + visual regression on the sandbox or staging"
+        description: "Scripted steps and screenshot diffs run after each vendor update."
+        metrics:
+          upkeep: 20
+          automation: 25
+          build: -10
+        pros:
+          - title: "Tells you exactly which screens changed"
+        cons:
+          - title: "Needs a non-production instance to run against"
+        whyThisFits: "Automatic drift checks turn 'which modules broke?' into a report instead of a guess."

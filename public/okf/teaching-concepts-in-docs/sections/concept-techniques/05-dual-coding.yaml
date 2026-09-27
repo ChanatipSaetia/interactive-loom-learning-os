@@ -1,0 +1,12 @@
+icon: Shapes
+title: "Dual Coding (Words + Diagram)"
+subtitle: "Say it and show it"
+description: "Dual coding: pairing words with a diagram helps people understand and remember better than words alone."
+details: "'An organisation has workspaces; a workspace has projects; permissions set on a workspace flow down to its projects' is hard to hold in your head as a sentence. The same idea as a simple box diagram, with an arrow showing permissions flowing down, plus the sentence, gives the reader two routes into memory. Keep diagrams simple: boxes, arrows, a few labels."
+analogy: "Directions plus a sketch map, instead of directions alone."
+primaryFocus: "Structure you can see"
+inScope:
+  - "Simple box-and-arrow diagrams next to the text"
+outOfScope:
+  - "Decorative images that don't show the structure"
+color: green

@@ -1,0 +1,15 @@
+icon: Code
+title: "HTML/DOM Capture Demos"
+subtitle: "A snapshot of the real web page, not a picture of it"
+description: "HTML/DOM capture demos snapshot real web pages so text and data can be edited without re-recording, but only work for web apps."
+details: "Instead of a screenshot, a browser extension saves the page's HTML and CSS: the actual structure a browser renders. The result looks pixel-perfect and stays crisp at any screen size. Because it is still HTML, an author can change a customer name, a number or a label in an editor without capturing the screen again. Desktop software has no DOM to capture, so this only works for web apps, and a real layout change still means a new capture."
+analogy: "Saving the recipe card instead of a photo of the cake: you can still change the ingredients afterwards."
+primaryFocus: "High visual realism for web apps with easy text edits"
+inScope:
+  - "Browser-based SaaS and internal web apps"
+  - "Editing text and fake data after capture"
+  - "Guided and self-explore product demos"
+outOfScope:
+  - "Desktop applications and terminals"
+  - "Real server logic behind the captured pages"
+color: sky

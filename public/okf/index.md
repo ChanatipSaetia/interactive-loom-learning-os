@@ -36,6 +36,9 @@ okf_version: "0.1"
 * [IT Project Management & Meetings](pm-and-meetings/index.md) — Learn why project management is necessary and how to run effective, lean meetings without wasting developers' focus time.
 * [Presenting Tech Manuals](presenting-tech-manuals/index.md) — Present IT system, Web App, and Developer Experience manuals with markdown decks, docs-as-code platforms, and live demo craft.
 * [Onboarding Craft](onboarding-it-web-dx/index.md) — Master onboarding principles for IT systems, Web Apps, and Developer Experience with five methods and their trade-offs.
+* [Interactive User Manuals](interactive-user-manuals/index.md) — Teach people to use IT systems and software through safe simulations, without touching the real, restricted system
+* [Technical Writing for Software Docs](technical-writing-software-docs/index.md) — Write web app manuals that users can find, follow and trust: the right kind of page, steps that work, plain language and a review loop
+* [Teaching Concepts in Software Docs](teaching-concepts-in-docs/index.md) — Help users understand the ideas behind a web app, not just the clicks: mental models, analogies, worked examples, interactive explanations and checks that make it stick
 
 ## History
 * [ประวัติศาสตร์โลกเบื้องต้น (Basic World History)](world-history/index.md) — สำรวจวิวัฒนาการมนุษยชาติ กำเนิดอารยธรรมโบราณ ยุคกลาง เรเนซองส์ และการปฏิวัติอุตสาหกรรม

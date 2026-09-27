@@ -1,0 +1,14 @@
+icon: MousePointerClick
+title: "Hotspot Simulation Authoring Tools"
+subtitle: "Articulate Storyline 360 · Adobe Captivate · iSpring Suite"
+description: "Articulate Storyline 360, Adobe Captivate and iSpring Suite build hotspot simulations and publish them as SCORM or xAPI packages for an LMS."
+details: "These e-learning authoring tools record the screen as an expert does the task and build clickable steps from it, with hints, feedback and scoring. They publish the result as a SCORM or xAPI package, a standard format that a learning management system (LMS) can host and use to record who finished the course and how they scored."
+analogy: "A lesson-in-a-box that plugs into the school's register."
+primaryFocus: "Tracked, scored practice inside an LMS"
+inScope:
+  - "Screen recording into clickable steps"
+  - "Hints, feedback and scoring"
+  - "SCORM / xAPI packages for an LMS"
+outOfScope:
+  - "Editing text without the authoring tool"
+color: yellow

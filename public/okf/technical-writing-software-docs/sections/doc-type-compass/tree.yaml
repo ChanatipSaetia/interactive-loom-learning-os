@@ -1,0 +1,57 @@
+id: diataxis-compass
+title: "Which kind of page should this content be?"
+root: start
+nodes:
+  start:
+    prompt: "Question 1: Is this content about action (doing something) or cognition (knowing something)?"
+    choices:
+      - id: action
+        text: "Action: the reader will do things, step by step"
+        next: action-purpose
+      - id: cognition
+        text: "Cognition: the reader wants to know or understand something"
+        next: cognition-purpose
+  action-purpose:
+    prompt: "Question 2: Does it serve acquisition (studying, learning the skill) or application (doing real work)?"
+    choices:
+      - id: action-study
+        text: "Acquisition: a beginner learning to use the app"
+        next: leaf-tutorial
+      - id: action-work
+        text: "Application: someone getting a real job done"
+        next: leaf-howto
+        recommended: true
+  cognition-purpose:
+    prompt: "Question 2: Does it serve acquisition (studying, building understanding) or application (looking up a fact while working)?"
+    choices:
+      - id: cognition-work
+        text: "Application: a fact they need mid-task"
+        next: leaf-reference
+      - id: cognition-study
+        text: "Acquisition: understanding why, read away from the task"
+        next: leaf-explanation
+  leaf-tutorial:
+    leaf:
+      recommendation: "Write a tutorial"
+      explanation: "Action + acquisition. Guide a beginner through a safe lesson that always works, with the path and sample data chosen by you."
+      tradeoffs:
+        - "Must be kept working exactly, or beginners lose trust immediately"
+        - "Not useful to experienced users; link them to how-to guides"
+  leaf-howto:
+    leaf:
+      recommendation: "Write a how-to guide"
+      explanation: "Action + application. Give a competent user the steps to one specific goal, without teaching basics or explaining theory."
+      tradeoffs:
+        - "Assumes the basics; beginners may need a tutorial first"
+  leaf-reference:
+    leaf:
+      recommendation: "Write reference"
+      explanation: "Cognition + application. Describe fields, settings and limits completely and consistently so people can look things up while working."
+      tradeoffs:
+        - "Must be complete and accurate, so it's the most affected by every release"
+  leaf-explanation:
+    leaf:
+      recommendation: "Write explanation"
+      explanation: "Cognition + acquisition. Discuss concepts, background and design decisions, away from any single task."
+      tradeoffs:
+        - "Easy to let it leak into how-to pages; keep it separate and link to it"

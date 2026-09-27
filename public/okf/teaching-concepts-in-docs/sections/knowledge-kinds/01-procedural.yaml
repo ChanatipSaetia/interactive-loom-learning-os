@@ -1,0 +1,13 @@
+icon: ListOrdered
+title: "Procedural Knowledge"
+subtitle: "Knowing the steps"
+description: "Procedural knowledge is knowing the steps; it breaks as soon as the user's situation differs from the documented one."
+details: "A user who has memorised 'Select Share, enter the e-mail, select Send' can share a file exactly as the manual shows. But when the Share button is greyed out, or the person is outside the company, they are stuck: the steps don't say what to do and they have nothing else to reason with. Procedural knowledge is necessary, but it's brittle."
+analogy: "Knowing the bus route by heart: perfect until a road is closed."
+primaryFocus: "Doing the documented task"
+inScope:
+  - "Memorised steps and click paths"
+  - "Tasks exactly as documented"
+outOfScope:
+  - "Situations the manual didn't foresee"
+color: yellow

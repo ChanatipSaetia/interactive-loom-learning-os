@@ -1,0 +1,155 @@
+# yaml-language-server: $schema=../../../schemas/okf/topic-brief.schema.json
+id: technical-writing-software-docs
+title: "Technical Writing for Software Docs"
+description: "Write web app manuals that users can find, follow and trust: the right kind of page, steps that work, plain language and a review loop"
+category: Project Management
+tags: [documentation, technical-writing, diataxis, style-guide, plain-language]
+
+boss:
+  title: "The Wall-of-Text Wyrm"
+  failureMode: "Pages describe the software instead of helping the reader finish a task: mixed page types, vague steps and no results shown, so users give up and open a ticket"
+
+tracks:
+  - id: doc-types
+    title: "Four Kinds of Docs"
+    sections:
+      - name: diataxis
+        type: taxonomy-browser
+        title: "The Diátaxis Framework"
+        keyItem: true
+        teaches:
+          - id: tutorial
+            point: "A tutorial is learning-oriented: it guides a beginner through a safe, guaranteed-to-work lesson, like a driving lesson"
+          - id: how-to
+            point: "A how-to guide is goal-oriented: it gives a competent user the steps to achieve one specific real-world goal"
+          - id: reference
+            point: "Reference is information-oriented: dry, complete, accurate descriptions of the product (fields, settings, limits) to look things up"
+          - id: explanation
+            point: "Explanation is understanding-oriented: it discusses why things work the way they do, background and design decisions"
+          - id: dont-mix
+            point: "Mixing types on one page (e.g. long background inside how-to steps) makes every reader wade through content meant for someone else"
+      - name: doc-type-compass
+        type: decision-tree
+        title: "The Diátaxis Compass"
+        teaches:
+          - id: compass
+            point: "The Diátaxis compass asks two questions: is the content about action (doing) or cognition (knowing), and does it serve acquisition (study) or application (work)?"
+      - name: quiz-doc-types
+        type: quiz
+        title: "Doc Types Check"
+
+  - id: task-writing
+    title: "Writing Steps That Work"
+    sections:
+      - name: task-anatomy
+        type: bullets
+        title: "Anatomy of a Task Page"
+        keyItem: true
+        teaches:
+          - id: task-title
+            point: "Title a task page with the user's goal as a verb phrase, such as 'Export a monthly report', not the feature name"
+          - id: prerequisites
+            point: "List prerequisites (role or permission, data, earlier setup) before the first step, so users don't fail halfway"
+          - id: one-action
+            point: "Use numbered steps with one action per step"
+          - id: show-result
+            point: "Say what the user should see after an important step, so they know it worked"
+          - id: minimalism
+            point: "Minimalism (John Carroll): get users acting quickly, cut what they don't need, and help them recognise and recover from errors"
+      - name: ui-conventions
+        type: taxonomy-browser
+        title: "UI Text Conventions"
+        teaches:
+          - id: bold-labels
+            point: "Write UI labels in bold, spelled and capitalised exactly as they appear on screen"
+          - id: location-first
+            point: "State where before what: 'In the Settings pane, select Save' so the reader looks in the right place first"
+          - id: menu-path
+            point: "Write menu paths with a > separator, e.g. File > Export > PDF"
+          - id: input-format
+            point: "Format text the user types, code and file names in monospace, separate from UI labels"
+          - id: consistent-verbs
+            point: "Pick device-neutral verbs such as 'select' and 'enter' (as the Microsoft style guide recommends) and use them consistently"
+      - name: page-rewrite
+        type: tradeoff-sandbox
+        title: "Page Rewrite Workshop"
+        teaches:
+          - id: screenshot-restraint
+            point: "Screenshots help readers find hard-to-spot controls but go stale every release, so use them only where text alone isn't enough"
+          - id: step-granularity
+            point: "Splitting long procedures into several short tasks makes them easier to follow and find than one giant page"
+      - name: order-task-page
+        type: reflection-sequence
+        title: "Assemble a Task Page"
+      - name: quiz-task-writing
+        type: quiz
+        title: "Task Writing Check"
+
+  - id: style
+    title: "Style & Plain Language"
+    sections:
+      - name: plain-language
+        type: bullets
+        title: "Plain Language Rules"
+        keyItem: true
+        teaches:
+          - id: short-sentences
+            point: "Keep sentences short, aiming for an average of about 15–20 words"
+          - id: active-voice
+            point: "Use active voice and address the reader as 'you': 'Select Save' rather than 'The Save button should be selected'"
+          - id: front-load
+            point: "Front-load the key information: put the most important word or condition at the start of the sentence or heading"
+          - id: one-term
+            point: "Use one term per concept everywhere; switching between 'workspace', 'project' and 'space' makes readers think they are different things"
+          - id: write-for-translation
+            point: "Plain, literal sentences without idioms or jokes translate better and are easier for non-native readers"
+      - name: style-guides
+        type: taxonomy-browser
+        title: "Style Guides & Tools"
+        teaches:
+          - id: ms-guide
+            point: "The Microsoft Writing Style Guide is a free public guide covering voice, UI text and terms for software docs"
+          - id: google-guide
+            point: "The Google developer documentation style guide is a free public guide focused on developer and technical docs"
+          - id: house-style
+            point: "A house style guide records only your own decisions (product names, terms, tone) and defers everything else to one public guide"
+          - id: vale
+            point: "Vale is a prose linter that checks docs against style rules, including packages for the Microsoft and Google guides, and can run in CI"
+      - name: readability
+        type: formula-sandbox
+        title: "Readability Calculator"
+        teaches:
+          - id: flesch
+            point: "Flesch Reading Ease = 206.835 − 1.015 × (words per sentence) − 84.6 × (syllables per word); higher scores are easier to read"
+          - id: score-is-a-guide
+            point: "Readability scores only measure sentence and word length; they are a warning light, not proof that a page is clear"
+      - name: quiz-style
+        type: quiz
+        title: "Style Check"
+
+  - id: quality
+    title: "Review & Keep It True"
+    sections:
+      - name: review-flow
+        type: flowchart
+        title: "The Docs Review Flow"
+        keyItem: true
+        teaches:
+          - id: sme-review
+            point: "A technical review by a subject-matter expert (developer or product owner) checks the facts against how the app really works"
+          - id: test-the-steps
+            point: "Someone follows every step in the real app or staging exactly as written before publishing"
+          - id: edit-review
+            point: "An editorial review checks structure, style and terminology against the style guide, helped by the linter"
+      - name: scenario-ticket-storm
+        type: scenario
+        title: "Scenario: The Ticket Storm"
+      - name: concept-map
+        type: concept-map
+        title: "How It All Connects"
+      - name: glossary
+        type: flashcards
+        title: "Glossary"
+      - name: synthesis
+        type: reflection-template
+        title: "Write It Right"

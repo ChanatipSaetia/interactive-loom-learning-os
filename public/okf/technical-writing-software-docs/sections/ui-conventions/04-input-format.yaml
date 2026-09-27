@@ -1,0 +1,12 @@
+icon: Terminal
+title: "Input Formatting"
+subtitle: "`monospace` for what users type"
+description: "Format text the user types, code and file names in monospace, separate from UI labels."
+details: "Readers must be able to tell 'click this' from 'type this'. In the **Name** field, enter `Q3-budget`. The bold word is on the screen; the monospace word goes into it. Monospace also shows exact characters (spaces, dashes, capital letters) that matter when typing, and it's the standard for file names like `claims.xlsx` and commands."
+analogy: "The difference between the label on a form and what you write in the box."
+primaryFocus: "Separating what you see from what you type"
+inScope:
+  - "Values to type, file names, code and commands"
+outOfScope:
+  - "UI labels (these are bold)"
+color: green

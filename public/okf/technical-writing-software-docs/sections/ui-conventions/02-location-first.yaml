@@ -1,0 +1,13 @@
+icon: MapPin
+title: "Location Before Action"
+subtitle: "Where, then what"
+description: "State where before what: 'In the Settings pane, select Save' so the reader looks in the right place first."
+details: "If the sentence says 'Select Save in the Settings pane', the reader may click the first Save they see, and there are often several. Putting the location first tells their eyes where to go before telling their hand what to do. The same applies to conditions: 'If you see an error, select Retry' rather than 'Select Retry if you see an error'."
+analogy: "'At the second traffic light, turn left', not 'turn left at the second traffic light', when there are lefts everywhere."
+primaryFocus: "Guiding the eye before the hand"
+inScope:
+  - "Panes, dialogs, tabs, regions of the page"
+  - "Conditions before instructions"
+outOfScope:
+  - "Multi-level menus (see Menu Paths)"
+color: sky

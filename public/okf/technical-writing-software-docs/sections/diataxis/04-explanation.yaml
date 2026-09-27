@@ -1,0 +1,13 @@
+icon: Lightbulb
+title: "Explanation"
+subtitle: "Understanding-oriented · cognition + study"
+description: "Explanation is understanding-oriented: it discusses why things work the way they do, background and design decisions."
+details: "The reader steps back from the keyboard to understand: why do approvals go through two levels? How do workspaces and projects relate? What changed in the new permission model and why? Explanation can discuss alternatives and give opinions, and it's where concepts live. It's read away from the task, not during it."
+analogy: "An article about why a recipe works, the chemistry of browning, read in an armchair rather than at the stove."
+primaryFocus: "Understanding concepts and reasons"
+inScope:
+  - "Concepts, background, design decisions"
+  - "Why the product works the way it does"
+outOfScope:
+  - "Instructions for a task"
+color: mauve

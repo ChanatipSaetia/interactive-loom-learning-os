@@ -1,0 +1,13 @@
+icon: Crosshair
+title: "Selective Fidelity"
+subtitle: "Exact on the path, simple off it"
+description: "Selective fidelity: copy the controls, labels and order on the task path exactly; everything off the path can be static or disabled."
+details: "The learner's muscle memory is built on the path they practise, so the buttons, labels, field order and messages on that path must match the real software exactly. Everything else on the screen (other menus, side panels, unrelated tabs) can be a static picture or a disabled control. This keeps build and upkeep cost down without making practice less real where it counts."
+analogy: "A film set only builds the side of the street the camera sees."
+primaryFocus: "Realism where it matters, low cost elsewhere"
+inScope:
+  - "Exact labels, controls and order on the task path"
+  - "Static or disabled areas off the path"
+outOfScope:
+  - "Rebuilding every feature of the product"
+color: sky

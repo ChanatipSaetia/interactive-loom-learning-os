@@ -1,0 +1,16 @@
+- text: "One-sentence definition, in plain words"
+  children:
+    - text: "'A workspace is a shared space where a team keeps its projects and controls who can see them.'"
+- text: "Why it matters to the user"
+  children:
+    - text: "'Who you add to a workspace decides what they can see in every project inside it.'"
+- text: "The explanation, using the techniques"
+  children:
+    - text: "A diagram, a worked example, an analogy with its limits, a named misconception, non-examples."
+- text: "Core idea first, details later (progressive disclosure)"
+  children:
+    - text: "Teach the core idea first and leave advanced details, such as overrides and guest access, for later sections or linked pages."
+- text: "Links in both directions between concepts and tasks"
+  children:
+    - text: "The concept page links to the tasks that use it: 'Add someone to a workspace', 'Create a project'."
+    - text: "Each task page links back: 'Why it works this way: Workspaces and permissions'."

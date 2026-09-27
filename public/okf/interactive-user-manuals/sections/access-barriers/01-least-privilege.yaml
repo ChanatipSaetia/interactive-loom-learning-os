@@ -1,0 +1,14 @@
+icon: ShieldCheck
+title: "Least-Privilege Access"
+subtitle: "No role, no practice"
+description: "Least-privilege access control means trainees often have no account or role that allows the actions they must learn."
+details: "Good security gives each person only the permissions their current job needs. A new hire in the finance team may not get the 'approve payment' role until after training, and an IT trainee should never hold domain-admin rights just to practise. So the very actions the manual must teach are the ones the learner is not allowed to perform. A simulation lets them rehearse the approver's screens without ever holding the approver's role."
+analogy: "A flight simulator: trainee pilots practise engine failures long before anyone hands them the keys to a real aircraft."
+primaryFocus: "Teaching actions the learner is not yet authorised to perform"
+inScope:
+  - "Roles granted only after training or certification"
+  - "Admin and approver screens that trainees must not reach"
+  - "Separation-of-duties rules (one person cannot both request and approve)"
+outOfScope:
+  - "Protecting the data inside the system (see Production Data)"
+color: mauve

@@ -1,0 +1,8 @@
+sim_player:
+  title: "Simulation Player"
+  desc: "Runs the module in Watch, Try and Test modes and gives feedback"
+  type: aggregate
+lms:
+  title: "Learning Management System"
+  desc: "Records completions, scores and wrong clicks (e.g. via xAPI)"
+  type: external

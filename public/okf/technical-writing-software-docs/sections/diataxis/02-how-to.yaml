@@ -1,0 +1,14 @@
+icon: Wrench
+title: "How-to Guide"
+subtitle: "Goal-oriented · action + work"
+description: "A how-to guide is goal-oriented: it gives a competent user the steps to achieve one specific real-world goal."
+details: "The reader already knows the basics and has a real job in front of them: 'Export last month's claims to Excel', 'Reset a user's password'. Give them the steps to that goal and nothing else. Don't teach basics, don't explain the architecture; assume they can adapt the steps to their own data. Most pages of a web app manual are how-to guides."
+analogy: "A recipe: it assumes you can already hold a knife, and gets you to the dish."
+primaryFocus: "Getting a real task done"
+inScope:
+  - "Steps to one specific goal"
+  - "Real users with real data"
+outOfScope:
+  - "Teaching the basics from zero (tutorial)"
+  - "Listing every field (reference)"
+color: sky

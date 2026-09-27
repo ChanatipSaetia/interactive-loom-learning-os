@@ -1,0 +1,12 @@
+icon: Workflow
+title: "Clickable Flow Diagram"
+subtitle: "Step through a process"
+description: "A clickable flow diagram lets users step through a process (an approval route) one stage at a time."
+details: "An approval route drawn as a static diagram shows every box at once. A clickable version reveals one stage at a time: 'Claim submitted → manager approves → over 5,000 baht? → Finance approves → paid', with each stage explaining who acts and what they see. Users follow the idea at their own pace and can go back."
+analogy: "A guided museum tour rather than the whole floor plan at once."
+primaryFocus: "Following a process at your own pace"
+inScope:
+  - "Approval routes, ticket lifecycles, data flows"
+outOfScope:
+  - "Ideas that aren't sequences"
+color: teal

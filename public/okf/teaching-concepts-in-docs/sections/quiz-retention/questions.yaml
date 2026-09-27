@@ -1,0 +1,68 @@
+- id: q1
+  groundedIn: retrieval-practice
+  question: "Which strengthens memory of a concept more?"
+  choices:
+    - id: q1-a
+      text: "Recalling it from memory with a quick question"
+      correct: true
+      explanation: "Retrieval practice (the testing effect) beats re-reading."
+    - id: q1-b
+      text: "Re-reading the page"
+      correct: false
+      explanation: "It feels productive but strengthens memory less."
+    - id: q1-c
+      text: "Highlighting the page"
+      correct: false
+      explanation: "Not retrieval."
+  hint: "Pull it out of memory."
+- id: q2
+  groundedIn: spacing
+  question: "You have 60 minutes of concept training. What schedule works best?"
+  choices:
+    - id: q2-a
+      text: "Short sessions spread over several days"
+      correct: true
+      explanation: "Spacing beats one long session."
+    - id: q2-b
+      text: "One 60-minute session on day one"
+      correct: false
+      explanation: "Massed practice fades faster."
+    - id: q2-c
+      text: "It makes no difference"
+      correct: false
+      explanation: "Spacing makes a difference."
+  hint: "Spread it out."
+- id: q3
+  groundedIn: self-explanation
+  question: "Which prompt uses self-explanation?"
+  choices:
+    - id: q3-a
+      text: "'In one sentence, why did Anna see all five projects?'"
+      correct: true
+      explanation: "Learners explain why, in their own words."
+    - id: q3-b
+      text: "'Select Next to continue.'"
+      correct: false
+      explanation: "No explaining involved."
+    - id: q3-c
+      text: "'Did you read this page? Yes / No'"
+      correct: false
+      explanation: "Not an explanation."
+  hint: "In their own words, why?"
+- id: q4
+  groundedIn: explanatory-feedback
+  question: "A learner answers wrongly. Which feedback is best?"
+  choices:
+    - id: q4-a
+      text: "'Not quite: permissions set on a workspace flow down to every project inside it.'"
+      correct: true
+      explanation: "Explanatory feedback says why, which fixes the model."
+    - id: q4-b
+      text: "'Incorrect.'"
+      correct: false
+      explanation: "Says whether, not why."
+    - id: q4-c
+      text: "'Try again.'"
+      correct: false
+      explanation: "No explanation at all."
+  hint: "Why, not just whether."

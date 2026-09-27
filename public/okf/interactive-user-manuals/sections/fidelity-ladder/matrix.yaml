@@ -1,0 +1,46 @@
+title: "The Fidelity Ladder"
+description: "How close to the real software a manual gets. Each rung up gives more realistic practice, and costs more to build and to maintain."
+layers:
+  - id: l-static
+    title: "1 · Static Annotated Screenshots"
+    description: "Pictures of the screens with numbered callouts. Learners read and look; they never click."
+  - id: l-walkthrough
+    title: "2 · Click-Through Walkthroughs"
+    description: "Recorded screens where the learner clicks the highlighted spot to move to the next step."
+  - id: l-interactive
+    title: "3 · Interactive Simulations with Fake Data"
+    description: "Working screens that respond to typing and clicking, backed by synthetic data instead of a real server."
+  - id: l-sandbox
+    title: "4 · Full Sandbox Environment"
+    description: "A separate, real instance of the software filled with fake data. Everything works, nothing counts."
+matrix_blocks:
+  - title: "Realism of Practice"
+    description: "Rises with every rung: from looking at pictures to using the real software."
+    layer_id: l-sandbox
+    col_offset: 0
+    col_span: 2
+    color: green
+  - title: "Build & Maintenance Cost"
+    description: "Also rises with every rung: more moving parts to build, host and keep up to date with each release."
+    layer_id: l-sandbox
+    col_offset: 2
+    col_span: 2
+    color: red
+  - title: "Fake Data + Mock Server"
+    description: "Screens react to input, but every response comes from prepared synthetic data."
+    layer_id: l-interactive
+    col_offset: 0
+    col_span: 4
+    color: sky
+  - title: "Hotspots on Recorded Screens"
+    description: "Only the expected click works; everything else on the screen is a picture."
+    layer_id: l-walkthrough
+    col_offset: 0
+    col_span: 4
+    color: yellow
+  - title: "Screenshots + Callouts"
+    description: "Cheapest to make, but learners only watch; they never practise."
+    layer_id: l-static
+    col_offset: 0
+    col_span: 4
+    color: mauve

@@ -1,0 +1,12 @@
+icon: ChevronsRight
+title: "Menu Paths with >"
+subtitle: "File > Export > PDF"
+description: "Write menu paths with a > separator, e.g. File > Export > PDF."
+details: "A menu path compresses several clicks into one readable line: **File** > **Export** > **PDF**. Each item stays bold, and the > shows the order. Use it for straightforward menu navigation; if something happens between the clicks, such as a dialog, write separate steps instead."
+analogy: "A folder path on your computer: Documents > Reports > 2026."
+primaryFocus: "Compact, unambiguous navigation"
+inScope:
+  - "Nested menus and settings navigation"
+outOfScope:
+  - "Steps where a dialog or choice happens in between"
+color: teal

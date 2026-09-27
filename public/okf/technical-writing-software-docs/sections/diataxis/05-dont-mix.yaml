@@ -1,0 +1,13 @@
+icon: Split
+title: "Don't Mix the Types"
+subtitle: "One page, one kind of reader need"
+description: "Mixing types on one page (e.g. long background inside how-to steps) makes every reader wade through content meant for someone else."
+details: "The classic 'everything page' starts with three paragraphs of history, teaches the basics, lists every field in a table halfway through the steps, and finally gets to the procedure. The expert who wants the steps must scroll past the lesson, and the beginner is lost in the reference table. Split it: a how-to page with just the steps that links to a reference page and an explanation page."
+analogy: "A restaurant menu that interrupts the list of dishes with the chef's life story."
+primaryFocus: "Each reader gets only what they came for"
+inScope:
+  - "Splitting everything pages into typed pages"
+  - "Linking between types instead of embedding"
+outOfScope:
+  - "Duplicating the same content in several types"
+color: red

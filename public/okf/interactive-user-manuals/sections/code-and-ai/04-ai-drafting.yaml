@@ -1,0 +1,14 @@
+icon: Sparkles
+title: "Where AI Helps: Drafting"
+subtitle: "Text, voice, quizzes, data, code"
+description: "AI is best used for drafting: step text and voice-over from recordings, quiz questions, synthetic data, and code changes to mocks and tour steps."
+details: "Screenshot tools such as Scribe, Tango and Guidde already use AI to write step text and voice-over from a recording. A language model can draft quiz questions from the step script, generate realistic synthetic records, and, for as-code approaches, a coding assistant can propose the change to MSW handlers or tour steps after a UI release. In every case AI produces a first draft that is faster to review than to write."
+analogy: "A fast junior writer: great first drafts, still needs an editor."
+primaryFocus: "Cutting the time to a first draft"
+inScope:
+  - "Step text and voice-over from recordings"
+  - "Quiz questions and synthetic data"
+  - "Code changes to mocks and tour steps"
+outOfScope:
+  - "Deciding the manual is correct (see Verify AI Output)"
+color: mauve

@@ -1,0 +1,187 @@
+- id: q1
+  groundedIn: short-sentences
+  question: "What average sentence length should plain-language docs aim for?"
+  choices:
+    - id: q1-a
+      text: "About 15–20 words"
+      correct: true
+      explanation: "Short sentences, one idea each."
+    - id: q1-b
+      text: "About 35–40 words"
+      correct: false
+      explanation: "Far too long for instructions."
+    - id: q1-c
+      text: "Exactly 5 words"
+      correct: false
+      explanation: "An average, not a hard limit, and 5 is unrealistically short."
+  hint: "Recall the first plain-language rule."
+- id: q2
+  groundedIn: active-voice
+  question: "Which sentence uses active voice and addresses the reader?"
+  choices:
+    - id: q2-a
+      text: "Select Save."
+      correct: true
+      explanation: "Active, direct and addressed to 'you'."
+    - id: q2-b
+      text: "The Save button should be selected."
+      correct: false
+      explanation: "Passive: who selects it?"
+    - id: q2-c
+      text: "Saving is performed by the system after selection."
+      correct: false
+      explanation: "Passive and vague."
+  hint: "Who does what?"
+- id: q3
+  groundedIn: front-load
+  question: "Which sentence front-loads the key information?"
+  choices:
+    - id: q3-a
+      text: "Refunds over 5,000 baht need manager approval."
+      correct: true
+      explanation: "The key condition comes first."
+    - id: q3-b
+      text: "Please note that, in accordance with policy, manager approval is needed for refunds over 5,000 baht."
+      correct: false
+      explanation: "The key information is buried at the end."
+    - id: q3-c
+      text: "In some cases, approval may be needed."
+      correct: false
+      explanation: "Vague, with no key information at all."
+  hint: "What does the reader see first?"
+- id: q4
+  groundedIn: one-term
+  question: "Your docs say 'workspace' on one page and 'project' on another for the same thing. What happens?"
+  choices:
+    - id: q4-a
+      text: "Readers think they're two different things"
+      correct: true
+      explanation: "Use one term per concept everywhere."
+    - id: q4-b
+      text: "Readers learn more vocabulary"
+      correct: false
+      explanation: "They get confused, not enriched."
+    - id: q4-c
+      text: "Search works better"
+      correct: false
+      explanation: "It splits results across two words."
+  hint: "One concept, how many terms?"
+- id: q5
+  groundedIn: write-for-translation
+  question: "Which sentence is best for translation into Thai?"
+  choices:
+    - id: q5-a
+      text: "You can start using it immediately."
+      correct: true
+      explanation: "Plain and literal, with no idiom."
+    - id: q5-b
+      text: "You'll hit the ground running."
+      correct: false
+      explanation: "An idiom that translates badly."
+    - id: q5-c
+      text: "It's a piece of cake, no rocket science!"
+      correct: false
+      explanation: "Two idioms and a joke."
+  hint: "Avoid idioms."
+- id: q6
+  groundedIn: ms-guide
+  question: "Which free public guide is a natural base for an end-user web app manual?"
+  choices:
+    - id: q6-a
+      text: "Microsoft Writing Style Guide"
+      correct: true
+      explanation: "It covers voice, UI text and terms for software docs."
+    - id: q6-b
+      text: "Vale"
+      correct: false
+      explanation: "Vale is a linter, not a style guide."
+    - id: q6-c
+      text: "Flesch Reading Ease"
+      correct: false
+      explanation: "That's a readability formula."
+  hint: "Look at the style guide cards."
+- id: q7
+  groundedIn: google-guide
+  question: "What is the Google developer documentation style guide focused on?"
+  choices:
+    - id: q7-a
+      text: "Developer and technical docs"
+      correct: true
+      explanation: "Code, commands, procedures and API reference."
+    - id: q7-b
+      text: "Marketing copy"
+      correct: false
+      explanation: "Not its focus."
+    - id: q7-c
+      text: "Translating docs into Thai"
+      correct: false
+      explanation: "Not its focus."
+  hint: "It's in the name."
+- id: q8
+  groundedIn: house-style
+  question: "What should a house style guide contain?"
+  choices:
+    - id: q8-a
+      text: "Only your own decisions (product names, terms, tone), deferring the rest to one public guide"
+      correct: true
+      explanation: "Short enough that people actually read it."
+    - id: q8-b
+      text: "A full rewrite of every grammar rule"
+      correct: false
+      explanation: "The public guide already covers those."
+    - id: q8-c
+      text: "Nothing: public guides are enough"
+      correct: false
+      explanation: "Public guides don't know your product names and terms."
+  hint: "What's unique to your team?"
+- id: q9
+  groundedIn: vale
+  question: "What does Vale do?"
+  choices:
+    - id: q9-a
+      text: "Checks docs against style rules, in the editor and in CI"
+      correct: true
+      explanation: "A prose linter with Microsoft and Google rule packages plus your own rules."
+    - id: q9-b
+      text: "Verifies that the steps work in the app"
+      correct: false
+      explanation: "That needs a person following the steps."
+    - id: q9-c
+      text: "Translates docs automatically"
+      correct: false
+      explanation: "It checks style; it doesn't translate."
+  hint: "A spell-checker that has read your style guide."
+- id: q10
+  groundedIn: flesch
+  question: "In the Flesch Reading Ease formula, what raises the score (easier reading)?"
+  choices:
+    - id: q10-a
+      text: "Fewer words per sentence and fewer syllables per word"
+      correct: true
+      explanation: "Both are subtracted, so shorter sentences and words raise the score."
+    - id: q10-b
+      text: "More words per sentence"
+      correct: false
+      explanation: "Words per sentence are subtracted, lowering the score."
+    - id: q10-c
+      text: "More headings"
+      correct: false
+      explanation: "The formula doesn't count headings."
+  hint: "Look at what is subtracted."
+- id: q11
+  groundedIn: score-is-a-guide
+  question: "A page scores 75 on Flesch Reading Ease. What can you conclude?"
+  choices:
+    - id: q11-a
+      text: "Sentences and words are short, but the page may still be unclear or wrong"
+      correct: true
+      explanation: "The score is a warning light, not proof of clarity."
+    - id: q11-b
+      text: "The page is clear and correct"
+      correct: false
+      explanation: "The formula can't see structure or accuracy."
+    - id: q11-c
+      text: "The page is too hard to read"
+      correct: false
+      explanation: "75 is easy to read."
+  hint: "What does the formula measure, and what doesn't it?"

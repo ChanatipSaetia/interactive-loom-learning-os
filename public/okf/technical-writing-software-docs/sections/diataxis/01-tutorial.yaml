@@ -1,0 +1,14 @@
+icon: GraduationCap
+title: "Tutorial"
+subtitle: "Learning-oriented · action + study"
+description: "A tutorial is learning-oriented: it guides a beginner through a safe, guaranteed-to-work lesson, like a driving lesson."
+details: "The reader is new and wants to learn, not to get a job done. You, the author, choose the path, with a small project, a fixed set of sample data and every step spelled out, so it always works. Keep explanation to a minimum and link to it instead. Success means the learner finishes and feels 'I can do this'. Example: 'Your first expense claim in 10 minutes'."
+analogy: "A driving lesson in an empty car park: the instructor picks the route and nothing can go badly wrong."
+primaryFocus: "Building a beginner's confidence by doing"
+inScope:
+  - "Guided first projects with sample data"
+  - "Every step spelled out, always works"
+outOfScope:
+  - "Getting a specific real job done (how-to guide)"
+  - "Background theory (explanation)"
+color: green

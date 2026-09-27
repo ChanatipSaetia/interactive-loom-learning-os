@@ -1,0 +1,46 @@
+challenges:
+  - prompt: "A new product release is coming. Put the maintainability loop in the right order."
+    groundedIn: drift-detection
+    items:
+      - id: fix
+        text: "The owner updates the affected screens"
+      - id: detect
+        text: "Automatic drift checks run against the new release"
+      - id: label
+        text: "Label the simulation with the new product version"
+      - id: report
+        text: "Failing checks name the stale modules and steps"
+    solution:
+      - detect
+      - report
+      - fix
+      - label
+  - prompt: "Turn a hand-made screenshot guide into one that regenerates itself. Order the steps."
+    groundedIn: screenshots-as-code
+    items:
+      - id: ci
+        text: "Run the script in CI on every release"
+      - id: script
+        text: "Write a Playwright script that performs each documented step"
+      - id: instance
+        text: "Get a non-production instance for the script to run against"
+      - id: capture
+        text: "Have the script save a screenshot at each step next to the Markdown text"
+    solution:
+      - instance
+      - script
+      - capture
+      - ci
+  - prompt: "Use AI safely to update a UI clone after a release. Order the steps."
+    groundedIn: ai-verify
+    items:
+      - id: publish
+        text: "Merge and publish the update"
+      - id: draft
+        text: "AI drafts the changes to MSW handlers and tour steps"
+      - id: verify
+        text: "Tests and a reviewer verify every step against the real UI"
+    solution:
+      - draft
+      - verify
+      - publish

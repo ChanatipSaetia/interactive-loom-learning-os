@@ -1,0 +1,13 @@
+icon: Link
+title: "Analogy (with Its Limits)"
+subtitle: "New idea ← familiar idea"
+description: "An analogy links a new idea to one the user already knows (a workspace is like a shared drive folder), and a good one says where it breaks down."
+details: "'A workspace is like a shared drive folder: everyone in it sees what's inside.' The user instantly borrows a whole structure they already understand. But every analogy breaks somewhere, and users will carry the broken part over too. So add the limit: 'Unlike a folder, a workspace also has its own billing and settings.'"
+analogy: "A borrowed map of a similar city: very useful, as long as you mark the streets that are different."
+primaryFocus: "Fast understanding by borrowing a known structure"
+inScope:
+  - "One familiar comparison per idea"
+  - "Stating where the analogy breaks"
+outOfScope:
+  - "Analogies from a world users don't know"
+color: mauve

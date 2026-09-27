@@ -1,0 +1,102 @@
+- id: q1
+  groundedIn: tutorial
+  question: "'Your first expense claim in 10 minutes', using sample data that always works, is which type?"
+  choices:
+    - id: q1-a
+      text: "Tutorial"
+      correct: true
+      explanation: "A tutorial is a learning-oriented, guaranteed-to-work lesson for a beginner."
+    - id: q1-b
+      text: "Reference"
+      correct: false
+      explanation: "Reference describes facts to look up; it doesn't guide a lesson."
+    - id: q1-c
+      text: "Explanation"
+      correct: false
+      explanation: "Explanation discusses why; this is a hands-on lesson."
+  hint: "Who is the reader, and are they learning or working?"
+- id: q2
+  groundedIn: how-to
+  question: "An experienced user needs to export last month's claims to Excel. Which type of page serves them?"
+  choices:
+    - id: q2-a
+      text: "How-to guide"
+      correct: true
+      explanation: "A how-to guide gives a competent user the steps to one specific real-world goal."
+    - id: q2-b
+      text: "Tutorial"
+      correct: false
+      explanation: "They aren't learning the basics; they have a real job to do."
+    - id: q2-c
+      text: "Explanation"
+      correct: false
+      explanation: "They need steps, not background."
+  hint: "Competent user + real goal."
+- id: q3
+  groundedIn: reference
+  question: "A table listing every field on the user form, what it accepts and its limits, is which type?"
+  choices:
+    - id: q3-a
+      text: "Reference"
+      correct: true
+      explanation: "Reference is dry, complete, accurate description to look things up."
+    - id: q3-b
+      text: "How-to guide"
+      correct: false
+      explanation: "It contains no steps toward a goal."
+    - id: q3-c
+      text: "Tutorial"
+      correct: false
+      explanation: "Nobody is being guided through a lesson."
+  hint: "Would you read it top to bottom or look something up?"
+- id: q4
+  groundedIn: explanation
+  question: "A page titled 'Why approvals go through two levels' belongs to which type?"
+  choices:
+    - id: q4-a
+      text: "Explanation"
+      correct: true
+      explanation: "Explanation covers why things work the way they do and design decisions."
+    - id: q4-b
+      text: "How-to guide"
+      correct: false
+      explanation: "It explains a reason; it doesn't give steps."
+    - id: q4-c
+      text: "Reference"
+      correct: false
+      explanation: "Reference lists facts; it doesn't discuss reasons."
+  hint: "The title starts with 'Why'."
+- id: q5
+  groundedIn: dont-mix
+  question: "A 'Submit a claim' page starts with three paragraphs on the history of the expense policy. What's wrong?"
+  choices:
+    - id: q5-a
+      text: "It mixes explanation into a how-to, so readers wade through content meant for someone else"
+      correct: true
+      explanation: "Keep the steps on the how-to page and link to a separate explanation page."
+    - id: q5-b
+      text: "Nothing: more context is always better"
+      correct: false
+      explanation: "The user who wants to submit a claim must scroll past history they didn't ask for."
+    - id: q5-c
+      text: "The history should be a tutorial instead"
+      correct: false
+      explanation: "History is background, which is explanation, not a hands-on lesson."
+  hint: "How many kinds of reader need is this page serving?"
+- id: q6
+  groundedIn: compass
+  question: "Which two questions make up the Diátaxis compass?"
+  choices:
+    - id: q6-a
+      text: "Action or cognition? Acquisition (study) or application (work)?"
+      correct: true
+      explanation: "The two answers together point to exactly one of the four types."
+    - id: q6-b
+      text: "Beginner or expert? Long or short?"
+      correct: false
+      explanation: "These aren't the compass questions."
+    - id: q6-c
+      text: "Web or desktop? Text or video?"
+      correct: false
+      explanation: "The compass is about the reader's need, not the medium."
+  hint: "Doing vs knowing, and studying vs working."

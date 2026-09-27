@@ -1,0 +1,221 @@
+- id: q1
+  groundedIn: task-first
+  question: "Which module title best follows the task-first principle?"
+  choices:
+    - id: q1-a
+      text: "Approve a leave request"
+      correct: true
+      explanation: "Task-first manuals are organised around real job tasks, not screens."
+    - id: q1-b
+      text: "A tour of the Settings tab"
+      correct: false
+      explanation: "That is screen-first: it follows the software, not the learner's job."
+    - id: q1-c
+      text: "All menus explained, A to Z"
+      correct: false
+      explanation: "A tour of every menu is exactly what task-first avoids."
+  hint: "Which one is a job someone has to get done?"
+- id: q2
+  groundedIn: selective-fidelity
+  question: "Under selective fidelity, what must match the real software exactly?"
+  choices:
+    - id: q2-a
+      text: "The controls, labels and order on the task path"
+      correct: true
+      explanation: "The path the learner practises must be exact; everything off the path can be static or disabled."
+    - id: q2-b
+      text: "Every screen and feature of the product"
+      correct: false
+      explanation: "That's full fidelity, which costs far more to build and maintain."
+    - id: q2-c
+      text: "Nothing: approximate screens are fine"
+      correct: false
+      explanation: "The task path must be exact, or learners build the wrong muscle memory."
+  hint: "Think of the film set that only builds what the camera sees."
+- id: q3
+  groundedIn: realistic-safe-data
+  question: "A trainer suggests copying last month's real customer list into the simulation 'to make it realistic'. What does the realistic, safe data principle say?"
+  choices:
+    - id: q3-a
+      text: "Use synthetic data that looks like real cases, never copied production data"
+      correct: true
+      explanation: "Realism comes from believable synthetic records, not from real people's data."
+    - id: q3-b
+      text: "Fine, as long as it's only for a week"
+      correct: false
+      explanation: "The principle is never, not 'just for now'."
+    - id: q3-c
+      text: "Use 'Test User 1' so nothing looks real"
+      correct: false
+      explanation: "That's safe, but not realistic: it hides the real difficulties learners will meet."
+  hint: "Realistic and safe at the same time."
+- id: q4
+  groundedIn: safe-to-fail
+  question: "A learner clicks 'Refund' twice in the simulation. What does 'safe to fail' recommend?"
+  choices:
+    - id: q4-a
+      text: "Show what would happen in the real system, then let them reset"
+      correct: true
+      explanation: "Learners can make mistakes, see the consequence and reset."
+    - id: q4-b
+      text: "Block the second click silently"
+      correct: false
+      explanation: "Silently blocking hides the lesson the mistake could teach."
+    - id: q4-c
+      text: "End the module and mark them as failed"
+      correct: false
+      explanation: "The point of simulating is that mistakes cost nothing."
+  hint: "What's the flight simulator's approach to a crash?"
+- id: q5
+  groundedIn: small-chunks
+  question: "Why split a 45-minute 'everything in the CRM' simulation into small modules?"
+  choices:
+    - id: q5-a
+      text: "Each short, single-goal task can be finished in minutes and found again later"
+      correct: true
+      explanation: "Small chunks are finishable and findable, and one release breaks one small module instead of a giant course."
+    - id: q5-b
+      text: "Small modules need no maintenance"
+      correct: false
+      explanation: "They still need upkeep, just less per change."
+    - id: q5-c
+      text: "LMSs can't host long courses"
+      correct: false
+      explanation: "They can. The reason is learning and lookup."
+  hint: "Think recipe cards versus a whole cookbook."
+- id: q6
+  groundedIn: bridge-to-real
+  question: "What belongs in the 'bridge to the real system' at the end of a module?"
+  choices:
+    - id: q6-a
+      text: "What differs in the real system, such as extra approvals, permissions or live consequences"
+      correct: true
+      explanation: "The bridge tells learners what will be different when they do it for real."
+    - id: q6-b
+      text: "A score summary"
+      correct: false
+      explanation: "Scores go to the LMS; the bridge is about the real system."
+    - id: q6-c
+      text: "The product's release notes"
+      correct: false
+      explanation: "The bridge is specific to the task just practised."
+  hint: "What will surprise them on the live system?"
+- id: q7
+  groundedIn: accessible
+  question: "Which is an accessibility requirement for an interactive manual?"
+  choices:
+    - id: q7-a
+      text: "Keyboard navigation, screen-reader labels and captions"
+      correct: true
+      explanation: "These are the three accessibility basics taught."
+    - id: q7-b
+      text: "Mouse-only hotspots for precision"
+      correct: false
+      explanation: "Mouse-only hotspots lock out keyboard and screen-reader users."
+    - id: q7-c
+      text: "Autoplaying narration without captions"
+      correct: false
+      explanation: "Audio needs captions."
+  hint: "Who uses the real system without a mouse?"
+- id: q8
+  groundedIn: task-analysis
+  question: "What is the first step of building a simulation?"
+  choices:
+    - id: q8-a
+      text: "Task analysis: watch an expert do the real task and note every step, decision and common mistake"
+      correct: true
+      explanation: "Everything else, including wrong-click feedback, is built from the task analysis."
+    - id: q8-b
+      text: "Choose an authoring tool"
+      correct: false
+      explanation: "The tool comes after you know what the task is."
+    - id: q8-c
+      text: "Publish to the LMS"
+      correct: false
+      explanation: "Publishing comes last."
+  hint: "Start by watching the real work."
+- id: q9
+  groundedIn: step-script
+  question: "A step script lists three things for each step. Which three?"
+  choices:
+    - id: q9-a
+      text: "The expected action, the hint, and the feedback for a wrong action"
+      correct: true
+      explanation: "Those three turn a step into a teachable moment."
+    - id: q9-b
+      text: "The screen colour, font and logo"
+      correct: false
+      explanation: "The step script is about behaviour, not branding."
+    - id: q9-c
+      text: "The developer, the tester and the release date"
+      correct: false
+      explanation: "Ownership matters, but it isn't part of the step script."
+  hint: "What should happen when the learner is right, stuck or wrong?"
+- id: q10
+  groundedIn: pilot-test
+  question: "Before releasing to 900 staff, what should you do with the finished simulation?"
+  choices:
+    - id: q10-a
+      text: "Pilot it with a few real learners and fix where they get stuck"
+      correct: true
+      explanation: "A pilot finds confusing steps while they're still cheap to fix."
+    - id: q10-b
+      text: "Release it and wait for feedback"
+      correct: false
+      explanation: "Then 900 people meet the confusing steps instead of a few."
+    - id: q10-c
+      text: "Add a disclaimer"
+      correct: false
+      explanation: "A disclaimer doesn't fix a confusing step."
+  hint: "Small audience first."
+- id: q11
+  groundedIn: measure-errors
+  question: "After release, how do you find the most confusing steps?"
+  choices:
+    - id: q11-a
+      text: "Track completion and wrong-click data, e.g. via xAPI"
+      correct: true
+      explanation: "Steps where many learners click the wrong thing point to design problems."
+    - id: q11-b
+      text: "Count how many people opened the module"
+      correct: false
+      explanation: "Opens don't show where people struggle."
+    - id: q11-c
+      text: "Ask the developers"
+      correct: false
+      explanation: "The learners' behaviour tells you, not the builders' guesses."
+  hint: "Which data shows where people click wrong?"
+- id: q12
+  groundedIn: three-modes
+  question: "Which mode removes all hints to check the learner can do the task alone?"
+  choices:
+    - id: q12-a
+      text: "Test"
+      correct: true
+      explanation: "Test is the unguided assessment."
+    - id: q12-b
+      text: "Try"
+      correct: false
+      explanation: "Try is guided practice with hints."
+    - id: q12-c
+      text: "Watch"
+      correct: false
+      explanation: "Watch is a demo; the learner doesn't act."
+  hint: "Watch → Try → ?"
+- id: q13
+  groundedIn: wrong-click-feedback
+  question: "In Try mode, a learner clicks 'Save' instead of 'Submit'. What should the simulation do?"
+  choices:
+    - id: q13-a
+      text: "Give immediate, specific feedback about why that was wrong"
+      correct: true
+      explanation: "Wrong clicks should get immediate, specific feedback instead of silence."
+    - id: q13-b
+      text: "Do nothing until they click the right button"
+      correct: false
+      explanation: "Silently doing nothing leaves the learner guessing."
+    - id: q13-c
+      text: "Jump straight to Test mode"
+      correct: false
+      explanation: "They haven't finished guided practice yet."
+  hint: "Look at the wrong-click branch of the flowchart."

@@ -1,0 +1,14 @@
+icon: Component
+title: "UI Clone with a Mocked Backend"
+subtitle: "The real front end, a fake server"
+description: "A rebuilt UI clone with a mocked backend reuses the product's real front-end components, giving high fidelity and automated tests, but needs developers to maintain it."
+details: "Developers assemble the training screens from the same component library the product uses, and replace the real server with a mock that returns prepared fake data. Buttons, forms and validation behave like the real thing, and learners can explore freely. Because it is code, it can be tested automatically and updated in the same pull request as the product. The price is that someone who can write front-end code has to own it."
+analogy: "A film-set street built with real doors and windows: everything you touch works, but nobody lives there."
+primaryFocus: "Highest fidelity without a real backend"
+inScope:
+  - "Reusing the product's own UI components"
+  - "Mock API responses with synthetic data"
+  - "Automated tests for the training flow"
+outOfScope:
+  - "Real back-end rules, integrations and batch jobs"
+color: green

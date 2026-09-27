@@ -1,0 +1,14 @@
+icon: Database
+title: "Production Data"
+subtitle: "Real people's records are not a practice ground"
+description: "Real systems hold production data (customer PII, patient or financial records) that trainees must not see or change."
+details: "A hospital system shows real patients, a CRM shows real customers, and a banking back office shows real balances. Letting trainees browse that data for practice breaks privacy law (such as GDPR or Thailand's PDPA) and the organisation's own policies. Even a read-only training account still exposes personal data to people who have no business need to see it."
+analogy: "Medical students practise on mannequins, not on the patient in bed 12."
+primaryFocus: "Keeping personal and confidential records away from practice"
+inScope:
+  - "Personally identifiable information (PII)"
+  - "Patient, financial and HR records"
+  - "Privacy and data-protection obligations"
+outOfScope:
+  - "Actions that change the world outside the system (see Irreversible Actions)"
+color: peach

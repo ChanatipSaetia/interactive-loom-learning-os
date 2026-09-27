@@ -1,0 +1,12 @@
+icon: SlidersHorizontal
+title: "Explorable Explanations"
+subtitle: "Change the inputs, watch the idea respond"
+description: "Explorable explanations (a term popularised by Bret Victor) let readers change inputs and watch the idea respond, instead of only reading about it."
+details: "Instead of 'storage cost depends on file count and retention period', give readers two sliders and let them see the cost change. Readers discover the relationship by playing with it. Bret Victor's 2011 essay 'Explorable Explanations' popularised the idea of text that you can play with."
+analogy: "A mixing desk instead of a recording: turn a knob, hear the difference."
+primaryFocus: "Discovering relationships by playing"
+inScope:
+  - "Sliders, toggles, live numbers inside the explanation"
+outOfScope:
+  - "Full working copies of the product"
+color: mauve

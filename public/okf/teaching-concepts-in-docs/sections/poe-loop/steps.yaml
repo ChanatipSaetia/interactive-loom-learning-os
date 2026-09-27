@@ -1,0 +1,44 @@
+- type: linear
+  id: step_predict
+  initiatedBy: learner
+  policy: "When a new situation is shown"
+  command: "Record a prediction of what will happen"
+  handledBy: explainer
+  resultEvents:
+    - id: evt_predicted
+      title: "Prediction Made"
+      desc: "e.g. 'If I add Anna to the Sales workspace, she'll see one project.'"
+  continuesAs: step_observe
+
+- type: linear
+  id: step_observe
+  initiatedBy: learner
+  policy: "After the prediction is recorded"
+  command: "Run the situation and show the real outcome"
+  handledBy: explainer
+  resultEvents:
+    - id: evt_observed
+      title: "Outcome Observed"
+  continuesAs: step_compare
+
+- type: branch
+  id: step_compare
+  event: evt_observed
+  branches:
+    - id: branch_match
+      label: "Prediction was right"
+      policy: "If the outcome matches the prediction"
+      command: "Confirm and explain why it was right"
+      handledBy: explainer
+      resultEvents:
+        - id: evt_model_confirmed
+          title: "Mental Model Confirmed"
+    - id: branch_mismatch
+      label: "Prediction was wrong"
+      policy: "If the outcome differs from the prediction"
+      command: "Ask the learner to explain the difference, then show the explanation"
+      handledBy: explainer
+      resultEvents:
+        - id: evt_model_corrected
+          title: "Mental Model Corrected"
+          desc: "The learner noticed their model was wrong, the moment it can be corrected"

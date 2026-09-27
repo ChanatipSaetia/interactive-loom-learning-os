@@ -1,0 +1,13 @@
+icon: FileText
+title: "Concrete Before Abstract"
+subtitle: "Worked example, then the rule"
+description: "Concrete before abstract: start with a worked example (Anna submits a 7,000-baht claim) and state the general rule after it."
+details: "'Claims over 5,000 baht go through two approval levels' is abstract. 'Anna submits a 7,000-baht taxi claim. It goes to her manager, Ben, then to Finance, because it's over 5,000 baht' is concrete. Start with the concrete story, then state the rule; the reader now has a hook to hang it on. Worked examples like this are one of the best-researched ways to teach new ideas."
+analogy: "Seeing one goal replayed before hearing the offside rule."
+primaryFocus: "Giving abstract rules a concrete hook"
+inScope:
+  - "Named people, real amounts, realistic cases"
+  - "The rule stated after the example"
+outOfScope:
+  - "Rules with no example at all"
+color: sky

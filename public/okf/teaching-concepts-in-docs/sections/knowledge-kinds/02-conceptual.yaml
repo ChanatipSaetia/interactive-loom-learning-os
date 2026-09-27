@@ -1,0 +1,13 @@
+icon: Network
+title: "Conceptual Knowledge"
+subtitle: "Knowing what, how it relates, and why"
+description: "Conceptual knowledge is knowing what the parts are, how they relate and why, which lets users work out steps nobody documented."
+details: "A user who understands that 'sharing is controlled by the workspace's permission settings, and external sharing is off by default' can reason about the greyed-out button themselves: check the workspace settings, or ask the admin. Conceptual knowledge is the map; procedural knowledge is one route across it."
+analogy: "Knowing the city map, so you can find a new route when a road is closed."
+primaryFocus: "Reasoning about the system"
+inScope:
+  - "What the parts are and how they relate"
+  - "Why the system behaves as it does"
+outOfScope:
+  - "Memorised click paths"
+color: green

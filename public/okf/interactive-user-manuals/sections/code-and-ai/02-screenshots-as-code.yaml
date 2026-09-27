@@ -1,0 +1,14 @@
+icon: FileCode
+title: "Screenshot Guides As Code"
+subtitle: "Playwright capture + Markdown"
+description: "Screenshot guides can become code by scripting Playwright to drive a non-production instance and capture every screenshot, so the whole manual regenerates on each release."
+details: "Instead of a person clicking and capturing, a Playwright script logs into a staging or sandbox instance, performs each documented step and saves a screenshot. The text lives in Markdown next to it. On each release CI runs the script again, so every screenshot is fresh. If a step fails, the script tells you the manual needs a text change too. You do need a non-production instance for the script to run against."
+analogy: "A photo booth that re-takes every class photo automatically each term."
+primaryFocus: "Turning the cheapest approach into a self-updating one"
+inScope:
+  - "Playwright scripts that capture screenshots"
+  - "Markdown text in git (docs-as-code)"
+  - "Regenerating the manual in CI on each release"
+outOfScope:
+  - "Software with no non-production instance to script against"
+color: sky

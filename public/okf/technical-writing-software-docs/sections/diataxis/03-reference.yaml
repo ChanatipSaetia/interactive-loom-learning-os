@@ -1,0 +1,14 @@
+icon: BookMarked
+title: "Reference"
+subtitle: "Information-oriented · cognition + work"
+description: "Reference is information-oriented: dry, complete, accurate descriptions of the product (fields, settings, limits) to look things up."
+details: "The reader is in the middle of work and needs one fact: what does the 'Retention period' field accept? What's the file-size limit? Which roles can approve? Reference describes, completely and consistently, in the same structure for every item. It doesn't instruct or explain. Tables of fields, settings, error codes, permissions and keyboard shortcuts are typical."
+analogy: "A dictionary: you don't read it cover to cover, you look up the one word you need."
+primaryFocus: "Accurate facts to look up while working"
+inScope:
+  - "Field, setting and permission tables"
+  - "Limits, error codes, shortcuts"
+outOfScope:
+  - "Step-by-step instructions (how-to)"
+  - "Opinions and reasons (explanation)"
+color: yellow

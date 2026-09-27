@@ -1,0 +1,12 @@
+icon: Code
+title: "Google Developer Documentation Style Guide"
+subtitle: "Free public guide for developer docs"
+description: "The Google developer documentation style guide is a free public guide focused on developer and technical docs."
+details: "It covers tone, formatting of code, commands and UI elements, procedures, API reference and a word list. It suits developer-facing documentation, such as APIs, SDKs and admin or integration guides for a web app."
+analogy: "The engineering handbook on the shelf next to the dictionary."
+primaryFocus: "Developer and technical writing"
+inScope:
+  - "Code, commands, procedures, API reference"
+outOfScope:
+  - "Your own product names and decisions (house style)"
+color: green

@@ -1,0 +1,9 @@
+writer:
+  title: "Technical Writer"
+  desc: "Drafts the page in Markdown and opens a pull request"
+sme:
+  title: "Subject-Matter Expert"
+  desc: "A developer or product owner who knows how the app really works"
+tester:
+  title: "Step Tester"
+  desc: "Someone who follows every step in the app exactly as written"

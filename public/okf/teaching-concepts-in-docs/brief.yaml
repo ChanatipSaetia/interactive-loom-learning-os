@@ -1,0 +1,137 @@
+# yaml-language-server: $schema=../../../schemas/okf/topic-brief.schema.json
+id: teaching-concepts-in-docs
+title: "Teaching Concepts in Software Docs"
+description: "Help users understand the ideas behind a web app, not just the clicks: mental models, analogies, worked examples, interactive explanations and checks that make it stick"
+category: Project Management
+tags: [documentation, instructional-design, mental-models, learning-science, explanation]
+
+boss:
+  title: "The Hollow Clicker"
+  failureMode: "Users follow the steps without understanding the ideas behind them, so they break things the moment their situation differs from the manual"
+
+tracks:
+  - id: why-concepts
+    title: "Why Concepts Matter"
+    sections:
+      - name: knowledge-kinds
+        type: taxonomy-browser
+        title: "Steps vs Understanding"
+        keyItem: true
+        teaches:
+          - id: procedural
+            point: "Procedural knowledge is knowing the steps; it breaks as soon as the user's situation differs from the documented one"
+          - id: conceptual
+            point: "Conceptual knowledge is knowing what the parts are, how they relate and why, which lets users work out steps nobody documented"
+          - id: transfer
+            point: "Transfer is applying what you learned to a new situation; conceptual knowledge is what makes transfer possible"
+      - name: mental-models
+        type: pillar-layer
+        title: "Three Models of the System"
+        teaches:
+          - id: three-models
+            point: "Don Norman distinguishes the designer's model (how the designers think it works), the system image (the UI and the docs) and the user's model (what users believe)"
+          - id: system-image
+            point: "Users build their model only from the system image, so the docs must carry the designer's model when the UI alone can't"
+      - name: quiz-why
+        type: quiz
+        title: "Why Concepts Check"
+
+  - id: techniques
+    title: "Techniques for Explaining"
+    sections:
+      - name: concept-techniques
+        type: taxonomy-browser
+        title: "Explaining Techniques"
+        keyItem: true
+        teaches:
+          - id: analogy
+            point: "An analogy links a new idea to one the user already knows (a workspace is like a shared drive folder), and a good one says where it breaks down"
+          - id: concrete-first
+            point: "Concrete before abstract: start with a worked example (Anna submits a 7,000-baht claim) and state the general rule after it"
+          - id: refutation
+            point: "Refutation text corrects a misconception by stating the wrong belief, saying clearly that it is wrong, then explaining what is true (archiving is not deleting)"
+          - id: non-examples
+            point: "Non-examples show what the concept is not, which sharpens its boundaries (a draft is not a submitted claim)"
+          - id: dual-coding
+            point: "Dual coding: pairing words with a diagram helps people understand and remember better than words alone"
+      - name: explain-workshop
+        type: tradeoff-sandbox
+        title: "Explain 'Permission Inheritance'"
+        teaches:
+          - id: cognitive-load
+            point: "Cognitive load: working memory holds only a few new items at once, so introduce a few new concepts at a time and build on them"
+          - id: mix-techniques
+            point: "Combining techniques (a diagram, a worked example and a named misconception) usually beats any single technique alone"
+      - name: concept-page
+        type: bullets
+        title: "Anatomy of a Concept Page"
+        teaches:
+          - id: definition-first
+            point: "A concept page opens with a one-sentence definition in plain words, then says why it matters to the user"
+          - id: concept-task-links
+            point: "Each concept page links to the tasks that use it, and each task page links back to its concept"
+          - id: progressive-disclosure
+            point: "Progressive disclosure: teach the core idea first and leave advanced details for later sections or linked pages"
+      - name: quiz-techniques
+        type: quiz
+        title: "Techniques Check"
+
+  - id: interactive
+    title: "Interactive Explanations"
+    sections:
+      - name: explorables
+        type: taxonomy-browser
+        title: "Kinds of Interactive Explanation"
+        keyItem: true
+        teaches:
+          - id: explorable
+            point: "Explorable explanations (a term popularised by Bret Victor) let readers change inputs and watch the idea respond, instead of only reading about it"
+          - id: concept-simulator
+            point: "A concept simulator isolates one idea, such as a permission simulator where you move a user between groups and see what they can access"
+          - id: clickable-flow
+            point: "A clickable flow diagram lets users step through a process (an approval route) one stage at a time"
+          - id: what-if
+            point: "A what-if scenario asks users to make a decision in a realistic situation and shows the consequence, testing understanding rather than recall"
+      - name: poe-loop
+        type: flowchart
+        title: "Predict → Observe → Explain"
+        teaches:
+          - id: poe
+            point: "Predict-Observe-Explain (POE): the learner predicts what will happen, observes the real outcome, then explains any difference"
+          - id: prediction-effect
+            point: "Asking for a prediction first makes learners notice when their mental model is wrong, which is when it can be corrected"
+      - name: order-poe
+        type: reflection-sequence
+        title: "Build a POE Moment"
+
+  - id: retention
+    title: "Make It Stick"
+    sections:
+      - name: learning-science
+        type: bullets
+        title: "Four Findings from Learning Science"
+        keyItem: true
+        teaches:
+          - id: retrieval-practice
+            point: "Retrieval practice (the testing effect): recalling an idea from memory strengthens it more than re-reading it"
+          - id: spacing
+            point: "Spacing: short reviews spread over days beat one long session"
+          - id: self-explanation
+            point: "Self-explanation: asking learners to explain why something works, in their own words, deepens understanding"
+          - id: explanatory-feedback
+            point: "Explanatory feedback says why an answer is right or wrong, not just whether it is"
+      - name: quiz-retention
+        type: quiz
+        title: "Retention Check"
+      - name: scenario-archive
+        type: scenario
+        title: "Scenario: Archive Is Not Delete"
+      - name: concept-map
+        type: concept-map
+        title: "How It All Connects"
+      - name: glossary
+        type: flashcards
+        title: "Glossary"
+      - name: synthesis
+        type: reflection-template
+        title: "Design a Concept Lesson"

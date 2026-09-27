@@ -1,0 +1,85 @@
+- id: q1
+  groundedIn: procedural
+  question: "A user knows the three steps to share a file, but the Share button is greyed out today. Why are they stuck?"
+  choices:
+    - id: q1-a
+      text: "Procedural knowledge breaks when the situation differs from the documented one"
+      correct: true
+      explanation: "Memorised steps give them nothing to reason with when something changes."
+    - id: q1-b
+      text: "They didn't memorise the steps well enough"
+      correct: false
+      explanation: "They know the steps; the steps just don't cover this case."
+    - id: q1-c
+      text: "The manual should have more screenshots"
+      correct: false
+      explanation: "Screenshots show the same documented path."
+  hint: "What kind of knowledge do they have?"
+- id: q2
+  groundedIn: conceptual
+  question: "What lets a user work out steps nobody documented?"
+  choices:
+    - id: q2-a
+      text: "Conceptual knowledge: what the parts are, how they relate and why"
+      correct: true
+      explanation: "It's the map; procedural knowledge is one route across it."
+    - id: q2-b
+      text: "Memorising more click paths"
+      correct: false
+      explanation: "More routes still don't cover undocumented cases."
+    - id: q2-c
+      text: "Faster typing"
+      correct: false
+      explanation: "Not related to understanding."
+  hint: "Map or route?"
+- id: q3
+  groundedIn: transfer
+  question: "Which is an example of transfer?"
+  choices:
+    - id: q3-a
+      text: "A user correctly handles a role-and-setting combination the manual never showed"
+      correct: true
+      explanation: "Transfer is applying learning to a new situation."
+    - id: q3-b
+      text: "A user repeats the manual's example exactly"
+      correct: false
+      explanation: "That's repetition, not transfer."
+    - id: q3-c
+      text: "A user reads the manual twice"
+      correct: false
+      explanation: "Reading isn't applying."
+  hint: "New situation."
+- id: q4
+  groundedIn: three-models
+  question: "In Don Norman's terms, what is the 'system image'?"
+  choices:
+    - id: q4-a
+      text: "Everything users can see: the UI, messages and docs"
+      correct: true
+      explanation: "The system image sits between the designer's model and the user's model."
+    - id: q4-b
+      text: "What the designers believe"
+      correct: false
+      explanation: "That's the designer's model."
+    - id: q4-c
+      text: "What users believe"
+      correct: false
+      explanation: "That's the user's model."
+  hint: "The middle layer."
+- id: q5
+  groundedIn: system-image
+  question: "The Archive icon looks like a trash can, and users think archiving deletes projects. What should the docs do?"
+  choices:
+    - id: q5-a
+      text: "Carry the designer's model: explain that archiving hides a project and it can be restored"
+      correct: true
+      explanation: "Users build their model only from the system image, so the docs must say what the UI can't."
+    - id: q5-b
+      text: "Nothing: users will figure it out"
+      correct: false
+      explanation: "They'll figure it out wrong, from the trash-can icon."
+    - id: q5-c
+      text: "Tell users to ask the designers"
+      correct: false
+      explanation: "Users can't see the designer's model; that's the whole problem."
+  hint: "Where do users get their model from?"

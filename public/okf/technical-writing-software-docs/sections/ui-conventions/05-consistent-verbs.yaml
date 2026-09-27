@@ -1,0 +1,13 @@
+icon: Repeat
+title: "Consistent, Device-Neutral Verbs"
+subtitle: "select · enter · choose, used the same way everywhere"
+description: "Pick device-neutral verbs such as 'select' and 'enter' (as the Microsoft style guide recommends) and use them consistently."
+details: "Web apps are used with mouse, touch and keyboard, so 'click' doesn't fit everyone; the Microsoft style guide recommends 'select'. The Google developer style guide still uses 'click' for mouse actions. Either can work; what matters is choosing one set of verbs in your house style and using it the same way on every page, so readers don't wonder whether 'press', 'hit' and 'click' mean different things."
+analogy: "A referee who uses the same whistle for the same foul every time."
+primaryFocus: "One verb, one meaning"
+inScope:
+  - "Verbs for selecting, entering, choosing"
+  - "Recording the choice in the house style"
+outOfScope:
+  - "Mixing 'click', 'press', 'hit' and 'tap' for the same action"
+color: yellow

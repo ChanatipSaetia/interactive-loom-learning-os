@@ -1,0 +1,186 @@
+# yaml-language-server: $schema=../../../schemas/okf/topic-brief.schema.json
+id: interactive-user-manuals
+title: "Interactive User Manuals"
+description: "Teach people to use IT systems and software through safe simulations, without touching the real, restricted system"
+category: Project Management
+tags: [documentation, training, simulation, software-adoption, maintainability]
+
+boss:
+  title: "The Drifted Phantom UI"
+  failureMode: "The simulation silently drifts away from the real software, so learners confidently rehearse screens and steps that no longer exist"
+
+tracks:
+  - id: why-simulate
+    title: "Why Simulate?"
+    sections:
+      - name: access-barriers
+        type: taxonomy-browser
+        title: "Why Learners Can't Touch the Real System"
+        keyItem: true
+        teaches:
+          - id: least-privilege
+            point: "Least-privilege access control means trainees often have no account or role that allows the actions they must learn"
+          - id: production-data
+            point: "Real systems hold production data (customer PII, patient or financial records) that trainees must not see or change"
+          - id: irreversible-actions
+            point: "Some actions are irreversible or high-impact in a live system, such as issuing a refund, deleting a record or changing a network rule"
+          - id: license-cost
+            point: "Per-seat licences and shared environments make it costly to give every trainee a real system to practise on"
+      - name: fidelity-ladder
+        type: pillar-layer
+        title: "The Fidelity Ladder"
+        teaches:
+          - id: fidelity-levels
+            point: "Simulation fidelity rises from static annotated screenshots, to click-through walkthroughs, to interactive simulations with fake data, to a full sandbox environment"
+          - id: fidelity-vs-cost
+            point: "Each step up the fidelity ladder gives more realistic practice but costs more to build and to maintain"
+      - name: quiz-why
+        type: quiz
+        title: "Why Simulate Check"
+
+  - id: approaches
+    title: "Ways to Build It"
+    sections:
+      - name: approach-catalog
+        type: taxonomy-browser
+        title: "Implementation Approaches"
+        keyItem: true
+        teaches:
+          - id: screenshot-guides
+            point: "Annotated screenshot or video guides are the cheapest to create but are passive: learners watch and never practise"
+          - id: hotspot-sims
+            point: "Screen-capture hotspot simulations turn recorded screens into clickable steps, but every UI change means re-recording the affected screens"
+          - id: dom-capture
+            point: "HTML/DOM capture demos snapshot real web pages so text and data can be edited without re-recording, but only work for web apps"
+          - id: ui-clone
+            point: "A rebuilt UI clone with a mocked backend reuses the product's real front-end components, giving high fidelity and automated tests, but needs developers to maintain it"
+          - id: training-sandbox
+            point: "A training sandbox is a separate real instance loaded with synthetic data; it is the most realistic but needs infrastructure, resets and its own access control"
+      - name: tool-kit
+        type: taxonomy-browser
+        title: "Tools for Each Approach"
+        teaches:
+          - id: tools-screenshot
+            point: "Scribe, Tango and Guidde auto-generate step-by-step screenshot guides from a recorded session; Snagit and Loom cover manual screenshots and video"
+          - id: tools-hotspot
+            point: "Articulate Storyline 360, Adobe Captivate and iSpring Suite build hotspot simulations and publish them as SCORM or xAPI packages for an LMS"
+          - id: tools-dom
+            point: "Walnut, Navattic, Storylane and Reprise capture a web app's HTML/DOM into editable, clickable demos"
+          - id: tools-clone
+            point: "A UI clone is typically built with the product's component library in Storybook, Mock Service Worker (MSW) for the fake API, and a tour library such as Shepherd.js or Driver.js for guided steps"
+          - id: tools-drift
+            point: "Playwright tests plus visual-regression services such as Chromatic or Percy detect when the real UI has changed"
+          - id: tools-sandbox
+            point: "Training sandboxes use vendor sandboxes (Salesforce sandboxes, ServiceNow sub-production instances) or Docker Compose/Terraform environments seeded by synthetic-data tools such as Faker, Mockaroo or Tonic.ai"
+      - name: approach-tradeoffs
+        type: tradeoff-sandbox
+        title: "Trade-off Sandbox: Fidelity vs Upkeep"
+        teaches:
+          - id: upkeep-axis
+            point: "The main trade-off axes are build cost, realism, maintenance effort per UI release, who can update it (authors vs developers) and how much can be automated as code or with AI"
+      - name: approach-decision
+        type: decision-tree
+        title: "Pick Your Approach"
+      - name: quiz-approaches
+        type: quiz
+        title: "Approach Check"
+
+  - id: maintainability
+    title: "Keeping It Alive"
+    sections:
+      - name: upkeep-cost
+        type: formula-sandbox
+        title: "Upkeep Cost Calculator"
+        keyItem: true
+        teaches:
+          - id: cost-drivers
+            point: "Yearly upkeep effort is roughly releases per year × screens changed per release × minutes to update one screen"
+          - id: coupling
+            point: "Approaches that copy pixels (screenshots, recordings) pay the full update cost per changed screen; approaches that reuse live components pay far less"
+      - name: upkeep-practices
+        type: bullets
+        title: "Maintainability Practices"
+        teaches:
+          - id: single-source
+            point: "Generate simulations from a single source of truth, such as the design-system components or a shared script of steps, instead of hand-copying screens"
+          - id: drift-detection
+            point: "Detect drift automatically with visual-regression or selector checks that run on every product release"
+          - id: version-pinning
+            point: "Label each simulation with the product version it matches and name an owner who updates it"
+          - id: synthetic-fixtures
+            point: "Keep fake data in shared synthetic fixtures so every simulation shows the same realistic, privacy-safe records"
+      - name: code-and-ai
+        type: taxonomy-browser
+        title: "As Code & With AI"
+        teaches:
+          - id: as-code-native
+            point: "UI clones and training sandboxes are naturally 'as code': components, MSW handlers, tour steps, Terraform and seed scripts live in git, get reviewed in pull requests and run in CI"
+          - id: screenshots-as-code
+            point: "Screenshot guides can become code by scripting Playwright to drive a non-production instance and capture every screenshot, so the whole manual regenerates on each release"
+          - id: gui-authored
+            point: "Hotspot simulations and DOM-capture demos are authored in GUI or SaaS editors whose project files are hard to diff, review or regenerate from git"
+          - id: ai-drafting
+            point: "AI is best used for drafting: step text and voice-over from recordings, quiz questions, synthetic data, and code changes to mocks and tour steps"
+          - id: ai-verify
+            point: "AI output must be verified against the real UI, by a person or by automated tests, because an invented step is exactly the drift a simulation must avoid"
+      - name: scenario-release
+        type: scenario
+        title: "Scenario: The Menu Moved"
+      - name: reflection-upkeep
+        type: reflection-sequence
+        title: "Order the Upkeep Loop"
+
+  - id: learning-design
+    title: "Principles of Creation"
+    sections:
+      - name: creation-principles
+        type: taxonomy-browser
+        title: "Principles for Building Simulations"
+        teaches:
+          - id: task-first
+            point: "Organise the manual around real job tasks (e.g. 'approve a leave request'), not a tour of every screen and menu"
+          - id: selective-fidelity
+            point: "Selective fidelity: copy the controls, labels and order on the task path exactly; everything off the path can be static or disabled"
+          - id: realistic-safe-data
+            point: "Use synthetic data that looks like real cases, never copied production data"
+          - id: safe-to-fail
+            point: "Make it safe to fail: learners can make mistakes, see what would happen, and reset"
+          - id: small-chunks
+            point: "Keep each module to one short task with one goal, so learners can finish it in a few minutes and look it up again later"
+          - id: bridge-to-real
+            point: "End each task with a bridge to the real system: what differs there, such as extra approvals, permissions or live consequences"
+          - id: accessible
+            point: "Make the simulation accessible: keyboard navigation, screen-reader labels and captions for any audio or video"
+      - name: build-process
+        type: bullets
+        title: "From Task to Simulation"
+        teaches:
+          - id: task-analysis
+            point: "Start with task analysis: watch an expert do the real task and write down every step, decision and common mistake"
+          - id: step-script
+            point: "Write a step script before building: for each step, the expected action, the hint, and the feedback for a wrong action"
+          - id: pilot-test
+            point: "Pilot the simulation with a few real learners before release and fix the steps where they get stuck"
+          - id: measure-errors
+            point: "After release, track completion and wrong-click data (e.g. via xAPI) to find confusing steps"
+      - name: watch-try-test
+        type: flowchart
+        title: "Watch → Try → Test"
+        keyItem: true
+        teaches:
+          - id: three-modes
+            point: "A good simulation offers three modes: Watch (demo), Try (guided practice with hints) and Test (unguided assessment)"
+          - id: wrong-click-feedback
+            point: "Wrong clicks should give immediate, specific feedback instead of silently doing nothing"
+      - name: quiz-principles
+        type: quiz
+        title: "Principles Check"
+      - name: concept-map
+        type: concept-map
+        title: "How It All Connects"
+      - name: glossary
+        type: flashcards
+        title: "Glossary"
+      - name: plan-your-sim
+        type: reflection-template
+        title: "Plan Your Simulation"

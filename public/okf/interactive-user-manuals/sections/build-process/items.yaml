@@ -1,0 +1,18 @@
+- text: "1 · Task analysis"
+  children:
+    - text: "Watch an expert do the real task and write down every step, decision and common mistake."
+    - text: "The common mistakes become your wrong-click feedback later."
+- text: "2 · Write a step script before building"
+  children:
+    - text: "For each step: the expected action, the hint, and the feedback for a wrong action."
+    - text: "Example: 'Click Actions → Submit claim' · hint 'Submitting lives in the Actions menu' · wrong click on Save: 'Save keeps a draft; it doesn't send the claim.'"
+- text: "3 · Build with the approach you chose"
+  children:
+    - text: "The step script is the same whether you build it in Storyline, Navattic, a UI clone or a sandbox."
+- text: "4 · Pilot with real learners before release"
+  children:
+    - text: "Pilot the simulation with a few real learners and fix the steps where they get stuck."
+- text: "5 · Measure after release"
+  children:
+    - text: "Track completion and wrong-click data (e.g. via xAPI) to find confusing steps."
+    - text: "A step where many people click the wrong thing is a design problem, not a learner problem."

@@ -1,0 +1,43 @@
+title: "Three Models of the System (Don Norman)"
+description: "The designers have a model in their heads. Users can't see it: they only see the system image (the UI and the docs) and build their own model from it."
+layers:
+  - id: l-user
+    title: "User's Model"
+    description: "What users believe about how the system works, built only from what they can see."
+  - id: l-image
+    title: "System Image"
+    description: "Everything users can actually see: the UI, messages, and the docs."
+  - id: l-designer
+    title: "Designer's Model"
+    description: "How the designers and developers think the system works."
+matrix_blocks:
+  - title: "'Archive deletes things' (wrong)"
+    description: "The user's model when nothing tells them otherwise."
+    layer_id: l-user
+    col_offset: 0
+    col_span: 2
+    color: red
+  - title: "'Archive hides things; restore any time' (right)"
+    description: "The user's model after the docs explain it."
+    layer_id: l-user
+    col_offset: 2
+    col_span: 2
+    color: green
+  - title: "The UI"
+    description: "A trash-can-like icon labelled Archive. It can't explain the idea by itself."
+    layer_id: l-image
+    col_offset: 0
+    col_span: 2
+    color: yellow
+  - title: "The Docs"
+    description: "Carry the designer's model when the UI alone can't: 'Archiving hides a project; it isn't deleted.'"
+    layer_id: l-image
+    col_offset: 2
+    col_span: 2
+    color: sky
+  - title: "Archive = hidden, restorable"
+    description: "Designers know archived items are kept and can be restored."
+    layer_id: l-designer
+    col_offset: 0
+    col_span: 4
+    color: mauve

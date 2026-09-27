@@ -1,0 +1,101 @@
+nodes:
+  real_system:
+    title: "Real System"
+    category: foundation
+  access_barriers:
+    title: "Access Barriers"
+    category: concept
+  interactive_manual:
+    title: "Interactive User Manual"
+    category: foundation
+  fidelity:
+    title: "Fidelity Ladder"
+    category: concept
+  screenshots:
+    title: "Screenshot Guides"
+    category: approach
+  hotspot:
+    title: "Hotspot Simulation"
+    category: approach
+  dom_capture:
+    title: "DOM Capture Demo"
+    category: approach
+  ui_clone:
+    title: "UI Clone + Mocks"
+    category: approach
+  sandbox:
+    title: "Training Sandbox"
+    category: approach
+  synthetic_data:
+    title: "Synthetic Data"
+    category: mechanism
+  as_code:
+    title: "As Code (git + CI)"
+    category: mechanism
+  ai_drafting:
+    title: "AI Drafting"
+    category: mechanism
+  drift_detection:
+    title: "Drift Detection"
+    category: mechanism
+  upkeep:
+    title: "Upkeep Cost"
+    category: concept
+  principles:
+    title: "Creation Principles"
+    category: concept
+  watch_try_test:
+    title: "Watch → Try → Test"
+    category: process
+  drift:
+    title: "Drift (the Phantom UI)"
+    category: risk
+edges:
+  - from: access_barriers
+    to: real_system
+    label: "block practice on"
+  - from: interactive_manual
+    to: real_system
+    label: "imitates"
+  - from: fidelity
+    to: interactive_manual
+    label: "sets realism of"
+  - from: screenshots
+    to: fidelity
+    label: "lowest rung of"
+  - from: sandbox
+    to: fidelity
+    label: "highest rung of"
+  - from: hotspot
+    to: upkeep
+    label: "re-record raises"
+  - from: dom_capture
+    to: interactive_manual
+    label: "builds web"
+  - from: ui_clone
+    to: as_code
+    label: "is natively"
+  - from: sandbox
+    to: as_code
+    label: "is natively"
+  - from: sandbox
+    to: synthetic_data
+    label: "is filled with"
+  - from: as_code
+    to: drift_detection
+    label: "enables"
+  - from: drift_detection
+    to: drift
+    label: "catches"
+  - from: ai_drafting
+    to: drift
+    label: "can cause, if unverified"
+  - from: upkeep
+    to: drift
+    label: "unpaid, leads to"
+  - from: principles
+    to: interactive_manual
+    label: "shape"
+  - from: principles
+    to: watch_try_test
+    label: "include"

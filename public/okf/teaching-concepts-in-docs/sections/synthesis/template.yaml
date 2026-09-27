@@ -1,0 +1,63 @@
+challenges:
+  - prompt: "Why concepts (Track 1):"
+    template: "Knowing only the steps is {zone-1} knowledge; knowing how the parts relate is {zone-2} knowledge, which makes {zone-3} possible."
+    chips:
+      - id: chip-procedural
+        text: "procedural"
+      - id: chip-conceptual
+        text: "conceptual"
+      - id: chip-transfer
+        text: "transfer"
+      - id: chip-typing
+        text: "faster typing"
+    solution:
+      zone-1: chip-procedural
+      zone-2: chip-conceptual
+      zone-3: chip-transfer
+    explanation: "<strong>Correct!</strong> Steps are brittle; understanding transfers to situations the manual never showed."
+  - prompt: "Explain it (Track 2):"
+    template: "Start with a {zone-1}, add a diagram for {zone-2}, and fix the wrong belief with {zone-3}."
+    chips:
+      - id: chip-example
+        text: "worked example"
+      - id: chip-dual
+        text: "dual coding"
+      - id: chip-refutation
+        text: "refutation"
+      - id: chip-checkbox
+        text: "an 'I understood' checkbox"
+    solution:
+      zone-1: chip-example
+      zone-2: chip-dual
+      zone-3: chip-refutation
+    explanation: "<strong>Correct!</strong> Concrete first, words + picture, and name-and-reject the misconception."
+  - prompt: "Make it interactive (Track 3):"
+    template: "Ask learners to {zone-1} first, let them {zone-2} the real outcome, then {zone-3} the difference."
+    chips:
+      - id: chip-predict
+        text: "predict"
+      - id: chip-observe
+        text: "observe"
+      - id: chip-explain
+        text: "explain"
+    solution:
+      zone-1: chip-predict
+      zone-2: chip-observe
+      zone-3: chip-explain
+    explanation: "<strong>Correct!</strong> Predict → Observe → Explain makes a wrong model visible, so it can be corrected."
+  - prompt: "Make it stick (Track 4):"
+    template: "Use {zone-1} instead of re-reading, spread reviews with {zone-2}, and give feedback that says {zone-3}."
+    chips:
+      - id: chip-retrieval
+        text: "retrieval practice"
+      - id: chip-spacing
+        text: "spacing"
+      - id: chip-why
+        text: "why"
+      - id: chip-whether
+        text: "only whether"
+    solution:
+      zone-1: chip-retrieval
+      zone-2: chip-spacing
+      zone-3: chip-why
+    explanation: "<strong>Correct!</strong> Recall, spacing and explanatory feedback turn understanding into lasting understanding."

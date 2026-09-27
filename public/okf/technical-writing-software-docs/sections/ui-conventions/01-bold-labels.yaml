@@ -1,0 +1,12 @@
+icon: Bold
+title: "Bold UI Labels, Exactly as Shown"
+subtitle: "**Save**, not \"save\" or 'the save button'"
+description: "Write UI labels in bold, spelled and capitalised exactly as they appear on screen."
+details: "Readers scan the page, then scan the screen for the same word. Bold makes the label stand out in the text, and exact spelling and capitalisation let them match it instantly. If the button says Save changes, write **Save changes**, not 'save' or 'the Save Changes button'. When the UI label changes in a release, the doc must change too."
+analogy: "Station names on a train map match the signs on the platform letter for letter."
+primaryFocus: "Instant matching between page and screen"
+inScope:
+  - "Buttons, menu items, tabs, field names, page titles"
+outOfScope:
+  - "Text the user types (see Input Formatting)"
+color: mauve

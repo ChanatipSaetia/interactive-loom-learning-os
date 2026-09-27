@@ -1,0 +1,204 @@
+- id: q1
+  groundedIn: task-title
+  question: "Which is the best title for a task page?"
+  choices:
+    - id: q1-a
+      text: "Export a monthly report"
+      correct: true
+      explanation: "The user's goal as a verb phrase is what users search for."
+    - id: q1-b
+      text: "Report Export Module"
+      correct: false
+      explanation: "That's a feature name, not the user's goal."
+    - id: q1-c
+      text: "Reports"
+      correct: false
+      explanation: "Too vague: which task about reports?"
+  hint: "What does the user want to do?"
+- id: q2
+  groundedIn: prerequisites
+  question: "Users keep failing at step 4 because they lack the Finance Approver role. How should the page fix this?"
+  choices:
+    - id: q2-a
+      text: "List the role as a prerequisite before the first step"
+      correct: true
+      explanation: "Prerequisites go before step 1 so users don't fail halfway."
+    - id: q2-b
+      text: "Add a note after step 4"
+      correct: false
+      explanation: "By then they've already done three steps for nothing."
+    - id: q2-c
+      text: "Mention it in the page's footer"
+      correct: false
+      explanation: "Nobody reads the footer before starting."
+  hint: "Where should they learn it: before or after starting?"
+- id: q3
+  groundedIn: one-action
+  question: "Which step follows the one-action-per-step rule?"
+  choices:
+    - id: q3-a
+      text: "3. Select Export."
+      correct: true
+      explanation: "One action, easy to keep your place."
+    - id: q3-b
+      text: "3. Choose Monthly, set the dates and export."
+      correct: false
+      explanation: "Three actions crammed into one step."
+    - id: q3-c
+      text: "3. Configure the report as needed."
+      correct: false
+      explanation: "Not a concrete action at all."
+  hint: "Count the verbs."
+- id: q4
+  groundedIn: show-result
+  question: "After 'Select Export', what should the page add?"
+  choices:
+    - id: q4-a
+      text: "What the user should see, e.g. 'The report downloads as an .xlsx file.'"
+      correct: true
+      explanation: "Showing the result tells users it worked."
+    - id: q4-b
+      text: "The history of the export feature"
+      correct: false
+      explanation: "That's explanation and belongs elsewhere."
+    - id: q4-c
+      text: "Nothing: the step is complete"
+      correct: false
+      explanation: "Without the result, users can't tell whether it worked."
+  hint: "How does the user know it worked?"
+- id: q5
+  groundedIn: minimalism
+  question: "Which idea is part of minimalism (John Carroll)?"
+  choices:
+    - id: q5-a
+      text: "Help users recognise and recover from errors"
+      correct: true
+      explanation: "Minimalism: act quickly, cut the unneeded, support error recognition and recovery."
+    - id: q5-b
+      text: "Document every feature before any task"
+      correct: false
+      explanation: "That's the opposite: it delays action."
+    - id: q5-c
+      text: "Hide errors from the documentation"
+      correct: false
+      explanation: "Minimalism explicitly supports recovering from errors."
+  hint: "Think: act fast, cut fat, recover from errors."
+- id: q6
+  groundedIn: bold-labels
+  question: "The button on screen reads 'Save changes'. How should the doc write it?"
+  choices:
+    - id: q6-a
+      text: "**Save changes**"
+      correct: true
+      explanation: "Bold, spelled and capitalised exactly as on screen."
+    - id: q6-b
+      text: "the save button"
+      correct: false
+      explanation: "Not bold and not the exact label."
+    - id: q6-c
+      text: "`Save Changes`"
+      correct: false
+      explanation: "Monospace is for typed input, and the capitalisation doesn't match."
+  hint: "Match the screen letter for letter."
+- id: q7
+  groundedIn: location-first
+  question: "Which sentence follows 'location before action'?"
+  choices:
+    - id: q7-a
+      text: "In the Settings pane, select Save."
+      correct: true
+      explanation: "The eye goes to the right place before the hand acts."
+    - id: q7-b
+      text: "Select Save in the Settings pane."
+      correct: false
+      explanation: "The reader may click the first Save they see before reading where."
+    - id: q7-c
+      text: "Save it."
+      correct: false
+      explanation: "No location and no UI label."
+  hint: "Where, then what."
+- id: q8
+  groundedIn: menu-path
+  question: "How is a menu path written?"
+  choices:
+    - id: q8-a
+      text: "File > Export > PDF"
+      correct: true
+      explanation: "Items separated by >, each in bold in the real page."
+    - id: q8-b
+      text: "File, then Export, then maybe PDF"
+      correct: false
+      explanation: "Wordy and vague."
+    - id: q8-c
+      text: "file/export/pdf"
+      correct: false
+      explanation: "Wrong separator and the labels don't match the screen."
+  hint: "Look at the separator."
+- id: q9
+  groundedIn: input-format
+  question: "In 'In the Name field, enter Q3-budget', how should Q3-budget be formatted?"
+  choices:
+    - id: q9-a
+      text: "Monospace, because it's text the user types"
+      correct: true
+      explanation: "Monospace separates what you type from UI labels."
+    - id: q9-b
+      text: "Bold, like a UI label"
+      correct: false
+      explanation: "Bold is for labels on screen; Q3-budget is typed in."
+    - id: q9-c
+      text: "Italic"
+      correct: false
+      explanation: "Not the convention taught."
+  hint: "See vs type."
+- id: q10
+  groundedIn: consistent-verbs
+  question: "Your docs use 'click', 'press', 'hit' and 'tap' for the same action. What's the fix?"
+  choices:
+    - id: q10-a
+      text: "Pick one device-neutral verb such as 'select' and use it consistently"
+      correct: true
+      explanation: "Consistency matters most; 'select' also works for mouse, touch and keyboard."
+    - id: q10-b
+      text: "Use all four so every device is covered"
+      correct: false
+      explanation: "Readers will wonder whether they mean different things."
+    - id: q10-c
+      text: "Avoid verbs altogether"
+      correct: false
+      explanation: "Steps need clear action verbs."
+  hint: "One verb, one meaning."
+- id: q11
+  groundedIn: screenshot-restraint
+  question: "When is a screenshot worth adding to a step?"
+  choices:
+    - id: q11-a
+      text: "When a control is hard to find from text alone"
+      correct: true
+      explanation: "Screenshots go stale each release, so use them where text isn't enough."
+    - id: q11-b
+      text: "After every single click"
+      correct: false
+      explanation: "That multiplies upkeep and slows scanning."
+    - id: q11-c
+      text: "Never"
+      correct: false
+      explanation: "Hidden controls, such as items in a ⋯ menu, need one."
+  hint: "Recall the screenshot step in the rewrite workshop."
+- id: q12
+  groundedIn: step-granularity
+  question: "Why split a 3,000-word 'Users' page into short task pages?"
+  choices:
+    - id: q12-a
+      text: "Short tasks are easier to follow and to find"
+      correct: true
+      explanation: "A search for 'reset password' lands on exactly that page."
+    - id: q12-b
+      text: "Search engines only index short pages"
+      correct: false
+      explanation: "Not the reason taught."
+    - id: q12-c
+      text: "It removes the need for prerequisites"
+      correct: false
+      explanation: "Each task page still needs its prerequisites."
+  hint: "Following and finding."

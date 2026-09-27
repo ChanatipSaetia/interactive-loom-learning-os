@@ -1,0 +1,14 @@
+icon: Container
+title: "Sandbox & Synthetic Data Tools"
+subtitle: "Salesforce sandboxes · ServiceNow sub-prod · Docker Compose · Terraform · Faker · Mockaroo · Tonic.ai"
+description: "Training sandboxes use vendor sandboxes (Salesforce sandboxes, ServiceNow sub-production instances) or Docker Compose/Terraform environments seeded by synthetic-data tools such as Faker, Mockaroo or Tonic.ai."
+details: "Many SaaS vendors offer sandboxes out of the box, such as Salesforce sandboxes or ServiceNow sub-production instances. For self-hosted systems, Docker Compose or Terraform describe the environment so it can be created and reset the same way every time. Faker (a code library), Mockaroo (a web tool) and Tonic.ai (a data platform) produce realistic fake records to fill it."
+analogy: "A stage set you can build, strike and rebuild every night, with actors instead of real customers."
+primaryFocus: "Repeatable environments with privacy-safe data"
+inScope:
+  - "Vendor sandboxes and sub-production instances"
+  - "Environment definitions: Docker Compose, Terraform"
+  - "Synthetic data: Faker, Mockaroo, Tonic.ai"
+outOfScope:
+  - "Copies of production data"
+color: peach

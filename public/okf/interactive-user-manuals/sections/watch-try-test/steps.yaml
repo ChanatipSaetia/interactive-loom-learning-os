@@ -1,0 +1,67 @@
+- type: linear
+  id: step_watch
+  initiatedBy: learner
+  policy: "When the learner opens a task module"
+  command: "Play the Watch demo"
+  handledBy: sim_player
+  resultEvents:
+    - id: evt_demo_watched
+      title: "Demo Watched"
+      desc: "The learner saw the task done once, step by step"
+  continuesAs: step_try
+
+- type: linear
+  id: step_try
+  initiatedBy: learner
+  policy: "After the demo is watched"
+  command: "Attempt a step in Try mode with hints"
+  handledBy: sim_player
+  resultEvents:
+    - id: evt_step_attempted
+      title: "Step Attempted"
+  continuesAs: step_try_check
+
+- type: branch
+  id: step_try_check
+  event: evt_step_attempted
+  branches:
+    - id: branch_correct
+      label: "Correct action"
+      policy: "If the action was correct"
+      command: "Advance to the next step"
+      handledBy: sim_player
+      resultEvents:
+        - id: evt_try_completed
+          title: "Guided Practice Completed"
+      continuesAs: step_test
+    - id: branch_wrong
+      label: "Wrong click"
+      dashed: true
+      policy: "If the action was wrong"
+      command: "Show specific feedback and a hint"
+      handledBy: sim_player
+      resultEvents:
+        - id: evt_feedback_shown
+          title: "Feedback Shown"
+          desc: "Immediate, specific feedback instead of silently doing nothing; the learner tries again"
+
+- type: linear
+  id: step_test
+  initiatedBy: learner
+  policy: "After guided practice is completed"
+  command: "Perform the task in Test mode without hints"
+  handledBy: sim_player
+  resultEvents:
+    - id: evt_test_submitted
+      title: "Test Submitted"
+  continuesAs: step_record
+
+- type: linear
+  id: step_record
+  policy: "When the test is submitted"
+  command: "Record score and wrong clicks"
+  handledBy: sim_player
+  delegatesTo: lms
+  resultEvents:
+    - id: evt_result_recorded
+      title: "Result Recorded"

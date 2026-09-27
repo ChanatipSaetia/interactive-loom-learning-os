@@ -1,0 +1,54 @@
+variables:
+  - id: releases
+    label: "Product releases per year"
+    min: 1
+    max: 52
+    step: 1
+    defaultValue: 12
+  - id: screens_changed
+    label: "Manual screens changed per release"
+    min: 0
+    max: 50
+    step: 1
+    defaultValue: 8
+  - id: minutes_per_screen
+    label: "Minutes to update one screen by hand (re-capture, re-annotate, re-publish)"
+    min: 5
+    max: 120
+    step: 5
+    defaultValue: 30
+  - id: reuse_percent
+    label: "% of changed screens that update automatically (reused live components or scripted capture)"
+    min: 0
+    max: 100
+    step: 5
+    defaultValue: 0
+metrics:
+  - id: pixel_hours
+    label: "Yearly upkeep if you copy pixels (hours)"
+    formula: "Math.round(releases * screens_changed * minutes_per_screen / 60)"
+    description: "Yearly upkeep effort ≈ releases per year × screens changed per release × minutes to update one screen. Screenshots and recordings pay this full cost for every changed screen."
+    analogy: "Repainting a mural every time the building gets a new window."
+    inScope:
+      - "Re-capturing, re-annotating and re-publishing changed screens"
+    outOfScope:
+      - "Building the manual the first time"
+      - "Writing new modules for new features"
+  - id: reuse_hours
+    label: "Yearly upkeep with reuse (hours)"
+    formula: "Math.round(releases * screens_changed * (1 - reuse_percent / 100) * minutes_per_screen / 60)"
+    description: "Approaches that reuse live components (a UI clone) or regenerate screenshots from a script only pay by hand for the screens that don't update themselves."
+    analogy: "A window display that rearranges itself when the stock changes; you only fix what it can't."
+    inScope:
+      - "Screens that still need a person to update them"
+    outOfScope:
+      - "The one-off cost of building the reuse (developers, scripts, CI)"
+  - id: hours_saved
+    label: "Hours saved per year by reuse"
+    formula: "Math.round(releases * screens_changed * (reuse_percent / 100) * minutes_per_screen / 60)"
+    description: "The yearly time that reuse buys back. Compare it with what the reuse costs to build: with few releases it may not pay off, with weekly releases it almost always does."
+    analogy: "The interest earned on an up-front investment."
+    inScope:
+      - "Recurring upkeep avoided"
+    outOfScope:
+      - "Developer time to build and maintain the reuse"

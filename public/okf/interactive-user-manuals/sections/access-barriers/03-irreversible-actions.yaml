@@ -1,0 +1,14 @@
+icon: TriangleAlert
+title: "Irreversible Actions"
+subtitle: "Some buttons cannot be un-pressed"
+description: "Some actions are irreversible or high-impact in a live system, such as issuing a refund, deleting a record or changing a network rule."
+details: "A refund sends real money, a deleted record may be gone for good, an e-mail blast reaches real customers, and a wrong firewall rule can cut off a whole office. Learning by trial and error is how people learn software best, but in a live system every error is a real incident. A simulation removes the consequence while keeping the practice."
+analogy: "Fire drills use a pretend fire so people can practise the exit route without anyone getting burned."
+primaryFocus: "Letting learners make mistakes that cost nothing"
+inScope:
+  - "Money movement: refunds, payments, payroll"
+  - "Destructive actions: delete, purge, overwrite"
+  - "Outbound effects: e-mails, orders, network and security changes"
+outOfScope:
+  - "Whether the learner is allowed to act at all (see Least-Privilege Access)"
+color: red

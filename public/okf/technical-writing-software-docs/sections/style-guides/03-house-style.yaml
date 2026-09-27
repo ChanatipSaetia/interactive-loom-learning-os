@@ -1,0 +1,13 @@
+icon: House
+title: "House Style Guide"
+subtitle: "Only your own decisions"
+description: "A house style guide records only your own decisions (product names, terms, tone) and defers everything else to one public guide."
+details: "Don't write a 50-page style guide from scratch. Say 'we follow the Microsoft Writing Style Guide, except:' and list your own decisions: product and feature names, the one term per concept ('workspace', never 'project'), your verbs ('select'), tone, and Thai/English choices. Short enough that people actually read it."
+analogy: "House rules on the fridge; the law of the land covers the rest."
+primaryFocus: "Recording your team's choices"
+inScope:
+  - "Product names and terminology list"
+  - "Exceptions to the public guide"
+outOfScope:
+  - "Re-writing rules the public guide already covers"
+color: peach

@@ -1,0 +1,13 @@
+icon: BadgeCheck
+title: "Verify AI Output"
+subtitle: "An invented step is drift"
+description: "AI output must be verified against the real UI, by a person or by automated tests, because an invented step is exactly the drift a simulation must avoid."
+details: "A language model can describe a button that isn't there or a menu path that the product never had, and say it confidently. To a learner that's the same failure as a stale screenshot: they rehearse something that doesn't exist. So AI drafts pass the same gate as human work: a person who knows the real UI checks it, or a Playwright test proves every step can actually be performed."
+analogy: "A sat-nav that invents a road: it only helps if someone checks the map before the trip."
+primaryFocus: "Keeping AI from creating new drift"
+inScope:
+  - "Human review against the real UI"
+  - "Automated tests that perform every step"
+outOfScope:
+  - "Publishing AI drafts unchecked"
+color: red

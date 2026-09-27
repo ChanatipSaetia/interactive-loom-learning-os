@@ -1,0 +1,13 @@
+icon: PenTool
+title: "GUI-Authored (Hard to Treat As Code)"
+subtitle: "Hotspot simulations · DOM-capture demos"
+description: "Hotspot simulations and DOM-capture demos are authored in GUI or SaaS editors whose project files are hard to diff, review or regenerate from git."
+details: "Storyline, Captivate and iSpring save projects as their own file formats that you edit in the desktop tool. Walnut, Navattic, Storylane and Reprise keep the demo inside their web platform. You can't easily see what changed between two versions, review it in a pull request, or rebuild it from a script. They are friendly for non-developers, but upkeep stays manual."
+analogy: "A hand-painted sign: beautiful, easy for a painter to make, but you can't 'diff' two versions of it."
+primaryFocus: "Author-friendly, but upkeep stays manual"
+inScope:
+  - "Desktop authoring tool project files"
+  - "Demos stored in a vendor's web platform"
+outOfScope:
+  - "Pull-request review and CI regeneration"
+color: yellow

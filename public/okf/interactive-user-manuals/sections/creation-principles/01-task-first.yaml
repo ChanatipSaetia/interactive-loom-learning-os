@@ -1,0 +1,13 @@
+icon: ListChecks
+title: "Task-First, Not Screen-First"
+subtitle: "Teach jobs, not menus"
+description: "Organise the manual around real job tasks (e.g. 'approve a leave request'), not a tour of every screen and menu."
+details: "Learners come to a manual to get a job done. A tour of every menu ('this is the File menu, this is the Settings tab…') is easy to write because it follows the software, but people forget it immediately because it isn't attached to anything they need to do. Start from the list of tasks each role performs and build one module per task."
+analogy: "A phrasebook organised by situations ('at the restaurant', 'at the station') beats a dictionary when you're travelling."
+primaryFocus: "Modules that map to real work"
+inScope:
+  - "A task list per role"
+  - "One module per job task"
+outOfScope:
+  - "Feature tours of every menu"
+color: mauve

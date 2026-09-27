@@ -1,0 +1,27 @@
+challenges:
+  - prompt: "Build a Predict → Observe → Explain moment for 'permission inheritance'. Put it in order."
+    groundedIn: poe
+    items:
+      - id: explain
+        text: "Ask: 'Why did she see all five?', then show the explanation"
+      - id: predict
+        text: "Ask: 'If Anna joins the Sales workspace, how many projects will she see?'"
+      - id: observe
+        text: "Run the simulator: Anna sees all five Sales projects"
+    solution:
+      - predict
+      - observe
+      - explain
+  - prompt: "Why does the prediction come first? Order the chain of what happens in the learner's head."
+    groundedIn: prediction-effect
+    items:
+      - id: correct
+        text: "Their mental model gets corrected"
+      - id: commit
+        text: "They commit to a prediction from their current mental model"
+      - id: notice
+        text: "They notice that the outcome differs from their prediction"
+    solution:
+      - commit
+      - notice
+      - correct

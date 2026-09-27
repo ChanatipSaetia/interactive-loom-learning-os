@@ -1,0 +1,2846 @@
+[
+  {
+    "folder": "intro",
+    "props": {
+      "estimatedTime": "40 min",
+      "roadmap": [
+        {
+          "description": "Tutorial, how-to guide, reference and explanation, and why not to mix them.",
+          "sectionId": "diataxis",
+          "title": "The Diátaxis Framework",
+          "type": "taxonomy-browser"
+        },
+        {
+          "description": "Two questions that decide what kind of page your content should be.",
+          "sectionId": "doc-type-compass",
+          "title": "The Diátaxis Compass",
+          "type": "decision-tree"
+        },
+        {
+          "description": "Sort real examples into the four types.",
+          "sectionId": "quiz-doc-types",
+          "title": "Doc Types Check",
+          "type": "quiz"
+        },
+        {
+          "description": "Goal title, prerequisites, one action per step, result, and minimalism.",
+          "sectionId": "task-anatomy",
+          "title": "Anatomy of a Task Page",
+          "type": "bullets"
+        },
+        {
+          "description": "Bold labels, location first, menu paths, monospace input, consistent verbs.",
+          "sectionId": "ui-conventions",
+          "title": "UI Text Conventions",
+          "type": "taxonomy-browser"
+        },
+        {
+          "description": "Rewrite a 3,000-word admin page: structure, screenshots and step style.",
+          "sectionId": "page-rewrite",
+          "title": "Page Rewrite Workshop",
+          "type": "tradeoff-sandbox"
+        },
+        {
+          "description": "Put the parts of a task page, and split steps, in order.",
+          "sectionId": "order-task-page",
+          "title": "Assemble a Task Page",
+          "type": "reflection-sequence"
+        },
+        {
+          "description": "Check task pages, UI conventions and screenshot judgement.",
+          "sectionId": "quiz-task-writing",
+          "title": "Task Writing Check",
+          "type": "quiz"
+        },
+        {
+          "description": "Short sentences, active voice, key information first, one term, write for translation.",
+          "sectionId": "plain-language",
+          "title": "Plain Language Rules",
+          "type": "bullets"
+        },
+        {
+          "description": "Microsoft and Google style guides, your house style, and the Vale linter.",
+          "sectionId": "style-guides",
+          "title": "Style Guides & Tools",
+          "type": "taxonomy-browser"
+        },
+        {
+          "description": "Play with the Flesch Reading Ease formula, and learn its limits.",
+          "sectionId": "readability",
+          "title": "Readability Calculator",
+          "type": "formula-sandbox"
+        },
+        {
+          "description": "Check plain language, style guides and readability.",
+          "sectionId": "quiz-style",
+          "title": "Style Check",
+          "type": "quiz"
+        },
+        {
+          "description": "Draft, technical review, step test, editorial review, publish.",
+          "sectionId": "review-flow",
+          "title": "The Docs Review Flow",
+          "type": "flowchart"
+        },
+        {
+          "description": "A page causes 40 tickets a week. Diagnose it and fix it.",
+          "sectionId": "scenario-ticket-storm",
+          "title": "Scenario: The Ticket Storm",
+          "type": "scenario"
+        },
+        {
+          "description": "Page types, task pages, style and review on one map.",
+          "sectionId": "concept-map",
+          "title": "How It All Connects",
+          "type": "concept-map"
+        },
+        {
+          "description": "Key terms from Diátaxis to Flesch.",
+          "sectionId": "glossary",
+          "title": "Glossary",
+          "type": "flashcards"
+        },
+        {
+          "description": "Fill in the blanks across all four tracks before facing the boss.",
+          "sectionId": "synthesis",
+          "title": "Write It Right",
+          "type": "reflection-template"
+        }
+      ],
+      "subtitle": "Write web app manuals that users can find, follow and trust",
+      "title": "Technical Writing for Software Docs",
+      "what": {
+        "bullets": [
+          "Four kinds of docs: tutorial, how-to, reference, explanation, and why not to mix them",
+          "Task pages: goal titles, prerequisites, one action per step, bold UI labels, results",
+          "Plain language: short sentences, active voice, one term per concept, style guides and Vale",
+          "Review: subject-matter expert check, follow-every-step test, editorial review"
+        ],
+        "definition": "Technical writing for software docs is the craft of writing pages that help a specific reader do or understand one thing in a software product, clearly, accurately and consistently.",
+        "summary": "Most bad manuals fail the same way: they describe the software instead of helping the reader. This topic covers choosing the right kind of page (Diátaxis), writing task pages whose steps actually work, plain language and style guides, and a review loop that proves the page is true before users see it.",
+        "tags": [
+          "documentation",
+          "technical-writing",
+          "diataxis",
+          "style-guide",
+          "plain-language"
+        ]
+      },
+      "why": {
+        "impact": "Teams that skip the craft grow the Wall-of-Text Wyrm: long pages that mix history, field tables and a vague 'then export it as needed', so users still can't finish their task.",
+        "summary": "Every page users can't follow becomes a support ticket, a mistake in the real system, or a user who gives up."
+      }
+    },
+    "type": "intro"
+  },
+  {
+    "folder": "diataxis",
+    "props": {
+      "categories": [
+        {
+          "analogy": "A driving lesson in an empty car park: the instructor picks the route and nothing can go badly wrong.",
+          "color": "green",
+          "description": "A tutorial is learning-oriented: it guides a beginner through a safe, guaranteed-to-work lesson, like a driving lesson.",
+          "details": "The reader is new and wants to learn, not to get a job done. You, the author, choose the path, with a small project, a fixed set of sample data and every step spelled out, so it always works. Keep explanation to a minimum and link to it instead. Success means the learner finishes and feels 'I can do this'. Example: 'Your first expense claim in 10 minutes'.",
+          "icon": "GraduationCap",
+          "inScope": [
+            "Guided first projects with sample data",
+            "Every step spelled out, always works"
+          ],
+          "outOfScope": [
+            "Getting a specific real job done (how-to guide)",
+            "Background theory (explanation)"
+          ],
+          "primaryFocus": "Building a beginner's confidence by doing",
+          "subtitle": "Learning-oriented · action + study",
+          "title": "Tutorial"
+        },
+        {
+          "analogy": "A recipe: it assumes you can already hold a knife, and gets you to the dish.",
+          "color": "sky",
+          "description": "A how-to guide is goal-oriented: it gives a competent user the steps to achieve one specific real-world goal.",
+          "details": "The reader already knows the basics and has a real job in front of them: 'Export last month's claims to Excel', 'Reset a user's password'. Give them the steps to that goal and nothing else. Don't teach basics, don't explain the architecture; assume they can adapt the steps to their own data. Most pages of a web app manual are how-to guides.",
+          "icon": "Wrench",
+          "inScope": [
+            "Steps to one specific goal",
+            "Real users with real data"
+          ],
+          "outOfScope": [
+            "Teaching the basics from zero (tutorial)",
+            "Listing every field (reference)"
+          ],
+          "primaryFocus": "Getting a real task done",
+          "subtitle": "Goal-oriented · action + work",
+          "title": "How-to Guide"
+        },
+        {
+          "analogy": "A dictionary: you don't read it cover to cover, you look up the one word you need.",
+          "color": "yellow",
+          "description": "Reference is information-oriented: dry, complete, accurate descriptions of the product (fields, settings, limits) to look things up.",
+          "details": "The reader is in the middle of work and needs one fact: what does the 'Retention period' field accept? What's the file-size limit? Which roles can approve? Reference describes, completely and consistently, in the same structure for every item. It doesn't instruct or explain. Tables of fields, settings, error codes, permissions and keyboard shortcuts are typical.",
+          "icon": "BookMarked",
+          "inScope": [
+            "Field, setting and permission tables",
+            "Limits, error codes, shortcuts"
+          ],
+          "outOfScope": [
+            "Step-by-step instructions (how-to)",
+            "Opinions and reasons (explanation)"
+          ],
+          "primaryFocus": "Accurate facts to look up while working",
+          "subtitle": "Information-oriented · cognition + work",
+          "title": "Reference"
+        },
+        {
+          "analogy": "An article about why a recipe works, the chemistry of browning, read in an armchair rather than at the stove.",
+          "color": "mauve",
+          "description": "Explanation is understanding-oriented: it discusses why things work the way they do, background and design decisions.",
+          "details": "The reader steps back from the keyboard to understand: why do approvals go through two levels? How do workspaces and projects relate? What changed in the new permission model and why? Explanation can discuss alternatives and give opinions, and it's where concepts live. It's read away from the task, not during it.",
+          "icon": "Lightbulb",
+          "inScope": [
+            "Concepts, background, design decisions",
+            "Why the product works the way it does"
+          ],
+          "outOfScope": [
+            "Instructions for a task"
+          ],
+          "primaryFocus": "Understanding concepts and reasons",
+          "subtitle": "Understanding-oriented · cognition + study",
+          "title": "Explanation"
+        },
+        {
+          "analogy": "A restaurant menu that interrupts the list of dishes with the chef's life story.",
+          "color": "red",
+          "description": "Mixing types on one page (e.g. long background inside how-to steps) makes every reader wade through content meant for someone else.",
+          "details": "The classic 'everything page' starts with three paragraphs of history, teaches the basics, lists every field in a table halfway through the steps, and finally gets to the procedure. The expert who wants the steps must scroll past the lesson, and the beginner is lost in the reference table. Split it: a how-to page with just the steps that links to a reference page and an explanation page.",
+          "icon": "Split",
+          "inScope": [
+            "Splitting everything pages into typed pages",
+            "Linking between types instead of embedding"
+          ],
+          "outOfScope": [
+            "Duplicating the same content in several types"
+          ],
+          "primaryFocus": "Each reader gets only what they came for",
+          "subtitle": "One page, one kind of reader need",
+          "title": "Don't Mix the Types"
+        }
+      ],
+      "title": "The Diátaxis Framework"
+    },
+    "type": "taxonomy-browser"
+  },
+  {
+    "folder": "doc-type-compass",
+    "props": {
+      "id": "diataxis-compass",
+      "nodes": {
+        "action-purpose": {
+          "choices": [
+            {
+              "id": "action-study",
+              "next": "leaf-tutorial",
+              "text": "Acquisition: a beginner learning to use the app"
+            },
+            {
+              "id": "action-work",
+              "next": "leaf-howto",
+              "recommended": true,
+              "text": "Application: someone getting a real job done"
+            }
+          ],
+          "id": "action-purpose",
+          "prompt": "Question 2: Does it serve acquisition (studying, learning the skill) or application (doing real work)?"
+        },
+        "cognition-purpose": {
+          "choices": [
+            {
+              "id": "cognition-work",
+              "next": "leaf-reference",
+              "text": "Application: a fact they need mid-task"
+            },
+            {
+              "id": "cognition-study",
+              "next": "leaf-explanation",
+              "text": "Acquisition: understanding why, read away from the task"
+            }
+          ],
+          "id": "cognition-purpose",
+          "prompt": "Question 2: Does it serve acquisition (studying, building understanding) or application (looking up a fact while working)?"
+        },
+        "leaf-explanation": {
+          "id": "leaf-explanation",
+          "leaf": {
+            "explanation": "Cognition + acquisition. Discuss concepts, background and design decisions, away from any single task.",
+            "recommendation": "Write explanation",
+            "tradeoffs": [
+              "Easy to let it leak into how-to pages; keep it separate and link to it"
+            ]
+          }
+        },
+        "leaf-howto": {
+          "id": "leaf-howto",
+          "leaf": {
+            "explanation": "Action + application. Give a competent user the steps to one specific goal, without teaching basics or explaining theory.",
+            "recommendation": "Write a how-to guide",
+            "tradeoffs": [
+              "Assumes the basics; beginners may need a tutorial first"
+            ]
+          }
+        },
+        "leaf-reference": {
+          "id": "leaf-reference",
+          "leaf": {
+            "explanation": "Cognition + application. Describe fields, settings and limits completely and consistently so people can look things up while working.",
+            "recommendation": "Write reference",
+            "tradeoffs": [
+              "Must be complete and accurate, so it's the most affected by every release"
+            ]
+          }
+        },
+        "leaf-tutorial": {
+          "id": "leaf-tutorial",
+          "leaf": {
+            "explanation": "Action + acquisition. Guide a beginner through a safe lesson that always works, with the path and sample data chosen by you.",
+            "recommendation": "Write a tutorial",
+            "tradeoffs": [
+              "Must be kept working exactly, or beginners lose trust immediately",
+              "Not useful to experienced users; link them to how-to guides"
+            ]
+          }
+        },
+        "start": {
+          "choices": [
+            {
+              "id": "action",
+              "next": "action-purpose",
+              "text": "Action: the reader will do things, step by step"
+            },
+            {
+              "id": "cognition",
+              "next": "cognition-purpose",
+              "text": "Cognition: the reader wants to know or understand something"
+            }
+          ],
+          "id": "start",
+          "prompt": "Question 1: Is this content about action (doing something) or cognition (knowing something)?"
+        }
+      },
+      "root": "start",
+      "title": "Which kind of page should this content be?"
+    },
+    "type": "decision-tree"
+  },
+  {
+    "folder": "quiz-doc-types",
+    "props": {
+      "questions": [
+        {
+          "choices": [
+            {
+              "correct": true,
+              "explanation": "A tutorial is a learning-oriented, guaranteed-to-work lesson for a beginner.",
+              "id": "q1-a",
+              "text": "Tutorial"
+            },
+            {
+              "correct": false,
+              "explanation": "Reference describes facts to look up; it doesn't guide a lesson.",
+              "id": "q1-b",
+              "text": "Reference"
+            },
+            {
+              "correct": false,
+              "explanation": "Explanation discusses why; this is a hands-on lesson.",
+              "id": "q1-c",
+              "text": "Explanation"
+            }
+          ],
+          "groundedIn": "tutorial",
+          "hint": "Who is the reader, and are they learning or working?",
+          "id": "q1",
+          "question": "'Your first expense claim in 10 minutes', using sample data that always works, is which type?"
+        },
+        {
+          "choices": [
+            {
+              "correct": true,
+              "explanation": "A how-to guide gives a competent user the steps to one specific real-world goal.",
+              "id": "q2-a",
+              "text": "How-to guide"
+            },
+            {
+              "correct": false,
+              "explanation": "They aren't learning the basics; they have a real job to do.",
+              "id": "q2-b",
+              "text": "Tutorial"
+            },
+            {
+              "correct": false,
+              "explanation": "They need steps, not background.",
+              "id": "q2-c",
+              "text": "Explanation"
+            }
+          ],
+          "groundedIn": "how-to",
+          "hint": "Competent user + real goal.",
+          "id": "q2",
+          "question": "An experienced user needs to export last month's claims to Excel. Which type of page serves them?"
+        },
+        {
+          "choices": [
+            {
+              "correct": true,
+              "explanation": "Reference is dry, complete, accurate description to look things up.",
+              "id": "q3-a",
+              "text": "Reference"
+            },
+            {
+              "correct": false,
+              "explanation": "It contains no steps toward a goal.",
+              "id": "q3-b",
+              "text": "How-to guide"
+            },
+            {
+              "correct": false,
+              "explanation": "Nobody is being guided through a lesson.",
+              "id": "q3-c",
+              "text": "Tutorial"
+            }
+          ],
+          "groundedIn": "reference",
+          "hint": "Would you read it top to bottom or look something up?",
+          "id": "q3",
+          "question": "A table listing every field on the user form, what it accepts and its limits, is which type?"
+        },
+        {
+          "choices": [
+            {
+              "correct": true,
+              "explanation": "Explanation covers why things work the way they do and design decisions.",
+              "id": "q4-a",
+              "text": "Explanation"
+            },
+            {
+              "correct": false,
+              "explanation": "It explains a reason; it doesn't give steps.",
+              "id": "q4-b",
+              "text": "How-to guide"
+            },
+            {
+              "correct": false,
+              "explanation": "Reference lists facts; it doesn't discuss reasons.",
+              "id": "q4-c",
+              "text": "Reference"
+            }
+          ],
+          "groundedIn": "explanation",
+          "hint": "The title starts with 'Why'.",
+          "id": "q4",
+          "question": "A page titled 'Why approvals go through two levels' belongs to which type?"
+        },
+        {
+          "choices": [
+            {
+              "correct": true,
+              "explanation": "Keep the steps on the how-to page and link to a separate explanation page.",
+              "id": "q5-a",
+              "text": "It mixes explanation into a how-to, so readers wade through content meant for someone else"
+            },
+            {
+              "correct": false,
+              "explanation": "The user who wants to submit a claim must scroll past history they didn't ask for.",
+              "id": "q5-b",
+              "text": "Nothing: more context is always better"
+            },
+            {
+              "correct": false,
+              "explanation": "History is background, which is explanation, not a hands-on lesson.",
+              "id": "q5-c",
+              "text": "The history should be a tutorial instead"
+            }
+          ],
+          "groundedIn": "dont-mix",
+          "hint": "How many kinds of reader need is this page serving?",
+          "id": "q5",
+          "question": "A 'Submit a claim' page starts with three paragraphs on the history of the expense policy. What's wrong?"
+        },
+        {
+          "choices": [
+            {
+              "correct": true,
+              "explanation": "The two answers together point to exactly one of the four types.",
+              "id": "q6-a",
+              "text": "Action or cognition? Acquisition (study) or application (work)?"
+            },
+            {
+              "correct": false,
+              "explanation": "These aren't the compass questions.",
+              "id": "q6-b",
+              "text": "Beginner or expert? Long or short?"
+            },
+            {
+              "correct": false,
+              "explanation": "The compass is about the reader's need, not the medium.",
+              "id": "q6-c",
+              "text": "Web or desktop? Text or video?"
+            }
+          ],
+          "groundedIn": "compass",
+          "hint": "Doing vs knowing, and studying vs working.",
+          "id": "q6",
+          "question": "Which two questions make up the Diátaxis compass?"
+        }
+      ],
+      "title": "Doc Types Check"
+    },
+    "type": "quiz"
+  },
+  {
+    "folder": "task-anatomy",
+    "props": {
+      "items": [
+        {
+          "children": [
+            {
+              "text": "'Export a monthly report', not 'Report Export Module'."
+            },
+            {
+              "text": "Users search for what they want to do, not for your feature names."
+            }
+          ],
+          "text": "Title: the user's goal as a verb phrase"
+        },
+        {
+          "children": [],
+          "text": "Short intro: when and why you'd do this (one or two sentences)"
+        },
+        {
+          "children": [
+            {
+              "text": "Role or permission, data you need ready, earlier setup."
+            },
+            {
+              "text": "Example: 'You need the Finance Approver role.' Otherwise users fail halfway and don't know why."
+            }
+          ],
+          "text": "Prerequisites before the first step"
+        },
+        {
+          "children": [
+            {
+              "text": "Good: '1. Select Reports. 2. Select Monthly. 3. Select Export.'"
+            },
+            {
+              "text": "Bad: '1. Go to reports, choose monthly, set the dates and export it.'"
+            }
+          ],
+          "text": "Numbered steps with one action per step"
+        },
+        {
+          "children": [
+            {
+              "text": "After an important step, say what the user should see: 'The report downloads as an .xlsx file.'"
+            },
+            {
+              "text": "It's how readers know it worked, and notice early when it didn't."
+            }
+          ],
+          "text": "Show the result"
+        },
+        {
+          "children": [
+            {
+              "text": "Links to what users usually do next, and fixes for the most common error."
+            }
+          ],
+          "text": "Next steps and troubleshooting (optional)"
+        },
+        {
+          "children": [
+            {
+              "text": "Get users acting quickly, cut what they don't need, and help them recognise and recover from errors."
+            }
+          ],
+          "text": "Minimalism (John Carroll) behind it all"
+        }
+      ],
+      "title": "Anatomy of a Task Page"
+    },
+    "type": "bullets"
+  },
+  {
+    "folder": "ui-conventions",
+    "props": {
+      "categories": [
+        {
+          "analogy": "Station names on a train map match the signs on the platform letter for letter.",
+          "color": "mauve",
+          "description": "Write UI labels in bold, spelled and capitalised exactly as they appear on screen.",
+          "details": "Readers scan the page, then scan the screen for the same word. Bold makes the label stand out in the text, and exact spelling and capitalisation let them match it instantly. If the button says Save changes, write **Save changes**, not 'save' or 'the Save Changes button'. When the UI label changes in a release, the doc must change too.",
+          "icon": "Bold",
+          "inScope": [
+            "Buttons, menu items, tabs, field names, page titles"
+          ],
+          "outOfScope": [
+            "Text the user types (see Input Formatting)"
+          ],
+          "primaryFocus": "Instant matching between page and screen",
+          "subtitle": "**Save**, not \"save\" or 'the save button'",
+          "title": "Bold UI Labels, Exactly as Shown"
+        },
+        {
+          "analogy": "'At the second traffic light, turn left', not 'turn left at the second traffic light', when there are lefts everywhere.",
+          "color": "sky",
+          "description": "State where before what: 'In the Settings pane, select Save' so the reader looks in the right place first.",
+          "details": "If the sentence says 'Select Save in the Settings pane', the reader may click the first Save they see, and there are often several. Putting the location first tells their eyes where to go before telling their hand what to do. The same applies to conditions: 'If you see an error, select Retry' rather than 'Select Retry if you see an error'.",
+          "icon": "MapPin",
+          "inScope": [
+            "Panes, dialogs, tabs, regions of the page",
+            "Conditions before instructions"
+          ],
+          "outOfScope": [
+            "Multi-level menus (see Menu Paths)"
+          ],
+          "primaryFocus": "Guiding the eye before the hand",
+          "subtitle": "Where, then what",
+          "title": "Location Before Action"
+        },
+        {
+          "analogy": "A folder path on your computer: Documents > Reports > 2026.",
+          "color": "teal",
+          "description": "Write menu paths with a > separator, e.g. File > Export > PDF.",
+          "details": "A menu path compresses several clicks into one readable line: **File** > **Export** > **PDF**. Each item stays bold, and the > shows the order. Use it for straightforward menu navigation; if something happens between the clicks, such as a dialog, write separate steps instead.",
+          "icon": "ChevronsRight",
+          "inScope": [
+            "Nested menus and settings navigation"
+          ],
+          "outOfScope": [
+            "Steps where a dialog or choice happens in between"
+          ],
+          "primaryFocus": "Compact, unambiguous navigation",
+          "subtitle": "File > Export > PDF",
+          "title": "Menu Paths with >"
+        },
+        {
+          "analogy": "The difference between the label on a form and what you write in the box.",
+          "color": "green",
+          "description": "Format text the user types, code and file names in monospace, separate from UI labels.",
+          "details": "Readers must be able to tell 'click this' from 'type this'. In the **Name** field, enter `Q3-budget`. The bold word is on the screen; the monospace word goes into it. Monospace also shows exact characters (spaces, dashes, capital letters) that matter when typing, and it's the standard for file names like `claims.xlsx` and commands.",
+          "icon": "Terminal",
+          "inScope": [
+            "Values to type, file names, code and commands"
+          ],
+          "outOfScope": [
+            "UI labels (these are bold)"
+          ],
+          "primaryFocus": "Separating what you see from what you type",
+          "subtitle": "`monospace` for what users type",
+          "title": "Input Formatting"
+        },
+        {
+          "analogy": "A referee who uses the same whistle for the same foul every time.",
+          "color": "yellow",
+          "description": "Pick device-neutral verbs such as 'select' and 'enter' (as the Microsoft style guide recommends) and use them consistently.",
+          "details": "Web apps are used with mouse, touch and keyboard, so 'click' doesn't fit everyone; the Microsoft style guide recommends 'select'. The Google developer style guide still uses 'click' for mouse actions. Either can work; what matters is choosing one set of verbs in your house style and using it the same way on every page, so readers don't wonder whether 'press', 'hit' and 'click' mean different things.",
+          "icon": "Repeat",
+          "inScope": [
+            "Verbs for selecting, entering, choosing",
+            "Recording the choice in the house style"
+          ],
+          "outOfScope": [
+            "Mixing 'click', 'press', 'hit' and 'tap' for the same action"
+          ],
+          "primaryFocus": "One verb, one meaning",
+          "subtitle": "select · enter · choose, used the same way everywhere",
+          "title": "Consistent, Device-Neutral Verbs"
+        }
+      ],
+      "title": "UI Text Conventions"
+    },
+    "type": "taxonomy-browser"
+  },
+  {
+    "folder": "page-rewrite",
+    "props": {
+      "scenarios": [
+        {
+          "description": "The old page is 3,000 words covering user management from creation to deletion, with a screenshot after every click. Support gets tickets about password resets every day. Make choices and watch the meters.",
+          "id": "reset-password-page",
+          "metrics": [
+            {
+              "baseValue": 30,
+              "direction": "higher",
+              "id": "followability",
+              "label": "Easy to Follow",
+              "max": 100,
+              "min": 0
+            },
+            {
+              "baseValue": 30,
+              "direction": "higher",
+              "id": "findability",
+              "label": "Easy to Find",
+              "max": 100,
+              "min": 0
+            },
+            {
+              "baseValue": 40,
+              "direction": "higher",
+              "id": "upkeep",
+              "label": "Ease of Upkeep per Release",
+              "max": 100,
+              "min": 0
+            }
+          ],
+          "steps": [
+            {
+              "choices": [
+                {
+                  "cons": [
+                    {
+                      "description": "Readers must find their part inside it; searching 'reset password' lands at the top.",
+                      "title": "Still one giant page"
+                    }
+                  ],
+                  "description": "Everything stays together.",
+                  "id": "keep-one",
+                  "label": "Keep one long page, add a table of contents",
+                  "metrics": {
+                    "findability": 5,
+                    "followability": 5
+                  },
+                  "pros": [
+                    {
+                      "title": "Quick to do"
+                    }
+                  ]
+                },
+                {
+                  "cons": [
+                    {
+                      "title": "More pages to link together"
+                    }
+                  ],
+                  "description": "'Create a user', 'Reset a user's password', 'Deactivate a user', each its own page.",
+                  "id": "split-tasks",
+                  "label": "Split into short task pages",
+                  "metrics": {
+                    "findability": 30,
+                    "followability": 25,
+                    "upkeep": 5
+                  },
+                  "pros": [
+                    {
+                      "description": "Search for 'reset password' lands on exactly that page.",
+                      "title": "Each task is short and findable"
+                    }
+                  ],
+                  "whyThisFits": "Splitting long procedures into several short tasks makes each one easier to follow and to find."
+                }
+              ],
+              "description": "How do you break up the 3,000-word page?",
+              "id": "split",
+              "recommended": "split-tasks",
+              "title": "Page Structure"
+            },
+            {
+              "choices": [
+                {
+                  "cons": [
+                    {
+                      "description": "Every UI change breaks several images, and long pages of images are slow to scan.",
+                      "title": "Stale every release"
+                    }
+                  ],
+                  "description": "Readers can always see the screen.",
+                  "id": "every-step",
+                  "label": "Keep a screenshot for every step",
+                  "metrics": {
+                    "followability": 5,
+                    "upkeep": -30
+                  },
+                  "pros": [
+                    {
+                      "title": "Reassuring for novices"
+                    }
+                  ]
+                },
+                {
+                  "cons": [
+                    {
+                      "title": "Needs judgement for each page"
+                    }
+                  ],
+                  "description": "e.g. the reset option hidden in a ⋯ menu gets one annotated screenshot.",
+                  "id": "where-needed",
+                  "label": "Only where a control is hard to find",
+                  "metrics": {
+                    "followability": 10,
+                    "upkeep": 10
+                  },
+                  "pros": [
+                    {
+                      "title": "Help where text isn't enough"
+                    },
+                    {
+                      "title": "Few images to update"
+                    }
+                  ],
+                  "whyThisFits": "Screenshots help readers find hard-to-spot controls but go stale every release, so use them only where text alone isn't enough."
+                },
+                {
+                  "cons": [
+                    {
+                      "description": "Nobody finds the reset option in the ⋯ menu from text alone.",
+                      "title": "Hidden controls stay hidden"
+                    }
+                  ],
+                  "description": "Text only.",
+                  "id": "none",
+                  "label": "No screenshots at all",
+                  "metrics": {
+                    "followability": -10,
+                    "upkeep": 20
+                  },
+                  "pros": [
+                    {
+                      "title": "Nothing to go stale"
+                    }
+                  ]
+                }
+              ],
+              "description": "The old page has a screenshot after every click. What now?",
+              "id": "screenshots",
+              "recommended": "where-needed",
+              "title": "Screenshots"
+            },
+            {
+              "choices": [
+                {
+                  "cons": [
+                    {
+                      "description": "Readers lose their place between the screen and the text.",
+                      "title": "Hard to follow while clicking"
+                    }
+                  ],
+                  "description": "'Head over to Users, find the person, open the menu and reset their password.'",
+                  "id": "paragraph",
+                  "label": "A friendly paragraph",
+                  "metrics": {
+                    "followability": -15
+                  },
+                  "pros": [
+                    {
+                      "title": "Reads conversationally"
+                    }
+                  ]
+                },
+                {
+                  "cons": [
+                    {
+                      "title": "Looks less friendly"
+                    }
+                  ],
+                  "description": "'1. Select Users. 2. Select the user's name. 3. Select ⋯ > Reset password. A confirmation e-mail is sent to the user.'",
+                  "id": "one-action",
+                  "label": "Numbered steps, one action each, with the result",
+                  "metrics": {
+                    "followability": 25
+                  },
+                  "pros": [
+                    {
+                      "title": "Easy to keep your place"
+                    },
+                    {
+                      "title": "Shows that it worked"
+                    }
+                  ],
+                  "whyThisFits": "Numbered steps with one action each, plus the result, are the anatomy of a task page."
+                }
+              ],
+              "description": "How do you write the steps?",
+              "id": "steps",
+              "recommended": "one-action",
+              "title": "Step Style"
+            }
+          ],
+          "title": "Rewrite 'Admin Guide – Users' into Something People Can Follow"
+        }
+      ],
+      "title": "Page Rewrite Workshop"
+    },
+    "type": "tradeoff-sandbox"
+  },
+  {
+    "folder": "order-task-page",
+    "props": {
+      "challenges": [
+        {
+          "groundedIn": "prerequisites",
+          "items": [
+            {
+              "id": "steps",
+              "text": "Numbered steps, one action each"
+            },
+            {
+              "id": "title",
+              "text": "Title: 'Reset a user's password'"
+            },
+            {
+              "id": "result",
+              "text": "Result: 'The user receives a reset e-mail.'"
+            },
+            {
+              "id": "prereq",
+              "text": "Prerequisites: 'You need the User Admin role.'"
+            },
+            {
+              "id": "intro",
+              "text": "Intro: when you'd need to do this"
+            }
+          ],
+          "prompt": "Assemble the parts of a task page in the right order.",
+          "solution": [
+            "title",
+            "intro",
+            "prereq",
+            "steps",
+            "result"
+          ]
+        },
+        {
+          "groundedIn": "one-action",
+          "items": [
+            {
+              "id": "export",
+              "text": "Select Export."
+            },
+            {
+              "id": "reports",
+              "text": "Select Reports."
+            },
+            {
+              "id": "dates",
+              "text": "In the Date range fields, enter the start and end dates."
+            },
+            {
+              "id": "monthly",
+              "text": "Select Monthly."
+            }
+          ],
+          "prompt": "Rewrite this one crammed step into one action per step. Put the split steps in order: 'Go to Reports, choose Monthly, set the date range and export.'",
+          "solution": [
+            "reports",
+            "monthly",
+            "dates",
+            "export"
+          ]
+        }
+      ],
+      "title": "Assemble a Task Page"
+    },
+    "type": "reflection-sequence"
+  },
+  {
+    "folder": "quiz-task-writing",
+    "props": {
+      "questions": [
+        {
+          "choices": [
+            {
+              "correct": true,
+              "explanation": "The user's goal as a verb phrase is what users search for.",
+              "id": "q1-a",
+              "text": "Export a monthly report"
+            },
+            {
+              "correct": false,
+              "explanation": "That's a feature name, not the user's goal.",
+              "id": "q1-b",
+              "text": "Report Export Module"
+            },
+            {
+              "correct": false,
+              "explanation": "Too vague: which task about reports?",
+              "id": "q1-c",
+              "text": "Reports"
+            }
+          ],
+          "groundedIn": "task-title",
+          "hint": "What does the user want to do?",
+          "id": "q1",
+          "question": "Which is the best title for a task page?"
+        },
+        {
+          "choices": [
+            {
+              "correct": true,
+              "explanation": "Prerequisites go before step 1 so users don't fail halfway.",
+              "id": "q2-a",
+              "text": "List the role as a prerequisite before the first step"
+            },
+            {
+              "correct": false,
+              "explanation": "By then they've already done three steps for nothing.",
+              "id": "q2-b",
+              "text": "Add a note after step 4"
+            },
+            {
+              "correct": false,
+              "explanation": "Nobody reads the footer before starting.",
+              "id": "q2-c",
+              "text": "Mention it in the page's footer"
+            }
+          ],
+          "groundedIn": "prerequisites",
+          "hint": "Where should they learn it: before or after starting?",
+          "id": "q2",
+          "question": "Users keep failing at step 4 because they lack the Finance Approver role. How should the page fix this?"
+        },
+        {
+          "choices": [
+            {
+              "correct": true,
+              "explanation": "One action, easy to keep your place.",
+              "id": "q3-a",
+              "text": "3. Select Export."
+            },
+            {
+              "correct": false,
+              "explanation": "Three actions crammed into one step.",
+              "id": "q3-b",
+              "text": "3. Choose Monthly, set the dates and export."
+            },
+            {
+              "correct": false,
+              "explanation": "Not a concrete action at all.",
+              "id": "q3-c",
+              "text": "3. Configure the report as needed."
+            }
+          ],
+          "groundedIn": "one-action",
+          "hint": "Count the verbs.",
+          "id": "q3",
+          "question": "Which step follows the one-action-per-step rule?"
+        },
+        {
+          "choices": [
+            {
+              "correct": true,
+              "explanation": "Showing the result tells users it worked.",
+              "id": "q4-a",
+              "text": "What the user should see, e.g. 'The report downloads as an .xlsx file.'"
+            },
+            {
+              "correct": false,
+              "explanation": "That's explanation and belongs elsewhere.",
+              "id": "q4-b",
+              "text": "The history of the export feature"
+            },
+            {
+              "correct": false,
+              "explanation": "Without the result, users can't tell whether it worked.",
+              "id": "q4-c",
+              "text": "Nothing: the step is complete"
+            }
+          ],
+          "groundedIn": "show-result",
+          "hint": "How does the user know it worked?",
+          "id": "q4",
+          "question": "After 'Select Export', what should the page add?"
+        },
+        {
+          "choices": [
+            {
+              "correct": true,
+              "explanation": "Minimalism: act quickly, cut the unneeded, support error recognition and recovery.",
+              "id": "q5-a",
+              "text": "Help users recognise and recover from errors"
+            },
+            {
+              "correct": false,
+              "explanation": "That's the opposite: it delays action.",
+              "id": "q5-b",
+              "text": "Document every feature before any task"
+            },
+            {
+              "correct": false,
+              "explanation": "Minimalism explicitly supports recovering from errors.",
+              "id": "q5-c",
+              "text": "Hide errors from the documentation"
+            }
+          ],
+          "groundedIn": "minimalism",
+          "hint": "Think: act fast, cut fat, recover from errors.",
+          "id": "q5",
+          "question": "Which idea is part of minimalism (John Carroll)?"
+        },
+        {
+          "choices": [
+            {
+              "correct": true,
+              "explanation": "Bold, spelled and capitalised exactly as on screen.",
+              "id": "q6-a",
+              "text": "**Save changes**"
+            },
+            {
+              "correct": false,
+              "explanation": "Not bold and not the exact label.",
+              "id": "q6-b",
+              "text": "the save button"
+            },
+            {
+              "correct": false,
+              "explanation": "Monospace is for typed input, and the capitalisation doesn't match.",
+              "id": "q6-c",
+              "text": "`Save Changes`"
+            }
+          ],
+          "groundedIn": "bold-labels",
+          "hint": "Match the screen letter for letter.",
+          "id": "q6",
+          "question": "The button on screen reads 'Save changes'. How should the doc write it?"
+        },
+        {
+          "choices": [
+            {
+              "correct": true,
+              "explanation": "The eye goes to the right place before the hand acts.",
+              "id": "q7-a",
+              "text": "In the Settings pane, select Save."
+            },
+            {
+              "correct": false,
+              "explanation": "The reader may click the first Save they see before reading where.",
+              "id": "q7-b",
+              "text": "Select Save in the Settings pane."
+            },
+            {
+              "correct": false,
+              "explanation": "No location and no UI label.",
+              "id": "q7-c",
+              "text": "Save it."
+            }
+          ],
+          "groundedIn": "location-first",
+          "hint": "Where, then what.",
+          "id": "q7",
+          "question": "Which sentence follows 'location before action'?"
+        },
+        {
+          "choices": [
+            {
+              "correct": true,
+              "explanation": "Items separated by >, each in bold in the real page.",
+              "id": "q8-a",
+              "text": "File > Export > PDF"
+            },
+            {
+              "correct": false,
+              "explanation": "Wordy and vague.",
+              "id": "q8-b",
+              "text": "File, then Export, then maybe PDF"
+            },
+            {
+              "correct": false,
+              "explanation": "Wrong separator and the labels don't match the screen.",
+              "id": "q8-c",
+              "text": "file/export/pdf"
+            }
+          ],
+          "groundedIn": "menu-path",
+          "hint": "Look at the separator.",
+          "id": "q8",
+          "question": "How is a menu path written?"
+        },
+        {
+          "choices": [
+            {
+              "correct": true,
+              "explanation": "Monospace separates what you type from UI labels.",
+              "id": "q9-a",
+              "text": "Monospace, because it's text the user types"
+            },
+            {
+              "correct": false,
+              "explanation": "Bold is for labels on screen; Q3-budget is typed in.",
+              "id": "q9-b",
+              "text": "Bold, like a UI label"
+            },
+            {
+              "correct": false,
+              "explanation": "Not the convention taught.",
+              "id": "q9-c",
+              "text": "Italic"
+            }
+          ],
+          "groundedIn": "input-format",
+          "hint": "See vs type.",
+          "id": "q9",
+          "question": "In 'In the Name field, enter Q3-budget', how should Q3-budget be formatted?"
+        },
+        {
+          "choices": [
+            {
+              "correct": true,
+              "explanation": "Consistency matters most; 'select' also works for mouse, touch and keyboard.",
+              "id": "q10-a",
+              "text": "Pick one device-neutral verb such as 'select' and use it consistently"
+            },
+            {
+              "correct": false,
+              "explanation": "Readers will wonder whether they mean different things.",
+              "id": "q10-b",
+              "text": "Use all four so every device is covered"
+            },
+            {
+              "correct": false,
+              "explanation": "Steps need clear action verbs.",
+              "id": "q10-c",
+              "text": "Avoid verbs altogether"
+            }
+          ],
+          "groundedIn": "consistent-verbs",
+          "hint": "One verb, one meaning.",
+          "id": "q10",
+          "question": "Your docs use 'click', 'press', 'hit' and 'tap' for the same action. What's the fix?"
+        },
+        {
+          "choices": [
+            {
+              "correct": true,
+              "explanation": "Screenshots go stale each release, so use them where text isn't enough.",
+              "id": "q11-a",
+              "text": "When a control is hard to find from text alone"
+            },
+            {
+              "correct": false,
+              "explanation": "That multiplies upkeep and slows scanning.",
+              "id": "q11-b",
+              "text": "After every single click"
+            },
+            {
+              "correct": false,
+              "explanation": "Hidden controls, such as items in a ⋯ menu, need one.",
+              "id": "q11-c",
+              "text": "Never"
+            }
+          ],
+          "groundedIn": "screenshot-restraint",
+          "hint": "Recall the screenshot step in the rewrite workshop.",
+          "id": "q11",
+          "question": "When is a screenshot worth adding to a step?"
+        },
+        {
+          "choices": [
+            {
+              "correct": true,
+              "explanation": "A search for 'reset password' lands on exactly that page.",
+              "id": "q12-a",
+              "text": "Short tasks are easier to follow and to find"
+            },
+            {
+              "correct": false,
+              "explanation": "Not the reason taught.",
+              "id": "q12-b",
+              "text": "Search engines only index short pages"
+            },
+            {
+              "correct": false,
+              "explanation": "Each task page still needs its prerequisites.",
+              "id": "q12-c",
+              "text": "It removes the need for prerequisites"
+            }
+          ],
+          "groundedIn": "step-granularity",
+          "hint": "Following and finding.",
+          "id": "q12",
+          "question": "Why split a 3,000-word 'Users' page into short task pages?"
+        }
+      ],
+      "title": "Task Writing Check"
+    },
+    "type": "quiz"
+  },
+  {
+    "folder": "plain-language",
+    "props": {
+      "items": [
+        {
+          "children": [
+            {
+              "text": "Aim for an average of about 15–20 words per sentence."
+            },
+            {
+              "text": "One idea per sentence; split sentences joined by 'and', 'which' or 'so that'."
+            }
+          ],
+          "text": "Keep sentences short"
+        },
+        {
+          "children": [
+            {
+              "text": "Write 'Select Save', not 'The Save button should be selected'."
+            },
+            {
+              "text": "Active voice says who does what; 'you' speaks directly to the reader."
+            }
+          ],
+          "text": "Use active voice and 'you'"
+        },
+        {
+          "children": [
+            {
+              "text": "Put the most important word or condition at the start of the sentence or heading."
+            },
+            {
+              "text": "'Refunds over 5,000 baht need manager approval' beats 'Please note that, in accordance with policy, manager approval is needed for refunds over 5,000 baht'."
+            }
+          ],
+          "text": "Front-load the key information"
+        },
+        {
+          "children": [
+            {
+              "text": "Pick 'workspace' and use it everywhere."
+            },
+            {
+              "text": "Switching between 'workspace', 'project' and 'space' makes readers think they are different things."
+            }
+          ],
+          "text": "One term per concept"
+        },
+        {
+          "children": [
+            {
+              "text": "Plain, literal sentences without idioms or jokes translate better and are easier for non-native readers."
+            },
+            {
+              "text": "'This will hit the ground running' is hard to translate; 'You can start using it immediately' isn't."
+            }
+          ],
+          "text": "Write for translation"
+        }
+      ],
+      "title": "Plain Language Rules"
+    },
+    "type": "bullets"
+  },
+  {
+    "folder": "style-guides",
+    "props": {
+      "categories": [
+        {
+          "analogy": "A big, well-thumbed dictionary for the whole office.",
+          "color": "blue",
+          "description": "The Microsoft Writing Style Guide is a free public guide covering voice, UI text and terms for software docs.",
+          "details": "It covers voice and tone, how to describe UI elements and interactions, grammar, punctuation and a large A–Z word list of software terms. It is a natural base for end-user manuals of web apps, and it's where the 'select' recommendation comes from.",
+          "icon": "BookOpen",
+          "inScope": [
+            "Voice, UI text, grammar, word list"
+          ],
+          "outOfScope": [
+            "Your own product names and decisions (house style)"
+          ],
+          "primaryFocus": "End-user software writing",
+          "subtitle": "Free public guide for software docs",
+          "title": "Microsoft Writing Style Guide"
+        },
+        {
+          "analogy": "The engineering handbook on the shelf next to the dictionary.",
+          "color": "green",
+          "description": "The Google developer documentation style guide is a free public guide focused on developer and technical docs.",
+          "details": "It covers tone, formatting of code, commands and UI elements, procedures, API reference and a word list. It suits developer-facing documentation, such as APIs, SDKs and admin or integration guides for a web app.",
+          "icon": "Code",
+          "inScope": [
+            "Code, commands, procedures, API reference"
+          ],
+          "outOfScope": [
+            "Your own product names and decisions (house style)"
+          ],
+          "primaryFocus": "Developer and technical writing",
+          "subtitle": "Free public guide for developer docs",
+          "title": "Google Developer Documentation Style Guide"
+        },
+        {
+          "analogy": "House rules on the fridge; the law of the land covers the rest.",
+          "color": "peach",
+          "description": "A house style guide records only your own decisions (product names, terms, tone) and defers everything else to one public guide.",
+          "details": "Don't write a 50-page style guide from scratch. Say 'we follow the Microsoft Writing Style Guide, except:' and list your own decisions: product and feature names, the one term per concept ('workspace', never 'project'), your verbs ('select'), tone, and Thai/English choices. Short enough that people actually read it.",
+          "icon": "House",
+          "inScope": [
+            "Product names and terminology list",
+            "Exceptions to the public guide"
+          ],
+          "outOfScope": [
+            "Re-writing rules the public guide already covers"
+          ],
+          "primaryFocus": "Recording your team's choices",
+          "subtitle": "Only your own decisions",
+          "title": "House Style Guide"
+        },
+        {
+          "analogy": "A spell-checker that has read your style guide.",
+          "color": "teal",
+          "description": "Vale is a prose linter that checks docs against style rules, including packages for the Microsoft and Google guides, and can run in CI.",
+          "details": "Vale reads your Markdown and flags passive voice, banned words, wrong product names, overly long sentences and more, based on rule packages such as Microsoft and Google plus your own house-style rules. Run it in the editor while writing and in CI on every pull request, so reviewers can focus on meaning instead of commas.",
+          "icon": "ShieldCheck",
+          "inScope": [
+            "Microsoft and Google rule packages",
+            "Custom rules for your terms",
+            "Editor and CI checks"
+          ],
+          "outOfScope": [
+            "Checking whether the steps are correct (that needs a person)"
+          ],
+          "primaryFocus": "Enforcing style without nagging humans",
+          "subtitle": "Style rules checked automatically",
+          "title": "Vale Prose Linter"
+        }
+      ],
+      "title": "Style Guides & Tools"
+    },
+    "type": "taxonomy-browser"
+  },
+  {
+    "folder": "readability",
+    "props": {
+      "metrics": [
+        {
+          "analogy": "A speedometer for reading effort: long sentences and long words push it down.",
+          "description": "Flesch Reading Ease = 206.835 − 1.015 × (words per sentence) − 84.6 × (syllables per word). Higher scores are easier to read; around 60–70 is plain English.",
+          "formula": "Math.round(206.835 - 1.015 * words_per_sentence - 84.6 * syllables_per_word)",
+          "id": "flesch",
+          "inScope": [
+            "Sentence length",
+            "Word length in syllables"
+          ],
+          "label": "Flesch Reading Ease (0–100, higher is easier)",
+          "outOfScope": [
+            "Whether the steps are correct or in the right order",
+            "Whether the reader knows the terms"
+          ]
+        },
+        {
+          "description": "How much of the score long sentences cost. Try dropping the average from 25 to 15 words.",
+          "formula": "Math.round(1.015 * words_per_sentence)",
+          "id": "sentence_penalty",
+          "inScope": [
+            "Words per sentence"
+          ],
+          "label": "Points lost to sentence length"
+        },
+        {
+          "description": "How much of the score long words cost, e.g. 'utilise' instead of 'use'.",
+          "formula": "Math.round(84.6 * syllables_per_word)",
+          "id": "word_penalty",
+          "inScope": [
+            "Syllables per word"
+          ],
+          "label": "Points lost to long words"
+        },
+        {
+          "analogy": "A smoke alarm, not a fire inspector.",
+          "description": "Readability scores only measure sentence and word length. They are a warning light, not proof that a page is clear: a short, simple page can still have the steps in the wrong order.",
+          "formula": "(206.835 - 1.015 * words_per_sentence - 84.6 * syllables_per_word) < 50 ? 1 : 0",
+          "id": "warning",
+          "label": "Warning light (1 = score below 50, rewrite likely needed)",
+          "outOfScope": [
+            "Structure, accuracy and page type"
+          ]
+        }
+      ],
+      "title": "Readability Calculator",
+      "variables": [
+        {
+          "defaultValue": 25,
+          "id": "words_per_sentence",
+          "label": "Average words per sentence",
+          "max": 40,
+          "min": 5,
+          "step": 1
+        },
+        {
+          "defaultValue": 1.6,
+          "id": "syllables_per_word",
+          "label": "Average syllables per word",
+          "max": 2.5,
+          "min": 1,
+          "step": 0.05
+        }
+      ]
+    },
+    "type": "formula-sandbox"
+  },
+  {
+    "folder": "quiz-style",
+    "props": {
+      "questions": [
+        {
+          "choices": [
+            {
+              "correct": true,
+              "explanation": "Short sentences, one idea each.",
+              "id": "q1-a",
+              "text": "About 15–20 words"
+            },
+            {
+              "correct": false,
+              "explanation": "Far too long for instructions.",
+              "id": "q1-b",
+              "text": "About 35–40 words"
+            },
+            {
+              "correct": false,
+              "explanation": "An average, not a hard limit, and 5 is unrealistically short.",
+              "id": "q1-c",
+              "text": "Exactly 5 words"
+            }
+          ],
+          "groundedIn": "short-sentences",
+          "hint": "Recall the first plain-language rule.",
+          "id": "q1",
+          "question": "What average sentence length should plain-language docs aim for?"
+        },
+        {
+          "choices": [
+            {
+              "correct": true,
+              "explanation": "Active, direct and addressed to 'you'.",
+              "id": "q2-a",
+              "text": "Select Save."
+            },
+            {
+              "correct": false,
+              "explanation": "Passive: who selects it?",
+              "id": "q2-b",
+              "text": "The Save button should be selected."
+            },
+            {
+              "correct": false,
+              "explanation": "Passive and vague.",
+              "id": "q2-c",
+              "text": "Saving is performed by the system after selection."
+            }
+          ],
+          "groundedIn": "active-voice",
+          "hint": "Who does what?",
+          "id": "q2",
+          "question": "Which sentence uses active voice and addresses the reader?"
+        },
+        {
+          "choices": [
+            {
+              "correct": true,
+              "explanation": "The key condition comes first.",
+              "id": "q3-a",
+              "text": "Refunds over 5,000 baht need manager approval."
+            },
+            {
+              "correct": false,
+              "explanation": "The key information is buried at the end.",
+              "id": "q3-b",
+              "text": "Please note that, in accordance with policy, manager approval is needed for refunds over 5,000 baht."
+            },
+            {
+              "correct": false,
+              "explanation": "Vague, with no key information at all.",
+              "id": "q3-c",
+              "text": "In some cases, approval may be needed."
+            }
+          ],
+          "groundedIn": "front-load",
+          "hint": "What does the reader see first?",
+          "id": "q3",
+          "question": "Which sentence front-loads the key information?"
+        },
+        {
+          "choices": [
+            {
+              "correct": true,
+              "explanation": "Use one term per concept everywhere.",
+              "id": "q4-a",
+              "text": "Readers think they're two different things"
+            },
+            {
+              "correct": false,
+              "explanation": "They get confused, not enriched.",
+              "id": "q4-b",
+              "text": "Readers learn more vocabulary"
+            },
+            {
+              "correct": false,
+              "explanation": "It splits results across two words.",
+              "id": "q4-c",
+              "text": "Search works better"
+            }
+          ],
+          "groundedIn": "one-term",
+          "hint": "One concept, how many terms?",
+          "id": "q4",
+          "question": "Your docs say 'workspace' on one page and 'project' on another for the same thing. What happens?"
+        },
+        {
+          "choices": [
+            {
+              "correct": true,
+              "explanation": "Plain and literal, with no idiom.",
+              "id": "q5-a",
+              "text": "You can start using it immediately."
+            },
+            {
+              "correct": false,
+              "explanation": "An idiom that translates badly.",
+              "id": "q5-b",
+              "text": "You'll hit the ground running."
+            },
+            {
+              "correct": false,
+              "explanation": "Two idioms and a joke.",
+              "id": "q5-c",
+              "text": "It's a piece of cake, no rocket science!"
+            }
+          ],
+          "groundedIn": "write-for-translation",
+          "hint": "Avoid idioms.",
+          "id": "q5",
+          "question": "Which sentence is best for translation into Thai?"
+        },
+        {
+          "choices": [
+            {
+              "correct": true,
+              "explanation": "It covers voice, UI text and terms for software docs.",
+              "id": "q6-a",
+              "text": "Microsoft Writing Style Guide"
+            },
+            {
+              "correct": false,
+              "explanation": "Vale is a linter, not a style guide.",
+              "id": "q6-b",
+              "text": "Vale"
+            },
+            {
+              "correct": false,
+              "explanation": "That's a readability formula.",
+              "id": "q6-c",
+              "text": "Flesch Reading Ease"
+            }
+          ],
+          "groundedIn": "ms-guide",
+          "hint": "Look at the style guide cards.",
+          "id": "q6",
+          "question": "Which free public guide is a natural base for an end-user web app manual?"
+        },
+        {
+          "choices": [
+            {
+              "correct": true,
+              "explanation": "Code, commands, procedures and API reference.",
+              "id": "q7-a",
+              "text": "Developer and technical docs"
+            },
+            {
+              "correct": false,
+              "explanation": "Not its focus.",
+              "id": "q7-b",
+              "text": "Marketing copy"
+            },
+            {
+              "correct": false,
+              "explanation": "Not its focus.",
+              "id": "q7-c",
+              "text": "Translating docs into Thai"
+            }
+          ],
+          "groundedIn": "google-guide",
+          "hint": "It's in the name.",
+          "id": "q7",
+          "question": "What is the Google developer documentation style guide focused on?"
+        },
+        {
+          "choices": [
+            {
+              "correct": true,
+              "explanation": "Short enough that people actually read it.",
+              "id": "q8-a",
+              "text": "Only your own decisions (product names, terms, tone), deferring the rest to one public guide"
+            },
+            {
+              "correct": false,
+              "explanation": "The public guide already covers those.",
+              "id": "q8-b",
+              "text": "A full rewrite of every grammar rule"
+            },
+            {
+              "correct": false,
+              "explanation": "Public guides don't know your product names and terms.",
+              "id": "q8-c",
+              "text": "Nothing: public guides are enough"
+            }
+          ],
+          "groundedIn": "house-style",
+          "hint": "What's unique to your team?",
+          "id": "q8",
+          "question": "What should a house style guide contain?"
+        },
+        {
+          "choices": [
+            {
+              "correct": true,
+              "explanation": "A prose linter with Microsoft and Google rule packages plus your own rules.",
+              "id": "q9-a",
+              "text": "Checks docs against style rules, in the editor and in CI"
+            },
+            {
+              "correct": false,
+              "explanation": "That needs a person following the steps.",
+              "id": "q9-b",
+              "text": "Verifies that the steps work in the app"
+            },
+            {
+              "correct": false,
+              "explanation": "It checks style; it doesn't translate.",
+              "id": "q9-c",
+              "text": "Translates docs automatically"
+            }
+          ],
+          "groundedIn": "vale",
+          "hint": "A spell-checker that has read your style guide.",
+          "id": "q9",
+          "question": "What does Vale do?"
+        },
+        {
+          "choices": [
+            {
+              "correct": true,
+              "explanation": "Both are subtracted, so shorter sentences and words raise the score.",
+              "id": "q10-a",
+              "text": "Fewer words per sentence and fewer syllables per word"
+            },
+            {
+              "correct": false,
+              "explanation": "Words per sentence are subtracted, lowering the score.",
+              "id": "q10-b",
+              "text": "More words per sentence"
+            },
+            {
+              "correct": false,
+              "explanation": "The formula doesn't count headings.",
+              "id": "q10-c",
+              "text": "More headings"
+            }
+          ],
+          "groundedIn": "flesch",
+          "hint": "Look at what is subtracted.",
+          "id": "q10",
+          "question": "In the Flesch Reading Ease formula, what raises the score (easier reading)?"
+        },
+        {
+          "choices": [
+            {
+              "correct": true,
+              "explanation": "The score is a warning light, not proof of clarity.",
+              "id": "q11-a",
+              "text": "Sentences and words are short, but the page may still be unclear or wrong"
+            },
+            {
+              "correct": false,
+              "explanation": "The formula can't see structure or accuracy.",
+              "id": "q11-b",
+              "text": "The page is clear and correct"
+            },
+            {
+              "correct": false,
+              "explanation": "75 is easy to read.",
+              "id": "q11-c",
+              "text": "The page is too hard to read"
+            }
+          ],
+          "groundedIn": "score-is-a-guide",
+          "hint": "What does the formula measure, and what doesn't it?",
+          "id": "q11",
+          "question": "A page scores 75 on Flesch Reading Ease. What can you conclude?"
+        }
+      ],
+      "title": "Style Check"
+    },
+    "type": "quiz"
+  },
+  {
+    "folder": "review-flow",
+    "props": {
+      "schema": {
+        "entities": {
+          "cmd_branch_fail": {
+            "desc": "Send the page back for rewrite",
+            "title": "Send the page back for rewrite",
+            "type": "Command"
+          },
+          "cmd_branch_pass": {
+            "desc": "Run editorial review with the linter",
+            "title": "Run editorial review with the linter",
+            "type": "Command"
+          },
+          "cmd_step_draft": {
+            "desc": "Open a pull request with the draft page",
+            "title": "Open a pull request with the draft page",
+            "type": "Command"
+          },
+          "cmd_step_publish": {
+            "desc": "Merge and publish the page",
+            "title": "Merge and publish the page",
+            "type": "Command"
+          },
+          "cmd_step_sme": {
+            "desc": "Check the facts against how the app works",
+            "title": "Check the facts against how the app works",
+            "type": "Command"
+          },
+          "cmd_step_test": {
+            "desc": "Follow every step exactly as written",
+            "title": "Follow every step exactly as written",
+            "type": "Command"
+          },
+          "docs_repo": {
+            "desc": "Markdown pages under version control, reviewed through pull requests",
+            "title": "Docs Repository",
+            "type": "Aggregate"
+          },
+          "docs_repo2": {
+            "desc": "Markdown pages under version control, reviewed through pull requests",
+            "title": "Docs Repository",
+            "type": "Aggregate"
+          },
+          "docs_repo3": {
+            "desc": "Markdown pages under version control, reviewed through pull requests",
+            "title": "Docs Repository",
+            "type": "Aggregate"
+          },
+          "docs_site": {
+            "desc": "Where users read the manual",
+            "title": "Published Docs Site",
+            "type": "External API"
+          },
+          "evt_evt_draft_opened": {
+            "desc": "Draft Opened",
+            "title": "Draft Opened",
+            "type": "Event"
+          },
+          "evt_evt_edit_done": {
+            "desc": "Structure, style and terminology checked against the style guide",
+            "title": "Editorial Review Done",
+            "type": "Event"
+          },
+          "evt_evt_facts_checked": {
+            "desc": "Facts, limits, permissions and behaviour confirmed by a subject-matter expert",
+            "title": "Technical Review Done",
+            "type": "Event"
+          },
+          "evt_evt_published": {
+            "desc": "Page Published",
+            "title": "Page Published",
+            "type": "Event"
+          },
+          "evt_evt_rewrite_requested": {
+            "desc": "Rewrite Requested",
+            "title": "Rewrite Requested",
+            "type": "Event"
+          },
+          "evt_evt_steps_tested": {
+            "desc": "Steps Tested",
+            "title": "Steps Tested",
+            "type": "Event"
+          },
+          "pol_branch_fail": {
+            "desc": "If a step didn't work as written",
+            "title": "If a step didn't work as written",
+            "type": "Policy"
+          },
+          "pol_branch_pass": {
+            "desc": "If every step worked as written",
+            "title": "If every step worked as written",
+            "type": "Policy"
+          },
+          "pol_step_draft": {
+            "desc": "When a feature changes or a task page is missing",
+            "root": false,
+            "title": "When a feature changes or a task page is missing",
+            "type": "Policy"
+          },
+          "pol_step_publish": {
+            "desc": "When all reviews pass",
+            "root": false,
+            "title": "When all reviews pass",
+            "type": "Policy"
+          },
+          "pol_step_sme": {
+            "desc": "When a draft is opened",
+            "root": false,
+            "title": "When a draft is opened",
+            "type": "Policy"
+          },
+          "pol_step_test": {
+            "desc": "After the technical review",
+            "root": false,
+            "title": "After the technical review",
+            "type": "Policy"
+          },
+          "sme": {
+            "desc": "A developer or product owner who knows how the app really works",
+            "title": "Subject-Matter Expert",
+            "type": "Actor"
+          },
+          "staging_app": {
+            "desc": "A non-production copy of the app on the upcoming version",
+            "title": "Staging Web App",
+            "type": "External API"
+          },
+          "tester": {
+            "desc": "Someone who follows every step in the app exactly as written",
+            "title": "Step Tester",
+            "type": "Actor"
+          },
+          "vale_ci": {
+            "desc": "Prose linter that checks style and terminology on every pull request",
+            "title": "Vale in CI",
+            "type": "External API"
+          },
+          "writer": {
+            "desc": "Drafts the page in Markdown and opens a pull request",
+            "title": "Technical Writer",
+            "type": "Actor"
+          },
+          "writer2": {
+            "desc": "Drafts the page in Markdown and opens a pull request",
+            "title": "Technical Writer",
+            "type": "Actor"
+          }
+        },
+        "journeys": [
+          {
+            "description": "The page passes technical review, the step test and editorial review",
+            "id": "journey_publish",
+            "label": "Happy Path: Draft to Published",
+            "steps": [
+              {
+                "nodeIds": [
+                  "evt_evt_draft_opened"
+                ],
+                "reason": "The writer opens a pull request",
+                "title": "Draft"
+              },
+              {
+                "nodeIds": [
+                  "evt_evt_facts_checked"
+                ],
+                "reason": "A subject-matter expert checks the facts against how the app really works",
+                "title": "Technical review"
+              },
+              {
+                "nodeIds": [
+                  "evt_evt_steps_tested"
+                ],
+                "reason": "Someone follows every step in staging exactly as written",
+                "title": "Step test"
+              },
+              {
+                "nodeIds": [
+                  "evt_evt_edit_done"
+                ],
+                "reason": "Structure, style and terms are checked, with Vale doing the mechanical part",
+                "title": "Editorial review"
+              },
+              {
+                "nodeIds": [
+                  "evt_evt_published"
+                ],
+                "reason": "The page goes live",
+                "title": "Published"
+              }
+            ]
+          },
+          {
+            "description": "The step test catches a step that doesn't work as written",
+            "id": "journey_rewrite",
+            "label": "A Step Fails",
+            "steps": [
+              {
+                "nodeIds": [
+                  "evt_evt_draft_opened"
+                ],
+                "reason": "The writer opens a pull request",
+                "title": "Draft"
+              },
+              {
+                "nodeIds": [
+                  "evt_evt_facts_checked"
+                ],
+                "reason": "The facts look right on paper",
+                "title": "Technical review"
+              },
+              {
+                "nodeIds": [
+                  "evt_evt_steps_tested"
+                ],
+                "reason": "Step 3 says Export, but the button now lives in the ⋯ menu",
+                "title": "Step test"
+              },
+              {
+                "nodeIds": [
+                  "evt_evt_rewrite_requested"
+                ],
+                "reason": "The page goes back to the writer before any user sees it",
+                "title": "Rewrite"
+              }
+            ]
+          }
+        ],
+        "rawSteps": [
+          {
+            "command": "Open a pull request with the draft page",
+            "continuesAs": "step_sme",
+            "handledBy": {
+              "_tag": "ref",
+              "id": "docs_repo"
+            },
+            "id": "step_draft",
+            "initiatedBy": {
+              "_tag": "ref",
+              "id": "writer"
+            },
+            "policy": "When a feature changes or a task page is missing",
+            "resultEvents": [
+              {
+                "id": "evt_draft_opened",
+                "title": "Draft Opened"
+              }
+            ],
+            "type": "linear"
+          },
+          {
+            "command": "Check the facts against how the app works",
+            "continuesAs": "step_test",
+            "handledBy": {
+              "_tag": "ref",
+              "id": "docs_repo"
+            },
+            "id": "step_sme",
+            "initiatedBy": {
+              "_tag": "ref",
+              "id": "sme"
+            },
+            "policy": "When a draft is opened",
+            "resultEvents": [
+              {
+                "desc": "Facts, limits, permissions and behaviour confirmed by a subject-matter expert",
+                "id": "evt_facts_checked",
+                "title": "Technical Review Done"
+              }
+            ],
+            "type": "linear"
+          },
+          {
+            "command": "Follow every step exactly as written",
+            "continuesAs": "step_test_outcome",
+            "handledBy": {
+              "_tag": "ref",
+              "id": "staging_app"
+            },
+            "id": "step_test",
+            "initiatedBy": {
+              "_tag": "ref",
+              "id": "tester"
+            },
+            "policy": "After the technical review",
+            "resultEvents": [
+              {
+                "id": "evt_steps_tested",
+                "title": "Steps Tested"
+              }
+            ],
+            "type": "linear"
+          },
+          {
+            "branches": [
+              {
+                "command": "Run editorial review with the linter",
+                "continuesAs": "step_publish",
+                "handledBy": {
+                  "_tag": "ref",
+                  "id": "vale_ci"
+                },
+                "id": "branch_pass",
+                "label": "Every step worked",
+                "policy": "If every step worked as written",
+                "resultEvents": [
+                  {
+                    "desc": "Structure, style and terminology checked against the style guide",
+                    "id": "evt_edit_done",
+                    "title": "Editorial Review Done"
+                  }
+                ]
+              },
+              {
+                "command": "Send the page back for rewrite",
+                "dashed": true,
+                "handledBy": {
+                  "_tag": "ref",
+                  "id": "docs_repo"
+                },
+                "id": "branch_fail",
+                "label": "A step failed",
+                "policy": "If a step didn't work as written",
+                "resultEvents": [
+                  {
+                    "id": "evt_rewrite_requested",
+                    "title": "Rewrite Requested"
+                  }
+                ]
+              }
+            ],
+            "event": "evt_steps_tested",
+            "id": "step_test_outcome",
+            "type": "branch"
+          },
+          {
+            "command": "Merge and publish the page",
+            "handledBy": {
+              "_tag": "ref",
+              "id": "docs_site"
+            },
+            "id": "step_publish",
+            "initiatedBy": {
+              "_tag": "ref",
+              "id": "writer"
+            },
+            "policy": "When all reviews pass",
+            "resultEvents": [
+              {
+                "id": "evt_published",
+                "title": "Page Published"
+              }
+            ],
+            "type": "linear"
+          }
+        ],
+        "relations": [
+          {
+            "from": "writer",
+            "id": "r1",
+            "to": "pol_step_draft",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "from": "pol_step_draft",
+            "id": "r2",
+            "to": "cmd_step_draft",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "from": "cmd_step_draft",
+            "handledBy": true,
+            "id": "r3",
+            "to": "docs_repo",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "from": "docs_repo",
+            "id": "r4",
+            "to": "evt_evt_draft_opened",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "from": "evt_evt_draft_opened",
+            "id": "r5",
+            "to": "pol_step_sme",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "from": "sme",
+            "id": "r6",
+            "to": "pol_step_sme",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "from": "pol_step_sme",
+            "id": "r7",
+            "to": "cmd_step_sme",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "from": "cmd_step_sme",
+            "handledBy": true,
+            "id": "r8",
+            "to": "docs_repo2",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "from": "docs_repo2",
+            "id": "r9",
+            "to": "evt_evt_facts_checked",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "from": "evt_evt_facts_checked",
+            "id": "r10",
+            "to": "pol_step_test",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "from": "tester",
+            "id": "r11",
+            "to": "pol_step_test",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "from": "pol_step_test",
+            "id": "r12",
+            "to": "cmd_step_test",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "from": "cmd_step_test",
+            "handledBy": true,
+            "id": "r13",
+            "to": "staging_app",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "from": "staging_app",
+            "id": "r14",
+            "to": "evt_evt_steps_tested",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "from": "evt_evt_steps_tested",
+            "id": "r15",
+            "label": "Every step worked",
+            "to": "pol_branch_pass",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "from": "pol_branch_pass",
+            "id": "r16",
+            "to": "cmd_branch_pass",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "from": "cmd_branch_pass",
+            "handledBy": true,
+            "id": "r17",
+            "to": "vale_ci",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "from": "vale_ci",
+            "id": "r18",
+            "to": "evt_evt_edit_done",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "from": "evt_evt_edit_done",
+            "id": "r19",
+            "to": "pol_step_publish",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "dashed": true,
+            "from": "evt_evt_steps_tested",
+            "id": "r20",
+            "label": "A step failed",
+            "to": "pol_branch_fail",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "from": "pol_branch_fail",
+            "id": "r21",
+            "to": "cmd_branch_fail",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "from": "cmd_branch_fail",
+            "handledBy": true,
+            "id": "r22",
+            "to": "docs_repo3",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "from": "docs_repo3",
+            "id": "r23",
+            "to": "evt_evt_rewrite_requested",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "from": "writer2",
+            "id": "r24",
+            "to": "pol_step_publish",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "from": "pol_step_publish",
+            "id": "r25",
+            "to": "cmd_step_publish",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "from": "cmd_step_publish",
+            "handledBy": true,
+            "id": "r26",
+            "to": "docs_site",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "from": "docs_site",
+            "id": "r27",
+            "to": "evt_evt_published",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          }
+        ]
+      },
+      "title": "The Docs Review Flow"
+    },
+    "type": "flowchart"
+  },
+  {
+    "folder": "scenario-ticket-storm",
+    "props": {
+      "id": "ticket-storm",
+      "intro": "Support gets 40 tickets a week saying 'I can't export my report'. The docs page 'Reporting' is 2,500 words: two paragraphs on why the reporting engine was rebuilt, a table of every report field, then one paragraph that ends '...and then export it as needed.' You're asked to fix it.",
+      "nodes": {
+        "result-a": {
+          "id": "result-a",
+          "outcome": {
+            "lesson": "Right page type, a well-built task page and a review loop that includes following the steps: that's the whole craft.",
+            "rating": "a",
+            "verdict": "The step test catches that Export moved into the ⋯ menu in the latest release. Fixed, published, and tickets drop to 3 a week."
+          }
+        },
+        "result-move": {
+          "id": "result-move",
+          "outcome": {
+            "lesson": "Moving a vague paragraph doesn't make it followable. Split the types, then write real steps.",
+            "rating": "b-minus",
+            "verdict": "Slightly better, but the paragraph still says 'export it as needed' and people still get lost."
+          }
+        },
+        "result-paragraph": {
+          "id": "result-paragraph",
+          "outcome": {
+            "lesson": "Readers need a prerequisite, one action per step and the result, not warmth alone.",
+            "rating": "c",
+            "verdict": "Friendlier, but just as vague. Tickets barely drop."
+          }
+        },
+        "result-risky": {
+          "id": "result-risky",
+          "outcome": {
+            "lesson": "Someone must follow every step in the real app or staging before publishing.",
+            "rating": "b-plus",
+            "verdict": "Tickets drop, then rise again: step 3 says 'Select Export' but Export moved into the ⋯ menu last release."
+          }
+        },
+        "result-style": {
+          "id": "result-style",
+          "outcome": {
+            "lesson": "A linter checks style, not whether the page serves the reader's task. The problem here is page type and missing steps.",
+            "rating": "c",
+            "verdict": "The page is now grammatically perfect, and the tickets keep coming."
+          }
+        },
+        "review": {
+          "choices": [
+            {
+              "id": "full-review",
+              "next": "result-a",
+              "text": "Technical review by the report developer, someone follows every step in staging, then editorial review with Vale"
+            },
+            {
+              "id": "straight-publish",
+              "next": "result-risky",
+              "text": "Publish now; it's obviously better"
+            }
+          ],
+          "id": "review",
+          "prompt": "The new page is ready. How do you publish it?"
+        },
+        "split": {
+          "choices": [
+            {
+              "id": "split-pages",
+              "next": "write-steps",
+              "text": "Split it: a how-to 'Export a report', a reference page of report fields, an explanation page on the new engine"
+            },
+            {
+              "id": "move-top",
+              "next": "result-move",
+              "text": "Keep one page but move the export paragraph to the top"
+            }
+          ],
+          "id": "split",
+          "prompt": "You've found the how-to buried under explanation and reference. What next?"
+        },
+        "start": {
+          "choices": [
+            {
+              "id": "rewrite-style",
+              "next": "result-style",
+              "text": "Run it through Vale and fix the style warnings"
+            },
+            {
+              "id": "diagnose-type",
+              "next": "split",
+              "text": "Sort the page's content by type: explanation, reference and the how-to buried at the end"
+            }
+          ],
+          "id": "start",
+          "prompt": "What's the first thing you do?"
+        },
+        "write-steps": {
+          "choices": [
+            {
+              "id": "good-steps",
+              "next": "review",
+              "text": "Prerequisite (Report Viewer role), numbered one-action steps with bold labels, location first, and the result: 'The file downloads as .xlsx'"
+            },
+            {
+              "id": "friendly-paragraph",
+              "next": "result-paragraph",
+              "text": "A friendly paragraph: 'Just head to Reports and export whatever you need!'"
+            }
+          ],
+          "id": "write-steps",
+          "prompt": "Now write 'Export a report'. Which version do you ship?"
+        }
+      },
+      "startNode": "start",
+      "title": "The Ticket Storm"
+    },
+    "type": "scenario"
+  },
+  {
+    "folder": "concept-map",
+    "props": {
+      "edges": [
+        {
+          "from": "diataxis",
+          "label": "sorts content by",
+          "to": "reader_need"
+        },
+        {
+          "from": "diataxis",
+          "label": "defines",
+          "to": "tutorial"
+        },
+        {
+          "from": "diataxis",
+          "label": "defines",
+          "to": "how_to"
+        },
+        {
+          "from": "diataxis",
+          "label": "defines",
+          "to": "reference"
+        },
+        {
+          "from": "diataxis",
+          "label": "defines",
+          "to": "explanation"
+        },
+        {
+          "from": "how_to",
+          "label": "is built as a",
+          "to": "task_page"
+        },
+        {
+          "from": "task_page",
+          "label": "uses",
+          "to": "ui_conventions"
+        },
+        {
+          "from": "plain_language",
+          "label": "makes readable",
+          "to": "task_page"
+        },
+        {
+          "from": "style_guide",
+          "label": "codifies",
+          "to": "plain_language"
+        },
+        {
+          "from": "vale",
+          "label": "enforces",
+          "to": "style_guide"
+        },
+        {
+          "from": "readability",
+          "label": "warns about",
+          "to": "plain_language"
+        },
+        {
+          "from": "review",
+          "label": "proves",
+          "to": "task_page"
+        },
+        {
+          "from": "wall_of_text",
+          "label": "ignores",
+          "to": "reader_need"
+        }
+      ],
+      "nodes": {
+        "diataxis": {
+          "category": "framework",
+          "id": "diataxis",
+          "title": "Diátaxis"
+        },
+        "explanation": {
+          "category": "doc-type",
+          "id": "explanation",
+          "title": "Explanation"
+        },
+        "how_to": {
+          "category": "doc-type",
+          "id": "how_to",
+          "title": "How-to Guide"
+        },
+        "plain_language": {
+          "category": "style",
+          "id": "plain_language",
+          "title": "Plain Language"
+        },
+        "readability": {
+          "category": "tool",
+          "id": "readability",
+          "title": "Readability Score"
+        },
+        "reader_need": {
+          "category": "foundation",
+          "id": "reader_need",
+          "title": "Reader's Need"
+        },
+        "reference": {
+          "category": "doc-type",
+          "id": "reference",
+          "title": "Reference"
+        },
+        "review": {
+          "category": "process",
+          "id": "review",
+          "title": "Review & Step Test"
+        },
+        "style_guide": {
+          "category": "style",
+          "id": "style_guide",
+          "title": "Style Guides"
+        },
+        "task_page": {
+          "category": "structure",
+          "id": "task_page",
+          "title": "Task Page Anatomy"
+        },
+        "tutorial": {
+          "category": "doc-type",
+          "id": "tutorial",
+          "title": "Tutorial"
+        },
+        "ui_conventions": {
+          "category": "structure",
+          "id": "ui_conventions",
+          "title": "UI Text Conventions"
+        },
+        "vale": {
+          "category": "tool",
+          "id": "vale",
+          "title": "Vale Linter"
+        },
+        "wall_of_text": {
+          "category": "risk",
+          "id": "wall_of_text",
+          "title": "Wall of Text (failure)"
+        }
+      },
+      "title": "How It All Connects"
+    },
+    "type": "concept-map"
+  },
+  {
+    "folder": "glossary",
+    "props": {
+      "terms": [
+        {
+          "category": "Framework",
+          "detailedDefinition": "Created by Daniele Procida, it places content on two axes, action vs cognition and acquisition vs application, giving four page types with different jobs.",
+          "id": "diataxis",
+          "pronunciation": "dee-uh-tak-sis",
+          "shortDefinition": "A framework that sorts docs into tutorials, how-to guides, reference and explanation.",
+          "whyItMatters": "Deciding the page type first prevents the everything page.",
+          "word": "Diátaxis"
+        },
+        {
+          "category": "Doc type",
+          "detailedDefinition": "Goal-oriented and action-focused, without teaching basics or explaining theory. Most pages of a web app manual.",
+          "id": "how-to",
+          "pronunciation": "how too gahyd",
+          "shortDefinition": "Steps that get a competent user to one real goal.",
+          "whyItMatters": "It's what most users open the manual for.",
+          "word": "How-to Guide"
+        },
+        {
+          "category": "Doc type",
+          "detailedDefinition": "Fields, settings, limits, permissions and error codes, described consistently and without instructions.",
+          "id": "reference",
+          "pronunciation": "ref-er-uhns",
+          "shortDefinition": "Complete, accurate facts to look up while working.",
+          "whyItMatters": "It answers the one fact a user needs mid-task.",
+          "word": "Reference"
+        },
+        {
+          "category": "Task page",
+          "detailedDefinition": "A role or permission, data ready, or earlier setup, listed before the first step.",
+          "id": "prerequisite",
+          "pronunciation": "pree-rek-wuh-zit",
+          "shortDefinition": "What must be true before step 1.",
+          "whyItMatters": "Without it, users fail halfway and don't know why.",
+          "word": "Prerequisite"
+        },
+        {
+          "category": "Task page",
+          "detailedDefinition": "A documentation philosophy from 'The Nurnberg Funnel' (1990): users learn by doing, so docs should get them acting fast and help them recover from mistakes.",
+          "id": "minimalism",
+          "pronunciation": "min-uh-muh-liz-uhm",
+          "shortDefinition": "John Carroll's approach: act quickly, cut the unneeded, support error recovery.",
+          "whyItMatters": "It's the reason task pages are short and action-first.",
+          "word": "Minimalism"
+        },
+        {
+          "category": "Style",
+          "detailedDefinition": "Short sentences, active voice, 'you', key information first, one term per concept, no idioms.",
+          "id": "plain-language",
+          "pronunciation": "pleyn lang-gwij",
+          "shortDefinition": "Writing that readers understand the first time they read it.",
+          "whyItMatters": "Readers skim while working; plain language survives skimming and translation.",
+          "word": "Plain Language"
+        },
+        {
+          "category": "Style",
+          "detailedDefinition": "The opposite of passive voice ('Save should be selected'), which hides who acts.",
+          "id": "active-voice",
+          "pronunciation": "ak-tiv vois",
+          "shortDefinition": "The subject does the action: 'You select Save'.",
+          "whyItMatters": "Instructions must make clear who does what.",
+          "word": "Active Voice"
+        },
+        {
+          "category": "Style",
+          "detailedDefinition": "Product names, terminology and exceptions, deferring everything else to e.g. the Microsoft Writing Style Guide.",
+          "id": "house-style",
+          "pronunciation": "hous stahyl gahyd",
+          "shortDefinition": "Your team's own decisions on top of a public guide.",
+          "whyItMatters": "Consistency across writers without a 50-page rulebook.",
+          "word": "House Style Guide"
+        },
+        {
+          "category": "Tool",
+          "detailedDefinition": "Checks Markdown against rule packages (Microsoft, Google, your own) in the editor and in CI.",
+          "id": "vale",
+          "pronunciation": "veyl",
+          "shortDefinition": "A prose linter for docs.",
+          "whyItMatters": "Machines check the commas so reviewers can check the meaning.",
+          "word": "Vale"
+        },
+        {
+          "category": "Tool",
+          "detailedDefinition": "206.835 − 1.015 × words per sentence − 84.6 × syllables per word. Higher is easier.",
+          "id": "flesch",
+          "pronunciation": "flesh ree-ding eez",
+          "shortDefinition": "A readability score from sentence and word length.",
+          "whyItMatters": "A warning light for dense text, not proof of clarity.",
+          "word": "Flesch Reading Ease"
+        },
+        {
+          "category": "Review",
+          "detailedDefinition": "Usually a developer or product owner who does the technical review of a page.",
+          "id": "sme",
+          "pronunciation": "es em ee",
+          "shortDefinition": "The person who knows how the feature really works.",
+          "whyItMatters": "Writers describe; SMEs confirm it's true.",
+          "word": "SME (Subject-Matter Expert)"
+        }
+      ],
+      "title": "Glossary"
+    },
+    "type": "flashcards"
+  },
+  {
+    "folder": "synthesis",
+    "props": {
+      "challenges": [
+        {
+          "chips": [
+            {
+              "id": "chip-tutorial",
+              "text": "tutorial"
+            },
+            {
+              "id": "chip-howto",
+              "text": "how-to guide"
+            },
+            {
+              "id": "chip-reference",
+              "text": "reference"
+            },
+            {
+              "id": "chip-blog",
+              "text": "blog post"
+            }
+          ],
+          "explanation": "<strong>Correct!</strong> Tutorials teach, how-to guides get jobs done, reference is looked up. A blog post isn't one of the four Diátaxis types.",
+          "prompt": "Choose the page type (Track 1):",
+          "solution": {
+            "zone-1": "chip-tutorial",
+            "zone-2": "chip-howto",
+            "zone-3": "chip-reference"
+          },
+          "template": "A beginner's guaranteed-to-work lesson is a {zone-1}; steps to a real goal are a {zone-2}; a table of fields is {zone-3}."
+        },
+        {
+          "chips": [
+            {
+              "id": "chip-goal",
+              "text": "user's goal"
+            },
+            {
+              "id": "chip-prereq",
+              "text": "prerequisites"
+            },
+            {
+              "id": "chip-bold",
+              "text": "bold"
+            },
+            {
+              "id": "chip-feature",
+              "text": "feature name"
+            }
+          ],
+          "explanation": "<strong>Correct!</strong> Goal-based title, prerequisites first, one action per step, bold labels exactly as on screen, and the result.",
+          "prompt": "Build the task page (Track 2):",
+          "solution": {
+            "zone-1": "chip-goal",
+            "zone-2": "chip-prereq",
+            "zone-3": "chip-bold"
+          },
+          "template": "Title it with the {zone-1}, list {zone-2} before step 1, write one action per step with UI labels in {zone-3}, and show the result."
+        },
+        {
+          "chips": [
+            {
+              "id": "chip-15-20",
+              "text": "15–20"
+            },
+            {
+              "id": "chip-active",
+              "text": "active"
+            },
+            {
+              "id": "chip-vale",
+              "text": "Vale"
+            },
+            {
+              "id": "chip-passive",
+              "text": "passive"
+            }
+          ],
+          "explanation": "<strong>Correct!</strong> Short sentences, active voice, and a linter to catch the mechanical slips.",
+          "prompt": "Write it plainly (Track 3):",
+          "solution": {
+            "zone-1": "chip-15-20",
+            "zone-2": "chip-active",
+            "zone-3": "chip-vale"
+          },
+          "template": "Aim for about {zone-1} words per sentence, use {zone-2} voice, and enforce the house style with {zone-3}."
+        },
+        {
+          "chips": [
+            {
+              "id": "chip-sme",
+              "text": "subject-matter expert"
+            },
+            {
+              "id": "chip-follows",
+              "text": "follows every step"
+            },
+            {
+              "id": "chip-readability",
+              "text": "readability score"
+            }
+          ],
+          "explanation": "<strong>Correct!</strong> Technical review plus a step test catch what a readability score never can.",
+          "prompt": "Keep it true (Track 4):",
+          "solution": {
+            "zone-1": "chip-sme",
+            "zone-2": "chip-follows"
+          },
+          "template": "Before publishing, a {zone-1} checks the facts and someone {zone-2} in staging exactly as written."
+        }
+      ],
+      "title": "Write It Right"
+    },
+    "type": "reflection-template"
+  }
+]

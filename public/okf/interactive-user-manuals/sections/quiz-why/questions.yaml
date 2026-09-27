@@ -1,0 +1,85 @@
+- id: q1
+  groundedIn: least-privilege
+  question: "A new accounts clerk must learn to approve supplier payments, but their approver role is only granted after training. Which barrier stops them from practising in the real system?"
+  choices:
+    - id: q1-a
+      text: "Least-privilege access: they have no role that allows the action yet"
+      correct: true
+      explanation: "Least privilege means trainees often have no account or role that allows the actions they must learn."
+    - id: q1-b
+      text: "Licence cost: the payment module is too expensive"
+      correct: false
+      explanation: "Cost can be a barrier, but here the problem is that the clerk's role doesn't allow approving yet."
+    - id: q1-c
+      text: "Irreversible actions: the approve button is broken"
+      correct: false
+      explanation: "Nothing is broken; the clerk simply isn't authorised yet."
+  hint: "Think about which permissions the clerk has today."
+- id: q2
+  groundedIn: production-data
+  question: "Why is giving trainees a read-only account on the live hospital system still a problem?"
+  choices:
+    - id: q2-a
+      text: "They would still see real patient records they have no need to see"
+      correct: true
+      explanation: "Real systems hold production data such as patient records, which trainees must not see or change."
+    - id: q2-b
+      text: "Read-only accounts can't show any screens"
+      correct: false
+      explanation: "Read-only accounts can show screens. The issue is the real data on them."
+    - id: q2-c
+      text: "Read-only accounts cost more than full accounts"
+      correct: false
+      explanation: "This is not the barrier described. The problem is exposure of production data."
+  hint: "Look at what is on the screens, not what the learner can click."
+- id: q3
+  groundedIn: irreversible-actions
+  question: "Which of these is the best example of an irreversible or high-impact action?"
+  choices:
+    - id: q3-a
+      text: "Issuing a customer refund"
+      correct: true
+      explanation: "A refund sends real money and can't simply be undone, so practising it live turns every mistake into an incident."
+    - id: q3-b
+      text: "Opening the search screen"
+      correct: false
+      explanation: "Opening a screen changes nothing."
+    - id: q3-c
+      text: "Sorting a table by date"
+      correct: false
+      explanation: "Sorting only changes the view."
+  hint: "Which one changes something outside the screen?"
+- id: q4
+  groundedIn: fidelity-levels
+  question: "Put simply, what is the order of the fidelity ladder from lowest to highest?"
+  choices:
+    - id: q4-a
+      text: "Screenshots → click-through walkthroughs → interactive simulations with fake data → full sandbox"
+      correct: true
+      explanation: "That is the ladder: from looking at pictures to using a real instance filled with fake data."
+    - id: q4-b
+      text: "Sandbox → screenshots → walkthroughs → interactive simulations"
+      correct: false
+      explanation: "The sandbox is the top rung, not the bottom."
+    - id: q4-c
+      text: "Walkthroughs → screenshots → sandbox → interactive simulations"
+      correct: false
+      explanation: "Screenshots are the lowest rung, and the sandbox is the highest."
+  hint: "Start from the version where learners only look."
+- id: q5
+  groundedIn: fidelity-vs-cost
+  question: "Your team wants to move from annotated screenshots to a full sandbox. What should they expect?"
+  choices:
+    - id: q5-a
+      text: "More realistic practice, but higher build and maintenance cost"
+      correct: true
+      explanation: "Each rung up the ladder gives more realistic practice and costs more to build and maintain."
+    - id: q5-b
+      text: "More realism with no extra cost"
+      correct: false
+      explanation: "Realism and cost rise together on the ladder."
+    - id: q5-c
+      text: "Lower cost, because sandboxes need no upkeep"
+      correct: false
+      explanation: "A sandbox is the most expensive rung to build and keep running."
+  hint: "Look at the two blocks on the top rung of the ladder."

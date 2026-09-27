@@ -1,0 +1,67 @@
+- type: linear
+  id: step_draft
+  initiatedBy: writer
+  policy: "When a feature changes or a task page is missing"
+  command: "Open a pull request with the draft page"
+  handledBy: docs_repo
+  resultEvents:
+    - id: evt_draft_opened
+      title: "Draft Opened"
+  continuesAs: step_sme
+
+- type: linear
+  id: step_sme
+  initiatedBy: sme
+  policy: "When a draft is opened"
+  command: "Check the facts against how the app works"
+  handledBy: docs_repo
+  resultEvents:
+    - id: evt_facts_checked
+      title: "Technical Review Done"
+      desc: "Facts, limits, permissions and behaviour confirmed by a subject-matter expert"
+  continuesAs: step_test
+
+- type: linear
+  id: step_test
+  initiatedBy: tester
+  policy: "After the technical review"
+  command: "Follow every step exactly as written"
+  handledBy: staging_app
+  resultEvents:
+    - id: evt_steps_tested
+      title: "Steps Tested"
+  continuesAs: step_test_outcome
+
+- type: branch
+  id: step_test_outcome
+  event: evt_steps_tested
+  branches:
+    - id: branch_pass
+      label: "Every step worked"
+      policy: "If every step worked as written"
+      command: "Run editorial review with the linter"
+      handledBy: vale_ci
+      resultEvents:
+        - id: evt_edit_done
+          title: "Editorial Review Done"
+          desc: "Structure, style and terminology checked against the style guide"
+      continuesAs: step_publish
+    - id: branch_fail
+      label: "A step failed"
+      dashed: true
+      policy: "If a step didn't work as written"
+      command: "Send the page back for rewrite"
+      handledBy: docs_repo
+      resultEvents:
+        - id: evt_rewrite_requested
+          title: "Rewrite Requested"
+
+- type: linear
+  id: step_publish
+  initiatedBy: writer
+  policy: "When all reviews pass"
+  command: "Merge and publish the page"
+  handledBy: docs_site
+  resultEvents:
+    - id: evt_published
+      title: "Page Published"

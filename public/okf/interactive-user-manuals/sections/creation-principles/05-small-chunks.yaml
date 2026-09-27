@@ -1,0 +1,13 @@
+icon: Puzzle
+title: "Small Chunks"
+subtitle: "One task, one goal, a few minutes"
+description: "Keep each module to one short task with one goal, so learners can finish it in a few minutes and look it up again later."
+details: "A 45-minute simulation of 'everything in the CRM' is hard to finish and impossible to find again when you need it. A module called 'Merge two duplicate customers' takes three minutes and can be found by searching for the task on the day you need it. Short modules are also easier to update: a release breaks one small module, not a giant course."
+analogy: "Recipe cards instead of a cookbook read cover to cover."
+primaryFocus: "Finishable and findable modules"
+inScope:
+  - "One goal per module"
+  - "Task names learners would search for"
+outOfScope:
+  - "Long all-in-one courses"
+color: yellow

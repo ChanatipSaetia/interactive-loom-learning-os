@@ -1,0 +1,79 @@
+id: pick-approach
+title: "Which interactive manual approach fits your situation?"
+root: start
+nodes:
+  start:
+    prompt: "Do learners need to practise, or just follow along?"
+    choices:
+      - id: follow
+        text: "Follow along: a reference they can look at while doing the task"
+        next: leaf-screenshots
+      - id: practise
+        text: "Practise: they must prove they can do it"
+        next: platform
+        recommended: true
+  platform:
+    prompt: "Is the software a web app or desktop/terminal software?"
+    choices:
+      - id: desktop
+        text: "Desktop or terminal software"
+        next: leaf-hotspot
+      - id: web
+        text: "Web app"
+        next: backend
+        recommended: true
+  backend:
+    prompt: "Do learners need real back-end behaviour (workflows, integrations, real error messages)?"
+    choices:
+      - id: backend-yes
+        text: "Yes, the back-end rules are what they must learn"
+        next: leaf-sandbox
+      - id: backend-no
+        text: "No, the screens and steps are what matter"
+        next: devs
+        recommended: true
+  devs:
+    prompt: "Do you own the product's front-end code and have developers to maintain a clone?"
+    choices:
+      - id: devs-yes
+        text: "Yes, it's our product and our team"
+        next: leaf-clone
+        recommended: true
+      - id: devs-no
+        text: "No, it's a bought product, or only authors will maintain it"
+        next: leaf-dom
+  leaf-screenshots:
+    leaf:
+      recommendation: "Annotated screenshot or video guide (Scribe, Tango, Guidde, Snagit, Loom)"
+      explanation: "The cheapest option, and fine when learners only need a reference to follow. Script the screenshots with Playwright if the UI changes often."
+      tradeoffs:
+        - "Passive: nobody checks the learner can actually do the task"
+        - "Every changed screen must be re-captured"
+  leaf-hotspot:
+    leaf:
+      recommendation: "Hotspot simulation (Articulate Storyline 360, Adobe Captivate, iSpring Suite)"
+      explanation: "Desktop software has no DOM to capture and can't easily be cloned, so recorded screens with clickable hotspots give real practice, tracked in your LMS via SCORM/xAPI."
+      tradeoffs:
+        - "Re-record affected screens on every UI change"
+        - "Project files are hard to diff or review in git"
+  leaf-sandbox:
+    leaf:
+      recommendation: "Training sandbox with synthetic data"
+      explanation: "Only a real instance reproduces back-end rules, integrations and real error messages. Use a vendor sandbox or a Docker Compose/Terraform environment seeded with Faker, Mockaroo or Tonic.ai."
+      tradeoffs:
+        - "Needs hosting, resets after every class and its own training accounts"
+        - "Must be kept on the same version as production"
+  leaf-clone:
+    leaf:
+      recommendation: "UI clone with a mocked backend (Storybook + MSW + Shepherd.js/Driver.js)"
+      explanation: "You can reuse your own components, so the clone stays faithful, lives in git and gets tested in CI alongside the product."
+      tradeoffs:
+        - "Developers must own it"
+        - "Back-end rules are only as real as your mocks"
+  leaf-dom:
+    leaf:
+      recommendation: "HTML/DOM capture demo (Walnut, Navattic, Storylane, Reprise)"
+      explanation: "Realistic web-app practice that non-developers can update: edit text and fake data without re-capturing."
+      tradeoffs:
+        - "Layout changes still need a new capture"
+        - "Content lives in a vendor platform, not your git repo"

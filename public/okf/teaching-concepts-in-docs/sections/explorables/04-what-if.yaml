@@ -1,0 +1,12 @@
+icon: GitBranch
+title: "What-If Scenario"
+subtitle: "Decide, then see the consequence"
+description: "A what-if scenario asks users to make a decision in a realistic situation and shows the consequence, testing understanding rather than recall."
+details: "'A contractor needs to see one project, just for a week. What do you do?' Each choice leads to a consequence: added to the workspace, the contractor sees all five projects. Because the situation is new, users can't answer from memorised steps; they must use the concept. It both teaches and checks understanding."
+analogy: "A choose-your-own-adventure book where the wrong path teaches the lesson."
+primaryFocus: "Applying the concept to a new case"
+inScope:
+  - "Realistic decisions with consequences"
+outOfScope:
+  - "Questions answerable by recall alone"
+color: peach

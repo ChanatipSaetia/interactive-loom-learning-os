@@ -1,0 +1,16 @@
+- text: "Generate from a single source of truth"
+  children:
+    - text: "Build simulations from the design-system components or a shared script of steps, instead of hand-copying screens."
+    - text: "When the source changes, every manual that uses it changes too; there is no second copy to forget."
+- text: "Detect drift automatically"
+  children:
+    - text: "Run visual-regression or selector checks on every product release."
+    - text: "A failing check names the exact module and step that went stale, before a learner finds it."
+- text: "Pin versions and name an owner"
+  children:
+    - text: "Label each simulation with the product version it matches, e.g. 'Matches ServiceDesk v24.3'."
+    - text: "Name an owner who updates it; 'everyone' means no one."
+- text: "Keep fake data in shared synthetic fixtures"
+  children:
+    - text: "Store the fake customers, tickets and orders in one shared set of synthetic fixtures."
+    - text: "Every simulation then shows the same realistic, privacy-safe records, and a data change is made once."
