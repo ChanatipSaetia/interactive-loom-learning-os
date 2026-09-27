@@ -1,0 +1,58 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$comment": "Generated from Zod by `npm run okf:schemas` — do not edit by hand. Frontmatter mapping of a section.md file (type, title, resource, intro).",
+  "title": "OKF section.md frontmatter",
+  "type": "object",
+  "properties": {
+    "type": {
+      "type": "string",
+      "enum": [
+        "bullets",
+        "concept-map",
+        "decision-tree",
+        "flashcards",
+        "flowchart",
+        "formula-sandbox",
+        "image-gallery",
+        "intro",
+        "pillar-layer",
+        "quiz",
+        "reflection-sequence",
+        "reflection-template",
+        "scenario",
+        "taxonomy-browser",
+        "text",
+        "tradeoff-sandbox"
+      ]
+    },
+    "title": {
+      "type": "string"
+    },
+    "heading": {
+      "type": "string"
+    },
+    "ordered": {
+      "type": "boolean"
+    },
+    "resource": {
+      "type": "string"
+    },
+    "intro": {
+      "type": "object",
+      "properties": {
+        "what": {
+          "type": "string"
+        },
+        "why": {
+          "type": "string"
+        },
+        "next": {
+          "type": "string"
+        }
+      }
+    }
+  },
+  "required": [
+    "type"
+  ]
+}

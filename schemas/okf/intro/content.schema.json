@@ -1,0 +1,89 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$comment": "Generated from Zod by `npm run okf:schemas` — do not edit by hand. Intro what/why/roadmap — the content.yaml file of an intro section.",
+  "title": "OKF intro content.yaml",
+  "type": "object",
+  "properties": {
+    "title": {
+      "type": "string"
+    },
+    "subtitle": {
+      "type": "string"
+    },
+    "estimatedTime": {
+      "type": "string"
+    },
+    "moduleCount": {
+      "type": "number"
+    },
+    "what": {
+      "type": "object",
+      "properties": {
+        "definition": {
+          "type": "string"
+        },
+        "summary": {
+          "type": "string"
+        },
+        "bullets": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "tags": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      "required": [
+        "summary"
+      ]
+    },
+    "why": {
+      "type": "object",
+      "properties": {
+        "summary": {
+          "type": "string"
+        },
+        "impact": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "summary"
+      ]
+    },
+    "roadmap": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "sectionId": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          },
+          "type": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "title",
+          "type",
+          "description"
+        ]
+      }
+    }
+  },
+  "required": [
+    "what",
+    "why"
+  ]
+}

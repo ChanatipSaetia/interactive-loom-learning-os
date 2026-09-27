@@ -1,0 +1,179 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$comment": "Generated from Zod by `npm run okf:schemas` — do not edit by hand. Pillar/layer grid — the matrix.yaml file of a pillar-layer section.",
+  "title": "OKF pillar-layer matrix.yaml",
+  "type": "object",
+  "properties": {
+    "title": {
+      "type": "string"
+    },
+    "description": {
+      "type": "string"
+    },
+    "layers": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "blocks": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "title": {
+                  "type": "string"
+                },
+                "description": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "title"
+              ]
+            }
+          }
+        },
+        "required": [
+          "id",
+          "title"
+        ]
+      }
+    },
+    "matrix_blocks": {
+      "default": [],
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "layer_id": {
+            "type": "string"
+          },
+          "col_offset": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 9007199254740991
+          },
+          "col_span": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 9007199254740991
+          },
+          "row_span": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 9007199254740991
+          },
+          "shape": {
+            "type": "string",
+            "enum": [
+              "rect",
+              "l-bottom-left",
+              "l-bottom-right",
+              "l-top-left",
+              "l-top-right"
+            ]
+          },
+          "cells": {
+            "type": "array",
+            "items": {
+              "anyOf": [
+                {
+                  "type": "object",
+                  "properties": {
+                    "pillar_id": {
+                      "type": "string"
+                    },
+                    "layer_id": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "layer_id"
+                  ]
+                },
+                {
+                  "type": "array",
+                  "prefixItems": [
+                    {
+                      "type": "string"
+                    },
+                    {
+                      "type": "string"
+                    }
+                  ]
+                }
+              ]
+            }
+          },
+          "offsets": {
+            "type": "array",
+            "items": {
+              "type": "array",
+              "prefixItems": [
+                {
+                  "type": "integer",
+                  "minimum": -9007199254740991,
+                  "maximum": 9007199254740991
+                },
+                {
+                  "type": "integer",
+                  "minimum": -9007199254740991,
+                  "maximum": 9007199254740991
+                }
+              ]
+            }
+          },
+          "color": {
+            "type": "string",
+            "enum": [
+              "rosewater",
+              "flamingo",
+              "pink",
+              "mauve",
+              "red",
+              "maroon",
+              "peach",
+              "yellow",
+              "green",
+              "teal",
+              "sky",
+              "sapphire",
+              "blue",
+              "lavender"
+            ]
+          },
+          "depends_on": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "required": [
+          "title"
+        ]
+      }
+    }
+  },
+  "required": [
+    "layers"
+  ]
+}

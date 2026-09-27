@@ -1,0 +1,28 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$comment": "Generated from Zod by `npm run okf:schemas` — do not edit by hand. Gallery items (array) — the gallery.yaml file of an image-gallery section.",
+  "title": "OKF image-gallery gallery.yaml",
+  "type": "array",
+  "items": {
+    "type": "object",
+    "properties": {
+      "id": {
+        "type": "string"
+      },
+      "url": {
+        "type": "string"
+      },
+      "caption": {
+        "type": "string"
+      },
+      "credit": {
+        "type": "string"
+      }
+    },
+    "required": [
+      "id",
+      "url",
+      "caption"
+    ]
+  }
+}

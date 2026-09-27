@@ -1,0 +1,90 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$comment": "Generated from Zod by `npm run okf:schemas` — do not edit by hand. Branching scenario — the scenarios.yaml file of a scenario section.",
+  "title": "OKF scenario scenarios.yaml",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string"
+    },
+    "title": {
+      "type": "string"
+    },
+    "intro": {
+      "type": "string"
+    },
+    "nodes": {
+      "type": "object",
+      "propertyNames": {
+        "type": "string"
+      },
+      "additionalProperties": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "prompt": {
+            "type": "string"
+          },
+          "choices": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string"
+                },
+                "text": {
+                  "type": "string"
+                },
+                "next": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "id",
+                "text",
+                "next"
+              ]
+            }
+          },
+          "outcome": {
+            "type": "object",
+            "properties": {
+              "verdict": {
+                "type": "string"
+              },
+              "lesson": {
+                "type": "string"
+              },
+              "rating": {
+                "type": "string",
+                "enum": [
+                  "a",
+                  "b-plus",
+                  "b-minus",
+                  "c"
+                ]
+              }
+            },
+            "required": [
+              "verdict",
+              "lesson",
+              "rating"
+            ]
+          }
+        }
+      }
+    },
+    "startNode": {
+      "default": "start",
+      "type": "string"
+    }
+  },
+  "required": [
+    "id",
+    "title",
+    "nodes"
+  ]
+}

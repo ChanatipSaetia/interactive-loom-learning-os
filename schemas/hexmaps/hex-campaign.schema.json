@@ -1,0 +1,226 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$comment": "Generated from Zod by `npm run okf:schemas` — do not edit by hand. Hex campaign map document — public/hexmaps/<topic-id>.yaml.",
+  "title": "OKF hex campaign map",
+  "type": "object",
+  "properties": {
+    "topicId": {
+      "type": "string",
+      "minLength": 1
+    },
+    "topicTitle": {
+      "type": "string",
+      "minLength": 1
+    },
+    "capitalId": {
+      "default": "capital",
+      "type": "string"
+    },
+    "nodes": {
+      "minItems": 1,
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "parentId": {
+            "type": "string"
+          },
+          "unlockedBy": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "dependsOn": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "title": {
+            "type": "string",
+            "minLength": 1
+          },
+          "type": {
+            "type": "string",
+            "enum": [
+              "capital",
+              "reading_sanctuary",
+              "archive_spire",
+              "simulation_nexus",
+              "concept_monolith",
+              "observatory_gallery",
+              "quiz_encounter",
+              "reflection_decryption",
+              "tradeoff_workshop",
+              "boss_lair"
+            ]
+          },
+          "coordinates": {
+            "type": "object",
+            "properties": {
+              "q": {
+                "type": "integer",
+                "minimum": -9007199254740991,
+                "maximum": 9007199254740991
+              },
+              "r": {
+                "type": "integer",
+                "minimum": -9007199254740991,
+                "maximum": 9007199254740991
+              }
+            },
+            "required": [
+              "q",
+              "r"
+            ]
+          },
+          "status": {
+            "default": "locked",
+            "type": "string",
+            "enum": [
+              "locked",
+              "unlocked",
+              "cleared"
+            ]
+          },
+          "sectionRef": {
+            "type": "string"
+          },
+          "description": {
+            "default": "",
+            "type": "string"
+          },
+          "monster": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string",
+                "minLength": 1
+              },
+              "name": {
+                "type": "string",
+                "minLength": 1
+              },
+              "type": {
+                "default": "goblin",
+                "type": "string"
+              },
+              "maxHp": {
+                "default": 30,
+                "type": "integer",
+                "exclusiveMinimum": 0,
+                "maximum": 9007199254740991
+              },
+              "currentHp": {
+                "type": "integer",
+                "minimum": -9007199254740991,
+                "maximum": 9007199254740991
+              },
+              "damage": {
+                "default": 10,
+                "type": "integer",
+                "exclusiveMinimum": 0,
+                "maximum": 9007199254740991
+              },
+              "icon": {
+                "default": "👾",
+                "type": "string"
+              }
+            },
+            "required": [
+              "id",
+              "name"
+            ]
+          },
+          "rewards": {
+            "default": [],
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "name": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "icon": {
+                  "default": "✨",
+                  "type": "string"
+                },
+                "description": {
+                  "default": "",
+                  "type": "string"
+                }
+              },
+              "required": [
+                "id",
+                "name"
+              ]
+            }
+          },
+          "requiredItems": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "healingAmount": {
+            "default": 40,
+            "type": "number"
+          },
+          "buff": {
+            "type": "object",
+            "properties": {
+              "stat": {
+                "type": "string",
+                "enum": [
+                  "armor",
+                  "evasion",
+                  "intelligence"
+                ]
+              },
+              "value": {
+                "type": "number"
+              },
+              "label": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "stat",
+              "value",
+              "label"
+            ]
+          },
+          "tradeoffMapping": {
+            "type": "object",
+            "propertyNames": {
+              "type": "string"
+            },
+            "additionalProperties": {
+              "type": "string"
+            }
+          }
+        },
+        "required": [
+          "id",
+          "title",
+          "type"
+        ]
+      }
+    }
+  },
+  "required": [
+    "topicId",
+    "topicTitle",
+    "nodes"
+  ]
+}

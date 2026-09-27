@@ -1,0 +1,87 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$comment": "Generated from Zod by `npm run okf:schemas` — do not edit by hand. Formula variables and metrics — the sandbox.yaml file of a formula-sandbox section.",
+  "title": "OKF formula-sandbox sandbox.yaml",
+  "type": "object",
+  "properties": {
+    "variables": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "label": {
+            "type": "string"
+          },
+          "min": {
+            "type": "number"
+          },
+          "max": {
+            "type": "number"
+          },
+          "step": {
+            "type": "number"
+          },
+          "defaultValue": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "id",
+          "label",
+          "min",
+          "max",
+          "step",
+          "defaultValue"
+        ]
+      }
+    },
+    "metrics": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "label": {
+            "type": "string"
+          },
+          "formula": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "analogy": {
+            "type": "string"
+          },
+          "inScope": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "outOfScope": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "required": [
+          "id",
+          "label",
+          "formula",
+          "description"
+        ]
+      }
+    }
+  },
+  "required": [
+    "variables",
+    "metrics"
+  ]
+}

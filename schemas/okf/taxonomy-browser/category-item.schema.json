@@ -1,0 +1,68 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$comment": "Generated from Zod by `npm run okf:schemas` — do not edit by hand. One taxonomy category — a single numbered *.yaml file in a taxonomy-browser collection folder.",
+  "title": "OKF taxonomy category item",
+  "type": "object",
+  "properties": {
+    "icon": {
+      "type": "string"
+    },
+    "title": {
+      "type": "string"
+    },
+    "subtitle": {
+      "type": "string"
+    },
+    "description": {
+      "type": "string"
+    },
+    "details": {
+      "type": "string"
+    },
+    "analogy": {
+      "type": "string"
+    },
+    "primaryFocus": {
+      "type": "string"
+    },
+    "inScope": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "outOfScope": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "color": {
+      "type": "string",
+      "enum": [
+        "blue",
+        "peach",
+        "pink",
+        "mauve",
+        "green",
+        "teal",
+        "sky",
+        "lavender",
+        "yellow",
+        "red"
+      ]
+    }
+  },
+  "required": [
+    "icon",
+    "title",
+    "subtitle",
+    "description",
+    "details",
+    "analogy",
+    "primaryFocus",
+    "inScope",
+    "outOfScope",
+    "color"
+  ]
+}

@@ -1,0 +1,63 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$comment": "Generated from Zod by `npm run okf:schemas` — do not edit by hand. Flashcard terms (array) — the glossary.yaml file of a flashcards section.",
+  "title": "OKF flashcards glossary.yaml",
+  "type": "array",
+  "items": {
+    "type": "object",
+    "properties": {
+      "id": {
+        "type": "string"
+      },
+      "word": {
+        "type": "string"
+      },
+      "pronunciation": {
+        "type": "string"
+      },
+      "category": {
+        "type": "string"
+      },
+      "image": {
+        "type": "string"
+      },
+      "shortDefinition": {
+        "type": "string"
+      },
+      "detailedDefinition": {
+        "type": "string"
+      },
+      "whyItMatters": {
+        "type": "string"
+      },
+      "dialogue": {
+        "type": "object",
+        "properties": {
+          "user": {
+            "type": "string"
+          },
+          "aiThoughts": {
+            "type": "string"
+          },
+          "aiQuestion": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "user",
+          "aiThoughts",
+          "aiQuestion"
+        ]
+      }
+    },
+    "required": [
+      "id",
+      "word",
+      "pronunciation",
+      "category",
+      "shortDefinition",
+      "detailedDefinition",
+      "whyItMatters"
+    ]
+  }
+}

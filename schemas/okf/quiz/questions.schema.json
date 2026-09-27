@@ -1,0 +1,51 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$comment": "Generated from Zod by `npm run okf:schemas` — do not edit by hand. Quiz questions (array) — the questions.yaml file of a quiz section.",
+  "title": "OKF quiz questions.yaml",
+  "type": "array",
+  "items": {
+    "type": "object",
+    "properties": {
+      "id": {
+        "type": "string"
+      },
+      "question": {
+        "type": "string"
+      },
+      "choices": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "string"
+            },
+            "text": {
+              "type": "string"
+            },
+            "correct": {
+              "type": "boolean"
+            },
+            "explanation": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "id",
+            "text",
+            "correct",
+            "explanation"
+          ]
+        }
+      },
+      "hint": {
+        "type": "string"
+      }
+    },
+    "required": [
+      "id",
+      "question",
+      "choices"
+    ]
+  }
+}

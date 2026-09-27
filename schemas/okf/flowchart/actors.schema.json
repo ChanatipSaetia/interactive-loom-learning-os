@@ -1,0 +1,20 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$comment": "Generated from Zod by `npm run okf:schemas` — do not edit by hand. Declared actors keyed by id — the actors.yaml file of a flowchart section.",
+  "title": "OKF flowchart actors.yaml",
+  "type": "object",
+  "propertyNames": {
+    "type": "string"
+  },
+  "additionalProperties": {
+    "type": "object",
+    "properties": {
+      "title": {
+        "type": "string"
+      },
+      "desc": {
+        "type": "string"
+      }
+    }
+  }
+}

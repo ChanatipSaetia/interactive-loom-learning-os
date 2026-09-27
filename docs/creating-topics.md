@@ -73,6 +73,39 @@ Rules and guarantees:
 
 The rest of this guide explains every file the scaffold produces, so you can edit (or hand-write) them with full control.
 
+## 0.5. Editor Setup: VS Code YAML Schema Autocomplete
+
+While editing OKF YAML in VS Code (not only in the in-app editor), the
+[Red Hat YAML extension](https://marketplace.visualstudio.com/items?itemName=redhat.vscode-yaml)
+offers autocomplete and inline errors from JSON Schemas generated from the
+co-located Zod `SectionSchema`s (input shapes, per [domain.md](agents/domain.md)).
+
+1. Install the recommended extension (`.vscode/extensions.json` suggests `redhat.vscode-yaml`).
+2. Keep the schemas in sync with Zod after touching any `sub-contexts/*/schema.ts`:
+
+   ```bash
+   npm run okf:schemas   # regenerates schemas/ — a unit test fails on drift
+   ```
+
+3. `.vscode/settings.json` (`yaml.schemas`) maps each generated schema to its
+   file shape by filename convention — e.g. `sections/*/questions.yaml` gets
+   the quiz questions schema, `sections/*/tree.yaml` the decision tree, and
+   `public/hexmaps/*.yaml` the hex campaign map.
+
+**Ambiguous filenames — use the modeline.** Collection folders (taxonomy
+categories, tradeoff scenarios) hold one item per numbered file with arbitrary
+names, and a `resource:` override can rename any data file. Where the filename
+pattern does not match, pin a schema with a first-line modeline (relative to
+the YAML file, so five levels up from `public/okf/<topic>/sections/<name>/`):
+
+```yaml
+# yaml-language-server: $schema=../../../../../schemas/okf/taxonomy-browser/category-item.schema.json
+```
+
+Available item/single-file schemas: `schemas/okf/<section-type>/*.schema.json`
+(see `scripts/okf-schemas-manifest.ts` for the full list) and
+`schemas/okf/section-frontmatter.schema.json` for `section.md` frontmatter.
+
 ## 1. Create the Directory Structure
 
 Each topic is an [OKF v0.1](https://github.com/GoogleCloudPlatform/knowledge-catalog/blob/main/okf/SPEC.md) compliant knowledge bundle under `public/okf/`:

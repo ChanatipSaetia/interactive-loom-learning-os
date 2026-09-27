@@ -14,6 +14,7 @@
     "lint": "eslint . --ext .ts,.tsx --report-unused-disable-directives --max-warnings 0",
     "typecheck": "tsc --noEmit",
     "okf:validate": "npx -y tsx scripts/validate-okf.ts",
+    "okf:schemas": "npx -y tsx scripts/generate-okf-schemas.ts",
     "okf:new": "npx -y tsx scripts/okf-new.ts"
   },
   "dependencies": {

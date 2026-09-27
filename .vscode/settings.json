@@ -1,0 +1,67 @@
+{
+  "yaml.schemas": {
+    "./schemas/okf/quiz/questions.schema.json": [
+      "public/okf/*/sections/*/questions.yaml"
+    ],
+    "./schemas/okf/flashcards/glossary.schema.json": [
+      "public/okf/*/sections/*/glossary.yaml"
+    ],
+    "./schemas/okf/concept-map/concepts.schema.json": [
+      "public/okf/*/sections/*/concepts.yaml"
+    ],
+    "./schemas/okf/intro/content.schema.json": [
+      "public/okf/*/sections/*/content.yaml"
+    ],
+    "./schemas/okf/bullets/items.schema.json": [
+      "public/okf/*/sections/*/items.yaml"
+    ],
+    "./schemas/okf/taxonomy-browser/categories.schema.json": [
+      "public/okf/*/sections/*/categories.yaml"
+    ],
+    "./schemas/okf/taxonomy-browser/category-item.schema.json": [
+      "public/okf/*/sections/*taxonom*/[0-9][0-9]-*.yaml"
+    ],
+    "./schemas/okf/image-gallery/gallery.schema.json": [
+      "public/okf/*/sections/*/gallery.yaml"
+    ],
+    "./schemas/okf/pillar-layer/matrix.schema.json": [
+      "public/okf/*/sections/*/matrix.yaml"
+    ],
+    "./schemas/okf/flowchart/actors.schema.json": [
+      "public/okf/*/sections/*/actors.yaml"
+    ],
+    "./schemas/okf/flowchart/systems.schema.json": [
+      "public/okf/*/sections/*/systems.yaml"
+    ],
+    "./schemas/okf/flowchart/steps.schema.json": [
+      "public/okf/*/sections/*/steps.yaml"
+    ],
+    "./schemas/okf/flowchart/journeys.schema.json": [
+      "public/okf/*/sections/*/journeys.yaml"
+    ],
+    "./schemas/okf/scenario/scenarios.schema.json": [
+      "public/okf/*/sections/scenario*/scenarios.yaml"
+    ],
+    "./schemas/okf/tradeoff-sandbox/scenarios.schema.json": [
+      "public/okf/*/sections/tradeoff*/scenarios.yaml"
+    ],
+    "./schemas/okf/tradeoff-sandbox/scenario-item.schema.json": [
+      "public/okf/*/sections/*tradeoff*/[0-9][0-9]-*.yaml"
+    ],
+    "./schemas/okf/formula-sandbox/sandbox.schema.json": [
+      "public/okf/*/sections/*/sandbox.yaml"
+    ],
+    "./schemas/okf/decision-tree/tree.schema.json": [
+      "public/okf/*/sections/*/tree.yaml"
+    ],
+    "./schemas/okf/reflection-sequence/sequence.schema.json": [
+      "public/okf/*/sections/*/sequence.yaml"
+    ],
+    "./schemas/okf/reflection-template/template.schema.json": [
+      "public/okf/*/sections/*/template.yaml"
+    ],
+    "./schemas/hexmaps/hex-campaign.schema.json": [
+      "public/hexmaps/*.yaml"
+    ]
+  }
+}

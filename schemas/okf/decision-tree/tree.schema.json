@@ -1,0 +1,87 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$comment": "Generated from Zod by `npm run okf:schemas` — do not edit by hand. Decision tree nodes — the tree.yaml file of a decision-tree section.",
+  "title": "OKF decision-tree tree.yaml",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string"
+    },
+    "title": {
+      "type": "string"
+    },
+    "root": {
+      "type": "string"
+    },
+    "nodes": {
+      "type": "object",
+      "propertyNames": {
+        "type": "string"
+      },
+      "additionalProperties": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "prompt": {
+            "type": "string"
+          },
+          "choices": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string"
+                },
+                "text": {
+                  "type": "string"
+                },
+                "next": {
+                  "type": "string"
+                },
+                "rationale": {
+                  "type": "string"
+                },
+                "recommended": {
+                  "type": "boolean"
+                }
+              },
+              "required": [
+                "text"
+              ]
+            }
+          },
+          "leaf": {
+            "type": "object",
+            "properties": {
+              "recommendation": {
+                "type": "string"
+              },
+              "explanation": {
+                "type": "string"
+              },
+              "tradeoffs": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              }
+            },
+            "required": [
+              "recommendation",
+              "explanation"
+            ]
+          }
+        }
+      }
+    }
+  },
+  "required": [
+    "id",
+    "title",
+    "root",
+    "nodes"
+  ]
+}

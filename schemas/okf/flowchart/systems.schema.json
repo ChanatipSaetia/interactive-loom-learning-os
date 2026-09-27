@@ -1,0 +1,64 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$comment": "Generated from Zod by `npm run okf:schemas` — do not edit by hand. Declared systems keyed by id — the systems.yaml file of a flowchart section.",
+  "title": "OKF flowchart systems.yaml",
+  "type": "object",
+  "propertyNames": {
+    "type": "string"
+  },
+  "additionalProperties": {
+    "type": "object",
+    "properties": {
+      "title": {
+        "type": "string"
+      },
+      "desc": {
+        "type": "string"
+      },
+      "type": {
+        "type": "string",
+        "enum": [
+          "aggregate",
+          "external"
+        ]
+      },
+      "stateMachine": {
+        "type": "object",
+        "properties": {
+          "states": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string"
+                },
+                "label": {
+                  "type": "string"
+                },
+                "color": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "id",
+                "label",
+                "color"
+              ]
+            }
+          },
+          "initialState": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "states",
+          "initialState"
+        ]
+      }
+    },
+    "required": [
+      "type"
+    ]
+  }
+}

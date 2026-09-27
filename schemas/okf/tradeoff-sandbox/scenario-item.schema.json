@@ -1,0 +1,157 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$comment": "Generated from Zod by `npm run okf:schemas` — do not edit by hand. One tradeoff scenario — a single numbered *.yaml file in a tradeoff-sandbox collection folder.",
+  "title": "OKF tradeoff scenario item",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string"
+    },
+    "title": {
+      "type": "string"
+    },
+    "description": {
+      "type": "string"
+    },
+    "metrics": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "label": {
+            "type": "string"
+          },
+          "baseValue": {
+            "type": "number"
+          },
+          "min": {
+            "type": "number"
+          },
+          "max": {
+            "type": "number"
+          },
+          "direction": {
+            "type": "string",
+            "enum": [
+              "higher",
+              "lower"
+            ]
+          }
+        },
+        "required": [
+          "id",
+          "label",
+          "baseValue"
+        ]
+      }
+    },
+    "steps": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "choices": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string"
+                },
+                "label": {
+                  "type": "string"
+                },
+                "description": {
+                  "type": "string"
+                },
+                "metrics": {
+                  "type": "object",
+                  "propertyNames": {
+                    "type": "string"
+                  },
+                  "additionalProperties": {
+                    "type": "number"
+                  }
+                },
+                "pros": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "title": {
+                        "type": "string"
+                      },
+                      "description": {
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "title"
+                    ]
+                  }
+                },
+                "cons": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "title": {
+                        "type": "string"
+                      },
+                      "description": {
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "title"
+                    ]
+                  }
+                },
+                "whyThisFits": {
+                  "type": "string"
+                },
+                "whenToUse": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "id",
+                "label",
+                "description",
+                "metrics",
+                "pros",
+                "cons"
+              ]
+            }
+          },
+          "recommended": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "title",
+          "choices"
+        ]
+      }
+    }
+  },
+  "required": [
+    "id",
+    "title",
+    "metrics",
+    "steps"
+  ]
+}
