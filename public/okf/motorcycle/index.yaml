@@ -22,12 +22,12 @@ related:
   - sections/flowchart-brake/systems.yaml
   - sections/flowchart-brake/steps.yaml
   - sections/flowchart-brake/journeys.yaml
-  - sections/tradeoffs/fuel-system.yaml
-  - sections/tradeoffs/engine-oil.yaml
-  - sections/tradeoffs/tires.yaml
-  - sections/taxonomy/engine-system.yaml
-  - sections/taxonomy/drivetrain.yaml
-  - sections/taxonomy/green-3.yaml
+  - sections/tradeoffs/01-fuel-system.yaml
+  - sections/tradeoffs/02-engine-oil.yaml
+  - sections/tradeoffs/03-tires.yaml
+  - sections/taxonomy/01-engine-system.yaml
+  - sections/taxonomy/02-drivetrain.yaml
+  - sections/taxonomy/03-green-3.yaml
   - sections/maintenance/items.yaml
   - sections/flashcards/glossary.yaml
   - sections/concept-map/concepts.yaml

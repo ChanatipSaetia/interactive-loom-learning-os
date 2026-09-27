@@ -1,0 +1,91 @@
+type: pillar-layer
+title: "กายวิภาคและสถาปัตยกรรมเตาเซรามิก Kamado (Kamado Anatomy Stack)"
+description: "โครงสร้างแบบเป็นชั้นของเตา Kamado แสดงการถ่ายเทความร้อน การกักเก็บพลังงาน และการควบคุมการไหลเวียนอากาศ"
+layers:
+  - id: "l-dome-exhaust"
+    title: "1. ชั้นควบคุมไอเสียและกักเก็บความร้อนด้านบน (Top Exhaust & Dome Tier)"
+    description: "วาล์วด้านบนและฝาครอบเซรามิกหนา ทำหน้าที่กักเก็บรังสีความร้อนและคุมการระบายไอเสีย"
+  - id: "l-cooking-zone"
+    title: "2. ชั้นตะแกรงย่างและจัดโซนความร้อน (Cooking Grates & Deflector Tier)"
+    description: "พื้นที่วางเนื้อสเต๊ก ตะแกรงเหล็กหล่อ/สเตนเลส และแผ่นหิน Deflector สำหรับกระจายความร้อนทางอ้อม"
+  - id: "l-firebox-core"
+    title: "3. ชั้นกล่องเผาไหม้และศูนย์รวมถ่าน (Firebox & Fire Ring Tier)"
+    description: "ห้องเซรามิกทนความร้อนสูงสำหรับบรรจุถ่านไม้ธรรมชาติ มีรูระบายอากาศเพื่อกระจายออกซิเจน"
+  - id: "l-base-draft"
+    title: "4. ชั้นฐานรองและประตูรับอากาศเข้าล่าง (Base & Draft Door Tier)"
+    description: "ช่องดึงอากาศบริสุทธิ์เข้าด้านล่างเพื่อป้อนออกซิเจนให้ไฟ และลิ้นชักสำหรับดักขี้เถ้า"
+
+matrix_blocks:
+  # Layer 1: Top Dome & Exhaust
+  - id: "b-top-vent"
+    title: "วาล์วปรับลมบน (Top Vent / Dual-Disc)"
+    description: "ควบคุมความเร็วลมขาออกและดักความร้อน ละเอียดระดับมิลลิเมตรเพื่อปรับอุณหภูมิละเอียด (Fine-tuning)"
+    layer_id: "l-dome-exhaust"
+    col_offset: 0
+    col_span: 2
+    color: "mauve"
+    depends_on: ["b-grill-grate"]
+
+  - id: "b-ceramic-dome"
+    title: "ฝาครอบเซรามิกหนาพิเศษ (Ceramic Heavy Dome)"
+    description: "ผนังเซรามิกสะท้อนรังสีความร้อนอินฟราเรดกลับลงมาที่ผิวเนื้อ ทำให้เนื้อสุกรอบทิศทางโดยไม่ต้องเปิดฝาบ่อย"
+    layer_id: "l-dome-exhaust"
+    col_offset: 2
+    col_span: 2
+    color: "blue"
+    depends_on: ["b-deflector"]
+
+  # Layer 2: Cooking Zone
+  - id: "b-grill-grate"
+    title: "ตะแกรงย่างเหล็กหล่อ/สเตนเลส (Cooking Grate)"
+    description: "รองรับเนื้อวัว สามารถเลือกใช้เหล็กหล่อเพื่อสะสมความร้อนสำหรับ Sear ลายสวยงาม"
+    layer_id: "l-cooking-zone"
+    col_offset: 0
+    col_span: 2
+    color: "peach"
+    depends_on: ["b-firebox"]
+
+  - id: "b-deflector"
+    title: "แผ่นหินกันความร้อน (Ceramic Heat Deflector)"
+    description: "แปลงเตาย่างเปลวไฟตรงให้กลายเป็นเตาอบ Convection กั้นเปลวไฟตรงเพื่อย่างทางอ้อม (Indirect Smoking / Reverse Sear)"
+    layer_id: "l-cooking-zone"
+    col_offset: 2
+    col_span: 2
+    color: "teal"
+    depends_on: ["b-fire-ring"]
+
+  # Layer 3: Firebox & Ring
+  - id: "b-firebox"
+    title: "กล่องเผาไหม้เซรามิก (Ceramic Firebox)"
+    description: "บรรจุถ่านไม้ก้อนธรรมชาติ ผนังมีรูเจาะระบายอากาศเพื่อกระจายออกซิเจนเข้าสู่กองถ่านอย่างสม่ำเสมอ"
+    layer_id: "l-firebox-core"
+    col_offset: 0
+    col_span: 2
+    color: "sapphire"
+    depends_on: ["b-draft-door"]
+
+  - id: "b-fire-ring"
+    title: "วงแหวนยกความสูง (Fire Ring)"
+    description: "วางซ้อนบน Firebox เพื่อเพิ่มระยะห่างระหว่างกองถ่านกับตะแกรงย่าง และเป็นฐานรองรับแผ่น Heat Deflector"
+    layer_id: "l-firebox-core"
+    col_offset: 2
+    col_span: 2
+    color: "green"
+    depends_on: ["b-ash-drawer"]
+
+  # Layer 4: Base & Draft Door
+  - id: "b-draft-door"
+    title: "ประตูวาล์วลมล่าง (Bottom Draft Door)"
+    description: "จุดรับออกซิเจนหลักเข้าสู่เตา ทำหน้าที่ควบคุมอุณหภูมิหยาบ (Coarse tuning) เปิดกว้างเพื่อเร่งไฟ หรี่เพื่อลดไฟ"
+    layer_id: "l-base-draft"
+    col_offset: 0
+    col_span: 2
+    color: "maroon"
+
+  - id: "b-ash-drawer"
+    title: "ลิ้นชักรองขี้เถ้า (Ash Drawer / Base Cavity)"
+    description: "กักเก็บขี้เถ้าที่ร่วงผ่านตะแกรงก้นเตา ป้องกันไม่ให้ขี้เถ้าอุดตันช่องลมเข้า ทำให้กระแสลมไหลเวียนต่อเนื่อง"
+    layer_id: "l-base-draft"
+    col_offset: 2
+    col_span: 2
+    color: "lavender"

@@ -1,0 +1,96 @@
+- id: q1
+  question: "According to the six principles, when should accounts, licenses, and API keys be ready for a newcomer?"
+  hint: "Principle 1 has a strong opinion about the calendar."
+  choices:
+    - id: a
+      text: "In pre-boarding — before day one"
+      correct: true
+      explanation: "Correct. Principle 1 'Access First' demands credentials exist before the newcomer arrives; waiting-for-access is the number-one onboarding killer."
+    - id: b
+      text: "On Monday morning, requested by the newcomer's manager"
+      correct: false
+      explanation: "Requesting access on day one makes the newcomer watch a provisioning queue — the exact anti-pattern Principle 1 forbids."
+    - id: c
+      text: "After the first week, once they've read the handbook"
+      correct: false
+      explanation: "Reading without access means touching nothing real; the doctrine drives newcomers to a real task in week one, which requires day-zero access."
+- id: q2
+  question: "What is the only week-one metric the doctrine says matters most?"
+  hint: "Principle 2 names it explicitly."
+  choices:
+    - id: a
+      text: "Number of handbook pages read"
+      correct: false
+      explanation: "Pages read is a vanity metric; the doctrine measures a completed real task, not consumed documentation."
+    - id: b
+      text: "Time-to-first-value: how fast the newcomer completes one meaningful task"
+      correct: true
+      explanation: "Correct. Principle 2 declares time-to-first-value the only week-one metric that matters — first record, first safe change, or first successful API call."
+    - id: c
+      text: "How many features the tour covered"
+      correct: false
+      explanation: "Feature-tour coverage is what Principle 3 rejects; competence comes from one deep golden-path task, not breadth."
+- id: q3
+  question: "A developer signs up for your API and spends an afternoon fighting setup before one successful call. Which audience's doctrine did you break, and what is the metric called?"
+  hint: "Each archetype has its own flavor of first value."
+  choices:
+    - id: a
+      text: "Web App end users — their metric is the first successful business task"
+      correct: false
+      explanation: "End users measure first business task inside the product; fighting an API afternoon is the developer archetype, whose metric is time-to-first-successful-API-call."
+    - id: b
+      text: "Developers (DX) — their first value is time-to-first-successful-API-call on a clean machine"
+      correct: true
+      explanation: "Correct. For developers the onboarding IS the product trial; the taught metric is time-to-first-successful-API-call, and setup friction makes integrators quietly leave."
+    - id: c
+      text: "Internal staff & operators — their metric is the first supervised deploy"
+      correct: false
+      explanation: "Operators graduate through graded real tasks ending in a supervised deploy; a self-serve API signup is the developer archetype's journey."
+- id: q4
+  question: "Where does the doctrine say to reveal advanced features and edge-case warnings to a newcomer?"
+  hint: "Principle 4 is about timing, not content volume."
+  choices:
+    - id: a
+      text: "In the kickoff presentation, so nobody is surprised later"
+      correct: false
+      explanation: "Front-loading everything is the information firehose Principle 4 warns against — it creates quit-points, not competence."
+    - id: b
+      text: "At the exact moment the newcomer reaches that step"
+      correct: true
+      explanation: "Correct. Progressive disclosure teaches the next step when it is needed, never three screens ahead."
+    - id: c
+      text: "In an appendix of the handbook they can read anytime"
+      correct: false
+      explanation: "An appendix nobody opens is where knowledge goes to hide; the doctrine reveals complexity at the point of need."
+- id: q5
+  question: "A fully self-serve in-app tour ships for your Web App. According to the Human Anchor principle, what must still exist?"
+  hint: "Principle 5 names the failure hour."
+  choices:
+    - id: a
+      text: "A longer tour that answers every possible question"
+      correct: false
+      explanation: "No tour answers everything; the doctrine's answer is not more software but a named human for the questions the tour cannot answer."
+    - id: b
+      text: "A named human, buddy, or office hours where questions land"
+      correct: true
+      explanation: "Correct. Even self-serve paths need office hours or a buddy — unanswered questions at hour three are where motivation dies."
+    - id: c
+      text: "A FAQ page link in the tour's final step"
+      correct: false
+      explanation: "A FAQ link is a dead end, not an anchor; the principle demands a real person or live office hours the question can reach."
+- id: q6
+  question: "Your onboarding program has a documented dip: half of newcomers stall at the same screen. What does Principle 6 tell you to do?"
+  hint: "Measure first, then fix — in a specific order."
+  choices:
+    - id: a
+      text: "Instrument the path, then fix the biggest measured quit-point before adding new content"
+      correct: true
+      explanation: "Correct. Measure the friction (login success, completion rate, ticket storms) and fix the biggest quit-point before writing another page."
+    - id: b
+      text: "Write an extra handbook chapter explaining that screen"
+      correct: false
+      explanation: "Adding content before measuring is the doctrine's favorite anti-pattern — more pages, same quit-point."
+    - id: c
+      text: "Send everyone a reminder email to read the wiki"
+      correct: false
+      explanation: "Reminder emails treat the symptom; Principle 6 sends you to the instrumentation to find and remove the cause."

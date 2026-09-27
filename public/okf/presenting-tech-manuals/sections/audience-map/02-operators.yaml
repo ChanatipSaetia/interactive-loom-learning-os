@@ -1,0 +1,16 @@
+type: taxonomy-category
+icon: ServerCog
+title: "Operators & Admins"
+subtitle: "SRE, IT support, platform teams"
+color: peach
+description: "People who keep the IT system alive at 2am. They need configuration references, runbooks, and troubleshooting flows more than feature tours."
+details: "Operators read manuals defensively: 'what breaks, how do I see it breaking, and what do I type to fix it?' Present runbooks as decision flows (symptom → diagnosis → remediation), show the actual config keys and environment variables, and demo the monitoring dashboards live. Keep every command copy-pasteable from the docs site permalink."
+analogy: "An aircraft emergency checklist — terse, ordered, unambiguous, and identical every time the cabin altitude warning sounds."
+primaryFocus: "Configuration, monitoring, and incident runbooks"
+inScope:
+  - "Install/upgrade/rollback procedures with exact commands"
+  - "Config file and environment variable reference tables"
+  - "Alert triage flows and common failure symptom tables"
+outOfScope:
+  - "Marketing feature overviews"
+  - "UI walkthroughs of end-user business tasks"

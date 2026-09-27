@@ -1,0 +1,90 @@
+nodes:
+  component:
+    title: "Your Component"
+    category: system
+  meta:
+    title: "Meta Export (default)"
+    category: mechanism
+  story:
+    title: "Story Export (named)"
+    category: concept
+  args:
+    title: "Args & argTypes"
+    category: data
+  csf:
+    title: "Component Story Format (CSF)"
+    category: pattern
+  indexer:
+    title: "Story Indexer"
+    category: process
+  preview:
+    title: "Preview (iframe runtime)"
+    category: system
+  manager:
+    title: "Manager (sidebar & toolbar UI)"
+    category: system
+  controls:
+    title: "Controls Addon"
+    category: mechanism
+  docs:
+    title: "Docs & MDX"
+    category: concept
+  play:
+    title: "Play Function"
+    category: mechanism
+  testrunner:
+    title: "Test Runner (CI)"
+    category: process
+  visual:
+    title: "Visual Regression (Chromatic)"
+    category: process
+  hmr:
+    title: "Dev Server HMR"
+    category: process
+
+edges:
+  - from: csf
+    to: meta
+    label: "file exports"
+  - from: csf
+    to: story
+    label: "file exports"
+  - from: meta
+    to: component
+    label: "binds & documents"
+  - from: story
+    to: meta
+    label: "inherits from"
+  - from: story
+    to: args
+    label: "parameterized by"
+  - from: story
+    to: play
+    label: "may script with"
+  - from: indexer
+    to: csf
+    label: "scans & indexes"
+  - from: preview
+    to: story
+    label: "renders in isolation"
+  - from: preview
+    to: manager
+    label: "embeds as iframe"
+  - from: manager
+    to: indexer
+    label: "builds sidebar from"
+  - from: controls
+    to: args
+    label: "mutates live"
+  - from: docs
+    to: story
+    label: "embeds live examples"
+  - from: hmr
+    to: preview
+    label: "re-renders on save"
+  - from: play
+    to: testrunner
+    label: "executed by"
+  - from: testrunner
+    to: visual
+    label: "feeds snapshots"

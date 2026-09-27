@@ -1,0 +1,84 @@
+- id: "q-vrt"
+  question: "In the Release-Day scenario, what tooling flagged the tooltip z-index regression before merge?"
+  hint: "It compared rendered pixels between builds."
+  choices:
+    - id: "a"
+      text: "End-to-end tests on the marketing homepage"
+      correct: false
+      explanation: "The E2E path rated worst — the homepage button was fine; only component-state coverage found the collision."
+    - id: "b"
+      text: "Visual regression diffing every story snapshot at multiple viewports"
+      correct: true
+      explanation: "Correct. The Tooltip-within-Button story at the tablet viewport produced a pixel diff that blocked the merge."
+    - id: "c"
+      text: "A slower release train schedule"
+      correct: false
+      explanation: "Delaying for manual sweeps scored poorly — it found bugs by luck, not by design."
+
+- id: "q-acceptance"
+  question: "CI visual regression flagged the diff, but the reviewer accepted all pending snapshots to go green. What is the lesson?"
+  hint: "The tool worked; something else failed."
+  choices:
+    - id: "a"
+      text: "Visual regression is useless and should be removed"
+      correct: false
+      explanation: "The tool did its job by flagging the change — abandoning it discards the detection."
+    - id: "b"
+      text: "Baseline acceptance needs owners and review discipline, or the safety net becomes a rubber stamp"
+      correct: true
+      explanation: "Correct. Acceptance policy is part of the testing strategy; unreviewed approvals ship the bug anyway."
+    - id: "c"
+      text: "Play functions should replace all visual testing"
+      correct: false
+      explanation: "Interaction tests catch behavior, not pixel drift — they complement rather than replace snapshot diffing."
+
+- id: "q-play"
+  question: "A Dropdown stops opening on click after a refactor. Which Storybook mechanism catches this behavioral (non-visual) regression in CI?"
+  hint: "It scripts userEvent interactions on a story."
+  choices:
+    - id: "a"
+      text: "A play function asserting the panel appears after userEvent.click, run by the test runner"
+      correct: true
+      explanation: "Correct. Play functions execute headlessly via the Storybook test runner and fail CI when their assertions throw."
+    - id: "b"
+      text: "Autodocs props tables generated from argTypes"
+      correct: false
+      explanation: "Docs describe the API surface; they do not execute interactions."
+    - id: "c"
+      text: "Adding more args to the story"
+      correct: false
+      explanation: "Args change rendered props; only scripted interaction asserts behavior."
+
+- id: "q-runner"
+  question: "What does the Storybook test runner (test-storybook) actually execute in CI?"
+  hint: "It reuses the story catalog rather than duplicating tests."
+  choices:
+    - id: "a"
+      text: "Only unit tests extracted from story files"
+      correct: false
+      explanation: "It does not run unit tests — it boots the built Storybook and drives stories in real browsers."
+    - id: "b"
+      text: "Every story (plus its play function) in headless browsers, failing when assertions throw"
+      correct: true
+      explanation: "Correct. The runner boots the static Storybook build and executes each story as a test case in Playwright or Puppeteer."
+    - id: "c"
+      text: "A linter over the .storybook config directory"
+      correct: false
+      explanation: "Linting is separate; the runner is a browser-driven test executor."
+
+- id: "q-advisor"
+  question: "According to the Test Layer Advisor, your data policy forbids sending component builds to a vendor. What visual-regression path do you pick?"
+  hint: "Snapshots must stay on infrastructure you control."
+  choices:
+    - id: "a"
+      text: "Self-hosted Playwright screenshot diffs on your own CI runners"
+      correct: true
+      explanation: "Correct. Self-hosted capture keeps data sovereignty, at the cost of owning browser fleets and baseline storage."
+    - id: "b"
+      text: "Cloud visual regression with an enterprise NDA"
+      correct: false
+      explanation: "An NDA does not change the constraint — builds still leave your infrastructure."
+    - id: "c"
+      text: "Skip visual regression and rely on Controls exploration"
+      correct: false
+      explanation: "Manual Controls exploration is pre-merge review, not automated regression detection."

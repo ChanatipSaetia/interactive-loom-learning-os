@@ -1,0 +1,84 @@
+- id: "q-csf"
+  question: "In Component Story Format (CSF), how are individual stories declared in a .stories.ts file?"
+  hint: "Think about what kind of JavaScript module a story file is."
+  choices:
+    - id: "a"
+      text: "By calling a global registerStory() registry API"
+      correct: false
+      explanation: "CSF replaced the old registry API — registration happens implicitly through module exports."
+    - id: "b"
+      text: "As named exports of the story file"
+      correct: true
+      explanation: "Correct. Each named export is one story; the default export is the shared meta."
+    - id: "c"
+      text: "As JSON entries in a stories.json manifest"
+      correct: false
+      explanation: "Stories are plain ESM code, not JSON entries — that is what makes them importable and type-checkable."
+
+- id: "q-meta"
+  question: "What does the default export (meta) of a story file declare?"
+  hint: "It describes the component as a whole, not one state."
+  choices:
+    - id: "a"
+      text: "Component-level config such as title, component, and shared argTypes"
+      correct: true
+      explanation: "Correct. Meta is the file-level source of truth that enables sidebar grouping, autodocs props tables, and Controls inference."
+    - id: "b"
+      text: "The props for exactly one rendered state"
+      correct: false
+      explanation: "Per-state props live in each story's args; meta holds file-level configuration."
+    - id: "c"
+      text: "The list of CI jobs to run for this component"
+      correct: false
+      explanation: "Meta is about component documentation and organization, not CI configuration."
+
+- id: "q-args"
+  question: "In the architecture map, Controls mutates what, which then flows into the story?"
+  hint: "It is the data each story uses as props."
+  choices:
+    - id: "a"
+      text: "The decorator chain"
+      correct: false
+      explanation: "Decorators wrap stories with providers; Controls edits a different piece of data."
+    - id: "b"
+      text: "Args"
+      correct: true
+      explanation: "Correct. Controls edits the story's args live, and the preview re-renders with the new props."
+    - id: "c"
+      text: "The story's import statements"
+      correct: false
+      explanation: "Imports never change at runtime; only the args data mutates."
+
+- id: "q-frames"
+  question: "Which two frames make up the Storybook application?"
+  hint: "One shows navigation, the other renders your component."
+  choices:
+    - id: "a"
+      text: "The Manager (sidebar, toolbar, addons panel) and the Preview (iframe that renders stories)"
+      correct: true
+      explanation: "Correct. The Manager is Storybook's chrome; the Preview is a separate runtime that mounts the selected story in an iframe."
+    - id: "b"
+      text: "The Docs tab and the Search modal"
+      correct: false
+      explanation: "Those are features inside the Manager, not the two-frame architecture."
+    - id: "c"
+      text: "The bundler config and the tsconfig"
+      correct: false
+      explanation: "Those are build configuration files, not runtime frames."
+
+- id: "q-decorator"
+  question: "Your component throws because it expects a ThemeProvider ancestor. What is the idiomatic Storybook fix?"
+  hint: "Something wraps the story to supply outside context."
+  choices:
+    - id: "a"
+      text: "Wrap the component's source in a ThemeProvider permanently"
+      correct: false
+      explanation: "That would couple the component to a provider it should receive from its environment."
+    - id: "b"
+      text: "Add a decorator that wraps the story with ThemeProvider"
+      correct: true
+      explanation: "Correct. Decorators re-create the application harness — providers, routers, layout — around the story without changing component code."
+    - id: "c"
+      text: "Disable the story until theming ships"
+      correct: false
+      explanation: "Losing coverage is the opposite of the workshop mindset; decorators exist exactly for this."

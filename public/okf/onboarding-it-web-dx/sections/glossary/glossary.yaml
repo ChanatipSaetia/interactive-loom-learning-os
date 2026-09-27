@@ -1,0 +1,64 @@
+- id: time-to-first-value
+  word: "Time-to-First-Value (TTFV)"
+  pronunciation: "tyme tuh furst val-yoo"
+  category: metric
+  shortDefinition: "How fast a newcomer completes one real, meaningful task — the doctrine's only week-one metric."
+  detailedDefinition: "Measured from day zero (or key issuance for developers) to the first genuine win: a submitted record, a safe production change, a successful API call. Everything else in onboarding is a leading indicator of this number."
+  whyItMatters: "It converts 'onboarding feels fine' into a number you can drive down; teams that instrument it stop writing handbook pages and start removing walls."
+  dialogue:
+    user: "We covered every feature in the kickoff deck!"
+    aiThoughts: "Coverage is not completion; nobody has shipped a real task yet."
+    aiQuestion: "What was the median hours from day zero to each newcomer's first real task?"
+- id: golden-path
+  word: "Golden Path"
+  pronunciation: "gohl-den path"
+  category: doctrine
+  shortDefinition: "The single scripted end-to-end journey every newcomer walks first, chosen to produce a real win."
+  detailedDefinition: "One canonical route through the system — create, configure, run, export — maintained like production code, with deeper optional routes branching only after it succeeds."
+  whyItMatters: "A tour of every button produces fatigue; one deep golden path produces competence, and its completion rate is the sharpest leading indicator of friction."
+- id: pre-boarding
+  word: "Pre-boarding"
+  pronunciation: "pree-bor-ding"
+  category: practice
+  shortDefinition: "Everything done before day one: accounts, licenses, environments, and entitlements provisioned and smoke-tested."
+  detailedDefinition: "Joiner tickets drive SSO group rules and self-serve key minting so the newcomer's first action is work, not a provisioning queue. Production-reach roles get vault-approved grants in the same window."
+  whyItMatters: "Waiting-for-access is the number-one onboarding killer; pre-boarding is Principle 1 made real."
+- id: activation-moment
+  word: "Activation Moment"
+  pronunciation: "ak-tih-vey-shun moh-ment"
+  category: concept
+  shortDefinition: "The deliberately designed 'aha' where the product's value becomes personal for a newcomer."
+  detailedDefinition: "Different per audience: the end user's first real record, the operator's first supervised safe change, the developer's first successful call. It is defined before it is measured, never guessed afterward."
+  whyItMatters: "You cannot shorten time-to-first-value if you never wrote down what 'value' is; the activation moment is the finish line you instrument."
+- id: progressive-disclosure
+  word: "Progressive Disclosure"
+  pronunciation: "pruh-gres-siv dis-kloh-zhur"
+  category: doctrine
+  shortDefinition: "Revealing the next level of complexity only at the moment the newcomer needs it."
+  detailedDefinition: "The opposite of the information firehose: short paths with deeper links, tour steps at the point of confusion, advanced options hidden until the golden path succeeds."
+  whyItMatters: "Every unneeded fact shown early is a quit-point manufactured on purpose; attention is the onboarding budget."
+- id: ticket-storm
+  word: "Ticket Storm"
+  pronunciation: "tik-et storm"
+  category: signal
+  shortDefinition: "A spike of help-channel and support questions from the current newcomer cohort, tagged and trended as a friction signal."
+  detailedDefinition: "Questions are unanswered documentation: where the cohort asks in a burst is precisely where the golden path, tour, or entitlement broke."
+  whyItMatters: "It is the cheapest quit-point detector you have — the newcomers are telling you out loud where they stalled."
+  dialogue:
+    user: "Why is #newest-hires suddenly asking about SSO seventeen times an hour?"
+    aiThoughts: "That is not noise, that is a map."
+    aiQuestion: "What did the day-one smoke test just start failing for everyone?"
+- id: sandbox-quest
+  word: "Sandbox Quest"
+  pronunciation: "sand-boks kwest"
+  category: method
+  shortDefinition: "A graded challenge in a safe, seeded practice environment, ending in a senior-reviewed 'boss task'."
+  detailedDefinition: "The gamified onboarding method: newcomers break the playground happily, climb a quest board of real tasks, and prove competence on the boss task with zero blast radius."
+  whyItMatters: "It converts anxious observation into motivated doing for staff and operators — at the cost of keeping a playground forever fresh."
+- id: human-anchor
+  word: "Human Anchor"
+  pronunciation: "hyoo-mun ang-ker"
+  category: doctrine
+  shortDefinition: "The named human, buddy, or staffed office-hours channel every onboarding path must end at."
+  detailedDefinition: "Even fully self-serve methods route their last resort to a person: office hours, a buddy rota, or a staffed channel. A FAQ link is explicitly not an anchor."
+  whyItMatters: "Unanswered questions at hour three are where motivation dies; the anchor is the doctrine's insurance policy against silent quit-points."

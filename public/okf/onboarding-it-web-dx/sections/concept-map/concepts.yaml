@@ -1,0 +1,134 @@
+nodes:
+  onboarding:
+    title: "Onboarding Craft"
+    category: concept
+  access_first:
+    title: "Access First (Pre-boarding)"
+    category: principle
+  ttfv:
+    title: "Time-to-First-Value"
+    category: metric
+  golden_path:
+    title: "One Golden Path"
+    category: principle
+  progressive_disclosure:
+    title: "Progressive Disclosure"
+    category: principle
+  human_anchor:
+    title: "Human Anchor"
+    category: principle
+  measure_friction:
+    title: "Measure the Friction"
+    category: principle
+  end_users:
+    title: "Web App End Users"
+    category: role
+  staff_operators:
+    title: "Staff & Operators"
+    category: role
+  developers:
+    title: "Developers (DX)"
+    category: role
+  docs_first:
+    title: "Docs-First Handbook"
+    category: method
+  buddy:
+    title: "Buddy Apprenticeship"
+    category: method
+  cohort:
+    title: "Cohort Academy"
+    category: method
+  in_app_tours:
+    title: "Self-Serve In-App Tours"
+    category: method
+  sandbox_quests:
+    title: "Sandbox Quests"
+    category: method
+  provisioning_flow:
+    title: "Day-1 Provisioning Flow"
+    category: process
+  ticket_storm:
+    title: "Ticket Storm"
+    category: signal
+  activation_moment:
+    title: "Activation Moment"
+    category: concept
+  first_api_call:
+    title: "First Successful API Call"
+    category: concept
+  rework_loop:
+    title: "4003 Rework Loop"
+    category: process
+edges:
+  - from: onboarding
+    to: access_first
+    label: "begins with"
+  - from: onboarding
+    to: ttfv
+    label: "is measured by"
+  - from: onboarding
+    to: golden_path
+    label: "routes through"
+  - from: onboarding
+    to: progressive_disclosure
+    label: "paces with"
+  - from: onboarding
+    to: human_anchor
+    label: "backs up with"
+  - from: onboarding
+    to: measure_friction
+    label: "improves by"
+  - from: access_first
+    to: provisioning_flow
+    label: "is executed by"
+  - from: provisioning_flow
+    to: rework_loop
+    label: "fails into"
+  - from: golden_path
+    to: activation_moment
+    label: "targets"
+  - from: ttfv
+    to: activation_moment
+    label: "times the trip to"
+  - from: ttfv
+    to: first_api_call
+    label: "for developers means"
+  - from: measure_friction
+    to: ticket_storm
+    label: "listens for"
+  - from: end_users
+    to: in_app_tours
+    label: "scale via"
+  - from: end_users
+    to: golden_path
+    label: "walk"
+  - from: staff_operators
+    to: buddy
+    label: "climb with"
+  - from: staff_operators
+    to: sandbox_quests
+    label: "practice in"
+  - from: developers
+    to: docs_first
+    label: "self-serve with"
+  - from: developers
+    to: first_api_call
+    label: "activate at"
+  - from: cohort
+    to: sandbox_quests
+    label: "spines with"
+  - from: docs_first
+    to: golden_path
+    label: "documents"
+  - from: human_anchor
+    to: buddy
+    label: "is strongest as"
+  - from: in_app_tours
+    to: progressive_disclosure
+    label: "embody"
+  - from: cohort
+    to: human_anchor
+    label: "guarantees"
+  - from: ticket_storm
+    to: golden_path
+    label: "maps its quit-points"

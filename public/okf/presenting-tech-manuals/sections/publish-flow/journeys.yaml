@@ -1,0 +1,33 @@
+- id: journey_publish
+  label: "Happy Path: Publish"
+  description: "The manual change is reviewed and published to the docs web app"
+  steps:
+    - stepId: evt_committed
+      name: "Changes Committed"
+      description: "The technical writer commits a manual update to the Git repository"
+    - stepId: evt_preview
+      name: "Preview Deployed"
+      description: "CI builds a preview site so the proposed manual can be clicked through"
+    - stepId: evt_reviewed
+      name: "Review Completed"
+      description: "An engineering reviewer checks commands and screenshots against the real system"
+    - stepId: evt_published
+      name: "Docs Published"
+      description: "The docs web app ships the new version under a permanent permalink"
+
+- id: journey_revision
+  label: "Revision Loop"
+  description: "The reviewer finds a stale command and the manual cycles back for revision"
+  steps:
+    - stepId: evt_committed
+      name: "Changes Committed"
+      description: "A manual update lands in the repository"
+    - stepId: evt_preview
+      name: "Preview Deployed"
+      description: "CI deploys the ephemeral preview for inspection"
+    - stepId: evt_reviewed
+      name: "Review Completed"
+      description: "The reviewer spots a command that no longer matches the system"
+    - stepId: evt_revised
+      name: "Content Revised"
+      description: "Content returns to the writer for revision instead of publishing"

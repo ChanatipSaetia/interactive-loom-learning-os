@@ -1,0 +1,9 @@
+hiring_manager:
+  title: "Hiring Manager"
+  desc: "Files the joiner request with role, team, and start date before day one"
+it_operator:
+  title: "IT Access Operator"
+  desc: "Runs the provisioning pipeline and clears access failures by hand"
+newcomer:
+  title: "Newcomer"
+  desc: "The new user, operator, or developer attempting their day-one smoke test"

@@ -1,0 +1,184 @@
+topicId: "kamado-beef"
+topicTitle: "ดินแดนแห่งเปลวไฟเซรามิก: ศิลปะการย่างเนื้อเตา Kamado"
+capitalId: "capital"
+
+nodes:
+  # Ring 0: Capital Center
+  - id: "capital"
+    title: "มหานครเปลวไฟเซรามิก (Kamado Citadel)"
+    type: "capital"
+    status: "unlocked"
+    sectionRef: "intro"
+    description: "จุดเริ่มต้นแห่งการเดินทางสู่การเป็นสุดยอด Pitmaster! เรียนรู้ประวัติศาสตร์ คุณสมบัติของมวลเซรามิก และภาพรวมหลักสูตรการย่างเนื้อ"
+
+  # Track 1: กายวิภาคและการควบคุมไฟ (Anatomy & Airflow Mastery)
+  - id: "sanctuary-anatomy"
+    title: "วิหารแห่งกายวิภาคเตาเซรามิก (Sanctuary of Ceramic Anatomy)"
+    type: "reading_sanctuary"
+    status: "unlocked"
+    unlockedBy:
+      - "capital"
+    sectionRef: "anatomy"
+    healingAmount: 40
+    description: "สำรวจโครงสร้างและกายวิภาคของเตา Kamado ตั้งแต่วาล์วลมล่าง กล่อง Firebox แผ่น Deflector จนถึงฝาครอบเซรามิกหนาพิเศษ"
+    rewards:
+      - id: "relic-fire-control"
+        name: "ศิลาคุมกระแสลม (Aegis of Airflow & Thermal Mass)"
+        icon: "🛡️"
+        description: "ผนึกโบราณแห่งการกักเก็บความร้อนเซรามิก ช่วยป้องกันความร้อนแห้งกระด้างในการเผชิญหน้ากับบอส"
+
+  - id: "quiz-airflow"
+    title: "ด่านทดสอบภูตเถ้าถ่าน (Ash Gremlin Outpost)"
+    type: "quiz_encounter"
+    status: "locked"
+    unlockedBy:
+      - "sanctuary-anatomy"
+    sectionRef: "quiz-airflow"
+    description: "ภูตเถ้าถ่านพยายามอุดตันช่องลมเตา! ตอบคำถามเรื่องกายวิภาคและการคุมลมเตา Kamado ให้ถูกต้องเพื่อเอาชนะมัน"
+    monster:
+      id: "ash-gremlin"
+      name: "ภูตเถ้าถ่านอุดตันลม (Ash Clog Gremlin)"
+      type: "goblin"
+      maxHp: 100
+      damage: 15
+      icon: "👾"
+
+  - id: "tradeoff-fuel"
+    title: "โรงตีเหล็กเลือกเชื้อเพลิงและควัน (Fuel & Smoke Forge)"
+    type: "tradeoff_workshop"
+    status: "locked"
+    unlockedBy:
+      - "quiz-airflow"
+    sectionRef: "tradeoffs"
+    description: "ชั่งน้ำหนักระหว่างถ่านไม้ก้อนธรรมชาติ ถ่านอัดก้อน และไม้รมควันชนิดต่างๆ เพื่อเสริมพลังย่างเนื้อ"
+    tradeoffMapping:
+      heat_output: "damage"
+      burn_duration: "armor"
+      ash_cleanliness: "evasion"
+      flavor_purity: "true_damage"
+
+  - id: "scenario-overheat"
+    title: "เน็กซัสจำลองวิกฤตความร้อนพุ่งเกิน (Overheat Simulation Nexus)"
+    type: "simulation_nexus"
+    status: "locked"
+    unlockedBy:
+      - "tradeoff-fuel"
+    sectionRef: "scenario"
+    healingAmount: 35
+    description: "เผชิญหน้ากับวิกฤตความร้อนเตาพุ่งทะลุ 230°C และตัดสินใจคุมสถานการณ์ด้วยหลักออกซิเจน"
+
+  - id: "flowchart-process"
+    title: "เน็กซัสกระบวนการย่างสเต๊ก Reverse Sear (Reverse Sear Flow Nexus)"
+    type: "simulation_nexus"
+    status: "locked"
+    unlockedBy:
+      - "scenario-overheat"
+    sectionRef: "flowchart"
+    healingAmount: 40
+    description: "จำลองขั้นตอน Event Storming การทำ Reverse Sear Tomahawk สมบูรณ์แบบตั้งแต่จุดเตาจนถึงเสิร์ฟ"
+
+  # Track 2: วิธีการและกระบวนการย่าง (Techniques & Process Track)
+  - id: "sanctuary-taxonomy"
+    title: "หอจดหมายเหตุ 4 สไตล์การย่าง (Spire of Grilling Taxonomy)"
+    type: "archive_spire"
+    status: "unlocked"
+    unlockedBy:
+      - "capital"
+    sectionRef: "taxonomy"
+    healingAmount: 35
+    description: "ศึกษาความแตกต่างของ 4 เทคนิคหลัก: Reverse Sear, Low & Slow, Direct Grill และ Caveman Style"
+    rewards:
+      - id: "relic-reverse-sear"
+        name: "คัมภีร์ย่างย้อนศร (Scroll of Reverse Sear Mastery)"
+        icon: "📜"
+        description: "คัมภีร์ลับในการทำลายขอบเทา (Grey Band) และสร้างเนื้อสีชมพูสม่ำเสมอตั้งแต่ขอบจรดขอบ"
+
+  - id: "reflection-reverse-sear"
+    title: "ห้องผนึกกาลเวลา Reverse Sear (Reverse Sear Decryption Vault)"
+    type: "reflection_decryption"
+    status: "locked"
+    unlockedBy:
+      - "sanctuary-taxonomy"
+    sectionRef: "reflection-reverse-sear"
+    description: "เรียงลำดับขั้นตอนกระบวนการทำ Reverse Sear สเต๊กเนื้อให้ถูกต้องสมบูรณ์แบบก่อนเวลาหมดลง!"
+
+  - id: "sandbox-thermo"
+    title: "ห้องทดลองคำนวณเวลาและอุณหภูมิ (Steak Dynamics Workshop)"
+    type: "tradeoff_workshop"
+    status: "locked"
+    unlockedBy:
+      - "reflection-reverse-sear"
+    sectionRef: "formula-sandbox"
+    description: "ปรับความหนาของเนื้อ อุณหภูมิเตา และระดับความสุก เพื่อคำนวณเวลาอบและอุณหภูมิแกนกลางที่แม่นยำ"
+    tradeoffMapping:
+      pull_temp_c: "armor"
+      target_internal_temp_c: "damage"
+      indirect_time_min: "evasion"
+      resting_time_min: "shield"
+
+  - id: "decision-cuts"
+    title: "หอคอยที่ปรึกษาชิ้นส่วนเนื้อ (Beef Cut Advisor Spire)"
+    type: "archive_spire"
+    status: "locked"
+    unlockedBy:
+      - "sandbox-thermo"
+    sectionRef: "decision-tree"
+    healingAmount: 35
+    description: "วินิจฉัยและเลือกเทคนิคการปรุงที่ลงตัวที่สุดสำหรับ Ribeye, Tomahawk, Picanha, และ Brisket"
+
+  # Track 3: วิทยาศาสตร์อาหารและความชุ่มฉ่ำ (Food Science & Smoke Track)
+  - id: "sanctuary-science"
+    title: "ศิลาความรู้ทางวิทยาศาสตร์อาหาร (Monolith of Food Science)"
+    type: "concept_monolith"
+    status: "unlocked"
+    unlockedBy:
+      - "capital"
+    sectionRef: "concept-map"
+    healingAmount: 35
+    description: "สำรวจแผนผังความสัมพันธ์ของ Thermal Mass, Airflow, Maillard Reaction และ Carryover Cooking"
+    rewards:
+      - id: "relic-maillard"
+        name: "ศิลาอัญมณีเมลลาร์ด (Gem of Maillard & Smoke Chemistry)"
+        icon: "💎"
+        description: "พลังแห่งปฏิกิริยาสร้างเปลือก Crust กรอบสีน้ำตาลทองและโมเลกุลความหอมจากควันไม้ธรรมชาติ"
+
+  - id: "reflection-template"
+    title: "วิหารสังเคราะห์ความร้อนและความฉ่ำ (Thermodynamics Synthesis Crypt)"
+    type: "reflection_decryption"
+    status: "locked"
+    unlockedBy:
+      - "sanctuary-science"
+    sectionRef: "reflection-template"
+    description: "ประกอบเมทริกซ์ความรู้สังเคราะห์หลักการอุ้มน้ำและการแผ่ความร้อนเซรามิกให้สมบูรณ์"
+
+  - id: "flashcards-vocab"
+    title: "เสาหินคลังศัพท์ Pitmaster (Pitmaster Vocabulary Monolith)"
+    type: "concept_monolith"
+    status: "locked"
+    unlockedBy:
+      - "reflection-template"
+    sectionRef: "flashcards"
+    healingAmount: 30
+    description: "ทบทวนคำศัพท์สำคัญ เช่น Maillard, Thin Blue Smoke, Heat Deflector, The Stall และ Carryover Cooking"
+
+  # Final Boss Climax
+  - id: "boss-lair"
+    title: "รังมังกรเนื้อไหม้ไฟแห่งความสุกเกิน (Lair of the Overcooked Smoke Dragon)"
+    type: "boss_lair"
+    status: "locked"
+    unlockedBy:
+      - "flowchart-process"
+      - "decision-cuts"
+      - "flashcards-vocab"
+    description: "มังกรยักษ์แห่งความล้มเหลวในการย่างเนื้อ! ตัวแทนของเนื้อเหนียวแห้ง ขอบเทาหนาเตอะ และเปลือกไหม้ดำ ต้องใช้ทั้ง 3 วัตถุโบราณเพื่อปลดผนึกและพิชิตมัน!"
+    requiredItems:
+      - "relic-fire-control"
+      - "relic-reverse-sear"
+      - "relic-maillard"
+    monster:
+      id: "overcooked-dragon"
+      name: "มังกรเนื้อไหม้ไฟแห้งกระด้าง (Overcooked Smoke Dragon)"
+      type: "boss"
+      maxHp: 260
+      damage: 42
+      icon: "🐲"

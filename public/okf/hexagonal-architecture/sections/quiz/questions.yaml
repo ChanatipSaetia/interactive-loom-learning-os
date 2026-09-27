@@ -1,64 +1,62 @@
-type: quiz
-questions:
-  - id: "q1"
-    question: "What is the primary role of a Driving (Primary) Port in Hexagonal Architecture?"
-    hint: "Think about who initiates execution (inbound vs outbound)."
-    choices:
-      - id: "c1"
-        text: "It exposes SQL queries to external clients."
-        correct: false
-        explanation: "SQL queries belong in database adapters, not in driving ports."
-      - id: "c2"
-        text: "It acts as an inbound contract interface declaring use cases the domain offers to external actors."
-        correct: true
-        explanation: "Driving Ports are inbound interfaces owned by the Application Core that define how external drivers (HTTP Controllers, CLI) can invoke use cases."
-      - id: "c3"
-        text: "It connects the database directly to the HTTP controller."
-        correct: false
-        explanation: "Hexagonal Architecture strictly prohibits connecting HTTP controllers directly to databases."
-      - id: "c4"
-        text: "It parses HTML templates for web pages."
-        correct: false
-        explanation: "HTML parsing is a UI presentation concern, completely outside driving port contracts."
+- id: "q1"
+  question: "What is the primary role of a Driving (Primary) Port in Hexagonal Architecture?"
+  hint: "Think about who initiates execution (inbound vs outbound)."
+  choices:
+    - id: "c1"
+      text: "It exposes SQL queries to external clients."
+      correct: false
+      explanation: "SQL queries belong in database adapters, not in driving ports."
+    - id: "c2"
+      text: "It acts as an inbound contract interface declaring use cases the domain offers to external actors."
+      correct: true
+      explanation: "Driving Ports are inbound interfaces owned by the Application Core that define how external drivers (HTTP Controllers, CLI) can invoke use cases."
+    - id: "c3"
+      text: "It connects the database directly to the HTTP controller."
+      correct: false
+      explanation: "Hexagonal Architecture strictly prohibits connecting HTTP controllers directly to databases."
+    - id: "c4"
+      text: "It parses HTML templates for web pages."
+      correct: false
+      explanation: "HTML parsing is a UI presentation concern, completely outside driving port contracts."
 
-  - id: "q2"
-    question: "Why does Hexagonal Architecture invert dependencies for database access using Driven Ports?"
-    hint: "Consider how domain tests run without booting real SQL databases."
-    choices:
-      - id: "c1"
-        text: "So the database schema determines the domain model."
-        correct: false
-        explanation: "Database schema driving domain models is a anti-pattern that Hexagonal Architecture prevents."
-      - id: "c2"
-        text: "To allow the Domain Core to define its data requirements without depending on concrete ORMs or database drivers."
-        correct: true
-        explanation: "Driven Ports allow the domain logic to specify repository contracts while concrete database adapters implement those contracts outside the hexagon."
-      - id: "c3"
-        text: "To avoid writing unit tests."
-        correct: false
-        explanation: "Dependency inversion makes unit testing significantly easier and faster."
-      - id: "c4"
-        text: "To force all database queries to be written in GraphQL."
-        correct: false
-        explanation: "GraphQL is a web API query layer, unrelated to persistence ports."
+- id: "q2"
+  question: "Why does Hexagonal Architecture invert dependencies for database access using Driven Ports?"
+  hint: "Consider how domain tests run without booting real SQL databases."
+  choices:
+    - id: "c1"
+      text: "So the database schema determines the domain model."
+      correct: false
+      explanation: "Database schema driving domain models is a anti-pattern that Hexagonal Architecture prevents."
+    - id: "c2"
+      text: "To allow the Domain Core to define its data requirements without depending on concrete ORMs or database drivers."
+      correct: true
+      explanation: "Driven Ports allow the domain logic to specify repository contracts while concrete database adapters implement those contracts outside the hexagon."
+    - id: "c3"
+      text: "To avoid writing unit tests."
+      correct: false
+      explanation: "Dependency inversion makes unit testing significantly easier and faster."
+    - id: "c4"
+      text: "To force all database queries to be written in GraphQL."
+      correct: false
+      explanation: "GraphQL is a web API query layer, unrelated to persistence ports."
 
-  - id: "q3"
-    question: "Which component in Hexagonal Architecture is responsible for converting HTTP REST payloads into domain commands?"
-    hint: "Who converts inbound HTTP requests before calling the port?"
-    choices:
-      - id: "c1"
-        text: "Driven Adapter"
-        correct: false
-        explanation: "Driven Adapters handle outbound infrastructure like databases or external web APIs."
-      - id: "c2"
-        text: "Driven Port"
-        correct: false
-        explanation: "Driven Ports are outbound interface definitions, not request handlers."
-      - id: "c3"
-        text: "Driving Adapter"
-        correct: true
-        explanation: "Driving Adapters (such as Express or Spring HTTP controllers) receive external HTTP requests and adapt them to call Driving Port use cases."
-      - id: "c4"
-        text: "Domain Aggregate"
-        correct: false
-        explanation: "Domain Aggregates enforce business rules and consistency, unaware of HTTP protocols."
+- id: "q3"
+  question: "Which component in Hexagonal Architecture is responsible for converting HTTP REST payloads into domain commands?"
+  hint: "Who converts inbound HTTP requests before calling the port?"
+  choices:
+    - id: "c1"
+      text: "Driven Adapter"
+      correct: false
+      explanation: "Driven Adapters handle outbound infrastructure like databases or external web APIs."
+    - id: "c2"
+      text: "Driven Port"
+      correct: false
+      explanation: "Driven Ports are outbound interface definitions, not request handlers."
+    - id: "c3"
+      text: "Driving Adapter"
+      correct: true
+      explanation: "Driving Adapters (such as Express or Spring HTTP controllers) receive external HTTP requests and adapt them to call Driving Port use cases."
+    - id: "c4"
+      text: "Domain Aggregate"
+      correct: false
+      explanation: "Domain Aggregates enforce business rules and consistency, unaware of HTTP protocols."

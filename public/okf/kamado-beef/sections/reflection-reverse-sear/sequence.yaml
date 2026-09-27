@@ -1,0 +1,23 @@
+challenges:
+  - prompt: "เรียงลำดับขั้นตอนการทำสเต๊กแบบ Reverse Sear บนเตา Kamado ให้ถูกต้องตามกระบวนการทำลายขอบเทา (Edge-to-edge pink):"
+    items:
+      - id: "step-prep-setup"
+        text: "1. ปรุงรสเนื้อสเต๊กหนา และเตรียมเตา Kamado ใส่แผ่น Heat Deflector คุมไฟที่ 105-120°C"
+      - id: "step-probe-indirect"
+        text: "2. วางเนื้อลงบนตะแกรง เสียบโพรบวัดอุณหภูมิแกนกลาง และปิดฝาครอบเซรามิก"
+      - id: "step-bake-target"
+        text: "3. อบเนื้อด้วยความร้อนทางอ้อมอย่างช้าๆ จนอุณหภูมิแกนกลางถึงประมาณ 45-48°C"
+      - id: "step-rest-stoke"
+        text: "4. ยกเนื้อออกมาพักชั่วคราว ถอดแผ่น Deflector และเปิดวาล์วลมเร่งอุณหภูมิเตาขึ้นสู่ 300-350°C"
+      - id: "step-high-sear"
+        text: "5. นำเนื้อลง Sear บนเปลวไฟแรงจัดด้านละ 45-60 วินาที เพื่อสร้าง Crust สีน้ำตาลทอง (Maillard Reaction)"
+      - id: "step-final-rest"
+        text: "6. นำเนื้อขึ้นมาพัก (Resting) 5-10 นาที เพื่อให้น้ำในเนื้อกระจายตัวสม่ำเสมอก่อนหั่นเสิร์ฟ"
+
+    solution:
+      - "step-prep-setup"
+      - "step-probe-indirect"
+      - "step-bake-target"
+      - "step-rest-stoke"
+      - "step-high-sear"
+      - "step-final-rest"

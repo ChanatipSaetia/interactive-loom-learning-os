@@ -1,0 +1,16 @@
+type: taxonomy-category
+icon: Users
+title: "End Users"
+subtitle: "Business users & customers"
+color: green
+description: "People who complete business tasks in the Web App day to day and need the manual to get unstuck in under two minutes."
+details: "End users do not care which database backs the app. They need task-oriented walkthroughs: 'How do I export the monthly invoice report?' Show annotated screenshots of the real UI, name the exact buttons to click, and state where the permanent permalink to that page lives. Every click you skip in the slides is a support ticket you create later."
+analogy: "A GPS navigation app — it never explains how the engine works; it says 'turn left in 200 meters' at exactly the right moment."
+primaryFocus: "Task-oriented walkthroughs of real UI screens"
+inScope:
+  - "Step-by-step happy paths for the top everyday tasks"
+  - "Annotated screenshots with numbered callouts on exact buttons"
+  - "FAQ and 'what do I do when this error appears' pages"
+outOfScope:
+  - "Internal microservice architecture diagrams"
+  - "API request/response payload formats"

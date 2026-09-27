@@ -1,0 +1,96 @@
+- id: q1
+  question: "Which is a documented CON of the Docs-First Handbook method?"
+  hint: "Think about what nobody can force a reader to do."
+  choices:
+    - id: a
+      text: "It cannot teach judgment, policy, or the edge cases between the lines"
+      correct: true
+      explanation: "Correct. The method card lists 'no human anchor for the questions between the lines' — handbooks tell you how to fish but not which lake, and confused readers quit silently."
+    - id: b
+      text: "It requires a certified instructor per learner"
+      correct: false
+      explanation: "Instructor cost belongs to Cohort Academy and Buddy Apprenticeship; the handbook's marginal cost per learner is near zero."
+    - id: c
+      text: "It is calendar-locked to a quarterly bootcamp"
+      correct: false
+      explanation: "Calendar-locking is the Cohort Academy con; handbooks are readable any time of day, which is exactly their strength."
+- id: q2
+  question: "Your platform team must onboard hundreds of thousands of free-tier developers. Which method's pros make it the only one that scales?"
+  hint: "Near-zero marginal cost per learner, and it ships in the product."
+  choices:
+    - id: a
+      text: "Buddy Apprenticeship — pairing every developer with a staff engineer"
+      correct: false
+      explanation: "Buddy is explicitly the method that does not scale: one or two newcomers per busy senior, ever."
+    - id: b
+      text: "Self-Serve In-App Tours / self-serve checklists and playgrounds in the product"
+      correct: true
+      explanation: "Correct. In-product self-serve teaching carries near-zero marginal cost per learner and reaches every user instantly — the only option at hundred-thousand scale."
+    - id: c
+      text: "Cohort Academy — run bigger and bigger bootcamps"
+      correct: false
+      explanation: "Cohorts are high-cost per head and calendar-locked; scaling bootcamps to a mass long-tail is the documented con."
+- id: q3
+  question: "A new SRE joins the on-call rotation. The team chooses a named senior engineer to shadow first, then watch her drive real incidents. Which method, and which con should the team guard against?"
+  hint: "The method is flight-school dual controls; the con is paid in senior focus."
+  choices:
+    - id: a
+      text: "Buddy Apprenticeship — guard against burning out the busiest senior volunteer"
+      correct: true
+      explanation: "Correct. Shadow-then-drive is Buddy Apprenticeship; its taught cons are the focus tax on senior staff and informal buddies quietly burning out."
+    - id: b
+      text: "Sandbox Quests — guard against seeded data going stale"
+      correct: false
+      explanation: "Real incidents with a watching senior are not a safe sandbox; the described method is pairing, and its risk is helper burnout, not stale seed data."
+    - id: c
+      text: "Docs-First Handbook — guard against the wiki rotting"
+      correct: false
+      explanation: "A named human shadowing and watching is the definition of apprenticeship, not handbooks; wiki rot is the docs-first con."
+- id: q4
+  question: "After a UI redesign, half your activation checklist steps point at buttons that no longer exist. This is the documented con of which method?"
+  hint: "The method that teaches inside the artifact is fragile to the artifact changing."
+  choices:
+    - id: a
+      text: "Self-Serve In-App Tours — UI-churn fragility"
+      correct: true
+      explanation: "Correct. Tour fragility against UI churn is the taught con: overlay steps and checklists mispoint the moment the interface moves."
+    - id: b
+      text: "Cohort Academy — instructor knowledge going stale"
+      correct: false
+      explanation: "Instructor staleness is a cohort con, but mispointing checklist steps after a redesign is the in-app tour's signature failure."
+    - id: c
+      text: "Buddy Apprenticeship — buddies teaching old habits"
+      correct: false
+      explanation: "Buddies passing on old habits is not what broke here; clickable overlays anchored to removed UI is the documented tour fragility."
+- id: q5
+  question: "A company wants onboarding to be 'the most fun, hands-on week of your life' for 30 platform-engineer campus hires, with a budget and a six-week runway. Which method's pros fit best?"
+  hint: "Safe-to-break playground, quest board, final boss task."
+  choices:
+    - id: a
+      text: "Sandbox Quests — safe failure, high motivation, objective graded competence"
+      correct: true
+      explanation: "Correct. Gamified sandbox quests deliver zero-blast-radius practice and motivating graded challenges — the documented pros — and a budgeted batch of 30 with runway fits its high build cost."
+    - id: b
+      text: "Docs-First Handbook — print the quest descriptions"
+      correct: false
+      explanation: "Handbooks are the passive low-cost backbone; the described experience — breaking a seeded playground and beating a boss task — is the sandbox quest method."
+    - id: c
+      text: "Self-Serve In-App Tours — because tours are free"
+      correct: false
+      explanation: "Tours teach today's task in the live product; the cohort of 30 with budget and runway is the classic sandbox-quest fit, quests and all."
+- id: q6
+  question: "According to the method cards, what is the recommended way to use Docs-First handbooks?"
+  hint: "Read the verdict line."
+  choices:
+    - id: a
+      text: "As the backbone every other method links back to — never the only method"
+      correct: true
+      explanation: "Correct. The verdict: durable reference backbone, but passive on its own — combine it with tours, buddies, or cohorts."
+    - id: b
+      text: "As the sole onboarding method for developer audiences"
+      correct: false
+      explanation: "The card explicitly warns 'never the only method' — handbooks have no human anchor and nothing forces engagement."
+    - id: c
+      text: "Only for operators, never for end users"
+      correct: false
+      explanation: "The card assigns no audience restriction; its rule is about being a backbone, not a solo door."

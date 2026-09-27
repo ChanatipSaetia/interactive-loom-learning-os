@@ -1,0 +1,16 @@
+type: taxonomy-category
+icon: Footprints
+title: "In-App & In-Code Guided Tours"
+subtitle: "Intro.js · Shepherd · VS Code Code Tour"
+color: yellow
+description: "Teach inside the artifact itself: overlay step-by-step tours on the running Web App, or pin narrated steps to real files in the repository."
+details: "Intro.js and Shepherd.js render highlight-and-explain overlay tours directly on your Web App screens — perfect for self-serve onboarding that never goes stale between releases. VS Code Code Tour ships .tour files in the repo that walk a developer through the manual's example project file by file, line by line. The presentation hands off into the tour instead of ending in a blank slide."
+analogy: "A museum audio guide that starts talking when you walk into the actual room, instead of a slideshow about the museum."
+primaryFocus: "Self-serve guided learning embedded in the product or repo"
+inScope:
+  - "Intro.js / Shepherd overlay walkthroughs on live Web App screens"
+  - "VS Code Code Tour (.tour) step files anchored to repository files"
+  - "Product tour copy written in the same markdown pipeline as the manual"
+outOfScope:
+  - "Front-facing keynote presentation delivery"
+  - "Video editing suites (see Recording & Async Demos)"

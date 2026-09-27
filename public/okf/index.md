@@ -10,6 +10,7 @@ okf_version: "0.1"
 * [Mutual TLS (mTLS) Security & Protocol Architecture](mtls/index.md) — Mutual authentication, TLS 1.3 handshakes, and SPIFFE identity
 * [PixiJS — 2D WebGL/WebGPU Rendering Engine](pixijs/index.md) — Master hardware-accelerated 2D graphics, scene graphs, draw-call batching, and GPU render pipelines
 * [PixiJS Filters & Post-Processing Shaders](pixijs-filters/index.md) — Master GPU post-processing, custom fragment shaders, multi-pass convolution blurs, displacement maps, and FilterSystem architecture
+* [Storybook — The Component Workshop](storybook/index.md) — Develop, document, and test UI components in isolation with stories, Controls, and visual regression safety nets
 * [System Design](system-design/index.md) — Learn scalable architecture fundamentals, trade-offs, and design patterns
 
 ## Behavioral Design
@@ -29,9 +30,12 @@ okf_version: "0.1"
 
 ## Cooking
 * [ทุเรียนทอด (Fried Durian)](fried-durian/index.md) — เรียนรู้วิธีทำขนมทุเรียนทอดกรอบอร่อยแบบไทย
+* [การย่างเนื้อด้วยเตา Kamado (Kamado Beef Grilling)](kamado-beef/index.md) — เรียนรู้ศาสตร์และศิลป์การย่างเนื้อพรีเมียมด้วยเตาเซรามิก Kamado เทคนิค Reverse Sear และวิทยาศาสตร์ความร้อน
 
 ## Project Management
 * [IT Project Management & Meetings](pm-and-meetings/index.md) — Learn why project management is necessary and how to run effective, lean meetings without wasting developers' focus time.
+* [Presenting Tech Manuals](presenting-tech-manuals/index.md) — Present IT system, Web App, and Developer Experience manuals with markdown decks, docs-as-code platforms, and live demo craft.
+* [Onboarding Craft](onboarding-it-web-dx/index.md) — Master onboarding principles for IT systems, Web Apps, and Developer Experience with five methods and their trade-offs.
 
 ## History
 * [ประวัติศาสตร์โลกเบื้องต้น (Basic World History)](world-history/index.md) — สำรวจวิวัฒนาการมนุษยชาติ กำเนิดอารยธรรมโบราณ ยุคกลาง เรเนซองส์ และการปฏิวัติอุตสาหกรรม

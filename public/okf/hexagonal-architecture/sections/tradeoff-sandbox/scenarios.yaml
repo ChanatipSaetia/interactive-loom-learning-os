@@ -1,71 +1,69 @@
-type: tradeoff-sandbox
-scenarios:
-  - id: "architecture-choice"
-    title: "System Architecture Pattern Selection"
-    description: "Compare structural trade-offs when building a core financial transaction engine."
-    metrics:
-      - id: "unit_testability"
-        label: "In-Memory Unit Testability"
-        baseValue: 50
-        min: 0
-        max: 100
-      - id: "framework_decoupling"
-        label: "Framework Decoupling"
-        baseValue: 50
-        min: 0
-        max: 100
-      - id: "initial_setup_speed"
-        label: "Initial Prototype Speed"
-        baseValue: 50
-        min: 0
-        max: 100
-      - id: "codebase_indirection"
-        label: "Low Indirection Complexity"
-        baseValue: 50
-        min: 0
-        max: 100
-    steps:
-      - id: "pattern-step"
-        title: "Choose Architectural Pattern"
-        description: "Select how domain logic and external infrastructure dependencies are organized."
-        choices:
-          - id: "hexagonal"
-            label: "Hexagonal Architecture (Ports & Adapters)"
-            description: "Strict isolation of Domain Core via Port interfaces and Adapter implementations."
-            metrics:
-              unit_testability: 95
-              framework_decoupling: 98
-              initial_setup_speed: 60
-              codebase_indirection: 55
-            pros:
-              - title: "In-Memory Testability"
-                description: "100% in-memory domain unit testability without DB or HTTP mocks"
-              - title: "Painless Migrations"
-                description: "Effortless database or framework migrations"
-              - title: "Pure Domain Logic"
-                description: "Domain rules stay pure and readable with zero framework imports"
-            cons:
-              - title: "Interface Indirection"
-                description: "Requires interface indirection and DTO mapping layers"
-              - title: "Setup Boilerplate"
-                description: "Slightly higher initial project setup cost"
-          - id: "layered-monolith"
-            label: "Traditional Layered Monolith (Controller → Service → Repository)"
-            description: "Direct top-down dependencies where Controller calls Service, which calls DB ORM directly."
-            metrics:
-              unit_testability: 50
-              framework_decoupling: 30
-              initial_setup_speed: 90
-              codebase_indirection: 90
-            pros:
-              - title: "Fast CRUD Bootstrapping"
-                description: "Fastest initial CRUD bootstrapping"
-              - title: "Low Indirection"
-                description: "Fewer files and zero interface indirection"
-            cons:
-              - title: "ORM Leakage"
-                description: "Database ORM entity leaks directly into business logic"
-              - title: "Heavy Test Setups"
-                description: "Requires mock databases or heavy container setups for testing"
-              - title: "Tightly Coupled Dependencies"
-                description: "Hard to migrate frameworks or database providers later"
+- id: "architecture-choice"
+  title: "System Architecture Pattern Selection"
+  description: "Compare structural trade-offs when building a core financial transaction engine."
+  metrics:
+    - id: "unit_testability"
+      label: "In-Memory Unit Testability"
+      baseValue: 50
+      min: 0
+      max: 100
+    - id: "framework_decoupling"
+      label: "Framework Decoupling"
+      baseValue: 50
+      min: 0
+      max: 100
+    - id: "initial_setup_speed"
+      label: "Initial Prototype Speed"
+      baseValue: 50
+      min: 0
+      max: 100
+    - id: "codebase_indirection"
+      label: "Low Indirection Complexity"
+      baseValue: 50
+      min: 0
+      max: 100
+  steps:
+    - id: "pattern-step"
+      title: "Choose Architectural Pattern"
+      description: "Select how domain logic and external infrastructure dependencies are organized."
+      choices:
+        - id: "hexagonal"
+          label: "Hexagonal Architecture (Ports & Adapters)"
+          description: "Strict isolation of Domain Core via Port interfaces and Adapter implementations."
+          metrics:
+            unit_testability: 95
+            framework_decoupling: 98
+            initial_setup_speed: 60
+            codebase_indirection: 55
+          pros:
+            - title: "In-Memory Testability"
+              description: "100% in-memory domain unit testability without DB or HTTP mocks"
+            - title: "Painless Migrations"
+              description: "Effortless database or framework migrations"
+            - title: "Pure Domain Logic"
+              description: "Domain rules stay pure and readable with zero framework imports"
+          cons:
+            - title: "Interface Indirection"
+              description: "Requires interface indirection and DTO mapping layers"
+            - title: "Setup Boilerplate"
+              description: "Slightly higher initial project setup cost"
+        - id: "layered-monolith"
+          label: "Traditional Layered Monolith (Controller → Service → Repository)"
+          description: "Direct top-down dependencies where Controller calls Service, which calls DB ORM directly."
+          metrics:
+            unit_testability: 50
+            framework_decoupling: 30
+            initial_setup_speed: 90
+            codebase_indirection: 90
+          pros:
+            - title: "Fast CRUD Bootstrapping"
+              description: "Fastest initial CRUD bootstrapping"
+            - title: "Low Indirection"
+              description: "Fewer files and zero interface indirection"
+          cons:
+            - title: "ORM Leakage"
+              description: "Database ORM entity leaks directly into business logic"
+            - title: "Heavy Test Setups"
+              description: "Requires mock databases or heavy container setups for testing"
+            - title: "Tightly Coupled Dependencies"
+              description: "Hard to migrate frameworks or database providers later"

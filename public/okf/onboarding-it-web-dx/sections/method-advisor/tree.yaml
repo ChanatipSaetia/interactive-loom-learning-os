@@ -1,0 +1,89 @@
+id: method-advisor
+title: "Which Onboarding Method Fits Your Crowd?"
+root: audience
+nodes:
+  audience:
+    prompt: "Who is being onboarded right now?"
+    choices:
+      - id: end-users
+        text: "Web App end users doing business tasks"
+        next: user-scale
+        rationale: "Their first value is a successful task inside the product."
+      - id: staff
+        text: "Internal staff & operators running the IT system"
+        next: staff-risk
+        rationale: "Their journey is a supervised climb to trusted production access."
+      - id: developers
+        text: "Developers integrating with the platform"
+        next: rec-devs
+        rationale: "They self-onboard or not at all; the product is the onboarding."
+  user-scale:
+    prompt: "Roughly how many end users arrive per month, and how often does the UI change?"
+    choices:
+      - id: many-stable
+        text: "Many users each month; UI evolves slowly"
+        next: rec-tours
+        recommended: true
+        rationale: "Self-serve tours scale at near-zero marginal cost and stay fresh between releases."
+      - id: many-churny
+        text: "Many users each month; UI churns every sprint"
+        next: rec-tours-docs
+        rationale: "Overlay tours mispoint when the interface moves fast; anchor them to searchable docs."
+      - id: few-highvalue
+        text: "A few high-value accounts that expect a white-glove start"
+        next: rec-buddy-users
+        rationale: "At low volume, a human success onboarding beats any software tour."
+  rec-tours:
+    leaf:
+      recommendation: "Self-serve in-app checklists and first-run tours driving one golden-path task, with sample data so the app is never a blank page."
+      explanation: "The in-app tour method's taught pros — near-zero marginal cost, teach-at-the-moment-of-need, instant fixes shipped to everyone — fit a large, stable audience. Instrument completion and drop-off per the Measure-the-Friction principle."
+      tradeoffs:
+        - "Upfront engineering cost for the tour layer"
+        - "Needs a human anchor (office hours or a channel) for the questions tours cannot answer"
+  rec-tours-docs:
+    leaf:
+      recommendation: "Lightweight in-app checklists for the golden path only, plus a docs-as-code handbook carrying the depth, linked at the point of need."
+      explanation: "Tour fragility against UI churn is the documented con: keep the overlay surface tiny and let searchable, CI-owned docs absorb the change velocity."
+      tradeoffs:
+        - "Docs need a CI-owning maintainer or they rot"
+        - "Two artifacts to keep pointed at the same golden path"
+  rec-buddy-users:
+    leaf:
+      recommendation: "Buddy-style live onboarding sessions for each account, recorded and clipped into the handbook, with a self-serve tour left behind for their teammates."
+      explanation: "Apprenticeship's pros — tacit knowledge, trust, highest retention — justify its focus tax only when each account is worth the hours. The recording amortizes the cost into self-serve assets."
+      tradeoffs:
+        - "Does not scale past a handful of accounts"
+        - "Quality varies with the people skills of whoever runs the session"
+  staff-risk:
+    prompt: "What is the blast radius of a mistake by this role in their first month?"
+    choices:
+      - id: low-risk
+        text: "Low — sandboxed tools, no production reach"
+        next: rec-quests-staff
+        rationale: "Safe-to-break practice is free motivation when mistakes are cheap."
+      - id: high-risk
+        text: "High — production access, customer data, or money movement"
+        next: rec-buddy-ops
+        recommended: true
+        rationale: "Flight school, not freestyle: dual controls before the first solo."
+  rec-quests-staff:
+    leaf:
+      recommendation: "Sandbox quests: a seeded practice environment with a graded quest board ending in a boss task reviewed by a senior."
+      explanation: "Sandbox quests deliver zero-blast-radius practice and objective competence — the taught pros — and the boss-task review supplies the human anchor."
+      tradeoffs:
+        - "Building and re-seeding the playground is the costliest method to keep fresh"
+        - "Shallow quests become pixel-art chores; design the boss task with care"
+  rec-buddy-ops:
+    leaf:
+      recommendation: "Buddy apprenticeship with graduated privileges: shadow incidents, then drive with a witness, then the supervised pager — with runbooks as the spine."
+      explanation: "Apprenticeship carries the escalation culture no handbook holds, and graded real tasks convert reading into trusted competence. Cap each buddy at two newcomers to dodge the burnout con."
+      tradeoffs:
+        - "Real focus tax on senior operators"
+        - "Buddy quality varies; brief the buddies on what to teach"
+  rec-devs:
+    leaf:
+      recommendation: "Self-serve DX path: keys minted in minutes, a CI-tested quickstart to a first successful call in under fifteen, a seeded sandbox with test data, and generated API references."
+      explanation: "Developers self-onboard or leave quietly; time-to-first-successful-API-call is their first value. Docs-first is the backbone here, but every step must be runnable, not readable."
+      tradeoffs:
+        - "Quickstarts need CI tests or they rot within a sprint"
+        - "Sandbox data seeding is an ongoing tax"

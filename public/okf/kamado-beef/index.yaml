@@ -1,0 +1,29 @@
+category: Cooking
+tags:
+  - kamado
+  - beef
+  - steak
+  - barbecue
+  - grilling
+  - food-science
+related:
+  - sections/intro/content.yaml
+  - sections/anatomy/matrix.yaml
+  - sections/quiz-airflow/questions.yaml
+  - sections/taxonomy/01-reverse-sear.yaml
+  - sections/taxonomy/02-low-and-slow.yaml
+  - sections/taxonomy/03-direct-grill.yaml
+  - sections/taxonomy/04-caveman-style.yaml
+  - sections/reflection-reverse-sear/sequence.yaml
+  - sections/flowchart/actors.yaml
+  - sections/flowchart/systems.yaml
+  - sections/flowchart/steps.yaml
+  - sections/flowchart/journeys.yaml
+  - sections/concept-map/concepts.yaml
+  - sections/reflection-template/template.yaml
+  - sections/tradeoffs/01-fuel-choice.yaml
+  - sections/tradeoffs/02-wood-flavor.yaml
+  - sections/formula-sandbox/sandbox.yaml
+  - sections/scenario/scenarios.yaml
+  - sections/decision-tree/tree.yaml
+  - sections/flashcards/glossary.yaml

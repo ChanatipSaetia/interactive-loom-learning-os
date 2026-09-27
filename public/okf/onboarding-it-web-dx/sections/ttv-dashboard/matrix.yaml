@@ -1,0 +1,102 @@
+type: pillar-layer
+title: "The Time-to-Value Dashboard Stack"
+description: "Onboarding measurement as a Lego stack: raw instrumentation on the bottom, friction diagnostics above it, leading indicators, and the north-star time-to-first-value on top."
+
+layers:
+  - id: "l-instrument"
+    title: "Instrumentation"
+    description: "Raw events and identity stitching that make the newcomer's journey visible at all."
+
+  - id: "l-friction"
+    title: "Friction Diagnostics"
+    description: "Where newcomers stall, rage-quit, and file tickets — the quit-point detector."
+
+  - id: "l-leading"
+    title: "Leading Indicators"
+    description: "Day-one and week-one signals that predict whether first value will arrive."
+
+  - id: "l-northstar"
+    title: "North Star"
+    description: "The one number the doctrine says matters: how fast a newcomer completes something real."
+
+matrix_blocks:
+  - id: "b-events"
+    title: "Product & Setup Event Streams"
+    description: "Logins, key creation, first API call, checklist steps — instrumented like any conversion funnel."
+    col_offset: 0
+    layer_id: "l-instrument"
+    col_span: 2
+    row_span: 1
+    color: teal
+
+  - id: "b-identity"
+    title: "Joiner Identity Stitching"
+    description: "Tying HR joiner records to product accounts so every newcomer's clock starts at day zero."
+    col_offset: 2
+    layer_id: "l-instrument"
+    col_span: 2
+    row_span: 1
+    color: sky
+
+  - id: "b-tickets"
+    title: "Ticket Storm Detector"
+    description: "Support and help-channel volume tagged by newcomer cohort — questions are unanswered documentation."
+    col_offset: 0
+    layer_id: "l-friction"
+    col_span: 2
+    row_span: 1
+    color: red
+
+  - id: "b-dropoff"
+    title: "Funnel Drop-off Map"
+    description: "Per-step quit-points in signup, setup, and the golden path, ranked by who you are losing."
+    col_offset: 2
+    layer_id: "l-friction"
+    col_span: 2
+    row_span: 1
+    color: peach
+
+  - id: "b-day1"
+    title: "Day-1 Login Success"
+    description: "Percentage of newcomers who reach a working, license-complete workspace on the first day."
+    col_offset: 0
+    layer_id: "l-leading"
+    col_span: 1
+    row_span: 1
+    color: green
+
+  - id: "b-goldenpath"
+    title: "Golden Path Completion"
+    description: "Share of newcomers who finish the one canonical journey in week one."
+    col_offset: 1
+    layer_id: "l-leading"
+    col_span: 1
+    row_span: 1
+    color: green
+
+  - id: "b-firstcall"
+    title: "First-Call Time (DX)"
+    description: "Minutes from key issuance to first successful API call on a clean machine."
+    col_offset: 2
+    layer_id: "l-leading"
+    col_span: 2
+    row_span: 1
+    color: yellow
+
+  - id: "b-ttfv"
+    title: "Time-to-First-Value"
+    description: "Hours from day zero to one real, meaningful completed task — the north star every layer feeds."
+    col_offset: 0
+    layer_id: "l-northstar"
+    col_span: 2
+    row_span: 1
+    color: mauve
+
+  - id: "b-activation"
+    title: "Activation Moment Definition"
+    description: "The explicitly designed 'aha' per audience: first record, first safe change, first successful call."
+    col_offset: 2
+    layer_id: "l-northstar"
+    col_span: 2
+    row_span: 1
+    color: mauve

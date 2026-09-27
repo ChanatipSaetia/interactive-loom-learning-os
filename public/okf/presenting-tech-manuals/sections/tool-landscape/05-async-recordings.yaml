@@ -1,0 +1,16 @@
+type: taxonomy-category
+icon: Video
+title: "Screen Recording & Async Demos"
+subtitle: "OBS Studio · embedded clips"
+color: red
+description: "Record the walkthrough once at high fidelity; reuse it as the live-demo fallback clip, the async manual for absent colleagues, and the GIF embedded in the docs page."
+details: "OBS Studio records the real product UI with microphone narration for free and produces the pre-recorded fallback clip every Stage 4 live demo must carry. A three-minute cut of the same recording becomes the async manual for people in other time zones, and a trimmed GIF answers the question inside the docs page itself — no 'meeting recording' 47-minute graveyard."
+analogy: "A stunt double standing by for the dangerous scene — same shot, zero risk of the live staging site freezing on camera."
+primaryFocus: "One recording, three lives: fallback clip, async manual, docs GIF"
+inScope:
+  - "OBS Studio screen + microphone capture of the real UI"
+  - "Short clips embedded in the docs site next to the written steps"
+  - "The pre-recorded fallback clip loaded before every live demo"
+outOfScope:
+  - "Interactive clickable simulation tools"
+  - "Static annotated screenshots (cheaper, but a different instrument)"

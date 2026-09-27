@@ -1,0 +1,17 @@
+type: taxonomy-category
+icon: BookOpen
+title: "Docs-First Handbook"
+subtitle: "Wikis, handbooks & runbooks"
+color: green
+description: "The classic: a written, searchable path — quickstart, handbook, runbooks — that newcomers read and follow at their own pace."
+details: "PROS: cheapest per learner and infinitely reusable; searchable and versionable; survives every hire and reorg; scales to any headcount without scheduling. CONS: passive — nothing forces engagement, and 'did you read the wiki?' is the epitaph of a thousand failed onboardings; rots within a sprint if not owned in CI; tells you how to fish but not which lake; zero human connection, so confused readers quit silently. Verdict: the backbone every other method links back to, but never the only method."
+analogy: "A well-written restaurant menu: necessary, referenceable, cheap to reprint — but nobody learns to cook from the menu alone."
+primaryFocus: "Self-paced, searchable written path"
+inScope:
+  - "PRO — near-zero marginal cost per new learner, scales to thousands"
+  - "PRO — searchable, versioned, and reviewable like code (docs-as-code)"
+  - "PRO — the durable reference every other method points to"
+outOfScope:
+  - "CON — passive: no engagement guarantee, quiet quit-points"
+  - "CON — rots fast without a CI-owned maintainer"
+  - "CON — no human anchor for the questions between the lines"

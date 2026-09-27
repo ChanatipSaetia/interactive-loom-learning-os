@@ -1,0 +1,54 @@
+- type: linear
+  id: step_commit
+  initiatedBy: doc_writer
+  policy: "On manual content change"
+  command: "Commit manual update"
+  handledBy: git_repo
+  resultEvents:
+    - id: evt_committed
+      title: "Changes Committed"
+  continuesAs: step_preview
+
+- type: linear
+  id: step_preview
+  policy: "On pull request opened"
+  command: "Build preview site"
+  handledBy: ci_pipeline
+  delegatesTo: preview_host
+  resultEvents:
+    - id: evt_preview
+      title: "Preview Deployed"
+  continuesAs: step_review
+
+- type: linear
+  id: step_review
+  initiatedBy: reviewer
+  policy: "On preview ready"
+  command: "Review pull request"
+  handledBy: preview_host
+  resultEvents:
+    - id: evt_reviewed
+      title: "Review Completed"
+  continuesAs: step_outcome
+
+- type: branch
+  id: step_outcome
+  event: evt_reviewed
+  branches:
+    - id: branch_publish
+      label: "Approved"
+      policy: "If review approved"
+      command: "Publish release"
+      handledBy: docs_site
+      resultEvents:
+        - id: evt_published
+          title: "Docs Published"
+    - id: branch_revise
+      label: "Changes requested"
+      dashed: true
+      policy: "If review requests changes"
+      command: "Revise content in repo"
+      handledBy: git_repo
+      resultEvents:
+        - id: evt_revised
+          title: "Content Revised"

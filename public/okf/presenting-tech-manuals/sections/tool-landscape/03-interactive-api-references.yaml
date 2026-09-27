@@ -1,0 +1,16 @@
+type: taxonomy-category
+icon: Plug
+title: "Interactive API References & Playgrounds"
+subtitle: "Swagger UI · Redoc · Storybook"
+color: sky
+description: "For developer-facing manuals: render the API itself as the documentation so consumers read, try, and trust the real contract instead of a stale screenshot."
+details: "Swagger UI renders an OpenAPI spec as an explorable, 'try it now' reference page. Redoc produces a clean three-column readable reference from the same spec. Storybook turns each UI component or SDK usage example into an interactive, isolated playground. In a DX presentation, opening the live playground IS the demo — the manual cannot be out of date because it is generated from the code."
+analogy: "A test drive instead of a brochure about the car — the reference is the road."
+primaryFocus: "Executable, always-current reference documentation from specs"
+inScope:
+  - "Swagger UI interactive API consoles from OpenAPI specs"
+  - "Redoc rendered API references"
+  - "Storybook component & SDK example playgrounds"
+outOfScope:
+  - "Narrative onboarding prose (put it in the docs site and link over)"
+  - "End-user UI task walkthroughs"

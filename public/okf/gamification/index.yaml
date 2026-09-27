@@ -8,20 +8,20 @@ tags:
 related:
   - sections/intro/content.yaml
   - sections/core-mechanics/items.yaml
-  - sections/octalysis/cd1-epic-meaning.yaml
-  - sections/octalysis/cd2-development.yaml
-  - sections/octalysis/cd3-creativity.yaml
-  - sections/octalysis/cd4-ownership.yaml
-  - sections/octalysis/cd5-social.yaml
-  - sections/octalysis/cd6-scarcity.yaml
-  - sections/octalysis/cd7-unpredictability.yaml
-  - sections/octalysis/cd8-loss.yaml
+  - sections/octalysis/01-cd1-epic-meaning.yaml
+  - sections/octalysis/02-cd2-development.yaml
+  - sections/octalysis/03-cd3-creativity.yaml
+  - sections/octalysis/04-cd4-ownership.yaml
+  - sections/octalysis/05-cd5-social.yaml
+  - sections/octalysis/06-cd6-scarcity.yaml
+  - sections/octalysis/07-cd7-unpredictability.yaml
+  - sections/octalysis/08-cd8-loss.yaml
   - sections/reward-loop/actors.yaml
   - sections/reward-loop/systems.yaml
   - sections/reward-loop/steps.yaml
   - sections/reward-loop/journeys.yaml
-  - sections/tradeoffs/learning-app.yaml
-  - sections/tradeoffs/employee-training.yaml
+  - sections/tradeoffs/01-learning-app.yaml
+  - sections/tradeoffs/02-employee-training.yaml
   - sections/decision-tree/tree.yaml
   - sections/scenario/scenarios.yaml
   - sections/reflection-sequence/sequence.yaml

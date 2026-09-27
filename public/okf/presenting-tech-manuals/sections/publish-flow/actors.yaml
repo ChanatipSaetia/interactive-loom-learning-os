@@ -1,0 +1,6 @@
+doc_writer:
+  title: "Technical Writer"
+  desc: "Authors and revises the manual pages in markdown"
+reviewer:
+  title: "Engineering Reviewer"
+  desc: "Verifies commands, config keys, and screenshots against the real system"

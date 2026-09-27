@@ -1,0 +1,88 @@
+id: fuel-choice
+title: "การเลือกชนิดเชื้อเพลิงสำหรับเตา Kamado (Fuel Selection)"
+description: "ประเมินและเลือกประเภทถ่านที่เหมาะสมกับการย่างเนื้อวัวและการรักษาสภาพเตาเซรามิก"
+metrics:
+  - id: heat_output
+    label: "พลังความร้อนสูงสุด (Max Heat Output)"
+    baseValue: 50
+    min: 0
+    max: 100
+    direction: higher
+  - id: burn_duration
+    label: "ระยะเวลาติดไฟต่อเนื่อง (Burn Duration)"
+    baseValue: 50
+    min: 0
+    max: 100
+    direction: higher
+  - id: ash_cleanliness
+    label: "ความสะอาดและขี้เผ่าน้อย (Low Ash / Clean Airflow)"
+    baseValue: 50
+    min: 0
+    max: 100
+    direction: higher
+  - id: flavor_purity
+    label: "ความบริสุทธิ์ของกลิ่นรส (Flavor Purity)"
+    baseValue: 50
+    min: 0
+    max: 100
+    direction: higher
+
+steps:
+  - id: charcoal_type
+    title: "ประเภทถ่าน (Charcoal Medium)"
+    description: "เลือกชนิดถ่านที่จะนำมาเป็นเชื้อเพลิงหลักในเตา Kamado"
+    recommended: lump_hardwood
+    choices:
+      - id: lump_hardwood
+        label: "ถ่านไม้เนื้อแข็งธรรมชาติ (Natural Hardwood Lump Charcoal)"
+        description: "ไม้ธรรมชาติ 100% เผาไร้ออกซิเจน ชิ้นใหญ่ ไร้สารเคมีประสาน"
+        metrics:
+          heat_output: 25
+          burn_duration: 15
+          ash_cleanliness: 20
+          flavor_purity: 25
+        pros:
+          - title: "เร่งอุณหภูมิได้สูงมาก"
+            description: "ทำความร้อนแตะ 350-400°C สำหรับ Sear สเต๊กได้อย่างรวดเร็ว"
+          - title: "ขี้เผ่าน้อยมาก"
+            description: "ไม่ทำให้ช่องลมล่างอุดตัน รักษากระแสลมได้อย่างยอดเยี่ยม"
+        cons:
+          - title: "ขนาดชิ้นไม่สม่ำเสมอ"
+            description: "ต้องเรียงก้อนใหญ่ไว้ด้านล่าง ก้อนเล็กไว้ด้านบน"
+        whyThisFits: "เตาเซรามิกต้องการถ่านที่ขี้เผ่าน้อยและไร้สารเคมี ถ่านไม้ก้อนธรรมชาติคือตัวเลือกมาตรฐานสากลอันดับ 1 ของเตา Kamado"
+
+      - id: charcoal_briquettes
+        label: "ถ่านอัดก้อนมาตรฐาน (Standard Briquettes)"
+        description: "ผงถ่านผสมแป้งข้าวโพดหรือสารเคมีประสานอัดขึ้นรูปเป็นก้อนกลมสี่เหลี่ยม"
+        metrics:
+          heat_output: -10
+          burn_duration: 10
+          ash_cleanliness: -25
+          flavor_purity: -20
+        pros:
+          - title: "ขนาดก้อนเท่ากันสม่ำเสมอ"
+            description: "เผาไหม้ในอัตราคงที่ คาดเดาเวลาง่าย"
+        cons:
+          - title: "ขี้เถ้ามหาศาล"
+            description: "ขี้เถ้าจะร่วงลงมาอุดตันช่องลมก้นเตาอย่างรวดเร็ว ทำให้อุณหภูมิตก"
+          - title: "กลิ่นสารเคมีประสาน"
+            description: "กลิ่นแป้งประสานจะซึมเข้าผนังเซรามิกและรบกวนรสชาติเนื้อวัว"
+        whenToUse: "เหมาะกับเตาเหล็กเปิดฝาทั่วไป ไม่แนะนำอย่างยิ่งสำหรับเตาเซรามิก Kamado"
+
+      - id: binchotan_charcoal
+        label: "ถ่านขาวบินโชตัน (White Charcoal / Binchotan)"
+        description: "ถ่านไม้โอ๊คญี่ปุ่นเผาอุณหภูมิสูงพิเศษ 1000°C แข็งแกร่งดั่งโลหะ"
+        metrics:
+          heat_output: 30
+          burn_duration: 30
+          ash_cleanliness: 25
+          flavor_purity: 30
+        pros:
+          - title: "ความร้อนอินฟราเรดบริสุทธิ์สูงมาก"
+            description: "ไร้ควัน ไร้กลิ่น ให้ความร้อนสม่ำเสมอยาวนานหลายชั่วโมง"
+        cons:
+          - title: "จุดติดไฟยากมาก"
+            description: "ต้องใช้หัวพ่นแก๊สหรือปล่องจุดถ่านพิเศษนานกว่า 20-30 นาที"
+          - title: "ราคาสูงมาก"
+            description: "เหมาะสำหรับโอกาสพิเศษหรืองานยากินิกุระดับพรีเมียม"
+        whenToUse: "ใช้เมื่อต้องการย่างแบบยากินิกุหรือ Caveman สเต๊กที่ต้องการความบริสุทธิ์ของความร้อนสูงสุด"

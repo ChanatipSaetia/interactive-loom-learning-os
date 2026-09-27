@@ -1,0 +1,16 @@
+type: taxonomy-category
+icon: Building2
+title: "Internal Staff & Operators"
+subtitle: "Employees of the IT system"
+color: peach
+description: "People hired to run, support, and operate the IT system from the inside. For them, onboarding is a supervised climb from 'afraid to touch production' to 'on-call and trusted'."
+details: "Staff and operators onboard into a socio-technical system: tools, credentials, runbooks, escalation chains, and unwritten traditions. The failure mode is the month-long silent soak — a new hire reads the wiki, watches senior people, and touches nothing real for weeks. Good internal onboarding pre-provisions every account on day zero, pairs the newcomer with a buddy for the first incidents, and graduates them through deliberately graded real tasks: first a low-risk change with a witness, then a supervised deploy, then the pager. Their manual is the runbook; their exam is a real shift."
+analogy: "Flight school: ground school, then dual controls, then a solo — never 'here's the keys, good luck'."
+primaryFocus: "Graded real tasks from supervised change to independent on-call"
+inScope:
+  - "Day-zero accounts, licenses, VPN, and toolchain readiness"
+  - "Runbooks, escalation paths, and incident rituals"
+  - "Buddy shadowing and graduated production privileges"
+outOfScope:
+  - "Marketing messaging about the product"
+  - "Billing plan comparisons the employee never touches"

@@ -1,0 +1,22 @@
+- text: "Stage 1 — Hook with the user's pain, not the architecture"
+  children:
+    - text: "Open with the task that currently makes people groan, e.g. 'expensing a trip takes 9 clicks today'"
+    - text: "Never open with a microservices diagram — the audience hasn't asked for it yet"
+- text: "Stage 2 — Roadmap: state what they will be able to do by the end"
+  children:
+    - text: "'By the end you can complete onboarding, refund, and export without asking support'"
+- text: "Stage 3 — One-scenario walkthrough"
+  children:
+    - text: "Follow ONE realistic persona completing ONE task end-to-end"
+    - text: "Two shallow scenarios beat one deep one? No — one deep scenario beats two shallow ones"
+- text: "Stage 4 — Live demo in the running product"
+  children:
+    - text: "Drive the real UI, not screenshots pretending to be a UI"
+    - text: "Always have a pre-recorded OBS Studio fallback clip in the presenter's pocket"
+- text: "Stage 5 — Gotchas: show the two or three known failure modes"
+  children:
+    - text: "Present the error message, the cause, and the documented fix side by side"
+- text: "Stage 6 — Recap + permalink"
+  children:
+    - text: "End every manual presentation by pinning the permanent docs-site permalink to this slide"
+    - text: "Tell people where the search box is — findability beats memorability"

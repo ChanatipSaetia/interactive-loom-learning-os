@@ -1,55 +1,54 @@
-steps:
-  - type: linear
-    id: "step_checkout"
-    initiatedBy: "customer"
-    policy: "Parse HTTP Payload Policy"
-    command: "Invoke CreateOrderPort"
-    handledBy: "http_controller"
-    resultEvents:
-      - id: "evt_checkout_requested"
-        title: "Checkout Requested"
-        desc: "Customer submits cart payload via Web UI."
-    continuesAs: "step_invoke_port"
+- type: linear
+  id: "step_checkout"
+  initiatedBy: "customer"
+  policy: "Parse HTTP Payload Policy"
+  command: "Invoke CreateOrderPort"
+  handledBy: "http_controller"
+  resultEvents:
+    - id: "evt_checkout_requested"
+      title: "Checkout Requested"
+      desc: "Customer submits cart payload via Web UI."
+  continuesAs: "step_invoke_port"
 
-  - type: linear
-    id: "step_invoke_port"
-    policy: "Route To Domain Service Policy"
-    command: "Instantiate Order Aggregate"
-    handledBy: "create_order_port"
-    resultEvents:
-      - id: "evt_port_invoked"
-        title: "CreateOrderPort Invoked"
-        desc: "Driving Adapter calls CreateOrderUseCase interface method."
-    continuesAs: "step_domain_logic"
+- type: linear
+  id: "step_invoke_port"
+  policy: "Route To Domain Service Policy"
+  command: "Instantiate Order Aggregate"
+  handledBy: "create_order_port"
+  resultEvents:
+    - id: "evt_port_invoked"
+      title: "CreateOrderPort Invoked"
+      desc: "Driving Adapter calls CreateOrderUseCase interface method."
+  continuesAs: "step_domain_logic"
 
-  - type: linear
-    id: "step_domain_logic"
-    policy: "Persist New Order Policy"
-    command: "Call OrderRepositoryPort.save()"
-    handledBy: "order_aggregate"
-    resultEvents:
-      - id: "evt_order_created"
-        title: "Order Aggregate Created"
-        desc: "Domain Aggregate validates items, price calculations, and stock invariants."
-    continuesAs: "step_call_driven_port"
+- type: linear
+  id: "step_domain_logic"
+  policy: "Persist New Order Policy"
+  command: "Call OrderRepositoryPort.save()"
+  handledBy: "order_aggregate"
+  resultEvents:
+    - id: "evt_order_created"
+      title: "Order Aggregate Created"
+      desc: "Domain Aggregate validates items, price calculations, and stock invariants."
+  continuesAs: "step_call_driven_port"
 
-  - type: linear
-    id: "step_call_driven_port"
-    policy: "Delegate To Database Adapter Policy"
-    command: "Execute SQL Insert"
-    handledBy: "order_repo_port"
-    resultEvents:
-      - id: "evt_repo_called"
-        title: "OrderRepositoryPort Called"
-        desc: "Outbound interface receives Order entity for persistence."
-    continuesAs: "step_db_persist"
+- type: linear
+  id: "step_call_driven_port"
+  policy: "Delegate To Database Adapter Policy"
+  command: "Execute SQL Insert"
+  handledBy: "order_repo_port"
+  resultEvents:
+    - id: "evt_repo_called"
+      title: "OrderRepositoryPort Called"
+      desc: "Outbound interface receives Order entity for persistence."
+  continuesAs: "step_db_persist"
 
-  - type: linear
-    id: "step_db_persist"
-    policy: "Return Success DTO Policy"
-    command: "Respond 201 Created"
-    handledBy: "postgres_adapter"
-    resultEvents:
-      - id: "evt_order_saved"
-        title: "Order Record Saved to Postgres"
-        desc: "Postgres database commits transaction successfully."
+- type: linear
+  id: "step_db_persist"
+  policy: "Return Success DTO Policy"
+  command: "Respond 201 Created"
+  handledBy: "postgres_adapter"
+  resultEvents:
+    - id: "evt_order_saved"
+      title: "Order Record Saved to Postgres"
+      desc: "Postgres database commits transaction successfully."

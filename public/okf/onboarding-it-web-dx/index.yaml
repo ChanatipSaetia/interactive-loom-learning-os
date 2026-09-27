@@ -1,0 +1,32 @@
+# App metadata for onboarding-it-web-dx topic bundle
+category: Project Management
+tags:
+  - onboarding
+  - developer-experience
+  - user-activation
+  - it-operations
+  - enablement
+related:
+  - sections/audience-map/01-end-users.yaml
+  - sections/audience-map/02-staff-operators.yaml
+  - sections/audience-map/03-developers.yaml
+  - sections/principles/items.yaml
+  - sections/quiz-principles/questions.yaml
+  - sections/reflection-journey/sequence.yaml
+  - sections/methods/01-docs-first.yaml
+  - sections/methods/02-buddy.yaml
+  - sections/methods/03-cohort-academy.yaml
+  - sections/methods/04-in-app-tours.yaml
+  - sections/methods/05-sandbox-quests.yaml
+  - sections/quiz-methods/questions.yaml
+  - sections/method-loadout/01-onboarding-program.yaml
+  - sections/method-advisor/tree.yaml
+  - sections/ttv-dashboard/matrix.yaml
+  - sections/provision-flow/actors.yaml
+  - sections/provision-flow/systems.yaml
+  - sections/provision-flow/steps.yaml
+  - sections/provision-flow/journeys.yaml
+  - sections/scenario-firstday/scenarios.yaml
+  - sections/glossary/glossary.yaml
+  - sections/concept-map/concepts.yaml
+  - sections/synthesis/template.yaml

@@ -1,0 +1,53 @@
+id: beef-cut-advisor
+title: "Beef Cut Technique Advisor (ที่ปรึกษาการเลือกวิธีปรุงเนื้อวัว)"
+root: cut_nature
+nodes:
+  cut_nature:
+    prompt: "ชิ้นส่วนเนื้อที่คุณต้องการปรุงมีลักษณะโครงสร้างกล้ามเนื้อและคอลลาเจนแบบใด?"
+    choices:
+      - id: tough_collagen
+        text: "เนื้อส่วนเหนียว มีพังผืดและคอลลาเจนสูง (เช่น Brisket, Short Ribs, Chuck Roast)"
+        next: rec_low_and_slow
+        rationale: "คอลลาเจนต้องการความร้อนต่ำและเวลาที่ยาวนานเพื่อละลายตัวเป็นเจลาติน"
+      - id: tender_steak
+        text: "เนื้อสเต๊กพรีเมียม นุ่มตามธรรมชาติ (เช่น Ribeye, Striploin, Tenderloin, Picanha)"
+        next: steak_thickness
+        rationale: "เนื้อนุ่มธรรมชาติควรปรุงแบบสเต๊กโดยรักษาความฉ่ำและความสุกที่แม่นยำ"
+        recommended: true
+
+  steak_thickness:
+    prompt: "สเต๊กชิ้นนี้มีความหนาเท่าใด?"
+    choices:
+      - id: thick_cut
+        text: "ชิ้นหนาพิเศษ 1.5 นิ้วขึ้นไป (หรือติดกระดูก Tomahawk / Cowboy Steak)"
+        next: rec_reverse_sear
+        rationale: "เนื้อหนาเกิน 1.5 นิ้วหากย่างไฟตรงข้างในจะดิบและขอบจะเป็นสีเทา"
+        recommended: true
+      - id: thin_cut
+        text: "ชิ้นบางปานกลางถึงบาง ต่ำกว่า 1.2 นิ้ว (หรือเนื้อใบบัว Skirt / Flank Steak)"
+        next: rec_direct_sear
+        rationale: "เนื้อบางสุกเร็วมาก การใช้ไฟแรงโดยตรงระยะสั้นจะช่วยให้เกิด Crust ก่อนที่ข้างในจะสุกเกิน"
+
+  rec_low_and_slow:
+    leaf:
+      recommendation: "ใช้เทคนิค Low & Slow Smoking (105-120°C เป็นเวลา 6-12 ชั่วโมง)"
+      explanation: "ใส่แผ่น Heat Deflector เต็มแผ่น พร้อมท่อนไม้ Post Oak คุมอุณหภูมิให้นิ่งจนเส้นใยคอลลาเจนสลายตัวเป็นเจลาติน และเนื้อนุ่มจนฉีกได้ด้วยส้อม"
+      tradeoffs:
+        - "ต้องใช้เวลาเตรียมนานและวางแผนล่วงหน้าหลายชั่วโมง"
+        - "เปลืองถ่านและต้องเฝ้าดูความเสถียรของอุณหภูมิเป็นระยะ"
+
+  rec_reverse_sear:
+    leaf:
+      recommendation: "ใช้เทคนิค Reverse Sear (อบ Indirect 110°C แล้ว Sear เตา 350°C)"
+      explanation: "อบเนื้อด้วย Heat Deflector จน Internal Temp ถึง 48°C (สำหรับ Medium Rare) จากนั้นพักเนื้อ เร่งเตาเป็น 350°C แล้ว Sear บนตะแกรงเหล็กหล่อด้านละ 60 วินาที ได้เนื้อสีชมพูสม่ำเสมอไร้ขอบเทา"
+      tradeoffs:
+        - "ต้องใช้เวลาปรับเตา 2 สเต็ป (ช่วงเปลี่ยนจากไฟเบาเป็นไฟแรง)"
+        - "จำเป็นต้องมีโพรบวัดอุณหภูมิแกนกลางดิจิทัลเพื่อความแม่นยำ"
+
+  rec_direct_sear:
+    leaf:
+      recommendation: "ใช้เทคนิค Direct High-Heat Searing (ย่างไฟแรงตรง 280-320°C)"
+      explanation: "ถอดแผ่น Heat Deflector วางตะแกรงเหล็กหล่อใกล้กองถ่าน พลิกเนื้อทุกๆ 1-2 นาทีเพื่อสร้าง Crust กรอบโดยไม่ทำให้ใจกลางเนื้อสุกเกิน Medium Rare"
+      tradeoffs:
+        - "ต้องระวังเปลวไฟแลบ (Flare-ups) จากไขมันหยดลงถ่าน"
+        - "ไม่เหมาะกับสเต๊กหนาเพราะแกนกลางจะยังเย็นขณะที่ผิวเกรียม"

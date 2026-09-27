@@ -79,7 +79,7 @@ outOfScope:
 
 ## Real Example
 
-From `public/okf/poe2-flicker-monk/sections/taxonomy/main-skills.yaml`:
+From `public/okf/poe2-flicker-monk/sections/taxonomy/01-main-skills.yaml`:
 
 ```yaml
 type: taxonomy-category

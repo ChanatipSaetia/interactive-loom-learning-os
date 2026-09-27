@@ -1,0 +1,66 @@
+nodes:
+  ceramic_mass:
+    title: "Ceramic Thermal Mass (มวลความร้อนเซรามิก)"
+    category: mechanism
+  airflow_control:
+    title: "Airflow Vent Control (การควบคุมวาล์วลม)"
+    category: mechanism
+  heat_deflector:
+    title: "Heat Deflector (แผ่นหินกระจายความร้อน)"
+    category: system
+  moisture_retention:
+    title: "Moisture Retention (การรักษาความฉ่ำในเนื้อ)"
+    category: concept
+  maillard_reaction:
+    title: "Maillard Reaction (ปฏิกิริยาเกิดเปลือกกรอบสีน้ำตาล)"
+    category: process
+  wood_smoke:
+    title: "Wood Smoke Flavors (สารหอมระเหยจากควันไม้)"
+    category: data
+  internal_temp:
+    title: "Internal Core Temp (อุณหภูมิแกนกลางเนื้อ)"
+    category: data
+  carryover_cooking:
+    title: "Carryover Cooking (ความร้อนแฝงขณะพักเนื้อ)"
+    category: process
+  reverse_sear:
+    title: "Reverse Sear Process (กระบวนการย่างย้อนศร)"
+    category: pattern
+  perfect_steak:
+    title: "Edge-to-Edge Pink Steak (สเต๊กสมบูรณ์แบบไร้ขอบเทา)"
+    category: concept
+
+edges:
+  - from: ceramic_mass
+    to: airflow_control
+    label: "ลดปริมาณลมดูดผ่านเตา"
+  - from: ceramic_mass
+    to: moisture_retention
+    label: "ป้องกันเนื้อแห้งกระด้าง"
+  - from: airflow_control
+    to: heat_deflector
+    label: "สร้างกระแสลม Convection"
+  - from: heat_deflector
+    to: reverse_sear
+    label: "เปิดใช้งานการอบไฟอ่อนทางอ้อม"
+  - from: reverse_sear
+    to: internal_temp
+    label: "ควบคุมความสุกระดับ Rare/Med-Rare"
+  - from: reverse_sear
+    to: maillard_reaction
+    label: "สร้างเปลือก Crust ในขั้นตอน Sear"
+  - from: maillard_reaction
+    to: perfect_steak
+    label: "ให้กลิ่นหอมและรสชาติอูมามิ"
+  - from: wood_smoke
+    to: perfect_steak
+    label: "เคลือบผิวนอกด้วยกลิ่นหอม Guaiacol"
+  - from: internal_temp
+    to: carryover_cooking
+    label: "อุณหภูมิเพิ่มขึ้นอีก 2-3°C ช่วงพักเนื้อ"
+  - from: carryover_cooking
+    to: perfect_steak
+    label: "กระจายน้ำในเนื้อให้ชุ่มฉ่ำสม่ำเสมอ"
+  - from: moisture_retention
+    to: perfect_steak
+    label: "คงเนื้อสัมผัสนุ่มละมุน"

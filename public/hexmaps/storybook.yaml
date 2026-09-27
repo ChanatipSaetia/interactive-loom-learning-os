@@ -1,0 +1,180 @@
+topicId: "storybook"
+topicTitle: "Realm of the Component Forge: Storybook"
+capitalId: "capital"
+nodes:
+  # ─── Capital Center ───
+  - id: "capital"
+    title: "The Component Forge Citadel"
+    type: "capital"
+    status: "unlocked"
+    sectionRef: "intro"
+    description: "The grand workshop where every component state is forged, documented, and tested. Choose your path: Lexicon, Pipeline, or Delivery!"
+
+  # ─── Track A (Left): Foundations & Lexicon ───
+  - id: "monolith-architecture"
+    title: "Monolith of the Manager & Preview"
+    type: "concept_monolith"
+    status: "unlocked"
+    unlockedBy:
+      - "capital"
+    sectionRef: "concept-map"
+    healingAmount: 30
+    description: "Map how stories, meta, args, the preview iframe, and addons interlock inside Storybook."
+
+  - id: "lexicon-spire"
+    title: "Spire of the Story Lexicon"
+    type: "concept_monolith"
+    status: "locked"
+    unlockedBy:
+      - "monolith-architecture"
+    sectionRef: "flashcards"
+    healingAmount: 35
+    description: "Absorb the sacred vocabulary: Story, Meta, CSF, args, decorators, play functions, and composition."
+
+  - id: "trial-foundations"
+    title: "Chamber of the Format Sentinel"
+    type: "quiz_encounter"
+    status: "locked"
+    unlockedBy:
+      - "lexicon-spire"
+    sectionRef: "quiz-foundations"
+    description: "The Format Sentinel only yields to those who can distinguish meta from story, and manager from preview."
+    monster:
+      id: "sentinel-of-exports"
+      name: "Format Sentinel"
+      type: "golem"
+      maxHp: 110
+      damage: 15
+      icon: "🗿"
+    rewards:
+      - id: "crystal-csf"
+        name: "Crystal of Component Story Format"
+        icon: "🔮"
+        description: "A mandatory relic proving you speak the language of stories. Required to breach the Boss Lair."
+
+  # ─── Track B (Center): Authoring & Render Pipeline ───
+  - id: "sanctum-workflow"
+    title: "Sanctum of the Authoring Rite"
+    type: "reading_sanctuary"
+    status: "unlocked"
+    unlockedBy:
+      - "capital"
+    sectionRef: "text-workflow"
+    healingAmount: 40
+    description: "Study the five-move rite: init, colocate stories, parameterize args, script play, ship the loop to CI."
+
+  - id: "nexus-render"
+    title: "Nexus of the Hot-Reload Current"
+    type: "simulation_nexus"
+    status: "locked"
+    unlockedBy:
+      - "sanctum-workflow"
+    sectionRef: "flowchart"
+    description: "Witness the living current: from saved story file through HMR, indexing, and preview render to live Controls updates."
+
+  - id: "vault-sequence"
+    title: "Vault of the Reload Chronology"
+    type: "reflection_decryption"
+    status: "locked"
+    unlockedBy:
+      - "nexus-render"
+    sectionRef: "reflection-sequence"
+    description: "The vault's seal resets until the hot-reload and Controls loops are restored to their true order."
+
+  - id: "forge-strategy"
+    title: "Forge of the Safety Net"
+    type: "tradeoff_workshop"
+    status: "locked"
+    unlockedBy:
+      - "vault-sequence"
+    sectionRef: "tradeoffs"
+    description: "Hammer your regression strategy: coverage, snapshot engines, and review surfaces trade confidence against CI speed and cost."
+    rewards:
+      - id: "aegis-visual"
+        name: "Aegis of Visual Regression"
+        icon: "🛡️"
+        description: "A mandatory relic that diffs every pixel of every story. Required to breach the Boss Lair."
+
+  # ─── Track C (Right): Testing, Docs & Delivery ───
+  - id: "spire-catalog"
+    title: "Archive Spire of the Fivefold Craft"
+    type: "archive_spire"
+    status: "unlocked"
+    unlockedBy:
+      - "capital"
+    sectionRef: "taxonomy"
+    healingAmount: 35
+    description: "Catalog Storybook's five jobs — workshop, docs, testing, review hub, design-system catalog — and its boundaries."
+
+  - id: "maelstrom-release"
+    title: "Maelstrom of Release Day"
+    type: "simulation_nexus"
+    status: "locked"
+    unlockedBy:
+      - "spire-catalog"
+    sectionRef: "scenario"
+    description: "A tooltip betrayal stalks the release train. Your safety-net choices decide who sleeps tonight."
+
+  - id: "oracle-advisor"
+    title: "Oracle of the Test Layers"
+    type: "archive_spire"
+    status: "locked"
+    unlockedBy:
+      - "maelstrom-release"
+    sectionRef: "decision-tree"
+    healingAmount: 30
+    description: "Query the Oracle: which blend of play functions, test runners, and snapshot diffing guards your components?"
+
+  - id: "trial-coverage"
+    title: "Lair Gate of the Regression Wraith"
+    type: "quiz_encounter"
+    status: "locked"
+    unlockedBy:
+      - "oracle-advisor"
+    sectionRef: "quiz-testing"
+    description: "The Wraith phases through untested states. Only correct answers about stories-as-tests banish it."
+    monster:
+      id: "regression-wraith"
+      name: "Regression Wraith"
+      type: "wraith"
+      maxHp: 130
+      damage: 18
+      icon: "👻"
+    rewards:
+      - id: "orb-interaction"
+        name: "Orb of Interaction Coverage"
+        icon: "🟣"
+        description: "A mandatory relic humming with scripted play functions. Required to breach the Boss Lair."
+
+  # ─── Synthesis Gate ───
+  - id: "vault-synthesis"
+    title: "Synthesis Vault of the Forged Net"
+    type: "reading_sanctuary"
+    status: "locked"
+    unlockedBy:
+      - "trial-foundations"
+      - "forge-strategy"
+      - "trial-coverage"
+    sectionRef: "reflection-template"
+    healingAmount: 45
+    description: "Inscribe the complete safety-net statement. Only a forged synthesis opens the path to the Lair."
+
+  # ─── Boss Lair ───
+  - id: "boss-lair"
+    title: "Lair of the Documentation Drift"
+    type: "boss_lair"
+    status: "locked"
+    unlockedBy:
+      - "vault-synthesis"
+    description: "The realm's final trial: the Phantom that silently separates what components claim to do from what they actually render. Requires all mandatory knowledge relics."
+    requiredItems:
+      - "crystal-csf"
+      - "aegis-visual"
+      - "orb-interaction"
+    monster:
+      id: "phantom-drift"
+      name: "Phantom of Documentation Drift"
+      type: "boss"
+      maxHp: 260
+      damage: 40
+      icon: "🌫️"

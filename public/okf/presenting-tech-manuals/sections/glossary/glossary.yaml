@@ -1,0 +1,60 @@
+- id: docs-as-code
+  word: "Docs-as-Code"
+  pronunciation: "dok-uhz uhz kohd"
+  category: practice
+  shortDefinition: "Writing documentation with the same tools and pipeline as code: markdown in Git, reviewed in pull requests, deployed by CI."
+  detailedDefinition: "Manual pages, OpenAPI specs, and tour files live in repositories, get linted and preview-built like source code, and ship through the same review discipline engineers already trust."
+  whyItMatters: "It is the only way a manual stays true after the first hotfix; documentation outside the pipeline rots within a sprint."
+  dialogue:
+    user: "Our manual says 'click Submit' but the button is now called 'Send'."
+    aiThoughts: "The docs live outside the repo, so no PR ever touched them."
+    aiQuestion: "What if a pull request that renames a button had to update the manual page too, or CI would flag it?"
+- id: permalink
+  word: "Permalink"
+  pronunciation: "pur-muh-link"
+  category: delivery
+  shortDefinition: "A permanent URL pointing at one exact page or version of the manual."
+  detailedDefinition: "The final slide of every manual presentation pins a permalink so the audience lands on the living docs page instead of a dead slide screenshot."
+  whyItMatters: "Findability beats memorability — the presentation ends, but the permalink keeps teaching for years."
+- id: runbook
+  word: "Runbook"
+  pronunciation: "ruhn-book"
+  category: operator-doc
+  shortDefinition: "A terse, ordered operator procedure for a specific task or incident: symptom, diagnosis, remediation."
+  detailedDefinition: "Written like an aircraft checklist so it works under stress: every command copy-pasteable, every expected output stated, no prose between steps."
+  whyItMatters: "At 2am nobody reads paragraphs; runbooks convert documentation into action."
+- id: quickstart
+  word: "Quickstart"
+  pronunciation: "kwik-start"
+  category: dx-doc
+  shortDefinition: "A five-minute guided path that gets a developer from zero to one successful call in the real system."
+  detailedDefinition: "The DX manual's most important page: prereqs, install, auth, first request, expected output — tested on a clean machine so it works on first try."
+  whyItMatters: "Developers judge the whole product by whether the first ten minutes work; a broken quickstart is a broken product."
+- id: guided-tour
+  word: "Guided Tour"
+  pronunciation: "gyed toor"
+  category: in-app
+  shortDefinition: "An interactive overlay (Intro.js, Shepherd) or repository walkthrough (Code Tour) that teaches by highlighting real steps in the artifact itself."
+  detailedDefinition: "Instead of slides about the product, the tour walks the user through the live UI or the actual code files, step by step, at their own pace."
+  whyItMatters: "It converts a one-time presentation into self-serve onboarding that survives every UI release."
+- id: demo-fallback
+  word: "Demo Fallback Clip"
+  pronunciation: "dee-moh faw-back klip"
+  category: presentation
+  shortDefinition: "A pre-recorded screen capture (OBS Studio) of the exact demo, cued up before the live presentation starts."
+  detailedDefinition: "When staging freezes on camera, the presenter switches mid-sentence to the clip and the walkthrough continues uninterrupted."
+  whyItMatters: "It is the difference between a hiccup and a cancelled launch; recorded once, the clip also becomes the async manual and docs embed."
+- id: annotated-screenshot
+  word: "Annotated Screenshot"
+  pronunciation: "an-oh-tei-tid skreen-shot"
+  category: end-user-doc
+  shortDefinition: "A UI screenshot with numbered callouts pointing at the exact buttons and fields a task requires."
+  detailedDefinition: "The end-user manual's core unit: one screen, one task, numbered arrows naming every control in click order."
+  whyItMatters: "Every click you skip in the visuals is a support ticket you create later."
+- id: developer-experience
+  word: "Developer Experience (DX)"
+  pronunciation: "dih-vel-uh-per ik-speer-ee-uhns"
+  category: concept
+  shortDefinition: "The cumulative feeling developers get while using a system — and its manual is often the first contact."
+  detailedDefinition: "Quickstarts, generated API references, playgrounds, error messages, and changelogs together form the DX; for many products, documentation is the product's front door."
+  whyItMatters: "A DX presentation is not 'about' the manual — it is the manual being demonstrated live, which is why the instruments (playgrounds, live code) matter so much."

@@ -1,0 +1,65 @@
+- type: linear
+  id: step_ignite
+  initiatedBy: pitmaster
+  command: "จุดถ่านไม้ก้อนธรรมชาติ"
+  policy: "เริ่มขั้นตอนวอร์มเตา (Warm Up)"
+  handledBy: firebox
+  resultEvents:
+    - id: evt_coals_lit
+      title: "ถ่านติดไฟพร้อมใช้งาน"
+      desc: "ถ่านคุแดงเริ่มปล่อยความร้อน"
+  continuesAs: step_indirect_setup
+
+- type: linear
+  id: step_indirect_setup
+  policy: "จัดระบบความร้อนทางอ้อม (Setup Indirect)"
+  command: "ใส่แผ่น Deflector และหรี่วาล์วลม 110°C"
+  handledBy: deflector_unit
+  resultEvents:
+    - id: evt_temp_stabilized
+      title: "อุณหภูมิเตาคงที่ 110°C"
+      desc: "ความร้อน Convection ไหลเวียนทั่วถึง"
+  continuesAs: step_insert_probe
+
+- type: linear
+  id: step_insert_probe
+  policy: "ติดตามความสุกของแกนกลางเนื้อ (Monitor Core Temp)"
+  command: "เสียบโพรบและวางเนื้อลงอบ"
+  handledBy: meat_probe
+  resultEvents:
+    - id: evt_probe_reading
+      title: "อ่านค่าอุณหภูมิแกนกลางต่อเนื่อง"
+      desc: "ความร้อนซึมเข้าสู่ใจกลางเนื้ออย่างนุ่มนวล"
+  continuesAs: step_reach_internal
+
+- type: linear
+  id: step_reach_internal
+  policy: "เมื่อแกนกลางถึง 48°C สั่งเร่งไฟ (Trigger High Sear)"
+  command: "นำเนื้อออกพักชั่วคราวและเปิดวาล์วเร่งไฟ 350°C"
+  handledBy: deflector_unit
+  resultEvents:
+    - id: evt_sear_ready
+      title: "เตาร้อนจัด 350°C พร้อม Sear"
+      desc: "ตะแกรงเหล็กหล่อสะสมความร้อนเต็มที่"
+  continuesAs: step_cast_iron_sear
+
+- type: linear
+  id: step_cast_iron_sear
+  policy: "สร้างปฏิกิริยาเมลลาร์ด (Maillard Reaction)"
+  command: "วางเนื้อ Sear บนตะแกรงเหล็กหล่อด้านละ 60 วินาที"
+  handledBy: searing_grate
+  resultEvents:
+    - id: evt_crust_formed
+      title: "ได้ Crust สีน้ำตาลทองกรอบหอม"
+      desc: "ผิวนอกเกรียมหอมโดยเนื้อในยังคงนุ่มสีชมพู"
+  continuesAs: step_rest_and_serve
+
+- type: linear
+  id: step_rest_and_serve
+  policy: "ปรับสมดุลของเหลวในเนื้อ (Equilibrate Juices)"
+  command: "พักเนื้อ 8 นาทีและสไลซ์พร้อมเสิร์ฟ"
+  handledBy: resting_board
+  resultEvents:
+    - id: evt_steak_served
+      title: "สเต๊กสมบูรณ์แบบพร้อมรับประทาน"
+      desc: "เนื้อชุ่มฉ่ำไร้ขอบเทาสุกระดับ Medium Rare"

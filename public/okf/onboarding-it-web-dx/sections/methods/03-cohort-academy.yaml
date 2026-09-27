@@ -1,0 +1,17 @@
+type: taxonomy-category
+icon: GraduationCap
+title: "Cohort Academy"
+subtitle: "Batch training & bootcamps"
+color: yellow
+description: "Scheduled batches — a week-one bootcamp, a weekly class, an internal academy — where a group learns the system together with an instructor and shared exercises."
+details: "PROS: guarantees a consistent, complete baseline for every newcomer; scheduled time is protected time, so engagement is high; creates a peer cohort — the loneliest onboarding failure cured instantly; instructor accumulates and improves the material. CONS: expensive per head (instructor hours, rooms, prep); calendar-locked — a solo hire waits weeks for the next batch or drowls alone; pace is set by the slowest attendee; content goes stale unless someone owns revisions. Verdict: ideal for campus hires and platform rollouts to many teams at once; terrible for the one senior developer joining Tuesday."
+analogy: "Trade school: brilliant cohort energy and a certified baseline, but the semester starts in September whether you like it or not."
+primaryFocus: "Consistent baseline via scheduled group instruction"
+inScope:
+  - "PRO — guaranteed consistent curriculum for every newcomer"
+  - "PRO — peer cohort cures isolation and seeds future help networks"
+  - "PRO — protected calendar time drives real engagement"
+outOfScope:
+  - "CON — high per-head cost and instructor burden"
+  - "CON — calendar-locked: bad fit for lone or urgent hires"
+  - "CON — one pace fits all; fast learners idle, slow learners drown"

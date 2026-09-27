@@ -9,14 +9,14 @@ related:
   - sections/flowchart/systems.yaml
   - sections/flowchart/steps.yaml
   - sections/flowchart/journeys.yaml
-  - sections/tradeoffs/communication-strategy.yaml
-  - sections/tradeoffs/process-overhead.yaml
-  - sections/tradeoffs/estimations-and-planning.yaml
-  - sections/taxonomy/daily-standup.yaml
-  - sections/taxonomy/sprint-planning.yaml
-  - sections/taxonomy/retrospective.yaml
-  - sections/taxonomy/async-status.yaml
-  - sections/taxonomy/project-planning.yaml
+  - sections/tradeoffs/01-communication-strategy.yaml
+  - sections/tradeoffs/02-process-overhead.yaml
+  - sections/tradeoffs/03-estimations-and-planning.yaml
+  - sections/taxonomy/01-daily-standup.yaml
+  - sections/taxonomy/02-sprint-planning.yaml
+  - sections/taxonomy/03-retrospective.yaml
+  - sections/taxonomy/04-async-status.yaml
+  - sections/taxonomy/05-project-planning.yaml
   - sections/flashcards/glossary.yaml
   - sections/quiz/questions.yaml
   - sections/concept-map/concepts.yaml

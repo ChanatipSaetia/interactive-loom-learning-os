@@ -1,0 +1,28 @@
+- id: journey_reverse_sear
+  label: "เส้นทางการทำ Reverse Sear สเต๊กเนื้อพรีเมียม (Happy Path)"
+  description: "ขั้นตอนตั้งแต่การจุดเตา อบไฟอ่อนทางอ้อม ไปจนถึงการ Sear เปลวไฟแรงสูงและการพักเนื้อ"
+  steps:
+    - stepId: step_ignite
+      name: "จุดถ่านไม้ธรรมชาติ"
+      description: "จุดถ่านไม้ธรรมชาติให้คุแดงสม่ำเสมอใน Firebox"
+      processGroup: ignition
+    - stepId: step_indirect_setup
+      name: "ติดตั้ง Heat Deflector"
+      description: "ติดตั้งแผ่น Heat Deflector และปรับวาล์วเพื่อคุมอุณหภูมิคงที่ 110°C"
+      processGroup: indirect_bake
+    - stepId: step_insert_probe
+      name: "เสียบโพรบและเริ่มอบ"
+      description: "เสียบโพรบดิจิทัลเพื่อเฝ้าดูอุณหภูมิแกนกลางเนื้อวัว"
+      processGroup: indirect_bake
+    - stepId: step_reach_internal
+      name: "เร่งไฟ 350°C"
+      description: "ยกเนื้อออกมาพัก ถอดแผ่น Deflector และเปิดวาล์วเร่งไฟ 350°C"
+      processGroup: sear_prep
+    - stepId: step_cast_iron_sear
+      name: "Sear บนตะแกรงเหล็กหล่อ"
+      description: "Sear เนื้อบนตะแกรงเหล็กหล่อด้านละ 60 วินาทีเพื่อเกิดปฏิกิริยา Maillard"
+      processGroup: searing
+    - stepId: step_rest_and_serve
+      name: "พักเนื้อและจัดเสิร์ฟ"
+      description: "พักเนื้อ 8 นาทีเพื่อให้น้ำในเนื้อกระจายตัวทั่วถึงก่อนหั่นเสิร์ฟ"
+      processGroup: serving

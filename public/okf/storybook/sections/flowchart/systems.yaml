@@ -1,0 +1,19 @@
+dev_server:
+  title: "Dev Server (Vite/Webpack)"
+  desc: "Bundler serving the preview runtime with hot module replacement"
+  type: "external"
+
+story_indexer:
+  title: "Story Indexer"
+  desc: "Scans story files and extracts meta and story exports into the sidebar index"
+  type: "aggregate"
+
+preview_runtime:
+  title: "Preview Runtime (iframe)"
+  desc: "Boots the component module graph and renders the selected story"
+  type: "aggregate"
+
+controls_addon:
+  title: "Controls Addon"
+  desc: "Edits a story's args live from the addons panel"
+  type: "aggregate"

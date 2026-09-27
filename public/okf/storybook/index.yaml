@@ -1,0 +1,24 @@
+# App metadata for storybook topic bundle
+category: Architecture
+tags:
+  - Storybook
+  - UI Components
+  - Design System
+  - Component Testing
+  - Frontend Tooling
+related:
+  - sections/intro/content.yaml
+  - sections/concept-map/concepts.yaml
+  - sections/flashcards/glossary.yaml
+  - sections/quiz-foundations/questions.yaml
+  - sections/flowchart/actors.yaml
+  - sections/flowchart/systems.yaml
+  - sections/flowchart/steps.yaml
+  - sections/flowchart/journeys.yaml
+  - sections/reflection-sequence/sequence.yaml
+  - sections/tradeoffs/scenarios.yaml
+  - sections/taxonomy/categories.yaml
+  - sections/scenario/scenarios.yaml
+  - sections/decision-tree/tree.yaml
+  - sections/quiz-testing/questions.yaml
+  - sections/reflection-template/template.yaml

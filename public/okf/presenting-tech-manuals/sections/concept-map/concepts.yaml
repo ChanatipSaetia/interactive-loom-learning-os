@@ -1,0 +1,95 @@
+nodes:
+  audience_analysis:
+    title: "Audience Analysis"
+    category: concept
+  end_users:
+    title: "End Users"
+    category: role
+  operators:
+    title: "Operators & Admins"
+    category: role
+  developers:
+    title: "Developers (DX)"
+    category: role
+  persona_scenario:
+    title: "One-Scenario Walkthrough"
+    category: process
+  hook_pain:
+    title: "Hook with the Pain"
+    category: concept
+  live_demo:
+    title: "Live Product Demo"
+    category: process
+  fallback_clip:
+    title: "OBS Fallback Clip"
+    category: mechanism
+  gotchas:
+    title: "Gotchas & Fixes"
+    category: concept
+  permalink:
+    title: "Docs Permalink"
+    category: concept
+  docs_as_code:
+    title: "Docs-as-Code"
+    category: process
+  review_loop:
+    title: "PR Review & Preview"
+    category: process
+  markdown_deck:
+    title: "Marp / Slidev / reveal.js"
+    category: tool
+  docs_site:
+    title: "Docusaurus / MkDocs / VitePress"
+    category: tool
+  api_playground:
+    title: "Swagger UI / Redoc / Storybook"
+    category: tool
+  guided_tour:
+    title: "In-App & Code Tours"
+    category: tool
+edges:
+  - from: audience_analysis
+    to: end_users
+    label: "splits into"
+  - from: audience_analysis
+    to: operators
+    label: "splits into"
+  - from: audience_analysis
+    to: developers
+    label: "splits into"
+  - from: hook_pain
+    to: persona_scenario
+    label: "leads into"
+  - from: persona_scenario
+    to: live_demo
+    label: "is proven by"
+  - from: live_demo
+    to: fallback_clip
+    label: "is protected by"
+  - from: live_demo
+    to: gotchas
+    label: "flows into"
+  - from: gotchas
+    to: permalink
+    label: "ends at"
+  - from: docs_as_code
+    to: review_loop
+    label: "ships through"
+  - from: docs_as_code
+    to: markdown_deck
+    label: "compiles decks"
+  - from: docs_as_code
+    to: docs_site
+    label: "compiles sites"
+  - from: docs_site
+    to: permalink
+    label: "hosts"
+  - from: developers
+    to: api_playground
+    label: "learn via"
+  - from: end_users
+    to: guided_tour
+    label: "learn via"
+  - from: operators
+    to: docs_site
+    label: "run from"

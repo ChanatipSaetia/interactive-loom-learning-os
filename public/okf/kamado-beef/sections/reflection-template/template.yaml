@@ -1,0 +1,22 @@
+challenges:
+  - prompt: "ลากคำศัพท์วิทยาศาสตร์อาหารลงในช่องว่างเพื่อสังเคราะห์ความสัมพันธ์ของเตาเซรามิกกับความชุ่มฉ่ำของเนื้อสเต๊ก:"
+    template: "เตา Kamado มีคุณสมบัติ {zone-1} สูง ทำให้ใช้กระแสลมผ่านเตาน้อย จึงเกิด {zone-2} สูงกว่าเตาเหล็กทั่วไป เมื่อนำเนื้อที่ผ่านการอบทางอ้อมมา Sear ไฟแรง จะเกิด {zone-3} ที่ผิวสร้างความกรอบหอม และเมื่อนำเนื้อขึ้นมาพักจะเกิด {zone-4} ที่ทำให้อุณหภูมิแกนกลางเพิ่มขึ้นอีกเล็กน้อยจนได้ความสุกสมบูรณ์แบบ"
+    chips:
+      - id: "chip-thermal-mass"
+        text: "Ceramic Thermal Mass"
+      - id: "chip-moisture"
+        text: "Moisture Retention"
+      - id: "chip-maillard"
+        text: "Maillard Reaction"
+      - id: "chip-carryover"
+        text: "Carryover Cooking"
+      - id: "chip-flareup"
+        text: "Direct Flare-up"
+      - id: "chip-greyband"
+        text: "Grey Band"
+    solution:
+      zone-1: "chip-thermal-mass"
+      zone-2: "chip-moisture"
+      zone-3: "chip-maillard"
+      zone-4: "chip-carryover"
+    explanation: "<strong>ยอดเยี่ยมมาก!</strong> เตาเซรามิกกักเก็บความร้อนสูงและแผ่รังสีสม่ำเสมอ จึงไม่จำเป็นต้องดึงลมเข้าเตาปริมาณมหาศาลเหมือนเตาเหล็ก ช่วยรักษาความชื้น (Moisture Retention) ในเนื้อได้สูงสุด เมื่อผสานกับ Maillard Reaction และ Carryover Cooking จึงได้สเต๊กที่ฉ่ำและกรอบนอกนุ่มในอย่างไร้ที่ติ"

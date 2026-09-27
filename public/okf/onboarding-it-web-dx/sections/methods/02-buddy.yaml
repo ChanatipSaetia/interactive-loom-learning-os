@@ -1,0 +1,17 @@
+type: taxonomy-category
+icon: Users
+title: "Buddy Apprenticeship"
+subtitle: "One-on-one shadowing & pairing"
+color: peach
+description: "A named senior person adopts the newcomer: shadowing first, then the buddy watches the newcomer drive real tasks."
+details: "PROS: carries the tacit knowledge no handbook holds (which dashboards matter, who to ping, what 'usually fine' means); instant feedback loop; strongest retention and trust of any method; naturally enforces the Human Anchor principle. CONS: does not scale — each buddy carries one or two newcomers at a time and pays real focus tax on their own work; quality varies entirely with the buddy's people skills; informal versions burn out the friendliest senior engineer. Verdict: the gold standard for internal staff and operators; use it deliberately and cap the load per buddy."
+analogy: "Flight school dual controls: the fastest way to competence, but every hour consumes a certified instructor."
+primaryFocus: "Tacit knowledge transfer through pairing"
+inScope:
+  - "PRO — transmits tribal knowledge, judgment, and escalation culture"
+  - "PRO — highest engagement, retention, and psychological safety"
+  - "PRO — real-time correction of bad habits before they set"
+outOfScope:
+  - "CON — does not scale; heavy focus tax on senior staff"
+  - "CON — quality is as good as the busiest volunteer"
+  - "CON — informal buddy systems quietly burn out helpers"

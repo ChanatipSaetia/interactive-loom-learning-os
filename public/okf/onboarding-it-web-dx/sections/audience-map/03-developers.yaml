@@ -1,0 +1,16 @@
+type: taxonomy-category
+icon: Code
+title: "Developers (DX)"
+subtitle: "External integrators & internal engineers"
+color: sky
+description: "People building on top of your platform or API. For them the onboarding IS the product trial: setup, auth, and the first successful call decide whether they stay or quietly leave."
+details: "Developers onboard themselves or they don't onboard at all. Every minute of setup friction, every broken quickstart snippet, every 'contact sales to get an API key' is a funnel stage where integrators abandon you — and they will not file a ticket, they will just leave. Good DX onboarding means: keys minted in self-serve minutes, a quickstart that works on a clean machine in under fifteen, a sandbox with realistic test data, generated API references, and a visible path from hello-world to production. Time-to-first-call is the developer's time-to-first-value."
+analogy: "A test drive with the keys in hand: if the engine doesn't start in the first turn, the buyer walks to the dealership next door."
+primaryFocus: "Time-to-first-successful-API-call on a clean machine"
+inScope:
+  - "Self-serve signup, keys, and a real sandbox with test data"
+  - "Quickstart that is CI-tested to work on a clean machine"
+  - "Generated API references, error catalogs, and changelogs"
+outOfScope:
+  - "Sales-gated trials that add days to the first call"
+  - "Slide decks about architecture instead of runnable code"

@@ -1,0 +1,89 @@
+id: storybook-test-advisor
+title: "Which Storybook Test Layer Do You Need?"
+root: risk
+nodes:
+  risk:
+    prompt: "What kind of regression scares you most for this component?"
+    choices:
+      - id: pixels
+        text: "Silent visual changes — spacing, colors, overflow on some viewport"
+        next: budget-visual
+        rationale: "Pixel-level drift is invisible to code review and most assertions; it needs snapshot diffing."
+      - id: behavior
+        text: "Broken behavior — clicks, typing, open/close, validation"
+        next: depth-behavior
+        rationale: "Behavior regressions need scripted interactions, not screenshots."
+      - id: a11y
+        text: "Accessibility or responsiveness failures"
+        next: leaf-a11y
+        rationale: "Automated audits cover structure and contrast; humans cover intent."
+      - id: docs
+        text: "Nobody knows the component exists or how to use it"
+        next: leaf-docs
+        rationale: "Adoption failures are documentation failures in disguise."
+  budget-visual:
+    prompt: "Where should visual snapshots run?"
+    choices:
+      - id: cloud
+        text: "We already share published Storybook links for design review"
+        next: leaf-cloud-vrt
+        rationale: "The review workflow and the snapshot baseline become the same artifact."
+        recommended: true
+      - id: self
+        text: "Our data policy forbids sending component builds to a vendor"
+        next: leaf-selfhosted-vrt
+        rationale: "Self-hosted Playwright screenshot pipelines keep everything on your runners."
+  depth-behavior:
+    prompt: "How complex is the interaction you need to protect?"
+    choices:
+      - id: simple
+        text: "A single trigger — click opens, input filters, toggle flips"
+        next: leaf-play
+        rationale: "A short play function with userEvent is the cheapest executable specification."
+        recommended: true
+      - id: multi
+        text: "Multi-step flows with assertions across several interactions"
+        next: leaf-play-runner
+        rationale: "Play functions plus the CI test runner execute the script headlessly on every PR."
+  leaf-cloud-vrt:
+    leaf:
+      recommendation: "Full state-matrix stories + cloud visual regression (e.g. Chromatic) gating merges"
+      explanation: "Publish every Storybook build; the service snapshots all stories across browsers and viewports and blocks merges on unreviewed pixel changes. Designers approve diffs on the same link they already use for review."
+      tradeoffs:
+        - "Per-build subscription cost scales with monorepo activity"
+        - "Baseline acceptance becomes a review duty — rubber-stamping re-introduces the bug"
+  leaf-selfhosted-vrt:
+    leaf:
+      recommendation: "State-matrix stories + self-hosted Playwright screenshot diffs in your own CI"
+      explanation: "Capture screenshots of every story on your runners and diff against committed baselines. Full data sovereignty and no per-build fees."
+      tradeoffs:
+        - "You maintain browser fleets, font rendering parity, and baseline storage"
+        - "Flaky captures need retry and quarantine policies you own"
+  leaf-play:
+    leaf:
+      recommendation: "A play function on the story demonstrating the interaction"
+      explanation: "Attach an async play function using the story's userEvent API. It runs interactively during development and automatically in CI — one artifact serves demo and test."
+      tradeoffs:
+        - "Play functions need maintenance as the component API evolves"
+        - "Only covers scenarios someone thought to script"
+  leaf-play-runner:
+    leaf:
+      recommendation: "Play functions executed headlessly by the Storybook test runner on every PR"
+      explanation: "test-storybook boots the static build and runs every story with its play function in Playwright/Puppeteer, failing the pipeline when an assertion throws. Add jest/Playwright expect queries inside play for real assertions."
+      tradeoffs:
+        - "Adds a browser boot phase to CI minutes"
+        - "Shared-state stories can introduce ordering flakiness"
+  leaf-a11y:
+    leaf:
+      recommendation: "Accessibility addon (axe-core) on all stories + viewport stories per breakpoint"
+      explanation: "Run automated a11y audits against every story in CI so contrast, labels, and roles fail the build, and keep dedicated narrow-viewport stories so responsive breakage shows in the catalog."
+      tradeoffs:
+        - "Automated audits catch only a fraction of real a11y issues"
+        - "Keyboard and screen-reader intent still needs human testing"
+  leaf-docs:
+    leaf:
+      recommendation: "Autodocs pages published as a static Storybook site with MDX usage guides"
+      explanation: "Tag the component's stories for docs, let autodocs render the props table from meta and JSDoc, and add an MDX page for long-form guidance with live embeds. Publish per-branch and on main."
+      tradeoffs:
+        - "Docs go stale if stories stop covering real usage"
+        - "MDX freedom means style drift without lint rules"

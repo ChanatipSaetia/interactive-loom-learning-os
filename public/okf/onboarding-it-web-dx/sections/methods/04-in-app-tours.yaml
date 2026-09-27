@@ -1,0 +1,17 @@
+type: taxonomy-category
+icon: Footprints
+title: "Self-Serve In-App Tours"
+subtitle: "First-run checklists & overlay tours"
+color: sky
+description: "Onboarding built into the product itself: first-run checklists, overlay tours, and empty-state coaching that teach while the newcomer does the real task."
+details: "PROS: teaches inside the artifact at the moment of need — the purest form of progressive disclosure; zero marginal cost per learner and instant updates for every user at once; measurable to the click (completion, drop-off, time-to-activation); the only method that scales to millions of end users. CONS: engineering and design cost up front; fragile against UI churn (stale tours mispoint at buttons); covering every feature in tours breeds banner blindness and 'skip all'; cannot carry judgment, edge cases, or why. Verdict: the default for Web App end users and self-serve DX; pair it with docs for depth and a human anchor for doubt."
+analogy: "Video-game tutorial levels: learn the controls by playing the first room, not by reading the box."
+primaryFocus: "Learning by doing inside the live product"
+inScope:
+  - "PRO — scales to any user count with near-zero marginal cost"
+  - "PRO — teach at the exact moment of need; fully instrumentable"
+  - "PRO — shipping a fix to the tour reaches every user instantly"
+outOfScope:
+  - "CON — upfront engineering cost and UI-churn fragility"
+  - "CON — tour fatigue: users learn to click 'skip all'"
+  - "CON — cannot teach judgment, policy, or the edge cases"

@@ -1,0 +1,59 @@
+id: storybook-release-crisis
+title: "The Tooltip That Betrayed Production"
+intro: "You maintain the design system at PixelForge. A teammate's Button refactor — touching a shared z-index mixin — passed code review and is queued for tonight's release. Your job: decide how the team catches (or misses) what the refactor broke."
+nodes:
+  start:
+    prompt: "It's 4 PM before the release train. The Button PR is approved. What is your team's current safety net for this change?"
+    choices:
+      - id: "manual-qa"
+        text: "Nothing automated — QA will click through the app tonight"
+        next: "manual-result"
+      - id: "storybook-ci"
+        text: "Stories for every Button state run in CI with visual regression gating"
+        next: "storybook-branch"
+      - id: "e2e-only"
+        text: "Only end-to-end tests on the marketing homepage cover it"
+        next: "e2e-result"
+  manual-result:
+    prompt: "QA has 90 minutes and 40 product surfaces to sweep. They test the checkout button on Chrome desktop — it looks fine."
+    choices:
+      - id: "ship"
+        text: "Release on time"
+        next: "disaster-result"
+      - id: "delay"
+        text: "Delay the train for a full manual sweep"
+        next: "delay-result"
+  storybook-branch:
+    prompt: "CI boots the Storybook build. Visual regression flags changed pixels on the Tooltip-within-Button story at the tablet viewport — the exact z-index collision. Meanwhile a reviewer opens the PR's published Storybook link."
+    choices:
+      - id: "approve-diff"
+        text: "Review the diff, see it is unintended, and block the merge"
+        next: "hero-result"
+      - id: "rubber-stamp"
+        text: "Accept all visual diffs to make CI green and ship"
+        next: "rubber-result"
+  e2e-result:
+    outcome:
+      verdict: "The homepage button renders perfectly. Three product pages embedding the Tooltip inside Buttons go dark on Safari with an invisible, unclickable layer."
+      lesson: "E2E tests sample app journeys; they cannot enumerate component states. Stories enumerate states by construction — the combination nobody thought to click is exactly where bugs live."
+      rating: c
+  disaster-result:
+    outcome:
+      verdict: "At 2 AM, support reports a transparent layer swallowing clicks across the pricing page. The release is rolled back at a cost of thousands in lost conversions."
+      lesson: "Manual sweeps at PR scale are sampling with a sieve made of fingers. Without per-state automated rendering, an edge-state regression is a coin flip you will eventually lose."
+      rating: c
+  delay-result:
+    outcome:
+      verdict: "The 40-surface sweep finds the tooltip bug at 10 PM — after hours of overtime — but only on the second page checked. Confidence in tonight's release stays low either way."
+      lesson: "Manual review found the bug by luck, not by design. Storybook's catalog makes 'test every state' mechanical instead of heroic."
+      rating: c
+  hero-result:
+    outcome:
+      verdict: "The merge is blocked 20 minutes after the diff was flagged. The teammate pushes a z-index fix, the new baseline is accepted with a comment, and the train leaves on time."
+      lesson: "Stories + CI visual regression + a reviewable published build turns a 2 AM rollback into a 20-minute PR comment. The same story file documented the state, tested the state, and saved the release."
+      rating: a
+  rubber-result:
+    outcome:
+      verdict: "CI goes green and the tooltip bug ships anyway. The tooling worked perfectly; the human bypassed it."
+      lesson: "Visual regression is only as strong as its acceptance policy. Baseline approvals need owners and review discipline, or the safety net becomes a rubber stamp."
+      rating: b-minus

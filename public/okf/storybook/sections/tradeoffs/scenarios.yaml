@@ -1,0 +1,186 @@
+- id: "storybook-safety-net"
+  title: "Design System Regression Safety Net"
+  description: "Your design system's Button change silently broke tooltips on two product pages. Leadership wants a Storybook-based safety net. Choose how much confidence to buy and what it costs in CI time, money, and review effort."
+  metrics:
+    - id: "confidence"
+      label: "Regression Confidence"
+      baseValue: 40
+      min: 0
+      max: 100
+      direction: "higher"
+    - id: "ci_speed"
+      label: "CI Pipeline Speed"
+      baseValue: 70
+      min: 0
+      max: 100
+      direction: "higher"
+    - id: "cost_efficiency"
+      label: "Cost Efficiency"
+      baseValue: 65
+      min: 0
+      max: 100
+      direction: "higher"
+    - id: "review_load"
+      label: "Reviewer Acceptance Burden"
+      baseValue: 70
+      min: 0
+      max: 100
+      direction: "higher"
+  steps:
+    - id: "story_coverage"
+      title: "1. Story Coverage Policy"
+      description: "How many stories must each component carry before it counts as covered?"
+      recommended: "state_matrix"
+      choices:
+        - id: "happy_only"
+          label: "Happy-path only (1-2 stories per component)"
+          description: "Only the default and primary variants get stories; edge states stay app-only."
+          metrics:
+            confidence: -15
+            ci_speed: 20
+            cost_efficiency: 15
+            review_load: 10
+          pros:
+            - title: "Fast to author"
+              description: "New components enter the catalog with minimal ceremony."
+          cons:
+            - title: "Blind to edge states"
+              description: "Error, disabled, and overflow states — where the tooltip bug hid — are never rendered in isolation."
+          whenToUse: "Prototype Storybooks or throwaway spike components."
+        - id: "state_matrix"
+          label: "Full state matrix (one story per meaningful arg combination)"
+          description: "Every boolean, enum size/variant, loading, disabled, and error state gets a named story."
+          metrics:
+            confidence: 30
+            ci_speed: -10
+            cost_efficiency: -5
+            review_load: -10
+          pros:
+            - title: "Every state is reviewable"
+              description: "Snapshot diffs cover exactly the combinations that break in production."
+            - title: "Docs come free"
+              description: "The same stories render the autodocs examples for each state."
+          cons:
+            - title: "Snapshot volume"
+              description: "Hundreds of components times dozens of states multiplies review work."
+          whyThisFits: "The incident was an unrendered edge state — the state matrix is the smallest coverage that would have caught it."
+          whenToUse: "Production design systems where UI regressions are expensive."
+        - id: "story_plus_play"
+          label: "State matrix + play functions on interactive components"
+          description: "On top of full coverage, modals, menus, and forms carry scripted interaction stories."
+          metrics:
+            confidence: 40
+            ci_speed: -20
+            cost_efficiency: -15
+            review_load: -5
+          pros:
+            - title: "Behavior regressions caught too"
+              description: "A dropdown that stops opening on click fails CI, not just a pixel diff."
+          cons:
+            - title: "Authoring investment"
+              description: "Play functions are tests in disguise and need maintenance."
+          whenToUse: "Components whose bugs are behavioral (focus, open/close, validation) rather than visual."
+    - id: "visual_regression"
+      title: "2. Visual Regression Engine"
+      description: "How do pixel diffs run against the story catalog?"
+      recommended: "cloud_service"
+      choices:
+        - id: "none"
+          label: "No visual regression (manual QA eyeballs)"
+          description: "Rely on reviewers noticing visual changes in PR previews."
+          metrics:
+            confidence: -25
+            ci_speed: 15
+            cost_efficiency: 20
+            review_load: 5
+          pros:
+            - title: "Zero setup or subscription"
+              description: "No baselines, no approvals, no vendor."
+          cons:
+            - title: "Subtle diffs slip through"
+              description: "A 2px tooltip shift is invisible to human reviewers at PR scale."
+          whenToUse: "Internal tools where visual polish is not critical."
+        - id: "self_hosted"
+          label: "Self-hosted snapshot pipeline (Docker + Playwright screenshots)"
+          description: "Run screenshot capture and diffing on your own CI runners, storing baselines in your infra."
+          metrics:
+            confidence: 25
+            ci_speed: -15
+            cost_efficiency: -5
+            review_load: -15
+          pros:
+            - title: "Full control of baselines"
+              description: "No third party sees component data; you own storage and retention."
+          cons:
+            - title: "You maintain the fleet"
+              description: "Font rendering, flaky runners, and baseline garbage collection become your team's job."
+          whenToUse: "Strict data-sovereignty requirements with platform-engineering capacity."
+        - id: "cloud_service"
+          label: "Cloud visual testing (e.g. Chromatic)"
+          description: "Publish every build; the service snapshots all stories across browsers/viewports and gates merges on visual changes."
+          metrics:
+            confidence: 35
+            ci_speed: -5
+            cost_efficiency: -20
+            review_load: -20
+          pros:
+            - title: "Baseline review UI built in"
+              description: "Designers approve pixel diffs in the same link where they review the story."
+            - title: "Parallel cross-browser matrix"
+              description: "Snapshots run in a managed grid of browsers and viewports."
+          cons:
+            - title: "Per-build pricing"
+              description: "Cost scales with build count across a busy monorepo."
+          whyThisFits: "The team already shares Storybook links for design review — acceptance happens where review already occurs."
+          whenToUse: "Product teams with design review in the PR flow and budget for SaaS."
+    - id: "docs_publish"
+      title: "3. Docs & Review Surface"
+      description: "What do stakeholders see per change?"
+      recommended: "per_branch"
+      choices:
+        - id: "local_only"
+          label: "Local Storybook only (npx storybook dev)"
+          description: "Developers run the workshop on their laptops; nobody else clicks anything."
+          metrics:
+            confidence: -10
+            ci_speed: 10
+            cost_efficiency: 10
+            review_load: 0
+          pros:
+            - title: "Zero publishing cost"
+              description: "Nothing leaves the developer machine."
+          cons:
+            - title: "No shared review"
+              description: "Designers cannot click through a change before merge."
+          whenToUse: "Solo or co-located prototype teams."
+        - id: "per_branch"
+          label: "Published Storybook per branch/PR"
+          description: "Every pull request publishes a static Storybook URL for click-through review."
+          metrics:
+            confidence: 20
+            ci_speed: -10
+            cost_efficiency: -10
+            review_load: -5
+          pros:
+            - title: "Review real components, not screenshots"
+              description: "Stakeholders exercise Controls on the exact PR build."
+          cons:
+            - title: "Publish time in CI"
+              description: "Static builds add minutes to each pipeline run."
+          whyThisFits: "Pairs with visual regression: the published build is both the review artifact and the snapshot source."
+          whenToUse: "Any team where design or product sign-off happens before merge."
+        - id: "main_only"
+          label: "Publish only main branch docs site"
+          description: "One canonical published Storybook, updated after merge."
+          metrics:
+            confidence: 5
+            ci_speed: 5
+            cost_efficiency: 5
+            review_load: 5
+          pros:
+            - title: "One stable URL"
+              description: "The catalog consumers bookmark always matches merged code."
+          cons:
+            - title: "Reviews happen post-merge"
+              description: "Feedback arrives after the change already landed."
+          whenToUse: "Public component-library documentation for external consumers."

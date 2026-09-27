@@ -1,0 +1,80 @@
+- id: q1
+  question: "According to the presentation arc, what is the best way to open a manual presentation?"
+  hint: "Stage 1 says what NOT to open with."
+  choices:
+    - id: a
+      text: "A microservices architecture diagram so everyone shares context"
+      correct: false
+      explanation: "The arc explicitly warns: never open with a microservices diagram — the audience hasn't asked for it yet."
+    - id: b
+      text: "The user task that currently makes people groan, e.g. 'expensing a trip takes 9 clicks today'"
+      correct: true
+      explanation: "Correct. Stage 1 hooks with the user's pain, not the architecture."
+    - id: c
+      text: "A full list of every feature shipped in the release"
+      correct: false
+      explanation: "Feature lists are a release notes read-aloud — the exact failure mode this realm fights. Hook with the user's pain instead."
+- id: q2
+  question: "During the one-scenario walkthrough stage, how many scenarios should you cover?"
+  hint: "One bullet in Stage 3 answers with a rhetorical question."
+  choices:
+    - id: a
+      text: "One realistic persona completing one task end-to-end"
+      correct: true
+      explanation: "Correct. One deep scenario beats two shallow ones — depth is what makes the manual stick."
+    - id: b
+      text: "Two shallow scenarios for broader coverage"
+      correct: false
+      explanation: "The arc says the opposite: one deep scenario beats two shallow ones."
+    - id: c
+      text: "As many as fit in the slide deck"
+      correct: false
+      explanation: "Slide count is not the constraint — depth of one end-to-end persona task is what makes Stage 3 work."
+- id: q3
+  question: "Which audience archetype needs config references, monitoring dashboards, and incident runbooks the most?"
+  hint: "Think about who is awake at 2am keeping the system alive."
+  choices:
+    - id: a
+      text: "End users"
+      correct: false
+      explanation: "End users need task walkthroughs of real UI screens; internal config and alert triage are explicitly out of their scope."
+    - id: b
+      text: "Operators & admins"
+      correct: true
+      explanation: "Correct. Operators read manuals defensively: what breaks, how do I see it breaking, what do I type to fix it."
+    - id: c
+      text: "Developers (DX)"
+      correct: false
+      explanation: "Developers want quickstarts, API references, and runnable code samples — runbooks and alert triage belong to the operators archetype."
+- id: q4
+  question: "What should the final moment of a manual presentation always include?"
+  hint: "Stage 6 has two children, and both are about what happens after the talk."
+  choices:
+    - id: a
+      text: "A teaser for the next release's roadmap"
+      correct: false
+      explanation: "Roadmap teasers belong to product pitches. Stage 6 is about making the manual findable after the talk ends."
+    - id: b
+      text: "A recap plus the permanent docs-site permalink, and where the search box is"
+      correct: true
+      explanation: "Correct. Pin the permalink to the slide and teach people where the search box lives — findability beats memorability."
+    - id: c
+      text: "A quiz to make sure people remember everything"
+      correct: false
+      explanation: "Memorability is not the goal — findability is. End with the permalink and the search box, not a pop quiz."
+- id: q5
+  question: "What safety net must a live product demo in Stage 4 always have?"
+  hint: "It is recorded before the presentation ever starts."
+  choices:
+    - id: a
+      text: "A second presenter driving a backup laptop"
+      correct: false
+      explanation: "The taught safety net is simpler and cheaper: a pre-recorded fallback clip kept ready in the presenter's pocket."
+    - id: b
+      text: "A pre-recorded fallback clip (e.g. made with OBS Studio)"
+      correct: true
+      explanation: "Correct. Stage 4 demands a pre-recorded OBS Studio fallback clip so a frozen staging site never kills the talk."
+    - id: c
+      text: "High-resolution screenshots to click through instead"
+      correct: false
+      explanation: "Screenshots pretending to be a UI are what Stage 4 explicitly rejects; the fallback is a pre-recorded video clip."

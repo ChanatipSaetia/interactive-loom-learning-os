@@ -145,7 +145,7 @@ steps:
 
 ## Real Example
 
-From `public/okf/poe2-flicker-monk/sections/tradeoffs/gear-budget.yaml` — see the actual file for a complete working example.
+From `public/okf/poe2-flicker-monk/sections/tradeoffs/01-gear-budget.yaml` — see the actual file for a complete working example.
 
 ---
 

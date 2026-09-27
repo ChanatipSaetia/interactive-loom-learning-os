@@ -1,0 +1,111 @@
+type: pillar-layer
+title: "The Docs-as-Code Layer Stack"
+description: "The manual as a Lego stack: plain-text sources at the bottom, generators that compile them, a delivery web app on top, and the live layer where a human presents it."
+
+layers:
+  - id: "l-source"
+    title: "Authoring Sources"
+    description: "Plain-text single sources of truth that live in Git next to the code."
+
+  - id: "l-generators"
+    title: "Generators & Renderers"
+    description: "Pipelines that compile markdown and specs into browsable artifacts."
+
+  - id: "l-delivery"
+    title: "Delivery Web App"
+    description: "The hosted, searchable, versioned surface the audience actually opens."
+
+  - id: "l-live"
+    title: "Live & In-App Layer"
+    description: "Where a human or the product itself presents the manual in real time."
+
+matrix_blocks:
+  - id: "b-markdown"
+    title: "Markdown / MDX Pages"
+    description: "Task pages, runbooks, and quickstarts — the same markdown feeds decks and sites."
+    col_offset: 0
+    layer_id: "l-source"
+    col_span: 2
+    row_span: 1
+    color: green
+
+  - id: "b-openapi"
+    title: "OpenAPI Spec"
+    description: "The machine-readable API contract, maintained as first-class code."
+    col_offset: 2
+    layer_id: "l-source"
+    col_span: 1
+    row_span: 1
+    color: sky
+
+  - id: "b-tourfiles"
+    title: "Code Tour .tour Files"
+    description: "Narracted repository walkthroughs anchored to real files."
+    col_offset: 3
+    layer_id: "l-source"
+    col_span: 1
+    row_span: 1
+    color: yellow
+
+  - id: "b-ssg"
+    title: "Site Generators"
+    description: "Docusaurus, MkDocs Material, VitePress, and mdBook compile sources into doc sites."
+    col_offset: 0
+    layer_id: "l-generators"
+    col_span: 2
+    row_span: 1
+    color: green
+
+  - id: "b-apirender"
+    title: "API Renderers"
+    description: "Swagger UI and Redoc turn the OpenAPI spec into explorable references."
+    col_offset: 2
+    layer_id: "l-generators"
+    col_span: 1
+    row_span: 1
+    color: sky
+
+  - id: "b-deckbuild"
+    title: "Deck Builders"
+    description: "Marp, Slidev, and reveal.js compile slide markdown into presentable decks."
+    col_offset: 3
+    layer_id: "l-generators"
+    col_span: 1
+    row_span: 1
+    color: mauve
+
+  - id: "b-docsite"
+    title: "Docs Web App + Search"
+    description: "Hosted site with full-text search, versioning, and permanent permalinks."
+    col_offset: 0
+    layer_id: "l-delivery"
+    col_span: 2
+    row_span: 1
+    color: peach
+
+  - id: "b-playground"
+    title: "Interactive Playground"
+    description: "Try-it-now API consoles and Storybook examples embedded in the docs."
+    col_offset: 2
+    layer_id: "l-delivery"
+    col_span: 2
+    row_span: 1
+    color: teal
+
+  - id: "b-deck"
+    title: "Presented Deck"
+    description: "The live webinar or workshop deck — always ending on the permalink slide."
+    col_offset: 0
+    layer_id: "l-live"
+    col_span: 2
+    row_span: 1
+    color: mauve
+
+  - id: "b-inapp"
+    title: "In-App Tours & Clips"
+    description: "Intro.js/Shepherd tours and OBS clips teaching inside the running product."
+    col_offset: 2
+    layer_id: "l-live"
+    col_span: 2
+    row_span: 1
+    color: red

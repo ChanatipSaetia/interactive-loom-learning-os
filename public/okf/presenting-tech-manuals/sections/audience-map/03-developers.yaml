@@ -1,0 +1,16 @@
+type: taxonomy-category
+icon: Code
+title: "Developers (DX)"
+subtitle: "Integrators & internal engineers"
+color: sky
+description: "People building on top of the system. For them the manual is the product: quickstarts, API references, and runnable code samples define the Developer Experience."
+details: "Developers judge a manual the way chefs judge a kitchen — by how fast they can get something working. Lead with a five-minute quickstart that compiles, keep API references generated from the OpenAPI spec so they never drift, and make every code sample copy-pasteable and tested. In a DX presentation, live-code the integration instead of photographing it."
+analogy: "A well-stocked workshop with labeled tools and a workbench — developers don't want a slideshow about the tools, they want to start building in ten minutes."
+primaryFocus: "Quickstarts, API references, and copy-pasteable code samples"
+inScope:
+  - "Getting-started quickstart that works on first try"
+  - "API/SDK reference generated from OpenAPI or source annotations"
+  - "Auth flows, error code tables, changelog and deprecation policy"
+outOfScope:
+  - "Business-process background the integrator will never touch"
+  - "Screenshots of UI screens the developer never renders"

@@ -1,0 +1,24 @@
+firebox:
+  title: "กล่องเผาไหม้และกองถ่าน (Firebox)"
+  desc: "ระบบสร้างพลังงานความร้อนจากถ่านไม้ธรรมชาติ"
+  type: aggregate
+
+deflector_unit:
+  title: "ระบบควบคุมลมและแผ่นหิน (Deflector & Vents)"
+  desc: "ควบคุมอุณหภูมิ Convection และการไหลเวียนของออกซิเจน"
+  type: aggregate
+
+meat_probe:
+  title: "โพรบวัดอุณหภูมิเนื้อ (Meat Probe System)"
+  desc: "ระบบดิจิทัลอ่านค่าอุณหภูมิแกนกลางเนื้อแบบเรียลไทม์"
+  type: external
+
+searing_grate:
+  title: "ตะแกรงเหล็กหล่อสะสมความร้อน (Cast Iron Grate)"
+  desc: "ตัวนำความร้อนสัมผัสสูงสำหรับสร้าง Maillard Crust"
+  type: aggregate
+
+resting_board:
+  title: "เขียงและอุปกรณ์พักเนื้อ (Resting & Carving Station)"
+  desc: "สถานีปรับสมดุลความดันของเหลวในเนื้อและสไลซ์พร้อมเสิร์ฟ"
+  type: aggregate

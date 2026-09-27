@@ -1,0 +1,53 @@
+id: release-webinar
+title: "The Release Webinar"
+intro: "You are presenting the user manual of a new Web App to a mixed audience of end users and operators. Ten minutes to start; the staging environment looks 'mostly fine'. How do you run this?"
+nodes:
+  start:
+    prompt: "How do you open the webinar?"
+    choices:
+      - id: open-architecture
+        text: "Open with the microservices architecture diagram for shared context"
+        next: result-architecture
+      - id: open-pain
+        text: "Open with the task people groan at: 'onboarding a new teammate takes 14 clicks today'"
+        next: demo-moment
+      - id: open-notes
+        text: "Read the release notes aloud so nobody misses a feature"
+        next: result-notes
+  result-architecture:
+    outcome:
+      verdict: "The end users glaze over in the first two minutes; the operators were not the ones who needed the diagram either."
+      lesson: "Stage 1 of the arc: hook with the user's pain, not the architecture. Nobody in the room asked how the system is built — they asked how to do their job."
+      rating: c
+  result-notes:
+    outcome:
+      verdict: "You covered every feature. Your audience retained approximately one of them."
+      lesson: "A release-notes read-aloud is the canonical failure mode of manual presentations. One deep persona scenario beats a shallow catalog."
+      rating: b-minus
+  demo-moment:
+    prompt: "Midway through your live demo of the onboarding flow, the staging site freezes on the big screen. What now?"
+    choices:
+      - id: switch-clip
+        text: "Switch seamlessly to the OBS Studio fallback clip and keep narrating"
+        next: result-clip
+      - id: debug-live
+        text: "Apologize and debug the staging environment live on screen"
+        next: result-debug
+      - id: skip-demo
+        text: "Skip the demo and describe the flow verbally until it recovers"
+        next: result-skip
+  result-clip:
+    outcome:
+      verdict: "Nobody blinked. You finished the walkthrough, showed the gotchas, and closed on the docs-site permalink slide."
+      lesson: "The pre-recorded fallback clip is a stunt double: same shot, zero risk. Recorded once, it lives three lives — fallback, async manual, and docs embed."
+      rating: a
+  result-debug:
+    outcome:
+      verdict: "Twelve minutes of silent troubleshooting later, the demo works — and half the audience has opened their laptops to actual work."
+      lesson: "Live debugging trades your authority for infrastructure's reliability. The fallback clip existed precisely for this moment."
+      rating: b-minus
+  result-skip:
+    outcome:
+      verdict: "Describing clicks without showing them confused end users, and the Q&A turned into a re-explanation session."
+      lesson: "Stage 4 demands the real product on screen — or its recorded double. Pantomiming the UI is screenshots pretending to be a UI, only worse."
+      rating: c

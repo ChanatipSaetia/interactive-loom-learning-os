@@ -1,0 +1,17 @@
+type: taxonomy-category
+icon: Gamepad2
+title: "Sandbox Quests"
+subtitle: "Gamified playgrounds & boss tasks"
+color: mauve
+description: "A safe, seeded practice environment where onboarding is a game: a quest board of graded challenges, hidden Easter eggs, and a final 'boss' task that proves competence."
+details: "PROS: learning by doing with zero blast radius — newcomers break the sandbox happily and remember why; intrinsically motivating and genuinely fun, the anti-dread onboarding; exposes the curious, who explore past the minimum path and become future experts. CONS: the most expensive method to build and the most expensive to keep fresh (seeded data rots, environments drift, quests go stale); grading and cheating need design; can trivialize if the quests are shallow or feel like chores with pixel art. Verdict: spectacular as the spine of a cohort academy or a DX platform trial; wasteful as the only door for a user who just needs to do their job today."
+analogy: "A driving course with traffic cones and an inflatable wall: all the reflexes of the real road, none of the funerals."
+primaryFocus: "Motivated competence-building through safe failure"
+inScope:
+  - "PRO — safe-to-break practice with memorable, hands-on learning"
+  - "PRO — high motivation; surfaces the curious future experts"
+  - "PRO — graded quests make competence objective, not vibes"
+outOfScope:
+  - "CON — highest build cost and constant environment-freshness tax"
+  - "CON — shallow quests become pixel-art chores fast"
+  - "CON — overkill when the learner just needs today's task done"

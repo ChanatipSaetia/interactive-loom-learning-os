@@ -1,0 +1,12 @@
+joiner_ticket:
+  title: "Joiner Ticket System"
+  desc: "Captures the joiner request with role, team, and start date"
+  type: "external"
+sso_directory:
+  title: "SSO Identity Directory"
+  desc: "Group-rule automation that mints accounts, licenses, and app entitlements"
+  type: "aggregate"
+pam_vault:
+  title: "Privileged Access Vault"
+  desc: "Manually approved grants for production, sandboxes, and elevated tooling"
+  type: "external"

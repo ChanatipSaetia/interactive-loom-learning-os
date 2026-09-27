@@ -1,0 +1,183 @@
+id: launch-webinar
+title: "Web App Manual Launch Webinar"
+description: "You have 30 minutes to present the user manual of a new Web App to a mixed audience of end users and operators. Forge a loadout that lands the manual without melting down on stage."
+metrics:
+  - id: clarity
+    label: Audience Clarity
+    baseValue: 50
+    min: 0
+    max: 100
+    direction: higher
+  - id: reliability
+    label: Demo Reliability
+    baseValue: 50
+    min: 0
+    max: 100
+    direction: higher
+  - id: prep
+    label: Prep Efficiency
+    baseValue: 50
+    min: 0
+    max: 100
+    direction: higher
+  - id: reuse
+    label: Reuse Value
+    baseValue: 50
+    min: 0
+    max: 100
+    direction: higher
+steps:
+  - id: demo-medium
+    title: "Main Walkthrough Medium"
+    description: "Stage 3-4 of the arc: how do you show the one persona task being completed?"
+    recommended: live-plus-clip
+    choices:
+      - id: live-only
+        label: "Pure live demo in staging"
+        description: "Drive the real UI with no safety net."
+        metrics:
+          clarity: 10
+          reliability: -25
+          prep: 10
+          reuse: -10
+        pros:
+          - title: "Maximum authenticity"
+            description: "The audience watches the actual product, not a facsimile."
+        cons:
+          - title: "One staging freeze from disaster"
+            description: "A frozen environment mid-demo derails the whole narrative."
+        whenToUse: "Only when the staging environment has a proven track record and the network is pristine."
+      - id: live-plus-clip
+        label: "Live demo + OBS pre-recorded fallback clip"
+        description: "Drive the real UI, with a recorded clip cued up in the presenter's pocket."
+        metrics:
+          clarity: 15
+          reliability: 20
+          prep: -10
+          reuse: 15
+        pros:
+          - title: "The show never stops"
+            description: "If staging hiccups, switch to the clip mid-sentence and nobody blinks."
+          - title: "Recording lives three lives"
+            description: "The same clip becomes the async manual and the docs page embed."
+        cons:
+          - title: "Extra prep time"
+            description: "Recording and trimming the clip costs an hour up front."
+        whyThisFits: "Stage 4 of the arc demands a pre-recorded fallback clip; the recording amortizes into the docs site afterward."
+      - id: screenshots
+        label: "Static annotated screenshots"
+        description: "Click through numbered callouts of the UI in the deck."
+        metrics:
+          clarity: -5
+          reliability: 25
+          prep: 15
+          reuse: 5
+        pros:
+          - title: "Cannot break live"
+            description: "Zero runtime risk and fastest to prepare."
+        cons:
+          - title: "Screenshots pretending to be a UI"
+            description: "The arc explicitly rejects faking the live demo."
+        whenToUse: "Acceptable for operators' runbook sections where exact config text matters more than flow."
+  - id: deck-format
+    title: "Slide Deck Format"
+    description: "What instrument carries the hook, roadmap, and gotcha slides?"
+    recommended: marp
+    choices:
+      - id: marp
+        label: "Marp markdown deck"
+        description: "Plain markdown slides in the product repo, exported to HTML/PDF/PPTX."
+        metrics:
+          clarity: 5
+          reliability: 5
+          prep: 10
+          reuse: 20
+        pros:
+          - title: "Lives with the code"
+            description: "The deck gets reviewed in pull requests and never contradicts the manual."
+          - title: "PPTX export for stakeholders"
+            description: "Satisfies the exec who only opens PowerPoint."
+        cons:
+          - title: "Less flashy than coded decks"
+            description: "Fewer interactive toys than Slidev or reveal.js."
+        whyThisFits: "A manual presentation should demonstrate the docs pipeline: the deck and the manual share one markdown source of truth."
+      - id: slidev-reveal
+        label: "Slidev / reveal.js interactive deck"
+        description: "Vue components, live code blocks, or a full HTML/JS web-app deck."
+        metrics:
+          clarity: 10
+          reliability: -5
+          prep: -10
+          reuse: 10
+        pros:
+          - title: "Live coding dazzles developers"
+            description: "Slidev's editable code blocks turn a DX talk into a workshop."
+        cons:
+          - title: "More moving parts on stage"
+            description: "Custom components and browser decks add ways to fail mid-talk."
+        whenToUse: "Developer Experience audiences where live code IS the message, and you have rehearsed twice."
+      - id: handcrafted
+        label: "One-off clicker deck (no text source)"
+        description: "Drag-and-drop slides edited directly in a presentation app."
+        metrics:
+          clarity: 0
+          reliability: 5
+          prep: 5
+          reuse: -15
+        pros:
+          - title: "Familiar tooling"
+            description: "Everyone's org already knows the clicker."
+        cons:
+          - title: "Diverges from the manual"
+            description: "With no markdown source, slide text rots away from the docs site."
+        whenToUse: "Last resort when policy forbids running anything but the corporate clicker."
+  - id: take-home
+    title: "Take-Home Reference"
+    description: "Stage 6 recap: where does the manual live after the webinar ends?"
+    recommended: docs-site
+    choices:
+      - id: docs-site
+        label: "Generated docs site permalink"
+        description: "MkDocs/Docusaurus page with a permanent URL pinned on the final slide."
+        metrics:
+          clarity: 10
+          reliability: 5
+          prep: -5
+          reuse: 20
+        pros:
+          - title: "Findability beats memorability"
+            description: "Searchable, versioned, and linkable forever."
+        cons:
+          - title: "One more pipeline to maintain"
+            description: "The docs site needs CI to stay true."
+        whyThisFits: "The arc's final stage is recap + permalink; a generated docs site is what makes the permalink real."
+      - id: slide-photo
+        label: "Photo of the final slide"
+        description: "Audience snaps a picture of slide 32 with their phone."
+        metrics:
+          clarity: -10
+          reliability: 0
+          prep: 5
+          reuse: -10
+        pros:
+          - title: "Zero effort"
+            description: "Literally nothing to build."
+        cons:
+          - title: "Dies in camera rolls"
+            description: "No search, no updates, no follow-up links."
+        whenToUse: "Never as the only artifact — at best a complement to a permalink."
+      - id: repo-readme
+        label: "'It's in the repo README'"
+        description: "Point developers at the raw markdown in the Git repository."
+        metrics:
+          clarity: -5
+          reliability: 0
+          prep: 10
+          reuse: 0
+        pros:
+          - title: "Always current"
+            description: "The source of truth is the source of truth."
+        cons:
+          - title: "Hostile to end users and operators"
+            description: "Non-developers in the room cannot use a repo README."
+        whenToUse: "Fine as an extra pointer for the DX crowd alongside the docs site."

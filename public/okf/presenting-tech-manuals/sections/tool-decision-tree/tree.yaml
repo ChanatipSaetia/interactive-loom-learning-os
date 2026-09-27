@@ -1,0 +1,59 @@
+id: instrument-advisor
+title: "Which Presentation Instrument Fits Your Manual?"
+root: audience
+nodes:
+  audience:
+    prompt: "Who is the primary audience for this manual presentation?"
+    choices:
+      - id: end-users
+        text: "End users doing business tasks in the Web App"
+        next: enduser-format
+        rationale: "Task-oriented walkthroughs need UI-forward instruments."
+      - id: operators
+        text: "Operators & admins keeping the system alive"
+        next: rec-operators
+        rationale: "Defensive readers need runbooks, commands, and triage flows."
+      - id: developers
+        text: "Developers integrating with the system (DX)"
+        next: rec-developers
+        rationale: "They judge the manual by how fast the first call succeeds."
+  enduser-format:
+    prompt: "Will the manual be consumed live (you in the room) or async (people on their own)?"
+    choices:
+      - id: live
+        text: "Live webinar or workshop"
+        next: rec-live-enduser
+        recommended: true
+        rationale: "Live means you control the demo — but it must be rehearsed with a fallback."
+      - id: async
+        text: "Async self-serve"
+        next: rec-async-enduser
+        rationale: "Async readers need findable, click-through guidance, not a recording graveyard."
+  rec-live-enduser:
+    leaf:
+      recommendation: "Marp markdown deck + live product demo with an OBS Studio fallback clip + in-app Intro.js tour for the next release's onboarding."
+      explanation: "The arc demands one persona task shown in the running UI; Marp keeps the deck in the repo, the OBS clip is your stunt double, and the Intro.js tour lets users replay the flow themselves after the webinar."
+      tradeoffs:
+        - "Prepping the fallback clip costs an hour before the talk"
+        - "Marp themes need a one-time setup in the repo"
+  rec-async-enduser:
+    leaf:
+      recommendation: "MkDocs Material or Docusaurus docs site with annotated screenshots and embedded OBS clip, plus an Intro.js/Shepherd in-app tour."
+      explanation: "Async end users find the manual through search, so the docs site is the presentation. The embedded clip and overlay tour replace you at the keyboard."
+      tradeoffs:
+        - "The docs site pipeline needs CI to stay truthful"
+        - "In-app tours need product code changes and release coordination"
+  rec-operators:
+    leaf:
+      recommendation: "MkDocs Material runbook site (copy-pasteable commands) + reveal.js triage deck for incident reviews + Code Tour for the deploy scripts."
+      explanation: "Operators read defensively: symptom, diagnosis, remediation. A generated runbook site keeps every command current, a browser-native reveal.js deck handles live postmortems, and Code Tour walks the deploy scripts in the repo itself."
+      tradeoffs:
+        - "Runbook docs need ownership or they rot"
+        - "Command blocks must be tested in CI to stay trustworthy"
+  rec-developers:
+    leaf:
+      recommendation: "Slidev deck with live code blocks + Swagger UI/Redoc reference rendered from the OpenAPI spec + Storybook playground + a five-minute quickstart page."
+      explanation: "For DX, the instrument is the message: generate the reference from the contract so it cannot be stale, let the audience run code during the talk, and prove the quickstart works on first try."
+      tradeoffs:
+        - "OpenAPI specs must be maintained as first-class code"
+        - "Live coding demos need rehearsal and a recorded backup"

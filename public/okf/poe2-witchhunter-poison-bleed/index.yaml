@@ -11,17 +11,17 @@ tags:
   - dual-ailment
 related:
   - sections/flashcards/glossary.yaml
-  - sections/taxonomy/main-skills.yaml
-  - sections/taxonomy/support-gems.yaml
-  - sections/taxonomy/defenses.yaml
-  - sections/taxonomy/ascendancy.yaml
+  - sections/taxonomy/01-main-skills.yaml
+  - sections/taxonomy/02-support-gems.yaml
+  - sections/taxonomy/03-defenses.yaml
+  - sections/taxonomy/04-ascendancy.yaml
   - sections/combat-flow/actors.yaml
   - sections/combat-flow/systems.yaml
   - sections/combat-flow/steps.yaml
   - sections/combat-flow/journeys.yaml
   - sections/dot-calculator/sandbox.yaml
-  - sections/gear-tradeoffs/budget.yaml
-  - sections/gear-tradeoffs/invested.yaml
+  - sections/gear-tradeoffs/01-budget.yaml
+  - sections/gear-tradeoffs/02-invested.yaml
   - sections/build-journey/scenarios.yaml
   - sections/setup-advisor/tree.yaml
   - sections/image-gallery/gallery.yaml

@@ -43,6 +43,15 @@
   description: >-
     Decouple core business domain logic from external dependencies, databases,
     frameworks, and UI drivers using Hexagonal Architecture.
+- id: kamado-beef
+  label: kamado-beef
+  path: /topics/kamado-beef
+  category: Cooking
+  description: >-
+    คู่มือการเรียนรู้เชิงปฏิสัมพันธ์สำหรับการย่างเนื้อพรีเมียมด้วยเตาเซรามิก
+    Kamado ตั้งแต่โครงสร้างเตา การควบคุมอุณหภูมิ การจัดโซนความร้อน
+    วิทยาศาสตร์การเกิดเปลือกกรอบ (Maillard Reaction) จนถึงเทคนิค Reverse Sear
+    ระดับมาสเตอร์
 - id: motorcycle
   label: motorcycle
   path: /topics/motorcycle
@@ -80,6 +89,14 @@
   path: /topics/poe2-witchhunter-poison-bleed
   category: Gaming
   description: ''
+- id: presenting-tech-manuals
+  label: presenting-tech-manuals
+  path: /topics/presenting-tech-manuals
+  category: Project Management
+  description: >-
+    How to present user manuals for IT systems, Web Apps, and Developer
+    Experience — from audience analysis through the presentation toolchain to
+    docs-as-code delivery.
 - id: system-design
   label: system-design
   path: /topics/system-design
@@ -96,3 +113,4 @@
     สำรวจวิวัฒนาการของมนุษยชาติ ตั้งแต่กำเนิดอารยธรรมโบราณ
     การค้าและปฏิสัมพันธ์ข้ามวัฒนธรรม ยุคฟื้นฟูศิลปวิทยาการ การปฏิวัติอุตสาหกรรม
     จนถึงระบบระเบียบโลกยุคร่วมสมัย
+    ผ่านชุดสื่อการเรียนรู้เชิงปฏิสัมพันธ์หลากหลายมิติ

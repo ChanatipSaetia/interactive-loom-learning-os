@@ -1,0 +1,185 @@
+id: onboarding-program
+title: "Onboarding Program for 40 Mixed Newcomers"
+description: "Monday: 40 newcomers land — 25 Web App end users, 10 internal operators, 5 platform developers. You have one quarter to stand up onboarding. Forge a loadout that gets everyone to first value without bankrupting the team."
+metrics:
+  - id: speed
+    label: Speed to First Value
+    baseValue: 50
+    min: 0
+    max: 100
+    direction: higher
+  - id: consistency
+    label: Baseline Consistency
+    baseValue: 50
+    min: 0
+    max: 100
+    direction: higher
+  - id: cost
+    label: Build & Run Cost
+    baseValue: 50
+    min: 0
+    max: 100
+    direction: lower
+  - id: retention
+    label: Newcomer Retention
+    baseValue: 50
+    min: 0
+    max: 100
+    direction: higher
+steps:
+  - id: access-policy
+    title: "Access Provisioning Policy"
+    description: "Principle 1: when do newcomers get their accounts, licenses, and environments?"
+    recommended: preboard-automated
+    choices:
+      - id: selfserve-justintime
+        label: "Self-serve signup, just in time"
+        description: "Every credential appears the moment the product needs it."
+        metrics:
+          speed: 10
+          consistency: -5
+          cost: -15
+          retention: 5
+        pros:
+          - title: "Zero queue for end users and developers"
+            description: "Self-serve signup mints keys in minutes — the taught DX fast path."
+        cons:
+          - title: "Staff and operators still need curated access"
+            description: "Production privileges cannot be self-minted; someone still reviews them."
+        whenToUse: "Great for the end users and developers in the mix; never for operator production access."
+      - id: preboard-automated
+        label: "Automated pre-boarding: day-zero accounts via SSO groups"
+        description: "Joiner tickets drive SSO group rules that mint every account and license before day one."
+        metrics:
+          speed: 20
+          consistency: 15
+          cost: -10
+          retention: 10
+        pros:
+          - title: "Monday starts at the task, not the queue"
+            description: "Access First: the newcomer's first hour is spent doing, not waiting."
+          - title: "One ruleset for forty people"
+            description: "Group-driven provisioning is consistent and re-runnable for the next cohort."
+        cons:
+          - title: "Upfront plumbing project"
+            description: "The identity bridge and group rules cost a sprint to build once."
+        whyThisFits: "Principle 1 demands day-zero access for all three audiences; automation is the only way to do it for 40 people."
+      - id: manual-tickets
+        label: "Manual tickets submitted on Monday"
+        description: "Managers email requests; IT works the queue in arrival order."
+        metrics:
+          speed: -25
+          consistency: -10
+          cost: 10
+          retention: -15
+        pros:
+          - title: "No build cost at all"
+            description: "The process already exists, for better or worse."
+        cons:
+          - title: "The documented number-one onboarding killer"
+            description: "A blocked newcomer spends week one anxious and unproductive."
+        whenToUse: "Never as the primary policy — only as the fallback for bespoke one-off grants."
+  - id: training-method
+    title: "Primary Training Method"
+    description: "Which of the five methods carries the core curriculum for a mixed crowd?"
+    recommended: mixed-loadout
+    choices:
+      - id: docs-only
+        label: "Docs-first handbook for everyone"
+        description: "One polished handbook; newcomers read and go."
+        metrics:
+          speed: -5
+          consistency: 10
+          cost: 20
+          retention: -10
+        pros:
+          - title: "Cheap backbone, infinitely reusable"
+            description: "The taught pros: near-zero marginal cost and versioned durability."
+        cons:
+          - title: "Passive and anchorless"
+            description: "Nothing forces engagement; confused readers quit silently."
+        whenToUse: "As the spine every other method links to — the card's own verdict — never as the only door."
+      - id: mixed-loadout
+        label: "Mixed loadout: tours for end users, buddy for operators, quickstart+sandbox for devs"
+        description: "Match the method to each audience using each card's strengths."
+        metrics:
+          speed: 15
+          consistency: 5
+          cost: -15
+          retention: 20
+        pros:
+          - title: "Every audience gets its own first value"
+            description: "Task in the product, graded real change, first API call — the three archetypes served by their best-fit method."
+          - title: "Costs are capped per method"
+            description: "Buddy load stays at 10 operators; tours carry the 25 users for free."
+        cons:
+          - title: "Three programs to maintain"
+            description: "More moving parts than one handbook or one bootcamp."
+        whyThisFits: "The method cards' verdicts all say combine; a mixed crowd is exactly the case for per-audience loadouts."
+      - id: mega-bootcamp
+        label: "One cohort academy bootcamp for all 40"
+        description: "A week-long instructor-led academy covering everything for everyone."
+        metrics:
+          speed: -10
+          consistency: 20
+          cost: -20
+          retention: 5
+        pros:
+          - title: "Perfectly consistent baseline"
+            description: "The cohort pro: nobody leaves the room knowing less than the curriculum."
+        cons:
+          - title: "Calendar-locked and one pace for three audiences"
+            description: "End users sit through auth deep-dives; developers idle through button tours."
+        whenToUse: "When the crowd is homogeneous and the hire dates can wait for the next batch."
+  - id: support-anchor
+    title: "Human Anchor Channel"
+    description: "Principle 5: where do questions land when the material cannot answer them?"
+    recommended: office-hours
+    choices:
+      - id: office-hours
+        label: "Weekly office hours + a newcomer channel with a rota"
+        description: "Scheduled live hours plus a staffed channel for async questions."
+        metrics:
+          speed: 10
+          consistency: 5
+          cost: -5
+          retention: 15
+        pros:
+          - title: "Questions die at hour three, not day three"
+            description: "The doctrine's failure point — unanswered early questions — gets a scheduled antidote."
+          - title: "Rota prevents buddy burnout"
+            description: "Sharing the anchor across the team avoids the taught burnout con."
+        cons:
+          - title: "Someone must own the rota"
+            description: "Unowned office hours quietly stop happening."
+        whyThisFits: "Every self-serve method still needs the Human Anchor; office hours scale the anchor without a per-person buddy tax."
+      - id: buddy-everyone
+        label: "A named buddy for all 40 newcomers"
+        description: "Every newcomer pairs with a dedicated senior for their first month."
+        metrics:
+          speed: 5
+          consistency: 0
+          cost: -25
+          retention: 15
+        pros:
+          - title: "Maximum psychological safety"
+            description: "The apprenticeship pros: trust, tacit knowledge, real-time correction."
+        cons:
+          - title: "Forty buddies is a focus tax on the whole org"
+            description: "The method card's scaling con, multiplied by four-zero."
+        whenToUse: "Reserve for operators and high-stakes roles; overkill for self-serve end users."
+      - id: faq-link
+        label: "A FAQ link and 'ping us anytime'"
+        description: "The anchor is a URL and good intentions."
+        metrics:
+          speed: -10
+          consistency: 0
+          cost: 10
+          retention: -20
+        pros:
+          - title: "Effortless to stand up"
+            description: "The link takes five minutes to write."
+        cons:
+          - title: "Not an anchor at all"
+            description: "The doctrine: a FAQ link is a dead end; questions need a person."
+        whenToUse: "Nowhere. This is the failure mode the workshop exists to avoid."

@@ -1,0 +1,16 @@
+type: taxonomy-category
+icon: Library
+title: "Docs-as-Code Sites"
+subtitle: "Docusaurus · MkDocs Material · VitePress · mdBook"
+color: green
+description: "Static site generators that turn a folder of markdown/MDX into a searchable, versioned documentation web app — the durable home the manual presentation points at."
+details: "Docusaurus (MDX + React) gives versioned docs, a built-in search, and interactive components. MkDocs Material with mkdocs.yml is the fast, themeable workhorse for internal IT system manuals. VitePress pairs Vue-native speed with markdown for DX portals. mdBook is minimal and perfect for pure-text handbooks. All of them accept the same markdown you already wrote in the Marp deck's speaker notes, so the deck and the manual never diverge."
+analogy: "The library the presentation was held in front of — the talk is live, but the books stay shelved, catalogued, and findable forever."
+primaryFocus: "Durable, searchable, versioned manual delivery on the web"
+inScope:
+  - "Docusaurus MDX docs with versioning and sidebar navigation"
+  - "MkDocs Material themed sites for internal runbooks and IT manuals"
+  - "VitePress and mdBook for fast markdown-native doc sites"
+outOfScope:
+  - "Linear one-shot presentation delivery (use a deck tool)"
+  - "Interactive API consoles rendered from OpenAPI (see API Reference category)"

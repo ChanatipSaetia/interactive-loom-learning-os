@@ -1,0 +1,36 @@
+- id: journey_happy
+  label: "Happy Path: Day-Zero Access"
+  description: "The joiner request provisions every account before day one and the smoke test passes"
+  steps:
+    - stepId: evt_requested
+      name: "Joiner Request Filed"
+      description: "The hiring manager files the joiner request with role, team, and start date before day one"
+    - stepId: evt_provisioned
+      name: "Day-Zero Accounts Provisioned"
+      description: "SSO group rules mint accounts, licenses, and app entitlements automatically"
+    - stepId: evt_privileged
+      name: "Privileges Granted"
+      description: "For production-reach roles, the privileged access vault approves elevated grants"
+    - stepId: evt_smoked
+      name: "Smoke Test Attempted"
+      description: "On the first workday morning the newcomer logs in and checks every golden-path tool"
+    - stepId: evt_verified
+      name: "Day-1 Access Verified"
+      description: "Every entitlement resolves; the newcomer starts the golden-path task instead of a ticket queue"
+
+- id: journey_rework
+  label: "Rework Loop: 4003 Access Denied"
+  description: "A missing entitlement surfaces on day one and the credential chain is fixed by hand"
+  steps:
+    - stepId: evt_requested
+      name: "Joiner Request Filed"
+      description: "The joiner request lands in the ticket system"
+    - stepId: evt_provisioned
+      name: "Day-Zero Accounts Provisioned"
+      description: "Standard accounts are minted, but an uncommon tool is missed by the group rules"
+    - stepId: evt_smoked
+      name: "Smoke Test Attempted"
+      description: "The newcomer's day-one smoke test hits a 4003 access-denied on the missing entitlement"
+    - stepId: evt_denied
+      name: "Access Denied — Rework Loop"
+      description: "The IT access operator manually repairs the credential chain and the test is re-run"

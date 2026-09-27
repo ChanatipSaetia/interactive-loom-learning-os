@@ -15,15 +15,15 @@ related:
   - sections/flowchart-query/systems.yaml
   - sections/flowchart-query/steps.yaml
   - sections/flowchart-query/journeys.yaml
-  - sections/tradeoffs/haystack-architecture.yaml
-  - sections/taxonomy/offline-etl-processing.yaml
-  - sections/taxonomy/real-time-retrieval.yaml
-  - sections/taxonomy/persistent-storage.yaml
-  - sections/taxonomy/extensibility-layer.yaml
-  - sections/taxonomy/indexing-pipeline.yaml
-  - sections/taxonomy/query-pipeline.yaml
-  - sections/taxonomy/document-store.yaml
-  - sections/taxonomy/custom-components.yaml
+  - sections/tradeoffs/01-haystack-architecture.yaml
+  - sections/taxonomy/01-offline-etl-processing.yaml
+  - sections/taxonomy/02-real-time-retrieval.yaml
+  - sections/taxonomy/03-persistent-storage.yaml
+  - sections/taxonomy/04-extensibility-layer.yaml
+  - sections/taxonomy/05-indexing-pipeline.yaml
+  - sections/taxonomy/06-query-pipeline.yaml
+  - sections/taxonomy/07-document-store.yaml
+  - sections/taxonomy/08-custom-components.yaml
   - sections/capabilities/items.yaml
   - sections/flashcards/glossary.yaml
   - sections/concept-map/concepts.yaml

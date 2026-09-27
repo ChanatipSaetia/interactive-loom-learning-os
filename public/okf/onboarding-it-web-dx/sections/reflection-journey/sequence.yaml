@@ -1,0 +1,22 @@
+challenges:
+  - prompt: "Assemble the six onboarding principles in their correct order of operation:"
+    items:
+      - id: drag-measure
+        text: "Measure the friction: instrument the path and fix the biggest quit-point"
+      - id: drag-access
+        text: "Access first: credentials and environments ready before day one"
+      - id: drag-anchor
+        text: "Human anchor: every path ends at a named human or office hours"
+      - id: drag-value
+        text: "First value in week one: drive one meaningful completed task"
+      - id: drag-disclosure
+        text: "Progressive disclosure: reveal complexity only when it is needed"
+      - id: drag-golden
+        text: "One golden path: a single canonical journey beats a feature tour"
+    solution:
+      - drag-access
+      - drag-value
+      - drag-golden
+      - drag-disclosure
+      - drag-anchor
+      - drag-measure

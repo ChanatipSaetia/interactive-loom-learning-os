@@ -1,0 +1,64 @@
+- type: linear
+  id: step_request
+  initiatedBy: hiring_manager
+  policy: "Before the start date"
+  command: "File joiner request"
+  handledBy: joiner_ticket
+  resultEvents:
+    - id: evt_requested
+      title: "Joiner Request Filed"
+  continuesAs: step_provision
+
+- type: linear
+  id: step_provision
+  policy: "On joiner request accepted"
+  command: "Provision accounts via SSO groups"
+  handledBy: sso_directory
+  resultEvents:
+    - id: evt_provisioned
+      title: "Day-Zero Accounts Provisioned"
+  continuesAs: step_privileges
+
+- type: linear
+  id: step_privileges
+  initiatedBy: it_operator
+  policy: "For production-reach roles only"
+  command: "Approve privileged grants"
+  handledBy: pam_vault
+  resultEvents:
+    - id: evt_privileged
+      title: "Privileges Granted"
+  continuesAs: step_smoke
+
+- type: linear
+  id: step_smoke
+  initiatedBy: newcomer
+  policy: "On the first workday morning"
+  command: "Run day-one smoke test"
+  handledBy: sso_directory
+  resultEvents:
+    - id: evt_smoked
+      title: "Smoke Test Attempted"
+  continuesAs: step_outcome
+
+- type: branch
+  id: step_outcome
+  event: evt_smoked
+  branches:
+    - id: branch_pass
+      label: "All entitlements resolve"
+      policy: "If day-one login and golden-path tools work"
+      command: "Sign off day-one access"
+      handledBy: sso_directory
+      resultEvents:
+        - id: evt_verified
+          title: "Day-1 Access Verified"
+    - id: branch_fail
+      label: "4003 access denied"
+      dashed: true
+      policy: "If the smoke test hits a missing entitlement"
+      command: "Manually fix credential chain"
+      handledBy: pam_vault
+      resultEvents:
+        - id: evt_denied
+          title: "Access Denied — Rework Loop"

@@ -1,0 +1,16 @@
+type: taxonomy-category
+icon: FileText
+title: "Markdown-Native Slide Decks"
+subtitle: "Marp · Slidev · reveal.js"
+color: mauve
+description: "Write slides as plain markdown files that compile to HTML, PDF, or PowerPoint — your deck lives in the same Git repo and pull requests as the code it presents."
+details: "Marp turns CommonMark into slides with theme directives and exports to PDF and PPTX for the people who insist on PowerPoint. Slidev adds Vue components, live coding blocks, and presenter notes for developer audiences. reveal.js builds presentations as HTML/JS web apps with nested vertical slides, speaker notes, and Markdown fragments — a deck you can literally deploy to the same web server as the Web App."
+analogy: "A README.md that stands up and gives a talk — version-controlled, diff-able, and reproducible like code."
+primaryFocus: "Slides authored as code: versioned, themed, and exportable"
+inScope:
+  - "Marp: markdown → HTML/PDF/PPTX slides with themes"
+  - "Slidev: Vue-powered slides with live code editing and presenter mode"
+  - "reveal.js: HTML/JS presentations that run as web apps in the browser"
+outOfScope:
+  - "Drag-and-drop design tools with no text source of truth"
+  - "Long-form hosted documentation sites (see Docs-as-Code Sites)"
