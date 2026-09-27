@@ -1,21 +1,22 @@
-prompt: "Reassemble the Six-Stage Manual Presentation Arc in the correct chronological order:"
-items:
-  - id: drag-recap
-    text: "Recap + pin the permanent docs-site permalink"
-  - id: drag-hook
-    text: "Hook with the user's pain, not the architecture"
-  - id: drag-gotchas
-    text: "Gotchas: show the known failure modes with documented fixes"
-  - id: drag-demo
-    text: "Live demo in the running product (fallback clip ready)"
-  - id: drag-roadmap
-    text: "Roadmap: state what they will be able to do by the end"
-  - id: drag-scenario
-    text: "One-scenario walkthrough of a single persona task end-to-end"
-solution:
-  - drag-hook
-  - drag-roadmap
-  - drag-scenario
-  - drag-demo
-  - drag-gotchas
-  - drag-recap
+challenges:
+  - prompt: "Reassemble the Six-Stage Manual Presentation Arc in the correct chronological order:"
+    items:
+      - id: drag-recap
+        text: "Recap + pin the permanent docs-site permalink"
+      - id: drag-hook
+        text: "Hook with the user's pain, not the architecture"
+      - id: drag-gotchas
+        text: "Gotchas: show the known failure modes with documented fixes"
+      - id: drag-demo
+        text: "Live demo in the running product (fallback clip ready)"
+      - id: drag-roadmap
+        text: "Roadmap: state what they will be able to do by the end"
+      - id: drag-scenario
+        text: "One-scenario walkthrough of a single persona task end-to-end"
+    solution:
+      - drag-hook
+      - drag-roadmap
+      - drag-scenario
+      - drag-demo
+      - drag-gotchas
+      - drag-recap
