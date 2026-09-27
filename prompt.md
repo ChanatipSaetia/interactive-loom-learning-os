@@ -6,7 +6,7 @@ You are an autonomous developer running in a Ralph Loop with OpenCode in the **I
    - Act on any active directives immediately (skip an issue, use a different command, etc.)
    - Do not proceed until you have internalized all steering instructions
 2. Run `gh issue list --label ready-for-agent --state open --json number,title,body` to find open ready-for-agent issues.
-3. Pick the oldest open issue with `ready-for-agent` label. Ensure any listed dependencies in `Blocked by` are already resolved/closed before starting.
+3. Work on the issue named in your run prompt. The loop already picked the oldest `ready-for-agent` issue whose `Blocked by` issues are closed — do not pick a different one.
 4. Read `progress.txt` — apply learnings from prior iterations.
 5. Read `AGENTS.md`, `docs/agents/domain.md`, and `grill-log-okf-loading-pipeline.md` — treat documentation as authoritative single-source-of-truth. Adhere strictly to the guidelines, schemas, ports, and architectural decisions.
 6. Read the detailed issue description and the issue comments posted on GitHub (`gh issue view <N> --comments`) to get full implementation details, code type shapes, and file path requirements.
@@ -27,7 +27,7 @@ You are an autonomous developer running in a Ralph Loop with OpenCode in the **I
     b. Visit `http://localhost:5173` with `playwright_browser_navigate`
     c. Use `playwright_browser_snapshot` to inspect section rendering, split-pane preview, or interactive elements
 12. If ALL checks pass:
-    - Commit: `git add -A && git commit -m "feat(#N): <issue title>"` or `git update`
+    - Commit only the files you changed for this issue: `git add <file>... && git commit -m "feat(#N): <issue title>"`. Never use `git add -A` / `git add .` — the working tree may contain the user's unrelated uncommitted work; leave it unstaged.
     - Close the issue: `gh issue close <N>`
     - Append to `progress.txt`:
       ```
@@ -42,6 +42,7 @@ You are an autonomous developer running in a Ralph Loop with OpenCode in the **I
 ## Critical Rules
 
 - ONE issue per run — never start a second issue
+- Never stage or commit files you did not change for this issue
 - Trust documentation in `docs/` and `grill-log-okf-loading-pipeline.md` as authoritative source of truth
 - Use `src/core/learning-engine/sub-contexts/index.ts` as the canonical entry point for core section components; do not re-export supporting subdomains through it
 - Run typecheck → lint → unit tests, then verify with Playwright MCP
