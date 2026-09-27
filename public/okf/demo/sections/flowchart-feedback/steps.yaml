@@ -34,7 +34,7 @@
 
 - type: linear
   id: fb_store
-  event: fb_revision
+  policy: fb_revision
   command: cmd_store_failure
   handledBy: memory_store
   resultEvents:
@@ -44,7 +44,7 @@
 
 - type: linear
   id: fb_rerun
-  event: fb_stored
+  policy: fb_stored
   command: cmd_rerun
   handledBy: llm_feedback
   resultEvents:

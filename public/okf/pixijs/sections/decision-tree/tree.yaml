@@ -3,7 +3,7 @@ title: "PixiJS Display Object Selection Guide"
 root: "q_purpose"
 nodes:
   q_purpose:
-    text: "What type of visual content are you rendering in PixiJS?"
+    prompt: "What type of visual content are you rendering in PixiJS?"
     choices:
       - text: "Text, Numbers, or Typography"
         next: "q_text_frequency"
@@ -13,7 +13,7 @@ nodes:
         next: "q_vector_dynamic"
 
   q_text_frequency:
-    text: "How often does this text content update?"
+    prompt: "How often does this text content update?"
     choices:
       - text: "Updates frequently (e.g. 60 FPS score counter, damage numbers, timer)"
         next: "leaf_bitmap_text"
@@ -21,7 +21,7 @@ nodes:
         next: "leaf_pixi_text"
 
   q_entity_count:
-    text: "How many simultaneous entities will be on screen?"
+    prompt: "How many simultaneous entities will be on screen?"
     choices:
       - text: "Thousands of simple entities (e.g. bullets, rain, snow, starfield)"
         next: "leaf_particle_container"
@@ -29,7 +29,7 @@ nodes:
         next: "leaf_sprite_container"
 
   q_vector_dynamic:
-    text: "Does the vector shape change shape/geometry every frame?"
+    prompt: "Does the vector shape change shape/geometry every frame?"
     choices:
       - text: "Static geometry drawn once (e.g. UI card background, static game board)"
         next: "leaf_render_texture_graphics"
@@ -37,43 +37,49 @@ nodes:
         next: "leaf_pixi_graphics"
 
   leaf_bitmap_text:
-    recommendation: "Use PIXI.BitmapText"
-    explanation: "BitmapText uses pre-rasterized glyphs from a texture atlas. Updating strings every frame creates zero GPU texture uploads and batches with standard sprites."
-    tradeoffs:
-      - "Requires pre-baking font atlas using BMFont or Hiero."
-      - "Extreme 60 FPS performance with zero GC stutter."
+    leaf:
+      recommendation: "Use PIXI.BitmapText"
+      explanation: "BitmapText uses pre-rasterized glyphs from a texture atlas. Updating strings every frame creates zero GPU texture uploads and batches with standard sprites."
+      tradeoffs:
+        - "Requires pre-baking font atlas using BMFont or Hiero."
+        - "Extreme 60 FPS performance with zero GC stutter."
 
   leaf_pixi_text:
-    recommendation: "Use PIXI.Text (or PIXI.HTMLText)"
-    explanation: "PIXI.Text supports all system fonts, rich CSS gradients, and drop shadows without pre-baking. Perfect for static labels."
-    tradeoffs:
-      - "Do not update strings in tight loops to avoid VRAM churn."
-      - "Maximum styling flexibility with zero pre-processing."
+    leaf:
+      recommendation: "Use PIXI.Text (or PIXI.HTMLText)"
+      explanation: "PIXI.Text supports all system fonts, rich CSS gradients, and drop shadows without pre-baking. Perfect for static labels."
+      tradeoffs:
+        - "Do not update strings in tight loops to avoid VRAM churn."
+        - "Maximum styling flexibility with zero pre-processing."
 
   leaf_particle_container:
-    recommendation: "Use PIXI.ParticleContainer"
-    explanation: "ParticleContainer streams flat vertex buffers directly to the GPU, effortlessly pushing 50,000+ sprites at 60 FPS."
-    tradeoffs:
-      - "No deep nested children or individual child filters."
-      - "Industry-leading 2D particle rendering performance."
+    leaf:
+      recommendation: "Use PIXI.ParticleContainer"
+      explanation: "ParticleContainer streams flat vertex buffers directly to the GPU, effortlessly pushing 50,000+ sprites at 60 FPS."
+      tradeoffs:
+        - "No deep nested children or individual child filters."
+        - "Industry-leading 2D particle rendering performance."
 
   leaf_sprite_container:
-    recommendation: "Use PIXI.Container + PIXI.Sprite with Texture Atlas"
-    explanation: "Standard Container and Sprite provide full transform hierarchy, anchor positioning, alpha blending, and automatic batch rendering."
-    tradeoffs:
-      - "Pack sprites into a texture atlas to maintain low draw calls."
-      - "Full hierarchical control over character rigs and UI widgets."
+    leaf:
+      recommendation: "Use PIXI.Container + PIXI.Sprite with Texture Atlas"
+      explanation: "Standard Container and Sprite provide full transform hierarchy, anchor positioning, alpha blending, and automatic batch rendering."
+      tradeoffs:
+        - "Pack sprites into a texture atlas to maintain low draw calls."
+        - "Full hierarchical control over character rigs and UI widgets."
 
   leaf_render_texture_graphics:
-    recommendation: "Draw with PIXI.Graphics, then Bake to RenderTexture"
-    explanation: "Draw vector paths using PIXI.Graphics once during initialization, then generate a Texture via app.renderer.generateTexture(graphics)."
-    tradeoffs:
-      - "Bypasses CPU triangulation in the render loop."
-      - "Renders static vector shapes as ultra-fast textured quads."
+    leaf:
+      recommendation: "Draw with PIXI.Graphics, then Bake to RenderTexture"
+      explanation: "Draw vector paths using PIXI.Graphics once during initialization, then generate a Texture via app.renderer.generateTexture(graphics)."
+      tradeoffs:
+        - "Bypasses CPU triangulation in the render loop."
+        - "Renders static vector shapes as ultra-fast textured quads."
 
   leaf_pixi_graphics:
-    recommendation: "Use PIXI.Graphics (Dynamic Redraw)"
-    explanation: "Call graphics.clear() and redraw simple geometry (like health bars and bounding boxes) directly inside the ticker."
-    tradeoffs:
-      - "Fast and intuitive for procedural dynamic geometry."
-      - "Keep vertex count reasonable to avoid CPU triangulation overhead."
+    leaf:
+      recommendation: "Use PIXI.Graphics (Dynamic Redraw)"
+      explanation: "Call graphics.clear() and redraw simple geometry (like health bars and bounding boxes) directly inside the ticker."
+      tradeoffs:
+        - "Fast and intuitive for procedural dynamic geometry."
+        - "Keep vertex count reasonable to avoid CPU triangulation overhead."
