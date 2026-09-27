@@ -66,6 +66,8 @@ export interface ParsedSection {
  * sub-context next to its schema; the gateway runs it between Tier 1 and Tier 2.
  */
 export interface SectionLayout {
+  /** Files whose Tier 1 parse failure blocks Tier 2 for this layout. */
+  requiredFiles(section: ParsedSection): string[]
   assemble(section: ParsedSection): { input: Record<string, unknown>; diagnostics: ValidationDiagnostic[] }
 }
 

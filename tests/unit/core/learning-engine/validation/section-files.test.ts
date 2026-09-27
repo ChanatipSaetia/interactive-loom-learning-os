@@ -118,6 +118,75 @@ nodes:
     expect(result.diagnostics[0]).toMatchObject({ tier: 3, field: 'nodes.start.choices[0].next' })
   })
 
+  it('reports syntax and schema errors from sibling collection files in one pass', () => {
+    const result = validateSectionFiles({
+      'section.md': sectionMd('type: taxonomy-browser'),
+      '01-broken.yaml': 'title: Broken\n  bad indent: [unclosed',
+      '02-incomplete.yaml': `subtitle: s
+description: d
+details: d
+analogy: a
+primaryFocus: p
+inScope: [a]
+outOfScope: [b]
+color: blue`,
+    }, ctx)
+
+    expect(result.status).toBe('error')
+    expect(result.payload.data).toEqual({})
+    expect(result.diagnostics.some((d) => d.tier === 1 && d.file === 'demo/sections/x/01-broken.yaml')).toBe(true)
+    const schemaDiag = result.diagnostics.find((d) => d.tier === 2)
+    expect(schemaDiag).toBeDefined()
+    expect(schemaDiag?.field).toContain('icon')
+  })
+
+  it('reports every broken file syntax error in one pass', () => {
+    const result = validateSectionFiles({
+      'section.md': sectionMd('type: taxonomy-browser'),
+      '01-one.yaml': 'a: [unclosed',
+      '02-two.yaml': 'b: {unclosed',
+    }, ctx)
+
+    expect(result.status).toBe('error')
+    const files = result.diagnostics.filter((d) => d.tier === 1).map((d) => d.file)
+    expect(files).toEqual(
+      expect.arrayContaining(['demo/sections/x/01-one.yaml', 'demo/sections/x/02-two.yaml']),
+    )
+  })
+
+  it('skips Tier 2 when the file feeding a singleFile layout failed to parse', () => {
+    const result = validateSectionFiles({
+      'section.md': sectionMd('type: quiz\ntitle: Q'),
+      'questions.yaml': '- id: q1\n  question: [unclosed',
+    }, ctx)
+
+    expect(result.status).toBe('error')
+    expect(result.diagnostics.map((d) => d.tier)).toEqual([1])
+    expect(result.diagnostics[0]).toMatchObject({ file: 'demo/sections/x/questions.yaml' })
+  })
+
+  it('reports only the syntax error when one file of a fixed-file layout is broken', () => {
+    const result = validateSectionFiles({
+      'section.md': sectionMd('type: flowchart'),
+      'actors.yaml': 'user: { title: User, desc: d }',
+      'systems.yaml': 'engine: { title: Engine, desc: d }',
+      'steps.yaml': 'steps: [unclosed',
+      'journeys.yaml': '[]',
+    }, ctx)
+
+    expect(result.status).toBe('error')
+    expect(result.diagnostics).toHaveLength(1)
+    expect(result.diagnostics[0]).toMatchObject({ tier: 1, file: 'demo/sections/x/steps.yaml' })
+  })
+
+  it('collects syntax errors of data files even when section.md is missing', () => {
+    const result = validateSectionFiles({ 'items.yaml': 'a: [unclosed' }, ctx)
+
+    expect(result.status).toBe('error')
+    expect(result.diagnostics[0]).toMatchObject({ tier: 1, message: 'Missing section.md.' })
+    expect(result.diagnostics.some((d) => d.tier === 1 && d.file === 'demo/sections/x/items.yaml')).toBe(true)
+  })
+
   it('returns empty data when Tier 2 fails', () => {
     const result = validateSectionFiles({
       'section.md': sectionMd('type: quiz'),

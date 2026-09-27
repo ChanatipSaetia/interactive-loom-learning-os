@@ -43,6 +43,9 @@ export function resourceFile(section: ParsedSection, defaultFile: string): strin
  */
 export function singleFile(defaultFile: string, key?: string): SectionLayout {
   return {
+    requiredFiles(section) {
+      return [resourceFile(section, defaultFile)]
+    },
     assemble(section) {
       const file = resourceFile(section, defaultFile)
       if (!(file in section.yaml)) return { input: {}, diagnostics: [missingFile(file)] }
@@ -61,6 +64,10 @@ export function singleFile(defaultFile: string, key?: string): SectionLayout {
 export function collection(key: string): SectionLayout {
   const fromResource = singleFile('', key)
   return {
+    requiredFiles(section) {
+      const { resource } = section.meta
+      return resource && resource !== '.' ? [resourceFile(section, '')] : []
+    },
     assemble(section) {
       if (section.meta.resource && section.meta.resource !== '.') return fromResource.assemble(section)
       const files = Object.keys(section.yaml)
@@ -74,6 +81,9 @@ export function collection(key: string): SectionLayout {
 /** Several fixed files, each stored under its own key inside `wrapKey`. */
 export function fixedFiles(wrapKey: string, files: Record<string, string>): SectionLayout {
   return {
+    requiredFiles() {
+      return Object.values(files)
+    },
     assemble(section) {
       const diagnostics = Object.values(files)
         .filter((f) => !(f in section.yaml))
@@ -97,6 +107,9 @@ export function parseParagraphs(markdown: string): string[] {
 /** A markdown file split into paragraphs, falling back to the section.md body. */
 export function markdownParagraphs(defaultFile: string, key: string): SectionLayout {
   return {
+    requiredFiles() {
+      return []
+    },
     assemble(section) {
       const file = resourceFile(section, defaultFile)
       const text = section.markdown[file] ?? section.body

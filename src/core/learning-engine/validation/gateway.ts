@@ -416,12 +416,19 @@ function toSectionMeta(frontmatter: Record<string, unknown>): SectionMeta {
   }
 }
 
-/** Tier 1: parse section.md frontmatter and every YAML / Markdown file, one diagnostic per broken file. */
+/**
+ * Tier 1: parse section.md frontmatter and every YAML / Markdown file, one
+ * diagnostic per broken file. Every file is parsed even when an earlier one
+ * failed, so all syntax errors in the section surface in a single pass.
+ */
 function parseSectionFiles(
   files: SectionFiles,
   fileLabel: (name: string) => string
 ): { parsed: ParsedSection | null; diagnostics: ValidationDiagnostic[] } {
   const diagnostics: ValidationDiagnostic[] = []
+
+  let meta: SectionMeta | null = null
+  let body = ''
 
   const sectionMd = files[SECTION_FILE]
   if (sectionMd === undefined) {
@@ -431,22 +438,23 @@ function parseSectionFiles(
       message: 'Missing section.md.',
       fixHint: 'Every section folder needs a section.md whose frontmatter declares at least "type".',
     })
-    return { parsed: null, diagnostics }
+  } else {
+    const fm = extractFrontmatter(sectionMd)
+    if (fm === null) {
+      diagnostics.push({
+        tier: 1,
+        file: fileLabel(SECTION_FILE),
+        line: 1,
+        message: 'Invalid YAML frontmatter: missing closing "---" delimiter or malformed frontmatter.',
+        fixHint: 'Ensure frontmatter is wrapped between opening "---" and closing "---" delimiters.',
+      })
+    } else {
+      meta = toSectionMeta(fm.frontmatter)
+      body = fm.body
+    }
   }
 
-  const fm = extractFrontmatter(sectionMd)
-  if (fm === null) {
-    diagnostics.push({
-      tier: 1,
-      file: fileLabel(SECTION_FILE),
-      line: 1,
-      message: 'Invalid YAML frontmatter: missing closing "---" delimiter or malformed frontmatter.',
-      fixHint: 'Ensure frontmatter is wrapped between opening "---" and closing "---" delimiters.',
-    })
-    return { parsed: null, diagnostics }
-  }
-
-  const parsed: ParsedSection = { meta: toSectionMeta(fm.frontmatter), body: fm.body, yaml: {}, markdown: {} }
+  const parsed: ParsedSection = { meta: meta ?? toSectionMeta({}), body, yaml: {}, markdown: {} }
 
   for (const [name, text] of Object.entries(files)) {
     if (name === SECTION_FILE) continue
@@ -468,6 +476,7 @@ function parseSectionFiles(
     }
   }
 
+  if (!meta) return { parsed: null, diagnostics }
   return { parsed, diagnostics }
 }
 
@@ -475,8 +484,13 @@ function parseSectionFiles(
  * Execute the full 3-Tier Validation pipeline on one section folder's raw files.
  *
  * Tier 1 parses section.md and each data file separately (diagnostics name the
- * file), the section type's layout assembles the schema input, then Tier 2
- * validates and transforms it and Tier 3 checks references on the output.
+ * file) and keeps going after the first failure, so every broken file in the
+ * section is reported in one pass. The section type's layout assembles the
+ * schema input, then Tier 2 validates and transforms it and Tier 3 checks
+ * references on the output. When some file failed to parse, collection layouts
+ * still run Tier 2/3 on the entries that parsed (sibling schema errors surface
+ * in the same pass); layouts whose required files failed skip Tier 2 — the
+ * syntax diagnostic already names the file.
  *
  * @param files - Raw file contents keyed by filename within the section folder
  * @param context - File/topic context; `context.file` should be the section folder path
@@ -486,15 +500,15 @@ export function validateSectionFiles(
   context?: ValidationContext
 ): ValidationResult<LoadedSection> {
   const fileLabel = (name: string) => (context?.file ? `${context.file}/${name}` : name)
-  const { parsed, diagnostics } = parseSectionFiles(files, fileLabel)
+  const { parsed, diagnostics: tier1Diagnostics } = parseSectionFiles(files, fileLabel)
 
   const fail = (extra: ValidationDiagnostic[] = []): ValidationResult<LoadedSection> => ({
     status: 'error',
     payload: { meta: parsed?.meta ?? toSectionMeta({}), data: {}, body: parsed?.body ?? '' },
-    diagnostics: [...diagnostics, ...extra],
+    diagnostics: [...tier1Diagnostics, ...extra],
   })
 
-  if (!parsed || diagnostics.length > 0) return fail()
+  if (!parsed) return fail()
 
   const sectionType = parsed.meta.type
   const entry = SCHEMA_REGISTRY[sectionType]
@@ -508,15 +522,22 @@ export function validateSectionFiles(
     }])
   }
 
+  const brokenFiles = new Set(
+    Object.keys(files).filter((name) => /\.ya?ml$/.test(name) && !(name in parsed.yaml)),
+  )
+  const tier2Blocked = entry.layout.requiredFiles(parsed).some((f) => brokenFiles.has(f))
+  if (tier2Blocked) return fail()
+
   const assembled = entry.layout.assemble(parsed)
   const layoutDiagnostics = assembled.diagnostics.map((d) => ({ ...d, file: d.file ? fileLabel(d.file) : context?.file }))
   if (layoutDiagnostics.length > 0) return fail(layoutDiagnostics)
 
   const result = validateSectionData({ ...assembled.input, type: sectionType }, sectionType, context)
+  const status: ValidationResult['status'] = tier1Diagnostics.length > 0 ? 'error' : result.status
   return {
-    status: result.status,
-    payload: { meta: parsed.meta, data: result.status === 'error' ? {} : result.payload, body: parsed.body },
-    diagnostics: result.diagnostics,
+    status,
+    payload: { meta: parsed.meta, data: status === 'error' ? {} : result.payload, body: parsed.body },
+    diagnostics: [...tier1Diagnostics, ...result.diagnostics],
   }
 }
 
