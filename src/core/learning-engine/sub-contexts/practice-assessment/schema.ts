@@ -14,6 +14,8 @@ export const QuizQuestionSchema = z.object({
   question: z.string(),
   choices: z.array(QuizChoiceSchema),
   hint: z.string().optional(),
+  /** Teach point id (from the topic brief) this question assesses. */
+  groundedIn: z.string().optional(),
 })
 
 export const QuizSectionSchema = z.object({

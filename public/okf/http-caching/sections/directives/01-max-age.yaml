@@ -1,0 +1,13 @@
+type: taxonomy-category
+icon: Timer
+title: "max-age"
+subtitle: "Fresh for N seconds"
+color: green
+description: "The response may be reused without contacting the server until it is N seconds old."
+details: "Use long max-age values for fingerprinted static assets such as app.3f9a.js."
+analogy: "Like milk with a best-before date."
+primaryFocus: "Freshness lifetime"
+inScope:
+  - "Static assets with hashed filenames"
+outOfScope:
+  - "Per-user responses"

@@ -1,0 +1,13 @@
+type: taxonomy-category
+icon: RefreshCw
+title: "no-cache"
+subtitle: "Store, but revalidate first"
+color: yellow
+description: "Caches may store the response but must check with the server before every reuse."
+details: "Good for HTML documents that change often but benefit from cheap 304 Not Modified replies."
+analogy: "Like calling ahead to confirm a reservation before driving over."
+primaryFocus: "Always revalidate"
+inScope:
+  - "HTML entry pages"
+outOfScope:
+  - "Secrets that must never touch disk"

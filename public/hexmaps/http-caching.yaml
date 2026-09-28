@@ -1,0 +1,64 @@
+topicId: "http-caching"
+topicTitle: "Realm of the Swift Response"
+capitalId: "capital"
+
+nodes:
+  - id: "capital"
+    title: "Origin Citadel"
+    type: "capital"
+    status: "unlocked"
+    sectionRef: "intro"
+    description: "Every request once came here. Learn why the realm needs caches."
+
+  - id: "directive-spire"
+    title: "Spire of Directives"
+    type: "archive_spire"
+    status: "unlocked"
+    unlockedBy:
+      - "capital"
+    sectionRef: "directives"
+    description: "Study the four Cache-Control directives."
+    rewards:
+      - id: "header-sigil"
+        name: "Sigil of Cache-Control"
+        icon: "📜"
+        description: "Proof you know what each directive allows."
+
+  - id: "stale-outpost"
+    title: "Stale Goblin Outpost"
+    type: "quiz_encounter"
+    status: "locked"
+    unlockedBy:
+      - "directive-spire"
+    sectionRef: "quiz"
+    description: "Pick the right directive to defeat the goblin serving stale pages."
+    monster:
+      id: "stale-goblin"
+      name: "Stale Goblin"
+      type: "goblin"
+      maxHp: 100
+      damage: 15
+      icon: "👾"
+    rewards:
+      - id: "fresh-shield"
+        name: "Shield of Freshness"
+        icon: "🛡️"
+        description: "Earned by choosing directives correctly under pressure."
+
+  - id: "boss-lair"
+    title: "Lair of the Thundering Herd"
+    type: "boss_lair"
+    status: "locked"
+    unlockedBy:
+      - "stale-outpost"
+    description: "A cache miss storm floods the origin. Only correct caching policy can stop it."
+    requiredItems:
+      - "header-sigil"
+      - "fresh-shield"
+    monster:
+      id: "thundering-herd"
+      name: "The Thundering Herd"
+      type: "boss"
+      maxHp: 200
+      damage: 35
+      icon: "🐲"

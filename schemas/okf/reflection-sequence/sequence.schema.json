@@ -38,6 +38,9 @@
             "items": {
               "type": "string"
             }
+          },
+          "groundedIn": {
+            "type": "string"
           }
         },
         "required": [

@@ -1,0 +1,13 @@
+type: taxonomy-category
+icon: ShieldOff
+title: "no-store"
+subtitle: "Never keep a copy"
+color: red
+description: "No cache may store any part of the response."
+details: "Use for banking pages and other sensitive data."
+analogy: "Like a shredder: read it once, then it is gone."
+primaryFocus: "Zero persistence"
+inScope:
+  - "Sensitive personal data"
+outOfScope:
+  - "Public static assets"

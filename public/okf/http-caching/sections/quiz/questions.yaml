@@ -1,0 +1,31 @@
+- id: q1
+  question: "A logged-in dashboard is different for every user. Which directive stops a CDN from storing it while still letting the browser cache it?"
+  hint: "Think about shared vs private caches."
+  choices:
+    - id: a
+      text: "private"
+      correct: true
+      explanation: "Correct. private allows only the user's own browser cache to store the response."
+    - id: b
+      text: "max-age"
+      correct: false
+      explanation: "max-age sets a freshness lifetime but does not stop shared caches from storing it."
+    - id: c
+      text: "no-store"
+      correct: false
+      explanation: "no-store forbids every cache, including the browser, from keeping a copy."
+- id: q2
+  question: "Your HTML changes often, but you want cheap 304 replies. Which directive fits?"
+  choices:
+    - id: a
+      text: "no-store"
+      correct: false
+      explanation: "no-store prevents storage entirely, so there is nothing to revalidate."
+    - id: b
+      text: "no-cache"
+      correct: true
+      explanation: "Correct. no-cache stores the response but revalidates before every reuse."
+    - id: c
+      text: "max-age"
+      correct: false
+      explanation: "A long max-age would serve stale HTML without checking the server."

@@ -19,7 +19,22 @@ import { useOKFBundled, toSectionConfigs } from '../../../../learning-engine/com
 import { useTopics } from '../../../../learning-engine/composition/routes'
 
 // Known hexmap topics available in public/hexmaps/
-export const KNOWN_HEXMAP_TOPIC_IDS = ['gamification', 'demo', 'system-design', 'pixijs', 'pixijs-filters', 'world-history']
+export const KNOWN_HEXMAP_TOPIC_IDS = [
+  'gamification',
+  'demo',
+  'system-design',
+  'pixijs',
+  'pixijs-filters',
+  'world-history',
+  'kamado-beef',
+  'storybook',
+  'http-caching',
+  'interactive-user-manuals',
+  'onboarding-it-web-dx',
+  'presenting-tech-manuals',
+  'teaching-concepts-in-docs',
+  'technical-writing-software-docs',
+]
 
 export type SnackbarType = 'success' | 'danger' | 'warning' | 'info' | 'craft' | 'exp'
 

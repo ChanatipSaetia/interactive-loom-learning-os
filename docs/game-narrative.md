@@ -35,10 +35,10 @@ The world is not a continent. It is a set of **Realms**, one for each domain of 
 Realm is a lattice of glowing hexes radiating from a single hub.
 
 At the center of every Realm stands its **Capital** — the Citadel of Motivation, the Architecture
-Citadel, the WebGL Citadel, the Great Hall of Time (มหาศาลากาลเวลา). The Capital is home, shop, and
+Citadel, the WebGL Citadel, the Great Hall of Time (มหาศาลากาลเวลา), or the Kamado Citadel (มหานครเปลวไฟเซรามิก). The Capital is home, shop, and
 starting hub; leaving it begins the run, returning in defeat ends it.
 
-From the Capital, **branching tracks of hexes unfurl**, allowing the Architect to **freely explore parallel paths** (e.g. Legal & Governance Systems, Production & Technology, or Geopolitical Conflicts). Each path is an open frontier:
+From the Capital, **branching tracks of hexes unfurl**, allowing the Architect to **freely explore parallel paths** (e.g. Legal & Governance Systems, Production & Technology, Food Science & Thermodynamics, or Geopolitical Conflicts). Each path is an open frontier:
 
 - **Reading Sanctuaries & Archive Spires** — sacred havens, categorized libraries, and layered architectural Lego stacks where the Architect studies, recovers hit points, and discovers foundational relics.
 - **Concept Monoliths** — standing stones of vocabulary and knowledge graphs, where names are learned so that later things can be *said*.
@@ -57,6 +57,7 @@ And at the heart of every Realm: the **Boss Lair**, sealed until all mandatory k
 Across the branching paths of the realm, **Key Items** reside inside sanctuaries, archives, simulation nexuses, or battle encounters. They represent the **mandatory milestones** of that domain:
 
 - In the **Chronos Realm**, the *Hourglass of Chronos* (Ancient River Valleys), the *Seal of the Historian* (Classical Law & Charters), the *Astrolabe of Truth* (Renaissance & Industrial Flow), and the *Compass of Chronos* (Cold War Deterrence) must all be claimed.
+- In the **Realm of the Kamado Flame**, the *Aegis of Airflow & Thermal Mass* (Ceramic Anatomy), the *Scroll of Reverse Sear Mastery* (Grilling Taxonomies), and the *Gem of Maillard & Smoke Chemistry* (Food Science) are required to dissolve the seal on the *Overcooked Smoke Dragon's Lair*.
 - A Boss Lair's seal will not break for brute force alone — it opens only when the Architect holds every mandatory relic of understanding. The Dragon of your specialization cannot be felled by anything you failed to learn in this Realm.
 
 Within the Lair itself, collected relics transform into tactical weapons:

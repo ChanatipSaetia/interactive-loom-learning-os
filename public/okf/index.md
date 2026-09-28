@@ -7,6 +7,7 @@ okf_version: "0.1"
 * [AI Agent Architecture (Demo)](demo/index.md) — Explore AI Agent system architecture with LLM, tools, and memory
 * [Haystack 2.x - AI Search Framework](haystack/index.md) — Build search and RAG applications with composable Haystack pipelines
 * [Hexagonal Architecture (Ports & Adapters)](hexagonal-architecture/index.md) — Isolate core business domain logic from external technologies, databases, frameworks, and UI drivers
+* [HTTP Caching](http-caching/index.md) — Make web apps fast and cheap by letting browsers and CDNs reuse responses safely
 * [Mutual TLS (mTLS) Security & Protocol Architecture](mtls/index.md) — Mutual authentication, TLS 1.3 handshakes, and SPIFFE identity
 * [PixiJS — 2D WebGL/WebGPU Rendering Engine](pixijs/index.md) — Master hardware-accelerated 2D graphics, scene graphs, draw-call batching, and GPU render pipelines
 * [PixiJS Filters & Post-Processing Shaders](pixijs-filters/index.md) — Master GPU post-processing, custom fragment shaders, multi-pass convolution blurs, displacement maps, and FilterSystem architecture
@@ -42,5 +43,3 @@ okf_version: "0.1"
 
 ## History
 * [ประวัติศาสตร์โลกเบื้องต้น (Basic World History)](world-history/index.md) — สำรวจวิวัฒนาการมนุษยชาติ กำเนิดอารยธรรมโบราณ ยุคกลาง เรเนซองส์ และการปฏิวัติอุตสาหกรรม
-
-

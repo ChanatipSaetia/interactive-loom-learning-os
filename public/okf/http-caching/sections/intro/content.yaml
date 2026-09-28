@@ -1,0 +1,24 @@
+title: "HTTP Caching"
+subtitle: "Reuse responses safely so pages load fast and servers stay calm."
+estimatedTime: "5 min read"
+moduleCount: 2
+what:
+  summary: "HTTP caching lets a browser or CDN keep a copy of a response and reuse it instead of asking the origin server again."
+  bullets:
+    - "The Cache-Control header tells caches what they may store and for how long"
+    - "Shared caches (CDNs) and private caches (browsers) follow different rules"
+  tags:
+    - "Cache-Control"
+    - "CDN"
+why:
+  summary: "Every request that hits the origin costs latency and compute."
+  impact: "A correct caching policy can remove most repeat traffic from your servers."
+roadmap:
+  - sectionId: "directives"
+    title: "Cache-Control Directives"
+    type: "taxonomy-browser"
+    description: "Compare max-age, no-cache, no-store, and private."
+  - sectionId: "quiz"
+    title: "Knowledge Check"
+    type: "quiz"
+    description: "Pick the right directive for each response."

@@ -1,253 +1,105 @@
 # Guideline: How to Create a New Topic
 
-This document is a technical reference guide for directory structures, content schemas, and registration requirements for creating interactive topics inside the Loom Learning OS. To build something right now, follow the Quick start below; read the reference sections afterwards only where you need the details.
+This document is a technical reference guide for directory structures, content schemas, and registration requirements for creating interactive topics inside the Loom Learning OS. To build a topic, follow the Quick start below (the same flow for humans and AI agents). The reference sections after it explain each file `okf:new` writes; read them only where you need the details.
 
-## Quick start: your first topic in 10 minutes
+## Quick start: the topic authoring flow
 
-A topic is an OKF bundle under `public/okf/` plus a registration link and a hex campaign map. Follow these five steps verbatim and you end up with a topic that passes `npm run okf:validate` and appears in `npm run dev`. The example below is a trimmed version of the real `http-caching` walkthrough topic (`intro` → `taxonomy-browser` → `quiz` + hex map) that lives in `public/okf/http-caching/`.
+A topic is an OKF bundle under `public/okf/`, a registration link and a hex campaign map. **Humans and AI agents create topics the same way**: design the topic in a **brief**, review it, then let `okf:new` build the files from it. Every step below applies to both. The only difference is who does the review in step 3.
 
-### The 5-step path
+### The 6-step flow
 
-| # | Step | Where |
+| # | Step | Command / file |
 |---|---|---|
-| 1 | **Bundle** — topic landing page + app metadata | `public/okf/<topic-id>/index.md` + `index.yaml` |
-| 2 | **Sections** — one folder per section (`section.md` + data files) | `public/okf/<topic-id>/sections/<name>/` — schemas in [docs/sections/](sections/README.md) |
-| 3 | **Validate** — the same Validation Gateway the app runs | `npm run okf:validate -- --topic=<topic-id>` |
-| 4 | **Register** — one markdown link so the app can discover the topic | `public/okf/index.md` |
-| 5 | **Hex map** — campaign map binding every section to a node | `public/hexmaps/<topic-id>.yaml` — see [creating-hexmaps.md](creating-hexmaps.md) |
+| 1 | **Brief**: design the topic (tracks, sections, key items, boss, teach points) | `public/okf/<topic-id>/brief.yaml`, written by hand, or `npm run okf:new -- <topic-id> --category <Category> --sections <type1,type2,...>` for a starter brief |
+| 2 | **Check the brief** | `npm run okf:validate -- --topic=<topic-id> --brief` |
+| 3 | **Review the brief** before any content exists | A human reviews it themselves. **An AI agent stops here and asks the user to approve the brief.** |
+| 4 | **Scaffold** section stubs, `index.md`, `index.yaml`, root registration and hex map | `npm run okf:new -- --from public/okf/<topic-id>/brief.yaml` |
+| 5 | **Fill**: replace stub content, add `groundedIn` to every quiz question and reflection-sequence challenge, rewrite the hex map story | `public/okf/<topic-id>/sections/*`, `public/hexmaps/<topic-id>.yaml` (see [creating-hexmaps.md](creating-hexmaps.md)) |
+| 6 | **Gate**: the topic is done when validation passes **and** every `groundedIn` is confirmed against the section text | `npm run okf:validate -- --topic=<topic-id>` |
 
-### Fastest route: scaffold all five steps in one command
+To **change a topic later** (add a section or a track), edit the brief and repeat from step 2. `okf:new --from` is additive. It creates only what is missing: new section folders, new links in the topic `index.md`, new hex nodes at the tip of their track and new key items on the boss. It never overwrites section content or existing hex nodes. The only file it rewrites is `index.yaml`, which is generated from the brief.
 
-The `okf:new` scaffold writes a complete, validation-clean starter topic — bundle, section stubs, root registration, and a starter hex map — and runs the Validation Gateway before anything touches disk:
+### The topic brief
 
-```bash
-npm run okf:new -- <topic-slug> --category <Category> --sections <type1,type2,...> [--title "..."] [--description "..."] [--tags a,b]
-```
-
-Example:
-
-```bash
-npm run okf:new -- http-caching --category Architecture --sections taxonomy-browser,flowchart,quiz --tags http,performance
-```
-
-The scaffold writes the bundle (`index.md` + `index.yaml`), one stub folder per requested type (named after the type), the root registration link under `## <Category>`, and a starter hex map (capital hub + one node per section + boss lair, mapped per [creating-hexmaps.md §4](creating-hexmaps.md)).
-
-Guarantees: `intro` is always added automatically (the capital hub must bind to it); the command **refuses to overwrite** an existing topic and writes **nothing** unless everything validates clean; pass each section type once — to get two sections of the same type, copy the generated folder and rename it. Every generated file is a placeholder: replace the stub content, rewrite the hex map story, then re-verify with `npm run okf:validate -- --topic=<topic-slug>`.
-
-### Hand-writing the minimal topic
-
-To understand what the scaffold produces (or to skip it), here is every file of a complete topic, `first-topic`, written by hand.
-
-**1. Bundle** — `public/okf/first-topic/index.md` (no frontmatter; section links in display order):
-
-```markdown
-# Caching Basics
-
-Make web apps fast and cheap by letting browsers and CDNs reuse responses safely.
-
-## Foundations
-* [Why Cache?](sections/intro/section.md) — what HTTP caching is and why it matters
-* [The max-age Directive](sections/directives/section.md) — the freshness directive you use every day
-
-## Check
-* [Knowledge Check](sections/quiz/section.md) — test your directive intuition
-```
-
-and `public/okf/first-topic/index.yaml`:
+The brief is the topic's permanent design record: it holds *what* the topic contains, and `okf:new` builds the files from it. It is committed next to the topic. Section loaders ignore it. VS Code autocompletes it from `schemas/okf/topic-brief.schema.json`.
 
 ```yaml
-# App metadata for first-topic topic bundle
-category: Architecture
-tags:
-  - http
-  - caching
+# public/okf/http-caching/brief.yaml
+id: http-caching                       # = folder name, lowercase kebab-case
+title: "HTTP Caching"
+description: "Make web apps fast and cheap by letting browsers and CDNs reuse responses safely"
+category: Architecture                 # the ## heading in public/okf/index.md
+tags: [http, caching, performance]
+
+boss:                                  # the central failure mode of the domain
+  title: "The Stale Cache Wraith"
+  failureMode: "Serving outdated or private data because cache rules were wrong"
+
+tracks:                                # 2–4 exploration tracks from the capital
+  - id: directives
+    title: "Cache Directives"
+    sections:                          # in learning order
+      - name: directives               # folder: sections/directives/
+        type: taxonomy-browser
+        title: "Cache Directives"
+        keyItem: true                  # drops a key item the boss requires
+        teaches:                       # what this section teaches, one id per point
+          - id: max-age
+            point: "max-age sets how many seconds a response stays fresh"
+          - id: private
+            point: "private lets only the user's browser cache store it, not CDNs"
+      - name: directives-quiz
+        type: quiz
+        title: "Directive Check"
+
+  - id: revalidation
+    title: "Revalidation"
+    sections:
+      - name: etags
+        type: text
+        title: "ETags and 304s"
+        keyItem: true
+        teaches:
+          - id: etag
+            point: "An ETag identifies a response version so caches can revalidate with a 304"
+      - name: revalidation-order
+        type: reflection-sequence
+        title: "Revalidation Order"
 ```
 
-**2. Sections** — three folders under `public/okf/first-topic/sections/`:
+| Field | Rule |
+|---|---|
+| `id`, `title`, `description`, `category`, `tags` | The **only** place topic metadata is written. `okf:new` generates `index.yaml` and the root `public/okf/index.md` link from it, and `okf:validate` fails if they drift. |
+| `boss` | `title` names the boss monster; `failureMode` becomes the boss lair description. |
+| `tracks` | 2–4 tracks. Each becomes one unlock chain from the capital on the hex map, in section order. |
+| `sections[].name` | The folder name, unique across the topic. `intro` is reserved: `okf:new` always adds the intro (the capital hub) and generates its roadmap from the tracks. The same `type` may appear several times under different names. |
+| `sections[].keyItem` | `true` makes the section's hex node drop a key item that the boss requires. At least one section must be a key item; 2–4 is typical. |
+| `sections[].teaches` | Optional `{ id, point }` list. Ids are unique across the topic. |
 
-`intro/section.md` ([full schema](sections/intro.md)):
+### Grounding: `groundedIn`
 
-```yaml
----
-type: intro
-title: "Caching Basics"
-resource: content.yaml
----
-```
-
-`intro/content.yaml`:
-
-```yaml
-title: "Caching Basics"
-subtitle: "Reuse responses safely so pages load fast and servers stay calm."
-estimatedTime: "5 min read"
-moduleCount: 2
-what:
-  summary: "HTTP caching lets a browser or CDN keep a copy of a response and reuse it instead of asking the origin server again."
-  bullets:
-    - "The Cache-Control header tells caches what they may store and for how long"
-  tags:
-    - "Cache-Control"
-why:
-  summary: "Every request that hits the origin costs latency and compute."
-  impact: "A correct caching policy can remove most repeat traffic from your servers."
-roadmap:
-  - sectionId: "directives"
-    title: "The max-age Directive"
-    type: "taxonomy-browser"
-    description: "How freshness lifetimes work."
-  - sectionId: "quiz"
-    title: "Knowledge Check"
-    type: "quiz"
-    description: "Apply the freshness rule."
-```
-
-`directives/section.md` ([full schema](sections/taxonomy-browser.md)) — `resource: "."` means every `.yaml` file in the folder is one category card:
+Every `quiz` question and `reflection-sequence` challenge names the teach point it assesses:
 
 ```yaml
----
-type: taxonomy-browser
-title: "Cache Directives"
-resource: "."
----
-```
-
-`directives/01-max-age.yaml`:
-
-```yaml
-type: taxonomy-category
-icon: Timer
-title: "max-age"
-subtitle: "Fresh for N seconds"
-color: green
-description: "The response may be reused without contacting the server until it is N seconds old."
-details: "Use long max-age values for fingerprinted static assets such as app.3f9a.js."
-analogy: "Like milk with a best-before date."
-primaryFocus: "Freshness lifetime"
-inScope:
-  - "Static assets with hashed filenames"
-outOfScope:
-  - "Per-user responses"
-```
-
-`quiz/section.md` ([full schema](sections/quiz.md)):
-
-```yaml
----
-type: quiz
-title: "Knowledge Check"
-resource: questions.yaml
----
-```
-
-`quiz/questions.yaml` — every fact tested is already taught above (grounding rule):
-
-```yaml
+# sections/directives-quiz/questions.yaml
 - id: q1
-  question: "Your stylesheet is named app.3f9a.css and its contents never change unless the filename changes. What does the max-age guidance suggest?"
-  hint: "Think about best-before dates and hashed filenames."
-  choices:
-    - id: a
-      text: "A long max-age freshness lifetime"
-      correct: true
-      explanation: "Correct. Fingerprinted static assets can stay fresh in caches for a long time."
-    - id: b
-      text: "Nothing — caching does not apply to stylesheets"
-      correct: false
-      explanation: "max-age applies to any cacheable response, including stylesheets."
+  groundedIn: private        # a teaches id from an EARLIER section in the SAME track
+  question: "A logged-in dashboard is different for every user. Which directive stops a CDN from storing it?"
+  choices: ...
 ```
 
-**4. Register** — add one link to `public/okf/index.md` under a `## <Category>` heading (create the heading if missing):
+`okf:validate` checks that the id belongs to a section that comes earlier in the same track. Grounding is opt-in per section: `groundedIn` becomes required once an earlier section in that track lists `teaches`. The validator can only check the id. The author, human or AI, must still confirm the section text actually teaches the point.
 
-```markdown
-## Architecture
-* [Caching Basics](first-topic/index.md) — Make web apps fast and cheap by letting browsers and CDNs reuse responses safely
-```
+### What `okf:validate` checks for a topic with a brief
 
-**5. Hex map** — `public/hexmaps/first-topic.yaml` (one node per section, boss gated by every key item; full rules in [creating-hexmaps.md](creating-hexmaps.md)):
+- **Brief**: YAML syntax, schema, 2–4 tracks, unique track, section and teach ids, at least one key item.
+- **Brief vs. disk**: every section folder is in the brief and every brief section has a folder, and each `section.md` type matches the brief.
+- **Metadata**: `index.yaml` category and tags match the brief, and the topic is registered in `public/okf/index.md` under `## <category>`.
+- **Intro**: every roadmap `sectionId` is a section in the brief.
+- **Grounding**: `groundedIn` rules as above.
+- **Hex map**: it exists, and (as for every topic) every section is mapped, the boss can be solved and the boss drops no items.
 
-```yaml
-topicId: "first-topic"
-topicTitle: "Realm of the Swift Response"
-capitalId: "capital"
-
-nodes:
-  - id: "capital"
-    title: "Origin Citadel"
-    type: "capital"
-    status: "unlocked"
-    sectionRef: "intro"
-    description: "Every request once came here. Learn why the realm needs caches."
-
-  - id: "directive-spire"
-    title: "Spire of Directives"
-    type: "archive_spire"
-    status: "unlocked"
-    unlockedBy:
-      - "capital"
-    sectionRef: "directives"
-    description: "Study the max-age freshness rule."
-    rewards:
-      - id: "header-sigil"
-        name: "Sigil of Cache-Control"
-        icon: "📜"
-        description: "Proof you know what each directive allows."
-
-  - id: "stale-outpost"
-    title: "Stale Goblin Outpost"
-    type: "quiz_encounter"
-    status: "locked"
-    unlockedBy:
-      - "directive-spire"
-    sectionRef: "quiz"
-    description: "Pick the right directive to defeat the goblin serving stale pages."
-    monster:
-      id: "stale-goblin"
-      name: "Stale Goblin"
-      type: "goblin"
-      maxHp: 100
-      damage: 15
-      icon: "👾"
-
-  - id: "boss-lair"
-    title: "Lair of the Thundering Herd"
-    type: "boss_lair"
-    status: "locked"
-    unlockedBy:
-      - "stale-outpost"
-    description: "A cache miss storm floods the origin. Only correct caching policy can stop it."
-    requiredItems:
-      - "header-sigil"
-    monster:
-      id: "thundering-herd"
-      name: "The Thundering Herd"
-      type: "boss"
-      maxHp: 200
-      damage: 35
-      icon: "🐲"
-```
-
-(Real topics radiate 2–4 thematic tracks from the capital — this single chain is just the minimum.)
-
-**3. Verify** — path step 3, run last so the validator sees everything:
-
-```bash
-npm run okf:validate -- --topic=first-topic   # must print "All OKF section bundles passed validation clean!"
-npm run dev                                    # topic card appears under Architecture; open it and click through the sections
-```
-
-### Common mistakes
-
-| Mistake | Symptom | Caught by validator? |
-|---|---|---|
-| **Forgetting root registration** — topic exists but has no link in `public/okf/index.md` | Validates clean, but the app never shows the topic (the SPA discovers topics from that file, the CLI scans the filesystem) | ❌ — check the link yourself |
-| **Missing hex map** — no `public/hexmaps/<topic-id>.yaml` | Topic renders but the campaign map has no nodes | ❌ |
-| **Ungrounded quiz questions** — a question, answer option, or reflection item references a fact not taught in any prerequisite section | Learners are tested on the unseen | ❌ — human review |
-| **Unmapped sections** — a section folder has no hex map node (each node binds a unique `sectionRef`) | Sections are unreachable from the campaign map | ✅ tier 3, but only once a hex map exists |
-
-Also remember: the boss lair unlocks only when **all** key items are gathered, and it must **not** drop items itself ([creating-hexmaps.md](creating-hexmaps.md)).
-
-Everything the scaffold produces and the example above hand-writes is explained file by file in the reference sections below.
+Topics created before the brief existed have no `brief.yaml`, and none of the brief checks run for them.
 
 ## Reference Guides & Documentation
 
@@ -468,7 +320,7 @@ See the [Section Types Reference](sections/README.md) for the index and recommen
 
 ## 4. Register the Topic
 
-Topics are auto-discovered — no TypeScript changes needed. Two files must be updated:
+Topics are auto-discovered — no TypeScript changes needed. `okf:new --from` writes the registration link from the brief (`title`, `description`, `category`), and `okf:validate` fails if a topic with a brief is missing from the root index or listed under the wrong category.
 
 ### Add to root `index.md`
 
@@ -500,11 +352,11 @@ This is optional if `index.md` is properly configured, but serves as a backup fo
 
 To add a section to an existing topic:
 
-1. Create the folder under `public/okf/[topic-id]/sections/[section-name]/`
-2. Create `section.md` with frontmatter (`type`, `title`, `resource`)
-3. Add data files in the folder
-4. Add a link to the section in `index.md` under the appropriate heading
-5. Run `npm run okf:validate` — it runs the same Validation Gateway as the app and fails on broken files or on `index.md` links without a `section.md`
+1. Add it to a track in `public/okf/[topic-id]/brief.yaml` (with `teaches` if later assessments will test it)
+2. `npm run okf:validate -- --topic=[topic-id] --brief`, then review the brief change
+3. `npm run okf:new -- --from public/okf/[topic-id]/brief.yaml`. This creates the folder with `section.md` and stub data files, appends the link to `index.md` and appends a hex node at the tip of the track
+4. Replace the stub content
+5. Run `npm run okf:validate`. It runs the same Validation Gateway as the app and fails on broken files, on `index.md` links without a `section.md`, and on section folders the brief does not declare
 
 No TypeScript changes needed — the loader discovers the section's files from the folder at runtime.
 
@@ -530,87 +382,7 @@ Each `section.md` declares its own `type` and `title`.
 
 ## 6. Creating a New Topic from Scratch
 
-Step-by-step guide to create a new topic by hand (prefer the [Quick start](#quick-start-your-first-topic-in-10-minutes) for the fast path). Remember to also create the hex map in `public/hexmaps/[topic-id].yaml` — see [creating-hexmaps.md](creating-hexmaps.md).
-
-### Step 1: Create the directory
-
-```bash
-mkdir -p public/okf/my-topic/sections
-```
-
-### Step 2: Create `index.md` (OKF directory listing)
-
-```markdown
-# My Topic Title
-
-A brief description of what this topic covers.
-
-## Foundations
-* [Introduction](sections/intro/section.md) — Overview of the topic
-* [Key Vocabulary](sections/flashcards/section.md) — Essential terms
-
-## Concepts
-* [Concept Map](sections/concept-map/section.md) — How concepts relate
-* [Taxonomy](sections/taxonomy/section.md) — Category breakdown
-
-## Interactive
-* [Knowledge Check](sections/quiz/section.md) — Test your understanding
-* [Trade-off Sandbox](sections/tradeoffs/section.md) — Experiment with decisions
-```
-
-### Step 3: Create `index.yaml` (app metadata)
-
-```yaml
-# App metadata for my-topic topic bundle
-category: Architecture
-tags:
-  - my-topic
-  - related-tag
-```
-
-### Step 4: Register in root `index.md`
-
-Add a link in `public/okf/index.md`:
-
-```markdown
-## Architecture
-* [Existing Topic](existing/index.md) — existing description
-* [My Topic Title](my-topic/index.md) — A brief description of what this topic covers
-```
-
-### Step 5: Create sections
-
-Create each section following the [Section Types](#3-section-types) documentation above. At minimum, create an `intro` section:
-
-```bash
-mkdir -p public/okf/my-topic/sections/intro
-```
-
-Create `public/okf/my-topic/sections/intro/section.md`:
-```yaml
----
-type: text
-title: "Introduction"
-heading: "Getting Started"
-resource: content.md
----
-```
-
-Create `public/okf/my-topic/sections/intro/content.md`:
-```markdown
-An introductory paragraph about your topic.
-
-A second paragraph with more detail.
-```
-
-### Step 6: Verify
-
-Start the dev server and navigate to `http://localhost:5173/` to see the topic card, then click to verify sections load.
-
-```bash
-npm run dev
-```
-
+Use the [Quick start](#quick-start-the-topic-authoring-flow) flow: brief → `okf:validate --brief` → review → `okf:new --from` → fill → `okf:validate`. Topics are no longer hand-assembled file by file. Sections 1–5 above describe each file the scaffold writes, so you can edit them after scaffolding.
 
 ## Related Reference Documents
 

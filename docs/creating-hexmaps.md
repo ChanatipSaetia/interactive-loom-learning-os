@@ -56,7 +56,9 @@ public/
 │   ├── gamification.yaml
 │   ├── system-design.yaml
 │   ├── pixijs.yaml
+│   ├── pixijs-filters.yaml
 │   ├── world-history.yaml
+│   ├── kamado-beef.yaml
 │   └── <topic-id>.yaml       # Must match the topic directory in public/okf/<topic-id>/
 └── okf/
     └── <topic-id>/

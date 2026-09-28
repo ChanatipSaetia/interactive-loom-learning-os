@@ -62,6 +62,9 @@
     ],
     "./schemas/hexmaps/hex-campaign.schema.json": [
       "public/hexmaps/*.yaml"
+    ],
+    "./schemas/okf/topic-brief.schema.json": [
+      "public/okf/*/brief.yaml"
     ]
   }
 }

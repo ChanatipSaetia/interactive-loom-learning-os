@@ -60,6 +60,7 @@ A YAML **list** of `QuizQuestion` objects.
 | `id` | `string` | Yes | Unique question identifier |
 | `question` | `string` | Yes | The question text |
 | `hint` | `string` | No | Hint shown when the learner requests it |
+| `groundedIn` | `string` | When required | Teach point id (from the topic's `brief.yaml`) this question assesses. Must come from an earlier section in the same track, and is required once that section lists `teaches`. See [Grounding](../creating-topics.md#grounding-groundedin) |
 | `choices` | `QuizChoice[]` | Yes | Answer options (typically 3–4) |
 
 `QuizChoice` schema:

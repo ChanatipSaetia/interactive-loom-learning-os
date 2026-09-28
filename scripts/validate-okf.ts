@@ -4,6 +4,12 @@ import path from 'path'
 import { fileURLToPath } from 'url'
 import { validateSectionFiles, formatValidationAsPrompt, validateHexCampaign, type ValidationDiagnostic, type ValidationResult } from '../src/core/learning-engine/validation/gateway.ts'
 import { NodeFsStorageAdapter } from '../src/core/delivery/adapters/node-fs-storage.ts'
+import {
+  BRIEF_FILE,
+  validateTopicBrief,
+  validateTopicAgainstBrief,
+  type TopicSectionOnDisk,
+} from '../src/core/learning-engine/validation/topic-brief.ts'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 const ROOT = path.join(__dirname, '..')
@@ -16,6 +22,29 @@ const args = process.argv.slice(2)
 const isJson = args.includes('--json')
 const isPrompt = args.includes('--format=prompt')
 const topicArg = args.find((a) => a.startsWith('--topic='))?.split('=')[1]
+const briefOnly = args.includes('--brief')
+
+const readIfExists = (abs: string): string | undefined => (fs.existsSync(abs) ? fs.readFileSync(abs, 'utf-8') : undefined)
+
+/** `--brief`: check only public/okf/<topic>/brief.yaml — the gate before scaffolding. */
+function validateBriefOnly(): { totalFiles: number; diagnostics: ValidationDiagnostic[] } {
+  if (!topicArg) {
+    console.error('--brief needs --topic=<topic-id>.')
+    process.exit(1)
+  }
+  const briefPath = path.join(OKF_DIR, topicArg, BRIEF_FILE)
+  const file = path.relative(ROOT, briefPath)
+  const raw = readIfExists(briefPath)
+  if (raw === undefined) {
+    return { totalFiles: 0, diagnostics: [{ tier: 1, file, message: `${file} does not exist.`, fixHint: `Write it by hand, or run \`npm run okf:new -- ${topicArg} --category … --sections …\` for a starter brief.` }] }
+  }
+  const res = validateTopicBrief(raw, file)
+  const diagnostics = [...res.diagnostics]
+  if (res.payload && res.payload.id !== topicArg) {
+    diagnostics.push({ tier: 3, file, field: 'id', message: `Brief id "${res.payload.id}" does not match its folder "${topicArg}".`, fixHint: `Set id: ${topicArg}.` })
+  }
+  return { totalFiles: 1, diagnostics }
+}
 
 async function getTopics(): Promise<string[]> {
   if (topicArg) return [topicArg]
@@ -30,12 +59,35 @@ async function validateAll(): Promise<{ totalFiles: number; diagnostics: Validat
   for (const topicId of await getTopics()) {
     // Every section folder on disk — linked or not — goes through the same gateway as the app.
     const folders = await storage.listSectionFolders(topicId)
+    const sectionsOnDisk: TopicSectionOnDisk[] = []
     for (const folder of folders) {
       totalFiles++
       const files = await storage.readSectionFiles(topicId, folder)
       const file = path.relative(ROOT, path.join(OKF_DIR, topicId, 'sections', folder))
       const res = validateSectionFiles(files, { file, topicId, sectionName: folder })
       diagnostics.push(...res.diagnostics)
+      sectionsOnDisk.push({
+        name: folder,
+        type: res.payload.meta.type || undefined,
+        data: res.status === 'error' ? undefined : (res.payload.data as Record<string, unknown>),
+      })
+    }
+
+    // Topics with a brief: the brief itself, then brief ↔ disk (drift, metadata, grounding, hex map).
+    const briefRaw = readIfExists(path.join(OKF_DIR, topicId, BRIEF_FILE))
+    if (briefRaw !== undefined) {
+      const topicDir = path.relative(ROOT, path.join(OKF_DIR, topicId))
+      const briefRes = validateTopicBrief(briefRaw, `${topicDir}/${BRIEF_FILE}`)
+      diagnostics.push(...briefRes.diagnostics)
+      if (briefRes.payload) {
+        diagnostics.push(...validateTopicAgainstBrief(briefRes.payload, {
+          topicDir,
+          sections: sectionsOnDisk,
+          indexYaml: readIfExists(path.join(OKF_DIR, topicId, 'index.yaml')),
+          rootIndexMd: readIfExists(path.join(OKF_DIR, 'index.md')) ?? '',
+          hexMapExists: fs.existsSync(path.join(HEXMAPS_DIR, `${topicId}.yaml`)),
+        }))
+      }
     }
 
     // Every lesson link in index.md must resolve to a section folder with a section.md.
@@ -81,7 +133,7 @@ async function validateAll(): Promise<{ totalFiles: number; diagnostics: Validat
 }
 
 async function main() {
-  const { totalFiles, diagnostics } = await validateAll()
+  const { totalFiles, diagnostics } = briefOnly ? validateBriefOnly() : await validateAll()
 
   if (isJson) {
     console.log(JSON.stringify(diagnostics, null, 2))

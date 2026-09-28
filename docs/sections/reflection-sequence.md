@@ -77,6 +77,7 @@ challenges:
 | `prompt` | `string` | Yes | Instruction shown above the cards |
 | `items` | `SequenceItem[]` | Yes | Cards to be ordered (presented in randomized order) |
 | `solution` | `string[]` | Yes | Correct order of item `id`s |
+| `groundedIn` | `string` | When required | Teach point id (from the topic's `brief.yaml`) this challenge assesses. Must come from an earlier section in the same track, and is required once that section lists `teaches`. See [Grounding](../creating-topics.md#grounding-groundedin) |
 
 ### `SequenceItem` schema
 

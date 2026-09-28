@@ -1,0 +1,1 @@
+../../../.opencode/skills/create-topic-and-hexmap/SKILL.md

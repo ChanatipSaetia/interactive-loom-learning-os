@@ -45,6 +45,7 @@ import {
 } from '../src/core/learning-engine/sub-contexts/practice-assessment/schema'
 
 import { HexCampaignSchema } from '../src/core/generic/hex-map/schema'
+import { TopicBriefSchema } from '../src/core/learning-engine/validation/topic-brief'
 
 export interface OkfSchemaTarget {
   /** Output path relative to the repository root. */
@@ -252,6 +253,14 @@ export const SCHEMA_TARGETS: OkfSchemaTarget[] = [
     description: 'Hex campaign map document — public/hexmaps/<topic-id>.yaml.',
     sectionType: 'hexmap',
     schema: HexCampaignSchema,
+  },
+  // --- topic brief ---
+  {
+    outPath: 'schemas/okf/topic-brief.schema.json',
+    title: 'OKF topic brief',
+    description: 'Topic design record — public/okf/<topic-id>/brief.yaml.',
+    sectionType: 'brief',
+    schema: TopicBriefSchema,
   },
   // --- section.md frontmatter ---
   {

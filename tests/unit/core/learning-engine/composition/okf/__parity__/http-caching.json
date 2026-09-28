@@ -1,0 +1,172 @@
+[
+  {
+    "folder": "intro",
+    "props": {
+      "estimatedTime": "5 min read",
+      "moduleCount": 2,
+      "roadmap": [
+        {
+          "description": "Compare max-age, no-cache, no-store, and private.",
+          "sectionId": "directives",
+          "title": "Cache-Control Directives",
+          "type": "taxonomy-browser"
+        },
+        {
+          "description": "Pick the right directive for each response.",
+          "sectionId": "quiz",
+          "title": "Knowledge Check",
+          "type": "quiz"
+        }
+      ],
+      "subtitle": "Reuse responses safely so pages load fast and servers stay calm.",
+      "title": "HTTP Caching",
+      "what": {
+        "bullets": [
+          "The Cache-Control header tells caches what they may store and for how long",
+          "Shared caches (CDNs) and private caches (browsers) follow different rules"
+        ],
+        "summary": "HTTP caching lets a browser or CDN keep a copy of a response and reuse it instead of asking the origin server again.",
+        "tags": [
+          "Cache-Control",
+          "CDN"
+        ]
+      },
+      "why": {
+        "impact": "A correct caching policy can remove most repeat traffic from your servers.",
+        "summary": "Every request that hits the origin costs latency and compute."
+      }
+    },
+    "type": "intro"
+  },
+  {
+    "folder": "directives",
+    "props": {
+      "categories": [
+        {
+          "analogy": "Like milk with a best-before date.",
+          "color": "green",
+          "description": "The response may be reused without contacting the server until it is N seconds old.",
+          "details": "Use long max-age values for fingerprinted static assets such as app.3f9a.js.",
+          "icon": "Timer",
+          "inScope": [
+            "Static assets with hashed filenames"
+          ],
+          "outOfScope": [
+            "Per-user responses"
+          ],
+          "primaryFocus": "Freshness lifetime",
+          "subtitle": "Fresh for N seconds",
+          "title": "max-age"
+        },
+        {
+          "analogy": "Like calling ahead to confirm a reservation before driving over.",
+          "color": "yellow",
+          "description": "Caches may store the response but must check with the server before every reuse.",
+          "details": "Good for HTML documents that change often but benefit from cheap 304 Not Modified replies.",
+          "icon": "RefreshCw",
+          "inScope": [
+            "HTML entry pages"
+          ],
+          "outOfScope": [
+            "Secrets that must never touch disk"
+          ],
+          "primaryFocus": "Always revalidate",
+          "subtitle": "Store, but revalidate first",
+          "title": "no-cache"
+        },
+        {
+          "analogy": "Like a shredder: read it once, then it is gone.",
+          "color": "red",
+          "description": "No cache may store any part of the response.",
+          "details": "Use for banking pages and other sensitive data.",
+          "icon": "ShieldOff",
+          "inScope": [
+            "Sensitive personal data"
+          ],
+          "outOfScope": [
+            "Public static assets"
+          ],
+          "primaryFocus": "Zero persistence",
+          "subtitle": "Never keep a copy",
+          "title": "no-store"
+        },
+        {
+          "analogy": "Like a diary: you may keep it, the library may not.",
+          "color": "mauve",
+          "description": "Only the user's own browser cache may store the response; shared caches such as CDNs must not.",
+          "details": "Use for personalized pages like a logged-in dashboard.",
+          "icon": "Lock",
+          "inScope": [
+            "Per-user responses"
+          ],
+          "outOfScope": [
+            "Content identical for every user"
+          ],
+          "primaryFocus": "Private cache only",
+          "subtitle": "Browser only, not CDNs",
+          "title": "private"
+        }
+      ],
+      "title": "Cache-Control Directives"
+    },
+    "type": "taxonomy-browser"
+  },
+  {
+    "folder": "quiz",
+    "props": {
+      "questions": [
+        {
+          "choices": [
+            {
+              "correct": true,
+              "explanation": "Correct. private allows only the user's own browser cache to store the response.",
+              "id": "a",
+              "text": "private"
+            },
+            {
+              "correct": false,
+              "explanation": "max-age sets a freshness lifetime but does not stop shared caches from storing it.",
+              "id": "b",
+              "text": "max-age"
+            },
+            {
+              "correct": false,
+              "explanation": "no-store forbids every cache, including the browser, from keeping a copy.",
+              "id": "c",
+              "text": "no-store"
+            }
+          ],
+          "hint": "Think about shared vs private caches.",
+          "id": "q1",
+          "question": "A logged-in dashboard is different for every user. Which directive stops a CDN from storing it while still letting the browser cache it?"
+        },
+        {
+          "choices": [
+            {
+              "correct": false,
+              "explanation": "no-store prevents storage entirely, so there is nothing to revalidate.",
+              "id": "a",
+              "text": "no-store"
+            },
+            {
+              "correct": true,
+              "explanation": "Correct. no-cache stores the response but revalidates before every reuse.",
+              "id": "b",
+              "text": "no-cache"
+            },
+            {
+              "correct": false,
+              "explanation": "A long max-age would serve stale HTML without checking the server.",
+              "id": "c",
+              "text": "max-age"
+            }
+          ],
+          "id": "q2",
+          "question": "Your HTML changes often, but you want cheap 304 replies. Which directive fits?"
+        }
+      ],
+      "title": "Knowledge Check"
+    },
+    "type": "quiz"
+  }
+]

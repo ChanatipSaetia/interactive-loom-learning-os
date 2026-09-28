@@ -12,6 +12,8 @@ export const ReflectionSequenceChallengeSchema = z.object({
   prompt: z.string(),
   items: z.array(SequenceItemSchema),
   solution: z.array(z.string()),
+  /** Teach point id (from the topic brief) this challenge assesses. */
+  groundedIn: z.string().optional(),
 })
 
 export const ReflectionSequenceSectionSchema = z.object({

@@ -40,6 +40,9 @@
       },
       "hint": {
         "type": "string"
+      },
+      "groundedIn": {
+        "type": "string"
       }
     },
     "required": [

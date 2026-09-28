@@ -1,0 +1,13 @@
+type: taxonomy-category
+icon: Lock
+title: "private"
+subtitle: "Browser only, not CDNs"
+color: mauve
+description: "Only the user's own browser cache may store the response; shared caches such as CDNs must not."
+details: "Use for personalized pages like a logged-in dashboard."
+analogy: "Like a diary: you may keep it, the library may not."
+primaryFocus: "Private cache only"
+inScope:
+  - "Per-user responses"
+outOfScope:
+  - "Content identical for every user"
