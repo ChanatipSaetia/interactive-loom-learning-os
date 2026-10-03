@@ -1,6 +1,6 @@
 # Grill Log — OpenUI Lang Replaces OKF
 
-Status: **Phases 1–4 complete — Phase 5 (Section Editor raw OpenUI tab) next**
+Status: **Phases 1–4 complete — Phase 5 re-scoped to a standalone editor app (Loom Studio)**
 
 ## Goal
 
@@ -138,6 +138,29 @@ Delivery:
 - **Guard for the committed content** (`tests/unit/content/content-files.test.ts`): the catalog, every topic manifest and every section must compile with no tier 1/2/3 diagnostics, every `TopicRef`/`SectionRef` must resolve, and no section file may be orphaned. A deliberately corrupted file makes it fail. This test replaces the OKF round trip once `public/okf/` is deleted in Phase 6.
 - **Existing content bug (unchanged, in both formats):** `poe2-witchhunter-poison-bleed/dot-calculator`'s `total_dps` formula is `bleed_dps + poison_dps`, which references other *metrics*. The formula sandbox only binds *variables*, so it logs `ReferenceError` on every render. It is not fixed here because the content is migrated as-is.
 - `public/okf/` is still present and still the fallback source. It is deleted in Phase 6 along with the OKF reader.
+
+## Re-scope (after Phase 4): Standalone Editor App — Decisions
+
+The in-app Section Editor (old Phase 5) is replaced by a separate authoring app, **Loom Studio**, for editing topic folders on disk.
+
+| # | Question | Decision |
+|---|---|---|
+| 15 | Disk access | **Browser folder picker** (File System Access API, `showDirectoryPicker`). It reads and writes `.oui` files directly with no server, so Studio can be hosted statically. Chromium-based browsers only; other browsers get an explanatory message. |
+| 16 | Folder scope | **One topic folder** (`topic.oui` + `sections/*.oui`). An empty folder starts a new topic. |
+| 17 | Main app editor | **Removed.** The learning app becomes a read-only viewer: no edit toggle, no split-pane editor, no dev-server save endpoints. |
+| 18 | App location | **Same repo, own page:** a second Vite entry (`studio.html`, `npm run studio`) that reuses `src/core` directly, so previews use the real section components. |
+| 19 | Editing a section | **Code + form + preview:** the OpenUI code editor (Phase 2 tooling) and the existing per-type visual forms, synced both ways, with a live preview of the real section. Code edits are saved exactly as typed; form edits reprint the file. |
+| 20 | Saving | **Explicit Save** (Ctrl/Cmd+S or button), unsaved markers in the section list, and a warning before leaving with unsaved changes. |
+| 21 | Section actions | **Add from type template** (pick type and file name, start from a small valid example), **reorder** (updates `SectionRef` order in `topic.oui`), **rename / delete** (with confirmation; updates `topic.oui`). No duplicate. |
+| 22 | Catalog | **Auto-generated.** `index.oui` is generated from the `public/content/*/topic.oui` folders at dev and build time, so a new topic folder just appears. It is no longer committed. |
+
+Revised remaining phases:
+
+5. **Loom Studio**
+   - 5a. Auto-generated catalog (Vite plugin, dev middleware + build emit); drop the committed `index.oui`.
+   - 5b. Studio app: folder picker, topic loading, section list (add/reorder/rename/delete), topic metadata, section editor (code + form + preview), explicit save.
+   - 5c. Remove the in-app editor and dev save endpoints from the learning app.
+6. Delete OKF code, `public/okf/` and the OKF converter/round-trip test; update docs.
 
 ## Open Questions
 
