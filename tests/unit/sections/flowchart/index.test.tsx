@@ -182,7 +182,6 @@ describe('Flowchart journey controls', () => {
 
   it('renders journey selector when journeys provided', () => {
     render(<Flowchart title="Test" schema={mockSchema} />, { wrapper });
-    fireEvent.click(screen.getByTestId('dock-tab-journey'));
     expect(screen.getByTestId('flowchart-journey-select')).toBeInTheDocument();
   });
 
@@ -193,7 +192,6 @@ describe('Flowchart journey controls', () => {
 
   it('renders all journey options', () => {
     render(<Flowchart title="Test" schema={mockSchema} />, { wrapper });
-    fireEvent.click(screen.getByTestId('dock-tab-journey'));
     const select = screen.getByTestId('flowchart-journey-select') as HTMLSelectElement;
     expect(select.options).toHaveLength(2);
     expect(select.options[0].text).toBe('Journey A');
@@ -202,17 +200,14 @@ describe('Flowchart journey controls', () => {
 
   it('defaults to first journey', () => {
     render(<Flowchart title="Test" schema={mockSchema} />, { wrapper });
-    fireEvent.click(screen.getByTestId('dock-tab-journey'));
     const select = screen.getByTestId('flowchart-journey-select') as HTMLSelectElement;
     expect(select.value).toBe('journey-a');
   });
 
   it('switching journeys resets to overview', () => {
     render(<Flowchart title="Test" schema={mockSchema} />, { wrapper });
-    fireEvent.click(screen.getByTestId('dock-tab-journey'));
     const select = screen.getByTestId('flowchart-journey-select');
     fireEvent.change(select, { target: { value: 'journey-b' } });
-    fireEvent.click(screen.getByTestId('dock-tab-steps'));
     const progress = screen.getByTestId('flowchart-progress');
     expect(progress.textContent).toBe('0 / 2');
   });

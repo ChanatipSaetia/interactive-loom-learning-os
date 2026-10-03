@@ -462,78 +462,70 @@ export function Flowchart({ title, flow, schema = INITIAL_SCHEMA, sectionIndex =
   const dockTabs = useMemo<ExpandableTabItem[]>(() => {
     const tabs: ExpandableTabItem[] = [];
 
-    // Journey Tab (only when journeys exist)
-    if (localSchema.journeys.length > 0) {
-      tabs.push({
-        id: 'journey',
-        label: 'Journey',
-        icon: <Icons.Route size={14} />,
-        testId: 'dock-tab-journey',
-        content: (
-          <div className="flowchart-dock-journey" data-testid="flowchart-journey-bar">
-            <div className="flowchart-journey-selector">
-              <span className="flowchart-journey-label">Story / Journey:</span>
-              <Dropdown
-                value={playback.currentJourneyId}
-                onChange={(val) => {
-                  playback.setCurrentJourneyId(val);
-                  setActiveStep(null);
-                }}
-                options={localSchema.journeys.map(j => ({ value: j.id, label: j.label }))}
-                data-testid="flowchart-journey-select"
-                native={true}
-                showChevron={false}
-                triggerClassName="flowchart-journey-select"
-                className="flowchart-journey-dropdown"
-                optionsClassName="flowchart-journey-options"
-                optionClassName="flowchart-journey-option"
-              />
-            </div>
-            {playback.currentJourney?.description && (
-              <div className="flowchart-journey-description" data-testid="flowchart-journey-description">
-                {playback.currentJourney.description}
-              </div>
-            )}
-          </div>
-        )
-      });
-    }
-
-    // Steps Tab (with Playback controls on top)
+    // Journey Tab: journey picker + description + playback + step carousel
     if (activeSteps && activeSteps.length > 0) {
+      const journeys = localSchema.journeys;
+      const currentJourney = playback.currentJourney;
       tabs.push({
         id: 'steps',
-        label: 'Steps',
-        icon: <Icons.Footprints size={14} />,
+        label: 'Journey',
+        icon: <Icons.Route size={14} />,
         testId: 'dock-tab-steps',
         content: (
-          <div className="flowchart-dock-steps">
-            {playback.currentJourney && (
-              <div className="flowchart-dock-steps-controls">
-                <div className="flowchart-dock-journey-title-wrapper">
+          <div className="flowchart-dock-steps" data-testid="flowchart-journey-bar">
+            {currentJourney && (
+              <div className="flowchart-dock-journey-header">
+                <div className="flowchart-dock-steps-controls">
+                  <div className="flowchart-dock-journey-title-wrapper">
+                    {journeys.length > 1 ? (
+                      <Dropdown
+                        value={playback.currentJourneyId}
+                        onChange={(val) => {
+                          playback.setCurrentJourneyId(val);
+                          setActiveStep(null);
+                        }}
+                        options={journeys.map(j => ({ value: j.id, label: j.label }))}
+                        data-testid="flowchart-journey-select"
+                        triggerTestId="flowchart-journey-trigger"
+                        native={true}
+                        className="flowchart-journey-dropdown"
+                        triggerClassName="flowchart-journey-select"
+                        optionsClassName="flowchart-journey-options"
+                        optionClassName="flowchart-journey-option"
+                        optionActiveClassName="flowchart-journey-option-active"
+                      />
+                    ) : (
+                      <div
+                        className="flowchart-dock-journey-title"
+                        data-testid="flowchart-dock-journey-title"
+                        title={currentJourney.label}
+                      >
+                        {currentJourney.label}
+                      </div>
+                    )}
+                  </div>
+                  <div className="flowchart-dock-playback">
+                    <PlaybackControls
+                      currentJourney={currentJourney}
+                      currentStep={playback.currentStep}
+                      isPlaying={playback.isPlaying}
+                      handlePlay={playback.handlePlay}
+                      handlePause={playback.handlePause}
+                      handleNext={playback.handleNext}
+                      handlePrev={playback.handlePrev}
+                      handleReset={playback.handleReset}
+                    />
+                  </div>
+                </div>
+                {currentJourney.description && (
                   <div
-                    className="flowchart-dock-journey-title"
-                    data-testid="flowchart-dock-journey-title"
-                    title={playback.currentJourney.label}
+                    className="flowchart-journey-description"
+                    data-testid="flowchart-journey-description"
+                    title={currentJourney.description}
                   >
-                    {playback.currentJourney.label}
+                    {currentJourney.description}
                   </div>
-                  <div className="flowchart-dock-journey-tooltip" aria-hidden="true">
-                    {playback.currentJourney.label}
-                  </div>
-                </div>
-                <div className="flowchart-dock-playback">
-                  <PlaybackControls
-                    currentJourney={playback.currentJourney}
-                    currentStep={playback.currentStep}
-                    isPlaying={playback.isPlaying}
-                    handlePlay={playback.handlePlay}
-                    handlePause={playback.handlePause}
-                    handleNext={playback.handleNext}
-                    handlePrev={playback.handlePrev}
-                    handleReset={playback.handleReset}
-                  />
-                </div>
+                )}
               </div>
             )}
             <StepCarousel

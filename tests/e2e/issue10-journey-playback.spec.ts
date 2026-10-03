@@ -6,7 +6,6 @@ test.describe('Issue #10 Slice 2: Journey selector + step-by-step highlighting +
   })
 
   test('journey selector renders with all journeys', async ({ page }) => {
-    await page.getByTestId('dock-tab-journey').click()
 
     const select = page.getByTestId('flowchart-journey-select')
     await expect(select).toBeVisible()
@@ -23,7 +22,6 @@ test.describe('Issue #10 Slice 2: Journey selector + step-by-step highlighting +
   })
 
   test('switching journeys updates description and step counts', async ({ page }) => {
-    await page.getByTestId('dock-tab-journey').click()
     const select = page.getByTestId('flowchart-journey-select')
     const description = page.getByTestId('flowchart-journey-description')
     
@@ -32,14 +30,12 @@ test.describe('Issue #10 Slice 2: Journey selector + step-by-step highlighting +
     await select.selectOption('direct-llm-response')
     await expect(description).toContainText('Follow the fast path where the user asks a question')
     
-    // Switch to steps tab to see step progress count
-    await page.getByTestId('dock-tab-steps').click()
     const progress = page.getByTestId('flowchart-progress')
     await expect(progress).toHaveText('0 / 3')
     
-    // Verify journey title is displayed in Steps tab
-    const title = page.getByTestId('flowchart-dock-journey-title')
-    await expect(title).toHaveText('Direct LLM Response')
+    // Journey picker in the panel header shows the selected journey
+    const trigger = page.getByTestId('flowchart-journey-trigger')
+    await expect(trigger).toHaveText('Direct LLM Response')
   })
 
   test('step through all Agent-Subagent MCP Loop steps with highlights', async ({ page }) => {
