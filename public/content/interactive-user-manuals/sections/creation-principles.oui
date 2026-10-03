@@ -1,0 +1,103 @@
+root = TaxonomyBrowser(
+  "Principles for Building Simulations",
+  [
+    taskFirstNotScreenFirst,
+    selectiveFidelity,
+    realisticSafeData,
+    safeToFail,
+    smallChunks,
+    bridgeToTheRealSystem,
+    accessible,
+  ],
+)
+
+taskFirstNotScreenFirst = TaxonomyCategory(
+  "Task-First, Not Screen-First",
+  "Teach jobs, not menus",
+  "ListChecks",
+  "mauve",
+  "Organise the manual around real job tasks (e.g. 'approve a leave request'), not a tour of every screen and menu.",
+  "Learners come to a manual to get a job done. A tour of every menu ('this is the File menu, this is the Settings tab…') is easy to write because it follows the software, but people forget it immediately because it isn't attached to anything they need to do. Start from the list of tasks each role performs and build one module per task.",
+  "A phrasebook organised by situations ('at the restaurant', 'at the station') beats a dictionary when you're travelling.",
+  "Modules that map to real work",
+  ["A task list per role", "One module per job task"],
+  ["Feature tours of every menu"],
+)
+
+selectiveFidelity = TaxonomyCategory(
+  "Selective Fidelity",
+  "Exact on the path, simple off it",
+  "Crosshair",
+  "sky",
+  "Selective fidelity: copy the controls, labels and order on the task path exactly; everything off the path can be static or disabled.",
+  "The learner's muscle memory is built on the path they practise, so the buttons, labels, field order and messages on that path must match the real software exactly. Everything else on the screen (other menus, side panels, unrelated tabs) can be a static picture or a disabled control. This keeps build and upkeep cost down without making practice less real where it counts.",
+  "A film set only builds the side of the street the camera sees.",
+  "Realism where it matters, low cost elsewhere",
+  ["Exact labels, controls and order on the task path", "Static or disabled areas off the path"],
+  ["Rebuilding every feature of the product"],
+)
+
+realisticSafeData = TaxonomyCategory(
+  "Realistic, Safe Data",
+  "Believable cases, zero real people",
+  "Users",
+  "green",
+  "Use synthetic data that looks like real cases, never copied production data.",
+  "'Test User 1' and 'Lorem ipsum' make practice feel fake and hide the real difficulty, such as long names, duplicate customers or an order with ten line items. Invent synthetic records that look like the cases learners will meet, including the awkward ones. Never copy production data into a training tool, even 'just for now'.",
+  "A good crash-test dummy is shaped like a person, but it isn't one.",
+  "Practice that feels real without privacy risk",
+  ["Synthetic records modelled on real cases", "Edge cases learners will meet"],
+  ["Copies of production data"],
+)
+
+safeToFail = TaxonomyCategory(
+  "Safe to Fail",
+  "Mistakes are the lesson",
+  "RotateCcw",
+  "red",
+  "Make it safe to fail: learners can make mistakes, see what would happen, and reset.",
+  "The whole point of simulating is that errors cost nothing, so use it. Let learners press the wrong button and show them what would happen in the real system ('This would have refunded the customer twice'). Then give them a one-click reset so they can try again from a clean start.",
+  "A flight simulator lets you crash, shows you why, and puts you back on the runway.",
+  "Learning from consequences without real damage",
+  ["Showing the consequence of a wrong action", "One-click reset to a clean start"],
+  ["Silently blocking every wrong click"],
+)
+
+smallChunks = TaxonomyCategory(
+  "Small Chunks",
+  "One task, one goal, a few minutes",
+  "Puzzle",
+  "yellow",
+  "Keep each module to one short task with one goal, so learners can finish it in a few minutes and look it up again later.",
+  "A 45-minute simulation of 'everything in the CRM' is hard to finish and impossible to find again when you need it. A module called 'Merge two duplicate customers' takes three minutes and can be found by searching for the task on the day you need it. Short modules are also easier to update: a release breaks one small module, not a giant course.",
+  "Recipe cards instead of a cookbook read cover to cover.",
+  "Finishable and findable modules",
+  ["One goal per module", "Task names learners would search for"],
+  ["Long all-in-one courses"],
+)
+
+bridgeToTheRealSystem = TaxonomyCategory(
+  "Bridge to the Real System",
+  "Say what's different out there",
+  "Link",
+  "teal",
+  "End each task with a bridge to the real system: what differs there, such as extra approvals, permissions or live consequences.",
+  "A simulation always leaves something out. Close each module by telling learners what will be different when they do it for real: 'In the live system your manager must approve refunds over 5,000 baht', 'You will only see this menu after your role is granted', 'This e-mail really goes to the customer'. It stops practice-world habits from causing real-world surprises.",
+  "The driving instructor's last lesson: 'on the motorway, nobody will brake for you'.",
+  "Transferring practice safely to the live system",
+  ["Extra approvals and permissions in the real system", "Consequences that are live for real"],
+  ["Pretending the simulation is identical"],
+)
+
+accessible = TaxonomyCategory(
+  "Accessible",
+  "Everyone who uses the system can train on it",
+  "Accessibility",
+  "lavender",
+  "Make the simulation accessible: keyboard navigation, screen-reader labels and captions for any audio or video.",
+  "If some staff use the real system with a keyboard or a screen reader, the manual must work that way too. Hotspots that only respond to a mouse click lock them out. Give every control a keyboard path and a screen-reader label, and caption every narration or video.",
+  "A building's ramp isn't an extra; it's how some people get in the door.",
+  "Nobody is left out of training",
+  ["Keyboard navigation", "Screen-reader labels", "Captions for audio and video"],
+  ["Mouse-only hotspots"],
+)

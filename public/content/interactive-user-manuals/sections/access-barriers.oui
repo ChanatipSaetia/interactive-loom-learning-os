@@ -1,0 +1,72 @@
+root = TaxonomyBrowser(
+  "Why Learners Can't Touch the Real System",
+  [leastPrivilegeAccess, productionData, irreversibleActions, licenceEnvironmentCost],
+)
+
+leastPrivilegeAccess = TaxonomyCategory(
+  "Least-Privilege Access",
+  "No role, no practice",
+  "ShieldCheck",
+  "mauve",
+  "Least-privilege access control means trainees often have no account or role that allows the actions they must learn.",
+  "Good security gives each person only the permissions their current job needs. A new hire in the finance team may not get the 'approve payment' role until after training, and an IT trainee should never hold domain-admin rights just to practise. So the very actions the manual must teach are the ones the learner is not allowed to perform. A simulation lets them rehearse the approver's screens without ever holding the approver's role.",
+  "A flight simulator: trainee pilots practise engine failures long before anyone hands them the keys to a real aircraft.",
+  "Teaching actions the learner is not yet authorised to perform",
+  [
+    "Roles granted only after training or certification",
+    "Admin and approver screens that trainees must not reach",
+    "Separation-of-duties rules (one person cannot both request and approve)",
+  ],
+  ["Protecting the data inside the system (see Production Data)"],
+)
+
+productionData = TaxonomyCategory(
+  "Production Data",
+  "Real people's records are not a practice ground",
+  "Database",
+  "peach",
+  "Real systems hold production data (customer PII, patient or financial records) that trainees must not see or change.",
+  "A hospital system shows real patients, a CRM shows real customers, and a banking back office shows real balances. Letting trainees browse that data for practice breaks privacy law (such as GDPR or Thailand's PDPA) and the organisation's own policies. Even a read-only training account still exposes personal data to people who have no business need to see it.",
+  "Medical students practise on mannequins, not on the patient in bed 12.",
+  "Keeping personal and confidential records away from practice",
+  [
+    "Personally identifiable information (PII)",
+    "Patient, financial and HR records",
+    "Privacy and data-protection obligations",
+  ],
+  ["Actions that change the world outside the system (see Irreversible Actions)"],
+)
+
+irreversibleActions = TaxonomyCategory(
+  "Irreversible Actions",
+  "Some buttons cannot be un-pressed",
+  "TriangleAlert",
+  "red",
+  "Some actions are irreversible or high-impact in a live system, such as issuing a refund, deleting a record or changing a network rule.",
+  "A refund sends real money, a deleted record may be gone for good, an e-mail blast reaches real customers, and a wrong firewall rule can cut off a whole office. Learning by trial and error is how people learn software best, but in a live system every error is a real incident. A simulation removes the consequence while keeping the practice.",
+  "Fire drills use a pretend fire so people can practise the exit route without anyone getting burned.",
+  "Letting learners make mistakes that cost nothing",
+  [
+    "Money movement: refunds, payments, payroll",
+    "Destructive actions: delete, purge, overwrite",
+    "Outbound effects: e-mails, orders, network and security changes",
+  ],
+  ["Whether the learner is allowed to act at all (see Least-Privilege Access)"],
+)
+
+licenceEnvironmentCost = TaxonomyCategory(
+  "Licence & Environment Cost",
+  "A real seat for every trainee adds up",
+  "Wallet",
+  "yellow",
+  "Per-seat licences and shared environments make it costly to give every trainee a real system to practise on.",
+  "Enterprise software such as ERP, CRM or ITSM platforms is usually licensed per user, and extra non-production environments cost more again. A class of 200 new staff each needing a seat just to practise for a week is hard to justify. Shared test environments are also busy with developers and testers, who do not want trainees changing their data.",
+  "A driving school doesn't buy every student a car; it shares a few dual-control cars and uses a simulator for the rest.",
+  "Scaling practice without scaling licences",
+  [
+    "Per-user licensing of enterprise platforms",
+    "Cost and upkeep of extra non-production environments",
+    "Shared test environments that trainees would disrupt",
+  ],
+  ["The cost of building and maintaining the simulation itself (see Keeping It Alive)"],
+)

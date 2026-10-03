@@ -1,0 +1,132 @@
+root = Quiz("Doc Types Check", [q1, q2, q3, q4, q5, q6])
+
+q1 = QuizQuestion(
+  "q1",
+  "'Your first expense claim in 10 minutes', using sample data that always works, is which type?",
+  [
+    QuizChoice(
+      "q1-a",
+      "Tutorial",
+      true,
+      "A tutorial is a learning-oriented, guaranteed-to-work lesson for a beginner.",
+    ),
+    QuizChoice(
+      "q1-b",
+      "Reference",
+      false,
+      "Reference describes facts to look up; it doesn't guide a lesson.",
+    ),
+    QuizChoice(
+      "q1-c",
+      "Explanation",
+      false,
+      "Explanation discusses why; this is a hands-on lesson.",
+    ),
+  ],
+  "Who is the reader, and are they learning or working?",
+)
+
+q2 = QuizQuestion(
+  "q2",
+  "An experienced user needs to export last month's claims to Excel. Which type of page serves them?",
+  [
+    QuizChoice(
+      "q2-a",
+      "How-to guide",
+      true,
+      "A how-to guide gives a competent user the steps to one specific real-world goal.",
+    ),
+    QuizChoice(
+      "q2-b",
+      "Tutorial",
+      false,
+      "They aren't learning the basics; they have a real job to do.",
+    ),
+    QuizChoice("q2-c", "Explanation", false, "They need steps, not background."),
+  ],
+  "Competent user + real goal.",
+)
+
+q3 = QuizQuestion(
+  "q3",
+  "A table listing every field on the user form, what it accepts and its limits, is which type?",
+  [
+    QuizChoice(
+      "q3-a",
+      "Reference",
+      true,
+      "Reference is dry, complete, accurate description to look things up.",
+    ),
+    QuizChoice("q3-b", "How-to guide", false, "It contains no steps toward a goal."),
+    QuizChoice("q3-c", "Tutorial", false, "Nobody is being guided through a lesson."),
+  ],
+  "Would you read it top to bottom or look something up?",
+)
+
+q4 = QuizQuestion(
+  "q4",
+  "A page titled 'Why approvals go through two levels' belongs to which type?",
+  [
+    QuizChoice(
+      "q4-a",
+      "Explanation",
+      true,
+      "Explanation covers why things work the way they do and design decisions.",
+    ),
+    QuizChoice("q4-b", "How-to guide", false, "It explains a reason; it doesn't give steps."),
+    QuizChoice("q4-c", "Reference", false, "Reference lists facts; it doesn't discuss reasons."),
+  ],
+  "The title starts with 'Why'.",
+)
+
+q5 = QuizQuestion(
+  "q5",
+  "A 'Submit a claim' page starts with three paragraphs on the history of the expense policy. What's wrong?",
+  [
+    QuizChoice(
+      "q5-a",
+      "It mixes explanation into a how-to, so readers wade through content meant for someone else",
+      true,
+      "Keep the steps on the how-to page and link to a separate explanation page.",
+    ),
+    QuizChoice(
+      "q5-b",
+      "Nothing: more context is always better",
+      false,
+      "The user who wants to submit a claim must scroll past history they didn't ask for.",
+    ),
+    QuizChoice(
+      "q5-c",
+      "The history should be a tutorial instead",
+      false,
+      "History is background, which is explanation, not a hands-on lesson.",
+    ),
+  ],
+  "How many kinds of reader need is this page serving?",
+)
+
+q6 = QuizQuestion(
+  "q6",
+  "Which two questions make up the Diátaxis compass?",
+  [
+    QuizChoice(
+      "q6-a",
+      "Action or cognition? Acquisition (study) or application (work)?",
+      true,
+      "The two answers together point to exactly one of the four types.",
+    ),
+    QuizChoice(
+      "q6-b",
+      "Beginner or expert? Long or short?",
+      false,
+      "These aren't the compass questions.",
+    ),
+    QuizChoice(
+      "q6-c",
+      "Web or desktop? Text or video?",
+      false,
+      "The compass is about the reader's need, not the medium.",
+    ),
+  ],
+  "Doing vs knowing, and studying vs working.",
+)

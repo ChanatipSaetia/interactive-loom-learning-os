@@ -1,0 +1,41 @@
+root = Bullets(
+  "Four Findings from Learning Science",
+  [
+    Bullet(
+      "Retrieval practice (the testing effect)",
+      [
+        Bullet("Recalling an idea from memory strengthens it more than re-reading it."),
+        Bullet(
+          "In docs: end a concept page with two or three quick questions, and don't show the answers until the reader tries.",
+        ),
+      ],
+    ),
+    Bullet(
+      "Spacing",
+      [
+        Bullet("Short reviews spread over days beat one long session."),
+        Bullet(
+          "In docs: a follow-up quiz or tip a few days after onboarding, not a three-hour course on day one.",
+        ),
+      ],
+    ),
+    Bullet(
+      "Self-explanation",
+      [
+        Bullet(
+          "Asking learners to explain why something works, in their own words, deepens understanding.",
+        ),
+        Bullet("In docs: 'In one sentence, why did Anna see all five projects?'"),
+      ],
+    ),
+    Bullet(
+      "Explanatory feedback",
+      [
+        Bullet("Say why an answer is right or wrong, not just whether it is."),
+        Bullet(
+          "'Incorrect' teaches nothing; 'Not quite: permissions set on a workspace flow down to every project inside it' fixes the model.",
+        ),
+      ],
+    ),
+  ],
+)

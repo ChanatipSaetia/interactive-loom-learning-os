@@ -1,0 +1,199 @@
+topicId: "presenting-tech-manuals"
+topicTitle: "Realm of the Presented Manual: Docspeak Citadel"
+capitalId: "capital"
+nodes:
+  # Ring 0: Capital Center
+  - id: "capital"
+    title: "Capital of the Presented Manual: Broadcast Hub"
+    type: "capital"
+    status: "unlocked"
+    sectionRef: "intro"
+    description: "The central hub of manual presentation. Learn why presenting the manual is a craft, not a chore!"
+
+  # Side Branch: Memory Monoliths
+  - id: "lexicon-monolith"
+    title: "Lexicon of the Realm"
+    type: "concept_monolith"
+    status: "unlocked"
+    unlockedBy:
+      - "capital"
+    sectionRef: "glossary"
+    description: "Master the vocabulary of docs-as-code: runbooks, permalinks, quickstarts, and fallback clips."
+
+  - id: "constellation-monolith"
+    title: "Concept Constellation"
+    type: "concept_monolith"
+    status: "locked"
+    unlockedBy:
+      - "lexicon-monolith"
+    sectionRef: "concept-map"
+    description: "Trace the semantic links between audience, arc, instruments, and delivery."
+
+  # Track 1: Audience & Narrative
+  - id: "audience-spire"
+    title: "Spire of the Three Audience Zones"
+    type: "archive_spire"
+    status: "unlocked"
+    unlockedBy:
+      - "capital"
+    sectionRef: "audience-map"
+    description: "Catalog the three audience archetypes: end users, operators, and developers."
+    rewards:
+      - id: "lens-of-empathy"
+        name: "Lens of Empathy"
+        icon: "📿"
+        description: "A relic that forces every slide to be read through the audience's eyes before it is shown."
+
+  - id: "arc-archive"
+    title: "Archive of the Six-Stage Arc"
+    type: "archive_spire"
+    status: "locked"
+    unlockedBy:
+      - "audience-spire"
+    sectionRef: "narrative-arc"
+    description: "Study the canonical presentation arc: hook, roadmap, scenario, demo, gotchas, recap."
+
+  - id: "narrative-arena"
+    title: "Trial of the Narrative"
+    type: "quiz_encounter"
+    status: "locked"
+    unlockedBy:
+      - "arc-archive"
+    sectionRef: "quiz-narrative"
+    description: "Battle the Slide Golem by choosing the right narrative moves for the right audience!"
+    monster:
+      id: "slide-golem"
+      name: "Slide Golem"
+      type: "goblin"
+      maxHp: 100
+      damage: 15
+      icon: "🗿"
+
+  - id: "rehearsal-vault"
+    title: "Rehearsal Chamber"
+    type: "reflection_decryption"
+    status: "locked"
+    unlockedBy:
+      - "narrative-arena"
+    sectionRef: "reflection-prep"
+    description: "Decrypt the chronological cipher: reorder the rehearsal ritual before the countdown ring expires."
+
+  # Track 2: Presentation Toolchain
+  - id: "instrument-spire"
+    title: "Spire of the Instrument Landscape"
+    type: "archive_spire"
+    status: "unlocked"
+    unlockedBy:
+      - "capital"
+    sectionRef: "tool-landscape"
+    description: "Survey the five instrument categories: markdown decks, docs sites, API references, guided tours, and recordings."
+
+  - id: "tools-arena"
+    title: "Trial of the Instrument Choice"
+    type: "quiz_encounter"
+    status: "locked"
+    unlockedBy:
+      - "instrument-spire"
+    sectionRef: "quiz-tools"
+    description: "The Markup Gremlin feints with wrong tool pairings. Strike with the right instrument!"
+    monster:
+      id: "markup-gremlin"
+      name: "Markup Gremlin"
+      type: "goblin"
+      maxHp: 110
+      damage: 16
+      icon: "👾"
+
+  - id: "webinar-forge"
+    title: "Launch Webinar Trade-off Workshop"
+    type: "tradeoff_workshop"
+    status: "locked"
+    unlockedBy:
+      - "tools-arena"
+    sectionRef: "deck-tradeoffs"
+    description: "Forge a webinar loadout balancing clarity, reliability, prep efficiency, and reuse value."
+    tradeoffMapping:
+      clarity: "wisdom"
+      reliability: "armor"
+      prep: "agility"
+      reuse: "fortune"
+
+  - id: "advisor-spire"
+    title: "Instrument Selection Advisor"
+    type: "archive_spire"
+    status: "locked"
+    unlockedBy:
+      - "webinar-forge"
+    sectionRef: "tool-decision-tree"
+    description: "Navigate the branching advisor to match any audience to its perfect instrument loadout."
+    rewards:
+      - id: "compass-of-instruments"
+        name: "Compass of Instrument Choice"
+        icon: "🧭"
+        description: "A relic that always points to the tool that makes the manual impossible to stale."
+
+  # Track 3: Docs Platform & Delivery
+  - id: "stack-spire"
+    title: "Spire of the Docs-as-Code Layer Stack"
+    type: "archive_spire"
+    status: "unlocked"
+    unlockedBy:
+      - "capital"
+    sectionRef: "docs-stack"
+    description: "Stack the Lego layers: authoring sources, generators, delivery web app, and the live layer."
+
+  - id: "pipeline-nexus"
+    title: "Docs-as-Code Publish Flow"
+    type: "simulation_nexus"
+    status: "locked"
+    unlockedBy:
+      - "stack-spire"
+    sectionRef: "publish-flow"
+    description: "Simulate the event-stormed publish flow from commit to preview, review, and publication."
+
+  - id: "launch-nexus"
+    title: "Scenario: The Release Webinar"
+    type: "simulation_nexus"
+    status: "locked"
+    unlockedBy:
+      - "pipeline-nexus"
+    sectionRef: "scenario-launch"
+    description: "Survive the release webinar: frozen staging, mixed audiences, and only one take."
+    rewards:
+      - id: "ember-of-flawless-demo"
+        name: "Ember of the Flawless Demo"
+        icon: "🔥"
+        description: "A relic kindled from the pre-recorded fallback clip that never freezes on camera."
+
+  # Convergence: Synthesis Vault
+  - id: "synthesis-sanctuary"
+    title: "Synthesis Vault"
+    type: "reading_sanctuary"
+    status: "locked"
+    unlockedBy:
+      - "rehearsal-vault"
+      - "advisor-spire"
+      - "launch-nexus"
+    sectionRef: "synthesis"
+    healingAmount: 30
+    description: "Bind the three tracks: audience doctrine, presentation arc, and instrument mastery."
+
+  # Final Boss
+  - id: "boss-lair"
+    title: "Lair of the Wall-of-Text Lich"
+    type: "boss_lair"
+    status: "locked"
+    unlockedBy:
+      - "synthesis-sanctuary"
+    description: "Face the central failure mode of every manual presentation! Requires the Lens of Empathy, the Compass of Instrument Choice, and the Ember of the Flawless Demo."
+    requiredItems:
+      - "lens-of-empathy"
+      - "compass-of-instruments"
+      - "ember-of-flawless-demo"
+    monster:
+      id: "wall-of-text-lich"
+      name: "Wall-of-Text Lich"
+      type: "boss"
+      maxHp: 240
+      damage: 38
+      icon: "💀"

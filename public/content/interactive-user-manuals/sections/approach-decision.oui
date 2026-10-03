@@ -1,0 +1,122 @@
+root = DecisionTree(
+  "Pick Your Approach",
+  "pick-approach",
+  "start",
+  [start, platform, backend, devs, leafScreenshots, leafHotspot, leafSandbox, leafClone, leafDom],
+  "Which interactive manual approach fits your situation?",
+)
+
+start = DecisionNode(
+  "start",
+  "Do learners need to practise, or just follow along?",
+  [
+    DecisionChoice(
+      "follow",
+      "Follow along: a reference they can look at while doing the task",
+      "leaf-screenshots",
+    ),
+    DecisionChoice("practise", "Practise: they must prove they can do it", "platform", null, true),
+  ],
+)
+
+platform = DecisionNode(
+  "platform",
+  "Is the software a web app or desktop/terminal software?",
+  [
+    DecisionChoice("desktop", "Desktop or terminal software", "leaf-hotspot"),
+    DecisionChoice("web", "Web app", "backend", null, true),
+  ],
+)
+
+backend = DecisionNode(
+  "backend",
+  "Do learners need real back-end behaviour (workflows, integrations, real error messages)?",
+  [
+    DecisionChoice(
+      "backend-yes",
+      "Yes, the back-end rules are what they must learn",
+      "leaf-sandbox",
+    ),
+    DecisionChoice("backend-no", "No, the screens and steps are what matter", "devs", null, true),
+  ],
+)
+
+devs = DecisionNode(
+  "devs",
+  "Do you own the product's front-end code and have developers to maintain a clone?",
+  [
+    DecisionChoice("devs-yes", "Yes, it's our product and our team", "leaf-clone", null, true),
+    DecisionChoice(
+      "devs-no",
+      "No, it's a bought product, or only authors will maintain it",
+      "leaf-dom",
+    ),
+  ],
+)
+
+leafScreenshots = DecisionNode(
+  "leaf-screenshots",
+  null,
+  null,
+  DecisionLeaf(
+    "Annotated screenshot or video guide (Scribe, Tango, Guidde, Snagit, Loom)",
+    "The cheapest option, and fine when learners only need a reference to follow. Script the screenshots with Playwright if the UI changes often.",
+    [
+      "Passive: nobody checks the learner can actually do the task",
+      "Every changed screen must be re-captured",
+    ],
+  ),
+)
+
+leafHotspot = DecisionNode(
+  "leaf-hotspot",
+  null,
+  null,
+  DecisionLeaf(
+    "Hotspot simulation (Articulate Storyline 360, Adobe Captivate, iSpring Suite)",
+    "Desktop software has no DOM to capture and can't easily be cloned, so recorded screens with clickable hotspots give real practice, tracked in your LMS via SCORM/xAPI.",
+    [
+      "Re-record affected screens on every UI change",
+      "Project files are hard to diff or review in git",
+    ],
+  ),
+)
+
+leafSandbox = DecisionNode(
+  "leaf-sandbox",
+  null,
+  null,
+  DecisionLeaf(
+    "Training sandbox with synthetic data",
+    "Only a real instance reproduces back-end rules, integrations and real error messages. Use a vendor sandbox or a Docker Compose/Terraform environment seeded with Faker, Mockaroo or Tonic.ai.",
+    [
+      "Needs hosting, resets after every class and its own training accounts",
+      "Must be kept on the same version as production",
+    ],
+  ),
+)
+
+leafClone = DecisionNode(
+  "leaf-clone",
+  null,
+  null,
+  DecisionLeaf(
+    "UI clone with a mocked backend (Storybook + MSW + Shepherd.js/Driver.js)",
+    "You can reuse your own components, so the clone stays faithful, lives in git and gets tested in CI alongside the product.",
+    ["Developers must own it", "Back-end rules are only as real as your mocks"],
+  ),
+)
+
+leafDom = DecisionNode(
+  "leaf-dom",
+  null,
+  null,
+  DecisionLeaf(
+    "HTML/DOM capture demo (Walnut, Navattic, Storylane, Reprise)",
+    "Realistic web-app practice that non-developers can update: edit text and fake data without re-capturing.",
+    [
+      "Layout changes still need a new capture",
+      "Content lives in a vendor platform, not your git repo",
+    ],
+  ),
+)

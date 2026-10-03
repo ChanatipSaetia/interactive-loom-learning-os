@@ -6,6 +6,7 @@ import { ScrollReveal } from '../../../../../ui-system/motion/scroll-reveal'
 import { useSound } from '../../../../../ui-system/sensory/SoundContext'
 import { SectionTitleBar } from '../../../../../delivery/web-app-shell/SectionTitleBar'
 import { TaxonomyHelpModal } from './TaxonomyHelpModal'
+import type { TaxonomyAccentColor } from '../../schema'
 import './taxonomy-browser.css'
 
 export interface TaxonomyCategory {
@@ -18,7 +19,7 @@ export interface TaxonomyCategory {
   primaryFocus: string
   inScope: string[]
   outOfScope: string[]
-  color: string
+  color: TaxonomyAccentColor
 }
 
 function resolveIcon(name: string): ComponentType<any> {
@@ -33,7 +34,7 @@ export interface TaxonomyBrowserSectionProps {
   sectionIndex?: number
 }
 
-const colorAccentMap: Record<string, string> = {
+const colorAccentMap: Record<TaxonomyAccentColor, string> = {
   blue: 'var(--ctp-blue)',
   peach: 'var(--ctp-peach)',
   pink: 'var(--ctp-pink)',

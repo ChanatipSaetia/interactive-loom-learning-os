@@ -1,0 +1,38 @@
+root = ReflectionSequence(
+  "Design Reflection",
+  [challenge1, challenge2, challenge3],
+  "Reflect on Real-World Trade-offs",
+)
+
+challenge1 = SequenceChallenge(
+  "Arrange the 4 phases of Nir Eyal's Hook Model in the correct order",
+  [action, trigger, reward, investment],
+  [trigger, action, reward, investment],
+)
+
+action = SequenceItem("action", "Action (User performs behavior)", "👆")
+trigger = SequenceItem("trigger", "Trigger (External or internal cue)", "🔔")
+reward = SequenceItem("reward", "Variable Reward (Unpredictable delight)", "🎁")
+investment = SequenceItem("investment", "Investment (User puts effort into system)", "💎")
+
+challenge2 = SequenceChallenge(
+  "Order the steps of designing a scalable system",
+  [capacity, bottleneck, decompose, replicate],
+  [capacity, bottleneck, decompose, replicate],
+)
+
+capacity = SequenceItem("capacity", "Estimate system capacity requirements", "📊")
+bottleneck = SequenceItem("bottleneck", "Identify potential bottlenecks", "🔍")
+decompose = SequenceItem("decompose", "Decompose into independent services", "🧩")
+replicate = SequenceItem("replicate", "Add replication and caching", "📋")
+
+challenge3 = SequenceChallenge(
+  "Arrange the trade-off decision flow for distributed databases",
+  [requirement, failure, choose, implement],
+  [requirement, failure, choose, implement],
+)
+
+requirement = SequenceItem("requirement", "Define data consistency requirements", "📝")
+failure = SequenceItem("failure", "Define acceptable failure modes", "⚠️")
+choose = SequenceItem("choose", "Choose CP or AP architecture", "🏗️")
+implement = SequenceItem("implement", "Implement chosen strategy", "⚙️")

@@ -49,11 +49,15 @@ export interface TradeoffScenario {
   steps: TradeoffStep[]
 }
 
-export interface TradeoffSandboxSectionProps {
+import type { SectionResultProps, SectionResultContract } from '../../../types'
+import type { DecisionNodeSelected } from '../../events'
+
+export interface TradeoffSandboxSectionProps extends SectionResultProps<Record<string, number> | DecisionNodeSelected> {
   title?: string
   scenarios: TradeoffScenario[]
   instanceId?: string
   sectionIndex?: number
+  sectionId?: string
 }
 
 function MetricBar({ metric, value, max, instanceId }: { metric: MetricDef; value: number; max: number; instanceId?: string }) {
@@ -602,7 +606,14 @@ function DetailsModal({
   )
 }
 
-function TradeoffSandboxSection({ title, scenarios, instanceId, sectionIndex = 0 }: TradeoffSandboxSectionProps) {
+function TradeoffSandboxSection({
+  title,
+  scenarios,
+  instanceId,
+  sectionIndex = 0,
+  sectionId = 'tradeoff-sandbox',
+  onResultChange,
+}: TradeoffSandboxSectionProps) {
   const [scenarioIdx, setScenarioIdx] = useState(0)
   const [compareOpen, setCompareOpen] = useState(false)
   const { playSound } = useSound()
@@ -668,9 +679,32 @@ function TradeoffSandboxSection({ title, scenarios, instanceId, sectionIndex = 0
     })
     return values
   }, [scenario, chosenIds])
-
   const totalSteps = scenario?.steps.length ?? 0
   const placedCount = Object.keys(chosenIds).length
+
+  // Emit Result Contract and events on state changes
+  useEffect(() => {
+    if (!scenario) return
+    const isCompleted = totalSteps > 0 && placedCount === totalSteps
+
+    // Compute average normalized score across metrics
+    const metricValues = Object.values(currentValues)
+    const avgScore = metricValues.length > 0
+      ? Math.round(metricValues.reduce((sum, v) => sum + v, 0) / metricValues.length)
+      : 50
+
+    const resultContract: SectionResultContract<Record<string, number>> = {
+      sectionId: sectionId || scenario.id || 'tradeoff-sandbox',
+      sectionType: 'tradeoff-sandbox',
+      status: isCompleted ? 'completed' : 'in_progress',
+      score: avgScore,
+      accuracy: totalSteps > 0 ? placedCount / totalSteps : 0,
+      completedAt: isCompleted ? Date.now() : undefined,
+      payload: currentValues,
+    }
+
+    onResultChange?.(resultContract)
+  }, [scenario, currentValues, totalSteps, placedCount, onResultChange, sectionId])
 
 
 

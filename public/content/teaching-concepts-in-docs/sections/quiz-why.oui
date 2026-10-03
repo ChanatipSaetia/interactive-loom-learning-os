@@ -1,0 +1,111 @@
+root = Quiz("Why Concepts Check", [q1, q2, q3, q4, q5])
+
+q1 = QuizQuestion(
+  "q1",
+  "A user knows the three steps to share a file, but the Share button is greyed out today. Why are they stuck?",
+  [
+    QuizChoice(
+      "q1-a",
+      "Procedural knowledge breaks when the situation differs from the documented one",
+      true,
+      "Memorised steps give them nothing to reason with when something changes.",
+    ),
+    QuizChoice(
+      "q1-b",
+      "They didn't memorise the steps well enough",
+      false,
+      "They know the steps; the steps just don't cover this case.",
+    ),
+    QuizChoice(
+      "q1-c",
+      "The manual should have more screenshots",
+      false,
+      "Screenshots show the same documented path.",
+    ),
+  ],
+  "What kind of knowledge do they have?",
+)
+
+q2 = QuizQuestion(
+  "q2",
+  "What lets a user work out steps nobody documented?",
+  [
+    QuizChoice(
+      "q2-a",
+      "Conceptual knowledge: what the parts are, how they relate and why",
+      true,
+      "It's the map; procedural knowledge is one route across it.",
+    ),
+    QuizChoice(
+      "q2-b",
+      "Memorising more click paths",
+      false,
+      "More routes still don't cover undocumented cases.",
+    ),
+    QuizChoice("q2-c", "Faster typing", false, "Not related to understanding."),
+  ],
+  "Map or route?",
+)
+
+q3 = QuizQuestion(
+  "q3",
+  "Which is an example of transfer?",
+  [
+    QuizChoice(
+      "q3-a",
+      "A user correctly handles a role-and-setting combination the manual never showed",
+      true,
+      "Transfer is applying learning to a new situation.",
+    ),
+    QuizChoice(
+      "q3-b",
+      "A user repeats the manual's example exactly",
+      false,
+      "That's repetition, not transfer.",
+    ),
+    QuizChoice("q3-c", "A user reads the manual twice", false, "Reading isn't applying."),
+  ],
+  "New situation.",
+)
+
+q4 = QuizQuestion(
+  "q4",
+  "In Don Norman's terms, what is the 'system image'?",
+  [
+    QuizChoice(
+      "q4-a",
+      "Everything users can see: the UI, messages and docs",
+      true,
+      "The system image sits between the designer's model and the user's model.",
+    ),
+    QuizChoice("q4-b", "What the designers believe", false, "That's the designer's model."),
+    QuizChoice("q4-c", "What users believe", false, "That's the user's model."),
+  ],
+  "The middle layer.",
+)
+
+q5 = QuizQuestion(
+  "q5",
+  "The Archive icon looks like a trash can, and users think archiving deletes projects. What should the docs do?",
+  [
+    QuizChoice(
+      "q5-a",
+      "Carry the designer's model: explain that archiving hides a project and it can be restored",
+      true,
+      "Users build their model only from the system image, so the docs must say what the UI can't.",
+    ),
+    QuizChoice(
+      "q5-b",
+      "Nothing: users will figure it out",
+      false,
+      "They'll figure it out wrong, from the trash-can icon.",
+    ),
+    QuizChoice(
+      "q5-c",
+      "Tell users to ask the designers",
+      false,
+      "Users can't see the designer's model; that's the whole problem.",
+    ),
+  ],
+  "Where do users get their model from?",
+)

@@ -1,0 +1,21 @@
+root = Topic(
+  "PixiJS — 2D WebGL/WebGPU Rendering Engine",
+  "Architecture",
+  "Master hardware-accelerated 2D graphics, scene graphs, draw-call batching, and GPU render pipelines",
+  [
+    SectionRef("intro"),
+    SectionRef("concept-map"),
+    SectionRef("flashcards"),
+    SectionRef("quiz-vocabulary"),
+    SectionRef("taxonomy-browser"),
+    SectionRef("decision-tree"),
+    SectionRef("quiz-taxonomies"),
+    SectionRef("text-core"),
+    SectionRef("reflection-transforms"),
+    SectionRef("flowchart"),
+    SectionRef("reflection-sequence"),
+    SectionRef("tradeoff-sandbox"),
+    SectionRef("quiz-optimization"),
+  ],
+  ["PixiJS", "WebGL", "WebGPU", "2D Graphics", "Rendering Engine"],
+)

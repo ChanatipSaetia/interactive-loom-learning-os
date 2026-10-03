@@ -1,0 +1,163 @@
+root = DecisionTree(
+  "Display Object Selection Guide",
+  "pixi-display-decision-tree",
+  "q_purpose",
+  [
+    qPurpose,
+    qTextFrequency,
+    qEntityCount,
+    qVectorDynamic,
+    leafBitmapText,
+    leafPixiText,
+    leafParticleContainer,
+    leafSpriteContainer,
+    leafRenderTextureGraphics,
+    leafPixiGraphics,
+  ],
+  "PixiJS Display Object Selection Guide",
+)
+
+qPurpose = DecisionNode(
+  "q_purpose",
+  "What type of visual content are you rendering in PixiJS?",
+  [
+    DecisionChoice("", "Text, Numbers, or Typography", "q_text_frequency"),
+    DecisionChoice("", "Visual Images, Characters, or Particles", "q_entity_count"),
+    DecisionChoice("", "Dynamic Vector Shapes or Line Paths", "q_vector_dynamic"),
+  ],
+)
+
+qTextFrequency = DecisionNode(
+  "q_text_frequency",
+  "How often does this text content update?",
+  [
+    DecisionChoice(
+      "",
+      "Updates frequently (e.g. 60 FPS score counter, damage numbers, timer)",
+      "leaf_bitmap_text",
+    ),
+    DecisionChoice(
+      "",
+      "Static or rarely changes (e.g. dialog text, quest log, title heading)",
+      "leaf_pixi_text",
+    ),
+  ],
+)
+
+qEntityCount = DecisionNode(
+  "q_entity_count",
+  "How many simultaneous entities will be on screen?",
+  [
+    DecisionChoice(
+      "",
+      "Thousands of simple entities (e.g. bullets, rain, snow, starfield)",
+      "leaf_particle_container",
+    ),
+    DecisionChoice(
+      "",
+      "Moderate count (under 1,000) needing hierarchy, rotation, and tinting",
+      "leaf_sprite_container",
+    ),
+  ],
+)
+
+qVectorDynamic = DecisionNode(
+  "q_vector_dynamic",
+  "Does the vector shape change shape/geometry every frame?",
+  [
+    DecisionChoice(
+      "",
+      "Static geometry drawn once (e.g. UI card background, static game board)",
+      "leaf_render_texture_graphics",
+    ),
+    DecisionChoice(
+      "",
+      "Dynamic geometry changing every frame (e.g. health bar, debug raycasts)",
+      "leaf_pixi_graphics",
+    ),
+  ],
+)
+
+leafBitmapText = DecisionNode(
+  "leaf_bitmap_text",
+  null,
+  null,
+  DecisionLeaf(
+    "Use PIXI.BitmapText",
+    "BitmapText uses pre-rasterized glyphs from a texture atlas. Updating strings every frame creates zero GPU texture uploads and batches with standard sprites.",
+    [
+      "Requires pre-baking font atlas using BMFont or Hiero.",
+      "Extreme 60 FPS performance with zero GC stutter.",
+    ],
+  ),
+)
+
+leafPixiText = DecisionNode(
+  "leaf_pixi_text",
+  null,
+  null,
+  DecisionLeaf(
+    "Use PIXI.Text (or PIXI.HTMLText)",
+    "PIXI.Text supports all system fonts, rich CSS gradients, and drop shadows without pre-baking. Perfect for static labels.",
+    [
+      "Do not update strings in tight loops to avoid VRAM churn.",
+      "Maximum styling flexibility with zero pre-processing.",
+    ],
+  ),
+)
+
+leafParticleContainer = DecisionNode(
+  "leaf_particle_container",
+  null,
+  null,
+  DecisionLeaf(
+    "Use PIXI.ParticleContainer",
+    "ParticleContainer streams flat vertex buffers directly to the GPU, effortlessly pushing 50,000+ sprites at 60 FPS.",
+    [
+      "No deep nested children or individual child filters.",
+      "Industry-leading 2D particle rendering performance.",
+    ],
+  ),
+)
+
+leafSpriteContainer = DecisionNode(
+  "leaf_sprite_container",
+  null,
+  null,
+  DecisionLeaf(
+    "Use PIXI.Container + PIXI.Sprite with Texture Atlas",
+    "Standard Container and Sprite provide full transform hierarchy, anchor positioning, alpha blending, and automatic batch rendering.",
+    [
+      "Pack sprites into a texture atlas to maintain low draw calls.",
+      "Full hierarchical control over character rigs and UI widgets.",
+    ],
+  ),
+)
+
+leafRenderTextureGraphics = DecisionNode(
+  "leaf_render_texture_graphics",
+  null,
+  null,
+  DecisionLeaf(
+    "Draw with PIXI.Graphics, then Bake to RenderTexture",
+    "Draw vector paths using PIXI.Graphics once during initialization, then generate a Texture via app.renderer.generateTexture(graphics).",
+    [
+      "Bypasses CPU triangulation in the render loop.",
+      "Renders static vector shapes as ultra-fast textured quads.",
+    ],
+  ),
+)
+
+leafPixiGraphics = DecisionNode(
+  "leaf_pixi_graphics",
+  null,
+  null,
+  DecisionLeaf(
+    "Use PIXI.Graphics (Dynamic Redraw)",
+    "Call graphics.clear() and redraw simple geometry (like health bars and bounding boxes) directly inside the ticker.",
+    [
+      "Fast and intuitive for procedural dynamic geometry.",
+      "Keep vertex count reasonable to avoid CPU triangulation overhead.",
+    ],
+  ),
+)

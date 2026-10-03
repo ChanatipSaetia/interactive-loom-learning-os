@@ -1,0 +1,129 @@
+root = PillarLayer(
+  "The Time-to-Value Dashboard Stack",
+  [lInstrument, lFriction, lLeading, lNorthstar],
+  [bEvents, bIdentity, bTickets, bDropoff, bDay1, bGoldenpath, bFirstcall, bTtfv, bActivation],
+  "Onboarding measurement as a Lego stack: raw instrumentation on the bottom, friction diagnostics above it, leading indicators, and the north-star time-to-first-value on top.",
+)
+
+lInstrument = Layer(
+  "l-instrument",
+  "Instrumentation",
+  "Raw events and identity stitching that make the newcomer's journey visible at all.",
+)
+
+lFriction = Layer(
+  "l-friction",
+  "Friction Diagnostics",
+  "Where newcomers stall, rage-quit, and file tickets — the quit-point detector.",
+)
+
+lLeading = Layer(
+  "l-leading",
+  "Leading Indicators",
+  "Day-one and week-one signals that predict whether first value will arrive.",
+)
+
+lNorthstar = Layer(
+  "l-northstar",
+  "North Star",
+  "The one number the doctrine says matters: how fast a newcomer completes something real.",
+)
+
+bEvents = MatrixBlock(
+  "b-events",
+  "Product & Setup Event Streams",
+  lInstrument,
+  0,
+  2,
+  1,
+  "Logins, key creation, first API call, checklist steps — instrumented like any conversion funnel.",
+  "teal",
+)
+
+bIdentity = MatrixBlock(
+  "b-identity",
+  "Joiner Identity Stitching",
+  lInstrument,
+  2,
+  2,
+  1,
+  "Tying HR joiner records to product accounts so every newcomer's clock starts at day zero.",
+  "sky",
+)
+
+bTickets = MatrixBlock(
+  "b-tickets",
+  "Ticket Storm Detector",
+  lFriction,
+  0,
+  2,
+  1,
+  "Support and help-channel volume tagged by newcomer cohort — questions are unanswered documentation.",
+  "red",
+)
+
+bDropoff = MatrixBlock(
+  "b-dropoff",
+  "Funnel Drop-off Map",
+  lFriction,
+  2,
+  2,
+  1,
+  "Per-step quit-points in signup, setup, and the golden path, ranked by who you are losing.",
+  "peach",
+)
+
+bDay1 = MatrixBlock(
+  "b-day1",
+  "Day-1 Login Success",
+  lLeading,
+  0,
+  1,
+  1,
+  "Percentage of newcomers who reach a working, license-complete workspace on the first day.",
+  "green",
+)
+
+bGoldenpath = MatrixBlock(
+  "b-goldenpath",
+  "Golden Path Completion",
+  lLeading,
+  1,
+  1,
+  1,
+  "Share of newcomers who finish the one canonical journey in week one.",
+  "green",
+)
+
+bFirstcall = MatrixBlock(
+  "b-firstcall",
+  "First-Call Time (DX)",
+  lLeading,
+  2,
+  2,
+  1,
+  "Minutes from key issuance to first successful API call on a clean machine.",
+  "yellow",
+)
+
+bTtfv = MatrixBlock(
+  "b-ttfv",
+  "Time-to-First-Value",
+  lNorthstar,
+  0,
+  2,
+  1,
+  "Hours from day zero to one real, meaningful completed task — the north star every layer feeds.",
+  "mauve",
+)
+
+bActivation = MatrixBlock(
+  "b-activation",
+  "Activation Moment Definition",
+  lNorthstar,
+  2,
+  2,
+  1,
+  "The explicitly designed 'aha' per audience: first record, first safe change, first successful call.",
+  "mauve",
+)

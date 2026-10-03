@@ -1,0 +1,52 @@
+root = ReflectionSequence(
+  "ถอดรหัสไทม์ไลน์: ยุคคลาสสิกและยุคกลาง",
+  [challenge1, challenge2],
+  "เรียงลำดับเหตุการณ์สำคัญตั้งแต่ยุคประชาธิปไตยกรีก กฎหมายโรมัน สู่มหากฎบัตรแมกนาคาร์ตา",
+)
+
+challenge1 = SequenceChallenge(
+  "ถอดรหัสยุคคลาสสิกและการขยายอารยธรรมกรีก-โรมัน (Classical Antiquity):",
+  [seqTwelveTables, seqAthensPericles, seqAlexander, seqPaxRomana],
+  [seqTwelveTables, seqAthensPericles, seqAlexander, seqPaxRomana],
+)
+
+seqTwelveTables = SequenceItem(
+  "seq-twelve-tables",
+  "สาธารณรัฐโรมันจารึกกฎหมายสิบสองโต๊ะ (Twelve Tables) (~450 BC)",
+)
+
+seqAthensPericles = SequenceItem(
+  "seq-athens-pericles",
+  "ยุคทองของประชาธิปไตยและปรัชญาในเอเธนส์ ยุคเพริคลีส (~450 BC)",
+)
+
+seqAlexander = SequenceItem(
+  "seq-alexander",
+  "พระเจ้าอเล็กซานเดอร์มหาราชแผ่ขยายจักรวรรดิและผสานวัฒนธรรมเฮลเลนิสติก (~330 BC)",
+)
+
+seqPaxRomana = SequenceItem(
+  "seq-pax-romana",
+  "การสถาปนาจักรวรรดิโรมันและยุคสันติภาพโรมัน (Pax Romana) (~27 BC)",
+)
+
+challenge2 = SequenceChallenge(
+  "ถอดรหัสการเปลี่ยนผ่านสู่ยุคกลางและวิวัฒนาการแห่งสิทธิ (Middle Ages to Charters):",
+  [seqRomeFall, seqMagnaCarta, seqConstantinople],
+  [seqRomeFall, seqMagnaCarta, seqConstantinople],
+)
+
+seqRomeFall = SequenceItem(
+  "seq-rome-fall",
+  "จักรวรรดิโรมันตะวันตกล่มสลาย ยุโรปเข้าสู่ระบบฟิวดัลในยุคกลาง (AD 476)",
+)
+
+seqMagnaCarta = SequenceItem(
+  "seq-magna-carta",
+  "มหากฎบัตรแมกนาคาร์ตา (Magna Carta) จำกัดพระราชอำนาจกษัตริย์อังกฤษ (AD 1215)",
+)
+
+seqConstantinople = SequenceItem(
+  "seq-constantinople",
+  "กรุงคอนสแตนติโนเปิลเสียแก่ออตโตมัน สิ้นสุดยุคกลางและจักรวรรดิไบแซนไทน์ (AD 1453)",
+)

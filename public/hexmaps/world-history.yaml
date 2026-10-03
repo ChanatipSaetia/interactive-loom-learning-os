@@ -1,0 +1,302 @@
+topicId: "world-history"
+topicTitle: "อาณาจักรประวัติศาสตร์โลก: มหาศาลากาลเวลา (Chronos Realm)"
+capitalId: "capital"
+
+nodes:
+  # ══════════════════════════════════════════════════════════════════════════════
+  # Ring 0: Capital Center
+  # ══════════════════════════════════════════════════════════════════════════════
+  - id: "capital"
+    title: "มหานครปฐมกาล (Chronos Capital)"
+    type: "capital"
+    status: "unlocked"
+    sectionRef: "intro"
+    description: "จุดเริ่มต้นแห่งการเดินทางข้ามมิติกาลเวลา เรียนรู้ภาพรวมและแผนที่การเดินทางประวัติศาสตร์โลก!"
+
+  # ══════════════════════════════════════════════════════════════════════════════
+  # TRACK 1: Civilizations & The Rule of Law (อารยธรรมและนิติรัฐ)
+  # ══════════════════════════════════════════════════════════════════════════════
+  - id: "sanctuary-ancient"
+    title: "หอจดหมายเหตุอารยธรรมลุ่มน้ำ (Ancient River Valleys Archive)"
+    type: "reading_sanctuary"
+    status: "unlocked"
+    unlockedBy:
+      - "capital"
+    sectionRef: "text"
+    healingAmount: 40
+    description: "ศึกษาการประดิษฐ์ตัวอักษรและอารยธรรมลุ่มน้ำเมโสโปเตเมีย อียิปต์ สินธุ และฮวงโห"
+
+  - id: "quiz-ancient-chamber"
+    title: "สมรภูมิทดสอบปัญญาอารยธรรมลุ่มน้ำ (Trial of Nile Sphinx)"
+    type: "quiz_encounter"
+    status: "locked"
+    unlockedBy:
+      - "sanctuary-ancient"
+    sectionRef: "quiz"
+    description: "ต่อสู้กับสฟิงซ์แห่งลุ่มน้ำไนล์ด้วยความรู้อารยธรรมลุ่มน้ำเพื่อรับนาฬิกาทรายแห่งกาลเวลา!"
+    monster:
+      id: "nile-sphinx"
+      name: "Nile Sphinx (สฟิงซ์แห่งลุ่มน้ำไนล์)"
+      type: "goblin"
+      maxHp: 110
+      damage: 16
+      icon: "🦁"
+    rewards:
+      - id: "chronos-hourglass"
+        name: "นาฬิกาทรายแห่งกาลเวลา (Hourglass of Chronos)"
+        icon: "⏳"
+        description: "วัตถุโบราณที่กักเก็บกระแสกาลเวลา จำเป็นต้องใช้เพื่อเปิดผนึกห้องบอส"
+
+  - id: "reflection-ancient-vault"
+    title: "ห้องนิรภัยไทม์ไลน์อารยธรรมลุ่มน้ำ (Ancient River Valleys Vault)"
+    type: "reflection_decryption"
+    status: "locked"
+    unlockedBy:
+      - "quiz-ancient-chamber"
+    sectionRef: "reflection-sequence"
+    description: "ถอดรหัสและเรียงลำดับเหตุการณ์สำคัญของอารยธรรมลุ่มน้ำโบราณเพื่อเคลียร์ด่านความจำ"
+
+  - id: "civilization-archive"
+    title: "สถาบันอารยธรรมโบราณหลัก (Civilization Archive)"
+    type: "archive_spire"
+    status: "locked"
+    unlockedBy:
+      - "quiz-ancient-chamber"
+    sectionRef: "taxonomy"
+    healingAmount: 35
+    description: "เจาะลึก 4 แหล่งอารยธรรมหลัก เมโสโปเตเมีย อียิปต์ กรีก-โรมัน และเอเชียผ่าน Taxonomy Browser"
+
+  - id: "governance-pillar"
+    title: "หอคอยสถาปัตยกรรมกฎหมายและสิทธิ (Legal & Governance Stack)"
+    type: "archive_spire"
+    status: "locked"
+    unlockedBy:
+      - "civilization-archive"
+    sectionRef: "pillar-layer"
+    healingAmount: 35
+    description: "สำรวจสถาปัตยกรรมบล็อกเลโก้ลำดับชั้นของกฎหมาย สิทธิ และโครงสร้างอำนาจตั้งแต่ฮัมมูราบีสู่ UDHR"
+
+  - id: "quiz-classical-chamber"
+    title: "สมรภูมิประลองปัญญายุคคลาสสิก (Trial of the Roman Centurion)"
+    type: "quiz_encounter"
+    status: "locked"
+    unlockedBy:
+      - "governance-pillar"
+    sectionRef: "quiz-classical"
+    description: "ต่อสู้กับเซนทูเรียนด้วยความรู้ปรัชญากรีก กฎหมายโรมัน และแมกนาคาร์ตาเพื่อรับตราประทับนักประวัติศาสตร์!"
+    monster:
+      id: "roman-centurion"
+      name: "Chrono Centurion (เซนทูเรียนแห่งกาลเวลา)"
+      type: "goblin"
+      maxHp: 120
+      damage: 18
+      icon: "🏛️"
+    rewards:
+      - id: "historian-seal"
+        name: "ตราประทับนักประวัติศาสตร์ (Seal of the Historian)"
+        icon: "📜"
+        description: "ตราประทับศักดิ์สิทธิ์ที่ยืนยันความเข้าใจในสายธารประวัติศาสตร์ ใช้เปิดผนึกห้องบอส"
+
+  - id: "reflection-classical-vault"
+    title: "ห้องนิรภัยไทม์ไลน์ยุคคลาสสิก (Classical & Medieval Vault)"
+    type: "reflection_decryption"
+    status: "locked"
+    unlockedBy:
+      - "quiz-classical-chamber"
+    sectionRef: "reflection-sequence-classical"
+    description: "ถอดรหัสและเรียงลำดับเหตุการณ์ตั้งแต่กฎหมายสิบสองโต๊ะสู่มหากฎบัตรแมกนาคาร์ตา"
+
+  # ══════════════════════════════════════════════════════════════════════════════
+  # TRACK 2: Production, Technology & Global Trade (เทคโนโลยี การค้า และการปฏิวัติอุตสาหกรรม)
+  # ══════════════════════════════════════════════════════════════════════════════
+  - id: "concept-monolith"
+    title: "ศิลาจารึกมโนทัศน์ประวัติศาสตร์ (Concept Monolith)"
+    type: "concept_monolith"
+    status: "unlocked"
+    unlockedBy:
+      - "capital"
+    sectionRef: "concept-map"
+    healingAmount: 35
+    description: "สำรวจโครงข่ายความสัมพันธ์ระหว่างการเมือง กฎหมาย เศรษฐกิจ และนวัตกรรม"
+
+  - id: "renaissance-spire"
+    title: "หอจดหมายเหตุสารานุกรมยุคฟื้นฟู (Renaissance & Discovery Codex)"
+    type: "archive_spire"
+    status: "locked"
+    unlockedBy:
+      - "concept-monolith"
+    sectionRef: "bullets"
+    healingAmount: 35
+    description: "ศึกษาแผนผังจำแนกมนุษยนิยม การสำรวจทางทะเล และการปฏิวัติวิทยาศาสตร์"
+
+  - id: "simulation-industrial"
+    title: "ศูนย์จำลองการปฏิวัติอุตสาหกรรม (Industrial Nexus)"
+    type: "simulation_nexus"
+    status: "locked"
+    unlockedBy:
+      - "renaissance-spire"
+    sectionRef: "flowchart"
+    healingAmount: 40
+    description: "ติดตามวิวัฒนาการเครื่องจักรไอน้ำและระบบโรงงานที่พลิกโฉมหน้าเศรษฐกิจโลก"
+
+  - id: "tradeoff-forge"
+    title: "โรงหลอมยุทธศาสตร์และดุลยภาพ (Strategy Tradeoff Forge)"
+    type: "tradeoff_workshop"
+    status: "locked"
+    unlockedBy:
+      - "simulation-industrial"
+    sectionRef: "tradeoffs"
+    description: "ทดลองชั่งน้ำหนักเส้นทางการค้าโบราณและนโยบายอุตสาหกรรมเพื่อสังเคราะห์บัฟเสริมพลัง!"
+    tradeoffMapping:
+      trade_volume: "armor"
+      security: "chaos_shield"
+      diplomatic_reach: "intelligence"
+      maintenance_cost: "evasion"
+
+  - id: "quiz-modern-chamber"
+    title: "สมรภูมิประลองปัญหายุคอุตสาหกรรม (Trial of the Steam Automaton)"
+    type: "quiz_encounter"
+    status: "locked"
+    unlockedBy:
+      - "simulation-industrial"
+    sectionRef: "quiz-modern"
+    description: "ประลองกับออโตมาตอนไอพ่นด้วยความรู้ยุคฟื้นฟูและการปฏิวัติอุตสาหกรรมเพื่อรับแอสโตรแลบแห่งสัจธรรม!"
+    monster:
+      id: "steam-automaton"
+      name: "Steam Automaton (ออโตมาตอนไอพ่น)"
+      type: "goblin"
+      maxHp: 130
+      damage: 20
+      icon: "⚙️"
+    rewards:
+      - id: "astrolabe-of-truth"
+        name: "แอสโตรแลบแห่งสัจธรรม (Astrolabe of Truth)"
+        icon: "🧭"
+        description: "เครื่องมือดาราศาสตร์โบราณที่ใช้นำทางผ่านมิติยุคสมัย ใช้เปิดผนึกห้องบอส"
+
+  - id: "reflection-modern-vault"
+    title: "ห้องนิรภัยไทม์ไลน์ยุคอุตสาหกรรม (Industrial Timeline Vault)"
+    type: "reflection_decryption"
+    status: "locked"
+    unlockedBy:
+      - "quiz-modern-chamber"
+    sectionRef: "reflection-sequence-modern"
+    description: "ถอดรหัสและเรียงลำดับจุดเปลี่ยนแท่นพิมพ์กูเทนแบร์กถึงการปฏิวัติอุตสาหกรรม"
+
+  # ══════════════════════════════════════════════════════════════════════════════
+  # TRACK 3: Ideology, Cold War & Crisis Strategy (สงครามเย็น วิกฤตการณ์ และยุทธศาสตร์)
+  # ══════════════════════════════════════════════════════════════════════════════
+  - id: "vocab-spire"
+    title: "หอคอยศัพทานุกรมโบราณ (Lexicon Spire)"
+    type: "archive_spire"
+    status: "unlocked"
+    unlockedBy:
+      - "capital"
+    sectionRef: "flashcards"
+    healingAmount: 35
+    description: "ทบทวนคำศัพท์และมโนทัศน์สำคัญ เช่น Cuneiform, Renaissance, Feudalism"
+
+  - id: "advisor-spire"
+    title: "หอพยากรณ์และสายธารการตัดสินใจ (Historical Decision Tree)"
+    type: "archive_spire"
+    status: "locked"
+    unlockedBy:
+      - "vocab-spire"
+    sectionRef: "decision-tree"
+    healingAmount: 35
+    description: "ค้นหาแนวทางการศึกษาประวัติศาสตร์และระเบียบวิธีวิจัยที่ตรงกับความสนใจ"
+
+  - id: "coldwar-crucible"
+    title: "เบ้าหลอมดุลอำนาจสงครามเย็น (Cold War Balance Crucible)"
+    type: "tradeoff_workshop"
+    status: "locked"
+    unlockedBy:
+      - "advisor-spire"
+    sectionRef: "formula-sandbox"
+    description: "ทดลองปรับแต่งตัวแปรแสนยานุภาพ การทูต และการค้า เพื่อจำลองเสถียรภาพการป้องปรามและความเสี่ยงวิกฤต"
+    tradeoffMapping:
+      nuclear_arsenal: "armor"
+      diplomatic_hotline: "evasion"
+      proxy_war_intensity: "chaos_shield"
+      economic_interdependence: "intelligence"
+
+  - id: "scenario-nexus"
+    title: "วิหารจำลองการตัดสินใจขีปนาวุธคิวบา (Cuban Crisis Scenario Nexus)"
+    type: "simulation_nexus"
+    status: "locked"
+    unlockedBy:
+      - "coldwar-crucible"
+    sectionRef: "scenario"
+    healingAmount: 40
+    description: "สวมบทบาทผู้นำตัดสินใจในวิกฤตการณ์ขีปนาวุธคิวบา 1962"
+
+  - id: "quiz-contemporary-chamber"
+    title: "สมรภูมิประลองปัญญาโลกร่วมสมัย (Trial of Chrono Titan)"
+    type: "quiz_encounter"
+    status: "locked"
+    unlockedBy:
+      - "scenario-nexus"
+    sectionRef: "quiz-contemporary"
+    description: "ท้าประลองกับไททันสงครามเย็นด้วยความรู้ศตวรรษที่ 20 และระเบียบโลกเพื่อรับเข็มทิศแห่งกาลเวลา!"
+    monster:
+      id: "chrono-titan"
+      name: "Chrono Titan (ไททันแห่งสงครามเย็น)"
+      type: "goblin"
+      maxHp: 140
+      damage: 22
+      icon: "🗿"
+    rewards:
+      - id: "chronos-compass"
+        name: "เข็มทิศแห่งกาลเวลา (Chronos Compass)"
+        icon: "✨"
+        description: "เข็มทิศเวทมนตร์ที่ชี้ทิศทางสู่ศูนย์กลางแห่งกาลเวลา ใช้เปิดผนึกห้องบอส"
+
+  - id: "reflection-contemporary-vault"
+    title: "ห้องนิรภัยไทม์ไลน์โลกร่วมสมัย (Contemporary Timeline Vault)"
+    type: "reflection_decryption"
+    status: "locked"
+    unlockedBy:
+      - "quiz-contemporary-chamber"
+    sectionRef: "reflection-sequence-contemporary"
+    description: "ถอดรหัสและเรียงลำดับเหตุการณ์ตั้งแต่สนธิสัญญาแวร์ซายส์ถึงการล่มสลายของกำแพงเบอร์ลิน"
+
+  # ══════════════════════════════════════════════════════════════════════════════
+  # GRAND SYNTHESIS SHRINE
+  # ══════════════════════════════════════════════════════════════════════════════
+  - id: "synthesis-vault"
+    title: "แท่นสังเคราะห์สัจธรรมประวัติศาสตร์ (Truth Synthesis Shrine)"
+    type: "reading_sanctuary"
+    status: "locked"
+    unlockedBy:
+      - "reflection-classical-vault"
+      - "reflection-modern-vault"
+      - "reflection-contemporary-vault"
+    sectionRef: "reflection-template"
+    healingAmount: 35
+    description: "สังเคราะห์บทเรียนและข้อสรุปแห่งการเปลี่ยนแปลงทางประวัติศาสตร์ข้ามยุคสมัย"
+
+  # ══════════════════════════════════════════════════════════════════════════════
+  # CLIMAX BOSS LAIR (Requires all 4 Key Items)
+  # ══════════════════════════════════════════════════════════════════════════════
+  - id: "boss-lair"
+    title: "ถ้ำมังกรผู้บิดเบือนกาลเวลา (Lair of the Time-Weaver Dragon)"
+    type: "boss_lair"
+    status: "locked"
+    unlockedBy:
+      - "quiz-ancient-chamber"
+      - "quiz-classical-chamber"
+      - "quiz-modern-chamber"
+      - "quiz-contemporary-chamber"
+    description: "เผชิญหน้ากับบอสใหญ่แห่งอาณาจักรประวัติศาสตร์โลก! ต้องใช้นาฬิกาทรายแห่งกาลเวลา ตราประทับนักประวัติศาสตร์ แอสโตรแลบแห่งสัจธรรม และเข็มทิศแห่งกาลเวลาเพื่อคลายผนึก"
+    requiredItems:
+      - "chronos-hourglass"
+      - "historian-seal"
+      - "astrolabe-of-truth"
+      - "chronos-compass"
+    monster:
+      id: "time-weaver-dragon"
+      name: "Time-Weaver Dragon (มังกรผู้ถักทอกาลเวลา)"
+      type: "boss"
+      maxHp: 320
+      damage: 50
+      icon: "🐲"

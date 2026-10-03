@@ -1,0 +1,82 @@
+root = Intro(
+  "Introduction to PixiJS",
+  what,
+  why,
+  [
+    RoadmapStep(
+      "Architecture & Scene Graph Map",
+      "concept-map",
+      "Explore the structural relationships between Application, Stage, Container, Sprite, Texture, and Renderer.",
+      "concept-map",
+    ),
+    RoadmapStep(
+      "Essential PixiJS Terminology",
+      "flashcards",
+      "Master vocabulary including Batching, Ticker, World Transforms, Blend Modes, and Texture Atlases.",
+      "flashcards",
+    ),
+    RoadmapStep(
+      "Display Object Categories",
+      "taxonomy-browser",
+      "Compare Containers, ParticleContainers, Vector Graphics, Text renderers, and GLSL Filters.",
+      "taxonomy-browser",
+    ),
+    RoadmapStep(
+      "The PixiJS Render Pipeline",
+      "text",
+      "Deep dive into matrix transform propagation, batching breaks, and memory lifecycle.",
+      "text-core",
+    ),
+    RoadmapStep(
+      "60 FPS Frame Render Loop",
+      "flowchart",
+      "Trace the step-by-step event storming lifecycle from Ticker tick to WebGL framebuffer swap.",
+      "flowchart",
+    ),
+    RoadmapStep(
+      "Render Loop Sequencing",
+      "reflection-sequence",
+      "Reorder the stages of the frame execution pipeline from delta tick to GPU flush.",
+      "reflection-sequence",
+    ),
+    RoadmapStep(
+      "Knowledge Check Checkpoint",
+      "quiz",
+      "Test your understanding of sprite batching, transform updates, and texture memory management.",
+      "quiz",
+    ),
+    RoadmapStep(
+      "Rendering Architecture Trade-offs",
+      "tradeoff-sandbox",
+      "Balance FPS performance, draw calls, and memory footprint when choosing asset & container strategies.",
+      "tradeoff-sandbox",
+    ),
+    RoadmapStep(
+      "Display Object Architecture Guide",
+      "decision-tree",
+      "Diagnostic decision tree to select the optimal PixiJS primitive for your specific 2D visual feature.",
+      "decision-tree",
+    ),
+  ],
+  "High-performance hardware-accelerated 2D graphics, scene graphs, and batch rendering",
+  "25 min",
+  10,
+  "PixiJS — 2D WebGL & WebGPU Creation Engine",
+)
+
+what = IntroWhat(
+  "A battle-tested 2D rendering library that provides a hierarchical scene graph, automatic draw-call batching, multi-texture optimization, custom filters, and asset management for 60+ FPS web graphics.",
+  "PixiJS is a rendering engine that allows you to create rich, interactive 2D graphics, cross-platform applications, and games using WebGL and WebGPU without dealing with complex lower-level shader code.",
+  [
+    "Hierarchical Scene Graph: Tree structure with Containers, Sprites, Graphics, and Text",
+    "Automatic Batch Rendering: Bundles thousands of draw calls into single GPU passes",
+    "WebGL & WebGPU Dual Backends: Modern hardware acceleration with automatic fallbacks",
+    "Asset Management & Texture Atlases: Asynchronous loading, caching, and sprite sheet slicing",
+  ],
+  ["PixiJS", "WebGL", "WebGPU", "2D Graphics", "Game Engine"],
+)
+
+why = IntroWhy(
+  "Raw HTML5 2D Canvas struggles when animating thousands of objects due to CPU rasterization bottlenecks, while raw WebGL requires hundreds of lines of shader setup and matrix math boilerplate.",
+  "PixiJS bridges this gap by offering a clean, intuitive display tree API while unlocking the full speed of the GPU, powering interactive maps, data visualizations, and production web games at locked 60 FPS.",
+)

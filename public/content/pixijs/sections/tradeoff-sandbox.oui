@@ -1,0 +1,137 @@
+root = TradeoffSandbox("Rendering Architecture Trade-offs", [pixiRenderingArchitecture])
+
+pixiRenderingArchitecture = TradeoffScenario(
+  "pixi-rendering-architecture",
+  "2D Rendering & Asset Architecture Strategy",
+  [
+    TradeoffMetric("fps_performance", "FPS Performance", 50, 0, 100, "higher"),
+    TradeoffMetric("draw_calls", "Draw Call Overhead", 60, 0, 100, "lower"),
+    TradeoffMetric("memory_footprint", "GPU Memory Footprint", 45, 0, 100, "lower"),
+    TradeoffMetric("visual_fidelity", "Visual Fidelity & Effects", 70, 0, 100, "higher"),
+  ],
+  [stepAssets, stepContainer, stepText],
+  "Optimize rendering performance, memory footprint, and visual fidelity for a 2D web game running across mobile and desktop devices.",
+)
+
+stepAssets = TradeoffStep(
+  "step_assets",
+  "1. Asset Packaging & Texture Strategy",
+  [individualPngs, atlasSpritesheet],
+  "Select how image assets, sprites, and animations are bundled and delivered to the GPU.",
+  "atlas_spritesheet",
+)
+
+individualPngs = TradeoffChoice(
+  "individual_pngs",
+  "Individual Loose PNG Images",
+  "Load each character, prop, and particle as separate PNG image files on demand.",
+  {fps_performance: -25, draw_calls: 35, memory_footprint: 10, visual_fidelity: 0},
+  [ProCon("Simple asset pipeline", "No sprite sheet build step required during development.")],
+  [
+    ProCon("Severe batch breaks", "Each distinct texture forces a separate GPU draw call."),
+    ProCon("High HTTP overhead", "Dozens of network requests during initial scene load."),
+  ],
+  "Quick prototypes with fewer than 50 sprites on screen.",
+  "Early proof-of-concepts before asset pipeline automation.",
+)
+
+atlasSpritesheet = TradeoffChoice(
+  "atlas_spritesheet",
+  "Packed Texture Atlas (Spritesheet)",
+  "Pack all sprites, UI icons, and animations into unified 2048x2048 PNG/WebP atlases with JSON frames.",
+  {fps_performance: 35, draw_calls: -35, memory_footprint: -15, visual_fidelity: 10},
+  [
+    ProCon("Flawless batching", "Thousands of sprites render in a single GPU draw call."),
+    ProCon("Optimized VRAM allocation", "Power-of-two GPU textures reduce memory fragmentation."),
+  ],
+  [ProCon("Build pipeline step", "Requires TexturePacker or Spritesheet tool in build process.")],
+  "Production games and high-performance interactive apps.",
+  "Standard architecture for all production PixiJS applications.",
+)
+
+stepContainer = TradeoffStep(
+  "step_container",
+  "2. Display Architecture for 10,000 Moving Entities",
+  [standardContainers, particleContainer],
+  "Choose container primitives for managing bullets, particles, and background elements.",
+  "particle_container",
+)
+
+standardContainers = TradeoffChoice(
+  "standard_containers",
+  "Nested PIXI.Container Tree",
+  "Organize all 10,000 entities inside standard nested Container nodes with full transform inheritance.",
+  {fps_performance: -30, draw_calls: 10, memory_footprint: 20, visual_fidelity: 15},
+  [ProCon("Full feature set", "Supports individual masking, filters, and deep sub-nesting.")],
+  [
+    ProCon(
+      "Heavy CPU transform overhead",
+      "Matrix multiplication for 10,000 nodes drops framerate on mobile CPUs.",
+    ),
+  ],
+  "Complex UI screens with deeply nested widgets.",
+  "When objects need individual interactive children and masks.",
+)
+
+particleContainer = TradeoffChoice(
+  "particle_container",
+  "Flat PIXI.ParticleContainer",
+  "Stream flat vertex buffers directly to the GPU using ParticleContainer with locked properties.",
+  {fps_performance: 40, draw_calls: -25, memory_footprint: -20, visual_fidelity: -5},
+  [
+    ProCon(
+      "Blazing 60+ FPS throughput",
+      "Direct GPU buffer streaming handles 50,000+ sprites effortlessly.",
+    ),
+    ProCon("Minimal CPU overhead", "Bypasses scene-graph matrix traversal."),
+  ],
+  [ProCon("Restricted feature set", "No deep nesting, child masks, or individual child filters.")],
+  "Particle systems, bullet hells, weather effects, and data visualizers.",
+  "Whenever rendering thousands of flat, identical sprite instances.",
+)
+
+stepText = TradeoffStep(
+  "step_text",
+  "3. UI Text & Scoreboard Rendering",
+  [canvasText, bitmapText],
+  "Determine the typography strategy for rapidly updating HUD numbers and dialog strings.",
+  "bitmap_text",
+)
+
+canvasText = TradeoffChoice(
+  "canvas_text",
+  "PIXI.Text (Canvas Rasterization)",
+  "Use standard PIXI.Text with CSS font family, gradient fills, and drop shadows.",
+  {fps_performance: -20, draw_calls: 15, memory_footprint: 25, visual_fidelity: 15},
+  [ProCon("Native system font support", "Renders any installed font with full CSS styling.")],
+  [
+    ProCon(
+      "Garbage collection & texture churn",
+      "Every number change re-rasterizes offscreen canvas and re-uploads GPU texture.",
+    ),
+  ],
+  "Static text labels that never change after scene initialization.",
+  "Headings, titles, and localized dialog strings loaded once.",
+)
+
+bitmapText = TradeoffChoice(
+  "bitmap_text",
+  "PIXI.BitmapText (Pre-baked Font Atlas)",
+  "Render text using pre-baked XML/JSON font atlas glyphs as batched quads.",
+  {fps_performance: 25, draw_calls: -20, memory_footprint: -10, visual_fidelity: 5},
+  [
+    ProCon(
+      "Zero texture re-upload overhead",
+      "Modifying text at 60 FPS creates zero garbage collection pauses.",
+    ),
+    ProCon("Fully batched", "Draws alongside sprites in the same draw call."),
+  ],
+  [
+    ProCon(
+      "Fixed font sizes",
+      "Scaling bitmap fonts beyond native resolution causes pixelation or requires MSDF.",
+    ),
+  ],
+  "Rapidly updating HUD counters, combat damage numbers, and health bars.",
+  "Any text that changes every frame or requires locked 60 FPS performance.",
+)

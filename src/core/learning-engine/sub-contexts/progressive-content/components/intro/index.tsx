@@ -5,7 +5,9 @@ import { IntroHelpModal } from './IntroHelpModal'
 import { SectionTitleBar } from '../../../../../delivery/web-app-shell/SectionTitleBar'
 import './intro.css'
 
-export interface IntroSectionProps {
+import type { SectionResultProps } from '../../../types'
+
+export interface IntroSectionProps extends SectionResultProps<{ viewedRoadmap: boolean }> {
   title?: string
   subtitle?: string
   estimatedTime?: string
@@ -22,6 +24,7 @@ export interface IntroSectionProps {
   }
   roadmap?: OKFIntroRoadmapStep[]
   sectionIndex?: number
+  sectionId?: string
 }
 
 const IntroSection: React.FC<IntroSectionProps> = ({
@@ -33,7 +36,20 @@ const IntroSection: React.FC<IntroSectionProps> = ({
   why,
   roadmap = [],
   sectionIndex = 0,
+  sectionId = 'intro',
+  onResultChange,
 }) => {
+  React.useMemo(() => {
+    onResultChange?.({
+      sectionId,
+      sectionType: 'intro',
+      status: 'completed',
+      score: 100,
+      accuracy: 1.0,
+      completedAt: Date.now(),
+      payload: { viewedRoadmap: true },
+    })
+  }, [onResultChange, sectionId])
 
   const handleScrollToSection = (sectionId?: string) => {
     if (!sectionId) return

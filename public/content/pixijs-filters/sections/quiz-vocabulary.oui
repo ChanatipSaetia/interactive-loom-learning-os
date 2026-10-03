@@ -1,0 +1,79 @@
+root = Quiz("Shader & Uniform Vocabulary Quiz", [qFilterPadding, qUsampler, qColormatrix])
+
+qFilterPadding = QuizQuestion(
+  "q-filter-padding",
+  "Why does a BlurFilter or DropShadowFilter appear clipped inside a hard rectangle if filter.padding is not set?",
+  [
+    QuizChoice(
+      "a",
+      "Because WebGL shaders cannot draw outside the [0, 1] UV texture range",
+      false,
+      "Shaders can sample texture coordinates freely, but the canvas texture itself is bounded by the target dimensions.",
+    ),
+    QuizChoice(
+      "b",
+      "Because the default offscreen RenderTarget matches the unpadded bounding box of the sprite",
+      true,
+      "Correct! Without filter.padding, the offscreen RenderTarget is sized strictly to the sprite bounds, clipping any outward-bleeding blur or shadow pixels.",
+    ),
+    QuizChoice(
+      "c",
+      "Because the GPU depth buffer discards blurred fragments",
+      false,
+      "PixiJS 2D rendering does not use standard 3D depth buffer clipping for 2D sprites.",
+    ),
+  ],
+  "Think about the dimensions of the temporary offscreen RenderTarget.",
+)
+
+qUsampler = QuizQuestion(
+  "q-usampler",
+  "What is the role of the uniform uSampler in a PixiJS fragment shader?",
+  [
+    QuizChoice(
+      "a",
+      "It passes the CPU system clock time",
+      false,
+      "Time values are passed via custom uniform floats.",
+    ),
+    QuizChoice(
+      "b",
+      "It provides the texture sampler containing the offscreen rendered display object",
+      true,
+      "Correct! uSampler references the offscreen RenderTarget texture containing the captured display tree pixels.",
+    ),
+    QuizChoice(
+      "c",
+      "It configures the WebGL blend mode",
+      false,
+      "Blend modes are managed by the WebGL state machine rather than uSampler.",
+    ),
+  ],
+  "Think about what image input the shader is processing.",
+)
+
+qColormatrix = QuizQuestion(
+  "q-colormatrix",
+  "Which of the following is a primary characteristic of ColorMatrixFilter?",
+  [
+    QuizChoice(
+      "a",
+      "It requires multi-pass ping-pong framebuffers",
+      false,
+      "ColorMatrixFilter is a single-pass filter with zero ping-pong buffering.",
+    ),
+    QuizChoice(
+      "b",
+      "It transforms RGBA color vectors using a 5x4 matrix in a single GPU pass",
+      true,
+      "Correct! ColorMatrixFilter multiplies RGBA vectors by a 5x4 matrix in one fast fragment pass.",
+    ),
+    QuizChoice(
+      "c",
+      "It samples adjacent pixel neighbors like a convolution blur",
+      false,
+      "ColorMatrixFilter operates only on the current pixel's color channels.",
+    ),
+  ],
+  "Consider how many passes and matrix dimensions it uses.",
+)

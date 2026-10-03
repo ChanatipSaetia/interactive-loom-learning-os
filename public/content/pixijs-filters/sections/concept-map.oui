@@ -1,0 +1,41 @@
+root = ConceptMap(
+  "Filter Pipeline & System Map",
+  [
+    app,
+    renderer,
+    filterSystem,
+    container,
+    filter,
+    targetPool,
+    vertexShader,
+    fragmentShader,
+    uniformMap,
+    displacementMap,
+    framebuffer,
+  ],
+  [
+    ConceptLink(app, renderer, "manages"),
+    ConceptLink(renderer, filterSystem, "delegates filter passes"),
+    ConceptLink(container, filter, "declares in filters[]"),
+    ConceptLink(filterSystem, targetPool, "leases & recycles RenderTargets"),
+    ConceptLink(filterSystem, container, "calculates padded bounds"),
+    ConceptLink(filterSystem, filter, "executes shader passes"),
+    ConceptLink(filter, vertexShader, "binds full-screen quad"),
+    ConceptLink(filter, fragmentShader, "executes per-pixel logic"),
+    ConceptLink(filter, uniformMap, "uploads CPU uniform values"),
+    ConceptLink(fragmentShader, displacementMap, "samples UV offset coordinates"),
+    ConceptLink(filterSystem, framebuffer, "composites final filtered output"),
+  ],
+)
+
+app = Concept("app", "PIXI.Application", "Core Entrypoint")
+renderer = Concept("renderer", "Renderer (WebGL / WebGPU)", "GPU Pipeline")
+filterSystem = Concept("filter_system", "FilterSystem", "GPU Pipeline")
+container = Concept("container", "Container / DisplayObject", "Scene Graph")
+filter = Concept("filter", "Filter Instance", "Shaders & Effects")
+targetPool = Concept("target_pool", "RenderTarget Pool", "Memory & Assets")
+vertexShader = Concept("vertex_shader", "Vertex Shader (Quad Matrix)", "Shaders & Effects")
+fragmentShader = Concept("fragment_shader", "Fragment Shader (Pixel Math)", "Shaders & Effects")
+uniformMap = Concept("uniform_map", "Uniforms & uFilterMatrix", "Shaders & Effects")
+displacementMap = Concept("displacement_map", "Displacement Map Texture", "Memory & Assets")
+framebuffer = Concept("framebuffer", "GPU Framebuffer / Screen", "GPU Pipeline")

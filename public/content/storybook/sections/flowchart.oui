@@ -1,0 +1,237 @@
+root = Flowchart(
+  "Render & Hot-Reload Pipeline",
+  [frontendDev],
+  [devServer, storyIndexer, previewRuntime, controlsAddon],
+  [stepAuthor, stepHmr, stepIndex, stepRender, stepOutcome, stepTune, stepRerender],
+  [journeyHotReload, journeyControls],
+)
+
+frontendDev = Actor(
+  "frontend_dev",
+  "Frontend Developer",
+  "Writes and edits story files, then tunes component states in the UI",
+)
+
+devServer = System(
+  "dev_server",
+  "Dev Server (Vite/Webpack)",
+  "Bundler serving the preview runtime with hot module replacement",
+  "external",
+)
+
+storyIndexer = System(
+  "story_indexer",
+  "Story Indexer",
+  "Scans story files and extracts meta and story exports into the sidebar index",
+  "aggregate",
+)
+
+previewRuntime = System(
+  "preview_runtime",
+  "Preview Runtime (iframe)",
+  "Boots the component module graph and renders the selected story",
+  "aggregate",
+)
+
+controlsAddon = System(
+  "controls_addon",
+  "Controls Addon",
+  "Edits a story's args live from the addons panel",
+  "aggregate",
+)
+
+stepAuthor = Step(
+  "step_author",
+  "When Story Source Is Saved",
+  "Persist Story File Change",
+  devServer,
+  [
+    Event(
+      "evt_file_saved",
+      "Story File Saved",
+      "Bundler detects the changed .stories module in the graph",
+    ),
+  ],
+  frontendDev,
+  null,
+  "step_hmr",
+  "Developer saves Button.stories.ts with a new args tweak",
+)
+
+stepHmr = Step(
+  "step_hmr",
+  "When Module Graph Is Invalidated",
+  "Hot-Replace Story Module",
+  devServer,
+  [
+    Event(
+      "evt_module_replaced",
+      "Story Module Hot-Replaced",
+      "Updated story module pushed to the preview runtime without a full reload",
+    ),
+  ],
+  null,
+  null,
+  "step_index",
+  "Vite/Webpack HMR swaps only the changed story module",
+)
+
+stepIndex = Step(
+  "step_index",
+  "When Story Module Is Replaced",
+  "Re-extract Meta & Story Exports",
+  storyIndexer,
+  [
+    Event(
+      "evt_index_updated",
+      "Story Index Updated",
+      "Sidebar entries and story parameters refreshed from exports",
+    ),
+  ],
+  null,
+  null,
+  "step_render",
+  "Indexer re-reads default/named exports to refresh the sidebar",
+)
+
+stepRender = Step(
+  "step_render",
+  "When Selected Story Must Be Displayed",
+  "Render Story Component in Preview Iframe",
+  previewRuntime,
+  [
+    Event(
+      "evt_story_rendered",
+      "Story Rendered",
+      "Component mounted in isolation with the story's args as props",
+    ),
+  ],
+  null,
+  null,
+  "step_outcome",
+  "Preview mounts the component with args; success or error decides the branch",
+)
+
+stepOutcome = Branch(
+  "step_outcome",
+  "evt_story_rendered",
+  [
+    BranchOption(
+      "branch_ok",
+      "Story mounts cleanly",
+      "When Mount Succeeds",
+      "Expose Story to Addons Panel",
+      controlsAddon,
+      [
+        Event(
+          "evt_interactive",
+          "Story Interactive",
+          "Controls, Docs, and viewport tools bind to the live story",
+        ),
+      ],
+    ),
+    BranchOption(
+      "branch_error",
+      "Render throws",
+      "When Error Boundary Catches",
+      "Display Error Overlay",
+      previewRuntime,
+      [
+        Event(
+          "evt_error_shown",
+          "Error Overlay Shown",
+          "Stack trace surfaces in the preview for immediate debugging",
+        ),
+      ],
+      true,
+    ),
+  ],
+)
+
+stepTune = Step(
+  "step_tune",
+  "When Reviewer Edits a Control Widget",
+  "Dispatch Arg Update Over Channel",
+  controlsAddon,
+  [
+    Event(
+      "evt_args_updated",
+      "Args Updated",
+      "New arg values sent from the manager to the preview runtime",
+    ),
+  ],
+  frontendDev,
+  null,
+  "step_rerender",
+  "Reviewer flips disabled or edits the label in the Controls panel",
+)
+
+stepRerender = Step(
+  "step_rerender",
+  "When Args Updated",
+  "Re-render Story With New Args",
+  previewRuntime,
+  [
+    Event(
+      "evt_story_updated",
+      "Story Live-Updated",
+      "Component re-renders with merged args in milliseconds",
+    ),
+  ],
+  null,
+  null,
+  null,
+  "Preview merges the updated args and repaints the story",
+)
+
+journeyHotReload = Journey(
+  "journey_hot_reload",
+  "Hot-Reload Loop",
+  "From saving a story file to a freshly rendered story in the preview iframe.",
+  [
+    JourneyStep(
+      stepAuthor,
+      "1. Save Story File",
+      "The developer edits a story and the dev server detects the change.",
+      "planning",
+    ),
+    JourneyStep(
+      stepHmr,
+      "2. Hot-Replace Module",
+      "HMR swaps the changed story module without reloading the whole app.",
+      "execution",
+    ),
+    JourneyStep(
+      stepIndex,
+      "3. Re-index Stories",
+      "The indexer refreshes sidebar entries from the new exports.",
+      "execution",
+    ),
+    JourneyStep(
+      stepRender,
+      "4. Render in Preview",
+      "The preview runtime mounts the story with its args.",
+      "execution",
+    ),
+  ],
+)
+
+journeyControls = Journey(
+  "journey_controls",
+  "Controls Tuning Loop",
+  "A reviewer mutates args live and the story re-renders instantly.",
+  [
+    JourneyStep(
+      stepTune,
+      "1. Edit a Control",
+      "The reviewer toggles a boolean in the Controls panel.",
+      "planning",
+    ),
+    JourneyStep(
+      stepRerender,
+      "2. Live Re-render",
+      "Args flow over the channel and the component repaints.",
+      "evaluation",
+    ),
+  ],
+)

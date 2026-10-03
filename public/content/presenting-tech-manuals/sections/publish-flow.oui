@@ -1,0 +1,156 @@
+root = Flowchart(
+  "Docs-as-Code Publish Flow",
+  [docWriter, reviewer],
+  [gitRepo, ciPipeline, previewHost, docsSite],
+  [stepCommit, stepPreview, stepReview, stepOutcome],
+  [journeyPublish, journeyRevision],
+)
+
+docWriter = Actor(
+  "doc_writer",
+  "Technical Writer",
+  "Authors and revises the manual pages in markdown",
+)
+
+reviewer = Actor(
+  "reviewer",
+  "Engineering Reviewer",
+  "Verifies commands, config keys, and screenshots against the real system",
+)
+
+gitRepo = System(
+  "git_repo",
+  "Git Repository",
+  "Stores manual markdown, OpenAPI specs, and tour files next to the code",
+  "external",
+)
+
+ciPipeline = System(
+  "ci_pipeline",
+  "CI Preview Pipeline",
+  "Builds the doc site and link-checks every pull request",
+  "aggregate",
+)
+
+previewHost = System(
+  "preview_host",
+  "Preview Deploy Host",
+  "Serves an ephemeral preview URL for the proposed manual",
+  "external",
+)
+
+docsSite = System(
+  "docs_site",
+  "Published Docs Web App",
+  "The hosted, searchable, versioned manual site with permalinks",
+  "external",
+)
+
+stepCommit = Step(
+  "step_commit",
+  "On manual content change",
+  "Commit manual update",
+  gitRepo,
+  [Event("evt_committed", "Changes Committed")],
+  docWriter,
+  null,
+  "step_preview",
+)
+
+stepPreview = Step(
+  "step_preview",
+  "On pull request opened",
+  "Build preview site",
+  ciPipeline,
+  [Event("evt_preview", "Preview Deployed")],
+  null,
+  previewHost,
+  "step_review",
+)
+
+stepReview = Step(
+  "step_review",
+  "On preview ready",
+  "Review pull request",
+  previewHost,
+  [Event("evt_reviewed", "Review Completed")],
+  reviewer,
+  null,
+  "step_outcome",
+)
+
+stepOutcome = Branch(
+  "step_outcome",
+  "evt_reviewed",
+  [
+    BranchOption(
+      "branch_publish",
+      "Approved",
+      "If review approved",
+      "Publish release",
+      docsSite,
+      [Event("evt_published", "Docs Published")],
+    ),
+    BranchOption(
+      "branch_revise",
+      "Changes requested",
+      "If review requests changes",
+      "Revise content in repo",
+      gitRepo,
+      [Event("evt_revised", "Content Revised")],
+      true,
+    ),
+  ],
+)
+
+journeyPublish = Journey(
+  "journey_publish",
+  "Happy Path: Publish",
+  "The manual change is reviewed and published to the docs web app",
+  [
+    JourneyStep(
+      "evt_committed",
+      "Changes Committed",
+      "The technical writer commits a manual update to the Git repository",
+    ),
+    JourneyStep(
+      "evt_preview",
+      "Preview Deployed",
+      "CI builds a preview site so the proposed manual can be clicked through",
+    ),
+    JourneyStep(
+      "evt_reviewed",
+      "Review Completed",
+      "An engineering reviewer checks commands and screenshots against the real system",
+    ),
+    JourneyStep(
+      "evt_published",
+      "Docs Published",
+      "The docs web app ships the new version under a permanent permalink",
+    ),
+  ],
+)
+
+journeyRevision = Journey(
+  "journey_revision",
+  "Revision Loop",
+  "The reviewer finds a stale command and the manual cycles back for revision",
+  [
+    JourneyStep("evt_committed", "Changes Committed", "A manual update lands in the repository"),
+    JourneyStep(
+      "evt_preview",
+      "Preview Deployed",
+      "CI deploys the ephemeral preview for inspection",
+    ),
+    JourneyStep(
+      "evt_reviewed",
+      "Review Completed",
+      "The reviewer spots a command that no longer matches the system",
+    ),
+    JourneyStep(
+      "evt_revised",
+      "Content Revised",
+      "Content returns to the writer for revision instead of publishing",
+    ),
+  ],
+)

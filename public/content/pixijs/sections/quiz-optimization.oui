@@ -1,0 +1,65 @@
+root = Quiz("Performance & Memory Optimization Quiz", [qOpt1, qOpt2])
+
+qOpt1 = QuizQuestion(
+  "q_opt_1",
+  "Why should you pass `{ children: true, texture: true, baseTexture: true }` when destroying disposable temporary sprites?",
+  [
+    QuizChoice(
+      "c1",
+      "To ensure both the JavaScript DOM objects and the underlying WebGL VRAM texture allocations are freed immediately",
+      true,
+      "Without texture/baseTexture flags, GPU texture memory remains allocated on the graphics card even after JavaScript garbage collection sweeps the sprite.",
+    ),
+    QuizChoice(
+      "c2",
+      "To restart the browser's GPU acceleration driver",
+      false,
+      "It manages application-level resource disposal without restarting drivers.",
+    ),
+    QuizChoice(
+      "c3",
+      "To automatically reload higher-resolution textures",
+      false,
+      "Destroy completely disposes of the resource.",
+    ),
+    QuizChoice(
+      "c4",
+      "To clear the browser's HTTP cache",
+      false,
+      "HTTP cache is distinct from WebGL GPU video memory.",
+    ),
+  ],
+  "Think about GPU memory leaks vs JavaScript CPU memory leaks.",
+)
+
+qOpt2 = QuizQuestion(
+  "q_opt_2",
+  "What is the primary performance drawback of applying post-processing Filters (like BlurFilter) to many individual sprites?",
+  [
+    QuizChoice(
+      "c1",
+      "Each filter pass renders the target into an offscreen framebuffer, forcing render target swaps and interrupting batch rendering",
+      true,
+      "Filters require offscreen render texture passes that break the batch renderer and incur GPU memory bandwidth costs.",
+    ),
+    QuizChoice(
+      "c2",
+      "Filters delete sprite textures from disk",
+      false,
+      "Disk assets are unaffected.",
+    ),
+    QuizChoice(
+      "c3",
+      "Filters disable all keyboard input listeners",
+      false,
+      "Input handling is unrelated to shader post-processing.",
+    ),
+    QuizChoice(
+      "c4",
+      "Filters convert all 2D textures to 3D voxel models",
+      false,
+      "PixiJS remains a 2D rendering pipeline.",
+    ),
+  ],
+  "Consider the cost of switching WebGL framebuffers for offscreen render targets.",
+)

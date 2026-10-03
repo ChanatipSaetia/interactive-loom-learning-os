@@ -1,0 +1,115 @@
+root = Scenario(
+  "Scenario: The Menu Moved",
+  "menu-moved",
+  [start, resultWait, fix, fixAuto, resultRerecord, resultNote, resultAuto, resultAi],
+  "Your company's expense web app ships version 5.0 on Monday. The 'Submit claim' button has moved from the top toolbar into a new 'Actions' menu. You own the interactive manual that 900 staff use, built as a hotspot simulation plus a screenshot quick-reference. Monday is three days away.",
+  null,
+  "The Menu Moved",
+)
+
+start = ScenarioNode(
+  "start",
+  "How do you find out which parts of the manual the release breaks?",
+  [
+    ScenarioChoice("wait", "Wait for learners to report problems after Monday", "result-wait"),
+    ScenarioChoice(
+      "click-through",
+      "Click through every module by hand against the v5.0 staging site",
+      "fix",
+    ),
+    ScenarioChoice(
+      "automated",
+      "Run your Playwright drift checks and visual diffs against v5.0 staging",
+      "fix-auto",
+    ),
+  ],
+)
+
+resultWait = ScenarioNode(
+  "result-wait",
+  null,
+  null,
+  Outcome(
+    "On Tuesday the help desk gets 60 tickets: 'the manual says Submit is on the toolbar'. Staff stop trusting the manual.",
+    "Learners should never be your drift detector. Detect drift on every release, before anyone rehearses a screen that no longer exists.",
+    "c",
+  ),
+)
+
+fix = ScenarioNode(
+  "fix",
+  "The hand check finds 6 broken screens across 3 modules. How do you fix them?",
+  [
+    ScenarioChoice(
+      "rerecord",
+      "Re-record the 6 screens, update the quick-reference and label both 'Matches v5.0'",
+      "result-rerecord",
+    ),
+    ScenarioChoice(
+      "note",
+      "Add a note at the start: 'Some screens may look different'",
+      "result-note",
+    ),
+  ],
+)
+
+fixAuto = ScenarioNode(
+  "fix-auto",
+  "The checks name 6 failing steps in 3 modules. The owner is you. What next?",
+  [
+    ScenarioChoice(
+      "rerecord-auto",
+      "Re-record the 6 screens, re-run the checks until green, label 'Matches v5.0'",
+      "result-auto",
+    ),
+    ScenarioChoice(
+      "ai-publish",
+      "Ask an AI assistant to rewrite the step text for v5.0 and publish it straight away",
+      "result-ai",
+    ),
+  ],
+)
+
+resultRerecord = ScenarioNode(
+  "result-rerecord",
+  null,
+  null,
+  Outcome(
+    "The manual matches v5.0 on Monday, but the hand check took most of a day and could easily miss a screen next time.",
+    "Pinning the version and updating the changed screens is right. Automating the detection would make it faster and more reliable every release.",
+    "b-plus",
+  ),
+)
+
+resultNote = ScenarioNode(
+  "result-note",
+  null,
+  null,
+  Outcome(
+    "Staff read the warning, then still rehearse the old toolbar button in the simulation.",
+    "A warning doesn't fix drift. The simulation must match the version learners will use.",
+    "c",
+  ),
+)
+
+resultAuto = ScenarioNode(
+  "result-auto",
+  null,
+  null,
+  Outcome(
+    "The checks pinpointed the broken steps in minutes; the fixed modules are labelled v5.0 and verified before Monday.",
+    "Automatic drift detection plus a named owner and a version label is the maintainability loop working as designed.",
+    "a",
+  ),
+)
+
+resultAi = ScenarioNode(
+  "result-ai",
+  null,
+  null,
+  Outcome(
+    "The AI text says 'click Submit in the Actions menu', which is right, but for one module it invents a 'Quick submit' shortcut that doesn't exist.",
+    "AI is great for drafting, but its output must be verified against the real UI, by a person or by tests, before publishing.",
+    "b-minus",
+  ),
+)

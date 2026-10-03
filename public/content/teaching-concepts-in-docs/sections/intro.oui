@@ -1,0 +1,117 @@
+root = Intro(
+  "Teaching Concepts in Software Docs",
+  what,
+  why,
+  [
+    RoadmapStep(
+      "Steps vs Understanding",
+      "taxonomy-browser",
+      "Procedural knowledge, conceptual knowledge and transfer.",
+      "knowledge-kinds",
+    ),
+    RoadmapStep(
+      "Three Models of the System",
+      "pillar-layer",
+      "Designer's model, system image, user's model, and the docs' job between them.",
+      "mental-models",
+    ),
+    RoadmapStep(
+      "Why Concepts Check",
+      "quiz",
+      "Check the kinds of knowledge and the three models.",
+      "quiz-why",
+    ),
+    RoadmapStep(
+      "Explaining Techniques",
+      "taxonomy-browser",
+      "Analogy, concrete-first, refutation, non-examples, dual coding.",
+      "concept-techniques",
+    ),
+    RoadmapStep(
+      "Explain 'Permission Inheritance'",
+      "tradeoff-sandbox",
+      "Balance understanding, overload and effort for new admins.",
+      "explain-workshop",
+    ),
+    RoadmapStep(
+      "Anatomy of a Concept Page",
+      "bullets",
+      "Definition first, why it matters, core before details, links to tasks.",
+      "concept-page",
+    ),
+    RoadmapStep(
+      "Techniques Check",
+      "quiz",
+      "Check the explaining techniques and the concept page.",
+      "quiz-techniques",
+    ),
+    RoadmapStep(
+      "Kinds of Interactive Explanation",
+      "taxonomy-browser",
+      "Explorable explanations, simulators, clickable flows, what-ifs.",
+      "explorables",
+    ),
+    RoadmapStep(
+      "Predict → Observe → Explain",
+      "flowchart",
+      "The loop that exposes and corrects a wrong mental model.",
+      "poe-loop",
+    ),
+    RoadmapStep(
+      "Build a POE Moment",
+      "reflection-sequence",
+      "Put a POE moment, and why it works, in order.",
+      "order-poe",
+    ),
+    RoadmapStep(
+      "Four Findings from Learning Science",
+      "bullets",
+      "Retrieval practice, spacing, self-explanation, explanatory feedback.",
+      "learning-science",
+    ),
+    RoadmapStep("Retention Check", "quiz", "Check the four findings.", "quiz-retention"),
+    RoadmapStep(
+      "Scenario: Archive Is Not Delete",
+      "scenario",
+      "Fix a wrong mental model that's causing tickets and data leaks.",
+      "scenario-archive",
+    ),
+    RoadmapStep(
+      "How It All Connects",
+      "concept-map",
+      "Knowledge, models, techniques and retention on one map.",
+      "concept-map",
+    ),
+    RoadmapStep(
+      "Glossary",
+      "flashcards",
+      "Key terms from mental model to retrieval practice.",
+      "glossary",
+    ),
+    RoadmapStep(
+      "Design a Concept Lesson",
+      "reflection-template",
+      "Fill in the blanks across all four tracks before facing the boss.",
+      "synthesis",
+    ),
+  ],
+  "Help users understand the ideas behind a web app, not just the clicks",
+  "40 min",
+)
+
+what = IntroWhat(
+  "Steps tell users what to click; concepts tell them why. This topic covers why understanding matters (mental models and transfer), techniques for explaining (analogies, worked examples, refutation, diagrams), interactive explanations (simulators, what-ifs, Predict → Observe → Explain), and findings from learning science that make understanding stick.",
+  "Teaching concepts in software docs means helping users build a correct mental model of how the product works, so they can act correctly even when the manual's steps don't cover their situation.",
+  [
+    "Procedural vs conceptual knowledge, transfer, and Don Norman's three models",
+    "Analogy with limits, concrete before abstract, refutation, non-examples, dual coding, cognitive load",
+    "Explorable explanations, concept simulators, clickable flows, what-if scenarios, POE",
+    "Retrieval practice, spacing, self-explanation and explanatory feedback",
+  ],
+  ["documentation", "instructional-design", "mental-models", "learning-science", "explanation"],
+)
+
+why = IntroWhy(
+  "No manual can document every situation. Users who understand the idea handle the undocumented cases; users who only know the clicks guess.",
+  "Docs that teach only steps create the Hollow Clicker: users who follow the manual perfectly, then archive confidential data thinking it's deleted, or give a contractor access to every project.",
+)

@@ -16,7 +16,9 @@
     "typecheck": "tsc --noEmit",
     "okf:validate": "npx -y tsx scripts/validate-okf.ts",
     "oui:convert": "npx -y tsx scripts/okf-to-oui.ts",
-    "openui:gen": "npx -y tsx scripts/gen-openui-standard.ts"
+    "openui:gen": "npx -y tsx scripts/gen-openui-standard.ts",
+    "hexmap:schema": "npx -y tsx scripts/generate-hexmap-schema.ts",
+    "hexmap:validate": "npx -y tsx scripts/validate-hexmaps.ts"
   },
   "dependencies": {
     "@codemirror/autocomplete": "^6.20.3",
@@ -40,6 +42,8 @@
     "marked": "^18.0.4",
     "motion": "^12.42.0",
     "next-themes": "^0.4.6",
+    "pixi-filters": "^6.1.5",
+    "pixi.js": "^8.20.0",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "react-router-dom": "^6.28.0",

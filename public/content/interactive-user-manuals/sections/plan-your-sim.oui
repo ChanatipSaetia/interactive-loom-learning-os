@@ -1,0 +1,57 @@
+root = ReflectionTemplate("Plan Your Simulation", [challenge1, challenge2, challenge3, challenge4])
+
+challenge1 = TemplateChallenge(
+  "Complete the case for simulating (Track 1):",
+  "Trainees can't use the real system because {zone-1} denies them the role, it holds {zone-2}, and some actions are {zone-3}.",
+  [
+    Chip("chip-least-privilege", "least privilege"),
+    Chip("chip-production-data", "production data"),
+    Chip("chip-irreversible", "irreversible"),
+    Chip("chip-dark-mode", "dark mode"),
+  ],
+  {
+    "zone-1": "chip-least-privilege",
+    "zone-2": "chip-production-data",
+    "zone-3": "chip-irreversible",
+  },
+  "<strong>Correct!</strong> Least privilege, production data and irreversible actions are three of the four barriers (licence cost is the fourth). Dark mode was never one of them.",
+)
+
+challenge2 = TemplateChallenge(
+  "Pick an approach and its tool (Track 2):",
+  "For a desktop program, build a {zone-1} in a tool such as {zone-2}. For your own web product with developers, build a {zone-3} with MSW.",
+  [
+    Chip("chip-hotspot", "hotspot simulation"),
+    Chip("chip-storyline", "Articulate Storyline 360"),
+    Chip("chip-clone", "UI clone"),
+    Chip("chip-walnut", "Walnut"),
+  ],
+  {"zone-1": "chip-hotspot", "zone-2": "chip-storyline", "zone-3": "chip-clone"},
+  "<strong>Correct!</strong> Desktop software has no DOM to capture, so Walnut doesn't fit it; hotspot simulations do. With your own front-end code, a UI clone with MSW mocks reuses real components.",
+)
+
+challenge3 = TemplateChallenge(
+  "Keep it alive (Track 3):",
+  "Detect drift with {zone-1} on every release, label each module with its {zone-2}, and let AI {zone-3} but never publish unverified.",
+  [
+    Chip("chip-playwright", "Playwright and visual diffs"),
+    Chip("chip-version", "product version"),
+    Chip("chip-draft", "draft"),
+    Chip("chip-learner-reports", "learner complaints"),
+  ],
+  {"zone-1": "chip-playwright", "zone-2": "chip-version", "zone-3": "chip-draft"},
+  "<strong>Correct!</strong> Automatic checks, a version label and AI-as-drafter keep the Drifted Phantom UI away. Learner complaints are the failure, not the detector.",
+)
+
+challenge4 = TemplateChallenge(
+  "Design the module (Track 4):",
+  "Start with {zone-1}, keep {zone-2} on the task path, run learners through {zone-3}, and end with a bridge to the real system.",
+  [
+    Chip("chip-task-analysis", "task analysis"),
+    Chip("chip-selective", "exact fidelity"),
+    Chip("chip-wtt", "Watch → Try → Test"),
+    Chip("chip-menu-tour", "a tour of every menu"),
+  ],
+  {"zone-1": "chip-task-analysis", "zone-2": "chip-selective", "zone-3": "chip-wtt"},
+  "<strong>Correct!</strong> Watch the expert first, make the practised path exact, move learners from demo to guided practice to test, and tell them what differs on the live system. A tour of every menu is screen-first, not task-first.",
+)

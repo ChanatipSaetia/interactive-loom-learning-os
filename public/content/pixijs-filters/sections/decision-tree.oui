@@ -1,0 +1,194 @@
+root = DecisionTree(
+  "Filter Selection & Performance Advisor",
+  "filter-selection-advisor",
+  "primary_goal",
+  [
+    primaryGoal,
+    nodeColorType,
+    nodeBlurTarget,
+    recColorMatrix,
+    recSpriteTint,
+    recKawaseMobile,
+    recGaussianDesktop,
+    recCacheBitmap,
+    recDisplacement,
+    recCustomGlsl,
+  ],
+  "PixiJS Filter Selection & Performance Advisor",
+)
+
+primaryGoal = DecisionNode(
+  "primary_goal",
+  "What visual effect or post-processing transformation are you building?",
+  [
+    DecisionChoice(
+      "choice_color",
+      "Color adjustment, grading, tint, or desaturation",
+      "node_color_type",
+      "Color modifications can be performed efficiently in a single shader pass.",
+      true,
+    ),
+    DecisionChoice(
+      "choice_blur",
+      "Blur, glow, drop shadow, or depth-of-field",
+      "node_blur_target",
+      "Blur and spatial convolutions require multi-pass texture sampling.",
+    ),
+    DecisionChoice(
+      "choice_distortion",
+      "Water ripples, shockwaves, or optical refraction",
+      "rec_displacement",
+      "Coordinate distortions are best handled by DisplacementFilter with a map texture.",
+    ),
+    DecisionChoice(
+      "choice_custom",
+      "Custom procedural visuals or unique shader math",
+      "rec_custom_glsl",
+      "Bespoke visuals require writing custom GLSL/WGSL fragment shaders via PIXI.Filter.",
+    ),
+  ],
+)
+
+nodeColorType = DecisionNode(
+  "node_color_type",
+  "Is the color transformation static or dynamically animated?",
+  [
+    DecisionChoice(
+      "choice_matrix_preset",
+      "Standard presets (grayscale, sepia, brightness, contrast, hue)",
+      "rec_color_matrix",
+      "ColorMatrixFilter provides built-in GPU matrix math presets with zero setup.",
+      true,
+    ),
+    DecisionChoice(
+      "choice_simple_tint",
+      "Simple uniform color tint across a single sprite",
+      "rec_sprite_tint",
+      "Sprite tint property operates directly in the batch renderer without filter overhead.",
+    ),
+  ],
+)
+
+nodeBlurTarget = DecisionNode(
+  "node_blur_target",
+  "What is your target deployment platform and update frequency?",
+  [
+    DecisionChoice(
+      "choice_mobile_dynamic",
+      "Mobile devices / 60 FPS continuous real-time animation",
+      "rec_kawase_mobile",
+      "Mobile GPUs have limited fill rate; Kawase blur with reduced resolution maximizes FPS.",
+      true,
+    ),
+    DecisionChoice(
+      "choice_desktop_high",
+      "Desktop high-performance browser / AAA visual fidelity",
+      "rec_gaussian_desktop",
+      "Desktop GPUs can handle full 2-pass Gaussian BlurFilter with high sample quality.",
+    ),
+    DecisionChoice(
+      "choice_static_ui",
+      "Static UI cards, dialog backgrounds, or rarely updated panels",
+      "rec_cache_bitmap",
+      "Baking static filtered containers with cacheAsBitmap eliminates ongoing GPU costs.",
+    ),
+  ],
+)
+
+recColorMatrix = DecisionNode(
+  "rec_color_matrix",
+  null,
+  null,
+  DecisionLeaf(
+    "Use PIXI.ColorMatrixFilter",
+    "ColorMatrixFilter executes a 5x4 matrix multiplication in a single GPU pass. It provides built-in methods like desaturate(), sepia(), hue(), and brightness() without breaking performance.",
+    [
+      "Single-pass execution incurs minimal performance penalty",
+      "Cannot perform spatial neighboring-pixel blur operations",
+    ],
+  ),
+)
+
+recSpriteTint = DecisionNode(
+  "rec_sprite_tint",
+  null,
+  null,
+  DecisionLeaf(
+    "Use sprite.tint instead of a Filter",
+    "For simple color tints on individual sprites, setting sprite.tint = 0xFF0000 is processed directly inside the BatchRenderer with zero offscreen RenderTarget overhead.",
+    [
+      "Zero batch break overhead and zero offscreen buffer allocation",
+      "Multiplicative tinting only; cannot do advanced curves or inverted grading",
+    ],
+  ),
+)
+
+recKawaseMobile = DecisionNode(
+  "rec_kawase_mobile",
+  null,
+  null,
+  DecisionLeaf(
+    "Use KawaseBlurFilter with resolution: 0.5",
+    "KawaseBlurFilter from pixi-filters delivers smooth blur aesthetics using fewer texture sample taps. Setting filter.resolution = 0.5 cuts GPU fillrate consumption by 75% on mobile devices.",
+    [
+      "Blazing 60 FPS performance on low-end mobile devices",
+      "Slight softening from bilinear upsampling (usually imperceptible for blurs)",
+    ],
+  ),
+)
+
+recGaussianDesktop = DecisionNode(
+  "rec_gaussian_desktop",
+  null,
+  null,
+  DecisionLeaf(
+    "Use PIXI.BlurFilter with quality: 3",
+    "Standard BlurFilter implements separable horizontal and vertical Gaussian passes. Setting quality = 3 produces smooth, publication-grade blur gradients on desktop GPUs.",
+    [
+      "Perfect mathematical Gaussian blur curves",
+      "Requires multiple passes that can slow down mobile web browsers",
+    ],
+  ),
+)
+
+recCacheBitmap = DecisionNode(
+  "rec_cache_bitmap",
+  null,
+  null,
+  DecisionLeaf(
+    "Apply Filter + set container.cacheAsBitmap = true",
+    "Apply any complex blur or glow filter to the UI container, then set cacheAsBitmap = true. PixiJS renders the filter once into a private texture and draws it as a single quad in subsequent frames.",
+    [
+      "Eliminates per-frame filter recalculation entirely (100% batched)",
+      "Updating container contents requires invalidating the cache",
+    ],
+  ),
+)
+
+recDisplacement = DecisionNode(
+  "rec_displacement",
+  null,
+  null,
+  DecisionLeaf(
+    "Use PIXI.DisplacementFilter with a Noise Sprite",
+    "Create a DisplacementFilter referencing a seamless tileable noise texture. Animate displacementSprite.x and y in your Ticker loop to produce dynamic water ripples and heat haze.",
+    [
+      "Realistic refractive optical distortion effects",
+      "Requires an extra texture unit and displacement map asset",
+    ],
+  ),
+)
+
+recCustomGlsl = DecisionNode(
+  "rec_custom_glsl",
+  null,
+  null,
+  DecisionLeaf(
+    "Create a custom PIXI.Filter subclass",
+    "Subclass PIXI.Filter and pass custom GLSL vertex/fragment shader strings and uniform mappings. Update uniform values inside your game loop for dynamic, procedural effects.",
+    [
+      "Unlimited creative shader freedom",
+      "Requires GLSL shader authoring and uniform memory management",
+    ],
+  ),
+)

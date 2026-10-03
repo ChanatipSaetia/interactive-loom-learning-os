@@ -1,0 +1,61 @@
+root = TaxonomyBrowser(
+  "Audience Map — Who Are You Onboarding?",
+  [webAppEndUsers, internalStaffOperators, developersDx],
+)
+
+webAppEndUsers = TaxonomyCategory(
+  "Web App End Users",
+  "Customers & business users",
+  "MousePointer2",
+  "green",
+  "People who must complete business tasks in your Web App. For them, good onboarding means reaching their first successful task without ever leaving the product or opening a ticket.",
+  "End users do not care how the system works; they care whether they can finish their job today. Onboarding for them is product work: a guided first-run flow, sensible sample data, one golden-path task (create the first project, invite the first teammate, run the first report), and help that appears exactly when they hover over the confusing button. Every extra login, jargon word, or blank screen is a quit-point where users quietly churn. Pros and cons of each delivery method (tours, docs, cohorts) are weighed later in Track 2 — the doctrine is the same: first value inside the product, fast.",
+  "A hotel check-in: nobody tours you through the HVAC plant — you get your key, your room is warm, and you're asleep in twenty minutes.",
+  "First successful business task inside the product",
+  [
+    "Guided first-run experience and activation moments",
+    "Sample data so the app is never a terrifying blank page",
+    "Contextual help at the exact point of confusion",
+  ],
+  [
+    "Server architecture the user will never see",
+    "Admin configuration and user-management screens",
+  ],
+)
+
+internalStaffOperators = TaxonomyCategory(
+  "Internal Staff & Operators",
+  "Employees of the IT system",
+  "Building2",
+  "peach",
+  "People hired to run, support, and operate the IT system from the inside. For them, onboarding is a supervised climb from 'afraid to touch production' to 'on-call and trusted'.",
+  "Staff and operators onboard into a socio-technical system: tools, credentials, runbooks, escalation chains, and unwritten traditions. The failure mode is the month-long silent soak — a new hire reads the wiki, watches senior people, and touches nothing real for weeks. Good internal onboarding pre-provisions every account on day zero, pairs the newcomer with a buddy for the first incidents, and graduates them through deliberately graded real tasks: first a low-risk change with a witness, then a supervised deploy, then the pager. Their manual is the runbook; their exam is a real shift.",
+  "Flight school: ground school, then dual controls, then a solo — never 'here's the keys, good luck'.",
+  "Graded real tasks from supervised change to independent on-call",
+  [
+    "Day-zero accounts, licenses, VPN, and toolchain readiness",
+    "Runbooks, escalation paths, and incident rituals",
+    "Buddy shadowing and graduated production privileges",
+  ],
+  ["Marketing messaging about the product", "Billing plan comparisons the employee never touches"],
+)
+
+developersDx = TaxonomyCategory(
+  "Developers (DX)",
+  "External integrators & internal engineers",
+  "Code",
+  "sky",
+  "People building on top of your platform or API. For them the onboarding IS the product trial: setup, auth, and the first successful call decide whether they stay or quietly leave.",
+  "Developers onboard themselves or they don't onboard at all. Every minute of setup friction, every broken quickstart snippet, every 'contact sales to get an API key' is a funnel stage where integrators abandon you — and they will not file a ticket, they will just leave. Good DX onboarding means: keys minted in self-serve minutes, a quickstart that works on a clean machine in under fifteen, a sandbox with realistic test data, generated API references, and a visible path from hello-world to production. Time-to-first-call is the developer's time-to-first-value.",
+  "A test drive with the keys in hand: if the engine doesn't start in the first turn, the buyer walks to the dealership next door.",
+  "Time-to-first-successful-API-call on a clean machine",
+  [
+    "Self-serve signup, keys, and a real sandbox with test data",
+    "Quickstart that is CI-tested to work on a clean machine",
+    "Generated API references, error catalogs, and changelogs",
+  ],
+  [
+    "Sales-gated trials that add days to the first call",
+    "Slide decks about architecture instead of runnable code",
+  ],
+)

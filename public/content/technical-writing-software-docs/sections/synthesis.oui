@@ -1,0 +1,52 @@
+root = ReflectionTemplate("Write It Right", [challenge1, challenge2, challenge3, challenge4])
+
+challenge1 = TemplateChallenge(
+  "Choose the page type (Track 1):",
+  "A beginner's guaranteed-to-work lesson is a {zone-1}; steps to a real goal are a {zone-2}; a table of fields is {zone-3}.",
+  [
+    Chip("chip-tutorial", "tutorial"),
+    Chip("chip-howto", "how-to guide"),
+    Chip("chip-reference", "reference"),
+    Chip("chip-blog", "blog post"),
+  ],
+  {"zone-1": "chip-tutorial", "zone-2": "chip-howto", "zone-3": "chip-reference"},
+  "<strong>Correct!</strong> Tutorials teach, how-to guides get jobs done, reference is looked up. A blog post isn't one of the four Diátaxis types.",
+)
+
+challenge2 = TemplateChallenge(
+  "Build the task page (Track 2):",
+  "Title it with the {zone-1}, list {zone-2} before step 1, write one action per step with UI labels in {zone-3}, and show the result.",
+  [
+    Chip("chip-goal", "user's goal"),
+    Chip("chip-prereq", "prerequisites"),
+    Chip("chip-bold", "bold"),
+    Chip("chip-feature", "feature name"),
+  ],
+  {"zone-1": "chip-goal", "zone-2": "chip-prereq", "zone-3": "chip-bold"},
+  "<strong>Correct!</strong> Goal-based title, prerequisites first, one action per step, bold labels exactly as on screen, and the result.",
+)
+
+challenge3 = TemplateChallenge(
+  "Write it plainly (Track 3):",
+  "Aim for about {zone-1} words per sentence, use {zone-2} voice, and enforce the house style with {zone-3}.",
+  [
+    Chip("chip-15-20", "15–20"),
+    Chip("chip-active", "active"),
+    Chip("chip-vale", "Vale"),
+    Chip("chip-passive", "passive"),
+  ],
+  {"zone-1": "chip-15-20", "zone-2": "chip-active", "zone-3": "chip-vale"},
+  "<strong>Correct!</strong> Short sentences, active voice, and a linter to catch the mechanical slips.",
+)
+
+challenge4 = TemplateChallenge(
+  "Keep it true (Track 4):",
+  "Before publishing, a {zone-1} checks the facts and someone {zone-2} in staging exactly as written.",
+  [
+    Chip("chip-sme", "subject-matter expert"),
+    Chip("chip-follows", "follows every step"),
+    Chip("chip-readability", "readability score"),
+  ],
+  {"zone-1": "chip-sme", "zone-2": "chip-follows"},
+  "<strong>Correct!</strong> Technical review plus a step test catch what a readability score never can.",
+)

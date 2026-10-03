@@ -1,0 +1,107 @@
+root = Scenario(
+  "Scenario: The Release Webinar",
+  "release-webinar",
+  [start, resultArchitecture, resultNotes, demoMoment, resultClip, resultDebug, resultSkip],
+  "You are presenting the user manual of a new Web App to a mixed audience of end users and operators. Ten minutes to start; the staging environment looks 'mostly fine'. How do you run this?",
+  null,
+  "The Release Webinar",
+)
+
+start = ScenarioNode(
+  "start",
+  "How do you open the webinar?",
+  [
+    ScenarioChoice(
+      "open-architecture",
+      "Open with the microservices architecture diagram for shared context",
+      "result-architecture",
+    ),
+    ScenarioChoice(
+      "open-pain",
+      "Open with the task people groan at: 'onboarding a new teammate takes 14 clicks today'",
+      "demo-moment",
+    ),
+    ScenarioChoice(
+      "open-notes",
+      "Read the release notes aloud so nobody misses a feature",
+      "result-notes",
+    ),
+  ],
+)
+
+resultArchitecture = ScenarioNode(
+  "result-architecture",
+  null,
+  null,
+  Outcome(
+    "The end users glaze over in the first two minutes; the operators were not the ones who needed the diagram either.",
+    "Stage 1 of the arc: hook with the user's pain, not the architecture. Nobody in the room asked how the system is built — they asked how to do their job.",
+    "c",
+  ),
+)
+
+resultNotes = ScenarioNode(
+  "result-notes",
+  null,
+  null,
+  Outcome(
+    "You covered every feature. Your audience retained approximately one of them.",
+    "A release-notes read-aloud is the canonical failure mode of manual presentations. One deep persona scenario beats a shallow catalog.",
+    "b-minus",
+  ),
+)
+
+demoMoment = ScenarioNode(
+  "demo-moment",
+  "Midway through your live demo of the onboarding flow, the staging site freezes on the big screen. What now?",
+  [
+    ScenarioChoice(
+      "switch-clip",
+      "Switch seamlessly to the OBS Studio fallback clip and keep narrating",
+      "result-clip",
+    ),
+    ScenarioChoice(
+      "debug-live",
+      "Apologize and debug the staging environment live on screen",
+      "result-debug",
+    ),
+    ScenarioChoice(
+      "skip-demo",
+      "Skip the demo and describe the flow verbally until it recovers",
+      "result-skip",
+    ),
+  ],
+)
+
+resultClip = ScenarioNode(
+  "result-clip",
+  null,
+  null,
+  Outcome(
+    "Nobody blinked. You finished the walkthrough, showed the gotchas, and closed on the docs-site permalink slide.",
+    "The pre-recorded fallback clip is a stunt double: same shot, zero risk. Recorded once, it lives three lives — fallback, async manual, and docs embed.",
+    "a",
+  ),
+)
+
+resultDebug = ScenarioNode(
+  "result-debug",
+  null,
+  null,
+  Outcome(
+    "Twelve minutes of silent troubleshooting later, the demo works — and half the audience has opened their laptops to actual work.",
+    "Live debugging trades your authority for infrastructure's reliability. The fallback clip existed precisely for this moment.",
+    "b-minus",
+  ),
+)
+
+resultSkip = ScenarioNode(
+  "result-skip",
+  null,
+  null,
+  Outcome(
+    "Describing clicks without showing them confused end users, and the Q&A turned into a re-explanation session.",
+    "Stage 4 demands the real product on screen — or its recorded double. Pantomiming the UI is screenshots pretending to be a UI, only worse.",
+    "c",
+  ),
+)

@@ -284,25 +284,32 @@ export function Modal({ open, onClose, title, children, maxWidth = 'lg' }: Modal
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/50"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4"
       onClick={onClose}
       role="dialog"
       aria-modal="true"
       aria-label={title}
+      data-lenis-prevent
+      data-lenis-prevent-wheel
+      data-lenis-prevent-touch
     >
       <div
         className={cn(
-          'relative bg-card border border-border rounded-xl shadow-xl w-full mx-4 p-6',
+          'relative bg-card border border-border rounded-xl shadow-xl w-full max-h-[85vh] overflow-y-auto p-6 text-foreground',
           MAX_WIDTH_CLASS[maxWidth],
         )}
         onClick={(e) => e.stopPropagation()}
+        style={{ overscrollBehavior: 'contain' }}
+        data-lenis-prevent
+        data-lenis-prevent-wheel
+        data-lenis-prevent-touch
       >
         {title && (
-          <div className="flex items-center justify-between mb-4">
+          <div className="flex items-center justify-between mb-4 sticky top-0 bg-card pb-2 z-10 border-b border-border">
             <h2 className="text-lg font-semibold text-foreground">{title}</h2>
             <button
               onClick={onClose}
-              className="text-muted-foreground hover:text-foreground transition-colors"
+              className="text-muted-foreground hover:text-foreground transition-colors text-xl font-bold px-2 py-1"
               aria-label="Close"
             >
               ×
@@ -310,6 +317,71 @@ export function Modal({ open, onClose, title, children, maxWidth = 'lg' }: Modal
           </div>
         )}
         {children}
+      </div>
+    </div>
+  )
+}
+
+// ---------------------------------------------------------------------------
+// PageModal — full-height overlay where the backdrop scrolls (no inner clip)
+// ---------------------------------------------------------------------------
+
+export interface PageModalProps {
+  /** Whether the modal is currently open */
+  open: boolean
+  /** Request to close the modal */
+  onClose: () => void
+  /** Plain title string (used as aria-label) */
+  title?: string
+  /** Rich header slot — renders inside the sticky bar in place of the plain title */
+  header?: ReactNode
+  children?: ReactNode
+  /** Max width of the content panel */
+  maxWidth?: 'sm' | 'md' | 'lg' | 'xl' | 'full'
+}
+
+export function PageModal({ open, onClose, title, header, children, maxWidth = 'lg' }: PageModalProps) {
+  if (!open) return null
+
+  return (
+    <div
+      className="fixed inset-0 z-50 overflow-y-auto bg-black/60 backdrop-blur-sm"
+      onClick={onClose}
+      role="dialog"
+      aria-modal="true"
+      aria-label={title}
+      data-lenis-prevent
+      data-lenis-prevent-wheel
+      data-lenis-prevent-touch
+    >
+      {/* Panel: no max-h, no overflow — expands to natural content height */}
+      <div
+        className={cn(
+          'relative w-full mx-auto bg-background border-x border-border shadow-2xl text-foreground min-h-screen',
+          maxWidth !== 'full' ? MAX_WIDTH_CLASS[maxWidth] : 'max-w-none',
+        )}
+        onClick={(e) => e.stopPropagation()}
+      >
+        {/* Sticky header — always reachable regardless of scroll position */}
+        <div className="sticky top-0 z-10 flex items-center justify-between bg-background border-b border-border px-6 py-3">
+          {header
+            ? <div className="flex-1 min-w-0 pr-4">{header}</div>
+            : title
+              ? <h2 className="text-lg font-semibold text-foreground truncate pr-4">{title}</h2>
+              : <span />}
+          <button
+            onClick={onClose}
+            className="text-muted-foreground hover:text-foreground transition-colors text-2xl font-bold px-2 py-0.5 rounded hover:bg-muted/30 shrink-0"
+            aria-label="Close"
+          >
+            ×
+          </button>
+        </div>
+
+        {/* Content renders at full natural height */}
+        <div className="px-6 py-6">
+          {children}
+        </div>
       </div>
     </div>
   )
@@ -419,6 +491,7 @@ export interface UIComponentRegistryContract {
   Button: typeof Button
   Badge: typeof Badge
   RangeSlider: typeof RangeSlider
+  PageModal: typeof PageModal
   Modal: typeof Modal
   ModalHeader: typeof ModalHeader
   ModalTitle: typeof ModalTitle
@@ -441,6 +514,7 @@ export const UIComponentRegistry: UIComponentRegistryContract = {
   Button,
   Badge,
   RangeSlider,
+  PageModal,
   Modal,
   ModalHeader,
   ModalTitle,

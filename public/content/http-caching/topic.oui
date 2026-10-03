@@ -1,0 +1,7 @@
+root = Topic(
+  "HTTP Caching",
+  "Architecture",
+  "Make web apps fast and cheap by letting browsers and CDNs reuse responses safely",
+  [SectionRef("intro"), SectionRef("directives"), SectionRef("quiz")],
+  ["http", "caching", "performance"],
+)

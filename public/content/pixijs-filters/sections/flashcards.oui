@@ -1,0 +1,158 @@
+root = Flashcards(
+  "Essential Filter Terminology",
+  [
+    filtersystem,
+    rendertarget,
+    fragmentShader,
+    filterPadding,
+    multiPass,
+    kawaseBlur,
+    displacementFilter,
+    colorMatrixFilter,
+    cacheAsBitmap,
+  ],
+)
+
+filtersystem = Flashcard(
+  "filtersystem",
+  "FilterSystem",
+  "/ˈfɪltər ˈsɪstəm/",
+  "Core Architecture",
+  "The core PixiJS rendering subsystem that coordinates filter stacks, offscreen targets, and shader passes.",
+  "FilterSystem manages the lifecycle of filter execution. When a filtered container is drawn, FilterSystem computes padded bounding rectangles, pushes temporary RenderTargets, executes shader passes, and composites pixels to the target destination.",
+  "Abstracts low-level WebGL framebuffer binding, viewport scaling, and multi-pass ping-pong buffer management into a clean declarative API.",
+  null,
+  Dialogue(
+    "How does PixiJS know when to draw to an offscreen buffer?",
+    "Explain the FilterSystem push/pop interception mechanism.",
+    "When the renderer encounters an object with `filters.length > 0`, it calls `filterSystem.push()` to redirect child drawing into a temporary RenderTarget.",
+  ),
+)
+
+rendertarget = Flashcard(
+  "rendertarget",
+  "RenderTarget Pool",
+  "/ˈrɛndər ˈtɑːrɡɪt puːl/",
+  "Memory & Assets",
+  "A reusable pool of GPU framebuffers and textures used for intermediate offscreen filter rendering.",
+  "Creating WebGL textures and framebuffers dynamically causes severe garbage collection pauses and GPU memory fragmentation. PixiJS maintains a pool of RenderTargets, leasing them during filter passes and recycling them immediately after.",
+  "Prevents VRAM allocation churn and ensures consistent 60 FPS performance during heavy post-processing effects.",
+  null,
+  Dialogue(
+    "Does applying filters create new GPU textures every single frame?",
+    "Clarify RenderTarget pooling vs fresh allocation.",
+    "No! PixiJS borrows existing RenderTargets from its internal pool and returns them immediately after shader compositing.",
+  ),
+)
+
+fragmentShader = Flashcard(
+  "fragment-shader",
+  "Fragment Shader",
+  "/ˈfræɡmənt ˈʃeɪdər/",
+  "Shaders & GLSL",
+  "A GPU program executed for every pixel to compute color, alpha, and visual transformations.",
+  "In PixiJS filters, the fragment shader receives the offscreen texture via the uniform `uSampler` and texture coordinates via `vTextureCoord`. It calculates per-pixel colors using math algorithms (e.g. convolutions, color matrices, noise functions).",
+  "Provides total per-pixel artistic control, enabling real-time lighting, distortion, bloom, and stylized rendering.",
+  null,
+  Dialogue(
+    "What is the primary input to a filter fragment shader?",
+    "Identify the sampler and coordinate uniforms.",
+    "The offscreen texture `uSampler` containing the rendered display object, sampled at `vTextureCoord`!",
+  ),
+)
+
+filterPadding = Flashcard(
+  "filter-padding",
+  "Filter Padding",
+  "/ˈfɪltər ˈpædɪŋ/",
+  "Rendering Bounds",
+  "Extra margin added around a display object bounding box to prevent clipping outward visual effects.",
+  "Effects like `BlurFilter`, `GlowFilter`, and `DropShadowFilter` generate pixels that extend outside the original geometry boundaries. Setting `filter.padding` expands the offscreen RenderTarget dimensions so these blurred edges are not harshly clipped.",
+  "Without padding, blurred sprites appear inside hard square cutoffs matching their original rectangular sprite bounding boxes.",
+  null,
+  Dialogue(
+    "Why is my drop shadow cut off at the edge of the sprite?",
+    "Identify missing filter padding.",
+    "Increase `filter.padding` (e.g. `filter.padding = 20`) to give the offscreen render target enough margin for the shadow!",
+  ),
+)
+
+multiPass = Flashcard(
+  "multi-pass",
+  "Multi-Pass Filter",
+  "/ˈmʌlti pæs ˈfɪltər/",
+  "Pipeline Architecture",
+  "A filter technique executing multiple sequential shader stages using ping-pong intermediate textures.",
+  "Complex effects (such as separable 2D Gaussian blurs or bloom) cannot be calculated in a single shader pass. A multi-pass filter renders pass 1 into texture A, uses texture A as input for pass 2 into texture B, and repeats until the final composite.",
+  "Reduces computational complexity of 2D convolutions from O(N²) to O(2N), turning unplayable lag into smooth 60 FPS rendering.",
+  null,
+  Dialogue(
+    "Why is a 2-pass blur faster than a single-pass 2D convolution blur?",
+    "Highlight 1D separable math efficiency.",
+    "A separable blur performs a horizontal 1D pass then a vertical 1D pass (N + N samples), rather than an N x N 2D grid of samples per pixel!",
+  ),
+)
+
+kawaseBlur = Flashcard(
+  "kawase-blur",
+  "Kawase Blur",
+  "/kɑːˈwɑːseɪ blɜːr/",
+  "Algorithms",
+  "A fast multi-pass box-offset blur algorithm optimized for high performance on mobile GPUs.",
+  "Kawase Blur applies multiple successive passes with increasing sampling offsets around the center pixel. It yields a smooth, soft blur nearly indistinguishable from Gaussian blur but requires far fewer texture fetches per pass.",
+  "The standard choice for real-time mobile games, UI glassmorphism, and bloom effects where Gaussian blur is too expensive.",
+  null,
+  Dialogue(
+    "Which blur filter should I use for smooth performance on mobile web?",
+    "Recommend Kawase blur over Gaussian.",
+    "Use `KawaseBlurFilter` from pixi-filters! It provides smooth blur quality with minimal GPU fillrate overhead.",
+  ),
+)
+
+displacementFilter = Flashcard(
+  "displacement-filter",
+  "DisplacementFilter",
+  "/dɪsˈpleɪsmənt ˈfɪltər/",
+  "Effects",
+  "A filter using pixel color channels from a map texture to offset the sampling coordinates of the source.",
+  "DisplacementFilter reads the Red and Green channels of a displacement sprite (e.g. perlin noise or water ripples) and uses those values as (dX, dY) coordinate offsets when sampling the target texture, creating refraction and distortion.",
+  "Enables realistic water ripples, shockwaves, glass refraction, heat haze, and magical warp portals.",
+  null,
+  Dialogue(
+    "How do I create an animated water ripple effect across a game map?",
+    "Describe DisplacementFilter with a scrolling noise sprite.",
+    "Create a `DisplacementFilter` pointing to a seamless noise sprite, and increment the displacement sprite position in your Ticker loop!",
+  ),
+)
+
+colorMatrixFilter = Flashcard(
+  "color-matrix-filter",
+  "ColorMatrixFilter",
+  "/ˈkʌlər ˈmeɪtrɪks ˈfɪltər/",
+  "Color & Tones",
+  "A single-pass 5x4 matrix transformation filter for brightness, contrast, hue, saturation, and color grading.",
+  "ColorMatrixFilter multiplies each pixel RGBA vector by a 5x4 transformation matrix. PixiJS provides built-in presets including `desaturate()`, `sepia()`, `hue()`, `brightness()`, `contrast()`, `night()`, and `predator()`.",
+  "Extremely fast single-pass filter that enables instant screen transitions, damage flashes, night mode tinting, and retro color grading.",
+  null,
+  Dialogue(
+    "How do I make the whole screen black-and-white when the player dies?",
+    "Recommend ColorMatrixFilter desaturation.",
+    "Apply a `ColorMatrixFilter` to your root container and call `filter.desaturate()`!",
+  ),
+)
+
+cacheAsBitmap = Flashcard(
+  "cache-as-bitmap",
+  "cacheAsBitmap",
+  "/kæʃ æz ˈbɪtmæp/",
+  "Performance Optimization",
+  "A container property that bakes complex child display trees and filters into a single static GPU texture.",
+  "When `container.cacheAsBitmap = true`, PixiJS renders the container and its active filters once into a private RenderTexture. In subsequent frames, it draws that single cached texture as a normal sprite, bypassing all filter shader calculations.",
+  "Transforms heavy multi-pass filter costs from an ongoing 60 FPS tax into a one-time setup cost for static UI backgrounds and cards.",
+  null,
+  Dialogue(
+    "My static UI panel has heavy drop shadows and blurs that lag the game. How do I fix it?",
+    "Suggest cacheAsBitmap.",
+    "Enable `uiContainer.cacheAsBitmap = true`! PixiJS will bake the panel and filters into a single texture and draw it in 1 batched quad.",
+  ),
+)

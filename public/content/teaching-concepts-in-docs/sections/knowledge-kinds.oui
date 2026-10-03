@@ -1,0 +1,43 @@
+root = TaxonomyBrowser(
+  "Steps vs Understanding",
+  [proceduralKnowledge, conceptualKnowledge, transfer],
+)
+
+proceduralKnowledge = TaxonomyCategory(
+  "Procedural Knowledge",
+  "Knowing the steps",
+  "ListOrdered",
+  "yellow",
+  "Procedural knowledge is knowing the steps; it breaks as soon as the user's situation differs from the documented one.",
+  "A user who has memorised 'Select Share, enter the e-mail, select Send' can share a file exactly as the manual shows. But when the Share button is greyed out, or the person is outside the company, they are stuck: the steps don't say what to do and they have nothing else to reason with. Procedural knowledge is necessary, but it's brittle.",
+  "Knowing the bus route by heart: perfect until a road is closed.",
+  "Doing the documented task",
+  ["Memorised steps and click paths", "Tasks exactly as documented"],
+  ["Situations the manual didn't foresee"],
+)
+
+conceptualKnowledge = TaxonomyCategory(
+  "Conceptual Knowledge",
+  "Knowing what, how it relates, and why",
+  "Network",
+  "green",
+  "Conceptual knowledge is knowing what the parts are, how they relate and why, which lets users work out steps nobody documented.",
+  "A user who understands that 'sharing is controlled by the workspace's permission settings, and external sharing is off by default' can reason about the greyed-out button themselves: check the workspace settings, or ask the admin. Conceptual knowledge is the map; procedural knowledge is one route across it.",
+  "Knowing the city map, so you can find a new route when a road is closed.",
+  "Reasoning about the system",
+  ["What the parts are and how they relate", "Why the system behaves as it does"],
+  ["Memorised click paths"],
+)
+
+transfer = TaxonomyCategory(
+  "Transfer",
+  "Using it in a new situation",
+  "Shuffle",
+  "sky",
+  "Transfer is applying what you learned to a new situation; conceptual knowledge is what makes transfer possible.",
+  "No manual can document every situation: every combination of role, data and setting. Transfer is the real goal of teaching: the user meets a case the docs never showed and still acts correctly. Steps alone rarely transfer; an understood idea does.",
+  "Learning to cook rather than learning one recipe.",
+  "Acting correctly in undocumented situations",
+  ["New combinations of roles, data and settings", "Features added after training"],
+  ["Repeating the exact example from the manual"],
+)

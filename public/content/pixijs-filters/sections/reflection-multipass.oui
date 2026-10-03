@@ -1,0 +1,24 @@
+root = ReflectionSequence("Multi-Pass Convolution Sequencing", [challenge1])
+
+challenge1 = SequenceChallenge(
+  "Arrange the sequential stages of a 2-pass separable Gaussian/Kawase blur convolution pipeline:",
+  [stepLeasePair, stepPassHorizontal, stepSwapBuffers, stepPassVertical, stepReturnBuffers],
+  [stepLeasePair, stepPassHorizontal, stepSwapBuffers, stepPassVertical, stepReturnBuffers],
+)
+
+stepLeasePair = SequenceItem("step-lease-pair", "Lease Ping and Pong RenderTarget pair from pool")
+stepPassHorizontal = SequenceItem(
+  "step-pass-horizontal",
+  "Execute Pass 1 (Horizontal 1D Convolution) from Source Target to Ping Target",
+)
+
+stepSwapBuffers = SequenceItem("step-swap-buffers", "Swap Ping and Pong Buffer pointers")
+stepPassVertical = SequenceItem(
+  "step-pass-vertical",
+  "Execute Pass 2 (Vertical 1D Convolution) from Ping Target to Destination Target",
+)
+
+stepReturnBuffers = SequenceItem(
+  "step-return-buffers",
+  "Return both Ping and Pong RenderTargets back to pool",
+)

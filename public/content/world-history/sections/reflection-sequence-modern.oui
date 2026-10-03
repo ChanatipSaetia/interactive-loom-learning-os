@@ -1,0 +1,52 @@
+root = ReflectionSequence(
+  "ถอดรหัสไทม์ไลน์: ยุคฟื้นฟูศิลปวิทยาการและการปฏิวัติอุตสาหกรรม",
+  [challenge1, challenge2],
+  "เรียงลำดับเหตุการณ์สำคัญตั้งแต่แท่นพิมพ์กูเทนแบร์ก สู่การปฏิวัติอุตสาหกรรมและการเมือง",
+)
+
+challenge1 = SequenceChallenge(
+  "ถอดรหัสยุคฟื้นฟูศิลปวิทยาการและการสำรวจโลก (Renaissance & Scientific Revolution):",
+  [seqGutenberg, seqColumbus, seqScientificRev],
+  [seqGutenberg, seqColumbus, seqScientificRev],
+)
+
+seqGutenberg = SequenceItem(
+  "seq-gutenberg",
+  "โยฮันเนส กูเทนแบร์ก ประดิษฐ์แท่นพิมพ์ระบบเรียงพิมพ์โลหะในยุโรป (AD 1440)",
+)
+
+seqColumbus = SequenceItem(
+  "seq-columbus",
+  "คริสโตเฟอร์ โคลัมบัส เดินเรือข้ามมหาสมุทรแอตแลนติก นำสู่การแลกเปลี่ยนโคลัมเบียน (AD 1492)",
+)
+
+seqScientificRev = SequenceItem(
+  "seq-scientific-rev",
+  "เซอร์ไอแซก นิวตัน ตีพิมพ์หนังสือ Principia วางรากฐานฟิสิกส์สมัยใหม่ (AD 1687)",
+)
+
+challenge2 = SequenceChallenge(
+  "ถอดรหัสยุคแห่งการปฏิวัติอุตสาหกรรมและการเมือง (Industrial & Political Revolutions):",
+  [seqSteamEngine, seqFrenchRev, seqRailwayEra, seqBerlinConf],
+  [seqSteamEngine, seqFrenchRev, seqRailwayEra, seqBerlinConf],
+)
+
+seqSteamEngine = SequenceItem(
+  "seq-steam-engine",
+  "เจมส์ วัตต์ จดสิทธิบัตรเครื่องจักรไอน้ำประสิทธิภาพสูงในอังกฤษ (AD 1769)",
+)
+
+seqFrenchRev = SequenceItem(
+  "seq-french-rev",
+  "การปฏิวัติฝรั่งเศสและคำประกาศว่าด้วยสิทธิมนุษยชนและพลเมือง (AD 1789)",
+)
+
+seqRailwayEra = SequenceItem(
+  "seq-railway-era",
+  "การเปิดทางรถไฟโดยสารสายแรกของโลก Liverpool & Manchester Railway (AD 1830)",
+)
+
+seqBerlinConf = SequenceItem(
+  "seq-berlin-conf",
+  "การประชุมเบอร์ลิน (Berlin Conference) จัดสรรแบ่งดินแดนทวีปแอฟริกา (AD 1884)",
+)

@@ -1,0 +1,10 @@
+root = Text(
+  "Core Principles of System Design",
+  [
+    "Scalability is the ability of a system to handle growing amounts of work by adding resources. There are two main types: vertical scaling (adding more power to existing machines) and horizontal scaling (adding more machines to the system). Horizontal scaling is generally preferred for modern distributed systems as it provides better fault tolerance and flexibility.",
+    "Reliability refers to a system's ability to continue operating despite failures. Key concepts include redundancy (having backup components ready to take over), failover (automatic switching to a backup system), and replication (keeping multiple copies of data across different locations).",
+    "Maintainability is about how easy it is to modify, fix, or improve a system over time. Good maintainability comes from modularity (breaking systems into independent, well-defined components), documentation (clear documentation of architecture and decisions), and testing (comprehensive test coverage for automated validation).",
+    "The CAP theorem states that a distributed system can only guarantee two of three properties: consistency (all nodes see the same data at the same time), availability (every request receives a response), and partition tolerance (the system continues to operate despite network partitions). Most modern systems choose AP or CP based on their requirements.",
+  ],
+  "Scalability, Reliability, and Maintainability",
+)

@@ -1,0 +1,157 @@
+root = Quiz("Trial of the Doctrine", [q1, q2, q3, q4, q5, q6])
+
+q1 = QuizQuestion(
+  "q1",
+  "According to the six principles, when should accounts, licenses, and API keys be ready for a newcomer?",
+  [
+    QuizChoice(
+      "a",
+      "In pre-boarding — before day one",
+      true,
+      "Correct. Principle 1 'Access First' demands credentials exist before the newcomer arrives; waiting-for-access is the number-one onboarding killer.",
+    ),
+    QuizChoice(
+      "b",
+      "On Monday morning, requested by the newcomer's manager",
+      false,
+      "Requesting access on day one makes the newcomer watch a provisioning queue — the exact anti-pattern Principle 1 forbids.",
+    ),
+    QuizChoice(
+      "c",
+      "After the first week, once they've read the handbook",
+      false,
+      "Reading without access means touching nothing real; the doctrine drives newcomers to a real task in week one, which requires day-zero access.",
+    ),
+  ],
+  "Principle 1 has a strong opinion about the calendar.",
+)
+
+q2 = QuizQuestion(
+  "q2",
+  "What is the only week-one metric the doctrine says matters most?",
+  [
+    QuizChoice(
+      "a",
+      "Number of handbook pages read",
+      false,
+      "Pages read is a vanity metric; the doctrine measures a completed real task, not consumed documentation.",
+    ),
+    QuizChoice(
+      "b",
+      "Time-to-first-value: how fast the newcomer completes one meaningful task",
+      true,
+      "Correct. Principle 2 declares time-to-first-value the only week-one metric that matters — first record, first safe change, or first successful API call.",
+    ),
+    QuizChoice(
+      "c",
+      "How many features the tour covered",
+      false,
+      "Feature-tour coverage is what Principle 3 rejects; competence comes from one deep golden-path task, not breadth.",
+    ),
+  ],
+  "Principle 2 names it explicitly.",
+)
+
+q3 = QuizQuestion(
+  "q3",
+  "A developer signs up for your API and spends an afternoon fighting setup before one successful call. Which audience's doctrine did you break, and what is the metric called?",
+  [
+    QuizChoice(
+      "a",
+      "Web App end users — their metric is the first successful business task",
+      false,
+      "End users measure first business task inside the product; fighting an API afternoon is the developer archetype, whose metric is time-to-first-successful-API-call.",
+    ),
+    QuizChoice(
+      "b",
+      "Developers (DX) — their first value is time-to-first-successful-API-call on a clean machine",
+      true,
+      "Correct. For developers the onboarding IS the product trial; the taught metric is time-to-first-successful-API-call, and setup friction makes integrators quietly leave.",
+    ),
+    QuizChoice(
+      "c",
+      "Internal staff & operators — their metric is the first supervised deploy",
+      false,
+      "Operators graduate through graded real tasks ending in a supervised deploy; a self-serve API signup is the developer archetype's journey.",
+    ),
+  ],
+  "Each archetype has its own flavor of first value.",
+)
+
+q4 = QuizQuestion(
+  "q4",
+  "Where does the doctrine say to reveal advanced features and edge-case warnings to a newcomer?",
+  [
+    QuizChoice(
+      "a",
+      "In the kickoff presentation, so nobody is surprised later",
+      false,
+      "Front-loading everything is the information firehose Principle 4 warns against — it creates quit-points, not competence.",
+    ),
+    QuizChoice(
+      "b",
+      "At the exact moment the newcomer reaches that step",
+      true,
+      "Correct. Progressive disclosure teaches the next step when it is needed, never three screens ahead.",
+    ),
+    QuizChoice(
+      "c",
+      "In an appendix of the handbook they can read anytime",
+      false,
+      "An appendix nobody opens is where knowledge goes to hide; the doctrine reveals complexity at the point of need.",
+    ),
+  ],
+  "Principle 4 is about timing, not content volume.",
+)
+
+q5 = QuizQuestion(
+  "q5",
+  "A fully self-serve in-app tour ships for your Web App. According to the Human Anchor principle, what must still exist?",
+  [
+    QuizChoice(
+      "a",
+      "A longer tour that answers every possible question",
+      false,
+      "No tour answers everything; the doctrine's answer is not more software but a named human for the questions the tour cannot answer.",
+    ),
+    QuizChoice(
+      "b",
+      "A named human, buddy, or office hours where questions land",
+      true,
+      "Correct. Even self-serve paths need office hours or a buddy — unanswered questions at hour three are where motivation dies.",
+    ),
+    QuizChoice(
+      "c",
+      "A FAQ page link in the tour's final step",
+      false,
+      "A FAQ link is a dead end, not an anchor; the principle demands a real person or live office hours the question can reach.",
+    ),
+  ],
+  "Principle 5 names the failure hour.",
+)
+
+q6 = QuizQuestion(
+  "q6",
+  "Your onboarding program has a documented dip: half of newcomers stall at the same screen. What does Principle 6 tell you to do?",
+  [
+    QuizChoice(
+      "a",
+      "Instrument the path, then fix the biggest measured quit-point before adding new content",
+      true,
+      "Correct. Measure the friction (login success, completion rate, ticket storms) and fix the biggest quit-point before writing another page.",
+    ),
+    QuizChoice(
+      "b",
+      "Write an extra handbook chapter explaining that screen",
+      false,
+      "Adding content before measuring is the doctrine's favorite anti-pattern — more pages, same quit-point.",
+    ),
+    QuizChoice(
+      "c",
+      "Send everyone a reminder email to read the wiki",
+      false,
+      "Reminder emails treat the symptom; Principle 6 sends you to the instrumentation to find and remove the cause.",
+    ),
+  ],
+  "Measure first, then fix — in a specific order.",
+)

@@ -1,0 +1,131 @@
+root = Quiz("Foundations Trial", [qCsf, qMeta, qArgs, qFrames, qDecorator])
+
+qCsf = QuizQuestion(
+  "q-csf",
+  "In Component Story Format (CSF), how are individual stories declared in a .stories.ts file?",
+  [
+    QuizChoice(
+      "a",
+      "By calling a global registerStory() registry API",
+      false,
+      "CSF replaced the old registry API — registration happens implicitly through module exports.",
+    ),
+    QuizChoice(
+      "b",
+      "As named exports of the story file",
+      true,
+      "Correct. Each named export is one story; the default export is the shared meta.",
+    ),
+    QuizChoice(
+      "c",
+      "As JSON entries in a stories.json manifest",
+      false,
+      "Stories are plain ESM code, not JSON entries — that is what makes them importable and type-checkable.",
+    ),
+  ],
+  "Think about what kind of JavaScript module a story file is.",
+)
+
+qMeta = QuizQuestion(
+  "q-meta",
+  "What does the default export (meta) of a story file declare?",
+  [
+    QuizChoice(
+      "a",
+      "Component-level config such as title, component, and shared argTypes",
+      true,
+      "Correct. Meta is the file-level source of truth that enables sidebar grouping, autodocs props tables, and Controls inference.",
+    ),
+    QuizChoice(
+      "b",
+      "The props for exactly one rendered state",
+      false,
+      "Per-state props live in each story's args; meta holds file-level configuration.",
+    ),
+    QuizChoice(
+      "c",
+      "The list of CI jobs to run for this component",
+      false,
+      "Meta is about component documentation and organization, not CI configuration.",
+    ),
+  ],
+  "It describes the component as a whole, not one state.",
+)
+
+qArgs = QuizQuestion(
+  "q-args",
+  "In the architecture map, Controls mutates what, which then flows into the story?",
+  [
+    QuizChoice(
+      "a",
+      "The decorator chain",
+      false,
+      "Decorators wrap stories with providers; Controls edits a different piece of data.",
+    ),
+    QuizChoice(
+      "b",
+      "Args",
+      true,
+      "Correct. Controls edits the story's args live, and the preview re-renders with the new props.",
+    ),
+    QuizChoice(
+      "c",
+      "The story's import statements",
+      false,
+      "Imports never change at runtime; only the args data mutates.",
+    ),
+  ],
+  "It is the data each story uses as props.",
+)
+
+qFrames = QuizQuestion(
+  "q-frames",
+  "Which two frames make up the Storybook application?",
+  [
+    QuizChoice(
+      "a",
+      "The Manager (sidebar, toolbar, addons panel) and the Preview (iframe that renders stories)",
+      true,
+      "Correct. The Manager is Storybook's chrome; the Preview is a separate runtime that mounts the selected story in an iframe.",
+    ),
+    QuizChoice(
+      "b",
+      "The Docs tab and the Search modal",
+      false,
+      "Those are features inside the Manager, not the two-frame architecture.",
+    ),
+    QuizChoice(
+      "c",
+      "The bundler config and the tsconfig",
+      false,
+      "Those are build configuration files, not runtime frames.",
+    ),
+  ],
+  "One shows navigation, the other renders your component.",
+)
+
+qDecorator = QuizQuestion(
+  "q-decorator",
+  "Your component throws because it expects a ThemeProvider ancestor. What is the idiomatic Storybook fix?",
+  [
+    QuizChoice(
+      "a",
+      "Wrap the component's source in a ThemeProvider permanently",
+      false,
+      "That would couple the component to a provider it should receive from its environment.",
+    ),
+    QuizChoice(
+      "b",
+      "Add a decorator that wraps the story with ThemeProvider",
+      true,
+      "Correct. Decorators re-create the application harness — providers, routers, layout — around the story without changing component code.",
+    ),
+    QuizChoice(
+      "c",
+      "Disable the story until theming ships",
+      false,
+      "Losing coverage is the opposite of the workshop mindset; decorators exist exactly for this.",
+    ),
+  ],
+  "Something wraps the story to supply outside context.",
+)

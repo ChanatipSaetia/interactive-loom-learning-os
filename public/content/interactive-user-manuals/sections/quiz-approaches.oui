@@ -1,0 +1,231 @@
+root = Quiz("Approach Check", [q1, q2, q3, q4, q5, q6, q7, q8, q9, q10])
+
+q1 = QuizQuestion(
+  "q1",
+  "What is the main weakness of an annotated screenshot guide?",
+  [
+    QuizChoice(
+      "q1-a",
+      "It is passive: learners watch but never practise",
+      true,
+      "Screenshot and video guides are cheapest to make, but learners never practise the task.",
+    ),
+    QuizChoice(
+      "q1-b",
+      "It only works for desktop software",
+      false,
+      "Screenshots work for any software, web or desktop.",
+    ),
+    QuizChoice(
+      "q1-c",
+      "It is the most expensive approach to build",
+      false,
+      "It is the cheapest approach to build.",
+    ),
+  ],
+  "Think about what the learner actually does.",
+)
+
+q2 = QuizQuestion(
+  "q2",
+  "Your hotspot simulation is built from recorded screens. The next release moves the 'Save' button. What happens?",
+  [
+    QuizChoice(
+      "q2-a",
+      "The affected screens must be recorded again",
+      true,
+      "Each hotspot slide is a recorded picture, so every UI change means re-recording those screens.",
+    ),
+    QuizChoice(
+      "q2-b",
+      "The hotspot updates itself automatically",
+      false,
+      "Recorded screens don't know the real UI changed.",
+    ),
+    QuizChoice(
+      "q2-c",
+      "Nothing: learners won't notice",
+      false,
+      "Learners would practise a button position that no longer exists.",
+    ),
+  ],
+  "What is each slide actually made of?",
+)
+
+q3 = QuizQuestion(
+  "q3",
+  "Why can't you use an HTML/DOM capture tool to train people on a Windows desktop accounting program?",
+  [
+    QuizChoice(
+      "q3-a",
+      "DOM capture only works for web apps",
+      true,
+      "It saves a page's HTML, and desktop software has no HTML page to capture.",
+    ),
+    QuizChoice(
+      "q3-b",
+      "It can't edit fake data",
+      false,
+      "Editing text and data without re-recording is actually its strength.",
+    ),
+    QuizChoice(
+      "q3-c",
+      "It needs a real back-end server",
+      false,
+      "DOM capture replays saved pages; it doesn't need the real server.",
+    ),
+  ],
+  "What does DOM stand in for?",
+)
+
+q4 = QuizQuestion(
+  "q4",
+  "What is the main cost of a rebuilt UI clone with a mocked backend?",
+  [
+    QuizChoice(
+      "q4-a",
+      "It needs developers to maintain it",
+      true,
+      "It reuses the product's front-end components and has automated tests, but only developers can keep it working.",
+    ),
+    QuizChoice(
+      "q4-b",
+      "It looks nothing like the real product",
+      false,
+      "Reusing the real components gives it very high fidelity.",
+    ),
+    QuizChoice(
+      "q4-c",
+      "It can't be tested automatically",
+      false,
+      "Being code, it's the easiest to test automatically.",
+    ),
+  ],
+  "Who can edit it?",
+)
+
+q5 = QuizQuestion(
+  "q5",
+  "Which of these is a job you take on when you choose a training sandbox?",
+  [
+    QuizChoice(
+      "q5-a",
+      "Resetting it between classes and managing its own access control",
+      true,
+      "A sandbox is a real instance, so it needs infrastructure, resets and its own access control.",
+    ),
+    QuizChoice(
+      "q5-b",
+      "Re-recording every screen after each release",
+      false,
+      "That's the cost of hotspot simulations.",
+    ),
+    QuizChoice(
+      "q5-c",
+      "Hiding production data from trainees",
+      false,
+      "A sandbox holds synthetic data, not production data.",
+    ),
+  ],
+  "It's a real system; what does every real system need?",
+)
+
+q6 = QuizQuestion(
+  "q6",
+  "Which tool publishes hotspot simulations as SCORM or xAPI packages for an LMS?",
+  [
+    QuizChoice(
+      "q6-a",
+      "Articulate Storyline 360",
+      true,
+      "Storyline 360, Adobe Captivate and iSpring Suite all publish SCORM/xAPI packages.",
+    ),
+    QuizChoice(
+      "q6-b",
+      "Mock Service Worker (MSW)",
+      false,
+      "MSW fakes network requests for a UI clone.",
+    ),
+    QuizChoice("q6-c", "Terraform", false, "Terraform defines sandbox infrastructure."),
+  ],
+  "Look at the hotspot authoring tools card.",
+)
+
+q7 = QuizQuestion(
+  "q7",
+  "In a UI clone, which tool answers the app's network requests with fake data?",
+  [
+    QuizChoice(
+      "q7-a",
+      "Mock Service Worker (MSW)",
+      true,
+      "MSW intercepts requests in the browser and returns fake data, so no real server is needed.",
+    ),
+    QuizChoice("q7-b", "Driver.js", false, "Driver.js adds guided steps; it doesn't fake the API."),
+    QuizChoice("q7-c", "Scribe", false, "Scribe generates screenshot guides."),
+  ],
+  "Which building block plays the role of the server?",
+)
+
+q8 = QuizQuestion(
+  "q8",
+  "Which pair of tools helps you detect that the real UI has changed?",
+  [
+    QuizChoice(
+      "q8-a",
+      "Playwright plus Chromatic or Percy",
+      true,
+      "Playwright checks the steps still work; Chromatic and Percy flag visual differences.",
+    ),
+    QuizChoice(
+      "q8-b",
+      "Loom plus Snagit",
+      false,
+      "These make videos and screenshots; they don't detect changes.",
+    ),
+    QuizChoice("q8-c", "Faker plus Mockaroo", false, "These generate synthetic data."),
+  ],
+  "Look at the drift detection card.",
+)
+
+q9 = QuizQuestion(
+  "q9",
+  "You need 5,000 realistic but fake customer records to fill a training sandbox. Which tools fit?",
+  [
+    QuizChoice(
+      "q9-a",
+      "Faker, Mockaroo or Tonic.ai",
+      true,
+      "These synthetic-data tools produce realistic fake records.",
+    ),
+    QuizChoice("q9-b", "Walnut or Navattic", false, "These capture web pages into demos."),
+    QuizChoice(
+      "q9-c",
+      "A copy of the production database",
+      false,
+      "Production data is exactly what trainees must not see.",
+    ),
+  ],
+  "Look at the sandbox and synthetic data tools card.",
+)
+
+q10 = QuizQuestion(
+  "q10",
+  "Which of these is NOT one of the trade-off axes used to compare approaches?",
+  [
+    QuizChoice(
+      "q10-a",
+      "The colour scheme of the software",
+      true,
+      "The axes are build cost, realism, upkeep per release, who can update it, and how much can be automated.",
+    ),
+    QuizChoice("q10-b", "Maintenance effort per UI release", false, "That is one of the axes."),
+    QuizChoice(
+      "q10-c",
+      "Who can update it (authors vs developers)",
+      false,
+      "That is one of the axes.",
+    ),
+  ],
+  "Recall the meters in the trade-off sandbox.",
+)

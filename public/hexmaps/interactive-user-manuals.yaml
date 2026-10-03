@@ -1,0 +1,255 @@
+topicId: "interactive-user-manuals"
+topicTitle: "Realm of the Mirror Console"
+capitalId: "capital"
+
+nodes:
+  - id: "capital"
+    title: "The Mirror Console"
+    type: "capital"
+    status: "unlocked"
+    sectionRef: "intro"
+    description: "The hub of a realm where every system has a safe twin. The real consoles are locked, full of real people's records and one wrong click from disaster, so apprentices train on the mirror."
+
+  - id: "access-barriers"
+    title: "Gate of the Four Locks"
+    type: "archive_spire"
+    status: "locked"
+    unlockedBy:
+      - "capital"
+    sectionRef: "access-barriers"
+    description: "Four locks keep apprentices out of the real consoles: the Warden of Least Privilege, the Vault of Production Data, the Lever That Cannot Be Unpulled and the Tollhouse of Seats."
+    rewards:
+      - id: "access-barriers-relic"
+        name: "Key of the Four Locks"
+        icon: "🗝️"
+        description: "Proof you know why apprentices can't touch the real console."
+
+  - id: "fidelity-ladder"
+    title: "The Fidelity Ladder"
+    type: "archive_spire"
+    status: "locked"
+    unlockedBy:
+      - "access-barriers"
+    sectionRef: "fidelity-ladder"
+    description: "A tower of four rungs, from painted screenshots to a full working twin. Every rung up is more real, and heavier to carry."
+
+  - id: "quiz-why"
+    title: "Trial of the Locked Door"
+    type: "quiz_encounter"
+    status: "locked"
+    unlockedBy:
+      - "fidelity-ladder"
+    sectionRef: "quiz-why"
+    description: "A guardian tests whether you know why the real door stays shut, and how high to climb the ladder."
+    monster:
+      id: "quiz-why-monster"
+      name: "Warden of the Locked Console"
+      type: "goblin"
+      maxHp: 100
+      damage: 15
+      icon: "👾"
+
+  - id: "approach-catalog"
+    title: "Hall of Five Mirrors"
+    type: "archive_spire"
+    status: "locked"
+    unlockedBy:
+      - "capital"
+    sectionRef: "approach-catalog"
+    description: "Five mirrors each reflect the real system differently: the painted guide, the hotspot scroll, the captured page, the rebuilt clone and the sandbox twin."
+    rewards:
+      - id: "approach-catalog-relic"
+        name: "Shard of the Five Mirrors"
+        icon: "🪞"
+        description: "Proof you can tell the five ways to build a mirror apart."
+
+  - id: "tool-kit"
+    title: "The Artificer's Armory"
+    type: "archive_spire"
+    status: "locked"
+    unlockedBy:
+      - "approach-catalog"
+    sectionRef: "tool-kit"
+    description: "The tools that forge each mirror: Scribe and Loom, Storyline and Captivate, Navattic and Walnut, Storybook and MSW, Playwright and Percy, Terraform and Faker."
+
+  - id: "approach-tradeoffs"
+    title: "Forge of Fidelity and Upkeep"
+    type: "tradeoff_workshop"
+    status: "locked"
+    unlockedBy:
+      - "tool-kit"
+    sectionRef: "approach-tradeoffs"
+    description: "Build a training mirror for 200 service-desk agents while balancing realism, build speed, upkeep and automation."
+
+  - id: "approach-decision"
+    title: "Crossroads of the Mirror-Maker"
+    type: "archive_spire"
+    status: "locked"
+    unlockedBy:
+      - "approach-tradeoffs"
+    sectionRef: "approach-decision"
+    description: "Four signposts, practise or follow, web or desktop, back end or not, developers or not, point you to the right mirror."
+
+  - id: "quiz-approaches"
+    title: "Trial of the Five Mirrors"
+    type: "quiz_encounter"
+    status: "locked"
+    unlockedBy:
+      - "approach-decision"
+    sectionRef: "quiz-approaches"
+    description: "A guardian of the armory questions your knowledge of each approach, its tools and its trade-offs."
+    monster:
+      id: "quiz-approaches-monster"
+      name: "Armory Golem"
+      type: "goblin"
+      maxHp: 100
+      damage: 15
+      icon: "👾"
+
+  - id: "upkeep-cost"
+    title: "The Upkeep Abacus"
+    type: "tradeoff_workshop"
+    status: "locked"
+    unlockedBy:
+      - "capital"
+    sectionRef: "upkeep-cost"
+    description: "Count what each release costs a mirror made of pixels, and what reuse buys back."
+    rewards:
+      - id: "upkeep-cost-relic"
+        name: "Keeper's Abacus"
+        icon: "🧮"
+        description: "Proof you can count what drift costs and what reuse saves."
+
+  - id: "upkeep-practices"
+    title: "Watchtower of Maintenance"
+    type: "archive_spire"
+    status: "locked"
+    unlockedBy:
+      - "upkeep-cost"
+    sectionRef: "upkeep-practices"
+    description: "From the watchtower, keepers guard one source of truth, sound the drift alarm, stamp each mirror with its version and share one store of synthetic records."
+
+  - id: "code-and-ai"
+    title: "Scriptorium of Code and Spirits"
+    type: "archive_spire"
+    status: "locked"
+    unlockedBy:
+      - "upkeep-practices"
+    sectionRef: "code-and-ai"
+    description: "Mirrors written as code rebuild themselves; AI spirits draft quickly but invent rooms that don't exist, so every draft is checked against the real console."
+
+  - id: "scenario-release"
+    title: "The Moved Menu"
+    type: "simulation_nexus"
+    status: "locked"
+    unlockedBy:
+      - "code-and-ai"
+    sectionRef: "scenario-release"
+    description: "Three days before release, the Submit button moves. Choose how you find and fix the broken mirrors."
+
+  - id: "reflection-upkeep"
+    title: "Loop of the Keepers"
+    type: "reflection_decryption"
+    status: "locked"
+    unlockedBy:
+      - "scenario-release"
+    sectionRef: "reflection-upkeep"
+    description: "Put the keepers' rituals in order: detect, report, fix and stamp the version."
+
+  - id: "creation-principles"
+    title: "Codex of the Mirror-Maker"
+    type: "archive_spire"
+    status: "locked"
+    unlockedBy:
+      - "capital"
+    sectionRef: "creation-principles"
+    description: "Seven laws for building mirrors that teach: task-first, selective fidelity, realistic safe data, safe to fail, small chunks, a bridge to the real, and open to all."
+
+  - id: "build-process"
+    title: "The Drafting Table"
+    type: "archive_spire"
+    status: "locked"
+    unlockedBy:
+      - "creation-principles"
+    sectionRef: "build-process"
+    description: "Watch the expert, write the step script, build, pilot with real apprentices and measure where they stumble."
+
+  - id: "watch-try-test"
+    title: "Chamber of Three Trials"
+    type: "simulation_nexus"
+    status: "locked"
+    unlockedBy:
+      - "build-process"
+    sectionRef: "watch-try-test"
+    description: "Watch the demo, try with hints and honest feedback, then face the test alone."
+    rewards:
+      - id: "watch-try-test-relic"
+        name: "Sigil of Three Trials"
+        icon: "🎯"
+        description: "Proof you can design Watch → Try → Test."
+
+  - id: "quiz-principles"
+    title: "Trial of the Codex"
+    type: "quiz_encounter"
+    status: "locked"
+    unlockedBy:
+      - "watch-try-test"
+    sectionRef: "quiz-principles"
+    description: "A guardian tests the laws of the mirror-maker and the three trials."
+    monster:
+      id: "quiz-principles-monster"
+      name: "Codex Sentinel"
+      type: "goblin"
+      maxHp: 100
+      damage: 15
+      icon: "👾"
+
+  - id: "concept-map"
+    title: "Constellation of Mirrors"
+    type: "concept_monolith"
+    status: "locked"
+    unlockedBy:
+      - "quiz-principles"
+    sectionRef: "concept-map"
+    description: "See how locks, mirrors, upkeep and drift connect across the realm."
+
+  - id: "glossary"
+    title: "Lexicon Stones"
+    type: "concept_monolith"
+    status: "locked"
+    unlockedBy:
+      - "concept-map"
+    sectionRef: "glossary"
+    description: "The words of the realm: least privilege, fidelity, hotspot, DOM, MSW, SCORM, drift and more."
+
+  - id: "plan-your-sim"
+    title: "The Blueprint Vault"
+    type: "reading_sanctuary"
+    status: "locked"
+    unlockedBy:
+      - "glossary"
+    sectionRef: "plan-your-sim"
+    description: "Fill in the blueprint of your own mirror before descending to the boss."
+
+  - id: "boss-lair"
+    title: "Lair of the Drifted Phantom UI"
+    type: "boss_lair"
+    status: "locked"
+    unlockedBy:
+      - "quiz-why"
+      - "quiz-approaches"
+      - "reflection-upkeep"
+      - "plan-your-sim"
+    description: "The simulation silently drifts away from the real software, so learners confidently rehearse screens and steps that no longer exist"
+    requiredItems:
+      - "access-barriers-relic"
+      - "approach-catalog-relic"
+      - "upkeep-cost-relic"
+      - "watch-try-test-relic"
+    monster:
+      id: "failure-mode"
+      name: "The Drifted Phantom UI"
+      type: "boss"
+      maxHp: 200
+      damage: 35
+      icon: "👻"

@@ -1,0 +1,44 @@
+root = ConceptMap(
+  "Architecture & Scene Graph Map",
+  [
+    app,
+    renderer,
+    stage,
+    container,
+    sprite,
+    texture,
+    graphics,
+    text,
+    ticker,
+    assets,
+    batchRenderer,
+    filters,
+  ],
+  [
+    ConceptLink(app, renderer, "manages"),
+    ConceptLink(app, stage, "creates root"),
+    ConceptLink(app, ticker, "runs frame loop"),
+    ConceptLink(stage, container, "contains"),
+    ConceptLink(container, sprite, "nests children"),
+    ConceptLink(container, graphics, "nests children"),
+    ConceptLink(container, text, "nests children"),
+    ConceptLink(sprite, texture, "samples visual UVs"),
+    ConceptLink(assets, texture, "loads & caches"),
+    ConceptLink(renderer, batchRenderer, "delegates quad drawing"),
+    ConceptLink(sprite, filters, "applies post-processing"),
+    ConceptLink(batchRenderer, texture, "binds sampler units"),
+  ],
+)
+
+app = Concept("app", "PIXI.Application", "Core Entrypoint")
+renderer = Concept("renderer", "Renderer (WebGL / WebGPU)", "GPU Pipeline")
+stage = Concept("stage", "Root Stage (Container)", "Scene Graph")
+container = Concept("container", "Container", "Scene Graph")
+sprite = Concept("sprite", "Sprite", "Display Objects")
+texture = Concept("texture", "Texture / BaseTexture", "Assets & Memory")
+graphics = Concept("graphics", "Graphics (Vector)", "Display Objects")
+text = Concept("text", "Text / BitmapText", "Display Objects")
+ticker = Concept("ticker", "Ticker (RAF Loop)", "Timing & Animation")
+assets = Concept("assets", "Assets Loader", "Assets & Memory")
+batchRenderer = Concept("batch_renderer", "BatchRenderer", "GPU Pipeline")
+filters = Concept("filters", "Filters (GLSL Shaders)", "GPU Pipeline")

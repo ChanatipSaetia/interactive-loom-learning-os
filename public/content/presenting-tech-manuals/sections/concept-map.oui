@@ -1,0 +1,55 @@
+root = ConceptMap(
+  "Concept Constellation",
+  [
+    audienceAnalysis,
+    endUsers,
+    operators,
+    developers,
+    personaScenario,
+    hookPain,
+    liveDemo,
+    fallbackClip,
+    gotchas,
+    permalink,
+    docsAsCode,
+    reviewLoop,
+    markdownDeck,
+    docsSite,
+    apiPlayground,
+    guidedTour,
+  ],
+  [
+    ConceptLink(audienceAnalysis, endUsers, "splits into"),
+    ConceptLink(audienceAnalysis, operators, "splits into"),
+    ConceptLink(audienceAnalysis, developers, "splits into"),
+    ConceptLink(hookPain, personaScenario, "leads into"),
+    ConceptLink(personaScenario, liveDemo, "is proven by"),
+    ConceptLink(liveDemo, fallbackClip, "is protected by"),
+    ConceptLink(liveDemo, gotchas, "flows into"),
+    ConceptLink(gotchas, permalink, "ends at"),
+    ConceptLink(docsAsCode, reviewLoop, "ships through"),
+    ConceptLink(docsAsCode, markdownDeck, "compiles decks"),
+    ConceptLink(docsAsCode, docsSite, "compiles sites"),
+    ConceptLink(docsSite, permalink, "hosts"),
+    ConceptLink(developers, apiPlayground, "learn via"),
+    ConceptLink(endUsers, guidedTour, "learn via"),
+    ConceptLink(operators, docsSite, "run from"),
+  ],
+)
+
+audienceAnalysis = Concept("audience_analysis", "Audience Analysis", "concept")
+endUsers = Concept("end_users", "End Users", "role")
+operators = Concept("operators", "Operators & Admins", "role")
+developers = Concept("developers", "Developers (DX)", "role")
+personaScenario = Concept("persona_scenario", "One-Scenario Walkthrough", "process")
+hookPain = Concept("hook_pain", "Hook with the Pain", "concept")
+liveDemo = Concept("live_demo", "Live Product Demo", "process")
+fallbackClip = Concept("fallback_clip", "OBS Fallback Clip", "mechanism")
+gotchas = Concept("gotchas", "Gotchas & Fixes", "concept")
+permalink = Concept("permalink", "Docs Permalink", "concept")
+docsAsCode = Concept("docs_as_code", "Docs-as-Code", "process")
+reviewLoop = Concept("review_loop", "PR Review & Preview", "process")
+markdownDeck = Concept("markdown_deck", "Marp / Slidev / reveal.js", "tool")
+docsSite = Concept("docs_site", "Docusaurus / MkDocs / VitePress", "tool")
+apiPlayground = Concept("api_playground", "Swagger UI / Redoc / Storybook", "tool")
+guidedTour = Concept("guided_tour", "In-App & Code Tours", "tool")

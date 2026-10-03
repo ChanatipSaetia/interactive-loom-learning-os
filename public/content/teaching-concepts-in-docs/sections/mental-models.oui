@@ -1,0 +1,80 @@
+root = PillarLayer(
+  "Three Models of the System",
+  [lUser, lImage, lDesigner],
+  [block1, block2, block3, block4, block5],
+  "The designers have a model in their heads. Users can't see it: they only see the system image (the UI and the docs) and build their own model from it.",
+  "Three Models of the System (Don Norman)",
+)
+
+lUser = Layer(
+  "l-user",
+  "User's Model",
+  "What users believe about how the system works, built only from what they can see.",
+)
+
+lImage = Layer(
+  "l-image",
+  "System Image",
+  "Everything users can actually see: the UI, messages, and the docs.",
+)
+
+lDesigner = Layer(
+  "l-designer",
+  "Designer's Model",
+  "How the designers and developers think the system works.",
+)
+
+block1 = MatrixBlock(
+  "block-1",
+  "'Archive deletes things' (wrong)",
+  lUser,
+  0,
+  2,
+  null,
+  "The user's model when nothing tells them otherwise.",
+  "red",
+)
+
+block2 = MatrixBlock(
+  "block-2",
+  "'Archive hides things; restore any time' (right)",
+  lUser,
+  2,
+  2,
+  null,
+  "The user's model after the docs explain it.",
+  "green",
+)
+
+block3 = MatrixBlock(
+  "block-3",
+  "The UI",
+  lImage,
+  0,
+  2,
+  null,
+  "A trash-can-like icon labelled Archive. It can't explain the idea by itself.",
+  "yellow",
+)
+
+block4 = MatrixBlock(
+  "block-4",
+  "The Docs",
+  lImage,
+  2,
+  2,
+  null,
+  "Carry the designer's model when the UI alone can't: 'Archiving hides a project; it isn't deleted.'",
+  "sky",
+)
+
+block5 = MatrixBlock(
+  "block-5",
+  "Archive = hidden, restorable",
+  lDesigner,
+  0,
+  4,
+  null,
+  "Designers know archived items are kept and can be restored.",
+  "mauve",
+)

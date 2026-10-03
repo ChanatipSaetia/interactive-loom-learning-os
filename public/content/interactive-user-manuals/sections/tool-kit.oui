@@ -1,0 +1,109 @@
+root = TaxonomyBrowser(
+  "Tools for Each Approach",
+  [
+    screenshotVideoGuideTools,
+    hotspotSimulationAuthoringTools,
+    htmlDomCapturePlatforms,
+    uiCloneBuildingBlocks,
+    driftDetectionTools,
+    sandboxSyntheticDataTools,
+  ],
+)
+
+screenshotVideoGuideTools = TaxonomyCategory(
+  "Screenshot & Video Guide Tools",
+  "Scribe · Tango · Guidde · Snagit · Loom",
+  "Camera",
+  "mauve",
+  "Scribe, Tango and Guidde auto-generate step-by-step screenshot guides from a recorded session; Snagit and Loom cover manual screenshots and video.",
+  "With Scribe, Tango or Guidde you press record, do the task once, and the tool captures a screenshot and a written instruction for every click, then lets you blur sensitive data and share or export the guide. Snagit is the classic tool for hand-made annotated screenshots, and Loom records quick narrated screen videos.",
+  "A photographer who follows you around and captions every photo.",
+  "Fastest path from doing a task to a shareable guide",
+  [
+    "Auto-captured step guides: Scribe, Tango, Guidde",
+    "Manual annotated screenshots: Snagit",
+    "Narrated screen videos: Loom",
+  ],
+  ["Clickable practice with feedback"],
+)
+
+hotspotSimulationAuthoringTools = TaxonomyCategory(
+  "Hotspot Simulation Authoring Tools",
+  "Articulate Storyline 360 · Adobe Captivate · iSpring Suite",
+  "MousePointerClick",
+  "yellow",
+  "Articulate Storyline 360, Adobe Captivate and iSpring Suite build hotspot simulations and publish them as SCORM or xAPI packages for an LMS.",
+  "These e-learning authoring tools record the screen as an expert does the task and build clickable steps from it, with hints, feedback and scoring. They publish the result as a SCORM or xAPI package, a standard format that a learning management system (LMS) can host and use to record who finished the course and how they scored.",
+  "A lesson-in-a-box that plugs into the school's register.",
+  "Tracked, scored practice inside an LMS",
+  [
+    "Screen recording into clickable steps",
+    "Hints, feedback and scoring",
+    "SCORM / xAPI packages for an LMS",
+  ],
+  ["Editing text without the authoring tool"],
+)
+
+htmlDomCapturePlatforms = TaxonomyCategory(
+  "HTML/DOM Capture Platforms",
+  "Walnut · Navattic · Storylane · Reprise",
+  "Globe",
+  "sky",
+  "Walnut, Navattic, Storylane and Reprise capture a web app's HTML/DOM into editable, clickable demos.",
+  "These platforms use a browser extension to capture the pages of a web app, then let you edit text and data, add guided steps and share the demo as a link or an embed. They are often sold for product-marketing demos, but the same capture works for internal training on web systems.",
+  "A cardboard cut-out of the shop that still has working doors.",
+  "Realistic web-app demos without the real backend",
+  [
+    "Browser-extension capture of web pages",
+    "Editing text and data in a web editor",
+    "Sharing demos as a link or embed",
+  ],
+  ["Desktop software"],
+)
+
+uiCloneBuildingBlocks = TaxonomyCategory(
+  "UI Clone Building Blocks",
+  "Storybook · Mock Service Worker (MSW) · Shepherd.js · Driver.js",
+  "Blocks",
+  "green",
+  "A UI clone is typically built with the product's component library in Storybook, Mock Service Worker (MSW) for the fake API, and a tour library such as Shepherd.js or Driver.js for guided steps.",
+  "Storybook shows the product's real components in isolation and is a natural place to assemble training screens. Mock Service Worker (MSW) intercepts the app's network requests in the browser and answers them with fake data, so no real server is needed. Shepherd.js or Driver.js add the guided layer: highlight an element, explain it, and wait for the learner to act.",
+  "Real Lego bricks from the product's own box, a pretend power supply, and a tour guide pointing at each brick.",
+  "Building training screens from the product's own code",
+  [
+    "Storybook for the product's components",
+    "MSW for the fake API",
+    "Shepherd.js / Driver.js for guided steps",
+  ],
+  ["Authoring without developers"],
+)
+
+driftDetectionTools = TaxonomyCategory(
+  "Drift Detection Tools",
+  "Playwright · Chromatic · Percy",
+  "ScanEye",
+  "teal",
+  "Playwright tests plus visual-regression services such as Chromatic or Percy detect when the real UI has changed.",
+  "Playwright drives a browser through the documented steps and fails if a button or field can no longer be found. Chromatic and Percy take screenshots of each screen on every build and highlight pixel differences against an approved baseline. Together they tell you which manual screens a release has broken, before learners find out.",
+  "A smoke alarm for your manual: it goes off the moment the real UI stops matching.",
+  "Knowing when the manual is out of date",
+  ["Scripted checks that documented steps still work", "Visual diffs against approved screenshots"],
+  ["Fixing the manual (they only tell you what broke)"],
+)
+
+sandboxSyntheticDataTools = TaxonomyCategory(
+  "Sandbox & Synthetic Data Tools",
+  "Salesforce sandboxes · ServiceNow sub-prod · Docker Compose · Terraform · Faker · Mockaroo · Tonic.ai",
+  "Container",
+  "peach",
+  "Training sandboxes use vendor sandboxes (Salesforce sandboxes, ServiceNow sub-production instances) or Docker Compose/Terraform environments seeded by synthetic-data tools such as Faker, Mockaroo or Tonic.ai.",
+  "Many SaaS vendors offer sandboxes out of the box, such as Salesforce sandboxes or ServiceNow sub-production instances. For self-hosted systems, Docker Compose or Terraform describe the environment so it can be created and reset the same way every time. Faker (a code library), Mockaroo (a web tool) and Tonic.ai (a data platform) produce realistic fake records to fill it.",
+  "A stage set you can build, strike and rebuild every night, with actors instead of real customers.",
+  "Repeatable environments with privacy-safe data",
+  [
+    "Vendor sandboxes and sub-production instances",
+    "Environment definitions: Docker Compose, Terraform",
+    "Synthetic data: Faker, Mockaroo, Tonic.ai",
+  ],
+  ["Copies of production data"],
+)

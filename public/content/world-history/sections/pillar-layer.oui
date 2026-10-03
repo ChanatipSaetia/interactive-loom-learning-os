@@ -1,0 +1,102 @@
+root = PillarLayer(
+  "วิวัฒนาการระบอบการปกครองและระบบกฎหมาย",
+  [lModernRights, lCharters, lClassicalLaw, lAncientCodes],
+  [bUdhr, bRightsOfMan, bMagnaCarta, bAthensDemocracy, bTwelveTables, bHammurabi],
+  "โครงสร้างลำดับชั้นแสดงการต่อยอดของระบอบการปกครอง นิติรัฐ และการคุ้มครองสิทธิเสรีภาพข้ามยุคสมัย",
+  "สถาปัตยกรรมวิวัฒนาการกฎหมายและสิทธิมนุษยชน (Legal & Governance Stack)",
+)
+
+lModernRights = Layer(
+  "l-modern-rights",
+  "1. ระเบียบกฎหมายระหว่างประเทศและสิทธิมนุษยชน (Modern Rights Tier)",
+  "ปฏิญญาสากลและสิทธิเสรีภาพของมนุษยชาติในระดับโลก",
+)
+
+lCharters = Layer(
+  "l-charters",
+  "2. ยุคพันธสัญญาและระบอบรัฐสภา (Constitutional Charters Tier)",
+  "การจำกัดอำนาจกษัตริย์และวางรากฐานนิติรัฐในยุคกลางถึงยุคใหม่",
+)
+
+lClassicalLaw = Layer(
+  "l-classical-law",
+  "3. ระบบประมวลกฎหมายและประชาธิปไตยคลาสสิก (Classical Law Tier)",
+  "ประชาธิปไตยทางตรงกรีกและระบบกฎหมายสิบสองโต๊ะของโรมัน",
+)
+
+lAncientCodes = Layer(
+  "l-ancient-codes",
+  "4. จารึกกฎหมายและคำสั่งเทวสิทธิ์แรกเริ่ม (Ancient Divine Codes Tier)",
+  "กฎหมายลายลักษณ์อักษรยุคแรกเริ่มและการจัดระเบียบนครรัฐ",
+)
+
+bUdhr = MatrixBlock(
+  "b-udhr",
+  "ปฏิญญาสากลว่าด้วยสิทธิมนุษยชน (UDHR, AD 1948)",
+  lModernRights,
+  0,
+  2,
+  null,
+  "สหประชาชาติประกาศรับรองศักดิ์ศรีและสิทธิเสมอภาคของมนุษย์ทุกคนหลังสงครามโลกครั้งที่ 2",
+  "blue",
+  ["b-rights-of-man"],
+)
+
+bRightsOfMan = MatrixBlock(
+  "b-rights-of-man",
+  "คำประกาศสิทธิมนุษยชนและพลเมือง (AD 1789)",
+  lModernRights,
+  2,
+  2,
+  null,
+  "การปฏิวัติฝรั่งเศสสถาปนาหลักเสรีภาพ เสมอภาค ภราดรภาพ และลบล้างอภิสิทธิ์ชนชั้น",
+  "mauve",
+  ["b-magna-carta"],
+)
+
+bMagnaCarta = MatrixBlock(
+  "b-magna-carta",
+  "มหากฎบัตรแมกนาคาร์ตา (Magna Carta, AD 1215)",
+  lCharters,
+  0,
+  4,
+  null,
+  "กษัตริย์จอห์นแห่งอังกฤษลงนามจำกัดอำนาจกษัตริย์ให้อยู่ใต้กฎหมายและห้ามคุมขังโดยมิชอบ",
+  "peach",
+  ["b-twelve-tables", "b-athens-democracy"],
+)
+
+bAthensDemocracy = MatrixBlock(
+  "b-athens-democracy",
+  "ประชาธิปไตยทางตรงเอเธนส์ (~450 BC)",
+  lClassicalLaw,
+  0,
+  2,
+  null,
+  "พลเมืองชายมีส่วนร่วมลงคะแนนบริหารรัฐในยุคเพริคลีส ขณะที่สปาร์ตาสร้างรัฐทหารเพื่อความมั่นคง",
+  "teal",
+  ["b-hammurabi"],
+)
+
+bTwelveTables = MatrixBlock(
+  "b-twelve-tables",
+  "กฎหมายสิบสองโต๊ะแห่งโรมัน (~450 BC)",
+  lClassicalLaw,
+  2,
+  2,
+  null,
+  "จารึกกฎหมายลายลักษณ์อักษรเพื่อคุ้มครองชนชั้นสามัญ พัฒนาสู่ระบบประมวลกฎหมายโรมัน (Corpus Juris)",
+  "green",
+  ["b-hammurabi"],
+)
+
+bHammurabi = MatrixBlock(
+  "b-hammurabi",
+  "ประมวลกฎหมายฮัมมูราบีแห่งบาบิโลน (~1754 BC)",
+  lAncientCodes,
+  0,
+  4,
+  null,
+  "จารึกบนเสาหินบาซอลต์ ใช้หลักการลงโทษ ตาต่อตา ฟันต่อฟัน เพื่อสร้างระเบียบในเมโสโปเตเมีย",
+  "sapphire",
+)

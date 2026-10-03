@@ -1,0 +1,54 @@
+root = FormulaSandbox(
+  "Upkeep Cost Calculator",
+  [
+    FormulaVariable("releases", "Product releases per year", 1, 52, 1, 12),
+    FormulaVariable("screens_changed", "Manual screens changed per release", 0, 50, 1, 8),
+    FormulaVariable(
+      "minutes_per_screen",
+      "Minutes to update one screen by hand (re-capture, re-annotate, re-publish)",
+      5,
+      120,
+      5,
+      30,
+    ),
+    FormulaVariable(
+      "reuse_percent",
+      "% of changed screens that update automatically (reused live components or scripted capture)",
+      0,
+      100,
+      5,
+      0,
+    ),
+  ],
+  [pixelHours, reuseHours, hoursSaved],
+)
+
+pixelHours = FormulaMetric(
+  "pixel_hours",
+  "Yearly upkeep if you copy pixels (hours)",
+  "Math.round(releases * screens_changed * minutes_per_screen / 60)",
+  "Yearly upkeep effort ≈ releases per year × screens changed per release × minutes to update one screen. Screenshots and recordings pay this full cost for every changed screen.",
+  "Repainting a mural every time the building gets a new window.",
+  ["Re-capturing, re-annotating and re-publishing changed screens"],
+  ["Building the manual the first time", "Writing new modules for new features"],
+)
+
+reuseHours = FormulaMetric(
+  "reuse_hours",
+  "Yearly upkeep with reuse (hours)",
+  "Math.round(releases * screens_changed * (1 - reuse_percent / 100) * minutes_per_screen / 60)",
+  "Approaches that reuse live components (a UI clone) or regenerate screenshots from a script only pay by hand for the screens that don't update themselves.",
+  "A window display that rearranges itself when the stock changes; you only fix what it can't.",
+  ["Screens that still need a person to update them"],
+  ["The one-off cost of building the reuse (developers, scripts, CI)"],
+)
+
+hoursSaved = FormulaMetric(
+  "hours_saved",
+  "Hours saved per year by reuse",
+  "Math.round(releases * screens_changed * (reuse_percent / 100) * minutes_per_screen / 60)",
+  "The yearly time that reuse buys back. Compare it with what the reuse costs to build: with few releases it may not pay off, with weekly releases it almost always does.",
+  "The interest earned on an up-front investment.",
+  ["Recurring upkeep avoided"],
+  ["Developer time to build and maintain the reuse"],
+)

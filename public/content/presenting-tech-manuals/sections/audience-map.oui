@@ -1,0 +1,58 @@
+root = TaxonomyBrowser(
+  "Audience Map — Who Is the Manual For?",
+  [endUsers, operatorsAdmins, developersDx],
+)
+
+endUsers = TaxonomyCategory(
+  "End Users",
+  "Business users & customers",
+  "Users",
+  "green",
+  "People who complete business tasks in the Web App day to day and need the manual to get unstuck in under two minutes.",
+  "End users do not care which database backs the app. They need task-oriented walkthroughs: 'How do I export the monthly invoice report?' Show annotated screenshots of the real UI, name the exact buttons to click, and state where the permanent permalink to that page lives. Every click you skip in the slides is a support ticket you create later.",
+  "A GPS navigation app — it never explains how the engine works; it says 'turn left in 200 meters' at exactly the right moment.",
+  "Task-oriented walkthroughs of real UI screens",
+  [
+    "Step-by-step happy paths for the top everyday tasks",
+    "Annotated screenshots with numbered callouts on exact buttons",
+    "FAQ and 'what do I do when this error appears' pages",
+  ],
+  ["Internal microservice architecture diagrams", "API request/response payload formats"],
+)
+
+operatorsAdmins = TaxonomyCategory(
+  "Operators & Admins",
+  "SRE, IT support, platform teams",
+  "ServerCog",
+  "peach",
+  "People who keep the IT system alive at 2am. They need configuration references, runbooks, and troubleshooting flows more than feature tours.",
+  "Operators read manuals defensively: 'what breaks, how do I see it breaking, and what do I type to fix it?' Present runbooks as decision flows (symptom → diagnosis → remediation), show the actual config keys and environment variables, and demo the monitoring dashboards live. Keep every command copy-pasteable from the docs site permalink.",
+  "An aircraft emergency checklist — terse, ordered, unambiguous, and identical every time the cabin altitude warning sounds.",
+  "Configuration, monitoring, and incident runbooks",
+  [
+    "Install/upgrade/rollback procedures with exact commands",
+    "Config file and environment variable reference tables",
+    "Alert triage flows and common failure symptom tables",
+  ],
+  ["Marketing feature overviews", "UI walkthroughs of end-user business tasks"],
+)
+
+developersDx = TaxonomyCategory(
+  "Developers (DX)",
+  "Integrators & internal engineers",
+  "Code",
+  "sky",
+  "People building on top of the system. For them the manual is the product: quickstarts, API references, and runnable code samples define the Developer Experience.",
+  "Developers judge a manual the way chefs judge a kitchen — by how fast they can get something working. Lead with a five-minute quickstart that compiles, keep API references generated from the OpenAPI spec so they never drift, and make every code sample copy-pasteable and tested. In a DX presentation, live-code the integration instead of photographing it.",
+  "A well-stocked workshop with labeled tools and a workbench — developers don't want a slideshow about the tools, they want to start building in ten minutes.",
+  "Quickstarts, API references, and copy-pasteable code samples",
+  [
+    "Getting-started quickstart that works on first try",
+    "API/SDK reference generated from OpenAPI or source annotations",
+    "Auth flows, error code tables, changelog and deprecation policy",
+  ],
+  [
+    "Business-process background the integrator will never touch",
+    "Screenshots of UI screens the developer never renders",
+  ],
+)

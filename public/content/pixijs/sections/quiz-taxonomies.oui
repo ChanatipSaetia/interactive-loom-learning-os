@@ -1,0 +1,97 @@
+root = Quiz("Display Object Taxonomies Quiz", [qTax1, qTax2, qTax3])
+
+qTax1 = QuizQuestion(
+  "q_tax_1",
+  "When should you prefer PIXI.ParticleContainer over a standard PIXI.Container?",
+  [
+    QuizChoice(
+      "c1",
+      "When you need deeply nested hierarchy trees and individual child blur filters",
+      false,
+      "ParticleContainer does not support deep nesting or individual child filters.",
+    ),
+    QuizChoice(
+      "c2",
+      "When you need to render thousands of flat, high-speed sprites (e.g. bullets, rain, snow) with minimal CPU overhead",
+      true,
+      "ParticleContainer streams flat vertex buffers directly to the GPU shader, bypassing full scene-graph matrix recalculations.",
+    ),
+    QuizChoice(
+      "c3",
+      "When you are rendering static vector SVG shapes",
+      false,
+      "ParticleContainer is designed exclusively for textured sprite quads.",
+    ),
+    QuizChoice(
+      "c4",
+      "When you want to display HTML form inputs",
+      false,
+      "HTML inputs are managed in the DOM outside the WebGL canvas.",
+    ),
+  ],
+  "ParticleContainer sacrifices complex hierarchy features for raw vertex streaming throughput.",
+)
+
+qTax2 = QuizQuestion(
+  "q_tax_2",
+  "Why should dynamic 60 FPS numerical counters use PIXI.BitmapText rather than standard PIXI.Text?",
+  [
+    QuizChoice(
+      "c1",
+      "BitmapText creates no CPU canvas rasterization or GPU texture re-upload churn when strings change",
+      true,
+      "PIXI.Text generates a new offscreen HTML5 2D Canvas texture on every text change, creating VRAM churn and GC pauses. BitmapText merely batches pre-uploaded character glyphs.",
+    ),
+    QuizChoice(
+      "c2",
+      "Standard PIXI.Text cannot render numbers",
+      false,
+      "PIXI.Text can render any Unicode text string.",
+    ),
+    QuizChoice(
+      "c3",
+      "BitmapText runs on WebAudio instead of WebGL",
+      false,
+      "BitmapText is a WebGL display object.",
+    ),
+    QuizChoice(
+      "c4",
+      "BitmapText automatically translates text into 12 languages",
+      false,
+      "Localization is an application-level concern.",
+    ),
+  ],
+  "Think about the memory and CPU cost of offscreen canvas rasterization.",
+)
+
+qTax3 = QuizQuestion(
+  "q_tax_3",
+  "What is the optimal display strategy for a complex static vector UI background drawn with PIXI.Graphics?",
+  [
+    QuizChoice(
+      "c1",
+      "Redraw the entire vector path inside the 60 FPS Ticker loop",
+      false,
+      "Redrawing vector paths every frame causes unnecessary CPU triangulation overhead.",
+    ),
+    QuizChoice(
+      "c2",
+      "Draw the paths once and bake them into a reusable Texture via app.renderer.generateTexture(graphics)",
+      true,
+      "Baking static vector geometry into a RenderTexture allows it to render as an ultra-fast batched sprite quad without recurring CPU triangulation.",
+    ),
+    QuizChoice(
+      "c3",
+      "Convert the vector path into a raw HTML <video> tag",
+      false,
+      "Video tags are for video streams, not static vector shapes.",
+    ),
+    QuizChoice(
+      "c4",
+      "Disable the GPU and use software rendering",
+      false,
+      "Software rendering is much slower than GPU acceleration.",
+    ),
+  ],
+  "Consider baking one-off vector drawings into a GPU texture.",
+)

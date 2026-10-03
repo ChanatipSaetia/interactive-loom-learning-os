@@ -1,0 +1,132 @@
+root = Flashcards(
+  "Essential PixiJS Terminology",
+  [application, container, sprite, texture, batchRenderer, ticker, particleContainer, filter],
+)
+
+application = Flashcard(
+  "application",
+  "Application",
+  "/ˌæplɪˈkeɪʃən/",
+  "Core Architecture",
+  "The main convenience wrapper that initializes the Renderer, Ticker, and root Stage Container.",
+  "PIXI.Application encapsulates canvas DOM creation, requestAnimationFrame loop management via Ticker, and sets up the root stage container. It provides a simple start point for interactive 2D projects.",
+  "Eliminates hundreds of lines of boilerplate setup for WebGL canvas context creation, screen resizing, and animation frame hooks.",
+  null,
+  Dialogue(
+    "How do I spin up a new PixiJS canvas?",
+    "User needs the standard entry point object.",
+    "Instantiate `const app = new PIXI.Application(); await app.init({ width: 800, height: 600 }); document.body.appendChild(app.canvas);`",
+  ),
+)
+
+container = Flashcard(
+  "container",
+  "Container",
+  "/kənˈteɪnər/",
+  "Scene Graph",
+  "A general display node that holds a collection of children and propagates position, rotation, and scale down the hierarchy.",
+  "Containers do not render pixels directly; instead, they manage hierarchical spatial transformations. When a container moves, rotates, or scales, all its children inherit those transforms via world matrix multiplication.",
+  "Allows complex composite game objects (like a character with separate body, weapon, and shadow sprites) to be moved and transformed as a single unit.",
+  null,
+  Dialogue(
+    "How do I move a group of 20 sprites together?",
+    "Group them under a single parent display node.",
+    "Add them to a `PIXI.Container` and update only the container's `x` and `y` properties!",
+  ),
+)
+
+sprite = Flashcard(
+  "sprite",
+  "Sprite",
+  "/spraɪt/",
+  "Display Objects",
+  "The fundamental 2D display object that renders a textured quad onto the screen.",
+  "A Sprite binds a source Texture (or a sub-region of a texture atlas) to rectangular geometry. It supports anchors, pivot points, alpha transparency, tint colors, and blend modes.",
+  "Sprites are the core building block for 90% of visual elements in 2D games and dashboards, and are heavily optimized by Pixi's batch renderer.",
+  null,
+  Dialogue(
+    "What is the difference between a Texture and a Sprite?",
+    "Differentiate the GPU asset from the scene graph display object.",
+    "A Texture is the raw image data on the GPU; a Sprite is the visible instance in the scene tree with position, scale, and tint.",
+  ),
+)
+
+texture = Flashcard(
+  "texture",
+  "Texture",
+  "/ˈtɛkstʃər/",
+  "Assets & GPU",
+  "An object representing an image resource or frame stored in WebGL GPU video memory.",
+  "Textures wrap a BaseTexture (the actual GPU texture buffer) with UV coordinate frames. Multiple Textures can share a single BaseTexture (such as sprites in a texture atlas / spritesheet).",
+  "Sharing a single BaseTexture across multiple sprites allows the BatchRenderer to draw them in a single draw call without expensive GPU texture bind swaps.",
+  null,
+  Dialogue(
+    "Why should I use a spritesheet instead of separate PNG files?",
+    "Highlight texture atlas batching benefits.",
+    "Because all sprites referencing the same spritesheet share one BaseTexture, allowing PixiJS to render thousands of sprites in 1 GPU draw call.",
+  ),
+)
+
+batchRenderer = Flashcard(
+  "batch-renderer",
+  "BatchRenderer",
+  "/bætʃ ˈrɛndərər/",
+  "Performance",
+  "An internal rendering system that combines multiple textured quads into a single WebGL drawArrays/drawElements call.",
+  "Instead of executing one draw call per sprite, BatchRenderer buffers sprite vertices, UVs, tints, and multi-texture indices into dynamic vertex buffers, flushing to the GPU only when texture limits or blend mode changes require a batch break.",
+  "Draw calls are the primary performance bottleneck in WebGL; batching allows PixiJS to render 10,000+ moving sprites at 60 FPS on modest mobile hardware.",
+  null,
+  Dialogue(
+    "What causes a 'batch break' that degrades performance?",
+    "Identify state changes that force a flush.",
+    "Switching to an unbound texture, changing blend modes, or interleaving custom shaders breaks the current batch and forces a new draw call.",
+  ),
+)
+
+ticker = Flashcard(
+  "ticker",
+  "Ticker",
+  "/ˈtɪkər/",
+  "Animation",
+  "A high-precision animation loop manager driven by window.requestAnimationFrame.",
+  "The Ticker dispatches update events every frame with delta time multipliers. It automatically manages frame-rate throttling, pause when tabs are inactive, and priority queues for update listeners.",
+  "Ensures smooth, delta-compensated physics and animations that run consistently regardless of device refresh rate (60Hz, 120Hz, 144Hz).",
+  null,
+  Dialogue(
+    "How do I animate a rotating sprite smoothly?",
+    "Connect to ticker callback with deltaTime.",
+    "Attach a callback to `app.ticker.add((time) => { sprite.rotation += 0.05 * time.deltaTime; })`",
+  ),
+)
+
+particleContainer = Flashcard(
+  "particle-container",
+  "ParticleContainer",
+  "/ˈpɑːrtɪkəl kənˈteɪnər/",
+  "High-Performance",
+  "A fast, streamlined container designed to render massive numbers of simple sprites with minimal CPU overhead.",
+  "ParticleContainer trades advanced features (such as deep nesting, masks, filters, and per-child rotation/tint when disabled) for ultra-fast GPU streaming, uploading flat vertex buffers directly to the shader.",
+  "Can render 50,000+ particles (snow, rain, bullets, starfields) at 60 FPS where standard Containers would suffer CPU transform overhead.",
+  null,
+  Dialogue(
+    "When should I use ParticleContainer instead of Container?",
+    "Determine when raw particle volume trumps hierarchy features.",
+    "Use ParticleContainer for massive flat particle systems (bullets, explosions, rain) where children don't need complex sub-nesting or filters.",
+  ),
+)
+
+filter = Flashcard(
+  "filter",
+  "Filter",
+  "/ˈfɪltər/",
+  "Shaders & Effects",
+  "A post-processing effect applied via custom GLSL fragment and vertex shaders.",
+  "Filters render a display object into a temporary offscreen framebuffer (render texture), then apply shader passes (e.g. Blur, ColorMatrix, Glow, Displacement) before compositing the result back to the screen.",
+  "Unlocks AAA visual effects like water distortion, bloom, drop shadows, and color grading directly inside the browser.",
+  null,
+  Dialogue(
+    "Why does applying many filters slow down my frame rate?",
+    "Explain offscreen framebuffer overhead.",
+    "Each filter requires switching render targets to offscreen framebuffers, which increases GPU memory bandwidth and interrupts sprite batching.",
+  ),
+)

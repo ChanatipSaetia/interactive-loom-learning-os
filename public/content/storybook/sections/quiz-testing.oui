@@ -1,0 +1,131 @@
+root = Quiz("Testing & Delivery Trial", [qVrt, qAcceptance, qPlay, qRunner, qAdvisor])
+
+qVrt = QuizQuestion(
+  "q-vrt",
+  "In the Release-Day scenario, what tooling flagged the tooltip z-index regression before merge?",
+  [
+    QuizChoice(
+      "a",
+      "End-to-end tests on the marketing homepage",
+      false,
+      "The E2E path rated worst — the homepage button was fine; only component-state coverage found the collision.",
+    ),
+    QuizChoice(
+      "b",
+      "Visual regression diffing every story snapshot at multiple viewports",
+      true,
+      "Correct. The Tooltip-within-Button story at the tablet viewport produced a pixel diff that blocked the merge.",
+    ),
+    QuizChoice(
+      "c",
+      "A slower release train schedule",
+      false,
+      "Delaying for manual sweeps scored poorly — it found bugs by luck, not by design.",
+    ),
+  ],
+  "It compared rendered pixels between builds.",
+)
+
+qAcceptance = QuizQuestion(
+  "q-acceptance",
+  "CI visual regression flagged the diff, but the reviewer accepted all pending snapshots to go green. What is the lesson?",
+  [
+    QuizChoice(
+      "a",
+      "Visual regression is useless and should be removed",
+      false,
+      "The tool did its job by flagging the change — abandoning it discards the detection.",
+    ),
+    QuizChoice(
+      "b",
+      "Baseline acceptance needs owners and review discipline, or the safety net becomes a rubber stamp",
+      true,
+      "Correct. Acceptance policy is part of the testing strategy; unreviewed approvals ship the bug anyway.",
+    ),
+    QuizChoice(
+      "c",
+      "Play functions should replace all visual testing",
+      false,
+      "Interaction tests catch behavior, not pixel drift — they complement rather than replace snapshot diffing.",
+    ),
+  ],
+  "The tool worked; something else failed.",
+)
+
+qPlay = QuizQuestion(
+  "q-play",
+  "A Dropdown stops opening on click after a refactor. Which Storybook mechanism catches this behavioral (non-visual) regression in CI?",
+  [
+    QuizChoice(
+      "a",
+      "A play function asserting the panel appears after userEvent.click, run by the test runner",
+      true,
+      "Correct. Play functions execute headlessly via the Storybook test runner and fail CI when their assertions throw.",
+    ),
+    QuizChoice(
+      "b",
+      "Autodocs props tables generated from argTypes",
+      false,
+      "Docs describe the API surface; they do not execute interactions.",
+    ),
+    QuizChoice(
+      "c",
+      "Adding more args to the story",
+      false,
+      "Args change rendered props; only scripted interaction asserts behavior.",
+    ),
+  ],
+  "It scripts userEvent interactions on a story.",
+)
+
+qRunner = QuizQuestion(
+  "q-runner",
+  "What does the Storybook test runner (test-storybook) actually execute in CI?",
+  [
+    QuizChoice(
+      "a",
+      "Only unit tests extracted from story files",
+      false,
+      "It does not run unit tests — it boots the built Storybook and drives stories in real browsers.",
+    ),
+    QuizChoice(
+      "b",
+      "Every story (plus its play function) in headless browsers, failing when assertions throw",
+      true,
+      "Correct. The runner boots the static Storybook build and executes each story as a test case in Playwright or Puppeteer.",
+    ),
+    QuizChoice(
+      "c",
+      "A linter over the .storybook config directory",
+      false,
+      "Linting is separate; the runner is a browser-driven test executor.",
+    ),
+  ],
+  "It reuses the story catalog rather than duplicating tests.",
+)
+
+qAdvisor = QuizQuestion(
+  "q-advisor",
+  "According to the Test Layer Advisor, your data policy forbids sending component builds to a vendor. What visual-regression path do you pick?",
+  [
+    QuizChoice(
+      "a",
+      "Self-hosted Playwright screenshot diffs on your own CI runners",
+      true,
+      "Correct. Self-hosted capture keeps data sovereignty, at the cost of owning browser fleets and baseline storage.",
+    ),
+    QuizChoice(
+      "b",
+      "Cloud visual regression with an enterprise NDA",
+      false,
+      "An NDA does not change the constraint — builds still leave your infrastructure.",
+    ),
+    QuizChoice(
+      "c",
+      "Skip visual regression and rely on Controls exploration",
+      false,
+      "Manual Controls exploration is pre-merge review, not automated regression detection.",
+    ),
+  ],
+  "Snapshots must stay on infrastructure you control.",
+)

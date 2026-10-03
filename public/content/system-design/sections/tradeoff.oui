@@ -1,0 +1,96 @@
+root = TradeoffSandbox(
+  "Design Trade-off Sandbox",
+  [ecommerce],
+  "Explore Consistency vs Availability Decisions",
+)
+
+ecommerce = TradeoffScenario(
+  "ecommerce",
+  "E-Commerce Platform",
+  [
+    TradeoffMetric("consistency", "Consistency", 50, 0, 100, "higher"),
+    TradeoffMetric("availability", "Availability", 50, 0, 100, "higher"),
+    TradeoffMetric("latency", "Latency", 50, 0, 100, "lower"),
+    TradeoffMetric("cost", "Cost", 50, 0, 100, "lower"),
+  ],
+  [step1, step2],
+  "You are designing an e-commerce platform. Adjust the trade-offs to find the right balance.",
+)
+
+step1 = TradeoffStep(
+  "step1",
+  "Choose Consistency Model",
+  [strong, eventual],
+  "How should data consistency be handled across replicas?",
+)
+
+strong = TradeoffChoice(
+  "strong",
+  "Strong Consistency",
+  "All nodes see the same data at the same time",
+  {consistency: 90, availability: 40, latency: 30, cost: 70},
+  [
+    ProCon("Data Accuracy", "Users always see the latest data"),
+    ProCon("Simplicity", "Easier to reason about system behavior"),
+  ],
+  [
+    ProCon("Lower Availability", "System may be unavailable during failures"),
+    ProCon("Higher Latency", "Waiting for all replicas to confirm"),
+  ],
+  "Best for inventory and payment systems",
+  "When data accuracy is more important than speed",
+)
+
+eventual = TradeoffChoice(
+  "eventual",
+  "Eventual Consistency",
+  "System is faster, but users might see stale data briefly",
+  {consistency: 40, availability: 90, latency: 80, cost: 50},
+  [
+    ProCon("High Availability", "System remains responsive during failures"),
+    ProCon("Low Latency", "Fast responses for users"),
+  ],
+  [
+    ProCon("Stale Data", "Users might see outdated information"),
+    ProCon("Complexity", "Harder to handle conflicts"),
+  ],
+  "Best for product catalogs and reviews",
+  "When availability and speed matter more than immediate accuracy",
+)
+
+step2 = TradeoffStep(
+  "step2",
+  "Choose Deployment Strategy",
+  [single, multi],
+  "How should the system be deployed across regions?",
+)
+
+single = TradeoffChoice(
+  "single",
+  "Single Region",
+  "All resources in one data center",
+  {consistency: 70, availability: 50, latency: 60, cost: 30},
+  [
+    ProCon("Lower Cost", "Single data center reduces infrastructure costs"),
+    ProCon("Simpler Operations", "Easier to manage and monitor"),
+  ],
+  [
+    ProCon("Single Point of Failure", "Region outage affects all users"),
+    ProCon("Limited Scale", "Geographic limitations for users"),
+  ],
+)
+
+multi = TradeoffChoice(
+  "multi",
+  "Multi-Region",
+  "Deployed across multiple geographic regions",
+  {consistency: 50, availability: 90, latency: 80, cost: 80},
+  [
+    ProCon("Better Availability", "Region failures don't take down the system"),
+    ProCon("Global Performance", "Users connect to nearest region"),
+  ],
+  [
+    ProCon("Higher Cost", "Multiple data centers increase expenses"),
+    ProCon("Complex Consistency", "Harder to maintain data consistency"),
+  ],
+)

@@ -2,8 +2,9 @@ import { describe, it, expect, beforeEach } from 'vitest'
 import { render, screen, fireEvent } from '@testing-library/react'
 import { SectionRegistry } from '../../../../src/core/learning-engine/registry'
 import TaxonomyBrowserSection from '../../../../src/core/learning-engine/sub-contexts/progressive-content/components/taxonomy-browser'
+import type { TaxonomyCategory } from '../../../../src/core/learning-engine/sub-contexts/progressive-content/components/taxonomy-browser'
 
-const mockCategories = [
+const mockCategories: TaxonomyCategory[] = [
   {
     icon: "BookOpen",
     title: 'Category One',

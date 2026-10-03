@@ -1,0 +1,52 @@
+root = Bullets(
+  "The Six-Stage Manual Presentation Arc",
+  [
+    Bullet(
+      "Stage 1 — Hook with the user's pain, not the architecture",
+      [
+        Bullet(
+          "Open with the task that currently makes people groan, e.g. 'expensing a trip takes 9 clicks today'",
+        ),
+        Bullet("Never open with a microservices diagram — the audience hasn't asked for it yet"),
+      ],
+    ),
+    Bullet(
+      "Stage 2 — Roadmap: state what they will be able to do by the end",
+      [
+        Bullet(
+          "'By the end you can complete onboarding, refund, and export without asking support'",
+        ),
+      ],
+    ),
+    Bullet(
+      "Stage 3 — One-scenario walkthrough",
+      [
+        Bullet("Follow ONE realistic persona completing ONE task end-to-end"),
+        Bullet(
+          "Two shallow scenarios beat one deep one? No — one deep scenario beats two shallow ones",
+        ),
+      ],
+    ),
+    Bullet(
+      "Stage 4 — Live demo in the running product",
+      [
+        Bullet("Drive the real UI, not screenshots pretending to be a UI"),
+        Bullet("Always have a pre-recorded OBS Studio fallback clip in the presenter's pocket"),
+      ],
+    ),
+    Bullet(
+      "Stage 5 — Gotchas: show the two or three known failure modes",
+      [Bullet("Present the error message, the cause, and the documented fix side by side")],
+    ),
+    Bullet(
+      "Stage 6 — Recap + permalink",
+      [
+        Bullet(
+          "End every manual presentation by pinning the permanent docs-site permalink to this slide",
+        ),
+        Bullet("Tell people where the search box is — findability beats memorability"),
+      ],
+    ),
+  ],
+  true,
+)

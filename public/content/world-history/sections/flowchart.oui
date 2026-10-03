@@ -1,0 +1,135 @@
+root = Flowchart(
+  "วิวัฒนาการการปฏิวัติอุตสาหกรรม",
+  [inventorScientist, merchantCapitalist, factoryWorker],
+  [steamEngine, factorySystem, globalMarket],
+  [stepInventEngine, stepBuildFactory, stepMassProduce, stepExpandTrade],
+  [journeyIndustrialTransition],
+  "ผังกระบวนการเปลี่ยนผ่านจากแรงงานฝีมือสู่ระบบโรงงานและตลาดโลก",
+)
+
+inventorScientist = Actor(
+  "inventor_scientist",
+  "นักประดิษฐ์ (Inventor / Engineer)",
+  "ผู้คิดค้นและพัฒนาเครื่องจักรไอน้ำและเทคโนโลยีกลไก",
+)
+
+merchantCapitalist = Actor(
+  "merchant_capitalist",
+  "นายทุนอุตสาหกรรม (Capitalist / Industrialist)",
+  "ผู้ระดมทุน สร้างโรงงาน และขยายโครงข่ายการค้า",
+)
+
+factoryWorker = Actor(
+  "factory_worker",
+  "แรงงานโรงงาน (Factory Laborer)",
+  "ผู้ปฏิบัติการเครื่องจักรในกระบวนการผลิตจำนวนมาก",
+)
+
+steamEngine = System(
+  "steam_engine",
+  "ระบบเครื่องจักรไอน้ำ (Steam Engine System)",
+  "แหล่งพลังงานกลไกทดแทนพลังงานน้ำและแรงงานสัตว์",
+  "aggregate",
+)
+
+factorySystem = System(
+  "factory_system",
+  "ระบบโรงงานและการผลิต (Factory Production)",
+  "สายการผลิตรวมศูนย์และการแบ่งงานกันทำ (Division of Labor)",
+  "aggregate",
+)
+
+globalMarket = System(
+  "global_market",
+  "ตลาดการค้าและคมนาคมโลก (Global Market & Logistics)",
+  "เครือข่ายรถไฟ เรือกลไฟ และระบบโลจิสติกส์ระหว่างประเทศ",
+  "external",
+)
+
+stepInventEngine = Step(
+  "step_invent_engine",
+  "ต้องการแหล่งพลังงานต่อเนื่องไม่พึ่งพากระแสน้ำ",
+  "ประดิษฐ์และปรับปรุงเครื่องจักรไอน้ำ (Invent Steam Engine)",
+  steamEngine,
+  [Event("evt_engine_ready", "เครื่องจักรไอน้ำพร้อมทำงาน", "เกิดต้นกำลังกลไกประสิทธิภาพสูง")],
+  inventorScientist,
+  null,
+  "step_build_factory",
+)
+
+stepBuildFactory = Step(
+  "step_build_factory",
+  "นำพลังงานไอน้ำมาขับเคลื่อนเครื่องทอผ้าและอุปกรณ์",
+  "ลงทุนจัดตั้งโรงงานอุตสาหกรรม (Establish Factory)",
+  factorySystem,
+  [
+    Event(
+      "evt_factory_operational",
+      "โรงงานเปิดดำเนินการ",
+      "รวมศูนย์แรงงานและเครื่องจักรไว้ที่เดียว",
+    ),
+  ],
+  merchantCapitalist,
+  null,
+  "step_mass_produce",
+)
+
+stepMassProduce = Step(
+  "step_mass_produce",
+  "ปฏิบัติงานตามระบบกะและการแบ่งงานตามความชำนาญ",
+  "เดินเครื่องจักรผลิตสินค้าจำนวนมาก (Mass Production)",
+  factorySystem,
+  [
+    Event(
+      "evt_goods_surplus",
+      "สินค้าอุตสาหกรรมล้นหลาม",
+      "ต้นทุนต่อหน่วยลดลง ผลผลิตเพิ่มขึ้นมหาศาล",
+    ),
+  ],
+  factoryWorker,
+  null,
+  "step_expand_trade",
+)
+
+stepExpandTrade = Step(
+  "step_expand_trade",
+  "ต้องการระบายสินค้าและแสวงหาวัตถุดิบใหม่ข้ามทวีป",
+  "ขยายเส้นทางรถไฟและการเดินเรือกลไฟ (Expand Global Logistics)",
+  globalMarket,
+  [
+    Event(
+      "evt_global_interconnected",
+      "ตลาดโลกเชื่อมโยงถึงกัน (Globalized Market)",
+      "เกิดระบบเศรษฐกิจทุนนิยมและการค้าข้ามชาติยุคใหม่",
+    ),
+  ],
+  merchantCapitalist,
+)
+
+journeyIndustrialTransition = Journey(
+  "journey_industrial_transition",
+  "เส้นทางการเปลี่ยนผ่านสู่ยุคอุตสาหกรรม (Industrial Transition Journey)",
+  "ลำดับวิวัฒนาการตั้งแต่การประดิษฐ์พลังงานกลไกจนถึงการกำเนิดตลาดโลกยุคใหม่",
+  [
+    JourneyStep(
+      stepInventEngine,
+      "จุดกำเนิดพลังงานไอน้ำ",
+      "นักประดิษฐ์สร้างเครื่องจักรไอน้ำปลดล็อกข้อจำกัดทางพลังงานเดิม",
+    ),
+    JourneyStep(
+      stepBuildFactory,
+      "การก่อตั้งระบบโรงงาน",
+      "นายทุนรวมศูนย์เครื่องจักรและแรงงาน เกิดระบบการแบ่งงานกันทำ",
+    ),
+    JourneyStep(
+      stepMassProduce,
+      "การผลิตจำนวนมาก",
+      "แรงงานเดินเครื่องจักรอย่างต่อเนื่อง สินค้าเพิ่มปริมาณและราคาถูกลง",
+    ),
+    JourneyStep(
+      stepExpandTrade,
+      "การขยายตัวสู่ตลาดโลก",
+      "รถไฟและเรือกลไฟเชื่อมโยงตลาด ขับเคลื่อนสู่ยุคโลกาภิวัตน์",
+    ),
+  ],
+)

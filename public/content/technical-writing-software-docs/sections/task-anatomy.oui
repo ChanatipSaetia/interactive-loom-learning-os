@@ -1,0 +1,50 @@
+root = Bullets(
+  "Anatomy of a Task Page",
+  [
+    Bullet(
+      "Title: the user's goal as a verb phrase",
+      [
+        Bullet("'Export a monthly report', not 'Report Export Module'."),
+        Bullet("Users search for what they want to do, not for your feature names."),
+      ],
+    ),
+    Bullet("Short intro: when and why you'd do this (one or two sentences)"),
+    Bullet(
+      "Prerequisites before the first step",
+      [
+        Bullet("Role or permission, data you need ready, earlier setup."),
+        Bullet(
+          "Example: 'You need the Finance Approver role.' Otherwise users fail halfway and don't know why.",
+        ),
+      ],
+    ),
+    Bullet(
+      "Numbered steps with one action per step",
+      [
+        Bullet("Good: '1. Select Reports. 2. Select Monthly. 3. Select Export.'"),
+        Bullet("Bad: '1. Go to reports, choose monthly, set the dates and export it.'"),
+      ],
+    ),
+    Bullet(
+      "Show the result",
+      [
+        Bullet(
+          "After an important step, say what the user should see: 'The report downloads as an .xlsx file.'",
+        ),
+        Bullet("It's how readers know it worked, and notice early when it didn't."),
+      ],
+    ),
+    Bullet(
+      "Next steps and troubleshooting (optional)",
+      [Bullet("Links to what users usually do next, and fixes for the most common error.")],
+    ),
+    Bullet(
+      "Minimalism (John Carroll) behind it all",
+      [
+        Bullet(
+          "Get users acting quickly, cut what they don't need, and help them recognise and recover from errors.",
+        ),
+      ],
+    ),
+  ],
+)

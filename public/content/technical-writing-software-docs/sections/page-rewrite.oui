@@ -1,0 +1,128 @@
+root = TradeoffSandbox("Page Rewrite Workshop", [resetPasswordPage])
+
+resetPasswordPage = TradeoffScenario(
+  "reset-password-page",
+  "Rewrite 'Admin Guide – Users' into Something People Can Follow",
+  [
+    TradeoffMetric("followability", "Easy to Follow", 30, 0, 100, "higher"),
+    TradeoffMetric("findability", "Easy to Find", 30, 0, 100, "higher"),
+    TradeoffMetric("upkeep", "Ease of Upkeep per Release", 40, 0, 100, "higher"),
+  ],
+  [split, screenshots, steps],
+  "The old page is 3,000 words covering user management from creation to deletion, with a screenshot after every click. Support gets tickets about password resets every day. Make choices and watch the meters.",
+)
+
+split = TradeoffStep(
+  "split",
+  "Page Structure",
+  [keepOne, splitTasks],
+  "How do you break up the 3,000-word page?",
+  "split-tasks",
+)
+
+keepOne = TradeoffChoice(
+  "keep-one",
+  "Keep one long page, add a table of contents",
+  "Everything stays together.",
+  {followability: 5, findability: 5},
+  [ProCon("Quick to do")],
+  [
+    ProCon(
+      "Still one giant page",
+      "Readers must find their part inside it; searching 'reset password' lands at the top.",
+    ),
+  ],
+)
+
+splitTasks = TradeoffChoice(
+  "split-tasks",
+  "Split into short task pages",
+  "'Create a user', 'Reset a user's password', 'Deactivate a user', each its own page.",
+  {followability: 25, findability: 30, upkeep: 5},
+  [
+    ProCon(
+      "Each task is short and findable",
+      "Search for 'reset password' lands on exactly that page.",
+    ),
+  ],
+  [ProCon("More pages to link together")],
+  "Splitting long procedures into several short tasks makes each one easier to follow and to find.",
+)
+
+screenshots = TradeoffStep(
+  "screenshots",
+  "Screenshots",
+  [everyStep, whereNeeded, none],
+  "The old page has a screenshot after every click. What now?",
+  "where-needed",
+)
+
+everyStep = TradeoffChoice(
+  "every-step",
+  "Keep a screenshot for every step",
+  "Readers can always see the screen.",
+  {followability: 5, upkeep: -30},
+  [ProCon("Reassuring for novices")],
+  [
+    ProCon(
+      "Stale every release",
+      "Every UI change breaks several images, and long pages of images are slow to scan.",
+    ),
+  ],
+)
+
+whereNeeded = TradeoffChoice(
+  "where-needed",
+  "Only where a control is hard to find",
+  "e.g. the reset option hidden in a ⋯ menu gets one annotated screenshot.",
+  {followability: 10, upkeep: 10},
+  [ProCon("Help where text isn't enough"), ProCon("Few images to update")],
+  [ProCon("Needs judgement for each page")],
+  "Screenshots help readers find hard-to-spot controls but go stale every release, so use them only where text alone isn't enough.",
+)
+
+none = TradeoffChoice(
+  "none",
+  "No screenshots at all",
+  "Text only.",
+  {followability: -10, upkeep: 20},
+  [ProCon("Nothing to go stale")],
+  [
+    ProCon(
+      "Hidden controls stay hidden",
+      "Nobody finds the reset option in the ⋯ menu from text alone.",
+    ),
+  ],
+)
+
+steps = TradeoffStep(
+  "steps",
+  "Step Style",
+  [paragraph, oneAction],
+  "How do you write the steps?",
+  "one-action",
+)
+
+paragraph = TradeoffChoice(
+  "paragraph",
+  "A friendly paragraph",
+  "'Head over to Users, find the person, open the menu and reset their password.'",
+  {followability: -15},
+  [ProCon("Reads conversationally")],
+  [
+    ProCon(
+      "Hard to follow while clicking",
+      "Readers lose their place between the screen and the text.",
+    ),
+  ],
+)
+
+oneAction = TradeoffChoice(
+  "one-action",
+  "Numbered steps, one action each, with the result",
+  "'1. Select Users. 2. Select the user's name. 3. Select ⋯ > Reset password. A confirmation e-mail is sent to the user.'",
+  {followability: 25},
+  [ProCon("Easy to keep your place"), ProCon("Shows that it worked")],
+  [ProCon("Looks less friendly")],
+  "Numbered steps with one action each, plus the result, are the anatomy of a task page.",
+)

@@ -21,6 +21,7 @@ Read the relevant doc before starting work — **all documentation in `docs/` an
 | OKF Section Validation & Diagnostics | [grill-log-okf-section-validation.md](grill-log-okf-section-validation.md) |
 | Creating / editing topics & flowchart schemas | [docs/creating-topics.md](docs/creating-topics.md) |
 | Design system & sensory experience | [DESIGN.md](DESIGN.md) |
+| Hex campaign maps (gamification) | [docs/creating-hexmaps.md](docs/creating-hexmaps.md) |
 
 ## Working on DDD Subdomains, Validation Gateway & Delivery Ports
 
@@ -72,6 +73,17 @@ When creating a new topic, adding a lesson, or editing a `UnifiedFlowchartSchema
 - Actor and system node duplication across steps is handled automatically by `deriveSchema`. If an actor or system is referenced in N steps, `deriveSchema` generates per-step node instances in EVENT_STORMING view (sharing exact titles), and automatically collapses them into a single node in derived views (SYS_ARCH, SWIMLANES, SEQUENCE, DATA_FLOW) based on matching title and entity type. Point `initiatedBy`, `handledBy`, and `delegatesTo` directly to the declared actor/system ID in `steps.yaml`.
 
 Reference schemas: `src/topics/demo/data/agent-schema.ts`, `src/topics/motorcycle/data/schema.ts`.
+
+## Working on Hex Campaign Maps & Gamification
+
+Campaign maps live in `public/hexmaps/<topic-id>.yaml` and are played at `/campaign/<topic-id>` (`src/core/supporting/gamification/`). Follow [docs/creating-hexmaps.md](docs/creating-hexmaps.md):
+
+- **Multi-modal sections:** never build a topic out of plain `text` walls; spread the knowledge across the interactive section types.
+- **Grounded assessments:** every `quiz` question and `reflection-sequence` challenge tests only what an earlier section of the same track teaches.
+- **Tracks:** radiate 2–4 parallel tracks from the starting `capital` hub.
+- **Key items** mark mandatory milestones and can sit on any node type except `capital`. The `boss_lair` (the domain's central failure mode) unlocks once every required key item is collected, and it never drops items.
+- **Full coverage:** every section file `public/content/<topic-id>/sections/<name>.oui` maps to exactly one node through `sectionRef: <name>`.
+- Check maps with `npm run hexmap:validate`. Regenerate the VS Code YAML schema with `npm run hexmap:schema` after changing `src/core/generic/hex-map/schema.ts`.
 
 ## Commands
 

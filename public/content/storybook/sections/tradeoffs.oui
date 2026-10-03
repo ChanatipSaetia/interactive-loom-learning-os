@@ -1,0 +1,187 @@
+root = TradeoffSandbox("UI Safety-Net Trade-offs", [storybookSafetyNet])
+
+storybookSafetyNet = TradeoffScenario(
+  "storybook-safety-net",
+  "Design System Regression Safety Net",
+  [
+    TradeoffMetric("confidence", "Regression Confidence", 40, 0, 100, "higher"),
+    TradeoffMetric("ci_speed", "CI Pipeline Speed", 70, 0, 100, "higher"),
+    TradeoffMetric("cost_efficiency", "Cost Efficiency", 65, 0, 100, "higher"),
+    TradeoffMetric("review_load", "Reviewer Acceptance Burden", 70, 0, 100, "higher"),
+  ],
+  [storyCoverage, visualRegression, docsPublish],
+  "Your design system's Button change silently broke tooltips on two product pages. Leadership wants a Storybook-based safety net. Choose how much confidence to buy and what it costs in CI time, money, and review effort.",
+)
+
+storyCoverage = TradeoffStep(
+  "story_coverage",
+  "1. Story Coverage Policy",
+  [happyOnly, stateMatrix, storyPlusPlay],
+  "How many stories must each component carry before it counts as covered?",
+  "state_matrix",
+)
+
+happyOnly = TradeoffChoice(
+  "happy_only",
+  "Happy-path only (1-2 stories per component)",
+  "Only the default and primary variants get stories; edge states stay app-only.",
+  {confidence: -15, ci_speed: 20, cost_efficiency: 15, review_load: 10},
+  [ProCon("Fast to author", "New components enter the catalog with minimal ceremony.")],
+  [
+    ProCon(
+      "Blind to edge states",
+      "Error, disabled, and overflow states — where the tooltip bug hid — are never rendered in isolation.",
+    ),
+  ],
+  null,
+  "Prototype Storybooks or throwaway spike components.",
+)
+
+stateMatrix = TradeoffChoice(
+  "state_matrix",
+  "Full state matrix (one story per meaningful arg combination)",
+  "Every boolean, enum size/variant, loading, disabled, and error state gets a named story.",
+  {confidence: 30, ci_speed: -10, cost_efficiency: -5, review_load: -10},
+  [
+    ProCon(
+      "Every state is reviewable",
+      "Snapshot diffs cover exactly the combinations that break in production.",
+    ),
+    ProCon("Docs come free", "The same stories render the autodocs examples for each state."),
+  ],
+  [
+    ProCon(
+      "Snapshot volume",
+      "Hundreds of components times dozens of states multiplies review work.",
+    ),
+  ],
+  "The incident was an unrendered edge state — the state matrix is the smallest coverage that would have caught it.",
+  "Production design systems where UI regressions are expensive.",
+)
+
+storyPlusPlay = TradeoffChoice(
+  "story_plus_play",
+  "State matrix + play functions on interactive components",
+  "On top of full coverage, modals, menus, and forms carry scripted interaction stories.",
+  {confidence: 40, ci_speed: -20, cost_efficiency: -15, review_load: -5},
+  [
+    ProCon(
+      "Behavior regressions caught too",
+      "A dropdown that stops opening on click fails CI, not just a pixel diff.",
+    ),
+  ],
+  [ProCon("Authoring investment", "Play functions are tests in disguise and need maintenance.")],
+  null,
+  "Components whose bugs are behavioral (focus, open/close, validation) rather than visual.",
+)
+
+visualRegression = TradeoffStep(
+  "visual_regression",
+  "2. Visual Regression Engine",
+  [none, selfHosted, cloudService],
+  "How do pixel diffs run against the story catalog?",
+  "cloud_service",
+)
+
+none = TradeoffChoice(
+  "none",
+  "No visual regression (manual QA eyeballs)",
+  "Rely on reviewers noticing visual changes in PR previews.",
+  {confidence: -25, ci_speed: 15, cost_efficiency: 20, review_load: 5},
+  [ProCon("Zero setup or subscription", "No baselines, no approvals, no vendor.")],
+  [
+    ProCon(
+      "Subtle diffs slip through",
+      "A 2px tooltip shift is invisible to human reviewers at PR scale.",
+    ),
+  ],
+  null,
+  "Internal tools where visual polish is not critical.",
+)
+
+selfHosted = TradeoffChoice(
+  "self_hosted",
+  "Self-hosted snapshot pipeline (Docker + Playwright screenshots)",
+  "Run screenshot capture and diffing on your own CI runners, storing baselines in your infra.",
+  {confidence: 25, ci_speed: -15, cost_efficiency: -5, review_load: -15},
+  [
+    ProCon(
+      "Full control of baselines",
+      "No third party sees component data; you own storage and retention.",
+    ),
+  ],
+  [
+    ProCon(
+      "You maintain the fleet",
+      "Font rendering, flaky runners, and baseline garbage collection become your team's job.",
+    ),
+  ],
+  null,
+  "Strict data-sovereignty requirements with platform-engineering capacity.",
+)
+
+cloudService = TradeoffChoice(
+  "cloud_service",
+  "Cloud visual testing (e.g. Chromatic)",
+  "Publish every build; the service snapshots all stories across browsers/viewports and gates merges on visual changes.",
+  {confidence: 35, ci_speed: -5, cost_efficiency: -20, review_load: -20},
+  [
+    ProCon(
+      "Baseline review UI built in",
+      "Designers approve pixel diffs in the same link where they review the story.",
+    ),
+    ProCon(
+      "Parallel cross-browser matrix",
+      "Snapshots run in a managed grid of browsers and viewports.",
+    ),
+  ],
+  [ProCon("Per-build pricing", "Cost scales with build count across a busy monorepo.")],
+  "The team already shares Storybook links for design review — acceptance happens where review already occurs.",
+  "Product teams with design review in the PR flow and budget for SaaS.",
+)
+
+docsPublish = TradeoffStep(
+  "docs_publish",
+  "3. Docs & Review Surface",
+  [localOnly, perBranch, mainOnly],
+  "What do stakeholders see per change?",
+  "per_branch",
+)
+
+localOnly = TradeoffChoice(
+  "local_only",
+  "Local Storybook only (npx storybook dev)",
+  "Developers run the workshop on their laptops; nobody else clicks anything.",
+  {confidence: -10, ci_speed: 10, cost_efficiency: 10, review_load: 0},
+  [ProCon("Zero publishing cost", "Nothing leaves the developer machine.")],
+  [ProCon("No shared review", "Designers cannot click through a change before merge.")],
+  null,
+  "Solo or co-located prototype teams.",
+)
+
+perBranch = TradeoffChoice(
+  "per_branch",
+  "Published Storybook per branch/PR",
+  "Every pull request publishes a static Storybook URL for click-through review.",
+  {confidence: 20, ci_speed: -10, cost_efficiency: -10, review_load: -5},
+  [
+    ProCon(
+      "Review real components, not screenshots",
+      "Stakeholders exercise Controls on the exact PR build.",
+    ),
+  ],
+  [ProCon("Publish time in CI", "Static builds add minutes to each pipeline run.")],
+  "Pairs with visual regression: the published build is both the review artifact and the snapshot source.",
+  "Any team where design or product sign-off happens before merge.",
+)
+
+mainOnly = TradeoffChoice(
+  "main_only",
+  "Publish only main branch docs site",
+  "One canonical published Storybook, updated after merge.",
+  {confidence: 5, ci_speed: 5, cost_efficiency: 5, review_load: 5},
+  [ProCon("One stable URL", "The catalog consumers bookmark always matches merged code.")],
+  [ProCon("Reviews happen post-merge", "Feedback arrives after the change already landed.")],
+  null,
+  "Public component-library documentation for external consumers.",
+)

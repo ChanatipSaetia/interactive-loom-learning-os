@@ -1,0 +1,217 @@
+root = Quiz("Style Check", [q1, q2, q3, q4, q5, q6, q7, q8, q9, q10, q11])
+
+q1 = QuizQuestion(
+  "q1",
+  "What average sentence length should plain-language docs aim for?",
+  [
+    QuizChoice("q1-a", "About 15–20 words", true, "Short sentences, one idea each."),
+    QuizChoice("q1-b", "About 35–40 words", false, "Far too long for instructions."),
+    QuizChoice(
+      "q1-c",
+      "Exactly 5 words",
+      false,
+      "An average, not a hard limit, and 5 is unrealistically short.",
+    ),
+  ],
+  "Recall the first plain-language rule.",
+)
+
+q2 = QuizQuestion(
+  "q2",
+  "Which sentence uses active voice and addresses the reader?",
+  [
+    QuizChoice("q2-a", "Select Save.", true, "Active, direct and addressed to 'you'."),
+    QuizChoice("q2-b", "The Save button should be selected.", false, "Passive: who selects it?"),
+    QuizChoice(
+      "q2-c",
+      "Saving is performed by the system after selection.",
+      false,
+      "Passive and vague.",
+    ),
+  ],
+  "Who does what?",
+)
+
+q3 = QuizQuestion(
+  "q3",
+  "Which sentence front-loads the key information?",
+  [
+    QuizChoice(
+      "q3-a",
+      "Refunds over 5,000 baht need manager approval.",
+      true,
+      "The key condition comes first.",
+    ),
+    QuizChoice(
+      "q3-b",
+      "Please note that, in accordance with policy, manager approval is needed for refunds over 5,000 baht.",
+      false,
+      "The key information is buried at the end.",
+    ),
+    QuizChoice(
+      "q3-c",
+      "In some cases, approval may be needed.",
+      false,
+      "Vague, with no key information at all.",
+    ),
+  ],
+  "What does the reader see first?",
+)
+
+q4 = QuizQuestion(
+  "q4",
+  "Your docs say 'workspace' on one page and 'project' on another for the same thing. What happens?",
+  [
+    QuizChoice(
+      "q4-a",
+      "Readers think they're two different things",
+      true,
+      "Use one term per concept everywhere.",
+    ),
+    QuizChoice("q4-b", "Readers learn more vocabulary", false, "They get confused, not enriched."),
+    QuizChoice("q4-c", "Search works better", false, "It splits results across two words."),
+  ],
+  "One concept, how many terms?",
+)
+
+q5 = QuizQuestion(
+  "q5",
+  "Which sentence is best for translation into Thai?",
+  [
+    QuizChoice(
+      "q5-a",
+      "You can start using it immediately.",
+      true,
+      "Plain and literal, with no idiom.",
+    ),
+    QuizChoice("q5-b", "You'll hit the ground running.", false, "An idiom that translates badly."),
+    QuizChoice("q5-c", "It's a piece of cake, no rocket science!", false, "Two idioms and a joke."),
+  ],
+  "Avoid idioms.",
+)
+
+q6 = QuizQuestion(
+  "q6",
+  "Which free public guide is a natural base for an end-user web app manual?",
+  [
+    QuizChoice(
+      "q6-a",
+      "Microsoft Writing Style Guide",
+      true,
+      "It covers voice, UI text and terms for software docs.",
+    ),
+    QuizChoice("q6-b", "Vale", false, "Vale is a linter, not a style guide."),
+    QuizChoice("q6-c", "Flesch Reading Ease", false, "That's a readability formula."),
+  ],
+  "Look at the style guide cards.",
+)
+
+q7 = QuizQuestion(
+  "q7",
+  "What is the Google developer documentation style guide focused on?",
+  [
+    QuizChoice(
+      "q7-a",
+      "Developer and technical docs",
+      true,
+      "Code, commands, procedures and API reference.",
+    ),
+    QuizChoice("q7-b", "Marketing copy", false, "Not its focus."),
+    QuizChoice("q7-c", "Translating docs into Thai", false, "Not its focus."),
+  ],
+  "It's in the name.",
+)
+
+q8 = QuizQuestion(
+  "q8",
+  "What should a house style guide contain?",
+  [
+    QuizChoice(
+      "q8-a",
+      "Only your own decisions (product names, terms, tone), deferring the rest to one public guide",
+      true,
+      "Short enough that people actually read it.",
+    ),
+    QuizChoice(
+      "q8-b",
+      "A full rewrite of every grammar rule",
+      false,
+      "The public guide already covers those.",
+    ),
+    QuizChoice(
+      "q8-c",
+      "Nothing: public guides are enough",
+      false,
+      "Public guides don't know your product names and terms.",
+    ),
+  ],
+  "What's unique to your team?",
+)
+
+q9 = QuizQuestion(
+  "q9",
+  "What does Vale do?",
+  [
+    QuizChoice(
+      "q9-a",
+      "Checks docs against style rules, in the editor and in CI",
+      true,
+      "A prose linter with Microsoft and Google rule packages plus your own rules.",
+    ),
+    QuizChoice(
+      "q9-b",
+      "Verifies that the steps work in the app",
+      false,
+      "That needs a person following the steps.",
+    ),
+    QuizChoice(
+      "q9-c",
+      "Translates docs automatically",
+      false,
+      "It checks style; it doesn't translate.",
+    ),
+  ],
+  "A spell-checker that has read your style guide.",
+)
+
+q10 = QuizQuestion(
+  "q10",
+  "In the Flesch Reading Ease formula, what raises the score (easier reading)?",
+  [
+    QuizChoice(
+      "q10-a",
+      "Fewer words per sentence and fewer syllables per word",
+      true,
+      "Both are subtracted, so shorter sentences and words raise the score.",
+    ),
+    QuizChoice(
+      "q10-b",
+      "More words per sentence",
+      false,
+      "Words per sentence are subtracted, lowering the score.",
+    ),
+    QuizChoice("q10-c", "More headings", false, "The formula doesn't count headings."),
+  ],
+  "Look at what is subtracted.",
+)
+
+q11 = QuizQuestion(
+  "q11",
+  "A page scores 75 on Flesch Reading Ease. What can you conclude?",
+  [
+    QuizChoice(
+      "q11-a",
+      "Sentences and words are short, but the page may still be unclear or wrong",
+      true,
+      "The score is a warning light, not proof of clarity.",
+    ),
+    QuizChoice(
+      "q11-b",
+      "The page is clear and correct",
+      false,
+      "The formula can't see structure or accuracy.",
+    ),
+    QuizChoice("q11-c", "The page is too hard to read", false, "75 is easy to read."),
+  ],
+  "What does the formula measure, and what doesn't it?",
+)

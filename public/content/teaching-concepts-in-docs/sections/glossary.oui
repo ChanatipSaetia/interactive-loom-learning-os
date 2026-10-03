@@ -1,0 +1,115 @@
+root = Flashcards(
+  "Glossary",
+  [
+    procedural,
+    conceptual,
+    transfer,
+    mentalModel,
+    refutation,
+    dualCoding,
+    cognitiveLoad,
+    explorable,
+    poe,
+    retrievalPractice,
+  ],
+)
+
+procedural = Flashcard(
+  "procedural",
+  "Procedural Knowledge",
+  "pruh-see-jer-uhl nol-ij",
+  "Knowledge",
+  "Knowing the steps.",
+  "Knowing how to carry out a documented task. Brittle when the situation changes.",
+  "Necessary, but not enough on its own.",
+)
+
+conceptual = Flashcard(
+  "conceptual",
+  "Conceptual Knowledge",
+  "kuhn-sep-choo-uhl nol-ij",
+  "Knowledge",
+  "Knowing what the parts are, how they relate, and why.",
+  "The understanding that lets users reason about the system and work out undocumented steps.",
+  "It's what makes transfer possible.",
+)
+
+transfer = Flashcard(
+  "transfer",
+  "Transfer",
+  "trans-fur",
+  "Knowledge",
+  "Applying learning to a new situation.",
+  "Acting correctly in a case the training never showed.",
+  "No manual can document every case.",
+)
+
+mentalModel = Flashcard(
+  "mental-model",
+  "Mental Model",
+  "men-tl mod-l",
+  "Foundation",
+  "A person's inner picture of how a system works.",
+  "Don Norman separates the designer's model, the system image (UI + docs) and the user's model, which users build only from the system image.",
+  "Wrong models cause confident mistakes.",
+)
+
+refutation = Flashcard(
+  "refutation",
+  "Refutation Text",
+  "ref-yoo-tey-shuhn tekst",
+  "Technique",
+  "Name the misconception, reject it, explain the truth.",
+  "A way of writing that makes readers notice the conflict between their belief and the truth.",
+  "Stating the truth alone often doesn't replace a wrong belief.",
+)
+
+dualCoding = Flashcard(
+  "dual-coding",
+  "Dual Coding",
+  "doo-uhl koh-ding",
+  "Technique",
+  "Words plus visuals.",
+  "Pairing text with a simple diagram gives two routes into memory (Allan Paivio's theory).",
+  "Structures are easier to see than to read.",
+)
+
+cognitiveLoad = Flashcard(
+  "cognitive-load",
+  "Cognitive Load",
+  "kog-ni-tiv lohd",
+  "Constraint",
+  "How much working memory a task uses.",
+  "Working memory holds only a few new items at once (John Sweller's cognitive load theory), so introduce few new concepts at a time.",
+  "Overloaded readers retain nothing.",
+)
+
+explorable = Flashcard(
+  "explorable",
+  "Explorable Explanation",
+  "ik-splawr-uh-buhl ek-spluh-ney-shuhn",
+  "Interactive",
+  "An explanation you can play with.",
+  "Readers change inputs and watch the idea respond. Popularised by Bret Victor's 2011 essay.",
+  "Discovering a relationship beats being told it.",
+)
+
+poe = Flashcard(
+  "poe",
+  "Predict-Observe-Explain (POE)",
+  "pee oh ee",
+  "Interactive",
+  "Predict, see the real outcome, explain the difference.",
+  "A teaching strategy (White & Gunstone) that makes learners notice when their mental model is wrong.",
+  "A failed prediction is the moment a model can be corrected.",
+)
+
+retrievalPractice = Flashcard(
+  "retrieval-practice",
+  "Retrieval Practice",
+  "ri-tree-vuhl prak-tis",
+  "Retention",
+  "Recalling from memory to strengthen it.",
+  "Also called the testing effect: quick recall questions beat re-reading.",
+  "Understanding that isn't retrieved fades.",
+)

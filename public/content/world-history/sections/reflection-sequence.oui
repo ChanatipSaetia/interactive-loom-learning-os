@@ -1,0 +1,53 @@
+root = ReflectionSequence(
+  "ถอดรหัสไทม์ไลน์: อารยธรรมลุ่มแม่น้ำโบราณ",
+  [challenge1, challenge2],
+  "เรียงลำดับหมุดหมายสำคัญแห่งการก่อกำเนิดอารยธรรมแรกเริ่มของมนุษยชาติ",
+)
+
+challenge1 = SequenceChallenge(
+  "ถอดรหัสลำดับการกำเนิดอารยธรรมลุ่มแม่น้ำโบราณ (Ancient River Valleys):",
+  [seqCuneiform, seqPyramid, seqHammurabi, seqOracleBones],
+  [seqCuneiform, seqPyramid, seqHammurabi, seqOracleBones],
+)
+
+seqCuneiform = SequenceItem(
+  "seq-cuneiform",
+  "ชาวสุเมเรียนประดิษฐ์อักษรรูปลิ่ม (Cuneiform) ในเมโสโปเตเมีย (~3500 BC)",
+)
+
+seqPyramid = SequenceItem("seq-pyramid", "การสร้างมหาพีระมิดแห่งกิซาในอียิปต์โบราณ (~2560 BC)")
+seqHammurabi = SequenceItem(
+  "seq-hammurabi",
+  "พระเจ้าฮัมมูราบีจารึกประมวลกฎหมายฮัมมูราบีแห่งบาบิโลน (~1754 BC)",
+)
+
+seqOracleBones = SequenceItem(
+  "seq-oracle-bones",
+  "การจารึกอักษรบนกระดูกเสี่ยงทาย (Oracle Bones) ยุคราชวงศ์ซางของจีน (~1200 BC)",
+)
+
+challenge2 = SequenceChallenge(
+  "ถอดรหัสพัฒนาการนวัตกรรมและการจัดระเบียบสังคมยุคโบราณ:",
+  [seqProtoCuneiform, seqIndusGrid, seqPapyrusHieroglyph, seqShangBronze],
+  [seqProtoCuneiform, seqIndusGrid, seqPapyrusHieroglyph, seqShangBronze],
+)
+
+seqProtoCuneiform = SequenceItem(
+  "seq-proto-cuneiform",
+  "การประดิษฐ์ตัวอักษรเพื่อทำบัญชีผลผลิตในเมโสโปเตเมีย (~3500 BC)",
+)
+
+seqIndusGrid = SequenceItem(
+  "seq-indus-grid",
+  "การวางผังเมืองตารางหมากรุกและท่อระบายน้ำเมืองโมเฮนโจ-ดาโร (~2500 BC)",
+)
+
+seqPapyrusHieroglyph = SequenceItem(
+  "seq-papyrus-hieroglyph",
+  "การบันทึกคัมภีร์มรณะด้วยอักษรไฮโรกลิฟิกบนกระดาษปาปิรุส (~1500 BC)",
+)
+
+seqShangBronze = SequenceItem(
+  "seq-shang-bronze",
+  "การหล่อเครื่องสำริดและจารึกอักษรเสี่ยงทายในราชวงศ์ซาง (~1200 BC)",
+)

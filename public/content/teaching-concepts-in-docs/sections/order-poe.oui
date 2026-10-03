@@ -1,0 +1,25 @@
+root = ReflectionSequence("Build a POE Moment", [challenge1, challenge2])
+
+challenge1 = SequenceChallenge(
+  "Build a Predict → Observe → Explain moment for 'permission inheritance'. Put it in order.",
+  [explain, predict, observe],
+  [predict, observe, explain],
+)
+
+explain = SequenceItem("explain", "Ask: 'Why did she see all five?', then show the explanation")
+predict = SequenceItem(
+  "predict",
+  "Ask: 'If Anna joins the Sales workspace, how many projects will she see?'",
+)
+
+observe = SequenceItem("observe", "Run the simulator: Anna sees all five Sales projects")
+
+challenge2 = SequenceChallenge(
+  "Why does the prediction come first? Order the chain of what happens in the learner's head.",
+  [correct, commit, notice],
+  [commit, notice, correct],
+)
+
+correct = SequenceItem("correct", "Their mental model gets corrected")
+commit = SequenceItem("commit", "They commit to a prediction from their current mental model")
+notice = SequenceItem("notice", "They notice that the outcome differs from their prediction")

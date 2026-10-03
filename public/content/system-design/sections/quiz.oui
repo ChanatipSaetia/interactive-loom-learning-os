@@ -1,0 +1,156 @@
+root = Quiz("System Design Knowledge Check", [q1, q2, q3, q4, q5], "Test Your Understanding")
+
+q1 = QuizQuestion(
+  "q1",
+  "What does CAP theorem state?",
+  [
+    QuizChoice(
+      "a",
+      "A distributed system can guarantee all three: consistency, availability, and partition tolerance",
+      false,
+      "CAP theorem states you can only guarantee two of three properties.",
+    ),
+    QuizChoice(
+      "b",
+      "A distributed system can only guarantee two of three: consistency, availability, and partition tolerance",
+      true,
+      "The CAP theorem states that a distributed system can only guarantee two of three properties.",
+    ),
+    QuizChoice(
+      "c",
+      "A distributed system must sacrifice partition tolerance",
+      false,
+      "Partition tolerance is typically non-negotiable in distributed systems.",
+    ),
+    QuizChoice(
+      "d",
+      "A distributed system prioritizes availability over all else",
+      false,
+      "Different systems prioritize different properties based on their requirements.",
+    ),
+  ],
+)
+
+q2 = QuizQuestion(
+  "q2",
+  "Which scaling approach adds more machines to handle increased load?",
+  [
+    QuizChoice(
+      "a",
+      "Vertical scaling",
+      false,
+      "Vertical scaling adds more power to existing machines.",
+    ),
+    QuizChoice(
+      "b",
+      "Horizontal scaling",
+      true,
+      "Horizontal scaling involves adding more machines/servers to distribute the load.",
+    ),
+    QuizChoice(
+      "c",
+      "Functional scaling",
+      false,
+      "Functional scaling is not a standard term in system design.",
+    ),
+    QuizChoice(
+      "d",
+      "Linear scaling",
+      false,
+      "Linear scaling refers to proportional growth, not the approach of adding machines.",
+    ),
+  ],
+)
+
+q3 = QuizQuestion(
+  "q3",
+  "What is the primary benefit of redundancy in system design?",
+  [
+    QuizChoice(
+      "a",
+      "Reduced costs",
+      false,
+      "Redundancy typically increases costs due to additional hardware.",
+    ),
+    QuizChoice(
+      "b",
+      "Improved reliability and fault tolerance",
+      true,
+      "Redundancy provides backup components that can take over in case of failures.",
+    ),
+    QuizChoice(
+      "c",
+      "Faster response times",
+      false,
+      "Redundancy may actually add latency due to synchronization overhead.",
+    ),
+    QuizChoice(
+      "d",
+      "Simpler architecture",
+      false,
+      "Redundancy makes architecture more complex, not simpler.",
+    ),
+  ],
+)
+
+q4 = QuizQuestion(
+  "q4",
+  "Which is NOT a characteristic of good maintainability?",
+  [
+    QuizChoice(
+      "a",
+      "Modularity",
+      false,
+      "Modularity is a key characteristic of maintainable systems.",
+    ),
+    QuizChoice(
+      "b",
+      "Lack of documentation",
+      true,
+      "Good maintainability requires documentation, not lack of it.",
+    ),
+    QuizChoice(
+      "c",
+      "Comprehensive testing",
+      false,
+      "Testing helps ensure changes don't break existing functionality.",
+    ),
+    QuizChoice(
+      "d",
+      "Clear interfaces",
+      false,
+      "Clear interfaces make it easier to understand and modify components.",
+    ),
+  ],
+)
+
+q5 = QuizQuestion(
+  "q5",
+  "In a distributed database, which choice prioritizes data accuracy over response speed?",
+  [
+    QuizChoice(
+      "a",
+      "AP (Availability + Partition Tolerance)",
+      false,
+      "AP systems prioritize availability over consistency.",
+    ),
+    QuizChoice(
+      "b",
+      "CP (Consistency + Partition Tolerance)",
+      true,
+      "CP systems prioritize consistency and partition tolerance, ensuring data accuracy.",
+    ),
+    QuizChoice(
+      "c",
+      "AC (Availability + Consistency)",
+      false,
+      "AC is not a common choice as it sacrifices partition tolerance.",
+    ),
+    QuizChoice(
+      "d",
+      "PC (Partition tolerance + Consistency without availability)",
+      false,
+      "This would mean the system is often unavailable, which is rarely desirable.",
+    ),
+  ],
+)

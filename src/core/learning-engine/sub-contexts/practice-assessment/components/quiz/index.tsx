@@ -8,10 +8,16 @@ import { SectionTitleBar } from '../../../../../delivery/web-app-shell/SectionTi
 import { QuizHelpModal } from './QuizHelpModal'
 import './quiz.css'
 
-export interface QuizSectionProps {
+import type { SectionResultProps, SectionResultContract } from '../../../types'
+import type { PracticeAssessmentEvents, QuizOptionSelected, QuizCompleted } from '../../events'
+
+export interface QuizSectionProps extends SectionResultProps<QuizCompleted | QuizOptionSelected, PracticeAssessmentEvents> {
   title?: string
   questions?: OKFQuizQuestion[]
   sectionIndex?: number
+  sectionId?: string
+  intelligenceChance?: number
+  evadeChance?: number
 }
 
 const CHOICE_LABELS = ['A', 'B', 'C', 'D', 'E', 'F']
@@ -25,6 +31,8 @@ function QuestionCard({
   total,
   selectedChoice,
   hintOpen,
+  showIntelligenceHint,
+  dodgedRetry,
   onAnswer,
   onToggleHint,
 }: {
@@ -33,6 +41,8 @@ function QuestionCard({
   total: number
   selectedChoice: string | null
   hintOpen: boolean
+  showIntelligenceHint?: boolean
+  dodgedRetry?: boolean
   onAnswer: (questionIndex: number, choiceId: string) => void
   onToggleHint: (questionIndex: number) => void
 }) {
@@ -64,6 +74,12 @@ function QuestionCard({
         {question.question}
       </h4>
 
+      {dodgedRetry && (
+        <div className="quiz-dodged-notice" data-testid={`quiz-dodged-notice-${index}`}>
+          💨 Dodged! Your quick footwork slipped the monster's counterattack — try the question again!
+        </div>
+      )}
+
       {question.hint && !revealed && (
         <div className="quiz-hint" data-testid={`quiz-hint-${index}`}>
           <button
@@ -94,10 +110,15 @@ function QuestionCard({
         {question.choices.map((choice, ci) => {
           const isSelected = choice.id === selectedChoice
           const label = CHOICE_LABELS[ci] ?? String(ci + 1)
+          
+          // Arcane Insight: After giving a wrong answer, Intelligence provides a chance to reveal the correct answer
+          const isWrongSelection = revealed && selectedChoice !== null && !isCorrect
+          const isRevealedCorrectByIntelligence = isWrongSelection && choice.correct && Boolean(showIntelligenceHint)
+          const isRevealedCorrectNormally = revealed && isCorrect && choice.correct
 
           let stateClass = ''
           if (revealed) {
-            if (choice.correct) {
+            if (isRevealedCorrectNormally || isRevealedCorrectByIntelligence) {
               stateClass = 'quiz-choice-correct'
             } else if (isSelected && !choice.correct) {
               stateClass = 'quiz-choice-wrong'
@@ -119,7 +140,12 @@ function QuestionCard({
             >
               <span className="quiz-choice-label">{label}</span>
               <span className="quiz-choice-text">{choice.text}</span>
-              {revealed && choice.correct && (
+              {isRevealedCorrectByIntelligence && (
+                <span className="quiz-choice-intelligence-badge">
+                  <span>💡 Arcane Insight</span>
+                </span>
+              )}
+              {revealed && (isRevealedCorrectNormally || isRevealedCorrectByIntelligence) && (
                 <Check className="quiz-choice-feedback-icon quiz-choice-feedback-correct" data-testid={`quiz-feedback-correct-${index}-${choice.id}`} />
               )}
               {revealed && isSelected && !choice.correct && (
@@ -161,22 +187,107 @@ function QuestionCard({
   )
 }
 
-export default function QuizSection({ title, questions = [], sectionIndex = 0 }: QuizSectionProps) {
+export default function QuizSection({
+  title,
+  questions = [],
+  sectionIndex = 0,
+  sectionId = 'quiz',
+  intelligenceChance,
+  evadeChance,
+  onResultChange,
+  onEvent,
+}: QuizSectionProps) {
   const [currentIndex, setCurrentIndex] = useState(0)
   const [answers, setAnswers] = useState<AnswersMap>({})
   const [hintsOpen, setHintsOpen] = useState<HintsOpenMap>({})
+  const [dodgedQuestionIndex, setDodgedQuestionIndex] = useState<number | null>(null)
   const { playSound } = useSound()
 
-  const handleAnswer = useCallback((questionIndex: number, choiceId: string) => {
-    setAnswers((prev) => ({ ...prev, [questionIndex]: choiceId }))
-    const q = questions[questionIndex]
-    const choice = q?.choices.find((c) => c.id === choiceId)
-    if (choice?.correct) {
-      playSound('success')
-    } else {
-      playSound('error')
-    }
-  }, [questions, playSound])
+  const handleAnswer = useCallback(
+    (questionIndex: number, choiceId: string) => {
+      const q = questions[questionIndex]
+      const choice = q?.choices.find((c) => c.id === choiceId)
+      const isCorrect = choice?.correct ?? false
+
+      // Swift Retreat: Evasion grants a passive chance to dodge damage on a wrong
+      // answer and immediately retry the missed question (answer is not committed).
+      if (!isCorrect && evadeChance && evadeChance > 0 && Math.random() * 100 < evadeChance) {
+        playSound('success')
+        onEvent?.({
+          type: 'QuizOptionSelected',
+          questionId: q?.id ?? `q_${questionIndex}`,
+          choiceId,
+          isCorrect: false,
+          dodged: true,
+          timestamp: Date.now(),
+        })
+        setDodgedQuestionIndex(questionIndex)
+        return
+      }
+
+      setDodgedQuestionIndex(null)
+      const newAnswers = { ...answers, [questionIndex]: choiceId }
+      setAnswers(newAnswers)
+
+      if (isCorrect) {
+        playSound('success')
+      } else {
+        playSound('error')
+      }
+
+      // 1. Emit single question option event
+      const optionEvent: QuizOptionSelected = {
+        type: 'QuizOptionSelected',
+        questionId: q?.id ?? `q_${questionIndex}`,
+        choiceId,
+        isCorrect,
+        intelligenceTriggered: !isCorrect && Boolean(showIntelligenceHint),
+        timestamp: Date.now(),
+      }
+      onEvent?.(optionEvent)
+
+      // 2. Compute aggregate progress and emit Result Contract
+      let correctCount = 0
+      let answeredCount = 0
+      for (let i = 0; i < questions.length; i++) {
+        const cId = newAnswers[i]
+        if (cId) {
+          answeredCount++
+          const c = questions[i].choices.find((item) => item.id === cId)
+          if (c?.correct) correctCount++
+        }
+      }
+
+      const isAllAnswered = questions.length > 0 && answeredCount === questions.length
+      const normalizedScore = questions.length > 0 ? Math.round((correctCount / questions.length) * 100) : 0
+      const accuracy = questions.length > 0 ? correctCount / questions.length : 0
+
+      const completedPayload: QuizCompleted = {
+        type: 'QuizCompleted',
+        totalQuestions: questions.length,
+        correctCount,
+        score: normalizedScore,
+        timestamp: Date.now(),
+      }
+
+      if (isAllAnswered) {
+        onEvent?.(completedPayload)
+      }
+
+      const resultContract: SectionResultContract<QuizCompleted | QuizOptionSelected> = {
+        sectionId,
+        sectionType: 'quiz',
+        status: isAllAnswered ? (accuracy >= 0.5 ? 'completed' : 'failed') : 'in_progress',
+        score: normalizedScore,
+        accuracy,
+        completedAt: isAllAnswered ? Date.now() : undefined,
+        payload: isAllAnswered ? completedPayload : optionEvent,
+      }
+
+      onResultChange?.(resultContract)
+    },
+    [questions, answers, playSound, evadeChance, onEvent, onResultChange, sectionId],
+  )
 
   const handleToggleHint = useCallback((questionIndex: number) => {
     playSound('click')
@@ -207,6 +318,10 @@ export default function QuizSection({ title, questions = [], sectionIndex = 0 }:
   }
 
   const currentQuestion = questions[currentIndex]
+  const showIntelligenceHint = useMemo(() => {
+    if (!intelligenceChance || intelligenceChance <= 0) return false
+    return Math.random() * 100 < intelligenceChance
+  }, [currentIndex, intelligenceChance])
 
   return (
     <div className="quiz-section" data-testid="quiz-section">
@@ -238,6 +353,8 @@ export default function QuizSection({ title, questions = [], sectionIndex = 0 }:
           total={questions.length}
           selectedChoice={answers[currentIndex] ?? null}
           hintOpen={!!hintsOpen[currentIndex]}
+          showIntelligenceHint={showIntelligenceHint}
+          dodgedRetry={dodgedQuestionIndex === currentIndex}
           onAnswer={handleAnswer}
           onToggleHint={handleToggleHint}
         />

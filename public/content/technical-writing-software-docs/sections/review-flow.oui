@@ -1,0 +1,170 @@
+root = Flowchart(
+  "The Docs Review Flow",
+  [writer, sme, tester],
+  [docsRepo, stagingApp, valeCi, docsSite],
+  [stepDraft, stepSme, stepTest, stepTestOutcome, stepPublish],
+  [journeyPublish, journeyRewrite],
+)
+
+writer = Actor("writer", "Technical Writer", "Drafts the page in Markdown and opens a pull request")
+sme = Actor(
+  "sme",
+  "Subject-Matter Expert",
+  "A developer or product owner who knows how the app really works",
+)
+
+tester = Actor(
+  "tester",
+  "Step Tester",
+  "Someone who follows every step in the app exactly as written",
+)
+
+docsRepo = System(
+  "docs_repo",
+  "Docs Repository",
+  "Markdown pages under version control, reviewed through pull requests",
+  "aggregate",
+)
+
+stagingApp = System(
+  "staging_app",
+  "Staging Web App",
+  "A non-production copy of the app on the upcoming version",
+  "external",
+)
+
+valeCi = System(
+  "vale_ci",
+  "Vale in CI",
+  "Prose linter that checks style and terminology on every pull request",
+  "external",
+)
+
+docsSite = System("docs_site", "Published Docs Site", "Where users read the manual", "external")
+
+stepDraft = Step(
+  "step_draft",
+  "When a feature changes or a task page is missing",
+  "Open a pull request with the draft page",
+  docsRepo,
+  [Event("evt_draft_opened", "Draft Opened")],
+  writer,
+  null,
+  "step_sme",
+)
+
+stepSme = Step(
+  "step_sme",
+  "When a draft is opened",
+  "Check the facts against how the app works",
+  docsRepo,
+  [
+    Event(
+      "evt_facts_checked",
+      "Technical Review Done",
+      "Facts, limits, permissions and behaviour confirmed by a subject-matter expert",
+    ),
+  ],
+  sme,
+  null,
+  "step_test",
+)
+
+stepTest = Step(
+  "step_test",
+  "After the technical review",
+  "Follow every step exactly as written",
+  stagingApp,
+  [Event("evt_steps_tested", "Steps Tested")],
+  tester,
+  null,
+  "step_test_outcome",
+)
+
+stepTestOutcome = Branch(
+  "step_test_outcome",
+  "evt_steps_tested",
+  [
+    BranchOption(
+      "branch_pass",
+      "Every step worked",
+      "If every step worked as written",
+      "Run editorial review with the linter",
+      valeCi,
+      [
+        Event(
+          "evt_edit_done",
+          "Editorial Review Done",
+          "Structure, style and terminology checked against the style guide",
+        ),
+      ],
+      null,
+      null,
+      null,
+      "step_publish",
+    ),
+    BranchOption(
+      "branch_fail",
+      "A step failed",
+      "If a step didn't work as written",
+      "Send the page back for rewrite",
+      docsRepo,
+      [Event("evt_rewrite_requested", "Rewrite Requested")],
+      true,
+    ),
+  ],
+)
+
+stepPublish = Step(
+  "step_publish",
+  "When all reviews pass",
+  "Merge and publish the page",
+  docsSite,
+  [Event("evt_published", "Page Published")],
+  writer,
+)
+
+journeyPublish = Journey(
+  "journey_publish",
+  "Happy Path: Draft to Published",
+  "The page passes technical review, the step test and editorial review",
+  [
+    JourneyStep("evt_draft_opened", "Draft", "The writer opens a pull request"),
+    JourneyStep(
+      "evt_facts_checked",
+      "Technical review",
+      "A subject-matter expert checks the facts against how the app really works",
+    ),
+    JourneyStep(
+      "evt_steps_tested",
+      "Step test",
+      "Someone follows every step in staging exactly as written",
+    ),
+    JourneyStep(
+      "evt_edit_done",
+      "Editorial review",
+      "Structure, style and terms are checked, with Vale doing the mechanical part",
+    ),
+    JourneyStep("evt_published", "Published", "The page goes live"),
+  ],
+)
+
+journeyRewrite = Journey(
+  "journey_rewrite",
+  "A Step Fails",
+  "The step test catches a step that doesn't work as written",
+  [
+    JourneyStep("evt_draft_opened", "Draft", "The writer opens a pull request"),
+    JourneyStep("evt_facts_checked", "Technical review", "The facts look right on paper"),
+    JourneyStep(
+      "evt_steps_tested",
+      "Step test",
+      "Step 3 says Export, but the button now lives in the ⋯ menu",
+    ),
+    JourneyStep(
+      "evt_rewrite_requested",
+      "Rewrite",
+      "The page goes back to the writer before any user sees it",
+    ),
+  ],
+)

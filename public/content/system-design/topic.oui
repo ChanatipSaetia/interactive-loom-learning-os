@@ -1,0 +1,13 @@
+root = Topic(
+  "System Design",
+  "Architecture",
+  "Learn scalable architecture fundamentals, trade-offs, and design patterns",
+  [
+    SectionRef("intro"),
+    SectionRef("text"),
+    SectionRef("quiz"),
+    SectionRef("reflection"),
+    SectionRef("tradeoff"),
+  ],
+  ["system-design", "scalability", "distributed-systems"],
+)

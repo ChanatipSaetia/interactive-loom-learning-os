@@ -1,0 +1,21 @@
+root = Topic(
+  "Storybook — The Component Workshop",
+  "Architecture",
+  "Develop, document, and test UI components in isolation with stories, Controls, and visual regression safety nets",
+  [
+    SectionRef("intro"),
+    SectionRef("concept-map"),
+    SectionRef("flashcards"),
+    SectionRef("quiz-foundations"),
+    SectionRef("text-workflow"),
+    SectionRef("flowchart"),
+    SectionRef("reflection-sequence"),
+    SectionRef("tradeoffs"),
+    SectionRef("taxonomy"),
+    SectionRef("scenario"),
+    SectionRef("decision-tree"),
+    SectionRef("quiz-testing"),
+    SectionRef("reflection-template"),
+  ],
+  ["Storybook", "UI Components", "Design System", "Component Testing", "Frontend Tooling"],
+)

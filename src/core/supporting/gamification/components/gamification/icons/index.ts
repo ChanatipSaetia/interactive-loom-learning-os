@@ -1,0 +1,7 @@
+export type { GamificationIconProps } from './types'
+export { WizardIcon } from './WizardIcon'
+export { ShieldIcon } from './ShieldIcon'
+export { LightningIcon } from './LightningIcon'
+export { BulbIcon } from './BulbIcon'
+export { TrophyIcon } from './TrophyIcon'
+export { SparkleIcon } from './SparkleIcon'

@@ -1,0 +1,95 @@
+root = Scenario(
+  "Scenario: Archive Is Not Delete",
+  "archive-not-delete",
+  [start, resultSteps, technique, resultFact, check, resultA, resultCheckbox],
+  "Your project-management web app has an Archive button with a box-shaped icon. Every month, support gets tickets: some users are afraid to archive ('will I lose it?'), and others archive projects to 'get rid of' confidential data, which is still there. You own the docs.",
+  null,
+  "Archive Is Not Delete",
+)
+
+start = ScenarioNode(
+  "start",
+  "What's the root problem?",
+  [
+    ScenarioChoice("steps-problem", "The steps for archiving are unclear", "result-steps"),
+    ScenarioChoice(
+      "model-problem",
+      "Users have the wrong mental model: they think archive means delete",
+      "technique",
+    ),
+  ],
+)
+
+resultSteps = ScenarioNode(
+  "result-steps",
+  null,
+  null,
+  Outcome(
+    "You rewrite the three archiving steps beautifully. Users still archive confidential data thinking it's gone.",
+    "Users can already click the button. The problem is conceptual: their model of what archiving does is wrong.",
+    "c",
+  ),
+)
+
+technique = ScenarioNode(
+  "technique",
+  "How do you fix the mental model?",
+  [
+    ScenarioChoice("add-fact", "Add a line: 'Archived projects can be restored.'", "result-fact"),
+    ScenarioChoice(
+      "refute-plus",
+      "Refutation + diagram + non-example: 'You might think archiving deletes a project. It doesn't…', a diagram of Active → Archived → Restored, and 'Deleting is different: it removes the data permanently.'",
+      "check",
+    ),
+  ],
+)
+
+resultFact = ScenarioNode(
+  "result-fact",
+  null,
+  null,
+  Outcome(
+    "True, but skimmed over. The misconception survives.",
+    "Stating the truth often doesn't replace a wrong belief. Name the misconception and reject it explicitly.",
+    "b-minus",
+  ),
+)
+
+check = ScenarioNode(
+  "check",
+  "How do you check users really understand it?",
+  [
+    ScenarioChoice(
+      "what-if",
+      "A what-if with prediction: 'You archive a project with salary data. Can other workspace members still open it?' Then show the answer with explanatory feedback.",
+      "result-a",
+    ),
+    ScenarioChoice(
+      "read-confirm",
+      "A checkbox: 'I have read and understood this page'",
+      "result-checkbox",
+    ),
+  ],
+)
+
+resultA = ScenarioNode(
+  "result-a",
+  null,
+  null,
+  Outcome(
+    "Many users predict 'no', see that the answer is 'yes, archived projects are only hidden', and read why. Tickets about lost and leaked archives drop sharply.",
+    "Wrong model named and refuted, shown in a diagram, then tested in a new situation with a prediction and explanatory feedback. That's teaching a concept, not just a click.",
+    "a",
+  ),
+)
+
+resultCheckbox = ScenarioNode(
+  "result-checkbox",
+  null,
+  null,
+  Outcome(
+    "Everyone ticks the box. The misconception is untouched.",
+    "Ticking a box isn't retrieval. Ask a question about a new situation and give feedback that explains why.",
+    "c",
+  ),
+)

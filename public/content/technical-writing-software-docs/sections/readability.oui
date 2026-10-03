@@ -1,0 +1,46 @@
+root = FormulaSandbox(
+  "Readability Calculator",
+  [
+    FormulaVariable("words_per_sentence", "Average words per sentence", 5, 40, 1, 25),
+    FormulaVariable("syllables_per_word", "Average syllables per word", 1, 2.5, 0.05, 1.6),
+  ],
+  [flesch, sentencePenalty, wordPenalty, warning],
+)
+
+flesch = FormulaMetric(
+  "flesch",
+  "Flesch Reading Ease (0–100, higher is easier)",
+  "Math.round(206.835 - 1.015 * words_per_sentence - 84.6 * syllables_per_word)",
+  "Flesch Reading Ease = 206.835 − 1.015 × (words per sentence) − 84.6 × (syllables per word). Higher scores are easier to read; around 60–70 is plain English.",
+  "A speedometer for reading effort: long sentences and long words push it down.",
+  ["Sentence length", "Word length in syllables"],
+  ["Whether the steps are correct or in the right order", "Whether the reader knows the terms"],
+)
+
+sentencePenalty = FormulaMetric(
+  "sentence_penalty",
+  "Points lost to sentence length",
+  "Math.round(1.015 * words_per_sentence)",
+  "How much of the score long sentences cost. Try dropping the average from 25 to 15 words.",
+  null,
+  ["Words per sentence"],
+)
+
+wordPenalty = FormulaMetric(
+  "word_penalty",
+  "Points lost to long words",
+  "Math.round(84.6 * syllables_per_word)",
+  "How much of the score long words cost, e.g. 'utilise' instead of 'use'.",
+  null,
+  ["Syllables per word"],
+)
+
+warning = FormulaMetric(
+  "warning",
+  "Warning light (1 = score below 50, rewrite likely needed)",
+  "(206.835 - 1.015 * words_per_sentence - 84.6 * syllables_per_word) < 50 ? 1 : 0",
+  "Readability scores only measure sentence and word length. They are a warning light, not proof that a page is clear: a short, simple page can still have the steps in the wrong order.",
+  "A smoke alarm, not a fire inspector.",
+  null,
+  ["Structure, accuracy and page type"],
+)

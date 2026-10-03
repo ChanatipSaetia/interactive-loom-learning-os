@@ -1,0 +1,107 @@
+root = Scenario(
+  "Scenario: Monday Without a Path",
+  "monday-without-a-path",
+  [start, resultFirehose, resultSlides, resultTriage, resultHero, resultQueue, resultWins],
+  "It is 9:10 on Monday morning. Forty newcomers — end users, operators, and five platform developers — are logged in (most of them) to a Wi-Fi guest network, a wiki nobody has refreshed since last quarter, and a Slack channel called #newest-hires. As the onboarding lead, what do you do first?",
+  null,
+  "Monday Without a Path",
+)
+
+start = ScenarioNode(
+  "start",
+  "Forty pairs of eyes are on you. What is the first move?",
+  [
+    ScenarioChoice(
+      "read-wiki",
+      "Send everyone the wiki link and a 40-page handbook to read while you put out fires",
+      "result-firehose",
+    ),
+    ScenarioChoice(
+      "triage-access",
+      "Stop everything and triage access: who can actually log in and touch a real environment today?",
+      "result-triage",
+    ),
+    ScenarioChoice(
+      "big-slides",
+      "Book the afternoon for a full architecture presentation so everyone shares context",
+      "result-slides",
+    ),
+  ],
+)
+
+resultFirehose = ScenarioNode(
+  "result-firehose",
+  null,
+  null,
+  Outcome(
+    "By lunch the handbook has 3 comments, the #newest-hires channel has 27 questions, and you have answered none of them. Two developers have already quietly left to 'explore the API later'.",
+    "The information firehose with no human anchor is the doctrine's textbook failure: passive content plus unanswered questions at hour three is exactly where motivation dies.",
+    "c",
+  ),
+)
+
+resultSlides = ScenarioNode(
+  "result-slides",
+  null,
+  null,
+  Outcome(
+    "You covered the microservices diagram beautifully. The operators wanted their runbooks, the end users wanted their first task, and the developers wanted their API keys. All three got slides instead.",
+    "An architecture tour is not onboarding. Each audience needed its own first value — a task, a graded change, a first API call — not a shared context nobody asked for.",
+    "c",
+  ),
+)
+
+resultTriage = ScenarioNode(
+  "result-triage",
+  "Triage reveals the truth: the 5 developers have no API keys, 3 operators are missing production-reach entitlements, and the end users' sample workspace is empty. You have one day and one team. Where do you spend it?",
+  [
+    ScenarioChoice(
+      "fix-all-yourself",
+      "Personality-provision all 40 people yourself, one browser tab at a time",
+      "result-hero",
+    ),
+    ScenarioChoice(
+      "scripted-fastest",
+      "Fix the fastest scripted wins first: mint dev keys via the self-serve flow, fill the sample workspace, file the privileged grants properly",
+      "result-wins",
+    ),
+    ScenarioChoice(
+      "wait-ticket-queue",
+      "File everything into the normal IT queue and tell people to expect access 'soon'",
+      "result-queue",
+    ),
+  ],
+)
+
+resultHero = ScenarioNode(
+  "result-hero",
+  null,
+  null,
+  Outcome(
+    "You personally fix 14 people's access by 11pm. The remaining 26 wait for the hero to recover. Next Monday's cohort gets nothing, because you are asleep.",
+    "Heroic manual provisioning is the anti-pattern the provisioning flow exists to automate: SSO group rules and self-serve key minting scale; your browser tabs do not.",
+    "b-minus",
+  ),
+)
+
+resultQueue = ScenarioNode(
+  "result-queue",
+  null,
+  null,
+  Outcome(
+    "The queue is honest, at least. It is also three weeks deep. Week one becomes week three of 'ping me when you're stuck', and three newcomers quit-point to silence.",
+    "Waiting-for-access is the number-one onboarding killer: Access First means credentials exist before day one, and 'soon' is how first value slips from week one to never.",
+    "c",
+  ),
+)
+
+resultWins = ScenarioNode(
+  "result-wins",
+  null,
+  null,
+  Outcome(
+    "By 3pm the developers ship their first test call against seeded sandbox data, the end users complete their first real record in a populated workspace, and the operators are shadowing an afternoon incident with runbooks open. You book office hours for Thursday and pin the handbook's single golden-path page in the channel.",
+    "This is the doctrine in one day: access unblocked through automation, one golden-path task per audience to first value, progressive depth via the handbook, and a scheduled human anchor for the questions. Measure who stalls next and fix that first.",
+    "a",
+  ),
+)

@@ -1,0 +1,70 @@
+root = Quiz("Retention Check", [q1, q2, q3, q4])
+
+q1 = QuizQuestion(
+  "q1",
+  "Which strengthens memory of a concept more?",
+  [
+    QuizChoice(
+      "q1-a",
+      "Recalling it from memory with a quick question",
+      true,
+      "Retrieval practice (the testing effect) beats re-reading.",
+    ),
+    QuizChoice(
+      "q1-b",
+      "Re-reading the page",
+      false,
+      "It feels productive but strengthens memory less.",
+    ),
+    QuizChoice("q1-c", "Highlighting the page", false, "Not retrieval."),
+  ],
+  "Pull it out of memory.",
+)
+
+q2 = QuizQuestion(
+  "q2",
+  "You have 60 minutes of concept training. What schedule works best?",
+  [
+    QuizChoice(
+      "q2-a",
+      "Short sessions spread over several days",
+      true,
+      "Spacing beats one long session.",
+    ),
+    QuizChoice("q2-b", "One 60-minute session on day one", false, "Massed practice fades faster."),
+    QuizChoice("q2-c", "It makes no difference", false, "Spacing makes a difference."),
+  ],
+  "Spread it out.",
+)
+
+q3 = QuizQuestion(
+  "q3",
+  "Which prompt uses self-explanation?",
+  [
+    QuizChoice(
+      "q3-a",
+      "'In one sentence, why did Anna see all five projects?'",
+      true,
+      "Learners explain why, in their own words.",
+    ),
+    QuizChoice("q3-b", "'Select Next to continue.'", false, "No explaining involved."),
+    QuizChoice("q3-c", "'Did you read this page? Yes / No'", false, "Not an explanation."),
+  ],
+  "In their own words, why?",
+)
+
+q4 = QuizQuestion(
+  "q4",
+  "A learner answers wrongly. Which feedback is best?",
+  [
+    QuizChoice(
+      "q4-a",
+      "'Not quite: permissions set on a workspace flow down to every project inside it.'",
+      true,
+      "Explanatory feedback says why, which fixes the model.",
+    ),
+    QuizChoice("q4-b", "'Incorrect.'", false, "Says whether, not why."),
+    QuizChoice("q4-c", "'Try again.'", false, "No explanation at all."),
+  ],
+  "Why, not just whether.",
+)

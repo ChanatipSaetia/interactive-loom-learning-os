@@ -1,0 +1,180 @@
+root = Flashcards(
+  "Essential Storybook Vocabulary",
+  [story, meta, csf, args, controls, decorator, play, managerPreview, addon, docsMdx, testRunner],
+)
+
+story = Flashcard(
+  "story",
+  "Story",
+  "/ˈstɔː.ri/",
+  "Core Format",
+  "A named export describing one specific state of one component (e.g. Primary, Disabled, Error).",
+  "In Component Story Format, each story is a named export of a `.stories.ts` file. A story object typically declares `args` (the props to render), optional `parameters`, an optional `render` function, and tags. Because a story is plain ESM code, it is importable, testable, and diffable like any other module.",
+  "Stories are the atomic unit of Storybook: they double as development fixtures, documentation examples, and the inputs to automated visual and interaction tests.",
+  null,
+  Dialogue(
+    "How do I show the loading state of my Button?",
+    "They need one more named export for that state.",
+    "Add `export const Loading: Story = { args: { loading: true } };` — a new story per state.",
+  ),
+)
+
+meta = Flashcard(
+  "meta",
+  "Meta",
+  "/ˈmeɪ.tə/",
+  "Core Format",
+  "The default export of a story file that describes the component as a whole.",
+  "Meta declares shared configuration for every story in the file: a `title` (which positions the component in the sidebar hierarchy, e.g. `Button`), the `component` itself (enabling autodocs and automatic Controls), and shared `argTypes` or `parameters`.",
+  "Meta is the single source of component-level truth; without it Storybook cannot group stories, generate props tables, or infer control types.",
+  null,
+  Dialogue(
+    "Where do I declare which component these stories belong to?",
+    "That is file-level configuration — the default export.",
+    "Set `export default { title: 'Button', component: Button };` at the top of `Button.stories.ts`.",
+  ),
+)
+
+csf = Flashcard(
+  "csf",
+  "Component Story Format (CSF)",
+  "/kəmˈpoʊ.nənt stɔː.ri ˈfɔːr.mæt/",
+  "Core Format",
+  "The standard ES-module file format for writing stories using exports instead of a registry API.",
+  "CSF files (conventionally `Component.stories.ts`) use a default export for meta and named exports for stories. CSF 3 makes the `render` function optional and infers story names from export names. Newer CSF Factories wraps meta and stories in `preview.meta()` / `meta.story()` factory calls for stronger TypeScript type safety.",
+  "Because stories are just module exports, they can be statically indexed by the bundler, type-checked, linted, and reused as test fixtures without any Storybook-specific DSL.",
+  null,
+  Dialogue(
+    "Do I need a special registry call to register stories?",
+    "No — registration is implicit via exports.",
+    "No registry needed: export default meta, export named stories, and Storybook indexes them automatically.",
+  ),
+)
+
+args = Flashcard(
+  "args",
+  "Args & argTypes",
+  "/ɑːɡz ænd ˈɑːɡ.taɪps/",
+  "Interactivity",
+  "`args` are the props a story passes to the component; `argTypes` declare metadata (type, options, range) for each arg.",
+  "Each story's `args` object becomes the component's props. `argTypes` (usually declared once in meta) tell Controls how to render an editor for each prop — a boolean toggle, a color picker, a dropdown of options, or a numeric range — and power autodocs props tables.",
+  "Args turn a static example into a playground: reviewers can flip booleans and edit strings live without touching code.",
+  null,
+  Dialogue(
+    "How do I get a dropdown for the button size in the panel?",
+    "They need argTypes metadata for Controls to know the options.",
+    "Declare `argTypes: { size: { options: ['sm','md','lg'], control: 'select' } }` in meta.",
+  ),
+)
+
+controls = Flashcard(
+  "controls",
+  "Controls",
+  "/kənˈtroʊlz/",
+  "Interactivity",
+  "The addon panel UI that edits a story's args live and re-renders the component instantly.",
+  "Controls reads the story's args and argTypes and renders an editor widget per arg. Mutating an arg re-renders the story in the preview with the new props, and the URL can encode args so an exact state is shareable.",
+  "Controls replaces 'change a prop, recompile, screenshot' loops with instant manual exploration of the whole props surface.",
+  null,
+  Dialogue(
+    "Can a designer try the disabled + loading combination without code?",
+    "Controls is exactly for ad-hoc state combinations.",
+    "Yes — open the Controls tab and toggle `disabled` and `loading` in the panel.",
+  ),
+)
+
+decorator = Flashcard(
+  "decorator",
+  "Decorator",
+  "/ˈdek.ə.reɪ.tər/",
+  "Interactivity",
+  "A wrapper function that adds providers or context around a story's render.",
+  "Decorators wrap a story to supply anything the component expects from outside itself: theme providers, routers, stores, or layout padding. They can be applied globally, per-file in meta, or per-story.",
+  "Components in isolation still need their application context; decorators re-create that harness without importing the real app.",
+  null,
+  Dialogue(
+    "My component crashes because it needs a ThemeProvider.",
+    "A decorator is the idiomatic provider wrapper.",
+    "Add `decorators: [Story => <ThemeProvider><Story /></ThemeProvider>]` in meta.",
+  ),
+)
+
+play = Flashcard(
+  "play",
+  "Play Function",
+  "/pleɪ ˈfʌŋk.ʃən/",
+  "Testing",
+  "An async function attached to a story that automates interactions when the story runs.",
+  "A play function receives a user-interaction API (like `userEvent` and `screen`) and scripts clicks, typing, and assertions against the rendered story. Play functions execute both interactively in the browser and headlessly in CI via the Storybook test runner.",
+  "The same code that demonstrates a workflow to humans becomes an executable interaction test — one artifact for docs and CI.",
+  null,
+  Dialogue(
+    "How do I prove the modal opens when clicking the trigger?",
+    "Script the click as a play function.",
+    "Add `play: async ({ userEvent, canvas }) => { await userEvent.click(...); }` to the story.",
+  ),
+)
+
+managerPreview = Flashcard(
+  "manager-preview",
+  "Manager & Preview",
+  "/ˈmæn.ɪ.dʒər ænd priːˈvjuː/",
+  "Architecture",
+  "The Manager is Storybook's chrome (sidebar, toolbar, addons panel); the Preview is the iframe that actually renders your components.",
+  "Storybook is an app of two frames: the Manager runs the navigation and addon UI, while the Preview boots a separate runtime (built by Vite or Webpack) that imports your story files and renders the selected story into an iframe. The two frames communicate over the channel API, which is how addons like Controls send new args into the rendered story.",
+  "Understanding the split explains why args changes re-render instantly and why addon builders must register code on both sides.",
+  null,
+  Dialogue(
+    "Why does my component run in a separate iframe?",
+    "That is the preview/manager architecture.",
+    "Isolation: the preview runtime loads only your component's module graph, keeping the manager UI stable.",
+  ),
+)
+
+addon = Flashcard(
+  "addon",
+  "Addon",
+  "/əˈdɒn/",
+  "Architecture",
+  "A plugin that extends Storybook's manager and preview — e.g. Controls, Actions, a11y, docs.",
+  "Addons register tooling into the manager UI and behaviors into the preview. First-party addons include Controls, Actions, Viewport, and Accessibility; the ecosystem adds design integration, theming, and test integrations.",
+  "The addon model keeps Storybook core small while letting teams bolt on exactly the workflow tools they need.",
+  null,
+  Dialogue(
+    "I want a click-logger panel while developing.",
+    "That is what the Actions addon provides.",
+    "Enable the Actions addon and wire event props via `parameters.actions` or `fn()` args.",
+  ),
+)
+
+docsMdx = Flashcard(
+  "docs-mdx",
+  "Docs & MDX",
+  "/dɒks ənd ˌem-diːˈeks/",
+  "Documentation",
+  "Story pages rendered as documentation — autodocs generate props tables from meta; MDX mixes prose with live story embeds.",
+  "Each component can get a docs page: autodocs render stories, descriptions, and a props table automatically from meta and JSDoc. MDX files let authors interleave long-form prose, custom sections, and `<Story>` embeds that are still live, interactive components.",
+  "Documentation stays in sync with code because it is generated from the same stories the tests run.",
+  null,
+  Dialogue(
+    "How do I publish usage guidelines next to live examples?",
+    "Docs pages with MDX prose plus story embeds.",
+    "Tag stories with `docs` and write an MDX page that embeds `<Canvas>` blocks between prose sections.",
+  ),
+)
+
+testRunner = Flashcard(
+  "test-runner",
+  "Test Runner & Visual Regression",
+  "/test ˈrʌn.ər ænd ˈvɪʒ.u.əl rɪˈɡreʃ.ən/",
+  "Testing",
+  "The CLI test runner executes every story (with its play function) in headless browsers; visual regression diffs screenshots between branches.",
+  "Storybook's test runner (test-storybook) boots the built Storybook and runs each story as a test in Playwright or Puppeteer, failing when a play function assertion throws. Visual regression tools like Chromatic snapshot every story per commit and block merges when pixels change unexpectedly.",
+  "Together they convert the story catalog into a full regression suite covering rendering, behavior, and pixels across viewports.",
+  null,
+  Dialogue(
+    "How do we stop silent UI regressions from merging?",
+    "Stories + snapshots + CI gating.",
+    "Run the test runner and a visual regression service on every PR so changed pixels fail the build.",
+  ),
+)

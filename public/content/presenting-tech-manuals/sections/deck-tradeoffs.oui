@@ -1,0 +1,174 @@
+root = TradeoffSandbox("Launch Webinar Trade-off Workshop", [launchWebinar])
+
+launchWebinar = TradeoffScenario(
+  "launch-webinar",
+  "Web App Manual Launch Webinar",
+  [
+    TradeoffMetric("clarity", "Audience Clarity", 50, 0, 100, "higher"),
+    TradeoffMetric("reliability", "Demo Reliability", 50, 0, 100, "higher"),
+    TradeoffMetric("prep", "Prep Efficiency", 50, 0, 100, "higher"),
+    TradeoffMetric("reuse", "Reuse Value", 50, 0, 100, "higher"),
+  ],
+  [demoMedium, deckFormat, takeHome],
+  "You have 30 minutes to present the user manual of a new Web App to a mixed audience of end users and operators. Forge a loadout that lands the manual without melting down on stage.",
+)
+
+demoMedium = TradeoffStep(
+  "demo-medium",
+  "Main Walkthrough Medium",
+  [liveOnly, livePlusClip, screenshots],
+  "Stage 3-4 of the arc: how do you show the one persona task being completed?",
+  "live-plus-clip",
+)
+
+liveOnly = TradeoffChoice(
+  "live-only",
+  "Pure live demo in staging",
+  "Drive the real UI with no safety net.",
+  {clarity: 10, reliability: -25, prep: 10, reuse: -10},
+  [ProCon("Maximum authenticity", "The audience watches the actual product, not a facsimile.")],
+  [
+    ProCon(
+      "One staging freeze from disaster",
+      "A frozen environment mid-demo derails the whole narrative.",
+    ),
+  ],
+  null,
+  "Only when the staging environment has a proven track record and the network is pristine.",
+)
+
+livePlusClip = TradeoffChoice(
+  "live-plus-clip",
+  "Live demo + OBS pre-recorded fallback clip",
+  "Drive the real UI, with a recorded clip cued up in the presenter's pocket.",
+  {clarity: 15, reliability: 20, prep: -10, reuse: 15},
+  [
+    ProCon(
+      "The show never stops",
+      "If staging hiccups, switch to the clip mid-sentence and nobody blinks.",
+    ),
+    ProCon(
+      "Recording lives three lives",
+      "The same clip becomes the async manual and the docs page embed.",
+    ),
+  ],
+  [ProCon("Extra prep time", "Recording and trimming the clip costs an hour up front.")],
+  "Stage 4 of the arc demands a pre-recorded fallback clip; the recording amortizes into the docs site afterward.",
+)
+
+screenshots = TradeoffChoice(
+  "screenshots",
+  "Static annotated screenshots",
+  "Click through numbered callouts of the UI in the deck.",
+  {clarity: -5, reliability: 25, prep: 15, reuse: 5},
+  [ProCon("Cannot break live", "Zero runtime risk and fastest to prepare.")],
+  [ProCon("Screenshots pretending to be a UI", "The arc explicitly rejects faking the live demo.")],
+  null,
+  "Acceptable for operators' runbook sections where exact config text matters more than flow.",
+)
+
+deckFormat = TradeoffStep(
+  "deck-format",
+  "Slide Deck Format",
+  [marp, slidevReveal, handcrafted],
+  "What instrument carries the hook, roadmap, and gotcha slides?",
+  "marp",
+)
+
+marp = TradeoffChoice(
+  "marp",
+  "Marp markdown deck",
+  "Plain markdown slides in the product repo, exported to HTML/PDF/PPTX.",
+  {clarity: 5, reliability: 5, prep: 10, reuse: 20},
+  [
+    ProCon(
+      "Lives with the code",
+      "The deck gets reviewed in pull requests and never contradicts the manual.",
+    ),
+    ProCon("PPTX export for stakeholders", "Satisfies the exec who only opens PowerPoint."),
+  ],
+  [ProCon("Less flashy than coded decks", "Fewer interactive toys than Slidev or reveal.js.")],
+  "A manual presentation should demonstrate the docs pipeline: the deck and the manual share one markdown source of truth.",
+)
+
+slidevReveal = TradeoffChoice(
+  "slidev-reveal",
+  "Slidev / reveal.js interactive deck",
+  "Vue components, live code blocks, or a full HTML/JS web-app deck.",
+  {clarity: 10, reliability: -5, prep: -10, reuse: 10},
+  [
+    ProCon(
+      "Live coding dazzles developers",
+      "Slidev's editable code blocks turn a DX talk into a workshop.",
+    ),
+  ],
+  [
+    ProCon(
+      "More moving parts on stage",
+      "Custom components and browser decks add ways to fail mid-talk.",
+    ),
+  ],
+  null,
+  "Developer Experience audiences where live code IS the message, and you have rehearsed twice.",
+)
+
+handcrafted = TradeoffChoice(
+  "handcrafted",
+  "One-off clicker deck (no text source)",
+  "Drag-and-drop slides edited directly in a presentation app.",
+  {clarity: 0, reliability: 5, prep: 5, reuse: -15},
+  [ProCon("Familiar tooling", "Everyone's org already knows the clicker.")],
+  [
+    ProCon(
+      "Diverges from the manual",
+      "With no markdown source, slide text rots away from the docs site.",
+    ),
+  ],
+  null,
+  "Last resort when policy forbids running anything but the corporate clicker.",
+)
+
+takeHome = TradeoffStep(
+  "take-home",
+  "Take-Home Reference",
+  [docsSite, slidePhoto, repoReadme],
+  "Stage 6 recap: where does the manual live after the webinar ends?",
+  "docs-site",
+)
+
+docsSite = TradeoffChoice(
+  "docs-site",
+  "Generated docs site permalink",
+  "MkDocs/Docusaurus page with a permanent URL pinned on the final slide.",
+  {clarity: 10, reliability: 5, prep: -5, reuse: 20},
+  [ProCon("Findability beats memorability", "Searchable, versioned, and linkable forever.")],
+  [ProCon("One more pipeline to maintain", "The docs site needs CI to stay true.")],
+  "The arc's final stage is recap + permalink; a generated docs site is what makes the permalink real.",
+)
+
+slidePhoto = TradeoffChoice(
+  "slide-photo",
+  "Photo of the final slide",
+  "Audience snaps a picture of slide 32 with their phone.",
+  {clarity: -10, reliability: 0, prep: 5, reuse: -10},
+  [ProCon("Zero effort", "Literally nothing to build.")],
+  [ProCon("Dies in camera rolls", "No search, no updates, no follow-up links.")],
+  null,
+  "Never as the only artifact — at best a complement to a permalink.",
+)
+
+repoReadme = TradeoffChoice(
+  "repo-readme",
+  "'It's in the repo README'",
+  "Point developers at the raw markdown in the Git repository.",
+  {clarity: -5, reliability: 0, prep: 10, reuse: 0},
+  [ProCon("Always current", "The source of truth is the source of truth.")],
+  [
+    ProCon(
+      "Hostile to end users and operators",
+      "Non-developers in the room cannot use a repo README.",
+    ),
+  ],
+  null,
+  "Fine as an extra pointer for the DX crowd alongside the docs site.",
+)

@@ -1,0 +1,85 @@
+root = PillarLayer(
+  "The Fidelity Ladder",
+  [lStatic, lWalkthrough, lInteractive, lSandbox],
+  [block1, block2, block3, block4, block5],
+  "How close to the real software a manual gets. Each rung up gives more realistic practice, and costs more to build and to maintain.",
+)
+
+lStatic = Layer(
+  "l-static",
+  "1 · Static Annotated Screenshots",
+  "Pictures of the screens with numbered callouts. Learners read and look; they never click.",
+)
+
+lWalkthrough = Layer(
+  "l-walkthrough",
+  "2 · Click-Through Walkthroughs",
+  "Recorded screens where the learner clicks the highlighted spot to move to the next step.",
+)
+
+lInteractive = Layer(
+  "l-interactive",
+  "3 · Interactive Simulations with Fake Data",
+  "Working screens that respond to typing and clicking, backed by synthetic data instead of a real server.",
+)
+
+lSandbox = Layer(
+  "l-sandbox",
+  "4 · Full Sandbox Environment",
+  "A separate, real instance of the software filled with fake data. Everything works, nothing counts.",
+)
+
+block1 = MatrixBlock(
+  "block-1",
+  "Realism of Practice",
+  lSandbox,
+  0,
+  2,
+  null,
+  "Rises with every rung: from looking at pictures to using the real software.",
+  "green",
+)
+
+block2 = MatrixBlock(
+  "block-2",
+  "Build & Maintenance Cost",
+  lSandbox,
+  2,
+  2,
+  null,
+  "Also rises with every rung: more moving parts to build, host and keep up to date with each release.",
+  "red",
+)
+
+block3 = MatrixBlock(
+  "block-3",
+  "Fake Data + Mock Server",
+  lInteractive,
+  0,
+  4,
+  null,
+  "Screens react to input, but every response comes from prepared synthetic data.",
+  "sky",
+)
+
+block4 = MatrixBlock(
+  "block-4",
+  "Hotspots on Recorded Screens",
+  lWalkthrough,
+  0,
+  4,
+  null,
+  "Only the expected click works; everything else on the screen is a picture.",
+  "yellow",
+)
+
+block5 = MatrixBlock(
+  "block-5",
+  "Screenshots + Callouts",
+  lStatic,
+  0,
+  4,
+  null,
+  "Cheapest to make, but learners only watch; they never practise.",
+  "mauve",
+)

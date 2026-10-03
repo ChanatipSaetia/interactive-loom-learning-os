@@ -1,0 +1,42 @@
+root = ReflectionTemplate("Synthesis Vault", [challenge1, challenge2, challenge3])
+
+challenge1 = TemplateChallenge(
+  "Complete the doctrine (Track 1):",
+  "The doctrine grants {zone-1} before day one, drives every newcomer to one {zone-2} task in week one, and reveals complexity through {zone-3}.",
+  [
+    Chip("chip-access", "day-zero access"),
+    Chip("chip-wiki", "a 40-page handbook"),
+    Chip("chip-golden", "golden-path"),
+    Chip("chip-firehose", "an information firehose"),
+    Chip("chip-disclosure", "progressive disclosure"),
+  ],
+  {"zone-1": "chip-access", "zone-2": "chip-golden", "zone-3": "chip-disclosure"},
+  "<strong>Correct!</strong> Principle 1 grants day-zero access, Principle 2 drives one golden-path task in week one, and Principle 4 reveals complexity through progressive disclosure — the handbook firehose is the anti-pattern.",
+)
+
+challenge2 = TemplateChallenge(
+  "Complete the method doctrine (Track 2):",
+  "At hundred-thousand-user scale only {zone-1} scale at near-zero marginal cost; high-risk operator roles climb best via {zone-2}; and the docs-first {zone-3} is the backbone, never the only door.",
+  [
+    Chip("chip-bootcamps", "bootcamps"),
+    Chip("chip-tours", "self-serve in-app tours"),
+    Chip("chip-buddy", "buddy apprenticeship"),
+    Chip("chip-handbook", "handbook"),
+  ],
+  {"zone-1": "chip-tours", "zone-2": "chip-buddy", "zone-3": "chip-handbook"},
+  "<strong>Correct!</strong> In-app tours carry the mass audience, apprenticeship carries the high-risk climb (watching for burnout), and the handbook is the spine everything links to — bootcamps are calendar-locked and cost-per-head.",
+)
+
+challenge3 = TemplateChallenge(
+  "Complete the measurement doctrine (Track 3):",
+  "The dashboard's north star is {zone-1}; a {zone-2} is an unanswered-documentation signal; and the provisioning flow's rework loop is nicknamed {zone-3}.",
+  [
+    Chip("chip-ttfv", "time-to-first-value"),
+    Chip("chip-pages", "pages-read count"),
+    Chip("chip-storm", "ticket storm"),
+    Chip("chip-4003", "'4003 access denied'"),
+    Chip("chip-smoke", "'Monday morning'"),
+  ],
+  {"zone-1": "chip-ttfv", "zone-2": "chip-storm", "zone-3": "chip-4003"},
+  "<strong>Correct!</strong> Time-to-first-value is the north star the whole stack feeds; ticket storms are the cohort telling you where the path broke; and the manual credential-fix loop earns its name from the day-one 4003 that exposes it. Pages-read counts are the vanity metric the realm rejects.",
+)

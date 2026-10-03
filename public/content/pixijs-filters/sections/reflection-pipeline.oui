@@ -1,0 +1,51 @@
+root = ReflectionSequence("Filter Pipeline Lifecycle Sequencing", [challenge1])
+
+challenge1 = SequenceChallenge(
+  "Arrange the chronological stages of the PixiJS Filter execution lifecycle from initial interception to framebuffer swap:",
+  [
+    seqBoundsPadding,
+    seqLeaseTarget,
+    seqRenderChildren,
+    seqBindUniforms,
+    seqExecuteQuad,
+    seqRecycleTarget,
+  ],
+  [
+    seqBoundsPadding,
+    seqLeaseTarget,
+    seqRenderChildren,
+    seqBindUniforms,
+    seqExecuteQuad,
+    seqRecycleTarget,
+  ],
+)
+
+seqBoundsPadding = SequenceItem(
+  "seq-bounds-padding",
+  "Calculate Padded Bounding Box (expand bounds by filter.padding)",
+)
+
+seqLeaseTarget = SequenceItem(
+  "seq-lease-target",
+  "Lease Temporary RenderTarget from internal RenderTarget pool",
+)
+
+seqRenderChildren = SequenceItem(
+  "seq-render-children",
+  "Render Container Child Hierarchy into the offscreen RenderTarget",
+)
+
+seqBindUniforms = SequenceItem(
+  "seq-bind-uniforms",
+  "Compute uFilterMatrix and bind Shader Uniforms & Samplers",
+)
+
+seqExecuteQuad = SequenceItem(
+  "seq-execute-quad",
+  "Execute Fragment Shader over full-screen Quad onto destination buffer",
+)
+
+seqRecycleTarget = SequenceItem(
+  "seq-recycle-target",
+  "Recycle temporary RenderTargets back to pool for future frames",
+)

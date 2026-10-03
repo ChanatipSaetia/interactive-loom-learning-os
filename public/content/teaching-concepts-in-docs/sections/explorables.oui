@@ -1,0 +1,56 @@
+root = TaxonomyBrowser(
+  "Kinds of Interactive Explanation",
+  [explorableExplanations, conceptSimulator, clickableFlowDiagram, whatIfScenario],
+)
+
+explorableExplanations = TaxonomyCategory(
+  "Explorable Explanations",
+  "Change the inputs, watch the idea respond",
+  "SlidersHorizontal",
+  "mauve",
+  "Explorable explanations (a term popularised by Bret Victor) let readers change inputs and watch the idea respond, instead of only reading about it.",
+  "Instead of 'storage cost depends on file count and retention period', give readers two sliders and let them see the cost change. Readers discover the relationship by playing with it. Bret Victor's 2011 essay 'Explorable Explanations' popularised the idea of text that you can play with.",
+  "A mixing desk instead of a recording: turn a knob, hear the difference.",
+  "Discovering relationships by playing",
+  ["Sliders, toggles, live numbers inside the explanation"],
+  ["Full working copies of the product"],
+)
+
+conceptSimulator = TaxonomyCategory(
+  "Concept Simulator",
+  "One idea, isolated",
+  "FlaskConical",
+  "sky",
+  "A concept simulator isolates one idea, such as a permission simulator where you move a user between groups and see what they can access.",
+  "Unlike a full training sandbox, a concept simulator strips away everything except the one idea. Drag Anna into the Sales workspace and watch five project icons light up; move her to a single project and only one lights up. The user builds the mental model by manipulating it directly.",
+  "A wind tunnel: one model plane, one force, nothing else.",
+  "Building a mental model by direct manipulation",
+  ["Permission, pricing, routing or scheduling rules", "Instant visual feedback"],
+  ["Practising full task steps (see Interactive User Manuals)"],
+)
+
+clickableFlowDiagram = TaxonomyCategory(
+  "Clickable Flow Diagram",
+  "Step through a process",
+  "Workflow",
+  "teal",
+  "A clickable flow diagram lets users step through a process (an approval route) one stage at a time.",
+  "An approval route drawn as a static diagram shows every box at once. A clickable version reveals one stage at a time: 'Claim submitted → manager approves → over 5,000 baht? → Finance approves → paid', with each stage explaining who acts and what they see. Users follow the idea at their own pace and can go back.",
+  "A guided museum tour rather than the whole floor plan at once.",
+  "Following a process at your own pace",
+  ["Approval routes, ticket lifecycles, data flows"],
+  ["Ideas that aren't sequences"],
+)
+
+whatIfScenario = TaxonomyCategory(
+  "What-If Scenario",
+  "Decide, then see the consequence",
+  "GitBranch",
+  "peach",
+  "A what-if scenario asks users to make a decision in a realistic situation and shows the consequence, testing understanding rather than recall.",
+  "'A contractor needs to see one project, just for a week. What do you do?' Each choice leads to a consequence: added to the workspace, the contractor sees all five projects. Because the situation is new, users can't answer from memorised steps; they must use the concept. It both teaches and checks understanding.",
+  "A choose-your-own-adventure book where the wrong path teaches the lesson.",
+  "Applying the concept to a new case",
+  ["Realistic decisions with consequences"],
+  ["Questions answerable by recall alone"],
+)

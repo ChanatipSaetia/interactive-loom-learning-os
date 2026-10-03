@@ -106,7 +106,7 @@ unpredictabilityCuriosity = TaxonomyCategory(
   "Unpredictability & Curiosity",
   "Core Drive 7 — Black Hat",
   "Dice5",
-  "rose",
+  "red",
   "The drive to satisfy curiosity and enjoy the unknown — variable rewards, surprise bonuses, and open loops that make people want to know what happens next.",
   "Randomize reward magnitude (variable-ratio reinforcement) and use narrative open loops. This is the strongest short-term hook — but overuse creates a slot-machine dynamic that users eventually resent.",
   "Like opening a loot crate and not knowing what is inside.",

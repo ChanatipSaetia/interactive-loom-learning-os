@@ -1,0 +1,61 @@
+root = TaxonomyBrowser(
+  "Style Guides & Tools",
+  [
+    microsoftWritingStyleGuide,
+    googleDeveloperDocumentationStyleGuide,
+    houseStyleGuide,
+    valeProseLinter,
+  ],
+)
+
+microsoftWritingStyleGuide = TaxonomyCategory(
+  "Microsoft Writing Style Guide",
+  "Free public guide for software docs",
+  "BookOpen",
+  "blue",
+  "The Microsoft Writing Style Guide is a free public guide covering voice, UI text and terms for software docs.",
+  "It covers voice and tone, how to describe UI elements and interactions, grammar, punctuation and a large A–Z word list of software terms. It is a natural base for end-user manuals of web apps, and it's where the 'select' recommendation comes from.",
+  "A big, well-thumbed dictionary for the whole office.",
+  "End-user software writing",
+  ["Voice, UI text, grammar, word list"],
+  ["Your own product names and decisions (house style)"],
+)
+
+googleDeveloperDocumentationStyleGuide = TaxonomyCategory(
+  "Google Developer Documentation Style Guide",
+  "Free public guide for developer docs",
+  "Code",
+  "green",
+  "The Google developer documentation style guide is a free public guide focused on developer and technical docs.",
+  "It covers tone, formatting of code, commands and UI elements, procedures, API reference and a word list. It suits developer-facing documentation, such as APIs, SDKs and admin or integration guides for a web app.",
+  "The engineering handbook on the shelf next to the dictionary.",
+  "Developer and technical writing",
+  ["Code, commands, procedures, API reference"],
+  ["Your own product names and decisions (house style)"],
+)
+
+houseStyleGuide = TaxonomyCategory(
+  "House Style Guide",
+  "Only your own decisions",
+  "House",
+  "peach",
+  "A house style guide records only your own decisions (product names, terms, tone) and defers everything else to one public guide.",
+  "Don't write a 50-page style guide from scratch. Say 'we follow the Microsoft Writing Style Guide, except:' and list your own decisions: product and feature names, the one term per concept ('workspace', never 'project'), your verbs ('select'), tone, and Thai/English choices. Short enough that people actually read it.",
+  "House rules on the fridge; the law of the land covers the rest.",
+  "Recording your team's choices",
+  ["Product names and terminology list", "Exceptions to the public guide"],
+  ["Re-writing rules the public guide already covers"],
+)
+
+valeProseLinter = TaxonomyCategory(
+  "Vale Prose Linter",
+  "Style rules checked automatically",
+  "ShieldCheck",
+  "teal",
+  "Vale is a prose linter that checks docs against style rules, including packages for the Microsoft and Google guides, and can run in CI.",
+  "Vale reads your Markdown and flags passive voice, banned words, wrong product names, overly long sentences and more, based on rule packages such as Microsoft and Google plus your own house-style rules. Run it in the editor while writing and in CI on every pull request, so reviewers can focus on meaning instead of commas.",
+  "A spell-checker that has read your style guide.",
+  "Enforcing style without nagging humans",
+  ["Microsoft and Google rule packages", "Custom rules for your terms", "Editor and CI checks"],
+  ["Checking whether the steps are correct (that needs a person)"],
+)

@@ -1,0 +1,52 @@
+root = Quiz("Knowledge Check", [q1, q2])
+
+q1 = QuizQuestion(
+  "q1",
+  "A logged-in dashboard is different for every user. Which directive stops a CDN from storing it while still letting the browser cache it?",
+  [
+    QuizChoice(
+      "a",
+      "private",
+      true,
+      "Correct. private allows only the user's own browser cache to store the response.",
+    ),
+    QuizChoice(
+      "b",
+      "max-age",
+      false,
+      "max-age sets a freshness lifetime but does not stop shared caches from storing it.",
+    ),
+    QuizChoice(
+      "c",
+      "no-store",
+      false,
+      "no-store forbids every cache, including the browser, from keeping a copy.",
+    ),
+  ],
+  "Think about shared vs private caches.",
+)
+
+q2 = QuizQuestion(
+  "q2",
+  "Your HTML changes often, but you want cheap 304 replies. Which directive fits?",
+  [
+    QuizChoice(
+      "a",
+      "no-store",
+      false,
+      "no-store prevents storage entirely, so there is nothing to revalidate.",
+    ),
+    QuizChoice(
+      "b",
+      "no-cache",
+      true,
+      "Correct. no-cache stores the response but revalidates before every reuse.",
+    ),
+    QuizChoice(
+      "c",
+      "max-age",
+      false,
+      "A long max-age would serve stale HTML without checking the server.",
+    ),
+  ],
+)

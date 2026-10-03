@@ -4,6 +4,8 @@ export interface ReflectionAnswered {
   challengeId: string
   /** Index of the challenge within the sequence or template. */
   challengeIndex: number
+  /** Total number of steps / slots in this challenge. */
+  stepCount?: number
   /** Whether the answer was correct. */
   isCorrect: boolean
   /** Timestamp of the answer. */

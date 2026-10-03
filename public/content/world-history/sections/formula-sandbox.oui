@@ -1,0 +1,68 @@
+root = FormulaSandbox(
+  "แบบจำลองดุลอำนาจและเสถียรภาพยุคสงครามเย็น",
+  [
+    FormulaVariable(
+      "nuclear_arsenal",
+      "แสนยานุภาพนิวเคลียร์และขีปนาวุธ (Nuclear Arsenal Index)",
+      10,
+      100,
+      5,
+      80,
+    ),
+    FormulaVariable(
+      "diplomatic_hotline",
+      "ช่องทางการทูตและสายด่วน (Diplomatic Hotline Channels)",
+      0,
+      100,
+      5,
+      65,
+    ),
+    FormulaVariable(
+      "proxy_war_intensity",
+      "ระดับการแทรกแซงสงครามตัวแทน (Proxy War Intensity)",
+      0,
+      100,
+      5,
+      45,
+    ),
+    FormulaVariable(
+      "economic_interdependence",
+      "ความเชื่อมโยงทางการค้าและเศรษฐกิจ (Economic Interdependence)",
+      0,
+      100,
+      5,
+      25,
+    ),
+  ],
+  [deterrenceStability, crisisEscalationRisk, geopoliticalInfluence],
+)
+
+deterrenceStability = FormulaMetric(
+  "deterrence_stability",
+  "เสถียรภาพการป้องปราม (Deterrence Stability)",
+  "Math.round(Math.min(100, (nuclear_arsenal * 0.45) + (diplomatic_hotline * 0.4) + (economic_interdependence * 0.25) - (proxy_war_intensity * 0.2)))",
+  "ระดับความสมดุลของการป้องปรามการทำลายล้างร่วมกัน (Mutually Assured Destruction - MAD) ที่ป้องกันสงครามโลกครั้งที่ 3",
+  "เหมือนนักสู้สองคนที่มีปืนจ่อหัวกัน หากมีสายด่วนคุยกันได้และมีผลประโยชน์ร่วมกัน โอกาสลั่นไกจะลดลง",
+  ["การป้องปรามนิวเคลียร์สองขั้วอำนาจ", "การรักษาสายด่วนฮอตไลน์หลังวิกฤตการณ์คิวบา"],
+  ["ยุทธวิธีการรบระดับกองพันในสมรภูมิย่อย"],
+)
+
+crisisEscalationRisk = FormulaMetric(
+  "crisis_escalation_risk",
+  "ความเสี่ยงการลุกลามสู่วิกฤตนิวเคลียร์ (Nuclear Escalation Risk)",
+  "Math.round(Math.max(0, Math.min(100, (proxy_war_intensity * 0.6) + (nuclear_arsenal * 0.3) - (diplomatic_hotline * 0.5) - (economic_interdependence * 0.2))))",
+  "ดัชนีโอกาสที่ความขัดแย้งในสงครามตัวแทนจะลุกลามสู่สงครามนิวเคลียร์ล้างโลก",
+  "เหมือนประกายไฟในห้องเก็บวัตถุไวไฟ หากไม่มีระบบดับเพลิงทางการทูต ประกายไฟเล็กๆ อาจระเบิดทั้งอาคาร",
+  ["วิกฤตการณ์ขีปนาวุธคิวบา 1962", "สงครามตัวแทนในเอเชียและแอฟริกา"],
+  ["ภัยคุกคามทางไซเบอร์ในศตวรรษที่ 21"],
+)
+
+geopoliticalInfluence = FormulaMetric(
+  "geopolitical_influence",
+  "อิทธิพลทางภูมิรัฐศาสตร์ (Geopolitical Influence Score)",
+  "Math.round((nuclear_arsenal * 0.35) + (proxy_war_intensity * 0.3) + (diplomatic_hotline * 0.2) + (economic_interdependence * 0.35))",
+  "ขีดความสามารถในการแผ่ขยายอุดมการณ์ พันธมิตร และอำนาจนำในเวทีระหว่างประเทศ",
+  "อำนาจดึงดูดของแรงโน้มถ่วง ยิ่งมีมวลแสนยานุภาพและเครือข่ายเศรษฐกิจมาก ดาวบริวารก็ยิ่งโคจรรอบมาก",
+  ["การแข่งขันขยายค่ายเสรีนิยม vs ค่ายคอมมิวนิสต์", "การแข่งขันทางอวกาศและเทคโนโลยี"],
+  ["การคว่ำบาตรทางเศรษฐกิจในตลาดคริปโตเคอร์เรนซี"],
+)

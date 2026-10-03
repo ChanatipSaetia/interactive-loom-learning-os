@@ -1,0 +1,113 @@
+root = Intro(
+  "Onboarding Craft for IT Systems, Web Apps & Developer Experience",
+  what,
+  why,
+  [
+    RoadmapStep(
+      "Audience Map",
+      "taxonomy-browser",
+      "Compare the three onboarding audiences — Web App end users, internal staff & operators, and developers — and what a good first week looks like for each.",
+      "audience-map",
+    ),
+    RoadmapStep(
+      "The Six Onboarding Principles",
+      "bullets",
+      "The canonical doctrine: access first, first value week one, one golden path, progressive disclosure, human anchor, measure the friction.",
+      "principles",
+    ),
+    RoadmapStep(
+      "Trial of the Doctrine",
+      "quiz",
+      "Combat trial testing the three audience archetypes and the six onboarding principles.",
+      "quiz-principles",
+    ),
+    RoadmapStep(
+      "Sequencing the First Week",
+      "reflection-sequence",
+      "Timed reordering challenge: assemble the six onboarding principles in their correct order of operation.",
+      "reflection-journey",
+    ),
+    RoadmapStep(
+      "The Five Onboarding Methods",
+      "taxonomy-browser",
+      "Docs-first handbooks, buddy apprenticeship, cohort academies, in-app tours, and sandbox quests — each with its pros and cons.",
+      "methods",
+    ),
+    RoadmapStep(
+      "Trial of the Method Choice",
+      "quiz",
+      "Combat trial testing which onboarding method fits which situation, given its pros and cons.",
+      "quiz-methods",
+    ),
+    RoadmapStep(
+      "Onboarding Program Trade-off Workshop",
+      "tradeoff-sandbox",
+      "Forge an onboarding loadout for 40 mixed newcomers: pick access policy, training method, and support channel while balancing speed, consistency, cost, and retention.",
+      "method-loadout",
+    ),
+    RoadmapStep(
+      "Onboarding Method Advisor",
+      "decision-tree",
+      "Diagnostic advisor: answer questions about audience, headcount, and risk, get a tailored onboarding method recommendation.",
+      "method-advisor",
+    ),
+    RoadmapStep(
+      "The Time-to-Value Dashboard Stack",
+      "pillar-layer",
+      "Lego-stack view of onboarding measurement: instrumentation, friction diagnostics, leading indicators, and the north-star time-to-first-value.",
+      "ttv-dashboard",
+    ),
+    RoadmapStep(
+      "Day-1 Access Provisioning Flow",
+      "flowchart",
+      "Event Storming walkthrough: request → SSO provisioning → golden-path access check → day-one smoke test (or 4003 error rework).",
+      "provision-flow",
+    ),
+    RoadmapStep(
+      "Scenario: Monday Without a Path",
+      "scenario",
+      "Branching narrative: 40 newcomers land on Monday and the wiki is on fire. Your onboarding decisions are graded.",
+      "scenario-firstday",
+    ),
+    RoadmapStep(
+      "Lexicon of the Threshold",
+      "flashcards",
+      "Key vocabulary: time-to-first-value, golden path, pre-boarding, activation moment, ticket storm, sandbox quest.",
+      "glossary",
+    ),
+    RoadmapStep(
+      "Concept Constellation",
+      "concept-map",
+      "Force-directed map of how audiences, principles, methods, and measurement connect.",
+      "concept-map",
+    ),
+    RoadmapStep(
+      "Synthesis Vault",
+      "reflection-template",
+      "Fill-in-the-blank synthesis across all three tracks — the final ritual before the Boss Lair.",
+      "synthesis",
+    ),
+  ],
+  "Get newcomers to their first real win fast — with the right onboarding method for the right audience",
+  "40 min",
+  15,
+)
+
+what = IntroWhat(
+  "Most onboarding fails the same way: a firehose of documentation, a pile of passwords, and a week of 'ping me if you're stuck'. This realm teaches the opposite discipline — grant access before day one, drive every newcomer to one golden-path task that produces real value in the first week, reveal complexity progressively, and measure the friction instead of guessing. Then pick the method that fits the audience: docs-first handbooks, buddy apprenticeship, cohort academies, self-serve in-app tours, or sandbox quests.",
+  "Onboarding is the engineered path from 'a stranger is granted a account, a seat, or an API key' to 'this person has delivered something real without asking for help'. For an IT system that means staff and operators; for a Web App it means end users; for Developer Experience it means integrators building on your platform.",
+  [
+    "Access First: credentials, licenses, and environments are ready on day zero — waiting for access is the number-one onboarding killer",
+    "Time-to-First-Value: the only week-one metric that matters is how fast a newcomer completes one real, meaningful task",
+    "One Golden Path: a single canonical end-to-end journey beats a feature tour of every button",
+    "Progressive Disclosure: teach the next step only when the newcomer needs it — information firehoses create quit-points",
+    "Human Anchor: every method, even fully self-serve ones, needs a named human or office hours to land questions on",
+    "Measure the Friction: day-1 login success, golden-path completion, and ticket storms tell you where onboarding breaks",
+  ],
+  ["Onboarding", "Developer Experience", "User Activation", "IT Operations", "Enablement"],
+)
+
+why = IntroWhy(
+  "Bad onboarding is invisible until it shows up as a support queue full of 'how do I…' tickets, developers who quietly abandon your API after an afternoon of setup, and new staff who spend a month afraid to touch production. Onboarding is the highest-leverage moment in the whole lifecycle: attention is high, habits are unformed, and everything you teach sticks.",
+  "Teams that pre-provision access and script a golden-path first task cut time-to-first-value from weeks to hours, slash newcomer support tickets, and dramatically improve both user activation and developer retention. Every onboarding method trades cost, consistency, and speed differently — choosing deliberately instead of defaulting to 'read the wiki' is the whole game.",
+)

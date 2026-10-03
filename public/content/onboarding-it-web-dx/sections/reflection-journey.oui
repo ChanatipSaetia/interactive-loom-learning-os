@@ -1,0 +1,37 @@
+root = ReflectionSequence("Sequencing the First Week", [challenge1])
+
+challenge1 = SequenceChallenge(
+  "Assemble the six onboarding principles in their correct order of operation:",
+  [dragMeasure, dragAccess, dragAnchor, dragValue, dragDisclosure, dragGolden],
+  [dragAccess, dragValue, dragGolden, dragDisclosure, dragAnchor, dragMeasure],
+)
+
+dragMeasure = SequenceItem(
+  "drag-measure",
+  "Measure the friction: instrument the path and fix the biggest quit-point",
+)
+
+dragAccess = SequenceItem(
+  "drag-access",
+  "Access first: credentials and environments ready before day one",
+)
+
+dragAnchor = SequenceItem(
+  "drag-anchor",
+  "Human anchor: every path ends at a named human or office hours",
+)
+
+dragValue = SequenceItem(
+  "drag-value",
+  "First value in week one: drive one meaningful completed task",
+)
+
+dragDisclosure = SequenceItem(
+  "drag-disclosure",
+  "Progressive disclosure: reveal complexity only when it is needed",
+)
+
+dragGolden = SequenceItem(
+  "drag-golden",
+  "One golden path: a single canonical journey beats a feature tour",
+)

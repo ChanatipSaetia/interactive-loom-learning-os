@@ -1,0 +1,180 @@
+root = Flowchart(
+  "ผังกระบวนการย่างสเต๊กแบบ Reverse Sear",
+  [pitmaster],
+  [firebox, deflectorUnit, meatProbe, searingGrate, restingBoard],
+  [
+    stepIgnite,
+    stepIndirectSetup,
+    stepInsertProbe,
+    stepReachInternal,
+    stepCastIronSear,
+    stepRestAndServe,
+  ],
+  [journeyReverseSear],
+)
+
+pitmaster = Actor(
+  "pitmaster",
+  "ผู้ย่างสเต๊ก (Pitmaster)",
+  "ผู้ควบคุมกระบวนการย่าง การเตรียมเนื้อ และการปรุงรส",
+)
+
+firebox = System(
+  "firebox",
+  "กล่องเผาไหม้และกองถ่าน (Firebox)",
+  "ระบบสร้างพลังงานความร้อนจากถ่านไม้ธรรมชาติ",
+  "aggregate",
+)
+
+deflectorUnit = System(
+  "deflector_unit",
+  "ระบบควบคุมลมและแผ่นหิน (Deflector & Vents)",
+  "ควบคุมอุณหภูมิ Convection และการไหลเวียนของออกซิเจน",
+  "aggregate",
+)
+
+meatProbe = System(
+  "meat_probe",
+  "โพรบวัดอุณหภูมิเนื้อ (Meat Probe System)",
+  "ระบบดิจิทัลอ่านค่าอุณหภูมิแกนกลางเนื้อแบบเรียลไทม์",
+  "external",
+)
+
+searingGrate = System(
+  "searing_grate",
+  "ตะแกรงเหล็กหล่อสะสมความร้อน (Cast Iron Grate)",
+  "ตัวนำความร้อนสัมผัสสูงสำหรับสร้าง Maillard Crust",
+  "aggregate",
+)
+
+restingBoard = System(
+  "resting_board",
+  "เขียงและอุปกรณ์พักเนื้อ (Resting & Carving Station)",
+  "สถานีปรับสมดุลความดันของเหลวในเนื้อและสไลซ์พร้อมเสิร์ฟ",
+  "aggregate",
+)
+
+stepIgnite = Step(
+  "step_ignite",
+  "เริ่มขั้นตอนวอร์มเตา (Warm Up)",
+  "จุดถ่านไม้ก้อนธรรมชาติ",
+  firebox,
+  [Event("evt_coals_lit", "ถ่านติดไฟพร้อมใช้งาน", "ถ่านคุแดงเริ่มปล่อยความร้อน")],
+  pitmaster,
+  null,
+  "step_indirect_setup",
+)
+
+stepIndirectSetup = Step(
+  "step_indirect_setup",
+  "จัดระบบความร้อนทางอ้อม (Setup Indirect)",
+  "ใส่แผ่น Deflector และหรี่วาล์วลม 110°C",
+  deflectorUnit,
+  [Event("evt_temp_stabilized", "อุณหภูมิเตาคงที่ 110°C", "ความร้อน Convection ไหลเวียนทั่วถึง")],
+  null,
+  null,
+  "step_insert_probe",
+)
+
+stepInsertProbe = Step(
+  "step_insert_probe",
+  "ติดตามความสุกของแกนกลางเนื้อ (Monitor Core Temp)",
+  "เสียบโพรบและวางเนื้อลงอบ",
+  meatProbe,
+  [
+    Event(
+      "evt_probe_reading",
+      "อ่านค่าอุณหภูมิแกนกลางต่อเนื่อง",
+      "ความร้อนซึมเข้าสู่ใจกลางเนื้ออย่างนุ่มนวล",
+    ),
+  ],
+  null,
+  null,
+  "step_reach_internal",
+)
+
+stepReachInternal = Step(
+  "step_reach_internal",
+  "เมื่อแกนกลางถึง 48°C สั่งเร่งไฟ (Trigger High Sear)",
+  "นำเนื้อออกพักชั่วคราวและเปิดวาล์วเร่งไฟ 350°C",
+  deflectorUnit,
+  [Event("evt_sear_ready", "เตาร้อนจัด 350°C พร้อม Sear", "ตะแกรงเหล็กหล่อสะสมความร้อนเต็มที่")],
+  null,
+  null,
+  "step_cast_iron_sear",
+)
+
+stepCastIronSear = Step(
+  "step_cast_iron_sear",
+  "สร้างปฏิกิริยาเมลลาร์ด (Maillard Reaction)",
+  "วางเนื้อ Sear บนตะแกรงเหล็กหล่อด้านละ 60 วินาที",
+  searingGrate,
+  [
+    Event(
+      "evt_crust_formed",
+      "ได้ Crust สีน้ำตาลทองกรอบหอม",
+      "ผิวนอกเกรียมหอมโดยเนื้อในยังคงนุ่มสีชมพู",
+    ),
+  ],
+  null,
+  null,
+  "step_rest_and_serve",
+)
+
+stepRestAndServe = Step(
+  "step_rest_and_serve",
+  "ปรับสมดุลของเหลวในเนื้อ (Equilibrate Juices)",
+  "พักเนื้อ 8 นาทีและสไลซ์พร้อมเสิร์ฟ",
+  restingBoard,
+  [
+    Event(
+      "evt_steak_served",
+      "สเต๊กสมบูรณ์แบบพร้อมรับประทาน",
+      "เนื้อชุ่มฉ่ำไร้ขอบเทาสุกระดับ Medium Rare",
+    ),
+  ],
+)
+
+journeyReverseSear = Journey(
+  "journey_reverse_sear",
+  "เส้นทางการทำ Reverse Sear สเต๊กเนื้อพรีเมียม (Happy Path)",
+  "ขั้นตอนตั้งแต่การจุดเตา อบไฟอ่อนทางอ้อม ไปจนถึงการ Sear เปลวไฟแรงสูงและการพักเนื้อ",
+  [
+    JourneyStep(
+      stepIgnite,
+      "จุดถ่านไม้ธรรมชาติ",
+      "จุดถ่านไม้ธรรมชาติให้คุแดงสม่ำเสมอใน Firebox",
+      "ignition",
+    ),
+    JourneyStep(
+      stepIndirectSetup,
+      "ติดตั้ง Heat Deflector",
+      "ติดตั้งแผ่น Heat Deflector และปรับวาล์วเพื่อคุมอุณหภูมิคงที่ 110°C",
+      "indirect_bake",
+    ),
+    JourneyStep(
+      stepInsertProbe,
+      "เสียบโพรบและเริ่มอบ",
+      "เสียบโพรบดิจิทัลเพื่อเฝ้าดูอุณหภูมิแกนกลางเนื้อวัว",
+      "indirect_bake",
+    ),
+    JourneyStep(
+      stepReachInternal,
+      "เร่งไฟ 350°C",
+      "ยกเนื้อออกมาพัก ถอดแผ่น Deflector และเปิดวาล์วเร่งไฟ 350°C",
+      "sear_prep",
+    ),
+    JourneyStep(
+      stepCastIronSear,
+      "Sear บนตะแกรงเหล็กหล่อ",
+      "Sear เนื้อบนตะแกรงเหล็กหล่อด้านละ 60 วินาทีเพื่อเกิดปฏิกิริยา Maillard",
+      "searing",
+    ),
+    JourneyStep(
+      stepRestAndServe,
+      "พักเนื้อและจัดเสิร์ฟ",
+      "พักเนื้อ 8 นาทีเพื่อให้น้ำในเนื้อกระจายตัวทั่วถึงก่อนหั่นเสิร์ฟ",
+      "serving",
+    ),
+  ],
+)

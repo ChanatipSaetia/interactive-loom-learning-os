@@ -77,7 +77,7 @@ tabs = Tabs([
 category = TaxonomyCategory(
   "Category",
   "Short subtitle",
-  "🧭",
+  "Compass",
   "blue",
   "What this category covers.",
   "More detail.",

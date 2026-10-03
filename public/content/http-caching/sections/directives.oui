@@ -1,0 +1,53 @@
+root = TaxonomyBrowser("Cache-Control Directives", [maxAge, noCache, noStore, private])
+
+maxAge = TaxonomyCategory(
+  "max-age",
+  "Fresh for N seconds",
+  "Timer",
+  "green",
+  "The response may be reused without contacting the server until it is N seconds old.",
+  "Use long max-age values for fingerprinted static assets such as app.3f9a.js.",
+  "Like milk with a best-before date.",
+  "Freshness lifetime",
+  ["Static assets with hashed filenames"],
+  ["Per-user responses"],
+)
+
+noCache = TaxonomyCategory(
+  "no-cache",
+  "Store, but revalidate first",
+  "RefreshCw",
+  "yellow",
+  "Caches may store the response but must check with the server before every reuse.",
+  "Good for HTML documents that change often but benefit from cheap 304 Not Modified replies.",
+  "Like calling ahead to confirm a reservation before driving over.",
+  "Always revalidate",
+  ["HTML entry pages"],
+  ["Secrets that must never touch disk"],
+)
+
+noStore = TaxonomyCategory(
+  "no-store",
+  "Never keep a copy",
+  "ShieldOff",
+  "red",
+  "No cache may store any part of the response.",
+  "Use for banking pages and other sensitive data.",
+  "Like a shredder: read it once, then it is gone.",
+  "Zero persistence",
+  ["Sensitive personal data"],
+  ["Public static assets"],
+)
+
+private = TaxonomyCategory(
+  "private",
+  "Browser only, not CDNs",
+  "Lock",
+  "mauve",
+  "Only the user's own browser cache may store the response; shared caches such as CDNs must not.",
+  "Use for personalized pages like a logged-in dashboard.",
+  "Like a diary: you may keep it, the library may not.",
+  "Private cache only",
+  ["Per-user responses"],
+  ["Content identical for every user"],
+)

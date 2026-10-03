@@ -1,0 +1,257 @@
+root = Flowchart(
+  "Filter Execution & Render Pipeline",
+  [renderTicker],
+  [filterSystem, targetPool, displayContainer, shaderProgram, gpuDriver],
+  [
+    stepInitFilter,
+    stepAcquireTarget,
+    stepRenderChildren,
+    stepBindShader,
+    stepBranchPass,
+    stepRecycleTargets,
+  ],
+  [journeySinglePass, journeyMultiPass],
+)
+
+renderTicker = Actor(
+  "render_ticker",
+  "Render Loop Ticker",
+  "Application animation ticker invoking renderer.render(stage)",
+)
+
+filterSystem = System(
+  "filter_system",
+  "FilterSystem",
+  "Coordinates filter stack, calculates bounding box with padding, and manages passes",
+  "aggregate",
+)
+
+targetPool = System(
+  "target_pool",
+  "RenderTarget Pool",
+  "Allocates and recycles temporary offscreen WebGL framebuffers",
+  "aggregate",
+)
+
+displayContainer = System(
+  "display_container",
+  "Display Container",
+  "Node holding child display objects and the attached filters array",
+  "aggregate",
+)
+
+shaderProgram = System(
+  "shader_program",
+  "GLSL Shader Program",
+  "Compiles and executes vertex/fragment shaders with uniform matrices",
+  "aggregate",
+)
+
+gpuDriver = System(
+  "gpu_driver",
+  "WebGL / WebGPU Driver",
+  "Hardware graphics pipeline drawing screen-space quads into framebuffers",
+  "external",
+)
+
+stepInitFilter = Step(
+  "step_init_filter",
+  "When Filtered Container Encountered In Scene Graph",
+  "Calculate Padded Bounding Box & Push Filter State",
+  filterSystem,
+  [
+    Event(
+      "evt_bounds_calculated",
+      "Padded Bounding Box Computed",
+      "Bounding rect expanded with filter.padding margin",
+    ),
+  ],
+  renderTicker,
+  null,
+  "step_acquire_target",
+  "FilterSystem intercepts rendering and computes offscreen canvas dimensions",
+)
+
+stepAcquireTarget = Step(
+  "step_acquire_target",
+  "When Padded Dimensions Known",
+  "Lease Temporary Offscreen Framebuffer",
+  targetPool,
+  [
+    Event(
+      "evt_target_acquired",
+      "RenderTarget Leased From Pool",
+      "Clean offscreen texture allocated without VRAM churn",
+    ),
+  ],
+  null,
+  null,
+  "step_render_children",
+  "Leases pre-allocated RenderTarget matching padded dimensions",
+)
+
+stepRenderChildren = Step(
+  "step_render_children",
+  "When Offscreen Target Bound",
+  "Render Child Display Tree Into Offscreen Target",
+  displayContainer,
+  [
+    Event(
+      "evt_children_rendered",
+      "Child Hierarchy Rendered Offscreen",
+      "Sprites and geometry drawn into offscreen texture buffer",
+    ),
+  ],
+  null,
+  null,
+  "step_bind_shader",
+  "Container renders all children into the leased RenderTarget",
+)
+
+stepBindShader = Step(
+  "step_bind_shader",
+  "When Offscreen Texture Complete",
+  "Upload Uniforms, Textures, & uFilterMatrix",
+  shaderProgram,
+  [
+    Event(
+      "evt_shader_ready",
+      "Shader Program & Uniforms Configured",
+      "Vertex/fragment uniforms, samplers, and matrices bound to GPU",
+    ),
+  ],
+  null,
+  null,
+  "step_branch_pass",
+  "Prepares shader program with matrix mapping and uniform values",
+)
+
+stepBranchPass = Branch(
+  "step_branch_pass",
+  "evt_shader_ready",
+  [
+    BranchOption(
+      "branch_single_pass",
+      "Single-Pass Effect",
+      "If Filter Has Single Shader Pass",
+      "Execute Fragment Quad Directly To Destination Framebuffer",
+      gpuDriver,
+      [
+        Event(
+          "evt_single_pass_completed",
+          "Single-Pass Filter Rendered",
+          "Output composited to target buffer in one GPU draw call",
+        ),
+      ],
+    ),
+    BranchOption(
+      "branch_multi_pass",
+      "Multi-Pass Convolution",
+      "If Filter Has Multiple Sequential Passes",
+      "Execute Ping-Pong Convolution Intermediate Passes",
+      gpuDriver,
+      [
+        Event(
+          "evt_multi_pass_completed",
+          "Multi-Pass Ping-Pong Completed",
+          "Sequential convolution passes combined into final output",
+        ),
+      ],
+      true,
+    ),
+  ],
+)
+
+stepRecycleTargets = Step(
+  "step_recycle_targets",
+  "When Filter Execution Finishes",
+  "Return Temporary Framebuffers Back To Pool",
+  targetPool,
+  [
+    Event(
+      "evt_targets_recycled",
+      "RenderTargets Recycled To Pool",
+      "Offscreen textures released for next frame without memory leaks",
+    ),
+  ],
+  null,
+  null,
+  null,
+  "FilterSystem cleans up and returns all leased buffers",
+)
+
+journeySinglePass = Journey(
+  "journey_single_pass",
+  "Single-Pass Shader Execution",
+  "Standard execution path for single-pass filters like ColorMatrixFilter or AlphaFilter.",
+  [
+    JourneyStep(
+      stepInitFilter,
+      "1. Filter Interception & Padding",
+      "FilterSystem computes padded bounds around the container.",
+      "planning",
+    ),
+    JourneyStep(
+      stepAcquireTarget,
+      "2. Pool Allocation",
+      "Leases temporary RenderTarget from internal pool.",
+      "execution",
+    ),
+    JourneyStep(
+      stepRenderChildren,
+      "3. Offscreen Draw",
+      "Container renders child sprites into offscreen target.",
+      "execution",
+    ),
+    JourneyStep(
+      stepBindShader,
+      "4. Uniform Binding",
+      "Shader program uploads uFilterMatrix and uniforms.",
+      "execution",
+    ),
+    JourneyStep(
+      stepRecycleTargets,
+      "5. Texture Recycling",
+      "Returns leased framebuffers back to pool.",
+      "evaluation",
+    ),
+  ],
+)
+
+journeyMultiPass = Journey(
+  "journey_multi_pass",
+  "Multi-Pass Ping-Pong Convolution",
+  "Execution lifecycle for multi-pass filters like separable Gaussian blur or Kawase blur.",
+  [
+    JourneyStep(
+      stepInitFilter,
+      "1. Padded Bounds",
+      "Calculates expanded bounding box for blur halo.",
+      "planning",
+    ),
+    JourneyStep(
+      stepAcquireTarget,
+      "2. Ping-Pong Targets",
+      "Leases pair of RenderTargets for intermediate passes.",
+      "execution",
+    ),
+    JourneyStep(
+      stepRenderChildren,
+      "3. Offscreen Capture",
+      "Renders unblurred source into first target.",
+      "execution",
+    ),
+    JourneyStep(
+      stepBindShader,
+      "4. Multi-Pass Shader",
+      "Executes horizontal and vertical passes across ping-pong buffers.",
+      "execution",
+    ),
+    JourneyStep(
+      stepRecycleTargets,
+      "5. Pool Cleanup",
+      "Recycles intermediate buffers back to pool.",
+      "evaluation",
+    ),
+  ],
+)

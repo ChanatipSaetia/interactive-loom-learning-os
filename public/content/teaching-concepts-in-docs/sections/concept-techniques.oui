@@ -1,0 +1,75 @@
+root = TaxonomyBrowser(
+  "Explaining Techniques",
+  [
+    analogyWithItsLimits,
+    concreteBeforeAbstract,
+    refutationFixTheMisconception,
+    nonExamples,
+    dualCodingWordsDiagram,
+  ],
+)
+
+analogyWithItsLimits = TaxonomyCategory(
+  "Analogy (with Its Limits)",
+  "New idea ← familiar idea",
+  "Link",
+  "mauve",
+  "An analogy links a new idea to one the user already knows (a workspace is like a shared drive folder), and a good one says where it breaks down.",
+  "'A workspace is like a shared drive folder: everyone in it sees what's inside.' The user instantly borrows a whole structure they already understand. But every analogy breaks somewhere, and users will carry the broken part over too. So add the limit: 'Unlike a folder, a workspace also has its own billing and settings.'",
+  "A borrowed map of a similar city: very useful, as long as you mark the streets that are different.",
+  "Fast understanding by borrowing a known structure",
+  ["One familiar comparison per idea", "Stating where the analogy breaks"],
+  ["Analogies from a world users don't know"],
+)
+
+concreteBeforeAbstract = TaxonomyCategory(
+  "Concrete Before Abstract",
+  "Worked example, then the rule",
+  "FileText",
+  "sky",
+  "Concrete before abstract: start with a worked example (Anna submits a 7,000-baht claim) and state the general rule after it.",
+  "'Claims over 5,000 baht go through two approval levels' is abstract. 'Anna submits a 7,000-baht taxi claim. It goes to her manager, Ben, then to Finance, because it's over 5,000 baht' is concrete. Start with the concrete story, then state the rule; the reader now has a hook to hang it on. Worked examples like this are one of the best-researched ways to teach new ideas.",
+  "Seeing one goal replayed before hearing the offside rule.",
+  "Giving abstract rules a concrete hook",
+  ["Named people, real amounts, realistic cases", "The rule stated after the example"],
+  ["Rules with no example at all"],
+)
+
+refutationFixTheMisconception = TaxonomyCategory(
+  "Refutation (Fix the Misconception)",
+  "State it · reject it · explain the truth",
+  "CircleX",
+  "red",
+  "Refutation text corrects a misconception by stating the wrong belief, saying clearly that it is wrong, then explaining what is true (archiving is not deleting).",
+  "Users arrive with wrong beliefs, and simply stating the truth often doesn't replace them. Refutation text names the belief directly: 'You might think archiving deletes a project. It doesn't. Archiving hides the project from lists; you can restore it at any time, and nothing is lost.' Naming the misconception makes the reader notice the conflict and update their model.",
+  "A sign saying 'This is not the exit', right where everyone thinks it is.",
+  "Replacing wrong beliefs, not just adding facts",
+  ["Common misconceptions from support tickets", "Explicit 'this is not true' statements"],
+  ["Listing every possible wrong idea"],
+)
+
+nonExamples = TaxonomyCategory(
+  "Non-Examples",
+  "What it is not",
+  "Ban",
+  "yellow",
+  "Non-examples show what the concept is not, which sharpens its boundaries (a draft is not a submitted claim).",
+  "To learn what a 'submitted claim' is, it helps to see things that look similar but aren't: a saved draft (not sent to anyone), a claim returned for changes (sent back, no longer waiting for approval). Showing the near-misses draws the edge of the concept, which is exactly where users make mistakes.",
+  "Learning what a dog is gets easier once someone shows you a wolf and a fox.",
+  "Sharp boundaries between similar ideas",
+  ["Look-alike states and objects", "Near-misses users confuse"],
+  ["Unrelated things nobody would confuse"],
+)
+
+dualCodingWordsDiagram = TaxonomyCategory(
+  "Dual Coding (Words + Diagram)",
+  "Say it and show it",
+  "Shapes",
+  "green",
+  "Dual coding: pairing words with a diagram helps people understand and remember better than words alone.",
+  "'An organisation has workspaces; a workspace has projects; permissions set on a workspace flow down to its projects' is hard to hold in your head as a sentence. The same idea as a simple box diagram, with an arrow showing permissions flowing down, plus the sentence, gives the reader two routes into memory. Keep diagrams simple: boxes, arrows, a few labels.",
+  "Directions plus a sketch map, instead of directions alone.",
+  "Structure you can see",
+  ["Simple box-and-arrow diagrams next to the text"],
+  ["Decorative images that don't show the structure"],
+)

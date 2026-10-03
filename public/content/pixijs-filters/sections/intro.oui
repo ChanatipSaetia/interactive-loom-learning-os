@@ -1,0 +1,112 @@
+root = Intro(
+  "Introduction to PixiJS Filters",
+  what,
+  why,
+  [
+    RoadmapStep(
+      "Filter Pipeline & System Map",
+      "concept-map",
+      "Map the structural interactions between FilterSystem, Display Objects, RenderTargets, Uniforms, and GPU Drivers.",
+      "concept-map",
+    ),
+    RoadmapStep(
+      "Essential Filter Terminology",
+      "flashcards",
+      "Master key terms like RenderTarget Pool, Fragment Shader, Uniforms, Padding, Multi-Pass, and Kawase Blur.",
+      "flashcards",
+    ),
+    RoadmapStep(
+      "Shader & Uniform Vocabulary Quiz",
+      "quiz",
+      "Recall check on filter uniforms, samplers, padding, and matrix transformations.",
+      "quiz-vocabulary",
+    ),
+    RoadmapStep(
+      "Filter Setup & Creation Sequencing",
+      "reflection-sequence",
+      "Chronological challenge ordering the steps to author and attach custom GLSL filters.",
+      "reflection-foundations",
+    ),
+    RoadmapStep(
+      "Filter Categories & Shader Effects",
+      "taxonomy-browser",
+      "Explore the taxonomy of Spatial Blurs, Color Grading, Coordinate Warping, Stylized Effects, and Custom Shaders.",
+      "taxonomy-browser",
+    ),
+    RoadmapStep(
+      "The FilterSystem Architecture & Lifecycle",
+      "text",
+      "In-depth breakdown of offscreen render targets, padding bounds, uniform matrices, and batch breaks.",
+      "text-core",
+    ),
+    RoadmapStep(
+      "Filter Execution & Render Pipeline",
+      "flowchart",
+      "Trace the Event Storming lifecycle of single-pass and multi-pass filter execution on the GPU.",
+      "flowchart",
+    ),
+    RoadmapStep(
+      "Filter Pipeline Lifecycle Sequencing",
+      "reflection-sequence",
+      "Reorder the runtime frame execution stages from bounds calculation to target recycling.",
+      "reflection-pipeline",
+    ),
+    RoadmapStep(
+      "Multi-Pass Convolution Sequencing",
+      "reflection-sequence",
+      "Sequence the ping-pong convolution stages of separable 2-pass blurs.",
+      "reflection-multipass",
+    ),
+    RoadmapStep(
+      "Bitmap Caching & Texture Baking Sequencing",
+      "reflection-sequence",
+      "Sequence the stages of caching static filtered containers with cacheAsBitmap.",
+      "reflection-caching",
+    ),
+    RoadmapStep(
+      "Filter Selection & Performance Advisor",
+      "decision-tree",
+      "Diagnostic advisor to choose the right filter technique and caching strategy for your target device.",
+      "decision-tree",
+    ),
+    RoadmapStep(
+      "Post-Processing Performance Trade-offs",
+      "tradeoff-sandbox",
+      "Tune render architecture trade-offs between draw calls, VRAM, and FPS throughput.",
+      "tradeoff-sandbox",
+    ),
+    RoadmapStep(
+      "Performance & Optimization Quiz",
+      "quiz",
+      "Assessment on batch breaking, Kawase vs Gaussian blur, and half-resolution scaling.",
+      "quiz-optimization",
+    ),
+    RoadmapStep(
+      "Master Filter Architecture Assessment",
+      "quiz",
+      "Comprehensive checkpoint testing cacheAsBitmap, displacement mapping, and RenderTarget pooling.",
+      "quiz-boss",
+    ),
+  ],
+  "GPU-accelerated visual effects, custom fragment shaders, and the FilterSystem architecture",
+  "30 min",
+  14,
+  "PixiJS Filters & Post-Processing Shaders",
+)
+
+what = IntroWhat(
+  "A powerful effects subsystem in PixiJS that enables blurs, color grading, displacement maps, glows, outlines, and custom GLSL/WGSL shaders with automatic bounding box padding and render target pooling.",
+  "PixiJS Filters are post-processing shader programs that intercept the rendering of a DisplayObject or Container, capture its output into an offscreen RenderTarget, and execute GPU fragment shaders to transform pixels.",
+  [
+    "Post-Processing Pipeline: Intercepts display tree rendering into offscreen framebuffers",
+    "Built-in & Community Filters: Blur, ColorMatrix, Displacement, Noise, Glow, Outline, Shockwave",
+    "Custom GLSL Shaders: Write custom vertex and fragment shaders with animated uniforms",
+    "FilterSystem & Resource Pooling: Reusable RenderTarget pools to prevent VRAM memory churn",
+  ],
+  ["PixiJS", "GLSL", "WebGL", "Shaders", "Post-Processing"],
+)
+
+why = IntroWhy(
+  "Standard 2D sprite rendering is limited to linear tinting and alpha blending. Creating atmospheric effects like heat distortion, bloom, chromatic aberration, or dynamic drop shadows requires per-pixel fragment manipulation.",
+  "PixiJS Filters provide hardware-accelerated post-processing without writing complex framebuffer ping-pong pipelines from scratch, giving 2D games and web applications studio-grade visual polish.",
+)

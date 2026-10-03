@@ -1,0 +1,47 @@
+root = ReflectionSequence(
+  "ถอดรหัสไทม์ไลน์: สงครามโลก สงครามเย็น และโลกร่วมสมัย",
+  [challenge1, challenge2],
+  "เรียงลำดับเหตุการณ์สำคัญตั้งแต่สงครามโลก องค์การสหประชาชาติ สู่วิกฤตการณ์สงครามเย็นและการล่มสลายของกำแพงเบอร์ลิน",
+)
+
+challenge1 = SequenceChallenge(
+  "ถอดรหัสสงครามโลกและการสถาปนาระเบียบสิทธิมนุษยชนสากล (World Wars & Human Rights):",
+  [seqVersailles, seqUnFounding, seqUdhr],
+  [seqVersailles, seqUnFounding, seqUdhr],
+)
+
+seqVersailles = SequenceItem(
+  "seq-versailles",
+  "สนธิสัญญาแวร์ซายส์ (Treaty of Versailles) ยุติสงครามโลกครั้งที่ 1 (AD 1919)",
+)
+
+seqUnFounding = SequenceItem(
+  "seq-un-founding",
+  "สิ้นสุดสงครามโลกครั้งที่ 2 และการก่อตั้งองค์การสหประชาชาติ (UN) (AD 1945)",
+)
+
+seqUdhr = SequenceItem(
+  "seq-udhr",
+  "การประกาศปฏิญญาสากลว่าด้วยสิทธิมนุษยชนแห่งสหประชาชาติ (UDHR) (AD 1948)",
+)
+
+challenge2 = SequenceChallenge(
+  "ถอดรหัสวิกฤตการณ์ยุคสงครามเย็นสู่การล่มสลายของกำแพงเบอร์ลิน (Cold War Dynamics):",
+  [seqCubanCrisis, seqApollo11, seqBerlinWall],
+  [seqCubanCrisis, seqApollo11, seqBerlinWall],
+)
+
+seqCubanCrisis = SequenceItem(
+  "seq-cuban-crisis",
+  "วิกฤตการณ์ขีปนาวุธคิวบา (Cuban Missile Crisis) เฉียดสงครามนิวเคลียร์ (AD 1962)",
+)
+
+seqApollo11 = SequenceItem(
+  "seq-apollo11",
+  "ยานอะพอลโล 11 พามนุษย์ลงจอดบนดวงจันทร์สำเร็จในการแข่งขันทางอวกาศ (AD 1969)",
+)
+
+seqBerlinWall = SequenceItem(
+  "seq-berlin-wall",
+  "การล่มสลายของกำแพงเบอร์ลิน (Fall of Berlin Wall) ปิดฉากสงครามเย็น (AD 1989)",
+)

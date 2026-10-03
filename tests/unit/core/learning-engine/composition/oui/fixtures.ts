@@ -22,7 +22,7 @@ root = Bullets("Capabilities", [Bullet("Tool use", [Bullet("Search"), Bullet("Co
 `,
   'taxonomy-browser': `
 root = TaxonomyBrowser("Taxonomy", [planning])
-planning = TaxonomyCategory("Planning", "Think first", "🧠", "blue", "Desc", "Details", "Like a map", "Goals", ["Plans"], ["Execution"])
+planning = TaxonomyCategory("Planning", "Think first", "Brain", "blue", "Desc", "Details", "Like a map", "Goals", ["Plans"], ["Execution"])
 `,
   'image-gallery': `
 root = ImageGallery("Gallery", [GalleryImage("img1", "/a.png", "Caption", "Credit")])

@@ -1,0 +1,101 @@
+root = TaxonomyBrowser(
+  "What Storybook Does Catalog",
+  [
+    componentWorkshop,
+    livingDocumentation,
+    automatedTestingPlatform,
+    reviewCollaborationHub,
+    designSystemCatalog,
+  ],
+)
+
+componentWorkshop = TaxonomyCategory(
+  "Component Workshop",
+  "Isolated UI development environment",
+  "Wrench",
+  "blue",
+  "The core job: develop every component state in a dedicated sandbox that runs beside your app.",
+  "Each state is a story rendered from real component code in an isolated preview iframe. Hot module replacement keeps the loop to sub-second, and no routes, auth flows, or API mocks are required to reach deep states like error or empty views.",
+  "A machinist's workbench: you tune a single part under a lamp instead of restarting the whole engine to inspect one bolt.",
+  "Building and reviewing individual component states fast, independent of app screens.",
+  [
+    "Per-state stories with args and argTypes",
+    "Interactive Controls, viewport, and zoom tools",
+    "Decorators supplying providers around a component",
+  ],
+  [
+    "Hosting or routing your production application",
+    "End-to-end user journeys across real backend systems",
+  ],
+)
+
+livingDocumentation = TaxonomyCategory(
+  "Living Documentation",
+  "Docs & MDX generated from stories",
+  "BookOpen",
+  "green",
+  "Storybook turns the story catalog into a searchable documentation site that never goes stale.",
+  "Autodocs generate props tables and examples straight from meta, JSDoc comments, and argTypes. MDX pages interleave prose with live, interactive story embeds, so guidelines are executed by the same code the tests run.",
+  "A cookbook where every recipe demo cooks itself at the touch of a button — and updates itself when the kitchen changes.",
+  "Keeping usage guidance, props references, and visual examples in sync with code.",
+  [
+    "Autodocs pages with props tables per component",
+    "MDX pages mixing prose, sections, and live Canvas embeds",
+    "Publishing a static docs build for the whole team",
+  ],
+  ["General-purpose wiki or blog hosting", "Backend or infrastructure API references"],
+)
+
+automatedTestingPlatform = TaxonomyCategory(
+  "Automated Testing Platform",
+  "Stories become executable tests",
+  "ShieldCheck",
+  "peach",
+  "Every story doubles as a test case: the test runner executes them headlessly and play functions assert behavior.",
+  "test-storybook boots the built Storybook and runs each story (plus its play function) in Playwright or Puppeteer in CI. Visual regression services snapshot every story per commit and diff pixels across browsers and viewports, blocking silent UI changes.",
+  "A full-scale firing range where every weapon you built is test-fired automatically before the shipment leaves.",
+  "Catching rendering, behavior, and pixel regressions on the pull request.",
+  [
+    "Play functions scripted with userEvent-style APIs",
+    "Headless test runner across browsers in CI",
+    "Visual snapshot diffing and review workflows",
+  ],
+  ["Unit-testing pure non-UI business logic", "Load and performance benchmarking"],
+)
+
+reviewCollaborationHub = TaxonomyCategory(
+  "Review & Collaboration Hub",
+  "Shareable links per branch",
+  "Users",
+  "mauve",
+  "Static Storybook builds give designers, PMs, and QA a clickable UI catalog to review per branch or PR.",
+  "Each commit gets a live URL (e.g. via Chromatic) where stakeholders click through states, leave inline comments, and approve visual changes. Reviewers exercise Controls themselves instead of requesting prop screenshots.",
+  "A printed proof in publishing: everyone signs the exact sheet that will be printed, not a description of it.",
+  "Making UI changes reviewable and sign-off auditable before merge.",
+  [
+    "Publishing static builds per commit/branch",
+    "Visual change review and baseline acceptance",
+    "Shareable links to an exact story + arg state",
+  ],
+  ["Replacing code review of application logic", "Formal project sign-off or ticket workflows"],
+)
+
+designSystemCatalog = TaxonomyCategory(
+  "Design System Catalog",
+  "Composition & single source of truth",
+  "Library",
+  "red",
+  "Design systems use Storybook as the canonical, browsable catalog of every component and pattern they ship.",
+  "Composition stitches several Storybooks (core primitives, product-specific kits, legacy libs) into one navigable portal with a shared sidebar. Teams version the catalog alongside npm releases so consumers browse documentation matching installed code.",
+  "A national library with one reading room card catalog, even though the books live in many branches.",
+  "A single browsable truth for which components exist and how they behave.",
+  [
+    "Composing multiple Storybook instances into one site",
+    "Tagging and filtering stories (e.g. experimental, stable)",
+    "Versioned catalogs released with component packages",
+  ],
+  [
+    "Distributing the component library binaries themselves",
+    "Design token storage independent of code",
+  ],
+)

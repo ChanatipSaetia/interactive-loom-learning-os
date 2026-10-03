@@ -1,0 +1,105 @@
+root = Flashcards(
+  "Lexicon of the Threshold",
+  [
+    timeToFirstValue,
+    goldenPath,
+    preBoarding,
+    activationMoment,
+    progressiveDisclosure,
+    ticketStorm,
+    sandboxQuest,
+    humanAnchor,
+  ],
+)
+
+timeToFirstValue = Flashcard(
+  "time-to-first-value",
+  "Time-to-First-Value (TTFV)",
+  "tyme tuh furst val-yoo",
+  "metric",
+  "How fast a newcomer completes one real, meaningful task — the doctrine's only week-one metric.",
+  "Measured from day zero (or key issuance for developers) to the first genuine win: a submitted record, a safe production change, a successful API call. Everything else in onboarding is a leading indicator of this number.",
+  "It converts 'onboarding feels fine' into a number you can drive down; teams that instrument it stop writing handbook pages and start removing walls.",
+  null,
+  Dialogue(
+    "We covered every feature in the kickoff deck!",
+    "Coverage is not completion; nobody has shipped a real task yet.",
+    "What was the median hours from day zero to each newcomer's first real task?",
+  ),
+)
+
+goldenPath = Flashcard(
+  "golden-path",
+  "Golden Path",
+  "gohl-den path",
+  "doctrine",
+  "The single scripted end-to-end journey every newcomer walks first, chosen to produce a real win.",
+  "One canonical route through the system — create, configure, run, export — maintained like production code, with deeper optional routes branching only after it succeeds.",
+  "A tour of every button produces fatigue; one deep golden path produces competence, and its completion rate is the sharpest leading indicator of friction.",
+)
+
+preBoarding = Flashcard(
+  "pre-boarding",
+  "Pre-boarding",
+  "pree-bor-ding",
+  "practice",
+  "Everything done before day one: accounts, licenses, environments, and entitlements provisioned and smoke-tested.",
+  "Joiner tickets drive SSO group rules and self-serve key minting so the newcomer's first action is work, not a provisioning queue. Production-reach roles get vault-approved grants in the same window.",
+  "Waiting-for-access is the number-one onboarding killer; pre-boarding is Principle 1 made real.",
+)
+
+activationMoment = Flashcard(
+  "activation-moment",
+  "Activation Moment",
+  "ak-tih-vey-shun moh-ment",
+  "concept",
+  "The deliberately designed 'aha' where the product's value becomes personal for a newcomer.",
+  "Different per audience: the end user's first real record, the operator's first supervised safe change, the developer's first successful call. It is defined before it is measured, never guessed afterward.",
+  "You cannot shorten time-to-first-value if you never wrote down what 'value' is; the activation moment is the finish line you instrument.",
+)
+
+progressiveDisclosure = Flashcard(
+  "progressive-disclosure",
+  "Progressive Disclosure",
+  "pruh-gres-siv dis-kloh-zhur",
+  "doctrine",
+  "Revealing the next level of complexity only at the moment the newcomer needs it.",
+  "The opposite of the information firehose: short paths with deeper links, tour steps at the point of confusion, advanced options hidden until the golden path succeeds.",
+  "Every unneeded fact shown early is a quit-point manufactured on purpose; attention is the onboarding budget.",
+)
+
+ticketStorm = Flashcard(
+  "ticket-storm",
+  "Ticket Storm",
+  "tik-et storm",
+  "signal",
+  "A spike of help-channel and support questions from the current newcomer cohort, tagged and trended as a friction signal.",
+  "Questions are unanswered documentation: where the cohort asks in a burst is precisely where the golden path, tour, or entitlement broke.",
+  "It is the cheapest quit-point detector you have — the newcomers are telling you out loud where they stalled.",
+  null,
+  Dialogue(
+    "Why is #newest-hires suddenly asking about SSO seventeen times an hour?",
+    "That is not noise, that is a map.",
+    "What did the day-one smoke test just start failing for everyone?",
+  ),
+)
+
+sandboxQuest = Flashcard(
+  "sandbox-quest",
+  "Sandbox Quest",
+  "sand-boks kwest",
+  "method",
+  "A graded challenge in a safe, seeded practice environment, ending in a senior-reviewed 'boss task'.",
+  "The gamified onboarding method: newcomers break the playground happily, climb a quest board of real tasks, and prove competence on the boss task with zero blast radius.",
+  "It converts anxious observation into motivated doing for staff and operators — at the cost of keeping a playground forever fresh.",
+)
+
+humanAnchor = Flashcard(
+  "human-anchor",
+  "Human Anchor",
+  "hyoo-mun ang-ker",
+  "doctrine",
+  "The named human, buddy, or staffed office-hours channel every onboarding path must end at.",
+  "Even fully self-serve methods route their last resort to a person: office hours, a buddy rota, or a staffed channel. A FAQ link is explicitly not an anchor.",
+  "Unanswered questions at hour three are where motivation dies; the anchor is the doctrine's insurance policy against silent quit-points.",
+)
