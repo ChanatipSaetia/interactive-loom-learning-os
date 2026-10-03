@@ -3,7 +3,7 @@
  * See grill-log-openui-input.md (decisions 15–22).
  */
 import { useCallback, useEffect, useState } from 'react'
-import { FolderOpen, Sparkles } from 'lucide-react'
+import { Eye, FolderOpen, Sparkles } from 'lucide-react'
 import { UISystemProvider } from '../core/ui-system'
 import {
   TopicWorkspace,
@@ -28,10 +28,13 @@ declare global {
 export function StudioApp() {
   const [workspace, setWorkspace] = useState<TopicWorkspace | null>(null)
   const [error, setError] = useState<string | null>(null)
+  /** Bumped on every open so reopening the same folder remounts the editor. */
+  const [generation, setGeneration] = useState(0)
 
   const open = useCallback(async (folder: TopicFolder) => {
     try {
       setWorkspace(await TopicWorkspace.open(folder))
+      setGeneration((g) => g + 1)
       setError(null)
     } catch (e) {
       setError(e instanceof Error ? e.message : String(e))
@@ -62,7 +65,14 @@ export function StudioApp() {
   return (
     <UISystemProvider>
       {workspace
-        ? <StudioWorkspace key={workspace.getSnapshot().topicId} workspace={workspace} onOpenFolder={pick} />
+        ? (
+          <StudioWorkspace
+            key={`${workspace.getSnapshot().topicId}:${generation}`}
+            workspace={workspace}
+            onOpenFolder={pick}
+            onReload={() => open(workspace.folder)}
+          />
+        )
         : <Landing onPick={pick} error={error} />}
     </UISystemProvider>
   )
@@ -79,15 +89,21 @@ function Landing({ onPick, error }: { onPick: () => void; error: string | null }
           Open a topic folder, such as <code>public/content/demo</code>, to edit its <code>topic.oui</code> and
           sections. Pick an empty folder to start a new topic.
         </p>
-        {supported ? (
-          <button type="button" className="studio-button studio-button--primary" onClick={onPick} data-testid="studio-open-folder">
-            <FolderOpen size={16} /> Open topic folder
-          </button>
-        ) : (
+        {!supported && (
           <p className="studio-warning" role="alert">
             This browser cannot open local folders. Use a Chromium-based browser such as Chrome or Edge.
           </p>
         )}
+        <div className="studio-landing-actions">
+          {supported && (
+            <button type="button" className="studio-button studio-button--primary" onClick={onPick} data-testid="studio-open-folder">
+              <FolderOpen size={16} /> Open topic folder
+            </button>
+          )}
+          <a className="studio-button" href="viewer.html" data-testid="studio-open-viewer">
+            <Eye size={16} /> View an exported topic
+          </a>
+        </div>
         {error && <pre className="studio-error" role="alert">{error}</pre>}
       </div>
     </div>

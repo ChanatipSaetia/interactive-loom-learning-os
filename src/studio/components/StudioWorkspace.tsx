@@ -1,9 +1,17 @@
-import { useCallback, useEffect, useState } from 'react'
-import { FolderOpen, Save, Sparkles, X } from 'lucide-react'
+import { useCallback, useEffect, useRef, useState, type ChangeEvent } from 'react'
+import { Eye, FileArchive, FileJson, FolderOpen, Save, Sparkles, Upload, X } from 'lucide-react'
 import { HUDProvider } from '../../core/learning-engine/composition/context/HUDContext'
 import { ProgressProvider } from '../../core/supporting/learner-progress'
-import type { TopicWorkspace } from '../../core/supporting/authoring-editor/workspace'
+import {
+  BUNDLE_EXTENSION,
+  TopicWorkspace,
+  createTopicBundle,
+  createTopicZip,
+  readTopicArchive,
+} from '../../core/supporting/authoring-editor/workspace'
+import { ThemeToggle } from '../../core/ui-system/motion/theme-toggle'
 import { useWorkspace } from '../useWorkspace'
+import { downloadFile } from '../download'
 import { SectionList, TOPIC_ITEM } from './SectionList'
 import { SectionEditor } from './SectionEditor'
 import { TopicMetaForm } from './TopicMetaForm'
@@ -11,9 +19,11 @@ import { TopicMetaForm } from './TopicMetaForm'
 interface Props {
   workspace: TopicWorkspace
   onOpenFolder: () => void
+  /** Reopen the current folder (after its files were replaced by an import). */
+  onReload: () => Promise<void>
 }
 
-export function StudioWorkspace({ workspace, onOpenFolder }: Props) {
+export function StudioWorkspace({ workspace, onOpenFolder, onReload }: Props) {
   const snap = useWorkspace(workspace)
   const [selected, setSelected] = useState<string>(() => snap.sections[0]?.name ?? TOPIC_ITEM)
   const [saving, setSaving] = useState(false)
@@ -36,6 +46,40 @@ export function StudioWorkspace({ workspace, onOpenFolder }: Props) {
     await run(() => workspace.save(), 'Saved')
     setSaving(false)
   }, [run, workspace])
+
+  const importInput = useRef<HTMLInputElement>(null)
+
+  const exportBundle = useCallback(() => {
+    const topic = workspace.exportFiles()
+    downloadFile(`${topic.topicId}${BUNDLE_EXTENSION}`, createTopicBundle([topic]), 'application/json')
+    setStatus({ kind: 'ok', text: `Exported ${topic.topicId}${BUNDLE_EXTENSION}` })
+  }, [workspace])
+
+  const exportZip = useCallback(() => {
+    const topic = workspace.exportFiles()
+    downloadFile(`${topic.topicId}.zip`, createTopicZip([topic]), 'application/zip')
+    setStatus({ kind: 'ok', text: `Exported ${topic.topicId}.zip` })
+  }, [workspace])
+
+  const importFile = useCallback(async (e: ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    e.target.value = ''
+    if (!file) return
+    await run(async () => {
+      const topics = await readTopicArchive(file)
+      const topic = topics.find((t) => t.topicId === snap.topicId) ?? topics[0]
+      const sectionCount = Object.keys(topic.files).filter((p) => p.startsWith('sections/')).length
+      const message = [
+        `Import "${topic.topicId}" (${sectionCount} section${sectionCount === 1 ? '' : 's'}) from ${file.name} into ${snap.topicId}/?`,
+        topics.length > 1 ? `The file holds ${topics.length} topics; only this one is imported.` : '',
+        'This overwrites topic.oui and deletes section files that are not in the import.',
+        workspace.isDirty ? 'Your unsaved changes will be lost.' : '',
+      ].filter(Boolean).join('\n\n')
+      if (!window.confirm(message)) return
+      await TopicWorkspace.replaceFolderContents(workspace.folder, topic.files)
+      await onReload()
+    })
+  }, [onReload, run, snap.topicId, workspace])
 
   // Ctrl/Cmd+S saves; leaving with unsaved changes asks first.
   useEffect(() => {
@@ -90,6 +134,27 @@ export function StudioWorkspace({ workspace, onOpenFolder }: Props) {
                   {status.text}
                 </span>
               )}
+              <ThemeToggle />
+              <a className="studio-button" href="viewer.html" target="_blank" rel="noreferrer" title="Open Loom Viewer to view exported topics">
+                <Eye size={15} /> Viewer
+              </a>
+              <button type="button" className="studio-button" onClick={() => importInput.current?.click()} title="Import a topic from a .loom.json bundle or a .zip" data-testid="studio-import">
+                <Upload size={15} /> Import
+              </button>
+              <input
+                ref={importInput}
+                type="file"
+                accept=".json,.zip,application/json,application/zip"
+                hidden
+                onChange={importFile}
+                data-testid="studio-import-input"
+              />
+              <button type="button" className="studio-button" onClick={exportBundle} title="Export all sections to a single .loom.json file" data-testid="studio-export-bundle">
+                <FileJson size={15} /> Export file
+              </button>
+              <button type="button" className="studio-button" onClick={exportZip} title="Export the topic folder as a .zip" data-testid="studio-export-zip">
+                <FileArchive size={15} /> Export zip
+              </button>
               <button type="button" className="studio-button" onClick={onOpenFolder}>
                 <FolderOpen size={15} /> Open folder
               </button>

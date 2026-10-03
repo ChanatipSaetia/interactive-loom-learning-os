@@ -59,7 +59,7 @@ When refactoring or extending core sections, follow the Strategic & Tactical DDD
 
 - OKF schemas and types live co-located in `src/core/subdomains/[subdomain]/schema.ts` (with legacy type aliases in `src/core/okf/types.ts`).
 - Dynamic OKF parsing and loading pipeline lives in `src/core/okf/reader.ts` and `src/core/okf/sections.ts` (using delivery adapters).
-- The learning app and embeds are read-only. Content is authored in **Loom Studio** (`npm run studio`, `studio.html`, `src/studio/`), which opens one topic folder (`public/content/<topic>/`) via the File System Access API and edits OpenUI Lang (`.oui`) files with code + visual form + live preview. See [grill-log-openui-input.md](grill-log-openui-input.md).
+- The learning app and embeds are read-only. Content is authored in **Loom Studio** (`npm run studio`, `studio.html`, `src/studio/`), which opens one topic folder (`public/content/<topic>/`) via the File System Access API and edits OpenUI Lang (`.oui`) files with code + visual form + live preview. Studio exports a topic as a single `.loom.json` file or a `.zip` and imports either back; **Loom Viewer** (`viewer.html`, `src/viewer/`) shows a `.loom.json`, `.zip` or picked folder read-only with the app themes. See [grill-log-openui-input.md](grill-log-openui-input.md).
 - Errors in OpenUI syntax or schema validation must present non-blocking inline diagnostics while the preview keeps the last valid version (`lastValid`).
 
 ## Working on Topics & Flowcharts

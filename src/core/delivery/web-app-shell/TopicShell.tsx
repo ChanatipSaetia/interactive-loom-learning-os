@@ -33,7 +33,7 @@ function SectionRenderer({ config, sectionIndex }: SectionRendererProps) {
   )
 }
 
-function HUDDrawer() {
+export function HUDDrawer() {
   const { isOpen, title, body, closeHUD } = useHUD()
 
   return (

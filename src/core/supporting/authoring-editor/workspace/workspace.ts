@@ -19,6 +19,7 @@ import { validateOUISection } from '../../../learning-engine/validation/oui-gate
 import type { ValidationResult } from '../../../learning-engine/validation/types'
 import type { OKFSectionData, OKFSectionMeta } from '../../../learning-engine/composition/okf/types'
 import type { TopicFolder } from './folder'
+import type { TopicFiles } from './archive'
 import { getSectionTemplate, newTopicSource } from './templates'
 
 export type TopicMetadata = Omit<OUITopicManifest, 'sections'>
@@ -78,7 +79,7 @@ export class TopicWorkspace {
   private snapshot: WorkspaceSnapshot
 
   private constructor(
-    private readonly folder: TopicFolder,
+    readonly folder: TopicFolder,
     private metadata: TopicMetadata,
     private savedMetadata: TopicMetadata,
     private sections: SectionState[],
@@ -122,6 +123,26 @@ export class TopicWorkspace {
     return new TopicWorkspace(folder, metadata, { ...metadata }, sections, listed, notices)
   }
 
+  /**
+   * Replace the folder's content with `files` (topic.oui + sections/*.oui),
+   * deleting section files that are not in `files`. Reopen the folder
+   * afterwards to edit the imported topic.
+   */
+  static async replaceFolderContents(folder: TopicFolder, files: Record<string, string>): Promise<void> {
+    const topicSource = files[TOPIC_FILE]
+    if (topicSource === undefined) throw new WorkspaceError('The imported topic has no topic.oui.')
+    const topic = compileOUITopic(topicSource)
+    const errors = topic.issues.filter((i) => i.tier < 3)
+    if (!topic.value || errors.length) {
+      throw new WorkspaceError(`The imported topic.oui has errors:\n${errors.map((i) => `  ${i.line ? `line ${i.line}: ` : ''}${i.message}`).join('\n')}`)
+    }
+    for (const [path, text] of Object.entries(files)) await folder.writeText(path, text)
+    for (const file of await folder.listFiles('sections')) {
+      const path = `sections/${file}`
+      if (file.endsWith('.oui') && !(path in files)) await folder.remove(path)
+    }
+  }
+
   private static sectionState(topicId: string, name: string, source: string, savedSource: string, previous?: SectionState): SectionState {
     const validation = validate(topicId, name, source)
     return { name, source, savedSource, validation, lastValid: usable(validation) ?? previous?.lastValid ?? null }
@@ -155,6 +176,15 @@ export class TopicWorkspace {
 
   get isDirty(): boolean {
     return this.snapshot.dirtySections.length > 0 || this.snapshot.topicDirty
+  }
+
+  /** Every file of the topic as currently edited (unsaved changes included). */
+  exportFiles(): TopicFiles {
+    const files: Record<string, string> = {
+      [TOPIC_FILE]: printOUITopic({ ...this.metadata, sections: this.sections.map((s) => s.name) }),
+    }
+    for (const s of this.sections) files[sectionPath(s.name)] = s.source
+    return { topicId: this.folder.name, files }
   }
 
   section(name: string): SectionState | undefined {

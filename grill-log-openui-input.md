@@ -178,6 +178,17 @@ Revised remaining phases:
 - **Decision 23 — embed `editable`:** removed. `LoomSections.render(…, { editable: true })` logs a warning that points to Loom Studio and renders read-only; `editable`/`topicId` are marked deprecated in the docs.
 - **Existing test gap:** `tests/e2e/static-html.spec.ts` was already broken (the static page was redesigned in v1.4.0) and loads the *published* library from jsdelivr first. It is rewritten for the current page and a read-only embed. Its assertions were verified against this branch's `dist-lib` build by routing the CDN to it, but the spec itself cannot reach jsdelivr in this sandbox.
 
+## Topic Archives & Loom Viewer
+
+| # | Topic | Decision |
+|---|---|---|
+| 24 | Single-file format | **`<topic>.loom.json`**: `{ format: "loom-topic-bundle", version: 1, exportedAt, topics: [{ id, files: { "topic.oui": …, "sections/<name>.oui": … } }] }`. Files stay byte-for-byte `.oui` sources, so a round trip is lossless. Several topics per file are allowed (the Viewer can show them); Studio exports one. |
+| 25 | Zip format | **The topic folder itself:** `<topic>/topic.oui` and `<topic>/sections/*.oui`, with folder entries. Written store-only (no dependency); reading also inflates deflated entries (`DecompressionStream`), so zips made by OS tools work. |
+| 26 | Studio export / import | **Export file / Export zip** export the topic *as currently edited* (unsaved edits included). **Import** takes a `.loom.json` or `.zip`, asks for confirmation, then overwrites `topic.oui`, writes the sections, deletes section files not in the import, and reopens the folder. A broken imported `topic.oui` is refused before anything is written. On import only `topic.oui` and `sections/<id>.oui` paths are kept. |
+| 27 | Loom Viewer | **Third read-only page** (`viewer.html`, `src/viewer/`): opens a `.loom.json`, a `.zip` (drop or pick), or a folder (`<input webkitdirectory>`, works in every modern browser). Each folder with a `topic.oui` is a topic; several topics get a picker. Sections render with the learning app's components; a broken or missing section shows its diagnostics in place. The theme toggle and sound toggle are in the header (Studio also gets the theme toggle). |
+
+Code: `src/core/supporting/authoring-editor/workspace/archive.ts` (bundle + zip + file grouping), `TopicWorkspace.exportFiles()` / `TopicWorkspace.replaceFolderContents()`, `src/viewer/`.
+
 ## Open Questions
 
 _None._
