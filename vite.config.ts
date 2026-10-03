@@ -4,6 +4,7 @@ import type { Plugin } from 'vite'
 import fs from 'fs'
 import path from 'path'
 import { createRequire } from 'module'
+import { generateCatalogSource } from './src/core/learning-engine/composition/oui/catalog-gen'
 
 function okfSavePlugin(): Plugin {
   return {
@@ -126,6 +127,39 @@ function ouiSavePlugin(): Plugin {
   }
 }
 
+const CONTENT_ROOT = path.resolve(process.cwd(), 'public', 'content')
+
+function contentTopicIds(): string[] {
+  if (!fs.existsSync(CONTENT_ROOT)) return []
+  return fs.readdirSync(CONTENT_ROOT, { withFileTypes: true })
+    .filter((entry) => entry.isDirectory() && fs.existsSync(path.join(CONTENT_ROOT, entry.name, 'topic.oui')))
+    .map((entry) => entry.name)
+}
+
+/**
+ * Generates the content catalog `content/index.oui` from the topic folders in
+ * public/content: served on the fly in dev, emitted as an asset at build time.
+ */
+function contentCatalogPlugin(): Plugin {
+  return {
+    name: 'loom-content-catalog',
+    configureServer(server) {
+      server.middlewares.use((req, res, next) => {
+        const url = (req.url ?? '').split('?')[0]
+        if (!url.endsWith('/content/index.oui')) {
+          next()
+          return
+        }
+        res.writeHead(200, { 'Content-Type': 'text/plain; charset=utf-8', 'Cache-Control': 'no-cache' })
+        res.end(generateCatalogSource(contentTopicIds()))
+      })
+    },
+    generateBundle() {
+      this.emitFile({ type: 'asset', fileName: 'content/index.oui', source: generateCatalogSource(contentTopicIds()) })
+    },
+  }
+}
+
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd(), '')
   const isLib = env.BUILD_MODE === 'lib'
@@ -172,6 +206,7 @@ export default defineConfig(({ mode }) => {
       react(),
       okfSavePlugin(),
       ouiSavePlugin(),
+      contentCatalogPlugin(),
     ],
     server: {
       port: Number(env.VITE_PORT) || 5173,

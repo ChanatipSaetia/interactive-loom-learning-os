@@ -6,6 +6,7 @@
  */
 import { describe, it, expect } from 'vitest'
 import { compileOUICatalog, compileOUITopic } from '../../../src/core/learning-engine/composition/oui/compile'
+import { generateCatalogSource } from '../../../src/core/learning-engine/composition/oui/catalog-gen'
 import { validateOUISection } from '../../../src/core/learning-engine/validation/oui-gateway'
 
 declare global {
@@ -17,12 +18,16 @@ declare global {
 const FILES = import.meta.glob<string>('/public/content/**/*.oui', { query: '?raw', import: 'default', eager: true })
 const file = (rel: string) => FILES[`/public/content/${rel}`]
 
-const catalog = compileOUICatalog(file('index.oui') ?? '')
+const topicFolders = Object.keys(FILES)
+  .map((f) => /^\/public\/content\/([^/]+)\/topic\.oui$/.exec(f)?.[1])
+  .filter((t): t is string => !!t)
+const catalog = compileOUICatalog(generateCatalogSource(topicFolders))
 
 describe('public/content', () => {
-  it('has a valid catalog', () => {
+  it('generates a valid catalog listing every topic folder', () => {
     expect(catalog.issues).toEqual([])
-    expect(catalog.value?.topics.length).toBeGreaterThan(0)
+    expect(catalog.value?.topics).toEqual([...topicFolders].sort())
+    expect(topicFolders.length).toBeGreaterThan(0)
   })
 
   for (const topicId of catalog.value?.topics ?? []) {

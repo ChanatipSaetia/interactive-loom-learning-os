@@ -12,7 +12,9 @@
  *
  *   public/content/<topic>/topic.oui
  *   public/content/<topic>/sections/<section>.oui
- *   public/content/index.oui  (catalog, in OKF catalog order)
+ *
+ * The catalog (public/content/index.oui) is generated from the topic folders by
+ * the loom-content-catalog Vite plugin, so it is not written here.
  *
  * Catalog metadata comes from public/okf/index.md (label, category,
  * description), public/okf/<topic>/index.yaml (tags) and public/index.yaml
@@ -35,8 +37,7 @@ globalThis.fetch = (async (input: string | URL) => {
 }) as typeof fetch
 
 const { loadOKFBundle } = await import('../src/core/learning-engine/composition/okf/reader.ts')
-const { printOUISection, printOUITopic, printOUICatalog } = await import('../src/core/learning-engine/composition/oui/print.ts')
-const { compileOUICatalog } = await import('../src/core/learning-engine/composition/oui/compile.ts')
+const { printOUISection, printOUITopic } = await import('../src/core/learning-engine/composition/oui/print.ts')
 const { validateOUISection } = await import('../src/core/learning-engine/validation/oui-gateway.ts')
 
 // --- Catalog metadata ---
@@ -133,20 +134,6 @@ for (const topicId of requested) {
     }
   }
   console.log(`${checkOnly ? '✓ (check)' : '✓'} ${topicId}: ${bundle.length} sections`)
-}
-
-// --- Catalog (index.oui), kept in OKF catalog order ---
-if (!checkOnly) {
-  const indexFile = path.join(CONTENT_DIR, 'index.oui')
-  const existing = fs.existsSync(indexFile) ? compileOUICatalog(fs.readFileSync(indexFile, 'utf8')).value?.topics ?? [] : []
-  const ids = new Set([...existing, ...requested.filter((id) => catalog.some((e) => e.id === id))])
-  const ordered = [
-    ...catalog.map((e) => e.id).filter((id) => ids.has(id)),
-    ...[...ids].filter((id) => !catalog.some((e) => e.id === id)),
-  ]
-  fs.mkdirSync(CONTENT_DIR, { recursive: true })
-  fs.writeFileSync(indexFile, printOUICatalog(ordered), 'utf8')
-  console.log(`✓ index.oui: ${ordered.join(', ')}`)
 }
 
 if (failures) {
