@@ -3,7 +3,7 @@ import { Button } from '../../../../../ui-system/motion/button';
 import type { FlowchartJourney } from './types';
 import { useSound } from '../../../../../ui-system/sensory/SoundContext';
 
-interface PlaybackControlsProps {
+export interface PlaybackControlsProps {
   currentJourney: FlowchartJourney;
   currentStep: number;
   isPlaying: boolean;
@@ -14,10 +14,10 @@ interface PlaybackControlsProps {
   handleReset: () => void;
 }
 
-export function PlaybackControls({
+/** Playback handlers wrapped with their sound cues, shared by the full and mini players. */
+export function usePlaybackSoundHandlers({
   currentJourney,
   currentStep,
-  isPlaying,
   handlePlay,
   handlePause,
   handleNext,
@@ -54,6 +54,13 @@ export function PlaybackControls({
     playSound('click');
     handleReset();
   };
+
+  return { onPrevClick, onNextClick, onPlayClick, onPauseClick, onResetClick };
+}
+
+export function PlaybackControls(props: PlaybackControlsProps) {
+  const { currentJourney, currentStep, isPlaying } = props;
+  const { onPrevClick, onNextClick, onPlayClick, onPauseClick, onResetClick } = usePlaybackSoundHandlers(props);
 
   return (
     <div className="flowchart-playback animate-fade-in" data-testid="flowchart-playback">

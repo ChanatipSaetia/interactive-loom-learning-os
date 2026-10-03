@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach, beforeAll, vi } from 'vitest';
+import { describe, it, expect, beforeEach, afterEach, beforeAll, vi } from 'vitest';
 import { render, screen, fireEvent, act } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import { SectionRegistry } from '../../../../src/core/learning-engine/registry';
@@ -347,6 +347,116 @@ describe('Flowchart journey controls', () => {
   it('reset disabled at overview', () => {
     render(<Flowchart title="Test" schema={mockSchema} />, { wrapper });
     expect(screen.getByTestId('flowchart-btn-reset')).toBeDisabled();
+  });
+});
+
+describe('Flowchart collapsible journey dock', () => {
+  beforeEach(() => {
+    SectionRegistry.clear();
+    vi.useFakeTimers();
+  });
+
+  afterEach(() => {
+    vi.useRealTimers();
+  });
+
+  // Let the dock's enter/exit animation finish so the next view mounts
+  const settle = async () => {
+    await act(async () => {
+      vi.advanceTimersByTime(1000);
+    });
+  };
+
+  const collapse = async () => {
+    fireEvent.click(screen.getByTestId('flowchart-dock-collapse'));
+    await settle();
+  };
+
+  it('starts expanded with a collapse button', () => {
+    render(<Flowchart title="Test" schema={mockSchema} />, { wrapper });
+    expect(screen.getByTestId('flowchart-journey-bar')).toBeInTheDocument();
+    expect(screen.getByTestId('flowchart-dock-collapse')).toBeInTheDocument();
+    expect(screen.queryByTestId('flowchart-mini-player')).not.toBeInTheDocument();
+  });
+
+  it('collapses to the mini player and expands back', async () => {
+    render(<Flowchart title="Test" schema={mockSchema} />, { wrapper });
+    await collapse();
+    expect(screen.getByTestId('flowchart-mini-player')).toBeInTheDocument();
+    expect(screen.queryByTestId('flowchart-journey-bar')).not.toBeInTheDocument();
+
+    fireEvent.click(screen.getByTestId('flowchart-dock-expand'));
+    await settle();
+    expect(screen.getByTestId('flowchart-journey-bar')).toBeInTheDocument();
+    expect(screen.queryByTestId('flowchart-mini-player')).not.toBeInTheDocument();
+  });
+
+  it('mini player steps forward and back', async () => {
+    render(<Flowchart title="Test" schema={mockSchema} />, { wrapper });
+    await collapse();
+    const progress = screen.getByTestId('flowchart-mini-progress');
+    expect(progress.textContent).toBe('0 / 3');
+    expect(screen.getByTestId('flowchart-mini-prev')).toBeDisabled();
+
+    fireEvent.click(screen.getByTestId('flowchart-mini-next'));
+    fireEvent.click(screen.getByTestId('flowchart-mini-next'));
+    expect(progress.textContent).toBe('2 / 3');
+
+    fireEvent.click(screen.getByTestId('flowchart-mini-prev'));
+    expect(progress.textContent).toBe('1 / 3');
+  });
+
+  it('mini player toggle plays and pauses', async () => {
+    render(<Flowchart title="Test" schema={mockSchema} />, { wrapper });
+    await collapse();
+    const toggle = screen.getByTestId('flowchart-mini-toggle');
+    expect(toggle).toHaveAttribute('aria-label', 'Play');
+
+    fireEvent.click(toggle);
+    expect(screen.getByTestId('flowchart-mini-progress').textContent).toBe('1 / 3');
+    expect(toggle).toHaveAttribute('aria-label', 'Pause');
+
+    fireEvent.click(toggle);
+    expect(toggle).toHaveAttribute('aria-label', 'Play');
+    act(() => {
+      vi.advanceTimersByTime(5000);
+    });
+    expect(screen.getByTestId('flowchart-mini-progress').textContent).toBe('1 / 3');
+  });
+
+  it('dots mark done / current / upcoming steps and jump on click', async () => {
+    render(<Flowchart title="Test" schema={mockSchema} />, { wrapper });
+    await collapse();
+    fireEvent.click(screen.getByTestId('flowchart-mini-dot-1'));
+    expect(screen.getByTestId('flowchart-mini-progress').textContent).toBe('2 / 3');
+    expect(screen.getByTestId('flowchart-mini-dot-0')).toHaveAttribute('data-state', 'done');
+    expect(screen.getByTestId('flowchart-mini-dot-1')).toHaveAttribute('data-state', 'current');
+    expect(screen.getByTestId('flowchart-mini-dot-1')).toHaveAttribute('aria-current', 'step');
+    expect(screen.getByTestId('flowchart-mini-dot-2')).toHaveAttribute('data-state', 'todo');
+  });
+
+  it('toggle becomes Replay at the last step and restarts from step 1', async () => {
+    render(<Flowchart title="Test" schema={mockSchema} />, { wrapper });
+    await collapse();
+    fireEvent.click(screen.getByTestId('flowchart-mini-dot-2'));
+    const toggle = screen.getByTestId('flowchart-mini-toggle');
+    expect(toggle).toHaveAttribute('aria-label', 'Replay');
+    expect(screen.getByTestId('flowchart-mini-next')).toBeDisabled();
+
+    fireEvent.click(toggle);
+    expect(screen.getByTestId('flowchart-mini-progress').textContent).toBe('1 / 3');
+    expect(toggle).toHaveAttribute('aria-label', 'Pause');
+  });
+
+  it('keeps playback position when collapsing and expanding', async () => {
+    render(<Flowchart title="Test" schema={mockSchema} />, { wrapper });
+    fireEvent.click(screen.getByTestId('flowchart-btn-next'));
+    await collapse();
+    expect(screen.getByTestId('flowchart-mini-progress').textContent).toBe('1 / 3');
+    fireEvent.click(screen.getByTestId('flowchart-mini-next'));
+    fireEvent.click(screen.getByTestId('flowchart-dock-expand'));
+    await settle();
+    expect(screen.getByTestId('flowchart-progress').textContent).toBe('2 / 3');
   });
 });
 

@@ -1174,16 +1174,81 @@
 }
 
 .flowchart-controls-dock {
+  @apply border backdrop-blur-md;
   pointer-events: auto;
-  background-color: var(--ctp-mantle) !important;
-  border-color: var(--border-light) !important;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4) !important;
+  background-color: var(--ctp-mantle);
+  border-color: var(--border-light);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
 }
 
-.flowchart-controls-dock-content {
-  background-color: var(--ctp-base);
-  width: 100%;
+/* Expanded: full journey panel */
+.flowchart-dock-panel {
+  @apply w-full p-3 rounded-[20px];
 }
+
+.flowchart-dock-collapse {
+  @apply ml-1;
+}
+
+/* Collapsed: mini player pill */
+.flowchart-dock-mini {
+  @apply rounded-full px-1.5 py-1;
+}
+
+.flowchart-mini-player {
+  @apply flex items-center gap-0.5;
+}
+
+.flowchart-mini-player .flowchart-btn {
+  @apply h-8 w-8 p-1;
+}
+
+.flowchart-mini-player .flowchart-mini-toggle {
+  color: var(--secondary);
+}
+
+.flowchart-mini-player .flowchart-progress {
+  @apply ml-1.5 whitespace-nowrap shrink-0;
+}
+
+.flowchart-mini-dots {
+  @apply flex items-center px-1.5;
+}
+
+/* 16px hit area around a small visible dot */
+.flowchart-mini-dot {
+  @apply relative flex items-center justify-center h-4 w-4 p-0 border-none bg-transparent cursor-pointer;
+}
+
+.flowchart-mini-dot::before {
+  content: '';
+  @apply block h-1.5 w-1.5 rounded-full;
+  background-color: var(--ctp-surface2);
+  transition: width 0.2s ease, background-color 0.2s ease;
+}
+
+.flowchart-mini-dot:hover::before {
+  background-color: var(--ctp-overlay1);
+}
+
+.flowchart-mini-dot[data-state="done"]::before {
+  background-color: color-mix(in srgb, var(--secondary) 70%, var(--ctp-surface2));
+}
+
+.flowchart-mini-dot[data-state="current"] {
+  @apply w-5;
+}
+
+.flowchart-mini-dot[data-state="current"]::before {
+  @apply w-3.5;
+  background-color: var(--secondary);
+}
+
+.flowchart-mini-divider {
+  @apply mx-1 h-4 w-px shrink-0;
+  background-color: var(--border-light);
+}
+
 
 .flowchart-dock-playback {
   @apply flex justify-end py-0.5 whitespace-nowrap flex-shrink-0;
@@ -1249,15 +1314,6 @@
 
 /* Mobile responsive: icon-only tabs, dynamic journey height */
 @media (max-width: 639px) {
-  .flowchart-controls-dock .expandable-tab-label {
-    display: none !important;
-  }
-
-  /* Show label for active dock tab so user knows which panel is open */
-  .flowchart-controls-dock button[data-active="true"] .expandable-tab-label {
-    display: inline !important;
-  }
-
   .flowchart-view-tab-label {
     display: none !important;
   }
@@ -1276,10 +1332,6 @@
     @apply overflow-x-auto;
   }
 
-  .flowchart-controls-dock .flowchart-controls-dock-content {
-    min-height: 0;
-  }
-
   .flowchart-dock-steps-controls {
     flex-direction: column;
     align-items: flex-start;
@@ -1293,6 +1345,14 @@
   .flowchart-dock-playback {
     width: 100%;
     justify-content: flex-start;
+  }
+
+  .flowchart-dock-collapse {
+    margin-left: auto;
+  }
+
+  .flowchart-mini-dots {
+    @apply px-0.5;
   }
 }
 

@@ -2,12 +2,14 @@ import { useCallback, useEffect, useMemo, useId, useRef, useState, type Componen
 import * as Icons from 'lucide-react';
 import { Button } from '../../../../../ui-system/motion/button';
 import { Dropdown } from '../../../../../ui-system/motion/dropdown';
-import { ExpandableTabs, type ExpandableTabItem } from '../../../../../ui-system/motion/expandable-tabs';
+import { motion, AnimatePresence } from 'motion/react';
+import { SPRING_PANEL } from '../../../../../ui-system/motion/ease';
 import { Tabs, TabsList, TabsTrigger } from '../../../../../ui-system/motion/tabs';
 import { SectionTitleBar } from '../../../../../delivery/web-app-shell/SectionTitleBar';
 
 import { FlowchartView } from './views';
 import { PlaybackControls } from './playback-controls';
+import { MiniPlayer } from './mini-player';
 import { StepCarousel } from './step-carousel';
 import { usePlaybackState } from './usePlaybackState';
 import { autoDeriveViews } from './derivations';
@@ -411,10 +413,7 @@ export function Flowchart({ title, flow, schema = INITIAL_SCHEMA, sectionIndex =
     }
   };
 
-  const [activeDockTabId, setActiveDockTabId] = useState<string | null>(() => {
-    if (schema.journeys && schema.journeys.length > 0) return 'steps';
-    return null;
-  });
+  const [isDockCollapsed, setIsDockCollapsed] = useState(false);
   const [cameraControls, setCameraControls] = useState<{
     handleZoomIn: () => void;
     handleZoomOut: () => void;
@@ -459,92 +458,93 @@ export function Flowchart({ title, flow, schema = INITIAL_SCHEMA, sectionIndex =
     });
   }, [visibleViewKeys, localSchema.views!, activeViewKey]);
 
-  const dockTabs = useMemo<ExpandableTabItem[]>(() => {
-    const tabs: ExpandableTabItem[] = [];
+  const journeys = localSchema.journeys;
+  const currentJourney = playback.currentJourney;
+  const hasDock = activeSteps.length > 0;
 
-    // Journey Tab: journey picker + description + playback + step carousel
-    if (activeSteps && activeSteps.length > 0) {
-      const journeys = localSchema.journeys;
-      const currentJourney = playback.currentJourney;
-      tabs.push({
-        id: 'steps',
-        label: 'Journey',
-        icon: <Icons.Route size={14} />,
-        testId: 'dock-tab-steps',
-        content: (
-          <div className="flowchart-dock-steps" data-testid="flowchart-journey-bar">
-            {currentJourney && (
-              <div className="flowchart-dock-journey-header">
-                <div className="flowchart-dock-steps-controls">
-                  <div className="flowchart-dock-journey-title-wrapper">
-                    {journeys.length > 1 ? (
-                      <Dropdown
-                        value={playback.currentJourneyId}
-                        onChange={(val) => {
-                          playback.setCurrentJourneyId(val);
-                          setActiveStep(null);
-                        }}
-                        options={journeys.map(j => ({ value: j.id, label: j.label }))}
-                        data-testid="flowchart-journey-select"
-                        triggerTestId="flowchart-journey-trigger"
-                        native={true}
-                        className="flowchart-journey-dropdown"
-                        triggerClassName="flowchart-journey-select"
-                        optionsClassName="flowchart-journey-options"
-                        optionClassName="flowchart-journey-option"
-                        optionActiveClassName="flowchart-journey-option-active"
-                      />
-                    ) : (
-                      <div
-                        className="flowchart-dock-journey-title"
-                        data-testid="flowchart-dock-journey-title"
-                        title={currentJourney.label}
-                      >
-                        {currentJourney.label}
-                      </div>
-                    )}
-                  </div>
-                  <div className="flowchart-dock-playback">
-                    <PlaybackControls
-                      currentJourney={currentJourney}
-                      currentStep={playback.currentStep}
-                      isPlaying={playback.isPlaying}
-                      handlePlay={playback.handlePlay}
-                      handlePause={playback.handlePause}
-                      handleNext={playback.handleNext}
-                      handlePrev={playback.handlePrev}
-                      handleReset={playback.handleReset}
-                    />
-                  </div>
+  const selectJourneyStep = (stepIndex: number) => {
+    playback.setCurrentStep(stepIndex);
+    playback.handlePause();
+  };
+
+  const journeyPanel = (
+    <div className="flowchart-dock-steps" data-testid="flowchart-journey-bar">
+      {currentJourney && (
+        <div className="flowchart-dock-journey-header">
+          <div className="flowchart-dock-steps-controls">
+            <div className="flowchart-dock-journey-title-wrapper">
+              {journeys.length > 1 ? (
+                <Dropdown
+                  value={playback.currentJourneyId}
+                  onChange={(val) => {
+                    playback.setCurrentJourneyId(val);
+                    setActiveStep(null);
+                  }}
+                  options={journeys.map(j => ({ value: j.id, label: j.label }))}
+                  data-testid="flowchart-journey-select"
+                  triggerTestId="flowchart-journey-trigger"
+                  native={true}
+                  className="flowchart-journey-dropdown"
+                  triggerClassName="flowchart-journey-select"
+                  optionsClassName="flowchart-journey-options"
+                  optionClassName="flowchart-journey-option"
+                  optionActiveClassName="flowchart-journey-option-active"
+                />
+              ) : (
+                <div
+                  className="flowchart-dock-journey-title"
+                  data-testid="flowchart-dock-journey-title"
+                  title={currentJourney.label}
+                >
+                  {currentJourney.label}
                 </div>
-                {currentJourney.description && (
-                  <div
-                    className="flowchart-journey-description"
-                    data-testid="flowchart-journey-description"
-                    title={currentJourney.description}
-                  >
-                    {currentJourney.description}
-                  </div>
-                )}
-              </div>
-            )}
-            <StepCarousel
-              activeSteps={activeSteps}
-              activeStep={activeStep}
-              handleStepClick={handleStepClick}
-              instanceId={instanceId}
-              inline={true}
-            />
+              )}
+            </div>
+            <div className="flowchart-dock-playback">
+              <PlaybackControls
+                currentJourney={currentJourney}
+                currentStep={playback.currentStep}
+                isPlaying={playback.isPlaying}
+                handlePlay={playback.handlePlay}
+                handlePause={playback.handlePause}
+                handleNext={playback.handleNext}
+                handlePrev={playback.handlePrev}
+                handleReset={playback.handleReset}
+              />
+              <Button
+                size="icon"
+                variant="ghost"
+                className="flowchart-btn flowchart-dock-collapse"
+                onClick={() => setIsDockCollapsed(true)}
+                data-testid="flowchart-dock-collapse"
+                aria-label="Collapse journey panel"
+                title="Collapse journey panel"
+                aria-expanded={true}
+              >
+                <Icons.ChevronDown size={16} />
+              </Button>
+            </div>
           </div>
-        )
-      });
-    }
-
-    // ── Floating buttons (fullscreen, inspector) rendered outside dock ──
-
-    return tabs;
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [activeSteps, activeStep, handleStepClick, instanceId, playback, isFullscreen, localSchema.journeys]);
+          {currentJourney.description && (
+            <div
+              className="flowchart-journey-description"
+              data-testid="flowchart-journey-description"
+              title={currentJourney.description}
+            >
+              {currentJourney.description}
+            </div>
+          )}
+        </div>
+      )}
+      <StepCarousel
+        activeSteps={activeSteps}
+        activeStep={activeStep}
+        handleStepClick={handleStepClick}
+        instanceId={instanceId}
+        inline={true}
+      />
+    </div>
+  );
 
   return (
     <div className={`flowchart-section${isFullscreen ? ' fullscreen' : ''}`} data-testid="flowchart-section">
@@ -686,13 +686,43 @@ export function Flowchart({ title, flow, schema = INITIAL_SCHEMA, sectionIndex =
 
         {/* Floating unified controls dock overlay at bottom-center */}
         <div className="flowchart-controls-dock-container" data-testid="flowchart-controls-dock">
-          <ExpandableTabs
-            tabs={dockTabs}
-            activeTabId={activeDockTabId}
-            onTabChange={setActiveDockTabId}
-            className="flowchart-controls-dock"
-            contentClassName="flowchart-controls-dock-content"
-          />
+          <AnimatePresence mode="wait" initial={false}>
+            {/* The mini player needs a journey to drive; without one the panel stays open */}
+            {hasDock && (isDockCollapsed && currentJourney ? (
+              <motion.div
+                key="mini"
+                className="flowchart-controls-dock flowchart-dock-mini"
+                initial={{ opacity: 0, y: 8, scale: 0.96 }}
+                animate={{ opacity: 1, y: 0, scale: 1 }}
+                exit={{ opacity: 0, y: 8, scale: 0.96 }}
+                transition={SPRING_PANEL}
+              >
+                <MiniPlayer
+                  currentJourney={currentJourney}
+                  currentStep={playback.currentStep}
+                  isPlaying={playback.isPlaying}
+                  handlePlay={playback.handlePlay}
+                  handlePause={playback.handlePause}
+                  handleNext={playback.handleNext}
+                  handlePrev={playback.handlePrev}
+                  handleReset={playback.handleReset}
+                  onSelectStep={selectJourneyStep}
+                  onExpand={() => setIsDockCollapsed(false)}
+                />
+              </motion.div>
+            ) : (
+              <motion.div
+                key="panel"
+                className="flowchart-controls-dock flowchart-dock-panel"
+                initial={{ opacity: 0, y: 12 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: 12 }}
+                transition={SPRING_PANEL}
+              >
+                {journeyPanel}
+              </motion.div>
+            ))}
+          </AnimatePresence>
         </div>
 
         {activeStep && (
