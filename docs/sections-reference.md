@@ -25,7 +25,7 @@ For optimal cognitive progression, structure your topic's sections in the follow
 2. **Concept map (`concept-map`)** — Visual bird's-eye view of how concepts interrelate. Placed early so the learner has a spatial map before individual concepts are explored in depth.
 3. **Glossary / vocabulary (`flashcards`)** — Teach key terms and their pronunciation before they appear in diagrams, text, or trade-offs. If the learner doesn't know the words, everything else is noise.
 4. **Concept categories (`taxonomy-browser`)** — Show the landscape of concepts and how they relate. Gives the learner a map of what's coming so individual sections feel connected, not isolated.
-5. **Core explanation (`text` / `bullets`)** — Explain main concepts, learning goals, or capabilities in prose. Builds on the vocabulary and taxonomy the learner just saw.
+5. **Core explanation (`openui` / `bullets`)** — Explain main concepts, learning goals, or capabilities in prose (markdown `TextContent` blocks) or richer layouts. Builds on the vocabulary and taxonomy the learner just saw.
 6. **How it works (`flowchart`)** — Show the process flow. Now the learner can read node labels and understand what each entity does because the terms were taught earlier.
 7. **Sequence check (`reflection-sequence`)** — Drag-and-drop chronological flowchart step ordering challenge. Placed immediately after the flowchart to transition passive flowchart recognition into active process recall.
 8. **Apply (`bullets`)** — Practical checklists, maintenance steps, or reference material. The learner can now act on this because they understand the underlying mechanics.
@@ -42,7 +42,7 @@ For optimal cognitive progression, structure your topic's sections in the follow
 
 > [!NOTE]
 > **Multiple Sections of Any Type Allowed**
-> Topics are not limited to a single instance per section type. A single topic can include **multiple sections of ANY type** (e.g., multiple `text` sections, multiple `flowchart` sections, multiple `tradeoff-sandbox` sections, or multiple `scenario` and `decision-tree` sections). Arrange them in whatever sequence best serves the learning progression.
+> Topics are not limited to a single instance per section type. A single topic can include **multiple sections of ANY type** (e.g., multiple `openui` sections, multiple `flowchart` sections, multiple `tradeoff-sandbox` sections, or multiple `scenario` and `decision-tree` sections). Arrange them in whatever sequence best serves the learning progression.
 
 ---
 
@@ -51,7 +51,6 @@ For optimal cognitive progression, structure your topic's sections in the follow
 | Section Type | Mental Model Focus | Data Input Format | Local UI State | Animations & Micro-interactions | Core Subdomain Path (`src/core/subdomains/`) |
 |---|---|---|---|---|---|
 | `intro` | Topic hero overview, rationale & learning roadmap | `content.yaml` | None | Entrance keyframes, touch-swipe horizontal roadmap track | `progressive-content` |
-| `text` | Anchored conceptual narrative | Markdown strings | None | Scroll-triggered fade-in | `progressive-content` |
 | `openui` | Free-form composed layout (cards, tabs, tables, charts) | Standard OpenUI Lang program after an `// @openui "Title"` directive | Component-local (tabs, accordions, form fields) | OpenUI component transitions | `progressive-content` |
 | `bullets` | Hierarchical taxonomy / breakdown | Nested recursive nodes | Expanded/Collapsed states | Staggered fade/slide-in, chevron rotation | `progressive-content` |
 | `flowchart` | Dynamic process flows & swimlanes | `actors.yaml`, `systems.yaml`, `steps.yaml`, `journeys.yaml` | Active step, fullscreen toggle, view mode tabs | anime.js path drawing, camera centering, highlights | `process-simulation` |
@@ -71,11 +70,6 @@ For optimal cognitive progression, structure your topic's sections in the follow
 ---
 
 ## Detailed Section Mental Models
-
-### `text`
-- **Mental Model Focus**: Anchored conceptual narrative.
-- **Interactivity**: Scroll-reveal animations.
-- **Pedagogical Rationale**: Establishes basic context and reading continuity. Useful for section summaries or introductory overviews.
 
 ### `openui`
 - **Mental Model Focus**: Free-form composed layout built from the standard OpenUI component library (`@openuidev/react-ui`).

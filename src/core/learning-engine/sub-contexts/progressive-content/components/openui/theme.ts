@@ -86,6 +86,21 @@ export const LOOM_OPENUI_THEME: Theme = {
   fontLabel: 'var(--font-body)',
 }
 
+const UPSTREAM_FONT = '"Inter", sans-serif'
+
+/**
+ * react-ui's composite text tokens (`textBodyDefault: 400 16px/1.5 "Inter", …`)
+ * hardcode the font family; swap in the Loom fonts (display font for headings).
+ */
+function withLoomFonts(theme: Record<string, string>): Theme {
+  return Object.fromEntries(Object.entries(theme).map(([key, value]) => [
+    key,
+    value.includes(UPSTREAM_FONT)
+      ? value.replace(UPSTREAM_FONT, key.startsWith('textHeading') ? 'var(--font-display)' : 'var(--font-body)')
+      : value,
+  ]))
+}
+
 /** Same naming as react-ui's `themeToCssVars`: `textBodyXs` → `--openui-text-body-xs`. */
 function cssVarName(key: string): string {
   const kebab = key
@@ -102,7 +117,7 @@ function cssVarName(key: string): string {
  * modals), which portal to the end of the document, are themed as well.
  */
 export function loomOpenUIThemeCss(selector = 'body'): string {
-  const theme: Theme = { ...defaultDarkTheme, ...LOOM_OPENUI_THEME }
+  const theme: Theme = { ...withLoomFonts(defaultDarkTheme), ...LOOM_OPENUI_THEME }
   const declarations = Object.entries(theme)
     .filter((entry): entry is [string, string] => typeof entry[1] === 'string')
     .map(([key, value]) => `  ${cssVarName(key)}: ${value};`)

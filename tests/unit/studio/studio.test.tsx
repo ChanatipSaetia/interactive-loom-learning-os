@@ -7,7 +7,7 @@ import { registerCoreSections } from '../../../src/core/learning-engine/registry
 
 const files = () => ({
   'topic.oui': 'root = Topic("Demo", "Architecture", "A demo", [SectionRef("intro"), SectionRef("quiz")])\n',
-  'sections/intro.oui': 'root = Text("Intro", ["Hello."])\n',
+  'sections/intro.oui': 'root = Bullets("Intro", [Bullet("Hello.")])\n',
   'sections/quiz.oui': 'root = Quiz("Check", [q1])\nq1 = QuizQuestion("q1", "Why?", [QuizChoice("a", "A", true, "Yes")])\n',
 })
 
@@ -29,19 +29,19 @@ describe('Loom Studio', () => {
 
   it('lists sections with their types and opens the first one', async () => {
     await renderWorkspace()
-    expect(screen.getByTestId('studio-section-intro').textContent).toContain('text')
+    expect(screen.getByTestId('studio-section-intro').textContent).toContain('bullets')
     expect(screen.getByTestId('studio-section-quiz').textContent).toContain('quiz')
     expect(screen.getByTestId('studio-section-editor')).toBeInTheDocument()
-    await waitFor(() => expect(screen.getByTestId('studio-preview').getAttribute('data-section-type')).toBe('text'))
+    await waitFor(() => expect(screen.getByTestId('studio-preview').getAttribute('data-section-type')).toBe('bullets'))
   })
 
   it('tracks unsaved edits and saves with Ctrl+S', async () => {
     const { folder, workspace } = await renderWorkspace()
     expect(screen.getByTestId('studio-save').textContent).toContain('Saved')
-    act(() => workspace.setSource('intro', 'root = Text("Intro", ["Changed."])\n'))
+    act(() => workspace.setSource('intro', 'root = Bullets("Intro", [Bullet("Changed.")])\n'))
     expect(screen.getByTestId('studio-save').textContent).toContain('Save (1)')
     fireEvent.keyDown(window, { key: 's', ctrlKey: true })
-    await waitFor(() => expect(folder.files.get('sections/intro.oui')).toBe('root = Text("Intro", ["Changed."])\n'))
+    await waitFor(() => expect(folder.files.get('sections/intro.oui')).toBe('root = Bullets("Intro", [Bullet("Changed.")])\n'))
     await waitFor(() => expect(screen.getByTestId('studio-save').textContent).toContain('Saved'))
   })
 
@@ -59,7 +59,7 @@ describe('Loom Studio', () => {
     expect(screen.getByTestId('studio-form')).toBeInTheDocument()
     const titleInput = screen.getByDisplayValue('Intro')
     fireEvent.change(titleInput, { target: { value: 'Welcome' } })
-    expect(workspace.section('intro')?.source).toContain('root = Text("Welcome"')
+    expect(workspace.section('intro')?.source).toContain('root = Bullets("Welcome"')
   })
 
   it('adds a section from a template', async () => {

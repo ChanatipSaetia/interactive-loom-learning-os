@@ -414,6 +414,7 @@ function compileStandardOpenUISection(source: string, directive: OpenUIDirective
 
   const meta: OKFSectionMeta = { type: OPENUI_SECTION_TYPE, title: directive.title, resource: '.' }
   if (directive.heading) meta.heading = directive.heading
+  if (directive.lead) meta.intro = directive.lead
   return {
     value: { meta, data: { type: OPENUI_SECTION_TYPE, source: openUIProgramOf(source) } },
     rootComponent: result.root.typeName,

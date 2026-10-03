@@ -19,7 +19,6 @@ import type {
   ReflectionTemplateChallenge,
 } from '../../sub-contexts/reflection-synthesis'
 import type {
-  TextSectionData,
   OpenUISectionData,
   IntroSectionData,
   BulletsSectionData,
@@ -28,6 +27,7 @@ import type {
   PillarLayerSectionData,
   GalleryItem,
 } from '../../sub-contexts/progressive-content'
+import { paragraphsToStandardProgram } from '../oui/standard'
 import type {
   QuizSectionData,
   FlashcardsSectionData,
@@ -170,6 +170,8 @@ export async function loadOKFBundle(topicId: string): Promise<OKFBundled> {
       const sectionBasePath = `${topicId}/${sectionDir}`
 
       const data = await loadSectionResource(meta.type, sectionBasePath, resourceFiles, meta.resource, sectionRes.body)
+      // Legacy `text` sections load as `openui` sections.
+      meta.type = data.type ?? meta.type
       const folderName = sectionDir.split('/').pop() ?? `section-${idx}`
       return { meta, data, sectionBody: sectionRes.body, sectionFolder: folderName }
     })
@@ -190,7 +192,7 @@ async function loadSectionResource(
     case 'intro':
       return loadIntroSection(basePath, resource)
     case 'text':
-      return loadTextSection(basePath, resource, sectionBody)
+      return loadTextAsOpenUISection(basePath, resource, sectionBody)
     case 'openui':
       return loadOpenUISection(basePath, resource)
     case 'bullets':
@@ -226,15 +228,14 @@ async function loadSectionResource(
   }
 }
 
-async function loadTextSection(basePath: string, resource: string, sectionBody: string): Promise<TextSectionData> {
+/** The retired `text` type: its paragraphs become a stack of markdown `TextContent` blocks. */
+async function loadTextAsOpenUISection(basePath: string, resource: string, sectionBody: string): Promise<OpenUISectionData> {
   const contentFile = resource !== '.' ? resource : 'content.md'
   try {
     const contentRes = await fetchMarkdown(`${basePath}/${contentFile}`)
-    const paragraphs = parseParagraphs(contentRes.body)
-    return { type: 'text', paragraphs }
+    return { type: 'openui', source: paragraphsToStandardProgram(parseParagraphs(contentRes.body)) }
   } catch {
-    const paragraphs = parseParagraphs(sectionBody)
-    return { type: 'text', paragraphs }
+    return { type: 'openui', source: paragraphsToStandardProgram(parseParagraphs(sectionBody)) }
   }
 }
 

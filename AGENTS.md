@@ -30,7 +30,7 @@ When refactoring or extending core sections, follow the Strategic & Tactical DDD
    * **`process-simulation`**: `flowchart`, `scenario`
    * **`tradeoff-sandbox`**: `tradeoff-sandbox`, `formula-sandbox`, `decision-tree`
    * **`reflection-synthesis`**: `reflection-sequence`, `reflection-template`
-   * **`progressive-content`**: `text`, `intro`, `bullets`, `taxonomy-browser`, `image-gallery`
+   * **`progressive-content`**: `intro`, `openui`, `bullets`, `taxonomy-browser`, `image-gallery`, `pillar-layer`
    * **`practice-assessment`**: `quiz`, `flashcards`, `concept-map`
    * *Rule:* Each subdomain directory (`src/core/subdomains/[subdomain]/`) MUST contain:
      - `components/`: React section view renderers, help modals, & visual form editors.

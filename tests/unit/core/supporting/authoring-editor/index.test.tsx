@@ -4,21 +4,17 @@ import { VisualFormEditor } from '../../../../../src/core/supporting/authoring-e
 import type { OKFSectionData } from '../../../../../src/core/learning-engine/composition/okf/types'
 
 describe('VisualFormEditor', () => {
-  it('renders text form editor for text type', () => {
-    const mockData: OKFSectionData = {
-      type: 'text',
-      paragraphs: ['Hello world', 'Second paragraph'],
-    }
+  it('renders the OpenUI block editor for openui sections', () => {
+    const mockData: OKFSectionData = { type: 'openui', source: 'root = Stack([TextContent("Hello world")])' }
     const onChange = vi.fn()
     render(<VisualFormEditor data={mockData} onChange={onChange} />)
 
-    expect(screen.getByTestId('text-form-editor')).toBeInTheDocument()
-    expect(screen.getByTestId('text-paragraph-input-0')).toBeInTheDocument()
-    expect(screen.getByTestId('text-add-paragraph')).toBeInTheDocument()
+    expect(screen.getByTestId('openui-form-editor')).toBeInTheDocument()
+    fireEvent.change(screen.getByTestId('openui-form-root-children-0-text'), { target: { value: 'Hi' } })
+    expect(onChange).toHaveBeenLastCalledWith({ type: 'openui', source: 'root = Stack([TextContent("Hi")])' })
 
-    // Test guide modal
-    fireEvent.click(screen.getByTestId('text-editor-help-btn'))
-    expect(screen.getByTestId('text-help-modal')).toBeInTheDocument()
+    fireEvent.click(screen.getByTestId('openui-editor-help-btn'))
+    expect(screen.getByTestId('openui-help-modal')).toBeInTheDocument()
   })
 
   it('renders bullets form editor for bullets type', () => {

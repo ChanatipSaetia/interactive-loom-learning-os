@@ -19,7 +19,6 @@ import { singleEmbedAdapter, registerEmbedSection } from '../src/core/delivery/a
 import '../src/styles/global.css'
 import '../src/core/delivery/web-app-shell/layout.css'
 import '../src/core/learning-engine/sub-contexts/progressive-content/components/intro/intro.css'
-import '../src/core/learning-engine/sub-contexts/progressive-content/components/text/text.css'
 import '../src/core/learning-engine/sub-contexts/progressive-content/components/bullets/bullets.css'
 import '../src/core/learning-engine/sub-contexts/process-simulation/components/flowchart/flowchart.css'
 import '../src/core/learning-engine/sub-contexts/tradeoff-sandbox/components/tradeoff-sandbox/tradeoff-sandbox.css'
@@ -35,7 +34,7 @@ import '../src/core/learning-engine/sub-contexts/reflection-synthesis/components
 
 // Import all section components directly
 import IntroSection from '../src/core/learning-engine/sub-contexts/progressive-content/components/intro'
-import TextSection from '../src/core/learning-engine/sub-contexts/progressive-content/components/text'
+import OpenUISection from '../src/core/learning-engine/sub-contexts/progressive-content/components/openui'
 import BulletsSection from '../src/core/learning-engine/sub-contexts/progressive-content/components/bullets'
 import { Flowchart as FlowchartSection } from '../src/core/learning-engine/sub-contexts/process-simulation/components/FlowchartSection'
 import TradeoffSandboxSection from '../src/core/learning-engine/sub-contexts/tradeoff-sandbox/components/tradeoff-sandbox'
@@ -54,7 +53,7 @@ import ReflectionTemplateSection from '../src/core/learning-engine/sub-contexts/
 
 const SECTIONS: Record<string, ComponentType<any>> = {
   intro: IntroSection,
-  text: TextSection,
+  openui: OpenUISection,
   bullets: BulletsSection,
   flowchart: FlowchartSection,
   'tradeoff-sandbox': TradeoffSandboxSection,

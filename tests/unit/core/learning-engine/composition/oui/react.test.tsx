@@ -6,18 +6,18 @@ import type { SectionConfig } from '../../../../../../src/core/learning-engine/r
 describe('OUISectionRenderer (react-lang bridge)', () => {
   it('renders a section through renderSection with compiled props', () => {
     const renderSection = vi.fn((config: SectionConfig) => (
-      <div data-testid="section">{config.type}:{(config.props.paragraphs as string[]).join('|')}</div>
+      <div data-testid="section">{config.type}:{(config.props.items as { text: string }[]).map((i) => i.text).join('|')}</div>
     ))
     render(
       <OUISectionRenderer
-        source={'$name = "Loom"\nroot = Text("Hello", ["Hi " + $name, "Bye"])'}
+        source={'$name = "Loom"\nroot = Bullets("Hello", [Bullet("Hi " + $name), Bullet("Bye")])'}
         renderSection={renderSection}
       />,
     )
-    expect(screen.getByTestId('section').textContent).toBe('text:Hi Loom|Bye')
+    expect(screen.getByTestId('section').textContent).toBe('bullets:Hi Loom|Bye')
     expect(renderSection).toHaveBeenLastCalledWith(expect.objectContaining({
-      type: 'text',
-      props: expect.objectContaining({ title: 'Hello', paragraphs: ['Hi Loom', 'Bye'] }),
+      type: 'bullets',
+      props: expect.objectContaining({ title: 'Hello', items: [{ text: 'Hi Loom' }, { text: 'Bye' }] }),
     }))
   })
 

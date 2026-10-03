@@ -22,7 +22,6 @@ import type { ValidationContext, ValidationDiagnostic, ValidationResult } from '
 
 import {
   IntroSectionSchema,
-  TextSectionSchema,
   OpenUISectionSchema,
   BulletsSectionSchema,
   TaxonomyBrowserSectionSchema,
@@ -65,7 +64,6 @@ interface SchemaEntry {
 
 const SCHEMA_REGISTRY: Record<string, SchemaEntry> = {
   'intro': { schema: IntroSectionSchema, subdomain: 'progressive-content', validateTier3: validateProgressiveContentTier3 },
-  'text': { schema: TextSectionSchema, subdomain: 'progressive-content', validateTier3: validateProgressiveContentTier3 },
   'openui': { schema: OpenUISectionSchema, subdomain: 'progressive-content', validateTier3: validateProgressiveContentTier3 },
   'bullets': { schema: BulletsSectionSchema, subdomain: 'progressive-content', validateTier3: validateProgressiveContentTier3 },
   'taxonomy-browser': { schema: TaxonomyBrowserSectionSchema, subdomain: 'progressive-content', validateTier3: validateProgressiveContentTier3 },

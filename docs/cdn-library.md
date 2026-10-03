@@ -21,13 +21,10 @@ Standalone React component library for rendering interactive learning sections f
   <script>
     const okfSections = [
       {
-        type: "text",
+        type: "openui",
         props: {
           title: "Welcome",
-          paragraphs: [
-            "# Hello World\nThis is your first learning page.",
-            "Add more paragraphs here."
-          ]
+          source: 'root = Stack([TextContent("# Hello World\\nThis is your first learning page."), TextContent("Add more paragraphs here.")])'
         }
       },
       {
@@ -165,14 +162,20 @@ interface SectionConfig {
 
 ## Section Types
 
+> [!WARNING]
+> **Breaking change:** the `text` section type was retired. Pass prose as an `openui` section whose `source` is a
+> standard OpenUI program, e.g. `root = Stack([TextContent("First paragraph."), TextContent("Second.")])`
+> (one markdown `TextContent` per former paragraph). Legacy OKF folders with `type: text` still load through
+> `renderOKF` / the OKF loader, which performs this conversion.
+
 For detailed schema specifications, prop definitions, file structures, and examples for each section type, see the dedicated reference documents in [`docs/sections/`](sections/README.md).
 
 > [!NOTE]
-> A topic configuration array (`sections`) can include **multiple instances of ANY section type** (e.g. multiple `text` sections, multiple `flowchart` sections, multiple `tradeoff-sandbox` sections, or multiple `scenario` and `decision-tree` sections).
+> A topic configuration array (`sections`) can include **multiple instances of ANY section type** (e.g. multiple `openui` sections, multiple `flowchart` sections, multiple `tradeoff-sandbox` sections, or multiple `scenario` and `decision-tree` sections).
 
 | Type | Reference Documentation | Mental Model |
 |---|---|---|
-| `text` | [sections/text.md](sections/text.md) | Anchored conceptual narrative |
+| `openui` | [sections/openui.md](sections/openui.md) | Prose and free-form layout from standard OpenUI components |
 | `bullets` | [sections/bullets.md](sections/bullets.md) | Hierarchical breakdown |
 | `concept-map` | [sections/concept-map.md](sections/concept-map.md) | Semantic relationships |
 | `flashcards` | [sections/flashcards.md](sections/flashcards.md) | Vocabulary recall |
@@ -296,10 +299,10 @@ Create `curriculum.json` in the same directory and define the array of sections:
 ```json
 [
   {
-    "type": "text",
+    "type": "openui",
     "props": {
       "title": "Welcome",
-      "paragraphs": ["# Hello World\nWelcome to interactive learning!"]
+      "source": "root = TextContent(\"# Hello World\\nWelcome to interactive learning!\")"
     }
   }
 ]
@@ -396,10 +399,10 @@ Embed the array directly inside your script tag:
   <script>
     const okfSections = [
       {
-        type: "text",
+        type: "openui",
         props: {
           title: "Introduction",
-          paragraphs: ["# Welcome\nThis is loaded from an inline script block."]
+          source: 'root = TextContent("# Welcome\\nThis is loaded from an inline script block.")'
         }
       }
     ];

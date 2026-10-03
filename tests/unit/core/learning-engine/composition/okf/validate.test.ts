@@ -21,23 +21,23 @@ describe('validateOKFSection (3-Tier Validation Gateway)', () => {
 
   // --- Tier 2 (Schema) ---
 
-  it('returns no errors for valid text section', () => {
-    const result = validateOKFSection('type: text\nparagraphs:\n  - Hello world')
+  it('returns no errors for valid bullets section', () => {
+    const result = validateOKFSection('type: bullets\nitems:\n  - text: Hello world')
     expect(result.status).toBe('valid')
     expect(result.payload).toBeTruthy()
   })
 
   it('returns schema error for missing required field', () => {
-    const result = validateOKFSection('type: text')
+    const result = validateOKFSection('type: bullets')
     expect(result.status).toBe('error')
-    const schemaErr = result.diagnostics.find((e: any) => e.tier === 2 && e.field === 'paragraphs')
+    const schemaErr = result.diagnostics.find((e: any) => e.tier === 2 && e.field === 'items')
     expect(schemaErr).toBeTruthy()
   })
 
   it('returns schema error for wrong field type', () => {
-    const result = validateOKFSection('type: text\nparagraphs: "not an array"')
+    const result = validateOKFSection('type: bullets\nitems: "not an array"')
     expect(result.status).toBe('error')
-    const schemaErr = result.diagnostics.find((e: any) => e.tier === 2 && e.field === 'paragraphs')
+    const schemaErr = result.diagnostics.find((e: any) => e.tier === 2 && e.field === 'items')
     expect(schemaErr).toBeTruthy()
   })
 
@@ -49,7 +49,7 @@ describe('validateOKFSection (3-Tier Validation Gateway)', () => {
   })
 
   it('returns schema error for missing type field', () => {
-    const result = validateOKFSection('paragraphs:\n  - Hello')
+    const result = validateOKFSection('items:\n  - text: Hello')
     expect(result.status).toBe('error')
     const typeErr = result.diagnostics.find((e: any) => e.tier === 2 && e.field === 'type')
     expect(typeErr).toBeTruthy()
@@ -102,7 +102,7 @@ edges:
   })
 
   it('uses metaType fallback when type field missing', () => {
-    const result = validateOKFSection('paragraphs:\n  - Hello', 'text')
+    const result = validateOKFSection('items:\n  - text: Hello', 'bullets')
     const typeErr = result.diagnostics.find((e: any) => e.tier === 2 && e.field === 'type')
     expect(typeErr).toBeFalsy()
     expect(result.status).toBe('valid')

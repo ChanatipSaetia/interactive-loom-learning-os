@@ -134,9 +134,9 @@ describe('TopicShell topic loading', () => {
 describe('TopicShell is read-only', () => {
   beforeEach(() => {
     registryModule.SectionRegistry.clear()
-    registryModule.SectionRegistry.register('text', mockSectionLoader)
+    registryModule.SectionRegistry.register('bullets', mockSectionLoader)
     vi.spyOn(contentModule, 'useTopicBundle').mockReturnValue({
-      bundle: [{ meta: { type: 'text', title: 'Intro', resource: '.' }, data: { type: 'text', paragraphs: ['Hi'] } }],
+      bundle: [{ meta: { type: 'bullets', title: 'Intro', resource: '.' }, data: { type: 'bullets', items: [{ text: 'Hi' }] } }],
       loading: false,
       error: null,
       reload: vi.fn(),

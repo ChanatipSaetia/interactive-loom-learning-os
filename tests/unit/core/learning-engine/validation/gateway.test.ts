@@ -15,7 +15,7 @@ import type { ValidationDiagnostic } from '../../../../../src/core/learning-engi
 
 describe('Tier 1 - YAML Syntax', () => {
   it('detects invalid YAML indentation', () => {
-    const result = validateOKFSection('type: text\n  paragraphs: [bad indent]')
+    const result = validateOKFSection('type: bullets\n  items: [bad indent]')
     expect(result.status).toBe('error')
     expect(result.diagnostics.length).toBeGreaterThanOrEqual(1)
     expect(result.diagnostics[0].tier).toBe(1)
@@ -23,7 +23,7 @@ describe('Tier 1 - YAML Syntax', () => {
   })
 
   it('detects broken YAML syntax', () => {
-    const result = validateOKFSection('type: text\nparagraphs:\n  - [unclosed bracket')
+    const result = validateOKFSection('type: bullets\nitems:\n  - [unclosed bracket')
     expect(result.status).toBe('error')
     const syntaxError = result.diagnostics.find((d) => d.tier === 1)
     expect(syntaxError).toBeDefined()
@@ -37,21 +37,21 @@ describe('Tier 1 - YAML Syntax', () => {
   })
 
   it('parses valid YAML without frontmatter', () => {
-    const result = validateOKFSection('type: text\nparagraphs: ["hello"]')
+    const result = validateOKFSection('type: bullets\nitems: [{text: "hello"}]')
     expect(result.diagnostics.filter((d) => d.tier === 1).length).toBe(0)
   })
 })
 
 describe('Tier 1 - Frontmatter', () => {
   it('extracts type hint from frontmatter', () => {
-    const yamlWithFm = '---\ntype: text\n---\nparagraphs: ["hello world"]'
+    const yamlWithFm = '---\ntype: bullets\n---\nitems: [{text: "hello world"}]'
     const result = validateOKFSectionFile(yamlWithFm)
     expect(result.status).toBe('valid')
     expect(result.diagnostics.length).toBe(0)
   })
 
   it('detects unclosed frontmatter', () => {
-    const result = validateOKFSection('---\ntype: text\nparagraphs: ["hello"]')
+    const result = validateOKFSection('---\ntype: bullets\nitems: [{text: "hello"}]')
     expect(result.status).toBe('error')
     const fmError = result.diagnostics.find((d) => d.tier === 1)
     expect(fmError).toBeDefined()
@@ -72,32 +72,32 @@ describe('Tier 2 - Schema Validation', () => {
   })
 
   it('detects missing type field', () => {
-    const result = validateOKFSection('paragraphs: ["hello"]')
+    const result = validateOKFSection('items: [{text: "hello"}]')
     expect(result.status).toBe('error')
     const typeError = result.diagnostics.find((d) => d.tier === 2 && d.field === 'type')
     expect(typeError).toBeDefined()
   })
 
-  it('validates text section with correct schema', () => {
-    const result = validateOKFSection('type: text\nparagraphs: ["Hello world", "Second para"]')
+  it('validates bullets section with correct schema', () => {
+    const result = validateOKFSection('type: bullets\nitems: [{text: "Hello world"}, {text: "Second para"}]')
     expect(result.status).toBe('valid')
     expect(result.diagnostics.length).toBe(0)
   })
 
-  it('detects missing required field in text section', () => {
-    const result = validateOKFSection('type: text')
+  it('detects missing required field in bullets section', () => {
+    const result = validateOKFSection('type: bullets')
     expect(result.status).toBe('error')
     const fieldError = result.diagnostics.find(
-      (d) => d.tier === 2 && d.field === 'paragraphs'
+      (d) => d.tier === 2 && d.field === 'items'
     )
     expect(fieldError).toBeDefined()
   })
 
-  it('detects wrong field type in text section', () => {
-    const result = validateOKFSection('type: text\nparagraphs: "not an array"')
+  it('detects wrong field type in bullets section', () => {
+    const result = validateOKFSection('type: bullets\nitems: "not an array"')
     expect(result.status).toBe('error')
     const fieldError = result.diagnostics.find(
-      (d) => d.tier === 2 && d.field === 'paragraphs'
+      (d) => d.tier === 2 && d.field === 'items'
     )
     expect(fieldError).toBeDefined()
     expect(fieldError!.fixHint).toBeDefined()
@@ -753,7 +753,7 @@ challenges:
 
 describe('ValidationResult structure', () => {
   it('returns valid status for correct section', () => {
-    const result = validateOKFSection('type: text\nparagraphs: ["OK"]')
+    const result = validateOKFSection('type: bullets\nitems: [{text: "OK"}]')
     expect(result.status).toBe('valid')
     expect(result.diagnostics).toEqual([])
     expect(result.payload).toBeDefined()
@@ -781,13 +781,13 @@ startNode: missing
   })
 
   it('returns error status for tier 2 errors', () => {
-    const result = validateOKFSection('type: text\nparagraphs: "not array"')
+    const result = validateOKFSection('type: bullets\nitems: "not array"')
     expect(result.status).toBe('error')
     expect(result.diagnostics.some((d) => d.tier === 2)).toBe(true)
   })
 
   it('includes fixHint on diagnostics', () => {
-    const result = validateOKFSection('type: text')
+    const result = validateOKFSection('type: bullets')
     expect(result.diagnostics.some((d) => d.fixHint !== undefined)).toBe(true)
   })
 
@@ -825,7 +825,7 @@ describe('ValidationContext', () => {
 
 describe('formatValidationReport', () => {
   it('produces valid JSON', () => {
-    const result = validateOKFSection('type: text')
+    const result = validateOKFSection('type: bullets')
     const report = formatValidationReport(result)
     const parsed = JSON.parse(report)
     expect(parsed.status).toBe('error')
@@ -835,14 +835,14 @@ describe('formatValidationReport', () => {
 
 describe('formatValidationAsPrompt', () => {
   it('produces markdown with tier markers', () => {
-    const result = validateOKFSection('type: text')
+    const result = validateOKFSection('type: bullets')
     const prompt = formatValidationAsPrompt(result)
     expect(prompt).toContain('[Tier 2]')
     expect(prompt).toContain('Suggested Fix')
   })
 
   it('returns clean message for valid sections', () => {
-    const result = validateOKFSection('type: text\nparagraphs: ["OK"]')
+    const result = validateOKFSection('type: bullets\nitems: [{text: "OK"}]')
     const prompt = formatValidationAsPrompt(result)
     expect(prompt).toContain('No validation errors')
   })
@@ -850,7 +850,7 @@ describe('formatValidationAsPrompt', () => {
 
 describe('KNOWN_SECTION_TYPES', () => {
   it('contains all expected section types', () => {
-    expect(KNOWN_SECTION_TYPES.has('text')).toBe(true)
+    expect(KNOWN_SECTION_TYPES.has('openui')).toBe(true)
     expect(KNOWN_SECTION_TYPES.has('intro')).toBe(true)
     expect(KNOWN_SECTION_TYPES.has('flowchart')).toBe(true)
     expect(KNOWN_SECTION_TYPES.has('scenario')).toBe(true)
@@ -868,8 +868,8 @@ describe('KNOWN_SECTION_TYPES', () => {
     expect(KNOWN_SECTION_TYPES.has('bullets')).toBe(true)
   })
 
-  it('has 17 section types', () => {
-    expect(KNOWN_SECTION_TYPES.size).toBe(17)
+  it('has 16 section types', () => {
+    expect(KNOWN_SECTION_TYPES.size).toBe(16)
   })
 })
 

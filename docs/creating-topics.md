@@ -54,9 +54,6 @@ public/okf/[topic-id]/
     intro/
       section.md                  # frontmatter: type: intro, title, resource: content.yaml
       content.yaml                # What, Why, and Roadmap data
-    text/
-      section.md                  # frontmatter: type: text, title, resource: content.md
-      content.md                  # paragraph text
     flowchart/
       section.md
       actors.yaml
@@ -161,32 +158,25 @@ Each section is a folder with a `section.md` manifest (YAML frontmatter) and dat
 
 | Field | Required | Description |
 |---|---|---|
-| `type` | yes | Section renderer: `text`, `openui`, `bullets`, `flowchart`, `tradeoff-sandbox`, `taxonomy-browser`, `flashcards`, `quiz`, `concept-map`, `scenario`, `decision-tree` |
+| `type` | yes | Section renderer: `openui`, `bullets`, `flowchart`, `tradeoff-sandbox`, `taxonomy-browser`, `flashcards`, `quiz`, `concept-map`, `scenario`, `decision-tree` |
 | `title` | yes | Display title shown above the section content |
 | `resource` | yes | `"."` for directory (multiple data files), or `"filename.yaml"` for a single file |
 | `heading` | no | Sub-heading displayed below the title |
 | `ordered` | no | `true` for numbered lists, `false` for bullets (only for `bullets` type) |
 
-### `text` section
-Paragraph-based content. Each non-empty, non-heading line in `content.md` becomes a paragraph. Numbered items (1., 2., 3.) and bullet points (-) are stripped of their prefix.
+### `openui` section (prose and free-form layout)
+Prose is written as an `openui` section: a standard OpenUI program, usually one markdown `TextContent` block per paragraph. See [sections/openui.md](sections/openui.md).
 
-```yaml
----
-type: text
-title: "Introduction Title"
-heading: "Sub-heading (optional)"
-resource: content.md
----
+```oui
+// @openui "Introduction Title" "Sub-heading (optional)"
+root = Stack([
+  TextContent("An **AI agent** is a software system that perceives its environment, reasons about a goal, and takes autonomous actions."),
+  TextContent("Modern agents combine a large language model with a memory store, a tool registry, and a feedback loop."),
+])
 ```
 
-**Data file (`content.md`):**
-```markdown
-An **AI agent** is a software system that perceives its environment, reasons about a goal, and takes autonomous actions.
-
-Modern agents combine a large language model with a memory store, a tool registry, and a feedback loop.
-
-The key design decision is the **orchestration strategy**: single-agent vs multi-agent, synchronous ReAct loop vs async event-driven pipeline.
-```
+> [!NOTE]
+> The `text` section type has been retired. Legacy OKF folders with `type: text` (a `content.md` of paragraphs) still load: the reader turns them into an `openui` section with one `TextContent` per paragraph.
 
 ### `bullets` section
 Bulleted or numbered list items with optional children.

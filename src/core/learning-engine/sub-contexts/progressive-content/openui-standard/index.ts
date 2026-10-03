@@ -38,34 +38,62 @@ export interface StandardOpenUISpec {
 /** Signatures and groups of the standard OpenUI library. */
 export const standardOpenUISpec = spec as StandardOpenUISpec
 
+export interface OpenUILead {
+  what?: string
+  why?: string
+  next?: string
+}
+
 export interface OpenUIDirective {
   title: string
   heading?: string
-  /** 1-based line of the directive. */
+  /** Optional section lead from a `// @lead "what" "why" "next"` line. */
+  lead?: OpenUILead
+  /** 1-based line of the `// @openui` directive. */
   line: number
 }
 
 const DIRECTIVE = /^[ \t]*\/\/[ \t]*@openui(?![\w-])(.*)$/
+const LEAD = /^[ \t]*\/\/[ \t]*@lead(?![\w-])(.*)$/
 const STRING = /"(?:[^"\\\n]|\\.)*"/g
 
 function firstContentLine(lines: string[]): number {
   return lines.findIndex((l) => l.trim() !== '')
 }
 
-/** Read the `// @openui "Title" ["Heading"]` directive on the first non-blank line. */
-export function readOpenUIDirective(source: string): OpenUIDirective | null {
-  const lines = source.split('\n')
-  const index = firstContentLine(lines)
-  const match = index < 0 ? null : DIRECTIVE.exec(lines[index])
-  if (!match) return null
-  const args = [...match[1].matchAll(STRING)].map((m) => {
+function stringArgs(text: string): string[] {
+  return [...text.matchAll(STRING)].map((m) => {
     try {
       return JSON.parse(m[0]) as string
     } catch {
       return m[0].slice(1, -1)
     }
   })
-  return { title: args[0] ?? '', heading: args[1] || undefined, line: index + 1 }
+}
+
+/** Index of the line after the directive block (`@openui` plus an optional `@lead`). */
+function headerEnd(lines: string[]): number {
+  const index = firstContentLine(lines)
+  return LEAD.test(lines[index + 1] ?? '') ? index + 2 : index + 1
+}
+
+/**
+ * Read the `// @openui "Title" ["Heading"]` directive on the first non-blank
+ * line, and an optional `// @lead "what" ["why"] ["next"]` line right after it.
+ */
+export function readOpenUIDirective(source: string): OpenUIDirective | null {
+  const lines = source.split('\n')
+  const index = firstContentLine(lines)
+  const match = index < 0 ? null : DIRECTIVE.exec(lines[index])
+  if (!match) return null
+  const [title = '', heading] = stringArgs(match[1])
+  const directive: OpenUIDirective = { title, heading: heading || undefined, line: index + 1 }
+  const lead = LEAD.exec(lines[index + 1] ?? '')
+  if (lead) {
+    const [what, why, next] = stringArgs(lead[1]).map((v) => v || undefined)
+    if (what || why || next) directive.lead = { what, why, next }
+  }
+  return directive
 }
 
 /** True when a section source is a standard OpenUI program. */
@@ -73,15 +101,20 @@ export function isOpenUISource(source: string): boolean {
   return readOpenUIDirective(source) !== null
 }
 
-/** The OpenUI program of a directive file (everything after the directive line). */
+/** The OpenUI program of a directive file (everything after the directive lines). */
 export function openUIProgramOf(source: string): string {
   const lines = source.split('\n')
-  const index = firstContentLine(lines)
-  return lines.slice(index + 1).join('\n').replace(/^\s*\n/, '').trimEnd()
+  return lines.slice(headerEnd(lines)).join('\n').replace(/^\s*\n/, '').trimEnd()
 }
 
-/** Print an `openui` section file: directive line followed by the program. */
-export function printOpenUISection(program: string, title: string, heading?: string): string {
-  const args = [JSON.stringify(title), ...(heading ? [JSON.stringify(heading)] : [])].join(' ')
-  return `// @openui ${args}\n${program.trim()}\n`
+/** Print an `openui` section file: directive line(s) followed by the program. */
+export function printOpenUISection(program: string, title: string, heading?: string, lead?: OpenUILead): string {
+  const q = (text: string) => JSON.stringify(text)
+  const header = [`// @openui ${[q(title), ...(heading ? [q(heading)] : [])].join(' ')}`]
+  if (lead && (lead.what || lead.why || lead.next)) {
+    const args = [lead.what ?? '', lead.why ?? '', lead.next ?? '']
+    while (args.length && !args[args.length - 1]) args.pop()
+    header.push(`// @lead ${args.map(q).join(' ')}`)
+  }
+  return `${header.join('\n')}\n${program.trim()}\n`
 }

@@ -1,6 +1,7 @@
 import { describe, it, expect, vi } from 'vitest'
 import { render, screen, fireEvent, waitFor } from '@testing-library/react'
 import OpenUISection from '../../../../src/core/learning-engine/sub-contexts/progressive-content/components/openui'
+import { OpenUIFormEditor } from '../../../../src/core/learning-engine/sub-contexts/progressive-content/components/openui/OpenUIFormEditor'
 import { OpenUIHelpModal } from '../../../../src/core/learning-engine/sub-contexts/progressive-content/components/openui/OpenUIHelpModal'
 import { OpenUISectionSchema } from '../../../../src/core/learning-engine/sub-contexts/progressive-content/schema'
 import { loomOpenUIThemeCss } from '../../../../src/core/learning-engine/sub-contexts/progressive-content/components/openui/theme'
@@ -99,5 +100,63 @@ describe('standard OpenUI snapshot', () => {
       components: openuiLibrary.toSpec().components,
       componentGroups: openuiLibrary.componentGroups ?? [],
     })))
+  })
+})
+
+describe('OpenUIFormEditor', () => {
+  const data = (source: string) => ({ type: 'openui' as const, source })
+
+  it('edits paragraphs of a migrated text section as blocks', () => {
+    const onChange = vi.fn()
+    render(<OpenUIFormEditor data={data('root = Stack([TextContent("One"), TextContent("Two")])')} onChange={onChange} />)
+    expect(screen.getByTestId('openui-form-tree')).toBeInTheDocument()
+    fireEvent.change(screen.getByTestId('openui-form-root-children-1-text'), { target: { value: 'Two!' } })
+    expect(onChange).toHaveBeenLastCalledWith(data('root = Stack([TextContent("One"), TextContent("Two!")])'))
+  })
+
+  it('adds, reorders and removes blocks', () => {
+    const onChange = vi.fn()
+    const { rerender } = render(<OpenUIFormEditor data={data('root = Stack([TextContent("A"), TextContent("B")])')} onChange={onChange} />)
+    fireEvent.click(screen.getByTestId('openui-form-root-children-1-up'))
+    expect(onChange).toHaveBeenLastCalledWith(data('root = Stack([TextContent("B"), TextContent("A")])'))
+    fireEvent.click(screen.getByTestId('openui-form-root-children-0-remove'))
+    expect(onChange).toHaveBeenLastCalledWith(data('root = Stack([TextContent("B")])'))
+    fireEvent.change(screen.getByTestId('openui-form-root-children-add'), { target: { value: 'Callout' } })
+    expect(onChange).toHaveBeenLastCalledWith(data('root = Stack([TextContent("A"), TextContent("B"), Callout("info", "", "")])'))
+
+    // Nested blocks (Tabs → TabItem → content) get their own lists.
+    rerender(<OpenUIFormEditor data={data('root = Stack([Tabs([TabItem("a", "A", [TextContent("x")])])])')} onChange={onChange} />)
+    fireEvent.change(screen.getByTestId('openui-form-root-children-0-items-0-content-add'), { target: { value: 'CodeBlock' } })
+    expect(onChange).toHaveBeenLastCalledWith(data('root = Stack([Tabs([TabItem("a", "A", [TextContent("x"), CodeBlock("", "")])])])'))
+  })
+
+  it('edits enums, optional params, string lists and the root container', () => {
+    const onChange = vi.fn()
+    render(<OpenUIFormEditor data={data('root = Stack([Callout("info", "T", "D"), TagBlock(["a", "b"])])')} onChange={onChange} />)
+    fireEvent.change(screen.getByTestId('openui-form-root-children-0-variant'), { target: { value: 'warning' } })
+    expect(onChange).toHaveBeenLastCalledWith(data('root = Stack([Callout("warning", "T", "D"), TagBlock(["a", "b"])])'))
+    fireEvent.change(screen.getByTestId('openui-form-root-children-1-tags'), { target: { value: 'a\nb\nc' } })
+    expect(onChange).toHaveBeenLastCalledWith(data('root = Stack([Callout("info", "T", "D"), TagBlock(["a", "b", "c"])])'))
+    fireEvent.change(screen.getByTestId('openui-form-root-gap'), { target: { value: 'l' } })
+    expect(onChange).toHaveBeenLastCalledWith(data('root = Stack([Callout("info", "T", "D"), TagBlock(["a", "b"])], null, "l")'))
+    fireEvent.click(screen.getByTestId('openui-form-root-children-0-visible'))
+    expect(onChange).toHaveBeenLastCalledWith(data('root = Stack([Callout("info", "T", "D", true), TagBlock(["a", "b"])])'))
+    fireEvent.change(screen.getByTestId('openui-form-root'), { target: { value: 'Card' } })
+    expect(onChange).toHaveBeenLastCalledWith(data('root = Card([Callout("info", "T", "D"), TagBlock(["a", "b"])])'))
+  })
+
+  it('unchecking an optional checkbox removes the parameter instead of writing false', () => {
+    const onChange = vi.fn()
+    render(<OpenUIFormEditor data={data('root = Stack([Callout("info", "T", "D", true)])')} onChange={onChange} />)
+    fireEvent.click(screen.getByTestId('openui-form-root-children-0-visible'))
+    expect(onChange).toHaveBeenLastCalledWith(data('root = Stack([Callout("info", "T", "D")])'))
+  })
+
+  it('falls back to the program text when it cannot be edited as blocks', () => {
+    const onChange = vi.fn()
+    render(<OpenUIFormEditor data={data('$n = 1\nroot = TextContent("" + $n)')} onChange={onChange} />)
+    expect(screen.getByTestId('openui-form-not-editable')).toHaveTextContent('$state')
+    fireEvent.change(screen.getByTestId('openui-source-input'), { target: { value: 'root = TextContent("x")' } })
+    expect(onChange).toHaveBeenLastCalledWith(data('root = TextContent("x")'))
   })
 })

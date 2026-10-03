@@ -50,9 +50,6 @@ export function bundleToSections(bundle: OKFBundled): SectionConfig[] {
         props.why = data.why
         props.roadmap = data.roadmap
         break
-      case 'text':
-        props.paragraphs = data.paragraphs
-        break
       case 'bullets':
         props.items = data.items
         break

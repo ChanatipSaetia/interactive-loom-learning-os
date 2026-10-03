@@ -34,7 +34,7 @@ Loom supports 14 interactive section types registered dynamically in the `Sectio
 
 | Section Type | Category | Description |
 |---|---|---|
-| `text` | Prose | Markdown-rendered paragraphs with optional scroll-reveal animations. |
+| `openui` | Free-form layout | Any standard OpenUI component (markdown text, cards, tabs, tables, charts, callouts, …) after a `// @openui "Title"` directive. |
 | `bullets` | Taxonomy | Hierarchical lists with checkable items and staggered animations. |
 | `flowchart` | Architecture | SUGY-laid flowcharts with multi-view layout, pan/zoom, and journey playback. |
 | `tradeoff-sandbox` | Decision | Strategy dashboard comparing choices with interactive metric changes. |

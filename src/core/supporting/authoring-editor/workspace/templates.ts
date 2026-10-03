@@ -22,22 +22,11 @@ export const SECTION_TEMPLATES: SectionTemplate[] = [
     component: 'Intro',
     label: 'Intro',
     description: 'Topic opener with what / why and a roadmap',
-    source: (title) => `root = Intro(${q(title)}, what, why, [RoadmapStep("Next section", "text", "What comes next")])
+    source: (title) => `root = Intro(${q(title)}, what, why, [RoadmapStep("Next section", "openui", "What comes next")])
 
 what = IntroWhat("One-sentence summary of the topic.", "A precise definition.", ["Key point"], ["tag"])
 
 why = IntroWhy("Why this topic matters.", "The impact of understanding it.")
-`,
-  },
-  {
-    type: 'text',
-    component: 'Text',
-    label: 'Text',
-    description: 'Paragraphs of prose',
-    source: (title) => `root = Text(${q(title)}, [
-  "First paragraph.",
-  "Second paragraph.",
-])
 `,
   },
   {

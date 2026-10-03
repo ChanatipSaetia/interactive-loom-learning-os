@@ -15,7 +15,6 @@ Each section type has its own dedicated reference document. Each doc covers:
 | Type | Doc | Mental Model | Core Subdomain Path (`src/core/subdomains/`) |
 |---|---|---|---|
 | `intro` | [intro.md](intro.md) | Topic hero overview, rationale & learning roadmap | `progressive-content` |
-| `text` | [text.md](text.md) | Anchored conceptual narrative | `progressive-content` |
 | `openui` | [openui.md](openui.md) | Free-form layout from standard OpenUI components | `progressive-content` |
 | `bullets` | [bullets.md](bullets.md) | Hierarchical taxonomy / breakdown | `progressive-content` |
 | `concept-map` | [concept-map.md](concept-map.md) | Semantic relationships & groupings | `practice-assessment` |
@@ -37,11 +36,11 @@ Each section type has its own dedicated reference document. Each doc covers:
 
 For optimal cognitive progression, order sections as follows:
 
-1. `text` — intro / anchor
+1. `intro` / `openui` — intro / anchor
 2. `concept-map` — spatial overview
 3. `flashcards` — vocabulary
 4. `taxonomy-browser` — concept categories
-5. `text` / `bullets` — core explanation
+5. `openui` / `bullets` — core explanation
 6. `flowchart` — how it works
 7. `reflection-sequence` — sequence recall
 8. `bullets` — practical reference
@@ -57,7 +56,7 @@ For optimal cognitive progression, order sections as follows:
 
 > [!NOTE]
 > **Multiple Sections of Any Type Allowed**
-> A single topic can contain **multiple sections of ANY type** (e.g. multiple `text` sections, multiple `flowchart` sections, multiple `tradeoff-sandbox` sections, multiple `scenario` sections, or multiple `decision-tree` sections). Each section instance gets its own directory under `sections/`.
+> A single topic can contain **multiple sections of ANY type** (e.g. multiple `openui` sections, multiple `flowchart` sections, multiple `tradeoff-sandbox` sections, multiple `scenario` sections, or multiple `decision-tree` sections). Each section instance gets its own directory under `sections/`.
 
 See [../sections-reference.md](../sections-reference.md) for the full rationale behind this ordering.
 
@@ -93,7 +92,7 @@ public/okf/<topic-slug>/
 ├── index.md                # optional human-readable topic description
 └── sections/
     ├── intro/
-    │   ├── section.md      # type: text
+    │   ├── section.md      # type: intro
     │   └── content.md
     ├── flashcards/
     │   ├── section.md      # type: flashcards

@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest'
 import {
-  TextSectionSchema,
+  OpenUISectionSchema,
   IntroSectionSchema,
   BulletsSectionSchema,
   TaxonomyBrowserSectionSchema,
@@ -11,40 +11,17 @@ import {
   IntroRoadmapStepSchema,
 } from '../../../../../../src/core/learning-engine/sub-contexts/progressive-content/schema'
 
-describe('TextSectionSchema', () => {
-  it('validates correct text section data', () => {
-    const valid = {
-      type: 'text',
-      paragraphs: ['First paragraph', 'Second paragraph with **bold** text'],
-    }
-    const result = TextSectionSchema.safeParse(valid)
-    expect(result.success).toBe(true)
+describe('OpenUISectionSchema', () => {
+  it('validates an openui section', () => {
+    expect(OpenUISectionSchema.safeParse({ type: 'openui', source: 'root = Stack([TextContent("p")])' }).success).toBe(true)
   })
 
-  it('rejects wrong type literal', () => {
-    const invalid = {
-      type: 'intro',
-      paragraphs: ['text'],
-    }
-    const result = TextSectionSchema.safeParse(invalid)
-    expect(result.success).toBe(false)
+  it('rejects the retired text type', () => {
+    expect(OpenUISectionSchema.safeParse({ type: 'text', paragraphs: ['p'] }).success).toBe(false)
   })
 
-  it('rejects missing paragraphs', () => {
-    const invalid = {
-      type: 'text',
-    }
-    const result = TextSectionSchema.safeParse(invalid)
-    expect(result.success).toBe(false)
-  })
-
-  it('accepts empty paragraphs array', () => {
-    const valid = {
-      type: 'text',
-      paragraphs: [],
-    }
-    const result = TextSectionSchema.safeParse(valid)
-    expect(result.success).toBe(true)
+  it('rejects an empty program', () => {
+    expect(OpenUISectionSchema.safeParse({ type: 'openui', source: '' }).success).toBe(false)
   })
 })
 

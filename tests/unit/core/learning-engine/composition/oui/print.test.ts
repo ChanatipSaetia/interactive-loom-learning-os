@@ -68,11 +68,25 @@ describe('printOUISection', () => {
 
   it('includes heading, lead and header comments', () => {
     const source = printOUISection(
-      { type: 'text', title: 'T', heading: 'H', resource: '.', intro: { what: 'W' } },
-      { type: 'text', paragraphs: ['p'] },
+      { type: 'bullets', title: 'T', heading: 'H', resource: '.', intro: { what: 'W' } },
+      { type: 'bullets', items: [{ text: 'p' }] },
       { header: ['Generated'] },
     )
-    expect(source).toBe('// Generated\nroot = Text("T", ["p"], "H", Lead("W"))\n')
+    expect(source).toBe('// Generated\nroot = Bullets("T", [Bullet("p")], null, "H", Lead("W"))\n')
+  })
+
+  it('prints openui sections as directive lines followed by the program', () => {
+    const source = printOUISection(
+      { type: 'openui', title: 'T', heading: 'H', resource: '.', intro: { what: 'W', next: 'N' } },
+      { type: 'openui', source: 'root = Stack([TextContent("p")])' },
+    )
+    expect(source).toBe('// @openui "T" "H"\n// @lead "W" "" "N"\nroot = Stack([TextContent("p")])\n')
+    expect(compileOUISection(source).value?.meta).toEqual({ type: 'openui', title: 'T', heading: 'H', resource: '.', intro: { what: 'W', why: undefined, next: 'N' } })
+  })
+
+  it('keeps a call with one long primitive argument on one line', () => {
+    const long = 'x'.repeat(150)
+    expect(printOUIProgram({ kind: 'call', component: 'SectionRef', props: { name: long } })).toBe(`root = SectionRef("${long}")\n`)
   })
 })
 

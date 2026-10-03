@@ -23,6 +23,8 @@ export interface OUIPrintOptions {
   width?: number
   /** Comment lines placed at the top of the file (without `//`). */
   header?: string[]
+  /** Positional parameter order of a component. Defaults to the Loom library's. */
+  paramOrder?: (component: string) => string[]
 }
 
 const RESERVED = new Set(['root', 'true', 'false', 'null'])
@@ -62,8 +64,8 @@ function paramOrder(component: string): string[] {
   return shape ? Object.keys(shape) : []
 }
 
-function positionalArgs(c: OUICall): OUIValue[] {
-  const order = paramOrder(c.component)
+function positionalArgs(c: OUICall, orderOf: (component: string) => string[] = paramOrder): OUIValue[] {
+  const order = orderOf(c.component)
   const unknown = Object.keys(c.props).filter((k) => !order.includes(k) && c.props[k] !== undefined)
   if (unknown.length) throw new Error(`${c.component} has no parameter(s): ${unknown.join(', ')}`)
   const args = order.map((key) => c.props[key])
@@ -81,6 +83,7 @@ interface Hoisted {
 /** Print a call tree as an OpenUI Lang program with `root = <rootCall>`. */
 export function printOUIProgram(rootCall: OUICall, options: OUIPrintOptions = {}): string {
   const width = options.width ?? 100
+  const args = (c: OUICall) => positionalArgs(c, options.paramOrder)
 
   // 1. Which (component, id) pairs are referenced?
   const referenced = new Set<string>()
@@ -127,7 +130,7 @@ export function printOUIProgram(rootCall: OUICall, options: OUIPrintOptions = {}
     }
     if (isCall(value)) {
       if (!top && hoistedNames.has(value)) return hoistedNames.get(value)!
-      return `${value.component}(${positionalArgs(value).map((a) => flat(a)).join(', ')})`
+      return `${value.component}(${args(value).map((a) => flat(a)).join(', ')})`
     }
     if (Array.isArray(value)) return `[${value.map((v) => flat(v)).join(', ')}]`
     const entries = Object.entries(value).filter(([, v]) => v !== undefined)
@@ -142,8 +145,10 @@ export function printOUIProgram(rootCall: OUICall, options: OUIPrintOptions = {}
     const lines = (items: string[], open: string, end: string) =>
       items.length === 0 ? `${open}${end}` : `${open}\n${items.map((i) => `${pad}${i},`).join('\n')}\n${close}${end}`
     if (isCall(value) && (top || !hoistedNames.has(value))) {
-      const args = positionalArgs(value).map((a) => fmt(a, indent + 2, indent + 3))
-      return lines(args, `${value.component}(`, ')')
+      const callArgs = args(value)
+      // A lone string/number argument (e.g. a long paragraph) reads best on one line.
+      if (callArgs.length === 1 && (typeof callArgs[0] !== 'object' || callArgs[0] === null)) return one
+      return lines(args(value).map((a) => fmt(a, indent + 2, indent + 3)), `${value.component}(`, ')')
     }
     if (Array.isArray(value)) {
       return lines(value.map((v) => fmt(v, indent + 2, indent + 3)), '[', ']')
@@ -182,7 +187,7 @@ const SECTION_BY_TYPE = new Map(LOOM_OUI_COMPONENTS.filter((c) => c.sectionType)
 /** Print a section (OKF-compatible meta + data) as a `.oui` file. */
 export function printOUISection(meta: OKFSectionMeta, data: OKFSectionData, options?: OUIPrintOptions): string {
   const type = data.type ?? meta.type
-  if (data.type === OPENUI_SECTION_TYPE) return printOpenUISection(data.source, meta.title ?? '', meta.heading)
+  if (data.type === OPENUI_SECTION_TYPE) return printOpenUISection(data.source, meta.title ?? '', meta.heading, meta.intro)
   const component = SECTION_BY_TYPE.get(type)
   if (!component?.fromData) throw new Error(`No OpenUI section component for type "${type}"`)
   return printOUIProgram(component.fromData(data as unknown as Record<string, unknown>, meta), options)

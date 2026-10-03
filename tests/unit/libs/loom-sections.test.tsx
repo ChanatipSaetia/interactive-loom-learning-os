@@ -20,10 +20,10 @@ describe('LoomSections UMD / CDN Library', () => {
   it('renders sections in container', async () => {
     const sections: SectionConfig[] = [
       {
-        type: 'text',
+        type: 'openui',
         props: {
           title: 'CDN Test Section',
-          paragraphs: ['This is a section paragraph rendered via UMD bundle.'],
+          source: 'root = Stack([TextContent("This is a section paragraph rendered via UMD bundle.")])',
         },
       },
     ]
@@ -47,7 +47,7 @@ describe('LoomSections UMD / CDN Library', () => {
   it('ignores the removed editable option with a warning and renders read-only', async () => {
     const warn = vi.spyOn(console, 'warn').mockImplementation(() => {})
     const sections: SectionConfig[] = [
-      { type: 'text', props: { title: 'Read-only Section', paragraphs: ['Some text.'] } },
+      { type: 'openui', props: { title: 'Read-only Section', source: 'root = TextContent("Some text.")' } },
     ]
 
     let cleanup: () => void = () => {}
@@ -108,8 +108,8 @@ Introductory text
   it('renders in-memory OKF bundle using renderOKF without fetch', async () => {
     const bundle = [
       {
-        meta: { type: 'text', title: 'Offline Section Title', resource: '.' },
-        data: { type: 'text' as const, paragraphs: ['Offline paragraph content without fetch.'] },
+        meta: { type: 'openui', title: 'Offline Section Title', resource: '.' },
+        data: { type: 'openui' as const, source: 'root = Stack([TextContent("Offline paragraph content without fetch.")])' },
         sectionFolder: 'sec-offline',
         sectionBody: '',
       },

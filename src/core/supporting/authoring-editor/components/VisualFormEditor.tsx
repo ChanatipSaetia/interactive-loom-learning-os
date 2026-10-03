@@ -9,7 +9,6 @@ import {
   FormulaSandboxFormEditor,
   FlowchartFormEditor,
   IntroFormEditor,
-  TextFormEditor,
   OpenUIFormEditor,
   BulletsFormEditor,
   TaxonomyBrowserFormEditor,
@@ -68,10 +67,6 @@ export function VisualFormEditor({ data, meta, onChange, onMetaChange }: VisualF
 
     if (isType(data, 'flowchart')) {
       return <FlowchartFormEditor data={data} onChange={onChange} />
-    }
-
-    if (isType(data, 'text')) {
-      return <TextFormEditor data={data} onChange={onChange} />
     }
 
     if (isType(data, 'openui')) {

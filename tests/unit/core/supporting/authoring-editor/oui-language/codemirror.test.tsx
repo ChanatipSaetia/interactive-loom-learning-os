@@ -111,15 +111,15 @@ describe('renderTooltipMarkdown', () => {
 describe('OUICodeEditor', () => {
   it('renders the source and reports edits', () => {
     const onChange = vi.fn()
-    const { getByTestId, rerender } = render(<OUICodeEditor value={'root = Text("T", [])'} onChange={onChange} />)
+    const { getByTestId, rerender } = render(<OUICodeEditor value={'root = Bullets("T", [])'} onChange={onChange} />)
     const host = getByTestId('oui-code-editor')
-    expect(host.textContent).toContain('root = Text("T", [])')
+    expect(host.textContent).toContain('root = Bullets("T", [])')
 
     const editor = EditorView.findFromDOM(host.querySelector('.cm-editor') as HTMLElement)!
     editor.dispatch({ changes: { from: 0, insert: '// hi\n' } })
-    expect(onChange).toHaveBeenLastCalledWith('// hi\nroot = Text("T", [])')
+    expect(onChange).toHaveBeenLastCalledWith('// hi\nroot = Bullets("T", [])')
 
-    rerender(<OUICodeEditor value={'root = Text("New", [])'} onChange={onChange} />)
-    expect(editor.state.doc.toString()).toBe('root = Text("New", [])')
+    rerender(<OUICodeEditor value={'root = Bullets("New", [])'} onChange={onChange} />)
+    expect(editor.state.doc.toString()).toBe('root = Bullets("New", [])')
   })
 })

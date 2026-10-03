@@ -1,0 +1,59 @@
+.openui-form-root {
+  @apply flex items-center gap-3 mb-3;
+}
+
+.openui-form-root .visual-form-select {
+  @apply w-auto;
+}
+
+.openui-form-block .visual-form-card-header {
+  @apply gap-2;
+}
+
+.openui-form-toggle {
+  @apply flex items-center gap-2 min-w-0 flex-1 text-left bg-transparent border-0 p-0 cursor-pointer;
+  color: inherit;
+}
+
+.openui-form-component {
+  @apply font-mono text-xs font-semibold px-2 py-0.5 rounded-md shrink-0;
+  background-color: color-mix(in srgb, var(--primary) 16%, transparent);
+  color: var(--primary);
+}
+
+.openui-form-summary {
+  @apply text-xs truncate;
+  color: var(--muted-foreground);
+}
+
+.openui-form-optional {
+  @apply normal-case font-normal;
+  color: var(--muted-foreground);
+}
+
+.openui-form-inline {
+  @apply flex-row items-center gap-2;
+}
+
+.openui-form-add {
+  @apply flex items-center gap-2;
+  color: var(--primary);
+}
+
+.openui-form-add .visual-form-select {
+  @apply w-auto;
+}
+
+.openui-form-note {
+  @apply flex items-center gap-1.5 text-xs;
+  color: var(--muted-foreground);
+}
+
+.openui-form-error {
+  @apply text-xs;
+  color: var(--destructive);
+}
+
+.openui-form-mono {
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+}

@@ -51,3 +51,21 @@
   @apply p-0 m-0 border-0 shadow-none;
   background: transparent;
 }
+
+/* Markdown prose (TextContent) reads like the rest of Loom's long-form text:
+   roomier leading and primary-colored emphasis. */
+.loom-openui-scope .openui-text-content-markdown,
+.loom-openui-scope .openui-text-content-markdown :is(p, li) {
+  line-height: 1.8;
+}
+
+.loom-openui-scope .openui-text-content-markdown strong {
+  @apply font-bold;
+  color: var(--primary);
+}
+
+.loom-openui-scope .openui-text-content-markdown a {
+  color: var(--primary);
+  @apply underline;
+  text-underline-offset: 3px;
+}

@@ -49,8 +49,8 @@ describe('validateOUISection', () => {
   })
 
   it('reports unused statements as warnings', () => {
-    const result = validateOUISection('root = Text("T", ["a"])\nunused = Text("U", [])', context)
+    const result = validateOUISection('root = Bullets("T", [Bullet("a")])\nunused = Bullets("U", [])', context)
     expect(result.status).toBe('warning')
-    expect(result.payload?.data).toEqual({ type: 'text', paragraphs: ['a'] })
+    expect(result.payload?.data).toEqual({ type: 'bullets', items: [{ text: 'a' }] })
   })
 })

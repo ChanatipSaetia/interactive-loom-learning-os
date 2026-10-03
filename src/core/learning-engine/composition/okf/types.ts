@@ -22,7 +22,6 @@ import type {
   ReflectionTemplateChallenge,
 } from '../../sub-contexts/reflection-synthesis'
 import type {
-  TextSectionData,
   OpenUISectionData,
   IntroSectionData,
   BulletsSectionData,
@@ -73,7 +72,6 @@ export interface OKFSectionMeta {
  */
 export type OKFSectionData =
   | IntroSectionData
-  | TextSectionData
   | OpenUISectionData
   | BulletsSectionData
   | FlowchartSectionData
@@ -91,7 +89,6 @@ export type OKFSectionData =
   | PillarLayerSectionData
 
 export type OKFIntroSectionData = IntroSectionData
-export type OKFTextSectionData = TextSectionData
 export type OKFOpenUISectionData = OpenUISectionData
 export type OKFBulletSectionData = BulletsSectionData
 export type OKFFlowSectionData = FlowchartSectionData

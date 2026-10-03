@@ -115,6 +115,6 @@ Use `bullets` for:
 - **Reference material** — hierarchical feature breakdowns, option listings
 - **Learning objectives** — what the learner will be able to do
 
-Best placed **after** a `flowchart` as a practical "apply" section (step 8 in the recommended order), or as a secondary `text`-like section for structured lists.
+Best placed **after** a `flowchart` as a practical "apply" section (step 8 in the recommended order), or next to an `openui` prose section for structured lists.
 
 See [sections-reference.md](../sections-reference.md) for the recommended section ordering.

@@ -5,12 +5,6 @@ root = Intro("AI Agents", what, why, [RoadmapStep("Quiz", "quiz", "Check yoursel
 what = IntroWhat("Agents act on goals.", "An agent is…", ["Loops"], ["LLM"])
 why = IntroWhy("Prompts alone break.", "Reliability")
 `,
-  text: `
-root = Text("Overview", [
-  "First paragraph.",
-  "Second paragraph.",
-])
-`,
   openui: `
 // @openui "Plans" "Pick one"
 root = Card([header, tabs])

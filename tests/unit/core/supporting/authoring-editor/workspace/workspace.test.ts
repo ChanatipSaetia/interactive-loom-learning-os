@@ -11,7 +11,7 @@ import { KNOWN_SECTION_TYPES } from '../../../../../../src/core/learning-engine/
 import { validateOUISection } from '../../../../../../src/core/learning-engine/validation/oui-gateway'
 
 const TOPIC = 'root = Topic("Demo", "Architecture", "A demo", [SectionRef("intro"), SectionRef("quiz")], ["ai"])\n'
-const INTRO = 'root = Text("Intro", ["Hello."])\n'
+const INTRO = 'root = Bullets("Intro", [Bullet("Hello.")])\n'
 const QUIZ = 'root = Quiz("Check", [q1])\nq1 = QuizQuestion("q1", "Why?", [QuizChoice("a", "A", true, "Yes")])\n'
 
 function demoFolder(extra: Record<string, string> = {}) {
@@ -44,7 +44,7 @@ describe('TopicWorkspace.open', () => {
     const snap = ws.getSnapshot()
     expect(snap.topicId).toBe('demo')
     expect(snap.metadata).toEqual({ title: 'Demo', category: 'Architecture', description: 'A demo', tags: ['ai'] })
-    expect(snap.sections.map((s) => [s.name, s.lastValid?.meta.type])).toEqual([['intro', 'text'], ['quiz', 'quiz']])
+    expect(snap.sections.map((s) => [s.name, s.lastValid?.meta.type])).toEqual([['intro', 'bullets'], ['quiz', 'quiz']])
     expect(snap.dirtySections).toEqual([])
     expect(snap.topicDirty).toBe(false)
     expect(snap.notices).toEqual([])
@@ -80,26 +80,32 @@ describe('content edits', () => {
     const notified: number[] = []
     ws.subscribe(() => notified.push(1))
 
-    ws.setSource('intro', 'root = Text("Intro", ["Hello.", "More."])\n')
+    ws.setSource('intro', 'root = Bullets("Intro", [Bullet("Hello."), Bullet("More.")])\n')
     expect(ws.getSnapshot().dirtySections).toEqual(['intro'])
-    expect(ws.section('intro')?.lastValid?.data).toEqual({ type: 'text', paragraphs: ['Hello.', 'More.'] })
+    expect(ws.section('intro')?.lastValid?.data).toEqual({ type: 'bullets', items: [{ text: 'Hello.' }, { text: 'More.' }] })
 
     ws.setSource('intro', 'root = Text("Intro", [')
     expect(ws.section('intro')?.validation.status).toBe('error')
-    expect(ws.section('intro')?.lastValid?.data).toEqual({ type: 'text', paragraphs: ['Hello.', 'More.'] })
+    expect(ws.section('intro')?.lastValid?.data).toEqual({ type: 'bullets', items: [{ text: 'Hello.' }, { text: 'More.' }] })
     expect(folder.files.get('sections/intro.oui')).toBe(INTRO)
 
-    ws.setSource('intro', '// edited\nroot = Text("Intro", ["Bye."])\n')
+    ws.setSource('intro', '// edited\nroot = Bullets("Intro", [Bullet("Bye.")])\n')
     await ws.save()
-    expect(folder.files.get('sections/intro.oui')).toBe('// edited\nroot = Text("Intro", ["Bye."])\n')
+    expect(folder.files.get('sections/intro.oui')).toBe('// edited\nroot = Bullets("Intro", [Bullet("Bye.")])\n')
     expect(ws.getSnapshot().dirtySections).toEqual([])
     expect(notified.length).toBeGreaterThan(0)
   })
 
   it('reprints the source for Visual Form edits', async () => {
     const ws = await TopicWorkspace.open(demoFolder())
-    ws.setSectionData('intro', { type: 'text', title: 'Intro', resource: '.' }, { type: 'text', paragraphs: ['From the form'] })
-    expect(ws.section('intro')?.source).toBe('root = Text("Intro", ["From the form"])\n')
+    ws.setSectionData('intro', { type: 'bullets', title: 'Intro', resource: '.' }, { type: 'bullets', items: [{ text: 'From the form' }] })
+    expect(ws.section('intro')?.source).toBe('root = Bullets("Intro", [Bullet("From the form")])\n')
+  })
+
+  it('reprints openui sections with their directive', async () => {
+    const ws = await TopicWorkspace.open(demoFolder())
+    ws.setSectionData('intro', { type: 'openui', title: 'Intro', resource: '.' }, { type: 'openui', source: 'root = Stack([TextContent("From the form")])' })
+    expect(ws.section('intro')?.source).toBe('// @openui "Intro"\nroot = Stack([TextContent("From the form")])\n')
   })
 
   it('saves topic metadata edits', async () => {

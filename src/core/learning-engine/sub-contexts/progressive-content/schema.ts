@@ -1,14 +1,5 @@
 import { z } from 'zod'
 
-// --- Text Section Schema ---
-
-export const TextSectionSchema = z.object({
-  type: z.literal('text'),
-  paragraphs: z.array(z.string()),
-})
-
-export type TextSectionData = z.infer<typeof TextSectionSchema>
-
 // --- Standard OpenUI Section Schema ---
 
 export const OpenUISectionSchema = z.object({

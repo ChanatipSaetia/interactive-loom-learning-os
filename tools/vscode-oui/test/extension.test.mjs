@@ -94,18 +94,26 @@ test('completes section names from disk in topic.oui', async () => {
 })
 
 test('provides signature help, hover, definition and symbols', () => {
-  const text = 'root = Text("T", [p])\np = "Hello"'
+  const text = 'root = Bullets("T", [p])\np = Bullet("Hello")'
   const d = doc(text)
-  const help = registered.signature.provideSignatureHelp(d, new Position(0, 17))
+  const help = registered.signature.provideSignatureHelp(d, new Position(0, 20))
   assert.equal(help.activeParameter, 1)
-  assert.match(help.signatures[0].label, /^Text\(title: string, paragraphs: string\[\]/)
+  assert.match(help.signatures[0].label, /^Bullets\(title: string, items: Bullet\[\]/)
 
   const hover = registered.hover.provideHover(d, new Position(0, 9))
-  assert.match(hover.contents.value, /```openui\nText\(/)
+  assert.match(hover.contents.value, /```openui\nBullets\(/)
 
-  const location = registered.definition.provideDefinition(d, new Position(0, 18))
+  const location = registered.definition.provideDefinition(d, new Position(0, 21))
   assert.deepEqual([location.range.start.line, location.range.start.character], [1, 0])
 
   const symbols = registered.symbols.provideDocumentSymbols(d)
-  assert.deepEqual(symbols.map((s) => [s.name, s.detail]), [['root', 'Text'], ['p', '']])
+  assert.deepEqual(symbols.map((s) => [s.name, s.detail]), [['root', 'Bullets'], ['p', 'Bullet']])
+})
+
+test('switches to the standard OpenUI components in // @openui files', async () => {
+  const text = '// @openui "Plans"\nroot = Stack([])'
+  const items = await registered.completion.provider.provideCompletionItems(doc(text), new Position(1, 14))
+  const labels = items.map((i) => i.label)
+  assert.ok(labels.includes('TextContent'))
+  assert.ok(!labels.includes('Quiz'))
 })

@@ -110,11 +110,11 @@ describe('compileOUISection — mapping details', () => {
   it('evaluates $state defaults, builtins and ternaries', () => {
     const { value, issues } = compileOUISection(`
 $level = "beginner"
-root = Text("Level: " + $level, [$level == "beginner" ? "Start slow." : "Go deep.", "" + @Count([1, 2, 3]) + " parts"])
+root = Bullets("Level: " + $level, [Bullet($level == "beginner" ? "Start slow." : "Go deep."), Bullet("" + @Count([1, 2, 3]) + " parts")])
 `)
     expect(issues).toEqual([])
     expect(value?.meta.title).toBe('Level: beginner')
-    expect(value?.data).toEqual({ type: 'text', paragraphs: ['Start slow.', '3 parts'] })
+    expect(value?.data).toEqual({ type: 'bullets', items: [{ text: 'Start slow.' }, { text: '3 parts' }] })
   })
 })
 
@@ -141,12 +141,12 @@ describe('compileOUISection — issues', () => {
   })
 
   it('reports unused statements as tier 3', () => {
-    const result = compileOUISection(`root = Text("T", ["a"])\nleftover = Text("x", [])`)
+    const result = compileOUISection(`root = Bullets("T", [Bullet("a")])\nleftover = Bullets("x", [])`)
     expect(result.issues).toEqual([expect.objectContaining({ tier: 3, code: 'unused-statement', statementId: 'leftover', line: 2 })])
   })
 
   it('rejects Query() as unsupported', () => {
-    const result = compileOUISection(`root = Text("T", ["a"])\ndata = Query("tool", {}, {rows: []})`)
+    const result = compileOUISection(`root = Bullets("T", [Bullet("a")])\ndata = Query("tool", {}, {rows: []})`)
     expect(result.issues).toContainEqual(expect.objectContaining({ tier: 1, code: 'unsupported-feature', statementId: 'data' }))
   })
 })
@@ -187,7 +187,7 @@ describe('indexStatementLines', () => {
       '  ]',
       ')',
       '$flag = true',
-      'next = Text("y", [])',
+      'next = Bullets("y", [])',
     ].join('\n'))
     expect([...lines.entries()]).toEqual([['root', 2], ['$flag', 8], ['next', 9]])
   })
@@ -227,6 +227,6 @@ describe('compileOUISection — standard OpenUI sections (// @openui)', () => {
   })
 
   it('treats a plain comment as a Loom section', () => {
-    expect(compileOUISection(`// openui is great\nroot = Text("T", ["p"])`).value?.meta.type).toBe('text')
+    expect(compileOUISection(`// openui is great\nroot = Bullets("T", [Bullet("p")])`).value?.meta.type).toBe('bullets')
   })
 })

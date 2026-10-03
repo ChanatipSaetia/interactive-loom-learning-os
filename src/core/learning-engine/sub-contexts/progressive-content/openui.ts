@@ -1,7 +1,6 @@
 /**
  * OpenUI Lang vocabulary for the Progressive Content subdomain.
  *
- *   root = Text("Overview", ["First paragraph.", "Second paragraph."])
  *   root = Bullets("Capabilities", [Bullet("Tool use", [Bullet("Search")])], false)
  */
 import { tagSchemaId } from '@openuidev/lang-core'
@@ -26,7 +25,6 @@ import type {
   IntroSectionData,
   PillarLayerSectionData,
   TaxonomyBrowserSectionData,
-  TextSectionData,
   IntroRoadmapStep,
   PillarLayerBlock,
   PillarLayerLayer,
@@ -106,20 +104,7 @@ export const Intro: LoomOUIComponent = defineOUISection({
   }),
 })
 
-// --- Text & Bullets ---
-
-export const Text: LoomOUIComponent = defineOUISection({
-  name: 'Text',
-  sectionType: 'text',
-  description: 'Prose section: one string per paragraph.',
-  props: z.object({
-    title: z.string(),
-    paragraphs: z.array(z.string()),
-    ...sectionTailProps,
-  }),
-  toData: (p) => ({ type: 'text', paragraphs: p.paragraphs }),
-  fromData: (data: TextSectionData, meta) => call(Text, { title: meta.title ?? '', paragraphs: [...data.paragraphs], ...sectionTail(meta) }),
-})
+// --- Bullets ---
 
 const NestedBullet = z.lazy(() => BulletProps)
 tagSchemaId(NestedBullet, 'Bullet')
@@ -337,7 +322,6 @@ export const PillarLayer: LoomOUIComponent = defineOUISection({
 
 export const progressiveContentOUIComponents = [
   Intro, IntroWhat, IntroWhy, RoadmapStep,
-  Text,
   Bullets, Bullet,
   TaxonomyBrowser, TaxonomyCategory,
   ImageGallery, GalleryImage,

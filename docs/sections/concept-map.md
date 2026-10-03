@@ -133,6 +133,6 @@ edges:
 
 ## Pedagogical Role
 
-Place `concept-map` **second** in the recommended section order — right after the intro `text`. Giving learners a bird's-eye spatial map of concepts before they dive into details helps them understand how individual sections relate to the whole.
+Place `concept-map` **second** in the recommended section order — right after the `intro`. Giving learners a bird's-eye spatial map of concepts before they dive into details helps them understand how individual sections relate to the whole.
 
 See [sections-reference.md](../sections-reference.md) for the recommended section ordering.

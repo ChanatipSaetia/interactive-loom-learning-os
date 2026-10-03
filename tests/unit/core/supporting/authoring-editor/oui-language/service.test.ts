@@ -130,7 +130,7 @@ describe('completions', () => {
     const sectionItems = getCompletions('', 0, 'section')
     expect(labels(sectionItems)).toContain('root = Quiz(…)')
     expect(labels(getCompletions('', 0, 'topic'))).toEqual(['root = Topic(…)'])
-    expect(getCompletions('root = Text("a", [])\n', 21)).toEqual([])
+    expect(getCompletions('root = Bullets("a", [])\n', 24)).toEqual([])
   })
 
   it('offers literals, state and builtins for primitive params', () => {
@@ -214,13 +214,13 @@ describe('diagnostics', () => {
   })
 
   it('reports unused statements as warnings', () => {
-    const source = 'root = Text("T", [])\nextra = Text("x", [])'
+    const source = 'root = Bullets("T", [])\nextra = Bullets("x", [])'
     expect(getDiagnostics(source)).toEqual([expect.objectContaining({ severity: 'warning', tier: 3 })])
   })
 
   it('validates topic and catalog files by kind', () => {
     expect(getDiagnostics('root = Topic("T", "C", "D", [SectionRef("intro")])', 'topic')).toEqual([])
-    expect(getDiagnostics('root = Text("x", [])', 'topic')).toEqual([expect.objectContaining({ message: expect.stringContaining('Topic') })])
+    expect(getDiagnostics('root = Bullets("x", [])', 'topic')).toEqual([expect.objectContaining({ message: expect.stringContaining('Topic') })])
     expect(fileKindFromPath('/x/public/content/index.oui')).toBe('catalog')
     expect(fileKindFromPath('C:\\content\\demo\\topic.oui')).toBe('topic')
     expect(fileKindFromPath('demo/sections/quiz.oui')).toBe('section')

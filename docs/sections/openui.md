@@ -1,6 +1,6 @@
 # Section Type: `openui`
 
-**Mental model**: Free-form composed layout. Use any standard OpenUI component (cards, tabs, tables, charts, accordions, steps, callouts, code blocks…) when `text` or `bullets` can't express the shape of the content.
+**Mental model**: Free-form composed layout. Use any standard OpenUI component (cards, tabs, tables, charts, accordions, steps, callouts, code blocks…) It is also how prose is written: one markdown `TextContent` block per paragraph (the retired `text` type migrated to this).
 
 ---
 
@@ -87,10 +87,10 @@ resource: view.oui
 
 ## CDN / inline equivalent
 
-> [!IMPORTANT]
-> The single-file embed library (`libs/loom-sections.tsx`, see [cdn-library.md](../cdn-library.md)) does **not**
-> include the `openui` renderer: the standard component library would roughly triple the bundle size. `openui` sections
-> render in the web app and Loom Studio, where they load lazily on first use.
+> [!NOTE]
+> The single-file embed library (`libs/loom-sections.tsx`, see [cdn-library.md](../cdn-library.md)) bundles the
+> `openui` renderer and the standard component library, which makes it roughly 2.5× larger (UMD: about 5.7 MB, 1.4 MB gzipped). In the web app
+> and Loom Studio it is a separate chunk that loads on first use.
 
 The section props look like this:
 

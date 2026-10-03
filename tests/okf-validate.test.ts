@@ -10,8 +10,8 @@ describe('OKF 3-Tier Section Validator Engine', () => {
   describe('Tier 1: YAML Syntax Validation', () => {
     it('should catch invalid YAML syntax with line info', () => {
       const brokenYaml = `
-type: text
-paragraphs:
+type: bullets
+items:
   - line 1
   - bad indent:
    broken: [
@@ -25,9 +25,9 @@ paragraphs:
 
     it('should parse valid YAML correctly', () => {
       const validYaml = `
-type: text
-paragraphs:
-  - Hello world
+type: bullets
+items:
+  - text: Hello world
 `
       const res = validateYAMLContent(validYaml)
       expect(res.data).not.toBeNull()
@@ -37,7 +37,7 @@ paragraphs:
 
   describe('Tier 2: Structural Schema Validation', () => {
     it('should detect missing required section type', () => {
-      const res = validateSectionData({ paragraphs: ['hello'] })
+      const res = validateSectionData({ items: [{ text: 'hello' }] })
       expect(res.length).toBeGreaterThan(0)
       expect(res[0].tier).toBe('schema')
       expect(res[0].field).toBe('type')
@@ -55,8 +55,8 @@ paragraphs:
     })
 
     it('should detect invalid field data types', () => {
-      const res = validateSectionData({ type: 'text', paragraphs: 'not an array' })
-      expect(res.some((e) => e.tier === 'schema' && e.field === 'paragraphs')).toBe(true)
+      const res = validateSectionData({ type: 'bullets', items: 'not an array' })
+      expect(res.some((e) => e.tier === 'schema' && e.field === 'items')).toBe(true)
     })
   })
 

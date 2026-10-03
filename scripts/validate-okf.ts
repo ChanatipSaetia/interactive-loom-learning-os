@@ -3,6 +3,7 @@ import fs from 'fs'
 import path from 'path'
 import { fileURLToPath } from 'url'
 import * as yaml from 'js-yaml'
+import { paragraphsToStandardProgram } from '../src/core/learning-engine/composition/oui/standard.ts'
 import { validateOKFSection, validateOKFSectionFile, formatValidationAsPrompt, tier2Validate, type ValidationDiagnostic, type ValidationResult } from '../src/core/learning-engine/validation/gateway.ts'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
@@ -62,14 +63,12 @@ function loadAndCombineSectionData(folderPath: string, meta: Record<string, unkn
     }
   }
 
-  // Handle Markdown content file for text sections
+  // Legacy `text` sections (Markdown content file) load as `openui` sections, like the OKF reader does.
   if (sectionType === 'text') {
     const mdFile = resource !== '.' ? resource : filesInFolder.find((f) => f.endsWith('.md') && f !== 'section.md') || 'content.md'
     const mdPath = path.join(folderPath, mdFile)
-    if (fs.existsSync(mdPath)) {
-      const mdContent = fs.readFileSync(mdPath, 'utf-8')
-      combined.paragraphs = parseParagraphs(mdContent)
-    }
+    const paragraphs = fs.existsSync(mdPath) ? parseParagraphs(fs.readFileSync(mdPath, 'utf-8')) : []
+    return { data: { ...meta, type: 'openui', source: paragraphsToStandardProgram(paragraphs) }, syntaxErrors }
   }
 
   // 2. Pure structural aggregation without mutation or alias normalization
