@@ -988,17 +988,38 @@
 }
 
 /* Fullscreen toggle button - fixed top-left */
-.flowchart-fullscreen-toggle-btn {
-  @apply absolute top-4 left-4 z-10 flex items-center justify-center w-9 h-9 rounded-[var(--radius-sm)] border border-border cursor-pointer shadow-lg;
+.flowchart-canvas-tools {
+  @apply absolute top-4 left-4 z-10 flex flex-col items-center gap-2;
+}
+
+.flowchart-canvas-tool-group {
+  @apply flex flex-col overflow-hidden rounded-[var(--radius-sm)] border border-border shadow-lg;
+  background: var(--ctp-crust);
+}
+
+.flowchart-canvas-tool-btn {
+  @apply flex items-center justify-center w-9 h-9 border-none cursor-pointer;
   font-family: var(--font-body);
   color: var(--ctp-overlay1);
   background: var(--ctp-crust);
-  transition: opacity 0.2s ease, background-color 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+  transition: background-color 0.15s ease, color 0.15s ease, border-color 0.15s ease;
 }
 
-.flowchart-fullscreen-toggle-btn:hover {
+/* Standalone tool (fullscreen) gets its own frame; grouped tools share one */
+.flowchart-canvas-tools > .flowchart-canvas-tool-btn {
+  @apply rounded-[var(--radius-sm)] border border-solid border-border shadow-lg;
+}
+
+.flowchart-canvas-tool-group > .flowchart-canvas-tool-btn + .flowchart-canvas-tool-btn {
+  border-top: 1px solid var(--border);
+}
+
+.flowchart-canvas-tool-btn:hover {
   background: var(--ctp-mantle);
   color: var(--ctp-text);
+}
+
+.flowchart-canvas-tools > .flowchart-canvas-tool-btn:hover {
   border-color: var(--ctp-blue);
 }
 
@@ -1125,6 +1146,19 @@
   color: var(--secondary) !important;
 }
 
+/* Floating view switcher — top-center of the canvas */
+.flowchart-view-menu {
+  @apply absolute top-4 left-1/2 -translate-x-1/2 z-20 flex items-center p-1 rounded-full border shadow-lg backdrop-blur-md;
+  max-width: calc(100% - 128px);
+  background-color: color-mix(in srgb, var(--ctp-mantle) 92%, transparent);
+  border-color: var(--border-light);
+  pointer-events: auto;
+}
+
+.flowchart-view-menu .flowchart-view-tabs {
+  @apply w-auto p-0 border-none bg-transparent shadow-none rounded-none;
+}
+
 /* Floating Combined Controls Dock Overlay inside Canvas */
 .flowchart-controls-dock-container {
   position: absolute;
@@ -1159,10 +1193,6 @@
   @apply bg-transparent p-0 border-none shadow-none flex-nowrap gap-0.5;
 }
 
-.flowchart-dock-zoom {
-  @apply flex justify-center py-1 w-full whitespace-nowrap;
-}
-
 .flowchart-dock-btn {
   @apply h-8 px-3 rounded-[var(--radius-xs)] border-none text-xs font-semibold flex items-center justify-center cursor-pointer transition-all duration-150;
   color: var(--ctp-overlay1) !important;
@@ -1172,14 +1202,6 @@
 .flowchart-dock-btn:hover {
   color: var(--ctp-text) !important;
   background-color: var(--ctp-surface0) !important;
-}
-
-.flowchart-dock-views {
-  @apply flex justify-center py-1 w-full;
-}
-
-.flowchart-dock-views .flowchart-view-action-bar {
-  @apply border-none bg-transparent shadow-none;
 }
 
 .flowchart-dock-journey {
@@ -1216,6 +1238,15 @@
   /* Show label for the active view tab so user knows which view is selected */
   .flowchart-view-tab-trigger[aria-selected="true"] .flowchart-view-tab-label {
     display: inline !important;
+  }
+
+  /* Floating view menu is icon-only on mobile; the name is in the tooltip */
+  .flowchart-view-menu .flowchart-view-tab-trigger[aria-selected="true"] .flowchart-view-tab-label {
+    display: none !important;
+  }
+
+  .flowchart-view-menu {
+    @apply overflow-x-auto;
   }
 
   .flowchart-controls-dock .flowchart-controls-dock-content {

@@ -413,7 +413,6 @@ export function Flowchart({ title, flow, schema = INITIAL_SCHEMA, sectionIndex =
 
   const [activeDockTabId, setActiveDockTabId] = useState<string | null>(() => {
     if (schema.journeys && schema.journeys.length > 0) return 'steps';
-    if (viewKeys.length > 1) return 'views';
     return null;
   });
   const [cameraControls, setCameraControls] = useState<{
@@ -462,39 +461,6 @@ export function Flowchart({ title, flow, schema = INITIAL_SCHEMA, sectionIndex =
 
   const dockTabs = useMemo<ExpandableTabItem[]>(() => {
     const tabs: ExpandableTabItem[] = [];
-
-    // Views Tab (only when multiple views)
-    if (visibleViewKeys.length > 1) {
-      tabs.push({
-        id: 'views',
-        label: 'Views',
-        icon: <Icons.Layers size={14} />,
-        testId: 'dock-tab-views',
-        content: (
-          <div className="flowchart-dock-views" data-testid="flowchart-view-tabs">
-            <Tabs
-              value={activeViewKey}
-              onValueChange={setActiveViewKey}
-              variant="pill"
-              className="flowchart-view-tabs"
-            >
-              <TabsList className="flowchart-view-tab-list">
-                {actionBarItems.map((item) => (
-                  <TabsTrigger
-                    key={item.id}
-                    value={item.id}
-                    className="flowchart-view-tab-trigger"
-                  >
-                    {item.icon}
-                    <span className="ml-1.5 flowchart-view-tab-label">{item.label}</span>
-                  </TabsTrigger>
-                ))}
-              </TabsList>
-            </Tabs>
-          </div>
-        )
-      });
-    }
 
     // Journey Tab (only when journeys exist)
     if (localSchema.journeys.length > 0) {
@@ -582,64 +548,11 @@ export function Flowchart({ title, flow, schema = INITIAL_SCHEMA, sectionIndex =
       });
     }
 
-    // Zoom Tab
-    tabs.push({
-      id: 'zoom',
-      label: 'Zoom',
-      icon: <Icons.Search size={14} />,
-      testId: 'dock-tab-zoom',
-      content: (
-        <div className="flowchart-dock-zoom">
-          {cameraControls ? (
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', justifyContent: 'center' }}>
-              <Button
-                size="sm"
-                variant="ghost"
-                onClick={cameraControls.handleZoomIn}
-                title="Zoom In"
-                data-testid="flowchart-zoom-in"
-                className="flowchart-btn flex items-center justify-center"
-              >
-                <Icons.ZoomIn size={14} style={{ marginRight: '6px' }} />
-                Zoom In
-              </Button>
-              <Button
-                size="sm"
-                variant="ghost"
-                onClick={cameraControls.handleZoomOut}
-                title="Zoom Out"
-                data-testid="flowchart-zoom-out"
-                className="flowchart-btn flex items-center justify-center"
-              >
-                <Icons.ZoomOut size={14} style={{ marginRight: '6px' }} />
-                Zoom Out
-              </Button>
-              <Button
-                size="sm"
-                variant="ghost"
-                onClick={cameraControls.handleFitToScreen}
-                title="Fit Screen"
-                data-testid="flowchart-fit-screen"
-                className="flowchart-btn flex items-center justify-center"
-              >
-                <Icons.Locate size={14} style={{ marginRight: '6px' }} />
-                Fit Screen
-              </Button>
-            </div>
-          ) : (
-            <div style={{ textAlign: 'center', fontSize: '12px', color: 'var(--ctp-subtext0)', padding: '8px' }}>
-              Camera controls not loaded
-            </div>
-          )}
-        </div>
-      )
-    });
-
     // ── Floating buttons (fullscreen, inspector) rendered outside dock ──
 
     return tabs;
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [activeSteps, activeStep, handleStepClick, instanceId, playback, cameraControls, isFullscreen, visibleViewKeys, actionBarItems, activeViewKey, localSchema.journeys]);
+  }, [activeSteps, activeStep, handleStepClick, instanceId, playback, isFullscreen, localSchema.journeys]);
 
   return (
     <div className={`flowchart-section${isFullscreen ? ' fullscreen' : ''}`} data-testid="flowchart-section">
@@ -668,16 +581,75 @@ export function Flowchart({ title, flow, schema = INITIAL_SCHEMA, sectionIndex =
           onCameraControls={setCameraControls}
         />
 
-        {/* Fullscreen Toggle Button - Fixed top-left */}
-        <button
-          onClick={() => setIsFullscreen(!isFullscreen)}
-          className="flowchart-fullscreen-toggle-btn"
-          data-testid={isFullscreen ? 'flowchart-fullscreen-exit' : 'flowchart-fullscreen-toggle'}
-          title={isFullscreen ? 'Exit Fullscreen' : 'Fullscreen'}
-          aria-label={isFullscreen ? 'Exit Fullscreen' : 'Fullscreen'}
-        >
-          {isFullscreen ? <Minimize size={16} /> : <Maximize size={16} />}
-        </button>
+        {/* Canvas tools - fullscreen + zoom, stacked vertically top-left */}
+        <div className="flowchart-canvas-tools" data-testid="flowchart-canvas-tools">
+          <button
+            onClick={() => setIsFullscreen(!isFullscreen)}
+            className="flowchart-canvas-tool-btn"
+            data-testid={isFullscreen ? 'flowchart-fullscreen-exit' : 'flowchart-fullscreen-toggle'}
+            title={isFullscreen ? 'Exit Fullscreen' : 'Fullscreen'}
+            aria-label={isFullscreen ? 'Exit Fullscreen' : 'Fullscreen'}
+          >
+            {isFullscreen ? <Minimize size={16} /> : <Maximize size={16} />}
+          </button>
+          {cameraControls && (
+            <div className="flowchart-canvas-tool-group" role="group" aria-label="Zoom">
+              <button
+                onClick={cameraControls.handleZoomIn}
+                className="flowchart-canvas-tool-btn"
+                data-testid="flowchart-zoom-in"
+                title="Zoom In"
+                aria-label="Zoom In"
+              >
+                <Icons.ZoomIn size={16} />
+              </button>
+              <button
+                onClick={cameraControls.handleZoomOut}
+                className="flowchart-canvas-tool-btn"
+                data-testid="flowchart-zoom-out"
+                title="Zoom Out"
+                aria-label="Zoom Out"
+              >
+                <Icons.ZoomOut size={16} />
+              </button>
+              <button
+                onClick={cameraControls.handleFitToScreen}
+                className="flowchart-canvas-tool-btn"
+                data-testid="flowchart-fit-screen"
+                title="Fit to Screen"
+                aria-label="Fit to Screen"
+              >
+                <Icons.Locate size={16} />
+              </button>
+            </div>
+          )}
+        </div>
+
+        {/* Floating view switcher - top-center */}
+        {visibleViewKeys.length > 1 && (
+          <div className="flowchart-view-menu" data-testid="flowchart-view-tabs">
+            <Tabs
+              value={activeViewKey}
+              onValueChange={setActiveViewKey}
+              variant="pill"
+              className="flowchart-view-tabs"
+            >
+              <TabsList className="flowchart-view-tab-list">
+                {actionBarItems.map((item) => (
+                  <TabsTrigger
+                    key={item.id}
+                    value={item.id}
+                    className="flowchart-view-tab-trigger"
+                    title={item.label}
+                  >
+                    {item.icon}
+                    <span className="ml-1.5 flowchart-view-tab-label">{item.label}</span>
+                  </TabsTrigger>
+                ))}
+              </TabsList>
+            </Tabs>
+          </div>
+        )}
 
         {/* Inspector Toggle Button - Fixed top-right */}
         {isFullscreen && (
