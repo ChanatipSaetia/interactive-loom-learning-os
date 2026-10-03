@@ -3,6 +3,7 @@ import { MemoryRouter, Routes, Route } from 'react-router-dom'
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 import * as registryModule from '../../../../../src/core/learning-engine/registry'
 import * as okfSections from '../../../../../src/core/learning-engine/composition/okf/sections'
+import * as contentModule from '../../../../../src/core/learning-engine/composition/content'
 import * as routesModule from '../../../../../src/core/learning-engine/composition/routes'
 import { TopicShell, SectionRenderer } from '../../../../../src/core/delivery/web-app-shell/TopicShell'
 import type { TopicRoute } from '../../../../../src/core/learning-engine/composition/routes'
@@ -38,7 +39,7 @@ function renderTopicShell(path = '/demo/rest-vs-websocket', topics: TopicRoute[]
   )
 }
 
-describe('TopicShell OKF loading', () => {
+describe('TopicShell topic loading', () => {
   beforeEach(() => {
     vi.clearAllMocks()
     registryModule.SectionRegistry.clear()
@@ -51,7 +52,7 @@ describe('TopicShell OKF loading', () => {
   })
 
   it('TopicShell renders topic page for known route', async () => {
-    vi.spyOn(okfSections, 'useOKFBundled').mockReturnValue({
+    vi.spyOn(contentModule, 'useTopicBundle').mockReturnValue({
       bundle: null,
       loading: false,
       error: null,
@@ -70,7 +71,7 @@ describe('TopicShell OKF loading', () => {
   })
 
   it('TopicShell shows loading state', async () => {
-    vi.spyOn(okfSections, 'useOKFBundled').mockReturnValue({
+    vi.spyOn(contentModule, 'useTopicBundle').mockReturnValue({
       bundle: null,
       loading: true,
       error: null,
@@ -84,7 +85,7 @@ describe('TopicShell OKF loading', () => {
   })
 
   it('TopicShell shows error state', async () => {
-    vi.spyOn(okfSections, 'useOKFBundled').mockReturnValue({
+    vi.spyOn(contentModule, 'useTopicBundle').mockReturnValue({
       bundle: null,
       loading: false,
       error: new Error('Network error'),
@@ -149,7 +150,7 @@ describe('TopicShell Editor Mode', () => {
     registryModule.SectionRegistry.clear()
     registryModule.SectionRegistry.register('text', mockSectionLoader)
     registryModule.SectionRegistry.register('bullets', mockSectionLoader)
-    vi.spyOn(okfSections, 'useOKFBundled').mockReturnValue({
+    vi.spyOn(contentModule, 'useTopicBundle').mockReturnValue({
       bundle: mockBundle,
       loading: false,
       error: null,
@@ -246,7 +247,7 @@ describe('EditSectionToggle', () => {
   it('shows Edit label when not in edit mode', async () => {
     registryModule.SectionRegistry.clear()
     registryModule.SectionRegistry.register('text', mockSectionLoader)
-    vi.spyOn(okfSections, 'useOKFBundled').mockReturnValue({
+    vi.spyOn(contentModule, 'useTopicBundle').mockReturnValue({
       bundle: [
         {
           meta: { type: 'text', title: 'Test', resource: 'test.md' },

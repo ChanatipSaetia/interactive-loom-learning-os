@@ -1,0 +1,22 @@
+root = ReflectionSequence("Process Flow Sequence Builder", [challenge1, challenge2])
+
+challenge1 = SequenceChallenge(
+  "Arrange the steps in the correct chronological order to model the product feature loop (Part 1):",
+  [dragFeatureReq, dragSprintBacklog, dragDeliverCode, dragReview],
+  [dragFeatureReq, dragSprintBacklog, dragDeliverCode, dragReview],
+)
+
+dragFeatureReq = SequenceItem("drag-feature-req", "Define Feature Request")
+dragSprintBacklog = SequenceItem("drag-sprint-backlog", "Sprint Backlog Ready")
+dragDeliverCode = SequenceItem("drag-deliver-code", "Deliver Code Changes")
+dragReview = SequenceItem("drag-review", "Sprint Review")
+
+challenge2 = SequenceChallenge(
+  "Arrange the steps in the correct chronological order to model the deployment pipeline (Part 2):",
+  [dragBuild, dragTest, dragDeploy],
+  [dragBuild, dragTest, dragDeploy],
+)
+
+dragBuild = SequenceItem("drag-build", "Build Artifacts")
+dragTest = SequenceItem("drag-test", "Run Unit & E2E Tests")
+dragDeploy = SequenceItem("drag-deploy", "Deploy to Production")

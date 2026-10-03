@@ -1,0 +1,134 @@
+root = DecisionTree(
+  "Agent Architecture Decision Guide",
+  "agent_architecture",
+  "scale_question",
+  [
+    scaleQuestion,
+    memoryQuestion,
+    orchestratorQuestion,
+    leafSimple,
+    leafVectorDb,
+    leafOrchestrator,
+    leafFanOut,
+  ],
+)
+
+scaleQuestion = DecisionNode(
+  "scale_question",
+  "How many concurrent tasks will the agent handle?",
+  [
+    DecisionChoice(
+      "single",
+      "One at a time",
+      "memory_question",
+      "Single-task agents are simpler to build and debug.",
+    ),
+    DecisionChoice(
+      "parallel",
+      "Many at once",
+      "orchestrator_question",
+      "Most production agents need parallel task handling for throughput.",
+      true,
+    ),
+  ],
+)
+
+memoryQuestion = DecisionNode(
+  "memory_question",
+  "Does the agent need to remember past interactions?",
+  [
+    DecisionChoice(
+      "yes",
+      "Yes, across sessions",
+      "leaf_vector_db",
+      "Persistent memory enables learning from past interactions.",
+    ),
+    DecisionChoice(
+      "no",
+      "No, stateless is fine",
+      "leaf_simple",
+      "Stateless agents are easier to scale horizontally.",
+      true,
+    ),
+  ],
+)
+
+orchestratorQuestion = DecisionNode(
+  "orchestrator_question",
+  "Do tasks require coordination between sub-agents?",
+  [
+    DecisionChoice(
+      "yes_coord",
+      "Yes, tasks depend on each other",
+      "leaf_orchestrator",
+      "Orchestrator pattern handles complex multi-step workflows.",
+      true,
+    ),
+    DecisionChoice(
+      "no_coord",
+      "No, tasks are independent",
+      "leaf_fan_out",
+      "Independent tasks can be distributed without coordination.",
+    ),
+  ],
+)
+
+leafSimple = DecisionNode(
+  "leaf_simple",
+  null,
+  null,
+  DecisionLeaf(
+    "Use a simple single-agent ReAct loop.",
+    "For single-task agents without memory needs, a basic ReAct (Reason-Act) loop is sufficient. The agent observes, reasons, takes an action, and repeats.",
+    [
+      "Minimal setup — no external dependencies",
+      "No long-term memory between sessions",
+      "Easy to debug and reason about",
+    ],
+  ),
+)
+
+leafVectorDb = DecisionNode(
+  "leaf_vector_db",
+  null,
+  null,
+  DecisionLeaf(
+    "Use a single-agent ReAct loop with vector store memory.",
+    "For single-task agents that need persistent memory, add a vector store for Retrieval-Augmented Generation (RAG). This lets the agent recall relevant past interactions.",
+    [
+      "Adds database dependency",
+      "Enables long-term learning from interactions",
+      "Increases latency for memory lookups",
+    ],
+  ),
+)
+
+leafOrchestrator = DecisionNode(
+  "leaf_orchestrator",
+  null,
+  null,
+  DecisionLeaf(
+    "Use an Orchestrator-Workers pattern.",
+    "A central orchestrator decomposes complex goals, delegates to specialized worker agents, and aggregates results. Best for workflows where tasks depend on each other.",
+    [
+      "Orchestrator becomes a single point of failure",
+      "Handles complex multi-step workflows elegantly",
+      "More agents to monitor and debug",
+    ],
+  ),
+)
+
+leafFanOut = DecisionNode(
+  "leaf_fan_out",
+  null,
+  null,
+  DecisionLeaf(
+    "Use a Fan-Out/Fan-In pattern.",
+    "Dispatch independent tasks to parallel workers and aggregate results. Simple and highly scalable when tasks don't depend on each other.",
+    [
+      "No coordination overhead between tasks",
+      "Limited to independent work items",
+      "Result aggregation can be complex",
+    ],
+  ),
+)

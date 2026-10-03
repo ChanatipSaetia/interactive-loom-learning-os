@@ -6,9 +6,12 @@
  *   perf = TradeoffMetric("performance", "Performance", 50, 0, 100, "higher")
  */
 import { z } from 'zod'
-import { byId, defineOUIComponent, defineOUISection, sectionTailProps } from '../openui-kernel'
+import { byId, call, defineOUIComponent, defineOUISection, sectionTail, sectionTailProps, type LoomOUIComponent } from '../openui-kernel'
 import type {
   DecisionTreeNode,
+  DecisionTreeSectionData,
+  FormulaSandboxSectionData,
+  TradeoffSandboxSectionData,
   FormulaMetric as FormulaMetricData,
   FormulaVariable as FormulaVariableData,
   TradeoffScenario as TradeoffScenarioData,
@@ -77,7 +80,7 @@ export const TradeoffScenario = defineOUIComponent({
   }),
 })
 
-export const TradeoffSandbox = defineOUISection({
+export const TradeoffSandbox: LoomOUIComponent = defineOUISection({
   name: 'TradeoffSandbox',
   sectionType: 'tradeoff-sandbox',
   description: 'Interactive sandbox where learners make design choices and watch metrics move.',
@@ -87,6 +90,32 @@ export const TradeoffSandbox = defineOUISection({
     ...sectionTailProps,
   }),
   toData: (p) => ({ type: 'tradeoff-sandbox', scenarios: p.scenarios as unknown as TradeoffScenarioData[] }),
+  fromData: (data: TradeoffSandboxSectionData, meta) => call(TradeoffSandbox, {
+    title: meta.title ?? '',
+    scenarios: data.scenarios.map((sc) => call(TradeoffScenario, {
+      id: sc.id,
+      title: sc.title,
+      metrics: sc.metrics.map((m) => call(TradeoffMetric, { id: m.id, label: m.label, baseValue: m.baseValue, min: m.min, max: m.max, direction: m.direction })),
+      steps: sc.steps.map((st) => call(TradeoffStep, {
+        id: st.id,
+        title: st.title,
+        choices: st.choices.map((c) => call(TradeoffChoice, {
+          id: c.id,
+          label: c.label,
+          description: c.description,
+          metrics: { ...c.metrics },
+          pros: c.pros.map((pc) => call(ProCon, { title: pc.title, description: pc.description })),
+          cons: c.cons.map((pc) => call(ProCon, { title: pc.title, description: pc.description })),
+          whyThisFits: c.whyThisFits,
+          whenToUse: c.whenToUse,
+        }, c.id)),
+        description: st.description,
+        recommended: st.recommended,
+      }, st.id)),
+      description: sc.description,
+    }, sc.id)),
+    ...sectionTail(meta),
+  }),
 })
 
 // --- Formula Sandbox ---
@@ -118,7 +147,7 @@ export const FormulaMetric = defineOUIComponent({
   }),
 })
 
-export const FormulaSandbox = defineOUISection({
+export const FormulaSandbox: LoomOUIComponent = defineOUISection({
   name: 'FormulaSandbox',
   sectionType: 'formula-sandbox',
   description: 'Parameter sandbox: sliders drive live formula-based metrics.',
@@ -132,6 +161,14 @@ export const FormulaSandbox = defineOUISection({
     type: 'formula-sandbox',
     variables: p.variables as unknown as FormulaVariableData[],
     metrics: p.metrics as unknown as FormulaMetricData[],
+  }),
+  fromData: (data: FormulaSandboxSectionData, meta) => call(FormulaSandbox, {
+    title: meta.title ?? '',
+    variables: data.variables.map((v) => call(FormulaVariable, { id: v.id, label: v.label, min: v.min, max: v.max, step: v.step, defaultValue: v.defaultValue })),
+    metrics: data.metrics.map((m) => call(FormulaMetric, {
+      id: m.id, label: m.label, formula: m.formula, description: m.description, analogy: m.analogy, inScope: m.inScope, outOfScope: m.outOfScope,
+    }, m.id)),
+    ...sectionTail(meta),
   }),
 })
 
@@ -170,23 +207,43 @@ export const DecisionNode = defineOUIComponent({
   }),
 })
 
-export const DecisionTree = defineOUISection({
+export const DecisionTree: LoomOUIComponent = defineOUISection({
   name: 'DecisionTree',
   sectionType: 'decision-tree',
-  description: 'Interactive decision guide. `root` is the ID of the first node.',
+  description: 'Interactive decision guide. `root` is the ID of the first node. `displayTitle` overrides the title shown inside the guide.',
   props: z.object({
     title: z.string(),
     id: z.string(),
     root: z.string(),
     nodes: z.array(DecisionNode.ref),
+    displayTitle: z.string().optional(),
     ...sectionTailProps,
   }),
   toData: (p) => ({
     type: 'decision-tree',
     id: p.id,
-    title: p.title,
+    title: p.displayTitle ?? p.title,
     root: p.root,
     nodes: byId(p.nodes as unknown as DecisionTreeNode[]),
+  }),
+  fromData: (data: DecisionTreeSectionData, meta) => call(DecisionTree, {
+    title: meta.title || data.title || '',
+    displayTitle: data.title && data.title !== (meta.title || data.title) ? data.title : undefined,
+    id: data.id,
+    root: data.root,
+    nodes: Object.entries(data.nodes).map(([id, n]) => call(DecisionNode, {
+      id,
+      prompt: n.prompt ?? n.text ?? n.title,
+      choices: (n.choices ?? n.options)?.map((c) => call(DecisionChoice, {
+        id: c.id ?? '',
+        text: c.text ?? c.label ?? '',
+        next: c.next ?? c.target ?? '',
+        rationale: c.rationale,
+        recommended: c.recommended,
+      })),
+      leaf: n.leaf ? call(DecisionLeaf, { recommendation: n.leaf.recommendation, explanation: n.leaf.explanation, tradeoffs: n.leaf.tradeoffs }) : undefined,
+    }, id)),
+    ...sectionTail(meta),
   }),
 })
 

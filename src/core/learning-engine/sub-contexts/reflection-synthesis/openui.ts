@@ -6,8 +6,13 @@
  *   a = SequenceItem("plan", "Plan")
  */
 import { z } from 'zod'
-import { defineOUIComponent, defineOUISection, idOf, refOrId, sectionTailProps } from '../openui-kernel'
-import type { ReflectionSequenceChallenge, ReflectionTemplateChallenge } from './schema'
+import { call, defineOUIComponent, defineOUISection, idOf, refOrId, refTo, sectionTail, sectionTailProps, type LoomOUIComponent } from '../openui-kernel'
+import type {
+  ReflectionSequenceChallenge,
+  ReflectionSequenceSectionData,
+  ReflectionTemplateChallenge,
+  ReflectionTemplateSectionData,
+} from './schema'
 
 // --- Reflection Sequence ---
 
@@ -32,7 +37,7 @@ export const SequenceChallenge = defineOUIComponent({
   toData: (p) => ({ prompt: p.prompt, items: p.items, solution: (p.solution as unknown[]).map(idOf) }),
 })
 
-export const ReflectionSequence = defineOUISection({
+export const ReflectionSequence: LoomOUIComponent = defineOUISection({
   name: 'ReflectionSequence',
   sectionType: 'reflection-sequence',
   description: 'Sequence-builder reflection: learners put steps in the right order.',
@@ -42,6 +47,15 @@ export const ReflectionSequence = defineOUISection({
     ...sectionTailProps,
   }),
   toData: (p) => ({ type: 'reflection-sequence', challenges: p.challenges as unknown as ReflectionSequenceChallenge[] }),
+  fromData: (data: ReflectionSequenceSectionData, meta) => call(ReflectionSequence, {
+    title: meta.title ?? '',
+    challenges: data.challenges.map((c, i) => call(SequenceChallenge, {
+      prompt: c.prompt,
+      items: c.items.map((item) => call(SequenceItem, { id: item.id, text: item.text, icon: item.icon })),
+      solution: c.solution.map((id) => refTo(SequenceItem, id)),
+    }, `challenge${i + 1}`)),
+    ...sectionTail(meta),
+  }),
 })
 
 // --- Reflection Template ---
@@ -67,7 +81,7 @@ export const TemplateChallenge = defineOUIComponent({
   }),
 })
 
-export const ReflectionTemplate = defineOUISection({
+export const ReflectionTemplate: LoomOUIComponent = defineOUISection({
   name: 'ReflectionTemplate',
   sectionType: 'reflection-template',
   description: 'Self-explanation reflection: learners complete sentence templates with chips.',
@@ -77,6 +91,17 @@ export const ReflectionTemplate = defineOUISection({
     ...sectionTailProps,
   }),
   toData: (p) => ({ type: 'reflection-template', challenges: p.challenges as unknown as ReflectionTemplateChallenge[] }),
+  fromData: (data: ReflectionTemplateSectionData, meta) => call(ReflectionTemplate, {
+    title: meta.title ?? '',
+    challenges: data.challenges.map((c, i) => call(TemplateChallenge, {
+      prompt: c.prompt,
+      template: c.template,
+      chips: c.chips.map((chip) => call(Chip, { id: chip.id, text: chip.text })),
+      solution: { ...c.solution },
+      explanation: c.explanation,
+    }, `challenge${i + 1}`)),
+    ...sectionTail(meta),
+  }),
 })
 
 export const reflectionSynthesisOUIComponents = [

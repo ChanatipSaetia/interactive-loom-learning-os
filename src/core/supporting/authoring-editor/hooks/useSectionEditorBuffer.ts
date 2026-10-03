@@ -5,8 +5,16 @@ import { validateOKFSection } from '../../../learning-engine/validation/gateway'
 import type { ValidationDiagnostic, ValidationResult } from '../../../learning-engine/validation/gateway'
 import { buildSectionSaveFiles, buildDownloadFiles, triggerDownload } from '../services/okfSave'
 import { inRepoStorage, clearOKFCache } from '../../../learning-engine/composition/okf/reader'
+import { clearContentCache } from '../../../learning-engine/composition/content'
+import { printOUISection } from '../../../learning-engine/composition/oui/print'
+import { ouiStorage } from '../../../delivery/adapters/oui-storage'
 
 const DEBOUNCE_MS = 300
+
+/** Sections loaded from OpenUI Lang content carry their `.oui` source. */
+function isOUISection(section: OKFBundledSection | null | undefined): section is OKFBundledSection & { source: string } {
+  return !!section && typeof (section as { source?: unknown }).source === 'string'
+}
 
 interface EditorBufferState {
   meta: OKFSectionMeta
@@ -267,20 +275,25 @@ export function useSectionEditorBuffer(
   )
 
   const saveToDisk = useCallback(async (topicId: string, sectionName: string): Promise<boolean> => {
-    const sectionBody = sourceRef.current?.sectionBody ?? ''
-    const dataYaml = yaml.dump(state.data, { lineWidth: -1, noRefs: true })
-    const files = buildSectionSaveFiles(state.meta, dataYaml, sectionBody)
-
     setState((prev) => ({ ...prev, isSaving: true }))
 
     try {
-      // Use storage adapter for disk persistence (Phase 3.2 delivery port)
-      await inRepoStorage.saveSection(topicId, sectionName, state.data, files.sectionMd)
+      if (isOUISection(sourceRef.current)) {
+        // OpenUI Lang content: print the edited section back to `.oui` source.
+        await ouiStorage.saveSection(topicId, sectionName, state.data, printOUISection(state.meta, state.data))
+      } else {
+        const sectionBody = sourceRef.current?.sectionBody ?? ''
+        const dataYaml = yaml.dump(state.data, { lineWidth: -1, noRefs: true })
+        const files = buildSectionSaveFiles(state.meta, dataYaml, sectionBody)
+        // Use storage adapter for disk persistence (Phase 3.2 delivery port)
+        await inRepoStorage.saveSection(topicId, sectionName, state.data, files.sectionMd)
+      }
       if (sourceRef.current) {
         sourceRef.current.data = state.data
         sourceRef.current.meta = state.meta
       }
       clearOKFCache()
+      clearContentCache()
       setState((prev) => ({ ...prev, isDirty: false, isSaving: false }))
       return true
     } catch (e: unknown) {
@@ -290,6 +303,11 @@ export function useSectionEditorBuffer(
   }, [state.meta, state.data])
 
   const downloadFiles = useCallback(() => {
+    if (isOUISection(sourceRef.current)) {
+      const name = sourceRef.current.sectionFolder ?? state.meta.type
+      triggerDownload({ filename: `${name}.oui`, content: printOUISection(state.meta, state.data), mimeType: 'text/plain' })
+      return
+    }
     const sectionBody = sourceRef.current?.sectionBody ?? ''
     const dataYaml = yaml.dump(state.data, { lineWidth: -1, noRefs: true })
     const downloads = buildDownloadFiles(state.meta, dataYaml, sectionBody)

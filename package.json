@@ -13,7 +13,8 @@
     "test:e2e": "playwright test",
     "lint": "eslint . --ext .ts,.tsx --report-unused-disable-directives --max-warnings 0",
     "typecheck": "tsc --noEmit",
-    "okf:validate": "npx -y tsx scripts/validate-okf.ts"
+    "okf:validate": "npx -y tsx scripts/validate-okf.ts",
+    "oui:convert": "npx -y tsx scripts/okf-to-oui.ts"
   },
   "dependencies": {
     "@codemirror/autocomplete": "^6.20.3",

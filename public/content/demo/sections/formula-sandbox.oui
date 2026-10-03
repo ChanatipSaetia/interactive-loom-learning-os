@@ -1,0 +1,39 @@
+root = FormulaSandbox(
+  "RAG Parameter Dynamics Sandbox",
+  [
+    FormulaVariable("chunk_size", "Chunk Size (characters)", 100, 2000, 50, 500),
+    FormulaVariable("overlap", "Chunk Overlap (%)", 0, 50, 5, 10),
+    FormulaVariable("overhead", "LLM Query Overhead (ms)", 100, 1500, 50, 400),
+  ],
+  [recall, latency, cost],
+)
+
+recall = FormulaMetric(
+  "recall",
+  "Search Recall Accuracy",
+  "Math.round((Math.log2(chunk_size) * (1 + (overlap / 70))) * 6.5)",
+  "The percentage of relevant reference documents successfully retrieved from the vector database for a given query context.",
+  "Like casting a wider net when fishing. You catch the targeted fish (better recall), but you also bring up a lot of seaweed and debris (noise).",
+  ["Top-K retrieval threshold tuning", "Overlap redundancy checks"],
+  ["Text generation formatting logic"],
+)
+
+latency = FormulaMetric(
+  "latency",
+  "Inference Query Latency",
+  "Math.round(overhead + (chunk_size * 0.4) + (overlap * 4))",
+  "Total execution time from query launch to receiving the synthesized answer from the LLM endpoint.",
+  "A long email takes longer to read and reply to than a short text message, regardless of how fast you write.",
+  ["Inference processing speed", "Network communication payload sizes"],
+  ["Vector database index creation time"],
+)
+
+cost = FormulaMetric(
+  "cost",
+  "Estimated API Token Cost (Per 1k Queries)",
+  "(chunk_size * 1.5 * 5) * 0.000015",
+  "Financial cost spent per 1,000 requests query traffic on API tokens.",
+  "Mailing heavy boxes. Shipping five 10lb boxes costs double compared to five 5lb boxes.",
+  ["Input prompt token pricing schemas", "Completion context generation sizes"],
+  ["Hosting compute system pricing"],
+)

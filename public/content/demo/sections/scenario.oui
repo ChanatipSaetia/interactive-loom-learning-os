@@ -1,0 +1,124 @@
+root = Scenario(
+  "Choosing a Deployment Strategy",
+  "deploy_decision",
+  [
+    start,
+    infraChoice,
+    cloudChoice,
+    toolChoice,
+    outcomeEdge,
+    outcomeRegional,
+    outcomeServerless,
+    outcomeContainers,
+    outcomeTracing,
+    outcomeMetrics,
+  ],
+  "Your team needs to deploy an AI agent system. Requirements: low latency, cost control, observability.",
+)
+
+start = ScenarioNode(
+  "start",
+  "What is the primary constraint?",
+  [
+    ScenarioChoice("latency", "Low latency is critical", "infra_choice"),
+    ScenarioChoice("cost", "Budget is tight", "cloud_choice"),
+    ScenarioChoice("obs", "We need full observability first", "tool_choice"),
+  ],
+)
+
+infraChoice = ScenarioNode(
+  "infra_choice",
+  "Where should the agent run?",
+  [
+    ScenarioChoice("edge", "Edge deployment closest to users", "outcome_edge"),
+    ScenarioChoice("regional", "Regional cloud with CDN", "outcome_regional"),
+  ],
+)
+
+cloudChoice = ScenarioNode(
+  "cloud_choice",
+  "Which cloud model fits best?",
+  [
+    ScenarioChoice(
+      "serverless",
+      "Serverless functions for on-demand scaling",
+      "outcome_serverless",
+    ),
+    ScenarioChoice("containers", "Managed containers with auto-scaling", "outcome_containers"),
+  ],
+)
+
+toolChoice = ScenarioNode(
+  "tool_choice",
+  "What observability layer do you need first?",
+  [
+    ScenarioChoice("tracing", "Distributed tracing for agent decision chains", "outcome_tracing"),
+    ScenarioChoice("metrics", "Metrics dashboard for throughput and cost", "outcome_metrics"),
+  ],
+)
+
+outcomeEdge = ScenarioNode(
+  "outcome_edge",
+  null,
+  null,
+  Outcome(
+    "Good for ultra-low latency, but higher infrastructure cost.",
+    "Edge deployment minimizes network hops but multiplies deployment complexity.",
+    "b-plus",
+  ),
+)
+
+outcomeRegional = ScenarioNode(
+  "outcome_regional",
+  null,
+  null,
+  Outcome(
+    "Balanced approach with acceptable latency for most regions.",
+    "Regional cloud with CDN gives a good latency/cost trade-off for global audiences.",
+    "a",
+  ),
+)
+
+outcomeServerless = ScenarioNode(
+  "outcome_serverless",
+  null,
+  null,
+  Outcome(
+    "Minimal upfront cost, but cold starts hurt latency.",
+    "Serverless is cost-efficient for sporadic workloads but struggles with real-time agent interactions.",
+    "b-minus",
+  ),
+)
+
+outcomeContainers = ScenarioNode(
+  "outcome_containers",
+  null,
+  null,
+  Outcome(
+    "Predictable performance with manageable cost.",
+    "Managed containers give you warm instances, horizontal scaling, and reasonable pricing.",
+    "a",
+  ),
+)
+
+outcomeTracing = ScenarioNode(
+  "outcome_tracing",
+  null,
+  null,
+  Outcome(
+    "Strong foundation for debugging agent behavior.",
+    "Distributed tracing reveals where agents stall, but adds overhead to every decision step.",
+    "b-plus",
+  ),
+)
+
+outcomeMetrics = ScenarioNode(
+  "outcome_metrics",
+  null,
+  null,
+  Outcome(
+    "Good cost visibility but limited behavioral insight.",
+    "Metrics tell you what happened, not why. Combine with tracing for full picture.",
+    "c",
+  ),
+)

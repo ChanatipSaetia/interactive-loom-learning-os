@@ -3,7 +3,8 @@ import { useParams } from 'react-router-dom'
 import { useTopics } from '../../learning-engine/composition/routes'
 import type { SectionConfig } from '../../learning-engine/registry'
 import { SectionRegistry } from '../../learning-engine/registry'
-import { useOKFBundled, bundleToSections } from '../../learning-engine/composition/okf/sections'
+import { bundleToSections } from '../../learning-engine/composition/okf/sections'
+import { useTopicBundle } from '../../learning-engine/composition/content'
 import { ProgressProvider } from '../../supporting/learner-progress'
 import { HUDProvider, useHUD } from '../../learning-engine/composition/context/HUDContext'
 import { EditorProvider, useEditor, useEditorSafe } from '../../learning-engine/composition/context/EditorContext'
@@ -161,7 +162,7 @@ function TopicShellInner() {
 
   const topic = useMemo(() => topics.find((r) => r.id === topicId), [topicId, topics])
 
-  const { bundle, loading, error, reload } = useOKFBundled(topicId ?? '')
+  const { bundle, loading, error, reload } = useTopicBundle(topicId ?? '')
   const sections = useMemo(() => (bundle ? bundleToSections(bundle) : []), [bundle])
 
   if (!topic) {
@@ -214,7 +215,7 @@ function TopicShellInner() {
 
 function TopicShellWithBundle() {
   const { topicId } = useParams()
-  const { bundle } = useOKFBundled(topicId ?? '')
+  const { bundle } = useTopicBundle(topicId ?? '')
   const editor = useEditorSafe()
 
   useEffect(() => {

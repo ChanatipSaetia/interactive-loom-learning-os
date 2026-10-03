@@ -6,10 +6,27 @@
  */
 import { tagSchemaId } from '@openuidev/lang-core'
 import { z } from 'zod'
-import { defineOUIComponent, defineOUISection, idOf, refOrId, sectionTailProps } from '../openui-kernel'
+import {
+  call,
+  defineOUIComponent,
+  defineOUISection,
+  idOf,
+  refOrId,
+  refTo,
+  sectionTail,
+  sectionTailProps,
+  type LoomOUIComponent,
+  type OUIValue,
+} from '../openui-kernel'
 import type {
   BulletItem,
+  BulletsSectionData,
   GalleryItem,
+  ImageGallerySectionData,
+  IntroSectionData,
+  PillarLayerSectionData,
+  TaxonomyBrowserSectionData,
+  TextSectionData,
   IntroRoadmapStep,
   PillarLayerBlock,
   PillarLayerLayer,
@@ -49,10 +66,10 @@ export const RoadmapStep = defineOUIComponent({
   }),
 })
 
-export const Intro = defineOUISection({
+export const Intro: LoomOUIComponent = defineOUISection({
   name: 'Intro',
   sectionType: 'intro',
-  description: 'Topic opener: what it is, why it matters, and a roadmap of the sections ahead.',
+  description: 'Topic opener: what it is, why it matters, and a roadmap of the sections ahead. `displayTitle` overrides the title shown inside the card.',
   props: z.object({
     title: z.string(),
     what: IntroWhat.ref,
@@ -61,11 +78,12 @@ export const Intro = defineOUISection({
     subtitle: z.string().optional(),
     estimatedTime: z.string().optional(),
     moduleCount: z.number().optional(),
+    displayTitle: z.string().optional(),
     ...sectionTailProps,
   }),
   toData: (p) => ({
     type: 'intro',
-    title: p.title,
+    title: p.displayTitle,
     subtitle: p.subtitle,
     estimatedTime: p.estimatedTime,
     moduleCount: p.moduleCount,
@@ -73,11 +91,24 @@ export const Intro = defineOUISection({
     why: p.why as unknown as { summary: string },
     roadmap: (p.roadmap ?? []) as unknown as IntroRoadmapStep[],
   }),
+  fromData: (data: IntroSectionData, meta) => call(Intro, {
+    title: meta.title || data.title || '',
+    displayTitle: data.title !== undefined && data.title !== (meta.title || data.title) ? data.title : undefined,
+    what: call(IntroWhat, { summary: data.what.summary, definition: data.what.definition, bullets: data.what.bullets, tags: data.what.tags }, 'what'),
+    why: call(IntroWhy, { summary: data.why.summary, impact: data.why.impact }, 'why'),
+    roadmap: data.roadmap?.length
+      ? data.roadmap.map((r) => call(RoadmapStep, { title: r.title, type: r.type, description: r.description, sectionId: r.sectionId }))
+      : undefined,
+    subtitle: data.subtitle,
+    estimatedTime: data.estimatedTime,
+    moduleCount: data.moduleCount,
+    ...sectionTail(meta),
+  }),
 })
 
 // --- Text & Bullets ---
 
-export const Text = defineOUISection({
+export const Text: LoomOUIComponent = defineOUISection({
   name: 'Text',
   sectionType: 'text',
   description: 'Prose section: one string per paragraph.',
@@ -87,6 +118,7 @@ export const Text = defineOUISection({
     ...sectionTailProps,
   }),
   toData: (p) => ({ type: 'text', paragraphs: p.paragraphs }),
+  fromData: (data: TextSectionData, meta) => call(Text, { title: meta.title ?? '', paragraphs: [...data.paragraphs], ...sectionTail(meta) }),
 })
 
 const NestedBullet = z.lazy(() => BulletProps)
@@ -103,7 +135,7 @@ export const Bullet = defineOUIComponent({
   props: BulletProps,
 })
 
-export const Bullets = defineOUISection({
+export const Bullets: LoomOUIComponent = defineOUISection({
   name: 'Bullets',
   sectionType: 'bullets',
   description: 'Bulleted (or numbered, when `ordered` is true) checklist.',
@@ -114,7 +146,17 @@ export const Bullets = defineOUISection({
     ...sectionTailProps,
   }),
   toData: (p) => ({ type: 'bullets', items: p.items as unknown as BulletItem[] }),
+  fromData: (data: BulletsSectionData, meta) => call(Bullets, {
+    title: meta.title ?? '',
+    items: data.items.map(bulletCall),
+    ordered: meta.ordered,
+    ...sectionTail(meta),
+  }),
 })
+
+function bulletCall(item: BulletItem): OUIValue {
+  return call(Bullet, { text: item.text, children: item.children?.length ? item.children.map(bulletCall) : undefined })
+}
 
 // --- Taxonomy Browser ---
 
@@ -135,7 +177,7 @@ export const TaxonomyCategory = defineOUIComponent({
   }),
 })
 
-export const TaxonomyBrowser = defineOUISection({
+export const TaxonomyBrowser: LoomOUIComponent = defineOUISection({
   name: 'TaxonomyBrowser',
   sectionType: 'taxonomy-browser',
   description: 'Browsable taxonomy of categories with scope, analogy and details.',
@@ -145,6 +187,22 @@ export const TaxonomyBrowser = defineOUISection({
     ...sectionTailProps,
   }),
   toData: (p) => ({ type: 'taxonomy-browser', categories: p.categories as unknown as TaxonomyCategoryData[] }),
+  fromData: (data: TaxonomyBrowserSectionData, meta) => call(TaxonomyBrowser, {
+    title: meta.title ?? '',
+    categories: data.categories.map((c) => call(TaxonomyCategory, {
+      title: c.title,
+      subtitle: c.subtitle,
+      icon: c.icon,
+      color: c.color,
+      description: c.description,
+      details: c.details,
+      analogy: c.analogy,
+      primaryFocus: c.primaryFocus,
+      inScope: c.inScope,
+      outOfScope: c.outOfScope,
+    }, c.title)),
+    ...sectionTail(meta),
+  }),
 })
 
 // --- Image Gallery ---
@@ -160,7 +218,7 @@ export const GalleryImage = defineOUIComponent({
   }),
 })
 
-export const ImageGallery = defineOUISection({
+export const ImageGallery: LoomOUIComponent = defineOUISection({
   name: 'ImageGallery',
   sectionType: 'image-gallery',
   description: 'Gallery of captioned images.',
@@ -170,6 +228,11 @@ export const ImageGallery = defineOUISection({
     ...sectionTailProps,
   }),
   toData: (p) => ({ type: 'image-gallery', items: p.images as unknown as GalleryItem[] }),
+  fromData: (data: ImageGallerySectionData, meta) => call(ImageGallery, {
+    title: meta.title ?? '',
+    images: data.items.map((i) => call(GalleryImage, { id: i.id, url: i.url, caption: i.caption, credit: i.credit })),
+    ...sectionTail(meta),
+  }),
 })
 
 // --- Pillar & Layer ---
@@ -226,23 +289,49 @@ export const MatrixBlock = defineOUIComponent({
   }),
 })
 
-export const PillarLayer = defineOUISection({
+export const PillarLayer: LoomOUIComponent = defineOUISection({
   name: 'PillarLayer',
   sectionType: 'pillar-layer',
-  description: 'Layer-stack map: layers as rows, blocks placed on a gap-free grid.',
+  description: 'Layer-stack map: layers as rows, blocks placed on a gap-free grid. `displayTitle` overrides the title shown inside the map.',
   props: z.object({
     title: z.string(),
     layers: z.array(Layer.ref),
     blocks: z.array(MatrixBlock.ref),
     description: z.string().optional(),
+    displayTitle: z.string().optional(),
     ...sectionTailProps,
   }),
   toData: (p) => ({
     type: 'pillar-layer',
-    title: p.title,
+    title: p.displayTitle ?? p.title,
     description: p.description,
     layers: p.layers as unknown as PillarLayerLayer[],
     matrix_blocks: p.blocks as unknown as PillarLayerBlock[],
+  }),
+  fromData: (data: PillarLayerSectionData, meta) => call(PillarLayer, {
+    title: meta.title || data.title || '',
+    displayTitle: data.title && data.title !== (meta.title || data.title) ? data.title : undefined,
+    layers: data.layers.map((l) => call(Layer, {
+      id: l.id,
+      title: l.title,
+      description: l.description,
+      items: l.blocks?.map((b) => call(LayerItem, { title: b.title, description: b.description })),
+    }, l.id)),
+    blocks: (data.matrix_blocks ?? []).map((b, i) => call(MatrixBlock, {
+      id: b.id ?? `block-${i + 1}`,
+      title: b.title,
+      layer: refTo(Layer, b.layer_id),
+      colOffset: b.col_offset,
+      colSpan: b.col_span,
+      rowSpan: b.row_span,
+      description: b.description,
+      color: b.color,
+      dependsOn: b.depends_on,
+      shape: b.shape,
+      offsets: b.offsets as OUIValue,
+    }, b.id ?? `block-${i + 1}`)),
+    description: data.description,
+    ...sectionTail(meta),
   }),
 })
 

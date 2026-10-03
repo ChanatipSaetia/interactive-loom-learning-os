@@ -13,7 +13,7 @@ import type { OKFSectionData, OKFBundled } from '../../learning-engine/compositi
 import type { SectionConfig } from '../../learning-engine/registry'
 import type { ValidationResult } from '../../learning-engine/validation/gateway'
 import { SectionRegistry } from '../../learning-engine/registry'
-import { loadOKFBundle } from '../../learning-engine/composition/okf/reader'
+import { loadTopicBundle } from '../../learning-engine/composition/content'
 import { validateOKFSection } from '../../learning-engine/validation/gateway'
 
 function renderSectionElement(config: SectionConfig): ReactNode {
@@ -30,10 +30,11 @@ function renderSectionElement(config: SectionConfig): ReactNode {
 
 export class WebAppRuntimeAdapter implements OKFRuntimePort {
   /**
-   * Load the complete topic bundle by delegating to the cached reader.
+   * Load the complete topic bundle (OpenUI Lang content, else OKF) via the
+   * cached content facade.
    */
   async loadTopicBundle(topicId: string): Promise<OKFBundled> {
-    return loadOKFBundle(topicId)
+    return loadTopicBundle(topicId)
   }
 
   /**

@@ -17,6 +17,47 @@ import { z } from 'zod'
 
 export type OUIProps = Record<string, unknown>
 
+// ============================================================================
+// Call trees (data → OpenUI Lang printing)
+// ============================================================================
+
+/** A component call to print. `name` asks the printer to hoist it into its own statement. */
+export interface OUICall {
+  kind: 'call'
+  component: string
+  props: Record<string, OUIValue>
+  name?: string
+}
+
+/**
+ * A reference to another component by ID. Printed as the statement name when
+ * that component is hoisted, otherwise as the plain string ID.
+ */
+export interface OUIRef {
+  kind: 'ref'
+  components: string[]
+  id: string
+}
+
+export type OUIValue =
+  | string
+  | number
+  | boolean
+  | null
+  | undefined
+  | OUICall
+  | OUIRef
+  | OUIValue[]
+  | { [key: string]: OUIValue }
+
+/** Shared section metadata the printer needs (title, heading, lead…). */
+export interface OUISectionMetaInput {
+  title?: string
+  heading?: string
+  ordered?: boolean
+  intro?: { what?: string; why?: string; next?: string }
+}
+
 export interface LoomOUIComponent {
   /** Component call name in OpenUI Lang (e.g. "Quiz"). */
   name: string
@@ -28,6 +69,8 @@ export interface LoomOUIComponent {
   toData: (props: OUIProps) => unknown
   /** Present on section-level components: the OKF/section type it compiles to. */
   sectionType?: string
+  /** Section-level components: section data (+ meta) → call tree, the inverse of `toData`. */
+  fromData?: (data: Record<string, unknown>, meta: OUISectionMetaInput) => OUICall
 }
 
 export interface LoomOUIComponentConfig<T extends z.ZodObject> {
@@ -40,6 +83,8 @@ export interface LoomOUIComponentConfig<T extends z.ZodObject> {
 export interface LoomOUISectionConfig<T extends z.ZodObject> extends LoomOUIComponentConfig<T> {
   sectionType: string
   toData: (props: z.infer<T>) => Record<string, unknown> & { type: string }
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  fromData: (data: any, meta: OUISectionMetaInput) => OUICall
 }
 
 /** Declare a data component (child of a section, e.g. a quiz question). */
@@ -63,7 +108,20 @@ export function defineOUISection<T extends z.ZodObject>(config: LoomOUISectionCo
   return {
     ...defineOUIComponent(config),
     sectionType: config.sectionType,
+    fromData: config.fromData,
   }
+}
+
+/** Build a call to `component` (props keyed by param name). */
+export function call(component: LoomOUIComponent, props: Record<string, OUIValue>, name?: string): OUICall {
+  return { kind: 'call', component: component.name, props, ...(name ? { name } : {}) }
+}
+
+/** Reference to a component instance (of any of `components`) by its ID. */
+export function refTo(components: LoomOUIComponent | LoomOUIComponent[], id: string | undefined): OUIRef | undefined {
+  if (id === undefined || id === null || id === '') return undefined
+  const list = Array.isArray(components) ? components : [components]
+  return { kind: 'ref', components: list.map((c) => c.name), id: String(id) }
 }
 
 // ============================================================================
@@ -85,6 +143,16 @@ export const Lead = defineOUIComponent({
 export const sectionTailProps = {
   heading: z.string().optional(),
   lead: Lead.ref.optional(),
+}
+
+/** Printer counterpart of `sectionTailProps`: `heading` and `lead` from section meta. */
+export function sectionTail(meta: OUISectionMetaInput): Record<string, OUIValue> {
+  const intro = meta.intro
+  const hasLead = intro && (intro.what || intro.why || intro.next)
+  return {
+    heading: meta.heading || undefined,
+    lead: hasLead ? call(Lead, { what: intro!.what, why: intro!.why, next: intro!.next }) : undefined,
+  }
 }
 
 // ============================================================================

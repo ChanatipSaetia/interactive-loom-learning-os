@@ -1,6 +1,6 @@
 # Grill Log — OpenUI Lang Replaces OKF
 
-Status: **Phases 1–2 complete — Phase 3 (converter + `demo` migration) next**
+Status: **Phases 1–3 complete — Phase 4 (migrate remaining 11 topics) next**
 
 ## Goal
 
@@ -118,6 +118,18 @@ Delivery:
 
 - The extension bundles the service with esbuild. **Rebuild it after changing the component library** (`cd tools/vscode-oui && npm run package`).
 - CodeMirror ships in its own on-demand `vendor-codemirror` chunk (~116 kB gz), loaded only when the editor mounts. Phase 5 wires it into the Section Editor's raw tab.
+
+## Phase 3 — Converter & `demo` Migration Notes
+
+- **Printer** (`composition/oui/print.ts`): every section component has a `fromData` (inverse of `toData`) that builds a call tree. The printer hoists named or referenced calls into statements, prints references by statement name, orders positional arguments by schema, writes `null` for gaps, and wraps at 100 columns. The editor also uses it to save Visual Form edits as `.oui` (until Phase 5's raw tab).
+- **Converter** (`npm run oui:convert -- <topic…> | --all [--check]`): loads topics through the existing OKF reader, so output matches what the app renders. It validates every section before writing and keeps `index.oui` in OKF catalog order. A dry run over all 12 topics (143 sections) converts with zero diagnostics.
+- **Round-trip guard** (`okf-roundtrip.test.ts`): every section of every OKF topic goes OKF → `.oui` → compile and must come back with identical data and meta. Normalized as equivalent: empty bullet `children`, `roadmap[].id` and `challenges[].id` (no component reads them), and an intro inner title equal to the section title.
+- **Vocabulary changes found by the round trip:**
+  - `displayTitle` on `Intro`, `Scenario`, `DecisionTree`, `PillarLayer`, for content whose inner widget title differs from the section title.
+  - `JourneyStep.processGroup` accepts any string; existing flows use values like "opening" and "learning".
+- **Dual-source loading** (`composition/content.ts`): a topic listed in `public/content/index.oui` loads from OpenUI Lang, otherwise from OKF. Topic discovery merges both catalogs, and migrated topics take their OpenUI metadata. The web app, single-HTML embed runtime and editor all go through this facade. Phase 6 removes the OKF branch.
+- **Catalog metadata:** title, category and description come from `public/okf/index.md`. Tags come from the topic's `index.yaml`; the OKF app ignored these before, so migrated topics now show tags in the catalog.
+- **Verified in Chromium:** `#/topics/demo` renders identical text for all 18 sections from `.oui` and from OKF (A/B with `index.oui` hidden), with the same console output. Editing a section in the UI and saving rewrites its `.oui` file.
 
 ## Open Questions
 

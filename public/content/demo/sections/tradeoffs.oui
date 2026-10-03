@@ -1,0 +1,425 @@
+root = TradeoffSandbox(
+  "Architecture Trade-off Sandbox",
+  [enterpriseWeb, realtimeChat, financialAudit],
+)
+
+enterpriseWeb = TradeoffScenario(
+  "enterprise-web",
+  "Enterprise Web Application",
+  [
+    TradeoffMetric("performance", "Performance", 50, 0, 100, "higher"),
+    TradeoffMetric("scalability", "Scalability", 50, 0, 100, "higher"),
+    TradeoffMetric("complexity", "Complexity", 30, 0, 100, "lower"),
+    TradeoffMetric("cost", "Cost Efficiency", 50, 0, 100, "higher"),
+  ],
+  [frontend, backend, database],
+  "Build a scalable enterprise web app: React SPA, Node.js microservices, PostgreSQL, deployed on Cloud PaaS. Evaluate trade-offs across frontend, backend, and infrastructure decisions.",
+)
+
+frontend = TradeoffStep(
+  "frontend",
+  "Frontend Framework",
+  [reactSpa, nextSsr],
+  "Choose the client-side rendering approach.",
+  "next-ssr",
+)
+
+reactSpa = TradeoffChoice(
+  "react-spa",
+  "React SPA",
+  "Single-page application with client-side routing and state management.",
+  {performance: 10, scalability: 5, complexity: 5, cost: 5},
+  [
+    ProCon("Rich ecosystem", "Vast library support and community"),
+    ProCon("Smooth UX", "Client-side transitions feel native"),
+  ],
+  [
+    ProCon("SEO challenges", "Requires SSR or SSG for search indexing"),
+    ProCon("Larger initial bundle", "Full framework must load first"),
+  ],
+  null,
+  "Useful for admin dashboards and internal tools where SEO is not a concern and developer familiarity with React is high.",
+)
+
+nextSsr = TradeoffChoice(
+  "next-ssr",
+  "Next.js SSR",
+  "Server-side rendered React with hybrid static/dynamic rendering.",
+  {performance: 15, scalability: 10, complexity: 10, cost: -5},
+  [
+    ProCon("Better SEO", "Server-rendered HTML for crawlers"),
+    ProCon("Faster first paint", "HTML delivered from server"),
+    ProCon("Hybrid rendering", "Mix static and dynamic pages"),
+  ],
+  [
+    ProCon("Server dependency", "Requires Node.js server runtime"),
+    ProCon("More complex deploy", "SSR adds deployment surface"),
+  ],
+  "Enterprise web applications benefit from server-side rendering for SEO, faster perceived performance, and the ability to mix static public pages with dynamic user-specific content.",
+)
+
+backend = TradeoffStep(
+  "backend",
+  "Backend Architecture",
+  [microservices, modularMonolith],
+  "Decide how to structure the server-side logic.",
+  "modular-monolith",
+)
+
+microservices = TradeoffChoice(
+  "microservices",
+  "Microservices",
+  "Independent services communicating via REST/gRPC.",
+  {performance: -5, scalability: 20, complexity: 20, cost: -10},
+  [
+    ProCon("Independent scaling", "Scale hot services without scaling all"),
+    ProCon("Tech diversity", "Each service can use best-fit language"),
+    ProCon("Fault isolation", "One service failure does not crash all"),
+  ],
+  [
+    ProCon("Network overhead", "Inter-service calls add latency"),
+    ProCon("Operational cost", "More services to monitor and deploy"),
+    ProCon("Distributed tracing", "Debugging spans multiple services"),
+  ],
+  null,
+  "Consider when your team has significant DevOps experience and specific services have vastly different scaling requirements.",
+)
+
+modularMonolith = TradeoffChoice(
+  "modular-monolith",
+  "Modular Monolith",
+  "Single deployable with strict module boundaries.",
+  {performance: 10, scalability: -5, complexity: -10, cost: 15},
+  [
+    ProCon("Simpler deployment", "One artifact to deploy"),
+    ProCon("Fast local calls", "In-process communication, no network"),
+    ProCon("Easier debugging", "Single stack trace, one log file"),
+  ],
+  [
+    ProCon("Monolithic scaling", "Must scale entire app, not parts"),
+    ProCon("Tight coupling risk", "Module boundaries can degrade over time"),
+  ],
+  "Starting with a modular monolith reduces operational overhead while maintaining clean boundaries. It can be split into microservices later if specific modules need independent scaling.",
+)
+
+database = TradeoffStep(
+  "database",
+  "Data Storage",
+  [postgresql, mongo],
+  "Choose the primary persistence layer.",
+  "postgresql",
+)
+
+postgresql = TradeoffChoice(
+  "postgresql",
+  "PostgreSQL",
+  "Relational database with ACID compliance and JSON support.",
+  {performance: 5, scalability: 5, complexity: -5, cost: 5},
+  [
+    ProCon("ACID compliance", "Guaranteed data integrity"),
+    ProCon("JSON support", "Semi-structured data without NoSQL"),
+    ProCon("Mature ecosystem", "Well-understood tooling and patterns"),
+  ],
+  [
+    ProCon("Schema migrations", "Schema changes require planning"),
+    ProCon("Vertical scaling limits", "Read replicas needed for scale"),
+  ],
+  "Enterprise applications require strong data integrity, complex querying, and reliable transactions. PostgreSQL provides all of this with the flexibility of JSON columns for semi-structured data.",
+)
+
+mongo = TradeoffChoice(
+  "mongo",
+  "MongoDB",
+  "Document database with flexible schema and horizontal scaling.",
+  {performance: 10, scalability: 15, complexity: 5, cost: -5},
+  [
+    ProCon("Flexible schema", "No migrations for evolving models"),
+    ProCon("Horizontal scaling", "Sharding built into the platform"),
+    ProCon("Fast writes", "Document model suits high-throughput inserts"),
+  ],
+  [
+    ProCon("No ACID joins", "Multi-document transactions are limited"),
+    ProCon("Schema drift risk", "Without enforcement, data quality varies"),
+  ],
+  null,
+  "Best for content management systems, catalog data, or high-throughput event logging where strict consistency is less critical.",
+)
+
+realtimeChat = TradeoffScenario(
+  "realtime-chat",
+  "Real-Time Chat & Collab System",
+  [
+    TradeoffMetric("latency", "Low Latency", 40, 0, 100, "higher"),
+    TradeoffMetric("consistency", "Consistency", 50, 0, 100, "higher"),
+    TradeoffMetric("devex", "Developer Experience", 50, 0, 100, "higher"),
+    TradeoffMetric("ops-cost", "Ops Cost", 50, 0, 100, "higher"),
+  ],
+  [compute, state, orchestration],
+  "Design a real-time collaborative system: WebAssembly compute, Node.js services, Redis pub/sub, Kubernetes orchestration. Balance latency, consistency, and cost.",
+)
+
+compute = TradeoffStep(
+  "compute",
+  "Compute Layer",
+  [clientJs, wasmWorkers],
+  "Choose the client-side and server-side compute strategy.",
+  "wasm-workers",
+)
+
+clientJs = TradeoffChoice(
+  "client-js",
+  "Client-side JS",
+  "All computation runs in the browser using JavaScript.",
+  {latency: 15, consistency: -5, devex: 10, "ops-cost": 15},
+  [
+    ProCon("Zero server cost", "All compute happens client-side"),
+    ProCon("Instant feedback", "No network round-trip for computation"),
+  ],
+  [
+    ProCon("Device dependency", "Performance varies by device"),
+    ProCon("Limited parallelism", "Browser threads are constrained"),
+  ],
+  null,
+  "Good for simple tools where server infrastructure is not justified.",
+)
+
+wasmWorkers = TradeoffChoice(
+  "wasm-workers",
+  "Wasm + Web Workers",
+  "WebAssembly modules run in Web Workers for parallel compute.",
+  {latency: 20, consistency: 5, devex: -5, "ops-cost": 10},
+  [
+    ProCon("Near-native performance", "Wasm executes close to hardware speed"),
+    ProCon("True parallelism", "Multiple workers run concurrently"),
+    ProCon("Language agnostic", "Compile from Rust, C++, Go"),
+  ],
+  [
+    ProCon("Complex build pipeline", "Wasm toolchain adds complexity"),
+    ProCon("Larger binary size", "Wasm modules increase bundle"),
+  ],
+  "Real-time collaboration requires low-latency, parallel compute that Wasm + Workers deliver efficiently.",
+)
+
+state = TradeoffStep(
+  "state",
+  "State Management",
+  [websocketLocal, redisOps],
+  "How to manage shared mutable state across participants.",
+  "redis-ops",
+)
+
+websocketLocal = TradeoffChoice(
+  "websocket-local",
+  "WebSocket + Local State",
+  "Each client maintains local state, synced via WebSocket.",
+  {latency: 10, consistency: -10, devex: 15, "ops-cost": 10},
+  [
+    ProCon("Simple architecture", "No shared state store needed"),
+    ProCon("Optimistic updates", "UI updates immediately before sync"),
+  ],
+  [
+    ProCon("Conflict resolution", "Concurrent edits cause conflicts"),
+    ProCon("Eventual consistency", "State may diverge temporarily"),
+  ],
+  null,
+  "Suitable for low-conflict scenarios like chat messaging.",
+)
+
+redisOps = TradeoffChoice(
+  "redis-ops",
+  "Redis CRDT Ops",
+  "Redis stores CRDT operations for conflict-free sync.",
+  {latency: 5, consistency: 20, devex: -10, "ops-cost": -5},
+  [
+    ProCon("Conflict-free", "CRDTs guarantee convergence"),
+    ProCon("Strong consistency", "All participants see same state"),
+    ProCon("Fast operations", "Redis in-memory ops are sub-millisecond"),
+  ],
+  [
+    ProCon("CRDT learning curve", "Understanding CRDT types is non-trivial"),
+    ProCon("Redis dependency", "Requires managed Redis instance"),
+  ],
+  "Real-time collab demands strong consistency and conflict resolution that CRDTs provide natively.",
+)
+
+orchestration = TradeoffStep(
+  "orchestration",
+  "Deployment & Scaling",
+  [serverless, kubernetes],
+  "How to deploy and scale the real-time infrastructure.",
+  "kubernetes",
+)
+
+serverless = TradeoffChoice(
+  "serverless",
+  "Serverless",
+  "AWS Lambda / Cloud Functions with managed WebSocket API.",
+  {latency: -10, consistency: 5, devex: 10, "ops-cost": 15},
+  [
+    ProCon("Zero ops", "Fully managed scaling and deployment"),
+    ProCon("Pay per use", "No idle resource costs"),
+  ],
+  [
+    ProCon("Cold start latency", "First request incurs startup delay"),
+    ProCon("WebSocket limits", "Long-lived connections cost more"),
+  ],
+  null,
+  "Good for variable workloads with predictable spike patterns.",
+)
+
+kubernetes = TradeoffChoice(
+  "kubernetes",
+  "Kubernetes",
+  "Containerized services on K8s with horizontal pod autoscaling.",
+  {latency: 10, consistency: 10, devex: -10, "ops-cost": -10},
+  [
+    ProCon("Predictable latency", "Always-warm containers"),
+    ProCon("Fine-grained scaling", "Per-service autoscaling"),
+    ProCon("Stateful support", "StatefulSets for Redis, databases"),
+  ],
+  [
+    ProCon("Complex setup", "K8s manifests and Helm charts"),
+    ProCon("Minimum resource cost", "Always-on pods have baseline cost"),
+  ],
+  "Real-time systems need predictable latency and always-warm connections that Kubernetes guarantees.",
+)
+
+financialAudit = TradeoffScenario(
+  "financial-audit",
+  "High-Security Financial Auditing Platform",
+  [
+    TradeoffMetric("security", "Security", 50, 0, 100, "higher"),
+    TradeoffMetric("compliance", "Compliance", 40, 0, 100, "higher"),
+    TradeoffMetric("maintainability", "Maintainability", 40, 0, 100, "higher"),
+    TradeoffMetric("time-market", "Time to Market", 40, 0, 100, "higher"),
+  ],
+  [ui, backend2, deployment],
+  "Build a compliance-critical auditing system: Angular frontend, Java monolith, PostgreSQL, deployed on-premise. Prioritize security, auditability, and regulatory compliance.",
+)
+
+ui = TradeoffStep(
+  "ui",
+  "UI Framework",
+  [angular, react],
+  "Choose the frontend framework for the audit dashboard.",
+  "angular",
+)
+
+angular = TradeoffChoice(
+  "angular",
+  "Angular",
+  "Enterprise-grade framework with built-in structure.",
+  {security: 10, compliance: 10, maintainability: 15, "time-market": -5},
+  [
+    ProCon("Built-in structure", "Enforced architecture reduces tech debt"),
+    ProCon("Type safety", "Full TypeScript stack"),
+    ProCon("Enterprise support", "Long-term stability and support"),
+  ],
+  [
+    ProCon("Steeper learning curve", "Angular concepts take time to master"),
+    ProCon("Larger bundle", "Framework overhead increases size"),
+  ],
+  "Financial platforms benefit from Angular's enforced structure, reducing the risk of architectural drift over long project lifecycles.",
+)
+
+react = TradeoffChoice(
+  "react",
+  "React",
+  "Flexible library with vast ecosystem.",
+  {security: 0, compliance: -5, maintainability: 5, "time-market": 10},
+  [
+    ProCon("Large ecosystem", "Vast component libraries"),
+    ProCon("Faster prototyping", "Less boilerplate than Angular"),
+  ],
+  [
+    ProCon("Architecture choices", "Team must decide on patterns"),
+    ProCon("Fragmented state management", "Multiple solutions (Redux, Zustand, Jotai)"),
+  ],
+  null,
+  "When team has React expertise and rapid prototyping is prioritized over long-term maintainability.",
+)
+
+backend2 = TradeoffStep(
+  "backend",
+  "Backend Architecture",
+  [springBoot, nodeExpress],
+  "Choose the server-side technology for processing audit data.",
+  "spring-boot",
+)
+
+springBoot = TradeoffChoice(
+  "spring-boot",
+  "Spring Boot",
+  "Java framework with enterprise security and transaction management.",
+  {security: 20, compliance: 15, maintainability: 10, "time-market": -10},
+  [
+    ProCon("Mature security", "Spring Security covers OAuth2, SAML, JWT"),
+    ProCon("Transaction management", "Declarative @Transactional"),
+    ProCon("Audit framework", "Spring Data Audit support built-in"),
+  ],
+  [
+    ProCon("Verbose configuration", "Annotation-heavy codebase"),
+    ProCon("Slower iteration", "Java compilation adds dev cycle time"),
+  ],
+  "Financial auditing requires battle-tested security frameworks and ACID transaction management that Spring Boot provides.",
+)
+
+nodeExpress = TradeoffChoice(
+  "node-express",
+  "Node.js + Express",
+  "Lightweight JavaScript runtime for rapid development.",
+  {security: -5, compliance: -10, maintainability: 5, "time-market": 15},
+  [
+    ProCon("Rapid development", "Less boilerplate, faster iteration"),
+    ProCon("Unified language", "JavaScript across full stack"),
+  ],
+  [
+    ProCon("Security requires discipline", "No built-in enterprise security"),
+    ProCon("Transaction complexity", "Multi-db transactions are challenging"),
+  ],
+  null,
+  "When time-to-market is critical and the team has strong security discipline.",
+)
+
+deployment = TradeoffStep(
+  "deployment",
+  "Deployment Strategy",
+  [onPremise, cloud],
+  "Choose where and how to deploy the audit platform.",
+  "on-premise",
+)
+
+onPremise = TradeoffChoice(
+  "on-premise",
+  "On-Premise",
+  "Deploy within the organization's own data center.",
+  {security: 20, compliance: 20, maintainability: -5, "time-market": -10},
+  [
+    ProCon("Full control", "Complete ownership of infrastructure"),
+    ProCon("Data sovereignty", "Financial data never leaves premises"),
+    ProCon("Audit trail", "Physical access logging"),
+  ],
+  [
+    ProCon("High CapEx", "Hardware procurement and maintenance"),
+    ProCon("Slower updates", "Patch management is manual"),
+  ],
+  "Financial institutions often require on-premise deployment for regulatory compliance and data sovereignty.",
+)
+
+cloud = TradeoffChoice(
+  "cloud",
+  "Cloud (AWS/Azure)",
+  "Managed cloud infrastructure with compliance certifications.",
+  {security: 5, compliance: 5, maintainability: 15, "time-market": 15},
+  [
+    ProCon("Managed security", "Provider handles infrastructure security"),
+    ProCon("Compliance ready", "SOC2, PCI-DSS certifications"),
+    ProCon("Fast deployment", "Infrastructure as Code"),
+  ],
+  [
+    ProCon("Vendor lock-in", "Cloud-specific services"),
+    ProCon("Data residency", "May not meet local regulations"),
+  ],
+  null,
+  "When the organization trusts cloud providers and values speed over full infrastructure control.",
+)

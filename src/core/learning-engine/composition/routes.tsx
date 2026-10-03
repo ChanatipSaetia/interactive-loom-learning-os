@@ -1,5 +1,6 @@
 import { createContext, useContext, useState, useEffect, useCallback, type ReactNode } from 'react'
 import * as yaml from 'js-yaml'
+import { discoverOUITopics, mergeTopicRoutes } from './content'
 
 export interface TopicRoute {
   id: string
@@ -140,6 +141,21 @@ export async function discoverTopics(): Promise<TopicRoute[]> {
   }
 }
 
+/**
+ * All topics: OKF catalog merged with the OpenUI Lang content catalog
+ * (migrated topics take their OpenUI metadata).
+ */
+export async function discoverAllTopics(): Promise<TopicRoute[]> {
+  const [okf, oui] = await Promise.all([
+    discoverTopics(),
+    discoverOUITopics().catch((e: unknown) => {
+      console.warn('OpenUI content catalog could not be loaded:', e)
+      return [] as TopicRoute[]
+    }),
+  ])
+  return mergeTopicRoutes(okf, oui)
+}
+
 // --- Context ---
 
 interface TopicsContextValue {
@@ -158,7 +174,7 @@ export function TopicsProvider({ children }: { children: ReactNode }) {
   const load = useCallback(async () => {
     try {
       setLoading(true)
-      const discovered = await discoverTopics()
+      const discovered = await discoverAllTopics()
       setTopics(discovered)
       setError(null)
     } catch (e) {

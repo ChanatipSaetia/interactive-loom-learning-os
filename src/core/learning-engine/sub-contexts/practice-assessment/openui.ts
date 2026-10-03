@@ -5,8 +5,16 @@
  *   q1 = QuizQuestion("q1", "What is X?", [QuizChoice("a", "Y", true, "Because…")])
  */
 import { z } from 'zod'
-import { byId, defineOUIComponent, defineOUISection, idOf, refOrId, sectionTailProps } from '../openui-kernel'
-import type { ConceptEdgeType, ConceptNodeType, QuizQuestion as QuizQuestionData, WordTermType } from './schema'
+import { byId, call, defineOUIComponent, defineOUISection, idOf, refOrId, refTo, sectionTail, sectionTailProps, type LoomOUIComponent } from '../openui-kernel'
+import type {
+  ConceptEdgeType,
+  ConceptMapSectionData,
+  ConceptNodeType,
+  FlashcardsSectionData,
+  QuizQuestion as QuizQuestionData,
+  QuizSectionData,
+  WordTermType,
+} from './schema'
 
 // --- Quiz ---
 
@@ -32,7 +40,7 @@ export const QuizQuestion = defineOUIComponent({
   }),
 })
 
-export const Quiz = defineOUISection({
+export const Quiz: LoomOUIComponent = defineOUISection({
   name: 'Quiz',
   sectionType: 'quiz',
   description: 'Knowledge-check section of multiple-choice questions.',
@@ -42,6 +50,16 @@ export const Quiz = defineOUISection({
     ...sectionTailProps,
   }),
   toData: (p) => ({ type: 'quiz', questions: p.questions as unknown as QuizQuestionData[] }),
+  fromData: (data: QuizSectionData, meta) => call(Quiz, {
+    title: meta.title ?? '',
+    questions: data.questions.map((q) => call(QuizQuestion, {
+      id: q.id,
+      question: q.question,
+      choices: q.choices.map((c) => call(QuizChoice, { id: c.id, text: c.text, correct: c.correct, explanation: c.explanation })),
+      hint: q.hint,
+    }, q.id)),
+    ...sectionTail(meta),
+  }),
 })
 
 // --- Flashcards ---
@@ -72,7 +90,7 @@ export const Flashcard = defineOUIComponent({
   }),
 })
 
-export const Flashcards = defineOUISection({
+export const Flashcards: LoomOUIComponent = defineOUISection({
   name: 'Flashcards',
   sectionType: 'flashcards',
   description: 'Deck of flip cards for key vocabulary.',
@@ -82,6 +100,21 @@ export const Flashcards = defineOUISection({
     ...sectionTailProps,
   }),
   toData: (p) => ({ type: 'flashcards', terms: p.cards as unknown as WordTermType[] }),
+  fromData: (data: FlashcardsSectionData, meta) => call(Flashcards, {
+    title: meta.title ?? '',
+    cards: data.terms.map((t) => call(Flashcard, {
+      id: t.id,
+      word: t.word,
+      pronunciation: t.pronunciation,
+      category: t.category,
+      shortDefinition: t.shortDefinition,
+      detailedDefinition: t.detailedDefinition,
+      whyItMatters: t.whyItMatters,
+      image: t.image,
+      dialogue: t.dialogue ? call(Dialogue, { user: t.dialogue.user, aiThoughts: t.dialogue.aiThoughts, aiQuestion: t.dialogue.aiQuestion }) : undefined,
+    }, t.id)),
+    ...sectionTail(meta),
+  }),
 })
 
 // --- Concept Map ---
@@ -107,7 +140,7 @@ export const ConceptLink = defineOUIComponent({
   toData: (p) => ({ from: idOf(p.from), to: idOf(p.to), label: p.label }),
 })
 
-export const ConceptMap = defineOUISection({
+export const ConceptMap: LoomOUIComponent = defineOUISection({
   name: 'ConceptMap',
   sectionType: 'concept-map',
   description: 'Knowledge graph of concepts and the relations between them.',
@@ -121,6 +154,12 @@ export const ConceptMap = defineOUISection({
     type: 'concept-map',
     nodes: byId(p.concepts as unknown as ConceptNodeType[]),
     edges: p.links as unknown as ConceptEdgeType[],
+  }),
+  fromData: (data: ConceptMapSectionData, meta) => call(ConceptMap, {
+    title: meta.title ?? '',
+    concepts: Object.entries(data.nodes).map(([id, n]) => call(Concept, { id, title: n.title ?? n.label ?? id, category: n.category }, id)),
+    links: data.edges.map((e) => call(ConceptLink, { from: refTo(Concept, e.from), to: refTo(Concept, e.to), label: e.label })),
+    ...sectionTail(meta),
   }),
 })
 

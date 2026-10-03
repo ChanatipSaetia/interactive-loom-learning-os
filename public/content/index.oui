@@ -1,0 +1,1 @@
+root = Catalog([TopicRef("demo")])

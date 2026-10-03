@@ -12,10 +12,22 @@
  *   happy = Journey("happy", "Happy path", "Order goes through", [JourneyStep(place, "Place order", "Buyer submits the cart")])
  */
 import { z } from 'zod'
-import { byId, defineOUIComponent, defineOUISection, idOf, refOrId, sectionTailProps } from '../openui-kernel'
+import {
+  byId,
+  call,
+  defineOUIComponent,
+  defineOUISection,
+  idOf,
+  refOrId,
+  refTo,
+  sectionTail,
+  sectionTailProps,
+  type LoomOUIComponent,
+  type OUIValue,
+} from '../openui-kernel'
 import { ref } from './components/flowchart/abstract-flow/types'
-import type { ActorDecl, FlowJourney, FlowStep, SystemDecl } from './components/flowchart/abstract-flow/types'
-import type { ScenarioNode as ScenarioNodeData } from './schema'
+import type { AbstractFlow, ActorDecl, BranchOption as BranchOptionData, FlowJourney, FlowStep, ResultEvent, SystemDecl } from './components/flowchart/abstract-flow/types'
+import type { FlowchartSectionData, ScenarioNode as ScenarioNodeData, ScenarioSectionData } from './schema'
 
 // --- Flowchart: declarations ---
 
@@ -159,12 +171,12 @@ export const Branch = defineOUIComponent({
 
 export const JourneyStep = defineOUIComponent({
   name: 'JourneyStep',
-  description: 'A stop on a journey: the Step or BranchOption it plays (reference or ID), with a short name and narration.',
+  description: 'A stop on a journey: the Step or BranchOption it plays (reference or ID), with a short name and narration. `processGroup` groups stops for the state machine (e.g. "planning", "execution").',
   props: z.object({
     step: z.union([z.string(), Step.ref, BranchOption.ref]),
     name: z.string(),
     description: z.string(),
-    processGroup: z.enum(['planning', 'execution', 'evaluation', 'escalation']).optional(),
+    processGroup: z.string().optional(),
   }),
   toData: (p) => ({ stepId: idOf(p.step), name: p.name, description: p.description, processGroup: p.processGroup }),
 })
@@ -180,7 +192,54 @@ export const Journey = defineOUIComponent({
   }),
 })
 
-export const Flowchart = defineOUISection({
+// --- Flowchart printing (data → call tree) ---
+
+function refId(value: unknown): string | undefined {
+  if (value === undefined || value === null || value === '') return undefined
+  return idOf(value) || undefined
+}
+
+function eventCalls(events: ResultEvent[] | undefined): OUIValue[] {
+  return (events ?? []).map((e) => call(Event, { id: e.id, title: e.title, desc: e.desc }))
+}
+
+function chainProps(step: { initiatedBy?: unknown; delegatesTo?: unknown; continuesAs?: string; description?: string }) {
+  return {
+    initiatedBy: refTo(Actor, refId(step.initiatedBy)),
+    delegatesTo: refTo(System, refId(step.delegatesTo)),
+    continuesAs: step.continuesAs,
+    description: step.description,
+  }
+}
+
+function stepCall(step: FlowStep): OUIValue {
+  if (step.type === 'branch') {
+    return call(Branch, {
+      id: step.id,
+      event: step.event,
+      options: step.branches.map((b: BranchOptionData) => call(BranchOption, {
+        id: b.id,
+        label: b.label,
+        policy: b.policy,
+        command: b.command,
+        handledBy: refTo(System, refId(b.handledBy)),
+        events: eventCalls(b.resultEvents),
+        dashed: b.dashed,
+        ...chainProps(b),
+      })),
+    }, step.id)
+  }
+  return call(Step, {
+    id: step.id,
+    policy: step.policy,
+    command: step.command,
+    handledBy: refTo(System, refId(step.handledBy)),
+    events: eventCalls(step.resultEvents),
+    ...chainProps(step),
+  }, step.id)
+}
+
+export const Flowchart: LoomOUIComponent = defineOUISection({
   name: 'Flowchart',
   sectionType: 'flowchart',
   description: 'Animated Event Storming flowchart. Every actor and system must be used by at least one step.',
@@ -211,6 +270,38 @@ export const Flowchart = defineOUISection({
         journeys: p.journeys as unknown as FlowJourney[],
       },
     }
+  },
+  fromData: (data: FlowchartSectionData, meta) => {
+    const flow = (data.flow ?? { actors: {}, systems: {}, steps: [], journeys: [] }) as unknown as AbstractFlow
+    return call(Flowchart, {
+      title: meta.title ?? '',
+      actors: Object.entries(flow.actors ?? {}).map(([id, a]) => call(Actor, { id, title: a.title, desc: a.desc ?? '' }, id)),
+      systems: Object.entries(flow.systems ?? {}).map(([id, sys]) => call(System, {
+        id,
+        title: sys.title,
+        desc: sys.desc ?? '',
+        kind: sys.type,
+        stateMachine: sys.stateMachine
+          ? call(StateMachine, {
+            states: sys.stateMachine.states.map((st) => call(MachineState, { id: st.id, label: st.label, color: st.color })),
+            initialState: sys.stateMachine.initialState,
+          })
+          : undefined,
+      }, id)),
+      steps: (flow.steps ?? []).map(stepCall),
+      journeys: (flow.journeys ?? []).map((j) => call(Journey, {
+        id: j.id,
+        label: j.label,
+        description: j.description,
+        steps: j.steps.map((js) => call(JourneyStep, {
+          step: refTo([Step, BranchOption], js.stepId),
+          name: js.name,
+          description: js.description,
+          processGroup: js.processGroup,
+        })),
+      }, j.id)),
+      ...sectionTail(meta),
+    })
   },
 })
 
@@ -247,25 +338,40 @@ export const ScenarioNode = defineOUIComponent({
   }),
 })
 
-export const Scenario = defineOUISection({
+export const Scenario: LoomOUIComponent = defineOUISection({
   name: 'Scenario',
   sectionType: 'scenario',
-  description: 'Branching "what would you do?" scenario. `startNode` defaults to "start".',
+  description: 'Branching "what would you do?" scenario. `startNode` defaults to "start". `displayTitle` overrides the title shown inside the scenario.',
   props: z.object({
     title: z.string(),
     id: z.string(),
     nodes: z.array(ScenarioNode.ref),
     intro: z.string().optional(),
     startNode: z.string().optional(),
+    displayTitle: z.string().optional(),
     ...sectionTailProps,
   }),
   toData: (p) => ({
     type: 'scenario',
     id: p.id,
-    title: p.title,
+    title: p.displayTitle ?? p.title,
     intro: p.intro,
     nodes: byId(p.nodes as unknown as ScenarioNodeData[]),
     startNode: p.startNode ?? 'start',
+  }),
+  fromData: (data: ScenarioSectionData, meta) => call(Scenario, {
+    title: meta.title || data.title || '',
+    displayTitle: data.title && data.title !== (meta.title || data.title) ? data.title : undefined,
+    id: data.id,
+    nodes: Object.entries(data.nodes).map(([id, n]) => call(ScenarioNode, {
+      id,
+      prompt: n.prompt ?? n.text,
+      choices: n.choices?.map((c) => call(ScenarioChoice, { id: c.id ?? '', text: c.text ?? c.label ?? '', next: c.next ?? c.nextNode ?? '' })),
+      outcome: n.outcome ? call(Outcome, { verdict: n.outcome.verdict, lesson: n.outcome.lesson, rating: n.outcome.rating }) : undefined,
+    }, id)),
+    intro: data.intro,
+    startNode: (data.startNode ?? data.initialNode) === 'start' ? undefined : (data.startNode ?? data.initialNode),
+    ...sectionTail(meta),
   }),
 })
 

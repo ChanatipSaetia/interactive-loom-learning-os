@@ -1,0 +1,131 @@
+root = Quiz("Knowledge Check", [qOrchestration, qMemory, qReflexion, qMapReduce, qToolUse])
+
+qOrchestration = QuizQuestion(
+  "q_orchestration",
+  "Which orchestration strategy suits a multi-step workflow needing strict quality control?",
+  [
+    QuizChoice(
+      "a",
+      "Hierarchical Orchestrator-Workers",
+      true,
+      "A central manager decomposes goals, delegates, and synthesizes.",
+    ),
+    QuizChoice(
+      "b",
+      "Peer-to-peer negotiation",
+      false,
+      "Peer negotiation works for decentralized systems but lacks centralized quality gates.",
+    ),
+    QuizChoice(
+      "c",
+      "Single-agent ReAct loop",
+      false,
+      "A single ReAct agent handles simple tasks but struggles with complex multi-step decomposition.",
+    ),
+  ],
+  "Think about who enforces quality in each model.",
+)
+
+qMemory = QuizQuestion(
+  "q_memory",
+  "What type of memory allows an agent to retain information across separate sessions?",
+  [
+    QuizChoice(
+      "a",
+      "Short-term context window",
+      false,
+      "The context window is limited to the current conversation and resets each session.",
+    ),
+    QuizChoice(
+      "b",
+      "Long-term persistent storage",
+      true,
+      "Persistent storage (vectors, graphs, documents) survives across sessions and enables recall.",
+    ),
+    QuizChoice(
+      "c",
+      "System prompt injection",
+      false,
+      "System prompts provide static instructions but don't store learned information between sessions.",
+    ),
+  ],
+  "Consider where data lives beyond the current chat.",
+)
+
+qReflexion = QuizQuestion(
+  "q_reflexion",
+  "In the Reflexion pattern, what does the agent do after a failed attempt?",
+  [
+    QuizChoice(
+      "a",
+      "Restarts from scratch with no memory",
+      false,
+      "Restarting without memory defeats the purpose of learning from failure.",
+    ),
+    QuizChoice(
+      "b",
+      "Appends verbal reasoning about what went wrong to its memory",
+      true,
+      "Reflexion adds self-reflection to memory, guiding the agent's next attempt with lessons learned.",
+    ),
+    QuizChoice(
+      "c",
+      "Asks the user for manual correction",
+      false,
+      "Reflexion is designed to be self-improving without human intervention.",
+    ),
+  ],
+  "Think about how humans learn from mistakes.",
+)
+
+qMapReduce = QuizQuestion(
+  "q_map_reduce",
+  "The Map-Reduce pattern is most useful when:",
+  [
+    QuizChoice(
+      "a",
+      "A single complex task needs step-by-step planning",
+      false,
+      "Map-Reduce focuses on parallel processing, not sequential planning.",
+    ),
+    QuizChoice(
+      "b",
+      "Independent subtasks can be processed in parallel and combined",
+      true,
+      "Map distributes work across workers, Reduce synthesizes partial results into a final answer.",
+    ),
+    QuizChoice(
+      "c",
+      "Real-time conversation is needed with a user",
+      false,
+      "Map-Reduce is batch-oriented and optimized for throughput, not latency.",
+    ),
+  ],
+  "Consider parallel vs sequential processing.",
+)
+
+qToolUse = QuizQuestion(
+  "q_tool_use",
+  "Why do agents use tools instead of relying solely on their internal knowledge?",
+  [
+    QuizChoice(
+      "a",
+      "Tools provide access to current, external data the model was never trained on",
+      true,
+      "Tools let agents search the web, run code, access APIs — bridging the knowledge cutoff gap.",
+    ),
+    QuizChoice(
+      "b",
+      "Tools make the agent run faster",
+      false,
+      "Tool calls typically add latency. Their value is accuracy and recency, not speed.",
+    ),
+    QuizChoice(
+      "c",
+      "Tools replace the need for a language model",
+      false,
+      "Tools augment the LLM; they don't replace the reasoning capability of the model.",
+    ),
+  ],
+  "Think about the limitations of a model's training data.",
+)

@@ -16,7 +16,7 @@ import type { OKFSectionMeta, OKFSectionData, OKFBundled } from '../../learning-
 import type { SectionConfig } from '../../learning-engine/registry'
 import type { ValidationResult } from '../../learning-engine/validation/gateway'
 import { Registry } from '../../learning-engine/registry/generic-registry'
-import { loadOKFBundle } from '../../learning-engine/composition/okf/reader'
+import { loadTopicBundle } from '../../learning-engine/composition/content'
 import { bundleToSections } from '../../learning-engine/composition/okf/sections'
 import { validateOKFSection } from '../../learning-engine/validation/gateway'
 import { deriveSchema } from '../../learning-engine/sub-contexts/process-simulation/components/flowchart/abstract-flow/derive'
@@ -194,7 +194,7 @@ class EmbedRuntime implements OKFRuntimePort {
    * Stores the bundle in in-memory storage for subsequent readSection calls.
    */
   async loadTopicBundle(topicId: string): Promise<OKFBundled> {
-    const bundle = await loadOKFBundle(topicId)
+    const bundle = await loadTopicBundle(topicId)
     this.storage.setBundle(topicId, bundle)
     return bundle
   }

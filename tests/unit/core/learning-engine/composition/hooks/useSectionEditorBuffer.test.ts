@@ -369,4 +369,38 @@ describe('useSectionEditorBuffer', () => {
     // Same count since each diagnostic maps to one legacy error
     expect(result.current.validationDiagnostics.length).toBe(result.current.validationDiagnostics.length)
   })
+
+  describe('OpenUI Lang sections', () => {
+    const ouiSection = {
+      meta: { type: 'text', title: 'Intro', resource: '.' },
+      data: { type: 'text', paragraphs: ['Hello'] },
+      sectionFolder: 'intro',
+      source: 'root = Text("Intro", ["Hello"])\n',
+      diagnostics: [],
+    } as OKFBundledSection
+
+    it('saves edits as printed .oui source through the content endpoint', async () => {
+      const fetchMock = vi.fn(async () => new Response('{"ok":true}', { status: 200 }))
+      vi.stubGlobal('fetch', fetchMock)
+      try {
+        const { result } = renderHook(() => useSectionEditorBuffer(ouiSection))
+        act(() => {
+          result.current.setVisualFormField({ type: 'text', paragraphs: ['Hello', 'Edited'] } as OKFSectionData)
+        })
+        await act(async () => {
+          await result.current.saveToDisk('demo', 'intro')
+        })
+        const [url, init] = fetchMock.mock.calls[0] as unknown as [string, RequestInit]
+        expect(url).toBe('/api/content/save-section')
+        expect(JSON.parse(init.body as string)).toEqual({
+          topicId: 'demo',
+          sectionName: 'intro',
+          source: 'root = Text("Intro", ["Hello", "Edited"])\n',
+        })
+        expect(result.current.isDirty).toBe(false)
+      } finally {
+        vi.unstubAllGlobals()
+      }
+    })
+  })
 })
