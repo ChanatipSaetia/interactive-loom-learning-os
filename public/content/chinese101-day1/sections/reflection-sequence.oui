@@ -1,0 +1,23 @@
+root = ReflectionSequence("Chinese Grammar Sequence Challenge", [challenge1, challenge2])
+
+challenge1 = SequenceChallenge(
+  "Arrange the words in the correct Chinese grammatical sequence to say: 'Are you busy today?' (Part 1):",
+  [subject, time, predicate, particle],
+  [subject, time, predicate, particle],
+)
+
+subject = SequenceItem("subject", "你 (You)")
+time = SequenceItem("time", "今天 (Today)")
+predicate = SequenceItem("predicate", "忙 (Busy)")
+particle = SequenceItem("particle", "嗎 (Question particle ?)")
+
+challenge2 = SequenceChallenge(
+  "Arrange the words in the correct Chinese grammatical sequence to say: 'What is your name?' (Part 2):",
+  [nameSubject, nameVerb, nameWhat, nameNoun],
+  [nameSubject, nameVerb, nameWhat, nameNoun],
+)
+
+nameSubject = SequenceItem("name_subject", "你 (You)")
+nameVerb = SequenceItem("name_verb", "叫 (Called)")
+nameWhat = SequenceItem("name_what", "什麼 (What)")
+nameNoun = SequenceItem("name_noun", "名字 (Name)")

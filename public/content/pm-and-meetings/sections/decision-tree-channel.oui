@@ -1,0 +1,157 @@
+root = DecisionTree(
+  "Advisor: Should this be a Meeting?",
+  "comm_channel_advisor",
+  "issue_nature",
+  [
+    issueNature,
+    brainComplexity,
+    decisionScope,
+    leafSlackUpdate,
+    leafAsyncRfc,
+    leafFocusedHuddle,
+    leafSmallChat,
+    leafAsyncProposal,
+  ],
+  "Communication Channel Advisor",
+)
+
+issueNature = DecisionNode(
+  "issue_nature",
+  "What is the primary goal of this communication?",
+  [
+    DecisionChoice(
+      "status_sharing",
+      "Share progress updates or report status",
+      "leaf_slack_update",
+      "Status updates rarely benefit from real-time discussion.",
+    ),
+    DecisionChoice(
+      "problem_solving",
+      "Solve a complex technical problem or brainstorm",
+      "brain_complexity",
+      "Solving complex issues often requires interactive collaboration.",
+      true,
+    ),
+    DecisionChoice(
+      "decision_making",
+      "Make a key decision (e.g. architecture design)",
+      "decision_scope",
+      "Decisions need documentation but might benefit from discussion first.",
+    ),
+  ],
+)
+
+brainComplexity = DecisionNode(
+  "brain_complexity",
+  "How well-defined is the problem?",
+  [
+    DecisionChoice(
+      "clear_problem",
+      "We know the problem, we need feedback on solutions",
+      "leaf_async_rfc",
+      "Proposals can be reviewed asynchronously to protect focus.",
+    ),
+    DecisionChoice(
+      "ambiguous_problem",
+      "We don't know the problem or have zero alignment",
+      "leaf_focused_huddle",
+      "Ambiguous situations benefit from high-bandwidth syncs.",
+      true,
+    ),
+  ],
+)
+
+decisionScope = DecisionNode(
+  "decision_scope",
+  "Who does the decision affect?",
+  [
+    DecisionChoice(
+      "small_scope",
+      "Only 2 or 3 team members",
+      "leaf_small_chat",
+      "Small groups can align quickly in chat or a 5-min call.",
+    ),
+    DecisionChoice(
+      "large_scope",
+      "The entire team or multiple teams",
+      "leaf_async_proposal",
+      "Large decisions must be documented and reviewed asynchronously.",
+      true,
+    ),
+  ],
+)
+
+leafSlackUpdate = DecisionNode(
+  "leaf_slack_update",
+  null,
+  null,
+  DecisionLeaf(
+    "Write an Async Slack or Jira update.",
+    "Do NOT schedule a meeting. Write a clear, bulleted summary of progress, next steps, and blockers. Post it where the team can read it on their own time.",
+    [
+      "Saves hours of developer focus time",
+      "Requires team discipline to read and update",
+      "No meeting overhead",
+    ],
+  ),
+)
+
+leafAsyncRfc = DecisionNode(
+  "leaf_async_rfc",
+  null,
+  null,
+  DecisionLeaf(
+    "Write a Design Doc or RFC (Request for Comments).",
+    "Document the proposed solutions, pros, and cons. Share the document with the team and give them 24-48 hours to comment asynchronously.",
+    [
+      "Permanent record of technical decisions",
+      "Allows developers to review when not coding",
+      "May take slightly longer to finalize",
+    ],
+  ),
+)
+
+leafFocusedHuddle = DecisionNode(
+  "leaf_focused_huddle",
+  null,
+  null,
+  DecisionLeaf(
+    "Schedule a focused, timeboxed 15-minute huddle.",
+    "Invite ONLY the essential people. Write a clear agenda beforehand. Start the meeting by defining the problem, brainstorm solutions, and end with assigned action items.",
+    [
+      "High bandwidth and alignment",
+      "Saves time by keeping the meeting small and brief",
+      "Interrupts engineer focus time (keep it rare)",
+    ],
+  ),
+)
+
+leafSmallChat = DecisionNode(
+  "leaf_small_chat",
+  null,
+  null,
+  DecisionLeaf(
+    "Resolve in a Slack thread or a quick huddle.",
+    "Don't send a calendar invite. Discuss in a group chat thread. If it gets complicated, launch a quick 5-minute huddle immediately to resolve it.",
+    [
+      "Fast and low friction",
+      "Decisions should still be documented briefly",
+      "Does not clutter calendars",
+    ],
+  ),
+)
+
+leafAsyncProposal = DecisionNode(
+  "leaf_async_proposal",
+  null,
+  null,
+  DecisionLeaf(
+    "Create an RFC document first, followed by a short sync if needed.",
+    "Write the proposal first so everyone can read the context. After everyone has commented on the doc, hold a brief meeting only to resolve final disagreements, not to present the proposal.",
+    [
+      "Ensures everyone comes prepared",
+      "Meetings are much shorter and highly focused",
+      "Requires upfront effort to write the document",
+    ],
+  ),
+)

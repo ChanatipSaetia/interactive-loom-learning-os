@@ -1,0 +1,405 @@
+root = Flowchart(
+  "The Reward Loop",
+  [learner],
+  [
+    lessonEngine,
+    gradingService,
+    rewardEngine,
+    progressStore,
+    streakTracker,
+    leagueService,
+    pushService,
+  ],
+  [
+    startLesson,
+    submitAnswers,
+    gradeBranch,
+    updateProgress,
+    badgeBranch,
+    streakUpdate,
+    streakBranch,
+    updateLeague,
+    notifyBranch,
+  ],
+  [happyPath, retryLoop],
+)
+
+learner = Actor(
+  "learner",
+  "Learner (Player)",
+  "Completes lessons and exercises inside the gamified app.",
+)
+
+lessonEngine = System(
+  "lesson_engine",
+  "Lesson Engine",
+  "Delivers lesson content, exercises, and hints.",
+  "aggregate",
+)
+
+gradingService = System(
+  "grading_service",
+  "Grading Service",
+  "Evaluates answers and computes correctness and XP value.",
+  "aggregate",
+)
+
+rewardEngine = System(
+  "reward_engine",
+  "Reward Engine",
+  "Awards XP, badges, and other reward tokens.",
+  "aggregate",
+)
+
+progressStore = System(
+  "progress_store",
+  "Progress Store",
+  "Persists skill progress, levels, and badge thresholds.",
+  "aggregate",
+)
+
+streakTracker = System(
+  "streak_tracker",
+  "Streak Tracker",
+  "Tracks daily goals, streak counters, and freeze tokens.",
+  "aggregate",
+)
+
+leagueService = System(
+  "league_service",
+  "League Service",
+  "Computes league ranks, tiers, and promotions.",
+  "aggregate",
+)
+
+pushService = System(
+  "push_service",
+  "Push Notification API",
+  "External notification delivery service.",
+  "external",
+)
+
+startLesson = Step(
+  "start_lesson",
+  "On Lesson Request",
+  "Start Lesson",
+  lessonEngine,
+  [Event("lesson_started", "Lesson Started", "Learner opens a lesson; the engine loads content.")],
+  learner,
+  null,
+  "submit_answers",
+)
+
+submitAnswers = Step(
+  "submit_answers",
+  "On Submission",
+  "Submit Answers",
+  gradingService,
+  [
+    Event(
+      "exercise_graded",
+      "Exercise Graded",
+      "Answers evaluated; correctness and XP value determined.",
+    ),
+  ],
+  learner,
+  null,
+  "grade_branch",
+)
+
+gradeBranch = Branch("grade_branch", "exercise_graded", [awardXp, showHint])
+
+awardXp = BranchOption(
+  "award_xp",
+  "Answer Correct",
+  "If Answer Correct",
+  "Award XP",
+  rewardEngine,
+  [Event("xp_awarded", "XP Awarded", "Experience points credited to the learner's account.")],
+  null,
+  null,
+  null,
+  "update_progress",
+)
+
+showHint = BranchOption(
+  "show_hint",
+  "Answer Wrong",
+  "If Answer Wrong",
+  "Show Hint",
+  lessonEngine,
+  [
+    Event(
+      "hint_shown",
+      "Hint Shown",
+      "Partial-credit hint displayed; learner retries the exercise.",
+    ),
+  ],
+  true,
+  null,
+  null,
+  "submit_answers",
+)
+
+updateProgress = Step(
+  "update_progress",
+  "On XP Awarded",
+  "Update Progress",
+  progressStore,
+  [
+    Event(
+      "progress_updated",
+      "Progress Updated",
+      "Skill progress, level thresholds, and badge thresholds recomputed.",
+    ),
+  ],
+  null,
+  null,
+  "badge_branch",
+)
+
+badgeBranch = Branch("badge_branch", "progress_updated", [unlockBadge, continueLesson])
+
+unlockBadge = BranchOption(
+  "unlock_badge",
+  "Threshold Reached",
+  "If Badge Threshold Reached",
+  "Unlock Badge",
+  rewardEngine,
+  [
+    Event(
+      "badge_unlocked",
+      "Badge Unlocked",
+      "Achievement badge added to the learner's collection.",
+    ),
+  ],
+  null,
+  null,
+  null,
+  "streak_update",
+)
+
+continueLesson = BranchOption(
+  "continue_lesson",
+  "No Badge Yet",
+  "If No Badge Earned",
+  "Continue Lesson",
+  lessonEngine,
+  [
+    Event(
+      "lesson_continued",
+      "Lesson Continued",
+      "Learner proceeds to the next exercise without a new badge.",
+    ),
+  ],
+  null,
+  null,
+  null,
+  "streak_update",
+)
+
+streakUpdate = Step(
+  "streak_update",
+  "On Lesson Completed",
+  "Evaluate Daily Goal",
+  streakTracker,
+  [
+    Event(
+      "goal_evaluated",
+      "Daily Goal Evaluated",
+      "Streak tracker checks whether today's goal was met.",
+    ),
+  ],
+  null,
+  null,
+  "streak_branch",
+)
+
+streakBranch = Branch("streak_branch", "goal_evaluated", [extendStreak, freezeStreak])
+
+extendStreak = BranchOption(
+  "extend_streak",
+  "Goal Met",
+  "If Daily Goal Met",
+  "Extend Streak",
+  streakTracker,
+  [
+    Event(
+      "streak_extended",
+      "Streak Extended",
+      "Consecutive-day counter incremented; habit reinforced.",
+    ),
+  ],
+  null,
+  null,
+  null,
+  "update_league",
+)
+
+freezeStreak = BranchOption(
+  "freeze_streak",
+  "Goal Missed",
+  "If Goal Missed",
+  "Apply Streak Freeze",
+  streakTracker,
+  [
+    Event(
+      "streak_frozen",
+      "Streak Frozen",
+      "Streak protected by a freeze token; no penalty today.",
+    ),
+  ],
+  true,
+  null,
+  null,
+  "update_league",
+)
+
+updateLeague = Step(
+  "update_league",
+  "On XP Change",
+  "Recalculate Standings",
+  leagueService,
+  [
+    Event(
+      "standings_updated",
+      "League Standings Updated",
+      "Learner's rank and league tier recomputed.",
+    ),
+  ],
+  null,
+  null,
+  "notify_branch",
+)
+
+notifyBranch = Branch("notify_branch", "standings_updated", [sendNotification, silentUpdate])
+
+sendNotification = BranchOption(
+  "send_notification",
+  "Badge or Promotion",
+  "If Badge Unlocked or League Promotion",
+  "Send Push Notification",
+  pushService,
+  [
+    Event(
+      "notification_sent",
+      "Notification Sent",
+      "Learner notified of the badge or league promotion.",
+    ),
+  ],
+)
+
+silentUpdate = BranchOption(
+  "silent_update",
+  "No Notable Change",
+  "If No Notable Change",
+  "Log Silently",
+  leagueService,
+  [
+    Event(
+      "update_logged",
+      "Update Logged",
+      "Standings persisted without user-facing notification.",
+    ),
+  ],
+)
+
+happyPath = Journey(
+  "happy-path",
+  "Happy Path: Badge Day",
+  "Learner answers correctly, earns a badge, extends the streak, and gets a promotion notification.",
+  [
+    JourneyStep(
+      startLesson,
+      "Start Lesson",
+      "Learner opens a lesson; the engine loads the exercises.",
+      "learning",
+    ),
+    JourneyStep(
+      submitAnswers,
+      "Submit Answers",
+      "Learner submits answers; the grading service evaluates correctness and XP value.",
+      "learning",
+    ),
+    JourneyStep(
+      awardXp,
+      "Award XP",
+      "Answers are correct — the reward engine credits experience points.",
+      "reward",
+    ),
+    JourneyStep(
+      unlockBadge,
+      "Unlock Badge",
+      "Progress crosses a badge threshold — a new achievement is unlocked.",
+      "reward",
+    ),
+    JourneyStep(
+      extendStreak,
+      "Extend Streak",
+      "Daily goal met — the streak counter increments and the habit is reinforced.",
+      "habit",
+    ),
+    JourneyStep(
+      updateLeague,
+      "Recalculate Standings",
+      "XP change triggers a league standings recalculation.",
+      "competition",
+    ),
+    JourneyStep(
+      sendNotification,
+      "Send Push Notification",
+      "The promotion is celebrated with a push notification.",
+      "feedback",
+    ),
+  ],
+)
+
+retryLoop = Journey(
+  "retry-loop",
+  "Retry Loop & Streak Freeze",
+  "Learner answers wrong, retries with a hint, then misses the daily goal and uses a streak freeze.",
+  [
+    JourneyStep(
+      submitAnswers,
+      "Submit Answers",
+      "Learner submits answers; the grading service finds an incorrect answer.",
+      "learning",
+    ),
+    JourneyStep(
+      showHint,
+      "Show Hint",
+      "A partial-credit hint is displayed and the learner retries the exercise.",
+      "learning",
+    ),
+    JourneyStep(
+      awardXp,
+      "Award XP",
+      "The retry succeeds — XP is credited at the reduced partial-credit rate.",
+      "reward",
+    ),
+    JourneyStep(
+      continueLesson,
+      "Continue Lesson",
+      "No badge threshold crossed; the learner moves to the next exercise.",
+      "reward",
+    ),
+    JourneyStep(
+      freezeStreak,
+      "Apply Streak Freeze",
+      "Daily goal missed — a freeze token protects the streak from resetting.",
+      "habit",
+    ),
+    JourneyStep(
+      updateLeague,
+      "Recalculate Standings",
+      "Standings are recalculated; no promotion this time.",
+      "competition",
+    ),
+    JourneyStep(
+      silentUpdate,
+      "Log Silently",
+      "The update is persisted quietly without a notification.",
+      "feedback",
+    ),
+  ],
+)

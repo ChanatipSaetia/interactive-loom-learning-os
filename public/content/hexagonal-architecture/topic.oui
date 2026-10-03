@@ -1,0 +1,25 @@
+root = Topic(
+  "Hexagonal Architecture (Ports & Adapters)",
+  "Architecture",
+  "Isolate core business domain logic from external technologies, databases, frameworks, and UI drivers",
+  [
+    SectionRef("intro"),
+    SectionRef("flashcards"),
+    SectionRef("concept-map"),
+    SectionRef("taxonomy-browser"),
+    SectionRef("text-core"),
+    SectionRef("flowchart"),
+    SectionRef("pillar-layer"),
+    SectionRef("reflection-sequence"),
+    SectionRef("tradeoff-sandbox"),
+    SectionRef("reflection-template"),
+    SectionRef("quiz"),
+  ],
+  [
+    "hexagonal-architecture",
+    "ports-and-adapters",
+    "ddd",
+    "dependency-inversion",
+    "software-architecture",
+  ],
+)

@@ -1,0 +1,189 @@
+root = PillarLayer(
+  "Haystack RAG Pipeline Layer Stack",
+  [lOrchestration, lModels, lRetrieval, lStorage],
+  [
+    bQueryPipeline,
+    bIndexingPipeline,
+    bPromptNode,
+    bRetrieverNode,
+    bEmbedderNode,
+    bOpenaiLlm,
+    bVectorIndex,
+    bDocStorePort,
+    bQdrantDb,
+    bPgStore,
+    bFaissIndex,
+    bS3Documents,
+  ],
+  "Component stack map of orchestration pipelines, LLM models, vector indexing, and data stores.",
+  null,
+  null,
+  Lead(
+    "Interactive 2D layer stack map of Haystack RAG components from orchestration pipelines down to vector databases.",
+    "Shows how query pipelines, prompt nodes, embedding retrievers, and document stores connect.",
+    "Next: Test your understanding with the knowledge check quiz.",
+  ),
+)
+
+lOrchestration = Layer(
+  "l-orchestration",
+  "1. Pipeline & Orchestration Tier",
+  "Flow control, prompt node routing, and query pipelines.",
+)
+
+lModels = Layer(
+  "l-models",
+  "2. LLMs & Embeddings Tier",
+  "Language models, dense/sparse encoders, and rerankers.",
+)
+
+lRetrieval = Layer(
+  "l-retrieval",
+  "3. Vector Indexing & Retrieval Tier",
+  "Dense vector indexes, BM25 keyword search engines.",
+)
+
+lStorage = Layer(
+  "l-storage",
+  "4. Persistence & Document Storage",
+  "Vector databases, SQL stores, and document repositories.",
+)
+
+bQueryPipeline = MatrixBlock(
+  "b-query-pipeline",
+  "QueryPipeline Node",
+  lOrchestration,
+  0,
+  2,
+  null,
+  "Executes end-to-end RAG query flow.",
+  "blue",
+  ["b-prompt-node", "b-retriever-node"],
+)
+
+bIndexingPipeline = MatrixBlock(
+  "b-indexing-pipeline",
+  "IndexingPipeline Node",
+  lOrchestration,
+  2,
+  2,
+  null,
+  "Parses, chunks, and embeds incoming documents.",
+  "mauve",
+  ["b-embedder-node", "b-doc-store-port"],
+)
+
+bPromptNode = MatrixBlock(
+  "b-prompt-node",
+  "PromptNode / Generator",
+  lModels,
+  0,
+  1,
+  null,
+  "Formats prompt templates for LLM invocation.",
+  "peach",
+  ["b-openai-llm"],
+)
+
+bRetrieverNode = MatrixBlock(
+  "b-retriever-node",
+  "EmbeddingRetriever",
+  lModels,
+  1,
+  1,
+  null,
+  "Calculates dense query embeddings and fetches top-K.",
+  "teal",
+  ["b-embedder-node", "b-vector-index"],
+)
+
+bEmbedderNode = MatrixBlock(
+  "b-embedder-node",
+  "TextEmbedder (bge-large)",
+  lModels,
+  2,
+  2,
+  null,
+  "Transforms text into 1024-d vector embeddings.",
+  "green",
+  ["b-qdrant-db"],
+)
+
+bOpenaiLlm = MatrixBlock(
+  "b-openai-llm",
+  "OpenAI GPT-4o Model API",
+  lRetrieval,
+  0,
+  1,
+  null,
+  "Generates synthesized answers from retrieved context.",
+  "sapphire",
+)
+
+bVectorIndex = MatrixBlock(
+  "b-vector-index",
+  "HNSW Vector Index",
+  lRetrieval,
+  1,
+  1,
+  null,
+  "Hierarchical Navigable Small World similarity search.",
+  "lavender",
+  ["b-qdrant-db"],
+)
+
+bDocStorePort = MatrixBlock(
+  "b-doc-store-port",
+  "DocumentStore Interface",
+  lRetrieval,
+  2,
+  2,
+  null,
+  "Abstract storage API for chunk metadata and vectors.",
+  "yellow",
+  ["b-qdrant-db", "b-pg-store"],
+)
+
+bQdrantDb = MatrixBlock(
+  "b-qdrant-db",
+  "Qdrant Vector DB",
+  lStorage,
+  0,
+  1,
+  null,
+  "Stores dense embeddings with payload filtering.",
+  "red",
+)
+
+bPgStore = MatrixBlock(
+  "b-pg-store",
+  "PostgreSQL Document Store",
+  lStorage,
+  1,
+  1,
+  null,
+  "Relational store for raw documents and metadata.",
+  "sky",
+)
+
+bFaissIndex = MatrixBlock(
+  "b-faiss-index",
+  "In-Memory FAISS Store",
+  lStorage,
+  2,
+  1,
+  null,
+  "Lightweight local vector store for fast prototyping.",
+  "pink",
+)
+
+bS3Documents = MatrixBlock(
+  "b-s3-documents",
+  "AWS S3 Object Storage",
+  lStorage,
+  3,
+  1,
+  null,
+  "Blob storage for raw source PDFs and Markdown.",
+  "maroon",
+)

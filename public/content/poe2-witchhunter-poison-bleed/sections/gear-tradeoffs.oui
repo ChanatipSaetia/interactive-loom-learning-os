@@ -1,0 +1,338 @@
+root = TradeoffSandbox("Gear Investment Trade-offs", [budgetLeagueStarter, investedEndgame])
+
+budgetLeagueStarter = TradeoffScenario(
+  "budget-league-starter",
+  "Budget League Starter",
+  [
+    TradeoffMetric("damage", "Damage Output", 30, 0, 100, "higher"),
+    TradeoffMetric("survivability", "Survivability", 45, 0, 100, "higher"),
+    TradeoffMetric("clear-speed", "Clear Speed", 35, 0, 100, "higher"),
+    TradeoffMetric("spirit-cost", "Spirit Cost", 30, 0, 100, "lower"),
+  ],
+  [weapon, bodyArmour, belt, flask],
+  "Minimum investment to clear all content with dual DoTs",
+)
+
+weapon = TradeoffStep(
+  "weapon",
+  "Weapon",
+  [bow, crossbow],
+  "Bow is the core weapon for Poison + Bleed. Crossbow offers a defensive alternative.",
+  "bow",
+)
+
+bow = TradeoffChoice(
+  "bow",
+  "Bow",
+  "Standard bow with Attack Speed and Damage.",
+  {damage: 10, survivability: 0, "clear-speed": 5, "spirit-cost": 0},
+  [
+    ProCon(
+      "Better attack speed",
+      "Faster attacks stack Poison quicker and refresh Bleed more often",
+    ),
+    ProCon("Wider stat pool", "More bow uniques and implicit stats support Attack Speed builds"),
+  ],
+  [ProCon("No built-in defense", "Standard bows rarely offer defensive modifiers")],
+  "Attack Speed is the priority for Poison stacking. Bow gives the best clear speed foundation.",
+)
+
+crossbow = TradeoffChoice(
+  "crossbow",
+  "Crossbow",
+  "Crossbow with Life and Damage.",
+  {damage: 5, survivability: 5, "clear-speed": 0, "spirit-cost": 0},
+  [ProCon("Defensive implicit", "Life on crossbow adds a layer of survivability early")],
+  [
+    ProCon(
+      "Slower attack speed",
+      "Lower attack speed means slower Poison stacking and Bleed refresh",
+    ),
+  ],
+  null,
+  "Viable if struggling with survivability early league, but clear speed will suffer.",
+)
+
+bodyArmour = TradeoffStep(
+  "body-armour",
+  "Body Armour",
+  [evasionChest, hybridEsEvasion],
+  "Evasion chest for physical hit mitigation vs Hybrid ES/Evasion for balanced defense.",
+  "evasion-chest",
+)
+
+evasionChest = TradeoffChoice(
+  "evasion-chest",
+  "Evasion Chest",
+  "High Evasion chest piece for maximum physical hit mitigation.",
+  {damage: 0, survivability: 15, "clear-speed": 0, "spirit-cost": 0},
+  [
+    ProCon(
+      "Strong physical mitigation",
+      "Evasion completely negates physical hits when above the threshold",
+    ),
+    ProCon("Cheaper to find", "High-evasion bases are common and affordable early league"),
+  ],
+  [ProCon("No ES layer", "Vulnerable to magic hits that bypass Evasion and elemental damage")],
+  "Physical hit mitigation is the most important defense layer. Evasion chest maximizes it.",
+)
+
+hybridEsEvasion = TradeoffChoice(
+  "hybrid-es-evasion",
+  "Hybrid ES/Evasion Chest",
+  "Hybrid base with both Energy Shield and Evasion.",
+  {damage: 5, survivability: 10, "clear-speed": 0, "spirit-cost": 0},
+  [ProCon("Dual defense layers", "Covers both physical hits and elemental/magic damage")],
+  [
+    ProCon(
+      "Lower Evasion value",
+      "Hybrid bases have less Evasion than pure evasion bases at the same item level",
+    ),
+  ],
+  null,
+  "Better mid-to-late league when you can afford well-rolled hybrid bases.",
+)
+
+belt = TradeoffStep(
+  "belt",
+  "Belt",
+  [rflas, stockingBelt],
+  "RFLAS for Spirit reduction and defense vs Stocking Belt for offense.",
+  "rflas",
+)
+
+rflas = TradeoffChoice(
+  "rflas",
+  "RFLAS",
+  "Rare Flat Life And Spirit belt with high Life and Spirit Reservation Reduction.",
+  {damage: 0, survivability: 15, "clear-speed": 0, "spirit-cost": 5},
+  [
+    ProCon(
+      "Spirit reservation reduction",
+      "Frees Spirit budget for more notables and ascendancy nodes",
+    ),
+    ProCon("Massive Life pool", "300+ Life on belt is the best defensive belt option"),
+  ],
+  [
+    ProCon(
+      "Increases Spirit cost",
+      "Spirit Reservation Reduction means you spend more Spirit overall",
+    ),
+  ],
+  "Spirit budget management is critical. RFLAS enables more defensive nodes while adding Life.",
+)
+
+stockingBelt = TradeoffChoice(
+  "stocking-belt",
+  "Stocking Belt",
+  "Stocking Belt with Attack Speed and Damage modifiers.",
+  {damage: 10, survivability: 0, "clear-speed": 5, "spirit-cost": 0},
+  [ProCon("Attack speed boost", "Faster Poison stacking and overall damage output")],
+  [ProCon("No defensive value", "Sacrifices a large chunk of Life for offensive stats")],
+  null,
+  "When Spirit budget is not a concern and damage is the bottleneck.",
+)
+
+flask = TradeoffStep(
+  "flask",
+  "Flask",
+  [lifeLeechFlask, manaLeechFlask],
+  "Life Leech Flask for sustain vs Mana Leech Flask for Spirit efficiency.",
+  "life-leech-flask",
+)
+
+lifeLeechFlask = TradeoffChoice(
+  "life-leech-flask",
+  "Life Leech Flask",
+  "Life Flask with Life Regeneration per second and Life Leech.",
+  {damage: 0, survivability: 10, "clear-speed": 0, "spirit-cost": 0},
+  [
+    ProCon("Active sustain", "Life Leech provides constant healing during map clears"),
+    ProCon("Burst recovery", "Life Flask charges quickly for emergency survivability"),
+  ],
+  [ProCon("No Spirit benefit", "Does not help with Spirit budget management")],
+  "Survivability is the priority for budget builds. Life Leech Flask keeps you alive in tough maps.",
+)
+
+manaLeechFlask = TradeoffChoice(
+  "mana-leech-flask",
+  "Mana Leech Flask",
+  "Mana Flask with Mana Regeneration and Mana Leech.",
+  {damage: 5, survivability: 0, "clear-speed": 0, "spirit-cost": 10},
+  [ProCon("Spirit efficiency", "Reduces Spirit budget pressure from Spirit-spending nodes")],
+  [ProCon("No defensive value", "Loses Life Leech sustain, making maps more dangerous")],
+  null,
+  "When Spirit budget is extremely tight and you cannot afford Spirit-reducing gear elsewhere.",
+)
+
+investedEndgame = TradeoffScenario(
+  "invested-endgame",
+  "Invested Endgame",
+  [
+    TradeoffMetric("damage", "Damage Output", 55, 0, 100, "higher"),
+    TradeoffMetric("survivability", "Survivability", 55, 0, 100, "higher"),
+    TradeoffMetric("clear-speed", "Clear Speed", 55, 0, 100, "higher"),
+    TradeoffMetric("spirit-cost", "Spirit Cost", 50, 0, 100, "lower"),
+  ],
+  [uniqueWeapon, uniqueChest, rings, helmet],
+  "Optimal gear choices for high-tier map clearing and bossing",
+)
+
+uniqueWeapon = TradeoffStep(
+  "unique-weapon",
+  "Unique Weapon",
+  [serpentsKiss, craftedBow],
+  "Serpent's Kiss for Poison damage vs crafted high DPS bow for raw damage.",
+  "serpents-kiss",
+)
+
+serpentsKiss = TradeoffChoice(
+  "serpents-kiss",
+  "Serpent's Kiss Bow",
+  "Unique bow with Poison Damage over Time and increased Attack Speed.",
+  {damage: 20, survivability: 0, "clear-speed": 0, "spirit-cost": 5},
+  [
+    ProCon(
+      "Massive Poison amplification",
+      "Increased Poison Damage over Time scales all Poison DoTs significantly",
+    ),
+    ProCon(
+      "Attack Speed synergy",
+      "Built-in Attack Speed stacks Poison faster and refreshes Bleed more often",
+    ),
+  ],
+  [
+    ProCon(
+      "Higher Spirit cost",
+      "Spirit Reservation Reduction from unique modifiers increases Spirit spend",
+    ),
+    ProCon("Single-element focus", "Less flexible if switching between Poison and Bleed emphasis"),
+  ],
+  "Poison Damage is the core multiplier for the build. Serpent's Kiss amplifies it directly.",
+)
+
+craftedBow = TradeoffChoice(
+  "crafted-bow",
+  "High DPS Crafted Bow",
+  "Crafted bow with maximum Attack Speed, Damage, and Area of Effect.",
+  {damage: 15, survivability: 0, "clear-speed": 10, "spirit-cost": 0},
+  [ProCon("Higher clear speed", "Area of Effect and raw Attack Speed clear maps faster")],
+  [ProCon("No Poison multiplier", "Lacks the Poison Damage over Time bonus from Serpent's Kiss")],
+  null,
+  "When map clear speed is prioritized over bossing damage, or Spirit budget is tight.",
+)
+
+uniqueChest = TradeoffStep(
+  "unique-chest",
+  "Unique Chest",
+  [bodyAndSoul, abyssus],
+  "Body and Soul for Spirit efficiency and survivability vs Abyssus for balanced offense/defense.",
+  "body-and-soul",
+)
+
+bodyAndSoul = TradeoffChoice(
+  "body-and-soul",
+  "Body and Soul",
+  "Unique chest with Spirit Reservation Reduction and Life Regeneration.",
+  {damage: 0, survivability: 15, "clear-speed": 0, "spirit-cost": 0},
+  [
+    ProCon(
+      "Spirit budget relief",
+      "Spirit Reservation Reduction enables more Spirit-spending notables",
+    ),
+    ProCon("Life regeneration", "Passive Life Regen provides constant sustain in maps"),
+  ],
+  [ProCon("No offensive stats", "Purely defensive item with zero damage contribution")],
+  "Spirit budget is the constraint for Witchhunter. Body and Soul unlocks the full tree.",
+)
+
+abyssus = TradeoffChoice(
+  "abyssus",
+  "Abyssus",
+  "Unique chest with Life, Resistance, and Damage over Time multipliers.",
+  {damage: 10, survivability: 10, "clear-speed": 0, "spirit-cost": 0},
+  [
+    ProCon(
+      "Balanced offense and defense",
+      "DoT multiplier directly boosts Poison and Bleed damage",
+    ),
+  ],
+  [ProCon("No Spirit benefit", "Does not help with Spirit budget, limiting tree options")],
+  null,
+  "When Spirit budget is already optimized and you need a damage boost.",
+)
+
+rings = TradeoffStep(
+  "rings",
+  "Rings",
+  [highLifeRings, damageRings],
+  "High-life rings for survivability vs damage-focused rings for raw DPS.",
+  "high-life-rings",
+)
+
+highLifeRings = TradeoffChoice(
+  "high-life-rings",
+  "Two High-Life Rings",
+  "Two rings with 90+ Life, Resistances, and Attribute totals.",
+  {damage: 0, survivability: 15, "clear-speed": 0, "spirit-cost": 0},
+  [
+    ProCon("Massive Life pool", "180+ Life from two rings is significant survivability"),
+    ProCon("Resistance caps", "Resistances on rings help reach 75% all elements"),
+  ],
+  [ProCon("No offensive contribution", "Purely defensive slots with zero damage modifiers")],
+  "Life pool is the most reliable defense layer. Two high-life rings maximize it cheaply.",
+)
+
+damageRings = TradeoffChoice(
+  "damage-rings",
+  "Damage Rings",
+  "Rings with Damage over Time, Attack Speed, and Critical Strike modifiers.",
+  {damage: 15, survivability: -5, "clear-speed": 0, "spirit-cost": 0},
+  [ProCon("Direct damage boost", "DoT multipliers and Attack Speed increase overall DPS")],
+  [ProCon("Reduced survivability", "Less Life means less room for error in high-tier maps")],
+  null,
+  "When survivability is already sufficient and damage is the bottleneck.",
+)
+
+helmet = TradeoffStep(
+  "helmet",
+  "Helmet",
+  [evasionHelm, hybridDotHelm],
+  "Evasion helm for physical mitigation vs Hybrid DoT helm for balanced offense/defense.",
+  "evasion-helm",
+)
+
+evasionHelm = TradeoffChoice(
+  "evasion-helm",
+  "Evasion Helmet",
+  "High Evasion helmet with Resistances and Attributes.",
+  {damage: 0, survivability: 10, "clear-speed": 0, "spirit-cost": 0},
+  [
+    ProCon(
+      "Physical hit mitigation",
+      "Evasion on helmet stacks with body armor for near-immunity to physical hits",
+    ),
+    ProCon(
+      "Cheaper to roll",
+      "Evasion helmets are easier to find with good rolls than hybrid bases",
+    ),
+  ],
+  [ProCon("No offensive stats", "Purely defensive item with no damage contribution")],
+  "Physical mitigation is the most impactful defense layer. Evasion helm completes the setup.",
+)
+
+hybridDotHelm = TradeoffChoice(
+  "hybrid-dot-helm",
+  "Hybrid DoT Helmet",
+  "Helmet with DoT multipliers and moderate Evasion.",
+  {damage: 10, survivability: 5, "clear-speed": 0, "spirit-cost": 0},
+  [
+    ProCon(
+      "Damage and defense balance",
+      "DoT multipliers boost Poison and Bleed while maintaining some Evasion",
+    ),
+  ],
+  [ProCon("Lower Evasion value", "Less physical mitigation than a pure evasion helmet")],
+  null,
+  "When you need a damage boost and can afford reduced physical mitigation.",
+)

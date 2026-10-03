@@ -1,0 +1,101 @@
+root = TradeoffSandbox("Gear Investment Levels", [budgetLeagueStarter])
+
+budgetLeagueStarter = TradeoffScenario(
+  "budget-league-starter",
+  "Budget League Starter",
+  [
+    TradeoffMetric("damage", "Damage Output", 35, 0, 100, "higher"),
+    TradeoffMetric("clear-speed", "Clear Speed", 45, 0, 100, "higher"),
+    TradeoffMetric("survivability", "Survivability", 50, 0, 100, "higher"),
+    TradeoffMetric("cost", "Cost Efficiency", 90, 0, 100, "higher"),
+  ],
+  [weapon, armor, charges],
+  "Minimum investment to clear all content. Everything obtainable through drops and cheap trade.",
+)
+
+weapon = TradeoffStep(
+  "weapon",
+  "Weapon Choice",
+  [anyStaff, dreamingStaff],
+  "Quarterstaff is mandatory. Avoid Dreaming Quarterstaff (0% Crit base).",
+  "any-staff",
+)
+
+anyStaff = TradeoffChoice(
+  "any-staff",
+  "Any Quarterstaff (non-Dreaming)",
+  "Any Quarterstaff with Lightning Damage and Crit stats.",
+  {damage: 10, "clear-speed": 5, survivability: 0, cost: 10},
+  [ProCon("Cheap and available", "Found in early acts and cheap on trade")],
+  [ProCon("No leech line", "May lack Leech Phys Damage as Mana for Oisin's Oath")],
+  "League starter doesn't need perfect rolls. Any non-Dreaming staff works.",
+)
+
+dreamingStaff = TradeoffChoice(
+  "dreaming-staff",
+  "Dreaming Quarterstaff",
+  "Unique with high damage but 0% Crit base.",
+  {damage: -5, "clear-speed": -10, survivability: 0, cost: 5},
+  [ProCon("Good raw numbers", "High Lightning Damage on the unique")],
+  [ProCon("0% Crit base", "Cripples Cast on Critical and all crit-dependent mechanics")],
+  null,
+  "Avoid entirely. The 0% Crit base makes this build unviable.",
+)
+
+armor = TradeoffStep(
+  "armor",
+  "Body Armor",
+  [sleekJacket, pureEs],
+  "ES/Evasion hybrid base for layered defense.",
+  "sleek-jacket",
+)
+
+sleekJacket = TradeoffChoice(
+  "sleek-jacket",
+  "Sleek Jacket (ES/EV hybrid)",
+  "Hybrid Evasion + Energy Shield base.",
+  {damage: 0, "clear-speed": 0, survivability: 10, cost: 8},
+  [ProCon("Layered defense", "Stacks Evasion with ES for physical hit mitigation")],
+  [ProCon("Early rolls may be poor", "Budget pieces may have low values")],
+  "Hybrid base aligns with the build's ES/Evasion defense strategy.",
+)
+
+pureEs = TradeoffChoice(
+  "pure-es",
+  "Pure Energy Shield Armor",
+  "Only ES, no Evasion.",
+  {damage: 0, "clear-speed": 0, survivability: 5, cost: 5},
+  [ProCon("Simple to find", "More available on trade")],
+  [ProCon("No Evasion layer", "Missing physical hit mitigation entirely")],
+  null,
+  "Acceptable early game before finding hybrid bases.",
+)
+
+charges = TradeoffStep(
+  "charges",
+  "Power Charge Generation",
+  [hollowFocus, ailithsBudget],
+  "Budget alternative to Ailith's Chimes.",
+  "hollow-focus",
+)
+
+hollowFocus = TradeoffChoice(
+  "hollow-focus",
+  "Hollow Focus + Killing Palm",
+  "Kill primed Hollow Focus bells with Killing Palm for charges.",
+  {damage: 5, "clear-speed": -5, survivability: 0, cost: 15},
+  [ProCon("Free", "Uses built-in ascendancy nodes, no expensive items needed")],
+  [ProCon("Manual process", "Requires casting Hollow Focus, then Killing Palm into the bells")],
+  "Best budget method. Reliable charge generation with zero investment.",
+)
+
+ailithsBudget = TradeoffChoice(
+  "ailiths-budget",
+  "Early Ailith's Chimes",
+  "Buy Ailith's Chimes early for Combo-based generation.",
+  {damage: 10, "clear-speed": 10, survivability: 0, cost: -15},
+  [ProCon("Instant charges", "One click to convert Combo to charges")],
+  [ProCon("Expensive early league", "Ailith's Chimes is costly in early league currency")],
+  null,
+  "Worth buying mid-league when prices drop.",
+)

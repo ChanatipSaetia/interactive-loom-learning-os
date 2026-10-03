@@ -1,0 +1,58 @@
+root = ConceptMap(
+  "Concept Map",
+  [
+    gamification,
+    gamefulness,
+    coreDrives,
+    sdt,
+    autonomy,
+    competence,
+    relatedness,
+    pbl,
+    xp,
+    badges,
+    leaderboards,
+    streaks,
+    hookLoop,
+    variableReward,
+    overjustification,
+    darkPatterns,
+  ],
+  [
+    ConceptLink(gamification, gamefulness, "produces"),
+    ConceptLink(gamification, pbl, "uses as surface layer"),
+    ConceptLink(gamification, coreDrives, "should target"),
+    ConceptLink(coreDrives, sdt, "synthesizes"),
+    ConceptLink(sdt, autonomy, "requires"),
+    ConceptLink(sdt, competence, "requires"),
+    ConceptLink(sdt, relatedness, "requires"),
+    ConceptLink(pbl, xp, "includes"),
+    ConceptLink(pbl, badges, "includes"),
+    ConceptLink(pbl, leaderboards, "includes"),
+    ConceptLink(xp, overjustification, "can trigger"),
+    ConceptLink(badges, competence, "signals"),
+    ConceptLink(leaderboards, relatedness, "leverages"),
+    ConceptLink(streaks, darkPatterns, "can become"),
+    ConceptLink(hookLoop, variableReward, "contains"),
+    ConceptLink(variableReward, coreDrives, "taps unpredictability"),
+    ConceptLink(darkPatterns, coreDrives, "abuses"),
+    ConceptLink(xp, coreDrives, "expresses development"),
+  ],
+)
+
+gamification = Concept("gamification", "Gamification", "concept")
+gamefulness = Concept("gamefulness", "Gamefulness", "concept")
+coreDrives = Concept("core-drives", "Core Drives (Octalysis)", "concept")
+sdt = Concept("sdt", "Self-Determination Theory", "concept")
+autonomy = Concept("autonomy", "Autonomy", "mechanism")
+competence = Concept("competence", "Competence", "mechanism")
+relatedness = Concept("relatedness", "Relatedness", "mechanism")
+pbl = Concept("pbl", "PBL (Points, Badges, Leaderboards)", "mechanism")
+xp = Concept("xp", "XP / Points", "mechanism")
+badges = Concept("badges", "Badges", "mechanism")
+leaderboards = Concept("leaderboards", "Leaderboards", "mechanism")
+streaks = Concept("streaks", "Streaks", "mechanism")
+hookLoop = Concept("hook-loop", "Hook Loop", "pattern")
+variableReward = Concept("variable-reward", "Variable Reward", "mechanism")
+overjustification = Concept("overjustification", "Overjustification Effect", "concept")
+darkPatterns = Concept("dark-patterns", "Dark Patterns", "concept")

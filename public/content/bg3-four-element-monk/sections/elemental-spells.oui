@@ -1,0 +1,72 @@
+root = TaxonomyBrowser("Spell Selection", [fireSpells, coldSpells, lightningSpells, acidSpells])
+
+fireSpells = TaxonomyCategory(
+  "Fire Spells",
+  "Pyromancy",
+  "Flame",
+  "red",
+  "Fire spells excel at sustained AoE damage and area denial.",
+  "Conjure Flame is your primary fire spell — it creates a persistent damage zone that enemies walk through. Burning Hands is a close-range cone blast. At higher levels, Fireball and Wall of Fire become available through spell upgrades.",
+  "Setting the battlefield on fire and watching enemies cook.",
+  "Area denial and sustained damage over time",
+  [
+    "Conjure Flame (cantrip — persistent zone damage)",
+    "Burning Hands (1st level — cone burst)",
+    "Fireball (3rd level — massive AoE)",
+    "Wall of Fire (4th level — line barrier)",
+  ],
+  ["Non-damaging fire spells like Produce Flame light"],
+)
+
+coldSpells = TaxonomyCategory(
+  "Cold Spells",
+  "Cryomancy",
+  "Snowflake",
+  "sky",
+  "Cold spells provide control, slow effects, and burst damage.",
+  "Ray of Frost is your cold cantrip with a built-in slow effect. Ice Knife is the signature cold spell — a two-part attack that pierces a target then explodes around them. Cone of Cold delivers massive frontal AoE at higher levels.",
+  "Freezing enemies in place before shattering them.",
+  "Crowd control and burst AoE damage",
+  [
+    "Ray of Frost (cantrip — line + slow)",
+    "Ice Knife (2nd level — pierce + AoE burst)",
+    "Cone of Cold (5th level — frontal devastation)",
+    "Cone of Cold with Twinned Spell for dual targets",
+  ],
+  ["Utility-only cold effects"],
+)
+
+lightningSpells = TaxonomyCategory(
+  "Lightning Spells",
+  "Electromancy",
+  "Zap",
+  "yellow",
+  "Lightning spells chain between targets and push enemies back.",
+  "Shocking Grasp is your lightning cantrip — it deals damage and prevents opportunity attacks. Call Lightning summons a cloud that strikes repeatedly. Chain Lightning jumps between multiple targets for efficient multi-kill potential.",
+  "A storm calling down bolts that arc between enemies.",
+  "Multi-target chain damage and knockback control",
+  [
+    "Shocking Grasp (cantrip — melee + OA prevention)",
+    "Call Lightning (3rd level — repeated strikes)",
+    "Chain Lightning (6th level — multi-target jump)",
+    "Lightning Bolt (3rd line blast)",
+  ],
+  ["Non-combat lightning effects"],
+)
+
+acidSpells = TaxonomyCategory(
+  "Acid Spells",
+  "Corrosion",
+  "Droplet",
+  "green",
+  "Acid spells bypass resistance and apply damage-over-time effects.",
+  "Acid Splash is your acid cantrip and hits multiple targets simultaneously. Acid Arrow delivers a delayed burst with a damage-over-time component. Chromatic Orb can be rolled to deal acid damage and benefits from upcasting.",
+  "Corrosive pools that dissolve armor and flesh alike.",
+  "Resistance penetration and multi-target damage",
+  [
+    "Acid Splash (cantrip — multi-target)",
+    "Acid Arrow (3rd level — DoT component)",
+    "Chromatic Orb (2nd level — flexible element)",
+  ],
+  ["Pure single-target acid without DoT"],
+)

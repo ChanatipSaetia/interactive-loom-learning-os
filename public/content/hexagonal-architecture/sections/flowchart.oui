@@ -1,0 +1,184 @@
+root = Flowchart(
+  "Order Placement Request Lifecycle",
+  [customer],
+  [orderAggregate, httpController, createOrderPort, orderRepoPort, postgresAdapter],
+  [stepCheckout, stepInvokePort, stepDomainLogic, stepCallDrivenPort, stepDbPersist],
+  [happyPath],
+  null,
+  Lead(
+    "Interactive Event Storming process diagram tracing an HTTP Order request through Ports and Adapters.",
+    "Visualizes step-by-step how Driving Adapters, Ports, Use Case Policies, and Driven Adapters interact.",
+    "Next: Challenge your process recall in the Reflection Sequence.",
+  ),
+)
+
+customer = Actor(
+  "customer",
+  "Online Customer (Initiator)",
+  "Customer submitting purchase orders via Web UI.",
+)
+
+orderAggregate = System(
+  "order_aggregate",
+  "Order Aggregate (Domain Core)",
+  "Core domain business entity maintaining state and business invariants.",
+  "aggregate",
+  StateMachine(
+    [
+      MachineState("DRAFT", "Draft", "var(--ctp-overlay1)"),
+      MachineState("CREATING", "Creating", "var(--ctp-blue)"),
+      MachineState("VALIDATED", "Validated", "var(--ctp-mauve)"),
+      MachineState("PERSISTING", "Persisting", "var(--ctp-peach)"),
+      MachineState("PERSISTED", "Persisted", "var(--ctp-green)"),
+    ],
+    "DRAFT",
+  ),
+)
+
+httpController = System(
+  "http_controller",
+  "Express HTTP Controller (Driving Adapter)",
+  "Receives HTTP REST requests and translates DTOs into domain commands.",
+  "external",
+)
+
+createOrderPort = System(
+  "create_order_port",
+  "CreateOrderUseCase (Driving Port)",
+  "Inbound application port interface exposing order creation operations.",
+  "external",
+)
+
+orderRepoPort = System(
+  "order_repo_port",
+  "OrderRepositoryPort (Driven Port)",
+  "Outbound infrastructure port interface for order persistence.",
+  "external",
+)
+
+postgresAdapter = System(
+  "postgres_adapter",
+  "PostgresOrderAdapter (Driven Adapter)",
+  "Outbound database adapter executing SQL queries against Postgres.",
+  "external",
+)
+
+stepCheckout = Step(
+  "step_checkout",
+  "Parse HTTP Payload Policy",
+  "Invoke CreateOrderPort",
+  httpController,
+  [
+    Event(
+      "evt_checkout_requested",
+      "Checkout Requested",
+      "Customer submits cart payload via Web UI.",
+    ),
+  ],
+  customer,
+  null,
+  "step_invoke_port",
+)
+
+stepInvokePort = Step(
+  "step_invoke_port",
+  "Route To Domain Service Policy",
+  "Instantiate Order Aggregate",
+  createOrderPort,
+  [
+    Event(
+      "evt_port_invoked",
+      "CreateOrderPort Invoked",
+      "Driving Adapter calls CreateOrderUseCase interface method.",
+    ),
+  ],
+  null,
+  null,
+  "step_domain_logic",
+)
+
+stepDomainLogic = Step(
+  "step_domain_logic",
+  "Persist New Order Policy",
+  "Call OrderRepositoryPort.save()",
+  orderAggregate,
+  [
+    Event(
+      "evt_order_created",
+      "Order Aggregate Created",
+      "Domain Aggregate validates items, price calculations, and stock invariants.",
+    ),
+  ],
+  null,
+  null,
+  "step_call_driven_port",
+)
+
+stepCallDrivenPort = Step(
+  "step_call_driven_port",
+  "Delegate To Database Adapter Policy",
+  "Execute SQL Insert",
+  orderRepoPort,
+  [
+    Event(
+      "evt_repo_called",
+      "OrderRepositoryPort Called",
+      "Outbound interface receives Order entity for persistence.",
+    ),
+  ],
+  null,
+  null,
+  "step_db_persist",
+)
+
+stepDbPersist = Step(
+  "step_db_persist",
+  "Return Success DTO Policy",
+  "Respond 201 Created",
+  postgresAdapter,
+  [
+    Event(
+      "evt_order_saved",
+      "Order Record Saved to Postgres",
+      "Postgres database commits transaction successfully.",
+    ),
+  ],
+)
+
+happyPath = Journey(
+  "happy-path",
+  "Complete Request Cycle (Inbound → Domain → Outbound)",
+  "Traces an HTTP order placement from the Express Driving Controller through Ports into the Domain Core and Postgres Driven Adapter.",
+  [
+    JourneyStep(
+      stepCheckout,
+      "1. HTTP Request Received",
+      "Express Controller validates request payload and maps HTTP DTO into CreateOrderCommand.",
+      "planning",
+    ),
+    JourneyStep(
+      stepInvokePort,
+      "2. Driving Port Invoked",
+      "Driving Adapter calls CreateOrderUseCase interface; application layer initiates domain transaction.",
+      "planning",
+    ),
+    JourneyStep(
+      stepDomainLogic,
+      "3. Domain Core Execution",
+      "Order Aggregate validates business invariants, item calculations, and instantiates order state.",
+      "execution",
+    ),
+    JourneyStep(
+      stepCallDrivenPort,
+      "4. Driven Port Call",
+      "Domain Core invokes OrderRepositoryPort interface for persistence.",
+      "execution",
+    ),
+    JourneyStep(
+      stepDbPersist,
+      "5. Postgres Persistence & Response",
+      "Driven Postgres Adapter executes SQL insert, commits transaction, and returns result to HTTP Controller.",
+      "evaluation",
+    ),
+  ],
+)

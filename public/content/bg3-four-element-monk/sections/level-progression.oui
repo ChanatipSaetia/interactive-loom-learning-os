@@ -1,0 +1,45 @@
+root = ReflectionSequence("Level Progression", [challenge1])
+
+challenge1 = SequenceChallenge(
+  "Arrange the Four Element Monk milestones in the correct level order:",
+  [
+    dragMartialArts,
+    dragUnarmoredMovement,
+    dragFourElementMonk,
+    dragSlowFall,
+    dragStunningStrike,
+    dragFlowBarrier,
+    dragEmptyBody,
+    dragFourPoint,
+    dragElemMastery,
+  ],
+  [
+    dragMartialArts,
+    dragUnarmoredMovement,
+    dragSlowFall,
+    dragFourElementMonk,
+    dragStunningStrike,
+    dragFlowBarrier,
+    dragFourPoint,
+    dragEmptyBody,
+    dragElemMastery,
+  ],
+)
+
+dragMartialArts = SequenceItem("drag_martial_arts", "Martial Arts — Unarmed strike damage dice")
+dragUnarmoredMovement = SequenceItem("drag_unarmored_movement", "Unarmored Movement — Speed boost")
+dragFourElementMonk = SequenceItem(
+  "drag_four_element_monk",
+  "Four Element Monk — Elemental Attunement & Twin Elemental Wrath",
+)
+
+dragSlowFall = SequenceItem("drag_slow_fall", "Slow Fall — Fall damage immunity")
+dragStunningStrike = SequenceItem("drag_stunning_strike", "Stunning Strike — Ki stun on hit")
+dragFlowBarrier = SequenceItem("drag_flow_barrier", "Flowing Barrier — Ki to AC conversion")
+dragEmptyBody = SequenceItem("drag_empty_body", "Empty Body — Teleport & Mirror Image")
+dragFourPoint = SequenceItem(
+  "drag_four_point",
+  "Four Point Attack — Four guaranteed elemental strikes",
+)
+
+dragElemMastery = SequenceItem("drag_elem_mastery", "Elemental Mastery — Free elemental spells")

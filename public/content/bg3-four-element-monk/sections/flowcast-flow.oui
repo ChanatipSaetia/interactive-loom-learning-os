@@ -1,0 +1,227 @@
+root = Flowchart(
+  "Flowcast Combat Flow",
+  [player, enemy],
+  [kiPool, elementalEngine, unarmedCombat, defenseSystem, twistedWrathHandler, fourPointHandler],
+  [step1, stepOpening, stepAttackLoop, stepKiCheck],
+  [journeyOffense, journeyBoss, journeyDefensive],
+)
+
+player = Actor("player", "Player (Monk)", "Controls the Four Element Monk")
+enemy = Actor("enemy", "Enemy", "Target of attacks and spells")
+
+kiPool = System("ki_pool", "Ki Pool", "Monk resource that fuels all abilities", "aggregate")
+elementalEngine = System(
+  "elemental_engine",
+  "Elemental Attunement",
+  "Spell casting system from four schools",
+  "aggregate",
+)
+
+unarmedCombat = System(
+  "unarmed_combat",
+  "Unarmed Combat",
+  "Martial strike damage system",
+  "aggregate",
+)
+
+defenseSystem = System(
+  "defense_system",
+  "Monk Defense",
+  "Flowing Barrier and Patient Defense",
+  "aggregate",
+)
+
+twistedWrathHandler = System(
+  "twisted_wrath_handler",
+  "Twin Elemental Wrath",
+  "Elemental infusion for unarmed strikes",
+  "aggregate",
+)
+
+fourPointHandler = System(
+  "four_point_handler",
+  "Four Point Attack",
+  "Ultimate four-elemental strike combo",
+  "aggregate",
+)
+
+step1 = Step(
+  "step_1",
+  "Combat Begins",
+  "Enter Combat Encounter",
+  kiPool,
+  [Event("evt_combat_start", "Combat Started")],
+  player,
+  null,
+  "step_opening",
+)
+
+stepOpening = Branch(
+  "step_opening",
+  "evt_combat_start",
+  [
+    branchOffense,
+    BranchOption(
+      "branch_spell",
+      "Spell Opening",
+      "If Enemy At Range",
+      "Cast Elemental Spell",
+      elementalEngine,
+      [Event("evt_spell_cast", "Spell Damage Dealt")],
+    ),
+    branchDefense,
+  ],
+)
+
+branchOffense = BranchOption(
+  "branch_offense",
+  "Offensive Opening",
+  "If Enemy Within Range",
+  "Cast Twin Elemental Wrath",
+  twistedWrathHandler,
+  [Event("evt_wrath_active", "Elemental Strikes Active")],
+  null,
+  null,
+  "enemy",
+  "step_attack_loop",
+)
+
+branchDefense = BranchOption(
+  "branch_defense",
+  "Defensive Opening",
+  "If Low HP or High Threat",
+  "Activate Flowing Barrier",
+  kiPool,
+  [Event("evt_barrier_up", "AC Boosted")],
+)
+
+stepAttackLoop = Step(
+  "step_attack_loop",
+  "While Wrath Active",
+  "Make Unarmed Strikes",
+  unarmedCombat,
+  [Event("evt_damage_dealt", "Elemental Damage Applied")],
+  "evt_wrath_active",
+  null,
+  "step_ki_check",
+)
+
+stepKiCheck = Branch(
+  "step_ki_check",
+  "evt_damage_dealt",
+  [
+    branchFourPoint,
+    branchSustain,
+    branchDefensive,
+    BranchOption(
+      "branch_short_rest",
+      "End Combat — Short Rest",
+      "If Combat Ends",
+      "Short Rest to Recover Ki",
+      kiPool,
+      [Event("evt_ki_restored", "Ki Pool Refreshed")],
+    ),
+  ],
+)
+
+branchFourPoint = BranchOption(
+  "branch_four_point",
+  "Boss Fight — Full Nuke",
+  "If 4 Ki Available and Boss Present",
+  "Execute Four Point Attack",
+  fourPointHandler,
+  [Event("evt_four_point", "Four Elemental Strikes Land")],
+)
+
+branchSustain = BranchOption(
+  "branch_sustain",
+  "Sustain Combat",
+  "If Ki Above Threshold",
+  "Continue Twin Elemental Wrath Loop",
+  twistedWrathHandler,
+  [Event("evt_loop", "Combat Continues")],
+)
+
+branchDefensive = BranchOption(
+  "branch_defensive",
+  "Defensive Pivot",
+  "If Ki Low or HP Critical",
+  "Use Patient Defense or Empty Body",
+  defenseSystem,
+  [Event("evt_defensive", "Defensive Position Secured")],
+)
+
+journeyOffense = Journey(
+  "journey_offense",
+  "Offensive Combat Loop",
+  "Standard combat flow using Twin Elemental Wrath for sustained damage",
+  [
+    JourneyStep(
+      step1,
+      "Combat Start",
+      "Player enters combat and assesses the situation",
+      "opening",
+    ),
+    JourneyStep(
+      branchOffense,
+      "Wrath Activation",
+      "Twin Elemental Wrath infuses strikes with elemental damage",
+      "execution",
+    ),
+    JourneyStep(
+      stepAttackLoop,
+      "Elemental Damage",
+      "Unarmed strikes deal physical plus elemental damage",
+      "execution",
+    ),
+    JourneyStep(
+      branchSustain,
+      "Sustain Loop",
+      "Combat continues with sustained elemental strikes",
+      "evaluation",
+    ),
+  ],
+)
+
+journeyBoss = Journey(
+  "journey_boss",
+  "Boss Nuke Flow",
+  "Full Ki investment into Four Point Attack for maximum burst",
+  [
+    JourneyStep(step1, "Combat Start", "Boss engagement begins", "opening"),
+    JourneyStep(
+      branchOffense,
+      "Wrath Activation",
+      "Twin Elemental Wrath activates for opening damage",
+      "execution",
+    ),
+    JourneyStep(stepAttackLoop, "Initial Damage", "Initial strikes weaken the boss", "execution"),
+    JourneyStep(
+      branchFourPoint,
+      "Four Point Nuke",
+      "Four Point Attack unleashes four guaranteed elemental hits",
+      "escalation",
+    ),
+  ],
+)
+
+journeyDefensive = Journey(
+  "journey_defensive",
+  "Defensive Survival",
+  "Ki spent on defense when overwhelmed",
+  [
+    JourneyStep(step1, "Combat Start", "Combat starts with high threat level", "opening"),
+    JourneyStep(
+      branchDefense,
+      "Flowing Barrier",
+      "Flowing Barrier boosts AC to avoid damage",
+      "execution",
+    ),
+    JourneyStep(
+      branchDefensive,
+      "Clutch Survival",
+      "Patient Defense or Empty Body for clutch survival",
+      "escalation",
+    ),
+  ],
+)

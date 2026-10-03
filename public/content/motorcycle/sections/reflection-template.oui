@@ -1,0 +1,27 @@
+root = ReflectionTemplate("Engine Dynamics Evaluation", [challenge1, challenge2])
+
+challenge1 = TemplateChallenge(
+  "Complete the statement explaining cylinder dimensions and engine volume (Part 1):",
+  "Increasing the cylinder bore size or piston stroke length results in a {zone-1} swept volume (displacement). This swept volume allows the engine to ingest more air and fuel, which directly {zone-2} the peak torque and power outputs.",
+  [
+    Chip("chip-larger", "larger"),
+    Chip("chip-smaller", "smaller"),
+    Chip("chip-increases", "increases"),
+    Chip("chip-decreases", "decreases"),
+  ],
+  {"zone-1": "chip-larger", "zone-2": "chip-increases"},
+  "<strong>Correct!</strong> Swept volume (displacement) increases with larger bore and stroke. Larger cylinder size holds more fuel charge, which increases combustion pressure force.",
+)
+
+challenge2 = TemplateChallenge(
+  "Complete the statement explaining high-revving performance dynamics (Part 2):",
+  "Operating the engine at high RPMs increases the horsepower but {zone-1} the fuel efficiency. This is because high revs require {zone-2} fuel injection cycles per second.",
+  [
+    Chip("chip-reduces", "reduces"),
+    Chip("chip-boosts", "boosts"),
+    Chip("chip-more", "more"),
+    Chip("chip-fewer", "fewer"),
+  ],
+  {"zone-1": "chip-reduces", "zone-2": "chip-more"},
+  "<strong>Correct!</strong> Higher speed requires more cycles per second, consuming more fuel and dropping economy metrics.",
+)

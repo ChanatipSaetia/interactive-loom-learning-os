@@ -1,0 +1,69 @@
+root = ConceptMap(
+  "Build Mechanics Map",
+  [
+    kiPoints,
+    elementalAttunement,
+    twinElementalWrath,
+    fourPointAttack,
+    elementalMastery,
+    emptyBody,
+    fireSpells,
+    coldSpells,
+    lightningSpells,
+    acidSpells,
+    strixCoveCloak,
+    sorcererMulticlass,
+    twinnedSpell,
+    flowingBarrier,
+    patientDefense,
+    patient0,
+    dragonClawGloves,
+    staffOfTheWoodlandRomance,
+  ],
+  [
+    ConceptLink(kiPoints, elementalAttunement, "fuels cantrip access"),
+    ConceptLink(kiPoints, twinElementalWrath, "spends 1 Ki"),
+    ConceptLink(kiPoints, fourPointAttack, "spends 4 Ki"),
+    ConceptLink(kiPoints, flowingBarrier, "spends Ki for AC"),
+    ConceptLink(elementalAttunement, fireSpells, "grants cantrips"),
+    ConceptLink(elementalAttunement, coldSpells, "grants cantrips"),
+    ConceptLink(elementalAttunement, lightningSpells, "grants cantrips"),
+    ConceptLink(elementalAttunement, acidSpells, "grants cantrips"),
+    ConceptLink(twinElementalWrath, fireSpells, "infuses attacks"),
+    ConceptLink(twinElementalWrath, coldSpells, "infuses attacks"),
+    ConceptLink(fourPointAttack, fireSpells, "one strike each element"),
+    ConceptLink(fourPointAttack, coldSpells, "one strike each element"),
+    ConceptLink(fourPointAttack, lightningSpells, "one strike each element"),
+    ConceptLink(fourPointAttack, acidSpells, "one strike each element"),
+    ConceptLink(elementalMastery, kiPoints, "restores Ki on cast"),
+    ConceptLink(sorcererMulticlass, twinnedSpell, "unlocks metamagic"),
+    ConceptLink(twinnedSpell, coldSpells, "doubles target count"),
+    ConceptLink(strixCoveCloak, elementalAttunement, "enables casting out of combat"),
+    ConceptLink(flowingBarrier, kiPoints, "converts Ki to AC"),
+    ConceptLink(patient0, kiPoints, "boosts damage with Ki"),
+    ConceptLink(dragonClawGloves, twinElementalWrath, "amplifies infused damage"),
+  ],
+)
+
+kiPoints = Concept("ki-points", "Ki Points", "mechanic")
+elementalAttunement = Concept("elemental-attunement", "Elemental Attunement", "feature")
+twinElementalWrath = Concept("twin-elemental-wrath", "Twin Elemental Wrath", "feature")
+fourPointAttack = Concept("four-point-attack", "Four Point Attack", "feature")
+elementalMastery = Concept("elemental-mastery", "Elemental Mastery", "feature")
+emptyBody = Concept("empty-body", "Empty Body", "feature")
+fireSpells = Concept("fire-spells", "Fire Spells", "element")
+coldSpells = Concept("cold-spells", "Cold Spells", "element")
+lightningSpells = Concept("lightning-spells", "Lightning Spells", "element")
+acidSpells = Concept("acid-spells", "Acid Spells", "element")
+strixCoveCloak = Concept("strix-cove-cloak", "Strix Cove Monk Cloak", "gear")
+sorcererMulticlass = Concept("sorcerer-multiclass", "Sorcerer Multiclass", "class")
+twinnedSpell = Concept("twinned-spell", "Twinned Spell", "metamagic")
+flowingBarrier = Concept("flowing-barrier", "Flowing Barrier", "feature")
+patientDefense = Concept("patient-defense", "Patient Defense", "technique")
+patient0 = Concept("patient-0", "Patient-0", "gear")
+dragonClawGloves = Concept("dragon-claw-gloves", "Dragon's Claw Gloves", "gear")
+staffOfTheWoodlandRomance = Concept(
+  "staff-of-the-woodland-romance",
+  "Staff of the Woodland Romance",
+  "gear",
+)

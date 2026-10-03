@@ -1,0 +1,20 @@
+root = Topic(
+  "BG3 Four Element Monk",
+  "Gaming",
+  "Monk of the Four Elements build combining martial abilities with elemental spellcasting in Baldur's Gate 3",
+  [
+    SectionRef("intro"),
+    SectionRef("concept-map"),
+    SectionRef("flashcards"),
+    SectionRef("subclass-features"),
+    SectionRef("elemental-spells"),
+    SectionRef("flowcast-flow"),
+    SectionRef("level-progression"),
+    SectionRef("build-checklist"),
+    SectionRef("quiz"),
+    SectionRef("tradeoffs"),
+    SectionRef("scenario"),
+    SectionRef("decision-tree"),
+  ],
+  ["baldurs-gate-3", "bg3", "monk", "four-elements", "spellcaster", "build-guide"],
+)

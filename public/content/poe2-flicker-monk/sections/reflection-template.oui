@@ -1,0 +1,27 @@
+root = ReflectionTemplate("Combat Stats & Defenses Evaluation", [challenge1, challenge2])
+
+challenge1 = TemplateChallenge(
+  "Complete the statement explaining Attack Speed vs Base Damage stats (Part 1):",
+  "Increasing Attack Speed multiplies the total hits landed per second, which directly {zone-1} total build DPS. However, swinging faster also {zone-2} the Spirit mana reservation needed to sustain aggressive stance buffs.",
+  [
+    Chip("chip-increases", "increases"),
+    Chip("chip-decreases", "decreases"),
+    Chip("chip-raises", "raises"),
+    Chip("chip-lowers", "lowers"),
+  ],
+  {"zone-1": "chip-increases", "zone-2": "chip-raises"},
+  "<strong>Correct!</strong> Attack speed directly multiplies dps but also drains dynamic Spirit costs, requiring higher aura reservation metrics.",
+)
+
+challenge2 = TemplateChallenge(
+  "Complete the statement explaining Critical Strike properties (Part 2):",
+  "Tuning Critical Strike Chance to 100% guarantees critical hits, which leads to a {zone-1} estimated build DPS. It also {zone-2} the chance to inflict Shock ailment on enemies.",
+  [
+    Chip("chip-higher", "higher"),
+    Chip("chip-lower", "lower"),
+    Chip("chip-increases", "increases"),
+    Chip("chip-decreases", "decreases"),
+  ],
+  {"zone-1": "chip-higher", "zone-2": "chip-increases"},
+  "<strong>Correct!</strong> Perfect crits lead to higher peak hits and guarantee shock infliction, multiplying base damage output.",
+)

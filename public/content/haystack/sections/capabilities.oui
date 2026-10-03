@@ -1,0 +1,46 @@
+root = Bullets(
+  "Key Capabilities",
+  [
+    Bullet(
+      "Pipeline Architecture",
+      [
+        Bullet("Directed multigraphs with branching and loops"),
+        Bullet("AsyncPipeline for parallel component execution"),
+        Bullet("Smart connections with implicit type adaptation"),
+        Bullet("SuperComponents for composable sub-pipelines"),
+      ],
+    ),
+    Bullet(
+      "Component Ecosystem",
+      [
+        Bullet("Embedders (SentenceTransformers, OpenAI, Azure)"),
+        Bullet("Retrievers (BM25, Embedding, Hybrid, SPLADE)"),
+        Bullet("Rankers (Transformer, Cohere, Reciprocal Rank Fusion)"),
+        Bullet("Converters (PDF, HTML, Markdown, Tesseract OCR)"),
+      ],
+    ),
+    Bullet(
+      "Document Store Backends",
+      [
+        Bullet("InMemoryDocumentStore (prototyping)"),
+        Bullet("OpenSearchDocumentStore (production hybrid)"),
+        Bullet("ElasticsearchDocumentStore (enterprise)"),
+        Bullet("Chroma, Weaviate, PostgreSQL, Pinecone, MongoDB"),
+        Bullet("Azure AI Search (managed semantic, haystack-azure-search-connector)"),
+        Bullet("Google Vertex AI Search (generative grounding, custom component)"),
+      ],
+    ),
+    Bullet(
+      "Agentic Features",
+      [
+        Bullet("Agent component with ReAct loop"),
+        Bullet("Multi-agent systems with delegation"),
+        Bullet("Tool integration via MCP and custom tools"),
+        Bullet("Memory stores for conversation history"),
+      ],
+    ),
+    Bullet("Full serialization and deserialization (YAML)"),
+    Bullet("Pipeline visualization as Mermaid graphs"),
+  ],
+  false,
+)

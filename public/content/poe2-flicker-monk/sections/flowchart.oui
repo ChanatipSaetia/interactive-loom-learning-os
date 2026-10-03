@@ -1,0 +1,307 @@
+root = Flowchart(
+  "Combat Flow",
+  [player, boss, pack],
+  [
+    whirlingAssault,
+    fallingThunder,
+    flickerStrike,
+    chargedStaff,
+    mantraDestruction,
+    ailithsChimes,
+    castOnCrit,
+    hollowFocus,
+    heralds,
+    trinity,
+    ci,
+  ],
+  [
+    stepEnter,
+    stepCharges,
+    stepClearBranch,
+    stepHeralds,
+    stepBossCheck,
+    stepBossCharges,
+    stepBossNuke,
+    stepBossCommit,
+  ],
+  [journeyMapping, journeyBoss],
+)
+
+player = Actor("player", "Player", "Martial Artist Monk controlling skills and gear")
+boss = Actor("boss", "Boss Enemy", "Map boss or Pinnacle boss")
+pack = Actor("pack", "Mob Pack", "Group of regular enemies")
+
+whirlingAssault = System(
+  "whirling_assault",
+  "Whirling Assault",
+  "AoE melee attack, builds Combo, generates charges via Cast on Critical",
+  "aggregate",
+)
+
+fallingThunder = System(
+  "falling_thunder",
+  "Falling Thunder",
+  "Lightning projectile per Power Charge, 360-degree via Nova Projectiles",
+  "aggregate",
+)
+
+flickerStrike = System(
+  "flicker_strike",
+  "Flicker Strike",
+  "Dash through enemies, teleporting while dealing damage",
+  "aggregate",
+)
+
+chargedStaff = System(
+  "charged_staff",
+  "Charged Staff",
+  "Buff skill consuming Power Charges for Lightning damage",
+  "aggregate",
+)
+
+mantraDestruction = System(
+  "mantra_destruction",
+  "Mantra of Destruction",
+  "Holds Combo stacks, expended for Power Charges via Ailith's Chimes",
+  "aggregate",
+)
+
+ailithsChimes = System(
+  "ailiths_chimes",
+  "Ailith's Chimes",
+  "Converts Combo expenditure into Power Charges",
+  "external",
+)
+
+castOnCrit = System(
+  "cast_on_crit",
+  "Cast on Critical",
+  "Triggers Profane Ritual on crits, consuming corpses for charges",
+  "external",
+)
+
+hollowFocus = System(
+  "hollow_focus",
+  "Hollow Focus Technique",
+  "Spawns primed bells for Killing Palm charge generation (budget alternative)",
+  "external",
+)
+
+heralds = System(
+  "heralds",
+  "Herald of Thunder + Ice",
+  "Mark enemies for elemental explosions",
+  "aggregate",
+)
+
+trinity = System(
+  "trinity",
+  "Trinity Aura",
+  "Multiplies lowest 2 elements to match highest",
+  "external",
+)
+
+ci = System("ci", "Chaos Inoculation", "100% Chaos Resistance, sets Life to 1", "external")
+
+stepEnter = Step(
+  "step_enter",
+  "Trigger Run",
+  "Enter Map & Initiate Attack",
+  whirlingAssault,
+  [Event("evt_clear_packs", "Clear Packs with Whirling Assault")],
+  player,
+  "pack",
+  "step_charges",
+)
+
+stepCharges = Step(
+  "step_charges",
+  "On Critical Strike Hit",
+  "Generate Power Charges",
+  castOnCrit,
+  [Event("evt_power_charges", "Power Charges Generated")],
+  null,
+  null,
+  "step_clear_branch",
+)
+
+stepClearBranch = Branch(
+  "step_clear_branch",
+  "evt_power_charges",
+  [
+    branchFt,
+    BranchOption(
+      "branch_fs",
+      "Flicker Strike (mobility)",
+      "If Pack is Scattered",
+      "Cast Flicker Strike",
+      flickerStrike,
+      [Event("evt_repositioned", "Dashed Through Pack")],
+      null,
+      null,
+      hollowFocus,
+      "step_heralds",
+    ),
+  ],
+)
+
+branchFt = BranchOption(
+  "branch_ft",
+  "Falling Thunder (dense packs)",
+  "If Pack is Dense",
+  "Cast Falling Thunder",
+  fallingThunder,
+  [Event("evt_pack_cleared", "Pack Wiped (360 Lightning)")],
+  null,
+  null,
+  trinity,
+  "step_heralds",
+)
+
+stepHeralds = Step(
+  "step_heralds",
+  "On Enemy Death",
+  "Trigger Herald Explosions",
+  heralds,
+  [Event("evt_explosions", "Herald Explosions Clean Up")],
+  null,
+  null,
+  "step_boss_check",
+)
+
+stepBossCheck = Branch("step_boss_check", "evt_explosions", [branchMapping, branchBoss])
+
+branchMapping = BranchOption(
+  "branch_mapping",
+  "Continue Mapping",
+  "If More Packs Remain",
+  "Loop Back to Clear",
+  whirlingAssault,
+  [Event("evt_mapping_loop", "Loop Back to Clear More")],
+  true,
+)
+
+branchBoss = BranchOption(
+  "branch_boss",
+  "Boss Fight",
+  "If Boss Encountered",
+  "Build Combo Stacks",
+  mantraDestruction,
+  [Event("evt_combo_ready", "20 Combo Stacks Built")],
+  null,
+  null,
+  "boss",
+  "step_boss_charges",
+)
+
+stepBossCharges = Step(
+  "step_boss_charges",
+  "On 20 Combo Stacks",
+  "Expend Combo Stacks",
+  ailithsChimes,
+  [Event("evt_boss_charges", "Boss Power Charges Ready")],
+  null,
+  null,
+  "step_boss_nuke",
+)
+
+stepBossNuke = Step(
+  "step_boss_nuke",
+  "On Boss Power Charges Ready",
+  "Activate Charged Staff Buff",
+  chargedStaff,
+  [Event("evt_buffed", "Charged Staff Lightning Buff Active")],
+  null,
+  ci,
+  "step_boss_commit",
+)
+
+stepBossCommit = Branch(
+  "step_boss_commit",
+  "evt_buffed",
+  [
+    BranchOption(
+      "branch_fs_boss",
+      "Flicker Strike Boss",
+      "Prefer Flicker Strike",
+      "Cast Flicker Strike on Boss",
+      flickerStrike,
+      [Event("evt_boss_dead", "Boss One-Shotted")],
+    ),
+    branchFtBoss,
+  ],
+)
+
+branchFtBoss = BranchOption(
+  "branch_ft_boss",
+  "Falling Thunder Boss",
+  "Prefer Falling Thunder",
+  "Cast Falling Thunder on Boss",
+  fallingThunder,
+  [Event("evt_boss_dead2", "Boss One-Shotted")],
+)
+
+journeyMapping = Journey(
+  "journey_mapping",
+  "Mapping Flow",
+  "Standard map clearing: generate charges, clear with Falling Thunder or Flicker Strike, loop",
+  [
+    JourneyStep(
+      stepEnter,
+      "Enter Map",
+      "Enter map, open with Whirling Assault for initial clear and charge generation",
+      "planning",
+    ),
+    JourneyStep(
+      stepCharges,
+      "Generate Power Charges",
+      "Cast on Critical triggers Profane Ritual on crits, generating Power Charges",
+      "execution",
+    ),
+    JourneyStep(
+      branchFt,
+      "Clear with Falling Thunder",
+      "Spend charges on Falling Thunder for 360-degree lightning burst",
+      "execution",
+    ),
+    JourneyStep(
+      stepHeralds,
+      "Trigger Herald Explosions",
+      "Herald of Thunder and Herald of Ice explode marked enemies",
+      "execution",
+    ),
+    JourneyStep(branchMapping, "Loop Back to Clear", "Loop back to clear next pack", "evaluation"),
+  ],
+)
+
+journeyBoss = Journey(
+  "journey_boss",
+  "Boss Fight Flow",
+  "Boss engagement: build Combo, convert to charges, buff with Charged Staff, one-shot",
+  [
+    JourneyStep(
+      branchBoss,
+      "Build Combo Stacks",
+      "Build 20 Combo stacks on boss via Whirling Assault",
+      "planning",
+    ),
+    JourneyStep(
+      stepBossCharges,
+      "Expend Combo for Charges",
+      "Expend Combo through Ailith's Chimes for Power Charges",
+      "execution",
+    ),
+    JourneyStep(
+      stepBossNuke,
+      "Activate Charged Staff",
+      "Activate Charged Staff for massive Lightning damage buff",
+      "execution",
+    ),
+    JourneyStep(
+      branchFtBoss,
+      "Cast Falling Thunder on Boss",
+      "Commit to Falling Thunder or Flicker Strike for the kill",
+      "execution",
+    ),
+  ],
+)

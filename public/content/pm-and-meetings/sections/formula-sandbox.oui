@@ -1,0 +1,39 @@
+root = FormulaSandbox(
+  "Synchronous Meeting Cost & Focus Loss Simulator",
+  [
+    FormulaVariable("attendees_count", "Meeting Attendees (Engineers)", 2, 15, 1, 6),
+    FormulaVariable("duration_minutes", "Meeting Duration (minutes)", 15, 120, 15, 45),
+    FormulaVariable("average_hourly_rate", "Average Engineer Hourly Rate ($)", 50, 150, 10, 80),
+  ],
+  [recall, latency, cost],
+)
+
+recall = FormulaMetric(
+  "recall",
+  "Direct Meeting Cost ($)",
+  "Math.round((attendees_count * duration_minutes * average_hourly_rate) / 60)",
+  "The direct financial expense spent on wages for engineers during the duration of the sync.",
+  "Burning bills. The more cooks in the kitchen for a simple dinner, the more hourly wages you pay.",
+  ["Attendee base wages"],
+  ["Meeting software subscriptions"],
+)
+
+latency = FormulaMetric(
+  "latency",
+  "Maker Focus Time Lost (hrs)",
+  "Math.round((attendees_count * (duration_minutes + 30)) / 60)",
+  "The total productivity hours lost, factoring in a 30-minute recovery/context-switching cost per attendee.",
+  "Stopping the assembly line. Every time a worker pauses to look at a calendar invite, it takes time to get back in the zone.",
+  ["Context switching recovery penalty", "Meeting runtime duration"],
+  ["Normal break time intervals"],
+)
+
+cost = FormulaMetric(
+  "cost",
+  "Company Overhead Index",
+  "Math.round(((attendees_count * duration_minutes * average_hourly_rate) / 60) * 1.6)",
+  "Adjusted cost index calculating long-term development friction and delay penalties.",
+  "Interest rates. Delaying code features to discuss them adds interest onto target shipping timelines.",
+  ["Workflow block cost factors"],
+  ["Product pricing dynamics"],
+)

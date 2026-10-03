@@ -1,0 +1,311 @@
+root = Flowchart(
+  "mTLS Handshake Process",
+  [clientDev, serverAdmin],
+  [client, server, tlsStack, keyStore, caService],
+  [
+    initConnection,
+    serverHelloStep,
+    serverCertStep,
+    serverReqCertStep,
+    clientCertStep,
+    verifyBranch,
+    clientVerifyStep,
+    keyExchangeStep,
+    handshakeComplete,
+  ],
+  [mtlsHappyPath, mtlsRejectedPath],
+)
+
+clientDev = Actor("client_dev", "Client Developer", "Integrates mTLS into client application")
+serverAdmin = Actor(
+  "server_admin",
+  "Server Administrator",
+  "Configures server CA trust and certificate requirements",
+)
+
+client = System(
+  "client",
+  "Client",
+  "mTLS-enabled client application initiating the handshake",
+  "aggregate",
+)
+
+server = System(
+  "server",
+  "Server",
+  "mTLS-enabled server requiring mutual authentication",
+  "aggregate",
+)
+
+tlsStack = System(
+  "tls_stack",
+  "TLS Protocol Stack",
+  "TLS handshake state machine handling cryptographic operations",
+  "aggregate",
+)
+
+keyStore = System(
+  "key_store",
+  "Key Store",
+  "Secure storage for private keys and trusted CA certificates",
+  "aggregate",
+)
+
+caService = System(
+  "ca_service",
+  "Certificate Authority",
+  "Trusted third-party CA that issued and can validate certificates",
+  "external",
+)
+
+initConnection = Step(
+  "init_connection",
+  "Start mTLS Handshake",
+  "Initiate TLS Connection",
+  client,
+  [Event("connection_initiated", "Connection Initiated", "TLS connection request sent by client")],
+  clientDev,
+  null,
+  "server_hello_step",
+)
+
+serverHelloStep = Step(
+  "server_hello_step",
+  "On ClientHello Received",
+  "Send ServerHello",
+  server,
+  [Event("server_hello_sent", "ServerHello Sent", "Server responds with supported TLS parameters")],
+  null,
+  null,
+  "server_cert_step",
+)
+
+serverCertStep = Step(
+  "server_cert_step",
+  "Present Server Identity",
+  "Send Server Certificate",
+  server,
+  [Event("server_cert_sent", "Server Certificate Sent", "Server presents its certificate chain")],
+  null,
+  null,
+  "server_req_cert_step",
+)
+
+serverReqCertStep = Step(
+  "server_req_cert_step",
+  "Require Mutual Auth",
+  "Request Client Certificate",
+  server,
+  [
+    Event(
+      "client_cert_requested",
+      "Client Certificate Requested",
+      "Server requests client authentication",
+    ),
+  ],
+  null,
+  "server_admin",
+  "client_cert_step",
+)
+
+clientCertStep = Step(
+  "client_cert_step",
+  "On CertificateRequest",
+  "Send Client Certificate",
+  client,
+  [Event("client_cert_sent", "Client Certificate Sent", "Client presents its certificate")],
+  null,
+  keyStore,
+  "verify_branch",
+)
+
+verifyBranch = Branch("verify_branch", "client_cert_sent", [verifyHappy, verifyRejected])
+
+verifyHappy = BranchOption(
+  "verify_happy",
+  "Valid Certificate",
+  "Validate Client Identity",
+  "Verify Client Certificate Against Trusted CA",
+  server,
+  [
+    Event(
+      "client_cert_verified",
+      "Client Certificate Verified",
+      "Server validates client certificate successfully",
+    ),
+  ],
+  null,
+  null,
+  caService,
+  "client_verify_step",
+)
+
+verifyRejected = BranchOption(
+  "verify_rejected",
+  "Invalid Certificate",
+  "Client Certificate Invalid",
+  "Terminate Connection",
+  server,
+  [
+    Event(
+      "connection_terminated",
+      "Connection Terminated",
+      "Server rejects invalid client certificate and closes connection",
+    ),
+  ],
+  true,
+)
+
+clientVerifyStep = Step(
+  "client_verify_step",
+  "Validate Server Identity",
+  "Verify Server Certificate Against Trusted CA",
+  client,
+  [
+    Event(
+      "server_cert_verified",
+      "Server Certificate Verified",
+      "Client validates server certificate successfully",
+    ),
+  ],
+  null,
+  null,
+  "key_exchange_step",
+)
+
+keyExchangeStep = Step(
+  "key_exchange_step",
+  "All Certificates Valid",
+  "Exchange Session Keys",
+  tlsStack,
+  [
+    Event(
+      "keys_established",
+      "Session Keys Established",
+      "Both parties derive shared encryption keys",
+    ),
+  ],
+  null,
+  null,
+  "handshake_complete",
+)
+
+handshakeComplete = Step(
+  "handshake_complete",
+  "Keys Exchanged",
+  "Begin Encrypted Communication",
+  tlsStack,
+  [
+    Event(
+      "channel_established",
+      "Encrypted Channel Established",
+      "Secure mTLS connection is active",
+    ),
+  ],
+)
+
+mtlsHappyPath = Journey(
+  "mtls_happy_path",
+  "Successful mTLS Handshake",
+  "All certificates are valid, encrypted channel established",
+  [
+    JourneyStep(
+      initConnection,
+      "Initiate Connection",
+      "Client developer initiates the TLS connection.",
+      "initiation",
+    ),
+    JourneyStep(
+      serverHelloStep,
+      "Server Hello",
+      "Server responds with ServerHello containing TLS parameters.",
+      "handshake",
+    ),
+    JourneyStep(
+      serverCertStep,
+      "Server Certificate",
+      "Server presents its certificate chain for identity verification.",
+      "identity",
+    ),
+    JourneyStep(
+      serverReqCertStep,
+      "Certificate Request",
+      "Server requests the client certificate for mutual authentication.",
+      "identity",
+    ),
+    JourneyStep(
+      clientCertStep,
+      "Client Certificate",
+      "Client sends its certificate in response to the request.",
+      "identity",
+    ),
+    JourneyStep(
+      verifyHappy,
+      "Verify Client Certificate",
+      "Server validates the client certificate against trusted CA.",
+      "verification",
+    ),
+    JourneyStep(
+      clientVerifyStep,
+      "Verify Server Certificate",
+      "Client validates the server certificate against trusted CA.",
+      "verification",
+    ),
+    JourneyStep(
+      keyExchangeStep,
+      "Key Exchange",
+      "Both parties exchange and derive session keys.",
+      "encryption",
+    ),
+    JourneyStep(
+      handshakeComplete,
+      "Handshake Complete",
+      "Encrypted mTLS channel is established and ready for communication.",
+      "encryption",
+    ),
+  ],
+)
+
+mtlsRejectedPath = Journey(
+  "mtls_rejected_path",
+  "Certificate Rejected",
+  "Client certificate fails validation, connection terminated",
+  [
+    JourneyStep(
+      initConnection,
+      "Initiate Connection",
+      "Client developer initiates the TLS connection.",
+      "initiation",
+    ),
+    JourneyStep(
+      serverHelloStep,
+      "Server Hello",
+      "Server responds with ServerHello containing TLS parameters.",
+      "handshake",
+    ),
+    JourneyStep(
+      serverCertStep,
+      "Server Certificate",
+      "Server presents its certificate chain for identity verification.",
+      "identity",
+    ),
+    JourneyStep(
+      serverReqCertStep,
+      "Certificate Request",
+      "Server requests the client certificate for mutual authentication.",
+      "identity",
+    ),
+    JourneyStep(
+      clientCertStep,
+      "Client Certificate",
+      "Client sends its certificate in response to the request.",
+      "identity",
+    ),
+    JourneyStep(
+      verifyRejected,
+      "Certificate Rejected",
+      "Server finds the client certificate invalid and terminates the connection.",
+      "verification",
+    ),
+  ],
+)

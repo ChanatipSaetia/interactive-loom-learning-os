@@ -1,0 +1,100 @@
+root = Flashcards(
+  "Key Terminology",
+  [timeboxing, asyncFirst, scopeCreep, velocity, retrospective, manDays],
+)
+
+timeboxing = Flashcard(
+  "timeboxing",
+  "Timeboxing",
+  "tahym-boks-ing",
+  "discipline",
+  "Allocating a fixed, maximum time limit to a meeting or task.",
+  "Timeboxing prevents meetings from dragging on by setting a hard stop (e.g. 15 minutes). If the time is up, the meeting ends, and unresolved points are handled in follow-ups.",
+  "Forces efficiency, keeps discussions focused, and ensures calendars don't bleed into development time.",
+  null,
+  Dialogue(
+    "Let's schedule a meeting to talk about the backend restructuring.",
+    "Restructuring is complex, but without timeboxing it could drag on for hours.",
+    "We can schedule a meeting, but let's timebox it to 25 minutes and have an agenda ready beforehand. Sound good?",
+  ),
+)
+
+asyncFirst = Flashcard(
+  "async_first",
+  "Async-First",
+  "ey-singk-furst",
+  "communication",
+  "Prioritizing written documentation over live, synchronous meetings.",
+  "An organizational culture where status updates, design reviews, and simple decisions are written down (Slack, Notion, RFCs) rather than discussed in live calls.",
+  "Protects engineers' focus state, allowing them to read and respond to items during natural breaks rather than interrupting active coding.",
+  null,
+  Dialogue(
+    "We need to sync on what everyone did today and what they are doing tomorrow.",
+    "A daily status meeting interrupts everyone. Async updates would work better here.",
+    "Can we post our updates in the daily Slack thread instead, so we don't have to interrupt everyone's coding flow?",
+  ),
+)
+
+scopeCreep = Flashcard(
+  "scope_creep",
+  "Scope Creep",
+  "skohp kreep",
+  "planning",
+  "The uncontrolled expansion of a project's requirements without adjusting time or budget.",
+  "Adding features or polishing details after the project's milestones have already been locked, leading to delays and team fatigue.",
+  "Failing to control scope creep is the #1 reason why software projects miss deadlines and experience burnout.",
+  null,
+  Dialogue(
+    "While we are building this page, let's also add a notification system and dashboard.",
+    "Those features are out of scope and will delay the release.",
+    "Those sound like great features, but let's log them in the backlog for Phase 2 so we can ship the current milestone on time.",
+  ),
+)
+
+velocity = Flashcard(
+  "velocity",
+  "Velocity",
+  "vuh-los-i-tee",
+  "metrics",
+  "A metric measuring how much work a team can complete in a cycle.",
+  "Calculated by summing effort points of completed tasks during an iteration. It helps project planners forecast future releases based on historical delivery speed.",
+  "Provides empirical data for planning, preventing teams from over-committing based on optimistic wishes.",
+  null,
+  Dialogue(
+    "Let's commit to completing 80 story points this sprint!",
+    "The team's average velocity is 45 points. Committing to 80 will cause stress and poor code quality.",
+    "Our average velocity is 45 points. Committing to 80 might lead to rushed code. Should we pull in 45 points and add stretch goals?",
+  ),
+)
+
+retrospective = Flashcard(
+  "retrospective",
+  "Retrospective",
+  "re-truh-spek-tiv",
+  "improvement",
+  "A regular team meeting to reflect on what went well and what to improve.",
+  "Held at the end of a sprint or milestone. The team discusses process bottlenecks, communication gaps, and tooling issues, committing to 1-2 actionable changes.",
+  "Provides a safe, dedicated space for continuous process improvement so the team stops repeating the same mistakes.",
+  null,
+  Dialogue(
+    "We don't have time for a retrospective; we need to start writing code for the next sprint.",
+    "Skipping retros leads to process rot. Continuous learning is essential.",
+    "If we skip reflecting, we might repeat this sprint's bottlenecks. Can we do a quick, focused 30-minute retro to improve our pipeline?",
+  ),
+)
+
+manDays = Flashcard(
+  "man_days",
+  "Man-Days (MDs)",
+  "man deyz",
+  "estimation",
+  "An estimation unit representing the amount of work one person can do in a single day.",
+  "Commonly used to estimate effort. However, because software development involves hidden complexities and coordination overhead, estimating in exact man-days is often inaccurate. Lean teams treat them as ranges rather than absolute commitments.",
+  "Using absolute man-days leads to planning fallacies. Range-based or relative estimates protect the team from arbitrary deadlines.",
+  null,
+  Dialogue(
+    "Exactly how many man-days will this refactoring task take?",
+    "Refactoring has unknowns. Giving an exact day count is risky.",
+    "Since there are some architectural unknowns, I estimate it will take between 3 to 5 man-days, rather than a single fixed number.",
+  ),
+)

@@ -1,0 +1,303 @@
+root = TradeoffSandbox("Reward Design Trade-offs", [learningApp, employeeTraining])
+
+learningApp = TradeoffScenario(
+  "learning-app",
+  "Learning App Rewards",
+  [
+    TradeoffMetric("intrinsic", "Intrinsic Motivation", 50, 0, 100, "higher"),
+    TradeoffMetric("retention", "30-Day Retention", 50, 0, 100, "higher"),
+    TradeoffMetric("fairness", "Perceived Fairness", 50, 0, 100, "higher"),
+    TradeoffMetric("cost", "Implementation Cost Efficiency", 50, 0, 100, "higher"),
+  ],
+  [leaderboard, rewardType, streakPolicy],
+  "Design the reward system for a language-learning app with 1M monthly learners.",
+)
+
+leaderboard = TradeoffStep(
+  "leaderboard",
+  "Leaderboard Style",
+  [globalTop, nearest, team, none],
+  "Choose how social comparison is presented.",
+  "nearest",
+)
+
+globalTop = TradeoffChoice(
+  "global-top",
+  "Global Top 10",
+  "Show only the very top performers worldwide.",
+  {intrinsic: -15, retention: 5, fairness: -10, cost: 5},
+  [ProCon("Prestige for elites", "Top spots carry real status and drive power users.")],
+  [ProCon("Unreachable gap", "The bottom 99% cannot reach the top and stop caring.")],
+  null,
+  "Short competitive tournaments or seasonal challenges, not a long-term default.",
+)
+
+nearest = TradeoffChoice(
+  "nearest",
+  "Nearest Competitor (±5)",
+  "Show the few peers just above and below the user.",
+  {intrinsic: 10, retention: 10, fairness: 5, cost: 0},
+  [
+    ProCon(
+      "Reachable targets",
+      "A small, winnable gap sustains effort far better than a distant top.",
+    ),
+  ],
+  [ProCon("Privacy concerns", "Close peer data needs careful anonymization.")],
+  "Default for long-running apps — motivation scales with the size of a reachable gap.",
+)
+
+team = TradeoffChoice(
+  "team",
+  "Team / Squad Based",
+  "Competition between small cooperative teams.",
+  {intrinsic: 5, retention: 10, fairness: 0, cost: -10},
+  [ProCon("Relatedness drive", "Shared goals reduce individual pressure and build community.")],
+  [ProCon("Free-rider problem", "Some members coast on the team's total.")],
+  null,
+  "When you have a social graph and want cooperative retention.",
+)
+
+none = TradeoffChoice(
+  "none",
+  "No Leaderboard",
+  "Skip social comparison entirely.",
+  {intrinsic: 10, retention: -5, fairness: 10, cost: 10},
+  [ProCon("Zero social anxiety", "Introverts and laggards stay comfortable.")],
+  [ProCon("No competitive pull", "A segment of users loses their main motivator.")],
+  null,
+  "Sensitive contexts or products where ranking feels wrong.",
+)
+
+rewardType = TradeoffStep(
+  "reward-type",
+  "Primary Reward Type",
+  [xpPoints, masteryFeedback, socialRecognition],
+  "What does the user actually earn?",
+  "mastery-feedback",
+)
+
+xpPoints = TradeoffChoice(
+  "xp-points",
+  "Exchangeable XP",
+  "Points that accumulate and can be traded for cosmetic items.",
+  {intrinsic: -10, retention: 5, fairness: 5, cost: 5},
+  [ProCon("Instant feedback", "Every action produces a visible number going up.")],
+  [
+    ProCon(
+      "Overjustification risk",
+      "Users optimize for points, not skill; inflation makes points meaningless.",
+    ),
+  ],
+  null,
+  "Short campaigns where a visible counter matters more than skill growth.",
+)
+
+masteryFeedback = TradeoffChoice(
+  "mastery-feedback",
+  "Mastery Feedback",
+  "Progress visualization tied to demonstrated skill.",
+  {intrinsic: 15, retention: 10, fairness: 5, cost: -10},
+  [ProCon("Real progress", "Every increment maps to an actual skill gain — no inflation.")],
+  [ProCon("Design effort", "Requires per-skill assessment, which is expensive to build.")],
+  "For a learning product, Development & Accomplishment (CD2) tied to real mastery is the strongest long-term fuel.",
+)
+
+socialRecognition = TradeoffChoice(
+  "social-recognition",
+  "Social Recognition",
+  "Public kudos, mentions, and peer awards.",
+  {intrinsic: 5, retention: 10, fairness: -5, cost: 0},
+  [ProCon("Status and relatedness", "Peer recognition is cheap to produce and hard to fake.")],
+  [ProCon("Recognition fatigue", "Constant kudos loses meaning; introverts may opt out.")],
+  null,
+  "Community-heavy products with an active peer culture.",
+)
+
+streakPolicy = TradeoffStep(
+  "streak-policy",
+  "Streak Policy",
+  [strict, freeze, flexible],
+  "How does the daily commitment mechanic handle a missed day?",
+  "freeze",
+)
+
+strict = TradeoffChoice(
+  "strict",
+  "Strict Streak",
+  "Miss one day and the streak resets to zero.",
+  {intrinsic: -15, retention: 10, fairness: -5, cost: 10},
+  [ProCon("Powerful habit force", "Loss aversion drives daily return behavior hard and fast.")],
+  [ProCon("Streak anxiety", "One missed day wipes weeks of progress and triggers quitting.")],
+  null,
+  "Short onboarding ramps, never as a permanent default.",
+)
+
+freeze = TradeoffChoice(
+  "freeze",
+  "Streak with Freezes",
+  "Earned freeze tokens protect the streak on missed days.",
+  {intrinsic: -5, retention: 10, fairness: 5, cost: 0},
+  [
+    ProCon(
+      "Escape valve",
+      "Keeps loss aversion but prevents all-or-nothing collapse (the Duolingo model).",
+    ),
+  ],
+  [ProCon("Gaming risk", "Freeze tokens can be hoarded or perceived as entitlement.")],
+  "Best balance of habit formation and user trust for a daily product.",
+)
+
+flexible = TradeoffChoice(
+  "flexible",
+  "Flexible Weekly Goal",
+  "Commit to a weekly quota, not a daily streak.",
+  {intrinsic: 10, retention: 5, fairness: 10, cost: -5},
+  [ProCon("Autonomy preserving", "Matches real schedules; no daily guilt.")],
+  [ProCon("Weaker daily signal", "Habit formation is slower without a daily anchor.")],
+  null,
+  "Sporadic-learner segments who reject daily commitments.",
+)
+
+employeeTraining = TradeoffScenario(
+  "employee-training",
+  "Employee Training Program",
+  [
+    TradeoffMetric("adoption", "Program Adoption", 50, 0, 100, "higher"),
+    TradeoffMetric("completion", "Course Completion", 50, 0, 100, "higher"),
+    TradeoffMetric("intrinsic", "Intrinsic Engagement", 50, 0, 100, "higher"),
+    TradeoffMetric("cost", "Budget Efficiency", 50, 0, 100, "higher"),
+  ],
+  [framing, socialLayer, recognition],
+  "Roll out gamification for a corporate upskilling program with 2,000 employees and a fixed quarterly budget.",
+)
+
+framing = TradeoffStep(
+  "framing",
+  "Program Framing",
+  [pointsBadges, narrativeQuests, complianceGates],
+  "How is the training program presented?",
+  "narrative-quests",
+)
+
+pointsBadges = TradeoffChoice(
+  "points-badges",
+  "PBL Points & Badges",
+  "Classic points per module completed, badges per course.",
+  {adoption: 10, completion: 5, intrinsic: -5, cost: 10},
+  [ProCon("Fast to ship", "Off-the-shelf PBL is cheap to implement.")],
+  [
+    ProCon(
+      "Novelty decay",
+      "The 'sprinkles and donuts' failure mode — engagement drops within 4 weeks.",
+    ),
+  ],
+  null,
+  "One-off compliance campaigns where speed matters most.",
+)
+
+narrativeQuests = TradeoffChoice(
+  "narrative-quests",
+  "Narrative Quests",
+  "Story arcs that frame modules as quests with a mission.",
+  {adoption: 5, completion: 15, intrinsic: 10, cost: -10},
+  [
+    ProCon(
+      "Epic meaning",
+      "Core Drive 1 — story arcs tie lessons to real work and a bigger purpose.",
+    ),
+  ],
+  [ProCon("Authoring cost", "Writing quests and story arcs is expensive upfront.")],
+  "Quarterly programs with a real business mission benefit from meaning over points.",
+)
+
+complianceGates = TradeoffChoice(
+  "compliance-gates",
+  "Compliance Gating",
+  "Completion enforced by deadlines and demotion warnings.",
+  {adoption: -5, completion: 10, intrinsic: -15, cost: 5},
+  [ProCon("Deterministic completion", "Guaranteed audit trail and completion rates.")],
+  [ProCon("Black-hat pressure", "Threat mechanics breed resentment and checkbox behavior.")],
+  null,
+  "Regulatory training only — never for upskilling.",
+)
+
+socialLayer = TradeoffStep(
+  "social-layer",
+  "Social Layer",
+  [leaderboards, cohortTeams, none2],
+  "What social structure wraps the program?",
+  "cohort-teams",
+)
+
+leaderboards = TradeoffChoice(
+  "leaderboards",
+  "Department Leaderboards",
+  "Rank departments against each other.",
+  {adoption: 5, completion: 5, intrinsic: -5, cost: 5},
+  [ProCon("Manager visibility", "Leaders can see departmental progress at a glance.")],
+  [ProCon("Inter-department rivalry", "Demotivates laggards and breeds resentment.")],
+  null,
+  "When leadership explicitly wants competitive pressure.",
+)
+
+cohortTeams = TradeoffChoice(
+  "cohort-teams",
+  "Cohort Teams",
+  "Small peer teams with shared goals and check-ins.",
+  {adoption: 10, completion: 10, intrinsic: 10, cost: -5},
+  [ProCon("Relatedness", "Peer accountability and Core Drive 5 without public shaming.")],
+  [ProCon("Coordination overhead", "Teams need scheduling and a light facilitation layer.")],
+  "Corporate peers respond to team accountability, not public ranking.",
+)
+
+none2 = TradeoffChoice(
+  "none",
+  "No Social Layer",
+  "Individual tracking only, no social features.",
+  {adoption: 0, completion: 5, intrinsic: 5, cost: 10},
+  [ProCon("Privacy", "No pressure, no exposure.")],
+  [ProCon("Completion drift", "Without accountability, completion decays over the quarter.")],
+  null,
+  "Sensitive skill areas where peers should not be visible.",
+)
+
+recognition = TradeoffStep(
+  "recognition",
+  "Recognition Cadence",
+  [monthly, micro, none3],
+  "How often are people recognized?",
+  "micro",
+)
+
+monthly = TradeoffChoice(
+  "monthly",
+  "Monthly Awards",
+  "One ceremony per month for top performers.",
+  {adoption: 5, completion: 5, intrinsic: 5, cost: 0},
+  [ProCon("Ceremony moment", "Leadership visibility at a meaningful cadence.")],
+  [ProCon("Narrow reach", "Most employees are rarely recognized.")],
+  null,
+  "Small teams where monthly coverage is realistic.",
+)
+
+micro = TradeoffChoice(
+  "micro",
+  "Micro-Recognition (Weekly)",
+  "Frequent, small public acknowledgments of progress.",
+  {adoption: 10, completion: 10, intrinsic: 10, cost: -10},
+  [ProCon("Frequent feedback", "Core Drive 2 — rapid feedback loops keep momentum visible.")],
+  [ProCon("Recognition inflation", "Kudos must stay meaningful or it becomes noise.")],
+  "Broad reach with frequent feedback keeps a 2,000-person program alive.",
+)
+
+none3 = TradeoffChoice(
+  "none",
+  "No Formal Recognition",
+  "Quiet tracking, no public or formal recognition.",
+  {adoption: -5, completion: 0, intrinsic: 5, cost: 10},
+  [ProCon("Zero cost", "Nothing to operate.")],
+  [ProCon("Invisible progress", "Without recognition, completion decays silently.")],
+  null,
+  "Never recommended as the primary design.",
+)

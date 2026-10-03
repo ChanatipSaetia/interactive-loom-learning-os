@@ -1,0 +1,30 @@
+root = ReflectionTemplate(
+  "Synthesize Hexagonal Architecture Core Concepts",
+  [challenge1],
+  null,
+  Lead(
+    "Fill-in-the-blank synthesis template testing your understanding of Ports & Adapters.",
+    "Solidifies how Dependency Inversion protects domain logic.",
+    "Next: Complete the final Knowledge Check Quiz.",
+  ),
+)
+
+challenge1 = TemplateChallenge(
+  "Fill in the blank fields to complete the explanation of Hexagonal Architecture mechanics:",
+  "In Hexagonal Architecture, the core business logic resides inside the domain hexagon and depends only on {zone-1}. External HTTP requests enter the system through {zone-2}, which invoke {zone-3}. Outbound infrastructure services like databases implement {zone-4}, allowing unit tests to swap real databases with {zone-5}.",
+  [
+    Chip("chip-ports", "Port interfaces"),
+    Chip("chip-driving-adapters", "Driving Adapters"),
+    Chip("chip-driving-ports", "Driving Ports"),
+    Chip("chip-driven-ports", "Driven Ports"),
+    Chip("chip-in-memory-adapters", "In-Memory Adapters"),
+  ],
+  {
+    "zone-1": "chip-ports",
+    "zone-2": "chip-driving-adapters",
+    "zone-3": "chip-driving-ports",
+    "zone-4": "chip-driven-ports",
+    "zone-5": "chip-in-memory-adapters",
+  },
+  "<strong>Correct! Excellent Hexagonal Architecture synthesis.</strong><br/>The core domain depends only on <em>Port interfaces</em>. External HTTP requests enter via <em>Driving Adapters</em> which invoke <em>Driving Ports</em>. Outbound infrastructure implements <em>Driven Ports</em>, allowing tests to easily swap real infrastructure for <em>In-Memory Adapters</em>.",
+)

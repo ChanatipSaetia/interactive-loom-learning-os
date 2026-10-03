@@ -1,0 +1,11 @@
+root = Text(
+  "The Mechanics of Dependency Inversion",
+  [
+    "In traditional layered software architectures, high-level business logic directly imports low-level database drivers, web frameworks, or external SDKs. This creates tight coupling, where a database schema update or framework upgrade forces breaking changes throughout the entire codebase.",
+    "Hexagonal Architecture flips this dependency direction upside down using **Dependency Inversion**:",
+    "**The Hexagon Core**: The center of the application contains domain entities, aggregates, and use case logic. It has **zero dependencies** on external libraries, web frameworks, or databases.",
+    "**Ports (Interfaces)**: The Core defines TypeScript/Java interfaces at its boundary. Inbound interfaces (*Driving Ports*) define what use cases exist. Outbound interfaces (*Driven Ports*) define what infrastructure data services the core needs.",
+    "**Adapters (Implementations)**: Adapters sit outside the hexagon boundary. Driving Adapters invoke Driving Ports, while Driven Adapters implement Driven Ports.",
+    "By keeping the Core independent of technology choices, you gain extreme testability: unit tests can instantiate domain services with fast in-memory adapters without needing a running database or HTTP server.",
+  ],
+)

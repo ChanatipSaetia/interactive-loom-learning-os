@@ -1,0 +1,25 @@
+root = ReflectionSequence("Sprint Development Cycle Sequence", [challenge1, challenge2])
+
+challenge1 = SequenceChallenge(
+  "Order the stages of a standard IT feature development sprint loop (Part 1):",
+  [defineRequirements, sprintPlanning, development, qaVerification, productionRelease],
+  [defineRequirements, sprintPlanning, development, qaVerification, productionRelease],
+)
+
+defineRequirements = SequenceItem("define_requirements", "Define Requirements & PRD")
+sprintPlanning = SequenceItem("sprint_planning", "Sprint Planning")
+development = SequenceItem("development", "Development & Code Review")
+qaVerification = SequenceItem("qa_verification", "QA Verification")
+productionRelease = SequenceItem("production_release", "Production Release")
+
+challenge2 = SequenceChallenge(
+  "Order the steps of a typical Sprint Retrospective meeting agenda (Part 2):",
+  [retroWarmup, retroGather, retroInsights, retroActions, retroClose],
+  [retroWarmup, retroGather, retroInsights, retroActions, retroClose],
+)
+
+retroWarmup = SequenceItem("retro_warmup", "Warm Up & Set Stage")
+retroGather = SequenceItem("retro_gather", "Gather Data (What went well / didn't)")
+retroInsights = SequenceItem("retro_insights", "Generate Insights (Analyze why)")
+retroActions = SequenceItem("retro_actions", "Decide Actions (Define tickets)")
+retroClose = SequenceItem("retro_close", "Close Retrospective")

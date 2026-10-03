@@ -1,0 +1,111 @@
+root = Flowchart(
+  "ระบบเบรก (Brake System)",
+  [rider],
+  [brakeMaster, brakeCaliper],
+  [brake, caliperSqueeze, brakeBranch],
+  [brakeNormal2, brakeFade2],
+)
+
+rider = Actor("rider", "ผู้ขับขี่ (Rider)", "ผู้ใช้งานมอเตอร์ไซค์")
+
+brakeMaster = System(
+  "brake_master",
+  "กระปุกเบรก (Brake Master Cylinder)",
+  "เปลี่ยนแรงกดเป็นแรงดันไฮดรอลิก",
+  "aggregate",
+)
+
+brakeCaliper = System(
+  "brake_caliper",
+  "แคลิเพอร์และจานเบรก (Brake Caliper & Disc)",
+  "ระบบสร้างแรงเสียดทานเพื่อหน่วงล้อ",
+  "aggregate",
+)
+
+brake = Step(
+  "brake",
+  "แคลิเพอร์รับแรงดัน (Caliper Activates)",
+  "กดคันเบรก (Apply Brake)",
+  brakeMaster,
+  [Event("brake_pressure", "น้ำมันเบรกดันไปแคลิเพอร์", "แรงดันไฮดรอลิกส่งผ่านท่อเบรก")],
+  rider,
+  null,
+  "caliper_squeeze",
+)
+
+caliperSqueeze = Step(
+  "caliper_squeeze",
+  "แคลิเพอร์รับแรงดัน (Caliper Activates)",
+  "กดผ้าเบรกเข้าจานเบรก",
+  brakeCaliper,
+  [
+    Event(
+      "wheel_slowed",
+      "ล้อช้าลง (Wheel Slowed)",
+      "พลังงานจลน์เปลี่ยนเป็นความร้อน รถชะลอความเร็ว",
+    ),
+    Event("brake_heat", "เกิดความร้อน (Brake Heat)", "จานเบรกและผ้าเบรกมีความร้อนสูง"),
+  ],
+  null,
+  null,
+  "brake-branch",
+)
+
+brakeBranch = Branch("brake-branch", "brake_heat", [brakeNormal, brakeFade])
+
+brakeNormal = BranchOption(
+  "brake_normal",
+  "ปกติ",
+  "เบรกทำงานปกติ (Normal Brake)",
+  "รถหยุดหรือช้าลงตามต้องการ (Normal Brake)",
+  brakeCaliper,
+  [Event("brake_normal", "รถหยุดหรือช้าลงตามต้องการ", "เบรกทำงานปกติ")],
+)
+
+brakeFade = BranchOption(
+  "brake_fade",
+  "ร้อนเกินไป",
+  "เบรกจม (Brake Fade)",
+  "เบรกจม (Brake Fade Action)",
+  brakeCaliper,
+  [Event("brake_fade", "เบรกจม (Brake Fade)", "ประสิทธิภาพเบรกลดลงเพราะความร้อนสูง")],
+  true,
+)
+
+brakeNormal2 = Journey(
+  "brake-normal",
+  "เบรกปกติ (Normal Braking)",
+  "กดเบรก → ไฮดรอลิก → แคลิเพอร์ประกบจาน → รถช้าลง",
+  [
+    JourneyStep(brake, "กดเบรก", "ผู้ขับขี่กดแฮนด์เบรก หรือแป้นเบรก เพื่อสั่งให้ระบบเบรกทำงาน"),
+    JourneyStep(
+      caliperSqueeze,
+      "แคลิเพอร์ประกบจาน",
+      "แรงไฮดรอลิกส่งต่อเข้าแคลิเพอร์ กดผ้าเบรกประกบจานเบรกทั้งสองด้าน",
+    ),
+    JourneyStep(
+      brakeNormal,
+      "รถช้าลง",
+      "แรงเสียดทานระหว่างผ้าเบรกและจานเบรกทำให้ล้อช้าลง รถหยุดหรือลดความเร็วตามที่ต้องการ",
+    ),
+  ],
+)
+
+brakeFade2 = Journey(
+  "brake-fade",
+  "เบรกจม (Brake Fade)",
+  "กดเบรก → เบรกหนักต่อเนื่อง → ร้อนเกิน → ประสิทธิภาพลด",
+  [
+    JourneyStep(brake, "กดเบรก", "ผู้ขับขี่กดเบรกเพื่อลดความเร็ว"),
+    JourneyStep(
+      caliperSqueeze,
+      "แคลิเพอร์ประกบจาน",
+      "แคลิเพอร์กดผ้าเบรกประกบจานเบรก ใช้แรงเสียดทานในการหยุดล้อ",
+    ),
+    JourneyStep(
+      brakeFade,
+      "เบรกจม",
+      "เบรกหนักต่อเนื่องทำให้จานและผ้าเบรกร้อนเกินจุดทนทาน แรงเสียดทานลด เบรกไม่ทำงานเต็มประสิทธิภาพ",
+    ),
+  ],
+)

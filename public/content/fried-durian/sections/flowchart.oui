@@ -1,0 +1,140 @@
+root = Flowchart(
+  "ขั้นตอนการทำทุเรียนทอด",
+  [cook, eater],
+  [durianRaw, knife, panOil, sugarBowl],
+  [step1, step2, step3, step4, step5, stepBranch],
+  [journeyPlain, journeySugar],
+  null,
+  Lead(
+    "กระบวนการทำทุเรียนทอดตั้งแต่เตรียมวัตถุดิบจนเสิร์ฟ",
+    "เห็นภาพกระบวนการทั้งหมดช่วยให้ทำตามได้ง่าย",
+    "ถัดไป: ทดสอบความรู้กับ Quiz",
+  ),
+)
+
+cook = Actor("cook", "คนทำอาหาร", "เตรียมวัตถุดิบและทอดทุเรียน")
+eater = Actor("eater", "คนทาน", "ชิมทุเรียนทอด")
+
+durianRaw = System("durian_raw", "ทุเรียนดิบ", "ทุเรียนอ่อน เนื้อแน่น", "aggregate")
+knife = System("knife", "มีด+เขียง", "อุปกรณ์หั่น", "external")
+panOil = System("pan_oil", "กระทะน้ำมัน", "น้ำมันร้อน 170-180°C", "external")
+sugarBowl = System("sugar_bowl", "น้ำตาล", "น้ำตาลทรายหรือน้ำตาลปี๊บ", "external")
+
+step1 = Step(
+  "step_1",
+  "เลือกทุเรียนดิบ เนื้อแน่น",
+  "แยกเนื้อทุเรียน",
+  durianRaw,
+  [Event("evt_flesh_ready", "เนื้อทุเรียนพร้อม")],
+  cook,
+  null,
+  "step_2",
+)
+
+step2 = Step(
+  "step_2",
+  "หั่นชิ้นบางสม่ำเสมอ",
+  "หั่นชิ้นบาง",
+  knife,
+  [Event("evt_sliced", "หั่นเสร็จ")],
+  cook,
+  null,
+  "step_3",
+)
+
+step3 = Step(
+  "step_3",
+  "อุ่นน้ำมัน 170-180°C เติมน้ำเกลือ",
+  "ตั้งน้ำมันร้อน",
+  panOil,
+  [Event("evt_oil_hot", "น้ำมันร้อนพร้อมทอด")],
+  cook,
+  null,
+  "step_4",
+)
+
+step4 = Step(
+  "step_4",
+  "ทอดไฟกลางจนสีทองกรอบ",
+  "ทอดทุเรียน",
+  panOil,
+  [Event("evt_fried", "ทอดเสร็จ")],
+  cook,
+  null,
+  "step_5",
+)
+
+step5 = Step(
+  "step_5",
+  "ยกขึ้นพักบนกระดาษซับมัน",
+  "สะเด็ดน้ำมัน",
+  knife,
+  [Event("evt_drained", "สะเด็ดน้ำมันเสร็จ")],
+  cook,
+  null,
+  "step_branch",
+)
+
+stepBranch = Branch("step_branch", "evt_drained", [branchPlain, branchSugar])
+
+branchPlain = BranchOption(
+  "branch_plain",
+  "แบบเปล่า",
+  "ไม่เคลือบน้ำตาล",
+  "เสิร์ฟทันที",
+  durianRaw,
+  [Event("evt_plain_done", "ทุเรียนทอดเปล่าพร้อมทาน")],
+  null,
+  null,
+  "eater",
+)
+
+branchSugar = BranchOption(
+  "branch_sugar",
+  "เคลือบน้ำตาล",
+  "เคลือบน้ำตาล",
+  "熬น้ำตาลแล้วคลุก",
+  sugarBowl,
+  [Event("evt_sugar_done", "ทุเรียนทอดเคลือบน้ำตาลพร้อมทาน")],
+  null,
+  null,
+  "eater",
+)
+
+journeyPlain = Journey(
+  "journey_plain",
+  "ทุเรียนทอดเปล่า",
+  "กระบวนการทำทุเรียนทอดแบบไม่เคลือบน้ำตาล",
+  [
+    JourneyStep(step1, "เตรียมเนื้อทุเรียน", "แยกเนื้อทุเรียนดิบออกจากเมล็ด", "planning"),
+    JourneyStep(step2, "หั่นทุเรียน", "หั่นเป็นชิ้นบางสม่ำเสมอเตรียมพร้อมทอด", "planning"),
+    JourneyStep(step3, "เตรียมน้ำมันทอด", "ตั้งน้ำมันให้ร้อน 170-180°C เติมน้ำเกลือ", "execution"),
+    JourneyStep(step4, "ทอดทุเรียน", "ทอดไฟกลางจนเหลืองทองกรอบ", "execution"),
+    JourneyStep(step5, "สะเด็ดน้ำมัน", "ยกขึ้นพักบนกระดาษซับมัน", "evaluation"),
+    JourneyStep(
+      branchPlain,
+      "เสิร์ฟทุเรียนทอดเปล่า",
+      "จัดเสิร์ฟทุเรียนทอดเปล่ากรอบอร่อย",
+      "evaluation",
+    ),
+  ],
+)
+
+journeySugar = Journey(
+  "journey_sugar",
+  "ทุเรียนทอดเคลือบน้ำตาล",
+  "กระบวนการทำทุเรียนทอดแบบเคลือบน้ำตาล",
+  [
+    JourneyStep(step1, "เตรียมเนื้อทุเรียน", "แยกเนื้อทุเรียนดิบออกจากเมล็ด", "planning"),
+    JourneyStep(step2, "หั่นทุเรียน", "หั่นเป็นชิ้นบางสม่ำเสมอเตรียมพร้อมทอด", "planning"),
+    JourneyStep(step3, "เตรียมน้ำมันทอด", "ตั้งน้ำมันให้ร้อน 170-180°C เติมน้ำเกลือ", "execution"),
+    JourneyStep(step4, "ทอดทุเรียน", "ทอดไฟกลางจนเหลืองทองกรอบ", "execution"),
+    JourneyStep(step5, "สะเด็ดน้ำมัน", "ยกขึ้นพักบนกระดาษซับมัน", "evaluation"),
+    JourneyStep(
+      branchSugar,
+      "เคลือบน้ำตาลเสิร์ฟ",
+      "เคี่ยวน้ำตาลคลุกเคลือบแล้วเสิร์ฟ",
+      "evaluation",
+    ),
+  ],
+)

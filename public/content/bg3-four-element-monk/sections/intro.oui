@@ -1,0 +1,94 @@
+root = Intro(
+  "BG3 Four Element Monk Build",
+  what,
+  why,
+  [
+    RoadmapStep(
+      "Build Mechanics Map",
+      "concept-map",
+      "Visualize how Ki, elements, and monk abilities connect.",
+      "concept-map",
+    ),
+    RoadmapStep(
+      "Key Vocabulary",
+      "flashcards",
+      "Learn essential BG3 monk and spellcasting terms.",
+      "flashcards",
+    ),
+    RoadmapStep(
+      "Subclass Features",
+      "taxonomy-browser",
+      "Explore Four Element Monk class features by level.",
+      "subclass-features",
+    ),
+    RoadmapStep(
+      "Spell Selection",
+      "taxonomy-browser",
+      "Best spells at each level for all four elements.",
+      "elemental-spells",
+    ),
+    RoadmapStep(
+      "Flowcast Combat Flow",
+      "flowchart",
+      "Trace Ki spending, spell casting, and attack combos.",
+      "flowcast-flow",
+    ),
+    RoadmapStep(
+      "Level Progression",
+      "reflection-sequence",
+      "Order key level milestones chronologically.",
+      "level-progression",
+    ),
+    RoadmapStep(
+      "Build Checklist",
+      "bullets",
+      "Essential equipment, feats, and ability scores.",
+      "build-checklist",
+    ),
+    RoadmapStep(
+      "Knowledge Check",
+      "quiz",
+      "Test your understanding of Four Element Monk mechanics.",
+      "quiz",
+    ),
+    RoadmapStep(
+      "Build Trade-offs",
+      "tradeoff-sandbox",
+      "Compare pure monk vs multiclass paths.",
+      "tradeoffs",
+    ),
+    RoadmapStep(
+      "Combat Scenario",
+      "scenario",
+      "Make tactical decisions in combat encounters.",
+      "scenario",
+    ),
+    RoadmapStep(
+      "Build Advisor",
+      "decision-tree",
+      "Get personalized build recommendations.",
+      "decision-tree",
+    ),
+  ],
+  null,
+  "8 min read",
+  12,
+)
+
+what = IntroWhat(
+  "Comprehensive build guide for the Monk of the Four Elements, covering subclass features, spell selection, Ki point optimization, and multiclass synergy with Sorcerer metamagic.",
+  "Four Element Monk is a Baldur's Gate 3 build that combines Monk martial abilities with elemental spellcasting from all four schools: Fire, Cold, Lightning, and Acid.",
+  [
+    "Elemental Attunement grants free cantrips at all four elements",
+    "Twin Elemental Wrath infuses unarmed strikes with dual-element damage",
+    "Four Point Attack unleashes four elemental strikes per turn",
+    "Strix Cove Monk Cloak enables out-of-combat casting and saves a Quiver slot",
+    "Sorcerer multiclass unlocks Twinned Spell for double-target magic",
+  ],
+  ["Baldur's Gate 3", "Monk", "Four Elements", "Spellcaster", "Ki Points"],
+)
+
+why = IntroWhy(
+  "Pure monks struggle with AoE and range. Pure spellcasters lack survivability. Four Element Monk bridges both, delivering burst elemental damage with monk mobility and defense.",
+  "Twin Elemental Wrath and Four Point Attack create unmatched single-target and AoE flexibility, while Empty Body provides invulnerability and mist form for clutch moments.",
+)

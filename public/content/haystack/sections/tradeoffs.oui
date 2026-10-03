@@ -1,0 +1,254 @@
+root = TradeoffSandbox("Architecture Trade-offs", [haystackArchitecture])
+
+haystackArchitecture = TradeoffScenario(
+  "haystack-architecture",
+  "Haystack Architecture Decisions",
+  [
+    TradeoffMetric("accuracy", "Search Accuracy", 50, 0, 100, "higher"),
+    TradeoffMetric("latency", "Low Latency", 50, 0, 100, "higher"),
+    TradeoffMetric("complexity", "Complexity", 30, 0, 100, "lower"),
+    TradeoffMetric("cost", "Cost Efficiency", 50, 0, 100, "higher"),
+  ],
+  [retrieval, documentStore, pipelinePattern],
+  "Design a production search system with Haystack. Evaluate trade-offs across retrieval strategy, document store choice, and pipeline pattern.",
+)
+
+retrieval = TradeoffStep(
+  "retrieval",
+  "Retrieval Strategy",
+  [bm25Only, denseOnly, hybrid],
+  "Choose how your system finds relevant documents.",
+  "hybrid",
+)
+
+bm25Only = TradeoffChoice(
+  "bm25-only",
+  "BM25 (Keyword)",
+  "Pure keyword matching based on term frequency and inverse document frequency.",
+  {accuracy: -15, latency: 20, complexity: -15, cost: 20},
+  [
+    ProCon("Fast execution", "No embedding computation needed, direct keyword lookup"),
+    ProCon("Exact matching", "Perfect for proper nouns, IDs, and specific terms"),
+    ProCon("No model cost", "No embedding API calls or model hosting required"),
+  ],
+  [
+    ProCon("No semantic understanding", "Cannot match synonyms or paraphrased queries"),
+    ProCon("Language dependent", "Requires stemming and stopword handling per language"),
+  ],
+  null,
+  "Best when users search for exact terms, product codes, or known identifiers.",
+)
+
+denseOnly = TradeoffChoice(
+  "dense-only",
+  "Dense Vector",
+  "Semantic similarity search using embedding vectors.",
+  {accuracy: 5, latency: -10, complexity: 5, cost: -10},
+  [
+    ProCon("Semantic matching", "Finds conceptually similar documents even with different wording"),
+    ProCon("Language agnostic", "Multilingual embeddings work across languages"),
+    ProCon("Robust to typos", "Vector similarity tolerates minor spelling errors"),
+  ],
+  [
+    ProCon("Embedding cost", "Every query and document needs vector computation"),
+    ProCon("Misses exact terms", "May overlook documents with specific keywords"),
+  ],
+  null,
+  "Best for conceptual search, research, and natural-language questions.",
+)
+
+hybrid = TradeoffChoice(
+  "hybrid",
+  "Hybrid (BM25 + Dense)",
+  "Combines keyword and semantic search with Reciprocal Rank Fusion.",
+  {accuracy: 25, latency: -5, complexity: 10, cost: -5},
+  [
+    ProCon("Best of both worlds", "Catches exact terms AND semantic matches"),
+    ProCon("RRF fusion", "Reciprocal Rank Fusion combines scores without tuning"),
+    ProCon("Production standard", "Industry best practice for enterprise search"),
+  ],
+  [
+    ProCon("Moderate overhead", "Runs two retrieval passes per query"),
+    ProCon("Dual indexing", "Documents need both keyword and vector indexes"),
+  ],
+  "Hybrid retrieval is the recommended production default. It provides the accuracy of semantic search while preserving the exact-match capability of BM25, with minimal latency overhead from RRF fusion.",
+)
+
+documentStore = TradeoffStep(
+  "document-store",
+  "Document Store Backend",
+  [inMemory, chroma, opensearch, azureSearch, googleSearch],
+  "Choose where to store and index your documents.",
+  "opensearch",
+)
+
+inMemory = TradeoffChoice(
+  "in-memory",
+  "InMemoryDocumentStore",
+  "In-process memory store with no external dependencies.",
+  {accuracy: -10, latency: 25, complexity: -25, cost: 20},
+  [
+    ProCon("Zero setup", "No external database to install or configure"),
+    ProCon("Fastest for small data", "No network latency for document access"),
+    ProCon("Ideal for prototyping", "Perfect for tutorials and quick experiments"),
+  ],
+  [
+    ProCon("No persistence", "Data lost when process restarts"),
+    ProCon("No scaling", "Cannot handle large document collections"),
+    ProCon("No distribution", "Single-process, single-machine only"),
+  ],
+  null,
+  "Use during development, testing, and when dataset fits in memory.",
+)
+
+chroma = TradeoffChoice(
+  "chroma",
+  "Chroma",
+  "Lightweight vector database focused on embedding search.",
+  {accuracy: 0, latency: 5, complexity: -5, cost: 10},
+  [
+    ProCon("Simple API", "Minimal configuration, easy to self-host"),
+    ProCon("Embedding-first", "Optimized for dense vector operations"),
+    ProCon("Good developer UX", "Clean Python client and local mode"),
+  ],
+  [
+    ProCon("No BM25", "Vector-only, no keyword search built-in"),
+    ProCon("Limited filtering", "Metadata filtering is basic compared to OpenSearch"),
+  ],
+  null,
+  "Good for embedding-only pipelines with moderate scale.",
+)
+
+opensearch = TradeoffChoice(
+  "opensearch",
+  "OpenSearch",
+  "Full-featured search engine with hybrid search and rich filtering.",
+  {accuracy: 20, latency: -5, complexity: 15, cost: 0},
+  [
+    ProCon("Hybrid search native", "BM25 + vectors + RRF fusion in one query"),
+    ProCon("Full OpenSearch DSL", "Inject custom queries for maximum control"),
+    ProCon("Rich metadata filtering", "Complex boolean filters on document metadata"),
+    ProCon("Enterprise scale", "Horizontal scaling, replication, and high availability"),
+  ],
+  [
+    ProCon("Infrastructure cost", "Requires running OpenSearch cluster"),
+    ProCon("Configuration complexity", "Mapping, shard settings, and cluster management"),
+  ],
+  "OpenSearch is the recommended production backend. Its native hybrid search, full DSL access, and robust metadata filtering make it the most flexible choice for enterprise Haystack deployments.",
+)
+
+azureSearch = TradeoffChoice(
+  "azure-search",
+  "Azure AI Search",
+  "Managed cloud search service with semantic ranker and Azure AI integration.",
+  {accuracy: 22, latency: 0, complexity: 5, cost: -10},
+  [
+    ProCon("Fully managed", "No infrastructure to maintain, auto-scaling included"),
+    ProCon("Semantic ranker", "Azure-built semantic reranking out of the box"),
+    ProCon(
+      "Azure AI integration",
+      "Native integration with Azure OpenAI for embeddings and generation",
+    ),
+    ProCon("Hybrid + vector search", "BM25, vector, and hybrid search with semantic ranking"),
+    ProCon("Enterprise features", "Role-based access, private endpoints, managed identity"),
+  ],
+  [
+    ProCon("Azure lock-in", "Tied to Azure ecosystem and billing"),
+    ProCon("Per-query cost", "Semantic ranker adds per-request charges"),
+    ProCon(
+      "Haystack integration via connector",
+      "Requires haystack-azure-search-connector package",
+    ),
+  ],
+  null,
+  "Best when already in Azure ecosystem or needing managed semantic search without infrastructure overhead.",
+)
+
+googleSearch = TradeoffChoice(
+  "google-search",
+  "Google Vertex AI Search",
+  "Google Cloud search with generative AI grounding and enterprise knowledge base.",
+  {accuracy: 20, latency: -5, complexity: 5, cost: -15},
+  [
+    ProCon("Generative AI grounding", "Built-in RAG with Gemini models for grounded answers"),
+    ProCon(
+      "Enterprise knowledge base",
+      "Pre-built connectors for G Suite, Sharepoint, and data warehouses",
+    ),
+    ProCon("Multi-modal search", "Search across text, images, and video with unified index"),
+    ProCon("Google scale", "Leverages Google search quality at cloud scale"),
+  ],
+  [
+    ProCon("GCP lock-in", "Tied to Google Cloud Platform"),
+    ProCon("Higher cost", "Premium pricing for generative AI features"),
+    ProCon("Less pipeline control", "Managed service abstracts away retrieval internals"),
+    ProCon(
+      "Haystack integration via custom component",
+      "Requires building a custom Haystack connector",
+    ),
+  ],
+  null,
+  "Best for GCP enterprises needing generative AI search with minimal pipeline customization.",
+)
+
+pipelinePattern = TradeoffStep(
+  "pipeline-pattern",
+  "Pipeline Pattern",
+  [standardPipeline, asyncPipeline, agentLoop],
+  "Choose the execution model for your Haystack pipeline.",
+  "standard-pipeline",
+)
+
+standardPipeline = TradeoffChoice(
+  "standard-pipeline",
+  "Standard Pipeline",
+  "Sequential execution with optional branching for parallel paths.",
+  {accuracy: 0, latency: 5, complexity: -20, cost: 10},
+  [
+    ProCon("Simplest model", "Linear data flow, easy to debug and reason about"),
+    ProCon("Type validation", "Pipeline validates all connections before execution"),
+    ProCon("Serialization", "Save and load pipelines as YAML for deployment"),
+  ],
+  [
+    ProCon("Sequential bottleneck", "Independent components still run one-by-one"),
+    ProCon("No built-in loops", "Requires Pipeline with loops for iterative patterns"),
+  ],
+  "Start with a Standard Pipeline for most use cases. It covers RAG, document search, and basic branching with minimal complexity. Upgrade to AsyncPipeline or loops only when you have a measured performance or control-flow need.",
+)
+
+asyncPipeline = TradeoffChoice(
+  "async-pipeline",
+  "Async Pipeline",
+  "Parallel execution of independent components and branches.",
+  {accuracy: 0, latency: 20, complexity: 10, cost: -5},
+  [
+    ProCon("Parallel execution", "Independent branches run concurrently"),
+    ProCon("Reduced latency", "Multiple retrievers or LLM calls run simultaneously"),
+    ProCon("I/O optimization", "Network-bound operations overlap efficiently"),
+  ],
+  [
+    ProCon("Async complexity", "Requires understanding of async/await patterns"),
+    ProCon("Debugging harder", "Non-deterministic execution order complicates tracing"),
+  ],
+  null,
+  "Use when your pipeline has independent branches (e.g., multi-retriever fan-out) and latency is critical.",
+)
+
+agentLoop = TradeoffChoice(
+  "agent-loop",
+  "Agent with Loops",
+  "Self-correcting pipeline with iterative feedback and tool use.",
+  {accuracy: 20, latency: -25, complexity: 25, cost: -15},
+  [
+    ProCon("Self-correction", "Agent retries with refined approach on failure"),
+    ProCon("Tool use", "Agent dynamically calls tools during execution"),
+    ProCon("Multi-step reasoning", "Complex goals decomposed into tool-assisted steps"),
+  ],
+  [
+    ProCon("High latency", "Multiple LLM calls per query, often 3-10 iterations"),
+    ProCon("Unpredictable cost", "Token usage scales with number of iterations"),
+    ProCon("Loop safety", "Must set max iterations to prevent infinite loops"),
+  ],
+  null,
+  "Use for complex tasks requiring reasoning, tool use, or multi-step problem solving where accuracy justifies the latency.",
+)

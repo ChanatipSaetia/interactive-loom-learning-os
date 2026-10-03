@@ -1,0 +1,122 @@
+root = Flowchart(
+  "ระบบหัวฉีด (Fuel Injection / EFI)",
+  [rider],
+  [ecu, fuelInjector],
+  [injectThrottle, injectFuel, fuelBranch],
+  [fuelInjectionNormal, fuelInjectionCold],
+)
+
+rider = Actor("rider", "ผู้ขับขี่ (Rider)", "ผู้ใช้งานมอเตอร์ไซค์")
+
+ecu = System(
+  "ecu",
+  "กล่อง ECU (Electronic Control Unit)",
+  "สมองกลคำนวณปริมาณน้ำมันที่แม่นยำ",
+  "aggregate",
+)
+
+fuelInjector = System(
+  "fuel_injector",
+  "หัวฉีด (Fuel Injector)",
+  "พ่นละอองน้ำมันเชื้อเพลิงเข้าสู่ท่อไอดี",
+  "aggregate",
+)
+
+injectThrottle = Step(
+  "inject_throttle",
+  "คำนวณอัตราส่วนผสม (Calculate Fuel Ratio)",
+  "บิดคันเร่ง (Injector Mode)",
+  ecu,
+  [
+    Event(
+      "sensor_read",
+      "รับค่าจากเซ็นเซอร์ (Sensor Data)",
+      "ข้อมูลรอบเครื่อง ตำแหน่งคันเร่ง อุณหภูมิเครื่อง อากาศเข้า",
+    ),
+  ],
+  rider,
+  null,
+  "inject_fuel",
+)
+
+injectFuel = Step(
+  "inject_fuel",
+  "คำนวณอัตราส่วนผสม (Calculate Fuel Ratio)",
+  "สั่งงานหัวฉีด (Activate Injector)",
+  fuelInjector,
+  [
+    Event(
+      "fuel_atomized",
+      "ละอองน้ำมันเข้าสู่ท่อไอดี",
+      "น้ำมันถูกทำให้เป็นละอองละเอียดผสมกับอากาศ",
+    ),
+  ],
+  null,
+  null,
+  "fuel-branch",
+)
+
+fuelBranch = Branch("fuel-branch", "fuel_atomized", [preciseMix, injectCold])
+
+preciseMix = BranchOption(
+  "precise_mix",
+  "ปกติ",
+  "ฉีดน้ำมันปกติ (Normal Injection)",
+  "ใช้ส่วนผสมแม่นยำ (Use Precise Mixture)",
+  fuelInjector,
+  [Event("precise_mix", "ส่วนผสมแม่นยำ (Precise Mixture)", "อัตราส่วนที่แม่นยำตามสภาวะการทำงาน")],
+)
+
+injectCold = BranchOption(
+  "inject_cold",
+  "เครื่องเย็น",
+  "เพิ่มส่วนผสมอัตโนมัติ (Auto Cold Enrichment)",
+  "เพิ่มส่วนผสมอัตโนมัติ (Auto Cold Enrichment Action)",
+  fuelInjector,
+  [
+    Event(
+      "inject_cold_auto",
+      "เพิ่มส่วนผสมอัตโนมัติ (Auto Cold Enrichment)",
+      "ECU เพิ่มน้ำมันอัตโนมัติเมื่อเครื่องเย็น",
+    ),
+  ],
+  true,
+)
+
+fuelInjectionNormal = Journey(
+  "fuel-injection-normal",
+  "หัวฉีดปกติ (Normal Fuel Injection)",
+  "บิดคันเร่ง → ECU คำนวณ → หัวฉีดพ่น → ละอองน้ำมัน → ผสมส่วนแม่นยำ",
+  [
+    JourneyStep(
+      injectThrottle,
+      "บิดคันเร่ง",
+      "ผู้ขับขี่บิดคันเร่ง เซนเซอร์ส่งสัญญาณปริมาณอากาศเข้าเครื่องไปยัง ECU",
+    ),
+    JourneyStep(
+      injectFuel,
+      "พ่นหัวฉีด",
+      "ECU คำนวณปริมาณน้ำมันที่เหมาะสม สั่งหัวฉีดพ่นน้ำมันเป็นละอองฝอย",
+    ),
+    JourneyStep(
+      preciseMix,
+      "ผสมส่วนแม่นยำ",
+      "ละอองน้ำมันผสมกับอากาศในอัตราส่วนที่ ECU คำนวณไว้ ให้การเผาไหม้สมบูรณ์",
+    ),
+  ],
+)
+
+fuelInjectionCold = Journey(
+  "fuel-injection-cold",
+  "เพิ่มส่วนผสมอัตโนมัติ (Auto Cold Enrichment)",
+  "บิดคันเร่ง → ECU ตรวจเครื่องเย็น → เพิ่มน้ำมันอัตโนมัติ",
+  [
+    JourneyStep(injectThrottle, "บิดคันเร่ง", "ผู้ขับขี่บิดคันเร่ง เซนเซอร์ส่งข้อมูลไปยัง ECU"),
+    JourneyStep(injectFuel, "พ่นหัวฉีด", "ECU คำนวณปริมาณน้ำมันพื้นฐานจากข้อมูลเซนเซอร์"),
+    JourneyStep(
+      injectCold,
+      "เพิ่มส่วนผสม",
+      "เซนเซอร์ตรวจพบอุณหภูมิเครื่องเย็น ECU สั่งเพิ่มปริมาณน้ำมันเพื่อสตาร์ทง่าย",
+    ),
+  ],
+)

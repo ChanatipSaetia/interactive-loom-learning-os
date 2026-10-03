@@ -1,0 +1,209 @@
+root = Quiz("Knowledge Check", [q1, q2, q3, q4, q5, q6, q7, q8])
+
+q1 = QuizQuestion(
+  "q1",
+  "How much Ki does Twin Elemental Wrath cost?",
+  [
+    QuizChoice(
+      "a",
+      "2 Ki points",
+      false,
+      "Twin Elemental Wrath is designed to be spammy. 2 Ki would be too expensive for regular use.",
+    ),
+    QuizChoice(
+      "b",
+      "1 Ki point",
+      true,
+      "Correct! Twin Elemental Wrath costs 1 Ki, making it efficient for sustained combat use.",
+    ),
+    QuizChoice(
+      "c",
+      "4 Ki points",
+      false,
+      "4 Ki is the cost for Four Point Attack, not Twin Elemental Wrath.",
+    ),
+  ],
+  "It's your most frequently used ability.",
+)
+
+q2 = QuizQuestion(
+  "q2",
+  "What does Four Point Attack guarantee?",
+  [
+    QuizChoice(
+      "a",
+      "Four spell casts in one turn",
+      false,
+      "Four Point Attack makes unarmed strikes, not spell casts.",
+    ),
+    QuizChoice(
+      "b",
+      "Four attacks that cannot miss, each with a different element",
+      true,
+      "Correct! Each of the four strikes auto-hits and deals a different elemental damage type.",
+    ),
+    QuizChoice(
+      "c",
+      "Four extra Ki points",
+      false,
+      "Four Point Attack spends Ki, it doesn't generate it.",
+    ),
+  ],
+  "Think about what makes it the ultimate ability.",
+)
+
+q3 = QuizQuestion(
+  "q3",
+  "At what Monk level do elemental spells become free to cast?",
+  [
+    QuizChoice(
+      "a",
+      "Monk 11",
+      false,
+      "Monk 11 grants Four Point Attack and cantrip upgrades, not free spells.",
+    ),
+    QuizChoice(
+      "b",
+      "Monk 15",
+      true,
+      "Correct! Elemental Mastery at Monk 15 makes elemental spells cost 0 Ki.",
+    ),
+    QuizChoice(
+      "c",
+      "Monk 14",
+      false,
+      "Monk 14 grants Empty Body (Teleport/Mirror Image), not free spells.",
+    ),
+  ],
+  "It's the highest subclass feature.",
+)
+
+q4 = QuizQuestion(
+  "q4",
+  "Which item lets Four Element Monk cast spells outside of combat?",
+  [
+    QuizChoice(
+      "a",
+      "Patient-0 Gauntlets",
+      false,
+      "Patient-0 boosts unarmed strike damage but doesn't enable out-of-combat casting.",
+    ),
+    QuizChoice(
+      "b",
+      "Strix Cove Monk Cloak",
+      true,
+      "Correct! The Strix Cove Monk Cloak removes the combat-only restriction on monk spellcasting.",
+    ),
+    QuizChoice(
+      "c",
+      "Dragon's Claw Gloves",
+      false,
+      "Dragon's Claw Gloves add elemental damage but don't affect casting restrictions.",
+    ),
+  ],
+  "It's a legendary cloak from Act 3.",
+)
+
+q5 = QuizQuestion(
+  "q5",
+  "What does Metamagic Adept's Twinned Spell do?",
+  [
+    QuizChoice(
+      "a",
+      "Doubles the damage of a spell",
+      false,
+      "Twinned Spell doesn't increase damage — it increases target count.",
+    ),
+    QuizChoice(
+      "b",
+      "Allows a single-target spell to affect a second target",
+      true,
+      "Correct! Twinned Spell lets spells like Ice Knife or Conjure Flame target two enemies.",
+    ),
+    QuizChoice(
+      "c",
+      "Casts the spell twice in one action",
+      false,
+      "That's not how Twinned Spell works. It targets two creatures simultaneously, not sequential casts.",
+    ),
+  ],
+  "Think about single-target spells.",
+)
+
+q6 = QuizQuestion(
+  "q6",
+  "What are the four elemental schools for Four Element Monk?",
+  [
+    QuizChoice(
+      "a",
+      "Fire, Cold, Lightning, Nature",
+      false,
+      "Nature is not one of the four elemental schools. The fourth is Acid.",
+    ),
+    QuizChoice(
+      "b",
+      "Fire, Cold, Lightning, Acid",
+      true,
+      "Correct! The Four Elements are Fire, Cold, Lightning, and Acid.",
+    ),
+    QuizChoice(
+      "c",
+      "Fire, Ice, Electricity, Poison",
+      false,
+      "Close, but the official names are Cold (not Ice), Lightning (not Electricity), and Acid (not Poison).",
+    ),
+  ],
+  "Think of the classic elements, but one is unusual.",
+)
+
+q7 = QuizQuestion(
+  "q7",
+  "How do Ki points refresh?",
+  [
+    QuizChoice(
+      "a",
+      "Long Rest only",
+      false,
+      "Ki refreshes more frequently than Long Rest — it's a short-rest resource.",
+    ),
+    QuizChoice(
+      "b",
+      "Short Rest",
+      true,
+      "Correct! All spent Ki points are recovered after a Short Rest.",
+    ),
+    QuizChoice(
+      "c",
+      "At the start of each combat",
+      false,
+      "Ki doesn't refresh per combat. You need to take a Short Rest to recover it.",
+    ),
+  ],
+  "Monks recover resources through resting.",
+)
+
+q8 = QuizQuestion(
+  "q8",
+  "Which multiclass dip is most recommended for Four Element Monk?",
+  [
+    QuizChoice(
+      "a",
+      "Wizard 2 — for additional spell slots",
+      false,
+      "Wizard doesn't grant Metamagic, which is the key synergy for this build.",
+    ),
+    QuizChoice(
+      "b",
+      "Sorcerer 2-4 — for Metamagic Adept abilities",
+      true,
+      "Correct! Sorcerer provides Twinned Spell and Quickened Spell, massively amplifying your elemental spells.",
+    ),
+    QuizChoice(
+      "c",
+      "Cleric 2 — for healing spells",
+      false,
+      "While Cleric adds healing, it doesn't synergize with the build's core spellcasting as well as Sorcerer.",
+    ),
+  ],
+  "Think about metamagic synergy.",
+)

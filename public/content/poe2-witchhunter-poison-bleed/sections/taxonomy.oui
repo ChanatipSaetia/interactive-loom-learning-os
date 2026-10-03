@@ -1,0 +1,79 @@
+root = TaxonomyBrowser("Build Components", [mainDamageSkills, supportGems, defenses, ascendancy])
+
+mainDamageSkills = TaxonomyCategory(
+  "Main Damage Skills",
+  "Gas Grenade & Barrage",
+  "Crosshair",
+  "green",
+  "Your two primary skills that clear maps through poison DoT stacking and bleed physical damage.",
+  "Gas Grenade throws a canister that shatters into poison gas clouds, dealing damage over time to enemies caught in the area. Barrage fires a rapid volley of projectiles across the screen, applying bleed through each individual hit. Gas Grenade excels at zone control and sustained DPS, while Barrage provides high attack-speed-driven application rate.",
+  "Gas Grenade is your area-denial toxin, Barrage is your shredding barrage — both stack debuffs relentlessly.",
+  "DoT application rate and cumulative poison/bleed stacking",
+  [
+    "Gas Grenade (Lv20) + Elemental Armament, At Mixture, Nova Projectiles, Faster Projectiles, Multifire",
+    "Barrage (Lv20) + Bleed 3 supports, At Mixture, Multifire, Faster Attacks, Close Combat",
+    "Both benefit from DoT duration, DoT magnitude, and attack speed",
+  ],
+  ["Instant-damage spell skills", "Trigger-based skills as primary damage"],
+)
+
+supportGems = TaxonomyCategory(
+  "Support Gems",
+  "Poison, Bleed, At Mixture & Utility Supports",
+  "Gem",
+  "mauve",
+  "Support gems that amplify your DoT damage, extend duration, and optimize the poison/bleed trade-off.",
+  "At Mixture is the keystone support — it converts a portion of your poison or bleed damage into the other DoT type, ensuring both debuffs contribute. Elemental Armament converts elemental damage to your chosen element for Gas Grenade. Poison and Bleed supports increase damage per stack independently. Multifire and Faster Projectiles boost application rate across both skills.",
+  "At Mixture is your damage blender — it makes poison and bleed work together instead of competing.",
+  "Maximizing combined DoT output through At Mixture synergy",
+  [
+    "At Mixture — converts portion of Poison to Bleed and Bleed to Poison",
+    "Elemental Armament (Lightning) for Gas Grenade elemental conversion",
+    "Poison 3 supports: Increased Duration, More Damage, Number of Poisons",
+    "Bleed 3 supports: Increased Duration, More Physical Damage, Number of Bleeds",
+    "Multifire, Faster Projectiles, Faster Attacks for application rate",
+    "Culling Strike for boss kill cleanup",
+  ],
+  ["Support gems for non-DoT skills", "Instant damage multiplication supports"],
+)
+
+defenses = TaxonomyCategory(
+  "Defenses",
+  "Sorcery Ward, Movement Evasion & Flasks",
+  "Shield",
+  "sky",
+  "Defense layers combining Sorcery Ward barriers, movement-based evasion, and life leech sustainability.",
+  "Sorcery Ward creates a barrier that absorbs damage and triggers effects when broken, giving you a second layer beyond life. The Witchhunter excels at movement-based evasion through high attack speed and mobility skills. Life flasks with leech recovery form the baseline sustain. Obsessive Rituals trades defense nodes for offense, creating a risk-reward balance you must manage through positioning and Ward uptime.",
+  "Sorcery Ward is your bubble, movement is your insurance, and Obsessive Rituals means you earn your safety through skill.",
+  "Ward barrier management and movement-based survival",
+  [
+    "Sorcery Ward barrier (skill + passive investment) for second health pool",
+    "Movement speed and evasion rating from Witchhunter passives",
+    "Life flasks with quick application and leech recovery",
+    "Obsessive Rituals trade-off — defensive passives sacrificed for offensive scaling",
+    "Positioning and kiting as primary avoidance",
+  ],
+  ["Energy Shield-based defenses", "Armour-based mitigation", "Block-based survivability"],
+)
+
+ascendancy = TaxonomyCategory(
+  "Ascendancy",
+  "Witchhunter — No Mercy, Obsessive Rituals, Sorcery Ward",
+  "Target",
+  "red",
+  "Witchhunter ascendancy nodes that define the build's identity around precision, DoT mastery, and calculated risk.",
+  "No Mercy is the core node, granting increased damage to affected enemies and scaling with DoT stacks — it rewards sustained engagements and multiple debuffs. Obsessive Rituals removes defensive passive nodes from the tree and converts them to offensive scaling, forcing reliance on Sorcery Ward and movement. Sorcery Ward integration across the ascendancy provides the barrier mechanic that replaces the sacrificed passive defenses.",
+  "You traded safety for lethality — every node you gave up came back as damage, but now you survive through skill and Ward.",
+  "DoT damage scaling through No Mercy with Ward-based survivability",
+  [
+    "No Mercy — increased damage to enemies affected by DoTs, scales with stack count",
+    "Obsessive Rituals — removes defensive nodes, converts to offensive scaling",
+    "Sorcery Ward ascendancy integration for barrier damage absorption",
+    "Poison and Bleed-specific ascendancy notables",
+    "Attack speed and mobility nodes tied to Witchhunter identity",
+  ],
+  [
+    "Ascendancy nodes from other classes (Inquisitor, Ascendant, etc.)",
+    "Spell-focused ascendancy pathways",
+  ],
+)

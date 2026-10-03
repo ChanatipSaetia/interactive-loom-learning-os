@@ -1,0 +1,109 @@
+root = TaxonomyBrowser(
+  "Meetings & Sync Formats",
+  [dailySyncStandup, sprintPlanning, retrospective, asynchronousUpdates, projectPlanning],
+)
+
+dailySyncStandup = TaxonomyCategory(
+  "Daily Sync (Standup)",
+  "15-Minute Alignment",
+  "Clock",
+  "peach",
+  "A quick daily sync to align the team on the day's goals and identify blockers immediately.",
+  "Held daily at the same time. Each member briefly shares what they completed, what they plan to do, and any blockers they face. Keep discussion high-level and timeboxed to 15 minutes.",
+  "Like a sports team huddle before a play — fast, focused, and preparing for the immediate next move.",
+  "Blocker identification and team alignment",
+  [
+    "Stating what you're working on today",
+    "Raising blockers that prevent progress",
+    "Flagging dependencies with other team members",
+  ],
+  [
+    "Debugging code or solving technical problems",
+    "Giving detailed feature design reviews",
+    "Project managers asking for detailed status justifications",
+  ],
+)
+
+sprintPlanning = TaxonomyCategory(
+  "Sprint Planning",
+  "Cycle Scope Definition",
+  "Calendar",
+  "sky",
+  "A collaborative session at the start of a cycle to commit to a scope of work aligned with product goals.",
+  "The team reviews prioritized backlog items, estimates effort (points or days), discusses dependencies, and commits to a realistic sprint goal. This sets the focus for the next 1-2 weeks.",
+  "Like packing a backpack for a hike — you only bring what you need and what actually fits, ensuring you don't over-commit.",
+  "Scope commitment and sprint goal definition",
+  [
+    "Clarifying requirements of backlog tasks",
+    "Estimating effort level and capacity",
+    "Selecting tasks that fit within velocity",
+  ],
+  [
+    "Writing code or starting implementation",
+    "Adding random, un-prioritized ideas to the sprint",
+    "Creating tasks without clear acceptance criteria",
+  ],
+)
+
+retrospective = TaxonomyCategory(
+  "Retrospective",
+  "Continuous Improvement",
+  "RefreshCw",
+  "green",
+  "A safe-space reflection meeting to evaluate processes and make concrete improvements for the next cycle.",
+  "Held at the end of a sprint. The team discusses what went well, what went poorly, and brainstorms solutions to process bottlenecks. The output is 1 or 2 high-priority action items.",
+  "Like a Formula 1 pit stop review — looking at telemetry and teamwork to see how to shave seconds off the next lap.",
+  "Continuous improvement and team dynamics",
+  [
+    "Highlighting process or communication bottlenecks",
+    "Appreciating team members who helped out",
+    "Creating 1-2 actionable improvement items",
+  ],
+  [
+    "Blaming individuals for project delays",
+    "Complaining without suggesting constructive changes",
+    "Listing 10 items that the team won't realistically implement",
+  ],
+)
+
+asynchronousUpdates = TaxonomyCategory(
+  "Asynchronous Updates",
+  "Meeting Replacement",
+  "FileText",
+  "mauve",
+  "Sharing status updates in writing, completely replacing status-check meetings.",
+  "Updates are written down in Slack, Discord, Notion, or Jira. Teammates read and reply at their convenience. This allows the team to stay informed without interrupting active work.",
+  "Like a newspaper or status feed — you read it when you have a coffee break, not while you are performing surgery.",
+  "Protecting focus time and reducing meeting count",
+  [
+    "Writing bulleted, clear daily or weekly updates",
+    "Reading others' updates and commenting if relevant",
+    "Flagging blockers in text with tags for visibility",
+  ],
+  [
+    "Writing long novels that take 20 minutes to read",
+    "Holding a live call to read written updates aloud",
+    "Ignoring updates completely and causing communication gaps",
+  ],
+)
+
+projectPlanning = TaxonomyCategory(
+  "Project Planning",
+  "Milestones & Sizing",
+  "Compass",
+  "yellow",
+  "Breaking down epics into clean milestones and sizing tasks collectively using lean guidelines.",
+  "Lean project planning involves continuous decomposition: breaking big requirements into smaller, independent user stories. Estimations (e.g. man-days or story points) are estimated collectively by the builders themselves to prevent unrealistic pressure.",
+  "Like planning a road trip — you decide the major stops (milestones) and estimate how long each leg takes as a range, rather than plotting every turn to the exact second.",
+  "Continuous decomposition and collaborative sizing",
+  [
+    "Decomposing large requirements into single-focus stories",
+    "Collaboratively estimating tasks using ranges or points",
+    "Prototyping/spiking unknowns before final estimation",
+  ],
+  [
+    "Estimating long-term tasks to the exact hour",
+    "Allowing managers to assign task estimates unilaterally",
+    "Assuming perfect delivery without factoring buffer/dependencies",
+  ],
+)

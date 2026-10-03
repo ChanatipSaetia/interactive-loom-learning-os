@@ -1,0 +1,122 @@
+root = DecisionTree(
+  "Build Advisor",
+  "build-advisor",
+  "playstyle",
+  [playstyle, levelChoice, multiclassPath, recEarly, recLate, recTwinned, recSpellHeavy],
+  "Four Element Monk Build Advisor",
+)
+
+playstyle = DecisionNode(
+  "playstyle",
+  "What's your preferred combat style?",
+  [
+    DecisionChoice(
+      "melee-focused",
+      "Close-range martial combat with elemental strikes",
+      "level-choice",
+      "Pure Monk path maximizes Ki and martial features.",
+      true,
+    ),
+    DecisionChoice(
+      "spell-focused",
+      "Ranged spellcasting with mobility",
+      "multiclass-path",
+      "Multiclass path enhances spellcasting versatility.",
+    ),
+    DecisionChoice("hybrid", "Mix of melee and spells", "level-choice"),
+  ],
+)
+
+levelChoice = DecisionNode(
+  "level-choice",
+  "What act are you planning for?",
+  [
+    DecisionChoice(
+      "early-game",
+      "Acts 1-2 (levels 1-8)",
+      "rec-early",
+      "Early game needs survivability and consistent damage.",
+    ),
+    DecisionChoice(
+      "late-game",
+      "Act 3 (levels 9-12+)",
+      "rec-late",
+      "Late game unlocks Four Point Attack and legendary gear.",
+    ),
+  ],
+)
+
+multiclassPath = DecisionNode(
+  "multiclass-path",
+  "How deep should the Sorcerer dip go?",
+  [
+    DecisionChoice(
+      "shallow-dip",
+      "Just Metamagic (Sorcerer 2)",
+      "rec-twinned",
+      "Minimum investment for maximum value.",
+      true,
+    ),
+    DecisionChoice("deep-dip", "Full spellcaster (Sorcerer 4+)", "rec-spell-heavy"),
+  ],
+)
+
+recEarly = DecisionNode(
+  "rec-early",
+  null,
+  null,
+  DecisionLeaf(
+    "Pure Monk 6-8, focus on Twin Elemental Wrath + Conjure Flame.",
+    "Early game, Ki is limited. Twin Elemental Wrath (1 Ki) + Conjure Flame zone damage creates excellent sustained pressure. Prioritize Dexterity for AC and hit rate. Grab Patient-0 gauntlets in Act 2.",
+    [
+      "Limited Ki means careful spending every fight",
+      "No Four Point Attack until Monk 11",
+      "Conjure Flame is your primary AoE tool",
+    ],
+  ),
+)
+
+recLate = DecisionNode(
+  "rec-late",
+  null,
+  null,
+  DecisionLeaf(
+    "Monk 12-13 pure, leverage Four Point Attack and legendary gear.",
+    "At Monk 12-13, you have 5 Ki, Four Point Attack, and access to both Patient-0 and Strix Cove Monk Cloak. Save 4 Ki for Four Point Attack on bosses, use Twin Elemental Wrath for clears. At Monk 15, Elemental Mastery makes spells free.",
+    [
+      "Four Point Attack consumes most of your Ki",
+      "Balance between offense (nuke) and defense (Barrier)",
+      "Strix Cove Cloak enables exploration utility",
+    ],
+  ),
+)
+
+recTwinned = DecisionNode(
+  "rec-twinned",
+  null,
+  null,
+  DecisionLeaf(
+    "Monk 10/Sorcerer 2 with Twinned Spell + Quickened Spell.",
+    "Twinned Spell doubles Ice Knife and Conjure Flame targets. Quickened Spell lets you cast a cantrip and make unarmed strikes in the same turn. The 2-level dip is the optimal investment — you get metamagic without sacrificing too much monk progression.",
+    [
+      "Delayed Four Point Attack by 2 levels",
+      "Fewer Ki points than pure monk at same total level",
+      "Metamagic uses are limited per Short Rest",
+    ],
+  ),
+)
+
+recSpellHeavy = DecisionNode(
+  "rec-spell-heavy",
+  null,
+  null,
+  DecisionLeaf(
+    "Monk 8/Sorcerer 4+ for expanded spell repertoire.",
+    "Deeper Sorcerer dip grants 3rd level spells like Fireball and Call Lightning, plus more metamagic points. You sacrifice monk features like Four Point Attack for broader spellcasting. Best for players who prefer spell diversity over martial abilities.",
+    [
+      "Never reaches Four Point Attack or Empty Body",
+      "Reduced Ki pool limits monk abilities",
+      "Broader spell access compensates for lost martial features",
+    ],
+  ),
+)

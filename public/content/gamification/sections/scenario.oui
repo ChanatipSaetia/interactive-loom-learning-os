@@ -1,0 +1,175 @@
+root = Scenario(
+  "The Streak Dilemma",
+  "streak-dilemma",
+  [
+    start,
+    strictLaunch,
+    freezeLaunch,
+    diagnose,
+    churn,
+    recovered,
+    sunset,
+    socialBoom,
+    leagueMixed,
+    dataDriven,
+    tieredWin,
+    xpOnly,
+  ],
+  "You are the product manager of LingoLeap, a language app with 2M monthly users. Engagement dipped last quarter, and the team is debating the streak feature.",
+)
+
+start = ScenarioNode(
+  "start",
+  "Engagement is down. What is your first move?",
+  [
+    ScenarioChoice(
+      "strict-streak",
+      "Launch a strict daily streak — miss a day, lose it all",
+      "strict-launch",
+    ),
+    ScenarioChoice(
+      "freeze-streak",
+      "Launch streaks with freeze tokens and a 7-day goal",
+      "freeze-launch",
+    ),
+    ScenarioChoice(
+      "diagnose-first",
+      "Run a motivation survey and cohort analysis before shipping",
+      "diagnose",
+    ),
+  ],
+)
+
+strictLaunch = ScenarioNode(
+  "strict-launch",
+  "Week 3: daily actives spike, but support tickets mention 'streak anxiety'. A viral thread complains that one missed day wipes 200 days. What now?",
+  [
+    ScenarioChoice(
+      "double-down",
+      "Double down — anxiety means it's working; push harder with alerts",
+      "churn",
+    ),
+    ScenarioChoice("add-freeze", "Add freeze tokens and a 'streak repair' grace card", "recovered"),
+    ScenarioChoice("sunset", "Sunset the feature and apologize", "sunset"),
+  ],
+)
+
+freezeLaunch = ScenarioNode(
+  "freeze-launch",
+  "Week 6: streaks hold and retention is up 4%. A power user asks for 'streak sharing' with friends. What do you ship next?",
+  [
+    ScenarioChoice(
+      "share-streak",
+      "Ship streak sharing — friends see each other's streaks",
+      "social-boom",
+    ),
+    ScenarioChoice("league", "Ship monthly leagues with promotion and demotion", "league-mixed"),
+    ScenarioChoice("hold", "Hold off — study which users actually use freezes", "data-driven"),
+  ],
+)
+
+diagnose = ScenarioNode(
+  "diagnose",
+  "The survey shows two segments: committed daily learners (40%) and sporadic weekend learners (60%). The weekenders say daily streaks 'don't fit my life'. What's your design?",
+  [
+    ScenarioChoice(
+      "tiered",
+      "Offer a flexible weekly streak for weekenders, daily streak for committed learners",
+      "tiered-win",
+    ),
+    ScenarioChoice("force-daily", "One design for all: daily streak", "churn"),
+    ScenarioChoice(
+      "no-streak",
+      "Drop streaks; invest in XP and mastery feedback instead",
+      "xp-only",
+    ),
+  ],
+)
+
+churn = ScenarioNode(
+  "churn",
+  null,
+  null,
+  Outcome(
+    "Streak anxiety turned a habit feature into a source of guilt. Churn among lapsed users tripled, and the viral backlash hurt brand sentiment.",
+    "Pure loss-avoidance (black hat) drives work short-term but burns users out. Always pair pressure with an escape valve.",
+    "c",
+  ),
+)
+
+recovered = ScenarioNode(
+  "recovered",
+  null,
+  null,
+  Outcome(
+    "Freeze tokens cut abandonment by 30%, and the grace design became a talking point. Retention recovered to baseline plus 2%.",
+    "Recovering from a hard launch is possible, but you paid for it in trust. Design the escape valve before launch.",
+    "b-minus",
+  ),
+)
+
+sunset = ScenarioNode(
+  "sunset",
+  null,
+  null,
+  Outcome(
+    "Sunsetting restored trust, but the engagement dip continued. The team spent a quarter on a feature that taught users 'streaks = stress'.",
+    "When you can't iterate, a fast sunset is the right call — but diagnose before committing.",
+    "b-minus",
+  ),
+)
+
+socialBoom = ScenarioNode(
+  "social-boom",
+  null,
+  null,
+  Outcome(
+    "Streak sharing created friendly daily pings; D7 retention rose 6% among sharers. Some users opted out citing pressure.",
+    "Social relatedness amplifies streaks but must be opt-in with an easy opt-out, or it becomes social pressure.",
+    "a",
+  ),
+)
+
+leagueMixed = ScenarioNode(
+  "league-mixed",
+  null,
+  null,
+  Outcome(
+    "Leagues lifted the top quartile, but the bottom half quit the monthly cycle. Promotion and demotion felt punitive to newcomers.",
+    "Competitive layers should be optional. Demotion mechanics demotivate exactly the users you need to keep.",
+    "b-plus",
+  ),
+)
+
+dataDriven = ScenarioNode(
+  "data-driven",
+  null,
+  null,
+  Outcome(
+    "The freeze-usage study revealed 12% of users rely on freezes monthly. You tuned freeze frequency to the data, and retention improved a further 3%.",
+    "Small, well-instrumented features beat big guesses. Let the data shape the next iteration.",
+    "a",
+  ),
+)
+
+tieredWin = ScenarioNode(
+  "tiered-win",
+  null,
+  null,
+  Outcome(
+    "Tiered streaks fit both segments: weekenders kept weekly streaks, committed learners kept daily. Overall habit retention rose 8%.",
+    "Diagnose your segments first. One-size-fits-all motivation design fails mixed cohorts.",
+    "a",
+  ),
+)
+
+xpOnly = ScenarioNode(
+  "xp-only",
+  null,
+  null,
+  Outcome(
+    "XP and mastery feedback were steady, but habit formation stalled — weekenders still didn't return daily. Engagement plateaued.",
+    "Intrinsic feedback is necessary but not sufficient for habit loops. Pair it with a commitment device that fits the segment.",
+    "b-plus",
+  ),
+)

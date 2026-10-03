@@ -1,0 +1,27 @@
+root = ReflectionTemplate("Meeting Efficiency Evaluation", [challenge1, challenge2])
+
+challenge1 = TemplateChallenge(
+  "Complete the statement explaining sync meeting overhead constraints (Part 1):",
+  "Inviting more engineers to a synchronous meeting directly {zone-1} the direct meeting cost. Furthermore, every engineer attending suffers a context-switching penalty that {zone-2} maker focus time.",
+  [
+    Chip("chip-increases", "increases"),
+    Chip("chip-decreases", "decreases"),
+    Chip("chip-reduces", "reduces"),
+    Chip("chip-extends", "extends"),
+  ],
+  {"zone-1": "chip-increases", "zone-2": "chip-reduces"},
+  "<strong>Correct!</strong> More attendees raise salary expenses and drain maker focus hours due to task-switching overhead.",
+)
+
+challenge2 = TemplateChallenge(
+  "Complete the statement explaining asynchronous documentation tradeoffs (Part 2):",
+  "Replacing standups with written status documents leads to {zone-1} maker focus time lost. However, asynchronous models require {zone-2} written communication clarity to prevent alignment gaps.",
+  [
+    Chip("chip-lower", "lower"),
+    Chip("chip-higher", "higher"),
+    Chip("chip-less", "less"),
+    Chip("chip-greater", "greater"),
+  ],
+  {"zone-1": "chip-lower", "zone-2": "chip-greater"},
+  "<strong>Correct!</strong> Async status writeups keep engineers focused, but demand higher clarity to stay aligned.",
+)

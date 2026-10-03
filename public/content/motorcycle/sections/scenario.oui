@@ -1,0 +1,55 @@
+root = Scenario(
+  "สถานการณ์ตัดสินใจ",
+  "motorcycle-troubleshoot",
+  [start, brakeFadeOutcome, engineBrakeOutcome, coastOutcome],
+  "คุณกำลังขับรถมอเตอร์ไซค์แล้วเจอปัญหา คุณจะใช้วิธีไหนในการแก้ไข?",
+  null,
+  "รถมีปัญหา ต้องทำอย่างไร?",
+)
+
+start = ScenarioNode(
+  "start",
+  "คุณกำลังลงเขาสูงและเบรกเริ่มร้อนมาก ควรทำอย่างไร?",
+  [
+    ScenarioChoice("brake-hard", "เบรกต่อไปเรื่อยๆ จนกว่าจะถึงด้านล่าง", "brake-fade-outcome"),
+    ScenarioChoice(
+      "engine-brake",
+      "ใช้เกียร์ช่วยเบรก (Engine Brake) และพักเบรกเป็นระยะ",
+      "engine-brake-outcome",
+    ),
+    ScenarioChoice("coast", "เลิกเบรกแล้วปล่อยให้รถไหลลงเขา", "coast-outcome"),
+  ],
+)
+
+brakeFadeOutcome = ScenarioNode(
+  "brake-fade-outcome",
+  null,
+  null,
+  Outcome(
+    "เบรกจมจากความร้อนสูง ทำให้เบรกไม่อยู่และเสี่ยงอุบัติเหตุรุนแรง",
+    "เมื่อเบรกใช้งานหนักต่อเนื่อง ควรใช้เกียร์ช่วยเบรกและพักเบรกเป็นระยะเพื่อไม่ให้จานเบรกและผ้าเบรกร้อนเกินจุดทำงานปกติ",
+    "c",
+  ),
+)
+
+engineBrakeOutcome = ScenarioNode(
+  "engine-brake-outcome",
+  null,
+  null,
+  Outcome(
+    "คุณควบคุมความเร็วได้ดีด้วยเกียร์และเบรกเป็นระยะ เบรกไม่ร้อนเกินไป",
+    "การใช้เกียร์ช่วยเบรก (Engine Brake) เป็นวิธีที่ปลอดภัยที่สุดเมื่อลงเขาสูง ช่วยลดภาระของระบบเบรก",
+    "a",
+  ),
+)
+
+coastOutcome = ScenarioNode(
+  "coast-outcome",
+  null,
+  null,
+  Outcome(
+    "รถไหลเร็วขึ้นเรื่อยๆ คุณไม่สามารถควบคุมความเร็วได้",
+    "การปล่อยรถไหลโดยไม่ควบคุมความเร็วเป็นอันตรายมาก ควรใช้เกียร์และเบรกควบคู่กัน",
+    "c",
+  ),
+)

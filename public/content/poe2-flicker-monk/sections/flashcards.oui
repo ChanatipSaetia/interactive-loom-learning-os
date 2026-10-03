@@ -1,0 +1,209 @@
+root = Flashcards(
+  "Key Vocabulary",
+  [
+    flickerStrike,
+    fallingThunder,
+    combo,
+    powerCharges,
+    martialArtist,
+    stonefist,
+    chaosInoculation,
+    subterfugeMask,
+    ailithsChimes,
+    trinity,
+    novaProjectiles,
+    quarterstaff,
+  ],
+)
+
+flickerStrike = Flashcard(
+  "flicker-strike",
+  "Flicker Strike",
+  "FLIK-er strike",
+  "skill",
+  "Dash through enemies, dealing melee damage.",
+  "Your character flickers through enemies in the direction of movement, dealing melee physical damage. Links with Perpetual Charge to extend duration and reduce charge consumption chance.",
+  "Primary mobility and clearing skill. Teleporting through packs while dealing damage is the build's signature feel.",
+  "https://cdn.mobalytics.gg/cdn-cgi/image/format=auto,width=96/assets/poe-2/images/game/Art/2DArt/SkillIcons/MonkFlickerStrikeTeleport.webp",
+  Dialogue(
+    "How do I clear maps fast?",
+    "The player wants mapping efficiency.",
+    "Use Flicker Strike to dash through packs, then follow up with Falling Thunder on dense groups.",
+  ),
+)
+
+fallingThunder = Flashcard(
+  "falling-thunder",
+  "Falling Thunder",
+  "FAL-ing THUN-der",
+  "skill",
+  "Fire lightning projectiles per Power Charge consumed.",
+  "A lightning attack that fires one projectile per Power Charge consumed, dealing increased damage per projectile. Combined with Nova Projectiles, it creates a 360-degree AoE burst.",
+  "Your main AoE clear skill. With 6-8 charges and Nova Projectiles, you fill the screen with lightning.",
+  "https://www.poe2wiki.net/images/a/a9/Falling_Thunder_inventory_icon.png",
+  Dialogue(
+    "What's my nuke button?",
+    "Player needs to know the main AoE skill.",
+    "Falling Thunder fires a projectile per charge consumed — stack charges first for maximum devastation.",
+  ),
+)
+
+combo = Flashcard(
+  "combo",
+  "Combo",
+  "KOM-boh",
+  "mechanic",
+  "Stack counter that buffs damage and enables charge generation.",
+  "A stacking mechanic gained through melee hits. Martial Adept doubles your Combo gain. At 20 stacks on Mantra of Destruction, you can expend Combo for Power Charges via Ailith's Chimes.",
+  "The bridge between hitting things and generating Power Charges for your main skills.",
+  null,
+  Dialogue(
+    "How do I get more charges for bossing?",
+    "Player needs charge generation explained.",
+    "Build Combo through Whirling Assault, then expend it into charges with Ailith's Chimes.",
+  ),
+)
+
+powerCharges = Flashcard(
+  "power-charges",
+  "Power Charges",
+  "POW-er CHARJZ",
+  "mechanic",
+  "Temporary buffs that enhance linked skills.",
+  "A currency of temporary buffs (max 5 normally, up to 8 with +1 mods). Consumed by Falling Thunder for projectiles, by Charged Staff for lightning damage, and by Flicker Strike for increased damage.",
+  "Everything in this build scales with Power Charges. More charges = more projectiles = more damage.",
+  "https://www.poe2wiki.net/images/a/a9/Falling_Thunder_inventory_icon.png",
+  Dialogue(
+    "Why does everyone talk about charges?",
+    "Player doesn't grasp charge centrality.",
+    "Each charge becomes a Falling Thunder projectile and boosts your Flicker Strike damage. They're the build's fuel.",
+  ),
+)
+
+martialArtist = Flashcard(
+  "martial-artist",
+  "Martial Artist",
+  "MAR-shul AR-tist",
+  "ascendancy",
+  "Monk ascendancy focused on close combat mastery.",
+  "The Martial Artist ascendancy provides: Way of the Stonefist (glove damage multiplier), Martial Adept (doubled Combo gain + ES recharge), Martial Master (all attacks build Combo), Hollow Focus Technique (bell stun/crit), and Runic Meridians (extra rune sockets).",
+  "Core ascendancy that makes the build viable. Stonefist alone is a massive damage multiplier.",
+  "https://www.poe2wiki.net/images/e/e9/Monk_portrait.png",
+  Dialogue(
+    "Which ascendancy do I take?",
+    "Player needs ascendancy guidance.",
+    "Martial Artist is mandatory. Prioritize Way of the Stonefist for damage and Martial Master for Combo retention.",
+  ),
+)
+
+stonefist = Flashcard(
+  "stonefist",
+  "Way of the Stonefist",
+  "way of the STONE-fist",
+  "ascendancy",
+  "Converts flat glove damage into extra damage percentages.",
+  "Flat Physical Damage and flat Elemental Damage on your Gloves become % Extra Damage of that type. Gloves with Physical + 2 elemental prefixes create a massive multiplicative damage multiplier.",
+  "Single biggest damage node in the ascendancy. A well-rolled pair of gloves multiplies all damage.",
+  "https://www.poe2wiki.net/images/6/6b/MartialArtistHandWraps_%28MartialArtist%29_passive_skill_icon.png",
+  Dialogue(
+    "What glove stats do I need?",
+    "Player needs to understand Stonefist gearing.",
+    "You need flat Physical Damage + 2 flat Elemental Damage types on your gloves for the Stonefist multiplier.",
+  ),
+)
+
+chaosInoculation = Flashcard(
+  "chaos-inoculation",
+  "Chaos Inoculation",
+  "KAY-os in-ok-yoo-LAY-shun",
+  "defense",
+  "Sets max Life to 1 but grants chaos immunity.",
+  "A notable passive that sets maximum Life to 1 in exchange for 100% Chaos Resistance. Requires sufficient base Energy Shield to survive. Taken at approximately 4000+ ES.",
+  "Essential endgame defense. Chaos damage has a 2x multiplier against ES, so CI eliminates that vulnerability.",
+  "https://www.poewiki.net/images/7/78/KeystoneChaosInoculation_passive_skill_icon.png",
+  Dialogue(
+    "When should I take CI?",
+    "Player needs CI timing.",
+    "Take Chaos Inoculation once you reach 4000+ ES and have Shavronne's Satchel for instant recovery.",
+  ),
+)
+
+subterfugeMask = Flashcard(
+  "subterfuge-mask",
+  "Subterfuge Mask",
+  "sub-TUR-fyoo MASK",
+  "defense",
+  "+2 Evasion per 1 ES on helmet.",
+  "A passive node that converts Energy Shield on your helmet into Evasion Rating. A 400 ES helmet generates an additional 800 Evasion, stacking with your body armor evasion.",
+  "Free evasion from your helmet. Combined with high-ES helmet and body armor, creates physical hit mitigation.",
+  "https://www.poe2wiki.net/images/9/91/EvasionandEnergyShieldNode_passive_skill_icon.png",
+  Dialogue(
+    "What helmet should I get?",
+    "Player needs helmet guidance for Subterfuge.",
+    "Get a high-ES helmet (350-450 ES). Subterfuge Mask converts it into bonus Evasion.",
+  ),
+)
+
+ailithsChimes = Flashcard(
+  "ailiths-chimes",
+  "Ailith's Chimes",
+  "EYE-liths CHIMZ",
+  "item",
+  "Unique support gem that converts Combo to Power Charges.",
+  "When linked with Mantra of Destruction and Delayed Gratification, expending Combo through the skill grants Power Charges instead of its normal effect. The primary endgame charge generation method.",
+  "The endgame charge engine. Without it, you rely on the slower Killing Palm + Hollow Focus method.",
+  "https://www.poe2wiki.net/images/7/78/Ailith%27s_Chimes_inventory_icon.png",
+  Dialogue(
+    "Is Ailith's Chimes worth buying?",
+    "Player weighs the investment.",
+    "Ailith's Chimes transforms boss charge generation from manual to instant. Budget alternative exists early league.",
+  ),
+)
+
+trinity = Flashcard(
+  "trinity",
+  "Trinity",
+  "trih-NIH-tee",
+  "aura",
+  "Multiplies lowest 2 elements to match highest.",
+  "An aura that multiplies your two lowest elemental damage types to match your highest. Requires balanced Fire/Cold/Lightning across weapon, rings, and gems. Free Trinity amulets exist to save Spirit.",
+  "Massive elemental damage multiplier. Ensures Falling Thunder's mixed damage output is optimized.",
+  "https://www.poewiki.net/images/2/29/Trinity_Support_inventory_icon.png",
+  Dialogue(
+    "Why can't my Trinity activate?",
+    "Player has unbalanced elements.",
+    "Check your damage breakdown — Trinity needs overlap between all three elements. Balance your staff and ring rolls.",
+  ),
+)
+
+novaProjectiles = Flashcard(
+  "nova-projectiles",
+  "Nova Projectiles",
+  "NOH-vuh pro-JEK-tyulz",
+  "support",
+  "Spreads projectiles in a 360-degree circle.",
+  "Support gem that causes projectiles to spread outward in all directions from you. In patch 0.5, its 40% Less Damage penalty was removed, making it a pure AoE enabler.",
+  "What makes Falling Thunder a screen-clearer instead of a directional skill. No longer has a damage penalty.",
+  "https://www.poe2wiki.net/images/d/de/Nova_Projectiles_I_inventory_icon.png",
+  Dialogue(
+    "Why did Nova Projectiles get buffed?",
+    "Player curious about 0.5 change.",
+    "The 40% Less Damage was removed in 0.5 — now it's pure 360-degree AoE with no tradeoff.",
+  ),
+)
+
+quarterstaff = Flashcard(
+  "quarterstaff",
+  "Quarterstaff",
+  "KWAR-tur-STAF",
+  "gear",
+  "Two-handed melee weapon socketing main skills.",
+  "Your primary weapon. Holds Falling Thunder, Flicker Strike, and other skills. Prioritize flat Lightning Damage, % Increased Critical Damage, Attack Speed, and Leech Physical Damage as Mana.",
+  "Skill socket hub and primary damage source. Avoid Dreaming Quarterstaff — it has 0% base Crit Chance.",
+  "https://www.poe2wiki.net/images/5/55/Crescent_Quarterstaff_inventory_icon.png",
+  Dialogue(
+    "Can I use a Dreaming Quarterstaff?",
+    "Player doesn't know the crit issue.",
+    "No — Dreaming Quarterstaff has 0% base Crit, crippling this crit-focused build. Use any other Quarterstaff.",
+  ),
+)

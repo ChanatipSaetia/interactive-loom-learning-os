@@ -1,0 +1,60 @@
+root = ConceptMap(
+  "Build Mechanics Map",
+  [
+    flickerStrike,
+    fallingThunder,
+    chargedStaff,
+    martialArtist,
+    combo,
+    powerCharges,
+    ailithsChimes,
+    stonefist,
+    hollowFocus,
+    heraldThunder,
+    heraldIce,
+    trinity,
+    chaosInoculation,
+    subterfugeMask,
+    quarterstaff,
+    manaLeech,
+    novaProjectiles,
+    castOnCrit,
+  ],
+  [
+    ConceptLink(flickerStrike, powerCharges, "consumes for damage"),
+    ConceptLink(fallingThunder, powerCharges, "fires per charge"),
+    ConceptLink(fallingThunder, novaProjectiles, "360-degree spread"),
+    ConceptLink(chargedStaff, powerCharges, "consumes for buff"),
+    ConceptLink(chargedStaff, heraldThunder, "triggers explosions"),
+    ConceptLink(martialArtist, combo, "doubles gain"),
+    ConceptLink(martialArtist, stonefist, "glove multiplier"),
+    ConceptLink(combo, ailithsChimes, "converts to charges"),
+    ConceptLink(hollowFocus, powerCharges, "bell cull charges"),
+    ConceptLink(quarterstaff, manaLeech, "sustains mana"),
+    ConceptLink(castOnCrit, powerCharges, "mapping charges"),
+    ConceptLink(trinity, fallingThunder, "multiplies elements"),
+    ConceptLink(heraldThunder, fallingThunder, "amplifies explosions"),
+    ConceptLink(heraldIce, fallingThunder, "freeze + explosion"),
+    ConceptLink(chaosInoculation, subterfugeMask, "stacked defenses"),
+    ConceptLink(ailithsChimes, combo, "consumes combo"),
+  ],
+)
+
+flickerStrike = Concept("flicker-strike", "Flicker Strike", "skill")
+fallingThunder = Concept("falling-thunder", "Falling Thunder", "skill")
+chargedStaff = Concept("charged-staff", "Charged Staff", "skill")
+martialArtist = Concept("martial-artist", "Martial Artist", "ascendancy")
+combo = Concept("combo", "Combo System", "mechanic")
+powerCharges = Concept("power-charges", "Power Charges", "mechanic")
+ailithsChimes = Concept("ailiths-chimes", "Ailith's Chimes", "item")
+stonefist = Concept("stonefist", "Way of the Stonefist", "ascendancy")
+hollowFocus = Concept("hollow-focus", "Hollow Focus Technique", "ascendancy")
+heraldThunder = Concept("herald-thunder", "Herald of Thunder", "herald")
+heraldIce = Concept("herald-ice", "Herald of Ice", "herald")
+trinity = Concept("trinity", "Trinity Aura", "aura")
+chaosInoculation = Concept("chaos-inoculation", "Chaos Inoculation", "defense")
+subterfugeMask = Concept("subterfuge-mask", "Subterfuge Mask", "defense")
+quarterstaff = Concept("quarterstaff", "Quarterstaff", "gear")
+manaLeech = Concept("mana-leech", "Mana Leech", "mechanic")
+novaProjectiles = Concept("nova-projectiles", "Nova Projectiles", "support")
+castOnCrit = Concept("cast-on-crit", "Cast on Critical", "mechanic")

@@ -1,0 +1,209 @@
+root = Quiz("Knowledge Check", [q1, q2, q3, q4, q5, q6, q7, q8])
+
+q1 = QuizQuestion(
+  "q1",
+  "What does Way of the Stonefist convert on your gloves?",
+  [
+    QuizChoice(
+      "a",
+      "Socket count into mana regeneration",
+      false,
+      "Stonefist does not affect sockets or mana. It's a damage multiplier node.",
+    ),
+    QuizChoice(
+      "b",
+      "Flat Physical and Elemental Damage into % Extra Damage",
+      true,
+      "Correct. Flat Physical Damage + flat Elemental Damage on gloves become % Extra Damage of each type, creating a massive multiplicative multiplier.",
+    ),
+    QuizChoice(
+      "c",
+      "Attack Speed into movement speed",
+      false,
+      "Stonefist only converts flat damage stats. Attack Speed is unaffected.",
+    ),
+  ],
+  "Think about flat stats becoming percentages.",
+)
+
+q2 = QuizQuestion(
+  "q2",
+  "Why should you avoid Dreaming Quarterstaff?",
+  [
+    QuizChoice(
+      "a",
+      "It has too low physical damage",
+      false,
+      "Physical damage isn't the issue. The problem is more fundamental to this crit-based build.",
+    ),
+    QuizChoice(
+      "b",
+      "It has 0% base Crit Chance",
+      true,
+      "Correct. Dreaming Quarterstaff has 0% base Crit, which cripples this crit-focused build. Use any other Quarterstaff.",
+    ),
+    QuizChoice(
+      "c",
+      "It cannot socket Falling Thunder",
+      false,
+      "Dreaming Quarterstaff can socket any melee skill. The issue is its 0% base Crit.",
+    ),
+  ],
+  "Think about critical strikes.",
+)
+
+q3 = QuizQuestion(
+  "q3",
+  "When should you take Chaos Inoculation?",
+  [
+    QuizChoice(
+      "a",
+      "Immediately at league start",
+      false,
+      "Taking CI too early leaves you with insufficient ES to survive. Wait for proper gearing.",
+    ),
+    QuizChoice(
+      "b",
+      "At approximately 4000 ES with Shavronne's Satchel",
+      true,
+      "Correct. CI sets Life to 1, so you need Shavronne's Satchel for instant recovery and 4000+ ES to survive hits.",
+    ),
+    QuizChoice(
+      "c",
+      "Never — it's too risky for this build",
+      false,
+      "CI is recommended for endgame. Chaos damage has a 2x multiplier against ES, making CI essential.",
+    ),
+  ],
+  "Consider the ES threshold and recovery items.",
+)
+
+q4 = QuizQuestion(
+  "q4",
+  "How does Nova Projectiles change Falling Thunder in patch 0.5?",
+  [
+    QuizChoice(
+      "a",
+      "It doubles projectile count",
+      false,
+      "Nova Projectiles doesn't add projectiles. It changes their direction.",
+    ),
+    QuizChoice(
+      "b",
+      "It spreads projectiles in 360 degrees with no damage penalty",
+      true,
+      "Correct. The 40% Less Damage penalty was removed in 0.5, making Nova Projectiles a pure AoE enabler.",
+    ),
+    QuizChoice(
+      "c",
+      "It adds cold damage to the projectiles",
+      false,
+      "Nova Projectiles only affects direction. Cold damage comes from Herald of Ice and staff rolls.",
+    ),
+  ],
+  "Think about directional vs circular attacks.",
+)
+
+q5 = QuizQuestion(
+  "q5",
+  "What is the primary endgame Power Charge generation method?",
+  [
+    QuizChoice(
+      "a",
+      "Killing Palm + Hollow Focus bell culling",
+      false,
+      "This is the budget/early league method. Endgame uses a faster Combo-based approach.",
+    ),
+    QuizChoice(
+      "b",
+      "Building 20 Combo then expending via Delayed Gratification + Ailith's Chimes",
+      true,
+      "Correct. Build Combo on Mantra of Destruction, then expend it — Ailith's Chimes converts the Combo into Power Charges.",
+    ),
+    QuizChoice(
+      "c",
+      "Passive Power Charge gain from mapping",
+      false,
+      "Passive charge gain isn't sufficient for boss fights. You need the Combo + Ailith's Chimes system.",
+    ),
+  ],
+  "Think about what happens after building Combo.",
+)
+
+q6 = QuizQuestion(
+  "q6",
+  "What does Subterfuge Mask convert?",
+  [
+    QuizChoice(
+      "a",
+      "Helmet Energy Shield into Evasion Rating",
+      true,
+      "Correct. +2 Evasion per 1 ES on helmet. A 400 ES helmet = 800 bonus Evasion.",
+    ),
+    QuizChoice(
+      "b",
+      "Helmet Armour into Energy Shield",
+      false,
+      "Subterfuge Mask works with ES on helmets, not Armour.",
+    ),
+    QuizChoice(
+      "c",
+      "Evasion into block chance",
+      false,
+      "Subterfuge Mask converts ES to Evasion, not the other way around, and doesn't involve block.",
+    ),
+  ],
+  "Think about helmet stats.",
+)
+
+q7 = QuizQuestion(
+  "q7",
+  "Why is Trinity aura important for this build?",
+  [
+    QuizChoice(
+      "a",
+      "It provides a damage shield",
+      false,
+      "Trinity doesn't provide defense. It's a damage multiplier aura.",
+    ),
+    QuizChoice(
+      "b",
+      "It multiplies your two lowest elements to match the highest",
+      true,
+      "Correct. Trinity ensures all three elements (Fire, Cold, Lightning) deal equal damage, maximizing Falling Thunder's mixed elemental output.",
+    ),
+    QuizChoice(
+      "c",
+      "It reduces Spirit cost of all auras",
+      false,
+      "That's Inspiration's job. Trinity is purely a damage multiplier.",
+    ),
+  ],
+  "Think about elemental damage types.",
+)
+
+q8 = QuizQuestion(
+  "q8",
+  "What belt is essential for Chaos Inoculation viability?",
+  [
+    QuizChoice(
+      "a",
+      "Snake Pit",
+      false,
+      "Snake Pit is a good belt but doesn't provide the instant recovery needed for CI.",
+    ),
+    QuizChoice(
+      "b",
+      "Shavronne's Satchel",
+      true,
+      "Correct. Shavronne's Satchel requires an Instant Life Flask, which heals Energy Shield on use — providing instant recovery after being hit.",
+    ),
+    QuizChoice(
+      "c",
+      "The Squire",
+      false,
+      "The Squire reduces flask charges but doesn't provide the instant recovery that Shavronne's does.",
+    ),
+  ],
+  "It provides instant recovery.",
+)

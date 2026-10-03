@@ -1,0 +1,78 @@
+root = TradeoffSandbox(
+  "Architecture Strategy & Tradeoff Sandbox",
+  [architectureChoice],
+  null,
+  Lead(
+    "Interactive comparison table comparing Hexagonal Architecture vs Layered Monolith vs Microservices.",
+    "Evaluates the trade-offs of initial development velocity vs long-term testability and maintainability.",
+    "Next: Synthesize your understanding in the Reflection Template.",
+  ),
+)
+
+architectureChoice = TradeoffScenario(
+  "architecture-choice",
+  "System Architecture Pattern Selection",
+  [
+    TradeoffMetric("unit_testability", "In-Memory Unit Testability", 50, 0, 100),
+    TradeoffMetric("framework_decoupling", "Framework Decoupling", 50, 0, 100),
+    TradeoffMetric("initial_setup_speed", "Initial Prototype Speed", 50, 0, 100),
+    TradeoffMetric("codebase_indirection", "Low Indirection Complexity", 50, 0, 100),
+  ],
+  [patternStep],
+  "Compare structural trade-offs when building a core financial transaction engine.",
+)
+
+patternStep = TradeoffStep(
+  "pattern-step",
+  "Choose Architectural Pattern",
+  [hexagonal, layeredMonolith],
+  "Select how domain logic and external infrastructure dependencies are organized.",
+)
+
+hexagonal = TradeoffChoice(
+  "hexagonal",
+  "Hexagonal Architecture (Ports & Adapters)",
+  "Strict isolation of Domain Core via Port interfaces and Adapter implementations.",
+  {
+    unit_testability: 95,
+    framework_decoupling: 98,
+    initial_setup_speed: 60,
+    codebase_indirection: 55,
+  },
+  [
+    ProCon(
+      "In-Memory Testability",
+      "100% in-memory domain unit testability without DB or HTTP mocks",
+    ),
+    ProCon("Painless Migrations", "Effortless database or framework migrations"),
+    ProCon("Pure Domain Logic", "Domain rules stay pure and readable with zero framework imports"),
+  ],
+  [
+    ProCon("Interface Indirection", "Requires interface indirection and DTO mapping layers"),
+    ProCon("Setup Boilerplate", "Slightly higher initial project setup cost"),
+  ],
+)
+
+layeredMonolith = TradeoffChoice(
+  "layered-monolith",
+  "Traditional Layered Monolith (Controller → Service → Repository)",
+  "Direct top-down dependencies where Controller calls Service, which calls DB ORM directly.",
+  {
+    unit_testability: 50,
+    framework_decoupling: 30,
+    initial_setup_speed: 90,
+    codebase_indirection: 90,
+  },
+  [
+    ProCon("Fast CRUD Bootstrapping", "Fastest initial CRUD bootstrapping"),
+    ProCon("Low Indirection", "Fewer files and zero interface indirection"),
+  ],
+  [
+    ProCon("ORM Leakage", "Database ORM entity leaks directly into business logic"),
+    ProCon("Heavy Test Setups", "Requires mock databases or heavy container setups for testing"),
+    ProCon(
+      "Tightly Coupled Dependencies",
+      "Hard to migrate frameworks or database providers later",
+    ),
+  ],
+)

@@ -1,0 +1,84 @@
+root = Flashcards(
+  "Key Vocabulary",
+  [pipeline, component, documentStore, document, retriever, embedder, rag, ranking],
+)
+
+pipeline = Flashcard(
+  "pipeline",
+  "Pipeline",
+  "pipe-line",
+  "architecture",
+  "A directed multigraph of Haystack components wired together to form a processing flow.",
+  "In Haystack, a Pipeline is the central orchestration primitive. It connects Components via typed input/output sockets. The Pipeline validates type compatibility at connection time, supports branching (concurrent execution), loops (iterative self-correction), and serialization to YAML. Pipelines are either Indexing Pipelines (offline ETL) or Query Pipelines (real-time retrieval).",
+  "Understanding Pipelines is essential because they are how you compose Haystack applications. Every search system is at least one Pipeline, and complex RAG systems chain multiple Pipelines together.",
+)
+
+component = Flashcard(
+  "component",
+  "Component",
+  "com-puh-nent",
+  "architecture",
+  "A reusable, self-contained unit of processing with typed inputs and outputs.",
+  "Components are the building blocks of Haystack. Each component has a run() method that accepts inputs and returns a dict of outputs. Built-in components include embedders, retrievers, converters, rankers, and LLMs. Custom components are created with the @component decorator. Components can be used standalone or wired into Pipelines.",
+  "Components are the atomic unit of Haystack development. When communicating with AI about Haystack, you reference components (e.g., \"use a SentenceTransformersTextEmbedder\" or \"build a custom ranker component\").",
+)
+
+documentStore = Flashcard(
+  "document-store",
+  "Document Store",
+  "duh-kuh-ment store",
+  "storage",
+  "The persistent database layer that stores and serves Document objects.",
+  "A Document Store is not a Pipeline component — it is an external database that components access. Haystack supports multiple backends: InMemoryDocumentStore (prototyping), OpenSearchDocumentStore, ElasticsearchDocumentStore, ChromaDocumentStore, WeaviateDocumentStore, and more. The store provides four core operations: count_documents, filter_documents, write_documents, and delete_documents.",
+  "The Document Store is the convergence point between Indexing and Query pipelines. Your choice of Document Store determines what retrieval strategies (BM25, vector, hybrid) are available.",
+)
+
+document = Flashcard(
+  "document",
+  "Document",
+  "duh-kuh-ment",
+  "data",
+  "The canonical data class in Haystack, carrying content, embedding, metadata, and ID.",
+  "A Haystack Document is a Python dataclass with these fields: id (unique string), content (text string), embedding (list of floats), metadata (dict of key-value pairs), and score (float for ranking). All text-processing components convert to and from Documents. The metadata field is critical — it enables filtering, parent-child relationships, and custom schemas.",
+  "Every Haystack pipeline ultimately produces or consumes Documents. Understanding the Document structure is key to debugging pipelines and designing custom schemas.",
+)
+
+retriever = Flashcard(
+  "retriever",
+  "Retriever",
+  "ree-truh-ver",
+  "search",
+  "A component that queries a Document Store to find relevant documents.",
+  "Retrievers are specialized components that accept a query (and optionally an embedding) and return a ranked list of Documents. Haystack provides BM25Retriever (keyword search), EmbeddingRetriever (dense vector similarity), and hybrid retrievers that combine both. Each Document Store backend typically ships with a matching Retriever for optimal performance.",
+  "The Retriever is the heart of any search application. Its quality determines whether the LLM receives relevant context. Hybrid retrieval (BM25 + vectors) is the production standard.",
+)
+
+embedder = Flashcard(
+  "embedder",
+  "Embedder",
+  "em-bed-er",
+  "search",
+  "A component that converts text into dense vector representations.",
+  "Embedders transform text (documents or queries) into fixed-length vectors that capture semantic meaning. Haystack provides TextEmbedders (for queries) and DocumentEmbedders (for document chunks). Models include SentenceTransformers (local), OpenAI embeddings, Azure AI, and Cohere. The same model family should be used for both text and document embedding to ensure compatible vector spaces.",
+  "Embedders enable semantic search. Without embeddings, you are limited to keyword matching. The quality of your embeddings directly impacts retrieval accuracy.",
+)
+
+rag = Flashcard(
+  "rag",
+  "RAG (Retrieval-Augmented Generation)",
+  "rag",
+  "pattern",
+  "A pattern where retrieved documents are injected into the LLM prompt to ground its response.",
+  "RAG combines a retrieval pipeline (finding relevant documents) with a generation pipeline (LLM answering from context). The typical flow is: embed query → retrieve documents → rank documents → build prompt with retrieved context → invoke LLM → return answer. Haystack makes RAG trivial by wiring these components into a single Pipeline.",
+  "RAG is the most common production pattern with Haystack. When you design a search system, you are almost always designing a RAG pipeline.",
+)
+
+ranking = Flashcard(
+  "ranking",
+  "Ranker",
+  "rank-er",
+  "search",
+  "A component that re-scores and re-orders retrieved documents by relevance.",
+  "Rankers take a list of Documents and a query, then re-order the documents by a more sophisticated relevance score. Haystack provides TransformerSimilarityRanker (cross-encoder models), CohereRanker (API-based), and ReciprocalRankFusion (combining multiple retrieval results). Rankers are more expensive than Retrievers but significantly improve result quality.",
+  "Adding a Ranker after retrieval is the single most effective way to improve search quality. It catches false positives from the initial retrieval step.",
+)

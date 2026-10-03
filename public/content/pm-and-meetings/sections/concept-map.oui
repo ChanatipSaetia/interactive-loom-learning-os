@@ -1,0 +1,21 @@
+root = ConceptMap(
+  "PM & Meeting Ecosystem",
+  [projectGoal, backlog, standup, retro, asyncUpdate, blocker, team, pm],
+  [
+    ConceptLink(pm, backlog, "prioritizes"),
+    ConceptLink(team, backlog, "executes from"),
+    ConceptLink(standup, blocker, "surfaces"),
+    ConceptLink(retro, team, "improves"),
+    ConceptLink(asyncUpdate, projectGoal, "tracks"),
+    ConceptLink(blocker, pm, "escalated to"),
+  ],
+)
+
+projectGoal = Concept("project_goal", "Project Goal", "pattern")
+backlog = Concept("backlog", "Task Backlog", "data")
+standup = Concept("standup", "Daily Sync", "process")
+retro = Concept("retro", "Retrospective", "process")
+asyncUpdate = Concept("async_update", "Async Update", "process")
+blocker = Concept("blocker", "Blocker", "data")
+team = Concept("team", "Engineering Team", "role")
+pm = Concept("pm", "Project Manager", "role")

@@ -1,0 +1,10 @@
+root = TaxonomyBrowser(
+  "mTLS Alternatives",
+  [],
+  null,
+  Lead(
+    "Explore authentication alternatives to mTLS, each with different trade-offs.",
+    "mTLS isn't always the right choice. Understanding alternatives helps you pick the right tool.",
+    "Walk through the mTLS handshake process in the flowchart.",
+  ),
+)

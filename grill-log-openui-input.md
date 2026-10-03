@@ -1,6 +1,6 @@
 # Grill Log — OpenUI Lang Replaces OKF
 
-Status: **Phases 1–3 complete — Phase 4 (migrate remaining 11 topics) next**
+Status: **Phases 1–4 complete — Phase 5 (Section Editor raw OpenUI tab) next**
 
 ## Goal
 
@@ -130,6 +130,14 @@ Delivery:
 - **Dual-source loading** (`composition/content.ts`): a topic listed in `public/content/index.oui` loads from OpenUI Lang, otherwise from OKF. Topic discovery merges both catalogs, and migrated topics take their OpenUI metadata. The web app, single-HTML embed runtime and editor all go through this facade. Phase 6 removes the OKF branch.
 - **Catalog metadata:** title, category and description come from `public/okf/index.md`. Tags come from the topic's `index.yaml`; the OKF app ignored these before, so migrated topics now show tags in the catalog.
 - **Verified in Chromium:** `#/topics/demo` renders identical text for all 18 sections from `.oui` and from OKF (A/B with `index.oui` hidden), with the same console output. Editing a section in the UI and saving rewrites its `.oui` file.
+
+## Phase 4 — Full Content Migration Notes
+
+- `npm run oui:convert -- --all` converted all 12 topics: 143 sections, 12 `topic.oui` manifests and the `index.oui` catalog (~1.1 MB in `public/content/`). Regenerating `demo` produced byte-identical output.
+- **Verified in Chromium:** all 12 topic pages render identical section text (143/143) and titles from `.oui` and from OKF (A/B with `index.oui` hidden). The catalog page differs only by the topic tags that OpenUI manifests now carry.
+- **Guard for the committed content** (`tests/unit/content/content-files.test.ts`): the catalog, every topic manifest and every section must compile with no tier 1/2/3 diagnostics, every `TopicRef`/`SectionRef` must resolve, and no section file may be orphaned. A deliberately corrupted file makes it fail. This test replaces the OKF round trip once `public/okf/` is deleted in Phase 6.
+- **Existing content bug (unchanged, in both formats):** `poe2-witchhunter-poison-bleed/dot-calculator`'s `total_dps` formula is `bleed_dps + poison_dps`, which references other *metrics*. The formula sandbox only binds *variables*, so it logs `ReferenceError` on every render. It is not fixed here because the content is migrated as-is.
+- `public/okf/` is still present and still the fallback source. It is deleted in Phase 6 along with the OKF reader.
 
 ## Open Questions
 

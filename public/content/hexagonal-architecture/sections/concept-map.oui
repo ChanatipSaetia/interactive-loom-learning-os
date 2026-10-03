@@ -1,0 +1,37 @@
+root = ConceptMap(
+  "Hexagonal Architecture Domain Map",
+  [
+    actor,
+    drivingAdapter,
+    drivingPort,
+    domainService,
+    aggregate,
+    drivenPort,
+    drivenAdapter,
+    infrastructure,
+  ],
+  [
+    ConceptLink(actor, drivingAdapter, "Triggers HTTP / Command"),
+    ConceptLink(drivingAdapter, drivingPort, "Invokes DTO Method"),
+    ConceptLink(drivingPort, domainService, "Implemented By"),
+    ConceptLink(domainService, aggregate, "Mutates & Enforces Business Rules"),
+    ConceptLink(domainService, drivenPort, "Calls Dependency Interface"),
+    ConceptLink(drivenAdapter, drivenPort, "Implements Interface"),
+    ConceptLink(drivenAdapter, infrastructure, "Executes SQL / API Call"),
+  ],
+  null,
+  Lead(
+    "Interactive semantic network mapping entities and boundaries in Ports & Adapters.",
+    "Builds a spatial mental model of how Driving Adapters, Ports, Domain Aggregates, and Driven Adapters connect.",
+    "Next: Categorize Primary vs Secondary Adapters.",
+  ),
+)
+
+actor = Concept("actor", "External Actor / Client", "External")
+drivingAdapter = Concept("driving-adapter", "Driving Adapter (REST / CLI / gRPC)", "Primary")
+drivingPort = Concept("driving-port", "Driving Port (Inbound Interface)", "Contract")
+domainService = Concept("domain-service", "Domain Service / Application Core", "Core")
+aggregate = Concept("aggregate", "Domain Aggregate / Entity", "Core")
+drivenPort = Concept("driven-port", "Driven Port (Outbound Interface)", "Contract")
+drivenAdapter = Concept("driven-adapter", "Driven Adapter (DB / HTTP / Queue)", "Secondary")
+infrastructure = Concept("infrastructure", "External System / Database / Service", "External")

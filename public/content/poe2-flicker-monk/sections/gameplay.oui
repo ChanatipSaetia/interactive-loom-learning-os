@@ -1,0 +1,71 @@
+root = Bullets(
+  "Gameplay Loop",
+  [
+    Bullet(
+      "Enter map and spam Whirling Assault to clear initial packs and generate Power Charges",
+      [
+        Bullet(
+          "Cast on Critical triggers Profane Ritual on crits, converting corpses into Power Charges",
+        ),
+        Bullet(
+          "Maintain minimum 60% Crit Chance on Whirling Assault for reliable charge generation",
+        ),
+        Bullet("Oisin's Oath on Whirling Assault converts Elemental Damage to Mana Leech"),
+      ],
+    ),
+    Bullet(
+      "Spend Power Charges on Falling Thunder + Nova Projectiles for 360-degree pack clearing",
+      [
+        Bullet(
+          "Each consumed charge fires one projectile — 6-8 charges = 6-8 lightning projectiles",
+        ),
+        Bullet("Nova Projectiles spreads them in a full circle with no damage penalty (patch 0.5)"),
+        Bullet("Herald of Thunder and Herald of Ice trigger explosions on hit"),
+      ],
+    ),
+    Bullet(
+      "Alternate with Flicker Strike to dash through packs and reposition",
+      [
+        Bullet("Flicker Strike consumes charges for increased damage"),
+        Bullet("Perpetual Charge extends duration and reduces charge consumption chance"),
+        Bullet(
+          "Use for mobility between packs or tight areas where Falling Thunder is less effective",
+        ),
+      ],
+    ),
+    Bullet(
+      "For bosses, build 20 Combo stacks on Mantra of Destruction with Whirling Assault",
+      [
+        Bullet("Hit boss repeatedly with Whirling Assault to accumulate Combo"),
+        Bullet("Martial Adept doubles Combo gain speed"),
+      ],
+    ),
+    Bullet(
+      "Expend Combo through Delayed Gratification + Ailith's Chimes for Power Charges",
+      [
+        Bullet("Ailith's Chimes converts expended Combo into a full set of Power Charges"),
+        Bullet("Alternative: Hand of Chayula + Culmination II + Ailith's Chimes"),
+        Bullet(
+          "Pre-Ailith's: use Shattering Palm + Living Lightning II minions to cull Hollow Focus bells",
+        ),
+      ],
+    ),
+    Bullet(
+      "Mark boss with Hand of Chayula, activate Charged Staff, then commit to Flicker Strike or Falling Thunder",
+      [
+        Bullet("Charged Staff provides massive Lightning damage buff per charge consumed"),
+        Bullet("For Uber bosses, swap to Powertread boots for guaranteed one-shot"),
+        Bullet("If boss survives, regenerate charges and repeat the cycle"),
+      ],
+    ),
+    Bullet(
+      "Gear progression: starter Quarterstaff → Shavronne's Satchel → Chaos Inoculation → Ailith's Chimes → endgame",
+      [
+        Bullet("Take CI at approximately 4000 ES with Shavronne's Satchel and Instant Life Flask"),
+        Bullet("Heart of the Well Timeless Jewel adds Chaos Damage for Herald of Ice explosions"),
+        Bullet("High budget: Uul-Netol's Embrace + Rite of Passage for maximum damage"),
+      ],
+    ),
+  ],
+  true,
+)

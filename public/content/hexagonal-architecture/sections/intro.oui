@@ -1,0 +1,55 @@
+root = Intro(
+  "",
+  what,
+  why,
+  [
+    RoadmapStep(
+      "1. Core Vocabulary",
+      "flashcards",
+      "Understand Ports, Adapters, Driving vs Driven boundaries, and Dependency Inversion.",
+    ),
+    RoadmapStep(
+      "2. Domain Topology",
+      "concept-map",
+      "Visualize entity relationships in a semantic graph.",
+    ),
+    RoadmapStep(
+      "3. Adapter Taxonomies",
+      "taxonomy-browser",
+      "Categorize Primary (Driving) UI/API drivers vs Secondary (Driven) Persistence drivers.",
+    ),
+    RoadmapStep(
+      "4. Execution Flow",
+      "flowchart",
+      "Trace request cycles from HTTP Adapters through Ports into Domain Aggregates.",
+    ),
+    RoadmapStep(
+      "5. Architectural Trade-offs",
+      "tradeoff-sandbox",
+      "Compare Hexagonal Architecture vs Layered Monolith vs Microservices.",
+    ),
+    RoadmapStep(
+      "6. Active Recall & Quiz",
+      "quiz",
+      "Test your synthesis with sequencing challenges and checkpoint quizzes.",
+    ),
+  ],
+  "Isolate core domain logic from external technologies, frameworks, databases, and UI drivers",
+  "25 mins",
+  6,
+)
+
+what = IntroWhat(
+  "Hexagonal Architecture (also known as Ports & Adapters) decouples core business domain logic from external dependencies like HTTP controllers, databases, message brokers, and third-party APIs through explicit contracts called Ports, implemented by Adapters.",
+  "An architectural pattern originated by Alistair Cockburn that isolates application core logic using inbound and outbound Ports and Adapters.",
+  [
+    "Driving (Primary) Ports & Adapters handle incoming user requests.",
+    "Driven (Secondary) Ports & Adapters handle outgoing persistence and external service calls.",
+    "Domain logic stays pure with zero framework dependencies.",
+  ],
+)
+
+why = IntroWhy(
+  "Traditional layered architectures tend to leak database entities and framework concerns into application code, making software hard to test, refactor, or migrate. Ports & Adapters allow developers to test business logic completely in memory without databases or HTTP servers.",
+  "Enables fast in-memory unit testing and painless framework migrations.",
+)

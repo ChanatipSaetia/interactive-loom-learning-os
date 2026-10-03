@@ -1,0 +1,90 @@
+root = Flashcards(
+  "Essential Terminology",
+  [drivingPort, drivenPort, drivingAdapter, drivenAdapter, dependencyInversion],
+  null,
+  Lead(
+    "Key terms and definitions defining Hexagonal Architecture boundaries.",
+    "Pre-teaches essential vocabulary before exploring structural flowcharts and trade-off sandboxes.",
+    "Next: Explore the Semantic Domain Map.",
+  ),
+)
+
+drivingPort = Flashcard(
+  "driving-port",
+  "Driving Port (Primary)",
+  "ˈdraɪvɪŋ pɔːrt",
+  "Domain Architecture",
+  "An entry point contract (interface) exposed by the Application Core that defines what tasks the domain can perform for external actors.",
+  "Driving Ports define the explicit use-case boundary of the core application. External actors like REST controllers or CLI handlers invoke these contracts to trigger business logic.",
+  "Decouples entry points from concrete web framework handlers.",
+  null,
+  Dialogue(
+    "How do REST controllers interact with core logic?",
+    "Evaluating dependency direction; HTTP controllers should invoke inbound Port interfaces, not domain entities directly.",
+    "Does the Express controller call the PlaceOrderPort interface or directly instantiate ORM models?",
+  ),
+)
+
+drivenPort = Flashcard(
+  "driven-port",
+  "Driven Port (Secondary)",
+  "ˈdrɪv.ən pɔːrt",
+  "Domain Architecture",
+  "An exit point contract (interface) declared by the Application Core defining requirements for external infrastructure.",
+  "Driven Ports allow the Domain Core to express persistence and external service needs without depending on concrete ORM classes or HTTP clients.",
+  "Enables replacing databases or third-party APIs without modifying business logic.",
+  null,
+  Dialogue(
+    "How does the domain save data without knowing about SQL?",
+    "Checking Dependency Inversion; domain defines OrderRepositoryPort interface, infrastructure implements it.",
+    "Which layer owns the OrderRepositoryPort interface definition?",
+  ),
+)
+
+drivingAdapter = Flashcard(
+  "driving-adapter",
+  "Driving (Primary) Adapter",
+  "ˈdraɪvɪŋ əˈdæp.tər",
+  "Domain Architecture",
+  "An external component (HTTP REST controller, CLI command, gRPC handler) that converts requests into Driving Port calls.",
+  "Driving Adapters sit outside the Hexagon. They parse external protocol payloads (JSON, CLI flags, protobufs) and translate them into domain command invocations.",
+  "Allows supporting multiple UI drivers (Web, Mobile, CLI, gRPC) against the exact same core logic.",
+  null,
+  Dialogue(
+    "Can we add a gRPC endpoint without rewriting the business logic?",
+    "Verifying multi-driver capability; adding a gRPC Driving Adapter simply calls existing Driving Ports.",
+    "Would adding a gRPC adapter require editing any code inside the domain hexagon?",
+  ),
+)
+
+drivenAdapter = Flashcard(
+  "driven-adapter",
+  "Driven (Secondary) Adapter",
+  "ˈdrɪv.ən əˈdæp.tər",
+  "Domain Architecture",
+  "A concrete implementation of a Driven Port interface that communicates with external technology.",
+  "Driven Adapters implement Secondary Port contracts using specific libraries like Prisma, TypeORM, Redis, or Stripe SDKs.",
+  "Isolates vendor-specific dependencies and database query details outside the core domain.",
+  null,
+  Dialogue(
+    "How do we test domain logic without connecting to PostgreSQL?",
+    "Evaluating test doubles; swap PostgresDrivenAdapter with InMemoryOrderAdapter.",
+    "Can we run unit tests using an InMemoryDrivenAdapter in under 10 milliseconds?",
+  ),
+)
+
+dependencyInversion = Flashcard(
+  "dependency-inversion",
+  "Dependency Inversion Principle",
+  "dɪˈpen.dən.si ɪnˈvɜːr.ʒən",
+  "Domain Architecture",
+  "High-level domain modules do not depend on low-level infrastructure details; both depend on abstractions (Ports).",
+  "Dependency Inversion flips traditional dependency direction: infrastructure depends on domain contracts, ensuring the core remains pure and isolated.",
+  "Prevents framework creep and database entities from leaking into application logic.",
+  null,
+  Dialogue(
+    "Why is Dependency Inversion critical for long-term maintainability?",
+    "Analyzing software longevity; domain logic outlives framework versions and database drivers.",
+    "What happens to your domain code when you upgrade or switch web frameworks?",
+  ),
+)

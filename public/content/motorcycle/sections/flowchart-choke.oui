@@ -1,0 +1,110 @@
+root = Flowchart(
+  "ระบบโช้ค (Choke System)",
+  [rider],
+  [chokeValve, engineWarm],
+  [chokeOn, richMixBranch, chokeOff],
+  [chokeColdStart, chokeForgotOff],
+)
+
+rider = Actor("rider", "ผู้ขับขี่ (Rider)", "ผู้ใช้งานมอเตอร์ไซค์")
+
+chokeValve = System(
+  "choke_valve",
+  "วาล์วโช้ค (Choke Valve)",
+  "ควบคุมปริมาณอากาศที่เข้าสู่คาร์บูเรเตอร์",
+  "aggregate",
+)
+
+engineWarm = System(
+  "engine_warm",
+  "เครื่องยนต์อุ่นตัว (Engine Warms Up)",
+  "อุณหภูมิเครื่องยนต์สูงขึ้นเรื่อยๆ",
+  "aggregate",
+)
+
+chokeOn = Step(
+  "choke_on",
+  "ใช้ส่วนผสมรวยน้ำมัน (Rich Mix Decision)",
+  "เปิดโช้ค (Turn Choke On)",
+  chokeValve,
+  [Event("rich_mix", "ส่วนผสมรวยน้ำมัน (Rich Mixture)", "อัตราส่วนน้ำมัน:อากาศสูงกว่าปกติ")],
+  rider,
+  null,
+  "rich-mix-branch",
+)
+
+richMixBranch = Branch("rich-mix-branch", "rich_mix", [coldStart, rideChoke])
+
+coldStart = BranchOption(
+  "cold_start",
+  "สตาร์ทเครื่อง",
+  "เลือกสตาร์ทเครื่อง (Choose Cold Start)",
+  "สตาร์ทเครื่องเย็น (Cold Start Engine)",
+  engineWarm,
+  [Event("engine_warm", "เครื่องอุ่นแล้ว (Engine Warm)", "อุณหภูมิเครื่องยนต์ถึงระดับทำงานปกติ")],
+  null,
+  null,
+  null,
+  "choke_off",
+)
+
+rideChoke = BranchOption(
+  "ride_choke",
+  "ลืมปิดโช้ค",
+  "ลืมปิดโช้ค (Forgot Choke)",
+  "ขี่รถโดยลืมปิดโช้ค (Ride With Choke)",
+  chokeValve,
+  [
+    Event(
+      "choke_forget",
+      "วิ่ง โช้คค้าง (Riding With Choke On)",
+      "ส่วนผสมรวยน้ำมันเกินไป ทำให้หัวเทียนสกปรกและกินน้ำมัน",
+    ),
+  ],
+  true,
+)
+
+chokeOff = Step(
+  "choke_off",
+  "ปิดโช้ค (Turn Choke Off)",
+  "ปิดโช้ค (Choke Off)",
+  chokeValve,
+  [Event("normal_mix", "ส่วนผสมปกติ (Normal Mixture)", "อัตราส่วนน้ำมัน:อากาศกลับสู่ค่ามาตรฐาน")],
+)
+
+chokeColdStart = Journey(
+  "choke-cold-start",
+  "สตาร์ทเครื่องเย็น (Cold Start)",
+  "เปิดโช้ค → สตาร์ท → เครื่องอุ่น → ปิดโช้ค → ผสมส่วนปกติ",
+  [
+    JourneyStep(
+      chokeOn,
+      "เปิดโช้ค",
+      "ดึงโช้คปิดช่องอากาศ ลดอากาศเข้าเพื่อให้ส่วนผสมเข้มข้นขึ้น เหมาะแก่การสตาร์ทเครื่องเย็น",
+    ),
+    JourneyStep(
+      coldStart,
+      "สตาร์ทเครื่อง",
+      "ส่วนผสมเข้มข้นช่วยให้จุดระเบิดง่ายขึ้น เครื่องติดและเริ่มทำงาน",
+    ),
+    JourneyStep(
+      chokeOff,
+      "ปิดโช้ค",
+      "เมื่อเครื่องอุ่นแล้ว ปล่อยโช้คกลับมาเพื่อเปิดช่องอากาศให้กลับสู่การทำงานปกติ",
+    ),
+  ],
+)
+
+chokeForgotOff = Journey(
+  "choke-forgot-off",
+  "ลืมปิดโช้ค (Forgot to Turn Off Choke)",
+  "เปิดโช้ค → ลืมปิด → วิ่งโช้คค้าง → รถเร่งไม่ขึ้น",
+  [
+    JourneyStep(chokeOn, "เปิดโช้ค", "ดึงโช้คเพื่อสตาร์ทเครื่องเย็น"),
+    JourneyStep(
+      rideChoke,
+      "วิ่งโช้คค้าง",
+      "ลืมปล่อยโช้ค เครื่องได้รับส่วนผสมเข้มข้นเกินไป ทำให้เร่งไม่ขึ้น มีควันดำ และสิ้นเปลืองน้ำมัน",
+    ),
+  ],
+)

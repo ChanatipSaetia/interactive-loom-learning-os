@@ -1,0 +1,62 @@
+root = Intro(
+  "",
+  what,
+  why,
+  [
+    RoadmapStep(
+      "Mechanics Map",
+      "concept-map",
+      "Map connections between charges, ascendancies, and strike skills.",
+      "concept-map",
+    ),
+    RoadmapStep(
+      "Key Vocabulary",
+      "flashcards",
+      "Master PoE 2 terminology and damage scaling definitions.",
+      "flashcards",
+    ),
+    RoadmapStep(
+      "Skill Arsenal",
+      "taxonomy-browser",
+      "Explore core skills, gems, and passive node categories.",
+      "taxonomy",
+    ),
+    RoadmapStep(
+      "Combat Flow",
+      "flowchart",
+      "Trace event-driven skill execution and charge reset policies.",
+      "flowchart",
+    ),
+    RoadmapStep(
+      "Gear Sandboxes",
+      "tradeoff-sandbox",
+      "Compare budget vs endgame gear setups and stat trade-offs.",
+      "tradeoffs",
+    ),
+    RoadmapStep(
+      "DPS Calculator",
+      "formula-sandbox",
+      "Calculate attack speed, crit multiplier, and effective DPS.",
+      "formula-sandbox",
+    ),
+  ],
+  null,
+  "6 min read",
+  13,
+)
+
+what = IntroWhat(
+  "Comprehensive build guide and mechanics breakdown for the PoE 2 Flicker Strike Invoker Monk.",
+  "Flicker Strike Monk is a high-mobility PoE 2 melee build that spends Power Charges to instantly teleport and strike enemies continuously without cooldown.",
+  [
+    "Power Charge generation loops & Flicker Strike reset mechanics",
+    "Invoker Monk ascendancy skill synergy & elemental scaling",
+    "Budget-friendly gear milestones and DPS calculations",
+  ],
+  ["PoE 2", "Flicker Strike", "Invoker Monk", "Build Mechanics"],
+)
+
+why = IntroWhy(
+  "Flicker Strike offers extreme mobility and burst DPS, but misconfiguring charge generation leads to skill downtime in endgame bosses.",
+  "Mastering charge generation loops ensures permanent skill uptime, high clear speed, and boss deletion.",
+)

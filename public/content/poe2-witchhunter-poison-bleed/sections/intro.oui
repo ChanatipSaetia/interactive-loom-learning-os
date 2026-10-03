@@ -1,0 +1,75 @@
+root = Intro(
+  "The Dual Pestilence Witchhunter",
+  what,
+  why,
+  [
+    RoadmapStep(
+      "Key Vocabulary",
+      "flashcards",
+      "Memorise DoT mechanics, ailment magnitudes, and Witchhunter-specific terminology.",
+      "flashcards",
+    ),
+    RoadmapStep(
+      "Build Components",
+      "taxonomy-browser",
+      "Explore main skills, support gems, defenses, and ascendancy nodes by category.",
+      "taxonomy-browser",
+    ),
+    RoadmapStep(
+      "Combat Engagement Flow",
+      "flowchart",
+      "Trace how dual DoTs apply and tick through the full combat event chain.",
+      "flowchart",
+    ),
+    RoadmapStep(
+      "Skill & Mechanic Showcase",
+      "image-gallery",
+      "Visual reference for skills, support gems, and key game mechanics.",
+      "image-gallery",
+    ),
+    RoadmapStep(
+      "DoT Damage Calculator",
+      "formula-sandbox",
+      "Tune attack speed, magnitude, and duration to see live Bleed and Poison DPS.",
+      "formula-sandbox",
+    ),
+    RoadmapStep(
+      "Gear Investment Trade-offs",
+      "tradeoff-sandbox",
+      "Compare budget vs invested gear choices and their stat trade-offs.",
+      "tradeoff-sandbox",
+    ),
+    RoadmapStep(
+      "Build Progression Scenario",
+      "scenario",
+      "Walk through a league journey with branching decisions and outcome ratings.",
+      "scenario",
+    ),
+    RoadmapStep(
+      "Build Setup Advisor",
+      "decision-tree",
+      "Get a personalised setup recommendation based on your league stage and goals.",
+      "decision-tree",
+    ),
+  ],
+  "Poison + Bleed DoT Mercenary Build — PoE 2 v0.5",
+  "8 min read",
+  8,
+)
+
+what = IntroWhat(
+  "Complete build guide for the Witchhunter ascendancy Mercenary, covering dual-ailment mechanics, ascendancy synergies, gear milestones, and DPS calculations.",
+  "Poison + Bleed Witchhunter is a dual-ailment DoT build in Path of Exile 2 patch 0.5 that melts enemies through simultaneous Poison and Bleed damage-over-time. It pairs Gas Grenade for area poison clouds with Barrage for rapid bleed application, synergised by the Poison 3, Bleed 3, and At Mixture keystones.",
+  [
+    "Dual-ailment loop: Poison 3 + Bleed 3 + At Mixture multiplicative synergy",
+    "Witchhunter ascendancy — No Mercy, Obsessive Rituals, Sorcery Ward",
+    "Gas Grenade for area poison clouds, Barrage for rapid bleed hits",
+    "Budget league-starter scaling into late-game Uber viability",
+  ],
+  ["PoE 2", "Witchhunter", "Poison & Bleed", "Damage over Time"],
+)
+
+why = IntroWhy(
+  "Dual-ailment DoT is one of the most forgiving endgame damage types in PoE 2 — apply ailments once and step back while ticks do the work. But misconfiguring the synergy keystones or skipping Obsessive Rituals' offensive trade-off leaves huge damage on the table.",
+  "Mastering the Poison + Bleed interaction loop, Concentration management via No Mercy, and defensive positioning around Sorcery Ward turns a budget league-starter into a build capable of deleting Uber bosses.",
+)
