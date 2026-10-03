@@ -7,6 +7,7 @@ import { SectionRegistry } from './index'
 export function registerCoreSections(): void {
   SectionRegistry.register('intro', () => import('../sub-contexts/progressive-content/components/intro'))
   SectionRegistry.register('text', () => import('../sub-contexts/progressive-content/components/text'))
+  SectionRegistry.register('openui', () => import('../sub-contexts/progressive-content/components/openui'))
   SectionRegistry.register('bullets', () => import('../sub-contexts/progressive-content/components/bullets'))
   SectionRegistry.register('flowchart', () => import('../sub-contexts/process-simulation/components/flowchart'))
   SectionRegistry.register('tradeoff-sandbox', () => import('../sub-contexts/tradeoff-sandbox/components/tradeoff-sandbox'))

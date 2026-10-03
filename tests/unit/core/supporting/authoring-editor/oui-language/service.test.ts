@@ -243,3 +243,32 @@ describe('completion noise', () => {
     expect(getCompletions(source, offset).some((i) => i.kind === 'builtin')).toBe(false)
   })
 })
+
+describe('standard OpenUI files (// @openui)', () => {
+  const STANDARD = `// @openui "Plans"\nroot = Card([‸])\n`
+
+  it('uses the standard library spec', () => {
+    const spec = getOUILanguageSpec('// @openui "X"\nroot = Card([])')
+    expect(spec.components.has('Tabs')).toBe(true)
+    expect(spec.components.has('Quiz')).toBe(false)
+    expect(spec.sectionComponents[0]).toBe('Card')
+    expect(getOUILanguageSpec().components.has('Quiz')).toBe(true)
+  })
+
+  it('completes standard child components', () => {
+    const items = labels(getCompletions(...at(STANDARD)))
+    expect(items).toEqual(expect.arrayContaining(['TextContent', 'CardHeader', 'Tabs']))
+    expect(items).not.toContain('Quiz')
+  })
+
+  it('offers standard roots for a new statement', () => {
+    const items = labels(getCompletions(...at(`// @openui "Plans"\n‸`)))
+    expect(items).toContain('root = Card(…)')
+    expect(items).not.toContain('root = Quiz(…)')
+  })
+
+  it('reports standard diagnostics on the right line', () => {
+    const diagnostics = getDiagnostics(`// @openui "Plans"\nroot = Card([x])\nx = Nope()`)
+    expect(diagnostics).toContainEqual(expect.objectContaining({ severity: 'error', tier: 1 }))
+  })
+})

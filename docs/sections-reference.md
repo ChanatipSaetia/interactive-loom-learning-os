@@ -52,6 +52,7 @@ For optimal cognitive progression, structure your topic's sections in the follow
 |---|---|---|---|---|---|
 | `intro` | Topic hero overview, rationale & learning roadmap | `content.yaml` | None | Entrance keyframes, touch-swipe horizontal roadmap track | `progressive-content` |
 | `text` | Anchored conceptual narrative | Markdown strings | None | Scroll-triggered fade-in | `progressive-content` |
+| `openui` | Free-form composed layout (cards, tabs, tables, charts) | Standard OpenUI Lang program after an `// @openui "Title"` directive | Component-local (tabs, accordions, form fields) | OpenUI component transitions | `progressive-content` |
 | `bullets` | Hierarchical taxonomy / breakdown | Nested recursive nodes | Expanded/Collapsed states | Staggered fade/slide-in, chevron rotation | `progressive-content` |
 | `flowchart` | Dynamic process flows & swimlanes | `actors.yaml`, `systems.yaml`, `steps.yaml`, `journeys.yaml` | Active step, fullscreen toggle, view mode tabs | anime.js path drawing, camera centering, highlights | `process-simulation` |
 | `tradeoff-sandbox` | Architectural tradeoffs & strategy matrix | Scenarios with choices, pros/cons list | Selected choice per step, metrics scores state | Bar gauge expansion transitions, pros/cons fade-in | `tradeoff-sandbox` |
@@ -75,6 +76,11 @@ For optimal cognitive progression, structure your topic's sections in the follow
 - **Mental Model Focus**: Anchored conceptual narrative.
 - **Interactivity**: Scroll-reveal animations.
 - **Pedagogical Rationale**: Establishes basic context and reading continuity. Useful for section summaries or introductory overviews.
+
+### `openui`
+- **Mental Model Focus**: Free-form composed layout built from the standard OpenUI component library (`@openuidev/react-ui`).
+- **Interactivity**: Whatever the components provide (tabs, accordions, carousels, charts), with no learning feedback or progress events.
+- **Pedagogical Rationale**: Covers content `text` and `bullets` can't shape, such as side-by-side comparisons, small data tables or charts, and FAQs. Prefer a purpose-built section when one fits. See [sections/openui.md](sections/openui.md).
 
 ### `bullets`
 - **Mental Model Focus**: Hierarchical taxonomy and properties list.

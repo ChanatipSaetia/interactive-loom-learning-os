@@ -16,7 +16,7 @@ import {
   type OUIStatement,
   type OUIToken,
 } from './scanner'
-import { getOUILanguageSpec, type OUIComponentSpec, type OUIParamSpec } from './spec'
+import { getOUILanguageSpec, type OUIComponentSpec, type OUILanguageSpec, type OUIParamSpec } from './spec'
 
 // ============================================================================
 // Types
@@ -100,6 +100,8 @@ interface IdDecl {
 
 interface Document {
   source: string
+  /** Component spec for this file (Loom, or standard OpenUI for `// @openui` files). */
+  spec: OUILanguageSpec
   tokens: OUIToken[]
   statements: OUIStatement[]
   ids: IdDecl[]
@@ -108,7 +110,7 @@ interface Document {
 function analyze(source: string): Document {
   const tokens = scan(source)
   const statements = indexStatements(tokens)
-  const spec = getOUILanguageSpec()
+  const spec = getOUILanguageSpec(source)
   const ids: IdDecl[] = []
   const significant = tokens.filter((t) => t.type !== 'comment' && t.type !== 'newline')
   for (let i = 0; i + 2 < significant.length; i++) {
@@ -117,7 +119,7 @@ function analyze(source: string): Document {
     if (spec.components.get(name.text)?.params[0]?.name !== 'id') continue
     ids.push({ component: name.text, id: unquote(first.text), range: { start: first.start, end: first.end } })
   }
-  return { source, tokens, statements, ids }
+  return { source, spec, tokens, statements, ids }
 }
 
 function unquote(text: string): string {
@@ -135,8 +137,7 @@ interface Expected {
   inObject: boolean
 }
 
-function expectedAt(ctx: OUICursorContext): Expected {
-  const spec = getOUILanguageSpec()
+function expectedAt(ctx: OUICursorContext, spec: OUILanguageSpec): Expected {
   let arrayDepth = 0
   let inObject = false
   for (let i = ctx.frames.length - 1; i >= 0; i--) {
@@ -209,8 +210,7 @@ function componentDoc(component: OUIComponentSpec): string {
   return `\`\`\`oui\n${component.signature}\n\`\`\`\n${component.description}`
 }
 
-function rootSnippets(kind: OUIFileKind, replace: OUIRange): OUICompletion[] {
-  const spec = getOUILanguageSpec()
+function rootSnippets(kind: OUIFileKind, replace: OUIRange, spec: OUILanguageSpec): OUICompletion[] {
   const names = kind === 'topic' ? ['Topic'] : kind === 'catalog' ? ['Catalog'] : spec.sectionComponents
   return names.map((name, i) => {
     const component = spec.components.get(name)!
@@ -235,11 +235,11 @@ export function getCompletions(
 ): OUICompletion[] {
   const doc = analyze(source)
   const ctx = cursorContext(source, doc.tokens, offset)
-  const spec = getOUILanguageSpec()
+  const spec = doc.spec
   if (ctx.inComment) return []
 
   const replace: OUIRange = { start: ctx.prefixStart, end: offset }
-  const exp = expectedAt(ctx)
+  const exp = expectedAt(ctx, spec)
 
   // --- Inside a string: enum values and IDs ---
   if (ctx.inString && ctx.token) {
@@ -265,7 +265,7 @@ export function getCompletions(
 
   // --- New top-level statement ---
   if (ctx.atStatementStart) {
-    return doc.statements.some((s) => s.name === 'root') ? [] : rootSnippets(kind, replace)
+    return doc.statements.some((s) => s.name === 'root') ? [] : rootSnippets(kind, replace, spec)
   }
 
   // --- Object literal keys (TradeoffChoice metrics → metric IDs) ---
@@ -368,7 +368,7 @@ export function getSignatureHelp(source: string, offset: number): OUISignatureHe
   const doc = analyze(source)
   const ctx = cursorContext(source, doc.tokens, offset)
   if (ctx.inComment) return null
-  const spec = getOUILanguageSpec()
+  const spec = doc.spec
 
   for (let i = ctx.frames.length - 1; i >= 0; i--) {
     const frame = ctx.frames[i]
@@ -422,7 +422,7 @@ export function getHover(source: string, offset: number): OUIHover | null {
   const doc = analyze(source)
   const token = tokenAt(doc.tokens, offset)
   if (!token || token.type === 'comment' || token.type === 'punct' || token.type === 'operator') return null
-  const spec = getOUILanguageSpec()
+  const spec = doc.spec
   const range = { start: token.start, end: token.end }
 
   if (token.type === 'builtin') {
@@ -452,7 +452,7 @@ export function getHover(source: string, offset: number): OUIHover | null {
 /** Explain which positional parameter the token is the value of. */
 function paramHover(source: string, doc: Document, token: OUIToken): string | null {
   const ctx = cursorContext(source, doc.tokens, token.start)
-  const exp = expectedAt(ctx)
+  const exp = expectedAt(ctx, doc.spec)
   if (!exp.component || !exp.param) return null
   const position = `${exp.component.name} › ${exp.param.name}${exp.param.optional ? '?' : ''}`
   const element = exp.inArray ? ' (element)' : ''
@@ -477,7 +477,7 @@ export function getDefinition(source: string, offset: number): OUIRange | null {
   }
   if (token.type === 'string') {
     const ctx = cursorContext(source, doc.tokens, token.start + 1)
-    const targets = idTargets(expectedAt(ctx))
+    const targets = idTargets(expectedAt(ctx, doc.spec))
     const decl = doc.ids.find((d) => d.id === unquote(token.text) && targets.includes(d.component) && d.range.start !== token.start)
     return decl ? decl.range : null
   }

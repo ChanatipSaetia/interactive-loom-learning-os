@@ -1,0 +1,53 @@
+.openui-section {
+  @apply mb-8;
+}
+
+.openui-section-heading {
+  @apply font-semibold text-foreground mb-4 leading-[1.2] tracking-tight;
+  font-size: var(--text-card-heading);
+  font-family: var(--font-display);
+}
+
+.openui-section-body {
+  @apply flex flex-col gap-4;
+  color: var(--ctp-text);
+}
+
+.openui-section-errors {
+  @apply mt-3 px-4 py-3 rounded-xl border text-xs font-mono list-disc pl-8;
+  border-color: color-mix(in srgb, var(--destructive) 40%, transparent);
+  background-color: color-mix(in srgb, var(--destructive) 10%, transparent);
+  color: var(--destructive);
+}
+
+/* Upstream's default "card" variant is unstyled (it relies on a surrounding
+   chat bubble); give it a Loom card surface. Nested cards stay flat. */
+.loom-openui-scope .openui-card-card {
+  @apply rounded-2xl border p-5;
+  background-color: var(--card);
+  border-color: var(--border);
+}
+
+.loom-openui-scope .openui-card-card .openui-card-card {
+  @apply p-0 border-0 rounded-none;
+  background-color: transparent;
+}
+
+/* Code blocks: react-syntax-highlighter sets inline backgrounds (and markdown
+   fences pick the light theme, see theme.ts), so pin them to the Loom code
+   surface, and drop the app-wide `pre` frame around fenced blocks. */
+.loom-openui-scope .openui-code-block-syntax-highlighter,
+.loom-openui-scope .openui-code-block-syntax-highlighter > code {
+  background: var(--ctp-crust) !important;
+  color: var(--ctp-text) !important;
+  text-shadow: none !important;
+}
+
+.loom-openui-scope .openui-code-block-syntax-highlighter {
+  @apply rounded-xl;
+}
+
+.loom-openui-scope pre:has(> .openui-code-block-wrapper) {
+  @apply p-0 m-0 border-0 shadow-none;
+  background: transparent;
+}

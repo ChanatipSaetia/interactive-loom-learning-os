@@ -52,6 +52,22 @@ why = IntroWhy("Why this topic matters.", "The impact of understanding it.")
 `,
   },
   {
+    type: 'openui',
+    component: 'OpenUI',
+    label: 'OpenUI',
+    description: 'Any standard OpenUI components (cards, tabs, tables, charts…)',
+    source: (title) => `// @openui ${q(title)}
+root = Card([header, tabs])
+
+header = CardHeader("Heading", "A short subtitle")
+
+tabs = Tabs([
+  TabItem("first", "First", [TextContent("Content with **markdown**.")]),
+  TabItem("second", "Second", [Callout("info", "Tip", "Callouts highlight key points.")]),
+])
+`,
+  },
+  {
     type: 'taxonomy-browser',
     component: 'TaxonomyBrowser',
     label: 'Taxonomy Browser',

@@ -8,6 +8,11 @@
  *   3. Walk the element tree bottom-up, running each component's `toData`
  *      mapper, so a section root becomes the subdomain's section data.
  *
+ * A section file that starts with `// @openui "Title"` is instead a standard
+ * OpenUI program (see `progressive-content/openui-standard.ts`): it is parsed
+ * against the `@openuidev/react-ui` library and kept verbatim as an `openui`
+ * section.
+ *
  * Issues found along the way are reported with the statement ID and source
  * line they came from. Compiled objects are tracked in a source map so later
  * validation tiers can point back at the line that produced a value.
@@ -21,6 +26,13 @@ import {
   type Parser,
 } from '@openuidev/lang-core'
 import { getLoomOUIComponent, getLoomOUIJSONSchema, loomOUILibrary, OUI_SECTION_TYPES } from './library'
+import {
+  OPENUI_SECTION_TYPE,
+  openUIProgramOf,
+  readOpenUIDirective,
+  standardOpenUISchema,
+  type OpenUIDirective,
+} from '../../sub-contexts/progressive-content/openui-standard'
 import type { OKFSectionData, OKFSectionMeta } from '../okf/types'
 
 // ============================================================================
@@ -146,10 +158,16 @@ export function indexStatementLines(source: string): Map<string, number> {
 // ============================================================================
 
 let parser: Parser | null = null
+let standardParser: Parser | null = null
 
 function getParser(): Parser {
   parser ??= createParser(getLoomOUIJSONSchema())
   return parser
+}
+
+function getStandardParser(): Parser {
+  standardParser ??= createParser(standardOpenUISchema)
+  return standardParser
 }
 
 const ERROR_TIERS: Record<string, 1 | 2> = {
@@ -194,13 +212,13 @@ interface ParsedProgram {
   lines: Map<string, number>
 }
 
-function parseProgram(source: string): ParsedProgram {
+function parseProgram(source: string, programParser: Parser = getParser()): ParsedProgram {
   const lines = indexStatementLines(source)
   const issues: OUIIssue[] = []
 
   let result: ParseResult
   try {
-    result = getParser().parse(source)
+    result = programParser.parse(source)
   } catch (e) {
     issues.push({
       tier: 1,
@@ -376,8 +394,42 @@ export function compileSectionElement(root: ElementNode): OUISectionPayload | nu
   }
 }
 
-/** Compile a section `.oui` file (root must be a section component). */
+/**
+ * Compile a standard OpenUI section (`// @openui "Title"` directive). The
+ * program is only parsed — to report syntax and schema issues against the
+ * standard library — and kept verbatim; it is rendered by OpenUI itself.
+ */
+function compileStandardOpenUISection(source: string, directive: OpenUIDirective): OUICompileResult<OUISectionPayload> {
+  const { result, issues, lines } = parseProgram(source, getStandardParser())
+  const sourceMap: OUISourceMap = {
+    lineOf: (id) => lines.get(id),
+    statementOf: () => undefined,
+  }
+  for (const issue of issues) {
+    if (issue.code === 'unknown-component') {
+      issue.fixHint = 'Use a component from the standard OpenUI library (see the OpenUI section guide), or remove the `// @openui` line to write a Loom section.'
+    }
+  }
+  if (!result?.root) return { value: null, issues, sourceMap }
+
+  const meta: OKFSectionMeta = { type: OPENUI_SECTION_TYPE, title: directive.title, resource: '.' }
+  if (directive.heading) meta.heading = directive.heading
+  return {
+    value: { meta, data: { type: OPENUI_SECTION_TYPE, source: openUIProgramOf(source) } },
+    rootComponent: result.root.typeName,
+    issues,
+    sourceMap,
+  }
+}
+
+/**
+ * Compile a section `.oui` file: either a Loom section (root must be a
+ * section component) or a standard OpenUI program behind an `// @openui` directive.
+ */
 export function compileOUISection(source: string): OUICompileResult<OUISectionPayload> {
+  const directive = readOpenUIDirective(source)
+  if (directive) return compileStandardOpenUISection(source, directive)
+
   const program = compileProgram(source)
   const { root, issues, sourceMap, rootComponent } = program
   if (!root) return { value: null, issues, sourceMap }

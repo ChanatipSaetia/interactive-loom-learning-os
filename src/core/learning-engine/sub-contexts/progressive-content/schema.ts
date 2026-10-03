@@ -9,6 +9,16 @@ export const TextSectionSchema = z.object({
 
 export type TextSectionData = z.infer<typeof TextSectionSchema>
 
+// --- Standard OpenUI Section Schema ---
+
+export const OpenUISectionSchema = z.object({
+  type: z.literal('openui'),
+  /** OpenUI Lang program written against the standard `@openuidev/react-ui` library. */
+  source: z.string().min(1, 'The OpenUI program is empty; add a `root = …` statement.'),
+})
+
+export type OpenUISectionData = z.infer<typeof OpenUISectionSchema>
+
 // --- Intro Section Schema ---
 
 export const IntroRoadmapStepSchema = z.object({

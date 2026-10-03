@@ -13,8 +13,9 @@ import { deriveSchema } from '../../../../../../src/core/learning-engine/sub-con
 import { SECTION_FIXTURES } from './fixtures'
 
 describe('Loom OpenUI library', () => {
-  it('has one section component for every known section type', () => {
-    expect(new Set(OUI_SECTION_TYPES.values())).toEqual(KNOWN_SECTION_TYPES)
+  it('has one section component for every known section type except directive-based openui', () => {
+    expect(new Set([...OUI_SECTION_TYPES.values(), 'openui'])).toEqual(KNOWN_SECTION_TYPES)
+    expect([...OUI_SECTION_TYPES.values()]).not.toContain('openui')
   })
 
   it('exposes a JSON schema covering every component', () => {
@@ -189,5 +190,43 @@ describe('indexStatementLines', () => {
       'next = Text("y", [])',
     ].join('\n'))
     expect([...lines.entries()]).toEqual([['root', 2], ['$flag', 8], ['next', 9]])
+  })
+})
+
+describe('compileOUISection — standard OpenUI sections (// @openui)', () => {
+  it('compiles the directive into meta and keeps the program verbatim', () => {
+    const { value, issues, rootComponent } = compileOUISection(SECTION_FIXTURES.openui)
+    expect(issues).toEqual([])
+    expect(rootComponent).toBe('Card')
+    expect(value?.meta).toEqual({ type: 'openui', title: 'Plans', heading: 'Pick one', resource: '.' })
+    expect((value?.data as any).source).toMatch(/^root = Card\(\[header, tabs\]\)\n/)
+    expect((value?.data as any).source).not.toContain('@openui')
+  })
+
+  it('accepts a directive with only a title', () => {
+    const { value } = compileOUISection(`// @openui "Just a title"\nroot = Card([TextContent("hi")])`)
+    expect(value?.meta).toEqual({ type: 'openui', title: 'Just a title', resource: '.' })
+  })
+
+  it('validates against the standard library, not the Loom one', () => {
+    const loomOnly = validateOUISection(`// @openui "X"\nroot = Quiz("Q", [])`)
+    expect(loomOnly.status).toBe('error')
+    expect(loomOnly.diagnostics).toContainEqual(expect.objectContaining({ tier: 1, line: 2, fixHint: expect.stringContaining('standard OpenUI library') }))
+    expect(loomOnly.payload).toBeNull()
+  })
+
+  it('reports missing required arguments with their line', () => {
+    const result = validateOUISection(`// @openui "X"\nroot = Card([t])\nt = TextContent()`)
+    expect(result.status).toBe('error')
+    expect(result.diagnostics).toContainEqual(expect.objectContaining({ tier: 2, line: 3 }))
+  })
+
+  it('rejects Query()/Mutation() since content is static', () => {
+    const result = validateOUISection(`// @openui "X"\nroot = Card([TextContent(data)])\ndata = Query("get_data", {}, "")`)
+    expect(result.diagnostics).toContainEqual(expect.objectContaining({ tier: 1, line: 3, message: expect.stringContaining('Query()/Mutation()') }))
+  })
+
+  it('treats a plain comment as a Loom section', () => {
+    expect(compileOUISection(`// openui is great\nroot = Text("T", ["p"])`).value?.meta.type).toBe('text')
   })
 })

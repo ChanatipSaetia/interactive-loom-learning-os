@@ -56,6 +56,9 @@ export function bundleToSections(bundle: OKFBundled): SectionConfig[] {
       case 'bullets':
         props.items = data.items
         break
+      case 'openui':
+        props.source = data.source
+        break
       case 'flowchart':
         props.schema = data.flow ? deriveSchema(data.flow as any) : data.views ? data : undefined
         break
