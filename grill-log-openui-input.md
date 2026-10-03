@@ -1,6 +1,6 @@
 # Grill Log — OpenUI Lang Replaces OKF
 
-Status: **Phase 1 complete — Phase 2 (author tooling) next**
+Status: **Phases 1–2 complete — Phase 3 (converter + `demo` migration) next**
 
 ## Goal
 
@@ -90,6 +90,34 @@ orders = System("orders", "Order Service", "Owns orders", "aggregate")
 place = Step("place-order", "When cart is submitted", "PlaceOrder", orders, [Event("order-placed", "Order Placed")], buyer)
 happy = Journey("happy", "Happy path", "Order goes through", [JourneyStep(place, "Place order", "Buyer submits the cart")])
 ```
+
+## Phase 2 — Author Tooling Notes
+
+All tooling comes from one editor-agnostic **language service** generated from the library's JSON Schema, so it cannot drift from what the compiler accepts:
+
+| Piece | Location |
+|---|---|
+| Language spec (params, kinds, enums, accepted components, builtins) | `src/core/supporting/authoring-editor/oui-language/spec.ts` |
+| Fault-tolerant scanner (cursor frames, statements, offsets) | `src/core/supporting/authoring-editor/oui-language/scanner.ts` |
+| Service: completions, signature help, hover, definition, symbols, diagnostics | `src/core/supporting/authoring-editor/oui-language/service.ts` |
+| CodeMirror 6 bindings + Catppuccin theme (`--ctp-*` variables) | `src/core/supporting/authoring-editor/oui-language/codemirror.ts` |
+| `OUICodeEditor` React component (exported lazily as `LazyOUICodeEditor`) | `src/core/supporting/authoring-editor/components/OUICodeEditor.tsx` |
+| VS Code extension (TextMate grammar, language config, providers) | `tools/vscode-oui/` |
+| GitHub highlighting | `.gitattributes` (`*.oui linguist-language=JavaScript`) |
+
+Features (VS Code and in-app):
+
+- **Completions by argument position.** Only the components the current positional argument accepts (e.g. inside `Quiz(…, [▮])` only `QuizQuestion`), references of compatible type, declared IDs inside strings (`handledBy: "or▮"` → `orders`; scenario/decision `next`, `recommended`, `initialState`, `dependsOn`), enum values, TradeoffChoice metric keys, `$state`/`@builtins` where a plain value fits, and `root = …` snippets in an empty file. Component completions insert a snippet with every required argument.
+- **Signature help** that highlights the active positional argument.
+- **Hover** names the parameter any argument fills (`Step › command: string`), documents components and builtins, and previews referenced statements.
+- **Go to definition** for references and ID strings (VS Code F12; in-app F12 or Ctrl/Cmd-click); outline from statements.
+- **Diagnostics** from the same 3-tier gateway as the app, with fix hints.
+- VS Code also completes `SectionRef("…")` / `TopicRef("…")` from files on disk.
+
+Delivery:
+
+- The extension bundles the service with esbuild. **Rebuild it after changing the component library** (`cd tools/vscode-oui && npm run package`).
+- CodeMirror ships in its own on-demand `vendor-codemirror` chunk (~116 kB gz), loaded only when the editor mounts. Phase 5 wires it into the Section Editor's raw tab.
 
 ## Open Questions
 

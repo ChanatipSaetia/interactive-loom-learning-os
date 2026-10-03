@@ -184,6 +184,8 @@ export default defineConfig(({ mode }) => {
           manualChunks(id) {
             if (id.includes('node_modules')) {
               if (id.includes('anime')) return 'vendor-anime'
+              // CodeMirror is only needed by the lazily loaded OpenUI code editor.
+              if (/node_modules\/(@codemirror|@lezer|@marijn|crelt|style-mod|w3c-keyname)\//.test(id)) return 'vendor-codemirror'
               return 'vendor'
             }
 
