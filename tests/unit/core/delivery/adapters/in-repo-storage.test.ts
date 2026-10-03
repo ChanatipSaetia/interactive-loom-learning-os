@@ -55,45 +55,8 @@ describe('InRepoStorageAdapter', () => {
   })
 
   describe('saveSection', () => {
-    it('sends POST request to save endpoint', async () => {
-      const mockFetch = vi.fn().mockResolvedValue({ ok: true, text: () => Promise.resolve('{}') })
-      ;(globalThis.fetch as any) = mockFetch
-
-      const testData: OKFIntroSectionData = {
-        type: 'intro',
-        what: { summary: 'test' },
-        why: { summary: 'test' },
-        roadmap: [],
-      }
-      await adapter.saveSection('demo', 'intro', testData, '---\ntype: intro\n---\n\nbody')
-
-      expect(mockFetch).toHaveBeenCalledWith('/api/okf/save-section', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: expect.any(String),
-      })
-
-      const body = JSON.parse(mockFetch.mock.calls[0][1].body)
-      expect(body.topicId).toBe('demo')
-      expect(body.sectionName).toBe('intro')
-    })
-
-    it('throws when save endpoint returns error', async () => {
-      const mockFetch = vi.fn().mockResolvedValue({
-        ok: false,
-        text: () => Promise.resolve('Validation failed'),
-      })
-      ;(globalThis.fetch as any) = mockFetch
-
-      const testData: OKFIntroSectionData = {
-        type: 'intro',
-        what: { summary: 'test' },
-        why: { summary: 'test' },
-        roadmap: [],
-      }
-      await expect(
-        adapter.saveSection('demo', 'intro', testData, '---\ntype: intro\n---')
-      ).rejects.toThrow('Failed to save section')
+    it('is read-only and points to Loom Studio', async () => {
+      await expect(adapter.saveSection()).rejects.toThrow(/Loom Studio/)
     })
   })
 

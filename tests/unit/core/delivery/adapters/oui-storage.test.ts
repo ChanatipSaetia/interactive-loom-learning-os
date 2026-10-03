@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
-import { OUIStorageAdapter, OUI_SAVE_ENDPOINT } from '../../../../../src/core/delivery/adapters/oui-storage'
+import { OUIStorageAdapter } from '../../../../../src/core/delivery/adapters/oui-storage'
 import {
   clearOUICache,
   loadOUICatalog,
@@ -84,9 +84,6 @@ describe('OpenUI content reader & OUIStorageAdapter', () => {
       body: 'root = Text("Intro", ["Hello."])',
     })
 
-    await adapter.saveSection('demo', 'intro', section.data, 'root = Text("Intro", ["Bye."])')
-    const [url, init] = fetchMock.mock.calls[fetchMock.mock.calls.length - 1]
-    expect(url).toBe(OUI_SAVE_ENDPOINT)
-    expect(JSON.parse(init!.body as string)).toEqual({ topicId: 'demo', sectionName: 'intro', source: 'root = Text("Intro", ["Bye."])' })
+    await expect(adapter.saveSection()).rejects.toThrow(/Loom Studio/)
   })
 })

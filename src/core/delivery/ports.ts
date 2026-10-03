@@ -21,6 +21,13 @@ import type { ValidationResult } from '../learning-engine/validation/gateway'
 // ============================================================================
 // Storage Port — read/write/list of OKF section files
 // ============================================================================
+
+/**
+ * Error message for `saveSection` in hosts that only read content. The
+ * learning app and embeds are read-only; content is authored in Loom Studio.
+ */
+export const READ_ONLY_CONTENT_MESSAGE =
+  'Content is read-only here. Edit topic folders with Loom Studio (npm run studio, studio.html).'
 /**
  * Formal interface for OKF file storage operations.
  *

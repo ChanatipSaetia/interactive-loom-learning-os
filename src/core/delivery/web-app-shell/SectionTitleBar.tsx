@@ -1,7 +1,6 @@
 import { useState } from 'react'
 import { createPortal } from 'react-dom'
-import { Pencil, PencilOff, HelpCircle } from 'lucide-react'
-import { useEditorSafe } from '../../learning-engine/composition/context/EditorContext'
+import { HelpCircle } from 'lucide-react'
 import { SectionHelpModal } from './SectionHelpModal'
 
 interface SectionTitleBarProps {
@@ -23,9 +22,7 @@ export function SectionTitleBar({
   HelpModal,
   extraActions,
 }: SectionTitleBarProps) {
-  const editor = useEditorSafe()
   const [isHelpOpen, setIsHelpOpen] = useState(false)
-  const isActive = editor?.activeSectionIndex === sectionIndex
 
   const renderModal = () => {
     if (!isHelpOpen) return null
@@ -44,15 +41,6 @@ export function SectionTitleBar({
     return (
       <div className={`section-title-bar-actions ${className}`}>
         {extraActions}
-        <button
-          className={`section-action-btn ${isActive ? 'active' : ''}`}
-          data-testid={`edit-section-toggle-${sectionIndex}`}
-          onClick={() => editor?.toggleEdit(sectionIndex)}
-          aria-label={editor?.editMode ? 'Exit edit mode' : 'Edit section'}
-          title={editor?.editMode ? 'Exit edit mode' : 'Edit section'}
-        >
-          {editor?.editMode && isActive ? <PencilOff size={14} /> : <Pencil size={14} />}
-        </button>
         <button
           className="section-action-btn"
           data-testid={`section-help-btn-${sectionIndex}`}
@@ -74,15 +62,6 @@ export function SectionTitleBar({
       </h3>
       <div className="section-title-bar-actions">
         {extraActions}
-        <button
-          className={`section-action-btn ${isActive ? 'active' : ''}`}
-          data-testid={`edit-section-toggle-${sectionIndex}`}
-          onClick={() => editor?.toggleEdit(sectionIndex)}
-          aria-label={editor?.editMode ? 'Exit edit mode' : 'Edit section'}
-          title={editor?.editMode ? 'Exit edit mode' : 'Edit section'}
-        >
-          {editor?.editMode && isActive ? <PencilOff size={14} /> : <Pencil size={14} />}
-        </button>
         <button
           className="section-action-btn"
           data-testid={`section-help-btn-${sectionIndex}`}

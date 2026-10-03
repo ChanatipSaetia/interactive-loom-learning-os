@@ -2,20 +2,16 @@
  * OUIStorageAdapter — OKFStoragePort for OpenUI Lang content in
  * `public/content/` (see composition/oui/reader.ts for the layout).
  *
- * Reads go through the cached OpenUI reader (compile + validate). Writes go
- * through the Vite dev-server endpoint `POST /api/content/save-section`,
- * which re-validates the source before writing `<topic>/sections/<name>.oui`.
+ * Reads go through the cached OpenUI reader (compile + validate). The
+ * learning app is read-only: authoring happens in Loom Studio.
  */
-import type { OKFStoragePort } from '../ports'
+import { READ_ONLY_CONTENT_MESSAGE, type OKFStoragePort } from '../ports'
 import type { OKFSectionData, OKFSectionMeta } from '../../learning-engine/composition/okf/types'
 import {
-  clearOUICache,
   getCachedOUITopic,
   loadOUICatalogTopicIds,
   loadOUISection,
 } from '../../learning-engine/composition/oui/reader'
-
-export const OUI_SAVE_ENDPOINT = '/api/content/save-section'
 
 export class OUIStorageAdapter implements OKFStoragePort {
   /** Read one section; `body` is the raw `.oui` source. */
@@ -29,24 +25,11 @@ export class OUIStorageAdapter implements OKFStoragePort {
   }
 
   /**
-   * Persist a section. `rawText` is the complete `.oui` source; `data` is
-   * accepted for port compatibility but the source is the source of truth.
+   * Read-only: the learning app does not write content. Edit topic folders
+   * with Loom Studio instead.
    */
-  async saveSection(
-    topicId: string,
-    sectionFolder: string,
-    _data: OKFSectionData,
-    rawText: string,
-  ): Promise<void> {
-    const res = await fetch(OUI_SAVE_ENDPOINT, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ topicId, sectionName: sectionFolder, source: rawText }),
-    })
-    if (!res.ok) {
-      throw new Error(`Failed to save section: ${await res.text()}`)
-    }
-    clearOUICache()
+  async saveSection(): Promise<void> {
+    throw new Error(READ_ONLY_CONTENT_MESSAGE)
   }
 
   /** List topic IDs from `index.oui`. */

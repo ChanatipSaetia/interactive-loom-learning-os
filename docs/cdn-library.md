@@ -68,7 +68,7 @@ Render sections into a DOM container.
 |---|---|---|
 | `container` | `HTMLElement` | DOM element to render into |
 | `sections` | `SectionConfig[]` | Array of section configurations |
-| `options` | `RenderOptions` | Optional — title, theme, header, editable (see [RenderOptions](#renderoptions)) |
+| `options` | `RenderOptions` | Optional — title, theme, header (see [RenderOptions](#renderoptions)) |
 
 ```javascript
 LoomSections.render(document.getElementById("root"), sections, {
@@ -91,12 +91,14 @@ cleanup(); // unmounts React root
 
 ### `RenderOptions`
 
+Embeds are read-only. To author content, use Loom Studio (`npm run studio`, `studio.html`).
+
 ```typescript
 interface RenderOptions {
   title?: string
   theme?: BuiltInTheme | Record<string, string>
-  editable?: boolean
-  topicId?: string
+  editable?: boolean   // deprecated: ignored with a warning (embeds are read-only)
+  topicId?: string     // deprecated: only used by the removed in-page editor
   bundle?: OKFBundled
   header?: boolean | HeaderOptions
 }

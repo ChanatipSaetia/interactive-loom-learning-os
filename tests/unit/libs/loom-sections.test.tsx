@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest'
-import { screen, fireEvent, act, waitFor } from '@testing-library/react'
+import { screen, act, waitFor } from '@testing-library/react'
 import LoomSections from '../../../libs/loom-sections'
 import type { SectionConfig } from '../../../src/core/learning-engine/registry'
 
@@ -32,7 +32,6 @@ describe('LoomSections UMD / CDN Library', () => {
     await act(async () => {
       cleanup = LoomSections.render(container, sections, {
         title: 'CDN Test Page',
-        editable: true,
       })
     })
 
@@ -45,39 +44,22 @@ describe('LoomSections UMD / CDN Library', () => {
     cleanup()
   })
 
-  it('renders edit section toggle and switches to editor mode when edit pencil is clicked', async () => {
+  it('ignores the removed editable option with a warning and renders read-only', async () => {
+    const warn = vi.spyOn(console, 'warn').mockImplementation(() => {})
     const sections: SectionConfig[] = [
-      {
-        type: 'text',
-        props: {
-          title: 'Editable Section Title',
-          paragraphs: ['Original text before edit.'],
-        },
-      },
+      { type: 'text', props: { title: 'Read-only Section', paragraphs: ['Some text.'] } },
     ]
 
     let cleanup: () => void = () => {}
     await act(async () => {
-      cleanup = LoomSections.render(container, sections, {
-        title: 'Editable Test Page',
-        editable: true,
-      })
+      cleanup = LoomSections.render(container, sections, { title: 'Embed Page', editable: true })
     })
 
-    await waitFor(() => {
-      expect(screen.getByTestId('edit-section-toggle-0')).toBeInTheDocument()
-    })
+    await waitFor(() => expect(screen.getByText('Some text.')).toBeInTheDocument())
+    expect(screen.queryByTestId('edit-section-toggle-0')).toBeNull()
+    expect(warn).toHaveBeenCalledWith(expect.stringContaining('Loom Studio'))
 
-    const editBtn = screen.getByTestId('edit-section-toggle-0')
-
-    await act(async () => {
-      fireEvent.click(editBtn)
-    })
-
-    await waitFor(() => {
-      expect(screen.getByTestId('visual-form-editor')).toBeInTheDocument()
-    })
-
+    warn.mockRestore()
     cleanup()
   })
 
@@ -109,7 +91,6 @@ Introductory text
     let cleanup: () => void = () => {}
     await act(async () => {
       cleanup = await LoomSections.loadAndRenderOKF(container, 'http://localhost/okf', 'demo', {
-        editable: true,
         title: 'OKF Demo Topic',
       })
     })
@@ -138,7 +119,6 @@ Introductory text
     await act(async () => {
       cleanup = LoomSections.renderOKF(container, bundle, {
         title: 'Serverless Offline OKF',
-        editable: true,
       })
     })
 

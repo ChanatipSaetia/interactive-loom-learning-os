@@ -3,129 +3,7 @@ import react from '@vitejs/plugin-react'
 import type { Plugin } from 'vite'
 import fs from 'fs'
 import path from 'path'
-import { createRequire } from 'module'
 import { generateCatalogSource } from './src/core/learning-engine/composition/oui/catalog-gen'
-
-function okfSavePlugin(): Plugin {
-  return {
-    name: 'okf-save-plugin',
-    configureServer(server) {
-      server.middlewares.use((req, res, next) => {
-        if (req.method === 'POST' && req.url === '/api/okf/save-section') {
-          let body = ''
-          req.on('data', (chunk) => { body += chunk })
-          req.on('end', async () => {
-            try {
-              const { topicId, sectionName, sectionMd, dataYaml } = JSON.parse(body)
-              if (!topicId || !sectionName || sectionMd == null || dataYaml == null) {
-                res.writeHead(400, { 'Content-Type': 'application/json' })
-                res.end(JSON.stringify({ error: 'Missing required fields: topicId, sectionName, sectionMd, dataYaml' }))
-                return
-              }
-
-              // Validate before disk write — use createRequire to bypass esbuild static analysis
-              const require = createRequire(import.meta.url)
-              const { validateOKFSectionFile } = require('./src/core/learning-engine/validation/gateway.ts')
-              const payloadToValidate = (typeof dataYaml === 'string' && dataYaml.trim())
-                ? dataYaml
-                : sectionMd
-              const validationResult = validateOKFSectionFile(
-                payloadToValidate,
-                { topicId, sectionName, file: `${topicId}/${sectionName}` }
-              )
-
-              if (validationResult.status === 'error') {
-                res.writeHead(422, { 'Content-Type': 'application/json' })
-                res.end(JSON.stringify({
-                  ok: false,
-                  validationStatus: validationResult.status,
-                  diagnostics: validationResult.diagnostics,
-                  error: `Validation failed with ${validationResult.diagnostics.length} error(s). Fix issues before saving.`,
-                }))
-                return
-              }
-
-              const dir = path.resolve(process.cwd(), 'public', 'okf', topicId, 'sections', sectionName)
-              fs.mkdirSync(dir, { recursive: true })
-              fs.writeFileSync(path.join(dir, 'section.md'), sectionMd, 'utf-8')
-              fs.writeFileSync(path.join(dir, 'data.yaml'), dataYaml, 'utf-8')
-
-              const response: Record<string, unknown> = { ok: true }
-              if (validationResult.status === 'warning') {
-                response.warnings = validationResult.diagnostics
-              }
-              res.writeHead(200, { 'Content-Type': 'application/json' })
-              res.end(JSON.stringify(response))
-            } catch (e: unknown) {
-              const msg = e instanceof Error ? e.message : String(e)
-              res.writeHead(500, { 'Content-Type': 'application/json' })
-              res.end(JSON.stringify({ error: msg }))
-            }
-          })
-        } else {
-          next()
-        }
-      })
-    },
-  }
-}
-
-const CONTENT_ID = /^[a-z0-9][a-z0-9_-]*$/
-
-/**
- * Dev-server endpoint for saving OpenUI Lang section sources:
- * POST /api/content/save-section { topicId, sectionName, source }
- * → validates via the OpenUI Validation Gateway, then writes
- *   public/content/<topicId>/sections/<sectionName>.oui
- */
-function ouiSavePlugin(): Plugin {
-  return {
-    name: 'oui-save-plugin',
-    configureServer(server) {
-      server.middlewares.use((req, res, next) => {
-        if (req.method !== 'POST' || req.url !== '/api/content/save-section') {
-          next()
-          return
-        }
-        let body = ''
-        req.on('data', (chunk) => { body += chunk })
-        req.on('end', async () => {
-          const send = (status: number, payload: unknown) => {
-            res.writeHead(status, { 'Content-Type': 'application/json' })
-            res.end(JSON.stringify(payload))
-          }
-          try {
-            const { topicId, sectionName, source } = JSON.parse(body)
-            if (typeof source !== 'string' || !CONTENT_ID.test(topicId ?? '') || !CONTENT_ID.test(sectionName ?? '')) {
-              send(400, { error: 'Expected { topicId, sectionName, source } with lowercase IDs ([a-z0-9_-]).' })
-              return
-            }
-
-            const { validateOUISection } = await server.ssrLoadModule('/src/core/learning-engine/validation/oui-gateway.ts')
-            const file = `${topicId}/sections/${sectionName}.oui`
-            const result = validateOUISection(source, { topicId, sectionName, file })
-            if (result.status === 'error') {
-              send(422, {
-                ok: false,
-                validationStatus: result.status,
-                diagnostics: result.diagnostics,
-                error: `Validation failed with ${result.diagnostics.length} diagnostic(s). Fix issues before saving.`,
-              })
-              return
-            }
-
-            const target = path.resolve(process.cwd(), 'public', 'content', file)
-            fs.mkdirSync(path.dirname(target), { recursive: true })
-            fs.writeFileSync(target, source, 'utf-8')
-            send(200, result.status === 'warning' ? { ok: true, warnings: result.diagnostics } : { ok: true })
-          } catch (e: unknown) {
-            send(500, { error: e instanceof Error ? e.message : String(e) })
-          }
-        })
-      })
-    },
-  }
-}
 
 const CONTENT_ROOT = path.resolve(process.cwd(), 'public', 'content')
 
@@ -204,8 +82,6 @@ export default defineConfig(({ mode }) => {
     base: basePath,
     plugins: [
       react(),
-      okfSavePlugin(),
-      ouiSavePlugin(),
       contentCatalogPlugin(),
     ],
     server: {

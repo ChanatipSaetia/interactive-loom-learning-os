@@ -1,4 +1,4 @@
-import { Suspense, useMemo, useEffect } from 'react'
+import { Suspense, useMemo } from 'react'
 import { useParams } from 'react-router-dom'
 import { useTopics } from '../../learning-engine/composition/routes'
 import type { SectionConfig } from '../../learning-engine/registry'
@@ -7,11 +7,6 @@ import { bundleToSections } from '../../learning-engine/composition/okf/sections
 import { useTopicBundle } from '../../learning-engine/composition/content'
 import { ProgressProvider } from '../../supporting/learner-progress'
 import { HUDProvider, useHUD } from '../../learning-engine/composition/context/HUDContext'
-import { EditorProvider, useEditor, useEditorSafe } from '../../learning-engine/composition/context/EditorContext'
-import { EditSectionToggle } from './EditSectionToggle'
-import { SplitPaneLayout } from './SplitPaneLayout'
-import { EditorPanel, useSectionEditorBuffer } from '../../supporting/authoring-editor'
-import { ToastProvider, useToast } from '../../ui-system/primitives/Toast'
 import { X } from 'lucide-react'
 
 interface SectionRendererProps {
@@ -54,115 +49,17 @@ function HUDDrawer() {
   )
 }
 
-function LivePreviewSection({ config }: { config: SectionConfig }) {
-  const { activeSectionIndex } = useEditor()
-  return (
-    <div className="editor-preview-wrapper" data-testid="editor-preview-wrapper">
-      <SectionRenderer config={config} sectionIndex={activeSectionIndex ?? 0} />
-    </div>
-  )
-}
-
-function EditorModeView({ topicLabel, reload }: { topicLabel: string; reload?: () => Promise<void> }) {
-  const { topicId } = useParams()
-  const { activeSection, activeSectionIndex, toggleEdit } = useEditor()
-  const { showToast } = useToast()
-
-  const {
-    meta: editedMeta,
-    data: editedData,
-    rawText,
-    validationDiagnostics,
-    validationStatus,
-    isDirty,
-    isSaving,
-    setVisualFormField,
-    setVisualFormMeta,
-    setRawText,
-    saveToDisk,
-    downloadFiles,
-  } = useSectionEditorBuffer(activeSection)
-
-  const previewConfig = useMemo(() => {
-    if (!activeSection) return null
-    const original = bundleToSections([activeSection])[0]
-    return {
-      type: original.type,
-      props: {
-        ...original.props,
-        ...editedData,
-        ...(editedMeta.title ? { title: editedMeta.title } : {}),
-        ...(editedMeta.heading ? { heading: editedMeta.heading } : {}),
-      },
-    }
-  }, [activeSection, editedData, editedMeta])
-
-  const sectionName = useMemo(() => {
-    if (!activeSection) return ''
-    return activeSection.sectionFolder ?? `section-${activeSectionIndex ?? 0}`
-  }, [activeSection, activeSectionIndex])
-
-  const handleSave = async () => {
-    if (!topicId || !sectionName || !isDirty) return
-    try {
-      await saveToDisk(topicId, sectionName)
-      if (reload) {
-        await reload()
-      }
-      showToast('success', 'Section saved to disk')
-    } catch (e: unknown) {
-      const msg = e instanceof Error ? e.message : String(e)
-      showToast('error', `Save failed: ${msg}`)
-    }
-  }
-
-  const handleDownload = () => {
-    downloadFiles()
-  }
-
-  if (!activeSection || !previewConfig) {
-    return null
-  }
-
-  return (
-    <div>
-      <div className="editor-mode-header">
-        <h2 className="topic-page-title">{topicLabel}</h2>
-        <EditSectionToggle />
-      </div>
-      <SplitPaneLayout
-        leftPanel={
-          <EditorPanel
-            sectionData={editedData}
-            sectionMeta={editedMeta}
-            validationDiagnostics={validationDiagnostics}
-            validationStatus={validationStatus}
-            onVisualFormChange={setVisualFormField}
-            onVisualMetaChange={setVisualFormMeta}
-            onRawTextChange={setRawText}
-            rawText={rawText}
-            isDirty={isDirty}
-            isSaving={isSaving}
-            onSave={handleSave}
-            onDownload={handleDownload}
-            onDone={() => toggleEdit()}
-          />
-        }
-        rightPanel={<LivePreviewSection config={previewConfig} />}
-      />
-      <HUDDrawer />
-    </div>
-  )
-}
-
+/**
+ * Read-only topic page. Content is authored in Loom Studio (studio.html),
+ * not in the learning app.
+ */
 function TopicShellInner() {
   const { topicId } = useParams()
   const { topics } = useTopics()
-  const { editMode } = useEditor()
 
   const topic = useMemo(() => topics.find((r) => r.id === topicId), [topicId, topics])
 
-  const { bundle, loading, error, reload } = useTopicBundle(topicId ?? '')
+  const { bundle, loading, error } = useTopicBundle(topicId ?? '')
   const sections = useMemo(() => (bundle ? bundleToSections(bundle) : []), [bundle])
 
   if (!topic) {
@@ -192,14 +89,6 @@ function TopicShellInner() {
     )
   }
 
-  if (editMode) {
-    return (
-      <div className="topic-page editor-mode" data-topic-id={topic.id} data-testid={`${topic.id}-topic`}>
-        <EditorModeView topicLabel={topic.label} reload={reload} />
-      </div>
-    )
-  }
-
   return (
     <div className="topic-page topic-container" data-topic-id={topic.id} data-testid={`${topic.id}-topic`}>
       <h2 className="topic-page-title">{topic.label}</h2>
@@ -213,41 +102,11 @@ function TopicShellInner() {
   )
 }
 
-function TopicShellWithBundle() {
-  const { topicId } = useParams()
-  const { bundle } = useTopicBundle(topicId ?? '')
-  const editor = useEditorSafe()
-
-  useEffect(() => {
-    if (editor?.setBundle) {
-      editor.setBundle(bundle ?? null)
-    }
-  }, [bundle, editor])
-
-  useEffect(() => {
-    if (editor?.editMode) {
-      editor.setEditMode(false)
-    }
-  }, [topicId])
-
-  if (!editor) {
-    return (
-      <EditorProvider bundle={bundle}>
-        <TopicShellInner />
-      </EditorProvider>
-    )
-  }
-
-  return <TopicShellInner />
-}
-
 export function TopicShell() {
   return (
     <ProgressProvider>
       <HUDProvider>
-        <ToastProvider>
-          <TopicShellWithBundle />
-        </ToastProvider>
+        <TopicShellInner />
       </HUDProvider>
     </ProgressProvider>
   )
