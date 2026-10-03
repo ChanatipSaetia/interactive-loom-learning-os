@@ -32,26 +32,18 @@ Zod schemas (`defineComponent` / `createLibrary`).
 | 10 | Validation | **Keep 3 tiers.** T1 = OpenUI parse errors (`parse-failed`, `unknown-component`, …); T2 = Zod props per component; T3 = Loom semantics (event-storming cycle, actor/system connectivity, quiz option bounds). Same `ValidationResult` + `fixHint` + `lastValidData`. |
 | 11 | Rollout | **Phased commits**, each green on `typecheck` + `test` (see below). |
 | 12 | Extension | **`.oui`** |
+| 13 | Author tooling | **Build all three:** TextMate grammar (highlighting); VS Code extension with completion, signature help for positional args, hover docs, go-to-definition and gateway diagnostics; the same completion and diagnostics in the in-app raw tab (CodeMirror). Everything is generated from `createLibrary(...).toJSONSchema()`. **Named args are rejected**, so we stay on the upstream spec. |
+| 14 | Tooling timing | **Right after Phase 1**, before content migration. |
 
 ## Rollout Phases
 
 1. Loom OpenUI component library + `.oui` loader + gateway mapping (new ports/adapters).
-2. OKF→OpenUI converter; migrate `demo` topic end-to-end.
-3. Migrate remaining 11 topics.
-4. Section Editor: raw OpenUI tab, Visual Form ↔ OpenUI printer, save middleware for `.oui`.
-5. Author tooling (see open question below).
+2. Author tooling: TextMate grammar, VS Code extension / language server, CodeMirror integration.
+3. OKF→OpenUI converter; migrate `demo` topic end-to-end.
+4. Migrate remaining 11 topics.
+5. Section Editor: raw OpenUI tab, Visual Form ↔ OpenUI printer, save middleware for `.oui`.
 6. Delete OKF code, `public/okf/`, and update docs (`AGENTS.md`, `docs/creating-topics.md`, `docs/agents/domain.md`).
 
 ## Open Questions
 
-- **Human authoring tooling (syntax highlighting / autocomplete).** Upstream OpenUI ships
-  no VS Code extension, TextMate grammar, or language server — it targets LLM output.
-  Positional arguments (`Step("PlaceOrder", user, api, …)`) are hard to write by hand
-  without signature help, so Loom needs its own. Proposal, all driven by the same
-  `createLibrary(...).toJSONSchema()` output so it stays in sync with the library:
-  - TextMate grammar for `.oui` (highlighting in VS Code, GitHub via linguist override, Shiki).
-  - Small VS Code extension / language server: component-name completion, **signature
-    help showing parameter names for positional args**, hover docs from `description`,
-    go-to-definition for references, and diagnostics from the 3-tier gateway.
-  - Same completion/diagnostics in the in-app raw OpenUI tab (CodeMirror or Monaco).
-  - Awaiting decision on which of these are in scope and when.
+_None._
