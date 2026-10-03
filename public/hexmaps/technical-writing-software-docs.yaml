@@ -1,0 +1,228 @@
+topicId: "technical-writing-software-docs"
+topicTitle: "Realm of the Clear Page"
+capitalId: "capital"
+
+nodes:
+  - id: "capital"
+    title: "The Scribes' Guildhall"
+    type: "capital"
+    status: "unlocked"
+    sectionRef: "intro"
+    description: "Home of the scribes who write the manuals of the realm's web apps. Their creed: every page exists to help one reader do or understand one thing."
+
+  - id: "diataxis"
+    title: "The Four-Quarter Library"
+    type: "archive_spire"
+    status: "locked"
+    unlockedBy:
+      - "capital"
+    sectionRef: "diataxis"
+    description: "A library split into four quarters: Tutorial, How-to, Reference and Explanation. Books shelved in the wrong quarter are never found."
+    rewards:
+      - id: "diataxis-relic"
+        name: "Compass of Four Quarters"
+        icon: "🧭"
+        description: "Proof you can choose the right kind of page."
+
+  - id: "doc-type-compass"
+    title: "The Scribe's Compass"
+    type: "archive_spire"
+    status: "locked"
+    unlockedBy:
+      - "diataxis"
+    sectionRef: "doc-type-compass"
+    description: "Two questions, doing or knowing, studying or working, point every scrap of content to its quarter."
+
+  - id: "quiz-doc-types"
+    title: "Trial of the Four Quarters"
+    type: "quiz_encounter"
+    status: "locked"
+    unlockedBy:
+      - "doc-type-compass"
+    sectionRef: "quiz-doc-types"
+    description: "The Librarian tests whether you can shelve each page in the right quarter."
+    monster:
+      id: "quiz-doc-types-monster"
+      name: "The Misshelving Librarian"
+      type: "goblin"
+      maxHp: 100
+      damage: 15
+      icon: "👾"
+
+  - id: "task-anatomy"
+    title: "The Anatomist's Table"
+    type: "archive_spire"
+    status: "locked"
+    unlockedBy:
+      - "capital"
+    sectionRef: "task-anatomy"
+    description: "Lay a task page open: goal title, prerequisites, one action per step, and the result that proves it worked."
+    rewards:
+      - id: "task-anatomy-relic"
+        name: "Quill of One Action"
+        icon: "🪶"
+        description: "Proof you can write steps that work."
+
+  - id: "ui-conventions"
+    title: "Hall of Signposts"
+    type: "archive_spire"
+    status: "locked"
+    unlockedBy:
+      - "task-anatomy"
+    sectionRef: "ui-conventions"
+    description: "Bold labels matching the screen, where before what, paths marked with >, and typed words in monospace."
+
+  - id: "page-rewrite"
+    title: "The Rewrite Forge"
+    type: "tradeoff_workshop"
+    status: "locked"
+    unlockedBy:
+      - "ui-conventions"
+    sectionRef: "page-rewrite"
+    description: "Hammer a 3,000-word admin scroll into short task pages, and decide where a picture truly helps."
+
+  - id: "order-task-page"
+    title: "The Assembly Bench"
+    type: "reflection_decryption"
+    status: "locked"
+    unlockedBy:
+      - "page-rewrite"
+    sectionRef: "order-task-page"
+    description: "Put the parts of a task page, and the split steps, back in order."
+
+  - id: "quiz-task-writing"
+    title: "Trial of the Steps"
+    type: "quiz_encounter"
+    status: "locked"
+    unlockedBy:
+      - "order-task-page"
+    sectionRef: "quiz-task-writing"
+    description: "A guardian follows your steps literally, and punishes every vague one."
+    monster:
+      id: "quiz-task-writing-monster"
+      name: "The Literal Golem"
+      type: "goblin"
+      maxHp: 100
+      damage: 15
+      icon: "👾"
+
+  - id: "plain-language"
+    title: "The Plain Spring"
+    type: "archive_spire"
+    status: "locked"
+    unlockedBy:
+      - "capital"
+    sectionRef: "plain-language"
+    description: "Short sentences, active voice, key words first, one name per thing, and nothing that won't survive translation."
+    rewards:
+      - id: "plain-language-relic"
+        name: "Plain Seal"
+        icon: "📜"
+        description: "Proof you can write so readers understand the first time."
+
+  - id: "style-guides"
+    title: "The Codex Hall"
+    type: "archive_spire"
+    status: "locked"
+    unlockedBy:
+      - "plain-language"
+    sectionRef: "style-guides"
+    description: "The great public codices of Microsoft and Google, your own slim house rules, and Vale, the tireless checker."
+
+  - id: "readability"
+    title: "The Readability Scales"
+    type: "tradeoff_workshop"
+    status: "locked"
+    unlockedBy:
+      - "style-guides"
+    sectionRef: "readability"
+    description: "Weigh words per sentence and syllables per word, and learn that the scales can't weigh truth."
+
+  - id: "quiz-style"
+    title: "Trial of the Plain Word"
+    type: "quiz_encounter"
+    status: "locked"
+    unlockedBy:
+      - "readability"
+    sectionRef: "quiz-style"
+    description: "A guardian who only understands short, active, plain sentences."
+    monster:
+      id: "quiz-style-monster"
+      name: "The Jargon Imp"
+      type: "goblin"
+      maxHp: 100
+      damage: 15
+      icon: "👾"
+
+  - id: "review-flow"
+    title: "The Gate of Proof"
+    type: "simulation_nexus"
+    status: "locked"
+    unlockedBy:
+      - "capital"
+    sectionRef: "review-flow"
+    description: "No page passes until an expert checks the facts, someone follows every step, and the editor signs off."
+    rewards:
+      - id: "review-flow-relic"
+        name: "Seal of Proof"
+        icon: "✅"
+        description: "Proof you never publish an untested page."
+
+  - id: "scenario-ticket-storm"
+    title: "The Ticket Storm"
+    type: "simulation_nexus"
+    status: "locked"
+    unlockedBy:
+      - "review-flow"
+    sectionRef: "scenario-ticket-storm"
+    description: "Forty tickets a week pour from one page. Find the cause and calm the storm."
+
+  - id: "concept-map"
+    title: "Constellation of the Clear Page"
+    type: "concept_monolith"
+    status: "locked"
+    unlockedBy:
+      - "scenario-ticket-storm"
+    sectionRef: "concept-map"
+    description: "See how page types, task pages, style and review connect."
+
+  - id: "glossary"
+    title: "Lexicon Stones"
+    type: "concept_monolith"
+    status: "locked"
+    unlockedBy:
+      - "concept-map"
+    sectionRef: "glossary"
+    description: "The words of the scribes: Diátaxis, prerequisite, minimalism, Vale, Flesch and more."
+
+  - id: "synthesis"
+    title: "The Final Draft"
+    type: "reading_sanctuary"
+    status: "locked"
+    unlockedBy:
+      - "glossary"
+    sectionRef: "synthesis"
+    description: "Fill in the scribe's creed before facing the Wyrm."
+
+  - id: "boss-lair"
+    title: "Lair of the Wall-of-Text Wyrm"
+    type: "boss_lair"
+    status: "locked"
+    unlockedBy:
+      - "quiz-doc-types"
+      - "quiz-task-writing"
+      - "quiz-style"
+      - "synthesis"
+    description: "Pages describe the software instead of helping the reader finish a task: mixed page types, vague steps and no results shown, so users give up and open a ticket"
+    requiredItems:
+      - "diataxis-relic"
+      - "task-anatomy-relic"
+      - "plain-language-relic"
+      - "review-flow-relic"
+    monster:
+      id: "failure-mode"
+      name: "The Wall-of-Text Wyrm"
+      type: "boss"
+      maxHp: 200
+      damage: 35
+      icon: "🐉"

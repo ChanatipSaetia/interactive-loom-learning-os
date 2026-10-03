@@ -1,0 +1,37 @@
+root = ReflectionSequence("Transform Pipeline Sequencing", [challenge1])
+
+challenge1 = SequenceChallenge(
+  "Order the stages of coordinate matrix transformation from local entity properties to canvas screen viewport:",
+  [t3, t1, t5, t2, t4],
+  [t1, t2, t3, t4, t5],
+)
+
+t3 = SequenceItem(
+  "t-3",
+  "Child local matrix is multiplied by parent worldTransform matrix during depth-first traversal",
+  "Layers",
+)
+
+t1 = SequenceItem(
+  "t-1",
+  "Developer modifies entity local properties (x, y, scale, rotation, pivot)",
+  "Edit",
+)
+
+t5 = SequenceItem(
+  "t-5",
+  "Vertex Buffer Object coordinates are transformed by projection matrix onto WebGL viewport",
+  "Monitor",
+)
+
+t2 = SequenceItem(
+  "t-2",
+  "Local affine transformation matrix (a, b, c, d, tx, ty) is constructed",
+  "Grid",
+)
+
+t4 = SequenceItem(
+  "t-4",
+  "Four corner quad vertices are multiplied by resulting worldTransform to produce absolute coordinates",
+  "Box",
+)

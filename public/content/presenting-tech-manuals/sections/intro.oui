@@ -1,0 +1,118 @@
+root = Intro(
+  "Presenting IT System, Web App & Developer Experience Manuals",
+  what,
+  why,
+  [
+    RoadmapStep(
+      "Audience Map",
+      "taxonomy-browser",
+      "Compare the three audience archetypes — end users, operators, and developers — and what slice of the manual each one actually needs.",
+      "audience-map",
+    ),
+    RoadmapStep(
+      "The Six-Stage Manual Presentation Arc",
+      "bullets",
+      "The reusable presentation skeleton: hook, roadmap, one-scenario walkthrough, live demo, gotchas, recap + permalink.",
+      "narrative-arc",
+    ),
+    RoadmapStep(
+      "Trial of the Narrative Arc",
+      "quiz",
+      "Combat trial testing the audience archetypes and the six-stage presentation arc.",
+      "quiz-narrative",
+    ),
+    RoadmapStep(
+      "Sequencing the Presentation Arc",
+      "reflection-sequence",
+      "Timed reordering challenge: assemble the six stages of the manual presentation in order.",
+      "reflection-prep",
+    ),
+    RoadmapStep(
+      "Presentation & Docs Tooling Landscape",
+      "taxonomy-browser",
+      "Five tool categories: markdown decks, docs-as-code sites, interactive API references, in-app & in-code tours, and screen recording.",
+      "tool-landscape",
+    ),
+    RoadmapStep(
+      "Trial of the Instrument Choice",
+      "quiz",
+      "Combat trial testing which tool fits which presenting job: Marp, Slidev, reveal.js, Docusaurus, Swagger UI, Code Tour, Intro.js, OBS.",
+      "quiz-tools",
+    ),
+    RoadmapStep(
+      "Launch Webinar Trade-off Workshop",
+      "tradeoff-sandbox",
+      "Forge a launch webinar loadout: pick the demo medium, deck format, and take-home reference while balancing clarity, reliability, prep, and reuse.",
+      "deck-tradeoffs",
+    ),
+    RoadmapStep(
+      "Instrument Selection Advisor",
+      "decision-tree",
+      "Diagnostic advisor: answer three questions about your audience and format, get a tailored presentation tooling recommendation.",
+      "tool-decision-tree",
+    ),
+    RoadmapStep(
+      "The Docs-as-Code Layer Stack",
+      "pillar-layer",
+      "Lego-stack view of the manual platform: authoring sources, generators, delivery web app, and the live/in-app layer.",
+      "docs-stack",
+    ),
+    RoadmapStep(
+      "Docs-as-Code Publish Flow",
+      "flowchart",
+      "Event Storming walkthrough: commit → CI preview → review → publish (or revise) for manual changes.",
+      "publish-flow",
+    ),
+    RoadmapStep(
+      "Scenario: The Release Webinar",
+      "scenario",
+      "Branching narrative: present a Web App manual to a mixed audience while the live demo falls apart. Your choices are graded.",
+      "scenario-launch",
+    ),
+    RoadmapStep(
+      "Lexicon of the Realm",
+      "flashcards",
+      "Key vocabulary: docs-as-code, permalink, runbook, quickstart, guided tour, demo fallback, DX, annotated screenshot.",
+      "glossary",
+    ),
+    RoadmapStep(
+      "Concept Constellation",
+      "concept-map",
+      "Force-directed map of how audience, narrative, tools, and the docs-as-code pipeline connect.",
+      "concept-map",
+    ),
+    RoadmapStep(
+      "Synthesis Vault",
+      "reflection-template",
+      "Fill-in-the-blank synthesis across all three tracks — the final ritual before the Boss Lair.",
+      "synthesis",
+    ),
+  ],
+  "Turn documentation into presentations people actually finish — with markdown, code-based, and web-app presentation tools",
+  "35 min",
+  15,
+)
+
+what = IntroWhat(
+  "Most manual presentations fail the same way: someone reads release notes aloud over an architecture diagram while the real audience — the people who must click buttons at 2am — silently disengages. This realm teaches the opposite: analyze the audience first, walk one realistic scenario end-to-end in the real UI, keep a fallback for the live demo, and hand everyone a permanent permalink to a docs site.",
+  "Presenting a user manual is the craft of turning written documentation for an IT system, Web App, or Developer Experience (DX) into a live, audience-shaped story — a guided walkthrough of one real task, proven in the running product, and backed by durable, findable reference material.",
+  [
+    "Audience First: end users, operators/admins, and developers each need a completely different cut of the same manual",
+    "One-Scenario Arc: hook with the user's pain, walk one persona task end-to-end, show gotchas, end with a permalink",
+    "Markdown-Native Tooling: Marp, Slidev, and reveal.js keep slides in the same Git repo as the code",
+    "Docs-as-Code Delivery: Docusaurus, MkDocs, and VitePress turn the manual into a searchable, versioned web app",
+    "Live Demo with a Safety Net: every live demo of the product ships with a pre-recorded OBS fallback clip",
+  ],
+  [
+    "Technical Communication",
+    "Documentation",
+    "Presentation",
+    "Developer Experience",
+    "Docs-as-Code",
+  ],
+)
+
+why = IntroWhy(
+  "A manual nobody watches or finds is a manual that doesn't exist. Teams spend weeks writing documentation, then present it in the format least likely to stick — walls of text read aloud — and then wonder why the support queue never shrinks.",
+  "Presentations grounded in one realistic task and delivered with the right instrument (a Marp deck for a release webinar, a Swagger UI playground for API consumers, an in-app tour for self-serve onboarding) measurably cut support tickets, speed up onboarding, and make the manual self-service instead of person-service.",
+)

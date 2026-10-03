@@ -1,0 +1,123 @@
+root = Intro(
+  "Technical Writing for Software Docs",
+  what,
+  why,
+  [
+    RoadmapStep(
+      "The Diátaxis Framework",
+      "taxonomy-browser",
+      "Tutorial, how-to guide, reference and explanation, and why not to mix them.",
+      "diataxis",
+    ),
+    RoadmapStep(
+      "The Diátaxis Compass",
+      "decision-tree",
+      "Two questions that decide what kind of page your content should be.",
+      "doc-type-compass",
+    ),
+    RoadmapStep(
+      "Doc Types Check",
+      "quiz",
+      "Sort real examples into the four types.",
+      "quiz-doc-types",
+    ),
+    RoadmapStep(
+      "Anatomy of a Task Page",
+      "bullets",
+      "Goal title, prerequisites, one action per step, result, and minimalism.",
+      "task-anatomy",
+    ),
+    RoadmapStep(
+      "UI Text Conventions",
+      "taxonomy-browser",
+      "Bold labels, location first, menu paths, monospace input, consistent verbs.",
+      "ui-conventions",
+    ),
+    RoadmapStep(
+      "Page Rewrite Workshop",
+      "tradeoff-sandbox",
+      "Rewrite a 3,000-word admin page: structure, screenshots and step style.",
+      "page-rewrite",
+    ),
+    RoadmapStep(
+      "Assemble a Task Page",
+      "reflection-sequence",
+      "Put the parts of a task page, and split steps, in order.",
+      "order-task-page",
+    ),
+    RoadmapStep(
+      "Task Writing Check",
+      "quiz",
+      "Check task pages, UI conventions and screenshot judgement.",
+      "quiz-task-writing",
+    ),
+    RoadmapStep(
+      "Plain Language Rules",
+      "bullets",
+      "Short sentences, active voice, key information first, one term, write for translation.",
+      "plain-language",
+    ),
+    RoadmapStep(
+      "Style Guides & Tools",
+      "taxonomy-browser",
+      "Microsoft and Google style guides, your house style, and the Vale linter.",
+      "style-guides",
+    ),
+    RoadmapStep(
+      "Readability Calculator",
+      "formula-sandbox",
+      "Play with the Flesch Reading Ease formula, and learn its limits.",
+      "readability",
+    ),
+    RoadmapStep(
+      "Style Check",
+      "quiz",
+      "Check plain language, style guides and readability.",
+      "quiz-style",
+    ),
+    RoadmapStep(
+      "The Docs Review Flow",
+      "flowchart",
+      "Draft, technical review, step test, editorial review, publish.",
+      "review-flow",
+    ),
+    RoadmapStep(
+      "Scenario: The Ticket Storm",
+      "scenario",
+      "A page causes 40 tickets a week. Diagnose it and fix it.",
+      "scenario-ticket-storm",
+    ),
+    RoadmapStep(
+      "How It All Connects",
+      "concept-map",
+      "Page types, task pages, style and review on one map.",
+      "concept-map",
+    ),
+    RoadmapStep("Glossary", "flashcards", "Key terms from Diátaxis to Flesch.", "glossary"),
+    RoadmapStep(
+      "Write It Right",
+      "reflection-template",
+      "Fill in the blanks across all four tracks before facing the boss.",
+      "synthesis",
+    ),
+  ],
+  "Write web app manuals that users can find, follow and trust",
+  "40 min",
+)
+
+what = IntroWhat(
+  "Most bad manuals fail the same way: they describe the software instead of helping the reader. This topic covers choosing the right kind of page (Diátaxis), writing task pages whose steps actually work, plain language and style guides, and a review loop that proves the page is true before users see it.",
+  "Technical writing for software docs is the craft of writing pages that help a specific reader do or understand one thing in a software product, clearly, accurately and consistently.",
+  [
+    "Four kinds of docs: tutorial, how-to, reference, explanation, and why not to mix them",
+    "Task pages: goal titles, prerequisites, one action per step, bold UI labels, results",
+    "Plain language: short sentences, active voice, one term per concept, style guides and Vale",
+    "Review: subject-matter expert check, follow-every-step test, editorial review",
+  ],
+  ["documentation", "technical-writing", "diataxis", "style-guide", "plain-language"],
+)
+
+why = IntroWhy(
+  "Every page users can't follow becomes a support ticket, a mistake in the real system, or a user who gives up.",
+  "Teams that skip the craft grow the Wall-of-Text Wyrm: long pages that mix history, field tables and a vague 'then export it as needed', so users still can't finish their task.",
+)

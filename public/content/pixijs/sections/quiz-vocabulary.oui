@@ -1,0 +1,65 @@
+root = Quiz("Essential PixiJS Vocabulary Quiz", [qVoc1, qVoc2])
+
+qVoc1 = QuizQuestion(
+  "q_voc_1",
+  "What is the structural difference between a 'Texture' and a 'BaseTexture' in PixiJS?",
+  [
+    QuizChoice(
+      "c1",
+      "Texture is for 3D meshes; BaseTexture is for 2D sprites",
+      false,
+      "PixiJS is a 2D rendering engine; both handle 2D image data.",
+    ),
+    QuizChoice(
+      "c2",
+      "BaseTexture holds the actual raw WebGL GPU image resource, while Texture defines a specific UV rectangular crop of that BaseTexture",
+      true,
+      "BaseTexture owns the GPU memory allocation. Multiple Texture instances can reference sub-regions (UV frames) of the same BaseTexture, enabling sprite sheets.",
+    ),
+    QuizChoice(
+      "c3",
+      "BaseTexture is rendered by CPU, whereas Texture is rendered by GPU",
+      false,
+      "Both are part of the GPU texture management system.",
+    ),
+    QuizChoice(
+      "c4",
+      "They are identical aliases with no technical distinction",
+      false,
+      "They have distinct responsibilities: GPU resource vs UV sub-region definition.",
+    ),
+  ],
+  "Think about how a sprite sheet texture atlas shares one large image across dozens of sprite frames.",
+)
+
+qVoc2 = QuizQuestion(
+  "q_voc_2",
+  "How does the 'Ticker' deltaTime property help maintain consistent movement speed across different monitor refresh rates (60Hz vs 144Hz)?",
+  [
+    QuizChoice(
+      "c1",
+      "It forces all monitors to run at exactly 60 FPS by sleeping the thread",
+      false,
+      "Ticker does not sleep the main JS thread; it measures actual elapsed time.",
+    ),
+    QuizChoice(
+      "c2",
+      "It provides a frame duration multiplier proportional to 60 FPS, scaling velocity so distance per second remains identical",
+      true,
+      "At 60 FPS, deltaTime is ~1.0. At 120 FPS, deltaTime is ~0.5. Multiplying velocity by deltaTime ensures identical movement speed in physical time.",
+    ),
+    QuizChoice(
+      "c3",
+      "It skips rendering every second frame on high-refresh monitors",
+      false,
+      "PixiJS renders on every RAF frame to deliver maximum visual smoothness.",
+    ),
+    QuizChoice(
+      "c4",
+      "It converts pixel measurements to meters automatically",
+      false,
+      "Pixel measurements are preserved; deltaTime scales numerical step changes.",
+    ),
+  ],
+  "Consider what multiplier is needed when a frame executes in 8.3ms (120Hz) instead of 16.6ms (60Hz).",
+)

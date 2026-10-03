@@ -1,0 +1,79 @@
+root = Quiz("Performance & Optimization Quiz", [qBatchBreaking, qKawaseBenefit, qHalfRes])
+
+qBatchBreaking = QuizQuestion(
+  "q-batch-breaking",
+  "What is the primary performance reason that applying individual filters to 100 separate sprites causes severe lag?",
+  [
+    QuizChoice(
+      "a",
+      "Each filter requires switching render targets to offscreen framebuffers, breaking sprite batching and causing 100+ separate draw passes",
+      true,
+      "Correct! Each filtered object forces a framebuffer target switch, vertex flush, and shader draw call, completely destroying the automatic batch renderer.",
+    ),
+    QuizChoice(
+      "b",
+      "JavaScript garbage collection deletes the texture buffers every frame",
+      false,
+      "RenderTarget pooling prevents garbage collection, but GPU state switching overhead remains high.",
+    ),
+    QuizChoice(
+      "c",
+      "GLSL fragment shaders cannot run on more than 16 sprites simultaneously",
+      false,
+      "GPUs can run millions of fragment shader instances; the bottleneck is CPU-to-GPU state changes and framebuffer bindings.",
+    ),
+  ],
+  "Consider what happens to WebGL state and draw calls when switching render targets.",
+)
+
+qKawaseBenefit = QuizQuestion(
+  "q-kawase-benefit",
+  "Why is KawaseBlurFilter preferred over standard multi-pass Gaussian Blur on mobile web devices?",
+  [
+    QuizChoice(
+      "a",
+      "Kawase blur runs on the CPU while Gaussian runs on the GPU",
+      false,
+      "Both algorithms run entirely on the GPU in fragment shaders.",
+    ),
+    QuizChoice(
+      "b",
+      "Kawase blur uses expanding box sampling offsets, achieving smooth blur quality with significantly fewer texture fetch operations",
+      true,
+      "Correct! Kawase blur achieves smooth distribution with minimal texture sampling taps, drastically lowering memory bandwidth on mobile GPUs.",
+    ),
+    QuizChoice(
+      "c",
+      "Kawase blur does not require an offscreen RenderTarget",
+      false,
+      "Kawase blur still uses offscreen RenderTargets for its ping-pong passes.",
+    ),
+  ],
+  "Compare the number of texture sample taps required per pixel.",
+)
+
+qHalfRes = QuizQuestion(
+  "q-half-res",
+  "How does setting filter.resolution = 0.5 improve mobile shader performance?",
+  [
+    QuizChoice(
+      "a",
+      "It renders the offscreen target at half size, reducing fragment shader pixel calculations by 75%",
+      true,
+      "Correct! Half width and half height means 1/4 the pixel count (75% reduction), with hardware bilinear upsampling smoothing the blur.",
+    ),
+    QuizChoice(
+      "b",
+      "It drops the framerate to 30 FPS",
+      false,
+      "It reduces GPU load per frame while keeping the display running at full 60 FPS.",
+    ),
+    QuizChoice(
+      "c",
+      "It disables the vertex shader entirely",
+      false,
+      "Vertex shaders are still executed for quad geometry.",
+    ),
+  ],
+  "Think about pixel fillrate in the fragment shader.",
+)

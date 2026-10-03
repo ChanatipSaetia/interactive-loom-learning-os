@@ -1,0 +1,63 @@
+root = Bullets(
+  "The Six Onboarding Principles",
+  [
+    Bullet(
+      "Principle 1 — Access First: everything works before day one",
+      [
+        Bullet(
+          "Accounts, licenses, VPN, repositories, and API keys are provisioned in pre-boarding, not requested on Monday morning",
+        ),
+        Bullet(
+          "Waiting-for-access is the number-one onboarding killer: a blocked newcomer is an anxious, unproductive newcomer",
+        ),
+      ],
+    ),
+    Bullet(
+      "Principle 2 — First Value in Week One: drive to one real win fast",
+      [
+        Bullet(
+          "Time-to-first-value is the only week-one metric that matters: how fast does this person complete one meaningful task?",
+        ),
+        Bullet(
+          "For end users it is the first real record; for staff the first safe change; for developers the first successful API call",
+        ),
+      ],
+    ),
+    Bullet(
+      "Principle 3 — One Golden Path: a single canonical journey beats a feature tour",
+      [
+        Bullet("Design ONE scripted end-to-end route through the system that every newcomer walks"),
+        Bullet("A tour of every button produces fatigue; one deep task produces competence"),
+      ],
+    ),
+    Bullet(
+      "Principle 4 — Progressive Disclosure: reveal complexity only when it is needed",
+      [
+        Bullet(
+          "Teach the next step at the moment the newcomer reaches it, never three screens ahead",
+        ),
+        Bullet(
+          "Information firehoses create quit-points; a short path with deeper links respects the newcomer's attention",
+        ),
+      ],
+    ),
+    Bullet(
+      "Principle 5 — Human Anchor: every path ends at a named human",
+      [
+        Bullet(
+          "Even fully self-serve onboarding needs office hours, a buddy, or a channel where questions land on a real person",
+        ),
+        Bullet("Unanswered questions at hour three are where motivation dies — not at hour zero"),
+      ],
+    ),
+    Bullet(
+      "Principle 6 — Measure the Friction: instrument the path, watch where they stall",
+      [
+        Bullet(
+          "Track day-1 login success, golden-path completion rate, and where help tickets storm",
+        ),
+        Bullet("Fix the biggest measured quit-point before adding any new onboarding content"),
+      ],
+    ),
+  ],
+)

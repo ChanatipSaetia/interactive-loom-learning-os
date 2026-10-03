@@ -1,0 +1,99 @@
+root = Flashcards(
+  "Lexicon of the Realm",
+  [
+    docsAsCode,
+    permalink,
+    runbook,
+    quickstart,
+    guidedTour,
+    demoFallback,
+    annotatedScreenshot,
+    developerExperience,
+  ],
+)
+
+docsAsCode = Flashcard(
+  "docs-as-code",
+  "Docs-as-Code",
+  "dok-uhz uhz kohd",
+  "practice",
+  "Writing documentation with the same tools and pipeline as code: markdown in Git, reviewed in pull requests, deployed by CI.",
+  "Manual pages, OpenAPI specs, and tour files live in repositories, get linted and preview-built like source code, and ship through the same review discipline engineers already trust.",
+  "It is the only way a manual stays true after the first hotfix; documentation outside the pipeline rots within a sprint.",
+  null,
+  Dialogue(
+    "Our manual says 'click Submit' but the button is now called 'Send'.",
+    "The docs live outside the repo, so no PR ever touched them.",
+    "What if a pull request that renames a button had to update the manual page too, or CI would flag it?",
+  ),
+)
+
+permalink = Flashcard(
+  "permalink",
+  "Permalink",
+  "pur-muh-link",
+  "delivery",
+  "A permanent URL pointing at one exact page or version of the manual.",
+  "The final slide of every manual presentation pins a permalink so the audience lands on the living docs page instead of a dead slide screenshot.",
+  "Findability beats memorability — the presentation ends, but the permalink keeps teaching for years.",
+)
+
+runbook = Flashcard(
+  "runbook",
+  "Runbook",
+  "ruhn-book",
+  "operator-doc",
+  "A terse, ordered operator procedure for a specific task or incident: symptom, diagnosis, remediation.",
+  "Written like an aircraft checklist so it works under stress: every command copy-pasteable, every expected output stated, no prose between steps.",
+  "At 2am nobody reads paragraphs; runbooks convert documentation into action.",
+)
+
+quickstart = Flashcard(
+  "quickstart",
+  "Quickstart",
+  "kwik-start",
+  "dx-doc",
+  "A five-minute guided path that gets a developer from zero to one successful call in the real system.",
+  "The DX manual's most important page: prereqs, install, auth, first request, expected output — tested on a clean machine so it works on first try.",
+  "Developers judge the whole product by whether the first ten minutes work; a broken quickstart is a broken product.",
+)
+
+guidedTour = Flashcard(
+  "guided-tour",
+  "Guided Tour",
+  "gyed toor",
+  "in-app",
+  "An interactive overlay (Intro.js, Shepherd) or repository walkthrough (Code Tour) that teaches by highlighting real steps in the artifact itself.",
+  "Instead of slides about the product, the tour walks the user through the live UI or the actual code files, step by step, at their own pace.",
+  "It converts a one-time presentation into self-serve onboarding that survives every UI release.",
+)
+
+demoFallback = Flashcard(
+  "demo-fallback",
+  "Demo Fallback Clip",
+  "dee-moh faw-back klip",
+  "presentation",
+  "A pre-recorded screen capture (OBS Studio) of the exact demo, cued up before the live presentation starts.",
+  "When staging freezes on camera, the presenter switches mid-sentence to the clip and the walkthrough continues uninterrupted.",
+  "It is the difference between a hiccup and a cancelled launch; recorded once, the clip also becomes the async manual and docs embed.",
+)
+
+annotatedScreenshot = Flashcard(
+  "annotated-screenshot",
+  "Annotated Screenshot",
+  "an-oh-tei-tid skreen-shot",
+  "end-user-doc",
+  "A UI screenshot with numbered callouts pointing at the exact buttons and fields a task requires.",
+  "The end-user manual's core unit: one screen, one task, numbered arrows naming every control in click order.",
+  "Every click you skip in the visuals is a support ticket you create later.",
+)
+
+developerExperience = Flashcard(
+  "developer-experience",
+  "Developer Experience (DX)",
+  "dih-vel-uh-per ik-speer-ee-uhns",
+  "concept",
+  "The cumulative feeling developers get while using a system — and its manual is often the first contact.",
+  "Quickstarts, generated API references, playgrounds, error messages, and changelogs together form the DX; for many products, documentation is the product's front door.",
+  "A DX presentation is not 'about' the manual — it is the manual being demonstrated live, which is why the instruments (playgrounds, live code) matter so much.",
+)

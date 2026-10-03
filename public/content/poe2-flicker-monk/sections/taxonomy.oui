@@ -42,7 +42,7 @@ heraldsUtility = TaxonomyCategory(
   "Heralds & Utility",
   "Herald of Thunder, Herald of Ice, Mantra of Destruction",
   "Shield",
-  "rose",
+  "red",
   "Heralds mark enemies for elemental explosions. Utility skills enable boss strategies.",
   "Herald of Thunder and Herald of Ice mark enemies for lightning and cold explosions. Mantra of Destruction holds Combo stacks for charge generation. Hand of Chayula marks bosses for additional charge generation with Culmination II.",
   "Heralds are sticky notes on enemies saying 'explode next time you get hit.'",

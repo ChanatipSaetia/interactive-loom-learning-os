@@ -1,0 +1,180 @@
+root = TradeoffSandbox(
+  "การเลือกถ่านและไม้รมควัน (Fuel & Smoke Trade-offs)",
+  [fuelChoice, woodFlavor],
+)
+
+fuelChoice = TradeoffScenario(
+  "fuel-choice",
+  "การเลือกชนิดเชื้อเพลิงสำหรับเตา Kamado (Fuel Selection)",
+  [
+    TradeoffMetric("heat_output", "พลังความร้อนสูงสุด (Max Heat Output)", 50, 0, 100, "higher"),
+    TradeoffMetric("burn_duration", "ระยะเวลาติดไฟต่อเนื่อง (Burn Duration)", 50, 0, 100, "higher"),
+    TradeoffMetric(
+      "ash_cleanliness",
+      "ความสะอาดและขี้เผ่าน้อย (Low Ash / Clean Airflow)",
+      50,
+      0,
+      100,
+      "higher",
+    ),
+    TradeoffMetric(
+      "flavor_purity",
+      "ความบริสุทธิ์ของกลิ่นรส (Flavor Purity)",
+      50,
+      0,
+      100,
+      "higher",
+    ),
+  ],
+  [charcoalType],
+  "ประเมินและเลือกประเภทถ่านที่เหมาะสมกับการย่างเนื้อวัวและการรักษาสภาพเตาเซรามิก",
+)
+
+charcoalType = TradeoffStep(
+  "charcoal_type",
+  "ประเภทถ่าน (Charcoal Medium)",
+  [lumpHardwood, charcoalBriquettes, binchotanCharcoal],
+  "เลือกชนิดถ่านที่จะนำมาเป็นเชื้อเพลิงหลักในเตา Kamado",
+  "lump_hardwood",
+)
+
+lumpHardwood = TradeoffChoice(
+  "lump_hardwood",
+  "ถ่านไม้เนื้อแข็งธรรมชาติ (Natural Hardwood Lump Charcoal)",
+  "ไม้ธรรมชาติ 100% เผาไร้ออกซิเจน ชิ้นใหญ่ ไร้สารเคมีประสาน",
+  {heat_output: 25, burn_duration: 15, ash_cleanliness: 20, flavor_purity: 25},
+  [
+    ProCon("เร่งอุณหภูมิได้สูงมาก", "ทำความร้อนแตะ 350-400°C สำหรับ Sear สเต๊กได้อย่างรวดเร็ว"),
+    ProCon("ขี้เผ่าน้อยมาก", "ไม่ทำให้ช่องลมล่างอุดตัน รักษากระแสลมได้อย่างยอดเยี่ยม"),
+  ],
+  [ProCon("ขนาดชิ้นไม่สม่ำเสมอ", "ต้องเรียงก้อนใหญ่ไว้ด้านล่าง ก้อนเล็กไว้ด้านบน")],
+  "เตาเซรามิกต้องการถ่านที่ขี้เผ่าน้อยและไร้สารเคมี ถ่านไม้ก้อนธรรมชาติคือตัวเลือกมาตรฐานสากลอันดับ 1 ของเตา Kamado",
+)
+
+charcoalBriquettes = TradeoffChoice(
+  "charcoal_briquettes",
+  "ถ่านอัดก้อนมาตรฐาน (Standard Briquettes)",
+  "ผงถ่านผสมแป้งข้าวโพดหรือสารเคมีประสานอัดขึ้นรูปเป็นก้อนกลมสี่เหลี่ยม",
+  {heat_output: -10, burn_duration: 10, ash_cleanliness: -25, flavor_purity: -20},
+  [ProCon("ขนาดก้อนเท่ากันสม่ำเสมอ", "เผาไหม้ในอัตราคงที่ คาดเดาเวลาง่าย")],
+  [
+    ProCon("ขี้เถ้ามหาศาล", "ขี้เถ้าจะร่วงลงมาอุดตันช่องลมก้นเตาอย่างรวดเร็ว ทำให้อุณหภูมิตก"),
+    ProCon("กลิ่นสารเคมีประสาน", "กลิ่นแป้งประสานจะซึมเข้าผนังเซรามิกและรบกวนรสชาติเนื้อวัว"),
+  ],
+  null,
+  "เหมาะกับเตาเหล็กเปิดฝาทั่วไป ไม่แนะนำอย่างยิ่งสำหรับเตาเซรามิก Kamado",
+)
+
+binchotanCharcoal = TradeoffChoice(
+  "binchotan_charcoal",
+  "ถ่านขาวบินโชตัน (White Charcoal / Binchotan)",
+  "ถ่านไม้โอ๊คญี่ปุ่นเผาอุณหภูมิสูงพิเศษ 1000°C แข็งแกร่งดั่งโลหะ",
+  {heat_output: 30, burn_duration: 30, ash_cleanliness: 25, flavor_purity: 30},
+  [
+    ProCon(
+      "ความร้อนอินฟราเรดบริสุทธิ์สูงมาก",
+      "ไร้ควัน ไร้กลิ่น ให้ความร้อนสม่ำเสมอยาวนานหลายชั่วโมง",
+    ),
+  ],
+  [
+    ProCon("จุดติดไฟยากมาก", "ต้องใช้หัวพ่นแก๊สหรือปล่องจุดถ่านพิเศษนานกว่า 20-30 นาที"),
+    ProCon("ราคาสูงมาก", "เหมาะสำหรับโอกาสพิเศษหรืองานยากินิกุระดับพรีเมียม"),
+  ],
+  null,
+  "ใช้เมื่อต้องการย่างแบบยากินิกุหรือ Caveman สเต๊กที่ต้องการความบริสุทธิ์ของความร้อนสูงสุด",
+)
+
+woodFlavor = TradeoffScenario(
+  "wood-flavor",
+  "การจับคู่ไม้รมควันกับเนื้อวัว (Wood Chunks Selection)",
+  [
+    TradeoffMetric(
+      "smoke_intensity",
+      "ความเข้มข้นของกลิ่นควัน (Smoke Boldness)",
+      50,
+      0,
+      100,
+      "higher",
+    ),
+    TradeoffMetric(
+      "sweetness_balance",
+      "ความกลมกล่อมอมหวาน (Sweetness Balance)",
+      50,
+      0,
+      100,
+      "higher",
+    ),
+    TradeoffMetric(
+      "versatility",
+      "ความเข้ากันได้กับเนื้อทุกส่วน (Versatility)",
+      50,
+      0,
+      100,
+      "higher",
+    ),
+  ],
+  [woodSelection],
+  "เลือกท่อนไม้รมควัน (Wood Chunks) เพื่อสร้างโปรไฟล์กลิ่นและรสชาติที่ส่งเสริมเนื้อวัวอย่างลงตัว",
+)
+
+woodSelection = TradeoffStep(
+  "wood_selection",
+  "ชนิดไม้รมควัน (Wood Variety)",
+  [oakPost, hickoryWood, fruitwoodCherry],
+  "เลือกไม้รมควันใส่ลงบนกองถ่าน 1-2 ท่อน (Wood Chunks ห้ามใช้ Wood Chips เพราะจะไหม้เร็วเกินไป)",
+  "oak_post",
+)
+
+oakPost = TradeoffChoice(
+  "oak_post",
+  "ไม้โอ๊ค (Post Oak / White Oak)",
+  "ราชาแห่งไม้รมควันสไตล์เท็กซัส กลิ่นควันสะอาด ละมุน หนักแน่นกำลังดี",
+  {smoke_intensity: 15, sweetness_balance: 15, versatility: 30},
+  [
+    ProCon(
+      "กลิ่นควันกลมกล่อมคลาสสิก",
+      "ชูรสเนื้อวัวธรรมชาติโดยไม่บดบังรสชาติของไขมันและเกลือพริกไทย",
+    ),
+    ProCon("ควันสะอาดติดไฟง่าย", "ให้ควันสีฟ้าใส (Thin Blue Smoke) ได้ง่าย"),
+  ],
+  [ProCon("กลิ่นอาจไม่หวือหวา", "เน้นความเรียบหรูและสมดุลมากกว่ากลิ่นหวานจัด")],
+  "ไม้โอ๊คคือมาตรฐานทองคำของการย่างและรมควันเนื้อวัว เข้าได้กับทั้ง Reverse Sear สเต๊ก และ Brisket",
+)
+
+hickoryWood = TradeoffChoice(
+  "hickory_wood",
+  "ไม้ฮิคคอรี่ (Hickory)",
+  "กลิ่นควันสไตล์เบคอน เข้มข้น ฉุนหนักแน่นแบบดั้งเดิมของอเมริกาใต้",
+  {smoke_intensity: 30, sweetness_balance: 5, versatility: 10},
+  [ProCon("กลิ่นหอมรมควันทรงพลัง", "สร้างกลิ่นแบบบาร์บีคิวขนานแท้ ชัดเจนแม้ใช้เพียงท่อนเดียว")],
+  [
+    ProCon(
+      "เสี่ยงกลิ่นฉุนเกินไป",
+      "หากใส่มากเกินไป กลิ่นอาจกลบรสชาติเนื้อพรีเมียมและทำให้มีรสขมฝาด",
+    ),
+  ],
+  null,
+  "เหมาะกับเนื้อส่วนที่มีไขมันแทรกและรสเข้ม เช่น Short Ribs และ Brisket",
+)
+
+fruitwoodCherry = TradeoffChoice(
+  "fruitwood_cherry",
+  "ไม้ผลเชอร์รี่ / แอปเปิ้ล (Cherry & Apple Wood)",
+  "กลิ่นควันหอมหวาน ผลไม้ นุ่มนวล ละเมียดละไม",
+  {smoke_intensity: -10, sweetness_balance: 25, versatility: 15},
+  [
+    ProCon(
+      "สร้างสีผิวแดงสวยงาม (Mahogany Color)",
+      "ไม้เชอร์รี่ทำให้ผิวเปลือก Bark ของเนื้อมีสีแดงมะฮอกกานีสวยงามน่ารับประทาน",
+    ),
+    ProCon("กลิ่นหวานละมุน", "ไม่ฉุน เหมาะสำหรับผู้ที่ไม่ชอบควันหนัก"),
+  ],
+  [
+    ProCon(
+      "กลิ่นอาจเบาไปสำหรับเนื้อรสเข้ม",
+      "หากใช้กับเนื้อชิ้นหนามาก กลิ่นควันอาจไม่ซึมลึกเท่าโอ๊ค",
+    ),
+  ],
+  null,
+  "เหมาะสำหรับสเต๊ก Ribeye แบบ Reverse Sear สั้นๆ หรือผสมคู่กับไม้โอ๊ค",
+)

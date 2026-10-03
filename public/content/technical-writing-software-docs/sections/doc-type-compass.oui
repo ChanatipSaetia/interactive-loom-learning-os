@@ -1,0 +1,99 @@
+root = DecisionTree(
+  "The Diátaxis Compass",
+  "diataxis-compass",
+  "start",
+  [start, actionPurpose, cognitionPurpose, leafTutorial, leafHowto, leafReference, leafExplanation],
+  "Which kind of page should this content be?",
+)
+
+start = DecisionNode(
+  "start",
+  "Question 1: Is this content about action (doing something) or cognition (knowing something)?",
+  [
+    DecisionChoice("action", "Action: the reader will do things, step by step", "action-purpose"),
+    DecisionChoice(
+      "cognition",
+      "Cognition: the reader wants to know or understand something",
+      "cognition-purpose",
+    ),
+  ],
+)
+
+actionPurpose = DecisionNode(
+  "action-purpose",
+  "Question 2: Does it serve acquisition (studying, learning the skill) or application (doing real work)?",
+  [
+    DecisionChoice(
+      "action-study",
+      "Acquisition: a beginner learning to use the app",
+      "leaf-tutorial",
+    ),
+    DecisionChoice(
+      "action-work",
+      "Application: someone getting a real job done",
+      "leaf-howto",
+      null,
+      true,
+    ),
+  ],
+)
+
+cognitionPurpose = DecisionNode(
+  "cognition-purpose",
+  "Question 2: Does it serve acquisition (studying, building understanding) or application (looking up a fact while working)?",
+  [
+    DecisionChoice("cognition-work", "Application: a fact they need mid-task", "leaf-reference"),
+    DecisionChoice(
+      "cognition-study",
+      "Acquisition: understanding why, read away from the task",
+      "leaf-explanation",
+    ),
+  ],
+)
+
+leafTutorial = DecisionNode(
+  "leaf-tutorial",
+  null,
+  null,
+  DecisionLeaf(
+    "Write a tutorial",
+    "Action + acquisition. Guide a beginner through a safe lesson that always works, with the path and sample data chosen by you.",
+    [
+      "Must be kept working exactly, or beginners lose trust immediately",
+      "Not useful to experienced users; link them to how-to guides",
+    ],
+  ),
+)
+
+leafHowto = DecisionNode(
+  "leaf-howto",
+  null,
+  null,
+  DecisionLeaf(
+    "Write a how-to guide",
+    "Action + application. Give a competent user the steps to one specific goal, without teaching basics or explaining theory.",
+    ["Assumes the basics; beginners may need a tutorial first"],
+  ),
+)
+
+leafReference = DecisionNode(
+  "leaf-reference",
+  null,
+  null,
+  DecisionLeaf(
+    "Write reference",
+    "Cognition + application. Describe fields, settings and limits completely and consistently so people can look things up while working.",
+    ["Must be complete and accurate, so it's the most affected by every release"],
+  ),
+)
+
+leafExplanation = DecisionNode(
+  "leaf-explanation",
+  null,
+  null,
+  DecisionLeaf(
+    "Write explanation",
+    "Cognition + acquisition. Discuss concepts, background and design decisions, away from any single task.",
+    ["Easy to let it leak into how-to pages; keep it separate and link to it"],
+  ),
+)

@@ -1,0 +1,51 @@
+root = ReflectionSequence("Pipeline Sequencing Challenge", [challenge1, challenge2])
+
+challenge1 = SequenceChallenge(
+  "Order the hot-reload pipeline from saving a story file to a rendered story (Part 1):",
+  [seq3, seq1, seq4, seq2],
+  [seq1, seq2, seq3, seq4],
+)
+
+seq3 = SequenceItem(
+  "seq-3",
+  "Story Indexer re-extracts meta and story exports to refresh the sidebar",
+  "ListTree",
+)
+
+seq1 = SequenceItem(
+  "seq-1",
+  "Developer saves the story file and the dev server detects the change",
+  "Save",
+)
+
+seq4 = SequenceItem(
+  "seq-4",
+  "Preview runtime renders the story component in its iframe",
+  "MonitorPlay",
+)
+
+seq2 = SequenceItem("seq-2", "Dev server hot-replaces only the changed story module (HMR)", "Zap")
+
+challenge2 = SequenceChallenge(
+  "Order the Controls tuning loop from panel click to live update (Part 2):",
+  [tune2, tune1, tune3],
+  [tune1, tune2, tune3],
+)
+
+tune2 = SequenceItem(
+  "tune-2",
+  "Args Updated event is sent to the preview runtime over the channel",
+  "Send",
+)
+
+tune1 = SequenceItem(
+  "tune-1",
+  "Reviewer edits a control widget (e.g. toggles disabled) in the addons panel",
+  "SlidersHorizontal",
+)
+
+tune3 = SequenceItem(
+  "tune-3",
+  "Preview re-renders the component with the merged new args",
+  "RefreshCw",
+)

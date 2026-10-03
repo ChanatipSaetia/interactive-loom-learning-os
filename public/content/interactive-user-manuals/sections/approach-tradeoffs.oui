@@ -1,0 +1,156 @@
+root = TradeoffSandbox("Trade-off Sandbox: Fidelity vs Upkeep", [helpdeskTraining])
+
+helpdeskTraining = TradeoffScenario(
+  "helpdesk-training",
+  "Training 200 Service-Desk Agents on a New ITSM Web App",
+  [
+    TradeoffMetric("realism", "Realism of Practice", 40, 0, 100, "higher"),
+    TradeoffMetric("build", "Build Speed", 50, 0, 100, "higher"),
+    TradeoffMetric("upkeep", "Ease of Upkeep per Release", 50, 0, 100, "higher"),
+    TradeoffMetric("automation", "Automation (as code / AI)", 30, 0, 100, "higher"),
+  ],
+  [approach, owner, detection],
+  "New agents must learn to log, route and close tickets in a web-based IT service management system. They can't use production (real tickets, real users), and the vendor ships an update every month. Build a training setup and watch the meters: realism, build speed, upkeep per release and automation (as code or with AI). Also keep an eye on who will be able to update it: authors or developers.",
+)
+
+approach = TradeoffStep(
+  "approach",
+  "Main Approach",
+  [screenshots, hotspot, domCapture, uiClone, sandbox],
+  "How will agents practise the ticket workflow?",
+  "dom-capture",
+)
+
+screenshots = TradeoffChoice(
+  "screenshots",
+  "Annotated screenshot guide",
+  "Capture each step once and add callouts.",
+  {realism: -20, build: 30, upkeep: -10, automation: 5},
+  [ProCon("Ready this afternoon", "Anyone with access can make it in a few hours.")],
+  [
+    ProCon("No practice", "Agents only watch; nobody checks they can do it."),
+    ProCon("Monthly re-shoots", "Every UI change means new screenshots."),
+  ],
+  null,
+  "As a quick reference card next to a more interactive option.",
+)
+
+hotspot = TradeoffChoice(
+  "hotspot",
+  "Hotspot simulation (Storyline / Captivate / iSpring)",
+  "Record the task and turn it into clickable, scored steps in the LMS.",
+  {realism: 15, build: -10, upkeep: -25, automation: -10},
+  [ProCon("Scored practice in the LMS", "Completion and scores are tracked via SCORM/xAPI.")],
+  [ProCon("Re-record on every change", "With monthly releases, screens go stale fast.")],
+  null,
+  "When the UI rarely changes, or for desktop software that can't be captured as HTML.",
+)
+
+domCapture = TradeoffChoice(
+  "dom-capture",
+  "HTML/DOM capture demo (Walnut / Navattic / Storylane)",
+  "Capture the web pages and edit the fake ticket data in a web editor.",
+  {realism: 25, build: 10, upkeep: 0, automation: -5},
+  [
+    ProCon("Looks exactly like the real app", "Captured HTML stays crisp and realistic."),
+    ProCon("Edit text without re-capturing", "Change ticket data and labels in the editor."),
+  ],
+  [
+    ProCon(
+      "Layout changes still need a new capture",
+      "And the content lives in the vendor's platform, not in git.",
+    ),
+  ],
+  "It's a web app with frequent small changes, and the training team has no developers. DOM capture gives realistic practice that authors can update themselves.",
+)
+
+uiClone = TradeoffChoice(
+  "ui-clone",
+  "UI clone with MSW mocks",
+  "Rebuild the screens from the product's components with a fake API.",
+  {realism: 30, build: -30, upkeep: 20, automation: 35},
+  [ProCon("Tested with every release", "Lives in git and runs in CI.")],
+  [
+    ProCon(
+      "Needs developers",
+      "You can't reuse the vendor's components, so you'd be rebuilding a third-party UI by hand.",
+    ),
+  ],
+  null,
+  "When you own the product's source code, which you don't for a bought ITSM tool.",
+)
+
+sandbox = TradeoffChoice(
+  "sandbox",
+  "Vendor sandbox instance",
+  "Use a sub-production instance with synthetic tickets.",
+  {realism: 40, build: -15, upkeep: 10, automation: 20},
+  [ProCon("The real thing", "Routing rules, notifications and errors all behave for real.")],
+  [
+    ProCon(
+      "Resets, accounts and licences",
+      "Someone must reset the data after every class and manage 200 training accounts.",
+    ),
+  ],
+  null,
+  "When back-end behaviour matters and ops can own resets and access.",
+)
+
+owner = TradeoffStep(
+  "owner",
+  "Who Keeps It Up to Date?",
+  [nobody, namedOwner],
+  "The vendor ships monthly. Who owns updates?",
+  "named-owner",
+)
+
+nobody = TradeoffChoice(
+  "nobody",
+  "Whoever notices first",
+  "No named owner; fix it when learners complain.",
+  {realism: -20, upkeep: -20},
+  [ProCon("No cost today")],
+  [ProCon("Learners find the drift first", "They lose trust in the manual.")],
+)
+
+namedOwner = TradeoffChoice(
+  "named-owner",
+  "Named owner + version label",
+  "Each module shows the product version it matches and has an owner.",
+  {realism: 10, upkeep: 15},
+  [
+    ProCon(
+      "Clear accountability",
+      "Everyone knows who fixes what, and learners can see which version it matches.",
+    ),
+  ],
+  [ProCon("Takes a slice of someone's time every month")],
+  "With monthly releases, a named owner and a visible version label keep drift under control.",
+)
+
+detection = TradeoffStep(
+  "detection",
+  "How Do You Notice Drift?",
+  [manualReview, automated],
+  "How will you know that a release broke the manual?",
+  "automated",
+)
+
+manualReview = TradeoffChoice(
+  "manual-review",
+  "Click through by hand each release",
+  "The owner re-walks every module after each update.",
+  {upkeep: -10, automation: -10},
+  [ProCon("No tooling needed")],
+  [ProCon("Slow and easy to skip")],
+)
+
+automated = TradeoffChoice(
+  "automated",
+  "Playwright + visual regression on the sandbox or staging",
+  "Scripted steps and screenshot diffs run after each vendor update.",
+  {upkeep: 20, automation: 25, build: -10},
+  [ProCon("Tells you exactly which screens changed")],
+  [ProCon("Needs a non-production instance to run against")],
+  "Automatic drift checks turn 'which modules broke?' into a report instead of a guess.",
+)

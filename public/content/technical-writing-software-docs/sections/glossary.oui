@@ -1,0 +1,126 @@
+root = Flashcards(
+  "Glossary",
+  [
+    diataxis,
+    howTo,
+    reference,
+    prerequisite,
+    minimalism,
+    plainLanguage,
+    activeVoice,
+    houseStyle,
+    vale,
+    flesch,
+    sme,
+  ],
+)
+
+diataxis = Flashcard(
+  "diataxis",
+  "Diátaxis",
+  "dee-uh-tak-sis",
+  "Framework",
+  "A framework that sorts docs into tutorials, how-to guides, reference and explanation.",
+  "Created by Daniele Procida, it places content on two axes, action vs cognition and acquisition vs application, giving four page types with different jobs.",
+  "Deciding the page type first prevents the everything page.",
+)
+
+howTo = Flashcard(
+  "how-to",
+  "How-to Guide",
+  "how too gahyd",
+  "Doc type",
+  "Steps that get a competent user to one real goal.",
+  "Goal-oriented and action-focused, without teaching basics or explaining theory. Most pages of a web app manual.",
+  "It's what most users open the manual for.",
+)
+
+reference = Flashcard(
+  "reference",
+  "Reference",
+  "ref-er-uhns",
+  "Doc type",
+  "Complete, accurate facts to look up while working.",
+  "Fields, settings, limits, permissions and error codes, described consistently and without instructions.",
+  "It answers the one fact a user needs mid-task.",
+)
+
+prerequisite = Flashcard(
+  "prerequisite",
+  "Prerequisite",
+  "pree-rek-wuh-zit",
+  "Task page",
+  "What must be true before step 1.",
+  "A role or permission, data ready, or earlier setup, listed before the first step.",
+  "Without it, users fail halfway and don't know why.",
+)
+
+minimalism = Flashcard(
+  "minimalism",
+  "Minimalism",
+  "min-uh-muh-liz-uhm",
+  "Task page",
+  "John Carroll's approach: act quickly, cut the unneeded, support error recovery.",
+  "A documentation philosophy from 'The Nurnberg Funnel' (1990): users learn by doing, so docs should get them acting fast and help them recover from mistakes.",
+  "It's the reason task pages are short and action-first.",
+)
+
+plainLanguage = Flashcard(
+  "plain-language",
+  "Plain Language",
+  "pleyn lang-gwij",
+  "Style",
+  "Writing that readers understand the first time they read it.",
+  "Short sentences, active voice, 'you', key information first, one term per concept, no idioms.",
+  "Readers skim while working; plain language survives skimming and translation.",
+)
+
+activeVoice = Flashcard(
+  "active-voice",
+  "Active Voice",
+  "ak-tiv vois",
+  "Style",
+  "The subject does the action: 'You select Save'.",
+  "The opposite of passive voice ('Save should be selected'), which hides who acts.",
+  "Instructions must make clear who does what.",
+)
+
+houseStyle = Flashcard(
+  "house-style",
+  "House Style Guide",
+  "hous stahyl gahyd",
+  "Style",
+  "Your team's own decisions on top of a public guide.",
+  "Product names, terminology and exceptions, deferring everything else to e.g. the Microsoft Writing Style Guide.",
+  "Consistency across writers without a 50-page rulebook.",
+)
+
+vale = Flashcard(
+  "vale",
+  "Vale",
+  "veyl",
+  "Tool",
+  "A prose linter for docs.",
+  "Checks Markdown against rule packages (Microsoft, Google, your own) in the editor and in CI.",
+  "Machines check the commas so reviewers can check the meaning.",
+)
+
+flesch = Flashcard(
+  "flesch",
+  "Flesch Reading Ease",
+  "flesh ree-ding eez",
+  "Tool",
+  "A readability score from sentence and word length.",
+  "206.835 − 1.015 × words per sentence − 84.6 × syllables per word. Higher is easier.",
+  "A warning light for dense text, not proof of clarity.",
+)
+
+sme = Flashcard(
+  "sme",
+  "SME (Subject-Matter Expert)",
+  "es em ee",
+  "Review",
+  "The person who knows how the feature really works.",
+  "Usually a developer or product owner who does the technical review of a page.",
+  "Writers describe; SMEs confirm it's true.",
+)

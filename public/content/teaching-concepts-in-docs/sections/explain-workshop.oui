@@ -1,0 +1,81 @@
+root = TradeoffSandbox("Explain 'Permission Inheritance'", [permissionInheritance])
+
+permissionInheritance = TradeoffScenario(
+  "permission-inheritance",
+  "Explain 'Permission Inheritance' to New Admins",
+  [
+    TradeoffMetric("understanding", "Understanding", 30, 0, 100, "higher"),
+    TradeoffMetric("overload", "Mental Room Left (low = overloaded)", 70, 0, 100, "higher"),
+    TradeoffMetric("effort", "Writing Effort Saved", 60, 0, 100, "higher"),
+  ],
+  [scope, technique],
+  "New workspace admins keep giving people access to the wrong projects, because they don't understand that permissions set on a workspace flow down to every project inside it. Build the concept page and watch the meters.",
+)
+
+scope = TradeoffStep(
+  "scope",
+  "How Many New Concepts on This Page?",
+  [all, few],
+  "The admin guide could cover organisations, workspaces, projects, roles, groups, guests and overrides.",
+  "few",
+)
+
+all = TradeoffChoice(
+  "all",
+  "All seven concepts in one page",
+  "Complete in one place.",
+  {understanding: -10, overload: -40},
+  [ProCon("Nothing is left out")],
+  [
+    ProCon(
+      "Overload",
+      "Working memory holds only a few new items at once; most readers retain none of them.",
+    ),
+  ],
+)
+
+few = TradeoffChoice(
+  "few",
+  "Just workspace → project → inherited permission",
+  "Link out to roles, groups and overrides for later.",
+  {understanding: 20, overload: 10},
+  [ProCon("Few new ideas, well understood")],
+  [ProCon("Advanced cases need another page")],
+  "Cognitive load: working memory holds only a few new items at once, so introduce a few new concepts at a time and build on them.",
+)
+
+technique = TradeoffStep(
+  "technique",
+  "Main Technique",
+  [definitionOnly, analogyOnly, combined],
+  "How will you explain inheritance?",
+  "combined",
+)
+
+definitionOnly = TradeoffChoice(
+  "definition-only",
+  "A precise definition paragraph",
+  "'Permissions assigned at the workspace level are inherited by all child project resources.'",
+  {understanding: -5, effort: 20},
+  [ProCon("Quick to write, precise")],
+  [ProCon("Abstract and easy to misread")],
+)
+
+analogyOnly = TradeoffChoice(
+  "analogy-only",
+  "Just an analogy",
+  "'It's like a shared drive folder: sharing the folder shares everything inside.'",
+  {understanding: 15, effort: 10},
+  [ProCon("Instantly relatable")],
+  [ProCon("No limits stated", "Users carry over the parts of the analogy that don't fit.")],
+)
+
+combined = TradeoffChoice(
+  "combined",
+  "Diagram + worked example + named misconception",
+  "A box diagram with arrows, 'Anna is added to the Sales workspace, so she can see all five Sales projects', and 'You might think adding her to one project is enough to limit her access. It isn't…'",
+  {understanding: 35, effort: -20},
+  [ProCon("Several routes into understanding"), ProCon("Fixes the exact mistake admins make")],
+  [ProCon("More work to write and draw")],
+  "Combining techniques (a diagram, a worked example and a named misconception) usually beats any single technique alone.",
+)

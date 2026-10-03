@@ -1,0 +1,42 @@
+root = ConceptMap(
+  "แผนผังมโนทัศน์ประวัติศาสตร์โลก",
+  [
+    civilization,
+    agriculture,
+    writingSystem,
+    governanceLaw,
+    feudalism,
+    renaissance,
+    scientificRev,
+    industrialRev,
+    tradeNetworks,
+    nationState,
+    globalization,
+  ],
+  [
+    ConceptLink(agriculture, civilization, "ก่อให้เกิด"),
+    ConceptLink(civilization, writingSystem, "ประดิษฐ์ขึ้นเพื่อใช้ใน"),
+    ConceptLink(civilization, governanceLaw, "พัฒนาเป็น"),
+    ConceptLink(governanceLaw, feudalism, "วิวัฒนาการสู่"),
+    ConceptLink(feudalism, renaissance, "เปลี่ยนผ่านสู่"),
+    ConceptLink(renaissance, scientificRev, "เป็นรากฐานของ"),
+    ConceptLink(scientificRev, industrialRev, "ต่อยอดเทคโนโลยีสู่"),
+    ConceptLink(industrialRev, tradeNetworks, "ขยายขนาดของ"),
+    ConceptLink(tradeNetworks, globalization, "ขับเคลื่อนสู่"),
+    ConceptLink(industrialRev, nationState, "สร้างพลังขับเคลื่อน"),
+    ConceptLink(nationState, globalization, "มีปฏิสัมพันธ์ในระบบ"),
+  ],
+  "ความเชื่อมโยงระหว่างการเมือง เศรษฐกิจ สังคม นวัตกรรม และภูมิศาสตร์",
+)
+
+civilization = Concept("civilization", "อารยธรรม (Civilization)", "concept")
+agriculture = Concept("agriculture", "การปฏิวัติเกษตรกรรม", "process")
+writingSystem = Concept("writing_system", "ระบบการเขียน (Writing System)", "mechanism")
+governanceLaw = Concept("governance_law", "ระบบการปกครองและกฎหมาย", "system")
+feudalism = Concept("feudalism", "ระบบศักดินา (Feudalism)", "pattern")
+renaissance = Concept("renaissance", "ยุคเรเนซองส์ (Renaissance)", "concept")
+scientificRev = Concept("scientific_rev", "การปฏิวัติวิทยาศาสตร์", "process")
+industrialRev = Concept("industrial_rev", "การปฏิวัติอุตสาหกรรม", "system")
+tradeNetworks = Concept("trade_networks", "เครือข่ายการค้าโลก (Global Trade)", "mechanism")
+nationState = Concept("nation_state", "รัฐชาติสมัยใหม่ (Nation State)", "pattern")
+globalization = Concept("globalization", "โลกาภิวัตน์ (Globalization)", "concept")

@@ -1,0 +1,95 @@
+root = TaxonomyBrowser(
+  "Implementation Approaches",
+  [
+    annotatedScreenshotVideoGuides,
+    hotspotSimulations,
+    htmlDomCaptureDemos,
+    uiCloneWithAMockedBackend,
+    trainingSandbox,
+  ],
+)
+
+annotatedScreenshotVideoGuides = TaxonomyCategory(
+  "Annotated Screenshot & Video Guides",
+  "Show, don't touch",
+  "Image",
+  "mauve",
+  "Annotated screenshot or video guides are the cheapest to create but are passive: learners watch and never practise.",
+  "Someone with access does the task once, captures the screens or records a video, and adds numbered callouts or narration. It can be made in an afternoon and works for any software, web or desktop. But the learner only watches. Nothing checks whether they could do the task themselves, and every screenshot is a copy of pixels that goes out of date when the screen changes.",
+  "A cookbook with photos: great for following along, but reading it doesn't make you able to cook.",
+  "Lowest build cost, any platform",
+  [
+    "Step-by-step screenshot guides with callouts",
+    "Narrated screen recordings",
+    "Quick reference cards and job aids",
+  ],
+  ["Any practice where the learner clicks or types"],
+)
+
+hotspotSimulations = TaxonomyCategory(
+  "Hotspot Simulations",
+  "Recorded screens with clickable spots",
+  "MousePointerClick",
+  "yellow",
+  "Screen-capture hotspot simulations turn recorded screens into clickable steps, but every UI change means re-recording the affected screens.",
+  "An authoring tool records the real software as an expert performs the task, then turns each captured screen into a slide with an invisible 'hotspot' on the right button or field. The learner must click the right spot or type the right value to advance, and can get hints or feedback on wrong clicks. It works for desktop and web software alike. The catch: each slide is still a picture, so when a button moves in the next release, those screens have to be recorded again.",
+  "A pop-up book: parts move when you pull the right tab, but you can't redraw a page without printing a new book.",
+  "Real practice for any software, built by instructional designers",
+  [
+    "Click and type steps on captured screens",
+    "Hints and feedback for wrong clicks",
+    "Desktop and web applications",
+  ],
+  ["Free exploration off the recorded path"],
+)
+
+htmlDomCaptureDemos = TaxonomyCategory(
+  "HTML/DOM Capture Demos",
+  "A snapshot of the real web page, not a picture of it",
+  "Code",
+  "sky",
+  "HTML/DOM capture demos snapshot real web pages so text and data can be edited without re-recording, but only work for web apps.",
+  "Instead of a screenshot, a browser extension saves the page's HTML and CSS: the actual structure a browser renders. The result looks pixel-perfect and stays crisp at any screen size. Because it is still HTML, an author can change a customer name, a number or a label in an editor without capturing the screen again. Desktop software has no DOM to capture, so this only works for web apps, and a real layout change still means a new capture.",
+  "Saving the recipe card instead of a photo of the cake: you can still change the ingredients afterwards.",
+  "High visual realism for web apps with easy text edits",
+  [
+    "Browser-based SaaS and internal web apps",
+    "Editing text and fake data after capture",
+    "Guided and self-explore product demos",
+  ],
+  ["Desktop applications and terminals", "Real server logic behind the captured pages"],
+)
+
+uiCloneWithAMockedBackend = TaxonomyCategory(
+  "UI Clone with a Mocked Backend",
+  "The real front end, a fake server",
+  "Component",
+  "green",
+  "A rebuilt UI clone with a mocked backend reuses the product's real front-end components, giving high fidelity and automated tests, but needs developers to maintain it.",
+  "Developers assemble the training screens from the same component library the product uses, and replace the real server with a mock that returns prepared fake data. Buttons, forms and validation behave like the real thing, and learners can explore freely. Because it is code, it can be tested automatically and updated in the same pull request as the product. The price is that someone who can write front-end code has to own it.",
+  "A film-set street built with real doors and windows: everything you touch works, but nobody lives there.",
+  "Highest fidelity without a real backend",
+  [
+    "Reusing the product's own UI components",
+    "Mock API responses with synthetic data",
+    "Automated tests for the training flow",
+  ],
+  ["Real back-end rules, integrations and batch jobs"],
+)
+
+trainingSandbox = TaxonomyCategory(
+  "Training Sandbox",
+  "The real software, fake world",
+  "Server",
+  "peach",
+  "A training sandbox is a separate real instance loaded with synthetic data; it is the most realistic but needs infrastructure, resets and its own access control.",
+  "The organisation runs another copy of the real system just for training, filled with synthetic customers, orders or tickets. Everything the learner does is real software behaviour, including workflows, integrations with other sandboxes and error messages. But it must be hosted, kept on the same version as production, reset after each class so the next group starts clean, and given its own training accounts and roles.",
+  "A practice kitchen in a cooking school: real stoves and knives, but nobody is eating the food.",
+  "Maximum realism, including back-end behaviour",
+  [
+    "Separate non-production instance of the real system",
+    "Synthetic data and scheduled resets",
+    "Training-only accounts and roles",
+  ],
+  ["Anything that touches production data or real customers"],
+)

@@ -1,0 +1,23 @@
+root = Topic(
+  "Onboarding Craft",
+  "Project Management",
+  "Master onboarding principles for IT systems, Web Apps, and Developer Experience with five methods and their trade-offs.",
+  [
+    SectionRef("intro"),
+    SectionRef("audience-map"),
+    SectionRef("principles"),
+    SectionRef("quiz-principles"),
+    SectionRef("reflection-journey"),
+    SectionRef("methods"),
+    SectionRef("quiz-methods"),
+    SectionRef("method-loadout"),
+    SectionRef("method-advisor"),
+    SectionRef("ttv-dashboard"),
+    SectionRef("provision-flow"),
+    SectionRef("scenario-firstday"),
+    SectionRef("glossary"),
+    SectionRef("concept-map"),
+    SectionRef("synthesis"),
+  ],
+  ["onboarding", "developer-experience", "user-activation", "it-operations", "enablement"],
+)

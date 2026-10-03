@@ -1,0 +1,137 @@
+root = Scenario(
+  "Scenario: The Ticket Storm",
+  "ticket-storm",
+  [
+    start,
+    resultStyle,
+    split,
+    resultMove,
+    writeSteps,
+    resultParagraph,
+    review,
+    resultA,
+    resultRisky,
+  ],
+  "Support gets 40 tickets a week saying 'I can't export my report'. The docs page 'Reporting' is 2,500 words: two paragraphs on why the reporting engine was rebuilt, a table of every report field, then one paragraph that ends '...and then export it as needed.' You're asked to fix it.",
+  null,
+  "The Ticket Storm",
+)
+
+start = ScenarioNode(
+  "start",
+  "What's the first thing you do?",
+  [
+    ScenarioChoice(
+      "rewrite-style",
+      "Run it through Vale and fix the style warnings",
+      "result-style",
+    ),
+    ScenarioChoice(
+      "diagnose-type",
+      "Sort the page's content by type: explanation, reference and the how-to buried at the end",
+      "split",
+    ),
+  ],
+)
+
+resultStyle = ScenarioNode(
+  "result-style",
+  null,
+  null,
+  Outcome(
+    "The page is now grammatically perfect, and the tickets keep coming.",
+    "A linter checks style, not whether the page serves the reader's task. The problem here is page type and missing steps.",
+    "c",
+  ),
+)
+
+split = ScenarioNode(
+  "split",
+  "You've found the how-to buried under explanation and reference. What next?",
+  [
+    ScenarioChoice(
+      "split-pages",
+      "Split it: a how-to 'Export a report', a reference page of report fields, an explanation page on the new engine",
+      "write-steps",
+    ),
+    ScenarioChoice(
+      "move-top",
+      "Keep one page but move the export paragraph to the top",
+      "result-move",
+    ),
+  ],
+)
+
+resultMove = ScenarioNode(
+  "result-move",
+  null,
+  null,
+  Outcome(
+    "Slightly better, but the paragraph still says 'export it as needed' and people still get lost.",
+    "Moving a vague paragraph doesn't make it followable. Split the types, then write real steps.",
+    "b-minus",
+  ),
+)
+
+writeSteps = ScenarioNode(
+  "write-steps",
+  "Now write 'Export a report'. Which version do you ship?",
+  [
+    ScenarioChoice(
+      "good-steps",
+      "Prerequisite (Report Viewer role), numbered one-action steps with bold labels, location first, and the result: 'The file downloads as .xlsx'",
+      "review",
+    ),
+    ScenarioChoice(
+      "friendly-paragraph",
+      "A friendly paragraph: 'Just head to Reports and export whatever you need!'",
+      "result-paragraph",
+    ),
+  ],
+)
+
+resultParagraph = ScenarioNode(
+  "result-paragraph",
+  null,
+  null,
+  Outcome(
+    "Friendlier, but just as vague. Tickets barely drop.",
+    "Readers need a prerequisite, one action per step and the result, not warmth alone.",
+    "c",
+  ),
+)
+
+review = ScenarioNode(
+  "review",
+  "The new page is ready. How do you publish it?",
+  [
+    ScenarioChoice(
+      "full-review",
+      "Technical review by the report developer, someone follows every step in staging, then editorial review with Vale",
+      "result-a",
+    ),
+    ScenarioChoice("straight-publish", "Publish now; it's obviously better", "result-risky"),
+  ],
+)
+
+resultA = ScenarioNode(
+  "result-a",
+  null,
+  null,
+  Outcome(
+    "The step test catches that Export moved into the ⋯ menu in the latest release. Fixed, published, and tickets drop to 3 a week.",
+    "Right page type, a well-built task page and a review loop that includes following the steps: that's the whole craft.",
+    "a",
+  ),
+)
+
+resultRisky = ScenarioNode(
+  "result-risky",
+  null,
+  null,
+  Outcome(
+    "Tickets drop, then rise again: step 3 says 'Select Export' but Export moved into the ⋯ menu last release.",
+    "Someone must follow every step in the real app or staging before publishing.",
+    "b-plus",
+  ),
+)

@@ -1,0 +1,24 @@
+root = ReflectionSequence("Assemble a Task Page", [challenge1, challenge2])
+
+challenge1 = SequenceChallenge(
+  "Assemble the parts of a task page in the right order.",
+  [steps, title, result, prereq, intro],
+  [title, intro, prereq, steps, result],
+)
+
+steps = SequenceItem("steps", "Numbered steps, one action each")
+title = SequenceItem("title", "Title: 'Reset a user's password'")
+result = SequenceItem("result", "Result: 'The user receives a reset e-mail.'")
+prereq = SequenceItem("prereq", "Prerequisites: 'You need the User Admin role.'")
+intro = SequenceItem("intro", "Intro: when you'd need to do this")
+
+challenge2 = SequenceChallenge(
+  "Rewrite this one crammed step into one action per step. Put the split steps in order: 'Go to Reports, choose Monthly, set the date range and export.'",
+  [export, reports, dates, monthly],
+  [reports, monthly, dates, export],
+)
+
+export = SequenceItem("export", "Select Export.")
+reports = SequenceItem("reports", "Select Reports.")
+dates = SequenceItem("dates", "In the Date range fields, enter the start and end dates.")
+monthly = SequenceItem("monthly", "Select Monthly.")

@@ -1,0 +1,131 @@
+root = Quiz("Trial of the Narrative Arc", [q1, q2, q3, q4, q5])
+
+q1 = QuizQuestion(
+  "q1",
+  "According to the presentation arc, what is the best way to open a manual presentation?",
+  [
+    QuizChoice(
+      "a",
+      "A microservices architecture diagram so everyone shares context",
+      false,
+      "The arc explicitly warns: never open with a microservices diagram — the audience hasn't asked for it yet.",
+    ),
+    QuizChoice(
+      "b",
+      "The user task that currently makes people groan, e.g. 'expensing a trip takes 9 clicks today'",
+      true,
+      "Correct. Stage 1 hooks with the user's pain, not the architecture.",
+    ),
+    QuizChoice(
+      "c",
+      "A full list of every feature shipped in the release",
+      false,
+      "Feature lists are a release notes read-aloud — the exact failure mode this realm fights. Hook with the user's pain instead.",
+    ),
+  ],
+  "Stage 1 says what NOT to open with.",
+)
+
+q2 = QuizQuestion(
+  "q2",
+  "During the one-scenario walkthrough stage, how many scenarios should you cover?",
+  [
+    QuizChoice(
+      "a",
+      "One realistic persona completing one task end-to-end",
+      true,
+      "Correct. One deep scenario beats two shallow ones — depth is what makes the manual stick.",
+    ),
+    QuizChoice(
+      "b",
+      "Two shallow scenarios for broader coverage",
+      false,
+      "The arc says the opposite: one deep scenario beats two shallow ones.",
+    ),
+    QuizChoice(
+      "c",
+      "As many as fit in the slide deck",
+      false,
+      "Slide count is not the constraint — depth of one end-to-end persona task is what makes Stage 3 work.",
+    ),
+  ],
+  "One bullet in Stage 3 answers with a rhetorical question.",
+)
+
+q3 = QuizQuestion(
+  "q3",
+  "Which audience archetype needs config references, monitoring dashboards, and incident runbooks the most?",
+  [
+    QuizChoice(
+      "a",
+      "End users",
+      false,
+      "End users need task walkthroughs of real UI screens; internal config and alert triage are explicitly out of their scope.",
+    ),
+    QuizChoice(
+      "b",
+      "Operators & admins",
+      true,
+      "Correct. Operators read manuals defensively: what breaks, how do I see it breaking, what do I type to fix it.",
+    ),
+    QuizChoice(
+      "c",
+      "Developers (DX)",
+      false,
+      "Developers want quickstarts, API references, and runnable code samples — runbooks and alert triage belong to the operators archetype.",
+    ),
+  ],
+  "Think about who is awake at 2am keeping the system alive.",
+)
+
+q4 = QuizQuestion(
+  "q4",
+  "What should the final moment of a manual presentation always include?",
+  [
+    QuizChoice(
+      "a",
+      "A teaser for the next release's roadmap",
+      false,
+      "Roadmap teasers belong to product pitches. Stage 6 is about making the manual findable after the talk ends.",
+    ),
+    QuizChoice(
+      "b",
+      "A recap plus the permanent docs-site permalink, and where the search box is",
+      true,
+      "Correct. Pin the permalink to the slide and teach people where the search box lives — findability beats memorability.",
+    ),
+    QuizChoice(
+      "c",
+      "A quiz to make sure people remember everything",
+      false,
+      "Memorability is not the goal — findability is. End with the permalink and the search box, not a pop quiz.",
+    ),
+  ],
+  "Stage 6 has two children, and both are about what happens after the talk.",
+)
+
+q5 = QuizQuestion(
+  "q5",
+  "What safety net must a live product demo in Stage 4 always have?",
+  [
+    QuizChoice(
+      "a",
+      "A second presenter driving a backup laptop",
+      false,
+      "The taught safety net is simpler and cheaper: a pre-recorded fallback clip kept ready in the presenter's pocket.",
+    ),
+    QuizChoice(
+      "b",
+      "A pre-recorded fallback clip (e.g. made with OBS Studio)",
+      true,
+      "Correct. Stage 4 demands a pre-recorded OBS Studio fallback clip so a frozen staging site never kills the talk.",
+    ),
+    QuizChoice(
+      "c",
+      "High-resolution screenshots to click through instead",
+      false,
+      "Screenshots pretending to be a UI are what Stage 4 explicitly rejects; the fallback is a pre-recorded video clip.",
+    ),
+  ],
+  "It is recorded before the presentation ever starts.",
+)

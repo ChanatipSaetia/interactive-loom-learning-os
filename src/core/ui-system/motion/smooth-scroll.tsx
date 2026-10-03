@@ -208,6 +208,18 @@ export function SmoothScroll({
           smoothWheel: true,
           syncTouch: touch,
           easing: EASE_SCROLL,
+          prevent: (node: Element) => {
+            return (
+              node.hasAttribute('data-lenis-prevent') ||
+              node.closest('[data-lenis-prevent]') !== null ||
+              node.closest('[role="dialog"]') !== null ||
+              node.closest('.section-help-modal') !== null ||
+              node.closest('.section-help-overlay') !== null ||
+              node.closest('.overflow-y-auto') !== null ||
+              node.closest('.overflow-auto') !== null ||
+              node.closest('.modal-content') !== null
+            )
+          },
         }}
       >
         <LenisBridge

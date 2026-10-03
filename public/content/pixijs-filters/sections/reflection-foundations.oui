@@ -1,0 +1,44 @@
+root = ReflectionSequence("Filter Setup & Creation Sequencing", [challenge1])
+
+challenge1 = SequenceChallenge(
+  "Arrange the chronological steps for authoring and applying a custom GLSL Filter in PixiJS:",
+  [
+    stepWriteShader,
+    stepDefineUniforms,
+    stepInstantiateFilter,
+    stepAttachContainer,
+    stepUpdateTicker,
+  ],
+  [
+    stepWriteShader,
+    stepDefineUniforms,
+    stepInstantiateFilter,
+    stepAttachContainer,
+    stepUpdateTicker,
+  ],
+)
+
+stepWriteShader = SequenceItem(
+  "step-write-shader",
+  "Write custom GLSL Vertex and Fragment Shader source strings",
+)
+
+stepDefineUniforms = SequenceItem(
+  "step-define-uniforms",
+  "Define Uniform Object with initial values (e.g. uTime, uSpeed, uColor)",
+)
+
+stepInstantiateFilter = SequenceItem(
+  "step-instantiate-filter",
+  "Instantiate custom PIXI.Filter(vertexSrc, fragmentSrc, uniforms)",
+)
+
+stepAttachContainer = SequenceItem(
+  "step-attach-container",
+  "Attach instance to container.filters = [customFilter]",
+)
+
+stepUpdateTicker = SequenceItem(
+  "step-update-ticker",
+  "Update uniform values (customFilter.uniforms.uTime += delta) in Ticker loop",
+)

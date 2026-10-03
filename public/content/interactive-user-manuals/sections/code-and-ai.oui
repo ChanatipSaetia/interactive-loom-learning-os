@@ -1,0 +1,87 @@
+root = TaxonomyBrowser(
+  "As Code & With AI",
+  [
+    nativelyAsCode,
+    screenshotGuidesAsCode,
+    guiAuthoredHardToTreatAsCode,
+    whereAiHelpsDrafting,
+    verifyAiOutput,
+  ],
+)
+
+nativelyAsCode = TaxonomyCategory(
+  "Natively As Code",
+  "UI clones · training sandboxes",
+  "GitBranch",
+  "green",
+  "UI clones and training sandboxes are naturally 'as code': components, MSW handlers, tour steps, Terraform and seed scripts live in git, get reviewed in pull requests and run in CI.",
+  "A UI clone is front-end code: components, MSW handlers that fake the API, and tour steps for Shepherd.js or Driver.js. A sandbox is infrastructure code: Terraform or Docker Compose files plus seed scripts that fill it with synthetic data. Because everything is text in git, a change is a pull request that someone reviews, CI tests it, and a new version can be rebuilt the same way every time.",
+  "A recipe in a shared cookbook that anyone can propose edits to, and a test kitchen that cooks it on every change.",
+  "Reviewable, testable, reproducible manuals",
+  [
+    "Components, MSW handlers and tour steps in git",
+    "Terraform / Docker Compose and seed scripts",
+    "Pull-request review and CI tests",
+  ],
+  ["Authoring by people who don't use git"],
+)
+
+screenshotGuidesAsCode = TaxonomyCategory(
+  "Screenshot Guides As Code",
+  "Playwright capture + Markdown",
+  "FileCode",
+  "sky",
+  "Screenshot guides can become code by scripting Playwright to drive a non-production instance and capture every screenshot, so the whole manual regenerates on each release.",
+  "Instead of a person clicking and capturing, a Playwright script logs into a staging or sandbox instance, performs each documented step and saves a screenshot. The text lives in Markdown next to it. On each release CI runs the script again, so every screenshot is fresh. If a step fails, the script tells you the manual needs a text change too. You do need a non-production instance for the script to run against.",
+  "A photo booth that re-takes every class photo automatically each term.",
+  "Turning the cheapest approach into a self-updating one",
+  [
+    "Playwright scripts that capture screenshots",
+    "Markdown text in git (docs-as-code)",
+    "Regenerating the manual in CI on each release",
+  ],
+  ["Software with no non-production instance to script against"],
+)
+
+guiAuthoredHardToTreatAsCode = TaxonomyCategory(
+  "GUI-Authored (Hard to Treat As Code)",
+  "Hotspot simulations · DOM-capture demos",
+  "PenTool",
+  "yellow",
+  "Hotspot simulations and DOM-capture demos are authored in GUI or SaaS editors whose project files are hard to diff, review or regenerate from git.",
+  "Storyline, Captivate and iSpring save projects as their own file formats that you edit in the desktop tool. Walnut, Navattic, Storylane and Reprise keep the demo inside their web platform. You can't easily see what changed between two versions, review it in a pull request, or rebuild it from a script. They are friendly for non-developers, but upkeep stays manual.",
+  "A hand-painted sign: beautiful, easy for a painter to make, but you can't 'diff' two versions of it.",
+  "Author-friendly, but upkeep stays manual",
+  ["Desktop authoring tool project files", "Demos stored in a vendor's web platform"],
+  ["Pull-request review and CI regeneration"],
+)
+
+whereAiHelpsDrafting = TaxonomyCategory(
+  "Where AI Helps: Drafting",
+  "Text, voice, quizzes, data, code",
+  "Sparkles",
+  "mauve",
+  "AI is best used for drafting: step text and voice-over from recordings, quiz questions, synthetic data, and code changes to mocks and tour steps.",
+  "Screenshot tools such as Scribe, Tango and Guidde already use AI to write step text and voice-over from a recording. A language model can draft quiz questions from the step script, generate realistic synthetic records, and, for as-code approaches, a coding assistant can propose the change to MSW handlers or tour steps after a UI release. In every case AI produces a first draft that is faster to review than to write.",
+  "A fast junior writer: great first drafts, still needs an editor.",
+  "Cutting the time to a first draft",
+  [
+    "Step text and voice-over from recordings",
+    "Quiz questions and synthetic data",
+    "Code changes to mocks and tour steps",
+  ],
+  ["Deciding the manual is correct (see Verify AI Output)"],
+)
+
+verifyAiOutput = TaxonomyCategory(
+  "Verify AI Output",
+  "An invented step is drift",
+  "BadgeCheck",
+  "red",
+  "AI output must be verified against the real UI, by a person or by automated tests, because an invented step is exactly the drift a simulation must avoid.",
+  "A language model can describe a button that isn't there or a menu path that the product never had, and say it confidently. To a learner that's the same failure as a stale screenshot: they rehearse something that doesn't exist. So AI drafts pass the same gate as human work: a person who knows the real UI checks it, or a Playwright test proves every step can actually be performed.",
+  "A sat-nav that invents a road: it only helps if someone checks the map before the trip.",
+  "Keeping AI from creating new drift",
+  ["Human review against the real UI", "Automated tests that perform every step"],
+  ["Publishing AI drafts unchecked"],
+)

@@ -1,0 +1,110 @@
+root = TaxonomyBrowser(
+  "Presentation & Docs Tooling Landscape",
+  [
+    markdownNativeSlideDecks,
+    docsAsCodeSites,
+    interactiveApiReferencesPlaygrounds,
+    inAppInCodeGuidedTours,
+    screenRecordingAsyncDemos,
+  ],
+)
+
+markdownNativeSlideDecks = TaxonomyCategory(
+  "Markdown-Native Slide Decks",
+  "Marp · Slidev · reveal.js",
+  "FileText",
+  "mauve",
+  "Write slides as plain markdown files that compile to HTML, PDF, or PowerPoint — your deck lives in the same Git repo and pull requests as the code it presents.",
+  "Marp turns CommonMark into slides with theme directives and exports to PDF and PPTX for the people who insist on PowerPoint. Slidev adds Vue components, live coding blocks, and presenter notes for developer audiences. reveal.js builds presentations as HTML/JS web apps with nested vertical slides, speaker notes, and Markdown fragments — a deck you can literally deploy to the same web server as the Web App.",
+  "A README.md that stands up and gives a talk — version-controlled, diff-able, and reproducible like code.",
+  "Slides authored as code: versioned, themed, and exportable",
+  [
+    "Marp: markdown → HTML/PDF/PPTX slides with themes",
+    "Slidev: Vue-powered slides with live code editing and presenter mode",
+    "reveal.js: HTML/JS presentations that run as web apps in the browser",
+  ],
+  [
+    "Drag-and-drop design tools with no text source of truth",
+    "Long-form hosted documentation sites (see Docs-as-Code Sites)",
+  ],
+)
+
+docsAsCodeSites = TaxonomyCategory(
+  "Docs-as-Code Sites",
+  "Docusaurus · MkDocs Material · VitePress · mdBook",
+  "Library",
+  "green",
+  "Static site generators that turn a folder of markdown/MDX into a searchable, versioned documentation web app — the durable home the manual presentation points at.",
+  "Docusaurus (MDX + React) gives versioned docs, a built-in search, and interactive components. MkDocs Material with mkdocs.yml is the fast, themeable workhorse for internal IT system manuals. VitePress pairs Vue-native speed with markdown for DX portals. mdBook is minimal and perfect for pure-text handbooks. All of them accept the same markdown you already wrote in the Marp deck's speaker notes, so the deck and the manual never diverge.",
+  "The library the presentation was held in front of — the talk is live, but the books stay shelved, catalogued, and findable forever.",
+  "Durable, searchable, versioned manual delivery on the web",
+  [
+    "Docusaurus MDX docs with versioning and sidebar navigation",
+    "MkDocs Material themed sites for internal runbooks and IT manuals",
+    "VitePress and mdBook for fast markdown-native doc sites",
+  ],
+  [
+    "Linear one-shot presentation delivery (use a deck tool)",
+    "Interactive API consoles rendered from OpenAPI (see API Reference category)",
+  ],
+)
+
+interactiveApiReferencesPlaygrounds = TaxonomyCategory(
+  "Interactive API References & Playgrounds",
+  "Swagger UI · Redoc · Storybook",
+  "Plug",
+  "sky",
+  "For developer-facing manuals: render the API itself as the documentation so consumers read, try, and trust the real contract instead of a stale screenshot.",
+  "Swagger UI renders an OpenAPI spec as an explorable, 'try it now' reference page. Redoc produces a clean three-column readable reference from the same spec. Storybook turns each UI component or SDK usage example into an interactive, isolated playground. In a DX presentation, opening the live playground IS the demo — the manual cannot be out of date because it is generated from the code.",
+  "A test drive instead of a brochure about the car — the reference is the road.",
+  "Executable, always-current reference documentation from specs",
+  [
+    "Swagger UI interactive API consoles from OpenAPI specs",
+    "Redoc rendered API references",
+    "Storybook component & SDK example playgrounds",
+  ],
+  [
+    "Narrative onboarding prose (put it in the docs site and link over)",
+    "End-user UI task walkthroughs",
+  ],
+)
+
+inAppInCodeGuidedTours = TaxonomyCategory(
+  "In-App & In-Code Guided Tours",
+  "Intro.js · Shepherd · VS Code Code Tour",
+  "Footprints",
+  "yellow",
+  "Teach inside the artifact itself: overlay step-by-step tours on the running Web App, or pin narrated steps to real files in the repository.",
+  "Intro.js and Shepherd.js render highlight-and-explain overlay tours directly on your Web App screens — perfect for self-serve onboarding that never goes stale between releases. VS Code Code Tour ships .tour files in the repo that walk a developer through the manual's example project file by file, line by line. The presentation hands off into the tour instead of ending in a blank slide.",
+  "A museum audio guide that starts talking when you walk into the actual room, instead of a slideshow about the museum.",
+  "Self-serve guided learning embedded in the product or repo",
+  [
+    "Intro.js / Shepherd overlay walkthroughs on live Web App screens",
+    "VS Code Code Tour (.tour) step files anchored to repository files",
+    "Product tour copy written in the same markdown pipeline as the manual",
+  ],
+  [
+    "Front-facing keynote presentation delivery",
+    "Video editing suites (see Recording & Async Demos)",
+  ],
+)
+
+screenRecordingAsyncDemos = TaxonomyCategory(
+  "Screen Recording & Async Demos",
+  "OBS Studio · embedded clips",
+  "Video",
+  "red",
+  "Record the walkthrough once at high fidelity; reuse it as the live-demo fallback clip, the async manual for absent colleagues, and the GIF embedded in the docs page.",
+  "OBS Studio records the real product UI with microphone narration for free and produces the pre-recorded fallback clip every Stage 4 live demo must carry. A three-minute cut of the same recording becomes the async manual for people in other time zones, and a trimmed GIF answers the question inside the docs page itself — no 'meeting recording' 47-minute graveyard.",
+  "A stunt double standing by for the dangerous scene — same shot, zero risk of the live staging site freezing on camera.",
+  "One recording, three lives: fallback clip, async manual, docs GIF",
+  [
+    "OBS Studio screen + microphone capture of the real UI",
+    "Short clips embedded in the docs site next to the written steps",
+    "The pre-recorded fallback clip loaded before every live demo",
+  ],
+  [
+    "Interactive clickable simulation tools",
+    "Static annotated screenshots (cheaper, but a different instrument)",
+  ],
+)

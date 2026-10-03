@@ -1,0 +1,121 @@
+root = Quiz("Why Simulate Check", [q1, q2, q3, q4, q5])
+
+q1 = QuizQuestion(
+  "q1",
+  "A new accounts clerk must learn to approve supplier payments, but their approver role is only granted after training. Which barrier stops them from practising in the real system?",
+  [
+    QuizChoice(
+      "q1-a",
+      "Least-privilege access: they have no role that allows the action yet",
+      true,
+      "Least privilege means trainees often have no account or role that allows the actions they must learn.",
+    ),
+    QuizChoice(
+      "q1-b",
+      "Licence cost: the payment module is too expensive",
+      false,
+      "Cost can be a barrier, but here the problem is that the clerk's role doesn't allow approving yet.",
+    ),
+    QuizChoice(
+      "q1-c",
+      "Irreversible actions: the approve button is broken",
+      false,
+      "Nothing is broken; the clerk simply isn't authorised yet.",
+    ),
+  ],
+  "Think about which permissions the clerk has today.",
+)
+
+q2 = QuizQuestion(
+  "q2",
+  "Why is giving trainees a read-only account on the live hospital system still a problem?",
+  [
+    QuizChoice(
+      "q2-a",
+      "They would still see real patient records they have no need to see",
+      true,
+      "Real systems hold production data such as patient records, which trainees must not see or change.",
+    ),
+    QuizChoice(
+      "q2-b",
+      "Read-only accounts can't show any screens",
+      false,
+      "Read-only accounts can show screens. The issue is the real data on them.",
+    ),
+    QuizChoice(
+      "q2-c",
+      "Read-only accounts cost more than full accounts",
+      false,
+      "This is not the barrier described. The problem is exposure of production data.",
+    ),
+  ],
+  "Look at what is on the screens, not what the learner can click.",
+)
+
+q3 = QuizQuestion(
+  "q3",
+  "Which of these is the best example of an irreversible or high-impact action?",
+  [
+    QuizChoice(
+      "q3-a",
+      "Issuing a customer refund",
+      true,
+      "A refund sends real money and can't simply be undone, so practising it live turns every mistake into an incident.",
+    ),
+    QuizChoice("q3-b", "Opening the search screen", false, "Opening a screen changes nothing."),
+    QuizChoice("q3-c", "Sorting a table by date", false, "Sorting only changes the view."),
+  ],
+  "Which one changes something outside the screen?",
+)
+
+q4 = QuizQuestion(
+  "q4",
+  "Put simply, what is the order of the fidelity ladder from lowest to highest?",
+  [
+    QuizChoice(
+      "q4-a",
+      "Screenshots → click-through walkthroughs → interactive simulations with fake data → full sandbox",
+      true,
+      "That is the ladder: from looking at pictures to using a real instance filled with fake data.",
+    ),
+    QuizChoice(
+      "q4-b",
+      "Sandbox → screenshots → walkthroughs → interactive simulations",
+      false,
+      "The sandbox is the top rung, not the bottom.",
+    ),
+    QuizChoice(
+      "q4-c",
+      "Walkthroughs → screenshots → sandbox → interactive simulations",
+      false,
+      "Screenshots are the lowest rung, and the sandbox is the highest.",
+    ),
+  ],
+  "Start from the version where learners only look.",
+)
+
+q5 = QuizQuestion(
+  "q5",
+  "Your team wants to move from annotated screenshots to a full sandbox. What should they expect?",
+  [
+    QuizChoice(
+      "q5-a",
+      "More realistic practice, but higher build and maintenance cost",
+      true,
+      "Each rung up the ladder gives more realistic practice and costs more to build and maintain.",
+    ),
+    QuizChoice(
+      "q5-b",
+      "More realism with no extra cost",
+      false,
+      "Realism and cost rise together on the ladder.",
+    ),
+    QuizChoice(
+      "q5-c",
+      "Lower cost, because sandboxes need no upkeep",
+      false,
+      "A sandbox is the most expensive rung to build and keep running.",
+    ),
+  ],
+  "Look at the two blocks on the top rung of the ladder.",
+)

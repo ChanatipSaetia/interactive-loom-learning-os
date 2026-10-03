@@ -229,7 +229,7 @@ terms:
     const result = validateOKFSection(`
 type: taxonomy-browser
 categories:
-  - icon: "📦"
+  - icon: "Package"
     title: "Category 1"
     subtitle: "Sub 1"
     description: "Desc"
@@ -238,7 +238,7 @@ categories:
     primaryFocus: "Focus"
     inScope: ["in"]
     outOfScope: ["out"]
-    color: "#ff0000"
+    color: "red"
 `.trim())
     expect(result.status).toBe('valid')
   })

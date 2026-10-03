@@ -1,0 +1,79 @@
+root = Quiz("Master Filter Architecture Assessment", [qBossCache, qBossDisplacement, qBossPooling])
+
+qBossCache = QuizQuestion(
+  "q-boss-cache",
+  "When is container.cacheAsBitmap = true the most effective optimization for filtered objects?",
+  [
+    QuizChoice(
+      "a",
+      "When the container contains static or infrequently updating visuals, allowing PixiJS to bake the filtered result into a single reusable texture",
+      true,
+      "Correct! cacheAsBitmap bakes the filtered container into a texture once, drawing it as a single standard batched sprite in subsequent frames.",
+    ),
+    QuizChoice(
+      "b",
+      "When animating position, rotation, and text at 60 FPS every frame",
+      false,
+      "Updating children every frame forces expensive re-baking of the cached bitmap, degrading performance.",
+    ),
+    QuizChoice(
+      "c",
+      "Only when applying shaders to raw WebGL mesh geometries",
+      false,
+      "cacheAsBitmap works across standard Container trees with sprites, text, graphics, and filters.",
+    ),
+  ],
+  "Consider how frequently the container visual contents mutate.",
+)
+
+qBossDisplacement = QuizQuestion(
+  "q-boss-displacement",
+  "How does DisplacementFilter calculate coordinate distortion on the target sprite?",
+  [
+    QuizChoice(
+      "a",
+      "It uses the Red and Green channels of the map texture to offset the UV sampling coordinates",
+      true,
+      "Correct! DisplacementFilter maps Red and Green channel values to (dx, dy) coordinate offsets during texture sampling.",
+    ),
+    QuizChoice(
+      "b",
+      "It physically recalculates the vertex buffer positions on the CPU",
+      false,
+      "The distortion happens in the GPU fragment shader by offsetting UV sampling coordinates.",
+    ),
+    QuizChoice(
+      "c",
+      "It inverts the alpha channel of the background canvas",
+      false,
+      "Alpha inversion is not used for displacement mapping.",
+    ),
+  ],
+  "Consider what color channels are read from the displacement map texture.",
+)
+
+qBossPooling = QuizQuestion(
+  "q-boss-pooling",
+  "Why does FilterSystem lease RenderTargets from a pre-allocated pool instead of instantiating fresh framebuffers?",
+  [
+    QuizChoice(
+      "a",
+      "To prevent continuous VRAM allocation churn, memory fragmentation, and JavaScript GC stutter at 60 FPS",
+      true,
+      "Correct! Dynamic WebGL framebuffer creation triggers severe GC pauses and GPU driver stalls; pooling keeps memory steady.",
+    ),
+    QuizChoice(
+      "b",
+      "Because WebGL only permits a total of 1 framebuffer in the entire browser context",
+      false,
+      "WebGL allows multiple framebuffers, but creating and destroying them continuously causes memory churn.",
+    ),
+    QuizChoice(
+      "c",
+      "Because shaders cannot execute without pre-allocated CSS textures",
+      false,
+      "RenderTargets are WebGL textures, independent of CSS.",
+    ),
+  ],
+  "Think about GPU memory fragmentation and garbage collection pauses.",
+)

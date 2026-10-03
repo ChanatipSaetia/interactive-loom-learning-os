@@ -1,0 +1,69 @@
+root = TaxonomyBrowser(
+  "The Diátaxis Framework",
+  [tutorial, howToGuide, reference, explanation, donTMixTheTypes],
+)
+
+tutorial = TaxonomyCategory(
+  "Tutorial",
+  "Learning-oriented · action + study",
+  "GraduationCap",
+  "green",
+  "A tutorial is learning-oriented: it guides a beginner through a safe, guaranteed-to-work lesson, like a driving lesson.",
+  "The reader is new and wants to learn, not to get a job done. You, the author, choose the path, with a small project, a fixed set of sample data and every step spelled out, so it always works. Keep explanation to a minimum and link to it instead. Success means the learner finishes and feels 'I can do this'. Example: 'Your first expense claim in 10 minutes'.",
+  "A driving lesson in an empty car park: the instructor picks the route and nothing can go badly wrong.",
+  "Building a beginner's confidence by doing",
+  ["Guided first projects with sample data", "Every step spelled out, always works"],
+  ["Getting a specific real job done (how-to guide)", "Background theory (explanation)"],
+)
+
+howToGuide = TaxonomyCategory(
+  "How-to Guide",
+  "Goal-oriented · action + work",
+  "Wrench",
+  "sky",
+  "A how-to guide is goal-oriented: it gives a competent user the steps to achieve one specific real-world goal.",
+  "The reader already knows the basics and has a real job in front of them: 'Export last month's claims to Excel', 'Reset a user's password'. Give them the steps to that goal and nothing else. Don't teach basics, don't explain the architecture; assume they can adapt the steps to their own data. Most pages of a web app manual are how-to guides.",
+  "A recipe: it assumes you can already hold a knife, and gets you to the dish.",
+  "Getting a real task done",
+  ["Steps to one specific goal", "Real users with real data"],
+  ["Teaching the basics from zero (tutorial)", "Listing every field (reference)"],
+)
+
+reference = TaxonomyCategory(
+  "Reference",
+  "Information-oriented · cognition + work",
+  "BookMarked",
+  "yellow",
+  "Reference is information-oriented: dry, complete, accurate descriptions of the product (fields, settings, limits) to look things up.",
+  "The reader is in the middle of work and needs one fact: what does the 'Retention period' field accept? What's the file-size limit? Which roles can approve? Reference describes, completely and consistently, in the same structure for every item. It doesn't instruct or explain. Tables of fields, settings, error codes, permissions and keyboard shortcuts are typical.",
+  "A dictionary: you don't read it cover to cover, you look up the one word you need.",
+  "Accurate facts to look up while working",
+  ["Field, setting and permission tables", "Limits, error codes, shortcuts"],
+  ["Step-by-step instructions (how-to)", "Opinions and reasons (explanation)"],
+)
+
+explanation = TaxonomyCategory(
+  "Explanation",
+  "Understanding-oriented · cognition + study",
+  "Lightbulb",
+  "mauve",
+  "Explanation is understanding-oriented: it discusses why things work the way they do, background and design decisions.",
+  "The reader steps back from the keyboard to understand: why do approvals go through two levels? How do workspaces and projects relate? What changed in the new permission model and why? Explanation can discuss alternatives and give opinions, and it's where concepts live. It's read away from the task, not during it.",
+  "An article about why a recipe works, the chemistry of browning, read in an armchair rather than at the stove.",
+  "Understanding concepts and reasons",
+  ["Concepts, background, design decisions", "Why the product works the way it does"],
+  ["Instructions for a task"],
+)
+
+donTMixTheTypes = TaxonomyCategory(
+  "Don't Mix the Types",
+  "One page, one kind of reader need",
+  "Split",
+  "red",
+  "Mixing types on one page (e.g. long background inside how-to steps) makes every reader wade through content meant for someone else.",
+  "The classic 'everything page' starts with three paragraphs of history, teaches the basics, lists every field in a table halfway through the steps, and finally gets to the procedure. The expert who wants the steps must scroll past the lesson, and the beginner is lost in the reference table. Split it: a how-to page with just the steps that links to a reference page and an explanation page.",
+  "A restaurant menu that interrupts the list of dishes with the chef's life story.",
+  "Each reader gets only what they came for",
+  ["Splitting everything pages into typed pages", "Linking between types instead of embedding"],
+  ["Duplicating the same content in several types"],
+)

@@ -1,0 +1,23 @@
+root = Topic(
+  "Presenting Tech Manuals",
+  "Project Management",
+  "Present IT system, Web App, and Developer Experience manuals with markdown decks, docs-as-code platforms, and live demo craft.",
+  [
+    SectionRef("intro"),
+    SectionRef("audience-map"),
+    SectionRef("narrative-arc"),
+    SectionRef("quiz-narrative"),
+    SectionRef("reflection-prep"),
+    SectionRef("tool-landscape"),
+    SectionRef("quiz-tools"),
+    SectionRef("deck-tradeoffs"),
+    SectionRef("tool-decision-tree"),
+    SectionRef("docs-stack"),
+    SectionRef("publish-flow"),
+    SectionRef("scenario-launch"),
+    SectionRef("glossary"),
+    SectionRef("concept-map"),
+    SectionRef("synthesis"),
+  ],
+  ["documentation", "presentation", "developer-experience", "docs-as-code", "web-app"],
+)

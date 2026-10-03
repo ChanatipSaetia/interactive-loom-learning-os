@@ -17,23 +17,29 @@ export interface ReflectionSequenceChallenge {
   solution: string[]
 }
 
-export interface ReflectionSequenceProps {
+import type { SectionResultProps, SectionResultContract } from '../../../types'
+import type { ReflectionSynthesisEvents, ReflectionAnswered, ReflectionCompleted } from '../../events'
+
+export interface ReflectionSequenceProps extends SectionResultProps<ReflectionCompleted | ReflectionAnswered, ReflectionSynthesisEvents> {
   title?: string
   prompt?: string
   items?: SequenceItem[]
   solution?: string[]
   challenges?: ReflectionSequenceChallenge[]
   sectionIndex?: number
+  sectionId?: string
 }
 
 function ReflectionSequenceSingle({
   prompt,
   items,
   solution,
+  onVerifyResult,
 }: {
   prompt: string
   items: SequenceItem[]
   solution: string[]
+  onVerifyResult?: (isCorrect: boolean, stepCount: number) => void
 }) {
   const { playSound } = useSound()
   const [slots, setSlots] = useState<Record<number, SequenceItem | null>>(() => {
@@ -64,50 +70,56 @@ function ReflectionSequenceSingle({
 
   const handleDrop = (e: React.DragEvent, slotIndex: number) => {
     e.preventDefault()
-    const id = e.dataTransfer.getData('text/plain')
-    const item = items.find((x) => x.id === id)
-    if (item) {
-      placeItemInSlot(slotIndex, item)
-    }
-  }
+    const itemId = e.dataTransfer.getData('text/plain')
+    const item = items.find((i) => i.id === itemId)
+    if (!item) return
 
-  const handleItemTap = (id: string) => {
-    if (isPlaced(id)) return
-    playSound('click')
-    if (selectedItemId === id) {
-      setSelectedItemId(null)
-    } else {
-      setSelectedItemId(id)
-    }
-  }
-
-  const handleSlotTap = (slotIndex: number) => {
-    if (slots[slotIndex]) {
-      removeItemFromSlot(slotIndex)
-      return
-    }
-    if (selectedItemId) {
-      const item = items.find((x) => x.id === selectedItemId)
-      if (item) {
-        placeItemInSlot(slotIndex, item)
-      }
-      setSelectedItemId(null)
-    }
-  }
-
-  const placeItemInSlot = (slotIndex: number, item: SequenceItem) => {
     playSound('stepNext')
-    const previousSlotIndex = Object.keys(slots).find(
-      (key) => slots[parseInt(key)]?.id === item.id
-    )
     setSlots((prev) => {
       const next = { ...prev }
+      const previousSlotIndex = Object.keys(next).find((k) => next[parseInt(k)]?.id === itemId)
       if (previousSlotIndex !== undefined) {
         next[parseInt(previousSlotIndex)] = null
       }
       next[slotIndex] = item
       return next
     })
+    setFeedback({ text: '', type: '' })
+  }
+
+  const handleItemTap = (itemId: string) => {
+    if (isPlaced(itemId)) return
+
+    playSound('click')
+    if (selectedItemId === itemId) {
+      setSelectedItemId(null)
+    } else {
+      setSelectedItemId(itemId)
+    }
+  }
+
+  const handleSlotTap = (slotIndex: number) => {
+    if (!selectedItemId) {
+      if (slots[slotIndex]) {
+        removeItemFromSlot(slotIndex)
+      }
+      return
+    }
+
+    const item = items.find((i) => i.id === selectedItemId)
+    if (!item) return
+
+    playSound('stepNext')
+    setSlots((prev) => {
+      const next = { ...prev }
+      const previousSlotIndex = Object.keys(next).find((k) => next[parseInt(k)]?.id === selectedItemId)
+      if (previousSlotIndex !== undefined) {
+        next[parseInt(previousSlotIndex)] = null
+      }
+      next[slotIndex] = item
+      return next
+    })
+    setSelectedItemId(null)
     setFeedback({ text: '', type: '' })
   }
 
@@ -139,9 +151,10 @@ function ReflectionSequenceSingle({
     if (filledCount < solution.length) {
       playSound('boundary')
       setFeedback({
-        text: 'Please place all steps in slots before verifying.',
+        text: 'Please place all sequence steps before verifying.',
         type: 'error',
       })
+      onVerifyResult?.(false, solution.length)
       return
     }
 
@@ -151,21 +164,25 @@ function ReflectionSequenceSingle({
         text: 'Correct! You have mapped the process flow sequence accurately.',
         type: 'success',
       })
+      onVerifyResult?.(true, solution.length)
     } else {
       playSound('error')
       setFeedback({
         text: 'Incorrect sequence. Analyze dependencies and try rearranging the steps.',
         type: 'error',
       })
+      onVerifyResult?.(false, solution.length)
     }
   }
 
 
   return (
-    <div className="sequence-body">
-      <div className="sequence-prompt">{prompt}</div>
+    <div className="sequence-card" data-testid="sequence-card">
+      <div className="sequence-prompt-banner">
+        <span className="sequence-prompt-text">{prompt}</span>
+      </div>
 
-      <div className="sequence-source-pool">
+      <div className="sequence-pool">
         {items.map((item) => {
           const placed = isPlaced(item.id)
           const isSelected = selectedItemId === item.id
@@ -250,18 +267,67 @@ export function ReflectionSequence({
   solution = [],
   challenges,
   sectionIndex = 0,
+  sectionId = 'reflection-sequence',
+  onResultChange,
+  onEvent,
 }: ReflectionSequenceProps) {
   const normalizedChallenges = challenges && challenges.length > 0
     ? challenges
     : [{ prompt, items, solution }]
 
   const [currentIndex, setCurrentIndex] = useState(0)
+  const [clearedChallenges, setClearedChallenges] = useState<Record<number, boolean>>({})
 
   useEffect(() => {
     setCurrentIndex(0)
   }, [challenges])
 
   const currentChallenge = normalizedChallenges[currentIndex]
+
+  const handleChallengeVerify = (isCorrect: boolean, stepCount?: number) => {
+    const nextCleared = { ...clearedChallenges, [currentIndex]: isCorrect }
+    setClearedChallenges(nextCleared)
+
+    // 1. Emit single answer event
+    const answeredEvent: ReflectionAnswered = {
+      type: 'ReflectionAnswered',
+      challengeId: `challenge_${currentIndex}`,
+      challengeIndex: currentIndex,
+      stepCount: stepCount ?? currentChallenge?.items?.length ?? 3,
+      isCorrect,
+      timestamp: Date.now(),
+    }
+    onEvent?.(answeredEvent)
+
+    // 2. Compute aggregate progress and emit Result Contract
+    const correctCount = Object.values(nextCleared).filter(Boolean).length
+    const isCompleted = correctCount === normalizedChallenges.length
+    const normalizedScore = Math.round((correctCount / normalizedChallenges.length) * 100)
+
+    const completedPayload: ReflectionCompleted = {
+      type: 'ReflectionCompleted',
+      sectionType: 'reflection-sequence',
+      totalChallenges: normalizedChallenges.length,
+      correctCount,
+      timestamp: Date.now(),
+    }
+
+    if (isCompleted) {
+      onEvent?.(completedPayload)
+    }
+
+    const resultContract: SectionResultContract<ReflectionCompleted | ReflectionAnswered> = {
+      sectionId,
+      sectionType: 'reflection-sequence',
+      status: isCompleted ? 'completed' : 'in_progress',
+      score: normalizedScore,
+      accuracy: correctCount / normalizedChallenges.length,
+      completedAt: isCompleted ? Date.now() : undefined,
+      payload: isCompleted ? completedPayload : answeredEvent,
+    }
+
+    onResultChange?.(resultContract)
+  }
 
   const handlePrev = () => {
     setCurrentIndex((prev) => Math.max(prev - 1, 0))
@@ -281,6 +347,7 @@ export function ReflectionSequence({
         prompt={currentChallenge.prompt}
         items={currentChallenge.items}
         solution={currentChallenge.solution}
+        onVerifyResult={handleChallengeVerify}
       />
 
       {/* Pagination Controls */}

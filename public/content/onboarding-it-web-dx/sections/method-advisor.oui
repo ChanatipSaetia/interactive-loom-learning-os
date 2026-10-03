@@ -1,0 +1,172 @@
+root = DecisionTree(
+  "Onboarding Method Advisor",
+  "method-advisor",
+  "audience",
+  [
+    audience,
+    userScale,
+    recTours,
+    recToursDocs,
+    recBuddyUsers,
+    staffRisk,
+    recQuestsStaff,
+    recBuddyOps,
+    recDevs,
+  ],
+  "Which Onboarding Method Fits Your Crowd?",
+)
+
+audience = DecisionNode(
+  "audience",
+  "Who is being onboarded right now?",
+  [
+    DecisionChoice(
+      "end-users",
+      "Web App end users doing business tasks",
+      "user-scale",
+      "Their first value is a successful task inside the product.",
+    ),
+    DecisionChoice(
+      "staff",
+      "Internal staff & operators running the IT system",
+      "staff-risk",
+      "Their journey is a supervised climb to trusted production access.",
+    ),
+    DecisionChoice(
+      "developers",
+      "Developers integrating with the platform",
+      "rec-devs",
+      "They self-onboard or not at all; the product is the onboarding.",
+    ),
+  ],
+)
+
+userScale = DecisionNode(
+  "user-scale",
+  "Roughly how many end users arrive per month, and how often does the UI change?",
+  [
+    DecisionChoice(
+      "many-stable",
+      "Many users each month; UI evolves slowly",
+      "rec-tours",
+      "Self-serve tours scale at near-zero marginal cost and stay fresh between releases.",
+      true,
+    ),
+    DecisionChoice(
+      "many-churny",
+      "Many users each month; UI churns every sprint",
+      "rec-tours-docs",
+      "Overlay tours mispoint when the interface moves fast; anchor them to searchable docs.",
+    ),
+    DecisionChoice(
+      "few-highvalue",
+      "A few high-value accounts that expect a white-glove start",
+      "rec-buddy-users",
+      "At low volume, a human success onboarding beats any software tour.",
+    ),
+  ],
+)
+
+recTours = DecisionNode(
+  "rec-tours",
+  null,
+  null,
+  DecisionLeaf(
+    "Self-serve in-app checklists and first-run tours driving one golden-path task, with sample data so the app is never a blank page.",
+    "The in-app tour method's taught pros — near-zero marginal cost, teach-at-the-moment-of-need, instant fixes shipped to everyone — fit a large, stable audience. Instrument completion and drop-off per the Measure-the-Friction principle.",
+    [
+      "Upfront engineering cost for the tour layer",
+      "Needs a human anchor (office hours or a channel) for the questions tours cannot answer",
+    ],
+  ),
+)
+
+recToursDocs = DecisionNode(
+  "rec-tours-docs",
+  null,
+  null,
+  DecisionLeaf(
+    "Lightweight in-app checklists for the golden path only, plus a docs-as-code handbook carrying the depth, linked at the point of need.",
+    "Tour fragility against UI churn is the documented con: keep the overlay surface tiny and let searchable, CI-owned docs absorb the change velocity.",
+    [
+      "Docs need a CI-owning maintainer or they rot",
+      "Two artifacts to keep pointed at the same golden path",
+    ],
+  ),
+)
+
+recBuddyUsers = DecisionNode(
+  "rec-buddy-users",
+  null,
+  null,
+  DecisionLeaf(
+    "Buddy-style live onboarding sessions for each account, recorded and clipped into the handbook, with a self-serve tour left behind for their teammates.",
+    "Apprenticeship's pros — tacit knowledge, trust, highest retention — justify its focus tax only when each account is worth the hours. The recording amortizes the cost into self-serve assets.",
+    [
+      "Does not scale past a handful of accounts",
+      "Quality varies with the people skills of whoever runs the session",
+    ],
+  ),
+)
+
+staffRisk = DecisionNode(
+  "staff-risk",
+  "What is the blast radius of a mistake by this role in their first month?",
+  [
+    DecisionChoice(
+      "low-risk",
+      "Low — sandboxed tools, no production reach",
+      "rec-quests-staff",
+      "Safe-to-break practice is free motivation when mistakes are cheap.",
+    ),
+    DecisionChoice(
+      "high-risk",
+      "High — production access, customer data, or money movement",
+      "rec-buddy-ops",
+      "Flight school, not freestyle: dual controls before the first solo.",
+      true,
+    ),
+  ],
+)
+
+recQuestsStaff = DecisionNode(
+  "rec-quests-staff",
+  null,
+  null,
+  DecisionLeaf(
+    "Sandbox quests: a seeded practice environment with a graded quest board ending in a boss task reviewed by a senior.",
+    "Sandbox quests deliver zero-blast-radius practice and objective competence — the taught pros — and the boss-task review supplies the human anchor.",
+    [
+      "Building and re-seeding the playground is the costliest method to keep fresh",
+      "Shallow quests become pixel-art chores; design the boss task with care",
+    ],
+  ),
+)
+
+recBuddyOps = DecisionNode(
+  "rec-buddy-ops",
+  null,
+  null,
+  DecisionLeaf(
+    "Buddy apprenticeship with graduated privileges: shadow incidents, then drive with a witness, then the supervised pager — with runbooks as the spine.",
+    "Apprenticeship carries the escalation culture no handbook holds, and graded real tasks convert reading into trusted competence. Cap each buddy at two newcomers to dodge the burnout con.",
+    [
+      "Real focus tax on senior operators",
+      "Buddy quality varies; brief the buddies on what to teach",
+    ],
+  ),
+)
+
+recDevs = DecisionNode(
+  "rec-devs",
+  null,
+  null,
+  DecisionLeaf(
+    "Self-serve DX path: keys minted in minutes, a CI-tested quickstart to a first successful call in under fifteen, a seeded sandbox with test data, and generated API references.",
+    "Developers self-onboard or leave quietly; time-to-first-successful-API-call is their first value. Docs-first is the backbone here, but every step must be runnable, not readable.",
+    [
+      "Quickstarts need CI tests or they rot within a sprint",
+      "Sandbox data seeding is an ongoing tax",
+    ],
+  ),
+)

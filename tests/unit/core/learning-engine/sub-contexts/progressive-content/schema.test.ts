@@ -294,6 +294,41 @@ describe('TaxonomyCategorySchema', () => {
     const result = TaxonomyCategorySchema.safeParse(invalid)
     expect(result.success).toBe(false)
   })
+
+  it.each(['rose', 'violet', '#89b4fa', 'var(--ctp-blue)'])('rejects out-of-palette color %s', (color) => {
+    const result = TaxonomyCategorySchema.safeParse({
+      icon: 'Circle',
+      title: 'Cat',
+      subtitle: 'Sub',
+      description: 'Desc',
+      details: 'Details',
+      analogy: 'Analog',
+      primaryFocus: 'Focus',
+      inScope: ['s1'],
+      outOfScope: ['o1'],
+      color,
+    })
+    expect(result.success).toBe(false)
+  })
+
+  it.each(['blue', 'peach', 'pink', 'mauve', 'green', 'teal', 'sky', 'lavender', 'yellow', 'red'])(
+    'accepts theme accent color %s',
+    (color) => {
+      const result = TaxonomyCategorySchema.safeParse({
+        icon: 'Circle',
+        title: 'Cat',
+        subtitle: 'Sub',
+        description: 'Desc',
+        details: 'Details',
+        analogy: 'Analog',
+        primaryFocus: 'Focus',
+        inScope: ['s1'],
+        outOfScope: ['o1'],
+        color,
+      })
+      expect(result.success).toBe(true)
+    }
+  )
 })
 
 describe('ImageGallerySectionSchema', () => {

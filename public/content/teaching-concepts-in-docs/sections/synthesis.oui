@@ -1,0 +1,55 @@
+root = ReflectionTemplate(
+  "Design a Concept Lesson",
+  [challenge1, challenge2, challenge3, challenge4],
+)
+
+challenge1 = TemplateChallenge(
+  "Why concepts (Track 1):",
+  "Knowing only the steps is {zone-1} knowledge; knowing how the parts relate is {zone-2} knowledge, which makes {zone-3} possible.",
+  [
+    Chip("chip-procedural", "procedural"),
+    Chip("chip-conceptual", "conceptual"),
+    Chip("chip-transfer", "transfer"),
+    Chip("chip-typing", "faster typing"),
+  ],
+  {"zone-1": "chip-procedural", "zone-2": "chip-conceptual", "zone-3": "chip-transfer"},
+  "<strong>Correct!</strong> Steps are brittle; understanding transfers to situations the manual never showed.",
+)
+
+challenge2 = TemplateChallenge(
+  "Explain it (Track 2):",
+  "Start with a {zone-1}, add a diagram for {zone-2}, and fix the wrong belief with {zone-3}.",
+  [
+    Chip("chip-example", "worked example"),
+    Chip("chip-dual", "dual coding"),
+    Chip("chip-refutation", "refutation"),
+    Chip("chip-checkbox", "an 'I understood' checkbox"),
+  ],
+  {"zone-1": "chip-example", "zone-2": "chip-dual", "zone-3": "chip-refutation"},
+  "<strong>Correct!</strong> Concrete first, words + picture, and name-and-reject the misconception.",
+)
+
+challenge3 = TemplateChallenge(
+  "Make it interactive (Track 3):",
+  "Ask learners to {zone-1} first, let them {zone-2} the real outcome, then {zone-3} the difference.",
+  [
+    Chip("chip-predict", "predict"),
+    Chip("chip-observe", "observe"),
+    Chip("chip-explain", "explain"),
+  ],
+  {"zone-1": "chip-predict", "zone-2": "chip-observe", "zone-3": "chip-explain"},
+  "<strong>Correct!</strong> Predict → Observe → Explain makes a wrong model visible, so it can be corrected.",
+)
+
+challenge4 = TemplateChallenge(
+  "Make it stick (Track 4):",
+  "Use {zone-1} instead of re-reading, spread reviews with {zone-2}, and give feedback that says {zone-3}.",
+  [
+    Chip("chip-retrieval", "retrieval practice"),
+    Chip("chip-spacing", "spacing"),
+    Chip("chip-why", "why"),
+    Chip("chip-whether", "only whether"),
+  ],
+  {"zone-1": "chip-retrieval", "zone-2": "chip-spacing", "zone-3": "chip-why"},
+  "<strong>Correct!</strong> Recall, spacing and explanatory feedback turn understanding into lasting understanding.",
+)

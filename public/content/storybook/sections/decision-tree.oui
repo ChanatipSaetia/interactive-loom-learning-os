@@ -1,0 +1,172 @@
+root = DecisionTree(
+  "Test Layer Advisor",
+  "storybook-test-advisor",
+  "risk",
+  [
+    risk,
+    budgetVisual,
+    depthBehavior,
+    leafCloudVrt,
+    leafSelfhostedVrt,
+    leafPlay,
+    leafPlayRunner,
+    leafA11y,
+    leafDocs,
+  ],
+  "Which Storybook Test Layer Do You Need?",
+)
+
+risk = DecisionNode(
+  "risk",
+  "What kind of regression scares you most for this component?",
+  [
+    DecisionChoice(
+      "pixels",
+      "Silent visual changes — spacing, colors, overflow on some viewport",
+      "budget-visual",
+      "Pixel-level drift is invisible to code review and most assertions; it needs snapshot diffing.",
+    ),
+    DecisionChoice(
+      "behavior",
+      "Broken behavior — clicks, typing, open/close, validation",
+      "depth-behavior",
+      "Behavior regressions need scripted interactions, not screenshots.",
+    ),
+    DecisionChoice(
+      "a11y",
+      "Accessibility or responsiveness failures",
+      "leaf-a11y",
+      "Automated audits cover structure and contrast; humans cover intent.",
+    ),
+    DecisionChoice(
+      "docs",
+      "Nobody knows the component exists or how to use it",
+      "leaf-docs",
+      "Adoption failures are documentation failures in disguise.",
+    ),
+  ],
+)
+
+budgetVisual = DecisionNode(
+  "budget-visual",
+  "Where should visual snapshots run?",
+  [
+    DecisionChoice(
+      "cloud",
+      "We already share published Storybook links for design review",
+      "leaf-cloud-vrt",
+      "The review workflow and the snapshot baseline become the same artifact.",
+      true,
+    ),
+    DecisionChoice(
+      "self",
+      "Our data policy forbids sending component builds to a vendor",
+      "leaf-selfhosted-vrt",
+      "Self-hosted Playwright screenshot pipelines keep everything on your runners.",
+    ),
+  ],
+)
+
+depthBehavior = DecisionNode(
+  "depth-behavior",
+  "How complex is the interaction you need to protect?",
+  [
+    DecisionChoice(
+      "simple",
+      "A single trigger — click opens, input filters, toggle flips",
+      "leaf-play",
+      "A short play function with userEvent is the cheapest executable specification.",
+      true,
+    ),
+    DecisionChoice(
+      "multi",
+      "Multi-step flows with assertions across several interactions",
+      "leaf-play-runner",
+      "Play functions plus the CI test runner execute the script headlessly on every PR.",
+    ),
+  ],
+)
+
+leafCloudVrt = DecisionNode(
+  "leaf-cloud-vrt",
+  null,
+  null,
+  DecisionLeaf(
+    "Full state-matrix stories + cloud visual regression (e.g. Chromatic) gating merges",
+    "Publish every Storybook build; the service snapshots all stories across browsers and viewports and blocks merges on unreviewed pixel changes. Designers approve diffs on the same link they already use for review.",
+    [
+      "Per-build subscription cost scales with monorepo activity",
+      "Baseline acceptance becomes a review duty — rubber-stamping re-introduces the bug",
+    ],
+  ),
+)
+
+leafSelfhostedVrt = DecisionNode(
+  "leaf-selfhosted-vrt",
+  null,
+  null,
+  DecisionLeaf(
+    "State-matrix stories + self-hosted Playwright screenshot diffs in your own CI",
+    "Capture screenshots of every story on your runners and diff against committed baselines. Full data sovereignty and no per-build fees.",
+    [
+      "You maintain browser fleets, font rendering parity, and baseline storage",
+      "Flaky captures need retry and quarantine policies you own",
+    ],
+  ),
+)
+
+leafPlay = DecisionNode(
+  "leaf-play",
+  null,
+  null,
+  DecisionLeaf(
+    "A play function on the story demonstrating the interaction",
+    "Attach an async play function using the story's userEvent API. It runs interactively during development and automatically in CI — one artifact serves demo and test.",
+    [
+      "Play functions need maintenance as the component API evolves",
+      "Only covers scenarios someone thought to script",
+    ],
+  ),
+)
+
+leafPlayRunner = DecisionNode(
+  "leaf-play-runner",
+  null,
+  null,
+  DecisionLeaf(
+    "Play functions executed headlessly by the Storybook test runner on every PR",
+    "test-storybook boots the static build and runs every story with its play function in Playwright/Puppeteer, failing the pipeline when an assertion throws. Add jest/Playwright expect queries inside play for real assertions.",
+    [
+      "Adds a browser boot phase to CI minutes",
+      "Shared-state stories can introduce ordering flakiness",
+    ],
+  ),
+)
+
+leafA11y = DecisionNode(
+  "leaf-a11y",
+  null,
+  null,
+  DecisionLeaf(
+    "Accessibility addon (axe-core) on all stories + viewport stories per breakpoint",
+    "Run automated a11y audits against every story in CI so contrast, labels, and roles fail the build, and keep dedicated narrow-viewport stories so responsive breakage shows in the catalog.",
+    [
+      "Automated audits catch only a fraction of real a11y issues",
+      "Keyboard and screen-reader intent still needs human testing",
+    ],
+  ),
+)
+
+leafDocs = DecisionNode(
+  "leaf-docs",
+  null,
+  null,
+  DecisionLeaf(
+    "Autodocs pages published as a static Storybook site with MDX usage guides",
+    "Tag the component's stories for docs, let autodocs render the props table from meta and JSDoc, and add an MDX page for long-form guidance with live embeds. Publish per-branch and on main.",
+    [
+      "Docs go stale if stories stop covering real usage",
+      "MDX freedom means style drift without lint rules",
+    ],
+  ),
+)

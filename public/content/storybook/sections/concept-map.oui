@@ -1,0 +1,51 @@
+root = ConceptMap(
+  "Storybook Architecture Map",
+  [
+    component,
+    meta,
+    story,
+    args,
+    csf,
+    indexer,
+    preview,
+    manager,
+    controls,
+    docs,
+    play,
+    testrunner,
+    visual,
+    hmr,
+  ],
+  [
+    ConceptLink(csf, meta, "file exports"),
+    ConceptLink(csf, story, "file exports"),
+    ConceptLink(meta, component, "binds & documents"),
+    ConceptLink(story, meta, "inherits from"),
+    ConceptLink(story, args, "parameterized by"),
+    ConceptLink(story, play, "may script with"),
+    ConceptLink(indexer, csf, "scans & indexes"),
+    ConceptLink(preview, story, "renders in isolation"),
+    ConceptLink(preview, manager, "embeds as iframe"),
+    ConceptLink(manager, indexer, "builds sidebar from"),
+    ConceptLink(controls, args, "mutates live"),
+    ConceptLink(docs, story, "embeds live examples"),
+    ConceptLink(hmr, preview, "re-renders on save"),
+    ConceptLink(play, testrunner, "executed by"),
+    ConceptLink(testrunner, visual, "feeds snapshots"),
+  ],
+)
+
+component = Concept("component", "Your Component", "system")
+meta = Concept("meta", "Meta Export (default)", "mechanism")
+story = Concept("story", "Story Export (named)", "concept")
+args = Concept("args", "Args & argTypes", "data")
+csf = Concept("csf", "Component Story Format (CSF)", "pattern")
+indexer = Concept("indexer", "Story Indexer", "process")
+preview = Concept("preview", "Preview (iframe runtime)", "system")
+manager = Concept("manager", "Manager (sidebar & toolbar UI)", "system")
+controls = Concept("controls", "Controls Addon", "mechanism")
+docs = Concept("docs", "Docs & MDX", "concept")
+play = Concept("play", "Play Function", "mechanism")
+testrunner = Concept("testrunner", "Test Runner (CI)", "process")
+visual = Concept("visual", "Visual Regression (Chromatic)", "process")
+hmr = Concept("hmr", "Dev Server HMR", "process")

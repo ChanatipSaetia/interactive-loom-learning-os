@@ -1,0 +1,36 @@
+root = ReflectionSequence("Order the Upkeep Loop", [challenge1, challenge2, challenge3])
+
+challenge1 = SequenceChallenge(
+  "A new product release is coming. Put the maintainability loop in the right order.",
+  [fix, detect, label, report],
+  [detect, report, fix, label],
+)
+
+fix = SequenceItem("fix", "The owner updates the affected screens")
+detect = SequenceItem("detect", "Automatic drift checks run against the new release")
+label = SequenceItem("label", "Label the simulation with the new product version")
+report = SequenceItem("report", "Failing checks name the stale modules and steps")
+
+challenge2 = SequenceChallenge(
+  "Turn a hand-made screenshot guide into one that regenerates itself. Order the steps.",
+  [ci, script, instance, capture],
+  [instance, script, capture, ci],
+)
+
+ci = SequenceItem("ci", "Run the script in CI on every release")
+script = SequenceItem("script", "Write a Playwright script that performs each documented step")
+instance = SequenceItem("instance", "Get a non-production instance for the script to run against")
+capture = SequenceItem(
+  "capture",
+  "Have the script save a screenshot at each step next to the Markdown text",
+)
+
+challenge3 = SequenceChallenge(
+  "Use AI safely to update a UI clone after a release. Order the steps.",
+  [publish, draft, verify],
+  [draft, verify, publish],
+)
+
+publish = SequenceItem("publish", "Merge and publish the update")
+draft = SequenceItem("draft", "AI drafts the changes to MSW handlers and tour steps")
+verify = SequenceItem("verify", "Tests and a reviewer verify every step against the real UI")

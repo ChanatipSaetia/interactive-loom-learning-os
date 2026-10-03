@@ -1,0 +1,99 @@
+root = Flowchart(
+  "Predict → Observe → Explain",
+  [learner],
+  [explainer],
+  [stepPredict, stepObserve, stepCompare],
+  [journeyMismatch, journeyMatch],
+)
+
+learner = Actor("learner", "Learner", "A user learning a concept in the docs")
+
+explainer = System(
+  "explainer",
+  "Interactive Explanation",
+  "The concept simulator or what-if scenario embedded in the docs",
+  "aggregate",
+)
+
+stepPredict = Step(
+  "step_predict",
+  "When a new situation is shown",
+  "Record a prediction of what will happen",
+  explainer,
+  [
+    Event(
+      "evt_predicted",
+      "Prediction Made",
+      "e.g. 'If I add Anna to the Sales workspace, she'll see one project.'",
+    ),
+  ],
+  learner,
+  null,
+  "step_observe",
+)
+
+stepObserve = Step(
+  "step_observe",
+  "After the prediction is recorded",
+  "Run the situation and show the real outcome",
+  explainer,
+  [Event("evt_observed", "Outcome Observed")],
+  learner,
+  null,
+  "step_compare",
+)
+
+stepCompare = Branch(
+  "step_compare",
+  "evt_observed",
+  [
+    BranchOption(
+      "branch_match",
+      "Prediction was right",
+      "If the outcome matches the prediction",
+      "Confirm and explain why it was right",
+      explainer,
+      [Event("evt_model_confirmed", "Mental Model Confirmed")],
+    ),
+    BranchOption(
+      "branch_mismatch",
+      "Prediction was wrong",
+      "If the outcome differs from the prediction",
+      "Ask the learner to explain the difference, then show the explanation",
+      explainer,
+      [
+        Event(
+          "evt_model_corrected",
+          "Mental Model Corrected",
+          "The learner noticed their model was wrong, the moment it can be corrected",
+        ),
+      ],
+    ),
+  ],
+)
+
+journeyMismatch = Journey(
+  "journey_mismatch",
+  "Wrong Prediction → Corrected Model",
+  "The most valuable path: the learner's prediction fails and their model gets fixed",
+  [
+    JourneyStep("evt_predicted", "Predict", "'Anna will see one project.'"),
+    JourneyStep("evt_observed", "Observe", "Anna sees all five Sales projects."),
+    JourneyStep(
+      "evt_model_corrected",
+      "Explain",
+      "The learner explains the difference: permissions flow down from the workspace.",
+    ),
+  ],
+)
+
+journeyMatch = Journey(
+  "journey_match",
+  "Right Prediction → Confirmed Model",
+  "The learner's model was already right and gets reinforced",
+  [
+    JourneyStep("evt_predicted", "Predict", "'Anna will see all five projects.'"),
+    JourneyStep("evt_observed", "Observe", "She does."),
+    JourneyStep("evt_model_confirmed", "Explain", "The explanation confirms why."),
+  ],
+)

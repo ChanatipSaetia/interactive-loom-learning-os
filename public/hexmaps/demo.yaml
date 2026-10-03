@@ -1,0 +1,239 @@
+topicId: "demo"
+topicTitle: "Realm of Autonomous Agents: AI Orchestration Citadel"
+capitalId: "capital"
+nodes:
+  # Ring 0: Capital Center
+  - id: "capital"
+    title: "Citadel of AI Agents: Orchestration Hub"
+    type: "capital"
+    status: "unlocked"
+    sectionRef: "intro"
+    description: "The grand citadel of autonomous intelligence. Master LLM orchestration, tool calling, memory systems, and multi-agent coordination!"
+
+  # Track 1: Knowledge Graph & Evaluation Checkpoint
+  - id: "sanctuary-concept"
+    title: "Monolith of the Knowledge Graph"
+    type: "concept_monolith"
+    status: "unlocked"
+    unlockedBy:
+      - "capital"
+    sectionRef: "concept-map"
+    healingAmount: 35
+    description: "Explore the structural relationships between Planners, Memory, Tool Registries, and LLM Orchestrators."
+
+  - id: "encounter-quiz"
+    title: "Hallucination Gremlin Outpost"
+    type: "quiz_encounter"
+    status: "locked"
+    unlockedBy:
+      - "sanctuary-concept"
+    sectionRef: "quiz"
+    description: "A mischievous Gremlin injecting hallucinations into context windows! Answer architecture questions to defeat it."
+    monster:
+      id: "gremlin-hallucination"
+      name: "Hallucination Gremlin"
+      type: "goblin"
+      maxHp: 95
+      damage: 15
+      icon: "👾"
+    rewards:
+      - id: "eval-shield"
+        name: "Aegis of Evaluation"
+        icon: "🛡️"
+        description: "A robust verification shield that filters out hallucinations."
+
+  # Track 2: Capabilities & Sequence Builder
+  - id: "sanctuary-taxonomy"
+    title: "Archive Spire of Agent Capabilities"
+    type: "archive_spire"
+    status: "unlocked"
+    unlockedBy:
+      - "capital"
+    sectionRef: "taxonomy"
+    healingAmount: 35
+    description: "Examine taxonomy classes spanning Hierarchical Orchestration, Tool Use, Memory Systems, and Reflection."
+
+  - id: "reflection-sequence"
+    title: "ReAct Execution Sequence Vault"
+    type: "reflection_decryption"
+    status: "locked"
+    unlockedBy:
+      - "sanctuary-taxonomy"
+    sectionRef: "reflection-sequence"
+    description: "Reassemble the chronological execution flow of Thought -> Action -> Observation before the cipher expires!"
+    rewards:
+      - id: "orchestrator-blade"
+        name: "Blade of ReAct Orchestration"
+        icon: "⚔️"
+        description: "A razor-sharp execution blade that cuts through multi-step agent reasoning latency."
+
+  # Track 3: Vocabulary & RAG Template Decryption
+  - id: "sanctuary-flashcards"
+    title: "Monolith of Core Terminology"
+    type: "concept_monolith"
+    status: "unlocked"
+    unlockedBy:
+      - "capital"
+    sectionRef: "flashcards"
+    healingAmount: 30
+    description: "Master foundational concepts: Prompt Injection, Tool Calling, Vector Indexing, and Context Windows."
+    rewards:
+      - id: "tome-rag"
+        name: "Tome of Context Synthesis"
+        icon: "📖"
+        description: "Chronicles verified grounded retrieval augmentation protocols."
+
+  - id: "reflection-template"
+    title: "RAG Synthesis Crypt"
+    type: "reflection_decryption"
+    status: "locked"
+    unlockedBy:
+      - "sanctuary-flashcards"
+    sectionRef: "reflection-template"
+    description: "Reconstruct the RAG synthesis template with retrieved chunk citations to unlock context knowledge."
+
+  # Deep Sanctuaries (Downstream from Tier-1 Challenges)
+  - id: "sanctuary-patterns"
+    title: "Archive Spire of Agent Design Patterns"
+    type: "archive_spire"
+    status: "locked"
+    unlockedBy:
+      - "encounter-quiz"
+    sectionRef: "taxonomy-patterns"
+    healingAmount: 35
+    description: "Study proven multi-agent design patterns: Plan-and-Execute, Map-Reduce, and Reflexion."
+
+  - id: "sanctuary-lifecycle"
+    title: "Sanctuary of the Agent Lifecycle"
+    type: "reading_sanctuary"
+    status: "locked"
+    unlockedBy:
+      - "reflection-sequence"
+    sectionRef: "lifecycle"
+    healingAmount: 35
+    description: "Deep dive into state machines, token budget management, and tool call retry policies."
+
+  - id: "sanctuary-decision"
+    title: "Grove of the Architecture Guide"
+    type: "reading_sanctuary"
+    status: "locked"
+    unlockedBy:
+      - "reflection-template"
+    sectionRef: "decision-tree"
+    healingAmount: 30
+    description: "Consult the diagnostic tree to select single-agent vs multi-agent supervisor architectures."
+
+  - id: "sanctuary-capabilities"
+    title: "Archive Spire of Agent Capabilities"
+    type: "archive_spire"
+    status: "locked"
+    unlockedBy:
+      - "sanctuary-patterns"
+    sectionRef: "capabilities"
+    healingAmount: 30
+    description: "Core checklist of production-grade agent capabilities and tool calling interfaces."
+
+  - id: "sanctuary-pillar"
+    title: "Pillar Layer Architecture Stack"
+    type: "reading_sanctuary"
+    status: "locked"
+    unlockedBy:
+      - "sanctuary-lifecycle"
+    sectionRef: "pillar-layer"
+    healingAmount: 35
+    description: "Inspect multi-tier decoupling between presentation, gateway routing, and microservice infrastructure."
+
+  - id: "sanctuary-flowchart-core"
+    title: "Simulation Nexus of Agent Architecture Flow"
+    type: "simulation_nexus"
+    status: "locked"
+    unlockedBy:
+      - "sanctuary-decision"
+    sectionRef: "flowchart"
+    healingAmount: 40
+    description: "Trace the end-to-end Event Storming flowchart of multi-agent routing and execution."
+
+  - id: "sanctuary-scenario"
+    title: "Simulation Nexus of Deployment Scenarios"
+    type: "simulation_nexus"
+    status: "locked"
+    unlockedBy:
+      - "sanctuary-capabilities"
+    sectionRef: "scenario"
+    healingAmount: 35
+    description: "Navigate branching scenario paths to choose the optimal deployment strategy."
+
+  - id: "sanctuary-flowchart-feedback"
+    title: "Simulation Nexus of Feedback Loops"
+    type: "simulation_nexus"
+    status: "locked"
+    unlockedBy:
+      - "sanctuary-pillar"
+    sectionRef: "flowchart-feedback"
+    healingAmount: 40
+    description: "Trace the Event Storming flowchart of agent self-reflection, tool retry, and user feedback."
+
+  # Workshops (Challenge Nodes)
+  - id: "workshop-tradeoffs"
+    title: "Agent Architecture Trade-off Workshop"
+    type: "tradeoff_workshop"
+    status: "locked"
+    unlockedBy:
+      - "sanctuary-flowchart-core"
+    sectionRef: "tradeoffs"
+    description: "Tune latency, token cost, and grounding accuracy trade-offs to forge tactical equipment buffs."
+    tradeoffMapping:
+      latency: "evasion"
+      accuracy: "armor"
+      cost: "chaos_shield"
+      reasoning_depth: "intelligence"
+
+  - id: "workshop-rag"
+    title: "RAG Parameter Dynamics Crucible"
+    type: "tradeoff_workshop"
+    status: "locked"
+    unlockedBy:
+      - "sanctuary-flashcards"
+    sectionRef: "formula-sandbox"
+    description: "Experiment with chunk sizes, Top-K retrieval counts, and similarity thresholds to forge stat bonuses."
+    tradeoffMapping:
+      top_k: "intelligence"
+      chunk_size: "armor"
+      temperature: "evasion"
+
+  - id: "workshop-deploy"
+    title: "Cloud vs On-Prem Deployment Forge"
+    type: "tradeoff_workshop"
+    status: "locked"
+    unlockedBy:
+      - "sanctuary-scenario"
+    sectionRef: "tradeoffs-deploy"
+    description: "Balance security, cloud cost, and local inference throughput."
+    tradeoffMapping:
+      security: "armor"
+      cost: "chaos_shield"
+      throughput: "evasion"
+
+  # Climax Boss Encounter
+  - id: "boss-lair"
+    title: "Lair of the Autonomous Overfitting Dragon"
+    type: "boss_lair"
+    status: "locked"
+    unlockedBy:
+      - "encounter-quiz"
+      - "reflection-sequence"
+      - "reflection-template"
+    description: "The supreme Overfitting Dragon! Requires the Aegis of Evaluation, Blade of ReAct, and Tome of Context Synthesis to unlock its gates."
+    requiredItems:
+      - "eval-shield"
+      - "orchestrator-blade"
+      - "tome-rag"
+    monster:
+      id: "agent-dragon"
+      name: "Autonomous Overfitting Dragon"
+      type: "boss"
+      maxHp: 270
+      damage: 42
+      icon: "🐲"
+
+

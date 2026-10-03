@@ -1,0 +1,199 @@
+topicId: "onboarding-it-web-dx"
+topicTitle: "Realm of the Open Threshold: Onboarding Citadel"
+capitalId: "capital"
+nodes:
+  # Ring 0: Capital Center
+  - id: "capital"
+    title: "Capital of the Open Threshold: Welcome Gate"
+    type: "capital"
+    status: "unlocked"
+    sectionRef: "intro"
+    description: "The gate where every newcomer's story begins. Learn why onboarding is a craft, not a checklist!"
+
+  # Side Branch: Memory Monoliths
+  - id: "lexicon-monolith"
+    title: "Lexicon of the Threshold"
+    type: "concept_monolith"
+    status: "unlocked"
+    unlockedBy:
+      - "capital"
+    sectionRef: "glossary"
+    description: "Master the vocabulary of onboarding: time-to-first-value, golden paths, pre-boarding, and ticket storms."
+
+  - id: "constellation-monolith"
+    title: "Concept Constellation"
+    type: "concept_monolith"
+    status: "locked"
+    unlockedBy:
+      - "lexicon-monolith"
+    sectionRef: "concept-map"
+    description: "Trace the semantic links between audiences, principles, methods, and measurement."
+
+  # Track 1: Doctrine & Audiences
+  - id: "audience-spire"
+    title: "Spire of the Three Newcomer Tides"
+    type: "archive_spire"
+    status: "unlocked"
+    unlockedBy:
+      - "capital"
+    sectionRef: "audience-map"
+    description: "Catalog the three onboarding audiences: Web App end users, staff & operators, and developers."
+    rewards:
+      - id: "lens-of-the-newcomer"
+        name: "Lens of the Newcomer"
+        icon: "🧂"
+        description: "A relic that shows every wall, wait, and jargon word exactly as a first-day stranger sees it."
+
+  - id: "doctrine-archive"
+    title: "Archive of the Six Principles"
+    type: "archive_spire"
+    status: "locked"
+    unlockedBy:
+      - "audience-spire"
+    sectionRef: "principles"
+    description: "Study the canonical doctrine: access first, first value week one, golden path, disclosure, anchor, measure."
+
+  - id: "doctrine-arena"
+    title: "Trial of the Doctrine"
+    type: "quiz_encounter"
+    status: "locked"
+    unlockedBy:
+      - "doctrine-archive"
+    sectionRef: "quiz-principles"
+    description: "Battle the Wiki Golem by answering with doctrine, not folklore!"
+    monster:
+      id: "wiki-golem"
+      name: "Wiki Golem"
+      type: "goblin"
+      maxHp: 100
+      damage: 15
+      icon: "📕"
+
+  - id: "sequence-vault"
+    title: "Sequencing the First Week"
+    type: "reflection_decryption"
+    status: "locked"
+    unlockedBy:
+      - "doctrine-arena"
+    sectionRef: "reflection-journey"
+    description: "Decrypt the chronological cipher: reorder the six principles before the countdown ring expires."
+
+  # Track 2: The Five Methods
+  - id: "methods-spire"
+    title: "Spire of the Five Methods"
+    type: "archive_spire"
+    status: "unlocked"
+    unlockedBy:
+      - "capital"
+    sectionRef: "methods"
+    description: "Survey the five methods and their pros and cons: handbooks, buddies, academies, tours, and sandbox quests."
+
+  - id: "methods-arena"
+    title: "Trial of the Method Choice"
+    type: "quiz_encounter"
+    status: "locked"
+    unlockedBy:
+      - "methods-spire"
+    sectionRef: "quiz-methods"
+    description: "The Bootcamp Gremlin feints with mismatched methods. Strike with the method whose pros fit the crowd!"
+    monster:
+      id: "bootcamp-gremlin"
+      name: "Bootcamp Gremlin"
+      type: "goblin"
+      maxHp: 110
+      damage: 16
+      icon: "👹"
+
+  - id: "loadout-forge"
+    title: "Onboarding Program Trade-off Workshop"
+    type: "tradeoff_workshop"
+    status: "locked"
+    unlockedBy:
+      - "methods-arena"
+    sectionRef: "method-loadout"
+    description: "Forge a 40-newcomer loadout balancing speed to value, consistency, build cost, and retention."
+    tradeoffMapping:
+      speed: "agility"
+      consistency: "wisdom"
+      cost: "fortune"
+      retention: "armor"
+
+  - id: "advisor-spire"
+    title: "Onboarding Method Advisor"
+    type: "archive_spire"
+    status: "locked"
+    unlockedBy:
+      - "loadout-forge"
+    sectionRef: "method-advisor"
+    description: "Navigate the branching advisor to match any crowd to its perfect method loadout."
+    rewards:
+      - id: "codex-of-methods"
+        name: "Codex of Methods"
+        icon: "🗝️"
+        description: "A relic whose pages rearrange until the right onboarding method for the crowd stares back."
+
+  # Track 3: Measurement & Operations
+  - id: "dashboard-stack"
+    title: "Spire of the Time-to-Value Dashboard"
+    type: "archive_spire"
+    status: "unlocked"
+    unlockedBy:
+      - "capital"
+    sectionRef: "ttv-dashboard"
+    description: "Stack the Lego layers: instrumentation, friction diagnostics, leading indicators, and the north-star clock."
+
+  - id: "provision-nexus"
+    title: "Day-1 Access Provisioning Flow"
+    type: "simulation_nexus"
+    status: "locked"
+    unlockedBy:
+      - "dashboard-stack"
+    sectionRef: "provision-flow"
+    description: "Simulate the event-stormed provisioning flow from joiner request to day-one smoke test."
+
+  - id: "monday-nexus"
+    title: "Scenario: Monday Without a Path"
+    type: "simulation_nexus"
+    status: "locked"
+    unlockedBy:
+      - "provision-nexus"
+    sectionRef: "scenario-firstday"
+    description: "Forty newcomers, a stale wiki, and one day. Every decision is graded."
+    rewards:
+      - id: "skeleton-key-first-access"
+        name: "Skeleton Key of First Access"
+        icon: "🦴"
+        description: "A relic that mints every account before day one; its teeth are SSO group rules."
+
+  # Convergence: Synthesis Vault
+  - id: "synthesis-sanctuary"
+    title: "Synthesis Vault"
+    type: "reading_sanctuary"
+    status: "locked"
+    unlockedBy:
+      - "sequence-vault"
+      - "advisor-spire"
+      - "monday-nexus"
+    sectionRef: "synthesis"
+    healingAmount: 30
+    description: "Bind the three tracks: the doctrine, the method loadout, and the measurement of first value."
+
+  # Final Boss
+  - id: "boss-lair"
+    title: "Lair of the 30-Day Ghost"
+    type: "boss_lair"
+    status: "locked"
+    unlockedBy:
+      - "synthesis-sanctuary"
+    description: "Face the realm's central failure mode: the newcomer who haunts the halls for a month, granted a desk but never a path! Requires the Lens of the Newcomer, the Codex of Methods, and the Skeleton Key of First Access."
+    requiredItems:
+      - "lens-of-the-newcomer"
+      - "codex-of-methods"
+      - "skeleton-key-first-access"
+    monster:
+      id: "thirty-day-ghost"
+      name: "The 30-Day Ghost"
+      type: "boss"
+      maxHp: 240
+      damage: 38
+      icon: "👻"

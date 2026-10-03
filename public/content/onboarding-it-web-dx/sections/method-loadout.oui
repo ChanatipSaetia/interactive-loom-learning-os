@@ -1,0 +1,211 @@
+root = TradeoffSandbox("Onboarding Program Trade-off Workshop", [onboardingProgram])
+
+onboardingProgram = TradeoffScenario(
+  "onboarding-program",
+  "Onboarding Program for 40 Mixed Newcomers",
+  [
+    TradeoffMetric("speed", "Speed to First Value", 50, 0, 100, "higher"),
+    TradeoffMetric("consistency", "Baseline Consistency", 50, 0, 100, "higher"),
+    TradeoffMetric("cost", "Build & Run Cost", 50, 0, 100, "lower"),
+    TradeoffMetric("retention", "Newcomer Retention", 50, 0, 100, "higher"),
+  ],
+  [accessPolicy, trainingMethod, supportAnchor],
+  "Monday: 40 newcomers land — 25 Web App end users, 10 internal operators, 5 platform developers. You have one quarter to stand up onboarding. Forge a loadout that gets everyone to first value without bankrupting the team.",
+)
+
+accessPolicy = TradeoffStep(
+  "access-policy",
+  "Access Provisioning Policy",
+  [selfserveJustintime, preboardAutomated, manualTickets],
+  "Principle 1: when do newcomers get their accounts, licenses, and environments?",
+  "preboard-automated",
+)
+
+selfserveJustintime = TradeoffChoice(
+  "selfserve-justintime",
+  "Self-serve signup, just in time",
+  "Every credential appears the moment the product needs it.",
+  {speed: 10, consistency: -5, cost: -15, retention: 5},
+  [
+    ProCon(
+      "Zero queue for end users and developers",
+      "Self-serve signup mints keys in minutes — the taught DX fast path.",
+    ),
+  ],
+  [
+    ProCon(
+      "Staff and operators still need curated access",
+      "Production privileges cannot be self-minted; someone still reviews them.",
+    ),
+  ],
+  null,
+  "Great for the end users and developers in the mix; never for operator production access.",
+)
+
+preboardAutomated = TradeoffChoice(
+  "preboard-automated",
+  "Automated pre-boarding: day-zero accounts via SSO groups",
+  "Joiner tickets drive SSO group rules that mint every account and license before day one.",
+  {speed: 20, consistency: 15, cost: -10, retention: 10},
+  [
+    ProCon(
+      "Monday starts at the task, not the queue",
+      "Access First: the newcomer's first hour is spent doing, not waiting.",
+    ),
+    ProCon(
+      "One ruleset for forty people",
+      "Group-driven provisioning is consistent and re-runnable for the next cohort.",
+    ),
+  ],
+  [
+    ProCon(
+      "Upfront plumbing project",
+      "The identity bridge and group rules cost a sprint to build once.",
+    ),
+  ],
+  "Principle 1 demands day-zero access for all three audiences; automation is the only way to do it for 40 people.",
+)
+
+manualTickets = TradeoffChoice(
+  "manual-tickets",
+  "Manual tickets submitted on Monday",
+  "Managers email requests; IT works the queue in arrival order.",
+  {speed: -25, consistency: -10, cost: 10, retention: -15},
+  [ProCon("No build cost at all", "The process already exists, for better or worse.")],
+  [
+    ProCon(
+      "The documented number-one onboarding killer",
+      "A blocked newcomer spends week one anxious and unproductive.",
+    ),
+  ],
+  null,
+  "Never as the primary policy — only as the fallback for bespoke one-off grants.",
+)
+
+trainingMethod = TradeoffStep(
+  "training-method",
+  "Primary Training Method",
+  [docsOnly, mixedLoadout, megaBootcamp],
+  "Which of the five methods carries the core curriculum for a mixed crowd?",
+  "mixed-loadout",
+)
+
+docsOnly = TradeoffChoice(
+  "docs-only",
+  "Docs-first handbook for everyone",
+  "One polished handbook; newcomers read and go.",
+  {speed: -5, consistency: 10, cost: 20, retention: -10},
+  [
+    ProCon(
+      "Cheap backbone, infinitely reusable",
+      "The taught pros: near-zero marginal cost and versioned durability.",
+    ),
+  ],
+  [ProCon("Passive and anchorless", "Nothing forces engagement; confused readers quit silently.")],
+  null,
+  "As the spine every other method links to — the card's own verdict — never as the only door.",
+)
+
+mixedLoadout = TradeoffChoice(
+  "mixed-loadout",
+  "Mixed loadout: tours for end users, buddy for operators, quickstart+sandbox for devs",
+  "Match the method to each audience using each card's strengths.",
+  {speed: 15, consistency: 5, cost: -15, retention: 20},
+  [
+    ProCon(
+      "Every audience gets its own first value",
+      "Task in the product, graded real change, first API call — the three archetypes served by their best-fit method.",
+    ),
+    ProCon(
+      "Costs are capped per method",
+      "Buddy load stays at 10 operators; tours carry the 25 users for free.",
+    ),
+  ],
+  [ProCon("Three programs to maintain", "More moving parts than one handbook or one bootcamp.")],
+  "The method cards' verdicts all say combine; a mixed crowd is exactly the case for per-audience loadouts.",
+)
+
+megaBootcamp = TradeoffChoice(
+  "mega-bootcamp",
+  "One cohort academy bootcamp for all 40",
+  "A week-long instructor-led academy covering everything for everyone.",
+  {speed: -10, consistency: 20, cost: -20, retention: 5},
+  [
+    ProCon(
+      "Perfectly consistent baseline",
+      "The cohort pro: nobody leaves the room knowing less than the curriculum.",
+    ),
+  ],
+  [
+    ProCon(
+      "Calendar-locked and one pace for three audiences",
+      "End users sit through auth deep-dives; developers idle through button tours.",
+    ),
+  ],
+  null,
+  "When the crowd is homogeneous and the hire dates can wait for the next batch.",
+)
+
+supportAnchor = TradeoffStep(
+  "support-anchor",
+  "Human Anchor Channel",
+  [officeHours, buddyEveryone, faqLink],
+  "Principle 5: where do questions land when the material cannot answer them?",
+  "office-hours",
+)
+
+officeHours = TradeoffChoice(
+  "office-hours",
+  "Weekly office hours + a newcomer channel with a rota",
+  "Scheduled live hours plus a staffed channel for async questions.",
+  {speed: 10, consistency: 5, cost: -5, retention: 15},
+  [
+    ProCon(
+      "Questions die at hour three, not day three",
+      "The doctrine's failure point — unanswered early questions — gets a scheduled antidote.",
+    ),
+    ProCon(
+      "Rota prevents buddy burnout",
+      "Sharing the anchor across the team avoids the taught burnout con.",
+    ),
+  ],
+  [ProCon("Someone must own the rota", "Unowned office hours quietly stop happening.")],
+  "Every self-serve method still needs the Human Anchor; office hours scale the anchor without a per-person buddy tax.",
+)
+
+buddyEveryone = TradeoffChoice(
+  "buddy-everyone",
+  "A named buddy for all 40 newcomers",
+  "Every newcomer pairs with a dedicated senior for their first month.",
+  {speed: 5, consistency: 0, cost: -25, retention: 15},
+  [
+    ProCon(
+      "Maximum psychological safety",
+      "The apprenticeship pros: trust, tacit knowledge, real-time correction.",
+    ),
+  ],
+  [
+    ProCon(
+      "Forty buddies is a focus tax on the whole org",
+      "The method card's scaling con, multiplied by four-zero.",
+    ),
+  ],
+  null,
+  "Reserve for operators and high-stakes roles; overkill for self-serve end users.",
+)
+
+faqLink = TradeoffChoice(
+  "faq-link",
+  "A FAQ link and 'ping us anytime'",
+  "The anchor is a URL and good intentions.",
+  {speed: -10, consistency: 0, cost: 10, retention: -20},
+  [ProCon("Effortless to stand up", "The link takes five minutes to write.")],
+  [
+    ProCon(
+      "Not an anchor at all",
+      "The doctrine: a FAQ link is a dead end; questions need a person.",
+    ),
+  ],
+  null,
+  "Nowhere. This is the failure mode the workshop exists to avoid.",
+)

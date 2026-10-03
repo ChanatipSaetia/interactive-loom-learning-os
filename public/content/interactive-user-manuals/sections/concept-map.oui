@@ -1,0 +1,58 @@
+root = ConceptMap(
+  "How It All Connects",
+  [
+    realSystem,
+    accessBarriers,
+    interactiveManual,
+    fidelity,
+    screenshots,
+    hotspot,
+    domCapture,
+    uiClone,
+    sandbox,
+    syntheticData,
+    asCode,
+    aiDrafting,
+    driftDetection,
+    upkeep,
+    principles,
+    watchTryTest,
+    drift,
+  ],
+  [
+    ConceptLink(accessBarriers, realSystem, "block practice on"),
+    ConceptLink(interactiveManual, realSystem, "imitates"),
+    ConceptLink(fidelity, interactiveManual, "sets realism of"),
+    ConceptLink(screenshots, fidelity, "lowest rung of"),
+    ConceptLink(sandbox, fidelity, "highest rung of"),
+    ConceptLink(hotspot, upkeep, "re-record raises"),
+    ConceptLink(domCapture, interactiveManual, "builds web"),
+    ConceptLink(uiClone, asCode, "is natively"),
+    ConceptLink(sandbox, asCode, "is natively"),
+    ConceptLink(sandbox, syntheticData, "is filled with"),
+    ConceptLink(asCode, driftDetection, "enables"),
+    ConceptLink(driftDetection, drift, "catches"),
+    ConceptLink(aiDrafting, drift, "can cause, if unverified"),
+    ConceptLink(upkeep, drift, "unpaid, leads to"),
+    ConceptLink(principles, interactiveManual, "shape"),
+    ConceptLink(principles, watchTryTest, "include"),
+  ],
+)
+
+realSystem = Concept("real_system", "Real System", "foundation")
+accessBarriers = Concept("access_barriers", "Access Barriers", "concept")
+interactiveManual = Concept("interactive_manual", "Interactive User Manual", "foundation")
+fidelity = Concept("fidelity", "Fidelity Ladder", "concept")
+screenshots = Concept("screenshots", "Screenshot Guides", "approach")
+hotspot = Concept("hotspot", "Hotspot Simulation", "approach")
+domCapture = Concept("dom_capture", "DOM Capture Demo", "approach")
+uiClone = Concept("ui_clone", "UI Clone + Mocks", "approach")
+sandbox = Concept("sandbox", "Training Sandbox", "approach")
+syntheticData = Concept("synthetic_data", "Synthetic Data", "mechanism")
+asCode = Concept("as_code", "As Code (git + CI)", "mechanism")
+aiDrafting = Concept("ai_drafting", "AI Drafting", "mechanism")
+driftDetection = Concept("drift_detection", "Drift Detection", "mechanism")
+upkeep = Concept("upkeep", "Upkeep Cost", "concept")
+principles = Concept("principles", "Creation Principles", "concept")
+watchTryTest = Concept("watch_try_test", "Watch → Try → Test", "process")
+drift = Concept("drift", "Drift (the Phantom UI)", "risk")

@@ -1,0 +1,136 @@
+root = Flowchart(
+  "Watch → Try → Test",
+  [learner],
+  [simPlayer, lms],
+  [stepWatch, stepTry, stepTryCheck, stepTest, stepRecord],
+  [journeyHappy, journeyWrongClick],
+)
+
+learner = Actor("learner", "Learner", "A staff member learning one task in the simulation")
+
+simPlayer = System(
+  "sim_player",
+  "Simulation Player",
+  "Runs the module in Watch, Try and Test modes and gives feedback",
+  "aggregate",
+)
+
+lms = System(
+  "lms",
+  "Learning Management System",
+  "Records completions, scores and wrong clicks (e.g. via xAPI)",
+  "external",
+)
+
+stepWatch = Step(
+  "step_watch",
+  "When the learner opens a task module",
+  "Play the Watch demo",
+  simPlayer,
+  [Event("evt_demo_watched", "Demo Watched", "The learner saw the task done once, step by step")],
+  learner,
+  null,
+  "step_try",
+)
+
+stepTry = Step(
+  "step_try",
+  "After the demo is watched",
+  "Attempt a step in Try mode with hints",
+  simPlayer,
+  [Event("evt_step_attempted", "Step Attempted")],
+  learner,
+  null,
+  "step_try_check",
+)
+
+stepTryCheck = Branch(
+  "step_try_check",
+  "evt_step_attempted",
+  [
+    BranchOption(
+      "branch_correct",
+      "Correct action",
+      "If the action was correct",
+      "Advance to the next step",
+      simPlayer,
+      [Event("evt_try_completed", "Guided Practice Completed")],
+      null,
+      null,
+      null,
+      "step_test",
+    ),
+    BranchOption(
+      "branch_wrong",
+      "Wrong click",
+      "If the action was wrong",
+      "Show specific feedback and a hint",
+      simPlayer,
+      [
+        Event(
+          "evt_feedback_shown",
+          "Feedback Shown",
+          "Immediate, specific feedback instead of silently doing nothing; the learner tries again",
+        ),
+      ],
+      true,
+    ),
+  ],
+)
+
+stepTest = Step(
+  "step_test",
+  "After guided practice is completed",
+  "Perform the task in Test mode without hints",
+  simPlayer,
+  [Event("evt_test_submitted", "Test Submitted")],
+  learner,
+  null,
+  "step_record",
+)
+
+stepRecord = Step(
+  "step_record",
+  "When the test is submitted",
+  "Record score and wrong clicks",
+  simPlayer,
+  [Event("evt_result_recorded", "Result Recorded")],
+  null,
+  lms,
+)
+
+journeyHappy = Journey(
+  "journey_happy",
+  "Happy Path: Watch → Try → Test",
+  "The learner watches, practises with hints, then passes the unguided test",
+  [
+    JourneyStep("evt_demo_watched", "Watch", "Watch mode demonstrates the task once"),
+    JourneyStep(
+      "evt_step_attempted",
+      "Try",
+      "Try mode lets the learner do each step, with hints available",
+    ),
+    JourneyStep(
+      "evt_try_completed",
+      "Guided practice done",
+      "Every step was performed correctly with support",
+    ),
+    JourneyStep("evt_test_submitted", "Test", "Test mode removes hints: an unguided assessment"),
+    JourneyStep("evt_result_recorded", "Recorded", "The score and wrong clicks go to the LMS"),
+  ],
+)
+
+journeyWrongClick = Journey(
+  "journey_wrong_click",
+  "Wrong Click in Try Mode",
+  "A wrong action gets immediate, specific feedback instead of silence",
+  [
+    JourneyStep("evt_demo_watched", "Watch", "The learner watches the demo"),
+    JourneyStep("evt_step_attempted", "Try", "The learner clicks the wrong control"),
+    JourneyStep(
+      "evt_feedback_shown",
+      "Feedback",
+      "The player explains why that was wrong and gives a hint, then the learner tries again",
+    ),
+  ],
+)

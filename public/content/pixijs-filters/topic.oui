@@ -1,0 +1,23 @@
+root = Topic(
+  "PixiJS Filters & Post-Processing Shaders",
+  "Architecture",
+  "Master GPU post-processing, custom fragment shaders, multi-pass convolution blurs, displacement maps, and FilterSystem architecture",
+  [
+    SectionRef("intro"),
+    SectionRef("concept-map"),
+    SectionRef("flashcards"),
+    SectionRef("quiz-vocabulary"),
+    SectionRef("reflection-foundations"),
+    SectionRef("taxonomy-browser"),
+    SectionRef("text-core"),
+    SectionRef("flowchart"),
+    SectionRef("reflection-pipeline"),
+    SectionRef("reflection-multipass"),
+    SectionRef("reflection-caching"),
+    SectionRef("decision-tree"),
+    SectionRef("tradeoff-sandbox"),
+    SectionRef("quiz-optimization"),
+    SectionRef("quiz-boss"),
+  ],
+  ["PixiJS", "WebGL", "WebGPU", "Shaders", "Post-Processing", "Filters"],
+)

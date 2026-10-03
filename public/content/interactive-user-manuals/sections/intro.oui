@@ -1,0 +1,146 @@
+root = Intro(
+  "Interactive User Manuals",
+  what,
+  why,
+  [
+    RoadmapStep(
+      "Why Learners Can't Touch the Real System",
+      "taxonomy-browser",
+      "The four barriers: least privilege, production data, irreversible actions and licence cost.",
+      "access-barriers",
+    ),
+    RoadmapStep(
+      "The Fidelity Ladder",
+      "pillar-layer",
+      "From screenshots to full sandbox: more realism costs more to build and maintain.",
+      "fidelity-ladder",
+    ),
+    RoadmapStep(
+      "Why Simulate Check",
+      "quiz",
+      "Check the barriers and the fidelity ladder.",
+      "quiz-why",
+    ),
+    RoadmapStep(
+      "Implementation Approaches",
+      "taxonomy-browser",
+      "Screenshot guides, hotspot simulations, DOM capture, UI clones and training sandboxes.",
+      "approach-catalog",
+    ),
+    RoadmapStep(
+      "Tools for Each Approach",
+      "taxonomy-browser",
+      "Scribe, Storyline, Navattic, Storybook + MSW, Playwright, Terraform, Faker and more.",
+      "tool-kit",
+    ),
+    RoadmapStep(
+      "Trade-off Sandbox: Fidelity vs Upkeep",
+      "tradeoff-sandbox",
+      "Build training for a service desk and balance realism, build speed, upkeep and automation.",
+      "approach-tradeoffs",
+    ),
+    RoadmapStep(
+      "Pick Your Approach",
+      "decision-tree",
+      "Answer four questions and get an approach recommendation.",
+      "approach-decision",
+    ),
+    RoadmapStep(
+      "Approach Check",
+      "quiz",
+      "Check the approaches, their tools and their trade-offs.",
+      "quiz-approaches",
+    ),
+    RoadmapStep(
+      "Upkeep Cost Calculator",
+      "formula-sandbox",
+      "Releases × changed screens × minutes per screen, and what reuse saves.",
+      "upkeep-cost",
+    ),
+    RoadmapStep(
+      "Maintainability Practices",
+      "bullets",
+      "Single source of truth, drift detection, version labels and shared synthetic data.",
+      "upkeep-practices",
+    ),
+    RoadmapStep(
+      "As Code & With AI",
+      "taxonomy-browser",
+      "Which approaches live in git, how screenshots become code, and where AI helps or hurts.",
+      "code-and-ai",
+    ),
+    RoadmapStep(
+      "Scenario: The Menu Moved",
+      "scenario",
+      "A release moves a button three days before launch. What do you do?",
+      "scenario-release",
+    ),
+    RoadmapStep(
+      "Order the Upkeep Loop",
+      "reflection-sequence",
+      "Put the drift loop, scripted screenshots and AI updates in order.",
+      "reflection-upkeep",
+    ),
+    RoadmapStep(
+      "Principles for Building Simulations",
+      "taxonomy-browser",
+      "Task-first, selective fidelity, realistic safe data, safe to fail, small chunks, bridge to real, accessible.",
+      "creation-principles",
+    ),
+    RoadmapStep(
+      "From Task to Simulation",
+      "bullets",
+      "Task analysis, step script, build, pilot and measure.",
+      "build-process",
+    ),
+    RoadmapStep(
+      "Watch → Try → Test",
+      "flowchart",
+      "Demo, guided practice with wrong-click feedback, then unguided test.",
+      "watch-try-test",
+    ),
+    RoadmapStep(
+      "Principles Check",
+      "quiz",
+      "Check the creation principles, the build process and the three modes.",
+      "quiz-principles",
+    ),
+    RoadmapStep(
+      "How It All Connects",
+      "concept-map",
+      "Barriers, approaches, upkeep and drift on one map.",
+      "concept-map",
+    ),
+    RoadmapStep(
+      "Glossary",
+      "flashcards",
+      "Key terms: least privilege, fidelity, hotspot, DOM, MSW, SCORM/xAPI, drift and more.",
+      "glossary",
+    ),
+    RoadmapStep(
+      "Plan Your Simulation",
+      "reflection-template",
+      "Fill in the blanks across all four tracks before facing the boss.",
+      "plan-your-sim",
+    ),
+  ],
+  "Teach people to use IT systems and software in a safe copy, when they can't touch the real thing",
+  "45 min",
+)
+
+what = IntroWhat(
+  "Trainees often aren't allowed to touch the real software: they lack the role, it holds real people's data, or one wrong click sends real money. This topic covers why we simulate, the five ways to build a simulation and the tools for each, how to keep it matching the real software release after release (including as code and with AI), and the principles that make a simulation actually teach.",
+  "An interactive user manual is a simulation of a software system that lets people practise real tasks (clicking, typing, making mistakes) without using the live system.",
+  [
+    "Why simulate: least privilege, production data, irreversible actions and licence cost",
+    "Five approaches, from screenshot guides to hotspot simulations, DOM capture, UI clones and training sandboxes, and their tools",
+    "Maintainability: upkeep cost, drift detection, version labels, and what can be done as code or with AI",
+    "Creation principles: task-first, selective fidelity, safe to fail, and Watch → Try → Test",
+  ],
+  ["documentation", "training", "simulation", "software-adoption", "maintainability"],
+)
+
+why = IntroWhy(
+  "A manual people can practise in beats a manual people read, but only while it still matches the real software.",
+  "Teams that pick an approach without thinking about upkeep end up with the Drifted Phantom UI: a simulation of screens that no longer exist, which trains people to do the wrong thing with confidence.",
+)

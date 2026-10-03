@@ -19,6 +19,8 @@ done
 MAX=21
 MODEL=""
 ENGINE="${ENGINE:-opencode}"
+THINKING="${THINKING:-true}"
+VARIANT="${VARIANT:-}"
 
 POSITIONAL=()
 while [[ $# -gt 0 ]]; do
@@ -38,6 +40,22 @@ while [[ $# -gt 0 ]]; do
         --opencode)
             ENGINE="opencode"
             shift
+            ;;
+        --thinking)
+            THINKING="true"
+            shift
+            ;;
+        --no-thinking)
+            THINKING="false"
+            shift
+            ;;
+        --variant=*)
+            VARIANT="${1#*=}"
+            shift
+            ;;
+        --variant)
+            VARIANT="$2"
+            shift 2
             ;;
         *)
             POSITIONAL+=("$1")
@@ -61,6 +79,14 @@ done
 MODEL_FLAG=""
 if [ -n "$MODEL" ]; then
     MODEL_FLAG="--model $MODEL"
+fi
+
+OPENCODE_EXTRA_FLAGS=()
+if [ "$THINKING" = "true" ]; then
+    OPENCODE_EXTRA_FLAGS+=("--thinking")
+fi
+if [ -n "$VARIANT" ]; then
+    OPENCODE_EXTRA_FLAGS+=("--variant" "$VARIANT")
 fi
 
 iteration=0
@@ -94,13 +120,18 @@ log "=== Ralph Loop: $PROJECT started ==="
 log "Engine: $ENGINE"
 log "Max iterations: $MAX"
 [ -n "$MODEL_FLAG" ] && log "Model override: $MODEL" || log "Model: ($ENGINE default)"
+if [ "$ENGINE" = "opencode" ]; then
+    log "Thinking stream: $THINKING"
+    [ -n "$VARIANT" ] && log "Reasoning variant: $VARIANT"
+fi
 
 if ! command -v "$ENGINE" &>/dev/null; then
     log "ERROR: Command '$ENGINE' not found in PATH."
     exit 1
 fi
 
-if [ ! -d .git ]; then
+# rev-parse (not [ -d .git ]) so git worktrees, where .git is a file, are recognised
+if ! git rev-parse --git-dir &>/dev/null; then
     git init
     git add -A
     git commit -m "chore: initial commit before ralph loop" || true
@@ -113,28 +144,90 @@ if ! gh auth status &>/dev/null; then
 fi
 
 BOT_LISTENER_PID=""
-if [ -f bot-listener.sh ]; then
-    rm -f /tmp/ralph-bot-listener.pid
-    ./bot-listener.sh $$ &
-    BOT_LISTENER_PID=$!
-    log "[bot] Telegram listener started (PID: $BOT_LISTENER_PID)"
-    ./notify.sh "Ralph Loop started! Project: $PROJECT | Engine: $ENGINE | Max: $MAX | Use /status /log /llama /stop"
-fi
+start_bot_listener() {
+    if [ -f bot-listener.sh ]; then
+        rm -f "/tmp/ralph-bot-listener-${PROJECT}.pid" 2>/dev/null
+        ./bot-listener.sh $$ &
+        BOT_LISTENER_PID=$!
+        sleep 0.3
+        if kill -0 "$BOT_LISTENER_PID" 2>/dev/null; then
+            log "[bot] Telegram listener active (PID: $BOT_LISTENER_PID)"
+        else
+            log "[bot] Telegram listener failed to start — check credentials or /tmp pidfile"
+        fi
+    fi
+}
+
+start_bot_listener
+./notify.sh "Ralph Loop started! Project: $PROJECT | Engine: $ENGINE | Max: $MAX | Use /status /log /llama /stop"
+
+echo $$ > "/tmp/ralph-${PROJECT}.pid"
 
 cleanup() {
+    rm -f "/tmp/ralph-${PROJECT}.pid" 2>/dev/null
     if [ -n "$AGENT_PID" ] && kill -0 "$AGENT_PID" 2>/dev/null; then
-        kill "$AGENT_PID" 2>/dev/null
+        pkill -TERM -P "$AGENT_PID" 2>/dev/null || true
+        kill -TERM "$AGENT_PID" 2>/dev/null || true
+        sleep 0.1
+        pkill -9 -P "$AGENT_PID" 2>/dev/null || true
+        kill -9 "$AGENT_PID" 2>/dev/null || true
         log "[ralph] $ENGINE child stopped"
     fi
     if [ -n "$BOT_LISTENER_PID" ] && kill -0 "$BOT_LISTENER_PID" 2>/dev/null; then
-        kill "$BOT_LISTENER_PID" 2>/dev/null
+        pkill -TERM -P "$BOT_LISTENER_PID" 2>/dev/null || true
+        kill -TERM "$BOT_LISTENER_PID" 2>/dev/null || true
+        sleep 0.1
+        kill -9 "$BOT_LISTENER_PID" 2>/dev/null || true
         log "[bot] Telegram listener stopped"
     fi
 }
 trap cleanup EXIT
+# INT/TERM must exit, otherwise the handler returns and the loop moves on to the next iteration
+trap 'exit 130' INT TERM
+
+# Pick the oldest ready-for-agent issue whose "## Blocked by" issues are all closed.
+# Sets REMAINING, CURRENT_ISSUE, CURRENT_ISSUE_NUM, ISSUE_BODY.
+# Returns 0 = picked, 1 = none left, 2 = gh error, 3 = every remaining issue is blocked.
+pick_issue() {
+    local issues num title blockers blocker state
+    issues=$(gh issue list --label ready-for-agent --state open --limit 100 --json number,title,body 2>/dev/null) || return 2
+    REMAINING=$(jq 'length' <<<"$issues") || return 2
+    [ "$REMAINING" -eq 0 ] && return 1
+
+    while IFS=$'\t' read -r num title; do
+        blockers=$(jq -r --argjson n "$num" '.[] | select(.number == $n) | .body' <<<"$issues" |
+            awk '/^## Blocked by/ { f = 1; next } /^## / { f = 0 } f' |
+            grep -o '#[0-9]\+' | tr -d '#' | sort -u)
+        blocker=""
+        for b in $blockers; do
+            state=$(gh issue view "$b" --json state --jq '.state' 2>/dev/null || echo "UNKNOWN")
+            if [ "$state" != "CLOSED" ]; then
+                blocker="$b"
+                break
+            fi
+        done
+        if [ -z "$blocker" ]; then
+            CURRENT_ISSUE_NUM="$num"
+            CURRENT_ISSUE="#$num $title"
+            ISSUE_BODY=$(jq -r --argjson n "$num" '.[] | select(.number == $n) | .body' <<<"$issues")
+            return 0
+        fi
+        log "Skipping #$num — blocked by open issue #$blocker"
+    done < <(jq -r 'sort_by(.number) | .[] | "\(.number)\t\(.title)"' <<<"$issues")
+
+    return 3
+}
 
 while [ $iteration -lt $MAX ]; do
     iteration=$((iteration + 1))
+
+    # Health check: ensure bot listener is running, restart if it died
+    if [ -f bot-listener.sh ]; then
+        if [ -z "$BOT_LISTENER_PID" ] || ! kill -0 "$BOT_LISTENER_PID" 2>/dev/null; then
+            log "[bot] Telegram listener was not running — restarting..."
+            start_bot_listener
+        fi
+    fi
 
     STEERING_FLAG=""
     if [ -f STEERING.md ]; then
@@ -142,18 +235,24 @@ while [ $iteration -lt $MAX ]; do
         log "[steering] STEERING.md detected"
     fi
 
-    # Count remaining ready-for-agent issues
-    REMAINING=$(gh issue list --label ready-for-agent --state open --json number --jq 'length' 2>/dev/null || echo "0")
-
-    if [ "$REMAINING" -eq 0 ]; then
-        log "No more ready-for-agent issues!"
-        ./notify.sh "Loop complete! All ready-for-agent issues processed after $((iteration - 1)) iterations. Project: $PROJECT"
-        break
-    fi
-
-    # Get the oldest ready-for-agent issue
-    CURRENT_ISSUE=$(gh issue list --label ready-for-agent --state open --search "sort:created" --json number,title --jq '.[-1] | "#\(.number) \(.title)"' 2>/dev/null || echo "unknown")
-    CURRENT_ISSUE_NUM=$(echo "$CURRENT_ISSUE" | grep -o '#[0-9]*' | tr -d '#')
+    pick_issue
+    case $? in
+        1)
+            log "No more ready-for-agent issues!"
+            ./notify.sh "Loop complete! All ready-for-agent issues processed after $((iteration - 1)) iterations. Project: $PROJECT"
+            break
+            ;;
+        2)
+            log "ERROR: could not list issues via gh — stopping (check network / gh auth)"
+            ./notify.sh "Loop STOPPED: gh issue list failed after $((iteration - 1)) iterations. Project: $PROJECT"
+            break
+            ;;
+        3)
+            log "All $REMAINING remaining ready-for-agent issues are blocked by open issues — stopping"
+            ./notify.sh "Loop STOPPED: all $REMAINING remaining issues are blocked. Project: $PROJECT"
+            break
+            ;;
+    esac
 
     log "========================================="
     log "Iteration $iteration / $MAX | Remaining: $REMAINING | Issue: $CURRENT_ISSUE"
@@ -166,26 +265,35 @@ while [ $iteration -lt $MAX ]; do
         stuck_count=1
     fi
 
-    if [ "$stuck_count" -ge 5 ]; then
-        log "BLOCKED: $CURRENT_ISSUE failed $stuck_count iterations in a row — tagging as needs-info"
+    # Picked for the 6th time in a row = 5 failed attempts; park it instead of running it again
+    if [ "$stuck_count" -gt 5 ]; then
+        log "BLOCKED: $CURRENT_ISSUE failed $((stuck_count - 1)) iterations in a row — tagging as needs-info"
         gh issue edit "$CURRENT_ISSUE_NUM" --remove-label "ready-for-agent" --add-label "needs-info" 2>/dev/null
-        ./notify.sh "BLOCKED: $CURRENT_ISSUE failed $stuck_count times. Tagged as needs-info, moving to next issue."
+        ./notify.sh "BLOCKED: $CURRENT_ISSUE failed $((stuck_count - 1)) times. Tagged as needs-info, moving to next issue."
+        stuck_issue=""
         stuck_count=0
+        continue
     fi
 
-    # Fetch the issue body for context
-    ISSUE_BODY=$(gh issue view "$CURRENT_ISSUE_NUM" --json body --jq '.body' 2>/dev/null || echo "")
+    # Collect existing context files to attach
+    CONTEXT_FILES=()
+    [ -f progress.txt ] && CONTEXT_FILES+=("@progress.txt")
+    [ -f AGENTS.md ] && CONTEXT_FILES+=("@AGENTS.md")
+    [ -f prompt.md ] && CONTEXT_FILES+=("@prompt.md")
+    [ -f prd.json ] && CONTEXT_FILES+=("@prd.json")
+    [ -f STEERING.md ] && CONTEXT_FILES+=("@STEERING.md")
 
-    # Run selected engine — output to terminal and log
+    # Run selected engine with live streaming output to console and log file
+    # Use process substitution so $! captures the actual engine PID, not tee
     if [ "$ENGINE" = "agy" ]; then
-        agy -p "Implement issue $CURRENT_ISSUE. Issue body: $ISSUE_BODY. Read progress.txt, AGENTS.md, prompt.md, and STEERING.md (if present) and follow the instructions in prompt.md exactly." \
+        PYTHONUNBUFFERED=1 agy -p "Implement issue $CURRENT_ISSUE. Issue body: $ISSUE_BODY. Read progress.txt, AGENTS.md, prompt.md, and STEERING.md (if present) and follow the instructions in prompt.md exactly." \
             $MODEL_FLAG --dangerously-skip-permissions \
-            2>&1 | tee -a "$LOOP_LOG" &
+            > >(tee -a "$LOOP_LOG") 2>&1 &
     else
-        opencode run $MODEL_FLAG \
-            @progress.txt @AGENTS.md @prompt.md $STEERING_FLAG . \
+        PYTHONUNBUFFERED=1 opencode run $MODEL_FLAG --auto "${OPENCODE_EXTRA_FLAGS[@]}" \
+            "${CONTEXT_FILES[@]}" . \
             "Implement issue $CURRENT_ISSUE. Issue body: $ISSUE_BODY. Follow the instructions in prompt.md exactly." \
-            2>&1 | tee -a "$LOOP_LOG" &
+            > >(tee -a "$LOOP_LOG") 2>&1 &
     fi
     AGENT_PID=$!
     wait $AGENT_PID || true

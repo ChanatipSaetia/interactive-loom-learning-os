@@ -1,0 +1,109 @@
+root = TaxonomyBrowser(
+  "The Five Onboarding Methods — Pros & Cons",
+  [docsFirstHandbook, buddyApprenticeship, cohortAcademy, selfServeInAppTours, sandboxQuests],
+)
+
+docsFirstHandbook = TaxonomyCategory(
+  "Docs-First Handbook",
+  "Wikis, handbooks & runbooks",
+  "BookOpen",
+  "green",
+  "The classic: a written, searchable path — quickstart, handbook, runbooks — that newcomers read and follow at their own pace.",
+  "PROS: cheapest per learner and infinitely reusable; searchable and versionable; survives every hire and reorg; scales to any headcount without scheduling. CONS: passive — nothing forces engagement, and 'did you read the wiki?' is the epitaph of a thousand failed onboardings; rots within a sprint if not owned in CI; tells you how to fish but not which lake; zero human connection, so confused readers quit silently. Verdict: the backbone every other method links back to, but never the only method.",
+  "A well-written restaurant menu: necessary, referenceable, cheap to reprint — but nobody learns to cook from the menu alone.",
+  "Self-paced, searchable written path",
+  [
+    "PRO — near-zero marginal cost per new learner, scales to thousands",
+    "PRO — searchable, versioned, and reviewable like code (docs-as-code)",
+    "PRO — the durable reference every other method points to",
+  ],
+  [
+    "CON — passive: no engagement guarantee, quiet quit-points",
+    "CON — rots fast without a CI-owned maintainer",
+    "CON — no human anchor for the questions between the lines",
+  ],
+)
+
+buddyApprenticeship = TaxonomyCategory(
+  "Buddy Apprenticeship",
+  "One-on-one shadowing & pairing",
+  "Users",
+  "peach",
+  "A named senior person adopts the newcomer: shadowing first, then the buddy watches the newcomer drive real tasks.",
+  "PROS: carries the tacit knowledge no handbook holds (which dashboards matter, who to ping, what 'usually fine' means); instant feedback loop; strongest retention and trust of any method; naturally enforces the Human Anchor principle. CONS: does not scale — each buddy carries one or two newcomers at a time and pays real focus tax on their own work; quality varies entirely with the buddy's people skills; informal versions burn out the friendliest senior engineer. Verdict: the gold standard for internal staff and operators; use it deliberately and cap the load per buddy.",
+  "Flight school dual controls: the fastest way to competence, but every hour consumes a certified instructor.",
+  "Tacit knowledge transfer through pairing",
+  [
+    "PRO — transmits tribal knowledge, judgment, and escalation culture",
+    "PRO — highest engagement, retention, and psychological safety",
+    "PRO — real-time correction of bad habits before they set",
+  ],
+  [
+    "CON — does not scale; heavy focus tax on senior staff",
+    "CON — quality is as good as the busiest volunteer",
+    "CON — informal buddy systems quietly burn out helpers",
+  ],
+)
+
+cohortAcademy = TaxonomyCategory(
+  "Cohort Academy",
+  "Batch training & bootcamps",
+  "GraduationCap",
+  "yellow",
+  "Scheduled batches — a week-one bootcamp, a weekly class, an internal academy — where a group learns the system together with an instructor and shared exercises.",
+  "PROS: guarantees a consistent, complete baseline for every newcomer; scheduled time is protected time, so engagement is high; creates a peer cohort — the loneliest onboarding failure cured instantly; instructor accumulates and improves the material. CONS: expensive per head (instructor hours, rooms, prep); calendar-locked — a solo hire waits weeks for the next batch or drowls alone; pace is set by the slowest attendee; content goes stale unless someone owns revisions. Verdict: ideal for campus hires and platform rollouts to many teams at once; terrible for the one senior developer joining Tuesday.",
+  "Trade school: brilliant cohort energy and a certified baseline, but the semester starts in September whether you like it or not.",
+  "Consistent baseline via scheduled group instruction",
+  [
+    "PRO — guaranteed consistent curriculum for every newcomer",
+    "PRO — peer cohort cures isolation and seeds future help networks",
+    "PRO — protected calendar time drives real engagement",
+  ],
+  [
+    "CON — high per-head cost and instructor burden",
+    "CON — calendar-locked: bad fit for lone or urgent hires",
+    "CON — one pace fits all; fast learners idle, slow learners drown",
+  ],
+)
+
+selfServeInAppTours = TaxonomyCategory(
+  "Self-Serve In-App Tours",
+  "First-run checklists & overlay tours",
+  "Footprints",
+  "sky",
+  "Onboarding built into the product itself: first-run checklists, overlay tours, and empty-state coaching that teach while the newcomer does the real task.",
+  "PROS: teaches inside the artifact at the moment of need — the purest form of progressive disclosure; zero marginal cost per learner and instant updates for every user at once; measurable to the click (completion, drop-off, time-to-activation); the only method that scales to millions of end users. CONS: engineering and design cost up front; fragile against UI churn (stale tours mispoint at buttons); covering every feature in tours breeds banner blindness and 'skip all'; cannot carry judgment, edge cases, or why. Verdict: the default for Web App end users and self-serve DX; pair it with docs for depth and a human anchor for doubt.",
+  "Video-game tutorial levels: learn the controls by playing the first room, not by reading the box.",
+  "Learning by doing inside the live product",
+  [
+    "PRO — scales to any user count with near-zero marginal cost",
+    "PRO — teach at the exact moment of need; fully instrumentable",
+    "PRO — shipping a fix to the tour reaches every user instantly",
+  ],
+  [
+    "CON — upfront engineering cost and UI-churn fragility",
+    "CON — tour fatigue: users learn to click 'skip all'",
+    "CON — cannot teach judgment, policy, or the edge cases",
+  ],
+)
+
+sandboxQuests = TaxonomyCategory(
+  "Sandbox Quests",
+  "Gamified playgrounds & boss tasks",
+  "Gamepad2",
+  "mauve",
+  "A safe, seeded practice environment where onboarding is a game: a quest board of graded challenges, hidden Easter eggs, and a final 'boss' task that proves competence.",
+  "PROS: learning by doing with zero blast radius — newcomers break the sandbox happily and remember why; intrinsically motivating and genuinely fun, the anti-dread onboarding; exposes the curious, who explore past the minimum path and become future experts. CONS: the most expensive method to build and the most expensive to keep fresh (seeded data rots, environments drift, quests go stale); grading and cheating need design; can trivialize if the quests are shallow or feel like chores with pixel art. Verdict: spectacular as the spine of a cohort academy or a DX platform trial; wasteful as the only door for a user who just needs to do their job today.",
+  "A driving course with traffic cones and an inflatable wall: all the reflexes of the real road, none of the funerals.",
+  "Motivated competence-building through safe failure",
+  [
+    "PRO — safe-to-break practice with memorable, hands-on learning",
+    "PRO — high motivation; surfaces the curious future experts",
+    "PRO — graded quests make competence objective, not vibes",
+  ],
+  [
+    "CON — highest build cost and constant environment-freshness tax",
+    "CON — shallow quests become pixel-art chores fast",
+    "CON — overkill when the learner just needs today's task done",
+  ],
+)

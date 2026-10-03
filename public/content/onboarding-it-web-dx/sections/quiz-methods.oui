@@ -1,0 +1,157 @@
+root = Quiz("Trial of the Method Choice", [q1, q2, q3, q4, q5, q6])
+
+q1 = QuizQuestion(
+  "q1",
+  "Which is a documented CON of the Docs-First Handbook method?",
+  [
+    QuizChoice(
+      "a",
+      "It cannot teach judgment, policy, or the edge cases between the lines",
+      true,
+      "Correct. The method card lists 'no human anchor for the questions between the lines' — handbooks tell you how to fish but not which lake, and confused readers quit silently.",
+    ),
+    QuizChoice(
+      "b",
+      "It requires a certified instructor per learner",
+      false,
+      "Instructor cost belongs to Cohort Academy and Buddy Apprenticeship; the handbook's marginal cost per learner is near zero.",
+    ),
+    QuizChoice(
+      "c",
+      "It is calendar-locked to a quarterly bootcamp",
+      false,
+      "Calendar-locking is the Cohort Academy con; handbooks are readable any time of day, which is exactly their strength.",
+    ),
+  ],
+  "Think about what nobody can force a reader to do.",
+)
+
+q2 = QuizQuestion(
+  "q2",
+  "Your platform team must onboard hundreds of thousands of free-tier developers. Which method's pros make it the only one that scales?",
+  [
+    QuizChoice(
+      "a",
+      "Buddy Apprenticeship — pairing every developer with a staff engineer",
+      false,
+      "Buddy is explicitly the method that does not scale: one or two newcomers per busy senior, ever.",
+    ),
+    QuizChoice(
+      "b",
+      "Self-Serve In-App Tours / self-serve checklists and playgrounds in the product",
+      true,
+      "Correct. In-product self-serve teaching carries near-zero marginal cost per learner and reaches every user instantly — the only option at hundred-thousand scale.",
+    ),
+    QuizChoice(
+      "c",
+      "Cohort Academy — run bigger and bigger bootcamps",
+      false,
+      "Cohorts are high-cost per head and calendar-locked; scaling bootcamps to a mass long-tail is the documented con.",
+    ),
+  ],
+  "Near-zero marginal cost per learner, and it ships in the product.",
+)
+
+q3 = QuizQuestion(
+  "q3",
+  "A new SRE joins the on-call rotation. The team chooses a named senior engineer to shadow first, then watch her drive real incidents. Which method, and which con should the team guard against?",
+  [
+    QuizChoice(
+      "a",
+      "Buddy Apprenticeship — guard against burning out the busiest senior volunteer",
+      true,
+      "Correct. Shadow-then-drive is Buddy Apprenticeship; its taught cons are the focus tax on senior staff and informal buddies quietly burning out.",
+    ),
+    QuizChoice(
+      "b",
+      "Sandbox Quests — guard against seeded data going stale",
+      false,
+      "Real incidents with a watching senior are not a safe sandbox; the described method is pairing, and its risk is helper burnout, not stale seed data.",
+    ),
+    QuizChoice(
+      "c",
+      "Docs-First Handbook — guard against the wiki rotting",
+      false,
+      "A named human shadowing and watching is the definition of apprenticeship, not handbooks; wiki rot is the docs-first con.",
+    ),
+  ],
+  "The method is flight-school dual controls; the con is paid in senior focus.",
+)
+
+q4 = QuizQuestion(
+  "q4",
+  "After a UI redesign, half your activation checklist steps point at buttons that no longer exist. This is the documented con of which method?",
+  [
+    QuizChoice(
+      "a",
+      "Self-Serve In-App Tours — UI-churn fragility",
+      true,
+      "Correct. Tour fragility against UI churn is the taught con: overlay steps and checklists mispoint the moment the interface moves.",
+    ),
+    QuizChoice(
+      "b",
+      "Cohort Academy — instructor knowledge going stale",
+      false,
+      "Instructor staleness is a cohort con, but mispointing checklist steps after a redesign is the in-app tour's signature failure.",
+    ),
+    QuizChoice(
+      "c",
+      "Buddy Apprenticeship — buddies teaching old habits",
+      false,
+      "Buddies passing on old habits is not what broke here; clickable overlays anchored to removed UI is the documented tour fragility.",
+    ),
+  ],
+  "The method that teaches inside the artifact is fragile to the artifact changing.",
+)
+
+q5 = QuizQuestion(
+  "q5",
+  "A company wants onboarding to be 'the most fun, hands-on week of your life' for 30 platform-engineer campus hires, with a budget and a six-week runway. Which method's pros fit best?",
+  [
+    QuizChoice(
+      "a",
+      "Sandbox Quests — safe failure, high motivation, objective graded competence",
+      true,
+      "Correct. Gamified sandbox quests deliver zero-blast-radius practice and motivating graded challenges — the documented pros — and a budgeted batch of 30 with runway fits its high build cost.",
+    ),
+    QuizChoice(
+      "b",
+      "Docs-First Handbook — print the quest descriptions",
+      false,
+      "Handbooks are the passive low-cost backbone; the described experience — breaking a seeded playground and beating a boss task — is the sandbox quest method.",
+    ),
+    QuizChoice(
+      "c",
+      "Self-Serve In-App Tours — because tours are free",
+      false,
+      "Tours teach today's task in the live product; the cohort of 30 with budget and runway is the classic sandbox-quest fit, quests and all.",
+    ),
+  ],
+  "Safe-to-break playground, quest board, final boss task.",
+)
+
+q6 = QuizQuestion(
+  "q6",
+  "According to the method cards, what is the recommended way to use Docs-First handbooks?",
+  [
+    QuizChoice(
+      "a",
+      "As the backbone every other method links back to — never the only method",
+      true,
+      "Correct. The verdict: durable reference backbone, but passive on its own — combine it with tours, buddies, or cohorts.",
+    ),
+    QuizChoice(
+      "b",
+      "As the sole onboarding method for developer audiences",
+      false,
+      "The card explicitly warns 'never the only method' — handbooks have no human anchor and nothing forces engagement.",
+    ),
+    QuizChoice(
+      "c",
+      "Only for operators, never for end users",
+      false,
+      "The card assigns no audience restriction; its rule is about being a backbone, not a solo door.",
+    ),
+  ],
+  "Read the verdict line.",
+)

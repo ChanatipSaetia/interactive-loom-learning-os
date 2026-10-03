@@ -163,6 +163,28 @@ Bounded Contexts define the solution space boundaries. Each Bounded Context main
 
 ---
 
+#### E. Hex Map Context (Generic — independent of section content)
+* **Role:** Independent bounded context owning campaign map topology as authorable data and coordinate layout geometry. It is **NOT** a section type and has no structural dependency on the content format — a topic without a map remains a valid topic.
+* **Ubiquitous Language:** `HexCampaign`, `HexNode`, `HexNodeType` (`capital`, `reading_sanctuary`, `quiz_encounter`, `reflection_decryption`, `tradeoff_workshop`, `boss_lair`), `HexGridCoordinate` (axial `(q, r)`), `Section Reference`.
+* **Validation Delegation:** Registers its `HexCampaignSchema` (Tier 2 structural) and semantic validators (coordinate uniqueness, capital connectivity, boss solvability, section-ref resolution) with the `ValidationGatewayContext` (`validateHexCampaign`).
+* **Data location:** `public/hexmaps/<topicId>.yaml` — map topology, monsters, item rewards, boss `requiredItems`, and section references only. A node's `sectionRef` names an OpenUI section file of the same topic (`public/content/<topicId>/sections/<sectionRef>.oui`).
+
+---
+
+#### F. Gamification Campaign Context (Supporting)
+* **Role:** Supporting subdomain runtime orchestrating a learner's gameplay of a `HexCampaign`: character attributes, HP, combat resolution, node unlocks, System Chaos, XP/leveling, temporary buffs, item inventory, and badge awards. Consumes validated payloads from the `ValidationGatewayContext` (similar to `CompositionEngineContext`).
+* **Ubiquitous Language:** `GlobalCharacterState`, `TopicCampaignState`, `CharacterAttributes` (Armor, Evasion, Intelligence), `MonsterData`, `ItemReward`, `CombatTurnResult`, `LevelProgressResult`.
+* **Ports & Adapters Architecture:**
+  * **Driving (Inbound) Ports:** `GamificationRuntimePort` (or `useGamification()` hook) allowing host views (`/campaign`, `/campaign/:topicId`, `/gamification-demo`) to trigger gameplay actions (`takeTurn`, `unlockNode`, `restAtSanctuary`).
+  * **Driven (Outbound) Ports:**
+    * `HexCampaignSourcePort` (input): Loads validated campaign data (`loadCampaign(topicId): HexCampaign | null`). Implemented by `ValidationGatewayCampaignAdapter`, which reads the YAML through `HttpHexMapStorageAdapter` (`src/core/delivery/adapters/hexmap-storage.ts`) and validates it with the Validation Gateway. Section content for each node comes from the OpenUI topic bundle (`useTopicBundle`).
+    * `CharacterStatePort` (persistence): Saves and loads player state (`loadState()`, `saveState()`). Implemented by `LocalStorageCharacterAdapter` and `MemoryCharacterAdapter`.
+    * `AssessmentEventSubscriberPort` (learning sync): Subscribes to learning events (`SectionCompleted`, `QuizAnswered`) to award XP/items.
+* **Degradation & Fallback:** Maintains `lastValidData` for the active campaign so map edits or transient validation errors in authoring mode never crash active gameplay.
+* **Current code:** [src/core/supporting/gamification/](file:///home/chanatip/interactive_loom_learning_os/src/core/supporting/gamification) — `game-rules.ts` (pure domain functions), `types.ts`, `layout.ts`, `components/`.
+
+---
+
 ## 3. Contract Specifications
 
 ### 📜 1. The Section Contract Specification (Open Host Service)

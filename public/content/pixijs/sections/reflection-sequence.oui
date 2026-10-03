@@ -1,0 +1,37 @@
+root = ReflectionSequence("Render Loop Sequencing", [challenge1])
+
+challenge1 = SequenceChallenge(
+  "Arrange the stages of the PixiJS Render Loop in correct chronological order from frame tick to screen output:",
+  [item3, item1, item5, item2, item4],
+  [item1, item2, item3, item4, item5],
+)
+
+item3 = SequenceItem(
+  "item-3",
+  "Renderer traverses display tree, evaluating visibility, alpha, and culling",
+  "Eye",
+)
+
+item1 = SequenceItem(
+  "item-1",
+  "Ticker receives requestAnimationFrame and computes frame delta time",
+  "Clock",
+)
+
+item5 = SequenceItem(
+  "item-5",
+  "WebGL driver binds shader program and issues batched drawElements call to swap framebuffer",
+  "Monitor",
+)
+
+item2 = SequenceItem(
+  "item-2",
+  "Scene graph multiplies local matrices into absolute worldTransform properties",
+  "Layers",
+)
+
+item4 = SequenceItem(
+  "item-4",
+  "BatchRenderer packs sprite quad vertices, UVs, and texture indices into vertex buffers",
+  "Package",
+)

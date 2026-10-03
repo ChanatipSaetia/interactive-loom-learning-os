@@ -1,0 +1,95 @@
+root = TaxonomyBrowser(
+  "Filter Categories & Shader Effects",
+  [
+    spatialConvolutionBlurs,
+    colorTonalGrading,
+    geometricCoordinateWarping,
+    stylizedEdgeEffects,
+    customGlslWgslShaders,
+  ],
+)
+
+spatialConvolutionBlurs = TaxonomyCategory(
+  "Spatial & Convolution Blurs",
+  "Gaussian, Kawase, and Directional Blurs",
+  "Sparkles",
+  "sky",
+  "Algorithms that blend adjacent pixel neighborhoods to create defocus, motion blur, and soft glowing aesthetics.",
+  "Includes BlurFilter (separable 2-pass Gaussian), KawaseBlurFilter (fast multi-pass box offset), MotionBlurFilter, and ZoomBlurFilter.",
+  "Like viewing the world through frosted glass or a camera lens shifted out of focus.",
+  "Softening edges, depth of field, UI glassmorphism, and atmospheric glow",
+  [
+    "Multi-pass ping-pong texture sampling",
+    "Configurable kernel size and sampling quality",
+    "Separable horizontal and vertical convolution passes",
+  ],
+  ["Directional pixel displacement or geometric warping"],
+)
+
+colorTonalGrading = TaxonomyCategory(
+  "Color & Tonal Grading",
+  "Matrix Transformations & Tonal Grading",
+  "Palette",
+  "mauve",
+  "Single-pass shader operations that transform RGBA color vectors for artistic color correction, grading, and visual state indicators.",
+  "Includes ColorMatrixFilter (5x4 linear color matrix), AdjustmentFilter (gamma, saturation, contrast), AlphaFilter, and ColorOverlayFilter.",
+  "Like placing colored optical filters or vintage film lenses over a camera.",
+  "Fast single-pass color manipulation, damage effects, day/night cycles, and retro color palettes",
+  [
+    "Instantaneous matrix multiplication on RGBA vectors",
+    "Single-pass zero ping-pong overhead",
+    "Built-in presets (sepia, grayscale, invert, polaroid, night)",
+  ],
+  ["Sampling neighboring pixel coordinates"],
+)
+
+geometricCoordinateWarping = TaxonomyCategory(
+  "Geometric & Coordinate Warping",
+  "UV Coordinate Distortion & Refraction",
+  "Waves",
+  "teal",
+  "Filters that read secondary texture maps or mathematical equations to perturb UV texture sampling coordinates.",
+  "Includes DisplacementFilter (normal map / noise map sampling), ShockwaveFilter (expanding spherical waves), BulgePinchFilter, and TwistFilter.",
+  "Like looking at an image reflected on undulating water or through a magnifying lens.",
+  "Simulating physical optical distortion, shockwaves, whirlpools, and fluid surfaces",
+  [
+    "Secondary texture map binding and sampling",
+    "Dynamic UV coordinate offset calculation",
+    "Time-based wave propagation and radial distortions",
+  ],
+  ["Modifying mesh vertex buffer positions directly"],
+)
+
+stylizedEdgeEffects = TaxonomyCategory(
+  "Stylized & Edge Effects",
+  "Outlines, Glows, Shadows & CRT Retro",
+  "Layers",
+  "peach",
+  "Specialized post-processing shaders that generate outlines, halos, drop shadows, and retro display characteristics.",
+  "Includes GlowFilter, OutlineFilter, DropShadowFilter, CRTFilter, GlitchFilter, and PixelateFilter.",
+  "Like graphic design stroke layers and vintage cathode-ray tube television scanlines.",
+  "Unit selection indicators, combat emphasis, user interface shadows, and retro aesthetics",
+  [
+    "Alpha threshold edge detection and expansion",
+    "Color tinting of peripheral blur halos",
+    "Scanline, curvature, and chromatic aberration simulation",
+  ],
+  ["Volumetric 3D raymarched lighting"],
+)
+
+customGlslWgslShaders = TaxonomyCategory(
+  "Custom GLSL & WGSL Shaders",
+  "Bespoke Vertex & Fragment Programs",
+  "Code",
+  "green",
+  "User-defined GPU shader programs implemented via the PIXI.Filter base class with custom uniforms and shaders.",
+  "Allows developers to write arbitrary GLSL (WebGL) or WGSL (WebGPU) code, declare animated uniforms, bind multi-texture samplers, and build proprietary visual effects.",
+  "Like having direct access to the GPU painting canvas with custom mathematical brushes.",
+  "Unique gameplay mechanics, procedural terrain generation, custom dissolve shaders, and custom transitions",
+  [
+    "Custom vertex and fragment shader source code",
+    "Binding custom CPU uniform values (time, resolution, mouse coords)",
+    "Multi-texture custom sampling",
+  ],
+  ["Fixed-function legacy pipeline rendering"],
+)

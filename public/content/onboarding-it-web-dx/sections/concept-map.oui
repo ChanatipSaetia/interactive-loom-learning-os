@@ -1,0 +1,72 @@
+root = ConceptMap(
+  "Concept Constellation",
+  [
+    onboarding,
+    accessFirst,
+    ttfv,
+    goldenPath,
+    progressiveDisclosure,
+    humanAnchor,
+    measureFriction,
+    endUsers,
+    staffOperators,
+    developers,
+    docsFirst,
+    buddy,
+    cohort,
+    inAppTours,
+    sandboxQuests,
+    provisioningFlow,
+    ticketStorm,
+    activationMoment,
+    firstApiCall,
+    reworkLoop,
+  ],
+  [
+    ConceptLink(onboarding, accessFirst, "begins with"),
+    ConceptLink(onboarding, ttfv, "is measured by"),
+    ConceptLink(onboarding, goldenPath, "routes through"),
+    ConceptLink(onboarding, progressiveDisclosure, "paces with"),
+    ConceptLink(onboarding, humanAnchor, "backs up with"),
+    ConceptLink(onboarding, measureFriction, "improves by"),
+    ConceptLink(accessFirst, provisioningFlow, "is executed by"),
+    ConceptLink(provisioningFlow, reworkLoop, "fails into"),
+    ConceptLink(goldenPath, activationMoment, "targets"),
+    ConceptLink(ttfv, activationMoment, "times the trip to"),
+    ConceptLink(ttfv, firstApiCall, "for developers means"),
+    ConceptLink(measureFriction, ticketStorm, "listens for"),
+    ConceptLink(endUsers, inAppTours, "scale via"),
+    ConceptLink(endUsers, goldenPath, "walk"),
+    ConceptLink(staffOperators, buddy, "climb with"),
+    ConceptLink(staffOperators, sandboxQuests, "practice in"),
+    ConceptLink(developers, docsFirst, "self-serve with"),
+    ConceptLink(developers, firstApiCall, "activate at"),
+    ConceptLink(cohort, sandboxQuests, "spines with"),
+    ConceptLink(docsFirst, goldenPath, "documents"),
+    ConceptLink(humanAnchor, buddy, "is strongest as"),
+    ConceptLink(inAppTours, progressiveDisclosure, "embody"),
+    ConceptLink(cohort, humanAnchor, "guarantees"),
+    ConceptLink(ticketStorm, goldenPath, "maps its quit-points"),
+  ],
+)
+
+onboarding = Concept("onboarding", "Onboarding Craft", "concept")
+accessFirst = Concept("access_first", "Access First (Pre-boarding)", "principle")
+ttfv = Concept("ttfv", "Time-to-First-Value", "metric")
+goldenPath = Concept("golden_path", "One Golden Path", "principle")
+progressiveDisclosure = Concept("progressive_disclosure", "Progressive Disclosure", "principle")
+humanAnchor = Concept("human_anchor", "Human Anchor", "principle")
+measureFriction = Concept("measure_friction", "Measure the Friction", "principle")
+endUsers = Concept("end_users", "Web App End Users", "role")
+staffOperators = Concept("staff_operators", "Staff & Operators", "role")
+developers = Concept("developers", "Developers (DX)", "role")
+docsFirst = Concept("docs_first", "Docs-First Handbook", "method")
+buddy = Concept("buddy", "Buddy Apprenticeship", "method")
+cohort = Concept("cohort", "Cohort Academy", "method")
+inAppTours = Concept("in_app_tours", "Self-Serve In-App Tours", "method")
+sandboxQuests = Concept("sandbox_quests", "Sandbox Quests", "method")
+provisioningFlow = Concept("provisioning_flow", "Day-1 Provisioning Flow", "process")
+ticketStorm = Concept("ticket_storm", "Ticket Storm", "signal")
+activationMoment = Concept("activation_moment", "Activation Moment", "concept")
+firstApiCall = Concept("first_api_call", "First Successful API Call", "concept")
+reworkLoop = Concept("rework_loop", "4003 Rework Loop", "process")

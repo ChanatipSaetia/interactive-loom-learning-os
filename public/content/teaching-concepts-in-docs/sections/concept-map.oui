@@ -1,0 +1,48 @@
+root = ConceptMap(
+  "How It All Connects",
+  [
+    procedural,
+    conceptual,
+    transfer,
+    mentalModel,
+    systemImage,
+    analogy,
+    workedExample,
+    refutation,
+    dualCoding,
+    cognitiveLoad,
+    explorable,
+    poe,
+    retrieval,
+    hollowClicker,
+  ],
+  [
+    ConceptLink(systemImage, mentalModel, "shapes"),
+    ConceptLink(mentalModel, conceptual, "is the core of"),
+    ConceptLink(conceptual, transfer, "enables"),
+    ConceptLink(procedural, hollowClicker, "alone leads to"),
+    ConceptLink(analogy, mentalModel, "builds"),
+    ConceptLink(workedExample, mentalModel, "builds"),
+    ConceptLink(refutation, mentalModel, "corrects"),
+    ConceptLink(dualCoding, mentalModel, "builds"),
+    ConceptLink(cognitiveLoad, mentalModel, "limits how fast we build"),
+    ConceptLink(explorable, poe, "hosts"),
+    ConceptLink(poe, mentalModel, "exposes and corrects"),
+    ConceptLink(retrieval, conceptual, "makes it stick"),
+  ],
+)
+
+procedural = Concept("procedural", "Procedural Knowledge", "knowledge")
+conceptual = Concept("conceptual", "Conceptual Knowledge", "knowledge")
+transfer = Concept("transfer", "Transfer", "goal")
+mentalModel = Concept("mental_model", "User's Mental Model", "foundation")
+systemImage = Concept("system_image", "System Image (UI + Docs)", "foundation")
+analogy = Concept("analogy", "Analogy", "technique")
+workedExample = Concept("worked_example", "Worked Example", "technique")
+refutation = Concept("refutation", "Refutation", "technique")
+dualCoding = Concept("dual_coding", "Diagram + Words", "technique")
+cognitiveLoad = Concept("cognitive_load", "Cognitive Load", "constraint")
+explorable = Concept("explorable", "Interactive Explanation", "technique")
+poe = Concept("poe", "Predict → Observe → Explain", "process")
+retrieval = Concept("retrieval", "Retrieval & Spacing", "retention")
+hollowClicker = Concept("hollow_clicker", "Hollow Clicker (failure)", "risk")

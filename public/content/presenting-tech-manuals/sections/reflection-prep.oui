@@ -1,0 +1,21 @@
+root = ReflectionSequence("Rehearsal Chamber", [challenge1])
+
+challenge1 = SequenceChallenge(
+  "Reassemble the Six-Stage Manual Presentation Arc in the correct chronological order:",
+  [dragRecap, dragHook, dragGotchas, dragDemo, dragRoadmap, dragScenario],
+  [dragHook, dragRoadmap, dragScenario, dragDemo, dragGotchas, dragRecap],
+)
+
+dragRecap = SequenceItem("drag-recap", "Recap + pin the permanent docs-site permalink")
+dragHook = SequenceItem("drag-hook", "Hook with the user's pain, not the architecture")
+dragGotchas = SequenceItem(
+  "drag-gotchas",
+  "Gotchas: show the known failure modes with documented fixes",
+)
+
+dragDemo = SequenceItem("drag-demo", "Live demo in the running product (fallback clip ready)")
+dragRoadmap = SequenceItem("drag-roadmap", "Roadmap: state what they will be able to do by the end")
+dragScenario = SequenceItem(
+  "drag-scenario",
+  "One-scenario walkthrough of a single persona task end-to-end",
+)

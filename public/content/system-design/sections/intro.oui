@@ -1,0 +1,32 @@
+root = Intro(
+  "Welcome to System Design",
+  what,
+  why,
+  [
+    RoadmapStep("Core Principles", "text", "Learn scalability, reliability, and maintainability"),
+    RoadmapStep("Knowledge Check", "quiz", "Test your understanding with quiz questions"),
+    RoadmapStep("Design Reflection", "reflection", "Reflect on real-world trade-offs"),
+    RoadmapStep("Trade-off Sandbox", "tradeoff", "Experiment with design decisions"),
+  ],
+  null,
+  null,
+  null,
+  null,
+  "Building Systems That Scale",
+)
+
+what = IntroWhat(
+  "Learn how to design scalable, reliable, and maintainable distributed systems.",
+  "System design is the process of defining the architecture, components, modules, interfaces, and data for a system to satisfy specified requirements.",
+  [
+    "Scalability through horizontal and vertical scaling",
+    "Reliability via redundancy and failover",
+    "Maintainability through modularity and testing",
+  ],
+  ["architecture", "scalability", "distributed-systems"],
+)
+
+why = IntroWhy(
+  "Good system design ensures your applications can handle millions of users while remaining reliable and easy to maintain.",
+  "Poor design leads to system failures, downtime, and expensive rewrites.",
+)

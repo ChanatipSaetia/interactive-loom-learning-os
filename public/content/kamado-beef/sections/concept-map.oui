@@ -1,0 +1,58 @@
+root = ConceptMap(
+  "แผนผังวิทยาศาสตร์อาหารและอุณหพลศาสตร์เตา Kamado",
+  [
+    ceramicMass,
+    airflowControl,
+    heatDeflector,
+    moistureRetention,
+    maillardReaction,
+    woodSmoke,
+    internalTemp,
+    carryoverCooking,
+    reverseSear,
+    perfectSteak,
+  ],
+  [
+    ConceptLink(ceramicMass, airflowControl, "ลดปริมาณลมดูดผ่านเตา"),
+    ConceptLink(ceramicMass, moistureRetention, "ป้องกันเนื้อแห้งกระด้าง"),
+    ConceptLink(airflowControl, heatDeflector, "สร้างกระแสลม Convection"),
+    ConceptLink(heatDeflector, reverseSear, "เปิดใช้งานการอบไฟอ่อนทางอ้อม"),
+    ConceptLink(reverseSear, internalTemp, "ควบคุมความสุกระดับ Rare/Med-Rare"),
+    ConceptLink(reverseSear, maillardReaction, "สร้างเปลือก Crust ในขั้นตอน Sear"),
+    ConceptLink(maillardReaction, perfectSteak, "ให้กลิ่นหอมและรสชาติอูมามิ"),
+    ConceptLink(woodSmoke, perfectSteak, "เคลือบผิวนอกด้วยกลิ่นหอม Guaiacol"),
+    ConceptLink(internalTemp, carryoverCooking, "อุณหภูมิเพิ่มขึ้นอีก 2-3°C ช่วงพักเนื้อ"),
+    ConceptLink(carryoverCooking, perfectSteak, "กระจายน้ำในเนื้อให้ชุ่มฉ่ำสม่ำเสมอ"),
+    ConceptLink(moistureRetention, perfectSteak, "คงเนื้อสัมผัสนุ่มละมุน"),
+  ],
+)
+
+ceramicMass = Concept("ceramic_mass", "Ceramic Thermal Mass (มวลความร้อนเซรามิก)", "mechanism")
+airflowControl = Concept("airflow_control", "Airflow Vent Control (การควบคุมวาล์วลม)", "mechanism")
+heatDeflector = Concept("heat_deflector", "Heat Deflector (แผ่นหินกระจายความร้อน)", "system")
+moistureRetention = Concept(
+  "moisture_retention",
+  "Moisture Retention (การรักษาความฉ่ำในเนื้อ)",
+  "concept",
+)
+
+maillardReaction = Concept(
+  "maillard_reaction",
+  "Maillard Reaction (ปฏิกิริยาเกิดเปลือกกรอบสีน้ำตาล)",
+  "process",
+)
+
+woodSmoke = Concept("wood_smoke", "Wood Smoke Flavors (สารหอมระเหยจากควันไม้)", "data")
+internalTemp = Concept("internal_temp", "Internal Core Temp (อุณหภูมิแกนกลางเนื้อ)", "data")
+carryoverCooking = Concept(
+  "carryover_cooking",
+  "Carryover Cooking (ความร้อนแฝงขณะพักเนื้อ)",
+  "process",
+)
+
+reverseSear = Concept("reverse_sear", "Reverse Sear Process (กระบวนการย่างย้อนศร)", "pattern")
+perfectSteak = Concept(
+  "perfect_steak",
+  "Edge-to-Edge Pink Steak (สเต๊กสมบูรณ์แบบไร้ขอบเทา)",
+  "concept",
+)

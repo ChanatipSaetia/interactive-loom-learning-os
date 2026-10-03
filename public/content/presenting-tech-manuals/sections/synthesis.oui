@@ -1,0 +1,39 @@
+root = ReflectionTemplate("Synthesis Vault", [challenge1, challenge2, challenge3])
+
+challenge1 = TemplateChallenge(
+  "Complete the audience doctrine (Track 1):",
+  "Before choosing any tool, map your audience: {zone-1} need task walkthroughs of real UI screens, while {zone-2} read the manual defensively for runbooks and incident triage.",
+  [
+    Chip("chip-endusers", "end users"),
+    Chip("chip-operators", "operators"),
+    Chip("chip-executives", "executives"),
+  ],
+  {"zone-1": "chip-endusers", "zone-2": "chip-operators"},
+  "<strong>Correct!</strong> End users need task-oriented UI walkthroughs; operators read defensively (what breaks, how to see it, what to type). Executives were never one of the three taught archetypes.",
+)
+
+challenge2 = TemplateChallenge(
+  "Complete the presentation arc (Track 1):",
+  "The six-stage arc opens by hooking the audience with {zone-1}, proves the task in a {zone-2} of the running product, and closes by pinning the docs-site {zone-3}.",
+  [
+    Chip("chip-pain", "the user's pain"),
+    Chip("chip-arch-diagram", "an architecture diagram"),
+    Chip("chip-live-demo", "live demo"),
+    Chip("chip-permalink", "permalink"),
+  ],
+  {"zone-1": "chip-pain", "zone-2": "chip-live-demo", "zone-3": "chip-permalink"},
+  "<strong>Correct!</strong> Hook with the pain (never the architecture diagram), prove one persona task in a live demo of the real product, and end on the permalink — findability beats memorability.",
+)
+
+challenge3 = TemplateChallenge(
+  "Complete the instrument doctrine (Tracks 2 & 3):",
+  "Authoring slides as markdown with {zone-1} keeps the deck in Git, rendering the OpenAPI spec with {zone-2} keeps the API reference un-stale, and recording the walkthrough with {zone-3} yields the live demo's fallback clip.",
+  [
+    Chip("chip-marp", "Marp"),
+    Chip("chip-swagger", "Swagger UI"),
+    Chip("chip-obs", "OBS Studio"),
+    Chip("chip-photoshop", "Photoshop"),
+  ],
+  {"zone-1": "chip-marp", "zone-2": "chip-swagger", "zone-3": "chip-obs"},
+  "<strong>Correct!</strong> Marp compiles markdown decks that live in the repo, Swagger UI renders the API contract itself so it can never be stale, and OBS Studio records the clip that saves the live demo. Photoshop is a distractor — it appears nowhere in the realm.",
+)

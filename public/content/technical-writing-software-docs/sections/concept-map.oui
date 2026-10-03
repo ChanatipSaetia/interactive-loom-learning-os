@@ -1,0 +1,49 @@
+root = ConceptMap(
+  "How It All Connects",
+  [
+    readerNeed,
+    diataxis,
+    tutorial,
+    howTo,
+    reference,
+    explanation,
+    taskPage,
+    uiConventions,
+    plainLanguage,
+    styleGuide,
+    vale,
+    readability,
+    review,
+    wallOfText,
+  ],
+  [
+    ConceptLink(diataxis, readerNeed, "sorts content by"),
+    ConceptLink(diataxis, tutorial, "defines"),
+    ConceptLink(diataxis, howTo, "defines"),
+    ConceptLink(diataxis, reference, "defines"),
+    ConceptLink(diataxis, explanation, "defines"),
+    ConceptLink(howTo, taskPage, "is built as a"),
+    ConceptLink(taskPage, uiConventions, "uses"),
+    ConceptLink(plainLanguage, taskPage, "makes readable"),
+    ConceptLink(styleGuide, plainLanguage, "codifies"),
+    ConceptLink(vale, styleGuide, "enforces"),
+    ConceptLink(readability, plainLanguage, "warns about"),
+    ConceptLink(review, taskPage, "proves"),
+    ConceptLink(wallOfText, readerNeed, "ignores"),
+  ],
+)
+
+readerNeed = Concept("reader_need", "Reader's Need", "foundation")
+diataxis = Concept("diataxis", "Diátaxis", "framework")
+tutorial = Concept("tutorial", "Tutorial", "doc-type")
+howTo = Concept("how_to", "How-to Guide", "doc-type")
+reference = Concept("reference", "Reference", "doc-type")
+explanation = Concept("explanation", "Explanation", "doc-type")
+taskPage = Concept("task_page", "Task Page Anatomy", "structure")
+uiConventions = Concept("ui_conventions", "UI Text Conventions", "structure")
+plainLanguage = Concept("plain_language", "Plain Language", "style")
+styleGuide = Concept("style_guide", "Style Guides", "style")
+vale = Concept("vale", "Vale Linter", "tool")
+readability = Concept("readability", "Readability Score", "tool")
+review = Concept("review", "Review & Step Test", "process")
+wallOfText = Concept("wall_of_text", "Wall of Text (failure)", "risk")

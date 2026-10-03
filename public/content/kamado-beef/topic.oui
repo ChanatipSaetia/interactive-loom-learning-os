@@ -1,0 +1,21 @@
+root = Topic(
+  "การย่างเนื้อด้วยเตา Kamado (Kamado Beef Grilling)",
+  "Cooking",
+  "เรียนรู้ศาสตร์และศิลป์การย่างเนื้อพรีเมียมด้วยเตาเซรามิก Kamado เทคนิค Reverse Sear และวิทยาศาสตร์ความร้อน",
+  [
+    SectionRef("intro"),
+    SectionRef("anatomy"),
+    SectionRef("quiz-airflow"),
+    SectionRef("taxonomy"),
+    SectionRef("reflection-reverse-sear"),
+    SectionRef("flowchart"),
+    SectionRef("concept-map"),
+    SectionRef("reflection-template"),
+    SectionRef("tradeoffs"),
+    SectionRef("formula-sandbox"),
+    SectionRef("scenario"),
+    SectionRef("decision-tree"),
+    SectionRef("flashcards"),
+  ],
+  ["kamado", "beef", "steak", "barbecue", "grilling", "food-science"],
+)

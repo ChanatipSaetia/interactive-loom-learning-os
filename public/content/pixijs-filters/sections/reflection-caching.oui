@@ -1,0 +1,32 @@
+root = ReflectionSequence("Bitmap Caching & Texture Baking Sequencing", [challenge1])
+
+challenge1 = SequenceChallenge(
+  "Arrange the chronological stages of baking a filtered container with cacheAsBitmap:",
+  [stepEnableCache, stepMeasureBounds, stepBakeTexture, stepSwitchBatched, stepInvalidateMutation],
+  [stepEnableCache, stepMeasureBounds, stepBakeTexture, stepSwitchBatched, stepInvalidateMutation],
+)
+
+stepEnableCache = SequenceItem(
+  "step-enable-cache",
+  "Set container.cacheAsBitmap = true on static filtered display object",
+)
+
+stepMeasureBounds = SequenceItem(
+  "step-measure-bounds",
+  "Calculate combined padded bounds of container and active filters",
+)
+
+stepBakeTexture = SequenceItem(
+  "step-bake-texture",
+  "Execute filter shader passes once and bake output into private RenderTexture",
+)
+
+stepSwitchBatched = SequenceItem(
+  "step-switch-batched",
+  "Direct renderer to draw cached texture as a single batched sprite quad",
+)
+
+stepInvalidateMutation = SequenceItem(
+  "step-invalidate-mutation",
+  "Invalidate and re-bake cache when child nodes change or mutate",
+)

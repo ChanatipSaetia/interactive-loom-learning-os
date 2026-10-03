@@ -1,0 +1,45 @@
+root = Bullets(
+  "Maintainability Practices",
+  [
+    Bullet(
+      "Generate from a single source of truth",
+      [
+        Bullet(
+          "Build simulations from the design-system components or a shared script of steps, instead of hand-copying screens.",
+        ),
+        Bullet(
+          "When the source changes, every manual that uses it changes too; there is no second copy to forget.",
+        ),
+      ],
+    ),
+    Bullet(
+      "Detect drift automatically",
+      [
+        Bullet("Run visual-regression or selector checks on every product release."),
+        Bullet(
+          "A failing check names the exact module and step that went stale, before a learner finds it.",
+        ),
+      ],
+    ),
+    Bullet(
+      "Pin versions and name an owner",
+      [
+        Bullet(
+          "Label each simulation with the product version it matches, e.g. 'Matches ServiceDesk v24.3'.",
+        ),
+        Bullet("Name an owner who updates it; 'everyone' means no one."),
+      ],
+    ),
+    Bullet(
+      "Keep fake data in shared synthetic fixtures",
+      [
+        Bullet(
+          "Store the fake customers, tickets and orders in one shared set of synthetic fixtures.",
+        ),
+        Bullet(
+          "Every simulation then shows the same realistic, privacy-safe records, and a data change is made once.",
+        ),
+      ],
+    ),
+  ],
+)

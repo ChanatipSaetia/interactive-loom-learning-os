@@ -1,0 +1,103 @@
+root = TaxonomyBrowser(
+  "Display Object Taxonomies",
+  [
+    displayObjectsSceneGraph,
+    vectorGraphicsGeometry,
+    typographyTextRendering,
+    shadersFiltersPostProcessing,
+    highPerformanceBatchingParticles,
+  ],
+)
+
+displayObjectsSceneGraph = TaxonomyCategory(
+  "Display Objects & Scene Graph",
+  "Hierarchical visual tree structure",
+  "Layers",
+  "blue",
+  "The core nodes used to organize, position, and render visual content in PixiJS.",
+  "Containers provide hierarchical spatial transforms (x, y, scale, rotation, skew) and alpha blending. Sprites bind 2D textures to quads. AnimatedSprite cycles frame sequences, and NineSliceSprite preserves borders during UI resizing.",
+  "Like a Photoshop layer hierarchy where moving a group folder automatically moves all sub-layers inside it.",
+  "Organizing game worlds, UI panels, and multi-part character puppets.",
+  [
+    "Container hierarchy & transform propagation",
+    "Sprite & AnimatedSprite rendering",
+    "NineSliceSprite & TilingSprite",
+    "Local vs World coordinate space conversion",
+  ],
+  [
+    "Complex 3D skeletal bones (use Spine/DragonBones extensions)",
+    "Physics simulation (delegate to Matter.js or Rapier)",
+  ],
+)
+
+vectorGraphicsGeometry = TaxonomyCategory(
+  "Vector Graphics & Geometry",
+  "Procedural shapes, paths, and meshes",
+  "Shapes",
+  "green",
+  "Dynamic shape drawing and custom vertex mesh manipulation on the GPU.",
+  "Graphics generates 2D vector shapes (rectangles, circles, bezier paths, polygons) converted on-the-fly into triangulated vertex buffers. MeshSimple and MeshRope allow deformable ribbons, flags, and custom geometry.",
+  "Like an SVG vector canvas with stroke and fill commands, but compiled into GPU triangle primitives.",
+  "Drawing debug bounds, dynamic UI wireframes, health bars, and deformable rope ribbons.",
+  [
+    "PIXI.Graphics path drawing & bezier curves",
+    "Holes, fills, and parametric strokes",
+    "MeshSimple & MeshRope triangulated ribbons",
+    "Dynamic redraw vs pre-baked RenderTexture",
+  ],
+  ["3D polygon modeling (PixiJS is strictly 2D)", "Font vector tracing at runtime"],
+)
+
+typographyTextRendering = TaxonomyCategory(
+  "Typography & Text Rendering",
+  "Canvas text vs GPU bitmap fonts",
+  "Type",
+  "yellow",
+  "Text display strategies balancing styling flexibility against 60 FPS render performance.",
+  "PIXI.Text rasterizes fonts using HTML5 2D Canvas context and generates an internal texture. PIXI.BitmapText renders characters from pre-baked XML/JSON font atlases using batched quads for zero CPU overhead.",
+  "PIXI.Text is like printing a new photo each time words change; BitmapText is like stamping pre-carved wooden letter blocks.",
+  "Rendering dialog boxes, score counters, HUD indicators, and localized strings.",
+  [
+    "PIXI.Text with styling (drop shadow, gradient fill, stroke)",
+    "PIXI.BitmapText with high-speed batched character quads",
+    "HTMLText for rich HTML/CSS formatted labels",
+    "Font atlas generation and loading",
+  ],
+  ["Complex RTL bidirectional text shaping without plugins", "Live vector font glyph deformation"],
+)
+
+shadersFiltersPostProcessing = TaxonomyCategory(
+  "Shaders, Filters & Post-Processing",
+  "Custom GLSL effects and full-screen passes",
+  "Sparkles",
+  "mauve",
+  "GPU fragment and vertex shader pipelines for lighting, blur, distortion, and stylization.",
+  "Filters render target objects into offscreen framebuffers and pass them through custom GLSL shaders. ColorMatrixFilter provides tinting/grayscale, BlurFilter softens edges, and DisplacementFilter creates liquid ripples.",
+  "Like applying real-time Instagram filters and optical lenses over rendered canvas layers.",
+  "Visual juice: shockwaves, water reflections, CRT monitors, glow highlights, and color grading.",
+  [
+    "Built-in filters (ColorMatrix, Blur, Alpha, Noise)",
+    "Custom GLSL fragment and vertex shader filters",
+    "Displacement maps & uv animation",
+    "Filter padding and resolution scaling",
+  ],
+  ["Raytracing and global illumination", "Multi-pass deferred 3D lighting"],
+)
+
+highPerformanceBatchingParticles = TaxonomyCategory(
+  "High-Performance Batching & Particles",
+  "Ultra-high-throughput rendering pipelines",
+  "Zap",
+  "peach",
+  "Techniques for rendering tens of thousands of simultaneous entities at locked 60 FPS.",
+  "ParticleContainer strips complex scene-graph overhead to pump raw vertex buffers directly to the GPU. Texture atlases group assets into single BaseTextures to avoid draw-call batch breaks.",
+  "Like a freight train loading thousands of identical shipping crates at once rather than sending individual courier trucks.",
+  "Bullet hell shoot-em-ups, weather effects (snow/rain), particle explosions, and massive starfields.",
+  [
+    "ParticleContainer with selective dynamic properties (position, scale, uv)",
+    "Spritesheet atlas packaging to eliminate batch breaks",
+    "RenderTexture baking for static sub-trees",
+    "Object pooling to avoid GC pauses",
+  ],
+  ["Complex nested hierarchy inside particle containers", "Custom per-particle shader uniforms"],
+)

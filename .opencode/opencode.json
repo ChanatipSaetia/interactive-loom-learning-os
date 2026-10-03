@@ -3,13 +3,11 @@
   "watcher": {
     "ignore": ["**/node_modules/**", "**/dist/**", "**/logs/**"]
   },
-  "model": "llama.cpp/Qwen3.8-27B-UD-Q4_K_XL",
+  "model": "llama.cpp/Qwen3.8-Flash-Next-UD-IQ4_XS",
   "compaction": {
     "auto": true,
-    "prune": true
-  },
-  "limit": {
-    "context": 51200
+    "prune": true,
+    "reserved": 8192
   },
   "mcp": {
     "playwright": {

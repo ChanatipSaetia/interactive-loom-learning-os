@@ -1,0 +1,89 @@
+root = DecisionTree(
+  "ระบบแนะนำเทคนิคการย่างตามชิ้นส่วนเนื้อ (Beef Cut Advisor)",
+  "beef-cut-advisor",
+  "cut_nature",
+  [cutNature, steakThickness, recLowAndSlow, recReverseSear, recDirectSear],
+  "Beef Cut Technique Advisor (ที่ปรึกษาการเลือกวิธีปรุงเนื้อวัว)",
+)
+
+cutNature = DecisionNode(
+  "cut_nature",
+  "ชิ้นส่วนเนื้อที่คุณต้องการปรุงมีลักษณะโครงสร้างกล้ามเนื้อและคอลลาเจนแบบใด?",
+  [
+    DecisionChoice(
+      "tough_collagen",
+      "เนื้อส่วนเหนียว มีพังผืดและคอลลาเจนสูง (เช่น Brisket, Short Ribs, Chuck Roast)",
+      "rec_low_and_slow",
+      "คอลลาเจนต้องการความร้อนต่ำและเวลาที่ยาวนานเพื่อละลายตัวเป็นเจลาติน",
+    ),
+    DecisionChoice(
+      "tender_steak",
+      "เนื้อสเต๊กพรีเมียม นุ่มตามธรรมชาติ (เช่น Ribeye, Striploin, Tenderloin, Picanha)",
+      "steak_thickness",
+      "เนื้อนุ่มธรรมชาติควรปรุงแบบสเต๊กโดยรักษาความฉ่ำและความสุกที่แม่นยำ",
+      true,
+    ),
+  ],
+)
+
+steakThickness = DecisionNode(
+  "steak_thickness",
+  "สเต๊กชิ้นนี้มีความหนาเท่าใด?",
+  [
+    DecisionChoice(
+      "thick_cut",
+      "ชิ้นหนาพิเศษ 1.5 นิ้วขึ้นไป (หรือติดกระดูก Tomahawk / Cowboy Steak)",
+      "rec_reverse_sear",
+      "เนื้อหนาเกิน 1.5 นิ้วหากย่างไฟตรงข้างในจะดิบและขอบจะเป็นสีเทา",
+      true,
+    ),
+    DecisionChoice(
+      "thin_cut",
+      "ชิ้นบางปานกลางถึงบาง ต่ำกว่า 1.2 นิ้ว (หรือเนื้อใบบัว Skirt / Flank Steak)",
+      "rec_direct_sear",
+      "เนื้อบางสุกเร็วมาก การใช้ไฟแรงโดยตรงระยะสั้นจะช่วยให้เกิด Crust ก่อนที่ข้างในจะสุกเกิน",
+    ),
+  ],
+)
+
+recLowAndSlow = DecisionNode(
+  "rec_low_and_slow",
+  null,
+  null,
+  DecisionLeaf(
+    "ใช้เทคนิค Low & Slow Smoking (105-120°C เป็นเวลา 6-12 ชั่วโมง)",
+    "ใส่แผ่น Heat Deflector เต็มแผ่น พร้อมท่อนไม้ Post Oak คุมอุณหภูมิให้นิ่งจนเส้นใยคอลลาเจนสลายตัวเป็นเจลาติน และเนื้อนุ่มจนฉีกได้ด้วยส้อม",
+    [
+      "ต้องใช้เวลาเตรียมนานและวางแผนล่วงหน้าหลายชั่วโมง",
+      "เปลืองถ่านและต้องเฝ้าดูความเสถียรของอุณหภูมิเป็นระยะ",
+    ],
+  ),
+)
+
+recReverseSear = DecisionNode(
+  "rec_reverse_sear",
+  null,
+  null,
+  DecisionLeaf(
+    "ใช้เทคนิค Reverse Sear (อบ Indirect 110°C แล้ว Sear เตา 350°C)",
+    "อบเนื้อด้วย Heat Deflector จน Internal Temp ถึง 48°C (สำหรับ Medium Rare) จากนั้นพักเนื้อ เร่งเตาเป็น 350°C แล้ว Sear บนตะแกรงเหล็กหล่อด้านละ 60 วินาที ได้เนื้อสีชมพูสม่ำเสมอไร้ขอบเทา",
+    [
+      "ต้องใช้เวลาปรับเตา 2 สเต็ป (ช่วงเปลี่ยนจากไฟเบาเป็นไฟแรง)",
+      "จำเป็นต้องมีโพรบวัดอุณหภูมิแกนกลางดิจิทัลเพื่อความแม่นยำ",
+    ],
+  ),
+)
+
+recDirectSear = DecisionNode(
+  "rec_direct_sear",
+  null,
+  null,
+  DecisionLeaf(
+    "ใช้เทคนิค Direct High-Heat Searing (ย่างไฟแรงตรง 280-320°C)",
+    "ถอดแผ่น Heat Deflector วางตะแกรงเหล็กหล่อใกล้กองถ่าน พลิกเนื้อทุกๆ 1-2 นาทีเพื่อสร้าง Crust กรอบโดยไม่ทำให้ใจกลางเนื้อสุกเกิน Medium Rare",
+    [
+      "ต้องระวังเปลวไฟแลบ (Flare-ups) จากไขมันหยดลงถ่าน",
+      "ไม่เหมาะกับสเต๊กหนาเพราะแกนกลางจะยังเย็นขณะที่ผิวเกรียม",
+    ],
+  ),
+)

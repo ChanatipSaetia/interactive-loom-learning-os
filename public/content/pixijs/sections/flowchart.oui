@@ -1,0 +1,169 @@
+root = Flowchart(
+  "60 FPS Frame Render Loop",
+  [appTicker],
+  [tickerManager, sceneGraph, batchRenderer, webglDriver],
+  [stepTick, stepTransforms, stepTraverse, stepBatch, stepDraw],
+  [renderLoop],
+)
+
+appTicker = Actor(
+  "app_ticker",
+  "App Ticker",
+  "Internal animation clock driven by window.requestAnimationFrame",
+)
+
+tickerManager = System(
+  "ticker_manager",
+  "Ticker Manager",
+  "Calculates delta time multipliers and triggers frame tick listeners",
+  "aggregate",
+)
+
+sceneGraph = System(
+  "scene_graph",
+  "Scene Graph Tree",
+  "Hierarchical display tree managing local and world transform matrices",
+  "aggregate",
+)
+
+batchRenderer = System(
+  "batch_renderer",
+  "Batch Renderer",
+  "Buffers quad vertices, UV coordinates, and multi-texture indices",
+  "aggregate",
+)
+
+webglDriver = System(
+  "webgl_driver",
+  "WebGL / WebGPU Driver",
+  "Hardware graphics pipeline executing shader draw calls",
+  "external",
+)
+
+stepTick = Step(
+  "step_tick",
+  "When Screen Refresh Triggered",
+  "Dispatch Delta Time Tick",
+  tickerManager,
+  [
+    Event(
+      "evt_tick_dispatched",
+      "Delta Tick Dispatched",
+      "Frame interval and delta multiplier sent to scene graph",
+    ),
+  ],
+  appTicker,
+  null,
+  "step_transforms",
+  "Ticker calculates elapsed time and fires frame update",
+)
+
+stepTransforms = Step(
+  "step_transforms",
+  "When Delta Tick Received",
+  "Update Local & World Transform Matrices",
+  sceneGraph,
+  [
+    Event(
+      "evt_transforms_updated",
+      "World Transforms Updated",
+      "Hierarchical matrix multiplications complete for all display nodes",
+    ),
+  ],
+  null,
+  null,
+  "step_traverse",
+  "Traverses container hierarchy to compute absolute world coordinates",
+)
+
+stepTraverse = Step(
+  "step_traverse",
+  "When Transforms Validated",
+  "Traverse Display Tree & Cull Offscreen Nodes",
+  sceneGraph,
+  [
+    Event(
+      "evt_visible_nodes_collected",
+      "Visible Sprites Collected",
+      "Render list assembled with visible textured quads",
+    ),
+  ],
+  null,
+  null,
+  "step_batch",
+  "Collects visible sprites and skips hidden or out-of-bound nodes",
+)
+
+stepBatch = Step(
+  "step_batch",
+  "When Sprites Queued For Rendering",
+  "Pack Quad Vertices Into Multi-Texture Batch",
+  batchRenderer,
+  [
+    Event(
+      "evt_batches_assembled",
+      "Batch Geometry Buffers Packed",
+      "Vertex and UV buffers filled for compatible sprites sharing textures",
+    ),
+  ],
+  null,
+  null,
+  "step_draw",
+  "Assembles maximum quad buffers before hitting batch boundary",
+)
+
+stepDraw = Step(
+  "step_draw",
+  "When Batch Capacity Reached Or State Changes",
+  "Execute GPU Draw Call",
+  webglDriver,
+  [
+    Event(
+      "evt_frame_rendered",
+      "Frame Rendered & Displayed",
+      "Framebuffer swapped to canvas context at locked 60 FPS",
+    ),
+  ],
+  null,
+  null,
+  null,
+  "WebGL issues gl.drawElements to render batched geometry",
+)
+
+renderLoop = Journey(
+  "render_loop",
+  "60 FPS Render Pipeline Loop",
+  "Complete execution lifecycle of a single PixiJS frame from requestAnimationFrame tick to GPU draw call.",
+  [
+    JourneyStep(
+      stepTick,
+      "1. Animation Tick",
+      "App ticker receives requestAnimationFrame pulse and computes elapsed delta time.",
+      "planning",
+    ),
+    JourneyStep(
+      stepTransforms,
+      "2. Transform Propagation",
+      "Scene graph multiplies local transforms by parent world matrices.",
+      "execution",
+    ),
+    JourneyStep(
+      stepTraverse,
+      "3. Scene Traversal",
+      "Culling and sorting visible display objects into a render list.",
+      "execution",
+    ),
+    JourneyStep(
+      stepBatch,
+      "4. Geometry Batching",
+      "BatchRenderer packs vertex coordinates, UVs, and texture indices.",
+      "execution",
+    ),
+    JourneyStep(
+      stepDraw,
+      "5. GPU Draw Execution",
+      "WebGL driver executes shader program and swaps canvas buffer.",
+      "evaluation",
+    ),
+  ],
+)

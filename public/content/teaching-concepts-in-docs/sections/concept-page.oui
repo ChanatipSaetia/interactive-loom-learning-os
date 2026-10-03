@@ -1,0 +1,46 @@
+root = Bullets(
+  "Anatomy of a Concept Page",
+  [
+    Bullet(
+      "One-sentence definition, in plain words",
+      [
+        Bullet(
+          "'A workspace is a shared space where a team keeps its projects and controls who can see them.'",
+        ),
+      ],
+    ),
+    Bullet(
+      "Why it matters to the user",
+      [
+        Bullet(
+          "'Who you add to a workspace decides what they can see in every project inside it.'",
+        ),
+      ],
+    ),
+    Bullet(
+      "The explanation, using the techniques",
+      [
+        Bullet(
+          "A diagram, a worked example, an analogy with its limits, a named misconception, non-examples.",
+        ),
+      ],
+    ),
+    Bullet(
+      "Core idea first, details later (progressive disclosure)",
+      [
+        Bullet(
+          "Teach the core idea first and leave advanced details, such as overrides and guest access, for later sections or linked pages.",
+        ),
+      ],
+    ),
+    Bullet(
+      "Links in both directions between concepts and tasks",
+      [
+        Bullet(
+          "The concept page links to the tasks that use it: 'Add someone to a workspace', 'Create a project'.",
+        ),
+        Bullet("Each task page links back: 'Why it works this way: Workspaces and permissions'."),
+      ],
+    ),
+  ],
+)

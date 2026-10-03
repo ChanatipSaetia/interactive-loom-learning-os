@@ -1,0 +1,216 @@
+root = Quiz("Techniques Check", [q1, q2, q3, q4, q5, q6, q7, q8, q9, q10])
+
+q1 = QuizQuestion(
+  "q1",
+  "'A workspace is like a shared drive folder.' What makes this a good analogy?",
+  [
+    QuizChoice(
+      "q1-a",
+      "It also says where it breaks down, e.g. workspaces have their own billing and settings",
+      true,
+      "Users carry the whole analogy over, so state its limits.",
+    ),
+    QuizChoice("q1-b", "It's funny", false, "Humour isn't what makes it teach."),
+    QuizChoice("q1-c", "It avoids mentioning workspaces", false, "It must link to the new idea."),
+  ],
+  "Every analogy breaks somewhere.",
+)
+
+q2 = QuizQuestion(
+  "q2",
+  "What's the right order for teaching the two-level approval rule?",
+  [
+    QuizChoice(
+      "q2-a",
+      "Anna's 7,000-baht claim example first, then the general rule",
+      true,
+      "Concrete before abstract gives the rule a hook.",
+    ),
+    QuizChoice(
+      "q2-b",
+      "The rule only; examples waste space",
+      false,
+      "Abstract rules without examples are hard to grasp.",
+    ),
+    QuizChoice(
+      "q2-c",
+      "The rule first, and no example",
+      false,
+      "Missing the concrete hook entirely.",
+    ),
+  ],
+  "Concrete before …?",
+)
+
+q3 = QuizQuestion(
+  "q3",
+  "Which text is a refutation?",
+  [
+    QuizChoice(
+      "q3-a",
+      "'You might think archiving deletes a project. It doesn't. Archived projects are hidden and can be restored.'",
+      true,
+      "It states the misconception, rejects it, and explains the truth.",
+    ),
+    QuizChoice(
+      "q3-b",
+      "'Archived projects can be restored.'",
+      false,
+      "True, but it doesn't name and reject the wrong belief.",
+    ),
+    QuizChoice(
+      "q3-c",
+      "'Select Archive to archive a project.'",
+      false,
+      "That's a step, not a correction.",
+    ),
+  ],
+  "State it, reject it, explain.",
+)
+
+q4 = QuizQuestion(
+  "q4",
+  "Teaching 'submitted claim', which is a useful non-example?",
+  [
+    QuizChoice(
+      "q4-a",
+      "A saved draft that hasn't been sent to anyone",
+      true,
+      "A near-miss that sharpens the concept's boundary.",
+    ),
+    QuizChoice("q4-b", "A user's profile photo", false, "Nobody would confuse it with a claim."),
+    QuizChoice("q4-c", "Another submitted claim", false, "That's an example, not a non-example."),
+  ],
+  "Something that looks similar but isn't.",
+)
+
+q5 = QuizQuestion(
+  "q5",
+  "Why add a box diagram next to the sentence 'permissions flow down from workspace to projects'?",
+  [
+    QuizChoice(
+      "q5-a",
+      "Words plus a diagram help people understand and remember better than words alone",
+      true,
+      "Dual coding gives two routes into memory.",
+    ),
+    QuizChoice(
+      "q5-b",
+      "Pages need decoration",
+      false,
+      "The diagram must show structure, not decorate.",
+    ),
+    QuizChoice("q5-c", "So the sentence can be deleted", false, "Dual coding pairs both."),
+  ],
+  "Say it and show it.",
+)
+
+q6 = QuizQuestion(
+  "q6",
+  "Why not introduce seven new concepts on one page?",
+  [
+    QuizChoice(
+      "q6-a",
+      "Working memory holds only a few new items at once",
+      true,
+      "Introduce a few at a time and build on them.",
+    ),
+    QuizChoice("q6-b", "Pages have a word limit", false, "Not the reason taught."),
+    QuizChoice(
+      "q6-c",
+      "Seven concepts is fine if the page is long enough",
+      false,
+      "Length doesn't fix overload.",
+    ),
+  ],
+  "Recall the first step of the workshop.",
+)
+
+q7 = QuizQuestion(
+  "q7",
+  "What usually works better than a single technique?",
+  [
+    QuizChoice(
+      "q7-a",
+      "Combining a diagram, a worked example and a named misconception",
+      true,
+      "Several routes into understanding, aimed at the real mistake.",
+    ),
+    QuizChoice("q7-b", "A longer definition", false, "Still one abstract technique."),
+    QuizChoice(
+      "q7-c",
+      "Three analogies",
+      false,
+      "More of one technique, each with its own broken parts.",
+    ),
+  ],
+  "Recall the second step of the workshop.",
+)
+
+q8 = QuizQuestion(
+  "q8",
+  "How should a concept page open?",
+  [
+    QuizChoice(
+      "q8-a",
+      "A one-sentence plain definition, then why it matters to the user",
+      true,
+      "Readers know immediately what it is and why they should care.",
+    ),
+    QuizChoice(
+      "q8-b",
+      "The full history of the feature",
+      false,
+      "The reader doesn't know what it is yet.",
+    ),
+    QuizChoice("q8-c", "A list of every edge case", false, "Edge cases come later, if at all."),
+  ],
+  "Definition first.",
+)
+
+q9 = QuizQuestion(
+  "q9",
+  "How should concept pages and task pages connect?",
+  [
+    QuizChoice(
+      "q9-a",
+      "Concept pages link to the tasks that use them, and task pages link back",
+      true,
+      "Links in both directions connect understanding and doing.",
+    ),
+    QuizChoice(
+      "q9-b",
+      "They shouldn't link; keep them separate",
+      false,
+      "Separate pages, yes, but linked.",
+    ),
+    QuizChoice(
+      "q9-c",
+      "Copy the concept text into every task page",
+      false,
+      "Link instead of duplicating.",
+    ),
+  ],
+  "Both directions.",
+)
+
+q10 = QuizQuestion(
+  "q10",
+  "Where do advanced details, such as permission overrides, belong?",
+  [
+    QuizChoice(
+      "q10-a",
+      "In later sections or linked pages, after the core idea",
+      true,
+      "Progressive disclosure: core idea first, details later.",
+    ),
+    QuizChoice(
+      "q10-b",
+      "In the first paragraph, so nothing is missed",
+      false,
+      "That buries the core idea.",
+    ),
+    QuizChoice("q10-c", "Nowhere; never document them", false, "They're documented, just later."),
+  ],
+  "Core first.",
+)

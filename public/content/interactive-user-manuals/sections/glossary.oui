@@ -1,0 +1,137 @@
+root = Flashcards(
+  "Glossary",
+  [
+    leastPrivilege,
+    fidelity,
+    selectiveFidelity,
+    hotspot,
+    dom,
+    msw,
+    scormXapi,
+    syntheticData,
+    drift,
+    visualRegression,
+    asCode,
+    watchTryTest,
+  ],
+)
+
+leastPrivilege = Flashcard(
+  "least-privilege",
+  "Least Privilege",
+  "leest priv-uh-lij",
+  "Access",
+  "Giving each person only the permissions their current job needs.",
+  "A security principle under which accounts get the smallest set of roles necessary. It is why trainees often can't perform the very actions a manual must teach.",
+  "It's the most common reason learners can't practise in the real system.",
+)
+
+fidelity = Flashcard(
+  "fidelity",
+  "Fidelity",
+  "fi-del-i-tee",
+  "Design",
+  "How closely a simulation matches the real software.",
+  "The fidelity ladder runs from annotated screenshots to click-through walkthroughs, interactive simulations with fake data and a full sandbox. Higher fidelity gives more realistic practice at higher build and upkeep cost.",
+  "Choosing the right rung is the first trade-off of any interactive manual.",
+)
+
+selectiveFidelity = Flashcard(
+  "selective-fidelity",
+  "Selective Fidelity",
+  "si-lek-tiv fi-del-i-tee",
+  "Design",
+  "Exact on the task path, simplified everywhere else.",
+  "Controls, labels and order on the path the learner practises match the real software exactly; areas off the path can be static or disabled.",
+  "It keeps practice realistic where it counts while keeping cost down.",
+)
+
+hotspot = Flashcard(
+  "hotspot",
+  "Hotspot",
+  "hot-spot",
+  "Approach",
+  "A clickable area placed over a recorded screen.",
+  "In hotspot simulations, an invisible click target sits on the correct button or field of a captured screen. Clicking it advances the step; clicking elsewhere can trigger feedback.",
+  "Hotspots make recorded screens practisable, but the screens under them go stale with every UI change.",
+)
+
+dom = Flashcard(
+  "dom",
+  "DOM Capture",
+  "dom kap-cher",
+  "Approach",
+  "Saving a web page's HTML structure instead of a picture of it.",
+  "The DOM (Document Object Model) is the structure a browser renders. Capturing it gives a crisp, realistic copy whose text and data can be edited without re-recording.",
+  "It's why DOM-capture demos are easier to update than screenshots, but only for web apps.",
+)
+
+msw = Flashcard(
+  "msw",
+  "Mock Service Worker (MSW)",
+  "em es dub-uhl-yoo",
+  "Tool",
+  "A library that answers an app's network requests with fake data.",
+  "MSW intercepts requests in the browser and returns prepared responses, so a UI clone runs with no real server.",
+  "It's the fake backend of a UI clone.",
+)
+
+scormXapi = Flashcard(
+  "scorm-xapi",
+  "SCORM / xAPI",
+  "skorm / eks ay pee eye",
+  "Tool",
+  "Standard formats that let an LMS host a course and record results.",
+  "Authoring tools such as Storyline, Captivate and iSpring publish SCORM or xAPI packages. The LMS uses them to track completion and scores; xAPI can also record detailed events such as wrong clicks.",
+  "It's how you measure who finished training and where they struggled.",
+)
+
+syntheticData = Flashcard(
+  "synthetic-data",
+  "Synthetic Data",
+  "sin-thet-ik day-tuh",
+  "Data",
+  "Invented records that look real but belong to nobody.",
+  "Fake customers, tickets or orders created with tools such as Faker, Mockaroo or Tonic.ai and shared as fixtures across simulations.",
+  "Realistic practice without privacy risk.",
+)
+
+drift = Flashcard(
+  "drift",
+  "Drift",
+  "drift",
+  "Maintenance",
+  "When the manual no longer matches the real software.",
+  "Every release can move buttons, rename labels or change steps. Unless someone updates the simulation, learners rehearse screens that no longer exist.",
+  "It's the central failure mode of interactive manuals: the Drifted Phantom UI.",
+)
+
+visualRegression = Flashcard(
+  "visual-regression",
+  "Visual Regression Testing",
+  "vizh-oo-uhl ri-gresh-uhn",
+  "Maintenance",
+  "Comparing new screenshots with approved ones to spot changes.",
+  "Services such as Chromatic and Percy capture screens on every build and highlight pixel differences against a baseline.",
+  "It tells you which manual screens a release has changed.",
+)
+
+asCode = Flashcard(
+  "as-code",
+  "As Code",
+  "az kohd",
+  "Maintenance",
+  "Keeping the manual as text files in git, reviewed and built by CI.",
+  "UI clones, sandbox definitions and scripted screenshot guides live in git, so changes are pull requests, tests run automatically and everything can be rebuilt.",
+  "It makes upkeep reviewable, testable and repeatable.",
+)
+
+watchTryTest = Flashcard(
+  "watch-try-test",
+  "Watch → Try → Test",
+  "woch, trahy, test",
+  "Design",
+  "Demo, guided practice with hints, then unguided assessment.",
+  "The three simulation modes: Watch shows the task, Try lets the learner do it with hints and feedback, and Test checks they can do it alone.",
+  "It moves learners from seeing to doing to proving.",
+)

@@ -8,19 +8,28 @@
   font-family: var(--font-display);
 }
 
-.sequence-body {
+.sequence-body,
+.sequence-card {
   display: flex;
   flex-direction: column;
   gap: 20px;
 }
 
-.sequence-prompt {
+.sequence-prompt,
+.sequence-prompt-banner {
   font-size: 14.5px;
   color: var(--ctp-subtext1);
   font-weight: 600;
 }
 
-.sequence-source-pool {
+.sequence-prompt-text {
+  font-size: 14.5px;
+  color: var(--ctp-subtext1);
+  font-weight: 600;
+}
+
+.sequence-source-pool,
+.sequence-pool {
   display: flex;
   flex-wrap: wrap;
   gap: 10px;

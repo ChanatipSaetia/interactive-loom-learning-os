@@ -56,6 +56,9 @@ import {
   ConceptMapSectionSchema,
 } from '../sub-contexts/practice-assessment/schema'
 import { validatePracticeAssessmentTier3 } from '../sub-contexts/practice-assessment/validation'
+import { HexCampaignSchema } from '../../generic/hex-map/schema'
+import { validateHexMapTier3 } from '../../generic/hex-map/validation'
+import type { HexCampaignData } from '../../generic/hex-map/schema'
 
 interface SchemaEntry {
   schema: z.ZodTypeAny
@@ -466,6 +469,90 @@ export function formatValidationAsPrompt(
   }
 
   return prompt
+}
+
+/**
+ * Validates a Hex Map Campaign document across all 3 Tiers:
+ * Tier 1: YAML Syntax
+ * Tier 2: Structural Zod Schema (HexCampaignSchema)
+ * Tier 3: Semantic Reference Integrity (validateHexMapTier3)
+ */
+export function validateHexCampaign(
+  raw: unknown,
+  availableSectionIds?: string[],
+  lastValidData?: HexCampaignData | null
+): ValidationResult<HexCampaignData> {
+  const diagnostics: ValidationDiagnostic[] = []
+  const fallbackPayload: HexCampaignData = (lastValidData as HexCampaignData) ?? {
+    topicId: '',
+    topicTitle: '',
+    capitalId: 'capital',
+    nodes: [],
+  }
+
+  // 1. Tier 1: Syntax & Frontmatter Parsing
+  let parsedData: any = raw
+  if (typeof raw === 'string') {
+    try {
+      parsedData = yaml.load(raw)
+    } catch (e: any) {
+      diagnostics.push({
+        tier: 1,
+        message: e?.message || 'Invalid YAML syntax in hex campaign document.',
+        fixHint: 'Fix YAML indentation and syntax errors.',
+      })
+      return {
+        status: 'error',
+        payload: fallbackPayload,
+        diagnostics,
+      }
+    }
+  }
+
+  if (!parsedData || typeof parsedData !== 'object') {
+    diagnostics.push({
+      tier: 1,
+      message: 'Campaign document must be a non-empty YAML object or parsed dictionary.',
+      fixHint: 'Ensure topicId, topicTitle, and nodes are declared at root level.',
+    })
+    return {
+      status: 'error',
+      payload: fallbackPayload,
+      diagnostics,
+    }
+  }
+
+  // 2. Tier 2: Structural Zod Validation
+  const zodResult = HexCampaignSchema.safeParse(parsedData)
+  if (!zodResult.success) {
+    for (const issue of zodResult.error.issues) {
+      const field = issue.path.join('.')
+      diagnostics.push({
+        tier: 2,
+        field,
+        message: issue.message,
+        fixHint: `Correct the field '${field}' to match the HexCampaignSchema structure.`,
+      })
+    }
+    return {
+      status: 'warning',
+      payload: fallbackPayload,
+      diagnostics,
+    }
+  }
+
+  // 3. Tier 3: Semantic Reference Integrity
+  const tier3Diags = validateHexMapTier3(zodResult.data, availableSectionIds)
+  diagnostics.push(...tier3Diags)
+
+  const hasErrors = diagnostics.some((d) => d.tier === 1 || d.tier === 2)
+  const hasWarnings = diagnostics.some((d) => d.tier === 3)
+
+  return {
+    status: hasErrors ? 'error' : hasWarnings ? 'warning' : 'valid',
+    payload: zodResult.data,
+    diagnostics,
+  }
 }
 
 

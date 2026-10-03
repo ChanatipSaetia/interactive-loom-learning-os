@@ -1,0 +1,125 @@
+root = PillarLayer(
+  "โครงสร้างและกายวิภาคของเตา Kamado",
+  [lDomeExhaust, lCookingZone, lFireboxCore, lBaseDraft],
+  [bTopVent, bCeramicDome, bGrillGrate, bDeflector, bFirebox, bFireRing, bDraftDoor, bAshDrawer],
+  "โครงสร้างแบบเป็นชั้นของเตา Kamado แสดงการถ่ายเทความร้อน การกักเก็บพลังงาน และการควบคุมการไหลเวียนอากาศ",
+  "กายวิภาคและสถาปัตยกรรมเตาเซรามิก Kamado (Kamado Anatomy Stack)",
+)
+
+lDomeExhaust = Layer(
+  "l-dome-exhaust",
+  "1. ชั้นควบคุมไอเสียและกักเก็บความร้อนด้านบน (Top Exhaust & Dome Tier)",
+  "วาล์วด้านบนและฝาครอบเซรามิกหนา ทำหน้าที่กักเก็บรังสีความร้อนและคุมการระบายไอเสีย",
+)
+
+lCookingZone = Layer(
+  "l-cooking-zone",
+  "2. ชั้นตะแกรงย่างและจัดโซนความร้อน (Cooking Grates & Deflector Tier)",
+  "พื้นที่วางเนื้อสเต๊ก ตะแกรงเหล็กหล่อ/สเตนเลส และแผ่นหิน Deflector สำหรับกระจายความร้อนทางอ้อม",
+)
+
+lFireboxCore = Layer(
+  "l-firebox-core",
+  "3. ชั้นกล่องเผาไหม้และศูนย์รวมถ่าน (Firebox & Fire Ring Tier)",
+  "ห้องเซรามิกทนความร้อนสูงสำหรับบรรจุถ่านไม้ธรรมชาติ มีรูระบายอากาศเพื่อกระจายออกซิเจน",
+)
+
+lBaseDraft = Layer(
+  "l-base-draft",
+  "4. ชั้นฐานรองและประตูรับอากาศเข้าล่าง (Base & Draft Door Tier)",
+  "ช่องดึงอากาศบริสุทธิ์เข้าด้านล่างเพื่อป้อนออกซิเจนให้ไฟ และลิ้นชักสำหรับดักขี้เถ้า",
+)
+
+bTopVent = MatrixBlock(
+  "b-top-vent",
+  "วาล์วปรับลมบน (Top Vent / Dual-Disc)",
+  lDomeExhaust,
+  0,
+  2,
+  null,
+  "ควบคุมความเร็วลมขาออกและดักความร้อน ละเอียดระดับมิลลิเมตรเพื่อปรับอุณหภูมิละเอียด (Fine-tuning)",
+  "mauve",
+  ["b-grill-grate"],
+)
+
+bCeramicDome = MatrixBlock(
+  "b-ceramic-dome",
+  "ฝาครอบเซรามิกหนาพิเศษ (Ceramic Heavy Dome)",
+  lDomeExhaust,
+  2,
+  2,
+  null,
+  "ผนังเซรามิกสะท้อนรังสีความร้อนอินฟราเรดกลับลงมาที่ผิวเนื้อ ทำให้เนื้อสุกรอบทิศทางโดยไม่ต้องเปิดฝาบ่อย",
+  "blue",
+  ["b-deflector"],
+)
+
+bGrillGrate = MatrixBlock(
+  "b-grill-grate",
+  "ตะแกรงย่างเหล็กหล่อ/สเตนเลส (Cooking Grate)",
+  lCookingZone,
+  0,
+  2,
+  null,
+  "รองรับเนื้อวัว สามารถเลือกใช้เหล็กหล่อเพื่อสะสมความร้อนสำหรับ Sear ลายสวยงาม",
+  "peach",
+  ["b-firebox"],
+)
+
+bDeflector = MatrixBlock(
+  "b-deflector",
+  "แผ่นหินกันความร้อน (Ceramic Heat Deflector)",
+  lCookingZone,
+  2,
+  2,
+  null,
+  "แปลงเตาย่างเปลวไฟตรงให้กลายเป็นเตาอบ Convection กั้นเปลวไฟตรงเพื่อย่างทางอ้อม (Indirect Smoking / Reverse Sear)",
+  "teal",
+  ["b-fire-ring"],
+)
+
+bFirebox = MatrixBlock(
+  "b-firebox",
+  "กล่องเผาไหม้เซรามิก (Ceramic Firebox)",
+  lFireboxCore,
+  0,
+  2,
+  null,
+  "บรรจุถ่านไม้ก้อนธรรมชาติ ผนังมีรูเจาะระบายอากาศเพื่อกระจายออกซิเจนเข้าสู่กองถ่านอย่างสม่ำเสมอ",
+  "sapphire",
+  ["b-draft-door"],
+)
+
+bFireRing = MatrixBlock(
+  "b-fire-ring",
+  "วงแหวนยกความสูง (Fire Ring)",
+  lFireboxCore,
+  2,
+  2,
+  null,
+  "วางซ้อนบน Firebox เพื่อเพิ่มระยะห่างระหว่างกองถ่านกับตะแกรงย่าง และเป็นฐานรองรับแผ่น Heat Deflector",
+  "green",
+  ["b-ash-drawer"],
+)
+
+bDraftDoor = MatrixBlock(
+  "b-draft-door",
+  "ประตูวาล์วลมล่าง (Bottom Draft Door)",
+  lBaseDraft,
+  0,
+  2,
+  null,
+  "จุดรับออกซิเจนหลักเข้าสู่เตา ทำหน้าที่ควบคุมอุณหภูมิหยาบ (Coarse tuning) เปิดกว้างเพื่อเร่งไฟ หรี่เพื่อลดไฟ",
+  "maroon",
+)
+
+bAshDrawer = MatrixBlock(
+  "b-ash-drawer",
+  "ลิ้นชักรองขี้เถ้า (Ash Drawer / Base Cavity)",
+  lBaseDraft,
+  2,
+  2,
+  null,
+  "กักเก็บขี้เถ้าที่ร่วงผ่านตะแกรงก้นเตา ป้องกันไม่ให้ขี้เถ้าอุดตันช่องลมเข้า ทำให้กระแสลมไหลเวียนต่อเนื่อง",
+  "lavender",
+)

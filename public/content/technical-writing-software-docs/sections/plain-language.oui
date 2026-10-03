@@ -1,0 +1,48 @@
+root = Bullets(
+  "Plain Language Rules",
+  [
+    Bullet(
+      "Keep sentences short",
+      [
+        Bullet("Aim for an average of about 15–20 words per sentence."),
+        Bullet("One idea per sentence; split sentences joined by 'and', 'which' or 'so that'."),
+      ],
+    ),
+    Bullet(
+      "Use active voice and 'you'",
+      [
+        Bullet("Write 'Select Save', not 'The Save button should be selected'."),
+        Bullet("Active voice says who does what; 'you' speaks directly to the reader."),
+      ],
+    ),
+    Bullet(
+      "Front-load the key information",
+      [
+        Bullet("Put the most important word or condition at the start of the sentence or heading."),
+        Bullet(
+          "'Refunds over 5,000 baht need manager approval' beats 'Please note that, in accordance with policy, manager approval is needed for refunds over 5,000 baht'.",
+        ),
+      ],
+    ),
+    Bullet(
+      "One term per concept",
+      [
+        Bullet("Pick 'workspace' and use it everywhere."),
+        Bullet(
+          "Switching between 'workspace', 'project' and 'space' makes readers think they are different things.",
+        ),
+      ],
+    ),
+    Bullet(
+      "Write for translation",
+      [
+        Bullet(
+          "Plain, literal sentences without idioms or jokes translate better and are easier for non-native readers.",
+        ),
+        Bullet(
+          "'This will hit the ground running' is hard to translate; 'You can start using it immediately' isn't.",
+        ),
+      ],
+    ),
+  ],
+)

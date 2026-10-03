@@ -1,0 +1,100 @@
+root = Intro(
+  "Introduction to Storybook",
+  what,
+  why,
+  [
+    RoadmapStep(
+      "Storybook Architecture Map",
+      "concept-map",
+      "Explore how stories, meta, the preview iframe, the manager UI, and addons fit together.",
+      "concept-map",
+    ),
+    RoadmapStep(
+      "Essential Storybook Vocabulary",
+      "flashcards",
+      "Master Story, Meta, CSF, args, argTypes, Controls, decorators, play functions, and composition.",
+      "flashcards",
+    ),
+    RoadmapStep(
+      "Foundations Trial",
+      "quiz",
+      "Prove your grasp of stories, CSF exports, and the manager/preview split to earn the first key relic.",
+      "quiz-foundations",
+    ),
+    RoadmapStep(
+      "The Story Authoring Workflow",
+      "text",
+      "Step-by-step: from a bare component to a published, documented, tested story.",
+      "text-workflow",
+    ),
+    RoadmapStep(
+      "Render & Hot-Reload Pipeline",
+      "flowchart",
+      "Event-storming walkthrough of how a saved story file reaches the preview iframe and reacts to Controls.",
+      "flowchart",
+    ),
+    RoadmapStep(
+      "Pipeline Sequencing Challenge",
+      "reflection-sequence",
+      "Rebuild the hot-reload and Controls-tuning flows in the correct order.",
+      "reflection-sequence",
+    ),
+    RoadmapStep(
+      "UI Safety-Net Trade-offs",
+      "tradeoff-sandbox",
+      "Balance confidence, review speed, and CI cost when choosing your testing and docs strategy.",
+      "tradeoffs",
+    ),
+    RoadmapStep(
+      "What Storybook Does Catalog",
+      "taxonomy-browser",
+      "Compare Storybook's five jobs — workshop, docs, testing, review, catalog — and what stays out of scope.",
+      "taxonomy",
+    ),
+    RoadmapStep(
+      "Release-Day Crisis Scenario",
+      "scenario",
+      "A design-system regression ships toward production. Your tooling choices decide the outcome.",
+      "scenario",
+    ),
+    RoadmapStep(
+      "Test Layer Advisor",
+      "decision-tree",
+      "Diagnostic Q&A recommending visual, interaction, or accessibility testing for your risk profile.",
+      "decision-tree",
+    ),
+    RoadmapStep(
+      "Testing & Delivery Trial",
+      "quiz",
+      "Defeat the Regression Wraith by answering correctly on visual diffs, play functions, and the test runner.",
+      "quiz-testing",
+    ),
+    RoadmapStep(
+      "Synthesis Vault",
+      "reflection-template",
+      "Fill the blanks to forge a complete Storybook safety-net statement before facing the Boss.",
+      "reflection-template",
+    ),
+  ],
+  "Develop, document, and test UI components in isolation, one story at a time",
+  "30 min",
+  13,
+  "Storybook — The Component Workshop",
+)
+
+what = IntroWhat(
+  "A component workshop that turns each component state into a runnable, isolated example (a story) written in Component Story Format (CSF), then layers on interactive Controls, auto-generated Docs, accessibility checks, and automated visual and interaction testing.",
+  "Storybook is an open-source tool for building UI components and pages in isolation. It runs as a separate workshop environment alongside your app, rendering each component state — called a story — from a plain code file so you can develop, document, and test without wiring up screens, mock servers, or app state.",
+  [
+    "Stories, not screenshots: every state is live, executable code in Component Story Format (CSF)",
+    "Isolated development: render a single button without booting routes, auth, or backend data",
+    "Interactive controls: tweak args and argTypes to explore component states instantly",
+    "Built-in safety net: play functions, test runner, and visual regression catch regressions in CI",
+  ],
+  ["Storybook", "UI Components", "Design System", "Component Testing", "Frontend Tooling"],
+)
+
+why = IntroWhy(
+  "Developing components inside a running app means booting the whole system — login flows, API mocks, feature flags — just to see one button in its error state. Untested, undocumented components then drift silently between PRs and break production pages.",
+  "Storybook shrinks the feedback loop to a single component state, makes every state reviewable as documentation, and converts stories into automated tests — so design-system regressions are caught on the pull request instead of by users in production.",
+)

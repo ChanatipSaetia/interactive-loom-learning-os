@@ -1,0 +1,219 @@
+topicId: "teaching-concepts-in-docs"
+topicTitle: "Realm of the Understood Idea"
+capitalId: "capital"
+
+nodes:
+  - id: "capital"
+    title: "The Lantern Academy"
+    type: "capital"
+    status: "unlocked"
+    sectionRef: "intro"
+    description: "Where the realm's guides learn to light up ideas, not just point at buttons. Their creed: a user who understands can find a path no manual drew."
+
+  - id: "knowledge-kinds"
+    title: "The Two Roads"
+    type: "archive_spire"
+    status: "locked"
+    unlockedBy:
+      - "capital"
+    sectionRef: "knowledge-kinds"
+    description: "One road is memorised steps and ends at the first closed gate. The other is understanding, and leads anywhere."
+    rewards:
+      - id: "knowledge-kinds-relic"
+        name: "Map of the Two Roads"
+        icon: "🗺️"
+        description: "Proof you know why steps alone aren't enough."
+
+  - id: "mental-models"
+    title: "Tower of Three Mirrors"
+    type: "archive_spire"
+    status: "locked"
+    unlockedBy:
+      - "knowledge-kinds"
+    sectionRef: "mental-models"
+    description: "The designer's mirror, the system's mirror and the user's mirror. Only the middle one can be seen, so the docs must reflect what the UI can't."
+
+  - id: "quiz-why"
+    title: "Trial of the Closed Gate"
+    type: "quiz_encounter"
+    status: "locked"
+    unlockedBy:
+      - "mental-models"
+    sectionRef: "quiz-why"
+    description: "A guardian asks why step-followers get stuck, and what the system image is."
+    monster:
+      id: "quiz-why-monster"
+      name: "Gatekeeper of the Closed Road"
+      type: "goblin"
+      maxHp: 100
+      damage: 15
+      icon: "👾"
+
+  - id: "concept-techniques"
+    title: "The Explainer's Workshop"
+    type: "archive_spire"
+    status: "locked"
+    unlockedBy:
+      - "capital"
+    sectionRef: "concept-techniques"
+    description: "Tools for building understanding: analogy with its limits, the worked example, refutation, the non-example, and words with pictures."
+    rewards:
+      - id: "concept-techniques-relic"
+        name: "Explainer's Lens"
+        icon: "🔍"
+        description: "Proof you can explain a new idea several ways."
+
+  - id: "explain-workshop"
+    title: "The Inheritance Forge"
+    type: "tradeoff_workshop"
+    status: "locked"
+    unlockedBy:
+      - "concept-techniques"
+    sectionRef: "explain-workshop"
+    description: "Teach new admins how permissions flow down, without overloading them."
+
+  - id: "concept-page"
+    title: "The Concept Scroll"
+    type: "archive_spire"
+    status: "locked"
+    unlockedBy:
+      - "explain-workshop"
+    sectionRef: "concept-page"
+    description: "Definition first, why it matters, core before details, and links to every task that uses the idea."
+
+  - id: "quiz-techniques"
+    title: "Trial of the Explainer"
+    type: "quiz_encounter"
+    status: "locked"
+    unlockedBy:
+      - "concept-page"
+    sectionRef: "quiz-techniques"
+    description: "A guardian tests each explaining technique."
+    monster:
+      id: "quiz-techniques-monster"
+      name: "The Muddled Mimic"
+      type: "goblin"
+      maxHp: 100
+      damage: 15
+      icon: "👾"
+
+  - id: "explorables"
+    title: "The Hall of Living Diagrams"
+    type: "archive_spire"
+    status: "locked"
+    unlockedBy:
+      - "capital"
+    sectionRef: "explorables"
+    description: "Sliders, simulators, clickable flows and what-ifs: explanations that respond when you touch them."
+    rewards:
+      - id: "explorables-relic"
+        name: "Living Diagram Shard"
+        icon: "🧪"
+        description: "Proof you can make an idea explorable."
+
+  - id: "poe-loop"
+    title: "The Oracle's Loop"
+    type: "simulation_nexus"
+    status: "locked"
+    unlockedBy:
+      - "explorables"
+    sectionRef: "poe-loop"
+    description: "Predict, observe, explain. The oracle rewards wrong predictions, because that's when minds change."
+
+  - id: "order-poe"
+    title: "The Loop Puzzle"
+    type: "reflection_decryption"
+    status: "locked"
+    unlockedBy:
+      - "poe-loop"
+    sectionRef: "order-poe"
+    description: "Put the oracle's loop back in order, and say why the prediction comes first."
+
+  - id: "learning-science"
+    title: "The Memory Garden"
+    type: "archive_spire"
+    status: "locked"
+    unlockedBy:
+      - "capital"
+    sectionRef: "learning-science"
+    description: "Recall, spacing, self-explanation and feedback that says why: the four waters that make understanding grow."
+    rewards:
+      - id: "learning-science-relic"
+        name: "Seed of Memory"
+        icon: "🌱"
+        description: "Proof you can make understanding stick."
+
+  - id: "quiz-retention"
+    title: "Trial of the Fading Page"
+    type: "quiz_encounter"
+    status: "locked"
+    unlockedBy:
+      - "learning-science"
+    sectionRef: "quiz-retention"
+    description: "A guardian who erases everything you only re-read."
+    monster:
+      id: "quiz-retention-monster"
+      name: "The Fading Wisp"
+      type: "goblin"
+      maxHp: 100
+      damage: 15
+      icon: "👾"
+
+  - id: "scenario-archive"
+    title: "The Archive Vaults"
+    type: "simulation_nexus"
+    status: "locked"
+    unlockedBy:
+      - "quiz-retention"
+    sectionRef: "scenario-archive"
+    description: "Users think the vault door destroys what's inside. Fix their model before more secrets leak."
+
+  - id: "concept-map"
+    title: "Constellation of Ideas"
+    type: "concept_monolith"
+    status: "locked"
+    unlockedBy:
+      - "scenario-archive"
+    sectionRef: "concept-map"
+    description: "See how knowledge, models, techniques and memory connect."
+
+  - id: "glossary"
+    title: "Lexicon Stones"
+    type: "concept_monolith"
+    status: "locked"
+    unlockedBy:
+      - "concept-map"
+    sectionRef: "glossary"
+    description: "The words of the academy: mental model, refutation, dual coding, POE, retrieval and more."
+
+  - id: "synthesis"
+    title: "The Lesson Blueprint"
+    type: "reading_sanctuary"
+    status: "locked"
+    unlockedBy:
+      - "glossary"
+    sectionRef: "synthesis"
+    description: "Design a concept lesson before facing the Hollow Clicker."
+
+  - id: "boss-lair"
+    title: "Lair of the Hollow Clicker"
+    type: "boss_lair"
+    status: "locked"
+    unlockedBy:
+      - "quiz-why"
+      - "quiz-techniques"
+      - "order-poe"
+      - "synthesis"
+    description: "Users follow the steps without understanding the ideas behind them, so they break things the moment their situation differs from the manual"
+    requiredItems:
+      - "knowledge-kinds-relic"
+      - "concept-techniques-relic"
+      - "explorables-relic"
+      - "learning-science-relic"
+    monster:
+      id: "failure-mode"
+      name: "The Hollow Clicker"
+      type: "boss"
+      maxHp: 200
+      damage: 35
+      icon: "🖱️"

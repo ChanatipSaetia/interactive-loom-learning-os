@@ -1,0 +1,171 @@
+root = TradeoffSandbox("Post-Processing Performance Trade-offs", [filterOptimizationStrategy])
+
+filterOptimizationStrategy = TradeoffScenario(
+  "filter-optimization-strategy",
+  "Post-Processing Performance & Architecture Strategy",
+  [
+    TradeoffMetric("fps_throughput", "FPS Throughput", 55, 0, 100, "higher"),
+    TradeoffMetric("draw_call_overhead", "Draw Call & Target Breaks", 60, 0, 100, "lower"),
+    TradeoffMetric("gpu_memory", "GPU Memory & VRAM Bandwidth", 50, 0, 100, "lower"),
+    TradeoffMetric("visual_spectacle", "Visual Fidelity & Effects", 70, 0, 100, "higher"),
+  ],
+  [stepAttachment, stepAlgorithm, stepCaching, stepResolution],
+  "Architect post-processing shaders and container hierarchies for a 60 FPS mobile/web game, balancing GPU fillrate, VRAM, and visual fidelity.",
+)
+
+stepAttachment = TradeoffStep(
+  "step_attachment",
+  "1. Filter Attachment Hierarchy",
+  [individualSprites, groupedContainer],
+  "Determine where filters are attached in the scene graph hierarchy.",
+  "grouped_container",
+)
+
+individualSprites = TradeoffChoice(
+  "individual_sprites",
+  "Individual Leaf Sprites",
+  "Attach separate filters to 50 individual enemy sprites on screen.",
+  {fps_throughput: -35, draw_call_overhead: 45, gpu_memory: 30, visual_spectacle: 5},
+  [ProCon("Independent control", "Each enemy can have unique filter parameters.")],
+  [
+    ProCon(
+      "Catastrophic batch breaking",
+      "Forces 50 separate offscreen RenderTarget switch cycles per frame.",
+    ),
+    ProCon("Severe mobile lag", "Framerate drops below 20 FPS on mobile devices."),
+  ],
+  "Only when rendering 1 or 2 highlighted hero characters.",
+  "Solo boss highlight or single cursor glow.",
+)
+
+groupedContainer = TradeoffChoice(
+  "grouped_container",
+  "Grouped Parent Container",
+  "Group all 50 enemies into one parent Container and attach 1 filter to the container.",
+  {fps_throughput: 30, draw_call_overhead: -35, gpu_memory: -20, visual_spectacle: 15},
+  [
+    ProCon(
+      "Single offscreen pass",
+      "All 50 enemies render into 1 shared RenderTarget before filtering.",
+    ),
+    ProCon("Preserves 60 FPS", "Reduces framebuffer switching overhead by 98%."),
+  ],
+  [ProCon("Uniform parameters", "All grouped enemies share the same filter intensity.")],
+  "Standard best practice for multi-object post-processing.",
+  "Particle swarms, enemy mobs, and UI card groups.",
+)
+
+stepAlgorithm = TradeoffStep(
+  "step_algorithm",
+  "2. Blur & Glow Algorithm Selection",
+  [standardGaussian, kawaseBlur],
+  "Choose the mathematical convolution approach for blurs and glows.",
+  "kawase_blur",
+)
+
+standardGaussian = TradeoffChoice(
+  "standard_gaussian",
+  "Multi-Pass Gaussian Blur",
+  "Standard PIXI.BlurFilter with quality 4 and large kernel radii.",
+  {fps_throughput: -20, draw_call_overhead: 15, gpu_memory: 20, visual_spectacle: 20},
+  [ProCon("Pure Gaussian distribution", "Mathematically flawless smooth gradients.")],
+  [ProCon("High sample taps", "High texture fetch count increases GPU thermal load on phones.")],
+  "High-end desktop gaming and marketing landing pages.",
+  "When GPU power is abundant and visual precision is paramount.",
+)
+
+kawaseBlur = TradeoffChoice(
+  "kawase_blur",
+  "Kawase Box-Offset Blur",
+  "Multi-pass KawaseBlurFilter with expanding box sample offsets.",
+  {fps_throughput: 25, draw_call_overhead: -10, gpu_memory: -15, visual_spectacle: 15},
+  [
+    ProCon("Ultra-fast texture sampling", "Requires far fewer texture reads per pixel pass."),
+    ProCon("Visually identical to Gaussian", "Provides smooth soft-focus aesthetics."),
+  ],
+  [ProCon("External package", "Requires pixi-filters package import.")],
+  "Production mobile web games and interactive apps.",
+  "All mobile-first projects requiring real-time blur or bloom.",
+)
+
+stepCaching = TradeoffStep(
+  "step_caching",
+  "3. Static Filter Caching Strategy",
+  [dynamicPerFrame, cacheBitmap],
+  "Determine whether static filtered UI and card assets are cached.",
+  "cache_bitmap",
+)
+
+dynamicPerFrame = TradeoffChoice(
+  "dynamic_per_frame",
+  "Continuous Dynamic Re-execution",
+  "Execute all filter shader passes every frame even for static UI elements.",
+  {fps_throughput: -25, draw_call_overhead: 25, gpu_memory: 15, visual_spectacle: 0},
+  [ProCon("Always reactive", "Instantly reflects any child transform or text change.")],
+  [
+    ProCon(
+      "Wasted GPU cycles",
+      "Calculates identical pixels 60 times per second for unchanging UI.",
+    ),
+  ],
+  "Rapidly animating visual effects that change every frame.",
+  "Waving water, flickering flames, or animated shockwaves.",
+)
+
+cacheBitmap = TradeoffChoice(
+  "cache_bitmap",
+  "Bake with cacheAsBitmap = true",
+  "Bake the filtered container into a static cached texture after initial render.",
+  {fps_throughput: 35, draw_call_overhead: -30, gpu_memory: -10, visual_spectacle: 10},
+  [
+    ProCon(
+      "Zero ongoing filter cost",
+      "Subsequent frames draw the baked texture as 1 standard batched sprite.",
+    ),
+    ProCon("Restores batch rendering", "Can be batched alongside regular sprites."),
+  ],
+  [
+    ProCon(
+      "Re-bake on mutation",
+      "Changing child text or layout requires invalidating the bitmap cache.",
+    ),
+  ],
+  "Static UI cards, inventory dialogs, HUD backgrounds, and map tiles.",
+  "Any filtered object whose contents change infrequently.",
+)
+
+stepResolution = TradeoffStep(
+  "step_resolution",
+  "4. Filter Resolution & Sampling Scale",
+  [nativeResolution, halfResolution],
+  "Configure filter.resolution to balance shader sharpness with GPU fillrate.",
+  "half_resolution",
+)
+
+nativeResolution = TradeoffChoice(
+  "native_resolution",
+  "Native Resolution (1.0x / Retina 2.0x)",
+  "Render offscreen targets at full native display pixel density.",
+  {fps_throughput: -15, draw_call_overhead: 0, gpu_memory: 25, visual_spectacle: 15},
+  [ProCon("Pixel-perfect sharpness", "Sharp outlines and fine displacement details.")],
+  [ProCon("4x fillrate cost on Retina", "Huge bandwidth tax on high-DPI smartphone screens.")],
+  "Crisp outline filters and fine pixel-art CRT shaders.",
+  "Fine geometric effects where blur softness is undesirable.",
+)
+
+halfResolution = TradeoffChoice(
+  "half_resolution",
+  "Half Resolution (0.5x Scale)",
+  "Render offscreen target at half resolution with hardware bilinear upsampling.",
+  {fps_throughput: 25, draw_call_overhead: 0, gpu_memory: -25, visual_spectacle: 5},
+  [
+    ProCon(
+      "75% reduction in pixel fillrate",
+      "Processes 1/4 the pixel count in the fragment shader.",
+    ),
+    ProCon("Natural blur smoothing", "Bilinear upsampling naturally complements blur and bloom."),
+  ],
+  [ProCon("Slight edge softening", "Not suitable for razor-sharp 1px outlines.")],
+  "Large blurs, glows, bloom, and background depth-of-field.",
+  "Mobile devices and performance-sensitive blur/glow effects.",
+)

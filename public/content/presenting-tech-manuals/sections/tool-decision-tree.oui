@@ -1,0 +1,108 @@
+root = DecisionTree(
+  "Instrument Selection Advisor",
+  "instrument-advisor",
+  "audience",
+  [audience, enduserFormat, recLiveEnduser, recAsyncEnduser, recOperators, recDevelopers],
+  "Which Presentation Instrument Fits Your Manual?",
+)
+
+audience = DecisionNode(
+  "audience",
+  "Who is the primary audience for this manual presentation?",
+  [
+    DecisionChoice(
+      "end-users",
+      "End users doing business tasks in the Web App",
+      "enduser-format",
+      "Task-oriented walkthroughs need UI-forward instruments.",
+    ),
+    DecisionChoice(
+      "operators",
+      "Operators & admins keeping the system alive",
+      "rec-operators",
+      "Defensive readers need runbooks, commands, and triage flows.",
+    ),
+    DecisionChoice(
+      "developers",
+      "Developers integrating with the system (DX)",
+      "rec-developers",
+      "They judge the manual by how fast the first call succeeds.",
+    ),
+  ],
+)
+
+enduserFormat = DecisionNode(
+  "enduser-format",
+  "Will the manual be consumed live (you in the room) or async (people on their own)?",
+  [
+    DecisionChoice(
+      "live",
+      "Live webinar or workshop",
+      "rec-live-enduser",
+      "Live means you control the demo — but it must be rehearsed with a fallback.",
+      true,
+    ),
+    DecisionChoice(
+      "async",
+      "Async self-serve",
+      "rec-async-enduser",
+      "Async readers need findable, click-through guidance, not a recording graveyard.",
+    ),
+  ],
+)
+
+recLiveEnduser = DecisionNode(
+  "rec-live-enduser",
+  null,
+  null,
+  DecisionLeaf(
+    "Marp markdown deck + live product demo with an OBS Studio fallback clip + in-app Intro.js tour for the next release's onboarding.",
+    "The arc demands one persona task shown in the running UI; Marp keeps the deck in the repo, the OBS clip is your stunt double, and the Intro.js tour lets users replay the flow themselves after the webinar.",
+    [
+      "Prepping the fallback clip costs an hour before the talk",
+      "Marp themes need a one-time setup in the repo",
+    ],
+  ),
+)
+
+recAsyncEnduser = DecisionNode(
+  "rec-async-enduser",
+  null,
+  null,
+  DecisionLeaf(
+    "MkDocs Material or Docusaurus docs site with annotated screenshots and embedded OBS clip, plus an Intro.js/Shepherd in-app tour.",
+    "Async end users find the manual through search, so the docs site is the presentation. The embedded clip and overlay tour replace you at the keyboard.",
+    [
+      "The docs site pipeline needs CI to stay truthful",
+      "In-app tours need product code changes and release coordination",
+    ],
+  ),
+)
+
+recOperators = DecisionNode(
+  "rec-operators",
+  null,
+  null,
+  DecisionLeaf(
+    "MkDocs Material runbook site (copy-pasteable commands) + reveal.js triage deck for incident reviews + Code Tour for the deploy scripts.",
+    "Operators read defensively: symptom, diagnosis, remediation. A generated runbook site keeps every command current, a browser-native reveal.js deck handles live postmortems, and Code Tour walks the deploy scripts in the repo itself.",
+    [
+      "Runbook docs need ownership or they rot",
+      "Command blocks must be tested in CI to stay trustworthy",
+    ],
+  ),
+)
+
+recDevelopers = DecisionNode(
+  "rec-developers",
+  null,
+  null,
+  DecisionLeaf(
+    "Slidev deck with live code blocks + Swagger UI/Redoc reference rendered from the OpenAPI spec + Storybook playground + a five-minute quickstart page.",
+    "For DX, the instrument is the message: generate the reference from the contract so it cannot be stale, let the audience run code during the talk, and prove the quickstart works on first try.",
+    [
+      "OpenAPI specs must be maintained as first-class code",
+      "Live coding demos need rehearsal and a recorded backup",
+    ],
+  ),
+)

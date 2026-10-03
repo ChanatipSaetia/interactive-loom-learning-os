@@ -72,6 +72,11 @@ export function useTopicBundle(topicId: string) {
   const [error, setError] = useState<Error | null>(null)
 
   const load = useCallback(async () => {
+    if (!topicId) {
+      setBundle(null)
+      setLoading(false)
+      return
+    }
     try {
       if (!getCachedTopicBundle(topicId)) setLoading(true)
       setBundle(await loadTopicBundle(topicId))

@@ -1,0 +1,268 @@
+root = Quiz("Task Writing Check", [q1, q2, q3, q4, q5, q6, q7, q8, q9, q10, q11, q12])
+
+q1 = QuizQuestion(
+  "q1",
+  "Which is the best title for a task page?",
+  [
+    QuizChoice(
+      "q1-a",
+      "Export a monthly report",
+      true,
+      "The user's goal as a verb phrase is what users search for.",
+    ),
+    QuizChoice(
+      "q1-b",
+      "Report Export Module",
+      false,
+      "That's a feature name, not the user's goal.",
+    ),
+    QuizChoice("q1-c", "Reports", false, "Too vague: which task about reports?"),
+  ],
+  "What does the user want to do?",
+)
+
+q2 = QuizQuestion(
+  "q2",
+  "Users keep failing at step 4 because they lack the Finance Approver role. How should the page fix this?",
+  [
+    QuizChoice(
+      "q2-a",
+      "List the role as a prerequisite before the first step",
+      true,
+      "Prerequisites go before step 1 so users don't fail halfway.",
+    ),
+    QuizChoice(
+      "q2-b",
+      "Add a note after step 4",
+      false,
+      "By then they've already done three steps for nothing.",
+    ),
+    QuizChoice(
+      "q2-c",
+      "Mention it in the page's footer",
+      false,
+      "Nobody reads the footer before starting.",
+    ),
+  ],
+  "Where should they learn it: before or after starting?",
+)
+
+q3 = QuizQuestion(
+  "q3",
+  "Which step follows the one-action-per-step rule?",
+  [
+    QuizChoice("q3-a", "3. Select Export.", true, "One action, easy to keep your place."),
+    QuizChoice(
+      "q3-b",
+      "3. Choose Monthly, set the dates and export.",
+      false,
+      "Three actions crammed into one step.",
+    ),
+    QuizChoice(
+      "q3-c",
+      "3. Configure the report as needed.",
+      false,
+      "Not a concrete action at all.",
+    ),
+  ],
+  "Count the verbs.",
+)
+
+q4 = QuizQuestion(
+  "q4",
+  "After 'Select Export', what should the page add?",
+  [
+    QuizChoice(
+      "q4-a",
+      "What the user should see, e.g. 'The report downloads as an .xlsx file.'",
+      true,
+      "Showing the result tells users it worked.",
+    ),
+    QuizChoice(
+      "q4-b",
+      "The history of the export feature",
+      false,
+      "That's explanation and belongs elsewhere.",
+    ),
+    QuizChoice(
+      "q4-c",
+      "Nothing: the step is complete",
+      false,
+      "Without the result, users can't tell whether it worked.",
+    ),
+  ],
+  "How does the user know it worked?",
+)
+
+q5 = QuizQuestion(
+  "q5",
+  "Which idea is part of minimalism (John Carroll)?",
+  [
+    QuizChoice(
+      "q5-a",
+      "Help users recognise and recover from errors",
+      true,
+      "Minimalism: act quickly, cut the unneeded, support error recognition and recovery.",
+    ),
+    QuizChoice(
+      "q5-b",
+      "Document every feature before any task",
+      false,
+      "That's the opposite: it delays action.",
+    ),
+    QuizChoice(
+      "q5-c",
+      "Hide errors from the documentation",
+      false,
+      "Minimalism explicitly supports recovering from errors.",
+    ),
+  ],
+  "Think: act fast, cut fat, recover from errors.",
+)
+
+q6 = QuizQuestion(
+  "q6",
+  "The button on screen reads 'Save changes'. How should the doc write it?",
+  [
+    QuizChoice(
+      "q6-a",
+      "**Save changes**",
+      true,
+      "Bold, spelled and capitalised exactly as on screen.",
+    ),
+    QuizChoice("q6-b", "the save button", false, "Not bold and not the exact label."),
+    QuizChoice(
+      "q6-c",
+      "`Save Changes`",
+      false,
+      "Monospace is for typed input, and the capitalisation doesn't match.",
+    ),
+  ],
+  "Match the screen letter for letter.",
+)
+
+q7 = QuizQuestion(
+  "q7",
+  "Which sentence follows 'location before action'?",
+  [
+    QuizChoice(
+      "q7-a",
+      "In the Settings pane, select Save.",
+      true,
+      "The eye goes to the right place before the hand acts.",
+    ),
+    QuizChoice(
+      "q7-b",
+      "Select Save in the Settings pane.",
+      false,
+      "The reader may click the first Save they see before reading where.",
+    ),
+    QuizChoice("q7-c", "Save it.", false, "No location and no UI label."),
+  ],
+  "Where, then what.",
+)
+
+q8 = QuizQuestion(
+  "q8",
+  "How is a menu path written?",
+  [
+    QuizChoice(
+      "q8-a",
+      "File > Export > PDF",
+      true,
+      "Items separated by >, each in bold in the real page.",
+    ),
+    QuizChoice("q8-b", "File, then Export, then maybe PDF", false, "Wordy and vague."),
+    QuizChoice(
+      "q8-c",
+      "file/export/pdf",
+      false,
+      "Wrong separator and the labels don't match the screen.",
+    ),
+  ],
+  "Look at the separator.",
+)
+
+q9 = QuizQuestion(
+  "q9",
+  "In 'In the Name field, enter Q3-budget', how should Q3-budget be formatted?",
+  [
+    QuizChoice(
+      "q9-a",
+      "Monospace, because it's text the user types",
+      true,
+      "Monospace separates what you type from UI labels.",
+    ),
+    QuizChoice(
+      "q9-b",
+      "Bold, like a UI label",
+      false,
+      "Bold is for labels on screen; Q3-budget is typed in.",
+    ),
+    QuizChoice("q9-c", "Italic", false, "Not the convention taught."),
+  ],
+  "See vs type.",
+)
+
+q10 = QuizQuestion(
+  "q10",
+  "Your docs use 'click', 'press', 'hit' and 'tap' for the same action. What's the fix?",
+  [
+    QuizChoice(
+      "q10-a",
+      "Pick one device-neutral verb such as 'select' and use it consistently",
+      true,
+      "Consistency matters most; 'select' also works for mouse, touch and keyboard.",
+    ),
+    QuizChoice(
+      "q10-b",
+      "Use all four so every device is covered",
+      false,
+      "Readers will wonder whether they mean different things.",
+    ),
+    QuizChoice("q10-c", "Avoid verbs altogether", false, "Steps need clear action verbs."),
+  ],
+  "One verb, one meaning.",
+)
+
+q11 = QuizQuestion(
+  "q11",
+  "When is a screenshot worth adding to a step?",
+  [
+    QuizChoice(
+      "q11-a",
+      "When a control is hard to find from text alone",
+      true,
+      "Screenshots go stale each release, so use them where text isn't enough.",
+    ),
+    QuizChoice(
+      "q11-b",
+      "After every single click",
+      false,
+      "That multiplies upkeep and slows scanning.",
+    ),
+    QuizChoice("q11-c", "Never", false, "Hidden controls, such as items in a ⋯ menu, need one."),
+  ],
+  "Recall the screenshot step in the rewrite workshop.",
+)
+
+q12 = QuizQuestion(
+  "q12",
+  "Why split a 3,000-word 'Users' page into short task pages?",
+  [
+    QuizChoice(
+      "q12-a",
+      "Short tasks are easier to follow and to find",
+      true,
+      "A search for 'reset password' lands on exactly that page.",
+    ),
+    QuizChoice("q12-b", "Search engines only index short pages", false, "Not the reason taught."),
+    QuizChoice(
+      "q12-c",
+      "It removes the need for prerequisites",
+      false,
+      "Each task page still needs its prerequisites.",
+    ),
+  ],
+  "Following and finding.",
+)

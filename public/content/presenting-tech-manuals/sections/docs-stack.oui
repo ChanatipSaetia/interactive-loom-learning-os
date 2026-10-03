@@ -1,0 +1,151 @@
+root = PillarLayer(
+  "The Docs-as-Code Layer Stack",
+  [lSource, lGenerators, lDelivery, lLive],
+  [
+    bMarkdown,
+    bOpenapi,
+    bTourfiles,
+    bSsg,
+    bApirender,
+    bDeckbuild,
+    bDocsite,
+    bPlayground,
+    bDeck,
+    bInapp,
+  ],
+  "The manual as a Lego stack: plain-text sources at the bottom, generators that compile them, a delivery web app on top, and the live layer where a human presents it.",
+)
+
+lSource = Layer(
+  "l-source",
+  "Authoring Sources",
+  "Plain-text single sources of truth that live in Git next to the code.",
+)
+
+lGenerators = Layer(
+  "l-generators",
+  "Generators & Renderers",
+  "Pipelines that compile markdown and specs into browsable artifacts.",
+)
+
+lDelivery = Layer(
+  "l-delivery",
+  "Delivery Web App",
+  "The hosted, searchable, versioned surface the audience actually opens.",
+)
+
+lLive = Layer(
+  "l-live",
+  "Live & In-App Layer",
+  "Where a human or the product itself presents the manual in real time.",
+)
+
+bMarkdown = MatrixBlock(
+  "b-markdown",
+  "Markdown / MDX Pages",
+  lSource,
+  0,
+  2,
+  1,
+  "Task pages, runbooks, and quickstarts — the same markdown feeds decks and sites.",
+  "green",
+)
+
+bOpenapi = MatrixBlock(
+  "b-openapi",
+  "OpenAPI Spec",
+  lSource,
+  2,
+  1,
+  1,
+  "The machine-readable API contract, maintained as first-class code.",
+  "sky",
+)
+
+bTourfiles = MatrixBlock(
+  "b-tourfiles",
+  "Code Tour .tour Files",
+  lSource,
+  3,
+  1,
+  1,
+  "Narracted repository walkthroughs anchored to real files.",
+  "yellow",
+)
+
+bSsg = MatrixBlock(
+  "b-ssg",
+  "Site Generators",
+  lGenerators,
+  0,
+  2,
+  1,
+  "Docusaurus, MkDocs Material, VitePress, and mdBook compile sources into doc sites.",
+  "green",
+)
+
+bApirender = MatrixBlock(
+  "b-apirender",
+  "API Renderers",
+  lGenerators,
+  2,
+  1,
+  1,
+  "Swagger UI and Redoc turn the OpenAPI spec into explorable references.",
+  "sky",
+)
+
+bDeckbuild = MatrixBlock(
+  "b-deckbuild",
+  "Deck Builders",
+  lGenerators,
+  3,
+  1,
+  1,
+  "Marp, Slidev, and reveal.js compile slide markdown into presentable decks.",
+  "mauve",
+)
+
+bDocsite = MatrixBlock(
+  "b-docsite",
+  "Docs Web App + Search",
+  lDelivery,
+  0,
+  2,
+  1,
+  "Hosted site with full-text search, versioning, and permanent permalinks.",
+  "peach",
+)
+
+bPlayground = MatrixBlock(
+  "b-playground",
+  "Interactive Playground",
+  lDelivery,
+  2,
+  2,
+  1,
+  "Try-it-now API consoles and Storybook examples embedded in the docs.",
+  "teal",
+)
+
+bDeck = MatrixBlock(
+  "b-deck",
+  "Presented Deck",
+  lLive,
+  0,
+  2,
+  1,
+  "The live webinar or workshop deck — always ending on the permalink slide.",
+  "mauve",
+)
+
+bInapp = MatrixBlock(
+  "b-inapp",
+  "In-App Tours & Clips",
+  lLive,
+  2,
+  2,
+  1,
+  "Intro.js/Shepherd tours and OBS clips teaching inside the running product.",
+  "red",
+)
